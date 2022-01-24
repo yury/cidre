@@ -45,6 +45,16 @@ pub struct MutableArrayRef(ArrayRef);
 
 impl ArrayRef {
     #[inline]
+    pub fn retained(&self) -> Array {
+        Array(self.retain())
+    }
+    
+    #[inline]
+    pub fn retain(&self) -> ArrayRef {
+        ArrayRef(self.0.retain())
+    }
+
+    #[inline]
     pub fn create_copy(&self, allocator: Option<AllocatorRef>) -> Option<Array> {
         unsafe { CFArrayCreateCopy(allocator, *self) }
     }

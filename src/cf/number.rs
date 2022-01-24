@@ -1,4 +1,4 @@
-use super::{base::ComparisonResult, AllocatorRef, Index, TypeID, TypeRef};
+use super::{ComparisonResult, AllocatorRef, Index, TypeID, TypeRef};
 use std::{
     convert::From,
     ffi::c_void,
@@ -117,6 +117,17 @@ impl NumberType {
 pub struct NumberRef(TypeRef);
 
 impl NumberRef {
+
+    #[inline]
+    pub fn retained(&self) -> Number {
+        Number(self.retain())
+    }
+
+    #[inline]
+    pub fn retain(&self) -> NumberRef {
+        NumberRef(self.0.retain())
+    }
+
     #[inline]
     pub fn get_number_type(&self) -> NumberType {
         unsafe { CFNumberGetType(*self) }

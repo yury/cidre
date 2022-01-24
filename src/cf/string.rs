@@ -1,4 +1,4 @@
-use super::{base::OptionFlags, AllocatorRef, Index, TypeID, TypeRef};
+use super::{OptionFlags, AllocatorRef, Index, TypeID, TypeRef};
 use std::ops::{Deref, DerefMut};
 
 ///```
@@ -35,6 +35,17 @@ pub struct MutableStringRef(StringRef);
 pub struct MutableString(MutableStringRef);
 
 impl StringRef {
+
+    #[inline]
+    pub fn retained(&self) -> String {
+        String(self.retain())
+    }
+    
+    #[inline]
+    pub fn retain(&self) -> StringRef {
+        StringRef(self.0.retain())
+    }
+
     #[inline]
     pub fn get_length(&self) -> Index {
         unsafe { CFStringGetLength(*self) }
@@ -77,6 +88,16 @@ impl Drop for String {
 }
 
 impl MutableStringRef {
+    #[inline]
+    pub fn retained(&self) -> MutableString {
+        MutableString(self.retain())
+    }
+    
+    #[inline]
+    pub fn retain(&self) -> MutableStringRef {
+        MutableStringRef(self.0.retain())
+    }
+
     #[inline]
     pub fn append_string(&mut self, appending_string: StringRef) {
         unsafe { CFStringAppend(*self, appending_string) }

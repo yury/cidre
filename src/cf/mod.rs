@@ -1,5 +1,6 @@
 mod base;
 pub use base::copy_type_id_description;
+pub use base::ComparisonResult;
 pub use base::AllocatorRef;
 pub use base::ComparatorFunction;
 pub use base::HashCode;
@@ -13,8 +14,8 @@ pub use base::NOT_FOUND;
 
 mod number;
 pub use number::boolean_get_type_id;
-pub use number::number_get_type_id;
 pub use number::BooleanRef;
+pub use number::number_get_type_id;
 pub use number::Number;
 pub use number::NumberRef;
 pub use number::NumberType;

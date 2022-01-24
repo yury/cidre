@@ -1,6 +1,5 @@
-use super::string::String;
-use std::cmp::Ordering;
-use std::{ffi::c_void, ops::Deref, ptr::NonNull};
+use super::String;
+use std::{cmp::Ordering, ffi::c_void, ops::{Deref, DerefMut}, ptr::NonNull};
 
 pub type Index = isize;
 pub type TypeID = usize;
@@ -61,6 +60,29 @@ impl Default for Null {
     }
 }
 
+#[repr(transparent)]
+pub struct Type(TypeRef);
+
+impl Drop for Type {
+    fn drop(&mut self) {
+        self.release()
+    }
+}
+
+impl Deref for Type {
+    type Target = TypeRef;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Type {
+   fn deref_mut(&mut self) -> &mut Self::Target {
+       &mut self.0
+   }
+}
+
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct AllocatorRef(TypeRef);
@@ -93,6 +115,11 @@ impl AllocatorRef {
 }
 
 impl TypeRef {
+    #[inline]
+    pub fn retained(&self) -> Type {
+        Type(self.retain())
+    }
+
     #[inline]
     pub fn retain(&self) -> TypeRef {
         unsafe { CFRetain(*self) }
