@@ -46,11 +46,11 @@ pub struct MutableArrayRef(ArrayRef);
 impl ArrayRef {
     #[inline]
     pub fn retained(&self) -> Array {
-        Array(self.retain())
+        unsafe { Array(self.retain()) }
     }
     
     #[inline]
-    pub fn retain(&self) -> ArrayRef {
+    pub unsafe fn retain(&self) -> ArrayRef {
         ArrayRef(self.0.retain())
     }
 

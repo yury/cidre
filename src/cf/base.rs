@@ -117,12 +117,12 @@ impl AllocatorRef {
 impl TypeRef {
     #[inline]
     pub fn retained(&self) -> Type {
-        Type(self.retain())
+        unsafe { Type(self.retain()) }
     }
 
     #[inline]
-    pub fn retain(&self) -> TypeRef {
-        unsafe { CFRetain(*self) }
+    pub unsafe fn retain(&self) -> TypeRef {
+        CFRetain(*self)
     }
 
     #[inline]

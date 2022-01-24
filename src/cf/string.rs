@@ -38,11 +38,11 @@ impl StringRef {
 
     #[inline]
     pub fn retained(&self) -> String {
-        String(self.retain())
+        unsafe { String(self.retain()) }
     }
     
     #[inline]
-    pub fn retain(&self) -> StringRef {
+    pub unsafe fn retain(&self) -> StringRef {
         StringRef(self.0.retain())
     }
 
@@ -90,11 +90,11 @@ impl Drop for String {
 impl MutableStringRef {
     #[inline]
     pub fn retained(&self) -> MutableString {
-        MutableString(self.retain())
+        unsafe { MutableString(self.retain()) }
     }
     
     #[inline]
-    pub fn retain(&self) -> MutableStringRef {
+    pub unsafe fn retain(&self) -> MutableStringRef {
         MutableStringRef(self.0.retain())
     }
 

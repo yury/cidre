@@ -120,11 +120,11 @@ impl NumberRef {
 
     #[inline]
     pub fn retained(&self) -> Number {
-        Number(self.retain())
+        unsafe { Number(self.retain()) }
     }
 
     #[inline]
-    pub fn retain(&self) -> NumberRef {
+    pub unsafe fn retain(&self) -> NumberRef {
         NumberRef(self.0.retain())
     }
 
