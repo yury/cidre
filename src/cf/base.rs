@@ -1,7 +1,6 @@
 use super::string::String;
 use std::cmp::Ordering;
-use std::ffi::c_void;
-use std::{ops::Deref, ptr::NonNull};
+use std::{ffi::c_void, ops::Deref, ptr::NonNull};
 
 pub type Index = isize;
 pub type TypeID = usize;

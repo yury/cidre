@@ -1,8 +1,10 @@
 use super::{AllocatorRef, Index, StringRef, TypeID, TypeRef};
-use std::ops::{Deref, DerefMut};
-use std::os::raw::c_void;
-use std::ptr::NonNull;
+use std::{ffi::c_void, ptr::NonNull, ops::{Deref, DerefMut}};
 
+///'''
+/// use cider::cf;
+/// assert_eq!(cf::array_get_type_id(), 21);
+///```
 pub fn array_get_type_id() -> TypeID {
     unsafe { CFArrayGetTypeID() }
 }

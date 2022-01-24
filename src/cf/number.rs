@@ -137,6 +137,34 @@ impl NumberRef {
         unsafe { CFNumberCompare(*self, *other_number, context) }
     }
 
+    #[inline]
+    pub fn positive_inifinity() -> NumberRef {
+      unsafe {
+        kCFNumberPositiveInfinity
+      }
+    }
+
+    #[inline]
+    pub fn negative_inifinity() -> NumberRef {
+      unsafe {
+        kCFNumberNegativeInfinity
+      }
+    }
+
+    ///```
+    /// use cidre::cf;
+    /// 
+    /// let nan1 = cf::NumberRef::nan();
+    /// let nan2 = cf::NumberRef::nan();
+    /// assert_eq!(nan1.equal(&nan2), true);
+    ///```
+    #[inline]
+    pub fn nan() -> NumberRef {
+      unsafe {
+        kCFNumberNaN
+      }
+    }
+
     ///```
     /// use cidre::cf;
     ///
@@ -329,6 +357,10 @@ extern "C" {
     fn CFBooleanGetValue(boolean: BooleanRef) -> bool;
 
     fn CFNumberGetTypeID() -> TypeID;
+
+    static kCFNumberPositiveInfinity: NumberRef;
+    static kCFNumberNegativeInfinity: NumberRef;
+    static kCFNumberNaN: NumberRef;
 
     fn CFNumberCreate(
         allocator: Option<AllocatorRef>,
