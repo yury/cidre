@@ -5,11 +5,11 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-///```
+/// ```
 /// use cidre::cf;
 ///
 /// assert_eq!(cf::boolean_get_type_id(), 21);
-///```
+/// ```
 #[inline]
 pub fn boolean_get_type_id() -> TypeID {
     unsafe { CFBooleanGetTypeID() }
@@ -20,34 +20,34 @@ pub fn boolean_get_type_id() -> TypeID {
 pub struct BooleanRef(TypeRef);
 
 impl BooleanRef {
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let f = cf::BooleanRef::value_true();
     /// assert_eq!(true, f.get_value());
-    ///```
+    /// ```
     #[inline]
     pub fn get_value(&self) -> bool {
         unsafe { CFBooleanGetValue(*self) }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let f = cf::BooleanRef::value_true();
     /// assert_eq!(true, f.get_value());
-    ///```
+    /// ```
     #[inline]
     pub fn value_true() -> BooleanRef {
         unsafe { kCFBooleanTrue }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let f = cf::BooleanRef::value_false();
     /// assert_eq!(false, f.get_value());
-    ///```
+    /// ```
     #[inline]
     pub fn value_false() -> BooleanRef {
         unsafe { kCFBooleanFalse }
@@ -61,11 +61,11 @@ impl std::fmt::Debug for BooleanRef {
 }
 
 impl From<bool> for BooleanRef {
-    ///```
+    /// ```
     /// use cidre::cf;
     /// let f: cf::BooleanRef = true.into();
     /// assert_eq!(cf::BooleanRef::from(true), f);
-    ///```
+    /// ```
     #[inline]
     fn from(v: bool) -> Self {
         if v {
@@ -157,13 +157,13 @@ impl NumberRef {
         unsafe { kCFNumberNegativeInfinity }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let nan1 = cf::NumberRef::nan();
     /// let nan2 = cf::NumberRef::nan();
     /// assert_eq!(nan1.equal(&nan2), true);
-    ///```
+    /// ```
     #[inline]
     pub fn nan() -> NumberRef {
         unsafe { kCFNumberNaN }
@@ -277,7 +277,7 @@ impl NumberRef {
 pub struct Number(NumberRef);
 
 impl Number {
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i8(8).unwrap();
@@ -291,7 +291,7 @@ impl Number {
         }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i16(16).unwrap();
@@ -305,7 +305,7 @@ impl Number {
         }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i32(32).unwrap();
@@ -320,7 +320,7 @@ impl Number {
         }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i64(64).unwrap();
@@ -335,7 +335,7 @@ impl Number {
         }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_f64(64.0).unwrap();

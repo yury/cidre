@@ -5,10 +5,10 @@ use std::{
     ptr::NonNull,
 };
 
-///```
+/// ```
 /// use cidre::cf;
 /// assert_eq!(cf::array_get_type_id(), 19);
-///```
+/// ```
 #[inline]
 pub fn array_get_type_id() -> TypeID {
     unsafe { CFArrayGetTypeID() }
