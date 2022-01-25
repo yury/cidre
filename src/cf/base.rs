@@ -62,7 +62,8 @@ pub struct TypeRef(NonNull<*const c_void>);
 pub struct Null(TypeRef);
 
 impl Null {
-    pub fn null() -> Self {
+    #[inline]
+    pub fn value() -> Self {
         unsafe { kCFNull }
     }
 }
@@ -70,7 +71,7 @@ impl Null {
 impl Default for Null {
     #[inline]
     fn default() -> Self {
-        Self::null()
+        Self::value()
     }
 }
 

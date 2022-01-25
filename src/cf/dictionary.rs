@@ -68,7 +68,6 @@ pub type DictionaryApplierFunction =
 #[repr(transparent)]
 pub struct DictionaryRef(TypeRef);
 
-#[derive(Clone)]
 #[repr(transparent)]
 pub struct Dictionary(DictionaryRef);
 

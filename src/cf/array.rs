@@ -40,7 +40,6 @@ impl ArrayCallbacks {
 #[repr(transparent)]
 pub struct ArrayRef(TypeRef);
 
-#[derive(Clone)]
 #[repr(transparent)]
 pub struct Array(ArrayRef);
 
