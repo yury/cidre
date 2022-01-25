@@ -80,10 +80,16 @@ impl ArrayRef {
     ///
     /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");
     /// assert_eq!(arr.len(), 0);
+    /// assert_eq!(arr.is_empty(), true);
     /// ```
     #[inline]
     pub fn len(&self) -> usize {
         self.get_count() as _
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+       self.len() == 0
     }
 
     #[inline]
