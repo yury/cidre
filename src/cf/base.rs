@@ -49,7 +49,6 @@ pub enum ComparisonResult {
 /// let desc = cf::copy_type_id_description(t).unwrap();
 /// desc.show_str();
 /// ```
-
 pub fn copy_type_id_description(type_id: TypeID) -> Option<String> {
     unsafe { CFCopyTypeIDDescription(type_id) }
 }
