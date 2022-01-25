@@ -286,9 +286,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i8(value: i8) -> Option<Number> {
-        unsafe {
-            NumberRef::create(None, NumberType::I8, &value as *const _ as _)
-        }
+        unsafe { NumberRef::create(None, NumberType::I8, &value as *const _ as _) }
     }
 
     /// ```
@@ -300,9 +298,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i16(value: i16) -> Option<Number> {
-        unsafe {
-            NumberRef::create(None, NumberType::I16, &value as *const _ as _)
-        }
+        unsafe { NumberRef::create(None, NumberType::I16, &value as *const _ as _) }
     }
 
     /// ```
@@ -315,9 +311,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i32(value: i32) -> Option<Number> {
-        unsafe {
-            NumberRef::create(None, NumberType::I32, &value as *const _ as _)
-        }
+        unsafe { NumberRef::create(None, NumberType::I32, &value as *const _ as _) }
     }
 
     /// ```
@@ -330,9 +324,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i64(value: i64) -> Option<Number> {
-        unsafe {
-            NumberRef::create(None, NumberType::I64, &value as *const _ as _)
-        }
+        unsafe { NumberRef::create(None, NumberType::I64, &value as *const _ as _) }
     }
 
     /// ```
@@ -345,9 +337,7 @@ impl Number {
     /// assert_eq!(true, num.is_float_type());
     /// ```
     pub fn from_f64(value: f64) -> Option<Number> {
-        unsafe {
-            NumberRef::create(None, NumberType::F64, &value as *const _ as _)
-        }
+        unsafe { NumberRef::create(None, NumberType::F64, &value as *const _ as _) }
     }
 }
 

@@ -92,13 +92,13 @@ impl DictionaryRef {
         &self,
         key: *const c_void,
     ) -> Option<Option<NonNull<*const c_void>>> {
-            let mut value = Option::None;
+        let mut value = Option::None;
 
-            if CFDictionaryGetValueIfPresent(*self, key, &mut value) {
-                Some(value)
-            } else {
-                None
-            }
+        if CFDictionaryGetValueIfPresent(*self, key, &mut value) {
+            Some(value)
+        } else {
+            None
+        }
     }
 
     #[inline]
@@ -113,7 +113,7 @@ impl DictionaryRef {
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-      self.get_count() == 0
+        self.get_count() == 0
     }
 }
 

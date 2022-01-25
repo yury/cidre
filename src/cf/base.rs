@@ -2,6 +2,7 @@ use super::String;
 use std::{
     cmp::Ordering,
     ffi::c_void,
+    intrinsics::transmute,
     ops::{Deref, DerefMut},
     ptr::NonNull,
 };
@@ -203,13 +204,21 @@ impl Deref for AllocatorRef {
 }
 
 impl From<ComparisonResult> for Ordering {
+    /// ```
+    /// use cidre::cf;
+    /// use core::cmp::Ordering;
+    ///
+    /// let less: Ordering = cf::ComparisonResult::LessThen.into();
+    /// let equal: Ordering = cf::ComparisonResult::EqualTo.into();
+    /// let greater: Ordering = cf::ComparisonResult::GreaterThen.into();
+    ///
+    /// assert_eq!(less, Ordering::Less);
+    /// assert_eq!(equal, Ordering::Equal);
+    /// assert_eq!(greater, Ordering::Greater);
+    /// ```
+    #[inline]
     fn from(o: ComparisonResult) -> Self {
-        // TODO: transmute
-        match o {
-            ComparisonResult::LessThen => Ordering::Less,
-            ComparisonResult::EqualTo => Ordering::Equal,
-            ComparisonResult::GreaterThen => Ordering::Greater,
-        }
+        unsafe { transmute::<i8, Ordering>(o as i8) }
     }
 }
 
