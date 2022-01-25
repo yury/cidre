@@ -74,26 +74,25 @@ pub struct Dictionary(DictionaryRef);
 
 impl DictionaryRef {
     #[inline]
-    pub fn contains_key(&self, key: *const c_void) -> bool {
-        unsafe { CFDictionaryContainsKey(*self, key) }
+    pub unsafe fn contains_key(&self, key: *const c_void) -> bool {
+        CFDictionaryContainsKey(*self, key)
     }
 
     #[inline]
-    pub fn contains_value(&self, value: *const c_void) -> bool {
-        unsafe { CFDictionaryContainsValue(*self, value) }
+    pub unsafe fn contains_value(&self, value: *const c_void) -> bool {
+        CFDictionaryContainsValue(*self, value)
     }
 
     #[inline]
-    pub fn get_value(&self, key: *const c_void) -> Option<NonNull<*const c_void>> {
-        unsafe { CFDictionaryGetValue(*self, key) }
+    pub unsafe fn get_value(&self, key: *const c_void) -> Option<NonNull<*const c_void>> {
+        CFDictionaryGetValue(*self, key)
     }
 
     #[inline]
-    pub fn get_value_if_present(
+    pub unsafe fn get_value_if_present(
         &self,
         key: *const c_void,
     ) -> Option<Option<NonNull<*const c_void>>> {
-        unsafe {
             let mut value = Option::None;
 
             if CFDictionaryGetValueIfPresent(*self, key, &mut value) {
@@ -101,7 +100,6 @@ impl DictionaryRef {
             } else {
                 None
             }
-        }
     }
 
     #[inline]
@@ -112,6 +110,11 @@ impl DictionaryRef {
     #[inline]
     pub fn len(&self) -> usize {
         self.get_count() as _
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+      self.get_count() == 0
     }
 }
 

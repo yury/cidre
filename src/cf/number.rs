@@ -172,17 +172,17 @@ impl NumberRef {
     ///```
     /// use cidre::cf;
     ///
-    /// let num = cf::NumberRef::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap();
+    /// let num = unsafe { cf::NumberRef::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap() };
     /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
     /// assert_eq!(num.to_i8().unwrap(), 5i8);
     /// ```
     #[inline]
-    pub fn create(
+    pub unsafe fn create(
         allocator: Option<AllocatorRef>,
         the_type: NumberType,
         value_ptr: *const c_void,
     ) -> Option<Number> {
-        unsafe { CFNumberCreate(allocator, the_type, value_ptr) }
+        CFNumberCreate(allocator, the_type, value_ptr)
     }
 
     #[inline]
@@ -259,7 +259,9 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i8(value: i8) -> Option<Number> {
-        NumberRef::create(None, NumberType::I8, &value as *const _ as _)
+        unsafe {
+            NumberRef::create(None, NumberType::I8, &value as *const _ as _)
+        }
     }
 
     ///```
@@ -271,7 +273,9 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i16(value: i16) -> Option<Number> {
-        NumberRef::create(None, NumberType::I16, &value as *const _ as _)
+        unsafe {
+            NumberRef::create(None, NumberType::I16, &value as *const _ as _)
+        }
     }
 
     ///```
@@ -284,7 +288,9 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i32(value: i32) -> Option<Number> {
-        NumberRef::create(None, NumberType::I32, &value as *const _ as _)
+        unsafe {
+            NumberRef::create(None, NumberType::I32, &value as *const _ as _)
+        }
     }
 
     ///```
@@ -297,7 +303,9 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i64(value: i64) -> Option<Number> {
-        NumberRef::create(None, NumberType::I64, &value as *const _ as _)
+        unsafe {
+            NumberRef::create(None, NumberType::I64, &value as *const _ as _)
+        }
     }
 
     ///```
@@ -310,7 +318,9 @@ impl Number {
     /// assert_eq!(true, num.is_float_type());
     /// ```
     pub fn from_f64(value: f64) -> Option<Number> {
-        NumberRef::create(None, NumberType::F64, &value as *const _ as _)
+        unsafe {
+            NumberRef::create(None, NumberType::F64, &value as *const _ as _)
+        }
     }
 }
 
