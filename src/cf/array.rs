@@ -161,5 +161,5 @@ extern "C" {
         callbacks: Option<&ArrayCallbacks>,
     ) -> Option<Array>;
     fn CFArrayCreateCopy(allocator: Option<AllocatorRef>, the_array: ArrayRef) -> Option<Array>;
-    fn CFArrayGetCount(theArray: ArrayRef) -> Index;
+    fn CFArrayGetCount(the_array: ArrayRef) -> Index;
 }
