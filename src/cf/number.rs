@@ -191,6 +191,8 @@ impl NumberRef {
     /// let num = cf::Number::from_i8(-5).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
+    /// assert_eq!(num.to_i16().unwrap(), -5i16);
+    /// assert_eq!(num.to_i32().unwrap(), -5i32);
     /// ```
     #[inline]
     pub fn to_i8(&self) -> Option<i8> {
@@ -204,6 +206,15 @@ impl NumberRef {
         }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i16(-5).unwrap();
+    /// assert_eq!(num.get_number_type(), cf::NumberType::I16);
+    /// assert_eq!(num.to_i8().unwrap(), -5i8);
+    /// assert_eq!(num.to_i16().unwrap(), -5i16);
+    /// assert_eq!(num.to_i32().unwrap(), -5i32);
+    /// ```
     #[inline]
     pub fn to_i16(&self) -> Option<i16> {
         unsafe {
@@ -216,6 +227,15 @@ impl NumberRef {
         }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i32(-5).unwrap();
+    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
+    /// assert_eq!(num.to_i8().unwrap(), -5i8);
+    /// assert_eq!(num.to_i16().unwrap(), -5i16);
+    /// assert_eq!(num.to_i32().unwrap(), -5i32);
+    /// ```
     #[inline]
     pub fn to_i32(&self) -> Option<i32> {
         unsafe {
