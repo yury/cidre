@@ -5,9 +5,9 @@ use std::{
     ptr::NonNull,
 };
 
-///'''
-/// use cider::cf;
-/// assert_eq!(cf::array_get_type_id(), 21);
+///```
+/// use cidre::cf;
+/// assert_eq!(cf::dictionary_get_type_id(), 18);
 ///```
 #[inline]
 pub fn dictionary_get_type_id() -> TypeID {

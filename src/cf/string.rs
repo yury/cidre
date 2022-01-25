@@ -4,7 +4,7 @@ use std::ops::{Deref, DerefMut};
 ///```
 /// use cidre::cf;
 ///
-/// assert_eq!(7, cf::string_get_type_id());
+/// assert_eq!(cf::string_get_type_id(), 7);
 ///```
 pub fn string_get_type_id() -> TypeID {
     unsafe { CFStringGetTypeID() }

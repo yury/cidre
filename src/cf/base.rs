@@ -40,7 +40,17 @@ pub enum ComparisonResult {
     GreaterThen = 1,
 }
 
-pub fn copy_type_id_description(type_id: TypeID) -> String {
+
+/// ```
+/// use cidre::cf;
+/// 
+/// let s = cf::String::from_static_string("hello").unwrap();
+/// let t = s.get_type_id();
+/// let desc = cf::copy_type_id_description(t).unwrap();
+/// desc.show_str();
+/// ```
+
+pub fn copy_type_id_description(type_id: TypeID) -> Option<String> {
     unsafe { CFCopyTypeIDDescription(type_id) }
 }
 
@@ -206,7 +216,7 @@ impl From<ComparisonResult> for Ordering {
 extern "C" {
     static kCFNull: Null;
 
-    fn CFCopyTypeIDDescription(type_id: TypeID) -> String;
+    fn CFCopyTypeIDDescription(type_id: TypeID) -> Option<String>;
 
     fn CFRetain(cf: TypeRef) -> TypeRef;
     fn CFRelease(cf: TypeRef);
