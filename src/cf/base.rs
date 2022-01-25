@@ -204,16 +204,16 @@ impl Deref for AllocatorRef {
 
 impl From<ComparisonResult> for Ordering {
     /// ```
-    /// use cidre::cf;
-    /// use core::cmp::Ordering;
+    /// use cidre::cf::ComparisonResult as CR;
+    /// use core::cmp::Ordering as O;
     ///
-    /// let less: Ordering = cf::ComparisonResult::LessThen.into();
-    /// let equal: Ordering = cf::ComparisonResult::EqualTo.into();
-    /// let greater: Ordering = cf::ComparisonResult::GreaterThen.into();
+    /// let less: O = CR::LessThen.into();
+    /// let equal: O = CR::EqualTo.into();
+    /// let greater: O = CR::GreaterThen.into();
     ///
-    /// assert_eq!(less, Ordering::Less);
-    /// assert_eq!(equal, Ordering::Equal);
-    /// assert_eq!(greater, Ordering::Greater);
+    /// assert_eq!(less, O::Less);
+    /// assert_eq!(equal, O::Equal);
+    /// assert_eq!(greater, O::Greater);
     /// ```
     #[inline]
     fn from(o: ComparisonResult) -> Self {
