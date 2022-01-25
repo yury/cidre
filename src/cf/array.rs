@@ -64,7 +64,7 @@ impl ArrayRef {
         unsafe { CFArrayCreateCopy(allocator, *self) }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");
@@ -75,7 +75,7 @@ impl ArrayRef {
         unsafe { CFArrayGetCount(*self) }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");
@@ -86,7 +86,7 @@ impl ArrayRef {
         self.get_count() as _
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");

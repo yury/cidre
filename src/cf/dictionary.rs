@@ -5,10 +5,10 @@ use std::{
     ptr::NonNull,
 };
 
-///```
+/// ```
 /// use cidre::cf;
 /// assert_eq!(cf::dictionary_get_type_id(), 18);
-///```
+/// ```
 #[inline]
 pub fn dictionary_get_type_id() -> TypeID {
     unsafe { CFDictionaryGetTypeID() }
