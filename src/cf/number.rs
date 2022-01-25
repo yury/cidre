@@ -169,7 +169,7 @@ impl NumberRef {
         unsafe { kCFNumberNaN }
     }
 
-    ///```
+    /// ```
     /// use cidre::cf;
     ///
     /// let num = unsafe { cf::NumberRef::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap() };
@@ -185,6 +185,13 @@ impl NumberRef {
         CFNumberCreate(allocator, the_type, value_ptr)
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i8(-5).unwrap();
+    /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
+    /// assert_eq!(num.to_i8().unwrap(), -5i8);
+    /// ```
     #[inline]
     pub fn to_i8(&self) -> Option<i8> {
         unsafe {
