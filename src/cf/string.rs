@@ -104,7 +104,7 @@ impl String {
 
 impl Drop for String {
     fn drop(&mut self) {
-        self.release()
+        unsafe { self.release() }
     }
 }
 
@@ -186,7 +186,7 @@ impl DerefMut for MutableString {
 
 impl Drop for MutableString {
     fn drop(&mut self) {
-        self.release()
+        unsafe { self.release() }
     }
 }
 

@@ -102,7 +102,7 @@ impl Array {}
 impl Drop for Array {
     #[inline]
     fn drop(&mut self) {
-        self.release()
+        unsafe { self.release() }
     }
 }
 

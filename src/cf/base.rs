@@ -79,7 +79,7 @@ pub struct Type(TypeRef);
 
 impl Drop for Type {
     fn drop(&mut self) {
-        self.release()
+        unsafe { self.release() }
     }
 }
 
@@ -140,8 +140,8 @@ impl TypeRef {
     }
 
     #[inline]
-    pub fn release(&mut self) {
-        unsafe { CFRelease(*self) }
+    pub unsafe fn release(&mut self) {
+        CFRelease(*self)
     }
 
     pub fn get_retain_count(&self) -> Index {

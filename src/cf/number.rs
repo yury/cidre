@@ -198,7 +198,7 @@ impl NumberRef {
     pub fn to_i8(&self) -> Option<i8> {
         unsafe {
             let mut value: i8 = 0;
-            if CFNumberGetValue(*self, NumberType::I8, &mut value as *mut _ as *mut c_void) {
+            if CFNumberGetValue(*self, NumberType::I8, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -219,7 +219,7 @@ impl NumberRef {
     pub fn to_i16(&self) -> Option<i16> {
         unsafe {
             let mut value: i16 = 0;
-            if CFNumberGetValue(*self, NumberType::I16, &mut value as *mut _ as *mut c_void) {
+            if CFNumberGetValue(*self, NumberType::I16, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -240,7 +240,7 @@ impl NumberRef {
     pub fn to_i32(&self) -> Option<i32> {
         unsafe {
             let mut value: i32 = 0;
-            if CFNumberGetValue(*self, NumberType::I32, &mut value as *mut _ as *mut c_void) {
+            if CFNumberGetValue(*self, NumberType::I32, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -252,7 +252,7 @@ impl NumberRef {
     pub fn to_i64(&self) -> Option<i64> {
         unsafe {
             let mut value: i64 = 0;
-            if CFNumberGetValue(*self, NumberType::I64, &mut value as *mut _ as *mut c_void) {
+            if CFNumberGetValue(*self, NumberType::I64, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -264,7 +264,7 @@ impl NumberRef {
     pub fn to_f64(&self) -> Option<f64> {
         unsafe {
             let mut value: f64 = 0.0;
-            if CFNumberGetValue(*self, NumberType::F64, &mut value as *mut _ as *mut c_void) {
+            if CFNumberGetValue(*self, NumberType::F64, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -354,7 +354,7 @@ impl Number {
 impl Drop for Number {
     #[inline]
     fn drop(&mut self) {
-        self.release()
+        unsafe { self.release() }
     }
 }
 

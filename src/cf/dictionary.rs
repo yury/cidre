@@ -147,7 +147,7 @@ impl DerefMut for Dictionary {
 
 impl Drop for Dictionary {
     fn drop(&mut self) {
-        self.release()
+        unsafe { self.release() }
     }
 }
 
