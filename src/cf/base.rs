@@ -40,10 +40,9 @@ pub enum ComparisonResult {
     GreaterThen = 1,
 }
 
-
 /// ```
 /// use cidre::cf;
-/// 
+///
 /// let s = cf::String::from_static_string("hello").unwrap();
 /// let t = s.get_type_id();
 /// let desc = cf::copy_type_id_description(t).unwrap();

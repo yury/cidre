@@ -35,7 +35,6 @@ pub struct MutableStringRef(StringRef);
 pub struct MutableString(MutableStringRef);
 
 impl StringRef {
-
     #[inline]
     pub fn retained(&self) -> String {
         unsafe { String(self.retain()) }
@@ -84,7 +83,7 @@ impl StringRef {
 impl String {
     ///```
     /// use cidre::cf;
-    /// 
+    ///
     /// let s = cf::String::from_static_string("nice").expect("CFString");
     /// assert_eq!(4, s.get_length());
     ///```
