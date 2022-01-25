@@ -1,4 +1,4 @@
-use super::{ComparisonResult, AllocatorRef, Index, TypeID, TypeRef};
+use super::{AllocatorRef, ComparisonResult, Index, TypeID, TypeRef};
 use std::{
     convert::From,
     ffi::c_void,
@@ -117,7 +117,6 @@ impl NumberType {
 pub struct NumberRef(TypeRef);
 
 impl NumberRef {
-
     #[inline]
     pub fn retained(&self) -> Number {
         unsafe { Number(self.retain()) }
@@ -150,30 +149,24 @@ impl NumberRef {
 
     #[inline]
     pub fn positive_inifinity() -> NumberRef {
-      unsafe {
-        kCFNumberPositiveInfinity
-      }
+        unsafe { kCFNumberPositiveInfinity }
     }
 
     #[inline]
     pub fn negative_inifinity() -> NumberRef {
-      unsafe {
-        kCFNumberNegativeInfinity
-      }
+        unsafe { kCFNumberNegativeInfinity }
     }
 
     ///```
     /// use cidre::cf;
-    /// 
+    ///
     /// let nan1 = cf::NumberRef::nan();
     /// let nan2 = cf::NumberRef::nan();
     /// assert_eq!(nan1.equal(&nan2), true);
     ///```
     #[inline]
     pub fn nan() -> NumberRef {
-      unsafe {
-        kCFNumberNaN
-      }
+        unsafe { kCFNumberNaN }
     }
 
     ///```
@@ -260,65 +253,65 @@ impl Number {
     ///```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::with_i8(8).unwrap();
+    /// let num = cf::Number::from_i8(8).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
     /// assert_eq!(1, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn with_i8(value: i8) -> Option<Number> {
+    pub fn from_i8(value: i8) -> Option<Number> {
         NumberRef::create(None, NumberType::I8, &value as *const _ as _)
     }
 
     ///```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::with_i16(16).unwrap();
+    /// let num = cf::Number::from_i16(16).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::I16);
     /// assert_eq!(2, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn with_i16(value: i16) -> Option<Number> {
+    pub fn from_i16(value: i16) -> Option<Number> {
         NumberRef::create(None, NumberType::I16, &value as *const _ as _)
     }
 
     ///```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::with_i32(32).unwrap();
+    /// let num = cf::Number::from_i32(32).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
     /// assert_eq!(4, num.get_byte_size());
     /// assert_eq!(32, num.to_i32().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn with_i32(value: i32) -> Option<Number> {
+    pub fn from_i32(value: i32) -> Option<Number> {
         NumberRef::create(None, NumberType::I32, &value as *const _ as _)
     }
 
     ///```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::with_i64(64).unwrap();
+    /// let num = cf::Number::from_i64(64).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::I64);
     /// assert_eq!(8, num.get_byte_size());
     /// assert_eq!(64, num.to_i64().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn with_i64(value: i64) -> Option<Number> {
+    pub fn from_i64(value: i64) -> Option<Number> {
         NumberRef::create(None, NumberType::I64, &value as *const _ as _)
     }
 
     ///```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::with_f64(64.0).unwrap();
+    /// let num = cf::Number::from_f64(64.0).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::F64);
     /// assert_eq!(8, num.get_byte_size());
     /// assert_eq!(64.0, num.to_f64().unwrap());
     /// assert_eq!(true, num.is_float_type());
     /// ```
-    pub fn with_f64(value: f64) -> Option<Number> {
-      NumberRef::create(None, NumberType::F64, &value as *const _ as _)
-  }
+    pub fn from_f64(value: f64) -> Option<Number> {
+        NumberRef::create(None, NumberType::F64, &value as *const _ as _)
+    }
 }
 
 impl Drop for Number {

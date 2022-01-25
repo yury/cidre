@@ -1,5 +1,10 @@
 use super::String;
-use std::{cmp::Ordering, ffi::c_void, ops::{Deref, DerefMut}, ptr::NonNull};
+use std::{
+    cmp::Ordering,
+    ffi::c_void,
+    ops::{Deref, DerefMut},
+    ptr::NonNull,
+};
 
 pub type Index = isize;
 pub type TypeID = usize;
@@ -78,9 +83,9 @@ impl Deref for Type {
 }
 
 impl DerefMut for Type {
-   fn deref_mut(&mut self) -> &mut Self::Target {
-       &mut self.0
-   }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
 #[derive(Copy, Clone, PartialEq, Eq)]

@@ -1,8 +1,8 @@
 mod base;
 pub use base::copy_type_id_description;
-pub use base::ComparisonResult;
 pub use base::AllocatorRef;
 pub use base::ComparatorFunction;
+pub use base::ComparisonResult;
 pub use base::HashCode;
 pub use base::Index;
 pub use base::Null;
@@ -14,8 +14,8 @@ pub use base::NOT_FOUND;
 
 mod number;
 pub use number::boolean_get_type_id;
-pub use number::BooleanRef;
 pub use number::number_get_type_id;
+pub use number::BooleanRef;
 pub use number::Number;
 pub use number::NumberRef;
 pub use number::NumberType;
@@ -34,8 +34,20 @@ mod array;
 pub use array::array_get_type_id;
 pub use array::Array;
 pub use array::ArrayCallbacks;
+pub use array::ArrayCopyDescriptionCallBack;
+pub use array::ArrayEqualCallBack;
 pub use array::ArrayRef;
+pub use array::ArrayReleaseCallBack;
+pub use array::ArrayRetainCallBack;
 pub use array::MutableArrayRef;
+
+mod dictionary;
+pub use dictionary::dictionary_get_type_id;
+pub use dictionary::Dictionary;
+pub use dictionary::DictionaryApplierFunction;
+pub use dictionary::DictionaryKeyCallBacks;
+pub use dictionary::DictionaryRef;
+pub use dictionary::DictionaryValueCallBacks;
 
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;

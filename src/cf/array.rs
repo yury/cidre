@@ -1,10 +1,15 @@
 use super::{AllocatorRef, Index, StringRef, TypeID, TypeRef};
-use std::{ffi::c_void, ptr::NonNull, ops::{Deref, DerefMut}};
+use std::{
+    ffi::c_void,
+    ops::{Deref, DerefMut},
+    ptr::NonNull,
+};
 
 ///'''
 /// use cider::cf;
 /// assert_eq!(cf::array_get_type_id(), 21);
 ///```
+#[inline]
 pub fn array_get_type_id() -> TypeID {
     unsafe { CFArrayGetTypeID() }
 }
@@ -48,7 +53,7 @@ impl ArrayRef {
     pub fn retained(&self) -> Array {
         unsafe { Array(self.retain()) }
     }
-    
+
     #[inline]
     pub unsafe fn retain(&self) -> ArrayRef {
         ArrayRef(self.0.retain())

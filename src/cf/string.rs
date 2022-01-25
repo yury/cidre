@@ -1,4 +1,4 @@
-use super::{OptionFlags, AllocatorRef, Index, TypeID, TypeRef};
+use super::{AllocatorRef, Index, OptionFlags, TypeID, TypeRef};
 use std::ops::{Deref, DerefMut};
 
 ///```
@@ -40,7 +40,7 @@ impl StringRef {
     pub fn retained(&self) -> String {
         unsafe { String(self.retain()) }
     }
-    
+
     #[inline]
     pub unsafe fn retain(&self) -> StringRef {
         StringRef(self.0.retain())
@@ -81,6 +81,28 @@ impl StringRef {
     }
 }
 
+impl String {
+    ///```
+    /// use cidre::cf;
+    /// 
+    /// let s = cf::String::from_static_string("nice").expect("CFString");
+    /// assert_eq!(4, s.get_length());
+    ///```
+    #[inline]
+    pub fn from_static_string(string: &'static str) -> Option<String> {
+        unsafe {
+            CFStringCreateWithBytesNoCopy(
+                None,
+                string.as_ptr(),
+                string.len() as _,
+                StringEncoding::UTF8,
+                false,
+                AllocatorRef::null(),
+            )
+        }
+    }
+}
+
 impl Drop for String {
     fn drop(&mut self) {
         self.release()
@@ -92,7 +114,7 @@ impl MutableStringRef {
     pub fn retained(&self) -> MutableString {
         unsafe { MutableString(self.retain()) }
     }
-    
+
     #[inline]
     pub unsafe fn retain(&self) -> MutableStringRef {
         MutableStringRef(self.0.retain())
@@ -224,6 +246,15 @@ extern "C" {
     fn CFStringGetCharacterAtIndex(theString: StringRef, idx: Index) -> UniChar;
     fn CFStringAppend(theString: MutableStringRef, appended_string: StringRef);
     fn CFStringTrimWhitespace(theString: MutableStringRef);
+
+    fn CFStringCreateWithBytesNoCopy(
+        alloc: Option<AllocatorRef>,
+        bytes: *const u8,
+        num_bytes: Index,
+        encoding: StringEncoding,
+        is_external_representation: bool,
+        contents_deallocator: Option<AllocatorRef>,
+    ) -> Option<String>;
 
     fn CFShow(cf: TypeRef);
     fn CFShowStr(str: StringRef);
