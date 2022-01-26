@@ -1,7 +1,8 @@
+use crate::define_ref;
+
 use super::{AllocatorRef, HashCode, Index, StringRef, TypeID, TypeRef};
 use std::{
     ffi::c_void,
-    ops::{Deref, DerefMut},
     ptr::NonNull,
 };
 
@@ -64,12 +65,7 @@ impl DictionaryValueCallBacks {
 pub type DictionaryApplierFunction =
     extern "C" fn(key: *const c_void, value: *const c_void, context: *mut c_void);
 
-#[derive(Copy, Clone)]
-#[repr(transparent)]
-pub struct DictionaryRef(TypeRef);
-
-#[repr(transparent)]
-pub struct Dictionary(DictionaryRef);
+define_ref!(TypeRef, DictionaryRef, Dictionary);
 
 impl DictionaryRef {
     #[inline]
@@ -114,39 +110,6 @@ impl DictionaryRef {
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.get_count() == 0
-    }
-}
-
-impl Deref for DictionaryRef {
-    type Target = TypeRef;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for DictionaryRef {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Deref for Dictionary {
-    type Target = DictionaryRef;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Dictionary {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Drop for Dictionary {
-    fn drop(&mut self) {
-        unsafe { self.release() }
     }
 }
 

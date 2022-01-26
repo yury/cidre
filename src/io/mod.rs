@@ -1,6 +1,4 @@
-use std::ops::{Deref, DerefMut};
-
-use crate::cf::{self, TypeRef};
+use crate::{cf::{self, TypeRef}, define_ref};
 
 #[repr(i32)]
 pub enum SurfaceComponentName {
@@ -50,9 +48,7 @@ pub fn surface_get_type_id() -> cf::TypeID {
     unsafe { IOSurfaceGetTypeID() }
 }
 
-#[derive(Copy, Clone)]
-#[repr(transparent)]
-pub struct SurfaceRef(TypeRef);
+define_ref!(TypeRef, SurfaceRef, Surface);
 
 impl SurfaceRef {
     /// ```
@@ -66,47 +62,6 @@ impl SurfaceRef {
     }
 }
 
-#[repr(transparent)]
-pub struct Surface(SurfaceRef);
-
-impl Deref for SurfaceRef {
-    type Target = TypeRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for SurfaceRef {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Deref for Surface {
-    type Target = SurfaceRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Surface {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Drop for Surface {
-    #[inline]
-    fn drop(&mut self) {
-        unsafe { self.release() }
-    }
-}
 
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {

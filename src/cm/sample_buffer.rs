@@ -1,5 +1,4 @@
-use super::super::cf;
+use crate::{cf, define_ref};
 
-#[derive(Copy, Clone)]
-#[repr(transparent)]
-pub struct SampleBufferRef(cf::TypeRef);
+
+define_ref!(cf::TypeRef, SampleBufferRef, SampleBuffer);

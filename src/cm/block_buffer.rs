@@ -1,8 +1,6 @@
-use std::ops::{Deref, DerefMut};
-
 use crate::{
     cf::{AllocatorRef, TypeID, TypeRef},
-    os::{self, NO_ERR},
+    os::{self, NO_ERR}, define_ref,
 };
 
 /// ```
@@ -26,9 +24,7 @@ impl BlockBufferFlags {
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
-#[derive(Copy, Clone)]
-#[repr(transparent)]
-pub struct BlockBufferRef(TypeRef);
+define_ref!(TypeRef, BlockBufferRef, BlockBuffer);
 
 impl BlockBufferRef {
     pub fn is_empty(&self) -> bool {
@@ -60,48 +56,6 @@ impl BlockBufferRef {
                 Err(res)
             }
         }
-    }
-}
-
-impl Deref for BlockBufferRef {
-    type Target = TypeRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for BlockBufferRef {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-#[repr(transparent)]
-pub struct BlockBuffer(BlockBufferRef);
-
-impl Deref for BlockBuffer {
-    type Target = BlockBufferRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for BlockBuffer {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Drop for BlockBuffer {
-    #[inline]
-    fn drop(&mut self) {
-        unsafe { self.release() }
     }
 }
 

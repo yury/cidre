@@ -1,7 +1,8 @@
+use crate::define_ref;
+
 use super::{AllocatorRef, Index, StringRef, TypeID, TypeRef};
 use std::{
     ffi::c_void,
-    ops::{Deref, DerefMut},
     ptr::NonNull,
 };
 
@@ -36,27 +37,10 @@ impl ArrayCallbacks {
     }
 }
 
-#[derive(Copy, Clone)]
-#[repr(transparent)]
-pub struct ArrayRef(TypeRef);
-
-#[repr(transparent)]
-pub struct Array(ArrayRef);
-
-#[derive(Copy, Clone)]
-#[repr(transparent)]
-pub struct MutableArrayRef(ArrayRef);
+define_ref!(TypeRef, ArrayRef, Array);
+define_ref!(ArrayRef, MutableArrayRef, MutableArray);
 
 impl ArrayRef {
-    #[inline]
-    pub fn retained(&self) -> Array {
-        unsafe { Array(self.retain()) }
-    }
-
-    #[inline]
-    pub unsafe fn retain(&self) -> ArrayRef {
-        ArrayRef(self.0.retain())
-    }
 
     #[inline]
     pub fn create_copy(&self, allocator: Option<AllocatorRef>) -> Option<Array> {
@@ -104,47 +88,6 @@ impl ArrayRef {
         callbacks: Option<&ArrayCallbacks>,
     ) -> Option<Array> {
         unsafe { CFArrayCreate(allocator, values, num_values, callbacks) }
-    }
-}
-
-impl Array {}
-
-impl Drop for Array {
-    #[inline]
-    fn drop(&mut self) {
-        unsafe { self.release() }
-    }
-}
-
-impl Deref for ArrayRef {
-    type Target = TypeRef;
-
-    #[inline]
-    fn deref(&self) -> &TypeRef {
-        &self.0
-    }
-}
-
-impl Deref for Array {
-    type Target = ArrayRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Array {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl DerefMut for ArrayRef {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
     }
 }
 

@@ -1,8 +1,9 @@
+use crate::define_ref;
+
 use super::{AllocatorRef, ComparisonResult, Index, TypeID, TypeRef};
 use std::{
     convert::From,
     ffi::c_void,
-    ops::{Deref, DerefMut},
 };
 
 /// ```
@@ -112,20 +113,9 @@ impl NumberType {
     pub const MAX: Self = Self(16);
 }
 
-#[derive(Copy, Clone, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct NumberRef(TypeRef);
+define_ref!(TypeRef, NumberRef, Number);
 
 impl NumberRef {
-    #[inline]
-    pub fn retained(&self) -> Number {
-        unsafe { Number(self.retain()) }
-    }
-
-    #[inline]
-    pub unsafe fn retain(&self) -> NumberRef {
-        NumberRef(self.0.retain())
-    }
 
     #[inline]
     pub fn get_number_type(&self) -> NumberType {
@@ -273,9 +263,6 @@ impl NumberRef {
     }
 }
 
-#[repr(transparent)]
-pub struct Number(NumberRef);
-
 impl Number {
     /// ```
     /// use cidre::cf;
@@ -338,45 +325,6 @@ impl Number {
     /// ```
     pub fn from_f64(value: f64) -> Option<Number> {
         unsafe { NumberRef::create(None, NumberType::F64, &value as *const _ as _) }
-    }
-}
-
-impl Drop for Number {
-    #[inline]
-    fn drop(&mut self) {
-        unsafe { self.release() }
-    }
-}
-
-impl Deref for NumberRef {
-    type Target = TypeRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for NumberRef {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Deref for Number {
-    type Target = NumberRef;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Number {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
     }
 }
 

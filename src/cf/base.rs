@@ -98,7 +98,7 @@ impl DerefMut for Type {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Copy, Clone)]
 #[repr(transparent)]
 pub struct AllocatorRef(TypeRef);
 

@@ -1,5 +1,16 @@
 use super::{AllocatorRef, Index, OptionFlags, TypeID, TypeRef};
-use std::ops::{Deref, DerefMut};
+
+use crate::define_ref;
+
+define_ref!(TypeRef, StringRef, String);
+define_ref!(StringRef, MutableStringRef, MutableString);
+
+impl TypeRef {
+    #[inline]
+    pub fn show(&self) {
+        unsafe { CFShow(*self) }
+    }
+}
 
 ///```
 /// use cidre::cf;
@@ -20,31 +31,7 @@ impl StringEncoding {
 
 pub type UniChar = u16;
 
-#[derive(Copy, Clone, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct StringRef(TypeRef);
-
-#[repr(transparent)]
-pub struct String(StringRef);
-
-#[derive(Copy, Clone, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct MutableStringRef(StringRef);
-
-#[repr(transparent)]
-pub struct MutableString(MutableStringRef);
-
 impl StringRef {
-    #[inline]
-    pub fn retained(&self) -> String {
-        unsafe { String(self.retain()) }
-    }
-
-    #[inline]
-    pub unsafe fn retain(&self) -> StringRef {
-        StringRef(self.0.retain())
-    }
-
     #[inline]
     pub fn get_length(&self) -> Index {
         unsafe { CFStringGetLength(*self) }
@@ -102,23 +89,7 @@ impl String {
     }
 }
 
-impl Drop for String {
-    fn drop(&mut self) {
-        unsafe { self.release() }
-    }
-}
-
 impl MutableStringRef {
-    #[inline]
-    pub fn retained(&self) -> MutableString {
-        unsafe { MutableString(self.retain()) }
-    }
-
-    #[inline]
-    pub unsafe fn retain(&self) -> MutableStringRef {
-        MutableStringRef(self.0.retain())
-    }
-
     #[inline]
     pub fn append_string(&mut self, appending_string: StringRef) {
         unsafe { CFStringAppend(*self, appending_string) }
@@ -134,81 +105,6 @@ impl MutableString {
     #[inline]
     pub fn create(alloc: Option<AllocatorRef>, max_length: Index) -> Option<MutableString> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
-    }
-}
-
-impl Deref for StringRef {
-    type Target = TypeRef;
-
-    #[inline]
-    fn deref(&self) -> &TypeRef {
-        &self.0
-    }
-}
-
-impl DerefMut for StringRef {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl DerefMut for String {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Deref for MutableStringRef {
-    type Target = StringRef;
-
-    #[inline]
-    fn deref(&self) -> &StringRef {
-        &self.0
-    }
-}
-
-impl Deref for MutableString {
-    type Target = MutableStringRef;
-
-    #[inline]
-    fn deref(&self) -> &MutableStringRef {
-        &self.0
-    }
-}
-
-impl DerefMut for MutableString {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Drop for MutableString {
-    fn drop(&mut self) {
-        unsafe { self.release() }
-    }
-}
-
-impl DerefMut for MutableStringRef {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Deref for String {
-    type Target = StringRef;
-
-    #[inline]
-    fn deref(&self) -> &StringRef {
-        &self.0
-    }
-}
-
-impl TypeRef {
-    #[inline]
-    pub fn show(&self) {
-        unsafe { CFShow(*self) }
     }
 }
 
@@ -235,16 +131,16 @@ extern "C" {
         alloc: Option<AllocatorRef>,
         max_length: Index,
     ) -> Option<MutableString>;
-    fn CFStringCreateCopy(alloc: Option<AllocatorRef>, theString: StringRef) -> Option<String>;
+    fn CFStringCreateCopy(alloc: Option<AllocatorRef>, the_string: StringRef) -> Option<String>;
     fn CFStringHasPrefix(the_string: StringRef, prefix: StringRef) -> bool;
     fn CFStringCreateMutableCopy(
         alloc: Option<AllocatorRef>,
         max_length: Index,
         the_string: StringRef,
     ) -> Option<MutableString>;
-    fn CFStringGetCharacterAtIndex(theString: StringRef, idx: Index) -> UniChar;
-    fn CFStringAppend(theString: MutableStringRef, appended_string: StringRef);
-    fn CFStringTrimWhitespace(theString: MutableStringRef);
+    fn CFStringGetCharacterAtIndex(the_string: StringRef, idx: Index) -> UniChar;
+    fn CFStringAppend(the_string: MutableStringRef, appended_string: StringRef);
+    fn CFStringTrimWhitespace(the_string: MutableStringRef);
 
     fn CFStringCreateWithBytesNoCopy(
         alloc: Option<AllocatorRef>,
