@@ -8,12 +8,12 @@ pub mod os {
     pub type Status = i32;
     pub type Type = FourCharCode;
     
-    pub const NO_ERR: Err = 0;
+    pub const NO_ERR: Status = 0;
 }
 
 pub mod cf;
-pub mod vt;
 pub mod cm;
+pub mod vt;
 
 #[cfg(test)]
 mod tests {
