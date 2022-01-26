@@ -73,6 +73,8 @@ macro_rules! define_ref {
         }
 
         impl Drop for $Owned {
+
+            #[inline]
             fn drop(&mut self) {
                 unsafe { self.release() }
             }
