@@ -14,6 +14,7 @@ pub mod os {
 pub mod cf;
 pub mod cm;
 pub mod vt;
+pub mod io;
 
 #[cfg(test)]
 mod tests {
