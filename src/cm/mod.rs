@@ -1,11 +1,10 @@
-
 mod time;
+pub use time::Time;
 pub use time::TimeEpoch;
 pub use time::TimeFlags;
+pub use time::TimeRoundingMethod;
 pub use time::TimeScale;
 pub use time::TimeValue;
-pub use time::Time;
-pub use time::TimeRoundingMethod;
 
 mod sample_buffer;
 pub use sample_buffer::SampleBufferRef;
@@ -16,4 +15,4 @@ pub use block_buffer::BlockBufferFlags;
 pub use block_buffer::BlockBufferRef;
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C" { }
+extern "C" {}
