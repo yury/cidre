@@ -31,7 +31,7 @@ impl BlockBuffer {
     /// use cidre::cm;
     ///
     /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
-    /// assert_eq!(true, b.is_empty());
+    /// assert!(b.is_empty());
     /// ```
     #[inline]
     pub fn create_empty<'a>(
