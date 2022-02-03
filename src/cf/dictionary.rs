@@ -1,10 +1,7 @@
-use crate::define_ref;
+use crate::define_cf_type;
 
-use super::{AllocatorRef, HashCode, Index, StringRef, TypeID, TypeRef};
-use std::{
-    ffi::c_void,
-    ptr::NonNull,
-};
+use super::{Allocator, HashCode, Index, Retained, String, Type, TypeID};
+use std::{ffi::c_void, ptr::NonNull};
 
 /// ```
 /// use cidre::cf;
@@ -16,10 +13,11 @@ pub fn dictionary_get_type_id() -> TypeID {
 }
 
 pub type DictionaryRetainCallBack =
-    extern "C" fn(allocator: Option<AllocatorRef>, value: *const c_void);
+    extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type DictionaryReleaseCallBack =
-    extern "C" fn(allocator: Option<AllocatorRef>, value: *const c_void);
-pub type DictionaryCopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> StringRef;
+    extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type DictionaryCopyDescriptionCallBack =
+    extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
 pub type DictionaryEqualCallBack =
     extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 pub type DictionaryHashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
@@ -36,13 +34,13 @@ pub struct DictionaryKeyCallBacks {
 
 impl DictionaryKeyCallBacks {
     #[inline]
-    pub fn default() -> Option<&'static DictionaryKeyCallBacks> {
-        unsafe { Some(&kCFTypeDictionaryKeyCallBacks) }
+    pub fn default() -> &'static DictionaryKeyCallBacks {
+        unsafe { &kCFTypeDictionaryKeyCallBacks }
     }
 
     #[inline]
-    pub fn copy_strings() -> Option<&'static DictionaryKeyCallBacks> {
-        unsafe { Some(&kCFCopyStringDictionaryKeyCallBacks) }
+    pub fn copy_strings() -> &'static DictionaryKeyCallBacks {
+        unsafe { &kCFCopyStringDictionaryKeyCallBacks }
     }
 }
 
@@ -65,22 +63,22 @@ impl DictionaryValueCallBacks {
 pub type DictionaryApplierFunction =
     extern "C" fn(key: *const c_void, value: *const c_void, context: *mut c_void);
 
-define_ref!(TypeRef, DictionaryRef, Dictionary);
+define_cf_type!(Dictionary(Type));
 
-impl DictionaryRef {
+impl Dictionary {
     #[inline]
     pub unsafe fn contains_key(&self, key: *const c_void) -> bool {
-        CFDictionaryContainsKey(*self, key)
+        CFDictionaryContainsKey(self, key)
     }
 
     #[inline]
     pub unsafe fn contains_value(&self, value: *const c_void) -> bool {
-        CFDictionaryContainsValue(*self, value)
+        CFDictionaryContainsValue(self, value)
     }
 
     #[inline]
     pub unsafe fn get_value(&self, key: *const c_void) -> Option<NonNull<*const c_void>> {
-        CFDictionaryGetValue(*self, key)
+        CFDictionaryGetValue(self, key)
     }
 
     #[inline]
@@ -90,7 +88,7 @@ impl DictionaryRef {
     ) -> Option<Option<NonNull<*const c_void>>> {
         let mut value = Option::None;
 
-        if CFDictionaryGetValueIfPresent(*self, key, &mut value) {
+        if CFDictionaryGetValueIfPresent(self, key, &mut value) {
             Some(value)
         } else {
             None
@@ -99,7 +97,7 @@ impl DictionaryRef {
 
     #[inline]
     pub fn get_count(&self) -> Index {
-        unsafe { CFDictionaryGetCount(*self) }
+        unsafe { CFDictionaryGetCount(self) }
     }
 
     #[inline]
@@ -111,6 +109,34 @@ impl DictionaryRef {
     pub fn is_empty(&self) -> bool {
         self.get_count() == 0
     }
+
+    /// ```
+    /// use cidre::cf;
+    /// 
+    /// let dict = cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap();
+    /// 
+    /// dict.show();
+    /// ```
+    #[inline]
+    pub fn create(
+        allocator: Option<&Allocator>,
+        keys: *const *const c_void,
+        values: *const *const c_void,
+        num_values: Index,
+        key_callbacks: Option<&DictionaryKeyCallBacks>,
+        value_callbacks: Option<&DictionaryValueCallBacks>,
+    ) -> Option<Retained<Dictionary>> {
+        unsafe {
+            CFDictionaryCreate(
+                allocator,
+                keys,
+                values,
+                num_values,
+                key_callbacks,
+                value_callbacks,
+            )
+        }
+    }
 }
 
 extern "C" {
@@ -121,17 +147,27 @@ extern "C" {
 
     fn CFDictionaryGetTypeID() -> TypeID;
 
-    fn CFDictionaryContainsKey(the_dict: DictionaryRef, key: *const c_void) -> bool;
-    fn CFDictionaryContainsValue(the_dict: DictionaryRef, value: *const c_void) -> bool;
+    fn CFDictionaryContainsKey(the_dict: &Dictionary, key: *const c_void) -> bool;
+    fn CFDictionaryContainsValue(the_dict: &Dictionary, value: *const c_void) -> bool;
 
-    fn CFDictionaryGetCount(the_dict: DictionaryRef) -> Index;
+    fn CFDictionaryGetCount(the_dict: &Dictionary) -> Index;
     fn CFDictionaryGetValue(
-        the_dict: DictionaryRef,
+        the_dict: &Dictionary,
         key: *const c_void,
     ) -> Option<NonNull<*const c_void>>;
     fn CFDictionaryGetValueIfPresent(
-        the_dict: DictionaryRef,
+        the_dict: &Dictionary,
         key: *const c_void,
         value: *mut Option<NonNull<*const c_void>>,
     ) -> bool;
+
+    fn CFDictionaryCreate(
+        allocator: Option<&Allocator>,
+        keys: *const *const c_void,
+        values: *const *const c_void,
+        num_values: Index,
+        key_callbacks: Option<&DictionaryKeyCallBacks>,
+        value_callbacks: Option<&DictionaryValueCallBacks>,
+    ) -> Option<Retained<Dictionary>>;
+
 }

@@ -1,10 +1,7 @@
-use crate::define_ref;
+use crate::define_cf_type;
 
-use super::{AllocatorRef, Index, StringRef, TypeID, TypeRef};
-use std::{
-    ffi::c_void,
-    ptr::NonNull,
-};
+use super::{Allocator, Index, Retained, String, Type, TypeID};
+use std::{ffi::c_void, ptr::NonNull};
 
 /// ```
 /// use cidre::cf;
@@ -15,10 +12,10 @@ pub fn array_get_type_id() -> TypeID {
     unsafe { CFArrayGetTypeID() }
 }
 
-pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<AllocatorRef>, value: *const c_void);
-pub type ArrayReleaseCallBack =
-    extern "C" fn(allocator: Option<AllocatorRef>, value: *const c_void);
-pub type ArrayCopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> StringRef;
+pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type ArrayReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type ArrayCopyDescriptionCallBack =
+    extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
 pub type ArrayEqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 
 #[repr(C)]
@@ -37,31 +34,24 @@ impl ArrayCallbacks {
     }
 }
 
-define_ref!(TypeRef, ArrayRef, Array);
-define_ref!(ArrayRef, MutableArrayRef, MutableArray);
+define_cf_type!(Array(Type));
 
-impl ArrayRef {
-
-    #[inline]
-    pub fn create_copy(&self, allocator: Option<AllocatorRef>) -> Option<Array> {
-        unsafe { CFArrayCreateCopy(allocator, *self) }
-    }
-
+impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");
+    /// let arr = cf::Array::create(None, None, 0, None).expect("arr");
     /// assert_eq!(arr.len(), 0);
     /// ```
     #[inline]
     pub fn get_count(&self) -> Index {
-        unsafe { CFArrayGetCount(*self) }
+        unsafe { CFArrayGetCount(self) }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");
+    /// let arr = cf::Array::create(None, None, 0, None).expect("arr");
     /// assert_eq!(arr.len(), 0);
     /// ```
     #[inline]
@@ -72,21 +62,30 @@ impl ArrayRef {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::ArrayRef::create(None, None, 0, None).expect("arr");
+    /// let arr = cf::Array::create(None, None, 0, None).expect("arr");
     /// assert_eq!(arr.is_empty(), true);
     /// ```
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+}
+
+define_cf_type!(MutableArray(Array));
+
+impl Array {
+    #[inline]
+    pub fn create_copy(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
+        unsafe { CFArrayCreateCopy(allocator, self) }
+    }
 
     #[inline]
     pub fn create(
-        allocator: Option<AllocatorRef>,
+        allocator: Option<&Allocator>,
         values: Option<NonNull<*const *const c_void>>,
         num_values: Index,
         callbacks: Option<&ArrayCallbacks>,
-    ) -> Option<Array> {
+    ) -> Option<Retained<Array>> {
         unsafe { CFArrayCreate(allocator, values, num_values, callbacks) }
     }
 }
@@ -97,11 +96,14 @@ extern "C" {
     fn CFArrayGetTypeID() -> TypeID;
 
     fn CFArrayCreate(
-        allocator: Option<AllocatorRef>,
+        allocator: Option<&Allocator>,
         values: Option<NonNull<*const *const c_void>>,
         num_values: Index,
         callbacks: Option<&ArrayCallbacks>,
-    ) -> Option<Array>;
-    fn CFArrayCreateCopy(allocator: Option<AllocatorRef>, the_array: ArrayRef) -> Option<Array>;
-    fn CFArrayGetCount(the_array: ArrayRef) -> Index;
+    ) -> Option<Retained<Array>>;
+    fn CFArrayCreateCopy(
+        allocator: Option<&Allocator>,
+        the_array: &Array,
+    ) -> Option<Retained<Array>>;
+    fn CFArrayGetCount(the_array: &Array) -> Index;
 }

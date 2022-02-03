@@ -1,6 +1,7 @@
 use crate::{
-    cf::{AllocatorRef, TypeID, TypeRef},
-    os::{self, NO_ERR}, define_ref,
+    cf::{Allocator, Retained, Type, TypeID},
+    define_cf_type,
+    os::{self, NO_ERR},
 };
 
 /// ```
@@ -24,24 +25,26 @@ impl BlockBufferFlags {
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
-define_ref!(TypeRef, BlockBufferRef, BlockBuffer);
+define_cf_type!(BlockBuffer(Type));
 
-impl BlockBufferRef {
+impl BlockBuffer {
+    #[inline]
     pub fn is_empty(&self) -> bool {
-        unsafe { CMBlockBufferIsEmpty(*self) }
+        unsafe { CMBlockBufferIsEmpty(self) }
     }
 
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBufferRef::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
+    /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
     /// assert_eq!(true, b.is_empty());
     /// ```
+    #[inline]
     pub fn create_empty(
-        structure_allocator: Option<AllocatorRef>,
+        structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
         flags: BlockBufferFlags,
-    ) -> Result<BlockBuffer, os::Status> {
+    ) -> Result<Retained<BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
             let res = CMBlockBufferCreateEmpty(
@@ -61,12 +64,12 @@ impl BlockBufferRef {
 
 extern "C" {
     fn CMBlockBufferGetTypeID() -> TypeID;
-    fn CMBlockBufferIsEmpty(the_buffer: BlockBufferRef) -> bool;
+    fn CMBlockBufferIsEmpty(the_buffer: &BlockBuffer) -> bool;
 
     fn CMBlockBufferCreateEmpty(
-        structure_allocator: Option<AllocatorRef>,
+        structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
         flags: BlockBufferFlags,
-        block_buffer_out: &mut Option<BlockBuffer>,
+        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
     ) -> os::Status;
 }

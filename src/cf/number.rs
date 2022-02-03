@@ -1,6 +1,7 @@
-use crate::define_ref;
+use crate::define_cf_type;
 
-use super::{AllocatorRef, ComparisonResult, Index, TypeID, TypeRef};
+use super::{Allocator, ComparisonResult, Index, TypeID, Type, Retained};
+
 use std::{
     convert::From,
     ffi::c_void,
@@ -16,70 +17,55 @@ pub fn boolean_get_type_id() -> TypeID {
     unsafe { CFBooleanGetTypeID() }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct BooleanRef(TypeRef);
+define_cf_type!(Boolean(Type));
 
-impl BooleanRef {
+
+impl Boolean {
+
     /// ```
     /// use cidre::cf;
     ///
-    /// let f = cf::BooleanRef::value_true();
+    /// let f = cf::Boolean::value_true();
     /// assert_eq!(true, f.get_value());
     /// ```
     #[inline]
     pub fn get_value(&self) -> bool {
-        unsafe { CFBooleanGetValue(*self) }
+        unsafe { CFBooleanGetValue(self) }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let f = cf::BooleanRef::value_true();
+    /// let f = cf::Boolean::value_true();
     /// assert_eq!(true, f.get_value());
     /// ```
     #[inline]
-    pub fn value_true() -> BooleanRef {
+    pub fn value_true() -> &'static Boolean {
         unsafe { kCFBooleanTrue }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let f = cf::BooleanRef::value_false();
+    /// let f = cf::Boolean::value_false();
     /// assert_eq!(false, f.get_value());
     /// ```
     #[inline]
-    pub fn value_false() -> BooleanRef {
+    pub fn value_false() -> &'static Boolean {
         unsafe { kCFBooleanFalse }
     }
 }
 
-impl std::fmt::Debug for BooleanRef {
+impl std::fmt::Debug for Boolean {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("{:?}", self.get_value()))
     }
 }
 
-impl From<bool> for BooleanRef {
-    /// ```
-    /// use cidre::cf;
-    /// let f: cf::BooleanRef = true.into();
-    /// assert_eq!(cf::BooleanRef::from(true), f);
-    /// ```
-    #[inline]
-    fn from(v: bool) -> Self {
-        if v {
-            Self::value_true()
-        } else {
-            Self::value_false()
-        }
-    }
-}
 
-impl From<BooleanRef> for bool {
+impl From<Boolean> for bool {
     #[inline]
-    fn from(cf: BooleanRef) -> Self {
+    fn from(cf: Boolean) -> Self {
         cf.get_value()
     }
 }
@@ -113,66 +99,28 @@ impl NumberType {
     pub const MAX: Self = Self(16);
 }
 
-define_ref!(TypeRef, NumberRef, Number);
+define_cf_type!(Number(Type));
 
-impl NumberRef {
+impl Number {
 
     #[inline]
     pub fn get_number_type(&self) -> NumberType {
-        unsafe { CFNumberGetType(*self) }
-    }
+        unsafe { CFNumberGetType(self) }
+    }    
 
     #[inline]
     pub fn get_byte_size(&self) -> Index {
-        unsafe { CFNumberGetByteSize(*self) }
+        unsafe { CFNumberGetByteSize(self) }
     }
 
     #[inline]
     pub fn is_float_type(&self) -> bool {
-        unsafe { CFNumberIsFloatType(*self) }
+        unsafe { CFNumberIsFloatType(self) }
     }
 
     #[inline]
     pub fn compare(&self, other_number: &Self, context: &mut c_void) -> ComparisonResult {
-        unsafe { CFNumberCompare(*self, *other_number, context) }
-    }
-
-    #[inline]
-    pub fn positive_inifinity() -> NumberRef {
-        unsafe { kCFNumberPositiveInfinity }
-    }
-
-    #[inline]
-    pub fn negative_inifinity() -> NumberRef {
-        unsafe { kCFNumberNegativeInfinity }
-    }
-
-    /// ```
-    /// use cidre::cf;
-    ///
-    /// let nan1 = cf::NumberRef::nan();
-    /// let nan2 = cf::NumberRef::nan();
-    /// assert_eq!(nan1.equal(&nan2), true);
-    /// ```
-    #[inline]
-    pub fn nan() -> NumberRef {
-        unsafe { kCFNumberNaN }
-    }
-
-    /// ```
-    /// use cidre::cf;
-    ///
-    /// let num = unsafe { cf::NumberRef::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap() };
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
-    /// assert_eq!(num.to_i8().unwrap(), 5i8);
-    /// ```
-    #[inline]
-    pub unsafe fn create(
-        allocator: Option<AllocatorRef>,
-        the_type: NumberType,
-        value_ptr: *const c_void,
-    ) -> Option<Number> {
-        CFNumberCreate(allocator, the_type, value_ptr)
+        unsafe { CFNumberCompare(self, other_number, context) }
     }
 
     /// ```
@@ -188,7 +136,7 @@ impl NumberRef {
     pub fn to_i8(&self) -> Option<i8> {
         unsafe {
             let mut value: i8 = 0;
-            if CFNumberGetValue(*self, NumberType::I8, &mut value as *mut _ as *mut _) {
+            if CFNumberGetValue(self, NumberType::I8, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -209,7 +157,7 @@ impl NumberRef {
     pub fn to_i16(&self) -> Option<i16> {
         unsafe {
             let mut value: i16 = 0;
-            if CFNumberGetValue(*self, NumberType::I16, &mut value as *mut _ as *mut _) {
+            if CFNumberGetValue(self, NumberType::I16, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -230,7 +178,7 @@ impl NumberRef {
     pub fn to_i32(&self) -> Option<i32> {
         unsafe {
             let mut value: i32 = 0;
-            if CFNumberGetValue(*self, NumberType::I32, &mut value as *mut _ as *mut _) {
+            if CFNumberGetValue(self, NumberType::I32, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -242,7 +190,7 @@ impl NumberRef {
     pub fn to_i64(&self) -> Option<i64> {
         unsafe {
             let mut value: i64 = 0;
-            if CFNumberGetValue(*self, NumberType::I64, &mut value as *mut _ as *mut _) {
+            if CFNumberGetValue(self, NumberType::I64, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -254,7 +202,7 @@ impl NumberRef {
     pub fn to_f64(&self) -> Option<f64> {
         unsafe {
             let mut value: f64 = 0.0;
-            if CFNumberGetValue(*self, NumberType::F64, &mut value as *mut _ as *mut _) {
+            if CFNumberGetValue(self, NumberType::F64, &mut value as *mut _ as *mut _) {
                 Some(value)
             } else {
                 None
@@ -264,6 +212,46 @@ impl NumberRef {
 }
 
 impl Number {
+
+
+    #[inline]
+    pub fn positive_inifinity() -> &'static Number {
+        unsafe { kCFNumberPositiveInfinity }
+    }
+
+    #[inline]
+    pub fn negative_inifinity() -> &'static Number {
+        unsafe { kCFNumberNegativeInfinity }
+    }
+
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let nan1 = cf::Number::nan();
+    /// let nan2 = cf::Number::nan();
+    /// assert_eq!(nan1.equal(&nan2), true);
+    /// ```
+    #[inline]
+    pub fn nan() -> &'static Number {
+        unsafe { kCFNumberNaN }
+    }
+
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = unsafe { cf::Number::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap() };
+    /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
+    /// assert_eq!(num.to_i8().unwrap(), 5i8);
+    /// ```
+    #[inline]
+    pub unsafe fn create(
+        allocator: Option<&Allocator>,
+        the_type: NumberType,
+        value_ptr: *const c_void,
+    ) -> Option<Retained<Number>> {
+        CFNumberCreate(allocator, the_type, value_ptr)
+    }
+
     /// ```
     /// use cidre::cf;
     ///
@@ -272,8 +260,8 @@ impl Number {
     /// assert_eq!(1, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i8(value: i8) -> Option<Number> {
-        unsafe { NumberRef::create(None, NumberType::I8, &value as *const _ as _) }
+    pub fn from_i8(value: i8) -> Option<Retained<Number>> {
+        unsafe { Number::create(None, NumberType::I8, &value as *const _ as _) }
     }
 
     /// ```
@@ -284,8 +272,8 @@ impl Number {
     /// assert_eq!(2, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i16(value: i16) -> Option<Number> {
-        unsafe { NumberRef::create(None, NumberType::I16, &value as *const _ as _) }
+    pub fn from_i16(value: i16) -> Option<Retained<Number>> {
+        unsafe { Number::create(None, NumberType::I16, &value as *const _ as _) }
     }
 
     /// ```
@@ -297,8 +285,8 @@ impl Number {
     /// assert_eq!(32, num.to_i32().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i32(value: i32) -> Option<Number> {
-        unsafe { NumberRef::create(None, NumberType::I32, &value as *const _ as _) }
+    pub fn from_i32(value: i32) -> Option<Retained<Number>> {
+        unsafe { Number::create(None, NumberType::I32, &value as *const _ as _) }
     }
 
     /// ```
@@ -310,8 +298,8 @@ impl Number {
     /// assert_eq!(64, num.to_i64().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i64(value: i64) -> Option<Number> {
-        unsafe { NumberRef::create(None, NumberType::I64, &value as *const _ as _) }
+    pub fn from_i64(value: i64) -> Option<Retained<Number>> {
+        unsafe { Number::create(None, NumberType::I64, &value as *const _ as _) }
     }
 
     /// ```
@@ -323,37 +311,37 @@ impl Number {
     /// assert_eq!(64.0, num.to_f64().unwrap());
     /// assert_eq!(true, num.is_float_type());
     /// ```
-    pub fn from_f64(value: f64) -> Option<Number> {
-        unsafe { NumberRef::create(None, NumberType::F64, &value as *const _ as _) }
+    pub fn from_f64(value: f64) -> Option<Retained<Number>> {
+        unsafe { Number::create(None, NumberType::F64, &value as *const _ as _) }
     }
 }
 
 extern "C" {
     fn CFBooleanGetTypeID() -> TypeID;
-    static kCFBooleanTrue: BooleanRef;
-    static kCFBooleanFalse: BooleanRef;
+    static kCFBooleanTrue: &'static Boolean;
+    static kCFBooleanFalse: &'static Boolean;
 
-    fn CFBooleanGetValue(boolean: BooleanRef) -> bool;
+    fn CFBooleanGetValue(boolean: &Boolean) -> bool;
 
     fn CFNumberGetTypeID() -> TypeID;
 
-    static kCFNumberPositiveInfinity: NumberRef;
-    static kCFNumberNegativeInfinity: NumberRef;
-    static kCFNumberNaN: NumberRef;
+    static kCFNumberPositiveInfinity: &'static Number;
+    static kCFNumberNegativeInfinity: &'static Number;
+    static kCFNumberNaN: &'static Number;
 
     fn CFNumberCreate(
-        allocator: Option<AllocatorRef>,
+        allocator: Option<&Allocator>,
         the_type: NumberType,
         value_ptr: *const c_void,
-    ) -> Option<Number>;
+    ) -> Option<Retained<Number>>;
 
-    fn CFNumberGetType(number: NumberRef) -> NumberType;
-    fn CFNumberGetByteSize(number: NumberRef) -> Index;
-    fn CFNumberIsFloatType(number: NumberRef) -> bool;
+    fn CFNumberGetType(number: &Number) -> NumberType;
+    fn CFNumberGetByteSize(number: &Number) -> Index;
+    fn CFNumberIsFloatType(number: &Number) -> bool;
     fn CFNumberCompare(
-        number: NumberRef,
-        other_number: NumberRef,
+        number: &Number,
+        other_number: &Number,
         context: *mut c_void,
     ) -> ComparisonResult;
-    fn CFNumberGetValue(number: NumberRef, the_type: NumberType, value_ptr: *mut c_void) -> bool;
+    fn CFNumberGetValue(number: &Number, the_type: NumberType, value_ptr: *mut c_void) -> bool;
 }

@@ -1,16 +1,6 @@
-use super::{AllocatorRef, Index, OptionFlags, TypeID, TypeRef};
+use super::{runtime::Ltb, Allocator, Index, OptionFlags, Retained, Type, TypeID};
 
-use crate::define_ref;
-
-define_ref!(TypeRef, StringRef, String);
-define_ref!(StringRef, MutableStringRef, MutableString);
-
-impl TypeRef {
-    #[inline]
-    pub fn show(&self) {
-        unsafe { CFShow(*self) }
-    }
-}
+use crate::define_cf_type;
 
 ///```
 /// use cidre::cf;
@@ -31,83 +21,6 @@ impl StringEncoding {
 
 pub type UniChar = u16;
 
-impl StringRef {
-    #[inline]
-    pub fn get_length(&self) -> Index {
-        unsafe { CFStringGetLength(*self) }
-    }
-
-    #[inline]
-    pub fn create_mutable_copy(
-        &self,
-        alloc: Option<AllocatorRef>,
-        max_length: Index,
-    ) -> Option<MutableString> {
-        unsafe { CFStringCreateMutableCopy(alloc, max_length, *self) }
-    }
-
-    #[inline]
-    pub fn get_character_at_index(&self, idx: Index) -> UniChar {
-        unsafe { CFStringGetCharacterAtIndex(*self, idx) }
-    }
-
-    #[inline]
-    pub fn show_str(&self) {
-        unsafe { CFShowStr(*self) }
-    }
-
-    #[inline]
-    pub fn create_copy(&self, alloc: Option<AllocatorRef>) -> Option<String> {
-        unsafe { CFStringCreateCopy(alloc, *self) }
-    }
-
-    #[inline]
-    pub fn has_prefix(&self, prefix: StringRef) -> bool {
-        unsafe { CFStringHasPrefix(*self, prefix) }
-    }
-}
-
-impl String {
-    ///```
-    /// use cidre::cf;
-    ///
-    /// let s = cf::String::from_static_string("nice").expect("CFString");
-    /// assert_eq!(4, s.get_length());
-    ///```
-    #[inline]
-    pub fn from_static_string(string: &'static str) -> Option<String> {
-        unsafe {
-            CFStringCreateWithBytesNoCopy(
-                None,
-                string.as_ptr(),
-                string.len() as _,
-                StringEncoding::UTF8,
-                false,
-                AllocatorRef::null(),
-            )
-        }
-    }
-}
-
-impl MutableStringRef {
-    #[inline]
-    pub fn append_string(&mut self, appending_string: StringRef) {
-        unsafe { CFStringAppend(*self, appending_string) }
-    }
-
-    #[inline]
-    pub fn trim_whitespace(&mut self) {
-        unsafe { CFStringTrimWhitespace(*self) }
-    }
-}
-
-impl MutableString {
-    #[inline]
-    pub fn create(alloc: Option<AllocatorRef>, max_length: Index) -> Option<MutableString> {
-        unsafe { CFStringCreateMutable(alloc, max_length) }
-    }
-}
-
 #[repr(transparent)]
 pub struct StringCompareFlags(OptionFlags);
 
@@ -124,33 +37,79 @@ impl StringCompareFlags {
     pub const FORCED_ORDERING: Self = Self(512);
 }
 
+define_cf_type!(String(Type));
+
+impl String {
+    #[inline]
+    pub fn show_str(&self) {
+        unsafe { CFShowStr(self) }
+    }
+
+    #[inline]
+    pub fn get_length(&self) -> Index {
+        unsafe { CFStringGetLength(self) }
+    }
+
+    #[inline]
+    pub fn has_suffix(&self, suffix: &String) -> bool {
+        unsafe { CFStringHasSuffix(self, suffix) }
+    }
+
+    #[inline]
+    pub fn has_prefix(&self, prefix: &String) -> bool {
+        unsafe { CFStringHasPrefix(self, prefix) }
+    }
+
+    #[inline]
+    pub fn create_copy(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
+        unsafe { CFStringCreateCopy(alloc, self) }
+    }
+}
+
+define_cf_type!(MutableString(String));
+
+impl MutableString {
+    #[inline]
+    pub fn append(&mut self, appended_string: &String) {
+        unsafe { CFStringAppend(self, appended_string) }
+    }
+
+    #[inline]
+    pub fn create(alloc: Option<&Allocator>, max_length: Index) -> Option<Retained<Self>> {
+        unsafe { CFStringCreateMutable(alloc, max_length) }
+    }
+}
+
 extern "C" {
     fn CFStringGetTypeID() -> TypeID;
-    fn CFStringGetLength(theString: StringRef) -> Index;
+    fn CFStringGetLength(the_string: &String) -> Index;
     fn CFStringCreateMutable(
-        alloc: Option<AllocatorRef>,
+        alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<MutableString>;
-    fn CFStringCreateCopy(alloc: Option<AllocatorRef>, the_string: StringRef) -> Option<String>;
-    fn CFStringHasPrefix(the_string: StringRef, prefix: StringRef) -> bool;
+    ) -> Option<Retained<MutableString>>;
+    fn CFStringCreateCopy(
+        alloc: Option<&Allocator>,
+        the_string: &String,
+    ) -> Option<Retained<String>>;
+    fn CFStringHasPrefix(the_string: &String, prefix: &String) -> bool;
+    fn CFStringHasSuffix(the_string: &String, prefix: &String) -> bool;
     fn CFStringCreateMutableCopy(
-        alloc: Option<AllocatorRef>,
+        alloc: Option<&Allocator>,
         max_length: Index,
-        the_string: StringRef,
-    ) -> Option<MutableString>;
-    fn CFStringGetCharacterAtIndex(the_string: StringRef, idx: Index) -> UniChar;
-    fn CFStringAppend(the_string: MutableStringRef, appended_string: StringRef);
-    fn CFStringTrimWhitespace(the_string: MutableStringRef);
+        the_string: &String,
+    ) -> Option<Retained<MutableString>>;
+    fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
+    fn CFStringAppend(the_string: &mut MutableString, appended_string: &String);
+    fn CFStringTrimWhitespace(the_string: &mut MutableString);
 
-    fn CFStringCreateWithBytesNoCopy(
-        alloc: Option<AllocatorRef>,
+    fn CFStringCreateWithBytesNoCopy<'a>(
+        alloc: Option<&Allocator>,
         bytes: *const u8,
         num_bytes: Index,
         encoding: StringEncoding,
         is_external_representation: bool,
-        contents_deallocator: Option<AllocatorRef>,
-    ) -> Option<String>;
+        contents_deallocator: Option<&Allocator>,
+    ) -> Option<Ltb<'a, Retained<String>>>;
 
-    fn CFShow(cf: TypeRef);
-    fn CFShowStr(str: StringRef);
+    fn CFShowStr(str: &String);
 }

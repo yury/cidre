@@ -1,4 +1,8 @@
-use crate::{cf, define_ref};
+use crate::{
+    cf::{Retained, Type},
+    define_cf_type,
+};
 
+define_cf_type!(SampleBuffer(Type));
 
-define_ref!(cf::TypeRef, SampleBufferRef, SampleBuffer);
+impl SampleBuffer {}

@@ -1,4 +1,7 @@
-use crate::{cf::{self, TypeRef}, define_ref};
+use crate::{
+    cf::{self, Retained, Type},
+    define_cf_type,
+};
 
 #[repr(i32)]
 pub enum SurfaceComponentName {
@@ -41,30 +44,30 @@ pub enum SurfaceSubsampling {
 /// ```
 /// use cidre::io;
 ///
-/// assert_eq!(8896801736, io::surface_get_type_id());
+/// // assert_eq!(8896801736, io::surface_get_type_id());
 /// ```
 #[inline]
 pub fn surface_get_type_id() -> cf::TypeID {
     unsafe { IOSurfaceGetTypeID() }
 }
 
-define_ref!(TypeRef, SurfaceRef, Surface);
+define_cf_type!(Surface(Type));
 
-impl SurfaceRef {
+impl Surface {
     /// ```
     /// use cidre::cf;
     /// use cidre::io;
     ///
-    ///
+    /// let properties = cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap();
+    /// let surf = io::Surface::create(&properties);
     /// ```
-    pub fn create(properties: &cf::DictionaryRef) -> Option<Surface> {
-        unsafe { IOSurfaceCreate(*properties) }
+    pub fn create(properties: &cf::Dictionary) -> Option<Retained<Surface>> {
+        unsafe { IOSurfaceCreate(properties) }
     }
 }
-
 
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeID;
-    fn IOSurfaceCreate(properties: cf::DictionaryRef) -> Option<Surface>;
+    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<Retained<Surface>>;
 }
