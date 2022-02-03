@@ -104,6 +104,14 @@ impl String {
     ) -> Option<Retained<MutableString>> {
         unsafe { CFStringCreateMutableCopy(alloc, max_length, self) }
     }
+
+    #[inline]
+    pub fn mutable_copy(
+        &self,
+        max_length: Index,
+    ) -> Option<Retained<MutableString>> {
+        self.create_mutable_copy(None, max_length)
+    }
 }
 
 define_cf_type!(MutableString(String));
@@ -149,9 +157,9 @@ extern "C" {
         the_string: &String,
     ) -> Option<Retained<'a, MutableString>>;
     fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
+    
     fn CFStringAppend(the_string: &mut MutableString, appended_string: &String);
-
-    fn CFStringTrim(the_string: &MutableString, trim_string: &String);
+    fn CFStringTrim(the_string: &mut MutableString, trim_string: &String);
     fn CFStringTrimWhitespace(the_string: &mut MutableString);
 
     fn CFStringCreateWithBytesNoCopy<'a>(
