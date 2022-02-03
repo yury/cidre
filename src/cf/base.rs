@@ -29,7 +29,7 @@ pub struct Range {
 impl Range {
     #[inline]
     pub fn new(location: Index, length: Index) -> Self {
-        Range { location, length }
+        Self { location, length }
     }
 }
 
@@ -48,7 +48,7 @@ pub enum ComparisonResult {
 /// let desc = cf::copy_type_id_description(t).unwrap();
 /// desc.show_str();
 /// ```
-pub fn copy_type_id_description(type_id: TypeID) -> Option<Retained<String>> {
+pub fn copy_type_id_description<'a>(type_id: TypeID) -> Option<Retained<'a, String>> {
     unsafe { CFCopyTypeIDDescription(type_id) }
 }
 
@@ -139,7 +139,7 @@ impl Allocator {
 }
 
 extern "C" {
-    fn CFCopyTypeIDDescription(type_id: TypeID) -> Option<Retained<String>>;
+    fn CFCopyTypeIDDescription<'a>(type_id: TypeID) -> Option<Retained<'a, String>>;
 
     static kCFNull: &'static Null;
 
@@ -154,5 +154,5 @@ extern "C" {
     fn CFHash(cf: &Type) -> usize;
 
     fn CFEqual(cf1: &Type, cf2: &Type) -> bool;
-    fn CFCopyDescription(cf: Option<&Type>) -> Option<Retained<String>>;
+    fn CFCopyDescription<'a>(cf: Option<&Type>) -> Option<Retained<'a, String>>;
 }

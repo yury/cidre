@@ -251,7 +251,7 @@ impl Number {
     /// assert_eq!(1, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i8(value: i8) -> Option<Retained<Number>> {
+    pub fn from_i8<'a>(value: i8) -> Option<Retained<'a, Number>> {
         unsafe { Number::create(None, NumberType::I8, &value as *const _ as _) }
     }
 
@@ -263,7 +263,7 @@ impl Number {
     /// assert_eq!(2, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i16(value: i16) -> Option<Retained<Number>> {
+    pub fn from_i16<'a>(value: i16) -> Option<Retained<'a, Number>> {
         unsafe { Number::create(None, NumberType::I16, &value as *const _ as _) }
     }
 
@@ -276,7 +276,7 @@ impl Number {
     /// assert_eq!(32, num.to_i32().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i32(value: i32) -> Option<Retained<Number>> {
+    pub fn from_i32<'a>(value: i32) -> Option<Retained<'a, Number>> {
         unsafe { Number::create(None, NumberType::I32, &value as *const _ as _) }
     }
 
@@ -289,7 +289,7 @@ impl Number {
     /// assert_eq!(64, num.to_i64().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i64(value: i64) -> Option<Retained<Number>> {
+    pub fn from_i64<'a>(value: i64) -> Option<Retained<'a, Number>> {
         unsafe { Number::create(None, NumberType::I64, &value as *const _ as _) }
     }
 
@@ -302,7 +302,7 @@ impl Number {
     /// assert_eq!(64.0, num.to_f64().unwrap());
     /// assert_eq!(true, num.is_float_type());
     /// ```
-    pub fn from_f64(value: f64) -> Option<Retained<Number>> {
+    pub fn from_f64<'a>(value: f64) -> Option<Retained<'a, Number>> {
         unsafe { Number::create(None, NumberType::F64, &value as *const _ as _) }
     }
 }

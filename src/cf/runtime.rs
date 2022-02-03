@@ -1,69 +1,67 @@
 use std::{
     ffi::c_void,
     intrinsics::transmute,
-    marker::PhantomData,
     ops::{Deref, DerefMut},
-    ptr::NonNull,
 };
 
 use super::TypeID;
 
 pub trait Release {
-    unsafe fn release(&self);
+    unsafe fn release(&mut self);
 }
 
 pub trait Retain: Sized + Release {
-    fn retained(&self) -> Retained<Self>;
+    fn retained<'a>(&self) -> Retained<'a, Self>;
 }
 
 #[repr(transparent)]
-pub struct Retained<T: Release>(NonNull<T>);
+pub struct Retained<'a, T: Release>(&'a mut T);
 
-impl<T: Retain> Retained<T> {
+impl<'a, T: Retain> Retained<'a, T> {
     #[inline]
     pub fn retained(&self) -> Self {
-        unsafe { self.0.as_ref().retained() }
+        self.0.retained()
     }
 }
 
-impl<T: Release> Drop for Retained<T> {
+impl<'a, T: Release> Drop for Retained<'a, T> {
     #[inline]
     fn drop(&mut self) {
-        unsafe { self.release() }
+        unsafe { self.0.release() }
     }
 }
 
-impl<T: Release> Deref for Retained<T> {
+impl<'a, T: Release> Deref for Retained<'a, T> {
     type Target = T;
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        unsafe { self.0.as_ref() }
+        self.0
     }
 }
 
-impl<T: Release> DerefMut for Retained<T> {
+impl<'a, T: Release> DerefMut for Retained<'a, T> {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { self.0.as_mut() }
+        self.0
     }
 }
 
-#[repr(transparent)]
-pub struct Ltb<'a, T>(T, PhantomData<&'a T>);
-
-impl<'a, T> Deref for Ltb<'a, T> {
-    type Target = T;
-
+/// ```
+/// use cidre::cf;
+/// 
+/// let n = cf::Number::from_i8(10).unwrap();
+/// 
+/// let f = {
+///     n.clone()
+/// };
+/// 
+/// assert!(f.equal(&n));
+/// ```
+impl<'a, T: Retain> Clone for Retained<'a, T> {
     #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl<'a, T: Release + Retain> Ltb<'a, Retained<T>> {
-    #[inline]
-    pub fn retained(&self) -> Option<Ltb<Retained<T>>> {
-        unsafe { transmute(self.0.retained()) }
+    fn clone(&self) -> Self {
+        self.retained()
     }
 }
 
@@ -72,12 +70,12 @@ pub struct Type(c_void);
 
 impl Type {
     #[inline]
-    pub unsafe fn retain<T: Release>(cf: &Type) -> Retained<T> {
+    pub unsafe fn retain<'a, T: Release>(cf: &Type) -> Retained<'a, T> {
         transmute(CFRetain(cf))
     }
 
     #[inline]
-    pub unsafe fn release(cf: &Type) {
+    pub unsafe fn release(cf: &mut Type) {
         CFRelease(cf)
     }
 
@@ -93,14 +91,14 @@ impl Type {
 
 impl Retain for Type {
     #[inline]
-    fn retained(&self) -> Retained<Self> {
+    fn retained<'a>(&self) -> Retained<'a, Self> {
         unsafe { Type::retain(self) }
     }
 }
 
 impl Release for Type {
     #[inline]
-    unsafe fn release(&self) {
+    unsafe fn release(&mut self) {
         Type::release(self)
     }
 }
@@ -127,21 +125,21 @@ macro_rules! define_cf_type {
 
         impl crate::cf::runtime::Release for $NewType {
             #[inline]
-            unsafe fn release(&self) {
+            unsafe fn release(&mut self) {
                 self.0.release()
             }
         }
 
         impl crate::cf::runtime::Retain for $NewType {
             #[inline]
-            fn retained(&self) -> Retained<Self> {
+            fn retained<'a>(&self) -> Retained<'a, Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained(&self) -> Retained<Self> {
+            pub fn retained<'a>(&self) -> Retained<'a, Self> {
                 unsafe { Type::retain(self) }
             }
         }
@@ -150,6 +148,6 @@ macro_rules! define_cf_type {
 
 extern "C" {
     fn CFRetain(cf: &Type) -> Retained<Type>;
-    fn CFRelease(cf: &Type);
+    fn CFRelease(cf: &mut Type);
     fn CFGetTypeID(cf: &Type) -> TypeID;
 }

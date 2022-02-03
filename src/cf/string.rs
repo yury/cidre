@@ -1,4 +1,4 @@
-use super::{runtime::Ltb, Allocator, Index, OptionFlags, Retained, Type, TypeID};
+use super::{Allocator, Index, OptionFlags, Retained, Type, TypeID};
 
 use crate::define_cf_type;
 
@@ -77,7 +77,7 @@ impl String {
         encoding: StringEncoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Ltb<'a, Retained<String>>> {
+    ) -> Option<Retained<'a, String>> {
         unsafe {
             CFStringCreateWithBytesNoCopy(
                 alloc,
@@ -131,17 +131,17 @@ extern "C" {
         alloc: Option<&Allocator>,
         max_length: Index,
     ) -> Option<Retained<MutableString>>;
-    fn CFStringCreateCopy(
+    fn CFStringCreateCopy<'a>(
         alloc: Option<&Allocator>,
         the_string: &String,
-    ) -> Option<Retained<String>>;
+    ) -> Option<Retained<'a, String>>;
     fn CFStringHasPrefix(the_string: &String, prefix: &String) -> bool;
     fn CFStringHasSuffix(the_string: &String, prefix: &String) -> bool;
-    fn CFStringCreateMutableCopy(
+    fn CFStringCreateMutableCopy<'a>(
         alloc: Option<&Allocator>,
         max_length: Index,
         the_string: &String,
-    ) -> Option<Retained<MutableString>>;
+    ) -> Option<Retained<'a, MutableString>>;
     fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
     fn CFStringAppend(the_string: &mut MutableString, appended_string: &String);
 
@@ -155,7 +155,9 @@ extern "C" {
         encoding: StringEncoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Ltb<'a, Retained<String>>>;
+    ) -> Option<Retained<'a, String>>;
 
     fn CFShowStr(str: &String);
 }
+
+

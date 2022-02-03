@@ -8,7 +8,7 @@ pub type DictionaryRetainCallBack =
 pub type DictionaryReleaseCallBack =
     extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type DictionaryCopyDescriptionCallBack =
-    extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
+    extern "C" fn(value: *const c_void) -> Option<Retained<'static, String>>;
 pub type DictionaryEqualCallBack =
     extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 pub type DictionaryHashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
@@ -122,10 +122,10 @@ impl Dictionary {
     /// assert_eq!(1, d.len());
     /// ```
     #[inline]
-    pub fn from_pairs<const N: usize>(
+    pub fn from_pairs<'a, const N: usize>(
         keys: &[&Type; N],
         values: &[&Type; N],
-    ) -> Option<Retained<Dictionary>> {
+    ) -> Option<Retained<'a, Dictionary>> {
         unsafe {
             Self::create(
                 None,
@@ -145,14 +145,14 @@ impl Dictionary {
     /// dict.show();
     /// ```
     #[inline]
-    pub unsafe fn create(
+    pub unsafe fn create<'a>(
         allocator: Option<&Allocator>,
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
         key_callbacks: Option<&DictionaryKeyCallBacks>,
         value_callbacks: Option<&DictionaryValueCallBacks>,
-    ) -> Option<Retained<Dictionary>> {
+    ) -> Option<Retained<'a, Dictionary>> {
         CFDictionaryCreate(
             allocator,
             keys,
@@ -183,13 +183,13 @@ extern "C" {
         value: *mut Option<NonNull<c_void>>,
     ) -> bool;
 
-    fn CFDictionaryCreate(
+    fn CFDictionaryCreate<'a>(
         allocator: Option<&Allocator>,
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
         key_callbacks: Option<&DictionaryKeyCallBacks>,
         value_callbacks: Option<&DictionaryValueCallBacks>,
-    ) -> Option<Retained<Dictionary>>;
+    ) -> Option<Retained<'a, Dictionary>>;
 
 }
