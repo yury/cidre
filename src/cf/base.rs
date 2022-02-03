@@ -110,7 +110,7 @@ impl Type {
     }
 
     #[inline]
-    pub fn copy_descirption(&self) -> Option<Retained<String>> {
+    pub fn copy_description(&self) -> Option<Retained<String>> {
         unsafe { CFCopyDescription(Some(self)) }
     }
 }

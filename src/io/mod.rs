@@ -44,7 +44,6 @@ pub enum SurfaceSubsampling {
 define_cf_type!(Surface(Type));
 
 impl Surface {
-
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { IOSurfaceGetTypeID() }
@@ -56,7 +55,7 @@ impl Surface {
     /// let properties = cf::Dictionary::from_pairs(&[], &[]).unwrap();
     /// let surf = io::Surface::create(&properties);
     /// ```
-    pub fn create(properties: &cf::Dictionary) -> Option<Retained<Surface>> {
+    pub fn create<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>> {
         unsafe { IOSurfaceCreate(properties) }
     }
 }
@@ -64,5 +63,5 @@ impl Surface {
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
-    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<Retained<Surface>>;
+    fn IOSurfaceCreate<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>>;
 }

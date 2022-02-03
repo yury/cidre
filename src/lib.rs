@@ -28,10 +28,17 @@ mod tests {
             let arr = cf::Array::from_type_refs(&[null, &num]).unwrap();
 
             let v = b"he".to_vec();
-            let s = cf::String::create_with_bytes_no_copy(None, &v, 2, cf::StringEncoding::UTF8, false, Some(cf::Allocator::null())).unwrap();
+            let s = cf::String::create_with_bytes_no_copy(
+                None,
+                &v,
+                2,
+                cf::StringEncoding::UTF8,
+                false,
+                Some(cf::Allocator::null()),
+            )
+            .unwrap();
             // s
             let f = num;
-            
 
             arr.show();
             // s.show();

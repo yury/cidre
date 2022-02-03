@@ -88,7 +88,7 @@ impl Array {
     ///
     /// let arr1 = cf::Array::new().expect("Array::new");
     /// let arr2 = arr1.copy().expect("copy");
-    /// unsafe { 
+    /// unsafe {
     ///     assert_ne!(arr1.as_ptr(), arr2.as_ptr());
     /// }
     /// ```
@@ -112,13 +112,21 @@ impl Array {
         Self::create(None, None, 0, None)
     }
 
+
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i32(10).unwrap();
+    /// let arr = cf::Array::from_type_refs(&[&num, &num, &num]).unwrap();
+    /// assert_eq!(3, arr.len());
+    /// ```
     #[inline]
-    pub fn from_type_refs<'a>(values: &[&Type]) -> Option<Retained<'a, Array>> {
+    pub fn from_type_refs<'a, const N: usize>(values: &[&Type; N]) -> Option<Retained<'a, Array>> {
         let vals = unsafe {
             let ptr = values.as_ptr() as *const *const c_void as _;
             NonNull::new_unchecked(ptr)
         };
-        Array::create(None, Some(vals), values.len() as _, None)
+        Array::create(None, Some(vals), N as _, None)
     }
 
     /// ```

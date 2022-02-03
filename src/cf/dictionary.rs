@@ -1,7 +1,7 @@
 use crate::define_cf_type;
 
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
-use std::{ffi::c_void, ptr::NonNull, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 pub type DictionaryRetainCallBack =
     extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -71,6 +71,24 @@ impl Dictionary {
         CFDictionaryContainsKey(self, key)
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let key = cf::Number::from_i8(10).unwrap();
+    /// let value = cf::Number::from_i8(20).unwrap();
+    ///
+    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    ///
+    /// assert!(d.contains_type_ref_key(&key));
+    ///
+    /// let key2 = cf::Number::from_i8(12).unwrap();
+    /// assert!(!d.contains_type_ref_key(&key2));
+    /// ```
+    #[inline]
+    pub fn contains_type_ref_key(&self, key: &Type) -> bool {
+        unsafe { CFDictionaryContainsKey(self, key.as_ptr()) }
+    }
+
     #[inline]
     pub unsafe fn contains_value(&self, value: *const c_void) -> bool {
         CFDictionaryContainsValue(self, value)
@@ -109,17 +127,14 @@ impl Dictionary {
     ///     assert_eq!(v.as_ptr(), value.as_ptr());
     /// }
     /// ```
-    pub fn value_by_type_ref_key<'a>(
-        &'a self,
-        key: &Type
-    ) -> Option<&'a Type> {
+    pub fn value_by_type_ref_key<'a>(&'a self, key: &Type) -> Option<&'a Type> {
         unsafe {
             let mut value = Option::None;
             if CFDictionaryGetValueIfPresent(self, key.as_ptr(), &mut value) {
                 Some(transmute(value))
             } else {
                 None
-            } 
+            }
         }
     }
 

@@ -49,13 +49,13 @@ impl<'a, T: Release> DerefMut for Retained<'a, T> {
 
 /// ```
 /// use cidre::cf;
-/// 
+///
 /// let n = cf::Number::from_i8(10).unwrap();
-/// 
+///
 /// let f = {
 ///     n.clone()
 /// };
-/// 
+///
 /// assert!(f.equal(&n));
 /// ```
 impl<'a, T: Retain> Clone for Retained<'a, T> {

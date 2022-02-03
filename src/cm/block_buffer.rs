@@ -18,7 +18,6 @@ impl BlockBufferFlags {
 define_cf_type!(BlockBuffer(Type));
 
 impl BlockBuffer {
-
     #[inline]
     pub fn get_type_id() -> TypeId {
         unsafe { CMBlockBufferGetTypeID() }

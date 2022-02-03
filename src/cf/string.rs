@@ -79,9 +79,10 @@ impl String {
         contents_deallocator: Option<&Allocator>,
     ) -> Option<Retained<'a, String>> {
         unsafe {
+            let bytes = bytes.as_ptr();
             CFStringCreateWithBytesNoCopy(
                 alloc,
-                bytes.as_ptr(),
+                bytes,
                 num_bytes,
                 encoding,
                 is_external_representation,
@@ -159,5 +160,3 @@ extern "C" {
 
     fn CFShowStr(str: &String);
 }
-
-

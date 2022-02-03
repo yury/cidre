@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+use crate::cf::{Allocator, Retained, String};
+
 pub type TimeValue = i64;
 pub type TimeScale = i32;
 pub type TimeEpoch = i64;
@@ -250,6 +252,13 @@ impl Time {
     pub fn absolute_value(&self) -> Time {
         unsafe { CMTimeAbsoluteValue(*self) }
     }
+
+    #[inline]
+    pub fn copy_description<'a>(&self, allocator:Option<&Allocator>) -> Option<Retained<'a, String>> {
+        unsafe {
+            CMTimeCopyDescription(allocator, *self)
+        }
+    }
 }
 
 impl PartialEq for Time {
@@ -331,4 +340,6 @@ extern "C" {
     fn CMTimeCompare(time1: Time, time2: Time) -> i32;
     fn CMTimeAbsoluteValue(time: Time) -> Time;
     fn CMTimeShow(time: Time);
+
+    fn CMTimeCopyDescription<'a>(allocator: Option<&Allocator>, time: Time) -> Option<Retained<'a, String>>;
 }
