@@ -3,15 +3,6 @@ use crate::define_cf_type;
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeID};
 use std::{ffi::c_void, ptr::NonNull};
 
-/// ```
-/// use cidre::cf;
-/// assert_eq!(cf::dictionary_get_type_id(), 18);
-/// ```
-#[inline]
-pub fn dictionary_get_type_id() -> TypeID {
-    unsafe { CFDictionaryGetTypeID() }
-}
-
 pub type DictionaryRetainCallBack =
     extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type DictionaryReleaseCallBack =
@@ -66,6 +57,15 @@ pub type DictionaryApplierFunction =
 define_cf_type!(Dictionary(Type));
 
 impl Dictionary {
+    /// ```
+    /// use cidre::cf;
+    /// assert_eq!(cf::Dictionary::type_id(), 18);
+    /// ```
+    #[inline]
+    pub fn type_id() -> TypeID {
+        unsafe { CFDictionaryGetTypeID() }
+    }
+
     #[inline]
     pub unsafe fn contains_key(&self, key: *const c_void) -> bool {
         CFDictionaryContainsKey(self, key)
@@ -112,9 +112,29 @@ impl Dictionary {
 
     /// ```
     /// use cidre::cf;
-    /// 
+    ///
+    /// let key = cf::Number::from_i8(10).unwrap();
+    /// let value = cf::Number::from_i8(20).unwrap();
+    ///
+    /// let d = cf::Dictionary::create_with_type_refs(&[&key], &[&value]).unwrap();
+    ///
+    /// assert!(!d.is_empty());
+    ///
+    pub fn create_with_type_refs(keys: &[&Type], values: &[&Type]) -> Option<Retained<Dictionary>> {
+        Self::create(
+            None,
+            keys.as_ptr() as _,
+            values.as_ptr() as _,
+            std::cmp::min(keys.len(), values.len()) as _,
+            None,
+            None,
+        )
+    }
+    /// ```
+    /// use cidre::cf;
+    ///
     /// let dict = cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap();
-    /// 
+    ///
     /// dict.show();
     /// ```
     #[inline]

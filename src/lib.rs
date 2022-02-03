@@ -22,10 +22,5 @@ mod tests {
     #[test]
     fn it_works() {
         let null = cf::Null::value();
-        let str = cf::MutableString::create(None, 0).unwrap();
-        str.show_str();
-        assert_eq!(cf::array_get_type_id(), 19);
-        let result = 2 + 2;
-        assert_eq!(result, 4);
     }
 }

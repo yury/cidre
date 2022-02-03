@@ -1,26 +1,21 @@
 use crate::define_cf_type;
 
-use super::{Allocator, ComparisonResult, Index, TypeID, Type, Retained};
+use super::{Allocator, ComparisonResult, Index, Retained, Type, TypeID};
 
-use std::{
-    convert::From,
-    ffi::c_void,
-};
-
-/// ```
-/// use cidre::cf;
-///
-/// assert_eq!(cf::boolean_get_type_id(), 21);
-/// ```
-#[inline]
-pub fn boolean_get_type_id() -> TypeID {
-    unsafe { CFBooleanGetTypeID() }
-}
+use std::{convert::From, ffi::c_void};
 
 define_cf_type!(Boolean(Type));
 
-
 impl Boolean {
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// assert_eq!(cf::Boolean::type_id(), 21);
+    /// ```
+    #[inline]
+    pub fn type_id() -> TypeID {
+        unsafe { CFBooleanGetTypeID() }
+    }
 
     /// ```
     /// use cidre::cf;
@@ -62,17 +57,11 @@ impl std::fmt::Debug for Boolean {
     }
 }
 
-
 impl From<Boolean> for bool {
     #[inline]
     fn from(cf: Boolean) -> Self {
         cf.get_value()
     }
-}
-
-#[inline]
-pub fn number_get_type_id() -> TypeID {
-    unsafe { CFNumberGetTypeID() }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -102,11 +91,15 @@ impl NumberType {
 define_cf_type!(Number(Type));
 
 impl Number {
+    #[inline]
+    pub fn type_id() -> TypeID {
+        unsafe { CFNumberGetTypeID() }
+    }
 
     #[inline]
     pub fn get_number_type(&self) -> NumberType {
         unsafe { CFNumberGetType(self) }
-    }    
+    }
 
     #[inline]
     pub fn get_byte_size(&self) -> Index {
@@ -212,8 +205,6 @@ impl Number {
 }
 
 impl Number {
-
-
     #[inline]
     pub fn positive_inifinity() -> &'static Number {
         unsafe { kCFNumberPositiveInfinity }

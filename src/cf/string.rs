@@ -2,15 +2,6 @@ use super::{runtime::Ltb, Allocator, Index, OptionFlags, Retained, Type, TypeID}
 
 use crate::define_cf_type;
 
-///```
-/// use cidre::cf;
-///
-/// assert_eq!(cf::string_get_type_id(), 7);
-///```
-pub fn string_get_type_id() -> TypeID {
-    unsafe { CFStringGetTypeID() }
-}
-
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct StringEncoding(u32);
@@ -40,6 +31,14 @@ impl StringCompareFlags {
 define_cf_type!(String(Type));
 
 impl String {
+    ///```
+    /// use cidre::cf;
+    ///
+    /// assert_eq!(cf::String::type_id(), 7);
+    ///```
+    pub fn type_id() -> TypeID {
+        unsafe { CFStringGetTypeID() }
+    }
     #[inline]
     pub fn show_str(&self) {
         unsafe { CFShowStr(self) }
@@ -61,8 +60,43 @@ impl String {
     }
 
     #[inline]
+    pub fn get_character_at_index(&self, idx: Index) -> UniChar {
+        unsafe { CFStringGetCharacterAtIndex(self, idx) }
+    }
+
+    #[inline]
     pub fn create_copy(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
         unsafe { CFStringCreateCopy(alloc, self) }
+    }
+
+    #[inline]
+    pub fn create_with_bytes_no_copy<'a>(
+        alloc: Option<&Allocator>,
+        bytes: &'a [u8],
+        num_bytes: Index,
+        encoding: StringEncoding,
+        is_external_representation: bool,
+        contents_deallocator: Option<&Allocator>,
+    ) -> Option<Ltb<'a, Retained<String>>> {
+        unsafe {
+            CFStringCreateWithBytesNoCopy(
+                alloc,
+                bytes.as_ptr(),
+                num_bytes,
+                encoding,
+                is_external_representation,
+                contents_deallocator,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn create_mutable_copy(
+        &self,
+        alloc: Option<&Allocator>,
+        max_length: Index,
+    ) -> Option<Retained<MutableString>> {
+        unsafe { CFStringCreateMutableCopy(alloc, max_length, self) }
     }
 }
 
@@ -72,6 +106,16 @@ impl MutableString {
     #[inline]
     pub fn append(&mut self, appended_string: &String) {
         unsafe { CFStringAppend(self, appended_string) }
+    }
+
+    #[inline]
+    pub fn trim(&mut self, trim_string: &String) {
+        unsafe { CFStringTrim(self, trim_string) }
+    }
+
+    #[inline]
+    pub fn trim_whitespace(&mut self) {
+        unsafe { CFStringTrimWhitespace(self) }
     }
 
     #[inline]
@@ -100,6 +144,8 @@ extern "C" {
     ) -> Option<Retained<MutableString>>;
     fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
     fn CFStringAppend(the_string: &mut MutableString, appended_string: &String);
+
+    fn CFStringTrim(the_string: &MutableString, trim_string: &String);
     fn CFStringTrimWhitespace(the_string: &mut MutableString);
 
     fn CFStringCreateWithBytesNoCopy<'a>(

@@ -3,15 +3,6 @@ use crate::define_cf_type;
 use super::{Allocator, Index, Retained, String, Type, TypeID};
 use std::{ffi::c_void, ptr::NonNull};
 
-/// ```
-/// use cidre::cf;
-/// assert_eq!(cf::array_get_type_id(), 19);
-/// ```
-#[inline]
-pub fn array_get_type_id() -> TypeID {
-    unsafe { CFArrayGetTypeID() }
-}
-
 pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ArrayReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ArrayCopyDescriptionCallBack =
@@ -37,6 +28,14 @@ impl ArrayCallbacks {
 define_cf_type!(Array(Type));
 
 impl Array {
+    /// ```
+    /// use cidre::cf;
+    /// assert_eq!(cf::Array::type_id(), 19);
+    /// ```
+    #[inline]
+    pub fn type_id() -> TypeID {
+        unsafe { CFArrayGetTypeID() }
+    }
     /// ```
     /// use cidre::cf;
     ///
@@ -79,10 +78,28 @@ impl Array {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let n = cf::Number::from_i32(10).unwrap();
+    ///
+    /// let arr = cf::Array::with_type_refs(&[&n, &n, &n]).unwrap();
+    ///
+    /// assert_eq!(3, arr.len());
+    /// ```
+    #[inline]
+    pub fn with_type_refs(values: &[&Type]) -> Option<Retained<Array>> {
+        let vals = unsafe {
+            let ptr = values.as_ptr() as *const *const c_void as _;
+            NonNull::new_unchecked(ptr)
+        };
+        Self::create(None, Some(vals), values.len() as _, None)
+    }
+
     #[inline]
     pub fn create(
         allocator: Option<&Allocator>,
-        values: Option<NonNull<*const *const c_void>>,
+        values: Option<NonNull<*const c_void>>,
         num_values: Index,
         callbacks: Option<&ArrayCallbacks>,
     ) -> Option<Retained<Array>> {
@@ -97,7 +114,7 @@ extern "C" {
 
     fn CFArrayCreate(
         allocator: Option<&Allocator>,
-        values: Option<NonNull<*const *const c_void>>,
+        values: Option<NonNull<*const c_void>>,
         num_values: Index,
         callbacks: Option<&ArrayCallbacks>,
     ) -> Option<Retained<Array>>;

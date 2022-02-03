@@ -1,6 +1,4 @@
-use std::{
-    ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref, ptr::NonNull,
-};
+use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref, ptr::NonNull};
 
 use super::TypeID;
 
