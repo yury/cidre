@@ -58,7 +58,7 @@ impl Surface {
     /// use cidre::cf;
     /// use cidre::io;
     ///
-    /// let properties = cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap();
+    /// let properties = cf::Dictionary::from_pairs(&[], &[]).unwrap();
     /// let surf = io::Surface::create(&properties);
     /// ```
     pub fn create(properties: &cf::Dictionary) -> Option<Retained<Surface>> {

@@ -140,7 +140,7 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let dict = cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap();
+    /// let dict = unsafe { cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap() };
     ///
     /// dict.show();
     /// ```
