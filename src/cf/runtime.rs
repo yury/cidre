@@ -13,7 +13,7 @@ pub trait Release {
 }
 
 pub trait Retain: Sized + Release {
-    fn retained(&self) -> Option<Retained<Self>>;
+    fn retained(&self) -> Retained<Self>;
 }
 
 #[repr(transparent)]
@@ -21,7 +21,7 @@ pub struct Retained<T: Release>(NonNull<T>);
 
 impl<T: Retain> Retained<T> {
     #[inline]
-    pub fn retained(&self) -> Option<Self> {
+    pub fn retained(&self) -> Self {
         unsafe { self.0.as_ref().retained() }
     }
 }
@@ -72,7 +72,7 @@ pub struct Type(c_void);
 
 impl Type {
     #[inline]
-    pub unsafe fn retain<T: Release>(cf: &Type) -> Option<Retained<T>> {
+    pub unsafe fn retain<T: Release>(cf: &Type) -> Retained<T> {
         transmute(CFRetain(cf))
     }
 
@@ -93,7 +93,7 @@ impl Type {
 
 impl Retain for Type {
     #[inline]
-    fn retained(&self) -> Option<Retained<Self>> {
+    fn retained(&self) -> Retained<Self> {
         unsafe { Type::retain(self) }
     }
 }
@@ -134,14 +134,14 @@ macro_rules! define_cf_type {
 
         impl crate::cf::runtime::Retain for $NewType {
             #[inline]
-            fn retained(&self) -> Option<Retained<Self>> {
+            fn retained(&self) -> Retained<Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained(&self) -> Option<Retained<Self>> {
+            pub fn retained(&self) -> Retained<Self> {
                 unsafe { Type::retain(self) }
             }
         }
@@ -149,7 +149,7 @@ macro_rules! define_cf_type {
 }
 
 extern "C" {
-    fn CFRetain(cf: &Type) -> Option<Retained<Type>>;
+    fn CFRetain(cf: &Type) -> Retained<Type>;
     fn CFRelease(cf: &Type);
     fn CFGetTypeID(cf: &Type) -> TypeID;
 }
