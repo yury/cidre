@@ -39,7 +39,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::Array::create(None, None, 0, None).expect("arr");
+    /// let arr = cf::Array::new().expect("arr");
     /// assert_eq!(arr.len(), 0);
     /// ```
     #[inline]

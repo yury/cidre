@@ -1,7 +1,7 @@
 use crate::define_cf_type;
 
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
-use std::{ffi::c_void, ptr::NonNull};
+use std::{ffi::c_void, ptr::NonNull, intrinsics::transmute};
 
 pub type DictionaryRetainCallBack =
     extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -92,6 +92,34 @@ impl Dictionary {
             Some(value)
         } else {
             None
+        }
+    }
+
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let key = cf::Number::from_i8(10).unwrap();
+    /// let value = cf::Number::from_i8(20).unwrap();
+    ///
+    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    ///
+    /// let v = d.value_by_type_ref_key(&key).unwrap();
+    /// assert!(v.equal(&value));
+    /// unsafe {
+    ///     assert_eq!(v.as_ptr(), value.as_ptr());
+    /// }
+    /// ```
+    pub fn value_by_type_ref_key<'a>(
+        &'a self,
+        key: &Type
+    ) -> Option<&'a Type> {
+        unsafe {
+            let mut value = Option::None;
+            if CFDictionaryGetValueIfPresent(self, key.as_ptr(), &mut value) {
+                Some(transmute(value))
+            } else {
+                None
+            } 
         }
     }
 
