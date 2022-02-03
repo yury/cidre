@@ -42,6 +42,7 @@ pub use dictionary::Dictionary;
 pub use dictionary::DictionaryApplierFunction;
 pub use dictionary::DictionaryKeyCallBacks;
 pub use dictionary::DictionaryValueCallBacks;
+pub use dictionary::MutableDictionary;
 
 pub mod locale;
 

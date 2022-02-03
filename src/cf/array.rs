@@ -112,7 +112,6 @@ impl Array {
         Self::create(None, None, 0, None)
     }
 
-
     /// ```
     /// use cidre::cf;
     ///

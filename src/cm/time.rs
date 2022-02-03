@@ -254,10 +254,11 @@ impl Time {
     }
 
     #[inline]
-    pub fn copy_description<'a>(&self, allocator:Option<&Allocator>) -> Option<Retained<'a, String>> {
-        unsafe {
-            CMTimeCopyDescription(allocator, *self)
-        }
+    pub fn copy_description<'a>(
+        &self,
+        allocator: Option<&Allocator>,
+    ) -> Option<Retained<'a, String>> {
+        unsafe { CMTimeCopyDescription(allocator, *self) }
     }
 }
 
@@ -341,5 +342,8 @@ extern "C" {
     fn CMTimeAbsoluteValue(time: Time) -> Time;
     fn CMTimeShow(time: Time);
 
-    fn CMTimeCopyDescription<'a>(allocator: Option<&Allocator>, time: Time) -> Option<Retained<'a, String>>;
+    fn CMTimeCopyDescription<'a>(
+        allocator: Option<&Allocator>,
+        time: Time,
+    ) -> Option<Retained<'a, String>>;
 }

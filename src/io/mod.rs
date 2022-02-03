@@ -3,6 +3,8 @@ use crate::{
     define_cf_type,
 };
 
+pub type SurfaceId = u32;
+
 #[repr(i32)]
 pub enum SurfaceComponentName {
     Unkown = 0,
@@ -41,6 +43,14 @@ pub enum SurfaceSubsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
+#[repr(transparent)]
+pub struct SurfaceLockOptions(pub cf::OptionFlags);
+
+impl SurfaceLockOptions {
+    pub const READ_ONLY: Self = Self(1);
+    pub const AVOID_SYNC: Self = Self(2);
+}
+
 define_cf_type!(Surface(Type));
 
 impl Surface {
@@ -58,10 +68,28 @@ impl Surface {
     pub fn create<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>> {
         unsafe { IOSurfaceCreate(properties) }
     }
+
+    pub fn get_id(&self) -> SurfaceId {
+        unsafe { IOSurfaceGetID(&self) }
+    }
+
+    /// ```
+    /// use cidre::io;
+    ///
+    /// let surf = io::Surface::lookup(0);
+    ///
+    /// assert!(surf.is_none());
+    /// ```
+    pub fn lookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>> {
+        unsafe { IOSurfaceLookup(csid) }
+    }
 }
 
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
     fn IOSurfaceCreate<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>>;
+    fn IOSurfaceLookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>>;
+    fn IOSurfaceGetID(buffer: &Surface) -> SurfaceId;
+
 }

@@ -207,6 +207,8 @@ impl Dictionary {
     }
 }
 
+define_cf_type!(MutableDictionary(Dictionary));
+
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: DictionaryKeyCallBacks;
     static kCFCopyStringDictionaryKeyCallBacks: DictionaryKeyCallBacks;
