@@ -1,6 +1,6 @@
 use crate::define_cf_type;
 
-use super::{Allocator, ComparisonResult, Index, Retained, Type, TypeID};
+use super::{Allocator, ComparisonResult, Index, Retained, Type, TypeId};
 
 use std::{convert::From, ffi::c_void};
 
@@ -13,7 +13,7 @@ impl Boolean {
     /// assert_eq!(cf::Boolean::type_id(), 21);
     /// ```
     #[inline]
-    pub fn type_id() -> TypeID {
+    pub fn type_id() -> TypeId {
         unsafe { CFBooleanGetTypeID() }
     }
 
@@ -92,7 +92,7 @@ define_cf_type!(Number(Type));
 
 impl Number {
     #[inline]
-    pub fn type_id() -> TypeID {
+    pub fn type_id() -> TypeId {
         unsafe { CFNumberGetTypeID() }
     }
 
@@ -308,13 +308,13 @@ impl Number {
 }
 
 extern "C" {
-    fn CFBooleanGetTypeID() -> TypeID;
+    fn CFBooleanGetTypeID() -> TypeId;
     static kCFBooleanTrue: &'static Boolean;
     static kCFBooleanFalse: &'static Boolean;
 
     fn CFBooleanGetValue(boolean: &Boolean) -> bool;
 
-    fn CFNumberGetTypeID() -> TypeID;
+    fn CFNumberGetTypeID() -> TypeId;
 
     static kCFNumberPositiveInfinity: &'static Number;
     static kCFNumberNegativeInfinity: &'static Number;

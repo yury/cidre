@@ -4,7 +4,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use super::TypeID;
+use super::TypeId;
 
 pub trait Release {
     unsafe fn release(&mut self);
@@ -80,7 +80,7 @@ impl Type {
     }
 
     #[inline]
-    pub fn get_type_id(&self) -> TypeID {
+    pub fn get_type_id(&self) -> TypeId {
         unsafe { CFGetTypeID(self) }
     }
 
@@ -149,5 +149,5 @@ macro_rules! define_cf_type {
 extern "C" {
     fn CFRetain(cf: &Type) -> Retained<Type>;
     fn CFRelease(cf: &mut Type);
-    fn CFGetTypeID(cf: &Type) -> TypeID;
+    fn CFGetTypeID(cf: &Type) -> TypeId;
 }

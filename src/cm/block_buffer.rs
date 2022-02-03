@@ -1,18 +1,8 @@
 use crate::{
-    cf::{Allocator, Retained, Type, TypeID},
+    cf::{Allocator, Retained, Type, TypeId},
     define_cf_type,
     os::{self, NO_ERR},
 };
-
-/// ```
-/// use cidre::cm;
-///
-/// assert_eq!(256, cm::block_buffer_get_type_id());
-/// ```
-#[inline]
-pub fn block_buffer_get_type_id() -> TypeID {
-    unsafe { CMBlockBufferGetTypeID() }
-}
 
 #[repr(transparent)]
 pub struct BlockBufferFlags(pub u32);
@@ -28,6 +18,11 @@ impl BlockBufferFlags {
 define_cf_type!(BlockBuffer(Type));
 
 impl BlockBuffer {
+
+    #[inline]
+    pub fn get_type_id() -> TypeId {
+        unsafe { CMBlockBufferGetTypeID() }
+    }
     #[inline]
     pub fn is_empty(&self) -> bool {
         unsafe { CMBlockBufferIsEmpty(self) }
@@ -63,7 +58,7 @@ impl BlockBuffer {
 }
 
 extern "C" {
-    fn CMBlockBufferGetTypeID() -> TypeID;
+    fn CMBlockBufferGetTypeID() -> TypeId;
     fn CMBlockBufferIsEmpty(the_buffer: &BlockBuffer) -> bool;
 
     fn CMBlockBufferCreateEmpty(

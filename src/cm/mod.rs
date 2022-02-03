@@ -10,7 +10,6 @@ mod sample_buffer;
 pub use sample_buffer::SampleBuffer;
 
 mod block_buffer;
-pub use block_buffer::block_buffer_get_type_id;
 pub use block_buffer::BlockBuffer;
 pub use block_buffer::BlockBufferFlags;
 

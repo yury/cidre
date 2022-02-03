@@ -1,6 +1,6 @@
 use crate::define_cf_type;
 
-use super::{Allocator, HashCode, Index, Retained, String, Type, TypeID};
+use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
 use std::{ffi::c_void, ptr::NonNull};
 
 pub type DictionaryRetainCallBack =
@@ -62,7 +62,7 @@ impl Dictionary {
     /// assert_eq!(cf::Dictionary::type_id(), 18);
     /// ```
     #[inline]
-    pub fn type_id() -> TypeID {
+    pub fn type_id() -> TypeId {
         unsafe { CFDictionaryGetTypeID() }
     }
 
@@ -170,7 +170,7 @@ extern "C" {
 
     static kCFTypeDictionaryValueCallBacks: DictionaryValueCallBacks;
 
-    fn CFDictionaryGetTypeID() -> TypeID;
+    fn CFDictionaryGetTypeID() -> TypeId;
 
     fn CFDictionaryContainsKey(the_dict: &Dictionary, key: *const c_void) -> bool;
     fn CFDictionaryContainsValue(the_dict: &Dictionary, value: *const c_void) -> bool;

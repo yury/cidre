@@ -41,19 +41,14 @@ pub enum SurfaceSubsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-/// ```
-/// use cidre::io;
-///
-/// // assert_eq!(8896801736, io::surface_get_type_id());
-/// ```
-#[inline]
-pub fn surface_get_type_id() -> cf::TypeID {
-    unsafe { IOSurfaceGetTypeID() }
-}
-
 define_cf_type!(Surface(Type));
 
 impl Surface {
+
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { IOSurfaceGetTypeID() }
+    }
     /// ```
     /// use cidre::cf;
     /// use cidre::io;
@@ -68,6 +63,6 @@ impl Surface {
 
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {
-    fn IOSurfaceGetTypeID() -> cf::TypeID;
+    fn IOSurfaceGetTypeID() -> cf::TypeId;
     fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<Retained<Surface>>;
 }

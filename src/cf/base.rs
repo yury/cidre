@@ -7,7 +7,7 @@ use super::{
 use std::{cmp::Ordering, ffi::c_void, intrinsics::transmute};
 
 pub type Index = isize;
-pub type TypeID = usize;
+pub type TypeId = usize;
 pub type HashCode = usize;
 
 pub type OptionFlags = usize;
@@ -48,7 +48,7 @@ pub enum ComparisonResult {
 /// let desc = cf::copy_type_id_description(t).unwrap();
 /// desc.show_str();
 /// ```
-pub fn copy_type_id_description<'a>(type_id: TypeID) -> Option<Retained<'a, String>> {
+pub fn copy_type_id_description<'a>(type_id: TypeId) -> Option<Retained<'a, String>> {
     unsafe { CFCopyTypeIDDescription(type_id) }
 }
 
@@ -139,7 +139,7 @@ impl Allocator {
 }
 
 extern "C" {
-    fn CFCopyTypeIDDescription<'a>(type_id: TypeID) -> Option<Retained<'a, String>>;
+    fn CFCopyTypeIDDescription<'a>(type_id: TypeId) -> Option<Retained<'a, String>>;
 
     static kCFNull: &'static Null;
 

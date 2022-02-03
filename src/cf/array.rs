@@ -1,6 +1,6 @@
 use crate::define_cf_type;
 
-use super::{Allocator, Index, Retained, String, Type, TypeID};
+use super::{Allocator, Index, Retained, String, Type, TypeId};
 use std::{ffi::c_void, ptr::NonNull};
 
 pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -33,7 +33,7 @@ impl Array {
     /// assert_eq!(cf::Array::type_id(), 19);
     /// ```
     #[inline]
-    pub fn type_id() -> TypeID {
+    pub fn type_id() -> TypeId {
         unsafe { CFArrayGetTypeID() }
     }
     /// ```
@@ -69,11 +69,29 @@ impl Array {
         self.len() == 0
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let arr1 = cf::Array::new().expect("Array::new");
+    /// let arr2 = arr1.create_copy(None).expect("copy");
+    /// unsafe {    
+    ///     assert_ne!(arr1.as_ptr(), arr2.as_ptr());
+    /// }
+    /// ```
     #[inline]
     pub fn create_copy<'a>(&self, allocator: Option<&Allocator>) -> Option<Retained<'a, Array>> {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let arr1 = cf::Array::new().expect("Array::new");
+    /// let arr2 = arr1.copy().expect("copy");
+    /// unsafe { 
+    ///     assert_ne!(arr1.as_ptr(), arr2.as_ptr());
+    /// }
+    /// ```
     #[inline]
     pub fn copy<'a>(&self) -> Option<Retained<'a, Array>> {
         Self::create_copy(self, None)
@@ -191,7 +209,7 @@ impl MutableArray {
 extern "C" {
     static kCFTypeArrayCallBacks: ArrayCallbacks;
 
-    fn CFArrayGetTypeID() -> TypeID;
+    fn CFArrayGetTypeID() -> TypeId;
 
     fn CFArrayCreate<'a>(
         allocator: Option<&Allocator>,

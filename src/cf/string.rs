@@ -1,4 +1,4 @@
-use super::{Allocator, Index, OptionFlags, Retained, Type, TypeID};
+use super::{Allocator, Index, OptionFlags, Retained, Type, TypeId};
 
 use crate::define_cf_type;
 
@@ -36,7 +36,7 @@ impl String {
     ///
     /// assert_eq!(cf::String::type_id(), 7);
     ///```
-    pub fn type_id() -> TypeID {
+    pub fn type_id() -> TypeId {
         unsafe { CFStringGetTypeID() }
     }
     #[inline]
@@ -125,7 +125,7 @@ impl MutableString {
 }
 
 extern "C" {
-    fn CFStringGetTypeID() -> TypeID;
+    fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;
     fn CFStringCreateMutable(
         alloc: Option<&Allocator>,
