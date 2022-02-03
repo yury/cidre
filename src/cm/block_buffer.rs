@@ -34,11 +34,11 @@ impl BlockBuffer {
     /// assert_eq!(true, b.is_empty());
     /// ```
     #[inline]
-    pub fn create_empty(
+    pub fn create_empty<'a>(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
         flags: BlockBufferFlags,
-    ) -> Result<Retained<BlockBuffer>, os::Status> {
+    ) -> Result<Retained<'a, BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
             let res = CMBlockBufferCreateEmpty(
@@ -60,10 +60,10 @@ extern "C" {
     fn CMBlockBufferGetTypeID() -> TypeId;
     fn CMBlockBufferIsEmpty(the_buffer: &BlockBuffer) -> bool;
 
-    fn CMBlockBufferCreateEmpty(
+    fn CMBlockBufferCreateEmpty<'a>(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
         flags: BlockBufferFlags,
-        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+        block_buffer_out: &mut Option<Retained<'a, BlockBuffer>>,
     ) -> os::Status;
 }
