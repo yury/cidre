@@ -22,5 +22,10 @@ mod tests {
     #[test]
     fn it_works() {
         let null = cf::Null::value();
+        let num = cf::Number::from_i16(0).unwrap();
+        let arr = cf::Array::from_type_refs(&[null, &num]).unwrap();
+
+        println!("len {:?}", arr.len());
+        arr.show();
     }
 }

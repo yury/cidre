@@ -1,6 +1,6 @@
-use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref, ptr::NonNull};
+use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::{Deref, DerefMut}, ptr::NonNull};
 
-use super::TypeID;
+use super::{TypeID};
 
 pub trait Release {
     unsafe fn release(&self);
@@ -34,6 +34,12 @@ impl<T: Release> Deref for Retained<T> {
     fn deref(&self) -> &Self::Target {
         unsafe { self.0.as_ref() }
     }
+}
+
+impl<T: Release> DerefMut for Retained<T> {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+      unsafe { self.0.as_mut() }
+  }
 }
 
 #[repr(transparent)]
@@ -73,6 +79,10 @@ impl Type {
     pub fn get_type_id(&self) -> TypeID {
         unsafe { CFGetTypeID(self) }
     }
+
+    pub unsafe fn as_ptr(&self) -> *const c_void {
+      &self.0
+    }
 }
 
 impl Retain for Type {
@@ -100,6 +110,12 @@ macro_rules! define_cf_type {
 
             fn deref(&self) -> &Self::Target {
                 &self.0
+            }
+        }
+
+        impl std::ops::DerefMut for $NewType {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
             }
         }
 

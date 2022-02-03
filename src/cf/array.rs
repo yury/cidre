@@ -61,39 +61,22 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::Array::create(None, None, 0, None).expect("arr");
+    /// let arr = cf::Array::new().expect("arr");
     /// assert_eq!(arr.is_empty(), true);
     /// ```
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
-}
 
-define_cf_type!(MutableArray(Array));
-
-impl Array {
     #[inline]
     pub fn create_copy(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
-    /// ```
-    /// use cidre::cf;
-    ///
-    /// let n = cf::Number::from_i32(10).unwrap();
-    ///
-    /// let arr = cf::Array::with_type_refs(&[&n, &n, &n]).unwrap();
-    ///
-    /// assert_eq!(3, arr.len());
-    /// ```
     #[inline]
-    pub fn with_type_refs(values: &[&Type]) -> Option<Retained<Array>> {
-        let vals = unsafe {
-            let ptr = values.as_ptr() as *const *const c_void as _;
-            NonNull::new_unchecked(ptr)
-        };
-        Self::create(None, Some(vals), values.len() as _, None)
+    pub fn copy(&self) -> Option<Retained<Array>> {
+        Self::create_copy(&self, None)
     }
 
     #[inline]
@@ -104,6 +87,106 @@ impl Array {
         callbacks: Option<&ArrayCallbacks>,
     ) -> Option<Retained<Array>> {
         unsafe { CFArrayCreate(allocator, values, num_values, callbacks) }
+    }
+
+    #[inline]
+    pub fn new() -> Option<Retained<Array>> {
+        Self::create(None, None, 0, None)
+    }
+
+    #[inline]
+    pub fn from_type_refs(values: &[&Type]) -> Option<Retained<Array>> {
+        let vals = unsafe {
+            let ptr = values.as_ptr() as *const *const c_void as _;
+            NonNull::new_unchecked(ptr)
+        };
+        Array::create(None, Some(vals), values.len() as _, None)
+    }
+
+    /// ```
+    /// use cidre::cf;
+    /// 
+    /// let num = cf::Number::from_i32(10).unwrap();
+    /// 
+    /// let empty_arr = cf::Array::new().unwrap();
+    /// let mut mut_arr = empty_arr.create_mutable_copy(None, 0).unwrap();
+    /// 
+    /// 
+    /// mut_arr.append(&num);
+    /// 
+    /// assert_eq!(1, mut_arr.len());
+    /// assert_eq!(0, empty_arr.len());
+    /// 
+    /// ```
+    #[inline]
+    pub fn create_mutable_copy(&self, allocator: Option<&Allocator>, capacity: Index) -> Option<Retained<MutableArray>> {
+        unsafe {
+            CFArrayCreateMutableCopy(allocator, capacity, self)
+        }
+    }
+
+    #[inline]
+    pub fn mutable_copy(&self) -> Option<Retained<MutableArray>> {
+        unsafe {
+            CFArrayCreateMutableCopy(None, self.get_count(), self)
+        }
+    }
+}
+
+define_cf_type!(MutableArray(Array));
+
+impl MutableArray {
+
+    #[inline]
+    pub fn append_value(&mut self, value: *const c_void) {
+        unsafe {
+            CFArrayAppendValue(self, value)
+        }
+    }
+
+    #[inline]
+    pub fn append(&mut self, value: &Type) {
+        unsafe {
+            self.append_value(value.as_ptr())
+        }
+    }
+
+    #[inline]
+    pub fn remove_all_values(&mut self) {
+        unsafe {
+            CFArrayRemoveAllValues(self);
+        }
+    }
+
+    #[inline]
+    pub fn create(allocator: Option<&Allocator>, capacity: Index, callbacks: Option<&ArrayCallbacks>) -> Option<Retained<MutableArray>> {
+        unsafe {
+            CFArrayCreateMutable(allocator, capacity, callbacks)
+        }
+    }
+
+    #[inline]
+    pub fn with_capacity(capacity: Index) -> Option<Retained<MutableArray>> {
+        Self::create(None, capacity, None)
+    }
+
+    /// ```
+    /// use cidre::cf;
+    /// 
+    /// let mut arr = cf::MutableArray::new().unwrap();
+    /// assert_eq!(0, arr.len());
+    /// 
+    /// let num = cf::Number::from_i32(0).unwrap();
+    /// 
+    /// arr.append(&num);
+    /// assert_eq!(1, arr.len());
+    /// 
+    /// arr.remove_all_values();
+    /// assert_eq!(0, arr.len());
+    /// ```
+    #[inline]
+    pub fn new() -> Option<Retained<MutableArray>> {
+        Self::with_capacity(0)
     }
 }
 
@@ -118,9 +201,16 @@ extern "C" {
         num_values: Index,
         callbacks: Option<&ArrayCallbacks>,
     ) -> Option<Retained<Array>>;
+
     fn CFArrayCreateCopy(
         allocator: Option<&Allocator>,
         the_array: &Array,
     ) -> Option<Retained<Array>>;
+
     fn CFArrayGetCount(the_array: &Array) -> Index;
+
+    fn CFArrayCreateMutable(allocator: Option<&Allocator>, capacity: Index, callbacks: Option<&ArrayCallbacks>) -> Option<Retained<MutableArray>>;
+    fn CFArrayCreateMutableCopy(allocator: Option<&Allocator>, capacity: Index, the_array: &Array) -> Option<Retained<MutableArray>>;
+    fn CFArrayAppendValue(the_array: &mut MutableArray, value: *const c_void);
+    fn CFArrayRemoveAllValues(the_array: &mut MutableArray);
 }
