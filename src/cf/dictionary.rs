@@ -77,7 +77,7 @@ impl Dictionary {
     }
 
     #[inline]
-    pub unsafe fn get_value(&self, key: *const c_void) -> Option<NonNull<*const c_void>> {
+    pub unsafe fn get_value(&self, key: *const c_void) -> Option<NonNull<c_void>> {
         CFDictionaryGetValue(self, key)
     }
 
@@ -85,7 +85,7 @@ impl Dictionary {
     pub unsafe fn get_value_if_present(
         &self,
         key: *const c_void,
-    ) -> Option<Option<NonNull<*const c_void>>> {
+    ) -> Option<Option<NonNull<c_void>>> {
         let mut value = Option::None;
 
         if CFDictionaryGetValueIfPresent(self, key, &mut value) {
@@ -116,19 +116,26 @@ impl Dictionary {
     /// let key = cf::Number::from_i8(10).unwrap();
     /// let value = cf::Number::from_i8(20).unwrap();
     ///
-    /// let d = cf::Dictionary::create_with_type_refs(&[&key], &[&value]).unwrap();
+    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
     ///
     /// assert!(!d.is_empty());
-    ///
-    pub fn create_with_type_refs(keys: &[&Type], values: &[&Type]) -> Option<Retained<Dictionary>> {
-        Self::create(
-            None,
-            keys.as_ptr() as _,
-            values.as_ptr() as _,
-            std::cmp::min(keys.len(), values.len()) as _,
-            None,
-            None,
-        )
+    /// assert_eq!(1, d.len());
+    /// ```
+    #[inline]
+    pub fn from_pairs<const N: usize>(
+        keys: &[&Type; N],
+        values: &[&Type; N],
+    ) -> Option<Retained<Dictionary>> {
+        unsafe {
+            Self::create(
+                None,
+                keys.as_ptr() as _,
+                values.as_ptr() as _,
+                N as _,
+                None,
+                None,
+            )
+        }
     }
     /// ```
     /// use cidre::cf;
@@ -138,7 +145,7 @@ impl Dictionary {
     /// dict.show();
     /// ```
     #[inline]
-    pub fn create(
+    pub unsafe fn create(
         allocator: Option<&Allocator>,
         keys: *const *const c_void,
         values: *const *const c_void,
@@ -146,16 +153,14 @@ impl Dictionary {
         key_callbacks: Option<&DictionaryKeyCallBacks>,
         value_callbacks: Option<&DictionaryValueCallBacks>,
     ) -> Option<Retained<Dictionary>> {
-        unsafe {
-            CFDictionaryCreate(
-                allocator,
-                keys,
-                values,
-                num_values,
-                key_callbacks,
-                value_callbacks,
-            )
-        }
+        CFDictionaryCreate(
+            allocator,
+            keys,
+            values,
+            num_values,
+            key_callbacks,
+            value_callbacks,
+        )
     }
 }
 
@@ -171,14 +176,11 @@ extern "C" {
     fn CFDictionaryContainsValue(the_dict: &Dictionary, value: *const c_void) -> bool;
 
     fn CFDictionaryGetCount(the_dict: &Dictionary) -> Index;
-    fn CFDictionaryGetValue(
-        the_dict: &Dictionary,
-        key: *const c_void,
-    ) -> Option<NonNull<*const c_void>>;
+    fn CFDictionaryGetValue(the_dict: &Dictionary, key: *const c_void) -> Option<NonNull<c_void>>;
     fn CFDictionaryGetValueIfPresent(
         the_dict: &Dictionary,
         key: *const c_void,
-        value: *mut Option<NonNull<*const c_void>>,
+        value: *mut Option<NonNull<c_void>>,
     ) -> bool;
 
     fn CFDictionaryCreate(
