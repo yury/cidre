@@ -65,8 +65,13 @@ impl String {
     }
 
     #[inline]
-    pub fn create_copy(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
+    pub fn create_copy<'a>(&self, alloc: Option<&Allocator>) -> Option<Retained<'a, String>> {
         unsafe { CFStringCreateCopy(alloc, self) }
+    }
+
+    #[inline]
+    pub fn copy<'a>(&self) -> Option<Retained<'a, String>> {
+        self.create_copy(None)
     }
 
     #[inline]
@@ -120,7 +125,7 @@ impl MutableString {
     }
 
     #[inline]
-    pub fn create(alloc: Option<&Allocator>, max_length: Index) -> Option<Retained<Self>> {
+    pub fn create<'a>(alloc: Option<&Allocator>, max_length: Index) -> Option<Retained<'a, Self>> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
     }
 }
@@ -128,10 +133,10 @@ impl MutableString {
 extern "C" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;
-    fn CFStringCreateMutable(
+    fn CFStringCreateMutable<'a>(
         alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<Retained<MutableString>>;
+    ) -> Option<Retained<'a, MutableString>>;
     fn CFStringCreateCopy<'a>(
         alloc: Option<&Allocator>,
         the_string: &String,
