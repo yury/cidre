@@ -43,40 +43,45 @@ impl String {
     ///```
     /// use cidre::cf;
     ///
-    /// let s1 = cf::String::from_str_no_copy("nice").unwrap();
-    /// let s2 = cf::String::from_str_no_copy("nice").unwrap();
+    /// let s1 = cf::String::from_str_no_copy("nice");
+    /// let s2 = cf::String::from_str_no_copy("nice");
     ///
     /// assert_eq!(4, s1.len());
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
-    pub fn from_str_no_copy<'a>(str: &'a str) -> Option<Retained<'a, String>> {
+    pub fn from_str_no_copy<'a>(str: &'a str) -> Retained<'a, String> {
         let bytes = str.as_bytes();
-        Self::create_with_bytes_no_copy(
-            None,
-            bytes,
-            bytes.len() as _,
-            StringEncoding::UTF8,
-            false,
-            Some(Allocator::null()),
-        )
+        unsafe {
+            Self::create_with_bytes_no_copy(
+                None,
+                bytes,
+                bytes.len() as _,
+                StringEncoding::UTF8,
+                false,
+                Some(Allocator::null()),
+            ).unwrap_unchecked()
+        }
     }
 
     ///```
     /// use cidre::cf;
     ///
-    /// let s1 = cf::String::from_str("nice").unwrap();
-    /// let s2 = cf::String::from_str("nice").unwrap();
-    /// let s3 = cf::String::from_str("nice string").unwrap();
+    /// let s1 = cf::String::from_str("nice");
+    /// let s2 = cf::String::from_str("nice");
+    /// let s3 = cf::String::from_str("nice string");
     ///
     /// assert_eq!(4, s1.len());
     /// assert!(s1.equal(&s2));
     /// assert!(s3.has_prefix(&s2));
     ///```
     #[inline]
-    pub fn from_str<'a>(str: &str) -> Option<Retained<'a, String>> {
+    pub fn from_str<'a>(str: &str) -> Retained<'a, String> {
         let bytes = str.as_bytes();
-        Self::create_with_bytes(None, bytes, bytes.len() as _, StringEncoding::UTF8, false)
+        unsafe {
+            Self::create_with_bytes(None, bytes, bytes.len() as _, StringEncoding::UTF8, false)
+                .unwrap_unchecked()
+        }
     }
 
     #[inline]
