@@ -43,7 +43,7 @@ pub enum ComparisonResult {
 /// ```
 /// use cidre::cf;
 ///
-/// let s = cf::Number::from_i32(10).unwrap();//from_static_string("hello").unwrap();
+/// let s = cf::Number::from_i32(10);//from_static_string("hello").unwrap();
 /// let t = s.get_type_id();
 /// let desc = cf::copy_type_id_description(t).unwrap();
 /// desc.show_str();
@@ -92,8 +92,8 @@ impl Type {
     /// ```
     /// use cidre::cf;
     ///
-    /// let n1 = cf::Number::from_i8(4).unwrap();
-    /// let n2 = cf::Number::from_i32(4).unwrap();
+    /// let n1 = cf::Number::from_i8(4);
+    /// let n2 = cf::Number::from_i32(4);
     /// let n3 = cf::Number::from_f64(3.0).unwrap();
     ///
     /// assert!(n1.equal(&n2));
@@ -125,14 +125,17 @@ impl Null {
 define_cf_type!(Allocator(Type));
 
 impl Allocator {
+    #[inline]
     pub fn default() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorDefault }
     }
 
+    #[inline]
     pub fn system_default() -> &'static Allocator {
         unsafe { kCFAllocatorSystemDefault }
     }
 
+    #[inline]
     pub fn null() -> &'static Allocator {
         unsafe { kCFAllocatorNull }
     }

@@ -50,7 +50,7 @@ impl<'a, T: Release> DerefMut for Retained<'a, T> {
 /// ```
 /// use cidre::cf;
 ///
-/// let n = cf::Number::from_i8(10).unwrap();
+/// let n = cf::Number::from_i8(10);
 ///
 /// let f = {
 ///     n.clone()

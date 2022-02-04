@@ -10,7 +10,7 @@ impl Boolean {
     /// ```
     /// use cidre::cf;
     ///
-    /// assert_eq!(cf::Boolean::type_id(), 21);
+    /// assert_eq!(cf::Boolean::type_id(), cf::Boolean::value_true().get_type_id());
     /// ```
     #[inline]
     pub fn type_id() -> TypeId {
@@ -64,6 +64,17 @@ impl From<Boolean> for bool {
     }
 }
 
+impl From<bool> for &'static Boolean {
+    #[inline]
+    fn from(value: bool) -> Self {
+        if value  {
+            Boolean::value_true()
+        } else {
+            Boolean::value_false() 
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct NumberType(Index);
@@ -91,6 +102,13 @@ impl NumberType {
 define_cf_type!(Number(Type));
 
 impl Number {
+    /// ```
+    /// use cidre::cf;
+    /// 
+    /// let num = cf::Number::from_i16(10);
+    /// 
+    /// assert_eq!(num.get_type_id(), cf::Number::type_id());
+    /// ```
     #[inline]
     pub fn type_id() -> TypeId {
         unsafe { CFNumberGetTypeID() }
@@ -119,7 +137,7 @@ impl Number {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i8(-5).unwrap();
+    /// let num = cf::Number::from_i8(-5);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
@@ -140,7 +158,7 @@ impl Number {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i16(-5).unwrap();
+    /// let num = cf::Number::from_i16(-5);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I16);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
@@ -161,7 +179,7 @@ impl Number {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i32(-5).unwrap();
+    /// let num = cf::Number::from_i32(-5);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
@@ -202,9 +220,7 @@ impl Number {
             }
         }
     }
-}
 
-impl Number {
     #[inline]
     pub fn positive_inifinity() -> &'static Number {
         unsafe { kCFNumberPositiveInfinity }
@@ -235,62 +251,77 @@ impl Number {
     /// assert_eq!(num.to_i8().unwrap(), 5i8);
     /// ```
     #[inline]
-    pub unsafe fn create(
+    pub unsafe fn create<'a>(
         allocator: Option<&Allocator>,
         the_type: NumberType,
         value_ptr: *const c_void,
-    ) -> Option<Retained<Number>> {
+    ) -> Option<Retained<'a, Number>> {
         CFNumberCreate(allocator, the_type, value_ptr)
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i8(8).unwrap();
+    /// let num = cf::Number::from_i8(8);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
     /// assert_eq!(1, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i8<'a>(value: i8) -> Option<Retained<'a, Number>> {
-        unsafe { Number::create(None, NumberType::I8, &value as *const _ as _) }
+    /// Will return tagged
+    pub fn from_i8<'a>(value: i8) -> Retained<'a, Number> {
+        unsafe {
+            Number::create(None, NumberType::I8, &value as *const _ as _)
+                .unwrap_unchecked()
+        }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i16(16).unwrap();
+    /// let num = cf::Number::from_i16(16);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I16);
     /// assert_eq!(2, num.get_byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i16<'a>(value: i16) -> Option<Retained<'a, Number>> {
-        unsafe { Number::create(None, NumberType::I16, &value as *const _ as _) }
+    /// Will return tagged
+    pub fn from_i16<'a>(value: i16) -> Retained<'a, Number> {
+        unsafe {
+            Number::create(None, NumberType::I16, &value as *const _ as _)
+                .unwrap_unchecked()
+        }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i32(32).unwrap();
+    /// let num = cf::Number::from_i32(32);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
     /// assert_eq!(4, num.get_byte_size());
     /// assert_eq!(32, num.to_i32().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i32<'a>(value: i32) -> Option<Retained<'a, Number>> {
-        unsafe { Number::create(None, NumberType::I32, &value as *const _ as _) }
+    /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
+    pub fn from_i32<'a>(value: i32) -> Retained<'a, Number> {
+        unsafe {
+            Number::create(None, NumberType::I32, &value as *const _ as _)
+                .unwrap_unchecked()
+        }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i64(64).unwrap();
+    /// let num = cf::Number::from_i64(64);
     /// assert_eq!(num.get_number_type(), cf::NumberType::I64);
     /// assert_eq!(8, num.get_byte_size());
     /// assert_eq!(64, num.to_i64().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i64<'a>(value: i64) -> Option<Retained<'a, Number>> {
-        unsafe { Number::create(None, NumberType::I64, &value as *const _ as _) }
+    pub fn from_i64<'a>(value: i64) -> Retained<'a, Number> {
+        unsafe {
+            Number::create(None, NumberType::I64, &value as *const _ as _)
+                .unwrap_unchecked()
+        }
     }
 
     /// ```
@@ -307,6 +338,30 @@ impl Number {
     }
 }
 
+impl<'a> From<i8> for Retained<'a, Number> {
+    fn from(value: i8) -> Self {
+        Number::from_i8(value)
+    }
+}
+
+impl<'a> From<i16> for Retained<'a, Number> {
+    fn from(value: i16) -> Self {
+        Number::from_i16(value)
+    }
+}
+
+impl<'a> From<i32> for Retained<'a, Number> {
+    fn from(value: i32) -> Self {
+        Number::from_i32(value)
+    }
+}
+
+impl<'a> From<i64> for Retained<'a, Number> {
+    fn from(value: i64) -> Self {
+        Number::from_i64(value)
+    }
+}
+
 extern "C" {
     fn CFBooleanGetTypeID() -> TypeId;
     static kCFBooleanTrue: &'static Boolean;
@@ -320,11 +375,11 @@ extern "C" {
     static kCFNumberNegativeInfinity: &'static Number;
     static kCFNumberNaN: &'static Number;
 
-    fn CFNumberCreate(
+    fn CFNumberCreate<'a>(
         allocator: Option<&Allocator>,
         the_type: NumberType,
         value_ptr: *const c_void,
-    ) -> Option<Retained<Number>>;
+    ) -> Option<Retained<'a, Number>>;
 
     fn CFNumberGetType(number: &Number) -> NumberType;
     fn CFNumberGetByteSize(number: &Number) -> Index;

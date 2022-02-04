@@ -54,6 +54,7 @@ impl SurfaceLockOptions {
 define_cf_type!(Surface(Type));
 
 impl Surface {
+
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { IOSurfaceGetTypeID() }
@@ -63,8 +64,8 @@ impl Surface {
     /// use cidre::io;
     ///
     ///
-    /// let width = cf::Number::from_i32(100).unwrap();
-    /// let height = cf::Number::from_i32(200).unwrap();
+    /// let width = cf::Number::from_i32(100);
+    /// let height = cf::Number::from_i32(200);
     ///
     /// let properties = cf::Dictionary::from_pairs(
     ///   &[

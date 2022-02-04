@@ -74,14 +74,14 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let key = cf::Number::from_i8(10).unwrap();
-    /// let value = cf::Number::from_i8(20).unwrap();
+    /// let key = cf::Number::from_i8(10);
+    /// let value = cf::Number::from_i8(20);
     ///
     /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
     ///
     /// assert!(d.contains_type_ref_key(&key));
     ///
-    /// let key2 = cf::Number::from_i8(12).unwrap();
+    /// let key2 = cf::Number::from_i8(12);
     /// assert!(!d.contains_type_ref_key(&key2));
     /// ```
     #[inline]
@@ -116,8 +116,8 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let key = cf::Number::from_i8(10).unwrap();
-    /// let value = cf::Number::from_i8(20).unwrap();
+    /// let key = cf::Number::from_i8(10);
+    /// let value = cf::Number::from_i8(20);
     ///
     /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
     ///
@@ -156,8 +156,8 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let key = cf::Number::from_i8(10).unwrap();
-    /// let value = cf::Number::from_i8(20).unwrap();
+    /// let key = cf::Number::from_i8(10);
+    /// let value = cf::Number::from_i8(20);
     ///
     /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
     ///
@@ -209,8 +209,8 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let key = cf::Number::from_i8(10).unwrap();
-    /// let value = cf::Number::from_i8(20).unwrap();
+    /// let key = cf::Number::from_i8(10);
+    /// let value = cf::Number::from_i8(20);
     ///
     /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
     ///
@@ -235,8 +235,8 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let key = cf::Number::from_i8(10).unwrap();
-    /// let value = cf::Number::from_i8(20).unwrap();
+    /// let key = cf::Number::from_i8(10);
+    /// let value = cf::Number::from_i8(20);
     ///
     /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
     ///
@@ -283,6 +283,10 @@ impl Dictionary {
 }
 
 define_cf_type!(MutableDictionary(Dictionary));
+
+impl MutableDictionary {
+
+}
 
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: DictionaryKeyCallBacks;

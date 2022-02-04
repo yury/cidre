@@ -115,7 +115,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i32(10).unwrap();
+    /// let num = cf::Number::from_i32(10);
     /// let arr = cf::Array::from_type_refs(&[&num, &num, &num]).unwrap();
     /// assert_eq!(3, arr.len());
     /// ```
@@ -131,7 +131,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_i32(10).unwrap();
+    /// let num = cf::Number::from_i32(10);
     ///
     /// let empty_arr = cf::Array::new().unwrap();
     /// let mut mut_arr = empty_arr.create_mutable_copy(None, 0).unwrap();
@@ -198,7 +198,7 @@ impl MutableArray {
     /// let mut arr = cf::MutableArray::new().unwrap();
     /// assert_eq!(0, arr.len());
     ///
-    /// let num = cf::Number::from_i32(0).unwrap();
+    /// let num = cf::Number::from_i32(0);
     ///
     /// arr.append(&num);
     /// arr.append(&num);
