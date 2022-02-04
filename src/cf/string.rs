@@ -39,6 +39,46 @@ impl String {
     pub fn type_id() -> TypeId {
         unsafe { CFStringGetTypeID() }
     }
+
+    ///```
+    /// use cidre::cf;
+    ///
+    /// let s1 = cf::String::from_str_no_copy("nice").unwrap();
+    /// let s2 = cf::String::from_str_no_copy("nice").unwrap();
+    ///
+    /// assert_eq!(4, s1.len());
+    /// assert!(s1.equal(&s2));
+    ///```
+    #[inline]
+    pub fn from_str_no_copy<'a>(str: &'a str) -> Option<Retained<'a, String>> {
+        let bytes = str.as_bytes();
+        Self::create_with_bytes_no_copy(
+            None,
+            bytes,
+            bytes.len() as _,
+            StringEncoding::UTF8,
+            false,
+            Some(Allocator::null()),
+        )
+    }
+
+    ///```
+    /// use cidre::cf;
+    ///
+    /// let s1 = cf::String::from_str("nice").unwrap();
+    /// let s2 = cf::String::from_str("nice").unwrap();
+    /// let s3 = cf::String::from_str("nice string").unwrap();
+    ///
+    /// assert_eq!(4, s1.len());
+    /// assert!(s1.equal(&s2));
+    /// assert!(s3.has_prefix(&s2));
+    ///```
+    #[inline]
+    pub fn from_str<'a>(str: &str) -> Option<Retained<'a, String>> {
+        let bytes = str.as_bytes();
+        Self::create_with_bytes(None, bytes, bytes.len() as _, StringEncoding::UTF8, false)
+    }
+
     #[inline]
     pub fn show_str(&self) {
         unsafe { CFShowStr(self) }
@@ -47,6 +87,11 @@ impl String {
     #[inline]
     pub fn get_length(&self) -> Index {
         unsafe { CFStringGetLength(self) }
+    }
+
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.get_length() as _
     }
 
     #[inline]
@@ -92,6 +137,26 @@ impl String {
                 encoding,
                 is_external_representation,
                 contents_deallocator,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn create_with_bytes<'a>(
+        alloc: Option<&Allocator>,
+        bytes: &[u8],
+        num_bytes: Index,
+        encoding: StringEncoding,
+        is_external_representation: bool,
+    ) -> Option<Retained<'a, String>> {
+        unsafe {
+            let bytes = bytes.as_ptr();
+            CFStringCreateWithBytes(
+                alloc,
+                bytes,
+                num_bytes,
+                encoding,
+                is_external_representation,
             )
         }
     }
@@ -166,6 +231,14 @@ extern "C" {
         encoding: StringEncoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
+    ) -> Option<Retained<'a, String>>;
+
+    fn CFStringCreateWithBytes<'a>(
+        alloc: Option<&Allocator>,
+        bytes: *const u8,
+        num_bytes: Index,
+        encoding: StringEncoding,
+        is_external_representation: bool,
     ) -> Option<Retained<'a, String>>;
 
     fn CFShowStr(str: &String);

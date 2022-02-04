@@ -84,6 +84,7 @@ impl Type {
         unsafe { CFGetTypeID(self) }
     }
 
+    #[inline]
     pub unsafe fn as_ptr(&self) -> *const c_void {
         &self.0
     }

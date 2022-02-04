@@ -1,95 +1,14 @@
-use crate::{
-    cf::{self, Retained, Type},
-    define_cf_type,
-};
 
-pub type SurfaceId = u32;
+pub mod surface;
 
-#[repr(i32)]
-pub enum SurfaceComponentName {
-    Unkown = 0,
-    Alpha = 1,
-    Red = 2,
-    Green = 3,
-    Blue = 4,
-    Luma = 5,
-    ChromaRed = 6,
-    ChromeBlue = 7,
-}
+pub use surface::Surface;
+pub use surface::SurfaceId;
+pub use surface::SurfaceLockOptions;
+pub use surface::SurfaceSubsampling;
+pub use surface::SurfaceComponentName;
+pub use surface::SurfaceComponentRange;
 
-#[repr(i32)]
-pub enum SurfaceComponentType {
-    Unknown = 0,
-    UnsignedInteger = 1,
-    SignedInteger = 2,
-    Float = 3,
-    SignedNormalized = 4,
-}
-
-#[repr(i32)]
-pub enum SurfaceComponentRange {
-    Unknown = 0,
-    Full = 1,
-    Video = 2,
-    Wide = 3,
-}
-
-#[repr(i32)]
-pub enum SurfaceSubsampling {
-    Unknown = 0,
-    None = 1, // Includes "4:4:4"
-    _422 = 2, // Chroma downsampled by 2x1
-    _420 = 3, // Chroma downsampled by 2x2
-    _411 = 4, // Chroma downsampled by 4x1
-}
-
-#[repr(transparent)]
-pub struct SurfaceLockOptions(pub cf::OptionFlags);
-
-impl SurfaceLockOptions {
-    pub const READ_ONLY: Self = Self(1);
-    pub const AVOID_SYNC: Self = Self(2);
-}
-
-define_cf_type!(Surface(Type));
-
-impl Surface {
-    #[inline]
-    pub fn type_id() -> cf::TypeId {
-        unsafe { IOSurfaceGetTypeID() }
-    }
-    /// ```
-    /// use cidre::cf;
-    /// use cidre::io;
-    ///
-    /// let properties = cf::Dictionary::from_pairs(&[], &[]).unwrap();
-    /// let surf = io::Surface::create(&properties);
-    /// ```
-    pub fn create<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>> {
-        unsafe { IOSurfaceCreate(properties) }
-    }
-
-    pub fn get_id(&self) -> SurfaceId {
-        unsafe { IOSurfaceGetID(&self) }
-    }
-
-    /// ```
-    /// use cidre::io;
-    ///
-    /// let surf = io::Surface::lookup(0);
-    ///
-    /// assert!(surf.is_none());
-    /// ```
-    pub fn lookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>> {
-        unsafe { IOSurfaceLookup(csid) }
-    }
-}
+pub use surface::keys as surface_keys;
 
 #[link(name = "IOSurface", kind = "framework")]
-extern "C" {
-    fn IOSurfaceGetTypeID() -> cf::TypeId;
-    fn IOSurfaceCreate<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>>;
-    fn IOSurfaceLookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>>;
-    fn IOSurfaceGetID(buffer: &Surface) -> SurfaceId;
-
-}
+extern "C" { }

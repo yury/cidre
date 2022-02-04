@@ -6,3 +6,5 @@ use crate::{
 define_cf_type!(SampleBuffer(Type));
 
 impl SampleBuffer {}
+
+extern "C" {}
