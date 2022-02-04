@@ -1,6 +1,6 @@
 use crate::{
-  cf::{self, Retained, Type},
-  define_cf_type,
+    cf::{self, Retained, Type},
+    define_cf_type,
 };
 
 pub type SurfaceId = u32;
@@ -62,10 +62,10 @@ impl Surface {
     /// use cidre::cf;
     /// use cidre::io;
     ///
-    /// 
+    ///
     /// let width = cf::Number::from_i32(100).unwrap();
     /// let height = cf::Number::from_i32(200).unwrap();
-    /// 
+    ///
     /// let properties = cf::Dictionary::from_pairs(
     ///   &[
     ///     io::surface_keys::width(),
@@ -78,11 +78,15 @@ impl Surface {
     /// ).unwrap();
     ///
     /// let surf = io::Surface::create(&properties).unwrap();
-    /// 
+    ///
     /// assert_eq!(100, surf.get_width());
     /// assert_eq!(200, surf.get_height());
+    /// assert_eq!(0, surf.get_plane_count());
     /// assert_ne!(0, surf.get_id());
     ///
+    /// let props = surf.copy_all_values().unwrap();
+    /// props.show();
+    /// assert_eq!(1, props.len());
     /// ```
     pub fn create<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>> {
         unsafe { IOSurfaceCreate(properties) }
@@ -95,12 +99,27 @@ impl Surface {
 
     #[inline]
     pub fn get_width(&self) -> usize {
-      unsafe { IOSurfaceGetWidth(self) }
+        unsafe { IOSurfaceGetWidth(self) }
     }
 
     #[inline]
     pub fn get_height(&self) -> usize {
-      unsafe { IOSurfaceGetHeight(self) }
+        unsafe { IOSurfaceGetHeight(self) }
+    }
+
+    #[inline]
+    pub fn get_plane_count(&self) -> usize {
+        unsafe { IOSurfaceGetPlaneCount(self) }
+    }
+
+    #[inline]
+    pub fn get_plane_width(&self, plane_index: usize) -> usize {
+        unsafe { IOSurfaceGetWidthOfPlane(self, plane_index) }
+    }
+
+    #[inline]
+    pub fn get_plane_height(&self, plane_index: usize) -> usize {
+        unsafe { IOSurfaceGetHeightOfPlane(self, plane_index) }
     }
 
     /// ```
@@ -113,8 +132,12 @@ impl Surface {
     pub fn lookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>> {
         unsafe { IOSurfaceLookup(csid) }
     }
-}
 
+    #[inline]
+    pub fn copy_all_values<'a>(&self) -> Option<Retained<'a, cf::Dictionary>> {
+        unsafe { IOSurfaceCopyAllValues(self) }
+    }
+}
 
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
@@ -123,58 +146,77 @@ extern "C" {
     fn IOSurfaceGetID(buffer: &Surface) -> SurfaceId;
     fn IOSurfaceGetWidth(buffer: &Surface) -> usize;
     fn IOSurfaceGetHeight(buffer: &Surface) -> usize;
+    fn IOSurfaceGetPlaneCount(buffer: &Surface) -> usize;
+    fn IOSurfaceGetWidthOfPlane(buffer: &Surface, plane_index: usize) -> usize;
+    fn IOSurfaceGetHeightOfPlane(buffer: &Surface, plane_index: usize) -> usize;
+
+    fn IOSurfaceCopyAllValues<'a>(buffer: &Surface) -> Option<Retained<'a, cf::Dictionary>>;
 }
 
 /// The following list of properties are used with the cf::Dictionary passed to io::Surface::create
 pub mod keys {
-  use crate::cf::String;
+    use crate::cf::String;
 
-  /// cf::Number of the total allocation size of the buffer including all planes.    
-  /// Defaults to BufferHeight * BytesPerRow if not specified. Must be specified for
-  /// dimensionless buffers.
-  #[inline]
-  pub fn alloc_size() -> &'static String { unsafe { kIOSurfaceAllocSize }}
+    /// cf::Number of the total allocation size of the buffer including all planes.    
+    /// Defaults to BufferHeight * BytesPerRow if not specified. Must be specified for
+    /// dimensionless buffers.
+    #[inline]
+    pub fn alloc_size() -> &'static String {
+        unsafe { kIOSurfaceAllocSize }
+    }
 
-  /// cf::Number for the width of the io::Surface buffer in pixels. Required for planar io::Surfaces
-  #[inline]
-  pub fn width() -> &'static String { unsafe { kIOSurfaceWidth }}
+    /// cf::Number for the width of the io::Surface buffer in pixels. Required for planar io::Surfaces
+    #[inline]
+    pub fn width() -> &'static String {
+        unsafe { kIOSurfaceWidth }
+    }
 
-  /// cf::Number for the height of the io::Surface buffer in pixels. Required for planar io::Surfaces
-  #[inline]
-  pub fn height() -> &'static String { unsafe { kIOSurfaceHeight }}
-  #[inline]
-  pub fn bytes_per_row() -> &'static String { unsafe { kIOSurfaceBytesPerRow }}
-  #[inline]
-  pub fn bytes_per_element() -> &'static String { unsafe { kIOSurfaceBytesPerElement }}
-  #[inline]
-  pub fn element_width() -> &'static String { unsafe { kIOSurfaceElementWidth }}
-  #[inline]
-  pub fn element_height() -> &'static String { unsafe { kIOSurfaceElementHeight }}
+    /// cf::Number for the height of the io::Surface buffer in pixels. Required for planar io::Surfaces
+    #[inline]
+    pub fn height() -> &'static String {
+        unsafe { kIOSurfaceHeight }
+    }
+    #[inline]
+    pub fn bytes_per_row() -> &'static String {
+        unsafe { kIOSurfaceBytesPerRow }
+    }
+    #[inline]
+    pub fn bytes_per_element() -> &'static String {
+        unsafe { kIOSurfaceBytesPerElement }
+    }
+    #[inline]
+    pub fn element_width() -> &'static String {
+        unsafe { kIOSurfaceElementWidth }
+    }
+    #[inline]
+    pub fn element_height() -> &'static String {
+        unsafe { kIOSurfaceElementHeight }
+    }
 
-  extern "C" {
-    static kIOSurfaceAllocSize: &'static String;
-    static kIOSurfaceWidth: &'static String;
-    static kIOSurfaceHeight: &'static String;
-    static kIOSurfaceBytesPerRow: &'static String;
-    static kIOSurfaceBytesPerElement: &'static String;
-    static kIOSurfaceElementWidth: &'static String;
-    static kIOSurfaceElementHeight: &'static String;
-    // static kIOSurfaceOffset: &'static String;
-    // static kIOSurfacePlaneInfo: &'static String;
-    // static kIOSurfacePlaneWidth: &'static String;
-    // static kIOSurfacePlaneHeight: &'static String;
-    // static kIOSurfacePlaneBytesPerRow: &'static String;
-    // static kIOSurfacePlaneOffset: &'static String;
-    // static kIOSurfacePlaneSize: &'static String;
-    // static kIOSurfacePlaneBase: &'static String;
-    // static kIOSurfacePlaneBitsPerElement: &'static String;
-    // static kIOSurfacePlaneBytesPerElement: &'static String;
-    // static kIOSurfacePlaneElementWidth: &'static String;
-    // static kIOSurfacePlaneElementHeight: &'static String;
-    // static kIOSurfaceCacheMode: &'static String;
-    // static kIOSurfacePixelFormat: &'static String;
-    // static kIOSurfacePixelSizeCastingAllowed: &'static String;
-    // static kIOSurfacePlaneComponentBitDepths: &'static String;
-    // static kIOSurfacePlaneComponentBitOffsets: &'static String;
-  }
+    extern "C" {
+        static kIOSurfaceAllocSize: &'static String;
+        static kIOSurfaceWidth: &'static String;
+        static kIOSurfaceHeight: &'static String;
+        static kIOSurfaceBytesPerRow: &'static String;
+        static kIOSurfaceBytesPerElement: &'static String;
+        static kIOSurfaceElementWidth: &'static String;
+        static kIOSurfaceElementHeight: &'static String;
+        // static kIOSurfaceOffset: &'static String;
+        // static kIOSurfacePlaneInfo: &'static String;
+        // static kIOSurfacePlaneWidth: &'static String;
+        // static kIOSurfacePlaneHeight: &'static String;
+        // static kIOSurfacePlaneBytesPerRow: &'static String;
+        // static kIOSurfacePlaneOffset: &'static String;
+        // static kIOSurfacePlaneSize: &'static String;
+        // static kIOSurfacePlaneBase: &'static String;
+        // static kIOSurfacePlaneBitsPerElement: &'static String;
+        // static kIOSurfacePlaneBytesPerElement: &'static String;
+        // static kIOSurfacePlaneElementWidth: &'static String;
+        // static kIOSurfacePlaneElementHeight: &'static String;
+        // static kIOSurfaceCacheMode: &'static String;
+        // static kIOSurfacePixelFormat: &'static String;
+        // static kIOSurfacePixelSizeCastingAllowed: &'static String;
+        // static kIOSurfacePlaneComponentBitDepths: &'static String;
+        // static kIOSurfacePlaneComponentBitOffsets: &'static String;
+    }
 }

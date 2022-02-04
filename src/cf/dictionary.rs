@@ -205,6 +205,81 @@ impl Dictionary {
             value_callbacks,
         )
     }
+
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let key = cf::Number::from_i8(10).unwrap();
+    /// let value = cf::Number::from_i8(20).unwrap();
+    ///
+    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    ///
+    /// let keys = d.get_keys();
+    ///
+    /// assert!(!d.is_empty());
+    /// assert_eq!(1, d.len());
+    /// assert_eq!(1, keys.len());
+    /// assert!(key.equal(keys[0]));
+    /// ```
+    pub fn get_keys(&self) -> Vec<&Type> {
+        let len = self.len();
+        let mut keys: Vec<&Type> = Vec::with_capacity(len);
+        unsafe {
+            keys.set_len(len);
+            let keys = keys.as_ptr() as *const *const c_void;
+            self.get_keys_and_values(keys, std::ptr::null());
+        }
+        keys
+    }
+
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let key = cf::Number::from_i8(10).unwrap();
+    /// let value = cf::Number::from_i8(20).unwrap();
+    ///
+    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    ///
+    /// let vals = d.get_values();
+    ///
+    /// assert!(!d.is_empty());
+    /// assert_eq!(1, d.len());
+    /// assert_eq!(1, vals.len());
+    /// assert!(value.equal(vals[0]));
+    /// ```
+    pub fn get_values(&self) -> Vec<&Type> {
+        let len = self.len();
+        let mut values: Vec<&Type> = Vec::with_capacity(len);
+        unsafe {
+            values.set_len(len);
+            let values = values.as_ptr() as *const *const c_void;
+            self.get_keys_and_values(std::ptr::null(), values);
+        }
+        values
+    }
+
+    pub fn get_keys_with_values(&self) -> (Vec<&Type>, Vec<&Type>) {
+        let len = self.len();
+        let mut keys: Vec<&Type> = Vec::with_capacity(len);
+        let mut values: Vec<&Type> = Vec::with_capacity(len);
+        unsafe {
+            keys.set_len(len);
+            values.set_len(len);
+            let keys = keys.as_ptr() as *const *const c_void;
+            let values = values.as_ptr() as *const *const c_void;
+            self.get_keys_and_values(keys, values);
+        }
+        (keys, values)
+    }
+
+    #[inline]
+    pub unsafe fn get_keys_and_values(
+        &self,
+        keys: *const *const c_void,
+        values: *const *const c_void,
+    ) {
+        CFDictionaryGetKeysAndValues(self, keys, values)
+    }
 }
 
 define_cf_type!(MutableDictionary(Dictionary));
@@ -236,5 +311,11 @@ extern "C" {
         key_callbacks: Option<&DictionaryKeyCallBacks>,
         value_callbacks: Option<&DictionaryValueCallBacks>,
     ) -> Option<Retained<'a, Dictionary>>;
+
+    fn CFDictionaryGetKeysAndValues(
+        the_dict: &Dictionary,
+        keys: *const *const c_void,
+        values: *const *const c_void,
+    );
 
 }
