@@ -1,5 +1,5 @@
 use crate::{
-    cf::{self, Retained},
+    cf::{self, Allocator, Retained},
     cm, define_cf_type, os, FourCharCode,
 };
 
@@ -33,9 +33,25 @@ impl FormatDescription {}
 pub type VideoFormatDescription = FormatDescription;
 
 impl VideoFormatDescription {
-  pub fn create() {
-    
-  }
+    pub fn create(
+        allocator: Option<&Allocator>,
+        codec_type: VideoCodecType,
+        width: i32,
+        height: i32,
+        extensions: Option<&cf::Dictionary>,
+        format_description_out: &mut Option<Retained<VideoFormatDescription>>,
+    ) -> os::Status {
+        unsafe {
+            CMVideoFormatDescriptionCreate(
+                allocator,
+                codec_type,
+                width,
+                height,
+                extensions,
+                format_description_out,
+            )
+        }
+    }
 }
 
 extern "C" {

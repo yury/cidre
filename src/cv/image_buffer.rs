@@ -8,15 +8,11 @@ impl ImageBuffer {
     }
 
     pub fn get_clean_rect(&self) -> cg::Rect {
-      unsafe {
-        CVImageBufferGetCleanRect(self)
-      }
+        unsafe { CVImageBufferGetCleanRect(self) }
     }
 
     pub fn is_flipped(&self) -> bool {
-      unsafe {
-        CVImageBufferIsFlipped(self)
-      }
+        unsafe { CVImageBufferIsFlipped(self) }
     }
 }
 

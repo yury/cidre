@@ -2,9 +2,7 @@ use std::ffi::c_void;
 
 use crate::{
     cf::{Allocator, Retained, Type},
-    cm,
-    cv,
-    define_cf_type, os,
+    cm, cv, define_cf_type, os,
 };
 
 // use super::{formaFormatDescription};

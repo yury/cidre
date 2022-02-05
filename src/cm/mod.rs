@@ -25,6 +25,4 @@ pub use block_buffer::BlockBuffer;
 pub use block_buffer::BlockBufferFlags;
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C" {
-  
-}
+extern "C" {}
