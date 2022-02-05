@@ -54,7 +54,6 @@ impl SurfaceLockOptions {
 define_cf_type!(Surface(Type));
 
 impl Surface {
-
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { IOSurfaceGetTypeID() }

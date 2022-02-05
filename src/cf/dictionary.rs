@@ -284,9 +284,7 @@ impl Dictionary {
 
 define_cf_type!(MutableDictionary(Dictionary));
 
-impl MutableDictionary {
-
-}
+impl MutableDictionary {}
 
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: DictionaryKeyCallBacks;

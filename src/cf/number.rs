@@ -67,10 +67,10 @@ impl From<Boolean> for bool {
 impl From<bool> for &'static Boolean {
     #[inline]
     fn from(value: bool) -> Self {
-        if value  {
+        if value {
             Boolean::value_true()
         } else {
-            Boolean::value_false() 
+            Boolean::value_false()
         }
     }
 }
@@ -104,9 +104,9 @@ define_cf_type!(Number(Type));
 impl Number {
     /// ```
     /// use cidre::cf;
-    /// 
+    ///
     /// let num = cf::Number::from_i16(10);
-    /// 
+    ///
     /// assert_eq!(num.get_type_id(), cf::Number::type_id());
     /// ```
     #[inline]
@@ -269,10 +269,7 @@ impl Number {
     /// ```
     /// Will return tagged
     pub fn from_i8<'a>(value: i8) -> Retained<'a, Number> {
-        unsafe {
-            Number::create(None, NumberType::I8, &value as *const _ as _)
-                .unwrap_unchecked()
-        }
+        unsafe { Number::create(None, NumberType::I8, &value as *const _ as _).unwrap_unchecked() }
     }
 
     /// ```
@@ -285,10 +282,7 @@ impl Number {
     /// ```
     /// Will return tagged
     pub fn from_i16<'a>(value: i16) -> Retained<'a, Number> {
-        unsafe {
-            Number::create(None, NumberType::I16, &value as *const _ as _)
-                .unwrap_unchecked()
-        }
+        unsafe { Number::create(None, NumberType::I16, &value as *const _ as _).unwrap_unchecked() }
     }
 
     /// ```
@@ -302,10 +296,7 @@ impl Number {
     /// ```
     /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
     pub fn from_i32<'a>(value: i32) -> Retained<'a, Number> {
-        unsafe {
-            Number::create(None, NumberType::I32, &value as *const _ as _)
-                .unwrap_unchecked()
-        }
+        unsafe { Number::create(None, NumberType::I32, &value as *const _ as _).unwrap_unchecked() }
     }
 
     /// ```
@@ -318,10 +309,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     pub fn from_i64<'a>(value: i64) -> Retained<'a, Number> {
-        unsafe {
-            Number::create(None, NumberType::I64, &value as *const _ as _)
-                .unwrap_unchecked()
-        }
+        unsafe { Number::create(None, NumberType::I64, &value as *const _ as _).unwrap_unchecked() }
     }
 
     /// ```

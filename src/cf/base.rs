@@ -20,10 +20,11 @@ pub type ComparatorFunction = extern "C" fn(
 
 pub const NOT_FOUND: Index = -1;
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct Range {
-    location: Index,
-    length: Index,
+    pub location: Index,
+    pub length: Index,
 }
 
 impl Range {

@@ -1,4 +1,7 @@
-use super::{Allocator, Index, OptionFlags, Retained, Type, TypeId};
+use core::fmt;
+use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
+
+use super::{Allocator, Index, OptionFlags, Range, Retained, Type, TypeId};
 
 use crate::define_cf_type;
 
@@ -46,7 +49,7 @@ impl String {
     /// let s1 = cf::String::from_str_no_copy("nice");
     /// let s2 = cf::String::from_str_no_copy("nice");
     ///
-    /// assert_eq!(4, s1.len());
+    /// assert_eq!(4, s1.get_length());
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
@@ -60,7 +63,8 @@ impl String {
                 StringEncoding::UTF8,
                 false,
                 Some(Allocator::null()),
-            ).unwrap_unchecked()
+            )
+            .unwrap_unchecked()
         }
     }
 
@@ -71,7 +75,7 @@ impl String {
     /// let s2 = cf::String::from_str("nice");
     /// let s3 = cf::String::from_str("nice string");
     ///
-    /// assert_eq!(4, s1.len());
+    /// assert_eq!(4, s1.get_length());
     /// assert!(s1.equal(&s2));
     /// assert!(s3.has_prefix(&s2));
     ///```
@@ -85,6 +89,27 @@ impl String {
     }
 
     #[inline]
+    pub fn from_cstr<'a>(cstr: &CStr) -> Retained<'a, String> {
+        unsafe {
+            Self::create_with_cstring(None, cstr.to_bytes_with_nul(), StringEncoding::UTF8)
+                .unwrap_unchecked()
+        }
+    }
+
+    #[inline]
+    pub fn from_cstr_no_copy(cstr: &CStr) -> Retained<String> {
+        unsafe {
+            Self::create_with_cstring_no_copy(
+                None,
+                cstr.to_bytes_with_nul(),
+                StringEncoding::UTF8,
+                Some(Allocator::null()),
+            )
+            .unwrap_unchecked()
+        }
+    }
+
+    #[inline]
     pub fn show_str(&self) {
         unsafe { CFShowStr(self) }
     }
@@ -92,11 +117,6 @@ impl String {
     #[inline]
     pub fn get_length(&self) -> Index {
         unsafe { CFStringGetLength(self) }
-    }
-
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.get_length() as _
     }
 
     #[inline]
@@ -147,6 +167,31 @@ impl String {
     }
 
     #[inline]
+    pub fn create_with_cstring_no_copy<'a>(
+        alloc: Option<&Allocator>,
+        bytes_with_null: &'a [u8],
+        encoding: StringEncoding,
+        contents_deallocator: Option<&Allocator>,
+    ) -> Option<Retained<'a, String>> {
+        unsafe {
+            let c_str = bytes_with_null.as_ptr() as *const i8;
+            CFStringCreateWithCStringNoCopy(alloc, c_str, encoding, contents_deallocator)
+        }
+    }
+
+    #[inline]
+    pub fn create_with_cstring<'a>(
+        alloc: Option<&Allocator>,
+        bytes_with_null: &[u8],
+        encoding: StringEncoding,
+    ) -> Option<Retained<'a, String>> {
+        unsafe {
+            let c_str = bytes_with_null.as_ptr() as *const i8;
+            CFStringCreateWithCString(alloc, c_str, encoding)
+        }
+    }
+
+    #[inline]
     pub fn create_with_bytes<'a>(
         alloc: Option<&Allocator>,
         bytes: &[u8],
@@ -178,6 +223,66 @@ impl String {
     #[inline]
     pub fn mutable_copy(&self, max_length: Index) -> Option<Retained<MutableString>> {
         self.create_mutable_copy(None, max_length)
+    }
+}
+
+impl<'a> From<&'a String> for Cow<'a, str> {
+    fn from(cfstr: &'a String) -> Self {
+        unsafe {
+            let c_str = CFStringGetCStringPtr(cfstr, StringEncoding::UTF8);
+            if c_str.is_null() {
+                let range = crate::cf::Range {
+                    location: 0,
+                    length: cfstr.get_length(),
+                };
+                let mut bytes_required: Index = 0;
+                CFStringGetBytes(
+                    cfstr,
+                    range,
+                    StringEncoding::UTF8,
+                    0,
+                    false,
+                    std::ptr::null_mut(),
+                    0,
+                    &mut bytes_required,
+                );
+
+                let mut buffer = Vec::with_capacity(bytes_required as _);
+                buffer.set_len(bytes_required as _);
+                let mut used_buf_len: Index = 0;
+                CFStringGetBytes(
+                    cfstr,
+                    range,
+                    StringEncoding::UTF8,
+                    0,
+                    false,
+                    buffer.as_mut_ptr(),
+                    buffer.len() as _,
+                    &mut used_buf_len,
+                );
+
+                debug_assert_eq!(bytes_required, used_buf_len);
+
+                Cow::Owned(std::string::String::from_utf8_unchecked(buffer))
+            } else {
+                let cstr = CStr::from_ptr(c_str);
+                Cow::Borrowed(from_utf8_unchecked(cstr.to_bytes()))
+            }
+        }
+    }
+}
+
+impl fmt::Display for String {
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let s = cf::String::from_str("nice");
+    /// let ss = s.to_string();
+    ///
+    /// assert_eq!("nice", &ss);
+    /// ```
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.write_str(&Cow::from(self))
     }
 }
 
@@ -238,6 +343,19 @@ extern "C" {
         contents_deallocator: Option<&Allocator>,
     ) -> Option<Retained<'a, String>>;
 
+    fn CFStringCreateWithCStringNoCopy<'a>(
+        alloc: Option<&Allocator>,
+        c_str: *const c_char,
+        encoding: StringEncoding,
+        contents_deallocator: Option<&Allocator>,
+    ) -> Option<Retained<'a, String>>;
+
+    fn CFStringCreateWithCString<'a>(
+        alloc: Option<&Allocator>,
+        c_str: *const c_char,
+        encoding: StringEncoding,
+    ) -> Option<Retained<'a, String>>;
+
     fn CFStringCreateWithBytes<'a>(
         alloc: Option<&Allocator>,
         bytes: *const u8,
@@ -247,4 +365,30 @@ extern "C" {
     ) -> Option<Retained<'a, String>>;
 
     fn CFShowStr(str: &String);
+
+    fn CFStringGetCStringPtr(the_string: &String, encoding: StringEncoding) -> *const c_char;
+    fn CFStringGetBytes(
+        the_string: &String,
+        range: Range,
+        encoding: StringEncoding,
+        loss_byte: u8,
+        is_external_representation: bool,
+        buffer: *mut u8,
+        max_buflen: Index,
+        used_buf_len: *mut Index,
+    ) -> Index;
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::cf;
+
+    #[test]
+    fn it_works() {
+        let s = cf::String::from_str("hello");
+        assert_eq!(s.get_length(), 5);
+        let std_str = s.to_string();
+        assert_eq!(std_str.chars().count(), 5);
+    }
 }
