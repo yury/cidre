@@ -53,7 +53,7 @@ impl String {
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
-    pub fn from_str_no_copy<'a>(str: &'a str) -> Retained<'a, String> {
+    pub fn from_str_no_copy(str: &str) -> Retained<String> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes_no_copy(
