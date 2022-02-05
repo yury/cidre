@@ -133,15 +133,15 @@ macro_rules! define_cf_type {
 
         impl crate::cf::runtime::Retain for $NewType {
             #[inline]
-            fn retained<'a>(&self) -> Retained<'a, Self> {
+            fn retained<'a>(&self) -> crate::cf::runtime::Retained<'a, Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained<'a>(&self) -> Retained<'a, Self> {
-                unsafe { Type::retain(self) }
+            pub fn retained<'a>(&self) -> crate::cf::runtime::Retained<'a, Self> {
+                unsafe { crate::cf::runtime::Type::retain(self) }
             }
         }
     };

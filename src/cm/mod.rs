@@ -1,4 +1,15 @@
-mod time;
+pub mod base;
+
+pub use base::ItemCount;
+pub use base::ItemIndex;
+
+pub mod format_description;
+pub use format_description::FormatDescription;
+pub use format_description::MediaType;
+pub use format_description::VideoCodecType;
+pub use format_description::VideoFormatDescription;
+
+pub mod time;
 pub use time::Time;
 pub use time::TimeEpoch;
 pub use time::TimeFlags;
@@ -6,12 +17,14 @@ pub use time::TimeRoundingMethod;
 pub use time::TimeScale;
 pub use time::TimeValue;
 
-mod sample_buffer;
+pub mod sample_buffer;
 pub use sample_buffer::SampleBuffer;
 
-mod block_buffer;
+pub mod block_buffer;
 pub use block_buffer::BlockBuffer;
 pub use block_buffer::BlockBufferFlags;
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C" {}
+extern "C" {
+  
+}

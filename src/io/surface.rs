@@ -192,6 +192,26 @@ pub mod keys {
     pub fn element_height() -> &'static String {
         unsafe { kIOSurfaceElementHeight }
     }
+    #[inline]
+    pub fn offset() -> &'static String {
+        unsafe { kIOSurfaceOffset }
+    }
+    #[inline]
+    pub fn plane_info() -> &'static String {
+        unsafe { kIOSurfacePlaneInfo }
+    }
+    #[inline]
+    pub fn plane_width() -> &'static String {
+        unsafe { kIOSurfacePlaneWidth }
+    }
+    #[inline]
+    pub fn plane_height() -> &'static String {
+        unsafe { kIOSurfacePlaneHeight }
+    }
+    #[inline]
+    pub fn plane_bytes_per_row() -> &'static String {
+        unsafe { kIOSurfacePlaneBytesPerRow }
+    }
 
     extern "C" {
         static kIOSurfaceAllocSize: &'static String;
@@ -201,11 +221,11 @@ pub mod keys {
         static kIOSurfaceBytesPerElement: &'static String;
         static kIOSurfaceElementWidth: &'static String;
         static kIOSurfaceElementHeight: &'static String;
-        // static kIOSurfaceOffset: &'static String;
-        // static kIOSurfacePlaneInfo: &'static String;
-        // static kIOSurfacePlaneWidth: &'static String;
-        // static kIOSurfacePlaneHeight: &'static String;
-        // static kIOSurfacePlaneBytesPerRow: &'static String;
+        static kIOSurfaceOffset: &'static String;
+        static kIOSurfacePlaneInfo: &'static String;
+        static kIOSurfacePlaneWidth: &'static String;
+        static kIOSurfacePlaneHeight: &'static String;
+        static kIOSurfacePlaneBytesPerRow: &'static String;
         // static kIOSurfacePlaneOffset: &'static String;
         // static kIOSurfacePlaneSize: &'static String;
         // static kIOSurfacePlaneBase: &'static String;

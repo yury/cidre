@@ -68,7 +68,7 @@ impl From<ComparisonResult> for Ordering {
     /// ```
     #[inline]
     fn from(o: ComparisonResult) -> Self {
-        unsafe { transmute::<i8, Ordering>(o as i8) }
+        unsafe { transmute(o as i8) }
     }
 }
 
