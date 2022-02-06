@@ -12,6 +12,7 @@ pub enum AttachmentMode {
 define_cf_type!(Buffer(Type));
 
 impl Buffer {
+    #[inline]
     pub fn set_attachment(
         &mut self,
         key: &cf::String,
@@ -21,14 +22,17 @@ impl Buffer {
         unsafe { CVBufferSetAttachment(self, key, value, attachment_mode) }
     }
 
+    #[inline]
     pub fn remove_attachment(&mut self, key: &cf::String) {
         unsafe { CVBufferRemoveAttachment(self, key) }
     }
 
+    #[inline]
     pub fn remove_all_attachments(&mut self) {
         unsafe { CVBufferRemoveAllAttachments(self) }
     }
 
+    #[inline]
     pub fn set_attachments(
         &mut self,
         the_attachments: &cf::Dictionary,
@@ -37,10 +41,12 @@ impl Buffer {
         unsafe { CVBufferSetAttachments(self, the_attachments, attachment_mode) }
     }
 
+    #[inline]
     pub fn propagate_attachments(&self, destination_buffer: &mut Buffer) {
         unsafe { CVBufferPropagateAttachments(self, destination_buffer) }
     }
 
+    #[inline]
     pub fn copy_attachments<'a>(
         &self,
         attachment_mode: AttachmentMode,
@@ -48,6 +54,7 @@ impl Buffer {
         unsafe { CVBufferCopyAttachments(self, attachment_mode) }
     }
 
+    #[inline]
     pub fn copy_attachment<'a>(
         &self,
         key: &cf::String,
@@ -56,6 +63,7 @@ impl Buffer {
         unsafe { CVBufferCopyAttachment(self, key, attachment_mode) }
     }
 
+    #[inline]
     pub fn has_attachment(&self, key: &cf::String) -> bool {
         unsafe { CVBufferHasAttachment(self, key) }
     }
