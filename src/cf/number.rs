@@ -216,6 +216,13 @@ impl Number {
         }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i32(-5);
+    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
+    /// assert_eq!(num.to_i64().unwrap(), -5i64);
+    /// ```
     #[inline]
     pub fn to_i64(&self) -> Option<i64> {
         unsafe {
