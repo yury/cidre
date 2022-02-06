@@ -1,21 +1,11 @@
-pub type Float = f64;
-#[repr(C)]
-pub struct Point {
-    pub x: Float,
-    pub y: Float,
-}
-
-#[repr(C)]
-pub struct Size {
-    pub width: Float,
-    pub height: Float,
-}
-
-#[repr(C)]
-pub struct Rect {
-    pub origin: Point,
-    pub size: Size,
-}
+pub mod geometry;
+pub use geometry::Float;
+pub use geometry::Point;
+pub use geometry::Rect;
+pub use geometry::Size;
 
 pub mod color_space;
 pub use color_space::ColorSpace;
+
+#[link(name = "CoreGraphics", kind = "framework")]
+extern "C" {}

@@ -1,4 +1,4 @@
-use crate::{cg, cv, cf};
+use crate::{cf, cg, cv};
 
 pub type ImageBuffer = cv::Buffer;
 
@@ -24,17 +24,15 @@ impl ImageBuffer {
 
     #[inline]
     pub fn get_color_space(&self) -> Option<&cg::ColorSpace> {
-      unsafe {
-        CVImageBufferGetColorSpace(self)
-      }
+        unsafe { CVImageBufferGetColorSpace(self) }
     }
 
     #[inline]
-    pub fn create_color_space_form_attachments(attachments: &cf::Dictionary) -> Option<cf::Retained<cg::ColorSpace>> {
-      unsafe {
-        CVImageBufferCreateColorSpaceFromAttachments(attachments)
-      }
-    } 
+    pub fn create_color_space_form_attachments(
+        attachments: &cf::Dictionary,
+    ) -> Option<cf::Retained<cg::ColorSpace>> {
+        unsafe { CVImageBufferCreateColorSpaceFromAttachments(attachments) }
+    }
 }
 
 extern "C" {
@@ -43,5 +41,7 @@ extern "C" {
     fn CVImageBufferGetDisplaySize(image_buffer: &ImageBuffer) -> cg::Size;
     fn CVImageBufferGetCleanRect(image_buffer: &ImageBuffer) -> cg::Rect;
     fn CVImageBufferIsFlipped(image_buffer: &ImageBuffer) -> bool;
-    fn CVImageBufferCreateColorSpaceFromAttachments(attachments: &cf::Dictionary) -> Option<cf::Retained<cg::ColorSpace>>;
+    fn CVImageBufferCreateColorSpaceFromAttachments(
+        attachments: &cf::Dictionary,
+    ) -> Option<cf::Retained<cg::ColorSpace>>;
 }
