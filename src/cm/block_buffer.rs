@@ -19,7 +19,7 @@ define_cf_type!(BlockBuffer(Type));
 
 impl BlockBuffer {
     #[inline]
-    pub fn get_type_id() -> TypeId {
+    pub fn type_id() -> TypeId {
         unsafe { CMBlockBufferGetTypeID() }
     }
     #[inline]
@@ -32,6 +32,7 @@ impl BlockBuffer {
     ///
     /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
     /// assert!(b.is_empty());
+    /// assert_eq!(b.get_type_id(), cm::BlockBuffer::type_id());
     /// ```
     #[inline]
     pub fn create_empty<'a>(
