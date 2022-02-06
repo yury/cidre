@@ -16,11 +16,11 @@ impl Return {
     // TODO: ...
 
     #[inline]
-    pub unsafe fn to_result<T>(&self, option: Option<T>) -> Result<T, Self> {
+    pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
         if self.0 == Self::SUCCESS.0 {
             Ok(option.unwrap_unchecked())
         } else {
-            Err(*self)
+            Err(self)
         }
     }
 }
