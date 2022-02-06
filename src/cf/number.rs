@@ -181,6 +181,7 @@ impl Number {
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
     /// assert_eq!(num.to_i32().unwrap(), -5i32);
+    /// assert_eq!(num.to_i64().unwrap(), -5i64);
     /// ```
     #[inline]
     pub fn to_i16(&self) -> Option<i16> {
