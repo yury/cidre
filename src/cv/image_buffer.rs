@@ -7,16 +7,40 @@ impl ImageBuffer {
     pub fn get_encoded_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetEncodedSize(self) }
     }
+
+    /// ```
+    /// use cidre::{cv, cg};
+    ///
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
+    /// 
+    /// let display_size = pixel_buffer.get_display_size();
+    /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
+    /// ```
     #[inline]
     pub fn get_display_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetDisplaySize(self) }
     }
 
+    /// ```
+    /// use cidre::{cv, cg};
+    ///
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
+    /// 
+    /// let rect = pixel_buffer.get_clean_rect();
+    /// assert_eq!(cg::Rect { origin: cg::Point::zero(), size: cg::Size { width: 200.0, height: 100.0 }}, rect);
+    /// ```
     #[inline]
     pub fn get_clean_rect(&self) -> cg::Rect {
         unsafe { CVImageBufferGetCleanRect(self) }
     }
 
+    /// ```
+    /// use cidre::{cv, cg};
+    ///
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
+    /// 
+    /// assert_eq!(true, pixel_buffer.is_flipped());
+    /// ```
     #[inline]
     pub fn is_flipped(&self) -> bool {
         unsafe { CVImageBufferIsFlipped(self) }

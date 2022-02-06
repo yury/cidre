@@ -52,8 +52,6 @@ impl PixelBuffer {
     /// assert_eq!(0, pixel_buffer.get_plane_count());
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     /// 
-    /// let display_size = pixel_buffer.get_display_size();
-    /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
     /// ```
     pub fn new<'a>(
         width: usize,
