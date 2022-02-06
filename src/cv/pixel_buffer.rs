@@ -22,9 +22,31 @@ impl PixelBuffer {
         }
     }
 
+    #[inline]
     pub fn get_pixel_format_type(&self) -> PixelFormatType {
         unsafe {
             CVPixelBufferGetPixelFormatType(self)
+        }
+    }
+
+    #[inline]
+    pub fn get_plane_count(&self) -> usize {
+        unsafe {
+            CVPixelBufferGetPlaneCount(self)
+        }
+    }
+
+    #[inline]
+    pub fn get_plane_width(&self, plane_index: usize) -> usize {
+        unsafe {
+            CVPixelBufferGetWidthOfPlane(self, plane_index)
+        }
+    }
+
+    #[inline]
+    pub fn get_plane_height(&self, plane_index: usize) -> usize {
+        unsafe {
+            CVPixelBufferGetHeightOfPlane(self, plane_index)
         }
     }
 
@@ -38,6 +60,8 @@ impl PixelBuffer {
     /// assert_eq!(200, pixel_buffer.get_width());
     /// assert_eq!(100, pixel_buffer.get_height());
     /// assert_eq!(cv::PixelFormatType::_32BGRA, pixel_buffer.get_pixel_format_type());
+    /// assert_eq!(0, pixel_buffer.get_plane_count());
+    /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     /// ```
     pub fn new<'a>(
         width: usize,
@@ -104,6 +128,9 @@ extern "C" {
     fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuffer) -> usize;
     fn CVPixelBufferGetHeight(pixel_buffer: &PixelBuffer) -> usize;
     fn CVPixelBufferGetPixelFormatType(pixel_buffer: &PixelBuffer) -> PixelFormatType;
+    fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuffer) -> usize;
+    fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
+    fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
 }
 
 pub mod buffer_attribute_keys {
