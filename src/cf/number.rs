@@ -235,6 +235,13 @@ impl Number {
         }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_f64(-5.0f64).unwrap();
+    /// assert_eq!(num.get_number_type(), cf::NumberType::F64);
+    /// assert_eq!(num.to_f64().unwrap(), -5f64);
+    /// ```
     #[inline]
     pub fn to_f64(&self) -> Option<f64> {
         unsafe {
