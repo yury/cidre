@@ -114,6 +114,12 @@ impl Number {
         unsafe { CFNumberGetTypeID() }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i32(-5);
+    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
+    /// ```
     #[inline]
     pub fn get_number_type(&self) -> NumberType {
         unsafe { CFNumberGetType(self) }
