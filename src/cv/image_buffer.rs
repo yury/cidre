@@ -3,15 +3,14 @@ use crate::{cf, cg, cv};
 pub type ImageBuffer = cv::Buffer;
 
 impl ImageBuffer {
-
     /// Returns the full encoded dimensions of a cv::ImageBuffer.  For example, for an NTSC DV frame this would be 720x480
-    /// 
+    ///
     /// Example:
     /// ```
     /// use cidre::{cv, cg};
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
-    /// 
+    ///
     /// let size = pixel_buffer.get_encoded_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0 }, size);
     /// ```
@@ -24,7 +23,7 @@ impl ImageBuffer {
     /// use cidre::{cv, cg};
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
-    /// 
+    ///
     /// let display_size = pixel_buffer.get_display_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
     /// ```
@@ -37,7 +36,7 @@ impl ImageBuffer {
     /// use cidre::{cv, cg};
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
-    /// 
+    ///
     /// let rect = pixel_buffer.get_clean_rect();
     /// assert_eq!(cg::Rect { origin: cg::Point::zero(), size: cg::Size { width: 200.0, height: 100.0 }}, rect);
     /// ```
@@ -50,7 +49,7 @@ impl ImageBuffer {
     /// use cidre::{cv, cg};
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
-    /// 
+    ///
     /// assert_eq!(true, pixel_buffer.is_flipped());
     /// ```
     #[inline]

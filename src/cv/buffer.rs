@@ -13,6 +13,15 @@ define_cf_type!(Buffer(Type));
 
 impl Buffer {
     #[inline]
+    pub fn get_attachment<'a>(
+        &'a self,
+        key: &cf::String,
+        attachment_mode: AttachmentMode,
+    ) -> Option<&'a Type> {
+        unsafe { CVBufferGetAttachment(self, key, attachment_mode) }
+    }
+
+    #[inline]
     pub fn set_attachment(
         &mut self,
         key: &cf::String,
@@ -102,5 +111,10 @@ extern "C" {
         attachment_mode: AttachmentMode,
     ) -> Option<Retained<'a, Type>>;
     fn CVBufferHasAttachment(buffer: &Buffer, key: &cf::String) -> bool;
+    fn CVBufferGetAttachment<'a>(
+        buffer: &'a Buffer,
+        key: &cf::String,
+        attachment_mode: AttachmentMode,
+    ) -> Option<&'a cf::Type>;
 
 }

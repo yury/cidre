@@ -51,7 +51,7 @@ impl PixelBuffer {
     /// assert_eq!(cv::PixelFormatType::_32BGRA, pixel_buffer.get_pixel_format_type());
     /// assert_eq!(0, pixel_buffer.get_plane_count());
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
-    /// 
+    ///
     /// ```
     pub fn new<'a>(
         width: usize,

@@ -18,7 +18,6 @@ impl BlockBufferFlags {
 define_cf_type!(BlockBuffer(Type));
 
 impl BlockBuffer {
-   
     /// ```
     /// use cidre::cm;
     ///
@@ -30,12 +29,12 @@ impl BlockBuffer {
     pub fn type_id() -> TypeId {
         unsafe { CMBlockBufferGetTypeID() }
     }
-   
+
     /// ```
     /// use cidre::cm;
     ///
     /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
-    /// 
+    ///
     /// assert!(b.is_empty());
     /// ```
     #[inline]
@@ -47,7 +46,7 @@ impl BlockBuffer {
     /// use cidre::cm;
     ///
     /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
-    /// 
+    ///
     /// assert!(b.is_empty());
     /// ```
     #[inline]

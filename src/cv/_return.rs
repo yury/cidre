@@ -16,11 +16,11 @@ impl Return {
     pub const DISPLAY_LINK_ALREADY_RUNNING: Self = Self(-6671);
     pub const DISPLAY_LINK_NOT_RUNNING: Self = Self(-6672);
     pub const DISPLAY_LINK_CALLBACKS_NOT_SET: Self = Self(-6673);
-    
+
     // Buffer related errors
 
-    pub const INVALID_PIXEL_FORMAT : Self = Self(-6680);
-    pub const INVALID_SIZE : Self = Self(-6681);
+    pub const INVALID_PIXEL_FORMAT: Self = Self(-6680);
+    pub const INVALID_SIZE: Self = Self(-6681);
 
     // TODO: ...
 

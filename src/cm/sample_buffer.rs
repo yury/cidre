@@ -49,9 +49,8 @@ impl SampleTimingInfo {
 define_cf_type!(SampleBuffer(Type));
 
 impl SampleBuffer {
-
     /// Returns whether or not a cm::SampleBuffer's data is ready.
-    /// 
+    ///
     /// Example:
     /// ```
     /// use cidre::{cf, cm};
@@ -65,10 +64,8 @@ impl SampleBuffer {
     /// let buf = res.unwrap();
     /// assert!(buf.data_is_ready());
     /// ```
-    pub fn data_is_ready(&self)  -> bool {
-        unsafe {
-            CMSampleBufferDataIsReady(self)
-        }
+    pub fn data_is_ready(&self) -> bool {
+        unsafe { CMSampleBufferDataIsReady(self) }
     }
     /// ```
     /// use cidre::{cf, cm};
