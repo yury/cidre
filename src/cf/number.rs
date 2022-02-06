@@ -241,6 +241,7 @@ impl Number {
     /// let num = cf::Number::from_f64(-5.0f64).unwrap();
     /// assert_eq!(num.get_number_type(), cf::NumberType::F64);
     /// assert_eq!(num.to_f64().unwrap(), -5f64);
+    /// assert_eq!(true, num.is_float_type());
     /// ```
     #[inline]
     pub fn to_f64(&self) -> Option<f64> {
