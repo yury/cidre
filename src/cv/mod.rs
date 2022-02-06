@@ -1,3 +1,6 @@
+pub mod _return;
+pub use _return::Return;
+
 pub mod buffer;
 
 pub use buffer::AttachmentMode;
@@ -7,9 +10,9 @@ pub mod image_buffer;
 pub use image_buffer::ImageBuffer;
 
 pub mod pixel_buffer;
-pub use pixel_buffer::PixelBuffer;
-pub use pixel_buffer::PixelFormat;
 pub use pixel_buffer::buffer_attribute_keys;
+pub use pixel_buffer::PixelBuffer;
+pub use pixel_buffer::PixelFormatType;
 
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {}
