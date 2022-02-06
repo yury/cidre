@@ -8,55 +8,44 @@ impl PixelBuffer {
         unsafe { CVPixelBufferGetTypeID() }
     }
 
+    /// Width in pixels.
     #[inline]
     pub fn get_width(&self) -> usize {
-        unsafe {
-            CVPixelBufferGetWidth(self)
-        }
+        unsafe { CVPixelBufferGetWidth(self) }
     }
 
+    /// Height in pixels.
     #[inline]
     pub fn get_height(&self) -> usize {
-        unsafe {
-            CVPixelBufferGetHeight(self)
-        }
+        unsafe { CVPixelBufferGetHeight(self) }
     }
 
+    /// Returns the PixelFormatType of the PixelBuffer.
     #[inline]
     pub fn get_pixel_format_type(&self) -> PixelFormatType {
-        unsafe {
-            CVPixelBufferGetPixelFormatType(self)
-        }
+        unsafe { CVPixelBufferGetPixelFormatType(self) }
     }
 
     #[inline]
     pub fn get_plane_count(&self) -> usize {
-        unsafe {
-            CVPixelBufferGetPlaneCount(self)
-        }
+        unsafe { CVPixelBufferGetPlaneCount(self) }
     }
 
     #[inline]
     pub fn get_plane_width(&self, plane_index: usize) -> usize {
-        unsafe {
-            CVPixelBufferGetWidthOfPlane(self, plane_index)
-        }
+        unsafe { CVPixelBufferGetWidthOfPlane(self, plane_index) }
     }
 
     #[inline]
     pub fn get_plane_height(&self, plane_index: usize) -> usize {
-        unsafe {
-            CVPixelBufferGetHeightOfPlane(self, plane_index)
-        }
+        unsafe { CVPixelBufferGetHeightOfPlane(self, plane_index) }
     }
 
     /// ```
     /// use cidre::cv;
-    /// 
+    ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
-    /// 
-    /// pixel_buffer.show();
-    /// 
+    ///
     /// assert_eq!(200, pixel_buffer.get_width());
     /// assert_eq!(100, pixel_buffer.get_height());
     /// assert_eq!(cv::PixelFormatType::_32BGRA, pixel_buffer.get_pixel_format_type());
@@ -67,19 +56,20 @@ impl PixelBuffer {
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormatType,
-        pixel_buffer_attributes: Option<&cf::Dictionary>
+        pixel_buffer_attributes: Option<&cf::Dictionary>,
     ) -> Result<cf::Retained<'a, PixelBuffer>, cv::Return> {
-        unsafe {
-            let mut pixel_buffer_out = None;
+        let mut pixel_buffer_out = None;
 
-            let r = Self::create(None, width, height, pixel_format_type, pixel_buffer_attributes, &mut pixel_buffer_out);
+        let r = Self::create(
+            None,
+            width,
+            height,
+            pixel_format_type,
+            pixel_buffer_attributes,
+            &mut pixel_buffer_out,
+        );
 
-            if r == cv::Return::SUCCESS {
-                Ok(pixel_buffer_out.unwrap_unchecked())
-            } else {
-                Err(r)
-            }
-        }
+        unsafe { r.to_result(pixel_buffer_out) }
     }
 
     pub fn create(

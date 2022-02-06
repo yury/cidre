@@ -14,4 +14,13 @@ impl Return {
     pub const DISPLAY_LINK_ALREADY_RUNNING: Self = Self(-6671);
 
     // TODO: ...
+
+    #[inline]
+    pub unsafe fn to_result<T>(&self, option: Option<T>) -> Result<T, Self> {
+        if self.0 == Self::SUCCESS.0 {
+            Ok(option.unwrap_unchecked())
+        } else {
+            Err(*self)
+        }
+    }
 }

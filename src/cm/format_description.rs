@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Allocator, Retained},
-    cm, define_cf_type, os, FourCharCode,
+    define_cf_type, os, FourCharCode,
 };
 
 #[repr(transparent)]
@@ -28,7 +28,15 @@ impl VideoCodecType {
 
 define_cf_type!(FormatDescription(cf::Type));
 
-impl FormatDescription {}
+impl FormatDescription {
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CMFormatDescriptionGetTypeID() }
+    }
+
+    pub fn get_media_type(&self) -> MediaType {
+        unsafe { CMFormatDescriptionGetMediaType(self) }
+    }
+}
 
 pub type VideoFormatDescription = FormatDescription;
 
@@ -55,6 +63,9 @@ impl VideoFormatDescription {
 }
 
 extern "C" {
+    fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
+    fn CMFormatDescriptionGetMediaType(desc: &FormatDescription) -> MediaType;
+
     fn CMVideoFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
         codec_type: VideoCodecType,
