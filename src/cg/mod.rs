@@ -16,3 +16,6 @@ pub struct Rect {
     pub origin: Point,
     pub size: Size,
 }
+
+pub mod color_space;
+pub use color_space::ColorSpace;
