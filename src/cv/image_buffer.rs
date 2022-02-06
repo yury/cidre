@@ -3,6 +3,18 @@ use crate::{cf, cg, cv};
 pub type ImageBuffer = cv::Buffer;
 
 impl ImageBuffer {
+
+    /// Returns the full encoded dimensions of a cv::ImageBuffer.  For example, for an NTSC DV frame this would be 720x480
+    /// 
+    /// Example:
+    /// ```
+    /// use cidre::{cv, cg};
+    ///
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
+    /// 
+    /// let size = pixel_buffer.get_encoded_size();
+    /// assert_eq!(cg::Size { width: 200.0, height: 100.0 }, size);
+    /// ```
     #[inline]
     pub fn get_encoded_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetEncodedSize(self) }
