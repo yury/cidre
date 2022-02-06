@@ -125,11 +125,23 @@ impl Number {
         unsafe { CFNumberGetType(self) }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i32(-5);
+    /// assert_eq!(4, num.get_byte_size());
+    /// ```
     #[inline]
     pub fn get_byte_size(&self) -> Index {
         unsafe { CFNumberGetByteSize(self) }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let num = cf::Number::from_i32(-5);
+    /// assert_eq!(false, num.is_float_type());
+    /// ```
     #[inline]
     pub fn is_float_type(&self) -> bool {
         unsafe { CFNumberIsFloatType(self) }
