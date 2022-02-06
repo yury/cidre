@@ -20,9 +20,21 @@ pub struct Size {
     pub height: Float,
 }
 
+impl Size {
+    pub fn zero() -> Self {
+        Default::default()
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]
 #[repr(C)]
 pub struct Rect {
     pub origin: Point,
     pub size: Size,
+}
+
+impl Rect {
+    pub fn zero() {
+        Default::default()
+    }
 }

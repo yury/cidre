@@ -10,14 +10,25 @@ impl Return {
     pub const ALLOCATION_FAILED: Self = Self(-6662);
     pub const UNSUPPORTED: Self = Self(-6663);
 
+    // DisplayLink related errors
+
     pub const INVALID_DISPLAY: Self = Self(-6670);
     pub const DISPLAY_LINK_ALREADY_RUNNING: Self = Self(-6671);
+    pub const DISPLAY_LINK_NOT_RUNNING: Self = Self(-6672);
+    pub const DISPLAY_LINK_CALLBACKS_NOT_SET: Self = Self(-6673);
+    
+    // Buffer related errors
+
+    pub const INVALID_PIXEL_FORMAT : Self = Self(-6680);
+    pub const INVALID_SIZE : Self = Self(-6681);
 
     // TODO: ...
 
+    pub const LAST: Self = Self(-6699);
+
     #[inline]
     pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
-        if self.0 == Self::SUCCESS.0 {
+        if self == Self::SUCCESS {
             Ok(option.unwrap_unchecked())
         } else {
             Err(self)
