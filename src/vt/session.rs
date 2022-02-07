@@ -1,4 +1,7 @@
-use crate::{cf::Type, define_cf_type};
+use crate::{cf::Type};
 
 pub type Session = Type;
-// define_cf_type!(Session(Type));
+
+impl Session {
+  
+}
