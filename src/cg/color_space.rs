@@ -25,6 +25,14 @@ pub enum ColorSpaceModel {
 define_cf_type!(ColorSpace(cf::Type));
 
 impl ColorSpace {
+
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+      unsafe {
+        CGColorSpaceGetTypeID()
+      }
+    }
+
     #[inline]
     pub fn is_wide_gamut_rgb(&self) -> bool {
         unsafe { CGColorSpaceIsWideGamutRGB(self) }
@@ -53,15 +61,48 @@ impl ColorSpace {
         CGColorSpaceGetColorTableCount(self)
       }
     }
+
+    pub fn get_name(&self) -> Option<&cf::String> {
+      unsafe {
+        CGColorSpaceGetName(self)
+      }
+    }
+
+    #[inline]
+    pub fn create_device_gray<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
+      unsafe {
+        CGColorSpaceCreateDeviceGray()
+      }
+    }
+
+    /// ```
+    /// use cidre::cg;
+    /// 
+    /// let color_space = cg::ColorSpace::create_device_rgb().unwrap();
+    /// 
+    /// let name = color_space.get_name().unwrap();
+    /// assert_eq!("kCGColorSpaceDeviceRGB", name.to_string());
+    /// ```
+    #[inline]
+    pub fn create_device_rgb<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
+      unsafe {
+        CGColorSpaceCreateDeviceRGB()
+      }
+    }
 }
 
 extern "C" {
+    fn CGColorSpaceGetTypeID() -> cf::TypeId;
+    fn CGColorSpaceGetName(space: &ColorSpace) -> Option<&cf::String>;
     fn CGColorSpaceIsWideGamutRGB(space: &ColorSpace) -> bool;
     fn CGColorSpaceUsesITUR_2100TF(space: &ColorSpace) -> bool;
     fn CGColorSpaceUsesExtendedRange(space: &ColorSpace) -> bool;
     fn CGColorSpaceGetModel(space: &ColorSpace) -> ColorSpaceModel;
     fn CGColorSpaceGetBaseColorSpace(space: &ColorSpace) -> Option<&ColorSpace>;
     fn CGColorSpaceGetColorTableCount(space: &ColorSpace) -> usize;
+
+    fn CGColorSpaceCreateDeviceGray<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
+    fn CGColorSpaceCreateDeviceRGB<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
 }
 
 pub mod names {
