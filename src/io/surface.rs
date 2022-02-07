@@ -218,6 +218,15 @@ impl Surface {
             IOSurfaceAllowsPixelSizeCasting(self)
         }
     }
+
+    /// This will return the current seed value of the buffer and is a cheap call to make to see
+    /// if the contents of the buffer have changed since the last lock/unlock.
+    #[inline]
+    pub fn get_seed(&self) -> u32 {
+        unsafe {
+            IOSurfaceGetSeed(self)
+        }
+    }
     
 }
 
@@ -243,6 +252,8 @@ extern "C" {
     fn IOSurfaceDecrementUseCount(buffer: &mut Surface);
 
     fn IOSurfaceAllowsPixelSizeCasting(buffer: &Surface) -> bool;
+
+    fn IOSurfaceGetSeed(buffer: &Surface) -> u32;
 
 }
 
