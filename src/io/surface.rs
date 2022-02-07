@@ -163,6 +163,8 @@ impl Surface {
     /// let surf2 = io::Surface::from_mach_port(port).unwrap();
     /// port.task_self_deallocate();
     /// assert!(surf.equal(&surf2));
+    /// assert_eq!(false, surf.is_in_use());
+    /// assert_eq!(false, surf2.is_in_use());
     /// ```
     #[inline]
     pub fn create_mach_port(&self) -> MachPort {
