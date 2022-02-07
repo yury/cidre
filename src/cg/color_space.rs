@@ -39,85 +39,98 @@ impl ColorSpace {
     pub fn uses_extended_range(&self) -> bool {
         unsafe { CGColorSpaceUsesExtendedRange(self) }
     }
+
+    pub fn get_model(&self) -> ColorSpaceModel {
+        unsafe { CGColorSpaceGetModel(self) }
+    }
+
+    pub fn get_base_color_space(&self) -> Option<&ColorSpace> {
+        unsafe { CGColorSpaceGetBaseColorSpace(self) }
+    }
+
+    pub fn get_color_table_count(&self) -> usize {
+      unsafe {
+        CGColorSpaceGetColorTableCount(self)
+      }
+    }
 }
 
 extern "C" {
-    fn CGColorSpaceIsWideGamutRGB(color_space: &ColorSpace) -> bool;
-    fn CGColorSpaceUsesITUR_2100TF(color_space: &ColorSpace) -> bool;
-    fn CGColorSpaceUsesExtendedRange(color_space: &ColorSpace) -> bool;
+    fn CGColorSpaceIsWideGamutRGB(space: &ColorSpace) -> bool;
+    fn CGColorSpaceUsesITUR_2100TF(space: &ColorSpace) -> bool;
+    fn CGColorSpaceUsesExtendedRange(space: &ColorSpace) -> bool;
+    fn CGColorSpaceGetModel(space: &ColorSpace) -> ColorSpaceModel;
+    fn CGColorSpaceGetBaseColorSpace(space: &ColorSpace) -> Option<&ColorSpace>;
+    fn CGColorSpaceGetColorTableCount(space: &ColorSpace) -> usize;
 }
 
 pub mod names {
     use crate::cf;
 
+    /// The name of the "Generic" Gray color space. It is a legacy
+    /// color space so use it only if you definitely know that you
+    /// need it. If you need just a reasonable monochrome color space,
+    /// please use Generic Gray Gamma 2.2, i.e. use
+    /// generic_gray_gamma_2_2() name instead of
+    /// generic_gray().
     #[inline]
     pub fn generic_gray() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericGray
-      }
+        unsafe { kCGColorSpaceGenericGray }
     }
 
     #[inline]
     pub fn generic_rgb() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericRGB
-      }
+        unsafe { kCGColorSpaceGenericRGB }
     }
 
     #[inline]
     pub fn generic_cmyk() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericCMYK
-      }
+        unsafe { kCGColorSpaceGenericCMYK }
     }
 
     #[inline]
     pub fn display_p3() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceDisplayP3
-      }
+        unsafe { kCGColorSpaceDisplayP3 }
     }
 
     #[inline]
     pub fn generic_rgb_linear() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericRGBLinear
-      }
+        unsafe { kCGColorSpaceGenericRGBLinear }
     }
 
     #[inline]
     pub fn adobe_rgb_1998() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceAdobeRGB1998
-      }
+        unsafe { kCGColorSpaceAdobeRGB1998 }
     }
 
     #[inline]
     pub fn srgb() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceSRGB
-      }
+        unsafe { kCGColorSpaceSRGB }
     }
 
     #[inline]
     pub fn generic_gray_gamma_2_2() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericGrayGamma2_2
-      }
+        unsafe { kCGColorSpaceGenericGrayGamma2_2 }
     }
 
     #[inline]
     pub fn generic_xyz() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericXYZ
-      }
+        unsafe { kCGColorSpaceGenericXYZ }
     }
 
     #[inline]
     pub fn generic_lab() -> &'static cf::String {
-      unsafe {
-        kCGColorSpaceGenericLab
-      }
+        unsafe { kCGColorSpaceGenericLab }
+    }
+
+    #[inline]
+    pub fn acescg_linear() -> &'static cf::String {
+        unsafe { kCGColorSpaceACESCGLinear }
+    }
+
+    #[inline]
+    pub fn itur_709() -> &'static cf::String {
+        unsafe { kCGColorSpaceITUR_709 }
     }
 
     extern "C" {
