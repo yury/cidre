@@ -161,8 +161,8 @@ impl Surface {
     /// let surf = io::Surface::create(&properties).unwrap();
     /// let port = surf.create_mach_port();
     /// let surf2 = io::Surface::from_mach_port(port).unwrap();
-    /// assert!(surf.equal(&surf2));
     /// port.task_self_deallocate();
+    /// assert!(surf.equal(&surf2));
     /// ```
     pub fn create_mach_port(&self) -> MachPort {
         unsafe {
