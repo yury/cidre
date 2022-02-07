@@ -80,6 +80,7 @@ impl Array {
     ///
     /// let arr1 = cf::Array::new().expect("Array::new");
     /// let arr2 = arr1.create_copy(None).expect("copy");
+    /// assert!(arr1.equal(&arr2));
     /// unsafe {    
     ///     assert_ne!(arr1.as_ptr(), arr2.as_ptr());
     /// }

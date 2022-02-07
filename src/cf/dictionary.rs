@@ -59,7 +59,13 @@ define_cf_type!(Dictionary(Type));
 impl Dictionary {
     /// ```
     /// use cidre::cf;
-    /// assert_eq!(cf::Dictionary::type_id(), 18);
+    /// 
+    /// let type_id = cf::Dictionary::type_id();
+    /// assert_eq!(type_id, 18);
+    /// 
+    /// let type_desc = cf::copy_type_id_description(type_id).unwrap();
+    /// 
+    /// assert_eq!("CFDictionary", type_desc.to_string());
     /// ```
     #[inline]
     pub fn type_id() -> TypeId {
@@ -284,7 +290,9 @@ impl Dictionary {
 
 define_cf_type!(MutableDictionary(Dictionary));
 
-impl MutableDictionary {}
+impl MutableDictionary {
+    
+}
 
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: DictionaryKeyCallBacks;
