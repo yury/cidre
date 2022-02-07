@@ -68,6 +68,16 @@ impl ColorSpace {
       }
     }
 
+    /// ```
+    /// use cidre::cg;
+    /// 
+    /// let color_space = cg::ColorSpace::create_device_gray().unwrap();
+    /// 
+    /// assert_eq!(color_space.get_type_id(), cg::ColorSpace::type_id());
+    /// 
+    /// let name = color_space.get_name().unwrap();
+    /// assert_eq!("kCGColorSpaceDeviceGray", name.to_string());
+    /// ```
     #[inline]
     pub fn create_device_gray<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
       unsafe {
