@@ -45,10 +45,12 @@ impl CompressionSession {
         }
     }
 
+    #[inline]
     pub fn invalidate(&mut self) {
         unsafe { VTCompressionSessionInvalidate(self) }
     }
 
+    #[inline]
     pub fn encode_frame(
         &self,
         image_buffer: &cv::ImageBuffer,

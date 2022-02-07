@@ -13,16 +13,6 @@ pub mod os;
 pub mod sys;
 pub mod vt;
 
-pub fn test_asm() {
-    unsafe {
-        let null = cf::Null::value();
-        let num = cf::Number::from_i16(0);
-        let arr = cf::Array::from_type_refs(&[null, &num]).unwrap_unchecked();
-
-        arr.show();
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use crate::cf;
