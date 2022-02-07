@@ -44,7 +44,7 @@ impl Array {
     /// use cidre::cf;
     ///
     /// let arr = cf::Array::new().expect("arr");
-    /// assert_eq!(arr.len(), 0);
+    /// assert_eq!(arr.get_count(), 0);
     /// ```
     #[inline]
     pub fn get_count(&self) -> Index {
