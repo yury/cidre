@@ -80,6 +80,8 @@ impl ColorSpace {
     /// 
     /// let color_space = cg::ColorSpace::create_device_rgb().unwrap();
     /// 
+    /// assert_eq!(color_space.get_type_id(), cg::ColorSpace::type_id());
+    /// 
     /// let name = color_space.get_name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceRGB", name.to_string());
     /// ```
@@ -87,6 +89,23 @@ impl ColorSpace {
     pub fn create_device_rgb<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
       unsafe {
         CGColorSpaceCreateDeviceRGB()
+      }
+    }
+
+    /// ```
+    /// use cidre::cg;
+    /// 
+    /// let color_space = cg::ColorSpace::create_device_cmyk().unwrap();
+    /// 
+    /// assert_eq!(color_space.get_type_id(), cg::ColorSpace::type_id());
+    /// 
+    /// let name = color_space.get_name().unwrap();
+    /// assert_eq!("kCGColorSpaceDeviceCMYK", name.to_string());
+    /// ```
+    #[inline]
+    pub fn create_device_cmyk<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
+      unsafe {
+        CGColorSpaceCreateDeviceCMYK()
       }
     }
 }
@@ -103,6 +122,7 @@ extern "C" {
 
     fn CGColorSpaceCreateDeviceGray<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
     fn CGColorSpaceCreateDeviceRGB<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
+    fn CGColorSpaceCreateDeviceCMYK<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
 }
 
 pub mod names {
