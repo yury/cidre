@@ -34,7 +34,9 @@ impl Array {
     /// let type_id = cf::Array::type_id();
     /// assert_eq!(type_id, 19);
     /// 
-    /// assert_eq!("CFArray", cf::copy_type_id_description(type_id).unwrap().to_string());
+    /// let type_desc = cf::copy_type_id_description(type_id).unwrap();
+    /// 
+    /// assert_eq!("CFArray", type_desc.to_string());
     /// ```
     #[inline]
     pub fn type_id() -> TypeId {

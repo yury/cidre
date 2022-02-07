@@ -27,6 +27,17 @@ pub enum ColorSpaceModel {
 define_cf_type!(ColorSpace(cf::Type));
 
 impl ColorSpace {
+
+    
+    /// ```
+    /// use cidre::{cf, cg};
+    /// 
+    /// let type_id = cg::ColorSpace::type_id();
+    /// 
+    /// let type_desc = cf::copy_type_id_description(type_id).unwrap();
+    /// 
+    /// assert_eq!("CGColorSpace", type_desc.to_string());
+    /// ```
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CGColorSpaceGetTypeID() }
@@ -171,6 +182,9 @@ pub mod names {
         unsafe { kCGColorSpaceGenericCMYK }
     }
 
+    /// The Display P3 color space, created by Apple.
+    /// 
+    /// This color space uses the DCI P3 primaries, a D65 white point, and the sRGB transfer function.
     #[inline]
     pub fn display_p3() -> &'static cf::String {
         unsafe { kCGColorSpaceDisplayP3 }
@@ -186,6 +200,9 @@ pub mod names {
         unsafe { kCGColorSpaceAdobeRGB1998 }
     }
 
+    /// The standard Red Green Blue (sRGB) color space.
+    /// 
+    /// The sRGB colorimetry and non-linear transfer function are specified in IEC 61966-2-1.
     #[inline]
     pub fn srgb() -> &'static cf::String {
         unsafe { kCGColorSpaceSRGB }
@@ -234,6 +251,92 @@ pub mod names {
     #[inline]
     pub fn rommrgb() -> &'static cf::String {
         unsafe { kCGColorSpaceROMMRGB }
+    }
+
+    /// This color space was created by Digital Cinema Initiatives.
+    #[inline]
+    pub fn dci_p3() -> &'static cf::String {
+        unsafe { kCGColorSpaceDCIP3 }
+    }
+
+    #[inline]
+    pub fn linerar_itur_2020() -> &'static cf::String {
+        unsafe { kCGColorSpaceLinearITUR_2020 }
+    }
+
+    #[inline]
+    pub fn extended_itur_2020() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedITUR_2020 }
+    }
+
+    #[inline]
+    pub fn extended_linear_itur_2020() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedLinearITUR_2020 }
+    }
+
+    #[inline]
+    pub fn linear_display_p3() -> &'static cf::String {
+        unsafe { kCGColorSpaceLinearDisplayP3 }
+    }
+
+    #[inline]
+    pub fn extended_display_p3() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedDisplayP3 }
+    }
+    
+    #[inline]
+    pub fn extended_linear_display_p3() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedLinearDisplayP3 }
+    }
+
+    #[inline]
+    pub fn itur_2100_pq() -> &'static cf::String {
+        unsafe { kCGColorSpaceITUR_2100_PQ }
+    }
+
+    #[inline]
+    pub fn itur_2100_hlg() -> &'static cf::String {
+        unsafe { kCGColorSpaceITUR_2100_HLG }
+    }
+
+    #[inline]
+    pub fn display_p3_pq() -> &'static cf::String {
+        unsafe { kCGColorSpaceDisplayP3_PQ }
+    }
+
+    #[inline]
+    pub fn display_p3_hlg() -> &'static cf::String {
+        unsafe { kCGColorSpaceDisplayP3_HLG }
+    }
+
+    #[inline]
+    pub fn extended_srgb() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedSRGB }
+    }
+
+    #[inline]
+    pub fn linear_srgb() -> &'static cf::String {
+        unsafe { kCGColorSpaceLinearSRGB }
+    }
+
+    #[inline]
+    pub fn extended_linear_srgb() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedLinearSRGB }
+    }
+
+    #[inline]
+    pub fn extended_gray() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedGray }
+    }
+
+    #[inline]
+    pub fn linear_gray() -> &'static cf::String {
+        unsafe { kCGColorSpaceLinearGray }
+    }
+    
+    #[inline]
+    pub fn extended_linear_gray() -> &'static cf::String {
+        unsafe { kCGColorSpaceExtendedLinearGray }
     }
 
     extern "C" {
