@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Retained, Type},
-    define_cf_type,
+    define_cf_type, sys::_types::MachPort,
 };
 
 pub type SurfaceId = u32;
@@ -137,6 +137,44 @@ impl Surface {
     pub fn copy_all_values<'a>(&self) -> Option<Retained<'a, cf::Dictionary>> {
         unsafe { IOSurfaceCopyAllValues(self) }
     }
+
+    /// ```
+    /// use cidre::cf;
+    /// use cidre::io;
+    /// use cidre::mach::MachPort;
+    ///
+    ///
+    /// let width = cf::Number::from_i32(100);
+    /// let height = cf::Number::from_i32(200);
+    ///
+    /// let properties = cf::Dictionary::from_pairs(
+    ///   &[
+    ///     io::surface_keys::width(),
+    ///     io::surface_keys::height()
+    ///   ],
+    ///   &[
+    ///     &width,
+    ///     &height
+    ///   ]
+    /// ).unwrap();
+    ///
+    /// let surf = io::Surface::create(&properties).unwrap();
+    /// let port = surf.create_mach_port();
+    /// let surf2 = io::Surface::from_mach_port(port).unwrap();
+    /// assert!(surf.equal(&surf2));
+    /// port.task_self_deallocate();
+    /// ```
+    pub fn create_mach_port(&self) -> MachPort {
+        unsafe {
+            IOSurfaceCreateMachPort(self)
+        }
+    }
+
+    pub fn from_mach_port<'a>(port: MachPort) -> Option<Retained<'a, Surface>> {
+        unsafe {
+            IOSurfaceLookupFromMachPort(port)
+        }
+    }
 }
 
 extern "C" {
@@ -151,6 +189,9 @@ extern "C" {
     fn IOSurfaceGetHeightOfPlane(buffer: &Surface, plane_index: usize) -> usize;
 
     fn IOSurfaceCopyAllValues<'a>(buffer: &Surface) -> Option<Retained<'a, cf::Dictionary>>;
+
+    fn IOSurfaceCreateMachPort(buffer: &Surface) -> MachPort;
+    fn IOSurfaceLookupFromMachPort<'a>(port: MachPort) -> Option<Retained<'a, Surface>>;
 }
 
 /// The following list of properties are used with the cf::Dictionary passed to io::Surface::create
