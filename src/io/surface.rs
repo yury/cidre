@@ -69,8 +69,8 @@ impl Surface {
     ///
     /// let properties = cf::Dictionary::from_pairs(
     ///   &[
-    ///     io::surface_keys::width(),
-    ///     io::surface_keys::height()
+    ///     io::surface::keys::width(),
+    ///     io::surface::keys::height()
     ///   ],
     ///   &[
     ///     &width,
@@ -150,8 +150,8 @@ impl Surface {
     ///
     /// let properties = cf::Dictionary::from_pairs(
     ///   &[
-    ///     io::surface_keys::width(),
-    ///     io::surface_keys::height()
+    ///     io::surface::keys::width(),
+    ///     io::surface::keys::height()
     ///   ],
     ///   &[
     ///     &width,

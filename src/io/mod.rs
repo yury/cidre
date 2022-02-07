@@ -7,7 +7,5 @@ pub use surface::SurfaceId;
 pub use surface::SurfaceLockOptions;
 pub use surface::SurfaceSubsampling;
 
-pub use surface::keys as surface_keys;
-
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {}
