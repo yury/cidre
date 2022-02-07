@@ -141,7 +141,7 @@ impl Surface {
     /// ```
     /// use cidre::cf;
     /// use cidre::io;
-    /// use cidre::mach::MachPort;
+    /// use cidre::mach;
     ///
     ///
     /// let width = cf::Number::from_i32(100);
@@ -170,6 +170,9 @@ impl Surface {
         }
     }
 
+    /// This call takes a mach_port_t created via io::Surface::create_mach_port() and recreates an io::Surface from it.
+    /// 
+    /// This call does NOT destroy the port.
     pub fn from_mach_port<'a>(port: MachPort) -> Option<Retained<'a, Surface>> {
         unsafe {
             IOSurfaceLookupFromMachPort(port)
