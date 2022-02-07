@@ -164,6 +164,7 @@ impl Surface {
     /// port.task_self_deallocate();
     /// assert!(surf.equal(&surf2));
     /// ```
+    #[inline]
     pub fn create_mach_port(&self) -> MachPort {
         unsafe {
             IOSurfaceCreateMachPort(self)
@@ -173,11 +174,21 @@ impl Surface {
     /// This call takes a mach_port_t created via io::Surface::create_mach_port() and recreates an io::Surface from it.
     /// 
     /// This call does NOT destroy the port.
+    #[inline]
     pub fn from_mach_port<'a>(port: MachPort) -> Option<Retained<'a, Surface>> {
         unsafe {
             IOSurfaceLookupFromMachPort(port)
         }
     }
+
+    /// Returns true of an io::Surface is in use by any process in the system, otherwise false.
+    #[inline]
+    pub fn is_in_use(&self) -> bool {
+        unsafe {
+            IOSurfaceIsInUse(self)
+        }
+    }
+    
 }
 
 extern "C" {
@@ -195,6 +206,8 @@ extern "C" {
 
     fn IOSurfaceCreateMachPort(buffer: &Surface) -> MachPort;
     fn IOSurfaceLookupFromMachPort<'a>(port: MachPort) -> Option<Retained<'a, Surface>>;
+
+    fn IOSurfaceIsInUse(buffer: &Surface) -> bool;
 }
 
 /// The following list of properties are used with the cf::Dictionary passed to io::Surface::create
