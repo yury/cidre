@@ -75,6 +75,18 @@ impl From<bool> for &'static Boolean {
     }
 }
 
+impl<'a> PartialEq<bool> for &'a Boolean {
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// assert!(cf::Boolean::value_true() == true);
+    /// assert!(cf::Boolean::value_false() == false);
+    /// ```
+    fn eq(&self, other: &bool) -> bool {
+        self.get_value().eq(other)
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct NumberType(Index);
