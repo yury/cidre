@@ -318,6 +318,10 @@ pub mod keys {
     pub fn plane_base() -> &'static String {
         unsafe { kIOSurfacePlaneBase }
     }
+    #[inline]
+    pub fn plane_bits_per_element() -> &'static String {
+        unsafe { kIOSurfacePlaneBitsPerElement }
+    }
 
     extern "C" {
         static kIOSurfaceAllocSize: &'static String;
@@ -335,7 +339,7 @@ pub mod keys {
         static kIOSurfacePlaneOffset: &'static String;
         static kIOSurfacePlaneSize: &'static String;
         static kIOSurfacePlaneBase: &'static String;
-        // static kIOSurfacePlaneBitsPerElement: &'static String;
+        static kIOSurfacePlaneBitsPerElement: &'static String;
         // static kIOSurfacePlaneBytesPerElement: &'static String;
         // static kIOSurfacePlaneElementWidth: &'static String;
         // static kIOSurfacePlaneElementHeight: &'static String;
