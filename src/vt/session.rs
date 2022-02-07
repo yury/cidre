@@ -17,9 +17,17 @@ impl Session {
       VTSessionCopyProperty(self, key, allocator)
     }
   }
+
+  #[inline]
+  pub fn set_properties(&mut self, dict: &cf::Dictionary) -> os::Status {
+    unsafe {
+      VTSessionSetProperties(self, dict)
+    }
+  }
 }
 
 extern "C" {
   fn VTSessionSetProperty(session: &mut Session, property_key: &cf::String, property_value: Option<&cf::Type>) -> os::Status;
   fn VTSessionCopyProperty<'a>(session: &Session, property_key: &cf::String, allocator: Option<&cf::Allocator>) -> Option<cf::Retained<'a, cf::Type>>;
+  fn VTSessionSetProperties(session: &mut Session, property_dictionary: &cf::Dictionary) -> os::Status;
 }
