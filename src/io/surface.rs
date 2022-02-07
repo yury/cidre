@@ -60,8 +60,7 @@ impl Surface {
         unsafe { IOSurfaceGetTypeID() }
     }
     /// ```
-    /// use cidre::cf;
-    /// use cidre::io;
+    /// use cidre::{cf, io};
     ///
     ///
     /// let width = cf::Number::from_i32(100);
@@ -140,10 +139,7 @@ impl Surface {
     }
 
     /// ```
-    /// use cidre::cf;
-    /// use cidre::io;
-    /// use cidre::mach;
-    ///
+    /// use cidre::{cf, io, mach};
     ///
     /// let width = cf::Number::from_i32(100);
     /// let height = cf::Number::from_i32(200);

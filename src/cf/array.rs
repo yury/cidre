@@ -30,7 +30,11 @@ define_cf_type!(Array(Type));
 impl Array {
     /// ```
     /// use cidre::cf;
-    /// assert_eq!(cf::Array::type_id(), 19);
+    /// 
+    /// let type_id = cf::Array::type_id();
+    /// assert_eq!(type_id, 19);
+    /// 
+    /// assert_eq!("CFArray", cf::copy_type_id_description(type_id).unwrap().to_string());
     /// ```
     #[inline]
     pub fn type_id() -> TypeId {
