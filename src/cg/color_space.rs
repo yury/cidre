@@ -1,5 +1,6 @@
 use crate::{cf, define_cf_type};
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(i32)]
 pub enum ColorRenderingIntent {
     Default = 0,
@@ -9,6 +10,7 @@ pub enum ColorRenderingIntent {
     Saturation = 4,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(i32)]
 pub enum ColorSpaceModel {
     Unknown = -1,
@@ -71,12 +73,14 @@ impl ColorSpace {
     /// ```
     /// use cidre::cg;
     /// 
-    /// let color_space = cg::ColorSpace::create_device_gray().unwrap();
+    /// let space = cg::ColorSpace::create_device_gray().unwrap();
     /// 
-    /// assert_eq!(color_space.get_type_id(), cg::ColorSpace::type_id());
+    /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     /// 
-    /// let name = color_space.get_name().unwrap();
+    /// let name = space.get_name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceGray", name.to_string());
+    /// 
+    /// assert_eq!(cg::ColorSpaceModel::Monochrome, space.get_model());
     /// ```
     #[inline]
     pub fn create_device_gray<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
@@ -88,12 +92,14 @@ impl ColorSpace {
     /// ```
     /// use cidre::cg;
     /// 
-    /// let color_space = cg::ColorSpace::create_device_rgb().unwrap();
+    /// let space = cg::ColorSpace::create_device_rgb().unwrap();
     /// 
-    /// assert_eq!(color_space.get_type_id(), cg::ColorSpace::type_id());
+    /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     /// 
-    /// let name = color_space.get_name().unwrap();
+    /// let name = space.get_name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceRGB", name.to_string());
+    /// 
+    /// assert_eq!(cg::ColorSpaceModel::RGB, space.get_model());
     /// ```
     #[inline]
     pub fn create_device_rgb<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
@@ -105,12 +111,14 @@ impl ColorSpace {
     /// ```
     /// use cidre::cg;
     /// 
-    /// let color_space = cg::ColorSpace::create_device_cmyk().unwrap();
+    /// let space = cg::ColorSpace::create_device_cmyk().unwrap();
     /// 
-    /// assert_eq!(color_space.get_type_id(), cg::ColorSpace::type_id());
+    /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     /// 
-    /// let name = color_space.get_name().unwrap();
+    /// let name = space.get_name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceCMYK", name.to_string());
+    /// 
+    /// assert_eq!(cg::ColorSpaceModel::CMYK, space.get_model());
     /// ```
     #[inline]
     pub fn create_device_cmyk<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
@@ -202,6 +210,21 @@ pub mod names {
     #[inline]
     pub fn itur_709() -> &'static cf::String {
         unsafe { kCGColorSpaceITUR_709 }
+    }
+
+    #[inline]
+    pub fn itur_709_pq() -> &'static cf::String {
+        unsafe { kCGColorSpaceITUR_709_PQ }
+    }
+
+    #[inline]
+    pub fn itur_2020() -> &'static cf::String {
+        unsafe { kCGColorSpaceITUR_2020 }
+    }
+
+    #[inline]
+    pub fn itur_2020_srgb_gamma() -> &'static cf::String {
+        unsafe { kCGColorSpaceITUR_2020_sRGBGamma }
     }
 
     extern "C" {
