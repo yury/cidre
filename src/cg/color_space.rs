@@ -126,6 +126,23 @@ impl ColorSpace {
         CGColorSpaceCreateDeviceCMYK()
       }
     }
+
+    /// ```
+    /// use cidre::cg;
+    /// 
+    /// let space = cg::ColorSpace::create_with_name(Some(cg::color_space::names::generic_gray())).unwrap();
+    /// 
+    /// let name = space.get_name().unwrap();
+    /// 
+    /// assert!(name.equal(cg::color_space::names::generic_gray()));
+    /// ```
+    #[inline]
+    pub fn create_with_name<'a>(name: Option<&cf::String>) -> Option<cf::Retained<'a, ColorSpace>> {
+      unsafe {
+        CGColorSpaceCreateWithName(name)
+      }
+    }
+
 }
 
 extern "C" {
@@ -141,6 +158,8 @@ extern "C" {
     fn CGColorSpaceCreateDeviceGray<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
     fn CGColorSpaceCreateDeviceRGB<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
     fn CGColorSpaceCreateDeviceCMYK<'a>() -> Option<cf::Retained<'a, ColorSpace>>;
+
+    fn CGColorSpaceCreateWithName<'a>(name: Option<&cf::String>) -> Option<cf::Retained<'a, ColorSpace>>;
 }
 
 pub mod names {
@@ -226,7 +245,7 @@ pub mod names {
     pub fn itur_2020_srgb_gamma() -> &'static cf::String {
         unsafe { kCGColorSpaceITUR_2020_sRGBGamma }
     }
-    
+
     #[inline]
     pub fn rommrgb() -> &'static cf::String {
         unsafe { kCGColorSpaceROMMRGB }
