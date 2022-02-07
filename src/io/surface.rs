@@ -1,6 +1,7 @@
 use crate::{
     cf::{self, Retained, Type},
-    define_cf_type, sys::_types::MachPort,
+    define_cf_type,
+    sys::_types::MachPort,
 };
 
 pub type SurfaceId = u32;
@@ -168,66 +169,49 @@ impl Surface {
     /// ```
     #[inline]
     pub fn create_mach_port(&self) -> MachPort {
-        unsafe {
-            IOSurfaceCreateMachPort(self)
-        }
+        unsafe { IOSurfaceCreateMachPort(self) }
     }
 
     /// This call takes a mach_port_t created via io::Surface::create_mach_port() and recreates an io::Surface from it.
-    /// 
+    ///
     /// This call does NOT destroy the port.
     #[inline]
     pub fn from_mach_port<'a>(port: MachPort) -> Option<Retained<'a, Surface>> {
-        unsafe {
-            IOSurfaceLookupFromMachPort(port)
-        }
+        unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
     /// Returns true of an io::Surface is in use by any process in the system, otherwise false.
     #[inline]
     pub fn is_in_use(&self) -> bool {
-        unsafe {
-            IOSurfaceIsInUse(self)
-        }
+        unsafe { IOSurfaceIsInUse(self) }
     }
 
     #[inline]
     pub fn get_use_count(&self) -> i32 {
-        unsafe {
-            IOSurfaceGetUseCount(self)
-        }
+        unsafe { IOSurfaceGetUseCount(self) }
     }
 
     #[inline]
     pub fn increment_use_count(&mut self) {
-        unsafe {
-            IOSurfaceIncrementUseCount(self)
-        }
+        unsafe { IOSurfaceIncrementUseCount(self) }
     }
 
     #[inline]
     pub fn decrement_use_count(&mut self) {
-        unsafe {
-            IOSurfaceDecrementUseCount(self)
-        }
+        unsafe { IOSurfaceDecrementUseCount(self) }
     }
 
     #[inline]
     pub fn allows_pixel_size_casting(&self) -> bool {
-        unsafe {
-            IOSurfaceAllowsPixelSizeCasting(self)
-        }
+        unsafe { IOSurfaceAllowsPixelSizeCasting(self) }
     }
 
     /// This will return the current seed value of the buffer and is a cheap call to make to see
     /// if the contents of the buffer have changed since the last lock/unlock.
     #[inline]
     pub fn get_seed(&self) -> u32 {
-        unsafe {
-            IOSurfaceGetSeed(self)
-        }
+        unsafe { IOSurfaceGetSeed(self) }
     }
-    
 }
 
 extern "C" {

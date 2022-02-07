@@ -13,8 +13,6 @@ impl StringEncoding {
     pub const UTF8: Self = Self(0x08000100);
 }
 
-
-
 #[repr(transparent)]
 pub struct StringCompareFlags(OptionFlags);
 

@@ -8,10 +8,10 @@ pub mod cg;
 pub mod cm;
 pub mod cv;
 pub mod io;
+pub mod mach;
 pub mod os;
 pub mod sys;
 pub mod vt;
-pub mod mach;
 
 pub fn test_asm() {
     unsafe {
