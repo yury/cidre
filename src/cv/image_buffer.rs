@@ -34,7 +34,7 @@ impl ImageBuffer {
     }
 
     /// Returns the source rectangle of a Core Video image buffer that represents the clean aperture of the buffer in encoded pixels.
-    /// 
+    ///
     /// ```
     /// use cidre::{cv, cg};
     ///
@@ -49,7 +49,7 @@ impl ImageBuffer {
     }
 
     /// Returns a Boolean value indicating whether the image is flipped vertically.
-    /// 
+    ///
     /// ```
     /// use cidre::{cv, cg};
     ///

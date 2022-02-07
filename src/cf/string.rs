@@ -3,7 +3,7 @@ use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
 
 use super::{Allocator, Index, OptionFlags, Range, Retained, Type, TypeId};
 
-use crate::define_cf_type;
+use crate::{define_cf_type, UniChar};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
@@ -13,7 +13,7 @@ impl StringEncoding {
     pub const UTF8: Self = Self(0x08000100);
 }
 
-pub type UniChar = u16;
+
 
 #[repr(transparent)]
 pub struct StringCompareFlags(OptionFlags);

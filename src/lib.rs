@@ -1,21 +1,15 @@
-pub type FourCharCode = u32;
-pub type ResType = FourCharCode; // ??
-
-pub mod os {
-    use super::FourCharCode;
-
-    pub type Err = i16;
-    pub type Status = i32;
-    pub type Type = FourCharCode;
-
-    pub const NO_ERR: Status = 0;
-}
+pub mod mac_types;
+pub use mac_types::FourCharCode;
+pub use mac_types::ResType;
+pub use mac_types::UniChar;
 
 pub mod cf;
 pub mod cg;
 pub mod cm;
 pub mod cv;
 pub mod io;
+pub mod os;
+pub mod sys;
 pub mod vt;
 
 pub fn test_asm() {

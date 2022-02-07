@@ -26,7 +26,6 @@ pub use string::MutableString;
 pub use string::String;
 pub use string::StringCompareFlags;
 pub use string::StringEncoding;
-pub use string::UniChar;
 
 pub mod array;
 pub use array::Array;
