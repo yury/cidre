@@ -190,6 +190,34 @@ impl Surface {
             IOSurfaceIsInUse(self)
         }
     }
+
+    #[inline]
+    pub fn get_use_count(&self) -> i32 {
+        unsafe {
+            IOSurfaceGetUseCount(self)
+        }
+    }
+
+    #[inline]
+    pub fn increment_use_count(&mut self) {
+        unsafe {
+            IOSurfaceIncrementUseCount(self)
+        }
+    }
+
+    #[inline]
+    pub fn decrement_use_count(&mut self) {
+        unsafe {
+            IOSurfaceDecrementUseCount(self)
+        }
+    }
+
+    #[inline]
+    pub fn allows_pixel_size_casting(&self) -> bool {
+        unsafe {
+            IOSurfaceAllowsPixelSizeCasting(self)
+        }
+    }
     
 }
 
@@ -210,6 +238,12 @@ extern "C" {
     fn IOSurfaceLookupFromMachPort<'a>(port: MachPort) -> Option<Retained<'a, Surface>>;
 
     fn IOSurfaceIsInUse(buffer: &Surface) -> bool;
+    fn IOSurfaceGetUseCount(buffer: &Surface) -> i32;
+    fn IOSurfaceIncrementUseCount(buffer: &mut Surface);
+    fn IOSurfaceDecrementUseCount(buffer: &mut Surface);
+
+    fn IOSurfaceAllowsPixelSizeCasting(buffer: &Surface) -> bool;
+
 }
 
 /// The following list of properties are used with the cf::Dictionary passed to io::Surface::create
