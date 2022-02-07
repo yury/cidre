@@ -226,6 +226,11 @@ pub mod names {
     pub fn itur_2020_srgb_gamma() -> &'static cf::String {
         unsafe { kCGColorSpaceITUR_2020_sRGBGamma }
     }
+    
+    #[inline]
+    pub fn rommrgb() -> &'static cf::String {
+        unsafe { kCGColorSpaceROMMRGB }
+    }
 
     extern "C" {
         static kCGColorSpaceGenericGray: &'static cf::String;
