@@ -51,6 +51,11 @@ impl CompressionSession {
     }
 
     #[inline]
+    pub fn prepare_to_encode_frames(&mut self) {
+        unsafe { VTCompressionSessionPrepareToEncodeFrames(self) }
+    }
+
+    #[inline]
     pub fn encode_frame(
         &self,
         image_buffer: &cv::ImageBuffer,
@@ -89,6 +94,7 @@ extern "C" {
     ) -> os::Status;
 
     fn VTCompressionSessionInvalidate(session: &mut CompressionSession);
+    fn VTCompressionSessionPrepareToEncodeFrames(session: &mut CompressionSession);
 
     fn VTCompressionSessionEncodeFrame(
         session: &CompressionSession,
