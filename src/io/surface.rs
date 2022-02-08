@@ -55,6 +55,13 @@ impl SurfaceLockOptions {
 define_cf_type!(Surface(Type));
 
 impl Surface {
+    /// ```
+    /// use cidre::io;
+    ///
+    /// let type_id = io::Surface::type_id();
+    ///
+    /// assert_ne!(type_id, 0);
+    /// ```
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { IOSurfaceGetTypeID() }

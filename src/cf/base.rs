@@ -46,11 +46,13 @@ pub enum ComparisonResult {
 ///
 /// let s = cf::Number::from_i32(10);//from_static_string("hello").unwrap();
 /// let t = s.get_type_id();
-/// let desc = cf::copy_type_id_description(t).unwrap();
-/// assert_eq!("CFNumber", desc.to_string());
+/// unsafe {
+///     let desc = cf::copy_type_id_description(t).unwrap();
+///     assert_eq!("CFNumber", desc.to_string());
+/// }
 /// ```
-pub fn copy_type_id_description<'a>(type_id: TypeId) -> Option<Retained<'a, String>> {
-    unsafe { CFCopyTypeIDDescription(type_id) }
+pub unsafe fn copy_type_id_description<'a>(type_id: TypeId) -> Option<Retained<'a, String>> {
+    CFCopyTypeIDDescription(type_id)
 }
 
 impl From<ComparisonResult> for Ordering {

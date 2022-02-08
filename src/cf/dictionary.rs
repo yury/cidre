@@ -63,9 +63,10 @@ impl Dictionary {
     /// let type_id = cf::Dictionary::type_id();
     /// assert_eq!(type_id, 18);
     ///
-    /// let type_desc = cf::copy_type_id_description(type_id).unwrap();
-    ///
-    /// assert_eq!("CFDictionary", type_desc.to_string());
+    /// unsafe {
+    ///     let type_desc = cf::copy_type_id_description(type_id).unwrap();
+    ///     assert_eq!("CFDictionary", type_desc.to_string());
+    /// }
     /// ```
     #[inline]
     pub fn type_id() -> TypeId {
