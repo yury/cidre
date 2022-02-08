@@ -124,7 +124,7 @@ extern "C" {
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
 }
 
-pub mod buffer_attribute_keys {
+pub mod keys {
     use crate::cf;
 
     /// A single cf::Number or a cf::Array of cf::Numbers (os::Types)
