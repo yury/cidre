@@ -62,6 +62,13 @@ impl ImageBuffer {
         unsafe { CVImageBufferIsFlipped(self) }
     }
 
+    /// ```
+    /// use cidre::{cv, cg};
+    ///
+    /// let buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
+    ///
+    /// ```
+
     #[inline]
     pub fn get_color_space(&self) -> Option<&cg::ColorSpace> {
         unsafe { CVImageBufferGetColorSpace(self) }
@@ -84,4 +91,300 @@ extern "C" {
     fn CVImageBufferCreateColorSpaceFromAttachments(
         attachments: &cf::Dictionary,
     ) -> Option<cf::Retained<cg::ColorSpace>>;
+}
+
+
+pub mod attachment {
+
+    pub mod keys {
+        use crate::cf;
+
+        #[inline]
+        pub fn color_space() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferCGColorSpaceKey
+            }
+        }
+
+        #[inline]
+        pub fn clean_aperture() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferCleanApertureKey
+            }
+        }
+
+        #[inline]
+        pub fn preferred_clean_aperture() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferPreferredCleanApertureKey
+            }
+        }
+
+        #[inline]
+        pub fn field_count() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferFieldCountKey
+            }
+        }
+
+        #[inline]
+        pub fn field_detail() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferFieldDetailKey
+            }
+        }
+
+        #[inline]
+        pub fn aspect_ratio() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferPixelAspectRatioKey
+            }
+        }
+
+        #[inline]
+        pub fn display_dimensions() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferDisplayDimensionsKey
+            }
+        }
+
+        #[inline]
+        pub fn gamma_level() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferGammaLevelKey
+            }
+        }
+
+        #[inline]
+        pub fn iic_profile() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferICCProfileKey
+            }
+        }
+
+        #[inline]
+        pub fn y_cb_cr_matrix() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferYCbCrMatrixKey
+            }
+        }
+
+        #[inline]
+        pub fn color_primaries() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimariesKey
+            }
+        }
+
+        extern "C" {
+            static kCVImageBufferCGColorSpaceKey: &'static cf::String;
+            static kCVImageBufferCleanApertureKey: &'static cf::String;
+
+            static kCVImageBufferPreferredCleanApertureKey: &'static cf::String;
+            static kCVImageBufferFieldCountKey: &'static cf::String;
+            static kCVImageBufferFieldDetailKey: &'static cf::String;    
+            static kCVImageBufferPixelAspectRatioKey: &'static cf::String;    
+            static kCVImageBufferDisplayDimensionsKey: &'static cf::String;
+            static kCVImageBufferGammaLevelKey: &'static cf::String;
+            static kCVImageBufferICCProfileKey: &'static cf::String;
+            static kCVImageBufferYCbCrMatrixKey: &'static cf::String;
+            static kCVImageBufferColorPrimariesKey: &'static cf::String;
+            
+        }
+
+    }
+
+    pub mod clean_aperture_keys {
+        use crate::cf;
+
+        #[inline]
+        pub fn width() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferCleanApertureWidthKey
+            }
+        }
+        #[inline]
+        pub fn height() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferCleanApertureHeightKey
+            }
+        }
+        #[inline]
+        pub fn horizontal_offset() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferCleanApertureHorizontalOffsetKey
+            }
+        }
+
+        #[inline]
+        pub fn vertical_offset() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferCleanApertureVerticalOffsetKey
+            }
+        }
+
+
+        extern "C" { 
+            static kCVImageBufferCleanApertureWidthKey: &'static cf::String;
+            static kCVImageBufferCleanApertureHeightKey: &'static cf::String;
+            static kCVImageBufferCleanApertureHorizontalOffsetKey: &'static cf::String;
+            static kCVImageBufferCleanApertureVerticalOffsetKey: &'static cf::String;
+        }
+    }
+
+    pub mod field_detail {
+        use crate::cf;
+
+        pub fn termporal_top_first() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferFieldDetailTemporalTopFirst 
+            }
+        }
+        pub fn termporal_bottom_first() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferFieldDetailTemporalBottomFirst 
+            }
+        }
+        pub fn spatial_first_line_early() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferFieldDetailSpatialFirstLineEarly 
+            }
+        }
+        pub fn spatial_first_line_late() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferFieldDetailSpatialFirstLineLate 
+            }
+        }
+        extern "C" {
+            static kCVImageBufferFieldDetailTemporalTopFirst: &'static cf::String;
+            static kCVImageBufferFieldDetailTemporalBottomFirst: &'static cf::String;
+            static kCVImageBufferFieldDetailSpatialFirstLineEarly: &'static cf::String;
+            static kCVImageBufferFieldDetailSpatialFirstLineLate: &'static cf::String;
+        }
+    }
+
+    pub mod aspect_ration_keys {
+        use crate::cf; 
+
+        pub fn horizontal_spacing() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferPixelAspectRatioHorizontalSpacingKey 
+            }
+        }
+
+        pub fn vertical_spacing() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferPixelAspectRatioVerticalSpacingKey 
+            }
+        }
+
+        extern "C" {
+            static kCVImageBufferPixelAspectRatioHorizontalSpacingKey: &'static cf::String;
+            static kCVImageBufferPixelAspectRatioVerticalSpacingKey: &'static cf::String;
+        }
+    }
+
+    pub mod display_keys {
+        use crate::cf; 
+
+        pub fn width() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferDisplayWidthKey 
+            }
+        }
+
+        pub fn height() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferDisplayHeightKey 
+            }
+        }
+
+        extern "C" {
+            static kCVImageBufferDisplayWidthKey: &'static cf::String;
+            static kCVImageBufferDisplayHeightKey: &'static cf::String;
+        }
+    }
+
+    pub mod y_cb_cr_matrix {
+        use crate::cf;
+
+        pub fn itu_r_709_2() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferYCbCrMatrix_ITU_R_709_2 
+            }
+        }
+        pub fn itu_r_601_4() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferYCbCrMatrix_ITU_R_601_4 
+            }
+        }
+        pub fn smpte_240m_1995() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferYCbCrMatrix_SMPTE_240M_1995 
+            }
+        }
+        pub fn itu_r_2020() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferYCbCrMatrix_ITU_R_2020 
+            }
+        }
+        extern "C" {
+            static kCVImageBufferYCbCrMatrix_ITU_R_709_2: &'static cf::String;
+            static kCVImageBufferYCbCrMatrix_ITU_R_601_4: &'static cf::String;
+            static kCVImageBufferYCbCrMatrix_SMPTE_240M_1995: &'static cf::String;
+            static kCVImageBufferYCbCrMatrix_ITU_R_2020: &'static cf::String;
+        }
+    }
+
+    pub mod color_primaries {
+        use crate::cf;
+
+        pub fn itu_r_709_2() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_ITU_R_709_2 
+            }
+        }
+        pub fn ebu_3213() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_EBU_3213 
+            }
+        }
+        pub fn smpte_c() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_SMPTE_C 
+            }
+        }
+        pub fn p22() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_P22 
+            }
+        }
+        pub fn dci_p3() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_DCI_P3 
+            }
+        }
+        pub fn p3_d65() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_P3_D65 
+            }
+        }
+
+        pub fn itu_r_2020() -> &'static cf::String {
+            unsafe {
+                kCVImageBufferColorPrimaries_ITU_R_2020 
+            }
+        }
+        extern "C" {
+            static kCVImageBufferColorPrimaries_ITU_R_709_2: &'static cf::String;
+            static kCVImageBufferColorPrimaries_EBU_3213: &'static cf::String;
+            static kCVImageBufferColorPrimaries_SMPTE_C: &'static cf::String;
+            static kCVImageBufferColorPrimaries_P22: &'static cf::String;
+            static kCVImageBufferColorPrimaries_DCI_P3: &'static cf::String;
+            static kCVImageBufferColorPrimaries_P3_D65: &'static cf::String;
+            static kCVImageBufferColorPrimaries_ITU_R_2020: &'static cf::String;
+        }
+    }
+
+
 }

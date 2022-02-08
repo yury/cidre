@@ -3,14 +3,21 @@ pub use mac_types::FourCharCode;
 pub use mac_types::ResType;
 pub use mac_types::UniChar;
 
+/// Core Foundation
 pub mod cf;
+/// Core Graphics
 pub mod cg;
+/// Core Media
 pub mod cm;
+/// Core Vieo
 pub mod cv;
+/// IOSurface
 pub mod io;
+/// match
 pub mod mach;
 pub mod os;
 pub mod sys;
+/// Video Toolbox
 pub mod vt;
 
 #[cfg(test)]
@@ -21,6 +28,7 @@ mod tests {
         let f = {
             let null = cf::Null::value();
             null.show();
+            
             let num = cf::Number::from_i16(0);
             let arr = cf::Array::from_type_refs(&[null, &num]).unwrap();
 
