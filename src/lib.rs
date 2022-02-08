@@ -28,7 +28,7 @@ mod tests {
         let f = {
             let null = cf::Null::value();
             null.show();
-            
+
             let num = cf::Number::from_i16(0);
             let arr = cf::Array::from_type_refs(&[null, &num]).unwrap();
 

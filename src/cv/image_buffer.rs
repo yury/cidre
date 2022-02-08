@@ -93,7 +93,6 @@ extern "C" {
     ) -> Option<cf::Retained<cg::ColorSpace>>;
 }
 
-
 pub mod attachment {
 
     pub mod keys {
@@ -101,79 +100,62 @@ pub mod attachment {
 
         #[inline]
         pub fn color_space() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferCGColorSpaceKey
-            }
+            unsafe { kCVImageBufferCGColorSpaceKey }
         }
 
         #[inline]
         pub fn clean_aperture() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferCleanApertureKey
-            }
+            unsafe { kCVImageBufferCleanApertureKey }
         }
 
         #[inline]
         pub fn preferred_clean_aperture() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferPreferredCleanApertureKey
-            }
+            unsafe { kCVImageBufferPreferredCleanApertureKey }
         }
 
         #[inline]
         pub fn field_count() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferFieldCountKey
-            }
+            unsafe { kCVImageBufferFieldCountKey }
         }
 
         #[inline]
         pub fn field_detail() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferFieldDetailKey
-            }
+            unsafe { kCVImageBufferFieldDetailKey }
         }
 
         #[inline]
         pub fn aspect_ratio() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferPixelAspectRatioKey
-            }
+            unsafe { kCVImageBufferPixelAspectRatioKey }
         }
 
         #[inline]
         pub fn display_dimensions() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferDisplayDimensionsKey
-            }
+            unsafe { kCVImageBufferDisplayDimensionsKey }
         }
 
         #[inline]
         pub fn gamma_level() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferGammaLevelKey
-            }
+            unsafe { kCVImageBufferGammaLevelKey }
         }
 
         #[inline]
         pub fn iic_profile() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferICCProfileKey
-            }
+            unsafe { kCVImageBufferICCProfileKey }
         }
 
         #[inline]
         pub fn y_cb_cr_matrix() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferYCbCrMatrixKey
-            }
+            unsafe { kCVImageBufferYCbCrMatrixKey }
         }
 
         #[inline]
         pub fn color_primaries() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimariesKey
-            }
+            unsafe { kCVImageBufferColorPrimariesKey }
+        }
+
+        #[inline]
+        pub fn transfer_function() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunctionKey }
         }
 
         extern "C" {
@@ -182,16 +164,15 @@ pub mod attachment {
 
             static kCVImageBufferPreferredCleanApertureKey: &'static cf::String;
             static kCVImageBufferFieldCountKey: &'static cf::String;
-            static kCVImageBufferFieldDetailKey: &'static cf::String;    
-            static kCVImageBufferPixelAspectRatioKey: &'static cf::String;    
+            static kCVImageBufferFieldDetailKey: &'static cf::String;
+            static kCVImageBufferPixelAspectRatioKey: &'static cf::String;
             static kCVImageBufferDisplayDimensionsKey: &'static cf::String;
             static kCVImageBufferGammaLevelKey: &'static cf::String;
             static kCVImageBufferICCProfileKey: &'static cf::String;
             static kCVImageBufferYCbCrMatrixKey: &'static cf::String;
             static kCVImageBufferColorPrimariesKey: &'static cf::String;
-            
+            static kCVImageBufferTransferFunctionKey: &'static cf::String;
         }
-
     }
 
     pub mod clean_aperture_keys {
@@ -199,32 +180,23 @@ pub mod attachment {
 
         #[inline]
         pub fn width() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferCleanApertureWidthKey
-            }
+            unsafe { kCVImageBufferCleanApertureWidthKey }
         }
         #[inline]
         pub fn height() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferCleanApertureHeightKey
-            }
+            unsafe { kCVImageBufferCleanApertureHeightKey }
         }
         #[inline]
         pub fn horizontal_offset() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferCleanApertureHorizontalOffsetKey
-            }
+            unsafe { kCVImageBufferCleanApertureHorizontalOffsetKey }
         }
 
         #[inline]
         pub fn vertical_offset() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferCleanApertureVerticalOffsetKey
-            }
+            unsafe { kCVImageBufferCleanApertureVerticalOffsetKey }
         }
 
-
-        extern "C" { 
+        extern "C" {
             static kCVImageBufferCleanApertureWidthKey: &'static cf::String;
             static kCVImageBufferCleanApertureHeightKey: &'static cf::String;
             static kCVImageBufferCleanApertureHorizontalOffsetKey: &'static cf::String;
@@ -236,24 +208,16 @@ pub mod attachment {
         use crate::cf;
 
         pub fn termporal_top_first() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferFieldDetailTemporalTopFirst 
-            }
+            unsafe { kCVImageBufferFieldDetailTemporalTopFirst }
         }
         pub fn termporal_bottom_first() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferFieldDetailTemporalBottomFirst 
-            }
+            unsafe { kCVImageBufferFieldDetailTemporalBottomFirst }
         }
         pub fn spatial_first_line_early() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferFieldDetailSpatialFirstLineEarly 
-            }
+            unsafe { kCVImageBufferFieldDetailSpatialFirstLineEarly }
         }
         pub fn spatial_first_line_late() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferFieldDetailSpatialFirstLineLate 
-            }
+            unsafe { kCVImageBufferFieldDetailSpatialFirstLineLate }
         }
         extern "C" {
             static kCVImageBufferFieldDetailTemporalTopFirst: &'static cf::String;
@@ -263,19 +227,15 @@ pub mod attachment {
         }
     }
 
-    pub mod aspect_ration_keys {
-        use crate::cf; 
+    pub mod aspect_ratio_keys {
+        use crate::cf;
 
         pub fn horizontal_spacing() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferPixelAspectRatioHorizontalSpacingKey 
-            }
+            unsafe { kCVImageBufferPixelAspectRatioHorizontalSpacingKey }
         }
 
         pub fn vertical_spacing() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferPixelAspectRatioVerticalSpacingKey 
-            }
+            unsafe { kCVImageBufferPixelAspectRatioVerticalSpacingKey }
         }
 
         extern "C" {
@@ -285,18 +245,14 @@ pub mod attachment {
     }
 
     pub mod display_keys {
-        use crate::cf; 
+        use crate::cf;
 
         pub fn width() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferDisplayWidthKey 
-            }
+            unsafe { kCVImageBufferDisplayWidthKey }
         }
 
         pub fn height() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferDisplayHeightKey 
-            }
+            unsafe { kCVImageBufferDisplayHeightKey }
         }
 
         extern "C" {
@@ -309,24 +265,16 @@ pub mod attachment {
         use crate::cf;
 
         pub fn itu_r_709_2() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferYCbCrMatrix_ITU_R_709_2 
-            }
+            unsafe { kCVImageBufferYCbCrMatrix_ITU_R_709_2 }
         }
         pub fn itu_r_601_4() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferYCbCrMatrix_ITU_R_601_4 
-            }
+            unsafe { kCVImageBufferYCbCrMatrix_ITU_R_601_4 }
         }
         pub fn smpte_240m_1995() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferYCbCrMatrix_SMPTE_240M_1995 
-            }
+            unsafe { kCVImageBufferYCbCrMatrix_SMPTE_240M_1995 }
         }
         pub fn itu_r_2020() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferYCbCrMatrix_ITU_R_2020 
-            }
+            unsafe { kCVImageBufferYCbCrMatrix_ITU_R_2020 }
         }
         extern "C" {
             static kCVImageBufferYCbCrMatrix_ITU_R_709_2: &'static cf::String;
@@ -340,40 +288,26 @@ pub mod attachment {
         use crate::cf;
 
         pub fn itu_r_709_2() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_ITU_R_709_2 
-            }
+            unsafe { kCVImageBufferColorPrimaries_ITU_R_709_2 }
         }
         pub fn ebu_3213() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_EBU_3213 
-            }
+            unsafe { kCVImageBufferColorPrimaries_EBU_3213 }
         }
         pub fn smpte_c() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_SMPTE_C 
-            }
+            unsafe { kCVImageBufferColorPrimaries_SMPTE_C }
         }
         pub fn p22() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_P22 
-            }
+            unsafe { kCVImageBufferColorPrimaries_P22 }
         }
         pub fn dci_p3() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_DCI_P3 
-            }
+            unsafe { kCVImageBufferColorPrimaries_DCI_P3 }
         }
         pub fn p3_d65() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_P3_D65 
-            }
+            unsafe { kCVImageBufferColorPrimaries_P3_D65 }
         }
 
         pub fn itu_r_2020() -> &'static cf::String {
-            unsafe {
-                kCVImageBufferColorPrimaries_ITU_R_2020 
-            }
+            unsafe { kCVImageBufferColorPrimaries_ITU_R_2020 }
         }
         extern "C" {
             static kCVImageBufferColorPrimaries_ITU_R_709_2: &'static cf::String;
@@ -386,5 +320,55 @@ pub mod attachment {
         }
     }
 
+    pub mod transfer_function {
+        use crate::cf;
 
+        pub fn itu_r_709_2() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_ITU_R_709_2 }
+        }
+        pub fn smpte_240m_1995() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_SMPTE_240M_1995 }
+        }
+        pub fn use_gamma() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_UseGamma }
+        }
+        pub fn ebu_3213() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_EBU_3213 }
+        }
+        pub fn smpte_c() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_SMPTE_C }
+        }
+        pub fn srgb() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_sRGB }
+        }
+        pub fn itu_r_2020() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_ITU_R_2020 }
+        }
+        pub fn smpte_st_428_1() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_SMPTE_ST_428_1 }
+        }
+        pub fn smpte_st_2084_pq() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ }
+        }
+        pub fn itu_r_2100_hlg() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_ITU_R_2100_HLG }
+        }
+        pub fn linear() -> &'static cf::String {
+            unsafe { kCVImageBufferTransferFunction_Linear }
+        }
+
+        extern "C" {
+            static kCVImageBufferTransferFunction_ITU_R_709_2: &'static cf::String;
+            static kCVImageBufferTransferFunction_SMPTE_240M_1995: &'static cf::String;
+            static kCVImageBufferTransferFunction_UseGamma: &'static cf::String;
+            static kCVImageBufferTransferFunction_EBU_3213: &'static cf::String;
+            static kCVImageBufferTransferFunction_SMPTE_C: &'static cf::String;
+            static kCVImageBufferTransferFunction_sRGB: &'static cf::String;
+            static kCVImageBufferTransferFunction_ITU_R_2020: &'static cf::String;
+            static kCVImageBufferTransferFunction_SMPTE_ST_428_1: &'static cf::String;
+            static kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ: &'static cf::String;
+            static kCVImageBufferTransferFunction_ITU_R_2100_HLG: &'static cf::String;
+            static kCVImageBufferTransferFunction_Linear: &'static cf::String;
+        }
+    }
 }
