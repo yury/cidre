@@ -15,15 +15,13 @@ impl Point {
     }
 
     /// ```
-    /// use cidre::{cf, cg};
-    /// 
+    /// use cidre::cg;
+    ///
     /// let d = cg::Point::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 2);
     /// ```
     pub fn dictionary_representaion<'a>(&self) -> cf::Retained<'a, cf::Dictionary> {
-        unsafe {
-            CGPointCreateDictionaryRepresentation(*self)
-        }
+        unsafe { CGPointCreateDictionaryRepresentation(*self) }
     }
 }
 
@@ -40,15 +38,13 @@ impl Size {
     }
 
     /// ```
-    /// use cidre::{cf, cg};
-    /// 
+    /// use cidre::cg;
+    ///
     /// let d = cg::Size::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 2);
     /// ```
     pub fn dictionary_representaion<'a>(&self) -> cf::Retained<'a, cf::Dictionary> {
-        unsafe {
-            CGSizeCreateDictionaryRepresentation(*self)
-        }
+        unsafe { CGSizeCreateDictionaryRepresentation(*self) }
     }
 }
 
@@ -65,15 +61,13 @@ impl Rect {
     }
 
     /// ```
-    /// use cidre::{cf, cg};
-    /// 
+    /// use cidre::cg;
+    ///
     /// let d = cg::Rect::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 4);
     /// ```
     pub fn dictionary_representaion<'a>(&self) -> cf::Retained<'a, cf::Dictionary> {
-        unsafe {
-            CGRectCreateDictionaryRepresentation(*self)
-        }
+        unsafe { CGRectCreateDictionaryRepresentation(*self) }
     }
 }
 
