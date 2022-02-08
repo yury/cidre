@@ -43,6 +43,12 @@ pub use dictionary::DictionaryKeyCallBacks;
 pub use dictionary::DictionaryValueCallBacks;
 pub use dictionary::MutableDictionary;
 
+pub mod date;
+pub use date::absolute_time_get_current;
+pub use date::AbsoluteTime;
+pub use date::Date;
+pub use date::TimeInterval;
+
 pub mod locale;
 
 // pub type TimeInterval = f64;
