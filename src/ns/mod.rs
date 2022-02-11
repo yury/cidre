@@ -7,6 +7,10 @@ pub use objc::Sel;
 pub use objc::ns::Object;
 
 
+#[link(name = "Foundation", kind = "framework")]
+extern "C" {
+}
+
 #[cfg(test)]
 mod tests {
     use crate::ns;
