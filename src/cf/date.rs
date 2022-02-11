@@ -1,5 +1,5 @@
 use crate::{cf, define_cf_type};
-use std::{os::raw::c_double, ffi::c_void};
+use std::{ffi::c_void, os::raw::c_double};
 
 pub type TimeInterval = c_double;
 pub type AbsoluteTime = TimeInterval;
@@ -17,29 +17,26 @@ impl Date {
     }
 
     #[inline]
-    pub fn create<'a>(allocator: Option<&cf::Allocator>, at: AbsoluteTime) -> Option<cf::Retained<'a, Date>> {
-      unsafe {
-        CFDateCreate(allocator, at)
-      }
+    pub fn create<'a>(
+        allocator: Option<&cf::Allocator>,
+        at: AbsoluteTime,
+    ) -> Option<cf::Retained<'a, Date>> {
+        unsafe { CFDateCreate(allocator, at) }
     }
 
     #[inline]
     pub fn get_absolute_time(&self) -> AbsoluteTime {
-      unsafe {
-        CFDateGetAbsoluteTime(self)
-      }
+        unsafe { CFDateGetAbsoluteTime(self) }
     }
 
     #[inline]
     pub fn get_time_interval_since_date(&self, other_date: &Date) -> TimeInterval {
-      unsafe {
-        CFDateGetTimeIntervalSinceDate(self, other_date)
-      }
+        unsafe { CFDateGetTimeIntervalSinceDate(self, other_date) }
     }
 
     #[inline]
     pub unsafe fn compare(&self, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult {
-      CFDateCompare(self, other_date, context)
+        CFDateCompare(self, other_date, context)
     }
 }
 
@@ -47,9 +44,16 @@ extern "C" {
     fn CFAbsoluteTimeGetCurrent() -> AbsoluteTime;
     fn CFDateGetTypeID() -> cf::TypeId;
 
-    fn CFDateCreate<'a>(allocator: Option<&cf::Allocator>, at: AbsoluteTime) -> Option<cf::Retained<'a, Date>>;
+    fn CFDateCreate<'a>(
+        allocator: Option<&cf::Allocator>,
+        at: AbsoluteTime,
+    ) -> Option<cf::Retained<'a, Date>>;
     fn CFDateGetAbsoluteTime(the_date: &Date) -> AbsoluteTime;
     fn CFDateGetTimeIntervalSinceDate(the_date: &Date, other_date: &Date) -> TimeInterval;
 
-    fn CFDateCompare(the_date: &Date, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult ;
+    fn CFDateCompare(
+        the_date: &Date,
+        other_date: &Date,
+        context: *mut c_void,
+    ) -> cf::ComparisonResult;
 }

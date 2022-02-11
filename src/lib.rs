@@ -20,6 +20,9 @@ pub mod sys;
 /// Video Toolbox
 pub mod vt;
 
+pub mod objc;
+pub mod ns;
+
 #[cfg(test)]
 mod tests {
     use crate::cf;
