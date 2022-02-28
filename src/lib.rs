@@ -6,8 +6,6 @@ pub use mac_types::UniChar;
 /// Core Foundation
 pub mod cf;
 
-pub mod objc;
-pub mod ns;
 /// Core Graphics
 pub mod cg;
 /// Core Media
@@ -18,11 +16,14 @@ pub mod cv;
 pub mod io;
 /// match
 pub mod mach;
+pub mod ns;
+pub mod objc;
 pub mod os;
 pub mod sys;
 /// Video Toolbox
 pub mod vt;
 
+pub mod mtl;
 
 #[cfg(test)]
 mod tests {
