@@ -1,10 +1,10 @@
 use crate::{
     cf::{self, Retained},
     define_obj_type,
-    ns::Id,
+    ns::Id, io,
 };
 
-use super::{texture, CommandQueue, Size};
+use super::{texture, CommandQueue, Size, Library};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -111,12 +111,12 @@ impl Device {
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let queue = device.new_command_queue().unwrap();
+    /// let queue = device.command_queue().unwrap();
     ///
     /// queue.as_type_ref().show();
     ///
     #[inline]
-    pub fn new_command_queue(&self) -> Option<Retained<CommandQueue>> {
+    pub fn command_queue(&self) -> Option<Retained<CommandQueue>> {
         unsafe { rsel_newCommandQueue(self) }
     }
 
@@ -125,12 +125,12 @@ impl Device {
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let queue = device.new_command_queue_with_max_command_buffer_count(1).unwrap();
+    /// let queue = device.command_queue_with_max_command_buffer_count(1).unwrap();
     ///
     /// queue.as_type_ref().show();
     ///
     #[inline]
-    pub fn new_command_queue_with_max_command_buffer_count<'a>(
+    pub fn command_queue_with_max_command_buffer_count<'a>(
         &self,
         max_command_buffer_count: usize,
     ) -> Option<Retained<'a, CommandQueue>> {
@@ -144,15 +144,36 @@ impl Device {
     ///
     /// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
     ///
-    /// let t = device.new_texture_with_descriptor(&td).unwrap();
+    /// let t = device.texture_with_descriptor(&td).unwrap();
     ///
     /// ```
     #[inline]
-    pub fn new_texture_with_descriptor<'a>(
+    pub fn texture_with_descriptor<'a>(
         &self,
         descriptor: &texture::Descriptor,
     ) -> Option<Retained<texture::Texture>> {
         unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
+    }
+
+    #[inline]
+    pub fn texture_with_surface<'a>(&self, descriptor: &texture::Descriptor, surface: &io::Surface, plane: usize) -> Option<Retained<'a, texture::Texture>> {
+        unsafe {
+            rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane)
+        }
+    }
+
+    /// ```
+    /// use cidre::mtl;
+    ///
+    /// let device = mtl::Device::default().unwrap();
+    /// 
+    /// assert!(device.new_default_library().is_none());
+    /// ```
+    #[inline]
+    pub fn new_default_library<'a>(&self) -> Option<Retained<'a, Library>> {
+        unsafe {
+            rsel_newDefaultLibrary(self)
+        }
     }
 }
 
@@ -179,6 +200,12 @@ extern "C" {
         id: &Device,
         descriptor: &texture::Descriptor,
     ) -> Option<Retained<'a, texture::Texture>>;
+
+    fn rsel_newTextureWithDescriptor_iosurface_plane<'a>(id: &Device, descriptor: &texture::Descriptor, surface: &io::Surface, plane: usize) -> Option<Retained<'a, texture::Texture>>;
+
+    fn rsel_newDefaultLibrary<'a>(id: &Device) -> Option<Retained<'a, Library>>;
+
+
 }
 
 #[cfg(test)]

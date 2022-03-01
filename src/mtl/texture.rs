@@ -314,7 +314,7 @@ impl Texture {
     ///
     /// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
     ///
-    /// let t = device.new_texture_with_descriptor(&td).unwrap();
+    /// let t = device.texture_with_descriptor(&td).unwrap();
     ///
     /// assert_eq!(t.width(), 100);
     /// assert_eq!(t.height(), 200);
@@ -343,13 +343,13 @@ impl Texture {
     ///
     /// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
     ///
-    /// let t = device.new_texture_with_descriptor(&td).unwrap();
+    /// let t = device.texture_with_descriptor(&td).unwrap();
     ///
     /// assert!(t.parent_texture().is_none());
     /// assert!(t.io_surface().is_none());
     /// assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
     ///
-    /// let tv = t.new_texture_view_with_pixel_format(mtl::PixelFormat::A8Unorm).unwrap();
+    /// let tv = t.texture_view_with_pixel_format(mtl::PixelFormat::A8Unorm).unwrap();
     ///
     /// assert!(tv.parent_texture().is_some());
     /// assert_eq!(tv.width(), 100);
@@ -362,7 +362,7 @@ impl Texture {
     }
 
     #[inline]
-    pub fn new_texture_view_with_pixel_format(
+    pub fn texture_view_with_pixel_format(
         self: &Texture,
         pixel_format: PixelFormat,
     ) -> Option<Retained<Texture>> {

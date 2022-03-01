@@ -19,6 +19,9 @@ pub use resource::HAZARD_TRACKING_MODE_SHIFT;
 pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
 
+pub mod library;
+pub use library::Library;
+
 pub mod command_queue;
 pub use command_queue::CommandQueue;
 

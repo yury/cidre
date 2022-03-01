@@ -85,6 +85,14 @@ rsel_a(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLComman
 NS_RETURNS_RETAINED
 rsel_a(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _Nullable )
 
+//- (nullable id <MTLTexture>)newTextureWithDescriptor:(MTLTextureDescriptor *)descriptor iosurface:(IOSurfaceRef)iosurface plane:(NSUInteger)plane API_AVAILABLE(macos(10.11), ios(11.0));
+NS_RETURNS_RETAINED
+rsel_abc(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSurfaceRef, plane, NSUInteger, id <MTLTexture> _Nullable)
+
+
+//- (nullable id <MTLLibrary>)newDefaultLibrary;
+NS_RETURNS_RETAINED
+rsel(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
 
 // Shared
 
