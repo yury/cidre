@@ -55,10 +55,11 @@ pub use url::URL;
 
 pub mod locale;
 
+pub mod bundle;
+pub use bundle::Bundle;
+
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
-  
-}
+extern "C" {}

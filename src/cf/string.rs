@@ -11,7 +11,7 @@ pub struct StringEncoding(u32);
 
 impl StringEncoding {
     pub const ASCII: Self = Self(0x0600);
-    pub const UTF8:  Self = Self(0x08000100);
+    pub const UTF8: Self = Self(0x08000100);
 }
 
 #[repr(transparent)]

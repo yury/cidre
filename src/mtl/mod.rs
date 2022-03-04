@@ -6,15 +6,14 @@ pub use pixel_format::PixelFormat;
 
 pub mod argument;
 pub use argument::Access as ArgumentAccess;
-pub use argument::DataType;
-pub use argument::Type as ArgumentType;
-pub use argument::StructMember;
-pub use argument::BaseType;
 pub use argument::ArrayType;
-pub use argument::StructType;
+pub use argument::BaseType;
+pub use argument::DataType;
 pub use argument::PointerType;
+pub use argument::StructMember;
+pub use argument::StructType;
 pub use argument::TextureReferenceType;
-
+pub use argument::Type as ArgumentType;
 
 pub mod resource;
 pub use resource::Options;

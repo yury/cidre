@@ -138,16 +138,11 @@ pub enum Access {
 
 define_obj_type!(BaseType(Id));
 
-impl BaseType {
-
-}
-
+impl BaseType {}
 
 define_obj_type!(StructMember(Id));
 
-impl StructMember {
-
-}
+impl StructMember {}
 
 define_obj_type!(StructType(BaseType));
 define_obj_type!(ArrayType(BaseType));
@@ -155,4 +150,3 @@ define_obj_type!(PointerType(BaseType));
 define_obj_type!(TextureReferenceType(BaseType));
 
 define_obj_type!(Argument(Id));
-
