@@ -59,4 +59,6 @@ pub mod locale;
 // pub type AbsoluteTime = TimeInterval;
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {}
+extern "C" {
+  
+}

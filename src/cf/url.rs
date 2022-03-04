@@ -47,6 +47,7 @@ impl URL {
   /// let s1 = cf::String::from_str("https://github.com");
   /// let url = cf::URL::from_string(&s1).unwrap();
   /// 
+  /// assert!(url.can_be_decomposed());
   /// 
   /// ```
   #[inline]
@@ -80,9 +81,44 @@ impl URL {
   }
 
   #[inline]
+  pub fn can_be_decomposed(&self) -> bool {
+    unsafe {
+      CFURLCanBeDecomposed(self)
+    }
+  }
+
+  /// ```
+  /// use cidre::cf;
+  /// 
+  /// let url = cf::URL::from_str("https://localhost:3000").unwrap();
+  /// let scheme = url.copy_scheme().unwrap();
+  /// 
+  /// let https = cf::String::from_str_no_copy("https");
+  /// assert!(https.equal(&scheme));
+  /// ```
+  #[inline]
   pub fn copy_scheme<'a>(&self) -> Option<Retained<'a, cf::String>> {
     unsafe {
       CFURLCopyScheme(self)
+    }
+  }
+
+  /// ```
+  /// use cidre::cf;
+  /// 
+  /// let url1 = cf::URL::from_str("https://localhost:3000").unwrap();
+  /// 
+  /// assert_eq!(3000, url1.get_port());
+
+  /// let url2 = cf::URL::from_str("https://localhost").unwrap();
+  /// 
+  /// assert_eq!(-1, url2.get_port());
+  /// 
+  /// ```
+  #[inline]
+  pub fn get_port(&self) -> i32 {
+    unsafe {
+      CFURLGetPortNumber(self)
     }
   }
 }
@@ -94,5 +130,8 @@ extern "C" {
   fn CFURLGetString(anURL: &URL) -> &cf::String;
   fn CFURLGetBaseURL(anURL: &URL) -> Option<&URL>;
 
+  fn CFURLCanBeDecomposed(anURL: &URL) -> bool;
   fn CFURLCopyScheme<'a>(anURL: &URL) -> Option<Retained<'a, cf::String>>;
+
+  fn CFURLGetPortNumber(anURL: &URL) -> i32;
 }
