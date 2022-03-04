@@ -4,6 +4,18 @@ pub use types::Size;
 pub mod pixel_format;
 pub use pixel_format::PixelFormat;
 
+pub mod argument;
+pub use argument::Access as ArgumentAccess;
+pub use argument::DataType;
+pub use argument::Type as ArgumentType;
+pub use argument::StructMember;
+pub use argument::BaseType;
+pub use argument::ArrayType;
+pub use argument::StructType;
+pub use argument::PointerType;
+pub use argument::TextureReferenceType;
+
+
 pub mod resource;
 pub use resource::Options;
 pub use resource::Resource;
@@ -20,7 +32,11 @@ pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
 
 pub mod library;
+pub use library::CompileOptions;
+pub use library::Funtion;
+pub use library::LanguageVersion;
 pub use library::Library;
+pub use library::Type as LibraryType;
 
 pub mod command_queue;
 pub use command_queue::CommandQueue;

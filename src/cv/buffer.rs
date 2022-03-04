@@ -80,12 +80,12 @@ impl Buffer {
 
 extern "C" {
 
-    static kCVBufferPropagatedAttachmentsKey: &'static cf::String;
-    static kCVBufferNonPropagatedAttachmentsKey: &'static cf::String;
+    // static kCVBufferPropagatedAttachmentsKey: &'static cf::String;
+    // static kCVBufferNonPropagatedAttachmentsKey: &'static cf::String;
 
-    static kCVBufferMovieTimeKey: &'static cf::String;
-    static kCVBufferTimeValueKey: &'static cf::String;
-    static kCVBufferTimeScaleKey: &'static cf::String;
+    // static kCVBufferMovieTimeKey: &'static cf::String;
+    // static kCVBufferTimeValueKey: &'static cf::String;
+    // static kCVBufferTimeScaleKey: &'static cf::String;
 
     fn CVBufferSetAttachment(
         buffer: &mut Buffer,

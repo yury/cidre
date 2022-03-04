@@ -43,6 +43,7 @@ impl Retain for Id {
 }
 
 impl Release for Id {
+    #[inline]
     unsafe fn release(&mut self) {
         Id::release(self)
     }

@@ -1,10 +1,10 @@
 use crate::{
     cf::{self, Retained},
-    define_obj_type,
-    ns::Id, io,
+    define_obj_type, io,
+    ns::Id,
 };
 
-use super::{texture, CommandQueue, Size, Library};
+use super::{texture, CommandQueue, Library, Size};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -29,6 +29,7 @@ impl Device {
     ///
     /// let device = mtl::Device::default().unwrap();
     /// ```
+    #[inline]
     pub fn default<'a>() -> Option<Retained<'a, Device>> {
         unsafe { MTLCreateSystemDefaultDevice() }
     }
@@ -156,24 +157,25 @@ impl Device {
     }
 
     #[inline]
-    pub fn texture_with_surface<'a>(&self, descriptor: &texture::Descriptor, surface: &io::Surface, plane: usize) -> Option<Retained<'a, texture::Texture>> {
-        unsafe {
-            rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane)
-        }
+    pub fn texture_with_surface<'a>(
+        &self,
+        descriptor: &texture::Descriptor,
+        surface: &io::Surface,
+        plane: usize,
+    ) -> Option<Retained<'a, texture::Texture>> {
+        unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
     }
 
     /// ```
     /// use cidre::mtl;
     ///
     /// let device = mtl::Device::default().unwrap();
-    /// 
+    ///
     /// assert!(device.new_default_library().is_none());
     /// ```
     #[inline]
     pub fn new_default_library<'a>(&self) -> Option<Retained<'a, Library>> {
-        unsafe {
-            rsel_newDefaultLibrary(self)
-        }
+        unsafe { rsel_newDefaultLibrary(self) }
     }
 }
 
@@ -201,10 +203,14 @@ extern "C" {
         descriptor: &texture::Descriptor,
     ) -> Option<Retained<'a, texture::Texture>>;
 
-    fn rsel_newTextureWithDescriptor_iosurface_plane<'a>(id: &Device, descriptor: &texture::Descriptor, surface: &io::Surface, plane: usize) -> Option<Retained<'a, texture::Texture>>;
+    fn rsel_newTextureWithDescriptor_iosurface_plane<'a>(
+        id: &Device,
+        descriptor: &texture::Descriptor,
+        surface: &io::Surface,
+        plane: usize,
+    ) -> Option<Retained<'a, texture::Texture>>;
 
     fn rsel_newDefaultLibrary<'a>(id: &Device) -> Option<Retained<'a, Library>>;
-
 
 }
 

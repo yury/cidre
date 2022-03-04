@@ -49,6 +49,10 @@ pub use date::AbsoluteTime;
 pub use date::Date;
 pub use date::TimeInterval;
 
+pub mod url;
+pub use url::PathStyle;
+pub use url::URL;
+
 pub mod locale;
 
 // pub type TimeInterval = f64;
