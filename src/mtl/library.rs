@@ -3,7 +3,7 @@ use std::{borrow::Cow, fmt::Debug, ops::Deref, intrinsics::transmute};
 use crate::{
     cf::{self, Retained},
     define_mtl_device_and_label, define_obj_type, mtl,
-    objc::Id,
+    objc::Id, ns,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -72,6 +72,13 @@ impl Function {
     #[inline]
     pub fn name(&self) -> &cf::String {
         unsafe { rsel_name(self) }
+    }
+
+    #[inline]
+    pub fn new_argument_encoder_with_buffer_index<'a>(&self, index: ns::UInteger) -> Retained<'a, mtl::ArgumentEncoder> {
+        unsafe {
+            rsel_newArgumentEncoderWithBufferIndex(self, index)
+        }
     }
 }
 
@@ -240,4 +247,6 @@ extern "C" {
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&cf::Error>,
     ) -> Option<Retained<'new, Function>>;
+
+    fn rsel_newArgumentEncoderWithBufferIndex<'a>(id: &Function, index: ns::UInteger) -> Retained<'a, mtl::ArgumentEncoder>;
 }

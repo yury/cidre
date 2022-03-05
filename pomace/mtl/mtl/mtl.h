@@ -259,5 +259,13 @@ NS_RETURNS_NOT_RETAINED
 rsel(, id, functionNames, NSArray <NSString *> *)
 
 
+// MTLFunction
+
+//- (id <MTLArgumentEncoder>)newArgumentEncoderWithBufferIndex:(NSUInteger)bufferIndex API_AVAILABLE(macos(10.13), ios(11.0));
+NS_RETURNS_RETAINED
+rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
+
+
+
 
 NS_ASSUME_NONNULL_END
