@@ -5,6 +5,8 @@
 #
 # already existing elements were commented out
 
+pomace/mtl/mtl.xcodeproj/project.xcworkspace/xcuserdata
+
 /target
 .DS_Store
 Cargo.lock
