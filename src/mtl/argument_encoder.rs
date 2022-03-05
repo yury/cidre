@@ -9,9 +9,14 @@ impl ArgumentEncoder {
     pub fn encoded_length(&self) -> ns::UInteger {
         unsafe { rsel_encodedLength(self) }
     }
+
+    pub fn aligment(&self) -> ns::UInteger {
+        unsafe { rsel_aligment(self) }
+    }
 }
 
+#[link(name = "mtl", kind = "static")]
 extern "C" {
-    // rsel(, id, encodedLength, NSUInteger)
     fn rsel_encodedLength(id: &Id) -> ns::UInteger;
+    fn rsel_aligment(id: &Id) -> ns::UInteger;
 }

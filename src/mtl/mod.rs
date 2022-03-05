@@ -61,6 +61,9 @@ pub use function_constant_values::FunctionConstantValues;
 pub mod argument_encoder;
 pub use argument_encoder::ArgumentEncoder;
 
+pub mod buffer;
+pub use buffer::Buffer;
+
 #[macro_export]
 macro_rules! define_mtl_device_and_label {
     () => {

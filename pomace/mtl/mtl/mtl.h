@@ -71,6 +71,9 @@ rsel(, id, name, NSString * _Nonnull)
 
 wsel(, id, reset)
 
+//@property (readonly) NSUInteger length;
+rsel(, id, length, NSUInteger)
+
 #pragma mark - Device
 
 // uint64_t registryID
@@ -269,6 +272,9 @@ rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncode
 // ArgumentsEncoder
 //@property (readonly) NSUInteger encodedLength;
 rsel(, id, encodedLength, NSUInteger)
+
+//@property (readonly) NSUInteger alignment;
+rsel(, id, alignment, NSUInteger)
 
 
 NS_ASSUME_NONNULL_END
