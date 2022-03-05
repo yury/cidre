@@ -1,7 +1,7 @@
 use crate::define_cf_type;
 
-use super::{Allocator, Index, Retained, String, Type, TypeId};
-use std::{ffi::c_void, ptr::NonNull};
+use super::{Allocator, Index, Retained, String, Type, TypeId, runtime::{Retain, Release}};
+use std::{ffi::c_void, ptr::NonNull, marker::PhantomData, intrinsics::transmute};
 
 pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ArrayReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -26,6 +26,41 @@ impl ArrayCallbacks {
 }
 
 define_cf_type!(Array(Type));
+
+pub struct ArrayOf<T: Retain + Release>(Array, PhantomData<T>);
+
+impl<T> std::ops::Deref for ArrayOf<T> where T: Retain + Release {
+    type Target = Array;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T> std::ops::Index<usize> for ArrayOf<T> where T: Retain + Release {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        unsafe {
+            transmute::<&Type, &T>(&self.0[index])
+        }
+    }
+} 
+
+impl<T> Release for ArrayOf<T> where T: Retain + Release {
+    unsafe fn release(&mut self) {
+        self.0.release()
+    }
+}
+
+impl<T> Retain for ArrayOf<T> where T: Retain + Release {
+    fn retained<'a>(&self) -> Retained<'a, Self> {
+        unsafe {
+            transmute(self.0.retained())
+        }
+    }
+}
+
 
 impl Array {
     /// ```
@@ -166,6 +201,16 @@ impl Array {
     }
 }
 
+impl std::ops::Index<usize> for Array {
+    type Output = Type;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        unsafe {
+            CFArrayGetValueAtIndex(self, index as _)
+        }
+    }
+}
+
 define_cf_type!(MutableArray(Array));
 
 impl MutableArray {
@@ -225,6 +270,9 @@ extern "C" {
     static kCFTypeArrayCallBacks: ArrayCallbacks;
 
     fn CFArrayGetTypeID() -> TypeId;
+
+    //const void *CFArrayGetValueAtIndex(CFArrayRef theArray, CFIndex idx);
+    fn CFArrayGetValueAtIndex(the_array: &Array, idx: Index) -> &Type;
 
     fn CFArrayCreate<'a>(
         allocator: Option<&Allocator>,

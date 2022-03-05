@@ -285,6 +285,12 @@ impl fmt::Display for String {
     }
 }
 
+// impl fmt::Debug for String {
+//     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         fmt.write_str(&Cow::from(self))
+//     }
+// }
+
 define_cf_type!(MutableString(String));
 
 impl MutableString {

@@ -1,10 +1,4 @@
-use crate::{
-    cf::{self, Retained},
-    define_obj_type,
-    objc::Id,
-};
-
-use super::Device;
+use crate::{define_mtl_device_and_label, define_obj_type, objc::Id};
 
 #[repr(transparent)]
 pub struct Options(usize);
@@ -65,13 +59,7 @@ impl Options {
 define_obj_type!(Resource(Id));
 
 impl Resource {
-    pub fn device(&self) -> &Device {
-        unsafe { rsel_device(self) }
-    }
-
-    pub fn label<'a>(&self) -> Option<Retained<'a, cf::String>> {
-        unsafe { rsel_label(self) }
-    }
+    define_mtl_device_and_label!();
 
     #[inline]
     pub fn resource_options(&self) -> Options {
@@ -86,9 +74,6 @@ impl Resource {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_device(id: &Id) -> &Device;
-    fn rsel_label<'a>(id: &Id) -> Option<Retained<'a, cf::String>>;
-
     fn rsel_resourceOptions(id: &Id) -> Options;
     fn rsel_cpuCacheMode(id: &Id) -> CPUCacheMode;
 }

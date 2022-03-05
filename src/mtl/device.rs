@@ -1,5 +1,7 @@
+use std::intrinsics::transmute;
+
 use crate::{
-    cf::{self, Retained},
+    cf::{self, Retained, ArrayOf},
     define_obj_type, io, mtl,
     ns::Id,
 };
@@ -186,17 +188,33 @@ impl Device {
     /// let source = cf::String::from_str("void function_a() {}");
     /// let options = None;
     /// let mut err = None;
-    /// let lib = device.new_library_with_source(&source, options, &mut err).unwrap();
+    /// let lib = device.new_library_with_source_and_error(&source, options, &mut err).unwrap();
     ///
     /// ```
     #[inline]
-    pub fn new_library_with_source<'a>(
+    pub fn new_library_with_source_and_error<'a>(
         &self,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&cf::Error>,
     ) -> Option<Retained<'a, Library>> {
         unsafe { rsel_newLibraryWithSource_options_error(self, source, options, error) }
+    }
+
+    #[inline]
+    pub fn new_library_with_source<'a>(
+        &self,
+        source: &cf::String,
+        options: Option<&mtl::CompileOptions>,
+    ) -> Result<Retained<'a, Library>, &'a cf::Error> {
+        let mut error = None;
+        let res = Self::new_library_with_source_and_error(&self, source, options, &mut error);
+
+        if let Some(err) = error {
+            return Err(err);
+        }
+
+        unsafe { Ok(transmute(res)) }
     }
 }
 

@@ -32,7 +32,9 @@ pub use resource::STORAGE_MODE_SHIFT;
 
 pub mod library;
 pub use library::CompileOptions;
-pub use library::Funtion;
+pub use library::Error as LibraryError;
+pub use library::ErrorDomain as LibraryErrorDomain;
+pub use library::Function;
 pub use library::LanguageVersion;
 pub use library::Library;
 pub use library::Type as LibraryType;
@@ -55,3 +57,40 @@ pub use device::ReadWriteTextureTier;
 
 pub mod function_constant_values;
 pub use function_constant_values::FunctionConstantValues;
+
+pub mod argument_encoder;
+pub use argument_encoder::ArgumentEncoder;
+
+#[macro_export]
+macro_rules! define_mtl_device_and_label {
+    () => {
+        #[inline]
+        pub fn device(&self) -> &crate::mtl::Device {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_device(id: &Id) -> &crate::mtl::Device;
+            }
+            unsafe { rsel_device(self) }
+        }
+
+        #[inline]
+        pub fn label<'copy>(&self) -> Option<crate::cf::Retained<'copy, crate::cf::String>> {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_label<'copy>(
+                    id: &Id,
+                ) -> Option<crate::cf::Retained<'copy, crate::cf::String>>;
+            }
+            unsafe { rsel_label(self) }
+        }
+
+        #[inline]
+        pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setLabel(id: &mut Id, value: Option<&crate::cf::String>);
+            }
+            unsafe { wsel_setLabel(self, value) }
+        }
+    };
+}

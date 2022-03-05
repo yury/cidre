@@ -14,6 +14,7 @@ pub trait Retain: Sized + Release {
     fn retained<'a>(&self) -> Retained<'a, Self>;
 }
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Retained<'a, T: Release>(&'a mut T);
 

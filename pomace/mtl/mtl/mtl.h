@@ -114,10 +114,19 @@ rsel(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
 NS_RETURNS_RETAINED
 rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
 
+NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)
+
+//@property (readwrite, nonatomic) BOOL fastMathEnabled;
+rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
+//@property (readwrite, nonatomic) MTLLanguageVersion languageVersion
+rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
+
 // Shared
 
 NS_RETURNS_RETAINED
 rsel(, id, label, NSString * _Nullable)
+
+wsel_a(, id, setLabel, NSString * _Nullable)
 
 NS_RETURNS_NOT_RETAINED
 rsel(, id, device, id<MTLDevice>)
@@ -236,6 +245,19 @@ rsel_a(, id, newDepthStencilStateWithDescriptor, MTLDepthStencilDescriptor * _No
 
 
 // MTLHeap end
+
+// MTLLibrary
+
+NS_RETURNS_RETAINED
+rsel_a(, id, newFunctionWithName, NSString *, id<MTLFunction> _Nullable)
+
+NS_RETURNS_RETAINED
+rsel_abc(, id, newFunctionWithName, NSString *, constantValues, MTLFunctionConstantValues *, error, NSError * _Nullable * _Nullable, id<MTLFunction> _Nullable)
+
+//@property (readonly) NSArray <NSString *> *functionNames;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, functionNames, NSArray <NSString *> *)
+
 
 
 NS_ASSUME_NONNULL_END

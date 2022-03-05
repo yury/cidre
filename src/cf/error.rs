@@ -1,3 +1,5 @@
+use std::{borrow::Cow, fmt::Debug};
+
 use crate::{cf, define_cf_type};
 
 use super::Retained;
@@ -46,6 +48,17 @@ impl Error {
 
     pub fn copy_recovery_suggestion<'a>(&self) -> Option<Retained<'a, cf::String>> {
         unsafe { CFErrorCopyRecoverySuggestion(self) }
+    }
+}
+
+impl Debug for Error {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let desc: &cf::String = &self.copy_description();
+        fmt.debug_struct("Error")
+            .field("code", &self.get_code())
+            .field("domain", &Cow::from(self.get_domain()))
+            .field("desc", &Cow::from(desc))
+            .finish()
     }
 }
 
