@@ -1,7 +1,10 @@
 use crate::define_cf_type;
 
-use super::{Allocator, Index, Retained, String, Type, TypeId, runtime::{Retain, Release}};
-use std::{ffi::c_void, ptr::NonNull, marker::PhantomData, intrinsics::transmute};
+use super::{
+    runtime::{Release, Retain},
+    Allocator, Index, Retained, String, Type, TypeId,
+};
+use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
 pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ArrayReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -29,7 +32,10 @@ define_cf_type!(Array(Type));
 
 pub struct ArrayOf<T: Retain + Release>(Array, PhantomData<T>);
 
-impl<T> std::ops::Deref for ArrayOf<T> where T: Retain + Release {
+impl<T> std::ops::Deref for ArrayOf<T>
+where
+    T: Retain + Release,
+{
     type Target = Array;
 
     fn deref(&self) -> &Self::Target {
@@ -37,30 +43,34 @@ impl<T> std::ops::Deref for ArrayOf<T> where T: Retain + Release {
     }
 }
 
-impl<T> std::ops::Index<usize> for ArrayOf<T> where T: Retain + Release {
+impl<T> std::ops::Index<usize> for ArrayOf<T>
+where
+    T: Retain + Release,
+{
     type Output = T;
 
     fn index(&self, index: usize) -> &Self::Output {
-        unsafe {
-            transmute::<&Type, &T>(&self.0[index])
-        }
+        unsafe { transmute::<&Type, &T>(&self.0[index]) }
     }
-} 
+}
 
-impl<T> Release for ArrayOf<T> where T: Retain + Release {
+impl<T> Release for ArrayOf<T>
+where
+    T: Retain + Release,
+{
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for ArrayOf<T> where T: Retain + Release {
+impl<T> Retain for ArrayOf<T>
+where
+    T: Retain + Release,
+{
     fn retained<'a>(&self) -> Retained<'a, Self> {
-        unsafe {
-            transmute(self.0.retained())
-        }
+        unsafe { transmute(self.0.retained()) }
     }
 }
-
 
 impl Array {
     /// ```
@@ -205,9 +215,7 @@ impl std::ops::Index<usize> for Array {
     type Output = Type;
 
     fn index(&self, index: usize) -> &Self::Output {
-        unsafe {
-            CFArrayGetValueAtIndex(self, index as _)
-        }
+        unsafe { CFArrayGetValueAtIndex(self, index as _) }
     }
 }
 

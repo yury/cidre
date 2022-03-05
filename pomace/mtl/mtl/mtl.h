@@ -266,6 +266,9 @@ NS_RETURNS_RETAINED
 rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
 
 
+// ArgumentsEncoder
+//@property (readonly) NSUInteger encodedLength;
+rsel(, id, encodedLength, NSUInteger)
 
 
 NS_ASSUME_NONNULL_END

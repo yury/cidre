@@ -29,10 +29,10 @@ pub use string::StringEncoding;
 
 pub mod array;
 pub use array::Array;
-pub use array::ArrayOf;
 pub use array::ArrayCallbacks;
 pub use array::ArrayCopyDescriptionCallBack;
 pub use array::ArrayEqualCallBack;
+pub use array::ArrayOf;
 pub use array::ArrayReleaseCallBack;
 pub use array::ArrayRetainCallBack;
 pub use array::MutableArray;

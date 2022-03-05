@@ -1,9 +1,9 @@
-use std::{borrow::Cow, fmt::Debug, ops::Deref, intrinsics::transmute};
+use std::{borrow::Cow, fmt::Debug, intrinsics::transmute, ops::Deref};
 
 use crate::{
     cf::{self, Retained},
-    define_mtl_device_and_label, define_obj_type, mtl,
-    objc::Id, ns,
+    define_mtl_device_and_label, define_obj_type, mtl, ns,
+    objc::Id,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -75,10 +75,11 @@ impl Function {
     }
 
     #[inline]
-    pub fn new_argument_encoder_with_buffer_index<'a>(&self, index: ns::UInteger) -> Retained<'a, mtl::ArgumentEncoder> {
-        unsafe {
-            rsel_newArgumentEncoderWithBufferIndex(self, index)
-        }
+    pub fn new_argument_encoder_with_buffer_index<'a>(
+        &self,
+        index: ns::UInteger,
+    ) -> Retained<'a, mtl::ArgumentEncoder> {
+        unsafe { rsel_newArgumentEncoderWithBufferIndex(self, index) }
     }
 }
 
@@ -97,16 +98,14 @@ impl Library {
     /// let names = lib.function_names();
     /// assert_eq!(1, names.len());
     /// let n = &names[0];
-    /// 
+    ///
     /// let expected_name = cf::String::from_str("function_a");
-    /// 
+    ///
     /// assert!(n.equal(&expected_name));
     /// ```
     #[inline]
     pub fn function_names(&self) -> &cf::ArrayOf<cf::String> {
-        unsafe {
-            transmute(rsel_functionNames(self))
-        }
+        unsafe { transmute(rsel_functionNames(self)) }
     }
 
     /// ```
@@ -162,13 +161,18 @@ impl Library {
     ) -> Result<Retained<'new, Function>, &cf::Error> {
         let mut error = None;
 
-        let res = Self::new_function_with_name_constant_values_error(&self, name, constant_values, &mut error);
+        let res = Self::new_function_with_name_constant_values_error(
+            &self,
+            name,
+            constant_values,
+            &mut error,
+        );
 
         if let Some(err) = error {
             return Err(err);
         }
 
-        unsafe { Ok(transmute(res)) }        
+        unsafe { Ok(transmute(res)) }
     }
 }
 
@@ -248,5 +252,8 @@ extern "C" {
         error: &mut Option<&cf::Error>,
     ) -> Option<Retained<'new, Function>>;
 
-    fn rsel_newArgumentEncoderWithBufferIndex<'a>(id: &Function, index: ns::UInteger) -> Retained<'a, mtl::ArgumentEncoder>;
+    fn rsel_newArgumentEncoderWithBufferIndex<'a>(
+        id: &Function,
+        index: ns::UInteger,
+    ) -> Retained<'a, mtl::ArgumentEncoder>;
 }
