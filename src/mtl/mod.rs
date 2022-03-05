@@ -52,3 +52,6 @@ pub mod device;
 pub use device::ArgumentBuffersTier;
 pub use device::Device;
 pub use device::ReadWriteTextureTier;
+
+pub mod function_constant_values;
+pub use function_constant_values::FunctionConstantValues;

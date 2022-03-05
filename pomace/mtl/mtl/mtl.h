@@ -9,6 +9,10 @@
 #import <Metal/Metal.h>
 NS_ASSUME_NONNULL_BEGIN
 
+#define wsel(Prefix, SelfType, SEL) \
+void Prefix ## wsel ## _ ## SEL(SelfType _self) { [_self SEL]; } \
+\
+
 #define rsel(Prefix, SelfType, SEL, ReadType) \
 ReadType Prefix ## rsel ## _ ## SEL(SelfType _self) { return  [_self SEL]; } \
 \
@@ -26,13 +30,23 @@ ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self
   return  [_self SEL_A: a SEL_B: b SEL_C: c]; } \
 \
 
-#define wsel(Prefix, SelfType, SEL, WriteType) \
-void Prefix ## wsel ## _ ## SEL(SelfType _self, WriteType value) { return  [_self SEL: value]; } \
+#define wsel_a(Prefix, SelfType, SEL_A, A) \
+void Prefix ## wsel ## _ ## SEL_A(SelfType _self, A a) { [_self SEL_A: a]; } \
 \
+
+#define wsel_ab(Prefix, SelfType, SEL_A, A, SEL_B, B) \
+void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B(SelfType _self, A a, B b) { [_self SEL_A: a SEL_B: b]; } \
+\
+
+#define wsel_abc(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C) \
+void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self, A a, B b, C c) { [_self SEL_A: a SEL_B: b SEL_C: c]; } \
+\
+
+
 
 #define rwsel(Prefix, SelfType, ReadSel, WriteSel, Type) \
 rsel(Prefix, SelfType, ReadSel, Type) \
-wsel(Prefix, SelfType, WriteSel, Type) \
+wsel_a(Prefix, SelfType, WriteSel, Type) \
 
 #define csel(Prefix, ClassType, SEL, RetType) \
 RetType Prefix ## ClassType ## _ ## SEL(void) { return  [ClassType SEL]; } \
@@ -54,6 +68,8 @@ RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SE
 
 NS_RETURNS_NOT_RETAINED
 rsel(, id, name, NSString * _Nonnull)
+
+wsel(, id, reset)
 
 #pragma mark - Device
 
@@ -93,6 +109,10 @@ rsel_abc(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSu
 //- (nullable id <MTLLibrary>)newDefaultLibrary;
 NS_RETURNS_RETAINED
 rsel(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
+
+//- (nullable id <MTLLibrary>)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options error:(__autoreleasing NSError **)error;
+NS_RETURNS_RETAINED
+rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
 
 // Shared
 
@@ -177,6 +197,17 @@ rsel(, id, iosurface, IOSurfaceRef _Nullable )
 
 //@property (readonly) NSUInteger iosurfacePlane API_AVAILABLE(macos(10.11), ios(11.0));
 rsel(, id, iosurfacePlane, NSUInteger)
+
+// MTLFunctionConstantValues
+
+NS_RETURNS_RETAINED csel(, MTLFunctionConstantValues, new, MTLFunctionConstantValues *)
+//- (void)setConstantValue:(const void *)value type:(MTLDataType)type atIndex:(NSUInteger)index;
+wsel_abc(, id, setConstantValue, const void *, type, MTLDataType, atIndex, NSUInteger)
+//- (void)setConstantValues:(const void *)values type:(MTLDataType)type withRange:(NSRange)range;
+wsel_abc(, id, setConstantValues, const void *, type, MTLDataType, withRange, NSRange)
+//- (void)setConstantValue:(const void *)value type:(MTLDataType)type withName:(NSString *)name;
+wsel_abc(, id, setConstantValue, const void *, type, MTLDataType, withName, NSString *)
+
 
 
 // MTLHeap

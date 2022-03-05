@@ -37,6 +37,13 @@ impl URL {
         unsafe { CFURLCreateWithString(allocator, url_string, base_url) }
     }
 
+    #[inline]
+    pub fn create_with_file_system_path<'a>(allocator: Option<&cf::Allocator>, file_path: &cf::String, path_style: PathStyle, is_directory: bool) -> Option<Retained<'a, URL>> {
+      unsafe {
+        CFURLCreateWithFileSystemPath(allocator, file_path, path_style, is_directory)
+      }
+    }
+
     /// ```
     /// use cidre::cf;
     ///
@@ -142,6 +149,8 @@ extern "C" {
         url_string: &cf::String,
         base_url: Option<&URL>,
     ) -> Option<Retained<'a, URL>>;
+
+    fn CFURLCreateWithFileSystemPath<'a>(allocator: Option<&cf::Allocator>, file_path: &cf::String, path_style: PathStyle, is_directory: bool) -> Option<Retained<'a, URL>>;
 
     fn CFURLGetString(anURL: &URL) -> &cf::String;
     fn CFURLGetBaseURL(anURL: &URL) -> Option<&URL>;

@@ -1,5 +1,6 @@
 use crate::{
     cf::{self, Retained},
+    mtl,
     define_obj_type, io,
     ns::Id,
 };
@@ -177,6 +178,24 @@ impl Device {
     pub fn new_default_library<'a>(&self) -> Option<Retained<'a, Library>> {
         unsafe { rsel_newDefaultLibrary(self) }
     }
+
+    /// ```
+    /// use cidre::{cf, mtl};
+    ///
+    /// let device = mtl::Device::default().unwrap();
+    /// 
+    /// let source = cf::String::from_str("void function_a() {}");
+    /// let options = None; 
+    /// let mut err = None;
+    /// let lib = device.new_library_with_source(&source, options, &mut err).unwrap();
+    ///
+    /// ```
+    #[inline]
+    pub fn new_library_with_source<'a>(&self, source: &cf::String, options: Option<&mtl::CompileOptions>, error: &mut Option<&cf::Error>) -> Option<Retained<'a, Library>> {
+        unsafe {
+            rsel_newLibraryWithSource_options_error(self, source, options, error)
+        }
+    }
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -211,6 +230,8 @@ extern "C" {
     ) -> Option<Retained<'a, texture::Texture>>;
 
     fn rsel_newDefaultLibrary<'a>(id: &Device) -> Option<Retained<'a, Library>>;
+
+    fn rsel_newLibraryWithSource_options_error<'a>(id: &Device, source: &cf::String, options: Option<&mtl::CompileOptions>, error: &mut Option<&cf::Error>) -> Option<Retained<'a, Library>>;
 
 }
 
