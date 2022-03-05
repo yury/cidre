@@ -116,7 +116,7 @@ rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _N
 
 // Shared
 
-NS_RETURNS_NOT_RETAINED
+NS_RETURNS_RETAINED
 rsel(, id, label, NSString * _Nullable)
 
 NS_RETURNS_NOT_RETAINED

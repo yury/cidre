@@ -1,13 +1,11 @@
 use std::ffi::c_void;
 
-use crate::io;
-use crate::ns::Id;
 use crate::{
     cf::{self, Retained},
     define_obj_type, mtl, ns,
 };
 
-define_obj_type!(FunctionConstantValues(Id));
+define_obj_type!(FunctionConstantValues(ns::Id));
 
 impl FunctionConstantValues {
     /// ```
@@ -64,7 +62,7 @@ impl FunctionConstantValues {
 }
 
 extern "C" {
-    fn wsel_reset(id: &Id);
+    fn wsel_reset(id: &ns::Id);
     fn MTLFunctionConstantValues_new<'a>() -> Retained<'a, FunctionConstantValues>;
 
     fn wsel_setConstantValue_type_atIndex(

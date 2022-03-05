@@ -60,7 +60,7 @@ impl SharedTextureHandle {
         unsafe { rsel_device(self) }
     }
 
-    pub fn label(&self) -> &cf::String {
+    pub fn label<'a>(&self) -> Option<Retained<'a, cf::String>> {
         unsafe { rsel_label(self) }
     }
 }
@@ -393,7 +393,7 @@ impl Texture {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn rsel_device(id: &Id) -> &Device;
-    fn rsel_label(id: &Id) -> &cf::String;
+    fn rsel_label<'a>(id: &Id) -> Option<Retained<'a, cf::String>>;
 
     fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped<'a>(
         pixel_format: PixelFormat,
