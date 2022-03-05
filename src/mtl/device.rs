@@ -1,7 +1,6 @@
 use crate::{
     cf::{self, Retained},
-    mtl,
-    define_obj_type, io,
+    define_obj_type, io, mtl,
     ns::Id,
 };
 
@@ -183,18 +182,21 @@ impl Device {
     /// use cidre::{cf, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
-    /// 
+    ///
     /// let source = cf::String::from_str("void function_a() {}");
-    /// let options = None; 
+    /// let options = None;
     /// let mut err = None;
     /// let lib = device.new_library_with_source(&source, options, &mut err).unwrap();
     ///
     /// ```
     #[inline]
-    pub fn new_library_with_source<'a>(&self, source: &cf::String, options: Option<&mtl::CompileOptions>, error: &mut Option<&cf::Error>) -> Option<Retained<'a, Library>> {
-        unsafe {
-            rsel_newLibraryWithSource_options_error(self, source, options, error)
-        }
+    pub fn new_library_with_source<'a>(
+        &self,
+        source: &cf::String,
+        options: Option<&mtl::CompileOptions>,
+        error: &mut Option<&cf::Error>,
+    ) -> Option<Retained<'a, Library>> {
+        unsafe { rsel_newLibraryWithSource_options_error(self, source, options, error) }
     }
 }
 
@@ -231,7 +233,12 @@ extern "C" {
 
     fn rsel_newDefaultLibrary<'a>(id: &Device) -> Option<Retained<'a, Library>>;
 
-    fn rsel_newLibraryWithSource_options_error<'a>(id: &Device, source: &cf::String, options: Option<&mtl::CompileOptions>, error: &mut Option<&cf::Error>) -> Option<Retained<'a, Library>>;
+    fn rsel_newLibraryWithSource_options_error<'a>(
+        id: &Device,
+        source: &cf::String,
+        options: Option<&mtl::CompileOptions>,
+        error: &mut Option<&cf::Error>,
+    ) -> Option<Retained<'a, Library>>;
 
 }
 

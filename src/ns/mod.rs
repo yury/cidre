@@ -19,13 +19,9 @@ pub struct Range {
 }
 
 impl Range {
-
     #[inline]
     pub fn make(location: UInteger, length: UInteger) -> Self {
-        Self {
-            location,
-            length
-        }
+        Self { location, length }
     }
 
     #[inline]

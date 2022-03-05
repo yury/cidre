@@ -54,15 +54,15 @@ pub use url::PathStyle;
 pub use url::URL;
 
 pub mod locale;
-pub use locale::Locale;
 pub use locale::Identifier as LocaleIdentifier;
+pub use locale::Locale;
 
 pub mod bundle;
 pub use bundle::Bundle;
 
 pub mod error;
-pub use error::Error;
 pub use error::Domain as ErrorDomain;
+pub use error::Error;
 
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;
