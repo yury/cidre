@@ -67,7 +67,11 @@ RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SE
 #pragma mark - Common
 
 NS_RETURNS_NOT_RETAINED
-rsel(, id, name, NSString * _Nonnull)
+rsel(get_, id, name, NSString * _Nonnull)
+
+NS_RETURNS_RETAINED
+rsel(copy_nullable_, id, name, NSString * _Nullable)
+wsel_a(nullable_, id, setName, NSString * _Nullable)
 
 wsel(, id, reset)
 
@@ -275,6 +279,14 @@ rsel(, id, encodedLength, NSUInteger)
 
 //@property (readonly) NSUInteger alignment;
 rsel(, id, alignment, NSUInteger)
+
+//@property (readonly) MTLFunctionOptions options API_AVAILABLE(macos(11.0), ios(14.0));
+rsel(, id<MTLFunction>, options, MTLFunctionOptions)
+
+// FunctionDescriptor
+
+//+ (nonnull MTLFunctionDescriptor *)functionDescriptor;
+NS_RETURNS_NOT_RETAINED csel(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
 
 
 NS_ASSUME_NONNULL_END

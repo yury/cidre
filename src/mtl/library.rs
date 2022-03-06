@@ -71,7 +71,7 @@ impl Function {
 
     #[inline]
     pub fn name(&self) -> &cf::String {
-        unsafe { rsel_name(self) }
+        unsafe { get_rsel_name(self) }
     }
 
     #[inline]
@@ -230,7 +230,7 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_name(id: &Id) -> &cf::String;
+    fn get_rsel_name(id: &Id) -> &cf::String;
 
     fn MTLCompileOptions_new<'new>() -> Retained<'new, CompileOptions>;
     fn rsel_fastMathEnabled(id: &Id) -> bool;

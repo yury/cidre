@@ -64,6 +64,10 @@ pub use argument_encoder::ArgumentEncoder;
 pub mod buffer;
 pub use buffer::Buffer;
 
+pub mod function_descriptor;
+pub use function_descriptor::FunctionOptions;
+pub use function_descriptor::FunctionDescriptor;
+
 #[macro_export]
 macro_rules! define_mtl_device_and_label {
     () => {
