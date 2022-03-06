@@ -2,7 +2,7 @@ use std::{borrow::Cow, fmt::Debug, intrinsics::transmute, ops::Deref};
 
 use crate::{
     cf::{self, Retained},
-    define_mtl_device_and_label, define_obj_type, mtl, ns,
+    define_mtl, define_obj_type, mtl, ns,
     objc::Id,
 };
 
@@ -67,7 +67,7 @@ impl CompileOptions {
 define_obj_type!(Function(Id));
 
 impl Function {
-    define_mtl_device_and_label!();
+    define_mtl!(device, mut label);
 
     #[inline]
     pub fn name(&self) -> &cf::String {
@@ -86,7 +86,7 @@ impl Function {
 define_obj_type!(Library(Id));
 
 impl Library {
-    define_mtl_device_and_label!();
+    define_mtl!(device, mut label);
 
     /// ```
     /// use cidre::{cf, mtl};
@@ -94,7 +94,7 @@ impl Library {
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let source = cf::String::from_str("kernel void function_a() {}; void function_b() {}");
-    /// let lib = device.new_library_with_source(&source, None).unwrap();
+    /// let lib = device.library_with_source(&source, None).unwrap();
     /// let names = lib.function_names();
     /// assert_eq!(1, names.len());
     /// let n = &names[0];
@@ -114,7 +114,7 @@ impl Library {
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let source = cf::String::from_str("kernel void function_a() {}");
-    /// let lib = device.new_library_with_source(&source, None).unwrap();
+    /// let lib = device.library_with_source(&source, None).unwrap();
     ///
     /// let func_name = cf::String::from_str_no_copy("function_a");
     /// let func = lib.new_function_with_name(&func_name).unwrap();
@@ -145,7 +145,7 @@ impl Library {
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let source = cf::String::from_str("kernel void function_a() {}");
-    /// let lib = device.new_library_with_source(&source, None).unwrap();
+    /// let lib = device.library_with_source(&source, None).unwrap();
     ///
     /// let func_name = cf::String::from_str_no_copy("function_a");
     /// let constant_values = mtl::FunctionConstantValues::new();
@@ -196,7 +196,7 @@ impl ErrorDomain {
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let source = cf::String::from_str("vid function_a() {}");
-    /// let err = device.new_library_with_source(&source, None).unwrap_err();
+    /// let err = device.library_with_source(&source, None).unwrap_err();
     ///
     /// assert_eq!(mtl::LibraryError::CompileFailure, err.get_code());
     ///

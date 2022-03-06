@@ -121,6 +121,12 @@ rsel(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
 NS_RETURNS_RETAINED
 rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
 
+// - (nullable id <MTLComputePipelineState>)newComputePipelineStateWithFunction:(id <MTLFunction>)computeFunction error:(__autoreleasing NSError **)error;
+NS_RETURNS_RETAINED
+rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
+
+#pragma mark - CompileOptions
+
 NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)
 
 //@property (readwrite, nonatomic) BOOL fastMathEnabled;
@@ -131,7 +137,11 @@ rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
 // Shared
 
 NS_RETURNS_RETAINED
-rsel(, id, label, NSString * _Nullable)
+rsel(copy_, id, label, NSString * _Nullable)
+
+NS_RETURNS_NOT_RETAINED
+rsel(get_, id, label, NSString * _Nullable)
+
 
 wsel_a(, id, setLabel, NSString * _Nullable)
 

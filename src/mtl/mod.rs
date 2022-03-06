@@ -65,12 +65,16 @@ pub mod buffer;
 pub use buffer::Buffer;
 
 pub mod function_descriptor;
-pub use function_descriptor::FunctionOptions;
 pub use function_descriptor::FunctionDescriptor;
+pub use function_descriptor::FunctionOptions;
+
+pub mod compute_pipeline;
+pub use compute_pipeline::Descriptor as ComputePipelineDescr;
+pub use compute_pipeline::State as ComputePipelineState;
 
 #[macro_export]
-macro_rules! define_mtl_device_and_label {
-    () => {
+macro_rules! define_mtl {
+    (device) => {
         #[inline]
         pub fn device(&self) -> &crate::mtl::Device {
             #[link(name = "mtl", kind = "static")]
@@ -79,16 +83,18 @@ macro_rules! define_mtl_device_and_label {
             }
             unsafe { rsel_device(self) }
         }
+    };
 
+    (mut label) => {
         #[inline]
         pub fn label<'copy>(&self) -> Option<crate::cf::Retained<'copy, crate::cf::String>> {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn rsel_label<'copy>(
+                fn copy_rsel_label<'copy>(
                     id: &Id,
                 ) -> Option<crate::cf::Retained<'copy, crate::cf::String>>;
             }
-            unsafe { rsel_label(self) }
+            unsafe { copy_rsel_label(self) }
         }
 
         #[inline]
@@ -99,5 +105,28 @@ macro_rules! define_mtl_device_and_label {
             }
             unsafe { wsel_setLabel(self, value) }
         }
+    };
+
+    (get label) => {
+      #[inline]
+      pub fn label(&self) -> Option<&crate::cf::String> {
+          #[link(name = "mtl", kind = "static")]
+          extern "C" {
+              fn get_rsel_label(
+                  id: &Id,
+              ) -> Option<&crate::cf::String>;
+          }
+          unsafe { get_rsel_label(self) }
+      }
+    };
+
+    (device, mut label) => {
+        define_mtl!(device);
+        define_mtl!(mut label);
+    };
+
+    (device, get label) => {
+        define_mtl!(device);
+        define_mtl!(get label);
     };
 }

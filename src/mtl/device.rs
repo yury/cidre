@@ -32,7 +32,7 @@ impl Device {
     /// let device = mtl::Device::default().unwrap();
     /// ```
     #[inline]
-    pub fn default<'a>() -> Option<Retained<'a, Device>> {
+    pub fn default<'create>() -> Option<Retained<'create, Device>> {
         unsafe { MTLCreateSystemDefaultDevice() }
     }
 
@@ -119,7 +119,7 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[inline]
-    pub fn command_queue(&self) -> Option<Retained<CommandQueue>> {
+    pub fn command_queue<'create>(&self) -> Option<Retained<'create, CommandQueue>> {
         unsafe { rsel_newCommandQueue(self) }
     }
 
@@ -133,10 +133,10 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[inline]
-    pub fn command_queue_with_max_command_buffer_count<'a>(
+    pub fn command_queue_with_max_command_buffer_count<'create>(
         &self,
         max_command_buffer_count: usize,
-    ) -> Option<Retained<'a, CommandQueue>> {
+    ) -> Option<Retained<'create, CommandQueue>> {
         unsafe { rsel_newCommandQueueWithMaxCommandBufferCount(self, max_command_buffer_count) }
     }
 
@@ -151,10 +151,10 @@ impl Device {
     ///
     /// ```
     #[inline]
-    pub fn texture_with_descriptor<'a>(
+    pub fn texture_with_descriptor<'create>(
         &self,
         descriptor: &texture::Descriptor,
-    ) -> Option<Retained<texture::Texture>> {
+    ) -> Option<Retained<'create, texture::Texture>> {
         unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
     }
 
@@ -173,10 +173,10 @@ impl Device {
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// assert!(device.new_default_library().is_none());
+    /// assert!(device.default_library().is_none());
     /// ```
     #[inline]
-    pub fn new_default_library<'a>(&self) -> Option<Retained<'a, Library>> {
+    pub fn default_library<'create>(&self) -> Option<Retained<'create, Library>> {
         unsafe { rsel_newDefaultLibrary(self) }
     }
 
@@ -188,27 +188,51 @@ impl Device {
     /// let source = cf::String::from_str("void function_a() {}");
     /// let options = None;
     /// let mut err = None;
-    /// let lib = device.new_library_with_source_and_error(&source, options, &mut err).unwrap();
+    /// let lib = device.library_with_source_and_error(&source, options, &mut err).unwrap();
     ///
     /// ```
     #[inline]
-    pub fn new_library_with_source_and_error<'a>(
+    pub fn library_with_source_and_error<'create>(
         &self,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&cf::Error>,
-    ) -> Option<Retained<'a, Library>> {
+    ) -> Option<Retained<'create, Library>> {
         unsafe { rsel_newLibraryWithSource_options_error(self, source, options, error) }
     }
 
     #[inline]
-    pub fn new_library_with_source<'a>(
+    pub fn library_with_source<'create>(
         &self,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<Retained<'a, Library>, &'a cf::Error> {
+    ) -> Result<Retained<'create, Library>, &'create cf::Error> {
         let mut error = None;
-        let res = Self::new_library_with_source_and_error(&self, source, options, &mut error);
+        let res = Self::library_with_source_and_error(&self, source, options, &mut error);
+
+        if let Some(err) = error {
+            return Err(err);
+        }
+
+        unsafe { Ok(transmute(res)) }
+    }
+
+    #[inline]
+    pub fn compute_pipeline_state_with_function_error<'create>(
+        &self,
+        function: &mtl::Function,
+        error: &mut Option<&cf::Error>,
+    ) -> Option<Retained<'create, mtl::ComputePipelineState>> {
+        unsafe { rsel_newComputePipelineStateWithFunction_error(self, function, error) }
+    }
+
+    #[inline]
+    pub fn compute_pipeline_state_with_function<'create>(
+        &self,
+        function: &mtl::Function,
+    ) -> Result<Retained<'create, mtl::ComputePipelineState>, &cf::Error> {
+        let mut error = None;
+        let res = self.compute_pipeline_state_with_function_error(function, &mut error);
 
         if let Some(err) = error {
             return Err(err);
@@ -220,7 +244,7 @@ impl Device {
 
 #[link(name = "Metal", kind = "framework")]
 extern "C" {
-    fn MTLCreateSystemDefaultDevice<'a>() -> Option<Retained<'a, Device>>;
+    fn MTLCreateSystemDefaultDevice<'create>() -> Option<Retained<'create, Device>>;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -231,16 +255,16 @@ extern "C" {
     fn rsel_hasUnifiedMemory(id: &Device) -> bool;
     fn rsel_readWriteTextureSupport(id: &Device) -> ReadWriteTextureTier;
     fn rsel_argumentBuffersSupport(id: &Device) -> ArgumentBuffersTier;
-    fn rsel_newCommandQueue(id: &Device) -> Option<Retained<CommandQueue>>;
+    fn rsel_newCommandQueue<'create>(id: &Device) -> Option<Retained<'create, CommandQueue>>;
     fn rsel_newCommandQueueWithMaxCommandBufferCount<'a>(
         id: &Device,
         maxCommandBufferCount: usize,
     ) -> Option<Retained<'a, CommandQueue>>;
 
-    fn rsel_newTextureWithDescriptor<'a>(
+    fn rsel_newTextureWithDescriptor<'create>(
         id: &Device,
         descriptor: &texture::Descriptor,
-    ) -> Option<Retained<'a, texture::Texture>>;
+    ) -> Option<Retained<'create, texture::Texture>>;
 
     fn rsel_newTextureWithDescriptor_iosurface_plane<'a>(
         id: &Device,
@@ -257,6 +281,14 @@ extern "C" {
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&cf::Error>,
     ) -> Option<Retained<'a, Library>>;
+
+    // NS_RETURNS_RETAINED
+    // rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
+    fn rsel_newComputePipelineStateWithFunction_error<'create>(
+        id: &Device,
+        function: &mtl::Function,
+        error: &mut Option<&cf::Error>,
+    ) -> Option<Retained<'create, mtl::ComputePipelineState>>;
 
 }
 

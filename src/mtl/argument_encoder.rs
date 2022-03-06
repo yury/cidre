@@ -1,10 +1,10 @@
 use crate::ns::{self, Id};
-use crate::{define_mtl_device_and_label, define_obj_type};
+use crate::{define_mtl, define_obj_type};
 
 define_obj_type!(ArgumentEncoder(Id));
 
 impl ArgumentEncoder {
-    define_mtl_device_and_label!();
+    define_mtl!(device, mut label);
 
     pub fn encoded_length(&self) -> ns::UInteger {
         unsafe { rsel_encodedLength(self) }

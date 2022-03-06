@@ -1,4 +1,4 @@
-use crate::{define_mtl_device_and_label, define_obj_type, objc::Id};
+use crate::{define_mtl, define_obj_type, objc::Id};
 
 #[repr(transparent)]
 pub struct Options(usize);
@@ -59,7 +59,7 @@ impl Options {
 define_obj_type!(Resource(Id));
 
 impl Resource {
-    define_mtl_device_and_label!();
+    define_mtl!(device, mut label);
 
     #[inline]
     pub fn resource_options(&self) -> Options {
