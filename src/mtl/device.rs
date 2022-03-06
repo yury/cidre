@@ -1,7 +1,7 @@
 use std::intrinsics::transmute;
 
 use crate::{
-    cf::{self, ArrayOf, Retained},
+    cf::{self, Retained},
     define_obj_type, io, mtl,
     ns::Id,
 };

@@ -72,6 +72,10 @@ pub mod compute_pipeline;
 pub use compute_pipeline::Descriptor as ComputePipelineDescr;
 pub use compute_pipeline::State as ComputePipelineState;
 
+pub mod command_buffer;
+pub use command_buffer::CommandBuffer;
+pub use command_buffer::Status as CommandBufferStatus;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

@@ -1,5 +1,5 @@
-use crate::ns::{self, Id};
-use crate::{cf, define_mtl, define_obj_type};
+use crate::ns::Id;
+use crate::{cf, define_obj_type};
 
 define_obj_type!(FunctionDescriptor(Id));
 

@@ -78,6 +78,13 @@ wsel(, id, reset)
 //@property (readonly) NSUInteger length;
 rsel(, id, length, NSUInteger)
 
+//- (void)enqueue;
+wsel(, id, enqueue)
+wsel(, id, commit)
+wsel(, id, waitUntilScheduled)
+//- (void)waitUntilCompleted;
+wsel(, id, waitUntilCompleted)
+
 #pragma mark - Device
 
 // uint64_t registryID
