@@ -9,6 +9,24 @@
 #import <Metal/Metal.h>
 NS_ASSUME_NONNULL_BEGIN
 
+typedef struct {
+  void * fn;
+} rust_completion_block;
+
+//@interface CidreBlock : NSObject {
+//  @public rust_block * rb;
+//}
+//
+//@end
+//
+//@interface CidreBlockOnce : NSObject {
+//  @public rust_block * rb;
+//}
+//
+//@end
+
+
+
 #define wsel(Prefix, SelfType, SEL) \
 void Prefix ## wsel ## _ ## SEL(SelfType _self) { [_self SEL]; } \
 \
@@ -63,6 +81,49 @@ RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(A a, B b, 
 #define csel_abcd(Prefix, ClassType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D, RetType) \
 RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D(A a, B b, C c, D d) { return  [ClassType SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
 
+
+
+#define sel_ch(Prefix, SelfType, SEL_CH) \
+void Prefix ## sel ## _ ## SEL_CH(SelfType _self, rust_completion_block *rb) { [_self SEL_CH: ^() {\
+void(*ch)(void *) = rb->fn; \
+ch(rb); \
+} ]; } \
+\
+
+#define sel_ch_a(Prefix, SelfType, SEL_CH, CH_A) \
+void Prefix ## sel ## _ ## SEL_CH(SelfType _self, rust_completion_block *rb) { [_self SEL_CH: ^(CH_A ca) {\
+void(*ch)(void *, CH_A) = rb->fn; \
+ch(rb, ca); \
+} ]; } \
+\
+
+#define sel_a_ch_a(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A) \
+void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, rust_completion_block *rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca) {\
+void(*ch)(void *, CH_A) = rb->fn; \
+ch(rb, ca); \
+} ]; } \
+\
+
+#define sel_ch_ab(Prefix, SelfType, SEL_CH, CH_A, CH_B) \
+void Prefix ## sel ## _ ## SEL_CH(SelfType _self, rust_completion_block *rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
+void(*ch)(void *, CH_A, CH_B) = rb->fn; \
+ch(rb, ca, cb); \
+} ]; } \
+\
+
+#define sel_a_ch_ab(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A, CH_B) \
+void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, rust_completion_block *rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca, CH_B cb) {\
+void(*ch)(void *, CH_A, CH_B) = rb->fn; \
+ch(rb, ca, cb); \
+} ]; } \
+\
+
+#define sel_ab_ch_ab(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_CH, CH_A, CH_B) \
+void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_CH(SelfType _self, A a, B b, rust_completion_block *rb) { [_self SEL_A:a SEL_B:b SEL_CH:^(CH_A ca, CH_B cb) {\
+void(*handler)(void *, CH_A, CH_B) = rb->fn; \
+handler(rb, ca, cb); \
+} ]; } \
+\
 
 #pragma mark - Common
 
@@ -127,6 +188,16 @@ rsel(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
 //- (nullable id <MTLLibrary>)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
 rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
+
+//- (void)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options completionHandler:(MTLNewLibraryCompletionHandler)completionHandler
+sel_ab_ch_ab(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id <MTLLibrary> __nullable, NSError * __nullable)
+//void foo(id<MTLDevice> device, NSString * source, MTLCompileOptions * _Nullable options, rust_completion_block * rb) {
+//  [device newLibraryWithSource:source options:options completionHandler:^(id<MTLLibrary>  _Nullable library, NSError * _Nullable error) {
+//    void (*cb)(void *, id<MTLLibrary>  _Nullable library, NSError * _Nullable error) = rb->fn;
+//    cb(rb, library, error);
+//  }];
+//}
+
 
 // - (nullable id <MTLComputePipelineState>)newComputePipelineStateWithFunction:(id <MTLFunction>)computeFunction error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
@@ -260,12 +331,12 @@ rsel_a(, id, maxAvailableSizeWithAlignment, NSUInteger, NSUInteger)
 
 NS_RETURNS_RETAINED
 rsel_abc(, id, newBufferWithBytes, const void *, length,
-         NSUInteger, options, MTLResourceOptions,
-         id<MTLBuffer> _Nullable)
+        NSUInteger, options, MTLResourceOptions,
+        id<MTLBuffer> _Nullable)
 
 NS_RETURNS_RETAINED
 rsel_a(, id, newDepthStencilStateWithDescriptor, MTLDepthStencilDescriptor * _Nonnull,
-       id<MTLDepthStencilState> _Nullable)
+      id<MTLDepthStencilState> _Nullable)
 
 
 // MTLHeap end

@@ -257,3 +257,23 @@ extern "C" {
         index: ns::UInteger,
     ) -> Retained<'a, mtl::ArgumentEncoder>;
 }
+
+mod tests {
+
+    use std::{thread::sleep, time::Duration};
+
+    use crate::{
+        cf::{self, Retained},
+        mtl,
+    };
+
+    #[test]
+
+    fn foo() {
+        let device = mtl::Device::default().unwrap();
+        let source = cf::String::from_str("kernel void function_a() {}");
+        device.library_with_source_options_completion(&source, None, |lib, error| {
+            println!("nice!!! {:?} {:?}", lib, error);
+        });
+    }
+}

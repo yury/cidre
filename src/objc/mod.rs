@@ -53,6 +53,7 @@ impl Release for Id {
 #[repr(transparent)]
 pub struct Sel(c_void);
 
+pub mod block;
 pub mod ns;
 
 #[link(name = "objc", kind = "dylib")]

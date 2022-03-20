@@ -1,9 +1,10 @@
-use std::intrinsics::transmute;
+use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
     define_obj_type, io, mtl,
     ns::Id,
+    objc::block::CompletionHandlerAB,
 };
 
 use super::{texture, CommandQueue, Library, Size};
@@ -217,6 +218,24 @@ impl Device {
         unsafe { Ok(transmute(res)) }
     }
 
+    pub fn library_with_source_options_completion<T>(
+        &self,
+        source: &cf::String,
+        options: Option<&mtl::CompileOptions>,
+        completion: T,
+    ) where
+        T: Fn(Option<&mtl::library::Library>, Option<&cf::error::Error>),
+    {
+        unsafe {
+            sel_newLibraryWithSource_options_completionHandler(
+                self,
+                source,
+                options,
+                completion.into_raw(),
+            )
+        }
+    }
+
     #[inline]
     pub fn compute_pipeline_state_with_function_error<'create>(
         &self,
@@ -242,6 +261,8 @@ impl Device {
     }
 }
 
+
+
 #[link(name = "Metal", kind = "framework")]
 extern "C" {
     fn MTLCreateSystemDefaultDevice<'create>() -> Option<Retained<'create, Device>>;
@@ -249,6 +270,12 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
+    fn sel_newLibraryWithSource_options_completionHandler(
+        id: &Device,
+        source: &cf::String,
+        options: Option<&mtl::CompileOptions>,
+        rb_bloc: *const c_void,
+    );
     fn get_rsel_name(id: &Device) -> &cf::String;
     fn rsel_registryID(id: &Device) -> u64;
     fn rsel_maxThreadsPerThreadgroup(id: &Device) -> Size;
@@ -299,6 +326,7 @@ mod tests {
     #[test]
     fn it_works() {
         let device = unsafe { mtl::Device::default().unwrap_unchecked() };
+
         let n = device.name();
         n.show_str()
     }
