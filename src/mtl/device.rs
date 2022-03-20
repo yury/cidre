@@ -7,7 +7,7 @@ use crate::{
     objc::block::CompletionHandlerAB,
 };
 
-use super::{texture, CommandQueue, Library, Size};
+use super::{texture, CommandQueue, Library, Size, Buffer};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -259,6 +259,20 @@ impl Device {
 
         unsafe { Ok(transmute(res)) }
     }
+
+    #[inline]
+    pub fn buffer_with_length_and_options<'create>(&self, length: usize, options: mtl::ResourceOptions) -> Option<Retained<'create, Buffer>> {
+        unsafe {
+            rsel_newBufferWithLength_options(self, length, options)
+        }
+    }
+
+    #[inline]
+    pub fn buffer_with_bytes_length_and_options<'create>(&self, bytes: *const c_void, length: usize, options: mtl::ResourceOptions) -> Option<Retained<'create, Buffer>> {
+        unsafe {
+            rsel_newBufferWithBytes_length_options(self, bytes, length, options)
+        }
+    }
 }
 
 
@@ -316,6 +330,9 @@ extern "C" {
         function: &mtl::Function,
         error: &mut Option<&cf::Error>,
     ) -> Option<Retained<'create, mtl::ComputePipelineState>>;
+
+    fn rsel_newBufferWithLength_options<'create>(id: &Device, length: usize, options: mtl::ResourceOptions) -> Option<Retained<'create, Buffer>>;
+    fn rsel_newBufferWithBytes_length_options<'create>(id: &Device,  bytes: *const c_void, length: usize, options: mtl::ResourceOptions) -> Option<Retained<'create, Buffer>>;
 
 }
 

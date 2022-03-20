@@ -37,6 +37,12 @@ impl Options {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
         Self((CPUCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
 }
+
+impl Default for Options {
+    fn default() -> Self {
+        Options(0)
+    }
+}
 // typedef NS_OPTIONS(NSUInteger, MTLResourceOptions)
 // {
 //     MTLResourceCPUCacheModeDefaultCache  = MTLCPUCacheModeDefaultCache  << MTLResourceCPUCacheModeShift,

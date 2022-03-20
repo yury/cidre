@@ -260,8 +260,6 @@ extern "C" {
 
 mod tests {
 
-    use std::{thread::sleep, time::Duration};
-
     use crate::{
         cf::{self, Retained},
         mtl,

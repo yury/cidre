@@ -191,17 +191,14 @@ rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _N
 
 //- (void)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options completionHandler:(MTLNewLibraryCompletionHandler)completionHandler
 sel_ab_ch_ab(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id <MTLLibrary> __nullable, NSError * __nullable)
-//void foo(id<MTLDevice> device, NSString * source, MTLCompileOptions * _Nullable options, rust_completion_block * rb) {
-//  [device newLibraryWithSource:source options:options completionHandler:^(id<MTLLibrary>  _Nullable library, NSError * _Nullable error) {
-//    void (*cb)(void *, id<MTLLibrary>  _Nullable library, NSError * _Nullable error) = rb->fn;
-//    cb(rb, library, error);
-//  }];
-//}
-
 
 // - (nullable id <MTLComputePipelineState>)newComputePipelineStateWithFunction:(id <MTLFunction>)computeFunction error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
 rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
+
+//- (nullable id <MTLBuffer>)newBufferWithLength:(NSUInteger)length options:(MTLResourceOptions)options;
+NS_RETURNS_RETAINED
+rsel_ab(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<MTLBuffer> _Nullable)
 
 #pragma mark - CompileOptions
 

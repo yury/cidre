@@ -29,6 +29,7 @@ pub use resource::HAZARD_TRACKING_MODE_MASK;
 pub use resource::HAZARD_TRACKING_MODE_SHIFT;
 pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
+pub use resource::Options as ResourceOptions;
 
 pub mod library;
 pub use library::CompileOptions;
