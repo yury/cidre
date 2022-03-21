@@ -8,6 +8,27 @@ where
     pub call_fn: *const c_void,
     pub f: T,
 }
+
+pub trait CompletionHandlerA<A>: Fn(A) + Sized {
+  fn into_raw(self) -> *const c_void {
+      let arc = Arc::new(CompletionBlock {
+          call_fn: Self::call_a as _,
+          f: self,
+      });
+
+      Arc::into_raw(arc) as _
+  }
+
+  fn call_a(raw: *const CompletionBlock<Self>, a: A) {
+      unsafe {
+          let arc = Arc::from_raw(raw);
+          (arc.f)(a);
+      }
+  }
+}
+
+impl<T, A> CompletionHandlerA<A> for T where T: Fn(A) {}
+
 pub trait CompletionHandlerAB<A, B>: Fn(A, B) + Sized {
   fn into_raw(self) -> *const c_void {
       let arc = Arc::new(CompletionBlock {
@@ -27,6 +48,8 @@ pub trait CompletionHandlerAB<A, B>: Fn(A, B) + Sized {
 }
 
 impl<T, A, B> CompletionHandlerAB<A, B> for T where T: Fn(A, B) {}
+
+
 #[cfg(test)]
 mod tests {
     use std::{

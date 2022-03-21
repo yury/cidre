@@ -234,7 +234,12 @@ rwsel(, id, textureType, setTextureType, MTLTextureType)
 //@property (readwrite, nonatomic) MTLPixelFormat pixelFormat;
 rwsel(, id, pixelFormat, setPixelFormat, MTLPixelFormat)
 
+// CommandBuffer
 
+// - (void)addScheduledHandler:(MTLCommandBufferHandler)block;
+sel_ch_a(, id<MTLCommandBuffer>, addScheduledHandler, id <MTLCommandBuffer>)
+// - (void)addCompletedHandler:(MTLCommandBufferHandler)block;
+sel_ch_a(, id<MTLCommandBuffer>, addCompletedHandler, id <MTLCommandBuffer>)
 
 // TextureDescriptor
 
