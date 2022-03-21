@@ -2,8 +2,8 @@ use std::ffi::c_void;
 
 use crate::{define_mtl, define_obj_type};
 
-use crate::objc::block::CompletionHandlerA;
 use crate::ns::Id;
+use crate::objc::block::CompletionHandlerA;
 
 #[repr(usize)]
 pub enum Status {
@@ -51,19 +51,17 @@ impl CommandBuffer {
     }
 
     pub fn add_scheduled_handler<T>(&self, block: T)
-    where T: Fn(&CommandBuffer)
+    where
+        T: Fn(&Self),
     {
-        unsafe {
-            sel_addScheduledHandler(self, block.into_raw())
-        }
+        unsafe { sel_addScheduledHandler(self, block.into_raw()) }
     }
 
     pub fn add_completion_handler<T>(&self, block: T)
-    where T: Fn(&CommandBuffer)
+    where
+        T: Fn(&Self),
     {
-        unsafe {
-            sel_addCompletedHandler(self, block.into_raw())
-        }
+        unsafe { sel_addCompletedHandler(self, block.into_raw()) }
     }
 }
 

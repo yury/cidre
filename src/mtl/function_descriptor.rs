@@ -21,7 +21,7 @@ impl FunctionDescriptor {
     /// ```
     /// use cidre::{cf, mtl};
     ///
-    /// let fd = mtl::FunctionDescriptor::function_descriptor();
+    /// let fd = mtl::FunctionDescriptor::default();
     ///
     /// assert!(fd.name().is_none());
     ///
@@ -33,7 +33,7 @@ impl FunctionDescriptor {
     ///
     /// assert!(name.equal(&actual_name));
     ///
-    pub fn function_descriptor<'autorelease>() -> &'autorelease mut FunctionDescriptor {
+    pub fn default<'autorelease>() -> &'autorelease mut FunctionDescriptor {
         unsafe { MTLFunctionDescriptor_functionDescriptor() }
     }
 }

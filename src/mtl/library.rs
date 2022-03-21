@@ -162,7 +162,7 @@ impl Library {
         let mut error = None;
 
         let res = Self::new_function_with_name_constant_values_error(
-            &self,
+            self,
             name,
             constant_values,
             &mut error,
