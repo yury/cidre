@@ -206,12 +206,15 @@ extern "C" {
 define_obj_type!(RenderPipelineReflection(Id));
 
 impl RenderPipelineReflection {
+    #[inline]
     pub fn vertex_arguments(&self) -> Option<&ArrayOf<Argument>> {
         unsafe { rsel_vertexArguments(self) }
     }
+    #[inline]
     pub fn fragment_arguments(&self) -> Option<&ArrayOf<Argument>> {
         unsafe { rsel_fragmentArguments(self) }
     }
+    #[inline]
     pub fn tile_arguments(&self) -> Option<&ArrayOf<Argument>> {
         unsafe { rsel_tileArguments(self) }
     }

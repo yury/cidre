@@ -12,36 +12,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #define wsel(Prefix, SelfType, SEL) \
-void Prefix ## wsel ## _ ## SEL(SelfType _self) { [_self SEL]; } \
+extern inline void Prefix ## wsel ## _ ## SEL(SelfType _self) { [_self SEL]; } \
 \
 
 #define rsel(Prefix, SelfType, SEL, ReadType) \
-ReadType Prefix ## rsel ## _ ## SEL(SelfType _self) { return  [_self SEL]; } \
+extern inline ReadType Prefix ## rsel ## _ ## SEL(SelfType _self) { return  [_self SEL]; } \
 \
 
 #define rsel_a(Prefix, SelfType, SEL_A, A, ReadType) \
-ReadType Prefix ## rsel ## _ ## SEL_A(SelfType _self, A a) { return  [_self SEL_A: a]; } \
+extern inline ReadType Prefix ## rsel ## _ ## SEL_A(SelfType _self, A a) { return  [_self SEL_A: a]; } \
 \
 
 #define rsel_ab(Prefix, SelfType, SEL_A, A, SEL_B, B, ReadType) \
-ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B(SelfType _self, A a, B b) { return  [_self SEL_A: a SEL_B: b]; } \
+extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B(SelfType _self, A a, B b) { return  [_self SEL_A: a SEL_B: b]; } \
 \
 
 #define rsel_abc(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C, ReadType) \
-ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self, A a, B b, C c) { \
+extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self, A a, B b, C c) { \
   return  [_self SEL_A: a SEL_B: b SEL_C: c]; } \
 \
 
 #define wsel_a(Prefix, SelfType, SEL_A, A) \
-void Prefix ## wsel ## _ ## SEL_A(SelfType _self, A a) { [_self SEL_A: a]; } \
+extern inline void Prefix ## wsel ## _ ## SEL_A(SelfType _self, A a) { [_self SEL_A: a]; } \
 \
 
 #define wsel_ab(Prefix, SelfType, SEL_A, A, SEL_B, B) \
-void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B(SelfType _self, A a, B b) { [_self SEL_A: a SEL_B: b]; } \
+extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B(SelfType _self, A a, B b) { [_self SEL_A: a SEL_B: b]; } \
 \
 
 #define wsel_abc(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C) \
-void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self, A a, B b, C c) { [_self SEL_A: a SEL_B: b SEL_C: c]; } \
+extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self, A a, B b, C c) { [_self SEL_A: a SEL_B: b SEL_C: c]; } \
 \
 
 
@@ -51,59 +51,59 @@ rsel(Prefix, SelfType, ReadSel, Type) \
 wsel_a(Prefix, SelfType, WriteSel, Type) \
 
 #define csel(Prefix, ClassType, SEL, RetType) \
-RetType Prefix ## ClassType ## _ ## SEL(void) { return  [ClassType SEL]; } \
+extern inline RetType Prefix ## ClassType ## _ ## SEL(void) { return  [ClassType SEL]; } \
 
 #define csel_a(Prefix, ClassType, SEL_A, A, RetType) \
-RetType Prefix ## ClassType ## _ ## SEL_A(A a) { return  [ClassType SEL_A: a]; } \
+extern inline RetType Prefix ## ClassType ## _ ## SEL_A(A a) { return  [ClassType SEL_A: a]; } \
 
 #define csel_ab(Prefix, ClassType, SEL_A, A, SEL_B, B, RetType) \
-RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B(A a, B b) { return  [ClassType SEL_A: a SEL_B: b]; } \
+extern inline RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B(A a, B b) { return  [ClassType SEL_A: a SEL_B: b]; } \
 
 #define csel_abc(Prefix, ClassType, SEL_A, A, SEL_B, B, SEL_C, C, RetType) \
-RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(A a, B b, C c) { return  [ClassType SEL_A: a SEL_B: b SEL_C: c]; } \
+extern inline RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(A a, B b, C c) { return  [ClassType SEL_A: a SEL_B: b SEL_C: c]; } \
 
 #define csel_abcd(Prefix, ClassType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D, RetType) \
-RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D(A a, B b, C c, D d) { return  [ClassType SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
+extern inline RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D(A a, B b, C c, D d) { return  [ClassType SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
 
 
 
 #define sel_ch(Prefix, SelfType, SEL_CH) \
-void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^() {\
+extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^() {\
 void(*ch)(void *) = rb[0]; \
 ch(rb); \
 } ]; } \
 \
 
 #define sel_ch_a(Prefix, SelfType, SEL_CH, CH_A) \
-void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca) {\
+extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca) {\
 void(*ch)(void *, CH_A) = rb[0]; \
 ch(rb, ca); \
 } ]; } \
 \
 
 #define sel_a_ch_a(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A) \
-void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca) {\
+extern inline void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca) {\
 void(*ch)(void *, CH_A) = rb[0]; \
 ch(rb, ca); \
 } ]; } \
 \
 
 #define sel_ch_ab(Prefix, SelfType, SEL_CH, CH_A, CH_B) \
-void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
+extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
 void(*ch)(void *, CH_A, CH_B) = rb[0]; \
 ch(rb, ca, cb); \
 } ]; } \
 \
 
 #define sel_a_ch_ab(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A, CH_B) \
-void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca, CH_B cb) {\
+extern inline void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca, CH_B cb) {\
 void(*ch)(void *, CH_A, CH_B) = rb[0]; \
 ch(rb, ca, cb); \
 } ]; } \
 \
 
 #define sel_ab_ch_ab(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_CH, CH_A, CH_B) \
-void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_CH(SelfType _self, A a, B b, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_B:b SEL_CH:^(CH_A ca, CH_B cb) {\
+extern inline void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_CH(SelfType _self, A a, B b, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_B:b SEL_CH:^(CH_A ca, CH_B cb) {\
 void(*handler)(void *, CH_A, CH_B) = rb[0]; \
 handler(rb, ca, cb); \
 } ]; } \
@@ -393,6 +393,17 @@ rsel(, id, fragmentArguments, NSArray <MTLArgument *> * _Nullable)
 // @property (nullable, readonly) NSArray <MTLArgument *> *tileArguments;
 NS_RETURNS_NOT_RETAINED
 rsel(, id, tileArguments, NSArray <MTLArgument *> * _Nullable)
+
+#pragma mark - MTLRenderPipelineDescriptor
+
+// @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
+NS_RETURNS_NOT_RETAINED
+rwsel(, id, vertexFunction, setVertexFunction, id <MTLFunction> _Nullable)
+// @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> fragmentFunction;
+NS_RETURNS_NOT_RETAINED
+rwsel(, id, fragmentFunction, setFragmentFunction, id <MTLFunction> _Nullable)
+// @property (nullable, copy, nonatomic) MTLVertexDescriptor *vertexDescriptor;
+
 
 
 NS_ASSUME_NONNULL_END
