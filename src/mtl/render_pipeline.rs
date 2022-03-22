@@ -54,10 +54,10 @@ pub enum PrimitiveTopologyClass {
 
 #[repr(usize)]
 pub enum TessellationPartitionMode {
-    MTLTessellationPartitionModePow2 = 0,
-    MTLTessellationPartitionModeInteger = 1,
-    MTLTessellationPartitionModeFractionalOdd = 2,
-    MTLTessellationPartitionModeFractionalEven = 3,
+    Pow2 = 0,
+    Integer = 1,
+    FractionalOdd = 2,
+    FractionalEven = 3,
 }
 
 #[repr(usize)]
