@@ -382,4 +382,17 @@ rwsel(, id, alphaBlendOperation, setAlphaBlendOperation, MTLBlendOperation)
 rwsel(render_pipeline_, MTLRenderPipelineColorAttachmentDescriptor *, writeMask, setWriteMask, MTLColorWriteMask)
 
 
+#pragma mark - MTLRenderPipelineReflection
+
+//@property (nullable, readonly) NSArray <MTLArgument *> *vertexArguments;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, vertexArguments, NSArray <MTLArgument *> * _Nullable)
+//@property (nullable, readonly) NSArray <MTLArgument *> *fragmentArguments;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, fragmentArguments, NSArray <MTLArgument *> * _Nullable)
+// @property (nullable, readonly) NSArray <MTLArgument *> *tileArguments;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, tileArguments, NSArray <MTLArgument *> * _Nullable)
+
+
 NS_ASSUME_NONNULL_END

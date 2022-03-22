@@ -83,12 +83,12 @@ pub use render_pipeline::BlendFactor;
 pub use render_pipeline::BlendOperation;
 pub use render_pipeline::ColorWriteMask;
 pub use render_pipeline::PrimitiveTopologyClass;
-pub use render_pipeline::TessellationPartitionMode;
-pub use render_pipeline::TessellationFactorStepFunction;
-pub use render_pipeline::TessellationFactorFormat;
-pub use render_pipeline::TessellationControlPointIndexType;
 pub use render_pipeline::RenderPipelineColorAttachmentDescriptor;
-
+pub use render_pipeline::RenderPipelineReflection;
+pub use render_pipeline::TessellationControlPointIndexType;
+pub use render_pipeline::TessellationFactorFormat;
+pub use render_pipeline::TessellationFactorStepFunction;
+pub use render_pipeline::TessellationPartitionMode;
 
 #[macro_export]
 macro_rules! define_mtl {

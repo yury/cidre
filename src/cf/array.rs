@@ -30,6 +30,7 @@ impl ArrayCallbacks {
 
 define_cf_type!(Array(Type));
 
+#[repr(transparent)]
 pub struct ArrayOf<T: Retain + Release>(Array, PhantomData<T>);
 
 impl<T> std::ops::Deref for ArrayOf<T>
