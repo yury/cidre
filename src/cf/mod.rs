@@ -39,9 +39,9 @@ pub use array::RetainCallBack as ArrayRetainCallBack;
 
 pub mod dictionary;
 pub use dictionary::Dictionary;
-pub use dictionary::DictionaryApplierFunction;
-pub use dictionary::DictionaryKeyCallBacks;
-pub use dictionary::DictionaryValueCallBacks;
+pub use dictionary::ApplierFunction as DictionaryApplierFunction;
+pub use dictionary::KeyCallBacks as DictionaryKeyCallBacks;
+pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
 pub use dictionary::MutableDictionary;
 
 pub mod date;

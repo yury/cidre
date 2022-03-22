@@ -3,55 +3,55 @@ use crate::define_cf_type;
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-pub type DictionaryRetainCallBack =
+pub type RetainCallBack =
     extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type DictionaryReleaseCallBack =
+pub type ReleaseCallBack =
     extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type DictionaryCopyDescriptionCallBack =
+pub type CopyDescriptionCallBack =
     extern "C" fn(value: *const c_void) -> Option<Retained<'static, String>>;
-pub type DictionaryEqualCallBack =
+pub type EqualCallBack =
     extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
-pub type DictionaryHashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
+pub type HashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
 
 #[repr(C)]
-pub struct DictionaryKeyCallBacks {
+pub struct KeyCallBacks {
     version: Index,
-    retain: DictionaryRetainCallBack,
-    release: DictionaryReleaseCallBack,
-    copy_description: DictionaryCopyDescriptionCallBack,
-    equal: DictionaryEqualCallBack,
-    hash: DictionaryHashCallBack,
+    retain: RetainCallBack,
+    release: ReleaseCallBack,
+    copy_description: CopyDescriptionCallBack,
+    equal: EqualCallBack,
+    hash: HashCallBack,
 }
 
-impl DictionaryKeyCallBacks {
+impl KeyCallBacks {
     #[inline]
-    pub fn default() -> &'static DictionaryKeyCallBacks {
+    pub fn default() -> &'static KeyCallBacks {
         unsafe { &kCFTypeDictionaryKeyCallBacks }
     }
 
     #[inline]
-    pub fn copy_strings() -> &'static DictionaryKeyCallBacks {
+    pub fn copy_strings() -> &'static KeyCallBacks {
         unsafe { &kCFCopyStringDictionaryKeyCallBacks }
     }
 }
 
 #[repr(C)]
-pub struct DictionaryValueCallBacks {
+pub struct ValueCallBacks {
     version: Index,
-    retain: DictionaryRetainCallBack,
-    release: DictionaryReleaseCallBack,
-    copy_description: DictionaryCopyDescriptionCallBack,
-    equal: DictionaryEqualCallBack,
+    retain: RetainCallBack,
+    release: ReleaseCallBack,
+    copy_description: CopyDescriptionCallBack,
+    equal: EqualCallBack,
 }
 
-impl DictionaryValueCallBacks {
+impl ValueCallBacks {
     #[inline]
-    pub fn default() -> Option<&'static DictionaryValueCallBacks> {
+    pub fn default() -> Option<&'static ValueCallBacks> {
         unsafe { Some(&kCFTypeDictionaryValueCallBacks) }
     }
 }
 
-pub type DictionaryApplierFunction =
+pub type ApplierFunction =
     extern "C" fn(key: *const c_void, value: *const c_void, context: *mut c_void);
 
 define_cf_type!(Dictionary(Type));
@@ -200,8 +200,8 @@ impl Dictionary {
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
-        key_callbacks: Option<&DictionaryKeyCallBacks>,
-        value_callbacks: Option<&DictionaryValueCallBacks>,
+        key_callbacks: Option<&KeyCallBacks>,
+        value_callbacks: Option<&ValueCallBacks>,
     ) -> Option<Retained<'a, Dictionary>> {
         CFDictionaryCreate(
             allocator,
@@ -294,10 +294,10 @@ define_cf_type!(MutableDictionary(Dictionary));
 impl MutableDictionary {}
 
 extern "C" {
-    static kCFTypeDictionaryKeyCallBacks: DictionaryKeyCallBacks;
-    static kCFCopyStringDictionaryKeyCallBacks: DictionaryKeyCallBacks;
+    static kCFTypeDictionaryKeyCallBacks: KeyCallBacks;
+    static kCFCopyStringDictionaryKeyCallBacks: KeyCallBacks;
 
-    static kCFTypeDictionaryValueCallBacks: DictionaryValueCallBacks;
+    static kCFTypeDictionaryValueCallBacks: ValueCallBacks;
 
     fn CFDictionaryGetTypeID() -> TypeId;
 
@@ -317,8 +317,8 @@ extern "C" {
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
-        key_callbacks: Option<&DictionaryKeyCallBacks>,
-        value_callbacks: Option<&DictionaryValueCallBacks>,
+        key_callbacks: Option<&KeyCallBacks>,
+        value_callbacks: Option<&ValueCallBacks>,
     ) -> Option<Retained<'a, Dictionary>>;
 
     fn CFDictionaryGetKeysAndValues(
