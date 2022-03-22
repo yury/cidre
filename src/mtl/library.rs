@@ -266,8 +266,10 @@ mod tests {
     fn foo() {
         let device = mtl::Device::default().unwrap();
         let source = cf::String::from_str("kernel void function_a() {}");
-        device.library_with_source_options_completion(&source, None, |lib, error| {
+        
+        device.library_with_source_options_completion(&source, None, move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
+
     }
 }

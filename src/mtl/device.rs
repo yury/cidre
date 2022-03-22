@@ -224,7 +224,8 @@ impl Device {
         options: Option<&mtl::CompileOptions>,
         completion: T,
     ) where
-        T: Fn(Option<&mtl::library::Library>, Option<&cf::error::Error>),
+        T: FnOnce(Option<&mtl::library::Library>, Option<&cf::error::Error>),
+        T: Send + 'static,
     {
         unsafe {
             sel_newLibraryWithSource_options_completionHandler(

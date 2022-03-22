@@ -52,14 +52,14 @@ impl CommandBuffer {
 
     pub fn add_scheduled_handler<T>(&self, block: T)
     where
-        T: Fn(&Self),
+        T: FnOnce(&Self) + Send + 'static,
     {
         unsafe { sel_addScheduledHandler(self, block.into_raw()) }
     }
 
     pub fn add_completion_handler<T>(&self, block: T)
     where
-        T: Fn(&Self),
+        T: FnOnce(&Self) + Send + 'static,
     {
         unsafe { sel_addCompletedHandler(self, block.into_raw()) }
     }

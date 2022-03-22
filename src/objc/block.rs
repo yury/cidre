@@ -1,4 +1,4 @@
-use std::{ffi::c_void, sync::Arc};
+use std::{ffi::c_void};
 
 #[repr(C)]
 pub struct CompletionBlock<T>
@@ -9,41 +9,41 @@ where
     pub f: T,
 }
 
-pub trait CompletionHandlerA<A>: Fn(A) + Sized {
+pub trait CompletionHandlerA<A>: FnOnce(A) + Sized + Send {
     fn into_raw(self) -> *const c_void {
-        let arc = Arc::new(CompletionBlock {
+        let block = Box::new(CompletionBlock {
             fn_ptr: Self::fn_a as _,
             f: self,
         });
 
-        Arc::into_raw(arc) as _
+        Box::into_raw(block) as _
     }
 
-    unsafe fn fn_a(raw: *const CompletionBlock<Self>, a: A) {
-        let arc = Arc::from_raw(raw);
-        (arc.f)(a);
+    unsafe fn fn_a(raw: *mut CompletionBlock<Self>, a: A) {
+        let b = Box::from_raw(raw);
+        (b.f)(a);
     }
 }
 
-impl<T, A> CompletionHandlerA<A> for T where T: Fn(A) {}
+impl<T, A> CompletionHandlerA<A> for T where T: FnOnce(A) + Send {}
 
-pub trait CompletionHandlerAB<A, B>: Fn(A, B) + Sized {
+pub trait CompletionHandlerAB<A, B>: FnOnce(A, B) + Sized + Send {
     fn into_raw(self) -> *const c_void {
-        let arc = Arc::new(CompletionBlock {
+        let block = Box::new(CompletionBlock {
             fn_ptr: Self::fn_ab as _,
             f: self,
         });
 
-        Arc::into_raw(arc) as _
+        Box::into_raw(block) as _
     }
 
-    unsafe fn fn_ab(raw: *const CompletionBlock<Self>, a: A, b: B) {
-        let arc = Arc::from_raw(raw);
-        (arc.f)(a, b);
+    unsafe fn fn_ab(raw: *mut CompletionBlock<Self>, a: A, b: B) {
+        let block = Box::from_raw(raw);
+        (block.f)(a, b);
     }
 }
 
-impl<T, A, B> CompletionHandlerAB<A, B> for T where T: Fn(A, B) {}
+impl<T, A, B> CompletionHandlerAB<A, B> for T where T: FnOnce(A, B) + Send {}
 
 #[cfg(test)]
 mod tests {
