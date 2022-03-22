@@ -95,26 +95,129 @@ impl RenderPipelineColorAttachmentDescriptor {
         unsafe { wsel_setPixelFormat(self, value) }
     }
 
+    #[inline]
     pub fn blening_enabled(&self) -> bool {
       unsafe { rsel_isBlendingEnabled(self) }
     }
 
+    #[inline]
     pub fn set_blening_enabled(&mut self, value: bool) {
       unsafe {
         wsel_setBlendingEnabled(self, value)
       }
     }
+    
+    #[inline]
+    pub fn src_rgb_blend_factor(&self) -> BlendFactor {
+      unsafe { rsel_sourceRGBBlendFactor(self) }
+    }
 
-    //rwsel(, id, isBlendingEnabled, setBlendingEnabled, BOOL)
+    #[inline]
+    pub fn set_src_rgb_blend_factor(&mut self, value: BlendFactor) {
+      unsafe {
+        wsel_setSourceRGBBlendFactor(self, value)
+      }
+    }
 
+    #[inline]
+    pub fn dest_rgb_blend_factor(&self) -> BlendFactor {
+      unsafe { rsel_destinationRGBBlendFactor(self) }
+    }
+
+    #[inline]
+    pub fn set_dest_rgb_blend_factor(&mut self, value: BlendFactor) {
+      unsafe {
+        wsel_setDestinationRGBBlendFactor(self, value)
+      }
+    }
+    
+    #[inline]
+    pub fn rgb_blend_operation(&self) -> BlendOperation {
+      unsafe { rsel_rgbBlendOperation(self) }
+    }
+
+    #[inline]
+    pub fn set_rgb_blend_operation(&mut self, value: BlendOperation) {
+      unsafe {
+        wsel_setRgbBlendOperation(self, value)
+      }
+    }
+    
+    #[inline]
+    pub fn src_alpha_blend_factor(&self) -> BlendFactor {
+      unsafe { rsel_sourceAlphaBlendFactor(self) }
+    }
+
+    #[inline]
+    pub fn set_src_alpha_blend_factor(&mut self, value: BlendFactor) {
+      unsafe {
+        wsel_setSourceAlphaBlendFactor(self, value)
+      }
+    }
+    
+    #[inline]
+    pub fn dest_alpha_blend_factor(&self) -> BlendFactor {
+      unsafe { rsel_destinationAlphaBlendFactor(self) }
+    }
+
+    #[inline]
+    pub fn set_dest_alpha_blend_factor(&mut self, value: BlendFactor) {
+      unsafe {
+        wsel_setDestinationAlphaBlendFactor(self, value)
+      }
+    }
+
+    #[inline]
+    pub fn alpha_blend_operation(&self) -> BlendOperation {
+      unsafe { rsel_alphaBlendOperation(self) }
+    }
+
+    #[inline]
+    pub fn alpha_rgb_blend_operation(&mut self, value: BlendOperation) {
+      unsafe {
+        wsel_setAlphaBlendOperation(self, value)
+      }
+    }
+    
+    #[inline]
+    pub fn write_mask(&self) -> ColorWriteMask {
+      unsafe { render_pipeline_rsel_writeMask(self) }
+    }
+
+    #[inline]
+    pub fn set_write_mask(&mut self, value: ColorWriteMask) {
+      unsafe {
+        render_pipeline_wsel_setWriteMask(self, value)
+      }
+    }
 
 }
-
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn rsel_pixelFormat(id: &Id) -> PixelFormat;
     fn wsel_setPixelFormat(id: &mut Id, value: PixelFormat);
 
     fn rsel_isBlendingEnabled(id: &Id) -> bool;
-    fn wsel_setBlendingEnabled(id: &mut Id, val: bool);
+    fn wsel_setBlendingEnabled(id: &mut Id, value: bool);
+
+    fn rsel_sourceRGBBlendFactor(id: &Id) -> BlendFactor;
+    fn wsel_setSourceRGBBlendFactor(id: &mut Id, value: BlendFactor);
+
+    fn rsel_destinationRGBBlendFactor(id: &Id) -> BlendFactor;
+    fn wsel_setDestinationRGBBlendFactor(id: &mut Id, value: BlendFactor);
+    
+    fn rsel_rgbBlendOperation(id: &Id) -> BlendOperation;
+    fn wsel_setRgbBlendOperation(id: &mut Id, value: BlendOperation);
+    
+    fn rsel_sourceAlphaBlendFactor(id: &Id) -> BlendFactor;
+    fn wsel_setSourceAlphaBlendFactor(id: &mut Id, value: BlendFactor);
+    
+    fn rsel_destinationAlphaBlendFactor(id: &Id) -> BlendFactor;
+    fn wsel_setDestinationAlphaBlendFactor(id: &mut Id, value: BlendFactor);
+    
+    fn rsel_alphaBlendOperation(id: &Id) -> BlendOperation;
+    fn wsel_setAlphaBlendOperation(id: &mut Id, value: BlendOperation);
+
+    fn render_pipeline_rsel_writeMask(id: &Id) -> ColorWriteMask;
+    fn render_pipeline_wsel_setWriteMask(id: &mut Id, value: ColorWriteMask);
 }

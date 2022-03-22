@@ -379,7 +379,7 @@ rwsel(, id, destinationAlphaBlendFactor, setDestinationAlphaBlendFactor, MTLBlen
 // @property (nonatomic) MTLBlendOperation alphaBlendOperation;
 rwsel(, id, alphaBlendOperation, setAlphaBlendOperation, MTLBlendOperation)
 // @property (nonatomic) MTLColorWriteMask writeMask;
-rwsel(, MTLRenderPipelineColorAttachmentDescriptor *, writeMask, setWriteMask, MTLColorWriteMask)
+rwsel(render_pipeline_, MTLRenderPipelineColorAttachmentDescriptor *, writeMask, setWriteMask, MTLColorWriteMask)
 
 
 NS_ASSUME_NONNULL_END
