@@ -7,17 +7,17 @@ use crate::{define_cf_type, UniChar};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct StringEncoding(u32);
+pub struct Encoding(u32);
 
-impl StringEncoding {
+impl Encoding {
     pub const ASCII: Self = Self(0x0600);
     pub const UTF8: Self = Self(0x08000100);
 }
 
 #[repr(transparent)]
-pub struct StringCompareFlags(OptionFlags);
+pub struct CompareFlags(OptionFlags);
 
-impl StringCompareFlags {
+impl CompareFlags {
     pub const NONE: Self = Self(0);
     pub const CASE_INSENSITIVE: Self = Self(1);
     pub const BACKWARDS: Self = Self(4);
@@ -59,7 +59,7 @@ impl String {
                 None,
                 bytes,
                 bytes.len() as _,
-                StringEncoding::UTF8,
+                Encoding::UTF8,
                 false,
                 Some(Allocator::null()),
             )
@@ -82,7 +82,7 @@ impl String {
     pub fn from_str<'a>(str: &str) -> Retained<'a, String> {
         let bytes = str.as_bytes();
         unsafe {
-            Self::create_with_bytes(None, bytes, bytes.len() as _, StringEncoding::UTF8, false)
+            Self::create_with_bytes(None, bytes, bytes.len() as _, Encoding::UTF8, false)
                 .unwrap_unchecked()
         }
     }
@@ -90,7 +90,7 @@ impl String {
     #[inline]
     pub fn from_cstr<'a>(cstr: &CStr) -> Retained<'a, String> {
         unsafe {
-            Self::create_with_cstring(None, cstr.to_bytes_with_nul(), StringEncoding::UTF8)
+            Self::create_with_cstring(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
                 .unwrap_unchecked()
         }
     }
@@ -101,7 +101,7 @@ impl String {
             Self::create_with_cstring_no_copy(
                 None,
                 cstr.to_bytes_with_nul(),
-                StringEncoding::UTF8,
+                Encoding::UTF8,
                 Some(Allocator::null()),
             )
             .unwrap_unchecked()
@@ -148,7 +148,7 @@ impl String {
         alloc: Option<&Allocator>,
         bytes: &'a [u8],
         num_bytes: Index,
-        encoding: StringEncoding,
+        encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
     ) -> Option<Retained<'a, String>> {
@@ -169,7 +169,7 @@ impl String {
     pub fn create_with_cstring_no_copy<'a>(
         alloc: Option<&Allocator>,
         bytes_with_null: &'a [u8],
-        encoding: StringEncoding,
+        encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
     ) -> Option<Retained<'a, String>> {
         unsafe {
@@ -182,7 +182,7 @@ impl String {
     pub fn create_with_cstring<'a>(
         alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
-        encoding: StringEncoding,
+        encoding: Encoding,
     ) -> Option<Retained<'a, String>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
@@ -195,7 +195,7 @@ impl String {
         alloc: Option<&Allocator>,
         bytes: &[u8],
         num_bytes: Index,
-        encoding: StringEncoding,
+        encoding: Encoding,
         is_external_representation: bool,
     ) -> Option<Retained<'a, String>> {
         unsafe {
@@ -228,7 +228,7 @@ impl String {
 impl<'a> From<&'a String> for Cow<'a, str> {
     fn from(cfstr: &'a String) -> Self {
         unsafe {
-            let c_str = CFStringGetCStringPtr(cfstr, StringEncoding::UTF8);
+            let c_str = CFStringGetCStringPtr(cfstr, Encoding::UTF8);
             if c_str.is_null() {
                 let range = crate::cf::Range {
                     location: 0,
@@ -238,7 +238,7 @@ impl<'a> From<&'a String> for Cow<'a, str> {
                 CFStringGetBytes(
                     cfstr,
                     range,
-                    StringEncoding::UTF8,
+                    Encoding::UTF8,
                     0,
                     false,
                     std::ptr::null_mut(),
@@ -252,7 +252,7 @@ impl<'a> From<&'a String> for Cow<'a, str> {
                 CFStringGetBytes(
                     cfstr,
                     range,
-                    StringEncoding::UTF8,
+                    Encoding::UTF8,
                     0,
                     false,
                     buffer.as_mut_ptr(),
@@ -343,7 +343,7 @@ extern "C" {
         alloc: Option<&Allocator>,
         bytes: *const u8,
         num_bytes: Index,
-        encoding: StringEncoding,
+        encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
     ) -> Option<Retained<'a, String>>;
@@ -351,31 +351,31 @@ extern "C" {
     fn CFStringCreateWithCStringNoCopy<'a>(
         alloc: Option<&Allocator>,
         c_str: *const c_char,
-        encoding: StringEncoding,
+        encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
     ) -> Option<Retained<'a, String>>;
 
     fn CFStringCreateWithCString<'a>(
         alloc: Option<&Allocator>,
         c_str: *const c_char,
-        encoding: StringEncoding,
+        encoding: Encoding,
     ) -> Option<Retained<'a, String>>;
 
     fn CFStringCreateWithBytes<'a>(
         alloc: Option<&Allocator>,
         bytes: *const u8,
         num_bytes: Index,
-        encoding: StringEncoding,
+        encoding: Encoding,
         is_external_representation: bool,
     ) -> Option<Retained<'a, String>>;
 
     fn CFShowStr(str: &String);
 
-    fn CFStringGetCStringPtr(the_string: &String, encoding: StringEncoding) -> *const c_char;
+    fn CFStringGetCStringPtr(the_string: &String, encoding: Encoding) -> *const c_char;
     fn CFStringGetBytes(
         the_string: &String,
         range: Range,
-        encoding: StringEncoding,
+        encoding: Encoding,
         loss_byte: u8,
         is_external_representation: bool,
         buffer: *mut u8,

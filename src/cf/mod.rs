@@ -22,20 +22,20 @@ pub use number::Number;
 pub use number::NumberType;
 
 pub mod string;
+pub use string::CompareFlags as StringCompareFlags;
+pub use string::Encoding as StringEncoding;
 pub use string::MutableString;
 pub use string::String;
-pub use string::StringCompareFlags;
-pub use string::StringEncoding;
 
 pub mod array;
 pub use array::Array;
-pub use array::ArrayCallbacks;
-pub use array::ArrayCopyDescriptionCallBack;
-pub use array::ArrayEqualCallBack;
 pub use array::ArrayOf;
-pub use array::ArrayReleaseCallBack;
-pub use array::ArrayRetainCallBack;
+pub use array::Callbacks as ArrayCallbacks;
+pub use array::CopyDescriptionCallBack as ArrayCopyDescriptionCallBack;
+pub use array::EqualCallBack as ArrayEqualCallBack;
 pub use array::MutableArray;
+pub use array::ReleaseCallBack as ArrayReleaseCallBack;
+pub use array::RetainCallBack as ArrayRetainCallBack;
 
 pub mod dictionary;
 pub use dictionary::Dictionary;

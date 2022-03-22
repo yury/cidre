@@ -1,12 +1,12 @@
 use std::ffi::c_void;
 
 #[repr(C)]
-pub struct CompletionBlock<T>
+pub struct CompletionBlock<F>
 where
-    T: ?Sized,
+    F: ?Sized,
 {
     pub fn_ptr: *const c_void,
-    pub f: T,
+    pub f: F,
 }
 
 pub trait CompletionHandlerA<A>: FnOnce(A) + Sized + Send {
@@ -25,7 +25,7 @@ pub trait CompletionHandlerA<A>: FnOnce(A) + Sized + Send {
     }
 }
 
-impl<T, A> CompletionHandlerA<A> for T where T: FnOnce(A) + Send {}
+impl<F, A> CompletionHandlerA<A> for F where F: FnOnce(A) + Send {}
 
 pub trait CompletionHandlerAB<A, B>: FnOnce(A, B) + Sized + Send {
     fn into_raw(self) -> *const c_void {
@@ -43,7 +43,7 @@ pub trait CompletionHandlerAB<A, B>: FnOnce(A, B) + Sized + Send {
     }
 }
 
-impl<T, A, B> CompletionHandlerAB<A, B> for T where T: FnOnce(A, B) + Send {}
+impl<F, A, B> CompletionHandlerAB<A, B> for F where F: FnOnce(A, B) + Send {}
 
 #[cfg(test)]
 mod tests {

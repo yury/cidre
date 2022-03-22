@@ -6,24 +6,24 @@ use super::{
 };
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
-pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type ArrayReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type ArrayCopyDescriptionCallBack =
+pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type CopyDescriptionCallBack =
     extern "C" fn(value: *const c_void) -> Option<Retained<'static, String>>;
-pub type ArrayEqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
+pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 
 #[repr(C)]
-pub struct ArrayCallbacks {
+pub struct Callbacks {
     version: Index,
-    retain: ArrayRetainCallBack,
-    release: ArrayReleaseCallBack,
-    copy_description: ArrayCopyDescriptionCallBack,
-    equal: ArrayEqualCallBack,
+    retain: RetainCallBack,
+    release: ReleaseCallBack,
+    copy_description: CopyDescriptionCallBack,
+    equal: EqualCallBack,
 }
 
-impl ArrayCallbacks {
+impl Callbacks {
     #[inline]
-    pub fn default() -> Option<&'static ArrayCallbacks> {
+    pub fn default() -> Option<&'static Callbacks> {
         unsafe { Some(&kCFTypeArrayCallBacks) }
     }
 }
@@ -156,7 +156,7 @@ impl Array {
         allocator: Option<&Allocator>,
         values: Option<NonNull<*const c_void>>,
         num_values: Index,
-        callbacks: Option<&ArrayCallbacks>,
+        callbacks: Option<&Callbacks>,
     ) -> Option<Retained<'a, Array>> {
         unsafe { CFArrayCreate(allocator, values, num_values, callbacks) }
     }
@@ -244,7 +244,7 @@ impl MutableArray {
     pub fn create<'a>(
         allocator: Option<&Allocator>,
         capacity: Index,
-        callbacks: Option<&ArrayCallbacks>,
+        callbacks: Option<&Callbacks>,
     ) -> Option<Retained<'a, MutableArray>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
     }
@@ -276,7 +276,7 @@ impl MutableArray {
 }
 
 extern "C" {
-    static kCFTypeArrayCallBacks: ArrayCallbacks;
+    static kCFTypeArrayCallBacks: Callbacks;
 
     fn CFArrayGetTypeID() -> TypeId;
 
@@ -287,7 +287,7 @@ extern "C" {
         allocator: Option<&Allocator>,
         values: Option<NonNull<*const c_void>>,
         num_values: Index,
-        callbacks: Option<&ArrayCallbacks>,
+        callbacks: Option<&Callbacks>,
     ) -> Option<Retained<'a, Array>>;
 
     fn CFArrayCreateCopy<'a>(
@@ -300,7 +300,7 @@ extern "C" {
     fn CFArrayCreateMutable<'a>(
         allocator: Option<&Allocator>,
         capacity: Index,
-        callbacks: Option<&ArrayCallbacks>,
+        callbacks: Option<&Callbacks>,
     ) -> Option<Retained<'a, MutableArray>>;
     fn CFArrayCreateMutableCopy<'a>(
         allocator: Option<&Allocator>,
