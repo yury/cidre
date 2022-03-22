@@ -1,4 +1,4 @@
-use crate::{define_obj_type, objc::Id};
+use crate::{cf, define_obj_type, objc::Id};
 
 #[repr(usize)]
 pub enum DataType {
@@ -150,3 +150,14 @@ define_obj_type!(PointerType(BaseType));
 define_obj_type!(TextureReferenceType(BaseType));
 
 define_obj_type!(Argument(Id));
+
+impl Argument {
+    pub fn name(&self) -> &cf::String {
+        unsafe { rsel_name(self) }
+    }
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    fn rsel_name(id: &Id) -> &cf::String;
+}

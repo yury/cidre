@@ -7,14 +7,3 @@
 
 #import "mtl.h"
 
-//@implementation CidreBlock
-//
-//- (void)dealloc {
-//  rb->drop_fn(rb);
-//}
-//
-//@end
-//
-//@implementation CidreBlockOnce
-//
-//@end

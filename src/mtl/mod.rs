@@ -126,16 +126,16 @@ macro_rules! define_mtl {
     };
 
     (get label) => {
-      #[inline]
-      pub fn label(&self) -> Option<&crate::cf::String> {
-          #[link(name = "mtl", kind = "static")]
-          extern "C" {
-              fn get_rsel_label(
-                  id: &Id,
-              ) -> Option<&crate::cf::String>;
-          }
-          unsafe { get_rsel_label(self) }
-      }
+        #[inline]
+        pub fn label(&self) -> Option<&crate::cf::String> {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn get_rsel_label(
+                    id: &Id,
+                ) -> Option<&crate::cf::String>;
+            }
+            unsafe { get_rsel_label(self) }
+        }
     };
 
     (device, mut label) => {

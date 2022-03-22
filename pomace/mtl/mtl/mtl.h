@@ -45,7 +45,6 @@ extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(Self
 \
 
 
-
 #define rwsel(Prefix, SelfType, ReadSel, WriteSel, Type) \
 rsel(Prefix, SelfType, ReadSel, Type) \
 wsel_a(Prefix, SelfType, WriteSel, Type) \
@@ -403,6 +402,9 @@ rwsel(, id, vertexFunction, setVertexFunction, id <MTLFunction> _Nullable)
 NS_RETURNS_NOT_RETAINED
 rwsel(, id, fragmentFunction, setFragmentFunction, id <MTLFunction> _Nullable)
 // @property (nullable, copy, nonatomic) MTLVertexDescriptor *vertexDescriptor;
+
+//@property (readwrite, nonatomic) NSUInteger rasterSampleCount;
+rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
 
 
 

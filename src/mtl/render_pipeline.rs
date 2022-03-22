@@ -1,6 +1,6 @@
 use crate::{cf::ArrayOf, define_obj_type, objc::Id};
 
-use super::{argument::Argument, PixelFormat};
+use super::{argument::Argument, Function, PixelFormat};
 
 #[repr(usize)]
 pub enum BlendFactor {
@@ -225,4 +225,34 @@ extern "C" {
     fn rsel_vertexArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
     fn rsel_fragmentArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
     fn rsel_tileArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
+}
+
+define_obj_type!(RenderPipelineDescriptor(Id));
+
+impl RenderPipelineDescriptor {
+    pub fn vertex_function(&self) -> Option<&Function> {
+        unsafe { rsel_vertexFunction(self) }
+    }
+
+    pub fn set_vertex_function(&mut self, value: Option<&Function>) {
+        unsafe { wsel_setVertexFunction(self, value) }
+    }
+
+    pub fn fragment_function(&self) -> Option<&Function> {
+        unsafe { rsel_fragmentFunction(self) }
+    }
+
+    pub fn set_fragment_function(&mut self, value: Option<&Function>) {
+        unsafe { wsel_setFragmentFunction(self, value) }
+    }
+}
+// @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    fn rsel_vertexFunction(id: &Id) -> Option<&Function>;
+    fn wsel_setVertexFunction(id: &mut Id, value: Option<&Function>);
+
+    fn rsel_fragmentFunction(id: &Id) -> Option<&Function>;
+    fn wsel_setFragmentFunction(id: &mut Id, value: Option<&Function>);
+
 }

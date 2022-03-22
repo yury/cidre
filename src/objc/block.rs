@@ -1,4 +1,4 @@
-use std::{ffi::c_void};
+use std::ffi::c_void;
 
 #[repr(C)]
 pub struct CompletionBlock<T>
