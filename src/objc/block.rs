@@ -5,21 +5,21 @@ pub struct CompletionBlock<T>
 where
     T: ?Sized,
 {
-    pub call_fn: *const c_void,
+    pub fn_ptr: *const c_void,
     pub f: T,
 }
 
 pub trait CompletionHandlerA<A>: Fn(A) + Sized {
     fn into_raw(self) -> *const c_void {
         let arc = Arc::new(CompletionBlock {
-            call_fn: Self::call_a as _,
+            fn_ptr: Self::fn_a as _,
             f: self,
         });
 
         Arc::into_raw(arc) as _
     }
 
-    unsafe fn call_a(raw: *const CompletionBlock<Self>, a: A) {
+    unsafe fn fn_a(raw: *const CompletionBlock<Self>, a: A) {
         let arc = Arc::from_raw(raw);
         (arc.f)(a);
     }
@@ -30,14 +30,14 @@ impl<T, A> CompletionHandlerA<A> for T where T: Fn(A) {}
 pub trait CompletionHandlerAB<A, B>: Fn(A, B) + Sized {
     fn into_raw(self) -> *const c_void {
         let arc = Arc::new(CompletionBlock {
-            call_fn: Self::call_ab as _,
+            fn_ptr: Self::fn_ab as _,
             f: self,
         });
 
         Arc::into_raw(arc) as _
     }
 
-    unsafe fn call_ab(raw: *const CompletionBlock<Self>, a: A, b: B) {
+    unsafe fn fn_ab(raw: *const CompletionBlock<Self>, a: A, b: B) {
         let arc = Arc::from_raw(raw);
         (arc.f)(a, b);
     }

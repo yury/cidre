@@ -414,46 +414,46 @@ extern "C" {
     ) -> Retained<'a, Descriptor>;
 
     fn rsel_textureType(id: &Id) -> Type;
-    fn wsel_textureType(id: &Id, value: Type);
+    fn wsel_textureType(id: &mut Id, value: Type);
 
     fn rsel_pixelFormat(id: &Id) -> PixelFormat;
-    fn wsel_setPixelFormat(id: &Id, value: PixelFormat);
+    fn wsel_setPixelFormat(id: &mut Id, value: PixelFormat);
 
     fn rsel_width(id: &Id) -> usize;
-    fn wsel_setWidth(id: &Id, value: usize);
+    fn wsel_setWidth(id: &mut Id, value: usize);
 
     fn rsel_height(id: &Id) -> usize;
-    fn wsel_setHeight(id: &Id, value: usize);
+    fn wsel_setHeight(id: &mut Id, value: usize);
 
     fn rsel_depth(id: &Id) -> usize;
-    fn wsel_setDepth(id: &Id, value: usize);
+    fn wsel_setDepth(id: &mut Id, value: usize);
 
     fn rsel_mipmapLevelCount(id: &Id) -> usize;
-    fn wsel_setMipmapLevelCount(id: &Id, value: usize);
+    fn wsel_setMipmapLevelCount(id: &mut Id, value: usize);
 
     fn MTLTextureDescriptor_rsel_sampleCount(id: &Id) -> usize;
-    fn MTLTextureDescriptor_wsel_setSampleCount(id: &Id, value: usize);
+    fn MTLTextureDescriptor_wsel_setSampleCount(id: &mut Id, value: usize);
 
     fn rsel_arrayLength(id: &Id) -> usize;
-    fn wsel_setArrayLength(id: &Id, value: usize);
+    fn wsel_setArrayLength(id: &mut Id, value: usize);
 
     fn rsel_resourceOptions(id: &Id) -> resource::Options;
-    fn wsel_setResourceOptions(id: &Id, value: resource::Options);
+    fn wsel_setResourceOptions(id: &mut Id, value: resource::Options);
 
     fn rsel_cpuCacheMode(id: &Id) -> resource::CPUCacheMode;
-    fn wsel_setCpuCacheMode(id: &Id, value: resource::CPUCacheMode);
+    fn wsel_setCpuCacheMode(id: &mut Id, value: resource::CPUCacheMode);
 
     fn rsel_usage(id: &Id) -> Usage;
-    fn wsel_setUsage(id: &Id, value: Usage);
+    fn wsel_setUsage(id: &mut Id, value: Usage);
 
     fn rsel_allowGPUOptimizedContents(id: &Id) -> bool;
-    fn wsel_setAllowGPUOptimizedContents(id: &Id, value: bool);
+    fn wsel_setAllowGPUOptimizedContents(id: &mut Id, value: bool);
 
     // fn MTLTextureDescriptor_rsel_compressionType(id: &Id) -> CompressionType;
     // fn MTLTextureDescriptor_wsel_setCompressionType(id: &Id, value: CompressionType);
 
     fn rsel_swizzle(id: &Id) -> SwizzleChannels;
-    fn wsel_setSwizzle(id: &Id, value: SwizzleChannels);
+    fn wsel_setSwizzle(id: &mut Id, value: SwizzleChannels);
 
     fn rsel_parentTexture(id: &Texture) -> Option<&Texture>;
 

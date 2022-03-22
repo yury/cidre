@@ -78,6 +78,18 @@ pub use command_buffer::CommandBuffer;
 pub use command_buffer::Error as CommandBufferError;
 pub use command_buffer::Status as CommandBufferStatus;
 
+pub mod render_pipeline;
+pub use render_pipeline::BlendFactor;
+pub use render_pipeline::BlendOperation;
+pub use render_pipeline::ColorWriteMask;
+pub use render_pipeline::PrimitiveTopologyClass;
+pub use render_pipeline::TessellationPartitionMode;
+pub use render_pipeline::TessellationFactorStepFunction;
+pub use render_pipeline::TessellationFactorFormat;
+pub use render_pipeline::TessellationControlPointIndexType;
+pub use render_pipeline::RenderPipelineColorAttachmentDescriptor;
+
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

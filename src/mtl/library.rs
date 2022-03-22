@@ -260,13 +260,9 @@ extern "C" {
 
 mod tests {
 
-    use crate::{
-        cf::{self, Retained},
-        mtl,
-    };
+    use crate::{cf, mtl};
 
     #[test]
-
     fn foo() {
         let device = mtl::Device::default().unwrap();
         let source = cf::String::from_str("kernel void function_a() {}");

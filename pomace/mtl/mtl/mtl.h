@@ -7,24 +7,8 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+
 NS_ASSUME_NONNULL_BEGIN
-
-typedef struct {
-  void * fn;
-} rust_completion_block;
-
-//@interface CidreBlock : NSObject {
-//  @public rust_block * rb;
-//}
-//
-//@end
-//
-//@interface CidreBlockOnce : NSObject {
-//  @public rust_block * rb;
-//}
-//
-//@end
-
 
 
 #define wsel(Prefix, SelfType, SEL) \
@@ -84,43 +68,43 @@ RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SE
 
 
 #define sel_ch(Prefix, SelfType, SEL_CH) \
-void Prefix ## sel ## _ ## SEL_CH(SelfType _self, rust_completion_block *rb) { [_self SEL_CH: ^() {\
-void(*ch)(void *) = rb->fn; \
+void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^() {\
+void(*ch)(void *) = rb[0]; \
 ch(rb); \
 } ]; } \
 \
 
 #define sel_ch_a(Prefix, SelfType, SEL_CH, CH_A) \
-void Prefix ## sel ## _ ## SEL_CH(SelfType _self, rust_completion_block *rb) { [_self SEL_CH: ^(CH_A ca) {\
-void(*ch)(void *, CH_A) = rb->fn; \
+void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca) {\
+void(*ch)(void *, CH_A) = rb[0]; \
 ch(rb, ca); \
 } ]; } \
 \
 
 #define sel_a_ch_a(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A) \
-void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, rust_completion_block *rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca) {\
-void(*ch)(void *, CH_A) = rb->fn; \
+void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca) {\
+void(*ch)(void *, CH_A) = rb[0]; \
 ch(rb, ca); \
 } ]; } \
 \
 
 #define sel_ch_ab(Prefix, SelfType, SEL_CH, CH_A, CH_B) \
-void Prefix ## sel ## _ ## SEL_CH(SelfType _self, rust_completion_block *rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
-void(*ch)(void *, CH_A, CH_B) = rb->fn; \
+void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
+void(*ch)(void *, CH_A, CH_B) = rb[0]; \
 ch(rb, ca, cb); \
 } ]; } \
 \
 
 #define sel_a_ch_ab(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A, CH_B) \
-void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, rust_completion_block *rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca, CH_B cb) {\
-void(*ch)(void *, CH_A, CH_B) = rb->fn; \
+void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca, CH_B cb) {\
+void(*ch)(void *, CH_A, CH_B) = rb[0]; \
 ch(rb, ca, cb); \
 } ]; } \
 \
 
 #define sel_ab_ch_ab(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_CH, CH_A, CH_B) \
-void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_CH(SelfType _self, A a, B b, rust_completion_block *rb) { [_self SEL_A:a SEL_B:b SEL_CH:^(CH_A ca, CH_B cb) {\
-void(*handler)(void *, CH_A, CH_B) = rb->fn; \
+void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_CH(SelfType _self, A a, B b, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_B:b SEL_CH:^(CH_A ca, CH_B cb) {\
+void(*handler)(void *, CH_A, CH_B) = rb[0]; \
 handler(rb, ca, cb); \
 } ]; } \
 \
@@ -377,6 +361,25 @@ rsel(, id<MTLFunction>, options, MTLFunctionOptions)
 
 //+ (nonnull MTLFunctionDescriptor *)functionDescriptor;
 NS_RETURNS_NOT_RETAINED csel(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
+
+#pragma mark - MTLRenderPipelineColorAttachmentDescriptor
+
+// @property (nonatomic, getter = isBlendingEnabled) BOOL blendingEnabled;
+rwsel(, id, isBlendingEnabled, setBlendingEnabled, BOOL)
+//@property (nonatomic) MTLBlendFactor sourceRGBBlendFactor;
+rwsel(, id, sourceRGBBlendFactor, setSourceRGBBlendFactor, MTLBlendFactor)
+//@property (nonatomic) MTLBlendFactor destinationRGBBlendFactor;
+rwsel(, id, destinationRGBBlendFactor, setDestinationRGBBlendFactor, MTLBlendFactor)
+// @property (nonatomic) MTLBlendOperation rgbBlendOperation;
+rwsel(, id, rgbBlendOperation, setRgbBlendOperation, MTLBlendOperation)
+// @property (nonatomic) MTLBlendFactor sourceAlphaBlendFactor;
+rwsel(, id, sourceAlphaBlendFactor, setSourceAlphaBlendFactor, MTLBlendFactor)
+// @property (nonatomic) MTLBlendFactor destinationAlphaBlendFactor;
+rwsel(, id, destinationAlphaBlendFactor, setDestinationAlphaBlendFactor, MTLBlendFactor)
+// @property (nonatomic) MTLBlendOperation alphaBlendOperation;
+rwsel(, id, alphaBlendOperation, setAlphaBlendOperation, MTLBlendOperation)
+// @property (nonatomic) MTLColorWriteMask writeMask;
+rwsel(, MTLRenderPipelineColorAttachmentDescriptor *, writeMask, setWriteMask, MTLColorWriteMask)
 
 
 NS_ASSUME_NONNULL_END
