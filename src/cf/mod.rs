@@ -38,11 +38,11 @@ pub use array::ReleaseCallBack as ArrayReleaseCallBack;
 pub use array::RetainCallBack as ArrayRetainCallBack;
 
 pub mod dictionary;
-pub use dictionary::Dictionary;
 pub use dictionary::ApplierFunction as DictionaryApplierFunction;
+pub use dictionary::Dictionary;
 pub use dictionary::KeyCallBacks as DictionaryKeyCallBacks;
-pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
 pub use dictionary::MutableDictionary;
+pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
 
 pub mod date;
 pub use date::absolute_time_get_current;

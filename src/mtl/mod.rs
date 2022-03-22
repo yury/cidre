@@ -81,14 +81,20 @@ pub use command_buffer::Status as CommandBufferStatus;
 pub mod render_pipeline;
 pub use render_pipeline::BlendFactor;
 pub use render_pipeline::BlendOperation;
+pub use render_pipeline::ColorAttachmentDescriptorArray as RenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::ColorWriteMask;
+pub use render_pipeline::FunctionsDescriptor as RenderPipelineFunctionsDescriptor;
 pub use render_pipeline::PrimitiveTopologyClass;
 pub use render_pipeline::RenderPipelineColorAttachmentDescriptor;
 pub use render_pipeline::RenderPipelineReflection;
+pub use render_pipeline::State as RenderPipelineState;
 pub use render_pipeline::TessellationControlPointIndexType;
 pub use render_pipeline::TessellationFactorFormat;
 pub use render_pipeline::TessellationFactorStepFunction;
 pub use render_pipeline::TessellationPartitionMode;
+pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptor;
+pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptorArray;
+pub use render_pipeline::TileRenderPipelineDescriptor;
 
 #[macro_export]
 macro_rules! define_mtl {

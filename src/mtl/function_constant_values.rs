@@ -62,7 +62,7 @@ impl FunctionConstantValues {
 }
 
 extern "C" {
-    fn wsel_reset(id: &ns::Id);
+    fn wsel_reset(id: &mut ns::Id);
     fn MTLFunctionConstantValues_new<'a>() -> Retained<'a, FunctionConstantValues>;
 
     fn wsel_setConstantValue_type_atIndex(

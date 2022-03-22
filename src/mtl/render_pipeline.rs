@@ -245,6 +245,10 @@ impl RenderPipelineDescriptor {
     pub fn set_fragment_function(&mut self, value: Option<&Function>) {
         unsafe { wsel_setFragmentFunction(self, value) }
     }
+
+    pub fn reset(&mut self) {
+        unsafe { wsel_reset(self) }
+    }
 }
 // @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
 #[link(name = "mtl", kind = "static")]
@@ -255,4 +259,23 @@ extern "C" {
     fn rsel_fragmentFunction(id: &Id) -> Option<&Function>;
     fn wsel_setFragmentFunction(id: &mut Id, value: Option<&Function>);
 
+    fn wsel_reset(id: &mut Id);
+
+}
+
+define_obj_type!(FunctionsDescriptor(Id));
+
+define_obj_type!(State(Id));
+
+define_obj_type!(ColorAttachmentDescriptorArray(Id));
+
+define_obj_type!(TileRenderPipelineColorAttachmentDescriptor(Id));
+define_obj_type!(TileRenderPipelineColorAttachmentDescriptorArray(Id));
+
+define_obj_type!(TileRenderPipelineDescriptor(Id));
+
+impl TileRenderPipelineDescriptor {
+    pub fn reset(&mut self) {
+        unsafe { wsel_reset(self) }
+    }
 }

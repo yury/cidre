@@ -3,14 +3,11 @@ use crate::define_cf_type;
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-pub type RetainCallBack =
-    extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type ReleaseCallBack =
-    extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type CopyDescriptionCallBack =
     extern "C" fn(value: *const c_void) -> Option<Retained<'static, String>>;
-pub type EqualCallBack =
-    extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
+pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 pub type HashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
 
 #[repr(C)]
