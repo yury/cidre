@@ -1,4 +1,8 @@
-use crate::{cf::ArrayOf, define_obj_type, objc::Id};
+use crate::{
+    cf::{ArrayOf, Retained},
+    define_obj_type,
+    objc::Id,
+};
 
 use super::{argument::Argument, Function, PixelFormat};
 
@@ -227,9 +231,22 @@ extern "C" {
     fn rsel_tileArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
 }
 
-define_obj_type!(RenderPipelineDescriptor(Id));
+define_obj_type!(Descriptor(Id));
 
-impl RenderPipelineDescriptor {
+impl Descriptor {
+    /// ```
+    /// use cidre::{cf, mtl};
+    ///
+    /// let mut desc = mtl::RenderPipeLineDescriptor::new();
+    ///
+    /// assert!(desc.vertex_function().is_none());
+    /// assert!(desc.fragment_function().is_none());
+    ///
+    /// desc.reset();
+    /// ```
+    pub fn new<'create>() -> Retained<'create, Descriptor> {
+        unsafe { MTLRenderPipelineDescriptor_new() }
+    }
     pub fn vertex_function(&self) -> Option<&Function> {
         unsafe { rsel_vertexFunction(self) }
     }
@@ -250,9 +267,9 @@ impl RenderPipelineDescriptor {
         unsafe { wsel_reset(self) }
     }
 }
-// @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
 #[link(name = "mtl", kind = "static")]
 extern "C" {
+    fn MTLRenderPipelineDescriptor_new<'create>() -> Retained<'create, Descriptor>;
     fn rsel_vertexFunction(id: &Id) -> Option<&Function>;
     fn wsel_setVertexFunction(id: &mut Id, value: Option<&Function>);
 

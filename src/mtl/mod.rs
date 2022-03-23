@@ -83,6 +83,7 @@ pub use render_pipeline::BlendFactor;
 pub use render_pipeline::BlendOperation;
 pub use render_pipeline::ColorAttachmentDescriptorArray as RenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::ColorWriteMask;
+pub use render_pipeline::Descriptor as RenderPipeLineDescriptor;
 pub use render_pipeline::FunctionsDescriptor as RenderPipelineFunctionsDescriptor;
 pub use render_pipeline::PrimitiveTopologyClass;
 pub use render_pipeline::RenderPipelineColorAttachmentDescriptor;

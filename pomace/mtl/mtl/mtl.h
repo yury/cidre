@@ -395,6 +395,9 @@ rsel(, id, tileArguments, NSArray <MTLArgument *> * _Nullable)
 
 #pragma mark - MTLRenderPipelineDescriptor
 
+NS_RETURNS_RETAINED
+csel(, MTLRenderPipelineDescriptor, new, MTLRenderPipelineDescriptor *)
+
 // @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
 NS_RETURNS_NOT_RETAINED
 rwsel(, id, vertexFunction, setVertexFunction, id <MTLFunction> _Nullable)
