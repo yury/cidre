@@ -97,6 +97,9 @@ pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptor;
 pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::TileRenderPipelineDescriptor;
 
+pub mod fence;
+pub use fence::Fence;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

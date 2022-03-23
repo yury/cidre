@@ -7,7 +7,7 @@ use crate::{
     objc::block::CompletionHandlerAB,
 };
 
-use super::{texture, Buffer, CommandQueue, Library, Size};
+use super::{texture, Buffer, CommandQueue, Library, Size, Fence};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -279,6 +279,20 @@ impl Device {
     ) -> Option<Retained<'create, Buffer>> {
         unsafe { rsel_newBufferWithBytes_length_options(self, bytes, length, options) }
     }
+
+    /// ```
+    /// use cidre::{mtl};
+    /// 
+    /// let device = mtl::Device::default().unwrap();
+    /// 
+    /// let fence = device.fence().unwrap();
+    /// ```
+    #[inline]
+    pub fn fence<'create>(&self) -> Option<Retained<'create, Fence>> {
+        unsafe {
+            rsel_newFence(self)
+        }
+    }
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -346,6 +360,8 @@ extern "C" {
         length: usize,
         options: mtl::ResourceOptions,
     ) -> Option<Retained<'create, Buffer>>;
+
+    fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
 
 }
 

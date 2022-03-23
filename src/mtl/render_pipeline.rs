@@ -1,7 +1,7 @@
 use crate::{
     cf::{ArrayOf, Retained},
     define_obj_type,
-    objc::Id,
+    objc::Id, define_mtl,
 };
 
 use super::{argument::Argument, Function, PixelFormat};
@@ -283,6 +283,35 @@ extern "C" {
 define_obj_type!(FunctionsDescriptor(Id));
 
 define_obj_type!(State(Id));
+
+impl State {
+    define_mtl!(device, get label);
+
+    pub fn max_total_threads_per_threadgroup(&self) -> usize {
+        unsafe {
+            rsel_maxTotalThreadsPerThreadgroup(self)
+        }
+    }
+
+    pub fn threadgourp_size_matches_tile_size(&self) -> bool {
+        unsafe {
+            rsel_threadgroupSizeMatchesTileSize(self)
+        }
+    }
+
+    pub fn imageblock_sample_length(&self) -> usize {
+        unsafe {
+            rsel_imageblockSampleLength(self)
+        }
+    }
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    fn rsel_maxTotalThreadsPerThreadgroup(id: &Id) -> usize;
+    fn rsel_threadgroupSizeMatchesTileSize(id: &Id) -> bool;
+    fn rsel_imageblockSampleLength(id: &Id) -> usize;
+}
 
 define_obj_type!(ColorAttachmentDescriptorArray(Id));
 

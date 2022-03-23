@@ -183,6 +183,9 @@ rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSErr
 NS_RETURNS_RETAINED
 rsel_ab(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<MTLBuffer> _Nullable)
 
+NS_RETURNS_RETAINED
+rsel(, id, newFence, id<MTLFence> _Nullable)
+
 #pragma mark - CompileOptions
 
 NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)
@@ -408,6 +411,16 @@ rwsel(, id, fragmentFunction, setFragmentFunction, id <MTLFunction> _Nullable)
 
 //@property (readwrite, nonatomic) NSUInteger rasterSampleCount;
 rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
+
+
+#pragma mark - MTLRenderPipelineState
+
+//@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
+rsel(, id, maxTotalThreadsPerThreadgroup, NSUInteger)
+//@property (readonly) BOOL threadgroupSizeMatchesTileSize API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
+rsel(, id, threadgroupSizeMatchesTileSize, BOOL)
+//@property (readonly) NSUInteger imageblockSampleLength API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
+rsel(, id, imageblockSampleLength, NSUInteger)
 
 
 
