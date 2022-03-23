@@ -12,26 +12,23 @@ impl Descriptor {
 
     /// ```
     /// use cidre::{cf, mtl};
-    /// 
+    ///
     /// let mut desc = mtl::ComputePipelineDescriptor::new();
-    /// 
+    ///
     /// assert!(desc.label().is_none());
-    /// 
+    ///
     /// let label = cf::String::from_str("label");
-    /// 
+    ///
     /// desc.set_label(Some(&label));
-    /// 
+    ///
     /// let lb = desc.label().unwrap();
-    /// 
+    ///
     /// assert!(lb.equal(&label));
     /// ```
     pub fn new<'create>() -> Retained<'create, Self> {
-        unsafe {
-            MTLComputePipelineDescriptor_new()
-        }
+        unsafe { MTLComputePipelineDescriptor_new() }
     }
 }
-
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
@@ -55,7 +52,7 @@ impl State {
 
     #[inline]
     pub fn static_threadgroup_memory_length(&self) -> usize {
-        unsafe { rsel_staticThreadgroupMemoryLength(self) }    
+        unsafe { rsel_staticThreadgroupMemoryLength(self) }
     }
 }
 
@@ -65,4 +62,3 @@ extern "C" {
     fn rsel_threadExecutionWidth(id: &Id) -> usize;
     fn rsel_staticThreadgroupMemoryLength(id: &Id) -> usize;
 }
-

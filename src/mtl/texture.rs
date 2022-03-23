@@ -1,9 +1,9 @@
-use crate::io;
 use crate::ns::Id;
 use crate::{
     cf::{self, Retained},
     define_obj_type,
 };
+use crate::{define_mtl, io};
 
 use super::{resource, Device, PixelFormat, Resource};
 
@@ -183,35 +183,9 @@ impl Descriptor {
         unsafe { wsel_setPixelFormat(self, value) }
     }
 
-    #[inline]
-    pub fn width(&self) -> usize {
-        unsafe { rsel_width(self) }
-    }
-
-    #[inline]
-    pub fn set_width(&mut self, value: usize) {
-        unsafe { wsel_setWidth(self, value) }
-    }
-
-    #[inline]
-    pub fn height(&self) -> usize {
-        unsafe { rsel_height(self) }
-    }
-
-    #[inline]
-    pub fn set_height(&mut self, value: usize) {
-        unsafe { wsel_setHeight(self, value) }
-    }
-
-    #[inline]
-    pub fn depth(&self) -> usize {
-        unsafe { rsel_depth(self) }
-    }
-
-    #[inline]
-    pub fn set_depth(&mut self, value: usize) {
-        unsafe { wsel_setDepth(self, value) }
-    }
+    define_mtl!(mut width);
+    define_mtl!(mut height);
+    define_mtl!(mut depth);
 
     #[inline]
     pub fn mipmap_level_count(&self) -> usize {
@@ -306,35 +280,24 @@ impl Descriptor {
 
 define_obj_type!(Texture(Resource));
 
+/// ```
+/// use cidre::mtl;
+///
+/// let device = mtl::Device::default().unwrap();
+///
+/// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
+///
+/// let t = device.texture_with_descriptor(&td).unwrap();
+///
+/// assert_eq!(t.width(), 100);
+/// assert_eq!(t.height(), 200);
+/// assert_eq!(t.depth(), 1);
+///
+/// ```
 impl Texture {
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
-    ///
-    /// let t = device.texture_with_descriptor(&td).unwrap();
-    ///
-    /// assert_eq!(t.width(), 100);
-    /// assert_eq!(t.height(), 200);
-    /// assert_eq!(t.depth(), 1);
-    ///
-    /// ```
-    #[inline]
-    pub fn width(&self) -> usize {
-        unsafe { rsel_width(self) }
-    }
-
-    #[inline]
-    pub fn height(&self) -> usize {
-        unsafe { rsel_height(self) }
-    }
-
-    #[inline]
-    pub fn depth(&self) -> usize {
-        unsafe { rsel_depth(self) }
-    }
+    define_mtl!(width);
+    define_mtl!(height);
+    define_mtl!(depth);
 
     /// ```rust
     /// use cidre::mtl;
@@ -418,15 +381,6 @@ extern "C" {
 
     fn rsel_pixelFormat(id: &Id) -> PixelFormat;
     fn wsel_setPixelFormat(id: &mut Id, value: PixelFormat);
-
-    fn rsel_width(id: &Id) -> usize;
-    fn wsel_setWidth(id: &mut Id, value: usize);
-
-    fn rsel_height(id: &Id) -> usize;
-    fn wsel_setHeight(id: &mut Id, value: usize);
-
-    fn rsel_depth(id: &Id) -> usize;
-    fn wsel_setDepth(id: &mut Id, value: usize);
 
     fn rsel_mipmapLevelCount(id: &Id) -> usize;
     fn wsel_setMipmapLevelCount(id: &mut Id, value: usize);

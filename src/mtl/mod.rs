@@ -70,8 +70,8 @@ pub use function_descriptor::FunctionDescriptor;
 pub use function_descriptor::FunctionOptions;
 
 pub mod compute_pipeline;
-pub use compute_pipeline::Reflection as ComputePipelineReflection;
 pub use compute_pipeline::Descriptor as ComputePipelineDescriptor;
+pub use compute_pipeline::Reflection as ComputePipelineReflection;
 pub use compute_pipeline::State as ComputePipelineState;
 
 pub mod command_buffer;
@@ -149,6 +149,93 @@ macro_rules! define_mtl {
                 ) -> Option<&crate::cf::String>;
             }
             unsafe { get_rsel_label(self) }
+        }
+    };
+
+    (width) => {
+        #[inline]
+        pub fn width(&self) -> usize {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_width(
+                    id: &Id,
+                ) -> usize;
+            }
+            unsafe { rsel_width(self) }
+        }
+    };
+
+    (mut width) => {
+        define_mtl!(width);
+
+        #[inline]
+        pub fn set_width(&mut self, value: usize) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setWidth(
+                    id: &mut Id,
+                    value: usize
+                );
+            }
+            unsafe { wsel_setWidth(self, value) }
+        }
+    };
+
+    (height) => {
+        #[inline]
+        pub fn height(&self) -> usize {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_height(
+                    id: &Id,
+                ) -> usize;
+            }
+            unsafe { rsel_height(self) }
+        }
+    };
+
+    (mut height) => {
+        define_mtl!(height);
+
+        #[inline]
+        pub fn set_height(&mut self, value: usize) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setHeight(
+                    id: &mut Id,
+                    value: usize
+                );
+            }
+            unsafe { wsel_setHeight(self, value) }
+        }
+    };
+
+    (depth) => {
+        #[inline]
+        pub fn depth(&self) -> usize {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_depth(
+                    id: &Id,
+                ) -> usize;
+            }
+            unsafe { rsel_depth(self) }
+        }
+    };
+
+    (mut depth) => {
+        define_mtl!(depth);
+
+        #[inline]
+        pub fn set_depth(&mut self, value: usize) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setDepth(
+                    id: &mut Id,
+                    value: usize
+                );
+            }
+            unsafe { wsel_setDepth(self, value) }
         }
     };
 

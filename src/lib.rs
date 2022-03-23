@@ -16,14 +16,14 @@ pub mod cv;
 pub mod io;
 /// match
 pub mod mach;
+/// Metal
+pub mod mtl;
 pub mod ns;
 pub mod objc;
 pub mod os;
 pub mod sys;
 /// Video Toolbox
 pub mod vt;
-/// Metal
-pub mod mtl;
 
 #[cfg(test)]
 mod tests {
