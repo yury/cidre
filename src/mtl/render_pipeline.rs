@@ -84,9 +84,9 @@ pub enum TessellationControlPointIndexType {
     UInt32 = 2,
 }
 
-define_obj_type!(RenderPipelineColorAttachmentDescriptor(Id));
+define_obj_type!(ColorAttachmentDescriptor(Id));
 
-impl RenderPipelineColorAttachmentDescriptor {
+impl ColorAttachmentDescriptor {
     #[inline]
     pub fn pixel_format(&self) -> PixelFormat {
         unsafe { rsel_pixelFormat(self) }
@@ -207,9 +207,9 @@ extern "C" {
     fn render_pipeline_wsel_setWriteMask(id: &mut Id, value: ColorWriteMask);
 }
 
-define_obj_type!(RenderPipelineReflection(Id));
+define_obj_type!(Reflection(Id));
 
-impl RenderPipelineReflection {
+impl Reflection {
     #[inline]
     pub fn vertex_arguments(&self) -> Option<&ArrayOf<Argument>> {
         unsafe { rsel_vertexArguments(self) }

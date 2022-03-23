@@ -105,7 +105,7 @@ impl Library {
     /// ```
     #[inline]
     pub fn function_names(&self) -> &cf::ArrayOf<cf::String> {
-        unsafe { transmute(rsel_functionNames(self)) }
+        unsafe { rsel_functionNames(self) }
     }
 
     /// ```
@@ -239,7 +239,7 @@ extern "C" {
     fn rsel_languageVersion(id: &Id) -> LanguageVersion;
     fn wsel_setLanguageVersion(id: &mut Id, value: LanguageVersion);
 
-    fn rsel_functionNames(id: &Id) -> &cf::Array;
+    fn rsel_functionNames(id: &Id) -> &cf::ArrayOf<cf::String>;
 
     fn rsel_newFunctionWithName<'new>(
         id: &Library,
