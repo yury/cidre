@@ -258,6 +258,7 @@ extern "C" {
     ) -> Retained<'a, mtl::ArgumentEncoder>;
 }
 
+#[cfg(test)]
 mod tests {
 
     use crate::{cf, mtl};
