@@ -22,7 +22,7 @@ pub mod os;
 pub mod sys;
 /// Video Toolbox
 pub mod vt;
-
+/// Metal
 pub mod mtl;
 
 #[cfg(test)]
