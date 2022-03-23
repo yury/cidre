@@ -281,11 +281,13 @@ impl Device {
     }
 
     /// ```
-    /// use cidre::{mtl};
+    /// use cidre::{cf, mtl};
     /// 
     /// let device = mtl::Device::default().unwrap();
     /// 
-    /// let fence = device.fence().unwrap();
+    /// let mut fence = device.fence().unwrap();
+    /// let label = cf::String::from_str("nice");
+    /// fence.set_label(Some(&label));
     /// ```
     #[inline]
     pub fn fence<'create>(&self) -> Option<Retained<'create, Fence>> {
@@ -295,11 +297,13 @@ impl Device {
     }
 
     /// ```
-    /// use cidre::{mtl};
+    /// use cidre::{cf, mtl};
     /// 
     /// let device = mtl::Device::default().unwrap();
     /// 
-    /// let event = device.event().unwrap();
+    /// let mut event = device.event().unwrap();
+    /// let label = cf::String::from_str("nice");
+    /// event.set_label(Some(&label));
     /// ```
     #[inline]
     pub fn event<'create>(&self) -> Option<Retained<'create, Event>> {
