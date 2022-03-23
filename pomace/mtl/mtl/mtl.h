@@ -429,6 +429,17 @@ rsel(, id, threadgroupSizeMatchesTileSize, BOOL)
 //@property (readonly) NSUInteger imageblockSampleLength API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
 rsel(, id, imageblockSampleLength, NSUInteger)
 
+#pragma mark - MTLComputePipelineDescriptor
 
+NS_RETURNS_RETAINED
+csel(, MTLComputePipelineDescriptor, new, MTLComputePipelineDescriptor *)
+
+#pragma mark - MTLComputePipelineState
+
+//@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup;
+//@property (readonly) NSUInteger threadExecutionWidth;
+rsel(, id, threadExecutionWidth, NSUInteger)
+// @property (readonly) NSUInteger staticThreadgroupMemoryLength API_AVAILABLE(macos(10.13), ios(11.0));
+rsel(, id, staticThreadgroupMemoryLength, NSUInteger)
 
 NS_ASSUME_NONNULL_END

@@ -70,7 +70,8 @@ pub use function_descriptor::FunctionDescriptor;
 pub use function_descriptor::FunctionOptions;
 
 pub mod compute_pipeline;
-pub use compute_pipeline::Descriptor as ComputePipelineDescr;
+pub use compute_pipeline::Reflection as ComputePipelineReflection;
+pub use compute_pipeline::Descriptor as ComputePipelineDescriptor;
 pub use compute_pipeline::State as ComputePipelineState;
 
 pub mod command_buffer;
@@ -84,7 +85,7 @@ pub use render_pipeline::BlendOperation;
 pub use render_pipeline::ColorAttachmentDescriptor as RenderPipelineColorAttachmentDescriptor;
 pub use render_pipeline::ColorAttachmentDescriptorArray as RenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::ColorWriteMask;
-pub use render_pipeline::Descriptor as RenderPipeLineDescriptor;
+pub use render_pipeline::Descriptor as RenderPipelineDescriptor;
 pub use render_pipeline::FunctionsDescriptor as RenderPipelineFunctionsDescriptor;
 pub use render_pipeline::PrimitiveTopologyClass;
 pub use render_pipeline::Reflection as RenderPipelineReflection;

@@ -237,7 +237,7 @@ impl Descriptor {
     /// ```
     /// use cidre::{cf, mtl};
     ///
-    /// let mut desc = mtl::RenderPipeLineDescriptor::new();
+    /// let mut desc = mtl::RenderPipelineDescriptor::new();
     ///
     /// assert!(desc.vertex_function().is_none());
     /// assert!(desc.fragment_function().is_none());
