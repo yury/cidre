@@ -7,7 +7,7 @@ use crate::{
     objc::block::CompletionHandlerAB,
 };
 
-use super::{texture, Buffer, CommandQueue, Library, Size, Fence, Event};
+use super::{texture, Buffer, CommandQueue, Event, Fence, Library, Size};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -282,48 +282,42 @@ impl Device {
 
     /// ```
     /// use cidre::{cf, mtl};
-    /// 
+    ///
     /// let device = mtl::Device::default().unwrap();
-    /// 
+    ///
     /// let mut fence = device.fence().unwrap();
     /// let label = cf::String::from_str("nice");
     /// fence.set_label(Some(&label));
     /// ```
     #[inline]
     pub fn fence<'create>(&self) -> Option<Retained<'create, Fence>> {
-        unsafe {
-            rsel_newFence(self)
-        }
+        unsafe { rsel_newFence(self) }
     }
 
     /// ```
     /// use cidre::{cf, mtl};
-    /// 
+    ///
     /// let device = mtl::Device::default().unwrap();
-    /// 
+    ///
     /// let mut event = device.event().unwrap();
     /// let label = cf::String::from_str("nice");
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
     pub fn event<'create>(&self) -> Option<Retained<'create, Event>> {
-        unsafe {
-            rsel_newEvent(self)
-        }
+        unsafe { rsel_newEvent(self) }
     }
 
     /// ```
     /// use cidre::{mtl};
-    /// 
+    ///
     /// let device = mtl::Device::default().unwrap();
-    /// 
+    ///
     /// assert!(device.max_buffer_length() > 10);
     /// ```
     #[inline]
     pub fn max_buffer_length(&self) -> usize {
-        unsafe {
-            rsel_maxBufferLength(self)
-        }
+        unsafe { rsel_maxBufferLength(self) }
     }
 }
 

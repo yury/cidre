@@ -1,7 +1,7 @@
 use crate::{
     cf::{ArrayOf, Retained},
-    define_obj_type,
-    objc::Id, define_mtl,
+    define_mtl, define_obj_type,
+    objc::Id,
 };
 
 use super::{argument::Argument, Function, PixelFormat};
@@ -288,21 +288,15 @@ impl State {
     define_mtl!(device, get label);
 
     pub fn max_total_threads_per_threadgroup(&self) -> usize {
-        unsafe {
-            rsel_maxTotalThreadsPerThreadgroup(self)
-        }
+        unsafe { rsel_maxTotalThreadsPerThreadgroup(self) }
     }
 
     pub fn threadgourp_size_matches_tile_size(&self) -> bool {
-        unsafe {
-            rsel_threadgroupSizeMatchesTileSize(self)
-        }
+        unsafe { rsel_threadgroupSizeMatchesTileSize(self) }
     }
 
     pub fn imageblock_sample_length(&self) -> usize {
-        unsafe {
-            rsel_imageblockSampleLength(self)
-        }
+        unsafe { rsel_imageblockSampleLength(self) }
     }
 }
 
