@@ -100,6 +100,9 @@ pub use render_pipeline::TileRenderPipelineDescriptor;
 pub mod fence;
 pub use fence::Fence;
 
+pub mod event;
+pub use event::Event;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

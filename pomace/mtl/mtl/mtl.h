@@ -186,6 +186,13 @@ rsel_ab(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<M
 NS_RETURNS_RETAINED
 rsel(, id, newFence, id<MTLFence> _Nullable)
 
+//- (nullable id <MTLEvent>)newEvent API_AVAILABLE(macos(10.14), ios(12.0));
+NS_RETURNS_RETAINED
+rsel(, id, newEvent, id<MTLEvent> _Nullable)
+
+//@property (readonly) NSUInteger maxBufferLength API_AVAILABLE(macos(10.14), ios(12.0));
+rsel(, id, maxBufferLength, NSUInteger)
+
 #pragma mark - CompileOptions
 
 NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)

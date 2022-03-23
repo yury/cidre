@@ -7,7 +7,7 @@ use crate::{
     objc::block::CompletionHandlerAB,
 };
 
-use super::{texture, Buffer, CommandQueue, Library, Size, Fence};
+use super::{texture, Buffer, CommandQueue, Library, Size, Fence, Event};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -293,6 +293,34 @@ impl Device {
             rsel_newFence(self)
         }
     }
+
+    /// ```
+    /// use cidre::{mtl};
+    /// 
+    /// let device = mtl::Device::default().unwrap();
+    /// 
+    /// let event = device.event().unwrap();
+    /// ```
+    #[inline]
+    pub fn event<'create>(&self) -> Option<Retained<'create, Event>> {
+        unsafe {
+            rsel_newEvent(self)
+        }
+    }
+
+    /// ```
+    /// use cidre::{mtl};
+    /// 
+    /// let device = mtl::Device::default().unwrap();
+    /// 
+    /// assert!(device.max_buffer_length() > 10);
+    /// ```
+    #[inline]
+    pub fn max_buffer_length(&self) -> usize {
+        unsafe {
+            rsel_maxBufferLength(self)
+        }
+    }
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -362,7 +390,9 @@ extern "C" {
     ) -> Option<Retained<'create, Buffer>>;
 
     fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
+    fn rsel_newEvent<'create>(id: &Device) -> Option<Retained<'create, Event>>;
 
+    fn rsel_maxBufferLength(id: &Device) -> usize;
 }
 
 #[cfg(test)]
