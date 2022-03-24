@@ -65,6 +65,7 @@ impl CommandBuffer {
     }
 }
 
+#[link(name = "mtl", kind = "static")]
 extern "C" {
     fn wsel_enqueue(id: &Id);
     fn wsel_commit(id: &Id);

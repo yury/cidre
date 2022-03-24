@@ -31,6 +31,7 @@ impl Buffer {
     }
 }
 
+#[link(name = "mtl", kind = "static")]
 extern "C" {
     fn rsel_length(id: &Id) -> ns::UInteger;
 }
