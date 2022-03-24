@@ -137,7 +137,7 @@ macro_rules! define_mtl {
         pub fn device(&self) -> &crate::mtl::Device {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn rsel_device(id: &Id) -> &crate::mtl::Device;
+                fn rsel_device(id: &crate::ns::Id) -> &crate::mtl::Device;
             }
             unsafe { rsel_device(self) }
         }
@@ -149,7 +149,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn copy_rsel_label<'copy>(
-                    id: &Id,
+                    id: &crate::ns::Id,
                 ) -> Option<crate::cf::Retained<'copy, crate::cf::String>>;
             }
             unsafe { copy_rsel_label(self) }
@@ -159,7 +159,7 @@ macro_rules! define_mtl {
         pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_setLabel(id: &mut Id, value: Option<&crate::cf::String>);
+                fn wsel_setLabel(id: &mut crate::ns::Id, value: Option<&crate::cf::String>);
             }
             unsafe { wsel_setLabel(self, value) }
         }
@@ -171,7 +171,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn get_rsel_label(
-                    id: &Id,
+                    id: &crate::ns::Id,
                 ) -> Option<&crate::cf::String>;
             }
             unsafe { get_rsel_label(self) }
@@ -184,7 +184,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn rsel_width(
-                    id: &Id,
+                    id: &crate::ns::Id,
                 ) -> usize;
             }
             unsafe { rsel_width(self) }
@@ -199,7 +199,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn wsel_setWidth(
-                    id: &mut Id,
+                    id: &mut crate::ns::Id,
                     value: usize
                 );
             }
@@ -213,7 +213,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn rsel_height(
-                    id: &Id,
+                    id: &crate::ns::Id,
                 ) -> usize;
             }
             unsafe { rsel_height(self) }
@@ -228,7 +228,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn wsel_setHeight(
-                    id: &mut Id,
+                    id: &mut crate::ns::Id,
                     value: usize
                 );
             }
@@ -242,7 +242,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn rsel_depth(
-                    id: &Id,
+                    id: &crate::ns::Id,
                 ) -> usize;
             }
             unsafe { rsel_depth(self) }
@@ -257,7 +257,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn wsel_setDepth(
-                    id: &mut Id,
+                    id: &mut crate::ns::Id,
                     value: usize
                 );
             }

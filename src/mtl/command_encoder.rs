@@ -1,4 +1,4 @@
-use crate::ns;
+use crate::{ns, cf};
 use crate::{define_mtl, define_obj_type};
 pub struct ResourceUsage(pub usize);
 
@@ -25,9 +25,30 @@ impl CommandEncoder {
     pub fn end_encoding(&mut self) {
         unsafe { wsel_endEncoding(self) }
     }
+
+    pub fn insert_debug_signpost(&mut self, signpost: &cf::String) {
+        unsafe {
+            wsel_insertDebugSignpost(self, signpost)
+        }
+    }
+
+    pub fn push_debug_group(&mut self, debug_group: &cf::String) {
+        unsafe {
+            wsel_pushDebugGroup(self, debug_group)
+        }
+    }
+
+    pub fn pop_debug_group(&mut self) {
+        unsafe {
+            wsel_popDebugGroup(self)
+        }
+    }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn wsel_endEncoding(id: &mut ns::Id);
+    fn wsel_insertDebugSignpost(id: &mut ns::Id, signpost: &cf::String);
+    fn wsel_pushDebugGroup(id: &mut ns::Id, debug_group: &cf::String); 
+    fn wsel_popDebugGroup(id: &mut ns::Id); 
 }
