@@ -442,4 +442,8 @@ rsel(, id, threadExecutionWidth, NSUInteger)
 // @property (readonly) NSUInteger staticThreadgroupMemoryLength API_AVAILABLE(macos(10.13), ios(11.0));
 rsel(, id, staticThreadgroupMemoryLength, NSUInteger)
 
+#pragma mark - MTLCommandEncoder
+
+wsel(, id, endEncoding)
+
 NS_ASSUME_NONNULL_END

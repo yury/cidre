@@ -50,16 +50,16 @@ impl CommandBuffer {
         unsafe { wsel_waitUntilCompleted(self) }
     }
 
-    pub fn add_scheduled_handler<T>(&self, block: T)
+    pub fn add_scheduled_handler<B>(&self, block: B)
     where
-        T: FnOnce(&Self) + Send + 'static,
+        B: FnOnce(&Self) + Send + 'static,
     {
         unsafe { sel_addScheduledHandler(self, block.into_raw()) }
     }
 
-    pub fn add_completion_handler<T>(&self, block: T)
+    pub fn add_completion_handler<B>(&self, block: B)
     where
-        T: FnOnce(&Self) + Send + 'static,
+        B: FnOnce(&Self) + Send + 'static,
     {
         unsafe { sel_addCompletedHandler(self, block.into_raw()) }
     }

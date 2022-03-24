@@ -104,6 +104,32 @@ pub use fence::Fence;
 pub mod event;
 pub use event::Event;
 
+pub mod command_encoder;
+pub use command_encoder::BarrierScope;
+pub use command_encoder::CommandEncoder;
+pub use command_encoder::ResourceUsage;
+
+pub mod blit_command_encoder;
+pub use blit_command_encoder::BlitCommandEncoder;
+
+pub mod render_command_encoder;
+pub use render_command_encoder::CullMode;
+pub use render_command_encoder::DepthClipMode;
+pub use render_command_encoder::DrawIndexedPrimitivesIndirectArguments;
+pub use render_command_encoder::DrawPatchIndirectArguments;
+pub use render_command_encoder::DrawPrimitivesIndirectArguments;
+pub use render_command_encoder::PrimitiveType;
+pub use render_command_encoder::QuadTessellationFactorsHalf;
+pub use render_command_encoder::RenderCommandEncoder;
+pub use render_command_encoder::RenderStages;
+pub use render_command_encoder::ScissorRect;
+pub use render_command_encoder::TriangleFillMode;
+pub use render_command_encoder::TriangleTessellationFactorsHalf;
+pub use render_command_encoder::VertexAmplificationViewMapping;
+pub use render_command_encoder::ViewPort;
+pub use render_command_encoder::VisibilityResultMode;
+pub use render_command_encoder::Winding;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {
