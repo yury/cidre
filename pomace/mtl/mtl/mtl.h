@@ -445,11 +445,8 @@ rsel(, id, staticThreadgroupMemoryLength, NSUInteger)
 #pragma mark - MTLCommandEncoder
 
 wsel(, id, endEncoding)
-//- (void)insertDebugSignpost:(NSString *)string;
 wsel_a(, id, insertDebugSignpost, NSString *)
-//- (void)pushDebugGroup:(NSString *)string;
 wsel_a(, id, pushDebugGroup, NSString *)
-
 wsel(, id, popDebugGroup)
 
 

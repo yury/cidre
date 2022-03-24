@@ -104,6 +104,11 @@ pub use fence::Fence;
 pub mod event;
 pub use event::Event;
 
+pub mod blit_pass;
+pub use blit_pass::Descriptor as BlitPassDescriptor;
+pub use blit_pass::SampleBufferAttachmentDescriptor as BlitPassSampleBufferAttachmentDescriptor;
+pub use blit_pass::SampleBufferAttachmentDescriptorArray as BlitPassSampleBufferAttachmentDescriptorArray;
+
 pub mod command_encoder;
 pub use command_encoder::BarrierScope;
 pub use command_encoder::CommandEncoder;
