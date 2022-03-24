@@ -135,6 +135,9 @@ pub use render_command_encoder::ViewPort;
 pub use render_command_encoder::VisibilityResultMode;
 pub use render_command_encoder::Winding;
 
+pub mod parallel_render_command_encoder;
+pub use parallel_render_command_encoder::ParallelRenderCommandEncoder;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

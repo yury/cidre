@@ -450,4 +450,12 @@ wsel_a(, id, pushDebugGroup, NSString *)
 wsel(, id, popDebugGroup)
 
 
+#pragma mark - MTLParallelRenderCommandEncoder
+
+//- (nullable id <MTLRenderCommandEncoder>)renderCommandEncoder;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, renderCommandEncoder, id<MTLRenderCommandEncoder> _Nullable)
+
+
+
 NS_ASSUME_NONNULL_END
