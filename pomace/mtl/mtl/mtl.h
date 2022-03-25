@@ -231,12 +231,21 @@ rwsel(, id, textureType, setTextureType, MTLTextureType)
 //@property (readwrite, nonatomic) MTLPixelFormat pixelFormat;
 rwsel(, id, pixelFormat, setPixelFormat, MTLPixelFormat)
 
-// CommandBuffer
+#pragma mark - MTLCommandBuffer
 
 // - (void)addScheduledHandler:(MTLCommandBufferHandler)block;
 sel_ch_a(, id<MTLCommandBuffer>, addScheduledHandler, id <MTLCommandBuffer>)
 // - (void)addCompletedHandler:(MTLCommandBufferHandler)block;
 sel_ch_a(, id<MTLCommandBuffer>, addCompletedHandler, id <MTLCommandBuffer>)
+
+//- (nullable id <MTLBlitCommandEncoder>)blitCommandEncoder;
+
+NS_RETURNS_RETAINED
+rsel(, id, blitCommandEncoder, id <MTLBlitCommandEncoder> _Nullable)
+
+//- (nullable id <MTLComputeCommandEncoder>)computeCommandEncoder;
+NS_RETURNS_RETAINED
+rsel(, id, computeCommandEncoder, id <MTLComputeCommandEncoder> _Nullable)
 
 // TextureDescriptor
 
@@ -432,7 +441,7 @@ rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
 #pragma mark - MTLRenderPipelineState
 
 //@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
-rsel(, id, maxTotalThreadsPerThreadgroup, NSUInteger)
+rwsel(, id, maxTotalThreadsPerThreadgroup, setMaxTotalThreadsPerThreadgroup, NSUInteger)
 //@property (readonly) BOOL threadgroupSizeMatchesTileSize API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
 rsel(, id, threadgroupSizeMatchesTileSize, BOOL)
 //@property (readonly) NSUInteger imageblockSampleLength API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
@@ -445,6 +454,9 @@ csel(, MTLComputePipelineDescriptor, new, MTLComputePipelineDescriptor *)
 
 //@property (readwrite, nonatomic) BOOL threadGroupSizeIsMultipleOfThreadExecutionWidth;
 rwsel(, id, threadGroupSizeIsMultipleOfThreadExecutionWidth, setThreadGroupSizeIsMultipleOfThreadExecutionWidth, BOOL)
+
+//@property (nullable, readwrite, nonatomic, strong) id <MTLFunction> computeFunction;
+rwsel(, id, computeFunction, setComputeFunction, id <MTLFunction> _Nullable)
 
 #pragma mark - MTLComputePipelineState
 
@@ -491,6 +503,23 @@ wsel_abc(, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertex
 NS_RETURNS_NOT_RETAINED
 rsel(, id, renderCommandEncoder, id<MTLRenderCommandEncoder> _Nullable)
 
+#pragma mark - MTLBlitCommandEncoder
+
+//- (void)updateFence:(id <MTLFence>)fence API_AVAILABLE(macos(10.13), ios(10.0));
+wsel_a(, id, updateFence, id<MTLFence>)
+//- (void)waitForFence:(id <MTLFence>)fence API_AVAILABLE(macos(10.13), ios(10.0));
+wsel_a(, id, waitForFence, id<MTLFence>)
+
+//- (void)fillBuffer:(id<MTLBuffer>)buffer range:(NSRange)range value:(uint8_t)value;
+wsel_abc(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
+
+
+
+#pragma mark - MTLCommandQueue
+
+//- (nullable id <MTLCommandBuffer>)commandBuffer;
+NS_RETURNS_RETAINED
+rsel(, id, commandBuffer, id<MTLCommandBuffer> _Nullable)
 
 
 NS_ASSUME_NONNULL_END

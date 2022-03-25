@@ -1,9 +1,12 @@
 use std::ffi::c_void;
 
+use crate::cf::Retained;
 use crate::{define_mtl, define_obj_type};
 
 use crate::ns::Id;
 use crate::objc::block::CompletionHandlerA;
+
+use super::{BlitCommandEncoder, ComputeCommandEncoder};
 
 #[repr(usize)]
 pub enum Status {
@@ -63,6 +66,20 @@ impl CommandBuffer {
     {
         unsafe { sel_addCompletedHandler(self, block.into_raw()) }
     }
+    
+    #[inline]
+    pub fn blit_command_encoder<'new>(&self) -> Option<Retained<'new, BlitCommandEncoder>> {
+        unsafe {
+            rsel_blitCommandEncoder(self)
+        }
+    }
+
+    #[inline]
+    pub fn compute_command_encoder<'new>(&self) -> Option<Retained<'new, ComputeCommandEncoder>> {
+        unsafe {
+            rsel_computeCommandEncoder(self)
+        }
+    }
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -74,4 +91,6 @@ extern "C" {
     fn sel_addScheduledHandler(id: &Id, rb: *const c_void);
     fn sel_addCompletedHandler(id: &Id, rb: *const c_void);
 
+    fn rsel_blitCommandEncoder<'new>(id: &Id) -> Option<Retained<'new, BlitCommandEncoder>>;
+    fn rsel_computeCommandEncoder<'new>(id: &Id) -> Option<Retained<'new, ComputeCommandEncoder>>;
 }

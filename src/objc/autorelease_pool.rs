@@ -10,6 +10,7 @@ use std::ffi::c_void;
 pub struct AutoreleasePoolPage(*const c_void);
 
 impl AutoreleasePoolPage {
+    #[must_use]
     pub fn push() -> AutoreleasePoolPage {
         unsafe { objc_autoreleasePoolPush() }
     }

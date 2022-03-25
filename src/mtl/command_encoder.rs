@@ -1,5 +1,8 @@
+use crate::cf::Retained;
 use crate::{cf, ns};
 use crate::{define_mtl, define_obj_type};
+
+use super::BlitCommandEncoder;
 
 #[repr(transparent)]
 pub struct ResourceUsage(pub usize);
@@ -39,6 +42,7 @@ impl CommandEncoder {
     pub fn pop_debug_group(&mut self) {
         unsafe { wsel_popDebugGroup(self) }
     }
+
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -47,4 +51,5 @@ extern "C" {
     fn wsel_insertDebugSignpost(id: &mut ns::Id, signpost: &cf::String);
     fn wsel_pushDebugGroup(id: &mut ns::Id, debug_group: &cf::String);
     fn wsel_popDebugGroup(id: &mut ns::Id);
+    
 }

@@ -53,9 +53,9 @@ impl Release for Id {
 #[repr(transparent)]
 pub struct Sel(c_void);
 
+pub mod autorelease_pool;
 pub mod block;
 pub mod ns;
-pub mod autorelease_pool;
 pub use autorelease_pool::AutoreleasePoolPage;
 
 #[link(name = "objc", kind = "dylib")]
