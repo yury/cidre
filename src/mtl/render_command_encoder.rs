@@ -140,6 +140,12 @@ impl RenderCommandEncoder {
         }
     }
 
+    pub fn set_fragment_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
+        unsafe {
+            wsel_setFragmentBuffer(self, buffer, offset, at_index)
+        }
+    }
+
     pub fn use_resource(&mut self, resource: &Resource, usage: ResourceUsage) {
         unsafe {
             wsel_useResource(self, resource, usage)
@@ -171,6 +177,7 @@ extern "C" {
     fn wsel_setRenderPipelineState(id: &mut Id, state: &RenderPipelineState);
     fn wsel_setVertexBytes(id: &mut Id, bytes: *const c_void, length: usize, at_index: usize);
     fn wsel_setVertexBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
+    fn wsel_setFragmentBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
 
     fn wsel_useResource(id: &mut Id, resource: &Resource, usage: ResourceUsage);
     fn wsel_useResources(id: &mut Id, resources: *const Resource, count: usize, usage: ResourceUsage);

@@ -356,7 +356,7 @@ NS_RETURNS_RETAINED
 rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
 
 
-// ArgumentsEncoder
+#pragma mark - MTLArgumentsEncoder
 //@property (readonly) NSUInteger encodedLength;
 rsel(, id, encodedLength, NSUInteger)
 
@@ -365,6 +365,11 @@ rsel(, id, alignment, NSUInteger)
 
 //@property (readonly) MTLFunctionOptions options API_AVAILABLE(macos(11.0), ios(14.0));
 rsel(, id<MTLFunction>, options, MTLFunctionOptions)
+
+//- (void)setArgumentBuffer:(nullable id <MTLBuffer>)argumentBuffer offset:(NSUInteger)offset;
+wsel_ab(, id, setArgumentBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger)
+//- (void)setTexture:(nullable id <MTLTexture>)texture atIndex:(NSUInteger)index;
+wsel_ab(, id, setTexture, id <MTLTexture> _Nullable, atIndex, NSUInteger)
 
 // FunctionDescriptor
 
@@ -457,6 +462,8 @@ wsel_a(, id, setRenderPipelineState, id <MTLRenderPipelineState>)
 wsel_abc(, id, setVertexBytes, const void *, length, NSUInteger, atIndex, NSUInteger)
 //- (void)setVertexBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
 wsel_abc(, id, setVertexBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
+//- (void)setFragmentBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index
+wsel_abc(, id, setFragmentBuffer, id <MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
 //- (void)useResource:(id <MTLResource>)resource usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
 wsel_ab(, id, useResource, id <MTLResource>, usage, MTLResourceUsage)
 //- (void)useResources:(const id <MTLResource> __nonnull[__nonnull])resources count:(NSUInteger)count usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));

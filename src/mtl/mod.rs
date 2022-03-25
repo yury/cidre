@@ -47,6 +47,7 @@ pub mod command_queue;
 pub use command_queue::CommandQueue;
 
 pub mod texture;
+pub use texture::Texture;
 pub use texture::CompressionType as TextureCompressionType;
 pub use texture::Descriptor as TextureDescriptor;
 pub use texture::Swizzle as TextureSwizzle;
