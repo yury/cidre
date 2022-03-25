@@ -11,9 +11,7 @@ impl CommandQueue {
     define_mtl!(device, mut label);
 
     pub fn command_buffer<'new>(&self) -> Option<Retained<'new, CommandBuffer>> {
-        unsafe {
-            rsel_commandBuffer(self)
-        }
+        unsafe { rsel_commandBuffer(self) }
     }
 }
 

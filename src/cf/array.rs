@@ -39,6 +39,7 @@ where
 {
     type Target = Array;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.0
     }

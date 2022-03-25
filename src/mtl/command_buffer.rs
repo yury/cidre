@@ -66,19 +66,15 @@ impl CommandBuffer {
     {
         unsafe { sel_addCompletedHandler(self, block.into_raw()) }
     }
-    
+
     #[inline]
     pub fn blit_command_encoder<'new>(&self) -> Option<Retained<'new, BlitCommandEncoder>> {
-        unsafe {
-            rsel_blitCommandEncoder(self)
-        }
+        unsafe { rsel_blitCommandEncoder(self) }
     }
 
     #[inline]
     pub fn compute_command_encoder<'new>(&self) -> Option<Retained<'new, ComputeCommandEncoder>> {
-        unsafe {
-            rsel_computeCommandEncoder(self)
-        }
+        unsafe { rsel_computeCommandEncoder(self) }
     }
 }
 

@@ -1,19 +1,18 @@
-use crate::{define_obj_type, ns, objc::Id};
+use crate::{define_obj_type, objc::Id};
 
 use super::{CommandEncoder, Fence};
 
 define_obj_type!(ComputeCommandEncoder(CommandEncoder));
 
 impl ComputeCommandEncoder {
-  pub fn update_fence(&self, fence: &Fence) {
-    unsafe { wsel_updateFence(self, fence) }
-  }
+    pub fn update_fence(&self, fence: &Fence) {
+        unsafe { wsel_updateFence(self, fence) }
+    }
 
-  pub fn wait_for_fence(&self, fence: &Fence) {
-      unsafe { wsel_waitForFence(self, fence) }
-  }
+    pub fn wait_for_fence(&self, fence: &Fence) {
+        unsafe { wsel_waitForFence(self, fence) }
+    }
 }
-
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {

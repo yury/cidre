@@ -73,12 +73,14 @@ macro_rules! define_obj_type {
         impl std::ops::Deref for $NewType {
             type Target = $BaseType;
 
+            #[inline]
             fn deref(&self) -> &Self::Target {
                 &self.0
             }
         }
 
         impl std::ops::DerefMut for $NewType {
+            #[inline]
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
