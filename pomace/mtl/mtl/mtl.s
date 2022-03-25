@@ -2286,6 +2286,56 @@ _rsel_options:                          ; @rsel_options
 	ret
 	.cfi_endproc
                                         ; -- End function
+	.globl	_wsel_setArgumentBuffer_offset  ; -- Begin function wsel_setArgumentBuffer_offset
+	.p2align	2
+_wsel_setArgumentBuffer_offset:         ; @wsel_setArgumentBuffer_offset
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.183@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.183@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_setTexture_atIndex        ; -- Begin function wsel_setTexture_atIndex
+	.p2align	2
+_wsel_setTexture_atIndex:               ; @wsel_setTexture_atIndex
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.185@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.185@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
 	.globl	_MTLFunctionDescriptor_functionDescriptor ; -- Begin function MTLFunctionDescriptor_functionDescriptor
 	.p2align	2
 _MTLFunctionDescriptor_functionDescriptor: ; @MTLFunctionDescriptor_functionDescriptor
@@ -2296,10 +2346,10 @@ _MTLFunctionDescriptor_functionDescriptor: ; @MTLFunctionDescriptor_functionDesc
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.182@PAGE
-	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.182@PAGEOFF]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.184@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.184@PAGEOFF]
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.186@PAGE
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.186@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.188@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.188@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
 	ret
@@ -2318,8 +2368,8 @@ _rsel_isBlendingEnabled:                ; @rsel_isBlendingEnabled
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.186@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.186@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.190@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.190@PAGEOFF]
 	bl	_objc_msgSend
 	and	w0, w0, #0x1
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
@@ -2344,8 +2394,8 @@ _wsel_setBlendingEnabled:               ; @wsel_setBlendingEnabled
 	strb	w8, [sp, #7]
 	ldr	x0, [sp, #8]
 	ldrb	w8, [sp, #7]
-	adrp	x9, _OBJC_SELECTOR_REFERENCES_.188@PAGE
-	ldr	x1, [x9, _OBJC_SELECTOR_REFERENCES_.188@PAGEOFF]
+	adrp	x9, _OBJC_SELECTOR_REFERENCES_.192@PAGE
+	ldr	x1, [x9, _OBJC_SELECTOR_REFERENCES_.192@PAGEOFF]
 	and	w2, w8, #0x1
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
@@ -2366,8 +2416,8 @@ _rsel_sourceRGBBlendFactor:             ; @rsel_sourceRGBBlendFactor
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.190@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.190@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.194@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.194@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2389,8 +2439,8 @@ _wsel_setSourceRGBBlendFactor:          ; @wsel_setSourceRGBBlendFactor
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.192@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.192@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.196@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.196@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2410,8 +2460,8 @@ _rsel_destinationRGBBlendFactor:        ; @rsel_destinationRGBBlendFactor
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.194@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.194@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.198@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.198@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2433,8 +2483,8 @@ _wsel_setDestinationRGBBlendFactor:     ; @wsel_setDestinationRGBBlendFactor
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.196@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.196@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.200@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.200@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2454,8 +2504,8 @@ _rsel_rgbBlendOperation:                ; @rsel_rgbBlendOperation
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.198@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.198@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.202@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.202@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2477,8 +2527,8 @@ _wsel_setRgbBlendOperation:             ; @wsel_setRgbBlendOperation
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.200@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.200@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.204@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.204@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2498,8 +2548,8 @@ _rsel_sourceAlphaBlendFactor:           ; @rsel_sourceAlphaBlendFactor
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.202@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.202@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.206@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.206@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2521,8 +2571,8 @@ _wsel_setSourceAlphaBlendFactor:        ; @wsel_setSourceAlphaBlendFactor
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.204@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.204@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.208@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.208@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2542,8 +2592,8 @@ _rsel_destinationAlphaBlendFactor:      ; @rsel_destinationAlphaBlendFactor
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.206@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.206@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.210@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.210@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2565,8 +2615,8 @@ _wsel_setDestinationAlphaBlendFactor:   ; @wsel_setDestinationAlphaBlendFactor
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.208@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.208@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.212@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.212@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2586,8 +2636,8 @@ _rsel_alphaBlendOperation:              ; @rsel_alphaBlendOperation
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.210@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.210@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.214@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.214@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2609,8 +2659,8 @@ _wsel_setAlphaBlendOperation:           ; @wsel_setAlphaBlendOperation
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.212@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.212@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.216@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.216@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2630,8 +2680,8 @@ _render_pipeline_rsel_writeMask:        ; @render_pipeline_rsel_writeMask
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.214@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.214@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.218@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.218@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2653,8 +2703,8 @@ _render_pipeline_wsel_setWriteMask:     ; @render_pipeline_wsel_setWriteMask
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.216@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.216@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.220@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.220@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2674,8 +2724,8 @@ _rsel_vertexArguments:                  ; @rsel_vertexArguments
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.218@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.218@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.222@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.222@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2695,8 +2745,8 @@ _rsel_fragmentArguments:                ; @rsel_fragmentArguments
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.220@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.220@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.224@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.224@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2716,8 +2766,8 @@ _rsel_tileArguments:                    ; @rsel_tileArguments
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.222@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.222@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.226@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.226@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2734,8 +2784,8 @@ _MTLRenderPipelineDescriptor_new:       ; @MTLRenderPipelineDescriptor_new
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.223@PAGE
-	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.223@PAGEOFF]
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.227@PAGE
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.227@PAGEOFF]
 	bl	_objc_opt_new
 	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
 	ret
@@ -2754,8 +2804,8 @@ _rsel_vertexFunction:                   ; @rsel_vertexFunction
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.225@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.225@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.229@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.229@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2777,8 +2827,8 @@ _wsel_setVertexFunction:                ; @wsel_setVertexFunction
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.227@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.227@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.231@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.231@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2798,8 +2848,8 @@ _rsel_fragmentFunction:                 ; @rsel_fragmentFunction
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.229@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.229@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.233@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.233@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2821,8 +2871,8 @@ _wsel_setFragmentFunction:              ; @wsel_setFragmentFunction
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.231@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.231@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.235@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.235@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2842,8 +2892,8 @@ _rsel_rasterSampleCount:                ; @rsel_rasterSampleCount
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.233@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.233@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.237@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.237@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2865,8 +2915,8 @@ _wsel_setRasterSampleCount:             ; @wsel_setRasterSampleCount
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.235@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.235@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.239@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.239@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2886,8 +2936,8 @@ _rsel_maxTotalThreadsPerThreadgroup:    ; @rsel_maxTotalThreadsPerThreadgroup
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.237@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.237@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.241@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.241@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2907,8 +2957,8 @@ _rsel_threadgroupSizeMatchesTileSize:   ; @rsel_threadgroupSizeMatchesTileSize
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.239@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.239@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.243@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.243@PAGEOFF]
 	bl	_objc_msgSend
 	and	w0, w0, #0x1
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
@@ -2929,8 +2979,8 @@ _rsel_imageblockSampleLength:           ; @rsel_imageblockSampleLength
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.241@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.241@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.245@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.245@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2947,8 +2997,8 @@ _MTLComputePipelineDescriptor_new:      ; @MTLComputePipelineDescriptor_new
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.242@PAGE
-	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.242@PAGEOFF]
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.246@PAGE
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.246@PAGEOFF]
 	bl	_objc_opt_new
 	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
 	ret
@@ -2967,8 +3017,8 @@ _rsel_threadExecutionWidth:             ; @rsel_threadExecutionWidth
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.244@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.244@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.248@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.248@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -2988,8 +3038,8 @@ _rsel_staticThreadgroupMemoryLength:    ; @rsel_staticThreadgroupMemoryLength
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.246@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.246@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.250@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.250@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -3009,8 +3059,8 @@ _wsel_endEncoding:                      ; @wsel_endEncoding
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.248@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.248@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.252@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.252@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -3032,8 +3082,8 @@ _wsel_insertDebugSignpost:              ; @wsel_insertDebugSignpost
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.250@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.250@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.254@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.254@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -3055,8 +3105,8 @@ _wsel_pushDebugGroup:                   ; @wsel_pushDebugGroup
 	str	x1, [sp]
 	ldr	x0, [sp, #8]
 	ldr	x2, [sp]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.252@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.252@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.256@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.256@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
@@ -3076,11 +3126,246 @@ _wsel_popDebugGroup:                    ; @wsel_popDebugGroup
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.254@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.254@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.258@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.258@PAGEOFF]
 	bl	_objc_msgSend
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_setRenderPipelineState    ; -- Begin function wsel_setRenderPipelineState
+	.p2align	2
+_wsel_setRenderPipelineState:           ; @wsel_setRenderPipelineState
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	str	x0, [sp, #8]
+	str	x1, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.260@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.260@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_setVertexBytes_length_atIndex ; -- Begin function wsel_setVertexBytes_length_atIndex
+	.p2align	2
+_wsel_setVertexBytes_length_atIndex:    ; @wsel_setVertexBytes_length_atIndex
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	str	x3, [sp]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	ldr	x4, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.262@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.262@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_setVertexBuffer_offset_atIndex ; -- Begin function wsel_setVertexBuffer_offset_atIndex
+	.p2align	2
+_wsel_setVertexBuffer_offset_atIndex:   ; @wsel_setVertexBuffer_offset_atIndex
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	str	x3, [sp]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	ldr	x4, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.264@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.264@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_setFragmentBuffer_offset_atIndex ; -- Begin function wsel_setFragmentBuffer_offset_atIndex
+	.p2align	2
+_wsel_setFragmentBuffer_offset_atIndex: ; @wsel_setFragmentBuffer_offset_atIndex
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	str	x3, [sp]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	ldr	x4, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.266@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.266@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_useResource_usage         ; -- Begin function wsel_useResource_usage
+	.p2align	2
+_wsel_useResource_usage:                ; @wsel_useResource_usage
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.268@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.268@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_useResources_count_usage  ; -- Begin function wsel_useResources_count_usage
+	.p2align	2
+_wsel_useResources_count_usage:         ; @wsel_useResources_count_usage
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	str	x3, [sp]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	ldr	x4, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.270@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.270@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_useHeap                   ; -- Begin function wsel_useHeap
+	.p2align	2
+_wsel_useHeap:                          ; @wsel_useHeap
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	str	x0, [sp, #8]
+	str	x1, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.272@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.272@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_ic_wsel_drawPrimitives_vertexStart_SEL_C_instanceCount ; -- Begin function ic_wsel_drawPrimitives_vertexStart_SEL_C_instanceCount
+	.p2align	2
+_ic_wsel_drawPrimitives_vertexStart_SEL_C_instanceCount: ; @ic_wsel_drawPrimitives_vertexStart_SEL_C_instanceCount
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #64
+	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
+	add	x29, sp, #48
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	stur	x1, [x29, #-16]
+	str	x2, [sp, #24]
+	str	x3, [sp, #16]
+	str	x4, [sp, #8]
+	ldur	x0, [x29, #-8]
+	ldur	x2, [x29, #-16]
+	ldr	x3, [sp, #24]
+	ldr	x4, [sp, #16]
+	ldr	x5, [sp, #8]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.274@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.274@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
+	add	sp, sp, #64
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_wsel_drawPrimitives_vertexStart_vertexCount ; -- Begin function wsel_drawPrimitives_vertexStart_vertexCount
+	.p2align	2
+_wsel_drawPrimitives_vertexStart_vertexCount: ; @wsel_drawPrimitives_vertexStart_vertexCount
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	str	x3, [sp]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	ldr	x4, [sp]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.276@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.276@PAGEOFF]
+	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
 	ret
 	.cfi_endproc
                                         ; -- End function
@@ -3097,9 +3382,32 @@ _rsel_renderCommandEncoder:             ; @rsel_renderCommandEncoder
 	.cfi_offset w29, -16
 	str	x0, [sp, #8]
 	ldr	x0, [sp, #8]
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.256@PAGE
-	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.256@PAGEOFF]
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.278@PAGE
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.278@PAGEOFF]
 	bl	_objc_msgSend
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_foo                            ; -- Begin function foo
+	.p2align	2
+_foo:                                   ; @foo
+	.cfi_startproc
+; %bb.0:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	bl	_objc_autoreleasePoolPush
+	str	x0, [sp, #8]                    ; 8-byte Folded Spill
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.227@PAGE
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.227@PAGEOFF]
+	bl	_objc_opt_new
+	ldr	x0, [sp, #8]                    ; 8-byte Folded Reload
+	bl	_objc_autoreleasePoolPop
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
 	ret
@@ -3964,32 +4272,32 @@ l_OBJC_METH_VAR_NAME_.180:              ; @OBJC_METH_VAR_NAME_.180
 _OBJC_SELECTOR_REFERENCES_.181:
 	.quad	l_OBJC_METH_VAR_NAME_.180
 
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.182:              ; @OBJC_METH_VAR_NAME_.182
+	.asciz	"setArgumentBuffer:offset:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.183
+_OBJC_SELECTOR_REFERENCES_.183:
+	.quad	l_OBJC_METH_VAR_NAME_.182
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.184:              ; @OBJC_METH_VAR_NAME_.184
+	.asciz	"setTexture:atIndex:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.185
+_OBJC_SELECTOR_REFERENCES_.185:
+	.quad	l_OBJC_METH_VAR_NAME_.184
+
 	.section	__DATA,__objc_classrefs,regular,no_dead_strip
-	.p2align	3                               ; @"OBJC_CLASSLIST_REFERENCES_$_.182"
-_OBJC_CLASSLIST_REFERENCES_$_.182:
+	.p2align	3                               ; @"OBJC_CLASSLIST_REFERENCES_$_.186"
+_OBJC_CLASSLIST_REFERENCES_$_.186:
 	.quad	_OBJC_CLASS_$_MTLFunctionDescriptor
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.183:              ; @OBJC_METH_VAR_NAME_.183
-	.asciz	"functionDescriptor"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.184
-_OBJC_SELECTOR_REFERENCES_.184:
-	.quad	l_OBJC_METH_VAR_NAME_.183
-
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.185:              ; @OBJC_METH_VAR_NAME_.185
-	.asciz	"isBlendingEnabled"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.186
-_OBJC_SELECTOR_REFERENCES_.186:
-	.quad	l_OBJC_METH_VAR_NAME_.185
-
-	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.187:              ; @OBJC_METH_VAR_NAME_.187
-	.asciz	"setBlendingEnabled:"
+	.asciz	"functionDescriptor"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.188
@@ -3998,7 +4306,7 @@ _OBJC_SELECTOR_REFERENCES_.188:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.189:              ; @OBJC_METH_VAR_NAME_.189
-	.asciz	"sourceRGBBlendFactor"
+	.asciz	"isBlendingEnabled"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.190
@@ -4007,7 +4315,7 @@ _OBJC_SELECTOR_REFERENCES_.190:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.191:              ; @OBJC_METH_VAR_NAME_.191
-	.asciz	"setSourceRGBBlendFactor:"
+	.asciz	"setBlendingEnabled:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.192
@@ -4016,7 +4324,7 @@ _OBJC_SELECTOR_REFERENCES_.192:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.193:              ; @OBJC_METH_VAR_NAME_.193
-	.asciz	"destinationRGBBlendFactor"
+	.asciz	"sourceRGBBlendFactor"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.194
@@ -4025,7 +4333,7 @@ _OBJC_SELECTOR_REFERENCES_.194:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.195:              ; @OBJC_METH_VAR_NAME_.195
-	.asciz	"setDestinationRGBBlendFactor:"
+	.asciz	"setSourceRGBBlendFactor:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.196
@@ -4034,7 +4342,7 @@ _OBJC_SELECTOR_REFERENCES_.196:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.197:              ; @OBJC_METH_VAR_NAME_.197
-	.asciz	"rgbBlendOperation"
+	.asciz	"destinationRGBBlendFactor"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.198
@@ -4043,7 +4351,7 @@ _OBJC_SELECTOR_REFERENCES_.198:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.199:              ; @OBJC_METH_VAR_NAME_.199
-	.asciz	"setRgbBlendOperation:"
+	.asciz	"setDestinationRGBBlendFactor:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.200
@@ -4052,7 +4360,7 @@ _OBJC_SELECTOR_REFERENCES_.200:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.201:              ; @OBJC_METH_VAR_NAME_.201
-	.asciz	"sourceAlphaBlendFactor"
+	.asciz	"rgbBlendOperation"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.202
@@ -4061,7 +4369,7 @@ _OBJC_SELECTOR_REFERENCES_.202:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.203:              ; @OBJC_METH_VAR_NAME_.203
-	.asciz	"setSourceAlphaBlendFactor:"
+	.asciz	"setRgbBlendOperation:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.204
@@ -4070,7 +4378,7 @@ _OBJC_SELECTOR_REFERENCES_.204:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.205:              ; @OBJC_METH_VAR_NAME_.205
-	.asciz	"destinationAlphaBlendFactor"
+	.asciz	"sourceAlphaBlendFactor"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.206
@@ -4079,7 +4387,7 @@ _OBJC_SELECTOR_REFERENCES_.206:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.207:              ; @OBJC_METH_VAR_NAME_.207
-	.asciz	"setDestinationAlphaBlendFactor:"
+	.asciz	"setSourceAlphaBlendFactor:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.208
@@ -4088,7 +4396,7 @@ _OBJC_SELECTOR_REFERENCES_.208:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.209:              ; @OBJC_METH_VAR_NAME_.209
-	.asciz	"alphaBlendOperation"
+	.asciz	"destinationAlphaBlendFactor"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.210
@@ -4097,7 +4405,7 @@ _OBJC_SELECTOR_REFERENCES_.210:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.211:              ; @OBJC_METH_VAR_NAME_.211
-	.asciz	"setAlphaBlendOperation:"
+	.asciz	"setDestinationAlphaBlendFactor:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.212
@@ -4106,7 +4414,7 @@ _OBJC_SELECTOR_REFERENCES_.212:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.213:              ; @OBJC_METH_VAR_NAME_.213
-	.asciz	"writeMask"
+	.asciz	"alphaBlendOperation"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.214
@@ -4115,7 +4423,7 @@ _OBJC_SELECTOR_REFERENCES_.214:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.215:              ; @OBJC_METH_VAR_NAME_.215
-	.asciz	"setWriteMask:"
+	.asciz	"setAlphaBlendOperation:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.216
@@ -4124,7 +4432,7 @@ _OBJC_SELECTOR_REFERENCES_.216:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.217:              ; @OBJC_METH_VAR_NAME_.217
-	.asciz	"vertexArguments"
+	.asciz	"writeMask"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.218
@@ -4133,7 +4441,7 @@ _OBJC_SELECTOR_REFERENCES_.218:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.219:              ; @OBJC_METH_VAR_NAME_.219
-	.asciz	"fragmentArguments"
+	.asciz	"setWriteMask:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.220
@@ -4142,39 +4450,39 @@ _OBJC_SELECTOR_REFERENCES_.220:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.221:              ; @OBJC_METH_VAR_NAME_.221
-	.asciz	"tileArguments"
+	.asciz	"vertexArguments"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.222
 _OBJC_SELECTOR_REFERENCES_.222:
 	.quad	l_OBJC_METH_VAR_NAME_.221
 
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.223:              ; @OBJC_METH_VAR_NAME_.223
+	.asciz	"fragmentArguments"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.224
+_OBJC_SELECTOR_REFERENCES_.224:
+	.quad	l_OBJC_METH_VAR_NAME_.223
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.225:              ; @OBJC_METH_VAR_NAME_.225
+	.asciz	"tileArguments"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.226
+_OBJC_SELECTOR_REFERENCES_.226:
+	.quad	l_OBJC_METH_VAR_NAME_.225
+
 	.section	__DATA,__objc_classrefs,regular,no_dead_strip
-	.p2align	3                               ; @"OBJC_CLASSLIST_REFERENCES_$_.223"
-_OBJC_CLASSLIST_REFERENCES_$_.223:
+	.p2align	3                               ; @"OBJC_CLASSLIST_REFERENCES_$_.227"
+_OBJC_CLASSLIST_REFERENCES_$_.227:
 	.quad	_OBJC_CLASS_$_MTLRenderPipelineDescriptor
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.224:              ; @OBJC_METH_VAR_NAME_.224
-	.asciz	"vertexFunction"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.225
-_OBJC_SELECTOR_REFERENCES_.225:
-	.quad	l_OBJC_METH_VAR_NAME_.224
-
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.226:              ; @OBJC_METH_VAR_NAME_.226
-	.asciz	"setVertexFunction:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.227
-_OBJC_SELECTOR_REFERENCES_.227:
-	.quad	l_OBJC_METH_VAR_NAME_.226
-
-	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.228:              ; @OBJC_METH_VAR_NAME_.228
-	.asciz	"fragmentFunction"
+	.asciz	"vertexFunction"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.229
@@ -4183,7 +4491,7 @@ _OBJC_SELECTOR_REFERENCES_.229:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.230:              ; @OBJC_METH_VAR_NAME_.230
-	.asciz	"setFragmentFunction:"
+	.asciz	"setVertexFunction:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.231
@@ -4192,7 +4500,7 @@ _OBJC_SELECTOR_REFERENCES_.231:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.232:              ; @OBJC_METH_VAR_NAME_.232
-	.asciz	"rasterSampleCount"
+	.asciz	"fragmentFunction"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.233
@@ -4201,7 +4509,7 @@ _OBJC_SELECTOR_REFERENCES_.233:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.234:              ; @OBJC_METH_VAR_NAME_.234
-	.asciz	"setRasterSampleCount:"
+	.asciz	"setFragmentFunction:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.235
@@ -4210,7 +4518,7 @@ _OBJC_SELECTOR_REFERENCES_.235:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.236:              ; @OBJC_METH_VAR_NAME_.236
-	.asciz	"maxTotalThreadsPerThreadgroup"
+	.asciz	"rasterSampleCount"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.237
@@ -4219,7 +4527,7 @@ _OBJC_SELECTOR_REFERENCES_.237:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.238:              ; @OBJC_METH_VAR_NAME_.238
-	.asciz	"threadgroupSizeMatchesTileSize"
+	.asciz	"setRasterSampleCount:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.239
@@ -4228,39 +4536,39 @@ _OBJC_SELECTOR_REFERENCES_.239:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.240:              ; @OBJC_METH_VAR_NAME_.240
-	.asciz	"imageblockSampleLength"
+	.asciz	"maxTotalThreadsPerThreadgroup"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.241
 _OBJC_SELECTOR_REFERENCES_.241:
 	.quad	l_OBJC_METH_VAR_NAME_.240
 
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.242:              ; @OBJC_METH_VAR_NAME_.242
+	.asciz	"threadgroupSizeMatchesTileSize"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.243
+_OBJC_SELECTOR_REFERENCES_.243:
+	.quad	l_OBJC_METH_VAR_NAME_.242
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.244:              ; @OBJC_METH_VAR_NAME_.244
+	.asciz	"imageblockSampleLength"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.245
+_OBJC_SELECTOR_REFERENCES_.245:
+	.quad	l_OBJC_METH_VAR_NAME_.244
+
 	.section	__DATA,__objc_classrefs,regular,no_dead_strip
-	.p2align	3                               ; @"OBJC_CLASSLIST_REFERENCES_$_.242"
-_OBJC_CLASSLIST_REFERENCES_$_.242:
+	.p2align	3                               ; @"OBJC_CLASSLIST_REFERENCES_$_.246"
+_OBJC_CLASSLIST_REFERENCES_$_.246:
 	.quad	_OBJC_CLASS_$_MTLComputePipelineDescriptor
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.243:              ; @OBJC_METH_VAR_NAME_.243
-	.asciz	"threadExecutionWidth"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.244
-_OBJC_SELECTOR_REFERENCES_.244:
-	.quad	l_OBJC_METH_VAR_NAME_.243
-
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.245:              ; @OBJC_METH_VAR_NAME_.245
-	.asciz	"staticThreadgroupMemoryLength"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.246
-_OBJC_SELECTOR_REFERENCES_.246:
-	.quad	l_OBJC_METH_VAR_NAME_.245
-
-	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.247:              ; @OBJC_METH_VAR_NAME_.247
-	.asciz	"endEncoding"
+	.asciz	"threadExecutionWidth"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.248
@@ -4269,7 +4577,7 @@ _OBJC_SELECTOR_REFERENCES_.248:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.249:              ; @OBJC_METH_VAR_NAME_.249
-	.asciz	"insertDebugSignpost:"
+	.asciz	"staticThreadgroupMemoryLength"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.250
@@ -4278,7 +4586,7 @@ _OBJC_SELECTOR_REFERENCES_.250:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.251:              ; @OBJC_METH_VAR_NAME_.251
-	.asciz	"pushDebugGroup:"
+	.asciz	"endEncoding"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.252
@@ -4287,7 +4595,7 @@ _OBJC_SELECTOR_REFERENCES_.252:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.253:              ; @OBJC_METH_VAR_NAME_.253
-	.asciz	"popDebugGroup"
+	.asciz	"insertDebugSignpost:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.254
@@ -4296,12 +4604,111 @@ _OBJC_SELECTOR_REFERENCES_.254:
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.255:              ; @OBJC_METH_VAR_NAME_.255
-	.asciz	"renderCommandEncoder"
+	.asciz	"pushDebugGroup:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.256
 _OBJC_SELECTOR_REFERENCES_.256:
 	.quad	l_OBJC_METH_VAR_NAME_.255
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.257:              ; @OBJC_METH_VAR_NAME_.257
+	.asciz	"popDebugGroup"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.258
+_OBJC_SELECTOR_REFERENCES_.258:
+	.quad	l_OBJC_METH_VAR_NAME_.257
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.259:              ; @OBJC_METH_VAR_NAME_.259
+	.asciz	"setRenderPipelineState:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.260
+_OBJC_SELECTOR_REFERENCES_.260:
+	.quad	l_OBJC_METH_VAR_NAME_.259
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.261:              ; @OBJC_METH_VAR_NAME_.261
+	.asciz	"setVertexBytes:length:atIndex:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.262
+_OBJC_SELECTOR_REFERENCES_.262:
+	.quad	l_OBJC_METH_VAR_NAME_.261
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.263:              ; @OBJC_METH_VAR_NAME_.263
+	.asciz	"setVertexBuffer:offset:atIndex:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.264
+_OBJC_SELECTOR_REFERENCES_.264:
+	.quad	l_OBJC_METH_VAR_NAME_.263
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.265:              ; @OBJC_METH_VAR_NAME_.265
+	.asciz	"setFragmentBuffer:offset:atIndex:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.266
+_OBJC_SELECTOR_REFERENCES_.266:
+	.quad	l_OBJC_METH_VAR_NAME_.265
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.267:              ; @OBJC_METH_VAR_NAME_.267
+	.asciz	"useResource:usage:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.268
+_OBJC_SELECTOR_REFERENCES_.268:
+	.quad	l_OBJC_METH_VAR_NAME_.267
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.269:              ; @OBJC_METH_VAR_NAME_.269
+	.asciz	"useResources:count:usage:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.270
+_OBJC_SELECTOR_REFERENCES_.270:
+	.quad	l_OBJC_METH_VAR_NAME_.269
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.271:              ; @OBJC_METH_VAR_NAME_.271
+	.asciz	"useHeap:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.272
+_OBJC_SELECTOR_REFERENCES_.272:
+	.quad	l_OBJC_METH_VAR_NAME_.271
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.273:              ; @OBJC_METH_VAR_NAME_.273
+	.asciz	"drawPrimitives:vertexStart:vertexCount:instanceCount:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.274
+_OBJC_SELECTOR_REFERENCES_.274:
+	.quad	l_OBJC_METH_VAR_NAME_.273
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.275:              ; @OBJC_METH_VAR_NAME_.275
+	.asciz	"drawPrimitives:vertexStart:vertexCount:"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.276
+_OBJC_SELECTOR_REFERENCES_.276:
+	.quad	l_OBJC_METH_VAR_NAME_.275
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.277:              ; @OBJC_METH_VAR_NAME_.277
+	.asciz	"renderCommandEncoder"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.278
+_OBJC_SELECTOR_REFERENCES_.278:
+	.quad	l_OBJC_METH_VAR_NAME_.277
 
 	.section	__DATA,__objc_imageinfo,regular,no_dead_strip
 L_OBJC_IMAGE_INFO:

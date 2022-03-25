@@ -16,18 +16,15 @@ impl ArgumentEncoder {
         unsafe { rsel_aligment(self) }
     }
 
+    #[inline]
     pub fn set_argument_buffer(&mut self, buffer: Option<&Buffer>, offset: usize) {
-        unsafe {
-            wsel_setArgumentBuffer(self, buffer, offset)
-        }
+        unsafe { wsel_setArgumentBuffer(self, buffer, offset) }
     }
 
+    #[inline]
     pub fn set_texture(&mut self, texture: Option<&Texture>, at_index: usize) {
-        unsafe {
-            wsel_setTexture(self, texture, at_index)
-        }
+        unsafe { wsel_setTexture(self, texture, at_index) }
     }
-
 }
 
 #[link(name = "mtl", kind = "static")]

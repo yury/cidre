@@ -44,6 +44,10 @@ extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B(SelfType _self, A 
 extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(SelfType _self, A a, B b, C c) { [_self SEL_A: a SEL_B: b SEL_C: c]; } \
 \
 
+#define wsel_abcd(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D) \
+extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C_ ## SEL_D(SelfType _self, A a, B b, C c, D d) { [_self SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
+\
+
 
 #define rwsel(Prefix, SelfType, ReadSel, WriteSel, Type) \
 rsel(Prefix, SelfType, ReadSel, Type) \
@@ -471,6 +475,8 @@ wsel_abc(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, 
 //- (void)useHeap:(id <MTLHeap>)heap API_AVAILABLE(macos(10.13), ios(11.0));
 wsel_a(, id, useHeap, id <MTLHeap> _Nonnull)
 
+//- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount instanceCount:(NSUInteger)instanceCount;
+wsel_abcd(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger, instanceCount, NSUInteger)
 //- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount;
 wsel_abc(, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger)
 

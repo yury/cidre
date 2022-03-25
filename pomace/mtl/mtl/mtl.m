@@ -6,7 +6,3 @@
 //
 
 #import "mtl.h"
-
-//void foo(void) {
-//  [MTLRenderPipelineDescriptor new];
-//}

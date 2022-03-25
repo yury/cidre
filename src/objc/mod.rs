@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::cf::{
     runtime::{Release, Retain},
@@ -56,10 +56,34 @@ pub struct Sel(c_void);
 pub mod block;
 pub mod ns;
 
+/// ```
+/// use cidre::objc;
+///
+/// let _pp = objc::AutoreleasePoolPage::push();
+///
+/// ```
+#[repr(transparent)]
+pub struct AutoreleasePoolPage(*const c_void);
+
+impl AutoreleasePoolPage {
+    pub fn push() -> AutoreleasePoolPage {
+        unsafe { objc_autoreleasePoolPush() }
+    }
+}
+
+impl Drop for AutoreleasePoolPage {
+    fn drop(&mut self) {
+        unsafe { objc_autoreleasePoolPop(self.0) }
+    }
+}
+
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
     fn objc_release(obj: &mut Id);
+
+    fn objc_autoreleasePoolPush() -> AutoreleasePoolPage;
+    fn objc_autoreleasePoolPop(ctx: *const c_void);
 }
 
 #[macro_export]

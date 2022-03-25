@@ -1,9 +1,9 @@
 use std::ffi::c_void;
 
+use crate::mtl::RenderPipelineState;
 use crate::{define_obj_type, objc::Id};
-use crate::{mtl::RenderPipelineState};
 
-use super::{CommandEncoder, Buffer, Resource, ResourceUsage, Heap};
+use super::{Buffer, CommandEncoder, Heap, Resource, ResourceUsage};
 
 #[repr(usize)]
 pub enum PrimitiveType {
@@ -123,52 +123,58 @@ define_obj_type!(RenderCommandEncoder(CommandEncoder));
 
 impl RenderCommandEncoder {
     pub fn set_render_pipeline_state(&mut self, state: &RenderPipelineState) {
-        unsafe {
-            wsel_setRenderPipelineState(self, state)
-        }
+        unsafe { wsel_setRenderPipelineState(self, state) }
     }
 
     pub fn set_vertex_bytes(&mut self, bytes: &[u8], at_index: usize) {
-        unsafe {
-            wsel_setVertexBytes(self, bytes.as_ptr() as _, bytes.len(), at_index)
-        }
+        unsafe { wsel_setVertexBytes(self, bytes.as_ptr() as _, bytes.len(), at_index) }
     }
 
     pub fn set_vertex_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
-        unsafe {
-            wsel_setVertexBuffer(self, buffer, offset, at_index)
-        }
+        unsafe { wsel_setVertexBuffer(self, buffer, offset, at_index) }
     }
 
     pub fn set_fragment_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
-        unsafe {
-            wsel_setFragmentBuffer(self, buffer, offset, at_index)
-        }
+        unsafe { wsel_setFragmentBuffer(self, buffer, offset, at_index) }
     }
 
     pub fn use_resource(&mut self, resource: &Resource, usage: ResourceUsage) {
-        unsafe {
-            wsel_useResource(self, resource, usage)
-        }
-
+        unsafe { wsel_useResource(self, resource, usage) }
     }
 
     pub fn use_resources(&mut self, resources: &[Resource], usage: ResourceUsage) {
-        unsafe {
-            wsel_useResources(self, resources.as_ptr(), resources.len(), usage)
-        }
+        unsafe { wsel_useResources(self, resources.as_ptr(), resources.len(), usage) }
     }
 
     pub fn use_heap(&mut self, heap: &Heap) {
+        unsafe { wsel_useHeap(self, heap) }
+    }
+
+    pub fn draw(
+        &mut self,
+        primitive_type: PrimitiveType,
+        vertex_start: usize,
+        vertex_count: usize,
+        instance_count: usize,
+    ) {
         unsafe {
-            wsel_useHeap(self, heap)
+            ic_wsel_drawPrimitives(
+                self,
+                primitive_type,
+                vertex_start,
+                vertex_count,
+                instance_count,
+            )
         }
     }
 
-    pub fn draw_primitives(&mut self, primitive_type: PrimitiveType, vertex_start: usize, vertex_count: usize) {
-        unsafe {
-            wsel_drawPrimitives(self, primitive_type, vertex_start, vertex_count)
-        }
+    pub fn draw_primitives(
+        &mut self,
+        primitive_type: PrimitiveType,
+        vertex_start: usize,
+        vertex_count: usize,
+    ) {
+        unsafe { wsel_drawPrimitives(self, primitive_type, vertex_start, vertex_count) }
     }
 }
 
@@ -180,26 +186,25 @@ extern "C" {
     fn wsel_setFragmentBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
 
     fn wsel_useResource(id: &mut Id, resource: &Resource, usage: ResourceUsage);
-    fn wsel_useResources(id: &mut Id, resources: *const Resource, count: usize, usage: ResourceUsage);
+    fn wsel_useResources(
+        id: &mut Id,
+        resources: *const Resource,
+        count: usize,
+        usage: ResourceUsage,
+    );
     fn wsel_useHeap(id: &mut Id, heap: &Heap);
 
-    fn wsel_drawPrimitives(id: &mut Id, primitive_type: PrimitiveType, vertex_start: usize, vertex_count: usize);
+    fn wsel_drawPrimitives(
+        id: &mut Id,
+        primitive_type: PrimitiveType,
+        vertex_start: usize,
+        vertex_count: usize,
+    );
+    fn ic_wsel_drawPrimitives(
+        id: &mut Id,
+        primitive_type: PrimitiveType,
+        vertex_start: usize,
+        vertex_count: usize,
+        instance_count: usize,
+    );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
