@@ -28,14 +28,17 @@ define_obj_type!(BlitCommandEncoder(CommandEncoder));
 ///
 /// ```
 impl BlitCommandEncoder {
+    #[inline]
     pub fn update_fence(&self, fence: &Fence) {
         unsafe { wsel_updateFence(self, fence) }
     }
 
+    #[inline]
     pub fn wait_for_fence(&self, fence: &Fence) {
         unsafe { wsel_waitForFence(self, fence) }
     }
 
+    #[inline]
     pub fn fill_buffer(&self, buffer: &Buffer, range: ns::Range, value: u8) {
         unsafe { wsel_fillBuffer(self, buffer, range, value) }
     }

@@ -7,12 +7,14 @@ edition = "2021"
 
 [dependencies]
 
-# [lib]
-# crate-type = ["static"]
+#[lib]
+#crate-type = ["staticlib"]
 
 #[lib]
 #crate-type = ["cdylib"]
 
 
-# [profile.release]
-# strip = "debuginfo"
+[profile.release]
+lto = true
+strip = "debuginfo"
+panic = "abort"

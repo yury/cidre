@@ -16,7 +16,7 @@ extern inline void Prefix ## wsel ## _ ## SEL(SelfType _self) { [_self SEL]; } \
 \
 
 #define rsel(Prefix, SelfType, SEL, ReadType) \
-extern inline ReadType Prefix ## rsel ## _ ## SEL(SelfType _self) { return  [_self SEL]; } \
+ReadType Prefix ## rsel ## _ ## SEL(SelfType _self) { return  [_self SEL]; } \
 \
 
 #define rsel_a(Prefix, SelfType, SEL_A, A, ReadType) \
