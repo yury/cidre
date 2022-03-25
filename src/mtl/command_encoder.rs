@@ -1,5 +1,7 @@
 use crate::{cf, ns};
 use crate::{define_mtl, define_obj_type};
+
+#[repr(transparent)]
 pub struct ResourceUsage(pub usize);
 
 impl ResourceUsage {

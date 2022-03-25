@@ -449,6 +449,25 @@ wsel_a(, id, insertDebugSignpost, NSString *)
 wsel_a(, id, pushDebugGroup, NSString *)
 wsel(, id, popDebugGroup)
 
+#pragma mark - MTLRenderCommandEncoder
+
+//- (void)setRenderPipelineState:(id <MTLRenderPipelineState>)pipelineState;
+wsel_a(, id, setRenderPipelineState, id <MTLRenderPipelineState>)
+//- (void)setVertexBytes:(const void *)bytes length:(NSUInteger)length atIndex:(NSUInteger)index API_AVAILABLE(macos(10.11), ios(8.3));
+wsel_abc(, id, setVertexBytes, const void *, length, NSUInteger, atIndex, NSUInteger)
+//- (void)setVertexBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
+wsel_abc(, id, setVertexBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
+//- (void)useResource:(id <MTLResource>)resource usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
+wsel_ab(, id, useResource, id <MTLResource>, usage, MTLResourceUsage)
+//- (void)useResources:(const id <MTLResource> __nonnull[__nonnull])resources count:(NSUInteger)count usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
+wsel_abc(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, NSUInteger, usage, MTLResourceUsage)
+//- (void)useHeap:(id <MTLHeap>)heap API_AVAILABLE(macos(10.13), ios(11.0));
+wsel_a(, id, useHeap, id <MTLHeap> _Nonnull)
+
+//- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount;
+wsel_abc(, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger)
+
+
 
 #pragma mark - MTLParallelRenderCommandEncoder
 

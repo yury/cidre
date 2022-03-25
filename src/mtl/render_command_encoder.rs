@@ -1,6 +1,9 @@
-use crate::define_obj_type;
+use std::ffi::c_void;
 
-use super::CommandEncoder;
+use crate::{define_obj_type, objc::Id};
+use crate::{mtl::RenderPipelineState};
+
+use super::{CommandEncoder, Buffer, Resource, ResourceUsage, Heap};
 
 #[repr(usize)]
 pub enum PrimitiveType {
@@ -118,4 +121,78 @@ impl RenderStages {
 
 define_obj_type!(RenderCommandEncoder(CommandEncoder));
 
-impl RenderCommandEncoder {}
+impl RenderCommandEncoder {
+    pub fn set_render_pipeline_state(&mut self, state: &RenderPipelineState) {
+        unsafe {
+            wsel_setRenderPipelineState(self, state)
+        }
+    }
+
+    pub fn set_vertex_bytes(&mut self, bytes: &[u8], at_index: usize) {
+        unsafe {
+            wsel_setVertexBytes(self, bytes.as_ptr() as _, bytes.len(), at_index)
+        }
+    }
+
+    pub fn set_vertex_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
+        unsafe {
+            wsel_setVertexBuffer(self, buffer, offset, at_index)
+        }
+    }
+
+    pub fn use_resource(&mut self, resource: &Resource, usage: ResourceUsage) {
+        unsafe {
+            wsel_useResource(self, resource, usage)
+        }
+
+    }
+
+    pub fn use_resources(&mut self, resources: &[Resource], usage: ResourceUsage) {
+        unsafe {
+            wsel_useResources(self, resources.as_ptr(), resources.len(), usage)
+        }
+    }
+
+    pub fn use_heap(&mut self, heap: &Heap) {
+        unsafe {
+            wsel_useHeap(self, heap)
+        }
+    }
+
+    pub fn draw_primitives(&mut self, primitive_type: PrimitiveType, vertex_start: usize, vertex_count: usize) {
+        unsafe {
+            wsel_drawPrimitives(self, primitive_type, vertex_start, vertex_count)
+        }
+    }
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    fn wsel_setRenderPipelineState(id: &mut Id, state: &RenderPipelineState);
+    fn wsel_setVertexBytes(id: &mut Id, bytes: *const c_void, length: usize, at_index: usize);
+    fn wsel_setVertexBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
+
+    fn wsel_useResource(id: &mut Id, resource: &Resource, usage: ResourceUsage);
+    fn wsel_useResources(id: &mut Id, resources: *const Resource, count: usize, usage: ResourceUsage);
+    fn wsel_useHeap(id: &mut Id, heap: &Heap);
+
+    fn wsel_drawPrimitives(id: &mut Id, primitive_type: PrimitiveType, vertex_start: usize, vertex_count: usize);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

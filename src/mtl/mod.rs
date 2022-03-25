@@ -31,6 +31,9 @@ pub use resource::HAZARD_TRACKING_MODE_SHIFT;
 pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
 
+pub mod heap;
+pub use heap::Heap;
+
 pub mod library;
 pub use library::CompileOptions;
 pub use library::Error as LibraryError;
