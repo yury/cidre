@@ -24,15 +24,35 @@ impl Descriptor {
     /// let lb = desc.label().unwrap();
     ///
     /// assert!(lb.equal(&label));
+    /// 
+    /// assert_eq!(false, desc.thread_group_size_is_multiple_of_thread_execution_width());
+    /// desc.set_thread_group_size_is_multiple_of_thread_execution_width(true);
+    /// assert_eq!(true, desc.thread_group_size_is_multiple_of_thread_execution_width());
     /// ```
     pub fn new<'create>() -> Retained<'create, Self> {
         unsafe { MTLComputePipelineDescriptor_new() }
     }
+
+    pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool {
+        unsafe {
+            rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(self)
+        }
+    }
+
+    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, value: bool) {
+        unsafe {
+            wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(self, value)
+        }
+    }
+
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLComputePipelineDescriptor_new<'create>() -> Retained<'create, Descriptor>;
+
+    fn rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(id: &Id) -> bool;
+    fn wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(id: &mut Id, value: bool);
 }
 
 define_obj_type!(State(Id));

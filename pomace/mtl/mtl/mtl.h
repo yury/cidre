@@ -443,6 +443,9 @@ rsel(, id, imageblockSampleLength, NSUInteger)
 NS_RETURNS_RETAINED
 csel(, MTLComputePipelineDescriptor, new, MTLComputePipelineDescriptor *)
 
+//@property (readwrite, nonatomic) BOOL threadGroupSizeIsMultipleOfThreadExecutionWidth;
+rwsel(, id, threadGroupSizeIsMultipleOfThreadExecutionWidth, setThreadGroupSizeIsMultipleOfThreadExecutionWidth, BOOL)
+
 #pragma mark - MTLComputePipelineState
 
 //@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup;
