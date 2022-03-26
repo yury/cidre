@@ -308,6 +308,15 @@ impl Device {
         unsafe { rsel_newEvent(self) }
     }
 
+    /// ```
+    /// use cidre::{cf, mtl};
+    ///
+    /// let device = mtl::Device::default().unwrap();
+    ///
+    /// let mut event = device.shared_event().unwrap();
+    /// let label = cf::String::from_str("nice");
+    /// event.set_label(Some(&label));
+    /// ```
     #[inline]
     pub fn shared_event<'create>(&self) -> Option<Retained<'create, SharedEvent>> {
         unsafe {
