@@ -7,7 +7,7 @@ use crate::{
     objc::block::CompletionHandlerAB,
 };
 
-use super::{texture, Buffer, CommandQueue, Event, Fence, Library, Size};
+use super::{texture, Buffer, CommandQueue, Event, Fence, Library, Size, event::SharedEvent};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -308,6 +308,13 @@ impl Device {
         unsafe { rsel_newEvent(self) }
     }
 
+    #[inline]
+    pub fn shared_event<'create>(&self) -> Option<Retained<'create, SharedEvent>> {
+        unsafe {
+            rsel_newSharedEvent(self)
+        }
+    }
+
     /// ```
     /// use cidre::{mtl};
     ///
@@ -391,6 +398,8 @@ extern "C" {
     fn rsel_newEvent<'create>(id: &Device) -> Option<Retained<'create, Event>>;
 
     fn rsel_maxBufferLength(id: &Device) -> usize;
+
+    fn rsel_newSharedEvent<'create>(id: &Device) -> Option<Retained<'create, SharedEvent>>;
 }
 
 #[cfg(test)]

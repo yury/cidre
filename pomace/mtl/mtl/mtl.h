@@ -133,7 +133,7 @@ wsel(, id, waitUntilScheduled)
 //- (void)waitUntilCompleted;
 wsel(, id, waitUntilCompleted)
 
-#pragma mark - Device
+#pragma mark - MTLDevice
 
 // uint64_t registryID
 rsel(, id, registryID, uint64_t);
@@ -196,6 +196,10 @@ rsel(, id, newEvent, id<MTLEvent> _Nullable)
 
 //@property (readonly) NSUInteger maxBufferLength API_AVAILABLE(macos(10.14), ios(12.0));
 rsel(, id, maxBufferLength, NSUInteger)
+
+//- (nullable id <MTLSharedEvent>)newSharedEvent API_AVAILABLE(macos(10.14), ios(12.0));
+NS_RETURNS_RETAINED
+rsel(, id, newSharedEvent, id<MTLSharedEvent> _Nullable)
 
 #pragma mark - CompileOptions
 
