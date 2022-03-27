@@ -250,44 +250,32 @@ impl AttachmentDescriptor {
 
     #[inline]
     pub fn load_action(&self) -> LoadAction {
-        unsafe {
-            rsel_loadAction(self)
-        }
+        unsafe { rsel_loadAction(self) }
     }
 
     #[inline]
     pub fn set_load_action(&mut self, value: LoadAction) {
-        unsafe {
-            wsel_setLoadAction(self, value)
-        }
+        unsafe { wsel_setLoadAction(self, value) }
     }
 
     #[inline]
     pub fn store_action(&self) -> StoreAction {
-        unsafe {
-            rsel_storeAction(self)
-        }
+        unsafe { rsel_storeAction(self) }
     }
 
     #[inline]
     pub fn set_store_action(&mut self, value: StoreAction) {
-        unsafe {
-            wsel_setStoreAction(self, value)
-        }
+        unsafe { wsel_setStoreAction(self, value) }
     }
 
     #[inline]
     pub fn store_action_options(&self) -> StoreActionOptions {
-        unsafe {
-            rsel_storeActionOptions(self)
-        }
+        unsafe { rsel_storeActionOptions(self) }
     }
 
     #[inline]
     pub fn set_store_action_options(&mut self, value: StoreActionOptions) {
-        unsafe {
-            wsel_setSetStoreActionOptions(self, value)
-        }
+        unsafe { wsel_setSetStoreActionOptions(self, value) }
     }
 }
 
@@ -325,4 +313,54 @@ extern "C" {
 
     fn rsel_storeActionOptions(id: &Id) -> StoreActionOptions;
     fn wsel_setSetStoreActionOptions(id: &mut Id, value: StoreActionOptions);
+}
+
+impl ColorAttachmentDescriptor {
+    pub fn clear_color(&self) -> ClearColor {
+        unsafe { rsel_clearColor(self) }
+    }
+
+    pub fn set_clear_color(&mut self, value: ClearColor) {
+        unsafe { wsel_setClearColor(self, value) }
+    }
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    fn rsel_clearColor(id: &Id) -> ClearColor;
+    fn wsel_setClearColor(id: &mut Id, value: ClearColor);
+}
+
+#[repr(usize)]
+pub enum MultisampleDepthResolveFilter {
+    Sample0 = 0,
+    Min = 1,
+    Max = 2,
+}
+
+impl DepthAttachmentDescriptor {
+    pub fn clear_depth(&self) -> f64 {
+        unsafe { rsel_clearDepth(self) }
+    }
+
+    pub fn set_clear_depth(&mut self, value: f64) {
+        unsafe { wsel_setClearDepth(self, value) }
+    }
+
+    pub fn depth_resolve_filter(&self) -> MultisampleDepthResolveFilter {
+        unsafe { rsel_depthResolveFilter(self) }
+    }
+
+    pub fn set_depth_resolve_filter(&mut self, value: MultisampleDepthResolveFilter) {
+        unsafe { wsel_setDepthResolveFilter(self, value) }
+    }
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    fn rsel_clearDepth(id: &Id) -> f64;
+    fn wsel_setClearDepth(id: &mut Id, value: f64);
+
+    fn rsel_depthResolveFilter(id: &Id) -> MultisampleDepthResolveFilter;
+    fn wsel_setDepthResolveFilter(id: &mut Id, value: MultisampleDepthResolveFilter);
 }

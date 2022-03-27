@@ -576,7 +576,17 @@ rwsel(, id, loadAction, setLoadAction, MTLLoadAction)
 rwsel(, id, storeAction, setStoreAction, MTLStoreAction)
 rwsel(, id, storeActionOptions, setStoreActionOptions, MTLStoreActionOptions)
 
+#pragma mark - MTLRenderPassColorAttachmentDescriptor
 
+// @property (nonatomic) MTLClearColor clearColor;
+rwsel(, id, clearColor, setClearColor, MTLClearColor)
+
+#pragma mark - MTLRenderPassDepthAttachmentDescriptor
+
+// @property (nonatomic) double clearDepth;
+rwsel(, id, clearDepth, setClearDepth, double)
+//@property (nonatomic) MTLMultisampleDepthResolveFilter depthResolveFilter API_AVAILABLE(macos(10.14), ios(9.0));
+rwsel(, id, depthResolveFilter, setDepthResolveFilter, MTLMultisampleDepthResolveFilter)
 
 
 NS_ASSUME_NONNULL_END

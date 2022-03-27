@@ -146,11 +146,15 @@ pub mod parallel_render_command_encoder;
 pub use parallel_render_command_encoder::ParallelRenderCommandEncoder;
 
 pub mod render_pass;
+pub use render_pass::AttachmentDescriptor as RenderPassAttachmentDescriptor;
 pub use render_pass::ColorAttachmentDescriptor as RenderPassColorAttachmentDescriptor;
 pub use render_pass::ColorAttachmentDescriptorArray as RenderPassColorAttachmentDescriptorArray;
 pub use render_pass::DepthAttachmentDescriptor as RenderPassDepthAttachmentDescriptor;
 pub use render_pass::Descriptor as RenderPassDescriptor;
+pub use render_pass::LoadAction;
 pub use render_pass::StencilAttachmentDescriptor as RenderPassStencilAttachmentDescriptor;
+pub use render_pass::StoreAction;
+pub use render_pass::StoreActionOptions;
 
 #[macro_export]
 macro_rules! define_mtl {
