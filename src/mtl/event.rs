@@ -8,6 +8,4 @@ impl Event {
 
 define_obj_type!(SharedEvent(Event));
 
-impl SharedEvent {
-}
-
+impl SharedEvent {}

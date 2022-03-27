@@ -525,5 +525,36 @@ wsel_abc(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
 NS_RETURNS_RETAINED
 rsel(, id, commandBuffer, id<MTLCommandBuffer> _Nullable)
 
+#pragma mark - MTLRenderPassDescriptor
+
+NS_RETURNS_RETAINED
+csel(, MTLRenderPassDescriptor, new, MTLRenderPassDescriptor *)
+
+NS_RETURNS_NOT_RETAINED
+csel(, MTLRenderPassDescriptor, renderPassDescriptor, MTLRenderPassDescriptor *)
+
+//@property (readonly) MTLRenderPassColorAttachmentDescriptorArray *colorAttachments;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, colorAttachments, MTLRenderPassColorAttachmentDescriptorArray *)
+
+//@property (copy, nonatomic, null_resettable) MTLRenderPassDepthAttachmentDescriptor *depthAttachment;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, depthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
+wsel_a(, id, setDepthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
+
+
+//@property (copy, nonatomic, null_resettable) MTLRenderPassStencilAttachmentDescriptor *stencilAttachment;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, stencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
+wsel_a(, id, setStencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
+
+//- (MTLRenderPassColorAttachmentDescriptor *)objectAtIndexedSubscript:(NSUInteger)attachmentIndex;
+NS_RETURNS_NOT_RETAINED
+rsel_a(, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPassColorAttachmentDescriptor *)
+
+//- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
+wsel_ab(, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+
+
 
 NS_ASSUME_NONNULL_END

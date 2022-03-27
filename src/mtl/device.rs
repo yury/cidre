@@ -7,7 +7,7 @@ use crate::{
     objc::block::CompletionHandlerAB,
 };
 
-use super::{texture, Buffer, CommandQueue, Event, Fence, Library, Size, event::SharedEvent};
+use super::{event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -319,9 +319,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn shared_event<'create>(&self) -> Option<Retained<'create, SharedEvent>> {
-        unsafe {
-            rsel_newSharedEvent(self)
-        }
+        unsafe { rsel_newSharedEvent(self) }
     }
 
     /// ```
