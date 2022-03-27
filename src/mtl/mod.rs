@@ -159,6 +159,11 @@ pub use render_pass::StoreActionOptions;
 
 pub mod compute_pass;
 pub use compute_pass::Descriptor as ComputePassDescriptor;
+pub use compute_pass::SampleBufferAttachmentDescriptor as ComputePassSampleBufferAttachmentDescriptor;
+pub use compute_pass::SampleBufferAttachmentDescriptorArray as ComputePassSampleBufferAttachmentDescriptorArray;
+
+pub mod counters;
+pub use counters::CounterSampleBuffer;
 
 #[macro_export]
 macro_rules! define_mtl {

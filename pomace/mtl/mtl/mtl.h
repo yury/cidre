@@ -550,10 +550,10 @@ wsel_a(, id, setStencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
 
 //- (MTLRenderPassColorAttachmentDescriptor *)objectAtIndexedSubscript:(NSUInteger)attachmentIndex;
 NS_RETURNS_NOT_RETAINED
-rsel_a(, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPassColorAttachmentDescriptor *)
+rsel_a(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPassColorAttachmentDescriptor *)
 
 //- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
-wsel_ab(, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+wsel_ab(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
 
 // @property (nonatomic) NSUInteger tileWidth API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
 
@@ -606,5 +606,21 @@ csel(, MTLComputePassDescriptor, computePassDescriptor, MTLComputePassDescriptor
 //@property (nonatomic) MTLDispatchType dispatchType;
 rwsel(, id, dispatchType, setDispatchType, MTLDispatchType)
 
+//@property (readonly) MTLComputePassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
+NS_RETURNS_NOT_RETAINED
+rsel(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
+
+#pragma mark - MTLComputePassSampleBufferAttachmentDescriptorArray
+
+
+NS_RETURNS_NOT_RETAINED
+rsel_a(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLComputePassSampleBufferAttachmentDescriptor *)
+
+//- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
+wsel_ab(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, setObject, MTLComputePassSampleBufferAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+
+#pragma mark - MTLComputePassSampleBufferAttachmentDescriptor
+
+rwsel(, id, sampleBuffer, setSampleBuffer, id<MTLCounterSampleBuffer> _Nullable)
 
 NS_ASSUME_NONNULL_END
