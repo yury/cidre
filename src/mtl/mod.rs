@@ -300,6 +300,82 @@ macro_rules! define_mtl {
         }
     };
 
+    (update_fence) => {
+        #[inline]
+        pub fn update_fence(&self, fence: &crate::mtl::Fence) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_updateFence(id: &Id, fence: &crate::mtl::Fence);
+            }
+            unsafe { wsel_updateFence(self, fence) }
+        }
+    };
+
+    (wait_for_fence) => {
+        pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_waitForFence(id: &Id, fence: &crate::mtl::Fence);
+            }
+            unsafe { wsel_waitForFence(self, fence) }
+        }
+    };
+
+    (use_resource) => {
+        pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_useResource(id: &mut Id, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage);
+            }
+            unsafe { wsel_useResource(self, resource, usage) }
+        }
+    };
+
+    (use_resources) => {
+        pub fn use_resources(&mut self, resources: &[crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_useResources(
+                    id: &mut Id,
+                    resources: *const crate::mtl::Resource,
+                    count: usize,
+                    usage: crate::mtl::ResourceUsage,
+                );
+            }
+            unsafe { wsel_useResources(self, resources.as_ptr(), resources.len(), usage) }
+        }
+    };
+
+    (use_heap) => {
+        pub fn use_heap(&mut self, heap: &crate::mtl::Heap) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_useHeap(id: &mut Id, heap: &crate::mtl::Heap);
+            }
+            unsafe { wsel_useHeap(self, heap) }
+        }
+    };
+
+    (push_debug_group) => {
+        pub fn push_debug_group(&mut self, debug_group: &crate::cf::String) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_pushDebugGroup(id: &mut crate::ns::Id, debug_group: &crate::cf::String);
+            }
+            unsafe { wsel_pushDebugGroup(self, debug_group) }
+        }
+    };
+
+    (pop_debug_group) => {
+        pub fn pop_debug_group(&mut self) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_popDebugGroup(id: &mut crate::ns::Id);
+            }
+            unsafe { wsel_popDebugGroup(self) }
+        }
+    };
+
     (device, mut label) => {
         define_mtl!(device);
         define_mtl!(mut label);

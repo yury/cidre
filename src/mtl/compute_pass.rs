@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-use crate::{cm::SampleBuffer, define_obj_type, objc::Id};
+use crate::{define_obj_type, objc::Id};
 
 use super::{CounterSampleBuffer, DispatchType};
 

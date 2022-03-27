@@ -237,6 +237,10 @@ rwsel(, id, pixelFormat, setPixelFormat, MTLPixelFormat)
 
 #pragma mark - MTLCommandBuffer
 
+//@property (readonly) id <MTLCommandQueue> commandQueue;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, commandQueue, id<MTLCommandQueue>)
+
 // - (void)addScheduledHandler:(MTLCommandBufferHandler)block;
 sel_ch_a(, id<MTLCommandBuffer>, addScheduledHandler, id <MTLCommandBuffer>)
 // - (void)addCompletedHandler:(MTLCommandBufferHandler)block;
@@ -622,5 +626,14 @@ wsel_ab(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSamp
 #pragma mark - MTLComputePassSampleBufferAttachmentDescriptor
 
 rwsel(, id, sampleBuffer, setSampleBuffer, id<MTLCounterSampleBuffer> _Nullable)
+
+#pragma mark - MTLBlitPassDescriptor
+
+NS_RETURNS_NOT_RETAINED
+csel(, MTLBlitPassDescriptor, blitPassDescriptor, MTLBlitPassDescriptor *)
+
+//@property (readonly) MTLBlitPassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
+NS_RETURNS_NOT_RETAINED
+rsel(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
 
 NS_ASSUME_NONNULL_END

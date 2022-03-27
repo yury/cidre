@@ -6,7 +6,7 @@ use crate::{define_mtl, define_obj_type};
 use crate::ns::Id;
 use crate::objc::block::CompletionHandlerA;
 
-use super::{BlitCommandEncoder, ComputeCommandEncoder};
+use super::{BlitCommandEncoder, CommandQueue, ComputeCommandEncoder};
 
 #[repr(usize)]
 pub enum Status {
@@ -43,6 +43,12 @@ define_obj_type!(CommandBuffer(Id));
 
 impl CommandBuffer {
     define_mtl!(device, mut label);
+    define_mtl!(push_debug_group);
+    define_mtl!(pop_debug_group);
+
+    pub fn command_queue(&self) -> &CommandQueue {
+        unsafe { rsel_commandQueue(self) }
+    }
 
     pub fn enqueue(&self) {
         unsafe { wsel_enqueue(self) }
@@ -87,6 +93,7 @@ impl CommandBuffer {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
+    fn rsel_commandQueue(id: &Id) -> &CommandQueue;
     fn wsel_enqueue(id: &Id);
     fn wsel_commit(id: &Id);
     fn wsel_waitUntilScheduled(id: &Id);

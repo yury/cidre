@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc::Id};
+use crate::{define_mtl, define_obj_type, ns, objc::Id};
 
 use super::{Buffer, CommandEncoder, Fence};
 
@@ -28,15 +28,8 @@ define_obj_type!(BlitCommandEncoder(CommandEncoder));
 ///
 /// ```
 impl BlitCommandEncoder {
-    #[inline]
-    pub fn update_fence(&self, fence: &Fence) {
-        unsafe { wsel_updateFence(self, fence) }
-    }
-
-    #[inline]
-    pub fn wait_for_fence(&self, fence: &Fence) {
-        unsafe { wsel_waitForFence(self, fence) }
-    }
+    define_mtl!(update_fence);
+    define_mtl!(wait_for_fence);
 
     #[inline]
     pub fn fill_buffer(&self, buffer: &Buffer, range: ns::Range, value: u8) {
@@ -46,10 +39,6 @@ impl BlitCommandEncoder {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-
-    fn wsel_updateFence(id: &Id, fence: &Fence);
-    fn wsel_waitForFence(id: &Id, fence: &Fence);
-
     fn wsel_fillBuffer(id: &Id, buffer: &Buffer, range: ns::Range, value: u8);
 
 }

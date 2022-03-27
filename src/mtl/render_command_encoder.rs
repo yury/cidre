@@ -1,9 +1,10 @@
 use std::ffi::c_void;
 
+use crate::define_mtl;
 use crate::mtl::RenderPipelineState;
 use crate::{define_obj_type, objc::Id};
 
-use super::{Buffer, CommandEncoder, Heap, Resource, ResourceUsage};
+use super::{Buffer, CommandEncoder};
 
 #[repr(usize)]
 pub enum PrimitiveType {
@@ -122,6 +123,10 @@ impl RenderStages {
 define_obj_type!(RenderCommandEncoder(CommandEncoder));
 
 impl RenderCommandEncoder {
+    define_mtl!(use_resource);
+    define_mtl!(use_resources);
+    define_mtl!(use_heap);
+
     pub fn set_render_pipeline_state(&mut self, state: &RenderPipelineState) {
         unsafe { wsel_setRenderPipelineState(self, state) }
     }
@@ -136,18 +141,6 @@ impl RenderCommandEncoder {
 
     pub fn set_fragment_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
         unsafe { wsel_setFragmentBuffer(self, buffer, offset, at_index) }
-    }
-
-    pub fn use_resource(&mut self, resource: &Resource, usage: ResourceUsage) {
-        unsafe { wsel_useResource(self, resource, usage) }
-    }
-
-    pub fn use_resources(&mut self, resources: &[Resource], usage: ResourceUsage) {
-        unsafe { wsel_useResources(self, resources.as_ptr(), resources.len(), usage) }
-    }
-
-    pub fn use_heap(&mut self, heap: &Heap) {
-        unsafe { wsel_useHeap(self, heap) }
     }
 
     pub fn draw(
@@ -184,15 +177,6 @@ extern "C" {
     fn wsel_setVertexBytes(id: &mut Id, bytes: *const c_void, length: usize, at_index: usize);
     fn wsel_setVertexBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
     fn wsel_setFragmentBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
-
-    fn wsel_useResource(id: &mut Id, resource: &Resource, usage: ResourceUsage);
-    fn wsel_useResources(
-        id: &mut Id,
-        resources: *const Resource,
-        count: usize,
-        usage: ResourceUsage,
-    );
-    fn wsel_useHeap(id: &mut Id, heap: &Heap);
 
     fn wsel_drawPrimitives(
         id: &mut Id,
