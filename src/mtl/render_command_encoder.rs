@@ -123,9 +123,7 @@ impl RenderStages {
 define_obj_type!(RenderCommandEncoder(CommandEncoder));
 
 impl RenderCommandEncoder {
-    define_mtl!(use_resource);
-    define_mtl!(use_resources);
-    define_mtl!(use_heap);
+    define_mtl!(use_resource, use_resources, use_heap);
 
     pub fn set_render_pipeline_state(&mut self, state: &RenderPipelineState) {
         unsafe { wsel_setRenderPipelineState(self, state) }

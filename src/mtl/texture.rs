@@ -293,9 +293,7 @@ define_obj_type!(Texture(Resource));
 ///
 /// ```
 impl Texture {
-    define_mtl!(width);
-    define_mtl!(height);
-    define_mtl!(depth);
+    define_mtl!(width, height, depth);
 
     /// ```rust
     /// use cidre::mtl;

@@ -28,8 +28,7 @@ define_obj_type!(BlitCommandEncoder(CommandEncoder));
 ///
 /// ```
 impl BlitCommandEncoder {
-    define_mtl!(update_fence);
-    define_mtl!(wait_for_fence);
+    define_mtl!(update_fence, wait_for_fence);
 
     #[inline]
     pub fn fill_buffer(&self, buffer: &Buffer, range: ns::Range, value: u8) {
