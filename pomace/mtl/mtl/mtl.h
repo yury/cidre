@@ -556,5 +556,27 @@ rsel_a(, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript
 wsel_ab(, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
 
 
+#pragma mark - MTLRenderPassAttachmentDescriptor
+
+//@property (nullable, nonatomic, strong) id <MTLTexture> texture;
+
+rwsel(, id, texture, setTexture, id<MTLTexture> _Nullable)
+//@property (nonatomic) NSUInteger level;
+rwsel(, id, level, setLevel, NSUInteger)
+rwsel(, id, slice, setSlice, NSUInteger)
+rwsel(, id, depthPlane, setDepthPlane, NSUInteger)
+
+rwsel(, id, resolveTexture, setResolveTexture, id<MTLTexture> _Nullable)
+rwsel(, id, resolveLevel, setResolveLevel, NSUInteger)
+rwsel(, id, resolveSlice, setResolveSlice, NSUInteger)
+rwsel(, id, resolveDepthPlane, setResolveDepthPlane, NSUInteger)
+
+//@property (nonatomic) MTLLoadAction loadAction;
+rwsel(, id, loadAction, setLoadAction, MTLLoadAction)
+rwsel(, id, storeAction, setStoreAction, MTLStoreAction)
+rwsel(, id, storeActionOptions, setStoreActionOptions, MTLStoreActionOptions)
+
+
+
 
 NS_ASSUME_NONNULL_END

@@ -23,7 +23,7 @@ impl ArgumentEncoder {
 
     #[inline]
     pub fn set_texture(&mut self, texture: Option<&Texture>, at_index: usize) {
-        unsafe { wsel_setTexture(self, texture, at_index) }
+        unsafe { wsel_setTextureAtIndex(self, texture, at_index) }
     }
 }
 
@@ -32,5 +32,6 @@ extern "C" {
     fn rsel_encodedLength(id: &Id) -> usize;
     fn rsel_aligment(id: &Id) -> usize;
     fn wsel_setArgumentBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize);
-    fn wsel_setTexture(id: &mut Id, texture: Option<&Texture>, at_index: usize);
+    fn wsel_setTextureAtIndex(id: &mut Id, texture: Option<&Texture>, at_index: usize);
+
 }
