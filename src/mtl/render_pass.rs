@@ -103,6 +103,34 @@ impl Descriptor {
     pub fn reset_stencil_attachemnt(&mut self) {
         unsafe { wsel_setStencilAttachment(self, None) }
     }
+
+    #[inline]
+    pub fn title_width(&self) -> usize {
+        unsafe {
+            rsel_tileWidth(self)
+        }
+    }
+
+    #[inline]
+    pub fn set_title_width(&mut self, value: usize) {
+        unsafe {
+            wsel_setTileWidth(self, value)
+        }
+    }
+    
+    #[inline]
+    pub fn title_height(&self) -> usize {
+        unsafe {
+            rsel_tileHeight(self)
+        }
+    }
+
+    #[inline]
+    pub fn set_title_height(&mut self, value: usize) {
+        unsafe {
+            wsel_setTileHeight(self, value)
+        }
+    }
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -117,6 +145,11 @@ extern "C" {
 
     fn rsel_stencilAttachment(id: &Id) -> &StencilAttachmentDescriptor;
     fn wsel_setStencilAttachment(id: &mut Id, value: Option<&StencilAttachmentDescriptor>);
+
+    fn rsel_tileWidth(id: &Id) -> usize;
+    fn wsel_setTileWidth(id: &mut Id, value: usize);
+    fn rsel_tileHeight(id: &Id) -> usize;
+    fn wsel_setTileHeight(id: &mut Id, value: usize);
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(Id));

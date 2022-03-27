@@ -555,6 +555,14 @@ rsel_a(, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript
 //- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
 wsel_ab(, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
 
+// @property (nonatomic) NSUInteger tileWidth API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
+
+// @property (nonatomic) NSUInteger tileHeight API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
+
+rwsel(, id, tileWidth, setTileWidth, NSUInteger)
+rwsel(, id, tileHeight, setTileHeight, NSUInteger)
+
+
 
 #pragma mark - MTLRenderPassAttachmentDescriptor
 
