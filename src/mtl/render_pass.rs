@@ -2,7 +2,6 @@ use std::ops::Index;
 
 use crate::cf::Retained;
 use crate::define_obj_type;
-
 use crate::ns::Id;
 
 use super::Texture;
@@ -106,30 +105,22 @@ impl Descriptor {
 
     #[inline]
     pub fn title_width(&self) -> usize {
-        unsafe {
-            rsel_tileWidth(self)
-        }
+        unsafe { rsel_tileWidth(self) }
     }
 
     #[inline]
     pub fn set_title_width(&mut self, value: usize) {
-        unsafe {
-            wsel_setTileWidth(self, value)
-        }
+        unsafe { wsel_setTileWidth(self, value) }
     }
-    
+
     #[inline]
     pub fn title_height(&self) -> usize {
-        unsafe {
-            rsel_tileHeight(self)
-        }
+        unsafe { rsel_tileHeight(self) }
     }
 
     #[inline]
     pub fn set_title_height(&mut self, value: usize) {
-        unsafe {
-            wsel_setTileHeight(self, value)
-        }
+        unsafe { wsel_setTileHeight(self, value) }
     }
 }
 
@@ -155,10 +146,12 @@ extern "C" {
 define_obj_type!(ColorAttachmentDescriptorArray(Id));
 
 impl ColorAttachmentDescriptorArray {
+    #[inline]
     pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor {
         unsafe { MTLRenderPassColorAttachmentDescriptorArray_objectAtIndexedSubscript(self, index) }
     }
 
+    #[inline]
     pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor) {
         unsafe {
             MTLRenderPassColorAttachmentDescriptorArray_setObjectAtIndexedSubscript(
@@ -169,6 +162,7 @@ impl ColorAttachmentDescriptorArray {
         }
     }
 
+    #[inline]
     pub fn reset_at(&mut self, index: usize) {
         unsafe {
             MTLRenderPassColorAttachmentDescriptorArray_setObjectAtIndexedSubscript(
@@ -181,6 +175,7 @@ impl ColorAttachmentDescriptorArray {
 impl Index<usize> for ColorAttachmentDescriptorArray {
     type Output = ColorAttachmentDescriptor;
 
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         self.get_at(index)
     }
@@ -349,10 +344,12 @@ extern "C" {
 }
 
 impl ColorAttachmentDescriptor {
+    #[inline]
     pub fn clear_color(&self) -> ClearColor {
         unsafe { rsel_clearColor(self) }
     }
 
+    #[inline]
     pub fn set_clear_color(&mut self, value: ClearColor) {
         unsafe { wsel_setClearColor(self, value) }
     }
@@ -372,18 +369,22 @@ pub enum MultisampleDepthResolveFilter {
 }
 
 impl DepthAttachmentDescriptor {
+    #[inline]
     pub fn clear_depth(&self) -> f64 {
         unsafe { rsel_clearDepth(self) }
     }
 
+    #[inline]
     pub fn set_clear_depth(&mut self, value: f64) {
         unsafe { wsel_setClearDepth(self, value) }
     }
 
+    #[inline]
     pub fn depth_resolve_filter(&self) -> MultisampleDepthResolveFilter {
         unsafe { rsel_depthResolveFilter(self) }
     }
 
+    #[inline]
     pub fn set_depth_resolve_filter(&mut self, value: MultisampleDepthResolveFilter) {
         unsafe { wsel_setDepthResolveFilter(self, value) }
     }
