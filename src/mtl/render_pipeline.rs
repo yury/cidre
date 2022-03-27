@@ -285,7 +285,7 @@ define_obj_type!(FunctionsDescriptor(Id));
 define_obj_type!(State(Id));
 
 impl State {
-    define_mtl!(device, get label);
+    define_mtl!(device, label);
 
     pub fn max_total_threads_per_threadgroup(&self) -> usize {
         unsafe { rsel_maxTotalThreadsPerThreadgroup(self) }

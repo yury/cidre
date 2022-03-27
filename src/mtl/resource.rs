@@ -65,7 +65,7 @@ impl Default for Options {
 define_obj_type!(Resource(Id));
 
 impl Resource {
-    define_mtl!(device, mut label);
+    define_mtl!(device, label, set_label);
 
     #[inline]
     pub fn resource_options(&self) -> Options {

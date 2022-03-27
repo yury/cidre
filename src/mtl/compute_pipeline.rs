@@ -10,7 +10,7 @@ define_obj_type!(Reflection(Id));
 define_obj_type!(Descriptor(Id));
 
 impl Descriptor {
-    define_mtl!(mut label);
+    define_mtl!(label, set_label);
 
     /// ```
     /// use cidre::{cf, mtl};
@@ -74,7 +74,7 @@ extern "C" {
 define_obj_type!(State(Id));
 
 impl State {
-    define_mtl!(device, get label);
+    define_mtl!(device, label);
 
     #[inline]
     pub fn max_total_threads_per_threadgroup(&self) -> usize {

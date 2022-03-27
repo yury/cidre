@@ -1,6 +1,6 @@
 use crate::{define_mtl, define_obj_type, ns, objc::Id};
 
-use super::{Buffer, CommandEncoder, Fence};
+use super::{Buffer, CommandEncoder};
 
 define_obj_type!(BlitCommandEncoder(CommandEncoder));
 

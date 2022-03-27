@@ -1,4 +1,4 @@
-use std::{borrow::Cow, fmt::Debug, intrinsics::transmute, ops::Deref};
+use std::{borrow::Cow, fmt::Debug, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
@@ -67,7 +67,7 @@ impl CompileOptions {
 define_obj_type!(Function(Id));
 
 impl Function {
-    define_mtl!(device, mut label);
+    define_mtl!(device, label, set_label);
 
     #[inline]
     pub fn name(&self) -> &cf::String {
@@ -86,7 +86,7 @@ impl Function {
 define_obj_type!(Library(Id));
 
 impl Library {
-    define_mtl!(device, mut label);
+    define_mtl!(device, label, set_label);
 
     /// ```
     /// use cidre::{cf, mtl};
@@ -180,7 +180,7 @@ impl Debug for Library {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut st = f.debug_struct("Library");
         match self.label() {
-            Some(label) => st.field("label", &Cow::from(label.deref())),
+            Some(label) => st.field("label", &Cow::from(label)),
             None => st.field("label", &"<none>"),
         }
         .finish()

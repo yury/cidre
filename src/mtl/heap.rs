@@ -5,5 +5,5 @@ use crate::ns::Id;
 define_obj_type!(Heap(Id));
 
 impl Heap {
-    define_mtl!(device, mut label);
+    define_mtl!(device, label, set_label);
 }

@@ -22,9 +22,7 @@ impl BarrierScope {
 define_obj_type!(CommandEncoder(ns::Id));
 
 impl CommandEncoder {
-    define_mtl!(device, mut label);
-    define_mtl!(push_debug_group);
-    define_mtl!(pop_debug_group);
+    define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
     pub fn end_encoding(&mut self) {
         unsafe { wsel_endEncoding(self) }

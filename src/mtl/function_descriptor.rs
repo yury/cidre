@@ -10,10 +10,12 @@ pub enum FunctionOptions {
 }
 
 impl FunctionDescriptor {
+    #[inline]
     pub fn name<'copy>(&self) -> Option<cf::Retained<'copy, cf::String>> {
         unsafe { copy_nullable_rsel_name(self) }
     }
 
+    #[inline]
     pub fn set_name(&mut self, name: Option<&cf::String>) {
         unsafe { nullable_wsel_setName(self, name) }
     }

@@ -6,7 +6,7 @@ use super::{Buffer, Texture};
 define_obj_type!(ArgumentEncoder(Id));
 
 impl ArgumentEncoder {
-    define_mtl!(device, mut label);
+    define_mtl!(device, label, set_label);
 
     pub fn encoded_length(&self) -> usize {
         unsafe { rsel_encodedLength(self) }

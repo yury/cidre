@@ -183,9 +183,7 @@ impl Descriptor {
         unsafe { wsel_setPixelFormat(self, value) }
     }
 
-    define_mtl!(mut width);
-    define_mtl!(mut height);
-    define_mtl!(mut depth);
+    define_mtl!(width, set_width, height, set_height, depth, set_depth);
 
     #[inline]
     pub fn mipmap_level_count(&self) -> usize {

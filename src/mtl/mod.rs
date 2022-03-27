@@ -178,7 +178,7 @@ macro_rules! define_mtl {
         }
     };
 
-    (mut label) => {
+    (copy_label) => {
         #[inline]
         pub fn label<'copy>(&self) -> Option<crate::cf::Retained<'copy, crate::cf::String>> {
             #[link(name = "mtl", kind = "static")]
@@ -189,7 +189,9 @@ macro_rules! define_mtl {
             }
             unsafe { copy_rsel_label(self) }
         }
+    };
 
+    (set_label) => {
         #[inline]
         pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
             #[link(name = "mtl", kind = "static")]
@@ -200,7 +202,7 @@ macro_rules! define_mtl {
         }
     };
 
-    (get label) => {
+    (label) => {
         #[inline]
         pub fn label(&self) -> Option<&crate::cf::String> {
             #[link(name = "mtl", kind = "static")]
@@ -226,9 +228,7 @@ macro_rules! define_mtl {
         }
     };
 
-    (mut width) => {
-        define_mtl!(width);
-
+    (set_width) => {
         #[inline]
         pub fn set_width(&mut self, value: usize) {
             #[link(name = "mtl", kind = "static")]
@@ -255,9 +255,7 @@ macro_rules! define_mtl {
         }
     };
 
-    (mut height) => {
-        define_mtl!(height);
-
+    (set_height) => {
         #[inline]
         pub fn set_height(&mut self, value: usize) {
             #[link(name = "mtl", kind = "static")]
@@ -284,9 +282,7 @@ macro_rules! define_mtl {
         }
     };
 
-    (mut depth) => {
-        define_mtl!(depth);
-
+    (set_depth) => {
         #[inline]
         pub fn set_depth(&mut self, value: usize) {
             #[link(name = "mtl", kind = "static")]
@@ -305,7 +301,7 @@ macro_rules! define_mtl {
         pub fn update_fence(&self, fence: &crate::mtl::Fence) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_updateFence(id: &Id, fence: &crate::mtl::Fence);
+                fn wsel_updateFence(id: &crate::ns::Id, fence: &crate::mtl::Fence);
             }
             unsafe { wsel_updateFence(self, fence) }
         }
@@ -315,7 +311,7 @@ macro_rules! define_mtl {
         pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_waitForFence(id: &Id, fence: &crate::mtl::Fence);
+                fn wsel_waitForFence(id: &crate::ns::Id, fence: &crate::mtl::Fence);
             }
             unsafe { wsel_waitForFence(self, fence) }
         }
@@ -325,7 +321,7 @@ macro_rules! define_mtl {
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_useResource(id: &mut Id, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage);
+                fn wsel_useResource(id: &mut crate::ns::Id, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage);
             }
             unsafe { wsel_useResource(self, resource, usage) }
         }
@@ -336,7 +332,7 @@ macro_rules! define_mtl {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn wsel_useResources(
-                    id: &mut Id,
+                    id: &mut crate::ns::Id,
                     resources: *const crate::mtl::Resource,
                     count: usize,
                     usage: crate::mtl::ResourceUsage,
@@ -350,7 +346,7 @@ macro_rules! define_mtl {
         pub fn use_heap(&mut self, heap: &crate::mtl::Heap) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_useHeap(id: &mut Id, heap: &crate::mtl::Heap);
+                fn wsel_useHeap(id: &mut crate::ns::Id, heap: &crate::mtl::Heap);
             }
             unsafe { wsel_useHeap(self, heap) }
         }
@@ -376,13 +372,38 @@ macro_rules! define_mtl {
         }
     };
 
-    (device, mut label) => {
-        define_mtl!(device);
-        define_mtl!(mut label);
+    (storage_mode) => {
+        pub fn storage_mode(&self) -> crate::mtl::StorageMode {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_storageMode(id: &mut crate::ns::Id) -> crate::mtl::StorageMode;
+            }
+            unsafe { rsel_storageMode(self) } 
+        }
     };
 
-    (device, get label) => {
-        define_mtl!(device);
-        define_mtl!(get label);
+    (cpu_cache_mode) => {
+        pub fn cpu_cache_mode(&self) -> crate::mtl::CPUCacheMode {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_cpuCacheMode(id: &mut crate::ns::Id) -> crate::mtl::CPUCacheMode;
+            }
+            unsafe { rsel_cpuCacheMode(self) } 
+        }
+    };
+
+    (hazard_tracking_mode) => {
+        pub fn hazard_traking_mode(&self) -> crate::mtl::HazardTrackingMode {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_hazardTrackingMode(id: &mut crate::ns::Id) -> crate::mtl::HazardTrackingMode;
+            }
+            unsafe { rsel_hazardTrackingMode(self) } 
+        }
+    };
+
+    ($first:ident, $($tail:ident),+) => {
+        define_mtl!($first);
+        define_mtl!($($tail),+);
     };
 }

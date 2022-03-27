@@ -42,26 +42,29 @@ pub enum DispatchType {
 define_obj_type!(CommandBuffer(Id));
 
 impl CommandBuffer {
-    define_mtl!(device, mut label);
-    define_mtl!(push_debug_group);
-    define_mtl!(pop_debug_group);
+    define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
+    #[inline]
     pub fn command_queue(&self) -> &CommandQueue {
         unsafe { rsel_commandQueue(self) }
     }
 
+    #[inline]
     pub fn enqueue(&self) {
         unsafe { wsel_enqueue(self) }
     }
 
+    #[inline]
     pub fn commit(&self) {
         unsafe { wsel_commit(self) }
     }
 
+    #[inline]
     pub fn wait_untint_scheduled(&self) {
         unsafe { wsel_waitUntilScheduled(self) }
     }
 
+    #[inline]
     pub fn wait_until_completed(&self) {
         unsafe { wsel_waitUntilCompleted(self) }
     }

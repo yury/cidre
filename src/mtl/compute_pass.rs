@@ -14,18 +14,22 @@ impl Descriptor {
     ///
     /// assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
     /// ```
+    #[inline]
     pub fn default<'autoreleased>() -> &'autoreleased Descriptor {
         unsafe { MTLComputePassDescriptor_computePassDescriptor() }
     }
 
+    #[inline]
     pub fn dispatch_type(&self) -> DispatchType {
         unsafe { rsel_dispatchType(self) }
     }
 
+    #[inline]
     pub fn set_dispatch_type(&mut self, value: DispatchType) {
         unsafe { wsel_setDispatchType(self, value) }
     }
 
+    #[inline]
     pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray {
         unsafe { MTLComputePassDescriptor_sampleBufferAttachments(self) }
     }
@@ -102,10 +106,12 @@ extern "C" {
 define_obj_type!(SampleBufferAttachmentDescriptor(Id));
 
 impl SampleBufferAttachmentDescriptor {
+    #[inline]
     pub fn sample_buffer(&self) -> Option<&CounterSampleBuffer> {
         unsafe { rsel_sampleBuffer(self) }
     }
 
+    #[inline]
     pub fn set_sample_bufer(&mut self, value: Option<&CounterSampleBuffer>) {
         unsafe { wsel_setSampleBuffer(self, value) }
     }
