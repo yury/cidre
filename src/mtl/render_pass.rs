@@ -122,6 +122,36 @@ impl Descriptor {
     pub fn set_title_height(&mut self, value: usize) {
         unsafe { wsel_setTileHeight(self, value) }
     }
+
+    #[inline]
+    pub fn render_target_width(&self) -> usize {
+        unsafe { rsel_renderTargetWidth(self) }
+    }
+
+    #[inline]
+    pub fn set_render_width(&mut self, value: usize) {
+        unsafe { wsel_setRenderTargetWidth(self, value) }
+    }
+
+    #[inline]
+    pub fn render_target_height(&self) -> usize {
+        unsafe { rsel_renderTargetHeight(self) }
+    }
+
+    #[inline]
+    pub fn set_render_target_height(&mut self, value: usize) {
+        unsafe { wsel_setRenderTargetHeight(self, value) }
+    }
+
+    #[inline]
+    pub fn default_raster_sample_count(&self) -> usize {
+        unsafe { rsel_defaultRasterSampleCount(self) }
+    }
+
+    #[inline]
+    pub fn set_default_raster_sample_count(&mut self, value: usize) {
+        unsafe { wsel_setSetDefaultRasterSampleCount(self, value) }
+    }
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -141,6 +171,15 @@ extern "C" {
     fn wsel_setTileWidth(id: &mut Id, value: usize);
     fn rsel_tileHeight(id: &Id) -> usize;
     fn wsel_setTileHeight(id: &mut Id, value: usize);
+
+    fn rsel_defaultRasterSampleCount(id: &Id) -> usize;
+    fn wsel_setSetDefaultRasterSampleCount(id: &mut Id, value: usize);
+
+    fn rsel_renderTargetWidth(id: &Id) -> usize;
+    fn wsel_setRenderTargetWidth(id: &mut Id, value: usize);
+    fn rsel_renderTargetHeight(id: &Id) -> usize;
+    fn wsel_setRenderTargetHeight(id: &mut Id, value: usize);
+
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(Id));

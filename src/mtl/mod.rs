@@ -80,6 +80,7 @@ pub use compute_pipeline::State as ComputePipelineState;
 
 pub mod command_buffer;
 pub use command_buffer::CommandBuffer;
+pub use command_buffer::DispatchType;
 pub use command_buffer::Error as CommandBufferError;
 pub use command_buffer::Status as CommandBufferStatus;
 
@@ -155,6 +156,9 @@ pub use render_pass::LoadAction;
 pub use render_pass::StencilAttachmentDescriptor as RenderPassStencilAttachmentDescriptor;
 pub use render_pass::StoreAction;
 pub use render_pass::StoreActionOptions;
+
+pub mod compute_pass;
+pub use compute_pass::Descriptor as ComputePassDescriptor;
 
 #[macro_export]
 macro_rules! define_mtl {

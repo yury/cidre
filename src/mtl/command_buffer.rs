@@ -32,6 +32,13 @@ pub enum Error {
     StackOverflow = 12,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(usize)]
+pub enum DispatchType {
+    Serial,
+    Concurrent,
+}
+
 define_obj_type!(CommandBuffer(Id));
 
 impl CommandBuffer {

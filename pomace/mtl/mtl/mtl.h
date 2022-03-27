@@ -562,6 +562,10 @@ wsel_ab(, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPas
 rwsel(, id, tileWidth, setTileWidth, NSUInteger)
 rwsel(, id, tileHeight, setTileHeight, NSUInteger)
 
+rwsel(, id, defaultRasterSampleCount, setDefaultRasterSampleCount, NSUInteger)
+rwsel(, id, renderTargetWidth, setRenderTargetWidth, NSUInteger)
+rwsel(, id, renderTargetHeight, setRenderTargetHeight, NSUInteger)
+
 
 
 #pragma mark - MTLRenderPassAttachmentDescriptor
@@ -595,6 +599,12 @@ rwsel(, id, clearColor, setClearColor, MTLClearColor)
 rwsel(, id, clearDepth, setClearDepth, double)
 //@property (nonatomic) MTLMultisampleDepthResolveFilter depthResolveFilter API_AVAILABLE(macos(10.14), ios(9.0));
 rwsel(, id, depthResolveFilter, setDepthResolveFilter, MTLMultisampleDepthResolveFilter)
+
+#pragma mark - MTLComputePassDescriptor
+
+csel(, MTLComputePassDescriptor, computePassDescriptor, MTLComputePassDescriptor *)
+//@property (nonatomic) MTLDispatchType dispatchType;
+rwsel(, id, dispatchType, setDispatchType, MTLDispatchType)
 
 
 NS_ASSUME_NONNULL_END
