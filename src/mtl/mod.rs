@@ -165,17 +165,21 @@ pub use compute_pass::SampleBufferAttachmentDescriptor as ComputePassSampleBuffe
 pub use compute_pass::SampleBufferAttachmentDescriptorArray as ComputePassSampleBufferAttachmentDescriptorArray;
 
 pub mod counters;
+pub use counters::Counter;
+pub use counters::CounterResultStatistic;
 pub use counters::CounterSampleBuffer;
+pub use counters::CounterSet;
+pub use counters::Descriptor as CounterSampleBufferDescriptor;
 
 pub mod indirect_command_buffer;
-pub use indirect_command_buffer::ExecutionRange as IndirectCommandBufferExecutionRange;
 pub use indirect_command_buffer::Descriptor as IndirectCommandBufferDescriptor;
+pub use indirect_command_buffer::ExecutionRange as IndirectCommandBufferExecutionRange;
 pub use indirect_command_buffer::IndirectCommandBuffer;
 
 pub mod sampler;
-pub use sampler::Descriptor as SamplerDescriptor;
 pub use sampler::AddressMode as SamplerAddressMode;
 pub use sampler::BorderColor as SamplerBorderColor;
+pub use sampler::Descriptor as SamplerDescriptor;
 pub use sampler::MinMagFilter as SamplerMinMagFilter;
 pub use sampler::MipFilter as SamplerMipFilter;
 pub use sampler::State as SamplerState;
