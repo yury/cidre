@@ -167,6 +167,10 @@ pub use compute_pass::SampleBufferAttachmentDescriptorArray as ComputePassSample
 pub mod counters;
 pub use counters::CounterSampleBuffer;
 
+pub mod indirect_command_buffer;
+pub use indirect_command_buffer::ExecutionRange as IndirectCommandBufferExecutionRange;
+pub use indirect_command_buffer::IndirectCommandBuffer;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

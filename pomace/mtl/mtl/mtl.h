@@ -546,6 +546,16 @@ wsel_abc(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
 // - (void)copyFromTexture:(id<MTLTexture>)sourceTexture sourceSlice:(NSUInteger)sourceSlice sourceLevel:(NSUInteger)sourceLevel sourceOrigin:(MTLOrigin)sourceOrigin sourceSize:(MTLSize)sourceSize toTexture:(id<MTLTexture>)destinationTexture destinationSlice:(NSUInteger)destinationSlice destinationLevel:(NSUInteger)destinationLevel destinationOrigin:(MTLOrigin)destinationOrigin;
 wsel_abcdefghi(, id, copyFromTexture, id<MTLTexture>, sourceSlice, NSUInteger, sourceLevel, NSUInteger, sourceOrigin, MTLOrigin, sourceSize, MTLSize, toTexture, id<MTLTexture>, destinationSlice, NSUInteger, destinationLevel, NSUInteger, destinationOrigin, MTLOrigin)
 
+//- (void)copyFromTexture:(id<MTLTexture>)sourceTexture toTexture:(id<MTLTexture>)destinationTexture API_AVAILABLE(macos(10.15), ios(13.0));
+
+wsel_ab(, id, copyFromTexture, id<MTLTexture>, toTexture, id<MTLTexture>)
+
+//- (void)optimizeContentsForGPUAccess:(id<MTLTexture>)texture API_AVAILABLE(macos(10.14), ios(12.0));
+wsel_a(, id, optimizeContentsForGPUAccess, id<MTLTexture>)
+
+//- (void) resetCommandsInBuffer:(id<MTLIndirectCommandBuffer>)buffer withRange:(NSRange)range API_AVAILABLE(macos(10.14), ios(12.0));
+wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NSRange)
+
 
 
 #pragma mark - MTLCommandQueue

@@ -1,6 +1,6 @@
-use crate::{define_mtl, define_obj_type, ns, objc::Id};
+use crate::{define_mtl, define_obj_type, ns::{self, Range}, objc::Id};
 
-use super::{Buffer, CommandEncoder, Origin, Size, Texture};
+use super::{Buffer, CommandEncoder, Origin, Size, Texture, IndirectCommandBuffer};
 
 #[repr(usize)]
 pub enum BlitOption {
@@ -59,6 +59,27 @@ impl BlitCommandEncoder {
             wsel_copyFromTexture_sourceSlice_sourceLevel_sourceOrigin_sourceSize_toTexture_destinationSlice_destinationLevel_destinationOrigin(self, src_texture, src_slice, src_level, src_origin, src_size, dest_texture, dest_slice, dest_level, dest_origin)
         }
     }
+
+    #[inline]
+    pub fn copy_texture_to_texture(&self, src_texture: &Texture, dest_texture: &Texture) {
+      unsafe {
+        wsel_copyFromTexture_toTexture(self, src_texture, dest_texture)
+      }
+    }
+
+    #[inline]
+    pub fn optimize_contents_for_gpu_access(&self, texture: &Texture) {
+      unsafe {
+        wsel_optimizeContentsForGPUAccess(self, texture)
+      }
+    }
+
+    #[inline]
+    pub fn reset_commands_in_buffer_with_range(&self, buffer: &IndirectCommandBuffer, range: Range) {
+      unsafe {
+        wsel_resetCommandsInBuffer_withRange(self, buffer, range)
+      }
+    }
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -77,4 +98,12 @@ extern "C" {
         dest_level: usize,
         dest_origin: Origin,
     );
+
+    fn wsel_copyFromTexture_toTexture(id: &Id, src_texture: &Texture, dest_texture: &Texture);
+
+    // wsel_a(, id, optimizeContentsForGPUAccess, id<MTLTexture>)optimizeContentsForGPUAccess(id: &Id, )
+    fn wsel_optimizeContentsForGPUAccess(id: &Id, texture: &Texture);
+
+    // wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NSRange)
+    fn wsel_resetCommandsInBuffer_withRange(id: &Id, buffer: &IndirectCommandBuffer, with_range: Range);
 }
