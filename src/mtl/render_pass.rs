@@ -342,7 +342,7 @@ impl AttachmentDescriptor {
 
     #[inline]
     pub fn set_store_action_options(&mut self, value: StoreActionOptions) {
-        unsafe { wsel_setSetStoreActionOptions(self, value) }
+        unsafe { wsel_setStoreActionOptions(self, value) }
     }
 }
 
@@ -379,7 +379,7 @@ extern "C" {
     fn wsel_setStoreAction(id: &mut Id, value: StoreAction);
 
     fn rsel_storeActionOptions(id: &Id) -> StoreActionOptions;
-    fn wsel_setSetStoreActionOptions(id: &mut Id, value: StoreActionOptions);
+    fn wsel_setStoreActionOptions(id: &mut Id, value: StoreActionOptions);
 }
 
 impl ColorAttachmentDescriptor {
