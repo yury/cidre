@@ -1,6 +1,10 @@
-use crate::{define_mtl, define_obj_type, ns::{self, Range}, objc::Id};
+use crate::{
+    define_mtl, define_obj_type,
+    ns::{self, Range},
+    objc::Id,
+};
 
-use super::{Buffer, CommandEncoder, Origin, Size, Texture, IndirectCommandBuffer};
+use super::{Buffer, CommandEncoder, IndirectCommandBuffer, Origin, Size, Texture};
 
 #[repr(usize)]
 pub enum BlitOption {
@@ -62,23 +66,21 @@ impl BlitCommandEncoder {
 
     #[inline]
     pub fn copy_texture_to_texture(&self, src_texture: &Texture, dest_texture: &Texture) {
-      unsafe {
-        wsel_copyFromTexture_toTexture(self, src_texture, dest_texture)
-      }
+        unsafe { wsel_copyFromTexture_toTexture(self, src_texture, dest_texture) }
     }
 
     #[inline]
     pub fn optimize_contents_for_gpu_access(&self, texture: &Texture) {
-      unsafe {
-        wsel_optimizeContentsForGPUAccess(self, texture)
-      }
+        unsafe { wsel_optimizeContentsForGPUAccess(self, texture) }
     }
 
     #[inline]
-    pub fn reset_commands_in_buffer_with_range(&self, buffer: &IndirectCommandBuffer, range: Range) {
-      unsafe {
-        wsel_resetCommandsInBuffer_withRange(self, buffer, range)
-      }
+    pub fn reset_commands_in_buffer_with_range(
+        &self,
+        buffer: &IndirectCommandBuffer,
+        range: Range,
+    ) {
+        unsafe { wsel_resetCommandsInBuffer_withRange(self, buffer, range) }
     }
 }
 
@@ -105,5 +107,9 @@ extern "C" {
     fn wsel_optimizeContentsForGPUAccess(id: &Id, texture: &Texture);
 
     // wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NSRange)
-    fn wsel_resetCommandsInBuffer_withRange(id: &Id, buffer: &IndirectCommandBuffer, with_range: Range);
+    fn wsel_resetCommandsInBuffer_withRange(
+        id: &Id,
+        buffer: &IndirectCommandBuffer,
+        with_range: Range,
+    );
 }
