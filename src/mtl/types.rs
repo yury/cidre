@@ -6,3 +6,10 @@ pub struct Size {
     pub height: ns::UInteger,
     pub depth: ns::UInteger,
 }
+
+#[repr(C)]
+pub struct Origin {
+    pub x: usize,
+    pub y: usize,
+    pub z: usize,
+}

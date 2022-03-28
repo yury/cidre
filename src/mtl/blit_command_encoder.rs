@@ -1,6 +1,6 @@
 use crate::{define_mtl, define_obj_type, ns, objc::Id};
 
-use super::{Buffer, CommandEncoder};
+use super::{Buffer, CommandEncoder, Origin, Size, Texture};
 
 #[repr(usize)]
 pub enum BlitOption {
@@ -42,10 +42,39 @@ impl BlitCommandEncoder {
     pub fn fill_buffer(&self, buffer: &Buffer, range: ns::Range, value: u8) {
         unsafe { wsel_fillBuffer(self, buffer, range, value) }
     }
+
+    pub fn copy_texture(
+        &self,
+        src_texture: &Texture,
+        src_slice: usize,
+        src_level: usize,
+        src_origin: Origin,
+        src_size: Size,
+        dest_texture: &Texture,
+        dest_slice: usize,
+        dest_level: usize,
+        dest_origin: Origin,
+    ) {
+        unsafe {
+            wsel_copyFromTexture_sourceSlice_sourceLevel_sourceOrigin_sourceSize_toTexture_destinationSlice_destinationLevel_destinationOrigin(self, src_texture, src_slice, src_level, src_origin, src_size, dest_texture, dest_slice, dest_level, dest_origin)
+        }
+    }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn wsel_fillBuffer(id: &Id, buffer: &Buffer, range: ns::Range, value: u8);
 
+    fn wsel_copyFromTexture_sourceSlice_sourceLevel_sourceOrigin_sourceSize_toTexture_destinationSlice_destinationLevel_destinationOrigin(
+        id: &Id,
+        src_texture: &Texture,
+        src_slice: usize,
+        src_level: usize,
+        src_origin: Origin,
+        src_size: Size,
+        dest_texture: &Texture,
+        dest_slice: usize,
+        dest_level: usize,
+        dest_origin: Origin,
+    );
 }

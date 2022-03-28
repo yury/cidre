@@ -65,7 +65,14 @@ impl Default for Options {
 define_obj_type!(Resource(Id));
 
 impl Resource {
-    define_mtl!(device, label, set_label, cpu_cache_mode, storage_mode, hazard_tracking_mode);
+    define_mtl!(
+        device,
+        label,
+        set_label,
+        cpu_cache_mode,
+        storage_mode,
+        hazard_tracking_mode
+    );
 
     #[inline]
     pub fn resource_options(&self) -> Options {

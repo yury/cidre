@@ -1,4 +1,5 @@
 pub mod types;
+pub use types::Origin;
 pub use types::Size;
 
 pub mod pixel_format;
@@ -176,19 +177,6 @@ macro_rules! define_mtl {
                 fn rsel_device(id: &crate::ns::Id) -> &crate::mtl::Device;
             }
             unsafe { rsel_device(self) }
-        }
-    };
-
-    (copy_label) => {
-        #[inline]
-        pub fn label<'copy>(&self) -> Option<crate::cf::Retained<'copy, crate::cf::String>> {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn copy_rsel_label<'copy>(
-                    id: &crate::ns::Id,
-                ) -> Option<crate::cf::Retained<'copy, crate::cf::String>>;
-            }
-            unsafe { copy_rsel_label(self) }
         }
     };
 
