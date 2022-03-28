@@ -2,6 +2,14 @@ use crate::{define_mtl, define_obj_type, ns, objc::Id};
 
 use super::{Buffer, CommandEncoder};
 
+#[repr(usize)]
+pub enum BlitOption {
+    None = 0,
+    DepthFromDepthStencil = 1 << 0,
+    StencilFromDepthStencil = 1 << 1,
+    RowLinearPVRTC = 1 << 2,
+}
+
 define_obj_type!(BlitCommandEncoder(CommandEncoder));
 
 /// ```

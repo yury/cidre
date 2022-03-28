@@ -35,6 +35,7 @@ impl FunctionDescriptor {
     ///
     /// assert!(name.equal(&actual_name));
     ///
+    #[inline]
     pub fn default<'autorelease>() -> &'autorelease mut FunctionDescriptor {
         unsafe { MTLFunctionDescriptor_functionDescriptor() }
     }

@@ -2,12 +2,13 @@ use std::ffi::c_void;
 
 use crate::{
     cf::{self, Retained},
-    define_obj_type, mtl, ns,
+    define_mtl, define_obj_type, mtl, ns,
 };
 
 define_obj_type!(FunctionConstantValues(ns::Id));
 
 impl FunctionConstantValues {
+    define_mtl!(reset);
     /// ```
     /// use cidre::mtl;
     ///
@@ -55,14 +56,9 @@ impl FunctionConstantValues {
     ) {
         unsafe { wsel_setConstantValue_type_withName(self, value, type_, name) }
     }
-
-    pub fn reset(&mut self) {
-        unsafe { wsel_reset(self) }
-    }
 }
 
 extern "C" {
-    fn wsel_reset(id: &mut ns::Id);
     fn MTLFunctionConstantValues_new<'a>() -> Retained<'a, FunctionConstantValues>;
 
     fn wsel_setConstantValue_type_atIndex(

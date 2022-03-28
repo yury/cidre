@@ -121,6 +121,7 @@ pub use command_encoder::ResourceUsage;
 
 pub mod blit_command_encoder;
 pub use blit_command_encoder::BlitCommandEncoder;
+pub use blit_command_encoder::BlitOption;
 
 pub mod render_command_encoder;
 pub use render_command_encoder::CullMode;
@@ -308,6 +309,7 @@ macro_rules! define_mtl {
     };
 
     (wait_for_fence) => {
+        #[inline]
         pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
@@ -318,6 +320,7 @@ macro_rules! define_mtl {
     };
 
     (use_resource) => {
+        #[inline]
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
@@ -328,6 +331,7 @@ macro_rules! define_mtl {
     };
 
     (use_resources) => {
+        #[inline]
         pub fn use_resources(&mut self, resources: &[crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
@@ -343,6 +347,7 @@ macro_rules! define_mtl {
     };
 
     (use_heap) => {
+        #[inline]
         pub fn use_heap(&mut self, heap: &crate::mtl::Heap) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
@@ -353,6 +358,7 @@ macro_rules! define_mtl {
     };
 
     (push_debug_group) => {
+        #[inline]
         pub fn push_debug_group(&mut self, debug_group: &crate::cf::String) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
@@ -363,6 +369,7 @@ macro_rules! define_mtl {
     };
 
     (pop_debug_group) => {
+        #[inline]
         pub fn pop_debug_group(&mut self) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
@@ -373,32 +380,46 @@ macro_rules! define_mtl {
     };
 
     (storage_mode) => {
+        #[inline]
         pub fn storage_mode(&self) -> crate::mtl::StorageMode {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn rsel_storageMode(id: &mut crate::ns::Id) -> crate::mtl::StorageMode;
+                fn rsel_storageMode(id: &crate::ns::Id) -> crate::mtl::StorageMode;
             }
-            unsafe { rsel_storageMode(self) } 
+            unsafe { rsel_storageMode(self) }
         }
     };
 
     (cpu_cache_mode) => {
+        #[inline]
         pub fn cpu_cache_mode(&self) -> crate::mtl::CPUCacheMode {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn rsel_cpuCacheMode(id: &mut crate::ns::Id) -> crate::mtl::CPUCacheMode;
+                fn rsel_cpuCacheMode(id: &crate::ns::Id) -> crate::mtl::CPUCacheMode;
             }
-            unsafe { rsel_cpuCacheMode(self) } 
+            unsafe { rsel_cpuCacheMode(self) }
         }
     };
 
     (hazard_tracking_mode) => {
+        #[inline]
         pub fn hazard_traking_mode(&self) -> crate::mtl::HazardTrackingMode {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn rsel_hazardTrackingMode(id: &mut crate::ns::Id) -> crate::mtl::HazardTrackingMode;
+                fn rsel_hazardTrackingMode(id: &crate::ns::Id) -> crate::mtl::HazardTrackingMode;
             }
-            unsafe { rsel_hazardTrackingMode(self) } 
+            unsafe { rsel_hazardTrackingMode(self) }
+        }
+    };
+
+    (reset) => {
+        #[inline]
+        pub fn reset(&mut self) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_reset(id: &mut crate::ns::Id);
+            }
+            unsafe { wsel_reset(self) }
         }
     };
 

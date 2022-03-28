@@ -65,21 +65,15 @@ impl Default for Options {
 define_obj_type!(Resource(Id));
 
 impl Resource {
-    define_mtl!(device, label, set_label);
+    define_mtl!(device, label, set_label, cpu_cache_mode, storage_mode, hazard_tracking_mode);
 
     #[inline]
     pub fn resource_options(&self) -> Options {
         unsafe { rsel_resourceOptions(self) }
-    }
-
-    #[inline]
-    pub fn cpu_cache_mode(&self) -> CPUCacheMode {
-        unsafe { rsel_cpuCacheMode(self) }
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn rsel_resourceOptions(id: &Id) -> Options;
-    fn rsel_cpuCacheMode(id: &Id) -> CPUCacheMode;
 }
