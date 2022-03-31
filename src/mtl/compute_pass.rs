@@ -8,11 +8,13 @@ define_obj_type!(Descriptor(Id));
 
 impl Descriptor {
     /// ```
-    /// use cidre::{mtl};
+    /// use cidre::{mtl, objc};
     ///
-    /// let cpd = mtl::ComputePassDescriptor::default();
+    /// objc::autoreleasepool(|| {
+    ///     let cpd = mtl::ComputePassDescriptor::default();
     ///
-    /// assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
+    ///     assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
+    /// })
     /// ```
     #[inline]
     pub fn default<'ar>() -> Autoreleased<'ar, Descriptor> {
@@ -41,7 +43,6 @@ extern "C" {
     fn rsel_dispatchType(id: &Id) -> DispatchType;
     fn wsel_setDispatchType(id: &mut Id, value: DispatchType);
 
-    // rsel(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
     fn MTLComputePassDescriptor_sampleBufferAttachments(
         id: &Id,
     ) -> &SampleBufferAttachmentDescriptorArray;
