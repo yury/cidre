@@ -2,14 +2,12 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
-    define_obj_type, io, mtl,
+    define_obj_type, io, msg_send, mtl,
     ns::Id,
-    objc::{block::CompletionHandlerAB, Sel},
+    objc::block::CompletionHandlerAB,
 };
 
-use super::{
-    event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size,
-};
+use super::{event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -123,9 +121,7 @@ impl Device {
     ///
     #[inline]
     pub fn command_queue<'create>(&self) -> Option<Retained<'create, CommandQueue>> {
-        unsafe {
-            self.rsel(sel_newCommandQueue)
-        }
+        msg_send!(self, sel_newCommandQueue)
     }
 
     /// ```
@@ -295,9 +291,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn fence<'create>(&self) -> Option<Retained<'create, Fence>> {
-        unsafe {
-            self.rsel(sel_newFence)
-        }
+        msg_send!(self, sel_newFence)
     }
 
     /// ```
@@ -348,7 +342,7 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static sel_newCommandQueue: &'static Sel;
+    // static sel_newCommandQueue: &'static Sel;
 
     fn sel_newLibraryWithSource_options_completionHandler(
         id: &Device,
@@ -409,7 +403,6 @@ extern "C" {
         options: mtl::ResourceOptions,
     ) -> Option<Retained<'create, Buffer>>;
 
-    static sel_newFence: &'static Sel;
     // fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
     fn rsel_newEvent<'create>(id: &Device) -> Option<Retained<'create, Event>>;
 

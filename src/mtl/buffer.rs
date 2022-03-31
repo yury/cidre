@@ -1,6 +1,5 @@
-use crate::define_obj_type;
 use crate::mtl;
-use crate::ns::{self, Id};
+use crate::{define_obj_type, msg_send};
 
 define_obj_type!(Buffer(mtl::Resource));
 
@@ -18,7 +17,7 @@ impl Buffer {
     /// ```
     #[inline]
     pub fn length(&self) -> usize {
-        unsafe { rsel_length(self) }
+        msg_send!(self, sel_length)
     }
 
     #[inline]
@@ -29,9 +28,4 @@ impl Buffer {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_length(id: &Id) -> ns::UInteger;
 }

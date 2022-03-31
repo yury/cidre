@@ -2,7 +2,7 @@ use std::{borrow::Cow, fmt::Debug, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
-    define_mtl, define_obj_type, mtl, ns,
+    define_mtl, define_obj_type, msg_send, mtl, ns,
     objc::Id,
 };
 
@@ -71,7 +71,7 @@ impl Function {
 
     #[inline]
     pub fn name(&self) -> &cf::String {
-        unsafe { get_rsel_name(self) }
+        msg_send!(self, sel_name)
     }
 
     #[inline]
@@ -230,8 +230,6 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn get_rsel_name(id: &Id) -> &cf::String;
-
     fn MTLCompileOptions_new<'new>() -> Retained<'new, CompileOptions>;
     fn rsel_fastMathEnabled(id: &Id) -> bool;
     fn wsel_setFastMathEnabled(id: &mut Id, value: bool);

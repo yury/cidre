@@ -1,10 +1,7 @@
 use std::ffi::c_void;
-use std::intrinsics::transmute;
 
-use crate::cf::Retained;
 use crate::cf::runtime::Autoreleased;
-use crate::objc::Sel;
-use crate::{define_mtl, define_obj_type};
+use crate::{define_mtl, define_obj_type, msg_send};
 
 use crate::ns::Id;
 use crate::objc::block::CompletionHandlerA;
@@ -49,21 +46,17 @@ impl CommandBuffer {
 
     #[inline]
     pub fn command_queue(&self) -> &CommandQueue {
-        unsafe {
-            self.rsel(sel_commandQueue)
-        }
+        msg_send!(self, sel_commandQueue)
     }
 
     #[inline]
     pub fn enqueue(&self) {
-        unsafe { self.wsel(sel_enqueue) }
+        msg_send!(self, sel_enqueue)
     }
 
     #[inline]
     pub fn commit(&self) {
-        unsafe {
-            self.wsel(sel_commit);
-        }
+        msg_send!(self, sel_commit)
     }
 
     #[inline]
@@ -73,9 +66,7 @@ impl CommandBuffer {
 
     #[inline]
     pub fn wait_until_completed(&self) {
-        unsafe {
-            self.wsel(sel_waitUntilCompleted);
-        }
+        msg_send!(self, sel_waitUntilCompleted)
     }
 
     pub fn add_scheduled_handler<B>(&self, block: B)
@@ -94,31 +85,20 @@ impl CommandBuffer {
 
     #[inline]
     pub fn blit_command_encoder<'new>(&self) -> Option<Autoreleased<'new, BlitCommandEncoder>> {
-        unsafe { self.rsel(sel_blitCommandEncoder) }
+        msg_send!(self, sel_blitCommandEncoder)
     }
 
     #[inline]
-    pub fn compute_command_encoder<'new>(&self) -> Option<Autoreleased<'new, ComputeCommandEncoder>> {
-        unsafe { self.rsel(sel_computeCommandEncoder) }
+    pub fn compute_command_encoder<'new>(
+        &self,
+    ) -> Option<Autoreleased<'new, ComputeCommandEncoder>> {
+        msg_send!(self, sel_computeCommandEncoder)
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-
-    static sel_commit: &'static Sel;
-    static sel_enqueue: &'static Sel;
-    static sel_waitUntilCompleted: &'static Sel;
-    static sel_blitCommandEncoder: &'static Sel;
-    static sel_computeCommandEncoder: &'static Sel;
-    static sel_commandQueue: &'static Sel;
-
-    // fn rsel_commandQueue(id: &Id) -> &CommandQueue;
-    // fn wsel_enqueue(id: &Id);
     fn wsel_waitUntilScheduled(id: &Id);
     fn sel_addScheduledHandler(id: &Id, rb: *const c_void);
     fn sel_addCompletedHandler(id: &Id, rb: *const c_void);
-
-    // fn rsel_blitCommandEncoder<'new>(id: &Id) -> Option<Retained<'new, BlitCommandEncoder>>;
-    // fn rsel_computeCommandEncoder<'new>(id: &Id) -> Option<Retained<'new, ComputeCommandEncoder>>;
 }

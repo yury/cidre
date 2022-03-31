@@ -35,32 +35,33 @@ impl Id {
     }
 
     #[inline]
-    pub unsafe fn rsel<R>(&self, selector: &Sel) -> R {
-        let imp: unsafe extern fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
+    pub unsafe fn sel<R>(&self, selector: &Sel) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector)
     }
 
     #[inline]
-    pub unsafe fn wsel(&self, selector: &Sel) {
-        let imp: unsafe extern fn(&Id, &Sel) = transmute(objc_msgSend as *const c_void);
-        imp(self, selector)
-    }
-
-    #[inline]
-    pub unsafe fn wsel_a<A>(&self, selector: &Sel, a: A) {
-        let imp: unsafe extern fn(&Id, &Sel, A) = transmute(objc_msgSend as *const c_void);
+    pub unsafe fn sel_a<R, A>(&self, selector: &Sel, a: A) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector, a)
     }
 
+    // #[inline]
+    // pub unsafe fn wsel_a<A>(&self, selector: &Sel, a: A) {
+    //     let imp: unsafe extern "C" fn(&Id, &Sel, A) = transmute(objc_msgSend as *const c_void);
+    //     imp(self, selector, a)
+    // }
+
     #[inline]
     pub unsafe fn wsel_ab<A, B>(&self, selector: &Sel, a: A, b: B) {
-        let imp: unsafe extern fn(&Id, &Sel, A, B) = transmute(objc_msgSend as *const c_void);
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B) = transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b)
     }
 
     #[inline]
     pub unsafe fn wsel_abc<A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) {
-        let imp: unsafe extern fn(&Id, &Sel, A, B, C) = transmute(objc_msgSend as *const c_void);
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) =
+            transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c)
     }
 }
@@ -97,6 +98,27 @@ where
     f()
 }
 
+#[macro_export]
+macro_rules! msg_send {
+    ($self:ident, $sel:ident, $a:ident) => {{
+        #[link(name = "mtl", kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_a($sel, $a) }
+    }};
+
+    ($self:ident, $sel:ident) => {{
+        #[link(name = "mtl", kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel($sel) }
+    }};
+}
+
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
@@ -105,7 +127,7 @@ extern "C" {
     // static objc_msgSend: *const c_void;
 
     // #[link_name = "objc_msgSend"]
-    fn objc_msgSend(id: &Id, args:...) -> *const c_void;
+    fn objc_msgSend(id: &Id, args: ...) -> *const c_void;
 }
 
 #[macro_export]

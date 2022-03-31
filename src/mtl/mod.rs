@@ -189,11 +189,7 @@ macro_rules! define_mtl {
     (device) => {
         #[inline]
         pub fn device(&self) -> &crate::mtl::Device {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_device(id: &crate::ns::Id) -> &crate::mtl::Device;
-            }
-            unsafe { rsel_device(self) }
+            crate::msg_send!(self, sel_device)
         }
     };
 
@@ -211,13 +207,7 @@ macro_rules! define_mtl {
     (label) => {
         #[inline]
         pub fn label(&self) -> Option<&crate::cf::String> {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn get_rsel_label(
-                    id: &crate::ns::Id,
-                ) -> Option<&crate::cf::String>;
-            }
-            unsafe { get_rsel_label(self) }
+            crate::msg_send!(self, sel_label)
         }
     };
 
@@ -305,26 +295,14 @@ macro_rules! define_mtl {
     (update_fence) => {
         #[inline]
         pub fn update_fence(&self, fence: &crate::mtl::Fence) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                static sel_updateFence_a: &'static crate::objc::Sel;
-            }
-            unsafe { 
-                self.wsel_a(sel_updateFence_a, fence);
-            }
+            crate::msg_send!(self, sel_updateFence_a, fence)
         }
     };
 
     (wait_for_fence) => {
         #[inline]
         pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                static sel_waitForFence_a: &'static crate::objc::Sel;
-            }
-            unsafe { 
-                self.wsel_a(sel_waitForFence_a, fence);
-            }
+            crate::msg_send!(self, sel_waitForFence_a, fence)
         }
     };
 
@@ -335,7 +313,7 @@ macro_rules! define_mtl {
             extern "C" {
                 static sel_useResource_usage: &'static crate::objc::Sel;
             }
-            unsafe { 
+            unsafe {
                 self.wsel_ab(sel_useResource_usage, resource, usage)
             }
         }
@@ -348,7 +326,7 @@ macro_rules! define_mtl {
             extern "C" {
                 static sel_useResources_count_usage: &'static crate::objc::Sel;
             }
-            unsafe { 
+            unsafe {
                 self.wsel_abc(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
             }
         }

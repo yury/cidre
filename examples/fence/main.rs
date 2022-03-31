@@ -8,7 +8,9 @@ fn main() {
         let command_buffer = command_queue.command_buffer().unwrap();
 
         let cmd_queue = command_buffer.command_queue();
+        let dev = cmd_queue.device();
 
+        assert!(dev.as_type_ref().equal(device.as_type_ref()));
         assert!(cmd_queue.as_type_ref().equal(command_queue.as_type_ref()));
 
         let fence = device.fence().unwrap();

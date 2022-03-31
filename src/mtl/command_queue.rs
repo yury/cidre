@@ -1,6 +1,5 @@
 use crate::cf::runtime::Autoreleased;
-use crate::objc::Sel;
-use crate::{define_mtl, define_obj_type};
+use crate::{define_mtl, define_obj_type, msg_send};
 
 use crate::ns::Id;
 
@@ -13,10 +12,6 @@ impl CommandQueue {
 
     #[inline]
     pub fn command_buffer<'pool>(&self) -> Option<Autoreleased<'pool, CommandBuffer>> {
-        unsafe { self.rsel(sel_commandBuffer) }
+        msg_send!(self, sel_commandBuffer)
     }
-}
-
-extern "C" {
-    static sel_commandBuffer: &'static Sel;
 }

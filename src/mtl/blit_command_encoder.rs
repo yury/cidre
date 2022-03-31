@@ -103,10 +103,8 @@ extern "C" {
 
     fn wsel_copyFromTexture_toTexture(id: &Id, src_texture: &Texture, dest_texture: &Texture);
 
-    // wsel_a(, id, optimizeContentsForGPUAccess, id<MTLTexture>)optimizeContentsForGPUAccess(id: &Id, )
     fn wsel_optimizeContentsForGPUAccess(id: &Id, texture: &Texture);
 
-    // wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NSRange)
     fn wsel_resetCommandsInBuffer_withRange(
         id: &Id,
         buffer: &IndirectCommandBuffer,

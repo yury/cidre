@@ -672,6 +672,7 @@ NS_RETURNS_NOT_RETAINED
 rsel(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
 
 
+SEL sel_device;
 SEL sel_commandBuffer;
 SEL sel_commandQueue;
 SEL sel_commit;
@@ -686,12 +687,17 @@ SEL sel_newFence;
 SEL sel_useResource_usage;
 SEL sel_useResources_count_usage;
 SEL sel_enqueue;
+SEL sel_length;
+SEL sel_name;
+SEL sel_label;
+SEL sel_setName;
 
 __attribute__((constructor))
 static void mtl_initializer()
 {
     static int initialized = 0;
     if (!initialized) {
+      sel_device = @selector(device);
       sel_commandBuffer = @selector(commandBuffer);
       sel_commandQueue = @selector(commandQueue);
       sel_commit = @selector(commit);
@@ -706,6 +712,10 @@ static void mtl_initializer()
       sel_useResource_usage = @selector(useResource:usage:);
       sel_useResources_count_usage = @selector(useResources:count:usage:);
       sel_enqueue = @selector(enqueue);
+      sel_length = @selector(length);
+      sel_name = @selector(name);
+      sel_label = @selector(label);
+      sel_setName = @selector(setName:);
 
       initialized = 1;
     }

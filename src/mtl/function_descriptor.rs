@@ -1,5 +1,5 @@
 use crate::ns::Id;
-use crate::{cf, define_obj_type};
+use crate::{cf, define_obj_type, msg_send};
 
 define_obj_type!(FunctionDescriptor(Id));
 
@@ -12,12 +12,12 @@ pub enum FunctionOptions {
 impl FunctionDescriptor {
     #[inline]
     pub fn name<'copy>(&self) -> Option<cf::Retained<'copy, cf::String>> {
-        unsafe { copy_nullable_rsel_name(self) }
+        msg_send!(self, sel_name)
     }
 
     #[inline]
     pub fn set_name(&mut self, name: Option<&cf::String>) {
-        unsafe { nullable_wsel_setName(self, name) }
+        msg_send!(self, sel_setName, name)
     }
 
     /// ```
@@ -43,8 +43,6 @@ impl FunctionDescriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn copy_nullable_rsel_name<'copy>(id: &Id) -> Option<cf::Retained<'copy, cf::String>>;
-    fn nullable_wsel_setName(id: &mut Id, name: Option<&cf::String>);
     fn MTLFunctionDescriptor_functionDescriptor<'autorelease>(
     ) -> &'autorelease mut FunctionDescriptor;
 
