@@ -1,6 +1,6 @@
 use std::ops::Index;
 
-use crate::{define_obj_type, objc::Id};
+use crate::{cf::runtime::Autoreleased, define_obj_type, objc::Id};
 
 use super::{CounterSampleBuffer, DispatchType};
 
@@ -15,7 +15,7 @@ impl Descriptor {
     /// assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
     /// ```
     #[inline]
-    pub fn default<'autoreleased>() -> &'autoreleased Descriptor {
+    pub fn default<'ar>() -> Autoreleased<'ar, Descriptor> {
         unsafe { MTLComputePassDescriptor_computePassDescriptor() }
     }
 
@@ -36,7 +36,7 @@ impl Descriptor {
 }
 
 extern "C" {
-    fn MTLComputePassDescriptor_computePassDescriptor<'autoreleased>() -> &'autoreleased Descriptor;
+    fn MTLComputePassDescriptor_computePassDescriptor<'ar>() -> Autoreleased<'ar, Descriptor>;
 
     fn rsel_dispatchType(id: &Id) -> DispatchType;
     fn wsel_setDispatchType(id: &mut Id, value: DispatchType);

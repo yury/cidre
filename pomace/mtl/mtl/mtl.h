@@ -692,6 +692,10 @@ SEL sel_name;
 SEL sel_label;
 SEL sel_setLabel;
 SEL sel_setName;
+SEL sel_height;
+SEL sel_setHeight;
+SEL sel_width;
+SEL sel_setWidth;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -718,6 +722,11 @@ static void mtl_initializer()
       sel_label = @selector(label);
       sel_setName = @selector(setName:);
       sel_setLabel = @selector(setLabel:);
+      sel_width = @selector(width);
+      sel_height = @selector(height);
+      sel_setWidth = @selector(setWidth:);
+      sel_setHeight = @selector(setHeight:);
+
 
       initialized = 1;
     }

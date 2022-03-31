@@ -53,8 +53,9 @@ impl Id {
     // }
 
     #[inline]
-    pub unsafe fn wsel_ab<A, B>(&self, selector: &Sel, a: A, b: B) {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B) = transmute(objc_msgSend as *const c_void);
+    pub unsafe fn sel_ab<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B) -> R =
+            transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b)
     }
 
@@ -100,6 +101,15 @@ where
 
 #[macro_export]
 macro_rules! msg_send {
+    ($self:ident, $sel:ident, $a:ident, $b:ident) => {{
+        #[link(name = "mtl", kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_ab($sel, $a, $b) }
+    }};
+
     ($self:ident, $sel:ident, $a:ident) => {{
         #[link(name = "mtl", kind = "static")]
         extern "C" {

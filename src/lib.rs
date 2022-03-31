@@ -5,7 +5,6 @@ pub use mac_types::UniChar;
 
 /// Core Foundation
 pub mod cf;
-
 /// Core Graphics
 pub mod cg;
 /// Core Media

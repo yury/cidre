@@ -210,54 +210,28 @@ macro_rules! define_mtl {
     (width) => {
         #[inline]
         pub fn width(&self) -> usize {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_width(
-                    id: &crate::ns::Id,
-                ) -> usize;
-            }
-            unsafe { rsel_width(self) }
+            crate::msg_send!(self, sel_width)
         }
     };
 
     (set_width) => {
         #[inline]
         pub fn set_width(&mut self, value: usize) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setWidth(
-                    id: &mut crate::ns::Id,
-                    value: usize
-                );
-            }
-            unsafe { wsel_setWidth(self, value) }
+            crate::msg_send!(self, sel_setWidth, value)
         }
     };
 
     (height) => {
         #[inline]
         pub fn height(&self) -> usize {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_height(
-                    id: &crate::ns::Id,
-                ) -> usize;
-            }
-            unsafe { rsel_height(self) }
+            crate::msg_send!(self, sel_height)
         }
     };
 
     (set_height) => {
         #[inline]
         pub fn set_height(&mut self, value: usize) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setHeight(
-                    id: &mut crate::ns::Id,
-                    value: usize
-                );
-            }
-            unsafe { wsel_setHeight(self, value) }
+            crate::msg_send!(self, sel_setHeight, value)
         }
     };
 
@@ -305,13 +279,7 @@ macro_rules! define_mtl {
     (use_resource) => {
         #[inline]
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                static sel_useResource_usage: &'static crate::objc::Sel;
-            }
-            unsafe {
-                self.wsel_ab(sel_useResource_usage, resource, usage)
-            }
+            crate::msg_send!(self, sel_useResource_usage, resource, usage)
         }
     };
 
