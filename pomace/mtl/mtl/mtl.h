@@ -149,8 +149,8 @@ wsel(, id, reset)
 rsel(, id, length, NSUInteger)
 
 //- (void)enqueue;
-wsel(, id, enqueue)
-wsel(, id, commit)
+//wsel(, id, enqueue)
+//wsel(, id, commit)
 wsel(, id, waitUntilScheduled)
 //- (void)waitUntilCompleted;
 wsel(, id, waitUntilCompleted)
@@ -260,8 +260,8 @@ rwsel(, id, pixelFormat, setPixelFormat, MTLPixelFormat)
 #pragma mark - MTLCommandBuffer
 
 //@property (readonly) id <MTLCommandQueue> commandQueue;
-NS_RETURNS_NOT_RETAINED
-rsel(, id, commandQueue, id<MTLCommandQueue>)
+//NS_RETURNS_NOT_RETAINED
+//rsel(, id, commandQueue, id<MTLCommandQueue>)
 
 // - (void)addScheduledHandler:(MTLCommandBufferHandler)block;
 sel_ch_a(, id<MTLCommandBuffer>, addScheduledHandler, id <MTLCommandBuffer>)
@@ -561,8 +561,8 @@ wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NS
 #pragma mark - MTLCommandQueue
 
 //- (nullable id <MTLCommandBuffer>)commandBuffer;
-NS_RETURNS_RETAINED
-rsel(, id, commandBuffer, id<MTLCommandBuffer> _Nullable)
+//NS_RETURNS_RETAINED
+//rsel(, id, commandBuffer, id<MTLCommandBuffer> _Nullable)
 
 #pragma mark - MTLRenderPassDescriptor
 
@@ -670,5 +670,47 @@ csel(, MTLBlitPassDescriptor, blitPassDescriptor, MTLBlitPassDescriptor *)
 //@property (readonly) MTLBlitPassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
 NS_RETURNS_NOT_RETAINED
 rsel(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
+
+
+SEL sel_commandBuffer;
+SEL sel_commandQueue;
+SEL sel_commit;
+SEL sel_endEncoding;
+SEL sel_waitUntilCompleted;
+SEL sel_blitCommandEncoder;
+SEL sel_computeCommandEncoder;
+SEL sel_updateFence_a;
+SEL sel_waitForFence_a;
+SEL sel_newCommandQueue;
+SEL sel_newFence;
+SEL sel_useResource_usage;
+SEL sel_useResources_count_usage;
+SEL sel_enqueue;
+
+__attribute__((constructor))
+static void mtl_initializer()
+{
+    static int initialized = 0;
+    if (!initialized) {
+      sel_commandBuffer = @selector(commandBuffer);
+      sel_commandQueue = @selector(commandQueue);
+      sel_commit = @selector(commit);
+      sel_endEncoding = @selector(endEncoding);
+      sel_waitUntilCompleted = @selector(waitUntilCompleted);
+      sel_blitCommandEncoder = @selector(blitCommandEncoder);
+      sel_computeCommandEncoder = @selector(computeCommandEncoder);
+      sel_updateFence_a = @selector(updateFence:);
+      sel_waitForFence_a = @selector(waitForFence:);
+      sel_newCommandQueue = @selector(newCommandQueue);
+      sel_newFence = @selector(newFence);
+      sel_useResource_usage = @selector(useResource:usage:);
+      sel_useResources_count_usage = @selector(useResources:count:usage:);
+      sel_enqueue = @selector(enqueue);
+
+      initialized = 1;
+    }
+}
+
+
 
 NS_ASSUME_NONNULL_END

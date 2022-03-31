@@ -1,4 +1,5 @@
-use crate::cf::Retained;
+use crate::cf::runtime::Autoreleased;
+use crate::objc::Sel;
 use crate::{define_mtl, define_obj_type};
 
 use crate::ns::Id;
@@ -11,11 +12,11 @@ impl CommandQueue {
     define_mtl!(device, label, set_label);
 
     #[inline]
-    pub fn command_buffer<'new>(&self) -> Option<Retained<'new, CommandBuffer>> {
-        unsafe { rsel_commandBuffer(self) }
+    pub fn command_buffer<'pool>(&self) -> Option<Autoreleased<'pool, CommandBuffer>> {
+        unsafe { self.rsel(sel_commandBuffer) }
     }
 }
 
 extern "C" {
-    fn rsel_commandBuffer<'new>(id: &Id) -> Option<Retained<'new, CommandBuffer>>;
+    static sel_commandBuffer: &'static Sel;
 }

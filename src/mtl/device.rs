@@ -4,10 +4,12 @@ use crate::{
     cf::{self, Retained},
     define_obj_type, io, mtl,
     ns::Id,
-    objc::block::CompletionHandlerAB,
+    objc::{block::CompletionHandlerAB, Sel},
 };
 
-use super::{event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size};
+use super::{
+    event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -121,7 +123,9 @@ impl Device {
     ///
     #[inline]
     pub fn command_queue<'create>(&self) -> Option<Retained<'create, CommandQueue>> {
-        unsafe { rsel_newCommandQueue(self) }
+        unsafe {
+            self.rsel(sel_newCommandQueue)
+        }
     }
 
     /// ```
@@ -291,7 +295,9 @@ impl Device {
     /// ```
     #[inline]
     pub fn fence<'create>(&self) -> Option<Retained<'create, Fence>> {
-        unsafe { rsel_newFence(self) }
+        unsafe {
+            self.rsel(sel_newFence)
+        }
     }
 
     /// ```
@@ -342,6 +348,8 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
+    static sel_newCommandQueue: &'static Sel;
+
     fn sel_newLibraryWithSource_options_completionHandler(
         id: &Device,
         source: &cf::String,
@@ -354,7 +362,7 @@ extern "C" {
     fn rsel_hasUnifiedMemory(id: &Device) -> bool;
     fn rsel_readWriteTextureSupport(id: &Device) -> ReadWriteTextureTier;
     fn rsel_argumentBuffersSupport(id: &Device) -> ArgumentBuffersTier;
-    fn rsel_newCommandQueue<'create>(id: &Device) -> Option<Retained<'create, CommandQueue>>;
+    // fn rsel_newCommandQueue<'create>(id: &Device) -> Option<Retained<'create, CommandQueue>>;
     fn rsel_newCommandQueueWithMaxCommandBufferCount<'a>(
         id: &Device,
         maxCommandBufferCount: usize,
@@ -401,7 +409,8 @@ extern "C" {
         options: mtl::ResourceOptions,
     ) -> Option<Retained<'create, Buffer>>;
 
-    fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
+    static sel_newFence: &'static Sel;
+    // fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
     fn rsel_newEvent<'create>(id: &Device) -> Option<Retained<'create, Event>>;
 
     fn rsel_maxBufferLength(id: &Device) -> usize;

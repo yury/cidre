@@ -25,7 +25,9 @@ impl CommandEncoder {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
     pub fn end_encoding(&mut self) {
-        unsafe { wsel_endEncoding(self) }
+        unsafe {
+            self.wsel(sel_endEncoding);
+        }
     }
 
     pub fn insert_debug_signpost(&mut self, signpost: &cf::String) {
@@ -35,7 +37,7 @@ impl CommandEncoder {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn wsel_endEncoding(id: &mut ns::Id);
+    static sel_endEncoding: &'static crate::objc::Sel;
     fn wsel_insertDebugSignpost(id: &mut ns::Id, signpost: &cf::String);
 
 }

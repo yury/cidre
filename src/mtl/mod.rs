@@ -307,9 +307,11 @@ macro_rules! define_mtl {
         pub fn update_fence(&self, fence: &crate::mtl::Fence) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_updateFence(id: &crate::ns::Id, fence: &crate::mtl::Fence);
+                static sel_updateFence_a: &'static crate::objc::Sel;
             }
-            unsafe { wsel_updateFence(self, fence) }
+            unsafe { 
+                self.wsel_a(sel_updateFence_a, fence);
+            }
         }
     };
 
@@ -318,9 +320,11 @@ macro_rules! define_mtl {
         pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_waitForFence(id: &crate::ns::Id, fence: &crate::mtl::Fence);
+                static sel_waitForFence_a: &'static crate::objc::Sel;
             }
-            unsafe { wsel_waitForFence(self, fence) }
+            unsafe { 
+                self.wsel_a(sel_waitForFence_a, fence);
+            }
         }
     };
 
@@ -329,9 +333,11 @@ macro_rules! define_mtl {
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_useResource(id: &mut crate::ns::Id, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage);
+                static sel_useResource_usage: &'static crate::objc::Sel;
             }
-            unsafe { wsel_useResource(self, resource, usage) }
+            unsafe { 
+                self.wsel_ab(sel_useResource_usage, resource, usage)
+            }
         }
     };
 
@@ -340,14 +346,11 @@ macro_rules! define_mtl {
         pub fn use_resources(&mut self, resources: &[crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
-                fn wsel_useResources(
-                    id: &mut crate::ns::Id,
-                    resources: *const crate::mtl::Resource,
-                    count: usize,
-                    usage: crate::mtl::ResourceUsage,
-                );
+                static sel_useResources_count_usage: &'static crate::objc::Sel;
             }
-            unsafe { wsel_useResources(self, resources.as_ptr(), resources.len(), usage) }
+            unsafe { 
+                self.wsel_abc(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
+            }
         }
     };
 

@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::cf::{
     runtime::{Release, Retain},
@@ -33,6 +33,36 @@ impl Id {
     pub fn as_type_ref(&self) -> &Type {
         &self.0
     }
+
+    #[inline]
+    pub unsafe fn rsel<R>(&self, selector: &Sel) -> R {
+        let imp: unsafe extern fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
+        imp(self, selector)
+    }
+
+    #[inline]
+    pub unsafe fn wsel(&self, selector: &Sel) {
+        let imp: unsafe extern fn(&Id, &Sel) = transmute(objc_msgSend as *const c_void);
+        imp(self, selector)
+    }
+
+    #[inline]
+    pub unsafe fn wsel_a<A>(&self, selector: &Sel, a: A) {
+        let imp: unsafe extern fn(&Id, &Sel, A) = transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a)
+    }
+
+    #[inline]
+    pub unsafe fn wsel_ab<A, B>(&self, selector: &Sel, a: A, b: B) {
+        let imp: unsafe extern fn(&Id, &Sel, A, B) = transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b)
+    }
+
+    #[inline]
+    pub unsafe fn wsel_abc<A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) {
+        let imp: unsafe extern fn(&Id, &Sel, A, B, C) = transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c)
+    }
 }
 
 impl Retain for Id {
@@ -51,17 +81,31 @@ impl Release for Id {
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Sel(c_void);
+pub struct Sel(NonNull<c_void>);
 
 pub mod autorelease_pool;
 pub mod block;
 pub mod ns;
 pub use autorelease_pool::AutoreleasePoolPage;
 
+pub fn autoreleasepool<'a, T, F>(f: F) -> T
+where
+    F: FnOnce() -> T,
+    T: Clone,
+{
+    let _page = AutoreleasePoolPage::push();
+    f()
+}
+
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
     fn objc_release(obj: &mut Id);
+
+    // static objc_msgSend: *const c_void;
+
+    // #[link_name = "objc_msgSend"]
+    fn objc_msgSend(id: &Id, args:...) -> *const c_void;
 }
 
 #[macro_export]
