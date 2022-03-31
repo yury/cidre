@@ -45,6 +45,17 @@ impl Range {
     pub fn location_in_range(location: UInteger, range: Self) -> bool {
         !(location < range.location) && (location - range.location) < range.length
     }
+
+    /// ```
+    /// use cidre::{ns};
+    /// let a = ns::Range::new(0, 10);
+    /// assert!(a.contains(5));
+    /// assert!(!a.contains(10));
+    /// ```
+    #[inline]
+    pub fn contains(&self, location: UInteger) -> bool {
+        Range::location_in_range(location, *self)
+    }
 }
 
 #[link(name = "Foundation", kind = "framework")]
