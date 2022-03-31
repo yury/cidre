@@ -196,11 +196,7 @@ macro_rules! define_mtl {
     (set_label) => {
         #[inline]
         pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setLabel(id: &mut crate::ns::Id, value: Option<&crate::cf::String>);
-            }
-            unsafe { wsel_setLabel(self, value) }
+            crate::msg_send!(self, sel_setLabel, value)
         }
     };
 

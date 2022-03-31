@@ -234,17 +234,17 @@ rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
 
 // Shared
 
-NS_RETURNS_RETAINED
-rsel(copy_, id, label, NSString * _Nullable)
+//NS_RETURNS_RETAINED
+//rsel(copy_, id, label, NSString * _Nullable)
 
-NS_RETURNS_NOT_RETAINED
-rsel(get_, id, label, NSString * _Nullable)
+//NS_RETURNS_NOT_RETAINED
+//rsel(get_, id, label, NSString * _Nullable)
 
 
-wsel_a(, id, setLabel, NSString * _Nullable)
+//wsel_a(, id, setLabel, NSString * _Nullable)
 
-NS_RETURNS_NOT_RETAINED
-rsel(, id, device, id<MTLDevice>)
+//NS_RETURNS_NOT_RETAINED
+//rsel(, id, device, id<MTLDevice>)
 
 //@property (readwrite, nonatomic) MTLResourceOptions resourceOptions;
 rwsel(, id, resourceOptions, setResourceOptions, MTLResourceOptions)
@@ -690,6 +690,7 @@ SEL sel_enqueue;
 SEL sel_length;
 SEL sel_name;
 SEL sel_label;
+SEL sel_setLabel;
 SEL sel_setName;
 
 __attribute__((constructor))
@@ -716,6 +717,7 @@ static void mtl_initializer()
       sel_name = @selector(name);
       sel_label = @selector(label);
       sel_setName = @selector(setName:);
+      sel_setLabel = @selector(setLabel:);
 
       initialized = 1;
     }
