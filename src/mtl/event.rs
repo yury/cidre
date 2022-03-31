@@ -15,7 +15,3 @@ impl SharedEventHandle {
 define_obj_type!(SharedEvent(Event));
 
 impl SharedEvent {}
-
-extern "C" {
-    // - (MTLSharedEventHandle *)newSharedEventHandle;
-}

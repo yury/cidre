@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns::Id};
+use crate::{cf::runtime::Autoreleased, define_obj_type, ns::Id};
 
 define_obj_type!(SampleBufferAttachmentDescriptor(Id));
 
@@ -12,7 +12,7 @@ impl Descriptor {
     ///
     /// let bpd = mtl::BlitPassDescriptor::default();
     /// ```
-    pub fn default<'autoreleased>() -> &'autoreleased Descriptor {
+    pub fn default<'a>() -> Autoreleased<'a, Descriptor> {
         unsafe { MTLBlitPassDescriptor_blitPassDescriptor() }
     }
 
@@ -22,7 +22,7 @@ impl Descriptor {
 }
 
 extern "C" {
-    fn MTLBlitPassDescriptor_blitPassDescriptor<'autoreleased>() -> &'autoreleased Descriptor;
+    fn MTLBlitPassDescriptor_blitPassDescriptor<'a>() -> Autoreleased<'a, Descriptor>;
     fn MTLBlitPassDescriptor_sampleBufferAttachments(
         id: &Descriptor,
     ) -> &SampleBufferAttachmentDescriptorArray;

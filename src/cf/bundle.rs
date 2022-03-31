@@ -5,20 +5,6 @@ use super::Retained;
 define_cf_type!(Bundle(cf::Type));
 
 impl Bundle {
-    #[inline]
-    pub fn type_id() -> cf::TypeId {
-        unsafe { CFBundleGetTypeID() }
-    }
-
-    /// ```
-    /// use cidre::cf;
-    ///
-    /// let bundle = cf::Bundle::get_main().unwrap();
-    /// ```
-    pub fn get_main<'a>() -> Option<&'a Bundle> {
-        unsafe { CFBundleGetMainBundle() }
-    }
-
     /// ```
     /// use cidre::cf;
     ///
@@ -30,8 +16,22 @@ impl Bundle {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let bundle = cf::Bundle::get_main().unwrap();
+    /// ```
+    pub fn get_main<'a>() -> Option<&'a Bundle> {
+        unsafe { CFBundleGetMainBundle() }
+    }
+
     pub fn get_value_for_info_dictionary<'a>(&'a self, key: &cf::String) -> Option<&'a cf::Type> {
         unsafe { CFBundleGetValueForInfoDictionaryKey(self, key) }
+    }
+
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CFBundleGetTypeID() }
     }
 }
 

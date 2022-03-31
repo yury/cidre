@@ -92,7 +92,7 @@ pub use autorelease_pool::AutoreleasePoolPage;
 pub fn autoreleasepool<'a, T, F>(f: F) -> T
 where
     F: FnOnce() -> T,
-    T: Clone,
+    T: Clone, // Autoreleased doesn't implement Clone
 {
     let _page = AutoreleasePoolPage::push();
     f()
@@ -124,10 +124,7 @@ extern "C" {
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
     fn objc_release(obj: &mut Id);
 
-    // static objc_msgSend: *const c_void;
-
-    // #[link_name = "objc_msgSend"]
-    fn objc_msgSend(id: &Id, args: ...) -> *const c_void;
+    fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
 }
 
 #[macro_export]

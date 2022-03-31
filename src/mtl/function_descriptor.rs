@@ -1,17 +1,26 @@
-use crate::ns::Id;
-use crate::{cf, define_obj_type, msg_send};
+use crate::{
+    cf::{self, runtime::Autoreleased},
+    define_obj_type, msg_send, ns,
+};
 
-define_obj_type!(FunctionDescriptor(Id));
+define_obj_type!(FunctionDescriptor(ns::Id));
 
+#[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(usize)]
 pub enum FunctionOptions {
     None = 0,
     CompileToBinary = 1 << 0,
 }
 
+impl Default for FunctionOptions {
+    fn default() -> Self {
+        FunctionOptions::None
+    }
+}
+
 impl FunctionDescriptor {
     #[inline]
-    pub fn name<'copy>(&self) -> Option<cf::Retained<'copy, cf::String>> {
+    pub fn name(&self) -> Option<&cf::String> {
         msg_send!(self, sel_name)
     }
 
@@ -20,10 +29,10 @@ impl FunctionDescriptor {
         msg_send!(self, sel_setName, name)
     }
 
-    /// ```
+    /// ```rust
     /// use cidre::{cf, mtl};
     ///
-    /// let fd = mtl::FunctionDescriptor::default();
+    /// let mut fd = mtl::FunctionDescriptor::default();
     ///
     /// assert!(fd.name().is_none());
     ///
@@ -34,16 +43,14 @@ impl FunctionDescriptor {
     /// let actual_name = fd.name().unwrap();
     ///
     /// assert!(name.equal(&actual_name));
-    ///
+    /// ```
     #[inline]
-    pub fn default<'autorelease>() -> &'autorelease mut FunctionDescriptor {
+    pub fn default<'a>() -> Autoreleased<'a, FunctionDescriptor> {
         unsafe { MTLFunctionDescriptor_functionDescriptor() }
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLFunctionDescriptor_functionDescriptor<'autorelease>(
-    ) -> &'autorelease mut FunctionDescriptor;
-
+    fn MTLFunctionDescriptor_functionDescriptor<'a>() -> Autoreleased<'a, FunctionDescriptor>;
 }

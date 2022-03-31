@@ -97,6 +97,7 @@ impl Device {
         unsafe { rsel_readWriteTextureSupport(self) }
     }
 
+    /// Example
     /// ```
     /// use cidre::mtl;
     ///
