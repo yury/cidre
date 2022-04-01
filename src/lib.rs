@@ -23,6 +23,7 @@ pub mod os;
 pub mod sys;
 /// Video Toolbox
 pub mod vt;
+pub mod dispatch;
 
 #[cfg(test)]
 mod tests {
