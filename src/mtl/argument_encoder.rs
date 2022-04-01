@@ -1,5 +1,5 @@
 use crate::ns::Id;
-use crate::{define_mtl, define_obj_type};
+use crate::{define_mtl, define_obj_type, msg_send};
 
 use super::{Buffer, Texture};
 
@@ -9,29 +9,20 @@ impl ArgumentEncoder {
     define_mtl!(device, label, set_label);
 
     pub fn encoded_length(&self) -> usize {
-        unsafe { rsel_encodedLength(self) }
+        msg_send!(self, sel_encodedLength)
     }
 
     pub fn aligment(&self) -> usize {
-        unsafe { rsel_aligment(self) }
+        msg_send!(self, sel_aligment)
     }
 
     #[inline]
     pub fn set_argument_buffer(&mut self, buffer: Option<&Buffer>, offset: usize) {
-        unsafe { wsel_setArgumentBuffer(self, buffer, offset) }
+        msg_send!(self, sel_setArgumentBuffer_offset, buffer, offset)
     }
 
     #[inline]
     pub fn set_texture(&mut self, texture: Option<&Texture>, at_index: usize) {
-        unsafe { wsel_setTextureAtIndex(self, texture, at_index) }
+        msg_send!(self, sel_setTexture_atIndex, texture, at_index)
     }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_encodedLength(id: &Id) -> usize;
-    fn rsel_aligment(id: &Id) -> usize;
-    fn wsel_setArgumentBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize);
-    fn wsel_setTextureAtIndex(id: &mut Id, texture: Option<&Texture>, at_index: usize);
-
 }

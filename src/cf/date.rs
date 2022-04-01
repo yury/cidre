@@ -25,12 +25,12 @@ impl Date {
     }
 
     #[inline]
-    pub fn get_absolute_time(&self) -> AbsoluteTime {
+    pub fn absolute_time(&self) -> AbsoluteTime {
         unsafe { CFDateGetAbsoluteTime(self) }
     }
 
     #[inline]
-    pub fn get_time_interval_since_date(&self, other_date: &Date) -> TimeInterval {
+    pub fn time_interval_since_date(&self, other_date: &Date) -> TimeInterval {
         unsafe { CFDateGetTimeIntervalSinceDate(self, other_date) }
     }
 

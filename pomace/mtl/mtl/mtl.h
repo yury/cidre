@@ -401,18 +401,14 @@ rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncode
 
 #pragma mark - MTLArgumentsEncoder
 //@property (readonly) NSUInteger encodedLength;
-rsel(, id, encodedLength, NSUInteger)
+//rsel(, id, encodedLength, NSUInteger)
 
 //@property (readonly) NSUInteger alignment;
-rsel(, id, alignment, NSUInteger)
+//rsel(, id, alignment, NSUInteger)
 
 //@property (readonly) MTLFunctionOptions options API_AVAILABLE(macos(11.0), ios(14.0));
 rsel(, id<MTLFunction>, options, MTLFunctionOptions)
 
-//- (void)setArgumentBuffer:(nullable id <MTLBuffer>)argumentBuffer offset:(NSUInteger)offset;
-wsel_ab(, id, setArgumentBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger)
-//- (void)setTexture:(nullable id <MTLTexture>)texture atIndex:(NSUInteger)index;
-wsel_ab(, id, setTexture, id <MTLTexture> _Nullable, atIndex, NSUInteger)
 
 // FunctionDescriptor
 
@@ -696,12 +692,20 @@ SEL sel_height;
 SEL sel_setHeight;
 SEL sel_width;
 SEL sel_setWidth;
+//- (void)setTexture:(nullable id <MTLTexture>)texture atIndex:(NSUInteger)index;
+SEL sel_setTexture_atIndex;
+//- (void)setArgumentBuffer:(nullable id <MTLBuffer>)argumentBuffer offset:(NSUInteger)offset;
+SEL sel_setArgumentBuffer_offset;
+SEL sel_aligment;
+SEL sel_encodedLength;
+
 
 __attribute__((constructor))
 static void mtl_initializer()
 {
     static int initialized = 0;
     if (!initialized) {
+      
       sel_device = @selector(device);
       sel_commandBuffer = @selector(commandBuffer);
       sel_commandQueue = @selector(commandQueue);
@@ -726,6 +730,10 @@ static void mtl_initializer()
       sel_height = @selector(height);
       sel_setWidth = @selector(setWidth:);
       sel_setHeight = @selector(setHeight:);
+      sel_setTexture_atIndex = @selector(setTexture:atIndex:);
+      sel_setArgumentBuffer_offset = @selector(setArgumentBuffer:offset:);
+      sel_aligment = @selector(alignment);
+      sel_encodedLength = @selector(encodedLength);
 
 
       initialized = 1;
