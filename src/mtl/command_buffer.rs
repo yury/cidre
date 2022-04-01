@@ -61,7 +61,7 @@ impl CommandBuffer {
 
     #[inline]
     pub fn wait_untint_scheduled(&self) {
-        unsafe { wsel_waitUntilScheduled(self) }
+        msg_send!(self, sel_waitUntilScheduled)
     }
 
     #[inline]
@@ -98,7 +98,6 @@ impl CommandBuffer {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn wsel_waitUntilScheduled(id: &Id);
     fn sel_addScheduledHandler(id: &Id, rb: *const c_void);
     fn sel_addCompletedHandler(id: &Id, rb: *const c_void);
 }

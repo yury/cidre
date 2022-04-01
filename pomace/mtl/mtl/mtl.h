@@ -151,9 +151,9 @@ rsel(, id, length, NSUInteger)
 //- (void)enqueue;
 //wsel(, id, enqueue)
 //wsel(, id, commit)
-wsel(, id, waitUntilScheduled)
+//wsel(, id, waitUntilScheduled)
 //- (void)waitUntilCompleted;
-wsel(, id, waitUntilCompleted)
+//wsel(, id, waitUntilCompleted)
 
 #pragma mark - MTLDevice
 
@@ -532,9 +532,9 @@ rsel(, id, renderCommandEncoder, id<MTLRenderCommandEncoder> _Nullable)
 #pragma mark - MTLBlitCommandEncoder
 
 //- (void)updateFence:(id <MTLFence>)fence API_AVAILABLE(macos(10.13), ios(10.0));
-wsel_a(, id, updateFence, id<MTLFence>)
+//wsel_a(, id, updateFence, id<MTLFence>)
 //- (void)waitForFence:(id <MTLFence>)fence API_AVAILABLE(macos(10.13), ios(10.0));
-wsel_a(, id, waitForFence, id<MTLFence>)
+//wsel_a(, id, waitForFence, id<MTLFence>)
 
 //- (void)fillBuffer:(id<MTLBuffer>)buffer range:(NSRange)range value:(uint8_t)value;
 wsel_abc(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
@@ -674,6 +674,7 @@ SEL sel_commandQueue;
 SEL sel_commit;
 SEL sel_endEncoding;
 SEL sel_waitUntilCompleted;
+SEL sel_waitUntilScheduled;
 SEL sel_blitCommandEncoder;
 SEL sel_computeCommandEncoder;
 SEL sel_updateFence_a;
@@ -712,6 +713,7 @@ static void mtl_initializer()
       sel_commit = @selector(commit);
       sel_endEncoding = @selector(endEncoding);
       sel_waitUntilCompleted = @selector(waitUntilCompleted);
+      sel_waitUntilScheduled = @selector(waitUntilScheduled);
       sel_blitCommandEncoder = @selector(blitCommandEncoder);
       sel_computeCommandEncoder = @selector(computeCommandEncoder);
       sel_updateFence_a = @selector(updateFence:);
