@@ -4,7 +4,7 @@ use std::ptr::NonNull;
 
 use crate::cf::Retained;
 use crate::define_obj_type;
-use crate::dispatch::object::Object;
+use crate::dispatch::Object;
 
 use super::Function;
 

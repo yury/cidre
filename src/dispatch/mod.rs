@@ -2,7 +2,13 @@ pub mod base;
 pub use base::Function;
 
 pub mod object;
-pub use object::Object as DispatchObject;
+pub use object::Object;
+
+pub mod group;
+pub use group::Group;
+
+pub mod time;
+pub use time::Time;
 
 pub mod queue;
 pub use queue::Concurent as ConcurentQueue;
