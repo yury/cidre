@@ -11,8 +11,8 @@ pub use queue::Main as MainQueue;
 pub use queue::Queue;
 
 pub fn main() {
-  let id = std::thread::current().id();
-  println!("{:?}", id);
+    let id = std::thread::current().id();
+    println!("{:?}", id);
     unsafe { dispatch_main() }
 }
 

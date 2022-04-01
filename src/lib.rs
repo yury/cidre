@@ -11,6 +11,7 @@ pub mod cg;
 pub mod cm;
 /// Core Vieo
 pub mod cv;
+pub mod dispatch;
 /// IOSurface
 pub mod io;
 /// match
@@ -23,7 +24,6 @@ pub mod os;
 pub mod sys;
 /// Video Toolbox
 pub mod vt;
-pub mod dispatch;
 
 #[cfg(test)]
 mod tests {

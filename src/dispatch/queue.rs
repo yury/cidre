@@ -20,8 +20,7 @@ define_obj_type!(Attr(Object));
 pub enum AutoreleaseFrequency {
     Inherit = 0,
     WorkItem = 1,
-    Never = 2
-
+    Never = 2,
 }
 
 /// ```
@@ -32,14 +31,16 @@ pub enum AutoreleaseFrequency {
 /// q.as_type_ref().show();
 /// ```
 impl Queue {
-
     #[inline]
     pub fn new<'a>() -> Retained<'a, Queue> {
         Self::with_label_and_attrs(None, None)
     }
 
     #[inline]
-    pub fn with_label_and_attrs<'a>(label: Option<&CStr>, attr: Option<&Attr>) -> Retained<'a, Queue> {
+    pub fn with_label_and_attrs<'a>(
+        label: Option<&CStr>,
+        attr: Option<&Attr>,
+    ) -> Retained<'a, Queue> {
         unsafe {
             let label = label.map(|f| NonNull::new_unchecked(f.as_ptr() as *mut _));
             dispatch_queue_create(label, attr)
@@ -75,9 +76,15 @@ extern "C" {
 
     fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: Function);
     fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: Function);
-    fn dispatch_queue_create<'a>(label: Option<NonNull<c_char>>, attr: Option<&Attr>) -> Retained<'a, Queue>;
+    fn dispatch_queue_create<'a>(
+        label: Option<NonNull<c_char>>,
+        attr: Option<&Attr>,
+    ) -> Retained<'a, Queue>;
 
-    fn dispatch_queue_attr_make_with_autorelease_frequency<'a>(attr: Option<&Attr>, frequency: AutoreleaseFrequency) -> Retained<'a, Attr>;
+    fn dispatch_queue_attr_make_with_autorelease_frequency<'a>(
+        attr: Option<&Attr>,
+        frequency: AutoreleaseFrequency,
+    ) -> Retained<'a, Attr>;
 }
 
 #[cfg(test)]
