@@ -26,6 +26,7 @@ impl Semaphore {
   }
 }
 
+#[link(name = "System", kind = "dylib")]
 extern "C" {
   fn dispatch_semaphore_create<'a>(value: isize) -> Retained<'a, Semaphore>;
   fn dispatch_semaphore_wait(sema: &Semaphore, timeout: super::Time) -> isize;

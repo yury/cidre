@@ -27,14 +27,7 @@ pub fn main() {
     unsafe { dispatch_main() }
 }
 
-#[cfg_attr(
-    any(target_os = "macos", target_os = "ios"),
-    link(name = "System", kind = "dylib")
-)]
-#[cfg_attr(
-    not(any(target_os = "macos", target_os = "ios")),
-    link(name = "dispatch", kind = "dylib")
-)]
+#[link(name = "System", kind = "dylib")]
 extern "C" {
     fn dispatch_main();
 }

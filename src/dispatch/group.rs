@@ -11,6 +11,7 @@ impl Group {
   }
 }
 
+#[link(name = "System", kind = "dylib")]
 extern "C" {
   fn dispatch_group_create<'a>() -> Retained<'a, Group>;
 }

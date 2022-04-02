@@ -16,6 +16,7 @@ impl Object {
     }
 }
 
+#[link(name = "System", kind = "dylib")]
 extern "C" {
     fn dispatch_activate(object: &Object);
     fn dispatch_suspend(object: &Object);
