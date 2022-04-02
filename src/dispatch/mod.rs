@@ -11,10 +11,15 @@ pub mod time;
 pub use time::Time;
 
 pub mod queue;
+pub use queue::Attr;
+pub use queue::AutoreleaseFrequency;
 pub use queue::Concurent as ConcurentQueue;
 pub use queue::Global as GlobalQueue;
 pub use queue::Main as MainQueue;
 pub use queue::Queue;
+
+pub mod semaphor;
+pub use semaphor::Semaphore;
 
 pub fn main() {
     let id = std::thread::current().id();
