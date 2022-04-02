@@ -1,3 +1,5 @@
+use super::KernReturn;
+
 
 #[derive(Default)]
 #[repr(C)]
@@ -14,13 +16,22 @@ impl TimeBaseInfo {
     /// assert_eq!(tbi.numer, 0);
     /// assert_eq!(tbi.denom, 0);
     /// 
-    /// tbi.fill(); 
+    /// assert!(tbi.fill().is_ok()); 
     /// 
     /// assert!(tbi.numer > 0);
     /// assert!(tbi.denom > 0);
     /// ```
-    pub fn fill(&mut self) -> i32 {
+    #[inline]
+    pub fn fill(&mut self) -> KernReturn {
         unsafe { mach_timebase_info(self) }
+    }
+
+    #[inline]
+    pub fn new() -> Self {
+      let mut res = Self::default();
+      let r = res.fill();
+      debug_assert!(r.is_ok());
+      res
     }
 }
 
@@ -50,5 +61,5 @@ extern "C" {
     fn mach_continuous_time() -> u64;
     fn mach_continuous_approximate_time() -> u64;
 
-    fn mach_timebase_info(info: &mut TimeBaseInfo) -> i32;
+    fn mach_timebase_info(info: &mut TimeBaseInfo) -> KernReturn;
 }

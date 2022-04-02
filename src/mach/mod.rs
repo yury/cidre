@@ -5,11 +5,9 @@ pub use time::approximate_time;
 pub use time::continuous_approximate_time;
 pub use time::continuous_time;
 
+pub mod kern_return;
+pub use kern_return::KernReturn;
+
 pub mod port;
-use std::os::raw::c_int;
 
 pub use port::MachPort;
-
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-#[repr(transparent)]
-pub struct KernReturn(c_int);
