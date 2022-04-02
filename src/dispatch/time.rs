@@ -9,17 +9,15 @@ impl Time {
     pub const FOREVER: Time = Time(!0);
 
     pub fn when_delta_nanos(when: Time, delta: i64) -> Time {
-      unsafe {
-        dispatch_time(when, delta)
-      }
+        unsafe { dispatch_time(when, delta) }
     }
 
     pub fn when(when: Time, delta: Duration) -> Time {
-      unsafe {dispatch_time(when, delta.as_nanos() as _) }
+        unsafe { dispatch_time(when, delta.as_nanos() as _) }
     }
 }
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
-  fn dispatch_time(when: Time, delta: i64) -> Time;
+    fn dispatch_time(when: Time, delta: i64) -> Time;
 }

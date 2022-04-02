@@ -3,7 +3,7 @@ use crate::{define_obj_type, objc::Id};
 define_obj_type!(Object(Id));
 
 impl Object {
-    pub fn active(&self) {
+    pub fn activate(&self) {
         unsafe { dispatch_activate(self) }
     }
 

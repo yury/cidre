@@ -1,5 +1,5 @@
 use std::ffi::{c_void, CStr};
-use std::os::raw::{c_char};
+use std::os::raw::c_char;
 use std::ptr::NonNull;
 
 use crate::cf::Retained;
@@ -83,9 +83,7 @@ impl Queue {
 
     #[inline]
     pub fn after_f(&self, when: super::Time, context: *mut c_void, work: Function) {
-        unsafe {
-            dispatch_after_f(when, self, context, work)
-        }
+        unsafe { dispatch_after_f(when, self, context, work) }
     }
 
     #[inline]
@@ -158,10 +156,12 @@ impl Attr {
     }
 
     #[inline]
-    pub fn make_with_qos_class<'a>(attr: Option<&Attr>, qos_class: QOSClass, relative_priority: i32) -> Retained<'a, Attr> {
-        unsafe {
-            dispatch_queue_attr_make_with_qos_class(attr, qos_class, relative_priority)
-        }
+    pub fn make_with_qos_class<'a>(
+        attr: Option<&Attr>,
+        qos_class: QOSClass,
+        relative_priority: i32,
+    ) -> Retained<'a, Attr> {
+        unsafe { dispatch_queue_attr_make_with_qos_class(attr, qos_class, relative_priority) }
     }
 
     #[inline]
@@ -192,13 +192,22 @@ extern "C" {
     fn dispatch_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function);
 
     fn dispatch_queue_attr_make_initially_inactive<'a>(attr: Option<&Attr>) -> Retained<'a, Attr>;
-    fn dispatch_queue_attr_make_with_qos_class<'a>(attr: Option<&Attr>, qos_class: QOSClass, relative_priority: i32)-> Retained<'a, Attr>;
+    fn dispatch_queue_attr_make_with_qos_class<'a>(
+        attr: Option<&Attr>,
+        qos_class: QOSClass,
+        relative_priority: i32,
+    ) -> Retained<'a, Attr>;
     fn dispatch_queue_attr_make_with_autorelease_frequency<'a>(
         attr: Option<&Attr>,
         frequency: AutoreleaseFrequency,
     ) -> Retained<'a, Attr>;
 
-    fn dispatch_after_f(when: crate::dispatch::Time, queue: &Queue, context: *mut c_void, work: Function);
+    fn dispatch_after_f(
+        when: crate::dispatch::Time,
+        queue: &Queue,
+        context: *mut c_void,
+        work: Function,
+    );
     fn dispatch_barrier_async_f(queue: &Queue, context: *mut c_void, work: Function);
     fn dispatch_barrier_sync_f(queue: &Queue, context: *mut c_void, work: Function);
     fn dispatch_barrier_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function);
