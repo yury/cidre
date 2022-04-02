@@ -1,5 +1,5 @@
 use std::ffi::{c_void, CStr};
-use std::os::raw::c_char;
+use std::os::raw::{c_char, c_long};
 use std::ptr::NonNull;
 
 use crate::cf::Retained;
@@ -26,6 +26,16 @@ impl QOSClass {
     pub const UNSPECIFIED: Self = Self(0x00);
 
     pub const QOS_MIN_RELATIVE_PRIORITY: i32 = -15;
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Priority(pub c_long);
+
+impl Priority {
+    pub const HIGH: Self = Self(2);
+    pub const DEFAULT: Self = Self(0);
+    pub const LOW: Self = Self(-2);
+    pub const BACKGROUND: Self =  Self(-1 << 15);
 }
 
 #[repr(usize)]
@@ -62,6 +72,44 @@ impl Queue {
     #[inline]
     pub fn main<'a>() -> &'a Queue {
         Main::default()
+    }
+
+    /// ```
+    /// use cidre::dispatch;
+    /// 
+    /// let q = dispatch::Queue::global_with_qos(dispatch::QOSClass::BACKGROUND).unwrap();
+    /// 
+    /// ```
+    #[inline]
+    pub fn global_with_qos<'a>(qos: QOSClass) -> Option<&'a Global> {
+        unsafe {
+            Self::global_with_flags(qos.0 as _, 0)
+        }
+    }
+
+    /// ```
+    /// use cidre::dispatch;
+    /// 
+    /// let q = dispatch::Queue::global_with_priority(dispatch::QueuePriority::BACKGROUND).unwrap();
+    /// 
+    /// ```
+    #[inline]
+    pub fn global_with_priority<'a>(priority: Priority) -> Option<&'a Global> {
+        unsafe {
+            Self::global_with_flags(priority.0 as _, 0)
+        }
+    }
+
+    #[inline]
+    pub fn global<'a>(identifier: isize) -> Option<&'a Global> {
+        unsafe {
+            Self::global_with_flags(identifier, 0)
+        }
+    }
+
+    #[inline]
+    pub unsafe fn global_with_flags<'a>(identifier: isize, flags: usize) -> Option<&'a Global> {
+        dispatch_get_global_queue(identifier, flags)
     }
 
     #[inline]
@@ -216,6 +264,7 @@ extern "C" {
     fn dispatch_barrier_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function);
 
     fn dispatch_group_async_f(group: &super::Group, queue: &Queue, context: *mut c_void, work: Function);
+    fn dispatch_get_global_queue<'a>(identifier: isize, flags: usize) -> Option<&'a Global>;
 }
 
 #[cfg(test)]
@@ -245,6 +294,21 @@ mod tests {
 
         q.sync_f(std::ptr::null_mut(), foo);
 
+        q.async_and_wait_f(std::ptr::null_mut(), foo);
+    }
+
+    #[test]
+    fn test_global_queue() {
+        let q = dispatch::Queue::global_with_qos(dispatch::QOSClass::BACKGROUND).unwrap();
+
+        q.as_type_ref().show();
+        q.sync_f(std::ptr::null_mut(), foo);
+        q.async_and_wait_f(std::ptr::null_mut(), foo);
+
+        let q = dispatch::Queue::global_with_priority(dispatch::QueuePriority::HIGH).unwrap();
+
+        q.as_type_ref().show();
+        q.sync_f(std::ptr::null_mut(), foo);
         q.async_and_wait_f(std::ptr::null_mut(), foo);
     }
 }
