@@ -16,9 +16,9 @@ pub use queue::AutoreleaseFrequency;
 pub use queue::Concurent as ConcurentQueue;
 pub use queue::Global as GlobalQueue;
 pub use queue::Main as MainQueue;
-pub use queue::Queue;
-pub use queue::QOSClass;
 pub use queue::Priority as QueuePriority;
+pub use queue::QOSClass;
+pub use queue::Queue;
 
 pub mod semaphor;
 pub use semaphor::Semaphore;

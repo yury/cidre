@@ -101,6 +101,7 @@ where
 
 #[macro_export]
 macro_rules! msg_send {
+    // TODO: we should pass name and kind
     ($self:ident, $sel:ident, $a:ident, $b:ident) => {{
         #[link(name = "mtl", kind = "static")]
         extern "C" {

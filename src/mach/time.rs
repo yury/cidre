@@ -1,6 +1,5 @@
 use super::KernReturn;
 
-
 #[derive(Default)]
 #[repr(C)]
 pub struct TimeBaseInfo {
@@ -11,13 +10,13 @@ pub struct TimeBaseInfo {
 impl TimeBaseInfo {
     /// ```
     /// use cidre::mach;
-    /// 
+    ///
     /// let mut tbi = mach::TimeBaseInfo::default();
     /// assert_eq!(tbi.numer, 0);
     /// assert_eq!(tbi.denom, 0);
-    /// 
-    /// assert!(tbi.fill().is_ok()); 
-    /// 
+    ///
+    /// assert!(tbi.fill().is_ok());
+    ///
     /// assert!(tbi.numer > 0);
     /// assert!(tbi.denom > 0);
     /// ```
@@ -28,10 +27,10 @@ impl TimeBaseInfo {
 
     #[inline]
     pub fn new() -> Self {
-      let mut res = Self::default();
-      let r = res.fill();
-      debug_assert!(r.is_ok());
-      res
+        let mut res = Self::default();
+        let r = res.fill();
+        debug_assert!(r.is_ok());
+        res
     }
 }
 

@@ -4,7 +4,7 @@ use std::ptr::NonNull;
 
 use crate::cf::Retained;
 use crate::define_obj_type;
-use crate::dispatch::{Object, Function};
+use crate::dispatch::{Function, Object};
 
 define_obj_type!(Queue(Object));
 define_obj_type!(Global(Queue));
@@ -35,7 +35,7 @@ impl Priority {
     pub const HIGH: Self = Self(2);
     pub const DEFAULT: Self = Self(0);
     pub const LOW: Self = Self(-2);
-    pub const BACKGROUND: Self =  Self(-1 << 15);
+    pub const BACKGROUND: Self = Self(-1 << 15);
 }
 
 #[repr(usize)]
@@ -76,35 +76,29 @@ impl Queue {
 
     /// ```
     /// use cidre::dispatch;
-    /// 
+    ///
     /// let q = dispatch::Queue::global_with_qos(dispatch::QOSClass::BACKGROUND).unwrap();
-    /// 
+    ///
     /// ```
     #[inline]
     pub fn global_with_qos<'a>(qos: QOSClass) -> Option<&'a Global> {
-        unsafe {
-            Self::global_with_flags(qos.0 as _, 0)
-        }
+        unsafe { Self::global_with_flags(qos.0 as _, 0) }
     }
 
     /// ```
     /// use cidre::dispatch;
-    /// 
+    ///
     /// let q = dispatch::Queue::global_with_priority(dispatch::QueuePriority::BACKGROUND).unwrap();
-    /// 
+    ///
     /// ```
     #[inline]
     pub fn global_with_priority<'a>(priority: Priority) -> Option<&'a Global> {
-        unsafe {
-            Self::global_with_flags(priority.0 as _, 0)
-        }
+        unsafe { Self::global_with_flags(priority.0 as _, 0) }
     }
 
     #[inline]
     pub fn global<'a>(identifier: isize) -> Option<&'a Global> {
-        unsafe {
-            Self::global_with_flags(identifier, 0)
-        }
+        unsafe { Self::global_with_flags(identifier, 0) }
     }
 
     #[inline]
@@ -149,9 +143,7 @@ impl Queue {
 
     #[inline]
     pub fn group_async_f(&self, group: &super::Group, context: *mut c_void, work: Function) {
-        unsafe {
-            dispatch_group_async_f(group, self, context, work)
-        }
+        unsafe { dispatch_group_async_f(group, self, context, work) }
     }
 }
 
@@ -263,7 +255,12 @@ extern "C" {
     fn dispatch_barrier_sync_f(queue: &Queue, context: *mut c_void, work: Function);
     fn dispatch_barrier_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function);
 
-    fn dispatch_group_async_f(group: &super::Group, queue: &Queue, context: *mut c_void, work: Function);
+    fn dispatch_group_async_f(
+        group: &super::Group,
+        queue: &Queue,
+        context: *mut c_void,
+        work: Function,
+    );
     fn dispatch_get_global_queue<'a>(identifier: isize, flags: usize) -> Option<&'a Global>;
 }
 

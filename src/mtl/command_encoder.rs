@@ -24,6 +24,7 @@ define_obj_type!(CommandEncoder(ns::Id));
 impl CommandEncoder {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
+    #[inline]
     pub fn end_encoding(&mut self) {
         msg_send!(self, sel_endEncoding)
     }

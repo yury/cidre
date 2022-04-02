@@ -50,6 +50,5 @@ fn main() {
     };
 
     xc_build("mtl", sdk, arch, configuration);
-    // xc_build("dispatch", sdk, arch, configuration);
     // xc_build("sc", sdk, arch, configuration);
 }

@@ -8,6 +8,7 @@ use crate::objc::block::CompletionHandlerA;
 
 use super::{BlitCommandEncoder, CommandQueue, ComputeCommandEncoder};
 
+#[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
 pub enum Status {
     NotEnqueued = 0,
@@ -18,6 +19,7 @@ pub enum Status {
     Error = 5,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
 pub enum Error {
     None = 0,
