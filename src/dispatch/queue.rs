@@ -4,9 +4,7 @@ use std::ptr::NonNull;
 
 use crate::cf::Retained;
 use crate::define_obj_type;
-use crate::dispatch::Object;
-
-use super::Function;
+use crate::dispatch::{Object, Function};
 
 define_obj_type!(Queue(Object));
 define_obj_type!(Global(Queue));
@@ -100,6 +98,13 @@ impl Queue {
     pub fn barrier_async_and_waitf(&self, context: *mut c_void, work: Function) {
         unsafe { dispatch_barrier_async_and_wait_f(self, context, work) }
     }
+
+    #[inline]
+    pub fn group_async_f(&self, group: &super::Group, context: *mut c_void, work: Function) {
+        unsafe {
+            dispatch_group_async_f(group, self, context, work)
+        }
+    }
 }
 
 impl Main {
@@ -110,8 +115,6 @@ impl Main {
 }
 
 impl Attr {
-    // pub const QUEUE_SERIAL: Option<Self> = None;
-
     #[inline]
     pub fn serial<'a>() -> Option<&'a Attr> {
         None
@@ -211,6 +214,8 @@ extern "C" {
     fn dispatch_barrier_async_f(queue: &Queue, context: *mut c_void, work: Function);
     fn dispatch_barrier_sync_f(queue: &Queue, context: *mut c_void, work: Function);
     fn dispatch_barrier_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function);
+
+    fn dispatch_group_async_f(group: &super::Group, queue: &Queue, context: *mut c_void, work: Function);
 }
 
 #[cfg(test)]
