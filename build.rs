@@ -7,7 +7,7 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     out_lib_dir.push(pomace);
 
     let status = Command::new("xcodebuild")
-        .args(&["-project", &format!("./pomace/{pomace}/{pomace}.xcodeproj")])
+        .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
         .args(&["-scheme", pomace])
         .args(&["-sdk", &sdk])
         .args(&["-arch", &arch])
@@ -50,5 +50,5 @@ fn main() {
     };
 
     xc_build("mtl", sdk, arch, configuration);
-    // xc_build("sc", sdk, arch, configuration);
+    xc_build("sc", sdk, arch, configuration);
 }
