@@ -9,5 +9,8 @@ pub use color_space::ColorRenderingIntent;
 pub use color_space::ColorSpace;
 pub use color_space::ColorSpaceModel;
 
+pub mod color;
+pub use color::Color;
+
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}

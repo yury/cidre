@@ -1,4 +1,4 @@
-use crate::{cf::Retained, cm, cv, define_obj_type, objc::Id, os};
+use crate::{cf::Retained, cm, cv, define_obj_type, objc::Id, os, cg};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
@@ -35,6 +35,7 @@ impl Configuration {
     /// cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
     /// cfg.set_pixel_format(cv::PixelFormatType::_32BGRA);
     /// cfg.set_scales_to_fit(false);
+    /// cfg.set_shows_cursor(false);
     ///
     /// ```
     pub fn new<'new>() -> Retained<'new, Configuration> {
@@ -84,6 +85,14 @@ impl Configuration {
     pub fn set_scales_to_fit(&mut self, value: bool) {
         unsafe { wsel_setScalesToFit(self, value) }
     }
+
+    pub fn shows_cursor(&self) -> bool {
+        unsafe { rsel_showsCursor(self) }
+    }
+
+    pub fn set_shows_cursor(&mut self, value: bool) {
+        unsafe { wsel_setShowsCursor(self, value) }
+    }
 }
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
@@ -105,4 +114,10 @@ extern "C" {
 
     fn rsel_scalesToFit(id: &Id) -> bool;
     fn wsel_setScalesToFit(id: &Id, value: bool);
+
+    fn rsel_showsCursor(id: &Id) -> bool;
+    fn wsel_setShowsCursor(id: &Id, value: bool);
+
+    // rwsel(sc_, SCStreamConfiguration *, backgroundColor, setBackgroundColor, CGColorRef)
+    fn rsel_backgroundColor(id: &Id) -> cg::Color;
 }

@@ -54,5 +54,5 @@ fn main() {
         xc_build("sc", sdk, arch, configuration);
     }
 
-    println!("cargo:rerun-if-changed=./pomace");
+    println!("cargo:rerun-if-changed=./pomace/");
 }

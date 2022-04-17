@@ -20,6 +20,14 @@ rwsel(, id, minimumFrameInterval, setMinimumFrameInterval, CMTime)
 rwsel(sc_, SCStreamConfiguration *, pixelFormat, setPixelFormat, OSType)
 //@property(nonatomic, assign) BOOL scalesToFit;
 rwsel(, id, scalesToFit, setScalesToFit, BOOL)
+// @property(nonatomic, assign) BOOL showsCursor;
+rwsel(, id, showsCursor, setShowsCursor, BOOL)
+// @property(nonatomic, assign) CGColorRef backgroundColor;
+rwsel(sc_, SCStreamConfiguration *, backgroundColor, setBackgroundColor, CGColorRef)
+//@property(nonatomic, assign) CGRect sourceRect;
+rwsel(_, id, sourceRect, setSourceRect, CGRect)
+//@property(nonatomic, assign) CGRect destinationRect;
+rwsel(_, id, destinationRect, setDestinationRect, CGRect)
 
 __attribute__((constructor))
 static void cs_initializer()
