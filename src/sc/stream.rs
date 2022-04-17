@@ -1,4 +1,4 @@
-use crate::{cf::Retained, cm, cv, define_obj_type, objc::Id, os, cg};
+use crate::{cf::Retained, cg, cm, cv, define_obj_type, objc::Id, os};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
@@ -93,6 +93,13 @@ impl Configuration {
     pub fn set_shows_cursor(&mut self, value: bool) {
         unsafe { wsel_setShowsCursor(self, value) }
     }
+    pub fn background_color(&self) -> cg::Color {
+        unsafe { rsel_backgroundColor(self) }
+    }
+
+    pub fn set_background_color(&mut self, value: cg::Color) {
+        unsafe { wsel_setBackgroundColor(self, value) }
+    }
 }
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
@@ -118,6 +125,6 @@ extern "C" {
     fn rsel_showsCursor(id: &Id) -> bool;
     fn wsel_setShowsCursor(id: &Id, value: bool);
 
-    // rwsel(sc_, SCStreamConfiguration *, backgroundColor, setBackgroundColor, CGColorRef)
     fn rsel_backgroundColor(id: &Id) -> cg::Color;
+    fn wsel_setBackgroundColor(id: &Id, value: cg::Color);
 }
