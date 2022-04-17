@@ -16,6 +16,11 @@ rwsel(sc_, SCStreamConfiguration *, width, setWidth, size_t)
 rwsel(sc_, SCStreamConfiguration *, height, setHeight, size_t)
 rwsel(, id, minimumFrameInterval, setMinimumFrameInterval, CMTime)
 
+//@property(nonatomic, assign) OSType pixelFormat;
+rwsel(sc_, SCStreamConfiguration *, pixelFormat, setPixelFormat, OSType)
+//@property(nonatomic, assign) BOOL scalesToFit;
+rwsel(, id, scalesToFit, setScalesToFit, BOOL)
+
 __attribute__((constructor))
 static void cs_initializer()
 {

@@ -96,13 +96,16 @@ impl PixelBuffer {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct PixelFormatType(os::Type);
+pub struct PixelFormatType(pub os::Type);
 
 impl PixelFormatType {
+    // 'l10r': Packed Little Endian ARGB2101010
     pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
     pub const _32BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
     pub const _420_YP_CB_CR8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
     pub const _420_YP_CB_CR8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
+
+    pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r"));     /* little-endian ARGB2101010 full-range ARGB */
 }
 
 extern "C" {
