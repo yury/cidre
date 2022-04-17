@@ -6,5 +6,6 @@ pub use stream::OutputType;
 pub use stream::Status;
 pub use stream::Stream;
 
-
 pub mod shareable_content;
+
+pub mod error;

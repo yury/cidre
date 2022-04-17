@@ -40,6 +40,7 @@
 		D2520CFC280BFC4A00FD6562 /* libsc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2520CFE280BFC4A00FD6562 /* sc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sc.h; sourceTree = "<group>"; };
 		D2520CFF280BFC4A00FD6562 /* sc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sc.m; sourceTree = "<group>"; };
+		D2520D05280C502500FD6562 /* macro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = macro.h; sourceTree = "<group>"; };
 		D2FBEBF727CB653200FD974A /* libmtl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmtl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2FBEBFA27CB653200FD974A /* mtl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mtl.h; sourceTree = "<group>"; };
 		D2FBEBFB27CB653200FD974A /* mtl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mtl.m; sourceTree = "<group>"; };
@@ -75,6 +76,7 @@
 		D2FBEBEE27CB653200FD974A = {
 			isa = PBXGroup;
 			children = (
+				D2520D05280C502500FD6562 /* macro.h */,
 				D2FBEBF927CB653200FD974A /* mtl */,
 				D2520CFD280BFC4A00FD6562 /* sc */,
 				D2FBEBF827CB653200FD974A /* Products */,
@@ -197,10 +199,8 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FD6ZML48V9;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -211,10 +211,8 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FD6ZML48V9;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
