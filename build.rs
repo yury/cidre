@@ -24,7 +24,6 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     let s = out_lib_dir.to_str().unwrap();
 
     println!("cargo:rustc-link-search=native={s}");
-    
 
     assert!(status.success());
 }

@@ -184,7 +184,6 @@ pub use sampler::MinMagFilter as SamplerMinMagFilter;
 pub use sampler::MipFilter as SamplerMipFilter;
 pub use sampler::State as SamplerState;
 
-
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

@@ -105,7 +105,7 @@ impl PixelFormatType {
     pub const _420_YP_CB_CR8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
     pub const _420_YP_CB_CR8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
 
-    pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r"));     /* little-endian ARGB2101010 full-range ARGB */
+    pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
 }
 
 extern "C" {

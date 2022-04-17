@@ -18,8 +18,10 @@ pub enum OutputType {
 }
 
 define_obj_type!(ContentFilter(Id));
+
+impl ContentFilter {}
+
 define_obj_type!(Configuration(Id));
-define_obj_type!(Stream(Id));
 
 impl Configuration {
     /// ```
@@ -139,3 +141,5 @@ extern "C" {
     fn rsel_sourceRect(id: &Id) -> cg::Rect;
     fn wsel_setSourceRect(id: &Id, value: cg::Rect);
 }
+
+define_obj_type!(Stream(Id));
