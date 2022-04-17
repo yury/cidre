@@ -100,6 +100,14 @@ impl Configuration {
     pub fn set_background_color(&mut self, value: cg::Color) {
         unsafe { wsel_setBackgroundColor(self, value) }
     }
+
+    pub fn source_rect(&self) -> cg::Rect {
+        unsafe { rsel_sourceRect(self) }
+    }
+
+    pub fn set_source_rect(&mut self, value: cg::Rect) {
+        unsafe { wsel_setSourceRect(self, value) }
+    }
 }
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
@@ -127,4 +135,7 @@ extern "C" {
 
     fn rsel_backgroundColor(id: &Id) -> cg::Color;
     fn wsel_setBackgroundColor(id: &Id, value: cg::Color);
+
+    fn rsel_sourceRect(id: &Id) -> cg::Rect;
+    fn wsel_setSourceRect(id: &Id, value: cg::Rect);
 }

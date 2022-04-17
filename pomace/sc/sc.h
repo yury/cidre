@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - SCStreamConfiguration
+
 NS_RETURNS_RETAINED csel(, SCStreamConfiguration, new, SCStreamConfiguration *)
 
 rwsel(sc_, SCStreamConfiguration *, width, setWidth, size_t)
