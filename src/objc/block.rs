@@ -1,4 +1,4 @@
-use std::{ffi::c_void};
+use std::ffi::c_void;
 
 use super::Class;
 
@@ -27,7 +27,6 @@ pub struct CopyDispose<L> {
     pub dispose: extern "C" fn(liteal: *mut L),
 }
 
-
 impl<'a, F> Literal<'a, NoCopyDispose, F>
 where
     F: Fn(),
@@ -47,9 +46,9 @@ where
             isa: unsafe { _NSConcreteStackBlock },
             flags: Flags::NONE,
             reserved: 0,
-            invoke: Self::invoke ,
+            invoke: Self::invoke,
             descriptor: &Self::DESCRIPTOR,
-            func: f
+            func: f,
         };
 
         literal
@@ -119,7 +118,6 @@ extern "C" {
     static _NSConcreteStackBlock: &'static Class;
 }
 
-
 #[cfg(test)]
 mod tests {
 
@@ -127,7 +125,6 @@ mod tests {
 
     #[test]
     fn test_simple_block() {
-
         let b = Literal::new(|| {
             println!("nice");
         });
