@@ -102,8 +102,8 @@ where
 #[macro_export]
 macro_rules! msg_send {
     // TODO: we should pass name and kind
-    ($self:ident, $sel:ident, $a:ident, $b:ident) => {{
-        #[link(name = "mtl", kind = "static")]
+    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident) => {{
+        #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
@@ -111,8 +111,8 @@ macro_rules! msg_send {
         unsafe { $self.sel_ab($sel, $a, $b) }
     }};
 
-    ($self:ident, $sel:ident, $a:ident) => {{
-        #[link(name = "mtl", kind = "static")]
+    ($lib:literal, $self:ident, $sel:ident, $a:ident) => {{
+        #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
@@ -120,8 +120,8 @@ macro_rules! msg_send {
         unsafe { $self.sel_a($sel, $a) }
     }};
 
-    ($self:ident, $sel:ident) => {{
-        #[link(name = "mtl", kind = "static")]
+    ($lib:literal, $self:ident, $sel:ident) => {{
+        #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }

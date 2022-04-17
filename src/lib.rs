@@ -25,6 +25,9 @@ pub mod sys;
 /// Video Toolbox
 pub mod vt;
 
+#[cfg(target_os = "macos")]
+pub mod sc;
+
 #[cfg(test)]
 mod tests {
     use crate::cf;

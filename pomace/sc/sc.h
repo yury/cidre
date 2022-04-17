@@ -5,8 +5,5 @@
 //  Created by Yury Korolev on 17.04.2022.
 //
 
-#import <Foundation/Foundation.h>
+#import <ScreenCaptureKit/ScreenCaptureKit.h>
 
-@interface sc : NSObject
-
-@end

@@ -48,27 +48,27 @@ impl CommandBuffer {
 
     #[inline]
     pub fn command_queue(&self) -> &CommandQueue {
-        msg_send!(self, sel_commandQueue)
+        msg_send!("mtl", self, sel_commandQueue)
     }
 
     #[inline]
     pub fn enqueue(&self) {
-        msg_send!(self, sel_enqueue)
+        msg_send!("mtl", self, sel_enqueue)
     }
 
     #[inline]
     pub fn commit(&self) {
-        msg_send!(self, sel_commit)
+        msg_send!("mtl", self, sel_commit)
     }
 
     #[inline]
     pub fn wait_untint_scheduled(&self) {
-        msg_send!(self, sel_waitUntilScheduled)
+        msg_send!("mtl", self, sel_waitUntilScheduled)
     }
 
     #[inline]
     pub fn wait_until_completed(&self) {
-        msg_send!(self, sel_waitUntilCompleted)
+        msg_send!("mtl", self, sel_waitUntilCompleted)
     }
 
     pub fn add_scheduled_handler<B>(&self, block: B)
@@ -87,14 +87,14 @@ impl CommandBuffer {
 
     #[inline]
     pub fn blit_command_encoder<'new>(&self) -> Option<Autoreleased<'new, BlitCommandEncoder>> {
-        msg_send!(self, sel_blitCommandEncoder)
+        msg_send!("mtl", self, sel_blitCommandEncoder)
     }
 
     #[inline]
     pub fn compute_command_encoder<'new>(
         &self,
     ) -> Option<Autoreleased<'new, ComputeCommandEncoder>> {
-        msg_send!(self, sel_computeCommandEncoder)
+        msg_send!("mtl", self, sel_computeCommandEncoder)
     }
 }
 

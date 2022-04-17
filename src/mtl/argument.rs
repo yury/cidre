@@ -153,6 +153,6 @@ define_obj_type!(Argument(Id));
 
 impl Argument {
     pub fn name(&self) -> &cf::String {
-        msg_send!(self, sel_name)
+        msg_send!("mtl", self, sel_name)
     }
 }

@@ -12,6 +12,6 @@ impl CommandQueue {
 
     #[inline]
     pub fn command_buffer<'pool>(&self) -> Option<Autoreleased<'pool, CommandBuffer>> {
-        msg_send!(self, sel_commandBuffer)
+        msg_send!("mtl", self, sel_commandBuffer)
     }
 }

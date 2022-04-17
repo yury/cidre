@@ -122,7 +122,7 @@ impl Device {
     ///
     #[inline]
     pub fn command_queue<'create>(&self) -> Option<Retained<'create, CommandQueue>> {
-        msg_send!(self, sel_newCommandQueue)
+        msg_send!("mtl", self, sel_newCommandQueue)
     }
 
     /// ```
@@ -292,7 +292,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn fence<'create>(&self) -> Option<Retained<'create, Fence>> {
-        msg_send!(self, sel_newFence)
+        msg_send!("mtl", self, sel_newFence)
     }
 
     /// ```

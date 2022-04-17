@@ -26,7 +26,7 @@ impl CommandEncoder {
 
     #[inline]
     pub fn end_encoding(&mut self) {
-        msg_send!(self, sel_endEncoding)
+        msg_send!("mtl", self, sel_endEncoding)
     }
 
     pub fn insert_debug_signpost(&mut self, signpost: &cf::String) {

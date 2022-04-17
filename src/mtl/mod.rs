@@ -184,54 +184,55 @@ pub use sampler::MinMagFilter as SamplerMinMagFilter;
 pub use sampler::MipFilter as SamplerMipFilter;
 pub use sampler::State as SamplerState;
 
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {
         #[inline]
         pub fn device(&self) -> &crate::mtl::Device {
-            crate::msg_send!(self, sel_device)
+            crate::msg_send!("mtl", self, sel_device)
         }
     };
 
     (set_label) => {
         #[inline]
         pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
-            crate::msg_send!(self, sel_setLabel, value)
+            crate::msg_send!("mtl", self, sel_setLabel, value)
         }
     };
 
     (label) => {
         #[inline]
         pub fn label(&self) -> Option<&crate::cf::String> {
-            crate::msg_send!(self, sel_label)
+            crate::msg_send!("mtl", self, sel_label)
         }
     };
 
     (width) => {
         #[inline]
         pub fn width(&self) -> usize {
-            crate::msg_send!(self, sel_width)
+            crate::msg_send!("mtl", self, sel_width)
         }
     };
 
     (set_width) => {
         #[inline]
         pub fn set_width(&mut self, value: usize) {
-            crate::msg_send!(self, sel_setWidth, value)
+            crate::msg_send!("mtl", self, sel_setWidth, value)
         }
     };
 
     (height) => {
         #[inline]
         pub fn height(&self) -> usize {
-            crate::msg_send!(self, sel_height)
+            crate::msg_send!("mtl", self, sel_height)
         }
     };
 
     (set_height) => {
         #[inline]
         pub fn set_height(&mut self, value: usize) {
-            crate::msg_send!(self, sel_setHeight, value)
+            crate::msg_send!("mtl", self, sel_setHeight, value)
         }
     };
 
@@ -265,21 +266,21 @@ macro_rules! define_mtl {
     (update_fence) => {
         #[inline]
         pub fn update_fence(&self, fence: &crate::mtl::Fence) {
-            crate::msg_send!(self, sel_updateFence_a, fence)
+            crate::msg_send!("mtl", self, sel_updateFence_a, fence)
         }
     };
 
     (wait_for_fence) => {
         #[inline]
         pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
-            crate::msg_send!(self, sel_waitForFence_a, fence)
+            crate::msg_send!("mtl", self, sel_waitForFence_a, fence)
         }
     };
 
     (use_resource) => {
         #[inline]
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
-            crate::msg_send!(self, sel_useResource_usage, resource, usage)
+            crate::msg_send!("mtl", self, sel_useResource_usage, resource, usage)
         }
     };
 

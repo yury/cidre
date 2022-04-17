@@ -7,6 +7,3 @@
 
 #import "sc.h"
 
-@implementation sc
-
-@end
