@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cf::{self, Retained}, cg, define_obj_type, objc::Id, sys};
+use crate::{cf::{self}, cg, define_obj_type, objc::Id, sys};
 use crate::objc::block::CompletionHandlerAB;
 
 define_obj_type!(RunningApplication(Id));
@@ -43,15 +43,15 @@ extern "C" {
 define_obj_type!(ShareableContent(Id));
 
 impl ShareableContent {
-    pub fn windows(&self) -> cf::ArrayOf<Window> {
+    pub fn windows(&self) -> &cf::ArrayOf<Window> {
         unsafe { rsel_windows(self) }
     }
 
-    pub fn displays(&self) -> cf::ArrayOf<Display> {
+    pub fn displays(&self) -> &cf::ArrayOf<Display> {
         unsafe { rsel_displays(self) }
     }
 
-    pub fn applications(&self) -> cf::ArrayOf<RunningApplication> {
+    pub fn applications(&self) -> &cf::ArrayOf<RunningApplication> {
         unsafe { rsel_applications(self) }
     }
 
@@ -65,9 +65,9 @@ impl ShareableContent {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_windows(id: &Id) -> cf::ArrayOf<Window>;
-    fn rsel_displays(id: &Id) -> cf::ArrayOf<Display>;
-    fn rsel_applications(id: &Id) -> cf::ArrayOf<RunningApplication>;
+    fn rsel_windows(id: &Id) -> &cf::ArrayOf<Window>;
+    fn rsel_displays(id: &Id) -> &cf::ArrayOf<Display>;
+    fn rsel_applications(id: &Id) -> &cf::ArrayOf<RunningApplication>;
     fn cs_shareable_content_with_completion_handler(rb: *const c_void);
 }
 
@@ -84,8 +84,9 @@ use crate::sc;
         assert!(content.is_some());
 
         if let Some(c) = content {
-          c.as_type_ref().show();
-          println!("{:?}", c.as_type_ref().get_retain_count());
+          println!("apps {:?}", c.applications().len());
+          println!("windows {:?}", c.windows().len());
+          println!("displays {:?}", c.displays().len());
         }
         if let Some(e) = error {
           e.show();
