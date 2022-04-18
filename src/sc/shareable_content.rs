@@ -80,7 +80,7 @@ extern "C" {
 mod tests {
     use std::{thread::sleep, time::Duration};
 
-    use crate::sc;
+    use crate::{sc::{self, Window}, cf};
 
     #[test]
     pub fn current_with_completion() {
@@ -92,6 +92,16 @@ mod tests {
                 println!("apps {:?}", c.applications().len());
                 println!("windows {:?}", c.windows().len());
                 println!("displays {:?}", c.displays().len());
+
+                let ref display = c.displays()[0];
+
+                display.as_type_ref().show();
+                let windows = cf::ArrayOf::<Window>::new().unwrap();
+                
+                let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
+                filter.as_type_ref().show();
+                println!("{:?}", filter.as_type_ref().get_retain_count());
+
             }
             if let Some(e) = error {
                 e.show();

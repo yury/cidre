@@ -141,20 +141,19 @@ extern "C" {
     fn wsel_setSourceRect(id: &Id, value: cg::Rect);
 }
 
-
 define_obj_type!(ContentFilter(Id));
 
 impl ContentFilter {
     pub fn with_display_excluding_windows<'a>(display: &Display, windows: &cf::ArrayOf<Window>) -> Retained<'a, ContentFilter> {
         unsafe {
-            SCContentFilter_initWithDisplay(display, windows)
+            SCContentFilter_initWithDisplay_excludingWindows(display, windows)
         }
     }
 }
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCContentFilter_initWithDisplay<'a>(display: &Display, excluding_windows: &cf::ArrayOf<Window>) -> Retained<'a, ContentFilter>;
+    fn SCContentFilter_initWithDisplay_excludingWindows<'a>(display: &Display, windows: &cf::ArrayOf<Window>) -> Retained<'a, ContentFilter>;
 }
 
 define_obj_type!(Stream(Id));

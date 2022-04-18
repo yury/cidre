@@ -33,6 +33,16 @@ define_cf_type!(Array(Type));
 #[repr(transparent)]
 pub struct ArrayOf<T: Retain + Release>(Array, PhantomData<T>);
 
+impl<T> ArrayOf<T>
+where T: Retain + Release
+{
+    #[inline]
+    pub fn new<'a>() -> Option<Retained<'a, ArrayOf<T>>> {
+        let arr = Array::create(None, None, 0, None);
+        unsafe { transmute(arr) }
+    }
+}
+
 impl<T> std::ops::Deref for ArrayOf<T>
 where
     T: Retain + Release,

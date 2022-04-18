@@ -6,7 +6,7 @@
 //
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
-#include "macro.h"
+#include "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -64,6 +64,7 @@ void cs_shareable_content_with_completion_handler(void * _Nonnull * _Nonnull rb)
 
 #pragma mark - SCContentFilter
 
+NS_RETURNS_RETAINED
 cinit_ab(, SCContentFilter, initWithDisplay, SCDisplay *, excludingWindows, NSArray<SCWindow *>*)
 
 
