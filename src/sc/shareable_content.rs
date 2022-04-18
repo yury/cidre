@@ -1,7 +1,12 @@
 use std::ffi::c_void;
 
-use crate::{cf::{self}, cg, define_obj_type, objc::Id, sys};
 use crate::objc::block::CompletionHandlerAB;
+use crate::{
+    cf::{self},
+    cg, define_obj_type,
+    objc::Id,
+    sys,
+};
 
 define_obj_type!(RunningApplication(Id));
 define_obj_type!(Display(Id));
@@ -73,25 +78,25 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-  use std::{thread::sleep, time::Duration};
+    use std::{thread::sleep, time::Duration};
 
-use crate::sc;
+    use crate::sc;
 
-  #[test]
-  pub fn current_with_completion() {
-    sc::ShareableContent::current_with_completion(|content, error| {
-        assert!(error.is_none());
-        assert!(content.is_some());
+    #[test]
+    pub fn current_with_completion() {
+        sc::ShareableContent::current_with_completion(|content, error| {
+            assert!(error.is_none());
+            assert!(content.is_some());
 
-        if let Some(c) = content {
-          println!("apps {:?}", c.applications().len());
-          println!("windows {:?}", c.windows().len());
-          println!("displays {:?}", c.displays().len());
-        }
-        if let Some(e) = error {
-          e.show();
-        }
-    });
-    sleep(Duration::from_secs(1));
-  }
+            if let Some(c) = content {
+                println!("apps {:?}", c.applications().len());
+                println!("windows {:?}", c.windows().len());
+                println!("displays {:?}", c.displays().len());
+            }
+            if let Some(e) = error {
+                e.show();
+            }
+        });
+        sleep(Duration::from_secs(1));
+    }
 }

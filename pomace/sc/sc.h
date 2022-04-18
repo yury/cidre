@@ -55,21 +55,16 @@ rsel(, id, windows, NSArray<SCWindow *> *)
 rsel(, id, displays, NSArray<SCDisplay *> *)
 rsel(, id, applications, NSArray<SCRunningApplication *> *)
 
-//+ (void)getShareableContentWithCompletionHandler:(void(^)(SCShareableContent * _Nullable shareableContent, NSError * _Nullable error))completionHandler NS_SWIFT_ASYNC(1) NS_SWIFT_ASYNC_NAME(getter:current());
-
-//#define sel_ch_ab(Prefix, SelfType, SEL_CH, CH_A, CH_B) \
-//extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
-//void(*ch)(void *, CH_A, CH_B) = rb[0]; \
-//ch(rb, ca, cb); \
-//} ]; } \
-//\
-
 void cs_shareable_content_with_completion_handler(void * _Nonnull * _Nonnull rb) {
   [SCShareableContent getShareableContentWithCompletionHandler:^(SCShareableContent * _Nullable shareableContent, NSError * _Nullable error) {
     void(*ch)(void *, SCShareableContent * _Nullable, NSError * _Nullable error) = rb[0];
     ch(rb, shareableContent, error);
   }];
 }
+
+#pragma mark - SCContentFilter
+
+cinit_ab(, SCContentFilter, initWithDisplay, SCDisplay *, excludingWindows, NSArray<SCWindow *>*)
 
 
 __attribute__((constructor))
