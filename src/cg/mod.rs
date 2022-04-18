@@ -12,5 +12,8 @@ pub use color_space::ColorSpaceModel;
 pub mod color;
 pub use color::Color;
 
+pub mod window;
+pub use window::ID as WindowID;
+
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}
