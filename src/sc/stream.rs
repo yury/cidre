@@ -1,4 +1,9 @@
-use crate::{cf::{Retained, self}, cg, cm, cv, define_obj_type, objc::Id, os};
+use crate::{
+    cf::{self, Retained},
+    cg, cm, cv, define_obj_type,
+    objc::Id,
+    os,
+};
 
 use super::{Display, Window};
 
@@ -18,7 +23,6 @@ pub enum Status {
 pub enum OutputType {
     Screen,
 }
-
 
 define_obj_type!(Configuration(Id));
 
@@ -144,16 +148,20 @@ extern "C" {
 define_obj_type!(ContentFilter(Id));
 
 impl ContentFilter {
-    pub fn with_display_excluding_windows<'a>(display: &Display, windows: &cf::ArrayOf<Window>) -> Retained<'a, ContentFilter> {
-        unsafe {
-            SCContentFilter_initWithDisplay_excludingWindows(display, windows)
-        }
+    pub fn with_display_excluding_windows<'a>(
+        display: &Display,
+        windows: &cf::ArrayOf<Window>,
+    ) -> Retained<'a, ContentFilter> {
+        unsafe { SCContentFilter_initWithDisplay_excludingWindows(display, windows) }
     }
 }
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCContentFilter_initWithDisplay_excludingWindows<'a>(display: &Display, windows: &cf::ArrayOf<Window>) -> Retained<'a, ContentFilter>;
+    fn SCContentFilter_initWithDisplay_excludingWindows<'a>(
+        display: &Display,
+        windows: &cf::ArrayOf<Window>,
+    ) -> Retained<'a, ContentFilter>;
 }
 
 define_obj_type!(Stream(Id));

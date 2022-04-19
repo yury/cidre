@@ -34,7 +34,8 @@ define_cf_type!(Array(Type));
 pub struct ArrayOf<T: Retain + Release>(Array, PhantomData<T>);
 
 impl<T> ArrayOf<T>
-where T: Retain + Release
+where
+    T: Retain + Release,
 {
     #[inline]
     pub fn new<'a>() -> Option<Retained<'a, ArrayOf<T>>> {

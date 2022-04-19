@@ -4,7 +4,6 @@ pub struct UnfairLock {
 }
 
 impl UnfairLock {
-
     pub fn new() -> Self {
         Self { internal: 0 }
     }

@@ -78,7 +78,10 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{sc::{self, Window}, cf, dispatch};
+    use crate::{
+        cf, dispatch,
+        sc::{self, Window},
+    };
 
     #[test]
     pub fn current_with_completion() {
@@ -100,7 +103,7 @@ mod tests {
 
                 display.as_type_ref().show();
                 let windows = cf::ArrayOf::<Window>::new().unwrap();
-                
+
                 let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
                 filter.as_type_ref().show();
             }
@@ -108,7 +111,7 @@ mod tests {
                 e.show();
             }
         });
-        
+
         sema.wait_forever();
     }
 }

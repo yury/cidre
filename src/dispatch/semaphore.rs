@@ -3,13 +3,14 @@ use crate::define_obj_type;
 use crate::dispatch::Object;
 
 pub struct SignalGuard {
-    sema: Retained<'static, Semaphore>
+    sema: Retained<'static, Semaphore>,
 }
 impl SignalGuard {
-    pub fn consume(&self) { }
+    pub fn consume(&self) {}
 }
 
 impl<'a> Drop for SignalGuard {
+    #[inline]
     fn drop(&mut self) {
         self.sema.signal();
     }
@@ -18,30 +19,34 @@ impl<'a> Drop for SignalGuard {
 define_obj_type!(Semaphore(Object));
 
 impl Semaphore {
+    #[inline]
     pub fn new<'a>(value: isize) -> Retained<'a, Semaphore> {
         debug_assert!(value >= 0);
         unsafe { dispatch_semaphore_create(value) }
     }
 
+    #[inline]
     pub fn wait(&self, timeout: super::Time) -> isize {
         unsafe { dispatch_semaphore_wait(self, timeout) }
     }
 
+    #[inline]
     pub fn wait_forever(&self) -> isize {
         unsafe { dispatch_semaphore_wait(self, super::Time::FOREVER) }
     }
 
+    #[inline]
     pub fn signal(&self) -> isize {
         unsafe { dispatch_semaphore_signal(self) }
     }
 
+    #[inline]
     pub fn signal_guard(&self) -> SignalGuard {
         SignalGuard {
-            sema: self.retained()
+            sema: self.retained(),
         }
     }
 }
-
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
