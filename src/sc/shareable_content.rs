@@ -78,13 +78,16 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration};
-
-    use crate::{sc::{self, Window}, cf};
+    use crate::{sc::{self, Window}, cf, dispatch};
 
     #[test]
     pub fn current_with_completion() {
-        sc::ShareableContent::current_with_completion(|content, error| {
+        let sema = dispatch::Semaphore::new(0);
+        let signal_guard = sema.signal_guard();
+
+        sc::ShareableContent::current_with_completion(move |content, error| {
+            signal_guard.consume();
+
             assert!(error.is_none());
             assert!(content.is_some());
 
@@ -100,13 +103,12 @@ mod tests {
                 
                 let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
                 filter.as_type_ref().show();
-                println!("{:?}", filter.as_type_ref().get_retain_count());
-
             }
             if let Some(e) = error {
                 e.show();
             }
         });
-        sleep(Duration::from_secs(1));
+        
+        sema.wait_forever();
     }
 }

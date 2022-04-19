@@ -83,12 +83,12 @@ impl Type {
     }
 
     #[inline]
-    pub fn get_allocator(&self) -> Option<&Allocator> {
+    pub fn allocator(&self) -> Option<&Allocator> {
         unsafe { CFGetAllocator(self) }
     }
 
     #[inline]
-    pub fn get_retain_count(&self) -> isize {
+    pub fn retain_count(&self) -> isize {
         unsafe { CFGetRetainCount(self) }
     }
 

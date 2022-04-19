@@ -86,6 +86,7 @@ impl<'a, T: Retain> Clone for Retained<'a, T> {
     }
 }
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Type(c_void);
 

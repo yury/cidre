@@ -20,8 +20,8 @@ pub use queue::Priority as QueuePriority;
 pub use queue::QOSClass;
 pub use queue::Queue;
 
-pub mod semaphor;
-pub use semaphor::Semaphore;
+pub mod semaphore;
+pub use semaphore::Semaphore;
 
 pub fn main() {
     let id = std::thread::current().id();

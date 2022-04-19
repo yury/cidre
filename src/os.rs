@@ -5,3 +5,5 @@ pub type Status = i32;
 pub type Type = FourCharCode;
 
 pub const NO_ERR: Status = 0;
+
+pub mod lock;
