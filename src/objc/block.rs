@@ -87,7 +87,7 @@ pub trait CompletionHandlerA<A>: FnOnce(A) + Sized + Send {
         Box::into_raw(block) as _
     }
 
-    unsafe fn fn_a(raw: *mut CompletionBlock<Self>, a: A) {
+    unsafe extern "C" fn fn_a(raw: *mut CompletionBlock<Self>, a: A) {
         let b = Box::from_raw(raw);
         (b.f)(a);
     }
@@ -105,7 +105,7 @@ pub trait CompletionHandlerAB<A, B>: FnOnce(A, B) + Sized + Send {
         Box::into_raw(block) as _
     }
 
-    unsafe fn fn_ab(raw: *mut CompletionBlock<Self>, a: A, b: B) {
+    unsafe extern "C" fn fn_ab(raw: *mut CompletionBlock<Self>, a: A, b: B) {
         let block = Box::from_raw(raw);
         (block.f)(a, b);
     }
