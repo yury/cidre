@@ -32,6 +32,11 @@ extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(
   return  [_self SEL_A: a SEL_B: b SEL_C: c]; } \
 \
 
+#define rsel_abcd(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D, ReadType) \
+extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D(SelfType _self, A a, B b, C c, D d) { \
+  return  [_self SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
+\
+
 #define wsel_a(Prefix, SelfType, SEL_A, A) \
 extern inline void Prefix ## wsel ## _ ## SEL_A(SelfType _self, A a) { [_self SEL_A: a]; } \
 \
@@ -94,6 +99,8 @@ extern inline RetType Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SE
 #define cinit_ab(Prefix, ClassType, SEL_A, A, SEL_B, B) \
 extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B(A a, B b) { return  [[ClassType alloc] SEL_A: a SEL_B: b]; } \
 
+#define cinit_abc(Prefix, ClassType, SEL_A, A, SEL_B, B, SEL_C, C) \
+extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(A a, B b, C c) { return  [[ClassType alloc] SEL_A: a SEL_B: b SEL_C: c]; } \
 
 
 #define sel_ch(Prefix, SelfType, SEL_CH) \

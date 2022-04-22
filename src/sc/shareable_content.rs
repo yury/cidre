@@ -1,12 +1,7 @@
 use std::ffi::c_void;
 
 use crate::objc::block::CompletionHandlerAB;
-use crate::{
-    cf::{self},
-    cg, define_obj_type,
-    objc::Id,
-    sys,
-};
+use crate::{cf, cg, define_obj_type, objc::Id, sc, sys};
 
 define_obj_type!(RunningApplication(Id));
 define_obj_type!(Display(Id));
@@ -78,18 +73,61 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use std::{thread::sleep, time::Duration};
+
     use crate::{
         cf, dispatch,
-        sc::{self, Window},
+        sc::{
+            self,
+            stream::{Delegate, StreamDelegate, StreamOutput},
+            Window,
+        },
     };
+
+    struct Foo {
+        bla: u32,
+    }
+
+    impl StreamOutput for Foo {
+        extern "C" fn stream_did_output_sample_buffer_of_type(
+            &mut self,
+            stream: &sc::Stream,
+            sample_buffer: &crate::cm::SampleBuffer,
+            of_type: sc::OutputType,
+        ) {
+            self.bla += 1;
+            println!("nice {0}", self.bla);
+        }
+    }
+
+    struct Foo2 {
+        bla: u32,
+    }
+
+    impl StreamDelegate for Foo2 {
+        extern "C" fn stream_did_stop_with_error(
+            &mut self,
+            stream: &sc::Stream,
+            error: Option<&cf::Error>,
+        ) {
+            println!("!!!!")
+        }
+    }
 
     #[test]
     pub fn current_with_completion() {
         let sema = dispatch::Semaphore::new(0);
+        let queue = dispatch::Queue::new();
         let signal_guard = sema.signal_guard();
 
+        let bla = Foo { bla: 0 };
+        let bla2 = Foo2 { bla: 0 };
+
+        let d = bla.delegate();
+        let d2 = bla2.delegate();
+
         sc::ShareableContent::current_with_completion(move |content, error| {
-            signal_guard.consume();
+            // signal_guard.consume();
 
             assert!(error.is_none());
             assert!(content.is_some());
@@ -106,12 +144,28 @@ mod tests {
 
                 let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
                 filter.as_type_ref().show();
+
+                let mut cfg = sc::StreamConfiguration::new();
+                cfg.set_width(200);
+                cfg.set_height(200);
+
+                println!("!");
+
+                let stream = sc::Stream::new(&filter, &cfg, Some(&d2));
+                println!("!!");
+                stream.as_type_ref().show();
+                let mut error = None;
+                let res = stream.add_stream_output(d, sc::OutputType::Screen, Some(&queue), &mut error);
+                println!("!!!res {:?} {:?}", res, error);
+
+                stream.start();
             }
             if let Some(e) = error {
                 e.show();
             }
         });
 
+        // sleep(Duration::from_secs(100));
         sema.wait_forever();
     }
 }

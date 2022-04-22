@@ -67,10 +67,58 @@ void cs_shareable_content_with_completion_handler(void * _Nonnull * _Nonnull rb)
 NS_RETURNS_RETAINED
 cinit_ab(, SCContentFilter, initWithDisplay, SCDisplay *, excludingWindows, NSArray<SCWindow *>*)
 
+#pragma mark - SCStream
+
+NS_RETURNS_RETAINED
+cinit_abc(, SCStream, initWithFilter, SCContentFilter *, configuration, SCStreamConfiguration *, delegate, id<SCStreamDelegate> _Nullable)
 
 __attribute__((constructor))
 static void cs_initializer()
 {
 }
+
+@interface SidreStreamDelegate : NSObject<SCStreamDelegate> {
+  @public void * _vtable[2];
+}
+
+@end
+
+NS_RETURNS_RETAINED
+SidreStreamDelegate * make_stream_delegate(void * _Nonnull vtable[_Nonnull 2]) {
+  NSLog(@"created");
+  SidreStreamDelegate * result = [SidreStreamDelegate new];
+  memcpy(result->_vtable, vtable, 2 * sizeof(void *));
+  return result;
+}
+
+
+@interface SidreStreamOutDelegate : NSObject<SCStreamOutput> {
+  @public void * _vtable[2];
+}
+
+@end
+
+
+NS_RETURNS_RETAINED
+SidreStreamOutDelegate * make_stream_out(void * _Nonnull vtable[_Nonnull 2]) {
+  NSLog(@"created");
+  SidreStreamOutDelegate * result = [SidreStreamOutDelegate new];
+  NSLog(@"vtable src %p %p", vtable[0], vtable[1]);
+  memcpy(result->_vtable, vtable, 2 * sizeof(void *));
+  return result;
+}
+
+API_AVAILABLE(macos(12.3))
+void test_start(SCStream * stream) {
+  NSLog(@"starging!!!!");
+  [stream startCaptureWithCompletionHandler:^(NSError * _Nullable error) {
+    NSLog(@"what ??? %@", error);
+  }];
+}
+
+//- (BOOL)addStreamOutput:(id<SCStreamOutput>)output type:(SCStreamOutputType)type sampleHandlerQueue:(dispatch_queue_t _Nullable)sampleHandlerQueue error:(NSError **)error NS_SWIFT_ASYNC_NAME (addStreamOutput(_:type:sampleHandlerQueue:)) NS_SWIFT_NAME (addStreamOutput(_:type:sampleHandlerQueue:));
+
+API_AVAILABLE(macos(12.3))
+rsel_abcd(, id, addStreamOutput, id<SCStreamOutput>, type, SCStreamOutputType, sampleHandlerQueue,  dispatch_queue_t _Nullable, error, NSError **, bool)
 
 NS_ASSUME_NONNULL_END

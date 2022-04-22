@@ -1,8 +1,10 @@
+use std::{ffi::c_void, ops::Deref};
+
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type,
     objc::Id,
-    os,
+    os, dispatch,
 };
 
 use super::{Display, Window};
@@ -165,3 +167,104 @@ extern "C" {
 }
 
 define_obj_type!(Stream(Id));
+
+pub trait StreamDelegate {
+    extern "C" fn stream_did_stop_with_error(
+        &mut self,
+        stream: &Stream,
+        error: Option<&cf::Error>,
+    );
+
+    fn delegate(self) -> Delegate<Self>
+    where
+        Self: Sized,
+    {
+        let table: [*const c_void; 2] = [
+            &self as *const _ as *const _,
+            Self::stream_did_stop_with_error as _
+        ];
+
+        let obj = unsafe { make_stream_delegate(table.as_ptr()) };
+
+        Delegate { delegate: self, obj }
+    }
+}
+
+pub trait StreamOutput {
+    extern "C" fn stream_did_output_sample_buffer_of_type(
+        &mut self,
+        stream: &Stream,
+        sample_buffer: &cm::SampleBuffer,
+        of_type: OutputType,
+    );
+
+    fn delegate(self) -> Delegate<Self>
+    where
+        Self: Sized,
+    {
+        let table: [*const c_void; 2] = [
+            &self as *const _ as *const _,
+            Self::stream_did_output_sample_buffer_of_type as _
+        ];
+
+        let ptr = table.as_ptr();
+        println!("table ptr {:?} {:?}", ptr, table);
+
+        let obj = unsafe { make_stream_out(ptr) };
+
+        Delegate { delegate: self, obj }
+    }
+}
+
+#[link(name = "sc", kind = "static")]
+extern "C" {
+    fn make_stream_out<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
+    fn make_stream_delegate<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
+}
+
+#[repr(C)]
+pub struct Delegate<T> {
+    delegate: T,
+    pub obj: Retained<'static, Id>,
+}
+
+
+impl Stream {
+    pub fn new<'a, T>(
+        filter: &ContentFilter,
+        configuration: &Configuration,
+        delegate: Option<&Delegate<T>>,
+    ) -> Retained<'a, Self> 
+    where T: StreamDelegate
+    {
+        let delegate = delegate.map(|f| f.obj.deref());
+        unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, delegate) }
+    }
+
+    pub fn add_stream_output<T>(&self, delegate: Delegate<T>, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool
+    where T: StreamOutput
+    {
+        unsafe {
+            rsel_addStreamOutput_type_sampleHandlerQueue_error(self, delegate.obj.deref(), output_type, queue, error)
+        }
+    }
+
+    pub fn start(&self) {
+        unsafe {
+            test_start(self)
+        }
+    }
+}
+
+#[link(name = "sc", kind = "static")]
+extern "C" {
+    fn SCStream_initWithFilter_configuration_delegate<'a>(
+        filter: &ContentFilter,
+        configuration: &Configuration,
+        delegate: Option<&Id>,
+    ) -> Retained<'a, Stream>;
+
+    fn rsel_addStreamOutput_type_sampleHandlerQueue_error(id: &Id, output: &Id, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool;
+
+    fn test_start(id: &Id);
+}
