@@ -59,6 +59,12 @@ impl Queue {
     }
 
     #[inline]
+    pub fn serial_with_autoreleasepool<'a>() -> Retained<'a, Queue> {
+        let attr = Attr::serial_with_autoreleasepool();
+        Self::with_label_and_attrs(None, Some(&attr))
+    }
+
+    #[inline]
     pub fn with_label_and_attrs<'a>(
         label: Option<&CStr>,
         attr: Option<&Attr>,

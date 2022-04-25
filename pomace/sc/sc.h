@@ -100,10 +100,8 @@ SidreStreamDelegate * make_stream_delegate(void * _Nonnull vtable[_Nonnull 2]) {
 
 
 NS_RETURNS_RETAINED
-SidreStreamOutDelegate * make_stream_out(void * _Nonnull vtable[_Nonnull 2]) {
-  NSLog(@"created");
+SidreStreamOutDelegate * make_stream_out(void * _Nonnull vtable) {
   SidreStreamOutDelegate * result = [SidreStreamOutDelegate new];
-  NSLog(@"vtable src %p %p", vtable[0], vtable[1]);
   memcpy(result->_vtable, vtable, 2 * sizeof(void *));
   return result;
 }

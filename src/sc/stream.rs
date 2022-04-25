@@ -1,9 +1,9 @@
-use std::{ffi::c_void, ops::Deref};
+use std::{ffi::c_void, ops::Deref, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type,
-    objc::Id,
+    objc::{Id, self},
     os, dispatch,
 };
 
@@ -179,14 +179,19 @@ pub trait StreamDelegate {
     where
         Self: Sized,
     {
+        
+        let b = Box::new(self);
         let table: [*const c_void; 2] = [
-            &self as *const _ as *const _,
+            b.as_ref() as *const _ as _,
             Self::stream_did_stop_with_error as _
         ];
 
-        let obj = unsafe { make_stream_delegate(table.as_ptr()) };
+        let ptr = table.as_ptr();
+        println!("table ptr {:?} {:?}", ptr, table);
 
-        Delegate { delegate: self, obj }
+        let obj = unsafe { make_stream_delegate(ptr as _) };
+
+        Delegate { delegate: b, obj }     
     }
 }
 
@@ -202,17 +207,19 @@ pub trait StreamOutput {
     where
         Self: Sized,
     {
+        let b = Box::new(self);
         let table: [*const c_void; 2] = [
-            &self as *const _ as *const _,
+            b.as_ref() as *const _ as _,
+            // &self as *const _ as *const _,
             Self::stream_did_output_sample_buffer_of_type as _
         ];
 
         let ptr = table.as_ptr();
         println!("table ptr {:?} {:?}", ptr, table);
 
-        let obj = unsafe { make_stream_out(ptr) };
+        let obj = unsafe { make_stream_out(ptr as _) };
 
-        Delegate { delegate: self, obj }
+        Delegate { delegate: b, obj }
     }
 }
 
@@ -223,11 +230,16 @@ extern "C" {
 }
 
 #[repr(C)]
-pub struct Delegate<T> {
-    delegate: T,
-    pub obj: Retained<'static, Id>,
+pub struct Delegate<T: Sized> {
+    pub delegate: Box<T>,
+    pub obj:Retained<'static, Id>,
 }
 
+impl<T: Sized> Drop for Delegate<T> {
+    fn drop(&mut self) {
+        println!("DROP")
+    }
+}
 
 impl Stream {
     pub fn new<'a, T>(
@@ -241,7 +253,7 @@ impl Stream {
         unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, delegate) }
     }
 
-    pub fn add_stream_output<T>(&self, delegate: Delegate<T>, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool
+    pub fn add_stream_output<T>(&self, delegate: &Delegate<T>, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool
     where T: StreamOutput
     {
         unsafe {

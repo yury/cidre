@@ -10,9 +10,8 @@
 @implementation SidreStreamOutDelegate
 
 - (void)stream:(SCStream *)stream didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer ofType:(SCStreamOutputType)type  API_AVAILABLE(macos(12.3)){
-  
   void(*cb)(void *, SCStream *, CMSampleBufferRef, SCStreamOutputType) = _vtable[1];
-  cb(_vtable[0], stream, sampleBuffer, type);
+  cb( _vtable[0], stream, sampleBuffer, type);
 }
 
 - (void)dealloc {

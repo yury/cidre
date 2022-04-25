@@ -73,7 +73,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration};
+    use std::{thread::sleep, time::Duration, sync::Arc};
 
     use crate::{
         cf, dispatch,
@@ -84,6 +84,7 @@ mod tests {
         },
     };
 
+    #[repr(C)]
     struct Foo {
         bla: u32,
     }
@@ -96,10 +97,11 @@ mod tests {
             of_type: sc::OutputType,
         ) {
             self.bla += 1;
-            println!("nice {0}", self.bla);
+            // println!("nice {0}", self.bla);
         }
     }
 
+    #[repr(C)]
     struct Foo2 {
         bla: u32,
     }
@@ -117,14 +119,17 @@ mod tests {
     #[test]
     pub fn current_with_completion() {
         let sema = dispatch::Semaphore::new(0);
-        let queue = dispatch::Queue::new();
+        let queue = dispatch::Queue::serial_with_autoreleasepool();
         let signal_guard = sema.signal_guard();
 
         let bla = Foo { bla: 0 };
-        let bla2 = Foo2 { bla: 0 };
+        let bla2 = Foo2 { bla: 5 };
 
-        let d = bla.delegate();
-        let d2 = bla2.delegate();
+        let d = Arc::new(bla.delegate());
+        let d2 = Arc::new(bla2.delegate());
+
+        let d3 = d.clone();
+        let d4 = d2.clone();
 
         sc::ShareableContent::current_with_completion(move |content, error| {
             // signal_guard.consume();
@@ -155,7 +160,7 @@ mod tests {
                 println!("!!");
                 stream.as_type_ref().show();
                 let mut error = None;
-                let res = stream.add_stream_output(d, sc::OutputType::Screen, Some(&queue), &mut error);
+                let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
                 println!("!!!res {:?} {:?}", res, error);
 
                 stream.start();
@@ -167,5 +172,6 @@ mod tests {
 
         // sleep(Duration::from_secs(100));
         sema.wait_forever();
+        // d4.obj.as_type_ref().show();
     }
 }
