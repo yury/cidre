@@ -3,7 +3,7 @@ use crate::{
     cf::{self, Retained},
     define_obj_type,
 };
-use crate::{define_mtl, io};
+use crate::{define_mtl, io, msg_send};
 
 use super::{resource, Device, PixelFormat, Resource};
 
@@ -57,11 +57,11 @@ define_obj_type!(SharedTextureHandle(Id));
 
 impl SharedTextureHandle {
     pub fn device(&self) -> &Device {
-        unsafe { rsel_device(self) }
+        msg_send!("mtl", self, sel_device)
     }
 
     pub fn label<'a>(&self) -> Option<Retained<'a, cf::String>> {
-        unsafe { rsel_label(self) }
+        msg_send!("common", self, sel_label)
     }
 }
 
@@ -351,9 +351,6 @@ impl Texture {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_device(id: &Id) -> &Device;
-    fn rsel_label<'a>(id: &Id) -> Option<Retained<'a, cf::String>>;
-
     fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped<'a>(
         pixel_format: PixelFormat,
         width: usize,
