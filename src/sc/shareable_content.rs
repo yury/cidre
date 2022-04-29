@@ -129,7 +129,7 @@ mod tests {
         let d2 = Arc::new(bla2.delegate());
 
         let d3 = d.clone();
-        let d4 = d2.clone();
+        let d4 = d2.clone() ;
 
         sc::ShareableContent::current_with_completion(move |content, error| {
             // signal_guard.consume();
@@ -151,8 +151,8 @@ mod tests {
                 filter.as_type_ref().show();
 
                 let mut cfg = sc::StreamConfiguration::new();
-                cfg.set_width(200);
-                cfg.set_height(200);
+                cfg.set_width(1440 * 2);
+                cfg.set_height(900 * 2);
 
                 println!("!");
 
@@ -160,7 +160,8 @@ mod tests {
                 println!("!!");
                 stream.as_type_ref().show();
                 let mut error = None;
-                let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
+                queue.as_type_ref().show();
+                let res = stream.add_stream_output(&d, sc::OutputType::Screen, None, &mut error);
                 println!("!!!res {:?} {:?}", res, error);
 
                 stream.start();

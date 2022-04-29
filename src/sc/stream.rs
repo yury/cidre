@@ -249,6 +249,7 @@ impl Stream {
     ) -> Retained<'a, Self> 
     where T: StreamDelegate
     {
+        println!("!!");
         let delegate = delegate.map(|f| f.obj.deref());
         unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, delegate) }
     }

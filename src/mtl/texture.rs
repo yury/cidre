@@ -35,10 +35,10 @@ pub enum Swizzle {
 
 #[repr(C)]
 pub struct SwizzleChannels {
-    red: Swizzle,
-    green: Swizzle,
-    blue: Swizzle,
-    alpha: Swizzle,
+    pub red: Swizzle,
+    pub green: Swizzle,
+    pub blue: Swizzle,
+    pub alpha: Swizzle,
 }
 
 impl Default for SwizzleChannels {
