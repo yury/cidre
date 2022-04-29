@@ -13,17 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Common
 
-NS_RETURNS_NOT_RETAINED
-rsel(get_, id, name, NSString * _Nonnull)
-
-NS_RETURNS_RETAINED
-rsel(copy_nullable_, id, name, NSString * _Nullable)
-wsel_a(nullable_, id, setName, NSString * _Nullable)
-
 wsel(, id, reset)
-
-//@property (readonly) NSUInteger length;
-rsel(, id, length, NSUInteger)
 
 //- (void)enqueue;
 //wsel(, id, enqueue)
@@ -108,20 +98,6 @@ NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)
 rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
 //@property (readwrite, nonatomic) MTLLanguageVersion languageVersion
 rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
-
-// Shared
-
-//NS_RETURNS_RETAINED
-//rsel(copy_, id, label, NSString * _Nullable)
-
-//NS_RETURNS_NOT_RETAINED
-//rsel(get_, id, label, NSString * _Nullable)
-
-
-//wsel_a(, id, setLabel, NSString * _Nullable)
-
-//NS_RETURNS_NOT_RETAINED
-//rsel(, id, device, id<MTLDevice>)
 
 //@property (readwrite, nonatomic) MTLResourceOptions resourceOptions;
 rwsel(, id, resourceOptions, setResourceOptions, MTLResourceOptions)

@@ -48,7 +48,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn name(&self) -> &cf::String {
-        unsafe { get_rsel_name(self) }
+        msg_send!("common", self, sel_name)
     }
 
     /// ```
@@ -351,7 +351,6 @@ extern "C" {
         options: Option<&mtl::CompileOptions>,
         rb_bloc: *const c_void,
     );
-    fn get_rsel_name(id: &Device) -> &cf::String;
     fn rsel_registryID(id: &Device) -> u64;
     fn rsel_maxThreadsPerThreadgroup(id: &Device) -> Size;
     fn rsel_hasUnifiedMemory(id: &Device) -> bool;

@@ -193,7 +193,6 @@ mod tests {
             if let Some(e) = error {
                 e.show();
             }
-            // sema.signal();
         });
 
         // sleep(Duration::from_secs(100));
