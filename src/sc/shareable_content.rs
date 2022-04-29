@@ -1,10 +1,10 @@
 use std::ffi::c_void;
 
+use crate::msg_send;
 use crate::objc::block::CompletionHandlerAB;
 use crate::{cf, cg, define_obj_type, objc::Id, sc, sys};
 
 define_obj_type!(RunningApplication(Id));
-define_obj_type!(Display(Id));
 
 impl RunningApplication {
     pub fn bundle_identifier(&self) -> cf::String {
@@ -27,11 +27,35 @@ extern "C" {
     fn rsel_processID(id: &Id) -> sys::Pid;
 }
 
+define_obj_type!(Display(Id));
+
+impl Display {
+    pub fn display_id(&self) -> cg::DirectDisplayID {
+        todo!()
+    }
+
+    pub fn width(&self) -> isize {
+        msg_send!("common", self, sel_width)
+    }
+
+    pub fn height(&self) -> isize {
+        msg_send!("common", self, sel_height)
+    }
+
+    pub fn frame(&self) -> cg::Rect {
+        msg_send!("common", self, sel_frame)
+    }
+}
+
 define_obj_type!(Window(Id));
 
 impl Window {
     pub fn id(&self) -> cg::WindowID {
         unsafe { rsel_windowID(self) }
+    }
+
+    pub fn frame(&self) -> cg::Rect {
+        msg_send!("common", self, sel_frame)
     }
 }
 
@@ -132,7 +156,7 @@ mod tests {
         let d4 = d2.clone() ;
 
         sc::ShareableContent::current_with_completion(move |content, error| {
-            // signal_guard.consume();
+            signal_guard.consume();
 
             assert!(error.is_none());
             assert!(content.is_some());
@@ -151,10 +175,10 @@ mod tests {
                 filter.as_type_ref().show();
 
                 let mut cfg = sc::StreamConfiguration::new();
-                cfg.set_width(1440 * 2);
-                cfg.set_height(900 * 2);
+                cfg.set_width(display.width() as usize * 2);
+                cfg.set_height(display.height() as usize * 2);
 
-                println!("!");
+                println!("cfg size: {0}, {1}", cfg.width(), cfg.height());
 
                 let stream = sc::Stream::new(&filter, &cfg, Some(&d2));
                 println!("!!");
@@ -169,6 +193,7 @@ mod tests {
             if let Some(e) = error {
                 e.show();
             }
+            // sema.signal();
         });
 
         // sleep(Duration::from_secs(100));

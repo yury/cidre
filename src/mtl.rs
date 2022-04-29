@@ -196,42 +196,42 @@ macro_rules! define_mtl {
     (set_label) => {
         #[inline]
         pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
-            crate::msg_send!("mtl", self, sel_setLabel, value)
+            crate::msg_send!("common", self, sel_setLabel, value)
         }
     };
 
     (label) => {
         #[inline]
         pub fn label(&self) -> Option<&crate::cf::String> {
-            crate::msg_send!("mtl", self, sel_label)
+            crate::msg_send!("common", self, sel_label)
         }
     };
 
     (width) => {
         #[inline]
         pub fn width(&self) -> usize {
-            crate::msg_send!("mtl", self, sel_width)
+            crate::msg_send!("common", self, sel_width)
         }
     };
 
     (set_width) => {
         #[inline]
         pub fn set_width(&mut self, value: usize) {
-            crate::msg_send!("mtl", self, sel_setWidth, value)
+            crate::msg_send!("common", self, sel_setWidth, value)
         }
     };
 
     (height) => {
         #[inline]
         pub fn height(&self) -> usize {
-            crate::msg_send!("mtl", self, sel_height)
+            crate::msg_send!("common", self, sel_height)
         }
     };
 
     (set_height) => {
         #[inline]
         pub fn set_height(&mut self, value: usize) {
-            crate::msg_send!("mtl", self, sel_setHeight, value)
+            crate::msg_send!("common", self, sel_setHeight, value)
         }
     };
 

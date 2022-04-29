@@ -15,5 +15,8 @@ pub use color::Color;
 pub mod window;
 pub use window::ID as WindowID;
 
+pub mod direct_display;
+pub use direct_display::ID as DirectDisplayID;
+
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}

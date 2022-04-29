@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		D2520D00280BFC4A00FD6562 /* sc.m in Sources */ = {isa = PBXBuildFile; fileRef = D2520CFF280BFC4A00FD6562 /* sc.m */; };
 		D2520D01280BFC4A00FD6562 /* sc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2520CFE280BFC4A00FD6562 /* sc.h */; };
+		D273EB56281C3D160032B428 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = D273EB55281C3D160032B428 /* common.m */; };
+		D273EB57281C3D160032B428 /* common.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D273EB54281C3D160032B428 /* common.h */; };
 		D2FBEBFC27CB653200FD974A /* mtl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FBEBFB27CB653200FD974A /* mtl.m */; };
 		D2FBEBFD27CB653200FD974A /* mtl.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2FBEBFA27CB653200FD974A /* mtl.h */; };
 /* End PBXBuildFile section */
@@ -21,6 +23,16 @@
 			dstSubfolderSpec = 16;
 			files = (
 				D2520D01280BFC4A00FD6562 /* sc.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D273EB50281C3D160032B428 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D273EB57281C3D160032B428 /* common.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +53,9 @@
 		D2520CFE280BFC4A00FD6562 /* sc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sc.h; sourceTree = "<group>"; };
 		D2520CFF280BFC4A00FD6562 /* sc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sc.m; sourceTree = "<group>"; };
 		D2520D05280C502500FD6562 /* macro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = macro.h; sourceTree = "<group>"; };
+		D273EB52281C3D160032B428 /* libcommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D273EB54281C3D160032B428 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		D273EB55281C3D160032B428 /* common.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = common.m; sourceTree = "<group>"; };
 		D2FBEBF727CB653200FD974A /* libmtl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmtl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2FBEBFA27CB653200FD974A /* mtl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mtl.h; sourceTree = "<group>"; };
 		D2FBEBFB27CB653200FD974A /* mtl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mtl.m; sourceTree = "<group>"; };
@@ -48,6 +63,13 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		D2520CF9280BFC4A00FD6562 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D273EB4F281C3D160032B428 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -73,12 +95,22 @@
 			path = sc;
 			sourceTree = "<group>";
 		};
+		D273EB53281C3D160032B428 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				D273EB54281C3D160032B428 /* common.h */,
+				D273EB55281C3D160032B428 /* common.m */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
 		D2FBEBEE27CB653200FD974A = {
 			isa = PBXGroup;
 			children = (
 				D2520D05280C502500FD6562 /* macro.h */,
 				D2FBEBF927CB653200FD974A /* mtl */,
 				D2520CFD280BFC4A00FD6562 /* sc */,
+				D273EB53281C3D160032B428 /* common */,
 				D2FBEBF827CB653200FD974A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +120,7 @@
 			children = (
 				D2FBEBF727CB653200FD974A /* libmtl.a */,
 				D2520CFC280BFC4A00FD6562 /* libsc.a */,
+				D273EB52281C3D160032B428 /* libcommon.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +154,23 @@
 			productReference = D2520CFC280BFC4A00FD6562 /* libsc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D273EB51281C3D160032B428 /* common */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D273EB5A281C3D160032B428 /* Build configuration list for PBXNativeTarget "common" */;
+			buildPhases = (
+				D273EB4E281C3D160032B428 /* Sources */,
+				D273EB4F281C3D160032B428 /* Frameworks */,
+				D273EB50281C3D160032B428 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = common;
+			productName = common;
+			productReference = D273EB52281C3D160032B428 /* libcommon.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D2FBEBF627CB653200FD974A /* mtl */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2FBEC0027CB653200FD974A /* Build configuration list for PBXNativeTarget "mtl" */;
@@ -150,6 +200,9 @@
 					D2520CFB280BFC4A00FD6562 = {
 						CreatedOnToolsVersion = 13.3.1;
 					};
+					D273EB51281C3D160032B428 = {
+						CreatedOnToolsVersion = 13.3.1;
+					};
 					D2FBEBF627CB653200FD974A = {
 						CreatedOnToolsVersion = 13.3;
 					};
@@ -170,6 +223,7 @@
 			targets = (
 				D2FBEBF627CB653200FD974A /* mtl */,
 				D2520CFB280BFC4A00FD6562 /* sc */,
+				D273EB51281C3D160032B428 /* common */,
 			);
 		};
 /* End PBXProject section */
@@ -180,6 +234,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2520D00280BFC4A00FD6562 /* sc.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D273EB4E281C3D160032B428 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D273EB56281C3D160032B428 /* common.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +275,32 @@
 				DEVELOPMENT_TEAM = FD6ZML48V9;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D273EB58281C3D160032B428 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D273EB59281C3D160032B428 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -362,6 +450,15 @@
 			buildConfigurations = (
 				D2520D02280BFC4A00FD6562 /* Debug */,
 				D2520D03280BFC4A00FD6562 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D273EB5A281C3D160032B428 /* Build configuration list for PBXNativeTarget "common" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D273EB58281C3D160032B428 /* Debug */,
+				D273EB59281C3D160032B428 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

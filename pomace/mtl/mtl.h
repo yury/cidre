@@ -175,9 +175,9 @@ csel_abc(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelF
 csel_abcd(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
 
 //@property (readwrite, nonatomic) NSUInteger width;
-rwsel(, id, width, setWidth, NSUInteger)
+//rwsel(, id, width, setWidth, NSUInteger)
 //@property (readwrite, nonatomic) NSUInteger height;
-rwsel(, id, height, setHeight, NSUInteger)
+//rwsel(, id, height, setHeight, NSUInteger)
 //@property (readwrite, nonatomic) NSUInteger depth;
 rwsel(, id, depth, setDepth, NSUInteger)
 //@property (readwrite, nonatomic) NSUInteger mipmapLevelCount;
@@ -561,15 +561,6 @@ SEL sel_newFence;
 SEL sel_useResource_usage;
 SEL sel_useResources_count_usage;
 SEL sel_enqueue;
-SEL sel_length;
-SEL sel_name;
-SEL sel_label;
-SEL sel_setLabel;
-SEL sel_setName;
-SEL sel_height;
-SEL sel_setHeight;
-SEL sel_width;
-SEL sel_setWidth;
 //- (void)setTexture:(nullable id <MTLTexture>)texture atIndex:(NSUInteger)index;
 SEL sel_setTexture_atIndex;
 //- (void)setArgumentBuffer:(nullable id <MTLBuffer>)argumentBuffer offset:(NSUInteger)offset;
@@ -600,15 +591,6 @@ static void mtl_initializer()
       sel_useResource_usage = @selector(useResource:usage:);
       sel_useResources_count_usage = @selector(useResources:count:usage:);
       sel_enqueue = @selector(enqueue);
-      sel_length = @selector(length);
-      sel_name = @selector(name);
-      sel_label = @selector(label);
-      sel_setName = @selector(setName:);
-      sel_setLabel = @selector(setLabel:);
-      sel_width = @selector(width);
-      sel_height = @selector(height);
-      sel_setWidth = @selector(setWidth:);
-      sel_setHeight = @selector(setHeight:);
       sel_setTexture_atIndex = @selector(setTexture:atIndex:);
       sel_setArgumentBuffer_offset = @selector(setArgumentBuffer:offset:);
       sel_aligment = @selector(alignment);

@@ -1,10 +1,10 @@
-use std::{ffi::c_void, ops::Deref, intrinsics::transmute};
+use std::{ffi::c_void, ops::Deref};
 
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type,
-    objc::{Id, self},
-    os, dispatch,
+    objc::Id,
+    os, dispatch, msg_send,
 };
 
 use super::{Display, Window};
@@ -50,19 +50,19 @@ impl Configuration {
     }
 
     pub fn width(&self) -> usize {
-        unsafe { sc_rsel_width(self) }
+        msg_send!("common", self, sel_width)
     }
 
     pub fn set_width(&mut self, value: usize) {
-        unsafe { sc_wsel_setWidth(self, value) }
+        msg_send!("common", self, sel_setWidth, value)
     }
 
     pub fn height(&self) -> usize {
-        unsafe { sc_rsel_height(self) }
+        msg_send!("common", self, sel_height)
     }
 
     pub fn set_height(&mut self, value: usize) {
-        unsafe { sc_wsel_setHeight(self, value) }
+        msg_send!("common", self, sel_setHeight, value)
     }
 
     pub fn minimum_frame_interval(&self) -> cm::Time {
@@ -123,11 +123,6 @@ extern "C" {}
 #[link(name = "sc", kind = "static")]
 extern "C" {
     fn SCStreamConfiguration_new<'new>() -> Retained<'new, Configuration>;
-
-    fn sc_rsel_width(id: &Id) -> usize;
-    fn sc_wsel_setWidth(id: &Id, value: usize);
-    fn sc_rsel_height(id: &Id) -> usize;
-    fn sc_wsel_setHeight(id: &Id, value: usize);
 
     fn rsel_minimumFrameInterval(id: &Id) -> cm::Time;
     fn wsel_setMinimumFrameInterval(id: &Id, value: cm::Time);
@@ -249,7 +244,6 @@ impl Stream {
     ) -> Retained<'a, Self> 
     where T: StreamDelegate
     {
-        println!("!!");
         let delegate = delegate.map(|f| f.obj.deref());
         unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, delegate) }
     }

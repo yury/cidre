@@ -17,7 +17,7 @@ impl Buffer {
     /// ```
     #[inline]
     pub fn length(&self) -> usize {
-        msg_send!("mtl", self, sel_length)
+        msg_send!("common", self, sel_length)
     }
 
     #[inline]

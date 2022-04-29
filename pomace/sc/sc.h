@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_RETURNS_RETAINED csel(, SCStreamConfiguration, new, SCStreamConfiguration *)
 
-rwsel(sc_, SCStreamConfiguration *, width, setWidth, size_t)
-rwsel(sc_, SCStreamConfiguration *, height, setHeight, size_t)
 rwsel(, id, minimumFrameInterval, setMinimumFrameInterval, CMTime)
 
 //@property(nonatomic, assign) OSType pixelFormat;
