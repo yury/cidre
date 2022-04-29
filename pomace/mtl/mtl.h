@@ -209,7 +209,6 @@ wsel_abc(, id, setConstantValue, const void *, type, MTLDataType, withName, NSSt
 
 NS_RETURNS_RETAINED csel(, MTLHeapDescriptor, new, MTLHeapDescriptor *)
 
-rwsel(, id, size, setSize, NSUInteger)
 
 rwsel(MTLHeapType_MTLHeapDescriptor_, MTLHeapDescriptor *, type, setType, MTLHeapType)
 rsel(MTLHeapType_MTLHeap_, id<MTLHeap>, type, MTLHeapType)
@@ -384,11 +383,6 @@ rsel(, id, renderCommandEncoder, id<MTLRenderCommandEncoder> _Nullable)
 
 #pragma mark - MTLBlitCommandEncoder
 
-//- (void)updateFence:(id <MTLFence>)fence API_AVAILABLE(macos(10.13), ios(10.0));
-//wsel_a(, id, updateFence, id<MTLFence>)
-//- (void)waitForFence:(id <MTLFence>)fence API_AVAILABLE(macos(10.13), ios(10.0));
-//wsel_a(, id, waitForFence, id<MTLFence>)
-
 //- (void)fillBuffer:(id<MTLBuffer>)buffer range:(NSRange)range value:(uint8_t)value;
 wsel_abc(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
 
@@ -408,10 +402,6 @@ wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NS
 
 
 #pragma mark - MTLCommandQueue
-
-//- (nullable id <MTLCommandBuffer>)commandBuffer;
-//NS_RETURNS_RETAINED
-//rsel(, id, commandBuffer, id<MTLCommandBuffer> _Nullable)
 
 #pragma mark - MTLRenderPassDescriptor
 

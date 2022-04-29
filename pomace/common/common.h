@@ -20,6 +20,8 @@ SEL sel_width;
 SEL sel_setWidth;
 SEL sel_frame;
 SEL sel_setFrame;
+SEL sel_size;
+SEL sel_setSize;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -38,6 +40,8 @@ static void common_initializer()
       sel_setHeight = @selector(setHeight:);
       sel_frame = @selector(frame);
       sel_setFrame = @selector(setFrame:);
+      sel_size = @selector(size);
+      sel_setSize = @selector(setSize:);
 
 
       initialized = 1;

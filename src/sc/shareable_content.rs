@@ -97,7 +97,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration, sync::Arc};
+    use std::sync::Arc;
 
     use crate::{
         cf, dispatch,
@@ -181,12 +181,10 @@ mod tests {
                 println!("cfg size: {0}, {1}", cfg.width(), cfg.height());
 
                 let stream = sc::Stream::new(&filter, &cfg, Some(&d2));
-                println!("!!");
                 stream.as_type_ref().show();
                 let mut error = None;
                 queue.as_type_ref().show();
                 let res = stream.add_stream_output(&d, sc::OutputType::Screen, None, &mut error);
-                println!("!!!res {:?} {:?}", res, error);
 
                 stream.start();
             }
@@ -195,8 +193,6 @@ mod tests {
             }
         });
 
-        // sleep(Duration::from_secs(100));
         sema.wait_forever();
-        // d4.obj.as_type_ref().show();
     }
 }
