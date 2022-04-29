@@ -21,12 +21,12 @@ impl Default for FunctionOptions {
 impl FunctionDescriptor {
     #[inline]
     pub fn name(&self) -> Option<&cf::String> {
-        msg_send!("mtl", self, sel_name)
+        msg_send!("common", self, sel_name)
     }
 
     #[inline]
     pub fn set_name(&mut self, name: Option<&cf::String>) {
-        msg_send!("mtl", self, sel_setName, name)
+        msg_send!("common", self, sel_setName, name)
     }
 
     /// ```rust
