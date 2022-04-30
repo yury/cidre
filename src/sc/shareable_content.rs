@@ -1,11 +1,9 @@
-use parking_lot::Mutex;
-use std::task::Poll;
-use std::{ffi::c_void, future::Future, sync::Arc};
+use std::ffi::c_void;
 
-use crate::objc::block::CompletionHandlerAB;
+use crate::objc::block::{CompletionHandlerAB, Completion};
 use crate::{cf, cg, define_obj_type, objc::Id, sys};
 use crate::{
-    cf::{runtime::Retain, Retained},
+    cf::Retained,
     msg_send,
 };
 
@@ -92,87 +90,9 @@ impl ShareableContent {
     }
 
     pub fn current<'a>() -> Completion<Result<Retained<'a, Self>, Retained<'a, cf::Error>>> {
-        let (future, block_ptr) = Completion::pair();
+        let (future, block_ptr) = Completion::ptr_pair();
         unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
         future
-    }
-}
-
-pub struct Completion<T> {
-    inner: Arc<Block<T>>,
-}
-
-impl<'a, R> Completion<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
-where
-    R: Retain,
-{
-    pub fn pair() -> (Self, *const c_void) {
-        let b = Block::<Result<Retained<R>, Retained<cf::Error>>>::new();
-        let a = Arc::new(b);
-        let c = a.clone();
-        (Self { inner: a }, Arc::into_raw(c) as _)
-    }
-}
-
-#[repr(C)]
-struct Block<T> {
-    _fn_ptr: *const c_void,
-    inner: Mutex<Inner<T>>,
-}
-
-impl<'a, R> Block<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
-where
-    R: Retain,
-{
-    pub fn new() -> Self {
-        Self {
-            _fn_ptr: Self::completion as _,
-            inner: Mutex::new(Inner {
-                res: None,
-                waker: None,
-            }),
-        }
-    }
-
-    unsafe extern "C" fn completion(raw: *mut Self, res: Option<&R>, err: Option<&cf::Error>) {
-        let r = if let Some(err) = err {
-            Err(err.retained())
-        } else if let Some(res) = res {
-            Ok(res.retained())
-        } else {
-            panic!()
-        };
-
-        let block = Arc::from_raw(raw);
-        let mut inner = block.inner.lock();
-        inner.res = Some(r);
-
-        if let Some(w) = inner.waker.take() {
-            w.wake()
-        }
-    }
-}
-
-struct Inner<T> {
-    res: Option<T>,
-    waker: Option<std::task::Waker>,
-}
-
-impl<T> Future for Completion<T> {
-    type Output = T;
-
-    fn poll(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Self::Output> {
-        let mut result = self.inner.inner.lock();
-
-        if let Some(r) = result.res.take() {
-            Poll::Ready(r)
-        } else {
-            result.waker = Some(cx.waker().clone());
-            Poll::Pending
-        }
     }
 }
 
@@ -255,7 +175,7 @@ mod tests {
         let d4 = d2.clone();
 
         sc::ShareableContent::current_with_completion(move |content, error| {
-            signal_guard.consume();
+            // signal_guard.consume();
 
             assert!(error.is_none());
             assert!(content.is_some());
@@ -283,7 +203,7 @@ mod tests {
                 stream.as_type_ref().show();
                 let mut error = None;
                 queue.as_type_ref().show();
-                let res = stream.add_stream_output(&d, sc::OutputType::Screen, None, &mut error);
+                let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
 
                 stream.start();
             }

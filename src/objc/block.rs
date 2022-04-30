@@ -1,4 +1,8 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, sync::Arc};
+
+use parking_lot::Mutex;
+
+use crate::cf::{Retained, self, runtime::Retain};
 
 use super::Class;
 
@@ -117,6 +121,86 @@ extern "C" {
     static _NSConcreteGlobalBlock: &'static Class;
     static _NSConcreteStackBlock: &'static Class;
 }
+
+
+pub struct Completion<T> {
+    block: Arc<Block<T>>,
+}
+
+impl<'a, R> Completion<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
+where
+    R: Retain,
+{
+    pub fn ptr_pair() -> (Self, *const c_void) {
+        let b = Block::<Result<Retained<R>, Retained<cf::Error>>>::new();
+        let a = Arc::new(b);
+        let c = a.clone();
+        (Self { block: a }, Arc::into_raw(c) as _)
+    }
+}
+
+#[repr(C)]
+struct Block<T> {
+    _fn_ptr: *const c_void,
+    state: Mutex<State<T>>,
+}
+
+impl<'a, R> Block<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
+where
+    R: Retain,
+{
+    pub fn new() -> Self {
+        Self {
+            _fn_ptr: Self::completion as _,
+            state: Mutex::new(State {
+                ready: None,
+                pending: None,
+            }),
+        }
+    }
+
+    unsafe extern "C" fn completion(raw: *mut Self, res: Option<&R>, err: Option<&cf::Error>) {
+        let result = if let Some(err) = err {
+            Err(err.retained())
+        } else if let Some(res) = res {
+            Ok(res.retained())
+        } else {
+            panic!()
+        };
+
+        let block = Arc::from_raw(raw);
+        let mut state = block.state.lock();
+        state.ready = Some(result);
+
+        if let Some(w) = state.pending.take() {
+            w.wake()
+        }
+    }
+}
+
+struct State<T> {
+    ready: Option<T>,
+    pending: Option<std::task::Waker>,
+}
+
+impl<T> std::future::Future for Completion<T> {
+    type Output = T;
+
+    fn poll(
+        self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        let mut result = self.block.state.lock();
+
+        if let Some(r) = result.ready.take() {
+            std::task::Poll::Ready(r)
+        } else {
+            result.pending = Some(cx.waker().clone());
+            std::task::Poll::Pending
+        }
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
