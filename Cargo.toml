@@ -7,6 +7,9 @@ edition = "2021"
 
 [dependencies]
 
+tokio = { version = "1", features = ["macros", "rt"] }
+parking_lot = "0.12.0"
+
 #[lib]
 #crate-type = ["staticlib"]
 
