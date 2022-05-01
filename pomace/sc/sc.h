@@ -105,6 +105,13 @@ SidreStreamOutDelegate * make_stream_out(void * _Nonnull vtable) {
 }
 
 API_AVAILABLE(macos(12.3))
+sel_ch_a(, id, startCaptureWithCompletionHandler, NSError *_Nullable)
+
+API_AVAILABLE(macos(12.3))
+sel_ch_a(, id, stopCaptureWithCompletionHandler, NSError *_Nullable)
+
+
+API_AVAILABLE(macos(12.3))
 void test_start(SCStream * stream) {
   NSLog(@"starging!!!!");
   [stream startCaptureWithCompletionHandler:^(NSError * _Nullable error) {

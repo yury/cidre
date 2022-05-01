@@ -89,10 +89,10 @@ impl ShareableContent {
         unsafe { cs_shareable_content_with_completion_handler(block.into_raw()) }
     }
 
-    pub fn current<'a>() -> Completion<Result<Retained<'a, Self>, Retained<'a, cf::Error>>> {
-        let (future, block_ptr) = Completion::ptr_pair();
+    pub async fn current<'a>() -> Result<Retained<'a, Self>, Retained<'a, cf::Error>> {
+        let (future, block_ptr) = Completion::result_or_error();
         unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
-        future
+        future.await
     }
 }
 
@@ -175,7 +175,7 @@ mod tests {
         let d4 = d2.clone();
 
         sc::ShareableContent::current_with_completion(move |content, error| {
-            // signal_guard.consume();
+            signal_guard.consume();
 
             assert!(error.is_none());
             assert!(content.is_some());
@@ -199,13 +199,13 @@ mod tests {
 
                 println!("cfg size: {0}, {1}", cfg.width(), cfg.height());
 
-                let stream = sc::Stream::new(&filter, &cfg, Some(&d2));
+                let stream = sc::Stream::with_delegate(&filter, &cfg, &d2);
                 stream.as_type_ref().show();
                 let mut error = None;
                 queue.as_type_ref().show();
                 let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
 
-                stream.start();
+                stream.start_sync();
             }
             if let Some(e) = error {
                 e.show();

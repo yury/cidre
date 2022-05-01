@@ -3,7 +3,7 @@ use std::{ffi::c_void, ops::Deref};
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type,
-    objc::Id,
+    objc::{Id, block::Completion},
     os, dispatch, msg_send,
 };
 
@@ -230,22 +230,24 @@ pub struct Delegate<T: Sized> {
     pub obj:Retained<'static, Id>,
 }
 
-impl<T: Sized> Drop for Delegate<T> {
-    fn drop(&mut self) {
-        println!("DROP")
-    }
-}
-
 impl Stream {
-    pub fn new<'a, T>(
+    pub fn with_delegate<'a, T>(
         filter: &ContentFilter,
         configuration: &Configuration,
-        delegate: Option<&Delegate<T>>,
+        delegate: &Delegate<T>,
     ) -> Retained<'a, Self> 
     where T: StreamDelegate
     {
-        let delegate = delegate.map(|f| f.obj.deref());
-        unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, delegate) }
+        let delegate = delegate.obj.deref();
+        unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, Some(delegate)) }
+    }
+
+    pub fn new<'a>(
+        filter: &ContentFilter,
+        configuration: &Configuration,
+    ) -> Retained<'a, Self> 
+    {
+        unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, None) }
     }
 
     pub fn add_stream_output<T>(&self, delegate: &Delegate<T>, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool
@@ -256,10 +258,26 @@ impl Stream {
         }
     }
 
-    pub fn start(&self) {
+    pub fn start_sync(&self) {
         unsafe {
             test_start(self)
         }
+    }
+
+    pub async fn start<'a>(&self) -> Result<(), Retained<'a, cf::Error>> {
+        let (future, block_ptr) = Completion::ok_or_error();
+        unsafe {
+            sel_startCaptureWithCompletionHandler(self, block_ptr);
+        }
+        future.await
+    }
+
+    pub async fn stop<'a>(&self) -> Result<(), Retained<'a, cf::Error>> {
+        let (future, block_ptr) = Completion::ok_or_error();
+        unsafe {
+            sel_stopCaptureWithCompletionHandler(self, block_ptr);
+        }
+        future.await
     }
 }
 
@@ -274,4 +292,28 @@ extern "C" {
     fn rsel_addStreamOutput_type_sampleHandlerQueue_error(id: &Id, output: &Id, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool;
 
     fn test_start(id: &Id);
+
+    fn sel_startCaptureWithCompletionHandler(id: &Id, rb: *const c_void);
+    fn sel_stopCaptureWithCompletionHandler(id: &Id, rb: *const c_void);
+
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, sc};
+
+    #[tokio::test]
+    async fn test_start_fails() {
+        let content = sc::ShareableContent::current().await.expect("content");
+        let ref display = content.displays()[0];
+        let mut cfg = sc::StreamConfiguration::new();
+        cfg.set_width(display.width() as usize * 2);
+        cfg.set_height(display.height() as usize * 2);
+
+        let windows = cf::ArrayOf::<sc::Window>::new().unwrap();
+        let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
+        let stream = sc::Stream::new(&filter, &cfg);
+        stream.start().await.expect("started");
+    }
+
 }

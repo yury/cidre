@@ -2,7 +2,7 @@ use std::{ffi::c_void, sync::Arc};
 
 use parking_lot::Mutex;
 
-use crate::cf::{Retained, self, runtime::Retain};
+use crate::cf::{self, runtime::Retain, Retained};
 
 use super::Class;
 
@@ -122,20 +122,36 @@ extern "C" {
     static _NSConcreteStackBlock: &'static Class;
 }
 
+// https://developer.apple.com/documentation/swift/calling_objective-c_apis_asynchronously
 
 pub struct Completion<T> {
     block: Arc<Block<T>>,
+}
+
+impl<T> Completion<T> {
+    pub fn ok_or_error() -> (Self, *const c_void) {
+        let block = Arc::new(Block {
+            _fn_ptr: Block::ok_or_error_fn as _,
+            state: State::mutex(),
+        });
+
+        let ptr = Arc::into_raw(block.clone()) as _;
+        (Self { block }, ptr)
+    }
 }
 
 impl<'a, R> Completion<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
 where
     R: Retain,
 {
-    pub fn ptr_pair() -> (Self, *const c_void) {
-        let b = Block::<Result<Retained<R>, Retained<cf::Error>>>::new();
-        let a = Arc::new(b);
-        let c = a.clone();
-        (Self { block: a }, Arc::into_raw(c) as _)
+    pub fn result_or_error() -> (Self, *const c_void) {
+        let block = Arc::new(Block {
+            _fn_ptr: Block::<Result<Retained<R>, Retained<cf::Error>>>::result_or_error_fn as _,
+            state: State::mutex(),
+        });
+
+        let ptr = Arc::into_raw(block.clone()) as _;
+        (Self { block }, ptr)
     }
 }
 
@@ -145,21 +161,40 @@ struct Block<T> {
     state: Mutex<State<T>>,
 }
 
+impl<T> Block<T> {
+    #[inline]
+    fn ready(raw: *mut Self, ready: T) {
+        let block = unsafe { Arc::from_raw(raw) };
+        let mut state = block.state.lock();
+        state.ready = Some(ready);
+
+        if let Some(w) = state.pending.take() {
+            w.wake()
+        }
+    }
+}
+
+impl<'a> Block<Result<(), Retained<'a, cf::Error>>> {
+    unsafe extern "C" fn ok_or_error_fn(raw: *mut Self, err: Option<&cf::Error>) {
+        let result = if let Some(err) = err {
+            Err(err.retained())
+        } else {
+            Ok(())
+        };
+
+        Block::ready(raw, result);
+    }
+}
+
 impl<'a, R> Block<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
 where
     R: Retain,
 {
-    pub fn new() -> Self {
-        Self {
-            _fn_ptr: Self::completion as _,
-            state: Mutex::new(State {
-                ready: None,
-                pending: None,
-            }),
-        }
-    }
-
-    unsafe extern "C" fn completion(raw: *mut Self, res: Option<&R>, err: Option<&cf::Error>) {
+    unsafe extern "C" fn result_or_error_fn(
+        raw: *mut Self,
+        res: Option<&R>,
+        err: Option<&cf::Error>,
+    ) {
         let result = if let Some(err) = err {
             Err(err.retained())
         } else if let Some(res) = res {
@@ -168,19 +203,22 @@ where
             panic!()
         };
 
-        let block = Arc::from_raw(raw);
-        let mut state = block.state.lock();
-        state.ready = Some(result);
-
-        if let Some(w) = state.pending.take() {
-            w.wake()
-        }
+        Block::ready(raw, result);
     }
 }
 
 struct State<T> {
     ready: Option<T>,
     pending: Option<std::task::Waker>,
+}
+
+impl<T> State<T> {
+    fn mutex() -> Mutex<Self> {
+        Mutex::new(Self {
+            ready: None,
+            pending: None,
+        })
+    }
 }
 
 impl<T> std::future::Future for Completion<T> {
@@ -200,7 +238,6 @@ impl<T> std::future::Future for Completion<T> {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
