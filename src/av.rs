@@ -13,3 +13,7 @@ pub mod capture_output_base;
 
 pub use capture_output_base::CaptureOutputDataDroppedReason;
 pub use capture_output_base::CaptureOutput;
+
+pub mod capture_device;
+pub use capture_device::CaptureDevice;
+pub use capture_device::Format as CaptureDeviceFormat;
