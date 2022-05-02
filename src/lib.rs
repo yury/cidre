@@ -28,6 +28,9 @@ pub mod vt;
 #[cfg(target_os = "macos")]
 pub mod sc;
 
+pub mod av;
+
+
 #[cfg(test)]
 mod tests {
     use crate::cf;

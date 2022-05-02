@@ -49,6 +49,7 @@ fn main() {
     };
 
     xc_build("common", sdk, arch, configuration);
+    xc_build("av", sdk, arch, configuration);
     xc_build("mtl", sdk, arch, configuration);
     if sdk.eq("macosx") {
         xc_build("sc", sdk, arch, configuration);
