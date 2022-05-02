@@ -16,8 +16,11 @@ pub mod capture_session_preset;
 pub use capture_session_preset::CaptureSessionPreset;
 
 pub mod capture_system_pressure;
+#[cfg(not(target_os = "macos"))]
 pub use capture_system_pressure::Level as CaptureSystemPressureLevel;
-pub use capture_system_pressure::Factor as CaptureSystemPressureFactor;
+#[cfg(not(target_os = "macos"))]
+pub use capture_system_pressure::Factors as CaptureSystemPressureFactors;
+#[cfg(not(target_os = "macos"))]
 pub use capture_system_pressure::State as CaptureSystemPressureState;
 
 pub mod capture_session;
