@@ -1,11 +1,8 @@
 use std::ffi::c_void;
 
-use crate::objc::block::{CompletionHandlerAB, Completion};
+use crate::objc::block::{Completion, CompletionHandlerAB};
 use crate::{cf, cg, define_obj_type, objc::Id, sys};
-use crate::{
-    cf::Retained,
-    msg_send,
-};
+use crate::{cf::Retained, msg_send};
 
 define_obj_type!(RunningApplication(Id));
 

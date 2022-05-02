@@ -22,6 +22,8 @@ SEL sel_frame;
 SEL sel_setFrame;
 SEL sel_size;
 SEL sel_setSize;
+SEL sel_isEnabled;
+SEL sel_setEnabled;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -42,6 +44,8 @@ static void common_initializer()
       sel_setFrame = @selector(setFrame:);
       sel_size = @selector(size);
       sel_setSize = @selector(setSize:);
+      sel_isEnabled = @selector(isEnabled);
+      sel_setEnabled = @selector(setEnabled);
 
 
       initialized = 1;

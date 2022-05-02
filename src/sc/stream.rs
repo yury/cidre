@@ -2,9 +2,9 @@ use std::{ffi::c_void, ops::Deref};
 
 use crate::{
     cf::{self, Retained},
-    cg, cm, cv, define_obj_type,
-    objc::{Id, block::Completion},
-    os, dispatch, msg_send,
+    cg, cm, cv, define_obj_type, dispatch, msg_send,
+    objc::{block::Completion, Id},
+    os,
 };
 
 use super::{Display, Window};
@@ -164,21 +164,16 @@ extern "C" {
 define_obj_type!(Stream(Id));
 
 pub trait StreamDelegate {
-    extern "C" fn stream_did_stop_with_error(
-        &mut self,
-        stream: &Stream,
-        error: Option<&cf::Error>,
-    );
+    extern "C" fn stream_did_stop_with_error(&mut self, stream: &Stream, error: Option<&cf::Error>);
 
     fn delegate(self) -> Delegate<Self>
     where
         Self: Sized,
     {
-        
         let b = Box::new(self);
         let table: [*const c_void; 2] = [
             b.as_ref() as *const _ as _,
-            Self::stream_did_stop_with_error as _
+            Self::stream_did_stop_with_error as _,
         ];
 
         let ptr = table.as_ptr();
@@ -186,7 +181,7 @@ pub trait StreamDelegate {
 
         let obj = unsafe { make_stream_delegate(ptr as _) };
 
-        Delegate { delegate: b, obj }     
+        Delegate { delegate: b, obj }
     }
 }
 
@@ -206,7 +201,7 @@ pub trait StreamOutput {
         let table: [*const c_void; 2] = [
             b.as_ref() as *const _ as _,
             // &self as *const _ as *const _,
-            Self::stream_did_output_sample_buffer_of_type as _
+            Self::stream_did_output_sample_buffer_of_type as _,
         ];
 
         let ptr = table.as_ptr();
@@ -225,7 +220,7 @@ extern "C" {
 #[repr(C)]
 pub struct Delegate<T: Sized> {
     pub delegate: Box<T>,
-    pub obj:Retained<'static, Id>,
+    pub obj: Retained<'static, Id>,
 }
 
 impl Stream {
@@ -233,33 +228,43 @@ impl Stream {
         filter: &ContentFilter,
         configuration: &Configuration,
         delegate: &Delegate<T>,
-    ) -> Retained<'a, Self> 
-    where T: StreamDelegate
+    ) -> Retained<'a, Self>
+    where
+        T: StreamDelegate,
     {
         let delegate = delegate.obj.deref();
-        unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, Some(delegate)) }
+        unsafe {
+            SCStream_initWithFilter_configuration_delegate(filter, configuration, Some(delegate))
+        }
     }
 
-    pub fn new<'a>(
-        filter: &ContentFilter,
-        configuration: &Configuration,
-    ) -> Retained<'a, Self> 
-    {
+    pub fn new<'a>(filter: &ContentFilter, configuration: &Configuration) -> Retained<'a, Self> {
         unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, None) }
     }
 
-    pub fn add_stream_output<T>(&self, delegate: &Delegate<T>, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool
-    where T: StreamOutput
+    pub fn add_stream_output<T>(
+        &self,
+        delegate: &Delegate<T>,
+        output_type: OutputType,
+        queue: Option<&dispatch::Queue>,
+        error: &mut Option<&cf::Error>,
+    ) -> bool
+    where
+        T: StreamOutput,
     {
         unsafe {
-            rsel_addStreamOutput_type_sampleHandlerQueue_error(self, delegate.obj.deref(), output_type, queue, error)
+            rsel_addStreamOutput_type_sampleHandlerQueue_error(
+                self,
+                delegate.obj.deref(),
+                output_type,
+                queue,
+                error,
+            )
         }
     }
 
     pub fn start_sync(&self) {
-        unsafe {
-            test_start(self)
-        }
+        unsafe { test_start(self) }
     }
 
     pub async fn start<'a>(&self) -> Result<(), Retained<'a, cf::Error>> {
@@ -287,7 +292,13 @@ extern "C" {
         delegate: Option<&Id>,
     ) -> Retained<'a, Stream>;
 
-    fn rsel_addStreamOutput_type_sampleHandlerQueue_error(id: &Id, output: &Id, output_type: OutputType, queue: Option<&dispatch::Queue>, error: &mut Option<&cf::Error>) -> bool;
+    fn rsel_addStreamOutput_type_sampleHandlerQueue_error(
+        id: &Id,
+        output: &Id,
+        output_type: OutputType,
+        queue: Option<&dispatch::Queue>,
+        error: &mut Option<&cf::Error>,
+    ) -> bool;
 
     fn test_start(id: &Id);
 
@@ -300,13 +311,13 @@ extern "C" {
 mod tests {
     use std::time::Duration;
 
-    use crate::{cf, sc, dispatch};
+    use crate::{cf, dispatch, sc};
 
-    use super::{StreamOutput};
+    use super::StreamOutput;
 
     #[repr(C)]
     struct FameCounter {
-        counter: u32
+        counter: u32,
     }
 
     impl FameCounter {
@@ -317,16 +328,15 @@ mod tests {
 
     impl StreamOutput for FameCounter {
         extern "C" fn stream_did_output_sample_buffer_of_type(
-        &mut self,
-        stream: &sc::Stream,
-        sample_buffer: &crate::cm::SampleBuffer,
-        of_type: sc::OutputType,
-    ) {
-        self.counter += 1;
-        // why without println is not working well?
-        println!("frame {:?}", self.counter);
-        
-    }
+            &mut self,
+            stream: &sc::Stream,
+            sample_buffer: &crate::cm::SampleBuffer,
+            of_type: sc::OutputType,
+        ) {
+            self.counter += 1;
+            // why without println is not working well?
+            println!("frame {:?}", self.counter);
+        }
     }
 
     #[tokio::test]
@@ -353,9 +363,12 @@ mod tests {
 
         stream.stop().await.expect("stopped");
         stream.stop().await.expect_err("already stopped");
-        println!("------- {:?} {:?}", d.obj.as_type_ref(), d.delegate.counter());
+        println!(
+            "------- {:?} {:?}",
+            d.obj.as_type_ref(),
+            d.delegate.counter()
+        );
 
         assert!(d.delegate.counter() > 10, "{:?}", d.delegate.counter);
     }
-
 }

@@ -18,3 +18,4 @@ pub enum InterruptionReason {
 }
 
 define_obj_type!(CaptureSession(Id));
+define_obj_type!(CaptureConnection(Id));

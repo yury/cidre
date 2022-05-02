@@ -1,4 +1,3 @@
-
 pub type ID = u32;
 
 pub type RefreshRate = f64;
@@ -19,6 +18,5 @@ pub const NULL: ID = 0;
 // CF_ASSUME_NONNULL_BEGIN
 
 // /* Return the display ID of the current main display. */
-
 // CG_EXTERN CGDirectDisplayID CGMainDisplayID(void)
 //     CG_AVAILABLE_STARTING(10.2);
