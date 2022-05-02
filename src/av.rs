@@ -8,3 +8,8 @@ pub mod media_format;
 pub use media_format::FileType;
 pub use media_format::MediaType;
 pub use media_format::VideoRange;
+
+pub mod capture_output_base;
+
+pub use capture_output_base::CaptureOutputDataDroppedReason;
+pub use capture_output_base::CaptureOutput;

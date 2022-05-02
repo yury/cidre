@@ -1,4 +1,4 @@
-use crate::{cf, cm::VideoCodecType};
+use crate::cf;
 
 pub type MediaType = cf::String;
 
@@ -102,6 +102,6 @@ mod tests {
 
     #[test]
     fn test_media_type() {
-        let s = MediaType::audio();
+        let _s = MediaType::audio();
     }
 }
