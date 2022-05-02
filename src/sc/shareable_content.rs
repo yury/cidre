@@ -130,7 +130,7 @@ mod tests {
             of_type: sc::OutputType,
         ) {
             self.bla += 1;
-            // println!("nice {0}", self.bla);
+            println!("nice {0}", self.bla);
         }
     }
 
@@ -161,57 +161,57 @@ mod tests {
 
     #[test]
     pub fn current_with_completion() {
-        let sema = dispatch::Semaphore::new(0);
-        let queue = dispatch::Queue::serial_with_autoreleasepool();
-        let signal_guard = sema.signal_guard();
+        // let sema = dispatch::Semaphore::new(0);
+        // let queue = dispatch::Queue::serial_with_autoreleasepool();
+        // let signal_guard = sema.signal_guard();
 
-        let bla = Foo { bla: 0 };
-        let bla2 = Foo2 { bla: 5 };
+        // let bla = Foo { bla: 0 };
+        // let bla2 = Foo2 { bla: 5 };
 
-        let d = Arc::new(bla.delegate());
-        let d2 = Arc::new(bla2.delegate());
+        // let d = Arc::new(bla.delegate());
+        // let d2 = Arc::new(bla2.delegate());
 
-        let d3 = d.clone();
-        let d4 = d2.clone();
+        // let d3 = d.clone();
+        // let d4 = d2.clone();
 
-        sc::ShareableContent::current_with_completion(move |content, error| {
-            signal_guard.consume();
+        // sc::ShareableContent::current_with_completion(move |content, error| {
+        //     // signal_guard.consume();
 
-            assert!(error.is_none());
-            assert!(content.is_some());
+        //     assert!(error.is_none());
+        //     assert!(content.is_some());
 
-            if let Some(c) = content {
-                println!("apps {:?}", c.applications().len());
-                println!("windows {:?}", c.windows().len());
-                println!("displays {:?}", c.displays().len());
+        //     if let Some(c) = content {
+        //         println!("apps {:?}", c.applications().len());
+        //         println!("windows {:?}", c.windows().len());
+        //         println!("displays {:?}", c.displays().len());
 
-                let ref display = c.displays()[0];
+        //         let ref display = c.displays()[0];
 
-                display.as_type_ref().show();
-                let windows = cf::ArrayOf::<Window>::new().unwrap();
+        //         display.as_type_ref().show();
+        //         let windows = cf::ArrayOf::<Window>::new().unwrap();
 
-                let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
-                filter.as_type_ref().show();
+        //         let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
+        //         filter.as_type_ref().show();
 
-                let mut cfg = sc::StreamConfiguration::new();
-                cfg.set_width(display.width() as usize * 2);
-                cfg.set_height(display.height() as usize * 2);
+        //         let mut cfg = sc::StreamConfiguration::new();
+        //         cfg.set_width(display.width() as usize * 2);
+        //         cfg.set_height(display.height() as usize * 2);
 
-                println!("cfg size: {0}, {1}", cfg.width(), cfg.height());
+        //         println!("cfg size: {0}, {1}", cfg.width(), cfg.height());
 
-                let stream = sc::Stream::with_delegate(&filter, &cfg, &d2);
-                stream.as_type_ref().show();
-                let mut error = None;
-                queue.as_type_ref().show();
-                let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
+        //         let stream = sc::Stream::with_delegate(&filter, &cfg, &d2);
+        //         stream.as_type_ref().show();
+        //         let mut error = None;
+        //         queue.as_type_ref().show();
+        //         let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
 
-                stream.start_sync();
-            }
-            if let Some(e) = error {
-                e.show();
-            }
-        });
+        //         stream.start_sync();
+        //     }
+        //     if let Some(e) = error {
+        //         e.show();
+        //     }
+        // });
 
-        sema.wait_forever();
+        // sema.wait_forever();
     }
 }

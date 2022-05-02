@@ -26,6 +26,7 @@ pub struct Descriptor<CD> {
 #[repr(transparent)]
 pub struct NoCopyDispose;
 
+#[repr(C)]
 pub struct CopyDispose<L> {
     pub copy: extern "C" fn(src: *const L, dest: *const L),
     pub dispose: extern "C" fn(liteal: *mut L),
@@ -140,13 +141,15 @@ impl<T> Completion<T> {
     }
 }
 
-impl<'a, R> Completion<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
+type RetainedResult<'a, R> = Result<Retained<'a, R>, Retained<'a, cf::Error>>;
+
+impl<'a, R> Completion<RetainedResult<'a, R>>
 where
     R: Retain,
 {
     pub fn result_or_error() -> (Self, *const c_void) {
         let block = Arc::new(Block {
-            _fn_ptr: Block::<Result<Retained<R>, Retained<cf::Error>>>::result_or_error_fn as _,
+            _fn_ptr: Block::<RetainedResult<'a, R>>::result_or_error_fn as _,
             state: State::mutex(),
         });
 
@@ -186,7 +189,7 @@ impl<'a> Block<Result<(), Retained<'a, cf::Error>>> {
     }
 }
 
-impl<'a, R> Block<Result<Retained<'a, R>, Retained<'a, cf::Error>>>
+impl<'a, R> Block<RetainedResult<'a, R>>
 where
     R: Retain,
 {

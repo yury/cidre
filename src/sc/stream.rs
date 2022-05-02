@@ -210,8 +210,6 @@ pub trait StreamOutput {
         ];
 
         let ptr = table.as_ptr();
-        println!("table ptr {:?} {:?}", ptr, table);
-
         let obj = unsafe { make_stream_out(ptr as _) };
 
         Delegate { delegate: b, obj }
@@ -300,10 +298,40 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{cf, sc};
+    use std::time::Duration;
+
+    use crate::{cf, sc, dispatch};
+
+    use super::{StreamOutput};
+
+    #[repr(C)]
+    struct FameCounter {
+        counter: u32
+    }
+
+    impl FameCounter {
+        pub fn counter(&self) -> u32 {
+            self.counter
+        }
+    }
+
+    impl StreamOutput for FameCounter {
+        extern "C" fn stream_did_output_sample_buffer_of_type(
+        &mut self,
+        stream: &sc::Stream,
+        sample_buffer: &crate::cm::SampleBuffer,
+        of_type: sc::OutputType,
+    ) {
+        self.counter += 1;
+        // why without println is not working well?
+        println!("frame {:?}", self.counter);
+        
+    }
+    }
 
     #[tokio::test]
     async fn test_start_fails() {
+        let q = dispatch::Queue::serial_with_autoreleasepool();
         let content = sc::ShareableContent::current().await.expect("content");
         let ref display = content.displays()[0];
         let mut cfg = sc::StreamConfiguration::new();
@@ -313,7 +341,21 @@ mod tests {
         let windows = cf::ArrayOf::<sc::Window>::new().unwrap();
         let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
         let stream = sc::Stream::new(&filter, &cfg);
+        let delegate = FameCounter { counter: 0 };
+        let d = delegate.delegate();
+        let mut error = None;
+        stream.add_stream_output(&d, sc::OutputType::Screen, Some(&q), &mut error);
+        assert!(error.is_none());
         stream.start().await.expect("started");
+        stream.start().await.expect_err("already started");
+
+        tokio::time::sleep(Duration::from_secs(2)).await;
+
+        stream.stop().await.expect("stopped");
+        stream.stop().await.expect_err("already stopped");
+        println!("------- {:?} {:?}", d.obj.as_type_ref(), d.delegate.counter());
+
+        assert!(d.delegate.counter() > 10, "{:?}", d.delegate.counter);
     }
 
 }
