@@ -1,8 +1,8 @@
 pub mod device;
 pub use device::Device;
 pub use device::Format as DeviceFormat;
-pub use device::Type as DeviceType;
 pub use device::Position as DevicePosition;
+pub use device::Type as DeviceType;
 
 pub mod input;
 pub use input::Input;
