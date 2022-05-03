@@ -21,4 +21,10 @@ rsel(, AVCaptureSystemPressureState *, factors, AVCaptureSystemPressureFactors)
 
 #endif
 
+#pragma mark - AVCaptureDevice
+
+NS_RETURNS_RETAINED
+csel_abc(, AVCaptureDevice, defaultDeviceWithDeviceType, AVCaptureDeviceType, mediaType, AVMediaType _Nullable, position, AVCaptureDevicePosition, AVCaptureDevice * _Nullable)
+// + (nullable AVCaptureDevice *)defaultDeviceWithDeviceType:(AVCaptureDeviceType)deviceType mediaType:(nullable AVMediaType)mediaType position:(AVCaptureDevicePosition)position API_AVAILABLE(macos(10.15), ios(10.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
+
 NS_ASSUME_NONNULL_END
