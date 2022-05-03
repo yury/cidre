@@ -9,6 +9,7 @@ pub use capture::DataDroppedReason as CaptureDataDroppedReason;
 pub use capture::Device as CaptureDevice;
 pub use capture::DeviceFormat as CaptureDeviceFormat;
 pub use capture::DeviceType as CaptureDeviceType;
+pub use capture::DevicePosition as CaptureDevicePosition;
 pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
 pub use capture::InterruptionReason as CaptureInterruptionReason;

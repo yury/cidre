@@ -76,3 +76,10 @@ extern "C" {
     static AVCaptureDeviceTypeBuiltInTrueDepthCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInLiDARDepthCamera: &'static Type;
 }
+
+#[repr(isize)]
+pub enum Position {
+    Unspecified = 0,
+    Back = 1,
+    Front = 2
+}
