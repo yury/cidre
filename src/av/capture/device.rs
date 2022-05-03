@@ -6,7 +6,22 @@ define_obj_type!(Format(Id));
 
 pub type Type = cf::String;
 
+/// ```
+/// use cidre::av;
+/// 
+/// let device_type = av::CaptureDeviceType::external_unknown();
+/// let device_type = av::CaptureDeviceType::built_in_microphone();
+/// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
+/// let device_type = av::CaptureDeviceType::built_in_telephoto_camera();
+/// let device_type = av::CaptureDeviceType::built_in_ultra_wide_camera();
+/// let device_type = av::CaptureDeviceType::built_in_dual_camera();
+/// let device_type = av::CaptureDeviceType::built_in_dual_wide_camera();
+/// let device_type = av::CaptureDeviceType::built_in_tripple_camera();
+/// let device_type = av::CaptureDeviceType::built_in_true_depth_camera();
+/// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
+/// ```
 impl Type {
+
     pub fn external_unknown() -> &'static Self {
         unsafe { AVCaptureDeviceTypeExternalUnknown }
     }
