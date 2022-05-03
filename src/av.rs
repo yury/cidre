@@ -10,12 +10,14 @@ pub use capture::Device as CaptureDevice;
 pub use capture::DeviceFormat as CaptureDeviceFormat;
 pub use capture::DevicePosition as CaptureDevicePosition;
 pub use capture::DeviceType as CaptureDeviceType;
+pub use capture::FocusMode as CaptureFocusMode;
 pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
 pub use capture::InterruptionReason as CaptureInterruptionReason;
 pub use capture::Output as CaptureOutput;
 pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
+pub use capture::TorchMode as CaptureTouchMode;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
 
 #[cfg(not(target_os = "macos"))]

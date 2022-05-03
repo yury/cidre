@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 use crate::{
     av::MediaType,
     cf::{self, Retained},
-    define_obj_type,
+    cm, define_obj_type,
     objc::Id,
 };
 
@@ -92,20 +92,21 @@ pub enum Position {
 
 define_obj_type!(Device(Id));
 
+/// ```
+/// use cidre::{av::{self, capture::device::{self, Device} }};
+///
+/// let device_type = device::Type::built_in_wide_angle_camera();
+/// let media_type = av::MediaType::video();
+/// let position = device::Position::Front;
+/// let mut device = Device::with_device_type_media_and_position(device_type, Some(media_type), position).expect("device");
+/// device.unique_id().show();
+/// assert!(!device.has_torch());
+/// assert!(device.formats().len() > 0);
+/// assert!(device.supports_preset(av::CaptureSessionPreset::photo()));
+/// let mut lock = device.configuration_lock().expect("locked");
+///
+/// ```
 impl Device {
-    /// ```
-    /// use cidre::{av::{self, capture::device::{self, Device} }};
-    ///
-    /// let device_type = device::Type::built_in_wide_angle_camera();
-    /// let media_type = av::MediaType::video();
-    /// let position = device::Position::Front;
-    /// let mut device = Device::with_device_type_media_and_position(device_type, Some(media_type), position).expect("device");
-    /// device.unique_id().show();
-    /// assert!(device.formats().len() > 0);
-    /// assert!(device.supports_preset(av::CaptureSessionPreset::photo()));
-    /// let mut lock = device.configuration_lock().expect("locked");
-    ///
-    /// ```
     pub fn with_device_type_media_and_position<'a>(
         device_type: &Type,
         media_type: Option<&MediaType>,
@@ -130,6 +131,22 @@ impl Device {
 
     pub fn supports_preset(&self, preset: &SessionPreset) -> bool {
         unsafe { rsel_supportsAVCaptureSessionPreset(self, preset) }
+    }
+
+    pub fn active_format(&self) -> &Format {
+        unsafe { rsel_activeFormat(self) }
+    }
+
+    pub fn active_video_min_frame_duration(&self) -> cm::Time {
+        unsafe { rsel_activeVideoMinFrameDuration(self) }
+    }
+
+    pub fn active_video_max_frame_duration(&self) -> cm::Time {
+        unsafe { rsel_activeVideoMaxFrameDuration(self) }
+    }
+
+    pub fn has_torch(&self) -> bool {
+        unsafe { rsel_hasTorch(self) }
     }
 
     pub fn configuration_lock(&mut self) -> Result<ConfigurationLockGuard, Retained<cf::Error>> {
@@ -160,6 +177,20 @@ impl Device {
 
 pub struct ConfigurationLockGuard<'a> {
     device: &'a mut Device,
+}
+
+impl<'a> ConfigurationLockGuard<'a> {
+    pub fn set_active_format(&mut self, value: &Format) {
+        unsafe { wsel_setActiveFormat(self.device, value) }
+    }
+
+    pub fn set_active_video_min_frame_duration(&mut self, value: cm::Time) {
+        unsafe { wsel_setActiveVideoMinFrameDuration(self.device, value) }
+    }
+
+    pub fn set_active_video_max_frame_duration(&mut self, value: cm::Time) {
+        unsafe { wsel_setActiveVideoMaxFrameDuration(self.device, value) }
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -200,4 +231,30 @@ extern "C" {
 
     fn rsel_supportsAVCaptureSessionPreset(device: &Device, preset: &SessionPreset) -> bool;
     fn rsel_formats(device: &Device) -> &cf::ArrayOf<Format>;
+
+    fn rsel_activeFormat(device: &Device) -> &Format;
+    fn wsel_setActiveFormat(device: &mut Device, value: &Format);
+
+    fn rsel_activeVideoMinFrameDuration(device: &Device) -> cm::Time;
+    fn wsel_setActiveVideoMinFrameDuration(device: &mut Device, value: cm::Time);
+
+    fn rsel_activeVideoMaxFrameDuration(device: &Device) -> cm::Time;
+    fn wsel_setActiveVideoMaxFrameDuration(device: &mut Device, value: cm::Time);
+
+    fn rsel_hasTorch(device: &Device) -> bool;
+
+}
+
+#[repr(isize)]
+pub enum TorchMode {
+    Off = 0,
+    On = 1,
+    Auto = 2,
+}
+
+#[repr(isize)]
+pub enum FocusMode {
+    Locked = 0,
+    AutoFocus = 1,
+    ContinuousAutoFocus = 2,
 }

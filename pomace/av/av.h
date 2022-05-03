@@ -44,6 +44,20 @@ rsel_a(, id, supportsAVCaptureSessionPreset, AVCaptureSessionPreset, BOOL)
 NS_RETURNS_NOT_RETAINED
 rsel(, id, formats, NSArray<AVCaptureDeviceFormat *> *)
 
+//@property(nonatomic, retain) AVCaptureDeviceFormat *activeFormat
+NS_RETURNS_NOT_RETAINED
+rsel(, id, activeFormat, AVCaptureDeviceFormat *)
+wsel_a(, id, setActiveFormat, AVCaptureDeviceFormat* )
+
+//@property(nonatomic) CMTime activeVideoMinFrameDuration API_AVAILABLE(ios(7.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
+rsel(, id, activeVideoMinFrameDuration, CMTime)
+wsel_a(, id, setActiveVideoMinFrameDuration, CMTime)
+rsel(, id, activeVideoMaxFrameDuration, CMTime)
+wsel_a(, id, setActiveVideoMaxFrameDuration, CMTime)
+
+// @property(nonatomic, readonly) BOOL hasTorch;
+rsel(, id, hasTorch, BOOL)
+
 //+ (nullable AVCaptureDevice *)deviceWithUniqueID:(NSString *)deviceUniqueID;
 // + (nullable AVCaptureDevice *)defaultDeviceWithDeviceType:(AVCaptureDeviceType)deviceType mediaType:(nullable AVMediaType)mediaType position:(AVCaptureDevicePosition)position API_AVAILABLE(macos(10.15), ios(10.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
 
