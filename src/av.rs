@@ -17,8 +17,8 @@ pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
 
 #[cfg(not(target_os = "macos"))]
-pub use capture::SystemPressureLevel as CaptureSystemPressureLevel;
-#[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;
+#[cfg(not(target_os = "macos"))]
+pub use capture::SystemPressureLevel as CaptureSystemPressureLevel;
 #[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureState as CaptureSystemPressureState;

@@ -1,10 +1,8 @@
 use crate::cf;
 
-
 pub type SessionPreset = cf::String;
 
 impl SessionPreset {
-
     #[inline]
     pub fn photo() -> &'static Self {
         unsafe { AVCaptureSessionPresetPhoto }
@@ -54,7 +52,7 @@ impl SessionPreset {
     pub fn _1920x1080() -> &'static Self {
         unsafe { AVCaptureSessionPreset1920x1080 }
     }
-    
+
     #[inline]
     pub fn _3840x2160() -> &'static Self {
         unsafe { AVCaptureSessionPreset3840x2160 }

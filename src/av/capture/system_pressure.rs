@@ -6,7 +6,6 @@ pub type Level = cf::String;
 
 #[cfg(not(target_os = "macos"))]
 impl Level {
-
     #[inline]
     pub fn nominal() -> &'static Self {
         unsafe { AVCaptureSystemPressureLevelNominal }
@@ -32,7 +31,6 @@ impl Level {
         unsafe { AVCaptureSystemPressureLevelShutdown }
     }
 }
-
 
 #[cfg(not(target_os = "macos"))]
 #[repr(usize)]
