@@ -17,6 +17,7 @@ pub use capture::FrameRateRange;
 pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
 pub use capture::InterruptionReason as CaptureInterruptionReason;
+pub use capture::MicrophoneMode as CaptureMicrophoneMode;
 pub use capture::Output as CaptureOutput;
 pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;

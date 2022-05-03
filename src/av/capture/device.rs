@@ -267,3 +267,10 @@ pub enum CenterStageControlMode {
     App = 1,
     Cooperative = 2,
 }
+
+#[repr(isize)]
+pub enum MicrophoneMode {
+    Standard = 0,
+    WideSpectrum = 1,
+    VoiceIsolation = 2,
+}
