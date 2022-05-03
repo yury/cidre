@@ -90,12 +90,12 @@ define_obj_type!(Device(Id));
 
 impl Device {
     /// ```
-    /// use cidre::av;
+    /// use cidre::{av::{self, capture::device::{self, Device} }};
     ///
-    /// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
+    /// let device_type = device::Type::built_in_wide_angle_camera();
     /// let media_type = av::MediaType::video();
-    /// let position = av::CaptureDevicePosition::Front;
-    /// let device = av::CaptureDevice::with_device_type_media_and_position(device_type, Some(media_type), position);
+    /// let position = device::Position::Front;
+    /// let device = Device::with_device_type_media_and_position(device_type, Some(media_type), position);
     /// assert!(device.is_some());
     ///
     /// ```
