@@ -1,9 +1,9 @@
 use crate::cf;
 
 
-pub type CaptureSessionPreset = cf::String;
+pub type SessionPreset = cf::String;
 
-impl CaptureSessionPreset {
+impl SessionPreset {
 
     #[inline]
     pub fn photo() -> &'static Self {
@@ -78,18 +78,18 @@ impl CaptureSessionPreset {
 
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
-    static AVCaptureSessionPresetPhoto: &'static CaptureSessionPreset;
-    static AVCaptureSessionPresetHigh: &'static CaptureSessionPreset;
-    static AVCaptureSessionPresetMedium: &'static CaptureSessionPreset;
-    static AVCaptureSessionPresetLow: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset320x240: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset352x288: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset640x480: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset960x540: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset1280x720: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset1920x1080: &'static CaptureSessionPreset;
-    static AVCaptureSessionPreset3840x2160: &'static CaptureSessionPreset;
-    static AVCaptureSessionPresetiFrame960x540: &'static CaptureSessionPreset;
-    static AVCaptureSessionPresetiFrame1280x720: &'static CaptureSessionPreset;
-    static AVCaptureSessionPresetInputPriority: &'static CaptureSessionPreset;
+    static AVCaptureSessionPresetPhoto: &'static SessionPreset;
+    static AVCaptureSessionPresetHigh: &'static SessionPreset;
+    static AVCaptureSessionPresetMedium: &'static SessionPreset;
+    static AVCaptureSessionPresetLow: &'static SessionPreset;
+    static AVCaptureSessionPreset320x240: &'static SessionPreset;
+    static AVCaptureSessionPreset352x288: &'static SessionPreset;
+    static AVCaptureSessionPreset640x480: &'static SessionPreset;
+    static AVCaptureSessionPreset960x540: &'static SessionPreset;
+    static AVCaptureSessionPreset1280x720: &'static SessionPreset;
+    static AVCaptureSessionPreset1920x1080: &'static SessionPreset;
+    static AVCaptureSessionPreset3840x2160: &'static SessionPreset;
+    static AVCaptureSessionPresetiFrame960x540: &'static SessionPreset;
+    static AVCaptureSessionPresetiFrame1280x720: &'static SessionPreset;
+    static AVCaptureSessionPresetInputPriority: &'static SessionPreset;
 }

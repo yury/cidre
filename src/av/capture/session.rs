@@ -1,7 +1,7 @@
 use crate::{define_obj_type, objc::Id};
 
 #[repr(isize)]
-pub enum CaptureVideoOrienation {
+pub enum VideoOrienation {
     Portrait = 1,
     PortraitUpsideDown = 2,
     LandscapeRight = 3,
@@ -17,5 +17,5 @@ pub enum InterruptionReason {
     VideoDeviceNotAvailableDueToSystemPressure = 5,
 }
 
-define_obj_type!(CaptureSession(Id));
-define_obj_type!(CaptureConnection(Id));
+define_obj_type!(Session(Id));
+define_obj_type!(Connection(Id));
