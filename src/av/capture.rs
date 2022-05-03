@@ -1,7 +1,10 @@
 pub mod device;
+pub use device::CenterStageControlMode;
+pub use device::ConfigurationLockGuard as DeviceConfigurationLockGuard;
 pub use device::Device;
 pub use device::FocusMode;
 pub use device::Format as DeviceFormat;
+pub use device::FrameRateRange;
 pub use device::Position as DevicePosition;
 pub use device::TorchMode;
 pub use device::Type as DeviceType;

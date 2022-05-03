@@ -258,3 +258,12 @@ pub enum FocusMode {
     AutoFocus = 1,
     ContinuousAutoFocus = 2,
 }
+
+define_obj_type!(FrameRateRange(Id));
+
+#[repr(isize)]
+pub enum CenterStageControlMode {
+    User = 0,
+    App = 1,
+    Cooperative = 2,
+}

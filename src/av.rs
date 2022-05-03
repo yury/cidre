@@ -4,13 +4,16 @@ pub use media_format::MediaType;
 pub use media_format::VideoRange;
 
 pub mod capture;
+pub use capture::CenterStageControlMode as CaptureCenterStageControlMode;
 pub use capture::Connection as CaptureConnection;
 pub use capture::DataDroppedReason as CaptureDataDroppedReason;
 pub use capture::Device as CaptureDevice;
+pub use capture::DeviceConfigurationLockGuard as CaptureDeviceConfigurationLockGuard;
 pub use capture::DeviceFormat as CaptureDeviceFormat;
 pub use capture::DevicePosition as CaptureDevicePosition;
 pub use capture::DeviceType as CaptureDeviceType;
 pub use capture::FocusMode as CaptureFocusMode;
+pub use capture::FrameRateRange;
 pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
 pub use capture::InterruptionReason as CaptureInterruptionReason;
