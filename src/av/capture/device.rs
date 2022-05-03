@@ -9,8 +9,6 @@ use crate::{
 
 use super::SessionPreset;
 
-define_obj_type!(Format(Id));
-
 pub type Type = cf::String;
 
 /// ```
@@ -259,6 +257,13 @@ pub enum FocusMode {
     ContinuousAutoFocus = 2,
 }
 
+#[repr(isize)]
+pub enum AutoFocusSystem {
+    None = 0,
+    ContrastDetection = 1,
+    PhaseDetection = 2,
+}
+
 define_obj_type!(FrameRateRange(Id));
 
 #[repr(isize)]
@@ -273,4 +278,48 @@ pub enum MicrophoneMode {
     Standard = 0,
     WideSpectrum = 1,
     VoiceIsolation = 2,
+}
+
+define_obj_type!(Format(Id));
+
+impl Format {
+    #[cfg(not(target_os = "macos"))]
+    pub fn is_video_binned(&self) -> bool {
+        unsafe { rsel_isVideoBinned(self) }
+    }
+
+    pub fn video_supported_frame_rate_ranges(&self) -> &cf::ArrayOf<FrameRateRange> {
+        unsafe { rsel_videoSupportedFrameRateRanges(self) }
+    }
+
+    pub fn format_description(&self) -> &cm::FormatDescription {
+        unsafe { rsel_formatDescription(self) }
+    }
+
+    pub fn auto_focus_system(&self) -> AutoFocusSystem {
+        unsafe { rsel_autoFocusSystem(self) }
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    pub fn is_mutli_cam_supported(&self) -> bool {
+        unsafe { rsel_isMultiCamSupported(self) }
+    }
+
+    pub fn is_center_sstage_supported(&self) -> bool {
+        unsafe { rsel_isCenterStageSupported(self) }
+    }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    #[cfg(not(target_os = "macos"))]
+    fn rsel_isVideoBinned(format: &Format) -> bool;
+    #[cfg(not(target_os = "macos"))]
+    fn rsel_isMultiCamSupported(format: &Format) -> bool;
+
+    fn rsel_isCenterStageSupported(format: &Format) -> bool;
+
+    fn rsel_videoSupportedFrameRateRanges(format: &Format) -> &cf::ArrayOf<FrameRateRange>;
+    fn rsel_formatDescription(format: &Format) -> &cm::FormatDescription;
+    fn rsel_autoFocusSystem(format: &Format) -> AutoFocusSystem;
 }

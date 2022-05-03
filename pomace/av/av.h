@@ -58,6 +58,30 @@ wsel_a(, id, setActiveVideoMaxFrameDuration, CMTime)
 // @property(nonatomic, readonly) BOOL hasTorch;
 rsel(, id, hasTorch, BOOL)
 
+//@property(nonatomic, readonly, getter=isVideoBinned) BOOL videoBinned API_UNAVAILABLE(macos);
+#if TARGET_OS_IPHONE
+rsel(, id, isVideoBinned, BOOL)
+#endif
+
+//@property(nonatomic, readonly) NSArray<AVFrameRateRange *> *videoSupportedFrameRateRanges;
+rsel(, id, videoSupportedFrameRateRanges, NSArray<AVFrameRateRange *> *)
+
+//@property(nonatomic, readonly) CMFormatDescriptionRef formatDescription;
+rsel(, id, formatDescription, CMFormatDescriptionRef)
+
+//@property(nonatomic, readonly) AVCaptureAutoFocusSystem autoFocusSystem API_AVAILABLE(macos(10.15), ios(8.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
+rsel(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
+
+//@property(nonatomic, readonly, getter=isMultiCamSupported) BOOL multiCamSupported API_AVAILABLE(ios(13.0), macCatalyst(14.0)) API_UNAVAILABLE(macos, tvos) API_UNAVAILABLE(watchos);
+#if TARGET_OS_IPHONE
+rsel(, id, isMultiCamSupported, BOOL)
+#endif
+
+//@property(nonatomic, readonly, getter=isCenterStageSupported) BOOL centerStageSupported API_AVAILABLE(macos(12.3), ios(14.5), macCatalyst(14.5)) API_UNAVAILABLE(tvos) API_UNAVAILABLE(watchos);
+
+rsel(, id, isCenterStageSupported, BOOL)
+
+
 //+ (nullable AVCaptureDevice *)deviceWithUniqueID:(NSString *)deviceUniqueID;
 // + (nullable AVCaptureDevice *)defaultDeviceWithDeviceType:(AVCaptureDeviceType)deviceType mediaType:(nullable AVMediaType)mediaType position:(AVCaptureDevicePosition)position API_AVAILABLE(macos(10.15), ios(10.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
 

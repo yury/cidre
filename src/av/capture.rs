@@ -1,4 +1,5 @@
 pub mod device;
+pub use device::AutoFocusSystem;
 pub use device::CenterStageControlMode;
 pub use device::ConfigurationLockGuard as DeviceConfigurationLockGuard;
 pub use device::Device;

@@ -4,6 +4,7 @@ pub use media_format::MediaType;
 pub use media_format::VideoRange;
 
 pub mod capture;
+pub use capture::AutoFocusSystem as CaptureAutoFocusSystem;
 pub use capture::CenterStageControlMode as CaptureCenterStageControlMode;
 pub use capture::Connection as CaptureConnection;
 pub use capture::DataDroppedReason as CaptureDataDroppedReason;
