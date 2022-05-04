@@ -38,3 +38,17 @@ extern "C" {
     fn rsel_isEnabled(id: &Id) -> bool;
     fn wsel_setEnabled(id: &Id, value: bool);
 }
+
+pub mod port_notifications {
+    use crate::cf;
+
+    pub fn format_description_did_change() -> &'static cf::NotificationName {
+        unsafe { AVCaptureInputPortFormatDescriptionDidChangeNotification }
+    }
+
+    #[link(name = "AVFoundation", kind = "framework")]
+    extern "C" {
+        static AVCaptureInputPortFormatDescriptionDidChangeNotification:
+            &'static cf::NotificationName;
+    }
+}

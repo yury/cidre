@@ -67,10 +67,11 @@ pub use error::Error;
 
 pub mod notification_center;
 pub use notification_center::NotificationCenter;
+pub use notification_center::NotificationName;
 
 pub mod set;
-pub use set::Set;
 pub use set::MutableSet;
+pub use set::Set;
 
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;

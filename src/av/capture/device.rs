@@ -329,3 +329,28 @@ extern "C" {
 
     fn rsel_videoFrameRateRangeForCenterStage(format: &Format) -> Option<&FrameRateRange>;
 }
+
+pub mod notifications {
+    use crate::cf;
+
+    pub fn was_connected() -> &'static cf::NotificationName {
+        unsafe { AVCaptureDeviceWasConnectedNotification }
+    }
+
+    pub fn was_disconnected() -> &'static cf::NotificationName {
+        unsafe { AVCaptureDeviceWasDisconnectedNotification }
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    pub fn subject_area_did_change() -> &'static cf::NotificationName {
+        unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
+    }
+
+    #[link(name = "AVFoundation", kind = "framework")]
+    extern "C" {
+        static AVCaptureDeviceWasConnectedNotification: &'static cf::NotificationName;
+        static AVCaptureDeviceWasDisconnectedNotification: &'static cf::NotificationName;
+        #[cfg(not(target_os = "macos"))]
+        static AVCaptureDeviceSubjectAreaDidChangeNotification: &'static cf::NotificationName;
+    }
+}
