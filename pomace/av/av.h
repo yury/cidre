@@ -81,8 +81,22 @@ rsel(, id, isMultiCamSupported, BOOL)
 
 rsel(, id, isCenterStageSupported, BOOL)
 
+//@property(nonatomic, readonly, nullable) AVFrameRateRange *videoFrameRateRangeForCenterStage API_AVAILABLE(macos(12.3), ios(14.5), macCatalyst(14.5)) API_UNAVAILABLE(tvos) API_UNAVAILABLE(watchos);
+NS_RETURNS_NOT_RETAINED
+rsel(, id, videoFrameRateRangeForCenterStage, AVFrameRateRange* _Nullable)
 
 //+ (nullable AVCaptureDevice *)deviceWithUniqueID:(NSString *)deviceUniqueID;
 // + (nullable AVCaptureDevice *)defaultDeviceWithDeviceType:(AVCaptureDeviceType)deviceType mediaType:(nullable AVMediaType)mediaType position:(AVCaptureDevicePosition)position API_AVAILABLE(macos(10.15), ios(10.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
+
+#pragma mark - AVCaptureInput
+
+//@property(nonatomic, readonly) NSArray<AVCaptureInputPort *> *ports;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, ports, NSArray<AVCaptureInputPort *> *);
+
+
+//@property(nonatomic, readonly) AVCaptureInput *input;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, input, AVCaptureInput *)
 
 NS_ASSUME_NONNULL_END

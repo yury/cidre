@@ -308,6 +308,10 @@ impl Format {
     pub fn is_center_sstage_supported(&self) -> bool {
         unsafe { rsel_isCenterStageSupported(self) }
     }
+
+    pub fn video_frame_rate_range_for_center_stage(&self) -> Option<&FrameRateRange> {
+        unsafe { rsel_videoFrameRateRangeForCenterStage(self) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -322,4 +326,6 @@ extern "C" {
     fn rsel_videoSupportedFrameRateRanges(format: &Format) -> &cf::ArrayOf<FrameRateRange>;
     fn rsel_formatDescription(format: &Format) -> &cm::FormatDescription;
     fn rsel_autoFocusSystem(format: &Format) -> AutoFocusSystem;
+
+    fn rsel_videoFrameRateRangeForCenterStage(format: &Format) -> Option<&FrameRateRange>;
 }
