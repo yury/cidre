@@ -109,4 +109,12 @@ rsel(, id, connections, NSArray<AVCaptureConnection *> *)
 NS_RETURNS_NOT_RETAINED
 rsel_a(, id, connectionWithMediaType, AVMediaType, AVCaptureConnection * _Nullable)
 
+bool is_mutlicam_supported(void) {
+#if TARGET_OS_OSX
+  return NO;
+#else
+  return [AVCaptureMultiCamSession isMultiCamSupported];
+#endif
+}
+
 NS_ASSUME_NONNULL_END

@@ -18,4 +18,22 @@ pub enum InterruptionReason {
 }
 
 define_obj_type!(Session(Id));
+define_obj_type!(MultiCamSession(Session));
+
+impl MultiCamSession {
+    /// ```
+    /// use cidre::av;
+    ///
+    /// assert!(!av::CaptureMultiCamSession::multicam_supported());
+    /// ```
+    pub fn multicam_supported() -> bool {
+        unsafe { is_mutlicam_supported() }
+    }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    fn is_mutlicam_supported() -> bool;
+}
+
 define_obj_type!(Connection(Id));
