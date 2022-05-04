@@ -117,4 +117,47 @@ bool is_mutlicam_supported(void) {
 #endif
 }
 
+#pragma mark - AVCaptureSession
+
+//- (BOOL)canSetSessionPreset:(AVCaptureSessionPreset)preset;
+rsel_a(, id, canSetSessionPreset, AVCaptureSessionPreset, BOOL)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, sessionPreset, AVCaptureSessionPreset)
+
+wsel_a(, id, setSessionPreset, AVCaptureSessionPreset)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, AVCaptureSession *, inputs, NSArray<__kindof AVCaptureInput *> *)
+
+//- (BOOL)canAddInput:(AVCaptureInput *)input;
+rsel_a(, id, canAddInput, AVCaptureInput *, BOOL)
+//- (void)addInput:(AVCaptureInput *)input;
+wsel_a(, id, addInput, AVCaptureInput *)
+//- (void)removeInput:(AVCaptureInput *)input;
+wsel_a(, id, removeInput, AVCaptureInput *)
+
+//@property(nonatomic, readonly) NSArray<__kindof AVCaptureOutput *> *outputs;
+NS_RETURNS_NOT_RETAINED
+rsel(, AVCaptureSession *, outputs, NSArray<__kindof AVCaptureOutput *> *)
+
+rsel_a(, id, canAddOutput, AVCaptureOutput *, BOOL)
+wsel_a(, id, addOutput, AVCaptureOutput *)
+wsel_a(, id, removeOutput, AVCaptureOutput *)
+
+wsel_a(, id, addInputWithNoConnections, AVCaptureInput *)
+wsel_a(, id, addOutputWithNoConnections, AVCaptureOutput *)
+
+rsel_a(, id, canAddConnection, AVCaptureConnection *, BOOL)
+wsel_a(, id, addConnection, AVCaptureConnection *)
+wsel_a(, id, removeConnection, AVCaptureConnection *)
+
+//- (void)beginConfiguration;
+wsel(, id, beginConfiguration)
+//- (void)commitConfiguration;
+wsel(, id, commitConfiguration)
+
+wsel(, id, startRunning)
+wsel(, id, stopRunning)
+
 NS_ASSUME_NONNULL_END

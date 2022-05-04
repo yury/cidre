@@ -6,6 +6,7 @@ pub use media_format::VideoRange;
 pub mod capture;
 pub use capture::device_notifications as capture_device_notifications;
 pub use capture::input_port_notifications as capture_input_port_notifications;
+pub use capture::session_notifications as capture_session_notifications;
 pub use capture::AutoFocusSystem as CaptureAutoFocusSystem;
 pub use capture::CenterStageControlMode as CaptureCenterStageControlMode;
 pub use capture::Connection as CaptureConnection;
