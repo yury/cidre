@@ -33,3 +33,6 @@ pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;
 pub use capture::SystemPressureLevel as CaptureSystemPressureLevel;
 #[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureState as CaptureSystemPressureState;
+
+pub mod metadata_object;
+pub use metadata_object::MetadataObject;

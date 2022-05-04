@@ -99,4 +99,14 @@ rsel(, id, ports, NSArray<AVCaptureInputPort *> *);
 NS_RETURNS_NOT_RETAINED
 rsel(, id, input, AVCaptureInput *)
 
+#pragma mark - AVCaptureOutput
+
+// @property(nonatomic, readonly) NSArray<AVCaptureConnection *> *connections;
+NS_RETURNS_NOT_RETAINED
+rsel(, id, connections, NSArray<AVCaptureConnection *> *)
+
+
+NS_RETURNS_NOT_RETAINED
+rsel_a(, id, connectionWithMediaType, AVMediaType, AVCaptureConnection * _Nullable)
+
 NS_ASSUME_NONNULL_END
