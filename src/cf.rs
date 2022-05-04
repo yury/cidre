@@ -65,6 +65,9 @@ pub mod error;
 pub use error::Domain as ErrorDomain;
 pub use error::Error;
 
+pub mod notification_center;
+pub use notification_center::NotificationCenter;
+
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;
 
