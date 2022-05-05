@@ -72,6 +72,7 @@ pub use notification_center::NotificationName;
 pub mod set;
 pub use set::MutableSet;
 pub use set::Set;
+pub use set::SetOf;
 
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;

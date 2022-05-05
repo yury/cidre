@@ -390,7 +390,7 @@ impl DiscoverySession {
     }
 
     // @property(nonatomic, readonly) NSArray<NSSet<AVCaptureDevice *> *> *supportedMultiCamDeviceSets
-    pub fn supported_multi_cam_device_sets(&self) -> &cf::ArrayOf<cf::Set> {
+    pub fn supported_multi_cam_device_sets(&self) -> &cf::ArrayOf<cf::SetOf<Device>> {
         todo!()
     }
 }

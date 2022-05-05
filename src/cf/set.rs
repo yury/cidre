@@ -1,4 +1,4 @@
-use std::{ffi::c_void, marker::PhantomData, ops::Deref};
+use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref};
 
 use crate::{cf, define_cf_type};
 
@@ -61,6 +61,24 @@ where
 
     fn deref(&self) -> &Self::Target {
         todo!()
+    }
+}
+
+impl<T> Release for SetOf<T>
+where
+    T: Release + Retain,
+{
+    unsafe fn release(&mut self) {
+        self.0.release()
+    }
+}
+
+impl<T> Retain for SetOf<T>
+where
+    T: Release + Retain,
+{
+    fn retained<'a>(&self) -> Retained<'a, Self> {
+        unsafe { transmute(self.0.retained()) }
     }
 }
 
