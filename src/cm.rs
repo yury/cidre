@@ -6,7 +6,9 @@ pub use base::ItemIndex;
 pub mod format_description;
 pub use format_description::FormatDescription;
 pub use format_description::MediaType;
+pub use format_description::PixelFormatType;
 pub use format_description::VideoCodecType;
+pub use format_description::VideoDimensions;
 pub use format_description::VideoFormatDescription;
 
 pub mod time;

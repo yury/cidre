@@ -88,6 +88,14 @@ rsel(, id, videoFrameRateRangeForCenterStage, AVFrameRateRange* _Nullable)
 //+ (nullable AVCaptureDevice *)deviceWithUniqueID:(NSString *)deviceUniqueID;
 // + (nullable AVCaptureDevice *)defaultDeviceWithDeviceType:(AVCaptureDeviceType)deviceType mediaType:(nullable AVMediaType)mediaType position:(AVCaptureDevicePosition)position API_AVAILABLE(macos(10.15), ios(10.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
 
+#pragma mark - AVFrameRateRange
+
+rsel(,id, minFrameRate, Float64)
+rsel(,id, maxFrameRate, Float64)
+
+rsel(,id,  minFrameDuration, CMTime)
+rsel(,id,  maxFrameDuration, CMTime)
+
 #pragma mark - AVCaptureInput
 
 //@property(nonatomic, readonly) NSArray<AVCaptureInputPort *> *ports;
@@ -116,6 +124,14 @@ bool is_mutlicam_supported(void) {
   return [AVCaptureMultiCamSession isMultiCamSupported];
 #endif
 }
+
+#if TARGET_OS_OSX
+
+#else
+//@property(nonatomic, readonly) float hardwareCost;
+rsel(, id, hardwareCost, float)
+rsel(, id, systemPressureCost, float)
+#endif
 
 #pragma mark - AVCaptureSession
 

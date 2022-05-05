@@ -32,6 +32,7 @@ pub struct SampleTimingInfo {
 }
 
 impl SampleTimingInfo {
+    #[inline]
     pub fn invalid() -> Self {
         unsafe { kCMTimingInfoInvalid }
     }

@@ -257,6 +257,7 @@ pub enum FocusMode {
     ContinuousAutoFocus = 2,
 }
 
+#[derive(Debug, Clone, Copy)]
 #[repr(isize)]
 pub enum AutoFocusSystem {
     None = 0,
@@ -265,6 +266,32 @@ pub enum AutoFocusSystem {
 }
 
 define_obj_type!(FrameRateRange(Id));
+
+impl FrameRateRange {
+    pub fn min_frame_rate(&self) -> f64 {
+        unsafe { rsel_minFrameRate(self) }
+    }
+
+    pub fn max_frame_rate(&self) -> f64 {
+        unsafe { rsel_maxFrameRate(self) }
+    }
+
+    pub fn max_frame_duration(&self) -> cm::Time {
+        unsafe { rsel_maxFrameDuration(self) }
+    }
+
+    pub fn min_frame_duration(&self) -> cm::Time {
+        unsafe { rsel_minFrameDuration(self) }
+    }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    fn rsel_minFrameRate(id: &Id) -> f64;
+    fn rsel_maxFrameRate(id: &Id) -> f64;
+    fn rsel_maxFrameDuration(id: &Id) -> cm::Time;
+    fn rsel_minFrameDuration(id: &Id) -> cm::Time;
+}
 
 #[repr(isize)]
 pub enum CenterStageControlMode {
@@ -352,5 +379,18 @@ pub mod notifications {
         static AVCaptureDeviceWasDisconnectedNotification: &'static cf::NotificationName;
         #[cfg(not(target_os = "macos"))]
         static AVCaptureDeviceSubjectAreaDidChangeNotification: &'static cf::NotificationName;
+    }
+}
+
+define_obj_type!(DiscoverySession(Id));
+
+impl DiscoverySession {
+    pub fn devices(&self) -> &cf::ArrayOf<Device> {
+        todo!()
+    }
+
+    // @property(nonatomic, readonly) NSArray<NSSet<AVCaptureDevice *> *> *supportedMultiCamDeviceSets
+    pub fn supported_multi_cam_device_sets(&self) -> &cf::ArrayOf<cf::Set> {
+        todo!()
     }
 }

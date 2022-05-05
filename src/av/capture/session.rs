@@ -174,11 +174,51 @@ impl MultiCamSession {
     pub fn multicam_supported() -> bool {
         unsafe { is_mutlicam_supported() }
     }
+
+    #[cfg(not(target_os = "macos"))]
+    pub fn hardware_cost(&self) -> f32 {
+        unsafe { rsel_hardwareCost(self) }
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    pub fn system_pressure_cost(&self) -> f32 {
+        unsafe { rsel_systemPressureCost(self) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn is_mutlicam_supported() -> bool;
+
+    /// The value of this property is a float from 0.0 => 1.0 indicating
+    /// how much of the session's available hardware is in use as a percentage,
+    /// given the currently connected inputs and outputs and the features for
+    /// which you've opted in. When your hardwareCost is greater than 1.0,
+    /// the capture session cannot run your desired configuration due to
+    /// hardware constraints, so you receive an AVCaptureSessionRuntimeErrorNotification
+    /// when attempting to start it running. Default value is 0.
+    /// Contributors to hardwareCost include:
+    ///     - Whether the source devices' active formats use the full
+    ///       sensor (4:3) or a crop (16:9). Cropped formats require lower
+    ///       hardware bandwidth, and therefore lower the cost.
+    ///     - The max frame rate supported by the source devices' active formats.
+    ///       The higher the max frame rate, the higher the cost.
+    ///     - Whether the source devices' active formats are binned or not.
+    ///       Binned formats require substantially less hardware bandwidth,
+    ///       and therefore result in a lower cost.
+    ///     - The number of sources configured to deliver streaming
+    ///       disparity / depth via AVCaptureDepthDataOutput. The higher the number
+    ///       of cameras configured to produce depth, the higher the cost.
+    ///       In order to reduce hardwareCost, consider picking a sensor-cropped
+    ///       activeFormat, or a binned format.
+    ///       You may also use AVCaptureDeviceInput's videoMinFrameDurationOverride
+    ///       property to artificially limit the max frame rate (which is the
+    ///       reciprocal of the min frame duration) of a source device to a lower value.
+    ///       By doing so, you only pay the hardware cost for the max frame rate you intend to use.
+    #[cfg(not(target_os = "macos"))]
+    fn rsel_hardwareCost(session: &MultiCamSession) -> f32;
+    #[cfg(not(target_os = "macos"))]
+    fn rsel_systemPressureCost(session: &MultiCamSession) -> f32;
 }
 
 define_obj_type!(Connection(Id));

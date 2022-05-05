@@ -1,7 +1,7 @@
 use crate::define_cf_type;
 
 use super::{
-    runtime::{Release, Retain},
+    runtime::{Autoreleased, Release, Retain},
     Allocator, Index, Retained, String, Type, TypeId,
 };
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
@@ -41,6 +41,15 @@ where
     pub fn new<'a>() -> Option<Retained<'a, ArrayOf<T>>> {
         let arr = Array::create(None, None, 0, None);
         unsafe { transmute(arr) }
+    }
+
+    #[inline]
+    pub fn iter<'a>(&'a self) -> ArrayOfIterator<'a, T> {
+        ArrayOfIterator {
+            array: self,
+            index: 0,
+            len: self.len(),
+        }
     }
 }
 
@@ -82,6 +91,41 @@ where
 {
     fn retained<'a>(&self) -> Retained<'a, Self> {
         unsafe { transmute(self.0.retained()) }
+    }
+}
+
+pub struct ArrayOfIterator<'a, T>
+where
+    T: Retain,
+{
+    array: &'a ArrayOf<T>,
+    index: usize,
+    len: usize,
+}
+
+impl<'a, T> Iterator for ArrayOfIterator<'a, T>
+where
+    T: Retain,
+{
+    type Item = Autoreleased<'a, T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index < self.len {
+            let res = unsafe { transmute::<&T, Autoreleased<'a, T>>(&self.array[self.index]) };
+            self.index += 1;
+            Some(res)
+        } else {
+            None
+        }
+    }
+}
+
+impl<'a, T> ExactSizeIterator for ArrayOfIterator<'a, T>
+where
+    T: Retain,
+{
+    fn len(&self) -> usize {
+        self.array.len() - self.index
     }
 }
 

@@ -162,3 +162,5 @@ extern "C" {
     fn CFEqual(cf1: &Type, cf2: &Type) -> bool;
     fn CFCopyDescription<'a>(cf: Option<&Type>) -> Option<Retained<'a, String>>;
 }
+
+define_cf_type!(PropertyList(Type));
