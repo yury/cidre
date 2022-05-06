@@ -21,10 +21,10 @@ impl Boolean {
     /// use cidre::cf;
     ///
     /// let f = cf::Boolean::value_true();
-    /// assert_eq!(true, f.get_value());
+    /// assert_eq!(true, f.value());
     /// ```
     #[inline]
-    pub fn get_value(&self) -> bool {
+    pub fn value(&self) -> bool {
         unsafe { CFBooleanGetValue(self) }
     }
 
@@ -32,7 +32,7 @@ impl Boolean {
     /// use cidre::cf;
     ///
     /// let f = cf::Boolean::value_true();
-    /// assert_eq!(true, f.get_value());
+    /// assert_eq!(true, f.value());
     /// ```
     #[inline]
     pub fn value_true() -> &'static Boolean {
@@ -43,7 +43,7 @@ impl Boolean {
     /// use cidre::cf;
     ///
     /// let f = cf::Boolean::value_false();
-    /// assert_eq!(false, f.get_value());
+    /// assert_eq!(false, f.value());
     /// ```
     #[inline]
     pub fn value_false() -> &'static Boolean {
@@ -53,14 +53,14 @@ impl Boolean {
 
 impl std::fmt::Debug for Boolean {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{:?}", self.get_value()))
+        f.write_fmt(format_args!("{:?}", self.value()))
     }
 }
 
 impl From<Boolean> for bool {
     #[inline]
     fn from(cf: Boolean) -> Self {
-        cf.get_value()
+        cf.value()
     }
 }
 
@@ -83,7 +83,7 @@ impl<'a> PartialEq<bool> for &'a Boolean {
     /// assert!(cf::Boolean::value_false() == false);
     /// ```
     fn eq(&self, other: &bool) -> bool {
-        self.get_value().eq(other)
+        self.value().eq(other)
     }
 }
 

@@ -4,7 +4,7 @@ use crate::define_cf_type;
 
 use crate::cf;
 
-pub type NotificationName = cf::String;
+define_cf_type!(NotificationName(cf::String));
 
 pub type NotificationCallback = extern "C" fn(
     center: &NotificationCenter,
