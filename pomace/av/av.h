@@ -176,4 +176,21 @@ wsel(, id, commitConfiguration)
 wsel(, id, startRunning)
 wsel(, id, stopRunning)
 
+#pragma mark - AVCaptureDeviceDiscoverySession
+
+NS_RETURNS_RETAINED
+csel_abc(, AVCaptureDeviceDiscoverySession, discoverySessionWithDeviceTypes, NSArray<AVCaptureDeviceType> *, mediaType, AVMediaType _Nullable, position, AVCaptureDevicePosition, AVCaptureDeviceDiscoverySession *)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, devices, NSArray<AVCaptureDevice *> *)
+
+#if TARGET_OS_OSX
+
+#else
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, supportedMultiCamDeviceSets, NSArray<NSSet<AVCaptureDevice *> *> *)
+
+#endif
+
 NS_ASSUME_NONNULL_END

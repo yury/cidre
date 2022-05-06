@@ -1,8 +1,10 @@
 pub mod device;
 pub use device::AutoFocusSystem;
+pub use device::CaptureAudioChannel;
 pub use device::CenterStageControlMode;
 pub use device::ConfigurationLockGuard as DeviceConfigurationLockGuard;
 pub use device::Device;
+pub use device::DiscoverySession;
 pub use device::FocusMode;
 pub use device::Format as DeviceFormat;
 pub use device::FrameRateRange;

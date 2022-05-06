@@ -3,13 +3,13 @@ use std::ops::{Deref, DerefMut};
 use crate::{
     av::MediaType,
     cf::{self, Retained},
-    cm, define_obj_type,
+    cm, define_cf_type, define_obj_type,
     objc::Id,
 };
 
 use super::SessionPreset;
 
-pub type Type = cf::String;
+define_cf_type!(Type(cf::String));
 
 /// ```
 /// use cidre::av;
@@ -382,15 +382,43 @@ pub mod notifications {
     }
 }
 
+define_obj_type!(CaptureAudioChannel(Id));
+
 define_obj_type!(DiscoverySession(Id));
 
 impl DiscoverySession {
-    pub fn devices(&self) -> &cf::ArrayOf<Device> {
-        todo!()
+    pub fn with_device_types_media_and_position<'a>(
+        device_types: &cf::ArrayOf<Type>,
+        media_type: Option<&MediaType>,
+        position: Position,
+    ) -> Retained<'a, Self> {
+        unsafe {
+            AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position(
+                device_types,
+                media_type,
+                position,
+            )
+        }
     }
 
-    // @property(nonatomic, readonly) NSArray<NSSet<AVCaptureDevice *> *> *supportedMultiCamDeviceSets
-    pub fn supported_multi_cam_device_sets(&self) -> &cf::ArrayOf<cf::SetOf<Device>> {
-        todo!()
+    pub fn devices(&self) -> &cf::ArrayOf<Device> {
+        unsafe { rsel_devices(self) }
     }
+
+    #[cfg(not(target_os = "macos"))]
+    pub fn supported_multi_cam_device_sets(&self) -> &cf::ArrayOf<cf::SetOf<Device>> {
+        unsafe { rsel_supportedMultiCamDeviceSets(self) }
+    }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    fn AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position<'a>(
+        device_types: &cf::Array,
+        media_type: Option<&MediaType>,
+        position: Position,
+    ) -> Retained<'a, DiscoverySession>;
+    fn rsel_devices(id: &Id) -> &cf::ArrayOf<Device>;
+    #[cfg(not(target_os = "macos"))]
+    fn rsel_supportedMultiCamDeviceSets(id: &Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
 }

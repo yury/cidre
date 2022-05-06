@@ -1,4 +1,8 @@
-use cidre::{av, av::capture::device};
+use cidre::{
+    av,
+    av::{capture::device, MediaType},
+    cf,
+};
 
 fn main() {
     let device_type = device::Type::built_in_wide_angle_camera();
@@ -10,6 +14,16 @@ fn main() {
         position,
     )
     .expect("device");
+
+    let mut types = cf::MutArrayOf::<device::Type>::new().unwrap();
+    types.push(device::Type::built_in_wide_angle_camera());
+    let discrover_session = device::DiscoverySession::with_device_types_media_and_position(
+        &types,
+        Some(MediaType::video()),
+        device::Position::Front,
+    );
+
+    println!("devices {:?}", discrover_session.devices().len());
 
     let device_id = device.unique_id().to_string();
     println!("device id: {:?}", device_id);

@@ -1,6 +1,6 @@
-use crate::cf;
+use crate::{cf, define_cf_type};
 
-pub type MediaType = cf::String;
+define_cf_type!(MediaType(cf::String));
 
 impl MediaType {
     #[inline]
@@ -55,7 +55,7 @@ impl MediaType {
     }
 }
 
-pub type VideoRange = cf::String;
+define_cf_type!(VideoRange(cf::String));
 
 impl VideoRange {
     #[inline]
@@ -74,7 +74,7 @@ impl VideoRange {
     }
 }
 
-pub type FileType = cf::String;
+define_cf_type!(FileType(cf::String));
 
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {

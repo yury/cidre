@@ -49,7 +49,14 @@ where
             array: self,
             index: 0,
             len: self.len(),
+            phantom: PhantomData,
         }
+    }
+
+    #[inline]
+    pub fn mutable_copy<'a>(&self) -> Option<Retained<'a, MutArrayOf<T>>> {
+        let copy = self.0.mutable_copy();
+        unsafe { transmute(copy) }
     }
 }
 
@@ -98,9 +105,10 @@ pub struct ArrayOfIterator<'a, T>
 where
     T: Retain,
 {
-    array: &'a ArrayOf<T>,
+    array: &'a Array,
     index: usize,
     len: usize,
+    phantom: PhantomData<&'a T>,
 }
 
 impl<'a, T> Iterator for ArrayOfIterator<'a, T>
@@ -111,7 +119,7 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index < self.len {
-            let res = unsafe { transmute::<&T, Autoreleased<'a, T>>(&self.array[self.index]) };
+            let res = unsafe { transmute::<&Type, Autoreleased<'a, T>>(&self.array[self.index]) };
             self.index += 1;
             Some(res)
         } else {
@@ -126,6 +134,80 @@ where
 {
     fn len(&self) -> usize {
         self.array.len() - self.index
+    }
+}
+
+#[repr(transparent)]
+pub struct MutArrayOf<T: Retain + Release>(MutableArray, PhantomData<T>);
+
+impl<T> MutArrayOf<T>
+where
+    T: Retain + Release,
+{
+    #[inline]
+    pub fn new<'a>() -> Option<Retained<'a, MutArrayOf<T>>> {
+        Self::with_capacity(0)
+    }
+
+    #[inline]
+    pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<'a, MutArrayOf<T>>> {
+        let arr = MutableArray::create(None, capacity as _, None);
+        unsafe { transmute(arr) }
+    }
+
+    #[inline]
+    pub fn iter<'a>(&'a self) -> ArrayOfIterator<'a, T> {
+        ArrayOfIterator {
+            array: self,
+            index: 0,
+            len: self.len(),
+            phantom: PhantomData,
+        }
+    }
+
+    pub fn push(&mut self, value: &T) {
+        self.0.append(unsafe { transmute(value) });
+    }
+}
+
+impl<T> std::ops::Deref for MutArrayOf<T>
+where
+    T: Retain + Release,
+{
+    type Target = ArrayOf<T>;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe { transmute(self) }
+    }
+}
+
+impl<T> std::ops::Index<usize> for MutArrayOf<T>
+where
+    T: Retain + Release,
+{
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        unsafe { transmute::<&Type, &T>(&self.0[index]) }
+    }
+}
+
+impl<T> Release for MutArrayOf<T>
+where
+    T: Retain + Release,
+{
+    unsafe fn release(&mut self) {
+        self.0.release()
+    }
+}
+
+impl<T> Retain for MutArrayOf<T>
+where
+    T: Retain + Release,
+{
+    fn retained<'a>(&self) -> Retained<'a, Self> {
+        unsafe { transmute(self.0.retained()) }
     }
 }
 

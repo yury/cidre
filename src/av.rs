@@ -16,6 +16,7 @@ pub use capture::DeviceConfigurationLockGuard as CaptureDeviceConfigurationLockG
 pub use capture::DeviceFormat as CaptureDeviceFormat;
 pub use capture::DevicePosition as CaptureDevicePosition;
 pub use capture::DeviceType as CaptureDeviceType;
+pub use capture::DiscoverySession as CaptureDeviceDiscoverySession;
 pub use capture::FocusMode as CaptureFocusMode;
 pub use capture::FrameRateRange;
 pub use capture::Input as CaptureInput;
