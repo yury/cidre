@@ -1,6 +1,6 @@
-use crate::cf;
+use crate::{cf, define_cf_type};
 
-pub type SessionPreset = cf::String;
+define_cf_type!(SessionPreset(cf::String));
 
 impl SessionPreset {
     #[inline]

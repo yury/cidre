@@ -1,8 +1,8 @@
 #[cfg(not(target_os = "macos"))]
-use crate::{cf, define_obj_type, objc::Id};
+use crate::{cf, define_obj_type, define_cf_type, objc::Id};
 
 #[cfg(not(target_os = "macos"))]
-pub type Level = cf::String;
+define_cf_type!(Level(cf::String));
 
 #[cfg(not(target_os = "macos"))]
 impl Level {
