@@ -54,5 +54,4 @@ fn main() {
         session.set_session_preset(av::CaptureSessionPreset::_1920x1080());
     }
     session.as_type_ref().show();
-
 }
