@@ -6,9 +6,9 @@ use crate::{
     cv, define_cf_type, os, vt,
 };
 
-define_cf_type!(CompressionSession(crate::vt::Session));
+define_cf_type!(Session(crate::vt::Session));
 
-pub type CompressionOutputCallback = extern "C" fn(
+pub type OutputCallback = extern "C" fn(
     output_callback_ref_con: *mut c_void,
     source_frame_ref_con: *mut c_void,
     status: os::Status,
@@ -16,7 +16,7 @@ pub type CompressionOutputCallback = extern "C" fn(
     sample_buffer: Option<&SampleBuffer>,
 );
 
-impl CompressionSession {
+impl Session {
     pub fn create(
         allocator: Option<&cf::Allocator>,
         width: i32,
@@ -25,9 +25,9 @@ impl CompressionSession {
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attrubutes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<&CompressionOutputCallback>,
+        output_callback: Option<&OutputCallback>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: &mut Option<cf::Retained<CompressionSession>>,
+        compression_session_out: &mut Option<cf::Retained<Session>>,
     ) -> os::Status {
         unsafe {
             VTCompressionSessionCreate(
@@ -88,16 +88,16 @@ extern "C" {
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attrubutes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<&CompressionOutputCallback>,
+        output_callback: Option<&OutputCallback>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: &mut Option<cf::Retained<CompressionSession>>,
+        compression_session_out: &mut Option<cf::Retained<Session>>,
     ) -> os::Status;
 
-    fn VTCompressionSessionInvalidate(session: &mut CompressionSession);
-    fn VTCompressionSessionPrepareToEncodeFrames(session: &mut CompressionSession);
+    fn VTCompressionSessionInvalidate(session: &mut Session);
+    fn VTCompressionSessionPrepareToEncodeFrames(session: &mut Session);
 
     fn VTCompressionSessionEncodeFrame(
-        session: &CompressionSession,
+        session: &Session,
         image_buffer: &cv::ImageBuffer,
         pts: cm::Time,
         duration: cm::Time,

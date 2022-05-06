@@ -6,8 +6,8 @@ pub use errors::EncodeInfoFlags;
 pub mod session;
 pub use session::Session;
 
-pub mod compression_session;
-pub use compression_session::CompressionSession;
+pub mod compression;
+pub use compression::CompressionSession;
 
 #[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {}
