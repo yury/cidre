@@ -135,6 +135,8 @@ rsel(, id, systemPressureCost, float)
 
 #pragma mark - AVCaptureSession
 
+NS_RETURNS_RETAINED
+csel(, AVCaptureSession, new, AVCaptureSession *)
 //- (BOOL)canSetSessionPreset:(AVCaptureSessionPreset)preset;
 rsel_a(, id, canSetSessionPreset, AVCaptureSessionPreset, BOOL)
 
@@ -175,6 +177,16 @@ wsel(, id, commitConfiguration)
 
 wsel(, id, startRunning)
 wsel(, id, stopRunning)
+
+#pragma mark - AVCaptureMultiCamSession
+
+#if TARGET_OS_OSX
+
+#else
+
+NS_RETURNS_RETAINED
+csel(, AVCaptureMultiCamSession, new, AVCaptureMultiCamSession *)
+#endif
 
 #pragma mark - AVCaptureDeviceDiscoverySession
 

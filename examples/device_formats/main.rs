@@ -48,4 +48,7 @@ fn main() {
             );
         }
     }
+
+    let session = av::CaptureSession::new();
+    session.as_type_ref().show();
 }

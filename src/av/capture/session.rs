@@ -1,4 +1,9 @@
-use crate::{av, cf, define_obj_type, objc::Id};
+use crate::{
+    av,
+    cf::{self, Retained},
+    define_obj_type,
+    objc::Id,
+};
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
 #[repr(isize)]
@@ -25,6 +30,11 @@ pub enum InterruptionReason {
 define_obj_type!(Session(Id));
 
 impl Session {
+    #[inline]
+    pub fn new<'new>() -> Retained<'new, Session> {
+        unsafe { AVCaptureSession_new() }
+    }
+
     #[inline]
     pub fn can_set_session_preset(&self, preset: &av::CaptureSessionPreset) -> bool {
         unsafe { rsel_canSetSessionPreset(self, preset) }
@@ -133,6 +143,7 @@ impl Session {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
+    fn AVCaptureSession_new<'new>() -> Retained<'new, Session>;
     fn rsel_canSetSessionPreset(session: &Session, preset: &av::CaptureSessionPreset) -> bool;
     fn rsel_sessionPreset(session: &Session) -> &av::CaptureSessionPreset;
     fn wsel_setSessionPreset(session: &Session, value: &av::CaptureSessionPreset);
@@ -166,6 +177,10 @@ extern "C" {
 define_obj_type!(MultiCamSession(Session));
 
 impl MultiCamSession {
+    #[inline]
+    pub fn new<'new>() -> Retained<'new, MultiCamSession> {
+        unsafe { AVCaptureMultiCamSession_new() }
+    }
     /// ```
     /// use cidre::av;
     ///
@@ -188,6 +203,7 @@ impl MultiCamSession {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
+    fn AVCaptureMultiCamSession_new<'new>() -> Retained<'new, MultiCamSession>;
     fn is_mutlicam_supported() -> bool;
 
     /// The value of this property is a float from 0.0 => 1.0 indicating
