@@ -7,7 +7,8 @@ pub mod session;
 pub use session::Session;
 
 pub mod compression;
-pub use compression::CompressionSession;
+pub use compression::properties as compression_properties;
+pub use compression::Session as CompressionSession;
 
 #[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {}

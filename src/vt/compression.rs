@@ -1,4 +1,5 @@
 pub mod session;
-pub use session::Session as CompressionSession;
+pub use session::Session;
 
 pub mod properties;
+pub use properties::keys;
