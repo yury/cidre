@@ -345,3 +345,337 @@ pub mod keys {
         static kVTCompressionPropertyKey_EnableLTR: &'static cf::String;
     }
 }
+
+pub mod h264_entropy_mode {
+    use crate::cf;
+
+    #[inline]
+    pub fn cavlc() -> &'static cf::String {
+        unsafe { kVTH264EntropyMode_CAVLC }
+    }
+
+    #[inline]
+    pub fn cabac() -> &'static cf::String {
+        unsafe { kVTH264EntropyMode_CABAC }
+    }
+
+    extern "C" {
+        static kVTH264EntropyMode_CAVLC: &'static cf::String;
+        static kVTH264EntropyMode_CABAC: &'static cf::String;
+    }
+}
+
+pub mod hdr_metadata_insertion_mode {
+    use crate::cf;
+
+    #[inline]
+    pub fn none() -> &'static cf::String {
+        unsafe { kVTHDRMetadataInsertionMode_None }
+    }
+
+    #[inline]
+    pub fn auto() -> &'static cf::String {
+        unsafe { kVTHDRMetadataInsertionMode_Auto }
+    }
+
+    extern "C" {
+        static kVTHDRMetadataInsertionMode_None: &'static cf::String;
+        static kVTHDRMetadataInsertionMode_Auto: &'static cf::String;
+    }
+}
+
+pub mod profile_level {
+
+    pub mod hevc {
+        use crate::cf;
+        pub fn main_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_HEVC_Main_AutoLevel }
+        }
+
+        pub fn main10_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_HEVC_Main10_AutoLevel }
+        }
+
+        pub fn main42210_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_HEVC_Main42210_AutoLevel }
+        }
+        extern "C" {
+            static kVTProfileLevel_HEVC_Main_AutoLevel: &'static cf::String;
+            static kVTProfileLevel_HEVC_Main10_AutoLevel: &'static cf::String;
+            static kVTProfileLevel_HEVC_Main42210_AutoLevel: &'static cf::String;
+        }
+    }
+
+    pub mod h264 {
+        use crate::cf;
+
+        pub fn baseline_1_3() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_1_3 }
+        }
+
+        pub fn baseline_3_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_3_0 }
+        }
+
+        pub fn baseline_3_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_3_1 }
+        }
+
+        pub fn baseline_3_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_3_2 }
+        }
+
+        pub fn baseline_4_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_4_0 }
+        }
+
+        pub fn baseline_4_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_4_1 }
+        }
+
+        pub fn baseline_4_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_4_2 }
+        }
+
+        pub fn baseline_5_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_5_0 }
+        }
+
+        pub fn baseline_5_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_5_1 }
+        }
+
+        pub fn baseline_5_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_5_2 }
+        }
+
+        pub fn baseline_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Baseline_AutoLevel }
+        }
+
+        pub fn consstrained_baseline_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_ConstrainedBaseline_AutoLevel }
+        }
+
+        pub fn main_3_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_3_0 }
+        }
+
+        pub fn main_3_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_3_1 }
+        }
+
+        pub fn main_3_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_3_2 }
+        }
+
+        pub fn main_4_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_4_0 }
+        }
+
+        pub fn main_4_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_4_1 }
+        }
+
+        pub fn main_4_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_4_2 }
+        }
+
+        pub fn main_5_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_5_0 }
+        }
+
+        pub fn main_5_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_5_1 }
+        }
+
+        pub fn main_5_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_5_2 }
+        }
+
+        pub fn main_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Main_AutoLevel }
+        }
+
+        pub fn extended_5_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Extended_5_0 }
+        }
+
+        pub fn extended_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_Extended_AutoLevel }
+        }
+
+        pub fn high_3_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_3_0 }
+        }
+
+        pub fn high_3_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_3_1 }
+        }
+
+        pub fn high_3_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_3_2 }
+        }
+
+        pub fn high_4_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_4_0 }
+        }
+
+        pub fn high_4_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_4_1 }
+        }
+
+        pub fn high_4_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_4_2 }
+        }
+
+        pub fn high_5_0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_5_0 }
+        }
+
+        pub fn high_5_1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_5_1 }
+        }
+
+        pub fn high_5_2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_5_2 }
+        }
+
+        pub fn high_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_High_AutoLevel }
+        }
+
+        pub fn constrained_high_auto_level() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H264_ConstrainedHigh_AutoLevel }
+        }
+
+        extern "C" {
+            static kVTProfileLevel_H264_Baseline_1_3: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_3_0: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_3_1: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_3_2: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_4_0: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_4_1: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_4_2: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_5_0: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_5_1: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_5_2: &'static cf::String;
+            static kVTProfileLevel_H264_Baseline_AutoLevel: &'static cf::String;
+            static kVTProfileLevel_H264_ConstrainedBaseline_AutoLevel: &'static cf::String;
+
+            static kVTProfileLevel_H264_Main_3_0: &'static cf::String;
+            static kVTProfileLevel_H264_Main_3_1: &'static cf::String;
+            static kVTProfileLevel_H264_Main_3_2: &'static cf::String;
+            static kVTProfileLevel_H264_Main_4_0: &'static cf::String;
+            static kVTProfileLevel_H264_Main_4_1: &'static cf::String;
+            static kVTProfileLevel_H264_Main_4_2: &'static cf::String;
+            static kVTProfileLevel_H264_Main_5_0: &'static cf::String;
+            static kVTProfileLevel_H264_Main_5_1: &'static cf::String;
+            static kVTProfileLevel_H264_Main_5_2: &'static cf::String;
+            static kVTProfileLevel_H264_Main_AutoLevel: &'static cf::String;
+            static kVTProfileLevel_H264_Extended_5_0: &'static cf::String;
+            static kVTProfileLevel_H264_Extended_AutoLevel: &'static cf::String;
+
+            static kVTProfileLevel_H264_High_3_0: &'static cf::String;
+            static kVTProfileLevel_H264_High_3_1: &'static cf::String;
+            static kVTProfileLevel_H264_High_3_2: &'static cf::String;
+
+            static kVTProfileLevel_H264_High_4_0: &'static cf::String;
+            static kVTProfileLevel_H264_High_4_1: &'static cf::String;
+            static kVTProfileLevel_H264_High_4_2: &'static cf::String;
+
+            static kVTProfileLevel_H264_High_5_0: &'static cf::String;
+            static kVTProfileLevel_H264_High_5_1: &'static cf::String;
+            static kVTProfileLevel_H264_High_5_2: &'static cf::String;
+            static kVTProfileLevel_H264_High_AutoLevel: &'static cf::String;
+            static kVTProfileLevel_H264_ConstrainedHigh_AutoLevel: &'static cf::String;
+        }
+    }
+
+    pub mod mp4v {
+        use crate::cf;
+        pub fn simple_l0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Simple_L0 }
+        }
+
+        pub fn simple_l1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Simple_L1 }
+        }
+
+        pub fn simple_l2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Simple_L2 }
+        }
+
+        pub fn simple_l3() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Simple_L3 }
+        }
+
+        pub fn main_l2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Main_L2 }
+        }
+
+        pub fn main_l3() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Main_L3 }
+        }
+
+        pub fn main_l4() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_Main_L4 }
+        }
+
+        pub fn advanced_simple_l0() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L0 }
+        }
+
+        pub fn advanced_simple_l1() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L1 }
+        }
+
+        pub fn advanced_simple_l2() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L2 }
+        }
+        pub fn advanced_simple_l3() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L3 }
+        }
+
+        pub fn advanced_simple_l4() -> &'static cf::String {
+            unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L4 }
+        }
+
+        extern "C" {
+            static kVTProfileLevel_MP4V_Simple_L0: &'static cf::String;
+            static kVTProfileLevel_MP4V_Simple_L1: &'static cf::String;
+            static kVTProfileLevel_MP4V_Simple_L2: &'static cf::String;
+            static kVTProfileLevel_MP4V_Simple_L3: &'static cf::String;
+
+            static kVTProfileLevel_MP4V_Main_L2: &'static cf::String;
+            static kVTProfileLevel_MP4V_Main_L3: &'static cf::String;
+            static kVTProfileLevel_MP4V_Main_L4: &'static cf::String;
+
+            static kVTProfileLevel_MP4V_AdvancedSimple_L0: &'static cf::String;
+            static kVTProfileLevel_MP4V_AdvancedSimple_L1: &'static cf::String;
+            static kVTProfileLevel_MP4V_AdvancedSimple_L2: &'static cf::String;
+            static kVTProfileLevel_MP4V_AdvancedSimple_L3: &'static cf::String;
+            static kVTProfileLevel_MP4V_AdvancedSimple_L4: &'static cf::String;
+        }
+    }
+
+    pub mod h263 {
+        use crate::cf;
+        pub fn profile0_level_10() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H263_Profile0_Level10 }
+        }
+
+        pub fn profile0_level_45() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H263_Profile0_Level45 }
+        }
+
+        pub fn profile3_level_45() -> &'static cf::String {
+            unsafe { kVTProfileLevel_H263_Profile3_Level45 }
+        }
+        extern "C" {
+            static kVTProfileLevel_H263_Profile0_Level10: &'static cf::String;
+            static kVTProfileLevel_H263_Profile0_Level45: &'static cf::String;
+            static kVTProfileLevel_H263_Profile3_Level45: &'static cf::String;
+        }
+    }
+}
