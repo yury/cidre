@@ -23,6 +23,7 @@ impl Session {
     }
 }
 
+#[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {
     fn VTSessionSetProperty(
         session: &mut Session,

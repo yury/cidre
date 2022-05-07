@@ -1,9 +1,11 @@
 use std::{ffi::c_void, ptr::NonNull};
 
 use crate::{
-    cf,
+    cf::{self, Retained},
     cm::{self, SampleBuffer, VideoCodecType},
-    cv, define_cf_type, os, vt,
+    cv, define_cf_type,
+    os::{self, NO_ERR},
+    vt,
 };
 
 define_cf_type!(Session(crate::vt::Session));
@@ -17,13 +19,42 @@ pub type OutputCallback = extern "C" fn(
 );
 
 impl Session {
+    pub fn new<'a>(
+        width: u32,
+        height: u32,
+        codec: VideoCodecType,
+        encoder_specification: Option<&cf::Dictionary>,
+        source_image_buffer_attributes: Option<&cf::Dictionary>,
+        output_callback: Option<&OutputCallback>,
+        output_callback_ref_con: *mut c_void,
+    ) -> Result<Retained<'a, Self>, os::Status> {
+        let mut session = None;
+        let res = Self::create(
+            None,
+            width as _,
+            height as _,
+            codec,
+            encoder_specification,
+            source_image_buffer_attributes,
+            None,
+            output_callback,
+            output_callback_ref_con,
+            &mut session,
+        );
+        if res == NO_ERR {
+            Ok(session.unwrap())
+        } else {
+            Err(res)
+        }
+    }
+
     pub fn create(
         allocator: Option<&cf::Allocator>,
         width: i32,
         height: i32,
         codec_type: VideoCodecType,
         encoder_specification: Option<&cf::Dictionary>,
-        source_image_buffer_attrubutes: Option<&cf::Dictionary>,
+        source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<&OutputCallback>,
         output_callback_ref_con: *mut c_void,
@@ -36,7 +67,7 @@ impl Session {
                 height,
                 codec_type,
                 encoder_specification,
-                source_image_buffer_attrubutes,
+                source_image_buffer_attributes,
                 compressed_data_allocator,
                 output_callback,
                 output_callback_ref_con,
@@ -86,7 +117,7 @@ extern "C" {
         height: i32,
         codec_type: VideoCodecType,
         encoder_specification: Option<&cf::Dictionary>,
-        source_image_buffer_attrubutes: Option<&cf::Dictionary>,
+        source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<&OutputCallback>,
         output_callback_ref_con: *mut c_void,

@@ -291,6 +291,7 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_EnableLTR }
     }
 
+    #[link(name = "VideoToolbox", kind = "framework")]
     extern "C" {
         static kVTCompressionPropertyKey_NumberOfPendingFrames: &'static cf::String;
         static kVTCompressionPropertyKey_PixelBufferPoolIsShared: &'static cf::String;
@@ -359,6 +360,7 @@ pub mod h264_entropy_mode {
         unsafe { kVTH264EntropyMode_CABAC }
     }
 
+    #[link(name = "VideoToolbox", kind = "framework")]
     extern "C" {
         static kVTH264EntropyMode_CAVLC: &'static cf::String;
         static kVTH264EntropyMode_CABAC: &'static cf::String;
@@ -378,6 +380,7 @@ pub mod hdr_metadata_insertion_mode {
         unsafe { kVTHDRMetadataInsertionMode_Auto }
     }
 
+    #[link(name = "VideoToolbox", kind = "framework")]
     extern "C" {
         static kVTHDRMetadataInsertionMode_None: &'static cf::String;
         static kVTHDRMetadataInsertionMode_Auto: &'static cf::String;
@@ -399,6 +402,8 @@ pub mod profile_level {
         pub fn main42210_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main42210_AutoLevel }
         }
+
+        #[link(name = "VideoToolbox", kind = "framework")]
         extern "C" {
             static kVTProfileLevel_HEVC_Main_AutoLevel: &'static cf::String;
             static kVTProfileLevel_HEVC_Main10_AutoLevel: &'static cf::String;
@@ -549,6 +554,7 @@ pub mod profile_level {
             unsafe { kVTProfileLevel_H264_ConstrainedHigh_AutoLevel }
         }
 
+        #[link(name = "VideoToolbox", kind = "framework")]
         extern "C" {
             static kVTProfileLevel_H264_Baseline_1_3: &'static cf::String;
             static kVTProfileLevel_H264_Baseline_3_0: &'static cf::String;
@@ -594,6 +600,7 @@ pub mod profile_level {
 
     pub mod mp4v {
         use crate::cf;
+
         pub fn simple_l0() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Simple_L0 }
         }
@@ -641,6 +648,7 @@ pub mod profile_level {
             unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L4 }
         }
 
+        #[link(name = "VideoToolbox", kind = "framework")]
         extern "C" {
             static kVTProfileLevel_MP4V_Simple_L0: &'static cf::String;
             static kVTProfileLevel_MP4V_Simple_L1: &'static cf::String;
@@ -661,6 +669,7 @@ pub mod profile_level {
 
     pub mod h263 {
         use crate::cf;
+
         pub fn profile0_level_10() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile0_Level10 }
         }
@@ -672,6 +681,8 @@ pub mod profile_level {
         pub fn profile3_level_45() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile3_Level45 }
         }
+
+        #[link(name = "VideoToolbox", kind = "framework")]
         extern "C" {
             static kVTProfileLevel_H263_Profile0_Level10: &'static cf::String;
             static kVTProfileLevel_H263_Profile0_Level45: &'static cf::String;
