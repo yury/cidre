@@ -82,7 +82,15 @@ impl Session {
     }
 
     #[inline]
-    pub fn prepare_to_encode_frames(&mut self) {
+    pub fn prepare(&mut self) -> Result<(), os::Status> {
+        match self.prepare_to_encode_frames() {
+            NO_ERR => Ok(()),
+            status => Err(status),
+        }
+    }
+
+    #[inline]
+    pub fn prepare_to_encode_frames(&mut self) -> os::Status {
         unsafe { VTCompressionSessionPrepareToEncodeFrames(self) }
     }
 
@@ -125,7 +133,7 @@ extern "C" {
     ) -> os::Status;
 
     fn VTCompressionSessionInvalidate(session: &mut Session);
-    fn VTCompressionSessionPrepareToEncodeFrames(session: &mut Session);
+    fn VTCompressionSessionPrepareToEncodeFrames(session: &mut Session) -> os::Status;
 
     fn VTCompressionSessionEncodeFrame(
         session: &Session,

@@ -29,7 +29,7 @@ mod tests {
         );
         image_attrs.insert(cv::pixel_buffer::keys::pixel_format_type(), &pixel_format);
 
-        let session = Session::new(
+        let mut session = Session::new(
             1920,
             1080,
             VideoCodecType::H264,
@@ -39,6 +39,26 @@ mod tests {
             std::ptr::null_mut(),
         )
         .expect("encoder");
+
+        let bool_true = cf::Boolean::value_true();
+        let bool_false = cf::Boolean::value_false();
+        let expected_fr = cf::Number::from_i32(60);
+        let frame_delay_count = cf::Number::from_i32(0);
+
+        let mut props = cf::MutableDictionary::with_capacity(10).unwrap();
+        props.insert(keys::real_time(), &bool_true);
+        props.insert(keys::allow_frame_reordering(), &bool_false);
+        props.insert(
+            keys::profile_level(),
+            profile_level::h264::main_auto_level(),
+        );
+        props.insert(keys::allow_open_gop(), &bool_false);
+        props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());
+        props.insert(keys::expected_frame_rate(), &expected_fr);
+        props.insert(keys::max_frame_delay_count(), &frame_delay_count);
+
+        session.set_props(&props).unwrap();
+        session.prepare().unwrap();
 
         session.show();
     }
