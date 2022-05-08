@@ -1,5 +1,7 @@
 use crate::define_cf_type;
 
+use crate::cf;
+
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
@@ -286,10 +288,6 @@ impl Dictionary {
     }
 }
 
-define_cf_type!(MutableDictionary(Dictionary));
-
-impl MutableDictionary {}
-
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: KeyCallBacks;
     static kCFCopyStringDictionaryKeyCallBacks: KeyCallBacks;
@@ -324,4 +322,67 @@ extern "C" {
         values: *const *const c_void,
     );
 
+}
+
+define_cf_type!(MutableDictionary(Dictionary));
+
+impl MutableDictionary {
+    pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<'a, Self>> {
+        Self::create(None, capacity as _, None, None)
+    }
+
+    pub fn create<'a>(
+        allocator: Option<&cf::Allocator>,
+        capacity: cf::Index,
+        key_callbacks: Option<&KeyCallBacks>,
+        value_callbacks: Option<&ValueCallBacks>,
+    ) -> Option<Retained<'a, Self>> {
+        unsafe { CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks) }
+    }
+
+    pub fn insert(&mut self, key: &cf::String, value: &cf::Type) {
+        unsafe {
+            CFDictionarySetValue(self, key.as_ptr(), value.as_ptr())
+        }
+    }
+
+    pub fn remove(&mut self, key: &cf::String) {
+        unsafe {
+            CFDictionaryRemoveValue(self, key.as_ptr())
+        }
+    }
+
+    pub unsafe fn add_value(&mut self, key: *const c_void, value: *const c_void) {
+        CFDictionaryAddValue(self, key, value)
+    }
+
+    pub unsafe fn set_value(&mut self, key: *const c_void, value: *const c_void) {
+        CFDictionarySetValue(self, key, value)
+    }
+    pub unsafe fn replace_value(&mut self, key: *const c_void, value: *const c_void) {
+        CFDictionaryReplaceValue(self, key, value)
+    }
+
+    pub unsafe fn remove_value(&mut self, key: *const c_void) {
+        CFDictionaryRemoveValue(self, key)
+    }
+
+    pub fn remove_all_values(&mut self) {
+        unsafe { CFDictionaryRemoveAllValues(self) }
+    }
+}
+
+extern "C" {
+    fn CFDictionaryCreateMutable<'a>(
+        allocator: Option<&cf::Allocator>,
+        capacity: cf::Index,
+        key_callbacks: Option<&KeyCallBacks>,
+        value_callbacks: Option<&ValueCallBacks>,
+    ) -> Option<Retained<'a, MutableDictionary>>;
+
+    fn CFDictionaryAddValue(the_dict: &mut MutableDictionary, key: *const c_void, value: *const c_void);
+    fn CFDictionarySetValue(the_dict: &mut MutableDictionary, key: *const c_void, value: *const c_void);
+    fn CFDictionaryReplaceValue(the_dict: &mut MutableDictionary, key: *const c_void, value: *const c_void);
+    fn CFDictionaryRemoveValue(the_dict: &mut MutableDictionary, key: *const c_void);
+    fn CFDictionaryRemoveAllValues(the_dict: &mut MutableDictionary);
 }

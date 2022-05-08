@@ -9,12 +9,16 @@ pub use properties::profile_level;
 
 #[cfg(test)]
 mod tests {
-    use crate::cm::VideoCodecType;
+    use crate::{cm::VideoCodecType, cf};
 
     use super::*;
 
     #[test]
     fn session_new() {
+
+        let mut image_attrs = cf::MutableDictionary::with_capacity(4).unwrap();
+        
+        
         let session = Session::new(
             1920,
             1080,
