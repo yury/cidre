@@ -56,6 +56,9 @@ pub type ApplierFunction =
 define_cf_type!(Dictionary(Type));
 
 impl Dictionary {
+    pub fn new<'a>() -> Option<Retained<'a, Self>> {
+        unsafe { CFDictionaryCreate(None, std::ptr::null(), std::ptr::null(), 0, None, None) }
+    }
     /// ```
     /// use cidre::cf;
     ///
@@ -341,15 +344,11 @@ impl MutableDictionary {
     }
 
     pub fn insert(&mut self, key: &cf::String, value: &cf::Type) {
-        unsafe {
-            CFDictionarySetValue(self, key.as_ptr(), value.as_ptr())
-        }
+        unsafe { CFDictionarySetValue(self, key.as_ptr(), value.as_ptr()) }
     }
 
     pub fn remove(&mut self, key: &cf::String) {
-        unsafe {
-            CFDictionaryRemoveValue(self, key.as_ptr())
-        }
+        unsafe { CFDictionaryRemoveValue(self, key.as_ptr()) }
     }
 
     pub unsafe fn add_value(&mut self, key: *const c_void, value: *const c_void) {
@@ -380,9 +379,21 @@ extern "C" {
         value_callbacks: Option<&ValueCallBacks>,
     ) -> Option<Retained<'a, MutableDictionary>>;
 
-    fn CFDictionaryAddValue(the_dict: &mut MutableDictionary, key: *const c_void, value: *const c_void);
-    fn CFDictionarySetValue(the_dict: &mut MutableDictionary, key: *const c_void, value: *const c_void);
-    fn CFDictionaryReplaceValue(the_dict: &mut MutableDictionary, key: *const c_void, value: *const c_void);
+    fn CFDictionaryAddValue(
+        the_dict: &mut MutableDictionary,
+        key: *const c_void,
+        value: *const c_void,
+    );
+    fn CFDictionarySetValue(
+        the_dict: &mut MutableDictionary,
+        key: *const c_void,
+        value: *const c_void,
+    );
+    fn CFDictionaryReplaceValue(
+        the_dict: &mut MutableDictionary,
+        key: *const c_void,
+        value: *const c_void,
+    );
     fn CFDictionaryRemoveValue(the_dict: &mut MutableDictionary, key: *const c_void);
     fn CFDictionaryRemoveAllValues(the_dict: &mut MutableDictionary);
 }

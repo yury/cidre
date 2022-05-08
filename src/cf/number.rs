@@ -1,4 +1,4 @@
-use crate::define_cf_type;
+use crate::{define_cf_type, FourCharCode};
 
 use super::{Allocator, ComparisonResult, Index, Retained, Type, TypeId};
 
@@ -343,6 +343,11 @@ impl Number {
     /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
     pub fn from_i32<'a>(value: i32) -> Retained<'a, Number> {
         unsafe { Number::create(None, NumberType::I32, &value as *const _ as _).unwrap_unchecked() }
+    }
+
+    pub fn from_four_char_code<'a>(value: FourCharCode) -> Retained<'a, Number> {
+        let val = value as i32;
+        unsafe { Number::create(None, NumberType::I32, &val as *const _ as _).unwrap_unchecked() }
     }
 
     /// ```
