@@ -89,7 +89,7 @@ impl SampleBuffer {
         let mut sample_buffer_out = None;
 
         unsafe {
-            let res = Self::create(
+            Self::create(
                 None,
                 data_buffer,
                 data_ready,
@@ -102,13 +102,8 @@ impl SampleBuffer {
                 0,
                 std::ptr::null(),
                 &mut sample_buffer_out,
-            );
-
-            if res == os::NO_ERR {
-                Ok(sample_buffer_out.unwrap_unchecked())
-            } else {
-                Err(res)
-            }
+            )
+            .to_result(sample_buffer_out)
         }
     }
 

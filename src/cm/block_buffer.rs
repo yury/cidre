@@ -1,7 +1,7 @@
 use crate::{
     cf::{Allocator, Retained, Type, TypeId},
     define_cf_type,
-    os::{self, NO_ERR},
+    os,
 };
 
 #[repr(transparent)]
@@ -57,17 +57,12 @@ impl BlockBuffer {
     ) -> Result<Retained<'a, BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
-            let res = CMBlockBufferCreateEmpty(
+            CMBlockBufferCreateEmpty(
                 structure_allocator,
                 sub_block_capacity,
                 flags,
                 &mut block_buffer_out,
-            );
-            if res == NO_ERR {
-                Ok(block_buffer_out.unwrap_unchecked())
-            } else {
-                Err(res)
-            }
+            ).to_result(block_buffer_out)
         }
     }
 }

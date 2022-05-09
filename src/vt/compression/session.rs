@@ -3,9 +3,7 @@ use std::{ffi::c_void, ptr::NonNull};
 use crate::{
     cf::{self, Retained},
     cm::{self, SampleBuffer, VideoCodecType},
-    cv, define_cf_type,
-    os::{self, NO_ERR},
-    vt,
+    cv, define_cf_type, os, vt,
 };
 
 define_cf_type!(Session(crate::vt::Session));
@@ -28,27 +26,25 @@ impl Session {
         output_callback: Option<&OutputCallback>,
         output_callback_ref_con: *mut c_void,
     ) -> Result<Retained<'a, Self>, os::Status> {
-        let mut session = None;
-        let res = Self::create(
-            None,
-            width as _,
-            height as _,
-            codec,
-            encoder_specification,
-            source_image_buffer_attributes,
-            None,
-            output_callback,
-            output_callback_ref_con,
-            &mut session,
-        );
-        if res == NO_ERR {
-            Ok(session.unwrap())
-        } else {
-            Err(res)
+        unsafe {
+            let mut session = None;
+            Self::create(
+                None,
+                width as _,
+                height as _,
+                codec,
+                encoder_specification,
+                source_image_buffer_attributes,
+                None,
+                output_callback,
+                output_callback_ref_con,
+                &mut session,
+            )
+            .to_result(session)
         }
     }
 
-    pub fn create(
+    pub unsafe fn create(
         allocator: Option<&cf::Allocator>,
         width: i32,
         height: i32,
@@ -60,20 +56,18 @@ impl Session {
         output_callback_ref_con: *mut c_void,
         compression_session_out: &mut Option<cf::Retained<Session>>,
     ) -> os::Status {
-        unsafe {
-            VTCompressionSessionCreate(
-                allocator,
-                width,
-                height,
-                codec_type,
-                encoder_specification,
-                source_image_buffer_attributes,
-                compressed_data_allocator,
-                output_callback,
-                output_callback_ref_con,
-                compression_session_out,
-            )
-        }
+        VTCompressionSessionCreate(
+            allocator,
+            width,
+            height,
+            codec_type,
+            encoder_specification,
+            source_image_buffer_attributes,
+            compressed_data_allocator,
+            output_callback,
+            output_callback_ref_con,
+            compression_session_out,
+        )
     }
 
     #[inline]
@@ -83,10 +77,7 @@ impl Session {
 
     #[inline]
     pub fn prepare(&mut self) -> Result<(), os::Status> {
-        match self.prepare_to_encode_frames() {
-            NO_ERR => Ok(()),
-            status => Err(status),
-        }
+        self.prepare_to_encode_frames().result()
     }
 
     #[inline]

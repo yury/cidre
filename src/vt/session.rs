@@ -1,7 +1,4 @@
-use crate::{
-    cf,
-    os::{self, NO_ERR},
-};
+use crate::{cf, os};
 
 pub type Session = cf::Type;
 
@@ -22,11 +19,7 @@ impl Session {
 
     #[inline]
     pub fn set_props(&mut self, props: &cf::Dictionary) -> Result<(), os::Status> {
-        let res = unsafe { self.set_properties(props) };
-        match res {
-            NO_ERR => Ok(()),
-            _ => Err(res),
-        }
+        unsafe { self.set_properties(props).result() }
     }
 
     #[inline]
@@ -44,11 +37,7 @@ impl Session {
         key: &cf::String,
         value: Option<&cf::Type>,
     ) -> Result<(), os::Status> {
-        let res = unsafe { self.set_property(key, value) };
-        match res {
-            NO_ERR => Ok(()),
-            _ => Err(res),
-        }
+        unsafe { self.set_property(key, value).result() }
     }
 }
 

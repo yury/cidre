@@ -128,7 +128,7 @@ extern "C" {
         pixel_buffer_out: &mut Option<Retained<'a, cv::PixelBuffer>>,
     ) -> cv::Return;
 
-    fn CVPixelBufferPoolFlush(pool: &PixelBufferPool, options: FlashFlags);
+    fn CVPixelBufferPoolFlush(pool: &PixelBufferPool, options: FlushFlags);
 }
 
 pub mod keys {
