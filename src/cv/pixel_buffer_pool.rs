@@ -99,9 +99,7 @@ impl PixelBufferPool {
 
     #[inline]
     pub fn flush(&self, options: FlushFlags) {
-        unsafe {
-            CVPixelBufferPoolFlush(self, options)
-        }
+        unsafe { CVPixelBufferPoolFlush(self, options) }
     }
 }
 
