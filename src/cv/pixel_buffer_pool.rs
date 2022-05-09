@@ -6,12 +6,13 @@ use crate::{
 define_cf_type!(PixelBufferPool(cf::Type));
 
 impl PixelBufferPool {
+    #[inline]
     pub fn new<'a>(
         pool_attributes: Option<&cf::Dictionary>,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
     ) -> Result<Retained<'a, Self>, cv::Return> {
-        let mut pool_out = None;
         unsafe {
+            let mut pool_out = None;
             Self::create(
                 None,
                 pool_attributes,
@@ -22,6 +23,7 @@ impl PixelBufferPool {
         }
     }
 
+    #[inline]
     pub unsafe fn create<'a>(
         allocator: Option<&cf::Allocator>,
         pool_attributes: Option<&cf::Dictionary>,
@@ -36,14 +38,17 @@ impl PixelBufferPool {
         )
     }
 
+    #[inline]
     pub fn attributes(&self) -> Option<&cf::Dictionary> {
         unsafe { CVPixelBufferPoolGetAttributes(self) }
     }
 
+    #[inline]
     pub fn pixel_buffer_attributes(&self) -> Option<&cf::Dictionary> {
         unsafe { CVPixelBufferPoolGetPixelBufferAttributes(self) }
     }
 
+    #[inline]
     pub unsafe fn create_pixel_buffer<'a>(
         &self,
         allocator: Option<&cf::Allocator>,
@@ -52,6 +57,7 @@ impl PixelBufferPool {
         CVPixelBufferPoolCreatePixelBuffer(allocator, self, pixel_buffer_out)
     }
 
+    #[inline]
     pub fn pixel_buffer<'a>(&self) -> Result<Retained<'a, cv::PixelBuffer>, cv::Return> {
         unsafe {
             let mut pixel_buffer_out = None;
@@ -60,6 +66,7 @@ impl PixelBufferPool {
         }
     }
 
+    #[inline]
     pub unsafe fn create_pixel_buffer_with_aux_attributes<'a>(
         &self,
         allocator: Option<&cf::Allocator>,
@@ -74,6 +81,7 @@ impl PixelBufferPool {
         )
     }
 
+    #[inline]
     pub fn pixel_buffer_with_aux_attributes<'a>(
         &self,
         aux_attributes: Option<&cf::Dictionary>,
@@ -86,6 +94,13 @@ impl PixelBufferPool {
                 &mut pixel_buffer_out,
             )
             .to_result(pixel_buffer_out)
+        }
+    }
+
+    #[inline]
+    pub fn flush(&self, options: FlushFlags) {
+        unsafe {
+            CVPixelBufferPoolFlush(self, options)
         }
     }
 }
@@ -114,15 +129,19 @@ extern "C" {
         aux_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: &mut Option<Retained<'a, cv::PixelBuffer>>,
     ) -> cv::Return;
+
+    fn CVPixelBufferPoolFlush(pool: &PixelBufferPool, options: FlashFlags);
 }
 
 pub mod keys {
     use crate::cf;
 
+    #[inline]
     pub fn minimum_buffer_count() -> &'static cf::String {
         unsafe { kCVPixelBufferPoolMinimumBufferCountKey }
     }
 
+    #[inline]
     pub fn maximum_buffer_age() -> &'static cf::String {
         unsafe { kCVPixelBufferPoolMaximumBufferAgeKey }
     }
@@ -136,6 +155,7 @@ pub mod keys {
 pub mod aux_attribute_keys {
     use crate::cf;
 
+    #[inline]
     pub fn allocation_threashold() -> &'static cf::String {
         unsafe { kCVPixelBufferPoolAllocationThresholdKey }
     }
@@ -147,6 +167,8 @@ pub mod aux_attribute_keys {
 
 pub mod notifications {
     use crate::cf;
+
+    #[inline]
     pub fn free_buffer_notification() -> &'static cf::NotificationName {
         unsafe { kCVPixelBufferPoolFreeBufferNotification }
     }
@@ -154,4 +176,12 @@ pub mod notifications {
     extern "C" {
         static kCVPixelBufferPoolFreeBufferNotification: &'static cf::NotificationName;
     }
+}
+
+#[repr(transparent)]
+pub struct FlushFlags(pub u64);
+
+impl FlushFlags {
+    pub const NONE: Self = Self(0);
+    pub const EXCESS_BUFFERS: Self = Self(1);
 }
