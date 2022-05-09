@@ -6,7 +6,7 @@ use crate::{
     cv, define_cf_type, os, vt,
 };
 
-define_cf_type!(Session(crate::vt::Session));
+define_cf_type!(Session(vt::Session));
 
 pub type OutputCallback = extern "C" fn(
     output_callback_ref_con: *mut c_void,
@@ -44,6 +44,7 @@ impl Session {
         }
     }
 
+    /// use ::new
     pub unsafe fn create(
         allocator: Option<&cf::Allocator>,
         width: i32,
@@ -107,6 +108,23 @@ impl Session {
             )
         }
     }
+
+    #[inline]
+    pub fn pixel_buffer_pool(&self) -> Option<&cv::PixelBufferPool> {
+        unsafe { VTCompressionSessionGetPixelBufferPool(self) }
+    }
+
+    #[inline]
+    pub fn complete_frames(&self) -> os::Status {
+        unsafe { VTCompressionSessionCompleteFrames(self) }
+    }
+
+    #[inline]
+    pub fn complete(&self) -> Result<(), os::Status> {
+        self.complete_frames().result()
+    }
+
+    // TODO: multipass
 }
 
 extern "C" {
@@ -135,4 +153,8 @@ extern "C" {
         source_frame_ref_con: *mut c_void,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Status;
+
+    fn VTCompressionSessionGetPixelBufferPool(session: &Session) -> Option<&cv::PixelBufferPool>;
+
+    fn VTCompressionSessionCompleteFrames(session: &Session) -> os::Status;
 }

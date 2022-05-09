@@ -1,4 +1,7 @@
-use crate::{cf, os};
+use crate::{
+    cf::{self, Retained},
+    os,
+};
 
 pub type Session = cf::Type;
 
@@ -39,6 +42,21 @@ impl Session {
     ) -> Result<(), os::Status> {
         unsafe { self.set_property(key, value).result() }
     }
+
+    pub unsafe fn copy_supported_property_dictionary<'a>(
+        &self,
+        supported_property_dictionary_out: &mut Option<Retained<'a, cf::Dictionary>>,
+    ) -> os::Status {
+        VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
+    }
+
+    pub fn supported_properties<'a>(&self) -> Result<Retained<'a, cf::Dictionary>, os::Status> {
+        unsafe {
+            let mut supported_property_dictionary_out = None;
+            self.copy_supported_property_dictionary(&mut supported_property_dictionary_out)
+                .to_result(supported_property_dictionary_out)
+        }
+    }
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
@@ -58,5 +76,10 @@ extern "C" {
     fn VTSessionSetProperties(
         session: &mut Session,
         property_dictionary: &cf::Dictionary,
+    ) -> os::Status;
+
+    fn VTSessionCopySupportedPropertyDictionary<'a>(
+        session: &Session,
+        supported_property_dictionary_out: &mut Option<Retained<'a, cf::Dictionary>>,
     ) -> os::Status;
 }

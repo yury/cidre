@@ -10,5 +10,9 @@ pub mod compression;
 pub use compression::properties as compression_properties;
 pub use compression::Session as CompressionSession;
 
+pub mod pixel_transfer;
+pub use pixel_transfer::session as PixelTransferSession;
+pub use pixel_transfer::properties as pixel_transfer_properties;
+
 #[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {}

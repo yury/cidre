@@ -60,6 +60,11 @@ mod tests {
         session.set_props(&props).unwrap();
         session.prepare().unwrap();
 
+        let pool = session.pixel_buffer_pool().expect("pool");
+        pool.show();
+
+        session.supported_properties().expect("props").show();
+
         session.show();
     }
 }
