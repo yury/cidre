@@ -14,10 +14,16 @@ impl Status {
     pub fn is_ok(&self) -> bool {
         self.0 == 0
     }
+    
+    #[inline]
+    pub fn is_err(&self) -> bool {
+        !self.is_ok()
+    }
 
     #[inline]
     pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
         if self.is_ok() {
+            debug_assert!(option.is_some());
             Ok(option.unwrap_unchecked())
         } else {
             Err(self)
