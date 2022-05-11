@@ -78,5 +78,12 @@ pub use set::SetOf;
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;
 
+pub mod run_loop;
+pub use run_loop::Mode as RunLoopMode;
+pub use run_loop::Observer as RunLoopObserver;
+pub use run_loop::RunLoop;
+pub use run_loop::Source as RunLoopSource;
+pub use run_loop::Timer as RunLoopTimer;
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {}

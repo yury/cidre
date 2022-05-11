@@ -46,7 +46,7 @@ define_obj_type!(State(Id));
 
 #[cfg(not(target_os = "macos"))]
 impl State {
-    pub fn level(&self) -> Level {
+    pub fn level(&self) -> &Level {
         unsafe { rsel_state_level(self) }
     }
 

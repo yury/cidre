@@ -28,6 +28,8 @@ pub mod vt;
 #[cfg(target_os = "macos")]
 pub mod sc;
 
+#[cfg(target_os = "macos")]
+pub mod am;
 pub mod av;
 
 #[cfg(test)]

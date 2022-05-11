@@ -1,7 +1,6 @@
 use crate::{
     cf::{Allocator, Retained, Type, TypeId},
-    define_cf_type,
-    os,
+    define_cf_type, os,
 };
 
 #[repr(transparent)]
@@ -62,7 +61,8 @@ impl BlockBuffer {
                 sub_block_capacity,
                 flags,
                 &mut block_buffer_out,
-            ).to_result(block_buffer_out)
+            )
+            .to_result(block_buffer_out)
         }
     }
 }

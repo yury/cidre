@@ -53,6 +53,10 @@ fn main() {
     xc_build("mtl", sdk, arch, configuration);
     if sdk.eq("macosx") {
         xc_build("sc", sdk, arch, configuration);
+        println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
+        println!(
+            "cargo:rustc-link-search=framework=/Library/Apple/System/Library/PrivateFrameworks"
+        );
     }
 
     println!("cargo:rerun-if-changed=./pomace/");
