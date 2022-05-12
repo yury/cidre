@@ -26,6 +26,16 @@ pub enum MessageType {
     Unsubscribed = 3,
 }
 
+#[repr(u32)]
+#[derive(Copy, Clone, Debug)]
+#[non_exhaustive]
+pub enum InterfaceType {
+    Unknown = 0,
+    DirectUSB = 1,
+    InderectWiFi = 2,
+    Proxy = 3,
+}
+
 pub type NotificationCallback = extern "C" fn(info: &NotificationCallbackInfo, arg: *mut c_void);
 pub type MountCallback = extern "C" fn(info: &cf::Dictionary, ctx: *mut c_void);
 
@@ -190,6 +200,10 @@ impl Device {
         }
     }
 
+    pub fn interface_type(&self) -> InterfaceType {
+        unsafe { AMDeviceGetInterfaceType(self) }
+    }
+
     pub fn list<'a>() -> Retained<'a, cf::ArrayOf<Device>> {
         unsafe { AMDCreateDeviceList() }
     }
@@ -248,6 +262,8 @@ extern "C" {
         callback: *const c_void,
         cbarg: *const c_void,
     ) -> os::Status;
+
+    fn AMDeviceGetInterfaceType(device: &Device) -> InterfaceType;
 }
 
 #[cfg(test)]
@@ -286,14 +302,13 @@ mod tests {
     pub fn list() {
         let list = am::Device::list();
         assert!(list.len() > 0);
+        println!("interface type {:?}", list[0].interface_type());
     }
 
     #[test]
     pub fn notification_sub() {
-        let list = am::Device::list();
-        list.show();
         // let notification = Notification::subscribe(notification_callback, std::ptr::null_mut())
-        //     .expect("notification");
+            // .expect("notification");
 
         // cf::RunLoop::run();
 
