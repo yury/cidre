@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr::NonNull};
+use std::{ffi::c_void, ptr::NonNull, intrinsics::transmute, ops::Deref};
 
 use crate::{
     cf::{self, Retained},
@@ -76,13 +76,65 @@ impl Notification {
 }
 
 impl Device {
-    pub fn device_id(&self) -> u32 {
+    pub fn connection_id(&self) -> u32 {
         unsafe { AMDeviceGetConnectionID(self) }
     }
 
     pub fn identifier<'a>(&self) -> Retained<'a, cf::String> {
         unsafe { AMDeviceCopyDeviceIdentifier(self) }
     }
+
+
+    pub fn connected(&self) -> Result<Connected, os::Status> {
+        unsafe { 
+            AMDeviceConnect(&self).result()?;
+            Ok(Connected(self))
+        }
+    }
+
+    pub fn is_paired(&self) -> bool {
+        unsafe { AMDeviceIsPaired(self).is_ok() }
+    }
+
+    pub fn pair(&self) -> Result<(), os::Status> {
+        unsafe { AMDevicePair(self).result() }
+    }
+
+
+    // pub fn stop_session(&self) -> Result<(), os::Status> {
+    //     unsafe { AMDeviceStopSession(self).result() }
+    // }
+
+    pub fn validate_pairing(&self) -> Result<(), os::Status> {
+        unsafe { AMDeviceValidatePairing(self).result() }
+    }
+
+    pub fn secure_install_application(&self, url: &cf::URL, options: &cf::Dictionary) -> Result<(), os::Status> {
+        unsafe {
+            AMDeviceSecureInstallApplication(0, self, url, options, std::ptr::null(), std::ptr::null()).result()
+        }
+    }
+
+    pub fn secure_transfer_path(&self, url: &cf::URL, options: &cf::Dictionary) -> Result<(), os::Status> {
+        unsafe {
+            AMDeviceSecureTransferPath(0, self, url, options, std::ptr::null(), std::ptr::null()).result()
+        }
+    }
+
+    pub fn interface_type(&self) -> InterfaceType {
+        unsafe { AMDeviceGetInterfaceType(self) }
+    }
+
+
+    pub fn list<'a>() -> Retained<'a, cf::ArrayOf<Device>> {
+        unsafe { AMDCreateDeviceList() }
+    }
+}
+
+pub struct Connected<'a>(&'a Device);
+
+impl<'a> Connected<'a> {
+
 
     /* Reads various device settings. One of domain or cfstring arguments should be NULL.
      *
@@ -148,67 +200,96 @@ impl Device {
      * Possible values for domain:
      * com.apple.mobile.battery
      */
-    pub unsafe fn copy_value<'a>(
+    pub unsafe fn copy_value<'b>(
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Option<Retained<'a, cf::Type>> {
-        AMDeviceCopyValue(self, domain, key)
+    ) -> Option<Retained<'b, cf::Type>> {
+        AMDeviceCopyValue(self.0, domain, key)
     }
 
-    pub fn domain_value<'a>(&self, domain: &cf::String) -> Option<Retained<'a, cf::Type>> {
+    pub fn domain_value<'b>(&self, domain: &cf::String) -> Option<Retained<'b, cf::Type>> {
         unsafe { self.copy_value(Some(domain), None) }
     }
 
-    pub fn value<'a>(&self, key: &cf::String) -> Option<Retained<'a, cf::Type>> {
+    pub fn value<'b>(&self, key: &cf::String) -> Option<Retained<'b, cf::Type>> {
         unsafe { self.copy_value(None, Some(key)) }
     }
 
-    pub fn connect(&self) -> Result<(), os::Status> {
-        unsafe { AMDeviceConnect(self).result() }
+    #[inline]
+    pub fn name<'b>(&self) -> Retained<'b, cf::String> {
+        let key = cf::String::from_str_no_copy("DeviceName");
+        let v = self.value(&key);
+        unsafe { transmute(v) }
     }
 
-    pub fn is_paired(&self) -> bool {
-        unsafe { AMDeviceIsPaired(self).is_ok() }
+    #[inline]
+    pub fn cpu_arch<'b>(&self) -> Retained<'b, cf::String> {
+        let key = cf::String::from_str_no_copy("CPUArchitecture");
+        let v = self.value(&key);
+        unsafe { transmute(v) }
     }
 
-    pub fn pair(&self) -> Result<(), os::Status> {
-        unsafe { AMDevicePair(self).result() }
+    #[inline]
+    pub fn hardware_model<'b>(&self) -> Retained<'b, cf::String> {
+        let key = cf::String::from_str_no_copy("HardwareModel");
+        let v = self.value(&key);
+        unsafe { transmute(v) }
+    }
+
+    pub fn product_name<'b>(&self) -> Retained<'b, cf::String> {
+        let key = cf::String::from_str_no_copy("HardwareModel");
+        let v = self.value(&key);
+        unsafe { transmute(v) }
+    }
+
+    #[inline]
+    pub fn product_type<'b>(&self) -> Retained<'b, cf::String> {
+        let key = cf::String::from_str_no_copy("ProductType");
+        let v = self.value(&key);
+        unsafe { transmute(v) }
+    }
+
+    #[inline]
+    pub fn product_version<'b>(&self) -> Retained<'b, cf::String> {
+        let key = cf::String::from_str_no_copy("ProductVersion");
+        let v = self.value(&key);
+        unsafe { transmute(v) }
     }
 
     pub fn start_session(&self) -> Result<(), os::Status> {
-        unsafe { AMDeviceStartSession(self).result() }
+        unsafe { AMDeviceStartSession(self.0).result() }
     }
+}
 
-    pub fn stop_session(&self) -> Result<(), os::Status> {
-        unsafe { AMDeviceStopSession(self).result() }
+impl<'a> Drop for Connected<'a> {
+    fn drop(&mut self) {
+        unsafe { AMDeviceDisconnect(&self.0) };
     }
+}
 
-    pub fn validate_pairing(&self) -> Result<(), os::Status> {
-        unsafe { AMDeviceValidatePairing(self).result() }
+impl<'a> Deref for Connected<'a> {
+    type Target = Device;
+
+    fn deref(&self) -> &Self::Target {
+        self.0
     }
+}
 
-    pub fn secure_install_application(&self, url: &cf::URL, options: &cf::Dictionary) -> Result<(), os::Status> {
-        unsafe {
-            AMDeviceSecureInstallApplication(0, self, url, options, std::ptr::null(), std::ptr::null()).result()
-        }
+struct Session<'a>(Connected<'a>);
+
+impl<'a> Drop for Session<'a> {
+    fn drop(&mut self) {
+        _ = unsafe { AMDeviceStopSession(&self.0) };
     }
+}
 
-    pub fn secure_transfer_path(&self, url: &cf::URL, options: &cf::Dictionary) -> Result<(), os::Status> {
-        unsafe {
-            AMDeviceSecureTransferPath(0, self, url, options, std::ptr::null(), std::ptr::null()).result()
-        }
+impl<'a> Deref for Session<'a> {
+    type Target = Connected<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
-
-    pub fn interface_type(&self) -> InterfaceType {
-        unsafe { AMDeviceGetInterfaceType(self) }
-    }
-
-    pub fn list<'a>() -> Retained<'a, cf::ArrayOf<Device>> {
-        unsafe { AMDCreateDeviceList() }
-    }
-
-
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
@@ -240,6 +321,7 @@ extern "C" {
         key: Option<&cf::String>,
     ) -> Option<Retained<'a, cf::Type>>;
     fn AMDeviceConnect(device: &Device) -> os::Status;
+    fn AMDeviceDisconnect(device: &Device) -> os::Status;
     fn AMDeviceIsPaired(device: &Device) -> os::Status;
     fn AMDevicePair(device: &Device) -> os::Status;
     fn AMDeviceValidatePairing(device: &Device) -> os::Status;
@@ -278,22 +360,22 @@ mod tests {
         let dev = info.dev;
         let msg = info.msg;
         let dev: &am::Device = unsafe { transmute(dev) };
-        dev.connect().unwrap();
+        let connected_dev = dev.connected().unwrap();
         println!(
             "msg: {:?} {:?}, {:?}",
             msg,
-            dev.device_id(),
+            dev.connection_id(),
             dev.identifier().to_string()
         );
 
         unsafe {
-            let v = dev.copy_value(None, None).unwrap();
+            let v = connected_dev.copy_value(None, None).unwrap();
             v.show();
             // assert!(v.is_none());
         }
 
         let key = cf::String::from_str("DeviceName");
-        let v = dev.value(&key).unwrap();
+        let v = connected_dev.value(&key).unwrap();
         v.show();
         dev.show();
     }
