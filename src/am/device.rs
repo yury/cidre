@@ -100,11 +100,6 @@ impl Device {
         unsafe { AMDevicePair(self).result() }
     }
 
-
-    // pub fn stop_session(&self) -> Result<(), os::Status> {
-    //     unsafe { AMDeviceStopSession(self).result() }
-    // }
-
     pub fn validate_pairing(&self) -> Result<(), os::Status> {
         unsafe { AMDeviceValidatePairing(self).result() }
     }
@@ -237,6 +232,7 @@ impl<'a> Connected<'a> {
         unsafe { transmute(v) }
     }
 
+    #[inline]
     pub fn product_name<'b>(&self) -> Retained<'b, cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
