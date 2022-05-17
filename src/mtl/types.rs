@@ -1,5 +1,6 @@
 use crate::ns;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Size {
     pub width: ns::UInteger,
@@ -7,6 +8,7 @@ pub struct Size {
     pub depth: ns::UInteger,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Origin {
     pub x: usize,

@@ -25,6 +25,7 @@ impl Buffer {
         self.length()
     }
 
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }

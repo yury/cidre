@@ -27,8 +27,8 @@ pub enum ArgumentBuffersTier {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(C)]
 pub struct SizeAndAlign {
-    size: usize,
-    align: usize,
+    pub size: usize,
+    pub align: usize,
 }
 
 define_obj_type!(Device(Id));
