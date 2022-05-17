@@ -267,7 +267,7 @@ impl<'a> Connected<'a> {
     }
 
     pub fn start_session(&self) -> Result<Session, os::Status> {
-        unsafe { 
+        unsafe {
             match AMDeviceStartSession(self.0).result() {
                 Err(e) => Err(e),
                 Ok(()) => Ok(Session(self)),
@@ -293,7 +293,10 @@ impl<'a> Deref for Connected<'a> {
 pub struct Session<'a>(&'a Connected<'a>);
 
 impl<'a> Session<'a> {
-    pub fn secure_start_service<'b>(&self, name: &cf::String) -> Result<Retained<'b, Service>, os::Status> {
+    pub fn secure_start_service<'b>(
+        &self,
+        name: &cf::String,
+    ) -> Result<Retained<'b, Service>, os::Status> {
         unsafe {
             let mut service = None;
             AMDeviceSecureStartService(self, name, std::ptr::null(), &mut service)
