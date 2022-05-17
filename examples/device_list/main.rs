@@ -12,7 +12,6 @@ fn main() {
         );
 
         let s = f.start_session().expect("started session");
-        let dbg = s.start_debug_server().expect("started debug server");
-        dbg.show();
+        s.show();
     }
 }
