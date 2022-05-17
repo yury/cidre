@@ -49,3 +49,10 @@ pub use player::Player;
 pub use player::QueuePlayer;
 pub use player::Status as PlayerStatus;
 pub use player::TimeControlStatus as PlayerTimeControlStatus;
+
+pub mod asset;
+pub use asset::Asset;
+pub use asset::URLAsset;
+pub use asset::FragmentedAsset;
+pub use asset::FragmentedAssetMinder;
+pub use asset::AssetCache;
