@@ -11,6 +11,9 @@ fn main() {
             f.name().to_string()
         );
 
-        let s = f.start_session().unwrap();
+        let s = f.start_session().expect("started session");
+        let dbg = s.start_debug_server().expect("started debug server");
+        dbg.show();
+        
     }
 }

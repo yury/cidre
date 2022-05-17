@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr::NonNull, intrinsics::transmute, ops::Deref};
+use std::{ffi::c_void, intrinsics::transmute, ops::Deref, ptr::NonNull};
 
 use crate::{
     cf::{self, Retained},
@@ -84,9 +84,8 @@ impl Device {
         unsafe { AMDeviceCopyDeviceIdentifier(self) }
     }
 
-
     pub fn connected(&self) -> Result<Connected, os::Status> {
-        unsafe { 
+        unsafe {
             AMDeviceConnect(&self).result()?;
             Ok(Connected(self))
         }
@@ -104,22 +103,38 @@ impl Device {
         unsafe { AMDeviceValidatePairing(self).result() }
     }
 
-    pub fn secure_install_application(&self, url: &cf::URL, options: &cf::Dictionary) -> Result<(), os::Status> {
+    pub fn secure_install_application(
+        &self,
+        url: &cf::URL,
+        options: &cf::Dictionary,
+    ) -> Result<(), os::Status> {
         unsafe {
-            AMDeviceSecureInstallApplication(0, self, url, options, std::ptr::null(), std::ptr::null()).result()
+            AMDeviceSecureInstallApplication(
+                0,
+                self,
+                url,
+                options,
+                std::ptr::null(),
+                std::ptr::null(),
+            )
+            .result()
         }
     }
 
-    pub fn secure_transfer_path(&self, url: &cf::URL, options: &cf::Dictionary) -> Result<(), os::Status> {
+    pub fn secure_transfer_path(
+        &self,
+        url: &cf::URL,
+        options: &cf::Dictionary,
+    ) -> Result<(), os::Status> {
         unsafe {
-            AMDeviceSecureTransferPath(0, self, url, options, std::ptr::null(), std::ptr::null()).result()
+            AMDeviceSecureTransferPath(0, self, url, options, std::ptr::null(), std::ptr::null())
+                .result()
         }
     }
 
     pub fn interface_type(&self) -> InterfaceType {
         unsafe { AMDeviceGetInterfaceType(self) }
     }
-
 
     pub fn list<'a>() -> Retained<'a, cf::ArrayOf<Device>> {
         unsafe { AMDCreateDeviceList() }
@@ -129,8 +144,6 @@ impl Device {
 pub struct Connected<'a>(&'a Device);
 
 impl<'a> Connected<'a> {
-
-
     /* Reads various device settings. One of domain or cfstring arguments should be NULL.
      *
      * ActivationPublicKey
@@ -253,8 +266,13 @@ impl<'a> Connected<'a> {
         unsafe { transmute(v) }
     }
 
-    pub fn start_session(&self) -> Result<(), os::Status> {
-        unsafe { AMDeviceStartSession(self.0).result() }
+    pub fn start_session(&self) -> Result<Session, os::Status> {
+        unsafe { 
+            match AMDeviceStartSession(self.0).result() {
+                Err(e) => Err(e),
+                Ok(()) => Ok(Session(self)),
+            }
+        }
     }
 }
 
@@ -272,7 +290,22 @@ impl<'a> Deref for Connected<'a> {
     }
 }
 
-struct Session<'a>(Connected<'a>);
+pub struct Session<'a>(&'a Connected<'a>);
+
+impl<'a> Session<'a> {
+    pub fn secure_start_service<'b>(&self, name: &cf::String) -> Result<Retained<'b, Service>, os::Status> {
+        unsafe {
+            let mut service = None;
+            AMDeviceSecureStartService(self, name, std::ptr::null(), &mut service)
+                .to_result(service)
+        }
+    }
+
+    pub fn start_debug_server<'b>(&self) -> Result<Retained<'b, Service>, os::Status> {
+        let name = cf::String::from_str_no_copy("com.apple.debugserver");
+        self.secure_start_service(&name)
+    }
+}
 
 impl<'a> Drop for Session<'a> {
     fn drop(&mut self) {
@@ -287,6 +320,8 @@ impl<'a> Deref for Session<'a> {
         &self.0
     }
 }
+
+define_cf_type!(Service(cf::Type));
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -342,6 +377,14 @@ extern "C" {
     ) -> os::Status;
 
     fn AMDeviceGetInterfaceType(device: &Device) -> InterfaceType;
+
+    fn AMDeviceSecureStartService<'a>(
+        device: &Device,
+        service_name: &cf::String,
+        unknwon: *const c_void,
+        service: &Option<Retained<'a, Service>>,
+    ) -> os::Status;
+    fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 }
 
 #[cfg(test)]
@@ -386,7 +429,7 @@ mod tests {
     #[test]
     pub fn notification_sub() {
         // let notification = Notification::subscribe(notification_callback, std::ptr::null_mut())
-            // .expect("notification");
+        // .expect("notification");
 
         // cf::RunLoop::run();
 

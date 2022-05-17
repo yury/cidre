@@ -75,6 +75,9 @@ pub use set::MutableSet;
 pub use set::Set;
 pub use set::SetOf;
 
+pub mod uuid;
+pub use uuid::UUID;
+
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;
 
