@@ -56,3 +56,5 @@ pub use asset::URLAsset;
 pub use asset::FragmentedAsset;
 pub use asset::FragmentedAssetMinder;
 pub use asset::AssetCache;
+pub use asset::ReaderStatus as AssetReaderStatus;
+pub use asset::Reader as AssetReader;
