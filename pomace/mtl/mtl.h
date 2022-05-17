@@ -91,9 +91,9 @@ NS_RETURNS_RETAINED
 rsel(, id, newSharedEvent, id<MTLSharedEvent> _Nullable)
 
 //- (MTLSizeAndAlign)heapTextureSizeAndAlignWithDescriptor:(MTLTextureDescriptor *)desc API_AVAILABLE(macos(10.13), ios(10.0));
-rsel_a(, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSizeAndAlign)
+rsel_a(,id, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSizeAndAlign)
 //- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
-rsel_ab(, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
+rsel_ab(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 
 #pragma mark - CompileOptions
 

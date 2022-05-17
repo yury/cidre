@@ -39,3 +39,13 @@ pub use capture::SystemPressureState as CaptureSystemPressureState;
 
 pub mod metadata_object;
 pub use metadata_object::MetadataObject;
+
+pub mod player;
+pub use player::ActionAtItemEnd as PlayerActionAtItemEnd;
+pub use player::AudiovisualBackgroundPlaybackPolicy as PlayerAudiovisualBackgroundPlaybackPolicy;
+pub use player::HDRMode as PlayerHDRMode;
+pub use player::ItemStatus as PlayerItemStatus;
+pub use player::Player;
+pub use player::QueuePlayer;
+pub use player::Status as PlayerStatus;
+pub use player::TimeControlStatus as PlayerTimeControlStatus;
