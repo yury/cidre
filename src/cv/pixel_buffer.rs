@@ -1,4 +1,4 @@
-use crate::{cf, cv, os};
+use crate::{cf::{self, OptionFlags}, cv, os};
 
 pub type PixelBuffer = cv::ImageBuffer;
 
@@ -92,7 +92,45 @@ impl PixelBuffer {
             )
         }
     }
+
+    pub unsafe fn lock_base_address(&self, flags: LockFlags) -> cv::Return {
+        CVPixelBufferLockBaseAddress(self, flags)
+    }
+
+    pub unsafe fn unlock_lock_base_address(&self, flags: LockFlags) -> cv::Return {
+        CVPixelBufferUnlockBaseAddress(self, flags)
+    }
+
+    pub fn base_address_lock(&self, flags: LockFlags) -> Result<BaseAddressLockGuard, cv::Return> {
+        unsafe {
+            let res = self.lock_base_address(flags);
+            if res.is_ok() {
+                Ok(BaseAddressLockGuard(self, flags))
+            } else {
+                Err(res)
+            }
+        }
+    }
 }
+
+pub struct BaseAddressLockGuard<'a>(&'a PixelBuffer, LockFlags);
+
+impl<'a> Drop for BaseAddressLockGuard<'a> {
+    fn drop(&mut self) {
+        let res = unsafe { self.0.unlock_lock_base_address(self.1) };
+        debug_assert!(res.is_ok());
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct LockFlags(pub OptionFlags);
+
+impl LockFlags {
+    pub const DEFAULT: Self = Self(0);
+    pub const READ_ONLY: Self = Self(1);
+}
+
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -125,6 +163,10 @@ extern "C" {
     fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuffer) -> usize;
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
+
+    //CV_EXPORT CVReturn CVPixelBufferLockBaseAddress( CVPixelBufferRef CV_NONNULL pixelBuffer, CVPixelBufferLockFlags lockFlags ) __OSX_AVAILABLE_STARTING(__MAC_10_4,__IPHONE_4_0);
+    fn CVPixelBufferLockBaseAddress(pixel_buffer: &PixelBuffer, lock_flags: LockFlags) -> cv::Return;
+    fn CVPixelBufferUnlockBaseAddress(pixel_buffer: &PixelBuffer, lock_flags: LockFlags) -> cv::Return;
 }
 
 pub mod keys {

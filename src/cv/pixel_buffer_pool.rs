@@ -129,6 +129,7 @@ extern "C" {
     ) -> cv::Return;
 
     fn CVPixelBufferPoolFlush(pool: &PixelBufferPool, options: FlushFlags);
+
 }
 
 pub mod keys {

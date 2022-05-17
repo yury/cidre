@@ -43,6 +43,11 @@ impl Return {
     pub const LAST: Self = Self(-6699);
 
     #[inline]
+    pub fn is_ok(&self) -> bool {
+        *self == Self::SUCCESS
+    }
+
+    #[inline]
     pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
         if self == Self::SUCCESS {
             Ok(option.unwrap_unchecked())
