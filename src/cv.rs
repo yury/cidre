@@ -17,5 +17,8 @@ pub mod pixel_buffer_pool;
 pub use pixel_buffer_pool::FlushFlags as PixelBufferPoolFlushFlags;
 pub use pixel_buffer_pool::PixelBufferPool;
 
+pub mod pixel_format_description;
+pub use pixel_format_description::compressed_pixel_format_available;
+
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {}
