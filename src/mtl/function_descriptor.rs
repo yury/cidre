@@ -1,5 +1,5 @@
 use crate::{
-    cf::{self, runtime::Autoreleased},
+    cf,
     define_obj_type, msg_send, ns,
 };
 
@@ -45,12 +45,12 @@ impl FunctionDescriptor {
     /// assert!(name.equal(&actual_name));
     /// ```
     #[inline]
-    pub fn default<'a>() -> Autoreleased<'a, FunctionDescriptor> {
+    pub fn default<'a>() -> &'a mut FunctionDescriptor {
         unsafe { MTLFunctionDescriptor_functionDescriptor() }
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLFunctionDescriptor_functionDescriptor<'a>() -> Autoreleased<'a, FunctionDescriptor>;
+    fn MTLFunctionDescriptor_functionDescriptor<'a>() -> &'a mut FunctionDescriptor;
 }

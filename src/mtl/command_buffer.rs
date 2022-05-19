@@ -1,6 +1,5 @@
 use std::ffi::c_void;
 
-use crate::cf::runtime::Autoreleased;
 use crate::{define_mtl, define_obj_type, msg_send};
 
 use crate::ns::Id;
@@ -86,14 +85,14 @@ impl CommandBuffer {
     }
 
     #[inline]
-    pub fn blit_command_encoder<'new>(&self) -> Option<Autoreleased<'new, BlitCommandEncoder>> {
+    pub fn blit_command_encoder<'new>(&self) -> Option<&'new mut BlitCommandEncoder> {
         msg_send!("mtl", self, sel_blitCommandEncoder)
     }
 
     #[inline]
     pub fn compute_command_encoder<'new>(
         &self,
-    ) -> Option<Autoreleased<'new, ComputeCommandEncoder>> {
+    ) -> Option<&'new mut ComputeCommandEncoder> {
         msg_send!("mtl", self, sel_computeCommandEncoder)
     }
 }

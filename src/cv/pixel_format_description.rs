@@ -24,7 +24,7 @@ pub fn create<'a>(pixel_format: cv::PixelFormatType) -> Option<cf::Retained<'a, 
     unsafe { CVPixelFormatDescriptionCreateWithPixelFormatType(None, pixel_format) }
 }
 
-pub fn all_pixel_formats<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<cv::PixelFormatType>>> {
+pub fn all_pixel_formats<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<cf::Number>>> {
     unsafe { CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(None) }
 }
 
@@ -37,7 +37,7 @@ extern "C" {
 
     fn CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes<'a>(
         alloc: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<'a, cf::ArrayOf<cv::PixelFormatType>>>;
+    ) -> Option<cf::Retained<'a, cf::ArrayOf<cf::Number>>>;
 }
 
 #[cfg(test)]
@@ -46,5 +46,9 @@ mod tests {
     fn all_pixel_formats() {
         let all = super::all_pixel_formats().unwrap();
         all.show();
+
+        for f in all.iter() {
+            println!("{:?}", f.to_i32());
+        }
     }
 }

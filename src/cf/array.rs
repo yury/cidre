@@ -1,7 +1,7 @@
 use crate::define_cf_type;
 
 use super::{
-    runtime::{Autoreleased, Release, Retain},
+    runtime::{Release, Retain},
     Allocator, Index, Retained, String, Type, TypeId,
 };
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
@@ -97,14 +97,13 @@ pub struct ArrayOfIterator<'a, T> {
 }
 
 impl<'a, T> Iterator for ArrayOfIterator<'a, T>
-where
-    T: Retain,
+where T: Retain
 {
-    type Item = Autoreleased<'a, T>;
+    type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.index < self.len {
-            let res = unsafe { transmute::<&Type, Autoreleased<'a, T>>(&self.array[self.index]) };
+            let res = unsafe { transmute::<&Type, &'a T>(&self.array[self.index]) };
             self.index += 1;
             Some(res)
         } else {
@@ -114,8 +113,7 @@ where
 }
 
 impl<'a, T> ExactSizeIterator for ArrayOfIterator<'a, T>
-where
-    T: Retain,
+where T: Retain
 {
     fn len(&self) -> usize {
         self.array.len() - self.index

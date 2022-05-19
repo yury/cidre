@@ -18,25 +18,6 @@ pub trait Retain: Sized + Release {
 #[repr(transparent)]
 pub struct Retained<'a, T: Release>(&'a mut T);
 
-#[derive(Debug)]
-#[repr(transparent)]
-pub struct Autoreleased<'a, T: Release>(&'a mut T);
-
-impl<'a, T: Release> Deref for Autoreleased<'a, T> {
-    type Target = T;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        self.0
-    }
-}
-
-impl<'a, T: Release> DerefMut for Autoreleased<'a, T> {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
-    }
-}
 
 impl<'a, T: Retain> Retained<'a, T> {
     #[inline]
