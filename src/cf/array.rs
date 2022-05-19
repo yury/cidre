@@ -31,12 +31,9 @@ impl Callbacks {
 define_cf_type!(Array(Type));
 
 #[repr(transparent)]
-pub struct ArrayOf<T: Retain + Release>(Array, PhantomData<T>);
+pub struct ArrayOf<T>(Array, PhantomData<T>);
 
-impl<T> ArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> ArrayOf<T> {
     #[inline]
     pub fn new<'a>() -> Option<Retained<'a, ArrayOf<T>>> {
         let arr = Array::create(None, None, 0, None);
@@ -60,10 +57,7 @@ where
     }
 }
 
-impl<T> std::ops::Deref for ArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> std::ops::Deref for ArrayOf<T> {
     type Target = Array;
 
     #[inline]
@@ -83,28 +77,19 @@ where
     }
 }
 
-impl<T> Release for ArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> Release for ArrayOf<T> {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for ArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> Retain for ArrayOf<T> {
     fn retained<'a>(&self) -> Retained<'a, Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
 
-pub struct ArrayOfIterator<'a, T>
-where
-    T: Retain,
-{
+pub struct ArrayOfIterator<'a, T> {
     array: &'a Array,
     index: usize,
     len: usize,
@@ -138,12 +123,9 @@ where
 }
 
 #[repr(transparent)]
-pub struct MutArrayOf<T: Retain + Release>(MutableArray, PhantomData<T>);
+pub struct MutArrayOf<T>(MutableArray, PhantomData<T>);
 
-impl<T> MutArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> MutArrayOf<T> {
     #[inline]
     pub fn new<'a>() -> Option<Retained<'a, MutArrayOf<T>>> {
         Self::with_capacity(0)
@@ -170,10 +152,7 @@ where
     }
 }
 
-impl<T> std::ops::Deref for MutArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> std::ops::Deref for MutArrayOf<T> {
     type Target = ArrayOf<T>;
 
     #[inline]
@@ -193,19 +172,13 @@ where
     }
 }
 
-impl<T> Release for MutArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> Release for MutArrayOf<T> {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for MutArrayOf<T>
-where
-    T: Retain + Release,
-{
+impl<T> Retain for MutArrayOf<T> {
     fn retained<'a>(&self) -> Retained<'a, Self> {
         unsafe { transmute(self.0.retained()) }
     }

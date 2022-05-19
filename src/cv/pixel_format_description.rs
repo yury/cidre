@@ -24,12 +24,27 @@ pub fn create<'a>(pixel_format: cv::PixelFormatType) -> Option<cf::Retained<'a, 
     unsafe { CVPixelFormatDescriptionCreateWithPixelFormatType(None, pixel_format) }
 }
 
+pub fn all_pixel_formats<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<cv::PixelFormatType>>> {
+    unsafe { CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(None) }
+}
+
 extern "C" {
     fn CVIsCompressedPixelFormatAvailable(pixel_format: cv::PixelFormatType) -> bool;
     fn CVPixelFormatDescriptionCreateWithPixelFormatType<'a>(
         allocator: Option<&cf::Allocator>,
         pixel_format: cv::PixelFormatType,
     ) -> Option<cf::Retained<'a, cf::Dictionary>>;
+
+    fn CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes<'a>(
+        alloc: Option<&cf::Allocator>,
+    ) -> Option<cf::Retained<'a, cf::ArrayOf<cv::PixelFormatType>>>;
 }
 
-/* Create a description of a pixel format from a provided OSType */
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn all_pixel_formats() {
+        let all = super::all_pixel_formats().unwrap();
+        all.show();
+    }
+}
