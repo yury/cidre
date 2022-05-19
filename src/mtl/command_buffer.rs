@@ -90,9 +90,7 @@ impl CommandBuffer {
     }
 
     #[inline]
-    pub fn compute_command_encoder<'new>(
-        &self,
-    ) -> Option<&'new mut ComputeCommandEncoder> {
+    pub fn compute_command_encoder<'new>(&self) -> Option<&'new mut ComputeCommandEncoder> {
         msg_send!("mtl", self, sel_computeCommandEncoder)
     }
 }

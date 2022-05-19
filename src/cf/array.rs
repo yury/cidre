@@ -97,7 +97,8 @@ pub struct ArrayOfIterator<'a, T> {
 }
 
 impl<'a, T> Iterator for ArrayOfIterator<'a, T>
-where T: Retain
+where
+    T: Retain,
 {
     type Item = &'a T;
 
@@ -113,7 +114,8 @@ where T: Retain
 }
 
 impl<'a, T> ExactSizeIterator for ArrayOfIterator<'a, T>
-where T: Retain
+where
+    T: Retain,
 {
     fn len(&self) -> usize {
         self.array.len() - self.index

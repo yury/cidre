@@ -18,7 +18,6 @@ pub trait Retain: Sized + Release {
 #[repr(transparent)]
 pub struct Retained<'a, T: Release>(&'a mut T);
 
-
 impl<'a, T: Retain> Retained<'a, T> {
     #[inline]
     pub fn retained(&self) -> Self {

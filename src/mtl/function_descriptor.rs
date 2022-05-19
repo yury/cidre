@@ -1,7 +1,4 @@
-use crate::{
-    cf,
-    define_obj_type, msg_send, ns,
-};
+use crate::{cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(FunctionDescriptor(ns::Id));
 
