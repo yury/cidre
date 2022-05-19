@@ -52,9 +52,9 @@ pub use player::TimeControlStatus as PlayerTimeControlStatus;
 
 pub mod asset;
 pub use asset::Asset;
-pub use asset::URLAsset;
+pub use asset::AssetCache;
 pub use asset::FragmentedAsset;
 pub use asset::FragmentedAssetMinder;
-pub use asset::AssetCache;
-pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::Reader as AssetReader;
+pub use asset::ReaderStatus as AssetReaderStatus;
+pub use asset::URLAsset;

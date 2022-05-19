@@ -15,5 +15,4 @@ pub enum Status {
     Cancelled = 4,
 }
 
-
 define_obj_type!(Reader(ns::Id));

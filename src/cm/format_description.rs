@@ -7,11 +7,11 @@ use crate::{
 pub struct PixelFormatType(pub FourCharCode);
 
 impl PixelFormatType {
-    pub const _32ARGB: Self = Self(32);
-    pub const _32BGRA: Self = Self::from_be_bytes(b"BGRA");
-    pub const _24RGB: Self = Self(24);
-    pub const _422YPCBCR8: Self = Self::from_be_bytes(b"2vuy");
-    pub const _422YPCBCR8_YUVS: Self = Self::from_be_bytes(b"yuvs");
+    pub const _32_ARGB: Self = Self(32);
+    pub const _32_BGRA: Self = Self::from_be_bytes(b"BGRA");
+    pub const _24_RGB: Self = Self(24);
+    pub const _422_YP_CB_CR_8: Self = Self::from_be_bytes(b"2vuy");
+    pub const _422_YP_CB_CR_8_YUVS: Self = Self::from_be_bytes(b"yuvs");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
@@ -41,7 +41,7 @@ impl MediaType {
 pub struct VideoCodecType(FourCharCode);
 
 impl VideoCodecType {
-    pub const _422YPCBCR8: Self = Self(PixelFormatType::_422YPCBCR8.0);
+    pub const _422_YP_CB_CR_8: Self = Self(PixelFormatType::_422_YP_CB_CR_8.0);
     pub const H264: Self = Self::from_be_bytes(b"avc1");
     pub const HEVC: Self = Self::from_be_bytes(b"hvc1");
 

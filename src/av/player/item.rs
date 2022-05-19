@@ -1,4 +1,4 @@
-use crate::{ns, define_obj_type};
+use crate::{define_obj_type, ns};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
@@ -7,6 +7,5 @@ pub enum Status {
     ReadyToPlay = 1,
     Failed = 2,
 }
-
 
 define_obj_type!(Item(ns::Id));

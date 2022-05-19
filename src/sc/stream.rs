@@ -40,7 +40,7 @@ impl Configuration {
     /// assert_eq!(300, cfg.height());
     ///
     /// cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
-    /// cfg.set_pixel_format(cv::PixelFormatType::_32BGRA);
+    /// cfg.set_pixel_format(cv::PixelFormatType::_32_BGRA);
     /// cfg.set_scales_to_fit(false);
     /// cfg.set_shows_cursor(false);
     ///

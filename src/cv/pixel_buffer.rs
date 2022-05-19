@@ -1,4 +1,7 @@
-use crate::{cf::{self, OptionFlags}, cv, os};
+use crate::{
+    cf::{self, OptionFlags},
+    cv, os,
+};
 
 pub type PixelBuffer = cv::ImageBuffer;
 
@@ -44,11 +47,11 @@ impl PixelBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     ///
     /// assert_eq!(200, pixel_buffer.get_width());
     /// assert_eq!(100, pixel_buffer.get_height());
-    /// assert_eq!(cv::PixelFormatType::_32BGRA, pixel_buffer.get_pixel_format_type());
+    /// assert_eq!(cv::PixelFormatType::_32_BGRA, pixel_buffer.get_pixel_format_type());
     /// assert_eq!(0, pixel_buffer.get_plane_count());
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     ///
@@ -131,17 +134,27 @@ impl LockFlags {
     pub const READ_ONLY: Self = Self(1);
 }
 
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct PixelFormatType(pub os::Type);
 
+// https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput
+
 impl PixelFormatType {
-    // 'l10r': Packed Little Endian ARGB2101010
     pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
-    pub const _32BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
-    pub const _420_YP_CB_CR8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
-    pub const _420_YP_CB_CR8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
+    pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
+    pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
+    pub const _420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
+    pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-8v0"));
+    pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-8f0"));
+    pub const _420_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"x420"));
+    pub const LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-xv0"));
+    pub const LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-xv2"));
 
     pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
 }
@@ -165,8 +178,14 @@ extern "C" {
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
 
     //CV_EXPORT CVReturn CVPixelBufferLockBaseAddress( CVPixelBufferRef CV_NONNULL pixelBuffer, CVPixelBufferLockFlags lockFlags ) __OSX_AVAILABLE_STARTING(__MAC_10_4,__IPHONE_4_0);
-    fn CVPixelBufferLockBaseAddress(pixel_buffer: &PixelBuffer, lock_flags: LockFlags) -> cv::Return;
-    fn CVPixelBufferUnlockBaseAddress(pixel_buffer: &PixelBuffer, lock_flags: LockFlags) -> cv::Return;
+    fn CVPixelBufferLockBaseAddress(
+        pixel_buffer: &PixelBuffer,
+        lock_flags: LockFlags,
+    ) -> cv::Return;
+    fn CVPixelBufferUnlockBaseAddress(
+        pixel_buffer: &PixelBuffer,
+        lock_flags: LockFlags,
+    ) -> cv::Return;
 }
 
 pub mod keys {

@@ -344,18 +344,17 @@ impl Device {
 
     #[inline]
     pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign {
-        unsafe {
-            rsel_heapTextureSizeAndAlignWithDescriptor(self, descriptor)
-        }
+        unsafe { rsel_heapTextureSizeAndAlignWithDescriptor(self, descriptor) }
     }
 
     #[inline]
-    pub fn heap_buffer_size_and_align(&self, length: usize, options: mtl::ResourceOptions) -> SizeAndAlign {
-        unsafe {
-            rsel_heapBufferSizeAndAlignWithLength(self, length, options)
-        }
+    pub fn heap_buffer_size_and_align(
+        &self,
+        length: usize,
+        options: mtl::ResourceOptions,
+    ) -> SizeAndAlign {
+        unsafe { rsel_heapBufferSizeAndAlignWithLength(self, length, options) }
     }
-
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -432,8 +431,15 @@ extern "C" {
 
     fn rsel_newSharedEvent<'create>(id: &Device) -> Option<Retained<'create, SharedEvent>>;
 
-    fn rsel_heapTextureSizeAndAlignWithDescriptor(id: &Device, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign;
-    fn rsel_heapBufferSizeAndAlignWithLength(id: &Device, length: usize, options: mtl::ResourceOptions) -> SizeAndAlign;
+    fn rsel_heapTextureSizeAndAlignWithDescriptor(
+        id: &Device,
+        descriptor: &mtl::TextureDescriptor,
+    ) -> SizeAndAlign;
+    fn rsel_heapBufferSizeAndAlignWithLength(
+        id: &Device,
+        length: usize,
+        options: mtl::ResourceOptions,
+    ) -> SizeAndAlign;
 }
 
 #[cfg(test)]
