@@ -11,22 +11,27 @@ use super::{Queue, Time};
 define_obj_type!(Group(Object));
 
 impl Group {
+    #[inline]
     pub fn new<'a>() -> Retained<'a, Self> {
         unsafe { dispatch_group_create() }
     }
 
+    #[inline]
     pub fn wait(&self, timeout: Time) -> isize {
         unsafe { dispatch_group_wait(self, timeout) }
     }
 
+    #[inline]
     pub fn notify_f(&self, queue: &Queue, context: *mut c_void, work: Function) {
         unsafe { dispatch_group_notify_f(self, queue, context, work) }
     }
 
+    #[inline]
     pub fn enter(&self) {
         unsafe { dispatch_group_enter(&self) }
     }
 
+    #[inline]
     pub fn leave(&self) {
         unsafe { dispatch_group_leave(self) }
     }

@@ -13,7 +13,7 @@ define_cf_type!(Buffer(Type));
 
 impl Buffer {
     #[inline]
-    pub fn get_attachment<'a>(
+    pub fn attachment<'a>(
         &'a self,
         key: &cf::String,
         attachment_mode: AttachmentMode,

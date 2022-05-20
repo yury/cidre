@@ -7,7 +7,7 @@ use crate::{
 pub type SurfaceId = u32;
 
 #[repr(i32)]
-pub enum SurfaceComponentName {
+pub enum ComponentName {
     Unkown = 0,
     Alpha = 1,
     Red = 2,
@@ -19,7 +19,7 @@ pub enum SurfaceComponentName {
 }
 
 #[repr(i32)]
-pub enum SurfaceComponentType {
+pub enum ComponentType {
     Unknown = 0,
     UnsignedInteger = 1,
     SignedInteger = 2,
@@ -28,7 +28,7 @@ pub enum SurfaceComponentType {
 }
 
 #[repr(i32)]
-pub enum SurfaceComponentRange {
+pub enum ComponentRange {
     Unknown = 0,
     Full = 1,
     Video = 2,
@@ -36,7 +36,7 @@ pub enum SurfaceComponentRange {
 }
 
 #[repr(i32)]
-pub enum SurfaceSubsampling {
+pub enum Subsampling {
     Unknown = 0,
     None = 1, // Includes "4:4:4"
     _422 = 2, // Chroma downsampled by 2x1
@@ -45,9 +45,9 @@ pub enum SurfaceSubsampling {
 }
 
 #[repr(transparent)]
-pub struct SurfaceLockOptions(pub cf::OptionFlags);
+pub struct LockOptions(pub cf::OptionFlags);
 
-impl SurfaceLockOptions {
+impl LockOptions {
     pub const READ_ONLY: Self = Self(1);
     pub const AVOID_SYNC: Self = Self(2);
 }
@@ -86,10 +86,10 @@ impl Surface {
     ///
     /// let surf = io::Surface::create(&properties).unwrap();
     ///
-    /// assert_eq!(100, surf.get_width());
-    /// assert_eq!(200, surf.get_height());
-    /// assert_eq!(0, surf.get_plane_count());
-    /// assert_ne!(0, surf.get_id());
+    /// assert_eq!(100, surf.width());
+    /// assert_eq!(200, surf.height());
+    /// assert_eq!(0, surf.plane_count());
+    /// assert_ne!(0, surf.id());
     ///
     /// let props = surf.copy_all_values().unwrap();
     /// props.show();
@@ -100,32 +100,32 @@ impl Surface {
     }
 
     #[inline]
-    pub fn get_id(&self) -> SurfaceId {
+    pub fn id(&self) -> SurfaceId {
         unsafe { IOSurfaceGetID(&self) }
     }
 
     #[inline]
-    pub fn get_width(&self) -> usize {
+    pub fn width(&self) -> usize {
         unsafe { IOSurfaceGetWidth(self) }
     }
 
     #[inline]
-    pub fn get_height(&self) -> usize {
+    pub fn height(&self) -> usize {
         unsafe { IOSurfaceGetHeight(self) }
     }
 
     #[inline]
-    pub fn get_plane_count(&self) -> usize {
+    pub fn plane_count(&self) -> usize {
         unsafe { IOSurfaceGetPlaneCount(self) }
     }
 
     #[inline]
-    pub fn get_plane_width(&self, plane_index: usize) -> usize {
+    pub fn plane_width(&self, plane_index: usize) -> usize {
         unsafe { IOSurfaceGetWidthOfPlane(self, plane_index) }
     }
 
     #[inline]
-    pub fn get_plane_height(&self, plane_index: usize) -> usize {
+    pub fn plane_height(&self, plane_index: usize) -> usize {
         unsafe { IOSurfaceGetHeightOfPlane(self, plane_index) }
     }
 
@@ -190,7 +190,7 @@ impl Surface {
     }
 
     #[inline]
-    pub fn get_use_count(&self) -> i32 {
+    pub fn use_count(&self) -> i32 {
         unsafe { IOSurfaceGetUseCount(self) }
     }
 
@@ -212,7 +212,7 @@ impl Surface {
     /// This will return the current seed value of the buffer and is a cheap call to make to see
     /// if the contents of the buffer have changed since the last lock/unlock.
     #[inline]
-    pub fn get_seed(&self) -> u32 {
+    pub fn seed(&self) -> u32 {
         unsafe { IOSurfaceGetSeed(self) }
     }
 }

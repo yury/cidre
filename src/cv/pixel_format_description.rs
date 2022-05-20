@@ -81,7 +81,7 @@ pub mod keys {
     pub fn contains_rgb() -> &'static cf::String {
         unsafe { kCVPixelFormatContainsRGB }
     }
-    
+
     #[inline]
     pub fn contains_grayscale() -> &'static cf::String {
         unsafe { kCVPixelFormatContainsGrayscale }

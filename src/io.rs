@@ -1,11 +1,11 @@
 pub mod surface;
 
+pub use surface::ComponentName as SurfaceComponentName;
+pub use surface::ComponentRange as SurfaceComponentRange;
+pub use surface::LockOptions as SurfaceLockOptions;
+pub use surface::Subsampling as SurfaceSubsampling;
 pub use surface::Surface;
-pub use surface::SurfaceComponentName;
-pub use surface::SurfaceComponentRange;
 pub use surface::SurfaceId;
-pub use surface::SurfaceLockOptions;
-pub use surface::SurfaceSubsampling;
 
 #[link(name = "IOSurface", kind = "framework")]
 extern "C" {}

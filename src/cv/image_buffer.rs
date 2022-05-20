@@ -11,11 +11,11 @@ impl ImageBuffer {
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     ///
-    /// let size = pixel_buffer.get_encoded_size();
+    /// let size = pixel_buffer.encoded_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0 }, size);
     /// ```
     #[inline]
-    pub fn get_encoded_size(&self) -> cg::Size {
+    pub fn encoded_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetEncodedSize(self) }
     }
 
@@ -25,11 +25,11 @@ impl ImageBuffer {
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     ///
-    /// let display_size = pixel_buffer.get_display_size();
+    /// let display_size = pixel_buffer.display_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
     /// ```
     #[inline]
-    pub fn get_display_size(&self) -> cg::Size {
+    pub fn display_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetDisplaySize(self) }
     }
 
@@ -40,11 +40,11 @@ impl ImageBuffer {
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     ///
-    /// let rect = pixel_buffer.get_clean_rect();
+    /// let rect = pixel_buffer.clean_rect();
     /// assert_eq!(cg::Rect { origin: cg::Point::zero(), size: cg::Size { width: 200.0, height: 100.0 }}, rect);
     /// ```
     #[inline]
-    pub fn get_clean_rect(&self) -> cg::Rect {
+    pub fn clean_rect(&self) -> cg::Rect {
         unsafe { CVImageBufferGetCleanRect(self) }
     }
 
@@ -70,7 +70,7 @@ impl ImageBuffer {
     /// ```
 
     #[inline]
-    pub fn get_color_space(&self) -> Option<&cg::ColorSpace> {
+    pub fn color_space(&self) -> Option<&cg::ColorSpace> {
         unsafe { CVImageBufferGetColorSpace(self) }
     }
 
