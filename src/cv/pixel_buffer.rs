@@ -167,8 +167,6 @@ impl PixelFormatType {
     }
 }
 
-
-
 extern "C" {
     fn CVPixelBufferGetTypeID() -> cf::TypeId;
     fn CVPixelBufferCreate(

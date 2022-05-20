@@ -20,7 +20,6 @@ extern "C" {
     fn CVMetalTextureIsFlipped(image: &Texture) -> bool;
 }
 
-
 pub mod keys {
     use crate::cf;
 

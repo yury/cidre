@@ -23,10 +23,10 @@ pub use pixel_format_description::avaiable_compressed as compressed_pixel_format
 pub use pixel_format_description::create as pixel_format_description_create;
 
 pub mod metal;
+pub use metal::texture_cache_keys as metal_texture_cache_keys;
+pub use metal::texture_keys as metal_texture_keys;
 pub use metal::Texture as MetalTexture;
 pub use metal::TextureCache as MetalTextureCache;
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C" {
-
-}
+extern "C" {}

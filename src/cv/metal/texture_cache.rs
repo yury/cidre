@@ -91,13 +91,14 @@ impl TextureCache {
     }
 
     /// Performs internal housekeeping/recycling operations
-    /// 
+    ///
     /// This call must be made periodically to give the texture cache a chance to do internal housekeeping operations.
     pub fn flush(&self) {
         unsafe { CVMetalTextureCacheFlush(self, 0) }
     }
 }
 
+#[link(name = "CoreVideo", kind = "framework")]
 extern "C" {
     fn CVMetalTextureCacheCreate<'a>(
         allocator: Option<&cf::Allocator>,
@@ -125,10 +126,14 @@ extern "C" {
 pub mod keys {
     use crate::cf;
 
+    /// By default, textures will age out after one second.  Setting a maximum
+    /// texture age of zero will disable the age-out mechanism completely.
+    /// TextureCache::flush() can be used to force eviction in either case.
     pub fn maximum_texture_age() -> &'static cf::String {
         unsafe { kCVMetalTextureCacheMaximumTextureAgeKey }
     }
 
+    #[link(name = "CoreVideo", kind = "framework")]
     extern "C" {
         static kCVMetalTextureCacheMaximumTextureAgeKey: &'static cf::String;
     }
