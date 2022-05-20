@@ -9,8 +9,8 @@ pub use objc::Sel;
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
 pub struct Range {
-    location: UInteger,
-    length: UInteger,
+    pub location: UInteger,
+    pub length: UInteger,
 }
 
 impl Range {
@@ -61,11 +61,4 @@ impl Range {
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
     fn NSIntersectionRange(a: Range, b: Range) -> Range;
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn it_works() {}
 }
