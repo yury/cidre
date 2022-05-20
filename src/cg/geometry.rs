@@ -56,6 +56,7 @@ pub struct Rect {
 }
 
 impl Rect {
+    #[inline]
     pub fn zero() -> Self {
         Default::default()
     }
