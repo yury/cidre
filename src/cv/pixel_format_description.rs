@@ -40,6 +40,84 @@ extern "C" {
     ) -> Option<cf::Retained<'a, cf::ArrayOf<cf::Number>>>;
 }
 
+pub mod keys {
+    use crate::cf;
+
+    /// The canonical name for the format.  This should bethe same as the codec name you'd use in QT
+    #[inline]
+    pub fn name() -> &'static cf::String {
+        unsafe { kCVPixelFormatName }
+    }
+
+    /// QuickTime/QuickDraw Pixel Format Type constant (os::Type)
+    #[inline]
+    pub fn constant() -> &'static cf::String {
+        unsafe { kCVPixelFormatConstant }
+    }
+
+    /// This is the codec type constant, i.e. '2vuy' or k422YpCbCr8CodecType
+    #[inline]
+    pub fn codec_type() -> &'static cf::String {
+        unsafe { kCVPixelFormatCodecType }
+    }
+
+    /// This is the equivalent Microsoft FourCC code for this pixel format
+    #[inline]
+    pub fn four_cc() -> &'static cf::String {
+        unsafe { kCVPixelFormatFourCC }
+    }
+
+    #[inline]
+    pub fn contains_alpha() -> &'static cf::String {
+        unsafe { kCVPixelFormatContainsAlpha }
+    }
+
+    #[inline]
+    pub fn contains_y_cb_cr() -> &'static cf::String {
+        unsafe { kCVPixelFormatContainsYCbCr }
+    }
+
+    #[inline]
+    pub fn contains_rgb() -> &'static cf::String {
+        unsafe { kCVPixelFormatContainsRGB }
+    }
+    
+    #[inline]
+    pub fn contains_grayscale() -> &'static cf::String {
+        unsafe { kCVPixelFormatContainsGrayscale }
+    }
+
+    #[inline]
+    pub fn component_range() -> &'static cf::String {
+        unsafe { kCVPixelFormatComponentRange }
+    }
+
+    extern "C" {
+        static kCVPixelFormatName: &'static cf::String;
+        static kCVPixelFormatConstant: &'static cf::String;
+        static kCVPixelFormatCodecType: &'static cf::String;
+        static kCVPixelFormatFourCC: &'static cf::String;
+        static kCVPixelFormatContainsAlpha: &'static cf::String;
+        static kCVPixelFormatContainsYCbCr: &'static cf::String;
+        static kCVPixelFormatContainsRGB: &'static cf::String;
+        static kCVPixelFormatContainsGrayscale: &'static cf::String;
+        static kCVPixelFormatComponentRange: &'static cf::String;
+    }
+}
+
+pub mod component_range {
+    use crate::cf;
+
+    #[inline]
+    pub fn component_range_video_range() -> &'static cf::String {
+        unsafe { kCVPixelFormatComponentRange_VideoRange }
+    }
+
+    extern "C" {
+        static kCVPixelFormatComponentRange_VideoRange: &'static cf::String;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::cv;

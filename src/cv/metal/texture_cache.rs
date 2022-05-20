@@ -93,6 +93,7 @@ impl TextureCache {
     /// Performs internal housekeeping/recycling operations
     ///
     /// This call must be made periodically to give the texture cache a chance to do internal housekeeping operations.
+    #[inline]
     pub fn flush(&self) {
         unsafe { CVMetalTextureCacheFlush(self, 0) }
     }

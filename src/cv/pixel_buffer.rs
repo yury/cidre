@@ -13,34 +13,34 @@ impl PixelBuffer {
 
     /// Width in pixels.
     #[inline]
-    pub fn get_width(&self) -> usize {
+    pub fn width(&self) -> usize {
         unsafe { CVPixelBufferGetWidth(self) }
     }
 
     /// Height in pixels.
     #[inline]
-    pub fn get_height(&self) -> usize {
+    pub fn height(&self) -> usize {
         unsafe { CVPixelBufferGetHeight(self) }
     }
 
     /// Returns the PixelFormatType of the PixelBuffer.
     #[inline]
-    pub fn get_pixel_format_type(&self) -> PixelFormatType {
+    pub fn pixel_format_type(&self) -> PixelFormatType {
         unsafe { CVPixelBufferGetPixelFormatType(self) }
     }
 
     #[inline]
-    pub fn get_plane_count(&self) -> usize {
+    pub fn plane_count(&self) -> usize {
         unsafe { CVPixelBufferGetPlaneCount(self) }
     }
 
     #[inline]
-    pub fn get_plane_width(&self, plane_index: usize) -> usize {
+    pub fn plane_width(&self, plane_index: usize) -> usize {
         unsafe { CVPixelBufferGetWidthOfPlane(self, plane_index) }
     }
 
     #[inline]
-    pub fn get_plane_height(&self, plane_index: usize) -> usize {
+    pub fn plane_height(&self, plane_index: usize) -> usize {
         unsafe { CVPixelBufferGetHeightOfPlane(self, plane_index) }
     }
 
@@ -49,10 +49,10 @@ impl PixelBuffer {
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     ///
-    /// assert_eq!(200, pixel_buffer.get_width());
-    /// assert_eq!(100, pixel_buffer.get_height());
-    /// assert_eq!(cv::PixelFormatType::_32_BGRA, pixel_buffer.get_pixel_format_type());
-    /// assert_eq!(0, pixel_buffer.get_plane_count());
+    /// assert_eq!(200, pixel_buffer.width());
+    /// assert_eq!(100, pixel_buffer.height());
+    /// assert_eq!(cv::PixelFormatType::_32_BGRA, pixel_buffer.pixel_format_type());
+    /// assert_eq!(0, pixel_buffer.plane_count());
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     ///
     /// ```
@@ -220,8 +220,24 @@ pub mod keys {
         unsafe { kCVPixelBufferIOSurfacePropertiesKey }
     }
 
+    #[inline]
     pub fn metal_compatability() -> &'static cf::String {
         unsafe { kCVPixelBufferMetalCompatibilityKey }
+    }
+
+    #[inline]
+    pub fn plane_aligment() -> &'static cf::String {
+        unsafe { kCVPixelBufferPlaneAlignmentKey }
+    }
+
+    #[inline]
+    pub fn extended_pixels_bottom() -> &'static cf::String {
+        unsafe { kCVPixelBufferExtendedPixelsBottomKey }
+    }
+
+    #[inline]
+    pub fn cg_image_comaptibility() -> &'static cf::String {
+        unsafe { kCVPixelBufferCGImageCompatibilityKey }
     }
 
     extern "C" {
@@ -230,5 +246,8 @@ pub mod keys {
         static kCVPixelBufferHeightKey: &'static cf::String;
         static kCVPixelBufferIOSurfacePropertiesKey: &'static cf::String;
         static kCVPixelBufferMetalCompatibilityKey: &'static cf::String;
+        static kCVPixelBufferPlaneAlignmentKey: &'static cf::String;
+        static kCVPixelBufferExtendedPixelsBottomKey: &'static cf::String;
+        static kCVPixelBufferCGImageCompatibilityKey: &'static cf::String;
     }
 }
