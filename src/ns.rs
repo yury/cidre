@@ -1,10 +1,6 @@
 use crate::objc;
 
-pub use objc::ns::Integer;
-pub use objc::ns::UInteger;
-pub use objc::Class;
-pub use objc::Id;
-pub use objc::Sel;
+pub use objc::{ns::{Integer, UInteger}, Class, Id, Sel};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
@@ -38,11 +34,11 @@ impl Range {
     /// ```
     /// use cidre::{ns};
     /// let a = ns::Range::new(0, 10);
-    /// assert!(ns::Range::location_in_range(1, a));
-    /// assert!(!ns::Range::location_in_range(10, a));
+    /// assert!(ns::Range::location_in_range(1, &a));
+    /// assert!(!ns::Range::location_in_range(10, &a));
     /// ```
     #[inline]
-    pub fn location_in_range(location: UInteger, range: Self) -> bool {
+    pub fn location_in_range(location: UInteger, range: &Self) -> bool {
         !(location < range.location) && (location - range.location) < range.length
     }
 
@@ -54,7 +50,7 @@ impl Range {
     /// ```
     #[inline]
     pub fn contains(&self, location: UInteger) -> bool {
-        Range::location_in_range(location, *self)
+        Range::location_in_range(location, self)
     }
 }
 

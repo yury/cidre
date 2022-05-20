@@ -7,12 +7,21 @@ pub type Session = cf::Type;
 
 impl Session {
     #[inline]
-    pub fn copy_property<'a>(
+    pub fn property<'a>(
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<'a, cf::Type>> {
         unsafe { VTSessionCopyProperty(self, key, allocator) }
+    }
+
+    #[inline]
+    pub unsafe fn set_property(
+        &mut self,
+        key: &cf::String,
+        value: Option<&cf::Type>,
+    ) -> os::Status {
+        VTSessionSetProperty(self, key, value)
     }
 
     #[inline]
@@ -23,15 +32,6 @@ impl Session {
     #[inline]
     pub fn set_props(&mut self, props: &cf::Dictionary) -> Result<(), os::Status> {
         unsafe { self.set_properties(props).result() }
-    }
-
-    #[inline]
-    pub unsafe fn set_property(
-        &mut self,
-        key: &cf::String,
-        value: Option<&cf::Type>,
-    ) -> os::Status {
-        VTSessionSetProperty(self, key, value)
     }
 
     #[inline]
