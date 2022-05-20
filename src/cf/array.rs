@@ -147,6 +147,7 @@ impl<T> MutArrayOf<T> {
         }
     }
 
+    #[inline]
     pub fn push(&mut self, value: &T) {
         self.0.append(unsafe { transmute(value) });
     }
