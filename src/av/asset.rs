@@ -10,5 +10,4 @@ pub use reader::Status as ReaderStatus;
 define_obj_type!(Asset(ns::Id));
 define_obj_type!(URLAsset(Asset));
 define_obj_type!(FragmentedAsset(URLAsset));
-
 define_obj_type!(FragmentedAssetMinder(ns::Id));

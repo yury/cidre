@@ -4,7 +4,7 @@ use crate::{
     sys::_types::MachPort,
 };
 
-pub type SurfaceId = u32;
+pub type Id = u32;
 
 #[repr(i32)]
 pub enum ComponentName {
@@ -100,7 +100,7 @@ impl Surface {
     }
 
     #[inline]
-    pub fn id(&self) -> SurfaceId {
+    pub fn id(&self) -> Id {
         unsafe { IOSurfaceGetID(&self) }
     }
 
@@ -136,7 +136,7 @@ impl Surface {
     ///
     /// assert!(surf.is_none());
     /// ```
-    pub fn lookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>> {
+    pub fn lookup<'a>(csid: Id) -> Option<Retained<'a, Surface>> {
         unsafe { IOSurfaceLookup(csid) }
     }
 
@@ -220,8 +220,8 @@ impl Surface {
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
     fn IOSurfaceCreate<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>>;
-    fn IOSurfaceLookup<'a>(csid: SurfaceId) -> Option<Retained<'a, Surface>>;
-    fn IOSurfaceGetID(buffer: &Surface) -> SurfaceId;
+    fn IOSurfaceLookup<'a>(csid: Id) -> Option<Retained<'a, Surface>>;
+    fn IOSurfaceGetID(buffer: &Surface) -> Id;
     fn IOSurfaceGetWidth(buffer: &Surface) -> usize;
     fn IOSurfaceGetHeight(buffer: &Surface) -> usize;
     fn IOSurfaceGetPlaneCount(buffer: &Surface) -> usize;

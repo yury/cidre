@@ -57,19 +57,19 @@ impl ColorSpace {
         unsafe { CGColorSpaceUsesExtendedRange(self) }
     }
 
-    pub fn get_model(&self) -> ColorSpaceModel {
+    pub fn model(&self) -> ColorSpaceModel {
         unsafe { CGColorSpaceGetModel(self) }
     }
 
-    pub fn get_base_color_space(&self) -> Option<&ColorSpace> {
+    pub fn base_color_space(&self) -> Option<&ColorSpace> {
         unsafe { CGColorSpaceGetBaseColorSpace(self) }
     }
 
-    pub fn get_color_table_count(&self) -> usize {
+    pub fn color_table_count(&self) -> usize {
         unsafe { CGColorSpaceGetColorTableCount(self) }
     }
 
-    pub fn get_name(&self) -> Option<&cf::String> {
+    pub fn name(&self) -> Option<&cf::String> {
         unsafe { CGColorSpaceGetName(self) }
     }
 
@@ -80,10 +80,10 @@ impl ColorSpace {
     ///
     /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     ///
-    /// let name = space.get_name().unwrap();
+    /// let name = space.name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceGray", name.to_string());
     ///
-    /// assert_eq!(cg::ColorSpaceModel::Monochrome, space.get_model());
+    /// assert_eq!(cg::ColorSpaceModel::Monochrome, space.model());
     /// ```
     #[inline]
     pub fn create_device_gray<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
@@ -97,10 +97,10 @@ impl ColorSpace {
     ///
     /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     ///
-    /// let name = space.get_name().unwrap();
+    /// let name = space.name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceRGB", name.to_string());
     ///
-    /// assert_eq!(cg::ColorSpaceModel::RGB, space.get_model());
+    /// assert_eq!(cg::ColorSpaceModel::RGB, space.model());
     /// ```
     #[inline]
     pub fn create_device_rgb<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
@@ -114,10 +114,10 @@ impl ColorSpace {
     ///
     /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     ///
-    /// let name = space.get_name().unwrap();
+    /// let name = space.name().unwrap();
     /// assert_eq!("kCGColorSpaceDeviceCMYK", name.to_string());
     ///
-    /// assert_eq!(cg::ColorSpaceModel::CMYK, space.get_model());
+    /// assert_eq!(cg::ColorSpaceModel::CMYK, space.model());
     /// ```
     #[inline]
     pub fn create_device_cmyk<'a>() -> Option<cf::Retained<'a, ColorSpace>> {
@@ -130,7 +130,7 @@ impl ColorSpace {
     /// let name = cg::color_space::names::generic_gray();
     /// let space = cg::ColorSpace::create_with_name(name).unwrap();
     ///
-    /// let actual_name = space.get_name().unwrap();
+    /// let actual_name = space.name().unwrap();
     ///
     /// assert!(actual_name.equal(name));
     /// ```

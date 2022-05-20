@@ -21,14 +21,17 @@ impl Set {
         self.count() as _
     }
 
+    #[inline]
     pub fn is_emtpy(&self) -> bool {
         self.len() == 0
     }
 
+    #[inline]
     pub unsafe fn contains_value(&self, value: *const c_void) -> bool {
         CFSetContainsValue(self, value)
     }
 
+    #[inline]
     pub unsafe fn get_values(&self, values: *mut *const c_void) {
         CFSetGetValues(self, values)
     }
