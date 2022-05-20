@@ -66,13 +66,19 @@ impl SharedTextureHandle {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
-#[repr(usize)]
-pub enum Usage {
-    Unknown = 0x0000,
-    ShaderRead = 0x0001,
-    ShaderWrite = 0x0002,
-    RenderTarget = 0x0004,
-    PixelFormatView = 0x0010,
+#[repr(transparent)]
+pub struct Usage(usize);
+
+impl Usage {
+    pub const UNKNOWN: Self = Self(0x0000);
+    pub const SHADER_READ: Self = Self(0x0001);
+    pub const SHADER_WRITE: Self = Self(0x0002);
+    pub const RENDER_TARGET: Self = Self(0x0004);
+    pub const PIXEL_FROMAT_VIEW: Self = Self(0x0010);
+
+    pub fn to_cf_number<'a>(&self) -> Retained<'a, cf::Number> {
+        cf::Number::from_i64(self.0 as _)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
