@@ -91,7 +91,7 @@ impl Surface {
     /// assert_eq!(0, surf.plane_count());
     /// assert_ne!(0, surf.id());
     ///
-    /// let props = surf.copy_all_values().unwrap();
+    /// let props = surf.all_values().unwrap();
     /// props.show();
     /// assert_eq!(1, props.len());
     /// ```
@@ -141,7 +141,7 @@ impl Surface {
     }
 
     #[inline]
-    pub fn copy_all_values<'a>(&self) -> Option<Retained<'a, cf::Dictionary>> {
+    pub fn all_values<'a>(&self) -> Option<Retained<'a, cf::Dictionary>> {
         unsafe { IOSurfaceCopyAllValues(self) }
     }
 
