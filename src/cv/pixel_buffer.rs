@@ -157,7 +157,17 @@ impl PixelFormatType {
         Self(os::Type::from_be_bytes(*b"-xv2"));
 
     pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
+
+    pub fn from_cf_number(number: &cf::Number) -> Self {
+        Self(number.to_i32().unwrap_or(0) as u32)
+    }
+
+    pub fn to_description<'a>(&self) -> Option<cf::Retained<'a, cf::Dictionary>> {
+        cv::pixel_format_description_create(*self)
+    }
 }
+
+
 
 extern "C" {
     fn CVPixelBufferGetTypeID() -> cf::TypeId;

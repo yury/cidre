@@ -42,13 +42,16 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use crate::cv;
     #[test]
     fn all_pixel_formats() {
         let all = super::all_pixel_formats().unwrap();
         all.show();
 
         for f in all.iter() {
-            println!("{:?}", f.to_i32());
+            let num = cv::PixelFormatType::from_cf_number(f);
+            let desc = num.to_description();
+            assert!(desc.is_some())
         }
     }
 }
