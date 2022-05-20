@@ -22,10 +22,11 @@ pub use pixel_format_description::all_pixel_formats as pixel_format_description_
 pub use pixel_format_description::avaiable_compressed as compressed_pixel_format_available;
 pub use pixel_format_description::create as pixel_format_description_create;
 
-pub mod metal_texture;
-pub use metal_texture::MetalTexture;
+pub mod metal;
+pub use metal::Texture as MetalTexture;
+pub use metal::TextureCache as MetalTextureCache;
 
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {
-  
+
 }
