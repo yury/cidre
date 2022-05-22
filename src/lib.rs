@@ -3,6 +3,7 @@ pub use mac_types::FourCharCode;
 pub use mac_types::ResType;
 pub use mac_types::UniChar;
 
+pub mod ca;
 /// Core Foundation
 pub mod cf;
 /// Core Graphics
