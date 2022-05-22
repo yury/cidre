@@ -51,6 +51,8 @@ fn main() {
     xc_build("common", sdk, arch, configuration);
     xc_build("av", sdk, arch, configuration);
     xc_build("mtl", sdk, arch, configuration);
+    xc_build("ca", sdk, arch, configuration);
+    xc_build("ci", sdk, arch, configuration);
     if sdk.eq("macosx") {
         xc_build("sc", sdk, arch, configuration);
         println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
