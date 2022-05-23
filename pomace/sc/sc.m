@@ -14,9 +14,6 @@
   cb( _vtable[0], stream, sampleBuffer, type);
 }
 
-- (void)dealloc {
-  NSLog(@"dealloc");
-}
 
 @end
 

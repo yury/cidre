@@ -3,7 +3,7 @@ use std::{ffi::c_void, ops::Deref};
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type, dispatch, msg_send,
-    objc::{block::Completion, Id},
+    objc::{block::Completion, Id, Delegate},
     os,
 };
 
@@ -177,7 +177,6 @@ pub trait StreamDelegate {
         ];
 
         let ptr = table.as_ptr();
-        println!("table ptr {:?} {:?}", ptr, table);
 
         let obj = unsafe { make_stream_delegate(ptr as _) };
 
@@ -217,11 +216,6 @@ extern "C" {
     fn make_stream_delegate<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
 }
 
-#[repr(C)]
-pub struct Delegate<T: Sized> {
-    pub delegate: Box<T>,
-    pub obj: Retained<'static, Id>,
-}
 
 impl Stream {
     pub fn with_delegate<'a, T>(

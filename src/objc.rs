@@ -182,3 +182,9 @@ macro_rules! define_obj_type {
         }
     };
 }
+
+#[repr(C)]
+pub struct Delegate<T: Sized> {
+    pub delegate: Box<T>,
+    pub obj: crate::cf::Retained<'static, Id>,
+}

@@ -1,4 +1,6 @@
+#[cfg(target_os = "ios")]
 pub mod display_link;
+#[cfg(target_os = "ios")]
 pub use display_link::DisplayLink;
 
 pub mod frame_rate_range;

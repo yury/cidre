@@ -12,6 +12,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+API_AVAILABLE(ios(3.1), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos)
+@interface CidreDisplayLinkDelegate : NSObject {
+  @public void * _vtable[2];
+}
+
+- (void)onDisplayLink:(CADisplayLink *)link;
+
+@end
+
+API_AVAILABLE(ios(3.1), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos)
+NS_RETURNS_RETAINED
+CidreDisplayLinkDelegate * make_display_link_delegate(void * _Nonnull vtable[_Nonnull 2]) {
+  CidreDisplayLinkDelegate * result = [CidreDisplayLinkDelegate new];
+  memcpy(result->_vtable, vtable, 2 * sizeof(void *));
+  return result;
+}
+
+API_AVAILABLE(ios(3.1), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos)
+NS_RETURNS_RETAINED
+CADisplayLink * cidre_CADisplayLinkWithDelegate(CidreDisplayLinkDelegate * delegate) {
+  return [CADisplayLink displayLinkWithTarget:delegate selector:@selector(onDisplayLink:)];
+}
 //NS_RETURNS_RETAINED
 //csel(, CADisplayLink, new, CADisplayLink *)
 

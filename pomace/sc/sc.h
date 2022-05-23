@@ -83,7 +83,6 @@ static void cs_initializer()
 
 NS_RETURNS_RETAINED
 SidreStreamDelegate * make_stream_delegate(void * _Nonnull vtable[_Nonnull 2]) {
-  NSLog(@"created");
   SidreStreamDelegate * result = [SidreStreamDelegate new];
   memcpy(result->_vtable, vtable, 2 * sizeof(void *));
   return result;
