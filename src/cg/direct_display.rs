@@ -4,6 +4,14 @@ pub type RefreshRate = f64;
 
 pub const NULL: ID = 0;
 
+pub fn main_display_id() -> ID {
+    unsafe { CGMainDisplayID() }
+}
+
+extern "C" {
+    fn CGMainDisplayID() -> ID;
+}
+
 // typedef uint32_t CGDirectDisplayID;
 // typedef uint32_t CGOpenGLDisplayMask;
 // typedef double CGRefreshRate;

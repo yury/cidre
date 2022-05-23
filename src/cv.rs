@@ -1,3 +1,8 @@
+pub mod base;
+pub use base::Time;
+pub use base::SMPTETime;
+pub use base::TimeStamp;
+
 pub mod _return;
 pub use _return::Return;
 
@@ -27,6 +32,11 @@ pub use metal::texture_cache_keys as metal_texture_cache_keys;
 pub use metal::texture_keys as metal_texture_keys;
 pub use metal::Texture as MetalTexture;
 pub use metal::TextureCache as MetalTextureCache;
+
+#[cfg(target_os = "macos")]
+pub mod display_link;
+#[cfg(target_os = "macos")]
+pub use display_link::DisplayLink;
 
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {}

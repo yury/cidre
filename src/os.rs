@@ -39,3 +39,9 @@ impl Status {
         }
     }
 }
+
+impl Into<Result<(), Status>> for Status {
+    fn into(self) -> Result<(), Status> {
+        self.result()
+    }
+}

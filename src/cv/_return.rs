@@ -49,10 +49,26 @@ impl Return {
 
     #[inline]
     pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
-        if self == Self::SUCCESS {
+        if self.is_ok() {
             Ok(option.unwrap_unchecked())
         } else {
             Err(self)
         }
+    }
+
+    #[inline]
+    pub fn result(self) -> Result<(), Self> {
+        if self.is_ok() {
+            Ok(())
+        } else {
+            Err(self)
+        }
+    }
+}
+
+impl Into<Result<(), Return>> for Return {
+    #[inline]
+    fn into(self) -> Result<(), Return> {
+        self.result()
     }
 }
