@@ -1,6 +1,9 @@
 use crate::objc;
 
-pub use objc::{ns::{Integer, UInteger}, Class, Id, Sel};
+pub use objc::{
+    ns::{Integer, UInteger},
+    Class, Id, Sel,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
