@@ -1,6 +1,6 @@
 pub mod base;
-pub use base::Time;
 pub use base::SMPTETime;
+pub use base::Time;
 pub use base::TimeStamp;
 
 pub mod _return;

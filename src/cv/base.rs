@@ -1,12 +1,10 @@
-
 #[derive(Debug)]
 #[repr(C)]
 pub struct Time {
     pub time_value: i64,
     pub time_scale: i32,
-    pub flags: i32
+    pub flags: i32,
 }
-
 
 #[derive(Debug, Default)]
 #[repr(C)]
@@ -19,7 +17,7 @@ pub struct SMPTETime {
     pub hours: i16,
     pub minutes: i16,
     pub seconds: i16,
-    pub frames: i16
+    pub frames: i16,
 }
 
 #[derive(Debug, Default)]

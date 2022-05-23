@@ -16,8 +16,8 @@ pub mod window;
 pub use window::ID as WindowID;
 
 pub mod direct_display;
-pub use direct_display::ID as DirectDisplayID;
 pub use direct_display::main_display_id;
+pub use direct_display::ID as DirectDisplayID;
 
 pub mod affine_transform;
 pub use affine_transform::AffineTransform;

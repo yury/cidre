@@ -3,7 +3,7 @@ use std::{ffi::c_void, ops::Deref};
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type, dispatch, msg_send,
-    objc::{block::Completion, Id, Delegate},
+    objc::{block::Completion, Delegate, Id},
     os,
 };
 
@@ -215,7 +215,6 @@ extern "C" {
     fn make_stream_out<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
     fn make_stream_delegate<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
 }
-
 
 impl Stream {
     pub fn with_delegate<'a, T>(

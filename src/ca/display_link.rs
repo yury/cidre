@@ -1,14 +1,11 @@
 use std::ffi::c_void;
 
-use crate::{define_obj_type, ns, cf, objc::Delegate};
+use crate::{cf, define_obj_type, ns, objc::Delegate};
 
 define_obj_type!(DisplayLink(ns::Id));
 
 pub trait DisplayLinkDelegate {
-    extern "C" fn on_display_link(
-        &mut self,
-        link: &DisplayLink,
-    );
+    extern "C" fn on_display_link(&mut self, link: &DisplayLink);
 
     fn delegate(self) -> Delegate<Self>
     where

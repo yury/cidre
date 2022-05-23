@@ -1,4 +1,3 @@
-
 pub struct Error(pub u32);
 
 impl Error {
