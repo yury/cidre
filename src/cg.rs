@@ -21,5 +21,8 @@ pub use direct_display::ID as DirectDisplayID;
 pub mod affine_transform;
 pub use affine_transform::AffineTransform;
 
+pub mod error;
+pub use error::Error;
+
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}
