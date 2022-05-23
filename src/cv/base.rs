@@ -1,4 +1,5 @@
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Time {
     pub time_value: i64,
@@ -7,6 +8,7 @@ pub struct Time {
 }
 
 
+#[derive(Debug, Default)]
 #[repr(C)]
 pub struct SMPTETime {
     pub subframes: i16,
@@ -20,6 +22,8 @@ pub struct SMPTETime {
     pub frames: i16
 }
 
+#[derive(Debug, Default)]
+#[repr(C)]
 pub struct TimeStamp {
     pub version: u32,
     pub video_time_scale: i32,

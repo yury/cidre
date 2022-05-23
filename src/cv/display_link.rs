@@ -20,9 +20,17 @@ impl DisplayLink {
     ///
     /// let display_id = cg::main_display_id();
     /// let link = cv::DisplayLink::with_cg_display(display_id).unwrap();
-    /// 
+    ///
     /// let err = link.start().unwrap_err();
     /// assert_eq!(err, cv::Return::DISPLAY_LINK_CALLBACKS_NOT_SET);
+    ///
+    /// let time = link.nominal_output_video_refresh_period();
+    /// println!("time {:?}", time);
+    ///
+    /// assert_eq!(false, link.running());
+    /// 
+    /// let err = link.current_time().unwrap_err();
+    /// assert_eq!(err, cv::Return::DISPLAY_LINK_NOT_RUNNING);
     ///
     /// ```
     pub fn with_cg_display<'a>(
@@ -42,6 +50,34 @@ impl DisplayLink {
     pub fn stop(&self) -> Result<(), cv::Return> {
         unsafe { CVDisplayLinkStop(self).into() }
     }
+
+    pub fn nominal_output_video_refresh_period(&self) -> cv::Time {
+        unsafe { CVDisplayLinkGetNominalOutputVideoRefreshPeriod(self) }
+    }
+
+    pub fn output_video_latency(&self) -> cv::Time {
+        unsafe { CVDisplayLinkGetOutputVideoLatency(self) }
+    }
+
+    pub fn running(&self) -> bool {
+        unsafe { CVDisplayLinkIsRunning(self) }
+    }
+
+    pub unsafe fn get_current_time(&self, out_time: &mut cv::TimeStamp) -> cv::Return {
+        CVDisplayLinkGetCurrentTime(self, out_time)
+    }
+
+    pub fn current_time(&self) -> Result<cv::TimeStamp, cv::Return> {
+        unsafe {
+            let mut out_time = cv::TimeStamp::default();
+            let res = self.get_current_time(&mut out_time);
+            if res.is_ok() {
+              Ok(out_time)
+            } else {
+              Err(res)
+            }
+        }
+    }
 }
 
 extern "C" {
@@ -54,4 +90,12 @@ extern "C" {
 
     fn CVDisplayLinkStart(link: &DisplayLink) -> cv::Return;
     fn CVDisplayLinkStop(link: &DisplayLink) -> cv::Return;
+    fn CVDisplayLinkIsRunning(link: &DisplayLink) -> bool;
+    fn CVDisplayLinkGetNominalOutputVideoRefreshPeriod(link: &DisplayLink) -> cv::Time;
+    fn CVDisplayLinkGetOutputVideoLatency(link: &DisplayLink) -> cv::Time;
+    // CV_EXPORT CVReturn CVDisplayLinkGetCurrentTime( CVDisplayLinkRef CV_NONNULL displayLink, CVTimeStamp * CV_NONNULL outTime ) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
+    fn CVDisplayLinkGetCurrentTime(
+        link: &DisplayLink,
+        out_time: &mut cv::TimeStamp,
+    ) -> cv::Return;
 }
