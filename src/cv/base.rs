@@ -33,3 +33,5 @@ pub struct TimeStamp {
     pub flags: u64,
     pub reserved: u64,
 }
+
+pub type OptionFlags = u64;

@@ -1,6 +1,17 @@
+use std::ffi::c_void;
+
 use crate::{cf, cg, cv, define_cf_type};
 
 define_cf_type!(DisplayLink(cf::Type));
+
+pub type DisplayLinkOutputCallback = extern "C" fn(
+    link: &DisplayLink,
+    in_now: &cv::TimeStamp,
+    in_output_time: &cv::TimeStamp,
+    flags_in: cv::OptionFlags,
+    flags_out: &mut cv::OptionFlags,
+    user_info: *mut c_void,
+) -> cv::Return;
 
 impl DisplayLink {
     pub fn type_id() -> cf::TypeId {
@@ -27,7 +38,7 @@ impl DisplayLink {
     /// let time = link.nominal_output_video_refresh_period();
     /// println!("time {:?}", time);
     ///
-    /// assert_eq!(false, link.running());
+    /// assert_eq!(false, link.is_running());
     ///
     /// let err = link.current_time().unwrap_err();
     /// assert_eq!(err, cv::Return::DISPLAY_LINK_NOT_RUNNING);
@@ -59,7 +70,7 @@ impl DisplayLink {
         unsafe { CVDisplayLinkGetOutputVideoLatency(self) }
     }
 
-    pub fn running(&self) -> bool {
+    pub fn is_running(&self) -> bool {
         unsafe { CVDisplayLinkIsRunning(self) }
     }
 
@@ -78,6 +89,10 @@ impl DisplayLink {
             }
         }
     }
+
+    pub unsafe fn set_callback(&self, callback: DisplayLinkOutputCallback, user_info: *mut c_void) -> cv::Return {
+        CVDisplayLinkSetOutputCallback(self, callback, user_info)
+    }
 }
 
 extern "C" {
@@ -93,6 +108,6 @@ extern "C" {
     fn CVDisplayLinkIsRunning(link: &DisplayLink) -> bool;
     fn CVDisplayLinkGetNominalOutputVideoRefreshPeriod(link: &DisplayLink) -> cv::Time;
     fn CVDisplayLinkGetOutputVideoLatency(link: &DisplayLink) -> cv::Time;
-    // CV_EXPORT CVReturn CVDisplayLinkGetCurrentTime( CVDisplayLinkRef CV_NONNULL displayLink, CVTimeStamp * CV_NONNULL outTime ) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
     fn CVDisplayLinkGetCurrentTime(link: &DisplayLink, out_time: &mut cv::TimeStamp) -> cv::Return;
+    fn CVDisplayLinkSetOutputCallback(link: &DisplayLink, callback: DisplayLinkOutputCallback, user_info: *mut c_void) -> cv::Return;
 }
