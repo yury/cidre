@@ -27,7 +27,7 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
         .args(&["-arch", &arch])
         .args(&["-configuration", &configuration])
         .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
-        .args(&["SUPPORTS_MACCATALYST=YES"])
+        .args(&["-destination 'platform=macOS,variant=Mac Catalyst'", "SUPPORTS_MACCATALYST=YES"])
         .arg("build")
         .status()
         .unwrap()
@@ -85,7 +85,7 @@ fn main() {
     xc_build("av", sdk, arch, configuration);
     xc_build("mtl", sdk, arch, configuration);
 
-    if sdk.eq("ios") || sdk.eq("maccatalyst") {
+    if sdk.eq("iphoneos") || sdk.eq("maccatalyst") {
         xc_build("ca", sdk, arch, configuration);
         xc_build("ui", sdk, arch, configuration);
     }

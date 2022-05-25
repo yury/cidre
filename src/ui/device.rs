@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{cf, define_obj_type, msg_send, ns};
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
@@ -62,7 +62,6 @@ pub enum UserInterfaceIdiom {
     /// Optimized for Mac UI
     Mac = 5,
 }
-
 
 pub mod notifications {
     use crate::cf;
@@ -143,10 +142,38 @@ impl Device {
     pub fn set_battery_monitoring_enabled(&self, value: bool) {
         unsafe { wsel_setBatteryMonitoringEnabled(self, value) }
     }
+
+    #[inline]
+    pub fn identifier_for_vendor(&self) -> Option<&cf::UUID> {
+        unsafe { rsel_identifierForVendor(self) }
+    }
+
+    #[inline]
+    pub fn model(&self) -> &cf::String {
+        unsafe { rsel_model(self) }
+    }
+
+    #[inline]
+    pub fn system_name(&self) -> &cf::String {
+        unsafe { rsel_UIDevice_systemName(self) }
+    }
+
+    #[inline]
+    pub fn name(&self) -> &cf::String {
+        msg_send!("common", self, sel_name)
+    }
+
+    #[inline]
+    pub fn system_version(&self) -> &cf::String {
+        unsafe { rsel_UIDevice_systemVersion(self) }
+    }
 }
 
 #[link(name = "ui", kind = "static")]
 extern "C" {
+    fn rsel_UIDevice_systemVersion(device: &Device) -> &cf::String;
+    fn rsel_model(device: &Device) -> &cf::String;
+    fn rsel_UIDevice_systemName(device: &Device) -> &cf::String;
     fn rsel_userInterfaceIdiom(device: &Device) -> UserInterfaceIdiom;
     fn rsel_isMultitaskingSupported(device: &Device) -> bool;
     fn rsel_proximityState(device: &Device) -> bool;
@@ -156,4 +183,5 @@ extern "C" {
     fn rsel_batteryState(device: &Device) -> BatteryState;
     fn rsel_isBatteryMonitoringEnabled(device: &Device) -> bool;
     fn wsel_setBatteryMonitoringEnabled(device: &Device, value: bool);
+    fn rsel_identifierForVendor(device: &Device) -> Option<&cf::UUID>;
 }

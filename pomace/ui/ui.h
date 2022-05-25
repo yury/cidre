@@ -23,10 +23,10 @@ NS_RETURNS_NOT_RETAINED
 rsel(, id, model, NSString *)
 
 NS_RETURNS_NOT_RETAINED
-rsel(, id, systemName, NSString *)
+rsel(UIDevice_, id, systemName, NSString *)
 
 NS_RETURNS_NOT_RETAINED
-rsel(, UIDevice *, systemVersion, NSString *)
+rsel(UIDevice_, UIDevice *, systemVersion, NSString *)
 
 rsel(, UIDevice *, orientation, UIDeviceOrientation)
 
