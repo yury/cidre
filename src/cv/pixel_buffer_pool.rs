@@ -168,7 +168,7 @@ pub mod notifications {
     use crate::cf;
 
     #[inline]
-    pub fn free_buffer_notification() -> &'static cf::NotificationName {
+    pub fn free_buffer() -> &'static cf::NotificationName {
         unsafe { kCVPixelBufferPoolFreeBufferNotification }
     }
 

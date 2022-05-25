@@ -34,6 +34,9 @@ pub mod sc;
 pub mod am;
 pub mod av;
 
+#[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
+pub mod ui;
+
 #[cfg(test)]
 mod tests {
     use crate::cf;
