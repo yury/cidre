@@ -168,7 +168,8 @@ impl Device {
         unsafe { rsel_UIDevice_systemVersion(self) }
     }
 
-    /// return current device orientation.  this will return Orientation::Unknown unless device orientation notifications are being generated.
+    /// Returns current device orientation. This will return Orientation::Unknown
+    /// unless device orientation notifications are being generated.
     #[inline]
     pub fn orientation(&self) -> Orientation {
         unsafe { rsel_orientation(self) }

@@ -1,8 +1,8 @@
 pub mod base;
+pub use base::OptionFlags;
 pub use base::SMPTETime;
 pub use base::Time;
 pub use base::TimeStamp;
-pub use base::OptionFlags;
 
 pub mod _return;
 pub use _return::Return;

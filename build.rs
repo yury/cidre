@@ -7,41 +7,44 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     out_lib_dir.push(pomace);
 
     let status = if sdk.eq("maccatalyst") {
-        let c = Command::new("xcrun").arg("--show-sdk-path").output()
-        .unwrap();
+        let c = Command::new("xcrun")
+            .arg("--show-sdk-path")
+            .output()
+            .unwrap();
         let line = String::from_utf8(c.stdout).unwrap();
         let line = line.lines().next().unwrap();
 
-        println!(
-            "cargo:rustc-link-search=system={line}/System/iOSSupport/usr"
-        );
+        println!("cargo:rustc-link-search=system={line}/System/iOSSupport/usr");
         println!(
             "cargo:rustc-link-search=framework={line}/System/iOSSupport/System/Library/Frameworks"
         );
         // -isystem $(MACOSX_SDK_DIR)/System/iOSSupport/usr/include \
         // -iframework $(MACOSX_SDK_DIR)/System/iOSSupport/System/Library/Frameworks
         Command::new("xcodebuild")
-        .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
-        .args(&["-scheme", pomace])
-        .args(&["-sdk", "macosx"])
-        .args(&["-arch", &arch])
-        .args(&["-configuration", &configuration])
-        .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
-        .args(&["-destination 'platform=macOS,variant=Mac Catalyst'", "SUPPORTS_MACCATALYST=YES"])
-        .arg("build")
-        .status()
-        .unwrap()
+            .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
+            .args(&["-scheme", pomace])
+            .args(&["-sdk", "macosx"])
+            .args(&["-arch", &arch])
+            .args(&["-configuration", &configuration])
+            .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
+            .args(&[
+                "-destination 'platform=macOS,variant=Mac Catalyst'",
+                "SUPPORTS_MACCATALYST=YES",
+            ])
+            .arg("build")
+            .status()
+            .unwrap()
     } else {
         Command::new("xcodebuild")
-        .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
-        .args(&["-scheme", pomace])
-        .args(&["-sdk", &sdk])
-        .args(&["-arch", &arch])
-        .args(&["-configuration", &configuration])
-        .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
-        .arg("build")
-        .status()
-        .unwrap()
+            .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
+            .args(&["-scheme", pomace])
+            .args(&["-sdk", &sdk])
+            .args(&["-arch", &arch])
+            .args(&["-configuration", &configuration])
+            .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
+            .arg("build")
+            .status()
+            .unwrap()
     };
 
     out_lib_dir.push("Build");
@@ -49,7 +52,7 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     out_lib_dir.push(configuration);
 
     let mut s = out_lib_dir.to_str().unwrap().to_string();
-    
+
     if !sdk.eq("macosx") {
         s.push_str("-");
         s.push_str(sdk);
@@ -70,7 +73,10 @@ fn main() {
     };
 
     let arch = match env::var("TARGET").unwrap().as_ref() {
-        "aarch64-apple-ios-macabi" | "aarch64-apple-darwin" | "aarch64-apple-ios" | "aarch64-apple-ios-sim" => "arm64",
+        "aarch64-apple-ios-macabi"
+        | "aarch64-apple-darwin"
+        | "aarch64-apple-ios"
+        | "aarch64-apple-ios-sim" => "arm64",
         "x86_64-apple-ios" | "x86_64-apple-darwin" => "x86_64",
         x => panic!("unknown tripple: {x}"),
     };

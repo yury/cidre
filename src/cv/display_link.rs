@@ -90,7 +90,11 @@ impl DisplayLink {
         }
     }
 
-    pub unsafe fn set_callback(&self, callback: DisplayLinkOutputCallback, user_info: *mut c_void) -> cv::Return {
+    pub unsafe fn set_callback(
+        &self,
+        callback: DisplayLinkOutputCallback,
+        user_info: *mut c_void,
+    ) -> cv::Return {
         CVDisplayLinkSetOutputCallback(self, callback, user_info)
     }
 }
@@ -109,5 +113,9 @@ extern "C" {
     fn CVDisplayLinkGetNominalOutputVideoRefreshPeriod(link: &DisplayLink) -> cv::Time;
     fn CVDisplayLinkGetOutputVideoLatency(link: &DisplayLink) -> cv::Time;
     fn CVDisplayLinkGetCurrentTime(link: &DisplayLink, out_time: &mut cv::TimeStamp) -> cv::Return;
-    fn CVDisplayLinkSetOutputCallback(link: &DisplayLink, callback: DisplayLinkOutputCallback, user_info: *mut c_void) -> cv::Return;
+    fn CVDisplayLinkSetOutputCallback(
+        link: &DisplayLink,
+        callback: DisplayLinkOutputCallback,
+        user_info: *mut c_void,
+    ) -> cv::Return;
 }
