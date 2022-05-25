@@ -167,10 +167,17 @@ impl Device {
     pub fn system_version(&self) -> &cf::String {
         unsafe { rsel_UIDevice_systemVersion(self) }
     }
+
+    /// return current device orientation.  this will return Orientation::Unknown unless device orientation notifications are being generated.
+    #[inline]
+    pub fn orientation(&self) -> Orientation {
+        unsafe { rsel_orientation(self) }
+    }
 }
 
 #[link(name = "ui", kind = "static")]
 extern "C" {
+    fn rsel_orientation(device: &Device) -> Orientation;
     fn rsel_UIDevice_systemVersion(device: &Device) -> &cf::String;
     fn rsel_model(device: &Device) -> &cf::String;
     fn rsel_UIDevice_systemName(device: &Device) -> &cf::String;
