@@ -58,3 +58,5 @@ pub use asset::FragmentedAssetMinder;
 pub use asset::Reader as AssetReader;
 pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::URLAsset;
+
+pub mod audio;
