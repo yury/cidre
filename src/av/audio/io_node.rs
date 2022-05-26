@@ -1,4 +1,4 @@
-use crate::{define_obj_type, av::audio};
+use crate::{av::audio, define_obj_type};
 
 // AVAudioIONode
 define_obj_type!(IONode(audio::Node));

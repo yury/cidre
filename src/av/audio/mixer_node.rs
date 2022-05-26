@@ -1,4 +1,4 @@
-use crate::{define_obj_type, av::audio};
+use crate::{av::audio, define_obj_type};
 
 // AVAudioMixerNode
 define_obj_type!(MixerNode(audio::Node));
