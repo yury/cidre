@@ -10,6 +10,13 @@ pub use types::Vector3D;
 pub use types::Vector3DOrientation;
 
 pub mod node;
+pub mod io_node;
+pub use io_node::IONode;
+pub use io_node::InputNode;
+pub use io_node::OutputNode;
+
+pub mod mixer_node;
+
 pub mod time;
 pub use node::Node;
 
@@ -50,3 +57,4 @@ pub use converter::PrimeInfo as ConverterPrimeInfo;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 pub mod settings;
+
