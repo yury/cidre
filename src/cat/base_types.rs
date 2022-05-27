@@ -11,6 +11,8 @@
 
 use std::ffi::c_void;
 
+use crate::os;
+
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
 pub mod os_status {
     use crate::os::Status;
@@ -331,3 +333,270 @@ pub struct AudioStreamBasicDescription {
 /// The format can use any sample rate. Note that this constant can only appear
 /// in listings of supported formats. It will never appear in a current format.
 pub const AUDIO_STREAM_ANY_RATE: f64 = 0.0;
+
+#[derive(Debug, Copy, Clone, Default)]
+#[repr(transparent)]
+pub struct SMPTETimeType(pub u32);
+
+impl SMPTETimeType {
+    /// 24 Frame
+    pub const _24: Self = Self(0);
+
+    /// 25 Frame
+    pub const _25: Self = Self(1);
+
+    /// 30 Drop Frame
+    pub const _30_DROP: Self = Self(2);
+
+    /// 30 Frame
+    pub const _30: Self = Self(3);
+
+    /// 29.97 Frame
+    pub const _29_97: Self = Self(4);
+
+    /// 29.97 Drop Frame
+    pub const _29_97_DROP: Self = Self(5);
+
+    /// 60 Frame
+    pub const _60: Self = Self(6);
+
+    /// 59.94 Frame
+    pub const _59_94: Self = Self(7);
+
+    /// 60 Drop Frame
+    pub const _60_DROP: Self = Self(8);
+
+    /// 59.94 Drop Frame
+    pub const _59_94_DROP: Self = Self(9);
+
+    /// 50 Frame
+    pub const _50: Self = Self(10);
+
+    /// 23.98 Frame
+    pub const _23_98: Self = Self(11);
+}
+
+#[derive(Debug, Copy, Clone, Default)]
+#[repr(transparent)]
+pub struct SMPTETimeFlags(pub u32);
+
+impl SMPTETimeFlags {
+    pub const UNKNOWN: Self = Self(0);
+    pub const VALID: Self = Self(1u32 << 0);
+    pub const RUNNING: Self = Self(1u32 << 1);
+}
+
+#[derive(Debug, Default)]
+#[repr(C)]
+pub struct SMPTETime {
+    pub subframes: i16,
+    pub subframes_divisor: i16,
+    pub counter: u32,
+    pub r#type: SMPTETimeType,
+    pub flags: SMPTETimeFlags,
+    pub hours: i16,
+    pub minutes: i16,
+    pub seconds: i16,
+    pub frames: i16,
+}
+
+#[repr(C)]
+pub struct AudioTimeStamp {
+    /// The absolute sample frame time.
+    pub sample_time: f64,
+    /// The host machine's time base, mach_absolute_time.
+    pub host_time: u64,
+    /// The ratio of actual host ticks per sample frame to the nominal host ticks
+    /// per sample frame.
+    pub rate_scalar: f64,
+    /// The word clock time.
+    pub work_clock_time: u64,
+    /// The SMPTE time.
+    pub smpte_time: SMPTETime,
+    /// A set of flags indicating which representations of the time are valid.
+    pub flags: AudioTimeStampFlags,
+    /// Pads the structure out to force an even 8 byte alignment.
+    pub reserved: u32,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct AudioTimeStampFlags(pub u32);
+
+impl AudioTimeStampFlags {
+    pub const NOTHING_VALID: Self = Self(0);
+    /// The sample frame time is valid.
+    pub const SAMPLE_TIME_VALID: Self = Self(1u32 << 0);
+    /// The host time is valid.
+    pub const HOST_TIME_VALID: Self = Self(1u32 << 1);
+    /// The rate scalar is valid.
+    pub const RATE_SCALAR_VALID: Self = Self(1u32 << 2);
+    /// The word clock time is valid.
+    pub const WORD_CLOCK_TIME_VALID: Self = Self(1u32 << 3);
+    /// The SMPTE time is valid.
+    pub const SMPTETIME_VALID: Self = Self(1u32 << 4);
+    /// The sample frame time and the host time are valid.
+    pub const SAMPLE_HOST_TIME_VALID: Self =
+        Self(Self::SAMPLE_TIME_VALID.0 | Self::HOST_TIME_VALID.0);
+}
+
+#[repr(C)]
+pub struct AudioClassDescription {
+    /// The four char code codec type.
+    pub m_type: os::Type,
+    /// The four char code codec subtype.
+    pub m_sub_type: os::Type,
+    /// The four char code codec manufacturer.
+    pub m_manufacturer: os::Type,
+}
+
+/// A tag identifying how the channel is to be used.
+#[repr(transparent)]
+pub struct AudioChannelLabel(pub u32);
+
+impl AudioChannelLabel {
+    /// unknown or unspecified other use
+    pub const UNKNOWN: Self = Self(0xFFFFFFFF);
+    /// channel is present, but has no intended use or destination
+    pub const UNUSED: Self = Self(0);
+    /// channel is described by the mCoordinates fields.
+    pub const USE_COORDINATES: Self = Self(100);
+
+    pub const LEFT: Self = Self(1);
+    pub const RIGHT: Self = Self(2);
+    pub const CENTER: Self = Self(3);
+    pub const LFE_SCREEN: Self = Self(4);
+    pub const LEFT_SURROUND: Self = Self(5);
+    pub const RIGHT_SURROUND: Self = Self(6);
+    pub const LEFT_CENTER: Self = Self(7);
+    pub const RIGHT_CENTER: Self = Self(8);
+
+    /// WAVE: "Back Center" or plain "Rear Surround"
+    pub const CENTER_SURROUND: Self = Self(9);
+    pub const LEFT_SURROUND_DIRECT: Self = Self(10);
+    pub const RIGHT_SURROUND_DIRECT: Self = Self(11);
+    pub const TOP_CENTER_SURROUND: Self = Self(12);
+
+    /// WAVE: "Top Front Left
+    pub const VERTICAL_HEIGHT_LEFT: Self = Self(13);
+
+    /// WAVE: "Top Front Center"
+    pub const VERTICAL_HEIGHT_CENTER: Self = Self(14);
+
+    /// WAVE: "Top Front Right"
+    pub const VERTICAL_HEIGHT_RIGHT: Self = Self(15);
+
+    pub const TOP_BACK_LEFT: Self = Self(16);
+    pub const TOP_BACK_CENTER: Self = Self(17);
+    pub const TOP_BACK_RIGHT: Self = Self(18);
+
+    pub const REAR_SURROUND_LEFT: Self = Self(33);
+    pub const REAR_SURROUND_RIGHT: Self = Self(34);
+    pub const LEFT_WIDE: Self = Self(35);
+    pub const RIGHT_WIDE: Self = Self(36);
+    pub const LFE2: Self = Self(37);
+    /// matrix encoded 4 channels
+    pub const LEFT_TOTAL: Self = Self(38);
+    /// matrix encoded 4 channels
+    pub const RIGHT_TOTAL: Self = Self(39);
+    pub const HEARING_IMPAIRED: Self = Self(40);
+    pub const NARRATION: Self = Self(41);
+    pub const MONO: Self = Self(42);
+    pub const DIALOG_CENTRIC_MIX: Self = Self(43);
+
+    /// back center, non diffuse
+    pub const CENTER_SURROUND_DIRECT: Self = Self(44);
+
+    pub const HAPTIC: Self = Self(45);
+
+    pub const LEFT_TOP_FRONT: Self = Self::VERTICAL_HEIGHT_LEFT;
+    pub const CENTER_TOP_FRONT: Self = Self::VERTICAL_HEIGHT_CENTER;
+    pub const RIGHT_TOP_FRONT: Self = Self::VERTICAL_HEIGHT_RIGHT;
+    pub const LEFT_TOP_MIDDLE: Self = Self(49);
+    pub const CENTER_TOP_MIDDLE: Self = Self::TOP_CENTER_SURROUND;
+    pub const RIGHT_TOP_MIDDLE: Self = Self(51);
+    pub const LEFT_TOP_REAR: Self = Self(52);
+    pub const CENTER_TOP_REAR: Self = Self(53);
+    pub const RIGHT_TOP_REAR: Self = Self(54);
+
+    // first order ambisonic channels
+
+    pub const AMBISONIC_W: Self = Self(200);
+    pub const AMBISONIC_X: Self = Self(201);
+    pub const AMBISONIC_Y: Self = Self(202);
+    pub const AMBISONIC_Z: Self = Self(203);
+
+    // Mid/Side Recording
+
+    pub const MS_MID: Self = Self(204);
+    pub const MS_SIDE: Self = Self(205);
+
+    // X-Y Recording
+
+    pub const XY_X: Self = Self(206);
+    pub const XY_Y: Self = Self(207);
+
+    // Binaural Recording
+    pub const BINAURAL_LEFT: Self = Self(208);
+    pub const BINAURAL_RIGHT: Self = Self(209);
+
+    // other
+    pub const HEADPHONES_LEFT: Self = Self(301);
+    pub const HEADPHONES_RIGHT: Self = Self(302);
+    pub const CLICK_TRACK: Self = Self(304);
+    pub const FOREIGN_LANGUAGE: Self = Self(305);
+
+    // generic discrete channel
+    pub const DISCRETE: Self = Self(400);
+
+    // numbered discrete channel
+    pub const DISCRETE_0: Self = Self((1u32 << 16) | 0);
+    pub const DISCRETE_1: Self = Self((1u32 << 16) | 1);
+    pub const DISCRETE_2: Self = Self((1u32 << 16) | 2);
+    pub const DISCRETE_3: Self = Self((1u32 << 16) | 3);
+    pub const DISCRETE_4: Self = Self((1u32 << 16) | 4);
+    pub const DISCRETE_5: Self = Self((1u32 << 16) | 5);
+    pub const DISCRETE_6: Self = Self((1u32 << 16) | 6);
+    pub const DISCRETE_7: Self = Self((1u32 << 16) | 7);
+    pub const DISCRETE_8: Self = Self((1u32 << 16) | 8);
+    pub const DISCRETE_9: Self = Self((1u32 << 16) | 9);
+    pub const DISCRETE_10: Self = Self((1u32 << 16) | 10);
+    pub const DISCRETE_11: Self = Self((1u32 << 16) | 11);
+    pub const DISCRETE_12: Self = Self((1u32 << 16) | 12);
+    pub const DISCRETE_13: Self = Self((1u32 << 16) | 13);
+    pub const DISCRETE_14: Self = Self((1u32 << 16) | 14);
+    pub const DISCRETE_15: Self = Self((1u32 << 16) | 15);
+    pub const DISCRETE_65535: Self = Self((1u32 << 16) | 65535);
+
+    // generic HOA ACN channel
+    pub const HOA_ACN: Self = Self(500);
+
+    // numbered HOA ACN channels, SN3D normalization
+    pub const HOA_ACN_0: Self = Self((2u32 << 16) | 0);
+    pub const HOA_ACN_1: Self = Self((2u32 << 16) | 1);
+    pub const HOA_ACN_2: Self = Self((2u32 << 16) | 2);
+    pub const HOA_ACN_3: Self = Self((2u32 << 16) | 3);
+    pub const HOA_ACN_4: Self = Self((2u32 << 16) | 4);
+    pub const HOA_ACN_5: Self = Self((2u32 << 16) | 5);
+    pub const HOA_ACN_6: Self = Self((2u32 << 16) | 6);
+    pub const HOA_ACN_7: Self = Self((2u32 << 16) | 7);
+    pub const HOA_ACN_8: Self = Self((2u32 << 16) | 8);
+    pub const HOA_ACN_9: Self = Self((2u32 << 16) | 9);
+    pub const HOA_ACN_10: Self = Self((2u32 << 16) | 10);
+    pub const HOA_ACN_11: Self = Self((2u32 << 16) | 11);
+    pub const HOA_ACN_12: Self = Self((2u32 << 16) | 12);
+    pub const HOA_ACN_13: Self = Self((2u32 << 16) | 13);
+    pub const HOA_ACN_14: Self = Self((2u32 << 16) | 14);
+    pub const HOA_ACN_15: Self = Self((2u32 << 16) | 15);
+    pub const HOA_ACN_65024: Self = Self((2u32 << 16) | 65024); // 254th order uses 65025 channels
+
+    // Specific SN3D alias
+    pub const HOA_SN3D: Self = Self::HOA_ACN_0; // Needs to be ORed with the channel index, not HOA order
+
+    // HOA N3D
+    pub const HOA_N3D: Self = Self(3u32 << 16); // Needs to be ORed with the channel index, not HOA order
+
+    // Channel label values in this range are reserved for internal use
+    pub const BEGIN_RESERVED: Self = Self(0xF0000000);
+    pub const END_RESERVED: Self = Self(0xFFFFFFFE);
+}
