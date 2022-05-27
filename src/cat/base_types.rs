@@ -600,3 +600,36 @@ impl AudioChannelLabel {
     pub const BEGIN_RESERVED: Self = Self(0xF0000000);
     pub const END_RESERVED: Self = Self(0xFFFFFFFE);
 }
+
+#[repr(transparent)]
+pub struct AudioChannelBitmap(pub u32);
+
+impl AudioChannelBitmap {
+    pub const LEFT: Self = Self(1u32 << 0);
+    pub const RIGHT: Self = Self(1u32 << 1);
+    pub const CENTER: Self = Self(1u32 << 2);
+    pub const LFE_SCREEN: Self = Self(1u32 << 3);
+    pub const LEFT_SURROUND: Self = Self(1u32 << 4);
+    pub const RIGHT_SURROUND: Self = Self(1u32 << 5);
+    pub const LEFT_CENTER: Self = Self(1u32 << 6);
+    pub const RIGHT_CENTER: Self = Self(1u32 << 7);
+    pub const CENTER_SURROUND: Self = Self(1u32 << 8); // WAVE: "Back Center"
+    pub const LEFT_SURROUND_DIRECT: Self = Self(1u32 << 9);
+    pub const RIGHT_SURROUND_DIRECT: Self = Self(1u32 << 10);
+    pub const TOP_CENTER_SURROUND: Self = Self(1u32 << 11);
+    pub const VERTICAL_HEIGHT_LEFT: Self = Self(1u32 << 12); // WAVE: "Top Front Left"
+    pub const VERTICAL_HEIGHT_CENTER: Self = Self(1u32 << 13); // WAVE: "Top Front Center"
+    pub const VERTICAL_HEIGHT_RIGHT: Self = Self(1u32 << 14); // WAVE: "Top Front Right"
+    pub const TOP_BACK_LEFT: Self = Self(1u32 << 15);
+    pub const TOP_BACK_CENTER: Self = Self(1u32 << 16);
+    pub const TOP_BACK_RIGHT: Self = Self(1u32 << 17);
+    pub const LEFT_TOP_FRONT: Self = Self::VERTICAL_HEIGHT_LEFT;
+    pub const CENTER_TOP_FRONT: Self = Self::VERTICAL_HEIGHT_CENTER;
+    pub const RIGHT_TOP_FRONT: Self = Self::VERTICAL_HEIGHT_RIGHT;
+    pub const LEFT_TOP_MIDDLE: Self = Self(1u32 << 21);
+    pub const CENTER_TOP_MIDDLE: Self = Self::TOP_CENTER_SURROUND;
+    pub const RIGHT_TOP_MIDDLE: Self = Self(1u32 << 23);
+    pub const LEFT_TOP_REAR: Self = Self(1u32 << 24);
+    pub const CENTER_TOP_REAR: Self = Self(1u32 << 25);
+    pub const RIGHT_TOP_REAR: Self = Self(1u32 << 26);
+}
