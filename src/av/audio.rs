@@ -1,3 +1,5 @@
+pub mod unit;
+
 pub mod types;
 pub use types::Angular3DOrientation;
 pub use types::ChannelCount;
