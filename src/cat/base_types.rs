@@ -1,3 +1,4 @@
+use core::ffi::c_long;
 use std::ffi::c_void;
 
 use crate::os;
@@ -24,20 +25,20 @@ pub struct AudioValueRange {
 
 /// A structure to hold a buffer of audio data.
 #[repr(C)]
-pub struct AudioBuffer {
+pub struct AudioBuffer<const N: usize> {
     /// The number of interleaved channels in the buffer.
     pub number_channels: u32,
     /// The number of bytes in the buffer pointed at by mData.
-    pub data_bytes_syte: u32,
+    pub data_bytes_size: u32,
     /// A pointer to the buffer of audio data.
-    pub data: *mut c_void,
+    pub data: [u8; N],
 }
 
 #[repr(C)]
-pub struct AudioBufferList {
+pub struct AudioBufferList<const N: usize, const M: usize> {
     pub number_buffers: u32,
     /// this is a variable length array of mNumberBuffers elements
-    pub buffers: *mut AudioBuffer,
+    pub buffers: [AudioBuffer<M>; N],
 }
 
 /// A four char code indicating the general kind of data in the stream.
@@ -1100,4 +1101,44 @@ impl AudioChannelLayoutTag {
 
     /// needs to be ORed with the actual number of channels
     pub const UNKNOWN: Self = Self(0xFFFF0000);
+}
+
+/// This structure describes a single channel.
+#[repr(C)]
+pub struct AudioChannelDescription {
+    /// The AudioChannelLabel that describes the channel.
+    pub channel_label: AudioChannelLabel,
+    /// Flags that control the interpretation of mCoordinates.
+    pub channel_flags: AudioChannelFlags,
+    /// An ordered triple that specifies a precise speaker location.
+    pub coordinates: [f32; 3],
+}
+
+#[repr(C)]
+pub struct AudioChannelLayout<const N: usize> {
+    pub channel_layout_tag: AudioChannelLayoutTag,
+    pub channel_bitmap: AudioChannelBitmap,
+    pub number_channel_descriptions: u32,
+    pub channel_descriptions: [AudioChannelDescription; N],
+}
+
+#[repr(C)]
+pub struct AudioFormatListItem {
+    pub asbd: AudioStreamBasicDescription,
+    pub channel_layout_tag: AudioChannelLayoutTag,
+}
+
+#[repr(transparent)]
+pub struct MPEG4ObjectID(pub i64);
+
+impl MPEG4ObjectID {
+    pub const AAC_MAIN: Self       = Self(1);
+    pub const AAC_LC: Self         = Self(2);
+    pub const AAC_SSR: Self        = Self(3);
+    pub const AAC_LTP: Self        = Self(4);
+    pub const AAC_SBR: Self        = Self(5);
+    pub const AAC_SCALABLE: Self   = Self(6);
+    pub const TWIN_VQ: Self         = Self(7);
+    pub const CELP: Self           = Self(8);
+    pub const HVXC: Self           = Self(9);
 }
