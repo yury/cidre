@@ -33,6 +33,7 @@ pub mod sc;
 #[cfg(target_os = "macos")]
 pub mod am;
 pub mod av;
+// CoreAudioTypes
 pub mod cat;
 
 #[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]

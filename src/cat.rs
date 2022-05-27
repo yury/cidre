@@ -1,4 +1,5 @@
-pub mod base_types;
-pub mod session_types;
+mod base_types;
+mod session_types;
 
 pub use base_types::*;
+pub use session_types::*;

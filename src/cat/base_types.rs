@@ -1129,13 +1129,13 @@ pub struct AudioFormatListItem {
 pub struct MPEG4ObjectID(pub i64);
 
 impl MPEG4ObjectID {
-    pub const AAC_MAIN: Self       = Self(1);
-    pub const AAC_LC: Self         = Self(2);
-    pub const AAC_SSR: Self        = Self(3);
-    pub const AAC_LTP: Self        = Self(4);
-    pub const AAC_SBR: Self        = Self(5);
-    pub const AAC_SCALABLE: Self   = Self(6);
-    pub const TWIN_VQ: Self         = Self(7);
-    pub const CELP: Self           = Self(8);
-    pub const HVXC: Self           = Self(9);
+    pub const AAC_MAIN: Self = Self(1);
+    pub const AAC_LC: Self = Self(2);
+    pub const AAC_SSR: Self = Self(3);
+    pub const AAC_LTP: Self = Self(4);
+    pub const AAC_SBR: Self = Self(5);
+    pub const AAC_SCALABLE: Self = Self(6);
+    pub const TWIN_VQ: Self = Self(7);
+    pub const CELP: Self = Self(8);
+    pub const HVXC: Self = Self(9);
 }
