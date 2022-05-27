@@ -1,14 +1,3 @@
-// CF_ENUM(OSStatus)
-// {
-//     kAudio_UnimplementedError     = -4,
-//     kAudio_FileNotFoundError      = -43,
-//     kAudio_FilePermissionError    = -54,
-//     kAudio_TooManyFilesOpenError  = -42,
-//     kAudio_BadFilePathError       = '!pth', // 0x21707468, 561017960
-//     kAudio_ParamError             = -50,
-//     kAudio_MemFullError           = -108
-// };
-
 use std::ffi::c_void;
 
 use crate::os;
@@ -632,4 +621,483 @@ impl AudioChannelBitmap {
     pub const LEFT_TOP_REAR: Self = Self(1u32 << 24);
     pub const CENTER_TOP_REAR: Self = Self(1u32 << 25);
     pub const RIGHT_TOP_REAR: Self = Self(1u32 << 26);
+}
+
+/// These constants are used in the mChannelFlags field of an
+/// AudioChannelDescription structure.
+#[repr(transparent)]
+pub struct AudioChannelFlags(pub u32);
+
+impl AudioChannelFlags {
+    pub const ALL_OFF: Self = Self(0);
+
+    /// The channel is specified by the cartesian coordinates of the speaker
+    /// position. This flag is mutally exclusive with
+    /// AudioChannelFlags::SPHERICAL_COORDINATES.
+    pub const RECTANGULAR_COORDINATES: Self = Self(1u32 << 0);
+    /// The channel is specified by the spherical coordinates of the speaker
+    /// position. This flag is mutally exclusive with
+    /// AudioChannelFlags::RECTANGULAR_COORDINATES.
+    pub const SPHERICAL_COORDINATES: Self = Self(1u32 << 1);
+    /// Set to indicate the units are in meters, clear to indicate the units are
+    /// relative to the unit cube or unit sphere.
+    pub const METERS: Self = Self(1u32 << 2);
+}
+
+#[repr(transparent)]
+pub struct AudioChannelCoordinateIndex(pub u32);
+
+impl AudioChannelCoordinateIndex {
+    pub const LEFT_RIGHT: Self = Self(0);
+    pub const BACK_FRONT: Self = Self(1);
+    pub const DOWN_UP: Self = Self(2);
+    pub const AZIMUTH: Self = Self(0);
+    pub const ELEVATION: Self = Self(1);
+    pub const DISTANCE: Self = Self(2);
+}
+
+/// Some channel abbreviations used below:
+/// L - left
+/// R - right
+/// C - center
+/// Ls - left surround
+/// Rs - right surround
+/// Cs - center surround
+/// Rls - rear left surround
+/// Rrs - rear right surround
+/// Lw - left wide
+/// Rw - right wide
+/// Lsd - left surround direct
+/// Rsd - right surround direct
+/// Lc - left center
+/// Rc - right center
+/// Ts - top surround
+/// Vhl - vertical height left
+/// Vhc - vertical height center
+/// Vhr - vertical height right
+/// Ltm - left top middle
+/// Rtm - right top middle
+/// Ltr - left top rear
+/// Ctr - center top rear
+/// Rtr - right top rear
+/// Lt - left matrix total. for matrix encoded stereo.
+/// Rt - right matrix total. for matrix encoded stereo.
+#[repr(transparent)]
+pub struct AudioChannelLayoutTag(pub u32);
+
+/// These constants are used in the mChannelLayoutTag field of an AudioChannelLayout
+/// structure.
+impl AudioChannelLayoutTag {
+    //  General layouts
+
+    /// use the array of AudioChannelDescriptions to define the mapping.
+    pub const USE_CHANNEL_DESCRIPTIONS: Self = Self((0u32 << 16) | 0);
+
+    /// use the bitmap to define the mapping.
+    pub const USE_CHANNEL_BITMAP: Self = Self((1u32 << 16) | 0);
+
+    /// a standard mono stream
+    pub const MONO: Self = Self((100u32 << 16) | 1);
+
+    /// a standard stereo stream (L R) - implied playback
+    pub const STEREO: Self = Self((101u32 << 16) | 2);
+
+    /// a standard stereo stream (L R) - implied headphone playback
+    pub const STEREO_HEADPHONES: Self = Self((102u32 << 16) | 2);
+
+    /// a matrix encoded stereo stream (Lt, Rt)
+    pub const MATRIX_STEREO: Self = Self((103u32 << 16) | 2);
+
+    /// mid/side recording
+    pub const MID_SIDE: Self = Self((104u32 << 16) | 2);
+
+    /// coincident mic pair (often 2 figure 8's)
+    pub const XY: Self = Self((105u32 << 16) | 2);
+
+    /// binaural stereo (left, right)
+    pub const BINAURAL: Self = Self((106u32 << 16) | 2);
+
+    /// W, X, Y, Z
+    pub const AMBISONIC_B_FORMAT: Self = Self((107u32 << 16) | 4);
+
+    /// L R Ls Rs  -- 90 degree speaker separation
+    pub const QUADRAPHONIC: Self = Self((108u32 << 16) | 4);
+
+    /// L R Ls Rs C  -- 72 degree speaker separation
+    pub const PENTAGONAL: Self = Self((109u32 << 16) | 5);
+    /// L R Ls Rs C Cs  -- 60 degree speaker separation
+    pub const HEXAGONAL: Self = Self((110u32 << 16) | 6);
+    /// L R Ls Rs C Cs Lw Rw  -- 45 degree speaker separation
+    pub const OCTAGONAL: Self = Self((111u32 << 16) | 8);
+
+    /// left, right, rear left, rear right
+    /// top left, top right, top rear left, top rear right
+    pub const CUBE: Self = Self((112u32 << 16) | 8);
+
+    ///  MPEG defined layouts
+
+    /// C
+    pub const MPEG_1_0: Self = Self::MONO;
+    ///  L R
+    pub const MPEG_2_0: Self = Self::STEREO;
+    ///  L R C
+    pub const MPEG_3_0_A: Self = Self((113u32 << 16) | 3);
+    ///  C L R
+    pub const MPEG_3_0_B: Self = Self((114u32 << 16) | 3);
+    ///  L R C Cs
+    pub const MPEG_4_0_A: Self = Self((115u32 << 16) | 4);
+    ///  C L R Cs
+    pub const MPEG_4_0_B: Self = Self((116u32 << 16) | 4);
+    ///  L R C Ls Rs
+    pub const MPEG_5_0_A: Self = Self((117u32 << 16) | 5);
+    ///  L R Ls Rs C
+    pub const MPEG_5_0_B: Self = Self((118u32 << 16) | 5);
+    ///  L C R Ls Rs
+    pub const MPEG_5_0_C: Self = Self((119u32 << 16) | 5);
+    ///  C L R Ls Rs
+    pub const MPEG_5_0_D: Self = Self((120u32 << 16) | 5);
+    ///  L R C LFE Ls Rs
+    pub const MPEG_5_1_A: Self = Self((121u32 << 16) | 6);
+    ///  L R Ls Rs C LFE
+    pub const MPEG_5_1_B: Self = Self((122u32 << 16) | 6);
+    ///  L C R Ls Rs LFE
+    pub const MPEG_5_1_C: Self = Self((123u32 << 16) | 6);
+    ///  C L R Ls Rs LFE
+    pub const MPEG_5_1_D: Self = Self((124u32 << 16) | 6);
+    ///  L R C LFE Ls Rs Cs
+    pub const MPEG_6_1_A: Self = Self((125u32 << 16) | 7);
+    ///  L R C LFE Ls Rs Lc Rc
+    pub const MPEG_7_1_A: Self = Self((126u32 << 16) | 8);
+    ///  C Lc Rc L R Ls Rs LFE    (doc: IS-13818-7 MPEG2-AAC Table 3.1)
+    pub const MPEG_7_1_B: Self = Self((127u32 << 16) | 8);
+    ///  L R C LFE Ls Rs Rls Rrs
+    pub const MPEG_7_1_C: Self = Self((128u32 << 16) | 8);
+    ///  L R Ls Rs C LFE Lc Rc
+    pub const EMAGIC_DEFAULT_7_1: Self = Self((129u32 << 16) | 8);
+    ///  L R C LFE Ls Rs Lt Rt
+    ///      (kAudioChannelLayoutTag_ITU_5_1 plus a matrix encoded stereo mix)
+    pub const SMPTE_DTV: Self = Self((130u32 << 16) | 8);
+
+    //  ITU defined layouts
+
+    ///  C
+    pub const ITU_1_0: Self = Self::MONO;
+    ///  L R
+    pub const ITU_2_0: Self = Self::STEREO;
+
+    ///  L R Cs
+    pub const ITU_2_1: Self = Self((131u32 << 16) | 3);
+
+    ///  L R Ls Rs
+    pub const ITU_2_2: Self = Self((132u32 << 16) | 4);
+
+    ///  L R C
+    pub const ITU_3_0: Self = Self::MPEG_3_0_A;
+
+    ///  L R C Cs
+    pub const ITU_3_1: Self = Self::MPEG_4_0_A;
+
+    ///<  L R C Ls Rs
+    pub const ITU_3_2: Self = Self::MPEG_5_0_A;
+
+    ///  L R C LFE Ls Rs
+    pub const ITU_3_2_1: Self = Self::MPEG_5_1_A;
+
+    ///  L R C LFE Ls Rs Rls Rrs
+    pub const ITU_3_4_1: Self = Self::MPEG_7_1_C;
+
+    // DVD defined layouts
+
+    /// C (mono)
+    pub const DVD_0: Self = Self::MONO;
+    /// L R
+    pub const DVD_1: Self = Self::STEREO;
+    /// L R Cs
+    pub const DVD_2: Self = Self::ITU_2_1;
+    /// L R Ls Rs
+    pub const DVD_3: Self = Self::ITU_2_2;
+    /// L R LFE
+    pub const DVD_4: Self = Self((133u32 << 16) | 3);
+    /// L R LFE Cs
+    pub const DVD_5: Self = Self((134u32 << 16) | 4);
+    /// L R LFE Ls Rs
+    pub const DVD_6: Self = Self((135u32 << 16) | 5);
+    /// L R C
+    pub const DVD_7: Self = Self::MPEG_3_0_A;
+    /// L R C Cs
+    pub const DVD_8: Self = Self::MPEG_4_0_A;
+    /// L R C Ls Rs
+    pub const DVD_9: Self = Self::MPEG_5_0_A;
+    /// L R C LFE
+    pub const DVD_10: Self = Self((136u32 << 16) | 4);
+    /// L R C LFE Cs
+    pub const DVD_11: Self = Self((137u32 << 16) | 5);
+    /// L R C LFE Ls Rs
+    pub const DVD_12: Self = Self::MPEG_5_1_A;
+
+    // 13 through 17 are duplicates of 8 through 12.
+
+    /// L R C Cs
+    pub const DVD_13: Self = Self::DVD_8;
+    /// L R C Ls Rs
+    pub const DVD_14: Self = Self::DVD_9;
+    /// L R C LFE
+    pub const DVD_15: Self = Self::DVD_10;
+    /// L R C LFE Cs
+    pub const DVD_16: Self = Self::DVD_11;
+    /// L R C LFE Ls Rs
+    pub const DVD_17: Self = Self::DVD_12;
+    /// L R Ls Rs LFE
+    pub const DVD_18: Self = Self((138u32 << 16) | 5);
+    /// L R Ls Rs C
+    pub const DVD_19: Self = Self::MPEG_5_0_B;
+    /// L R Ls Rs C LFE
+    pub const DVD_20: Self = Self::MPEG_5_1_B;
+
+    // These layouts are recommended for AudioUnit usage
+    // These are the symmetrical layouts
+    pub const AUDIO_UNIT_4: Self = Self::QUADRAPHONIC;
+    pub const AUDIO_UNIT_5: Self = Self::PENTAGONAL;
+    pub const AUDIO_UNIT_6: Self = Self::HEXAGONAL;
+    pub const AUDIO_UNIT_8: Self = Self::OCTAGONAL;
+
+    // These are the surround-based layouts
+
+    /// L R Ls Rs C
+    pub const AUDIO_UNIT_5_0: Self = Self::MPEG_5_0_B;
+    /// L R Ls Rs C Cs
+    pub const AUDIO_UNIT_6_0: Self = Self((139u32 << 16) | 6);
+    /// L R Ls Rs C Rls Rrs
+    pub const AUDIO_UNIT_7_0: Self = Self((140u32 << 16) | 7);
+    /// L R Ls Rs C Lc Rc
+    pub const AUDIO_UNIT_7_0_FRONT: Self = Self((148u32 << 16) | 7);
+    /// L R C LFE Ls Rs
+    pub const AUDIO_UNIT_5_1: Self = Self::MPEG_5_1_A;
+    /// L R C LFE Ls Rs Cs
+    pub const AUDIO_UNIT_6_1: Self = Self::MPEG_6_1_A;
+    /// L R C LFE Ls Rs Rls Rrs
+    pub const AUDIO_UNIT_7_1: Self = Self::MPEG_7_1_C;
+    /// L R C LFE Ls Rs Lc Rc
+    pub const AUDIO_UNIT_7_1_FRONT: Self = Self::MPEG_7_1_A;
+
+    pub const AAC_3_0: Self = Self::MPEG_3_0_B;
+    /// C L R
+    pub const AAC_QUADRAPHONIC: Self = Self::QUADRAPHONIC;
+    /// L R Ls Rs
+    pub const AAC_4_0: Self = Self::MPEG_4_0_B;
+    /// C L R Cs
+    pub const AAC_5_0: Self = Self::MPEG_5_0_D;
+    /// C L R Ls Rs
+    pub const AAC_5_1: Self = Self::MPEG_5_1_D;
+    /// C L R Ls Rs Lfe
+    pub const AAC_6_0: Self = Self((141u32 << 16) | 6);
+    /// C L R Ls Rs Cs
+    pub const AAC_6_1: Self = Self((142u32 << 16) | 7);
+    /// C L R Ls Rs Cs Lfe
+    pub const AAC_7_0: Self = Self((143u32 << 16) | 7);
+    /// C L R Ls Rs Rls Rrs
+    pub const AAC_7_1: Self = Self::MPEG_7_1_B;
+    /// C Lc Rc L R Ls Rs Lfe
+    pub const AAC_7_1_B: Self = Self((183u32 << 16) | 8);
+    /// C L R Ls Rs Rls Rrs LFE
+    pub const AAC_7_1_C: Self = Self((184u32 << 16) | 8);
+    /// C L R Ls Rs LFE Vhl Vhr
+    pub const AAC_OCTAGONAL: Self = Self((144u32 << 16) | 8);
+    /// C L R Ls Rs Rls Rrs Cs
+
+    /// L R C Vhc Lsd Rsd Ls Rs Vhl Vhr Lw Rw Csd Cs LFE1 LFE2
+    pub const TMH_10_2_STD: Self = Self((145u32 << 16) | 16);
+
+    /// TMH_10_2_std plus: Lc Rc HI VI Haptic
+    pub const TMH_10_2_FULL: Self = Self((146u32 << 16) | 21);
+
+    /// C LFE
+    pub const AC3_1_0_1: Self = Self((149u32 << 16) | 2);
+    /// L C R
+    pub const AC3_3_0: Self = Self((150u32 << 16) | 3);
+    /// L C R Cs
+    pub const AC3_3_1: Self = Self((151u32 << 16) | 4);
+    /// L C R LFE
+    pub const AC3_3_0_1: Self = Self((152u32 << 16) | 4);
+    /// L R Cs LFE
+    pub const AC3_2_1_1: Self = Self((153u32 << 16) | 4);
+    /// L C R Cs LFE
+    pub const AC3_3_1_1: Self = Self((154u32 << 16) | 5);
+
+    /// L C R Ls Rs Cs
+    pub const EAC_6_0_A: Self = Self((155u32 << 16) | 6);
+    /// L C R Ls Rs Rls Rrs
+    pub const EAC_7_0_A: Self = Self((156u32 << 16) | 7);
+
+    /// L C R Ls Rs LFE Cs
+    pub const EAC3_6_1_A: Self = Self((157u32 << 16) | 7);
+    /// L C R Ls Rs LFE Ts
+    pub const EAC3_6_1_B: Self = Self((158u32 << 16) | 7);
+    /// L C R Ls Rs LFE Vhc
+    pub const EAC3_6_1_C: Self = Self((159u32 << 16) | 7);
+    /// L C R Ls Rs LFE Rls Rrs
+    pub const EAC3_7_1_A: Self = Self((160u32 << 16) | 8);
+    /// L C R Ls Rs LFE Lc Rc
+    pub const EAC3_7_1_B: Self = Self((161u32 << 16) | 8);
+    /// L C R Ls Rs LFE Lsd Rsd
+    pub const EAC3_7_1_C: Self = Self((162u32 << 16) | 8);
+    /// L C R Ls Rs LFE Lw Rw
+    pub const EAC3_7_1_D: Self = Self((163u32 << 16) | 8);
+    /// L C R Ls Rs LFE Vhl Vhr
+    pub const EAC3_7_1_E: Self = Self((164u32 << 16) | 8);
+
+    /// L C R Ls Rs LFE Cs Ts
+    pub const EAC3_7_1_F: Self = Self((165u32 << 16) | 8);
+    /// L C R Ls Rs LFE Cs Vhc
+    pub const EAC3_7_1_G: Self = Self((166u32 << 16) | 8);
+    /// L C R Ls Rs LFE Ts Vhc
+    pub const EAC3_7_1_H: Self = Self((167u32 << 16) | 8);
+
+    /// C L R LFE
+    pub const DTS_3_1: Self = Self((168u32 << 16) | 4);
+    /// C L R Cs LFE
+    pub const DTS_4_1: Self = Self((169u32 << 16) | 5);
+    /// Lc Rc L R Ls Rs
+    pub const DTS_6_0_A: Self = Self((170u32 << 16) | 6);
+    /// C L R Rls Rrs Ts
+    pub const DTS_6_0_B: Self = Self((171u32 << 16) | 6);
+    /// C Cs L R Rls Rrs
+    pub const DTS_6_0_C: Self = Self((172u32 << 16) | 6);
+    /// Lc Rc L R Ls Rs LFE
+    pub const DTS_6_1_A: Self = Self((173u32 << 16) | 7);
+    /// C L R Rls Rrs Ts LFE
+    pub const DTS_6_1_B: Self = Self((174u32 << 16) | 7);
+    /// C Cs L R Rls Rrs LFE
+    pub const DTS_6_1_C: Self = Self((175u32 << 16) | 7);
+    /// Lc C Rc L R Ls Rs
+    pub const DTS_7_0: Self = Self((176u32 << 16) | 7);
+    /// Lc C Rc L R Ls Rs LFE
+    pub const DTS_7_1: Self = Self((177u32 << 16) | 8);
+    /// Lc Rc L R Ls Rs Rls Rrs
+    pub const DTS_8_0_A: Self = Self((178u32 << 16) | 8);
+    /// Lc C Rc L R Ls Cs Rs
+    pub const DTS_8_0_B: Self = Self((179u32 << 16) | 8);
+    /// Lc Rc L R Ls Rs Rls Rrs LFE
+    pub const DTS_8_1_A: Self = Self((180u32 << 16) | 9);
+    /// Lc C Rc L R Ls Cs Rs LFE
+    pub const DTS_8_1_B: Self = Self((181u32 << 16) | 9);
+    /// C L R Ls Rs LFE Cs
+    pub const DTS_6_1_D: Self = Self((182u32 << 16) | 7);
+
+    /// 3 channels, L R LFE
+    pub const WAVE_2_1: Self = Self::DVD_4;
+    /// 3 channels, L R C
+    pub const WAVE_3_0: Self = Self::MPEG_3_0_A;
+    /// 4 channels, L R Ls Rs
+    pub const WAVE_4_0_A: Self = Self::ITU_2_2;
+    /// 4 channels, L R Rls Rrs
+    pub const WAVE_4_0_B: Self = Self((185u32 << 16) | 4);
+    /// 5 channels, L R C Ls Rs
+    pub const WAVE_5_0_A: Self = Self::MPEG_5_0_A;
+    /// 5 channels, L R C Rls Rrs
+    pub const WAVE_5_0_B: Self = Self((186u32 << 16) | 5);
+    /// 6 channels, L R C LFE Ls Rs
+    pub const WAVE_5_1_A: Self = Self::MPEG_5_1_A;
+    /// 6 channels, L R C LFE Rls Rrs
+    pub const WAVE_5_1_B: Self = Self((187u32 << 16) | 6);
+    /// 7 channels, L R C LFE Cs Ls Rs
+    pub const WAVE_6_1: Self = Self((188u32 << 16) | 7);
+    /// 8 channels, L R C LFE Rls Rrs Ls Rs
+    pub const WAVE_7_1: Self = Self((189u32 << 16) | 8);
+
+    /// Higher Order Ambisonics, Ambisonics Channel Number, SN3D normalization
+    /// needs to be ORed with the actual number of channels (not the HOA order)
+    pub const HOA_ACN_SN3D: Self = Self((190u32 << 16) | 0);
+    /// Higher Order Ambisonics, Ambisonics Channel Number, N3D normalization
+    /// needs to be ORed with the actual number of channels (not the HOA order)
+    pub const HOA_ACN_N3D: Self = Self((191u32 << 16) | 0);
+
+    /// L R C LFE Ls Rs Ltm Rtm
+    pub const ATMOS_5_1_2: Self = Self((194u32 << 16) | 8);
+    /// L R C LFE Ls Rs Vhl Vhr Ltr Rtr
+    pub const ATMOS_5_1_4: Self = Self((195u32 << 16) | 10);
+    /// L R C LFE Ls Rs Rls Rrs Ltm Rtm
+    pub const ATMOS_7_1_2: Self = Self((196u32 << 16) | 10);
+    /// L R C LFE Ls Rs Rls Rrs Vhl Vhr Ltr Rtr
+    pub const ATMOS_7_1_4: Self = Self((192u32 << 16) | 12);
+    /// L R C LFE Ls Rs Rls Rrs Lw Rw Vhl Vhr Ltm Rtm Ltr Rtr
+    pub const ATMOS_9_1_6: Self = Self((193u32 << 16) | 16);
+
+    /// C
+    pub const LOGIC_MONO: Self = Self::MONO;
+    /// L R
+    pub const LOGIC_STEREO: Self = Self::STEREO;
+    /// L R Ls Rs
+    pub const LOGIC_QUADRAPHONIC: Self = Self::QUADRAPHONIC;
+    /// L R C Cs
+    pub const LOGIC_4_0_A: Self = Self::MPEG_4_0_A;
+    /// C L R Cs
+    pub const LOGIC_4_0_B: Self = Self::MPEG_4_0_B;
+    /// L R Cs C
+    pub const LOGIC_4_0_C: Self = Self((197u32 << 16) | 4);
+    /// L R C Ls Rs
+    pub const LOGIC_5_0_A: Self = Self::MPEG_5_0_A;
+    /// L R Ls Rs C
+    pub const LOGIC_5_0_B: Self = Self::MPEG_5_0_B;
+    /// L C R Ls Rs
+    pub const LOGIC_5_0_C: Self = Self::MPEG_5_0_C;
+    /// C L R Ls Rs
+    pub const LOGIC_5_0_D: Self = Self::MPEG_5_0_D;
+    /// L R C LFE Ls Rs
+    pub const LOGIC_5_1_A: Self = Self::MPEG_5_1_A;
+    /// L R Ls Rs C LFE
+    pub const LOGIC_5_1_B: Self = Self::MPEG_5_1_B;
+    /// L C R Ls Rs LFE
+    pub const LOGIC_5_1_C: Self = Self::MPEG_5_1_C;
+    /// C L R Ls Rs LFE
+    pub const LOGIC_5_1_D: Self = Self::MPEG_5_1_D;
+    /// C L R Ls Rs Cs
+    pub const LOGIC_6_0_A: Self = Self::AAC_6_0;
+    /// L R Ls Rs Cs C
+    pub const LOGIC_6_0_B: Self = Self((198u32 << 16) | 6);
+    /// L R Ls Rs C Cs
+    pub const LOGIC_6_0_C: Self = Self::AUDIO_UNIT_6_0;
+    /// C L R Ls Rs Cs LFE
+    pub const LOGIC_6_1_A: Self = Self::AAC_6_1;
+    /// L R Ls Rs Cs C LFE
+    pub const LOGIC_6_1_B: Self = Self((199u32 << 16) | 7);
+    /// L R C LFE Ls Rs Cs
+    pub const LOGIC_6_1_C: Self = Self::MPEG_6_1_A;
+    /// L C R Ls Cs Rs LFE
+    pub const LOGIC_6_1_D: Self = Self((200u32 << 16) | 7);
+    /// L R C LFE Ls Rs Rls Rrs
+    pub const LOGIC_7_1_A: Self = Self::AUDIO_UNIT_7_1;
+    /// L R Ls Rs Rls Rrs C LFE
+    pub const LOGIC_7_1_B: Self = Self((201u32 << 16) | 8);
+    /// L R C LFE Ls Rs Rls Rrs
+    pub const LOGIC_7_1_C: Self = Self::MPEG_7_1_C;
+    /// L R C LFE Ls Rs Lc Rc
+    pub const LOGIC_7_1_SDDS_A: Self = Self::MPEG_7_1_A;
+    /// C Lc Rc L R Ls Rs LFE
+    pub const LOGIC_7_1_SDDS_B: Self = Self::MPEG_7_1_B;
+    /// L R Ls Rs C LFE Lc Rc
+    pub const LOGIC_7_1_SDDS_C: Self = Self::EMAGIC_DEFAULT_7_1;
+    /// L R C LFE Ls Rs Ltm Rtm
+    pub const LOGIC_ATMOS_5_1_2: Self = Self::ATMOS_5_1_2;
+    /// L R C LFE Ls Rs Vhl Vhr Ltr Rtr
+    pub const LOGIC_ATMOS_5_1_4: Self = Self::ATMOS_5_1_4;
+    /// L R C LFE Ls Rs Rls Rrs Ltm Rtm
+    pub const LOGIC_ATMOS_7_1_2: Self = Self::ATMOS_7_1_2;
+    /// L R C LFE Ls Rs Rls Rrs Vhl Vhr Ltr Rtr
+    pub const LOGIC_ATMOS_7_1_4_A: Self = Self::ATMOS_7_1_4;
+    /// L R Rls Rrs Ls Rs C LFE Vhl Vhr Ltr Rtr
+    pub const LOGIC_ATMOS_7_1_4_B: Self = Self((202u32 << 16) | 12);
+    /// L R Rls Rrs Ls Rs C LFE Vhl Vhr Ltm Rtm Ltr Rtr
+    pub const LOGIC_ATMOS_7_1_6: Self = Self((203u32 << 16) | 14);
+
+    /// needs to be ORed with the actual number of channels
+    pub const DISCRETE_IN_ORDER: Self = Self((147u32 << 16) | 0);
+
+    /// Channel layout tag values in this range are reserved for internal use
+    pub const BEGIN_RESERVED: Self = Self(0xF0000000);
+    /// Channel layout tag values in this range are reserved for internal use
+    pub const END_RESERVED: Self = Self(0xFFFEFFFF);
+
+    /// needs to be ORed with the actual number of channels
+    pub const UNKNOWN: Self = Self(0xFFFF0000);
 }
