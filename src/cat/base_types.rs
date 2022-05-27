@@ -1,6 +1,3 @@
-use core::ffi::c_long;
-use std::ffi::c_void;
-
 use crate::os;
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
