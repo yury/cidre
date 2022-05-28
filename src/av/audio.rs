@@ -41,6 +41,8 @@ pub use session::Session;
 
 pub mod buffer;
 pub use buffer::Buffer;
+pub use buffer::CompressedBuffer;
+pub use buffer::PCMBuffer;
 
 pub mod format;
 pub use format::CommonFormat;

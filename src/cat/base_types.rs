@@ -1,7 +1,7 @@
 use crate::os;
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
-pub mod os_status {
+pub mod errors {
     use crate::os::Status;
 
     pub const UNIMPLEMENTED_ERROR: Status = Status(-4);
@@ -39,13 +39,14 @@ pub struct AudioBufferList<const N: usize, const M: usize> {
 }
 
 /// A four char code indicating the general kind of data in the stream.
+#[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
 pub struct AudioFormatID(pub u32);
 
 /// The AudioFormatIDs used to identify individual formats of audio data.
 impl AudioFormatID {
     /// Linear PCM, uses the standard flags.
-    pub const LINEAR_PC: Self = Self(u32::from_be_bytes(*b"lpcm"));
+    pub const LINEAR_PCM: Self = Self(u32::from_be_bytes(*b"lpcm"));
 
     /// AC-3, has no flags.
     pub const AC3: Self = Self(u32::from_be_bytes(*b"ac-3"));
@@ -180,6 +181,7 @@ impl AudioFormatID {
 }
 
 /// Flags that are specific to each format.
+#[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
 pub struct AudioFormatFlags(pub u32);
 
@@ -207,7 +209,7 @@ impl AudioFormatFlags {
     pub const IS_BIG_ENDIAN: Self = Self(1u32 << 1);
 
     /// Set for signed integer, clear for unsigned integer. This is only valid if
-    /// kAudioFormatFlagIsFloat is clear.
+    /// AudioFormatFlags::IS_FLOAT is clear.
     pub const IS_SIGNED_INTEGER: Self = Self(1u32 << 2);
 
     /// Set if the sample bits occupy the entire available bits for the channel,
@@ -215,7 +217,7 @@ impl AudioFormatFlags {
     /// this flag is clear, it is implied that this flag is set if the
     /// AudioStreamBasicDescription is filled out such that the fields have the
     /// following relationship:
-    ///     ((mBitsPerSample / 8) * mChannelsPerFrame) == mBytesPerFrame
+    ///     ((bits_per_sample / 8) * channels_per_frame) == bytes_per_frame
     pub const IS_PACKED: Self = Self(1u32 << 3);
 
     /// Set if the sample bits are placed into the high bits of the channel, clear
@@ -244,6 +246,11 @@ impl AudioFormatFlags {
     pub const LINEAR_PCM_IS_ALIGNED_HIGH: Self = Self::IS_ALIGNED_HIGH;
     pub const LINEAR_PCM_IS_NON_INTERLEAVED: Self = Self::IS_NON_INTERLEAVED;
     pub const LINEAR_PCM_IS_NON_MIXABLE: Self = Self::IS_NON_MIXABLE;
+
+    pub const NATIVE_ENDIAN: Self = Self(0);
+
+    pub const NATIVE_FLOAT_PACKED: Self =
+        Self(Self::IS_FLOAT.0 | Self::NATIVE_ENDIAN.0 | Self::IS_PACKED.0);
 
     /// The linear PCM flags contain a 6-bit bitfield indicating that an integer
     /// format is to be interpreted as fixed point. The value indicates the number
@@ -287,14 +294,16 @@ impl AudioFormatFlags {
 /// for these kinds of formats (the extra data is provided via separate properties).
 /// In all fields, a value of 0 indicates that the field is either unknown, not
 /// applicable or otherwise is inapproprate for the format and should be ignored.
-/// Note that 0 is still a valid value for most formats in the mFormatFlags field.
+/// Note that 0 is still a valid value for most formats in the format_flags field.
 ///
 /// In audio data a frame is one sample across all channels. In non-interleaved
 /// audio, the per frame fields identify one channel. In interleaved audio, the per
 /// frame fields identify the set of n channels. In uncompressed audio, a Packet is
-/// one frame, (mFramesPerPacket == 1). In compressed audio, a Packet is an
+/// one frame, (frames_per_packet == 1). In compressed audio, a Packet is an
 /// indivisible chunk of compressed data, for example an AAC packet will contain
 /// 1024 sample frames.
+///
+#[derive(Default, Debug, Copy, Clone)]
 #[repr(C)]
 pub struct AudioStreamBasicDescription {
     /// The number of sample frames per second of the data in the stream.
@@ -315,6 +324,15 @@ pub struct AudioStreamBasicDescription {
     pub bits_per_channel: u32,
     /// Pads the structure out to force an even 8 byte alignment.
     pub reserved: u32,
+}
+
+impl AudioStreamBasicDescription {
+    #[inline]
+    pub fn is_native_endian(&self) -> bool {
+        self.format_id == AudioFormatID::LINEAR_PCM
+            && (self.format_flags.0 & AudioFormatFlags::IS_BIG_ENDIAN.0
+                == AudioFormatFlags::NATIVE_ENDIAN.0)
+    }
 }
 
 /// The format can use any sample rate. Note that this constant can only appear
@@ -427,6 +445,7 @@ impl AudioTimeStampFlags {
         Self(Self::SAMPLE_TIME_VALID.0 | Self::HOST_TIME_VALID.0);
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
 pub struct AudioClassDescription {
     /// The four char code codec type.
@@ -645,12 +664,28 @@ impl AudioChannelFlags {
 #[repr(transparent)]
 pub struct AudioChannelCoordinateIndex(pub u32);
 
+/// Constants for indexing the coordinates array in an AudioChannelDescription
+/// structure.
 impl AudioChannelCoordinateIndex {
+    /// For rectangular coordinates, negative is left and positive is right.
     pub const LEFT_RIGHT: Self = Self(0);
+
+    ///  For rectangular coordinates, negative is back and positive is front.
     pub const BACK_FRONT: Self = Self(1);
+
+    /// For rectangular coordinates, negative is below ground level, 0 is ground
+    /// level, and positive is above ground level.
     pub const DOWN_UP: Self = Self(2);
+
+    /// For spherical coordinates, 0 is front center, positive is right, negative is
+    /// left. This is measured in degrees.
     pub const AZIMUTH: Self = Self(0);
+
+    /// For spherical coordinates, +90 is zenith, 0 is horizontal, -90 is nadir.
+    /// This is measured in degrees.
     pub const ELEVATION: Self = Self(1);
+
+    /// For spherical coordinates, the units are described by flags.
     pub const DISTANCE: Self = Self(2);
 }
 

@@ -34,6 +34,7 @@ pub mod sc;
 pub mod am;
 pub mod av;
 // CoreAudioTypes
+pub mod at;
 pub mod cat;
 
 #[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]

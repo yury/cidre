@@ -472,7 +472,7 @@ impl CategoryOptions {
     ///      for routing. For HFP and A2DP ports on separate hardware devices, the last-in wins rule
     ///      applies.
     ///
-    ///        Introduced in iOS 10.0 / watchOS 3.0 / tvOS 10.0.
+    /// Introduced in iOS 10.0 / watchOS 3.0 / tvOS 10.0.
     pub const ALLOW_BLUETOOTH_A2_DP: Self = Self(0x20);
 
     /// Allows an application to change the default behavior of some audio session categories with
