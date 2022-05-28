@@ -14,6 +14,7 @@ pub mod errors {
 }
 
 /// This structure holds a pair of numbers that represent a continuous range of values.
+#[derive(Debug, PartialEq)]
 #[repr(C)]
 pub struct AudioValueRange {
     pub minimum: f64,

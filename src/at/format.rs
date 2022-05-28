@@ -2,7 +2,8 @@ use std::{ffi::c_void, mem::size_of, ptr::NonNull};
 
 use crate::{
     cat::{
-        self, AudioChannelLayout, AudioClassDescription, AudioFormatID, AudioStreamBasicDescription,
+        self, AudioChannelLayout, AudioClassDescription, AudioFormatID,
+        AudioStreamBasicDescription, AudioValueRange,
     },
     os,
 };
@@ -369,6 +370,32 @@ impl PropertyID {
 
     pub fn decoders(format_id: AudioFormatID) -> Result<Vec<AudioClassDescription>, os::Status> {
         unsafe { asbd_props::DECODERS.get_vec_with(&format_id) }
+    }
+
+    /// ```
+    /// use cidre::{at, cat};
+    ///
+    /// let rates = at::AudioFormatPropertyID::available_encode_bit_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
+    /// println!("{:?}", bates);
+    /// assert!(bates.len() > 0);
+    /// ```
+    pub fn available_encode_bit_rates(
+        format_id: AudioFormatID,
+    ) -> Result<Vec<AudioValueRange>, os::Status> {
+        unsafe { asbd_props::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format_id) }
+    }
+
+    /// ```
+    /// use cidre::{at, cat};
+    ///
+    /// let bates = at::AudioFormatPropertyID::available_encode_sample_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
+    /// println!("{:?}", bates);
+    /// assert!(bates.len() > 0);
+    /// ```
+    pub fn available_encode_sample_rates(
+        format_id: AudioFormatID,
+    ) -> Result<Vec<AudioValueRange>, os::Status> {
+        unsafe { asbd_props::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format_id) }
     }
 }
 
