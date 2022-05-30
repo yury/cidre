@@ -1,7 +1,9 @@
-use std::{ffi::c_void, mem::size_of};
+use std::{ffi::c_void, intrinsics::transmute, mem::size_of};
 
 use crate::{
-    cat::{AudioStreamBasicDescription, AudioValueRange},
+    cat::{
+        AudioBufferList, AudioStreamBasicDescription, AudioStreamPacketDescription, AudioValueRange,
+    },
     cf, define_cf_type, os,
 };
 
@@ -343,6 +345,14 @@ pub mod errors {
 
 define_cf_type!(Converter(cf::Type));
 
+pub type ComplexInputDataProc<const L: usize, const N: usize, D> = extern "C" fn(
+    converter: &Converter,
+    io_number_data_packets: &mut u32,
+    io_data: &mut AudioBufferList<L, N>,
+    out_data_packet_description: *mut *mut AudioStreamBasicDescription,
+    in_user_data: *mut D,
+) -> os::Status;
+
 impl Converter {
     pub unsafe fn new<'a>(
         in_source_format: &AudioStreamBasicDescription,
@@ -493,6 +503,48 @@ impl Converter {
     pub fn set_encode_bit_rate(&self, value: u32) -> Result<(), os::Status> {
         unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &value) }
     }
+
+    pub unsafe fn fill_complex_buffer(
+        &self,
+        in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
+        in_input_data_proc_user_data: *mut c_void,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut AudioBufferList<1, 1>,
+        out_packet_description: *mut AudioStreamPacketDescription,
+    ) -> os::Status {
+        AudioConverterFillComplexBuffer(
+            self,
+            in_input_data_proc,
+            in_input_data_proc_user_data,
+            io_output_data_packet_size,
+            out_output_data,
+            out_packet_description,
+        )
+    }
+
+    pub fn fill_complex_buf<D>(
+        &self,
+        proc: ComplexInputDataProc<1, 1, D>,
+        user_data: &mut D,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut AudioBufferList<1, 1>,
+    ) -> Result<AudioStreamPacketDescription, os::Status> {
+        let mut aspd = AudioStreamPacketDescription::default();
+        unsafe {
+            let res = self.fill_complex_buffer(
+                transmute(proc),
+                user_data as *mut _ as _,
+                io_output_data_packet_size,
+                out_output_data,
+                &mut aspd,
+            );
+            if res.is_ok() {
+                Ok(aspd)
+            } else {
+                Err(res)
+            }
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -530,5 +582,14 @@ extern "C" {
         property_id: PropertyID,
         in_property_data_size: u32,
         in_property_data: *const c_void,
+    ) -> os::Status;
+
+    fn AudioConverterFillComplexBuffer(
+        converter: &Converter,
+        in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
+        in_input_data_proc_user_data: *mut c_void,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut AudioBufferList<1, 1>,
+        out_packet_description: *mut AudioStreamPacketDescription,
     ) -> os::Status;
 }

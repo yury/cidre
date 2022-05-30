@@ -33,10 +33,10 @@ pub struct AudioBuffer<const N: usize> {
 }
 
 #[repr(C)]
-pub struct AudioBufferList<const N: usize, const M: usize> {
+pub struct AudioBufferList<const L: usize, const N: usize> {
     pub number_buffers: u32,
     /// this is a variable length array of mNumberBuffers elements
-    pub buffers: [AudioBuffer<M>; N],
+    pub buffers: [AudioBuffer<N>; L],
 }
 
 /// A four char code indicating the general kind of data in the stream.
@@ -334,6 +334,14 @@ impl AudioStreamBasicDescription {
             && (self.format_flags.0 & AudioFormatFlags::IS_BIG_ENDIAN.0
                 == AudioFormatFlags::NATIVE_ENDIAN.0)
     }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
+#[repr(C)]
+pub struct AudioStreamPacketDescription {
+    pub start_offset: i64,
+    pub variable_frames_in_packet: u32,
+    pub data_byte_size: u32,
 }
 
 /// The format can use any sample rate. Note that this constant can only appear
