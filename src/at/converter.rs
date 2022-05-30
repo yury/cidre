@@ -504,6 +504,7 @@ impl Converter {
         unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &value) }
     }
 
+    #[inline]
     pub unsafe fn fill_complex_buffer(
         &self,
         in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
@@ -519,6 +520,59 @@ impl Converter {
             io_output_data_packet_size,
             out_output_data,
             out_packet_description,
+        )
+    }
+
+    /// Converts PCM data from an input buffer list to an output buffer list.
+    /// This function will fail for any conversion where there is a
+    /// variable relationship between the input and output data buffer sizes. This
+    /// includes sample rate conversions and most compressed formats. In these cases,
+    /// use AudioConverterFillComplexBuffer. Generally this function is only appropriate for
+    /// PCM-to-PCM conversions where there is no sample rate conversion.
+    /// #[inline]
+    pub unsafe fn convert_complex_buffer(
+        &self,
+        in_number_pcm_frames: u32,
+        in_input_data: *const AudioBufferList<1, 1>,
+        out_output_data: *mut AudioBufferList<1, 1>,
+    ) -> os::Status {
+        AudioConverterConvertComplexBuffer(
+            self,
+            in_number_pcm_frames,
+            in_input_data,
+            out_output_data,
+        )
+    }
+
+    #[inline]
+    pub fn convert_complex_buf<
+        const IL: usize,
+        const IN: usize,
+        const OL: usize,
+        const ON: usize,
+    >(
+        &self,
+        frames: u32,
+        input: &AudioBufferList<IL, IN>,
+        output: &mut AudioBufferList<OL, ON>,
+    ) -> Result<(), os::Status> {
+        unsafe { self.convert_complex_buffer(frames, transmute(input), transmute(output)) }.result()
+    }
+
+    #[inline]
+    pub unsafe fn convert_buffer(
+        &self,
+        in_input_data_size: u32,
+        in_input_data: *const c_void,
+        io_output_data_size: *mut u32,
+        out_output_data: *mut c_void,
+    ) -> os::Status {
+        AudioConverterConvertBuffer(
+            self,
+            in_input_data_size,
+            in_input_data,
+            io_output_data_size,
+            out_output_data,
         )
     }
 
@@ -592,4 +646,20 @@ extern "C" {
         out_output_data: &mut AudioBufferList<1, 1>,
         out_packet_description: *mut AudioStreamPacketDescription,
     ) -> os::Status;
+
+    fn AudioConverterConvertComplexBuffer(
+        converter: &Converter,
+        in_number_pcm_frames: u32,
+        in_input_data: *const AudioBufferList<1, 1>,
+        out_output_data: *mut AudioBufferList<1, 1>,
+    ) -> os::Status;
+
+    fn AudioConverterConvertBuffer(
+        converter: &Converter,
+        in_input_data_size: u32,
+        in_input_data: *const c_void,
+        io_output_data_size: *mut u32,
+        out_output_data: *mut c_void,
+    ) -> os::Status;
+
 }
