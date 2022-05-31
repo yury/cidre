@@ -529,7 +529,11 @@ impl Converter {
     /// includes sample rate conversions and most compressed formats. In these cases,
     /// use AudioConverterFillComplexBuffer. Generally this function is only appropriate for
     /// PCM-to-PCM conversions where there is no sample rate conversion.
-    /// #[inline]
+    /// 
+    /// # Safety
+    /// 
+    /// Use [`.convert_complex_buf()`].
+    #[inline]
     pub unsafe fn convert_complex_buffer(
         &self,
         in_number_pcm_frames: u32,
