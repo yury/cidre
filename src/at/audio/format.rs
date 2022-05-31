@@ -357,9 +357,9 @@ impl PropertyID {
     }
 
     /// ```
-    /// use cidre::{at, cat};
+    /// use cidre::at::audio;
     ///
-    /// let encoders = at::AudioFormatPropertyID::encoders(cat::AudioFormatID::MPEG4_AAC).unwrap();
+    /// let encoders = audio::FormatPropertyID::encoders(audio::FormatID::MPEG4_AAC).unwrap();
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
@@ -372,9 +372,9 @@ impl PropertyID {
     }
 
     /// ```
-    /// use cidre::{at, cat};
+    /// use cidre::at::audio;
     ///
-    /// let rates = at::AudioFormatPropertyID::available_encode_bit_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
+    /// let rates = audio::FormatPropertyID::available_encode_bit_rates(audio::FormatID::MPEG4_AAC).unwrap();
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
@@ -385,9 +385,9 @@ impl PropertyID {
     }
 
     /// ```
-    /// use cidre::{at, cat};
+    /// use cidre::at::audio;
     ///
-    /// let rates = at::AudioFormatPropertyID::available_encode_sample_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
+    /// let rates = audio::FormatPropertyID::available_encode_sample_rates(audio::FormatID::MPEG4_AAC).unwrap();
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
