@@ -186,6 +186,9 @@ impl AudioFormatID {
 #[repr(transparent)]
 pub struct AudioFormatFlags(pub u32);
 
+/// app audio - IS_BIG_ENDIAN | IS_SIGNED_INTEGER | IS_PACKED
+/// mic - IS_SIGNED_INTEGER | IS_PACKED
+
 /// These are the standard AudioFormatFlags for use in the mFormatFlags field of the
 /// AudioStreamBasicDescription structure.
 /// Typically, when an ASBD is being used, the fields describe the complete layout

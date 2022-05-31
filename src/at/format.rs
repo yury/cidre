@@ -376,8 +376,8 @@ impl PropertyID {
     /// use cidre::{at, cat};
     ///
     /// let rates = at::AudioFormatPropertyID::available_encode_bit_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
-    /// println!("{:?}", bates);
-    /// assert!(bates.len() > 0);
+    /// println!("{:?}", rates);
+    /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_bit_rates(
         format_id: AudioFormatID,
@@ -388,9 +388,9 @@ impl PropertyID {
     /// ```
     /// use cidre::{at, cat};
     ///
-    /// let bates = at::AudioFormatPropertyID::available_encode_sample_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
-    /// println!("{:?}", bates);
-    /// assert!(bates.len() > 0);
+    /// let rates = at::AudioFormatPropertyID::available_encode_sample_rates(cat::AudioFormatID::MPEG4_AAC).unwrap();
+    /// println!("{:?}", rates);
+    /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_sample_rates(
         format_id: AudioFormatID,
