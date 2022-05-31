@@ -1,4 +1,14 @@
 pub mod audio;
 pub use audio::BalanceFade as AudioBalanceFade;
+pub use audio::Buffer as AudioBuffer;
+pub use audio::BufferList as AudioBufferList;
+pub use audio::ChannelBitmap as AudioChannelBitmap;
+pub use audio::ChannelCoordinateIndex as AudioChannelCoordinateIndex;
+pub use audio::ChannelDescription as AudioChannelDescription;
+pub use audio::ChannelFlags as AudioChannelFlags;
+pub use audio::ChannelLabel as AudioChannelLabel;
+pub use audio::ChannelLayout as AudioChannelLayout;
+pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
+pub use audio::ClassDescription as AudioClassDescription;
 pub use audio::Converter as AudioConverter;
 pub use audio::FormatPropertyID as AudioFormatPropertyID;

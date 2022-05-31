@@ -1151,8 +1151,10 @@ impl ChannelLayoutTag {
 pub struct ChannelDescription {
     /// The AudioChannelLabel that describes the channel.
     pub channel_label: ChannelLabel,
+
     /// Flags that control the interpretation of mCoordinates.
     pub channel_flags: ChannelFlags,
+
     /// An ordered triple that specifies a precise speaker location.
     pub coordinates: [f32; 3],
 }

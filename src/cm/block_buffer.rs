@@ -17,6 +17,7 @@ impl BlockBufferFlags {
 define_cf_type!(BlockBuffer(Type));
 
 impl BlockBuffer {
+    /// # Example
     /// ```
     /// use cidre::cm;
     ///
@@ -44,7 +45,8 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
+    /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE)
+    ///     .expect("empty block buffer");
     ///
     /// assert!(b.is_empty());
     /// assert!(b.data_len() == 0);
