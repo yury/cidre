@@ -37,7 +37,7 @@ pub enum InterfaceType {
 }
 
 pub type NotificationCallback = extern "C" fn(info: &NotificationCallbackInfo, arg: *mut c_void);
-pub type MountCallback = extern "C" fn(info: &cf::Dictionary, ctx: *mut c_void);
+//pub type MountCallback = extern "C" fn(info: &cf::Dictionary, ctx: *mut c_void);
 
 impl Notification {
     pub fn subscribe(
@@ -308,6 +308,12 @@ impl<'a> Session<'a> {
         let name = cf::String::from_str_no_copy("com.apple.debugserver");
         self.secure_start_service(&name)
     }
+
+    pub fn mound_disk<T>(&self, image: &cf::String, options: &cf::Dictionary, callback: MounImageCallback<T>, ctx: *mut T) -> os::Status {
+        unsafe {
+            AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
+        }
+    }
 }
 
 impl<'a> Drop for Session<'a> {
@@ -325,6 +331,8 @@ impl<'a> Deref for Session<'a> {
 }
 
 define_cf_type!(Service(cf::Type));
+
+pub type MounImageCallback<T> = extern "C" fn(info: &cf::Dictionary, ctx: *mut T);
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -388,6 +396,14 @@ extern "C" {
         service: &Option<Retained<'a, Service>>,
     ) -> os::Status;
     fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
+
+    fn AMDeviceMountImage(
+        device: &Device,
+        image: &cf::String,
+        options: &cf::Dictionary,
+        callback: *const MounImageCallback<c_void>,
+        ctx: *mut c_void,
+    ) -> os::Status;
 }
 
 #[cfg(test)]
