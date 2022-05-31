@@ -1,9 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute, mem::size_of};
 
 use crate::{
-    cat::{
-        AudioBufferList, AudioStreamBasicDescription, AudioStreamPacketDescription, AudioValueRange,
-    },
+    cat::audio,
     cf, define_cf_type, os,
 };
 
@@ -348,23 +346,23 @@ define_cf_type!(Converter(cf::Type));
 pub type ComplexInputDataProc<const L: usize, const N: usize, D> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
-    io_data: &mut AudioBufferList<L, N>,
-    out_data_packet_description: *mut *mut AudioStreamBasicDescription,
+    io_data: &mut audio::BufferList<L, N>,
+    out_data_packet_description: *mut *mut audio::StreamBasicDescription,
     in_user_data: *mut D,
 ) -> os::Status;
 
 impl Converter {
     pub unsafe fn new<'a>(
-        in_source_format: &AudioStreamBasicDescription,
-        in_destination_format: &AudioStreamBasicDescription,
+        in_source_format: &audio::StreamBasicDescription,
+        in_destination_format: &audio::StreamBasicDescription,
         out_audio_converer: &mut Option<cf::Retained<'a, Converter>>,
     ) -> os::Status {
         AudioConverterNew(in_source_format, in_destination_format, out_audio_converer)
     }
 
     pub fn with_formats<'a>(
-        source_fmt: &AudioStreamBasicDescription,
-        dest_fmt: &AudioStreamBasicDescription,
+        source_fmt: &audio::StreamBasicDescription,
+        dest_fmt: &audio::StreamBasicDescription,
     ) -> Result<cf::Retained<'a, Converter>, os::Status> {
         unsafe {
             let mut out_converter = None;
@@ -471,26 +469,26 @@ impl Converter {
     }
 
     #[inline]
-    pub fn applicable_encode_bit_rates(&self) -> Result<Vec<AudioValueRange>, os::Status> {
+    pub fn applicable_encode_bit_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
         unsafe { self.prop(PropertyID::APPLICABLE_ENCODE_BIT_RATES) }
     }
 
     #[inline]
-    pub fn applicable_encode_sample_rates(&self) -> Result<Vec<AudioValueRange>, os::Status> {
+    pub fn applicable_encode_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
         unsafe { self.prop(PropertyID::APPLICABLE_ENCODE_SAMPLE_RATES) }
     }
 
     #[inline]
     pub fn current_output_stream_description(
         &self,
-    ) -> Result<AudioStreamBasicDescription, os::Status> {
+    ) -> Result<audio::StreamBasicDescription, os::Status> {
         unsafe { self.prop(PropertyID::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
     pub fn current_input_stream_description(
         &self,
-    ) -> Result<AudioStreamBasicDescription, os::Status> {
+    ) -> Result<audio::StreamBasicDescription, os::Status> {
         unsafe { self.prop(PropertyID::CURRENT_INPUT_STREAM_DESCRIPTION) }
     }
 
@@ -510,8 +508,8 @@ impl Converter {
         in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
         in_input_data_proc_user_data: *mut c_void,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut AudioBufferList<1, 1>,
-        out_packet_description: *mut AudioStreamPacketDescription,
+        out_output_data: &mut audio::BufferList<1, 1>,
+        out_packet_description: *mut audio::StreamPacketDescription,
     ) -> os::Status {
         AudioConverterFillComplexBuffer(
             self,
@@ -537,8 +535,8 @@ impl Converter {
     pub unsafe fn convert_complex_buffer(
         &self,
         in_number_pcm_frames: u32,
-        in_input_data: *const AudioBufferList<1, 1>,
-        out_output_data: *mut AudioBufferList<1, 1>,
+        in_input_data: *const audio::BufferList<1, 1>,
+        out_output_data: *mut audio::BufferList<1, 1>,
     ) -> os::Status {
         AudioConverterConvertComplexBuffer(
             self,
@@ -557,8 +555,8 @@ impl Converter {
     >(
         &self,
         frames: u32,
-        input: &AudioBufferList<IL, IN>,
-        output: &mut AudioBufferList<OL, ON>,
+        input: &audio::BufferList<IL, IN>,
+        output: &mut audio::BufferList<OL, ON>,
     ) -> Result<(), os::Status> {
         unsafe { self.convert_complex_buffer(frames, transmute(input), transmute(output)) }.result()
     }
@@ -585,9 +583,9 @@ impl Converter {
         proc: ComplexInputDataProc<1, 1, D>,
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut AudioBufferList<1, 1>,
-    ) -> Result<AudioStreamPacketDescription, os::Status> {
-        let mut aspd = AudioStreamPacketDescription::default();
+        out_output_data: &mut audio::BufferList<1, 1>,
+    ) -> Result<audio::StreamPacketDescription, os::Status> {
+        let mut aspd = audio::StreamPacketDescription::default();
         unsafe {
             let res = self.fill_complex_buffer(
                 transmute(proc),
@@ -615,8 +613,8 @@ pub struct PropertyInfo {
 #[link(name = "AudioToolbox", kind = "framework")]
 extern "C" {
     fn AudioConverterNew<'a>(
-        in_source_format: &AudioStreamBasicDescription,
-        in_destination_format: &AudioStreamBasicDescription,
+        in_source_format: &audio::StreamBasicDescription,
+        in_destination_format: &audio::StreamBasicDescription,
         out_audio_converer: &mut Option<cf::Retained<'a, Converter>>,
     ) -> os::Status;
 
@@ -647,15 +645,15 @@ extern "C" {
         in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
         in_input_data_proc_user_data: *mut c_void,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut AudioBufferList<1, 1>,
-        out_packet_description: *mut AudioStreamPacketDescription,
+        out_output_data: &mut audio::BufferList<1, 1>,
+        out_packet_description: *mut audio::StreamPacketDescription,
     ) -> os::Status;
 
     fn AudioConverterConvertComplexBuffer(
         converter: &Converter,
         in_number_pcm_frames: u32,
-        in_input_data: *const AudioBufferList<1, 1>,
-        out_output_data: *mut AudioBufferList<1, 1>,
+        in_input_data: *const audio::BufferList<1, 1>,
+        out_output_data: *mut audio::BufferList<1, 1>,
     ) -> os::Status;
 
     fn AudioConverterConvertBuffer(

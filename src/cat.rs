@@ -1,5 +1,18 @@
-mod base_types;
-mod session_types;
 
-pub use base_types::*;
-pub use session_types::*;
+pub mod audio;
+
+pub use audio::Buffer as AudioBuffer;
+pub use audio::BufferList as AudioBufferList;
+pub use audio::ChannelBitmap as AudioChannelBitmap;
+pub use audio::ChannelCoordinateIndex as ChannelCoordinateIndex;
+pub use audio::ChannelDescription as AudioChannelDescription;
+pub use audio::ChannelFlags as AudioChannelFlags;
+pub use audio::ChannelLabel as AudioChannelLabel;
+pub use audio::ChannelLayout as AudioChannelLayout;
+pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
+pub use audio::ClassDescription as AudioClassDescription;
+pub use audio::FormatFlags as AudioFormatFlags;
+pub use audio::FormatID as AudioFormatID;
+
+pub use audio::SessionID as AudioSessionID;
+pub use audio::SessionErrorCode as AudioSessionErrorCode;

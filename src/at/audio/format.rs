@@ -1,13 +1,11 @@
 use std::{ffi::c_void, mem::size_of, ptr::NonNull};
 
 use crate::{
-    cat::{
-        self, AudioChannelLayout, AudioClassDescription, AudioFormatID,
-        AudioStreamBasicDescription, AudioValueRange,
-    },
+    cat::audio,
     os,
 };
 
+/// AudioFormatPropertyID
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct PropertyID(pub u32);
@@ -18,6 +16,7 @@ impl PropertyID {
     }
 }
 
+/// AudioPanningMode
 #[repr(u32)]
 pub enum PanningMode {
     None = 0,
@@ -29,8 +28,9 @@ pub enum PanningMode {
     VectorBasedPanning = 4,
 }
 
+/// AudioPanningInfo
 #[repr(C)]
-pub struct AudioPanningInfo<const N: usize> {
+pub struct PanningInfo<const N: usize> {
     /// the PanningMode to be used for the pan
     pub panning_mode: PanningMode,
 
@@ -45,10 +45,9 @@ pub struct AudioPanningInfo<const N: usize> {
     /// 0 would give you back a matrix of zeroes.
     pub gain_scale: f32,
     /// This is the channel map that is going to be used to determine channel volumes for this pan.
-    pub output_channel_map: *const cat::AudioChannelLayout<N>,
+    pub output_channel_map: *const audio::ChannelLayout<N>,
 }
 
-//typedef CF_ENUM(UInt32, AudioBalanceFadeType) {
 #[repr(u32)]
 pub enum BalanceFadeType {
     /// the gain value never exceeds 1.0, the opposite channel fades out.
@@ -70,22 +69,22 @@ pub struct BalanceFade<const N: usize> {
     pub back_front_fade: f32,
     /// max unity gain, or equal power.
     pub r#type: BalanceFadeType,
-    pub channel_layout: *const AudioChannelLayout<N>,
+    pub channel_layout: *const audio::ChannelLayout<N>,
 }
 
 #[repr(C)]
 pub struct FormatInfo {
-    pub asbd: AudioStreamBasicDescription,
+    pub asbd: audio::StreamBasicDescription,
     pub magic_cookie: NonNull<c_void>,
     pub magic_cookie_size: u32,
 }
 
 #[repr(C)]
 pub struct ExtendedFormatInfo {
-    pub asbd: AudioStreamBasicDescription,
+    pub asbd: audio::StreamBasicDescription,
     pub magic_cookie: *const c_void,
     pub magic_cookie_size: u32,
-    pub class_description: AudioClassDescription,
+    pub class_description: audio::ClassDescription,
 }
 
 pub mod asbd_props {
@@ -339,21 +338,21 @@ impl PropertyID {
     /// println!("{:?}", format_ids.len());
     /// assert!(format_ids.len() > 0);
     /// ```
-    pub fn encode_format_ids() -> Result<Vec<cat::AudioFormatID>, os::Status> {
+    pub fn encode_format_ids() -> Result<Vec<audio::FormatID>, os::Status> {
         unsafe { asbd_props::ENCODE_FORMAT_IDS.get_vec() }
     }
 
     /// ```
-    /// use cidre::{at, cat};
+    /// use cidre::at::audio;
     ///
-    /// let mut asbd = cat::AudioStreamBasicDescription {
-    ///     format_id: cat::AudioFormatID::LINEAR_PCM,
+    /// let mut asbd = audio::StreamBasicDescription {
+    ///     format_id: audio::FormatID::LINEAR_PCM,
     ///     ..Default::default()
     /// };
-    /// at::AudioFormatPropertyID::format_info(&mut asbd).unwrap();
+    /// audio::FormatPropertyID::format_info(&mut asbd).unwrap();
     ///
     /// ```
-    pub fn format_info(asbd: &mut AudioStreamBasicDescription) -> Result<(), os::Status> {
+    pub fn format_info(asbd: &mut audio::StreamBasicDescription) -> Result<(), os::Status> {
         unsafe { asbd_props::FORMAT_INFO.fill(asbd) }
     }
 
@@ -364,11 +363,11 @@ impl PropertyID {
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
-    pub fn encoders(format_id: AudioFormatID) -> Result<Vec<AudioClassDescription>, os::Status> {
+    pub fn encoders(format_id: audio::FormatID) -> Result<Vec<audio::ClassDescription>, os::Status> {
         unsafe { asbd_props::ENCODERS.get_vec_with(&format_id) }
     }
 
-    pub fn decoders(format_id: AudioFormatID) -> Result<Vec<AudioClassDescription>, os::Status> {
+    pub fn decoders(format_id: audio::FormatID) -> Result<Vec<audio::ClassDescription>, os::Status> {
         unsafe { asbd_props::DECODERS.get_vec_with(&format_id) }
     }
 
@@ -380,8 +379,8 @@ impl PropertyID {
     /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_bit_rates(
-        format_id: AudioFormatID,
-    ) -> Result<Vec<AudioValueRange>, os::Status> {
+        format_id: audio::FormatID,
+    ) -> Result<Vec<audio::ValueRange>, os::Status> {
         unsafe { asbd_props::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format_id) }
     }
 
@@ -393,8 +392,8 @@ impl PropertyID {
     /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_sample_rates(
-        format_id: AudioFormatID,
-    ) -> Result<Vec<AudioValueRange>, os::Status> {
+        format_id: audio::FormatID,
+    ) -> Result<Vec<audio::ValueRange>, os::Status> {
         unsafe { asbd_props::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format_id) }
     }
 }

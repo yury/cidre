@@ -1,9 +1,9 @@
-pub type AudioSessionID = u32;
+pub type ID = u32;
 
 #[repr(transparent)]
-pub struct AVAudioSessionErrorCode(pub i64);
+pub struct ErrorCode(pub i64);
 
-impl AVAudioSessionErrorCode {
+impl ErrorCode {
     /// Operation succeeded.
     pub const NONE: Self = Self(0);
     /// The app attempted to use the audio session during or after a Media Services failure.  App

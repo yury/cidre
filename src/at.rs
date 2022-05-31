@@ -1,5 +1,5 @@
-pub mod converter;
-pub use converter::Converter as AudioConverter;
+pub mod audio;
+pub use audio::BalanceFade as AudioBalanceFade;
+pub use audio::FormatPropertyID as AudioFormatPropertyID;
+pub use audio::Converter as AudioConverter;
 
-pub mod format;
-pub use format::PropertyID as AudioFormatPropertyID;

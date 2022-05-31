@@ -16,14 +16,14 @@ pub mod errors {
 /// This structure holds a pair of numbers that represent a continuous range of values.
 #[derive(Debug, PartialEq)]
 #[repr(C)]
-pub struct AudioValueRange {
+pub struct ValueRange {
     pub minimum: f64,
     pub maximum: f64,
 }
 
 /// A structure to hold a buffer of audio data.
 #[repr(C)]
-pub struct AudioBuffer<const N: usize> {
+pub struct Buffer<const N: usize> {
     /// The number of interleaved channels in the buffer.
     pub number_channels: u32,
     /// The number of bytes in the buffer pointed at by mData.
@@ -33,19 +33,19 @@ pub struct AudioBuffer<const N: usize> {
 }
 
 #[repr(C)]
-pub struct AudioBufferList<const L: usize, const N: usize> {
+pub struct BufferList<const L: usize, const N: usize> {
     pub number_buffers: u32,
     /// this is a variable length array of mNumberBuffers elements
-    pub buffers: [AudioBuffer<N>; L],
+    pub buffers: [Buffer<N>; L],
 }
 
 /// A four char code indicating the general kind of data in the stream.
 #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
-pub struct AudioFormatID(pub u32);
+pub struct FormatID(pub u32);
 
 /// The AudioFormatIDs used to identify individual formats of audio data.
-impl AudioFormatID {
+impl FormatID {
     /// Linear PCM, uses the standard flags.
     pub const LINEAR_PCM: Self = Self(u32::from_be_bytes(*b"lpcm"));
 
@@ -184,7 +184,7 @@ impl AudioFormatID {
 /// Flags that are specific to each format.
 #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
-pub struct AudioFormatFlags(pub u32);
+pub struct FormatFlags(pub u32);
 
 /// app audio - IS_BIG_ENDIAN | IS_SIGNED_INTEGER | IS_PACKED
 /// mic - IS_SIGNED_INTEGER | IS_PACKED
@@ -205,7 +205,7 @@ pub struct AudioFormatFlags(pub u32);
 /// where each buffer contains one channel. This is used primarily with the
 /// AudioUnit (and AudioConverter) representation of this list - and won't be found
 /// in the AudioHardware usage of this structure.
-impl AudioFormatFlags {
+impl FormatFlags {
     /// Set for floating point, clear for integer.
     pub const IS_FLOAT: Self = Self(1u32 << 0);
 
@@ -309,13 +309,13 @@ impl AudioFormatFlags {
 ///
 #[derive(Default, Debug, Copy, Clone)]
 #[repr(C)]
-pub struct AudioStreamBasicDescription {
+pub struct StreamBasicDescription {
     /// The number of sample frames per second of the data in the stream.
     pub sample_rate: f64,
     /// The AudioFormatID indicating the general kind of data in the stream.
-    pub format_id: AudioFormatID,
+    pub format_id: FormatID,
     /// The AudioFormatFlags for the format indicated by mFormatID.
-    pub format_flags: AudioFormatFlags,
+    pub format_flags: FormatFlags,
     /// The number of bytes in a packet of data.
     pub bytes_per_packet: u32,
     /// The number of sample frames in each packet of data.
@@ -330,18 +330,18 @@ pub struct AudioStreamBasicDescription {
     pub reserved: u32,
 }
 
-impl AudioStreamBasicDescription {
+impl StreamBasicDescription {
     #[inline]
     pub fn is_native_endian(&self) -> bool {
-        self.format_id == AudioFormatID::LINEAR_PCM
-            && (self.format_flags.0 & AudioFormatFlags::IS_BIG_ENDIAN.0
-                == AudioFormatFlags::NATIVE_ENDIAN.0)
+        self.format_id == FormatID::LINEAR_PCM
+            && (self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0
+                == FormatFlags::NATIVE_ENDIAN.0)
     }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
 #[repr(C)]
-pub struct AudioStreamPacketDescription {
+pub struct StreamPacketDescription {
     pub start_offset: i64,
     pub variable_frames_in_packet: u32,
     pub data_byte_size: u32,
@@ -349,7 +349,7 @@ pub struct AudioStreamPacketDescription {
 
 /// The format can use any sample rate. Note that this constant can only appear
 /// in listings of supported formats. It will never appear in a current format.
-pub const AUDIO_STREAM_ANY_RATE: f64 = 0.0;
+pub const STREAM_ANY_RATE: f64 = 0.0;
 
 #[derive(Debug, Copy, Clone, Default)]
 #[repr(transparent)]
@@ -418,7 +418,7 @@ pub struct SMPTETime {
 }
 
 #[repr(C)]
-pub struct AudioTimeStamp {
+pub struct TimeStamp {
     /// The absolute sample frame time.
     pub sample_time: f64,
     /// The host machine's time base, mach_absolute_time.
@@ -431,16 +431,16 @@ pub struct AudioTimeStamp {
     /// The SMPTE time.
     pub smpte_time: SMPTETime,
     /// A set of flags indicating which representations of the time are valid.
-    pub flags: AudioTimeStampFlags,
+    pub flags: TimeStampFlags,
     /// Pads the structure out to force an even 8 byte alignment.
     pub reserved: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct AudioTimeStampFlags(pub u32);
+pub struct TimeStampFlags(pub u32);
 
-impl AudioTimeStampFlags {
+impl TimeStampFlags {
     pub const NOTHING_VALID: Self = Self(0);
     /// The sample frame time is valid.
     pub const SAMPLE_TIME_VALID: Self = Self(1u32 << 0);
@@ -459,7 +459,7 @@ impl AudioTimeStampFlags {
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
-pub struct AudioClassDescription {
+pub struct ClassDescription {
     /// The four char code codec type.
     pub m_type: os::Type,
     /// The four char code codec subtype.
@@ -470,9 +470,9 @@ pub struct AudioClassDescription {
 
 /// A tag identifying how the channel is to be used.
 #[repr(transparent)]
-pub struct AudioChannelLabel(pub u32);
+pub struct ChannelLabel(pub u32);
 
-impl AudioChannelLabel {
+impl ChannelLabel {
     /// unknown or unspecified other use
     pub const UNKNOWN: Self = Self(0xFFFFFFFF);
     /// channel is present, but has no intended use or destination
@@ -620,9 +620,9 @@ impl AudioChannelLabel {
 }
 
 #[repr(transparent)]
-pub struct AudioChannelBitmap(pub u32);
+pub struct ChannelBitmap(pub u32);
 
-impl AudioChannelBitmap {
+impl ChannelBitmap {
     pub const LEFT: Self = Self(1u32 << 0);
     pub const RIGHT: Self = Self(1u32 << 1);
     pub const CENTER: Self = Self(1u32 << 2);
@@ -655,9 +655,9 @@ impl AudioChannelBitmap {
 /// These constants are used in the mChannelFlags field of an
 /// AudioChannelDescription structure.
 #[repr(transparent)]
-pub struct AudioChannelFlags(pub u32);
+pub struct ChannelFlags(pub u32);
 
-impl AudioChannelFlags {
+impl ChannelFlags {
     pub const ALL_OFF: Self = Self(0);
 
     /// The channel is specified by the cartesian coordinates of the speaker
@@ -674,11 +674,11 @@ impl AudioChannelFlags {
 }
 
 #[repr(transparent)]
-pub struct AudioChannelCoordinateIndex(pub u32);
+pub struct ChannelCoordinateIndex(pub u32);
 
 /// Constants for indexing the coordinates array in an AudioChannelDescription
 /// structure.
-impl AudioChannelCoordinateIndex {
+impl ChannelCoordinateIndex {
     /// For rectangular coordinates, negative is left and positive is right.
     pub const LEFT_RIGHT: Self = Self(0);
 
@@ -728,11 +728,11 @@ impl AudioChannelCoordinateIndex {
 /// Lt - left matrix total. for matrix encoded stereo.
 /// Rt - right matrix total. for matrix encoded stereo.
 #[repr(transparent)]
-pub struct AudioChannelLayoutTag(pub u32);
+pub struct ChannelLayoutTag(pub u32);
 
 /// These constants are used in the mChannelLayoutTag field of an AudioChannelLayout
 /// structure.
-impl AudioChannelLayoutTag {
+impl ChannelLayoutTag {
     //  General layouts
 
     /// use the array of AudioChannelDescriptions to define the mapping.
@@ -1149,27 +1149,27 @@ impl AudioChannelLayoutTag {
 
 /// This structure describes a single channel.
 #[repr(C)]
-pub struct AudioChannelDescription {
+pub struct ChannelDescription {
     /// The AudioChannelLabel that describes the channel.
-    pub channel_label: AudioChannelLabel,
+    pub channel_label: ChannelLabel,
     /// Flags that control the interpretation of mCoordinates.
-    pub channel_flags: AudioChannelFlags,
+    pub channel_flags: ChannelFlags,
     /// An ordered triple that specifies a precise speaker location.
     pub coordinates: [f32; 3],
 }
 
 #[repr(C)]
-pub struct AudioChannelLayout<const N: usize> {
-    pub channel_layout_tag: AudioChannelLayoutTag,
-    pub channel_bitmap: AudioChannelBitmap,
+pub struct ChannelLayout<const N: usize> {
+    pub channel_layout_tag: ChannelLayoutTag,
+    pub channel_bitmap: ChannelBitmap,
     pub number_channel_descriptions: u32,
-    pub channel_descriptions: [AudioChannelDescription; N],
+    pub channel_descriptions: [ChannelDescription; N],
 }
 
 #[repr(C)]
-pub struct AudioFormatListItem {
-    pub asbd: AudioStreamBasicDescription,
-    pub channel_layout_tag: AudioChannelLayoutTag,
+pub struct FormatListItem {
+    pub asbd: StreamBasicDescription,
+    pub channel_layout_tag: ChannelLayoutTag,
 }
 
 #[repr(transparent)]
