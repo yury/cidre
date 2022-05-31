@@ -1,9 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, mem::size_of};
 
-use crate::{
-    cat::audio,
-    cf, define_cf_type, os,
-};
+use crate::{cat::audio, cf, define_cf_type, os};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -527,9 +524,9 @@ impl Converter {
     /// includes sample rate conversions and most compressed formats. In these cases,
     /// use AudioConverterFillComplexBuffer. Generally this function is only appropriate for
     /// PCM-to-PCM conversions where there is no sample rate conversion.
-    /// 
+    ///
     /// # Safety
-    /// 
+    ///
     /// Use [`.convert_complex_buf()`].
     #[inline]
     pub unsafe fn convert_complex_buffer(

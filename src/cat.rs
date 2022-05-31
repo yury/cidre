@@ -1,10 +1,9 @@
-
 pub mod audio;
 
 pub use audio::Buffer as AudioBuffer;
 pub use audio::BufferList as AudioBufferList;
 pub use audio::ChannelBitmap as AudioChannelBitmap;
-pub use audio::ChannelCoordinateIndex as ChannelCoordinateIndex;
+pub use audio::ChannelCoordinateIndex;
 pub use audio::ChannelDescription as AudioChannelDescription;
 pub use audio::ChannelFlags as AudioChannelFlags;
 pub use audio::ChannelLabel as AudioChannelLabel;
@@ -14,5 +13,5 @@ pub use audio::ClassDescription as AudioClassDescription;
 pub use audio::FormatFlags as AudioFormatFlags;
 pub use audio::FormatID as AudioFormatID;
 
-pub use audio::SessionID as AudioSessionID;
 pub use audio::SessionErrorCode as AudioSessionErrorCode;
+pub use audio::SessionID as AudioSessionID;

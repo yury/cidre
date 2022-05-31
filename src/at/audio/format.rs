@@ -1,9 +1,6 @@
 use std::{ffi::c_void, mem::size_of, ptr::NonNull};
 
-use crate::{
-    cat::audio,
-    os,
-};
+use crate::{cat::audio, os};
 
 /// AudioFormatPropertyID
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -363,11 +360,15 @@ impl PropertyID {
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
-    pub fn encoders(format_id: audio::FormatID) -> Result<Vec<audio::ClassDescription>, os::Status> {
+    pub fn encoders(
+        format_id: audio::FormatID,
+    ) -> Result<Vec<audio::ClassDescription>, os::Status> {
         unsafe { asbd_props::ENCODERS.get_vec_with(&format_id) }
     }
 
-    pub fn decoders(format_id: audio::FormatID) -> Result<Vec<audio::ClassDescription>, os::Status> {
+    pub fn decoders(
+        format_id: audio::FormatID,
+    ) -> Result<Vec<audio::ClassDescription>, os::Status> {
         unsafe { asbd_props::DECODERS.get_vec_with(&format_id) }
     }
 

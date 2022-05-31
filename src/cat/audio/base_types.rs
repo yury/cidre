@@ -334,8 +334,7 @@ impl StreamBasicDescription {
     #[inline]
     pub fn is_native_endian(&self) -> bool {
         self.format_id == FormatID::LINEAR_PCM
-            && (self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0
-                == FormatFlags::NATIVE_ENDIAN.0)
+            && (self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0 == FormatFlags::NATIVE_ENDIAN.0)
     }
 }
 
