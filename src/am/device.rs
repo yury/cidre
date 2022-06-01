@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, ops::Deref, ptr::NonNull};
+use std::{ffi::c_void, intrinsics::transmute, ops::Deref, path::PathBuf, ptr::NonNull};
 
 use crate::{
     cf::{self, Retained},
@@ -18,7 +18,7 @@ pub struct NotificationCallbackInfo {
 }
 
 #[repr(u32)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum MessageType {
     Connected = 1,
@@ -36,33 +36,40 @@ pub enum InterfaceType {
     Proxy = 3,
 }
 
-pub type NotificationCallback = extern "C" fn(info: &NotificationCallbackInfo, arg: *mut c_void);
+pub type NotificationCallback<T> = extern "C" fn(info: &NotificationCallbackInfo, arg: *mut T);
+pub type MounImageCallback<T> = extern "C" fn(info: &cf::Dictionary, ctx: *mut T);
 //pub type MountCallback = extern "C" fn(info: &cf::Dictionary, ctx: *mut c_void);
 
 impl Notification {
-    pub fn subscribe(
-        callback: NotificationCallback,
-        ctx: *mut c_void,
+    pub fn subscribe<T>(
+        callback: NotificationCallback<T>,
+        ctx: *mut T,
     ) -> Result<&'static Self, os::Status> {
         unsafe {
             let mut notification = None;
-            AMDeviceNotificationSubscribe(callback, 0, 0, ctx, &mut notification)
-                .to_result(notification)
+            AMDeviceNotificationSubscribe(
+                transmute(callback),
+                0,
+                0,
+                transmute(ctx),
+                &mut notification,
+            )
+            .to_result(notification)
         }
     }
 
-    pub fn subscribe_with_options(
-        callback: NotificationCallback,
-        ctx: *mut c_void,
+    pub fn subscribe_with_options<T>(
+        callback: NotificationCallback<T>,
+        ctx: *mut T,
         options: &cf::Dictionary,
     ) -> Result<&'static Self, os::Status> {
         unsafe {
             let mut notification = None;
             AMDeviceNotificationSubscribeWithOptions(
-                callback,
+                transmute(callback),
                 0,
                 0,
-                ctx,
+                transmute(ctx),
                 &mut notification,
                 options,
             )
@@ -274,6 +281,11 @@ impl<'a> Connected<'a> {
             }
         }
     }
+
+    pub fn device_support_path(&self) -> Option<PathBuf> {
+        let version = self.product_version().to_string();
+        platform_support_path("iPhoneOS.platform", &version)
+    }
 }
 
 impl<'a> Drop for Connected<'a> {
@@ -309,10 +321,18 @@ impl<'a> Session<'a> {
         self.secure_start_service(&name)
     }
 
-    pub fn mound_disk<T>(&self, image: &cf::String, options: &cf::Dictionary, callback: MounImageCallback<T>, ctx: *mut T) -> os::Status {
-        unsafe {
-            AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
-        }
+    pub fn mound_disk<T>(&self, image: &cf::String, options: &cf::Dictionary) -> os::Status {
+        unsafe { AMDeviceMountImage(self, image, options, std::ptr::null(), std::ptr::null_mut()) }
+    }
+
+    pub unsafe fn mound_disk_with_callback<T>(
+        &self,
+        image: &cf::String,
+        options: &cf::Dictionary,
+        callback: MounImageCallback<T>,
+        ctx: *mut T,
+    ) -> os::Status {
+        AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
     }
 }
 
@@ -332,13 +352,46 @@ impl<'a> Deref for Session<'a> {
 
 define_cf_type!(Service(cf::Type));
 
-pub type MounImageCallback<T> = extern "C" fn(info: &cf::Dictionary, ctx: *mut T);
+fn xcode_dev_path() -> PathBuf {
+    use std::process::Command;
+    let command = Command::new("xcode-select")
+        .arg("-print-path")
+        .output()
+        .expect("xcode-select prints path");
+    String::from_utf8(command.stdout)
+        .expect("valid utf-8 output from xcode-select command")
+        .trim()
+        .into()
+}
+
+fn platform_support_path(platform: &str, os_version: &str) -> Option<PathBuf> {
+    let prefix = xcode_dev_path()
+        .join("Platforms")
+        .join(platform)
+        .join("DeviceSupport");
+    let version: String = os_version
+        .splitn(3, '.')
+        .take(2)
+        .collect::<Vec<_>>()
+        .join(".")
+        .into();
+
+    for directory in std::fs::read_dir(&prefix).expect("folder exists") {
+        let directory = directory.expect("folder exists");
+        let name = directory.file_name().into_string().expect("valid string");
+        if name.starts_with(&version) {
+            return Some(prefix.join(name));
+        }
+    }
+
+    None
+}
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
     fn AMDCreateDeviceList<'a>() -> Retained<'a, cf::ArrayOf<Device>>;
     fn AMDeviceNotificationSubscribe(
-        callback: NotificationCallback,
+        callback: NotificationCallback<c_void>,
         unused0: u32,
         unused1: u32,
         context: *const c_void,
@@ -346,7 +399,7 @@ extern "C" {
     ) -> os::Status;
 
     fn AMDeviceNotificationSubscribeWithOptions(
-        callback: NotificationCallback,
+        callback: NotificationCallback<c_void>,
         unused0: u32,
         unused1: u32,
         context: *const c_void,
@@ -408,20 +461,26 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{ffi::c_void, intrinsics::transmute};
+    use std::ffi::c_void;
 
-    use crate::{am, cf};
+    use crate::{
+        am::{self, device::MessageType},
+        cf,
+    };
 
     use super::{Notification, NotificationCallbackInfo};
 
-    extern "C" fn notification_callback(info: &NotificationCallbackInfo, arg: *mut c_void) {
+    extern "C" fn notification_callback(info: &NotificationCallbackInfo, _arg: *mut c_void) {
         let dev = info.dev;
         let msg = info.msg;
-        let dev: &am::Device = unsafe { transmute(dev) };
+        println!("message: {:?}", msg);
+        if msg != MessageType::Connected {
+            return;
+        }
+        let dev: &am::Device = unsafe { &*dev };
         let connected_dev = dev.connected().unwrap();
         println!(
-            "msg: {:?} {:?}, {:?}",
-            msg,
+            "{:?}, {:?}",
             dev.connection_id(),
             dev.identifier().to_string()
         );
@@ -442,16 +501,30 @@ mod tests {
     pub fn list() {
         let list = am::Device::list();
         assert!(list.len() > 0);
-        println!("interface type {:?}", list[0].interface_type());
+        let device = &list[0];
+        println!("interface type {:?}", device.interface_type());
+    }
+
+    #[test]
+    pub fn connected() {
+        let list = am::Device::list();
+        assert!(list.len() > 0);
+        let device = &list[0];
+        let connected_device = device.connected().expect("connected device");
+        println!(
+            "product version {:?} {:?}",
+            connected_device.product_version().to_string(),
+            connected_device.device_support_path()
+        );
     }
 
     #[test]
     pub fn notification_sub() {
-        // let notification = Notification::subscribe(notification_callback, std::ptr::null_mut())
-        // .expect("notification");
+        let notification = Notification::subscribe(notification_callback, std::ptr::null_mut())
+            .expect("notification");
 
         // cf::RunLoop::run();
 
-        // notification.unsubscribe().expect("unsub")
+        notification.unsubscribe().expect("unsub")
     }
 }
