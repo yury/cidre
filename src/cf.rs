@@ -78,6 +78,10 @@ pub use set::SetOf;
 pub mod uuid;
 pub use uuid::UUID;
 
+pub mod data;
+pub use data::Data;
+pub use data::MutableData;
+
 // pub type TimeInterval = f64;
 // pub type AbsoluteTime = TimeInterval;
 

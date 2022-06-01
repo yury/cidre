@@ -334,6 +334,17 @@ impl<'a> Session<'a> {
     ) -> os::Status {
         AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
     }
+
+    pub fn mount_developer_image(&self) -> Result<(), os::Status> {
+        let ds_path = self.device_support_path();
+        if ds_path.is_none() {
+            return Err(os::Status(-1))
+        }
+        let ds_path = ds_path.unwrap();
+        
+
+        Ok(())
+    }
 }
 
 impl<'a> Drop for Session<'a> {
