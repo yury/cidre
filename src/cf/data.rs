@@ -4,7 +4,6 @@ define_cf_type!(Data(cf::Type));
 define_cf_type!(MutableData(Data));
 
 impl Data {
-
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CFDataGetTypeID() }
@@ -34,14 +33,19 @@ impl Data {
     }
 
     #[inline]
-    pub unsafe fn create_mutable_copy<'a>(&self, allocator: Option<&cf::Allocator>, capacity: cf::Index) -> Option<cf::Retained<'a, MutableData>> {
+    pub unsafe fn create_mutable_copy<'a>(
+        &self,
+        allocator: Option<&cf::Allocator>,
+        capacity: cf::Index,
+    ) -> Option<cf::Retained<'a, MutableData>> {
         CFDataCreateMutableCopy(allocator, capacity, self)
     }
 
     #[inline]
     pub fn mutable_copy<'a>(&self, capacity: usize) -> cf::Retained<'a, MutableData> {
         unsafe {
-            self.create_mutable_copy(None, capacity as _).unwrap_unchecked()
+            self.create_mutable_copy(None, capacity as _)
+                .unwrap_unchecked()
         }
     }
 }
@@ -61,7 +65,7 @@ impl MutableData {
     }
 
     /// # Unsafety
-    /// 
+    ///
     /// use [`.push_bytes()`]
     #[inline]
     pub unsafe fn append_bytes(&mut self, bytes: *const u8, length: cf::Index) {
@@ -72,7 +76,6 @@ impl MutableData {
     pub fn push_bytes(&mut self, bytes: &[u8]) {
         unsafe { self.append_bytes(bytes.as_ptr(), bytes.len() as _) }
     }
-
 }
 
 /// ```
@@ -100,5 +103,9 @@ extern "C" {
         capacity: cf::Index,
     ) -> Option<cf::Retained<'a, cf::MutableData>>;
     fn CFDataAppendBytes(data: &MutableData, bytes: *const u8, length: cf::Index);
-    fn CFDataCreateMutableCopy<'a>(allocator: Option<&cf::Allocator>, capacity: cf::Index, data: &Data) -> Option<cf::Retained<'a, MutableData>>;
+    fn CFDataCreateMutableCopy<'a>(
+        allocator: Option<&cf::Allocator>,
+        capacity: cf::Index,
+        data: &Data,
+    ) -> Option<cf::Retained<'a, MutableData>>;
 }

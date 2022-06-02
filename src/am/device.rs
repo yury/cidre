@@ -1,17 +1,15 @@
 use std::{ffi::c_void, intrinsics::transmute, ops::Deref, path::PathBuf, ptr::NonNull};
 pub mod base;
-pub mod error;
 pub mod discovery;
+pub mod error;
 
 pub use base::{Device, Error, Notification};
-pub use discovery::{Action, Speed, InterfaceConnectionType};
-
+pub use discovery::{Action, InterfaceConnectionType, Speed};
 
 use crate::{
     cf::{self, Retained},
     define_cf_type, os,
 };
-
 
 // #[repr(C)]
 // pub struct Notification(NonNull<c_void>);
@@ -333,8 +331,14 @@ impl<'a> Session<'a> {
                 println!("!!!!!!");
                 info.show();
             }
-            AMDeviceMountImage(self, image, options, mount_callback as _, std::ptr::null_mut())
-                .result()
+            AMDeviceMountImage(
+                self,
+                image,
+                options,
+                mount_callback as _,
+                std::ptr::null_mut(),
+            )
+            .result()
         }
     }
 
@@ -363,10 +367,7 @@ impl<'a> Session<'a> {
         let image_type_value = cf::String::from_str("Developer");
         let image_sig_key = cf::String::from_str("ImageSignature");
         let options = cf::Dictionary::with_keys_values(
-            &[
-                &image_type_key,
-                &image_sig_key,
-            ],
+            &[&image_type_key, &image_sig_key],
             &[&image_type_value, &sig],
         )
         .expect("options for mount created");
@@ -504,7 +505,6 @@ extern "C" {
     ) -> os::Status;
 }
 
-
 #[cfg(test)]
 mod tests {
     // use std::ffi::c_void;
@@ -568,7 +568,6 @@ mod tests {
     //         let session = connected_device.start_session().unwrap();
     //         session.mount_developer_image().expect("mounted");
     //     }
-
 
     // }
 

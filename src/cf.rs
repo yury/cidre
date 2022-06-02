@@ -89,9 +89,9 @@ pub mod run_loop;
 pub use run_loop::Mode as RunLoopMode;
 pub use run_loop::Observer as RunLoopObserver;
 pub use run_loop::RunLoop;
+pub use run_loop::RunResult as RunLoopRunResult;
 pub use run_loop::Source as RunLoopSource;
 pub use run_loop::Timer as RunLoopTimer;
-pub use run_loop::RunResult as RunLoopRunResult;
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {}

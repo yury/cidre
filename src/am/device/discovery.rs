@@ -87,22 +87,16 @@ pub enum SafeInfo<'a> {
     Attached(Retained<'a, Device>),
     Detached(&'a Device),
     NotificationStopped,
-    Paired(&'a Device)
+    Paired(&'a Device),
 }
 
 impl NotificationInfo {
     pub fn safe_info<'a>(&self) -> SafeInfo<'a> {
         match self.action {
-            Action::Attached => {
-                SafeInfo::Attached(unsafe { transmute(self.device) })
-            },
-            Action::Detached => {
-                SafeInfo::Detached(unsafe { transmute(self.device) })
-            },
+            Action::Attached => SafeInfo::Attached(unsafe { transmute(self.device) }),
+            Action::Detached => SafeInfo::Detached(unsafe { transmute(self.device) }),
             Action::NotificationStopped => SafeInfo::NotificationStopped,
-            Action::Paired => {
-                SafeInfo::Paired(unsafe { transmute(self.device) })
-            },
+            Action::Paired => SafeInfo::Paired(unsafe { transmute(self.device) }),
         }
     }
 }
@@ -232,7 +226,10 @@ mod tests {
     use std::ffi::c_void;
 
     use crate::{
-        am::{self, device::discovery::{NotificationInfo, SafeInfo}},
+        am::{
+            self,
+            device::discovery::{NotificationInfo, SafeInfo},
+        },
         cf,
     };
     #[test]
@@ -243,18 +240,18 @@ mod tests {
                 SafeInfo::Attached(device) => {
                     println!("attached");
                     device.show()
-                },
+                }
                 SafeInfo::Detached(device) => {
                     println!("detached");
                     device.show()
-                },
+                }
                 SafeInfo::NotificationStopped => {
                     println!("stopped")
-                },
+                }
                 SafeInfo::Paired(device) => {
                     println!("paired");
                     device.show()
-                },
+                }
             }
         }
 

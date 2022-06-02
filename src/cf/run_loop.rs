@@ -90,14 +90,14 @@ impl RunLoop {
     /// You are not restricted in which modes you can run from within a callout.
     /// You can create another run loop activation running in any available run loop mode,
     /// including any modes already running higher in the call stack.
-    /// 
+    ///
     /// The run loop exits with the following return values under the indicated conditions:
     ///     - Result::Finished. The run loop mode mode has no sources or timers.
     ///     - Result::Stopped. The run loop was stopped with CFRunLoopStop.
     ///     - Result::TimedOut. The time interval seconds passed.
     ///     - Result::HandledSource. A source was processed.
     /// This exit condition only applies when returnAfterSourceHandled is true.
-    /// 
+    ///
     /// You must not specify the kCFRunLoopCommonModes constant for the mode parameter.
     /// Run loops always run in a specific mode. You specify the common modes only when
     /// configuring a run-loop observer and only in situations where you want that

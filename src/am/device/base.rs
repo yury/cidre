@@ -1,4 +1,4 @@
-use crate::{define_cf_type, cf};
+use crate::{cf, define_cf_type};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 #[repr(transparent)]
