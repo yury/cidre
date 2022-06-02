@@ -73,7 +73,7 @@ impl Surface {
     /// let width = cf::Number::from_i32(100);
     /// let height = cf::Number::from_i32(200);
     ///
-    /// let properties = cf::Dictionary::from_pairs(
+    /// let properties = cf::Dictionary::with_keys_values(
     ///   &[
     ///     io::surface::keys::width(),
     ///     io::surface::keys::height()
@@ -151,7 +151,7 @@ impl Surface {
     /// let width = cf::Number::from_i32(100);
     /// let height = cf::Number::from_i32(200);
     ///
-    /// let properties = cf::Dictionary::from_pairs(
+    /// let properties = cf::Dictionary::with_keys_values(
     ///   &[
     ///     io::surface::keys::width(),
     ///     io::surface::keys::height()

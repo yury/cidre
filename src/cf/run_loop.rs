@@ -1,12 +1,21 @@
+use std::intrinsics::transmute;
+
 use crate::{cf, define_cf_type};
 
 use super::Retained;
 
 #[repr(i32)]
 pub enum RunResult {
+    /// The run loop mode mode has no sources or timers.
     Finished = 1,
+
+    /// The run loop was stopped with CFRunLoopStop.
     Stopped = 2,
+
+    /// The time interval seconds passed.
     TimedOut = 3,
+
+    /// A source was processed. This exit condition only applies when `return_after_source_handled` is true.
     HandledSource = 4,
 }
 
@@ -75,6 +84,32 @@ impl RunLoop {
     pub fn remove_timer(&self, timer: &Timer, mode: &Mode) {
         unsafe { CFRunLoopRemoveTimer(self, timer, mode) }
     }
+
+    /// Run loops can be run recursively. You can call `Mode` from within any run loop
+    /// callout and create nested run loop activations on the current thread’s call stack.
+    /// You are not restricted in which modes you can run from within a callout.
+    /// You can create another run loop activation running in any available run loop mode,
+    /// including any modes already running higher in the call stack.
+    /// 
+    /// The run loop exits with the following return values under the indicated conditions:
+    ///     - Result::Finished. The run loop mode mode has no sources or timers.
+    ///     - Result::Stopped. The run loop was stopped with CFRunLoopStop.
+    ///     - Result::TimedOut. The time interval seconds passed.
+    ///     - Result::HandledSource. A source was processed.
+    /// This exit condition only applies when returnAfterSourceHandled is true.
+    /// 
+    /// You must not specify the kCFRunLoopCommonModes constant for the mode parameter.
+    /// Run loops always run in a specific mode. You specify the common modes only when
+    /// configuring a run-loop observer and only in situations where you want that
+    /// observer to run in more than one mode.
+    #[inline]
+    pub fn run_in_mode(
+        mode: &Mode,
+        seconds: cf::TimeInterval,
+        return_after_source_handled: bool,
+    ) -> RunResult {
+        unsafe { CFRunLoopRunInMode(mode, seconds, return_after_source_handled) }
+    }
 }
 
 extern "C" {
@@ -93,11 +128,20 @@ extern "C" {
     fn CFRunLoopContainsTimer(rl: &RunLoop, timer: &Timer, mode: &Mode) -> bool;
     fn CFRunLoopAddTimer(rl: &RunLoop, timer: &Timer, mode: &Mode);
     fn CFRunLoopRemoveTimer(rl: &RunLoop, timer: &Timer, mode: &Mode);
+
+    fn CFRunLoopRunInMode(
+        mode: &Mode,
+        seconds: cf::TimeInterval,
+        return_after_source_handled: bool,
+    ) -> RunResult;
 }
 
 define_cf_type!(Mode(cf::String));
 
 impl Mode {
+    pub fn new(name: &cf::String) -> &Self {
+        unsafe { transmute(name) }
+    }
     pub fn default() -> &'static Mode {
         unsafe { kCFRunLoopDefaultMode }
     }

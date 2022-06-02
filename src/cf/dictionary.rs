@@ -86,7 +86,7 @@ impl Dictionary {
     /// let key = cf::Number::from_i8(10);
     /// let value = cf::Number::from_i8(20);
     ///
-    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
     /// assert!(d.contains_type_ref_key(&key));
     ///
@@ -128,7 +128,7 @@ impl Dictionary {
     /// let key = cf::Number::from_i8(10);
     /// let value = cf::Number::from_i8(20);
     ///
-    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
     /// let v = d.value_by_type_ref_key(&key).unwrap();
     /// assert!(v.equal(&value));
@@ -168,13 +168,13 @@ impl Dictionary {
     /// let key = cf::Number::from_i8(10);
     /// let value = cf::Number::from_i8(20);
     ///
-    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
     /// assert!(!d.is_empty());
     /// assert_eq!(1, d.len());
     /// ```
     #[inline]
-    pub fn from_pairs<'a, const N: usize>(
+    pub fn with_keys_values<'a, const N: usize>(
         keys: &[&Type; N],
         values: &[&Type; N],
     ) -> Option<Retained<'a, Dictionary>> {
@@ -221,7 +221,7 @@ impl Dictionary {
     /// let key = cf::Number::from_i8(10);
     /// let value = cf::Number::from_i8(20);
     ///
-    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
     /// let keys = d.get_keys();
     ///
@@ -247,7 +247,7 @@ impl Dictionary {
     /// let key = cf::Number::from_i8(10);
     /// let value = cf::Number::from_i8(20);
     ///
-    /// let d = cf::Dictionary::from_pairs(&[&key], &[&value]).unwrap();
+    /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
     /// let vals = d.get_values();
     ///

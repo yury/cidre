@@ -1,6 +1,6 @@
 use cidre::am;
 fn main() {
-    let devices = am::Device::list();
+    let devices = am::Device::list().unwrap();
 
     for d in devices.iter() {
         let f = d.connected().expect("connected");
