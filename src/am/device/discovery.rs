@@ -1,8 +1,4 @@
-use std::{
-    ffi::c_void,
-    intrinsics::transmute,
-    ops::{Deref, DerefMut},
-};
+use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::cf::{self, Retained};
 
@@ -91,7 +87,7 @@ pub enum SafeInfo<'a> {
 }
 
 impl NotificationInfo {
-    pub fn safe_info<'a>(&self) -> SafeInfo<'a> {
+    pub fn safe<'a>(&self) -> SafeInfo<'a> {
         match self.action {
             Action::Attached => SafeInfo::Attached(unsafe { transmute(self.device) }),
             Action::Detached => SafeInfo::Detached(unsafe { transmute(self.device) }),
@@ -136,11 +132,16 @@ impl Device {
     pub fn list<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<Device>>> {
         unsafe { AMDCreateDeviceList() }
     }
+
+    pub unsafe fn copy_array_of_devices_matching_query<'a>(note: Option<&Notification>, query: cf::Dictionary, out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>) -> Error {
+        AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array) 
+    }
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
     fn AMDCreateDeviceList<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<Device>>>;
+    fn AMDCopyArrayOfDevicesMatchingQuery<'a>(note: Option<&Notification>, query: cf::Dictionary, out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>) -> Error;
 }
 
 impl Notification {
@@ -190,6 +191,12 @@ impl Notification {
 
 pub struct SubscriptionGuard<'a>(Option<Retained<'a, Notification>>);
 
+impl<'a> SubscriptionGuard<'a> {
+    pub fn note(&self) -> Option<&Notification>{
+        self.0.as_deref()
+    }
+}
+
 impl<'a> Drop for SubscriptionGuard<'a> {
     fn drop(&mut self) {
         // AMDeviceNotificationUnsubscribe decrease ref count.
@@ -221,6 +228,68 @@ extern "C" {
     fn AMDeviceNotificationUnsubscribe(notification: &Notification) -> Error;
 }
 
+pub mod matching {
+    pub mod mode {
+        use crate::cf;
+
+        /// This key determines how the matching works. (Required)
+        #[inline]
+        pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchingMode")
+        }
+
+        /// If a device matches ANY of the criteria it will be part of the returned array.
+        #[inline]
+        pub fn any_value<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchAny")
+        }
+
+        /// Only if a device matches ALL of the criteria will it be part of the returned array.
+        #[inline]
+        pub fn all_value<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchAll")
+        }
+
+        /// Ignore all criteria, just return all devices.
+        #[inline]
+        pub fn wildcard_value<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchWildcard")
+        }
+    }
+
+    pub mod criteria {
+        use crate::cf;
+
+        /// Value is an array of CFStrings of device UDIDs, as returned
+        /// by AMDeviceCopyDeviceIdentifier(). Case IN-sensitive.
+        #[inline]
+        pub fn udid_key<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchUDID")
+        }
+
+        /// Value must be either kAMDCriteriaUSBKey or kAMDCriteriaNetworkKey.
+        #[inline]
+        pub fn connection_type_key<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchConnectionType")
+        }
+
+        #[inline]
+        pub fn usb_value<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchConnectionTypeUSB")
+        }
+
+        #[inline]
+        pub fn network_value<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchConnectionTypeNetwork")
+        }
+        
+        #[inline]
+        pub fn paired_device_value<'a>() -> cf::Retained<'a, cf::String> {
+            cf::String::from_str_no_copy("MatchConnectionTypePairedDevice")
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::ffi::c_void;
@@ -232,11 +301,11 @@ mod tests {
         },
         cf,
     };
+
     #[test]
     fn notification_drop() {
         extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
-            let sinfo = info.safe_info();
-            match sinfo {
+            match info.safe() {
                 SafeInfo::Attached(device) => {
                     println!("attached");
                     device.show()

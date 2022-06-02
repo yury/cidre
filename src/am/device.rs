@@ -2,6 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute, ops::Deref, path::PathBuf, ptr::No
 pub mod base;
 pub mod discovery;
 pub mod error;
+pub mod development;
 
 pub use base::{Device, Error, Notification};
 pub use discovery::{Action, InterfaceConnectionType, Speed};
@@ -282,10 +283,6 @@ impl<'a> Connected<'a> {
         }
     }
 
-    pub fn device_support_path(&self) -> Option<PathBuf> {
-        let version = self.product_version().to_string();
-        platform_support_path("iPhoneOS.platform", &version)
-    }
 }
 
 impl<'a> Drop for Connected<'a> {
@@ -321,65 +318,6 @@ impl<'a> Session<'a> {
         self.secure_start_service(&name)
     }
 
-    pub fn mound_disk(
-        &self,
-        image: &cf::String,
-        options: &cf::Dictionary,
-    ) -> Result<(), os::Status> {
-        unsafe {
-            extern "C" fn mount_callback(info: &cf::Dictionary, _ctx: *mut c_void) {
-                println!("!!!!!!");
-                info.show();
-            }
-            AMDeviceMountImage(
-                self,
-                image,
-                options,
-                mount_callback as _,
-                std::ptr::null_mut(),
-            )
-            .result()
-        }
-    }
-
-    pub unsafe fn mound_disk_with_callback<T>(
-        &self,
-        image: &cf::String,
-        options: &cf::Dictionary,
-        callback: MounImageCallback<T>,
-        ctx: *mut T,
-    ) -> os::Status {
-        AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
-    }
-
-    pub fn mount_developer_image(&self) -> Result<(), os::Status> {
-        let ds_path = self.device_support_path();
-        if ds_path.is_none() {
-            return Err(os::Status(-1));
-        }
-        let ds_path = ds_path.unwrap();
-        let image_path = ds_path.join("DeveloperDiskImage.dmg");
-        let sig_image_path = ds_path.join("DeveloperDiskImage.dmg.signature");
-        let sig = std::fs::read(sig_image_path).expect("sig file read");
-        let sig = Retained::from(&sig[..]);
-
-        let image_type_key = cf::String::from_str("ImageType");
-        let image_type_value = cf::String::from_str("Developer");
-        let image_sig_key = cf::String::from_str("ImageSignature");
-        let options = cf::Dictionary::with_keys_values(
-            &[&image_type_key, &image_sig_key],
-            &[&image_type_value, &sig],
-        )
-        .expect("options for mount created");
-
-        image_type_key.show();
-        options.show();
-        sig.show();
-
-        let path = image_path.to_str().unwrap();
-        let ref cf_image_path = cf::String::from_str_no_copy(&path);
-        self.mound_disk(&cf_image_path, &options)
-    }
 }
 
 impl<'a> Drop for Session<'a> {
@@ -398,40 +336,6 @@ impl<'a> Deref for Session<'a> {
 
 define_cf_type!(Service(cf::Type));
 
-fn xcode_dev_path() -> PathBuf {
-    use std::process::Command;
-    let command = Command::new("xcode-select")
-        .arg("-print-path")
-        .output()
-        .expect("xcode-select prints path");
-    String::from_utf8(command.stdout)
-        .expect("valid utf-8 output from xcode-select command")
-        .trim()
-        .into()
-}
-
-fn platform_support_path(platform: &str, os_version: &str) -> Option<PathBuf> {
-    let prefix = xcode_dev_path()
-        .join("Platforms")
-        .join(platform)
-        .join("DeviceSupport");
-    let version: String = os_version
-        .splitn(3, '.')
-        .take(2)
-        .collect::<Vec<_>>()
-        .join(".")
-        .into();
-
-    for directory in std::fs::read_dir(&prefix).expect("folder exists") {
-        let directory = directory.expect("folder exists");
-        let name = directory.file_name().into_string().expect("valid string");
-        if name.starts_with(&version) {
-            return Some(prefix.join(name));
-        }
-    }
-
-    None
-}
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -494,15 +398,8 @@ extern "C" {
         unknwon: *const c_void,
         service: &Option<Retained<'a, Service>>,
     ) -> os::Status;
-    fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
+    // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
-    fn AMDeviceMountImage(
-        device: &Device,
-        image: &cf::String,
-        options: &cf::Dictionary,
-        callback: *const MounImageCallback<c_void>,
-        ctx: *mut c_void,
-    ) -> os::Status;
 }
 
 #[cfg(test)]
