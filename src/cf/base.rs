@@ -140,7 +140,7 @@ impl Allocator {
 
     /// Default system allocator; you rarely need to use this.
     #[inline]
-    pub fn system_default() -> &'static Allocator {
+    pub fn system_default() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorSystemDefault }
     }
 
@@ -148,7 +148,7 @@ impl Allocator {
     /// is useful as the `bytes_deallocator` in cf::Data or `contents_deallocator`
     /// in cf::String where the memory should not be freed.
     #[inline]
-    pub fn null() -> &'static Allocator {
+    pub fn null() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorNull }
     }
 }
@@ -159,8 +159,8 @@ extern "C" {
     static kCFNull: &'static Null;
 
     static kCFAllocatorDefault: Option<&'static Allocator>;
-    static kCFAllocatorSystemDefault: &'static Allocator;
-    static kCFAllocatorNull: &'static Allocator;
+    static kCFAllocatorSystemDefault: Option<&'static Allocator>;
+    static kCFAllocatorNull: Option<&'static Allocator>;
 
     fn CFGetAllocator<'a>(cf: &Type) -> Option<&'a Allocator>;
     fn CFShow(cf: Option<&Type>);

@@ -61,7 +61,7 @@ impl String {
                 bytes.len() as _,
                 Encoding::UTF8,
                 false,
-                Some(Allocator::null()),
+                Allocator::null(),
             )
             .unwrap_unchecked()
         }
@@ -102,7 +102,7 @@ impl String {
                 None,
                 cstr.to_bytes_with_nul(),
                 Encoding::UTF8,
-                Some(Allocator::null()),
+                Allocator::null(),
             )
             .unwrap_unchecked()
         }
@@ -382,6 +382,20 @@ extern "C" {
         max_buflen: Index,
         used_buf_len: *mut Index,
     ) -> Index;
+}
+
+impl From<&'static str> for Retained<'static, String> {
+    #[inline]
+    fn from(s: &'static str) -> Self {
+        String::from_str_no_copy(s)
+    }
+}
+
+impl<'a> From<&std::string::String> for Retained<'a, String> {
+    #[inline]
+    fn from(s: &std::string::String) -> Self {
+        String::from_str(s.as_str())
+    }
 }
 
 #[cfg(test)]

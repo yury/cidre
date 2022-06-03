@@ -24,13 +24,13 @@ pub struct KeyCallBacks {
 
 impl KeyCallBacks {
     #[inline]
-    pub fn default() -> &'static KeyCallBacks {
-        unsafe { &kCFTypeDictionaryKeyCallBacks }
+    pub fn default() -> Option<&'static KeyCallBacks> {
+        unsafe { Some(&kCFTypeDictionaryKeyCallBacks) }
     }
 
     #[inline]
-    pub fn copy_strings() -> &'static KeyCallBacks {
-        unsafe { &kCFCopyStringDictionaryKeyCallBacks }
+    pub fn copy_strings() -> Option<&'static KeyCallBacks> {
+        unsafe { Some(&kCFCopyStringDictionaryKeyCallBacks) }
     }
 }
 
@@ -184,7 +184,7 @@ impl Dictionary {
                 keys.as_ptr() as _,
                 values.as_ptr() as _,
                 N as _,
-                Some(KeyCallBacks::default()),
+                KeyCallBacks::default(),
                 ValueCallBacks::default(),
             )
         }
@@ -350,7 +350,7 @@ impl MutableDictionary {
             Self::create(
                 None,
                 capacity as _,
-                Some(KeyCallBacks::default()),
+                KeyCallBacks::default(),
                 ValueCallBacks::default(),
             )
             .unwrap_unchecked()

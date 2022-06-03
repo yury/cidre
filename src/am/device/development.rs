@@ -135,23 +135,23 @@ pub mod image_type {
     use crate::cf;
 
     #[inline]
-    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("ImageType")
+    pub fn key() -> cf::Retained<'static, cf::String> {
+        "ImageType".into()
     }
 
     #[inline]
-    pub fn developer<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("Developer")
+    pub fn developer() -> cf::Retained<'static, cf::String> {
+        "Developer".into()
     }
 
     #[inline]
-    pub fn debug<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("Debug")
+    pub fn debug() -> cf::Retained<'static, cf::String> {
+        "Debug".into()
     }
 
     #[inline]
-    pub fn factory<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("Factory")
+    pub fn factory() -> cf::Retained<'static, cf::String> {
+        "Factory".into()
     }
 }
 
@@ -159,8 +159,8 @@ pub mod signature {
     use crate::cf;
 
     #[inline]
-    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("ImageSignature")
+    pub fn key() -> cf::Retained<'static, cf::String> {
+        "ImageSignature".into()
     }
 }
 

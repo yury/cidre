@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, ops::Deref, path::PathBuf, ptr::NonNull};
+use std::{ffi::c_void, intrinsics::transmute, ops::Deref};
 pub mod base;
 pub mod development;
 pub mod discovery;
@@ -11,81 +11,6 @@ use crate::{
     cf::{self, Retained},
     define_cf_type, os,
 };
-
-// #[repr(C)]
-// pub struct Notification(NonNull<c_void>);
-
-// #[repr(C, packed)]
-// #[derive(Copy, Clone, Debug)]
-// pub struct NotificationCallbackInfo {
-//     dev: *const Device,
-//     msg: MessageType,
-// }
-
-// #[repr(u32)]
-// #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-// #[non_exhaustive]
-// pub enum MessageType {
-//     Connected = 1,
-//     Disconneced = 2,
-//     Unsubscribed = 3,
-// }
-
-// #[repr(u32)]
-// #[derive(Copy, Clone, Debug)]
-// #[non_exhaustive]
-// pub enum InterfaceType {
-//     Unknown = 0,
-//     DirectUSB = 1,
-//     InderectWiFi = 2,
-//     Proxy = 3,
-// }
-
-// pub type NotificationCallback<T> = extern "C" fn(info: &NotificationCallbackInfo, arg: *mut T);
-pub type MounImageCallback<T> = extern "C" fn(info: &cf::Dictionary, ctx: *mut T);
-//pub type MountCallback = extern "C" fn(info: &cf::Dictionary, ctx: *mut c_void);
-
-// impl Notification {
-//     pub fn subscribe<T>(
-//         callback: NotificationCallback<T>,
-//         ctx: *mut T,
-//     ) -> Result<&'static Self, os::Status> {
-//         unsafe {
-//             let mut notification = None;
-//             AMDeviceNotificationSubscribe(
-//                 transmute(callback),
-//                 0,
-//                 0,
-//                 transmute(ctx),
-//                 &mut notification,
-//             )
-//             .to_result(notification)
-//         }
-//     }
-
-//     pub fn subscribe_with_options<T>(
-//         callback: NotificationCallback<T>,
-//         ctx: *mut T,
-//         options: &cf::Dictionary,
-//     ) -> Result<&'static Self, os::Status> {
-//         unsafe {
-//             let mut notification = None;
-//             AMDeviceNotificationSubscribeWithOptions(
-//                 transmute(callback),
-//                 0,
-//                 0,
-//                 transmute(ctx),
-//                 &mut notification,
-//                 options,
-//             )
-//             .to_result(notification)
-//         }
-//     }
-
-//     pub fn unsubscribe(&self) -> Result<(), os::Status> {
-//         unsafe { AMDeviceNotificationUnsubscribe(&self).result() }
-//     }
-// }
 
 impl Device {
     pub fn connection_id(&self) -> u32 {
@@ -320,7 +245,7 @@ impl<'a> Session<'a> {
 
 impl<'a> Drop for Session<'a> {
     fn drop(&mut self) {
-        _ = unsafe { AMDeviceStopSession(&self.0) };
+        _ = unsafe { AMDeviceStopSession(self) };
     }
 }
 

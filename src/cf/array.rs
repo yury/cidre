@@ -43,6 +43,14 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
+    pub fn new_in<'a>(alloc: Option<&Allocator>) -> Option<Retained<'a, ArrayOf<T>>> {
+        unsafe {
+            let arr = Array::create(alloc, None, 0, Callbacks::default());
+            transmute(arr)
+        }
+    }
+
+    #[inline]
     pub fn iter<'a>(&'a self) -> ArrayOfIterator<'a, T> {
         ArrayOfIterator {
             array: self,
@@ -136,6 +144,15 @@ impl<T> MutArrayOf<T> {
     #[inline]
     pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<'a, MutArrayOf<T>>> {
         let arr = MutableArray::create(None, capacity as _, Callbacks::default());
+        unsafe { transmute(arr) }
+    }
+
+    #[inline]
+    pub fn with_capacity_in<'a>(
+        capacity: usize,
+        alloc: Option<&Allocator>,
+    ) -> Option<Retained<'a, MutArrayOf<T>>> {
+        let arr = MutableArray::create(alloc, capacity as _, Callbacks::default());
         unsafe { transmute(arr) }
     }
 
@@ -378,6 +395,11 @@ impl MutableArray {
         unsafe {
             CFArrayRemoveAllValues(self);
         }
+    }
+
+    #[inline]
+    pub fn clear(&mut self) {
+        self.remove_all_values();
     }
 
     #[inline]

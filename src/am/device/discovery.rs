@@ -22,10 +22,8 @@ pub enum InterfaceConnectionType {
     Proxied = 3,
 }
 
-/*
- * Various interface connection speeds
- * in kilobits per second.
- */
+/// Various interface connection speeds
+/// in kilobits per second.
 #[repr(transparent)]
 pub struct Speed(pub i32);
 
@@ -190,7 +188,6 @@ impl QueryBuilder {
         let mut out_array = None;
         unsafe {
             let query = self.query.copy();
-            query.show();
             Device::copy_array_of_devices_matching_query(note, &query, &mut out_array)
                 .to_result(out_array)
         }
@@ -298,26 +295,26 @@ pub mod matching {
 
         /// This key determines how the matching works. (Required)
         #[inline]
-        pub fn key<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchingMode")
+        pub fn key() -> cf::Retained<'static, cf::String> {
+            "MatchingMode".into()
         }
 
         /// If a device matches ANY of the criteria it will be part of the returned array.
         #[inline]
-        pub fn any_value<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchAny")
+        pub fn any_value() -> cf::Retained<'static, cf::String> {
+            "MatchAny".into()
         }
 
         /// Only if a device matches ALL of the criteria will it be part of the returned array.
         #[inline]
-        pub fn all_value<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchAll")
+        pub fn all_value() -> cf::Retained<'static, cf::String> {
+            "MatchAll".into()
         }
 
         /// Ignore all criteria, just return all devices.
         #[inline]
-        pub fn wildcard_value<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchWildcard")
+        pub fn wildcard_value() -> cf::Retained<'static, cf::String> {
+            "MatchWildcard".into()
         }
     }
 
@@ -327,29 +324,29 @@ pub mod matching {
         /// Value is an array of CFStrings of device UDIDs, as returned
         /// by AMDeviceCopyDeviceIdentifier(). Case IN-sensitive.
         #[inline]
-        pub fn udid_key<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchUDID")
+        pub fn udid_key() -> cf::Retained<'static, cf::String> {
+            "MatchUDID".into()
         }
 
         /// Value must be either kAMDCriteriaUSBKey or kAMDCriteriaNetworkKey.
         #[inline]
-        pub fn connection_type_key<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchConnectionType")
+        pub fn connection_type_key() -> cf::Retained<'static, cf::String> {
+            "MatchConnectionType".into()
         }
 
         #[inline]
-        pub fn usb_value<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchConnectionTypeUSB")
+        pub fn usb_value() -> cf::Retained<'static, cf::String> {
+            "MatchConnectionTypeUSB".into()
         }
 
         #[inline]
-        pub fn network_value<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchConnectionTypeNetwork")
+        pub fn network_value() -> cf::Retained<'static, cf::String> {
+            "MatchConnectionTypeNetwork".into()
         }
 
         #[inline]
-        pub fn paired_device_value<'a>() -> cf::Retained<'a, cf::String> {
-            cf::String::from_str_no_copy("MatchConnectionTypePairedDevice")
+        pub fn paired_device_value() -> cf::Retained<'static, cf::String> {
+            "MatchConnectionTypePairedDevice".into()
         }
     }
 }

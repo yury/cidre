@@ -59,7 +59,7 @@ mod tests {
                 2,
                 cf::StringEncoding::UTF8,
                 false,
-                Some(cf::Allocator::null()),
+                cf::Allocator::null(),
             )
             .unwrap();
             // s
