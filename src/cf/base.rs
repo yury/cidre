@@ -127,17 +127,26 @@ impl Null {
 
 define_cf_type!(Allocator(Type));
 
+/// Most of the time when specifying an allocator to Create functions, the None
+/// argument indicates "use the default"; this is the same as using Allocator::default()
+/// or the return value from CFAllocatorGetDefault().  This assures that you will use
+/// the allocator in effect at that time.
 impl Allocator {
+    /// This is a synonym for NULL, if you'd rather use a named constant.
     #[inline]
     pub fn default() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorDefault }
     }
 
+    /// Default system allocator; you rarely need to use this.
     #[inline]
     pub fn system_default() -> &'static Allocator {
         unsafe { kCFAllocatorSystemDefault }
     }
 
+    /// Null allocator which does nothing and allocates no memory. This allocator
+    /// is useful as the `bytes_deallocator` in cf::Data or `contents_deallocator`
+    /// in cf::String where the memory should not be freed.
     #[inline]
     pub fn null() -> &'static Allocator {
         unsafe { kCFAllocatorNull }
@@ -164,3 +173,99 @@ extern "C" {
 }
 
 define_cf_type!(PropertyList(Type));
+
+/// Type to mean any instance of a property list type;
+/// currently, cf::String, cf::Data, cf::Number, cf::Boolean, cf::Date,
+/// cf::Array, and cf::Dictionary.
+impl PropertyList {
+    pub fn try_as_string(&self) -> Option<&crate::cf::String> {
+        if self.get_type_id() == crate::cf::String::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_string(&self) -> &crate::cf::String {
+        assert!(self.get_type_id() == crate::cf::String::type_id());
+        unsafe { transmute(self) }
+    }
+
+    pub fn try_as_data(&self) -> Option<&crate::cf::Data> {
+        if self.get_type_id() == crate::cf::Data::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_data(&self) -> &crate::cf::Data {
+        assert!(self.get_type_id() == crate::cf::Data::type_id());
+        unsafe { transmute(self) }
+    }
+
+    pub fn try_as_number(&self) -> Option<&crate::cf::Number> {
+        if self.get_type_id() == crate::cf::Number::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_number(&self) -> &crate::cf::Number {
+        assert!(self.get_type_id() == crate::cf::Number::type_id());
+        unsafe { transmute(self) }
+    }
+
+    pub fn try_as_boolean(&self) -> Option<&crate::cf::Boolean> {
+        if self.get_type_id() == crate::cf::Boolean::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_boolean(&self) -> &crate::cf::Boolean {
+        assert!(self.get_type_id() == crate::cf::Boolean::type_id());
+        unsafe { transmute(self) }
+    }
+
+    pub fn try_as_date(&self) -> Option<&crate::cf::Date> {
+        if self.get_type_id() == crate::cf::Date::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_date(&self) -> &crate::cf::Date {
+        assert!(self.get_type_id() == crate::cf::Date::type_id());
+        unsafe { transmute(self) }
+    }
+
+    pub fn try_as_array(&self) -> Option<&crate::cf::Array> {
+        if self.get_type_id() == crate::cf::Date::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_array(&self) -> &crate::cf::Array {
+        assert!(self.get_type_id() == crate::cf::Array::type_id());
+        unsafe { transmute(self) }
+    }
+
+    pub fn try_as_dictionary(&self) -> Option<&crate::cf::Dictionary> {
+        if self.get_type_id() == crate::cf::Dictionary::type_id() {
+            Some(unsafe { transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn as_dictionary(&self) -> &crate::cf::Dictionary {
+        assert!(self.get_type_id() == crate::cf::Dictionary::type_id());
+        unsafe { transmute(self) }
+    }
+}

@@ -133,15 +133,34 @@ impl Device {
         unsafe { AMDCreateDeviceList() }
     }
 
-    pub unsafe fn copy_array_of_devices_matching_query<'a>(note: Option<&Notification>, query: cf::Dictionary, out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>) -> Error {
-        AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array) 
+    pub unsafe fn copy_array_of_devices_matching_query<'a>(
+        note: Option<&Notification>,
+        query: cf::Dictionary,
+        out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>,
+    ) -> Error {
+        AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array)
+    }
+
+    pub fn matching_list<'a>(
+        note: Option<&Notification>,
+        query: cf::Dictionary,
+    ) -> Result<Retained<'a, cf::ArrayOf<Device>>, Error> {
+        let mut out_array = None;
+        unsafe {
+            Self::copy_array_of_devices_matching_query(note, query, &mut out_array)
+                .to_result(out_array)
+        }
     }
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
     fn AMDCreateDeviceList<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<Device>>>;
-    fn AMDCopyArrayOfDevicesMatchingQuery<'a>(note: Option<&Notification>, query: cf::Dictionary, out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>) -> Error;
+    fn AMDCopyArrayOfDevicesMatchingQuery<'a>(
+        note: Option<&Notification>,
+        query: cf::Dictionary,
+        out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>,
+    ) -> Error;
 }
 
 impl Notification {
@@ -192,7 +211,7 @@ impl Notification {
 pub struct SubscriptionGuard<'a>(Option<Retained<'a, Notification>>);
 
 impl<'a> SubscriptionGuard<'a> {
-    pub fn note(&self) -> Option<&Notification>{
+    pub fn note(&self) -> Option<&Notification> {
         self.0.as_deref()
     }
 }
@@ -226,6 +245,7 @@ extern "C" {
     ) -> Error;
 
     fn AMDeviceNotificationUnsubscribe(notification: &Notification) -> Error;
+
 }
 
 pub mod matching {
@@ -282,7 +302,7 @@ pub mod matching {
         pub fn network_value<'a>() -> cf::Retained<'a, cf::String> {
             cf::String::from_str_no_copy("MatchConnectionTypeNetwork")
         }
-        
+
         #[inline]
         pub fn paired_device_value<'a>() -> cf::Retained<'a, cf::String> {
             cf::String::from_str_no_copy("MatchConnectionTypePairedDevice")
@@ -308,6 +328,7 @@ mod tests {
             match info.safe() {
                 SafeInfo::Attached(device) => {
                     println!("attached");
+                    println!("{:?}", device.connected().unwrap().name().to_string());
                     device.show()
                 }
                 SafeInfo::Detached(device) => {

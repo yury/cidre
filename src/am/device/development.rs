@@ -1,8 +1,8 @@
-use std::{ffi::c_void, path::PathBuf, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, path::PathBuf};
 
 use crate::cf;
 
-use super::{Device, Error, Connected, Session};
+use super::{Connected, Device, Error, Session};
 
 pub type MountCallback<T> =
     extern "C" fn(status: cf::Retained<'static, cf::Dictionary>, context: *mut T);
@@ -16,6 +16,8 @@ extern "C" {
         callback: MountCallback<c_void>,
         context: *mut c_void,
     ) -> Error;
+
+    fn AMDeviceRelayFile(device: &Device, source: &cf::String, options: &cf::Dictionary) -> Error;
 }
 
 pub fn xcode_dev_path() -> PathBuf {
@@ -77,25 +79,32 @@ impl<'a> Session<'a> {
         self.mound_disk(&cf_image_path, &options)
     }
 
-    pub fn mound_disk(
-        &self,
-        image: &cf::String,
-        options: &cf::Dictionary,
-    ) -> Result<(), Error> {
+    pub fn mound_disk(&self, image: &cf::String, options: &cf::Dictionary) -> Result<(), Error> {
         unsafe {
             extern "C" fn callback(info: cf::Retained<'static, cf::Dictionary>, _ctx: *mut c_void) {
                 println!("!!!!!!");
                 info.show();
             }
-            AMDeviceMountImage(
-                self,
-                image,
-                options,
-                callback as _,
-                std::ptr::null_mut(),
-            )
-            .result()
+            AMDeviceMountImage(self, image, options, callback as _, std::ptr::null_mut()).result()
         }
+    }
+
+    /// Copy a file from the relay service.
+    /// Options must contain:
+    ///
+    /// kAMDRelayTypeKey: one of
+    ///     kAMDRelayTypeFileDescriptor
+    ///     kAMDRelayTypeData
+    ///
+    /// kAMDRelayLocationKey:
+    ///     for kAMDRelayTypeFileDescriptor, this must be a CFNumber containing a file descriptor
+    ///     on Windows, this must be a *file descriptor* that can be passed
+    ///     to the 'write' call; this is not the same as a Windows HANDLE.
+    ///
+    ///     for kAMDRelayTypeData, this must be a CFMutableData; the relayed stream will be appended
+    ///     to that CFMutableData
+    pub fn relay_file(&self, source: &cf::String, options: &cf::Dictionary) -> Error {
+        unsafe { AMDeviceRelayFile(self, source, options) }
     }
 }
 
@@ -120,4 +129,66 @@ pub fn platform_support_path(platform: &str, os_version: &str) -> Option<PathBuf
     }
 
     None
+}
+
+pub mod image_type {
+    use crate::cf;
+
+    #[inline]
+    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("ImageType")
+    }
+
+    #[inline]
+    pub fn developer<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("Developer")
+    }
+
+    #[inline]
+    pub fn debug<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("Debug")
+    }
+
+    #[inline]
+    pub fn factory<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("Factory")
+    }
+}
+
+pub mod signature {
+    use crate::cf;
+
+    #[inline]
+    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("ImageSignature")
+    }
+}
+
+pub mod relay_type {
+
+    use crate::cf;
+
+    #[inline]
+    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("RelayType")
+    }
+
+    #[inline]
+    pub fn file_descriptor<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("RelayTypeFileDescriptor")
+    }
+
+    #[inline]
+    pub fn data<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("RelayTypeData")
+    }
+}
+
+pub mod location {
+    use crate::cf;
+
+    #[inline]
+    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+        cf::String::from_str_no_copy("RelayLocation")
+    }
 }

@@ -1,8 +1,8 @@
 use std::{ffi::c_void, intrinsics::transmute, ops::Deref, path::PathBuf, ptr::NonNull};
 pub mod base;
+pub mod development;
 pub mod discovery;
 pub mod error;
-pub mod development;
 
 pub use base::{Device, Error, Notification};
 pub use discovery::{Action, InterfaceConnectionType, Speed};
@@ -282,7 +282,6 @@ impl<'a> Connected<'a> {
             }
         }
     }
-
 }
 
 impl<'a> Drop for Connected<'a> {
@@ -317,7 +316,6 @@ impl<'a> Session<'a> {
         let name = cf::String::from_str_no_copy("com.apple.debugserver");
         self.secure_start_service(&name)
     }
-
 }
 
 impl<'a> Drop for Session<'a> {
@@ -336,28 +334,8 @@ impl<'a> Deref for Session<'a> {
 
 define_cf_type!(Service(cf::Type));
 
-
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
-    // fn AMDCreateDeviceList<'a>() -> Retained<'a, cf::ArrayOf<Device>>;
-    // fn AMDeviceNotificationSubscribe(
-    //     callback: NotificationCallback<c_void>,
-    //     unused0: u32,
-    //     unused1: u32,
-    //     context: *const c_void,
-    //     notification: &mut Option<&Notification>,
-    // ) -> os::Status;
-
-    // fn AMDeviceNotificationSubscribeWithOptions(
-    //     callback: NotificationCallback<c_void>,
-    //     unused0: u32,
-    //     unused1: u32,
-    //     context: *const c_void,
-    //     notification: &mut Option<&Notification>,
-    //     options: &cf::Dictionary,
-    // ) -> os::Status;
-
-    // fn AMDeviceNotificationUnsubscribe(notification: &Notification) -> os::Status;
     fn AMDeviceGetConnectionID(device: &Device) -> u32;
     fn AMDeviceCopyDeviceIdentifier<'a>(device: &Device) -> Retained<'a, cf::String>;
     fn AMDeviceCopyValue<'a>(
@@ -395,7 +373,7 @@ extern "C" {
     fn AMDeviceSecureStartService<'a>(
         device: &Device,
         service_name: &cf::String,
-        unknwon: *const c_void,
+        ssl: *const c_void,
         service: &Option<Retained<'a, Service>>,
     ) -> os::Status;
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
@@ -466,15 +444,5 @@ mod tests {
     //         session.mount_developer_image().expect("mounted");
     //     }
 
-    // }
-
-    // #[test]
-    // pub fn notification_sub() {
-    //     let notification = Notification::subscribe(notification_callback, std::ptr::null_mut())
-    //         .expect("notification");
-
-    //     // cf::RunLoop::run();
-
-    //     notification.unsubscribe().expect("unsub")
     // }
 }
