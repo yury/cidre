@@ -96,13 +96,13 @@ impl<'a> Session<'a> {
     ///     kAMDRelayTypeFileDescriptor
     ///     kAMDRelayTypeData
     ///
-    /// kAMDRelayLocationKey:
-    ///     for kAMDRelayTypeFileDescriptor, this must be a CFNumber containing a file descriptor
-    ///     on Windows, this must be a *file descriptor* that can be passed
-    ///     to the 'write' call; this is not the same as a Windows HANDLE.
-    ///
-    ///     for kAMDRelayTypeData, this must be a CFMutableData; the relayed stream will be appended
-    ///     to that CFMutableData
+    //// kAMDRelayLocationKey:
+    ////     for kAMDRelayTypeFileDescriptor, this must be a CFNumber containing a file descriptor
+    ////     on Windows, this must be a *file descriptor* that can be passed
+    ////     to the 'write' call; this is not the same as a Windows HANDLE.
+    ////
+    ////     for kAMDRelayTypeData, this must be a CFMutableData; the relayed stream will be appended
+    ////     to that CFMutableData
     pub fn relay_file(&self, source: &cf::String, options: &cf::Dictionary) -> Error {
         unsafe { AMDeviceRelayFile(self, source, options) }
     }

@@ -184,8 +184,8 @@ impl Dictionary {
                 keys.as_ptr() as _,
                 values.as_ptr() as _,
                 N as _,
-                None,
-                None,
+                Some(KeyCallBacks::default()),
+                ValueCallBacks::default(),
             )
         }
     }
@@ -289,6 +289,16 @@ impl Dictionary {
     ) {
         CFDictionaryGetKeysAndValues(self, keys, values)
     }
+
+    #[inline]
+    pub fn copy<'a>(&self) -> Retained<'a, Self> {
+        unsafe { self.copy_in(None).unwrap_unchecked() }
+    }
+
+    #[inline]
+    pub fn copy_in<'a>(&self, allocator: Option<&cf::Allocator>) -> Option<Retained<'a, Self>> {
+        unsafe { CFDictionaryCreateCopy(allocator, self) }
+    }
 }
 
 extern "C" {
@@ -325,22 +335,35 @@ extern "C" {
         values: *const *const c_void,
     );
 
+    fn CFDictionaryCreateCopy<'a>(
+        allocator: Option<&cf::Allocator>,
+        the_dict: &cf::Dictionary,
+    ) -> Option<Retained<'a, cf::Dictionary>>;
+
 }
 
 define_cf_type!(MutableDictionary(Dictionary));
 
 impl MutableDictionary {
-    pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<'a, Self>> {
-        Self::create(None, capacity as _, None, None)
+    pub fn with_capacity<'a>(capacity: usize) -> Retained<'a, Self> {
+        unsafe {
+            Self::create(
+                None,
+                capacity as _,
+                Some(KeyCallBacks::default()),
+                ValueCallBacks::default(),
+            )
+            .unwrap_unchecked()
+        }
     }
 
-    pub fn create<'a>(
+    pub unsafe fn create<'a>(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
     ) -> Option<Retained<'a, Self>> {
-        unsafe { CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks) }
+        CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
     }
 
     pub fn insert(&mut self, key: &cf::String, value: &cf::Type) {

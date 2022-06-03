@@ -5,7 +5,7 @@ pub mod discovery;
 pub mod error;
 
 pub use base::{Device, Error, Notification};
-pub use discovery::{Action, InterfaceConnectionType, Speed};
+pub use discovery::{Action, InterfaceConnectionType, QueryBuilder, Speed};
 
 use crate::{
     cf::{self, Retained},

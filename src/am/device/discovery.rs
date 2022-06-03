@@ -133,21 +133,65 @@ impl Device {
         unsafe { AMDCreateDeviceList() }
     }
 
+    /// use am::DeviceQueryBuilder
     pub unsafe fn copy_array_of_devices_matching_query<'a>(
         note: Option<&Notification>,
-        query: cf::Dictionary,
+        query: &cf::Dictionary,
         out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>,
     ) -> Error {
         AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array)
     }
+}
+
+pub struct QueryBuilder {
+    query: Retained<'static, cf::MutableDictionary>,
+}
+
+impl QueryBuilder {
+    pub fn new(matching_mode: &cf::String) -> Self {
+        let mut query = cf::MutableDictionary::with_capacity(3);
+
+        query.insert(&matching::mode::key(), matching_mode);
+
+        Self { query }
+    }
+
+    pub fn udids(&mut self, udids: &[&str]) -> &mut Self {
+        let mut array = cf::MutableArray::with_capacity(udids.len() as _).unwrap();
+        for u in udids {
+            let s = cf::String::from_str(u);
+            array.append(&s);
+        }
+        self.query.insert(&matching::criteria::udid_key(), &array);
+        self
+    }
+
+    pub fn connection(&mut self, connection_type: InterfaceConnectionType) -> &mut Self {
+        let value = match connection_type {
+            InterfaceConnectionType::Invalid | InterfaceConnectionType::Any => {
+                self.query
+                    .remove(&matching::criteria::connection_type_key());
+                return self;
+            }
+            InterfaceConnectionType::Direct => matching::criteria::usb_value(),
+            InterfaceConnectionType::Inderect => matching::criteria::network_value(),
+            InterfaceConnectionType::Proxied => matching::criteria::paired_device_value(),
+        };
+
+        self.query
+            .insert(&matching::criteria::connection_type_key(), &value);
+        self
+    }
 
     pub fn matching_list<'a>(
+        &self,
         note: Option<&Notification>,
-        query: cf::Dictionary,
     ) -> Result<Retained<'a, cf::ArrayOf<Device>>, Error> {
         let mut out_array = None;
         unsafe {
-            Self::copy_array_of_devices_matching_query(note, query, &mut out_array)
+            let query = self.query.copy();
+            query.show();
+            Device::copy_array_of_devices_matching_query(note, &query, &mut out_array)
                 .to_result(out_array)
         }
     }
@@ -158,7 +202,7 @@ extern "C" {
     fn AMDCreateDeviceList<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<Device>>>;
     fn AMDCopyArrayOfDevicesMatchingQuery<'a>(
         note: Option<&Notification>,
-        query: cf::Dictionary,
+        query: &cf::Dictionary,
         out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>,
     ) -> Error;
 }
@@ -317,7 +361,7 @@ mod tests {
     use crate::{
         am::{
             self,
-            device::discovery::{NotificationInfo, SafeInfo},
+            device::discovery::{matching, NotificationInfo, SafeInfo},
         },
         cf,
     };
@@ -354,5 +398,15 @@ mod tests {
         .unwrap();
 
         cf::RunLoop::run_in_mode(cf::RunLoopMode::default(), 0.5, false);
+    }
+
+    #[test]
+    fn filters() {
+        let list = am::DeviceQueryBuilder::new(&matching::mode::wildcard_value())
+            // .connection(am::DeviceInterfaceConnectionType::Direct)
+            .matching_list(None)
+            .unwrap();
+
+        list.show();
     }
 }
