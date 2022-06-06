@@ -6,6 +6,7 @@ use crate::ns::Id;
 
 use super::Texture;
 
+#[derive(Debug, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum LoadAction {
     DontCare = 0,
@@ -13,13 +14,55 @@ pub enum LoadAction {
     Clear = 2,
 }
 
+/// Types of actions performed for an attachment at the end of a rendering pass.
+#[derive(Debug, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreAction {
+    /// The GPU has permission to discard the rendered contents of the attachment
+    /// at the end of the render pass, replacing them with arbitrary data.
+    ///
+    /// Use this option when you need the attachment’s contents during the render pass
+    /// but not afterwards. Some GPUs may still store the contents back to the texture,
+    /// but you can’t rely on that behavior. You must assume that GPU discarded
+    /// the texture’s contents.
     DontCare = 0,
+    /// The GPU stores the rendered contents to the texture.
     Store = 1,
+
+    /// The GPU resolves the multisampled data to one sample per pixel and stores the data
+    /// to the resolve texture, discarding the multisample data afterwards.
+    ///
+    /// Use this option when you need to resolve the multisample attachment’s contents
+    /// at the end of the render pass but don’t need the multisample data afterwards.
+    /// Some GPUs may still store the multisample data back to the texture, but you
+    /// can’t rely on that behavior. You must assume that GPU discarded the multisample
+    /// texture’s contents.
     MultisampleResolve = 2,
+
+    /// The GPU stores the multisample data to the multisample texture, resolves the data
+    /// to a sample per pixel, and stores the data to the resolve texture.
     StoreAndMultisampleResolve = 3,
+
+    /// The app will specify the store action when it encodes the render pass.
+    ///
+    /// Use this action only if you can’t determine the store action when you
+    /// are creating the render pass descriptor. You must specify a store action
+    /// before you finish encoding commands into the render command encoder.
+    /// Refer to the `mtl::RenderCommandEncoder` and `mtl::ParallelRenderCommandEncoder`
+    /// protocol references for further information
     Unknown = 4,
+
+    /// The GPU stores depth data in a sample-position–agnostic representation.
+    ///
+    /// You can only set this action on a MTLRenderPassDepthAttachmentDescriptor object.
+    ///
+    /// Set this action when you need to read the depth data in a subsequent render pass
+    /// or blit operation that is unaware of the programmable sample positions used to generate the data.
+    ///
+    /// If you specify this action, Metal may decompress the depth render target
+    /// and store the resulting data in its decompressed form. If you don't change
+    /// programmable sample positions in a subsequent render pass, use `StoreAction::Store`
+    /// instead to improve performance.
     CustomSampleDepthStore = 5,
 }
 

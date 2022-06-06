@@ -32,10 +32,11 @@ pub struct Buffer<const N: usize> {
     pub data: [u8; N],
 }
 
+/// A variable length array of AudioBuffer structures.
 #[repr(C)]
 pub struct BufferList<const L: usize, const N: usize> {
     pub number_buffers: u32,
-    /// this is a variable length array of mNumberBuffers elements
+    /// this is a variable length array of `number_buffers` elements
     pub buffers: [Buffer<N>; L],
 }
 
