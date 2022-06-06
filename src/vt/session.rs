@@ -1,9 +1,10 @@
 use crate::{
     cf::{self, Retained},
-    os,
+    define_cf_type, os,
 };
 
-pub type Session = cf::Type;
+// pub type Session = cf::Type;
+define_cf_type!(Session(cf::Type));
 
 impl Session {
     #[inline]

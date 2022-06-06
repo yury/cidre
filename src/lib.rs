@@ -11,8 +11,9 @@ pub mod cf;
 pub mod cg;
 /// Core Media
 pub mod cm;
-/// Core Vieo
+/// Core Video
 pub mod cv;
+/// Grand Central Dispatch
 pub mod dispatch;
 /// IOSurface
 pub mod io;
@@ -30,11 +31,15 @@ pub mod vt;
 #[cfg(target_os = "macos")]
 pub mod sc;
 
+/// Apple Mobile
 #[cfg(target_os = "macos")]
 pub mod am;
+/// AudioVisual Foundation (AVFoundation)
 pub mod av;
-// CoreAudioTypes
+
+/// Audio Toolkit
 pub mod at;
+/// CoreAudioTypes
 pub mod cat;
 
 #[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]

@@ -4,7 +4,7 @@ use super::{
     runtime::{Retained, Type},
     String,
 };
-use std::{cmp::Ordering, ffi::c_void, intrinsics::transmute};
+use std::{cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
 
 pub type Index = isize;
 pub type TypeId = usize;
@@ -118,6 +118,16 @@ impl Type {
     }
 }
 
+impl Debug for Type {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let desc = self
+            .copy_description()
+            .map(|f| f.to_string())
+            .unwrap_or_else(|| "no desc".to_string());
+        f.debug_tuple("cf::Type").field(&desc).finish()
+    }
+}
+
 impl Null {
     #[inline]
     pub fn value() -> &'static Null {
@@ -145,7 +155,7 @@ impl Allocator {
     }
 
     /// Null allocator which does nothing and allocates no memory. This allocator
-    /// is useful as the `bytes_deallocator` in cf::Data or `contents_deallocator`
+    /// is useful as the `bytes_deallocator` in [`cf::Data`] or `contents_deallocator`
     /// in cf::String where the memory should not be freed.
     #[inline]
     pub fn null() -> Option<&'static Allocator> {
