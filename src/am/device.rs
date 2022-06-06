@@ -3,14 +3,17 @@ pub mod base;
 pub mod development;
 pub mod discovery;
 pub mod error;
+pub mod installation;
 
 pub use base::{Device, Error, Notification};
 pub use discovery::{Action, InterfaceConnectionType, QueryBuilder, Speed};
 
 use crate::{
     cf::{self, Retained},
-    define_cf_type, os,
+    os,
 };
+
+use self::base::ServiceConnection;
 
 impl Device {
     pub fn connection_id(&self) -> u32 {
@@ -21,22 +24,42 @@ impl Device {
         unsafe { AMDeviceCopyDeviceIdentifier(self) }
     }
 
-    pub fn connected(&self) -> Result<Connected, os::Status> {
+    /// Connect to the mobile device.
+    ///
+    /// If you are already connected, this function will attempt to
+    /// verify that the connection is still open.
+    ///
+    /// Returns Error::WRONG_DROID if the device is in the restore OS.
+    pub fn connected(&self) -> Result<Connected, Error> {
         unsafe {
             AMDeviceConnect(&self).result()?;
             Ok(Connected(self))
         }
     }
 
+    /// Checks to see whether or not we are paired with the device.
+    ///
+    /// Only checks locally. May return true even if not paired. This may happen if the
+    /// device has recently been restored. Use AMDeviceValidatePair() to confer with device
+    /// about pair-ed-ness. Can be done without having a session.
+    ///
+    /// FOR ALMOST ALL USAGES, am::Device::validate_pairing() IS BETTER!
+    ///
     pub fn is_paired(&self) -> bool {
-        unsafe { AMDeviceIsPaired(self).is_ok() }
+        unsafe { AMDeviceIsPaired(self) == 1 }
     }
 
-    pub fn pair(&self) -> Result<(), os::Status> {
+    /// Create a pairing relationship with an iOS device
+    /// This is equivalent to calling AMDevicePairWithOptions with options set to NULL
+    pub fn pair(&self) -> Result<(), Error> {
         unsafe { AMDevicePair(self).result() }
     }
 
-    pub fn validate_pairing(&self) -> Result<(), os::Status> {
+    /// Validate the pairing with the device.
+    ///
+    /// Checks to see if the host and device are paired. Prefer this to am::Device::is_paired().
+    /// On success, the device will also be notified that it is attached to a Trusted Host.
+    pub fn validate_pairing(&self) -> Result<(), Error> {
         unsafe { AMDeviceValidatePairing(self).result() }
     }
 
@@ -149,6 +172,47 @@ impl<'a> Connected<'a> {
         AMDeviceCopyValue(self.0, domain, key)
     }
 
+    ///
+    /// Copy a value from the device
+    /// @param device The device to copy from
+    /// @param domain The domain to query. May be NULL.
+    /// @param key The key to query. May be NULL.
+    /// @param error_out On return, an error code describing the result of the operation. May be NULL.
+    /// @result A new plist value, or NULL.
+    ///
+    /// Copies a value from the lockdown property store. A key argument of NULL asks for the
+    /// contents of the whole domain. A domain argument of NULL asks for the global domain.
+    /// Some properties are unavailable outside of a session.
+    ///
+    /// Returns kAMDDeviceDisconnectedError is the device is no longer attached.
+    /// Returns kAMDInvalidArgumentError if device is not a valid device ref, or if domain or key arguments are
+    /// non-NULL and not string.
+    ///
+    pub unsafe fn copy_value_with_error<'b>(
+        &self,
+        domain: Option<&cf::String>,
+        key: Option<&cf::String>,
+        error_out: &mut Option<Error>,
+    ) -> Option<cf::Retained<'b, cf::PropertyList>> {
+        AMDeviceCopyValueWithError(self, domain, key, error_out)
+    }
+
+    pub fn try_value(
+        &self,
+        domain: Option<&cf::String>,
+        key: Option<&cf::String>,
+    ) -> Result<cf::Retained<cf::PropertyList>, Error> {
+        let mut error_out = None;
+        unsafe {
+            let value = self.copy_value_with_error(domain, key, &mut error_out);
+            if let Some(error) = error_out {
+                Err(error)
+            } else {
+                Ok(value.unwrap_unchecked())
+            }
+        }
+    }
+
     pub fn domain_value<'b>(&self, domain: &cf::String) -> Option<Retained<'b, cf::Type>> {
         unsafe { self.copy_value(Some(domain), None) }
     }
@@ -199,7 +263,17 @@ impl<'a> Connected<'a> {
         unsafe { transmute(v) }
     }
 
-    pub fn start_session(&self) -> Result<Session, os::Status> {
+    /// Start a session with the device.
+    ///
+    /// You must have paired with the device before you can start a session.
+    /// A return value of kAMDInvalidPairRecordError is possible if the pair records have
+    /// been damaged. In this case the pairing records will be discarded and the
+    /// device connection will be shut down.
+    ///
+    /// To recover: AMDeviceConnect(), AMDeviceUnpair(), AMDevicePair() and try to start
+    /// a session again.
+    pub fn start_session(&self) -> Result<Session, Error> {
+        self.validate_pairing()?;
         unsafe {
             match AMDeviceStartSession(self.0).result() {
                 Err(e) => Err(e),
@@ -226,10 +300,40 @@ impl<'a> Deref for Connected<'a> {
 pub struct Session<'a>(&'a Connected<'a>);
 
 impl<'a> Session<'a> {
+    /// Securely start a service on the device specifying options.
+    ///
+    /// Starts a service on the device. Requires that a session with the device be active.
+    /// Attempting to start a service without an active session will result in kAMDInvalidArgumentError.
+    /// Fails with kAMDNoWifiSyncSupportError if the device side service does not support SSL.
+    /// Fails with kAMDServiceProhibitedError if the service is not allowed to run. Some services are
+    /// only allowed to run when a device has been activated.
+    ///
+    /// The device may request that a connection be encrypted. If so, this call will also perform
+    /// the initial SSL handshake. See <MobileDevice/AMDServiceConnection.h> for more information
+    /// on using the service connection.
+    ///
+    /// # Options
+    ///
+    /// kAMDServiceOptionTimeoutConnection - The service connection will have SO_SNDTIMEO and
+    /// SO_RCVTIMEO set. It will be closed if either input or output operations fail to
+    /// complete within 25 seconds (use carefully if you expect your service to perform
+    /// long-lived operations on your behalf). Valid values are boolean true or false.
+    /// This is off by default.
+    ///
+    /// kAMDServiceOptionUnlockEscrowBag - Attempt the passcode-unlock the device when starting
+    /// a service.
+    ///
+    /// kAMDOptionCloseOnInvalidate - The returned service connection will take ownership of
+    /// the underlying file descriptor and SSL context. Manually closing the fd or SSL_free()'ing
+    /// the ssl context will result in an double free()s and close()s when the service connection
+    /// object is invalidate or ultimately released. Valid values are boolean true or false.
+    /// This is on by default.
+    ///
+    /// On success, the AMDServiceConnection returned in service_out must be CFRelease()'d by the caller.
     pub fn secure_start_service<'b>(
         &self,
         name: &cf::String,
-    ) -> Result<Retained<'b, Service>, os::Status> {
+    ) -> Result<Retained<'b, ServiceConnection>, Error> {
         unsafe {
             let mut service = None;
             AMDeviceSecureStartService(self, name, std::ptr::null(), &mut service)
@@ -237,9 +341,16 @@ impl<'a> Session<'a> {
         }
     }
 
-    pub fn start_debug_server<'b>(&self) -> Result<Retained<'b, Service>, os::Status> {
+    pub fn start_debug_server<'b>(&self) -> Result<Retained<'b, ServiceConnection>, Error> {
         let name = cf::String::from_str_no_copy("com.apple.debugserver");
+        // let name = cf::String::from_str("com.apple.debugserver.applist");
         self.secure_start_service(&name)
+    }
+
+    pub fn battery_level<'b>(&self) -> Option<cf::Retained<'b, cf::Number>> {
+        let domain: cf::Retained<_> = "com.apple.mobile.battery".into();
+        let key: cf::Retained<_> = "BatteryCurrentCapacity".into();
+        unsafe { transmute(self.copy_value(Some(&domain), Some(&key))) }
     }
 }
 
@@ -257,8 +368,6 @@ impl<'a> Deref for Session<'a> {
     }
 }
 
-define_cf_type!(Service(cf::Type));
-
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
     fn AMDeviceGetConnectionID(device: &Device) -> u32;
@@ -268,12 +377,12 @@ extern "C" {
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
     ) -> Option<Retained<'a, cf::Type>>;
-    fn AMDeviceConnect(device: &Device) -> os::Status;
+    fn AMDeviceConnect(device: &Device) -> Error;
     fn AMDeviceDisconnect(device: &Device) -> os::Status;
-    fn AMDeviceIsPaired(device: &Device) -> os::Status;
-    fn AMDevicePair(device: &Device) -> os::Status;
-    fn AMDeviceValidatePairing(device: &Device) -> os::Status;
-    fn AMDeviceStartSession(device: &Device) -> os::Status;
+    fn AMDeviceIsPaired(device: &Device) -> u32;
+    fn AMDevicePair(device: &Device) -> Error;
+    fn AMDeviceValidatePairing(device: &Device) -> Error;
+    fn AMDeviceStartSession(device: &Device) -> Error;
     fn AMDeviceStopSession(device: &Device) -> os::Status;
     fn AMDeviceSecureInstallApplication(
         zero: i32,
@@ -299,8 +408,15 @@ extern "C" {
         device: &Device,
         service_name: &cf::String,
         ssl: *const c_void,
-        service: &Option<Retained<'a, Service>>,
-    ) -> os::Status;
+        service: &Option<Retained<'a, ServiceConnection>>,
+    ) -> Error;
+
+    fn AMDeviceCopyValueWithError<'a>(
+        device: &Device,
+        domain: Option<&cf::String>,
+        key: Option<&cf::String>,
+        error_out: &mut Option<Error>,
+    ) -> Option<cf::Retained<'a, cf::PropertyList>>;
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }

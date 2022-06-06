@@ -23,9 +23,8 @@ pub use queue::Queue;
 pub mod semaphore;
 pub use semaphore::Semaphore;
 
+#[inline]
 pub fn main() {
-    let id = std::thread::current().id();
-    println!("{:?}", id);
     unsafe { dispatch_main() }
 }
 

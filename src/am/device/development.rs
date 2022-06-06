@@ -4,8 +4,7 @@ use crate::cf;
 
 use super::{Connected, Device, Error, Session};
 
-pub type MountCallback<T> =
-    extern "C" fn(status: cf::Retained<'static, cf::Dictionary>, context: *mut T);
+pub type MountCallback<T> = extern "C" fn(status: &cf::Dictionary, context: *mut T);
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -13,7 +12,7 @@ extern "C" {
         device: &Device,
         image_path: &cf::String,
         options: &cf::Dictionary,
-        callback: MountCallback<c_void>,
+        callback: *const MountCallback<c_void>,
         context: *mut c_void,
     ) -> Error;
 
@@ -44,7 +43,7 @@ impl<'a> Session<'a> {
         &self,
         image: &cf::String,
         options: &cf::Dictionary,
-        callback: MountCallback<T>,
+        callback: *const MountCallback<T>,
         ctx: *mut T,
     ) -> Error {
         AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
@@ -61,18 +60,12 @@ impl<'a> Session<'a> {
         let sig = std::fs::read(sig_image_path).expect("sig file read");
         let sig = cf::Retained::from(&sig[..]);
 
-        let image_type_key = cf::String::from_str("ImageType");
-        let image_type_value = cf::String::from_str("Developer");
         let image_sig_key = cf::String::from_str("ImageSignature");
         let options = cf::Dictionary::with_keys_values(
-            &[&image_type_key, &image_sig_key],
-            &[&image_type_value, &sig],
+            &[&image_type::key(), &image_sig_key],
+            &[&image_type::developer(), &sig],
         )
         .expect("options for mount created");
-
-        image_type_key.show();
-        options.show();
-        sig.show();
 
         let path = image_path.to_str().unwrap();
         let ref cf_image_path = cf::String::from_str_no_copy(&path);
@@ -80,12 +73,18 @@ impl<'a> Session<'a> {
     }
 
     pub fn mound_disk(&self, image: &cf::String, options: &cf::Dictionary) -> Result<(), Error> {
+        extern "C" fn mount_cb(status: &cf::Dictionary, context: *mut c_void) {
+            status.show();
+            println!("satus rc: {:?}", status.retain_count())
+        }
         unsafe {
-            extern "C" fn callback(info: cf::Retained<'static, cf::Dictionary>, _ctx: *mut c_void) {
-                println!("!!!!!!");
-                info.show();
-            }
-            AMDeviceMountImage(self, image, options, callback as _, std::ptr::null_mut()).result()
+            self.mound_disk_with_callback::<c_void>(
+                image,
+                options,
+                mount_cb as _,
+                std::ptr::null_mut(),
+            )
+            .result()
         }
     }
 
@@ -170,17 +169,17 @@ pub mod relay_type {
 
     #[inline]
     pub fn key<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("RelayType")
+        "RelayType".into()
     }
 
     #[inline]
     pub fn file_descriptor<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("RelayTypeFileDescriptor")
+        "RelayTypeFileDescriptor".into()
     }
 
     #[inline]
     pub fn data<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("RelayTypeData")
+        "RelayTypeData".into()
     }
 }
 
@@ -189,6 +188,6 @@ pub mod location {
 
     #[inline]
     pub fn key<'a>() -> cf::Retained<'a, cf::String> {
-        cf::String::from_str_no_copy("RelayLocation")
+        "RelayLocation".into()
     }
 }

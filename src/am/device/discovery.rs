@@ -146,6 +146,16 @@ pub struct QueryBuilder {
 }
 
 impl QueryBuilder {
+    pub fn new_match_all() -> Self {
+        Self::new(&matching::mode::all_value())
+    }
+    pub fn new_match_any() -> Self {
+        Self::new(&matching::mode::any_value())
+    }
+    pub fn new_match_wildcard() -> Self {
+        Self::new(&matching::mode::wildcard_value())
+    }
+
     pub fn new(matching_mode: &cf::String) -> Self {
         let mut query = cf::MutableDictionary::with_capacity(3);
 

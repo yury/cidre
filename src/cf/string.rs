@@ -225,6 +225,34 @@ impl String {
     }
 }
 
+/// ```
+/// use cidre::{cfstr, cf};
+///
+/// let s = cfstr!("nice");
+/// s.show();
+///
+/// assert_eq!(s.to_string(), "nice".to_string());
+/// ```
+#[macro_export]
+macro_rules! cfstr {
+    ($f:literal) => {
+        unsafe {
+            // TODO: becnhamrk and mem usage
+            // https://opensource.apple.com/source/CF/CF-855.17/CFString.c
+            extern "C" {
+                fn __CFStringMakeConstantString(
+                    str: *const std::os::raw::c_char,
+                ) -> &'static crate::cf::String;
+            }
+
+            __CFStringMakeConstantString(
+                std::ffi::CStr::from_bytes_with_nul_unchecked(concat!($f, "\0").as_bytes())
+                    .as_ptr(),
+            )
+        }
+    };
+}
+
 impl<'a> From<&'a String> for Cow<'a, str> {
     fn from(cfstr: &'a String) -> Self {
         unsafe {
@@ -382,6 +410,8 @@ extern "C" {
         max_buflen: Index,
         used_buf_len: *mut Index,
     ) -> Index;
+
+    // fn __CFStringMakeConstantString(str: *const c_char) -> &'static String;
 }
 
 impl From<&'static str> for Retained<'static, String> {
@@ -409,5 +439,15 @@ mod tests {
         assert_eq!(s.get_length(), 5);
         let std_str = s.to_string();
         assert_eq!(std_str.chars().count(), 5);
+    }
+
+    #[test]
+    fn macro_cfstr() {
+        let s = cfstr!("nice");
+        println!("rt {}", s.retain_count());
+        s.show();
+        s.show_str();
+
+        assert_eq!(s.to_string(), "nice".to_string());
     }
 }
