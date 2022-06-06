@@ -23,9 +23,9 @@ fn main() {
         device::Position::Front,
     );
 
-    println!("devices {:?}", discrover_session.devices().len());
+    println!("devices {:?}", discrover_session.devices());
 
-    let device_id = device.unique_id().to_string();
+    let device_id = device.unique_id();
     println!("device id: {:?}", device_id);
     let formats = device.formats();
     for f in formats.iter() {

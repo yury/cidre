@@ -51,12 +51,6 @@ impl Boolean {
     }
 }
 
-impl std::fmt::Debug for Boolean {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{:?}", self.value()))
-    }
-}
-
 impl From<Boolean> for bool {
     #[inline]
     fn from(cf: Boolean) -> Self {

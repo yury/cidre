@@ -30,6 +30,7 @@ impl Callbacks {
 
 define_cf_type!(Array(Type));
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct ArrayOf<T>(Array, PhantomData<T>);
 

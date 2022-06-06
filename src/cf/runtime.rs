@@ -109,6 +109,7 @@ impl Release for Type {
 #[macro_export]
 macro_rules! define_cf_type {
     ($NewType:ident($BaseType:path)) => {
+        #[derive(Debug)]
         #[repr(transparent)]
         pub struct $NewType($BaseType);
 

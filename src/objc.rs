@@ -81,6 +81,13 @@ impl Release for Id {
     }
 }
 
+impl std::fmt::Debug for Id {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let desc = self.as_type_ref().copy_description().map(|f| f.to_string()).unwrap_or_else(|| "no desc".to_string());
+        f.debug_tuple("NS").field(&desc).finish()
+    }
+}
+
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Sel(NonNull<c_void>);
@@ -141,6 +148,7 @@ extern "C" {
 #[macro_export]
 macro_rules! define_obj_type {
     ($NewType:ident($BaseType:path)) => {
+        #[derive(Debug)]
         #[repr(transparent)]
         pub struct $NewType($BaseType);
 
@@ -180,6 +188,16 @@ macro_rules! define_obj_type {
                 unsafe { crate::objc::Id::retain(self) }
             }
         }
+
+        // impl std::fmt::Debug for $NewType {
+        //     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        //         let desc = self
+        //             .copy_description()
+        //             .map(|f| f.to_string())
+        //             .unwrap_or_else(|| "no desc".to_string());
+        //         f.debug_tuple("cf::Type").field(&desc).finish()
+        //     }
+        // }
     };
 }
 

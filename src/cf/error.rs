@@ -51,16 +51,16 @@ impl Error {
     }
 }
 
-impl Debug for Error {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let desc: &cf::String = &self.copy_description();
-        fmt.debug_struct("Error")
-            .field("code", &self.get_code())
-            .field("domain", &Cow::from(self.get_domain()))
-            .field("desc", &Cow::from(desc))
-            .finish()
-    }
-}
+// impl Debug for Error {
+//     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         let desc: &cf::String = &self.copy_description();
+//         fmt.debug_struct("Error")
+//             .field("code", &self.get_code())
+//             .field("domain", &Cow::from(self.get_domain()))
+//             .field("desc", &Cow::from(desc))
+//             .finish()
+//     }
+// }
 
 extern "C" {
     static kCFErrorDomainPOSIX: &'static Domain;
