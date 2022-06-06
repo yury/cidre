@@ -456,6 +456,7 @@ impl TimeStampFlags {
         Self(Self::SAMPLE_TIME_VALID.0 | Self::HOST_TIME_VALID.0);
 }
 
+/// This structure is used to describe codecs installed on the system.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
 pub struct ClassDescription {
@@ -618,6 +619,8 @@ impl ChannelLabel {
     pub const END_RESERVED: Self = Self(0xFFFFFFFE);
 }
 
+/// These constants are for use in the mChannelBitmap field of an
+/// AudioChannelLayout structure
 #[repr(transparent)]
 pub struct ChannelBitmap(pub u32);
 
@@ -672,6 +675,8 @@ impl ChannelFlags {
     pub const METERS: Self = Self(1u32 << 2);
 }
 
+/// Constants for indexing the mCoordinates array in an AudioChannelDescription
+/// structure.
 #[repr(transparent)]
 pub struct ChannelCoordinateIndex(pub u32);
 
