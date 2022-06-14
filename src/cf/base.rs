@@ -1,4 +1,4 @@
-use crate::define_cf_type;
+use crate::{define_cf_type, define_options};
 
 use super::{
     runtime::{Retained, Type},
@@ -10,7 +10,12 @@ pub type Index = isize;
 pub type TypeId = usize;
 pub type HashCode = usize;
 
-pub type OptionFlags = usize;
+define_options!(OptionFlags(usize));
+
+impl OptionFlags {
+    pub const NONE: Self = Self(0);
+}
+
 
 pub type ComparatorFunction = extern "C" fn(
     val1: *const c_void,

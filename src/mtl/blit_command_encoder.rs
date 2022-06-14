@@ -1,17 +1,18 @@
 use crate::{
-    define_mtl, define_obj_type,
+    define_mtl, define_obj_type, define_options,
     ns::{self, Range},
     objc::Id,
 };
 
 use super::{Buffer, CommandEncoder, IndirectCommandBuffer, Origin, Size, Texture};
 
-#[repr(usize)]
-pub enum BlitOption {
-    None = 0,
-    DepthFromDepthStencil = 1 << 0,
-    StencilFromDepthStencil = 1 << 1,
-    RowLinearPVRTC = 1 << 2,
+define_options!(BlitOption(usize));
+
+impl BlitOption {
+    pub const NONE: Self = Self(0);
+    pub const DEPTH_FROM_DEPTH_STENCIL: Self = Self(1 << 0);
+    pub const STENCIL_FROM_DEPTH_STENCIL: Self = Self(1 << 1);
+    pub const ROW_LINEAR_PVRTC: Self = Self(1 << 2);
 }
 
 define_obj_type!(BlitCommandEncoder(CommandEncoder));

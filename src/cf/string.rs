@@ -3,7 +3,7 @@ use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
 
 use super::{Allocator, Index, OptionFlags, Range, Retained, Type, TypeId};
 
-use crate::{define_cf_type, UniChar};
+use crate::{define_cf_type, UniChar, define_options};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
@@ -14,20 +14,20 @@ impl Encoding {
     pub const UTF8: Self = Self(0x08000100);
 }
 
-#[repr(transparent)]
-pub struct CompareFlags(OptionFlags);
+define_options!(CompareFlags(OptionFlags));
 
 impl CompareFlags {
-    pub const NONE: Self = Self(0);
-    pub const CASE_INSENSITIVE: Self = Self(1);
-    pub const BACKWARDS: Self = Self(4);
-    pub const ANCHORED: Self = Self(8);
-    pub const NON_LITERAL: Self = Self(16);
-    pub const LOCALIZED: Self = Self(32);
-    pub const NUMERACALLY: Self = Self(64);
-    pub const DIACRITIC_INSENITIVE: Self = Self(128);
-    pub const WIDTH_INSENSITIVE: Self = Self(256);
-    pub const FORCED_ORDERING: Self = Self(512);
+    pub const NONE: Self = Self(OptionFlags(0));
+
+    pub const CASE_INSENSITIVE: Self = Self(OptionFlags(1));
+    pub const BACKWARDS: Self = Self(OptionFlags(4));
+    pub const ANCHORED: Self = Self(OptionFlags(8));
+    pub const NON_LITERAL: Self = Self(OptionFlags(16));
+    pub const LOCALIZED: Self = Self(OptionFlags(32));
+    pub const NUMERACALLY: Self = Self(OptionFlags(64));
+    pub const DIACRITIC_INSENITIVE: Self = Self(OptionFlags(128));
+    pub const WIDTH_INSENSITIVE: Self = Self(OptionFlags(256));
+    pub const FORCED_ORDERING: Self = Self(OptionFlags(512));
 }
 
 define_cf_type!(String(Type));

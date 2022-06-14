@@ -1,4 +1,4 @@
-use std::{borrow::Cow, fmt::Debug, intrinsics::transmute};
+use std::{fmt::Debug, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},

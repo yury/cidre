@@ -1,7 +1,7 @@
 use crate::{
     cf::{self, Retained, Type},
     define_cf_type,
-    sys::_types::MachPort,
+    sys::_types::MachPort, define_options,
 };
 
 pub type Id = u32;
@@ -44,11 +44,24 @@ pub enum Subsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-#[repr(transparent)]
-pub struct LockOptions(pub cf::OptionFlags);
+// #[repr(transparent)]
+// pub struct LockOptions(pub u32);
+define_options!(LockOptions(u32));
 
 impl LockOptions {
+    /// If you are not going to modify the data while you hold the lock,
+    /// you should set this flag to avoid invalidating
+    /// any existing caches of the buffer contents.
+    /// 
+    /// This flag should be passed both to the lock and unlock functions.
+    /// Non-symmetrical usage of this flag will result in undefined behavior.
     pub const READ_ONLY: Self = Self(1);
+
+    /// If you want to detect/avoid a potentially expensive paging operation
+    /// (such as readback from a GPU to system memory)
+    /// when you lock the buffer, you may include this flag.
+    /// If locking the buffer requires a readback, the lock will
+    /// fail with an error return of kIOReturnCannotLock.
     pub const AVOID_SYNC: Self = Self(2);
 }
 
@@ -93,7 +106,7 @@ impl Surface {
     ///
     /// let props = surf.all_values().unwrap();
     /// props.show();
-    /// assert_eq!(1, props.len());
+    /// assert!(props.len() >= 1);
     /// ```
     pub fn create<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>> {
         unsafe { IOSurfaceCreate(properties) }

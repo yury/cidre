@@ -9,20 +9,20 @@ impl<'a> Session<'a> {
     /// identifier and the value is the Info.plist of the installed application.
     ///
     /// The client can specify options to filter the results.
-    /// If the value of kLookupApplicationTypeKey is:
-    ///     kApplicationTypeAny: All application types are returned.
-    ///     kApplicationTypeSystem: Only applications installed with the OS are returned.
-    ///     kApplicationTypeUser: Only third party applications are returned.
-    ///
+    //// If the value of kLookupApplicationTypeKey is:
+    ////     kApplicationTypeAny: All application types are returned.
+    ////     kApplicationTypeSystem: Only applications installed with the OS are returned.
+    ////     kApplicationTypeUser: Only third party applications are returned.
+    ////
     /// If the value of kLookupAttributeKey is:
-    ///     kAttributeHasSettingsBundle: Only applications with the "HasSettingsBundle" attribute are returned.
-    ///     kAttributeHasSettingsBundleIcon: Only applications with the "HasSettingsBundleIcon" attribute are returned.
-    ///
-    ///     kLookupBundleIDsKey
-    ///         CFString or array of strings that indicate the bundle IDs to lookup
-    ///     kLookupReturnAttributesKey
-    ///         CFString or array of strings indicating which of the keys from the Info.plist should be returned
-    ///
+    ////    kAttributeHasSettingsBundle: Only applications with the "HasSettingsBundle" attribute are returned.
+    ////     kAttributeHasSettingsBundleIcon: Only applications with the "HasSettingsBundleIcon" attribute are returned.
+    ////
+    ////     kLookupBundleIDsKey
+    ////         CFString or array of strings that indicate the bundle IDs to lookup
+    ////     kLookupReturnAttributesKey
+    ////         CFString or array of strings indicating which of the keys from the Info.plist should be returned
+    ////
     /// IMPORTANT NOTE:
     /// You should specify kLookupReturnAttributesKey in the options dictionary with an array value containing those
     /// keys you would like returned. If you do not specify this attribute, MobileDevice will log every time you make

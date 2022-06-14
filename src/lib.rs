@@ -45,6 +45,60 @@ pub mod cat;
 #[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
 pub mod ui;
 
+#[macro_export]
+macro_rules! define_options {
+    ($NewType:ident($BaseType:path)) => {
+        #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
+        #[repr(transparent)]
+        pub struct $NewType(pub $BaseType);
+
+        impl $NewType {
+            pub fn contains(&self, rhs: Self) -> bool {
+                *self & rhs == rhs
+            }
+        }
+
+        impl ::std::ops::BitAndAssign for $NewType {
+            #[inline]
+            fn bitand_assign(&mut self, rhs: Self) {
+                *self = Self(self.0 & rhs.0)
+            }
+        }
+
+        impl ::std::ops::BitAnd for $NewType {
+            type Output = $NewType;
+            #[inline]
+            fn bitand(self, rhs: Self) -> Self {
+                Self(self.0 & rhs.0)
+            }
+        }
+
+        impl ::std::ops::BitOr for $NewType {
+            type Output = $NewType;
+            #[inline]
+            fn bitor(self, rhs: Self) -> Self {
+                Self(self.0 | rhs.0)
+            }
+        }
+
+        impl ::std::ops::BitOrAssign for $NewType {
+            #[inline]
+            fn bitor_assign(&mut self, rhs: Self) {
+                *self = Self(self.0 | rhs.0)
+            }
+        }
+
+        impl ::std::convert::From<$BaseType> for $NewType {
+            #[inline]
+            fn from(value: $BaseType) -> Self {
+                Self(value)
+            }
+        }
+
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use crate::cf;

@@ -1,6 +1,6 @@
 use crate::{
-    cf::{self, OptionFlags},
-    cv, os,
+    cf::{self},
+    cv, os, define_options,
 };
 
 pub type PixelBuffer = cv::ImageBuffer;
@@ -125,9 +125,11 @@ impl<'a> Drop for BaseAddressLockGuard<'a> {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct LockFlags(pub OptionFlags);
+// #[derive(Clone, Copy, PartialEq, Eq)]
+// #[repr(transparent)]
+// pub struct LockFlags(pub cv::OptionFlags);
+
+define_options!(LockFlags(cv::OptionFlags));
 
 impl LockFlags {
     pub const DEFAULT: Self = Self(0);
