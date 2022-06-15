@@ -4,7 +4,10 @@ use crate::cf;
 
 use super::{Connected, Device, Error, Session};
 
-pub type MountCallback<T> = extern "C" fn(status: &cf::Dictionary, context: *mut T);
+/// Image Mount Callback 
+/// Ownership of the status dictionary *status* passes to the callback function. The dict MUST BE 
+/// explicitly released or else it will leak.
+pub type MountCallback<T> = extern "C" fn(status: cf::Retained<'static, cf::Dictionary>, context: *mut T);
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -72,14 +75,13 @@ impl<'a> Session<'a> {
         self.mound_disk(&cf_image_path, &options)
     }
 
-    pub fn mound_disk(&self, image: &cf::String, options: &cf::Dictionary) -> Result<(), Error> {
-        extern "C" fn mount_cb(status: &cf::Dictionary, context: *mut c_void) {
+    pub fn mound_disk(&self, image_path: &cf::String, options: &cf::Dictionary) -> Result<(), Error> {
+        extern "C" fn mount_cb(status: cf::Retained<'static, cf::Dictionary>, _context: *mut c_void) {
             status.show();
-            println!("satus rc: {:?}", status.retain_count())
         }
         unsafe {
             self.mound_disk_with_callback::<c_void>(
-                image,
+                image_path,
                 options,
                 mount_cb as _,
                 std::ptr::null_mut(),

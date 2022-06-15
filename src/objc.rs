@@ -1,5 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
+pub mod native_block;
+
 use crate::cf::{
     runtime::{Release, Retain},
     Retained, Type,

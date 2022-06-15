@@ -6,6 +6,7 @@ use std::ptr::NonNull;
 use crate::cf::Retained;
 use crate::define_obj_type;
 use crate::dispatch::{Function, Object};
+use crate::objc::native_block::Literal;
 
 define_obj_type!(Queue(Object));
 define_obj_type!(Global(Queue));

@@ -342,7 +342,7 @@ impl<'a> Session<'a> {
     }
 
     pub fn start_debug_server<'b>(&self) -> Result<Retained<'b, ServiceConnection>, Error> {
-        let name = cf::String::from_str_no_copy("com.apple.debugserver");
+        let name = cf::String::from_str_no_copy("com.apple.debugserver.DVTSecureSocketProxy");
         // let name = cf::String::from_str("com.apple.debugserver.applist");
         self.secure_start_service(&name)
     }

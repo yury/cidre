@@ -33,32 +33,37 @@ pub extern "C" fn callback(info: &NotificationInfo, context: *mut c_void) {
 }
 
 fn main() {
-    // let devices = am::device::QueryBuilder::new_match_all()
-    //     .udids(&["00008103-001505940231001E"])
-    //     .matching_list(None)
-    //     .unwrap();
+    let devices = am::device::QueryBuilder::new_match_all()
+        // .udids(&["00008103-001505940231001E"])
+        .udids(&["00008110-00124CDE3AB8801E"])
+        .matching_list(None)
+        .unwrap();
 
-    // if devices.is_empty() {
-    //     println!("device not found");
-    //     return;
-    // }
+    if devices.is_empty() {
+        println!("device not found");
+        return;
+    }
 
-    // let ipad = &devices[0].retained();
-    // let connected = ipad.connected().expect("connected");
-    // println!("Device: {}", connected.name().to_string());
+    let ipad = &devices[0].retained();
+    let connected = ipad.connected().expect("connected");
+    println!("Device: {}", connected.name().to_string());
 
-    // let session = connected.start_session().expect("started session");
-    // session.mount_developer_image().expect("mounted");
-    // session.start_debug_server().expect("debug");
-    // println!("disk mounted");
+    let session = connected.start_session().expect("started session");
+    session.mount_developer_image().expect("mounted");
+    println!("disk mounted");
+    let service = session.start_debug_server().expect("debug");
 
-    let note = am::device::Notification::with(
-        callback,
-        DeviceSpeed::ANY,
-        DeviceInterfaceConnectionType::Any,
-        std::ptr::null_mut(),
-    )
-    .unwrap();
+    println!("FD {:?}", service.socket().expect("valid socket"));
 
-    cf::RunLoop::run()
+    
+
+    // let note = am::device::Notification::with(
+    //     callback,
+    //     DeviceSpeed::ANY,
+    //     DeviceInterfaceConnectionType::Any,
+    //     std::ptr::null_mut(),
+    // )
+    // .unwrap();
+
+    // cf::RunLoop::run()
 }
