@@ -6,7 +6,7 @@ use std::ptr::NonNull;
 use crate::cf::Retained;
 use crate::define_obj_type;
 use crate::dispatch::{Function, Object};
-use crate::objc::native_block::Literal;
+use crate::objc::native_block::DispatchBlock;
 
 define_obj_type!(Queue(Object));
 define_obj_type!(Global(Queue));
@@ -112,6 +112,40 @@ impl Queue {
     #[inline]
     pub unsafe fn global_with_flags<'a>(identifier: isize, flags: usize) -> Option<&'a Global> {
         dispatch_get_global_queue(identifier, flags)
+    }
+
+    #[inline]
+    pub fn sync_b<F, CD>(&self, block: &DispatchBlock<F, CD>) {
+        unsafe {
+            // let raw = Box::into_raw(block);
+            dispatch_sync(self, transmute(block));
+        }
+    }
+
+    #[inline]
+    pub fn sync_with<F: 'static>(&self, block: F)
+    where
+        F: FnMut(),
+    {
+        let block = DispatchBlock::stack(block);
+        self.sync_b(&block);
+    }
+
+    #[inline]
+    pub fn async_b<F, CD>(&self, block: Box<DispatchBlock<F, CD>>) {
+        unsafe {
+            let raw = Box::into_raw(block);
+            dispatch_async(self, transmute(raw));
+        }
+    }
+
+    #[inline]
+    pub fn async_with<F: 'static>(&self, block: F)
+    where
+        F: FnMut(),
+    {
+        let block = DispatchBlock::new(block);
+        self.async_b(block);
     }
 
     #[inline]
@@ -233,6 +267,9 @@ extern "C" {
     static _dispatch_main_q: Main;
     static _dispatch_queue_attr_concurrent: Attr;
 
+    fn dispatch_sync(queue: &Queue, block: *mut c_void);
+    fn dispatch_async(queue: &Queue, block: *mut c_void);
+
     fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
     fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
     fn dispatch_queue_create<'a>(
@@ -304,6 +341,32 @@ mod tests {
         q.sync_f(std::ptr::null_mut(), foo);
 
         q.async_and_wait_f(std::ptr::null_mut(), foo);
+    }
+
+    #[derive(Debug)]
+    struct Foo {}
+
+    impl Drop for Foo {
+        fn drop(&mut self) {
+            println!("drop!")
+        }
+    }
+
+    #[test]
+    fn test_sync_block() {
+        let q = dispatch::Queue::new();
+
+        let foo = Foo {};
+        q.as_type_ref().show();
+        let b = move || {
+            println!("nice! {:?}", foo);
+        };
+        q.async_with(b);
+
+        let foo2 = Foo {};
+        q.sync_with(move || {
+            println!("nice {:?}", foo2);
+        });
     }
 
     #[test]

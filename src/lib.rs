@@ -53,6 +53,7 @@ macro_rules! define_options {
         pub struct $NewType(pub $BaseType);
 
         impl $NewType {
+            #[inline]
             pub fn contains(&self, rhs: Self) -> bool {
                 *self & rhs == rhs
             }

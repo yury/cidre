@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, mem::ManuallyDrop};
 
 use crate::define_options;
 
@@ -20,6 +20,8 @@ impl Flags {
 
     // compiler
     pub const IS_NOESCAPE: Self = Self(1 << 23);
+
+    pub const NEEDS_FREE: Self = Self(1 << 24);
     // compiler
     pub const HAS_COPY_DISPOSE: Self = Self(1 << 25);
     pub const HAS_CTOR: Self = Self(1 << 26);
@@ -34,23 +36,22 @@ impl Flags {
 #[repr(C)]
 pub struct Literal<CD: 'static, F: Sized, R, D: Sized> {
     /// initialized to &_NSConcreteStackBlock or &_NSConcreteGlobalBlock
-    isa: &'static Class, 
+    isa: &'static Class,
     flags: Flags,
     reserved: i32,
     invoke: extern "C" fn(&mut Literal<CD, F, R, D>, args: ...) -> R,
     descriptor: &'static Descriptor<CD>,
 
     // optional fields
-
     func: F,
     pub fields: D,
 }
 
 #[repr(C)]
 pub struct Descriptor<CD> {
-    pub reserved: usize,
-    pub size: usize,
-    pub copy_dispose: CD,
+    reserved: usize,
+    size: usize,
+    copy_dispose: CD,
 }
 
 #[repr(transparent)]
@@ -61,8 +62,8 @@ pub struct NoFunc;
 
 #[repr(C)]
 pub struct CopyDispose {
-    pub copy: Option<extern "C" fn(dest: *mut c_void, src: *mut c_void)>,
-    pub dispose: Option<extern "C" fn(liteal: *mut c_void)>,
+    copy: Option<extern "C" fn(dest: *mut c_void, src: *mut c_void)>,
+    dispose: Option<extern "C" fn(liteal: *mut c_void)>,
 }
 
 impl<R, D> Literal<NoCopyDispose, NoFunc, R, D> {
@@ -74,7 +75,7 @@ impl<R, D> Literal<NoCopyDispose, NoFunc, R, D> {
             invoke: unsafe { transmute(f) },
             descriptor: &Self::DESCRIPTOR_1,
             func: NoFunc,
-            fields
+            fields,
         }
     }
 
@@ -90,7 +91,7 @@ impl<R, D> Literal<NoCopyDispose, NoFunc, R, D> {
             invoke: unsafe { transmute(f) },
             descriptor: &Self::DESCRIPTOR_1,
             func: NoFunc,
-            fields
+            fields,
         }
     }
 
@@ -154,7 +155,7 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
         (self.func)(a)
     }
 
-    pub fn with(f: F) -> Self
+    pub fn with(func: F) -> Self
     where
         F: Fn() -> R,
     {
@@ -164,12 +165,12 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
             reserved: 0,
             invoke: unsafe { transmute(Self::invoke as *const c_void) },
             descriptor: &Self::DESCRIPTOR,
-            func: f,
-            fields: ()
+            func,
+            fields: (),
         }
     }
 
-    pub fn with_mut(f: F) -> Self
+    pub fn with_mut(func: F) -> Self
     where
         F: FnMut() -> R,
     {
@@ -179,12 +180,12 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
             reserved: 0,
             invoke: unsafe { transmute(Self::invoke as *const c_void) },
             descriptor: &Self::DESCRIPTOR,
-            func: f,
-            fields: ()
+            func,
+            fields: (),
         }
     }
 
-    pub fn with_a<A>(f: F) -> Self
+    pub fn with_a<A>(func: F) -> Self
     where
         F: Fn(A) -> R,
     {
@@ -194,12 +195,12 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
             reserved: 0,
             invoke: unsafe { transmute(Self::invoke_a as *const c_void) },
             descriptor: &Self::DESCRIPTOR,
-            func: f,
-            fields: ()
+            func,
+            fields: (),
         }
     }
 
-    pub fn with_mut_a<A>(f: F) -> Self
+    pub fn with_mut_a<A>(func: F) -> Self
     where
         F: FnMut(A) -> R,
     {
@@ -209,15 +210,23 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
             reserved: 0,
             invoke: unsafe { transmute(Self::invoke_a as *const c_void) },
             descriptor: &Self::DESCRIPTOR,
-            func: f,
-            fields: ()
+            func,
+            fields: (),
         }
     }
 }
 
-impl<F, R> Literal<CopyDispose, F, R, ()> {
+impl<F: 'static, R> Literal<CopyDispose, ManuallyDrop<F>, R, ()> {
     extern "C" fn dispose(literal: *mut c_void) {
-        unsafe { _ = Box::from_raw(literal) };
+        let ptr = literal as *mut Self;
+        println!("dropping: {:?}", ptr);
+        let b = unsafe { Box::from_raw(ptr) };
+        println!("dropping: {:b}", b.flags.0);
+        let mut b = ManuallyDrop::new(b);
+
+        unsafe {
+            ManuallyDrop::drop(&mut b.func)
+        };
     }
 
     const DESCRIPTOR_F: Descriptor<CopyDispose> = Descriptor {
@@ -238,26 +247,59 @@ impl<F, R> Literal<CopyDispose, F, R, ()> {
         (literal.func)()
     }
 
-    pub fn new(f: F) -> Box<Self>
+    pub fn new(func: F) -> Box<Self>
     where
         F: FnMut() -> R,
     {
+        let retain_count = 0; // ???
+        println!(
+            "flags :{:b}",
+            (Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE | Flags(retain_count << 1)).0
+        );
         Box::new(Self {
-            isa: unsafe { _NSConcreteStackBlock },
-            flags: Flags::HAS_COPY_DISPOSE,
+            isa: unsafe { _NSConcreteMallocBlock },
+            flags: Flags::HAS_COPY_DISPOSE  | Flags::NEEDS_FREE  | Flags(retain_count << 1),
             reserved: 0,
             invoke: unsafe { transmute(Self::invoke_box as *const c_void) },
             descriptor: &Self::DESCRIPTOR_F,
-            func: f,
-            fields: ()
+            func: ManuallyDrop::new(func),
+            fields: (),
         })
+    }
+
+}
+
+impl<F: 'static, R> Literal<NoCopyDispose, F, R, ()> {
+
+    const DESCRIPTOR_F: Descriptor<NoCopyDispose> = Descriptor {
+        reserved: 0,
+        size: std::mem::size_of::<Self>(),
+        copy_dispose: NoCopyDispose,
+    };
+
+    pub fn stack(func: F) -> Self 
+    where
+        F: FnMut() -> R,
+        {
+        Self {
+            isa: unsafe { _NSConcreteStackBlock },
+            flags: Flags::IS_NOESCAPE,
+            reserved: 0,
+            invoke: unsafe { transmute(Self::invoke as *const c_void) },
+            descriptor: &Self::DESCRIPTOR_F,
+            func,
+            fields: (),
+        }
     }
 }
 
 extern "C" {
     static _NSConcreteGlobalBlock: &'static Class;
     static _NSConcreteStackBlock: &'static Class;
+    static _NSConcreteMallocBlock: &'static Class;
 }
+
+pub type DispatchBlock<F, CD> = Literal<CD, F, (), ()>;
 
 #[cfg(test)]
 mod tests {
@@ -266,6 +308,8 @@ mod tests {
 
     #[test]
     fn test_simple_block() {
+        let f = DispatchBlock::new(|| println!("nice"));
+
         let mut x = 10;
         let mut b = Literal::with_mut_a(|a: i32| {
             x += 5 + a;
@@ -277,16 +321,14 @@ mod tests {
         b.call_mut_a(10);
 
         extern "C" fn invoke(b: &mut Literal<NoCopyDispose, NoFunc, (), i32>) {
-            b.fields += 1;
-            println!("nice {:}", b.fields);
+            // b.fields += 1;
+            // println!("nice {:}", b.fields);
         }
 
         let mut x = Literal::with_fn(10, invoke);
         x.call_fn();
         x.call_fn();
 
-        let b = Literal::new(|| {
-
-        });
+        let b = Literal::new(|| {});
     }
 }
