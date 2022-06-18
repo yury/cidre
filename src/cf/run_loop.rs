@@ -110,6 +110,14 @@ impl RunLoop {
     ) -> RunResult {
         unsafe { CFRunLoopRunInMode(mode, seconds, return_after_source_handled) }
     }
+
+    pub fn is_waiting(&self) -> bool {
+        unsafe { CFRunLoopIsWaiting(self) }
+    }
+
+    pub fn wakeup(&self) {
+        unsafe { CFRunLoopWakeUp(self) }
+    }
 }
 
 extern "C" {
@@ -128,6 +136,8 @@ extern "C" {
     fn CFRunLoopContainsTimer(rl: &RunLoop, timer: &Timer, mode: &Mode) -> bool;
     fn CFRunLoopAddTimer(rl: &RunLoop, timer: &Timer, mode: &Mode);
     fn CFRunLoopRemoveTimer(rl: &RunLoop, timer: &Timer, mode: &Mode);
+    fn CFRunLoopIsWaiting(rl: &RunLoop) -> bool;
+    fn CFRunLoopWakeUp(rl: &RunLoop);
 
     fn CFRunLoopRunInMode(
         mode: &Mode,
@@ -142,10 +152,13 @@ impl Mode {
     pub fn new(name: &cf::String) -> &Self {
         unsafe { transmute(name) }
     }
+
+    #[inline]
     pub fn default() -> &'static Mode {
         unsafe { kCFRunLoopDefaultMode }
     }
 
+    #[inline]
     pub fn common() -> &'static Mode {
         unsafe { kCFRunLoopCommonModes }
     }
@@ -154,6 +167,93 @@ impl Mode {
 extern "C" {
     static kCFRunLoopDefaultMode: &'static Mode;
     static kCFRunLoopCommonModes: &'static Mode;
+}
+
+impl Source {
+    #[inline]
+    pub fn invalidate(&self) {
+        unsafe { CFRunLoopSourceInvalidate(self) }
+    }
+
+    #[inline]
+    pub fn is_valid(&self) -> bool {
+        unsafe { CFRunLoopSourceIsValid(self) }
+    }
+
+    #[inline]
+    pub fn order(&self) -> cf::Index {
+        unsafe { CFRunLoopSourceGetOrder(self) }
+    }
+
+    #[inline]
+    pub fn signal(&self) {
+        unsafe { CFRunLoopSourceSignal(self) }
+    }
+}
+
+extern "C" {
+    fn CFRunLoopSourceInvalidate(source: &Source);
+    fn CFRunLoopSourceIsValid(source: &Source) -> bool;
+    fn CFRunLoopSourceGetOrder(source: &Source) -> cf::Index;
+    fn CFRunLoopSourceSignal(source: &Source);
+}
+
+impl Timer {
+    #[inline]
+    pub fn invalidate(&self) {
+        unsafe { CFRunLoopTimerInvalidate(self) }
+    }
+
+    #[inline]
+    pub fn is_valid(&self) -> bool {
+        unsafe { CFRunLoopTimerIsValid(self) }
+    }
+
+    #[inline]
+    pub fn does_repeat(&self) -> bool {
+        unsafe { CFRunLoopTimerDoesRepeat(self) }
+    }
+
+    #[inline]
+    pub fn tolerance(&self) -> cf::TimeInterval {
+        unsafe { CFRunLoopTimerGetTolerance(self) }
+    }
+
+    #[inline]
+    pub fn set_tolerance(&self, value: cf::TimeInterval) {
+        unsafe { CFRunLoopTimerSetTolerance(self, value) }
+    }
+}
+
+extern "C" {
+    fn CFRunLoopTimerInvalidate(timer: &Timer);
+    fn CFRunLoopTimerIsValid(timer: &Timer) -> bool;
+    fn CFRunLoopTimerDoesRepeat(timer: &Timer) -> bool;
+    fn CFRunLoopTimerGetTolerance(timer: &Timer) -> cf::TimeInterval;
+    fn CFRunLoopTimerSetTolerance(timer: &Timer, value: cf::TimeInterval);
+}
+
+impl Observer {
+    #[inline]
+    pub fn invalidate(&self) {
+        unsafe { CFRunLoopObserverInvalidate(self) }
+    }
+
+    #[inline]
+    pub fn is_valid(&self) -> bool {
+        unsafe { CFRunLoopObserverIsValid(self) }
+    }
+
+    #[inline]
+    pub fn does_repeat(&self) -> bool {
+        unsafe { CFRunLoopObserverDoesRepeat(self) }
+    }
+}
+
+extern "C" {
+    fn CFRunLoopObserverInvalidate(timer: &Observer);
+    fn CFRunLoopObserverIsValid(timer: &Observer) -> bool;
+    fn CFRunLoopObserverDoesRepeat(timer: &Observer) -> bool;
 }
 
 #[cfg(test)]

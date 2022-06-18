@@ -1,6 +1,6 @@
 use std::{
     rc::Rc,
-    sync::{atomic::AtomicUsize, Arc, Mutex},
+    sync::Mutex,
 };
 
 use cidre::{dispatch, objc::native_block::DispatchBlock};

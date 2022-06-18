@@ -1,8 +1,8 @@
 use std::ffi::c_void;
 
 use cidre::{
-    am::{self, device::discovery::NotificationInfo, DeviceInterfaceConnectionType, DeviceSpeed},
-    cf,
+    am::{self, device::{discovery::NotificationInfo, self}, DeviceInterfaceConnectionType, DeviceSpeed},
+    cf, av::CaptureConnection,
 };
 
 pub extern "C" fn callback(info: &NotificationInfo, context: *mut c_void) {
@@ -32,7 +32,8 @@ pub extern "C" fn callback(info: &NotificationInfo, context: *mut c_void) {
     }
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let devices = am::device::QueryBuilder::new_match_all()
         // .udids(&["00008103-001505940231001E"])
         .udids(&["00008110-00124CDE3AB8801E"])
@@ -51,10 +52,34 @@ fn main() {
     let session = connected.start_session().expect("started session");
     session.mount_developer_image().expect("mounted");
     println!("disk mounted");
-    let service = session.start_debug_server().expect("debug");
+    let connection = session.start_debug_server().expect("debug");
 
-    println!("FD {:?}", service.socket().expect("valid socket"));
+    unsafe {
+        extern "C" fn cb(s: &cf::Socket,
+            cb_type: cf::SocketCallBackType,
+            address: &cf::Data,
+            data: *const u8,
+            info: *mut c_void) {
+                println!("??????????")
+        }
+        let sock = cf::Socket::create_with_native(None, connection.socket().unwrap(), cf::SocketCallBackType::READ, cb, None).unwrap();
+        let source = sock.create_runloop_source(None, 0).unwrap();
+        cf::RunLoop::main().add_source(&source, cf::RunLoopMode::common());
+        // source.invalidate();
+        
 
+        let n = connection.send(&[1]).unwrap();
+        println!("sent {}", n);
+    }
+
+    // println!("pre send");
+    // let n = connection.send(&[0,0,0,0]).unwrap();
+    // println!("post send {}", n);
+    // connection.http_proxy().await.unwrap();
+    // let fd = service.socket().expect("valid socket");
+    // println!("FD {:?}", fd);
+
+    // device::start_lldb_proxy(fd).await.unwrap();    
     
 
     // let note = am::device::Notification::with(
@@ -65,5 +90,5 @@ fn main() {
     // )
     // .unwrap();
 
-    // cf::RunLoop::run()
+    cf::RunLoop::run();
 }

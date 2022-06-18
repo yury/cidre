@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, ops::Deref};
+use std::{ffi::c_void, intrinsics::transmute, ops::Deref, os::unix::prelude::{RawFd, FromRawFd}};
 pub mod base;
 pub mod development;
 pub mod discovery;
@@ -7,6 +7,7 @@ pub mod installation;
 
 pub use base::{Device, Error, Notification};
 pub use discovery::{Action, InterfaceConnectionType, QueryBuilder, Speed};
+use tokio::io::Interest;
 
 use crate::{
     cf::{self, Retained},
@@ -285,6 +286,7 @@ impl<'a> Connected<'a> {
 
 impl<'a> Drop for Connected<'a> {
     fn drop(&mut self) {
+        println!("disconnect");
         unsafe { AMDeviceDisconnect(&self.0) };
     }
 }
@@ -336,14 +338,14 @@ impl<'a> Session<'a> {
     ) -> Result<Retained<'b, ServiceConnection>, Error> {
         unsafe {
             let mut service = None;
-            AMDeviceSecureStartService(self, name, std::ptr::null(), &mut service)
+            let foo: *mut c_void = std::ptr::null_mut(); 
+            AMDeviceSecureStartService(self, name, foo, &mut service)
                 .to_result(service)
         }
     }
 
     pub fn start_debug_server<'b>(&self) -> Result<Retained<'b, ServiceConnection>, Error> {
         let name = cf::String::from_str_no_copy("com.apple.debugserver.DVTSecureSocketProxy");
-        // let name = cf::String::from_str("com.apple.debugserver.applist");
         self.secure_start_service(&name)
     }
 
@@ -356,6 +358,7 @@ impl<'a> Session<'a> {
 
 impl<'a> Drop for Session<'a> {
     fn drop(&mut self) {
+        println!("dropping session");
         _ = unsafe { AMDeviceStopSession(self) };
     }
 }
@@ -407,7 +410,7 @@ extern "C" {
     fn AMDeviceSecureStartService<'a>(
         device: &Device,
         service_name: &cf::String,
-        ssl: *const c_void,
+        ssl: *mut c_void,
         service: &Option<Retained<'a, ServiceConnection>>,
     ) -> Error;
 
@@ -420,6 +423,7 @@ extern "C" {
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }
+
 
 #[cfg(test)]
 mod tests {

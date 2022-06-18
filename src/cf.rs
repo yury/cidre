@@ -94,5 +94,15 @@ pub use run_loop::RunResult as RunLoopRunResult;
 pub use run_loop::Source as RunLoopSource;
 pub use run_loop::Timer as RunLoopTimer;
 
+pub mod socket;
+pub use socket::Socket;
+pub use socket::CallBack as SocketCallBack;
+pub use socket::CallBackType as SocketCallBackType;
+pub use socket::Context as SocketContext;
+pub use socket::Error as SocketError;
+pub use socket::Flags as SocketFlags;
+pub use socket::NativeHandle as SocketNativeHandle;
+pub use socket::Signature as SocketSignature;
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {}
