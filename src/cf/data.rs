@@ -90,6 +90,7 @@ impl<'a> From<&[u8]> for cf::Retained<'a, Data> {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFDataGetTypeID() -> cf::TypeId;
     fn CFDataCreate<'a>(

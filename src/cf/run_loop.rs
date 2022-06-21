@@ -120,6 +120,7 @@ impl RunLoop {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFRunLoopRun();
     fn CFRunLoopStop(rl: &RunLoop);
@@ -191,6 +192,7 @@ impl Source {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFRunLoopSourceInvalidate(source: &Source);
     fn CFRunLoopSourceIsValid(source: &Source) -> bool;
@@ -225,6 +227,7 @@ impl Timer {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFRunLoopTimerInvalidate(timer: &Timer);
     fn CFRunLoopTimerIsValid(timer: &Timer) -> bool;
@@ -250,6 +253,7 @@ impl Observer {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFRunLoopObserverInvalidate(timer: &Observer);
     fn CFRunLoopObserverIsValid(timer: &Observer) -> bool;

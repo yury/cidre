@@ -127,6 +127,13 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
         (literal.func)(a)
     }
 
+    extern "C" fn invoke_abcde<A, B, C, D, E>(literal: &mut Self, a: A, b: B, c: C, d: D, e: E) -> R
+    where
+        F: FnMut(A, B, C, D, E) -> R,
+    {
+        (literal.func)(a, b, c,d ,e)
+    }
+
     pub fn call_mut(&mut self) -> R
     where
         F: FnMut() -> R,

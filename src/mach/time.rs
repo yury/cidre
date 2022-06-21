@@ -3,8 +3,8 @@ use super::KernReturn;
 #[derive(Default)]
 #[repr(C)]
 pub struct TimeBaseInfo {
-    pub numer: i32,
-    pub denom: i32,
+    pub numer: u32,
+    pub denom: u32,
 }
 
 impl TimeBaseInfo {
@@ -34,6 +34,9 @@ impl TimeBaseInfo {
     }
 }
 
+/// Returns current value of a clock that increments monotonically in tick units
+/// (starting at an arbitrary point), this clock does not increment while
+/// the system is asleep.
 #[inline]
 pub fn absolute_time() -> u64 {
     unsafe { mach_absolute_time() }
@@ -44,6 +47,8 @@ pub fn approximate_time() -> u64 {
     unsafe { mach_approximate_time() }
 }
 
+/// Returns current value of a clock that increments monotonically in tick units
+/// (starting at an arbitrary point), including while the system is asleep.
 #[inline]
 pub fn continuous_time() -> u64 {
     unsafe { mach_continuous_time() }

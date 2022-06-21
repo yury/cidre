@@ -41,6 +41,7 @@ impl UUID {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFUUIDGetTypeID() -> cf::TypeId;
     fn CFUUIDCreate<'a>(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<'a, UUID>>;

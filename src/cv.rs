@@ -39,7 +39,7 @@ pub mod display_link;
 #[cfg(target_os = "macos")]
 pub use display_link::DisplayLink;
 #[cfg(target_os = "macos")]
-pub use display_link::DisplayLinkOutputCallback;
+pub use display_link::OutputCallback as DisplayLinkOutputCallback;
 
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {}

@@ -62,6 +62,7 @@ impl Error {
 //     }
 // }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     static kCFErrorDomainPOSIX: &'static Domain;
     static kCFErrorDomainOSStatus: &'static Domain;

@@ -85,6 +85,7 @@ where
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFSetGetCount(set: &Set) -> cf::Index;
     fn CFSetContainsValue(set: &Set, value: *const c_void) -> bool;

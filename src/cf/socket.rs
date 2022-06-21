@@ -149,6 +149,7 @@ impl Socket {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFSocketCreate<'a>(
         allocator: Option<&cf::Allocator>,

@@ -1,16 +1,16 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{cf, cg, cv, define_cf_type};
 
 define_cf_type!(DisplayLink(cf::Type));
 
-pub type DisplayLinkOutputCallback = extern "C" fn(
+pub type OutputCallback<T> = extern "C" fn(
     link: &DisplayLink,
     in_now: &cv::TimeStamp,
     in_output_time: &cv::TimeStamp,
     flags_in: cv::OptionFlags,
     flags_out: &mut cv::OptionFlags,
-    user_info: *mut c_void,
+    user_info: *mut T,
 ) -> cv::Return;
 
 impl DisplayLink {
@@ -90,12 +90,12 @@ impl DisplayLink {
         }
     }
 
-    pub unsafe fn set_callback(
+    pub unsafe fn set_callback<T>(
         &self,
-        callback: DisplayLinkOutputCallback,
-        user_info: *mut c_void,
+        callback: OutputCallback<T>,
+        user_info: *mut T,
     ) -> cv::Return {
-        CVDisplayLinkSetOutputCallback(self, callback, user_info)
+        CVDisplayLinkSetOutputCallback(self, transmute(callback), user_info as _)
     }
 }
 
@@ -115,7 +115,7 @@ extern "C" {
     fn CVDisplayLinkGetCurrentTime(link: &DisplayLink, out_time: &mut cv::TimeStamp) -> cv::Return;
     fn CVDisplayLinkSetOutputCallback(
         link: &DisplayLink,
-        callback: DisplayLinkOutputCallback,
+        callback: OutputCallback<c_void>,
         user_info: *mut c_void,
     ) -> cv::Return;
 }

@@ -138,6 +138,7 @@ impl URL {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFURLGetTypeID() -> cf::TypeId;
     fn CFURLCreateWithBytes<'a>(

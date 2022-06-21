@@ -301,6 +301,7 @@ impl Dictionary {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: KeyCallBacks;
     static kCFCopyStringDictionaryKeyCallBacks: KeyCallBacks;

@@ -438,6 +438,7 @@ impl MutableArray {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     static kCFTypeArrayCallBacks: Callbacks;
 

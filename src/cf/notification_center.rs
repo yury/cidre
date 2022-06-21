@@ -86,6 +86,7 @@ pub enum NotificationSuspensionBehavior {
     DeliverImmediately = 4,
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFNotificationCenterGetTypeID() -> cf::TypeId;
     fn CFNotificationCenterGetLocalCenter<'a>() -> &'a NotificationCenter;

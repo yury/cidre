@@ -35,6 +35,7 @@ impl Bundle {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle<'a>() -> Option<&'a Bundle>;

@@ -34,8 +34,8 @@ impl Locale {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]    
 extern "C" {
-
     fn CFLocaleGetSystem<'get>() -> &'get Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Identifier;
     fn CFLocaleCopyCurrent<'copy>() -> cf::Retained<'copy, Locale>;

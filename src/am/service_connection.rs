@@ -1,9 +1,8 @@
-use std::{os::unix::prelude::{FromRawFd, RawFd}, ffi::c_void};
+use std::{os::unix::prelude::{FromRawFd, RawFd}};
 
 use tokio::io::Interest;
 
 pub use crate::am::device::base::ServiceConnection;
-use crate::cf;
 
 #[derive(Debug)]
 pub struct InvalidSocketError;

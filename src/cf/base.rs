@@ -168,6 +168,7 @@ impl Allocator {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFCopyTypeIDDescription<'a>(type_id: TypeId) -> Option<Retained<'a, String>>;
 

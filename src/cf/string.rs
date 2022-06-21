@@ -343,6 +343,7 @@ impl MutableString {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;

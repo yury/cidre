@@ -7,7 +7,5 @@ pub use device::QueryBuilder as DeviceQueryBuilder;
 pub use device::Speed as DeviceSpeed;
 
 pub mod service_connection;
-// pub use device::InterfaceType as DeviceInterfaceType;
-// pub use device::Notification as DeviceNotification;
-// pub use device::NotificationCallback as DeviceNotificationCallback;
-// pub use device::NotificationCallbackInfo as DeviceNotificationCallbackInfo;
+pub use service_connection::ServiceConnection;
+pub use service_connection::InvalidSocketError;

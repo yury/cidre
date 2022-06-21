@@ -152,6 +152,7 @@ macro_rules! define_cf_type {
     };
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFRetain(cf: &Type) -> Retained<Type>;
     fn CFRelease(cf: &mut Type);

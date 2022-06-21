@@ -1,6 +1,6 @@
 use crate::{cf, cfstr};
 
-use super::{base::ServiceConnection, Device, Error, Session};
+use super::{Device, Error, Session};
 
 impl<'a> Session<'a> {
     /// Lookup the set of installed applications on the device.

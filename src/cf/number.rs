@@ -395,6 +395,7 @@ impl<'a> From<i64> for Retained<'a, Number> {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFBooleanGetTypeID() -> TypeId;
     static kCFBooleanTrue: &'static Boolean;

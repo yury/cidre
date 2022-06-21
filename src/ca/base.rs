@@ -1,5 +1,7 @@
 use crate::cf;
 
+/// cf::TimeInterval derived by calling mach_absolute_time()
+/// and converting the result to seconds.
 /// ```
 /// use cidre::ca;
 ///

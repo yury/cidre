@@ -40,6 +40,7 @@ impl Date {
     }
 }
 
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFAbsoluteTimeGetCurrent() -> AbsoluteTime;
     fn CFDateGetTypeID() -> cf::TypeId;
