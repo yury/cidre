@@ -205,4 +205,24 @@ rsel(, id, supportedMultiCamDeviceSets, NSArray<NSSet<AVCaptureDevice *> *> *)
 
 #endif
 
+#pragma mark - AVAudioEngine
+
+NS_RETURNS_RETAINED
+csel(, AVAudioEngine, new, AVAudioEngine *)
+
+//- (void)attachNode:(AVAudioNode *)node;
+wsel_a(, id, attachNode, AVAudioNode *)
+wsel_a(, id, detachNode, AVAudioNode *)
+
+wsel_abcde(, id, connect, AVAudioNode *, to, AVAudioNode *, fromBus, AVAudioNodeBus, toBus, AVAudioNodeBus, format, AVAudioFormat * _Nullable)
+wsel_abc(, id, connect, AVAudioNode *, to, AVAudioNode *, format, AVAudioFormat * _Nullable)
+
+wsel(, id, prepare)
+
+rsel_a(, id, startAndReturnError, NSError **, BOOL);
+//- (BOOL)startAndReturnError:(NSError **)outError;
+
+//- (void)prepare;
+//- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
+
 NS_ASSUME_NONNULL_END

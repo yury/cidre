@@ -1,4 +1,6 @@
-use crate::{define_obj_type, ns, os};
+use crate::{cf, define_obj_type, ns, os};
+
+use super::{Format, Node, NodeBus};
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(transparent)]
@@ -53,3 +55,113 @@ pub enum ManualRenderingMode {
 }
 
 define_obj_type!(Engine(ns::Id));
+
+/// An AVAudioEngine contains a group of connected AVAudioNodes ("nodes"), each of which performs
+/// an audio signal generation, processing, or input/output task.
+///
+/// Nodes are created separately and attached to the engine.
+///
+/// The engine supports dynamic connection, disconnection and removal of nodes while running,
+/// with only minor limitations:
+/// - all dynamic reconnections must occur upstream of a mixer
+/// - while removals of effects will normally result in the automatic connection of the adjacent
+///   nodes, removal of a node which has differing input vs. output channel counts, or which
+///   is a mixer, is likely to result in a broken graph.
+///
+/// By default, the engine is connected to an audio device and automatically renders in realtime. 
+/// It can also be configured to operate in manual rendering mode, i.e. not connected to an
+/// audio device and rendering in response to requests from the client, normally at or
+/// faster than realtime rate.
+impl Engine {
+
+    /// ```
+    /// use cidre::av;
+    /// 
+    /// let engine = av::audio::Engine::new();
+    /// ```
+    #[inline]
+    pub fn new<'a>() -> cf::Retained<'a, Engine> {
+        unsafe { AVAudioEngine_new() }
+    }
+
+    #[inline]
+    pub fn attach_node(&self, node: &Node) {
+        unsafe { wsel_attachNode(self, node) }
+    }
+
+    #[inline]
+    pub fn detach_node(&self, node: &Node) {
+        unsafe { wsel_detachNode(self, node) }
+    }
+
+    #[inline]
+    pub fn connect_node_to_node_bus_to_bus(
+        &self,
+        node_from: &Node,
+        node_to: &Node,
+        from_bus: NodeBus,
+        to_bus: NodeBus,
+        format: Option<&Format>,
+    ) {
+        unsafe {
+            wsel_connect_to_fromBus_toBus_format(self, node_from, node_to, from_bus, to_bus, format)
+        }
+    }
+    #[inline]
+    pub fn connect_node_to_node(
+        &self,
+        node_from: &Node,
+        node_to: &Node,
+        format: Option<&Format>,
+    ) {
+        unsafe {
+            wsel_connect_to_format(self, node_from, node_to, format)
+        }
+    }
+
+    #[inline]
+    pub fn prepare(&self) {
+        unsafe {
+            wsel_prepare(self)
+        }
+    }
+
+    #[inline]
+    pub fn start<'a>(&self) -> Result<(), cf::Retained<'a, cf::Error>> {
+        unsafe {
+            let mut error = None;
+            let res = rsel_startAndReturnError(self, &mut error);
+            if res {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
+        }
+    }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    fn AVAudioEngine_new<'a>() -> cf::Retained<'a, Engine>;
+
+    fn wsel_attachNode(id: &ns::Id, node: &Node);
+    fn wsel_detachNode(id: &ns::Id, node: &Node);
+    fn wsel_connect_to_fromBus_toBus_format(
+        id: &ns::Id,
+        node_from: &Node,
+        node_to: &Node,
+        from_bus: NodeBus,
+        to_bus: NodeBus,
+        format: Option<&Format>,
+    );
+    fn wsel_connect_to_format(
+        id: &ns::Id,
+        node_from: &Node,
+        node_to: &Node,
+        format: Option<&Format>,
+    );
+
+    fn wsel_prepare(id: &ns::Id);
+
+    fn rsel_startAndReturnError<'a>(id: &ns::Id, error: &mut Option<cf::Retained<'a, cf::Error>>) -> bool;
+}
