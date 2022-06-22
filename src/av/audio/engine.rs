@@ -1,6 +1,6 @@
 use crate::{cf, define_obj_type, ns, os};
 
-use super::{ConnectionPoint, Format, Node, NodeBus};
+use super::{ConnectionPoint, Format, Node, NodeBus, InputNode, OutputNode, mixer_node::MixerNode};
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(transparent)]
@@ -170,6 +170,44 @@ impl Engine {
             }
         }
     }
+
+    /// ```
+    /// use cidre::av;
+    ///
+    /// let engine = av::audio::Engine::new();
+    /// let input_node = engine.input_node();
+    /// let en = input_node.engine().expect("engine");
+    /// ```
+    pub fn input_node(&self) -> &InputNode {
+        unsafe {
+            rsel_inputNode(self)
+        }
+    }
+
+    /// ```
+    /// use cidre::av;
+    ///
+    /// let engine = av::audio::Engine::new();
+    /// let output_node = engine.output_node();
+    /// 
+    /// ```
+    pub fn output_node(&self) -> &OutputNode {
+        unsafe {
+            rsel_outputNode(self)
+        }
+    }
+
+    pub fn main_mixer_node(&self) -> &MixerNode {
+        unsafe {
+            rsel_mainMixerNode(self)
+        }
+    }
+
+    pub fn reset(&self) {
+        unsafe {
+            av_wsel_reset(self)
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -211,4 +249,10 @@ extern "C" {
     fn wsel_disconnectNodeInput(id: &ns::Id, node: &Node);
     fn wsel_disconnectNodeOutput_bus(id: &ns::Id, node: &Node, bus: NodeBus);
     fn wsel_disconnectNodeOutput(id: &ns::Id, node: &Node);
+
+    fn rsel_inputNode(id: &ns::Id) -> &InputNode;
+    fn rsel_outputNode(id: &ns::Id) -> &OutputNode;
+    fn rsel_mainMixerNode(id: &ns::Id) -> &MixerNode;
+
+    fn av_wsel_reset(id: &ns::Id);
 }

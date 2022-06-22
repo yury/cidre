@@ -205,6 +205,11 @@ rsel(, id, supportedMultiCamDeviceSets, NSArray<NSSet<AVCaptureDevice *> *> *)
 
 #endif
 
+wsel(av_, id, reset)
+NS_RETURNS_NOT_RETAINED
+rsel(, id, engine, AVAudioEngine * _Nullable)
+
+
 #pragma mark - AVAudioEngine
 
 NS_RETURNS_RETAINED
@@ -226,6 +231,15 @@ wsel_a(, id, disconnectNodeInput, AVAudioNode *)
 
 wsel_ab(, id, disconnectNodeOutput, AVAudioNode *, bus, AVAudioNodeBus)
 wsel_a(, id, disconnectNodeOutput, AVAudioNode *)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, inputNode, AVAudioInputNode *)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, outputNode, AVAudioOutputNode *)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, mainMixerNode, AVAudioMixerNode *)
 
 //- (void)prepare;
 //- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
