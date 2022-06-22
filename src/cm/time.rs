@@ -1,14 +1,12 @@
 use std::cmp::Ordering;
 
-use crate::cf::{Allocator, Retained, String};
+use crate::{cf::{Allocator, Retained, String}, define_options};
 
 pub type TimeValue = i64;
 pub type TimeScale = i32;
 pub type TimeEpoch = i64;
 
-#[derive(Copy, Clone, Debug)]
-#[repr(transparent)]
-pub struct TimeFlags(u32);
+define_options!(TimeFlags(u32));
 
 impl TimeFlags {
     pub const VALID: Self = Self(1 << 0);

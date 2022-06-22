@@ -1,10 +1,9 @@
 use crate::{
     cf::{Allocator, Retained, Type, TypeId},
-    define_cf_type, os,
+    define_cf_type, os, define_options,
 };
 
-#[repr(transparent)]
-pub struct BlockBufferFlags(pub u32);
+define_options!(BlockBufferFlags(u32));
 
 impl BlockBufferFlags {
     pub const NONE: Self = Self(0);
