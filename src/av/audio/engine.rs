@@ -1,6 +1,6 @@
 use crate::{cf, define_obj_type, ns, os};
 
-use super::{Format, Node, NodeBus};
+use super::{ConnectionPoint, Format, Node, NodeBus};
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(transparent)]
@@ -68,15 +68,14 @@ define_obj_type!(Engine(ns::Id));
 ///   nodes, removal of a node which has differing input vs. output channel counts, or which
 ///   is a mixer, is likely to result in a broken graph.
 ///
-/// By default, the engine is connected to an audio device and automatically renders in realtime. 
+/// By default, the engine is connected to an audio device and automatically renders in realtime.
 /// It can also be configured to operate in manual rendering mode, i.e. not connected to an
 /// audio device and rendering in response to requests from the client, normally at or
 /// faster than realtime rate.
 impl Engine {
-
     /// ```
     /// use cidre::av;
-    /// 
+    ///
     /// let engine = av::audio::Engine::new();
     /// ```
     #[inline]
@@ -108,22 +107,55 @@ impl Engine {
         }
     }
     #[inline]
-    pub fn connect_node_to_node(
+    pub fn connect_node_to_node(&self, node_from: &Node, node_to: &Node, format: Option<&Format>) {
+        unsafe { wsel_connect_to_format(self, node_from, node_to, format) }
+    }
+
+    pub fn connect_node_to_connection_points_from_bus(
         &self,
-        node_from: &Node,
-        node_to: &Node,
+        node: &Node,
+        connection_pods: &cf::ArrayOf<ConnectionPoint>,
+        from_bus: NodeBus,
         format: Option<&Format>,
     ) {
         unsafe {
-            wsel_connect_to_format(self, node_from, node_to, format)
+            wsel_connect_toConnectionPoints_fromBus_format(
+                self,
+                node,
+                connection_pods,
+                from_bus,
+                format,
+            )
+        }
+    }
+
+    pub fn disconnect_node_input_bus(&self, node: &Node, bus: NodeBus) {
+        unsafe {
+            wsel_disconnectNodeInput_bus(self, node, bus);
+        }
+    }
+
+    pub fn disconnect_node_input(&self, node: &Node) {
+        unsafe {
+            wsel_disconnectNodeInput(self, node);
+        }
+    }
+
+    pub fn disconnect_node_output_bus(&self, node: &Node, bus: NodeBus) {
+        unsafe {
+            wsel_disconnectNodeOutput_bus(self, node, bus);
+        }
+    }
+
+    pub fn disconnect_node_output(&self, node: &Node) {
+        unsafe {
+            wsel_disconnectNodeOutput(self, node);
         }
     }
 
     #[inline]
     pub fn prepare(&self) {
-        unsafe {
-            wsel_prepare(self)
-        }
+        unsafe { wsel_prepare(self) }
     }
 
     #[inline]
@@ -163,5 +195,20 @@ extern "C" {
 
     fn wsel_prepare(id: &ns::Id);
 
-    fn rsel_startAndReturnError<'a>(id: &ns::Id, error: &mut Option<cf::Retained<'a, cf::Error>>) -> bool;
+    fn rsel_startAndReturnError<'a>(
+        id: &ns::Id,
+        error: &mut Option<cf::Retained<'a, cf::Error>>,
+    ) -> bool;
+    fn wsel_connect_toConnectionPoints_fromBus_format(
+        id: &ns::Id,
+        node: &Node,
+        connection_pods: &cf::ArrayOf<ConnectionPoint>,
+        from_bus: NodeBus,
+        format: Option<&Format>,
+    );
+
+    fn wsel_disconnectNodeInput_bus(id: &ns::Id, node: &Node, bus: NodeBus);
+    fn wsel_disconnectNodeInput(id: &ns::Id, node: &Node);
+    fn wsel_disconnectNodeOutput_bus(id: &ns::Id, node: &Node, bus: NodeBus);
+    fn wsel_disconnectNodeOutput(id: &ns::Id, node: &Node);
 }

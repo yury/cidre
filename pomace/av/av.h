@@ -220,7 +220,12 @@ wsel_abc(, id, connect, AVAudioNode *, to, AVAudioNode *, format, AVAudioFormat 
 wsel(, id, prepare)
 
 rsel_a(, id, startAndReturnError, NSError **, BOOL);
-//- (BOOL)startAndReturnError:(NSError **)outError;
+wsel_abcd(, id, connect, AVAudioNode *, toConnectionPoints, NSArray<AVAudioConnectionPoint *> *, fromBus, AVAudioNodeBus, format, AVAudioFormat * _Nullable)
+wsel_ab(, id, disconnectNodeInput, AVAudioNode *, bus, AVAudioNodeBus)
+wsel_a(, id, disconnectNodeInput, AVAudioNode *)
+
+wsel_ab(, id, disconnectNodeOutput, AVAudioNode *, bus, AVAudioNodeBus)
+wsel_a(, id, disconnectNodeOutput, AVAudioNode *)
 
 //- (void)prepare;
 //- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
