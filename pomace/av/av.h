@@ -210,6 +210,14 @@ NS_RETURNS_NOT_RETAINED
 rsel(, id, engine, AVAudioEngine * _Nullable)
 
 
+#pragma mark - AVAudioNode
+
+//@property (nonatomic, readonly) NSUInteger numberOfInputs;
+rsel(, id, numberOfInputs, NSUInteger)
+//@property (nonatomic, readonly) NSUInteger numberOfOutputs;
+rsel(, id, numberOfOutputs, NSUInteger)
+
+
 #pragma mark - AVAudioEngine
 
 NS_RETURNS_RETAINED
