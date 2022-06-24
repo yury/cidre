@@ -80,6 +80,15 @@ extern inline void Prefix ## wsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _
 rsel(Prefix, SelfType, ReadSel, Type) \
 wsel_a(Prefix, SelfType, WriteSel, Type) \
 
+#define asel(Prefix, ClassType, SEL) \
+extern inline ClassType * Prefix ## ClassType ## _ ## SEL(void) { return  [[ClassType alloc] SEL]; } \
+
+#define asel_a(Prefix, ClassType, SEL_A, A) \
+extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A(A a) { return  [[ClassType alloc] SEL_A: a]; } \
+
+#define asel_ab(Prefix, ClassType, SEL_A, A, SEL_B, B) \
+extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B(A a, B b) { return  [[ClassType alloc] SEL_A: a SEL_B: b]; } \
+
 
 #define csel(Prefix, ClassType, SEL, RetType) \
 extern inline RetType Prefix ## ClassType ## _ ## SEL(void) { return  [ClassType SEL]; } \

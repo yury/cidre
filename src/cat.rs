@@ -12,6 +12,8 @@ pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
 pub use audio::ClassDescription as AudioClassDescription;
 pub use audio::FormatFlags as AudioFormatFlags;
 pub use audio::FormatID as AudioFormatID;
+pub use audio::TimeStamp as AudioTimeStamp;
+pub use audio::TimeStampFlags as AudioTimeStampFlags;
 
 pub use audio::SessionErrorCode as AudioSessionErrorCode;
 pub use audio::SessionID as AudioSessionID;

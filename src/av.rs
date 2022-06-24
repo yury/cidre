@@ -60,3 +60,4 @@ pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::URLAsset;
 
 pub mod audio;
+pub use audio::time::Time as AudioTime;

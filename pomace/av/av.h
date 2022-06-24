@@ -252,4 +252,21 @@ rsel(, id, mainMixerNode, AVAudioMixerNode *)
 //- (void)prepare;
 //- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
 
+#pragma mark - AVAudioTime
+
+NS_RETURNS_RETAINED
+asel_a(, AVAudioTime, initWithHostTime, uint64_t)
+NS_RETURNS_RETAINED
+asel_ab(, AVAudioTime, initWithAudioTimeStamp, const AudioTimeStamp *, sampleRate, double)
+NS_RETURNS_RETAINED
+asel_ab(, AVAudioTime, initWithSampleTime, AVAudioFramePosition, atRate, double)
+
+
+rsel(, id, hostTime, uint64_t)
+rsel(, id, audioTimeStamp, AudioTimeStamp)
+rsel(, id, sampleRate, double)
+rsel(, id, isSampleTimeValid, BOOL)
+rsel(, id, sampleTime, AVAudioFramePosition)
+
+
 NS_ASSUME_NONNULL_END
