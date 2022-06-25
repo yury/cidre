@@ -255,18 +255,40 @@ rsel(, id, mainMixerNode, AVAudioMixerNode *)
 #pragma mark - AVAudioTime
 
 NS_RETURNS_RETAINED
-asel_a(, AVAudioTime, initWithHostTime, uint64_t)
+csel_a(, AVAudioTime, timeWithHostTime, uint64_t, AVAudioTime *)
 NS_RETURNS_RETAINED
-asel_ab(, AVAudioTime, initWithAudioTimeStamp, const AudioTimeStamp *, sampleRate, double)
+csel_ab(, AVAudioTime, timeWithAudioTimeStamp, const AudioTimeStamp *, sampleRate, double, AVAudioTime *)
 NS_RETURNS_RETAINED
-asel_ab(, AVAudioTime, initWithSampleTime, AVAudioFramePosition, atRate, double)
+csel_ab(, AVAudioTime, timeWithSampleTime, AVAudioFramePosition, atRate, double, AVAudioTime *)
+
+NS_RETURNS_RETAINED
+csel_abc(, AVAudioTime, timeWithHostTime, uint64_t, sampleTime, AVAudioFramePosition, atRate, double, AVAudioTime *)
 
 
 rsel(, id, hostTime, uint64_t)
 rsel(, id, audioTimeStamp, AudioTimeStamp)
 rsel(, id, sampleRate, double)
 rsel(, id, isSampleTimeValid, BOOL)
+rsel(, id, isHostTimeValid, BOOL)
 rsel(, id, sampleTime, AVAudioFramePosition)
 
+NS_RETURNS_RETAINED
+rsel_a(, id, extrapolateTimeFromAnchor, AVAudioTime *, AVAudioTime * _Nullable)
+
+#pragma mark - AVAudioCommonFormat
+
+NS_RETURNS_RETAINED
+asel_a(, AVAudioFormat, initWithStreamDescription, const AudioStreamBasicDescription *)
+
+NS_RETURNS_RETAINED
+asel_ab(, AVAudioFormat, initWithStreamDescription, const AudioStreamBasicDescription *, channelLayout, AVAudioChannelLayout * _Nullable)
+
+NS_RETURNS_RETAINED
+asel_ab(, AVAudioFormat, initStandardFormatWithSampleRate, double, channels, AVAudioChannelCount)
+
+NS_RETURNS_RETAINED
+asel_ab(, AVAudioFormat, initStandardFormatWithSampleRate, double, channelLayout, AVAudioChannelLayout *)
+//- (instancetype)initStandardFormatWithSampleRate:(double)sampleRate channelLayout:(AVAudioChannelLayout *)layout;
+//- (nullable instancetype)initStandardFormatWithSampleRate:(double)sampleRate channels:(AVAudioChannelCount)channels;
 
 NS_ASSUME_NONNULL_END
