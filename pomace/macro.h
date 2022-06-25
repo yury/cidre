@@ -89,6 +89,12 @@ extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A(A a) { return  [[Cla
 #define asel_ab(Prefix, ClassType, SEL_A, A, SEL_B, B) \
 extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B(A a, B b) { return  [[ClassType alloc] SEL_A: a SEL_B: b]; } \
 
+#define asel_abc(Prefix, ClassType, SEL_A, A, SEL_B, B, SEL_C, C) \
+extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B_ ## SEL_C(A a, B b, C c) { return  [[ClassType alloc] SEL_A: a SEL_B: b SEL_C: c]; } \
+
+#define asel_abcd(Prefix, ClassType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D) \
+extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D(A a, B b, C c, D d) { return  [[ClassType alloc] SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
+
 
 #define csel(Prefix, ClassType, SEL, RetType) \
 extern inline RetType Prefix ## ClassType ## _ ## SEL(void) { return  [ClassType SEL]; } \

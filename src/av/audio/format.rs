@@ -1,7 +1,4 @@
-use crate::{
-    at::{audio::StreamBasicDescription},
-    cf, define_obj_type, ns,
-};
+use crate::{at::audio::StreamBasicDescription, cf, define_obj_type, ns};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
@@ -25,7 +22,7 @@ define_obj_type!(Format(ns::Id));
 /// AVAudioFormat wraps a Core Audio AudioStreamBasicDescription struct, with convenience
 /// initializers and accessors for common formats, including Core Audio's standard deinterleaved
 /// 32-bit floating point.
-/// 
+///
 /// Instances of this class are immutable.
 impl Format {
     /// If the format specifies more than 2 channels, this method fails (returns None).
@@ -41,7 +38,6 @@ impl Format {
         unsafe { AVAudioFormat_initWithStreamDescription_channelLayout(asbd, layout) }
     }
 
-    
     pub fn standard_with_sample_rate_and_channels<'a>(
         sample_rate: f64,
         channels: ChannelCount,
@@ -55,6 +51,23 @@ impl Format {
         layout: &ChannelLayout,
     ) -> cf::Retained<'a, Format> {
         unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(sample_rate, layout) }
+    }
+
+    /// Initialize to float with the specified sample rate, channel layout and interleavedness.
+    pub fn with_common_format_sample_rate_interleaved_channel_layout<'a>(
+        format: CommonFormat,
+        sample_rate: f64,
+        interleaved: bool,
+        channel_layout: &ChannelLayout,
+    ) -> cf::Retained<'a, Format> {
+        unsafe {
+            AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
+                format,
+                sample_rate,
+                interleaved,
+                channel_layout,
+            )
+        }
     }
 }
 
@@ -74,9 +87,16 @@ extern "C" {
         sample_rate: f64,
         channels: ChannelCount,
     ) -> Option<cf::Retained<'a, Format>>;
-    
+
     fn AVAudioFormat_initStandardFormatWithSampleRate_channelLayout<'a>(
         sample_rate: f64,
         layout: &ChannelLayout,
+    ) -> cf::Retained<'a, Format>;
+
+    fn AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout<'a>(
+        format: CommonFormat,
+        sample_rate: f64,
+        interleaved: bool,
+        channel_layout: &ChannelLayout,
     ) -> cf::Retained<'a, Format>;
 }
