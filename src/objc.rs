@@ -17,6 +17,7 @@ impl Class {
     }
 }
 
+/// Use it as NSObject or id
 #[repr(transparent)]
 pub struct Id(Type);
 

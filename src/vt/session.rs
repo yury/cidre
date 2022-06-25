@@ -3,7 +3,6 @@ use crate::{
     define_cf_type, os,
 };
 
-// pub type Session = cf::Type;
 define_cf_type!(Session(cf::Type));
 
 impl Session {
