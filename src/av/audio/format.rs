@@ -79,9 +79,27 @@ impl Format {
     }
 
     pub fn settings(&self) -> &cf::DictionaryOf<cf::String, ns::Id> {
-        unsafe {
-            transmute(rsel_settings(self))
-        }
+        unsafe { transmute(rsel_settings(self)) }
+    }
+
+    pub fn is_interleaved(&self) -> bool {
+        unsafe { rsel_isInterleaved(self) }
+    }
+
+    pub fn common_format(&self) -> CommonFormat {
+        unsafe { rsel_commonFormat(self) }
+    }
+
+    pub fn channel_count(&self) -> ChannelCount {
+        unsafe { av_format_rsel_channelCount(self) }
+    }
+
+    pub fn absd(&self) -> &StreamBasicDescription {
+        unsafe { rsel_streamDescription(self) }
+    }
+
+    pub fn channel_layout(&self) -> Option<&ChannelLayout> {
+        unsafe { rsel_channelLayout(self) }
     }
 }
 
@@ -117,7 +135,12 @@ extern "C" {
     fn AVAudioFormat_initWithSettings<'a>(
         settings: &cf::Dictionary,
     ) -> Option<cf::Retained<'a, Format>>;
-    
 
     fn rsel_settings(id: &Id) -> &cf::Dictionary;
+    fn rsel_isInterleaved(id: &Id) -> bool;
+    fn rsel_commonFormat(id: &Id) -> CommonFormat;
+    fn av_format_rsel_channelCount(id: &Id) -> ChannelCount;
+    fn rsel_streamDescription(id: &Id) -> &StreamBasicDescription;
+    fn rsel_channelLayout(id: &Id) -> Option<&ChannelLayout>;
+
 }

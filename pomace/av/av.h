@@ -296,5 +296,10 @@ NS_RETURNS_RETAINED
 asel_a(, AVAudioFormat, initWithSettings, NSDictionary *);
 
 rsel(, id, settings, NSDictionary *)
+rsel(, id, isInterleaved, BOOL)
+rsel(, id, commonFormat, AVAudioCommonFormat)
+rsel(av_format_, AVAudioFormat *, channelCount, AVAudioChannelCount)
+rsel(, id, streamDescription, const AudioStreamBasicDescription *)
+rsel(, id, channelLayout, AVAudioChannelLayout * _Nullable)
 
 NS_ASSUME_NONNULL_END
