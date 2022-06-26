@@ -2,7 +2,10 @@ use crate::define_cf_type;
 
 use crate::cf;
 
+use super::runtime::Release;
+use super::runtime::Retain;
 use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
+use std::marker::PhantomData;
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -394,6 +397,62 @@ impl MutableDictionary {
         unsafe { CFDictionaryRemoveAllValues(self) }
     }
 }
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct DictionaryOf<K, V>(Dictionary, PhantomData<(K, V)>)
+where
+    K: Retain + Release,
+    V: Retain + Release;
+
+impl<K, V> DictionaryOf<K, V>
+where
+    K: Retain + Release,
+    V: Retain + Release,
+{
+    pub fn get(&self, k: &K) -> Option<&V> {
+        unsafe { transmute(self.0.value_by_type_ref_key(transmute(k))) }
+    }
+}
+
+impl<K, V> std::ops::Deref for DictionaryOf<K, V>
+where
+    K: Retain + Release,
+    V: Retain + Release,
+{
+    type Target = Dictionary;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+
+impl<K, V> Release for DictionaryOf<K, V>
+where
+    K: Retain + Release,
+    V: Retain + Release,
+{
+    unsafe fn release(&mut self) {
+        self.0.release()
+    }
+}
+
+impl<K, V> Retain for DictionaryOf<K, V>
+where
+    K: Retain + Release,
+    V: Retain + Release,
+{
+    fn retained<'a>(&self) -> Retained<'a, Self> {
+        unsafe { transmute(self.0.retained()) }
+    }
+}
+
+
+
+#[repr(transparent)]
+pub struct MutDictionaryOf<K, V>(MutableDictionary, PhantomData<(K, V)>);
 
 extern "C" {
     fn CFDictionaryCreateMutable<'a>(

@@ -1,3 +1,7 @@
+use std::intrinsics::transmute;
+
+use ns::Id;
+
 use crate::{at::audio::StreamBasicDescription, cf, define_obj_type, ns};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
@@ -69,6 +73,16 @@ impl Format {
             )
         }
     }
+
+    pub fn with_settings<'a>(settings: &cf::Dictionary) -> Option<cf::Retained<'a, Format>> {
+        unsafe { AVAudioFormat_initWithSettings(settings) }
+    }
+
+    pub fn settings(&self) -> &cf::DictionaryOf<cf::String, ns::Id> {
+        unsafe {
+            transmute(rsel_settings(self))
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -99,4 +113,11 @@ extern "C" {
         interleaved: bool,
         channel_layout: &ChannelLayout,
     ) -> cf::Retained<'a, Format>;
+
+    fn AVAudioFormat_initWithSettings<'a>(
+        settings: &cf::Dictionary,
+    ) -> Option<cf::Retained<'a, Format>>;
+    
+
+    fn rsel_settings(id: &Id) -> &cf::Dictionary;
 }

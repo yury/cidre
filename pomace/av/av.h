@@ -292,4 +292,9 @@ asel_ab(, AVAudioFormat, initStandardFormatWithSampleRate, double, channelLayout
 NS_RETURNS_RETAINED
 asel_abcd(, AVAudioFormat, initWithCommonFormat, AVAudioCommonFormat, sampleRate, double, interleaved, BOOL, channelLayout, AVAudioChannelLayout *)
 
+NS_RETURNS_RETAINED
+asel_a(, AVAudioFormat, initWithSettings, NSDictionary *);
+
+rsel(, id, settings, NSDictionary *)
+
 NS_ASSUME_NONNULL_END

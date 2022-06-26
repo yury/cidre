@@ -42,6 +42,7 @@ pub use array::RetainCallBack as ArrayRetainCallBack;
 pub mod dictionary;
 pub use dictionary::ApplierFunction as DictionaryApplierFunction;
 pub use dictionary::Dictionary;
+pub use dictionary::DictionaryOf;
 pub use dictionary::KeyCallBacks as DictionaryKeyCallBacks;
 pub use dictionary::MutableDictionary;
 pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
