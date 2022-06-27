@@ -11,16 +11,19 @@ pub use types::Point3D;
 pub use types::Vector3D;
 pub use types::Vector3DOrientation;
 
-pub mod io_node;
 pub mod node;
+pub use node::Node;
+
+pub mod io_node;
 pub use io_node::IONode;
 pub use io_node::InputNode;
 pub use io_node::OutputNode;
 
 pub mod mixer_node;
+pub use mixer_node::MixerNode;
 
 pub mod time;
-pub use node::Node;
+pub use time::Time;
 
 pub mod engine;
 pub use engine::Engine;
@@ -49,6 +52,7 @@ pub use format::CommonFormat;
 pub use format::Format;
 
 pub mod channel_layout;
+pub use channel_layout::ChannelLayout;
 
 pub mod connection_point;
 pub use connection_point::ConnectionPoint;
@@ -61,3 +65,4 @@ pub use converter::PrimeInfo as ConverterPrimeInfo;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 pub mod settings;
+pub use settings::Quality;
