@@ -60,6 +60,7 @@ pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::URLAsset;
 
 pub mod audio;
+pub use audio::mixer_node::MixerNode as AudioMixerNode;
 pub use audio::time::Time as AudioTime;
 pub use audio::Buffer as AudioBuffer;
 pub use audio::CommonFormat as AudioCommonFormat;
@@ -71,10 +72,8 @@ pub use audio::FrameCount as AudioFrameCount;
 pub use audio::FramePosition as AudioFramePosition;
 pub use audio::IONode as AudioIONode;
 pub use audio::InputNode as AudioInputNode;
-pub use audio::InputNode as AudioInputNode;
 pub use audio::Node as AudioNode;
 pub use audio::NodeBus as AudioNodeBus;
-pub use audio::OutputNode as AudioOutputNode;
 pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PCMBuffer as AudioPCMBuffer;
 pub use audio::Player as AudioPlayer;
