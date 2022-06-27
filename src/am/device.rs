@@ -9,7 +9,6 @@ pub mod log;
 pub use base::{Device, Error, Notification};
 pub use discovery::{Action, InterfaceConnectionType, QueryBuilder, Speed};
 
-
 use crate::{
     cf::{self, Retained},
     os,
@@ -339,9 +338,8 @@ impl<'a> Session<'a> {
     ) -> Result<Retained<'b, ServiceConnection>, Error> {
         unsafe {
             let mut service = None;
-            let foo: *mut c_void = std::ptr::null_mut(); 
-            AMDeviceSecureStartService(self, name, foo, &mut service)
-                .to_result(service)
+            let foo: *mut c_void = std::ptr::null_mut();
+            AMDeviceSecureStartService(self, name, foo, &mut service).to_result(service)
         }
     }
 
@@ -424,7 +422,6 @@ extern "C" {
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }
-
 
 #[cfg(test)]
 mod tests {

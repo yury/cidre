@@ -7,5 +7,5 @@ pub use device::QueryBuilder as DeviceQueryBuilder;
 pub use device::Speed as DeviceSpeed;
 
 pub mod service_connection;
-pub use service_connection::ServiceConnection;
 pub use service_connection::InvalidSocketError;
+pub use service_connection::ServiceConnection;

@@ -1,6 +1,6 @@
 use crate::{
     cf::{Allocator, Retained, Type, TypeId},
-    define_cf_type, os, define_options,
+    define_cf_type, define_options, os,
 };
 
 define_options!(BlockBufferFlags(u32));

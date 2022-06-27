@@ -1,6 +1,9 @@
 use std::cmp::Ordering;
 
-use crate::{cf::{Allocator, Retained, String}, define_options};
+use crate::{
+    cf::{Allocator, Retained, String},
+    define_options,
+};
 
 pub type TimeValue = i64;
 pub type TimeScale = i32;

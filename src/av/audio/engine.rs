@@ -1,6 +1,6 @@
 use crate::{cf, define_obj_type, ns, os};
 
-use super::{ConnectionPoint, Format, Node, NodeBus, InputNode, OutputNode, mixer_node::MixerNode};
+use super::{mixer_node::MixerNode, ConnectionPoint, Format, InputNode, Node, NodeBus, OutputNode};
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(transparent)]
@@ -179,9 +179,7 @@ impl Engine {
     /// let en = input_node.engine().expect("engine");
     /// ```
     pub fn input_node(&self) -> &InputNode {
-        unsafe {
-            rsel_inputNode(self)
-        }
+        unsafe { rsel_inputNode(self) }
     }
 
     /// ```
@@ -189,24 +187,18 @@ impl Engine {
     ///
     /// let engine = av::audio::Engine::new();
     /// let output_node = engine.output_node();
-    /// 
+    ///
     /// ```
     pub fn output_node(&self) -> &OutputNode {
-        unsafe {
-            rsel_outputNode(self)
-        }
+        unsafe { rsel_outputNode(self) }
     }
 
     pub fn main_mixer_node(&self) -> &MixerNode {
-        unsafe {
-            rsel_mainMixerNode(self)
-        }
+        unsafe { rsel_mainMixerNode(self) }
     }
 
     pub fn reset(&self) {
-        unsafe {
-            av_wsel_reset(self)
-        }
+        unsafe { av_wsel_reset(self) }
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::{
     cf::{self, Retained, Type},
-    define_cf_type,
-    sys::_types::MachPort, define_options,
+    define_cf_type, define_options,
+    sys::_types::MachPort,
 };
 
 pub type Id = u32;
@@ -52,7 +52,7 @@ impl LockOptions {
     /// If you are not going to modify the data while you hold the lock,
     /// you should set this flag to avoid invalidating
     /// any existing caches of the buffer contents.
-    /// 
+    ///
     /// This flag should be passed both to the lock and unlock functions.
     /// Non-symmetrical usage of this flag will result in undefined behavior.
     pub const READ_ONLY: Self = Self(1);

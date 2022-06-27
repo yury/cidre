@@ -95,10 +95,8 @@ macro_rules! define_options {
                 Self(value)
             }
         }
-
-    }
+    };
 }
-
 
 #[cfg(test)]
 mod tests {

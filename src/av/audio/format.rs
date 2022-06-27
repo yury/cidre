@@ -80,7 +80,7 @@ impl Format {
 
     /// ```
     /// use cidre::av;
-    /// 
+    ///
     /// let format = av::AudioFormat::standard_with_sample_rate_and_channels(44_100f64, 2).unwrap();
     /// let settings = format.settings();
     /// ```

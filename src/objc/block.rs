@@ -33,8 +33,6 @@ use super::Class;
 //     }
 // }
 
-
-
 #[repr(C)]
 pub struct CompletionBlock<F>
 where
@@ -79,7 +77,6 @@ pub trait CompletionHandlerAB<A, B>: FnOnce(A, B) + Sized + Send {
 }
 
 impl<F, A, B> CompletionHandlerAB<A, B> for F where F: FnOnce(A, B) + Send {}
-
 
 // https://developer.apple.com/documentation/swift/calling_objective-c_apis_asynchronously
 

@@ -131,7 +131,7 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
     where
         F: FnMut(A, B, C, D, E) -> R,
     {
-        (literal.func)(a, b, c,d ,e)
+        (literal.func)(a, b, c, d, e)
     }
 
     pub fn call_mut(&mut self) -> R
@@ -231,9 +231,7 @@ impl<F: 'static, R> Literal<CopyDispose, ManuallyDrop<F>, R, ()> {
         println!("dropping: {:b}", b.flags.0);
         let mut b = ManuallyDrop::new(b);
 
-        unsafe {
-            ManuallyDrop::drop(&mut b.func)
-        };
+        unsafe { ManuallyDrop::drop(&mut b.func) };
     }
 
     const DESCRIPTOR_F: Descriptor<CopyDispose> = Descriptor {
@@ -265,7 +263,7 @@ impl<F: 'static, R> Literal<CopyDispose, ManuallyDrop<F>, R, ()> {
         );
         Box::new(Self {
             isa: unsafe { _NSConcreteMallocBlock },
-            flags: Flags::HAS_COPY_DISPOSE  | Flags::NEEDS_FREE  | Flags(retain_count << 1),
+            flags: Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE | Flags(retain_count << 1),
             reserved: 0,
             invoke: unsafe { transmute(Self::invoke_box as *const c_void) },
             descriptor: &Self::DESCRIPTOR_F,
@@ -273,21 +271,19 @@ impl<F: 'static, R> Literal<CopyDispose, ManuallyDrop<F>, R, ()> {
             fields: (),
         })
     }
-
 }
 
 impl<F: 'static, R> Literal<NoCopyDispose, F, R, ()> {
-
     const DESCRIPTOR_F: Descriptor<NoCopyDispose> = Descriptor {
         reserved: 0,
         size: std::mem::size_of::<Self>(),
         copy_dispose: NoCopyDispose,
     };
 
-    pub fn stack(func: F) -> Self 
+    pub fn stack(func: F) -> Self
     where
         F: FnMut() -> R,
-        {
+    {
         Self {
             isa: unsafe { _NSConcreteStackBlock },
             flags: Flags::IS_NOESCAPE,

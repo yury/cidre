@@ -16,7 +16,6 @@ impl OptionFlags {
     pub const NONE: Self = Self(0);
 }
 
-
 pub type ComparatorFunction = extern "C" fn(
     val1: *const c_void,
     val2: *const c_void,

@@ -61,4 +61,14 @@ pub use asset::URLAsset;
 
 pub mod audio;
 pub use audio::time::Time as AudioTime;
+pub use audio::Buffer as AudioBuffer;
+pub use audio::CommonFormat as AudioCommonFormat;
+pub use audio::CompressedBuffer as AudioCompressedBuffer;
+pub use audio::Converter as AudioConverter;
+pub use audio::Engine as AudioEngine;
 pub use audio::Format as AudioFormat;
+pub use audio::FrameCount as AudioFrameCount;
+pub use audio::InputNode as AudioInputNode;
+pub use audio::Node as AudioNode;
+pub use audio::OutputNode as AudioOutputNode;
+pub use audio::PCMBuffer as AudioPCMBuffer;

@@ -428,7 +428,6 @@ where
     }
 }
 
-
 impl<K, V> Release for DictionaryOf<K, V>
 where
     K: Retain + Release,
@@ -448,8 +447,6 @@ where
         unsafe { transmute(self.0.retained()) }
     }
 }
-
-
 
 #[repr(transparent)]
 pub struct MutDictionaryOf<K, V>(MutableDictionary, PhantomData<(K, V)>);

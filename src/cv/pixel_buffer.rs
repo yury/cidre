@@ -1,6 +1,6 @@
 use crate::{
     cf::{self},
-    cv, os, define_options,
+    cv, define_options, os,
 };
 
 pub type PixelBuffer = cv::ImageBuffer;

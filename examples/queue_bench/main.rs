@@ -1,7 +1,4 @@
-use std::{
-    rc::Rc,
-    sync::Mutex,
-};
+use std::{rc::Rc, sync::Mutex};
 
 use cidre::{dispatch, objc::native_block::DispatchBlock};
 // use parking_lot::Mutex;

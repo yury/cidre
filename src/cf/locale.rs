@@ -34,7 +34,7 @@ impl Locale {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]    
+#[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFLocaleGetSystem<'get>() -> &'get Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Identifier;
