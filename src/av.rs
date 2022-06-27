@@ -73,3 +73,5 @@ pub use audio::InputNode as AudioInputNode;
 pub use audio::Node as AudioNode;
 pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PCMBuffer as AudioPCMBuffer;
+pub use audio::Player as AudioPlayer;
+pub use audio::PlayerNode as AudioPlayerNode;
