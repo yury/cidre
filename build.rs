@@ -21,11 +21,11 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
         // -isystem $(MACOSX_SDK_DIR)/System/iOSSupport/usr/include \
         // -iframework $(MACOSX_SDK_DIR)/System/iOSSupport/System/Library/Frameworks
         Command::new("xcodebuild")
-            .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
+            .args(&["-project", "./pomace/pomace.xcodeproj"])
             .args(&["-scheme", pomace])
             .args(&["-sdk", "macosx"])
-            .args(&["-arch", &arch])
-            .args(&["-configuration", &configuration])
+            .args(&["-arch", arch])
+            .args(&["-configuration", configuration])
             .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
             .args(&[
                 "-destination 'platform=macOS,variant=Mac Catalyst'",
@@ -36,11 +36,11 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
             .unwrap()
     } else {
         Command::new("xcodebuild")
-            .args(&["-project", &format!("./pomace/pomace.xcodeproj")])
+            .args(&["-project", "./pomace/pomace.xcodeproj"])
             .args(&["-scheme", pomace])
-            .args(&["-sdk", &sdk])
-            .args(&["-arch", &arch])
-            .args(&["-configuration", &configuration])
+            .args(&["-sdk", sdk])
+            .args(&["-arch", arch])
+            .args(&["-configuration", configuration])
             .args(&["-derivedDataPath", out_lib_dir.to_str().unwrap()])
             .arg("build")
             .status()
@@ -54,7 +54,7 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     let mut s = out_lib_dir.to_str().unwrap().to_string();
 
     if !sdk.eq("macosx") {
-        s.push_str("-");
+        s.push('-');
         s.push_str(sdk);
     }
 

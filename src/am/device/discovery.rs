@@ -40,7 +40,7 @@ impl Speed {
     pub const _80211B: Self = Self(11 * 1024);
     pub const _80211G: Self = Self(54 * 1024);
     pub const _80211N: Self = Self(540 * 1024);
-    pub const BLUETOOTH1: Self = Self(1 * 1024);
+    pub const BLUETOOTH1: Self = Self(1024);
     pub const BLUETOOTH2: Self = Self(21 * 1024);
 }
 
@@ -88,9 +88,9 @@ impl NotificationInfo {
     pub fn safe<'a>(&self) -> SafeInfo<'a> {
         match self.action {
             Action::Attached => SafeInfo::Attached(unsafe { transmute(self.device) }),
-            Action::Detached => SafeInfo::Detached(unsafe { transmute(self.device) }),
+            Action::Detached => SafeInfo::Detached(unsafe { &*self.device }),
             Action::NotificationStopped => SafeInfo::NotificationStopped,
-            Action::Paired => SafeInfo::Paired(unsafe { transmute(self.device) }),
+            Action::Paired => SafeInfo::Paired(unsafe { &*self.device }),
         }
     }
 }
@@ -255,7 +255,7 @@ impl Notification {
     }
 
     pub unsafe fn unsubscribe(&self) -> Error {
-        AMDeviceNotificationUnsubscribe(&self)
+        AMDeviceNotificationUnsubscribe(self)
     }
 }
 

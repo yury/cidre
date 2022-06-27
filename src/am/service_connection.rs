@@ -114,9 +114,8 @@ impl ServiceConnection {
                         Err(ref e) if e.kind() == tokio::io::ErrorKind::WouldBlock => {
                             continue;
                         }
-                        Err(e) => {
-                            return Err(e.into());
-                        }
+                        Err(e) => return Err(e),
+                        
                     }
                 }
 

@@ -569,7 +569,7 @@ impl ChannelLabel {
     pub const DISCRETE: Self = Self(400);
 
     // numbered discrete channel
-    pub const DISCRETE_0: Self = Self((1u32 << 16) | 0);
+    pub const DISCRETE_0: Self = Self(1u32 << 16);
     pub const DISCRETE_1: Self = Self((1u32 << 16) | 1);
     pub const DISCRETE_2: Self = Self((1u32 << 16) | 2);
     pub const DISCRETE_3: Self = Self((1u32 << 16) | 3);
@@ -591,7 +591,7 @@ impl ChannelLabel {
     pub const HOA_ACN: Self = Self(500);
 
     // numbered HOA ACN channels, SN3D normalization
-    pub const HOA_ACN_0: Self = Self((2u32 << 16) | 0);
+    pub const HOA_ACN_0: Self = Self(2u32 << 16);
     pub const HOA_ACN_1: Self = Self((2u32 << 16) | 1);
     pub const HOA_ACN_2: Self = Self((2u32 << 16) | 2);
     pub const HOA_ACN_3: Self = Self((2u32 << 16) | 3);
@@ -741,10 +741,10 @@ impl ChannelLayoutTag {
     //  General layouts
 
     /// use the array of AudioChannelDescriptions to define the mapping.
-    pub const USE_CHANNEL_DESCRIPTIONS: Self = Self((0u32 << 16) | 0);
+    pub const USE_CHANNEL_DESCRIPTIONS: Self = Self(0u32 << 16);
 
     /// use the bitmap to define the mapping.
-    pub const USE_CHANNEL_BITMAP: Self = Self((1u32 << 16) | 0);
+    pub const USE_CHANNEL_BITMAP: Self = Self(1u32 << 16);
 
     /// a standard mono stream
     pub const MONO: Self = Self((100u32 << 16) | 1);
@@ -1057,10 +1057,10 @@ impl ChannelLayoutTag {
 
     /// Higher Order Ambisonics, Ambisonics Channel Number, SN3D normalization
     /// needs to be ORed with the actual number of channels (not the HOA order)
-    pub const HOA_ACN_SN3D: Self = Self((190u32 << 16) | 0);
+    pub const HOA_ACN_SN3D: Self = Self(190u32 << 16);
     /// Higher Order Ambisonics, Ambisonics Channel Number, N3D normalization
     /// needs to be ORed with the actual number of channels (not the HOA order)
-    pub const HOA_ACN_N3D: Self = Self((191u32 << 16) | 0);
+    pub const HOA_ACN_N3D: Self = Self(191u32 << 16);
 
     /// L R C LFE Ls Rs Ltm Rtm
     pub const ATMOS_5_1_2: Self = Self((194u32 << 16) | 8);
@@ -1141,7 +1141,7 @@ impl ChannelLayoutTag {
     pub const LOGIC_ATMOS_7_1_6: Self = Self((203u32 << 16) | 14);
 
     /// needs to be ORed with the actual number of channels
-    pub const DISCRETE_IN_ORDER: Self = Self((147u32 << 16) | 0);
+    pub const DISCRETE_IN_ORDER: Self = Self(147u32 << 16);
 
     /// Channel layout tag values in this range are reserved for internal use
     pub const BEGIN_RESERVED: Self = Self(0xF0000000);

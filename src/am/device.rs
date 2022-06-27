@@ -33,7 +33,7 @@ impl Device {
     /// Returns Error::WRONG_DROID if the device is in the restore OS.
     pub fn connected(&self) -> Result<Connected, Error> {
         unsafe {
-            AMDeviceConnect(&self).result()?;
+            AMDeviceConnect(self).result()?;
             Ok(Connected(self))
         }
     }
@@ -287,7 +287,7 @@ impl<'a> Connected<'a> {
 impl<'a> Drop for Connected<'a> {
     fn drop(&mut self) {
         println!("disconnect");
-        unsafe { AMDeviceDisconnect(&self.0) };
+        unsafe { AMDeviceDisconnect(self.0) };
     }
 }
 
@@ -366,7 +366,7 @@ impl<'a> Deref for Session<'a> {
     type Target = Connected<'a>;
 
     fn deref(&self) -> &Self::Target {
-        &self.0
+        self.0
     }
 }
 
@@ -410,7 +410,7 @@ extern "C" {
         device: &Device,
         service_name: &cf::String,
         ssl: *mut c_void,
-        service: &Option<Retained<'a, ServiceConnection>>,
+        service: &mut Option<Retained<'a, ServiceConnection>>,
     ) -> Error;
 
     fn AMDeviceCopyValueWithError<'a>(
