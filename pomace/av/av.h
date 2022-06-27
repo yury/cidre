@@ -295,11 +295,17 @@ asel_abcd(, AVAudioFormat, initWithCommonFormat, AVAudioCommonFormat, sampleRate
 NS_RETURNS_RETAINED
 asel_a(, AVAudioFormat, initWithSettings, NSDictionary *);
 
+NS_RETURNS_NOT_RETAINED
 rsel(, id, settings, NSDictionary *)
 rsel(, id, isInterleaved, BOOL)
 rsel(, id, commonFormat, AVAudioCommonFormat)
 rsel(av_format_, AVAudioFormat *, channelCount, AVAudioChannelCount)
 rsel(, id, streamDescription, const AudioStreamBasicDescription *)
+NS_RETURNS_NOT_RETAINED
 rsel(, id, channelLayout, AVAudioChannelLayout * _Nullable)
+
+NS_RETURNS_NOT_RETAINED
+rsel(, id, magicCookie, NSData * _Nullable)
+
 
 NS_ASSUME_NONNULL_END

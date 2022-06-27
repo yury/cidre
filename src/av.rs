@@ -61,3 +61,4 @@ pub use asset::URLAsset;
 
 pub mod audio;
 pub use audio::time::Time as AudioTime;
+pub use audio::Format as AudioFormat;

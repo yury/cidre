@@ -78,6 +78,12 @@ impl Format {
         unsafe { AVAudioFormat_initWithSettings(settings) }
     }
 
+    /// ```
+    /// use cidre::av;
+    /// 
+    /// let format = av::AudioFormat::standard_with_sample_rate_and_channels(44_100f64, 2).unwrap();
+    /// let settings = format.settings();
+    /// ```
     pub fn settings(&self) -> &cf::DictionaryOf<cf::String, ns::Id> {
         unsafe { transmute(rsel_settings(self)) }
     }
@@ -100,6 +106,10 @@ impl Format {
 
     pub fn channel_layout(&self) -> Option<&ChannelLayout> {
         unsafe { rsel_channelLayout(self) }
+    }
+
+    pub fn magic_cookie(&self) -> Option<&cf::Data> {
+        unsafe { rsel_magicCookie(self) }
     }
 }
 
@@ -142,5 +152,7 @@ extern "C" {
     fn av_format_rsel_channelCount(id: &Id) -> ChannelCount;
     fn rsel_streamDescription(id: &Id) -> &StreamBasicDescription;
     fn rsel_channelLayout(id: &Id) -> Option<&ChannelLayout>;
+
+    fn rsel_magicCookie(id: &Id) -> Option<&cf::Data>;
 
 }
