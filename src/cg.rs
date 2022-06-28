@@ -3,6 +3,7 @@ pub use geometry::Float;
 pub use geometry::Point;
 pub use geometry::Rect;
 pub use geometry::Size;
+pub use geometry::Vector;
 
 pub mod color_space;
 pub use color_space::ColorRenderingIntent;
@@ -21,6 +22,7 @@ pub use direct_display::ID as DirectDisplayID;
 
 pub mod affine_transform;
 pub use affine_transform::AffineTransform;
+pub use affine_transform::Components as AffineTransformComponents;
 
 pub mod error;
 pub use error::Error;

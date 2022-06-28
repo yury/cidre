@@ -558,6 +558,26 @@ impl Converter {
         unsafe { self.convert_complex_buffer(frames, transmute(input), transmute(output)) }.result()
     }
 
+    pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> Result<usize, os::Status> {
+        unsafe {
+            let mut n = output.len() as u32;
+            let res = self.convert_buffer(
+                input.len() as _,
+                input.as_ptr() as _,
+                &mut n,
+                output.as_mut_ptr() as _,
+            );
+            if res.is_ok() {
+                Ok(n as _)
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    /// # Safety
+    ///
+    /// use `self.convert_buf()`
     #[inline]
     pub unsafe fn convert_buffer(
         &self,

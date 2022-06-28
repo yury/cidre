@@ -72,6 +72,13 @@ impl Rect {
     }
 }
 
+#[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]
+#[repr(C)]
+pub struct Vector {
+    pub dx: Float,
+    pub dy: Float,
+}
+
 extern "C" {
     fn CGPointCreateDictionaryRepresentation<'a>(point: Point) -> cf::Retained<'a, cf::Dictionary>;
     fn CGSizeCreateDictionaryRepresentation<'a>(size: Size) -> cf::Retained<'a, cf::Dictionary>;

@@ -11,7 +11,38 @@ pub struct AffineTransform {
     pub ty: f64,
 }
 
+/*                      |--------------------------- Components ------------------------|
+ *
+ *      | a  b  0 |     | sx  0  0 |   |  1  0  0 |   | cos(t)  sin(t)  0 |   | 1  0  0 |
+ *      | c  d  0 |  =  |  0 sy  0 | * | sh  1  0 | * |-sin(t)  cos(t)  0 | * | 0  1  0 |
+ *      | tx ty 1 |     |  0  0  1 |   |  0  0  1 |   |   0       0     1 |   | tx ty 1 |
+ *    AffineTransform      scale           shear            rotation          translation
+ */
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[repr(C)]
+pub struct Components {
+    /// Initial scaling in X and Y dimensions. {sx,sy}
+    /// Negative values indicate the image has been flipped in this dimension.
+    pub scale: cg::Size,
+
+    /// shear distortion (sh). Turns rectangles to parallelograms. 0 for no shear. Typically 0.
+    pub horizontal_shear: cg::Float,
+
+    /// Rotation angle in radians about the origin. (t) Sign convention for clockwise rotation
+    /// may differ between various Apple frameworks based on origin placement. Please see discussion. 
+    pub rotation: cg::Float,
+
+    /// Displacement from the origin (ty, ty) 
+    pub translation: cg::Vector,
+}
+
 impl AffineTransform {
+    #[inline]
+    pub fn with_components(components: Components) -> Self {
+        unsafe { CGAffineTransformMakeWithComponents(components) }
+    }
+
     #[inline]
     pub fn identity() -> AffineTransform {
         unsafe { CGAffineTransformIdentity }
@@ -66,6 +97,11 @@ impl AffineTransform {
     pub fn equal_to(&self, other: &AffineTransform) -> bool {
         unsafe { CGAffineTransformEqualToTransform(*self, *other) }
     }
+
+    #[inline]
+    pub fn decompose(&self) -> Components {
+        unsafe { CGAffineTransformDecompose(*self) }
+    }
 }
 
 impl cg::Point {
@@ -109,4 +145,6 @@ extern "C" {
     fn CGAffineTransformConcat(t: AffineTransform, other: AffineTransform) -> AffineTransform;
     fn CGAffineTransformEqualToTransform(t: AffineTransform, other: AffineTransform) -> bool;
     fn CGRectApplyAffineTransform(rect: cg::Rect, t: AffineTransform) -> cg::Rect;
+    fn CGAffineTransformDecompose(t: AffineTransform) -> Components;
+    fn CGAffineTransformMakeWithComponents(components: Components) -> AffineTransform;
 }

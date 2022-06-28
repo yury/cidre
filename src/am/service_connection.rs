@@ -104,9 +104,7 @@ impl ServiceConnection {
                 if ready.is_readable() {
                     device.writable().await?;
                     match socket.try_read(&mut buf) {
-                        Ok(0) => {
-                            break;
-                        }
+                        Ok(0) => break,
                         Ok(n) => {
                             let send = connection.send(&buf[0..n]).unwrap();
                             println!("send {} {}", send, n);
@@ -114,8 +112,7 @@ impl ServiceConnection {
                         Err(ref e) if e.kind() == tokio::io::ErrorKind::WouldBlock => {
                             continue;
                         }
-                        Err(e) => return Err(e),
-                        
+                        Err(e) => Err(e)?,
                     }
                 }
 
