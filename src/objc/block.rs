@@ -1,10 +1,9 @@
-use std::{ffi::c_void, intrinsics::transmute, sync::Arc};
+use std::{ffi::c_void, sync::Arc};
 
 use parking_lot::Mutex;
 
 use crate::cf::{self, runtime::Retain, Retained};
 
-use super::Class;
 
 // pub type PlainFn = extern "C" fn();
 // impl<'a, PlainFn> Literal<'a, NoCopyDispose, PlainFn>
