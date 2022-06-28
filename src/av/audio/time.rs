@@ -52,7 +52,7 @@ impl Time {
     /// assert_eq!(time.host_time(), 101);
     /// assert_eq!(time.sample_rate(), 0f64);
     /// assert_eq!(time.is_sample_time_valid(), false);
-    /// assert_eq!(time.is_host_time_valid(), false);
+    /// assert_eq!(time.is_host_time_valid(), true);
     /// ```
     pub fn host_time(&self) -> u64 {
         unsafe { rsel_hostTime(self) }

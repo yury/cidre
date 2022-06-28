@@ -307,5 +307,12 @@ rsel(, id, channelLayout, AVAudioChannelLayout * _Nullable)
 NS_RETURNS_NOT_RETAINED
 rsel(, id, magicCookie, NSData * _Nullable)
 
+#pragma mark - AVAudioBuffer
+
+rsel(, id, format, AVAudioFormat *)
+//const AudioBufferList *audioBufferList
+rsel(, id, audioBufferList, const AudioBufferList *)
+rsel(, id, mutableAudioBufferList, AudioBufferList *)
+
 
 NS_ASSUME_NONNULL_END

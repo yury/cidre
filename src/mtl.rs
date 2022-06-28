@@ -292,7 +292,7 @@ macro_rules! define_mtl {
                 static sel_useResources_count_usage: &'static crate::objc::Sel;
             }
             unsafe {
-                self.wsel_abc(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
+                self.sel_abc(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
             }
         }
     };

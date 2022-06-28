@@ -49,12 +49,6 @@ impl Id {
         imp(self, selector, a)
     }
 
-    // #[inline]
-    // pub unsafe fn wsel_a<A>(&self, selector: &Sel, a: A) {
-    //     let imp: unsafe extern "C" fn(&Id, &Sel, A) = transmute(objc_msgSend as *const c_void);
-    //     imp(self, selector, a)
-    // }
-
     #[inline]
     pub unsafe fn sel_ab<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B) -> R =
@@ -63,8 +57,8 @@ impl Id {
     }
 
     #[inline]
-    pub unsafe fn wsel_abc<A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) =
+    pub unsafe fn sel_abc<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c)
     }
