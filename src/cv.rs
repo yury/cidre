@@ -41,5 +41,10 @@ pub use display_link::DisplayLink;
 #[cfg(target_os = "macos")]
 pub use display_link::OutputCallback as DisplayLinkOutputCallback;
 
+pub mod host_time;
+pub use host_time::current_host_time;
+pub use host_time::host_clock_frequency;
+pub use host_time::host_clock_minimum_time_delta;
+
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {}
