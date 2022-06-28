@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Retained},
-    cv, define_cf_type,
+    cv, define_cf_type, define_options,
 };
 
 define_cf_type!(PixelBufferPool(cf::Type));
@@ -177,8 +177,7 @@ pub mod notifications {
     }
 }
 
-#[repr(transparent)]
-pub struct FlushFlags(pub u64);
+define_options!(FlushFlags(u64));
 
 impl FlushFlags {
     pub const NONE: Self = Self(0);

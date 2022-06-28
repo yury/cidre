@@ -48,7 +48,7 @@ pub mod ui;
 #[macro_export]
 macro_rules! define_options {
     ($NewType:ident($BaseType:path)) => {
-        #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
+        #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Default)]
         #[repr(transparent)]
         pub struct $NewType(pub $BaseType);
 

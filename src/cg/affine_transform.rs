@@ -30,10 +30,10 @@ pub struct Components {
     pub horizontal_shear: cg::Float,
 
     /// Rotation angle in radians about the origin. (t) Sign convention for clockwise rotation
-    /// may differ between various Apple frameworks based on origin placement. Please see discussion. 
+    /// may differ between various Apple frameworks based on origin placement. Please see discussion.
     pub rotation: cg::Float,
 
-    /// Displacement from the origin (ty, ty) 
+    /// Displacement from the origin (ty, ty)
     pub translation: cg::Vector,
 }
 
@@ -147,4 +147,5 @@ extern "C" {
     fn CGRectApplyAffineTransform(rect: cg::Rect, t: AffineTransform) -> cg::Rect;
     fn CGAffineTransformDecompose(t: AffineTransform) -> Components;
     fn CGAffineTransformMakeWithComponents(components: Components) -> AffineTransform;
+
 }

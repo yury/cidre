@@ -4,7 +4,6 @@ use parking_lot::Mutex;
 
 use crate::cf::{self, runtime::Retain, Retained};
 
-
 // pub type PlainFn = extern "C" fn();
 // impl<'a, PlainFn> Literal<'a, NoCopyDispose, PlainFn>
 // {
