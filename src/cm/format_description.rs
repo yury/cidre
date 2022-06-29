@@ -31,6 +31,12 @@ pub struct MediaType(pub FourCharCode);
 impl MediaType {
     pub const VIDEO: Self = Self::from_be_bytes(b"vide");
     pub const AUDIO: Self = Self::from_be_bytes(b"soun");
+    pub const MUXED: Self = Self::from_be_bytes(b"muxx");
+    pub const TEXT: Self = Self::from_be_bytes(b"text");
+    pub const CLOSED_CAPTION: Self = Self::from_be_bytes(b"clcp");
+    pub const SUBTITLE: Self = Self::from_be_bytes(b"sbtl");
+    pub const TIME_CODE: Self = Self::from_be_bytes(b"tmcd");
+    pub const METADATA: Self = Self::from_be_bytes(b"meta");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
