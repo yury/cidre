@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{cm, define_obj_type, ns};
 
 use super::WriterInput;
 
@@ -39,6 +39,10 @@ impl Writer {
     pub fn start_writing(&self) {
         unsafe { wsel_startWriting(self) }
     }
+
+    pub fn start_session_at_source_time(&self, start_time: cm::Time) {
+        unsafe { wsel_startSessionAtSourceTime(self, start_time) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -50,4 +54,5 @@ extern "C" {
     fn AVAssetWriter_wsel_addInput(writer: &Writer, input: &WriterInput);
 
     fn wsel_startWriting(id: &ns::Id);
+    fn wsel_startSessionAtSourceTime(id: &ns::Id, start_time: cm::Time);
 }

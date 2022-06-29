@@ -346,5 +346,6 @@ wsel_a(AVAssetWriter_, AVAssetWriter *, addInput, AVAssetWriterInput *)
 
 //- (BOOL)startWriting;
 wsel(, id, startWriting)
+wsel_a(, id, startSessionAtSourceTime, CMTime);
 
 NS_ASSUME_NONNULL_END
