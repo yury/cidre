@@ -7,6 +7,13 @@ pub mod reader;
 pub use reader::Reader;
 pub use reader::Status as ReaderStatus;
 
+pub mod writer;
+pub use writer::Status as WriterStatus;
+pub use writer::Writer as AssetWriter;
+
+pub mod writer_input;
+pub use writer_input::WriterInput;
+
 define_obj_type!(Asset(ns::Id));
 define_obj_type!(URLAsset(Asset));
 define_obj_type!(FragmentedAsset(URLAsset));

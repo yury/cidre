@@ -310,9 +310,41 @@ rsel(, id, magicCookie, NSData * _Nullable)
 #pragma mark - AVAudioBuffer
 
 rsel(, id, format, AVAudioFormat *)
-//const AudioBufferList *audioBufferList
 rsel(, id, audioBufferList, const AudioBufferList *)
 rsel(, id, mutableAudioBufferList, AudioBufferList *)
 
+
+//- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity
+
+#pragma mark - AVAssetWriterInput
+
+//+ (instancetype)assetWriterInputWithMediaType:(AVMediaType)mediaType outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings;
+csel_ab(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
+
+//@property (nonatomic, readonly) AVMediaType mediaType;
+rsel(, id, mediaType, AVMediaType)
+rsel(, id, outputSettings, NSDictionary * _Nullable)
+
+rsel(, id, isReadyForMoreMediaData, BOOL)
+
+//@property (nonatomic) BOOL expectsMediaDataInRealTime;
+rsel(, id, expectsMediaDataInRealTime, BOOL)
+wsel_a(, id, setExpectsMediaDataInRealTime, BOOL)
+
+//- (void)markAsFinished;
+wsel(, id, markAsFinished)
+
+//- (BOOL)appendSampleBuffer:(CMSampleBufferRef)sampleBuffer;
+rsel_a(, id, appendSampleBuffer, CMSampleBufferRef, BOOL)
+
+#pragma mark - AVAssetWriter
+
+rwsel(, id, shouldOptimizeForNetworkUse, setShouldOptimizeForNetworkUse, BOOL)
+//- (BOOL)canAddInput:(AVAssetWriterInput *)input;
+rsel_a(AVAssetWriter_, AVAssetWriter *, canAddInput, AVAssetWriterInput *, BOOL)
+wsel_a(AVAssetWriter_, AVAssetWriter *, addInput, AVAssetWriterInput *)
+
+//- (BOOL)startWriting;
+wsel(, id, startWriting)
 
 NS_ASSUME_NONNULL_END
