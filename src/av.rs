@@ -58,6 +58,9 @@ pub use asset::FragmentedAssetMinder;
 pub use asset::Reader as AssetReader;
 pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::URLAsset;
+pub use asset::WriterInput as AssetWriterInput;
+pub use asset::WriterStatus as AssetWriterStatus;
+pub use asset::AssetWriter;
 
 pub mod audio;
 pub use audio::time::Time as AudioTime;

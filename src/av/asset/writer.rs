@@ -1,4 +1,6 @@
-use crate::{cm, define_obj_type, ns, objc::native_block::DispatchBlock};
+use std::intrinsics::transmute;
+
+use crate::{av, cf, cm, define_obj_type, ns, objc::native_block::DispatchBlock};
 
 use super::WriterInput;
 
@@ -44,9 +46,46 @@ impl Writer {
         unsafe { wsel_startSessionAtSourceTime(self, start_time) }
     }
 
-    // pub fn finish_writing(&self) {
-    //     unsafe { wsel_finishWriting(self) }
-    // }
+    pub fn end_session_at_source_time(&self, start_time: cm::Time) {
+        unsafe { wsel_endSessionAtSourceTime(self, start_time) }
+    }
+
+    pub fn finish_writing(&self) {
+        unsafe { wsel_finishWriting(self) }
+    }
+
+    pub fn cancel_writing(&self) {
+        unsafe { wsel_cancelWriting(self) }
+    }
+
+    pub fn error(&self) -> Option<&cf::Error> {
+        unsafe { rsel_error(self) }
+    }
+
+    pub fn inputs(&self) -> &cf::ArrayOf<WriterInput> {
+        unsafe { AVAssetWriter_rsel_inputs(self) }
+    }
+
+    /// ```
+    /// use cidre::{av, cf};
+    /// let url = cf::URL::from_str("file://tmp/bla.mp4").unwrap();
+    ///
+    /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
+    /// assert_eq!(writer.inputs().len(), 0);
+    /// ```
+    pub fn with_url_and_file_type<'a>(
+        url: &cf::URL,
+        file_type: &av::FileType,
+    ) -> Result<cf::Retained<'a, Writer>, cf::Retained<'a, cf::Error>> {        
+        let mut error = None;
+        unsafe {
+            let res = AVAssetWriter_assetWriterWithURL_fileType_error(&url, &file_type, &mut error);
+            match error {
+                None => Ok(transmute(res)),
+                Some(e) => Err(e),
+            }
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -59,7 +98,21 @@ extern "C" {
 
     fn wsel_startWriting(id: &ns::Id);
     fn wsel_startSessionAtSourceTime(id: &ns::Id, start_time: cm::Time);
-    // fn wsel_finishWriting(id: &ns::Id);
+    fn wsel_endSessionAtSourceTime(id: &ns::Id, start_time: cm::Time);
+    fn wsel_finishWriting(id: &ns::Id);
+    fn wsel_cancelWriting(id: &ns::Id);
+    fn rsel_error(id: &ns::Id) -> Option<&cf::Error>;
+
+    fn AVAssetWriter_rsel_inputs(id: &ns::Id) -> &cf::ArrayOf<WriterInput>;
+
+    fn AVAssetWriter_assetWriterWithURL_fileType_error<'a>(
+        url: &cf::URL,
+        file_type: &av::FileType,
+        error: &mut Option<cf::Retained<'a, cf::Error>>,
+    ) -> Option<cf::Retained<'a, Writer>>;
+
+    //csel_ab(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
+    // fn
 
     // wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
     // fn wsel_finishWritingWithCompletionHandler(id: &ns::Id, block: &DispatchBlock);

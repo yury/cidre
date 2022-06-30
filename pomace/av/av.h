@@ -339,15 +339,25 @@ rsel_a(, id, appendSampleBuffer, CMSampleBufferRef, BOOL)
 
 #pragma mark - AVAssetWriter
 
+//+ (nullable instancetype)assetWriterWithURL:(NSURL *)outputURL fileType:(AVFileType)outputFileType error:(NSError * _Nullable * _Nullable)outError;
+NS_RETURNS_RETAINED
+csel_abc(, AVAssetWriter, assetWriterWithURL, NSURL *, fileType, AVFileType, error, NSError * _Nullable * _Nullable, AVAssetWriter *)
+
 rwsel(, id, shouldOptimizeForNetworkUse, setShouldOptimizeForNetworkUse, BOOL)
 //- (BOOL)canAddInput:(AVAssetWriterInput *)input;
 rsel_a(AVAssetWriter_, AVAssetWriter *, canAddInput, AVAssetWriterInput *, BOOL)
 wsel_a(AVAssetWriter_, AVAssetWriter *, addInput, AVAssetWriterInput *)
 
-//- (BOOL)startWriting;
 wsel(, id, startWriting)
 wsel_a(, id, startSessionAtSourceTime, CMTime);
-//wsel(, id, finishWriting)
+wsel_a(, id, endSessionAtSourceTime, CMTime);
+wsel(, id, cancelWriting)
+//- (void)endSessionAtSourceTime:(CMTime)endTime;
+wsel(, id, finishWriting)
+
+rsel(, id, error, NSError * _Nullable)
+//@property (nonatomic, readonly) NSArray<AVAssetWriterInput *> *inputs;
+rsel(AVAssetWriter_, id, inputs, NSArray<AVAssetWriterInput *> *)
 
 typedef void (^ VoidBlock)(void);
 wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
