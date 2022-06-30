@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{av, cf, cm, define_obj_type, ns, objc::native_block::DispatchBlock};
+use crate::{av, cf, cm, define_obj_type, ns};
 
 use super::WriterInput;
 

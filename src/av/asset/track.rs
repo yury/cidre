@@ -12,7 +12,4 @@ impl Track {
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn rsel_mediaType(id: &ns::Id) -> MediaType;
-
-    // fn rsel_alwaysCopiesSampleData(id: &ns::Id) -> bool;
-    // fn wsel_setAlwaysCopiesSampleData(id: &ns::Id, value: bool);
 }

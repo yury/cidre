@@ -1,9 +1,8 @@
 use std::ffi::c_void;
 
 use crate::{
-    av, cat,
-    cf::{self, Allocator, Retained},
-    cm, cv, define_cf_type, os, FourCharCode,
+    cat,
+    cf::{self, Allocator, Retained}, cv, define_cf_type, os, FourCharCode,
 };
 
 #[repr(transparent)]
@@ -99,7 +98,11 @@ impl FormatDescription {
     /// ```
     /// use cidre::{cm, mac_types::FourCharCode};
     ///
-    /// let desc = cm::FormatDescription::new(cm::MediaType::VIDEO, FourCharCode::from_be_bytes(*b"avc1"), None).unwrap();
+    /// let desc = cm::FormatDescription::new(
+    ///     cm::MediaType::VIDEO,
+    ///     FourCharCode::from_be_bytes(*b"avc1"),
+    ///     None
+    /// ).unwrap();
     /// ```
     pub fn new<'a>(
         media_type: MediaType,
