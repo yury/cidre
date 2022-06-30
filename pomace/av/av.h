@@ -347,5 +347,10 @@ wsel_a(AVAssetWriter_, AVAssetWriter *, addInput, AVAssetWriterInput *)
 //- (BOOL)startWriting;
 wsel(, id, startWriting)
 wsel_a(, id, startSessionAtSourceTime, CMTime);
+//wsel(, id, finishWriting)
+
+typedef void (^ VoidBlock)(void);
+wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
+//- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
 
 NS_ASSUME_NONNULL_END

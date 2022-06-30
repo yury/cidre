@@ -1,4 +1,4 @@
-use crate::{cm, define_obj_type, ns};
+use crate::{cm, define_obj_type, ns, objc::native_block::DispatchBlock};
 
 use super::WriterInput;
 
@@ -43,6 +43,10 @@ impl Writer {
     pub fn start_session_at_source_time(&self, start_time: cm::Time) {
         unsafe { wsel_startSessionAtSourceTime(self, start_time) }
     }
+
+    // pub fn finish_writing(&self) {
+    //     unsafe { wsel_finishWriting(self) }
+    // }
 }
 
 #[link(name = "av", kind = "static")]
@@ -55,4 +59,8 @@ extern "C" {
 
     fn wsel_startWriting(id: &ns::Id);
     fn wsel_startSessionAtSourceTime(id: &ns::Id, start_time: cm::Time);
+    // fn wsel_finishWriting(id: &ns::Id);
+
+    // wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
+    // fn wsel_finishWritingWithCompletionHandler(id: &ns::Id, block: &DispatchBlock);
 }
