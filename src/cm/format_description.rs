@@ -77,6 +77,45 @@ impl FormatDescription {
     pub fn extensions(&self) -> Option<&cf::Dictionary> {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
+
+    pub fn create(
+        allocator: Option<&cf::Allocator>,
+        media_type: MediaType,
+        media_sub_type: FourCharCode,
+        extensions: Option<&cf::Dictionary>,
+        format_description_out: &mut Option<Retained<FormatDescription>>,
+    ) -> os::Status {
+        unsafe {
+            CMFormatDescriptionCreate(
+                allocator,
+                media_type,
+                media_sub_type,
+                extensions,
+                format_description_out,
+            )
+        }
+    }
+
+    /// ```
+    /// use cidre::{cm, mac_types::FourCharCode};
+    ///
+    /// let desc = cm::FormatDescription::new(cm::MediaType::VIDEO, FourCharCode::from_be_bytes(*b"avc1"), None).unwrap();
+    /// ```
+    pub fn new<'a>(
+        media_type: MediaType,
+        media_sub_type: FourCharCode,
+        extensions: Option<&cf::Dictionary>,
+    ) -> Result<Retained<'a, Self>, os::Status> {
+        let mut format_desc = None;
+        let res = Self::create(
+            None,
+            media_type,
+            media_sub_type,
+            extensions,
+            &mut format_desc,
+        );
+        unsafe { res.to_result(format_desc) }
+    }
 }
 
 pub type VideoFormatDescription = FormatDescription;
@@ -85,9 +124,9 @@ impl VideoFormatDescription {
     /// ```
     /// use cidre::cm;
     ///
-    /// let desc = cm::VideoFormatDescription::new(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
+    /// let desc = cm::VideoFormatDescription::new_video(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
     /// ```
-    pub fn new_view<'a>(
+    pub fn new_video<'a>(
         codec_type: VideoCodecType,
         width: i32,
         height: i32,
@@ -197,5 +236,13 @@ extern "C" {
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::Dictionary>,
         format_description_out: &mut Option<Retained<AudioFormatDescription>>,
+    ) -> os::Status;
+
+    fn CMFormatDescriptionCreate(
+        allocator: Option<&cf::Allocator>,
+        media_type: MediaType,
+        media_sub_type: FourCharCode,
+        extensions: Option<&cf::Dictionary>,
+        format_description_out: &mut Option<Retained<FormatDescription>>,
     ) -> os::Status;
 }
