@@ -1,6 +1,9 @@
+use std::ffi::c_void;
+
 use crate::{
+    av, cat,
     cf::{self, Allocator, Retained},
-    cv, define_cf_type, os, FourCharCode,
+    cm, cv, define_cf_type, os, FourCharCode,
 };
 
 #[repr(transparent)]
@@ -79,7 +82,30 @@ impl FormatDescription {
 pub type VideoFormatDescription = FormatDescription;
 
 impl VideoFormatDescription {
-    pub fn create(
+    /// ```
+    /// use cidre::cm;
+    ///
+    /// let desc = cm::VideoFormatDescription::new(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
+    /// ```
+    pub fn new_view<'a>(
+        codec_type: VideoCodecType,
+        width: i32,
+        height: i32,
+        extensions: Option<&cf::Dictionary>,
+    ) -> Result<Retained<'a, Self>, os::Status> {
+        let mut format_desc = None;
+        let res = Self::create_video(
+            None,
+            codec_type,
+            width,
+            height,
+            extensions,
+            &mut format_desc,
+        );
+        unsafe { res.to_result(format_desc) }
+    }
+
+    pub fn create_video(
         allocator: Option<&Allocator>,
         codec_type: VideoCodecType,
         width: i32,
@@ -110,6 +136,32 @@ impl VideoFormatDescription {
 
 pub type AudioFormatDescription = FormatDescription;
 
+impl AudioFormatDescription {
+    pub fn create_audio(
+        allocator: Option<&cf::Allocator>,
+        asbd: &cat::audio::StreamBasicDescription,
+        layout_size: usize,
+        layout: Option<&cat::AudioChannelLayout<1>>,
+        magic_cookie_size: usize,
+        magic_cookie: Option<&c_void>,
+        extensions: Option<&cf::Dictionary>,
+        format_description_out: &mut Option<Retained<AudioFormatDescription>>,
+    ) -> os::Status {
+        unsafe {
+            CMAudioFormatDescriptionCreate(
+                allocator,
+                asbd,
+                layout_size,
+                layout,
+                magic_cookie_size,
+                magic_cookie,
+                extensions,
+                format_description_out,
+            )
+        }
+    }
+}
+
 extern "C" {
     fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
     fn CMFormatDescriptionGetMediaType(desc: &FormatDescription) -> MediaType;
@@ -135,4 +187,15 @@ extern "C" {
     fn CMFormatDescriptionGetMediaSubType(desc: &FormatDescription) -> FourCharCode;
 
     fn CMFormatDescriptionGetExtensions(desc: &FormatDescription) -> Option<&cf::Dictionary>;
+
+    fn CMAudioFormatDescriptionCreate(
+        allocator: Option<&cf::Allocator>,
+        asbd: &cat::audio::StreamBasicDescription,
+        layout_size: usize,
+        layout: Option<&cat::AudioChannelLayout<1>>,
+        magic_cookie_size: usize,
+        magic_cookie: Option<&c_void>,
+        extensions: Option<&cf::Dictionary>,
+        format_description_out: &mut Option<Retained<AudioFormatDescription>>,
+    ) -> os::Status;
 }

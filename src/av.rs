@@ -53,14 +53,16 @@ pub use player::TimeControlStatus as PlayerTimeControlStatus;
 pub mod asset;
 pub use asset::Asset;
 pub use asset::AssetCache;
+pub use asset::AssetWriter;
 pub use asset::FragmentedAsset;
 pub use asset::FragmentedAssetMinder;
+pub use asset::FragmentedTrack as FragmentedAssetTrack;
 pub use asset::Reader as AssetReader;
+pub use asset::ReaderOutput as AssetReaderOutput;
 pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::URLAsset;
 pub use asset::WriterInput as AssetWriterInput;
 pub use asset::WriterStatus as AssetWriterStatus;
-pub use asset::AssetWriter;
 
 pub mod audio;
 pub use audio::time::Time as AudioTime;

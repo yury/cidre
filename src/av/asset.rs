@@ -7,12 +7,19 @@ pub mod reader;
 pub use reader::Reader;
 pub use reader::Status as ReaderStatus;
 
+pub mod reader_output;
+pub use reader_output::ReaderOutput;
+
 pub mod writer;
 pub use writer::Status as WriterStatus;
 pub use writer::Writer as AssetWriter;
 
 pub mod writer_input;
 pub use writer_input::WriterInput;
+
+pub mod track;
+pub use track::Track;
+pub use track::FragmentedTrack;
 
 define_obj_type!(Asset(ns::Id));
 define_obj_type!(URLAsset(Asset));

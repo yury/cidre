@@ -1,5 +1,3 @@
-use std::intrinsics::transmute;
-
 use crate::{av::MediaType, cf, cm, define_obj_type, ns};
 
 define_obj_type!(WriterInput(ns::Id));

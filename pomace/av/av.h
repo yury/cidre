@@ -363,4 +363,9 @@ typedef void (^ VoidBlock)(void);
 wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
 //- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
 
+#pragma mark - AVAssetReaderOutput
+
+rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
+//@property (nonatomic) BOOL alwaysCopiesSampleData
+
 NS_ASSUME_NONNULL_END
