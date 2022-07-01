@@ -76,7 +76,7 @@ impl Writer {
     pub fn with_url_and_file_type<'a>(
         url: &cf::URL,
         file_type: &av::FileType,
-    ) -> Result<cf::Retained<'a, Writer>, cf::Retained<'a, cf::Error>> {        
+    ) -> Result<cf::Retained<'a, Writer>, cf::Retained<'a, cf::Error>> {
         let mut error = None;
         unsafe {
             let res = AVAssetWriter_assetWriterWithURL_fileType_error(&url, &file_type, &mut error);

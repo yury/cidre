@@ -23,9 +23,7 @@ define_obj_type!(PCMBuffer(Buffer));
 
 /// Provides a number of methods useful for manipulating buffers of
 /// audio in PCM format.
-impl PCMBuffer {
-    
-}
+impl PCMBuffer {}
 
 define_obj_type!(CompressedBuffer(ns::Id));
 

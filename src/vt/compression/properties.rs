@@ -1,16 +1,47 @@
+/// Recommendations for configuring VTCompressionSessions
+///
+/// These are recommendations for configuring VTCompressionSessions for some common scenarios.  
+/// These are starting points; you may find that the details of your application necessitate further adjustments.
+///
+/// Video-conferencing, live capture, and live broadcast scenarios:
+/// • kVTCompressionPropertyKey_RealTime: kCFBooleanTrue
+/// • kVTCompressionPropertyKey_ExpectedFrameRate: set to real-time frame rate if possible
+///
+/// Offline transcode initiated by a user, who is waiting for the results:
+/// • kVTCompressionPropertyKey_RealTime: kCFBooleanFalse
+/// • kVTCompressionPropertyKey_MaximizePowerEfficiency: kCFBooleanFalse
+///
+/// Offline transcode in the background (when the user is not aware):
+/// • kVTCompressionPropertyKey_RealTime: kCFBooleanFalse
+/// • kVTCompressionPropertyKey_MaximizePowerEfficiency: kCFBooleanTrue
+///
+/// Ultra-low-latency capture / conferencing / cloud gaming (cases where every millisecond counts):
+/// • kVTCompressionPropertyKey_RealTime: kCFBooleanTrue
+/// • kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality: kCFBooleanTrue
 pub mod keys {
     use crate::cf;
 
+    /// The number of pending frames in the compression session.
+    ///
+    /// This number may decrease asynchronously.
     #[inline]
     pub fn number_of_pending_frames() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_NumberOfPendingFrames }
     }
 
+    /// Indicates whether the a common pixel buffer pool is shared between
+    /// the video encoder and the session client.
+    ///
+    /// This is false if separate pools are used because the video encoder's
+    /// and the client's pixel buffer attributes were incompatible.
     #[inline]
     pub fn pixel_buffer_is_shared() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PixelBufferPoolIsShared }
     }
 
+    /// The video encoder's pixel buffer attributes for the compression session.
+    ///
+    /// You can use these to create a pixel buffer pool for source pixel buffers.
     #[inline]
     pub fn video_encoder_pixel_buffer_attributes() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_VideoEncoderPixelBufferAttributes }
@@ -281,14 +312,50 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_PreserveDynamicHDRMetadata }
     }
 
+    /// Specifies the minimum allowed encoded frame QP (Quantization Parameter).
+    ///
+    /// This is an optional parameter. Use it only when you have a specific requirement for the video quality and you are
+    /// familiar with frame QP.
+    /// This is not supported in all encoders or in all encoder operating modes. kVTPropertyNotSupportedErr will be
+    /// returned when this option is not supported.
     #[inline]
     pub fn max_allowed_frame_qp() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaxAllowedFrameQP }
     }
 
+    /// Enable Long Term Reference (LTR) frames during encoding
+    ///
+    /// When an LTR frame is encoded, encoder will signal a unique token of the LTR frame in the encoder callback through:
+    /// kVTSampleAttachmentKey_RequireLTRAcknowledgementToken
+    /// Clients are responsible for reporting acknowledged LTR frames to the encoder through:
+    /// - kVTEncodeFrameOptionKey_AcknowledgedLTRTokens
+    ///    Client can request a refresh frame at any time through:
+    /// - kVTEncodeFrameOptionKey_ForceLTRRefresh
+    ///   Encoder will encode a P frame by using one of acknowledged LTR frames
+    /// as the reference. Encoder will encode a new reference frame using an acknowledged LTR,
+    /// or an IDR if no LTR frames have been acknowledged.
     #[inline]
     pub fn enable_ltr() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_EnableLTR }
+    }
+
+    /// Requires that the encoder use a Constant Bit Rate algorithm.
+    ///
+    /// The property kVTCompressionPropertyKey_ExpectedFrameRate should be set
+    /// along with kVTCompressionPropertyKey_ConstantBitRate
+    /// to ensure effective CBR rate control.
+    ///
+    /// This property is not compatible with kVTCompressionPropertyKey_DataRateLimits and
+    /// kVTCompressionPropertyKey_AverageBitRate.
+    ///
+    /// The encoder will pad the frame if they are smaller than they need to be based on the Constant BitRate. This
+    /// property is not recommended for general streaming or export scenarios. It is intended for interoperability with
+    /// stremaing CDNs which specifically require that data rates not drop even during low motion and activity scenes.
+    /// This is not supported in all encoders or in all encoder operating modes. kVTPropertyNotSupportedErr will be
+    /// returned when this option is not supported.
+    #[inline]
+    pub fn constant_bitrate() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_ConstantBitRate }
     }
 
     #[link(name = "VideoToolbox", kind = "framework")]
@@ -319,6 +386,7 @@ pub mod keys {
         static kVTCompressionPropertyKey_MaximizePowerEfficiency: &'static cf::String;
         static kVTCompressionPropertyKey_SourceFrameCount: &'static cf::String;
         static kVTCompressionPropertyKey_ExpectedFrameRate: &'static cf::String;
+        static kVTCompressionPropertyKey_ConstantBitRate: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerFrameRateFraction: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerBitRateFraction: &'static cf::String;
         static kVTCompressionPropertyKey_ExpectedDuration: &'static cf::String;

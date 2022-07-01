@@ -77,10 +77,8 @@ impl VideoRange {
 define_cf_type!(FileType(cf::String));
 
 impl FileType {
-
-
     /// A UTI for the QuickTime movie file format.
-    /// 
+    ///
     /// The value of this UTI is @"com.apple.quicktime-movie".
     /// Files are identified with the .mov and .qt extensions.
     pub fn qt() -> &'static FileType {
@@ -88,7 +86,7 @@ impl FileType {
     }
 
     /// A UTI for the MPEG-4 file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.mpeg-4".
     /// Files are identified with the .mp4 extension.
     pub fn mp4() -> &'static FileType {
@@ -108,7 +106,7 @@ impl FileType {
     }
 
     /// A UTI for the 3GPP file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.3gpp".
     /// Files are identified with the .3gp, .3gpp, and .sdv extensions.
     pub fn _3gpp() -> &'static FileType {
@@ -116,7 +114,7 @@ impl FileType {
     }
 
     /// A UTI for the 3GPP file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.3gpp2".
     /// Files are identified with the .3g2, .3gp2 extensions.
     pub fn _3gpp2() -> &'static FileType {
@@ -124,7 +122,7 @@ impl FileType {
     }
 
     /// A UTI for the CoreAudio file format.
-    /// 
+    ///
     /// The value of this UTI is @"com.apple.coreaudio-format".
     /// Files are identified with the .caf extension.
     pub fn caf() -> &'static FileType {
@@ -132,7 +130,7 @@ impl FileType {
     }
 
     /// A UTI for the WAVE audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"com.microsoft.waveform-audio".
     /// Files are identified with the .wav, .wave, and .bwf extensions.
     pub fn wav() -> &'static FileType {
@@ -140,15 +138,15 @@ impl FileType {
     }
 
     /// A UTI for the AIFF audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.aiff-audio".
-    /// Files are identified with the .aif and .aiff extensions. 
+    /// Files are identified with the .aif and .aiff extensions.
     pub fn aif() -> &'static FileType {
         unsafe { AVFileTypeAIFF }
     }
 
     /// A UTI for the AIFC audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.aifc-audio".
     /// Files are identified with the .aifc and .cdda extensions.
     pub fn aifc() -> &'static FileType {
@@ -156,7 +154,7 @@ impl FileType {
     }
 
     /// A UTI for the adaptive multi-rate audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"org.3gpp.adaptive-multi-rate-audio".
     /// Files are identified with the .amr extension.
     pub fn amr() -> &'static FileType {
@@ -164,7 +162,7 @@ impl FileType {
     }
 
     /// A UTI for the MPEG layer 3 audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.mp3".
     /// Files are identified with the .mp3 extension.
     pub fn mp3() -> &'static FileType {
@@ -172,7 +170,7 @@ impl FileType {
     }
 
     /// A UTI for the Sun/NeXT audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.au-audio".
     /// Files are identified with the .au and .snd extensions.
     pub fn au() -> &'static FileType {
@@ -180,7 +178,7 @@ impl FileType {
     }
 
     /// A UTI for the AC-3 audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.ac3-audio".
     /// Files are identified with the .ac3 extension.
     pub fn ac3() -> &'static FileType {
@@ -188,7 +186,7 @@ impl FileType {
     }
 
     /// A UTI for the enhanced AC-3 audio file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.enhanced-ac3-audio".
     /// Files are identified with the .eac3 extension.
     pub fn eac3() -> &'static FileType {
@@ -196,7 +194,7 @@ impl FileType {
     }
 
     /// A UTI for the JPEG (JFIF) format.
-    /// 
+    ///
     /// The value of this UTI is @"public.jpeg".
     /// Files are identified with the .jpg or .jpeg extension.
     pub fn jpeg() -> &'static FileType {
@@ -204,7 +202,7 @@ impl FileType {
     }
 
     /// A UTI for the Adobe digital negative file format.
-    /// 
+    ///
     /// The value of this UTI is @"com.adobe.raw-image".
     /// Files are identified with the .dng extension.
     pub fn dng() -> &'static FileType {
@@ -212,7 +210,7 @@ impl FileType {
     }
 
     /// A UTI for the high efficiency image file format containing HEVC compressed images.
-    /// 
+    ///
     /// The value of this UTI is @"public.heic".
     /// Files are identified with the .heic extension.
     pub fn heic() -> &'static FileType {
@@ -220,14 +218,14 @@ impl FileType {
     }
 
     /// A UTI for the high efficiency image file format containing H.264 compressed images.
-    /// 
+    ///
     /// The value of this UTI is @"public.avci".
     /// Files are identified with the .avci extension.
     pub fn avci() -> &'static FileType {
         unsafe { AVFileTypeAVCI }
     }
     /// A UTI for the high efficiency image file format containing images compressed with any codec.
-    /// 
+    ///
     /// The value of this UTI is @"public.heif".
     /// Files are identified with the .heif extension.
     pub fn heif() -> &'static FileType {
@@ -235,7 +233,7 @@ impl FileType {
     }
 
     /// A UTI for the tagged image file format.
-    /// 
+    ///
     /// The value of this UTI is @"public.tiff".
     /// Files are identified with the .tiff or .tif extension.
     pub fn tiff() -> &'static FileType {
@@ -243,14 +241,14 @@ impl FileType {
     }
 
     /// A UTI for the Apple iTT caption file format
-    /// 
+    ///
     /// The value of this UTI is @"com.apple.itunes-timed-text".
     /// Files are identified with the .itt extension.
     pub fn apple_itt() -> &'static FileType {
         unsafe { AVFileTypeAppleiTT }
     }
     /// A UTI for the Scenarist closed caption file format
-    /// 
+    ///
     /// The value of this UTI is @"com.scenarist.closed-caption".
     /// Files are identified with the .scc extension.
     pub fn scc() -> &'static FileType {

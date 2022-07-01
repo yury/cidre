@@ -21,11 +21,11 @@ impl Clock {
     }
 
     /// Converts a host time from CMTime to the host time's native units.
-    /// 
+    ///
     /// This function performs a scale conversion, not a clock conversion.
-		/// It can be more accurate than CMTimeConvertScale because the system units may 
-		/// have a non-integer timescale.
-		/// On Mac OS X, this function converts to the units of mach_absolute_time.
+    /// It can be more accurate than CMTimeConvertScale because the system units may
+    /// have a non-integer timescale.
+    /// On Mac OS X, this function converts to the units of mach_absolute_time.
     #[inline]
     pub fn convert_host_time_to_system_units(host_time: cm::Time) -> u64 {
         unsafe { CMClockConvertHostTimeToSystemUnits(host_time) }

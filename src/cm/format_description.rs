@@ -2,7 +2,8 @@ use std::ffi::c_void;
 
 use crate::{
     cat,
-    cf::{self, Allocator, Retained}, cv, define_cf_type, os, FourCharCode,
+    cf::{self, Allocator, Retained},
+    cv, define_cf_type, os, FourCharCode,
 };
 
 #[repr(transparent)]

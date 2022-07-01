@@ -18,8 +18,8 @@ pub mod writer_input;
 pub use writer_input::WriterInput;
 
 pub mod track;
-pub use track::Track;
 pub use track::FragmentedTrack;
+pub use track::Track;
 
 define_obj_type!(Asset(ns::Id));
 define_obj_type!(URLAsset(Asset));

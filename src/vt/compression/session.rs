@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr::NonNull, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::{
     cf::{self, Retained},
