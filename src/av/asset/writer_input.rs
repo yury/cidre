@@ -14,7 +14,7 @@ impl WriterInput {
             )
         }
     }
-    
+
     pub fn with_media_type_output_settings_source_and_format_hint<'a>(
         media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
@@ -25,6 +25,19 @@ impl WriterInput {
                 media_type,
                 output_settings,
                 source_format_hint,
+            )
+        }
+    }
+
+    pub fn with_media_type_and_format_hint<'a>(
+        media_type: &MediaType,
+        source_format_hint: &cm::FormatDescription,
+    ) -> cf::Retained<'a, WriterInput> {
+        unsafe {
+            AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint(
+                media_type,
+                None,
+                Some(source_format_hint),
             )
         }
     }
@@ -67,7 +80,7 @@ impl WriterInput {
     ///
     /// If this method returns NO,
     /// check the value of the asset writer’s status property to determine whether
-    /// the writing operation’s status is complete, failed, or canceled. 
+    /// the writing operation’s status is complete, failed, or canceled.
     /// If the status is AVAssetWriterStatusFailed, the asset writer’s error property
     /// contains an error object that describes the failure.
     #[inline]

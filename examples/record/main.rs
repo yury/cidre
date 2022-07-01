@@ -1,16 +1,18 @@
 use std::{ffi::c_void, sync::Arc, time::Duration};
 
 use cidre::{
-    av::{self, asset::writer_input}, cf,
+    av::{self, asset::writer_input},
+    ca, cf,
     cm::{self, SampleBuffer},
-    cv, dispatch,
+    cv::{self, image_buffer, pixel_buffer},
+    dispatch,
     os::Status,
     sc::{self, stream::StreamOutput},
     vt::{
         self,
         compression_properties::{h264_entropy_mode, keys, profile_level},
         EncodeInfoFlags,
-    }, ca,
+    },
 };
 
 #[repr(C)]
@@ -35,10 +37,10 @@ impl StreamOutput for FameCounter {
         self.counter += 1;
         // why without println is not working well?
         // println!("frame {:?}", self.counter);
-        
+
         let img = sample_buffer.image_buffer();
         if img.is_none() {
-          return;
+            return;
         }
         let img = img.unwrap();
         let pts = sample_buffer.presentation_time_stamp();
@@ -59,26 +61,24 @@ extern "C" fn callback(
     ctx: *mut c_void,
     _: *mut c_void,
     status: Status,
-    flags: EncodeInfoFlags,
+    _flags: EncodeInfoFlags,
     buffer: Option<&SampleBuffer>,
 ) {
     // println!("compressed");
-    if buffer.is_none() {
-      return;
+    if status.is_err() || buffer.is_none() {
+        println!("status {:?}", status);
+        return;
     }
 
     let ctx = ctx as *mut cf::Retained<av::AssetWriterInput>;
     let ctx = unsafe { ctx.as_ref().unwrap() };
-    
+
     if ctx.is_ready_for_more_media_data() {
-      println!("appending");
-      ctx.append_sample_buffer(buffer.unwrap());
+        ctx.append_sample_buffer(buffer.unwrap());
     }
 }
 
-
-
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() {
     let q = dispatch::Queue::serial_with_autoreleasepool();
     let content = sc::ShareableContent::current().await.expect("content");
@@ -92,21 +92,18 @@ async fn main() {
         display.width() as i32 * 2,
         display.height() as i32 * 2,
         None,
-    ).unwrap();
+    )
+    .unwrap();
 
-    let mut props = cf::MutableDictionary::with_capacity(10);
-    // props.insert(av::, value)
-
-    let writer_input = av::AssetWriterInput::with_media_type_output_settings_source_and_format_hint(
-      av::MediaType::video(), None, Some(&format)
-    );
+    let writer_input =
+        av::AssetWriterInput::with_media_type_and_format_hint(av::MediaType::video(), &format);
     let url = cf::URL::from_str("file:///Users/yury/bla.mp4").unwrap();
-    
+
     let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     writer.add_input(&writer_input);
     writer.start_writing();
-    let secs = ca::current_media_time();
-    let start = cm::Time::with_seconds(secs, 60);
+    let start = cm::Time::with_seconds(0.2f64, 10_000);
+    let start = cm::Clock::host_time_clock().time().add(&start);
     writer.start_session_at_source_time(start);
 
     let input = Box::new(writer_input);
@@ -122,20 +119,19 @@ async fn main() {
     )
     .unwrap();
 
-
     let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
     let expected_fr = cf::Number::from_i32(60);
     let frame_delay_count = cf::Number::from_i32(0);
 
     let mut props = cf::MutableDictionary::with_capacity(10);
-    props.insert(keys::real_time(), &bool_true);
-    props.insert(keys::allow_frame_reordering(), &bool_false);
+    props.insert(keys::real_time(), bool_true);
+    props.insert(keys::allow_frame_reordering(), bool_false);
     props.insert(
         keys::profile_level(),
         profile_level::h264::main_auto_level(),
     );
-    props.insert(keys::allow_open_gop(), &bool_false);
+    props.insert(keys::allow_open_gop(), bool_false);
     props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());
     props.insert(keys::expected_frame_rate(), &expected_fr);
     props.insert(keys::max_frame_delay_count(), &frame_delay_count);
@@ -155,15 +151,14 @@ async fn main() {
     stream.add_stream_output(&d, sc::OutputType::Screen, Some(&q), &mut error);
     assert!(error.is_none());
     stream.start().await.expect("started");
-    stream.start().await.expect_err("already started");
 
     // cf::RunLoop::run
-    tokio::time::sleep(Duration::from_secs(60)).await;
+    tokio::time::sleep(Duration::from_secs(20)).await;
 
+    //    dispatch::Queue::main().async_with(move || {
     _ = stream.stop();
 
-    // dispatch::Queue::main().sync_with(move || {
-      writer.finish_writing();
-    // });
-    
+    writer.end_session_at_source_time(cm::Clock::host_time_clock().time());
+    writer.finish_writing();
+    //  })
 }

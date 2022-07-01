@@ -26,5 +26,10 @@ pub mod block_buffer;
 pub use block_buffer::BlockBuffer;
 pub use block_buffer::BlockBufferFlags;
 
+pub mod sync;
+pub use sync::Clock;
+pub use sync::ClockOrTimebase;
+pub use sync::Timebase;
+
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C" {}
