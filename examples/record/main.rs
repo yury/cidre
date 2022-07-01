@@ -1,10 +1,8 @@
-use std::{ffi::c_void, sync::Arc, time::Duration};
+use std::{ffi::c_void, time::Duration};
 
 use cidre::{
-    av::{self, asset::writer_input},
-    ca, cf,
+    av, cf,
     cm::{self, SampleBuffer},
-    cv::{self, image_buffer, pixel_buffer},
     dispatch,
     os::Status,
     sc::{self, stream::StreamOutput},
@@ -154,7 +152,7 @@ async fn main() {
     stream.start().await.expect("started");
 
     // cf::RunLoop::run
-    tokio::time::sleep(Duration::from_secs(20)).await;
+    tokio::time::sleep(Duration::from_secs(120)).await;
 
     //    dispatch::Queue::main().async_with(move || {
     _ = stream.stop();

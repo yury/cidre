@@ -24,6 +24,7 @@ pub enum Status {
 #[repr(isize)]
 pub enum OutputType {
     Screen,
+    Audio,
 }
 
 define_obj_type!(Configuration(Id));
