@@ -78,7 +78,8 @@ extern "C" fn callback(
     }
 }
 
-#[tokio::main(flavor = "multi_thread", worker_threads = 1)]
+#[tokio::main(flavor = "current_thread")]
+//#[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() {
     let q = dispatch::Queue::serial_with_autoreleasepool();
     let content = sc::ShareableContent::current().await.expect("content");
@@ -97,6 +98,7 @@ async fn main() {
 
     let writer_input =
         av::AssetWriterInput::with_media_type_and_format_hint(av::MediaType::video(), &format);
+    writer_input.set_expects_media_data_in_real_time(true);
     let url = cf::URL::from_str("file:///Users/yury/bla.mp4").unwrap();
 
     let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
