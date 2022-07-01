@@ -12,7 +12,7 @@ impl Clock {
     /// Returns a reference to the singleton clock logically identified with host time.
     #[inline]
     pub fn host_time_clock<'a>() -> &'a Clock {
-        unsafe { &CMClockGetHostTimeClock() }
+        unsafe { CMClockGetHostTimeClock() }
     }
 
     #[inline]

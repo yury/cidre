@@ -105,16 +105,43 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_AllowOpenGOP }
     }
 
+    /// The long-term desired average bit rate in bits per second.
+    ///
+    /// This is not a hard limit; the bit rate may peak above this.
+    /// The default bit rate is zero, which indicates that the video encoder
+    /// should determine the size of compressed data.
+    /// Note that bit rate settings only have an effect when timing
+    /// information is provided for source frames, and that some codecs do
+    /// not support limiting to specified bit rates.
     #[inline]
     pub fn avarage_bit_rate() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AverageBitRate }
     }
 
+    /// Zero, one or two hard limits on data rate.
+    ///
+    /// Each hard limit is described by a data size in bytes and a
+    /// duration in seconds, and requires that the total size of
+    /// compressed data for any contiguous segment of that duration (in
+    /// decode time) must not exceed the data size.
+    /// By default, no data rate limits are set.
+    /// The property is a CFArray of an even number of CFNumbers,
+    /// alternating between bytes and seconds.
+    /// Note that data rate settings only have an effect when timing
+    /// information is provided for source frames, and that some codecs do
+    /// not support limiting to specified data rates.
     #[inline]
     pub fn data_rate_limits() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_DataRateLimits }
     }
 
+    /// The desired compression quality.
+    ///
+    /// Some encoders, such as JPEG, describe the compression level of each
+    /// image with a quality value.  This value should be specified as a
+    /// number in the range of 0.0 to 1.0, where low = 0.25, normal = 0.50,
+    /// high = 0.75, and 1.0 implies lossless compression for encoders that
+    /// support it.
     #[inline]
     pub fn quality() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_Quality }
@@ -135,6 +162,19 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_MoreFramesAfterEnd }
     }
 
+    /// Hint for the video encoder that it should maximize its speed during encode, sacrificing quality if needed
+    ///
+    /// Video encoders sometimes have a tradeoff available between encoding speed and quality at a given bitrate.
+    /// For example, by spending more time refining encoding decisions, it may be possible to make marginal improvements on quality.
+    /// This property lets a client indicate its preference for any such tradeoff.
+    /// Clients may set this property to kCFBooleanTrue to indicate that
+    /// the encoder can take steps to maximize its speed by reducing quality,
+    /// or to kCFBooleanFalse to indicate that the priority should be maximizing quality (at a given bitrate).
+    /// When the property value is NULL, the video encoder will choose its default behavior.
+    /// H.264 and HEVC hardware video encoders prioritize quality over speed by default.
+    /// ProRes hardware encoders currently prioritize speed over quality by default.
+    /// Not all video encoders support this property.
+    /// By default, this property is NULL.
     #[inline]
     pub fn prioritize_encoding_speed_over_quality() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality }
