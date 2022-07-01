@@ -79,7 +79,6 @@ extern "C" fn callback(
 }
 
 #[tokio::main(flavor = "current_thread")]
-//#[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() {
     let q = dispatch::Queue::serial_with_autoreleasepool();
     let content = sc::ShareableContent::current().await.expect("content");
@@ -88,7 +87,7 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
-    let format = cm::FormatDescription::new_video(
+    let format = cm::FormatDescription::video(
         cm::VideoCodecType::H264,
         display.width() as i32 * 2,
         display.height() as i32 * 2,

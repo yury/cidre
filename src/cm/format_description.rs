@@ -127,9 +127,9 @@ impl VideoFormatDescription {
     /// ```
     /// use cidre::cm;
     ///
-    /// let desc = cm::VideoFormatDescription::new_video(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
+    /// let desc = cm::VideoFormatDescription::video(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
     /// ```
-    pub fn new_video<'a>(
+    pub fn video<'a>(
         codec_type: VideoCodecType,
         width: i32,
         height: i32,
@@ -179,7 +179,7 @@ impl VideoFormatDescription {
 pub type AudioFormatDescription = FormatDescription;
 
 impl AudioFormatDescription {
-    pub fn create_audio(
+    pub fn audio(
         allocator: Option<&cf::Allocator>,
         asbd: &cat::audio::StreamBasicDescription,
         layout_size: usize,
