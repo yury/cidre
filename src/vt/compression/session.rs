@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr::NonNull};
+use std::{ffi::c_void, ptr::NonNull, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
@@ -8,8 +8,8 @@ use crate::{
 
 define_cf_type!(Session(vt::Session));
 
-pub type OutputCallback = extern "C" fn(
-    output_callback_ref_con: *mut c_void,
+pub type OutputCallback<T> = extern "C" fn(
+    output_callback_ref_con: *mut T,
     source_frame_ref_con: *mut c_void,
     status: os::Status,
     info_flags: vt::EncodeInfoFlags,
@@ -17,14 +17,14 @@ pub type OutputCallback = extern "C" fn(
 );
 
 impl Session {
-    pub fn new<'a>(
+    pub fn new<'a, T>(
         width: u32,
         height: u32,
         codec: VideoCodecType,
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCallback>,
-        output_callback_ref_con: *mut c_void,
+        output_callback: Option<OutputCallback<T>>,
+        output_callback_ref_con: *mut T,
     ) -> Result<Retained<'a, Self>, os::Status> {
         unsafe {
             let mut session = None;
@@ -36,8 +36,8 @@ impl Session {
                 encoder_specification,
                 source_image_buffer_attributes,
                 None,
-                output_callback,
-                output_callback_ref_con,
+                transmute(output_callback),
+                transmute(output_callback_ref_con),
                 &mut session,
             )
             .to_result(session)
@@ -53,7 +53,7 @@ impl Session {
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<&OutputCallback>,
+        output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
         compression_session_out: &mut Option<cf::Retained<Session>>,
     ) -> os::Status {
@@ -136,7 +136,7 @@ extern "C" {
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<&OutputCallback>,
+        output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
         compression_session_out: &mut Option<cf::Retained<Session>>,
     ) -> os::Status;

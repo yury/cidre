@@ -160,6 +160,31 @@ impl SampleBuffer {
             )
         }
     }
+
+    #[inline]
+    pub fn image_buffer(&self) -> Option<&cv::ImageBuffer> {
+        unsafe { CMSampleBufferGetImageBuffer(self) }
+    }
+
+    #[inline]
+    pub fn data_buffer(&self) -> Option<&cm::BlockBuffer> {
+        unsafe { CMSampleBufferGetDataBuffer(self) }
+    }
+
+    #[inline]
+    pub fn duration(&self) -> cm::Time {
+        unsafe { CMSampleBufferGetDuration(self) }
+    }
+
+    #[inline]
+    pub fn presentation_time_stamp(&self) -> cm::Time {
+        unsafe { CMSampleBufferGetPresentationTimeStamp(self) }
+    }
+
+    #[inline]
+    pub fn decode_time_stamp(&self) -> cm::Time {
+        unsafe { CMSampleBufferGetDecodeTimeStamp(self) }
+    }
 }
 
 extern "C" {
@@ -192,4 +217,10 @@ extern "C" {
     ) -> crate::os::Status;
 
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuffer) -> bool;
+
+    fn CMSampleBufferGetImageBuffer(sbuf: &SampleBuffer) -> Option<&cv::ImageBuffer>;
+    fn CMSampleBufferGetDataBuffer(sbuf: &SampleBuffer) -> Option<&cm::BlockBuffer>;
+    fn CMSampleBufferGetDuration(sbuf: &SampleBuffer) -> cm::Time;
+    fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
+    fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
 }

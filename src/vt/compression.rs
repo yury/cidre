@@ -9,6 +9,8 @@ pub use properties::profile_level;
 
 #[cfg(test)]
 mod tests {
+    use std::ffi::c_void;
+
     use crate::{cf, cm::VideoCodecType, cv};
 
     use super::*;
@@ -29,7 +31,7 @@ mod tests {
         );
         image_attrs.insert(cv::pixel_buffer::keys::pixel_format_type(), &pixel_format);
 
-        let mut session = Session::new(
+        let mut session = Session::new::<c_void>(
             1920,
             1080,
             VideoCodecType::H264,
