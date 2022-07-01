@@ -1,7 +1,7 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, sync::Arc, time::Duration};
 
 use cidre::{
-    av, cf,
+    av::{self, asset::writer_input}, cf,
     cm::{self, SampleBuffer},
     cv, dispatch,
     os::Status,
@@ -10,7 +10,7 @@ use cidre::{
         self,
         compression_properties::{h264_entropy_mode, keys, profile_level},
         EncodeInfoFlags,
-    },
+    }, ca,
 };
 
 #[repr(C)]
@@ -63,7 +63,20 @@ extern "C" fn callback(
     buffer: Option<&SampleBuffer>,
 ) {
     // println!("compressed");
+    if buffer.is_none() {
+      return;
+    }
+
+    let ctx = ctx as *mut cf::Retained<av::AssetWriterInput>;
+    let ctx = unsafe { ctx.as_ref().unwrap() };
+    
+    if ctx.is_ready_for_more_media_data() {
+      println!("appending");
+      ctx.append_sample_buffer(buffer.unwrap());
+    }
 }
+
+
 
 #[tokio::main]
 async fn main() {
@@ -74,6 +87,30 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
+    let format = cm::FormatDescription::new_video(
+        cm::VideoCodecType::H264,
+        display.width() as i32 * 2,
+        display.height() as i32 * 2,
+        None,
+    ).unwrap();
+
+    let mut props = cf::MutableDictionary::with_capacity(10);
+    // props.insert(av::, value)
+
+    let writer_input = av::AssetWriterInput::with_media_type_output_settings_source_and_format_hint(
+      av::MediaType::video(), None, Some(&format)
+    );
+    let url = cf::URL::from_str("file:///Users/yury/bla.mp4").unwrap();
+    
+    let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
+    writer.add_input(&writer_input);
+    writer.start_writing();
+    let secs = ca::current_media_time();
+    let start = cm::Time::with_seconds(secs, 60);
+    writer.start_session_at_source_time(start);
+
+    let input = Box::new(writer_input);
+
     let mut session = vt::CompressionSession::new::<c_void>(
         display.width() as u32 * 2,
         display.height() as u32 * 2,
@@ -81,9 +118,10 @@ async fn main() {
         None,
         None,
         Some(callback),
-        std::ptr::null_mut(),
+        Box::into_raw(input) as _,
     )
     .unwrap();
+
 
     let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
@@ -119,5 +157,13 @@ async fn main() {
     stream.start().await.expect("started");
     stream.start().await.expect_err("already started");
 
-    dispatch::main()
+    // cf::RunLoop::run
+    tokio::time::sleep(Duration::from_secs(60)).await;
+
+    _ = stream.stop();
+
+    // dispatch::Queue::main().sync_with(move || {
+      writer.finish_writing();
+    // });
+    
 }

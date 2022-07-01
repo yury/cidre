@@ -83,3 +83,7 @@ pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PCMBuffer as AudioPCMBuffer;
 pub use audio::Player as AudioPlayer;
 pub use audio::PlayerNode as AudioPlayerNode;
+
+pub mod video;
+pub use video::settings_keys as video_settings_keys;
+pub use video::settings_codec_type as video_settings_codec_type;

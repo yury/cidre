@@ -321,6 +321,10 @@ rsel(, id, mutableAudioBufferList, AudioBufferList *)
 //+ (instancetype)assetWriterInputWithMediaType:(AVMediaType)mediaType outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings;
 csel_ab(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
 
+//+ (instancetype)assetWriterInputWithMediaType:(AVMediaType)mediaType outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings sourceFormatHint:(nullable CMFormatDescriptionRef)sourceFormatHint API_AVAILABLE(macos(10.8), ios(6.0), tvos(9.0)) API_UNAVAILABLE(watchos);
+csel_abc(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, sourceFormatHint, CMFormatDescriptionRef _Nullable, AVAssetWriterInput *)
+
+
 //@property (nonatomic, readonly) AVMediaType mediaType;
 rsel(, id, mediaType, AVMediaType)
 rsel(, id, outputSettings, NSDictionary * _Nullable)

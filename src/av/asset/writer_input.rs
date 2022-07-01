@@ -4,7 +4,7 @@ define_obj_type!(WriterInput(ns::Id));
 
 impl WriterInput {
     pub fn with_media_type_and_output_settings<'a>(
-        media_type: MediaType,
+        media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
     ) -> cf::Retained<'a, WriterInput> {
         unsafe {
@@ -14,12 +14,26 @@ impl WriterInput {
             )
         }
     }
+    
+    pub fn with_media_type_output_settings_source_and_format_hint<'a>(
+        media_type: &MediaType,
+        output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
+        source_format_hint: Option<&cm::FormatDescription>,
+    ) -> cf::Retained<'a, WriterInput> {
+        unsafe {
+            AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint(
+                media_type,
+                output_settings,
+                source_format_hint,
+            )
+        }
+    }
 
-    pub fn with_media_type<'a>(media_type: MediaType) -> cf::Retained<'a, WriterInput> {
+    pub fn with_media_type<'a>(media_type: &MediaType) -> cf::Retained<'a, WriterInput> {
         Self::with_media_type_and_output_settings(media_type, None)
     }
 
-    pub fn media_type(&self) -> MediaType {
+    pub fn media_type(&self) -> &MediaType {
         unsafe { rsel_mediaType(self) }
     }
 
@@ -65,11 +79,19 @@ impl WriterInput {
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings<'a>(
-        media_type: MediaType,
+        media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
     ) -> cf::Retained<'a, WriterInput>;
 
-    fn rsel_mediaType(id: &ns::Id) -> MediaType;
+    fn AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint<'a>(
+        media_type: &MediaType,
+        output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
+        source_format_hint: Option<&cm::FormatDescription>,
+    ) -> cf::Retained<'a, WriterInput>;
+
+    // csel_abc(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, sourceFormatHint, CMFormatDescriptionRef, AVAssetWriterInput *)
+
+    fn rsel_mediaType(id: &ns::Id) -> &MediaType;
     fn rsel_outputSettings(id: &ns::Id) -> Option<&cf::DictionaryOf<cf::String, ns::Id>>;
     fn rsel_isReadyForMoreMediaData(id: &ns::Id) -> bool;
     fn rsel_expectsMediaDataInRealTime(id: &ns::Id) -> bool;
