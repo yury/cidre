@@ -312,6 +312,12 @@ rsel(, id, magicCookie, NSData * _Nullable)
 rsel(, id, format, AVAudioFormat *)
 rsel(, id, audioBufferList, const AudioBufferList *)
 rsel(, id, mutableAudioBufferList, AudioBufferList *)
+
+#pragma mark - AVAudioPCMBuffer
+
+//- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity NS_DESIGNATED_INITIALIZER;
+asel_ab(, AVAudioPCMBuffer, initWithPCMFormat,AVAudioFormat *, frameCapacity, AVAudioFrameCount)
+
 rsel(, AVAudioPCMBuffer *, frameLength, AVAudioFrameCount)
 wsel_a(, AVAudioPCMBuffer *, setFrameLength, AVAudioFrameCount)
 rsel(, AVAudioPCMBuffer *, frameCapacity, AVAudioFrameCount)

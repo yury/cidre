@@ -27,6 +27,11 @@ define_obj_type!(PCMBuffer(Buffer));
 /// audio in PCM format.
 impl PCMBuffer {
 
+    pub fn with_format_and_frame_capacity<'a>(format: &Format, frame_capacity: FrameCount) -> Retained<'a, Self> {
+        unsafe {
+            AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(format, frame_capacity)
+        }
+    }
     /// The current number of valid sample frames in the buffer.
     /// 
     /// You may modify the length of the buffer as part of an operation that modifies its contents.
@@ -130,6 +135,8 @@ extern "C" {
     fn rsel_frameCapacity(id: &ns::Id) -> FrameCount;
     fn rsel_frameLength(id: &ns::Id) -> FrameCount;
     fn wsel_setFrameLength(id: &ns::Id, value: FrameCount);
+
+    fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity<'a>(format: &Format, frame_capacity: FrameCount) -> Retained<'a, PCMBuffer>;
 
     fn rsel_stride(id: &ns::Id) -> usize;
 
