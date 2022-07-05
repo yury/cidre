@@ -1,4 +1,4 @@
-use crate::{at::AudioBufferList, cf, define_obj_type, ns};
+use crate::{at::{AudioBufferList, audio::StreamPacketDescription}, cf, define_obj_type, ns};
 
 use super::{Format, FrameCount, PacketCount};
 
@@ -79,6 +79,30 @@ impl CompressedBuffer {
     pub fn maximum_packet_size(&self) -> isize {
         unsafe { rsel_maximumPacketSize(self) }
     }
+
+    /// The buffer's capacity in bytes
+    pub fn byte_capacity(&self) -> u32 {
+        unsafe { rsel_byteCapacity(self) }
+    }
+
+    pub fn byte_length(&self) -> u32 {
+        unsafe { rsel_byteLength(self) }
+    }
+
+    pub fn set_byte_length(&self, value: u32) {
+        unsafe { wsel_setByteLength(self, value) }
+    }
+
+    /// Access the buffer's array of packet descriptions, if any.
+    /// 
+    /// If the format has constant bytes per packet (format.streamDescription->mBytesPerPacket != 0), then this will return nil.
+    pub fn packet_descriptions(&self) -> Option<&StreamPacketDescription> {
+        unsafe { rsel_packetDescriptions(self) }
+    }
+
+    pub fn data(&self) -> *const c_void {
+        unsafe { rsel_data(self) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -98,4 +122,12 @@ extern "C" {
     fn wsel_setPacketCount(id: &ns::Id, value: PacketCount);
 
     fn rsel_maximumPacketSize(id: &ns::Id) -> isize;
+    fn rsel_byteCapacity(id: &ns::Id) -> u32;
+
+    fn rsel_byteLength(id: &ns::Id) -> u32;
+    fn wsel_setByteLength(id: &ns::Id, value: u32);
+
+    fn rsel_packetDescriptions(id: &ns::Id) -> Option<&StreamPacketDescription>;
+
+    fn rsel_data(id: &ns::Id) -> *const c_void;
 }

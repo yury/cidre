@@ -328,6 +328,16 @@ wsel_a(, id, setPacketCount, AVAudioPacketCount)
 
 //@property (nonatomic, readonly) NSInteger maximumPacketSize;
 rsel(, id, maximumPacketSize, NSInteger)
+//@property (nonatomic, readonly) uint32_t byteCapacity
+rsel(, id, byteCapacity, uint32_t)
+
+rwsel(, id, byteLength, setByteLength, uint32_t)
+
+//@property (nonatomic, readonly, nullable) AudioStreamPacketDescription *packetDescriptions;
+rsel(, id, packetDescriptions, AudioStreamPacketDescription * _Nullable)
+
+rsel(, id, data, void *)
+//@property (nonatomic) uint32_t byteLength API_AVAILABLE(macosx(10.13), ios(11.0), watchos(4.0), tvos(11.0));
 
 //- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity
 
