@@ -1,7 +1,7 @@
 use std::ffi::c_void;
 
 use crate::{
-    cf::{Allocator, Retained, Type},
+    cf::{self, Allocator, Retained, Type},
     cm, cv, define_cf_type, os,
 };
 
@@ -189,7 +189,7 @@ impl SampleBuffer {
     /// Returns the output presentation timestamp of the CMSampleBuffer.
     #[inline]
     pub fn output_presentation_time_stamp(&self) -> cm::Time {
-        unsafe { CMSampleBufferGetOutputPresentationTimeStamp(self)}
+        unsafe { CMSampleBufferGetOutputPresentationTimeStamp(self) }
     }
 
     #[inline]
@@ -198,7 +198,7 @@ impl SampleBuffer {
     }
 
     /// Returns the size in bytes of a specified sample in a CMSampleBuffer.
-    /// 
+    ///
     /// Size in bytes of the specified sample in the CMSampleBuffer.
     #[inline]
     pub fn sample_size(&self, sample_index: cm::ItemIndex) -> usize {
@@ -206,9 +206,9 @@ impl SampleBuffer {
     }
 
     /// Returns the total size in bytes of sample data in a CMSampleBuffer.
-    /// 
+    ///
     /// Total size in bytes of sample data in the CMSampleBuffer.
-	/// If there are no sample sizes in this CMSampleBuffer, a size of 0 will be returned.  
+    /// If there are no sample sizes in this CMSampleBuffer, a size of 0 will be returned.  
     #[inline]
     pub fn total_sample_size(&self) -> usize {
         unsafe { CMSampleBufferGetTotalSampleSize(self) }
@@ -216,9 +216,14 @@ impl SampleBuffer {
 
     #[inline]
     pub fn format_description(&self) -> Option<&cm::FormatDescription> {
-        unsafe {
-            CMSampleBufferGetFormatDescription(self)
-        }
+        unsafe { CMSampleBufferGetFormatDescription(self) }
+    }
+
+    /// Returns a reference to a CMSampleBuffer's immutable array of mutable sample attachments dictionaries (one dictionary
+	/// per sample in the CMSampleBuffer)
+    #[inline]
+    pub fn attachments(&self, create_if_necessary: bool) -> Option<&cf::ArrayOf<cf::MutableDictionary>> {
+        unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 }
 
@@ -263,4 +268,8 @@ extern "C" {
     fn CMSampleBufferGetSampleSize(sbuf: &SampleBuffer, sample_index: cm::ItemIndex) -> usize;
     fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuffer) -> usize;
     fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuffer) -> Option<&cm::FormatDescription>;
+    fn CMSampleBufferGetSampleAttachmentsArray(
+        sbuf: &SampleBuffer,
+        create_if_necessary: bool,
+    ) -> Option<&cf::ArrayOf<cf::MutableDictionary>>;
 }
