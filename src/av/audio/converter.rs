@@ -54,35 +54,46 @@ impl Converter {
     /// The maximum size of an output packet, in bytes.
     /// When encoding it is useful to know how large a packet can be in order to allocate a buffer to receive the output.
     pub fn maximum_output_packet_size(&self) -> isize {
-        todo!()
+        unsafe { rsel_maximumOutputPacketSize(self) }
     }
 
     /// When encoding, an NSArray of NSNumber of all bit rates provided by the codec.
     /// Returns None if not encoding.
     pub fn available_encode_bit_rates(&self) -> Option<&cf::ArrayOf<cf::Number>> {
-        todo!()
+        unsafe { rsel_availableEncodeBitRates(self) }
     }
 
     /// When encoding, an NSArray of NSNumber of bit rates that can be applied based on the current formats and settings.
     /// Returns None if not encoding.
     pub fn applicable_encode_bit_rates(&self) -> Option<&cf::ArrayOf<cf::Number>> {
-        todo!()
+        unsafe { rsel_applicableEncodeBitRates(self) }
     }
 
     /// When encoding, an NSArray of NSNumber of all output sample rates provided by the codec.
     /// Returns None if not encoding.
     pub fn available_encode_sample_rates(&self) -> Option<&cf::ArrayOf<cf::Number>> {
-        todo!()
+        unsafe { rsel_availableEncodeSampleRates(self) }
     }
 
     /// When encoding, an NSArray of NSNumber of output sample rates that can be applied based on the current formats and settings.
     /// Returns None if not encoding.
     pub fn applicable_encode_sample_rates(&self) -> Option<&cf::ArrayOf<cf::Number>> {
-        todo!()
+        unsafe { rsel_applicableEncodeSampleRates(self) }
     }
     /// When encoding, an NSArray of NSNumber of all output channel layout tags provided by the codec.
     /// Returns None if not encoding
     pub fn available_encode_channel_layout_tags(&self) -> Option<&cf::ArrayOf<cf::Number>> {
-        todo!()
+        unsafe { rsel_availableEncodeChannelLayoutTags(self) }
     }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    fn rsel_availableEncodeChannelLayoutTags(id: &ns::Id) -> Option<&cf::ArrayOf<cf::Number>>;
+    fn rsel_applicableEncodeSampleRates(id: &ns::Id) -> Option<&cf::ArrayOf<cf::Number>>;
+    fn rsel_availableEncodeSampleRates(id: &ns::Id) -> Option<&cf::ArrayOf<cf::Number>>;
+    fn rsel_applicableEncodeBitRates(id: &ns::Id) -> Option<&cf::ArrayOf<cf::Number>>;
+    fn rsel_availableEncodeBitRates(id: &ns::Id) -> Option<&cf::ArrayOf<cf::Number>>;
+
+    fn rsel_maximumOutputPacketSize(id: &ns::Id) -> isize;
 }

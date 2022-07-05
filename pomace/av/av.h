@@ -410,4 +410,15 @@ wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
 //@property (nonatomic) BOOL alwaysCopiesSampleData
 
+
+#pragma mark - AVAudioConverter
+
+rsel(, id, availableEncodeChannelLayoutTags, NSArray<NSNumber *> * _Nullable)
+rsel(, id, applicableEncodeSampleRates, NSArray<NSNumber *> * _Nullable)
+rsel(, id, availableEncodeSampleRates, NSArray<NSNumber *> * _Nullable)
+rsel(, id, applicableEncodeBitRates, NSArray<NSNumber *> * _Nullable)
+rsel(, id, availableEncodeBitRates, NSArray<NSNumber *> * _Nullable)
+//@property (nonatomic, readonly) NSInteger maximumOutputPacketSize;
+rsel(, id, maximumOutputPacketSize, NSInteger)
+
 NS_ASSUME_NONNULL_END
