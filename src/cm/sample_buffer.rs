@@ -185,6 +185,41 @@ impl SampleBuffer {
     pub fn decode_time_stamp(&self) -> cm::Time {
         unsafe { CMSampleBufferGetDecodeTimeStamp(self) }
     }
+
+    /// Returns the output presentation timestamp of the CMSampleBuffer.
+    #[inline]
+    pub fn output_presentation_time_stamp(&self) -> cm::Time {
+        unsafe { CMSampleBufferGetOutputPresentationTimeStamp(self)}
+    }
+
+    #[inline]
+    pub fn set_output_presentation_time_stamp(&self, value: cm::Time) {
+        unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, value) }
+    }
+
+    /// Returns the size in bytes of a specified sample in a CMSampleBuffer.
+    /// 
+    /// Size in bytes of the specified sample in the CMSampleBuffer.
+    #[inline]
+    pub fn sample_size(&self, sample_index: cm::ItemIndex) -> usize {
+        unsafe { CMSampleBufferGetSampleSize(self, sample_index) }
+    }
+
+    /// Returns the total size in bytes of sample data in a CMSampleBuffer.
+    /// 
+    /// Total size in bytes of sample data in the CMSampleBuffer.
+	/// If there are no sample sizes in this CMSampleBuffer, a size of 0 will be returned.  
+    #[inline]
+    pub fn total_sample_size(&self) -> usize {
+        unsafe { CMSampleBufferGetTotalSampleSize(self) }
+    }
+
+    #[inline]
+    pub fn format_description(&self) -> Option<&cm::FormatDescription> {
+        unsafe {
+            CMSampleBufferGetFormatDescription(self)
+        }
+    }
 }
 
 extern "C" {
@@ -223,4 +258,9 @@ extern "C" {
     fn CMSampleBufferGetDuration(sbuf: &SampleBuffer) -> cm::Time;
     fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
     fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
+    fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
+    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuffer, value: cm::Time);
+    fn CMSampleBufferGetSampleSize(sbuf: &SampleBuffer, sample_index: cm::ItemIndex) -> usize;
+    fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuffer) -> usize;
+    fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuffer) -> Option<&cm::FormatDescription>;
 }
