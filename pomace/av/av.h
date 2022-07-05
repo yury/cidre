@@ -326,22 +326,16 @@ rsel(, id, stride, NSUInteger)
 
 #pragma mark - AVAudioCompressedBuffer
 
-//- (instancetype)initWithFormat:(AVAudioFormat *)format packetCapacity:(AVAudioPacketCount)packetCapacity;
-
 asel_ab(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount)
 
 asel_abc(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount, maximumPacketSize, NSInteger)
 
 
-//@property (nonatomic, readonly) AVAudioPacketCount packetCapacity;
 rsel(, id, packetCapacity, AVAudioPacketCount)
-//@property (nonatomic) AVAudioPacketCount packetCount;
 rsel(, id, packetCount, AVAudioPacketCount)
 wsel_a(, id, setPacketCount, AVAudioPacketCount)
 
-//@property (nonatomic, readonly) NSInteger maximumPacketSize;
 rsel(, id, maximumPacketSize, NSInteger)
-//@property (nonatomic, readonly) uint32_t byteCapacity
 rsel(, id, byteCapacity, uint32_t)
 
 rwsel(, id, byteLength, setByteLength, uint32_t)
@@ -356,24 +350,19 @@ rsel(, AVAudioCompressedBuffer *, data, void *)
 
 #pragma mark - AVAssetWriterInput
 
-//+ (instancetype)assetWriterInputWithMediaType:(AVMediaType)mediaType outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings;
 csel_ab(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
 
-//+ (instancetype)assetWriterInputWithMediaType:(AVMediaType)mediaType outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings sourceFormatHint:(nullable CMFormatDescriptionRef)sourceFormatHint API_AVAILABLE(macos(10.8), ios(6.0), tvos(9.0)) API_UNAVAILABLE(watchos);
 csel_abc(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, sourceFormatHint, CMFormatDescriptionRef _Nullable, AVAssetWriterInput *)
 
 
-//@property (nonatomic, readonly) AVMediaType mediaType;
 rsel(, id, mediaType, AVMediaType)
 rsel(, id, outputSettings, NSDictionary * _Nullable)
 
 rsel(, id, isReadyForMoreMediaData, BOOL)
 
-//@property (nonatomic) BOOL expectsMediaDataInRealTime;
 rsel(, id, expectsMediaDataInRealTime, BOOL)
 wsel_a(, id, setExpectsMediaDataInRealTime, BOOL)
 
-//- (void)markAsFinished;
 wsel(, id, markAsFinished)
 
 //- (BOOL)appendSampleBuffer:(CMSampleBufferRef)sampleBuffer;
