@@ -312,7 +312,22 @@ rsel(, id, magicCookie, NSData * _Nullable)
 rsel(, id, format, AVAudioFormat *)
 rsel(, id, audioBufferList, const AudioBufferList *)
 rsel(, id, mutableAudioBufferList, AudioBufferList *)
+rsel(, AVAudioPCMBuffer *, frameLength, AVAudioFrameCount)
+wsel_a(, AVAudioPCMBuffer *, setFrameLength, AVAudioFrameCount)
+rsel(, AVAudioPCMBuffer *, frameCapacity, AVAudioFrameCount)
+//@property (nonatomic, readonly) AVAudioFrameCount frameCapacity;
+rsel(, id, stride, NSUInteger)
 
+#pragma mark - AVAudioCompressedBuffer
+
+//@property (nonatomic, readonly) AVAudioPacketCount packetCapacity;
+rsel(, id, packetCapacity, AVAudioPacketCount)
+//@property (nonatomic) AVAudioPacketCount packetCount;
+rsel(, id, packetCount, AVAudioPacketCount)
+wsel_a(, id, setPacketCount, AVAudioPacketCount)
+
+//@property (nonatomic, readonly) NSInteger maximumPacketSize;
+rsel(, id, maximumPacketSize, NSInteger)
 
 //- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity
 
