@@ -220,9 +220,12 @@ impl SampleBuffer {
     }
 
     /// Returns a reference to a CMSampleBuffer's immutable array of mutable sample attachments dictionaries (one dictionary
-	/// per sample in the CMSampleBuffer)
+    /// per sample in the CMSampleBuffer)
     #[inline]
-    pub fn attachments(&self, create_if_necessary: bool) -> Option<&cf::ArrayOf<cf::MutableDictionary>> {
+    pub fn attachments(
+        &self,
+        create_if_necessary: bool,
+    ) -> Option<&cf::ArrayOf<cf::MutableDictionary>> {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 }
@@ -272,4 +275,72 @@ extern "C" {
         sbuf: &SampleBuffer,
         create_if_necessary: bool,
     ) -> Option<&cf::ArrayOf<cf::MutableDictionary>>;
+}
+
+pub mod attachment_keys {
+    use crate::cf;
+
+    /// Indicates the reason the current video frame was dropped.
+    /// 
+    /// Sample buffers with this attachment contain no image or data buffer.  They mark a dropped video
+	/// frame.  This attachment identifies the reason for the droppage.
+    #[inline]
+    pub fn dropped_frame_reason() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_DroppedFrameReason }
+    }
+    /// Indicates additional information regarding the dropped video frame.
+    #[inline]
+    pub fn dropped_frame_reason_info() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_DroppedFrameReasonInfo }
+    }
+    /// Indicates information about the lens stabilization applied to the current still image buffer.
+    /// 
+    /// Sample buffers that have been captured with a lens stabilization module may have an attachment of
+	/// kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo which has information about the stabilization status
+    /// during the capture.  This key will not be present in CMSampleBuffers coming from cameras without a lens stabilization module.
+    #[inline]
+    pub fn still_image_lens_stabilization_info() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo }
+    }
+
+    /// Indicates the 3x3 camera intrinsic matrix applied to the current sample buffer.
+    ///
+    /// Camera intrinsic matrix is a CFData containing a matrix_float3x3, which is column-major. It has the following contents:
+    /// fx	0	ox
+    /// 0	fy	oy
+    /// 0	0	1
+    /// fx and fy are the focal length in pixels. For square pixels, they will have the same value.
+    /// ox and oy are the coordinates of the principal point. The origin is the upper left of the frame.
+    pub fn camera_intrinsic_matrix() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix }
+    }
+
+    /// Indicates that the current or next video sample buffer should be forced to be encoded as a key frame.
+    ///
+    /// A value of kCFBooleanTrue for kCMSampleBufferAttachmentKey_ForceKeyFrame indicates
+    /// that the current or next video sample buffer processed in the stream should be forced
+    /// to be encoded as a key frame.
+    /// If this attachment is present and kCFBooleanTrue on a sample buffer with a video
+    /// frame, that video frame will be forced to become a key frame.  If the sample
+    /// buffer for which this is present and kCFBooleanTrue does not have a valid video
+    /// frame, the next sample buffer processed that contains a valid video frame will be
+    /// encoded as a key frame.
+    #[inline]
+    pub fn force_key_frame() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_ForceKeyFrame }
+    }
+
+    #[inline]
+    pub fn cryptor_subsample_auxiliary_data() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
+    }
+
+    extern "C" {
+        static kCMSampleBufferAttachmentKey_DroppedFrameReason: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_DroppedFrameReasonInfo: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_ForceKeyFrame: &'static cf::String;
+        static kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData: &'static cf::String;
+    }
 }
