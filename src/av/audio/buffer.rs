@@ -1,4 +1,6 @@
-use crate::{at::{AudioBufferList, audio::StreamPacketDescription}, cf, define_obj_type, ns};
+use std::ffi::c_void;
+
+use crate::{at::{AudioBufferList, audio::StreamPacketDescription}, cf::{self, Retained}, define_obj_type, ns};
 
 use super::{Format, FrameCount, PacketCount};
 
@@ -103,6 +105,21 @@ impl CompressedBuffer {
     pub fn data(&self) -> *const c_void {
         unsafe { rsel_data(self) }
     }
+
+    /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
+    /// 
+    /// This fails if the format is PCM or if the format has variable bytes per packet (for example, format.streamDescription->mBytesPerPacket == 0).
+    pub fn with_format_and_packet_capacity<'a>(format: &Format, packet_capacity: PacketCount) -> Retained<'a, Self> {
+        unsafe {
+            AVAudioCompressedBuffer_initWithFormat_packetCapacity(format, packet_capacity)
+        }
+    }
+
+    pub fn with_format_packet_capacity_and_maximum_packet_size<'a>(format: &Format, packet_capacity: PacketCount, maximum_packet_size: isize) -> Retained<'a, Self> {
+        unsafe {
+            AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(format, packet_capacity, maximum_packet_size)
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -130,4 +147,7 @@ extern "C" {
     fn rsel_packetDescriptions(id: &ns::Id) -> Option<&StreamPacketDescription>;
 
     fn rsel_data(id: &ns::Id) -> *const c_void;
+
+    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity<'a>(format: &Format, packet_capacity: PacketCount) -> Retained<'a, CompressedBuffer>;
+    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize<'a>(format: &Format, packet_capacity: PacketCount, maximum_packet_size: isize) -> Retained<'a, CompressedBuffer>;
 }

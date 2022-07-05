@@ -320,6 +320,13 @@ rsel(, id, stride, NSUInteger)
 
 #pragma mark - AVAudioCompressedBuffer
 
+//- (instancetype)initWithFormat:(AVAudioFormat *)format packetCapacity:(AVAudioPacketCount)packetCapacity;
+
+asel_ab(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount)
+
+asel_abc(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount, maximumPacketSize, NSInteger)
+
+
 //@property (nonatomic, readonly) AVAudioPacketCount packetCapacity;
 rsel(, id, packetCapacity, AVAudioPacketCount)
 //@property (nonatomic) AVAudioPacketCount packetCount;
@@ -336,7 +343,7 @@ rwsel(, id, byteLength, setByteLength, uint32_t)
 //@property (nonatomic, readonly, nullable) AudioStreamPacketDescription *packetDescriptions;
 rsel(, id, packetDescriptions, AudioStreamPacketDescription * _Nullable)
 
-rsel(, id, data, void *)
+rsel(, AVAudioCompressedBuffer *, data, void *)
 //@property (nonatomic) uint32_t byteLength API_AVAILABLE(macosx(10.13), ios(11.0), watchos(4.0), tvos(11.0));
 
 //- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity
