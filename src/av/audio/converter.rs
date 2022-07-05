@@ -49,7 +49,13 @@ impl Converter {
         @abstract When encoding, an AVEncoderBitRateStrategyKey value constant as defined in AVAudioSettings.h. Returns nil if not encoding.
     */
     // @property (nonatomic, retain, nullable) NSString *bitRateStrategy;
-    // pub fn bit_rate_strategy(&self) -> Option<&av::Enc>
+    pub fn bit_rate_strategy(&self) -> Option<&cf::String> {
+        unsafe { rsel_bitRateStrategy(self) }
+    }
+
+    pub fn set_bit_rate_strategy(&self, value: Option<&cf::String>) {
+        unsafe { wsel_setBitRateStrategy(self, value) }
+    }
 
     /// The maximum size of an output packet, in bytes.
     /// When encoding it is useful to know how large a packet can be in order to allocate a buffer to receive the output.
@@ -96,4 +102,7 @@ extern "C" {
     fn rsel_availableEncodeBitRates(id: &ns::Id) -> Option<&cf::ArrayOf<cf::Number>>;
 
     fn rsel_maximumOutputPacketSize(id: &ns::Id) -> isize;
+
+    fn rsel_bitRateStrategy(id: &ns::Id) -> Option<&cf::String>;
+    fn wsel_setBitRateStrategy(id: &ns::Id, value: Option<&cf::String>);
 }

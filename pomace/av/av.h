@@ -421,4 +421,7 @@ rsel(, id, availableEncodeBitRates, NSArray<NSNumber *> * _Nullable)
 //@property (nonatomic, readonly) NSInteger maximumOutputPacketSize;
 rsel(, id, maximumOutputPacketSize, NSInteger)
 
+rsel(, id, bitRateStrategy, NSString * _Nullable)
+wsel_a(, id, setBitRateStrategy, NSString * _Nullable)
+
 NS_ASSUME_NONNULL_END
