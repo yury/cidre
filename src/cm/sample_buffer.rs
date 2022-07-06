@@ -280,6 +280,73 @@ extern "C" {
 pub mod attachment_keys {
     use crate::cf;
 
+    /// cf::Boolean (absence of this key implies Sync)
+    pub fn not_sync() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_NotSync }
+    }
+
+    /// cf::Boolean (absence of this key implies not Partial Sync. If NotSync is false, PartialSync should be ignored.)
+    pub fn partial_sync() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_PartialSync }
+    }
+
+    /// kCFBooleanTrue, kCFBooleanFalse, or absent if unknown
+    pub fn has_redundant_coding() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_HasRedundantCoding }
+    }
+
+    /// kCFBooleanTrue, kCFBooleanFalse, or absent if unknown
+    ///
+    /// A frame is considered droppable if and only if kCMSampleAttachmentKey_IsDependedOnByOthers is present and set to kCFBooleanFalse.
+    pub fn is_depended_on_by_others() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_IsDependedOnByOthers }
+    }
+
+    /// kCFBooleanTrue (e.g., non-I-frame), kCFBooleanFalse (e.g. I-frame), or absent if unknown
+    pub fn depends_on_others() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_DependsOnOthers }
+    }
+
+    /// cf::Boolean
+    pub fn earlier_display_times_allowed() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_EarlierDisplayTimesAllowed }
+    }
+
+    /// cf::Boolean
+    pub fn display_immediately() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_DisplayImmediately }
+    }
+
+    /// cf::Boolean
+    pub fn do_not_display() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_DoNotDisplay }
+    }
+
+    /// Marks a transition from one source of buffers (eg. song) to another
+    ///
+    /// For example, during gapless playback of a list of songs, this attachment marks the first buffer from the next song.
+    /// If this attachment is on a buffer containing no samples, the first following buffer that contains samples is the
+    /// buffer that contains the first samples from the next song.  The value of this attachment is a CFTypeRef.  This
+    /// transition identifier should be unique within a playlist, so each transition in a playlist is uniquely
+    /// identifiable.  A CFNumberRef counter that increments with each transition is a simple example.
+    pub fn transition_id() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_TransitionID }
+    }
+
+    /// he duration that should be removed at the beginning of the sample buffer, after decoding.
+    pub fn trim_duration_at_start() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_TrimDurationAtStart }
+    }
+
+    /// The duration that should be removed at the end of the sample buffer, after decoding.
+    ///
+    /// If this attachment is not present, the trim duration is zero (nothing removed).
+    /// This is a CMTime in CFDictionary format as made by CMTimeCopyAsDictionary;
+    /// use CMTimeMakeFromDictionary to convert to CMTime.
+    pub fn trim_duration_at_end() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_TrimDurationAtEnd }
+    }
+
     /// Indicates that the decoded contents of the sample buffer should be reversed.
     ///
     /// If this attachment is not present, the sample buffer should be played forwards as usual.
@@ -399,6 +466,18 @@ pub mod attachment_keys {
     }
 
     extern "C" {
+        static kCMSampleAttachmentKey_NotSync: &'static cf::String;
+        static kCMSampleAttachmentKey_PartialSync: &'static cf::String;
+        static kCMSampleAttachmentKey_HasRedundantCoding: &'static cf::String;
+        static kCMSampleAttachmentKey_IsDependedOnByOthers: &'static cf::String;
+        static kCMSampleAttachmentKey_DependsOnOthers: &'static cf::String;
+        static kCMSampleAttachmentKey_EarlierDisplayTimesAllowed: &'static cf::String;
+        static kCMSampleAttachmentKey_DisplayImmediately: &'static cf::String;
+        static kCMSampleAttachmentKey_DoNotDisplay: &'static cf::String;
+
+        static kCMSampleBufferAttachmentKey_TransitionID: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_TrimDurationAtStart: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_TrimDurationAtEnd: &'static cf::String;
         static kCMSampleBufferAttachmentKey_Reverse: &'static cf::String;
         static kCMSampleBufferAttachmentKey_FillDiscontinuitiesWithSilence: &'static cf::String;
         static kCMSampleBufferAttachmentKey_EmptyMedia: &'static cf::String;
