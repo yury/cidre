@@ -228,6 +228,27 @@ impl SampleBuffer {
     ) -> Option<&cf::ArrayOf<cf::MutableDictionary>> {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
+
+    #[inline]
+    pub fn is_valid(&self) -> bool {
+        unsafe { CMSampleBufferIsValid(self) }
+    }
+
+    /// Makes the sample buffer invalid, calling any installed invalidation callback.
+    ///
+    /// An invalid sample buffer cannot be used -- all accessors will return kCMSampleBufferError_Invalidated.
+    /// It is not a good idea to do this to a sample buffer that another module may be accessing concurrently.
+    /// Example of use: the invalidation callback could cancel pending I/O.
+    #[inline]
+    pub fn invalidate(&self) -> os::Status {
+        unsafe { CMSampleBufferInvalidate(self) }
+    }
+
+    /// Makes a CMSampleBuffer's data ready, by calling the client's CMSampleBufferMakeDataReadyCallback.
+    #[inline]
+    pub fn make_data_ready(&self) -> os::Status {
+        unsafe { CMSampleBufferMakeDataReady(self) }
+    }
 }
 
 extern "C" {
@@ -275,6 +296,11 @@ extern "C" {
         sbuf: &SampleBuffer,
         create_if_necessary: bool,
     ) -> Option<&cf::ArrayOf<cf::MutableDictionary>>;
+
+    fn CMSampleBufferIsValid(sbuf: &SampleBuffer) -> bool;
+
+    fn CMSampleBufferInvalidate(sbuf: &SampleBuffer) -> os::Status;
+    fn CMSampleBufferMakeDataReady(sbuf: &SampleBuffer) -> os::Status;
 }
 
 pub mod attachment_keys {
@@ -328,6 +354,30 @@ pub mod attachment_keys {
     #[inline]
     pub fn do_not_display() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DoNotDisplay }
+    }
+
+    /// cf::Boolean
+    #[inline]
+    pub fn reset_decoder_before_decoding() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding }
+    }
+
+    /// cf::Boolean
+    #[inline]
+    pub fn drain_after_decoding() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_DrainAfterDecoding }
+    }
+
+    /// cf::Dictionary (client-defined)
+    #[inline]
+    pub fn post_notification_when_consumed() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed }
+    }
+
+    /// CFNumber (ResumeTag)
+    #[inline]
+    pub fn resume_output() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_ResumeOutput }
     }
 
     /// Marks a transition from one source of buffers (eg. song) to another
@@ -494,6 +544,10 @@ pub mod attachment_keys {
         static kCMSampleAttachmentKey_EarlierDisplayTimesAllowed: &'static cf::String;
         static kCMSampleAttachmentKey_DisplayImmediately: &'static cf::String;
         static kCMSampleAttachmentKey_DoNotDisplay: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_DrainAfterDecoding: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_ResumeOutput: &'static cf::String;
 
         static kCMSampleBufferAttachmentKey_TransitionID: &'static cf::String;
         static kCMSampleBufferAttachmentKey_TrimDurationAtStart: &'static cf::String;
