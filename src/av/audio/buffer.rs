@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     at::{audio::StreamPacketDescription, AudioBufferList},
     cf::{self, Retained},
-    define_obj_type, define_options, ns,
+    define_obj_type, ns,
 };
 
 use super::{Format, FrameCount, PacketCount};

@@ -14,12 +14,14 @@ pub struct Point3D {
 
 pub type Vector3D = Point3D;
 
+#[derive(Copy, Clone, Debug)]
 #[repr(C)]
 pub struct Vector3DOrientation {
     pub forward: Vector3D,
     pub up: Vector3D,
 }
 
+#[derive(Copy, Clone, Debug)]
 #[repr(C)]
 pub struct Angular3DOrientation {
     pub yaw: f32,
