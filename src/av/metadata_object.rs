@@ -156,6 +156,7 @@ impl Object {
     /// expressed as scalar values from 0. - 1. If the original video has been scaled
     /// down, the bounds of the metadata object still are meaningful. This property may
     /// return cg::Rect::zero if the metadata has no bounds.
+    #[inline]
     pub fn bounds(&self) -> cg::Rect {
         msg_send!("common", self, sel_bounds)
     }
@@ -166,6 +167,7 @@ impl Object {
     /// For capture, it is the time at which this object was captured. If this metadata
     /// object originates from a cm::SampleBuffer, its time matches the sample buffer's
     /// presentation time. This property may return cm::Time::invalid.
+    #[inline]
     pub fn time(&self) -> cm::Time {
         unsafe { AVMetadataObject_rsel_time(self) }
     }
@@ -176,6 +178,7 @@ impl Object {
     /// of the metadata object. If this metadata object originates from a cm::SampleBuffer,
     /// its duration matches the sample buffer's duration.
     /// This property may return cm::Time::invalid.
+    #[inline]
     pub fn duration(&self) -> cm::Time {
         unsafe { AVMetadataObject_rsel_duration(self) }
     }
@@ -185,6 +188,7 @@ impl Object {
     }
 }
 
+#[link(name = "av", kind = "static")]
 extern "C" {
     fn AVMetadataObject_rsel_time(id: &ns::Id) -> cm::Time;
     fn AVMetadataObject_rsel_duration(id: &ns::Id) -> cm::Time;
@@ -192,9 +196,23 @@ extern "C" {
 }
 
 define_obj_type!(BodyObject(Object));
+
+impl BodyObject {
+    #[inline]
+    pub fn body_id(&self) -> isize {
+        unsafe { AVMetadataBodyObject_bodyID(self)}
+    }
+}
+
+extern "C" {
+    fn AVMetadataBodyObject_bodyID(id: &ns::Id) -> isize;
+}
+
 define_obj_type!(CatBodyObject(BodyObject));
 define_obj_type!(DogBodyObject(BodyObject));
-define_obj_type!(FaceObject(Object));
 define_obj_type!(HumanBodyObject(BodyObject));
+
+
+define_obj_type!(FaceObject(Object));
 define_obj_type!(MachineReadableCodeObject(Object));
 define_obj_type!(SalientObject(Object));

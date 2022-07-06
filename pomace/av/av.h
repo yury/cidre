@@ -416,4 +416,8 @@ rsel(AVMetadataObject_, AVMetadataObject *, time, CMTime)
 rsel(AVMetadataObject_, AVMetadataObject *, duration, CMTime)
 rsel(AVMetadataObject_, AVMetadataObject *, type, AVMetadataObjectType)
 
+#pragma mark - AVMetadataBodyObject
+
+rsel(AVMetadataBodyObject_, AVMetadataBodyObject *, bodyID, NSInteger)
+
 NS_ASSUME_NONNULL_END
