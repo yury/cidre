@@ -410,4 +410,10 @@ rsel(, id, maximumOutputPacketSize, NSInteger)
 rsel(, id, bitRateStrategy, NSString * _Nullable)
 wsel_a(, id, setBitRateStrategy, NSString * _Nullable)
 
+#pragma mark - AVMetadataObject
+
+rsel(AVMetadataObject_, AVMetadataObject *, time, CMTime)
+rsel(AVMetadataObject_, AVMetadataObject *, duration, CMTime)
+rsel(AVMetadataObject_, AVMetadataObject *, type, AVMetadataObjectType)
+
 NS_ASSUME_NONNULL_END

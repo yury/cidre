@@ -1,4 +1,4 @@
-use crate::{cf, cg, define_cf_type, define_obj_type, msg_send, ns::Id};
+use crate::{cf, cg, cm, define_cf_type, define_obj_type, msg_send, ns};
 
 define_cf_type!(Type(cf::String));
 
@@ -147,12 +147,48 @@ extern "C" {
 
 }
 
-define_obj_type!(Object(Id));
+define_obj_type!(Object(ns::Id));
 
 impl Object {
+    /// The value of this property is a cg::Rect representing the bounding rectangle
+    /// of the object with respect to the picture in which it resides. The rectangle's
+    /// origin is top left. If the metadata originates from video, bounds may be
+    /// expressed as scalar values from 0. - 1. If the original video has been scaled
+    /// down, the bounds of the metadata object still are meaningful. This property may
+    /// return cg::Rect::zero if the metadata has no bounds.
     pub fn bounds(&self) -> cg::Rect {
         msg_send!("common", self, sel_bounds)
     }
+
+    /// The media time associated with this metadata object.
+    ///
+    /// The value of this property is a cm::Time associated with the metadata object.
+    /// For capture, it is the time at which this object was captured. If this metadata
+    /// object originates from a cm::SampleBuffer, its time matches the sample buffer's
+    /// presentation time. This property may return cm::Time::invalid.
+    pub fn time(&self) -> cm::Time {
+        unsafe { AVMetadataObject_rsel_time(self) }
+    }
+
+    /// The media duration associated with this metadata object.
+    ///
+    /// The value of this property is a cm::Time representing the duration
+    /// of the metadata object. If this metadata object originates from a cm::SampleBuffer,
+    /// its duration matches the sample buffer's duration.
+    /// This property may return cm::Time::invalid.
+    pub fn duration(&self) -> cm::Time {
+        unsafe { AVMetadataObject_rsel_duration(self) }
+    }
+
+    pub fn object_type(&self) -> &Type {
+        unsafe { AVMetadataObject_rsel_type(self) }
+    }
+}
+
+extern "C" {
+    fn AVMetadataObject_rsel_time(id: &ns::Id) -> cm::Time;
+    fn AVMetadataObject_rsel_duration(id: &ns::Id) -> cm::Time;
+    fn AVMetadataObject_rsel_type(id: &ns::Id) -> &Type;
 }
 
 define_obj_type!(BodyObject(Object));
