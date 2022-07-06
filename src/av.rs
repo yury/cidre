@@ -38,7 +38,8 @@ pub use capture::SystemPressureLevel as CaptureSystemPressureLevel;
 pub use capture::SystemPressureState as CaptureSystemPressureState;
 
 pub mod metadata_object;
-pub use metadata_object::MetadataObject;
+pub use metadata_object::Object as MetadataObject;
+pub use metadata_object::Type as MetadataObjectType;
 
 pub mod player;
 pub use player::ActionAtItemEnd as PlayerActionAtItemEnd;

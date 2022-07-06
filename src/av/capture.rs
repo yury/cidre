@@ -35,6 +35,8 @@ pub use session::MultiCamSession;
 pub use session::Session;
 pub use session::VideoOrienation;
 
+pub mod metadata_output;
+
 #[cfg(not(target_os = "macos"))]
 pub mod system_pressure;
 #[cfg(not(target_os = "macos"))]
