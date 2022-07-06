@@ -1,15 +1,5 @@
 use crate::{cf, cg, define_cf_type, define_obj_type, msg_send, ns::Id};
 
-define_obj_type!(Object(Id));
-
-define_obj_type!(MachineReadableCodeObject(Object));
-define_obj_type!(FaceObject(Object));
-define_obj_type!(SalientObject(Object));
-define_obj_type!(BodyObject(Object));
-define_obj_type!(HumanBodyObject(BodyObject));
-define_obj_type!(CatBodyObject(BodyObject));
-define_obj_type!(DogBodyObject(BodyObject));
-
 define_cf_type!(Type(cf::String));
 
 impl Type {
@@ -157,8 +147,18 @@ extern "C" {
 
 }
 
+define_obj_type!(Object(Id));
+
 impl Object {
     pub fn bounds(&self) -> cg::Rect {
         msg_send!("common", self, sel_bounds)
     }
 }
+
+define_obj_type!(BodyObject(Object));
+define_obj_type!(CatBodyObject(BodyObject));
+define_obj_type!(DogBodyObject(BodyObject));
+define_obj_type!(FaceObject(Object));
+define_obj_type!(HumanBodyObject(BodyObject));
+define_obj_type!(MachineReadableCodeObject(Object));
+define_obj_type!(SalientObject(Object));
