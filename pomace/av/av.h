@@ -420,4 +420,17 @@ rsel(AVMetadataObject_, AVMetadataObject *, type, AVMetadataObjectType)
 
 rsel(AVMetadataBodyObject_, AVMetadataBodyObject *, bodyID, NSInteger)
 
+#pragma mark - AVMetadataSalientObject
+
+rsel(AVMetadataSalientObject_, AVMetadataSalientObject *, objectID, NSInteger)
+
+#pragma mark - AVMetadataFaceObject
+
+rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, faceID, NSInteger)
+rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, hasRollAngle, BOOL)
+rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, hasYawAngle, BOOL)
+rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, yawAngle, CGFloat)
+rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, rollAngle, CGFloat)
+
+
 NS_ASSUME_NONNULL_END

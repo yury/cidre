@@ -200,7 +200,7 @@ define_obj_type!(BodyObject(Object));
 impl BodyObject {
     #[inline]
     pub fn body_id(&self) -> isize {
-        unsafe { AVMetadataBodyObject_bodyID(self)}
+        unsafe { AVMetadataBodyObject_bodyID(self) }
     }
 }
 
@@ -212,7 +212,54 @@ define_obj_type!(CatBodyObject(BodyObject));
 define_obj_type!(DogBodyObject(BodyObject));
 define_obj_type!(HumanBodyObject(BodyObject));
 
-
 define_obj_type!(FaceObject(Object));
 define_obj_type!(MachineReadableCodeObject(Object));
 define_obj_type!(SalientObject(Object));
+
+impl SalientObject {
+    #[inline]
+    pub fn object_id(&self) -> isize {
+        unsafe { AVMetadataSalientObject_objectID(self) }
+    }
+}
+
+impl FaceObject {
+    #[inline]
+    pub fn face_id(&self) -> isize {
+        unsafe { AVMetadataFaceObject_faceID(self) }
+    }
+
+    /// The roll angle of the face in degrees.
+    #[inline]
+    pub fn roll_angle(&self) -> Option<cg::Float> {
+        unsafe {
+            if AVMetadataFaceObject_hasRollAngle(self) {
+                Some(AVMetadataFaceObject_rollAngle(self))
+            } else {
+                None
+            }
+        }
+    }
+
+    /// The yaw angle of the face in degrees.
+    #[inline]
+    pub fn yaw_angle(&self) -> Option<cg::Float> {
+        unsafe {
+            if AVMetadataFaceObject_hasYawAngle(self) {
+                Some(AVMetadataFaceObject_yawAngle(self))
+            } else {
+                None
+            }
+        }
+    }
+}
+
+extern "C" {
+    fn AVMetadataSalientObject_objectID(id: &ns::Id) -> isize;
+
+    fn AVMetadataFaceObject_faceID(id: &ns::Id) -> isize;
+    fn AVMetadataFaceObject_hasRollAngle(id: &ns::Id) -> bool;
+    fn AVMetadataFaceObject_hasYawAngle(id: &ns::Id) -> bool;
+    fn AVMetadataFaceObject_yawAngle(id: &ns::Id) -> cg::Float;
+    fn AVMetadataFaceObject_rollAngle(id: &ns::Id) -> cg::Float;
+}
