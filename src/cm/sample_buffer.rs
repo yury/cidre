@@ -281,16 +281,19 @@ pub mod attachment_keys {
     use crate::cf;
 
     /// cf::Boolean (absence of this key implies Sync)
+    #[inline]
     pub fn not_sync() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_NotSync }
     }
 
     /// cf::Boolean (absence of this key implies not Partial Sync. If NotSync is false, PartialSync should be ignored.)
+    #[inline]
     pub fn partial_sync() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_PartialSync }
     }
 
     /// kCFBooleanTrue, kCFBooleanFalse, or absent if unknown
+    #[inline]
     pub fn has_redundant_coding() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_HasRedundantCoding }
     }
@@ -298,26 +301,31 @@ pub mod attachment_keys {
     /// kCFBooleanTrue, kCFBooleanFalse, or absent if unknown
     ///
     /// A frame is considered droppable if and only if kCMSampleAttachmentKey_IsDependedOnByOthers is present and set to kCFBooleanFalse.
+    #[inline]
     pub fn is_depended_on_by_others() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_IsDependedOnByOthers }
     }
 
     /// kCFBooleanTrue (e.g., non-I-frame), kCFBooleanFalse (e.g. I-frame), or absent if unknown
+    #[inline]
     pub fn depends_on_others() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DependsOnOthers }
     }
 
     /// cf::Boolean
+    #[inline]
     pub fn earlier_display_times_allowed() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_EarlierDisplayTimesAllowed }
     }
 
     /// cf::Boolean
+    #[inline]
     pub fn display_immediately() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DisplayImmediately }
     }
 
     /// cf::Boolean
+    #[inline]
     pub fn do_not_display() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DoNotDisplay }
     }
@@ -329,11 +337,13 @@ pub mod attachment_keys {
     /// buffer that contains the first samples from the next song.  The value of this attachment is a CFTypeRef.  This
     /// transition identifier should be unique within a playlist, so each transition in a playlist is uniquely
     /// identifiable.  A CFNumberRef counter that increments with each transition is a simple example.
+    #[inline]
     pub fn transition_id() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_TransitionID }
     }
 
     /// he duration that should be removed at the beginning of the sample buffer, after decoding.
+    #[inline]
     pub fn trim_duration_at_start() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_TrimDurationAtStart }
     }
@@ -343,6 +353,7 @@ pub mod attachment_keys {
     /// If this attachment is not present, the trim duration is zero (nothing removed).
     /// This is a CMTime in CFDictionary format as made by CMTimeCopyAsDictionary;
     /// use CMTimeMakeFromDictionary to convert to CMTime.
+    #[inline]
     pub fn trim_duration_at_end() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_TrimDurationAtEnd }
     }
@@ -351,6 +362,7 @@ pub mod attachment_keys {
     ///
     /// If this attachment is not present, the sample buffer should be played forwards as usual.
     /// Reversal occurs after trimming and speed multipliers.
+    #[inline]
     pub fn reverse() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_Reverse }
     }
@@ -360,6 +372,7 @@ pub mod attachment_keys {
     /// If a sample buffer enters a buffer queue and the presentation time stamp between the
     /// previous buffer and the buffer with this attachment are discontiguous, handle the
     /// discontinuity by generating silence for the time difference.
+    #[inline]
     pub fn fill_discontinuities_with_silence() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_FillDiscontinuitiesWithSilence }
     }
@@ -368,6 +381,7 @@ pub mod attachment_keys {
     ///
     /// The sample buffer's output presentation timestamp indicates when the empty interval begins.
     /// Marker sample buffers with this attachment are used to announce the arrival of empty edits.
+    #[inline]
     pub fn empty_media() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_EmptyMedia }
     }
@@ -376,6 +390,7 @@ pub mod attachment_keys {
     ///
     /// Marker sample buffers with this attachment in addition to kCMSampleBufferAttachmentKey_EmptyMedia
     /// are used to indicate that no further samples are expected.
+    #[inline]
     pub fn permanent_empty_media() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_PermanentEmptyMedia }
     }
@@ -386,6 +401,7 @@ pub mod attachment_keys {
     /// are used to tell that the empty sample buffer should be dequeued immediately regardless of its timestamp.
     /// This attachment should only be used with sample buffers with the kCMSampleBufferAttachmentKey_EmptyMedia
     /// attachment.
+    #[inline]
     pub fn display_empty_media_immediately() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_DisplayEmptyMediaImmediately }
     }
@@ -396,16 +412,19 @@ pub mod attachment_keys {
     /// before their duration is known. In such situations, normally the recipient may use each sample buffer's timestamp
     /// to calculate the duration of the previous sample buffer. The marker sample buffer with this attachment is sent
     /// to provide the timestamp for calculating the final sample buffer's duration.
+    #[inline]
     pub fn ends_previous_sample_duration() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_EndsPreviousSampleDuration }
     }
 
     /// Indicates the URL where the sample data is.
+    #[inline]
     pub fn sample_reference_url() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_SampleReferenceURL }
     }
 
     /// Indicates the byte offset at which the sample data begins.
+    #[inline]
     pub fn sample_reference_byte_offset() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_SampleReferenceByteOffset }
     }
@@ -441,6 +460,7 @@ pub mod attachment_keys {
     /// 0	0	1
     /// fx and fy are the focal length in pixels. For square pixels, they will have the same value.
     /// ox and oy are the coordinates of the principal point. The origin is the upper left of the frame.
+    #[inline]
     pub fn camera_intrinsic_matrix() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix }
     }
