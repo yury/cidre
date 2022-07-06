@@ -2,8 +2,15 @@ use std::ffi::c_void;
 
 use crate::{
     cf::{self, Allocator, Retained, Type},
-    cm, cv, define_cf_type, os,
+    cm, cv, define_cf_type, define_options, os,
 };
+
+define_options!(Flags(u32));
+
+impl Flags {
+    /// Make sure memory involved in audio buffer lists is 16-byte aligned
+    pub const AUDIO_BUFFER_LIST_ASSURE16_BYTE_ALIGNMENT: Self = Self(1 << 0);
+}
 
 // use super::{formaFormatDescription};
 
@@ -567,4 +574,59 @@ pub mod attachment_keys {
         static kCMSampleBufferAttachmentKey_ForceKeyFrame: &'static cf::String;
         static kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData: &'static cf::String;
     }
+}
+
+pub mod errors {
+    use crate::os::Status;
+
+    /// An allocation failed.
+    pub const ALLOCATION_FAILED: Status = Status(-12730);
+
+    ///  NULL or 0 was passed for a required parameter.
+    pub const REQUIRED_PARAMETER_MISSING: Status = Status(-12731);
+
+    /// Attempt was made to set a dataBuffer on a CMSampleBuffer that already has one.
+    pub const ALREADY_HAS_DATA_BUFFER: Status = Status(-12732);
+
+    /// Buffer could not be made ready.
+    pub const BUFFER_NOT_READY: Status = Status(-12733);
+
+    /// Sample index was not between 0 and numSamples-1, inclusive.
+    pub const SAMPLE_INDEX_OUT_OF_RANGE: Status = Status(-12734);
+
+    /// Attempt to get sample size information when there was none.
+    pub const BUFFER_HAS_NO_SAMPLE_SIZES: Status = Status(-12735);
+
+    /// Attempt to get sample timing information when there was none.
+    pub const BUFFER_HAS_NO_SAMPLE_TIMING_INFO: Status = Status(-12736);
+
+    /// Output array was not large enough for the array being requested.
+    pub const ARRAY_TOO_SMALL: Status = Status(-12737);
+
+    /// Timing info or size array entry count was not 0, 1, or numSamples.
+    pub const INVALID_ENTRY_COUNT: Status = Status(-12738);
+
+    /// Sample buffer does not contain sample sizes.  This can happen when the samples in the buffer are non-contiguous (eg. non-interleaved audio, where the channel values for a single sample are scattered through the buffer).
+    pub const CANNOT_SUBDIVIDE: Status = Status(-12739);
+
+    /// buffer unexpectedly contains a non-numeric sample timing info
+    pub const SAMPLE_TIMING_INFO_INVALID: Status = Status(-12740);
+
+    /// the media type specified by a format description is not valid for the given operation (eg. a CMSampleBuffer with a non-audio format description passed to CMSampleBufferGetAudioStreamPacketDescriptionsPtr).
+    pub const INVALID_MEDIA_TYPE_FOR_OPERATION: Status = Status(-12741);
+
+    /// Buffer contains bad data. Only returned by CMSampleBuffer functions that inspect its sample data.
+    pub const INVALID_SAMPLE_DATA: Status = Status(-12742);
+
+    /// the format of the given media does not match the given format description (eg. a format description paired with a CVImageBuffer that fails CMVideoFormatDescriptionMatchesImageBuffer).
+    pub const INVALID_MEDIA_FORMAT: Status = Status(-12743);
+
+    /// the sample buffer was invalidated.
+    pub const INVALIDATED: Status = Status(-12744);
+
+    /// the sample buffer's data loading operation failed (generic error).
+    pub const DATA_FAILED: Status = Status(-16750);
+
+    /// the sample buffer's data loading operation was canceled.
+    pub const DATA_CANCELED: Status = Status(-16751);
 }

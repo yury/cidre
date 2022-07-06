@@ -3,9 +3,9 @@ use crate::{
     define_cf_type, define_options, os,
 };
 
-define_options!(BlockBufferFlags(u32));
+define_options!(Flags(u32));
 
-impl BlockBufferFlags {
+impl Flags {
     pub const NONE: Self = Self(0);
     pub const ASSURE_MEMORY_NOW: Self = Self(1u32 << 0);
     pub const ALWAYS_COPY_DATA: Self = Self(1u32 << 1);
@@ -54,7 +54,7 @@ impl BlockBuffer {
     pub fn create_empty<'a>(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
-        flags: BlockBufferFlags,
+        flags: Flags,
     ) -> Result<Retained<'a, BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
@@ -118,7 +118,7 @@ extern "C" {
     fn CMBlockBufferCreateEmpty<'a>(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
-        flags: BlockBufferFlags,
+        flags: Flags,
         block_buffer_out: &mut Option<Retained<'a, BlockBuffer>>,
     ) -> os::Status;
 

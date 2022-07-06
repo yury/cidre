@@ -20,11 +20,12 @@ pub use time::TimeScale;
 pub use time::TimeValue;
 
 pub mod sample_buffer;
+pub use sample_buffer::Flags as SampleBufferFlags;
 pub use sample_buffer::SampleBuffer;
 
 pub mod block_buffer;
 pub use block_buffer::BlockBuffer;
-pub use block_buffer::BlockBufferFlags;
+pub use block_buffer::Flags as BlockBufferFlags;
 
 pub mod sync;
 pub use sync::Clock;
