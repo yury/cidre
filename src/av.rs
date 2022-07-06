@@ -38,12 +38,12 @@ pub use capture::SystemPressureLevel as CaptureSystemPressureLevel;
 pub use capture::SystemPressureState as CaptureSystemPressureState;
 
 pub mod metadata_object;
-pub use metadata_object::Type as MetadataObjectType;
-pub use metadata_object::Object as MetadataObject;
+pub use metadata_object::CatBodyObject as MetadataCatBodyObject;
+pub use metadata_object::DogBodyObject as MetadataDogBodyObject;
 pub use metadata_object::FaceObject as MetadataFaceObject;
 pub use metadata_object::HumanBodyObject as MetadataHumanBodyObject;
-pub use metadata_object::DogBodyObject as MetadataDogBodyObject;
-pub use metadata_object::CatBodyObject as MetadataCatBodyObject;
+pub use metadata_object::Object as MetadataObject;
+pub use metadata_object::Type as MetadataObjectType;
 
 pub mod player;
 pub use player::ActionAtItemEnd as PlayerActionAtItemEnd;

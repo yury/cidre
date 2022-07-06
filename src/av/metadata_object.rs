@@ -183,6 +183,7 @@ impl Object {
         unsafe { AVMetadataObject_rsel_duration(self) }
     }
 
+    #[inline]
     pub fn object_type(&self) -> &Type {
         unsafe { AVMetadataObject_rsel_type(self) }
     }
