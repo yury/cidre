@@ -1,4 +1,4 @@
-use crate::{cf, cm, define_cf_type};
+use crate::{cf, cm, define_cf_type, os};
 
 define_cf_type!(Clock(cf::Type));
 define_cf_type!(Timebase(cf::Type));
@@ -13,6 +13,31 @@ impl Clock {
     #[inline]
     pub fn host_time_clock<'a>() -> &'a Clock {
         unsafe { CMClockGetHostTimeClock() }
+    }
+
+    /// Use `audio_clock`
+    #[inline]
+    pub unsafe fn audio_clock_create<'a>(
+        allocator: Option<&cf::Allocator>,
+        clock_out: &mut Option<cf::Retained<'a, Clock>>,
+    ) -> os::Status {
+        CMAudioClockCreate(allocator, clock_out)
+    }
+
+    /// Creates a clock that advances at the same rate as audio output.
+    ///
+    /// This clock will not drift from audio output, but may drift from CMClockGetHostTimeClock().
+    /// When audio output is completely stopped, the clock continues to advance, tracking CMClockGetHostTimeClock()
+    /// until audio output starts up again.
+    /// This clock is suitable for use as AVPlayer.masterClock when synchronizing video-only playback
+    /// with audio played through other APIs or objects.
+    #[inline]
+    pub fn audio_clock<'a>() -> Result<cf::Retained<'a, Clock>, os::Status> {
+        let mut clock_out = None;
+        unsafe {
+            let res = Self::audio_clock_create(None, &mut clock_out);
+            res.to_result(clock_out)
+        }
     }
 
     #[inline]
@@ -41,6 +66,10 @@ impl Clock {
 extern "C" {
     fn CMClockGetTypeID() -> cf::TypeId;
     fn CMClockGetHostTimeClock<'a>() -> &'a Clock;
+    fn CMAudioClockCreate<'a>(
+        allocator: Option<&cf::Allocator>,
+        clock_out: &mut Option<cf::Retained<'a, Clock>>,
+    ) -> os::Status;
 
     fn CMClockGetTime(clock: &Clock) -> cm::Time;
     fn CMClockConvertHostTimeToSystemUnits(host_time: cm::Time) -> u64;
