@@ -1,6 +1,10 @@
 use std::ffi::c_void;
 
-use crate::{at::{AudioBufferList, audio::StreamPacketDescription}, cf::{self, Retained}, define_obj_type, ns};
+use crate::{
+    at::{audio::StreamPacketDescription, AudioBufferList},
+    cf::{self, Retained},
+    define_obj_type, ns,
+};
 
 use super::{Format, FrameCount, PacketCount};
 
@@ -26,16 +30,16 @@ define_obj_type!(PCMBuffer(Buffer));
 /// Provides a number of methods useful for manipulating buffers of
 /// audio in PCM format.
 impl PCMBuffer {
-
-    pub fn with_format_and_frame_capacity<'a>(format: &Format, frame_capacity: FrameCount) -> Retained<'a, Self> {
-        unsafe {
-            AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(format, frame_capacity)
-        }
+    pub fn with_format_and_frame_capacity<'a>(
+        format: &Format,
+        frame_capacity: FrameCount,
+    ) -> Retained<'a, Self> {
+        unsafe { AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(format, frame_capacity) }
     }
     /// The current number of valid sample frames in the buffer.
-    /// 
+    ///
     /// You may modify the length of the buffer as part of an operation that modifies its contents.
-	/// The length must be less than or equal to the frameCapacity. Modifying frameLength will update
+    /// The length must be less than or equal to the frameCapacity. Modifying frameLength will update
     /// the mDataByteSize in each of the underlying AudioBufferList's AudioBuffer's correspondingly,
     /// and vice versa. Note that in the case of deinterleaved formats, mDataByteSize will refers
     /// the size of one channel's worth of audio samples.
@@ -45,10 +49,10 @@ impl PCMBuffer {
 
     pub fn set_frame_length(&self, value: FrameCount) {
         unsafe { wsel_setFrameLength(self, value) }
-    } 
+    }
 
     /// The buffer's number of interleaved channels.
-    /// 
+    ///
     /// Useful in conjunction with floatChannelData etc.
     pub fn stride(&self) -> usize {
         unsafe { rsel_stride(self) }
@@ -64,14 +68,13 @@ define_obj_type!(CompressedBuffer(ns::Id));
 
 /// Use with compressed audio formats.
 impl CompressedBuffer {
-
     /// The number of compressed packets the buffer can contain.
     pub fn packet_capacity(&self) -> PacketCount {
-        unsafe {  rsel_packetCapacity(self) }
+        unsafe { rsel_packetCapacity(self) }
     }
 
     /// The current number of compressed packets in the buffer.
-    /// 
+    ///
     /// You may modify the packetCount as part of an operation that modifies
     /// its contents. The packetCount must be less than or equal to the packet_capacity.
     pub fn packet_count(&self) -> PacketCount {
@@ -101,7 +104,7 @@ impl CompressedBuffer {
     }
 
     /// Access the buffer's array of packet descriptions, if any.
-    /// 
+    ///
     /// If the format has constant bytes per packet (format.streamDescription->mBytesPerPacket != 0), then this will return nil.
     pub fn packet_descriptions(&self) -> Option<&StreamPacketDescription> {
         unsafe { rsel_packetDescriptions(self) }
@@ -112,17 +115,26 @@ impl CompressedBuffer {
     }
 
     /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
-    /// 
+    ///
     /// This fails if the format is PCM or if the format has variable bytes per packet (for example, format.streamDescription->mBytesPerPacket == 0).
-    pub fn with_format_and_packet_capacity<'a>(format: &Format, packet_capacity: PacketCount) -> Retained<'a, Self> {
-        unsafe {
-            AVAudioCompressedBuffer_initWithFormat_packetCapacity(format, packet_capacity)
-        }
+    pub fn with_format_and_packet_capacity<'a>(
+        format: &Format,
+        packet_capacity: PacketCount,
+    ) -> Retained<'a, Self> {
+        unsafe { AVAudioCompressedBuffer_initWithFormat_packetCapacity(format, packet_capacity) }
     }
 
-    pub fn with_format_packet_capacity_and_maximum_packet_size<'a>(format: &Format, packet_capacity: PacketCount, maximum_packet_size: isize) -> Retained<'a, Self> {
+    pub fn with_format_packet_capacity_and_maximum_packet_size<'a>(
+        format: &Format,
+        packet_capacity: PacketCount,
+        maximum_packet_size: isize,
+    ) -> Retained<'a, Self> {
         unsafe {
-            AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(format, packet_capacity, maximum_packet_size)
+            AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
+                format,
+                packet_capacity,
+                maximum_packet_size,
+            )
         }
     }
 }
@@ -136,11 +148,14 @@ extern "C" {
     fn rsel_frameLength(id: &ns::Id) -> FrameCount;
     fn wsel_setFrameLength(id: &ns::Id, value: FrameCount);
 
-    fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity<'a>(format: &Format, frame_capacity: FrameCount) -> Retained<'a, PCMBuffer>;
+    fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity<'a>(
+        format: &Format,
+        frame_capacity: FrameCount,
+    ) -> Retained<'a, PCMBuffer>;
 
     fn rsel_stride(id: &ns::Id) -> usize;
 
-    fn rsel_packetCapacity(id: &ns::Id) ->  PacketCount; 
+    fn rsel_packetCapacity(id: &ns::Id) -> PacketCount;
 
     fn rsel_packetCount(id: &ns::Id) -> PacketCount;
     fn wsel_setPacketCount(id: &ns::Id, value: PacketCount);
@@ -155,6 +170,13 @@ extern "C" {
 
     fn rsel_data(id: &ns::Id) -> *const c_void;
 
-    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity<'a>(format: &Format, packet_capacity: PacketCount) -> Retained<'a, CompressedBuffer>;
-    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize<'a>(format: &Format, packet_capacity: PacketCount, maximum_packet_size: isize) -> Retained<'a, CompressedBuffer>;
+    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity<'a>(
+        format: &Format,
+        packet_capacity: PacketCount,
+    ) -> Retained<'a, CompressedBuffer>;
+    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize<'a>(
+        format: &Format,
+        packet_capacity: PacketCount,
+        maximum_packet_size: isize,
+    ) -> Retained<'a, CompressedBuffer>;
 }

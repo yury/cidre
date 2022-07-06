@@ -280,10 +280,73 @@ extern "C" {
 pub mod attachment_keys {
     use crate::cf;
 
+    /// Indicates that the decoded contents of the sample buffer should be reversed.
+    ///
+    /// If this attachment is not present, the sample buffer should be played forwards as usual.
+    /// Reversal occurs after trimming and speed multipliers.
+    pub fn reverse() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_Reverse }
+    }
+
+    /// Fill the difference between discontiguous sample buffers with silence
+    ///
+    /// If a sample buffer enters a buffer queue and the presentation time stamp between the
+    /// previous buffer and the buffer with this attachment are discontiguous, handle the
+    /// discontinuity by generating silence for the time difference.
+    pub fn fill_discontinuities_with_silence() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_FillDiscontinuitiesWithSilence }
+    }
+
+    /// Marks an intentionally empty interval in the sequence of samples.
+    ///
+    /// The sample buffer's output presentation timestamp indicates when the empty interval begins.
+    /// Marker sample buffers with this attachment are used to announce the arrival of empty edits.
+    pub fn empty_media() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_EmptyMedia }
+    }
+
+    /// Marks the end of the sequence of samples.
+    ///
+    /// Marker sample buffers with this attachment in addition to kCMSampleBufferAttachmentKey_EmptyMedia
+    /// are used to indicate that no further samples are expected.
+    pub fn permanent_empty_media() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_PermanentEmptyMedia }
+    }
+
+    /// Tells that the empty marker should be dequeued immediately regardless of its timestamp.
+    ///
+    /// Marker sample buffers with this attachment in addition to kCMSampleBufferAttachmentKey_EmptyMedia
+    /// are used to tell that the empty sample buffer should be dequeued immediately regardless of its timestamp.
+    /// This attachment should only be used with sample buffers with the kCMSampleBufferAttachmentKey_EmptyMedia
+    /// attachment.
+    pub fn display_empty_media_immediately() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_DisplayEmptyMediaImmediately }
+    }
+
+    /// Indicates that sample buffer's decode timestamp may be used to define the previous sample buffer's duration.
+    ///
+    /// Marker sample buffers with this attachment may be used in situations where sample buffers are transmitted
+    /// before their duration is known. In such situations, normally the recipient may use each sample buffer's timestamp
+    /// to calculate the duration of the previous sample buffer. The marker sample buffer with this attachment is sent
+    /// to provide the timestamp for calculating the final sample buffer's duration.
+    pub fn ends_previous_sample_duration() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_EndsPreviousSampleDuration }
+    }
+
+    /// Indicates the URL where the sample data is.
+    pub fn sample_reference_url() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_SampleReferenceURL }
+    }
+
+    /// Indicates the byte offset at which the sample data begins.
+    pub fn sample_reference_byte_offset() -> &'static cf::String {
+        unsafe { kCMSampleBufferAttachmentKey_SampleReferenceByteOffset }
+    }
+
     /// Indicates the reason the current video frame was dropped.
-    /// 
+    ///
     /// Sample buffers with this attachment contain no image or data buffer.  They mark a dropped video
-	/// frame.  This attachment identifies the reason for the droppage.
+    /// frame.  This attachment identifies the reason for the droppage.
     #[inline]
     pub fn dropped_frame_reason() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_DroppedFrameReason }
@@ -294,9 +357,9 @@ pub mod attachment_keys {
         unsafe { kCMSampleBufferAttachmentKey_DroppedFrameReasonInfo }
     }
     /// Indicates information about the lens stabilization applied to the current still image buffer.
-    /// 
+    ///
     /// Sample buffers that have been captured with a lens stabilization module may have an attachment of
-	/// kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo which has information about the stabilization status
+    /// kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo which has information about the stabilization status
     /// during the capture.  This key will not be present in CMSampleBuffers coming from cameras without a lens stabilization module.
     #[inline]
     pub fn still_image_lens_stabilization_info() -> &'static cf::String {
@@ -336,6 +399,14 @@ pub mod attachment_keys {
     }
 
     extern "C" {
+        static kCMSampleBufferAttachmentKey_Reverse: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_FillDiscontinuitiesWithSilence: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_EmptyMedia: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_PermanentEmptyMedia: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_DisplayEmptyMediaImmediately: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_EndsPreviousSampleDuration: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_SampleReferenceURL: &'static cf::String;
+        static kCMSampleBufferAttachmentKey_SampleReferenceByteOffset: &'static cf::String;
         static kCMSampleBufferAttachmentKey_DroppedFrameReason: &'static cf::String;
         static kCMSampleBufferAttachmentKey_DroppedFrameReasonInfo: &'static cf::String;
         static kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo: &'static cf::String;
