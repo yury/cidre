@@ -88,6 +88,7 @@ fn main() {
     };
 
     xc_build("common", sdk, arch, configuration);
+    xc_build("ns", sdk, arch, configuration);
     xc_build("av", sdk, arch, configuration);
     xc_build("mtl", sdk, arch, configuration);
 

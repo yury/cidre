@@ -28,7 +28,7 @@ impl MetadataOutput {
         unsafe { rsel_rectOfInterest(self) }
     }
 
-    pub fn set_rect_of_interst(&mut self, value: cg::Rect) {
+    pub fn set_rect_of_interest(&mut self, value: cg::Rect) {
         unsafe { wsel_setRectOfInterest(self, value) }
     }
 }
