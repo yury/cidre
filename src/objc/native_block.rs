@@ -316,7 +316,7 @@ mod tests {
 
     #[test]
     fn test_simple_block() {
-        let f = DispatchBlock::new(|| println!("nice"));
+        let _f = DispatchBlock::new(|| println!("nice"));
 
         let mut x = 10;
         let mut b = Literal::with_mut_a(|a: i32| {
@@ -337,6 +337,6 @@ mod tests {
         x.call_fn();
         x.call_fn();
 
-        let b = Literal::new(|| {});
+        let _b = Literal::new(|| {});
     }
 }

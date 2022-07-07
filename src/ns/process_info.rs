@@ -1,4 +1,3 @@
-
 #[repr(isize)]
 pub enum ThermalState {
     /// No corrective action is needed.
