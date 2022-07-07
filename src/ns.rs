@@ -9,4 +9,5 @@ pub mod range;
 pub use range::Range;
 
 pub mod process_info;
+pub use process_info::ProcessInfo;
 pub use process_info::ThermalState as ProcessInfoThermalState;

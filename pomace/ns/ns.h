@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - NSProcessInfo
+
+NS_RETURNS_NOT_RETAINED
+csel(, NSProcessInfo, processInfo, NSProcessInfo *)
+
+rsel(, id, thermalState, NSProcessInfoThermalState)
 
 
 NS_ASSUME_NONNULL_END

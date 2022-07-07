@@ -1,3 +1,6 @@
+use crate::{define_obj_type, ns};
+
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 #[repr(isize)]
 pub enum ThermalState {
     /// No corrective action is needed.
@@ -17,4 +20,30 @@ pub enum ThermalState {
     /// level needed to respond to user actions. Consider stopping use of camera and
     /// other peripherals if your application is using them.
     Critical,
+}
+
+define_obj_type!(ProcessInfo(ns::Id));
+
+impl ProcessInfo {
+    /// ```
+    /// use cidre::ns;
+    ///
+    /// let pi = ns::ProcessInfo::process_info();
+    ///
+    /// assert_ne!(pi.thermal_state(), ns::ProcessInfoThermalState::Critical);
+    /// ```
+    pub fn process_info() -> &'static ProcessInfo {
+        unsafe { NSProcessInfo_processInfo() }
+    }
+
+    #[inline]
+    pub fn thermal_state(&self) -> ThermalState {
+        unsafe { rsel_thermalState(self) }
+    }
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn NSProcessInfo_processInfo() -> &'static ProcessInfo;
+    fn rsel_thermalState(id: &ns::Id) -> ThermalState;
 }
