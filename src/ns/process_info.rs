@@ -58,6 +58,16 @@ impl ProcessInfo {
     pub fn active_processor_count(&self) -> usize {
         unsafe { rsel_activeProcessorCount(self) }
     }
+
+    #[inline]
+    pub fn is_mac_catalyst_app(&self) -> bool {
+        unsafe { rsel_isMacCatalystApp(self) }
+    }
+
+    #[inline]
+    pub fn is_ios_app_on_mac(&self) -> bool {
+        unsafe { rsel_isiOSAppOnMac(self) }
+    }
 }
 
 #[link(name = "ns", kind = "static")]
@@ -67,4 +77,7 @@ extern "C" {
     fn rsel_isLowPowerModeEnabled(id: &ns::Id) -> bool;
     fn rsel_processorCount(id: &ns::Id) -> usize;
     fn rsel_activeProcessorCount(id: &ns::Id) -> usize;
+
+    fn rsel_isMacCatalystApp(id: &ns::Id) -> bool;
+    fn rsel_isiOSAppOnMac(id: &ns::Id) -> bool;
 }

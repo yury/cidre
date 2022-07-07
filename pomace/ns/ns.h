@@ -20,5 +20,9 @@ rsel(, id, isLowPowerModeEnabled, BOOL)
 rsel(, id, processorCount, NSUInteger)
 rsel(, id, activeProcessorCount, NSUInteger)
 
+rsel(, id, isMacCatalystApp, BOOL)
+rsel(, id, isiOSAppOnMac, BOOL)
+
+
 
 NS_ASSUME_NONNULL_END
