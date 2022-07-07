@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, ns};
+use crate::{av, cf, define_obj_type, ns, cg};
 
 use super::Output;
 
@@ -23,8 +23,8 @@ impl MetadataOutput {
         unsafe { rsel_rectOfInterest(self) }
     }
 
-    pub fn set_rect_of_interest(&self, value: cg::Rect) {
-        unsafe { wsel_setRectOfIntereset(self, value) }
+    pub fn set_rect_of_interst(&self, value: cg::Rect) {
+        unsafe { wsel_setRectOfInterest(self, value) }
     }
 }
 
@@ -32,6 +32,6 @@ impl MetadataOutput {
 extern "C" {
     fn rsel_availableMetadataObjectTypes(id: &ns::Id) -> &cf::ArrayOf<av::MetadataObjectType>;
     fn rsel_rectOfInterest(id: &ns::Id) -> cg::Rect;
-    fn wsel_setRectOfIntereset(id: &ns::Id, value: cg::Rect);
+    fn wsel_setRectOfInterest(id: &ns::Id, value: cg::Rect);
     fn AVCaptureMetadataOutput_new<'a>() -> cf::Retained<'a, MetadataOutput>;
 }

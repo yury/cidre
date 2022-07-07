@@ -436,7 +436,7 @@ rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, rollAngle, CGFloat)
 
 //@property(nonatomic, readonly) NSArray<AVMetadataObjectType> *availableMetadataObjectTypes;
 rsel(, id, availableMetadataObjectTypes, NSArray *)
-rwsel(, id, rectOfInterest, setRectOfIntereset, CGRect)
+rwsel(, id, rectOfInterest, setRectOfInterest, CGRect)
 csel(, AVCaptureMetadataOutput, new, AVCaptureMetadataOutput *)
 
 NS_ASSUME_NONNULL_END
