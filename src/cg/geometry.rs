@@ -85,7 +85,10 @@ impl Rect {
 
     #[inline]
     pub fn make(x: Float, y: Float, width: Float, height: Float) -> Self {
-        Self { origin: Point {x, y }, size: Size {width, height} }
+        Self {
+            origin: Point { x, y },
+            size: Size { width, height },
+        }
     }
 }
 

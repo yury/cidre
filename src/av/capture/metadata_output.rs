@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, ns, cg};
+use crate::{av, cf, cg, define_obj_type, ns};
 
 use super::Output;
 
@@ -9,7 +9,7 @@ impl MetadataOutput {
     /// use cidre::{av, cg};
     ///
     /// let mut output = av::CaptureMetadataOutput::new();
-    /// 
+    ///
     /// let rect = cg::Rect::make(0.0, 0.0, 1.0, 1.0);
     /// assert_eq!(output.rect_of_intereset(), rect);
     /// let rect = cg::Rect::make(0.0, 0.0, 0.5, 0.5);
