@@ -16,9 +16,9 @@ NS_RETURNS_NOT_RETAINED
 csel(, NSProcessInfo, processInfo, NSProcessInfo *)
 
 rsel(, id, thermalState, NSProcessInfoThermalState)
-
-//@property (readonly, getter=isLowPowerModeEnabled) BOOL lowPowerModeEnabled
 rsel(, id, isLowPowerModeEnabled, BOOL)
+rsel(, id, processorCount, NSUInteger)
+rsel(, id, activeProcessorCount, NSUInteger)
 
 
 NS_ASSUME_NONNULL_END

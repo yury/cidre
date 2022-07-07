@@ -32,6 +32,8 @@ impl ProcessInfo {
     ///
     /// assert_ne!(pi.thermal_state(), ns::ProcessInfoThermalState::Critical);
     /// assert_eq!(pi.is_low_power_mode_enabled(), false);
+    /// assert!(pi.processor_count() > 1);
+    /// assert!(pi.active_processor_count() > 1);
     /// ```
     pub fn process_info() -> &'static ProcessInfo {
         unsafe { NSProcessInfo_processInfo() }
@@ -42,8 +44,19 @@ impl ProcessInfo {
         unsafe { rsel_thermalState(self) }
     }
 
+    #[inline]
     pub fn is_low_power_mode_enabled(&self) -> bool {
         unsafe { rsel_isLowPowerModeEnabled(self) }
+    }
+
+    #[inline]
+    pub fn processor_count(&self) -> usize {
+        unsafe { rsel_processorCount(self) }
+    }
+
+    #[inline]
+    pub fn active_processor_count(&self) -> usize {
+        unsafe { rsel_activeProcessorCount(self) }
     }
 }
 
@@ -52,4 +65,6 @@ extern "C" {
     fn NSProcessInfo_processInfo() -> &'static ProcessInfo;
     fn rsel_thermalState(id: &ns::Id) -> ThermalState;
     fn rsel_isLowPowerModeEnabled(id: &ns::Id) -> bool;
+    fn rsel_processorCount(id: &ns::Id) -> usize;
+    fn rsel_activeProcessorCount(id: &ns::Id) -> usize;
 }
