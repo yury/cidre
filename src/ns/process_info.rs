@@ -31,6 +31,7 @@ impl ProcessInfo {
     /// let pi = ns::ProcessInfo::process_info();
     ///
     /// assert_ne!(pi.thermal_state(), ns::ProcessInfoThermalState::Critical);
+    /// assert_eq!(pi.is_low_power_mode_enabled(), false);
     /// ```
     pub fn process_info() -> &'static ProcessInfo {
         unsafe { NSProcessInfo_processInfo() }
@@ -40,10 +41,15 @@ impl ProcessInfo {
     pub fn thermal_state(&self) -> ThermalState {
         unsafe { rsel_thermalState(self) }
     }
+
+    pub fn is_low_power_mode_enabled(&self) -> bool {
+        unsafe { rsel_isLowPowerModeEnabled(self) }
+    }
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSProcessInfo_processInfo() -> &'static ProcessInfo;
     fn rsel_thermalState(id: &ns::Id) -> ThermalState;
+    fn rsel_isLowPowerModeEnabled(id: &ns::Id) -> bool;
 }

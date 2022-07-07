@@ -17,5 +17,8 @@ csel(, NSProcessInfo, processInfo, NSProcessInfo *)
 
 rsel(, id, thermalState, NSProcessInfoThermalState)
 
+//@property (readonly, getter=isLowPowerModeEnabled) BOOL lowPowerModeEnabled
+rsel(, id, isLowPowerModeEnabled, BOOL)
+
 
 NS_ASSUME_NONNULL_END
