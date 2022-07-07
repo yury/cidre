@@ -6,10 +6,15 @@ define_obj_type!(MetadataOutput(Output));
 
 impl MetadataOutput {
     /// ```
-    /// use cidre::av;
+    /// use cidre::{av, cg};
     ///
-    /// let output = av::CaptureMetadataOutput::new();
-    ///
+    /// let mut output = av::CaptureMetadataOutput::new();
+    /// 
+    /// let rect = cg::Rect::make(0.0, 0.0, 1.0, 1.0);
+    /// assert_eq!(output.rect_of_intereset(), rect);
+    /// let rect = cg::Rect::make(0.0, 0.0, 0.5, 0.5);
+    /// output.set_rect_of_interest(rect);
+    /// assert_eq!(output.rect_of_intereset(), rect);
     /// ```
     pub fn new<'a>() -> cf::Retained<'a, Self> {
         unsafe { AVCaptureMetadataOutput_new() }
@@ -23,7 +28,7 @@ impl MetadataOutput {
         unsafe { rsel_rectOfInterest(self) }
     }
 
-    pub fn set_rect_of_interst(&self, value: cg::Rect) {
+    pub fn set_rect_of_interst(&mut self, value: cg::Rect) {
         unsafe { wsel_setRectOfInterest(self, value) }
     }
 }

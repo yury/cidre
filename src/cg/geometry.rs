@@ -1,3 +1,5 @@
+use std::arch::aarch64::float32x2_t;
+
 use crate::cf;
 
 pub type Float = f64;
@@ -23,6 +25,11 @@ impl Point {
     pub fn dictionary_representaion<'a>(&self) -> cf::Retained<'a, cf::Dictionary> {
         unsafe { CGPointCreateDictionaryRepresentation(*self) }
     }
+
+    #[inline]
+    pub fn make(x: Float, y: Float) -> Self {
+        Self { x, y }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]
@@ -45,6 +52,11 @@ impl Size {
     /// ```
     pub fn dictionary_representaion<'a>(&self) -> cf::Retained<'a, cf::Dictionary> {
         unsafe { CGSizeCreateDictionaryRepresentation(*self) }
+    }
+
+    #[inline]
+    pub fn make(width: Float, height: Float) -> Self {
+        Self { width, height }
     }
 }
 
@@ -69,6 +81,11 @@ impl Rect {
     /// ```
     pub fn dictionary_representaion<'a>(&self) -> cf::Retained<'a, cf::Dictionary> {
         unsafe { CGRectCreateDictionaryRepresentation(*self) }
+    }
+
+    #[inline]
+    pub fn make(x: Float, y: Float, width: Float, height: Float) -> Self {
+        Self { origin: Point {x, y }, size: Size {width, height} }
     }
 }
 
