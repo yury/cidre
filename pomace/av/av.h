@@ -432,5 +432,11 @@ rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, hasYawAngle, BOOL)
 rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, yawAngle, CGFloat)
 rsel(AVMetadataFaceObject_, AVMetadataFaceObject *, rollAngle, CGFloat)
 
+#pragma mark - AVCaptureMetadataOutput
+
+//@property(nonatomic, readonly) NSArray<AVMetadataObjectType> *availableMetadataObjectTypes;
+rsel(, id, availableMetadataObjectTypes, NSArray *)
+
+csel(, AVCaptureMetadataOutput, new, AVCaptureMetadataOutput *)
 
 NS_ASSUME_NONNULL_END
