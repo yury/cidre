@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, ns};
+use crate::{av, cf, define_obj_type, dispatch, ns};
 
 use super::Output;
 
@@ -38,6 +38,11 @@ impl VideoDataOutput {
     pub fn available_video_codec_types(&self) -> &cf::ArrayOf<av::VideoCodecType> {
         unsafe { rsel_availableVideoCodecTypes(self) }
     }
+
+    /// The dispatch queue on which all sample buffer delegate methods will be called.
+    pub fn sample_buffer_callback_queue(&self) -> Option<&dispatch::Queue> {
+        unsafe { rsel_sampleBufferCallbackQueue(self) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -49,4 +54,5 @@ extern "C" {
 
     fn rsel_availableVideoCVPixelFormatTypes(id: &ns::Id) -> &cf::ArrayOf<cf::Number>;
     fn rsel_availableVideoCodecTypes(id: &ns::Id) -> &cf::ArrayOf<av::VideoCodecType>;
+    fn rsel_sampleBufferCallbackQueue(id: &ns::Id) -> Option<&dispatch::Queue>;
 }

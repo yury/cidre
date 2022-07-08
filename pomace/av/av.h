@@ -450,5 +450,7 @@ rwsel(, AVCaptureVideoDataOutput *, alwaysDiscardsLateVideoFrames, setAlwaysDisc
 rsel(, id, availableVideoCVPixelFormatTypes, NSArray *)
 rsel(, id, availableVideoCodecTypes, NSArray *)
 
+rsel(, id, sampleBufferCallbackQueue, dispatch_queue_t _Nullable)
+
 
 NS_ASSUME_NONNULL_END
