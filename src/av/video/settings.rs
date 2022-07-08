@@ -1,3 +1,5 @@
+use crate::{cf, define_cf_type};
+
 pub mod keys {
     use crate::cf;
 
@@ -67,55 +69,55 @@ pub mod keys {
     }
 }
 
-pub mod codec_type {
-    use crate::cf;
+define_cf_type!(CodecType(cf::String));
 
-    pub fn hevc() -> &'static cf::String {
+impl CodecType {
+    pub fn hevc() -> &'static CodecType {
         unsafe { AVVideoCodecTypeHEVC }
     }
 
-    pub fn h264() -> &'static cf::String {
+    pub fn h264() -> &'static CodecType {
         unsafe { AVVideoCodecTypeH264 }
     }
 
-    pub fn jpeg() -> &'static cf::String {
+    pub fn jpeg() -> &'static CodecType {
         unsafe { AVVideoCodecTypeJPEG }
     }
 
-    pub fn apple_pro_res_4444() -> &'static cf::String {
+    pub fn apple_pro_res_4444() -> &'static CodecType {
         unsafe { AVVideoCodecTypeAppleProRes4444 }
     }
 
-    pub fn apple_pro_res_422() -> &'static cf::String {
+    pub fn apple_pro_res_422() -> &'static CodecType {
         unsafe { AVVideoCodecTypeAppleProRes422 }
     }
 
-    pub fn apple_pro_res_422_hq() -> &'static cf::String {
+    pub fn apple_pro_res_422_hq() -> &'static CodecType {
         unsafe { AVVideoCodecTypeAppleProRes422HQ }
     }
 
-    pub fn apple_pro_res_422_lt() -> &'static cf::String {
+    pub fn apple_pro_res_422_lt() -> &'static CodecType {
         unsafe { AVVideoCodecTypeAppleProRes422LT }
     }
 
-    pub fn apple_pro_res_422_proxy() -> &'static cf::String {
+    pub fn apple_pro_res_422_proxy() -> &'static CodecType {
         unsafe { AVVideoCodecTypeAppleProRes422Proxy }
     }
 
-    pub fn hevc_with_alpha() -> &'static cf::String {
+    pub fn hevc_with_alpha() -> &'static CodecType {
         unsafe { AVVideoCodecTypeHEVCWithAlpha }
     }
+}
 
-    extern "C" {
-        static AVVideoCodecTypeHEVC: &'static cf::String;
-        static AVVideoCodecTypeH264: &'static cf::String;
-        static AVVideoCodecTypeJPEG: &'static cf::String;
-        static AVVideoCodecTypeAppleProRes4444: &'static cf::String;
-        static AVVideoCodecTypeAppleProRes422: &'static cf::String;
-        static AVVideoCodecTypeAppleProRes422HQ: &'static cf::String;
-        static AVVideoCodecTypeAppleProRes422LT: &'static cf::String;
-        static AVVideoCodecTypeAppleProRes422Proxy: &'static cf::String;
+extern "C" {
+    static AVVideoCodecTypeHEVC: &'static CodecType;
+    static AVVideoCodecTypeH264: &'static CodecType;
+    static AVVideoCodecTypeJPEG: &'static CodecType;
+    static AVVideoCodecTypeAppleProRes4444: &'static CodecType;
+    static AVVideoCodecTypeAppleProRes422: &'static CodecType;
+    static AVVideoCodecTypeAppleProRes422HQ: &'static CodecType;
+    static AVVideoCodecTypeAppleProRes422LT: &'static CodecType;
+    static AVVideoCodecTypeAppleProRes422Proxy: &'static CodecType;
 
-        static AVVideoCodecTypeHEVCWithAlpha: &'static cf::String;
-    }
+    static AVVideoCodecTypeHEVCWithAlpha: &'static CodecType;
 }

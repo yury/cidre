@@ -38,6 +38,9 @@ pub use session::VideoOrienation;
 pub mod metadata_output;
 pub use metadata_output::MetadataOutput;
 
+pub mod video_data_output;
+pub use video_data_output::VideoDataOutput;
+
 #[cfg(not(target_os = "macos"))]
 pub mod system_pressure;
 #[cfg(not(target_os = "macos"))]

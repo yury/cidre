@@ -184,9 +184,9 @@ impl MultiCamSession {
     /// ```
     /// use cidre::av;
     ///
-    /// assert!(!av::CaptureMultiCamSession::multicam_supported());
+    /// assert!(!av::CaptureMultiCamSession::is_multicam_supported());
     /// ```
-    pub fn multicam_supported() -> bool {
+    pub fn is_multicam_supported() -> bool {
         unsafe { is_mutlicam_supported() }
     }
 

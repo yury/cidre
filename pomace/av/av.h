@@ -439,4 +439,16 @@ rsel(, id, availableMetadataObjectTypes, NSArray *)
 rwsel(, id, rectOfInterest, setRectOfInterest, CGRect)
 csel(, AVCaptureMetadataOutput, new, AVCaptureMetadataOutput *)
 
+#pragma mark - AVCaptureVideoDataOutput
+
+
+NS_RETURNS_RETAINED
+csel(, AVCaptureVideoDataOutput, new, AVCaptureVideoDataOutput *)
+
+rwsel(, AVCaptureVideoDataOutput *, alwaysDiscardsLateVideoFrames, setAlwaysDiscardsLateVideoFrames, BOOL)
+
+rsel(, id, availableVideoCVPixelFormatTypes, NSArray *)
+rsel(, id, availableVideoCodecTypes, NSArray *)
+
+
 NS_ASSUME_NONNULL_END
