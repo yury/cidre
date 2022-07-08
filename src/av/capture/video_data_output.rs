@@ -43,6 +43,19 @@ impl VideoDataOutput {
     pub fn sample_buffer_callback_queue(&self) -> Option<&dispatch::Queue> {
         unsafe { rsel_sampleBufferCallbackQueue(self) }
     }
+
+    pub fn video_settings(&self) -> Option<&cf::DictionaryOf<cf::String, ns::Id>> {
+        unsafe { rsel_videoSettings(self) }
+    }
+
+    pub fn recommended_video_settings_for_asset_writer_with_output_file_type(
+        &self,
+        output_file_type: &av::FileType,
+    ) -> Option<&cf::DictionaryOf<cf::String, ns::Id>> {
+        unsafe {
+            rsel_recommendedVideoSettingsForAssetWriterWithOutputFileType(self, output_file_type)
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -55,4 +68,10 @@ extern "C" {
     fn rsel_availableVideoCVPixelFormatTypes(id: &ns::Id) -> &cf::ArrayOf<cf::Number>;
     fn rsel_availableVideoCodecTypes(id: &ns::Id) -> &cf::ArrayOf<av::VideoCodecType>;
     fn rsel_sampleBufferCallbackQueue(id: &ns::Id) -> Option<&dispatch::Queue>;
+
+    fn rsel_videoSettings(id: &ns::Id) -> Option<&cf::DictionaryOf<cf::String, ns::Id>>;
+    fn rsel_recommendedVideoSettingsForAssetWriterWithOutputFileType<'a>(
+        id: &'a ns::Id,
+        output_file_type: &av::FileType,
+    ) -> Option<&'a cf::DictionaryOf<cf::String, ns::Id>>;
 }

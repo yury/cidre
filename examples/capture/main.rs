@@ -19,4 +19,10 @@ fn main() {
 
     println!("{:?}", video_output.available_video_cv_pixel_format_types());
     println!("{:?}", video_output.available_video_codec_types());
+    println!("{:?}", video_output.video_settings());
+    println!(
+        "{:?}",
+        video_output
+            .recommended_video_settings_for_asset_writer_with_output_file_type(av::FileType::mp4())
+    );
 }

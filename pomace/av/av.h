@@ -451,6 +451,8 @@ rsel(, id, availableVideoCVPixelFormatTypes, NSArray *)
 rsel(, id, availableVideoCodecTypes, NSArray *)
 
 rsel(, id, sampleBufferCallbackQueue, dispatch_queue_t _Nullable)
+rsel(, id, videoSettings, NSDictionary * _Nullable)
+rsel_a(, id, recommendedVideoSettingsForAssetWriterWithOutputFileType, AVFileType, NSDictionary * _Nullable)
 
 
 NS_ASSUME_NONNULL_END
