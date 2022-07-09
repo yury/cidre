@@ -16,7 +16,7 @@ use cidre::{
 #[repr(C)]
 struct FameCounter {
     counter: u32,
-    session: cf::Retained<'static, vt::CompressionSession>,
+    session: cf::Retained<vt::CompressionSession>,
 }
 
 impl FameCounter {

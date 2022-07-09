@@ -41,11 +41,11 @@ impl RunLoop {
         unsafe { CFRunLoopStop(self) }
     }
 
-    pub fn current_mode<'a>(&self) -> Option<Retained<'a, Mode>> {
+    pub fn current_mode(&self) -> Option<Retained<Mode>> {
         unsafe { CFRunLoopCopyCurrentMode(self) }
     }
 
-    pub fn all_modes<'a>(&self) -> Retained<'a, cf::ArrayOf<Mode>> {
+    pub fn all_modes(&self) -> Retained<cf::ArrayOf<Mode>> {
         unsafe { CFRunLoopCopyAllModes(self) }
     }
 
@@ -126,8 +126,8 @@ extern "C" {
     fn CFRunLoopStop(rl: &RunLoop);
     fn CFRunLoopGetCurrent() -> &'static RunLoop;
     fn CFRunLoopGetMain() -> &'static RunLoop;
-    fn CFRunLoopCopyCurrentMode<'a>(rl: &RunLoop) -> Option<Retained<'a, Mode>>;
-    fn CFRunLoopCopyAllModes<'a>(rl: &RunLoop) -> Retained<'a, cf::ArrayOf<Mode>>;
+    fn CFRunLoopCopyCurrentMode(rl: &RunLoop) -> Option<Retained<Mode>>;
+    fn CFRunLoopCopyAllModes(rl: &RunLoop) -> Retained<cf::ArrayOf<Mode>>;
     fn CFRunLoopContainsSource(rl: &RunLoop, source: &Source, mode: &Mode) -> bool;
     fn CFRunLoopAddSource(rl: &RunLoop, source: &Source, mode: &Mode);
     fn CFRunLoopRemoveSource(rl: &RunLoop, source: &Source, mode: &Mode);

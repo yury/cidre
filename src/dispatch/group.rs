@@ -12,7 +12,7 @@ define_obj_type!(Group(Object));
 
 impl Group {
     #[inline]
-    pub fn new<'a>() -> Retained<'a, Self> {
+    pub fn new() -> Retained<Self> {
         unsafe { dispatch_group_create() }
     }
 
@@ -39,7 +39,7 @@ impl Group {
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
-    fn dispatch_group_create<'a>() -> Retained<'a, Group>;
+    fn dispatch_group_create() -> Retained<Group>;
     fn dispatch_group_wait(group: &Group, timeout: Time) -> isize;
 
     fn dispatch_group_notify_f(group: &Group, queue: &Queue, context: *mut c_void, work: Function);

@@ -86,7 +86,7 @@ impl ShareableContent {
         unsafe { cs_shareable_content_with_completion_handler(block.into_raw()) }
     }
 
-    pub async fn current<'a>() -> Result<Retained<'a, Self>, Retained<'a, cf::Error>> {
+    pub async fn current() -> Result<Retained<Self>, Retained<cf::Error>> {
         let (future, block_ptr) = Completion::result_or_error();
         unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
         future.await

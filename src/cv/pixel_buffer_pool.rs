@@ -7,10 +7,10 @@ define_cf_type!(PixelBufferPool(cf::Type));
 
 impl PixelBufferPool {
     #[inline]
-    pub fn new<'a>(
+    pub fn new(
         pool_attributes: Option<&cf::Dictionary>,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<Retained<'a, Self>, cv::Return> {
+    ) -> Result<Retained<Self>, cv::Return> {
         unsafe {
             let mut pool_out = None;
             Self::create(
@@ -24,11 +24,11 @@ impl PixelBufferPool {
     }
 
     #[inline]
-    pub unsafe fn create<'a>(
+    pub unsafe fn create(
         allocator: Option<&cf::Allocator>,
         pool_attributes: Option<&cf::Dictionary>,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pool_out: &mut Option<Retained<'a, PixelBufferPool>>,
+        pool_out: &mut Option<Retained<PixelBufferPool>>,
     ) -> cv::Return {
         CVPixelBufferPoolCreate(
             allocator,
@@ -49,16 +49,16 @@ impl PixelBufferPool {
     }
 
     #[inline]
-    pub unsafe fn create_pixel_buffer<'a>(
+    pub unsafe fn create_pixel_buffer(
         &self,
         allocator: Option<&cf::Allocator>,
-        pixel_buffer_out: &mut Option<Retained<'a, cv::PixelBuffer>>,
+        pixel_buffer_out: &mut Option<Retained<cv::PixelBuffer>>,
     ) -> cv::Return {
         CVPixelBufferPoolCreatePixelBuffer(allocator, self, pixel_buffer_out)
     }
 
     #[inline]
-    pub fn pixel_buffer<'a>(&self) -> Result<Retained<'a, cv::PixelBuffer>, cv::Return> {
+    pub fn pixel_buffer(&self) -> Result<Retained<cv::PixelBuffer>, cv::Return> {
         unsafe {
             let mut pixel_buffer_out = None;
             self.create_pixel_buffer(None, &mut pixel_buffer_out)
@@ -67,11 +67,11 @@ impl PixelBufferPool {
     }
 
     #[inline]
-    pub unsafe fn create_pixel_buffer_with_aux_attributes<'a>(
+    pub unsafe fn create_pixel_buffer_with_aux_attributes(
         &self,
         allocator: Option<&cf::Allocator>,
         aux_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<Retained<'a, cv::PixelBuffer>>,
+        pixel_buffer_out: &mut Option<Retained<cv::PixelBuffer>>,
     ) -> cv::Return {
         CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(
             allocator,
@@ -82,10 +82,10 @@ impl PixelBufferPool {
     }
 
     #[inline]
-    pub fn pixel_buffer_with_aux_attributes<'a>(
+    pub fn pixel_buffer_with_aux_attributes(
         &self,
         aux_attributes: Option<&cf::Dictionary>,
-    ) -> Result<Retained<'a, cv::PixelBuffer>, cv::Return> {
+    ) -> Result<Retained<cv::PixelBuffer>, cv::Return> {
         unsafe {
             let mut pixel_buffer_out = None;
             self.create_pixel_buffer_with_aux_attributes(
@@ -104,28 +104,28 @@ impl PixelBufferPool {
 }
 
 extern "C" {
-    fn CVPixelBufferPoolCreate<'a>(
+    fn CVPixelBufferPoolCreate(
         allocator: Option<&cf::Allocator>,
         pool_attributes: Option<&cf::Dictionary>,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pool_out: &mut Option<Retained<'a, PixelBufferPool>>,
+        pool_out: &mut Option<Retained<PixelBufferPool>>,
     ) -> cv::Return;
 
     fn CVPixelBufferPoolGetAttributes(pool: &PixelBufferPool) -> Option<&cf::Dictionary>;
     fn CVPixelBufferPoolGetPixelBufferAttributes(pool: &PixelBufferPool)
         -> Option<&cf::Dictionary>;
 
-    fn CVPixelBufferPoolCreatePixelBuffer<'a>(
+    fn CVPixelBufferPoolCreatePixelBuffer(
         allocator: Option<&cf::Allocator>,
         pixel_buffer_pool: &PixelBufferPool,
-        pixel_buffer_out: &mut Option<Retained<'a, cv::PixelBuffer>>,
+        pixel_buffer_out: &mut Option<Retained<cv::PixelBuffer>>,
     ) -> cv::Return;
 
-    fn CVPixelBufferPoolCreatePixelBufferWithAuxAttributes<'a>(
+    fn CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(
         allocator: Option<&cf::Allocator>,
         pixel_buffer_pool: &PixelBufferPool,
         aux_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<Retained<'a, cv::PixelBuffer>>,
+        pixel_buffer_out: &mut Option<Retained<cv::PixelBuffer>>,
     ) -> cv::Return;
 
     fn CVPixelBufferPoolFlush(pool: &PixelBufferPool, options: FlushFlags);

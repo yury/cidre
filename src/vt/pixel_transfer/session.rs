@@ -6,7 +6,7 @@ use crate::{
 define_cf_type!(Session(vt::Session));
 
 impl Session {
-    pub fn create<'a>(allocator: Option<&cf::Allocator>) -> Result<Retained<'a, Self>, os::Status> {
+    pub fn create(allocator: Option<&cf::Allocator>) -> Result<Retained<Self>, os::Status> {
         unsafe {
             let mut pixel_transfer_ssession_out = None;
             VTPixelTransferSessionCreate(allocator, &mut pixel_transfer_ssession_out)
@@ -30,9 +30,9 @@ impl Session {
 }
 
 extern "C" {
-    fn VTPixelTransferSessionCreate<'a>(
+    fn VTPixelTransferSessionCreate(
         allocator: Option<&cf::Allocator>,
-        pixel_transfer_ssession_out: &mut Option<Retained<'a, Session>>,
+        pixel_transfer_ssession_out: &mut Option<Retained<Session>>,
     ) -> os::Status;
 
     fn VTPixelTransferSessionInvalidate(session: &Session);

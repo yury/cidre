@@ -4,12 +4,12 @@ define_cf_type!(TextureCache(cf::Type));
 
 impl TextureCache {
     #[inline]
-    pub unsafe fn create_cache<'a>(
+    pub unsafe fn create_cache(
         allocator: Option<&cf::Allocator>,
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-        cache_out: &mut Option<cf::Retained<'a, TextureCache>>,
+        cache_out: &mut Option<cf::Retained<TextureCache>>,
     ) -> cv::Return {
         CVMetalTextureCacheCreate(
             allocator,
@@ -21,11 +21,11 @@ impl TextureCache {
     }
 
     #[inline]
-    pub fn create<'a>(
+    pub fn create(
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-    ) -> Result<cf::Retained<'a, TextureCache>, cv::Return> {
+    ) -> Result<cf::Retained<TextureCache>, cv::Return> {
         unsafe {
             let mut cache_out = None;
             Self::create_cache(
@@ -40,7 +40,7 @@ impl TextureCache {
     }
 
     #[inline]
-    pub unsafe fn create_texture<'a>(
+    pub unsafe fn create_texture(
         &self,
         allocator: Option<&cf::Allocator>,
         source_image: &cv::ImageBuffer,
@@ -49,7 +49,7 @@ impl TextureCache {
         width: usize,
         height: usize,
         plane_index: usize,
-        texture_out: &mut Option<cf::Retained<'a, cv::MetalTexture>>,
+        texture_out: &mut Option<cf::Retained<cv::MetalTexture>>,
     ) -> cv::Return {
         CVMetalTextureCacheCreateTextureFromImage(
             allocator,
@@ -65,7 +65,7 @@ impl TextureCache {
     }
 
     #[inline]
-    pub fn texture<'a>(
+    pub fn texture(
         &self,
         source_image: &cv::ImageBuffer,
         texture_attributes: Option<&cf::Dictionary>,
@@ -73,7 +73,7 @@ impl TextureCache {
         width: usize,
         height: usize,
         plane_index: usize,
-    ) -> Result<cf::Retained<'a, cv::MetalTexture>, cv::Return> {
+    ) -> Result<cf::Retained<cv::MetalTexture>, cv::Return> {
         unsafe {
             let mut texture_out = None;
             self.create_texture(
@@ -101,15 +101,15 @@ impl TextureCache {
 
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C" {
-    fn CVMetalTextureCacheCreate<'a>(
+    fn CVMetalTextureCacheCreate(
         allocator: Option<&cf::Allocator>,
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-        cache_out: &mut Option<cf::Retained<'a, TextureCache>>,
+        cache_out: &mut Option<cf::Retained<TextureCache>>,
     ) -> cv::Return;
 
-    fn CVMetalTextureCacheCreateTextureFromImage<'a>(
+    fn CVMetalTextureCacheCreateTextureFromImage(
         allocator: Option<&cf::Allocator>,
         texture_cache: &TextureCache,
         source_image: &cv::ImageBuffer,
@@ -118,7 +118,7 @@ extern "C" {
         width: usize,
         height: usize,
         plane_index: usize,
-        texture_out: &mut Option<cf::Retained<'a, cv::MetalTexture>>,
+        texture_out: &mut Option<cf::Retained<cv::MetalTexture>>,
     ) -> cv::Return;
 
     fn CVMetalTextureCacheFlush(texture_cache: &TextureCache, options: usize);

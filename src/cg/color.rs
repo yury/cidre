@@ -11,7 +11,7 @@ impl Color {
     ///
     /// let c = cg::Color::generic_gray(0.5, 0.5);
     /// ```
-    pub fn generic_gray<'c>(gray: cg::Float, alpha: cg::Float) -> Retained<'c, Color> {
+    pub fn generic_gray(gray: cg::Float, alpha: cg::Float) -> Retained<Color> {
         unsafe { CGColorCreateGenericGray(gray, alpha) }
     }
 
@@ -22,12 +22,12 @@ impl Color {
     ///
     /// assert_eq!(c.alpha(), 0.5);
     /// ```
-    pub fn generic_rgb<'c>(
+    pub fn generic_rgb(
         red: cg::Float,
         green: cg::Float,
         blue: cg::Float,
         alpha: cg::Float,
-    ) -> Retained<'c, Color> {
+    ) -> Retained<Color> {
         unsafe { CGColorCreateGenericRGB(red, green, blue, alpha) }
     }
 
@@ -38,13 +38,13 @@ impl Color {
 
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {
-    fn CGColorCreateGenericGray<'c>(gray: cg::Float, alpha: cg::Float) -> Retained<'c, Color>;
-    fn CGColorCreateGenericRGB<'c>(
+    fn CGColorCreateGenericGray(gray: cg::Float, alpha: cg::Float) -> Retained<Color>;
+    fn CGColorCreateGenericRGB(
         red: cg::Float,
         green: cg::Float,
         blue: cg::Float,
         alpha: cg::Float,
-    ) -> Retained<'c, Color>;
+    ) -> Retained<Color>;
 
     fn CGColorGetAlpha(color: &Color) -> cg::Float;
 }

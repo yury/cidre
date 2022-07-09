@@ -3,9 +3,9 @@ use crate::{
     os,
 };
 
-pub fn copy<'a>(
+pub fn copy(
     options: Option<&cf::Dictionary>,
-) -> Result<Retained<'a, cf::ArrayOf<cf::Dictionary>>, os::Status> {
+) -> Result<Retained<cf::ArrayOf<cf::Dictionary>>, os::Status> {
     unsafe {
         let mut list_of_video_encoders_out = None;
         VTCopyVideoEncoderList(options, &mut list_of_video_encoders_out)
@@ -16,7 +16,7 @@ pub fn copy<'a>(
 extern "C" {
     fn VTCopyVideoEncoderList<'a>(
         options: Option<&cf::Dictionary>,
-        list_of_video_encoders_out: &mut Option<Retained<'a, cf::ArrayOf<cf::Dictionary>>>,
+        list_of_video_encoders_out: &mut Option<Retained<cf::ArrayOf<cf::Dictionary>>>,
     ) -> os::Status;
 }
 

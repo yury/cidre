@@ -22,7 +22,7 @@ pub struct Signature {
     pub protocol_family: i32,
     pub socket_type: i32,
     pub protocol: i32,
-    pub address: cf::Retained<'static, cf::Data>,
+    pub address: cf::Retained<cf::Data>,
 }
 
 define_options!(CallBackType(usize));
@@ -61,14 +61,13 @@ pub struct Context<T> {
     pub info: *mut T,
     pub retain: Option<extern "C" fn(info: *const T)>,
     pub release: Option<extern "C" fn(info: *const T)>,
-    pub copy_description:
-        Option<extern "C" fn(info: *const T) -> Option<cf::Retained<'static, cf::String>>>,
+    pub copy_description: Option<extern "C" fn(info: *const T) -> Option<cf::Retained<cf::String>>>,
 }
 
 pub type NativeHandle = i32;
 
 impl Socket {
-    pub unsafe fn create<'a, T>(
+    pub unsafe fn create<T>(
         allocator: Option<&cf::Allocator>,
         protocol_family: i32,
         socket_type: i32,
@@ -76,7 +75,7 @@ impl Socket {
         cb_types: CallBackType,
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<'a, Socket>> {
+    ) -> Option<cf::Retained<Socket>> {
         CFSocketCreate(
             allocator,
             protocol_family,
@@ -87,13 +86,13 @@ impl Socket {
             transmute(context),
         )
     }
-    pub unsafe fn create_with_native<'a, T>(
+    pub unsafe fn create_with_native<T>(
         allocator: Option<&cf::Allocator>,
         sock: NativeHandle,
         cb_types: CallBackType,
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<'a, Socket>> {
+    ) -> Option<cf::Retained<Socket>> {
         CFSocketCreateWithNative(
             allocator,
             sock,
@@ -115,11 +114,11 @@ impl Socket {
         unsafe { CFSocketIsValid(self) }
     }
 
-    pub fn create_runloop_source<'a>(
+    pub fn create_runloop_source(
         &self,
         allocator: Option<&cf::Allocator>,
         order: cf::Index,
-    ) -> Option<cf::Retained<'a, cf::RunLoopSource>> {
+    ) -> Option<cf::Retained<cf::RunLoopSource>> {
         unsafe { CFSocketCreateRunLoopSource(allocator, self, order) }
     }
 
@@ -151,7 +150,7 @@ impl Socket {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    fn CFSocketCreate<'a>(
+    fn CFSocketCreate(
         allocator: Option<&cf::Allocator>,
         protocol_family: i32,
         socket_type: i32,
@@ -159,15 +158,15 @@ extern "C" {
         cb_types: CallBackType,
         callout: CallBack<c_void>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<'a, Socket>>;
+    ) -> Option<cf::Retained<Socket>>;
 
-    fn CFSocketCreateWithNative<'a>(
+    fn CFSocketCreateWithNative(
         allocator: Option<&cf::Allocator>,
         sock: NativeHandle,
         cb_types: CallBackType,
         callout: CallBack<c_void>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<'a, Socket>>;
+    ) -> Option<cf::Retained<Socket>>;
 
     fn CFSocketGetNative(s: &Socket) -> NativeHandle;
 
@@ -175,11 +174,11 @@ extern "C" {
 
     fn CFSocketIsValid(s: &Socket) -> bool;
 
-    fn CFSocketCreateRunLoopSource<'a>(
+    fn CFSocketCreateRunLoopSource(
         allocator: Option<&cf::Allocator>,
         s: &Socket,
         order: cf::Index,
-    ) -> Option<cf::Retained<'a, cf::RunLoopSource>>;
+    ) -> Option<cf::Retained<cf::RunLoopSource>>;
 
     fn CFSocketGetSocketFlags(s: &Socket) -> Flags;
     fn CFSocketSetSocketFlags(s: &Socket, flags: Flags);

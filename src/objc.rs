@@ -23,7 +23,7 @@ pub struct Id(Type);
 
 impl Id {
     #[inline]
-    pub unsafe fn retain<'a, T: Release>(id: &Id) -> Retained<'a, T> {
+    pub unsafe fn retain<T: Release>(id: &Id) -> Retained<T> {
         transmute(objc_retain(id))
     }
 
@@ -66,7 +66,7 @@ impl Id {
 
 impl Retain for Id {
     #[inline]
-    fn retained<'a>(&self) -> Retained<'a, Self> {
+    fn retained(&self) -> Retained<Self> {
         unsafe { Id::retain(self) }
     }
 }
@@ -178,14 +178,14 @@ macro_rules! define_obj_type {
 
         impl crate::cf::runtime::Retain for $NewType {
             #[inline]
-            fn retained<'a>(&self) -> crate::cf::runtime::Retained<'a, Self> {
+            fn retained(&self) -> crate::cf::runtime::Retained<Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained<'a>(&self) -> crate::cf::runtime::Retained<'a, Self> {
+            pub fn retained(&self) -> crate::cf::runtime::Retained<Self> {
                 unsafe { crate::objc::Id::retain(self) }
             }
         }
@@ -205,5 +205,5 @@ macro_rules! define_obj_type {
 #[repr(C)]
 pub struct Delegate<T: Sized> {
     pub delegate: Box<T>,
-    pub obj: crate::cf::Retained<'static, Id>,
+    pub obj: crate::cf::Retained<Id>,
 }

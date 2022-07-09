@@ -3,10 +3,10 @@ use crate::{av::MediaType, cf, cm, define_obj_type, ns};
 define_obj_type!(WriterInput(ns::Id));
 
 impl WriterInput {
-    pub fn with_media_type_and_output_settings<'a>(
+    pub fn with_media_type_and_output_settings(
         media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
-    ) -> cf::Retained<'a, WriterInput> {
+    ) -> cf::Retained<WriterInput> {
         unsafe {
             AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings(
                 media_type,
@@ -15,11 +15,11 @@ impl WriterInput {
         }
     }
 
-    pub fn with_media_type_output_settings_source_and_format_hint<'a>(
+    pub fn with_media_type_output_settings_source_and_format_hint(
         media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDescription>,
-    ) -> cf::Retained<'a, WriterInput> {
+    ) -> cf::Retained<WriterInput> {
         unsafe {
             AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint(
                 media_type,
@@ -29,10 +29,10 @@ impl WriterInput {
         }
     }
 
-    pub fn with_media_type_and_format_hint<'a>(
+    pub fn with_media_type_and_format_hint(
         media_type: &MediaType,
         source_format_hint: &cm::FormatDescription,
-    ) -> cf::Retained<'a, WriterInput> {
+    ) -> cf::Retained<WriterInput> {
         unsafe {
             AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint(
                 media_type,
@@ -42,7 +42,7 @@ impl WriterInput {
         }
     }
 
-    pub fn with_media_type<'a>(media_type: &MediaType) -> cf::Retained<'a, WriterInput> {
+    pub fn with_media_type(media_type: &MediaType) -> cf::Retained<WriterInput> {
         Self::with_media_type_and_output_settings(media_type, None)
     }
 
@@ -94,13 +94,13 @@ extern "C" {
     fn AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings<'a>(
         media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
-    ) -> cf::Retained<'a, WriterInput>;
+    ) -> cf::Retained<WriterInput>;
 
     fn AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint<'a>(
         media_type: &MediaType,
         output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDescription>,
-    ) -> cf::Retained<'a, WriterInput>;
+    ) -> cf::Retained<WriterInput>;
 
     // csel_abc(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, sourceFormatHint, CMFormatDescriptionRef, AVAssetWriterInput *)
 

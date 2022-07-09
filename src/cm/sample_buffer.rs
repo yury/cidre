@@ -88,11 +88,11 @@ impl SampleBuffer {
     /// buf.show();
     /// ```
 
-    pub fn new<'a>(
+    pub fn new(
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,
         format_description: Option<&cm::FormatDescription>,
-    ) -> Result<Retained<'a, SampleBuffer>, os::Status> {
+    ) -> Result<Retained<SampleBuffer>, os::Status> {
         let mut sample_buffer_out = None;
 
         unsafe {

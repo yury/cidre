@@ -19,9 +19,9 @@ impl DisplayLink {
     }
 
     #[inline]
-    pub unsafe fn create_with_cg_display<'a>(
+    pub unsafe fn create_with_cg_display(
         display_id: cg::DirectDisplayID,
-        display_link_out: &mut Option<cf::Retained<'a, DisplayLink>>,
+        display_link_out: &mut Option<cf::Retained<DisplayLink>>,
     ) -> cv::Return {
         CVDisplayLinkCreateWithCGDisplay(display_id, display_link_out)
     }
@@ -44,9 +44,9 @@ impl DisplayLink {
     /// assert_eq!(err, cv::Return::DISPLAY_LINK_NOT_RUNNING);
     ///
     /// ```
-    pub fn with_cg_display<'a>(
+    pub fn with_cg_display(
         display_id: cg::DirectDisplayID,
-    ) -> Result<cf::Retained<'a, DisplayLink>, cv::Return> {
+    ) -> Result<cf::Retained<DisplayLink>, cv::Return> {
         unsafe {
             let mut display_link_out = None;
             Self::create_with_cg_display(display_id, &mut display_link_out)
@@ -102,9 +102,9 @@ impl DisplayLink {
 extern "C" {
     fn CVDisplayLinkGetTypeID() -> cf::TypeId;
 
-    fn CVDisplayLinkCreateWithCGDisplay<'a>(
+    fn CVDisplayLinkCreateWithCGDisplay(
         display_id: cg::DirectDisplayID,
-        display_link_out: &mut Option<cf::Retained<'a, DisplayLink>>,
+        display_link_out: &mut Option<cf::Retained<DisplayLink>>,
     ) -> cv::Return;
 
     fn CVDisplayLinkStart(link: &DisplayLink) -> cv::Return;

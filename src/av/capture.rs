@@ -18,9 +18,9 @@ pub use device::notifications as device_notifications;
 
 pub mod input;
 pub use input::port_notifications as input_port_notifications;
+pub use input::DeviceInput;
 pub use input::Input;
 pub use input::Port as InputPort;
-pub use input::DeviceInput;
 
 pub mod output_base;
 pub use output_base::DataDroppedReason;

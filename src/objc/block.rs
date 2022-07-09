@@ -94,15 +94,15 @@ impl<T> Completion<T> {
     }
 }
 
-type RetainedResult<'a, R> = Result<Retained<'a, R>, Retained<'a, cf::Error>>;
+type RetainedResult<R> = Result<Retained<R>, Retained<cf::Error>>;
 
-impl<'a, R> Completion<RetainedResult<'a, R>>
+impl<R> Completion<RetainedResult<R>>
 where
     R: Retain,
 {
     pub fn result_or_error() -> (Self, *const c_void) {
         let block = Arc::new(Block {
-            _fn_ptr: Block::<RetainedResult<'a, R>>::result_or_error_fn as _,
+            _fn_ptr: Block::<RetainedResult<R>>::result_or_error_fn as _,
             state: State::mutex(),
         });
 
@@ -130,7 +130,7 @@ impl<T> Block<T> {
     }
 }
 
-impl<'a> Block<Result<(), Retained<'a, cf::Error>>> {
+impl Block<Result<(), Retained<cf::Error>>> {
     unsafe extern "C" fn ok_or_error_fn(raw: *mut Self, err: Option<&cf::Error>) {
         let result = if let Some(err) = err {
             Err(err.retained())
@@ -142,7 +142,7 @@ impl<'a> Block<Result<(), Retained<'a, cf::Error>>> {
     }
 }
 
-impl<'a, R> Block<RetainedResult<'a, R>>
+impl<R> Block<RetainedResult<R>>
 where
     R: Retain,
 {

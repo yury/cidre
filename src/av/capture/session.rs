@@ -31,7 +31,7 @@ define_obj_type!(Session(Id));
 
 impl Session {
     #[inline]
-    pub fn new<'new>() -> Retained<'new, Session> {
+    pub fn new() -> Retained<Session> {
         unsafe { AVCaptureSession_new() }
     }
 
@@ -143,7 +143,7 @@ impl Session {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureSession_new<'new>() -> Retained<'new, Session>;
+    fn AVCaptureSession_new() -> Retained<Session>;
     fn rsel_canSetSessionPreset(session: &Session, preset: &av::CaptureSessionPreset) -> bool;
     fn rsel_sessionPreset(session: &Session) -> &av::CaptureSessionPreset;
     fn wsel_setSessionPreset(session: &Session, value: &av::CaptureSessionPreset);
@@ -178,7 +178,7 @@ define_obj_type!(MultiCamSession(Session));
 
 impl MultiCamSession {
     #[inline]
-    pub fn new<'new>() -> Retained<'new, MultiCamSession> {
+    pub fn new() -> Retained<MultiCamSession> {
         unsafe { AVCaptureMultiCamSession_new() }
     }
     /// ```
@@ -203,7 +203,7 @@ impl MultiCamSession {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureMultiCamSession_new<'new>() -> Retained<'new, MultiCamSession>;
+    fn AVCaptureMultiCamSession_new() -> Retained<MultiCamSession>;
     fn is_mutlicam_supported() -> bool;
 
     /// The value of this property is a float from 0.0 => 1.0 indicating

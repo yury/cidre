@@ -108,7 +108,7 @@ impl Surface {
     /// props.show();
     /// assert!(props.len() >= 1);
     /// ```
-    pub fn create<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>> {
+    pub fn create(properties: &cf::Dictionary) -> Option<Retained<Surface>> {
         unsafe { IOSurfaceCreate(properties) }
     }
 
@@ -149,12 +149,12 @@ impl Surface {
     ///
     /// assert!(surf.is_none());
     /// ```
-    pub fn lookup<'a>(csid: Id) -> Option<Retained<'a, Surface>> {
+    pub fn lookup(csid: Id) -> Option<Retained<Surface>> {
         unsafe { IOSurfaceLookup(csid) }
     }
 
     #[inline]
-    pub fn all_values<'a>(&self) -> Option<Retained<'a, cf::Dictionary>> {
+    pub fn all_values(&self) -> Option<Retained<cf::Dictionary>> {
         unsafe { IOSurfaceCopyAllValues(self) }
     }
 
@@ -192,7 +192,7 @@ impl Surface {
     ///
     /// This call does NOT destroy the port.
     #[inline]
-    pub fn from_mach_port<'a>(port: MachPort) -> Option<Retained<'a, Surface>> {
+    pub fn from_mach_port(port: MachPort) -> Option<Retained<Surface>> {
         unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
@@ -232,8 +232,8 @@ impl Surface {
 
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
-    fn IOSurfaceCreate<'a>(properties: &cf::Dictionary) -> Option<Retained<'a, Surface>>;
-    fn IOSurfaceLookup<'a>(csid: Id) -> Option<Retained<'a, Surface>>;
+    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<Retained<Surface>>;
+    fn IOSurfaceLookup(csid: Id) -> Option<Retained<Surface>>;
     fn IOSurfaceGetID(buffer: &Surface) -> Id;
     fn IOSurfaceGetWidth(buffer: &Surface) -> usize;
     fn IOSurfaceGetHeight(buffer: &Surface) -> usize;
@@ -241,10 +241,10 @@ extern "C" {
     fn IOSurfaceGetWidthOfPlane(buffer: &Surface, plane_index: usize) -> usize;
     fn IOSurfaceGetHeightOfPlane(buffer: &Surface, plane_index: usize) -> usize;
 
-    fn IOSurfaceCopyAllValues<'a>(buffer: &Surface) -> Option<Retained<'a, cf::Dictionary>>;
+    fn IOSurfaceCopyAllValues(buffer: &Surface) -> Option<Retained<cf::Dictionary>>;
 
     fn IOSurfaceCreateMachPort(buffer: &Surface) -> MachPort;
-    fn IOSurfaceLookupFromMachPort<'a>(port: MachPort) -> Option<Retained<'a, Surface>>;
+    fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<Retained<Surface>>;
 
     fn IOSurfaceIsInUse(buffer: &Surface) -> bool;
     fn IOSurfaceGetUseCount(buffer: &Surface) -> i32;

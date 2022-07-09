@@ -17,7 +17,7 @@ pub type OutputCallback<T> = extern "C" fn(
 );
 
 impl Session {
-    pub fn new<'a, T>(
+    pub fn new<T>(
         width: u32,
         height: u32,
         codec: VideoCodecType,
@@ -25,7 +25,7 @@ impl Session {
         source_image_buffer_attributes: Option<&cf::Dictionary>,
         output_callback: Option<OutputCallback<T>>,
         output_callback_ref_con: *mut T,
-    ) -> Result<Retained<'a, Self>, os::Status> {
+    ) -> Result<Retained<Self>, os::Status> {
         unsafe {
             let mut session = None;
             Self::create(

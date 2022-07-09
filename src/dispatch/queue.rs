@@ -56,21 +56,18 @@ pub enum AutoreleaseFrequency {
 /// ```
 impl Queue {
     #[inline]
-    pub fn new<'a>() -> Retained<'a, Queue> {
+    pub fn new() -> Retained<Queue> {
         Self::with_label_and_attrs(None, None)
     }
 
     #[inline]
-    pub fn serial_with_autoreleasepool<'a>() -> Retained<'a, Queue> {
+    pub fn serial_with_autoreleasepool() -> Retained<Queue> {
         let attr = Attr::serial_with_autoreleasepool();
         Self::with_label_and_attrs(None, Some(&attr))
     }
 
     #[inline]
-    pub fn with_label_and_attrs<'a>(
-        label: Option<&CStr>,
-        attr: Option<&Attr>,
-    ) -> Retained<'a, Queue> {
+    pub fn with_label_and_attrs(label: Option<&CStr>, attr: Option<&Attr>) -> Retained<Queue> {
         unsafe {
             let label = label.map(|f| NonNull::new_unchecked(f.as_ptr() as *mut _));
             dispatch_queue_create(label, attr)
@@ -78,7 +75,7 @@ impl Queue {
     }
 
     #[inline]
-    pub fn main<'a>() -> &'a Queue {
+    pub fn main() -> &'static Queue {
         Main::default()
     }
 
@@ -89,7 +86,7 @@ impl Queue {
     ///
     /// ```
     #[inline]
-    pub fn global_with_qos<'a>(qos: QOSClass) -> Option<&'a Global> {
+    pub fn global_with_qos(qos: QOSClass) -> Option<&'static Global> {
         unsafe { Self::global_with_flags(qos.0 as _, 0) }
     }
 
@@ -203,62 +200,59 @@ impl Attr {
     }
 
     #[inline]
-    pub fn concurrent<'a>() -> Option<&'a Attr> {
+    pub fn concurrent() -> Option<&'static Attr> {
         unsafe { Some(&_dispatch_queue_attr_concurrent) }
     }
 
     #[inline]
-    pub fn serial_inactive<'a>() -> Retained<'a, Attr> {
+    pub fn serial_inactive() -> Retained<Attr> {
         Self::make_initially_inactive(Self::serial())
     }
 
     #[inline]
-    pub fn concurrent_inactive<'a>() -> Retained<'a, Attr> {
+    pub fn concurrent_inactive() -> Retained<Attr> {
         Self::make_initially_inactive(Self::concurrent())
     }
 
     #[inline]
-    pub fn serial_with_autoreleasepool<'a>() -> Retained<'a, Attr> {
+    pub fn serial_with_autoreleasepool() -> Retained<Attr> {
         Self::make_with_autorelease_frequencey(Self::serial(), AutoreleaseFrequency::WorkItem)
     }
 
     #[inline]
-    pub fn concurrent_with_autoreleasepool<'a>() -> Retained<'a, Attr> {
+    pub fn concurrent_with_autoreleasepool() -> Retained<Attr> {
         Self::make_with_autorelease_frequencey(Self::concurrent(), AutoreleaseFrequency::WorkItem)
     }
 
     #[inline]
-    pub fn make_with_autorelease_frequencey<'a>(
+    pub fn make_with_autorelease_frequencey(
         attr: Option<&Attr>,
         frequency: AutoreleaseFrequency,
-    ) -> Retained<'a, Self> {
+    ) -> Retained<Self> {
         unsafe { dispatch_queue_attr_make_with_autorelease_frequency(attr, frequency) }
     }
 
     #[inline]
-    pub fn make_initially_inactive<'a>(attr: Option<&Attr>) -> Retained<'a, Attr> {
+    pub fn make_initially_inactive(attr: Option<&Attr>) -> Retained<Attr> {
         unsafe { dispatch_queue_attr_make_initially_inactive(attr) }
     }
 
     #[inline]
-    pub fn make_with_qos_class<'a>(
+    pub fn make_with_qos_class(
         attr: Option<&Attr>,
         qos_class: QOSClass,
         relative_priority: i32,
-    ) -> Retained<'a, Attr> {
+    ) -> Retained<Attr> {
         unsafe { dispatch_queue_attr_make_with_qos_class(attr, qos_class, relative_priority) }
     }
 
     #[inline]
-    pub fn initially_inactive<'a>(&self) -> Retained<'a, Attr> {
+    pub fn initially_inactive(&self) -> Retained<Attr> {
         unsafe { dispatch_queue_attr_make_initially_inactive(Some(self)) }
     }
 
     #[inline]
-    pub fn with_autorelease_frequencey<'a>(
-        &self,
-        frequency: AutoreleaseFrequency,
-    ) -> Retained<'a, Attr> {
+    pub fn with_autorelease_frequencey(&self, frequency: AutoreleaseFrequency) -> Retained<Attr> {
         unsafe { dispatch_queue_attr_make_with_autorelease_frequency(Some(self), frequency) }
     }
 }
@@ -272,23 +266,23 @@ extern "C" {
 
     fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
     fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
-    fn dispatch_queue_create<'a>(
+    fn dispatch_queue_create(
         label: Option<NonNull<c_char>>,
         attr: Option<&Attr>,
-    ) -> Retained<'a, Queue>;
+    ) -> Retained<Queue>;
 
     fn dispatch_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
 
-    fn dispatch_queue_attr_make_initially_inactive<'a>(attr: Option<&Attr>) -> Retained<'a, Attr>;
-    fn dispatch_queue_attr_make_with_qos_class<'a>(
+    fn dispatch_queue_attr_make_initially_inactive(attr: Option<&Attr>) -> Retained<Attr>;
+    fn dispatch_queue_attr_make_with_qos_class(
         attr: Option<&Attr>,
         qos_class: QOSClass,
         relative_priority: i32,
-    ) -> Retained<'a, Attr>;
-    fn dispatch_queue_attr_make_with_autorelease_frequency<'a>(
+    ) -> Retained<Attr>;
+    fn dispatch_queue_attr_make_with_autorelease_frequency(
         attr: Option<&Attr>,
         frequency: AutoreleaseFrequency,
-    ) -> Retained<'a, Attr>;
+    ) -> Retained<Attr>;
 
     fn dispatch_after_f(
         when: crate::dispatch::Time,

@@ -55,7 +55,7 @@ pub enum ComparisonResult {
 ///     assert_eq!("CFNumber", desc.to_string());
 /// }
 /// ```
-pub unsafe fn copy_type_id_description<'a>(type_id: TypeId) -> Option<Retained<'a, String>> {
+pub unsafe fn copy_type_id_description<'a>(type_id: TypeId) -> Option<Retained<String>> {
     CFCopyTypeIDDescription(type_id)
 }
 
@@ -169,7 +169,7 @@ impl Allocator {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    fn CFCopyTypeIDDescription<'a>(type_id: TypeId) -> Option<Retained<'a, String>>;
+    fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<Retained<String>>;
 
     static kCFNull: &'static Null;
 
@@ -184,7 +184,7 @@ extern "C" {
     fn CFHash(cf: &Type) -> usize;
 
     fn CFEqual(cf1: &Type, cf2: &Type) -> bool;
-    fn CFCopyDescription<'a>(cf: Option<&Type>) -> Option<Retained<'a, String>>;
+    fn CFCopyDescription(cf: Option<&Type>) -> Option<Retained<String>>;
 }
 
 define_cf_type!(PropertyList(Type));

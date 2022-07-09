@@ -79,7 +79,7 @@ impl String {
     /// assert!(s3.has_prefix(&s2));
     ///```
     #[inline]
-    pub fn from_str<'a>(str: &str) -> Retained<'a, String> {
+    pub fn from_str(str: &str) -> Retained<String> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes(None, bytes, bytes.len() as _, Encoding::UTF8, false)
@@ -88,7 +88,7 @@ impl String {
     }
 
     #[inline]
-    pub fn from_cstr<'a>(cstr: &CStr) -> Retained<'a, String> {
+    pub fn from_cstr(cstr: &CStr) -> Retained<String> {
         unsafe {
             Self::create_with_cstring(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
                 .unwrap_unchecked()
@@ -134,24 +134,24 @@ impl String {
     }
 
     #[inline]
-    pub fn create_copy<'a>(&self, alloc: Option<&Allocator>) -> Option<Retained<'a, String>> {
+    pub fn create_copy(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
         unsafe { CFStringCreateCopy(alloc, self) }
     }
 
     #[inline]
-    pub fn copy<'a>(&self) -> Option<Retained<'a, String>> {
+    pub fn copy(&self) -> Option<Retained<String>> {
         self.create_copy(None)
     }
 
     #[inline]
-    pub fn create_with_bytes_no_copy<'a>(
+    pub fn create_with_bytes_no_copy(
         alloc: Option<&Allocator>,
-        bytes: &'a [u8],
+        bytes: &[u8],
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<'a, String>> {
+    ) -> Option<Retained<String>> {
         unsafe {
             let bytes = bytes.as_ptr();
             CFStringCreateWithBytesNoCopy(
@@ -166,12 +166,12 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_cstring_no_copy<'a>(
+    pub fn create_with_cstring_no_copy(
         alloc: Option<&Allocator>,
-        bytes_with_null: &'a [u8],
+        bytes_with_null: &[u8],
         encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<'a, String>> {
+    ) -> Option<Retained<String>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
             CFStringCreateWithCStringNoCopy(alloc, c_str, encoding, contents_deallocator)
@@ -179,11 +179,11 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_cstring<'a>(
+    pub fn create_with_cstring(
         alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
         encoding: Encoding,
-    ) -> Option<Retained<'a, String>> {
+    ) -> Option<Retained<String>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
             CFStringCreateWithCString(alloc, c_str, encoding)
@@ -191,13 +191,13 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_bytes<'a>(
+    pub fn create_with_bytes(
         alloc: Option<&Allocator>,
         bytes: &[u8],
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
-    ) -> Option<Retained<'a, String>> {
+    ) -> Option<Retained<String>> {
         unsafe {
             let bytes = bytes.as_ptr();
             CFStringCreateWithBytes(
@@ -338,7 +338,7 @@ impl MutableString {
     }
 
     #[inline]
-    pub fn create<'a>(alloc: Option<&Allocator>, max_length: Index) -> Option<Retained<'a, Self>> {
+    pub fn create(alloc: Option<&Allocator>, max_length: Index) -> Option<Retained<Self>> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
     }
 }
@@ -347,56 +347,56 @@ impl MutableString {
 extern "C" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;
-    fn CFStringCreateMutable<'a>(
+    fn CFStringCreateMutable(
         alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<Retained<'a, MutableString>>;
-    fn CFStringCreateCopy<'a>(
+    ) -> Option<Retained<MutableString>>;
+    fn CFStringCreateCopy(
         alloc: Option<&Allocator>,
         the_string: &String,
-    ) -> Option<Retained<'a, String>>;
+    ) -> Option<Retained<String>>;
     fn CFStringHasPrefix(the_string: &String, prefix: &String) -> bool;
     fn CFStringHasSuffix(the_string: &String, prefix: &String) -> bool;
-    fn CFStringCreateMutableCopy<'a>(
+    fn CFStringCreateMutableCopy(
         alloc: Option<&Allocator>,
         max_length: Index,
         the_string: &String,
-    ) -> Option<Retained<'a, MutableString>>;
+    ) -> Option<Retained<MutableString>>;
     fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
 
     fn CFStringAppend(the_string: &mut MutableString, appended_string: &String);
     fn CFStringTrim(the_string: &mut MutableString, trim_string: &String);
     fn CFStringTrimWhitespace(the_string: &mut MutableString);
 
-    fn CFStringCreateWithBytesNoCopy<'a>(
+    fn CFStringCreateWithBytesNoCopy(
         alloc: Option<&Allocator>,
         bytes: *const u8,
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<'a, String>>;
+    ) -> Option<Retained<String>>;
 
-    fn CFStringCreateWithCStringNoCopy<'a>(
+    fn CFStringCreateWithCStringNoCopy(
         alloc: Option<&Allocator>,
         c_str: *const c_char,
         encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<'a, String>>;
+    ) -> Option<Retained<String>>;
 
-    fn CFStringCreateWithCString<'a>(
+    fn CFStringCreateWithCString(
         alloc: Option<&Allocator>,
         c_str: *const c_char,
         encoding: Encoding,
-    ) -> Option<Retained<'a, String>>;
+    ) -> Option<Retained<String>>;
 
-    fn CFStringCreateWithBytes<'a>(
+    fn CFStringCreateWithBytes(
         alloc: Option<&Allocator>,
         bytes: *const u8,
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
-    ) -> Option<Retained<'a, String>>;
+    ) -> Option<Retained<String>>;
 
     fn CFShowStr(str: &String);
 
@@ -415,14 +415,14 @@ extern "C" {
     // fn __CFStringMakeConstantString(str: *const c_char) -> &'static String;
 }
 
-impl From<&'static str> for Retained<'static, String> {
+impl From<&'static str> for Retained<String> {
     #[inline]
     fn from(s: &'static str) -> Self {
         String::from_str_no_copy(s)
     }
 }
 
-impl<'a> From<&std::string::String> for Retained<'a, String> {
+impl From<&std::string::String> for Retained<String> {
     #[inline]
     fn from(s: &std::string::String) -> Self {
         String::from_str(s.as_str())

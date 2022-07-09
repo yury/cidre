@@ -291,11 +291,11 @@ impl Number {
     /// assert_eq!(num.to_i8().unwrap(), 5i8);
     /// ```
     #[inline]
-    pub unsafe fn create<'a>(
+    pub unsafe fn create(
         allocator: Option<&Allocator>,
         the_type: NumberType,
         value_ptr: *const c_void,
-    ) -> Option<Retained<'a, Number>> {
+    ) -> Option<Retained<Number>> {
         CFNumberCreate(allocator, the_type, value_ptr)
     }
 
@@ -308,7 +308,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged
-    pub fn from_i8<'a>(value: i8) -> Retained<'a, Number> {
+    pub fn from_i8(value: i8) -> Retained<Number> {
         unsafe { Number::create(None, NumberType::I8, &value as *const _ as _).unwrap_unchecked() }
     }
 
@@ -321,7 +321,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged
-    pub fn from_i16<'a>(value: i16) -> Retained<'a, Number> {
+    pub fn from_i16(value: i16) -> Retained<Number> {
         unsafe { Number::create(None, NumberType::I16, &value as *const _ as _).unwrap_unchecked() }
     }
 
@@ -335,11 +335,11 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
-    pub fn from_i32<'a>(value: i32) -> Retained<'a, Number> {
+    pub fn from_i32(value: i32) -> Retained<Number> {
         unsafe { Number::create(None, NumberType::I32, &value as *const _ as _).unwrap_unchecked() }
     }
 
-    pub fn from_four_char_code<'a>(value: FourCharCode) -> Retained<'a, Number> {
+    pub fn from_four_char_code(value: FourCharCode) -> Retained<Number> {
         let val = value as i32;
         unsafe { Number::create(None, NumberType::I32, &val as *const _ as _).unwrap_unchecked() }
     }
@@ -353,7 +353,7 @@ impl Number {
     /// assert_eq!(64, num.to_i64().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    pub fn from_i64<'a>(value: i64) -> Retained<'a, Number> {
+    pub fn from_i64(value: i64) -> Retained<Number> {
         unsafe { Number::create(None, NumberType::I64, &value as *const _ as _).unwrap_unchecked() }
     }
 
@@ -366,30 +366,30 @@ impl Number {
     /// assert_eq!(64.0, num.to_f64().unwrap());
     /// assert_eq!(true, num.is_float_type());
     /// ```
-    pub fn from_f64<'a>(value: f64) -> Option<Retained<'a, Number>> {
+    pub fn from_f64(value: f64) -> Option<Retained<Number>> {
         unsafe { Number::create(None, NumberType::F64, &value as *const _ as _) }
     }
 }
 
-impl<'a> From<i8> for Retained<'a, Number> {
+impl From<i8> for Retained<Number> {
     fn from(value: i8) -> Self {
         Number::from_i8(value)
     }
 }
 
-impl<'a> From<i16> for Retained<'a, Number> {
+impl From<i16> for Retained<Number> {
     fn from(value: i16) -> Self {
         Number::from_i16(value)
     }
 }
 
-impl<'a> From<i32> for Retained<'a, Number> {
+impl From<i32> for Retained<Number> {
     fn from(value: i32) -> Self {
         Number::from_i32(value)
     }
 }
 
-impl<'a> From<i64> for Retained<'a, Number> {
+impl From<i64> for Retained<Number> {
     fn from(value: i64) -> Self {
         Number::from_i64(value)
     }
@@ -409,11 +409,11 @@ extern "C" {
     static kCFNumberNegativeInfinity: &'static Number;
     static kCFNumberNaN: &'static Number;
 
-    fn CFNumberCreate<'a>(
+    fn CFNumberCreate(
         allocator: Option<&Allocator>,
         the_type: NumberType,
         value_ptr: *const c_void,
-    ) -> Option<Retained<'a, Number>>;
+    ) -> Option<Retained<Number>>;
 
     fn CFNumberGetType(number: &Number) -> NumberType;
     fn CFNumberGetByteSize(number: &Number) -> Index;

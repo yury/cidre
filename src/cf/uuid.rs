@@ -9,7 +9,7 @@ impl UUID {
     }
 
     #[inline]
-    pub fn create<'a>(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<'a, UUID>> {
+    pub fn create(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<UUID>> {
         unsafe { CFUUIDCreate(alloc) }
     }
 
@@ -20,23 +20,20 @@ impl UUID {
     /// uuid.show();
     /// ```
     #[inline]
-    pub fn new<'a>() -> cf::Retained<'a, UUID> {
+    pub fn new() -> cf::Retained<UUID> {
         unsafe { Self::create(None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn from_cf_string<'a>(
+    pub fn from_cf_string(
         alloc: Option<&cf::Allocator>,
         uuid_str: &cf::String,
-    ) -> Option<cf::Retained<'a, UUID>> {
+    ) -> Option<cf::Retained<UUID>> {
         unsafe { CFUUIDCreateFromString(alloc, uuid_str) }
     }
 
     #[inline]
-    pub fn to_cf_string<'a>(
-        &self,
-        alloc: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<'a, cf::String>> {
+    pub fn to_cf_string(&self, alloc: Option<&cf::Allocator>) -> Option<cf::Retained<cf::String>> {
         unsafe { CFUUIDCreateString(alloc, self) }
     }
 }
@@ -44,13 +41,13 @@ impl UUID {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFUUIDGetTypeID() -> cf::TypeId;
-    fn CFUUIDCreate<'a>(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<'a, UUID>>;
-    fn CFUUIDCreateFromString<'a>(
+    fn CFUUIDCreate(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<UUID>>;
+    fn CFUUIDCreateFromString(
         alloc: Option<&cf::Allocator>,
         uuid_str: &cf::String,
-    ) -> Option<cf::Retained<'a, UUID>>;
-    fn CFUUIDCreateString<'a>(
+    ) -> Option<cf::Retained<UUID>>;
+    fn CFUUIDCreateString(
         alloc: Option<&cf::Allocator>,
         uuid: &UUID,
-    ) -> Option<cf::Retained<'a, cf::String>>;
+    ) -> Option<cf::Retained<cf::String>>;
 }

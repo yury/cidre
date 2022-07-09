@@ -214,7 +214,7 @@ impl Quality {
     pub const HIGH: Self = Self(0x60);
     pub const MAX: Self = Self(0x7F);
 
-    pub fn to_cf_number<'a>(&self) -> cf::Retained<'a, cf::Number> {
+    pub fn to_cf_number(&self) -> cf::Retained<cf::Number> {
         cf::Number::from_i64(self.0 as _)
     }
 }

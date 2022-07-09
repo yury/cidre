@@ -22,26 +22,23 @@ define_obj_type!(Time(ns::Id));
 /// frequency) so client code wanting to do what should be straightforward time computations can at
 /// least not be cluttered by ugly multiplications and divisions by the host clock frequency.
 impl Time {
-    pub fn with_timestamp<'a>(
-        ts: &cat::AudioTimeStamp,
-        sample_rate: f64,
-    ) -> cf::Retained<'a, Time> {
+    pub fn with_timestamp(ts: &cat::AudioTimeStamp, sample_rate: f64) -> cf::Retained<Time> {
         unsafe { AVAudioTime_timeWithAudioTimeStamp_sampleRate(ts, sample_rate) }
     }
 
-    pub fn with_host_time<'a>(host_time: u64) -> cf::Retained<'a, Time> {
+    pub fn with_host_time(host_time: u64) -> cf::Retained<Time> {
         unsafe { AVAudioTime_timeWithHostTime(host_time) }
     }
 
-    pub fn with_host_time_sample_rate_at_rate<'a>(
+    pub fn with_host_time_sample_rate_at_rate(
         host_time: u64,
         sample_time: FramePosition,
         at_rate: f64,
-    ) -> cf::Retained<'a, Time> {
+    ) -> cf::Retained<Time> {
         unsafe { AVAudioTime_timeWithHostTime_sampleTime_atRate(host_time, sample_time, at_rate) }
     }
 
-    pub fn with_sample_time<'a>(time: FramePosition, at_rate: f64) -> cf::Retained<'a, Time> {
+    pub fn with_sample_time(time: FramePosition, at_rate: f64) -> cf::Retained<Time> {
         unsafe { AVAudioTime_timeWithSampleTime_atRate(time, at_rate) }
     }
 
@@ -91,30 +88,27 @@ impl Time {
     /// but no host time representation.AVAudioTime *time0 = [AVAudioTime timeWithSampleTime: 0.0 atRate: 44100.0];
     /// anchor has a valid host time representation and sample time representation.AVAudioTime *anchor = [player playerTimeForNodeTime: player.lastRenderTime];
     /// fill in valid host time representationAVAudioTime *fullTime0 = [time0 extrapolateTimeFromAnchor: anchor];
-    pub fn extrapolate_time_from_anchor<'a>(
-        &self,
-        anchor: &Time,
-    ) -> Option<cf::Retained<'a, Time>> {
+    pub fn extrapolate_time_from_anchor(&self, anchor: &Time) -> Option<cf::Retained<Time>> {
         unsafe { rsel_extrapolateTimeFromAnchor(self, anchor) }
     }
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAudioTime_timeWithAudioTimeStamp_sampleRate<'a>(
+    fn AVAudioTime_timeWithAudioTimeStamp_sampleRate(
         ts: &cat::AudioTimeStamp,
         sample_rate: f64,
-    ) -> cf::Retained<'a, Time>;
-    fn AVAudioTime_timeWithHostTime<'a>(host_time: u64) -> cf::Retained<'a, Time>;
-    fn AVAudioTime_timeWithSampleTime_atRate<'a>(
+    ) -> cf::Retained<Time>;
+    fn AVAudioTime_timeWithHostTime<'a>(host_time: u64) -> cf::Retained<Time>;
+    fn AVAudioTime_timeWithSampleTime_atRate(
         sample_time: FramePosition,
         sample_rate: f64,
-    ) -> cf::Retained<'a, Time>;
-    fn AVAudioTime_timeWithHostTime_sampleTime_atRate<'a>(
+    ) -> cf::Retained<Time>;
+    fn AVAudioTime_timeWithHostTime_sampleTime_atRate(
         host_time: u64,
         sample_time: FramePosition,
         at_rate: f64,
-    ) -> cf::Retained<'a, Time>;
+    ) -> cf::Retained<Time>;
 
     fn rsel_hostTime(time: &Time) -> u64;
     fn rsel_sampleRate(time: &Time) -> f64;
@@ -123,8 +117,5 @@ extern "C" {
     fn rsel_isHostTimeValid(time: &Time) -> bool;
     fn rsel_sampleTime(time: &Time) -> FramePosition;
     fn rsel_audioTimeStamp(time: &Time) -> cat::AudioTimeStamp;
-    fn rsel_extrapolateTimeFromAnchor<'a>(
-        time: &Time,
-        anchor: &Time,
-    ) -> Option<cf::Retained<'a, Time>>;
+    fn rsel_extrapolateTimeFromAnchor(time: &Time, anchor: &Time) -> Option<cf::Retained<Time>>;
 }

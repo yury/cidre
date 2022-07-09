@@ -61,7 +61,4 @@ fn main() {
     );
 
     session.commit_configuration()
-    
-    
-
 }

@@ -13,7 +13,7 @@ impl Input {
 impl DeviceInput {
     pub fn with_device(
         device: &av::CaptureDevice,
-    ) -> Result<cf::Retained<'static, Self>, cf::Retained<'static, cf::Error>> {
+    ) -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
         let mut error = None;
         unsafe {
             let res = AVCaptureDeviceInput_deviceInputWithDevice_error(device, &mut error);
@@ -34,7 +34,7 @@ extern "C" {
     fn AVCaptureDeviceInput_deviceInputWithDevice_error(
         device: &av::CaptureDevice,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<'static, DeviceInput>>;
+    ) -> Option<cf::Retained<DeviceInput>>;
 }
 
 impl Port {

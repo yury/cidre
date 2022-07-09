@@ -30,10 +30,10 @@ define_obj_type!(PCMBuffer(Buffer));
 /// Provides a number of methods useful for manipulating buffers of
 /// audio in PCM format.
 impl PCMBuffer {
-    pub fn with_format_and_frame_capacity<'a>(
+    pub fn with_format_and_frame_capacity(
         format: &Format,
         frame_capacity: FrameCount,
-    ) -> Retained<'a, Self> {
+    ) -> Retained<Self> {
         unsafe { AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(format, frame_capacity) }
     }
     /// The current number of valid sample frames in the buffer.
@@ -117,18 +117,18 @@ impl CompressedBuffer {
     /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
     ///
     /// This fails if the format is PCM or if the format has variable bytes per packet (for example, format.streamDescription->mBytesPerPacket == 0).
-    pub fn with_format_and_packet_capacity<'a>(
+    pub fn with_format_and_packet_capacity(
         format: &Format,
         packet_capacity: PacketCount,
-    ) -> Retained<'a, Self> {
+    ) -> Retained<Self> {
         unsafe { AVAudioCompressedBuffer_initWithFormat_packetCapacity(format, packet_capacity) }
     }
 
-    pub fn with_format_packet_capacity_and_maximum_packet_size<'a>(
+    pub fn with_format_packet_capacity_and_maximum_packet_size(
         format: &Format,
         packet_capacity: PacketCount,
         maximum_packet_size: isize,
-    ) -> Retained<'a, Self> {
+    ) -> Retained<Self> {
         unsafe {
             AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
                 format,
@@ -148,10 +148,10 @@ extern "C" {
     fn rsel_frameLength(id: &ns::Id) -> FrameCount;
     fn wsel_setFrameLength(id: &ns::Id, value: FrameCount);
 
-    fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity<'a>(
+    fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(
         format: &Format,
         frame_capacity: FrameCount,
-    ) -> Retained<'a, PCMBuffer>;
+    ) -> Retained<PCMBuffer>;
 
     fn rsel_stride(id: &ns::Id) -> usize;
 
@@ -170,13 +170,13 @@ extern "C" {
 
     fn rsel_data(id: &ns::Id) -> *const c_void;
 
-    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity<'a>(
+    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity(
         format: &Format,
         packet_capacity: PacketCount,
-    ) -> Retained<'a, CompressedBuffer>;
-    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize<'a>(
+    ) -> Retained<CompressedBuffer>;
+    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
         format: &Format,
         packet_capacity: PacketCount,
         maximum_packet_size: isize,
-    ) -> Retained<'a, CompressedBuffer>;
+    ) -> Retained<CompressedBuffer>;
 }

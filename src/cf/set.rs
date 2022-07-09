@@ -44,7 +44,7 @@ impl<T> SetOf<T>
 where
     T: Retain + Release,
 {
-    pub fn values<'a>(&self) -> Vec<Retained<'a, T>> {
+    pub fn values(&self) -> Vec<Retained<T>> {
         let len = self.len();
         let mut vec: Vec<Retained<T>> = Vec::with_capacity(len);
         unsafe {
@@ -80,7 +80,7 @@ impl<T> Retain for SetOf<T>
 where
     T: Release + Retain,
 {
-    fn retained<'a>(&self) -> Retained<'a, Self> {
+    fn retained(&self) -> Retained<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }

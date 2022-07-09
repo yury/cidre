@@ -79,7 +79,7 @@ impl Engine {
     /// let engine = av::audio::Engine::new();
     /// ```
     #[inline]
-    pub fn new<'a>() -> cf::Retained<'a, Engine> {
+    pub fn new() -> cf::Retained<Engine> {
         unsafe { AVAudioEngine_new() }
     }
 
@@ -159,7 +159,7 @@ impl Engine {
     }
 
     #[inline]
-    pub fn start<'a>(&self) -> Result<(), cf::Retained<'a, cf::Error>> {
+    pub fn start(&self) -> Result<(), cf::Retained<cf::Error>> {
         unsafe {
             let mut error = None;
             let res = rsel_startAndReturnError(self, &mut error);
@@ -204,7 +204,7 @@ impl Engine {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAudioEngine_new<'a>() -> cf::Retained<'a, Engine>;
+    fn AVAudioEngine_new() -> cf::Retained<Engine>;
 
     fn wsel_attachNode(id: &ns::Id, node: &Node);
     fn wsel_detachNode(id: &ns::Id, node: &Node);
@@ -225,10 +225,7 @@ extern "C" {
 
     fn wsel_prepare(id: &ns::Id);
 
-    fn rsel_startAndReturnError<'a>(
-        id: &ns::Id,
-        error: &mut Option<cf::Retained<'a, cf::Error>>,
-    ) -> bool;
+    fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<cf::Retained<cf::Error>>) -> bool;
     fn wsel_connect_toConnectionPoints_fromBus_format(
         id: &ns::Id,
         node: &Node,

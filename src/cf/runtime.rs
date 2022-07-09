@@ -11,28 +11,28 @@ pub trait Release {
 }
 
 pub trait Retain: Sized + Release {
-    fn retained<'a>(&self) -> Retained<'a, Self>;
+    fn retained(&self) -> Retained<Self>;
 }
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Retained<'a, T: Release>(&'a mut T);
+pub struct Retained<T: Release + 'static>(&'static mut T);
 
-impl<'a, T: Retain> Retained<'a, T> {
+impl<T: Retain> Retained<T> {
     #[inline]
     pub fn retained(&self) -> Self {
         self.0.retained()
     }
 }
 
-impl<'a, T: Release> Drop for Retained<'a, T> {
+impl<T: Release> Drop for Retained<T> {
     #[inline]
     fn drop(&mut self) {
         unsafe { self.0.release() }
     }
 }
 
-impl<'a, T: Release> Deref for Retained<'a, T> {
+impl<T: Release> Deref for Retained<T> {
     type Target = T;
 
     #[inline]
@@ -41,7 +41,7 @@ impl<'a, T: Release> Deref for Retained<'a, T> {
     }
 }
 
-impl<'a, T: Release> DerefMut for Retained<'a, T> {
+impl<T: Release> DerefMut for Retained<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0
@@ -59,7 +59,7 @@ impl<'a, T: Release> DerefMut for Retained<'a, T> {
 ///
 /// assert!(f.equal(&n));
 /// ```
-impl<'a, T: Retain> Clone for Retained<'a, T> {
+impl<T: Retain> Clone for Retained<T> {
     #[inline]
     fn clone(&self) -> Self {
         self.retained()
@@ -72,7 +72,7 @@ pub struct Type(c_void);
 
 impl Type {
     #[inline]
-    pub unsafe fn retain<'a, T: Release>(cf: &Type) -> Retained<'a, T> {
+    pub unsafe fn retain<T: Release>(cf: &Type) -> Retained<T> {
         transmute(CFRetain(cf))
     }
 
@@ -94,7 +94,7 @@ impl Type {
 
 impl Retain for Type {
     #[inline]
-    fn retained<'a>(&self) -> Retained<'a, Self> {
+    fn retained<'a>(&self) -> Retained<Self> {
         unsafe { Type::retain(self) }
     }
 }
@@ -138,14 +138,14 @@ macro_rules! define_cf_type {
 
         impl crate::cf::runtime::Retain for $NewType {
             #[inline]
-            fn retained<'a>(&self) -> crate::cf::runtime::Retained<'a, Self> {
+            fn retained(&self) -> crate::cf::runtime::Retained<Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained<'a>(&self) -> crate::cf::runtime::Retained<'a, Self> {
+            pub fn retained(&self) -> crate::cf::runtime::Retained<Self> {
                 unsafe { crate::cf::runtime::Type::retain(self) }
             }
         }

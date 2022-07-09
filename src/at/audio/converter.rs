@@ -349,10 +349,10 @@ pub type ComplexInputDataProc<const L: usize, const N: usize, D> = extern "C" fn
 ) -> os::Status;
 
 impl Converter {
-    pub unsafe fn new<'a>(
+    pub unsafe fn new(
         in_source_format: &audio::StreamBasicDescription,
         in_destination_format: &audio::StreamBasicDescription,
-        out_audio_converer: &mut Option<cf::Retained<'a, Converter>>,
+        out_audio_converer: &mut Option<cf::Retained<Converter>>,
     ) -> os::Status {
         AudioConverterNew(in_source_format, in_destination_format, out_audio_converer)
     }
@@ -360,7 +360,7 @@ impl Converter {
     pub fn with_formats<'a>(
         source_fmt: &audio::StreamBasicDescription,
         dest_fmt: &audio::StreamBasicDescription,
-    ) -> Result<cf::Retained<'a, Converter>, os::Status> {
+    ) -> Result<cf::Retained<Converter>, os::Status> {
         unsafe {
             let mut out_converter = None;
             Self::new(source_fmt, dest_fmt, &mut out_converter).to_result(out_converter)
@@ -629,10 +629,10 @@ pub struct PropertyInfo {
 
 #[link(name = "AudioToolbox", kind = "framework")]
 extern "C" {
-    fn AudioConverterNew<'a>(
+    fn AudioConverterNew(
         in_source_format: &audio::StreamBasicDescription,
         in_destination_format: &audio::StreamBasicDescription,
-        out_audio_converer: &mut Option<cf::Retained<'a, Converter>>,
+        out_audio_converer: &mut Option<cf::Retained<Converter>>,
     ) -> os::Status;
 
     fn AudioConverterReset(converter: &Converter) -> os::Status;

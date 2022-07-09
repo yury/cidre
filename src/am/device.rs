@@ -21,7 +21,7 @@ impl Device {
         unsafe { AMDeviceGetConnectionID(self) }
     }
 
-    pub fn identifier<'a>(&self) -> Retained<'a, cf::String> {
+    pub fn identifier(&self) -> Retained<cf::String> {
         unsafe { AMDeviceCopyDeviceIdentifier(self) }
     }
 
@@ -165,11 +165,11 @@ impl<'a> Connected<'a> {
      * Possible values for domain:
      * com.apple.mobile.battery
      */
-    pub unsafe fn copy_value<'b>(
+    pub unsafe fn copy_value(
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Option<Retained<'b, cf::Type>> {
+    ) -> Option<Retained<cf::Type>> {
         AMDeviceCopyValue(self.0, domain, key)
     }
 
@@ -189,12 +189,12 @@ impl<'a> Connected<'a> {
     /// Returns kAMDInvalidArgumentError if device is not a valid device ref, or if domain or key arguments are
     /// non-NULL and not string.
     ///
-    pub unsafe fn copy_value_with_error<'b>(
+    pub unsafe fn copy_value_with_error(
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
         error_out: &mut Error,
-    ) -> Option<cf::Retained<'b, cf::PropertyList>> {
+    ) -> Option<cf::Retained<cf::PropertyList>> {
         AMDeviceCopyValueWithError(self, domain, key, error_out)
     }
 
@@ -214,51 +214,51 @@ impl<'a> Connected<'a> {
         }
     }
 
-    pub fn domain_value<'b>(&self, domain: &cf::String) -> Option<Retained<'b, cf::Type>> {
+    pub fn domain_value(&self, domain: &cf::String) -> Option<Retained<cf::Type>> {
         unsafe { self.copy_value(Some(domain), None) }
     }
 
-    pub fn value<'b>(&self, key: &cf::String) -> Option<Retained<'b, cf::Type>> {
+    pub fn value<'b>(&self, key: &cf::String) -> Option<Retained<cf::Type>> {
         unsafe { self.copy_value(None, Some(key)) }
     }
 
     #[inline]
-    pub fn name<'b>(&self) -> Retained<'b, cf::String> {
+    pub fn name<'b>(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("DeviceName");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn cpu_arch<'b>(&self) -> Retained<'b, cf::String> {
+    pub fn cpu_arch<'b>(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("CPUArchitecture");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn hardware_model<'b>(&self) -> Retained<'b, cf::String> {
+    pub fn hardware_model<'b>(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_name<'b>(&self) -> Retained<'b, cf::String> {
+    pub fn product_name<'b>(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_type<'b>(&self) -> Retained<'b, cf::String> {
+    pub fn product_type<'b>(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("ProductType");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_version<'b>(&self) -> Retained<'b, cf::String> {
+    pub fn product_version<'b>(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("ProductVersion");
         let v = self.value(&key);
         unsafe { transmute(v) }
@@ -332,10 +332,10 @@ impl<'a> Session<'a> {
     /// This is on by default.
     ///
     /// On success, the AMDServiceConnection returned in service_out must be CFRelease()'d by the caller.
-    pub fn secure_start_service<'b>(
+    pub fn secure_start_service(
         &self,
         name: &cf::String,
-    ) -> Result<Retained<'b, ServiceConnection>, Error> {
+    ) -> Result<Retained<ServiceConnection>, Error> {
         unsafe {
             let mut service = None;
             let foo: *mut c_void = std::ptr::null_mut();
@@ -343,12 +343,12 @@ impl<'a> Session<'a> {
         }
     }
 
-    pub fn start_debug_server<'b>(&self) -> Result<Retained<'b, ServiceConnection>, Error> {
+    pub fn start_debug_server(&self) -> Result<Retained<ServiceConnection>, Error> {
         let name = cf::String::from_str_no_copy("com.apple.debugserver.DVTSecureSocketProxy");
         self.secure_start_service(&name)
     }
 
-    pub fn battery_level<'b>(&self) -> Option<cf::Retained<'b, cf::Number>> {
+    pub fn battery_level(&self) -> Option<cf::Retained<cf::Number>> {
         let domain: cf::Retained<_> = "com.apple.mobile.battery".into();
         let key: cf::Retained<_> = "BatteryCurrentCapacity".into();
         unsafe { transmute(self.copy_value(Some(&domain), Some(&key))) }
@@ -373,12 +373,12 @@ impl<'a> Deref for Session<'a> {
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
     fn AMDeviceGetConnectionID(device: &Device) -> u32;
-    fn AMDeviceCopyDeviceIdentifier<'a>(device: &Device) -> Retained<'a, cf::String>;
-    fn AMDeviceCopyValue<'a>(
+    fn AMDeviceCopyDeviceIdentifier(device: &Device) -> Retained<cf::String>;
+    fn AMDeviceCopyValue(
         device: &Device,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Option<Retained<'a, cf::Type>>;
+    ) -> Option<Retained<cf::Type>>;
     fn AMDeviceConnect(device: &Device) -> Error;
     fn AMDeviceDisconnect(device: &Device) -> os::Status;
     fn AMDeviceIsPaired(device: &Device) -> u32;
@@ -406,19 +406,19 @@ extern "C" {
 
     fn AMDeviceGetInterfaceType(device: &Device) -> InterfaceConnectionType;
 
-    fn AMDeviceSecureStartService<'a>(
+    fn AMDeviceSecureStartService(
         device: &Device,
         service_name: &cf::String,
         ssl: *mut c_void,
-        service: &mut Option<Retained<'a, ServiceConnection>>,
+        service: &mut Option<Retained<ServiceConnection>>,
     ) -> Error;
 
-    fn AMDeviceCopyValueWithError<'a>(
+    fn AMDeviceCopyValueWithError(
         device: &Device,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
         error_out: &mut Error,
-    ) -> Option<cf::Retained<'a, cf::PropertyList>>;
+    ) -> Option<cf::Retained<cf::PropertyList>>;
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }

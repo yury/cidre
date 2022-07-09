@@ -17,10 +17,10 @@ impl Date {
     }
 
     #[inline]
-    pub fn create<'a>(
+    pub fn create(
         allocator: Option<&cf::Allocator>,
         at: AbsoluteTime,
-    ) -> Option<cf::Retained<'a, Date>> {
+    ) -> Option<cf::Retained<Date>> {
         unsafe { CFDateCreate(allocator, at) }
     }
 
@@ -45,10 +45,10 @@ extern "C" {
     fn CFAbsoluteTimeGetCurrent() -> AbsoluteTime;
     fn CFDateGetTypeID() -> cf::TypeId;
 
-    fn CFDateCreate<'a>(
+    fn CFDateCreate(
         allocator: Option<&cf::Allocator>,
         at: AbsoluteTime,
-    ) -> Option<cf::Retained<'a, Date>>;
+    ) -> Option<cf::Retained<Date>>;
     fn CFDateGetAbsoluteTime(the_date: &Date) -> AbsoluteTime;
     fn CFDateGetTimeIntervalSinceDate(the_date: &Date, other_date: &Date) -> TimeInterval;
 

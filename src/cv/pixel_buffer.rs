@@ -56,12 +56,12 @@ impl PixelBuffer {
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     ///
     /// ```
-    pub fn new<'a>(
+    pub fn new(
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormatType,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<cf::Retained<'a, PixelBuffer>, cv::Return> {
+    ) -> Result<cf::Retained<PixelBuffer>, cv::Return> {
         let mut pixel_buffer_out = None;
 
         let r = Self::create(
@@ -164,7 +164,7 @@ impl PixelFormatType {
         Self(number.to_i32().unwrap_or(0) as u32)
     }
 
-    pub fn to_description<'a>(&self) -> Option<cf::Retained<'a, cf::Dictionary>> {
+    pub fn to_description(&self) -> Option<cf::Retained<cf::Dictionary>> {
         cv::pixel_format_description_create(*self)
     }
 }

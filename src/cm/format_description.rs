@@ -105,11 +105,11 @@ impl FormatDescription {
     ///     None
     /// ).unwrap();
     /// ```
-    pub fn new<'a>(
+    pub fn new(
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
-    ) -> Result<Retained<'a, Self>, os::Status> {
+    ) -> Result<Retained<Self>, os::Status> {
         let mut format_desc = None;
         let res = Self::create(
             None,
@@ -130,12 +130,12 @@ impl VideoFormatDescription {
     ///
     /// let desc = cm::VideoFormatDescription::video(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
     /// ```
-    pub fn video<'a>(
+    pub fn video(
         codec_type: VideoCodecType,
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
-    ) -> Result<Retained<'a, Self>, os::Status> {
+    ) -> Result<Retained<Self>, os::Status> {
         let mut format_desc = None;
         let res = Self::create_video(
             None,

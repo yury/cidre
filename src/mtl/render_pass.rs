@@ -102,7 +102,7 @@ define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
 
 impl Descriptor {
     #[inline]
-    pub fn new<'new>() -> Retained<'new, Descriptor> {
+    pub fn new() -> Retained<Descriptor> {
         unsafe { MTLRenderPassDescriptor_new() }
     }
 
@@ -199,7 +199,7 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPassDescriptor_new<'new>() -> Retained<'new, Descriptor>;
+    fn MTLRenderPassDescriptor_new() -> Retained<Descriptor>;
     fn MTLRenderPassDescriptor_renderPassDescriptor<'autoreleased>() -> &'autoreleased Descriptor;
 
     fn rsel_colorAttachments(id: &Id) -> &ColorAttachmentDescriptorArray;

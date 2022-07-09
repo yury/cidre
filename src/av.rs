@@ -14,6 +14,7 @@ pub use capture::DataDroppedReason as CaptureDataDroppedReason;
 pub use capture::Device as CaptureDevice;
 pub use capture::DeviceConfigurationLockGuard as CaptureDeviceConfigurationLockGuard;
 pub use capture::DeviceFormat as CaptureDeviceFormat;
+pub use capture::DeviceInput as CaptureDeviceInput;
 pub use capture::DevicePosition as CaptureDevicePosition;
 pub use capture::DeviceType as CaptureDeviceType;
 pub use capture::DiscoverySession as CaptureDeviceDiscoverySession;
@@ -30,7 +31,6 @@ pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::TorchMode as CaptureTouchMode;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
-pub use capture::DeviceInput as CaptureDeviceInput;
 
 #[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;

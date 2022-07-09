@@ -7,8 +7,7 @@ use super::{Connected, Device, Error, Session};
 /// Image Mount Callback
 /// Ownership of the status dictionary *status* passes to the callback function. The dict MUST BE
 /// explicitly released or else it will leak.
-pub type MountCallback<T> =
-    extern "C" fn(status: cf::Retained<'static, cf::Dictionary>, context: *mut T);
+pub type MountCallback<T> = extern "C" fn(status: cf::Retained<cf::Dictionary>, context: *mut T);
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -81,10 +80,7 @@ impl<'a> Session<'a> {
         image_path: &cf::String,
         options: &cf::Dictionary,
     ) -> Result<(), Error> {
-        extern "C" fn mount_cb(
-            status: cf::Retained<'static, cf::Dictionary>,
-            _context: *mut c_void,
-        ) {
+        extern "C" fn mount_cb(status: cf::Retained<cf::Dictionary>, _context: *mut c_void) {
             status.show();
         }
         unsafe {
@@ -143,22 +139,22 @@ pub mod image_type {
     use crate::cf;
 
     #[inline]
-    pub fn key() -> cf::Retained<'static, cf::String> {
+    pub fn key() -> cf::Retained<cf::String> {
         "ImageType".into()
     }
 
     #[inline]
-    pub fn developer() -> cf::Retained<'static, cf::String> {
+    pub fn developer() -> cf::Retained<cf::String> {
         "Developer".into()
     }
 
     #[inline]
-    pub fn debug() -> cf::Retained<'static, cf::String> {
+    pub fn debug() -> cf::Retained<cf::String> {
         "Debug".into()
     }
 
     #[inline]
-    pub fn factory() -> cf::Retained<'static, cf::String> {
+    pub fn factory() -> cf::Retained<cf::String> {
         "Factory".into()
     }
 }
@@ -167,7 +163,7 @@ pub mod signature {
     use crate::cf;
 
     #[inline]
-    pub fn key() -> cf::Retained<'static, cf::String> {
+    pub fn key() -> cf::Retained<cf::String> {
         "ImageSignature".into()
     }
 }
@@ -177,17 +173,17 @@ pub mod relay_type {
     use crate::cf;
 
     #[inline]
-    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+    pub fn key() -> cf::Retained<cf::String> {
         "RelayType".into()
     }
 
     #[inline]
-    pub fn file_descriptor<'a>() -> cf::Retained<'a, cf::String> {
+    pub fn file_descriptor() -> cf::Retained<cf::String> {
         "RelayTypeFileDescriptor".into()
     }
 
     #[inline]
-    pub fn data<'a>() -> cf::Retained<'a, cf::String> {
+    pub fn data() -> cf::Retained<cf::String> {
         "RelayTypeData".into()
     }
 }
@@ -196,7 +192,7 @@ pub mod location {
     use crate::cf;
 
     #[inline]
-    pub fn key<'a>() -> cf::Retained<'a, cf::String> {
+    pub fn key() -> cf::Retained<cf::String> {
         "RelayLocation".into()
     }
 }

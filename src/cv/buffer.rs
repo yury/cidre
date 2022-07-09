@@ -56,19 +56,19 @@ impl Buffer {
     }
 
     #[inline]
-    pub fn copy_attachments<'a>(
+    pub fn copy_attachments(
         &self,
         attachment_mode: AttachmentMode,
-    ) -> Option<Retained<'a, cf::Dictionary>> {
+    ) -> Option<Retained<cf::Dictionary>> {
         unsafe { CVBufferCopyAttachments(self, attachment_mode) }
     }
 
     #[inline]
-    pub fn copy_attachment<'a>(
+    pub fn copy_attachment(
         &self,
         key: &cf::String,
         attachment_mode: AttachmentMode,
-    ) -> Option<Retained<'a, Type>> {
+    ) -> Option<Retained<Type>> {
         unsafe { CVBufferCopyAttachment(self, key, attachment_mode) }
     }
 
@@ -101,15 +101,15 @@ extern "C" {
         attachment_mode: AttachmentMode,
     );
     fn CVBufferPropagateAttachments(source_buffer: &Buffer, destination_buffer: &mut Buffer);
-    fn CVBufferCopyAttachments<'a>(
+    fn CVBufferCopyAttachments(
         buffer: &Buffer,
         attachment_mode: AttachmentMode,
-    ) -> Option<Retained<'a, cf::Dictionary>>;
-    fn CVBufferCopyAttachment<'a>(
+    ) -> Option<Retained<cf::Dictionary>>;
+    fn CVBufferCopyAttachment(
         buffer: &Buffer,
         key: &cf::String,
         attachment_mode: AttachmentMode,
-    ) -> Option<Retained<'a, Type>>;
+    ) -> Option<Retained<Type>>;
     fn CVBufferHasAttachment(buffer: &Buffer, key: &cf::String) -> bool;
     fn CVBufferGetAttachment<'a>(
         buffer: &'a Buffer,

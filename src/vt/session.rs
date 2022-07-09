@@ -7,11 +7,11 @@ define_cf_type!(Session(cf::Type));
 
 impl Session {
     #[inline]
-    pub fn property<'a>(
+    pub fn property(
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<'a, cf::Type>> {
+    ) -> Option<cf::Retained<cf::Type>> {
         unsafe { VTSessionCopyProperty(self, key, allocator) }
     }
 
@@ -43,14 +43,14 @@ impl Session {
         unsafe { self.set_property(key, value).result() }
     }
 
-    pub unsafe fn copy_supported_property_dictionary<'a>(
+    pub unsafe fn copy_supported_property_dictionary(
         &self,
-        supported_property_dictionary_out: &mut Option<Retained<'a, cf::Dictionary>>,
+        supported_property_dictionary_out: &mut Option<Retained<cf::Dictionary>>,
     ) -> os::Status {
         VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
     }
 
-    pub fn supported_properties<'a>(&self) -> Result<Retained<'a, cf::Dictionary>, os::Status> {
+    pub fn supported_properties(&self) -> Result<Retained<cf::Dictionary>, os::Status> {
         unsafe {
             let mut supported_property_dictionary_out = None;
             self.copy_supported_property_dictionary(&mut supported_property_dictionary_out)
@@ -67,19 +67,19 @@ extern "C" {
         property_value: Option<&cf::Type>,
     ) -> os::Status;
 
-    fn VTSessionCopyProperty<'a>(
+    fn VTSessionCopyProperty(
         session: &Session,
         property_key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<'a, cf::Type>>;
+    ) -> Option<cf::Retained<cf::Type>>;
 
     fn VTSessionSetProperties(
         session: &mut Session,
         property_dictionary: &cf::Dictionary,
     ) -> os::Status;
 
-    fn VTSessionCopySupportedPropertyDictionary<'a>(
+    fn VTSessionCopySupportedPropertyDictionary(
         session: &Session,
-        supported_property_dictionary_out: &mut Option<Retained<'a, cf::Dictionary>>,
+        supported_property_dictionary_out: &mut Option<Retained<cf::Dictionary>>,
     ) -> os::Status;
 }

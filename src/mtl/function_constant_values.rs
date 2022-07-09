@@ -17,7 +17,7 @@ impl FunctionConstantValues {
     /// fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
     /// fcv.reset();
     /// ```
-    pub fn new<'a>() -> Retained<'a, FunctionConstantValues> {
+    pub fn new() -> Retained<FunctionConstantValues> {
         unsafe { MTLFunctionConstantValues_new() }
     }
 
@@ -59,7 +59,7 @@ impl FunctionConstantValues {
 }
 
 extern "C" {
-    fn MTLFunctionConstantValues_new<'a>() -> Retained<'a, FunctionConstantValues>;
+    fn MTLFunctionConstantValues_new() -> Retained<FunctionConstantValues>;
 
     fn wsel_setConstantValue_type_atIndex(
         id: &FunctionConstantValues,

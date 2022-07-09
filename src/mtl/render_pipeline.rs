@@ -246,7 +246,7 @@ impl Descriptor {
     ///
     /// desc.reset();
     /// ```
-    pub fn new<'create>() -> Retained<'create, Descriptor> {
+    pub fn new() -> Retained<Descriptor> {
         unsafe { MTLRenderPipelineDescriptor_new() }
     }
     pub fn vertex_function(&self) -> Option<&Function> {
@@ -267,7 +267,7 @@ impl Descriptor {
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPipelineDescriptor_new<'create>() -> Retained<'create, Descriptor>;
+    fn MTLRenderPipelineDescriptor_new() -> Retained<Descriptor>;
     fn rsel_vertexFunction(id: &Id) -> Option<&Function>;
     fn wsel_setVertexFunction(id: &mut Id, value: Option<&Function>);
 

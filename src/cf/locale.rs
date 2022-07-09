@@ -25,7 +25,7 @@ impl Locale {
     ///
     /// let id = loc.get_identifier();
     /// ```
-    pub fn current<'copy>() -> cf::Retained<'copy, Locale> {
+    pub fn current() -> cf::Retained<Locale> {
         unsafe { CFLocaleCopyCurrent() }
     }
 
@@ -36,8 +36,8 @@ impl Locale {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    fn CFLocaleGetSystem<'get>() -> &'get Locale;
+    fn CFLocaleGetSystem() -> &'static Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Identifier;
-    fn CFLocaleCopyCurrent<'copy>() -> cf::Retained<'copy, Locale>;
+    fn CFLocaleCopyCurrent() -> cf::Retained<Locale>;
 
 }

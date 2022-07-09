@@ -18,32 +18,32 @@ impl URL {
     }
 
     #[inline]
-    pub fn create_with_bytes<'a>(
+    pub fn create_with_bytes(
         allocator: Option<&cf::Allocator>,
         url_bytes: *const u8,
         length: cf::Index,
         encoding: cf::StringEncoding,
         base_url: Option<&URL>,
-    ) -> Option<Retained<'a, URL>> {
+    ) -> Option<Retained<URL>> {
         unsafe { CFURLCreateWithBytes(allocator, url_bytes, length, encoding, base_url) }
     }
 
     #[inline]
-    pub fn create_with_string<'a>(
+    pub fn create_with_string(
         allocator: Option<&cf::Allocator>,
         url_string: &cf::String,
         base_url: Option<&URL>,
-    ) -> Option<Retained<'a, URL>> {
+    ) -> Option<Retained<URL>> {
         unsafe { CFURLCreateWithString(allocator, url_string, base_url) }
     }
 
     #[inline]
-    pub fn create_with_file_system_path<'a>(
+    pub fn create_with_file_system_path(
         allocator: Option<&cf::Allocator>,
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,
-    ) -> Option<Retained<'a, URL>> {
+    ) -> Option<Retained<URL>> {
         unsafe { CFURLCreateWithFileSystemPath(allocator, file_path, path_style, is_directory) }
     }
 
@@ -56,7 +56,7 @@ impl URL {
     ///
     /// ```
     #[inline]
-    pub fn from_str<'a>(str: &str) -> Option<Retained<'a, URL>> {
+    pub fn from_str(str: &str) -> Option<Retained<URL>> {
         Self::create_with_bytes(
             None,
             str.as_ptr(),
@@ -76,7 +76,7 @@ impl URL {
     ///
     /// ```
     #[inline]
-    pub fn from_string<'a>(str: &cf::String) -> Option<Retained<'a, URL>> {
+    pub fn from_string(str: &cf::String) -> Option<Retained<URL>> {
         Self::create_with_string(None, str, None)
     }
 
@@ -116,7 +116,7 @@ impl URL {
     /// assert!(https.equal(&scheme));
     /// ```
     #[inline]
-    pub fn copy_scheme<'a>(&self) -> Option<Retained<'a, cf::String>> {
+    pub fn copy_scheme(&self) -> Option<Retained<cf::String>> {
         unsafe { CFURLCopyScheme(self) }
     }
 
@@ -141,31 +141,31 @@ impl URL {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFURLGetTypeID() -> cf::TypeId;
-    fn CFURLCreateWithBytes<'a>(
+    fn CFURLCreateWithBytes(
         allocator: Option<&cf::Allocator>,
         url_bytes: *const u8,
         length: cf::Index,
         encoding: cf::StringEncoding,
         base_url: Option<&URL>,
-    ) -> Option<Retained<'a, URL>>;
-    fn CFURLCreateWithString<'a>(
+    ) -> Option<Retained<URL>>;
+    fn CFURLCreateWithString(
         allocator: Option<&cf::Allocator>,
         url_string: &cf::String,
         base_url: Option<&URL>,
-    ) -> Option<Retained<'a, URL>>;
+    ) -> Option<Retained<URL>>;
 
-    fn CFURLCreateWithFileSystemPath<'a>(
+    fn CFURLCreateWithFileSystemPath(
         allocator: Option<&cf::Allocator>,
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,
-    ) -> Option<Retained<'a, URL>>;
+    ) -> Option<Retained<URL>>;
 
     fn CFURLGetString(anURL: &URL) -> &cf::String;
     fn CFURLGetBaseURL(anURL: &URL) -> Option<&URL>;
 
     fn CFURLCanBeDecomposed(anURL: &URL) -> bool;
-    fn CFURLCopyScheme<'a>(anURL: &URL) -> Option<Retained<'a, cf::String>>;
+    fn CFURLCopyScheme(anURL: &URL) -> Option<Retained<cf::String>>;
 
     fn CFURLGetPortNumber(anURL: &URL) -> i32;
 }

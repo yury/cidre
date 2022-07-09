@@ -78,7 +78,7 @@ pub struct NotificationInfo {
 }
 
 pub enum SafeInfo<'a> {
-    Attached(Retained<'a, Device>),
+    Attached(Retained<Device>),
     Detached(&'a Device),
     NotificationStopped,
     Paired(&'a Device),
@@ -127,22 +127,22 @@ impl Device {
     ///
     /// To deal with devices dynamically coming and going, use AMDeviceNotificationSubscribe() instead.
     ///
-    pub fn list<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<Device>>> {
+    pub fn list() -> Option<cf::Retained<cf::ArrayOf<Device>>> {
         unsafe { AMDCreateDeviceList() }
     }
 
     /// use am::DeviceQueryBuilder
-    pub unsafe fn copy_array_of_devices_matching_query<'a>(
+    pub unsafe fn copy_array_of_devices_matching_query(
         note: Option<&Notification>,
         query: &cf::Dictionary,
-        out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>,
+        out_array: *mut Option<Retained<cf::ArrayOf<Device>>>,
     ) -> Error {
         AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array)
     }
 }
 
 pub struct QueryBuilder {
-    query: Retained<'static, cf::MutableDictionary>,
+    query: Retained<cf::MutableDictionary>,
 }
 
 impl QueryBuilder {
@@ -194,7 +194,7 @@ impl QueryBuilder {
     pub fn matching_list<'a>(
         &self,
         note: Option<&Notification>,
-    ) -> Result<Retained<'a, cf::ArrayOf<Device>>, Error> {
+    ) -> Result<Retained<cf::ArrayOf<Device>>, Error> {
         let mut out_array = None;
         unsafe {
             let query = self.query.copy();
@@ -206,21 +206,21 @@ impl QueryBuilder {
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
-    fn AMDCreateDeviceList<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<Device>>>;
+    fn AMDCreateDeviceList() -> Option<cf::Retained<cf::ArrayOf<Device>>>;
     fn AMDCopyArrayOfDevicesMatchingQuery<'a>(
         note: Option<&Notification>,
         query: &cf::Dictionary,
-        out_array: *mut Option<Retained<'a, cf::ArrayOf<Device>>>,
+        out_array: *mut Option<Retained<cf::ArrayOf<Device>>>,
     ) -> Error;
 }
 
 impl Notification {
-    pub unsafe fn subscribe<'a, T>(
+    pub unsafe fn subscribe<T>(
         callback: NotificationCallback<T>,
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut T,
-        ref_out: &mut Option<Retained<'a, Notification>>,
+        ref_out: &mut Option<Retained<Notification>>,
     ) -> Error {
         AMDeviceNotificationSubscribe(
             transmute(callback),
@@ -236,7 +236,7 @@ impl Notification {
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut T,
-    ) -> Result<SubscriptionGuard<'a>, Error> {
+    ) -> Result<SubscriptionGuard, Error> {
         let mut notification = None;
         unsafe {
             let res = Self::subscribe(
@@ -259,15 +259,15 @@ impl Notification {
     }
 }
 
-pub struct SubscriptionGuard<'a>(Option<Retained<'a, Notification>>);
+pub struct SubscriptionGuard(Option<Retained<Notification>>);
 
-impl<'a> SubscriptionGuard<'a> {
+impl SubscriptionGuard {
     pub fn note(&self) -> Option<&Notification> {
         self.0.as_deref()
     }
 }
 
-impl<'a> Drop for SubscriptionGuard<'a> {
+impl Drop for SubscriptionGuard {
     fn drop(&mut self) {
         // AMDeviceNotificationUnsubscribe decrease ref count.
         // So we need to do trick here
@@ -287,12 +287,12 @@ impl<'a> Drop for SubscriptionGuard<'a> {
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
-    fn AMDeviceNotificationSubscribe<'a>(
+    fn AMDeviceNotificationSubscribe(
         callback: NotificationCallback<c_void>,
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut c_void,
-        ref_out: &mut Option<Retained<'a, Notification>>,
+        ref_out: &mut Option<Retained<Notification>>,
     ) -> Error;
 
     fn AMDeviceNotificationUnsubscribe(notification: &Notification) -> Error;
@@ -305,25 +305,25 @@ pub mod matching {
 
         /// This key determines how the matching works. (Required)
         #[inline]
-        pub fn key() -> cf::Retained<'static, cf::String> {
+        pub fn key() -> cf::Retained<cf::String> {
             "MatchingMode".into()
         }
 
         /// If a device matches ANY of the criteria it will be part of the returned array.
         #[inline]
-        pub fn any_value() -> cf::Retained<'static, cf::String> {
+        pub fn any_value() -> cf::Retained<cf::String> {
             "MatchAny".into()
         }
 
         /// Only if a device matches ALL of the criteria will it be part of the returned array.
         #[inline]
-        pub fn all_value() -> cf::Retained<'static, cf::String> {
+        pub fn all_value() -> cf::Retained<cf::String> {
             "MatchAll".into()
         }
 
         /// Ignore all criteria, just return all devices.
         #[inline]
-        pub fn wildcard_value() -> cf::Retained<'static, cf::String> {
+        pub fn wildcard_value() -> cf::Retained<cf::String> {
             "MatchWildcard".into()
         }
     }
@@ -334,28 +334,28 @@ pub mod matching {
         /// Value is an array of CFStrings of device UDIDs, as returned
         /// by AMDeviceCopyDeviceIdentifier(). Case IN-sensitive.
         #[inline]
-        pub fn udid_key() -> cf::Retained<'static, cf::String> {
+        pub fn udid_key() -> cf::Retained<cf::String> {
             "MatchUDID".into()
         }
 
         /// Value must be either kAMDCriteriaUSBKey or kAMDCriteriaNetworkKey.
         #[inline]
-        pub fn connection_type_key() -> cf::Retained<'static, cf::String> {
+        pub fn connection_type_key() -> cf::Retained<cf::String> {
             "MatchConnectionType".into()
         }
 
         #[inline]
-        pub fn usb_value() -> cf::Retained<'static, cf::String> {
+        pub fn usb_value() -> cf::Retained<cf::String> {
             "MatchConnectionTypeUSB".into()
         }
 
         #[inline]
-        pub fn network_value() -> cf::Retained<'static, cf::String> {
+        pub fn network_value() -> cf::Retained<cf::String> {
             "MatchConnectionTypeNetwork".into()
         }
 
         #[inline]
-        pub fn paired_device_value() -> cf::Retained<'static, cf::String> {
+        pub fn paired_device_value() -> cf::Retained<cf::String> {
             "MatchConnectionTypePairedDevice".into()
         }
     }

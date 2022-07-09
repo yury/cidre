@@ -38,15 +38,15 @@ impl Error {
         unsafe { CFErrorGetCode(self) }
     }
 
-    pub fn copy_description<'a>(&self) -> Retained<'a, cf::String> {
+    pub fn copy_description(&self) -> Retained<cf::String> {
         unsafe { CFErrorCopyDescription(self) }
     }
 
-    pub fn copy_failure_reason<'a>(&self) -> Option<Retained<'a, cf::String>> {
+    pub fn copy_failure_reason(&self) -> Option<Retained<cf::String>> {
         unsafe { CFErrorCopyFailureReason(self) }
     }
 
-    pub fn copy_recovery_suggestion<'a>(&self) -> Option<Retained<'a, cf::String>> {
+    pub fn copy_recovery_suggestion(&self) -> Option<Retained<cf::String>> {
         unsafe { CFErrorCopyRecoverySuggestion(self) }
     }
 }
@@ -71,7 +71,7 @@ extern "C" {
 
     fn CFErrorGetDomain(err: &Error) -> &Domain;
     fn CFErrorGetCode(err: &Error) -> cf::Index;
-    fn CFErrorCopyDescription<'a>(err: &Error) -> Retained<'a, cf::String>;
-    fn CFErrorCopyFailureReason<'a>(err: &Error) -> Option<Retained<'a, cf::String>>;
-    fn CFErrorCopyRecoverySuggestion<'a>(err: &Error) -> Option<Retained<'a, cf::String>>;
+    fn CFErrorCopyDescription(err: &Error) -> Retained<cf::String>;
+    fn CFErrorCopyFailureReason(err: &Error) -> Option<Retained<cf::String>>;
+    fn CFErrorCopyRecoverySuggestion(err: &Error) -> Option<Retained<cf::String>>;
 }

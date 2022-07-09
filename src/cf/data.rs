@@ -9,11 +9,11 @@ impl Data {
         unsafe { CFDataGetTypeID() }
     }
 
-    pub fn create<'a>(
+    pub fn create(
         allocator: Option<&cf::Allocator>,
         bytes: *const u8,
         length: cf::Index,
-    ) -> Option<cf::Retained<'a, cf::Data>> {
+    ) -> Option<cf::Retained<cf::Data>> {
         unsafe { CFDataCreate(allocator, bytes, length) }
     }
 
@@ -33,16 +33,16 @@ impl Data {
     }
 
     #[inline]
-    pub unsafe fn create_mutable_copy<'a>(
+    pub unsafe fn create_mutable_copy(
         &self,
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-    ) -> Option<cf::Retained<'a, MutableData>> {
+    ) -> Option<cf::Retained<MutableData>> {
         CFDataCreateMutableCopy(allocator, capacity, self)
     }
 
     #[inline]
-    pub fn mutable_copy<'a>(&self, capacity: usize) -> cf::Retained<'a, MutableData> {
+    pub fn mutable_copy(&self, capacity: usize) -> cf::Retained<MutableData> {
         unsafe {
             self.create_mutable_copy(None, capacity as _)
                 .unwrap_unchecked()
@@ -52,15 +52,15 @@ impl Data {
 
 impl MutableData {
     #[inline]
-    pub fn create<'a>(
+    pub fn create(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-    ) -> Option<cf::Retained<'a, cf::MutableData>> {
+    ) -> Option<cf::Retained<cf::MutableData>> {
         unsafe { CFDataCreateMutable(allocator, capacity) }
     }
 
     #[inline]
-    pub fn with_capacity<'a>(capacity: usize) -> cf::Retained<'a, MutableData> {
+    pub fn with_capacity(capacity: usize) -> cf::Retained<MutableData> {
         unsafe { Self::create(None, capacity as _).unwrap_unchecked() }
     }
 
@@ -84,7 +84,7 @@ impl MutableData {
 /// assert_eq!(data.len(), 1);
 /// data.show();
 /// ```
-impl<'a> From<&[u8]> for cf::Retained<'a, Data> {
+impl<'a> From<&[u8]> for cf::Retained<Data> {
     fn from(bytes: &[u8]) -> Self {
         unsafe { Data::create(None, bytes.as_ptr(), bytes.len() as _).unwrap_unchecked() }
     }
@@ -93,20 +93,20 @@ impl<'a> From<&[u8]> for cf::Retained<'a, Data> {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFDataGetTypeID() -> cf::TypeId;
-    fn CFDataCreate<'a>(
+    fn CFDataCreate(
         allocator: Option<&cf::Allocator>,
         bytes: *const u8,
         length: cf::Index,
-    ) -> Option<cf::Retained<'a, cf::Data>>;
+    ) -> Option<cf::Retained<cf::Data>>;
     fn CFDataGetLength(data: &Data) -> cf::Index;
-    fn CFDataCreateMutable<'a>(
+    fn CFDataCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-    ) -> Option<cf::Retained<'a, cf::MutableData>>;
+    ) -> Option<cf::Retained<cf::MutableData>>;
     fn CFDataAppendBytes(data: &MutableData, bytes: *const u8, length: cf::Index);
-    fn CFDataCreateMutableCopy<'a>(
+    fn CFDataCreateMutableCopy(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
         data: &Data,
-    ) -> Option<cf::Retained<'a, MutableData>>;
+    ) -> Option<cf::Retained<MutableData>>;
 }

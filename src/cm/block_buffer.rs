@@ -51,11 +51,11 @@ impl BlockBuffer {
     /// assert!(b.data_len() == 0);
     /// ```
     #[inline]
-    pub fn create_empty<'a>(
+    pub fn create_empty(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
-    ) -> Result<Retained<'a, BlockBuffer>, os::Status> {
+    ) -> Result<Retained<BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
             CMBlockBufferCreateEmpty(
@@ -115,11 +115,11 @@ extern "C" {
     fn CMBlockBufferGetTypeID() -> TypeId;
     fn CMBlockBufferIsEmpty(the_buffer: &BlockBuffer) -> bool;
 
-    fn CMBlockBufferCreateEmpty<'a>(
+    fn CMBlockBufferCreateEmpty(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
-        block_buffer_out: &mut Option<Retained<'a, BlockBuffer>>,
+        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
     ) -> os::Status;
 
     fn CMBlockBufferGetDataLength(the_buffer: &BlockBuffer) -> usize;

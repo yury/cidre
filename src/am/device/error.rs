@@ -10,7 +10,7 @@ impl Error {
     }
 
     #[inline]
-    pub fn text<'a>(&self) -> Option<cf::Retained<'a, cf::String>> {
+    pub fn text(&self) -> Option<cf::Retained<cf::String>> {
         unsafe { AMDCopyErrorText(*self) }
     }
 
@@ -294,7 +294,7 @@ impl Debug for Error {
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
-    fn AMDCopyErrorText<'a>(error: Error) -> Option<cf::Retained<'a, cf::String>>;
+    fn AMDCopyErrorText(error: Error) -> Option<cf::Retained<cf::String>>;
 }
 
 #[cfg(test)]

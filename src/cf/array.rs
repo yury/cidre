@@ -8,8 +8,7 @@ use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull}
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescriptionCallBack =
-    extern "C" fn(value: *const c_void) -> Option<Retained<'static, String>>;
+pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
 pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 
 #[repr(C)]
@@ -36,7 +35,7 @@ pub struct ArrayOf<T>(Array, PhantomData<T>);
 
 impl<T> ArrayOf<T> {
     #[inline]
-    pub fn new<'a>() -> Option<Retained<'a, ArrayOf<T>>> {
+    pub fn new() -> Option<Retained<ArrayOf<T>>> {
         unsafe {
             let arr = Array::create(None, None, 0, Callbacks::default());
             transmute(arr)
@@ -44,7 +43,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn new_in<'a>(alloc: Option<&Allocator>) -> Option<Retained<'a, ArrayOf<T>>> {
+    pub fn new_in<'a>(alloc: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
         unsafe {
             let arr = Array::create(alloc, None, 0, Callbacks::default());
             transmute(arr)
@@ -62,7 +61,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn mutable_copy<'a>(&self) -> Option<Retained<'a, MutArrayOf<T>>> {
+    pub fn mutable_copy(&self) -> Option<Retained<MutArrayOf<T>>> {
         let copy = self.0.mutable_copy();
         unsafe { transmute(copy) }
     }
@@ -95,7 +94,7 @@ impl<T> Release for ArrayOf<T> {
 }
 
 impl<T> Retain for ArrayOf<T> {
-    fn retained<'a>(&self) -> Retained<'a, Self> {
+    fn retained(&self) -> Retained<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
@@ -138,21 +137,21 @@ pub struct MutArrayOf<T>(MutableArray, PhantomData<T>);
 
 impl<T> MutArrayOf<T> {
     #[inline]
-    pub fn new<'a>() -> Option<Retained<'a, MutArrayOf<T>>> {
+    pub fn new<'a>() -> Option<Retained<MutArrayOf<T>>> {
         Self::with_capacity(0)
     }
 
     #[inline]
-    pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<'a, MutArrayOf<T>>> {
+    pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<MutArrayOf<T>>> {
         let arr = MutableArray::create(None, capacity as _, Callbacks::default());
         unsafe { transmute(arr) }
     }
 
     #[inline]
-    pub fn with_capacity_in<'a>(
+    pub fn with_capacity_in(
         capacity: usize,
         alloc: Option<&Allocator>,
-    ) -> Option<Retained<'a, MutArrayOf<T>>> {
+    ) -> Option<Retained<MutArrayOf<T>>> {
         let arr = MutableArray::create(alloc, capacity as _, Callbacks::default());
         unsafe { transmute(arr) }
     }
@@ -200,7 +199,7 @@ impl<T> Release for MutArrayOf<T> {
 }
 
 impl<T> Retain for MutArrayOf<T> {
-    fn retained<'a>(&self) -> Retained<'a, Self> {
+    fn retained(&self) -> Retained<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
@@ -262,7 +261,7 @@ impl Array {
     ///
     /// ```
     #[inline]
-    pub fn create_copy<'a>(&self, allocator: Option<&Allocator>) -> Option<Retained<'a, Array>> {
+    pub fn create_copy(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
@@ -273,7 +272,7 @@ impl Array {
     /// let arr2 = arr1.copy().expect("copy");
     /// ```
     #[inline]
-    pub fn copy<'a>(&self) -> Option<Retained<'a, Array>> {
+    pub fn copy<'a>(&self) -> Option<Retained<Array>> {
         Self::create_copy(self, None)
     }
 
@@ -283,12 +282,12 @@ impl Array {
         values: Option<NonNull<*const c_void>>,
         num_values: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<'a, Array>> {
+    ) -> Option<Retained<Array>> {
         CFArrayCreate(allocator, values, num_values, callbacks)
     }
 
     #[inline]
-    pub fn new<'a>() -> Option<Retained<'a, Array>> {
+    pub fn new() -> Option<Retained<Array>> {
         unsafe { Self::create(None, None, 0, Callbacks::default()) }
     }
 
@@ -300,7 +299,7 @@ impl Array {
     /// assert_eq!(3, arr.len());
     /// ```
     #[inline]
-    pub fn from_type_refs<'a, const N: usize>(values: &[&Type; N]) -> Option<Retained<'a, Array>> {
+    pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<Retained<Array>> {
         let vals = unsafe {
             let ptr = values.as_ptr() as *const *const c_void as _;
             NonNull::new_unchecked(ptr)
@@ -309,7 +308,7 @@ impl Array {
     }
 
     #[inline]
-    pub fn from_slice<'a, T>(values: &[&T]) -> Option<Retained<'a, Array>>
+    pub fn from_slice<T>(values: &[&T]) -> Option<Retained<Array>>
     where
         T: Retain + Release,
     {
@@ -321,7 +320,7 @@ impl Array {
     }
 
     #[inline]
-    pub fn from_copyable<'a, const N: usize, T>(values: &[T; N]) -> Option<Retained<'a, Array>>
+    pub fn from_copyable<const N: usize, T>(values: &[T; N]) -> Option<Retained<Array>>
     where
         T: Copy,
     {
@@ -348,24 +347,21 @@ impl Array {
     ///
     /// ```
     #[inline]
-    pub fn create_mutable_copy<'a>(
+    pub fn create_mutable_copy(
         &self,
         allocator: Option<&Allocator>,
         capacity: Index,
-    ) -> Option<Retained<'a, MutableArray>> {
+    ) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
-    pub fn mutable_copy<'a>(&self) -> Option<Retained<'a, MutableArray>> {
+    pub fn mutable_copy(&self) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutableCopy(None, self.get_count(), self) }
     }
 
     #[inline]
-    pub fn mutable_copy_with_capacity<'a>(
-        &self,
-        capacity: usize,
-    ) -> Option<Retained<'a, MutableArray>> {
+    pub fn mutable_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutableCopy(None, capacity as _, self) }
     }
 }
@@ -404,16 +400,16 @@ impl MutableArray {
     }
 
     #[inline]
-    pub fn create<'a>(
+    pub fn create(
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<'a, MutableArray>> {
+    ) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
     }
 
     #[inline]
-    pub fn with_capacity<'a>(capacity: Index) -> Option<Retained<'a, MutableArray>> {
+    pub fn with_capacity<'a>(capacity: Index) -> Option<Retained<MutableArray>> {
         Self::create(None, capacity, Callbacks::default())
     }
 
@@ -433,7 +429,7 @@ impl MutableArray {
     /// assert_eq!(0, arr.len());
     /// ```
     #[inline]
-    pub fn new<'a>() -> Option<Retained<'a, MutableArray>> {
+    pub fn new() -> Option<Retained<MutableArray>> {
         Self::with_capacity(0)
     }
 }
@@ -447,30 +443,30 @@ extern "C" {
     //const void *CFArrayGetValueAtIndex(CFArrayRef theArray, CFIndex idx);
     fn CFArrayGetValueAtIndex(the_array: &Array, idx: Index) -> &Type;
 
-    fn CFArrayCreate<'a>(
+    fn CFArrayCreate(
         allocator: Option<&Allocator>,
         values: Option<NonNull<*const c_void>>,
         num_values: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<'a, Array>>;
+    ) -> Option<Retained<Array>>;
 
-    fn CFArrayCreateCopy<'a>(
+    fn CFArrayCreateCopy(
         allocator: Option<&Allocator>,
         the_array: &Array,
-    ) -> Option<Retained<'a, Array>>;
+    ) -> Option<Retained<Array>>;
 
     fn CFArrayGetCount(the_array: &Array) -> Index;
 
-    fn CFArrayCreateMutable<'a>(
+    fn CFArrayCreateMutable(
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<'a, MutableArray>>;
-    fn CFArrayCreateMutableCopy<'a>(
+    ) -> Option<Retained<MutableArray>>;
+    fn CFArrayCreateMutableCopy(
         allocator: Option<&Allocator>,
         capacity: Index,
         the_array: &Array,
-    ) -> Option<Retained<'a, MutableArray>>;
+    ) -> Option<Retained<MutableArray>>;
     fn CFArrayAppendValue(the_array: &mut MutableArray, value: *const c_void);
     fn CFArrayRemoveAllValues(the_array: &mut MutableArray);
 }

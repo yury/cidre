@@ -46,7 +46,7 @@ impl Configuration {
     /// cfg.set_shows_cursor(false);
     ///
     /// ```
-    pub fn new<'new>() -> Retained<'new, Configuration> {
+    pub fn new() -> Retained<Configuration> {
         unsafe { SCStreamConfiguration_new() }
     }
 
@@ -123,7 +123,7 @@ extern "C" {}
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCStreamConfiguration_new<'new>() -> Retained<'new, Configuration>;
+    fn SCStreamConfiguration_new() -> Retained<Configuration>;
 
     fn rsel_minimumFrameInterval(id: &Id) -> cm::Time;
     fn wsel_setMinimumFrameInterval(id: &Id, value: cm::Time);
@@ -146,20 +146,20 @@ extern "C" {
 define_obj_type!(ContentFilter(Id));
 
 impl ContentFilter {
-    pub fn with_display_excluding_windows<'a>(
+    pub fn with_display_excluding_windows(
         display: &Display,
         windows: &cf::ArrayOf<Window>,
-    ) -> Retained<'a, ContentFilter> {
+    ) -> Retained<ContentFilter> {
         unsafe { SCContentFilter_initWithDisplay_excludingWindows(display, windows) }
     }
 }
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCContentFilter_initWithDisplay_excludingWindows<'a>(
+    fn SCContentFilter_initWithDisplay_excludingWindows(
         display: &Display,
         windows: &cf::ArrayOf<Window>,
-    ) -> Retained<'a, ContentFilter>;
+    ) -> Retained<ContentFilter>;
 }
 
 define_obj_type!(Stream(Id));
@@ -213,16 +213,16 @@ pub trait StreamOutput {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn make_stream_out<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
-    fn make_stream_delegate<'a>(vtable: *const *const c_void) -> Retained<'a, Id>;
+    fn make_stream_out(vtable: *const *const c_void) -> Retained<Id>;
+    fn make_stream_delegate(vtable: *const *const c_void) -> Retained<Id>;
 }
 
 impl Stream {
-    pub fn with_delegate<'a, T>(
+    pub fn with_delegate<T>(
         filter: &ContentFilter,
         configuration: &Configuration,
         delegate: &Delegate<T>,
-    ) -> Retained<'a, Self>
+    ) -> Retained<Self>
     where
         T: StreamDelegate,
     {
@@ -232,7 +232,7 @@ impl Stream {
         }
     }
 
-    pub fn new<'a>(filter: &ContentFilter, configuration: &Configuration) -> Retained<'a, Self> {
+    pub fn new(filter: &ContentFilter, configuration: &Configuration) -> Retained<Self> {
         unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, None) }
     }
 
@@ -261,7 +261,7 @@ impl Stream {
         unsafe { test_start(self) }
     }
 
-    pub async fn start<'a>(&self) -> Result<(), Retained<'a, cf::Error>> {
+    pub async fn start(&self) -> Result<(), Retained<cf::Error>> {
         let (future, block_ptr) = Completion::ok_or_error();
         unsafe {
             sel_startCaptureWithCompletionHandler(self, block_ptr);
@@ -269,7 +269,7 @@ impl Stream {
         future.await
     }
 
-    pub async fn stop<'a>(&self) -> Result<(), Retained<'a, cf::Error>> {
+    pub async fn stop(&self) -> Result<(), Retained<cf::Error>> {
         let (future, block_ptr) = Completion::ok_or_error();
         unsafe {
             sel_stopCaptureWithCompletionHandler(self, block_ptr);
@@ -280,11 +280,11 @@ impl Stream {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCStream_initWithFilter_configuration_delegate<'a>(
+    fn SCStream_initWithFilter_configuration_delegate(
         filter: &ContentFilter,
         configuration: &Configuration,
         delegate: Option<&Id>,
-    ) -> Retained<'a, Stream>;
+    ) -> Retained<Stream>;
 
     fn rsel_addStreamOutput_type_sampleHandlerQueue_error(
         id: &Id,

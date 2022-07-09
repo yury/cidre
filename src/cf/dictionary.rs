@@ -10,8 +10,7 @@ use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescriptionCallBack =
-    extern "C" fn(value: *const c_void) -> Option<Retained<'static, String>>;
+pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
 pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 pub type HashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
 
@@ -59,7 +58,7 @@ pub type ApplierFunction =
 define_cf_type!(Dictionary(Type));
 
 impl Dictionary {
-    pub fn new<'a>() -> Option<Retained<'a, Self>> {
+    pub fn new() -> Option<Retained<Self>> {
         unsafe { CFDictionaryCreate(None, std::ptr::null(), std::ptr::null(), 0, None, None) }
     }
     /// ```
@@ -177,10 +176,10 @@ impl Dictionary {
     /// assert_eq!(1, d.len());
     /// ```
     #[inline]
-    pub fn with_keys_values<'a, const N: usize>(
+    pub fn with_keys_values<const N: usize>(
         keys: &[&Type; N],
         values: &[&Type; N],
-    ) -> Option<Retained<'a, Dictionary>> {
+    ) -> Option<Retained<Dictionary>> {
         unsafe {
             Self::create(
                 None,
@@ -200,14 +199,14 @@ impl Dictionary {
     /// dict.show();
     /// ```
     #[inline]
-    pub unsafe fn create<'a>(
+    pub unsafe fn create(
         allocator: Option<&Allocator>,
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<'a, Dictionary>> {
+    ) -> Option<Retained<Dictionary>> {
         CFDictionaryCreate(
             allocator,
             keys,
@@ -294,12 +293,12 @@ impl Dictionary {
     }
 
     #[inline]
-    pub fn copy<'a>(&self) -> Retained<'a, Self> {
+    pub fn copy(&self) -> Retained<Self> {
         unsafe { self.copy_in(None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn copy_in<'a>(&self, allocator: Option<&cf::Allocator>) -> Option<Retained<'a, Self>> {
+    pub fn copy_in(&self, allocator: Option<&cf::Allocator>) -> Option<Retained<Self>> {
         unsafe { CFDictionaryCreateCopy(allocator, self) }
     }
 }
@@ -324,14 +323,14 @@ extern "C" {
         value: *mut Option<NonNull<c_void>>,
     ) -> bool;
 
-    fn CFDictionaryCreate<'a>(
+    fn CFDictionaryCreate(
         allocator: Option<&Allocator>,
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<'a, Dictionary>>;
+    ) -> Option<Retained<Dictionary>>;
 
     fn CFDictionaryGetKeysAndValues(
         the_dict: &Dictionary,
@@ -339,17 +338,17 @@ extern "C" {
         values: *const *const c_void,
     );
 
-    fn CFDictionaryCreateCopy<'a>(
+    fn CFDictionaryCreateCopy(
         allocator: Option<&cf::Allocator>,
         the_dict: &cf::Dictionary,
-    ) -> Option<Retained<'a, cf::Dictionary>>;
+    ) -> Option<Retained<cf::Dictionary>>;
 
 }
 
 define_cf_type!(MutableDictionary(Dictionary));
 
 impl MutableDictionary {
-    pub fn with_capacity<'a>(capacity: usize) -> Retained<'a, Self> {
+    pub fn with_capacity(capacity: usize) -> Retained<Self> {
         unsafe {
             Self::create(
                 None,
@@ -361,12 +360,12 @@ impl MutableDictionary {
         }
     }
 
-    pub unsafe fn create<'a>(
+    pub unsafe fn create(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<'a, Self>> {
+    ) -> Option<Retained<Self>> {
         CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
     }
 
@@ -443,7 +442,7 @@ where
     K: Retain + Release,
     V: Retain + Release,
 {
-    fn retained<'a>(&self) -> Retained<'a, Self> {
+    fn retained(&self) -> Retained<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
@@ -452,12 +451,12 @@ where
 pub struct MutDictionaryOf<K, V>(MutableDictionary, PhantomData<(K, V)>);
 
 extern "C" {
-    fn CFDictionaryCreateMutable<'a>(
+    fn CFDictionaryCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<'a, MutableDictionary>>;
+    ) -> Option<Retained<MutableDictionary>>;
 
     fn CFDictionaryAddValue(
         the_dict: &mut MutableDictionary,

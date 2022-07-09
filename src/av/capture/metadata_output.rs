@@ -16,7 +16,7 @@ impl MetadataOutput {
     /// output.set_rect_of_interest(rect);
     /// assert_eq!(output.rect_of_intereset(), rect);
     /// ```
-    pub fn new<'a>() -> cf::Retained<'a, Self> {
+    pub fn new() -> cf::Retained<Self> {
         unsafe { AVCaptureMetadataOutput_new() }
     }
 
@@ -38,5 +38,5 @@ extern "C" {
     fn rsel_availableMetadataObjectTypes(id: &ns::Id) -> &cf::ArrayOf<av::MetadataObjectType>;
     fn rsel_rectOfInterest(id: &ns::Id) -> cg::Rect;
     fn wsel_setRectOfInterest(id: &ns::Id, value: cg::Rect);
-    fn AVCaptureMetadataOutput_new<'a>() -> cf::Retained<'a, MetadataOutput>;
+    fn AVCaptureMetadataOutput_new() -> cf::Retained<MetadataOutput>;
 }

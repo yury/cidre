@@ -20,24 +20,24 @@ pub fn avaiable_compressed(pixel_format: cv::PixelFormatType) -> bool {
 /// let format = cv::pixel_format_description::create(format).is_none();
 ///
 /// ```
-pub fn create<'a>(pixel_format: cv::PixelFormatType) -> Option<cf::Retained<'a, cf::Dictionary>> {
+pub fn create(pixel_format: cv::PixelFormatType) -> Option<cf::Retained<cf::Dictionary>> {
     unsafe { CVPixelFormatDescriptionCreateWithPixelFormatType(None, pixel_format) }
 }
 
-pub fn all_pixel_formats<'a>() -> Option<cf::Retained<'a, cf::ArrayOf<cf::Number>>> {
+pub fn all_pixel_formats() -> Option<cf::Retained<cf::ArrayOf<cf::Number>>> {
     unsafe { CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(None) }
 }
 
 extern "C" {
     fn CVIsCompressedPixelFormatAvailable(pixel_format: cv::PixelFormatType) -> bool;
-    fn CVPixelFormatDescriptionCreateWithPixelFormatType<'a>(
+    fn CVPixelFormatDescriptionCreateWithPixelFormatType(
         allocator: Option<&cf::Allocator>,
         pixel_format: cv::PixelFormatType,
-    ) -> Option<cf::Retained<'a, cf::Dictionary>>;
+    ) -> Option<cf::Retained<cf::Dictionary>>;
 
-    fn CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes<'a>(
+    fn CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(
         alloc: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<'a, cf::ArrayOf<cf::Number>>>;
+    ) -> Option<cf::Retained<cf::ArrayOf<cf::Number>>>;
 }
 
 pub mod keys {

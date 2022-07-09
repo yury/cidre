@@ -76,7 +76,7 @@ impl Writer {
     pub fn with_url_and_file_type<'a>(
         url: &cf::URL,
         file_type: &av::FileType,
-    ) -> Result<cf::Retained<'a, Writer>, cf::Retained<'a, cf::Error>> {
+    ) -> Result<cf::Retained<Writer>, cf::Retained<cf::Error>> {
         let mut error = None;
         unsafe {
             let res = AVAssetWriter_assetWriterWithURL_fileType_error(&url, &file_type, &mut error);
@@ -108,8 +108,8 @@ extern "C" {
     fn AVAssetWriter_assetWriterWithURL_fileType_error<'a>(
         url: &cf::URL,
         file_type: &av::FileType,
-        error: &mut Option<cf::Retained<'a, cf::Error>>,
-    ) -> Option<cf::Retained<'a, Writer>>;
+        error: &mut Option<cf::Retained<cf::Error>>,
+    ) -> Option<cf::Retained<Writer>>;
 
     //csel_ab(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
     // fn

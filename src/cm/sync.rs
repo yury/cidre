@@ -17,9 +17,9 @@ impl Clock {
 
     /// Use `audio_clock`
     #[inline]
-    pub unsafe fn audio_clock_create<'a>(
+    pub unsafe fn audio_clock_create(
         allocator: Option<&cf::Allocator>,
-        clock_out: &mut Option<cf::Retained<'a, Clock>>,
+        clock_out: &mut Option<cf::Retained<Clock>>,
     ) -> os::Status {
         CMAudioClockCreate(allocator, clock_out)
     }
@@ -32,7 +32,7 @@ impl Clock {
     /// This clock is suitable for use as AVPlayer.masterClock when synchronizing video-only playback
     /// with audio played through other APIs or objects.
     #[inline]
-    pub fn audio_clock<'a>() -> Result<cf::Retained<'a, Clock>, os::Status> {
+    pub fn audio_clock() -> Result<cf::Retained<Clock>, os::Status> {
         let mut clock_out = None;
         unsafe {
             let res = Self::audio_clock_create(None, &mut clock_out);
@@ -65,10 +65,10 @@ impl Clock {
 
 extern "C" {
     fn CMClockGetTypeID() -> cf::TypeId;
-    fn CMClockGetHostTimeClock<'a>() -> &'a Clock;
-    fn CMAudioClockCreate<'a>(
+    fn CMClockGetHostTimeClock() -> &'static Clock;
+    fn CMAudioClockCreate(
         allocator: Option<&cf::Allocator>,
-        clock_out: &mut Option<cf::Retained<'a, Clock>>,
+        clock_out: &mut Option<cf::Retained<Clock>>,
     ) -> os::Status;
 
     fn CMClockGetTime(clock: &Clock) -> cm::Time;

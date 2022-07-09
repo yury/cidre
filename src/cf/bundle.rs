@@ -12,7 +12,7 @@ impl Bundle {
     ///
     /// let url = bundle.copy_bundle_url().unwrap();
     /// ```
-    pub fn copy_bundle_url<'a>(&self) -> Option<Retained<'a, cf::URL>> {
+    pub fn copy_bundle_url(&self) -> Option<Retained<cf::URL>> {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
@@ -38,8 +38,8 @@ impl Bundle {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFBundleGetTypeID() -> cf::TypeId;
-    fn CFBundleGetMainBundle<'a>() -> Option<&'a Bundle>;
-    fn CFBundleCopyBundleURL<'a>(bundle: &Bundle) -> Option<Retained<'a, cf::URL>>;
+    fn CFBundleGetMainBundle() -> Option<&'static Bundle>;
+    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<Retained<cf::URL>>;
 
     fn CFBundleGetValueForInfoDictionaryKey<'a>(
         bundle: &'a Bundle,

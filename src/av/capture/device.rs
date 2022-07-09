@@ -105,11 +105,11 @@ define_obj_type!(Device(Id));
 ///
 /// ```
 impl Device {
-    pub fn with_device_type_media_and_position<'a>(
+    pub fn with_device_type_media_and_position(
         device_type: &Type,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Option<Retained<'a, Self>> {
+    ) -> Option<Retained<Self>> {
         unsafe {
             AVCaptureDevice_defaultDeviceWithDeviceType_mediaType_position(
                 device_type,
@@ -161,9 +161,9 @@ impl Device {
         }
     }
 
-    pub unsafe fn lock_for_configuration<'a>(
+    pub unsafe fn lock_for_configuration(
         &mut self,
-        error: &mut Option<Retained<'a, cf::Error>>,
+        error: &mut Option<Retained<cf::Error>>,
     ) -> bool {
         rsel_lockForConfiguration(self, error)
     }
@@ -213,15 +213,15 @@ impl<'a> DerefMut for ConfigurationLockGuard<'a> {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureDevice_defaultDeviceWithDeviceType_mediaType_position<'a>(
+    fn AVCaptureDevice_defaultDeviceWithDeviceType_mediaType_position(
         device_type: &Type,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Option<Retained<'a, Device>>;
+    ) -> Option<Retained<Device>>;
 
-    fn rsel_lockForConfiguration<'a>(
+    fn rsel_lockForConfiguration(
         device: &mut Device,
-        error: &mut Option<Retained<'a, cf::Error>>,
+        error: &mut Option<Retained<cf::Error>>,
     ) -> bool;
     fn wsel_unlockForConfiguration(device: &mut Device);
 
@@ -387,11 +387,11 @@ define_obj_type!(CaptureAudioChannel(Id));
 define_obj_type!(DiscoverySession(Id));
 
 impl DiscoverySession {
-    pub fn with_device_types_media_and_position<'a>(
+    pub fn with_device_types_media_and_position(
         device_types: &cf::ArrayOf<Type>,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Retained<'a, Self> {
+    ) -> Retained<Self> {
         unsafe {
             AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position(
                 device_types,
@@ -413,11 +413,11 @@ impl DiscoverySession {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position<'a>(
+    fn AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position(
         device_types: &cf::Array,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Retained<'a, DiscoverySession>;
+    ) -> Retained<DiscoverySession>;
     fn rsel_devices(id: &Id) -> &cf::ArrayOf<Device>;
     #[cfg(not(target_os = "macos"))]
     fn rsel_supportedMultiCamDeviceSets(id: &Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
@@ -426,9 +426,9 @@ extern "C" {
 #[derive(Debug, Clone, Copy)]
 #[repr(isize)]
 pub enum VideoStabilizationMode {
-    Off       = 0,
-    Standard  = 1,
+    Off = 0,
+    Standard = 1,
     Cinematic = 2,
     CinematicExtended,
-    Auto      = -1,
+    Auto = -1,
 }

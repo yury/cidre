@@ -31,7 +31,7 @@ impl Descriptor {
     /// desc.set_thread_group_size_is_multiple_of_thread_execution_width(true);
     /// assert_eq!(true, desc.thread_group_size_is_multiple_of_thread_execution_width());
     /// ```
-    pub fn new<'create>() -> Retained<'create, Self> {
+    pub fn new() -> Retained<Self> {
         unsafe { MTLComputePipelineDescriptor_new() }
     }
 
@@ -62,7 +62,7 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLComputePipelineDescriptor_new<'create>() -> Retained<'create, Descriptor>;
+    fn MTLComputePipelineDescriptor_new() -> Retained<Descriptor>;
 
     fn rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(id: &Id) -> bool;
     fn wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(id: &mut Id, value: bool);

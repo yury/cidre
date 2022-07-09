@@ -8,7 +8,7 @@ use super::Output;
 define_obj_type!(VideoDataOutput(Output));
 
 impl VideoDataOutput {
-    pub fn new() -> cf::Retained<'static, Self> {
+    pub fn new() -> cf::Retained<Self> {
         unsafe { AVCaptureVideoDataOutput_new() }
     }
 
@@ -77,7 +77,7 @@ impl VideoDataOutput {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureVideoDataOutput_new() -> cf::Retained<'static, VideoDataOutput>;
+    fn AVCaptureVideoDataOutput_new() -> cf::Retained<VideoDataOutput>;
 
     fn rsel_alwaysDiscardsLateVideoFrames(id: &ns::Id) -> bool;
     fn wsel_setAlwaysDiscardsLateVideoFrames(id: &ns::Id, value: bool);

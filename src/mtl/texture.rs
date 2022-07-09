@@ -60,7 +60,7 @@ impl SharedTextureHandle {
         msg_send!("mtl", self, sel_device)
     }
 
-    pub fn label<'a>(&self) -> Option<Retained<'a, cf::String>> {
+    pub fn label(&self) -> Option<&cf::String> {
         msg_send!("common", self, sel_label)
     }
 }
@@ -76,7 +76,7 @@ impl Usage {
     pub const RENDER_TARGET: Self = Self(0x0004);
     pub const PIXEL_FROMAT_VIEW: Self = Self(0x0010);
 
-    pub fn to_cf_number<'a>(&self) -> Retained<'a, cf::Number> {
+    pub fn to_cf_number(&self) -> Retained<cf::Number> {
         cf::Number::from_i64(self.0 as _)
     }
 }
@@ -113,12 +113,12 @@ impl Descriptor {
     ///
     /// ```
     #[inline]
-    pub fn new_2d_with_pixel_format<'a>(
+    pub fn new_2d_with_pixel_format(
         pixel_format: PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
-    ) -> Retained<'a, Descriptor> {
+    ) -> Retained<Descriptor> {
         unsafe {
             MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped(
                 pixel_format,
@@ -138,11 +138,11 @@ impl Descriptor {
     ///
     /// ```
     #[inline]
-    pub fn new_cube_with_pixel_format<'a>(
+    pub fn new_cube_with_pixel_format(
         pixel_format: PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> Retained<'a, Descriptor> {
+    ) -> Retained<Descriptor> {
         unsafe {
             MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
                 pixel_format,
@@ -153,12 +153,12 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn with_resource_options<'a>(
+    pub fn with_resource_options(
         pixel_format: PixelFormat,
         width: usize,
         resource_options: crate::mtl::resource::Options,
         usage: Usage,
-    ) -> Retained<'a, Descriptor> {
+    ) -> Retained<Descriptor> {
         unsafe {
             MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
                 pixel_format,
@@ -357,23 +357,23 @@ impl Texture {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped<'a>(
+    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped(
         pixel_format: PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
-    ) -> Retained<'a, Descriptor>;
-    fn MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped<'a>(
+    ) -> Retained<Descriptor>;
+    fn MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
         pixel_format: PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> Retained<'a, Descriptor>;
-    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage<'a>(
+    ) -> Retained<Descriptor>;
+    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
         pixel_format: PixelFormat,
         width: usize,
         resource_options: crate::mtl::resource::Options,
         usage: Usage,
-    ) -> Retained<'a, Descriptor>;
+    ) -> Retained<Descriptor>;
 
     fn rsel_textureType(id: &Id) -> Type;
     fn wsel_textureType(id: &mut Id, value: Type);

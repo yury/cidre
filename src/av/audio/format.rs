@@ -30,40 +30,40 @@ define_obj_type!(Format(ns::Id));
 /// Instances of this class are immutable.
 impl Format {
     /// If the format specifies more than 2 channels, this method fails (returns None).
-    pub fn with_asbd<'a>(asbd: &StreamBasicDescription) -> Option<cf::Retained<'a, Format>> {
+    pub fn with_asbd(asbd: &StreamBasicDescription) -> Option<cf::Retained<Format>> {
         unsafe { AVAudioFormat_initWithStreamDescription(asbd) }
     }
 
     /// the channel layout. Can be None only if asbd specifies 1 or 2 channels.
-    pub fn with_asbd_and_channel_layout<'a>(
+    pub fn with_asbd_and_channel_layout(
         asbd: &StreamBasicDescription,
         layout: Option<&ChannelLayout>,
-    ) -> Option<cf::Retained<'a, Format>> {
+    ) -> Option<cf::Retained<Format>> {
         unsafe { AVAudioFormat_initWithStreamDescription_channelLayout(asbd, layout) }
     }
 
-    pub fn standard_with_sample_rate_and_channels<'a>(
+    pub fn standard_with_sample_rate_and_channels(
         sample_rate: f64,
         channels: ChannelCount,
-    ) -> Option<cf::Retained<'a, Format>> {
+    ) -> Option<cf::Retained<Format>> {
         unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channels(sample_rate, channels) }
     }
 
     /// Initialize to deinterleaved float with the specified sample rate and channel layout.
-    pub fn standard_with_sample_rate_and_channel_layout<'a>(
+    pub fn standard_with_sample_rate_and_channel_layout(
         sample_rate: f64,
         layout: &ChannelLayout,
-    ) -> cf::Retained<'a, Format> {
+    ) -> cf::Retained<Format> {
         unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(sample_rate, layout) }
     }
 
     /// Initialize to float with the specified sample rate, channel layout and interleavedness.
-    pub fn with_common_format_sample_rate_interleaved_channel_layout<'a>(
+    pub fn with_common_format_sample_rate_interleaved_channel_layout(
         format: CommonFormat,
         sample_rate: f64,
         interleaved: bool,
         channel_layout: &ChannelLayout,
-    ) -> cf::Retained<'a, Format> {
+    ) -> cf::Retained<Format> {
         unsafe {
             AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
                 format,
@@ -74,7 +74,7 @@ impl Format {
         }
     }
 
-    pub fn with_settings<'a>(settings: &cf::Dictionary) -> Option<cf::Retained<'a, Format>> {
+    pub fn with_settings(settings: &cf::Dictionary) -> Option<cf::Retained<Format>> {
         unsafe { AVAudioFormat_initWithSettings(settings) }
     }
 
@@ -116,35 +116,33 @@ impl Format {
 #[link(name = "av", kind = "static")]
 extern "C" {
 
-    fn AVAudioFormat_initWithStreamDescription<'a>(
+    fn AVAudioFormat_initWithStreamDescription(
         asbd: &StreamBasicDescription,
-    ) -> Option<cf::Retained<'a, Format>>;
+    ) -> Option<cf::Retained<Format>>;
 
-    fn AVAudioFormat_initWithStreamDescription_channelLayout<'a>(
+    fn AVAudioFormat_initWithStreamDescription_channelLayout(
         asbd: &StreamBasicDescription,
         layout: Option<&ChannelLayout>,
-    ) -> Option<cf::Retained<'a, Format>>;
+    ) -> Option<cf::Retained<Format>>;
 
-    fn AVAudioFormat_initStandardFormatWithSampleRate_channels<'a>(
+    fn AVAudioFormat_initStandardFormatWithSampleRate_channels(
         sample_rate: f64,
         channels: ChannelCount,
-    ) -> Option<cf::Retained<'a, Format>>;
+    ) -> Option<cf::Retained<Format>>;
 
-    fn AVAudioFormat_initStandardFormatWithSampleRate_channelLayout<'a>(
+    fn AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(
         sample_rate: f64,
         layout: &ChannelLayout,
-    ) -> cf::Retained<'a, Format>;
+    ) -> cf::Retained<Format>;
 
-    fn AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout<'a>(
+    fn AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
         format: CommonFormat,
         sample_rate: f64,
         interleaved: bool,
         channel_layout: &ChannelLayout,
-    ) -> cf::Retained<'a, Format>;
+    ) -> cf::Retained<Format>;
 
-    fn AVAudioFormat_initWithSettings<'a>(
-        settings: &cf::Dictionary,
-    ) -> Option<cf::Retained<'a, Format>>;
+    fn AVAudioFormat_initWithSettings(settings: &cf::Dictionary) -> Option<cf::Retained<Format>>;
 
     fn rsel_settings(id: &Id) -> &cf::Dictionary;
     fn rsel_isInterleaved(id: &Id) -> bool;
