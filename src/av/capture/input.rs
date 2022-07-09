@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, ns, objc::Id};
+use crate::{av, cf, define_obj_type, objc::Id};
 
 define_obj_type!(Input(Id));
 define_obj_type!(DeviceInput(Input));
@@ -11,14 +11,14 @@ impl Input {
 }
 
 impl DeviceInput {
-    pub fn with_device(
+    pub fn with_device<'a>(
         device: &av::CaptureDevice,
-    ) -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
+    ) -> Result<cf::Retained<Self>, &'a cf::Error> {
         let mut error = None;
         unsafe {
             let res = AVCaptureDeviceInput_deviceInputWithDevice_error(device, &mut error);
             match error {
-                Some(e) => Err(e.retained()),
+                Some(e) => Err(e),
                 None => Ok(res.unwrap_unchecked()),
             }
         }
@@ -31,9 +31,9 @@ extern "C" {
 
     //csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
-    fn AVCaptureDeviceInput_deviceInputWithDevice_error(
+    fn AVCaptureDeviceInput_deviceInputWithDevice_error<'a>(
         device: &av::CaptureDevice,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&'a cf::Error>,
     ) -> Option<cf::Retained<DeviceInput>>;
 }
 
