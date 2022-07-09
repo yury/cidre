@@ -1,6 +1,7 @@
-use crate::{cf, define_obj_type, objc::Id};
+use crate::{av, cf, define_obj_type, ns, objc::Id};
 
 define_obj_type!(Input(Id));
+define_obj_type!(DeviceInput(Input));
 define_obj_type!(Port(Id));
 
 impl Input {
@@ -9,9 +10,31 @@ impl Input {
     }
 }
 
+impl DeviceInput {
+    pub fn with_device(
+        device: &av::CaptureDevice,
+    ) -> Result<cf::Retained<'static, Self>, cf::Retained<'static, cf::Error>> {
+        let mut error = None;
+        unsafe {
+            let res = AVCaptureDeviceInput_deviceInputWithDevice_error(device, &mut error);
+            match error {
+                Some(e) => Err(e.retained()),
+                None => Ok(res.unwrap_unchecked()),
+            }
+        }
+    }
+}
+
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn rsel_ports(input: &Input) -> &cf::ArrayOf<Port>;
+
+    //csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
+
+    fn AVCaptureDeviceInput_deviceInputWithDevice_error(
+        device: &av::CaptureDevice,
+        error: &mut Option<&cf::Error>,
+    ) -> Option<cf::Retained<'static, DeviceInput>>;
 }
 
 impl Port {

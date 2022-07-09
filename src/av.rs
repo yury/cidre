@@ -30,6 +30,7 @@ pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::TorchMode as CaptureTouchMode;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
+pub use capture::DeviceInput as CaptureDeviceInput;
 
 #[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;

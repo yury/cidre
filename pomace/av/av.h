@@ -454,5 +454,13 @@ rsel(, id, sampleBufferCallbackQueue, dispatch_queue_t _Nullable)
 rsel(, id, videoSettings, NSDictionary * _Nullable)
 rsel_a(, id, recommendedVideoSettingsForAssetWriterWithOutputFileType, AVFileType, NSDictionary * _Nullable)
 
+rsel_ab(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, assetWriterOutputFileType, AVFileType, NSDictionary * _Nullable)
+//- (nullable NSDictionary<NSString *, id> *)recommendedVideoSettingsForVideoCodecType:(AVVideoCodecType)videoCodecType assetWriterOutputFileType:(AVFileType)outputFileType API_AVAILABLE(macos(10.15), ios(11.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
+
+#pragma mark - AVCaptureDeviceInput
+
+// + (nullable instancetype)deviceInputWithDevice:(AVCaptureDevice *)device error:(NSError * _Nullable * _Nullable)outError;
+
+csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
 NS_ASSUME_NONNULL_END

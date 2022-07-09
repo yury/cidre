@@ -1,4 +1,7 @@
-use crate::{av, cf, define_obj_type, dispatch, ns};
+use crate::{
+    av::{self, FileType},
+    cf, define_obj_type, dispatch, ns,
+};
 
 use super::Output;
 
@@ -56,6 +59,20 @@ impl VideoDataOutput {
             rsel_recommendedVideoSettingsForAssetWriterWithOutputFileType(self, output_file_type)
         }
     }
+
+    pub fn recommended_video_settings_for_video_codec_type_asset_writer_output_file_type(
+        &self,
+        codec_type: &av::VideoCodecType,
+        output_file_type: &FileType,
+    ) -> Option<&cf::DictionaryOf<cf::String, ns::Id>> {
+        unsafe {
+            rsel_recommendedVideoSettingsForVideoCodecType_assetWriterOutputFileType(
+                self,
+                codec_type,
+                output_file_type,
+            )
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -73,5 +90,11 @@ extern "C" {
     fn rsel_recommendedVideoSettingsForAssetWriterWithOutputFileType<'a>(
         id: &'a ns::Id,
         output_file_type: &av::FileType,
+    ) -> Option<&'a cf::DictionaryOf<cf::String, ns::Id>>;
+
+    fn rsel_recommendedVideoSettingsForVideoCodecType_assetWriterOutputFileType<'a>(
+        id: &'a ns::Id,
+        codec_type: &av::VideoCodecType,
+        output_file_type: &FileType,
     ) -> Option<&'a cf::DictionaryOf<cf::String, ns::Id>>;
 }

@@ -4,7 +4,7 @@ use cidre::{
 };
 
 fn main() {
-    let session = av::capture::Session::new();
+    let mut session = av::capture::Session::new();
     let device = av::capture::Device::with_device_type_media_and_position(
         av::CaptureDeviceType::built_in_wide_angle_camera(),
         Some(MediaType::video()),
@@ -25,4 +25,43 @@ fn main() {
         video_output
             .recommended_video_settings_for_asset_writer_with_output_file_type(av::FileType::mp4())
     );
+    println!(
+        "{:?}",
+        video_output.recommended_video_settings_for_video_codec_type_asset_writer_output_file_type(
+            av::VideoCodecType::h264(),
+            av::FileType::mp4()
+        )
+    );
+
+    session.begin_configuration();
+
+    if session.can_add_output(&video_output) {
+        session.add_output(&video_output);
+    }
+
+    let device_input = av::CaptureDeviceInput::with_device(&device).expect("intput");
+    println!("{:?}", device_input);
+    if session.can_add_input(&device_input) {
+        session.add_input(&device_input)
+    }
+    println!("{:?}", video_output.available_video_cv_pixel_format_types());
+    println!("{:?}", video_output.available_video_codec_types());
+    println!("{:?}", video_output.video_settings());
+    println!(
+        "{:?}",
+        video_output
+            .recommended_video_settings_for_asset_writer_with_output_file_type(av::FileType::mp4())
+    );
+    println!(
+        "{:?}",
+        video_output.recommended_video_settings_for_video_codec_type_asset_writer_output_file_type(
+            av::VideoCodecType::h264(),
+            av::FileType::mp4()
+        )
+    );
+
+    session.commit_configuration()
+    
+    
+
 }

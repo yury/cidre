@@ -422,3 +422,13 @@ extern "C" {
     #[cfg(not(target_os = "macos"))]
     fn rsel_supportedMultiCamDeviceSets(id: &Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
 }
+
+#[derive(Debug, Clone, Copy)]
+#[repr(isize)]
+pub enum VideoStabilizationMode {
+    Off       = 0,
+    Standard  = 1,
+    Cinematic = 2,
+    CinematicExtended,
+    Auto      = -1,
+}
