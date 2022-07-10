@@ -178,6 +178,8 @@ wsel(, id, commitConfiguration)
 wsel(, id, startRunning)
 wsel(, id, stopRunning)
 
+rwsel(, id, usesApplicationAudioSession, setUsesApplicationAudioSession, BOOL)
+
 #pragma mark - AVCaptureMultiCamSession
 
 #if TARGET_OS_OSX

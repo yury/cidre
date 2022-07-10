@@ -139,6 +139,16 @@ impl Session {
     pub fn stop_running(&mut self) {
         unsafe { wsel_stopRunning(self) }
     }
+
+    #[inline]
+    pub fn uses_application_audio_session(&self) -> bool {
+        unsafe { rsel_usesApplicationAudioSession(self) }
+    }
+
+    #[inline]
+    pub fn set_uses_application_audio_session(&mut self, value: bool) {
+        unsafe { wsel_setUsesApplicationAudioSession(self, value) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -172,6 +182,10 @@ extern "C" {
 
     fn wsel_startRunning(session: &mut Session);
     fn wsel_stopRunning(session: &mut Session);
+
+    // rwsel(, id, usesApplicationAudioSession, setUsesApplicationAudioSession, BOOL)
+    fn rsel_usesApplicationAudioSession(session: &Session) -> bool;
+    fn wsel_setUsesApplicationAudioSession(session: &Session, value: bool);
 }
 
 define_obj_type!(MultiCamSession(Session));
