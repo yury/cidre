@@ -1,9 +1,18 @@
 use cidre::{
     av::{self, CaptureDevicePosition, MediaType},
-    objc::autorelease_pool,
+    cf, ns,
 };
 
+extern "C" fn exception_handler(exception: &ns::Exception) {
+    println!("!!!!!!!!!!!!!!!!!");
+    println!("{:?}", exception);
+}
+
 fn main() {
+    ns::set_uncaught_exception_handler(exception_handler as _);
+
+    ns::Exception::raise(&cf::String::from_str("str"));
+
     let mut session = av::capture::Session::new();
     let device = av::capture::Device::with_device_type_media_and_position(
         av::CaptureDeviceType::built_in_wide_angle_camera(),
@@ -60,5 +69,6 @@ fn main() {
         )
     );
 
-    session.commit_configuration()
+    session.commit_configuration();
+    session.start_running();
 }
