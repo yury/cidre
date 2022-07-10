@@ -1,6 +1,6 @@
 use cidre::{
     av::{self, CaptureDevicePosition, MediaType},
-    cf, ns,
+    cf, ns::{self, try_catch},
 };
 
 extern "C" fn exception_handler(exception: &ns::Exception) {
@@ -11,7 +11,7 @@ extern "C" fn exception_handler(exception: &ns::Exception) {
 fn main() {
     ns::set_uncaught_exception_handler(exception_handler as _);
 
-    ns::Exception::raise(&cf::String::from_str("str"));
+    // ns::Exception::raise(&cf::String::from_str("str"));
 
     let mut session = av::capture::Session::new();
     let device = av::capture::Device::with_device_type_media_and_position(
