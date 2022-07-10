@@ -159,30 +159,26 @@ extern "C" {
 }
 
 extern "C" {
-    fn cidre_try_catch(
+    fn cidre_try_catch<'a>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
-        exception: &mut Option<&ns::Id>,
-    ) -> bool;
+    ) -> Option<&'a ns::Id>;
 }
 
-pub fn try_catch<F, R>(f: F) -> Result<R, &'static ns::Id>
+pub fn try_catch<'a, F, R>(f: F) -> Result<R, &'a ns::Id>
 where
     F: FnOnce() -> R,
 {
-    let mut exception = None;
     let mut result = None;
-
     let mut wrapper = Some(|| result = Some(f()));
 
     let f = type_helper(&wrapper);
     let ctx = &mut wrapper as *mut _ as *mut c_void;
 
     unsafe {
-        if cidre_try_catch(transmute(f), ctx, &mut exception) {
-            Ok(result.unwrap_unchecked())
-        } else {
-            Err(exception.unwrap_unchecked())
+        match cidre_try_catch(transmute(f), ctx) {
+            None => Ok(result.unwrap_unchecked()),
+            Some(e) => Err(e),
         }
     }
 }
@@ -215,9 +211,7 @@ mod tests {
     fn test_exception_catch() {
         let err = ns::try_catch(|| {
             let msg = cf::String::from_str("test");
-            unsafe {
-                ns::exception::cidre_raise_exception(&msg);
-            }
+            ns::exception::Exception::raise(&msg);
         })
         .expect_err("result");
 
@@ -230,8 +224,8 @@ mod tests {
     fn test_throw_catch() {
         let msg = cf::String::from_str("test");
 
-        let err = ns::try_catch(|| unsafe {
-            ns::exception::cidre_throw_exception(&msg);
+        let err = ns::try_catch(|| {
+            ns::exception::throw_string(&msg);
         })
         .expect_err("result");
 

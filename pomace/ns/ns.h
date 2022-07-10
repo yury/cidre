@@ -31,21 +31,12 @@ void cidre_throw_exception(NSString *message) {
   @throw message;
 }
 
-
-BOOL cidre_try_catch(
-  void (*during)(void *),
-  void * context,
-// CF_RETURNS_RETAINED
-  id _Nullable  * _Nonnull exception
-
-) {
+id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
   @try {
     during(context);
-    *exception = nil;
-    return YES;
+    return nil;
   } @catch (id e) {
-    *exception = e;
-    return NO;
+    return e;
   }
 }
 
