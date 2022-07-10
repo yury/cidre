@@ -153,12 +153,10 @@ extern "C" {
     fn NSSetUncaughtExceptionHandler(handler: *const UncaughtExceptionHandler);
 }
 
+#[link(name = "ns", kind = "static")]
 extern "C" {
     fn cidre_raise_exception(message: &cf::String) -> !;
     fn cidre_throw_exception(message: &cf::String) -> !;
-}
-
-extern "C" {
     fn cidre_try_catch<'a>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
