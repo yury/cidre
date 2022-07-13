@@ -4,7 +4,6 @@ use cidre::{
 };
 
 extern "C" fn exception_handler(exception: &ns::Exception) {
-    println!("!!!!!!!!!!!!!!!!!");
     println!("{:?}", exception);
 }
 

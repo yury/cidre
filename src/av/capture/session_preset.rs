@@ -3,21 +3,25 @@ use crate::{cf, define_cf_type};
 define_cf_type!(SessionPreset(cf::String));
 
 impl SessionPreset {
+    /// preset suitable for high resolution photo quality output.
     #[inline]
     pub fn photo() -> &'static Self {
         unsafe { AVCaptureSessionPresetPhoto }
     }
 
+    /// preset suitable for high quality video and audio output.
     #[inline]
     pub fn high() -> &'static Self {
         unsafe { AVCaptureSessionPresetHigh }
     }
 
+    /// Clients may set an av::CaptureSession instance's sessionPreset to AVCaptureSessionPresetMedium to achieve output video and audio bitrates suitable for sharing over WiFi.
     #[inline]
     pub fn medium() -> &'static Self {
         unsafe { AVCaptureSessionPresetMedium }
     }
 
+    /// An AVCaptureSession preset suitable for low quality output.
     #[inline]
     pub fn low() -> &'static Self {
         unsafe { AVCaptureSessionPresetLow }
