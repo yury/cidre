@@ -1,3 +1,5 @@
+use std::ptr::{NonNull, slice_from_raw_parts_mut};
+
 use crate::{
     cf::{Allocator, Retained, Type, TypeId},
     define_cf_type, define_options, os,
@@ -108,6 +110,21 @@ impl BlockBuffer {
             total_length_out,
             data_pointer_out,
         )
+    }
+
+    #[inline]
+    pub fn data_pointer(&self, offset: usize) -> Result<(&[u8], usize), os::Status> {
+        let mut length_at_offset_out = 0;
+        let mut total_length_out = 0;
+        let mut data_pointer_out = std::ptr::null_mut();
+        unsafe { 
+            let res = self.get_data_pointer(offset, &mut length_at_offset_out, &mut total_length_out, &mut data_pointer_out);
+            if res.is_err() {
+                return Err(res);
+            }
+            let s = slice_from_raw_parts_mut(data_pointer_out, length_at_offset_out);
+            Ok((&*s, total_length_out))
+        }
     }
 }
 
