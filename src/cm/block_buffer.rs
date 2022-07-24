@@ -113,7 +113,7 @@ impl BlockBuffer {
     }
 
     #[inline]
-    pub fn data_pointer(&self, offset: usize) -> Result<(&[u8], usize), os::Status> {
+    pub fn data_pointer_at(&self, offset: usize) -> Result<(&[u8], usize), os::Status> {
         let mut length_at_offset_out = 0;
         let mut total_length_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
@@ -124,6 +124,20 @@ impl BlockBuffer {
             }
             let s = slice_from_raw_parts_mut(data_pointer_out, length_at_offset_out);
             Ok((&*s, total_length_out))
+        }
+    }
+
+    #[inline]
+    pub fn data_pointer(&self) -> Result<&[u8], os::Status> {
+        let mut length_at_offset_out = 0;
+        let mut data_pointer_out = std::ptr::null_mut();
+        unsafe { 
+            let res = self.get_data_pointer(0, &mut length_at_offset_out, std::ptr::null_mut(), &mut data_pointer_out);
+            if res.is_err() {
+                return Err(res);
+            }
+            let s = slice_from_raw_parts_mut(data_pointer_out, length_at_offset_out);
+            Ok(&*s)
         }
     }
 }

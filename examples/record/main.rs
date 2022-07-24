@@ -73,10 +73,9 @@ extern "C" fn callback(
 
     let buf = buffer.unwrap();
     let data_buffer = buf.data_buffer().unwrap();
-    let data = data_buffer.data_pointer(0).unwrap();
-    assert_eq!(data.0.len(), data_buffer.data_len());
-    assert_eq!(data.1, data_buffer.data_len());
-    println!("{:?}", data.0.len());
+    let data = data_buffer.data_pointer().unwrap();
+    assert_eq!(data.len(), data_buffer.data_len());
+    println!("{:?}", data.len());
 
     if ctx.is_ready_for_more_media_data() {
         ctx.append_sample_buffer(buf);
