@@ -23,6 +23,10 @@ pub mod sample_buffer;
 pub use sample_buffer::Flags as SampleBufferFlags;
 pub use sample_buffer::SampleBuffer;
 
+pub mod attachment;
+pub use attachment::Bearer as AttachmentBearer;
+pub use attachment::Mode as AttachmentMode;
+
 pub mod block_buffer;
 pub use block_buffer::BlockBuffer;
 pub use block_buffer::Flags as BlockBufferFlags;

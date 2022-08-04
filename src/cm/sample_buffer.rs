@@ -54,7 +54,7 @@ impl SampleTimingInfo {
 // 												scheduled read that needs to be forced to finish. */
 // 	API_AVAILABLE(macos(10.7), ios(4.0), tvos(9.0), watchos(6.0));
 
-define_cf_type!(SampleBuffer(Type));
+define_cf_type!(SampleBuffer(cm::AttachmentBearer));
 
 impl SampleBuffer {
     /// Returns whether or not a cm::SampleBuffer's data is ready.
@@ -542,6 +542,8 @@ pub mod attachment_keys {
         unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
     }
 
+
+    /// https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
     extern "C" {
         static kCMSampleAttachmentKey_NotSync: &'static cf::String;
         static kCMSampleAttachmentKey_PartialSync: &'static cf::String;

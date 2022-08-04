@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::{cmp::Ordering, intrinsics::transmute};
 
 use crate::{
     cf::{Allocator, Retained, String},
@@ -258,6 +258,20 @@ impl Time {
     pub fn zero() -> Time {
         unsafe { kCMTimeZero }
     }
+
+    #[inline]
+    pub fn max(l: Time, r: Time) -> Time {
+        unsafe {
+            CMTimeMaximum(l, r)
+        }
+    }
+
+    #[inline]
+    pub fn min(l: Time, r: Time) -> Time {
+        unsafe {
+            CMTimeMinimum(l, r)
+        }
+    }
 }
 
 impl PartialEq for Time {
@@ -271,6 +285,7 @@ impl PartialEq for Time {
     /// assert!(t1 == t1);
     /// assert!(t1 == t3);
     /// ```
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         unsafe { CMTimeCompare(*self, *other) == 0 }
     }
@@ -289,13 +304,10 @@ impl PartialOrd for Time {
     /// assert!(cm::Time::negative_infinity() < cm::Time::positive_infinity());
     /// assert!(cm::Time::zero() < cm::Time::positive_infinity());
     /// ```
+    #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        let res = unsafe { CMTimeCompare(*self, *other) };
-        match res {
-            -1 => Some(Ordering::Less),
-            0 => Some(Ordering::Equal),
-            1 => Some(Ordering::Greater),
-            _ => None,
+        unsafe {
+            transmute(CMTimeCompare(*self, *other) as i8)
         }
     }
 }
@@ -339,6 +351,8 @@ extern "C" {
     fn CMTimeCompare(time1: Time, time2: Time) -> i32;
     fn CMTimeAbsoluteValue(time: Time) -> Time;
     fn CMTimeShow(time: Time);
+    fn CMTimeMaximum(time1: Time, time2: Time) -> Time;
+    fn CMTimeMinimum(time1: Time, time2: Time) -> Time;
 
     fn CMTimeCopyDescription(allocator: Option<&Allocator>, time: Time)
         -> Option<Retained<String>>;

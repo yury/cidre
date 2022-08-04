@@ -1,7 +1,7 @@
-use std::ptr::{NonNull, slice_from_raw_parts_mut};
+use std::ptr::{slice_from_raw_parts_mut};
 
 use crate::{
-    cf::{Allocator, Retained, Type, TypeId},
+    cf::{Allocator, Retained, Type, TypeId, self},
     define_cf_type, define_options, os,
 };
 
@@ -51,6 +51,7 @@ impl BlockBuffer {
     ///
     /// assert!(b.is_empty());
     /// assert!(b.data_len() == 0);
+    /// 
     /// ```
     #[inline]
     pub fn create_empty(
@@ -117,8 +118,13 @@ impl BlockBuffer {
         let mut length_at_offset_out = 0;
         let mut total_length_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
-        unsafe { 
-            let res = self.get_data_pointer(offset, &mut length_at_offset_out, &mut total_length_out, &mut data_pointer_out);
+        unsafe {
+            let res = self.get_data_pointer(
+                offset,
+                &mut length_at_offset_out,
+                &mut total_length_out,
+                &mut data_pointer_out,
+            );
             if res.is_err() {
                 return Err(res);
             }
@@ -131,13 +137,20 @@ impl BlockBuffer {
     pub fn data_pointer(&self) -> Result<&[u8], os::Status> {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
-        unsafe { 
-            let res = self.get_data_pointer(0, &mut length_at_offset_out, std::ptr::null_mut(), &mut data_pointer_out);
+        unsafe {
+            let res = self.get_data_pointer(
+                0,
+                &mut length_at_offset_out,
+                std::ptr::null_mut(),
+                &mut data_pointer_out,
+            );
             if res.is_err() {
                 return Err(res);
             }
-            let s = slice_from_raw_parts_mut(data_pointer_out, length_at_offset_out);
-            Ok(&*s)
+            Ok(&*slice_from_raw_parts_mut(
+                data_pointer_out,
+                length_at_offset_out,
+            ))
         }
     }
 }
@@ -168,6 +181,13 @@ extern "C" {
         total_length_out: *mut usize,
         data_pointer_out: *mut *mut u8,
     ) -> os::Status;
+
+    // fn CMBlockBufferCreateWithMemoryBlock(
+    //     structure_allocator: Option<&cf::Allocator>,
+    //     memory_block: *mut u8,
+    //     block_length: usize,
+    //     block_allocator: Option<&cf::Allocator>,
+    // )
 }
 
 pub mod errors {
