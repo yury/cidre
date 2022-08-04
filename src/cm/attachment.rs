@@ -49,6 +49,18 @@ impl Bearer {
     pub fn remove_all_attachments(&mut self) {
         unsafe { CMRemoveAllAttachments(self) }
     }
+
+    #[inline]
+    pub unsafe fn copy_dictionary_of_attachments(&self, allocator: Option<&cf::Allocator>, attachment_mode: Mode) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
+        CMCopyDictionaryOfAttachments(allocator, self, attachment_mode)
+    }
+
+    #[inline]
+    pub fn dictionary_of_attachments(&self, attachment_mode: Mode) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
+        unsafe {
+            self.copy_dictionary_of_attachments(None, attachment_mode)
+        }
+    }
 }
 
 extern "C" {
@@ -67,4 +79,6 @@ extern "C" {
 
     fn CMRemoveAttachment(target: &Bearer, key: &cf::String);
     fn CMRemoveAllAttachments(target: &Bearer);
+
+    fn CMCopyDictionaryOfAttachments(allocator: Option<&cf::Allocator>, target: &Bearer, attachment_mode: Mode) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>>;
 }

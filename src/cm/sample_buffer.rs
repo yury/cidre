@@ -310,6 +310,7 @@ extern "C" {
     fn CMSampleBufferMakeDataReady(sbuf: &SampleBuffer) -> os::Status;
 }
 
+/// Use attachements()
 pub mod attachment_keys {
     use crate::cf;
 
@@ -362,6 +363,30 @@ pub mod attachment_keys {
     pub fn do_not_display() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DoNotDisplay }
     }
+
+    #[inline]
+    pub fn cryptor_subsample_auxiliary_data() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
+    }
+
+
+    /// https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
+    extern "C" {
+        static kCMSampleAttachmentKey_NotSync: &'static cf::String;
+        static kCMSampleAttachmentKey_PartialSync: &'static cf::String;
+        static kCMSampleAttachmentKey_HasRedundantCoding: &'static cf::String;
+        static kCMSampleAttachmentKey_IsDependedOnByOthers: &'static cf::String;
+        static kCMSampleAttachmentKey_DependsOnOthers: &'static cf::String;
+        static kCMSampleAttachmentKey_EarlierDisplayTimesAllowed: &'static cf::String;
+        static kCMSampleAttachmentKey_DisplayImmediately: &'static cf::String;
+        static kCMSampleAttachmentKey_DoNotDisplay: &'static cf::String;
+        static kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData: &'static cf::String;
+    }
+}
+
+/// use get_attachment or dictionary_of_attachments
+pub mod buffer_attachment_keys {
+    use crate::cf;
 
     /// cf::Boolean
     #[inline]
@@ -537,22 +562,8 @@ pub mod attachment_keys {
         unsafe { kCMSampleBufferAttachmentKey_ForceKeyFrame }
     }
 
-    #[inline]
-    pub fn cryptor_subsample_auxiliary_data() -> &'static cf::String {
-        unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
-    }
-
-
     /// https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
     extern "C" {
-        static kCMSampleAttachmentKey_NotSync: &'static cf::String;
-        static kCMSampleAttachmentKey_PartialSync: &'static cf::String;
-        static kCMSampleAttachmentKey_HasRedundantCoding: &'static cf::String;
-        static kCMSampleAttachmentKey_IsDependedOnByOthers: &'static cf::String;
-        static kCMSampleAttachmentKey_DependsOnOthers: &'static cf::String;
-        static kCMSampleAttachmentKey_EarlierDisplayTimesAllowed: &'static cf::String;
-        static kCMSampleAttachmentKey_DisplayImmediately: &'static cf::String;
-        static kCMSampleAttachmentKey_DoNotDisplay: &'static cf::String;
         static kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding: &'static cf::String;
         static kCMSampleBufferAttachmentKey_DrainAfterDecoding: &'static cf::String;
         static kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed: &'static cf::String;
@@ -574,7 +585,6 @@ pub mod attachment_keys {
         static kCMSampleBufferAttachmentKey_StillImageLensStabilizationInfo: &'static cf::String;
         static kCMSampleBufferAttachmentKey_CameraIntrinsicMatrix: &'static cf::String;
         static kCMSampleBufferAttachmentKey_ForceKeyFrame: &'static cf::String;
-        static kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData: &'static cf::String;
     }
 }
 
