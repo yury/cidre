@@ -48,7 +48,7 @@ pub use dictionary::MutableDictionary;
 pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
 
 pub mod date;
-pub use date::absolute_time_get_current;
+pub use date::absolute_time_current;
 pub use date::AbsoluteTime;
 pub use date::Date;
 pub use date::TimeInterval;

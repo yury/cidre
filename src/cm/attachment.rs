@@ -51,25 +51,25 @@ impl Bearer {
     }
 
     #[inline]
-    pub unsafe fn copy_dictionary_of_attachments(&self, allocator: Option<&cf::Allocator>, attachment_mode: Mode) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
+    pub unsafe fn copy_dictionary_of_attachments(
+        &self,
+        allocator: Option<&cf::Allocator>,
+        attachment_mode: Mode,
+    ) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
         CMCopyDictionaryOfAttachments(allocator, self, attachment_mode)
     }
 
     #[inline]
-    pub fn dictionary_of_attachments(&self, attachment_mode: Mode) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
-        unsafe {
-            self.copy_dictionary_of_attachments(None, attachment_mode)
-        }
+    pub fn dictionary_of_attachments(
+        &self,
+        attachment_mode: Mode,
+    ) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
+        unsafe { self.copy_dictionary_of_attachments(None, attachment_mode) }
     }
 }
 
 extern "C" {
-    fn CMSetAttachment(
-        target: &Bearer,
-        key: &cf::String,
-        value: &cf::Type,
-        attachment_mode: Mode,
-    );
+    fn CMSetAttachment(target: &Bearer, key: &cf::String, value: &cf::Type, attachment_mode: Mode);
 
     fn CMGetAttachment<'a>(
         target: &'a Bearer,
@@ -80,5 +80,9 @@ extern "C" {
     fn CMRemoveAttachment(target: &Bearer, key: &cf::String);
     fn CMRemoveAllAttachments(target: &Bearer);
 
-    fn CMCopyDictionaryOfAttachments(allocator: Option<&cf::Allocator>, target: &Bearer, attachment_mode: Mode) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>>;
+    fn CMCopyDictionaryOfAttachments(
+        allocator: Option<&cf::Allocator>,
+        target: &Bearer,
+        attachment_mode: Mode,
+    ) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>>;
 }

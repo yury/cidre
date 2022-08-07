@@ -1,7 +1,7 @@
-use std::ptr::{slice_from_raw_parts_mut};
+use std::ptr::slice_from_raw_parts_mut;
 
 use crate::{
-    cf::{Allocator, Retained, Type, TypeId, self},
+    cf::{self, Allocator, Retained, Type, TypeId},
     define_cf_type, define_options, os,
 };
 
@@ -51,7 +51,7 @@ impl BlockBuffer {
     ///
     /// assert!(b.is_empty());
     /// assert!(b.data_len() == 0);
-    /// 
+    ///
     /// ```
     #[inline]
     pub fn create_empty(

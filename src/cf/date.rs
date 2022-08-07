@@ -4,7 +4,17 @@ use std::{ffi::c_void, os::raw::c_double};
 pub type TimeInterval = c_double;
 pub type AbsoluteTime = TimeInterval;
 
-pub fn absolute_time_get_current() -> AbsoluteTime {
+/// The current absolute time.
+///
+/// Absolute time is measured in seconds relative to the absolute reference date of
+/// Jan 1 2001 00:00:00 GMT. A positive value represents a date after
+/// the reference date, a negative value represents a date before it.
+/// For example, the absolute time -32940326 is equivalent to
+/// December 16th, 1999 at 17:54:34. Repeated calls to this function do not guarantee
+/// monotonically increasing results. The system time may decrease due to synchronization
+/// with external time references or due to an explicit user change of the clock.
+#[inline]
+pub fn absolute_time_current() -> AbsoluteTime {
     unsafe { CFAbsoluteTimeGetCurrent() }
 }
 

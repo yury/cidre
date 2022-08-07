@@ -7,6 +7,7 @@ use crate::cf;
 ///
 /// println!("{:?}", ca::current_media_time());
 /// ```
+#[inline]
 pub fn current_media_time() -> cf::TimeInterval {
     unsafe { CACurrentMediaTime() }
 }

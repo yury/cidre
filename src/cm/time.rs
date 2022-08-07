@@ -261,16 +261,12 @@ impl Time {
 
     #[inline]
     pub fn max(l: Time, r: Time) -> Time {
-        unsafe {
-            CMTimeMaximum(l, r)
-        }
+        unsafe { CMTimeMaximum(l, r) }
     }
 
     #[inline]
     pub fn min(l: Time, r: Time) -> Time {
-        unsafe {
-            CMTimeMinimum(l, r)
-        }
+        unsafe { CMTimeMinimum(l, r) }
     }
 }
 
@@ -306,9 +302,7 @@ impl PartialOrd for Time {
     /// ```
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        unsafe {
-            transmute(CMTimeCompare(*self, *other) as i8)
-        }
+        unsafe { transmute(CMTimeCompare(*self, *other) as i8) }
     }
 }
 

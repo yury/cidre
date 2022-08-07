@@ -369,7 +369,6 @@ pub mod attachment_keys {
         unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
     }
 
-
     /// https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
     extern "C" {
         static kCMSampleAttachmentKey_NotSync: &'static cf::String;
