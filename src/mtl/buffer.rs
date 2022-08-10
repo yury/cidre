@@ -29,4 +29,14 @@ impl Buffer {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    #[inline]
+    pub fn contents(&self) -> *mut u8 {
+        msg_send!("mtl", self, sel_content) 
+    }
+
+    #[inline]
+    pub fn gpu_address(&self) -> u64 {
+        msg_send!("mtl", self, sel_gpuAddress)  
+    }
 }

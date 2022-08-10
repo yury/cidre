@@ -1,9 +1,9 @@
 use crate::cf::Retained;
-use crate::{define_mtl, define_obj_type};
+use crate::{define_mtl, define_obj_type, msg_send};
 
 use crate::ns::Id;
 
-use super::Function;
+use super::{Function, ResourceID};
 
 define_obj_type!(Reflection(Id));
 
@@ -89,6 +89,11 @@ impl State {
     #[inline]
     pub fn static_threadgroup_memory_length(&self) -> usize {
         unsafe { rsel_staticThreadgroupMemoryLength(self) }
+    }
+
+    #[inline]
+    pub fn gpu_resouce_id(&self) -> ResourceID {
+        msg_send!("mtl", self, sel_gpuResourceID) 
     }
 }
 

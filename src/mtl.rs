@@ -1,6 +1,7 @@
 pub mod types;
 pub use types::Origin;
 pub use types::Size;
+pub use types::ResourceID;
 
 pub mod pixel_format;
 pub use pixel_format::PixelFormat;

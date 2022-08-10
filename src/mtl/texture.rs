@@ -5,7 +5,7 @@ use crate::{
 };
 use crate::{define_mtl, io, msg_send};
 
-use super::{resource, Device, PixelFormat, Resource};
+use super::{resource, Device, PixelFormat, Resource, ResourceID};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -328,30 +328,35 @@ impl Texture {
 
     #[inline]
     pub fn texture_view_with_pixel_format(
-        self: &Texture,
+        &self,
         pixel_format: PixelFormat,
     ) -> Option<Retained<Texture>> {
         unsafe { rsel_newTextureViewWithPixelFormat(self, pixel_format) }
     }
 
     #[inline]
-    pub fn io_surface(self: &Texture) -> Option<&io::Surface> {
+    pub fn io_surface(&self) -> Option<&io::Surface> {
         unsafe { rsel_iosurface(self) }
     }
 
     #[inline]
-    pub fn io_surface_plane(self: &Texture) -> usize {
+    pub fn io_surface_plane(&self) -> usize {
         unsafe { rsel_iosurfacePlane(self) }
     }
 
     #[inline]
-    pub fn texture_type(self: &Texture) -> Type {
+    pub fn texture_type(&self) -> Type {
         unsafe { rsel_textureType(self) }
     }
 
     #[inline]
-    pub fn pixel_format(self: &Texture) -> PixelFormat {
+    pub fn pixel_format(&self) -> PixelFormat {
         unsafe { rsel_pixelFormat(self) }
+    }
+
+    #[inline]
+    pub fn gpu_resouce_id(&self) -> ResourceID {
+        msg_send!("mtl", self, sel_gpuResourceID) 
     }
 }
 

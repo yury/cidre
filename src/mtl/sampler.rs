@@ -1,4 +1,6 @@
-use crate::{define_mtl, define_obj_type, objc::Id};
+use crate::{define_mtl, define_obj_type, objc::Id, msg_send};
+
+use super::ResourceID;
 
 #[repr(usize)]
 pub enum MinMagFilter {
@@ -36,4 +38,9 @@ define_obj_type!(State(Id));
 
 impl State {
     define_mtl!(device, label);
+
+    #[inline]
+    pub fn gpu_resouce_id(&self) -> ResourceID {
+        msg_send!("mtl", self, sel_gpuResourceID) 
+    }
 }

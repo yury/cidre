@@ -1,10 +1,10 @@
 use crate::{
     cf::{ArrayOf, Retained},
     define_mtl, define_obj_type,
-    objc::Id,
+    objc::Id, msg_send,
 };
 
-use super::{argument::Argument, Function, PixelFormat};
+use super::{argument::Argument, Function, PixelFormat, ResourceID};
 
 #[repr(usize)]
 pub enum BlendFactor {
@@ -292,6 +292,11 @@ impl State {
 
     pub fn imageblock_sample_length(&self) -> usize {
         unsafe { rsel_imageblockSampleLength(self) }
+    }
+    
+    #[inline]
+    pub fn gpu_resouce_id(&self) -> ResourceID {
+        msg_send!("mtl", self, sel_gpuResourceID) 
     }
 }
 

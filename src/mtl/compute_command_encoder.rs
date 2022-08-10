@@ -38,6 +38,10 @@ impl ComputeCommandEncoder {
         msg_send!("mtl", self, sel_dispatchThreadgroups_threadsPerThreadgroup, threadgroups_per_grid, threads_per_threadgroup)
     }
 
+    #[inline]
+    pub fn set_image_block_size(&mut self, width: usize, height: usize) {
+        msg_send!("mtl", self, sel_setImageblockWidth_height, width, height)
+    }
 
 }
 

@@ -544,6 +544,10 @@ SEL sel_dispatchThreads_threadsPerThreadgroup;
 SEL sel_dispatchThreadgroups_threadsPerThreadgroup;
 //- (void)setTextures:(const id <MTLTexture> __nullable [__nonnull])textures withRange:(NSRange)range
 SEL sel_setTextures_withRange;
+SEL sel_setImageblockWidth_height;
+SEL sel_contents;
+SEL sel_gpuAddress;
+SEL sel_gpuResourceID;
 
 
 __attribute__((constructor))
@@ -578,7 +582,10 @@ static void mtl_initializer()
       sel_dispatchThreads_threadsPerThreadgroup = @selector( dispatchThreads:threadsPerThreadgroup:);
       sel_dispatchThreadgroups_threadsPerThreadgroup = @selector(dispatchThreadgroups:threadsPerThreadgroup:);
       sel_setTextures_withRange = @selector(setTextures:withRange:);
-      
+      sel_setImageblockWidth_height = @selector(setImageblockWidth:height:);
+      sel_contents = @selector(contents);
+      sel_gpuAddress = @selector(gpuAddress);
+      sel_gpuResourceID = @selector(gpuResourceID);
 
 
       initialized = 1;
