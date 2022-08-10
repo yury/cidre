@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cf, define_obj_type, ns, objc::Delegate};
+use crate::{cf, define_obj_type, ca, ns, msg_send, objc::Delegate};
 
 define_obj_type!(DisplayLink(ns::Id));
 
@@ -23,6 +23,9 @@ pub trait DisplayLinkDelegate {
 
         Delegate { delegate: b, obj }
     }
+}
+
+impl DisplayLink {
 
     /// Adds the receiver to the given run-loop and mode. Unless paused, it
     /// will fire every vsync until removed. Each object may only be added
@@ -80,7 +83,7 @@ pub trait DisplayLinkDelegate {
 
 #[link(name = "ca", kind = "static")]
 extern "C" {
-    fn make_display_link_delegate<'a>(vtable: *const *const c_void) -> cf::Retained<'a, ns::Id>;
+    fn make_display_link_delegate(vtable: *const *const c_void) -> cf::Retained<ns::Id>;
 
     fn wsel_addToRunLoop_forMode(link: &DisplayLink, runloop: &cf::RunLoop, mode: &cf::RunLoopMode);
     fn wsel_removeFromRunLoop_forMode(

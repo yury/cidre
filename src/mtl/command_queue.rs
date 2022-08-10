@@ -13,4 +13,9 @@ impl CommandQueue {
     pub fn command_buffer<'pool>(&self) -> Option<&'pool CommandBuffer> {
         msg_send!("mtl", self, sel_commandBuffer)
     }
+
+    #[inline]
+    pub fn command_buffer_with_unretained_refs<'pool>(&self) -> Option<&'pool CommandBuffer> {
+        msg_send!("mtl", self, sel_commandBufferWithUnretainedReferences)
+    }
 }

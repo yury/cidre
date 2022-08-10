@@ -46,6 +46,8 @@ pub mod cat;
 #[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
 pub mod ui;
 
+pub mod time;
+
 #[macro_export]
 macro_rules! define_options {
     ($NewType:ident($BaseType:path)) => {

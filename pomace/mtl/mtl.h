@@ -518,6 +518,7 @@ rsel(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, M
 
 SEL sel_device;
 SEL sel_commandBuffer;
+SEL sel_commandBufferWithUnretainedReferences;
 SEL sel_commandQueue;
 SEL sel_commit;
 SEL sel_endEncoding;
@@ -538,6 +539,11 @@ SEL sel_setTexture_atIndex;
 SEL sel_setArgumentBuffer_offset;
 SEL sel_aligment;
 SEL sel_encodedLength;
+SEL sel_setComputePipelineState;
+SEL sel_dispatchThreads_threadsPerThreadgroup;
+SEL sel_dispatchThreadgroups_threadsPerThreadgroup;
+//- (void)setTextures:(const id <MTLTexture> __nullable [__nonnull])textures withRange:(NSRange)range
+SEL sel_setTextures_withRange;
 
 
 __attribute__((constructor))
@@ -548,6 +554,8 @@ static void mtl_initializer()
       
       sel_device = @selector(device);
       sel_commandBuffer = @selector(commandBuffer);
+      sel_commandBufferWithUnretainedReferences = @selector(commandBufferWithUnretainedReferences);
+      
       sel_commandQueue = @selector(commandQueue);
       sel_commit = @selector(commit);
       sel_endEncoding = @selector(endEncoding);
@@ -566,6 +574,11 @@ static void mtl_initializer()
       sel_setArgumentBuffer_offset = @selector(setArgumentBuffer:offset:);
       sel_aligment = @selector(alignment);
       sel_encodedLength = @selector(encodedLength);
+      sel_setComputePipelineState = @selector(setComputePipelineState:);
+      sel_dispatchThreads_threadsPerThreadgroup = @selector( dispatchThreads:threadsPerThreadgroup:);
+      sel_dispatchThreadgroups_threadsPerThreadgroup = @selector(dispatchThreadgroups:threadsPerThreadgroup:);
+      sel_setTextures_withRange = @selector(setTextures:withRange:);
+      
 
 
       initialized = 1;
