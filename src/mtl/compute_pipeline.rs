@@ -3,7 +3,7 @@ use crate::{define_mtl, define_obj_type, msg_send};
 
 use crate::ns::Id;
 
-use super::{Function, ResourceID};
+use super::Function;
 
 define_obj_type!(Reflection(Id));
 
@@ -74,7 +74,7 @@ extern "C" {
 define_obj_type!(State(Id));
 
 impl State {
-    define_mtl!(device, label);
+    define_mtl!(device, label, gpu_resouce_id);
 
     #[inline]
     pub fn max_total_threads_per_threadgroup(&self) -> usize {
@@ -89,11 +89,6 @@ impl State {
     #[inline]
     pub fn static_threadgroup_memory_length(&self) -> usize {
         unsafe { rsel_staticThreadgroupMemoryLength(self) }
-    }
-
-    #[inline]
-    pub fn gpu_resouce_id(&self) -> ResourceID {
-        msg_send!("mtl", self, sel_gpuResourceID) 
     }
 }
 

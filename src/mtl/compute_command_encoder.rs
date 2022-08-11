@@ -1,4 +1,4 @@
-use crate::{define_mtl, mtl, define_obj_type, msg_send, ns};
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
 
 use super::CommandEncoder;
 
@@ -27,22 +27,41 @@ impl ComputeCommandEncoder {
     pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range) {
         msg_send!("mtl", self, sel_setTextures_withRange, textures, range)
     }
-    
+
     #[inline]
-    pub fn dispatch_threads(&mut self, threads_per_grid: mtl::Size, threads_per_threadgroup: mtl::Size) {
-        msg_send!("mtl", self, sel_dispatchThreads_threadsPerThreadgroup, threads_per_grid, threads_per_threadgroup)
+    pub fn dispatch_threads(
+        &mut self,
+        threads_per_grid: mtl::Size,
+        threads_per_threadgroup: mtl::Size,
+    ) {
+        msg_send!(
+            "mtl",
+            self,
+            sel_dispatchThreads_threadsPerThreadgroup,
+            threads_per_grid,
+            threads_per_threadgroup
+        )
     }
 
     #[inline]
-    pub fn dispatch_threadgroups(&mut self, threadgroups_per_grid: mtl::Size, threads_per_threadgroup: mtl::Size) {
-        msg_send!("mtl", self, sel_dispatchThreadgroups_threadsPerThreadgroup, threadgroups_per_grid, threads_per_threadgroup)
+    pub fn dispatch_threadgroups(
+        &mut self,
+        threadgroups_per_grid: mtl::Size,
+        threads_per_threadgroup: mtl::Size,
+    ) {
+        msg_send!(
+            "mtl",
+            self,
+            sel_dispatchThreadgroups_threadsPerThreadgroup,
+            threadgroups_per_grid,
+            threads_per_threadgroup
+        )
     }
 
     #[inline]
     pub fn set_image_block_size(&mut self, width: usize, height: usize) {
         msg_send!("mtl", self, sel_setImageblockWidth_height, width, height)
     }
-
 }
 
 #[link(name = "mtl", kind = "static")]

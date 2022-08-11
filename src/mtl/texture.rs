@@ -5,7 +5,7 @@ use crate::{
 };
 use crate::{define_mtl, io, msg_send};
 
-use super::{resource, Device, PixelFormat, Resource, ResourceID};
+use super::{resource, Device, PixelFormat, Resource};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -301,7 +301,7 @@ define_obj_type!(Texture(Resource));
 ///
 /// ```
 impl Texture {
-    define_mtl!(width, height, depth);
+    define_mtl!(width, height, depth, gpu_resouce_id);
 
     /// ```rust
     /// use cidre::mtl;
@@ -354,11 +354,6 @@ impl Texture {
     #[inline]
     pub fn pixel_format(&self) -> PixelFormat {
         unsafe { rsel_pixelFormat(self) }
-    }
-
-    #[inline]
-    pub fn gpu_resouce_id(&self) -> ResourceID {
-        msg_send!("mtl", self, sel_gpuResourceID)
     }
 }
 

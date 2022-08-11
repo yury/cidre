@@ -230,12 +230,16 @@ define_obj_type!(ColorAttachmentDescriptorArray(Id));
 impl ColorAttachmentDescriptorArray {
     #[inline]
     pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor {
-        unsafe { MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index) }
+        unsafe {
+            MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index)
+        }
     }
 
     #[inline]
     pub fn get_mut_at(&self, index: usize) -> &mut ColorAttachmentDescriptor {
-        unsafe { MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index) }
+        unsafe {
+            MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index)
+        }
     }
 
     #[inline]

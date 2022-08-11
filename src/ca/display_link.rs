@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cf, define_obj_type, ca, ns, msg_send, objc::Delegate};
+use crate::{ca, cf, define_obj_type, msg_send, ns, objc::Delegate};
 
 define_obj_type!(DisplayLink(ns::Id));
 
@@ -26,7 +26,6 @@ pub trait DisplayLinkDelegate {
 }
 
 impl DisplayLink {
-
     /// Adds the receiver to the given run-loop and mode. Unless paused, it
     /// will fire every vsync until removed. Each object may only be added
     /// to a single run-loop, but it may be added in multiple modes at once.

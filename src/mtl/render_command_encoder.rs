@@ -137,17 +137,37 @@ impl RenderCommandEncoder {
 
     #[inline]
     pub fn set_vertex_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
-        msg_send!("mtl", self, sel_setVertexBuffer_offset_atIndex, buffer, offset, at_index)
+        msg_send!(
+            "mtl",
+            self,
+            sel_setVertexBuffer_offset_atIndex,
+            buffer,
+            offset,
+            at_index
+        )
     }
 
     #[inline]
     pub fn set_fragment_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
-        msg_send!("mtl", self, sel_setFragmentBuffer_offset_atIndex, buffer, offset, at_index)
+        msg_send!(
+            "mtl",
+            self,
+            sel_setFragmentBuffer_offset_atIndex,
+            buffer,
+            offset,
+            at_index
+        )
     }
 
     #[inline]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&Texture>, at_index: usize) {
-        msg_send!("mtl", self, sel_setFragmentTexture_atIndex, texture, at_index)
+        msg_send!(
+            "mtl",
+            self,
+            sel_setFragmentTexture_atIndex,
+            texture,
+            at_index
+        )
     }
 
     #[inline]

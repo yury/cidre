@@ -1,7 +1,7 @@
 pub mod types;
 pub use types::Origin;
-pub use types::Size;
 pub use types::ResourceID;
+pub use types::Size;
 
 pub mod pixel_format;
 pub use pixel_format::PixelFormat;
@@ -261,6 +261,13 @@ macro_rules! define_mtl {
                 );
             }
             unsafe { wsel_setDepth(self, value) }
+        }
+    };
+
+    (gpu_resouce_id) => {
+        #[inline]
+        pub fn gpu_resouce_id(&self) -> crate::mtl::ResourceID {
+            msg_send!("mtl", self, sel_gpuResourceID)
         }
     };
 

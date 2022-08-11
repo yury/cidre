@@ -559,6 +559,7 @@ SEL sel_drawPrimitives_vertexStart_vertexCount_instanceCount;
 SEL sel_setVertexBuffer_offset_atIndex;
 SEL sel_setFragmentBuffer_offset_atIndex;
 SEL sel_setRenderPipelineState;
+SEL sel_computeCommandEncoderWithDescriptor;
 
 
 __attribute__((constructor))
@@ -604,6 +605,7 @@ static void mtl_initializer()
       sel_setVertexBuffer_offset_atIndex = @selector(setVertexBuffer:offset:atIndex:);
       sel_setFragmentBuffer_offset_atIndex = @selector(setFragmentBuffer:offset:atIndex:);
       sel_setRenderPipelineState = @selector(setRenderPipelineState:);
+      sel_computeCommandEncoderWithDescriptor = @selector(computeCommandEncoderWithDescriptor:);
 
 
       initialized = 1;

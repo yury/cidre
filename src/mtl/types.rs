@@ -20,5 +20,5 @@ pub struct Origin {
 #[repr(C)]
 /// Handle of the GPU resource suitable for storing in an Argument Buffer
 pub struct ResourceID {
-    _impl: u64 
+    _impl: u64,
 }

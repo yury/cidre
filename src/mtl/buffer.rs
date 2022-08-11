@@ -32,11 +32,11 @@ impl Buffer {
 
     #[inline]
     pub fn contents(&self) -> *mut u8 {
-        msg_send!("mtl", self, sel_content) 
+        msg_send!("mtl", self, sel_content)
     }
 
     #[inline]
     pub fn gpu_address(&self) -> u64 {
-        msg_send!("mtl", self, sel_gpuAddress)  
+        msg_send!("mtl", self, sel_gpuAddress)
     }
 }

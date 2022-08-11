@@ -1,6 +1,6 @@
-use crate::{define_obj_type, objc::Id, msg_send};
+use crate::{define_mtl, define_obj_type, msg_send, objc::Id};
 
-use super::{Resource, ResourceID};
+use super::Resource;
 
 #[repr(C)]
 pub struct ExecutionRange {
@@ -12,8 +12,5 @@ define_obj_type!(Descriptor(Id));
 define_obj_type!(IndirectCommandBuffer(Resource));
 
 impl IndirectCommandBuffer {
-    #[inline]
-    pub fn gpu_resouce_id(&self) -> ResourceID {
-        msg_send!("mtl", self, sel_gpuResourceID) 
-    }
+    define_mtl!(gpu_resouce_id);
 }

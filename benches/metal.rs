@@ -212,32 +212,19 @@ fn foo() -> BenchState {
     foo.set_texture(Some(&text));
 
     let vertex_data = [
-        -1.0f32,
-        -1.0,
-        0.0,
-        1.0,
-        // -
-        -1.0,
-        1.0,
-        0.0,
-        0.0,
-        // -
-        1.0,
-        -1.0,
-        1.0,
-        1.0,
-        // -
-        1.0,
-        1.0,
-        1.0,
-        0.0,
+        -1.0f32, -1.0, 0.0, 1.0, // -
+        -1.0, 1.0, 0.0, 0.0, // -
+        1.0, -1.0, 1.0, 1.0, // -
+        1.0, 1.0, 1.0, 0.0,
     ];
 
-    let vertex_buf = device.buffer_with_bytes_length_and_options(
-        vertex_data.as_ptr() as _,
-        (vertex_data.len() * std::mem::size_of::<f32>()) as _,
-        mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT
-    ).unwrap();
+    let vertex_buf = device
+        .buffer_with_bytes_length_and_options(
+            vertex_data.as_ptr() as _,
+            (vertex_data.len() * std::mem::size_of::<f32>()) as _,
+            mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT,
+        )
+        .unwrap();
 
     // foo.set_texture(value)
 
@@ -339,7 +326,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             cmd_buf.wait_until_completed();
         })
     });
-    
+
     c.bench_function("render", |b| {
         b.iter(|| {
             let cmd_buf = queue.command_buffer().unwrap();
