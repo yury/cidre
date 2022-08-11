@@ -1,10 +1,10 @@
 use std::ffi::c_void;
 
-use crate::define_mtl;
 use crate::mtl::RenderPipelineState;
+use crate::{define_mtl, msg_send};
 use crate::{define_obj_type, objc::Id};
 
-use super::{Buffer, CommandEncoder};
+use super::{Buffer, CommandEncoder, Texture};
 
 #[repr(usize)]
 pub enum PrimitiveType {
@@ -125,68 +125,69 @@ define_obj_type!(RenderCommandEncoder(CommandEncoder));
 impl RenderCommandEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
+    #[inline]
     pub fn set_render_pipeline_state(&mut self, state: &RenderPipelineState) {
-        unsafe { wsel_setRenderPipelineState(self, state) }
+        msg_send!("mtl", self, sel_setRenderPipelineState, state)
     }
 
+    #[inline]
     pub fn set_vertex_bytes(&mut self, bytes: &[u8], at_index: usize) {
         unsafe { wsel_setVertexBytes(self, bytes.as_ptr() as _, bytes.len(), at_index) }
     }
 
+    #[inline]
     pub fn set_vertex_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
-        unsafe { wsel_setVertexBuffer(self, buffer, offset, at_index) }
+        msg_send!("mtl", self, sel_setVertexBuffer_offset_atIndex, buffer, offset, at_index)
     }
 
+    #[inline]
     pub fn set_fragment_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
-        unsafe { wsel_setFragmentBuffer(self, buffer, offset, at_index) }
+        msg_send!("mtl", self, sel_setFragmentBuffer_offset_atIndex, buffer, offset, at_index)
     }
 
-    pub fn draw(
+    #[inline]
+    pub fn set_fragment_texture_at(&mut self, texture: Option<&Texture>, at_index: usize) {
+        msg_send!("mtl", self, sel_setFragmentTexture_atIndex, texture, at_index)
+    }
+
+    #[inline]
+    pub fn draw_primitives_instance_count(
         &mut self,
         primitive_type: PrimitiveType,
         vertex_start: usize,
         vertex_count: usize,
         instance_count: usize,
     ) {
-        unsafe {
-            ic_wsel_drawPrimitives(
-                self,
-                primitive_type,
-                vertex_start,
-                vertex_count,
-                instance_count,
-            )
-        }
+        msg_send!(
+            "mtl",
+            self,
+            sel_drawPrimitives_vertexStart_vertexCount_instanceCount,
+            primitive_type,
+            vertex_start,
+            vertex_count,
+            instance_count
+        )
     }
 
+    #[inline]
     pub fn draw_primitives(
         &mut self,
         primitive_type: PrimitiveType,
         vertex_start: usize,
         vertex_count: usize,
     ) {
-        unsafe { wsel_drawPrimitives(self, primitive_type, vertex_start, vertex_count) }
+        msg_send!(
+            "mtl",
+            self,
+            sel_drawPrimitives_vertexStart_vertexCount,
+            primitive_type,
+            vertex_start,
+            vertex_count
+        )
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn wsel_setRenderPipelineState(id: &mut Id, state: &RenderPipelineState);
     fn wsel_setVertexBytes(id: &mut Id, bytes: *const c_void, length: usize, at_index: usize);
-    fn wsel_setVertexBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
-    fn wsel_setFragmentBuffer(id: &mut Id, buffer: Option<&Buffer>, offset: usize, at_index: usize);
-
-    fn wsel_drawPrimitives(
-        id: &mut Id,
-        primitive_type: PrimitiveType,
-        vertex_start: usize,
-        vertex_count: usize,
-    );
-    fn ic_wsel_drawPrimitives(
-        id: &mut Id,
-        primitive_type: PrimitiveType,
-        vertex_start: usize,
-        vertex_count: usize,
-        instance_count: usize,
-    );
 }

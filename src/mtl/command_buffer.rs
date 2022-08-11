@@ -5,7 +5,10 @@ use crate::{define_mtl, define_obj_type, msg_send};
 use crate::ns::Id;
 use crate::objc::block::CompletionHandlerA;
 
-use super::{BlitCommandEncoder, CommandQueue, ComputeCommandEncoder};
+use super::{
+    BlitCommandEncoder, CommandQueue, ComputeCommandEncoder, RenderCommandEncoder,
+    RenderPassDescriptor,
+};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -92,6 +95,19 @@ impl CommandBuffer {
     #[inline]
     pub fn compute_command_encoder<'new>(&self) -> Option<&'new mut ComputeCommandEncoder> {
         msg_send!("mtl", self, sel_computeCommandEncoder)
+    }
+
+    #[inline]
+    pub fn render_command_encoder_with_descriptor<'new>(
+        &self,
+        descriptor: &RenderPassDescriptor,
+    ) -> Option<&'new mut RenderCommandEncoder> {
+        msg_send!(
+            "mtl",
+            self,
+            sel_renderCommandEncoderWithDescriptor,
+            descriptor
+        )
     }
 }
 

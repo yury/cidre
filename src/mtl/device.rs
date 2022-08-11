@@ -255,6 +255,32 @@ impl Device {
     }
 
     #[inline]
+    pub unsafe fn render_pipeline_state_with_descriptor_error(
+        &self,
+        descriptor: &mtl::RenderPipelineDescriptor,
+        error: &mut Option<&cf::Error>,
+    ) -> Option<Retained<mtl::RenderPipelineState>> {
+        rsel_newRenderPipelineStateWithDescriptor_error(self, descriptor, error)
+    }
+
+    #[inline]
+    pub fn render_pipeline_state_with_descriptor<'a>(
+        &self,
+        descriptor: &mtl::RenderPipelineDescriptor,
+    ) -> Result<Retained<mtl::RenderPipelineState>, &'a cf::Error> {
+        let mut error = None;
+        unsafe {
+            let res =
+                Self::render_pipeline_state_with_descriptor_error(&self, descriptor, &mut error);
+            if res.is_some() {
+                Ok(transmute(res))
+            } else {
+                Err(transmute(error))
+            }
+        }
+    }
+
+    #[inline]
     pub fn compute_pipeline_state_with_function<'a>(
         &self,
         function: &mtl::Function,
@@ -411,6 +437,12 @@ extern "C" {
         function: &mtl::Function,
         error: &mut Option<&'a cf::Error>,
     ) -> Option<Retained<mtl::ComputePipelineState>>;
+
+    fn rsel_newRenderPipelineStateWithDescriptor_error<'a>(
+        id: &Device,
+        descriptor: &mtl::RenderPipelineDescriptor,
+        error: &mut Option<&'a cf::Error>,
+    ) -> Option<Retained<mtl::RenderPipelineState>>;
 
     fn rsel_newBufferWithLength_options(
         id: &Device,

@@ -342,6 +342,17 @@ macro_rules! define_mtl {
         }
     };
 
+    (set_storage_mode) => {
+        #[inline]
+        pub fn set_storage_mode(&mut self, value: crate::mtl::StorageMode) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setStorageMode(id: &crate::ns::Id, value: crate::mtl::StorageMode);
+            }
+            unsafe { wsel_setStorageMode(self, value) }
+        }
+    };
+
     (cpu_cache_mode) => {
         #[inline]
         pub fn cpu_cache_mode(&self) -> crate::mtl::CPUCacheMode {

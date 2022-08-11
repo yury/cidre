@@ -91,6 +91,8 @@ pub enum CompressionType {
 define_obj_type!(Descriptor(Id));
 
 impl Descriptor {
+    define_mtl!(storage_mode, set_storage_mode);
+
     /// ```rust
     /// use cidre::mtl;
     ///
@@ -356,7 +358,7 @@ impl Texture {
 
     #[inline]
     pub fn gpu_resouce_id(&self) -> ResourceID {
-        msg_send!("mtl", self, sel_gpuResourceID) 
+        msg_send!("mtl", self, sel_gpuResourceID)
     }
 }
 

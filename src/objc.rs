@@ -62,6 +62,60 @@ impl Id {
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c)
     }
+
+    #[inline]
+    pub unsafe fn sel_abcd<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d)
+    }
+
+    #[inline]
+    pub unsafe fn sel_abcde<R, A, B, C, D, E>(
+        &self,
+        selector: &Sel,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d, e)
+    }
+
+    #[inline]
+    pub unsafe fn sel_abcdef<R, A, B, C, D, E, F>(
+        &self,
+        selector: &Sel,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+        f: F,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E, F) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d, e, f)
+    }
+    #[inline]
+    pub unsafe fn sel_abcdefg<R, A, B, C, D, E, F, G>(
+        &self,
+        selector: &Sel,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+        f: F,
+        g: G,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E, F, G) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d, e, f, g)
+    }
 }
 
 impl Retain for Id {
@@ -110,6 +164,47 @@ where
 #[macro_export]
 macro_rules! msg_send {
     // TODO: we should pass name and kind
+    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident, $f:ident, $g:ident) => {{
+        #[link(name = $lib, kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_abcdefg($sel, $a, $b, $c, $d, $e, $f, $g) }
+    }};
+    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident, $f:ident) => {{
+        #[link(name = $lib, kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_abcdef($sel, $a, $b, $c, $d, $e, $f) }
+    }};
+    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident) => {{
+        #[link(name = $lib, kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_abcde($sel, $a, $b, $c, $d, $e) }
+    }};
+    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident) => {{
+        #[link(name = $lib, kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_abcd($sel, $a, $b, $c, $d) }
+    }};
+    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident) => {{
+        #[link(name = $lib, kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel_abc($sel, $a, $b, $c) }
+    }};
+
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {

@@ -107,7 +107,7 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn default<'autoreleased>() -> &'autoreleased Descriptor {
+    pub fn default<'autoreleased>() -> &'autoreleased mut Descriptor {
         unsafe { MTLRenderPassDescriptor_renderPassDescriptor() }
     }
 
@@ -172,7 +172,7 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn set_render_width(&mut self, value: usize) {
+    pub fn set_render_target_width(&mut self, value: usize) {
         unsafe { wsel_setRenderTargetWidth(self, value) }
     }
 
@@ -200,7 +200,7 @@ impl Descriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLRenderPassDescriptor_new() -> Retained<Descriptor>;
-    fn MTLRenderPassDescriptor_renderPassDescriptor<'autoreleased>() -> &'autoreleased Descriptor;
+    fn MTLRenderPassDescriptor_renderPassDescriptor<'autoreleased>() -> &'autoreleased mut Descriptor;
 
     fn rsel_colorAttachments(id: &Id) -> &ColorAttachmentDescriptorArray;
 
@@ -230,13 +230,18 @@ define_obj_type!(ColorAttachmentDescriptorArray(Id));
 impl ColorAttachmentDescriptorArray {
     #[inline]
     pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor {
-        unsafe { MTLRenderPassColorAttachmentDescriptorArray_objectAtIndexedSubscript(self, index) }
+        unsafe { MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index) }
+    }
+
+    #[inline]
+    pub fn get_mut_at(&self, index: usize) -> &mut ColorAttachmentDescriptor {
+        unsafe { MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index) }
     }
 
     #[inline]
     pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor) {
         unsafe {
-            MTLRenderPassColorAttachmentDescriptorArray_setObjectAtIndexedSubscript(
+            MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
                 self,
                 Some(value),
                 index,
@@ -247,7 +252,7 @@ impl ColorAttachmentDescriptorArray {
     #[inline]
     pub fn reset_at(&mut self, index: usize) {
         unsafe {
-            MTLRenderPassColorAttachmentDescriptorArray_setObjectAtIndexedSubscript(
+            MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
                 self, None, index,
             )
         }
@@ -265,12 +270,12 @@ impl Index<usize> for ColorAttachmentDescriptorArray {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPassColorAttachmentDescriptorArray_objectAtIndexedSubscript(
+    fn MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
         id: &Id,
         index: usize,
-    ) -> &ColorAttachmentDescriptor;
+    ) -> &mut ColorAttachmentDescriptor;
 
-    fn MTLRenderPassColorAttachmentDescriptorArray_setObjectAtIndexedSubscript(
+    fn MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
         id: &mut Id,
         value: Option<&ColorAttachmentDescriptor>,
         index: usize,

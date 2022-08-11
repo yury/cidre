@@ -72,6 +72,10 @@ sel_ab_ch_ab(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions 
 NS_RETURNS_RETAINED
 rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
 
+NS_RETURNS_RETAINED
+rsel_ab(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
+//- (nullable id <MTLRenderPipelineState>)newRenderPipelineStateWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(__autoreleasing NSError **)error;
+
 //- (nullable id <MTLBuffer>)newBufferWithLength:(NSUInteger)length options:(MTLResourceOptions)options;
 NS_RETURNS_RETAINED
 rsel_ab(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<MTLBuffer> _Nullable)
@@ -359,7 +363,7 @@ wsel(, id, popDebugGroup)
 #pragma mark - MTLRenderCommandEncoder
 
 //- (void)setRenderPipelineState:(id <MTLRenderPipelineState>)pipelineState;
-wsel_a(, id, setRenderPipelineState, id <MTLRenderPipelineState>)
+//wsel_a(, id, setRenderPipelineState, id <MTLRenderPipelineState>)
 //- (void)setVertexBytes:(const void *)bytes length:(NSUInteger)length atIndex:(NSUInteger)index API_AVAILABLE(macos(10.11), ios(8.3));
 wsel_abc(, id, setVertexBytes, const void *, length, NSUInteger, atIndex, NSUInteger)
 //- (void)setVertexBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
@@ -374,9 +378,9 @@ wsel_abc(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, 
 wsel_a(, id, useHeap, id <MTLHeap> _Nonnull)
 
 //- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount instanceCount:(NSUInteger)instanceCount;
-wsel_abcd(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger, instanceCount, NSUInteger)
+//wsel_abcd(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger, instanceCount, NSUInteger)
 //- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount;
-wsel_abc(, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger)
+//wsel_abc(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger)
 
 
 
@@ -535,6 +539,7 @@ SEL sel_useResources_count_usage;
 SEL sel_enqueue;
 //- (void)setTexture:(nullable id <MTLTexture>)texture atIndex:(NSUInteger)index;
 SEL sel_setTexture_atIndex;
+SEL sel_setFragmentTexture_atIndex;
 //- (void)setArgumentBuffer:(nullable id <MTLBuffer>)argumentBuffer offset:(NSUInteger)offset;
 SEL sel_setArgumentBuffer_offset;
 SEL sel_aligment;
@@ -548,6 +553,12 @@ SEL sel_setImageblockWidth_height;
 SEL sel_contents;
 SEL sel_gpuAddress;
 SEL sel_gpuResourceID;
+SEL sel_renderCommandEncoderWithDescriptor;
+SEL sel_drawPrimitives_vertexStart_vertexCount;
+SEL sel_drawPrimitives_vertexStart_vertexCount_instanceCount;
+SEL sel_setVertexBuffer_offset_atIndex;
+SEL sel_setFragmentBuffer_offset_atIndex;
+SEL sel_setRenderPipelineState;
 
 
 __attribute__((constructor))
@@ -575,6 +586,7 @@ static void mtl_initializer()
       sel_useResources_count_usage = @selector(useResources:count:usage:);
       sel_enqueue = @selector(enqueue);
       sel_setTexture_atIndex = @selector(setTexture:atIndex:);
+      sel_setFragmentTexture_atIndex = @selector(setFragmentTexture:atIndex:);
       sel_setArgumentBuffer_offset = @selector(setArgumentBuffer:offset:);
       sel_aligment = @selector(alignment);
       sel_encodedLength = @selector(encodedLength);
@@ -586,6 +598,12 @@ static void mtl_initializer()
       sel_contents = @selector(contents);
       sel_gpuAddress = @selector(gpuAddress);
       sel_gpuResourceID = @selector(gpuResourceID);
+      sel_renderCommandEncoderWithDescriptor = @selector(renderCommandEncoderWithDescriptor:);
+      sel_drawPrimitives_vertexStart_vertexCount = @selector(drawPrimitives:vertexStart:vertexCount:);
+      sel_drawPrimitives_vertexStart_vertexCount_instanceCount = @selector(drawPrimitives:vertexStart:vertexCount:instanceCount:);
+      sel_setVertexBuffer_offset_atIndex = @selector(setVertexBuffer:offset:atIndex:);
+      sel_setFragmentBuffer_offset_atIndex = @selector(setFragmentBuffer:offset:atIndex:);
+      sel_setRenderPipelineState = @selector(setRenderPipelineState:);
 
 
       initialized = 1;
