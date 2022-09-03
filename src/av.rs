@@ -72,6 +72,7 @@ pub use asset::WriterInput as AssetWriterInput;
 pub use asset::WriterStatus as AssetWriterStatus;
 
 pub mod audio;
+pub use audio::Session as AudioSession;
 pub use audio::time::Time as AudioTime;
 pub use audio::Buffer as AudioBuffer;
 pub use audio::CommonFormat as AudioCommonFormat;

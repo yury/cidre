@@ -34,15 +34,19 @@ pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
 
 pub mod heap;
+pub use heap::Descriptor as HeapDescriptor;
 pub use heap::Heap;
+pub use heap::Type as HeapType;
 
 pub mod library;
 pub use library::CompileOptions;
 pub use library::Error as LibraryError;
 pub use library::ErrorDomain as LibraryErrorDomain;
 pub use library::Function;
+pub use library::FunctionType;
 pub use library::LanguageVersion;
 pub use library::Library;
+pub use library::OptimizationLevel as LibraryOptimizationLevel;
 pub use library::Type as LibraryType;
 
 pub mod command_queue;
@@ -371,14 +375,58 @@ macro_rules! define_mtl {
         }
     };
 
+    (set_cpu_cache_mode) => {
+        #[inline]
+        pub fn set_cpu_cache_mode(&mut self, value: crate::mtl::CPUCacheMode) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_setCpuCacheMode(id: &crate::ns::Id, value: crate::mtl::CPUCacheMode);
+            }
+            unsafe { rsel_setCpuCacheMode(self, value) }
+        }
+    };
+
     (hazard_tracking_mode) => {
         #[inline]
-        pub fn hazard_traking_mode(&self) -> crate::mtl::HazardTrackingMode {
+        pub fn hazard_tracking_mode(&self) -> crate::mtl::HazardTrackingMode {
             #[link(name = "mtl", kind = "static")]
             extern "C" {
                 fn rsel_hazardTrackingMode(id: &crate::ns::Id) -> crate::mtl::HazardTrackingMode;
             }
             unsafe { rsel_hazardTrackingMode(self) }
+        }
+    };
+
+    (set_hazard_tracking_mode) => {
+        #[inline]
+        pub fn set_hazard_tracking_mode(&mut self, value: crate::mtl::HazardTrackingMode) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setHazardTrackingMode(id: &mut crate::ns::Id, value: crate::mtl::HazardTrackingMode);
+            }
+            unsafe { wsel_setHazardTrackingMode(self, value) }
+        }
+    };
+
+    (resource_options) => {
+        #[inline]
+        pub fn resource_options(&self) -> crate::mtl::ResourceOptions {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn rsel_resourceOptions(id: &crate::ns::Id) -> crate::mtl::ResourceOptions;
+            }
+            unsafe { rsel_resourceOptions(self) }
+        }
+    };
+
+    (set_resource_options) => {
+        #[inline]
+        pub fn set_resource_options(&mut self, value: crate::mtl::ResourceOptions) {
+            #[link(name = "mtl", kind = "static")]
+            extern "C" {
+                fn wsel_setResourceOptions(id: &mut crate::ns::Id, value: crate::mtl::ResourceOptions);
+            }
+            unsafe { wsel_setResourceOptions(self, value) }
         }
     };
 

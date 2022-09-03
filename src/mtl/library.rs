@@ -17,12 +17,19 @@ pub enum LanguageVersion {
     _2_2 = (2 << 16) + 2,
     _2_3 = (2 << 16) + 3,
     _2_4 = (2 << 16) + 4,
+    _3_0 = (3 << 16),
 }
 
 #[repr(isize)]
 pub enum Type {
     Executable = 0,
     Dynamic = 1,
+}
+
+#[repr(isize)]
+pub enum OptimizationLevel {
+    Default = 0,
+    Size = 1,
 }
 
 define_obj_type!(CompileOptions(Id));
@@ -201,6 +208,18 @@ impl ErrorDomain {
     pub fn library() -> &'static ErrorDomain {
         unsafe { MTLLibraryErrorDomain }
     }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[repr(usize)]
+pub enum FunctionType {
+    Vertex = 1,
+    Fragment = 2,
+    Kernel = 3,
+    Visible = 5,
+    Intersection = 6,
+    Mesh = 7,
+    Object = 8,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

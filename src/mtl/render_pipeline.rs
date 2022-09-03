@@ -4,7 +4,7 @@ use crate::{
     objc::Id,
 };
 
-use super::{argument::Argument, Function, PixelFormat, ResourceID};
+use super::{argument::Argument, Function, PixelFormat};
 
 #[repr(usize)]
 pub enum BlendFactor {

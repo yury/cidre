@@ -20,3 +20,7 @@ pub use types::SilenceSecondaryAudioHintType;
 pub use types::StereoOrientation;
 
 define_obj_type!(Session(ns::Id));
+
+impl Session {
+  
+}
