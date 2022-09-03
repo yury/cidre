@@ -11,11 +11,11 @@ pub use compression::properties as compression_properties;
 pub use compression::Session as CompressionSession;
 
 pub mod decompression;
+pub use decompression::properties as decompression_properties;
 pub use decompression::Session as DecompressionSession;
 
 pub mod pixel_transfer;
 pub use pixel_transfer::properties as pixel_transfer_properties;
-#[cfg(not(target_os = "ios"))]
 pub use pixel_transfer::session as PixelTransferSession;
 
 pub mod video_encoder_list;
