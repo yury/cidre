@@ -28,6 +28,7 @@ pub mod error;
 pub use error::Error;
 
 pub mod image;
+pub use image::AlphaInfo as ImageAlphaInfo;
 pub use image::Image;
 
 #[link(name = "CoreGraphics", kind = "framework")]
