@@ -20,7 +20,7 @@ struct FameCounter {
 }
 
 impl FameCounter {
-    pub fn counter(&self) -> u32 {
+    pub fn _counter(&self) -> u32 {
         self.counter
     }
 }
@@ -28,9 +28,9 @@ impl FameCounter {
 impl StreamOutput for FameCounter {
     extern "C" fn stream_did_output_sample_buffer_of_type(
         &mut self,
-        stream: &sc::Stream,
+        _stream: &sc::Stream,
         sample_buffer: &cm::SampleBuffer,
-        of_type: sc::OutputType,
+        _of_type: sc::OutputType,
     ) {
         self.counter += 1;
         // why without println is not working well?
