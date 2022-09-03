@@ -191,7 +191,18 @@ impl Descriptor {
         unsafe { wsel_setPixelFormat(self, value) }
     }
 
-    define_mtl!(width, set_width, height, set_height, depth, set_depth);
+    define_mtl!(
+        width,
+        set_width,
+        height,
+        set_height,
+        depth,
+        set_depth,
+        resource_options,
+        set_resource_options,
+        cpu_cache_mode,
+        set_cpu_cache_mode
+    );
 
     #[inline]
     pub fn mipmap_level_count(&self) -> usize {
@@ -221,26 +232,6 @@ impl Descriptor {
     #[inline]
     pub fn set_array_len(&mut self, value: usize) {
         unsafe { wsel_setArrayLength(self, value) }
-    }
-
-    #[inline]
-    pub fn reource_options(&self) -> resource::Options {
-        unsafe { rsel_resourceOptions(self) }
-    }
-
-    #[inline]
-    pub fn set_resource_options(&mut self, value: resource::Options) {
-        unsafe { wsel_setResourceOptions(self, value) }
-    }
-
-    #[inline]
-    pub fn cpu_cache_mode(&self) -> resource::CPUCacheMode {
-        unsafe { rsel_cpuCacheMode(self) }
-    }
-
-    #[inline]
-    pub fn set_cpu_cache_mode(&mut self, value: resource::CPUCacheMode) {
-        unsafe { wsel_setCpuCacheMode(self, value) }
     }
 
     #[inline]

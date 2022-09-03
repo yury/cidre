@@ -23,6 +23,7 @@ pub use resource::Resource;
 
 pub use resource::CPUCacheMode;
 pub use resource::HazardTrackingMode;
+pub use resource::PurgableState;
 pub use resource::StorageMode;
 
 pub use resource::Options as ResourceOptions;

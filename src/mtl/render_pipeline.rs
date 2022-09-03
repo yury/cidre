@@ -6,6 +6,7 @@ use crate::{
 
 use super::{argument::Argument, Function, PixelFormat};
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BlendFactor {
     Zero = 0,
@@ -29,6 +30,7 @@ pub enum BlendFactor {
     OneMinusSource1Alpha = 18,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BlendOperation {
     Add = 0,
@@ -38,6 +40,7 @@ pub enum BlendOperation {
     Max = 4,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum ColorWriteMask {
     None = 0,
@@ -48,6 +51,7 @@ pub enum ColorWriteMask {
     All = 0xf,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PrimitiveTopologyClass {
     Unspecified = 0,
@@ -56,6 +60,7 @@ pub enum PrimitiveTopologyClass {
     Triangle = 3,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TessellationPartitionMode {
     Pow2 = 0,
@@ -64,6 +69,7 @@ pub enum TessellationPartitionMode {
     FractionalEven = 3,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TessellationFactorStepFunction {
     Constant = 0,
@@ -72,11 +78,13 @@ pub enum TessellationFactorStepFunction {
     PerPatchAndPerInstance = 3,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TessellationFactorFormat {
     MTLTessellationFactorFormatHalf = 0,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TessellationControlPointIndexType {
     None = 0,

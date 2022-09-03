@@ -116,7 +116,7 @@ async fn main() {
     let mut session = vt::CompressionSession::new::<c_void>(
         display.width() as u32 * 2,
         display.height() as u32 * 2,
-        cm::VideoCodecType::H264,
+        cm::VideoCodecType::HEVC,
         None,
         None,
         Some(callback),
@@ -130,14 +130,14 @@ async fn main() {
     let frame_delay_count = cf::Number::from_i32(0);
 
     let mut props = cf::MutableDictionary::with_capacity(10);
-    props.insert(keys::real_time(), bool_true);
+    props.insert(keys::real_time(), bool_false);
     props.insert(keys::allow_frame_reordering(), bool_false);
     props.insert(
         keys::profile_level(),
         profile_level::h264::main_auto_level(),
     );
     props.insert(keys::allow_open_gop(), bool_false);
-    props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());
+    // props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());
     props.insert(keys::expected_frame_rate(), &expected_fr);
     props.insert(keys::max_frame_delay_count(), &frame_delay_count);
 

@@ -1,4 +1,7 @@
-use std::ptr::slice_from_raw_parts_mut;
+use std::{
+    ffi::c_void,
+    ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
+};
 
 use crate::{
     cf::{self, Allocator, Retained, Type, TypeId},
@@ -69,6 +72,57 @@ impl BlockBuffer {
             )
             .to_result(block_buffer_out)
         }
+    }
+
+    /// ```
+    /// use cidre::cm;
+    ///
+    /// let b = cm::BlockBuffer::with_memory_block(10)
+    ///     .expect("empty block buffer");
+    ///
+    /// assert_eq!(false, b.is_empty());
+    /// assert_eq!(10, b.data_len());
+    ///
+    /// ```
+    #[inline]
+    pub fn with_memory_block(len: usize) -> Result<Retained<BlockBuffer>, os::Status> {
+        unsafe {
+            Self::create_with_memory_block(
+                None,
+                std::ptr::null_mut(),
+                len,
+                None,
+                0,
+                len,
+                Flags::ASSURE_MEMORY_NOW,
+            )
+        }
+    }
+
+    #[inline]
+    pub unsafe fn create_with_memory_block(
+        structure_allocator: Option<&cf::Allocator>,
+        memory_block: *mut c_void,
+        block_length: usize,
+        block_allocator: Option<&cf::Allocator>,
+        // custom_block_source: *const c_void, // TODO: add block source
+        offset_to_data: usize,
+        data_length: usize,
+        flags: Flags,
+    ) -> Result<Retained<BlockBuffer>, os::Status> {
+        let mut block_buffer_out = None;
+        CMBlockBufferCreateWithMemoryBlock(
+            structure_allocator,
+            memory_block,
+            block_length,
+            block_allocator,
+            std::ptr::null(),
+            offset_to_data,
+            data_length,
+            flags,
+            &mut block_buffer_out,
+        )
+        .to_result(block_buffer_out)
     }
 
     /// Obtains the total data length reachable via a cm::BlockBuffer.
@@ -147,7 +201,28 @@ impl BlockBuffer {
             if res.is_err() {
                 return Err(res);
             }
-            Ok(&*slice_from_raw_parts_mut(
+            Ok(&*slice_from_raw_parts(
+                data_pointer_out,
+                length_at_offset_out,
+            ))
+        }
+    }
+
+    #[inline]
+    pub fn data_pointer_mut(&self) -> Result<&mut [u8], os::Status> {
+        let mut length_at_offset_out = 0;
+        let mut data_pointer_out = std::ptr::null_mut();
+        unsafe {
+            let res = self.get_data_pointer(
+                0,
+                &mut length_at_offset_out,
+                std::ptr::null_mut(),
+                &mut data_pointer_out,
+            );
+            if res.is_err() {
+                return Err(res);
+            }
+            Ok(&mut *slice_from_raw_parts_mut(
                 data_pointer_out,
                 length_at_offset_out,
             ))
@@ -162,6 +237,18 @@ extern "C" {
     fn CMBlockBufferCreateEmpty(
         structure_allocator: Option<&Allocator>,
         sub_block_capacity: u32,
+        flags: Flags,
+        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+    ) -> os::Status;
+
+    fn CMBlockBufferCreateWithMemoryBlock(
+        structure_allocator: Option<&cf::Allocator>,
+        memory_block: *mut c_void,
+        block_length: usize,
+        block_allocator: Option<&cf::Allocator>,
+        custom_block_source: *const c_void, // TODO: add block source
+        offset_to_data: usize,
+        data_length: usize,
         flags: Flags,
         block_buffer_out: &mut Option<Retained<BlockBuffer>>,
     ) -> os::Status;

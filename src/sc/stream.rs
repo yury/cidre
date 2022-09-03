@@ -200,7 +200,6 @@ pub trait StreamOutput {
         let b = Box::new(self);
         let table: [*const c_void; 2] = [
             b.as_ref() as *const _ as _,
-            // &self as *const _ as *const _,
             Self::stream_did_output_sample_buffer_of_type as _,
         ];
 

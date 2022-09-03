@@ -10,6 +10,9 @@ pub mod compression;
 pub use compression::properties as compression_properties;
 pub use compression::Session as CompressionSession;
 
+pub mod decompression;
+pub use decompression::Session as DecompressionSession;
+
 pub mod pixel_transfer;
 pub use pixel_transfer::properties as pixel_transfer_properties;
 #[cfg(not(target_os = "ios"))]
