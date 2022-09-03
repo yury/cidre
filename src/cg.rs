@@ -27,5 +27,8 @@ pub use affine_transform::Components as AffineTransformComponents;
 pub mod error;
 pub use error::Error;
 
+pub mod image;
+pub use image::Image;
+
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}

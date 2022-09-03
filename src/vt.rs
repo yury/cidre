@@ -20,5 +20,8 @@ pub use pixel_transfer::session as PixelTransferSession;
 
 pub mod video_encoder_list;
 
+pub mod utilities;
+pub use utilities::create_cg_image_from_cv_pixel_buffer;
+
 #[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {}
