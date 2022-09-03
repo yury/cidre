@@ -8,7 +8,7 @@ use cidre::{
     sc::{self, stream::StreamOutput},
     vt::{
         self,
-        compression_properties::{h264_entropy_mode, keys, profile_level},
+        compression_properties::{keys, profile_level},
         EncodeInfoFlags,
     },
 };
@@ -124,7 +124,7 @@ async fn main() {
     )
     .unwrap();
 
-    let bool_true = cf::Boolean::value_true();
+    // let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
     let expected_fr = cf::Number::from_i32(60);
     let frame_delay_count = cf::Number::from_i32(0);
