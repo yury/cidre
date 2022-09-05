@@ -2,12 +2,21 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
-    define_obj_type, io, msg_send, mtl,
+    define_obj_type, define_options, io, msg_send, mtl,
     ns::Id,
     objc::block::CompletionHandlerAB,
 };
 
 use super::{event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size};
+
+define_options!(PipelineOption(usize));
+
+impl PipelineOption {
+    pub const NONE: Self = Self(0);
+    pub const ARGUMENT_INFO: Self = Self(1 << 0);
+    pub const BUFFER_TYPE_INFO: Self = Self(1 << 1);
+    pub const FAIL_ON_BINARY_ARCHIVE_MISS: Self = Self(1 << 2);
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]

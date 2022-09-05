@@ -3,7 +3,7 @@ use crate::{
     cf::{self, Retained},
     define_obj_type,
 };
-use crate::{define_mtl, io, msg_send};
+use crate::{define_mtl, define_options, io, msg_send};
 
 use super::{resource, Device, PixelFormat, Resource};
 
@@ -65,9 +65,7 @@ impl SharedTextureHandle {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
-#[repr(transparent)]
-pub struct Usage(usize);
+define_options!(Usage(usize));
 
 impl Usage {
     pub const UNKNOWN: Self = Self(0x0000);
@@ -254,15 +252,15 @@ impl Descriptor {
         unsafe { wsel_setAllowGPUOptimizedContents(self, value) }
     }
 
-    // #[inline]
-    // pub fn compression_type(&self) -> CompressionType {
-    //     unsafe { MTLTextureDescriptor_rsel_compressionType(self) }
-    // }
+    #[inline]
+    pub fn compression_type(&self) -> CompressionType {
+        unsafe { MTLTextureDescriptor_rsel_compressionType(self) }
+    }
 
-    // #[inline]
-    // pub fn set_compression_type(&mut self, value: CompressionType) {
-    //     unsafe { MTLTextureDescriptor_wsel_setCompressionType(self, value) }
-    // }
+    #[inline]
+    pub fn set_compression_type(&mut self, value: CompressionType) {
+        unsafe { MTLTextureDescriptor_wsel_setCompressionType(self, value) }
+    }
 
     #[inline]
     pub fn swizzle(&self) -> SwizzleChannels {
@@ -383,20 +381,14 @@ extern "C" {
     fn rsel_arrayLength(id: &Id) -> usize;
     fn wsel_setArrayLength(id: &mut Id, value: usize);
 
-    fn rsel_resourceOptions(id: &Id) -> resource::Options;
-    fn wsel_setResourceOptions(id: &mut Id, value: resource::Options);
-
-    fn rsel_cpuCacheMode(id: &Id) -> resource::CPUCacheMode;
-    fn wsel_setCpuCacheMode(id: &mut Id, value: resource::CPUCacheMode);
-
     fn rsel_usage(id: &Id) -> Usage;
     fn wsel_setUsage(id: &mut Id, value: Usage);
 
     fn rsel_allowGPUOptimizedContents(id: &Id) -> bool;
     fn wsel_setAllowGPUOptimizedContents(id: &mut Id, value: bool);
 
-    // fn MTLTextureDescriptor_rsel_compressionType(id: &Id) -> CompressionType;
-    // fn MTLTextureDescriptor_wsel_setCompressionType(id: &Id, value: CompressionType);
+    fn MTLTextureDescriptor_rsel_compressionType(id: &Id) -> CompressionType;
+    fn MTLTextureDescriptor_wsel_setCompressionType(id: &Id, value: CompressionType);
 
     fn rsel_swizzle(id: &Id) -> SwizzleChannels;
     fn wsel_setSwizzle(id: &mut Id, value: SwizzleChannels);

@@ -65,6 +65,7 @@ pub use texture::Usage as TextureUsage;
 pub mod device;
 pub use device::ArgumentBuffersTier;
 pub use device::Device;
+pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAndAlign;
 
