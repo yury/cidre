@@ -20,12 +20,14 @@ pub enum LanguageVersion {
     _3_0 = (3 << 16),
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum Type {
     Executable = 0,
     Dynamic = 1,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum OptimizationLevel {
     Default = 0,

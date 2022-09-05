@@ -34,6 +34,14 @@ pub enum ArgumentBuffersTier {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
+#[repr(isize)]
+pub enum SparsePageSize {
+    _16 = 101,
+    _64 = 102,
+    _256 = 103,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(C)]
 pub struct SizeAndAlign {
     pub size: usize,

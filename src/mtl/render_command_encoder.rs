@@ -1,7 +1,7 @@
 use std::ffi::c_void;
 
 use crate::mtl::RenderPipelineState;
-use crate::{define_mtl, msg_send};
+use crate::{define_mtl, define_options, msg_send};
 use crate::{define_obj_type, objc::Id};
 
 use super::{Buffer, CommandEncoder, Texture};
@@ -111,13 +111,14 @@ pub struct TriangleTessellationFactorsHalf {
     pub inside_tessellation_factor: u16,
 }
 
-#[repr(transparent)]
-pub struct RenderStages(usize);
+define_options!(RenderStages(usize));
 
 impl RenderStages {
     pub const VERTEX: Self = Self(1usize << 0);
     pub const FRAGMENT: Self = Self(1usize << 1);
     pub const TILE: Self = Self(1usize << 2);
+    pub const OBJECT: Self = Self(1usize << 3);
+    pub const MESH: Self = Self(1usize << 4);
 }
 
 define_obj_type!(RenderCommandEncoder(CommandEncoder));
