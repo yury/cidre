@@ -20,7 +20,7 @@ impl MemoryPool {
     }
 
     #[inline]
-    pub fn allocator(&self) -> &cf::Allocator {
+    pub fn pool_allocator(&self) -> &cf::Allocator {
         unsafe { CMMemoryPoolGetAllocator(self) }
     }
 

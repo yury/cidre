@@ -1,7 +1,7 @@
 use std::ffi::c_void;
 
 use crate::{
-    cf::{self, Allocator, Retained, Type},
+    cf::{self, Allocator, Retained},
     cm, cv, define_cf_type, define_options, os,
 };
 
@@ -72,9 +72,16 @@ impl SampleBuffer {
     /// let buf = res.unwrap();
     /// assert!(buf.data_is_ready());
     /// ```
+    #[inline]
     pub fn data_is_ready(&self) -> bool {
         unsafe { CMSampleBufferDataIsReady(self) }
     }
+
+    #[inline]
+    pub fn set_data_ready(&mut self) {
+        unsafe { CMSampleBufferSetDataReady(self) }
+    }
+
     /// ```
     /// use cidre::{cf, cm};
     ///
@@ -176,6 +183,11 @@ impl SampleBuffer {
     #[inline]
     pub fn data_buffer(&self) -> Option<&cm::BlockBuffer> {
         unsafe { CMSampleBufferGetDataBuffer(self) }
+    }
+
+    #[inline]
+    pub fn set_data_buffer(&mut self, data_buffer: &cm::BlockBuffer) -> Result<(), os::Status> {
+        unsafe { CMSampleBufferSetDataBuffer(self, data_buffer).result() }
     }
 
     #[inline]
@@ -288,9 +300,14 @@ extern "C" {
     ) -> crate::os::Status;
 
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuffer) -> bool;
+    fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuffer);
 
     fn CMSampleBufferGetImageBuffer(sbuf: &SampleBuffer) -> Option<&cv::ImageBuffer>;
     fn CMSampleBufferGetDataBuffer(sbuf: &SampleBuffer) -> Option<&cm::BlockBuffer>;
+    fn CMSampleBufferSetDataBuffer(
+        sbuf: &mut SampleBuffer,
+        data_buffer: &cm::BlockBuffer,
+    ) -> os::Status;
     fn CMSampleBufferGetDuration(sbuf: &SampleBuffer) -> cm::Time;
     fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
     fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
