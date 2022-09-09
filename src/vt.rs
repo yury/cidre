@@ -16,7 +16,7 @@ pub use decompression::Session as DecompressionSession;
 
 pub mod pixel_transfer;
 pub use pixel_transfer::properties as pixel_transfer_properties;
-pub use pixel_transfer::session as PixelTransferSession;
+pub use pixel_transfer::Session as PixelTransferSession;
 
 pub mod video_encoder_list;
 

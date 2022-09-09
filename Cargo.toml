@@ -12,6 +12,7 @@ parking_lot = "0.12.0"
 
 [dev-dependencies]
 criterion = "0.3"
+flume = {version = "0.10", features = ["async"]}
 
 [[bench]]
 name = "metal"

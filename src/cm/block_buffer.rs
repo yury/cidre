@@ -228,6 +228,46 @@ impl BlockBuffer {
             ))
         }
     }
+
+    #[inline]
+    pub fn with_buffer_reference(
+        buffer_reference: &BlockBuffer,
+        offset_to_data: usize,
+        data_length: usize,
+        flags: Flags,
+    ) -> Result<Retained<BlockBuffer>, os::Status> {
+        unsafe {
+            let mut block_buffer_out = None;
+            Self::create_with_buffer_reference(
+                None,
+                buffer_reference,
+                offset_to_data,
+                data_length,
+                flags,
+                &mut block_buffer_out,
+            )
+            .to_result(block_buffer_out)
+        }
+    }
+
+    #[inline]
+    pub unsafe fn create_with_buffer_reference(
+        structure_allocator: Option<&cf::Allocator>,
+        buffer_reference: &BlockBuffer,
+        offset_to_data: usize,
+        data_length: usize,
+        flags: Flags,
+        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+    ) -> os::Status {
+        CMBlockBufferCreateWithBufferReference(
+            structure_allocator,
+            buffer_reference,
+            offset_to_data,
+            data_length,
+            flags,
+            block_buffer_out,
+        )
+    }
 }
 
 extern "C" {
@@ -269,12 +309,15 @@ extern "C" {
         data_pointer_out: *mut *mut u8,
     ) -> os::Status;
 
-    // fn CMBlockBufferCreateWithMemoryBlock(
-    //     structure_allocator: Option<&cf::Allocator>,
-    //     memory_block: *mut u8,
-    //     block_length: usize,
-    //     block_allocator: Option<&cf::Allocator>,
-    // )
+    fn CMBlockBufferCreateWithBufferReference(
+        structure_allocator: Option<&cf::Allocator>,
+        buffer_reference: &BlockBuffer,
+        offset_to_data: usize,
+        data_length: usize,
+        flags: Flags,
+        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+    ) -> os::Status;
+
 }
 
 pub mod errors {

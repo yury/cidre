@@ -36,5 +36,9 @@ pub use sync::Clock;
 pub use sync::ClockOrTimebase;
 pub use sync::Timebase;
 
+pub mod memory_pool;
+pub use memory_pool::keys as memory_pool_options;
+pub use memory_pool::MemoryPool;
+
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C" {}

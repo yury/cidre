@@ -45,6 +45,7 @@ impl Session {
         }
     }
 
+    /// Use safe new
     pub unsafe fn create(
         allocator: Option<&cf::Allocator>,
         video_format_description: &cm::VideoFormatDescription,
