@@ -1,5 +1,6 @@
 use crate::{cf, define_obj_type, msg_send, objc::Id};
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum DataType {
     None = 0,
@@ -114,6 +115,7 @@ pub enum DataType {
     InstanceAccelerationStructure = 118,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum Type {
     Buffer = 0,
@@ -129,6 +131,7 @@ pub enum Type {
     IntersectionFunctionTable = 27,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum Access {
     ReadOnly = 0,
