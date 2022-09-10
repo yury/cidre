@@ -386,7 +386,7 @@ pub mod attachment_keys {
         unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
     }
 
-    /// https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
+    // https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
     extern "C" {
         static kCMSampleAttachmentKey_NotSync: &'static cf::String;
         static kCMSampleAttachmentKey_PartialSync: &'static cf::String;
@@ -578,7 +578,7 @@ pub mod buffer_attachment_keys {
         unsafe { kCMSampleBufferAttachmentKey_ForceKeyFrame }
     }
 
-    /// https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
+    // https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
     extern "C" {
         static kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding: &'static cf::String;
         static kCMSampleBufferAttachmentKey_DrainAfterDecoding: &'static cf::String;
