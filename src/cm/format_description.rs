@@ -168,12 +168,58 @@ impl VideoFormatDescription {
         }
     }
 
+    #[inline]
     pub fn dimensions(&self) -> VideoDimensions {
         unsafe { CMVideoFormatDescriptionGetDimensions(self) }
     }
 
+    #[inline]
     pub fn matches_image_buffer(&self, image_buffer: &cv::ImageBuffer) -> bool {
         unsafe { CMVideoFormatDescriptionMatchesImageBuffer(self, image_buffer) }
+    }
+
+    #[inline]
+    pub fn create_from_h264_parameter_sets<const N: usize>(
+        pointers: &[*const u8; N],
+        sizes: &[usize; N],
+        nal_unit_header_length: i32,
+    ) -> Result<Retained<VideoFormatDescription>, os::Status> {
+        let mut result = None;
+
+        unsafe {
+            CMVideoFormatDescriptionCreateFromH264ParameterSets(
+                None,
+                N,
+                pointers.as_ptr(),
+                sizes.as_ptr(),
+                nal_unit_header_length,
+                &mut result,
+            )
+            .to_result(result)
+        }
+    }
+
+    #[inline]
+    pub fn create_from_hevc_parameter_sets<const N: usize>(
+        pointers: &[*const u8; N],
+        sizes: &[usize; N],
+        nal_unit_header_length: i32,
+        extensions: Option<&cf::Dictionary>,
+    ) -> Result<Retained<VideoFormatDescription>, os::Status> {
+        let mut result = None;
+
+        unsafe {
+            CMVideoFormatDescriptionCreateFromHEVCParameterSets(
+                None,
+                N,
+                pointers.as_ptr(),
+                sizes.as_ptr(),
+                nal_unit_header_length,
+                extensions,
+                &mut result,
+            )
+            .to_result(result)
+        }
     }
 }
 
@@ -249,4 +295,28 @@ extern "C" {
         extensions: Option<&cf::Dictionary>,
         format_description_out: &mut Option<Retained<FormatDescription>>,
     ) -> os::Status;
+
+    fn CMVideoFormatDescriptionCreateFromH264ParameterSets(
+        allocator: Option<&cf::Allocator>,
+        parameter_set_count: usize,
+        parameter_set_pointers: *const *const u8,
+        parameter_set_sizes: *const usize,
+        nal_unit_header_length: i32,
+        format_descirption: &mut Option<cf::Retained<FormatDescription>>,
+    ) -> os::Status;
+
+    fn CMVideoFormatDescriptionCreateFromHEVCParameterSets(
+        allocator: Option<&cf::Allocator>,
+        parameter_set_count: usize,
+        parameter_set_pointers: *const *const u8,
+        parameter_set_sizes: *const usize,
+        nal_unit_header_length: i32,
+        extensions: Option<&cf::Dictionary>,
+        format_descirption: &mut Option<cf::Retained<FormatDescription>>,
+    ) -> os::Status;
+
+    // fn CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
+    //     video_desc: &VideoFormatDescription,
+    //     parameter_set_index: usize,
+    // ) -> os::Status;}
 }
