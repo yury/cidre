@@ -77,7 +77,7 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::with_memory_block(10)
+    /// let b = cm::BlockBuffer::with_memory_block(10, None)
     ///     .expect("empty block buffer");
     ///
     /// assert_eq!(false, b.is_empty());
@@ -85,13 +85,16 @@ impl BlockBuffer {
     ///
     /// ```
     #[inline]
-    pub fn with_memory_block(len: usize) -> Result<Retained<BlockBuffer>, os::Status> {
+    pub fn with_memory_block(
+        len: usize,
+        block_allocator: Option<&cf::Allocator>,
+    ) -> Result<Retained<BlockBuffer>, os::Status> {
         unsafe {
             Self::create_with_memory_block(
                 None,
                 std::ptr::null_mut(),
                 len,
-                None,
+                block_allocator,
                 0,
                 len,
                 Flags::ASSURE_MEMORY_NOW,
@@ -209,7 +212,7 @@ impl BlockBuffer {
     }
 
     #[inline]
-    pub fn data_pointer_mut(&self) -> Result<&mut [u8], os::Status> {
+    pub fn data_pointer_mut(&mut self) -> Result<&mut [u8], os::Status> {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {

@@ -1,11 +1,4 @@
-use std::{
-    collections::VecDeque,
-    ffi::c_void,
-    mem::{size_of, transmute},
-    net::SocketAddr,
-    sync::Arc,
-    time::Duration,
-};
+use std::{ffi::c_void, net::SocketAddr, time::Duration};
 
 use cidre::{
     av, cf,
@@ -19,135 +12,6 @@ use cidre::{
         EncodeInfoFlags,
     },
 };
-
-use tokio::net::UdpSocket;
-
-const MTU_LEN: usize = 1500;
-const UDP_HEADER_LEN: usize = 8;
-
-const HEADER_LEN: usize = std::mem::size_of::<Header>(); // 8; // i32 + u16 + u16
-const BODY_LEN: usize = (MTU_LEN - UDP_HEADER_LEN) - HEADER_LEN;
-const PACKET_LEN: usize = HEADER_LEN + BODY_LEN;
-
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-struct Header {
-    // THINK: we can merge channel_id and kind if kind will be relative small at the end
-    kind: MessageKind,
-    channel_id: u8, // video or audio steam id (during handshake?)
-    msg_no: u16,
-    packet_count: u16,
-    packet_idx: u16,
-}
-
-impl Header {
-    #[inline]
-    fn write(&self, buf: &mut [u8; PACKET_LEN]) {
-        buf[0] = self.kind as _;
-        buf[1] = self.channel_id;
-        buf[2..4].copy_from_slice(&self.msg_no.to_be_bytes());
-        buf[4..6].copy_from_slice(&self.packet_count.to_be_bytes());
-        buf[6..8].copy_from_slice(&self.packet_idx.to_be_bytes());
-    }
-
-    #[inline]
-    fn write_idx(idx: u16, buf: &mut [u8; PACKET_LEN]) {
-        buf[6..8].copy_from_slice(&idx.to_be_bytes())
-    }
-
-    #[inline]
-    fn read_msg_no(buf: &[u8; PACKET_LEN]) -> u16 {
-        u16::from_be_bytes([buf[2], buf[3]])
-    }
-
-    #[inline]
-    fn read_packet_count(buf: &[u8; PACKET_LEN]) -> u16 {
-        u16::from_be_bytes([buf[4], buf[5]])
-    }
-
-    #[inline]
-    fn read_packet_idx(buf: &[u8; PACKET_LEN]) -> u16 {
-        u16::from_be_bytes([buf[6], buf[7]])
-    }
-
-    #[inline]
-    fn read_kind(buf: &[u8; PACKET_LEN]) -> MessageKind {
-        unsafe { transmute(buf[0]) }
-    }
-
-    #[inline]
-    fn read_channel_id(buf: &[u8; PACKET_LEN]) -> u8 {
-        buf[1]
-    }
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(u8)]
-pub enum MessageKind {
-    VideoNonKey,
-    VideoKey,
-    File,
-    Audio,
-    Crtl,
-    RepeatPacket,
-}
-
-pub enum Cmd {
-    Repeat {
-        msg_no: u16,
-        packet_idx: u16,
-    },
-    Schedule {
-        kind: MessageKind,
-        body: cf::Retained<SampleBuffer>,
-    },
-    Stop,
-}
-
-struct Sequencer {
-    value: u16,
-    overs_count: u64,
-}
-
-impl Default for Sequencer {
-    fn default() -> Self {
-        Self {
-            value: 0,
-            overs_count: 0,
-        }
-    }
-}
-
-impl Sequencer {
-    pub fn next(&mut self) -> u16 {
-        let (value, over) = self.value.overflowing_add(1);
-        if over {
-            self.overs_count += 1;
-        }
-        self.value = value;
-        value
-    }
-}
-
-pub struct Message {
-    header: Header,
-    body: cf::Retained<SampleBuffer>,
-}
-
-impl Message {
-    #[inline]
-    pub fn no(&self) -> u16 {
-        self.header.msg_no
-    }
-
-    #[inline]
-    pub fn body(&self) -> &[u8] {
-        let data_buffer = self.body.data_buffer().unwrap();
-        let data = data_buffer.data_pointer().unwrap();
-        data
-        //    &self.body
-    }
-}
 
 #[repr(C)]
 struct FameCounter {
@@ -191,125 +55,7 @@ impl StreamOutput for FameCounter {
     }
 }
 
-#[inline]
-async fn safe_send_to(
-    sock: &UdpSocket,
-    dest_addr: SocketAddr,
-    buf: &[u8],
-) -> Result<usize, std::io::Error> {
-    loop {
-        let r = sock.send_to(buf, dest_addr).await;
-        match r {
-            Ok(n) => break Ok(n),
-            Err(_e) => {
-                // TODO: check actual error
-                tokio::time::sleep(Duration::from_millis(10)).await;
-                continue;
-            }
-        }
-    }
-}
-
-async fn sink_message(sock: &UdpSocket, dest_addr: SocketAddr, msg: Arc<Message>) {
-    let body = msg.body();
-    let body_len = body.len();
-
-    let mut packet = [0u8; PACKET_LEN];
-    msg.header.write(&mut packet);
-
-    let packet_count = msg.header.packet_count as usize;
-    // one packet message shortcut (may be not full)
-    if packet_count == 1 {
-        let packet_len = HEADER_LEN + body_len;
-        packet[HEADER_LEN..packet_len].copy_from_slice(&body);
-        let _r = safe_send_to(sock, dest_addr, &packet[..packet_len]).await;
-        return;
-    }
-
-    // first packet (full)
-    packet[HEADER_LEN..PACKET_LEN].copy_from_slice(&body[0..BODY_LEN]);
-    let _r = safe_send_to(sock, dest_addr, &packet).await;
-
-    // middle packets (full)
-    let last_idx = packet_count - 1;
-    for packet_idx in 1..last_idx {
-        let offset = packet_idx * BODY_LEN;
-        Header::write_idx(packet_idx as u16, &mut packet);
-        packet[HEADER_LEN..PACKET_LEN].copy_from_slice(&body[offset..offset + BODY_LEN]);
-        let _r = safe_send_to(sock, dest_addr, &packet).await;
-    }
-
-    // last packet (may be not full)
-    let offset = last_idx * BODY_LEN;
-    let packet_len = HEADER_LEN + body_len - offset;
-    Header::write_idx(last_idx as u16, &mut packet);
-    packet[HEADER_LEN..packet_len].copy_from_slice(&body[offset..body_len]);
-    let _r = safe_send_to(sock, dest_addr, &packet[..packet_len]).await;
-}
-
-async fn transmit_task(
-    dest_addr: SocketAddr,
-    channel_id: u8,
-    rx: flume::Receiver<Cmd>,
-) -> Result<(), std::io::Error> {
-    let sock = UdpSocket::bind("0.0.0.0:0").await?;
-    let sock = Arc::new(sock);
-    let (msg_tx, msg_rx) = flume::unbounded::<Arc<Message>>();
-    let send_task_sock = sock.clone();
-    let send_task = tokio::spawn(async move {
-        while let Ok(msg) = msg_rx.recv_async().await {
-            //println!("! {:?}", msg.no());
-            sink_message(&send_task_sock, dest_addr, msg).await;
-        }
-    });
-
-    let mut buf: VecDeque<Arc<Message>> = VecDeque::default();
-    let mut sequencer = Sequencer::default();
-    // control loop
-    while let Ok(cmd) = rx.recv_async().await {
-        match cmd {
-            Cmd::Repeat { msg_no, packet_idx } => {
-                let msg = buf.iter().find(|m| m.header.msg_no == msg_no);
-            }
-            Cmd::Schedule { kind, body } => {
-                let body_len = body.data_buffer().unwrap().data_len();
-                let mut segments = body_len / BODY_LEN;
-                if segments * BODY_LEN < body_len {
-                    segments += 1;
-                }
-                let header = Header {
-                    kind,
-                    channel_id,
-                    msg_no: sequencer.next(),
-                    packet_count: segments as _,
-                    packet_idx: 0,
-                };
-                let msg = Message { header, body };
-                let msg = Arc::new(msg);
-                buf.push_back(msg.clone());
-                if buf.len() > 3 {
-                    buf.pop_front();
-                }
-                let _r = msg_tx.send_async(msg).await;
-            }
-            Cmd::Stop => {
-                buf.clear();
-                break;
-            }
-        }
-    }
-
-    _ = send_task.abort();
-    Ok(())
-}
-
-pub fn create_sender(addr: SocketAddr, channel_id: u8) -> flume::Sender<Cmd> {
-    let (msg_tx, msg_rx) = flume::unbounded();
-    let _transmit = tokio::spawn(async move { transmit_task(addr, channel_id, msg_rx).await });
-    msg_tx
-}
-
-extern "C" fn callback2(
+extern "C" fn _callback2(
     ctx: *mut c_void,
     _: *mut c_void,
     status: Status,
@@ -350,13 +96,13 @@ extern "C" fn callback(
         return;
     }
 
-    let ctx = ctx as *mut flume::Sender<Cmd>;
+    let ctx = ctx as *mut flume::Sender<rt::Cmd>;
     let ctx = unsafe { ctx.as_ref().unwrap() };
 
     let buf = buffer.unwrap().retained();
-    ctx.send(Cmd::Schedule {
-        kind: MessageKind::VideoKey,
-        body: buf,
+    ctx.send(rt::Cmd::Schedule {
+        kind: rt::MessageKind::VideoKey,
+        body: buf.data_buffer().unwrap().retained(),
     })
     .unwrap();
     //let data_buffer = buf.data_buffer().unwrap();
@@ -399,10 +145,10 @@ async fn main() {
     //let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
     //let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
-    //let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
-    let addr = SocketAddr::V4("172.20.10.1:8080".parse().unwrap());
+    let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
+    // let addr = SocketAddr::V4("172.20.10.1:8080".parse().unwrap());
 
-    let sender = create_sender(addr, 0);
+    let sender = rt::create_sender(addr, 0);
     let input = Box::new(sender);
 
     let mut session = vt::CompressionSession::new::<c_void>(
