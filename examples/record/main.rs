@@ -96,10 +96,16 @@ extern "C" fn callback(
         return;
     }
 
+    let buf = buffer.unwrap().retained();
+    let fd = buf.format_description().unwrap() as &cm::VideoFormatDescription;
+    let res = fd.hevc_parameters_count_and_header_length().unwrap();
+    let hz = fd.hevc_parameter_set_at(0).unwrap();
+    println!("nice {:?}", hz);
+    //let s = fd.hev
+
     let ctx = ctx as *mut flume::Sender<rt::Cmd>;
     let ctx = unsafe { ctx.as_ref().unwrap() };
 
-    let buf = buffer.unwrap().retained();
     ctx.send(rt::Cmd::Schedule {
         kind: rt::MessageKind::VideoKey,
         body: buf.data_buffer().unwrap().retained(),

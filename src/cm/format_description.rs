@@ -221,6 +221,86 @@ impl VideoFormatDescription {
             .to_result(result)
         }
     }
+
+    #[inline]
+    pub fn h264_parameters_count_and_header_length(&self) -> Result<(usize, i32), os::Status> {
+        unsafe {
+            let mut parameters_count_out = 0;
+            let mut nal_unit_header_length_out = 0;
+
+            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
+                self,
+                0,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                &mut parameters_count_out,
+                &mut nal_unit_header_length_out,
+            )
+            .to_result(Some((parameters_count_out, nal_unit_header_length_out)))
+        }
+    }
+
+    #[inline]
+    pub fn hevc_parameters_count_and_header_length(&self) -> Result<(usize, i32), os::Status> {
+        unsafe {
+            let mut parameters_count_out = 0;
+            let mut nal_unit_header_length_out = 0;
+
+            CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+                self,
+                0,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                &mut parameters_count_out,
+                &mut nal_unit_header_length_out,
+            )
+            .to_result(Some((parameters_count_out, nal_unit_header_length_out)))
+        }
+    }
+
+    #[inline]
+    pub fn h264_parameter_set_at(&self, index: usize) -> Result<&[u8], os::Status> {
+        unsafe {
+            let mut size = 0;
+            let mut bytes = std::ptr::null();
+            let res = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
+                self,
+                index,
+                &mut bytes,
+                &mut size,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+            );
+            if res.is_ok() {
+                let slice = std::ptr::slice_from_raw_parts(bytes, size);
+                return Ok(&*slice);
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    #[inline]
+    pub fn hevc_parameter_set_at(&self, index: usize) -> Result<&[u8], os::Status> {
+        unsafe {
+            let mut size = 0;
+            let mut bytes = std::ptr::null();
+            let res = CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+                self,
+                index,
+                &mut bytes,
+                &mut size,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+            );
+            if res.is_ok() {
+                let slice = std::ptr::slice_from_raw_parts(bytes, size);
+                return Ok(&*slice);
+            } else {
+                Err(res)
+            }
+        }
+    }
 }
 
 pub type AudioFormatDescription = FormatDescription;
@@ -315,8 +395,21 @@ extern "C" {
         format_descirption: &mut Option<cf::Retained<FormatDescription>>,
     ) -> os::Status;
 
-    // fn CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
-    //     video_desc: &VideoFormatDescription,
-    //     parameter_set_index: usize,
-    // ) -> os::Status;}
+    fn CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
+        video_desc: &VideoFormatDescription,
+        parameter_set_index: usize,
+        parameter_set_pointer_out: *mut *const u8,
+        parameter_set_size_out: *mut usize,
+        parameter_set_count_out: *mut usize,
+        nal_unit_header_length: *mut i32,
+    ) -> os::Status;
+
+    fn CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+        video_desc: &VideoFormatDescription,
+        parameter_set_index: usize,
+        parameter_set_pointer_out: *mut *const u8,
+        parameter_set_size_out: *mut usize,
+        parameter_set_count_out: *mut usize,
+        nal_unit_header_length: *mut i32,
+    ) -> os::Status;
 }
