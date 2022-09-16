@@ -99,7 +99,7 @@ extern "C" fn callback(
     let buf = buffer.unwrap().retained();
     let fd = buf.format_description().unwrap() as &cm::VideoFormatDescription;
     let res = fd.hevc_parameters_count_and_header_length().unwrap();
-    let hz = fd.hevc_parameter_set_at(0).unwrap();
+    let hz = fd.hevc_parameter_set_at(1).unwrap();
     println!("nice {:?}", hz);
     //let s = fd.hev
 
