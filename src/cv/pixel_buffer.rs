@@ -167,6 +167,10 @@ impl PixelFormatType {
     pub fn to_description(&self) -> Option<cf::Retained<cf::Dictionary>> {
         cv::pixel_format_description_create(*self)
     }
+
+    pub fn to_cf_number(&self) -> cf::Retained<cf::Number> {
+        cf::Number::from_i32(self.0 as _)
+    }
 }
 
 extern "C" {

@@ -131,7 +131,7 @@ async fn main() {
     let content = sc::ShareableContent::current().await.expect("content");
     let ref display = content.displays()[0];
     let mut cfg = sc::StreamConfiguration::new();
-    cfg.set_minimum_frame_interval(cm::Time::new(1, 30));
+    cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
@@ -187,11 +187,11 @@ async fn main() {
 
     let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
-    let expected_fr = cf::Number::from_i32(30);
+    let expected_fr = cf::Number::from_i32(60);
     let frame_delay_count = cf::Number::from_i32(0);
     let max_key_frame_interval = cf::Number::from_i32(30 * 5);
     let rate_limit =
-        cf::Array::from_type_refs(&[&cf::Number::from_i32(3_000_000), &cf::Number::from_i32(1)])
+        cf::Array::from_type_refs(&[&cf::Number::from_i32(3_500_000), &cf::Number::from_i32(1)])
             .unwrap();
 
     let mut props = cf::MutableDictionary::with_capacity(10);

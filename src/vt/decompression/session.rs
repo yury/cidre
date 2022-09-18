@@ -22,6 +22,8 @@ pub struct OutputCallbackRecord<O, F> {
     pub output_ref_con: *mut O,
 }
 
+unsafe impl<O, F> Send for OutputCallbackRecord<O, F> {}
+
 impl<O, F> OutputCallbackRecord<O, F> {
     pub fn new(ref_con: O, callback: OutputCallback<O, F>) -> Self {
         let b = Box::new(ref_con);
@@ -170,4 +172,40 @@ extern "C" {
 
     fn VTIsHardwareDecodeSupported(codec_type: VideoCodecType) -> bool;
 
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::c_void;
+
+    use crate::{
+        cf,
+        cm::{self, VideoCodecType},
+        cv, os, vt,
+    };
+
+    #[test]
+    fn create_decompression_session() {
+        let desc =
+            cm::VideoFormatDescription::video(VideoCodecType::HEVC, 1920, 1080, None).unwrap();
+
+        struct Context {}
+
+        extern "C" fn callback(
+            output_ref_con: *mut Context,
+            source_frame_ref_con: *mut c_void,
+            status: os::Status,
+            info_flags: vt::DecodeInfoFlags,
+            image_buffer: Option<&cv::ImageBuffer>,
+            pts: cm::Time,
+            duration: cm::Time,
+        ) {
+        }
+
+        let ctx = Context {};
+
+        let record = vt::DecompressionOutputCallbackRecord::new(ctx, callback);
+
+        //vt::DecompressionSession::new(&desc, None, None, None).unwrap();
+    }
 }

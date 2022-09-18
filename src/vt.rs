@@ -12,6 +12,8 @@ pub use compression::Session as CompressionSession;
 
 pub mod decompression;
 pub use decompression::properties as decompression_properties;
+pub use decompression::OutputCallback as DecompressionOutputCallback;
+pub use decompression::OutputCallbackRecord as DecompressionOutputCallbackRecord;
 pub use decompression::Session as DecompressionSession;
 
 pub mod pixel_transfer;
