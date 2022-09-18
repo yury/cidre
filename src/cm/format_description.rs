@@ -200,9 +200,10 @@ impl VideoFormatDescription {
     }
 
     #[inline]
-    pub fn create_from_hevc_parameter_sets<const N: usize>(
-        pointers: &[*const u8; N],
-        sizes: &[usize; N],
+    pub fn create_from_hevc_parameter_sets(
+        count: usize,
+        pointers: &[*const u8],
+        sizes: &[usize],
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
     ) -> Result<Retained<VideoFormatDescription>, os::Status> {
@@ -211,7 +212,7 @@ impl VideoFormatDescription {
         unsafe {
             CMVideoFormatDescriptionCreateFromHEVCParameterSets(
                 None,
-                N,
+                count,
                 pointers.as_ptr(),
                 sizes.as_ptr(),
                 nal_unit_header_length,
@@ -238,6 +239,25 @@ impl VideoFormatDescription {
             )
             .to_result(Some((parameters_count_out, nal_unit_header_length_out)))
         }
+    }
+
+    #[inline]
+    pub unsafe fn hevc_paramater_set_at_index(
+        &self,
+        parameter_set_index: usize,
+        parameter_set_pointer_out: *mut *const u8,
+        parameter_set_size_out: *mut usize,
+        parameter_set_count_out: *mut usize,
+        nal_unit_header_length_out: *mut i32,
+    ) -> os::Status {
+        CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+            self,
+            parameter_set_index,
+            parameter_set_pointer_out,
+            parameter_set_size_out,
+            parameter_set_count_out,
+            nal_unit_header_length_out,
+        )
     }
 
     #[inline]
@@ -401,7 +421,7 @@ extern "C" {
         parameter_set_pointer_out: *mut *const u8,
         parameter_set_size_out: *mut usize,
         parameter_set_count_out: *mut usize,
-        nal_unit_header_length: *mut i32,
+        nal_unit_header_length_out: *mut i32,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
@@ -410,6 +430,6 @@ extern "C" {
         parameter_set_pointer_out: *mut *const u8,
         parameter_set_size_out: *mut usize,
         parameter_set_count_out: *mut usize,
-        nal_unit_header_length: *mut i32,
+        nal_unit_header_length_out: *mut i32,
     ) -> os::Status;
 }

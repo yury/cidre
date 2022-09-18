@@ -22,6 +22,16 @@ pub struct OutputCallbackRecord<O, F> {
     pub output_ref_con: *mut O,
 }
 
+impl<O, F> OutputCallbackRecord<O, F> {
+    pub fn new(ref_con: O, callback: OutputCallback<O, F>) -> Self {
+        let b = Box::new(ref_con);
+        Self {
+            callback,
+            output_ref_con: Box::into_raw(b),
+        }
+    }
+}
+
 define_cf_type!(Session(vt::Session));
 
 impl Session {
@@ -123,6 +133,7 @@ pub fn is_hardware_decode_supported(codec_type: VideoCodecType) -> bool {
     unsafe { VTIsHardwareDecodeSupported(codec_type) }
 }
 
+#[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {
 
     fn VTDecompressionSessionCreate(

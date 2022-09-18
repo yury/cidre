@@ -14,18 +14,18 @@ use cidre::{
 };
 
 #[repr(C)]
-struct FameCounter {
+struct FrameCounter {
     counter: u32,
     session: cf::Retained<vt::CompressionSession>,
 }
 
-impl FameCounter {
+impl FrameCounter {
     pub fn _counter(&self) -> u32 {
         self.counter
     }
 }
 
-impl StreamOutput for FameCounter {
+impl StreamOutput for FrameCounter {
     extern "C" fn stream_did_output_sample_buffer_of_type(
         &mut self,
         _stream: &sc::Stream,
@@ -83,6 +83,32 @@ extern "C" fn _callback2(
     }
 }
 
+struct SenderContext {
+    tx: flume::Sender<rt::Cmd>,
+    frames_count: usize,
+}
+
+impl SenderContext {
+    pub fn handle_sample_buffer(&mut self, buffer: &SampleBuffer) {
+        if self.frames_count % 1000 == 0 {
+            let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
+            self.tx
+                .send(rt::Cmd::HEVCDesc {
+                    desc: desc.retained(),
+                })
+                .unwrap();
+        }
+        self.tx
+            .send(rt::Cmd::Schedule {
+                kind: rt::MessageKind::VideoKey,
+                body: buffer.data_buffer().unwrap().retained(),
+            })
+            .unwrap();
+
+        self.frames_count += 1;
+    }
+}
+
 extern "C" fn callback(
     ctx: *mut c_void,
     _: *mut c_void,
@@ -90,31 +116,13 @@ extern "C" fn callback(
     _flags: EncodeInfoFlags,
     buffer: Option<&SampleBuffer>,
 ) {
-    // println!("compressed");
     if status.is_err() || buffer.is_none() {
         println!("status {:?}", status);
         return;
     }
-
-    let buf = buffer.unwrap().retained();
-    let fd = buf.format_description().unwrap() as &cm::VideoFormatDescription;
-    let res = fd.hevc_parameters_count_and_header_length().unwrap();
-    let hz = fd.hevc_parameter_set_at(1).unwrap();
-    println!("nice {:?}", hz);
-    //let s = fd.hev
-
-    let ctx = ctx as *mut flume::Sender<rt::Cmd>;
-    let ctx = unsafe { ctx.as_ref().unwrap() };
-
-    ctx.send(rt::Cmd::Schedule {
-        kind: rt::MessageKind::VideoKey,
-        body: buf.data_buffer().unwrap().retained(),
-    })
-    .unwrap();
-    //let data_buffer = buf.data_buffer().unwrap();
-    //let data = data_buffer.data_pointer().unwrap();
-    //assert_eq!(data.len(), data_buffer.data_len());
-    //println!("{:?}", data.len());
+    let ctx = ctx as *mut SenderContext;
+    let ctx = unsafe { ctx.as_mut().unwrap() };
+    ctx.handle_sample_buffer(buffer.unwrap())
 }
 
 #[tokio::main]
@@ -150,12 +158,15 @@ async fn main() {
     //let input = Box::new(writer_input);
     //let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
-    //let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
-    let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
+    let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
+    // let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
     // let addr = SocketAddr::V4("172.20.10.1:8080".parse().unwrap());
 
-    let sender = rt::create_sender(addr, 0);
-    let input = Box::new(sender);
+    let tx = rt::create_sender(addr, 0);
+    let input = Box::new(SenderContext {
+        tx,
+        frames_count: 0,
+    });
 
     let mut session = vt::CompressionSession::new::<c_void>(
         1920, // display.width() as u32 * 2,
@@ -204,7 +215,7 @@ async fn main() {
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
 
-    let delegate = FameCounter {
+    let delegate = FrameCounter {
         counter: 0,
         session,
     };

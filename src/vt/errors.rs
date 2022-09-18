@@ -1,4 +1,4 @@
-use crate::os::Status;
+use crate::{define_options, os::Status};
 
 pub const PROPERTY_NOT_SUPPORTED: Status = Status(-12900);
 pub const PROPERTY_READ_ONLY: Status = Status(-12901);
@@ -37,8 +37,7 @@ pub const VIDEO_ENCODER_NEEDS_ROSETTA: Status = Status(-17693);
 pub const VIDEO_DECODER_REFERENCE_MISSING: Status = Status(-17694);
 pub const VIDEO_DECODER_CALLBACK_MESSAGING: Status = Status(-17695);
 
-#[repr(transparent)]
-pub struct DecodeFrameFlags(pub u32);
+define_options!(DecodeFrameFlags(u32));
 
 impl DecodeFrameFlags {
     pub const ENABLE_ASYNCHRONOUS_DECOMPRESSION: Self = Self(1 << 0);
