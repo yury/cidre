@@ -55,34 +55,6 @@ impl StreamOutput for FrameCounter {
     }
 }
 
-extern "C" fn _callback2(
-    ctx: *mut c_void,
-    _: *mut c_void,
-    status: Status,
-    _flags: EncodeInfoFlags,
-    buffer: Option<&SampleBuffer>,
-) {
-    // println!("compressed");
-    if status.is_err() || buffer.is_none() {
-        println!("status {:?}", status);
-        return;
-    }
-
-    //    sender: flume::Sender<Cmd>,
-    let ctx = ctx as *mut cf::Retained<av::AssetWriterInput>;
-    let ctx = unsafe { ctx.as_ref().unwrap() };
-
-    let buf = buffer.unwrap();
-    let data_buffer = buf.data_buffer().unwrap();
-    let data = data_buffer.data_pointer().unwrap();
-    assert_eq!(data.len(), data_buffer.data_len());
-    println!("{:?}", data.len());
-
-    if ctx.is_ready_for_more_media_data() {
-        ctx.append_sample_buffer(buf);
-    }
-}
-
 struct SenderContext {
     tx: flume::Sender<rt::Cmd>,
     frames_count: usize,
@@ -135,6 +107,9 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
+    //    cfg.set_width(display.width() as usize);
+    //    cfg.set_height(display.height() as usize);
+
     //let input = Box::new(writer_input);
     //let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
@@ -149,8 +124,8 @@ async fn main() {
     });
 
     let mut session = vt::CompressionSession::new::<c_void>(
-        1440, // display.width() as u32 * 2,
-        900,  // display.height() as u32 * 2,
+        1440 * 2, // display.width() as u32 * 2,
+        900 * 2,  // display.height() as u32 * 2,
         cm::VideoCodecType::HEVC,
         None,
         None,
