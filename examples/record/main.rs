@@ -1,26 +1,22 @@
 use std::{ffi::c_void, net::SocketAddr, time::Duration};
 
 use cidre::{
-    av, cf,
+    cf,
     cm::{self, SampleBuffer},
     dispatch,
     os::Status,
     sc::{self, stream::StreamOutput},
-    vt::{
-        self,
-        compression_properties::{keys, profile_level},
-        EncodeInfoFlags,
-    },
+    vt::{self, compression_properties::keys, EncodeInfoFlags},
 };
 
 #[repr(C)]
 struct FrameCounter {
-    counter: u32,
+    counter: usize,
     session: cf::Retained<vt::CompressionSession>,
 }
 
 impl FrameCounter {
-    pub fn _counter(&self) -> u32 {
+    pub fn _counter(&self) -> usize {
         self.counter
     }
 }
@@ -40,7 +36,7 @@ impl StreamOutput for FrameCounter {
         if img.is_none() {
             return;
         }
-        let img = img.unwrap();
+        let img = unsafe { img.unwrap_unchecked() };
         let pts = sample_buffer.presentation_time_stamp();
         let dur = sample_buffer.duration();
 
@@ -107,11 +103,7 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
-    //    cfg.set_width(display.width() as usize);
-    //    cfg.set_height(display.height() as usize);
-
-    //let input = Box::new(writer_input);
-    //let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
+    // let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
     // let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
     let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
@@ -146,9 +138,9 @@ async fn main() {
     let frame_delay_count = cf::Number::from_i32(0);
     let max_key_frame_interval = cf::Number::from_i32(600 * 5 * 5);
     let rate_limit = cf::Array::from_type_refs(&[
-        &cf::Number::from_i32(50_000),
+        &cf::Number::from_i32(150_000),
         &cf::Number::from_f64(0.1f64).unwrap(),
-        &cf::Number::from_i32(400_000),
+        &cf::Number::from_i32(1_400_000),
         &cf::Number::from_f64(1.0f64).unwrap(),
     ])
     .unwrap();
@@ -184,11 +176,7 @@ async fn main() {
     assert!(error.is_none());
     stream.start().await.expect("started");
 
-    // cf::RunLoop::run
     tokio::time::sleep(Duration::from_secs(100_200)).await;
 
-    //    dispatch::Queue::main().async_with(move || {
     _ = stream.stop();
-
-    //  })
 }
