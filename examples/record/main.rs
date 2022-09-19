@@ -135,31 +135,11 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
-    let format = cm::FormatDescription::video(
-        cm::VideoCodecType::H264,
-        display.width() as i32 * 2,
-        display.height() as i32 * 2,
-        None,
-    )
-    .unwrap();
-
-    let writer_input =
-        av::AssetWriterInput::with_media_type_and_format_hint(av::MediaType::video(), &format);
-    writer_input.set_expects_media_data_in_real_time(true);
-    let url = cf::URL::from_str("file:///Users/yury/bla.mp4").unwrap();
-
-    let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
-    writer.add_input(&writer_input);
-    writer.start_writing();
-    let start = cm::Time::with_seconds(0.2f64, 10_000);
-    let start = cm::Clock::host_time_clock().time().add(&start);
-    writer.start_session_at_source_time(start);
-
     //let input = Box::new(writer_input);
     //let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
-    let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
-    // let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
+    // let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
+    let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
     // let addr = SocketAddr::V4("172.20.10.1:8080".parse().unwrap());
 
     let tx = rt::create_sender(addr, 0);
@@ -169,8 +149,8 @@ async fn main() {
     });
 
     let mut session = vt::CompressionSession::new::<c_void>(
-        1920, // display.width() as u32 * 2,
-        1080, // display.height() as u32 * 2,
+        1440, // display.width() as u32 * 2,
+        900,  // display.height() as u32 * 2,
         cm::VideoCodecType::HEVC,
         None,
         None,
@@ -189,20 +169,24 @@ async fn main() {
     let bool_false = cf::Boolean::value_false();
     let expected_fr = cf::Number::from_i32(60);
     let frame_delay_count = cf::Number::from_i32(0);
-    let max_key_frame_interval = cf::Number::from_i32(30 * 5);
-    let rate_limit =
-        cf::Array::from_type_refs(&[&cf::Number::from_i32(3_500_000), &cf::Number::from_i32(1)])
-            .unwrap();
+    let max_key_frame_interval = cf::Number::from_i32(600 * 5 * 5);
+    let rate_limit = cf::Array::from_type_refs(&[
+        &cf::Number::from_i32(50_000),
+        &cf::Number::from_f64(0.1f64).unwrap(),
+        &cf::Number::from_i32(400_000),
+        &cf::Number::from_f64(1.0f64).unwrap(),
+    ])
+    .unwrap();
 
     let mut props = cf::MutableDictionary::with_capacity(10);
     props.insert(keys::real_time(), bool_true);
     props.insert(keys::allow_frame_reordering(), bool_false);
     props.insert(keys::max_key_frame_interval(), &max_key_frame_interval);
     props.insert(keys::data_rate_limits(), &rate_limit);
-    props.insert(
-        keys::profile_level(),
-        profile_level::hevc::main_auto_level(),
-    );
+    // props.insert(
+    //     keys::profile_level(),
+    //     profile_level::hevc::main_auto_level(),
+    // );
     // props.insert(keys::allow_open_gop(), bool_false);
     // props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());
     props.insert(keys::expected_frame_rate(), &expected_fr);
@@ -226,12 +210,10 @@ async fn main() {
     stream.start().await.expect("started");
 
     // cf::RunLoop::run
-    tokio::time::sleep(Duration::from_secs(1200)).await;
+    tokio::time::sleep(Duration::from_secs(100_200)).await;
 
     //    dispatch::Queue::main().async_with(move || {
     _ = stream.stop();
 
-    writer.end_session_at_source_time(cm::Clock::host_time_clock().time());
-    writer.finish_writing();
     //  })
 }
