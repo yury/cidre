@@ -54,6 +54,7 @@ impl StreamOutput for FrameCounter {
 struct SenderContext {
     tx: flume::Sender<rt::Cmd>,
     frames_count: usize,
+    format_desc: Option<cf::Retained<cm::VideoFormatDescription>>,
 }
 
 impl SenderContext {
@@ -62,9 +63,12 @@ impl SenderContext {
             let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
             self.tx
                 .send(rt::Cmd::HEVCDesc {
+                    forced: self.frames_count == 0,
                     desc: desc.retained(),
                 })
                 .unwrap();
+            // store current format description
+            self.format_desc = Some(desc.retained());
         }
         self.tx
             .send(rt::Cmd::Schedule {
@@ -103,7 +107,6 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
-    // let addr = SocketAddr::V4("127.0.0.1:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
     // let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
     let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
@@ -113,6 +116,7 @@ async fn main() {
     let input = Box::new(SenderContext {
         tx,
         frames_count: 0,
+        format_desc: None,
     });
 
     let mut session = vt::CompressionSession::new::<c_void>(
