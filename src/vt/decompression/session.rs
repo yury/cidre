@@ -82,7 +82,7 @@ impl Session {
     /// When a decompression session's retain count reaches zero, it is automatically invalidated, but
     /// since sessions may be retained by multiple parties, it can be hard to predict when this will happen.
     /// Calling VTDecompressionSessionInvalidate ensures a deterministic, orderly teardown.
-    pub fn invalide(&mut self) {
+    pub fn invalidate(&mut self) {
         unsafe { VTDecompressionSessionInvalidate(self) }
     }
 
