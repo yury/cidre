@@ -105,5 +105,8 @@ pub use socket::NativeHandle as SocketNativeHandle;
 pub use socket::Signature as SocketSignature;
 pub use socket::Socket;
 
+pub mod mach_port;
+pub use mach_port::MachPort;
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {}
