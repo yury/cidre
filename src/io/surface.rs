@@ -6,6 +6,7 @@ use crate::{
 
 pub type Id = u32;
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum ComponentName {
     Unkown = 0,
@@ -18,6 +19,7 @@ pub enum ComponentName {
     ChromeBlue = 7,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum ComponentType {
     Unknown = 0,
@@ -27,6 +29,7 @@ pub enum ComponentType {
     SignedNormalized = 4,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum ComponentRange {
     Unknown = 0,
@@ -35,6 +38,7 @@ pub enum ComponentRange {
     Wide = 3,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum Subsampling {
     Unknown = 0,
