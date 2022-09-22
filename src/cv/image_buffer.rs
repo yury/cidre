@@ -290,18 +290,23 @@ pub mod attachment {
         pub fn itu_r_709_2() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_ITU_R_709_2 }
         }
+
         pub fn ebu_3213() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_EBU_3213 }
         }
+
         pub fn smpte_c() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_SMPTE_C }
         }
+
         pub fn p22() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_P22 }
         }
+
         pub fn dci_p3() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_DCI_P3 }
         }
+
         pub fn p3_d65() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_P3_D65 }
         }
@@ -309,6 +314,7 @@ pub mod attachment {
         pub fn itu_r_2020() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_ITU_R_2020 }
         }
+
         extern "C" {
             static kCVImageBufferColorPrimaries_ITU_R_709_2: &'static cf::String;
             static kCVImageBufferColorPrimaries_EBU_3213: &'static cf::String;
@@ -326,33 +332,43 @@ pub mod attachment {
         pub fn itu_r_709_2() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_ITU_R_709_2 }
         }
+
         pub fn smpte_240m_1995() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_240M_1995 }
         }
+
         pub fn use_gamma() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_UseGamma }
         }
+
         pub fn ebu_3213() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_EBU_3213 }
         }
+
         pub fn smpte_c() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_C }
         }
+
         pub fn srgb() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_sRGB }
         }
+
         pub fn itu_r_2020() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_ITU_R_2020 }
         }
+
         pub fn smpte_st_428_1() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_ST_428_1 }
         }
+
         pub fn smpte_st_2084_pq() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ }
         }
+
         pub fn itu_r_2100_hlg() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_ITU_R_2100_HLG }
         }
+
         pub fn linear() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_Linear }
         }
