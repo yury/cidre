@@ -1,5 +1,7 @@
 use std::ffi::c_void;
 
+use crate::define_options;
+
 use super::{Boolean, KernReturn, Port, PortName};
 
 pub type MsgBits = u32;
@@ -214,4 +216,38 @@ impl Return {
 
     /// Message auxiliary data is too large
     pub const SEND_SEND_AUX_TOO_LARGE: Self = Self(KernReturn(0x10000019));
+}
+
+define_options!(MsgOption(i32));
+
+#[repr(transparent)]
+pub struct Timeout(pub u32);
+
+impl Timeout {
+    pub const NONE: Self = Self(0);
+}
+
+#[inline]
+pub fn msg(
+    msg: &mut Header,
+    option: MsgOption,
+    send_size: MsgSize,
+    rcv_size: MsgSize,
+    rcv_name: PortName,
+    timeout: Timeout,
+    notify: PortName,
+) -> Return {
+    unsafe { mach_msg(msg, option, send_size, rcv_size, rcv_name, timeout, notify) }
+}
+
+extern "C" {
+    fn mach_msg(
+        msg: &mut Header,
+        option: MsgOption,
+        send_size: MsgSize,
+        rcv_size: MsgSize,
+        rcv_name: PortName,
+        timeout: Timeout,
+        notify: PortName,
+    ) -> Return;
 }
