@@ -1,6 +1,6 @@
 use super::KernReturn;
 
-#[derive(Default)]
+#[derive(Default, Eq, PartialEq, Debug)]
 #[repr(C)]
 pub struct TimeBaseInfo {
     pub numer: u32,

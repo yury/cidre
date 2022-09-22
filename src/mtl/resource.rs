@@ -71,6 +71,13 @@ pub enum HazardTrackingMode {
     Tracked = 2,
 }
 
+impl Default for HazardTrackingMode {
+    #[inline]
+    fn default() -> Self {
+        Self::Default
+    }
+}
+
 impl Options {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
         Self((CPUCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
