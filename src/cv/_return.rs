@@ -66,9 +66,16 @@ impl Return {
     }
 }
 
-impl Into<Result<(), Return>> for Return {
+// impl Into<Result<(), Return>> for Return {
+//     #[inline]
+//     fn into(self) -> Result<(), Return> {
+//         self.result()
+//     }
+// }
+
+impl From<Return> for Result<(), Return> {
     #[inline]
-    fn into(self) -> Result<(), Return> {
-        self.result()
+    fn from(r: Return) -> Self {
+        r.result()
     }
 }

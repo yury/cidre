@@ -276,6 +276,7 @@ define_options!(MsgOption(i32));
 
 impl MsgOption {
     pub const NONE: Self = Self(0x00000000);
+
     pub const SEND_MSG: Self = Self(0x00000001);
     pub const RCV_MSG: Self = Self(0x00000002);
 

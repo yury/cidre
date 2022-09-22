@@ -46,15 +46,17 @@ impl DecodeFrameFlags {
     pub const ENABLE_TEMPORAL_PROCESSING: Self = Self(1 << 3);
 }
 
-#[repr(u32)]
-pub enum DecodeInfoFlags {
-    Asynchronous = 1u32 << 0,
-    FrameDropped = 1u32 << 1,
-    ImageBufferModifiable = 1u32 << 2,
+define_options!(DecodeInfoFlags(u32));
+
+impl DecodeInfoFlags {
+    pub const ASYNCHRONOUS: Self = Self(1u32 << 0);
+    pub const FRAME_DROPPED: Self = Self(1u32 << 1);
+    pub const IMAGE_BUFFER_MODIFIABLE: Self = Self(1u32 << 2);
 }
 
-#[repr(u32)]
-pub enum EncodeInfoFlags {
-    Asynchronous = 1u32 << 0,
-    FrameDropped = 1u32 << 1,
+define_options!(EncodeInfoFlags(u32));
+
+impl EncodeInfoFlags {
+    pub const ASYNCHRONOUS: Self = Self(1u32 << 0);
+    pub const FRAME_DROPPED: Self = Self(1u32 << 1);
 }

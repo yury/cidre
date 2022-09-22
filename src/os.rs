@@ -40,8 +40,15 @@ impl Status {
     }
 }
 
-impl Into<Result<(), Status>> for Status {
-    fn into(self) -> Result<(), Status> {
-        self.result()
+// impl Into<Result<(), Status>> for Status {
+//     fn into(self) -> Result<(), Status> {
+//         self.result()
+//     }
+// }
+
+impl From<Status> for Result<(), Status> {
+    #[inline]
+    fn from(v: Status) -> Self {
+        v.result()
     }
 }
