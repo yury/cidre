@@ -1,7 +1,3 @@
-use std::os::raw::c_uint;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct MachPort(c_uint);
+pub use crate::mach::Port as MachPort;
 
 pub type Pid = i32;

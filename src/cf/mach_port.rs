@@ -19,7 +19,7 @@ impl MachPort {
         unsafe { CFMachPortCreateRunLoopSource(allocator, self, index) }
     }
 
-    pub fn port(&self) -> crate::mach::MachPort {
+    pub fn port(&self) -> crate::mach::Port {
         unsafe { CFMachPortGetPort(self) }
     }
 }
@@ -33,5 +33,5 @@ extern "C" {
         index: cf::Index,
     ) -> Option<cf::Retained<cf::RunLoopSource>>;
 
-    fn CFMachPortGetPort(port: &MachPort) -> crate::mach::MachPort;
+    fn CFMachPortGetPort(port: &MachPort) -> crate::mach::Port;
 }
