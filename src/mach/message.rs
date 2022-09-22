@@ -216,6 +216,60 @@ impl Return {
 
     /// Message auxiliary data is too large
     pub const SEND_SEND_AUX_TOO_LARGE: Self = Self(KernReturn(0x10000019));
+
+    /// Thread is waiting for receive.  (Internal use only.)
+    pub const RCV_IN_PROGRESS: Self = Self(KernReturn(0x10004001));
+
+    /// Bogus name for receive port/port-set.
+    pub const RCV_INVALID_NAME: Self = Self(KernReturn(0x10004002));
+
+    /// Didn't get a message within the timeout value.
+    pub const RCV_TIMED_OUT: Self = Self(KernReturn(0x10004003));
+
+    /// Message buffer is not large enough for inline data.
+    pub const RCV_TOO_LARGE: Self = Self(KernReturn(0x10004004));
+
+    /// Software interrupt.    
+    pub const RCV_INTERRUPTED: Self = Self(KernReturn(0x10004005));
+
+    /// compatibility: no longer a returned error
+    pub const RCV_PORT_CHANGED: Self = Self(KernReturn(0x10004006));
+
+    /// Bogus notify port argument.
+    pub const RCV_INVALID_NOTIFY: Self = Self(KernReturn(0x10004007));
+
+    /// Bogus message buffer for inline data.
+    pub const RCV_INVALID_DATA: Self = Self(KernReturn(0x10004008));
+
+    /// Port/set was sent away/died during receive.
+    pub const RCV_PORT_DIED: Self = Self(KernReturn(0x10004009));
+
+    /// compatibility: no longer a returned error
+    pub const RCV_IN_SET: Self = Self(KernReturn(0x1000400a));
+
+    /// Error receiving message header.  See special bits.
+    pub const RCV_HEADER_ERROR: Self = Self(KernReturn(0x1000400b));
+
+    /// Error receiving message body.  See special bits.
+    pub const RCV_BODY_ERROR: Self = Self(KernReturn(0x1000400c));
+
+    /// Invalid msg-type specification in scatter list.
+    pub const RCV_INVALID_TYPE: Self = Self(KernReturn(0x1000400d));
+
+    /// Out-of-line overwrite region is not large enough
+    pub const RCV_SCATTER_SMALL: Self = Self(KernReturn(0x1000400e));
+
+    /// trailer type or number of trailer elements not supported
+    pub const RCV_INVALID_TRAILER: Self = Self(KernReturn(0x1000400f));
+
+    /// Waiting for receive with timeout. (Internal use only.)
+    pub const RCV_IN_PROGRESS_TIMED: Self = Self(KernReturn(0x10004011));
+
+    /// invalid reply port used in a STRICT_REPLY message    
+    pub const RCV_INVALID_REPLY: Self = Self(KernReturn(0x10004012));
+
+    /// invalid receive arguments, receive has not started
+    pub const RCV_INVALID_ARGUMENTS: Self = Self(KernReturn(0x10004013));
 }
 
 define_options!(MsgOption(i32));
