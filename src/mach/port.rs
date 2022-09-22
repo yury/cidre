@@ -4,6 +4,10 @@ use crate::define_options;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
+pub struct Name(pub u32);
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(transparent)]
 pub struct Port(pub c_uint);
 
 impl Port {
