@@ -4,10 +4,13 @@ use crate::define_options;
 
 use super::{Boolean, KernReturn, Port, PortName};
 
-pub type MsgBits = u32;
-pub type MsgSize = i32;
-pub type MsgId = i32;
-pub type MsgPriority = u32;
+pub type Bits = u32;
+
+pub type Size = i32;
+
+pub type Id = i32;
+
+pub type Priority = u32;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(u32)]
@@ -65,7 +68,7 @@ impl DescriptorType {
 #[repr(C)]
 pub struct TypeDescriptor {
     pub pad1: u32,
-    pub pad2: MsgSize,
+    pub pad2: Size,
     pub pad3: u32,
     pub type_: DescriptorType,
 }
@@ -73,7 +76,7 @@ pub struct TypeDescriptor {
 #[repr(C)]
 pub struct PortDescriptor {
     pub name: Port,
-    pub pad1: MsgSize,
+    pub pad1: Size,
     pub pad2: u32,
     pub disposition: TypeName,
     pub type_: DescriptorType,
@@ -82,7 +85,7 @@ pub struct PortDescriptor {
 #[repr(C)]
 pub struct OOLDescriptor32 {
     pub address: u32,
-    pub size: MsgSize,
+    pub size: Size,
     pub deallocate: Boolean,
     pub pad1: u32,
     pub type_: DescriptorType,
@@ -91,7 +94,7 @@ pub struct OOLDescriptor32 {
 #[repr(C)]
 pub struct OOLDescriptor64 {
     pub address: u64,
-    pub size: MsgSize,
+    pub size: Size,
     pub deallocate: Boolean,
     pub pad1: u32,
     pub type_: DescriptorType,
@@ -104,22 +107,22 @@ pub struct OOLDescriptor {
     pub copy: CopyOptions,
     pub pad1: u32,
     pub type_: DescriptorType,
-    pub size: MsgSize,
+    pub size: Size,
 }
 
 #[repr(C)]
 pub struct Body {
-    pub descriptor_count: MsgSize,
+    pub descriptor_count: Size,
 }
 
 #[repr(C)]
 pub struct Header {
-    pub bits: MsgBits,
-    pub size: MsgSize,
+    pub bits: Bits,
+    pub size: Size,
     pub remote_port: Port,
     pub local_port: Port,
     pub voucher_port: PortName,
-    pub id: MsgId,
+    pub id: Id,
 }
 
 #[repr(C)]
@@ -370,8 +373,8 @@ impl Timeout {
 pub fn msg(
     msg: &mut Header,
     option: MsgOption,
-    send_size: MsgSize,
-    rcv_size: MsgSize,
+    send_size: Size,
+    rcv_size: Size,
     rcv_name: PortName,
     timeout: Timeout,
     notify: PortName,
@@ -383,8 +386,8 @@ extern "C" {
     fn mach_msg(
         msg: &mut Header,
         option: MsgOption,
-        send_size: MsgSize,
-        rcv_size: MsgSize,
+        send_size: Size,
+        rcv_size: Size,
         rcv_name: PortName,
         timeout: Timeout,
         notify: PortName,

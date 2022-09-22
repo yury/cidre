@@ -117,7 +117,7 @@ impl SampleBuffer {
                 std::ptr::null(),
                 &mut sample_buffer_out,
             )
-            .to_result(sample_buffer_out)
+            .to_result_unchecked(sample_buffer_out)
         }
     }
 

@@ -73,7 +73,7 @@ impl PixelBuffer {
             &mut pixel_buffer_out,
         );
 
-        unsafe { r.to_result(pixel_buffer_out) }
+        unsafe { r.to_result_unchecked(pixel_buffer_out) }
     }
 
     pub fn create(

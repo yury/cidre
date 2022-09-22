@@ -6,7 +6,8 @@ pub fn create_cg_image_from_cv_pixel_buffer(
 ) -> Result<cf::Retained<cg::Image>, os::Status> {
     let mut image_out = None;
     unsafe {
-        VTCreateCGImageFromCVPixelBuffer(pixel_buffer, options, &mut image_out).to_result(image_out)
+        VTCreateCGImageFromCVPixelBuffer(pixel_buffer, options, &mut image_out)
+            .to_result_unchecked(image_out)
     }
 }
 

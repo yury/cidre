@@ -118,7 +118,7 @@ impl FormatDescription {
             extensions,
             &mut format_desc,
         );
-        unsafe { res.to_result(format_desc) }
+        unsafe { res.to_result_unchecked(format_desc) }
     }
 }
 
@@ -145,7 +145,7 @@ impl VideoFormatDescription {
             extensions,
             &mut format_desc,
         );
-        unsafe { res.to_result(format_desc) }
+        unsafe { res.to_result_unchecked(format_desc) }
     }
 
     pub fn create_video(
@@ -195,7 +195,7 @@ impl VideoFormatDescription {
                 nal_unit_header_length,
                 &mut result,
             )
-            .to_result(result)
+            .to_result_unchecked(result)
         }
     }
 
@@ -219,7 +219,7 @@ impl VideoFormatDescription {
                 extensions,
                 &mut result,
             )
-            .to_result(result)
+            .to_result_unchecked(result)
         }
     }
 
@@ -237,7 +237,7 @@ impl VideoFormatDescription {
                 &mut parameters_count_out,
                 &mut nal_unit_header_length_out,
             )
-            .to_result(Some((parameters_count_out, nal_unit_header_length_out)))
+            .to_result_unchecked(Some((parameters_count_out, nal_unit_header_length_out)))
         }
     }
 
@@ -274,7 +274,7 @@ impl VideoFormatDescription {
                 &mut parameters_count_out,
                 &mut nal_unit_header_length_out,
             )
-            .to_result(Some((parameters_count_out, nal_unit_header_length_out)))
+            .to_result_unchecked(Some((parameters_count_out, nal_unit_header_length_out)))
         }
     }
 

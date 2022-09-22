@@ -19,7 +19,7 @@ impl PixelBufferPool {
                 pixel_buffer_attributes,
                 &mut pool_out,
             )
-            .to_result(pool_out)
+            .to_result_unchecked(pool_out)
         }
     }
 
@@ -62,7 +62,7 @@ impl PixelBufferPool {
         unsafe {
             let mut pixel_buffer_out = None;
             self.create_pixel_buffer(None, &mut pixel_buffer_out)
-                .to_result(pixel_buffer_out)
+                .to_result_unchecked(pixel_buffer_out)
         }
     }
 
@@ -93,7 +93,7 @@ impl PixelBufferPool {
                 aux_attributes,
                 &mut pixel_buffer_out,
             )
-            .to_result(pixel_buffer_out)
+            .to_result_unchecked(pixel_buffer_out)
         }
     }
 

@@ -9,7 +9,7 @@ pub fn copy(
     unsafe {
         let mut list_of_video_encoders_out = None;
         VTCopyVideoEncoderList(options, &mut list_of_video_encoders_out)
-            .to_result(list_of_video_encoders_out)
+            .to_result_unchecked(list_of_video_encoders_out)
     }
 }
 

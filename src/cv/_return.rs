@@ -48,7 +48,7 @@ impl Return {
     }
 
     #[inline]
-    pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
+    pub unsafe fn to_result_unchecked<T>(self, option: Option<T>) -> Result<T, Self> {
         if self.is_ok() {
             Ok(option.unwrap_unchecked())
         } else {
@@ -65,13 +65,6 @@ impl Return {
         }
     }
 }
-
-// impl Into<Result<(), Return>> for Return {
-//     #[inline]
-//     fn into(self) -> Result<(), Return> {
-//         self.result()
-//     }
-// }
 
 impl From<Return> for Result<(), Return> {
     #[inline]

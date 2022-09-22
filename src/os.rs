@@ -21,7 +21,7 @@ impl Status {
     }
 
     #[inline]
-    pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
+    pub unsafe fn to_result_unchecked<T>(self, option: Option<T>) -> Result<T, Self> {
         if self.is_ok() {
             debug_assert!(option.is_some());
             Ok(option.unwrap_unchecked())
@@ -39,12 +39,6 @@ impl Status {
         }
     }
 }
-
-// impl Into<Result<(), Status>> for Status {
-//     fn into(self) -> Result<(), Status> {
-//         self.result()
-//     }
-// }
 
 impl From<Status> for Result<(), Status> {
     #[inline]

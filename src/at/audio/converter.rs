@@ -363,7 +363,7 @@ impl Converter {
     ) -> Result<cf::Retained<Converter>, os::Status> {
         unsafe {
             let mut out_converter = None;
-            Self::new(source_fmt, dest_fmt, &mut out_converter).to_result(out_converter)
+            Self::new(source_fmt, dest_fmt, &mut out_converter).to_result_unchecked(out_converter)
         }
     }
 

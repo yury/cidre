@@ -10,7 +10,7 @@ impl Session {
         unsafe {
             let mut pixel_transfer_ssession_out = None;
             VTPixelTransferSessionCreate(allocator, &mut pixel_transfer_ssession_out)
-                .to_result(pixel_transfer_ssession_out)
+                .to_result_unchecked(pixel_transfer_ssession_out)
         }
     }
 

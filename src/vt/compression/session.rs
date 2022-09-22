@@ -40,7 +40,7 @@ impl Session {
                 transmute(output_callback_ref_con),
                 &mut session,
             )
-            .to_result(session)
+            .to_result_unchecked(session)
         }
     }
 

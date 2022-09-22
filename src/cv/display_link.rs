@@ -50,7 +50,7 @@ impl DisplayLink {
         unsafe {
             let mut display_link_out = None;
             Self::create_with_cg_display(display_id, &mut display_link_out)
-                .to_result(display_link_out)
+                .to_result_unchecked(display_link_out)
         }
     }
 

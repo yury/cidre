@@ -53,7 +53,7 @@ impl Session {
                 transmute(output_callback),
                 &mut session,
             )
-            .to_result(session)
+            .to_result_unchecked(session)
         }
     }
 
@@ -126,7 +126,7 @@ impl Session {
         let mut pixel_buffer_out = None;
         unsafe {
             VTDecompressionSessionCopyBlackPixelBuffer(self, &mut pixel_buffer_out)
-                .to_result(pixel_buffer_out)
+                .to_result_unchecked(pixel_buffer_out)
         }
     }
 }

@@ -54,7 +54,7 @@ impl Session {
         unsafe {
             let mut supported_property_dictionary_out = None;
             self.copy_supported_property_dictionary(&mut supported_property_dictionary_out)
-                .to_result(supported_property_dictionary_out)
+                .to_result_unchecked(supported_property_dictionary_out)
         }
     }
 }

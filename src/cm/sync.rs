@@ -36,7 +36,7 @@ impl Clock {
         let mut clock_out = None;
         unsafe {
             let res = Self::audio_clock_create(None, &mut clock_out);
-            res.to_result(clock_out)
+            res.to_result_unchecked(clock_out)
         }
     }
 

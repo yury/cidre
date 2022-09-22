@@ -70,7 +70,7 @@ impl BlockBuffer {
                 flags,
                 &mut block_buffer_out,
             )
-            .to_result(block_buffer_out)
+            .to_result_unchecked(block_buffer_out)
         }
     }
 
@@ -125,7 +125,7 @@ impl BlockBuffer {
             flags,
             &mut block_buffer_out,
         )
-        .to_result(block_buffer_out)
+        .to_result_unchecked(block_buffer_out)
     }
 
     /// Obtains the total data length reachable via a cm::BlockBuffer.
@@ -249,7 +249,7 @@ impl BlockBuffer {
                 flags,
                 &mut block_buffer_out,
             )
-            .to_result(block_buffer_out)
+            .to_result_unchecked(block_buffer_out)
         }
     }
 

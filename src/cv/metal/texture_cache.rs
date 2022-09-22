@@ -35,7 +35,7 @@ impl TextureCache {
                 texture_attributes,
                 &mut cache_out,
             )
-            .to_result(cache_out)
+            .to_result_unchecked(cache_out)
         }
     }
 
@@ -86,7 +86,7 @@ impl TextureCache {
                 plane_index,
                 &mut texture_out,
             )
-            .to_result(texture_out)
+            .to_result_unchecked(texture_out)
         }
     }
 
