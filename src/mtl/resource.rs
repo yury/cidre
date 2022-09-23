@@ -1,7 +1,6 @@
-use crate::{define_mtl, define_obj_type, objc::Id};
+use crate::{define_mtl, define_obj_type, define_options, objc::Id};
 
-#[repr(transparent)]
-pub struct Options(usize);
+define_options!(Options(usize));
 
 pub const CPU_CACHE_MODE_SHIFT: usize = 0;
 pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;
@@ -56,7 +55,7 @@ pub enum StorageMode {
     /// devices. The contents of the on-chip storage is undefined and does not persist, but its configuration is controlled by the
     /// mtl::Texture descriptor. Textures created with MTLStorageModeMemoryless dont have an IOAccelResource at any point in their
     /// lifetime. The only way to populate such resource is to perform rendering operations on it. Blit operations are disallowed.
-    MemoryLess = 3,
+    Memoryless = 3,
 }
 
 /// Describes how hazard tracking is performed.
@@ -81,31 +80,31 @@ impl Default for HazardTrackingMode {
 impl Options {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
         Self((CPUCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
+
+    pub const CPU_CACHE_MODE_WRITE_COMBINED: Self =
+        Self((CPUCacheMode::WriteCombined as usize) << CPU_CACHE_MODE_SHIFT);
+
+    pub const STORAGE_MODE_SHARED: Self =
+        Self((StorageMode::Shared as usize) << STORAGE_MODE_SHIFT);
+
+    pub const STORAGE_MODE_MANAGED: Self =
+        Self((StorageMode::Managed as usize) << STORAGE_MODE_SHIFT);
+
+    pub const STORAGE_MODE_PRIVATE: Self =
+        Self((StorageMode::Private as usize) << STORAGE_MODE_SHIFT);
+
+    pub const STORAGE_MODE_MEMORYLESS: Self =
+        Self((StorageMode::Memoryless as usize) << STORAGE_MODE_SHIFT);
+
+    pub const HAZARD_TRACKING_MODE_DEFAULT: Self =
+        Self((HazardTrackingMode::Default as usize) << HAZARD_TRACKING_MODE_SHIFT);
+
+    pub const HAZARD_TRACKING_MODE_UNTRACKED: Self =
+        Self((HazardTrackingMode::Untracked as usize) << HAZARD_TRACKING_MODE_SHIFT);
+
+    pub const HAZARD_TRACKING_MODE_TRACKED: Self =
+        Self((HazardTrackingMode::Tracked as usize) << HAZARD_TRACKING_MODE_SHIFT);
 }
-
-impl Default for Options {
-    fn default() -> Self {
-        Options(0)
-    }
-}
-// typedef NS_OPTIONS(NSUInteger, MTLResourceOptions)
-// {
-//     MTLResourceCPUCacheModeDefaultCache  = MTLCPUCacheModeDefaultCache  << MTLResourceCPUCacheModeShift,
-//     MTLResourceCPUCacheModeWriteCombined = MTLCPUCacheModeWriteCombined << MTLResourceCPUCacheModeShift,
-
-//     MTLResourceStorageModeShared API_AVAILABLE(macos(10.11), ios(9.0)) = MTLStorageModeShared << MTLResourceStorageModeShift,
-//     MTLResourceStorageModeManaged API_AVAILABLE(macos(10.11), macCatalyst(13.0)) API_UNAVAILABLE(ios) = MTLStorageModeManaged << MTLResourceStorageModeShift,
-//     MTLResourceStorageModePrivate API_AVAILABLE(macos(10.11), ios(9.0)) = MTLStorageModePrivate << MTLResourceStorageModeShift,
-//     MTLResourceStorageModeMemoryless API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(10.0)) = MTLStorageModeMemoryless << MTLResourceStorageModeShift,
-
-//     MTLResourceHazardTrackingModeDefault API_AVAILABLE(macos(10.13), ios(10.0)) = MTLHazardTrackingModeDefault << MTLResourceHazardTrackingModeShift,
-//     MTLResourceHazardTrackingModeUntracked API_AVAILABLE(macos(10.13), ios(10.0)) = MTLHazardTrackingModeUntracked << MTLResourceHazardTrackingModeShift,
-//     MTLResourceHazardTrackingModeTracked API_AVAILABLE(macos(10.15), ios(13.0)) = MTLHazardTrackingModeTracked << MTLResourceHazardTrackingModeShift,
-
-//     // Deprecated spellings
-//     MTLResourceOptionCPUCacheModeDefault       = MTLResourceCPUCacheModeDefaultCache,
-//     MTLResourceOptionCPUCacheModeWriteCombined = MTLResourceCPUCacheModeWriteCombined,
-// } API_AVAILABLE(macos(10.11), ios(8.0));
 
 define_obj_type!(Resource(Id));
 
