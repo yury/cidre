@@ -82,7 +82,7 @@ impl SenderContext {
 }
 
 extern "C" fn callback(
-    ctx: *mut c_void,
+    ctx: *mut SenderContext,
     _: *mut c_void,
     status: Status,
     _flags: EncodeInfoFlags,
@@ -92,9 +92,10 @@ extern "C" fn callback(
         println!("status {:?}", status);
         return;
     }
-    let ctx = ctx as *mut SenderContext;
-    let ctx = unsafe { ctx.as_mut().unwrap() };
-    ctx.handle_sample_buffer(buffer.unwrap())
+    unsafe {
+        let ctx = ctx.as_mut().unwrap_unchecked();
+        ctx.handle_sample_buffer(buffer.unwrap_unchecked());
+    }
 }
 
 #[tokio::main]
@@ -109,9 +110,9 @@ async fn main() {
 
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
     // let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
-    // let addr = SocketAddr::V4("10.0.1.11:8080".parse().unwrap());
+    let addr = SocketAddr::V4("10.0.1.11:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
-    let addr = SocketAddr::V4("192.168.135.219:8080".parse().unwrap()); // iphone in the office
+    //let addr = SocketAddr::V4("192.168.135.219:8080".parse().unwrap()); // iphone in the office
 
     // let addr = SocketAddr::V4("172.20.10.1:8080".parse().unwrap());
 
@@ -122,7 +123,7 @@ async fn main() {
         format_desc: None,
     });
 
-    let mut session = vt::CompressionSession::new::<c_void>(
+    let mut session = vt::CompressionSession::new(
         1440 * 2, // display.width() as u32 * 2,
         900 * 2,  // display.height() as u32 * 2,
         cm::VideoCodecType::HEVC,

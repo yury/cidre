@@ -46,7 +46,7 @@ impl Port {
         unsafe { rsel_isEnabled(self) }
     }
 
-    pub fn set_enabled(&self, value: bool) {
+    pub fn set_enabled(&mut self, value: bool) {
         unsafe { wsel_setEnabled(self, value) }
     }
 }
