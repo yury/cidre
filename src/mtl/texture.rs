@@ -83,7 +83,7 @@ impl Usage {
 #[repr(usize)]
 pub enum CompressionType {
     Lossless = 0,
-    TypeLossy = 1,
+    Lossy = 1,
 }
 
 define_obj_type!(Descriptor(Id));
