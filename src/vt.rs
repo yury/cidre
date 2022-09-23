@@ -20,6 +20,10 @@ pub mod pixel_transfer;
 pub use pixel_transfer::properties as pixel_transfer_properties;
 pub use pixel_transfer::Session as PixelTransferSession;
 
+pub mod pixel_rotation;
+pub use pixel_rotation::properties as pixel_rotation_properties;
+pub use pixel_rotation::Session as PixelRotationSession;
+
 pub mod video_encoder_list;
 
 pub mod utilities;

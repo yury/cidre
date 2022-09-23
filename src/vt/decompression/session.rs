@@ -45,7 +45,7 @@ impl Session {
     ) -> Result<cf::Retained<Self>, os::Status> {
         unsafe {
             let mut session = None;
-            Self::create(
+            Self::create_in(
                 None,
                 video_format_description,
                 video_decoder_specification,
@@ -58,7 +58,7 @@ impl Session {
     }
 
     /// Use safe new
-    pub unsafe fn create(
+    pub unsafe fn create_in(
         allocator: Option<&cf::Allocator>,
         video_format_description: &cm::VideoFormatDescription,
         video_decoder_specification: Option<&cf::Dictionary>,
