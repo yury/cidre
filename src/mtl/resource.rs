@@ -140,13 +140,11 @@ impl Resource {
 
 #[cfg(test)]
 mod tests {
-    use crate::mtl::{CPUCacheMode, StorageMode};
-
-    use super::{HazardTrackingMode, Options};
+    use crate::mtl::{CPUCacheMode, HazardTrackingMode, ResourceOptions, StorageMode};
 
     #[test]
     fn options_default() {
-        let opts = Options::default();
+        let opts = ResourceOptions::default();
         assert_eq!(opts.cpu_cache_mode(), CPUCacheMode::DefaultCache);
         assert_eq!(opts.storage_mode(), StorageMode::Shared);
         assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Default);
@@ -154,9 +152,9 @@ mod tests {
 
     #[test]
     fn options_non_default() {
-        let opts = Options::STORAGE_MODE_MEMORYLESS
-            | Options::CPU_CACHE_MODE_WRITE_COMBINED
-            | Options::HAZARD_TRACKING_MODE_UNTRACKED;
+        let opts = ResourceOptions::CPU_CACHE_MODE_WRITE_COMBINED
+            | ResourceOptions::STORAGE_MODE_MEMORYLESS
+            | ResourceOptions::HAZARD_TRACKING_MODE_UNTRACKED;
 
         assert_eq!(opts.cpu_cache_mode(), CPUCacheMode::WriteCombined);
         assert_eq!(opts.storage_mode(), StorageMode::Memoryless);

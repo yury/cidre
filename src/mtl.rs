@@ -18,7 +18,7 @@ pub use argument::TextureReferenceType;
 pub use argument::Type as ArgumentType;
 
 pub mod resource;
-pub use resource::Options;
+pub use resource::Options as ResouceOptions;
 pub use resource::Resource;
 
 pub use resource::CPUCacheMode;
