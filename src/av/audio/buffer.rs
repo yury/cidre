@@ -20,7 +20,7 @@ impl Buffer {
         unsafe { rsel_audioBufferList(self) }
     }
 
-    pub fn audio_buffer_list_mut(&self) -> &mut AudioBufferList<1, 1> {
+    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList<1, 1> {
         unsafe { rsel_mutableAudioBufferList(self) }
     }
 }

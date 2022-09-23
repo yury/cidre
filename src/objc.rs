@@ -152,7 +152,7 @@ pub mod block;
 pub mod ns;
 pub use autorelease_pool::AutoreleasePoolPage;
 
-pub fn autoreleasepool<'a, T, F>(f: F) -> T
+pub fn autoreleasepool<T, F>(f: F) -> T
 where
     F: FnOnce() -> T,
     T: Clone, // Autoreleased doesn't implement Clone

@@ -66,14 +66,15 @@ pub enum StoreAction {
     CustomSampleDepthStore = 5,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreActionOptions {
     None = 0,
     CustomSamplePositions = 1 << 0,
 }
 
-#[repr(C)]
 #[derive(Copy, Clone, Debug)]
+#[repr(C)]
 pub struct ClearColor {
     pub red: f64,
     pub green: f64,
@@ -236,7 +237,7 @@ impl ColorAttachmentDescriptorArray {
     }
 
     #[inline]
-    pub fn get_mut_at(&self, index: usize) -> &mut ColorAttachmentDescriptor {
+    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor {
         unsafe {
             MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index)
         }

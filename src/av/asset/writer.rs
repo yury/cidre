@@ -79,7 +79,7 @@ impl Writer {
     ) -> Result<cf::Retained<Writer>, cf::Retained<cf::Error>> {
         let mut error = None;
         unsafe {
-            let res = AVAssetWriter_assetWriterWithURL_fileType_error(&url, &file_type, &mut error);
+            let res = AVAssetWriter_assetWriterWithURL_fileType_error(url, file_type, &mut error);
             match error {
                 None => Ok(transmute(res)),
                 Some(e) => Err(e),

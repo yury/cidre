@@ -43,7 +43,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn new_in<'a>(alloc: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
+    pub fn new_in(alloc: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
         unsafe {
             let arr = Array::create(alloc, None, 0, Callbacks::default());
             transmute(arr)
@@ -51,7 +51,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn iter<'a>(&'a self) -> ArrayOfIterator<'a, T> {
+    pub fn iter(&self) -> ArrayOfIterator<T> {
         ArrayOfIterator {
             array: self,
             index: 0,
@@ -137,12 +137,12 @@ pub struct MutArrayOf<T>(MutableArray, PhantomData<T>);
 
 impl<T> MutArrayOf<T> {
     #[inline]
-    pub fn new<'a>() -> Option<Retained<MutArrayOf<T>>> {
+    pub fn new() -> Option<Retained<MutArrayOf<T>>> {
         Self::with_capacity(0)
     }
 
     #[inline]
-    pub fn with_capacity<'a>(capacity: usize) -> Option<Retained<MutArrayOf<T>>> {
+    pub fn with_capacity(capacity: usize) -> Option<Retained<MutArrayOf<T>>> {
         let arr = MutableArray::create(None, capacity as _, Callbacks::default());
         unsafe { transmute(arr) }
     }
@@ -157,7 +157,7 @@ impl<T> MutArrayOf<T> {
     }
 
     #[inline]
-    pub fn iter<'a>(&'a self) -> ArrayOfIterator<'a, T> {
+    pub fn iter(&self) -> ArrayOfIterator<T> {
         ArrayOfIterator {
             array: self,
             index: 0,
@@ -272,12 +272,12 @@ impl Array {
     /// let arr2 = arr1.copy().expect("copy");
     /// ```
     #[inline]
-    pub fn copy<'a>(&self) -> Option<Retained<Array>> {
+    pub fn copy(&self) -> Option<Retained<Array>> {
         Self::create_copy(self, None)
     }
 
     #[inline]
-    pub unsafe fn create<'a>(
+    pub unsafe fn create(
         allocator: Option<&Allocator>,
         values: Option<NonNull<*const c_void>>,
         num_values: Index,

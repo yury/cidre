@@ -218,47 +218,47 @@ impl<'a> Connected<'a> {
         unsafe { self.copy_value(Some(domain), None) }
     }
 
-    pub fn value<'b>(&self, key: &cf::String) -> Option<Retained<cf::Type>> {
+    pub fn value(&self, key: &cf::String) -> Option<Retained<cf::Type>> {
         unsafe { self.copy_value(None, Some(key)) }
     }
 
     #[inline]
-    pub fn name<'b>(&self) -> Retained<cf::String> {
+    pub fn name(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("DeviceName");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn cpu_arch<'b>(&self) -> Retained<cf::String> {
+    pub fn cpu_arch(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("CPUArchitecture");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn hardware_model<'b>(&self) -> Retained<cf::String> {
+    pub fn hardware_model(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_name<'b>(&self) -> Retained<cf::String> {
+    pub fn product_name(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_type<'b>(&self) -> Retained<cf::String> {
+    pub fn product_type(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("ProductType");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_version<'b>(&self) -> Retained<cf::String> {
+    pub fn product_version(&self) -> Retained<cf::String> {
         let key = cf::String::from_str_no_copy("ProductVersion");
         let v = self.value(&key);
         unsafe { transmute(v) }
