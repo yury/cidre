@@ -1,15 +1,6 @@
+use std::mem::transmute;
+
 use crate::{define_mtl, define_obj_type, define_options, objc::Id};
-
-define_options!(Options(usize));
-
-pub const CPU_CACHE_MODE_SHIFT: usize = 0;
-pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;
-
-pub const STORAGE_MODE_SHIFT: usize = 4;
-pub const STORAGE_MODE_MASK: usize = 0xfusize << STORAGE_MODE_SHIFT;
-
-pub const HAZARD_TRACKING_MODE_SHIFT: usize = 8;
-pub const HAZARD_TRACKING_MODE_MASK: usize = 0x3usize << HAZARD_TRACKING_MODE_SHIFT;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
@@ -77,6 +68,18 @@ impl Default for HazardTrackingMode {
     }
 }
 
+define_options!(Options(usize));
+
+pub const CPU_CACHE_MODE_SHIFT: usize = 0;
+pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;
+
+pub const STORAGE_MODE_SHIFT: usize = 4;
+pub const STORAGE_MODE_MASK: usize = 0xfusize << STORAGE_MODE_SHIFT;
+
+pub const HAZARD_TRACKING_MODE_SHIFT: usize = 8;
+pub const HAZARD_TRACKING_MODE_MASK: usize = 0x3usize << HAZARD_TRACKING_MODE_SHIFT;
+
+/// A set of optional arguments to influence the creation of a mtl::Resource (mtl::Texture or mtl::Buffer)
 impl Options {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
         Self((CPUCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
@@ -104,6 +107,21 @@ impl Options {
 
     pub const HAZARD_TRACKING_MODE_TRACKED: Self =
         Self((HazardTrackingMode::Tracked as usize) << HAZARD_TRACKING_MODE_SHIFT);
+
+    #[inline]
+    pub fn hazard_tracking_mode(&self) -> HazardTrackingMode {
+        unsafe { transmute((self.0 & HAZARD_TRACKING_MODE_MASK) >> HAZARD_TRACKING_MODE_SHIFT) }
+    }
+
+    #[inline]
+    pub fn storage_mode(&self) -> StorageMode {
+        unsafe { transmute((self.0 & STORAGE_MODE_MASK) >> STORAGE_MODE_SHIFT) }
+    }
+
+    #[inline]
+    pub fn cpu_cache_mode(&self) -> CPUCacheMode {
+        unsafe { transmute(self.0 & CPU_CACHE_MODE_MASK) }
+    }
 }
 
 define_obj_type!(Resource(Id));
@@ -118,4 +136,30 @@ impl Resource {
         hazard_tracking_mode,
         resource_options
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mtl::{CPUCacheMode, StorageMode};
+
+    use super::{HazardTrackingMode, Options};
+
+    #[test]
+    fn options_default() {
+        let opts = Options::default();
+        assert_eq!(opts.cpu_cache_mode(), CPUCacheMode::DefaultCache);
+        assert_eq!(opts.storage_mode(), StorageMode::Shared);
+        assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Default);
+    }
+
+    #[test]
+    fn options_non_default() {
+        let opts = Options::STORAGE_MODE_MEMORYLESS
+            | Options::CPU_CACHE_MODE_WRITE_COMBINED
+            | Options::HAZARD_TRACKING_MODE_UNTRACKED;
+
+        assert_eq!(opts.cpu_cache_mode(), CPUCacheMode::WriteCombined);
+        assert_eq!(opts.storage_mode(), StorageMode::Memoryless);
+        assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Untracked);
+    }
 }
