@@ -6,6 +6,7 @@ use crate::{define_obj_type, objc::Id};
 
 use super::{Buffer, CommandEncoder, Texture};
 
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum PrimitiveType {
     Point = 0,
@@ -15,6 +16,7 @@ pub enum PrimitiveType {
     TriangleStrip = 4,
 }
 
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum VisibilityResultMode {
     Disabled = 0,
@@ -22,6 +24,7 @@ pub enum VisibilityResultMode {
     Counting = 2,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct ScissorRect {
     pub x: usize,
@@ -30,6 +33,7 @@ pub struct ScissorRect {
     pub height: usize,
 }
 
+#[derive(Debug, PartialEq)]
 #[repr(C)]
 pub struct ViewPort {
     // double originX, originY, width, height, znear, zfar;
@@ -41,6 +45,7 @@ pub struct ViewPort {
     pub z_far: f64,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum CullMode {
     None = 0,
@@ -48,24 +53,28 @@ pub enum CullMode {
     Back = 2,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum Winding {
     Clockwise = 0,
     CounterClockwise = 1,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum DepthClipMode {
     Clip = 0,
     Clamp = 1,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TriangleFillMode {
     Fill = 0,
     Lines = 1,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct DrawPrimitivesIndirectArguments {
     pub vertex_count: u32,
@@ -83,12 +92,14 @@ pub struct DrawIndexedPrimitivesIndirectArguments {
     pub base_instance: u32,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct VertexAmplificationViewMapping {
     pub viewport_array_index_offset: u32,
     pub render_target_array_index_offset: u32,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct DrawPatchIndirectArguments {
     pub patch_count: u32,
