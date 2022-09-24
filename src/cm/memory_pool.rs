@@ -5,7 +5,7 @@ define_cf_type!(MemoryPool(cf::Type));
 impl MemoryPool {
     ///```rust
     /// use cidre::cm;
-    /// let pool = cm::MemoryPool::new();
+    /// let mut pool = cm::MemoryPool::new();
     /// let allocator = pool.allocator();
     /// pool.flush();
     ///````
@@ -25,12 +25,12 @@ impl MemoryPool {
     }
 
     #[inline]
-    pub fn flush(&self) {
+    pub fn flush(&mut self) {
         unsafe { CMMemoryPoolFlush(self) }
     }
 
     #[inline]
-    pub fn invalidate(&self) {
+    pub fn invalidate(&mut self) {
         unsafe { CMMemoryPoolInvalidate(self) }
     }
 }

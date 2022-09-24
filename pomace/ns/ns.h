@@ -20,6 +20,18 @@ wsel_ab(, id, removeFromRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
 csel(, NSPort, port, NSPort *)
 rsel(, id, machPort, uint32_t)
 
+@interface CidreMachPortDelegate : NSObject<NSMachPortDelegate> {
+  @public void * _vtable[2];
+}
+@end
+
+NS_RETURNS_RETAINED
+CidreMachPortDelegate * make_mach_port_delegate(void * _Nonnull vtable[_Nonnull 2]) {
+  CidreMachPortDelegate * result = [CidreMachPortDelegate new];
+  memcpy(result->_vtable, vtable, 2 * sizeof(void *));
+  return result;
+}
+
 #pragma mark - NSProcessInfo
 
 NS_RETURNS_NOT_RETAINED

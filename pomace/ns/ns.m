@@ -7,3 +7,11 @@
 
 #import "ns.h"
 
+@implementation CidreMachPortDelegate
+
+- (void)handleMachMessage:(void *)msg {
+  void(*cb)(void *, void *) = _vtable[1];
+  cb( _vtable[0], msg);
+}
+
+@end
