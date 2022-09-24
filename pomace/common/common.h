@@ -26,6 +26,7 @@ SEL sel_isEnabled;
 SEL sel_setEnabled;
 SEL sel_bounds;
 SEL sel_invalidate;
+SEL sel_isValid;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -50,6 +51,7 @@ static void common_initializer()
       sel_setEnabled = @selector(setEnabled);
       sel_bounds = @selector(bounds);
       sel_invalidate = @selector(invalidate);
+      sel_isValid = @selector(isValid);
 
       initialized = 1;
     }

@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - Common
+
+wsel_ab(, id, scheduleInRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
+wsel_ab(, id, removeFromRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
+
 #pragma mark - NSPort
 
 csel(, NSPort, port, NSPort *)
