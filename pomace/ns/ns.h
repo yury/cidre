@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - NSPort
+
+csel(, NSPort, port, NSPort *)
+rsel(, id, machPort, uint32_t)
+
 #pragma mark - NSProcessInfo
 
 NS_RETURNS_NOT_RETAINED

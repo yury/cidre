@@ -21,3 +21,7 @@ pub use exception::set_uncaught_exception_handler;
 pub use exception::try_catch;
 pub use exception::Exception;
 pub use exception::UncaughtExceptionHandler;
+
+pub mod port;
+pub use port::MachPort;
+pub use port::Port;
