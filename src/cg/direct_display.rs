@@ -4,11 +4,13 @@ pub type RefreshRate = f64;
 
 pub const NULL: ID = 0;
 
+#[cfg(target_os = "macos")]
 pub fn main_display_id() -> ID {
     unsafe { CGMainDisplayID() }
 }
 
 extern "C" {
+    #[cfg(target_os = "macos")]
     fn CGMainDisplayID() -> ID;
 }
 

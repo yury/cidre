@@ -1,4 +1,4 @@
-use std::os::raw::{c_int, c_uint};
+use std::os::raw::c_int;
 
 use crate::define_options;
 
@@ -6,9 +6,12 @@ use crate::define_options;
 #[repr(transparent)]
 pub struct Name(pub u32);
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct Port(pub c_uint);
+impl Name {
+    pub const NULL: Self = Self(0);
+    pub const DEAD: Self = Self(!0);
+}
+
+pub type Port = Name;
 
 impl Port {
     pub fn task_self_deallocate(self) -> c_int {
@@ -18,9 +21,6 @@ impl Port {
     pub fn current_task() -> Self {
         unsafe { mach_task_self_ }
     }
-
-    pub const NULL: Self = Self(0);
-    pub const DEAD: Self = Self(!0);
 }
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]

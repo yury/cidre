@@ -20,12 +20,12 @@ pub use port::Type as PortType;
 pub mod message;
 pub use message::msg;
 pub use message::Base as MsgBase;
-pub use message::Bits as MsgBits;
 pub use message::Body as MsgBody;
 pub use message::CopyOptions as MsgCopyOptions;
 pub use message::DescriptorType as MsgDescriptorType;
 pub use message::GuardFlags as MsgGuardFlags;
 pub use message::Header as MsgHeader;
+pub use message::HeaderBits as MsgHBits;
 pub use message::Id as MsgId;
 pub use message::MsgOption;
 pub use message::PortDescriptor as MsgPortDescriptor;
@@ -34,6 +34,7 @@ pub use message::Return as MsgReturn;
 pub use message::Size as MsgSize;
 pub use message::Timeout as MsgTimeout;
 pub use message::TypeDescriptor as MsgTypeDescriptor;
+pub use message::TypeName as MsgTypeName;
 
 pub fn msg_receive(header: &mut MsgHeader) -> MsgReturn {
     unsafe { mach_msg_receive(header) }

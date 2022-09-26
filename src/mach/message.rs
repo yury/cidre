@@ -4,7 +4,60 @@ use crate::define_options;
 
 use super::{Boolean, KernReturn, Port, PortName};
 
-pub type Bits = u32;
+define_options!(HeaderBits(u32));
+impl HeaderBits {
+    pub const ZERO: Self = Self(0);
+
+    /// The value of MACH_MSGH_BITS_REMOTE determines the interpretation
+    /// of the msgh_remote_port field.  It is handled like a msgt_name,
+    /// but must result in a send or send-once type right.
+    pub const REMOTE_MASK: Self = Self(0x0000001f);
+
+    /// The value of MACH_MSGH_BITS_LOCAL determines the interpretation
+    /// of the msgh_local_port field.  It is handled like a msgt_name,
+    /// and also must result in a send or send-once type right.
+    pub const LOCAL_MASK: Self = Self(0x00001f00);
+
+    /// The value of MACH_MSGH_BITS_VOUCHER determines the interpretation
+    /// of the msgh_voucher_port field.  It is handled like a msgt_name,
+    /// but must result in a send right (and the msgh_voucher_port field
+    ///  must be the name of a send right to a Mach voucher kernel object.)
+    pub const VOUCHER_MASK: Self = Self(0x001f0000);
+
+    pub const PORTS_MASK: Self =
+        Self(Self::REMOTE_MASK.0 | Self::LOCAL_MASK.0 | Self::VOUCHER_MASK.0);
+
+    /// The kernel uses MACH_MSGH_BITS_COMPLEX as a hint.  If it isn't on, it
+    /// assumes the body of the message doesn't contain port rights or OOL
+    /// data.  The field is set in received messages.  A user task must
+    /// use caution in interpreting the body of a message if the bit isn't
+    /// on, because the mach_msg_type's in the body might "lie" about the
+    /// contents.  If the bit isn't on, but the mach_msg_types
+    /// in the body specify rights or OOL data, the behavior is undefined.
+    /// (Ie, an error may or may not be produced.)
+    pub const COMPLEX: Self = Self(0x80000000);
+    pub const USER: Self = Self(0x801f1f1f);
+    pub const RAISEIMP: Self = Self(0x20000000);
+    pub const DENAP: Self = Self::RAISEIMP;
+    pub const IMPHOLDASRT: Self = Self(0x10000000);
+    pub const DENAPHOLDASRT: Self = Self::IMPHOLDASRT;
+
+    /// should be zero; is is used internally.
+    pub const CIRCULAR: Self = Self(0x10000000);
+    pub const USED: Self = Self(0xb01f1f1f);
+
+    pub fn with_ports(remote: TypeName, local: TypeName, voucher: TypeName) -> Self {
+        Self(
+            (remote as u32 & Self::REMOTE_MASK.0)
+                | (((local as u32) << 8) & Self::LOCAL_MASK.0)
+                | (((voucher as u32) << 16) & Self::VOUCHER_MASK.0),
+        )
+    }
+
+    pub fn with(remote: TypeName, local: TypeName, voucher: TypeName, other: Self) -> Self {
+        Self(Self::with_ports(remote, local, voucher).0 | (other.0 & Self::PORTS_MASK.0))
+    }
+}
 
 pub type Size = i32;
 
@@ -13,8 +66,10 @@ pub type Id = i32;
 pub type Priority = u32;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
-#[repr(u32)]
+#[repr(u8)]
 pub enum TypeName {
+    None = 0,
+    PortName = 15,
     MoveRecieve = 16,
     MoveSend = 17,
     MoveSendOnce = 18,
@@ -25,6 +80,20 @@ pub enum TypeName {
     DisposeReceive = 24,
     DisposeSend = 25,
     DisposeSendOnce = 26,
+}
+
+impl TypeName {
+    pub const fn port_receive() -> Self {
+        Self::MoveRecieve
+    }
+
+    pub const fn port_send() -> Self {
+        Self::MoveSend
+    }
+
+    pub const fn port_send_once() -> Self {
+        Self::MoveSendOnce
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
@@ -50,7 +119,7 @@ impl GuardFlags {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
-#[repr(u32)]
+#[repr(u8)]
 pub enum DescriptorType {
     Port,
 
@@ -69,7 +138,7 @@ impl DescriptorType {
 pub struct TypeDescriptor {
     pub pad1: u32,
     pub pad2: Size,
-    pub pad3: u32,
+    pub pad3: [u8; 24],
     pub type_: DescriptorType,
 }
 
@@ -77,7 +146,7 @@ pub struct TypeDescriptor {
 pub struct PortDescriptor {
     pub name: Port,
     pub pad1: Size,
-    pub pad2: u32,
+    pub pad2: u16,
     pub disposition: TypeName,
     pub type_: DescriptorType,
 }
@@ -117,7 +186,7 @@ pub struct Body {
 
 #[repr(C)]
 pub struct Header {
-    pub bits: Bits,
+    pub bits: HeaderBits,
     pub size: Size,
     pub remote_port: Port,
     pub local_port: Port,
@@ -131,6 +200,7 @@ pub struct Base {
     pub body: Body,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Return(pub KernReturn);
 
@@ -273,6 +343,10 @@ impl Return {
 
     /// invalid receive arguments, receive has not started
     pub const RCV_INVALID_ARGUMENTS: Self = Self(KernReturn(0x10004013));
+
+    pub fn is_ok(&self) -> bool {
+        *self == Self::SUCCESS
+    }
 }
 
 define_options!(MsgOption(i32));

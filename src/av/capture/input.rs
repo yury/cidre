@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, objc::Id};
+use crate::{av, cf, define_obj_type, msg_send, objc::Id};
 
 define_obj_type!(Input(Id));
 define_obj_type!(DeviceInput(Input));
@@ -43,23 +43,17 @@ impl Port {
     }
 
     pub fn enabled(&self) -> bool {
-        unsafe { rsel_isEnabled(self) }
+        msg_send!("common", self, sel_isEnabled)
     }
 
     pub fn set_enabled(&mut self, value: bool) {
-        unsafe { wsel_setEnabled(self, value) }
+        msg_send!("common", self, sel_isEnabled, value)
     }
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn rsel_input(port: &Port) -> &Input;
-}
-
-#[link(name = "common", kind = "static")]
-extern "C" {
-    fn rsel_isEnabled(id: &Id) -> bool;
-    fn wsel_setEnabled(id: &Id, value: bool);
 }
 
 pub mod port_notifications {

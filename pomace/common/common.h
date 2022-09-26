@@ -49,7 +49,7 @@ static void common_initializer()
       sel_size = @selector(size);
       sel_setSize = @selector(setSize:);
       sel_isEnabled = @selector(isEnabled);
-      sel_setEnabled = @selector(setEnabled);
+      sel_setEnabled = @selector(setEnabled:);
       sel_bounds = @selector(bounds);
       sel_invalidate = @selector(invalidate);
       sel_isValid = @selector(isValid);

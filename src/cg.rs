@@ -17,6 +17,8 @@ pub mod window;
 pub use window::ID as WindowID;
 
 pub mod direct_display;
+
+#[cfg(target_os = "macos")]
 pub use direct_display::main_display_id;
 pub use direct_display::ID as DirectDisplayID;
 
@@ -30,6 +32,9 @@ pub use error::Error;
 pub mod image;
 pub use image::AlphaInfo as ImageAlphaInfo;
 pub use image::Image;
+
+pub mod image_properties;
+pub use image_properties::Orientation as ImagePropertyOrientation;
 
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}

@@ -26,6 +26,7 @@ define_cf_type!(Type(cf::String));
 /// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
 /// ```
 impl Type {
+    #[cfg(target_os = "macos")]
     pub fn external_unknown() -> &'static Self {
         unsafe { AVCaptureDeviceTypeExternalUnknown }
     }
@@ -69,6 +70,8 @@ impl Type {
 
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
+
+    #[cfg(target_os = "macos")]
     static AVCaptureDeviceTypeExternalUnknown: &'static Type;
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
