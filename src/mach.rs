@@ -36,15 +36,21 @@ pub use message::Timeout as MsgTimeout;
 pub use message::TypeDescriptor as MsgTypeDescriptor;
 pub use message::TypeName as MsgTypeName;
 
+pub mod vm_types;
+pub use vm_types::Integer;
+pub use vm_types::Natural;
+
+#[inline]
 pub fn msg_receive(header: &mut MsgHeader) -> MsgReturn {
     unsafe { mach_msg_receive(header) }
 }
 
-pub fn msg_send(header: &MsgHeader) -> MsgReturn {
+#[inline]
+pub fn msg_send(header: &mut MsgHeader) -> MsgReturn {
     unsafe { mach_msg_send(header) }
 }
 
 extern "C" {
     fn mach_msg_receive(header: &mut MsgHeader) -> MsgReturn;
-    fn mach_msg_send(header: &MsgHeader) -> MsgReturn;
+    fn mach_msg_send(header: &mut MsgHeader) -> MsgReturn;
 }

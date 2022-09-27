@@ -1,8 +1,8 @@
-use std::ffi::c_void;
+use std::ffi::{c_uint, c_void};
 
 use crate::define_options;
 
-use super::{Boolean, KernReturn, Port, PortName};
+use super::{Boolean, Integer, KernReturn, Natural, Port, PortName};
 
 define_options!(HeaderBits(u32));
 impl HeaderBits {
@@ -55,15 +55,15 @@ impl HeaderBits {
     }
 
     pub fn with(remote: TypeName, local: TypeName, voucher: TypeName, other: Self) -> Self {
-        Self(Self::with_ports(remote, local, voucher).0 | (other.0 & Self::PORTS_MASK.0))
+        Self(Self::with_ports(remote, local, voucher).0 | (other.0 & (!Self::PORTS_MASK.0)))
     }
 }
 
-pub type Size = i32;
+pub type Size = Natural;
 
-pub type Id = i32;
+pub type Id = Integer;
 
-pub type Priority = u32;
+pub type Priority = c_uint;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(u8)]
@@ -73,7 +73,7 @@ pub enum TypeName {
     MoveRecieve = 16,
     MoveSend = 17,
     MoveSendOnce = 18,
-    MoveCopySend = 19,
+    CopySend = 19,
     MakeSend = 20,
     MakeSendOnce = 21,
     CopyReceive = 22,
@@ -83,21 +83,13 @@ pub enum TypeName {
 }
 
 impl TypeName {
-    pub const fn port_receive() -> Self {
-        Self::MoveRecieve
-    }
-
-    pub const fn port_send() -> Self {
-        Self::MoveSend
-    }
-
-    pub const fn port_send_once() -> Self {
-        Self::MoveSendOnce
-    }
+    pub const PORT_RECEIVE: Self = Self::MoveRecieve;
+    pub const PORT_SEND: Self = Self::MoveSend;
+    pub const PORT_SEND_ONCE: Self = Self::MoveSendOnce;
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
-#[repr(u32)]
+#[repr(u8)]
 pub enum CopyOptions {
     PhysicalCopy = 0,
     VirtualCopy = 1,
@@ -107,7 +99,7 @@ pub enum CopyOptions {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
-#[repr(u32)]
+#[repr(u16)]
 pub enum GuardFlags {
     None,
     ImmovableReceive,
@@ -115,7 +107,7 @@ pub enum GuardFlags {
 }
 
 impl GuardFlags {
-    pub const MASK: u32 = 3;
+    pub const MASK: u16 = 3;
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
@@ -134,15 +126,15 @@ impl DescriptorType {
     pub const MAX: Self = Self::GuardedPort;
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct TypeDescriptor {
-    pub pad1: u32,
+    pub pad1: Natural,
     pub pad2: Size,
-    pub pad3: [u8; 24],
+    pub pad3: [u8; 3],
     pub type_: DescriptorType,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct PortDescriptor {
     pub name: Port,
     pub pad1: Size,
@@ -151,7 +143,7 @@ pub struct PortDescriptor {
     pub type_: DescriptorType,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct OOLDescriptor32 {
     pub address: u32,
     pub size: Size,
@@ -160,7 +152,7 @@ pub struct OOLDescriptor32 {
     pub type_: DescriptorType,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct OOLDescriptor64 {
     pub address: u64,
     pub size: Size,
@@ -169,7 +161,7 @@ pub struct OOLDescriptor64 {
     pub type_: DescriptorType,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct OOLDescriptor {
     pub address: *mut c_void,
     pub deallocate: Boolean,
@@ -179,12 +171,12 @@ pub struct OOLDescriptor {
     pub size: Size,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct Body {
     pub descriptor_count: Size,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct Header {
     pub bits: HeaderBits,
     pub size: Size,
@@ -194,7 +186,7 @@ pub struct Header {
     pub id: Id,
 }
 
-#[repr(C)]
+#[repr(C, align(4))]
 pub struct Base {
     pub header: Header,
     pub body: Body,
@@ -349,7 +341,7 @@ impl Return {
     }
 }
 
-define_options!(MsgOption(i32));
+define_options!(MsgOption(Integer));
 
 impl MsgOption {
     pub const NONE: Self = Self(0x00000000);
@@ -436,8 +428,9 @@ impl MsgOption {
     pub const MSG_STRICT_REPLY: Self = Self(0x00000200);
 }
 
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 #[repr(transparent)]
-pub struct Timeout(pub u32);
+pub struct Timeout(pub Natural);
 
 impl Timeout {
     pub const NONE: Self = Self(0);
