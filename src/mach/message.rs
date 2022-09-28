@@ -192,6 +192,19 @@ pub struct Base {
     pub body: Body,
 }
 
+pub type TrailerSize = u32;
+
+#[repr(u32)]
+pub enum TrailerType {
+    Format0,
+}
+
+#[repr(C, align(4))]
+pub struct Trailer {
+    pub type_: TrailerType,
+    pub size: TrailerSize,
+}
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Return(pub KernReturn);

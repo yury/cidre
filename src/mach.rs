@@ -33,6 +33,9 @@ pub use message::Priority as MsgPriority;
 pub use message::Return as MsgReturn;
 pub use message::Size as MsgSize;
 pub use message::Timeout as MsgTimeout;
+pub use message::Trailer as MsgTrailer;
+pub use message::TrailerSize as MsgTrailerSize;
+pub use message::TrailerType as MsgTrailerType;
 pub use message::TypeDescriptor as MsgTypeDescriptor;
 pub use message::TypeName as MsgTypeName;
 
