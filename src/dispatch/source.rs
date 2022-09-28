@@ -149,6 +149,26 @@ impl Source {
     ) -> Option<&'b Source> {
         unsafe { dispatch_source_create(type_, handle, mask, queue) }
     }
+
+    #[inline]
+    pub fn cancel(&mut self) {
+        unsafe { dispatch_source_cancel(self) }
+    }
+
+    pub fn handle(&self) -> c_ulong {
+        unsafe { dispatch_source_get_handle(self) }
+    }
+    pub fn mask(&self) -> c_ulong {
+        unsafe { dispatch_source_get_mask(self) }
+    }
+
+    pub fn data(&self) -> c_ulong {
+        unsafe { dispatch_source_get_data(self) }
+    }
+
+    pub fn merge_data(&self, value: c_ulong) -> c_ulong {
+        unsafe { dispatch_source_merge_data(self, value) }
+    }
 }
 
 extern "C" {
@@ -171,6 +191,13 @@ extern "C" {
         mask: std::ffi::c_ulong,
         queue: Option<&dispatch::Queue>,
     ) -> Option<&'b Source>;
+
+    fn dispatch_source_cancel(source: &mut Source);
+
+    fn dispatch_source_get_handle(source: &Source) -> c_ulong;
+    fn dispatch_source_get_mask(source: &Source) -> c_ulong;
+    fn dispatch_source_get_data(source: &Source) -> c_ulong;
+    fn dispatch_source_merge_data(source: &Source, value: c_ulong) -> c_ulong;
 }
 
 #[cfg(test)]
