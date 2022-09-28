@@ -23,6 +23,11 @@ pub use queue::Queue;
 pub mod semaphore;
 pub use semaphore::Semaphore;
 
+pub mod source;
+pub use source::Source;
+pub use source::Type as SourceType;
+pub use source::TypeDataAdd as SourceDataAdd;
+
 /// This function "parks" the main thread and waits for blocks to be submitted to the main queue.
 /// Applications that call UIApplicationMain (iOS), NSApplicationMain (macOS), or CFRunLoopRun
 /// on the main thread must not call `dispatch::main()`.

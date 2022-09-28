@@ -4,6 +4,8 @@ use crate::define_options;
 
 use super::{Boolean, Integer, KernReturn, Natural, Port, PortName};
 
+// https://web.mit.edu/darwin/src/modules/xnu/osfmk/man/mach_msg.html
+
 define_options!(HeaderBits(u32));
 impl HeaderBits {
     pub const ZERO: Self = Self(0);
@@ -70,11 +72,42 @@ pub type Priority = c_uint;
 pub enum TypeName {
     None = 0,
     PortName = 15,
+
+    /// The message will carry a receive right, and the caller must supply a receive right.
+    /// The caller loses the supplied receive right, but retains any send rights with the same name.
+    /// The make-send count and sequence number of the receive right are reset to zero and
+    /// no-more-senders notification requests are cancelled (with a send-once notification
+    /// being sent to the no-more-senders notification right), but the port retains other attributes
+    /// like queued messages and extant send and send-once rights. If a message carries a send
+    /// or send-once right, and the port dies while the message is in transit, then the receiving
+    ///  task will get MACH_PORT_DEAD instead of a right.
     MoveRecieve = 16,
+
+    /// The message will carry a send right, and the caller must supply a send right.
+    /// The user reference count for the supplied send right is decremented, and
+    /// the right is destroyed if the count becomes zero. Unless a receive right remains,
+    /// the name becomes available for recycling. The caller may also supply a dead name,
+    /// which loses a user reference, and the receiving task will get MACH_PORT_DEAD.
     MoveSend = 17,
+
+    /// The message will carry a send-once right, and the caller must supply a send-once right.
+    /// The caller loses the supplied send-once right. The caller may also supply a dead name,
+    ///  which loses a user reference, and the receiving task will get MACH_PORT_DEAD.
     MoveSendOnce = 18,
+
+    /// The message will carry a send right, and the caller must supply a send right.
+    /// The user reference count for the supplied send right is not changed. The caller may also
+    /// supply a dead name and the receiving task will get MACH_PORT_DEAD.
     CopySend = 19,
+
+    /// The message will carry a send right, but the caller must supply a receive right.
+    /// The send right is created from the receive right, and the receive right's make-send count
+    /// is incremented.
     MakeSend = 20,
+
+    /// The message will carry a send-once right, but the caller must supply a receive right.
+    /// The send-once right is created from the receive right. Note that send once rights can
+    /// only be created from the receive right.
     MakeSendOnce = 21,
     CopyReceive = 22,
     DisposeReceive = 24,
@@ -83,8 +116,22 @@ pub enum TypeName {
 }
 
 impl TypeName {
+    /// This value is an alias for MACH_MSG_TYPE_MOVE_RECEIVE.
+    /// The message carried a receive right. If the receiving task already has send rights for the port,
+    /// then that name for the port will be reused; otherwise, the right will have a new,
+    /// previously unused name.
     pub const PORT_RECEIVE: Self = Self::MoveRecieve;
+
+    /// This value is an alias for MACH_MSG_TYPE_MOVE_SEND.
+    /// The message carried a send right. If the receiving task already has send and/ or receive rights
+    /// for the port, then that name for the port will be reused. Otherwise, the right will have a new,
+    /// previously unused, name. If the task already has send rights, it gains a user reference
+    /// for the right (un- less this would cause the user-reference count to overflow).
+    /// Otherwise, it acquires send rights, with a user-reference count of one.
     pub const PORT_SEND: Self = Self::MoveSend;
+
+    /// This value is an alias for MACH_MSG_TYPE_MOVE_SEND_ONCE. The message carried a send-once right.
+    /// The right will have a new, previously unused, name.
     pub const PORT_SEND_ONCE: Self = Self::MoveSendOnce;
 }
 

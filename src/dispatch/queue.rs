@@ -184,6 +184,8 @@ impl Queue {
     pub fn group_async_f<T>(&self, group: &super::Group, context: *mut T, work: Function<T>) {
         unsafe { dispatch_group_async_f(group, self, context as _, transmute(work)) }
     }
+
+    pub const TARGET_QUEUE_DEFAULT: Option<&Self> = None;
 }
 
 impl Main {
