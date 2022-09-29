@@ -1,11 +1,15 @@
 use std::{
     ffi::{c_ulong, c_void},
-    ptr::NonNull,
+    mem::transmute,
+    time::Duration,
 };
 
-use crate::{define_obj_type, define_options, dispatch};
+use crate::{cf, define_obj_type, define_options, dispatch, mach};
+
+use super::Function;
 
 define_obj_type!(Source(dispatch::Object));
+define_obj_type!(TimerSource(Source));
 
 /// The dispatch framework provides a suite of interfaces for monitoring low-
 /// level system objects (file descriptors, Mach ports, signals, VFS nodes, etc.)
@@ -141,13 +145,47 @@ impl TimerFlags {
 }
 
 impl Source {
-    pub fn create<'b>(
+    #[inline]
+    pub unsafe fn create(
         type_: &Type,
         handle: std::ffi::c_ulong,
         mask: std::ffi::c_ulong,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<&'b Source> {
-        unsafe { dispatch_source_create(type_, handle, mask, queue) }
+    ) -> Option<cf::Retained<Source>> {
+        dispatch_source_create(type_, handle, mask, queue)
+    }
+
+    #[inline]
+    pub fn new_mach_send(
+        port: mach::Port,
+        flags: MachSendFlags,
+        queue: Option<&dispatch::Queue>,
+    ) -> Option<cf::Retained<Source>> {
+        unsafe { Self::create(Type::mach_send(), port.0 as _, flags.0 as _, queue) }
+    }
+    #[inline]
+    pub fn new_mach_recv(
+        port: mach::Port,
+        flags: MachRecvFlags,
+        queue: Option<&dispatch::Queue>,
+    ) -> Option<cf::Retained<Source>> {
+        unsafe { Self::create(Type::mach_recv(), port.0 as _, flags.0 as _, queue) }
+    }
+
+    #[inline]
+    pub fn new_memory_pressure<'a>(
+        flags: MemoryPressureFlags,
+        queue: Option<&dispatch::Queue>,
+    ) -> Option<cf::Retained<Source>> {
+        unsafe { Self::create(Type::memory_pressure(), 0, flags.0 as _, queue) }
+    }
+
+    #[inline]
+    pub fn new_timer(
+        flags: TimerFlags,
+        queue: Option<&dispatch::Queue>,
+    ) -> Option<cf::Retained<TimerSource>> {
+        unsafe { transmute(Self::create(Type::timer(), 0, flags.0 as _, queue)) }
     }
 
     #[inline]
@@ -155,19 +193,53 @@ impl Source {
         unsafe { dispatch_source_cancel(self) }
     }
 
+    #[inline]
     pub fn handle(&self) -> c_ulong {
         unsafe { dispatch_source_get_handle(self) }
     }
+
+    #[inline]
     pub fn mask(&self) -> c_ulong {
         unsafe { dispatch_source_get_mask(self) }
     }
 
+    #[inline]
     pub fn data(&self) -> c_ulong {
         unsafe { dispatch_source_get_data(self) }
     }
 
+    #[inline]
     pub fn merge_data(&self, value: c_ulong) -> c_ulong {
         unsafe { dispatch_source_merge_data(self, value) }
+    }
+
+    #[inline]
+    pub fn set_event_handler_f<T>(&mut self, handler: Option<&Function<T>>) {
+        unsafe { dispatch_source_set_event_handler_f(self, transmute(handler)) }
+    }
+
+    #[inline]
+    pub fn set_cancel_handler_f<T>(&mut self, handler: Option<&Function<T>>) {
+        unsafe { dispatch_source_set_cancel_handler_f(self, transmute(handler)) }
+    }
+
+    ///
+    /// # Safety
+    ///
+    ///  use TimerSource::set
+    #[inline]
+    unsafe fn source_set_timer(&mut self, start: dispatch::Time, interval: u64, leeway: u64) {
+        dispatch_source_set_timer(self, start, interval, leeway)
+    }
+}
+
+impl TimerSource {
+    pub fn set(&mut self, start: dispatch::Time, interval: Duration, leeway: Duration) {
+        unsafe { self.source_set_timer(start, interval.as_nanos() as _, leeway.as_nanos() as _) }
+    }
+
+    pub fn fired_count(&self) -> usize {
+        self.data() as _
     }
 }
 
@@ -185,30 +257,58 @@ extern "C" {
     static _dispatch_source_type_vnode: TypeVNode;
     static _dispatch_source_type_write: TypeWrite;
 
-    fn dispatch_source_create<'b>(
+    fn dispatch_source_create(
         type_: &Type,
         handle: std::ffi::c_ulong,
         mask: std::ffi::c_ulong,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<&'b Source>;
+    ) -> Option<cf::Retained<Source>>;
 
     fn dispatch_source_cancel(source: &mut Source);
-
     fn dispatch_source_get_handle(source: &Source) -> c_ulong;
     fn dispatch_source_get_mask(source: &Source) -> c_ulong;
     fn dispatch_source_get_data(source: &Source) -> c_ulong;
     fn dispatch_source_merge_data(source: &Source, value: c_ulong) -> c_ulong;
+    fn dispatch_source_set_event_handler_f(source: &mut Source, handler: Option<&Function<c_void>>);
+    fn dispatch_source_set_cancel_handler_f(
+        source: &mut Source,
+        handler: Option<&Function<c_void>>,
+    );
+
+    fn dispatch_source_set_timer(
+        source: &mut Source,
+        start: dispatch::Time,
+        interval: u64,
+        leeway: u64,
+    );
+
 }
 
 #[cfg(test)]
 mod tests {
+    use std::{thread::sleep, time::Duration};
+
     use crate::dispatch;
 
     #[test]
-    fn basic_check() {
-        let f = dispatch::SourceType::data_add();
-        let source = dispatch::Source::create(f, 0, 0, dispatch::Queue::TARGET_QUEUE_DEFAULT);
+    fn timer() {
+        let mut timer = dispatch::Source::new_timer(dispatch::SourceTimerFlags::default(), None)
+            .unwrap()
+            .retained();
 
-        assert!(source.is_some());
+        timer.set(
+            dispatch::Time::NOW,
+            Duration::from_nanos(100),
+            Duration::from_secs(0),
+        );
+        timer.activate();
+
+        assert_eq!(timer.fired_count(), 0);
+
+        sleep(Duration::from_secs(1));
+
+        let times = timer.fired_count();
+        println!("timer fired {}", times);
+        assert!(timer.fired_count() > 30);
     }
 }
