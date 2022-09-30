@@ -145,6 +145,8 @@ impl TimerFlags {
 }
 
 impl Source {
+    /// # Safity
+    /// use typed factory function instead
     #[inline]
     pub unsafe fn create(
         type_: &Type,
@@ -173,11 +175,20 @@ impl Source {
     }
 
     #[inline]
-    pub fn new_memory_pressure<'a>(
+    pub fn new_memory_pressure(
         flags: MemoryPressureFlags,
         queue: Option<&dispatch::Queue>,
     ) -> Option<cf::Retained<Source>> {
         unsafe { Self::create(Type::memory_pressure(), 0, flags.0 as _, queue) }
+    }
+
+    #[inline]
+    pub fn new_proc(
+        pid: crate::sys::Pid,
+        flags: ProcFlags,
+        queue: Option<&dispatch::Queue>,
+    ) -> Option<cf::Retained<Source>> {
+        unsafe { Self::create(Type::proc(), pid as _, flags.0 as _, queue) }
     }
 
     #[inline]
@@ -186,6 +197,16 @@ impl Source {
         queue: Option<&dispatch::Queue>,
     ) -> Option<cf::Retained<TimerSource>> {
         unsafe { transmute(Self::create(Type::timer(), 0, flags.0 as _, queue)) }
+    }
+
+    #[inline]
+    pub fn new_read(fd: i32, queue: Option<&dispatch::Queue>) -> Option<cf::Retained<Source>> {
+        unsafe { Self::create(Type::read(), fd as _, 0, queue) }
+    }
+
+    #[inline]
+    pub fn new_write(fd: i32, queue: Option<&dispatch::Queue>) -> Option<cf::Retained<Source>> {
+        unsafe { Self::create(Type::write(), fd as _, 0, queue) }
     }
 
     #[inline]
