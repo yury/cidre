@@ -211,9 +211,9 @@ pub struct OOLDescriptor64 {
 #[repr(C, align(4))]
 pub struct OOLDescriptor {
     pub address: *mut c_void,
-    pub deallocate: Boolean,
+    pub deallocate: u8,
     pub copy: CopyOptions,
-    pub pad1: u32,
+    pub pad1: u8,
     pub type_: DescriptorType,
     pub size: Size,
 }

@@ -48,6 +48,22 @@ impl Data {
                 .unwrap_unchecked()
         }
     }
+
+    #[inline]
+    pub fn get_bytes(&self) -> *const u8 {
+        unsafe { CFDataGetBytePtr(self) }
+    }
+
+    #[inline]
+    pub fn copy_bytes(&self, offset: usize, buffer: &mut [u8]) {
+        unsafe {
+            CFDataGetBytes(
+                self,
+                cf::Range::new(offset as _, buffer.len() as _),
+                buffer.as_mut_ptr(),
+            )
+        }
+    }
 }
 
 impl MutableData {
@@ -109,4 +125,7 @@ extern "C" {
         capacity: cf::Index,
         data: &Data,
     ) -> Option<cf::Retained<MutableData>>;
+
+    fn CFDataGetBytePtr(data: &cf::Data) -> *const u8;
+    fn CFDataGetBytes(data: &cf::Data, range: cf::Range, buffer: *mut u8);
 }

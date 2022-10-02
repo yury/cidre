@@ -22,6 +22,7 @@ pub use time::TimeValue;
 pub mod sample_buffer;
 pub use sample_buffer::Flags as SampleBufferFlags;
 pub use sample_buffer::SampleBuffer;
+pub use sample_buffer::SampleTimingInfo;
 
 pub mod attachment;
 pub use attachment::Bearer as AttachmentBearer;

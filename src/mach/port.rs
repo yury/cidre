@@ -2,6 +2,9 @@ use std::os::raw::c_int;
 
 use crate::define_options;
 
+use super::vm_map::{vm_allocate, vm_deallocate};
+use super::{KernReturn, VMAddress, VMAllocationFlags, VMSize};
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Name(pub u32);
@@ -18,8 +21,24 @@ impl Port {
         unsafe { mach_port_deallocate(mach_task_self_, self) }
     }
 
+    #[inline]
     pub fn current_task() -> Self {
         unsafe { mach_task_self_ }
+    }
+
+    #[inline]
+    pub fn allocate(
+        self,
+        address: *mut VMAddress,
+        size: VMSize,
+        flags: VMAllocationFlags,
+    ) -> KernReturn {
+        unsafe { vm_allocate(self, address, size, flags) }
+    }
+
+    #[inline]
+    pub fn deallocate(self, address: VMAddress, size: VMSize) -> KernReturn {
+        unsafe { vm_deallocate(self, address, size) }
     }
 }
 

@@ -28,6 +28,7 @@ pub use message::Header as MsgHeader;
 pub use message::HeaderBits as MsgHBits;
 pub use message::Id as MsgId;
 pub use message::MsgOption;
+pub use message::OOLDescriptor as MsgOOLDescriptor;
 pub use message::PortDescriptor as MsgPortDescriptor;
 pub use message::Priority as MsgPriority;
 pub use message::Return as MsgReturn;
@@ -40,8 +41,19 @@ pub use message::TypeDescriptor as MsgTypeDescriptor;
 pub use message::TypeName as MsgTypeName;
 
 pub mod vm_types;
+pub use vm_types::Address as VMAddress;
 pub use vm_types::Integer;
+pub use vm_types::Map as VMMap;
+pub use vm_types::MapInspect as VMMapInspect;
+pub use vm_types::MapRead as VMMapRead;
 pub use vm_types::Natural;
+pub use vm_types::Offset as VMOffset;
+pub use vm_types::Size as VMSize;
+
+pub mod vm_map;
+
+pub mod vm_statistics;
+pub use vm_statistics::VMAllocationFlags;
 
 #[inline]
 pub fn msg_receive(header: &mut MsgHeader) -> MsgReturn {
