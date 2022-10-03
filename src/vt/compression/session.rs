@@ -23,6 +23,7 @@ impl Session {
         codec: VideoCodecType,
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
+        compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<T>>,
         output_callback_ref_con: *mut T,
     ) -> Result<Retained<Self>, os::Status> {
@@ -35,7 +36,7 @@ impl Session {
                 codec,
                 encoder_specification,
                 source_image_buffer_attributes,
-                None,
+                compressed_data_allocator,
                 transmute(output_callback),
                 transmute(output_callback_ref_con),
                 &mut session,

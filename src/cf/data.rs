@@ -50,7 +50,7 @@ impl Data {
     }
 
     #[inline]
-    pub fn get_bytes(&self) -> *const u8 {
+    pub fn bytes_ptr(&self) -> *const u8 {
         unsafe { CFDataGetBytePtr(self) }
     }
 
@@ -92,6 +92,16 @@ impl MutableData {
     pub fn push_bytes(&mut self, bytes: &[u8]) {
         unsafe { self.append_bytes(bytes.as_ptr(), bytes.len() as _) }
     }
+
+    #[inline]
+    pub fn bytes_ptr_mut(&mut self) -> *mut u8 {
+        unsafe { CFDataGetMutableBytePtr(self) }
+    }
+
+    #[inline]
+    pub fn set_len(&mut self, len: cf::Index) {
+        unsafe { CFDataSetLength(self, len) }
+    }
 }
 
 /// ```
@@ -128,4 +138,7 @@ extern "C" {
 
     fn CFDataGetBytePtr(data: &cf::Data) -> *const u8;
     fn CFDataGetBytes(data: &cf::Data, range: cf::Range, buffer: *mut u8);
+
+    fn CFDataGetMutableBytePtr(data: &mut cf::MutableData) -> *mut u8;
+    fn CFDataSetLength(data: &mut cf::MutableData, length: cf::Index);
 }

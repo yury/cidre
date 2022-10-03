@@ -3,6 +3,7 @@ use crate::{
     define_cf_type,
 };
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u32)]
 pub enum AttachmentMode {
     ShouldNotPropagate = 0,

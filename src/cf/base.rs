@@ -165,6 +165,26 @@ impl Allocator {
     pub fn null() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorNull }
     }
+
+    #[inline]
+    pub unsafe fn allocate(&self, size: Index, hint: OptionFlags) -> *mut c_void {
+        CFAllocatorAllocate(self, size, hint)
+    }
+
+    #[inline]
+    pub unsafe fn reallocate(
+        &self,
+        ptr: *mut c_void,
+        new_size: Index,
+        hint: OptionFlags,
+    ) -> *mut c_void {
+        CFAllocatorReallocate(self, ptr, new_size, hint)
+    }
+
+    #[inline]
+    pub unsafe fn deallocate(&self, ptr: *mut c_void) {
+        CFAllocatorDeallocate(self, ptr)
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
@@ -185,6 +205,15 @@ extern "C" {
 
     fn CFEqual(cf1: &Type, cf2: &Type) -> bool;
     fn CFCopyDescription(cf: Option<&Type>) -> Option<Retained<String>>;
+
+    fn CFAllocatorAllocate(allocator: &Allocator, size: Index, hint: OptionFlags) -> *mut c_void;
+    fn CFAllocatorReallocate(
+        allocator: &Allocator,
+        ptr: *mut c_void,
+        new_size: Index,
+        hint: OptionFlags,
+    ) -> *mut c_void;
+    fn CFAllocatorDeallocate(allocator: &Allocator, ptr: *mut c_void);
 }
 
 define_cf_type!(PropertyList(Type));
