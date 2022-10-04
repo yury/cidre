@@ -48,8 +48,6 @@ pub enum Subsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-// #[repr(transparent)]
-// pub struct LockOptions(pub u32);
 define_options!(LockOptions(u32));
 
 impl LockOptions {

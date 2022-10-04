@@ -140,6 +140,11 @@ impl BlockBuffer {
     }
 
     #[inline]
+    pub fn len(&self) -> usize {
+        self.data_len()
+    }
+
+    #[inline]
     pub fn is_range_contiguous(&self, offset: usize, length: usize) -> bool {
         unsafe { CMBlockBufferIsRangeContiguous(self, offset, length) }
     }

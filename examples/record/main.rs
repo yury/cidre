@@ -153,7 +153,7 @@ async fn main() {
     let rate_limit = cf::Array::from_type_refs(&[
         &cf::Number::from_i32(100_000),
         &cf::Number::from_f64(0.1f64).unwrap(),
-        &cf::Number::from_i32(1_200_000),
+        &cf::Number::from_i32(1_000_000),
         &cf::Number::from_f64(1.0f64).unwrap(),
     ])
     .unwrap();
