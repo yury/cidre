@@ -86,23 +86,40 @@ impl Session {
         unsafe { VTDecompressionSessionInvalidate(self) }
     }
 
-    pub fn decode_frame<F>(
+    #[inline]
+    pub fn decode(
         &self,
         sample_buffer: &SampleBuffer,
         decode_flags: vt::DecodeFrameFlags,
-        source_frame_ref_con: *mut F,
-        info_flags_out: *mut vt::DecodeInfoFlags,
     ) -> Result<(), os::Status> {
         unsafe {
             VTDecompressionSessionDecodeFrame(
                 self,
                 sample_buffer,
                 decode_flags,
-                transmute(source_frame_ref_con),
-                info_flags_out,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
             )
             .result()
         }
+    }
+
+    #[inline]
+    pub unsafe fn decode_frame<F>(
+        &self,
+        sample_buffer: &SampleBuffer,
+        decode_flags: vt::DecodeFrameFlags,
+        source_frame_ref_con: *mut F,
+        info_flags_out: *mut vt::DecodeInfoFlags,
+    ) -> Result<(), os::Status> {
+        VTDecompressionSessionDecodeFrame(
+            self,
+            sample_buffer,
+            decode_flags,
+            transmute(source_frame_ref_con),
+            info_flags_out,
+        )
+        .result()
     }
 
     pub fn finish_delayed_frames(&mut self) -> Result<(), os::Status> {

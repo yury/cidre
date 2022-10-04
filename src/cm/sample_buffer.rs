@@ -95,6 +95,7 @@ impl SampleBuffer {
     /// buf.show();
     /// ```
 
+    #[inline]
     pub fn new(
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,
