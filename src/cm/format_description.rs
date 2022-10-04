@@ -6,6 +6,7 @@ use crate::{
     cv, define_cf_type, os, FourCharCode,
 };
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PixelFormatType(pub FourCharCode);
 
@@ -28,6 +29,7 @@ pub struct VideoDimensions {
     pub height: i32,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct MediaType(pub FourCharCode);
 
@@ -46,6 +48,7 @@ impl MediaType {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct VideoCodecType(FourCharCode);
 
