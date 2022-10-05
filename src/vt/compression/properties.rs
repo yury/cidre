@@ -394,7 +394,7 @@ pub mod keys {
     /// This is not supported in all encoders or in all encoder operating modes. kVTPropertyNotSupportedErr will be
     /// returned when this option is not supported.
     #[inline]
-    pub fn constant_bitrate() -> &'static cf::String {
+    pub fn constant_bit_rate() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ConstantBitRate }
     }
 

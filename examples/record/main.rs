@@ -85,11 +85,11 @@ extern "C" fn callback(
     ctx: *mut SenderContext,
     _: *mut c_void,
     status: Status,
-    _flags: EncodeInfoFlags,
+    flags: EncodeInfoFlags,
     buffer: Option<&SampleBuffer>,
 ) {
     if status.is_err() || buffer.is_none() {
-        println!("status {:?}", status);
+        println!("status {:?} Flags: {:#b}", status, flags);
         return;
     }
     unsafe {
@@ -145,15 +145,16 @@ async fn main() {
         display.height() * 2
     );
 
+    let expected_bitrate = cf::Number::from_i32(6_500_000);
     let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
     let expected_fr = cf::Number::from_i32(60);
     let frame_delay_count = cf::Number::from_i32(0);
     let max_key_frame_interval = cf::Number::from_i32(600 * 5 * 5);
     let rate_limit = cf::Array::from_type_refs(&[
-        &cf::Number::from_i32(100_000),
+        &cf::Number::from_i32(120_000),
         &cf::Number::from_f64(0.1f64).unwrap(),
-        &cf::Number::from_i32(1_000_000),
+        &cf::Number::from_i32(1_500_000),
         &cf::Number::from_f64(1.0f64).unwrap(),
     ])
     .unwrap();
@@ -163,6 +164,8 @@ async fn main() {
     props.insert(keys::allow_frame_reordering(), bool_false);
     props.insert(keys::max_key_frame_interval(), &max_key_frame_interval);
     props.insert(keys::data_rate_limits(), &rate_limit);
+    props.insert(keys::avarage_bit_rate(), &expected_bitrate);
+    //props.insert(keys::constant_bit_rate(), &expected_bitrate);
     // props.insert(
     //     keys::profile_level(),
     //     profile_level::hevc::main_auto_level(),

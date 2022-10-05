@@ -56,7 +56,11 @@ impl DecodeInfoFlags {
 
 define_options!(EncodeInfoFlags(u32));
 
+/// Flags that indicate encoder state.
 impl EncodeInfoFlags {
+    /// A flag that indicates that an encode operation ran asynchronously.
     pub const ASYNCHRONOUS: Self = Self(1u32 << 0);
+
+    /// A flag that indicates that a frame dropped during encoding.
     pub const FRAME_DROPPED: Self = Self(1u32 << 1);
 }

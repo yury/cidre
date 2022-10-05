@@ -49,6 +49,8 @@ pub mod ui;
 
 pub mod time;
 
+pub mod dns_sd;
+
 #[macro_export]
 macro_rules! define_options {
     ($NewType:ident($BaseType:path)) => {
@@ -97,6 +99,12 @@ macro_rules! define_options {
             #[inline]
             fn from(value: $BaseType) -> Self {
                 Self(value)
+            }
+        }
+
+        impl ::std::fmt::Binary for $NewType {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                ::std::fmt::Binary::fmt(&self.0, f)
             }
         }
     };
