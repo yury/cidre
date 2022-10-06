@@ -69,7 +69,7 @@ impl From<bool> for &'static Boolean {
     }
 }
 
-impl<'a> PartialEq<bool> for &'a Boolean {
+impl PartialEq<bool> for &Boolean {
     /// ```
     /// use cidre::cf;
     ///
