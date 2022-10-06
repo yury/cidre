@@ -298,10 +298,10 @@ impl Device {
     }
 
     #[inline]
-    pub fn compute_pipeline_state_with_function<'a>(
+    pub fn compute_pipeline_state_with_function<'ar>(
         &self,
         function: &mtl::Function,
-    ) -> Result<Retained<mtl::ComputePipelineState>, &'a cf::Error> {
+    ) -> Result<Retained<mtl::ComputePipelineState>, &'ar cf::Error> {
         let mut error = None;
         let res = self.compute_pipeline_state_with_function_error(function, &mut error);
 

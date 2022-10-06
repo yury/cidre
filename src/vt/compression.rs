@@ -38,6 +38,7 @@ mod tests {
             None,
             Some(&image_attrs),
             None,
+            None,
             std::ptr::null_mut(),
         )
         .expect("encoder");

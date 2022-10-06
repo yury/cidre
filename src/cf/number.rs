@@ -124,10 +124,10 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i32(-5);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
+    /// assert_eq!(num.number_type(), cf::NumberType::I32);
     /// ```
     #[inline]
-    pub fn get_number_type(&self) -> NumberType {
+    pub fn number_type(&self) -> NumberType {
         unsafe { CFNumberGetType(self) }
     }
 
@@ -135,10 +135,10 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i32(-5);
-    /// assert_eq!(4, num.get_byte_size());
+    /// assert_eq!(4, num.byte_size());
     /// ```
     #[inline]
-    pub fn get_byte_size(&self) -> Index {
+    pub fn byte_size(&self) -> Index {
         unsafe { CFNumberGetByteSize(self) }
     }
 
@@ -162,7 +162,7 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i8(-5);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
+    /// assert_eq!(num.number_type(), cf::NumberType::I8);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
     /// assert_eq!(num.to_i32().unwrap(), -5i32);
@@ -183,7 +183,7 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i16(-5);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I16);
+    /// assert_eq!(num.number_type(), cf::NumberType::I16);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
     /// assert_eq!(num.to_i32().unwrap(), -5i32);
@@ -205,7 +205,7 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i32(-5);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
+    /// assert_eq!(num.number_type(), cf::NumberType::I32);
     /// assert_eq!(num.to_i8().unwrap(), -5i8);
     /// assert_eq!(num.to_i16().unwrap(), -5i16);
     /// assert_eq!(num.to_i32().unwrap(), -5i32);
@@ -226,7 +226,7 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i32(-5);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
+    /// assert_eq!(num.number_type(), cf::NumberType::I32);
     /// assert_eq!(num.to_i64().unwrap(), -5i64);
     /// ```
     #[inline]
@@ -245,7 +245,7 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_f64(-5.0f64).unwrap();
-    /// assert_eq!(num.get_number_type(), cf::NumberType::F64);
+    /// assert_eq!(num.number_type(), cf::NumberType::F64);
     /// assert_eq!(num.to_f64().unwrap(), -5f64);
     /// assert_eq!(true, num.is_float_type());
     /// ```
@@ -287,7 +287,7 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = unsafe { cf::Number::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap() };
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
+    /// assert_eq!(num.number_type(), cf::NumberType::I8);
     /// assert_eq!(num.to_i8().unwrap(), 5i8);
     /// ```
     #[inline]
@@ -303,8 +303,8 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i8(8);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I8);
-    /// assert_eq!(1, num.get_byte_size());
+    /// assert_eq!(num.number_type(), cf::NumberType::I8);
+    /// assert_eq!(1, num.byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged
@@ -316,8 +316,8 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i16(16);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I16);
-    /// assert_eq!(2, num.get_byte_size());
+    /// assert_eq!(num.number_type(), cf::NumberType::I16);
+    /// assert_eq!(2, num.byte_size());
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged
@@ -329,12 +329,13 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i32(32);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I32);
-    /// assert_eq!(4, num.get_byte_size());
+    /// assert_eq!(num.number_type(), cf::NumberType::I32);
+    /// assert_eq!(4, num.byte_size());
     /// assert_eq!(32, num.to_i32().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
+    #[inline]
     pub fn from_i32(value: i32) -> Retained<Number> {
         unsafe { Number::create(None, NumberType::I32, &value as *const _ as _).unwrap_unchecked() }
     }
@@ -348,11 +349,12 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_i64(64);
-    /// assert_eq!(num.get_number_type(), cf::NumberType::I64);
-    /// assert_eq!(8, num.get_byte_size());
+    /// assert_eq!(num.number_type(), cf::NumberType::I64);
+    /// assert_eq!(8, num.byte_size());
     /// assert_eq!(64, num.to_i64().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
+    #[inline]
     pub fn from_i64(value: i64) -> Retained<Number> {
         unsafe { Number::create(None, NumberType::I64, &value as *const _ as _).unwrap_unchecked() }
     }
@@ -361,35 +363,40 @@ impl Number {
     /// use cidre::cf;
     ///
     /// let num = cf::Number::from_f64(64.0).unwrap();
-    /// assert_eq!(num.get_number_type(), cf::NumberType::F64);
-    /// assert_eq!(8, num.get_byte_size());
+    /// assert_eq!(num.number_type(), cf::NumberType::F64);
+    /// assert_eq!(8, num.byte_size());
     /// assert_eq!(64.0, num.to_f64().unwrap());
     /// assert_eq!(true, num.is_float_type());
     /// ```
+    #[inline]
     pub fn from_f64(value: f64) -> Option<Retained<Number>> {
         unsafe { Number::create(None, NumberType::F64, &value as *const _ as _) }
     }
 }
 
 impl From<i8> for Retained<Number> {
+    #[inline]
     fn from(value: i8) -> Self {
         Number::from_i8(value)
     }
 }
 
 impl From<i16> for Retained<Number> {
+    #[inline]
     fn from(value: i16) -> Self {
         Number::from_i16(value)
     }
 }
 
 impl From<i32> for Retained<Number> {
+    #[inline]
     fn from(value: i32) -> Self {
         Number::from_i32(value)
     }
 }
 
 impl From<i64> for Retained<Number> {
+    #[inline]
     fn from(value: i64) -> Self {
         Number::from_i64(value)
     }
