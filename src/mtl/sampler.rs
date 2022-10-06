@@ -1,11 +1,13 @@
 use crate::{define_mtl, define_obj_type, msg_send, objc::Id};
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum MinMagFilter {
     Nearest = 0,
     Linear = 1,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum MipFilter {
     NotMipmapped = 0,
@@ -13,6 +15,7 @@ pub enum MipFilter {
     Linear = 2,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum AddressMode {
     ClampToEdge = 0,
@@ -23,6 +26,7 @@ pub enum AddressMode {
     ClampToBorderColor = 5,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BorderColor {
     TransparentBlack = 0, // {0,0,0,0}
