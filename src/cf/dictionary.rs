@@ -106,15 +106,12 @@ impl Dictionary {
     }
 
     #[inline]
-    pub unsafe fn get_value(&self, key: *const c_void) -> Option<NonNull<c_void>> {
+    pub unsafe fn value(&self, key: *const c_void) -> Option<NonNull<c_void>> {
         CFDictionaryGetValue(self, key)
     }
 
     #[inline]
-    pub unsafe fn get_value_if_present(
-        &self,
-        key: *const c_void,
-    ) -> Option<Option<NonNull<c_void>>> {
+    pub unsafe fn value_if_present(&self, key: *const c_void) -> Option<Option<NonNull<c_void>>> {
         let mut value = Option::None;
 
         if CFDictionaryGetValueIfPresent(self, key, &mut value) {
@@ -150,18 +147,18 @@ impl Dictionary {
     }
 
     #[inline]
-    pub fn get_count(&self) -> Index {
+    pub fn count(&self) -> Index {
         unsafe { CFDictionaryGetCount(self) }
     }
 
     #[inline]
     pub fn len(&self) -> usize {
-        self.get_count() as _
+        self.count() as _
     }
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        self.get_count() == 0
+        self.len() == 0
     }
 
     /// ```
@@ -225,20 +222,20 @@ impl Dictionary {
     ///
     /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
-    /// let keys = d.get_keys();
+    /// let keys = d.keys();
     ///
     /// assert!(!d.is_empty());
     /// assert_eq!(1, d.len());
     /// assert_eq!(1, keys.len());
     /// assert!(key.equal(keys[0]));
     /// ```
-    pub fn get_keys(&self) -> Vec<&Type> {
+    pub fn keys(&self) -> Vec<&Type> {
         let len = self.len();
         let mut keys: Vec<&Type> = Vec::with_capacity(len);
         unsafe {
             keys.set_len(len);
             let keys = keys.as_ptr() as *const *const c_void;
-            self.get_keys_and_values(keys, std::ptr::null());
+            self.keys_and_values(keys, std::ptr::null());
         }
         keys
     }
@@ -251,25 +248,25 @@ impl Dictionary {
     ///
     /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
-    /// let vals = d.get_values();
+    /// let vals = d.values();
     ///
     /// assert!(!d.is_empty());
     /// assert_eq!(1, d.len());
     /// assert_eq!(1, vals.len());
     /// assert!(value.equal(vals[0]));
     /// ```
-    pub fn get_values(&self) -> Vec<&Type> {
+    pub fn values(&self) -> Vec<&Type> {
         let len = self.len();
         let mut values: Vec<&Type> = Vec::with_capacity(len);
         unsafe {
             values.set_len(len);
             let values = values.as_ptr() as *const *const c_void;
-            self.get_keys_and_values(std::ptr::null(), values);
+            self.keys_and_values(std::ptr::null(), values);
         }
         values
     }
 
-    pub fn get_keys_with_values(&self) -> (Vec<&Type>, Vec<&Type>) {
+    pub fn keys_with_values(&self) -> (Vec<&Type>, Vec<&Type>) {
         let len = self.len();
         let mut keys: Vec<&Type> = Vec::with_capacity(len);
         let mut values: Vec<&Type> = Vec::with_capacity(len);
@@ -278,17 +275,13 @@ impl Dictionary {
             values.set_len(len);
             let keys = keys.as_ptr() as *const *const c_void;
             let values = values.as_ptr() as *const *const c_void;
-            self.get_keys_and_values(keys, values);
+            self.keys_and_values(keys, values);
         }
         (keys, values)
     }
 
     #[inline]
-    pub unsafe fn get_keys_and_values(
-        &self,
-        keys: *const *const c_void,
-        values: *const *const c_void,
-    ) {
+    pub unsafe fn keys_and_values(&self, keys: *const *const c_void, values: *const *const c_void) {
         CFDictionaryGetKeysAndValues(self, keys, values)
     }
 

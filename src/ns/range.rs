@@ -19,7 +19,7 @@ impl Range {
     }
 
     /// ```
-    /// use cidre::{ns};
+    /// use cidre::ns;
     /// let a = ns::Range::new(0, 10);
     /// let b = ns::Range::new(2, 8);
     /// assert_eq!(ns::Range::intersection(a, b), b);
