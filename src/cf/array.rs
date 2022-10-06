@@ -143,8 +143,7 @@ impl<T> MutArrayOf<T> {
 
     #[inline]
     pub fn with_capacity(capacity: usize) -> Option<Retained<MutArrayOf<T>>> {
-        let arr = MutableArray::create(None, capacity as _, Callbacks::default());
-        unsafe { transmute(arr) }
+        Self::with_capacity_in(capacity, None)
     }
 
     #[inline]
@@ -224,10 +223,10 @@ impl Array {
     /// use cidre::cf;
     ///
     /// let arr = cf::Array::new().expect("arr");
-    /// assert_eq!(arr.get_count(), 0);
+    /// assert_eq!(arr.count(), 0);
     /// ```
     #[inline]
-    pub fn get_count(&self) -> Index {
+    pub fn count(&self) -> Index {
         unsafe { CFArrayGetCount(self) }
     }
 
@@ -239,7 +238,7 @@ impl Array {
     /// ```
     #[inline]
     pub fn len(&self) -> usize {
-        self.get_count() as _
+        self.count() as _
     }
 
     /// ```
@@ -257,11 +256,11 @@ impl Array {
     /// use cidre::cf;
     ///
     /// let arr1 = cf::Array::new().expect("Array::new");
-    /// let arr2 = arr1.create_copy(None).expect("copy");
+    /// let arr2 = arr1.create_in(None).expect("copy");
     ///
     /// ```
     #[inline]
-    pub fn create_copy(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
+    pub fn create_in(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
@@ -273,7 +272,7 @@ impl Array {
     /// ```
     #[inline]
     pub fn copy(&self) -> Option<Retained<Array>> {
-        Self::create_copy(self, None)
+        self.create_in(None)
     }
 
     #[inline]
@@ -357,7 +356,7 @@ impl Array {
 
     #[inline]
     pub fn mutable_copy(&self) -> Option<Retained<MutableArray>> {
-        unsafe { CFArrayCreateMutableCopy(None, self.get_count(), self) }
+        unsafe { CFArrayCreateMutableCopy(None, self.count(), self) }
     }
 
     #[inline]
@@ -409,7 +408,7 @@ impl MutableArray {
     }
 
     #[inline]
-    pub fn with_capacity<'a>(capacity: Index) -> Option<Retained<MutableArray>> {
+    pub fn with_capacity(capacity: Index) -> Option<Retained<MutableArray>> {
         Self::create(None, capacity, Callbacks::default())
     }
 
