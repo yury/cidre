@@ -135,14 +135,16 @@ impl Library {
         unsafe { rsel_newFunctionWithName(self, name) }
     }
 
+    /// # Safety
+    /// Use new_function_with_name_constant_values
     #[inline]
-    pub fn new_function_with_name_constant_values_error<'a>(
+    pub unsafe fn new_function_with_name_constant_values_error<'ar>(
         &self,
         name: &cf::String,
         constant_values: &mtl::FunctionConstantValues,
-        error: &mut Option<&'a cf::Error>,
+        error: &mut Option<&'ar cf::Error>,
     ) -> Option<Retained<Function>> {
-        unsafe { rsel_newFunctionWithName_constantValues_error(self, name, constant_values, error) }
+        rsel_newFunctionWithName_constantValues_error(self, name, constant_values, error)
     }
 
     /// ```
@@ -160,19 +162,21 @@ impl Library {
     /// assert!(func_name.equal(&name));
     ///
     /// ```
-    pub fn new_function_with_name_constant_values<'a>(
+    pub fn new_function_with_name_constant_values<'ar>(
         &self,
         name: &cf::String,
         constant_values: &mtl::FunctionConstantValues,
-    ) -> Result<Retained<Function>, &'a cf::Error> {
+    ) -> Result<Retained<Function>, &'ar cf::Error> {
         let mut error = None;
 
-        let res = Self::new_function_with_name_constant_values_error(
-            self,
-            name,
-            constant_values,
-            &mut error,
-        );
+        let res = unsafe {
+            Self::new_function_with_name_constant_values_error(
+                self,
+                name,
+                constant_values,
+                &mut error,
+            )
+        };
 
         if let Some(err) = error {
             return Err(err);
@@ -258,11 +262,11 @@ extern "C" {
     fn rsel_functionNames(id: &Id) -> &cf::ArrayOf<cf::String>;
 
     fn rsel_newFunctionWithName(id: &Library, name: &cf::String) -> Option<Retained<Function>>;
-    fn rsel_newFunctionWithName_constantValues_error<'a>(
+    fn rsel_newFunctionWithName_constantValues_error<'ar>(
         id: &Library,
         name: &cf::String,
         constant_values: &mtl::FunctionConstantValues,
-        error: &mut Option<&'a cf::Error>,
+        error: &mut Option<&'ar cf::Error>,
     ) -> Option<Retained<Function>>;
 
     fn rsel_newArgumentEncoderWithBufferIndex(
