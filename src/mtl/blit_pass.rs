@@ -7,12 +7,14 @@ define_obj_type!(SampleBufferAttachmentDescriptorArray(Id));
 define_obj_type!(Descriptor(Id));
 
 impl Descriptor {
+    /// # Examples
+    ///
     /// ```
     /// use cidre::mtl;
     ///
     /// let bpd = mtl::BlitPassDescriptor::default();
     /// ```
-    pub fn default<'a>() -> &'a Descriptor {
+    pub fn default<'ar>() -> &'ar Descriptor {
         unsafe { MTLBlitPassDescriptor_blitPassDescriptor() }
     }
 
@@ -22,7 +24,7 @@ impl Descriptor {
 }
 
 extern "C" {
-    fn MTLBlitPassDescriptor_blitPassDescriptor<'a>() -> &'a Descriptor;
+    fn MTLBlitPassDescriptor_blitPassDescriptor<'ar>() -> &'ar Descriptor;
     fn MTLBlitPassDescriptor_sampleBufferAttachments(
         id: &Descriptor,
     ) -> &SampleBufferAttachmentDescriptorArray;

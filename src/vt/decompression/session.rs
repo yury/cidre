@@ -57,6 +57,7 @@ impl Session {
         }
     }
 
+    /// # Safety
     /// Use safe new
     pub unsafe fn create_in(
         allocator: Option<&cf::Allocator>,
@@ -82,6 +83,7 @@ impl Session {
     /// When a decompression session's retain count reaches zero, it is automatically invalidated, but
     /// since sessions may be retained by multiple parties, it can be hard to predict when this will happen.
     /// Calling VTDecompressionSessionInvalidate ensures a deterministic, orderly teardown.
+    #[inline]
     pub fn invalidate(&mut self) {
         unsafe { VTDecompressionSessionInvalidate(self) }
     }
@@ -138,6 +140,9 @@ impl Session {
         unsafe { VTDecompressionSessionCanAcceptFormatDescription(self, format_description) }
     }
 
+    /// Copies a black pixel buffer from the decompression session.
+    ///
+    /// The pixel buffer is in the same format that the session is decompressing to.
     #[inline]
     pub fn copy_black_pixel_buffer(&self) -> Result<Retained<cv::PixelBuffer>, os::Status> {
         let mut pixel_buffer_out = None;
@@ -148,6 +153,13 @@ impl Session {
     }
 }
 
+/// Indicates whether the current system supports hardware decode for a given codec
+///
+/// This routine reports whether the current system supports hardware decode.  Using
+/// this information, clients can make informed decisions regarding remote assets to load,
+/// favoring alternate encodings when hardware decode is not supported.
+/// This call returning true does not guarantee that hardware decode resources will be
+/// available at all times.
 pub fn is_hardware_decode_supported(codec_type: VideoCodecType) -> bool {
     unsafe { VTIsHardwareDecodeSupported(codec_type) }
 }
