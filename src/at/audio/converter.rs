@@ -170,6 +170,7 @@ impl PropertyID {
     pub const DITHER_BIT_DEPTH: Self = Self(u32::from_be_bytes(*b"dbit"));
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct DitherAlgorithm(pub u32);
 
@@ -178,6 +179,7 @@ impl DitherAlgorithm {
     pub const NOISE_SHAPING: Self = Self(2);
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Quality(pub u32);
 
@@ -205,6 +207,7 @@ impl Default for Quality {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct SampleRateConverterComplexity(pub u32);
 
@@ -240,6 +243,7 @@ impl SampleRateConverterComplexity {
     pub const MINIMUM_PHASE: Self = Self(u32::from_be_bytes(*b"minp"));
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u32)]
 pub enum PrimeMethod {
     /// Primes with leading + trailing input frames.
@@ -285,6 +289,7 @@ pub enum PrimeMethod {
 /// PrimeMethod::Pre may be preferable.  The default method is
 /// PrimeMethod::Normal, which requires no pre-seeking of the input stream and
 /// generates no latency at the output.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct PrimeInfo {
     /// Specifies the number of leading (previous) input frames, relative to the normal/desired
@@ -357,7 +362,7 @@ impl Converter {
         AudioConverterNew(in_source_format, in_destination_format, out_audio_converer)
     }
 
-    pub fn with_formats<'a>(
+    pub fn with_formats(
         source_fmt: &audio::StreamBasicDescription,
         dest_fmt: &audio::StreamBasicDescription,
     ) -> Result<cf::Retained<Converter>, os::Status> {
@@ -499,6 +504,10 @@ impl Converter {
         unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &value) }
     }
 
+    ///
+    /// # Safety
+    /// use fill_complex_buf
+    ///
     #[inline]
     pub unsafe fn fill_complex_buffer(
         &self,
@@ -555,7 +564,14 @@ impl Converter {
         input: &audio::BufferList<IL, IN>,
         output: &mut audio::BufferList<OL, ON>,
     ) -> Result<(), os::Status> {
-        unsafe { self.convert_complex_buffer(frames, transmute(input), transmute(output)) }.result()
+        unsafe {
+            self.convert_complex_buffer(
+                frames,
+                input as *const _ as *const _,
+                output as *mut _ as *mut _,
+            )
+        }
+        .result()
     }
 
     pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> Result<usize, os::Status> {
