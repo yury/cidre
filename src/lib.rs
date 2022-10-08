@@ -51,6 +51,8 @@ pub mod time;
 
 pub mod dns_sd;
 
+pub mod simd;
+
 #[macro_export]
 macro_rules! define_options {
     ($NewType:ident($BaseType:path)) => {

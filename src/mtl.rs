@@ -101,6 +101,7 @@ pub use render_pipeline::ColorAttachmentDescriptorArray as RenderPipelineColorAt
 pub use render_pipeline::ColorWriteMask;
 pub use render_pipeline::Descriptor as RenderPipelineDescriptor;
 pub use render_pipeline::FunctionsDescriptor as RenderPipelineFunctionsDescriptor;
+pub use render_pipeline::MeshRenderPipelineDescriptor;
 pub use render_pipeline::PrimitiveTopologyClass;
 pub use render_pipeline::Reflection as RenderPipelineReflection;
 pub use render_pipeline::State as RenderPipelineState;

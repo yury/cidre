@@ -320,3 +320,9 @@ define_obj_type!(TileRenderPipelineDescriptor(Id));
 impl TileRenderPipelineDescriptor {
     define_mtl!(reset);
 }
+
+define_obj_type!(MeshRenderPipelineDescriptor(Id));
+
+impl MeshRenderPipelineDescriptor {
+    define_mtl!(reset, label, set_label);
+}
