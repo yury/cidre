@@ -3,8 +3,14 @@ use crate::{cf, cg, ci, define_obj_type, objc};
 define_obj_type!(Context(objc::Id));
 
 impl Context {
+    #[inline]
     pub fn with_options(options: Option<&cf::Dictionary>) -> Option<cf::Retained<Self>> {
         unsafe { CIContext_contextWithOptions(options) }
+    }
+
+    #[inline]
+    pub fn new() -> Option<cf::Retained<Self>> {
+        Self::with_options(None)
     }
 
     pub fn write_png_to_url<'ar>(

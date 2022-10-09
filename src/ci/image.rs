@@ -37,12 +37,40 @@ impl Format {
     pub fn rgba8() -> Self {
         unsafe { kCIFormatRGBA8 }
     }
+
+    /// A 32-bit-per-pixel, fixed-point pixel format in which
+    /// the red, green, and blue color components precede the alpha value.
+    #[inline]
+    pub fn abgr8() -> Self {
+        unsafe { kCIFormatABGR8 }
+    }
+
+    /// A 64-bit-per-pixel, floating-point pixel format.
+    pub fn rgbah() -> Self {
+        unsafe { kCIFormatRGBAh }
+    }
+
+    /// A 64-bit-per-pixel, fixed-point pixel format.
+    pub fn rgba16() -> Self {
+        unsafe { kCIFormatRGBA16 }
+    }
+
+    /// A 128-bit-per-pixel, floating-point pixel format.
+    pub fn rgbaf() -> Self {
+        unsafe { kCIFormatRGBAf }
+    }
 }
+
 #[link(name = "CoreImage", kind = "framework")]
 extern "C" {
     static kCIFormatARGB8: Format;
     static kCIFormatBGRA8: Format;
     static kCIFormatRGBA8: Format;
+    static kCIFormatABGR8: Format;
+
+    static kCIFormatRGBAh: Format;
+    static kCIFormatRGBA16: Format;
+    static kCIFormatRGBAf: Format;
 }
 
 #[link(name = "ci", kind = "static")]

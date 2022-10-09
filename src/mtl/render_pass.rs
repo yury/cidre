@@ -6,7 +6,7 @@ use crate::ns::Id;
 
 use super::Texture;
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
 pub enum LoadAction {
     DontCare = 0,
@@ -15,7 +15,7 @@ pub enum LoadAction {
 }
 
 /// Types of actions performed for an attachment at the end of a rendering pass.
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreAction {
     /// The GPU has permission to discard the rendered contents of the attachment
@@ -73,7 +73,7 @@ pub enum StoreActionOptions {
     CustomSamplePositions = 1 << 0,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
 pub struct ClearColor {
     pub red: f64,
@@ -333,8 +333,13 @@ impl AttachmentDescriptor {
     }
 
     #[inline]
-    pub fn set_texture(&mut self, value: Option<&Texture>) {
-        unsafe { wsel_setTexture(self, value) }
+    pub fn set_texture(&mut self, value: &Texture) {
+        unsafe { wsel_setTexture(self, Some(value)) }
+    }
+
+    #[inline]
+    pub fn remove_texture(&mut self) {
+        unsafe { wsel_setTexture(self, None) }
     }
 
     #[inline]

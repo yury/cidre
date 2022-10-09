@@ -271,6 +271,11 @@ impl Descriptor {
     }
 
     #[inline]
+    pub fn set_vertex_fn(&mut self, value: &Function) {
+        self.set_vertex_function(Some(value))
+    }
+
+    #[inline]
     pub fn fragment_function(&self) -> Option<&Function> {
         unsafe { rsel_fragmentFunction(self) }
     }
@@ -278,6 +283,11 @@ impl Descriptor {
     #[inline]
     pub fn set_fragment_function(&mut self, value: Option<&Function>) {
         unsafe { wsel_setFragmentFunction(self, value) }
+    }
+
+    #[inline]
+    pub fn set_fragment_fn(&mut self, value: &Function) {
+        self.set_fragment_function(Some(value))
     }
 
     #[inline]
