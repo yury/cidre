@@ -1,4 +1,4 @@
-use cidre::{cf, mtl, objc::autoreleasepool, simd};
+use cidre::{cf, cg, ci, mtl, objc::autoreleasepool, simd};
 
 #[repr(C)]
 struct Vertex {
@@ -102,9 +102,9 @@ fn main() {
         first.set_texture(Some(&rgba_texture));
 
         let triangle = [
-            Vertex::with((0.0, 1.0), (1.0, 1.0, 1.0)),
-            Vertex::with((0.0, 1.0), (1.0, 1.0, 1.0)),
-            Vertex::with((0.0, 1.0), (1.0, 1.0, 1.0)),
+            Vertex::with((-1.0, 1.0), (1.0, 0.0, 0.0)),
+            Vertex::with((0.0, 0.0), (0.0, 1.0, 0.0)),
+            Vertex::with((1.0, 1.0), (0.0, 0.0, 1.0)),
         ];
 
         let mem_size = std::mem::size_of::<Vertex>() * triangle.len();
@@ -131,7 +131,16 @@ fn main() {
 
         command_buffer.wait_until_completed();
 
-        println!("{:?}", rgba_texture);
+        let ci_image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
+        let ci_context = ci::Context::with_options(None).unwrap();
+
+        let options = cf::Dictionary::new().unwrap();
+        let color_space = cg::ColorSpace::create_device_rgb().unwrap();
+        let url = cf::URL::from_str("file:///tmp/image.png").unwrap();
+        ci_context
+            .write_png_to_url(&ci_image, &url, ci::Format::rgba8(), &color_space, &options)
+            .unwrap();
+
         println!("done");
     });
 }

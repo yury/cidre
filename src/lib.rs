@@ -3,44 +3,57 @@ pub use mac_types::FourCharCode;
 pub use mac_types::ResType;
 pub use mac_types::UniChar;
 
+/// Apple Mobile
+#[cfg(target_os = "macos")]
+pub mod am;
+
+/// Audio Toolkit
+pub mod at;
+
+/// AudioVisual Foundation (AVFoundation)
+pub mod av;
+
 /// Core Animation
 pub mod ca;
+
+pub mod ci;
+
 /// Core Foundation
 pub mod cf;
+
 /// Core Graphics
 pub mod cg;
+
 /// Core Media
 pub mod cm;
+
 /// Core Video
 pub mod cv;
+
 /// Grand Central Dispatch
 pub mod dispatch;
+
 /// IOSurface
 pub mod io;
+
 /// match
 pub mod mach;
+
 /// Metal
 pub mod mtl;
+
 /// Foundation
 pub mod ns;
 pub mod objc;
 pub mod os;
 pub mod sys;
+
 /// Video Toolbox
 pub mod vt;
 
 #[cfg(target_os = "macos")]
 pub mod sc;
 
-/// Apple Mobile
-#[cfg(target_os = "macos")]
-pub mod am;
-
-/// AudioVisual Foundation (AVFoundation)
-pub mod av;
-
-/// Audio Toolkit
-pub mod at;
 /// CoreAudioTypes
 pub mod cat;
 

@@ -37,6 +37,16 @@ extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C 
   return  [_self SEL_A: a SEL_B: b SEL_C: c SEL_D: d]; } \
 \
 
+#define rsel_abcde(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D, SEL_E, E, ReadType) \
+extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D ## _ ## SEL_E(SelfType _self, A a, B b, C c, D d, E e) { \
+  return  [_self SEL_A: a SEL_B: b SEL_C: c SEL_D: d SEL_E: e]; } \
+\
+
+#define rsel_abcdef(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_C, C, SEL_D, D, SEL_E, E, SEL_F, F, ReadType) \
+extern inline ReadType Prefix ## rsel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C ## _ ## SEL_D ## _ ## SEL_E ## _ ## SEL_F(SelfType _self, A a, B b, C c, D d, E e, F f) { \
+  return  [_self SEL_A: a SEL_B: b SEL_C: c SEL_D: d SEL_E: e SEL_F: f]; } \
+\
+
 #define wsel_a(Prefix, SelfType, SEL_A, A) \
 extern inline void Prefix ## wsel ## _ ## SEL_A(SelfType _self, A a) { [_self SEL_A: a]; } \
 \
