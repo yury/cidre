@@ -497,6 +497,14 @@ rwsel(, id, dispatchType, setDispatchType, MTLDispatchType)
 NS_RETURNS_NOT_RETAINED
 rsel(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
 
+#pragma mark - MTLRenderPipelineColorAttachmentDescriptorArray
+
+
+NS_RETURNS_NOT_RETAINED
+rsel_a(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPipelineColorAttachmentDescriptor *)
+
+wsel_ab(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, setObject, MTLRenderPipelineColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+
 #pragma mark - MTLComputePassSampleBufferAttachmentDescriptorArray
 
 

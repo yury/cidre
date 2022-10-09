@@ -9,10 +9,25 @@ use super::{Buffer, CommandEncoder, Texture};
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum PrimitiveType {
+    /// Rasterize a point at each vertex. The vertex shader must provide [[point_size]],
+    /// or the point size is undefined.
     Point = 0,
+
+    /// Rasterize a line between each separate pair of vertices,
+    /// resulting in a series of unconnected lines. If there are
+    /// an odd number of vertices, the last vertex is ignored
     Line = 1,
+
+    /// Rasterize a line between each pair of adjacent vertices,
+    /// resulting in a series of connected lines (also called a polyline).
     LineStrip = 2,
+
+    /// For every separate set of three vertices, rasterize a triangle.
+    /// If the number of vertices is not a multiple of three,
+    /// either one or two vertices is ignored.
     Triangle = 3,
+
+    /// For every three adjacent vertices, rasterize a triangle.
     TriangleStrip = 4,
 }
 

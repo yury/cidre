@@ -1,3 +1,5 @@
+use std::ops::{Index, IndexMut};
+
 use crate::{
     cf::{ArrayOf, Retained},
     define_mtl, define_obj_type, msg_send,
@@ -272,6 +274,16 @@ impl Descriptor {
     pub fn set_fragment_function(&mut self, value: Option<&Function>) {
         unsafe { wsel_setFragmentFunction(self, value) }
     }
+
+    #[inline]
+    pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray {
+        unsafe { rsel_colorAttachments(self) }
+    }
+
+    #[inline]
+    pub fn color_attachments_mut(&self) -> &mut ColorAttachmentDescriptorArray {
+        unsafe { rsel_colorAttachments(self) }
+    }
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
@@ -281,6 +293,7 @@ extern "C" {
 
     fn rsel_fragmentFunction(id: &Id) -> Option<&Function>;
     fn wsel_setFragmentFunction(id: &mut Id, value: Option<&Function>);
+    fn rsel_colorAttachments(id: &Id) -> &mut ColorAttachmentDescriptorArray;
 }
 
 define_obj_type!(FunctionsDescriptor(Id));
@@ -311,6 +324,76 @@ extern "C" {
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(Id));
+
+impl ColorAttachmentDescriptorArray {
+    #[inline]
+    pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor {
+        unsafe {
+            MTLRenderPipelineColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
+                self, index,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor {
+        unsafe {
+            MTLRenderPipelineColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
+                self, index,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor) {
+        unsafe {
+            MTLRenderPipelineColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
+                self,
+                Some(value),
+                index,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn reset_at(&mut self, index: usize) {
+        unsafe {
+            MTLRenderPipelineColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
+                self, None, index,
+            )
+        }
+    }
+}
+
+impl Index<usize> for ColorAttachmentDescriptorArray {
+    type Output = ColorAttachmentDescriptor;
+
+    #[inline]
+    fn index(&self, index: usize) -> &Self::Output {
+        self.get_at(index)
+    }
+}
+
+impl IndexMut<usize> for ColorAttachmentDescriptorArray {
+    #[inline]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.get_mut_at(index)
+    }
+}
+
+extern "C" {
+
+    fn MTLRenderPipelineColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
+        id: &Id,
+        index: usize,
+    ) -> &mut ColorAttachmentDescriptor;
+
+    fn MTLRenderPipelineColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
+        id: &mut Id,
+        value: Option<&ColorAttachmentDescriptor>,
+        index: usize,
+    );
+}
 
 define_obj_type!(TileRenderPipelineColorAttachmentDescriptor(Id));
 define_obj_type!(TileRenderPipelineColorAttachmentDescriptorArray(Id));

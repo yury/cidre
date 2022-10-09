@@ -1,4 +1,4 @@
-use std::ops::Index;
+use std::ops::{Index, IndexMut};
 
 use crate::cf::Retained;
 use crate::define_obj_type;
@@ -118,6 +118,11 @@ impl Descriptor {
     }
 
     #[inline]
+    pub fn color_attachments_mut(&self) -> &mut ColorAttachmentDescriptorArray {
+        unsafe { rsel_colorAttachments(self) }
+    }
+
+    #[inline]
     pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor {
         unsafe { rsel_depthAttachment(self) }
     }
@@ -203,7 +208,7 @@ extern "C" {
     fn MTLRenderPassDescriptor_new() -> Retained<Descriptor>;
     fn MTLRenderPassDescriptor_renderPassDescriptor<'autoreleased>() -> &'autoreleased mut Descriptor;
 
-    fn rsel_colorAttachments(id: &Id) -> &ColorAttachmentDescriptorArray;
+    fn rsel_colorAttachments(id: &Id) -> &mut ColorAttachmentDescriptorArray;
 
     fn rsel_depthAttachment(id: &Id) -> &DepthAttachmentDescriptor;
     fn wsel_setDepthAttachment(id: &mut Id, value: Option<&DepthAttachmentDescriptor>);
@@ -270,6 +275,13 @@ impl Index<usize> for ColorAttachmentDescriptorArray {
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         self.get_at(index)
+    }
+}
+
+impl IndexMut<usize> for ColorAttachmentDescriptorArray {
+    #[inline]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.get_mut_at(index)
     }
 }
 

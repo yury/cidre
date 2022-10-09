@@ -113,12 +113,12 @@ impl Descriptor {
     ///
     /// ```
     #[inline]
-    pub fn new_2d_with_pixel_format(
+    pub fn new_2d_with_pixel_format<'ar>(
         pixel_format: PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
-    ) -> Retained<Descriptor> {
+    ) -> &'ar mut Descriptor {
         unsafe {
             MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped(
                 pixel_format,
@@ -348,12 +348,12 @@ impl Texture {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped(
+    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped<'ar>(
         pixel_format: PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
-    ) -> Retained<Descriptor>;
+    ) -> &'ar mut Descriptor;
     fn MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
         pixel_format: PixelFormat,
         size: usize,
