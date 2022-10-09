@@ -331,6 +331,18 @@ impl Device {
         unsafe { rsel_newBufferWithBytes_length_options(self, bytes, length, options) }
     }
 
+    pub fn buffer_with_slice<T: Sized>(
+        &self,
+        slice: &[T],
+        options: mtl::ResourceOptions,
+    ) -> Option<Retained<Buffer>> {
+        self.buffer_with_bytes_length_and_options(
+            slice.as_ptr() as _,
+            std::mem::size_of::<T>() * slice.len(),
+            options,
+        )
+    }
+
     /// ```
     /// use cidre::{cf, mtl};
     ///

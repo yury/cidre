@@ -14,7 +14,7 @@ impl Context {
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &cf::Dictionary,
-    ) -> Result<(), &cf::Error> {
+    ) -> Result<(), &'ar cf::Error> {
         unsafe {
             let mut error = None;
             let res = rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error(

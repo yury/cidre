@@ -259,18 +259,23 @@ impl Descriptor {
     pub fn new() -> Retained<Descriptor> {
         unsafe { MTLRenderPipelineDescriptor_new() }
     }
+
+    #[inline]
     pub fn vertex_function(&self) -> Option<&Function> {
         unsafe { rsel_vertexFunction(self) }
     }
 
+    #[inline]
     pub fn set_vertex_function(&mut self, value: Option<&Function>) {
         unsafe { wsel_setVertexFunction(self, value) }
     }
 
+    #[inline]
     pub fn fragment_function(&self) -> Option<&Function> {
         unsafe { rsel_fragmentFunction(self) }
     }
 
+    #[inline]
     pub fn set_fragment_function(&mut self, value: Option<&Function>) {
         unsafe { wsel_setFragmentFunction(self, value) }
     }

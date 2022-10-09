@@ -92,6 +92,33 @@ impl ClearColor {
             alpha,
         }
     }
+
+    pub const fn red() -> Self {
+        Self {
+            red: 1.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        }
+    }
+
+    pub const fn green() -> Self {
+        Self {
+            red: 0.0,
+            green: 1.0,
+            blue: 0.0,
+            alpha: 1.0,
+        }
+    }
+
+    pub const fn blue() -> Self {
+        Self {
+            red: 0.0,
+            green: 0.0,
+            blue: 1.0,
+            alpha: 1.0,
+        }
+    }
 }
 
 define_obj_type!(Descriptor(Id));
@@ -118,7 +145,7 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn color_attachments_mut(&self) -> &mut ColorAttachmentDescriptorArray {
+    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescriptorArray {
         unsafe { rsel_colorAttachments(self) }
     }
 
