@@ -93,7 +93,7 @@ fn main() {
             Vertex::with((1.0, 1.0), (0.0, 0.0, 1.0)),
         ];
 
-        let buffer = device
+        let vertex_buffer = device
             .buffer_with_slice(&triangle, Default::default())
             .unwrap();
 
@@ -106,7 +106,7 @@ fn main() {
 
         encoder.set_render_pipeline_state(&pipeline_state);
 
-        encoder.set_vertex_buffer(Some(&buffer), 0, 0);
+        encoder.set_vertex_buffer(Some(&vertex_buffer), 0, 0);
 
         encoder.draw_primitives(mtl::PrimitiveType::Triangle, 0, 3);
 
@@ -114,14 +114,14 @@ fn main() {
 
         command_buffer.commit();
 
-        let ci_context = ci::Context::new().unwrap();
-        let ci_image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
+        let context = ci::Context::new().unwrap();
+        let image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
 
         let options = cf::Dictionary::new().unwrap();
         let color_space = cg::ColorSpace::create_device_rgb().unwrap();
         let url = cf::URL::from_str("file:///tmp/image.png").unwrap();
-        ci_context
-            .write_png_to_url(&ci_image, &url, ci::Format::rgba8(), &color_space, &options)
+        context
+            .write_png_to_url(&image, &url, ci::Format::rgba8(), &color_space, &options)
             .unwrap();
 
         println!("done");
