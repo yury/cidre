@@ -33,7 +33,7 @@ impl MemoryPool {
     ///```rust
     /// use cidre::cm;
     /// let mut pool = cm::MemoryPool::new();
-    /// let allocator = pool.allocator();
+    /// let allocator = pool.pool_allocator();
     /// pool.flush();
     ///````
     #[inline]
