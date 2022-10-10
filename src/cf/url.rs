@@ -1,6 +1,4 @@
-use crate::{cf, define_cf_type};
-
-use super::Retained;
+use crate::{cf, cf::Retained, define_cf_type};
 
 #[repr(isize)]
 pub enum PathStyle {
@@ -52,7 +50,7 @@ impl URL {
     ///
     /// let url = cf::URL::from_str("http://google.com").unwrap();
     ///
-    /// let scheme = url.copy_scheme().unwrap();
+    /// let scheme = url.scheme().unwrap();
     ///
     /// ```
     #[inline]
@@ -80,6 +78,9 @@ impl URL {
         Self::create_with_string(None, str, None)
     }
 
+    /// Returns the URL's string. Percent-escape sequences are not removed
+    ///
+    /// # Examples
     /// ```
     /// use cidre::cf;
     ///
@@ -110,13 +111,13 @@ impl URL {
     /// use cidre::cf;
     ///
     /// let url = cf::URL::from_str("https://localhost:3000").unwrap();
-    /// let scheme = url.copy_scheme().unwrap();
+    /// let scheme = url.scheme().unwrap();
     ///
     /// let https = cf::String::from_str_no_copy("https");
     /// assert!(https.equal(&scheme));
     /// ```
     #[inline]
-    pub fn copy_scheme(&self) -> Option<Retained<cf::String>> {
+    pub fn scheme(&self) -> Option<Retained<cf::String>> {
         unsafe { CFURLCopyScheme(self) }
     }
 
@@ -125,15 +126,15 @@ impl URL {
     ///
     /// let url1 = cf::URL::from_str("https://localhost:3000").unwrap();
     ///
-    /// assert_eq!(3000, url1.get_port());
+    /// assert_eq!(3000, url1.port());
 
     /// let url2 = cf::URL::from_str("https://localhost").unwrap();
     ///
-    /// assert_eq!(-1, url2.get_port());
+    /// assert_eq!(-1, url2.port());
     ///
     /// ```
     #[inline]
-    pub fn get_port(&self) -> i32 {
+    pub fn port(&self) -> i32 {
         unsafe { CFURLGetPortNumber(self) }
     }
 }
