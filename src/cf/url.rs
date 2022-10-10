@@ -86,18 +86,18 @@ impl URL {
     /// let s1 = cf::String::from_str("https://github.com");
     /// let url = cf::URL::from_string(&s1).unwrap();
     ///
-    /// let s2 = url.get_string();
+    /// let s2 = url.string();
     ///
     /// assert!(s1.equal(s2));
     ///
     /// ```
     #[inline]
-    pub fn get_string(&self) -> &cf::String {
+    pub fn string(&self) -> &cf::String {
         unsafe { CFURLGetString(self) }
     }
 
     #[inline]
-    pub fn get_base_url(&self) -> Option<&URL> {
+    pub fn base_url(&self) -> Option<&URL> {
         unsafe { CFURLGetBaseURL(self) }
     }
 

@@ -80,12 +80,11 @@ fn main() {
             .unwrap();
 
         let mut render_pass_desc = mtl::RenderPassDescriptor::new();
-        let attachments = render_pass_desc.color_attachments_mut();
-        let first = &mut attachments[0];
-        first.set_clear_color(mtl::ClearColor::red());
-        first.set_load_action(mtl::LoadAction::Clear);
-        first.set_store_action(mtl::StoreAction::Store);
-        first.set_texture(&rgba_texture);
+        let ca = &mut render_pass_desc.color_attachments_mut()[0];
+        ca.set_clear_color(mtl::ClearColor::red());
+        ca.set_load_action(mtl::LoadAction::Clear);
+        ca.set_store_action(mtl::StoreAction::Store);
+        ca.set_texture(&rgba_texture);
 
         let triangle = [
             Vertex::with((-1.0, 1.0), (1.0, 0.0, 0.0)),
@@ -108,7 +107,7 @@ fn main() {
 
         encoder.set_vertex_buffer(Some(&vertex_buffer), 0, 0);
 
-        encoder.draw_primitives(mtl::PrimitiveType::Triangle, 0, 3);
+        encoder.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
 
         encoder.end_encoding();
 
@@ -124,6 +123,6 @@ fn main() {
             .write_png_to_url(&image, &url, ci::Format::rgba8(), &color_space, &options)
             .unwrap();
 
-        println!("done");
+        println!("image is written to {}", url.string());
     });
 }
