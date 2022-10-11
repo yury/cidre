@@ -1,5 +1,5 @@
 use cidre::{cf, mtl, ns};
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
 struct BenchState {
     y_texture: cf::Retained<mtl::Texture>,
@@ -15,21 +15,21 @@ struct BenchState {
 fn foo() -> BenchState {
     let device = mtl::Device::default().unwrap();
 
-    let mut y_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let y_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::R8Unorm,
         1920,
         1080,
         false,
     );
     y_texture_desc.set_usage(mtl::TextureUsage::SHADER_READ);
-    let mut cbcr_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let cbcr_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::RG8Unorm,
         1920 / 2,
         1080 / 2,
         false,
     );
     cbcr_texture_desc.set_usage(mtl::TextureUsage::SHADER_READ);
-    let mut bgra_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let bgra_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::BGRA8Unorm,
         1920,
         1080,
@@ -193,23 +193,22 @@ fn foo() -> BenchState {
         .unwrap();
 
     let render_pass_desc = mtl::RenderPassDescriptor::default();
-    let arr = render_pass_desc.color_attachments();
-    let foo = arr.get_mut_at(0);
+    let foo = &mut render_pass_desc.color_attachments_mut()[0];
     foo.set_load_action(mtl::LoadAction::DontCare);
     foo.set_store_action(mtl::StoreAction::DontCare);
 
-    let mut desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::BGRA8Unorm,
         1920,
         1080,
         false,
     );
     desc.set_usage(mtl::TextureUsage::RENDER_TARGET);
-    desc.set_storage_mode(mtl::StorageMode::MemoryLess);
+    desc.set_storage_mode(mtl::StorageMode::Memoryless);
 
     let text = device.texture_with_descriptor(&desc).unwrap();
 
-    foo.set_texture(Some(&text));
+    foo.set_texture(&text);
 
     let vertex_data = [
         -1.0f32, -1.0, 0.0, 1.0, // -
@@ -219,14 +218,8 @@ fn foo() -> BenchState {
     ];
 
     let vertex_buf = device
-        .buffer_with_bytes_length_and_options(
-            vertex_data.as_ptr() as _,
-            (vertex_data.len() * std::mem::size_of::<f32>()) as _,
-            mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT,
-        )
+        .buffer_with_slice(&vertex_data, mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT)
         .unwrap();
-
-    // foo.set_texture(value)
 
     BenchState {
         y_texture,

@@ -66,6 +66,9 @@ pub mod dns_sd;
 
 pub mod simd;
 
+/// Vision
+pub mod vn;
+
 #[macro_export]
 macro_rules! define_options {
     ($NewType:ident($BaseType:path)) => {

@@ -17,6 +17,15 @@ impl Vertex {
 }
 
 static LIB_SRC: &str = r###"
+
+using namespace metal;
+
+float circle(float2 st, float radius) {
+    float2 dist = st;
+	return 1.0 - smoothstep(radius-(radius*0.01),
+                         radius+(radius*0.01),
+                         dot(dist,dist)*4.0);
+}
             
 typedef struct {
     packed_float2 position;
@@ -24,8 +33,8 @@ typedef struct {
 } Vertex;
 
 typedef struct {
-    float4 position [[position]];
-    float4 color;
+    float4 position [[position]] [[center_no_perspective]];
+    float4 color [[center_no_perspective]];
 } Varyings;
 
 vertex Varyings passthrough(
@@ -35,7 +44,7 @@ vertex Varyings passthrough(
     Varyings out;
     constant Vertex &v = verticies[vid];
     out.position = float4(float2(v.position), 0.0, 1.0);
-    out.color = v.color;
+    out.color = out.position;// v.color;
 
     return out;
 }
@@ -43,7 +52,8 @@ vertex Varyings passthrough(
 fragment float4 pass_color(
     Varyings in [[stage_in]]
 ) {
-    return in.color;
+    float4 color = float4(circle(in.color.xy, 0.9), 0, 0, 1);
+    return color;
 }
 
 "###;
