@@ -16,13 +16,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - VNImageRequestHandler
 
-// - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(NSDictionary<VNImageOption, id> *)options;
 NS_RETURNS_RETAINED
 cinit_ab(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, options, NSDictionary *);
-//- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer orientation:(CGImagePropertyOrientation)orientation options:(NSDictionary<VNImageOption, id> *)options;
+
 
 NS_RETURNS_RETAINED
 cinit_abc(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, orientation, CGImagePropertyOrientation, options, NSDictionary *);
+
+rsel_ab(, id, performRequests, NSArray<VNRequest *> *, error, NSError **, BOOL)
+
+
+#pragma mark - VNSequenceRequestHandler
+
+csel(, VNSequenceRequestHandler, new, VNSequenceRequestHandler *)
 
 
 //csel(, VNRequest, new, VNRequest *)
