@@ -29,8 +29,6 @@ rsel_ab(, id, performRequests, NSArray<VNRequest *> *, error, NSError **, BOOL)
 
 csel(, VNSequenceRequestHandler, new, VNSequenceRequestHandler *)
 
-//- (BOOL)performRequests:(NSArray<VNRequest *> *)requests onCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
-
 rsel_abc(, id, performRequests, NSArray<VNRequest *> *, onCVPixelBuffer, CVPixelBufferRef, error, NSError **, BOOL)
 
 
