@@ -12,7 +12,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - CIImage
+#pragma mark - VNRequest
+
+#pragma mark - VNImageRequestHandler
+
+// - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(NSDictionary<VNImageOption, id> *)options;
+NS_RETURNS_RETAINED
+cinit_ab(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, options, NSDictionary *);
+//- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer orientation:(CGImagePropertyOrientation)orientation options:(NSDictionary<VNImageOption, id> *)options;
+
+NS_RETURNS_RETAINED
+cinit_abc(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, orientation, CGImagePropertyOrientation, options, NSDictionary *);
+
+
+//csel(, VNRequest, new, VNRequest *)
 
 //NS_RETURNS_RETAINED
 //csel_ab(, CIImage, imageWithMTLTexture, id<MTLTexture>, options, NSDictionary * _Nullable, CIImage *)

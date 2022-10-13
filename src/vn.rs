@@ -10,6 +10,10 @@ pub mod request;
 pub use request::ImageBasedRequest;
 pub use request::Request;
 
+pub mod request_handler;
+pub use request_handler::ImageRequestHandler;
+pub use request_handler::SequenceRequestHandler;
+
 pub mod tracking_request;
 pub use tracking_request::Level as TrackingRequestLevel;
 pub use tracking_request::TrackingRequest;

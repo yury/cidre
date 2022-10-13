@@ -43,3 +43,8 @@ impl ImageBasedRequest {
         }
     }
 }
+
+#[link(name = "vn", kind = "static")]
+extern "C" {
+    //    fn VNRequest_new() -> cf::Retained<Request>;
+}
