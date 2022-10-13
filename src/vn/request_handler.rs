@@ -71,6 +71,7 @@ impl ImageRequestHandler {
 
 define_obj_type!(SequenceRequestHandler(objc::Id));
 
+/// Performs requests on a sequence of images.
 impl SequenceRequestHandler {
     /// # Example
     ///
@@ -82,6 +83,29 @@ impl SequenceRequestHandler {
     #[inline]
     pub fn new() -> Option<cf::Retained<Self>> {
         unsafe { VNSequenceRequestHandler_new() }
+    }
+
+    #[inline]
+    pub fn perform_requests_on_cv_pixel_buffer<'ar>(
+        &self,
+        requests: &cf::ArrayOf<vn::Request>,
+        pixel_buffer: &cv::PixelBuffer,
+    ) -> Result<(), &'ar cf::Error> {
+        unsafe {
+            let mut error = None;
+            let res = rsel_performRequests_onCVPixelBuffer_error(
+                self,
+                requests,
+                pixel_buffer,
+                &mut error,
+            );
+
+            if res {
+                Ok(())
+            } else {
+                Err(transmute(error))
+            }
+        }
     }
 }
 
@@ -105,4 +129,11 @@ extern "C" {
     ) -> bool;
 
     fn VNSequenceRequestHandler_new() -> Option<cf::Retained<SequenceRequestHandler>>;
+
+    fn rsel_performRequests_onCVPixelBuffer_error<'ar>(
+        id: &objc::Id,
+        requests: &cf::ArrayOf<vn::Request>,
+        pixel_bufer: &cv::PixelBuffer,
+        error: &mut Option<&'ar cf::Error>,
+    ) -> bool;
 }

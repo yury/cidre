@@ -25,26 +25,14 @@ cinit_abc(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, orie
 
 rsel_ab(, id, performRequests, NSArray<VNRequest *> *, error, NSError **, BOOL)
 
-
 #pragma mark - VNSequenceRequestHandler
 
 csel(, VNSequenceRequestHandler, new, VNSequenceRequestHandler *)
 
+//- (BOOL)performRequests:(NSArray<VNRequest *> *)requests onCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
 
-//csel(, VNRequest, new, VNRequest *)
+rsel_abc(, id, performRequests, NSArray<VNRequest *> *, onCVPixelBuffer, CVPixelBufferRef, error, NSError **, BOOL)
 
-//NS_RETURNS_RETAINED
-//csel_ab(, CIImage, imageWithMTLTexture, id<MTLTexture>, options, NSDictionary * _Nullable, CIImage *)
-//
-//
-//#pragma mark - CIContext
-//
-//NS_RETURNS_RETAINED
-//csel_a(, CIContext, contextWithOptions, NSDictionary* _Nullable, CIContext *)
-//
-//rsel_abcd(, id, PNGRepresentationOfImage, CIImage *, format, CIFormat, colorSpace, CGColorSpaceRef, options, NSDictionary *, BOOL)
-//
-//rsel_abcdef(, id, writePNGRepresentationOfImage, CIImage *, toURL, NSURL *, format, CIFormat, colorSpace, CGColorSpaceRef, options, NSDictionary *, error, NSError **, BOOL)
 
 NS_ASSUME_NONNULL_END
 
