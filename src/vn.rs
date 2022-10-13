@@ -10,5 +10,12 @@ pub mod request;
 pub use request::ImageBasedRequest;
 pub use request::Request;
 
+pub mod tracking_request;
+pub use tracking_request::Level as TrackingRequestLevel;
+pub use tracking_request::TrackingRequest;
+
+pub mod stateful_request;
+pub use stateful_request::StatefulRequest;
+
 pub mod observation;
 pub use observation::Observation;
