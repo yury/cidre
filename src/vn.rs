@@ -21,5 +21,18 @@ pub use tracking_request::TrackingRequest;
 pub mod stateful_request;
 pub use stateful_request::StatefulRequest;
 
+pub mod recognize_text_request;
+pub use recognize_text_request::RecognitionLevel as RequestTextRecognitionLevel;
+pub use recognize_text_request::RecognizeTextRequest;
+
 pub mod observation;
+pub use observation::DetectedObjectObservation;
+pub use observation::HorizonObservation;
 pub use observation::Observation;
+pub use observation::RecognizedTextObservation;
+pub use observation::RectangleObservation;
+pub use observation::TextObservation;
+
+pub mod error;
+pub use error::Code as ErrorCode;
+pub use error::Domain as ErrorDomain;

@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, cv, define_obj_type, objc, vn};
+use crate::{cf, cg, cm, cv, define_obj_type, objc, vn};
 
 define_obj_type!(ImageRequestHandler(objc::Id));
 
@@ -118,6 +118,29 @@ impl SequenceRequestHandler {
             }
         }
     }
+
+    #[inline]
+    pub fn perform_requests_on_cm_sample_buffer<'ar>(
+        &self,
+        requests: &cf::ArrayOf<vn::Request>,
+        sample_buffer: &cm::SampleBuffer,
+    ) -> Result<(), &'ar cf::Error> {
+        unsafe {
+            let mut error = None;
+            let res = rsel_performRequests_onCMSampleBuffer_error(
+                self,
+                requests,
+                sample_buffer,
+                &mut error,
+            );
+
+            if res {
+                Ok(())
+            } else {
+                Err(transmute(error))
+            }
+        }
+    }
 }
 
 #[link(name = "vn", kind = "static")]
@@ -144,7 +167,15 @@ extern "C" {
     fn rsel_performRequests_onCVPixelBuffer_error<'ar>(
         id: &objc::Id,
         requests: &cf::ArrayOf<vn::Request>,
-        pixel_bufer: &cv::PixelBuffer,
+        pixel_buffer: &cv::PixelBuffer,
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
+
+    fn rsel_performRequests_onCMSampleBuffer_error<'ar>(
+        id: &objc::Id,
+        requests: &cf::ArrayOf<vn::Request>,
+        sample_buffer: &cm::SampleBuffer,
+        error: &mut Option<&'ar cf::Error>,
+    ) -> bool;
+
 }
