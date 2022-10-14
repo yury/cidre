@@ -72,6 +72,17 @@ impl ImageRequestHandler {
 define_obj_type!(SequenceRequestHandler(objc::Id));
 
 /// Performs requests on a sequence of images.
+///
+/// # Example
+/// ```
+/// use cidre::{cf, cv, cg, vn};
+///
+/// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
+/// let handler = vn::SequenceRequestHandler::new().unwrap();
+/// let requests = cf::ArrayOf::new().unwrap();
+/// handler.perform_requests_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
+///
+/// ````
 impl SequenceRequestHandler {
     /// # Example
     ///
