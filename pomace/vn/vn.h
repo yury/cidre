@@ -54,6 +54,8 @@ rsel(, id, timeRange, CMTimeRange)
 //@property (readonly, nonatomic, assign) CGRect boundingBox;
 rsel(, id, boundingBox, CGRect)
 
+rsel(, id, globalSegmentationMask, VNPixelBufferObservation *)
+
 #pragma mark - VNHorizonObservation
 
 //@property (readonly, nonatomic, assign) CGAffineTransform transform;
@@ -64,7 +66,45 @@ rsel(, id, angle, CGFloat)
 
 rsel_ab(, id, transformForImageWidth, size_t, height, size_t, CGAffineTransform)
 
+#pragma mark - VNFaceObservation
 
+rsel(, id, landmarks, VNFaceLandmarks2D *)
+rsel(, id, faceCaptureQuality, NSNumber *)
+
+rsel(, id, roll, NSNumber *)
+rsel(, id, yaw, NSNumber *)
+rsel(, id, pitch, NSNumber *)
+
+#pragma mark - VNClassificationObservation
+
+rsel(, id, identifier, NSString *)
+
+rsel(, id, hasPrecisionRecallCurve, BOOL)
+
+#pragma mark - VNHumanObservation
+
+rsel(, id, upperBodyOnly, BOOL)
+
+#pragma mark - VNRecognizedObjectObservation
+
+rsel(, id, labels, NSArray *)
+
+#pragma mark - VNPixelBufferObservation
+
+CF_RETURNS_NOT_RETAINED
+rsel(, id, pixelBuffer, CVPixelBufferRef)
+
+rsel(, id, featureName, NSString *)
+
+#pragma mark - VNTextObservation
+
+rsel(, id, characterBoxes, NSArray *)// NSArray<VNRectangleObservation *> *characterBoxes;
+
+
+#pragma mark - VNFaceLandmarkRegion
+
+//@property (readonly) NSUInteger pointCount;
+rsel(, id, pointCount, NSUInteger)
 
 NS_ASSUME_NONNULL_END
 
