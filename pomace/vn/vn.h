@@ -42,6 +42,28 @@ rsel_abc(, id, performRequests, NSArray<VNRequest *> *, onCVPixelBuffer, CVPixel
 
 rsel_abc(, id, performRequests, NSArray<VNRequest *> *, onCMSampleBuffer, CMSampleBufferRef, error, NSError **, BOOL)
 
+#pragma mark - VNObservation
+
+rsel(, id, uuid, NSUUID *)
+rsel(, id, confidence, VNConfidence)
+rsel(, id, timeRange, CMTimeRange)
+
+
+#pragma mark - VNDetectedObjectObservation
+
+//@property (readonly, nonatomic, assign) CGRect boundingBox;
+rsel(, id, boundingBox, CGRect)
+
+#pragma mark - VNHorizonObservation
+
+//@property (readonly, nonatomic, assign) CGAffineTransform transform;
+rsel(, id, transform, CGAffineTransform)
+
+rsel(, id, angle, CGFloat)
+//@property (readonly, nonatomic, assign) CGFloat angle;
+
+rsel_ab(, id, transformForImageWidth, size_t, height, size_t, CGAffineTransform)
+
 
 
 NS_ASSUME_NONNULL_END

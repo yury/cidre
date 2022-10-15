@@ -5,6 +5,10 @@ use crate::{
     define_options,
 };
 
+pub mod range;
+
+pub use range::Range as TimeRange;
+
 pub type TimeValue = i64;
 pub type TimeScale = i32;
 pub type TimeEpoch = i64;
