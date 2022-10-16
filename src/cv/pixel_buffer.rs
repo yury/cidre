@@ -160,8 +160,14 @@ impl PixelFormatType {
 
     pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
 
-    //kCVPixelFormatType_OneComponent8
+    /// kCVPixelFormatType_OneComponent8
     pub const ONE_COMPONENT_8: Self = Self(os::Type::from_be_bytes(*b"L008"));
+
+    /// kCVPixelFormatType_OneComponent16Half  = 'L00h'
+    pub const ONE_COMPONENT_16_HALF: Self = Self(os::Type::from_be_bytes(*b"L00h"));
+
+    ///  kCVPixelFormatType_OneComponent32Float = 'L00f'
+    pub const ONE_COMPONENT_32_FLOAT: Self = Self(os::Type::from_be_bytes(*b"L00f"));
 
     pub fn from_cf_number(number: &cf::Number) -> Self {
         Self(number.to_i32().unwrap_or(0) as u32)
