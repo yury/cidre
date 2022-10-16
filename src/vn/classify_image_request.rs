@@ -52,6 +52,8 @@ mod test {
         let supported_ids = request.supported_identifiers().unwrap();
         supported_ids.show();
 
+        assert!(request.results().is_none());
+
         request.set_revision(10);
 
         let error = request
