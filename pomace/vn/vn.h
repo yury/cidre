@@ -112,10 +112,37 @@ NS_RETURNS_RETAINED
 csel(, VNGeneratePersonSegmentationRequest, new, VNGeneratePersonSegmentationRequest *)
 
 
+#pragma mark - VNDetectDocumentSegmentationRequest
+
+NS_RETURNS_RETAINED
+csel(, VNDetectDocumentSegmentationRequest, new, VNDetectDocumentSegmentationRequest *)
+
+#pragma mark - VNSaliencyImageObservation
+
+rsel(, id, salientObjects, NSArray *)
+
+#pragma mark - VNGenerateAttentionBasedSaliencyImageRequest
+
+NS_RETURNS_RETAINED
+csel(, VNGenerateAttentionBasedSaliencyImageRequest, new, VNGenerateAttentionBasedSaliencyImageRequest *)
+
+
+
 #pragma mark - VNFaceLandmarkRegion
 
 //@property (readonly) NSUInteger pointCount;
 rsel(, id, pointCount, NSUInteger)
+
+
+#pragma mark - VNClassifyImageRequest
+
+//- (nullable NSArray<NSString*>*) supportedIdentifiersAndReturnError:(NSError**)error API_AVAILABLE(macos(12.0), ios(15.0), tvos(15.0));
+
+rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
+
+NS_RETURNS_RETAINED
+csel(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
+
 
 NS_ASSUME_NONNULL_END
 

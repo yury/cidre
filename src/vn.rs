@@ -39,6 +39,7 @@ pub use observation::PixelBufferObservation;
 pub use observation::RecognizedObjectObservation;
 pub use observation::RecognizedTextObservation;
 pub use observation::RectangleObservation;
+pub use observation::SaliencyImageObservation;
 pub use observation::TextObservation;
 pub use observation::TrajectoryObservation;
 
@@ -51,6 +52,15 @@ pub use face_landmarks::Region2D as FaceLandmarkRegion2D;
 pub mod generate_person_segmentation_request;
 pub use generate_person_segmentation_request::GeneratePersonSegmentationRequest;
 pub use generate_person_segmentation_request::QualityLevel as GeneratePersonSegmentationRequestQualityLevel;
+
+pub mod detect_document_segmentation_request;
+pub use detect_document_segmentation_request::DetectDocumentSegmentationRequest;
+
+pub mod generate_attention_based_saliency_image_request;
+pub use generate_attention_based_saliency_image_request::GenerateAttentionBasedSaliencyImageRequest;
+
+pub mod classify_image_request;
+pub use classify_image_request::ClassifyImageRequest;
 
 pub mod error;
 pub use error::Code as ErrorCode;

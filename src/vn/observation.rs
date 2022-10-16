@@ -182,6 +182,15 @@ impl HumanObservation {
     }
 }
 
+define_obj_type!(SaliencyImageObservation(PixelBufferObservation));
+
+impl SaliencyImageObservation {
+    #[inline]
+    pub fn salient_objects(&self) -> Option<&cf::ArrayOf<RectangleObservation>> {
+        unsafe { rsel_salientObjects(self) }
+    }
+}
+
 #[link(name = "vn", kind = "static")]
 extern "C" {
     fn rsel_uuid(id: &objc::Id) -> &cf::UUID;
@@ -216,4 +225,6 @@ extern "C" {
     ) -> cg::AffineTransform;
 
     fn rsel_upperBodyOnly(id: &objc::Id) -> bool;
+
+    fn rsel_salientObjects(id: &objc::Id) -> Option<&cf::ArrayOf<RectangleObservation>>;
 }
