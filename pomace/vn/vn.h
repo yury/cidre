@@ -163,5 +163,12 @@ rsel(vn_, VNFeaturePrintObservation *, data, NSData *)
 //- (BOOL)computeDistance:(float *)outDistance toFeaturePrintObservation:(VNFeaturePrintObservation *)featurePrint error:(NSError **)error;
 rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
+#pragma mark - VNGenerateImageFeaturePrintRequest
+
+rwsel(, id, imageCropAndScaleOption, setImageCropAndScaleOption, VNImageCropAndScaleOption)
+
+NS_RETURNS_RETAINED
+csel(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintRequest *)
+
 NS_ASSUME_NONNULL_END
 

@@ -4,6 +4,7 @@ pub use types::Chirality;
 pub use types::Confidence;
 pub use types::Degrees;
 pub use types::ElementType;
+pub use types::ImageCropAndScaleOption;
 pub use types::PointsClassification;
 
 pub mod request;
@@ -32,6 +33,7 @@ pub use observation::ClassificationObservation;
 pub use observation::CoreMLFeatureValueObservation;
 pub use observation::DetectedObjectObservation;
 pub use observation::FaceObservation;
+pub use observation::FeaturePrintObservation;
 pub use observation::HorizonObservation;
 pub use observation::HumanObservation;
 pub use observation::Observation;
@@ -49,17 +51,23 @@ pub use face_landmarks::FaceLandmarks2D;
 pub use face_landmarks::Region as FaceLandmarkRegion;
 pub use face_landmarks::Region2D as FaceLandmarkRegion2D;
 
-pub mod generate_person_segmentation_request;
+mod generate_person_segmentation_request;
 pub use generate_person_segmentation_request::GeneratePersonSegmentationRequest;
 pub use generate_person_segmentation_request::QualityLevel as GeneratePersonSegmentationRequestQualityLevel;
 
-pub mod detect_document_segmentation_request;
+mod detect_document_segmentation_request;
 pub use detect_document_segmentation_request::DetectDocumentSegmentationRequest;
 
-pub mod generate_attention_based_saliency_image_request;
+mod generate_attention_based_saliency_image_request;
 pub use generate_attention_based_saliency_image_request::GenerateAttentionBasedSaliencyImageRequest;
 
-pub mod classify_image_request;
+mod generate_objectness_based_saliency_image_request;
+pub use generate_objectness_based_saliency_image_request::GenerateObjectnessBasedSaliencyImageRequest;
+
+mod generate_image_feature_print_request;
+pub use generate_image_feature_print_request::GenerateImageFeaturePrintRequest;
+
+mod classify_image_request;
 pub use classify_image_request::ClassifyImageRequest;
 
 pub mod error;
