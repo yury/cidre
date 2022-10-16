@@ -101,6 +101,16 @@ impl ClassificationObservation {
     pub fn has_precision_recall_curve(&self) -> bool {
         unsafe { rsel_hasPrecisionRecallCurve(self) }
     }
+
+    #[inline]
+    pub fn has_minimum_recall_for_precision(&self, minimum_recall: f32, precision: f32) -> bool {
+        unsafe { rsel_hasMinimumRecall_forPrecision(self, minimum_recall, precision) }
+    }
+
+    #[inline]
+    pub fn has_minimum_precision_for_recall(&self, minimum_precistion: f32, recall: f32) -> bool {
+        unsafe { rsel_hasMinimumPrecision_forRecall(self, minimum_precistion, recall) }
+    }
 }
 
 define_obj_type!(RecognizedObjectObservation(DetectedObjectObservation));
@@ -191,6 +201,44 @@ impl SaliencyImageObservation {
     }
 }
 
+define_obj_type!(FeaturePrintObservation(Observation));
+
+impl FeaturePrintObservation {
+    pub fn element_type(&self) -> vn::ElementType {
+        unsafe { vn_rsel_elementType(self) }
+    }
+
+    pub fn element_count(&self) -> usize {
+        unsafe { vn_rsel_elementCount(self) }
+    }
+
+    pub fn data(&self) -> Option<&cf::Data> {
+        unsafe { vn_rsel_data(self) }
+    }
+
+    #[inline]
+    pub fn compute_distance<'ar>(
+        &self,
+        to: &FeaturePrintObservation,
+    ) -> Result<f32, &'ar cf::Error> {
+        unsafe {
+            let mut distance = 0f32;
+            let mut error = None;
+            let res = rsel_computeDistance_toFeaturePrintObservation_error(
+                self,
+                &mut distance,
+                to,
+                &mut error,
+            );
+            if res {
+                Ok(distance)
+            } else {
+                Err(error.unwrap_unchecked())
+            }
+        }
+    }
+}
+
 #[link(name = "vn", kind = "static")]
 extern "C" {
     fn rsel_uuid(id: &objc::Id) -> &cf::UUID;
@@ -208,6 +256,18 @@ extern "C" {
 
     fn rsel_identifier(id: &objc::Id) -> &cf::String;
     fn rsel_hasPrecisionRecallCurve(id: &objc::Id) -> bool;
+
+    fn rsel_hasMinimumRecall_forPrecision(
+        id: &objc::Id,
+        minimum_recall: f32,
+        precision: f32,
+    ) -> bool;
+
+    fn rsel_hasMinimumPrecision_forRecall(
+        id: &objc::Id,
+        minimum_precistion: f32,
+        recall: f32,
+    ) -> bool;
 
     fn rsel_labels(id: &objc::Id) -> &cf::ArrayOf<vn::ClassificationObservation>;
 
@@ -227,4 +287,17 @@ extern "C" {
     fn rsel_upperBodyOnly(id: &objc::Id) -> bool;
 
     fn rsel_salientObjects(id: &objc::Id) -> Option<&cf::ArrayOf<RectangleObservation>>;
+
+    fn vn_rsel_elementType(id: &FeaturePrintObservation) -> vn::ElementType;
+    fn vn_rsel_elementCount(id: &FeaturePrintObservation) -> usize;
+    fn vn_rsel_data(id: &FeaturePrintObservation) -> Option<&cf::Data>;
+
+    // rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
+
+    fn rsel_computeDistance_toFeaturePrintObservation_error<'ar>(
+        id: &objc::Id,
+        distance: &mut f32,
+        to: &FeaturePrintObservation,
+        error: &mut Option<&'ar cf::Error>,
+    ) -> bool;
 }

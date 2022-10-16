@@ -81,6 +81,12 @@ rsel(, id, identifier, NSString *)
 
 rsel(, id, hasPrecisionRecallCurve, BOOL)
 
+
+//- (BOOL) hasMinimumRecall:(float)minimumRecall forPrecision:(float)precision;
+rsel_ab(, id, hasMinimumRecall, float, forPrecision, float, BOOL)
+//- (BOOL) hasMinimumPrecision:(float)minimumPrecision forRecall:(float)recall;
+rsel_ab(, id, hasMinimumPrecision, float, forRecall, float, BOOL)
+
 #pragma mark - VNHumanObservation
 
 rsel(, id, upperBodyOnly, BOOL)
@@ -126,6 +132,10 @@ rsel(, id, salientObjects, NSArray *)
 NS_RETURNS_RETAINED
 csel(, VNGenerateAttentionBasedSaliencyImageRequest, new, VNGenerateAttentionBasedSaliencyImageRequest *)
 
+#pragma mark - VNGenerateObjectnessBasedSaliencyImageRequest
+
+NS_RETURNS_RETAINED
+csel(, VNGenerateObjectnessBasedSaliencyImageRequest, new, VNGenerateObjectnessBasedSaliencyImageRequest *)
 
 
 #pragma mark - VNFaceLandmarkRegion
@@ -143,6 +153,15 @@ rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
 NS_RETURNS_RETAINED
 csel(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
 
+#pragma mark - VNFeaturePrintObservation
+
+rsel(vn_, VNFeaturePrintObservation *, elementType, VNElementType)
+//@property (readonly, atomic, assign) NSUInteger elementCount;
+rsel(vn_, VNFeaturePrintObservation *, elementCount, NSUInteger)
+rsel(vn_, VNFeaturePrintObservation *, data, NSData *)
+
+//- (BOOL)computeDistance:(float *)outDistance toFeaturePrintObservation:(VNFeaturePrintObservation *)featurePrint error:(NSError **)error;
+rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
 NS_ASSUME_NONNULL_END
 
