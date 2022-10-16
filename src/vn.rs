@@ -48,6 +48,10 @@ pub use face_landmarks::FaceLandmarks2D;
 pub use face_landmarks::Region as FaceLandmarkRegion;
 pub use face_landmarks::Region2D as FaceLandmarkRegion2D;
 
+pub mod generate_person_segmentation_request;
+pub use generate_person_segmentation_request::GeneratePersonSegmentationRequest;
+pub use generate_person_segmentation_request::QualityLevel as GeneratePersonSegmentationRequestQualityLevel;
+
 pub mod error;
 pub use error::Code as ErrorCode;
 pub use error::Domain as ErrorDomain;

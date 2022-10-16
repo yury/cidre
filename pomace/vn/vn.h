@@ -101,6 +101,17 @@ rsel(, id, featureName, NSString *)
 rsel(, id, characterBoxes, NSArray *)// NSArray<VNRectangleObservation *> *characterBoxes;
 
 
+#pragma mark - VNGeneratePersonSegmentationRequest
+
+rwsel(, id, qualityLevel, setQualityLevel, VNGeneratePersonSegmentationRequestQualityLevel)
+
+//@property (readwrite, nonatomic) OSType outputPixelFormat;
+rwsel(, id, outputPixelFormat, setOutputPixelFormat, OSType)
+
+NS_RETURNS_RETAINED
+csel(, VNGeneratePersonSegmentationRequest, new, VNGeneratePersonSegmentationRequest *)
+
+
 #pragma mark - VNFaceLandmarkRegion
 
 //@property (readonly) NSUInteger pointCount;
