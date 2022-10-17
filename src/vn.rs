@@ -17,7 +17,7 @@ pub use request_handler::ImageRequestHandler;
 pub use request_handler::SequenceRequestHandler;
 
 mod tracking_request;
-pub use tracking_request::Level as TrackingRequestLevel;
+pub use tracking_request::Level as RequestTrackingRequestLevel;
 pub use tracking_request::TrackingRequest;
 
 mod stateful_request;

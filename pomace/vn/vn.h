@@ -175,6 +175,11 @@ csel(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintReque
 NS_RETURNS_RETAINED
 csel(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
 
+#pragma mark - VNTrackingRequest
+
+//@property (readwrite, nonatomic, assign) VNRequestTrackingLevel trackingLevel;
+rwsel(, id, trackingLevel, setTrackingLevel, VNRequestTrackingLevel)
+
 
 NS_ASSUME_NONNULL_END
 

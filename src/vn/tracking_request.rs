@@ -1,4 +1,4 @@
-use crate::{define_obj_type, vn};
+use crate::{define_obj_type, objc, vn};
 
 #[repr(usize)]
 pub enum Level {
@@ -7,3 +7,23 @@ pub enum Level {
 }
 
 define_obj_type!(TrackingRequest(vn::ImageBasedRequest));
+
+impl TrackingRequest {
+    /// Tracking level allows tuning tracking algorithm to prefer speed (vn::RequestTrackingLevel::Fast)
+    /// vs. tracking object location
+    #[inline]
+    pub fn tracking_level(&self) -> Level {
+        unsafe { rsel_trackingLevel(self) }
+    }
+
+    #[inline]
+    pub fn set_tracking_level(&mut self, value: Level) {
+        unsafe { wsel_setTrackingLevel(self, value) }
+    }
+}
+
+#[link(name = "vn", kind = "static")]
+extern "C" {
+    fn rsel_trackingLevel(id: &objc::Id) -> Level;
+    fn wsel_setTrackingLevel(id: &mut objc::Id, value: Level);
+}
