@@ -40,8 +40,8 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn new_in(alloc: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
-        unsafe { transmute(Array::new_in(alloc)) }
+    pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
+        unsafe { transmute(Array::new_in(allocator)) }
     }
 
     #[inline]
@@ -192,7 +192,7 @@ impl<T> std::ops::Deref for MutArrayOf<T> {
 
 impl<T> std::ops::Index<usize> for MutArrayOf<T>
 where
-    T: Retain + Release,
+    T: Retain,
 {
     type Output = T;
 
@@ -449,7 +449,7 @@ extern "C" {
 
     fn CFArrayGetTypeID() -> TypeId;
 
-    fn CFArrayGetValueAtIndex(the_array: &Array, idx: Index) -> &Type;
+    fn CFArrayGetValueAtIndex(array: &Array, idx: Index) -> &Type;
 
     fn CFArrayCreate(
         allocator: Option<&Allocator>,
@@ -458,25 +458,25 @@ extern "C" {
         callbacks: Option<&Callbacks>,
     ) -> Option<Retained<Array>>;
 
-    fn CFArrayCreateCopy(
-        allocator: Option<&Allocator>,
-        the_array: &Array,
-    ) -> Option<Retained<Array>>;
+    fn CFArrayCreateCopy(allocator: Option<&Allocator>, array: &Array) -> Option<Retained<Array>>;
 
-    fn CFArrayGetCount(the_array: &Array) -> Index;
+    fn CFArrayGetCount(array: &Array) -> Index;
 
     fn CFArrayCreateMutable(
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
     ) -> Option<Retained<MutableArray>>;
+
     fn CFArrayCreateMutableCopy(
         allocator: Option<&Allocator>,
         capacity: Index,
-        the_array: &Array,
+        array: &Array,
     ) -> Option<Retained<MutableArray>>;
-    fn CFArrayAppendValue(the_array: &mut MutableArray, value: *const c_void);
-    fn CFArrayRemoveAllValues(the_array: &mut MutableArray);
+
+    fn CFArrayAppendValue(array: &mut MutableArray, value: *const c_void);
+
+    fn CFArrayRemoveAllValues(array: &mut MutableArray);
 }
 
 #[cfg(test)]
