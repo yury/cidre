@@ -38,7 +38,7 @@ impl ImageRequestHandler {
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     /// let handler = vn::ImageRequestHandler::with_cv_pixel_buffer(&pixel_buffer, None).unwrap();
     /// let requests = cf::ArrayOf::new().unwrap();
-    /// handler.perform_requests(&requests).unwrap();
+    /// handler.perform(&requests).unwrap();
     ///
     /// ````
     #[inline]
@@ -65,10 +65,7 @@ impl ImageRequestHandler {
     }
 
     #[inline]
-    pub fn perform_requests<'ar>(
-        &self,
-        requests: &cf::ArrayOf<vn::Request>,
-    ) -> Result<(), &'ar cf::Error> {
+    pub fn perform<'ar>(&self, requests: &cf::ArrayOf<vn::Request>) -> Result<(), &'ar cf::Error> {
         unsafe {
             let mut error = None;
             let res = rsel_performRequests_error(self, requests, &mut error);
@@ -93,7 +90,7 @@ define_obj_type!(SequenceRequestHandler(objc::Id));
 /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
 /// let handler = vn::SequenceRequestHandler::new().unwrap();
 /// let requests = cf::ArrayOf::new().unwrap();
-/// handler.perform_requests_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
+/// handler.perform_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
 ///
 /// ````
 impl SequenceRequestHandler {
@@ -110,7 +107,7 @@ impl SequenceRequestHandler {
     }
 
     #[inline]
-    pub fn perform_requests_on_cv_pixel_buffer<'ar>(
+    pub fn perform_on_cv_pixel_buffer<'ar>(
         &self,
         requests: &cf::ArrayOf<vn::Request>,
         pixel_buffer: &cv::PixelBuffer,
@@ -133,7 +130,7 @@ impl SequenceRequestHandler {
     }
 
     #[inline]
-    pub fn perform_requests_on_cm_sample_buffer<'ar>(
+    pub fn perform_on_cm_sample_buffer<'ar>(
         &self,
         requests: &cf::ArrayOf<vn::Request>,
         sample_buffer: &cm::SampleBuffer,
@@ -215,9 +212,7 @@ mod tests {
         let handler = vn::ImageRequestHandler::with_url(&url, None);
 
         let requests = cf::ArrayOf::<vn::Request>::from_slice(&[&request]).unwrap();
-        let error = handler
-            .perform_requests(&requests)
-            .expect_err("should be error");
+        let error = handler.perform(&requests).expect_err("should be error");
 
         assert!(error.domain().equal(vn::ErrorDomain::vision()));
         assert_eq!(vn::ErrorCode::InvalidImage, error.code());
