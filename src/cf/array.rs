@@ -4,7 +4,7 @@ use super::{
     runtime::{Release, Retain},
     Allocator, Index, Retained, String, Type, TypeId,
 };
-use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
+use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -36,18 +36,12 @@ pub struct ArrayOf<T>(Array, PhantomData<T>);
 impl<T> ArrayOf<T> {
     #[inline]
     pub fn new() -> Option<Retained<ArrayOf<T>>> {
-        unsafe {
-            let arr = Array::create(None, None, 0, Callbacks::default());
-            transmute(arr)
-        }
+        unsafe { transmute(Array::new()) }
     }
 
     #[inline]
     pub fn new_in(alloc: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
-        unsafe {
-            let arr = Array::create(alloc, None, 0, Callbacks::default());
-            transmute(arr)
-        }
+        unsafe { transmute(Array::new_in(alloc)) }
     }
 
     #[inline]
@@ -71,12 +65,13 @@ impl<T> ArrayOf<T> {
     where
         T: Retain,
     {
-        let vals = unsafe {
-            let ptr = values.as_ptr() as *const *const c_void as _;
-            NonNull::new_unchecked(ptr)
-        };
         unsafe {
-            let arr = Array::create(None, Some(vals), values.len() as _, Callbacks::default());
+            let arr = Array::create_in(
+                None,
+                values.as_ptr() as _,
+                values.len() as _,
+                Callbacks::default(),
+            );
             transmute(arr)
         }
     }
@@ -248,7 +243,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = unsafe { cf::Array::create(None, None, 0, None).expect("arr") };
+    /// let arr = unsafe { cf::Array::create_in(None, std::ptr::null(), 0, None).expect("arr") };
     /// assert_eq!(arr.len(), 0);
     /// ```
     #[inline]
@@ -271,11 +266,11 @@ impl Array {
     /// use cidre::cf;
     ///
     /// let arr1 = cf::Array::new().expect("Array::new");
-    /// let arr2 = arr1.create_in(None).expect("copy");
+    /// let arr2 = arr1.copy_in(None).expect("copy");
     ///
     /// ```
     #[inline]
-    pub fn create_in(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
+    pub fn copy_in(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
@@ -287,13 +282,13 @@ impl Array {
     /// ```
     #[inline]
     pub fn copy(&self) -> Option<Retained<Array>> {
-        self.create_in(None)
+        self.copy_in(None)
     }
 
     #[inline]
-    pub unsafe fn create(
+    pub unsafe fn create_in(
         allocator: Option<&Allocator>,
-        values: Option<NonNull<*const c_void>>,
+        values: *const c_void,
         num_values: Index,
         callbacks: Option<&Callbacks>,
     ) -> Option<Retained<Array>> {
@@ -302,7 +297,12 @@ impl Array {
 
     #[inline]
     pub fn new() -> Option<Retained<Array>> {
-        unsafe { Self::create(None, None, 0, Callbacks::default()) }
+        Self::new_in(None)
+    }
+
+    #[inline]
+    pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<Array>> {
+        unsafe { Self::create_in(allocator, std::ptr::null(), 0, Callbacks::default()) }
     }
 
     /// ```
@@ -314,11 +314,11 @@ impl Array {
     /// ```
     #[inline]
     pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<Retained<Array>> {
-        let vals = unsafe {
-            let ptr = values.as_ptr() as *const *const c_void as _;
-            NonNull::new_unchecked(ptr)
-        };
-        unsafe { Array::create(None, Some(vals), N as _, Callbacks::default()) }
+        //let vals = unsafe {
+        //  let ptr = values.as_ptr() as *const *const c_void as _;
+        //NonNull::new_unchecked(ptr)
+        //};
+        unsafe { Array::create_in(None, values.as_ptr() as _, N as _, Callbacks::default()) }
     }
 
     #[inline]
@@ -326,11 +326,14 @@ impl Array {
     where
         T: Retain + Release,
     {
-        let vals = unsafe {
-            let ptr = values.as_ptr() as *const *const c_void as _;
-            NonNull::new_unchecked(ptr)
-        };
-        unsafe { Array::create(None, Some(vals), values.len() as _, Callbacks::default()) }
+        unsafe {
+            Array::create_in(
+                None,
+                values.as_ptr() as _,
+                values.len() as _,
+                Callbacks::default(),
+            )
+        }
     }
 
     #[inline]
@@ -338,11 +341,7 @@ impl Array {
     where
         T: Copy,
     {
-        let vals = unsafe {
-            let ptr = values.as_ptr() as *const *const c_void as _;
-            NonNull::new_unchecked(ptr)
-        };
-        unsafe { Array::create(None, Some(vals), N as _, None) }
+        unsafe { Array::create_in(None, values.as_ptr() as _, N as _, None) }
     }
 
     /// ```
@@ -459,7 +458,7 @@ extern "C" {
 
     fn CFArrayCreate(
         allocator: Option<&Allocator>,
-        values: Option<NonNull<*const c_void>>,
+        values: *const c_void,
         num_values: Index,
         callbacks: Option<&Callbacks>,
     ) -> Option<Retained<Array>>;
