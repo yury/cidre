@@ -73,6 +73,6 @@ pub use classify_image_request::ClassifyImageRequest;
 mod detect_face_rectangles_request;
 pub use detect_face_rectangles_request::DetectFaceRectanglesRequest;
 
-pub mod error;
+mod error;
 pub use error::Code as ErrorCode;
 pub use error::Domain as ErrorDomain;
