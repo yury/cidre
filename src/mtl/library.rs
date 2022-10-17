@@ -208,7 +208,7 @@ impl ErrorDomain {
     /// let source = cf::String::from_str("vid function_a() {}");
     /// let err = device.library_with_source(&source, None).unwrap_err();
     ///
-    /// assert_eq!(mtl::LibraryError::CompileFailure, err.get_code());
+    /// assert_eq!(mtl::LibraryError::CompileFailure, err.code());
     ///
     /// ```
     pub fn library() -> &'static ErrorDomain {

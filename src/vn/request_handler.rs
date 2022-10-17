@@ -218,6 +218,9 @@ mod tests {
         let error = handler
             .perform_requests(&requests)
             .expect_err("should be error");
+
+        assert!(error.domain().equal(vn::ErrorDomain::vision()));
+        assert_eq!(vn::ErrorCode::InvalidImage, error.code());
         error.show();
     }
 }
