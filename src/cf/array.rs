@@ -161,7 +161,7 @@ impl<T> MutArrayOf<T> {
         capacity: usize,
         alloc: Option<&Allocator>,
     ) -> Option<Retained<MutArrayOf<T>>> {
-        let arr = MutableArray::create(alloc, capacity as _, Callbacks::default());
+        let arr = MutableArray::create_in(alloc, capacity as _, Callbacks::default());
         unsafe { transmute(arr) }
     }
 
@@ -314,10 +314,6 @@ impl Array {
     /// ```
     #[inline]
     pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<Retained<Array>> {
-        //let vals = unsafe {
-        //  let ptr = values.as_ptr() as *const *const c_void as _;
-        //NonNull::new_unchecked(ptr)
-        //};
         unsafe { Array::create_in(None, values.as_ptr() as _, N as _, Callbacks::default()) }
     }
 
@@ -350,7 +346,7 @@ impl Array {
     /// let num = cf::Number::from_i32(10);
     ///
     /// let empty_arr = cf::Array::new().unwrap();
-    /// let mut mut_arr = empty_arr.create_mutable_copy(None, 0).unwrap();
+    /// let mut mut_arr = empty_arr.mutable_copy_in(None, 0).unwrap();
     ///
     ///
     /// mut_arr.append(&num);
@@ -360,7 +356,7 @@ impl Array {
     ///
     /// ```
     #[inline]
-    pub fn create_mutable_copy(
+    pub fn mutable_copy_in(
         &self,
         allocator: Option<&Allocator>,
         capacity: Index,
@@ -370,12 +366,12 @@ impl Array {
 
     #[inline]
     pub fn mutable_copy(&self) -> Option<Retained<MutableArray>> {
-        unsafe { CFArrayCreateMutableCopy(None, self.count(), self) }
+        unsafe { CFArrayCreateMutableCopy(None, 0, self) }
     }
 
     #[inline]
     pub fn mutable_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutableArray>> {
-        unsafe { CFArrayCreateMutableCopy(None, capacity as _, self) }
+        self.mutable_copy_in(None, capacity as _)
     }
 }
 
@@ -413,7 +409,7 @@ impl MutableArray {
     }
 
     #[inline]
-    pub fn create(
+    pub fn create_in(
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
@@ -423,7 +419,7 @@ impl MutableArray {
 
     #[inline]
     pub fn with_capacity(capacity: Index) -> Option<Retained<MutableArray>> {
-        Self::create(None, capacity, Callbacks::default())
+        Self::create_in(None, capacity, Callbacks::default())
     }
 
     /// ```
@@ -453,7 +449,6 @@ extern "C" {
 
     fn CFArrayGetTypeID() -> TypeId;
 
-    //const void *CFArrayGetValueAtIndex(CFArrayRef theArray, CFIndex idx);
     fn CFArrayGetValueAtIndex(the_array: &Array, idx: Index) -> &Type;
 
     fn CFArrayCreate(
