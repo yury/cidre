@@ -1,4 +1,4 @@
-pub mod types;
+mod types;
 pub use types::AspectRation;
 pub use types::Chirality;
 pub use types::Confidence;
@@ -7,27 +7,27 @@ pub use types::ElementType;
 pub use types::ImageCropAndScaleOption;
 pub use types::PointsClassification;
 
-pub mod request;
+mod request;
 pub use request::DetectHorizonRequest;
 pub use request::ImageBasedRequest;
 pub use request::Request;
 
-pub mod request_handler;
+mod request_handler;
 pub use request_handler::ImageRequestHandler;
 pub use request_handler::SequenceRequestHandler;
 
-pub mod tracking_request;
+mod tracking_request;
 pub use tracking_request::Level as TrackingRequestLevel;
 pub use tracking_request::TrackingRequest;
 
-pub mod stateful_request;
+mod stateful_request;
 pub use stateful_request::StatefulRequest;
 
-pub mod recognize_text_request;
+mod recognize_text_request;
 pub use recognize_text_request::RecognitionLevel as RequestTextRecognitionLevel;
 pub use recognize_text_request::RecognizeTextRequest;
 
-pub mod observation;
+mod observation;
 pub use observation::BarcodeObservation;
 pub use observation::ClassificationObservation;
 pub use observation::CoreMLFeatureValueObservation;
@@ -45,7 +45,7 @@ pub use observation::SaliencyImageObservation;
 pub use observation::TextObservation;
 pub use observation::TrajectoryObservation;
 
-pub mod face_landmarks;
+mod face_landmarks;
 pub use face_landmarks::FaceLandmarks;
 pub use face_landmarks::FaceLandmarks2D;
 pub use face_landmarks::Region as FaceLandmarkRegion;
@@ -69,6 +69,9 @@ pub use generate_image_feature_print_request::GenerateImageFeaturePrintRequest;
 
 mod classify_image_request;
 pub use classify_image_request::ClassifyImageRequest;
+
+mod detect_face_rectangles_request;
+pub use detect_face_rectangles_request::DetectFaceRectanglesRequest;
 
 pub mod error;
 pub use error::Code as ErrorCode;

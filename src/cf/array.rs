@@ -65,6 +65,21 @@ impl<T> ArrayOf<T> {
         let copy = self.0.mutable_copy();
         unsafe { transmute(copy) }
     }
+
+    #[inline]
+    pub fn from_slice(values: &[&T]) -> Option<Retained<Self>>
+    where
+        T: Retain,
+    {
+        let vals = unsafe {
+            let ptr = values.as_ptr() as *const *const c_void as _;
+            NonNull::new_unchecked(ptr)
+        };
+        unsafe {
+            let arr = Array::create(None, Some(vals), values.len() as _, Callbacks::default());
+            transmute(arr)
+        }
+    }
 }
 
 impl<T> std::ops::Deref for ArrayOf<T> {

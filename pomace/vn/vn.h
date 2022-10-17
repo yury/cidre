@@ -26,6 +26,12 @@ rwsel(, id, regionOfInterest, setRegionOfInterest, CGRect)
 #pragma mark - VNImageRequestHandler
 
 NS_RETURNS_RETAINED
+cinit_ab(, VNImageRequestHandler, initWithURL, NSURL *, options, NSDictionary *);
+
+NS_RETURNS_RETAINED
+cinit_abc(, VNImageRequestHandler, initWithURL, NSURL *, orientation, CGImagePropertyOrientation, options, NSDictionary *);
+
+NS_RETURNS_RETAINED
 cinit_ab(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, options, NSDictionary *);
 
 
@@ -140,13 +146,9 @@ csel(, VNGenerateObjectnessBasedSaliencyImageRequest, new, VNGenerateObjectnessB
 
 #pragma mark - VNFaceLandmarkRegion
 
-//@property (readonly) NSUInteger pointCount;
 rsel(, id, pointCount, NSUInteger)
 
-
 #pragma mark - VNClassifyImageRequest
-
-//- (nullable NSArray<NSString*>*) supportedIdentifiersAndReturnError:(NSError**)error API_AVAILABLE(macos(12.0), ios(15.0), tvos(15.0));
 
 rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
 
@@ -156,11 +158,9 @@ csel(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
 #pragma mark - VNFeaturePrintObservation
 
 rsel(vn_, VNFeaturePrintObservation *, elementType, VNElementType)
-//@property (readonly, atomic, assign) NSUInteger elementCount;
 rsel(vn_, VNFeaturePrintObservation *, elementCount, NSUInteger)
 rsel(vn_, VNFeaturePrintObservation *, data, NSData *)
 
-//- (BOOL)computeDistance:(float *)outDistance toFeaturePrintObservation:(VNFeaturePrintObservation *)featurePrint error:(NSError **)error;
 rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
 #pragma mark - VNGenerateImageFeaturePrintRequest
@@ -169,6 +169,12 @@ rwsel(, id, imageCropAndScaleOption, setImageCropAndScaleOption, VNImageCropAndS
 
 NS_RETURNS_RETAINED
 csel(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintRequest *)
+
+#pragma mark - VNDetectFaceRectanglesRequest
+
+NS_RETURNS_RETAINED
+csel(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
+
 
 NS_ASSUME_NONNULL_END
 

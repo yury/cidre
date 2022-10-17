@@ -15,6 +15,20 @@ define_obj_type!(ImageRequestHandler(objc::Id));
 /// The vn::ImageRequestHandler can choose to also cache intermediate representation
 /// of the image or other request-specific information for the purposes of runtime performance.
 impl ImageRequestHandler {
+    /// Creates a vn::ImageRequestHandler to be used for performing requests against an image
+    /// specified by it's URL
+    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> cf::Retained<Self> {
+        unsafe { VNImageRequestHandler_initWithURL_options(url, options) }
+    }
+
+    pub fn with_url_and_orientation(
+        url: &cf::URL,
+        orientation: cg::ImagePropertyOrientation,
+        options: Option<&cf::Dictionary>,
+    ) -> cf::Retained<Self> {
+        unsafe { VNImageRequestHandler_initWithURL_orientation_options(url, orientation, options) }
+    }
+
     /// Creates a vn::ImageRequestHandler to be used for performing requests against the image passed in as buffer.
     ///
     /// # Example
@@ -22,8 +36,7 @@ impl ImageRequestHandler {
     /// use cidre::{cf, cv, cg, vn};
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
-    /// let options = cf::Dictionary::new().unwrap();
-    /// let handler = vn::ImageRequestHandler::with_cv_pixel_buffer(&pixel_buffer, &options).unwrap();
+    /// let handler = vn::ImageRequestHandler::with_cv_pixel_buffer(&pixel_buffer, None).unwrap();
     /// let requests = cf::ArrayOf::new().unwrap();
     /// handler.perform_requests(&requests).unwrap();
     ///
@@ -31,7 +44,7 @@ impl ImageRequestHandler {
     #[inline]
     pub fn with_cv_pixel_buffer(
         pb: &cv::PixelBuffer,
-        options: &cf::Dictionary,
+        options: Option<&cf::Dictionary>,
     ) -> Option<cf::Retained<Self>> {
         unsafe { VNImageRequestHandler_initWithCVPixelBuffer_options(pb, options) }
     }
@@ -40,7 +53,7 @@ impl ImageRequestHandler {
     pub fn with_cv_pixel_buffer_and_orientation(
         pb: &cv::PixelBuffer,
         orientation: cg::ImagePropertyOrientation,
-        options: &cf::Dictionary,
+        options: Option<&cf::Dictionary>,
     ) -> Option<cf::Retained<Self>> {
         unsafe {
             VNImageRequestHandler_initWithCVPixelBuffer_orientation_options(
@@ -145,15 +158,27 @@ impl SequenceRequestHandler {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
+
+    fn VNImageRequestHandler_initWithURL_options(
+        url: &cf::URL,
+        options: Option<&cf::Dictionary>,
+    ) -> cf::Retained<ImageRequestHandler>;
+
+    fn VNImageRequestHandler_initWithURL_orientation_options(
+        url: &cf::URL,
+        orientation: cg::ImagePropertyOrientation,
+        options: Option<&cf::Dictionary>,
+    ) -> cf::Retained<ImageRequestHandler>;
+
     fn VNImageRequestHandler_initWithCVPixelBuffer_options(
         pb: &cv::PixelBuffer,
-        options: &cf::Dictionary,
+        options: Option<&cf::Dictionary>,
     ) -> Option<cf::Retained<ImageRequestHandler>>;
 
     fn VNImageRequestHandler_initWithCVPixelBuffer_orientation_options(
         pb: &cv::PixelBuffer,
         orientation: cg::ImagePropertyOrientation,
-        options: &cf::Dictionary,
+        options: Option<&cf::Dictionary>,
     ) -> Option<cf::Retained<ImageRequestHandler>>;
 
     fn rsel_performRequests_error<'ar>(
@@ -178,4 +203,21 @@ extern "C" {
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, vn};
+    #[test]
+    fn basics() {
+        let url = cf::URL::from_str("file:///tmp/some.jpg").unwrap();
+        let request = vn::DetectFaceRectanglesRequest::new();
+        let handler = vn::ImageRequestHandler::with_url(&url, None);
+
+        let requests = cf::ArrayOf::<vn::Request>::from_slice(&[&request]).unwrap();
+        let error = handler
+            .perform_requests(&requests)
+            .expect_err("should be error");
+        error.show();
+    }
 }

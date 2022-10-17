@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, vn};
+use crate::{define_obj_type, vn};
 
 #[repr(isize)]
 pub enum RecognitionLevel {
