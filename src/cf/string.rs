@@ -225,14 +225,6 @@ impl String {
     }
 }
 
-/// ```
-/// use cidre::{cfstr, cf};
-///
-/// let s = cfstr!("nice");
-/// s.show();
-///
-/// assert_eq!(s.to_string(), "nice".to_string());
-/// ```
 #[macro_export]
 macro_rules! cfstr {
     ($f:literal) => {

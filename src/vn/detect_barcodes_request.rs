@@ -69,5 +69,6 @@ mod tests {
         let supported_symbologies = request.supported_symbologies().unwrap();
 
         assert!(supported_symbologies.contains(vn::BarcodeSymbology::qr()));
+        assert!(symbologies.contains(vn::BarcodeSymbology::qr()));
     }
 }
