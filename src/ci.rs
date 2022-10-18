@@ -1,6 +1,6 @@
-pub mod context;
+mod context;
 pub use context::Context;
 
-pub mod image;
+mod image;
 pub use image::Format;
 pub use image::Image;
