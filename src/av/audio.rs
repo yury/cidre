@@ -35,7 +35,7 @@ pub use engine::ManualRenderingStatus as EngineManualRenderingStatus;
 mod player;
 pub use player::Player;
 
-pub mod player_node;
+mod player_node;
 pub use player_node::BufferOptions as PlayerNodeBufferOptions;
 pub use player_node::CompletionCallbackType as PlayerNodeCompletionCallbackType;
 pub use player_node::PlayerNode;
