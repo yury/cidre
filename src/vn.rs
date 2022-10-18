@@ -1,5 +1,6 @@
 mod types;
 pub use types::AspectRation;
+pub use types::BarcodeSymbology;
 pub use types::Chirality;
 pub use types::Confidence;
 pub use types::Degrees;
