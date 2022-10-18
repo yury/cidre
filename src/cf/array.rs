@@ -1,4 +1,4 @@
-use crate::define_cf_type;
+use crate::{cf, define_cf_type};
 
 use super::{
     runtime::{Release, Retain},
@@ -42,6 +42,19 @@ impl<T> ArrayOf<T> {
     #[inline]
     pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
         unsafe { transmute(Array::new_in(allocator)) }
+    }
+
+    pub fn contains(&self, value: &T) -> bool {
+        if self.is_empty() {
+            return false;
+        }
+        unsafe {
+            CFArrayContainsValue(
+                self,
+                cf::Range::new(0, self.count() - 1),
+                value as *const _ as _,
+            )
+        }
     }
 
     #[inline]
@@ -477,6 +490,8 @@ extern "C" {
     fn CFArrayAppendValue(array: &mut MutableArray, value: *const c_void);
 
     fn CFArrayRemoveAllValues(array: &mut MutableArray);
+
+    fn CFArrayContainsValue(array: &Array, range: cf::Range, value: *const c_void) -> bool;
 }
 
 #[cfg(test)]

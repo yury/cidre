@@ -24,6 +24,20 @@ impl DetectBarcodesRequest {
     pub fn set_symbologies(&mut self, value: &cf::ArrayOf<vn::BarcodeSymbology>) {
         unsafe { wsel_setSymbologies(self, value) }
     }
+
+    pub fn supported_symbologies<'ar>(
+        &self,
+    ) -> Result<&cf::ArrayOf<vn::BarcodeSymbology>, &'ar cf::Error> {
+        unsafe {
+            let mut error = None;
+            let res = rsel_supportedSymbologiesAndReturnError(self, &mut error);
+            if let Some(r) = res {
+                Ok(r)
+            } else {
+                Err(error.unwrap())
+            }
+        }
+    }
 }
 
 #[link(name = "vn", kind = "static")]
@@ -35,6 +49,11 @@ extern "C" {
     fn rsel_symbologies(id: &objc::Id) -> &cf::ArrayOf<vn::BarcodeSymbology>;
 
     fn wsel_setSymbologies(id: &mut objc::Id, value: &cf::ArrayOf<vn::BarcodeSymbology>);
+
+    fn rsel_supportedSymbologiesAndReturnError<'ar, 'a>(
+        id: &'a objc::Id,
+        error: &mut Option<&'ar cf::Error>,
+    ) -> Option<&'a cf::ArrayOf<vn::BarcodeSymbology>>;
 }
 
 #[cfg(test)]
@@ -44,6 +63,11 @@ mod tests {
     fn basics() {
         let request = vn::DetectBarcodesRequest::new();
         let symbologies = request.symbologies();
+
         assert!(!symbologies.is_empty());
+
+        let supported_symbologies = request.supported_symbologies().unwrap();
+
+        assert!(supported_symbologies.contains(vn::BarcodeSymbology::qr()));
     }
 }
