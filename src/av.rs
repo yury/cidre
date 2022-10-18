@@ -92,6 +92,15 @@ pub use audio::PlayerNode as AudioPlayerNode;
 pub use audio::Session as AudioSession;
 pub use audio::Time as AudioTime;
 
+pub use audio::SpeechBoundery;
+pub use audio::SpeechSynthesisMarker;
+pub use audio::SpeechSynthesisMarkerMark;
+pub use audio::SpeechSynthesisVoice;
+pub use audio::SpeechSynthesisVoiceGender;
+pub use audio::SpeechSynthesisVoiceQuality;
+pub use audio::SpeechSynthesizer;
+pub use audio::SpeechUtterance;
+
 pub mod video;
 pub use video::settings_keys as video_settings_keys;
 pub use video::CodecType as VideoCodecType;

@@ -67,3 +67,13 @@ pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 pub mod settings;
 pub use settings::Quality;
+
+pub mod speech_synthesis;
+pub use speech_synthesis::Marker as SpeechSynthesisMarker;
+pub use speech_synthesis::MarkerMark as SpeechSynthesisMarkerMark;
+pub use speech_synthesis::SpeechBoundery;
+pub use speech_synthesis::Synthesizer as SpeechSynthesizer;
+pub use speech_synthesis::Utterance as SpeechUtterance;
+pub use speech_synthesis::Voice as SpeechSynthesisVoice;
+pub use speech_synthesis::VoiceGender as SpeechSynthesisVoiceGender;
+pub use speech_synthesis::VoiceQuality as SpeechSynthesisVoiceQuality;
