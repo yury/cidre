@@ -5,10 +5,10 @@ pub use objc::{
     Class, Id, Sel,
 };
 
-pub mod range;
+mod range;
 pub use range::Range;
 
-pub mod process_info;
+mod process_info;
 pub use process_info::ProcessInfo;
 pub use process_info::ThermalState as ProcessInfoThermalState;
 
@@ -22,6 +22,6 @@ pub use exception::try_catch;
 pub use exception::Exception;
 pub use exception::UncaughtExceptionHandler;
 
-pub mod port;
+mod port;
 pub use port::MachPort;
 pub use port::Port;
