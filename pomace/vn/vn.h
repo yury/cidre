@@ -179,6 +179,13 @@ csel(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
 
 rwsel(, id, trackingLevel, setTrackingLevel, VNRequestTrackingLevel)
 
+#pragma mark - VNDetectBarcodesRequest
+NS_RETURNS_RETAINED
+csel(, VNDetectBarcodesRequest, new, VNDetectBarcodesRequest *)
+
+//@property (readwrite, nonatomic, copy) NSArray<VNBarcodeSymbology> *symbologies;
+rwsel(, id, symbologies, setSymbologies, NSArray *)
+
 
 NS_ASSUME_NONNULL_END
 
