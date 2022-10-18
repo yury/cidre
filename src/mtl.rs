@@ -78,7 +78,7 @@ pub use argument_encoder::ArgumentEncoder;
 mod buffer;
 pub use buffer::Buffer;
 
-pub mod function_descriptor;
+mod function_descriptor;
 pub use function_descriptor::FunctionDescriptor;
 pub use function_descriptor::FunctionOptions;
 

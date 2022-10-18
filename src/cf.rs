@@ -1,5 +1,4 @@
 pub mod runtime;
-
 pub use runtime::Retained;
 pub use runtime::Type;
 
@@ -17,7 +16,7 @@ pub use base::Range;
 pub use base::TypeId;
 pub use base::NOT_FOUND;
 
-pub mod number;
+mod number;
 pub use number::Boolean;
 pub use number::Number;
 pub use number::NumberType;
@@ -53,7 +52,7 @@ pub use date::AbsoluteTime;
 pub use date::Date;
 pub use date::TimeInterval;
 
-pub mod url;
+mod url;
 pub use url::PathStyle;
 pub use url::URL;
 
@@ -61,7 +60,7 @@ pub mod locale;
 pub use locale::Identifier as LocaleIdentifier;
 pub use locale::Locale;
 
-pub mod bundle;
+mod bundle;
 pub use bundle::Bundle;
 
 pub mod error;
@@ -72,15 +71,15 @@ pub mod notification_center;
 pub use notification_center::NotificationCenter;
 pub use notification_center::NotificationName;
 
-pub mod set;
+mod set;
 pub use set::MutableSet;
 pub use set::Set;
 pub use set::SetOf;
 
-pub mod uuid;
+mod uuid;
 pub use uuid::UUID;
 
-pub mod data;
+mod data;
 pub use data::Data;
 pub use data::MutableData;
 
@@ -105,7 +104,7 @@ pub use socket::NativeHandle as SocketNativeHandle;
 pub use socket::Signature as SocketSignature;
 pub use socket::Socket;
 
-pub mod mach_port;
+mod mach_port;
 pub use mach_port::MachPort;
 
 #[link(name = "CoreFoundation", kind = "framework")]

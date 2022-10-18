@@ -1,4 +1,4 @@
-pub mod geometry;
+mod geometry;
 pub use geometry::Float;
 pub use geometry::Point;
 pub use geometry::Rect;
@@ -10,14 +10,13 @@ pub use color_space::ColorRenderingIntent;
 pub use color_space::ColorSpace;
 pub use color_space::ColorSpaceModel;
 
-pub mod color;
+mod color;
 pub use color::Color;
 
-pub mod window;
+mod window;
 pub use window::ID as WindowID;
 
 pub mod direct_display;
-
 #[cfg(target_os = "macos")]
 pub use direct_display::main_display_id;
 pub use direct_display::ID as DirectDisplayID;
@@ -26,7 +25,7 @@ pub mod affine_transform;
 pub use affine_transform::AffineTransform;
 pub use affine_transform::Components as AffineTransformComponents;
 
-pub mod error;
+mod error;
 pub use error::Error;
 
 pub mod image;
