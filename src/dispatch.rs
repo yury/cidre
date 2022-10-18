@@ -1,13 +1,13 @@
-pub mod base;
+mod base;
 pub use base::Function;
 
-pub mod object;
+mod object;
 pub use object::Object;
 
-pub mod group;
+mod group;
 pub use group::Group;
 
-pub mod time;
+mod time;
 pub use time::Time;
 
 pub mod queue;
@@ -20,7 +20,7 @@ pub use queue::Priority as QueuePriority;
 pub use queue::QOSClass;
 pub use queue::Queue;
 
-pub mod semaphore;
+mod semaphore;
 pub use semaphore::Semaphore;
 
 pub mod source;

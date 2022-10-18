@@ -3,7 +3,7 @@ pub use types::Origin;
 pub use types::ResourceID;
 pub use types::Size;
 
-pub mod pixel_format;
+mod pixel_format;
 pub use pixel_format::PixelFormat;
 
 pub mod argument;
@@ -17,7 +17,7 @@ pub use argument::StructType;
 pub use argument::TextureReferenceType;
 pub use argument::Type as ArgumentType;
 
-pub mod resource;
+mod resource;
 pub use resource::Options as ResouceOptions;
 pub use resource::Resource;
 
@@ -34,12 +34,12 @@ pub use resource::HAZARD_TRACKING_MODE_SHIFT;
 pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
 
-pub mod heap;
+mod heap;
 pub use heap::Descriptor as HeapDescriptor;
 pub use heap::Heap;
 pub use heap::Type as HeapType;
 
-pub mod library;
+mod library;
 pub use library::CompileOptions;
 pub use library::Error as LibraryError;
 pub use library::ErrorDomain as LibraryErrorDomain;
@@ -50,7 +50,7 @@ pub use library::Library;
 pub use library::OptimizationLevel as LibraryOptimizationLevel;
 pub use library::Type as LibraryType;
 
-pub mod command_queue;
+mod command_queue;
 pub use command_queue::CommandQueue;
 
 pub mod texture;
@@ -69,13 +69,13 @@ pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAndAlign;
 
-pub mod function_constant_values;
+mod function_constant_values;
 pub use function_constant_values::FunctionConstantValues;
 
-pub mod argument_encoder;
+mod argument_encoder;
 pub use argument_encoder::ArgumentEncoder;
 
-pub mod buffer;
+mod buffer;
 pub use buffer::Buffer;
 
 pub mod function_descriptor;
@@ -113,10 +113,10 @@ pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptor;
 pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::TileRenderPipelineDescriptor;
 
-pub mod fence;
+mod fence;
 pub use fence::Fence;
 
-pub mod event;
+mod event;
 pub use event::Event;
 
 pub mod blit_pass;
@@ -129,7 +129,7 @@ pub use command_encoder::BarrierScope;
 pub use command_encoder::CommandEncoder;
 pub use command_encoder::ResourceUsage;
 
-pub mod blit_command_encoder;
+mod blit_command_encoder;
 pub use blit_command_encoder::BlitCommandEncoder;
 pub use blit_command_encoder::BlitOption;
 
@@ -151,10 +151,10 @@ pub use render_command_encoder::ViewPort;
 pub use render_command_encoder::VisibilityResultMode;
 pub use render_command_encoder::Winding;
 
-pub mod compute_command_encoder;
+mod compute_command_encoder;
 pub use compute_command_encoder::ComputeCommandEncoder;
 
-pub mod parallel_render_command_encoder;
+mod parallel_render_command_encoder;
 pub use parallel_render_command_encoder::ParallelRenderCommandEncoder;
 
 pub mod render_pass;
