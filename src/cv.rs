@@ -6,18 +6,18 @@ pub use base::Time;
 pub use base::TimeStamp;
 pub use base::TimeStampFlags;
 
-pub mod _return;
+mod _return;
 pub use _return::Return;
 
 pub mod buffer;
-
 pub use buffer::AttachmentMode;
 pub use buffer::Buffer;
 
-pub mod image_buffer;
+mod image_buffer;
 pub use image_buffer::ImageBuffer;
 
 pub mod pixel_buffer;
+pub use pixel_buffer::keys as pixel_buffer_keys;
 pub use pixel_buffer::PixelBuffer;
 pub use pixel_buffer::PixelFormatType;
 
@@ -43,7 +43,7 @@ pub use display_link::DisplayLink;
 #[cfg(target_os = "macos")]
 pub use display_link::OutputCallback as DisplayLinkOutputCallback;
 
-pub mod host_time;
+mod host_time;
 pub use host_time::current_host_time;
 pub use host_time::host_clock_frequency;
 pub use host_time::host_clock_minimum_time_delta;

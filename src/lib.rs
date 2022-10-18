@@ -16,6 +16,7 @@ pub mod av;
 /// Core Animation
 pub mod ca;
 
+// Core Image
 pub mod ci;
 
 /// Core Foundation
