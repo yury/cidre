@@ -1,6 +1,6 @@
 use crate::{define_obj_type, objc};
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum SpeechBoundery {
     /// Indicates to pause or stop speech immediately.
@@ -10,7 +10,7 @@ pub enum SpeechBoundery {
     Word,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum VoiceQuality {
     /// The basic quality version of a voice that’s on the device by default.
@@ -21,7 +21,7 @@ pub enum VoiceQuality {
     Premium,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum VoiceGender {
     /// The nonspecific gender option.
@@ -33,7 +33,7 @@ pub enum VoiceGender {
 }
 
 /// Markers used in the output event callback. Used for providing metadata on synthesized audio.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum MarkerMark {
     /// A type of text that represents a phoneme.
