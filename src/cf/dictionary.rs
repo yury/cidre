@@ -58,9 +58,16 @@ pub type ApplierFunction =
 define_cf_type!(Dictionary(Type));
 
 impl Dictionary {
+    #[inline]
     pub fn new() -> Option<Retained<Self>> {
-        unsafe { CFDictionaryCreate(None, std::ptr::null(), std::ptr::null(), 0, None, None) }
+        Self::new_in(None)
     }
+
+    #[inline]
+    pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<Self>> {
+        unsafe { CFDictionaryCreate(allocator, std::ptr::null(), std::ptr::null(), 0, None, None) }
+    }
+
     /// ```
     /// use cidre::cf;
     ///
@@ -188,6 +195,7 @@ impl Dictionary {
             )
         }
     }
+
     /// ```
     /// use cidre::cf;
     ///
@@ -342,14 +350,20 @@ define_cf_type!(MutableDictionary(Dictionary));
 
 impl MutableDictionary {
     pub fn with_capacity(capacity: usize) -> Retained<Self> {
+        unsafe { Self::with_capacity_in(None, capacity).unwrap_unchecked() }
+    }
+
+    pub fn with_capacity_in(
+        allocator: Option<&Allocator>,
+        capacity: usize,
+    ) -> Option<Retained<Self>> {
         unsafe {
             Self::create(
-                None,
+                allocator,
                 capacity as _,
                 KeyCallBacks::default(),
                 ValueCallBacks::default(),
             )
-            .unwrap_unchecked()
         }
     }
 
@@ -377,6 +391,7 @@ impl MutableDictionary {
     pub unsafe fn set_value(&mut self, key: *const c_void, value: *const c_void) {
         CFDictionarySetValue(self, key, value)
     }
+
     pub unsafe fn replace_value(&mut self, key: *const c_void, value: *const c_void) {
         CFDictionaryReplaceValue(self, key, value)
     }
