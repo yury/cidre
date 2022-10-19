@@ -50,6 +50,42 @@ define_obj_type!(Voice(objc::Id));
 
 define_obj_type!(Utterance(objc::Id));
 
+impl Utterance {
+    pub fn min_speech_rate() -> f32 {
+        unsafe { AVSpeechUtteranceMinimumSpeechRate }
+    }
+
+    pub fn max_speech_rate() -> f32 {
+        unsafe { AVSpeechUtteranceMaximumSpeechRate }
+    }
+
+    pub fn default_speech_rate() -> f32 {
+        unsafe { AVSpeechUtteranceDefaultSpeechRate }
+    }
+}
+
 define_obj_type!(Synthesizer(objc::Id));
 
 define_obj_type!(Marker(objc::Id));
+
+#[link(name = "AVFAudio", kind = "framework")]
+extern "C" {
+    static AVSpeechUtteranceMinimumSpeechRate: f32;
+    static AVSpeechUtteranceMaximumSpeechRate: f32;
+    static AVSpeechUtteranceDefaultSpeechRate: f32;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::av;
+
+    #[test]
+    fn basics() {
+        assert!(
+            av::SpeechUtterance::min_speech_rate() < av::SpeechUtterance::default_speech_rate()
+        );
+        assert!(
+            av::SpeechUtterance::default_speech_rate() < av::SpeechUtterance::max_speech_rate()
+        );
+    }
+}
