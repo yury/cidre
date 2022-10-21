@@ -1,7 +1,7 @@
 use crate::{cf, define_cf_type, define_options};
 
 pub type Confidence = f32;
-pub type AspectRation = f32;
+pub type AspectRatio = f32;
 pub type Degrees = f32;
 
 define_cf_type!(BarcodeSymbology(cf::String));

@@ -1,5 +1,5 @@
 mod types;
-pub use types::AspectRation;
+pub use types::AspectRatio;
 pub use types::BarcodeSymbology;
 pub use types::Chirality;
 pub use types::Confidence;
@@ -67,6 +67,12 @@ pub use generate_objectness_based_saliency_image_request::GenerateObjectnessBase
 
 mod generate_image_feature_print_request;
 pub use generate_image_feature_print_request::GenerateImageFeaturePrintRequest;
+
+mod generate_optical_flow_request;
+pub use generate_optical_flow_request::GenerateOpticalFlowRequest;
+
+mod targeted_image_request;
+use targeted_image_request::TargetedImageRequest;
 
 mod classify_image_request;
 pub use classify_image_request::ClassifyImageRequest;
