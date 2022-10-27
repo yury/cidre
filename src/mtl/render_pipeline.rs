@@ -299,6 +299,15 @@ impl Descriptor {
     pub fn color_attachments_mut(&self) -> &mut ColorAttachmentDescriptorArray {
         unsafe { rsel_colorAttachments(self) }
     }
+
+    #[inline]
+    pub fn raster_sample_count(&self) -> usize {
+        unsafe { rsel_rasterSampleCount(self) }
+    }
+
+    pub fn set_raster_sample_count(&mut self, value: usize) {
+        unsafe { wsel_setRasterSampleCount(self, value) }
+    }
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
@@ -309,6 +318,10 @@ extern "C" {
     fn rsel_fragmentFunction(id: &Id) -> Option<&Function>;
     fn wsel_setFragmentFunction(id: &mut Id, value: Option<&Function>);
     fn rsel_colorAttachments(id: &Id) -> &mut ColorAttachmentDescriptorArray;
+
+    //rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
+    fn rsel_rasterSampleCount(id: &Id) -> usize;
+    fn wsel_setRasterSampleCount(id: &Id, value: usize);
 }
 
 define_obj_type!(FunctionsDescriptor(Id));

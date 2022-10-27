@@ -72,6 +72,7 @@ fn main() {
         let fragment_fn = lib.new_function_with_name(&fragment_fn_name).unwrap();
 
         let mut desc = mtl::RenderPipelineDescriptor::new();
+        desc.set_raster_sample_count(4);
         desc.set_vertex_fn(&vertex_fn);
         desc.set_fragment_fn(&fragment_fn);
         desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
