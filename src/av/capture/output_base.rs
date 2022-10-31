@@ -23,6 +23,7 @@ extern "C" {
     ) -> Option<&av::CaptureConnection>;
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum DataDroppedReason {
     None = 0,

@@ -33,6 +33,7 @@ impl Level {
 }
 
 #[cfg(not(target_os = "macos"))]
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum Factors {
     None = 0,

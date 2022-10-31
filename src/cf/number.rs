@@ -2,7 +2,7 @@ use crate::{define_cf_type, FourCharCode};
 
 use super::{Allocator, ComparisonResult, Index, Retained, Type, TypeId};
 
-use std::{convert::From, ffi::c_void};
+use std::{convert::From, ffi::c_void, time::Duration};
 
 define_cf_type!(Boolean(Type));
 
@@ -371,6 +371,22 @@ impl Number {
     #[inline]
     pub fn from_f64(value: f64) -> Option<Retained<Number>> {
         unsafe { Number::create(None, NumberType::F64, &value as *const _ as _) }
+    }
+
+    /// ```
+    /// use cidre::cf;
+    /// use std::time::Duration;
+    ///
+    /// let num = cf::Number::from_duration(Duration::from_secs(1));
+    /// assert_eq!(num.number_type(), cf::NumberType::F64);
+    /// assert_eq!(8, num.byte_size());
+    /// assert_eq!(1f64, num.to_f64().unwrap());
+    /// ```
+    #[inline]
+    pub fn from_duration(value: Duration) -> Retained<Number> {
+        unsafe {
+            Number::create(None, NumberType::F64, &value.as_secs_f64() as *const _ as _).unwrap_unchecked()
+        }
     }
 }
 
