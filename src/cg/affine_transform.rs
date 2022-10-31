@@ -1,6 +1,6 @@
 use crate::cg;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct AffineTransform {
     pub a: f64,
@@ -101,6 +101,20 @@ impl AffineTransform {
     #[inline]
     pub fn decompose(&self) -> Components {
         unsafe { CGAffineTransformDecompose(*self) }
+    }
+}
+
+impl PartialEq for AffineTransform {
+    /// ```
+    /// use cidre::cg::AffineTransform;
+    /// 
+    /// let a = AffineTransform::identity();
+    /// assert!(a.is_identity());
+    /// assert_eq!(a, AffineTransform::identity());
+    /// ```
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.equal_to(other)
     }
 }
 
