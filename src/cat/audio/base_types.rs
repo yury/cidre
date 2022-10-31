@@ -1,4 +1,4 @@
-use crate::os;
+use crate::{os, define_options};
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
 pub mod errors {
@@ -417,6 +417,7 @@ pub struct SMPTETime {
     pub frames: i16,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct TimeStamp {
     /// The absolute sample frame time.
@@ -470,6 +471,7 @@ pub struct ClassDescription {
 }
 
 /// A tag identifying how the channel is to be used.
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ChannelLabel(pub u32);
 
@@ -622,6 +624,7 @@ impl ChannelLabel {
 
 /// These constants are for use in the mChannelBitmap field of an
 /// AudioChannelLayout structure
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ChannelBitmap(pub u32);
 
@@ -655,11 +658,10 @@ impl ChannelBitmap {
     pub const RIGHT_TOP_REAR: Self = Self(1u32 << 26);
 }
 
+define_options!(ChannelFlags(u32));
+
 /// These constants are used in the mChannelFlags field of an
 /// AudioChannelDescription structure.
-#[repr(transparent)]
-pub struct ChannelFlags(pub u32);
-
 impl ChannelFlags {
     pub const ALL_OFF: Self = Self(0);
 
@@ -678,6 +680,7 @@ impl ChannelFlags {
 
 /// Constants for indexing the mCoordinates array in an AudioChannelDescription
 /// structure.
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ChannelCoordinateIndex(pub u32);
 
@@ -732,6 +735,7 @@ impl ChannelCoordinateIndex {
 /// Rtr - right top rear
 /// Lt - left matrix total. for matrix encoded stereo.
 /// Rt - right matrix total. for matrix encoded stereo.
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ChannelLayoutTag(pub u32);
 
@@ -1153,6 +1157,7 @@ impl ChannelLayoutTag {
 }
 
 /// This structure describes a single channel.
+#[derive(Debug)]
 #[repr(C)]
 pub struct ChannelDescription {
     /// The AudioChannelLabel that describes the channel.
@@ -1165,6 +1170,7 @@ pub struct ChannelDescription {
     pub coordinates: [f32; 3],
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct ChannelLayout<const N: usize> {
     pub channel_layout_tag: ChannelLayoutTag,
@@ -1173,12 +1179,14 @@ pub struct ChannelLayout<const N: usize> {
     pub channel_descriptions: [ChannelDescription; N],
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct FormatListItem {
     pub asbd: StreamBasicDescription,
     pub channel_layout_tag: ChannelLayoutTag,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct MPEG4ObjectID(pub i64);
 
