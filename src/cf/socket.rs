@@ -8,6 +8,7 @@ use crate::define_options;
 
 define_cf_type!(Socket(cf::Type));
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Error(cf::Index);
 
@@ -17,6 +18,7 @@ impl Error {
     pub const TIMEOUT: Self = Error(-2);
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Signature {
     pub protocol_family: i32,

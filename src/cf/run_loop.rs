@@ -4,6 +4,7 @@ use crate::{cf, define_cf_type};
 
 use super::Retained;
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(i32)]
 pub enum RunResult {
     /// The run loop mode mode has no sources or timers.

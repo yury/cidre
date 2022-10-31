@@ -37,6 +37,7 @@ impl Set {
     }
 }
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct SetOf<T: Retain + Release>(Set, PhantomData<T>);
 

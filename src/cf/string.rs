@@ -38,6 +38,7 @@ impl String {
     ///
     /// assert_eq!(cf::String::type_id(), 7);
     ///```
+    #[inline]
     pub fn type_id() -> TypeId {
         unsafe { CFStringGetTypeID() }
     }
@@ -48,7 +49,7 @@ impl String {
     /// let s1 = cf::String::from_str_no_copy("nice");
     /// let s2 = cf::String::from_str_no_copy("nice");
     ///
-    /// assert_eq!(4, s1.get_length());
+    /// assert_eq!(4, s1.length());
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
@@ -74,7 +75,7 @@ impl String {
     /// let s2 = cf::String::from_str("nice");
     /// let s3 = cf::String::from_str("nice string");
     ///
-    /// assert_eq!(4, s1.get_length());
+    /// assert_eq!(4, s1.length());
     /// assert!(s1.equal(&s2));
     /// assert!(s3.has_prefix(&s2));
     ///```
@@ -114,7 +115,7 @@ impl String {
     }
 
     #[inline]
-    pub fn get_length(&self) -> Index {
+    pub fn length(&self) -> Index {
         unsafe { CFStringGetLength(self) }
     }
 
@@ -252,7 +253,7 @@ impl<'a> From<&'a String> for Cow<'a, str> {
             if c_str.is_null() {
                 let range = crate::cf::Range {
                     location: 0,
-                    length: cfstr.get_length(),
+                    length: cfstr.length(),
                 };
                 let mut bytes_required: Index = 0;
                 CFStringGetBytes(
@@ -429,7 +430,7 @@ mod tests {
     #[test]
     fn it_works() {
         let s = cf::String::from_str("hello");
-        assert_eq!(s.get_length(), 5);
+        assert_eq!(s.length(), 5);
         let std_str = s.to_string();
         assert_eq!(std_str.chars().count(), 5);
     }
