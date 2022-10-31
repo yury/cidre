@@ -44,7 +44,7 @@ impl AffineTransform {
     }
 
     #[inline]
-    pub fn identity() -> AffineTransform {
+    pub fn identity() -> Self {
         unsafe { CGAffineTransformIdentity }
     }
 
@@ -69,32 +69,32 @@ impl AffineTransform {
     }
 
     #[inline]
-    pub fn translate(&self, tx: f64, ty: f64) -> AffineTransform {
+    pub fn translate(&self, tx: f64, ty: f64) -> Self {
         unsafe { CGAffineTransformTranslate(*self, tx, ty) }
     }
 
     #[inline]
-    pub fn scale(&self, sx: f64, sy: f64) -> AffineTransform {
+    pub fn scale(&self, sx: f64, sy: f64) -> Self {
         unsafe { CGAffineTransformScale(*self, sx, sy) }
     }
 
     #[inline]
-    pub fn rotate(&self, angle: f64) -> AffineTransform {
+    pub fn rotate(&self, angle: f64) -> Self {
         unsafe { CGAffineTransformRotate(*self, angle) }
     }
 
     #[inline]
-    pub fn invert(&self) -> AffineTransform {
+    pub fn invert(&self) -> Self {
         unsafe { CGAffineTransformInvert(*self) }
     }
 
     #[inline]
-    pub fn concat(&self, other: &AffineTransform) -> AffineTransform {
+    pub fn concat(&self, other: &Self) -> Self {
         unsafe { CGAffineTransformConcat(*self, *other) }
     }
 
     #[inline]
-    pub fn equal_to(&self, other: &AffineTransform) -> bool {
+    pub fn equal_to(&self, other: &Self) -> bool {
         unsafe { CGAffineTransformEqualToTransform(*self, *other) }
     }
 
@@ -120,7 +120,7 @@ impl PartialEq for AffineTransform {
 
 impl cg::Point {
     #[inline]
-    pub fn apply_affine_transform(&self, t: &AffineTransform) -> cg::Point {
+    pub fn apply_affine_transform(&self, t: &AffineTransform) -> Self {
         cg::Point {
             x: t.a * self.x + t.c * self.y + t.tx,
             y: t.b * self.x + t.d * self.y + t.ty,
@@ -130,7 +130,7 @@ impl cg::Point {
 
 impl cg::Size {
     #[inline]
-    pub fn apply_affine_transform(&self, t: &AffineTransform) -> cg::Size {
+    pub fn apply_affine_transform(&self, t: &AffineTransform) -> Self {
         cg::Size {
             width: t.a * self.width + t.c * self.height,
             height: t.b * self.width + t.d * self.height,
@@ -140,7 +140,7 @@ impl cg::Size {
 
 impl cg::Rect {
     #[inline]
-    pub fn apply_affine_transform(&self, t: &AffineTransform) -> cg::Rect {
+    pub fn apply_affine_transform(&self, t: &AffineTransform) -> Self {
         unsafe { CGRectApplyAffineTransform(*self, *t) }
     }
 }
