@@ -158,7 +158,6 @@ extern "C" {
 
 }
 
-// pub type Category = cf::String;
 define_cf_type!(Category(cf::String));
 
 impl Category {
@@ -222,10 +221,10 @@ extern "C" {
     static AVAudioSessionCategoryMultiRoute: &'static Category;
 }
 
-/// Modes modify the audio category in order to introduce behavior that is tailored to the specific
-/// use of audio within an application.  Available in iOS 5.0 and greater.
-pub type Mode = cf::String;
+define_cf_type!(Mode(cf::String));
 
+/// Modes modify the audio category in order to introduce behavior that is tailored to the specific
+/// use of audio within an application. Available in iOS 5.0 and greater.
 impl Mode {
     #[inline]
     pub fn default() -> &'static Self {
@@ -312,12 +311,14 @@ extern "C" {
 
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum ActivationOptions {
     None = 0,
 }
 
 /// For use with overrideOutputAudioPort:error:
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PortOverride {
     /// No override.  Return audio routing to the default state for the current audio category.
@@ -329,6 +330,7 @@ pub enum PortOverride {
 
 /// Values for AVAudioSessionRouteChangeReasonKey in AVAudioSessionRouteChangeNotification's
 /// userInfo dictionary
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RouteChangeReason {
     /// The reason is unknown.
