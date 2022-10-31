@@ -22,6 +22,7 @@ pub struct ValueRange {
 }
 
 /// A structure to hold a buffer of audio data.
+#[derive(Debug)]
 #[repr(C)]
 pub struct Buffer<const N: usize> {
     /// The number of interleaved channels in the buffer.
@@ -33,6 +34,7 @@ pub struct Buffer<const N: usize> {
 }
 
 /// A variable length array of AudioBuffer structures.
+#[derive(Debug)]
 #[repr(C)]
 pub struct BufferList<const L: usize, const N: usize> {
     pub number_buffers: u32,

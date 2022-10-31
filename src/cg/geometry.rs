@@ -25,7 +25,7 @@ impl Point {
     }
 
     #[inline]
-    pub fn make(x: Float, y: Float) -> Self {
+    pub fn new(x: Float, y: Float) -> Self {
         Self { x, y }
     }
 }
@@ -53,7 +53,7 @@ impl Size {
     }
 
     #[inline]
-    pub fn make(width: Float, height: Float) -> Self {
+    pub fn new(width: Float, height: Float) -> Self {
         Self { width, height }
     }
 }
@@ -82,7 +82,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn make(x: Float, y: Float, width: Float, height: Float) -> Self {
+    pub fn new(x: Float, y: Float, width: Float, height: Float) -> Self {
         Self {
             origin: Point { x, y },
             size: Size { width, height },
