@@ -8,8 +8,9 @@ impl UUID {
         unsafe { CFUUIDGetTypeID() }
     }
 
+    /// CFUUIDCreate
     #[inline]
-    pub fn create(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<UUID>> {
+    pub fn new_in(alloc: Option<&cf::Allocator>) -> Option<cf::Retained<UUID>> {
         unsafe { CFUUIDCreate(alloc) }
     }
 
@@ -18,10 +19,12 @@ impl UUID {
     ///
     /// let uuid = cf::UUID::new();
     /// uuid.show();
+    /// let uuid2 = cf::UUID::new();
+    /// assert!(!uuid.equal(&uuid2));
     /// ```
     #[inline]
     pub fn new() -> cf::Retained<UUID> {
-        unsafe { Self::create(None).unwrap_unchecked() }
+        unsafe { Self::new_in(None).unwrap_unchecked() }
     }
 
     #[inline]

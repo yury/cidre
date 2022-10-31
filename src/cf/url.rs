@@ -16,6 +16,7 @@ impl URL {
         unsafe { CFURLGetTypeID() }
     }
 
+    /// CFURLCreateWithBytes
     #[inline]
     pub fn with_bytes_in(
         allocator: Option<&cf::Allocator>,
