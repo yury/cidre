@@ -1,5 +1,6 @@
 use crate::{av::audio, cf, define_obj_type, ns};
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum PrimeMethod {
     /// Primes with leading + trailing input frames.
@@ -10,12 +11,14 @@ pub enum PrimeMethod {
     None = 2,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(C)]
 pub struct PrimeInfo {
     pub leading_frames: audio::FrameCount,
     pub trailing_frames: audio::FrameCount,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum InputStatus {
     /// This is the normal case where you supply data to the converter.
@@ -29,6 +32,7 @@ pub enum InputStatus {
     EndOfStream = 2,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum OutputStatus {
     /// All of the requested data was returned.

@@ -10,9 +10,9 @@ impl MetadataOutput {
     ///
     /// let mut output = av::CaptureMetadataOutput::new();
     ///
-    /// let rect = cg::Rect::make(0.0, 0.0, 1.0, 1.0);
+    /// let rect = cg::Rect::new(0.0, 0.0, 1.0, 1.0);
     /// assert_eq!(output.rect_of_intereset(), rect);
-    /// let rect = cg::Rect::make(0.0, 0.0, 0.5, 0.5);
+    /// let rect = cg::Rect::new(0.0, 0.0, 0.5, 0.5);
     /// output.set_rect_of_interest(rect);
     /// assert_eq!(output.rect_of_intereset(), rect);
     /// ```
