@@ -124,24 +124,28 @@ impl String {
         unsafe { CFStringHasSuffix(self, suffix) }
     }
 
+    /// CFStringHasPrefix
     #[inline]
     pub fn has_prefix(&self, prefix: &String) -> bool {
         unsafe { CFStringHasPrefix(self, prefix) }
     }
 
+
+    /// CFStringGetCharacterAtIndex
     #[inline]
-    pub fn get_character_at_index(&self, idx: Index) -> UniChar {
+    pub fn character_at_index(&self, idx: Index) -> UniChar {
         unsafe { CFStringGetCharacterAtIndex(self, idx) }
     }
 
+    /// CFStringCreateCopy
     #[inline]
-    pub fn create_copy(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
+    pub fn copy_in(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
         unsafe { CFStringCreateCopy(alloc, self) }
     }
 
     #[inline]
     pub fn copy(&self) -> Option<Retained<String>> {
-        self.create_copy(None)
+        self.copy_in(None)
     }
 
     #[inline]
@@ -212,7 +216,7 @@ impl String {
     }
 
     #[inline]
-    pub fn create_mutable_copy(
+    pub fn mutable_copy_in(
         &self,
         alloc: Option<&Allocator>,
         max_length: Index,
@@ -222,7 +226,7 @@ impl String {
 
     #[inline]
     pub fn mutable_copy(&self, max_length: Index) -> Option<Retained<MutableString>> {
-        self.create_mutable_copy(None, max_length)
+        self.mutable_copy_in(None, max_length)
     }
 }
 
