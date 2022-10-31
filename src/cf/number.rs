@@ -262,12 +262,12 @@ impl Number {
     }
 
     #[inline]
-    pub fn positive_inifinity() -> &'static Self {
+    pub fn positive_infinity() -> &'static Self {
         unsafe { kCFNumberPositiveInfinity }
     }
 
     #[inline]
-    pub fn negative_inifinity() -> &'static Self {
+    pub fn negative_infinity() -> &'static Self {
         unsafe { kCFNumberNegativeInfinity }
     }
 
