@@ -418,6 +418,13 @@ impl From<i64> for Retained<Number> {
     }
 }
 
+impl From<Duration> for Retained<Number> {
+    #[inline]
+    fn from(value: Duration) -> Self {
+        Number::from_duration(value)
+    }
+}
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFBooleanGetTypeID() -> TypeId;
