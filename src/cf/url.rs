@@ -1,5 +1,6 @@
 use crate::{cf, cf::Retained, define_cf_type};
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum PathStyle {
     Posix = 0,
@@ -16,7 +17,7 @@ impl URL {
     }
 
     #[inline]
-    pub fn create_with_bytes(
+    pub fn with_bytes_in(
         allocator: Option<&cf::Allocator>,
         url_bytes: *const u8,
         length: cf::Index,
@@ -27,7 +28,7 @@ impl URL {
     }
 
     #[inline]
-    pub fn create_with_string(
+    pub fn with_string_in(
         allocator: Option<&cf::Allocator>,
         url_string: &cf::String,
         base_url: Option<&URL>,
@@ -36,7 +37,7 @@ impl URL {
     }
 
     #[inline]
-    pub fn create_with_file_system_path(
+    pub fn with_file_system_path_in(
         allocator: Option<&cf::Allocator>,
         file_path: &cf::String,
         path_style: PathStyle,
@@ -55,7 +56,7 @@ impl URL {
     /// ```
     #[inline]
     pub fn from_str(str: &str) -> Option<Retained<URL>> {
-        Self::create_with_bytes(
+        Self::with_bytes_in(
             None,
             str.as_ptr(),
             str.len() as _,
@@ -75,7 +76,7 @@ impl URL {
     /// ```
     #[inline]
     pub fn from_string(str: &cf::String) -> Option<Retained<URL>> {
-        Self::create_with_string(None, str, None)
+        Self::with_string_in(None, str, None)
     }
 
     /// Returns the URL's string. Percent-escape sequences are not removed
