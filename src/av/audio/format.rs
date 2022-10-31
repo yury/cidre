@@ -6,6 +6,7 @@ use crate::{at::audio::StreamBasicDescription, cf, define_obj_type, ns};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum CommonFormat {
     /// A format other than one of the common ones below.
@@ -88,26 +89,32 @@ impl Format {
         unsafe { transmute(rsel_settings(self)) }
     }
 
+    #[inline]
     pub fn is_interleaved(&self) -> bool {
         unsafe { rsel_isInterleaved(self) }
     }
 
+    #[inline]
     pub fn common_format(&self) -> CommonFormat {
         unsafe { rsel_commonFormat(self) }
     }
 
+    #[inline]
     pub fn channel_count(&self) -> ChannelCount {
         unsafe { av_format_rsel_channelCount(self) }
     }
 
+    #[inline]
     pub fn absd(&self) -> &StreamBasicDescription {
         unsafe { rsel_streamDescription(self) }
     }
 
+    #[inline]
     pub fn channel_layout(&self) -> Option<&ChannelLayout> {
         unsafe { rsel_channelLayout(self) }
     }
 
+    #[inline]
     pub fn magic_cookie(&self) -> Option<&cf::Data> {
         unsafe { rsel_magicCookie(self) }
     }

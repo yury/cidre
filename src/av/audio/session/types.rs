@@ -1,6 +1,6 @@
-use crate::cf;
+use crate::{cf, define_cf_type};
 
-pub type Port = cf::String;
+define_cf_type!(Port(cf::String));
 
 impl Port {
     /* input port types */
@@ -158,7 +158,8 @@ extern "C" {
 
 }
 
-pub type Category = cf::String;
+// pub type Category = cf::String;
+define_cf_type!(Category(cf::String));
 
 impl Category {
     /// Use this category for background sounds such as rain, car engine noise, etc.
@@ -506,6 +507,7 @@ impl CategoryOptions {
 
 /// Values for AVAudioSessionInterruptionTypeKey in AVAudioSessionInterruptionNotification's
 /// userInfo dictionary.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum InterruptionType {
     /// the system has interrupted your audio session
@@ -516,6 +518,7 @@ pub enum InterruptionType {
 
 /// Values for AVAudioSessionInterruptionOptionKey in AVAudioSessionInterruptionNotification's
 /// userInfo dictionary.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum InterruptionOptions {
     None = 0,
@@ -524,6 +527,7 @@ pub enum InterruptionOptions {
 }
 
 /// Values for AVAudioSessionInterruptionReasonKey in AVAudioSessionInterruptionNotification's userInfo dictionary.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum InterruptionReason {
     /// The audio session was interrupted because another session was activated.
@@ -542,6 +546,7 @@ pub enum InterruptionReason {
 }
 
 ///  options for use when calling setActive:withOptions:error:
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum SetActiveOptions {
     None = 0,
@@ -553,6 +558,7 @@ pub enum SetActiveOptions {
 /// Values for AVAudioSessionSilenceSecondaryAudioHintTypeKey in
 /// AVAudioSessionSilenceSecondaryAudioHintNotification's userInfo dictionary, to indicate whether
 /// optional secondary audio muting should begin or end.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum SilenceSecondaryAudioHintType {
     /// Another application's primary audio has started.
@@ -577,6 +583,7 @@ pub enum SilenceSecondaryAudioHintType {
 ///  
 /// Apps that don't use AVCaptureSession and use AVAudioSessionCategoryPlayAndRecord will continue
 /// to have aggregated audio I/O, as in previous versions of iOS.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum IOType {
     /// The default value.  If your app does not use AVCaptureSession or does not have any specific
@@ -601,6 +608,7 @@ pub enum IOType {
 /// Starting in iOS 11, tvOS 11, and watchOS 5, the route sharing policy allows a session
 /// to specify that its output audio should be routed somewhere other than the default system output,
 /// when appropriate alternative routes are available.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RouteSharingPolicy {
     /// Follow normal rules for routing audio output.
@@ -637,6 +645,7 @@ pub enum RouteSharingPolicy {
 /// Sessions that issue voice prompts are encouraged to pay attention to changes in the prompt style and
 /// modify their prompts in response. Apple encourages the use of non-verbal prompts when the Short
 /// style is requested.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PromptStyle {
     /// Indicates that another session is actively using microphone input and would be negatively impacted
@@ -654,6 +663,7 @@ pub enum PromptStyle {
 /// Constants indicating stereo input audio orientation,
 /// for use with built-in mic input data sources with
 /// a stereo polar pattern selected.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
 pub enum StereoOrientation {
     /// Indicates that audio capture orientation is not applicable (on mono capture, for instance).
@@ -668,6 +678,7 @@ pub enum StereoOrientation {
     LandscapeLeft = 4,
 }
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RecordPermission {
     /// The user has not yet been asked for permission.

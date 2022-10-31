@@ -59,6 +59,7 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::vn;
+
     #[test]
     fn basics() {
         let request = vn::DetectBarcodesRequest::new();
