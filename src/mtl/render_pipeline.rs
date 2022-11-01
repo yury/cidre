@@ -1,9 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{
-    cf::{ArrayOf, Retained},
-    define_mtl, define_obj_type, msg_send, ns,
-};
+use crate::{cf, define_mtl, define_obj_type, msg_send, ns};
 
 use super::{argument::Argument, Function, PixelFormat};
 
@@ -220,24 +217,24 @@ define_obj_type!(Reflection(ns::Id));
 
 impl Reflection {
     #[inline]
-    pub fn vertex_arguments(&self) -> Option<&ArrayOf<Argument>> {
+    pub fn vertex_arguments(&self) -> Option<&cf::ArrayOf<Argument>> {
         unsafe { rsel_vertexArguments(self) }
     }
     #[inline]
-    pub fn fragment_arguments(&self) -> Option<&ArrayOf<Argument>> {
+    pub fn fragment_arguments(&self) -> Option<&cf::ArrayOf<Argument>> {
         unsafe { rsel_fragmentArguments(self) }
     }
     #[inline]
-    pub fn tile_arguments(&self) -> Option<&ArrayOf<Argument>> {
+    pub fn tile_arguments(&self) -> Option<&cf::ArrayOf<Argument>> {
         unsafe { rsel_tileArguments(self) }
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_vertexArguments(id: &ns::Id) -> Option<&ArrayOf<Argument>>;
-    fn rsel_fragmentArguments(id: &ns::Id) -> Option<&ArrayOf<Argument>>;
-    fn rsel_tileArguments(id: &ns::Id) -> Option<&ArrayOf<Argument>>;
+    fn rsel_vertexArguments(id: &ns::Id) -> Option<&cf::ArrayOf<Argument>>;
+    fn rsel_fragmentArguments(id: &ns::Id) -> Option<&cf::ArrayOf<Argument>>;
+    fn rsel_tileArguments(id: &ns::Id) -> Option<&cf::ArrayOf<Argument>>;
 }
 
 define_obj_type!(Descriptor(ns::Id));
@@ -255,7 +252,7 @@ impl Descriptor {
     ///
     /// desc.reset();
     /// ```
-    pub fn new() -> Retained<Descriptor> {
+    pub fn new() -> cf::Retained<Descriptor> {
         unsafe { MTLRenderPipelineDescriptor_new() }
     }
 
@@ -310,7 +307,7 @@ impl Descriptor {
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPipelineDescriptor_new() -> Retained<Descriptor>;
+    fn MTLRenderPipelineDescriptor_new() -> cf::Retained<Descriptor>;
     fn rsel_vertexFunction(id: &ns::Id) -> Option<&Function>;
     fn wsel_setVertexFunction(id: &mut ns::Id, value: Option<&Function>);
 

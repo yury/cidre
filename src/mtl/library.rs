@@ -1,9 +1,6 @@
 use std::{fmt::Debug, intrinsics::transmute};
 
-use crate::{
-    cf::{self, Retained},
-    define_mtl, define_obj_type, msg_send, mtl, ns,
-};
+use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
@@ -51,7 +48,7 @@ impl CompileOptions {
     /// assert_eq!(options.language_version(), mtl::LanguageVersion::_2_4);
     ///
     /// ```
-    pub fn new() -> Retained<CompileOptions> {
+    pub fn new() -> cf::Retained<CompileOptions> {
         unsafe { MTLCompileOptions_new() }
     }
 
@@ -86,7 +83,7 @@ impl Function {
     pub fn new_argument_encoder_with_buffer_index(
         &self,
         index: ns::UInteger,
-    ) -> Retained<mtl::ArgumentEncoder> {
+    ) -> cf::Retained<mtl::ArgumentEncoder> {
         unsafe { rsel_newArgumentEncoderWithBufferIndex(self, index) }
     }
 }
@@ -130,7 +127,7 @@ impl Library {
     /// assert!(func_name.equal(&name));
     ///
     /// ```
-    pub fn new_function_with_name(&self, name: &cf::String) -> Option<Retained<Function>> {
+    pub fn new_function_with_name(&self, name: &cf::String) -> Option<cf::Retained<Function>> {
         unsafe { rsel_newFunctionWithName(self, name) }
     }
 
@@ -142,7 +139,7 @@ impl Library {
         name: &cf::String,
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&'ar cf::Error>,
-    ) -> Option<Retained<Function>> {
+    ) -> Option<cf::Retained<Function>> {
         rsel_newFunctionWithName_constantValues_error(self, name, constant_values, error)
     }
 
@@ -165,7 +162,7 @@ impl Library {
         &self,
         name: &cf::String,
         constant_values: &mtl::FunctionConstantValues,
-    ) -> Result<Retained<Function>, &'ar cf::Error> {
+    ) -> Result<cf::Retained<Function>, &'ar cf::Error> {
         let mut error = None;
 
         let res = unsafe {
@@ -251,7 +248,7 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLCompileOptions_new() -> Retained<CompileOptions>;
+    fn MTLCompileOptions_new() -> cf::Retained<CompileOptions>;
     fn rsel_fastMathEnabled(id: &ns::Id) -> bool;
     fn wsel_setFastMathEnabled(id: &mut ns::Id, value: bool);
 
@@ -260,18 +257,18 @@ extern "C" {
 
     fn rsel_functionNames(id: &ns::Id) -> &cf::ArrayOf<cf::String>;
 
-    fn rsel_newFunctionWithName(id: &Library, name: &cf::String) -> Option<Retained<Function>>;
+    fn rsel_newFunctionWithName(id: &Library, name: &cf::String) -> Option<cf::Retained<Function>>;
     fn rsel_newFunctionWithName_constantValues_error<'ar>(
         id: &Library,
         name: &cf::String,
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&'ar cf::Error>,
-    ) -> Option<Retained<Function>>;
+    ) -> Option<cf::Retained<Function>>;
 
     fn rsel_newArgumentEncoderWithBufferIndex(
         id: &Function,
         index: ns::UInteger,
-    ) -> Retained<mtl::ArgumentEncoder>;
+    ) -> cf::Retained<mtl::ArgumentEncoder>;
 }
 
 #[cfg(test)]

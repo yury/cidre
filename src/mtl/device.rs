@@ -1,9 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
-    cf::{self, Retained},
-    define_obj_type, define_options, io, msg_send, mtl, ns,
-    objc::block::CompletionHandlerAB,
+    cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::block::CompletionHandlerAB,
 };
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
@@ -56,7 +54,7 @@ impl Device {
     /// let device = mtl::Device::default().unwrap();
     /// ```
     #[inline]
-    pub fn default() -> Option<Retained<Device>> {
+    pub fn default() -> Option<cf::Retained<Device>> {
         unsafe { MTLCreateSystemDefaultDevice() }
     }
 
@@ -144,7 +142,7 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[inline]
-    pub fn command_queue(&self) -> Option<Retained<CommandQueue>> {
+    pub fn command_queue(&self) -> Option<cf::Retained<CommandQueue>> {
         msg_send!("mtl", self, sel_newCommandQueue)
     }
 
@@ -161,7 +159,7 @@ impl Device {
     pub fn command_queue_with_max_command_buffer_count(
         &self,
         max_command_buffer_count: usize,
-    ) -> Option<Retained<CommandQueue>> {
+    ) -> Option<cf::Retained<CommandQueue>> {
         unsafe { rsel_newCommandQueueWithMaxCommandBufferCount(self, max_command_buffer_count) }
     }
 
@@ -179,7 +177,7 @@ impl Device {
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<Retained<mtl::Texture>> {
+    ) -> Option<cf::Retained<mtl::Texture>> {
         unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
     }
 
@@ -189,7 +187,7 @@ impl Device {
         descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
         plane: usize,
-    ) -> Option<Retained<mtl::Texture>> {
+    ) -> Option<cf::Retained<mtl::Texture>> {
         unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
     }
 
@@ -201,7 +199,7 @@ impl Device {
     /// assert!(device.default_library().is_none());
     /// ```
     #[inline]
-    pub fn default_library(&self) -> Option<Retained<Library>> {
+    pub fn default_library(&self) -> Option<cf::Retained<Library>> {
         unsafe { rsel_newDefaultLibrary(self) }
     }
 
@@ -222,7 +220,7 @@ impl Device {
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&cf::Error>,
-    ) -> Option<Retained<Library>> {
+    ) -> Option<cf::Retained<Library>> {
         unsafe { rsel_newLibraryWithSource_options_error(self, source, options, error) }
     }
 
@@ -231,7 +229,7 @@ impl Device {
         &self,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<Retained<Library>, &'a cf::Error> {
+    ) -> Result<cf::Retained<Library>, &'a cf::Error> {
         let mut error = None;
         let res = Self::library_with_source_and_error(self, source, options, &mut error);
 
@@ -266,7 +264,7 @@ impl Device {
         &self,
         function: &mtl::Function,
         error: &mut Option<&cf::Error>,
-    ) -> Option<Retained<mtl::ComputePipelineState>> {
+    ) -> Option<cf::Retained<mtl::ComputePipelineState>> {
         unsafe { rsel_newComputePipelineStateWithFunction_error(self, function, error) }
     }
 
@@ -275,7 +273,7 @@ impl Device {
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&cf::Error>,
-    ) -> Option<Retained<mtl::RenderPipelineState>> {
+    ) -> Option<cf::Retained<mtl::RenderPipelineState>> {
         rsel_newRenderPipelineStateWithDescriptor_error(self, descriptor, error)
     }
 
@@ -283,7 +281,7 @@ impl Device {
     pub fn render_pipeline_state_with_descriptor<'a>(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
-    ) -> Result<Retained<mtl::RenderPipelineState>, &'a cf::Error> {
+    ) -> Result<cf::Retained<mtl::RenderPipelineState>, &'a cf::Error> {
         let mut error = None;
         unsafe {
             let res =
@@ -300,7 +298,7 @@ impl Device {
     pub fn compute_pipeline_state_with_function<'ar>(
         &self,
         function: &mtl::Function,
-    ) -> Result<Retained<mtl::ComputePipelineState>, &'ar cf::Error> {
+    ) -> Result<cf::Retained<mtl::ComputePipelineState>, &'ar cf::Error> {
         let mut error = None;
         let res = self.compute_pipeline_state_with_function_error(function, &mut error);
 
@@ -316,7 +314,7 @@ impl Device {
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<Buffer>> {
+    ) -> Option<cf::Retained<Buffer>> {
         unsafe { rsel_newBufferWithLength_options(self, length, options) }
     }
 
@@ -326,7 +324,7 @@ impl Device {
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<Buffer>> {
+    ) -> Option<cf::Retained<Buffer>> {
         unsafe { rsel_newBufferWithBytes_length_options(self, bytes, length, options) }
     }
 
@@ -334,7 +332,7 @@ impl Device {
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<Buffer>> {
+    ) -> Option<cf::Retained<Buffer>> {
         self.buffer_with_bytes_length_and_options(
             slice.as_ptr() as _,
             std::mem::size_of::<T>() * slice.len(),
@@ -352,7 +350,7 @@ impl Device {
     /// fence.set_label(Some(&label));
     /// ```
     #[inline]
-    pub fn fence(&self) -> Option<Retained<Fence>> {
+    pub fn fence(&self) -> Option<cf::Retained<Fence>> {
         msg_send!("mtl", self, sel_newFence)
     }
 
@@ -366,7 +364,7 @@ impl Device {
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
-    pub fn event(&self) -> Option<Retained<Event>> {
+    pub fn event(&self) -> Option<cf::Retained<Event>> {
         unsafe { rsel_newEvent(self) }
     }
 
@@ -380,7 +378,7 @@ impl Device {
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
-    pub fn shared_event(&self) -> Option<Retained<SharedEvent>> {
+    pub fn shared_event(&self) -> Option<cf::Retained<SharedEvent>> {
         unsafe { rsel_newSharedEvent(self) }
     }
 
@@ -414,14 +412,14 @@ impl Device {
     pub fn new_heap_with_descriptor(
         &self,
         descriptor: &mtl::HeapDescriptor,
-    ) -> Option<Retained<mtl::Heap>> {
+    ) -> Option<cf::Retained<mtl::Heap>> {
         unsafe { rsel_newHeapWithDescriptor(self, descriptor) }
     }
 }
 
 #[link(name = "Metal", kind = "framework")]
 extern "C" {
-    fn MTLCreateSystemDefaultDevice() -> Option<Retained<Device>>;
+    fn MTLCreateSystemDefaultDevice() -> Option<cf::Retained<Device>>;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -443,29 +441,29 @@ extern "C" {
     fn rsel_newCommandQueueWithMaxCommandBufferCount(
         id: &Device,
         maxCommandBufferCount: usize,
-    ) -> Option<Retained<CommandQueue>>;
+    ) -> Option<cf::Retained<CommandQueue>>;
 
     // reuse in Heap
     fn rsel_newTextureWithDescriptor(
         id: &ns::Id,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<Retained<mtl::Texture>>;
+    ) -> Option<cf::Retained<mtl::Texture>>;
 
     fn rsel_newTextureWithDescriptor_iosurface_plane(
         id: &Device,
         descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
         plane: usize,
-    ) -> Option<Retained<mtl::Texture>>;
+    ) -> Option<cf::Retained<mtl::Texture>>;
 
-    fn rsel_newDefaultLibrary(id: &Device) -> Option<Retained<Library>>;
+    fn rsel_newDefaultLibrary(id: &Device) -> Option<cf::Retained<Library>>;
 
     fn rsel_newLibraryWithSource_options_error(
         id: &Device,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&cf::Error>,
-    ) -> Option<Retained<Library>>;
+    ) -> Option<cf::Retained<Library>>;
 
     // NS_RETURNS_RETAINED
     // rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
@@ -473,34 +471,34 @@ extern "C" {
         id: &Device,
         function: &mtl::Function,
         error: &mut Option<&'a cf::Error>,
-    ) -> Option<Retained<mtl::ComputePipelineState>>;
+    ) -> Option<cf::Retained<mtl::ComputePipelineState>>;
 
     fn rsel_newRenderPipelineStateWithDescriptor_error<'a>(
         id: &Device,
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&'a cf::Error>,
-    ) -> Option<Retained<mtl::RenderPipelineState>>;
+    ) -> Option<cf::Retained<mtl::RenderPipelineState>>;
 
     // reuse this in Heap
     fn rsel_newBufferWithLength_options(
         id: &ns::Id,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<Buffer>>;
+    ) -> Option<cf::Retained<Buffer>>;
 
     fn rsel_newBufferWithBytes_length_options(
         id: &Device,
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<Buffer>>;
+    ) -> Option<cf::Retained<Buffer>>;
 
     // fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
-    fn rsel_newEvent(id: &Device) -> Option<Retained<Event>>;
+    fn rsel_newEvent(id: &Device) -> Option<cf::Retained<Event>>;
 
     fn rsel_maxBufferLength(id: &Device) -> usize;
 
-    fn rsel_newSharedEvent(id: &Device) -> Option<Retained<SharedEvent>>;
+    fn rsel_newSharedEvent(id: &Device) -> Option<cf::Retained<SharedEvent>>;
 
     fn rsel_heapTextureSizeAndAlignWithDescriptor(
         id: &Device,
@@ -516,7 +514,7 @@ extern "C" {
     fn rsel_newHeapWithDescriptor(
         id: &Device,
         descriptor: &mtl::HeapDescriptor,
-    ) -> Option<Retained<mtl::Heap>>;
+    ) -> Option<cf::Retained<mtl::Heap>>;
 }
 
 #[cfg(test)]

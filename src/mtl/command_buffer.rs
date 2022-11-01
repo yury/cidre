@@ -1,8 +1,7 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, msg_send};
+use crate::{define_mtl, define_obj_type, msg_send, ns};
 
-use crate::ns::Id;
 use crate::objc::block::CompletionHandlerA;
 
 use super::{
@@ -43,7 +42,7 @@ pub enum DispatchType {
     Concurrent,
 }
 
-define_obj_type!(CommandBuffer(Id));
+define_obj_type!(CommandBuffer(ns::Id));
 
 impl CommandBuffer {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
@@ -126,6 +125,6 @@ impl CommandBuffer {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn sel_addScheduledHandler(id: &Id, rb: *const c_void);
-    fn sel_addCompletedHandler(id: &Id, rb: *const c_void);
+    fn sel_addScheduledHandler(id: &ns::Id, rb: *const c_void);
+    fn sel_addCompletedHandler(id: &ns::Id, rb: *const c_void);
 }

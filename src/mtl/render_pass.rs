@@ -1,10 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::cf::Retained;
-use crate::define_obj_type;
-use crate::ns::Id;
-
-use super::Texture;
+use crate::{cf, define_obj_type, mtl, ns};
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
@@ -121,16 +117,16 @@ impl ClearColor {
     }
 }
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
-define_obj_type!(AttachmentDescriptor(Id));
+define_obj_type!(AttachmentDescriptor(ns::Id));
 define_obj_type!(ColorAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(DepthAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
 
 impl Descriptor {
     #[inline]
-    pub fn new() -> Retained<Descriptor> {
+    pub fn new() -> cf::Retained<Descriptor> {
         unsafe { MTLRenderPassDescriptor_new() }
     }
 
@@ -232,33 +228,33 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPassDescriptor_new() -> Retained<Descriptor>;
+    fn MTLRenderPassDescriptor_new() -> cf::Retained<Descriptor>;
     fn MTLRenderPassDescriptor_renderPassDescriptor<'ar>() -> &'ar mut Descriptor;
 
-    fn rsel_colorAttachments(id: &Id) -> &mut ColorAttachmentDescriptorArray;
+    fn rsel_colorAttachments(id: &ns::Id) -> &mut ColorAttachmentDescriptorArray;
 
-    fn rsel_depthAttachment(id: &Id) -> &DepthAttachmentDescriptor;
-    fn wsel_setDepthAttachment(id: &mut Id, value: Option<&DepthAttachmentDescriptor>);
+    fn rsel_depthAttachment(id: &ns::Id) -> &DepthAttachmentDescriptor;
+    fn wsel_setDepthAttachment(id: &mut ns::Id, value: Option<&DepthAttachmentDescriptor>);
 
-    fn rsel_stencilAttachment(id: &Id) -> &StencilAttachmentDescriptor;
-    fn wsel_setStencilAttachment(id: &mut Id, value: Option<&StencilAttachmentDescriptor>);
+    fn rsel_stencilAttachment(id: &ns::Id) -> &StencilAttachmentDescriptor;
+    fn wsel_setStencilAttachment(id: &mut ns::Id, value: Option<&StencilAttachmentDescriptor>);
 
-    fn rsel_tileWidth(id: &Id) -> usize;
-    fn wsel_setTileWidth(id: &mut Id, value: usize);
-    fn rsel_tileHeight(id: &Id) -> usize;
-    fn wsel_setTileHeight(id: &mut Id, value: usize);
+    fn rsel_tileWidth(id: &ns::Id) -> usize;
+    fn wsel_setTileWidth(id: &mut ns::Id, value: usize);
+    fn rsel_tileHeight(id: &ns::Id) -> usize;
+    fn wsel_setTileHeight(id: &mut ns::Id, value: usize);
 
-    fn rsel_defaultRasterSampleCount(id: &Id) -> usize;
-    fn wsel_setSetDefaultRasterSampleCount(id: &mut Id, value: usize);
+    fn rsel_defaultRasterSampleCount(id: &ns::Id) -> usize;
+    fn wsel_setSetDefaultRasterSampleCount(id: &mut ns::Id, value: usize);
 
-    fn rsel_renderTargetWidth(id: &Id) -> usize;
-    fn wsel_setRenderTargetWidth(id: &mut Id, value: usize);
-    fn rsel_renderTargetHeight(id: &Id) -> usize;
-    fn wsel_setRenderTargetHeight(id: &mut Id, value: usize);
+    fn rsel_renderTargetWidth(id: &ns::Id) -> usize;
+    fn wsel_setRenderTargetWidth(id: &mut ns::Id, value: usize);
+    fn rsel_renderTargetHeight(id: &ns::Id) -> usize;
+    fn wsel_setRenderTargetHeight(id: &mut ns::Id, value: usize);
 
 }
 
-define_obj_type!(ColorAttachmentDescriptorArray(Id));
+define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
 
 impl ColorAttachmentDescriptorArray {
     #[inline]
@@ -315,12 +311,12 @@ impl IndexMut<usize> for ColorAttachmentDescriptorArray {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
-        id: &Id,
+        id: &ns::Id,
         index: usize,
     ) -> &mut ColorAttachmentDescriptor;
 
     fn MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
-        id: &mut Id,
+        id: &mut ns::Id,
         value: Option<&ColorAttachmentDescriptor>,
         index: usize,
     );
@@ -328,12 +324,12 @@ extern "C" {
 
 impl AttachmentDescriptor {
     #[inline]
-    pub fn texture(&self) -> Option<&Texture> {
+    pub fn texture(&self) -> Option<&mtl::Texture> {
         unsafe { rsel_texture(self) }
     }
 
     #[inline]
-    pub fn set_texture(&mut self, value: &Texture) {
+    pub fn set_texture(&mut self, value: &mtl::Texture) {
         unsafe { wsel_setTexture(self, Some(value)) }
     }
 
@@ -373,12 +369,12 @@ impl AttachmentDescriptor {
     }
 
     #[inline]
-    pub fn resolve_texture(&self) -> Option<&Texture> {
+    pub fn resolve_texture(&self) -> Option<&mtl::Texture> {
         unsafe { rsel_resolveTexture(self) }
     }
 
     #[inline]
-    pub fn set_resolve_texture(&mut self, value: Option<&Texture>) {
+    pub fn set_resolve_texture(&mut self, value: Option<&mtl::Texture>) {
         unsafe { wsel_setResolveTexture(self, value) }
     }
 
@@ -445,38 +441,38 @@ impl AttachmentDescriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_texture(id: &Id) -> Option<&Texture>;
-    fn wsel_setTexture(id: &mut Id, value: Option<&Texture>);
+    fn rsel_texture(id: &ns::Id) -> Option<&mtl::Texture>;
+    fn wsel_setTexture(id: &mut ns::Id, value: Option<&mtl::Texture>);
 
-    fn rsel_level(id: &Id) -> usize;
-    fn wsel_setLevel(id: &mut Id, value: usize);
+    fn rsel_level(id: &ns::Id) -> usize;
+    fn wsel_setLevel(id: &mut ns::Id, value: usize);
 
-    fn rsel_slice(id: &Id) -> usize;
-    fn wsel_setSlice(id: &mut Id, value: usize);
+    fn rsel_slice(id: &ns::Id) -> usize;
+    fn wsel_setSlice(id: &mut ns::Id, value: usize);
 
-    fn rsel_depthPlane(id: &Id) -> usize;
-    fn wsel_setDepthPlane(id: &mut Id, value: usize);
+    fn rsel_depthPlane(id: &ns::Id) -> usize;
+    fn wsel_setDepthPlane(id: &mut ns::Id, value: usize);
 
-    fn rsel_resolveTexture(id: &Id) -> Option<&Texture>;
-    fn wsel_setResolveTexture(id: &mut Id, value: Option<&Texture>);
+    fn rsel_resolveTexture(id: &ns::Id) -> Option<&mtl::Texture>;
+    fn wsel_setResolveTexture(id: &mut ns::Id, value: Option<&mtl::Texture>);
 
-    fn rsel_resolveLevel(id: &Id) -> usize;
-    fn wsel_setResolveLevel(id: &mut Id, value: usize);
+    fn rsel_resolveLevel(id: &ns::Id) -> usize;
+    fn wsel_setResolveLevel(id: &mut ns::Id, value: usize);
 
-    fn rsel_resolveSlice(id: &Id) -> usize;
-    fn wsel_setResolveSlice(id: &mut Id, value: usize);
+    fn rsel_resolveSlice(id: &ns::Id) -> usize;
+    fn wsel_setResolveSlice(id: &mut ns::Id, value: usize);
 
-    fn rsel_resolveDepthPlane(id: &Id) -> usize;
-    fn wsel_setResolveDepthPlane(id: &mut Id, value: usize);
+    fn rsel_resolveDepthPlane(id: &ns::Id) -> usize;
+    fn wsel_setResolveDepthPlane(id: &mut ns::Id, value: usize);
 
-    fn rsel_loadAction(id: &Id) -> LoadAction;
-    fn wsel_setLoadAction(id: &mut Id, value: LoadAction);
+    fn rsel_loadAction(id: &ns::Id) -> LoadAction;
+    fn wsel_setLoadAction(id: &mut ns::Id, value: LoadAction);
 
-    fn rsel_storeAction(id: &Id) -> StoreAction;
-    fn wsel_setStoreAction(id: &mut Id, value: StoreAction);
+    fn rsel_storeAction(id: &ns::Id) -> StoreAction;
+    fn wsel_setStoreAction(id: &mut ns::Id, value: StoreAction);
 
-    fn rsel_storeActionOptions(id: &Id) -> StoreActionOptions;
-    fn wsel_setStoreActionOptions(id: &mut Id, value: StoreActionOptions);
+    fn rsel_storeActionOptions(id: &ns::Id) -> StoreActionOptions;
+    fn wsel_setStoreActionOptions(id: &mut ns::Id, value: StoreActionOptions);
 }
 
 impl ColorAttachmentDescriptor {
@@ -493,10 +489,11 @@ impl ColorAttachmentDescriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_clearColor(id: &Id) -> ClearColor;
-    fn wsel_setClearColor(id: &mut Id, value: ClearColor);
+    fn rsel_clearColor(id: &ns::Id) -> ClearColor;
+    fn wsel_setClearColor(id: &mut ns::Id, value: ClearColor);
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
 pub enum MultisampleDepthResolveFilter {
     Sample0 = 0,
@@ -528,9 +525,9 @@ impl DepthAttachmentDescriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_clearDepth(id: &Id) -> f64;
-    fn wsel_setClearDepth(id: &mut Id, value: f64);
+    fn rsel_clearDepth(id: &ns::Id) -> f64;
+    fn wsel_setClearDepth(id: &mut ns::Id, value: f64);
 
-    fn rsel_depthResolveFilter(id: &Id) -> MultisampleDepthResolveFilter;
-    fn wsel_setDepthResolveFilter(id: &mut Id, value: MultisampleDepthResolveFilter);
+    fn rsel_depthResolveFilter(id: &ns::Id) -> MultisampleDepthResolveFilter;
+    fn wsel_setDepthResolveFilter(id: &mut ns::Id, value: MultisampleDepthResolveFilter);
 }

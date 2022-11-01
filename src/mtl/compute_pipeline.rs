@@ -1,13 +1,8 @@
-use crate::cf::Retained;
-use crate::{define_mtl, define_obj_type, msg_send};
+use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
 
-use crate::ns::Id;
+define_obj_type!(Reflection(ns::Id));
 
-use super::Function;
-
-define_obj_type!(Reflection(Id));
-
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
     define_mtl!(label, set_label);
@@ -31,7 +26,7 @@ impl Descriptor {
     /// desc.set_thread_group_size_is_multiple_of_thread_execution_width(true);
     /// assert_eq!(true, desc.thread_group_size_is_multiple_of_thread_execution_width());
     /// ```
-    pub fn new() -> Retained<Self> {
+    pub fn new() -> cf::Retained<Self> {
         unsafe { MTLComputePipelineDescriptor_new() }
     }
 
@@ -43,11 +38,11 @@ impl Descriptor {
         unsafe { wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(self, value) }
     }
 
-    pub fn compute_function(&self) -> Option<&Function> {
+    pub fn compute_function(&self) -> Option<&mtl::Function> {
         unsafe { rsel_computeFunction(self) }
     }
 
-    pub fn set_compute_function(&mut self, value: Option<&Function>) {
+    pub fn set_compute_function(&mut self, value: Option<&mtl::Function>) {
         unsafe { wsel_setComputeFunction(self, value) }
     }
 
@@ -62,16 +57,16 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLComputePipelineDescriptor_new() -> Retained<Descriptor>;
+    fn MTLComputePipelineDescriptor_new() -> cf::Retained<Descriptor>;
 
-    fn rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(id: &Id) -> bool;
-    fn wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(id: &mut Id, value: bool);
+    fn rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(id: &ns::Id) -> bool;
+    fn wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(id: &mut ns::Id, value: bool);
 
-    fn rsel_computeFunction(id: &Id) -> Option<&Function>;
-    fn wsel_setComputeFunction(id: &mut Id, value: Option<&Function>);
+    fn rsel_computeFunction(id: &ns::Id) -> Option<&mtl::Function>;
+    fn wsel_setComputeFunction(id: &mut ns::Id, value: Option<&mtl::Function>);
 }
 
-define_obj_type!(State(Id));
+define_obj_type!(State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resouce_id);
@@ -94,9 +89,9 @@ impl State {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_maxTotalThreadsPerThreadgroup(id: &Id) -> usize;
-    fn wsel_setMaxTotalThreadsPerThreadgroup(id: &mut Id, value: usize);
+    fn rsel_maxTotalThreadsPerThreadgroup(id: &ns::Id) -> usize;
+    fn wsel_setMaxTotalThreadsPerThreadgroup(id: &mut ns::Id, value: usize);
     // rwsel(, id, maxTotalThreadsPerThreadgroup, setMaxTotalThreadsPerThreadgroup, NSUInteger)
-    fn rsel_threadExecutionWidth(id: &Id) -> usize;
-    fn rsel_staticThreadgroupMemoryLength(id: &Id) -> usize;
+    fn rsel_threadExecutionWidth(id: &ns::Id) -> usize;
+    fn rsel_staticThreadgroupMemoryLength(id: &ns::Id) -> usize;
 }

@@ -1,8 +1,6 @@
 use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
 
-use super::CommandEncoder;
-
-define_obj_type!(ComputeCommandEncoder(CommandEncoder));
+define_obj_type!(ComputeCommandEncoder(mtl::CommandEncoder));
 
 impl ComputeCommandEncoder {
     define_mtl!(
