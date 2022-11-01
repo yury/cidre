@@ -2,9 +2,7 @@ use std::ffi::c_void;
 use std::intrinsics::transmute;
 use std::ptr::NonNull;
 
-use crate::cf;
-use crate::define_cf_type;
-use crate::define_options;
+use crate::{cf, define_cf_type, define_options};
 
 define_cf_type!(Socket(cf::Type));
 

@@ -1,8 +1,6 @@
 use std::ffi::c_void;
 
-use crate::define_cf_type;
-
-use crate::cf;
+use crate::{cf, define_cf_type};
 
 define_cf_type!(NotificationName(cf::String));
 

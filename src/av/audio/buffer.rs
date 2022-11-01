@@ -2,8 +2,7 @@ use std::ffi::c_void;
 
 use crate::{
     at::{audio::StreamPacketDescription, AudioBufferList},
-    cf::{self, Retained},
-    define_obj_type, ns,
+    cf, define_obj_type, ns,
 };
 
 use super::{Format, FrameCount, PacketCount};
@@ -33,7 +32,7 @@ impl PCMBuffer {
     pub fn with_format_and_frame_capacity(
         format: &Format,
         frame_capacity: FrameCount,
-    ) -> Retained<Self> {
+    ) -> cf::Retained<Self> {
         unsafe { AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(format, frame_capacity) }
     }
     /// The current number of valid sample frames in the buffer.
@@ -130,7 +129,7 @@ impl CompressedBuffer {
     pub fn with_format_and_packet_capacity(
         format: &Format,
         packet_capacity: PacketCount,
-    ) -> Retained<Self> {
+    ) -> cf::Retained<Self> {
         unsafe { AVAudioCompressedBuffer_initWithFormat_packetCapacity(format, packet_capacity) }
     }
 
@@ -139,7 +138,7 @@ impl CompressedBuffer {
         format: &Format,
         packet_capacity: PacketCount,
         maximum_packet_size: isize,
-    ) -> Retained<Self> {
+    ) -> cf::Retained<Self> {
         unsafe {
             AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
                 format,
@@ -162,7 +161,7 @@ extern "C" {
     fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(
         format: &Format,
         frame_capacity: FrameCount,
-    ) -> Retained<PCMBuffer>;
+    ) -> cf::Retained<PCMBuffer>;
 
     fn rsel_stride(id: &ns::Id) -> usize;
 
@@ -184,10 +183,10 @@ extern "C" {
     fn AVAudioCompressedBuffer_initWithFormat_packetCapacity(
         format: &Format,
         packet_capacity: PacketCount,
-    ) -> Retained<CompressedBuffer>;
+    ) -> cf::Retained<CompressedBuffer>;
     fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
         format: &Format,
         packet_capacity: PacketCount,
         maximum_packet_size: isize,
-    ) -> Retained<CompressedBuffer>;
+    ) -> cf::Retained<CompressedBuffer>;
 }

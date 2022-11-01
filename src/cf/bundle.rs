@@ -1,7 +1,5 @@
 use crate::{cf, define_cf_type};
 
-use super::Retained;
-
 define_cf_type!(Bundle(cf::Type));
 
 impl Bundle {
@@ -12,7 +10,7 @@ impl Bundle {
     ///
     /// let url = bundle.copy_bundle_url().unwrap();
     /// ```
-    pub fn copy_bundle_url(&self) -> Option<Retained<cf::URL>> {
+    pub fn copy_bundle_url(&self) -> Option<cf::Retained<cf::URL>> {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
@@ -39,7 +37,7 @@ impl Bundle {
 extern "C" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle() -> Option<&'static Bundle>;
-    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<Retained<cf::URL>>;
+    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<cf::Retained<cf::URL>>;
 
     fn CFBundleGetValueForInfoDictionaryKey<'a>(
         bundle: &'a Bundle,

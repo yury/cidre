@@ -2,10 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref};
 
 use crate::{cf, define_cf_type};
 
-use super::{
-    runtime::{Release, Retain},
-    Retained,
-};
+use super::runtime::{Release, Retain};
 
 define_cf_type!(Set(cf::Type));
 define_cf_type!(MutableSet(Set));
@@ -45,9 +42,9 @@ impl<T> SetOf<T>
 where
     T: Retain + Release,
 {
-    pub fn values(&self) -> Vec<Retained<T>> {
+    pub fn values(&self) -> Vec<cf::Retained<T>> {
         let len = self.len();
-        let mut vec: Vec<Retained<T>> = Vec::with_capacity(len);
+        let mut vec: Vec<cf::Retained<T>> = Vec::with_capacity(len);
         unsafe {
             vec.set_len(len);
             self.get_values(vec.as_mut_ptr() as _);
@@ -81,7 +78,7 @@ impl<T> Retain for SetOf<T>
 where
     T: Release + Retain,
 {
-    fn retained(&self) -> Retained<Self> {
+    fn retained(&self) -> cf::Retained<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }

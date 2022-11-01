@@ -1,6 +1,6 @@
-use crate::{cf, msg_send, ns};
-use crate::{define_mtl, define_obj_type};
+use crate::{cf, define_mtl, define_obj_type, msg_send, ns};
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ResourceUsage(pub usize);
 
@@ -10,6 +10,7 @@ impl ResourceUsage {
     pub const SAMPLE: Self = Self(1 << 2);
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct BarrierScope(pub usize);
 

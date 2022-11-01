@@ -1,5 +1,4 @@
-use crate::mtl;
-use crate::{define_obj_type, msg_send};
+use crate::{define_obj_type, msg_send, mtl};
 
 define_obj_type!(Buffer(mtl::Resource));
 

@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    cf::{self, Allocator, Retained, Type, TypeId},
+    cf::{self, Retained},
     define_cf_type, define_options, os,
 };
 
@@ -18,7 +18,7 @@ impl Flags {
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
-define_cf_type!(BlockBuffer(Type));
+define_cf_type!(BlockBuffer(cf::Type));
 
 impl BlockBuffer {
     /// # Example
@@ -30,7 +30,7 @@ impl BlockBuffer {
     /// assert_eq!(b.get_type_id(), cm::BlockBuffer::type_id());
     /// ```
     #[inline]
-    pub fn type_id() -> TypeId {
+    pub fn type_id() -> cf::TypeId {
         unsafe { CMBlockBufferGetTypeID() }
     }
 
@@ -58,7 +58,7 @@ impl BlockBuffer {
     /// ```
     #[inline]
     pub fn create_empty(
-        structure_allocator: Option<&Allocator>,
+        structure_allocator: Option<&cf::Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
     ) -> Result<Retained<BlockBuffer>, os::Status> {
@@ -279,11 +279,11 @@ impl BlockBuffer {
 }
 
 extern "C" {
-    fn CMBlockBufferGetTypeID() -> TypeId;
+    fn CMBlockBufferGetTypeID() -> cf::TypeId;
     fn CMBlockBufferIsEmpty(the_buffer: &BlockBuffer) -> bool;
 
     fn CMBlockBufferCreateEmpty(
-        structure_allocator: Option<&Allocator>,
+        structure_allocator: Option<&cf::Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
         block_buffer_out: &mut Option<Retained<BlockBuffer>>,

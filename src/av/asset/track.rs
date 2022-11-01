@@ -4,6 +4,7 @@ define_obj_type!(Track(ns::Id));
 define_obj_type!(FragmentedTrack(Track));
 
 impl Track {
+    #[inline]
     pub fn media_type(&self) -> &MediaType {
         unsafe { rsel_mediaType(self) }
     }

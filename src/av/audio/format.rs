@@ -1,7 +1,5 @@
 use std::intrinsics::transmute;
 
-use ns::Id;
-
 use crate::{at::audio::StreamBasicDescription, cf, define_obj_type, ns};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
@@ -151,13 +149,13 @@ extern "C" {
 
     fn AVAudioFormat_initWithSettings(settings: &cf::Dictionary) -> Option<cf::Retained<Format>>;
 
-    fn rsel_settings(id: &Id) -> &cf::Dictionary;
-    fn rsel_isInterleaved(id: &Id) -> bool;
-    fn rsel_commonFormat(id: &Id) -> CommonFormat;
-    fn av_format_rsel_channelCount(id: &Id) -> ChannelCount;
-    fn rsel_streamDescription(id: &Id) -> &StreamBasicDescription;
-    fn rsel_channelLayout(id: &Id) -> Option<&ChannelLayout>;
+    fn rsel_settings(id: &ns::Id) -> &cf::Dictionary;
+    fn rsel_isInterleaved(id: &ns::Id) -> bool;
+    fn rsel_commonFormat(id: &ns::Id) -> CommonFormat;
+    fn av_format_rsel_channelCount(id: &ns::Id) -> ChannelCount;
+    fn rsel_streamDescription(id: &ns::Id) -> &StreamBasicDescription;
+    fn rsel_channelLayout(id: &ns::Id) -> Option<&ChannelLayout>;
 
-    fn rsel_magicCookie(id: &Id) -> Option<&cf::Data>;
+    fn rsel_magicCookie(id: &ns::Id) -> Option<&cf::Data>;
 
 }

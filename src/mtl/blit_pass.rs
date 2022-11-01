@@ -1,10 +1,10 @@
-use crate::{define_obj_type, ns::Id};
+use crate::{define_obj_type, ns};
 
-define_obj_type!(SampleBufferAttachmentDescriptor(Id));
+define_obj_type!(SampleBufferAttachmentDescriptor(ns::Id));
 
-define_obj_type!(SampleBufferAttachmentDescriptorArray(Id));
+define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
 /// Represents a collection of attachments to be used to create a concrete blit command encoder
 impl Descriptor {

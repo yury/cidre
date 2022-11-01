@@ -1,4 +1,4 @@
-use crate::{cf, cf::Retained, define_cf_type};
+use crate::{cf, define_cf_type};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
@@ -24,7 +24,7 @@ impl URL {
         length: cf::Index,
         encoding: cf::StringEncoding,
         base_url: Option<&URL>,
-    ) -> Option<Retained<URL>> {
+    ) -> Option<cf::Retained<URL>> {
         unsafe { CFURLCreateWithBytes(allocator, url_bytes, length, encoding, base_url) }
     }
 
@@ -33,7 +33,7 @@ impl URL {
         allocator: Option<&cf::Allocator>,
         url_string: &cf::String,
         base_url: Option<&URL>,
-    ) -> Option<Retained<URL>> {
+    ) -> Option<cf::Retained<URL>> {
         unsafe { CFURLCreateWithString(allocator, url_string, base_url) }
     }
 
@@ -43,7 +43,7 @@ impl URL {
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,
-    ) -> Option<Retained<URL>> {
+    ) -> Option<cf::Retained<URL>> {
         unsafe { CFURLCreateWithFileSystemPath(allocator, file_path, path_style, is_directory) }
     }
 
@@ -56,7 +56,7 @@ impl URL {
     ///
     /// ```
     #[inline]
-    pub fn from_str(str: &str) -> Option<Retained<URL>> {
+    pub fn from_str(str: &str) -> Option<cf::Retained<URL>> {
         Self::with_bytes_in(
             None,
             str.as_ptr(),
@@ -76,7 +76,7 @@ impl URL {
     ///
     /// ```
     #[inline]
-    pub fn from_string(str: &cf::String) -> Option<Retained<URL>> {
+    pub fn from_string(str: &cf::String) -> Option<cf::Retained<URL>> {
         Self::with_string_in(None, str, None)
     }
 
@@ -119,7 +119,7 @@ impl URL {
     /// assert!(https.equal(&scheme));
     /// ```
     #[inline]
-    pub fn scheme(&self) -> Option<Retained<cf::String>> {
+    pub fn scheme(&self) -> Option<cf::Retained<cf::String>> {
         unsafe { CFURLCopyScheme(self) }
     }
 
@@ -150,25 +150,25 @@ extern "C" {
         length: cf::Index,
         encoding: cf::StringEncoding,
         base_url: Option<&URL>,
-    ) -> Option<Retained<URL>>;
+    ) -> Option<cf::Retained<URL>>;
     fn CFURLCreateWithString(
         allocator: Option<&cf::Allocator>,
         url_string: &cf::String,
         base_url: Option<&URL>,
-    ) -> Option<Retained<URL>>;
+    ) -> Option<cf::Retained<URL>>;
 
     fn CFURLCreateWithFileSystemPath(
         allocator: Option<&cf::Allocator>,
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,
-    ) -> Option<Retained<URL>>;
+    ) -> Option<cf::Retained<URL>>;
 
     fn CFURLGetString(anURL: &URL) -> &cf::String;
     fn CFURLGetBaseURL(anURL: &URL) -> Option<&URL>;
 
     fn CFURLCanBeDecomposed(anURL: &URL) -> bool;
-    fn CFURLCopyScheme(anURL: &URL) -> Option<Retained<cf::String>>;
+    fn CFURLCopyScheme(anURL: &URL) -> Option<cf::Retained<cf::String>>;
 
     fn CFURLGetPortNumber(anURL: &URL) -> i32;
 }
