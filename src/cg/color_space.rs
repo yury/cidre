@@ -76,7 +76,7 @@ impl ColorSpace {
     /// ```
     /// use cidre::cg;
     ///
-    /// let space = cg::ColorSpace::create_device_gray().unwrap();
+    /// let space = cg::ColorSpace::device_gray().unwrap();
     ///
     /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     ///
@@ -86,14 +86,14 @@ impl ColorSpace {
     /// assert_eq!(cg::ColorSpaceModel::Monochrome, space.model());
     /// ```
     #[inline]
-    pub fn create_device_gray() -> Option<cf::Retained<ColorSpace>> {
+    pub fn device_gray() -> Option<cf::Retained<ColorSpace>> {
         unsafe { CGColorSpaceCreateDeviceGray() }
     }
 
     /// ```
     /// use cidre::cg;
     ///
-    /// let space = cg::ColorSpace::create_device_rgb().unwrap();
+    /// let space = cg::ColorSpace::device_rgb().unwrap();
     ///
     /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     ///
@@ -103,14 +103,14 @@ impl ColorSpace {
     /// assert_eq!(cg::ColorSpaceModel::RGB, space.model());
     /// ```
     #[inline]
-    pub fn create_device_rgb() -> Option<cf::Retained<ColorSpace>> {
+    pub fn device_rgb() -> Option<cf::Retained<ColorSpace>> {
         unsafe { CGColorSpaceCreateDeviceRGB() }
     }
 
     /// ```
     /// use cidre::cg;
     ///
-    /// let space = cg::ColorSpace::create_device_cmyk().unwrap();
+    /// let space = cg::ColorSpace::device_cmyk().unwrap();
     ///
     /// assert_eq!(space.get_type_id(), cg::ColorSpace::type_id());
     ///
@@ -120,7 +120,7 @@ impl ColorSpace {
     /// assert_eq!(cg::ColorSpaceModel::CMYK, space.model());
     /// ```
     #[inline]
-    pub fn create_device_cmyk() -> Option<cf::Retained<ColorSpace>> {
+    pub fn device_cmyk() -> Option<cf::Retained<ColorSpace>> {
         unsafe { CGColorSpaceCreateDeviceCMYK() }
     }
 
@@ -128,14 +128,14 @@ impl ColorSpace {
     /// use cidre::cg;
     ///
     /// let name = cg::color_space::names::generic_gray();
-    /// let space = cg::ColorSpace::create_with_name(name).unwrap();
+    /// let space = cg::ColorSpace::with_name(name).unwrap();
     ///
     /// let actual_name = space.name().unwrap();
     ///
     /// assert!(actual_name.equal(name));
     /// ```
     #[inline]
-    pub fn create_with_name(name: &cf::String) -> Option<cf::Retained<ColorSpace>> {
+    pub fn with_name(name: &cf::String) -> Option<cf::Retained<ColorSpace>> {
         unsafe { CGColorSpaceCreateWithName(name) }
     }
 }

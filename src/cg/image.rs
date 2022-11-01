@@ -49,6 +49,8 @@ impl Image {
         unsafe { CGImageGetUTType(self) }
     }
 
+    /// Return the color space of `image', or None if `image' is an image
+    /// mask.
     #[inline]
     pub fn color_space(&self) -> Option<&cg::ColorSpace> {
         unsafe { CGImageGetColorSpace(self) }

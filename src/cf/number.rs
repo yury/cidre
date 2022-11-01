@@ -356,7 +356,7 @@ impl Number {
     /// ```
     #[inline]
     pub fn from_i64(value: i64) -> Retained<Self> {
-        unsafe {Self::create(None, NumberType::I64, &value as *const _ as _).unwrap_unchecked() }
+        unsafe { Self::create(None, NumberType::I64, &value as *const _ as _).unwrap_unchecked() }
     }
 
     /// ```
@@ -385,7 +385,8 @@ impl Number {
     #[inline]
     pub fn from_duration(value: Duration) -> Retained<Self> {
         unsafe {
-            Self::create(None, NumberType::F64, &value.as_secs_f64() as *const _ as _).unwrap_unchecked()
+            Self::create(None, NumberType::F64, &value.as_secs_f64() as *const _ as _)
+                .unwrap_unchecked()
         }
     }
 }

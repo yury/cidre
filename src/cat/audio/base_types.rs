@@ -1,4 +1,4 @@
-use crate::{os, define_options};
+use crate::{define_options, os};
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
 pub mod errors {

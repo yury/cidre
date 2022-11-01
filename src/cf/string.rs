@@ -130,7 +130,6 @@ impl String {
         unsafe { CFStringHasPrefix(self, prefix) }
     }
 
-
     /// CFStringGetCharacterAtIndex
     #[inline]
     pub fn character_at_index(&self, idx: Index) -> UniChar {

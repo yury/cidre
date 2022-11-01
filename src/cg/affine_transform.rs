@@ -107,7 +107,7 @@ impl AffineTransform {
 impl PartialEq for AffineTransform {
     /// ```
     /// use cidre::cg::AffineTransform;
-    /// 
+    ///
     /// let a = AffineTransform::identity();
     /// assert!(a.is_identity());
     /// assert_eq!(a, AffineTransform::identity());
