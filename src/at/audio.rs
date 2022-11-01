@@ -1,6 +1,9 @@
 pub use crate::cat::audio::*;
 
 mod format;
+pub use format::asbd_props;
+pub use format::channel_layout_props;
+pub use format::id3_props;
 pub use format::BalanceFade;
 pub use format::BalanceFadeType;
 pub use format::ExtendedFormatInfo;
@@ -10,4 +13,7 @@ pub use format::PanningMode;
 pub use format::PropertyID as FormatPropertyID;
 
 mod converter;
+pub use converter::errors;
 pub use converter::Converter;
+pub use converter::DitherAlgorithm;
+pub use converter::PrimeMethod as ConverterPrimeMethod;
