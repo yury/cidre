@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, msg_send, objc::Id};
+use crate::{define_mtl, define_obj_type, msg_send, ns};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
@@ -34,9 +34,9 @@ pub enum BorderColor {
     OpaqueWhite = 2,      // {1,1,1,1}
 }
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
-define_obj_type!(State(Id));
+define_obj_type!(State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resouce_id);

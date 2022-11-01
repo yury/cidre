@@ -1,6 +1,6 @@
-use crate::{define_obj_type, objc, vn};
+use crate::{define_obj_type, ns, vn};
 
-define_obj_type!(Region(objc::Id));
+define_obj_type!(Region(ns::Id));
 
 impl Region {
     /// The amount of points in a given region. This can be zero if no points for a region could be found.
@@ -10,7 +10,7 @@ impl Region {
 }
 define_obj_type!(Region2D(Region));
 
-define_obj_type!(FaceLandmarks(objc::Id));
+define_obj_type!(FaceLandmarks(ns::Id));
 define_obj_type!(FaceLandmarks2D(FaceLandmarks));
 
 impl FaceLandmarks {
@@ -21,6 +21,6 @@ impl FaceLandmarks {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_pointCount(id: &objc::Id) -> usize;
-    fn rsel_confidence(id: &objc::Id) -> vn::Confidence;
+    fn rsel_pointCount(id: &ns::Id) -> usize;
+    fn rsel_confidence(id: &ns::Id) -> vn::Confidence;
 }

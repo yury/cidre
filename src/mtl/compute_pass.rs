@@ -1,10 +1,10 @@
 use std::ops::Index;
 
-use crate::{define_obj_type, objc::Id};
+use crate::{define_obj_type, ns};
 
 use super::{CounterSampleBuffer, DispatchType};
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
     /// ```
@@ -45,15 +45,15 @@ impl Descriptor {
 extern "C" {
     fn MTLComputePassDescriptor_computePassDescriptor<'ar>() -> &'ar Descriptor;
 
-    fn rsel_dispatchType(id: &Id) -> DispatchType;
-    fn wsel_setDispatchType(id: &mut Id, value: DispatchType);
+    fn rsel_dispatchType(id: &ns::Id) -> DispatchType;
+    fn wsel_setDispatchType(id: &mut ns::Id, value: DispatchType);
 
     fn MTLComputePassDescriptor_sampleBufferAttachments(
-        id: &Id,
+        id: &ns::Id,
     ) -> &mut SampleBufferAttachmentDescriptorArray;
 }
 
-define_obj_type!(SampleBufferAttachmentDescriptorArray(Id));
+define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
 
 impl SampleBufferAttachmentDescriptorArray {
     #[inline]
@@ -98,18 +98,18 @@ impl Index<usize> for SampleBufferAttachmentDescriptorArray {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLComputePassSampleBufferAttachmentDescriptorArray_objectAtIndexedSubscript(
-        id: &Id,
+        id: &ns::Id,
         index: usize,
     ) -> &SampleBufferAttachmentDescriptor;
 
     fn MTLComputePassSampleBufferAttachmentDescriptorArray_setObjectAtIndexedSubscript(
-        id: &mut Id,
+        id: &mut ns::Id,
         value: Option<&SampleBufferAttachmentDescriptor>,
         index: usize,
     );
 }
 
-define_obj_type!(SampleBufferAttachmentDescriptor(Id));
+define_obj_type!(SampleBufferAttachmentDescriptor(ns::Id));
 
 impl SampleBufferAttachmentDescriptor {
     #[inline]
@@ -125,6 +125,6 @@ impl SampleBufferAttachmentDescriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_sampleBuffer(id: &Id) -> Option<&CounterSampleBuffer>;
-    fn wsel_setSampleBuffer(id: &mut Id, value: Option<&CounterSampleBuffer>);
+    fn rsel_sampleBuffer(id: &ns::Id) -> Option<&CounterSampleBuffer>;
+    fn wsel_setSampleBuffer(id: &mut ns::Id, value: Option<&CounterSampleBuffer>);
 }

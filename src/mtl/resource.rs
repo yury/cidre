@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{define_mtl, define_obj_type, define_options, objc::Id};
+use crate::{define_mtl, define_obj_type, define_options, ns};
 
 /// Options for setPurgeable call.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -137,7 +137,7 @@ impl Options {
     }
 }
 
-define_obj_type!(Resource(Id));
+define_obj_type!(Resource(ns::Id));
 
 impl Resource {
     define_mtl!(

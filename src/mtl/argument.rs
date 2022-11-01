@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, objc::Id};
+use crate::{cf, define_obj_type, msg_send, ns};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -139,11 +139,11 @@ pub enum Access {
     WriteOnly = 2,
 }
 
-define_obj_type!(BaseType(Id));
+define_obj_type!(BaseType(ns::Id));
 
 impl BaseType {}
 
-define_obj_type!(StructMember(Id));
+define_obj_type!(StructMember(ns::Id));
 
 impl StructMember {}
 
@@ -152,7 +152,7 @@ define_obj_type!(ArrayType(BaseType));
 define_obj_type!(PointerType(BaseType));
 define_obj_type!(TextureReferenceType(BaseType));
 
-define_obj_type!(Argument(Id));
+define_obj_type!(Argument(ns::Id));
 
 impl Argument {
     pub fn name(&self) -> &cf::String {

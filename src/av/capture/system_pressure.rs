@@ -1,5 +1,5 @@
 #[cfg(not(target_os = "macos"))]
-use crate::{cf, define_cf_type, define_obj_type, objc::Id};
+use crate::{cf, define_cf_type, define_obj_type, ns};
 
 #[cfg(not(target_os = "macos"))]
 define_cf_type!(Level(cf::String));
@@ -43,7 +43,7 @@ pub enum Factors {
 }
 
 #[cfg(not(target_os = "macos"))]
-define_obj_type!(State(Id));
+define_obj_type!(State(ns::Id));
 
 #[cfg(not(target_os = "macos"))]
 impl State {
@@ -65,6 +65,6 @@ extern "C" {
     static AVCaptureSystemPressureLevelCritical: &'static Level;
     static AVCaptureSystemPressureLevelShutdown: &'static Level;
 
-    fn rsel_state_level(id: &Id) -> &Level;
-    fn rsel_state_factors(id: &Id) -> Factors;
+    fn rsel_state_level(id: &ns::Id) -> &Level;
+    fn rsel_state_factors(id: &ns::Id) -> Factors;
 }

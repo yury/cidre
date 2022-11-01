@@ -1,8 +1,8 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, cm, cv, define_obj_type, objc, vn};
+use crate::{cf, cg, cm, cv, define_obj_type, ns, vn};
 
-define_obj_type!(Observation(objc::Id));
+define_obj_type!(Observation(ns::Id));
 
 impl Observation {
     /// The unique identifier assigned to an observation.
@@ -241,52 +241,49 @@ impl FeaturePrintObservation {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_uuid(id: &objc::Id) -> &cf::UUID;
-    fn rsel_confidence(id: &objc::Id) -> vn::Confidence;
-    fn rsel_timeRange(id: &objc::Id) -> cm::TimeRange;
+    fn rsel_uuid(id: &ns::Id) -> &cf::UUID;
+    fn rsel_confidence(id: &ns::Id) -> vn::Confidence;
+    fn rsel_timeRange(id: &ns::Id) -> cm::TimeRange;
 
-    fn rsel_boundingBox(id: &objc::Id) -> cg::Rect;
-    fn rsel_globalSegmentationMask(id: &objc::Id) -> Option<&vn::PixelBufferObservation>;
+    fn rsel_boundingBox(id: &ns::Id) -> cg::Rect;
+    fn rsel_globalSegmentationMask(id: &ns::Id) -> Option<&vn::PixelBufferObservation>;
 
-    fn rsel_landmarks(id: &objc::Id) -> Option<&vn::FaceLandmarks2D>;
-    fn rsel_faceCaptureQuality(id: &objc::Id) -> Option<&cf::Number>;
-    fn rsel_roll(id: &objc::Id) -> Option<&cf::Number>;
-    fn rsel_yaw(id: &objc::Id) -> Option<&cf::Number>;
-    fn rsel_pitch(id: &objc::Id) -> Option<&cf::Number>;
+    fn rsel_landmarks(id: &ns::Id) -> Option<&vn::FaceLandmarks2D>;
+    fn rsel_faceCaptureQuality(id: &ns::Id) -> Option<&cf::Number>;
+    fn rsel_roll(id: &ns::Id) -> Option<&cf::Number>;
+    fn rsel_yaw(id: &ns::Id) -> Option<&cf::Number>;
+    fn rsel_pitch(id: &ns::Id) -> Option<&cf::Number>;
 
-    fn rsel_identifier(id: &objc::Id) -> &cf::String;
-    fn rsel_hasPrecisionRecallCurve(id: &objc::Id) -> bool;
+    fn rsel_identifier(id: &ns::Id) -> &cf::String;
+    fn rsel_hasPrecisionRecallCurve(id: &ns::Id) -> bool;
 
-    fn rsel_hasMinimumRecall_forPrecision(
-        id: &objc::Id,
-        minimum_recall: f32,
-        precision: f32,
-    ) -> bool;
+    fn rsel_hasMinimumRecall_forPrecision(id: &ns::Id, minimum_recall: f32, precision: f32)
+        -> bool;
 
     fn rsel_hasMinimumPrecision_forRecall(
-        id: &objc::Id,
+        id: &ns::Id,
         minimum_precistion: f32,
         recall: f32,
     ) -> bool;
 
-    fn rsel_labels(id: &objc::Id) -> &cf::ArrayOf<vn::ClassificationObservation>;
+    fn rsel_labels(id: &ns::Id) -> &cf::ArrayOf<vn::ClassificationObservation>;
 
-    fn rsel_pixelBuffer(id: &objc::Id) -> &cv::PixelBuffer;
-    fn rsel_featureName(id: &objc::Id) -> Option<&cf::String>;
+    fn rsel_pixelBuffer(id: &ns::Id) -> &cv::PixelBuffer;
+    fn rsel_featureName(id: &ns::Id) -> Option<&cf::String>;
 
-    fn rsel_characterBoxes(id: &objc::Id) -> Option<&cf::ArrayOf<vn::RectangleObservation>>;
+    fn rsel_characterBoxes(id: &ns::Id) -> Option<&cf::ArrayOf<vn::RectangleObservation>>;
 
-    fn rsel_angle(id: &objc::Id) -> cg::Float;
-    fn rsel_transform(id: &objc::Id) -> cg::AffineTransform;
+    fn rsel_angle(id: &ns::Id) -> cg::Float;
+    fn rsel_transform(id: &ns::Id) -> cg::AffineTransform;
     fn rsel_transformForImageWidth_height(
-        id: &objc::Id,
+        id: &ns::Id,
         width: usize,
         height: usize,
     ) -> cg::AffineTransform;
 
-    fn rsel_upperBodyOnly(id: &objc::Id) -> bool;
+    fn rsel_upperBodyOnly(id: &ns::Id) -> bool;
 
-    fn rsel_salientObjects(id: &objc::Id) -> Option<&cf::ArrayOf<RectangleObservation>>;
+    fn rsel_salientObjects(id: &ns::Id) -> Option<&cf::ArrayOf<RectangleObservation>>;
 
     fn vn_rsel_elementType(id: &FeaturePrintObservation) -> vn::ElementType;
     fn vn_rsel_elementCount(id: &FeaturePrintObservation) -> usize;
@@ -295,7 +292,7 @@ extern "C" {
     // rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
     fn rsel_computeDistance_toFeaturePrintObservation_error<'ar>(
-        id: &objc::Id,
+        id: &ns::Id,
         distance: &mut f32,
         to: &FeaturePrintObservation,
         error: &mut Option<&'ar cf::Error>,

@@ -1,6 +1,6 @@
-use crate::{cf, cg, ci, define_obj_type, objc};
+use crate::{cf, cg, ci, define_obj_type, ns};
 
-define_obj_type!(Context(objc::Id));
+define_obj_type!(Context(ns::Id));
 
 impl Context {
     #[inline]
@@ -49,7 +49,7 @@ extern "C" {
     ) -> Option<cf::Retained<Context>>;
 
     fn rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error<'ar>(
-        context: &objc::Id,
+        context: &ns::Id,
         image: &ci::Image,
         url: &cf::URL,
         format: ci::Format,

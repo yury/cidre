@@ -1,4 +1,4 @@
-use crate::{define_obj_type, objc};
+use crate::{define_obj_type, ns};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
@@ -46,9 +46,9 @@ pub enum MarkerMark {
     Paragraph,
 }
 
-define_obj_type!(Voice(objc::Id));
+define_obj_type!(Voice(ns::Id));
 
-define_obj_type!(Utterance(objc::Id));
+define_obj_type!(Utterance(ns::Id));
 
 impl Utterance {
     pub fn min_speech_rate() -> f32 {
@@ -64,9 +64,9 @@ impl Utterance {
     }
 }
 
-define_obj_type!(Synthesizer(objc::Id));
+define_obj_type!(Synthesizer(ns::Id));
 
-define_obj_type!(Marker(objc::Id));
+define_obj_type!(Marker(ns::Id));
 
 #[link(name = "AVFAudio", kind = "framework")]
 extern "C" {

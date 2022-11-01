@@ -1,6 +1,6 @@
-use crate::{av, cf, define_obj_type, objc::Id};
+use crate::{av, cf, define_obj_type, ns};
 
-define_obj_type!(Output(Id));
+define_obj_type!(Output(ns::Id));
 
 impl Output {
     pub fn connections(&self) -> &cf::ArrayOf<av::CaptureConnection> {

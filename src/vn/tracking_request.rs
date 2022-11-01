@@ -1,4 +1,4 @@
-use crate::{define_obj_type, objc, vn};
+use crate::{define_obj_type, ns, vn};
 
 #[repr(usize)]
 pub enum Level {
@@ -24,6 +24,6 @@ impl TrackingRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_trackingLevel(id: &objc::Id) -> Level;
-    fn wsel_setTrackingLevel(id: &mut objc::Id, value: Level);
+    fn rsel_trackingLevel(id: &ns::Id) -> Level;
+    fn wsel_setTrackingLevel(id: &mut ns::Id, value: Level);
 }

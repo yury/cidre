@@ -1,8 +1,8 @@
 use std::mem::transmute;
 
-use crate::{cf, define_cf_type, define_obj_type, mtl, objc};
+use crate::{cf, define_cf_type, define_obj_type, mtl, ns};
 
-define_obj_type!(Image(objc::Id));
+define_obj_type!(Image(ns::Id));
 
 impl Image {
     pub fn with_mtl_texture(

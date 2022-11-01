@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, define_obj_type, objc, vn};
+use crate::{cf, define_obj_type, ns, vn};
 
 define_obj_type!(DetectDocumentSegmentationRequest(vn::ImageBasedRequest));
 
@@ -18,7 +18,7 @@ impl DetectDocumentSegmentationRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &objc::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
 
     fn VNDetectDocumentSegmentationRequest_new() -> cf::Retained<DetectDocumentSegmentationRequest>;
 }

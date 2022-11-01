@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, define_obj_type, objc, vn};
+use crate::{cf, define_obj_type, ns, vn};
 
 define_obj_type!(DetectBarcodesRequest(vn::ImageBasedRequest));
 
@@ -42,16 +42,16 @@ impl DetectBarcodesRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &objc::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
 
     fn VNDetectBarcodesRequest_new() -> cf::Retained<DetectBarcodesRequest>;
 
-    fn rsel_symbologies(id: &objc::Id) -> &cf::ArrayOf<vn::BarcodeSymbology>;
+    fn rsel_symbologies(id: &ns::Id) -> &cf::ArrayOf<vn::BarcodeSymbology>;
 
-    fn wsel_setSymbologies(id: &mut objc::Id, value: &cf::ArrayOf<vn::BarcodeSymbology>);
+    fn wsel_setSymbologies(id: &mut ns::Id, value: &cf::ArrayOf<vn::BarcodeSymbology>);
 
     fn rsel_supportedSymbologiesAndReturnError<'ar, 'a>(
-        id: &'a objc::Id,
+        id: &'a ns::Id,
         error: &mut Option<&'ar cf::Error>,
     ) -> Option<&'a cf::ArrayOf<vn::BarcodeSymbology>>;
 }

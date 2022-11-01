@@ -1,8 +1,8 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, define_obj_type, objc, vn};
+use crate::{cf, cg, define_obj_type, ns, vn};
 
-define_obj_type!(Request(objc::Id));
+define_obj_type!(Request(ns::Id));
 
 impl Request {
     /// The specific algorithm or implementation revision that is to be used to perform the request.
@@ -63,14 +63,14 @@ impl DetectHorizonRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_revision(id: &objc::Id) -> usize;
-    fn wsel_setRevision(id: &objc::Id, value: usize);
+    fn rsel_revision(id: &ns::Id) -> usize;
+    fn wsel_setRevision(id: &ns::Id, value: usize);
 
-    fn rsel_usesCPUOnly(id: &objc::Id) -> bool;
-    fn wsel_setUsesCPUOnly(id: &objc::Id, value: bool);
+    fn rsel_usesCPUOnly(id: &ns::Id) -> bool;
+    fn wsel_setUsesCPUOnly(id: &ns::Id, value: bool);
 
-    fn rsel_results(id: &objc::Id) -> Option<cf::Retained<cf::ArrayOf<vn::Observation>>>;
+    fn rsel_results(id: &ns::Id) -> Option<cf::Retained<cf::ArrayOf<vn::Observation>>>;
 
-    fn rsel_regionOfInterest(id: &objc::Id) -> cg::Rect;
-    fn wsel_setRegionOfIntereset(id: &mut objc::Id, value: cg::Rect);
+    fn rsel_regionOfInterest(id: &ns::Id) -> cg::Rect;
+    fn wsel_setRegionOfIntereset(id: &mut ns::Id, value: cg::Rect);
 }

@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, define_obj_type, objc, vn};
+use crate::{cf, define_obj_type, ns, vn};
 
 define_obj_type!(GenerateImageFeaturePrintRequest(vn::ImageBasedRequest));
 
@@ -25,8 +25,8 @@ impl GenerateImageFeaturePrintRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &objc::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
 
-    fn rsel_imageCropAndScaleOption(id: &objc::Id) -> vn::ImageCropAndScaleOption;
-    fn wsel_setImageCropAndScaleOption(id: &mut objc::Id, value: vn::ImageCropAndScaleOption);
+    fn rsel_imageCropAndScaleOption(id: &ns::Id) -> vn::ImageCropAndScaleOption;
+    fn wsel_setImageCropAndScaleOption(id: &mut ns::Id, value: vn::ImageCropAndScaleOption);
 }

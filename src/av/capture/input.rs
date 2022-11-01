@@ -1,8 +1,8 @@
-use crate::{av, cf, define_obj_type, msg_send, objc::Id};
+use crate::{av, cf, define_obj_type, msg_send, ns};
 
-define_obj_type!(Input(Id));
+define_obj_type!(Input(ns::Id));
 define_obj_type!(DeviceInput(Input));
-define_obj_type!(Port(Id));
+define_obj_type!(Port(ns::Id));
 
 impl Input {
     pub fn ports(&self) -> &cf::ArrayOf<Port> {

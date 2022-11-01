@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, define_obj_type, objc, os, vn};
+use crate::{cf, define_obj_type, ns, os, vn};
 
 /// Person segmentation level options to favor speed over recognition accuracy.
 /// Accurate is the default option.
@@ -50,13 +50,13 @@ impl GeneratePersonSegmentationRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_qualityLevel(id: &objc::Id) -> QualityLevel;
-    fn wsel_setQualityLevel(id: &mut objc::Id, value: QualityLevel);
+    fn rsel_qualityLevel(id: &ns::Id) -> QualityLevel;
+    fn wsel_setQualityLevel(id: &mut ns::Id, value: QualityLevel);
 
-    fn rsel_outputPixelFormat(id: &objc::Id) -> os::Type;
-    fn wsel_setOutputPixelFormat(id: &mut objc::Id, value: os::Type);
+    fn rsel_outputPixelFormat(id: &ns::Id) -> os::Type;
+    fn wsel_setOutputPixelFormat(id: &mut ns::Id, value: os::Type);
 
-    fn rsel_results(id: &objc::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
 
     fn VNGeneratePersonSegmentationRequest_new() -> cf::Retained<GeneratePersonSegmentationRequest>;
 }

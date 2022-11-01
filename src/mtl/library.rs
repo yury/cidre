@@ -3,7 +3,6 @@ use std::{fmt::Debug, intrinsics::transmute};
 use crate::{
     cf::{self, Retained},
     define_mtl, define_obj_type, msg_send, mtl, ns,
-    objc::Id,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -34,7 +33,7 @@ pub enum OptimizationLevel {
     Size = 1,
 }
 
-define_obj_type!(CompileOptions(Id));
+define_obj_type!(CompileOptions(ns::Id));
 
 impl CompileOptions {
     /// ```
@@ -73,7 +72,7 @@ impl CompileOptions {
     }
 }
 
-define_obj_type!(Function(Id));
+define_obj_type!(Function(ns::Id));
 
 impl Function {
     define_mtl!(device, label, set_label);
@@ -92,7 +91,7 @@ impl Function {
     }
 }
 
-define_obj_type!(Library(Id));
+define_obj_type!(Library(ns::Id));
 
 impl Library {
     define_mtl!(device, label, set_label);
@@ -253,13 +252,13 @@ extern "C" {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLCompileOptions_new() -> Retained<CompileOptions>;
-    fn rsel_fastMathEnabled(id: &Id) -> bool;
-    fn wsel_setFastMathEnabled(id: &mut Id, value: bool);
+    fn rsel_fastMathEnabled(id: &ns::Id) -> bool;
+    fn wsel_setFastMathEnabled(id: &mut ns::Id, value: bool);
 
-    fn rsel_languageVersion(id: &Id) -> LanguageVersion;
-    fn wsel_setLanguageVersion(id: &mut Id, value: LanguageVersion);
+    fn rsel_languageVersion(id: &ns::Id) -> LanguageVersion;
+    fn wsel_setLanguageVersion(id: &mut ns::Id, value: LanguageVersion);
 
-    fn rsel_functionNames(id: &Id) -> &cf::ArrayOf<cf::String>;
+    fn rsel_functionNames(id: &ns::Id) -> &cf::ArrayOf<cf::String>;
 
     fn rsel_newFunctionWithName(id: &Library, name: &cf::String) -> Option<Retained<Function>>;
     fn rsel_newFunctionWithName_constantValues_error<'ar>(

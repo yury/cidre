@@ -1,10 +1,6 @@
 use std::ffi::c_void;
 
-use crate::mtl::RenderPipelineState;
-use crate::{define_mtl, define_options, msg_send};
-use crate::{define_obj_type, objc::Id};
-
-use super::{Buffer, CommandEncoder, Texture};
+use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -147,13 +143,13 @@ impl RenderStages {
     pub const MESH: Self = Self(1usize << 4);
 }
 
-define_obj_type!(RenderCommandEncoder(CommandEncoder));
+define_obj_type!(RenderCommandEncoder(mtl::CommandEncoder));
 
 impl RenderCommandEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
     #[inline]
-    pub fn set_render_pipeline_state(&mut self, state: &RenderPipelineState) {
+    pub fn set_render_pipeline_state(&mut self, state: &mtl::RenderPipelineState) {
         msg_send!("mtl", self, sel_setRenderPipelineState, state)
     }
 
@@ -163,7 +159,12 @@ impl RenderCommandEncoder {
     }
 
     #[inline]
-    pub fn set_vertex_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
+    pub fn set_vertex_buffer(
+        &mut self,
+        buffer: Option<&mtl::Buffer>,
+        offset: usize,
+        at_index: usize,
+    ) {
         msg_send!(
             "mtl",
             self,
@@ -175,7 +176,12 @@ impl RenderCommandEncoder {
     }
 
     #[inline]
-    pub fn set_fragment_buffer(&mut self, buffer: Option<&Buffer>, offset: usize, at_index: usize) {
+    pub fn set_fragment_buffer(
+        &mut self,
+        buffer: Option<&mtl::Buffer>,
+        offset: usize,
+        at_index: usize,
+    ) {
         msg_send!(
             "mtl",
             self,
@@ -187,7 +193,7 @@ impl RenderCommandEncoder {
     }
 
     #[inline]
-    pub fn set_fragment_texture_at(&mut self, texture: Option<&Texture>, at_index: usize) {
+    pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize) {
         msg_send!(
             "mtl",
             self,
@@ -236,5 +242,5 @@ impl RenderCommandEncoder {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn wsel_setVertexBytes(id: &mut Id, bytes: *const c_void, length: usize, at_index: usize);
+    fn wsel_setVertexBytes(id: &mut ns::Id, bytes: *const c_void, length: usize, at_index: usize);
 }

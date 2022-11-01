@@ -1,10 +1,9 @@
 use std::ffi::c_void;
 
 use crate::objc::block::{Completion, CompletionHandlerAB};
-use crate::{cf, cg, define_obj_type, objc::Id, sys};
-use crate::{cf::Retained, msg_send};
+use crate::{cf, cg, define_obj_type, msg_send, ns, sys};
 
-define_obj_type!(RunningApplication(Id));
+define_obj_type!(RunningApplication(ns::Id));
 
 impl RunningApplication {
     pub fn bundle_identifier(&self) -> cf::String {
@@ -22,12 +21,12 @@ impl RunningApplication {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_bundleIdentifier(id: &Id) -> cf::String;
-    fn rsel_applicationName(id: &Id) -> cf::String;
-    fn rsel_processID(id: &Id) -> sys::Pid;
+    fn rsel_bundleIdentifier(id: &ns::Id) -> cf::String;
+    fn rsel_applicationName(id: &ns::Id) -> cf::String;
+    fn rsel_processID(id: &ns::Id) -> sys::Pid;
 }
 
-define_obj_type!(Display(Id));
+define_obj_type!(Display(ns::Id));
 
 impl Display {
     pub fn display_id(&self) -> cg::DirectDisplayID {
@@ -47,7 +46,7 @@ impl Display {
     }
 }
 
-define_obj_type!(Window(Id));
+define_obj_type!(Window(ns::Id));
 
 impl Window {
     pub fn id(&self) -> cg::WindowID {
@@ -61,10 +60,10 @@ impl Window {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_windowID(id: &Id) -> cg::WindowID;
+    fn rsel_windowID(id: &ns::Id) -> cg::WindowID;
 }
 
-define_obj_type!(ShareableContent(Id));
+define_obj_type!(ShareableContent(ns::Id));
 
 impl ShareableContent {
     pub fn windows(&self) -> &cf::ArrayOf<Window> {
@@ -86,7 +85,7 @@ impl ShareableContent {
         unsafe { cs_shareable_content_with_completion_handler(block.into_raw()) }
     }
 
-    pub async fn current() -> Result<Retained<Self>, Retained<cf::Error>> {
+    pub async fn current() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
         let (future, block_ptr) = Completion::result_or_error();
         unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
         future.await
@@ -95,9 +94,9 @@ impl ShareableContent {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_windows(id: &Id) -> &cf::ArrayOf<Window>;
-    fn rsel_displays(id: &Id) -> &cf::ArrayOf<Display>;
-    fn rsel_applications(id: &Id) -> &cf::ArrayOf<RunningApplication>;
+    fn rsel_windows(id: &ns::Id) -> &cf::ArrayOf<Window>;
+    fn rsel_displays(id: &ns::Id) -> &cf::ArrayOf<Display>;
+    fn rsel_applications(id: &ns::Id) -> &cf::ArrayOf<RunningApplication>;
     fn cs_shareable_content_with_completion_handler(rb: *const c_void);
 }
 

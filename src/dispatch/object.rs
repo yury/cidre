@@ -3,10 +3,10 @@ use std::{ffi::c_void, mem::transmute};
 use crate::{
     define_obj_type,
     dispatch::{Function, QOSClass},
-    objc::Id,
+    ns,
 };
 
-define_obj_type!(Object(Id));
+define_obj_type!(Object(ns::Id));
 
 impl Object {
     #[inline]

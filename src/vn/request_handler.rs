@@ -1,8 +1,8 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, cm, cv, define_obj_type, objc, vn};
+use crate::{cf, cg, cm, cv, define_obj_type, ns, vn};
 
-define_obj_type!(ImageRequestHandler(objc::Id));
+define_obj_type!(ImageRequestHandler(ns::Id));
 
 /// Performs requests on a single image.
 ///
@@ -79,7 +79,7 @@ impl ImageRequestHandler {
     }
 }
 
-define_obj_type!(SequenceRequestHandler(objc::Id));
+define_obj_type!(SequenceRequestHandler(ns::Id));
 
 /// Performs requests on a sequence of images.
 ///
@@ -179,7 +179,7 @@ extern "C" {
     ) -> Option<cf::Retained<ImageRequestHandler>>;
 
     fn rsel_performRequests_error<'ar>(
-        id: &objc::Id,
+        id: &ns::Id,
         requests: &cf::ArrayOf<vn::Request>,
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
@@ -187,14 +187,14 @@ extern "C" {
     fn VNSequenceRequestHandler_new() -> Option<cf::Retained<SequenceRequestHandler>>;
 
     fn rsel_performRequests_onCVPixelBuffer_error<'ar>(
-        id: &objc::Id,
+        id: &ns::Id,
         requests: &cf::ArrayOf<vn::Request>,
         pixel_buffer: &cv::PixelBuffer,
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
 
     fn rsel_performRequests_onCMSampleBuffer_error<'ar>(
-        id: &objc::Id,
+        id: &ns::Id,
         requests: &cf::ArrayOf<vn::Request>,
         sample_buffer: &cm::SampleBuffer,
         error: &mut Option<&'ar cf::Error>,

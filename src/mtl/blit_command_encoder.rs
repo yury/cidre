@@ -1,8 +1,4 @@
-use crate::{
-    define_mtl, define_obj_type, define_options,
-    ns::{self, Range},
-    objc::Id,
-};
+use crate::{define_mtl, define_obj_type, define_options, ns};
 
 use super::{Buffer, CommandEncoder, IndirectCommandBuffer, Origin, Size, Texture};
 
@@ -79,7 +75,7 @@ impl BlitCommandEncoder {
     pub fn reset_commands_in_buffer_with_range(
         &self,
         buffer: &IndirectCommandBuffer,
-        range: Range,
+        range: ns::Range,
     ) {
         unsafe { wsel_resetCommandsInBuffer_withRange(self, buffer, range) }
     }
@@ -87,10 +83,10 @@ impl BlitCommandEncoder {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn wsel_fillBuffer(id: &Id, buffer: &Buffer, range: ns::Range, value: u8);
+    fn wsel_fillBuffer(id: &ns::Id, buffer: &Buffer, range: ns::Range, value: u8);
 
     fn wsel_copyFromTexture_sourceSlice_sourceLevel_sourceOrigin_sourceSize_toTexture_destinationSlice_destinationLevel_destinationOrigin(
-        id: &Id,
+        id: &ns::Id,
         src_texture: &Texture,
         src_slice: usize,
         src_level: usize,
@@ -102,13 +98,13 @@ extern "C" {
         dest_origin: Origin,
     );
 
-    fn wsel_copyFromTexture_toTexture(id: &Id, src_texture: &Texture, dest_texture: &Texture);
+    fn wsel_copyFromTexture_toTexture(id: &ns::Id, src_texture: &Texture, dest_texture: &Texture);
 
-    fn wsel_optimizeContentsForGPUAccess(id: &Id, texture: &Texture);
+    fn wsel_optimizeContentsForGPUAccess(id: &ns::Id, texture: &Texture);
 
     fn wsel_resetCommandsInBuffer_withRange(
-        id: &Id,
+        id: &ns::Id,
         buffer: &IndirectCommandBuffer,
-        with_range: Range,
+        with_range: ns::Range,
     );
 }

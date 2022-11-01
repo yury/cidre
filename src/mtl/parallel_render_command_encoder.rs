@@ -1,4 +1,4 @@
-use crate::{define_obj_type, objc::Id};
+use crate::{define_obj_type, ns};
 
 use super::{CommandEncoder, RenderCommandEncoder};
 
@@ -13,5 +13,5 @@ impl ParallelRenderCommandEncoder {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_renderCommandEncoder<'ar>(id: &Id) -> Option<&'ar RenderCommandEncoder>;
+    fn rsel_renderCommandEncoder<'ar>(id: &ns::Id) -> Option<&'ar RenderCommandEncoder>;
 }

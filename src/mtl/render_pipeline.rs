@@ -2,8 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use crate::{
     cf::{ArrayOf, Retained},
-    define_mtl, define_obj_type, msg_send,
-    objc::Id,
+    define_mtl, define_obj_type, msg_send, ns,
 };
 
 use super::{argument::Argument, Function, PixelFormat};
@@ -94,7 +93,7 @@ pub enum TessellationControlPointIndexType {
     UInt32 = 2,
 }
 
-define_obj_type!(ColorAttachmentDescriptor(Id));
+define_obj_type!(ColorAttachmentDescriptor(ns::Id));
 
 impl ColorAttachmentDescriptor {
     #[inline]
@@ -189,35 +188,35 @@ impl ColorAttachmentDescriptor {
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_pixelFormat(id: &Id) -> PixelFormat;
-    fn wsel_setPixelFormat(id: &mut Id, value: PixelFormat);
+    fn rsel_pixelFormat(id: &ns::Id) -> PixelFormat;
+    fn wsel_setPixelFormat(id: &mut ns::Id, value: PixelFormat);
 
-    fn rsel_isBlendingEnabled(id: &Id) -> bool;
-    fn wsel_setBlendingEnabled(id: &mut Id, value: bool);
+    fn rsel_isBlendingEnabled(id: &ns::Id) -> bool;
+    fn wsel_setBlendingEnabled(id: &mut ns::Id, value: bool);
 
-    fn rsel_sourceRGBBlendFactor(id: &Id) -> BlendFactor;
-    fn wsel_setSourceRGBBlendFactor(id: &mut Id, value: BlendFactor);
+    fn rsel_sourceRGBBlendFactor(id: &ns::Id) -> BlendFactor;
+    fn wsel_setSourceRGBBlendFactor(id: &mut ns::Id, value: BlendFactor);
 
-    fn rsel_destinationRGBBlendFactor(id: &Id) -> BlendFactor;
-    fn wsel_setDestinationRGBBlendFactor(id: &mut Id, value: BlendFactor);
+    fn rsel_destinationRGBBlendFactor(id: &ns::Id) -> BlendFactor;
+    fn wsel_setDestinationRGBBlendFactor(id: &mut ns::Id, value: BlendFactor);
 
-    fn rsel_rgbBlendOperation(id: &Id) -> BlendOperation;
-    fn wsel_setRgbBlendOperation(id: &mut Id, value: BlendOperation);
+    fn rsel_rgbBlendOperation(id: &ns::Id) -> BlendOperation;
+    fn wsel_setRgbBlendOperation(id: &mut ns::Id, value: BlendOperation);
 
-    fn rsel_sourceAlphaBlendFactor(id: &Id) -> BlendFactor;
-    fn wsel_setSourceAlphaBlendFactor(id: &mut Id, value: BlendFactor);
+    fn rsel_sourceAlphaBlendFactor(id: &ns::Id) -> BlendFactor;
+    fn wsel_setSourceAlphaBlendFactor(id: &mut ns::Id, value: BlendFactor);
 
-    fn rsel_destinationAlphaBlendFactor(id: &Id) -> BlendFactor;
-    fn wsel_setDestinationAlphaBlendFactor(id: &mut Id, value: BlendFactor);
+    fn rsel_destinationAlphaBlendFactor(id: &ns::Id) -> BlendFactor;
+    fn wsel_setDestinationAlphaBlendFactor(id: &mut ns::Id, value: BlendFactor);
 
-    fn rsel_alphaBlendOperation(id: &Id) -> BlendOperation;
-    fn wsel_setAlphaBlendOperation(id: &mut Id, value: BlendOperation);
+    fn rsel_alphaBlendOperation(id: &ns::Id) -> BlendOperation;
+    fn wsel_setAlphaBlendOperation(id: &mut ns::Id, value: BlendOperation);
 
-    fn render_pipeline_rsel_writeMask(id: &Id) -> ColorWriteMask;
-    fn render_pipeline_wsel_setWriteMask(id: &mut Id, value: ColorWriteMask);
+    fn render_pipeline_rsel_writeMask(id: &ns::Id) -> ColorWriteMask;
+    fn render_pipeline_wsel_setWriteMask(id: &mut ns::Id, value: ColorWriteMask);
 }
 
-define_obj_type!(Reflection(Id));
+define_obj_type!(Reflection(ns::Id));
 
 impl Reflection {
     #[inline]
@@ -236,12 +235,12 @@ impl Reflection {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_vertexArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
-    fn rsel_fragmentArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
-    fn rsel_tileArguments(id: &Id) -> Option<&ArrayOf<Argument>>;
+    fn rsel_vertexArguments(id: &ns::Id) -> Option<&ArrayOf<Argument>>;
+    fn rsel_fragmentArguments(id: &ns::Id) -> Option<&ArrayOf<Argument>>;
+    fn rsel_tileArguments(id: &ns::Id) -> Option<&ArrayOf<Argument>>;
 }
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
     define_mtl!(reset);
@@ -312,21 +311,21 @@ impl Descriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLRenderPipelineDescriptor_new() -> Retained<Descriptor>;
-    fn rsel_vertexFunction(id: &Id) -> Option<&Function>;
-    fn wsel_setVertexFunction(id: &mut Id, value: Option<&Function>);
+    fn rsel_vertexFunction(id: &ns::Id) -> Option<&Function>;
+    fn wsel_setVertexFunction(id: &mut ns::Id, value: Option<&Function>);
 
-    fn rsel_fragmentFunction(id: &Id) -> Option<&Function>;
-    fn wsel_setFragmentFunction(id: &mut Id, value: Option<&Function>);
-    fn rsel_colorAttachments(id: &Id) -> &mut ColorAttachmentDescriptorArray;
+    fn rsel_fragmentFunction(id: &ns::Id) -> Option<&Function>;
+    fn wsel_setFragmentFunction(id: &mut ns::Id, value: Option<&Function>);
+    fn rsel_colorAttachments(id: &ns::Id) -> &mut ColorAttachmentDescriptorArray;
 
     //rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
-    fn rsel_rasterSampleCount(id: &Id) -> usize;
-    fn wsel_setRasterSampleCount(id: &Id, value: usize);
+    fn rsel_rasterSampleCount(id: &ns::Id) -> usize;
+    fn wsel_setRasterSampleCount(id: &ns::Id, value: usize);
 }
 
-define_obj_type!(FunctionsDescriptor(Id));
+define_obj_type!(FunctionsDescriptor(ns::Id));
 
-define_obj_type!(State(Id));
+define_obj_type!(State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resouce_id);
@@ -346,12 +345,12 @@ impl State {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_maxTotalThreadsPerThreadgroup(id: &Id) -> usize;
-    fn rsel_threadgroupSizeMatchesTileSize(id: &Id) -> bool;
-    fn rsel_imageblockSampleLength(id: &Id) -> usize;
+    fn rsel_maxTotalThreadsPerThreadgroup(id: &ns::Id) -> usize;
+    fn rsel_threadgroupSizeMatchesTileSize(id: &ns::Id) -> bool;
+    fn rsel_imageblockSampleLength(id: &ns::Id) -> usize;
 }
 
-define_obj_type!(ColorAttachmentDescriptorArray(Id));
+define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
 
 impl ColorAttachmentDescriptorArray {
     #[inline]
@@ -412,27 +411,27 @@ impl IndexMut<usize> for ColorAttachmentDescriptorArray {
 extern "C" {
 
     fn MTLRenderPipelineColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
-        id: &Id,
+        id: &ns::Id,
         index: usize,
     ) -> &mut ColorAttachmentDescriptor;
 
     fn MTLRenderPipelineColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
-        id: &mut Id,
+        id: &mut ns::Id,
         value: Option<&ColorAttachmentDescriptor>,
         index: usize,
     );
 }
 
-define_obj_type!(TileRenderPipelineColorAttachmentDescriptor(Id));
-define_obj_type!(TileRenderPipelineColorAttachmentDescriptorArray(Id));
+define_obj_type!(TileRenderPipelineColorAttachmentDescriptor(ns::Id));
+define_obj_type!(TileRenderPipelineColorAttachmentDescriptorArray(ns::Id));
 
-define_obj_type!(TileRenderPipelineDescriptor(Id));
+define_obj_type!(TileRenderPipelineDescriptor(ns::Id));
 
 impl TileRenderPipelineDescriptor {
     define_mtl!(reset);
 }
 
-define_obj_type!(MeshRenderPipelineDescriptor(Id));
+define_obj_type!(MeshRenderPipelineDescriptor(ns::Id));
 
 impl MeshRenderPipelineDescriptor {
     define_mtl!(reset, label, set_label);
