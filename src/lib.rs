@@ -142,7 +142,7 @@ mod tests {
             let arr = cf::Array::from_type_refs(&[null, &num]).unwrap();
 
             let v = b"he".to_vec();
-            let s = cf::String::create_with_bytes_no_copy(
+            let _s = cf::String::create_with_bytes_no_copy_in(
                 None,
                 &v,
                 2,
@@ -151,8 +151,8 @@ mod tests {
                 cf::Allocator::null(),
             )
             .unwrap();
-            // s
-            let f = num;
+            
+            let _f = num;
 
             arr.show();
             // s.show();

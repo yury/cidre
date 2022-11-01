@@ -56,7 +56,7 @@ impl String {
     pub fn from_str_no_copy(str: &str) -> Retained<String> {
         let bytes = str.as_bytes();
         unsafe {
-            Self::create_with_bytes_no_copy(
+            Self::create_with_bytes_no_copy_in(
                 None,
                 bytes,
                 bytes.len() as _,
@@ -91,7 +91,7 @@ impl String {
     #[inline]
     pub fn from_cstr(cstr: &CStr) -> Retained<String> {
         unsafe {
-            Self::create_with_cstring(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
+            Self::create_with_cstring_in(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
                 .unwrap_unchecked()
         }
     }
@@ -99,7 +99,7 @@ impl String {
     #[inline]
     pub fn from_cstr_no_copy(cstr: &CStr) -> Retained<String> {
         unsafe {
-            Self::create_with_cstring_no_copy(
+            Self::create_with_cstring_no_copy_in(
                 None,
                 cstr.to_bytes_with_nul(),
                 Encoding::UTF8,
@@ -148,7 +148,7 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_bytes_no_copy(
+    pub fn create_with_bytes_no_copy_in(
         alloc: Option<&Allocator>,
         bytes: &[u8],
         num_bytes: Index,
@@ -170,7 +170,7 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_cstring_no_copy(
+    pub fn create_with_cstring_no_copy_in(
         alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
         encoding: Encoding,
@@ -183,7 +183,7 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_cstring(
+    pub fn create_with_cstring_in(
         alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
         encoding: Encoding,
