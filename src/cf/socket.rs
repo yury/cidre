@@ -69,7 +69,7 @@ pub struct Context<T> {
 pub type NativeHandle = i32;
 
 impl Socket {
-    pub unsafe fn create<T>(
+    pub unsafe fn create_in<T>(
         allocator: Option<&cf::Allocator>,
         protocol_family: i32,
         socket_type: i32,
@@ -88,7 +88,7 @@ impl Socket {
             transmute(context),
         )
     }
-    pub unsafe fn create_with_native<T>(
+    pub unsafe fn create_with_native_in<T>(
         allocator: Option<&cf::Allocator>,
         sock: NativeHandle,
         cb_types: CallBackType,
@@ -104,6 +104,15 @@ impl Socket {
         )
     }
 
+    pub unsafe fn create_with_native<T>(
+        sock: NativeHandle,
+        cb_types: CallBackType,
+        callout: CallBack<T>,
+        context: Option<NonNull<Context<c_void>>>,
+    ) -> Option<cf::Retained<Socket>> {
+        Self::create_with_native_in(None, sock, cb_types, callout, context)
+    }
+
     pub fn native(&self) -> NativeHandle {
         unsafe { CFSocketGetNative(self) }
     }
@@ -116,12 +125,19 @@ impl Socket {
         unsafe { CFSocketIsValid(self) }
     }
 
-    pub fn create_runloop_source(
+    pub fn create_runloop_source_in(
         &self,
         allocator: Option<&cf::Allocator>,
         order: cf::Index,
     ) -> Option<cf::Retained<cf::RunLoopSource>> {
         unsafe { CFSocketCreateRunLoopSource(allocator, self, order) }
+    }
+
+    pub fn create_runloop_source(
+        &self,
+        order: cf::Index,
+    ) -> Option<cf::Retained<cf::RunLoopSource>> {
+        self.create_runloop_source_in(None, order)
     }
 
     pub fn flags(&self) -> Flags {
