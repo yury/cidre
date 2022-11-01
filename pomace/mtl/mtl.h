@@ -99,6 +99,11 @@ rsel_a(,id, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSi
 //- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
 rsel_ab(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 
+NS_RETURNS_RETAINED
+rsel_a(, id, newHeapWithDescriptor, MTLHeapDescriptor *, id<MTLHeap>);
+
+
+
 #pragma mark - CompileOptions
 
 NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)
@@ -214,7 +219,7 @@ wsel_abc(, id, setConstantValue, const void *, type, MTLDataType, withName, NSSt
 
 
 
-// MTLHeap
+#pragma mark - MTLHeapDescriptor
 
 NS_RETURNS_RETAINED csel(, MTLHeapDescriptor, new, MTLHeapDescriptor *)
 

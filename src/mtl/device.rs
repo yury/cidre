@@ -4,10 +4,10 @@ use crate::{
     cf::{self, Retained},
     define_obj_type, define_options, io, msg_send, mtl,
     ns::Id,
-    objc::block::CompletionHandlerAB,
+    objc::{self, block::CompletionHandlerAB},
 };
 
-use super::{event::SharedEvent, texture, Buffer, CommandQueue, Event, Fence, Library, Size};
+use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 
 define_options!(PipelineOption(usize));
 
@@ -179,18 +179,18 @@ impl Device {
     #[inline]
     pub fn texture_with_descriptor(
         &self,
-        descriptor: &texture::Descriptor,
-    ) -> Option<Retained<texture::Texture>> {
+        descriptor: &mtl::TextureDescriptor,
+    ) -> Option<Retained<mtl::Texture>> {
         unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
     }
 
     #[inline]
     pub fn texture_with_surface(
         &self,
-        descriptor: &texture::Descriptor,
+        descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
         plane: usize,
-    ) -> Option<Retained<texture::Texture>> {
+    ) -> Option<Retained<mtl::Texture>> {
         unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
     }
 
@@ -410,6 +410,14 @@ impl Device {
     ) -> SizeAndAlign {
         unsafe { rsel_heapBufferSizeAndAlignWithLength(self, length, options) }
     }
+
+    #[inline]
+    pub fn new_heap_with_descriptor(
+        &self,
+        descriptor: &mtl::HeapDescriptor,
+    ) -> Option<Retained<mtl::Heap>> {
+        unsafe { rsel_newHeapWithDescriptor(self, descriptor) }
+    }
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -438,17 +446,18 @@ extern "C" {
         maxCommandBufferCount: usize,
     ) -> Option<Retained<CommandQueue>>;
 
+    // reuse in Heap
     fn rsel_newTextureWithDescriptor(
-        id: &Device,
-        descriptor: &texture::Descriptor,
-    ) -> Option<Retained<texture::Texture>>;
+        id: &objc::Id,
+        descriptor: &mtl::TextureDescriptor,
+    ) -> Option<Retained<mtl::Texture>>;
 
     fn rsel_newTextureWithDescriptor_iosurface_plane(
         id: &Device,
-        descriptor: &texture::Descriptor,
+        descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
         plane: usize,
-    ) -> Option<Retained<texture::Texture>>;
+    ) -> Option<Retained<mtl::Texture>>;
 
     fn rsel_newDefaultLibrary(id: &Device) -> Option<Retained<Library>>;
 
@@ -473,11 +482,13 @@ extern "C" {
         error: &mut Option<&'a cf::Error>,
     ) -> Option<Retained<mtl::RenderPipelineState>>;
 
+    // reuse this in Heap
     fn rsel_newBufferWithLength_options(
-        id: &Device,
+        id: &objc::Id,
         length: usize,
         options: mtl::ResourceOptions,
     ) -> Option<Retained<Buffer>>;
+
     fn rsel_newBufferWithBytes_length_options(
         id: &Device,
         bytes: *const c_void,
@@ -496,11 +507,17 @@ extern "C" {
         id: &Device,
         descriptor: &mtl::TextureDescriptor,
     ) -> SizeAndAlign;
+
     fn rsel_heapBufferSizeAndAlignWithLength(
         id: &Device,
         length: usize,
         options: mtl::ResourceOptions,
     ) -> SizeAndAlign;
+
+    fn rsel_newHeapWithDescriptor(
+        id: &Device,
+        descriptor: &mtl::HeapDescriptor,
+    ) -> Option<Retained<mtl::Heap>>;
 }
 
 #[cfg(test)]
