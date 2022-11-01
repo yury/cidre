@@ -5,7 +5,7 @@ use crate::{
 };
 use crate::{define_mtl, define_options, io, msg_send};
 
-use super::{resource, Device, PixelFormat, Resource};
+use super::{PixelFormat, Resource};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -33,6 +33,7 @@ pub enum Swizzle {
     Alpha = 5,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct SwizzleChannels {
     pub red: Swizzle,
@@ -56,13 +57,7 @@ impl Default for SwizzleChannels {
 define_obj_type!(SharedTextureHandle(Id));
 
 impl SharedTextureHandle {
-    pub fn device(&self) -> &Device {
-        msg_send!("mtl", self, sel_device)
-    }
-
-    pub fn label(&self) -> Option<&cf::String> {
-        msg_send!("common", self, sel_label)
-    }
+    define_mtl!(device, label);
 }
 
 define_options!(Usage(usize));
@@ -304,12 +299,15 @@ impl Texture {
     /// assert!(t.parent_texture().is_none());
     /// assert!(t.io_surface().is_none());
     /// assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
+    /// assert!(t.io_surface().is_none());
+    /// assert_eq!(t.io_surface_plane(), 0);
     ///
     /// let tv = t.texture_view_with_pixel_format(mtl::PixelFormat::A8Unorm).unwrap();
     ///
     /// assert!(tv.parent_texture().is_some());
     /// assert_eq!(tv.width(), 100);
     /// assert_eq!(tv.height(), 200);
+
     ///
     /// ```
     #[inline]

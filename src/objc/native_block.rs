@@ -132,7 +132,14 @@ impl<F, R> Literal<NoCopyDispose, F, R, ()> {
         (literal.func)(a)
     }
 
-    extern "C" fn invoke_abcde<A, B, C, D, E>(literal: &mut Self, a: A, b: B, c: C, d: D, e: E) -> R
+    extern "C" fn _invoke_abcde<A, B, C, D, E>(
+        literal: &mut Self,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+    ) -> R
     where
         F: FnMut(A, B, C, D, E) -> R,
     {
@@ -328,7 +335,7 @@ mod tests {
         b.call_mut_a(10);
         b.call_mut_a(10);
 
-        extern "C" fn invoke(b: &mut Literal<NoCopyDispose, NoFunc, (), i32>) {
+        extern "C" fn invoke(_b: &mut Literal<NoCopyDispose, NoFunc, (), i32>) {
             // b.fields += 1;
             // println!("nice {:}", b.fields);
         }

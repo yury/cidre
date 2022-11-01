@@ -118,6 +118,8 @@ pub use fence::Fence;
 
 mod event;
 pub use event::Event;
+pub use event::SharedEvent;
+pub use event::SharedEventHandle;
 
 pub mod blit_pass;
 pub use blit_pass::Descriptor as BlitPassDescriptor;
@@ -445,7 +447,7 @@ macro_rules! define_mtl {
         }
     };
 
-    ($first:ident, $($tail:ident),+) => {
+    ($first:ident, $($tail:ident),*) => {
         define_mtl!($first);
         define_mtl!($($tail),+);
     };
