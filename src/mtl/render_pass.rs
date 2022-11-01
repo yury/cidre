@@ -135,7 +135,7 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn default<'autoreleased>() -> &'autoreleased mut Descriptor {
+    pub fn default<'ar>() -> &'ar mut Descriptor {
         unsafe { MTLRenderPassDescriptor_renderPassDescriptor() }
     }
 
@@ -233,7 +233,7 @@ impl Descriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLRenderPassDescriptor_new() -> Retained<Descriptor>;
-    fn MTLRenderPassDescriptor_renderPassDescriptor<'autoreleased>() -> &'autoreleased mut Descriptor;
+    fn MTLRenderPassDescriptor_renderPassDescriptor<'ar>() -> &'ar mut Descriptor;
 
     fn rsel_colorAttachments(id: &Id) -> &mut ColorAttachmentDescriptorArray;
 

@@ -21,11 +21,15 @@ impl Descriptor {
     pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray {
         unsafe { MTLBlitPassDescriptor_sampleBufferAttachments(self) }
     }
+
+    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufferAttachmentDescriptorArray {
+        unsafe { MTLBlitPassDescriptor_sampleBufferAttachments(self) }
+    }
 }
 
 extern "C" {
     fn MTLBlitPassDescriptor_blitPassDescriptor<'ar>() -> &'ar Descriptor;
     fn MTLBlitPassDescriptor_sampleBufferAttachments(
         id: &Descriptor,
-    ) -> &SampleBufferAttachmentDescriptorArray;
+    ) -> &mut SampleBufferAttachmentDescriptorArray;
 }

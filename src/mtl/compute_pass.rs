@@ -35,6 +35,11 @@ impl Descriptor {
     pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray {
         unsafe { MTLComputePassDescriptor_sampleBufferAttachments(self) }
     }
+
+    #[inline]
+    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufferAttachmentDescriptorArray {
+        unsafe { MTLComputePassDescriptor_sampleBufferAttachments(self) }
+    }
 }
 
 extern "C" {
@@ -45,7 +50,7 @@ extern "C" {
 
     fn MTLComputePassDescriptor_sampleBufferAttachments(
         id: &Id,
-    ) -> &SampleBufferAttachmentDescriptorArray;
+    ) -> &mut SampleBufferAttachmentDescriptorArray;
 }
 
 define_obj_type!(SampleBufferAttachmentDescriptorArray(Id));
