@@ -11,13 +11,13 @@ impl Clock {
 
     /// Returns a reference to the singleton clock logically identified with host time.
     #[inline]
-    pub fn host_time_clock<'a>() -> &'a Clock {
+    pub fn host_time_clock() -> &'static Clock {
         unsafe { CMClockGetHostTimeClock() }
     }
 
     /// Use `audio_clock`
     #[inline]
-    pub unsafe fn audio_clock_create(
+    pub unsafe fn audio_clock_create_in(
         allocator: Option<&cf::Allocator>,
         clock_out: &mut Option<cf::Retained<Clock>>,
     ) -> os::Status {
@@ -35,7 +35,7 @@ impl Clock {
     pub fn audio_clock() -> Result<cf::Retained<Clock>, os::Status> {
         let mut clock_out = None;
         unsafe {
-            let res = Self::audio_clock_create(None, &mut clock_out);
+            let res = Self::audio_clock_create_in(None, &mut clock_out);
             res.to_result_unchecked(clock_out)
         }
     }

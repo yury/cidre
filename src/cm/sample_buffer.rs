@@ -56,6 +56,35 @@ impl SampleTimingInfo {
 
 define_cf_type!(SampleBuffer(cm::AttachmentBearer));
 
+/// An object that contains zero or more media samples of a uniform media type
+///
+/// Sample buffers are Core Foundation objects that the system uses to move media
+/// sample data through the media pipeline. An instance of cm::SampleBuffer contains
+/// zero or more compressed (or uncompressed) samples of a particular media type
+/// and contains one of the following:
+///
+///   - A cm::BlockBuffer of one or more media samples
+///   - A cm::ImageBuffer, a reference to the format description
+///      for the stream of CMSampleBuffers, size and timing information
+///      for each of the contained media samples, and both buffer-level
+///      and sample-level attachments
+///
+/// A sample buffer can contain both sample-level and buffer-level attachments.
+/// Each individual sample in a buffer may provide attachments that include
+/// information such as timestamps and video frame dependencies.
+///
+/// It’s possible for a sample buffer to describe samples it doesn’t yet contain.
+/// For example, some media services may have access to sample size, timing,
+/// and format information before they read the data. Such services may create
+/// sample buffers with that information and insert them into queues early,
+/// and attach (or fill) the buffer of media data later, when it becomes ready.
+/// Sample buffers have the concept of data-readiness, which means you can test,
+/// set, and force them to become ready “now.” It’s also possible for a sample buffer
+/// to contain nothing but a special buffer-level attachment that describes a media
+/// stream event (for example, “discontinuity: drain and reset decoder before processing
+/// the next cm::SampleBuffer”).
+///
+/// [CMSampleBuffer](https://developer.apple.com/documentation/coremedia/cmsamplebuffer?language=objc)
 impl SampleBuffer {
     /// Returns whether or not a cm::SampleBuffer's data is ready.
     ///
@@ -104,7 +133,7 @@ impl SampleBuffer {
         let mut sample_buffer_out = None;
 
         unsafe {
-            Self::create(
+            Self::create_in(
                 None,
                 data_buffer,
                 data_ready,
@@ -122,7 +151,8 @@ impl SampleBuffer {
         }
     }
 
-    pub unsafe fn create<'a>(
+    /// [CMSampleBufferCreate](https://developer.apple.com/documentation/coremedia/1489723-cmsamplebuffercreate?language=objc)
+    pub unsafe fn create_in<'a>(
         allocator: Option<&Allocator>,
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,
@@ -152,7 +182,7 @@ impl SampleBuffer {
         )
     }
 
-    pub fn create_for_image_buffer(
+    pub fn create_for_image_buffer_in(
         allocator: Option<&Allocator>,
         image_buffer: &cv::ImageBuffer,
         data_ready: bool,
