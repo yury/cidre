@@ -1,13 +1,8 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, msg_send, ns};
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
 
 use crate::objc::block::CompletionHandlerA;
-
-use super::{
-    BlitCommandEncoder, CommandQueue, ComputeCommandEncoder, ComputePassDescriptor,
-    RenderCommandEncoder, RenderPassDescriptor,
-};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -48,7 +43,7 @@ impl CommandBuffer {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
     #[inline]
-    pub fn command_queue(&self) -> &CommandQueue {
+    pub fn command_queue(&self) -> &mtl::CommandQueue {
         msg_send!("mtl", self, sel_commandQueue)
     }
 
@@ -87,20 +82,20 @@ impl CommandBuffer {
     }
 
     #[inline]
-    pub fn blit_command_encoder<'new>(&self) -> Option<&'new mut BlitCommandEncoder> {
+    pub fn blit_command_encoder<'new>(&self) -> Option<&'new mut mtl::BlitCommandEncoder> {
         msg_send!("mtl", self, sel_blitCommandEncoder)
     }
 
     #[inline]
-    pub fn compute_command_encoder<'new>(&self) -> Option<&'new mut ComputeCommandEncoder> {
+    pub fn compute_command_encoder<'new>(&self) -> Option<&'new mut mtl::ComputeCommandEncoder> {
         msg_send!("mtl", self, sel_computeCommandEncoder)
     }
 
     #[inline]
     pub fn compute_command_encoder_with_descriptor<'new>(
         &self,
-        descriptor: &ComputePassDescriptor,
-    ) -> Option<&'new mut ComputeCommandEncoder> {
+        descriptor: &mtl::ComputePassDescriptor,
+    ) -> Option<&'new mut mtl::ComputeCommandEncoder> {
         msg_send!(
             "mtl",
             self,
@@ -112,8 +107,8 @@ impl CommandBuffer {
     #[inline]
     pub fn render_command_encoder_with_descriptor<'new>(
         &self,
-        descriptor: &RenderPassDescriptor,
-    ) -> Option<&'new mut RenderCommandEncoder> {
+        descriptor: &mtl::RenderPassDescriptor,
+    ) -> Option<&'new mut mtl::RenderCommandEncoder> {
         msg_send!(
             "mtl",
             self,
