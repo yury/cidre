@@ -27,11 +27,16 @@ impl Date {
     }
 
     #[inline]
-    pub fn create(
+    pub fn new_in(
         allocator: Option<&cf::Allocator>,
         at: AbsoluteTime,
     ) -> Option<cf::Retained<Date>> {
         unsafe { CFDateCreate(allocator, at) }
+    }
+
+    #[inline]
+    pub fn new(at: AbsoluteTime) -> Option<cf::Retained<Date>> {
+        Self::new_in(None, at)
     }
 
     #[inline]

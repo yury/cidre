@@ -9,12 +9,18 @@ impl Data {
         unsafe { CFDataGetTypeID() }
     }
 
-    pub fn create(
+    #[inline]
+    pub fn new_in(
         allocator: Option<&cf::Allocator>,
         bytes: *const u8,
         length: cf::Index,
     ) -> Option<cf::Retained<cf::Data>> {
         unsafe { CFDataCreate(allocator, bytes, length) }
+    }
+
+    #[inline]
+    pub fn new(bytes: *const u8, length: cf::Index) -> Option<cf::Retained<cf::Data>> {
+        Self::new_in(None, bytes, length)
     }
 
     #[inline]
@@ -33,20 +39,17 @@ impl Data {
     }
 
     #[inline]
-    pub unsafe fn create_mutable_copy(
+    pub fn mutable_copy_in(
         &self,
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
     ) -> Option<cf::Retained<MutableData>> {
-        CFDataCreateMutableCopy(allocator, capacity, self)
+        unsafe { CFDataCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
     pub fn mutable_copy(&self, capacity: usize) -> cf::Retained<MutableData> {
-        unsafe {
-            self.create_mutable_copy(None, capacity as _)
-                .unwrap_unchecked()
-        }
+        unsafe { self.mutable_copy_in(None, capacity as _).unwrap_unchecked() }
     }
 
     #[inline]
@@ -68,7 +71,7 @@ impl Data {
 
 impl MutableData {
     #[inline]
-    pub fn create(
+    pub fn new_in(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
     ) -> Option<cf::Retained<cf::MutableData>> {
@@ -77,7 +80,7 @@ impl MutableData {
 
     #[inline]
     pub fn with_capacity(capacity: usize) -> cf::Retained<MutableData> {
-        unsafe { Self::create(None, capacity as _).unwrap_unchecked() }
+        unsafe { Self::new_in(None, capacity as _).unwrap_unchecked() }
     }
 
     /// # Unsafety
@@ -112,7 +115,7 @@ impl MutableData {
 /// ```
 impl<'a> From<&[u8]> for cf::Retained<Data> {
     fn from(bytes: &[u8]) -> Self {
-        unsafe { Data::create(None, bytes.as_ptr(), bytes.len() as _).unwrap_unchecked() }
+        unsafe { Data::new(bytes.as_ptr(), bytes.len() as _).unwrap_unchecked() }
     }
 }
 
