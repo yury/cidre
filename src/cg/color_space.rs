@@ -90,6 +90,10 @@ impl ColorSpace {
         unsafe { CGColorSpaceCreateDeviceGray() }
     }
 
+    /// Create a DeviceRGB color space.
+    ///
+    /// # Example
+    ///
     /// ```
     /// use cidre::cg;
     ///
