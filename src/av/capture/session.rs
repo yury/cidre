@@ -1,8 +1,7 @@
 use crate::{
     av,
     cf::{self, Retained},
-    define_obj_type,
-    objc::Id,
+    define_obj_type, ns,
 };
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
@@ -27,7 +26,7 @@ pub enum InterruptionReason {
     VideoDeviceNotAvailableDueToSystemPressure = 5,
 }
 
-define_obj_type!(Session(Id));
+define_obj_type!(Session(ns::Id));
 
 impl Session {
     #[inline]
@@ -171,7 +170,7 @@ extern "C" {
     fn wsel_addInputWithNoConnections(session: &mut Session, input: &av::CaptureInput);
     fn wsel_addOutputWithNoConnections(session: &mut Session, output: &av::CaptureOutput);
 
-    fn rsel_connections(id: &Id) -> &cf::ArrayOf<av::CaptureConnection>;
+    fn rsel_connections(id: &ns::Id) -> &cf::ArrayOf<av::CaptureConnection>;
 
     fn rsel_canAddConnection(session: &Session, connection: &av::CaptureConnection) -> bool;
     fn wsel_addConnection(session: &mut Session, connection: &av::CaptureConnection);
@@ -251,7 +250,7 @@ extern "C" {
     fn rsel_systemPressureCost(session: &MultiCamSession) -> f32;
 }
 
-define_obj_type!(Connection(Id));
+define_obj_type!(Connection(ns::Id));
 
 pub mod notifications {
     use crate::cf;

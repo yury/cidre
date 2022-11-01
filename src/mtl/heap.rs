@@ -1,7 +1,4 @@
-use crate::cf::Retained;
-use crate::{define_mtl, define_obj_type, msg_send, mtl, objc};
-
-use crate::ns::Id;
+use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
@@ -11,7 +8,7 @@ pub enum Type {
     Sparce = 2,
 }
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
     define_mtl!(
@@ -37,7 +34,7 @@ impl Descriptor {
     /// let heap = device.new_heap_with_descriptor(&desc).unwrap();
     /// assert!(heap.size() >= 1024);
     /// ```
-    pub fn new() -> Retained<Self> {
+    pub fn new() -> cf::Retained<Self> {
         unsafe { MTLHeapDescriptor_new() }
     }
 
@@ -50,7 +47,7 @@ impl Descriptor {
     }
 }
 
-define_obj_type!(Heap(Id));
+define_obj_type!(Heap(ns::Id));
 
 impl Heap {
     define_mtl!(
@@ -70,7 +67,7 @@ impl Heap {
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<mtl::Buffer>> {
+    ) -> Option<cf::Retained<mtl::Buffer>> {
         unsafe { rsel_newBufferWithLength_options(self, length, options) }
     }
 
@@ -78,7 +75,7 @@ impl Heap {
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<Retained<mtl::Texture>> {
+    ) -> Option<cf::Retained<mtl::Texture>> {
         unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
     }
 }
@@ -86,16 +83,16 @@ impl Heap {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
 
-    fn MTLHeapDescriptor_new() -> Retained<Descriptor>;
+    fn MTLHeapDescriptor_new() -> cf::Retained<Descriptor>;
 
     fn rsel_newBufferWithLength_options(
-        id: &objc::Id,
+        id: &ns::Id,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<Retained<mtl::Buffer>>;
+    ) -> Option<cf::Retained<mtl::Buffer>>;
 
     fn rsel_newTextureWithDescriptor(
-        id: &objc::Id,
+        id: &ns::Id,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<Retained<mtl::Texture>>;
+    ) -> Option<cf::Retained<mtl::Texture>>;
 }

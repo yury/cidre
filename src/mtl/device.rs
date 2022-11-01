@@ -2,9 +2,8 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
     cf::{self, Retained},
-    define_obj_type, define_options, io, msg_send, mtl,
-    ns::Id,
-    objc::{self, block::CompletionHandlerAB},
+    define_obj_type, define_options, io, msg_send, mtl, ns,
+    objc::block::CompletionHandlerAB,
 };
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
@@ -48,7 +47,7 @@ pub struct SizeAndAlign {
     pub align: usize,
 }
 
-define_obj_type!(Device(Id));
+define_obj_type!(Device(ns::Id));
 
 impl Device {
     /// ```
@@ -448,7 +447,7 @@ extern "C" {
 
     // reuse in Heap
     fn rsel_newTextureWithDescriptor(
-        id: &objc::Id,
+        id: &ns::Id,
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<Retained<mtl::Texture>>;
 
@@ -484,7 +483,7 @@ extern "C" {
 
     // reuse this in Heap
     fn rsel_newBufferWithLength_options(
-        id: &objc::Id,
+        id: &ns::Id,
         length: usize,
         options: mtl::ResourceOptions,
     ) -> Option<Retained<Buffer>>;

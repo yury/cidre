@@ -3,8 +3,7 @@ use std::ops::{Deref, DerefMut};
 use crate::{
     av::MediaType,
     cf::{self, Retained},
-    cm, define_cf_type, define_obj_type,
-    objc::Id,
+    cm, define_cf_type, define_obj_type, ns,
 };
 
 use super::SessionPreset;
@@ -91,7 +90,7 @@ pub enum Position {
     Front = 2,
 }
 
-define_obj_type!(Device(Id));
+define_obj_type!(Device(ns::Id));
 
 /// ```
 /// use cidre::{av::{self, capture::device::{self, Device} }};
@@ -268,7 +267,7 @@ pub enum AutoFocusSystem {
     PhaseDetection = 2,
 }
 
-define_obj_type!(FrameRateRange(Id));
+define_obj_type!(FrameRateRange(ns::Id));
 
 impl FrameRateRange {
     pub fn min_frame_rate(&self) -> f64 {
@@ -290,10 +289,10 @@ impl FrameRateRange {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn rsel_minFrameRate(id: &Id) -> f64;
-    fn rsel_maxFrameRate(id: &Id) -> f64;
-    fn rsel_maxFrameDuration(id: &Id) -> cm::Time;
-    fn rsel_minFrameDuration(id: &Id) -> cm::Time;
+    fn rsel_minFrameRate(id: &ns::Id) -> f64;
+    fn rsel_maxFrameRate(id: &ns::Id) -> f64;
+    fn rsel_maxFrameDuration(id: &ns::Id) -> cm::Time;
+    fn rsel_minFrameDuration(id: &ns::Id) -> cm::Time;
 }
 
 #[repr(isize)]
@@ -310,7 +309,7 @@ pub enum MicrophoneMode {
     VoiceIsolation = 2,
 }
 
-define_obj_type!(Format(Id));
+define_obj_type!(Format(ns::Id));
 
 impl Format {
     #[cfg(not(target_os = "macos"))]
@@ -385,9 +384,9 @@ pub mod notifications {
     }
 }
 
-define_obj_type!(CaptureAudioChannel(Id));
+define_obj_type!(CaptureAudioChannel(ns::Id));
 
-define_obj_type!(DiscoverySession(Id));
+define_obj_type!(DiscoverySession(ns::Id));
 
 impl DiscoverySession {
     pub fn with_device_types_media_and_position(
@@ -421,7 +420,7 @@ extern "C" {
         media_type: Option<&MediaType>,
         position: Position,
     ) -> Retained<DiscoverySession>;
-    fn rsel_devices(id: &Id) -> &cf::ArrayOf<Device>;
+    fn rsel_devices(id: &ns::Id) -> &cf::ArrayOf<Device>;
     #[cfg(not(target_os = "macos"))]
     fn rsel_supportedMultiCamDeviceSets(id: &Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
 }
