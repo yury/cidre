@@ -1,11 +1,4 @@
-use crate::ns::Id;
-use crate::{
-    cf::{self, Retained},
-    define_obj_type,
-};
-use crate::{define_mtl, define_options, io, msg_send};
-
-use super::{PixelFormat, Resource};
+use crate::{cf, define_mtl, define_obj_type, define_options, io, msg_send, mtl, ns};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -54,7 +47,7 @@ impl Default for SwizzleChannels {
     }
 }
 
-define_obj_type!(SharedTextureHandle(Id));
+define_obj_type!(SharedTextureHandle(ns::Id));
 
 impl SharedTextureHandle {
     define_mtl!(device, label);
@@ -69,7 +62,7 @@ impl Usage {
     pub const RENDER_TARGET: Self = Self(0x0004);
     pub const PIXEL_FROMAT_VIEW: Self = Self(0x0010);
 
-    pub fn to_cf_number(&self) -> Retained<cf::Number> {
+    pub fn to_cf_number(&self) -> cf::Retained<cf::Number> {
         cf::Number::from_i64(self.0 as _)
     }
 }
@@ -81,7 +74,7 @@ pub enum CompressionType {
     Lossy = 1,
 }
 
-define_obj_type!(Descriptor(Id));
+define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
     define_mtl!(storage_mode, set_storage_mode);
@@ -109,7 +102,7 @@ impl Descriptor {
     /// ```
     #[inline]
     pub fn new_2d_with_pixel_format<'ar>(
-        pixel_format: PixelFormat,
+        pixel_format: mtl::PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
@@ -134,10 +127,10 @@ impl Descriptor {
     /// ```
     #[inline]
     pub fn new_cube_with_pixel_format(
-        pixel_format: PixelFormat,
+        pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> Retained<Descriptor> {
+    ) -> cf::Retained<Descriptor> {
         unsafe {
             MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
                 pixel_format,
@@ -149,11 +142,11 @@ impl Descriptor {
 
     #[inline]
     pub fn with_resource_options(
-        pixel_format: PixelFormat,
+        pixel_format: mtl::PixelFormat,
         width: usize,
-        resource_options: crate::mtl::resource::Options,
+        resource_options: mtl::resource::Options,
         usage: Usage,
-    ) -> Retained<Descriptor> {
+    ) -> cf::Retained<Descriptor> {
         unsafe {
             MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
                 pixel_format,
@@ -175,12 +168,12 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn pixel_format(&self) -> PixelFormat {
+    pub fn pixel_format(&self) -> mtl::PixelFormat {
         unsafe { rsel_pixelFormat(self) }
     }
 
     #[inline]
-    pub fn set_pixel_format(&mut self, value: PixelFormat) {
+    pub fn set_pixel_format(&mut self, value: mtl::PixelFormat) {
         unsafe { wsel_setPixelFormat(self, value) }
     }
 
@@ -268,7 +261,7 @@ impl Descriptor {
     }
 }
 
-define_obj_type!(Texture(Resource));
+define_obj_type!(Texture(mtl::Resource));
 
 /// ```
 /// use cidre::mtl;
@@ -318,8 +311,8 @@ impl Texture {
     #[inline]
     pub fn texture_view_with_pixel_format(
         &self,
-        pixel_format: PixelFormat,
-    ) -> Option<Retained<Texture>> {
+        pixel_format: mtl::PixelFormat,
+    ) -> Option<cf::Retained<Texture>> {
         unsafe { rsel_newTextureViewWithPixelFormat(self, pixel_format) }
     }
 
@@ -339,7 +332,7 @@ impl Texture {
     }
 
     #[inline]
-    pub fn pixel_format(&self) -> PixelFormat {
+    pub fn pixel_format(&self) -> mtl::PixelFormat {
         unsafe { rsel_pixelFormat(self) }
     }
 }
@@ -347,57 +340,57 @@ impl Texture {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped<'ar>(
-        pixel_format: PixelFormat,
+        pixel_format: mtl::PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
     ) -> &'ar mut Descriptor;
     fn MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
-        pixel_format: PixelFormat,
+        pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> Retained<Descriptor>;
+    ) -> cf::Retained<Descriptor>;
     fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
-        pixel_format: PixelFormat,
+        pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: crate::mtl::resource::Options,
         usage: Usage,
-    ) -> Retained<Descriptor>;
+    ) -> cf::Retained<Descriptor>;
 
-    fn rsel_textureType(id: &Id) -> Type;
-    fn wsel_textureType(id: &mut Id, value: Type);
+    fn rsel_textureType(id: &ns::Id) -> Type;
+    fn wsel_textureType(id: &mut ns::Id, value: Type);
 
-    fn rsel_pixelFormat(id: &Id) -> PixelFormat;
-    fn wsel_setPixelFormat(id: &mut Id, value: PixelFormat);
+    fn rsel_pixelFormat(id: &ns::Id) -> mtl::PixelFormat;
+    fn wsel_setPixelFormat(id: &mut ns::Id, value: mtl::PixelFormat);
 
-    fn rsel_mipmapLevelCount(id: &Id) -> usize;
-    fn wsel_setMipmapLevelCount(id: &mut Id, value: usize);
+    fn rsel_mipmapLevelCount(id: &ns::Id) -> usize;
+    fn wsel_setMipmapLevelCount(id: &mut ns::Id, value: usize);
 
-    fn MTLTextureDescriptor_rsel_sampleCount(id: &Id) -> usize;
-    fn MTLTextureDescriptor_wsel_setSampleCount(id: &mut Id, value: usize);
+    fn MTLTextureDescriptor_rsel_sampleCount(id: &ns::Id) -> usize;
+    fn MTLTextureDescriptor_wsel_setSampleCount(id: &mut ns::Id, value: usize);
 
-    fn rsel_arrayLength(id: &Id) -> usize;
-    fn wsel_setArrayLength(id: &mut Id, value: usize);
+    fn rsel_arrayLength(id: &ns::Id) -> usize;
+    fn wsel_setArrayLength(id: &mut ns::Id, value: usize);
 
-    fn rsel_usage(id: &Id) -> Usage;
-    fn wsel_setUsage(id: &mut Id, value: Usage);
+    fn rsel_usage(id: &ns::Id) -> Usage;
+    fn wsel_setUsage(id: &mut ns::Id, value: Usage);
 
-    fn rsel_allowGPUOptimizedContents(id: &Id) -> bool;
-    fn wsel_setAllowGPUOptimizedContents(id: &mut Id, value: bool);
+    fn rsel_allowGPUOptimizedContents(id: &ns::Id) -> bool;
+    fn wsel_setAllowGPUOptimizedContents(id: &mut ns::Id, value: bool);
 
-    fn MTLTextureDescriptor_rsel_compressionType(id: &Id) -> CompressionType;
-    fn MTLTextureDescriptor_wsel_setCompressionType(id: &Id, value: CompressionType);
+    fn MTLTextureDescriptor_rsel_compressionType(id: &ns::Id) -> CompressionType;
+    fn MTLTextureDescriptor_wsel_setCompressionType(id: &ns::Id, value: CompressionType);
 
-    fn rsel_swizzle(id: &Id) -> SwizzleChannels;
-    fn wsel_setSwizzle(id: &mut Id, value: SwizzleChannels);
+    fn rsel_swizzle(id: &ns::Id) -> SwizzleChannels;
+    fn wsel_setSwizzle(id: &mut ns::Id, value: SwizzleChannels);
 
-    fn rsel_parentTexture(id: &Texture) -> Option<&Texture>;
+    fn rsel_parentTexture(id: &mtl::Texture) -> Option<&mtl::Texture>;
 
     fn rsel_newTextureViewWithPixelFormat(
-        id: &Texture,
-        pixel_format: PixelFormat,
-    ) -> Option<Retained<Texture>>;
+        id: &mtl::Texture,
+        pixel_format: mtl::PixelFormat,
+    ) -> Option<cf::Retained<mtl::Texture>>;
 
-    fn rsel_iosurface(id: &Texture) -> Option<&io::Surface>;
-    fn rsel_iosurfacePlane(id: &Texture) -> usize;
+    fn rsel_iosurface(id: &mtl::Texture) -> Option<&io::Surface>;
+    fn rsel_iosurfacePlane(id: &mtl::Texture) -> usize;
 }

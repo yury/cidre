@@ -1,9 +1,6 @@
-use crate::ns::Id;
-use crate::{define_mtl, define_obj_type, msg_send};
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
 
-use super::{Buffer, Texture};
-
-define_obj_type!(ArgumentEncoder(Id));
+define_obj_type!(ArgumentEncoder(ns::Id));
 
 impl ArgumentEncoder {
     define_mtl!(device, label, set_label);
@@ -17,12 +14,12 @@ impl ArgumentEncoder {
     }
 
     #[inline]
-    pub fn set_argument_buffer(&mut self, buffer: Option<&Buffer>, offset: usize) {
+    pub fn set_argument_buffer(&mut self, buffer: Option<&mtl::Buffer>, offset: usize) {
         msg_send!("mtl", self, sel_setArgumentBuffer_offset, buffer, offset)
     }
 
     #[inline]
-    pub fn set_texture(&mut self, texture: Option<&Texture>, at_index: usize) {
+    pub fn set_texture(&mut self, texture: Option<&mtl::Texture>, at_index: usize) {
         msg_send!("mtl", self, sel_setTexture_atIndex, texture, at_index)
     }
 }
