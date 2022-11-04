@@ -145,16 +145,17 @@ async fn main() {
         display.height() * 2
     );
 
-    let expected_bitrate = cf::Number::from_i32(6_500_000);
+    let expected_bitrate = cf::Number::from_i32(6_000_000);
     let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
     let expected_fr = cf::Number::from_i32(60);
     let frame_delay_count = cf::Number::from_i32(0);
     let max_key_frame_interval = cf::Number::from_i32(600 * 5 * 5);
+    let max_key_frame_interval_duration = cf::Number::from_f64(10f64).unwrap();
     let rate_limit = cf::Array::from_type_refs(&[
-        &cf::Number::from_i32(350_000),
+        &cf::Number::from_i32(200_000),
         &cf::Number::from_f64(0.1f64).unwrap(),
-        &cf::Number::from_i32(3_500_000),
+        &cf::Number::from_i32(4_000_000),
         &cf::Number::from_f64(1.0f64).unwrap(),
     ])
     .unwrap();
@@ -163,6 +164,10 @@ async fn main() {
     props.insert(keys::real_time(), bool_true);
     props.insert(keys::allow_frame_reordering(), bool_false);
     props.insert(keys::max_key_frame_interval(), &max_key_frame_interval);
+    props.insert(
+        keys::max_key_frame_interval_duration(),
+        &max_key_frame_interval_duration,
+    );
     props.insert(keys::data_rate_limits(), &rate_limit);
     props.insert(keys::avarage_bit_rate(), &expected_bitrate);
     //props.insert(keys::constant_bit_rate(), &expected_bitrate);
