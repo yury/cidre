@@ -422,7 +422,7 @@ extern "C" {
     ) -> Retained<DiscoverySession>;
     fn rsel_devices(id: &ns::Id) -> &cf::ArrayOf<Device>;
     #[cfg(not(target_os = "macos"))]
-    fn rsel_supportedMultiCamDeviceSets(id: &Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
+    fn rsel_supportedMultiCamDeviceSets(id: &ns::Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
 }
 
 #[derive(Debug, Clone, Copy)]
