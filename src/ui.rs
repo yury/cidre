@@ -1,4 +1,4 @@
-pub mod device;
+mod device;
 pub use device::notifications as device_notifications;
 pub use device::BatteryState as DeviceBatteryState;
 pub use device::Device;

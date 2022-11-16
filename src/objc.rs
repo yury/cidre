@@ -136,7 +136,7 @@ impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self
             .as_type_ref()
-            .copy_description()
+            .description()
             .map(|f| f.to_string())
             .unwrap_or_else(|| "no desc".to_string());
         f.debug_tuple("NS").field(&desc).finish()

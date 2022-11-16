@@ -56,7 +56,7 @@ pub enum ComparisonResult {
 ///     assert_eq!("CFNumber", desc.to_string());
 /// }
 /// ```
-pub unsafe fn copy_type_id_description<'a>(type_id: TypeId) -> Option<Retained<String>> {
+pub unsafe fn copy_type_id_description(type_id: TypeId) -> Option<Retained<String>> {
     CFCopyTypeIDDescription(type_id)
 }
 
@@ -118,7 +118,7 @@ impl Type {
     }
 
     #[inline]
-    pub fn copy_description(&self) -> Option<Retained<String>> {
+    pub fn description(&self) -> Option<Retained<String>> {
         unsafe { CFCopyDescription(Some(self)) }
     }
 }
@@ -126,7 +126,7 @@ impl Type {
 impl Debug for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self
-            .copy_description()
+            .description()
             .map(|f| f.to_string())
             .unwrap_or_else(|| "no desc".to_string());
         f.debug_tuple("cf::Type").field(&desc).finish()
