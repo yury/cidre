@@ -1,5 +1,5 @@
 use crate::{cf, define_cf_type};
-use std::{ffi::c_void, os::raw::c_double};
+use std::ffi::{c_double, c_void};
 
 pub type TimeInterval = c_double;
 pub type AbsoluteTime = TimeInterval;
@@ -27,16 +27,21 @@ impl Date {
     }
 
     #[inline]
-    pub fn new_in(
-        allocator: Option<&cf::Allocator>,
+    pub fn new_at_in(
         at: AbsoluteTime,
-    ) -> Option<cf::Retained<Date>> {
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<cf::Retained<Self>> {
         unsafe { CFDateCreate(allocator, at) }
     }
 
     #[inline]
-    pub fn new(at: AbsoluteTime) -> Option<cf::Retained<Date>> {
-        Self::new_in(None, at)
+    pub fn new_at(at: AbsoluteTime) -> Option<cf::Retained<Self>> {
+        Self::new_at_in(at, None)
+    }
+
+    #[inline]
+    pub fn current() -> Option<cf::Retained<Self>> {
+        Self::new_at(absolute_time_current())
     }
 
     #[inline]
@@ -52,6 +57,23 @@ impl Date {
     #[inline]
     pub unsafe fn compare(&self, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult {
         CFDateCompare(self, other_date, context)
+    }
+}
+
+impl PartialEq for Date {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { self.compare(other, std::ptr::null_mut()) == cf::ComparisonResult::EqualTo }
+    }
+}
+
+impl Eq for Date {}
+
+impl PartialOrd for Date {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        let res = unsafe { self.compare(other, std::ptr::null_mut()) };
+        let val: isize = res as _;
+        let ival: i8 = val as _;
+        Some(unsafe { std::mem::transmute(ival) })
     }
 }
 
@@ -72,4 +94,21 @@ extern "C" {
         other_date: &Date,
         context: *mut c_void,
     ) -> cf::ComparisonResult;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cf;
+
+    #[test]
+    fn basics() {
+        let d1 = cf::Date::current().unwrap();
+        let d2 = cf::Date::current().unwrap();
+
+        assert_ne!(d1, d2);
+        assert!(d1 < d2);
+
+        let interval = d2.time_interval_since_date(&d1);
+        assert!(interval > 0f64);
+    }
 }

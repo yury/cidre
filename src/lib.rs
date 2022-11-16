@@ -151,7 +151,7 @@ mod tests {
                 cf::Allocator::null(),
             )
             .unwrap();
-            
+
             let _f = num;
 
             arr.show();

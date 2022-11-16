@@ -18,6 +18,18 @@ pub trait Retain: Sized + Release {
 #[repr(transparent)]
 pub struct Retained<T: Release + 'static>(&'static mut T);
 
+impl<T: Retain + PartialEq> PartialEq for Retained<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl<T: Retain + PartialOrd> PartialOrd for Retained<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
+    }
+}
+
 impl<T: Retain> Retained<T> {
     #[inline]
     pub fn retained(&self) -> Self {

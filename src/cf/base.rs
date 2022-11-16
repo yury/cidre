@@ -38,6 +38,7 @@ impl Range {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum ComparisonResult {
     LessThen = -1,
