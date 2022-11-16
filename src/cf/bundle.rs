@@ -6,20 +6,20 @@ impl Bundle {
     /// ```
     /// use cidre::cf;
     ///
-    /// let bundle = cf::Bundle::get_main().unwrap();
+    /// let bundle = cf::Bundle::main().unwrap();
     ///
-    /// let url = bundle.copy_bundle_url().unwrap();
+    /// let url = bundle.bundle_url().unwrap();
     /// ```
-    pub fn copy_bundle_url(&self) -> Option<cf::Retained<cf::URL>> {
+    pub fn bundle_url(&self) -> Option<cf::Retained<cf::URL>> {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let bundle = cf::Bundle::get_main().unwrap();
+    /// let bundle = cf::Bundle::main().unwrap();
     /// ```
-    pub fn get_main<'a>() -> Option<&'a Bundle> {
+    pub fn main() -> Option<&'static Bundle> {
         unsafe { CFBundleGetMainBundle() }
     }
 
