@@ -152,7 +152,7 @@ impl SampleBuffer {
     }
 
     /// [CMSampleBufferCreate](https://developer.apple.com/documentation/coremedia/1489723-cmsamplebuffercreate?language=objc)
-    pub unsafe fn create_in<'a>(
+    pub unsafe fn create_in(
         allocator: Option<&Allocator>,
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,

@@ -9,7 +9,7 @@ impl SignalGuard {
     pub fn consume(&self) {}
 }
 
-impl<'a> Drop for SignalGuard {
+impl Drop for SignalGuard {
     #[inline]
     fn drop(&mut self) {
         self.sema.signal();

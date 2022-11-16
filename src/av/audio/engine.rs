@@ -8,7 +8,7 @@ pub struct ManualRenderingError(pub os::Status);
 
 impl ManualRenderingError {
     /// The operation cannot be performed because the engine is either not in manual
-    ///	rendering mode or the right variant of it.
+    /// rendering mode or the right variant of it.
     pub const INVALID_MODE: Self = Self(os::Status(-80800));
 
     /// The operation cannot be performed because the engine is initialized (i.e. not stopped).

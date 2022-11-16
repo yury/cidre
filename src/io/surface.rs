@@ -116,7 +116,7 @@ impl Surface {
 
     #[inline]
     pub fn id(&self) -> Id {
-        unsafe { IOSurfaceGetID(&self) }
+        unsafe { IOSurfaceGetID(self) }
     }
 
     #[inline]

@@ -28,7 +28,7 @@ impl Group {
 
     #[inline]
     pub fn enter(&self) {
-        unsafe { dispatch_group_enter(&self) }
+        unsafe { dispatch_group_enter(self) }
     }
 
     #[inline]
