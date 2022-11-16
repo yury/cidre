@@ -34,6 +34,12 @@ impl UnfairLock {
     }
 }
 
+impl Default for UnfairLock {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 extern "C" {
     fn os_unfair_lock_lock(lock: &UnfairLock);
     fn os_unfair_lock_trylock(lock: &UnfairLock) -> bool;

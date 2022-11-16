@@ -292,7 +292,7 @@ impl Descriptor {
     }
 
     #[inline]
-    pub fn color_attachments_mut(&self) -> &mut ColorAttachmentDescriptorArray {
+    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescriptorArray {
         unsafe { rsel_colorAttachments(self) }
     }
 
