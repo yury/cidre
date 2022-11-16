@@ -11,16 +11,16 @@ impl Data {
 
     #[inline]
     pub fn new_in(
-        allocator: Option<&cf::Allocator>,
         bytes: *const u8,
         length: cf::Index,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<cf::Data>> {
         unsafe { CFDataCreate(allocator, bytes, length) }
     }
 
     #[inline]
     pub fn new(bytes: *const u8, length: cf::Index) -> Option<cf::Retained<cf::Data>> {
-        Self::new_in(None, bytes, length)
+        Self::new_in(bytes, length, None)
     }
 
     #[inline]
@@ -41,15 +41,15 @@ impl Data {
     #[inline]
     pub fn mutable_copy_in(
         &self,
-        allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<MutableData>> {
         unsafe { CFDataCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
     pub fn mutable_copy(&self, capacity: usize) -> cf::Retained<MutableData> {
-        unsafe { self.mutable_copy_in(None, capacity as _).unwrap_unchecked() }
+        unsafe { self.mutable_copy_in(capacity as _, None).unwrap_unchecked() }
     }
 
     #[inline]
@@ -72,15 +72,15 @@ impl Data {
 impl MutableData {
     #[inline]
     pub fn new_in(
-        allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<cf::MutableData>> {
         unsafe { CFDataCreateMutable(allocator, capacity) }
     }
 
     #[inline]
     pub fn with_capacity(capacity: usize) -> cf::Retained<MutableData> {
-        unsafe { Self::new_in(None, capacity as _).unwrap_unchecked() }
+        unsafe { Self::new_in(capacity as _, None).unwrap_unchecked() }
     }
 
     /// # Unsafety

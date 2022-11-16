@@ -4,9 +4,9 @@ use std::os::raw::{c_char, c_long};
 use std::ptr::NonNull;
 
 use crate::cf::Retained;
-use crate::{define_obj_type, objc};
 use crate::dispatch::{Function, Object};
 use crate::objc::native_block::DispatchBlock;
+use crate::{define_obj_type, objc};
 
 define_obj_type!(Queue(Object));
 define_obj_type!(Global(Queue));
@@ -115,7 +115,10 @@ impl Queue {
     pub fn sync_b<F, CD>(&self, block: &DispatchBlock<F, CD>) {
         unsafe {
             // let raw = Box::into_raw(block);
-            dispatch_sync(self, block as *const objc::native_block::Literal<CD, F, (), ()> as *mut std::ffi::c_void);
+            dispatch_sync(
+                self,
+                block as *const objc::native_block::Literal<CD, F, (), ()> as *mut std::ffi::c_void,
+            );
         }
     }
 
