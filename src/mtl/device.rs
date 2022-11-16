@@ -285,7 +285,7 @@ impl Device {
         let mut error = None;
         unsafe {
             let res =
-                Self::render_pipeline_state_with_descriptor_error(&self, descriptor, &mut error);
+                Self::render_pipeline_state_with_descriptor_error(self, descriptor, &mut error);
             if res.is_some() {
                 Ok(transmute(res))
             } else {
