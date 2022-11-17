@@ -83,7 +83,7 @@ impl Socket {
             protocol,
             cb_types,
             transmute(callout),
-            transmute(context),
+            context,
         )
     }
     pub unsafe fn create_with_native_in<T>(        
@@ -98,7 +98,7 @@ impl Socket {
             sock,
             cb_types,
             transmute(callout),
-            transmute(context),
+            context,
         )
     }
 

@@ -22,14 +22,14 @@ impl PixelFormatType {
     }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
 pub struct VideoDimensions {
     pub width: i32,
     pub height: i32,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct MediaType(pub FourCharCode);
 
@@ -48,7 +48,7 @@ impl MediaType {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
 pub struct VideoCodecType(FourCharCode);
 

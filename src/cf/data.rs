@@ -113,7 +113,7 @@ impl MutableData {
 /// assert_eq!(data.len(), 1);
 /// data.show();
 /// ```
-impl<'a> From<&[u8]> for cf::Retained<Data> {
+impl From<&[u8]> for cf::Retained<Data> {
     fn from(bytes: &[u8]) -> Self {
         unsafe { Data::new(bytes.as_ptr(), bytes.len() as _).unwrap_unchecked() }
     }
