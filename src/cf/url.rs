@@ -18,7 +18,7 @@ impl URL {
 
     /// CFURLCreateWithBytes
     #[inline]
-    pub fn with_bytes_in(        
+    pub fn with_bytes_in(
         url_bytes: *const u8,
         length: cf::Index,
         encoding: cf::StringEncoding,
@@ -29,7 +29,7 @@ impl URL {
     }
 
     #[inline]
-    pub fn with_cf_string_in(        
+    pub fn with_cf_string_in(
         url_string: &cf::String,
         base_url: Option<&URL>,
         allocator: Option<&cf::Allocator>,
@@ -38,7 +38,7 @@ impl URL {
     }
 
     #[inline]
-    pub fn with_file_system_path_in(        
+    pub fn with_file_system_path_in(
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,

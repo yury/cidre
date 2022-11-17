@@ -86,20 +86,14 @@ impl Socket {
             context,
         )
     }
-    pub unsafe fn create_with_native_in<T>(        
+    pub unsafe fn create_with_native_in<T>(
         sock: NativeHandle,
         cb_types: CallBackType,
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<Socket>> {
-        CFSocketCreateWithNative(
-            allocator,
-            sock,
-            cb_types,
-            transmute(callout),
-            context,
-        )
+        CFSocketCreateWithNative(allocator, sock, cb_types, transmute(callout), context)
     }
 
     pub unsafe fn create_with_native<T>(
@@ -124,7 +118,7 @@ impl Socket {
     }
 
     pub fn create_runloop_source_in(
-        &self,        
+        &self,
         order: cf::Index,
         allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<cf::RunLoopSource>> {
