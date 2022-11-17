@@ -14,6 +14,7 @@ impl PropertyID {
 }
 
 /// AudioPanningMode
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(u32)]
 pub enum PanningMode {
     None = 0,
@@ -45,6 +46,7 @@ pub struct PanningInfo<const N: usize> {
     pub output_channel_map: *const audio::ChannelLayout<N>,
 }
 
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(u32)]
 pub enum BalanceFadeType {
     /// the gain value never exceeds 1.0, the opposite channel fades out.

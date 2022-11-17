@@ -89,6 +89,7 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.mpeg-4".
     /// Files are identified with the .mp4 extension.
+    #[inline]
     pub fn mp4() -> &'static FileType {
         unsafe { AVFileTypeMPEG4 }
     }
@@ -101,6 +102,7 @@ impl FileType {
 
     /// The value of this UTI is @"com.apple.m4a-audio".
     /// Files are identified with the .m4a extension.
+    #[inline]
     pub fn m4a() -> &'static FileType {
         unsafe { AVFileTypeAppleM4A }
     }
@@ -165,6 +167,7 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.mp3".
     /// Files are identified with the .mp3 extension.
+    #[inline]
     pub fn mp3() -> &'static FileType {
         unsafe { AVFileTypeMPEGLayer3 }
     }
@@ -213,6 +216,7 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.heic".
     /// Files are identified with the .heic extension.
+    #[inline]
     pub fn heic() -> &'static FileType {
         unsafe { AVFileTypeHEIC }
     }

@@ -83,9 +83,6 @@ mod data;
 pub use data::Data;
 pub use data::MutableData;
 
-// pub type TimeInterval = f64;
-// pub type AbsoluteTime = TimeInterval;
-
 pub mod run_loop;
 pub use run_loop::Mode as RunLoopMode;
 pub use run_loop::Observer as RunLoopObserver;
