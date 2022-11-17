@@ -14,10 +14,10 @@ impl PixelBufferPool {
         unsafe {
             let mut pool_out = None;
             Self::create_in(
-                None,
                 pool_attributes,
                 pixel_buffer_attributes,
                 &mut pool_out,
+                None,
             )
             .to_result_unchecked(pool_out)
         }
@@ -25,10 +25,10 @@ impl PixelBufferPool {
 
     #[inline]
     pub unsafe fn create_in(
-        allocator: Option<&cf::Allocator>,
         pool_attributes: Option<&cf::Dictionary>,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pool_out: &mut Option<Retained<PixelBufferPool>>,
+        allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVPixelBufferPoolCreate(
             allocator,
@@ -51,8 +51,8 @@ impl PixelBufferPool {
     #[inline]
     pub unsafe fn create_pixel_buffer_in(
         &self,
-        allocator: Option<&cf::Allocator>,
         pixel_buffer_out: &mut Option<Retained<cv::PixelBuffer>>,
+        allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVPixelBufferPoolCreatePixelBuffer(allocator, self, pixel_buffer_out)
     }
@@ -61,7 +61,7 @@ impl PixelBufferPool {
     pub fn pixel_buffer(&self) -> Result<Retained<cv::PixelBuffer>, cv::Return> {
         unsafe {
             let mut pixel_buffer_out = None;
-            self.create_pixel_buffer_in(None, &mut pixel_buffer_out)
+            self.create_pixel_buffer_in(&mut pixel_buffer_out, None)
                 .to_result_unchecked(pixel_buffer_out)
         }
     }
