@@ -170,7 +170,7 @@ impl PropertyID {
     pub const DITHER_BIT_DEPTH: Self = Self(u32::from_be_bytes(*b"dbit"));
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
 pub struct DitherAlgorithm(pub u32);
 
@@ -179,7 +179,7 @@ impl DitherAlgorithm {
     pub const NOISE_SHAPING: Self = Self(2);
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
 pub struct Quality(pub u32);
 
@@ -207,7 +207,7 @@ impl Default for Quality {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
 pub struct SampleRateConverterComplexity(pub u32);
 
@@ -243,7 +243,7 @@ impl SampleRateConverterComplexity {
     pub const MINIMUM_PHASE: Self = Self(u32::from_be_bytes(*b"minp"));
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(u32)]
 pub enum PrimeMethod {
     /// Primes with leading + trailing input frames.
@@ -289,7 +289,7 @@ pub enum PrimeMethod {
 /// PrimeMethod::Pre may be preferable.  The default method is
 /// PrimeMethod::Normal, which requires no pre-seeking of the input stream and
 /// generates no latency at the output.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(C)]
 pub struct PrimeInfo {
     /// Specifies the number of leading (previous) input frames, relative to the normal/desired
