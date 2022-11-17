@@ -18,31 +18,31 @@ impl URL {
 
     /// CFURLCreateWithBytes
     #[inline]
-    pub fn with_bytes_in(
-        allocator: Option<&cf::Allocator>,
+    pub fn with_bytes_in(        
         url_bytes: *const u8,
         length: cf::Index,
         encoding: cf::StringEncoding,
         base_url: Option<&URL>,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<URL>> {
         unsafe { CFURLCreateWithBytes(allocator, url_bytes, length, encoding, base_url) }
     }
 
     #[inline]
-    pub fn with_string_in(
-        allocator: Option<&cf::Allocator>,
+    pub fn with_cf_string_in(        
         url_string: &cf::String,
         base_url: Option<&URL>,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<URL>> {
         unsafe { CFURLCreateWithString(allocator, url_string, base_url) }
     }
 
     #[inline]
-    pub fn with_file_system_path_in(
-        allocator: Option<&cf::Allocator>,
+    pub fn with_file_system_path_in(        
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<URL>> {
         unsafe { CFURLCreateWithFileSystemPath(allocator, file_path, path_style, is_directory) }
     }
@@ -58,10 +58,10 @@ impl URL {
     #[inline]
     pub fn from_str(str: &str) -> Option<cf::Retained<URL>> {
         Self::with_bytes_in(
-            None,
             str.as_ptr(),
             str.len() as _,
             cf::StringEncoding::UTF8,
+            None,
             None,
         )
     }
@@ -70,14 +70,14 @@ impl URL {
     /// use cidre::cf;
     ///
     /// let s1 = cf::String::from_str("https://github.com");
-    /// let url = cf::URL::from_string(&s1).unwrap();
+    /// let url = cf::URL::from_cf_string(&s1).unwrap();
     ///
     /// assert!(url.can_be_decomposed());
     ///
     /// ```
     #[inline]
-    pub fn from_string(str: &cf::String) -> Option<cf::Retained<URL>> {
-        Self::with_string_in(None, str, None)
+    pub fn from_cf_string(str: &cf::String) -> Option<cf::Retained<URL>> {
+        Self::with_cf_string_in(str, None, None)
     }
 
     /// Returns the URL's string. Percent-escape sequences are not removed
@@ -87,15 +87,15 @@ impl URL {
     /// use cidre::cf;
     ///
     /// let s1 = cf::String::from_str("https://github.com");
-    /// let url = cf::URL::from_string(&s1).unwrap();
+    /// let url = cf::URL::from_cf_string(&s1).unwrap();
     ///
-    /// let s2 = url.string();
+    /// let s2 = url.cf_string();
     ///
     /// assert!(s1.equal(s2));
     ///
     /// ```
     #[inline]
-    pub fn string(&self) -> &cf::String {
+    pub fn cf_string(&self) -> &cf::String {
         unsafe { CFURLGetString(self) }
     }
 

@@ -11,9 +11,9 @@ define_cf_type!(Socket(cf::Type));
 pub struct Error(cf::Index);
 
 impl Error {
-    pub const SUCCESS: Self = Error(0);
-    pub const ERROR: Self = Error(-1);
-    pub const TIMEOUT: Self = Error(-2);
+    pub const SUCCESS: Self = Self(0);
+    pub const ERROR: Self = Self(-1);
+    pub const TIMEOUT: Self = Self(-2);
 }
 
 #[derive(Debug)]
@@ -68,13 +68,13 @@ pub type NativeHandle = i32;
 
 impl Socket {
     pub unsafe fn create_in<T>(
-        allocator: Option<&cf::Allocator>,
         protocol_family: i32,
         socket_type: i32,
         protocol: i32,
         cb_types: CallBackType,
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<Socket>> {
         CFSocketCreate(
             allocator,
@@ -86,12 +86,12 @@ impl Socket {
             transmute(context),
         )
     }
-    pub unsafe fn create_with_native_in<T>(
-        allocator: Option<&cf::Allocator>,
+    pub unsafe fn create_with_native_in<T>(        
         sock: NativeHandle,
         cb_types: CallBackType,
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<Socket>> {
         CFSocketCreateWithNative(
             allocator,
@@ -108,7 +108,7 @@ impl Socket {
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
     ) -> Option<cf::Retained<Socket>> {
-        Self::create_with_native_in(None, sock, cb_types, callout, context)
+        Self::create_with_native_in(sock, cb_types, callout, context, None)
     }
 
     pub fn native(&self) -> NativeHandle {
@@ -124,9 +124,9 @@ impl Socket {
     }
 
     pub fn create_runloop_source_in(
-        &self,
-        allocator: Option<&cf::Allocator>,
+        &self,        
         order: cf::Index,
+        allocator: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<cf::RunLoopSource>> {
         unsafe { CFSocketCreateRunLoopSource(allocator, self, order) }
     }
@@ -135,7 +135,7 @@ impl Socket {
         &self,
         order: cf::Index,
     ) -> Option<cf::Retained<cf::RunLoopSource>> {
-        self.create_runloop_source_in(None, order)
+        self.create_runloop_source_in(order, None)
     }
 
     pub fn flags(&self) -> Flags {

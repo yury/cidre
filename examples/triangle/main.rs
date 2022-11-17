@@ -134,6 +134,6 @@ fn main() {
             .write_png_to_url(&image, &url, ci::Format::rgba8(), &color_space, &options)
             .unwrap();
 
-        println!("image is written to {}", url.string());
+        println!("image is written to {}", url.cf_string());
     });
 }

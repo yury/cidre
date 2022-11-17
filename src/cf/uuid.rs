@@ -28,15 +28,15 @@ impl UUID {
     }
 
     #[inline]
-    pub fn from_cf_string(
-        alloc: Option<&cf::Allocator>,
+    pub fn from_cf_string_in(
         uuid_str: &cf::String,
+        alloc: Option<&cf::Allocator>,
     ) -> Option<cf::Retained<UUID>> {
         unsafe { CFUUIDCreateFromString(alloc, uuid_str) }
     }
 
     #[inline]
-    pub fn to_cf_string(&self, alloc: Option<&cf::Allocator>) -> Option<cf::Retained<cf::String>> {
+    pub fn to_cf_string_in(&self, alloc: Option<&cf::Allocator>) -> Option<cf::Retained<cf::String>> {
         unsafe { CFUUIDCreateString(alloc, self) }
     }
 }
