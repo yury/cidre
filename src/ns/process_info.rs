@@ -28,14 +28,14 @@ impl ProcessInfo {
     /// ```
     /// use cidre::ns;
     ///
-    /// let pi = ns::ProcessInfo::process_info();
+    /// let pi = ns::ProcessInfo::current();
     ///
     /// assert_ne!(pi.thermal_state(), ns::ProcessInfoThermalState::Critical);
     /// assert_eq!(pi.is_low_power_mode_enabled(), false);
     /// assert!(pi.processor_count() > 1);
     /// assert!(pi.active_processor_count() > 1);
     /// ```
-    pub fn process_info() -> &'static ProcessInfo {
+    pub fn current() -> &'static ProcessInfo {
         unsafe { NSProcessInfo_processInfo() }
     }
 
