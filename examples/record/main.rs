@@ -100,17 +100,19 @@ extern "C" fn callback(
 
 #[tokio::main]
 async fn main() {
+    const FPS: i32 = 60;
+
     let q = dispatch::Queue::serial_with_autoreleasepool();
     let content = sc::ShareableContent::current().await.expect("content");
     let ref display = content.displays()[0];
     let mut cfg = sc::StreamConfiguration::new();
-    cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
+    cfg.set_minimum_frame_interval(cm::Time::new(1, FPS));
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
     // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
     // let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
-    let addr = SocketAddr::V4("10.0.1.17:8080".parse().unwrap()); // iphone at home
+    let addr = SocketAddr::V4("10.0.1.13:8080".parse().unwrap()); // iphone at home
 
     // let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
     // let addr = SocketAddr::V4("192.168.135.219:8080".parse().unwrap()); // iphone in the office
@@ -145,17 +147,17 @@ async fn main() {
         display.height() * 2
     );
 
-    let expected_bitrate = cf::Number::from_i32(6_000_000);
+    let expected_bitrate = cf::Number::from_i32(4_500_000);
     let bool_true = cf::Boolean::value_true();
     let bool_false = cf::Boolean::value_false();
-    let expected_fr = cf::Number::from_i32(60);
+    let expected_fr = cf::Number::from_i32(FPS);
     let frame_delay_count = cf::Number::from_i32(0);
-    let max_key_frame_interval = cf::Number::from_i32(600 * 5 * 5);
-    let max_key_frame_interval_duration = cf::Number::from_f64(10f64).unwrap();
+    let max_key_frame_interval = cf::Number::from_i32(FPS * 5);
+    let max_key_frame_interval_duration = cf::Number::from_f64(5f64).unwrap();
     let rate_limit = cf::Array::from_type_refs(&[
         &cf::Number::from_i32(200_000),
         &cf::Number::from_f64(0.1f64).unwrap(),
-        &cf::Number::from_i32(4_000_000),
+        &cf::Number::from_i32(5_000_000),
         &cf::Number::from_f64(1.0f64).unwrap(),
     ])
     .unwrap();
@@ -183,7 +185,7 @@ async fn main() {
     session.set_props(&props).unwrap();
     session.prepare().unwrap();
 
-    let windows = cf::ArrayOf::<sc::Window>::new().unwrap();
+    let windows = cf::ArrayOf::new().unwrap();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
 
