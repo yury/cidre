@@ -62,5 +62,10 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
   }
 }
 
+#pragma mark - NSURLSession
+
+NS_RETURNS_NOT_RETAINED
+csel(, NSURLSession, sharedSession, NSURLSession *)
+
 
 NS_ASSUME_NONNULL_END
