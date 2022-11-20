@@ -67,5 +67,7 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
 NS_RETURNS_NOT_RETAINED
 csel(, NSURLSession, sharedSession, NSURLSession *)
 
+rsel_a(, id, dataTaskWithURL, NSURL *, NSURLSessionDataTask *)
+
 
 NS_ASSUME_NONNULL_END
