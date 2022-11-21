@@ -26,12 +26,13 @@ mod port;
 pub use port::MachPort;
 pub use port::Port;
 
-
 mod url_session;
-pub use url_session::Session as URLSession;
-pub use url_session::Task as URLSessionTask;
 pub use url_session::DataTask as URLSessionDataTask;
 pub use url_session::DownloadTask as URLSessionDownloadTask;
+pub use url_session::Session as URLSession;
 pub use url_session::StreamTask as URLSessionStreamTask;
+pub use url_session::Task as URLSessionTask;
+pub use url_session::TaskState as URLSessionTaskState;
 pub use url_session::UploadTask as URLSessionUploadTask;
+pub use url_session::WebSocketCloseCode as URLSessionWebSocketCloseCode;
 pub use url_session::WebSocketTask as URLSessionWebSocketTask;

@@ -69,5 +69,12 @@ csel(, NSURLSession, sharedSession, NSURLSession *)
 
 rsel_a(, id, dataTaskWithURL, NSURL *, NSURLSessionDataTask *)
 
+#pragma mark - NSURLSessionTask
+
+wsel(NSURLSessionTask_, NSURLSessionTask *, resume)
+wsel(NSURLSessionTask_, NSURLSessionTask *, cancel)
+wsel(NSURLSessionTask_, NSURLSessionTask *, suspend)
+rsel(NSURLSessionTask_, NSURLSessionTask *, state, NSURLSessionTaskState)
+
 
 NS_ASSUME_NONNULL_END
