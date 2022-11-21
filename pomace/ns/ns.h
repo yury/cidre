@@ -75,6 +75,15 @@ wsel(NSURLSessionTask_, NSURLSessionTask *, resume)
 wsel(NSURLSessionTask_, NSURLSessionTask *, cancel)
 wsel(NSURLSessionTask_, NSURLSessionTask *, suspend)
 rsel(NSURLSessionTask_, NSURLSessionTask *, state, NSURLSessionTaskState)
+rsel(NSURLSessionTask_, NSURLSessionTask *, error, NSError *)
+
+#pragma mark - NSURLRequest
+
+NS_RETURNS_RETAINED
+csel_a(, NSURLRequest, requestWithURL, NSURL *, NSURLRequest *)
+
+NS_RETURNS_RETAINED
+csel_abc(, NSURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
 
 
 NS_ASSUME_NONNULL_END

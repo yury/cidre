@@ -26,9 +26,17 @@ mod port;
 pub use port::MachPort;
 pub use port::Port;
 
+mod url_request;
+pub use url_request::CachePolicy as URLRequestCachePolicy;
+pub use url_request::MutableURLRequest;
+pub use url_request::NetworkServiceType as URLRequestNetworkServiceType;
+pub use url_request::URLRequest;
+
 mod url_session;
+pub use url_session::Configuration as URLSessionConfiguration;
 pub use url_session::DataTask as URLSessionDataTask;
 pub use url_session::DownloadTask as URLSessionDownloadTask;
+pub use url_session::MultipathServiceType as URLSessionMultipathServiceType;
 pub use url_session::Session as URLSession;
 pub use url_session::StreamTask as URLSessionStreamTask;
 pub use url_session::Task as URLSessionTask;
