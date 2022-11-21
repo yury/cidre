@@ -51,8 +51,10 @@ pub enum NetworkServiceType {
 impl URLRequest {
     /// ```
     /// use cidre::{cf, ns};
-    ///
-    /// let request = ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap());
+    /// let url = cf::URL::from_str("https://google.com").unwrap();
+    /// let request = ns::URLRequest::with_url(&url);
+    /// let request_url = request.url().unwrap();
+    /// assert!(url.cf_string().equal(request_url.cf_string()));
     /// ```
     #[inline]
     pub fn with_url(url: &cf::URL) -> Retained<URLRequest> {
@@ -73,6 +75,25 @@ impl URLRequest {
             )
         }
     }
+
+    #[inline]
+    pub fn url(&self) -> Option<&cf::URL> {
+        unsafe { NSURLRequest_rsel_URL(self) }
+    }
+}
+
+/// enum is used to indicate whether the
+/// user or developer specified the URL.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(usize)]
+pub enum Attribution {
+    ///  Indicates that the URL was specified
+    /// by the developer. This is the default value for an ns::URLRequest when created.
+    Developer = 0,
+
+    /// Indicates that the URL was specified by
+    /// the user.
+    User = 1,
 }
 
 #[link(name = "ns", kind = "static")]
@@ -83,4 +104,6 @@ extern "C" {
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
     ) -> Retained<URLRequest>;
+
+    fn NSURLRequest_rsel_URL(request: &URLRequest) -> Option<&cf::URL>;
 }

@@ -85,5 +85,8 @@ csel_a(, NSURLRequest, requestWithURL, NSURL *, NSURLRequest *)
 NS_RETURNS_RETAINED
 csel_abc(, NSURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
 
+rsel(NSURLRequest_, NSURLRequest *, URL, NSURL *)
+//@property (nullable, readonly, copy) NSURL *URL;
+
 
 NS_ASSUME_NONNULL_END

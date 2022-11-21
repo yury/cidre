@@ -27,6 +27,7 @@ pub use port::MachPort;
 pub use port::Port;
 
 mod url_request;
+pub use url_request::Attribution as URLRequestAttribution;
 pub use url_request::CachePolicy as URLRequestCachePolicy;
 pub use url_request::MutableURLRequest;
 pub use url_request::NetworkServiceType as URLRequestNetworkServiceType;
