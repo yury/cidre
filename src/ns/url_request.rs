@@ -147,22 +147,16 @@ impl URLRequest {
     }
 
     pub fn all_http_header_fields(&self) -> Option<&cf::DictionaryOf<cf::String, cf::String>> {
-        unsafe {
-            NSURLRequest_rsel_allHTTPHeaderFields(self)    
-        }
+        unsafe { NSURLRequest_rsel_allHTTPHeaderFields(self) }
     }
 
     pub fn value_for_http_header_field<'a>(&'a self, field: &cf::String) -> Option<&'a cf::String> {
-        unsafe {
-            NSURLRequest_rsel_valueForHTTPHeaderField(self, field)
-        }
+        unsafe { NSURLRequest_rsel_valueForHTTPHeaderField(self, field) }
     }
 
     #[inline]
     pub fn http_body(&self) -> Option<&cf::Data> {
-        unsafe {
-            NSURLRequest_rsel_HTTPBody(self)
-        }
+        unsafe { NSURLRequest_rsel_HTTPBody(self) }
     }
 }
 
@@ -200,7 +194,12 @@ extern "C" {
     fn NSURLRequest_rsel_attribution(request: &URLRequest) -> Attribution;
     fn NSURLRequest_rsel_requiresDNSSECValidation(request: &URLRequest) -> bool;
     fn NSURLRequest_rsel_HTTPMethod(request: &URLRequest) -> Option<&cf::String>;
-    fn NSURLRequest_rsel_allHTTPHeaderFields(request: &URLRequest) -> Option<&cf::DictionaryOf<cf::String, cf::String>>;    
-    fn NSURLRequest_rsel_valueForHTTPHeaderField<'a>(request: &'a URLRequest, field: &cf::String) -> Option<&'a cf::String>;
+    fn NSURLRequest_rsel_allHTTPHeaderFields(
+        request: &URLRequest,
+    ) -> Option<&cf::DictionaryOf<cf::String, cf::String>>;
+    fn NSURLRequest_rsel_valueForHTTPHeaderField<'a>(
+        request: &'a URLRequest,
+        field: &cf::String,
+    ) -> Option<&'a cf::String>;
     fn NSURLRequest_rsel_HTTPBody(request: &URLRequest) -> Option<&cf::Data>;
 }

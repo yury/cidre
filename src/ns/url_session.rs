@@ -138,6 +138,22 @@ extern "C" {
     fn NSURLSessionTask_rsel_error(task: &Task) -> Option<&cf::Error>;
 }
 
+pub struct TaskPriority;
+
+impl TaskPriority {
+    pub fn default() -> f32 {
+        unsafe { NSURLSessionTaskPriorityDefault }
+    }
+
+    pub fn low() -> f32 {
+        unsafe { NSURLSessionTaskPriorityLow }
+    }
+
+    pub fn high() -> f32 {
+        unsafe { NSURLSessionTaskPriorityHigh }
+    }
+}
+
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
     static NSURLSessionTaskPriorityDefault: f32;

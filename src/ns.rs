@@ -41,6 +41,7 @@ pub use url_session::MultipathServiceType as URLSessionMultipathServiceType;
 pub use url_session::Session as URLSession;
 pub use url_session::StreamTask as URLSessionStreamTask;
 pub use url_session::Task as URLSessionTask;
+pub use url_session::TaskPriority as URLSessionTaskPriority;
 pub use url_session::TaskState as URLSessionTaskState;
 pub use url_session::UploadTask as URLSessionUploadTask;
 pub use url_session::WebSocketCloseCode as URLSessionWebSocketCloseCode;
