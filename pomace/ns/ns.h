@@ -86,7 +86,22 @@ NS_RETURNS_RETAINED
 csel_abc(, NSURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
 
 rsel(NSURLRequest_, NSURLRequest *, URL, NSURL *)
-//@property (nullable, readonly, copy) NSURL *URL;
+rsel(NSURLRequest_, NSURLRequest *, cachePolicy, NSURLRequestCachePolicy)
+rsel(NSURLRequest_, NSURLRequest *, timeoutInterval, NSTimeInterval)
+rsel(NSURLRequest_, NSURLRequest *, networkServiceType, NSURLRequestNetworkServiceType)
+rsel(NSURLRequest_, NSURLRequest *, allowsCellularAccess, BOOL)
+rsel(NSURLRequest_, NSURLRequest *, allowsExpensiveNetworkAccess, BOOL)
+rsel(NSURLRequest_, NSURLRequest *, allowsConstrainedNetworkAccess, BOOL)
+rsel(NSURLRequest_, NSURLRequest *, assumesHTTP3Capable, BOOL)
+rsel(NSURLRequest_, NSURLRequest *, attribution, NSURLRequestAttribution)
+rsel(NSURLRequest_, NSURLRequest *, requiresDNSSECValidation, BOOL)
+
+rsel(NSURLRequest_, NSURLRequest *, HTTPMethod, NSString *)
+rsel(NSURLRequest_, NSURLRequest *, allHTTPHeaderFields, NSDictionary * _Nullable)
+
+rsel_a(NSURLRequest_, NSURLRequest *, valueForHTTPHeaderField, NSString *, NSString * _Nullable)
+rsel(NSURLRequest_, NSURLRequest *, HTTPBody, NSData * _Nullable)
+
 
 
 NS_ASSUME_NONNULL_END
