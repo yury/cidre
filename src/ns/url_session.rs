@@ -141,14 +141,17 @@ extern "C" {
 pub struct TaskPriority;
 
 impl TaskPriority {
+    #[inline]
     pub fn default() -> f32 {
         unsafe { NSURLSessionTaskPriorityDefault }
     }
 
+    #[inline]
     pub fn low() -> f32 {
         unsafe { NSURLSessionTaskPriorityLow }
     }
 
+    #[inline]
     pub fn high() -> f32 {
         unsafe { NSURLSessionTaskPriorityHigh }
     }
