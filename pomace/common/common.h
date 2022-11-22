@@ -28,6 +28,7 @@ SEL sel_bounds;
 SEL sel_invalidate;
 SEL sel_isValid;
 SEL sel_setDelegate;
+SEL sel_mutableCopy;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -54,6 +55,7 @@ static void common_initializer()
       sel_invalidate = @selector(invalidate);
       sel_isValid = @selector(isValid);
       sel_setDelegate = @selector(setDelegate:);
+      sel_mutableCopy = @selector(mutableCopy);
 
       initialized = 1;
     }

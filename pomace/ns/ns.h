@@ -102,6 +102,21 @@ rsel(NSURLRequest_, NSURLRequest *, allHTTPHeaderFields, NSDictionary * _Nullabl
 rsel_a(NSURLRequest_, NSURLRequest *, valueForHTTPHeaderField, NSString *, NSString * _Nullable)
 rsel(NSURLRequest_, NSURLRequest *, HTTPBody, NSData * _Nullable)
 
+#pragma mark - NSMutableURLRequest
+
+NS_RETURNS_RETAINED
+csel_a(, NSMutableURLRequest, requestWithURL, NSURL *, NSURLRequest *)
+
+NS_RETURNS_RETAINED
+csel_abc(, NSMutableURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
+
+rsel(NSMutableURLRequest_, NSMutableURLRequest *, URL, NSURL *)
+rsel(NSMutableURLRequest_, NSMutableURLRequest *, cachePolicy, NSURLRequestCachePolicy)
+
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setURL, NSURL *)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setCachePolicy, NSURLRequestCachePolicy)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setTimeoutInterval, NSTimeInterval)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setNetworkServiceType, NSURLRequestNetworkServiceType)
 
 
 NS_ASSUME_NONNULL_END

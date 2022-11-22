@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Retained},
-    define_obj_type, ns,
+    define_obj_type, msg_send, ns,
 };
 
 define_obj_type!(URLRequest(ns::Id));
@@ -158,6 +158,10 @@ impl URLRequest {
     pub fn http_body(&self) -> Option<&cf::Data> {
         unsafe { NSURLRequest_rsel_HTTPBody(self) }
     }
+
+    pub fn mutable_copy(&self) -> Retained<MutableURLRequest> {
+        crate::msg_send!("common", self, sel_mutableCopy)
+    }
 }
 
 /// enum is used to indicate whether the
@@ -202,4 +206,84 @@ extern "C" {
         field: &cf::String,
     ) -> Option<&'a cf::String>;
     fn NSURLRequest_rsel_HTTPBody(request: &URLRequest) -> Option<&cf::Data>;
+}
+
+impl MutableURLRequest {
+    #[inline]
+    pub fn with_url(url: &cf::URL) -> Retained<MutableURLRequest> {
+        unsafe { NSMutableURLRequest_requestWithURL(url) }
+    }
+
+    #[inline]
+    pub fn with_url_cache_policy_and_timeout(
+        url: &cf::URL,
+        cache_policy: CachePolicy,
+        timeout_interval: cf::TimeInterval,
+    ) -> Retained<MutableURLRequest> {
+        unsafe {
+            NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
+                url,
+                cache_policy,
+                timeout_interval,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn set_url(&mut self, url: Option<&cf::URL>) {
+        unsafe { NSMutableURLRequest_wsel_setURL(self, url) }
+    }
+
+    #[inline]
+    pub fn set_cache_policy(&mut self, cache_policy: CachePolicy) {
+        unsafe { NSMutableURLRequest_wsel_setCachePolicy(self, cache_policy) }
+    }
+
+    #[inline]
+    pub fn set_timeout_interval(&mut self, timeout_interval: cf::TimeInterval) {
+        unsafe { NSMutableURLRequest_wsel_setTimeoutInterval(self, timeout_interval) }
+    }
+
+    #[inline]
+    pub fn set_network_service_type(&mut self, value: NetworkServiceType) {
+        unsafe { NSMutableURLRequest_wsel_setNetworkServiceType(self, value) }
+    }
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> Retained<MutableURLRequest>;
+    fn NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
+        url: &cf::URL,
+        cache_policy: CachePolicy,
+        timeout_interval: cf::TimeInterval,
+    ) -> Retained<MutableURLRequest>;
+
+    fn NSMutableURLRequest_wsel_setURL(request: &MutableURLRequest, url: Option<&cf::URL>);
+    fn NSMutableURLRequest_wsel_setCachePolicy(
+        request: &MutableURLRequest,
+        cache_policy: CachePolicy,
+    );
+    fn NSMutableURLRequest_wsel_setTimeoutInterval(
+        request: &MutableURLRequest,
+        timeout_interval: cf::TimeInterval,
+    );
+
+    fn NSMutableURLRequest_wsel_setNetworkServiceType(
+        request: &MutableURLRequest,
+        value: NetworkServiceType,
+    );
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, ns};
+    #[test]
+    fn basics() {
+        let mut request =
+            ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap())
+                .mutable_copy();
+        request.set_timeout_interval(61f64);
+        assert_eq!(request.timeout_interval(), 61f64);
+    }
 }
