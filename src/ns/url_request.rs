@@ -282,5 +282,10 @@ mod tests {
                 .mutable_copy();
         request.set_timeout_interval(61f64);
         assert_eq!(request.timeout_interval(), 61f64);
+        request.set_cache_policy(ns::URLRequestCachePolicy::ReloadRevalidatingCacheData);
+        assert_eq!(
+            request.cache_policy(),
+            ns::URLRequestCachePolicy::ReloadRevalidatingCacheData
+        );
     }
 }
