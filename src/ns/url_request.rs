@@ -160,7 +160,7 @@ impl URLRequest {
     }
 
     pub fn mutable_copy(&self) -> Retained<MutableURLRequest> {
-        crate::msg_send!("common", self, sel_mutableCopy)
+        msg_send!("common", self, sel_mutableCopy)
     }
 }
 
@@ -235,13 +235,13 @@ impl MutableURLRequest {
     }
 
     #[inline]
-    pub fn set_cache_policy(&mut self, cache_policy: CachePolicy) {
-        unsafe { NSMutableURLRequest_wsel_setCachePolicy(self, cache_policy) }
+    pub fn set_cache_policy(&mut self, value: CachePolicy) {
+        unsafe { NSMutableURLRequest_wsel_setCachePolicy(self, value) }
     }
 
     #[inline]
-    pub fn set_timeout_interval(&mut self, timeout_interval: cf::TimeInterval) {
-        unsafe { NSMutableURLRequest_wsel_setTimeoutInterval(self, timeout_interval) }
+    pub fn set_timeout_interval(&mut self, value: cf::TimeInterval) {
+        unsafe { NSMutableURLRequest_wsel_setTimeoutInterval(self, value) }
     }
 
     #[inline]
@@ -260,13 +260,10 @@ extern "C" {
     ) -> Retained<MutableURLRequest>;
 
     fn NSMutableURLRequest_wsel_setURL(request: &MutableURLRequest, url: Option<&cf::URL>);
-    fn NSMutableURLRequest_wsel_setCachePolicy(
-        request: &MutableURLRequest,
-        cache_policy: CachePolicy,
-    );
+    fn NSMutableURLRequest_wsel_setCachePolicy(request: &MutableURLRequest, value: CachePolicy);
     fn NSMutableURLRequest_wsel_setTimeoutInterval(
         request: &MutableURLRequest,
-        timeout_interval: cf::TimeInterval,
+        value: cf::TimeInterval,
     );
 
     fn NSMutableURLRequest_wsel_setNetworkServiceType(
