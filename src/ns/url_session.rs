@@ -34,6 +34,11 @@ impl Session {
     pub fn data_task_with_url(&self, url: &cf::URL) -> Retained<DataTask> {
         unsafe { rsel_dataTaskWithURL(self, url) }
     }
+
+    #[inline]
+    pub fn data_task_with_request(&self, request: &ns::URLRequest) -> Retained<DataTask> {
+        unsafe { rsel_dataTaskWithRequest(self, request) }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
@@ -150,6 +155,7 @@ pub enum WebSocketCloseCode {
 extern "C" {
     fn NSURLSession_sharedSession() -> &'static Session;
     fn rsel_dataTaskWithURL(session: &Session, url: &cf::URL) -> Retained<DataTask>;
+    fn rsel_dataTaskWithRequest(session: &Session, request: &ns::URLRequest) -> Retained<DataTask>;
 
     fn NSURLSessionTask_wsel_resume(task: &Task);
     fn NSURLSessionTask_wsel_cancel(task: &Task);

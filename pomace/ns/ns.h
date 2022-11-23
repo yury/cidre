@@ -68,6 +68,7 @@ NS_RETURNS_NOT_RETAINED
 csel(, NSURLSession, sharedSession, NSURLSession *)
 
 rsel_a(, id, dataTaskWithURL, NSURL *, NSURLSessionDataTask *)
+rsel_a(, id, dataTaskWithRequest, NSURLRequest *, NSURLSessionDataTask *)
 
 #pragma mark - NSURLSessionTask
 
