@@ -29,6 +29,8 @@ SEL sel_invalidate;
 SEL sel_isValid;
 SEL sel_setDelegate;
 SEL sel_mutableCopy;
+SEL sel_URL;
+SEL sel_setURL;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -56,6 +58,8 @@ static void common_initializer()
       sel_isValid = @selector(isValid);
       sel_setDelegate = @selector(setDelegate:);
       sel_mutableCopy = @selector(mutableCopy);
+      sel_URL = @selector(URL);
+      sel_setURL = @selector(setURL:);
 
       initialized = 1;
     }

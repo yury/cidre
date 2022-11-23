@@ -106,6 +106,26 @@ impl Task {
     pub fn error(&self) -> Option<&cf::Error> {
         unsafe { NSURLSessionTask_rsel_error(self) }
     }
+
+    #[inline]
+    pub fn task_identifier(&self) -> ns::UInteger {
+        unsafe { NSURLSessionTask_rsel_taskIdentifier(self) }
+    }
+
+    #[inline]
+    pub fn original_request(&self) -> Option<&ns::URLRequest> {
+        unsafe { NSURLSessionTask_rsel_originalRequest(self) }
+    }
+
+    #[inline]
+    pub fn current_request(&self) -> Option<&ns::URLRequest> {
+        unsafe { NSURLSessionTask_rsel_currentRequest(self) }
+    }
+
+    #[inline]
+    pub fn response(&self) -> Option<&ns::URLResponse> {
+        unsafe { NSURLSessionTask_rsel_response(self) }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -136,6 +156,11 @@ extern "C" {
     fn NSURLSessionTask_wsel_suspend(task: &Task);
     fn NSURLSessionTask_rsel_state(task: &Task) -> TaskState;
     fn NSURLSessionTask_rsel_error(task: &Task) -> Option<&cf::Error>;
+    fn NSURLSessionTask_rsel_taskIdentifier(task: &Task) -> ns::UInteger;
+    fn NSURLSessionTask_rsel_originalRequest(task: &Task) -> Option<&ns::URLRequest>;
+    fn NSURLSessionTask_rsel_currentRequest(task: &Task) -> Option<&ns::URLRequest>;
+    fn NSURLSessionTask_rsel_response(task: &Task) -> Option<&ns::URLResponse>;
+
 }
 
 pub struct TaskPriority;

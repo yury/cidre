@@ -77,6 +77,11 @@ wsel(NSURLSessionTask_, NSURLSessionTask *, suspend)
 rsel(NSURLSessionTask_, NSURLSessionTask *, state, NSURLSessionTaskState)
 rsel(NSURLSessionTask_, NSURLSessionTask *, error, NSError *)
 
+rsel(NSURLSessionTask_, NSURLSessionTask *, taskIdentifier, NSUInteger)
+rsel(NSURLSessionTask_, NSURLSessionTask *, originalRequest, NSURLRequest * _Nullable)
+rsel(NSURLSessionTask_, NSURLSessionTask *, currentRequest, NSURLRequest * _Nullable)
+rsel(NSURLSessionTask_, NSURLSessionTask *, response, NSURLResponse * _Nullable)
+
 #pragma mark - NSURLRequest
 
 NS_RETURNS_RETAINED
@@ -85,7 +90,6 @@ csel_a(, NSURLRequest, requestWithURL, NSURL *, NSURLRequest *)
 NS_RETURNS_RETAINED
 csel_abc(, NSURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
 
-rsel(NSURLRequest_, NSURLRequest *, URL, NSURL *)
 rsel(NSURLRequest_, NSURLRequest *, cachePolicy, NSURLRequestCachePolicy)
 rsel(NSURLRequest_, NSURLRequest *, timeoutInterval, NSTimeInterval)
 rsel(NSURLRequest_, NSURLRequest *, networkServiceType, NSURLRequestNetworkServiceType)
@@ -110,10 +114,8 @@ csel_a(, NSMutableURLRequest, requestWithURL, NSURL *, NSURLRequest *)
 NS_RETURNS_RETAINED
 csel_abc(, NSMutableURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
 
-rsel(NSMutableURLRequest_, NSMutableURLRequest *, URL, NSURL *)
 rsel(NSMutableURLRequest_, NSMutableURLRequest *, cachePolicy, NSURLRequestCachePolicy)
 
-wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setURL, NSURL *)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setCachePolicy, NSURLRequestCachePolicy)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setTimeoutInterval, NSTimeInterval)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setNetworkServiceType, NSURLRequestNetworkServiceType)
@@ -127,6 +129,13 @@ wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setRequiresDNSSECValidation,
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPMethod, NSString * _Nullable)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAllHTTPHeaderFields, NSDictionary * _Nullable)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPBody, NSData * _Nullable)
+
+
+#pragma mark NSURLResponse
+
+asel_abcd(, NSURLResponse, initWithURL, NSURL *, MIMEType, NSString *, expectedContentLength, NSInteger, textEncodingName, NSString *)
+
+//@property (nullable, readonly, copy) NSString *MIMEType;
 
 
 NS_ASSUME_NONNULL_END

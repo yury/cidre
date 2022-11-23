@@ -97,7 +97,7 @@ impl URLRequest {
 
     #[inline]
     pub fn url(&self) -> Option<&cf::URL> {
-        unsafe { NSURLRequest_rsel_URL(self) }
+        msg_send!("common", self, sel_URL)
     }
 
     #[inline]
@@ -187,7 +187,6 @@ extern "C" {
         timeout_interval: cf::TimeInterval,
     ) -> Retained<URLRequest>;
 
-    fn NSURLRequest_rsel_URL(request: &URLRequest) -> Option<&cf::URL>;
     fn NSURLRequest_rsel_cachePolicy(request: &URLRequest) -> CachePolicy;
     fn NSURLRequest_rsel_timeoutInterval(request: &URLRequest) -> cf::TimeInterval;
     fn NSURLRequest_rsel_networkServiceType(request: &URLRequest) -> NetworkServiceType;
@@ -230,8 +229,8 @@ impl MutableURLRequest {
     }
 
     #[inline]
-    pub fn set_url(&mut self, url: Option<&cf::URL>) {
-        unsafe { NSMutableURLRequest_wsel_setURL(self, url) }
+    pub fn set_url(&mut self, value: Option<&cf::URL>) {
+        msg_send!("common", self, sel_setURL, value)
     }
 
     #[inline]
@@ -307,8 +306,6 @@ extern "C" {
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
     ) -> Retained<MutableURLRequest>;
-
-    fn NSMutableURLRequest_wsel_setURL(request: &MutableURLRequest, url: Option<&cf::URL>);
 
     fn NSMutableURLRequest_wsel_setCachePolicy(request: &MutableURLRequest, value: CachePolicy);
 

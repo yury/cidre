@@ -33,6 +33,10 @@ pub use url_request::MutableURLRequest;
 pub use url_request::NetworkServiceType as URLRequestNetworkServiceType;
 pub use url_request::URLRequest;
 
+mod url_response;
+pub use url_response::HTTPURLResponse;
+pub use url_response::URLResponse;
+
 mod url_session;
 pub use url_session::Configuration as URLSessionConfiguration;
 pub use url_session::DataTask as URLSessionDataTask;
