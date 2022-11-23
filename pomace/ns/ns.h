@@ -136,7 +136,15 @@ wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPBody, NSData * _Nulla
 
 asel_abcd(, NSURLResponse, initWithURL, NSURL *, MIMEType, NSString *, expectedContentLength, NSInteger, textEncodingName, NSString *)
 
-//@property (nullable, readonly, copy) NSString *MIMEType;
+#pragma mark NSURLSessionWebSocketMessage
+
+asel_a(, NSURLSessionWebSocketMessage, initWithData, NSData *)
+asel_a(, NSURLSessionWebSocketMessage, initWithString, NSString *)
+
+rsel(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, type, NSURLSessionWebSocketMessageType)
+rsel(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, data, NSData * _Nullable)
+rsel(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, string, NSString * _Nullable)
+
 
 
 NS_ASSUME_NONNULL_END

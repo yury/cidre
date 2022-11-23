@@ -49,4 +49,6 @@ pub use url_session::TaskPriority as URLSessionTaskPriority;
 pub use url_session::TaskState as URLSessionTaskState;
 pub use url_session::UploadTask as URLSessionUploadTask;
 pub use url_session::WebSocketCloseCode as URLSessionWebSocketCloseCode;
+pub use url_session::WebSocketMessage as URLSessionWebSocketMessage;
+pub use url_session::WebSocketMessageType as URLSessionWebSocketMessageType;
 pub use url_session::WebSocketTask as URLSessionWebSocketTask;

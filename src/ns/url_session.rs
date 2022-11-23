@@ -194,3 +194,49 @@ extern "C" {
     static NSURLSessionTaskPriorityLow: f32;
     static NSURLSessionTaskPriorityHigh: f32;
 }
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[repr(isize)]
+pub enum WebSocketMessageType {
+    Data = 0,
+    String = 1,
+}
+
+define_obj_type!(WebSocketMessage(ns::Id));
+
+impl WebSocketMessage {
+    #[inline]
+    pub fn with_data(data: &cf::Data) -> Retained<Self> {
+        unsafe { NSURLSessionWebSocketMessage_initWithData(data) }
+    }
+
+    #[inline]
+    pub fn with_string(string: &cf::String) -> Retained<Self> {
+        unsafe { NSURLSessionWebSocketMessage_initWithString(string) }
+    }
+
+    #[inline]
+    pub fn data(&self) -> Option<&cf::Data> {
+        unsafe { NSURLSessionWebSocketMessage_data(self) }
+    }
+
+    #[inline]
+    pub fn string(&self) -> Option<&cf::String> {
+        unsafe { NSURLSessionWebSocketMessage_string(self) }
+    }
+
+    #[inline]
+    pub fn type_(&self) -> WebSocketMessageType {
+        unsafe { NSURLSessionWebSocketMessage_type(self) }
+    }
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn NSURLSessionWebSocketMessage_initWithData(data: &cf::Data) -> Retained<WebSocketMessage>;
+    fn NSURLSessionWebSocketMessage_initWithString(data: &cf::String)
+        -> Retained<WebSocketMessage>;
+    fn NSURLSessionWebSocketMessage_data(msg: &WebSocketMessage) -> Option<&cf::Data>;
+    fn NSURLSessionWebSocketMessage_string(msg: &WebSocketMessage) -> Option<&cf::String>;
+    fn NSURLSessionWebSocketMessage_type(msg: &WebSocketMessage) -> WebSocketMessageType;
+}
