@@ -248,11 +248,60 @@ impl MutableURLRequest {
     pub fn set_network_service_type(&mut self, value: NetworkServiceType) {
         unsafe { NSMutableURLRequest_wsel_setNetworkServiceType(self, value) }
     }
+
+    #[inline]
+    pub fn set_allows_cellular_access(&mut self, value: bool) {
+        unsafe { NSMutableURLRequest_wsel_setAllowsCellularAccess(self, value) }
+    }
+
+    #[inline]
+    pub fn set_allows_expensive_network_access(&mut self, value: bool) {
+        unsafe { NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess(self, value) }
+    }
+
+    #[inline]
+    pub fn set_allows_constrained_network_access(&mut self, value: bool) {
+        unsafe { NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess(self, value) }
+    }
+
+    #[inline]
+    pub fn set_assumes_http3_capable(&mut self, value: bool) {
+        unsafe { NSMutableURLRequest_wsel_setAssumesHTTP3Capable(self, value) }
+    }
+
+    #[inline]
+    pub fn set_attribution(&mut self, value: Attribution) {
+        unsafe { NSMutableURLRequest_wsel_setAttribution(self, value) }
+    }
+
+    #[inline]
+    pub fn set_requires_dns_sec_validation(&mut self, value: bool) {
+        unsafe { NSMutableURLRequest_wsel_setRequiresDNSSECValidation(self, value) }
+    }
+
+    #[inline]
+    pub fn set_http_method(&mut self, value: Option<&cf::String>) {
+        unsafe { NSMutableURLRequest_wsel_setHTTPMethod(self, value) }
+    }
+
+    #[inline]
+    pub fn set_all_http_header_fields(
+        &mut self,
+        value: Option<&cf::DictionaryOf<cf::String, cf::String>>,
+    ) {
+        unsafe { NSMutableURLRequest_wsel_setAllHTTPHeaderFields(self, value) }
+    }
+
+    #[inline]
+    pub fn set_http_body(&mut self, value: Option<&cf::Data>) {
+        unsafe { NSMutableURLRequest_wsel_setHTTPBody(self, value) }
+    }
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> Retained<MutableURLRequest>;
+
     fn NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
         url: &cf::URL,
         cache_policy: CachePolicy,
@@ -260,7 +309,9 @@ extern "C" {
     ) -> Retained<MutableURLRequest>;
 
     fn NSMutableURLRequest_wsel_setURL(request: &MutableURLRequest, url: Option<&cf::URL>);
+
     fn NSMutableURLRequest_wsel_setCachePolicy(request: &MutableURLRequest, value: CachePolicy);
+
     fn NSMutableURLRequest_wsel_setTimeoutInterval(
         request: &MutableURLRequest,
         value: cf::TimeInterval,
@@ -270,6 +321,39 @@ extern "C" {
         request: &MutableURLRequest,
         value: NetworkServiceType,
     );
+
+    fn NSMutableURLRequest_wsel_setAllowsCellularAccess(request: &MutableURLRequest, value: bool);
+
+    fn NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess(
+        request: &MutableURLRequest,
+        value: bool,
+    );
+
+    fn NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess(
+        request: &MutableURLRequest,
+        value: bool,
+    );
+
+    fn NSMutableURLRequest_wsel_setAssumesHTTP3Capable(request: &MutableURLRequest, value: bool);
+
+    fn NSMutableURLRequest_wsel_setAttribution(request: &MutableURLRequest, value: Attribution);
+
+    fn NSMutableURLRequest_wsel_setRequiresDNSSECValidation(
+        request: &MutableURLRequest,
+        value: bool,
+    );
+
+    fn NSMutableURLRequest_wsel_setHTTPMethod(
+        request: &MutableURLRequest,
+        value: Option<&cf::String>,
+    );
+
+    fn NSMutableURLRequest_wsel_setAllHTTPHeaderFields(
+        request: &MutableURLRequest,
+        value: Option<&cf::DictionaryOf<cf::String, cf::String>>,
+    );
+
+    fn NSMutableURLRequest_wsel_setHTTPBody(request: &MutableURLRequest, value: Option<&cf::Data>);
 }
 
 #[cfg(test)]
@@ -286,6 +370,12 @@ mod tests {
         assert_eq!(
             request.cache_policy(),
             ns::URLRequestCachePolicy::ReloadRevalidatingCacheData
+        );
+
+        request.set_network_service_type(ns::URLRequestNetworkServiceType::AVStreaming);
+        assert_eq!(
+            request.network_service_type(),
+            ns::URLRequestNetworkServiceType::AVStreaming
         );
     }
 }

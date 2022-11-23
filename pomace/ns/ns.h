@@ -117,6 +117,16 @@ wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setURL, NSURL *)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setCachePolicy, NSURLRequestCachePolicy)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setTimeoutInterval, NSTimeInterval)
 wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setNetworkServiceType, NSURLRequestNetworkServiceType)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAllowsCellularAccess, BOOL)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAllowsExpensiveNetworkAccess, BOOL)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAllowsConstrainedNetworkAccess, BOOL)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAssumesHTTP3Capable, BOOL)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAttribution, NSURLRequestAttribution)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setRequiresDNSSECValidation, BOOL)
+
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPMethod, NSString * _Nullable)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setAllHTTPHeaderFields, NSDictionary * _Nullable)
+wsel_a(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPBody, NSData * _Nullable)
 
 
 NS_ASSUME_NONNULL_END
