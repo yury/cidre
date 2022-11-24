@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Retained},
-    define_obj_type, msg_send, ns,
+    define_obj_type, ns,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

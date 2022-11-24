@@ -23,6 +23,7 @@ impl Session {
     /// let url = cf::URL::from_str("https://google.com").unwrap();
     /// let data_task = session.data_task_with_url(&url);
     /// assert!(data_task.error().is_none());
+    /// assert_eq!(data_task.priority(), 0.5f32);
     /// assert_eq!(data_task.state(), ns::URLSessionTaskState::Suspended);
     /// data_task.resume();
     /// assert_eq!(data_task.state(), ns::URLSessionTaskState::Running);
@@ -131,6 +132,16 @@ impl Task {
     pub fn response(&self) -> Option<&ns::URLResponse> {
         unsafe { NSURLSessionTask_rsel_response(self) }
     }
+
+    #[inline]
+    pub fn priority(&self) -> f32 {
+        unsafe { NSURLSessionTask_rsel_priority(self) }
+    }
+
+    #[inline]
+    pub fn set_priority(&mut self, value: f32) {
+        unsafe { NSURLSessionTask_wsel_setPriority(self, value) }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -166,6 +177,8 @@ extern "C" {
     fn NSURLSessionTask_rsel_originalRequest(task: &Task) -> Option<&ns::URLRequest>;
     fn NSURLSessionTask_rsel_currentRequest(task: &Task) -> Option<&ns::URLRequest>;
     fn NSURLSessionTask_rsel_response(task: &Task) -> Option<&ns::URLResponse>;
+    fn NSURLSessionTask_rsel_priority(task: &Task) -> f32;
+    fn NSURLSessionTask_wsel_setPriority(task: &Task, value: f32);
 
 }
 

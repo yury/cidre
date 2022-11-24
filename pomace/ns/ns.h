@@ -83,6 +83,8 @@ rsel(NSURLSessionTask_, NSURLSessionTask *, originalRequest, NSURLRequest * _Nul
 rsel(NSURLSessionTask_, NSURLSessionTask *, currentRequest, NSURLRequest * _Nullable)
 rsel(NSURLSessionTask_, NSURLSessionTask *, response, NSURLResponse * _Nullable)
 
+rwsel(NSURLSessionTask_, NSURLSessionTask *, priority, setPriority, float)
+
 #pragma mark - NSURLRequest
 
 NS_RETURNS_RETAINED
