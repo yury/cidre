@@ -52,3 +52,8 @@ pub use url_session::WebSocketCloseCode as URLSessionWebSocketCloseCode;
 pub use url_session::WebSocketMessage as URLSessionWebSocketMessage;
 pub use url_session::WebSocketMessageType as URLSessionWebSocketMessageType;
 pub use url_session::WebSocketTask as URLSessionWebSocketTask;
+
+mod url_cache;
+pub use url_cache::CachedURLResponse;
+pub use url_cache::StoragePolicy as URLCacheStoragePolicy;
+pub use url_cache::URLCache;

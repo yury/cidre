@@ -145,6 +145,17 @@ rsel(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, type, NSURLS
 rsel(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, data, NSData * _Nullable)
 rsel(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, string, NSString * _Nullable)
 
+#pragma mark NSURLCache
+
+csel(, NSURLCache, sharedURLCache, NSURLCache *)
+
+asel_abc(, NSURLCache, initWithMemoryCapacity, NSUInteger, diskCapacity, NSUInteger, directoryURL, NSURL * _Nullable)
+
+rwsel(, id, memoryCapacity, setMemoryCapacity, NSUInteger)
+rwsel(, id, diskCapacity, setDiskCapacity, NSUInteger)
+
+rsel(, id, currentMemoryUsage, NSUInteger)
+rsel(, id, currentDiskUsage, NSUInteger)
 
 
 NS_ASSUME_NONNULL_END
