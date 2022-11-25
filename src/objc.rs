@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-pub mod native_block;
+pub mod blocks_runtime;
 
 use crate::cf::{
     runtime::{Release, Retain},

@@ -1,4 +1,6 @@
 mod base;
+use std::ffi::c_void;
+
 pub use base::Function;
 
 mod object;
@@ -33,6 +35,19 @@ pub use source::TimerFlags as SourceTimerFlags;
 pub use source::TimerSource;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
+
+use crate::objc::blocks_runtime::{B0Mut, Block as Blockfn, BlockFn, RetainedBlockFn};
+
+pub trait Block: B0Mut<()> {
+    #[inline]
+    unsafe fn as_block_ptr(&mut self) -> *mut c_void {
+        self as *mut Self as *mut std::ffi::c_void
+    }
+}
+
+impl Block for Blockfn<(), ()> {}
+impl<F: FnMut() -> ()> Block for BlockFn<(), (), F> {}
+impl<F: FnMut() -> ()> Block for RetainedBlockFn<(), (), F> {}
 
 /// This function "parks" the main thread and waits for blocks to be submitted to the main queue.
 /// Applications that call UIApplicationMain (iOS), NSApplicationMain (macOS), or CFRunLoopRun

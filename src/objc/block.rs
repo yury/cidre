@@ -4,33 +4,6 @@ use parking_lot::Mutex;
 
 use crate::cf::{self, runtime::Retain, Retained};
 
-// pub type PlainFn = extern "C" fn();
-// impl<'a, PlainFn> Literal<'a, NoCopyDispose, PlainFn>
-// {
-//     extern "C" fn invoke(literal: &Self) {
-//         (literal.func)()
-//     }
-
-//     const DESCRIPTOR: Descriptor<NoCopyDispose> = Descriptor {
-//         reserved: 0,
-//         size: std::mem::size_of::<Self>(),
-//         copy_dispose: NoCopyDispose {},
-//     };
-
-//     pub fn new(f: PlainFn) -> Self {
-//         let literal = Self {
-//             isa: unsafe { _NSConcreteStackBlock },
-//             flags: Flags::NONE,
-//             reserved: 0,
-//             invoke: Self::invoke,
-//             descriptor: &Self::DESCRIPTOR,
-//             func: f,
-//         };
-
-//         literal
-//     }
-// }
-
 #[repr(C)]
 pub struct CompletionBlock<F>
 where

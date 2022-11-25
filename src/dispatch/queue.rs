@@ -1,20 +1,21 @@
-use std::ffi::{c_void, CStr};
-use std::intrinsics::transmute;
-use std::os::raw::{c_char, c_long};
+use std::ffi::{c_char, c_long, c_void, CStr};
+use std::mem::transmute;
 use std::ptr::NonNull;
 
-use crate::cf::Retained;
-use crate::dispatch::{Function, Object};
-use crate::objc::native_block::{DispatchB, DispatchBlock};
-use crate::{define_obj_type, objc};
+use crate::{
+    cf::Retained,
+    define_obj_type,
+    dispatch::{self, Function},
+    objc::blocks_runtime::BlockFn,
+};
 
-define_obj_type!(Queue(Object));
+define_obj_type!(Queue(dispatch::Object));
 define_obj_type!(Global(Queue));
 define_obj_type!(Serial(Queue));
 define_obj_type!(Main(Serial));
 define_obj_type!(Concurent(Queue));
 
-define_obj_type!(Attr(Object));
+define_obj_type!(Attr(dispatch::Object));
 
 #[repr(transparent)]
 pub struct QOSClass(pub u32);
@@ -112,46 +113,26 @@ impl Queue {
     }
 
     #[inline]
-    pub fn sync_b<F, CD>(&self, block: &DispatchBlock<F, CD>) {
+    pub fn sync_b<B: dispatch::Block>(&self, block: &mut B) {
         unsafe {
-            // let raw = Box::into_raw(block);
-            dispatch_sync(
-                self,
-                block as *const objc::native_block::Literal<CD, F, (), ()> as *mut std::ffi::c_void,
-            );
+            dispatch_sync(self, block.as_block_ptr());
         }
     }
 
     #[inline]
-    pub fn sync_bb<B: DispatchB>(&self, block: &mut B) {
+    pub fn async_b<B: dispatch::Block>(&self, block: &'static mut B) {
         unsafe {
-            // let raw = Box::into_raw(block);
-            dispatch_sync(self, block as *mut B as *mut std::ffi::c_void);
+            dispatch_async(self, block.as_block_ptr());
         }
     }
-
-    #[inline]
-    pub fn async_bb<B: DispatchB>(&self, block: &'static mut B) {
-        unsafe {
-            dispatch_async(self, block as *mut B as *mut std::ffi::c_void);
-        }
-    }    
 
     #[inline]
     pub fn sync_with<F: 'static>(&self, block: F)
     where
         F: FnMut(),
     {
-        let block = DispatchBlock::stack(block);
-        self.sync_b(&block);
-    }
-
-    #[inline]
-    pub fn async_b<F, CD>(&self, block: Box<DispatchBlock<F, CD>>) {
-        unsafe {
-            let raw = Box::into_raw(block);
-            dispatch_async(self, transmute(raw));
-        }
+        let mut block = BlockFn::<(), (), _>::with(block);
+        self.sync_b(&mut block);
     }
 
     #[inline]
@@ -159,8 +140,8 @@ impl Queue {
     where
         F: FnMut(),
     {
-        let block = DispatchBlock::new(block);
-        self.async_b(block);
+        let mut block = BlockFn::<(), (), _>::new(block);
+        self.async_b(block.escape());
     }
 
     #[inline]
