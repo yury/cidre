@@ -7,6 +7,7 @@ use crate::cf::{
     Retained, Type,
 };
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Class(Type);
 

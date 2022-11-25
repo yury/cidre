@@ -5,7 +5,7 @@ use std::ptr::NonNull;
 
 use crate::cf::Retained;
 use crate::dispatch::{Function, Object};
-use crate::objc::native_block::DispatchBlock;
+use crate::objc::native_block::{DispatchB, DispatchBlock};
 use crate::{define_obj_type, objc};
 
 define_obj_type!(Queue(Object));
@@ -121,6 +121,21 @@ impl Queue {
             );
         }
     }
+
+    #[inline]
+    pub fn sync_bb<B: DispatchB>(&self, block: &mut B) {
+        unsafe {
+            // let raw = Box::into_raw(block);
+            dispatch_sync(self, block as *mut B as *mut std::ffi::c_void);
+        }
+    }
+
+    #[inline]
+    pub fn async_bb<B: DispatchB>(&self, block: &'static mut B) {
+        unsafe {
+            dispatch_async(self, block as *mut B as *mut std::ffi::c_void);
+        }
+    }    
 
     #[inline]
     pub fn sync_with<F: 'static>(&self, block: F)
