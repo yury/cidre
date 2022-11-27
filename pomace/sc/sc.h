@@ -7,6 +7,7 @@
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 #include "../macro.h"
+#include "Block.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,10 +55,16 @@ rsel(, id, displays, NSArray<SCDisplay *> *)
 rsel(, id, applications, NSArray<SCRunningApplication *> *)
 
 void cs_shareable_content_with_completion_handler(void * _Nonnull * _Nonnull rb) {
+  NSLog(@"what???");
   [SCShareableContent getShareableContentWithCompletionHandler:^(SCShareableContent * _Nullable shareableContent, NSError * _Nullable error) {
     void(*ch)(void *, SCShareableContent * _Nullable, NSError * _Nullable error) = rb[0];
     ch(rb, shareableContent, error);
   }];
+}
+
+
+void cs_shareable(id block) {
+  [SCShareableContent getShareableContentWithCompletionHandler:block];
 }
 
 #pragma mark - SCContentFilter

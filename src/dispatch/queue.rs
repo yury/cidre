@@ -115,19 +115,19 @@ impl Queue {
     #[inline]
     pub fn sync_b<B: dispatch::Block>(&self, block: &mut B) {
         unsafe {
-            dispatch_sync(self, block.as_block_ptr());
+            dispatch_sync(self, block.as_ptr());
         }
     }
 
     #[inline]
     pub fn async_b<B: dispatch::Block>(&self, block: &'static mut B) {
         unsafe {
-            dispatch_async(self, block.as_block_ptr());
+            dispatch_async(self, block.as_ptr());
         }
     }
 
     #[inline]
-    pub fn sync_with<F: 'static>(&self, block: F)
+    pub fn sync_with<F>(&self, block: F)
     where
         F: FnMut(),
     {
@@ -140,7 +140,7 @@ impl Queue {
     where
         F: FnMut(),
     {
-        let mut block = BlockFn::<(), (), _>::new(block);
+        let mut block = BlockFn::<(), (), _>::new_mut(block);
         self.async_b(block.escape());
     }
 

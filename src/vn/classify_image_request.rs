@@ -50,7 +50,7 @@ mod test {
     fn basics() {
         let mut request = vn::ClassifyImageRequest::new();
         let supported_ids = request.supported_identifiers().unwrap();
-        //        supported_ids.show();
+        supported_ids.show();
 
         assert!(request.results().is_none());
 

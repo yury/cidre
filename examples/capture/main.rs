@@ -1,7 +1,6 @@
 use cidre::{
     av::{self, CaptureDevicePosition, MediaType},
-    cf,
-    ns::{self, try_catch},
+    ns,
 };
 
 extern "C" fn exception_handler(exception: &ns::Exception) {

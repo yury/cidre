@@ -1,3 +1,12 @@
+// TODO:
+// 1. Pure fn block is global _NSConcreteGlobalBlock
+// 2. Pure fn block with fields - _NSConcreteMallocBlock
+// 3. NoEscaping block - _NSConcreteStackBlock
+
+// https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
+// https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
+
+
 use std::{
     ffi::{c_char, c_void},
     marker::PhantomData,
@@ -21,6 +30,12 @@ impl Flags {
     pub const REFCOUNT_MASK: Self = Self(0xfffei32);
 
     // compiler
+    // Set to true on blocks that have captures (and thus are not true
+    // global blocks) but are known not to escape for various other
+    // reasons. For backward compatibility with old runtimes, whenever
+    // IS_NOESCAPE is set, IS_GLOBAL is set too. Copying a
+    // non-escaping block returns the original block and releasing such a
+    // block is a no-op, which is exactly how global blocks are handled.
     pub const IS_NOESCAPE: Self = Self(1 << 23);
 
     // runtime
@@ -77,7 +92,7 @@ impl<Args, R, F: Sized> Drop for BlockFn<Args, R, F> {
 }
 
 #[repr(transparent)]
-pub struct RetainedBlockFn<Args, R, F>(&'static mut BlockFn<Args, R, F>)
+pub struct RetainedBlockFn<Args, R, F>(*mut BlockFn<Args, R, F>)
 where
     Args: 'static,
     R: 'static,
@@ -91,7 +106,11 @@ where
 {
     #[inline]
     pub fn escape(&mut self) -> &'static mut BlockFn<Args, R, F> {
-        unsafe { transmute(self.0 as *mut _) }
+        unsafe { &mut *self.0  }
+    }
+
+    pub fn foo(&self) -> *mut c_void {
+        self.0 as _
     }
 }
 
@@ -99,20 +118,20 @@ impl<Args, R, F> Deref for RetainedBlockFn<Args, R, F> {
     type Target = BlockFn<Args, R, F>;
 
     fn deref(&self) -> &Self::Target {
-        self.0
+        unsafe { &*self.0 }
     }
 }
 
 impl<Args, R, F> DerefMut for RetainedBlockFn<Args, R, F> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
+        unsafe { &mut *self.0 }
     }
 }
 
 impl<Args, R, F> Drop for RetainedBlockFn<Args, R, F> {
     fn drop(&mut self) {
         unsafe {
-            _Block_release(transmute(self.0 as *mut _));
+            _Block_release(self.0 as *const _);
         }
     }
 }
@@ -120,13 +139,14 @@ impl<Args, R, F> Drop for RetainedBlockFn<Args, R, F> {
 impl<Args, R, F> Clone for RetainedBlockFn<Args, R, F> {
     fn clone(&self) -> Self {
         unsafe {
-            let ptr = _Block_copy(transmute(self.0 as *const _));
-            Self(transmute(ptr))
+            let ptr = _Block_copy(self.0 as *const _);
+            Self(ptr as *mut c_void as _)
         }
     }
 }
 
 impl<Args, R, F: Sized> BlockFn<Args, R, F> {
+    
     const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
         reserved: 0,
         size: std::mem::size_of::<Self>(),
@@ -153,6 +173,7 @@ impl<Args, R, F: Sized> BlockFn<Args, R, F> {
     }
 
     extern "C" fn copy(_dest: *mut c_void, _src: *mut c_void) {
+        println!("copy!");
         panic!("should not be called");
     }
 
@@ -193,8 +214,8 @@ impl<Args, R, F: Sized> BlockFn<Args, R, F> {
 
     fn with_invoke(invoke: *const c_void, f: F) -> Self {
         Self {
-            isa: unsafe { _NSConcreteStackBlock },
-            flags: Flags::IS_NOESCAPE,
+            isa: unsafe { &_NSConcreteStackBlock },
+            flags: Flags::NONE,
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2_NO_COPY_DISPOSE,
@@ -205,8 +226,8 @@ impl<Args, R, F: Sized> BlockFn<Args, R, F> {
 
     fn new_with_invoke(invoke: *const c_void, f: F) -> Box<Self> {
         Box::new(Self {
-            isa: unsafe { _NSConcreteMallocBlock },
-            flags: Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE | Flags(2), // logical rain count 1
+            isa: unsafe { &_NSConcreteMallocBlock },
+            flags: Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE |  Flags(2), // logical rain count 1
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2,
@@ -223,6 +244,14 @@ impl<Args, R, F: Sized> BlockFn<Args, R, F> {
     }
 
     pub fn new(f: F) -> RetainedBlockFn<(), R, F>
+    where
+        F: Fn() -> R,
+    {
+        let b = BlockFn::new_with_invoke(BlockFn::<(), R, F>::invoke as _, f);
+        RetainedBlockFn(Box::leak(b))
+    }
+
+    pub fn new_mut(f: F) -> RetainedBlockFn<(), R, F>
     where
         F: FnMut() -> R,
     {
@@ -249,6 +278,14 @@ impl<Args, R, F: Sized> BlockFn<Args, R, F> {
         F: Fn(A, B) -> R,
     {
         BlockFn::with_invoke(Self::invoke_ab as _, f)
+    }
+
+    pub fn new_ab_mut<A, B>(f: F) -> RetainedBlockFn<(A, B), R, F>
+    where
+        F: FnMut(A, B) -> R,
+    {
+        let b = BlockFn::new_with_invoke(BlockFn::<(A, B), R, F>::invoke_ab as _, f);
+        RetainedBlockFn(Box::leak(b))
     }
 
     pub fn with_ab_mut<A, B>(f: F) -> BlockFn<(A, B), R, F>
@@ -279,9 +316,9 @@ impl<Args, R> Block<Args, R> {
         size: std::mem::size_of::<Self>(),
     };
 
-    fn with(f: extern "C" fn(&Self) -> R) -> Self {
+    pub fn with(f: extern "C" fn(&Self) -> R) -> Self {
         Self {
-            isa: unsafe { _NSConcreteStackBlock },
+            isa: unsafe { &_NSConcreteStackBlock },
             flags: Flags::NONE,
             reserved: 0,
             invoke: unsafe { transmute(f) },
@@ -309,6 +346,7 @@ impl<Args, R> Block<Args, R> {
     }
 }
 
+
 pub trait B0Mut<R> {
     fn invoke_mut(&mut self) -> R;
 }
@@ -327,6 +365,11 @@ pub trait B1<A, R>: B1Mut<A, R> {
 
 pub trait B2Mut<A, B, R> {
     fn invoke_mut(&mut self, a: A, b: B) -> R;
+
+    #[inline]
+    unsafe fn as_block_ptr(&mut self) -> *mut c_void {
+        self as *mut Self as *mut std::ffi::c_void
+    }
 }
 
 pub trait B2<A, B, R>: B2Mut<A, B, R> {
@@ -541,13 +584,6 @@ pub struct Descriptor3 {
     signature: *const c_char,
     layout: *const c_char,
 }
-// TODO:
-// 1. Pure fn block is global _NSConcreteGlobalBlock
-// 2. Pure fn block with fields - _NSConcreteMallocBlock
-// 3. NoEscaping block - _NSConcreteStackBlock
-
-// https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
-// https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
 
 #[cfg_attr(
     any(target_os = "macos", target_os = "ios"),
@@ -558,9 +594,9 @@ pub struct Descriptor3 {
     link(name = "BlocksRuntime", kind = "dylib")
 )]
 extern "C" {
-    static _NSConcreteGlobalBlock: &'static Class;
-    static _NSConcreteStackBlock: &'static Class;
-    static _NSConcreteMallocBlock: &'static Class;
+    static _NSConcreteGlobalBlock: Class;
+    static _NSConcreteStackBlock: Class;
+    static _NSConcreteMallocBlock: Class;
 
     fn _Block_copy(block: *const c_void) -> *const c_void;
     fn _Block_release(block: *const c_void);
@@ -568,10 +604,6 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-
-    use std::{thread::sleep, time::Duration};
-
-    use crate::objc::autoreleasepool;
 
     use super::*;
 
@@ -586,16 +618,12 @@ mod tests {
 
     #[test]
     fn test_simple_block() {
-        autoreleasepool(|| {
-            let mut b = BlockFn::<(), (), _>::new(|| println!("nice"));
+        let mut b = BlockFn::<(), (), _>::new(|| println!("nice"));
 
-            let q = crate::dispatch::Queue::new();
-            q.async_b(b.escape());
-            q.sync_with(|| println!("fuck"));
+        let q = crate::dispatch::Queue::new();
+        q.async_b(b.escape());
+        q.sync_with(|| println!("fuck"));
 
-            println!("finished");
-        });
-
-        println!("done");
+        println!("finished");
     }
 }

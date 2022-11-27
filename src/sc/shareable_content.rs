@@ -1,7 +1,9 @@
 use std::ffi::c_void;
+use std::mem::transmute;
 
 use crate::objc::block::{Completion, CompletionHandlerAB};
-use crate::{cf, cg, define_obj_type, msg_send, ns, sys};
+use crate::objc::blocks_runtime::{B2, B2Mut, RetainedBlockFn, B0};
+use crate::{cf, cg, define_obj_type, msg_send, ns, sys, dispatch};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -90,6 +92,15 @@ impl ShareableContent {
         unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
         future.await
     }
+
+    
+    pub fn current_with_completion2<B>(b: &'static mut B)
+    where B: B2Mut<Option<&'static ShareableContent>, Option<&'static cf::Error>, ()>
+    { 
+        unsafe {
+            cs_shareable(b as *mut B as _);
+        }
+    }
 }
 
 #[link(name = "sc", kind = "static")]
@@ -98,20 +109,22 @@ extern "C" {
     fn rsel_displays(id: &ns::Id) -> &cf::ArrayOf<Display>;
     fn rsel_applications(id: &ns::Id) -> &cf::ArrayOf<RunningApplication>;
     fn cs_shareable_content_with_completion_handler(rb: *const c_void);
+
+    fn cs_shareable(block: *mut c_void);
 }
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use crate::{
         cf, dispatch,
         sc::{
             self,
             stream::{StreamDelegate, StreamOutput},
             Window,
-        },
+        }, objc::blocks_runtime::{BlockFn, Block},
     };
+
+    use super::ShareableContent;
 
     #[repr(C)]
     struct Foo {
@@ -157,6 +170,26 @@ mod tests {
 
     #[test]
     pub fn current_with_completion() {
+
+        type Args = (Option<&'static ShareableContent>, Option<&'static cf::Error>);
+
+        let sema = dispatch::Semaphore::new(0);
+        let signal_guard = sema.signal_guard();
+        let mut bl = BlockFn::<Args, (), _>::new_ab_mut(move |content, error| {
+            println!("nice {:?} {:?}", content, error)
+            signal_guard.consume();
+        });
+
+        dispatch::Queue::global(0).unwrap().async_with(move || {
+            ShareableContent::current_with_completion2(bl.escape());
+        });
+        
+        sema.wait_forever();
+
+        // println!("why?");
+        // current_with_completion3(b.escape());
+        
+    
         // let sema = dispatch::Semaphore::new(0);
         // let queue = dispatch::Queue::serial_with_autoreleasepool();
         // let signal_guard = sema.signal_guard();

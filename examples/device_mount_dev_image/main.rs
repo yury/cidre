@@ -6,7 +6,6 @@ use cidre::{
         device::{self, discovery::NotificationInfo},
         DeviceInterfaceConnectionType, DeviceSpeed,
     },
-    av::CaptureConnection,
     cf,
 };
 

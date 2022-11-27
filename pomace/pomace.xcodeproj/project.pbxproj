@@ -127,6 +127,10 @@
 		D21A0FF1287738ED00AB7EF8 /* libns.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libns.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21A0FF3287738ED00AB7EF8 /* ns.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ns.h; sourceTree = "<group>"; };
 		D21A0FF4287738ED00AB7EF8 /* ns.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ns.m; sourceTree = "<group>"; };
+		D237F0AD293274B2005B7880 /* libSystem.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libSystem.tbd; path = usr/lib/libSystem.tbd; sourceTree = SDKROOT; };
+		D237F0AF293274C3005B7880 /* libSystem.B.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libSystem.B.tbd; path = usr/lib/libSystem.B.tbd; sourceTree = SDKROOT; };
+		D237F0B1293274EF005B7880 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		D237F0B329327506005B7880 /* libsystem_blocks.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsystem_blocks.tbd; path = usr/lib/system/libsystem_blocks.tbd; sourceTree = SDKROOT; };
 		D2520CFC280BFC4A00FD6562 /* libsc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2520CFE280BFC4A00FD6562 /* sc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sc.h; sourceTree = "<group>"; };
 		D2520CFF280BFC4A00FD6562 /* sc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sc.m; sourceTree = "<group>"; };
@@ -285,6 +289,10 @@
 		D2A5294F283A26B800E7B4C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D237F0B329327506005B7880 /* libsystem_blocks.tbd */,
+				D237F0B1293274EF005B7880 /* CoreFoundation.framework */,
+				D237F0AF293274C3005B7880 /* libSystem.B.tbd */,
+				D237F0AD293274B2005B7880 /* libSystem.tbd */,
 				D2A52950283A26B800E7B4C6 /* QuartzCore.framework */,
 			);
 			name = Frameworks;
@@ -697,6 +705,10 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FD6ZML48V9;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/system",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -709,6 +721,10 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FD6ZML48V9;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SDKROOT)/usr/lib/system",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

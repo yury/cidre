@@ -40,7 +40,7 @@ use crate::objc::blocks_runtime::{B0Mut, Block as Blockfn, BlockFn, RetainedBloc
 
 pub trait Block: B0Mut<()> {
     #[inline]
-    unsafe fn as_block_ptr(&mut self) -> *mut c_void {
+    unsafe fn as_ptr(&mut self) -> *mut c_void {
         self as *mut Self as *mut std::ffi::c_void
     }
 }
