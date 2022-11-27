@@ -176,7 +176,7 @@ mod tests {
         let sema = dispatch::Semaphore::new(0);
         let signal_guard = sema.signal_guard();
         let mut bl = BlockFn::<Args, (), _>::new_ab_mut(move |content, error| {
-            println!("nice {:?} {:?}", content, error)
+            println!("nice {:?} {:?}", content, error);
             signal_guard.consume();
         });
 
