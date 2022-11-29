@@ -14,7 +14,10 @@ impl Encoding {
     pub const ASCII: Self = Self(0x0600);
     pub const UTF8: Self = Self(0x08000100);
 
+    /// The default encoding for the system; untagged 8-bit characters are usually in this encoding
+    /// 
     /// CFStringGetSystemEncoding
+    /// 
     /// ```
     /// use cidre::cf;
     ///
@@ -65,7 +68,7 @@ impl String {
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
-    pub fn from_str_no_copy(str: &str) -> Retained<String> {
+    pub fn from_str_no_copy(str: &str) -> Retained<Self> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes_no_copy_in(
@@ -92,7 +95,7 @@ impl String {
     /// assert!(s3.has_prefix(&s2));
     ///```
     #[inline]
-    pub fn from_str(str: &str) -> Retained<String> {
+    pub fn from_str(str: &str) -> Retained<Self> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes(None, bytes, bytes.len() as _, Encoding::UTF8, false)
@@ -101,7 +104,7 @@ impl String {
     }
 
     #[inline]
-    pub fn from_cstr(cstr: &CStr) -> Retained<String> {
+    pub fn from_cstr(cstr: &CStr) -> Retained<Self> {
         unsafe {
             Self::create_with_cstring_in(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
                 .unwrap_unchecked()
@@ -109,7 +112,7 @@ impl String {
     }
 
     #[inline]
-    pub fn from_cstr_no_copy(cstr: &CStr) -> Retained<String> {
+    pub fn from_cstr_no_copy(cstr: &CStr) -> Retained<Self> {
         unsafe {
             Self::create_with_cstring_no_copy_in(
                 None,
@@ -132,13 +135,13 @@ impl String {
     }
 
     #[inline]
-    pub fn has_suffix(&self, suffix: &String) -> bool {
+    pub fn has_suffix(&self, suffix: &Self) -> bool {
         unsafe { CFStringHasSuffix(self, suffix) }
     }
 
     /// CFStringHasPrefix
     #[inline]
-    pub fn has_prefix(&self, prefix: &String) -> bool {
+    pub fn has_prefix(&self, prefix: &Self) -> bool {
         unsafe { CFStringHasPrefix(self, prefix) }
     }
 
@@ -150,12 +153,12 @@ impl String {
 
     /// CFStringCreateCopy
     #[inline]
-    pub fn copy_in(&self, alloc: Option<&Allocator>) -> Option<Retained<String>> {
+    pub fn copy_in(&self, alloc: Option<&Allocator>) -> Option<Retained<Self>> {
         unsafe { CFStringCreateCopy(alloc, self) }
     }
 
     #[inline]
-    pub fn copy(&self) -> Option<Retained<String>> {
+    pub fn copy(&self) -> Option<Retained<Self>> {
         self.copy_in(None)
     }
 
@@ -167,7 +170,7 @@ impl String {
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<String>> {
+    ) -> Option<Retained<Self>> {
         unsafe {
             let bytes = bytes.as_ptr();
             CFStringCreateWithBytesNoCopy(
@@ -187,7 +190,7 @@ impl String {
         bytes_with_null: &[u8],
         encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<String>> {
+    ) -> Option<Retained<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
             CFStringCreateWithCStringNoCopy(alloc, c_str, encoding, contents_deallocator)
@@ -199,7 +202,7 @@ impl String {
         alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
         encoding: Encoding,
-    ) -> Option<Retained<String>> {
+    ) -> Option<Retained<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
             CFStringCreateWithCString(alloc, c_str, encoding)
@@ -213,7 +216,7 @@ impl String {
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
-    ) -> Option<Retained<String>> {
+    ) -> Option<Retained<Self>> {
         unsafe {
             let bytes = bytes.as_ptr();
             CFStringCreateWithBytes(
