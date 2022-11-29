@@ -10,74 +10,8 @@ use std::{ffi::c_void, mem, ops};
 
 use crate::{define_options, objc::Class};
 
-define_options!(Flags(i32));
-
 #[repr(transparent)]
 pub struct Block<F>(c_void, std::marker::PhantomData<F>);
-
-impl Flags {
-    pub const NONE: Self = Self(0);
-
-    // runtime
-    pub const DEALLOCATING: Self = Self(1);
-
-    // runtime
-    pub const REFCOUNT_MASK: Self = Self(0xfffei32);
-
-    // compiler
-    // Set to true on blocks that have captures (and thus are not true
-    // global blocks) but are known not to escape for various other
-    // reasons. For backward compatibility with old runtimes, whenever
-    // IS_NOESCAPE is set, IS_GLOBAL is set too. Copying a
-    // non-escaping block returns the original block and releasing such a
-    // block is a no-op, which is exactly how global blocks are handled.
-    pub const IS_NOESCAPE: Self = Self(1 << 23);
-
-    // runtime
-    pub const NEEDS_FREE: Self = Self(1 << 24);
-    // compiler
-    pub const HAS_COPY_DISPOSE: Self = Self(1 << 25);
-    pub const HAS_CTOR: Self = Self(1 << 26);
-    pub const IS_GC: Self = Self(1 << 27);
-    pub const IS_GLOBAL: Self = Self(1 << 28);
-    pub const USE_STRET: Self = Self(1 << 29);
-    pub const HAS_SIGNATURE: Self = Self(1 << 30);
-    pub const HAS_EXTENDED_LAYOUT: Self = Self(1 << 31);
-}
-
-#[repr(C)]
-pub struct Descriptor1 {
-    reserved: usize,
-    size: usize,
-}
-
-#[repr(C)]
-pub struct Descriptor2<T: Sized> {
-    descriptor1: Descriptor1,
-    copy: extern "C" fn(dest: &mut T, src: &mut T),
-    dispose: extern "C" fn(liteal: &mut T),
-}
-
-// for completion handlers
-#[repr(C)]
-struct Layout1<F: Sized + 'static> {
-    isa: &'static Class,
-    flags: Flags,
-    reserved: i32,
-    invoke: *const c_void,
-    descriptor: &'static Descriptor1,
-    closure: mem::ManuallyDrop<F>,
-}
-
-#[repr(C)]
-struct Layout2<F: Sized + 'static> {
-    isa: &'static Class,
-    flags: Flags,
-    reserved: i32,
-    invoke: *const c_void,
-    descriptor: &'static Descriptor2<Self>,
-    closure: mem::ManuallyDrop<F>,
-}
 
 pub fn fn0<R>(f: extern "C" fn(*const c_void) -> R) -> bl<extern "C" fn(*const c_void) -> R> {
     bl::with(f)
@@ -171,10 +105,76 @@ where
     Layout2::new(Layout2::<F>::invoke4 as _, f)
 }
 
+define_options!(Flags(i32));
+
+impl Flags {
+    pub const NONE: Self = Self(0);
+
+    // runtime
+    pub const DEALLOCATING: Self = Self(1);
+
+    // runtime
+    pub const REFCOUNT_MASK: Self = Self(0xfffei32);
+
+    // compiler
+    // Set to true on blocks that have captures (and thus are not true
+    // global blocks) but are known not to escape for various other
+    // reasons. For backward compatibility with old runtimes, whenever
+    // IS_NOESCAPE is set, IS_GLOBAL is set too. Copying a
+    // non-escaping block returns the original block and releasing such a
+    // block is a no-op, which is exactly how global blocks are handled.
+    pub const IS_NOESCAPE: Self = Self(1 << 23);
+
+    // runtime
+    pub const NEEDS_FREE: Self = Self(1 << 24);
+    // compiler
+    pub const HAS_COPY_DISPOSE: Self = Self(1 << 25);
+    pub const HAS_CTOR: Self = Self(1 << 26);
+    pub const IS_GC: Self = Self(1 << 27);
+    pub const IS_GLOBAL: Self = Self(1 << 28);
+    pub const USE_STRET: Self = Self(1 << 29);
+    pub const HAS_SIGNATURE: Self = Self(1 << 30);
+    pub const HAS_EXTENDED_LAYOUT: Self = Self(1 << 31);
+}
+
+#[repr(C)]
+pub struct Descriptor1 {
+    reserved: usize,
+    size: usize,
+}
+
+#[repr(C)]
+pub struct Descriptor2<T: Sized> {
+    descriptor1: Descriptor1,
+    copy: extern "C" fn(dest: &mut T, src: &mut T),
+    dispose: extern "C" fn(liteal: &mut T),
+}
+
+// for completion handlers
+#[repr(C)]
+struct Layout1<F: Sized + 'static> {
+    isa: &'static Class,
+    flags: Flags,
+    reserved: i32,
+    invoke: *const c_void,
+    descriptor: &'static Descriptor1,
+    closure: mem::ManuallyDrop<F>,
+}
+
+#[repr(C)]
+struct Layout2<F: Sized + 'static> {
+    isa: &'static Class,
+    flags: Flags,
+    reserved: i32,
+    invoke: *const c_void,
+    descriptor: &'static Descriptor2<Self>,
+    closure: mem::ManuallyDrop<F>,
+}
+
 /// block with static fn
 #[allow(non_camel_case_types)]
 #[repr(C)]
-pub struct bl<F> {
+pub struct bl<F: Sized> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
@@ -182,7 +182,7 @@ pub struct bl<F> {
     descriptor: &'static Descriptor1,
 }
 
-impl<F> bl<F> {
+impl<F: Sized> bl<F> {
     #[inline]
     pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
         unsafe { mem::transmute(self) }
@@ -339,10 +339,12 @@ impl<F: Sized> Layout1<F> {
         }
     }
 
+    const NEW_FLAGS: Flags = Flags(Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1
+
     fn new(invoke: *const c_void, f: F) -> BlOnce<F> {
         let block = Box::new(Self {
             isa: unsafe { &_NSConcreteMallocBlock },
-            flags: Flags::NEEDS_FREE | Flags(2), // logical retain count 1
+            flags: Self::NEW_FLAGS,
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_1,
@@ -353,13 +355,11 @@ impl<F: Sized> Layout1<F> {
 }
 
 impl<F: Sized> Layout2<F> {
-    const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
-        reserved: 0,
-        size: std::mem::size_of::<Self>(),
-    };
-
     const DESCRIPTOR_2: Descriptor2<Self> = Descriptor2 {
-        descriptor1: Self::DESCRIPTOR_1,
+        descriptor1: Descriptor1 {
+            reserved: 0,
+            size: std::mem::size_of::<Self>(),
+        },
         copy: Self::copy,
         dispose: Self::dispose,
     };
@@ -409,10 +409,12 @@ impl<F: Sized> Layout2<F> {
         (self.closure)(a, b, c, d)
     }
 
+    const NEW_FLAGS: Flags = Flags(Flags::HAS_COPY_DISPOSE.0 | Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1
+
     fn new(invoke: *const c_void, f: F) -> BlMut<F> {
         let block = Box::new(Self {
             isa: unsafe { &_NSConcreteMallocBlock },
-            flags: Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE | Flags(2), // logical retain count 1
+            flags: Self::NEW_FLAGS,
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2,
