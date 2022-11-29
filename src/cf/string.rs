@@ -5,13 +5,25 @@ use super::{Allocator, Index, OptionFlags, Range, Retained, Type, TypeId};
 
 use crate::{define_cf_type, define_options, UniChar};
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Encoding(u32);
 
 impl Encoding {
+    pub const MAC_ROMAN: Self = Self(0);
     pub const ASCII: Self = Self(0x0600);
     pub const UTF8: Self = Self(0x08000100);
+
+    /// CFStringGetSystemEncoding
+    /// ```
+    /// use cidre::cf;
+    ///
+    /// let encoding = cf::StringEncoding::system_encoding();
+    /// assert_eq!(encoding, cf::StringEncoding::MAC_ROMAN);
+    /// ```
+    pub fn system_encoding() -> Self {
+        unsafe { CFStringGetSystemEncoding() }
+    }
 }
 
 define_options!(CompareFlags(OptionFlags));
@@ -407,6 +419,8 @@ extern "C" {
         max_buflen: Index,
         used_buf_len: *mut Index,
     ) -> Index;
+
+    fn CFStringGetSystemEncoding() -> Encoding;
 
     // fn __CFStringMakeConstantString(str: *const c_char) -> &'static String;
 }
