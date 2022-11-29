@@ -10,6 +10,9 @@ pub use format_description::VideoCodecType;
 pub use format_description::VideoDimensions;
 pub use format_description::VideoFormatDescription;
 
+mod format_description_bridge;
+pub use format_description_bridge::Flavor as ImageDescriptionFlavor;
+
 mod time;
 pub use time::Time;
 pub use time::TimeEpoch;

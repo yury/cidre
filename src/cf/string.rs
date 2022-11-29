@@ -15,9 +15,9 @@ impl Encoding {
     pub const UTF8: Self = Self(0x08000100);
 
     /// The default encoding for the system; untagged 8-bit characters are usually in this encoding
-    /// 
+    ///
     /// CFStringGetSystemEncoding
-    /// 
+    ///
     /// ```
     /// use cidre::cf;
     ///
