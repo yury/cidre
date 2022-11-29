@@ -8,8 +8,7 @@
 
 use std::{
     ffi::c_void,
-    marker::PhantomData,
-    mem::{transmute, ManuallyDrop},
+    mem,
     ops::{Deref, DerefMut},
 };
 
@@ -20,7 +19,7 @@ use super::Class;
 define_options!(Flags(i32));
 
 #[repr(transparent)]
-pub struct Block<F>(c_void, PhantomData<F>);
+pub struct Block<F>(c_void, std::marker::PhantomData<F>);
 
 impl Flags {
     pub const NONE: Self = Self(0);
@@ -73,7 +72,7 @@ struct Layout1<F: Sized + 'static> {
     reserved: i32,
     invoke: *const c_void,
     descriptor: &'static Descriptor1,
-    closure: ManuallyDrop<F>,
+    closure: mem::ManuallyDrop<F>,
 }
 
 #[repr(C)]
@@ -83,7 +82,7 @@ struct Layout2<F: Sized + 'static> {
     reserved: i32,
     invoke: *const c_void,
     descriptor: &'static Descriptor2<Self>,
-    closure: ManuallyDrop<F>,
+    closure: mem::ManuallyDrop<F>,
 }
 
 pub fn fn0<R>(f: extern "C" fn(*const c_void) -> R) -> bl<extern "C" fn(*const c_void) -> R> {
@@ -192,7 +191,7 @@ pub struct bl<F> {
 impl<F> bl<F> {
     #[inline]
     pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
-        unsafe { transmute(self) }
+        unsafe { mem::transmute(self) }
     }
 }
 
@@ -204,7 +203,7 @@ impl<F> BlOnce<F> {
     pub fn escape<'a>(self) -> &'a mut Block<F> {
         let res = self.0 as *mut Layout1<F>;
         std::mem::forget(self);
-        unsafe { transmute(res) }
+        unsafe { mem::transmute(res) }
     }
 }
 
@@ -215,15 +214,17 @@ impl<F> BlMut<F> {
     #[inline]
     pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
         let res = self.0 as *mut Layout2<F>;
-        unsafe { transmute(res) }
+        unsafe { mem::transmute(res) }
     }
 }
 
 impl<F> Drop for BlOnce<F> {
     #[inline]
     fn drop(&mut self) {
-        unsafe { ManuallyDrop::drop(&mut (*self.0).closure) };
-        unsafe { _Block_release(self.0 as *mut _ as *const _) };
+        unsafe { 
+            mem::ManuallyDrop::drop(&mut (*self.0).closure);
+            _Block_release(self.0 as *mut _ as *const _);
+        };
     }
 }
 
@@ -238,8 +239,8 @@ impl<F> Clone for BlMut<F> {
     #[inline]
     fn clone(&self) -> Self {
         unsafe {
-            let ptr = _Block_copy(transmute(self));
-            Self(transmute(ptr))
+            let ptr = _Block_copy(mem::transmute(self));
+            Self(mem::transmute(ptr))
         }
     }
 }
@@ -250,7 +251,7 @@ impl<F> Deref for BlOnce<F> {
     #[inline]
     fn deref(&self) -> &Self::Target {
         let res = self.0 as *const Layout1<F>;
-        unsafe { transmute(res) }
+        unsafe { mem::transmute(res) }
     }
 }
 
@@ -260,7 +261,7 @@ impl<F> Deref for BlMut<F> {
     #[inline]
     fn deref(&self) -> &Self::Target {
         let res = self.0 as *const Layout2<F>;
-        unsafe { transmute(res) }
+        unsafe { mem::transmute(res) }
     }
 }
 
@@ -268,7 +269,7 @@ impl<F> DerefMut for BlMut<F> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         let res = self.0 as *mut Layout2<F>;
-        unsafe { transmute(res) }
+        unsafe { mem::transmute(res) }
     }
 }
 
@@ -277,21 +278,21 @@ impl<F> Deref for bl<F> {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        unsafe { transmute(self) }
+        unsafe { mem::transmute(self) }
     }
 }
 
 impl<F> DerefMut for bl<F> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { transmute(self) }
+        unsafe { mem::transmute(self) }
     }
 }
 
 impl<F: Sized> Layout1<F> {
     const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
         reserved: 0,
-        size: std::mem::size_of::<Self>(),
+        size: mem::size_of::<Self>(),
     };
 
     extern "C" fn invoke0<R>(&mut self) -> R
@@ -299,8 +300,8 @@ impl<F: Sized> Layout1<F> {
         F: FnOnce() -> R,
     {
         unsafe {
-            let b = ManuallyDrop::take(&mut self.closure);
-            (b)()
+            let closure = mem::ManuallyDrop::take(&mut self.closure);
+            (closure)()
         }
     }
 
@@ -309,7 +310,7 @@ impl<F: Sized> Layout1<F> {
         F: FnOnce(A) -> R,
     {
         unsafe {
-            let closure = ManuallyDrop::take(&mut self.closure);
+            let closure = mem::ManuallyDrop::take(&mut self.closure);
             (closure)(a)
         }
     }
@@ -319,7 +320,7 @@ impl<F: Sized> Layout1<F> {
         F: FnOnce(A, B) -> R,
     {
         unsafe {
-            let closure = ManuallyDrop::take(&mut self.closure);
+            let closure = mem::ManuallyDrop::take(&mut self.closure);
             (closure)(a, b)
         }
     }
@@ -329,7 +330,7 @@ impl<F: Sized> Layout1<F> {
         F: FnOnce(A, B, C) -> R,
     {
         unsafe {
-            let closure = ManuallyDrop::take(&mut self.closure);
+            let closure = mem::ManuallyDrop::take(&mut self.closure);
             (closure)(a, b, c)
         }
     }
@@ -339,7 +340,7 @@ impl<F: Sized> Layout1<F> {
         F: FnOnce(A, B, C, D) -> R,
     {
         unsafe {
-            let closure = ManuallyDrop::take(&mut self.closure);
+            let closure = mem::ManuallyDrop::take(&mut self.closure);
             (closure)(a, b, c, d)
         }
     }
@@ -351,7 +352,7 @@ impl<F: Sized> Layout1<F> {
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_1,
-            closure: ManuallyDrop::new(f),
+            closure: mem::ManuallyDrop::new(f),
         });
         BlOnce(Box::leak(block))
     }
@@ -375,7 +376,7 @@ impl<F: Sized> Layout2<F> {
 
     extern "C" fn dispose(block: &mut Self) {
         unsafe {
-            ManuallyDrop::drop(&mut block.closure);
+            mem::ManuallyDrop::drop(&mut block.closure);
         }
     }
 
@@ -421,7 +422,7 @@ impl<F: Sized> Layout2<F> {
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2,
-            closure: ManuallyDrop::new(f),
+            closure: mem::ManuallyDrop::new(f),
         });
         BlMut(Box::leak(block))
     }
