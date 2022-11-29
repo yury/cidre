@@ -6,9 +6,8 @@
 // https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
 // https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
 
-
 use std::{
-    ffi::{c_char, c_void},
+    ffi::c_void,
     marker::PhantomData,
     mem::{transmute, ManuallyDrop},
     ops::{Deref, DerefMut},
@@ -19,6 +18,9 @@ use crate::define_options;
 use super::Class;
 
 define_options!(Flags(i32));
+
+#[repr(transparent)]
+pub struct Block<F>(c_void, PhantomData<F>);
 
 impl Flags {
     pub const NONE: Self = Self(0);
@@ -63,99 +65,254 @@ pub struct Descriptor2 {
     dispose: extern "C" fn(liteal: *mut c_void),
 }
 
+/// block with static fn
+#[allow(non_camel_case_types)]
 #[repr(C)]
-pub struct Block<Args, R> {
-    /// initialized to &_NSConcreteStackBlock or &_NSConcreteGlobalBlock
+pub struct bl<F> {
+    isa: &'static Class,
+    flags: Flags,
+    reserved: i32,
+    invoke: F,
+    descriptor: &'static Descriptor1,
+}
+
+// for completion handlers
+#[repr(C)]
+struct Layout1<F: Sized> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
     descriptor: &'static Descriptor1,
-    args: PhantomData<(Args, R)>,
+    closure: ManuallyDrop<F>,
 }
 
 #[repr(C)]
-pub struct BlockFn<Args, R, F: Sized> {
+struct Layout2<F: Sized> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
     descriptor: &'static Descriptor2,
-    func: ManuallyDrop<F>,
-    args: PhantomData<(Args, R)>,
+    closure: ManuallyDrop<F>,
 }
 
-impl<Args, R, F: Sized> Drop for BlockFn<Args, R, F> {
-    fn drop(&mut self) {
-        unsafe { ManuallyDrop::drop(&mut self.func) };
+pub fn with_fn<R>(f: extern "C" fn(*const c_void) -> R) -> bl<extern "C" fn(*const c_void) -> R> {
+    bl::with(f)
+}
+
+pub fn new_once<R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce() -> R,
+{
+    Layout1::new(Layout1::<F>::invoke as _, f)
+}
+
+pub fn new_mut<R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut() -> R,
+{
+    Layout2::new(Layout2::<F>::invoke as _, f)
+}
+
+pub fn new2_once<A, B, R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce(A, B) -> R,
+{
+    Layout1::new(Layout1::<F>::invoke2 as _, f)
+}
+
+pub fn with1_fn<A, R>(
+    f: extern "C" fn(*const c_void, a: A) -> R,
+) -> bl<extern "C" fn(*const c_void, a: A) -> R> {
+    bl::with(f)
+}
+
+pub fn new1_once<A, R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce(A) -> R,
+{
+    Layout1::new(Layout1::<F>::invoke1 as _, f)
+}
+
+pub fn with2_fn<A, B, R>(
+    f: extern "C" fn(*const c_void, a: A, b: B) -> R,
+) -> bl<extern "C" fn(*const c_void, a: A, b: B) -> R> {
+    bl::with(f)
+}
+
+#[repr(transparent)]
+pub struct BlOnce<F: 'static>(&'static mut Layout1<F>);
+
+impl<F> BlOnce<F> {
+    #[inline]
+    pub fn escape<'a>(self) -> &'a mut Block<F> {
+        let res = self.0 as *mut Layout1<F>;
+        std::mem::forget(self);
+        unsafe { transmute(res) }
+    }
+}
+
+impl<F> bl<F> {
+    #[inline]
+    pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
+        unsafe { transmute(self) }
     }
 }
 
 #[repr(transparent)]
-pub struct RetainedBlockFn<Args, R, F>(*mut BlockFn<Args, R, F>)
-where
-    Args: 'static,
-    R: 'static,
-    F: 'static;
+pub struct BlMut<F: 'static>(&'static mut Layout2<F>);
 
-impl<Args, R, F> RetainedBlockFn<Args, R, F>
-where
-    Args: 'static,
-    R: 'static,
-    F: 'static,
-{
+impl<F> BlMut<F> {
     #[inline]
-    pub fn escape(&mut self) -> &'static mut BlockFn<Args, R, F> {
-        unsafe { &mut *self.0  }
-    }
-
-    pub fn foo(&self) -> *mut c_void {
-        self.0 as _
+    pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
+        let res = self.0 as *mut Layout2<F>;
+        unsafe { transmute(res) }
     }
 }
 
-impl<Args, R, F> Deref for RetainedBlockFn<Args, R, F> {
-    type Target = BlockFn<Args, R, F>;
-
-    fn deref(&self) -> &Self::Target {
-        unsafe { &*self.0 }
-    }
-}
-
-impl<Args, R, F> DerefMut for RetainedBlockFn<Args, R, F> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { &mut *self.0 }
-    }
-}
-
-impl<Args, R, F> Drop for RetainedBlockFn<Args, R, F> {
+impl<F> Drop for BlOnce<F> {
+    #[inline]
     fn drop(&mut self) {
-        unsafe {
-            _Block_release(self.0 as *const _);
-        }
+        unsafe { ManuallyDrop::drop(&mut (*self.0).closure) };
+        unsafe { _Block_release(self.0 as *mut _ as *const _) };
     }
 }
 
-impl<Args, R, F> Clone for RetainedBlockFn<Args, R, F> {
+impl<F> Drop for BlMut<F> {
+    #[inline]
+    fn drop(&mut self) {
+        unsafe { _Block_release(self.0 as *mut _ as *const _) };
+    }
+}
+
+impl<F> Clone for BlMut<F> {
+    #[inline]
     fn clone(&self) -> Self {
         unsafe {
-            let ptr = _Block_copy(self.0 as *const _);
-            Self(ptr as *mut c_void as _)
+            let ptr = _Block_copy(transmute(self));
+            Self(transmute(ptr))
         }
     }
 }
 
-impl<Args, R, F: Sized> BlockFn<Args, R, F> {
-    
+impl<F> Deref for BlOnce<F> {
+    type Target = Block<F>;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        let res = self.0 as *const Layout1<F>;
+        unsafe { transmute(res) }
+    }
+}
+
+impl<F> Deref for BlMut<F> {
+    type Target = Block<F>;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        let res = self.0 as *const Layout2<F>;
+        unsafe { transmute(res) }
+    }
+}
+
+impl<F> DerefMut for BlMut<F> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        let res = self.0 as *mut Layout2<F>;
+        unsafe { transmute(res) }
+    }
+}
+
+impl<F> Deref for bl<F> {
+    type Target = Block<F>;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe { transmute(self) }
+    }
+}
+
+impl<F> DerefMut for bl<F> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { transmute(self) }
+    }
+}
+
+impl<F: Sized> Layout1<F> {
     const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
         reserved: 0,
         size: std::mem::size_of::<Self>(),
     };
 
-    const DESCRIPTOR_2_NO_COPY_DISPOSE: Descriptor2 = Descriptor2 {
-        descriptor1: Self::DESCRIPTOR_1,
-        copy: Self::no_copy,
-        dispose: Self::no_dispose,
+    extern "C" fn invoke<R>(&mut self) -> R
+    where
+        F: FnOnce() -> R,
+    {
+        unsafe {
+            let b = ManuallyDrop::take(&mut self.closure);
+            (b)()
+        }
+    }
+
+    extern "C" fn invoke1<A, R>(&mut self, a: A) -> R
+    where
+        F: FnOnce(A) -> R,
+    {
+        unsafe {
+            let closure = ManuallyDrop::take(&mut self.closure);
+            (closure)(a)
+        }
+    }
+
+    extern "C" fn invoke2<A, B, R>(&mut self, a: A, b: B) -> R
+    where
+        F: FnOnce(A, B) -> R,
+    {
+        unsafe {
+            let closure = ManuallyDrop::take(&mut self.closure);
+            (closure)(a, b)
+        }
+    }
+
+    extern "C" fn invoke3<A, B, C, R>(&mut self, a: A, b: B, c: C) -> R
+    where
+        F: FnOnce(A, B, C) -> R,
+    {
+        unsafe {
+            let closure = ManuallyDrop::take(&mut self.closure);
+            (closure)(a, b, c)
+        }
+    }
+
+    extern "C" fn invoke4<A, B, C, D, R>(&mut self, a: A, b: B, c: C, d: D) -> R
+    where
+        F: FnOnce(A, B, C, D) -> R,
+    {
+        unsafe {
+            let closure = ManuallyDrop::take(&mut self.closure);
+            (closure)(a, b, c, d)
+        }
+    }
+
+    fn new(invoke: *const c_void, f: F) -> BlOnce<F> {
+        let block = Box::new(Self {
+            isa: unsafe { &_NSConcreteMallocBlock },
+            flags: Flags::NEEDS_FREE | Flags(2), // logical retain count 1
+            reserved: 0,
+            invoke,
+            descriptor: &Self::DESCRIPTOR_1,
+            closure: ManuallyDrop::new(f),
+        });
+        BlOnce(Box::leak(block))
+    }
+}
+
+impl<F: Sized> Layout2<F> {
+    const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
+        reserved: 0,
+        size: std::mem::size_of::<Self>(),
     };
 
     const DESCRIPTOR_2: Descriptor2 = Descriptor2 {
@@ -164,425 +321,80 @@ impl<Args, R, F: Sized> BlockFn<Args, R, F> {
         dispose: Self::dispose,
     };
 
-    extern "C" fn no_copy(_dest: *mut c_void, _src: *mut c_void) {
-        panic!("should not be called");
-    }
-
-    extern "C" fn no_dispose(_dest: *mut c_void) {
-        panic!("should not be called");
-    }
-
     extern "C" fn copy(_dest: *mut c_void, _src: *mut c_void) {
-        println!("copy!");
-        panic!("should not be called");
+        panic!("copy should not be called");
     }
 
     extern "C" fn dispose(block: *mut c_void) {
         unsafe {
-            let block: &mut Self = transmute(block);
-            ManuallyDrop::drop(&mut block.func);
+            let bl: &mut Self = transmute(block);
+            ManuallyDrop::drop(&mut bl.closure);
         }
     }
 
-    extern "C" fn invoke(&mut self) -> R
+    extern "C" fn invoke<R>(&mut self) -> R
     where
         F: FnMut() -> R,
     {
-        (self.func)()
+        (self.closure)()
     }
 
-    extern "C" fn invoke_a<A>(&mut self, a: A) -> R
+    extern "C" fn invoke1<A, R>(&mut self, a: A) -> R
     where
         F: FnMut(A) -> R,
     {
-        (self.func)(a)
+        (self.closure)(a)
     }
 
-    extern "C" fn invoke_ab<A, B>(&mut self, a: A, b: B) -> R
+    extern "C" fn invoke2<A, B, R>(&mut self, a: A, b: B) -> R
     where
         F: FnMut(A, B) -> R,
     {
-        (self.func)(a, b)
+        (self.closure)(a, b)
     }
 
-    extern "C" fn invoke_abc<A, B, C>(&mut self, a: A, b: B, c: C) -> R
+    extern "C" fn invoke3<A, B, C, R>(&mut self, a: A, b: B, c: C) -> R
     where
         F: FnMut(A, B, C) -> R,
     {
-        (self.func)(a, b, c)
+        (self.closure)(a, b, c)
     }
 
-    fn with_invoke(invoke: *const c_void, f: F) -> Self {
-        Self {
-            isa: unsafe { &_NSConcreteStackBlock },
-            flags: Flags::NONE,
-            reserved: 0,
-            invoke,
-            descriptor: &Self::DESCRIPTOR_2_NO_COPY_DISPOSE,
-            func: ManuallyDrop::new(f),
-            args: PhantomData,
-        }
+    extern "C" fn invoke4<A, B, C, D, R>(&mut self, a: A, b: B, c: C, d: D) -> R
+    where
+        F: FnMut(A, B, C, D) -> R,
+    {
+        (self.closure)(a, b, c, d)
     }
 
-    fn new_with_invoke(invoke: *const c_void, f: F) -> Box<Self> {
-        Box::new(Self {
+    fn new(invoke: *const c_void, f: F) -> BlMut<F> {
+        let block = Box::new(Self {
             isa: unsafe { &_NSConcreteMallocBlock },
-            flags: Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE |  Flags(2), // logical rain count 1
+            flags: Flags::HAS_COPY_DISPOSE | Flags::NEEDS_FREE | Flags(2), // logical retain count 1
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2,
-            func: ManuallyDrop::new(f),
-            args: PhantomData,
-        })
-    }
-
-    pub fn with(f: F) -> BlockFn<(), R, F>
-    where
-        F: FnMut() -> R,
-    {
-        BlockFn::with_invoke(Self::invoke as _, f)
-    }
-
-    pub fn new(f: F) -> RetainedBlockFn<(), R, F>
-    where
-        F: Fn() -> R,
-    {
-        let b = BlockFn::new_with_invoke(BlockFn::<(), R, F>::invoke as _, f);
-        RetainedBlockFn(Box::leak(b))
-    }
-
-    pub fn new_mut(f: F) -> RetainedBlockFn<(), R, F>
-    where
-        F: FnMut() -> R,
-    {
-        let b = BlockFn::new_with_invoke(BlockFn::<(), R, F>::invoke as _, f);
-        RetainedBlockFn(Box::leak(b))
-    }
-
-    pub fn with_a<A>(f: F) -> BlockFn<A, R, F>
-    where
-        F: Fn(A) -> R,
-    {
-        BlockFn::with_invoke(Self::invoke_a as _, f)
-    }
-
-    pub fn with_a_mut<A>(f: F) -> BlockFn<A, R, F>
-    where
-        F: FnMut(A) -> R,
-    {
-        BlockFn::with_invoke(Self::invoke_a as _, f)
-    }
-
-    pub fn with_ab<A, B>(f: F) -> BlockFn<(A, B), R, F>
-    where
-        F: Fn(A, B) -> R,
-    {
-        BlockFn::with_invoke(Self::invoke_ab as _, f)
-    }
-
-    pub fn new_ab_mut<A, B>(f: F) -> RetainedBlockFn<(A, B), R, F>
-    where
-        F: FnMut(A, B) -> R,
-    {
-        let b = BlockFn::new_with_invoke(BlockFn::<(A, B), R, F>::invoke_ab as _, f);
-        RetainedBlockFn(Box::leak(b))
-    }
-
-    pub fn with_ab_mut<A, B>(f: F) -> BlockFn<(A, B), R, F>
-    where
-        F: FnMut(A, B) -> R,
-    {
-        BlockFn::with_invoke(Self::invoke_ab as _, f)
-    }
-
-    pub fn with_abc<A, B, C>(f: F) -> BlockFn<(A, B, C), R, F>
-    where
-        F: Fn(A, B, C) -> R,
-    {
-        BlockFn::with_invoke(Self::invoke_abc as _, f)
-    }
-
-    pub fn with_abc_mut<A, B, C>(f: F) -> BlockFn<(A, B, C), R, F>
-    where
-        F: FnMut(A, B, C) -> R,
-    {
-        BlockFn::with_invoke(Self::invoke_abc as _, f)
+            closure: ManuallyDrop::new(f),
+        });
+        BlMut(Box::leak(block))
     }
 }
 
-impl<Args, R> Block<Args, R> {
+impl<F> bl<F> {
     const DESCRIPTOR: Descriptor1 = Descriptor1 {
         reserved: 0,
         size: std::mem::size_of::<Self>(),
     };
 
-    pub fn with(f: extern "C" fn(&Self) -> R) -> Self {
-        Self {
+    pub fn with(f: F) -> bl<F> {
+        bl {
             isa: unsafe { &_NSConcreteStackBlock },
             flags: Flags::NONE,
             reserved: 0,
-            invoke: unsafe { transmute(f) },
+            invoke: f,
             descriptor: &Self::DESCRIPTOR,
-            args: PhantomData,
         }
     }
-
-    pub fn with_a<A>(f: extern "C" fn(&Self, A) -> R) -> Block<A, R> {
-        Block::with(unsafe { transmute(f) })
-    }
-
-    pub fn with_ab<A, B>(f: extern "C" fn(&Self, A, B) -> R) -> Block<(A, B), R> {
-        Block::with(unsafe { transmute(f) })
-    }
-
-    pub fn with_abc<A, B, C>(f: extern "C" fn(&Self, A, B, C) -> R) -> Block<(A, B, C), R> {
-        Block::with(unsafe { transmute(f) })
-    }
-
-    pub fn with_abcd<A, B, C, D>(
-        f: extern "C" fn(&Self, A, B, C, D) -> R,
-    ) -> Block<(A, B, C, D), R> {
-        Block::with(unsafe { transmute(f) })
-    }
-}
-
-
-pub trait B0Mut<R> {
-    fn invoke_mut(&mut self) -> R;
-}
-
-pub trait B0<R>: B0Mut<R> {
-    fn invoke(&self) -> R;
-}
-
-pub trait B1Mut<A, R> {
-    fn invoke_mut(&mut self, a: A) -> R;
-}
-
-pub trait B1<A, R>: B1Mut<A, R> {
-    fn invoke(&self, a: A) -> R;
-}
-
-pub trait B2Mut<A, B, R> {
-    fn invoke_mut(&mut self, a: A, b: B) -> R;
-
-    #[inline]
-    unsafe fn as_block_ptr(&mut self) -> *mut c_void {
-        self as *mut Self as *mut std::ffi::c_void
-    }
-}
-
-pub trait B2<A, B, R>: B2Mut<A, B, R> {
-    fn invoke(&self, a: A, b: B) -> R;
-}
-
-pub trait B3Mut<A, B, C, R> {
-    fn invoke_mut(&mut self, a: A, b: B, c: C) -> R;
-}
-
-pub trait B3<A, B, C, R>: B3Mut<A, B, C, R> {
-    fn invoke(&self, a: A, b: B, c: C) -> R;
-}
-
-pub trait B4Mut<A, B, C, D, R> {
-    fn invoke_mut(&mut self, a: A, b: B, c: C, d: D) -> R;
-}
-
-pub trait B4<A, B, C, D, R>: B4Mut<A, B, C, D, R> {
-    fn invoke(&self, a: A, b: B, c: C, d: D) -> R;
-}
-
-impl<R> B0Mut<R> for Block<(), R> {
-    fn invoke_mut(&mut self) -> R {
-        let f: extern "C" fn(&Self) -> R = unsafe { transmute(self.invoke) };
-        f(self)
-    }
-}
-
-impl<R> B0<R> for Block<(), R> {
-    fn invoke(&self) -> R {
-        let f: extern "C" fn(&Self) -> R = unsafe { transmute(self.invoke) };
-        f(self)
-    }
-}
-
-impl<A, R> B1Mut<A, R> for Block<A, R> {
-    fn invoke_mut(&mut self, a: A) -> R {
-        let f: extern "C" fn(&Self, a: A) -> R = unsafe { transmute(self.invoke) };
-        f(self, a)
-    }
-}
-
-impl<A, R> B1<A, R> for Block<A, R> {
-    fn invoke(&self, a: A) -> R {
-        let f: extern "C" fn(&Self, a: A) -> R = unsafe { transmute(self.invoke) };
-        f(self, a)
-    }
-}
-
-impl<A, B, R> B2Mut<A, B, R> for Block<(A, B), R> {
-    fn invoke_mut(&mut self, a: A, b: B) -> R {
-        let f: extern "C" fn(&Self, a: A, b: B) -> R = unsafe { transmute(self.invoke) };
-        f(self, a, b)
-    }
-}
-
-impl<A, B, R> B2<A, B, R> for Block<(A, B), R> {
-    fn invoke(&self, a: A, b: B) -> R {
-        let f: extern "C" fn(&Self, a: A, b: B) -> R = unsafe { transmute(self.invoke) };
-        f(self, a, b)
-    }
-}
-
-impl<A, B, C, R> B3Mut<A, B, C, R> for Block<(A, B, C), R> {
-    fn invoke_mut(&mut self, a: A, b: B, c: C) -> R {
-        let f: extern "C" fn(&Self, a: A, b: B, c: C) -> R = unsafe { transmute(self.invoke) };
-        f(self, a, b, c)
-    }
-}
-
-impl<A, B, C, R> B3<A, B, C, R> for Block<(A, B, C), R> {
-    fn invoke(&self, a: A, b: B, c: C) -> R {
-        let f: extern "C" fn(&Self, a: A, b: B, c: C) -> R = unsafe { transmute(self.invoke) };
-        f(self, a, b, c)
-    }
-}
-
-impl<A, B, C, D, R> B4Mut<A, B, C, D, R> for Block<(A, B, C, D), R> {
-    fn invoke_mut(&mut self, a: A, b: B, c: C, d: D) -> R {
-        let f: extern "C" fn(&Self, a: A, b: B, c: C, d: D) -> R =
-            unsafe { transmute(self.invoke) };
-        f(self, a, b, c, d)
-    }
-}
-
-impl<A, B, C, D, R> B4<A, B, C, D, R> for Block<(A, B, C, D), R> {
-    fn invoke(&self, a: A, b: B, c: C, d: D) -> R {
-        let f: extern "C" fn(&Self, a: A, b: B, c: C, d: D) -> R =
-            unsafe { transmute(self.invoke) };
-        f(self, a, b, c, d)
-    }
-}
-
-impl<R, F> B0Mut<R> for RetainedBlockFn<(), R, F>
-where
-    F: FnMut() -> R,
-{
-    fn invoke_mut(&mut self) -> R {
-        (self.func)()
-    }
-}
-
-impl<R, F> B0Mut<R> for BlockFn<(), R, F>
-where
-    F: FnMut() -> R,
-{
-    fn invoke_mut(&mut self) -> R {
-        (self.func)()
-    }
-}
-
-impl<R, F> B0<R> for BlockFn<(), R, F>
-where
-    F: Fn() -> R,
-{
-    fn invoke(&self) -> R {
-        (self.func)()
-    }
-}
-
-impl<A, R, F> B1Mut<A, R> for BlockFn<A, R, F>
-where
-    F: FnMut(A) -> R,
-{
-    fn invoke_mut(&mut self, a: A) -> R {
-        (self.func)(a)
-    }
-}
-
-impl<A, R, F> B1<A, R> for BlockFn<A, R, F>
-where
-    F: Fn(A) -> R,
-{
-    fn invoke(&self, a: A) -> R {
-        (self.func)(a)
-    }
-}
-
-impl<A, B, R, F> B2Mut<A, B, R> for BlockFn<(A, B), R, F>
-where
-    F: FnMut(A, B) -> R,
-{
-    fn invoke_mut(&mut self, a: A, b: B) -> R {
-        (self.func)(a, b)
-    }
-}
-
-impl<A, B, R, F> B2<A, B, R> for BlockFn<(A, B), R, F>
-where
-    F: Fn(A, B) -> R,
-{
-    fn invoke(&self, a: A, b: B) -> R {
-        (self.func)(a, b)
-    }
-}
-
-impl<A, B, C, R, F> B3Mut<A, B, C, R> for BlockFn<(A, B, C), R, F>
-where
-    F: FnMut(A, B, C) -> R,
-{
-    fn invoke_mut(&mut self, a: A, b: B, c: C) -> R {
-        (self.func)(a, b, c)
-    }
-}
-
-impl<A, B, C, R, F> B3<A, B, C, R> for BlockFn<(A, B, C), R, F>
-where
-    F: Fn(A, B, C) -> R,
-{
-    fn invoke(&self, a: A, b: B, c: C) -> R {
-        (self.func)(a, b, c)
-    }
-}
-
-impl<A, B, C, D, R, F> B4Mut<A, B, C, D, R> for BlockFn<(A, B, C, D), R, F>
-where
-    F: FnMut(A, B, C, D) -> R,
-{
-    fn invoke_mut(&mut self, a: A, b: B, c: C, d: D) -> R {
-        (self.func)(a, b, c, d)
-    }
-}
-
-impl<A, B, C, D, R, F> B4<A, B, C, D, R> for BlockFn<(A, B, C, D), R, F>
-where
-    F: Fn(A, B, C, D) -> R,
-{
-    fn invoke(&self, a: A, b: B, c: C, d: D) -> R {
-        (self.func)(a, b, c, d)
-    }
-}
-
-unsafe impl<A, R> Send for Block<A, R> {}
-unsafe impl<A, R> Sync for Block<A, R> {}
-unsafe impl<A, R, F> Send for BlockFn<A, R, F> where F: Send {}
-unsafe impl<A, R, F> Sync for BlockFn<A, R, F> where F: Sync {}
-
-#[repr(C)]
-pub struct Layout2<R> {
-    /// initialized to &_NSConcreteStackBlock or &_NSConcreteGlobalBlock
-    isa: &'static Class,
-    flags: Flags,
-    reserved: i32,
-    invoke: extern "C" fn(&Self, args: ...) -> R,
-    descriptor1: &'static Descriptor1,
-    descriptor2: &'static Descriptor2,
-}
-
-#[repr(C)]
-pub struct Descriptor3 {
-    signature: *const c_char,
-    layout: *const c_char,
 }
 
 #[cfg_attr(
@@ -604,23 +416,24 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-
-    use super::*;
+    use crate::objc::blocks_runtime;
 
     #[derive(Debug)]
     struct Foo;
 
     impl Drop for Foo {
         fn drop(&mut self) {
-            println!("dropped");
+            println!("dropped foo");
         }
     }
 
     #[test]
     fn test_simple_block() {
-        let mut b = BlockFn::<(), (), _>::new(|| println!("nice"));
+        let foo = Foo;
+        let mut b = blocks_runtime::new_mut(move || println!("nice {foo:?}"));
 
         let q = crate::dispatch::Queue::new();
+        q.async_b(b.escape());
         q.async_b(b.escape());
         q.sync_with(|| println!("fuck"));
 

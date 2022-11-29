@@ -1,5 +1,6 @@
 mod base;
 use std::ffi::c_void;
+use std::ops::DerefMut;
 
 pub use base::Function;
 
@@ -36,18 +37,47 @@ pub use source::TimerSource;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
 
-use crate::objc::blocks_runtime::{B0Mut, Block as Blockfn, BlockFn, RetainedBlockFn};
+use crate::objc::blocks_runtime::bl;
+use crate::objc::blocks_runtime::BlMut;
+use crate::objc::blocks_runtime::Block as ObjcBlock;
 
-pub trait Block: B0Mut<()> {
+pub trait Block<F> {
+    unsafe fn ptr(&mut self) -> *mut c_void;
+}
+
+impl<F> Block<F> for ObjcBlock<F>
+where
+    F: FnOnce() + 'static,
+{
     #[inline]
-    unsafe fn as_ptr(&mut self) -> *mut c_void {
-        self as *mut Self as *mut std::ffi::c_void
+    unsafe fn ptr(&mut self) -> *mut c_void {
+        self as *mut Self as *mut _
     }
 }
 
-impl Block for Blockfn<(), ()> {}
-impl<F: FnMut() -> ()> Block for BlockFn<(), (), F> {}
-impl<F: FnMut() -> ()> Block for RetainedBlockFn<(), (), F> {}
+impl<F> Block<F> for BlMut<F>
+where
+    F: FnOnce() + 'static,
+{
+    #[inline]
+    unsafe fn ptr(&mut self) -> *mut c_void {
+        self.deref_mut() as *mut ObjcBlock<F> as *mut _
+    }
+}
+
+impl Block<extern "C" fn(*const c_void)> for ObjcBlock<extern "C" fn(*const c_void)> {
+    #[inline]
+    unsafe fn ptr(&mut self) -> *mut c_void {
+        self as *mut Self as *mut _
+    }
+}
+
+impl Block<extern "C" fn(*const c_void)> for bl<extern "C" fn(*const c_void)> {
+    #[inline]
+    unsafe fn ptr(&mut self) -> *mut c_void {
+        self as *mut Self as *mut _
+    }
+}
 
 /// This function "parks" the main thread and waits for blocks to be submitted to the main queue.
 /// Applications that call UIApplicationMain (iOS), NSApplicationMain (macOS), or CFRunLoopRun

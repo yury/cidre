@@ -2,11 +2,11 @@ use std::ffi::{c_char, c_long, c_void, CStr};
 use std::mem::transmute;
 use std::ptr::NonNull;
 
+use crate::objc::blocks_runtime;
 use crate::{
     cf::Retained,
     define_obj_type,
     dispatch::{self, Function},
-    objc::blocks_runtime::BlockFn,
 };
 
 define_obj_type!(Queue(dispatch::Object));
@@ -113,34 +113,31 @@ impl Queue {
     }
 
     #[inline]
-    pub fn sync_b<B: dispatch::Block>(&self, block: &mut B) {
+    pub fn sync_b<F, B>(&self, block: &mut B)
+    where
+        B: dispatch::Block<F>,
+    {
         unsafe {
-            dispatch_sync(self, block.as_ptr());
+            dispatch_sync(self, block.ptr());
         }
     }
 
     #[inline]
-    pub fn async_b<B: dispatch::Block>(&self, block: &'static mut B) {
+    pub fn async_b<F, B: dispatch::Block<F>>(&self, block: &'static mut B) {
         unsafe {
-            dispatch_async(self, block.as_ptr());
+            dispatch_async(self, block.ptr());
         }
     }
 
     #[inline]
-    pub fn sync_with<F>(&self, block: F)
-    where
-        F: FnMut(),
-    {
-        let mut block = BlockFn::<(), (), _>::with(block);
-        self.sync_b(&mut block);
+    pub fn sync_with<F: FnOnce() + 'static>(&self, f: F) {
+        let block = blocks_runtime::new_once(f);
+        self.sync_b(block.escape());
     }
 
     #[inline]
-    pub fn async_with<F: 'static>(&self, block: F)
-    where
-        F: FnMut(),
-    {
-        let mut block = BlockFn::<(), (), _>::new_mut(block);
+    pub fn async_once<F: FnOnce() + 'static>(&self, block: F) {
+        let block = blocks_runtime::new_once(block);
         self.async_b(block.escape());
     }
 
@@ -356,7 +353,7 @@ mod tests {
         let b = move || {
             println!("nice! {:?}", foo);
         };
-        q.async_with(b);
+        q.async_once(b);
 
         let foo2 = Foo {};
         q.sync_with(move || {

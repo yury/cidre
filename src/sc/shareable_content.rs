@@ -2,8 +2,8 @@ use std::ffi::c_void;
 use std::mem::transmute;
 
 use crate::objc::block::{Completion, CompletionHandlerAB};
-use crate::objc::blocks_runtime::{B2, B2Mut, RetainedBlockFn, B0};
-use crate::{cf, cg, define_obj_type, msg_send, ns, sys, dispatch};
+use crate::objc::blocks_runtime::Block;
+use crate::{cf, cg, define_obj_type, dispatch, msg_send, ns, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -93,14 +93,25 @@ impl ShareableContent {
         future.await
     }
 
-    
-    pub fn current_with_completion2<B>(b: &'static mut B)
-    where B: B2Mut<Option<&'static ShareableContent>, Option<&'static cf::Error>, ()>
-    { 
+    pub fn current_with_completion2<'ar, F>(b: &'static mut Block<F>)
+    where
+        F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar cf::Error>) -> (),
+    {
         unsafe {
-            cs_shareable(b as *mut B as _);
+            cs_shareable(b as *mut Block<F> as *mut _);
         }
     }
+
+    // pub async fn current2() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
+
+    //     let mut bl = BlockFn::new2_mut(move |content, error| {
+
+    //     });
+
+    //     let (future, block_ptr) = Completion::result_or_error();
+    //     unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
+    //     future.await
+    // }
 }
 
 #[link(name = "sc", kind = "static")]
@@ -115,13 +126,18 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use std::{thread::sleep, time::Duration};
+
+    use tokio::sync::Semaphore;
+
     use crate::{
         cf, dispatch,
+        objc::blocks_runtime::{self, Block},
         sc::{
             self,
             stream::{StreamDelegate, StreamOutput},
             Window,
-        }, objc::blocks_runtime::{BlockFn, Block},
+        },
     };
 
     use super::ShareableContent;
@@ -170,77 +186,18 @@ mod tests {
 
     #[test]
     pub fn current_with_completion() {
-
-        type Args = (Option<&'static ShareableContent>, Option<&'static cf::Error>);
-
         let sema = dispatch::Semaphore::new(0);
+
         let signal_guard = sema.signal_guard();
-        let mut bl = BlockFn::<Args, (), _>::new_ab_mut(move |content, error| {
-            println!("nice {:?} {:?}", content, error);
+        let bl = blocks_runtime::new2_once(move |content, error| {
             signal_guard.consume();
+            println!("nice {:?} {:?}", content, error);
         });
 
-        dispatch::Queue::global(0).unwrap().async_with(move || {
+        dispatch::Queue::global(0).unwrap().async_once(move || {
             ShareableContent::current_with_completion2(bl.escape());
         });
-        
+
         sema.wait_forever();
-
-        // println!("why?");
-        // current_with_completion3(b.escape());
-        
-    
-        // let sema = dispatch::Semaphore::new(0);
-        // let queue = dispatch::Queue::serial_with_autoreleasepool();
-        // let signal_guard = sema.signal_guard();
-
-        // let bla = Foo { bla: 0 };
-        // let bla2 = Foo2 { bla: 5 };
-
-        // let d = Arc::new(bla.delegate());
-        // let d2 = Arc::new(bla2.delegate());
-
-        // let d3 = d.clone();
-        // let d4 = d2.clone();
-
-        // sc::ShareableContent::current_with_completion(move |content, error| {
-        //     // signal_guard.consume();
-
-        //     assert!(error.is_none());
-        //     assert!(content.is_some());
-
-        //     if let Some(c) = content {
-        //         println!("apps {:?}", c.applications().len());
-        //         println!("windows {:?}", c.windows().len());
-        //         println!("displays {:?}", c.displays().len());
-
-        //         let ref display = c.displays()[0];
-
-        //         display.as_type_ref().show();
-        //         let windows = cf::ArrayOf::<Window>::new().unwrap();
-
-        //         let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
-        //         filter.as_type_ref().show();
-
-        //         let mut cfg = sc::StreamConfiguration::new();
-        //         cfg.set_width(display.width() as usize * 2);
-        //         cfg.set_height(display.height() as usize * 2);
-
-        //         println!("cfg size: {0}, {1}", cfg.width(), cfg.height());
-
-        //         let stream = sc::Stream::with_delegate(&filter, &cfg, &d2);
-        //         stream.as_type_ref().show();
-        //         let mut error = None;
-        //         queue.as_type_ref().show();
-        //         let res = stream.add_stream_output(&d, sc::OutputType::Screen, Some(&queue), &mut error);
-
-        //         stream.start_sync();
-        //     }
-        //     if let Some(e) = error {
-        //         e.show();
-        //     }
-        // });
-
-        // sema.wait_forever();
     }
 }

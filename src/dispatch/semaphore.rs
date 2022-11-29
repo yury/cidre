@@ -5,6 +5,7 @@ use crate::dispatch::Object;
 pub struct SignalGuard {
     sema: Retained<Semaphore>,
 }
+
 impl SignalGuard {
     pub fn consume(&self) {}
 }
