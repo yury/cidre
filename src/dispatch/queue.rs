@@ -131,13 +131,13 @@ impl Queue {
 
     #[inline]
     pub fn sync_with<F: FnOnce() + 'static>(&self, f: F) {
-        let block = blocks_runtime::new_once(f);
+        let block = blocks_runtime::once0(f);
         self.sync_b(block.escape());
     }
 
     #[inline]
     pub fn async_once<F: FnOnce() + 'static>(&self, block: F) {
-        let block = blocks_runtime::new_once(block);
+        let block = blocks_runtime::once0(block);
         self.async_b(block.escape());
     }
 

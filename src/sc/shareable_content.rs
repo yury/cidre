@@ -1,9 +1,8 @@
 use std::ffi::c_void;
-use std::mem::transmute;
 
 use crate::objc::block::{Completion, CompletionHandlerAB};
 use crate::objc::blocks_runtime::Block;
-use crate::{cf, cg, define_obj_type, dispatch, msg_send, ns, sys};
+use crate::{cf, cg, define_obj_type, msg_send, ns, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -126,17 +125,13 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration};
-
-    use tokio::sync::Semaphore;
 
     use crate::{
         cf, dispatch,
-        objc::blocks_runtime::{self, Block},
+        objc::blocks_runtime,
         sc::{
             self,
             stream::{StreamDelegate, StreamOutput},
-            Window,
         },
     };
 
@@ -150,9 +145,9 @@ mod tests {
     impl StreamOutput for Foo {
         extern "C" fn stream_did_output_sample_buffer_of_type(
             &mut self,
-            stream: &sc::Stream,
-            sample_buffer: &crate::cm::SampleBuffer,
-            of_type: sc::OutputType,
+            _stream: &sc::Stream,
+            _sample_buffer: &crate::cm::SampleBuffer,
+            _of_type: sc::OutputType,
         ) {
             self.bla += 1;
             println!("nice {0}", self.bla);
@@ -167,8 +162,8 @@ mod tests {
     impl StreamDelegate for Foo2 {
         extern "C" fn stream_did_stop_with_error(
             &mut self,
-            stream: &sc::Stream,
-            error: Option<&cf::Error>,
+            _stream: &sc::Stream,
+            _error: Option<&cf::Error>,
         ) {
             println!("!!!!")
         }
@@ -189,7 +184,7 @@ mod tests {
         let sema = dispatch::Semaphore::new(0);
 
         let signal_guard = sema.signal_guard();
-        let bl = blocks_runtime::new2_once(move |content, error| {
+        let bl = blocks_runtime::once2(move |content, error| {
             signal_guard.consume();
             println!("nice {:?} {:?}", content, error);
         });

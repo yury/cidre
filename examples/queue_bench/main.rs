@@ -12,7 +12,7 @@ fn main() {
     let cc = c.clone();
     let b = Box::new(5);
     // let mut block = blocks_runtime::with_fn(block_fn);
-    let mut block = blocks_runtime::new_mut(|| {
+    let mut block = blocks_runtime::mut0(|| {
         // println!("nice");
     });
 

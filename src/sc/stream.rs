@@ -322,9 +322,9 @@ mod tests {
     impl StreamOutput for FameCounter {
         extern "C" fn stream_did_output_sample_buffer_of_type(
             &mut self,
-            stream: &sc::Stream,
-            sample_buffer: &crate::cm::SampleBuffer,
-            of_type: sc::OutputType,
+            _stream: &sc::Stream,
+            _sample_buffer: &crate::cm::SampleBuffer,
+            _of_type: sc::OutputType,
         ) {
             self.counter += 1;
             // why without println is not working well?

@@ -65,17 +65,6 @@ pub struct Descriptor2 {
     dispose: extern "C" fn(liteal: *mut c_void),
 }
 
-/// block with static fn
-#[allow(non_camel_case_types)]
-#[repr(C)]
-pub struct bl<F> {
-    isa: &'static Class,
-    flags: Flags,
-    reserved: i32,
-    invoke: F,
-    descriptor: &'static Descriptor1,
-}
-
 // for completion handlers
 #[repr(C)]
 struct Layout1<F: Sized> {
@@ -97,48 +86,114 @@ struct Layout2<F: Sized> {
     closure: ManuallyDrop<F>,
 }
 
-pub fn with_fn<R>(f: extern "C" fn(*const c_void) -> R) -> bl<extern "C" fn(*const c_void) -> R> {
+pub fn fn0<R>(f: extern "C" fn(*const c_void) -> R) -> bl<extern "C" fn(*const c_void) -> R> {
     bl::with(f)
 }
 
-pub fn new_once<R, F: 'static>(f: F) -> BlOnce<F>
-where
-    F: FnOnce() -> R,
-{
-    Layout1::new(Layout1::<F>::invoke as _, f)
-}
-
-pub fn new_mut<R, F: 'static>(f: F) -> BlMut<F>
-where
-    F: FnMut() -> R,
-{
-    Layout2::new(Layout2::<F>::invoke as _, f)
-}
-
-pub fn new2_once<A, B, R, F: 'static>(f: F) -> BlOnce<F>
-where
-    F: FnOnce(A, B) -> R,
-{
-    Layout1::new(Layout1::<F>::invoke2 as _, f)
-}
-
-pub fn with1_fn<A, R>(
+pub fn fn1<A, R>(
     f: extern "C" fn(*const c_void, a: A) -> R,
 ) -> bl<extern "C" fn(*const c_void, a: A) -> R> {
     bl::with(f)
 }
 
-pub fn new1_once<A, R, F: 'static>(f: F) -> BlOnce<F>
+pub fn fn2<A, B, R>(
+    f: extern "C" fn(*const c_void, a: A, b: B) -> R,
+) -> bl<extern "C" fn(*const c_void, a: A, b: B) -> R> {
+    bl::with(f)
+}
+
+pub fn fn3<A, B, C, R>(
+    f: extern "C" fn(*const c_void, a: A, b: B, c: C) -> R,
+) -> bl<extern "C" fn(*const c_void, a: A, b: B, c: C) -> R> {
+    bl::with(f)
+}
+
+pub fn once0<R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce() -> R,
+{
+    Layout1::new(Layout1::<F>::invoke0 as _, f)
+}
+
+pub fn once1<A, R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce(A) -> R,
 {
     Layout1::new(Layout1::<F>::invoke1 as _, f)
 }
 
-pub fn with2_fn<A, B, R>(
-    f: extern "C" fn(*const c_void, a: A, b: B) -> R,
-) -> bl<extern "C" fn(*const c_void, a: A, b: B) -> R> {
-    bl::with(f)
+pub fn once2<A, B, R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce(A, B) -> R,
+{
+    Layout1::new(Layout1::<F>::invoke2 as _, f)
+}
+
+pub fn once3<A, B, C, R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce(A, B, C) -> R,
+{
+    Layout1::new(Layout1::<F>::invoke3 as _, f)
+}
+
+pub fn once4<A, B, C, D, R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce(A, B, C, D) -> R,
+{
+    Layout1::new(Layout1::<F>::invoke4 as _, f)
+}
+
+pub fn mut0<R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut() -> R,
+{
+    Layout2::new(Layout2::<F>::invoke0 as _, f)
+}
+
+pub fn mut1<A, R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut(A) -> R,
+{
+    Layout2::new(Layout2::<F>::invoke1 as _, f)
+}
+
+pub fn mut2<A, B, R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut(A, B) -> R,
+{
+    Layout2::new(Layout2::<F>::invoke2 as _, f)
+}
+
+pub fn mut3<A, B, C, R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut(A, B, C) -> R,
+{
+    Layout2::new(Layout2::<F>::invoke3 as _, f)
+}
+
+pub fn mut4<A, B, C, D, R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut(A, B, C, D) -> R,
+{
+    Layout2::new(Layout2::<F>::invoke4 as _, f)
+}
+
+/// block with static fn
+#[allow(non_camel_case_types)]
+#[repr(C)]
+pub struct bl<F> {
+    isa: &'static Class,
+    flags: Flags,
+    reserved: i32,
+    invoke: F,
+    descriptor: &'static Descriptor1,
+}
+
+impl<F> bl<F> {
+    #[inline]
+    pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
+        unsafe { transmute(self) }
+    }
 }
 
 #[repr(transparent)]
@@ -150,13 +205,6 @@ impl<F> BlOnce<F> {
         let res = self.0 as *mut Layout1<F>;
         std::mem::forget(self);
         unsafe { transmute(res) }
-    }
-}
-
-impl<F> bl<F> {
-    #[inline]
-    pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
-        unsafe { transmute(self) }
     }
 }
 
@@ -246,7 +294,7 @@ impl<F: Sized> Layout1<F> {
         size: std::mem::size_of::<Self>(),
     };
 
-    extern "C" fn invoke<R>(&mut self) -> R
+    extern "C" fn invoke0<R>(&mut self) -> R
     where
         F: FnOnce() -> R,
     {
@@ -332,7 +380,7 @@ impl<F: Sized> Layout2<F> {
         }
     }
 
-    extern "C" fn invoke<R>(&mut self) -> R
+    extern "C" fn invoke0<R>(&mut self) -> R
     where
         F: FnMut() -> R,
     {
@@ -430,7 +478,7 @@ mod tests {
     #[test]
     fn test_simple_block() {
         let foo = Foo;
-        let mut b = blocks_runtime::new_mut(move || println!("nice {foo:?}"));
+        let mut b = blocks_runtime::mut0(move || println!("nice {foo:?}"));
 
         let q = crate::dispatch::Queue::new();
         q.async_b(b.escape());
