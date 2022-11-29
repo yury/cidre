@@ -6,15 +6,9 @@
 // https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
 // https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
 
-use std::{
-    ffi::c_void,
-    mem,
-    ops::{Deref, DerefMut},
-};
+use std::{ffi::c_void, mem, ops};
 
-use crate::define_options;
-
-use super::Class;
+use crate::{define_options, objc::Class};
 
 define_options!(Flags(i32));
 
@@ -221,7 +215,7 @@ impl<F> BlMut<F> {
 impl<F> Drop for BlOnce<F> {
     #[inline]
     fn drop(&mut self) {
-        unsafe { 
+        unsafe {
             mem::ManuallyDrop::drop(&mut (*self.0).closure);
             _Block_release(self.0 as *mut _ as *const _);
         };
@@ -245,7 +239,7 @@ impl<F> Clone for BlMut<F> {
     }
 }
 
-impl<F> Deref for BlOnce<F> {
+impl<F> ops::Deref for BlOnce<F> {
     type Target = Block<F>;
 
     #[inline]
@@ -255,7 +249,7 @@ impl<F> Deref for BlOnce<F> {
     }
 }
 
-impl<F> Deref for BlMut<F> {
+impl<F> ops::Deref for BlMut<F> {
     type Target = Block<F>;
 
     #[inline]
@@ -265,7 +259,7 @@ impl<F> Deref for BlMut<F> {
     }
 }
 
-impl<F> DerefMut for BlMut<F> {
+impl<F> ops::DerefMut for BlMut<F> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         let res = self.0 as *mut Layout2<F>;
@@ -273,7 +267,7 @@ impl<F> DerefMut for BlMut<F> {
     }
 }
 
-impl<F> Deref for bl<F> {
+impl<F> ops::Deref for bl<F> {
     type Target = Block<F>;
 
     #[inline]
@@ -282,7 +276,7 @@ impl<F> Deref for bl<F> {
     }
 }
 
-impl<F> DerefMut for bl<F> {
+impl<F> ops::DerefMut for bl<F> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe { mem::transmute(self) }
