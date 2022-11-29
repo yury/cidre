@@ -59,15 +59,15 @@ pub struct Descriptor1 {
 }
 
 #[repr(C)]
-pub struct Descriptor2 {
+pub struct Descriptor2<T: Sized> {
     descriptor1: Descriptor1,
-    copy: extern "C" fn(dest: *mut c_void, src: *mut c_void),
-    dispose: extern "C" fn(liteal: *mut c_void),
+    copy: extern "C" fn(dest: &mut T, src: &mut T),
+    dispose: extern "C" fn(liteal: &mut T),
 }
 
 // for completion handlers
 #[repr(C)]
-struct Layout1<F: Sized> {
+struct Layout1<F: Sized + 'static> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
@@ -77,12 +77,12 @@ struct Layout1<F: Sized> {
 }
 
 #[repr(C)]
-struct Layout2<F: Sized> {
+struct Layout2<F: Sized + 'static> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Descriptor2,
+    descriptor: &'static Descriptor2<Self>,
     closure: ManuallyDrop<F>,
 }
 
@@ -363,20 +363,19 @@ impl<F: Sized> Layout2<F> {
         size: std::mem::size_of::<Self>(),
     };
 
-    const DESCRIPTOR_2: Descriptor2 = Descriptor2 {
+    const DESCRIPTOR_2: Descriptor2<Self> = Descriptor2 {
         descriptor1: Self::DESCRIPTOR_1,
         copy: Self::copy,
         dispose: Self::dispose,
     };
 
-    extern "C" fn copy(_dest: *mut c_void, _src: *mut c_void) {
+    extern "C" fn copy(_dest: &mut Self, _src: &mut Self) {
         panic!("copy should not be called");
     }
 
-    extern "C" fn dispose(block: *mut c_void) {
+    extern "C" fn dispose(block: &mut Self) {
         unsafe {
-            let bl: &mut Self = transmute(block);
-            ManuallyDrop::drop(&mut bl.closure);
+            ManuallyDrop::drop(&mut block.closure);
         }
     }
 
