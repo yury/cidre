@@ -1,7 +1,5 @@
 use crate::{cf, cm, define_cf_type, os};
 
-use super::format_description::AudioFormatDescription;
-
 define_cf_type!(ImageDescriptionFlavor(cf::String));
 
 impl ImageDescriptionFlavor {
@@ -57,7 +55,12 @@ impl cm::VideoFormatDescription {
         &self,
         flavor: Option<&ImageDescriptionFlavor>,
     ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
-        Self::as_be_image_desc_cm_buffer_in(self, cf::StringEncoding::system_encoding(), flavor, None)
+        Self::as_be_image_desc_cm_buffer_in(
+            self,
+            cf::StringEncoding::system_encoding(),
+            flavor,
+            None,
+        )
     }
 
     pub fn from_be_image_desc_buffer_in(
@@ -91,7 +94,7 @@ impl cm::VideoFormatDescription {
         )
     }
 
-    pub fn from_be_image_description_data_in(
+    pub fn from_be_image_desc_data_in(
         data: &[u8],
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
@@ -116,45 +119,32 @@ impl cm::VideoFormatDescription {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
     ) -> Result<cf::Retained<Self>, os::Status> {
-        Self::from_be_image_description_data_in(
-            data,
-            string_encoding,
-            flavor,
-            None
-        )
+        Self::from_be_image_desc_data_in(data, string_encoding, flavor, None)
     }
 }
 
 /// Converts a ImageDescription data structure from big-endian to host-endian in place.
 #[inline]
 pub fn swap_be_image_desc_to_host(desc: &mut [u8]) -> os::Status {
-    unsafe {
-        CMSwapBigEndianImageDescriptionToHost(desc.as_mut_ptr(), desc.len())
-    }
+    unsafe { CMSwapBigEndianImageDescriptionToHost(desc.as_mut_ptr(), desc.len()) }
 }
 
 /// Converts an ImageDescription data structure from host-endian to big-endian in place.
 #[inline]
 pub fn swap_host_image_desc_to_be(desc: &mut [u8]) -> os::Status {
-    unsafe {
-        CMSwapHostEndianImageDescriptionToBig(desc.as_mut_ptr(), desc.len())
-    }
+    unsafe { CMSwapHostEndianImageDescriptionToBig(desc.as_mut_ptr(), desc.len()) }
 }
 
 /// Converts a SoundDescription data structure from big-endian to host-endian in place.
 #[inline]
 pub fn swap_be_sound_desc_to_host(desc: &mut [u8]) -> os::Status {
-    unsafe {
-        CMSwapBigEndianSoundDescriptionToHost(desc.as_mut_ptr(), desc.len())
-    }
+    unsafe { CMSwapBigEndianSoundDescriptionToHost(desc.as_mut_ptr(), desc.len()) }
 }
 
 /// Converts a SoundDescription data structure from host-endian to big-endian in place.
 #[inline]
 pub fn swap_host_sound_desc_to_be(desc: &mut [u8]) -> os::Status {
-    unsafe {
-        CMSwapHostEndianSoundDescriptionToBig(desc.as_mut_ptr(), desc.len())
-    }
+    unsafe { CMSwapHostEndianSoundDescriptionToBig(desc.as_mut_ptr(), desc.len()) }
 }
 
 define_cf_type!(SoundDescriptionFlavor(cf::String));
@@ -164,40 +154,31 @@ impl SoundDescriptionFlavor {
     /// A V1 sound description will be written if possible.
     /// If a V1 sound description is written for CBR or PCM audio, the sample tables will need to use the legacy CBR layout.
     pub fn quick_time_movie() -> &'static Self {
-        unsafe {
-            kCMSoundDescriptionFlavor_QuickTimeMovie
-        }
+        unsafe { kCMSoundDescriptionFlavor_QuickTimeMovie }
     }
 
     /// Chooses the QuickTime Movie Sound Description V2 format.
     /// A V2 sound description will be written.
     /// V2 Sound Descriptions contain no legacy CBR layout, and use 'lpcm' for all flavors of PCM.
     pub fn quick_time_movie_v2() -> &'static Self {
-        unsafe {
-            kCMSoundDescriptionFlavor_QuickTimeMovieV2
-        }
+        unsafe { kCMSoundDescriptionFlavor_QuickTimeMovieV2 }
     }
 
     /// Chooses the ISO family sample description format, used in MP4, M4A, etc.
     pub fn iso_family() -> &'static Self {
-        unsafe {
-            kCMSoundDescriptionFlavor_ISOFamily
-        }
+        unsafe { kCMSoundDescriptionFlavor_ISOFamily }
     }
 
     /// Chooses the 3GP family sample description format.
     /// This implies iso_family and adds additional rules specific to the 3GP family.
     pub fn _3gp_family() -> &'static Self {
-        unsafe {
-            kCMSoundDescriptionFlavor_3GPFamily 
-        }
+        unsafe { kCMSoundDescriptionFlavor_3GPFamily }
     }
 }
 
-impl AudioFormatDescription {
-
+impl cm::AudioFormatDescription {
     /// Copies the contents of a CMAudioFormatDescription to a CMBlockBuffer in big-endian byte ordering.
-    /// 
+    ///
     /// Note that the dataRefIndex field of the SampleDescription is intentionally filled with
     /// garbage values (0xFFFF).  The caller must overwrite these values with a valid dataRefIndex
     /// if writing the SampleDescription to a QuickTime/ISO file.
@@ -223,6 +204,57 @@ impl AudioFormatDescription {
         flavor: Option<&SoundDescriptionFlavor>,
     ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
         Self::as_be_sound_desc_cm_buffer_in(&self, flavor, None)
+    }
+
+    pub fn from_be_sound_desc_data_in(
+        data: &[u8],
+        flavor: Option<&SoundDescriptionFlavor>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Result<cf::Retained<Self>, os::Status> {
+        let mut result = None;
+        unsafe {
+            CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
+                allocator,
+                data.as_ptr(),
+                data.len(),
+                flavor,
+                &mut result,
+            )
+            .to_result_unchecked(result)
+        }
+    }
+
+    #[inline]
+    pub fn from_be_sound_desc_data(
+        data: &[u8],
+        flavor: Option<&SoundDescriptionFlavor>,
+    ) -> Result<cf::Retained<Self>, os::Status> {
+        Self::from_be_sound_desc_data_in(data, flavor, None)
+    }
+
+    pub fn from_be_sound_desc_buffer_in(
+        buffer: &cm::BlockBuffer,
+        flavor: Option<&SoundDescriptionFlavor>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Result<cf::Retained<Self>, os::Status> {
+        let mut result = None;
+        unsafe {
+            CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
+                allocator,
+                buffer,
+                flavor,
+                &mut result,
+            )
+            .to_result_unchecked(result)
+        }
+    }
+
+    #[inline]
+    pub fn from_be_sound_desc_buffer(
+        buffer: &cm::BlockBuffer,
+        flavor: Option<&SoundDescriptionFlavor>,
+    ) -> Result<cf::Retained<Self>, os::Status> {
+        Self::from_be_sound_desc_buffer_in(buffer, flavor, None)
     }
 }
 
@@ -251,16 +283,16 @@ extern "C" {
         image_description_block_buffer: &cm::BlockBuffer,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescriptionFlavor>,
-        format_description_out: &mut Option<cf::Retained<cm::FormatDescription>>,
+        format_description_out: &mut Option<cf::Retained<cm::VideoFormatDescription>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
         allocator: Option<&cf::Allocator>,
-		image_description_data: *const u8,
-		size: usize,
-		string_encoding: cf::StringEncoding,
-		flavor: Option<&cm::ImageDescriptionFlavor>,
-        format_description_out: &mut Option<cf::Retained<cm::FormatDescription>>,
+        image_description_data: *const u8,
+        size: usize,
+        string_encoding: cf::StringEncoding,
+        flavor: Option<&cm::ImageDescriptionFlavor>,
+        format_description_out: &mut Option<cf::Retained<cm::VideoFormatDescription>>,
     ) -> os::Status;
 
     fn CMSwapBigEndianImageDescriptionToHost(
@@ -285,8 +317,23 @@ extern "C" {
 
     fn CMAudioFormatDescriptionCopyAsBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
-        video_format_description: &cm::AudioFormatDescription,
+        audio_format_description: &cm::AudioFormatDescription,
         flavor: Option<&SoundDescriptionFlavor>,
         block_buffer_out: &mut Option<cf::Retained<cm::BlockBuffer>>,
+    ) -> os::Status;
+
+    fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
+        allocator: Option<&cf::Allocator>,
+        sound_description_data: *const u8,
+        size: usize,
+        flavor: Option<&SoundDescriptionFlavor>,
+        format_description_out: &mut Option<cf::Retained<cm::AudioFormatDescription>>,
+    ) -> os::Status;
+
+    fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
+        allocator: Option<&cf::Allocator>,
+        block_buffer: &cm::BlockBuffer,
+        flavor: Option<&SoundDescriptionFlavor>,
+        format_description_out: &mut Option<cf::Retained<cm::AudioFormatDescription>>,
     ) -> os::Status;
 }
