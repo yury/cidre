@@ -51,32 +51,38 @@ impl StreamOutput for FrameCounter {
     }
 }
 
-struct RecordContext {
+struct SenderContext {
+    tx: flume::Sender<rt::Cmd>,
     frames_count: usize,
     format_desc: Option<cf::Retained<cm::VideoFormatDescription>>,
 }
 
-impl RecordContext {
+impl SenderContext {
     pub fn handle_sample_buffer(&mut self, buffer: &SampleBuffer) {
         if self.frames_count % 1000 == 0 {
-            if self.format_desc.is_none() {
-                let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
-
-                let buf = desc.as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family())).unwrap();
-                let slice = buf.data_pointer().unwrap();
-                println!("format desc {:?}", slice);
-                // store current format description
-                self.format_desc = Some(desc.retained());
-            }
+            let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
+            self.tx
+                .send(rt::Cmd::HEVCDesc {
+                    forced: self.frames_count == 0,
+                    desc: desc.retained(),
+                })
+                .unwrap();
+            // store current format description
+            self.format_desc = Some(desc.retained());
         }
-        
+        self.tx
+            .send(rt::Cmd::Schedule {
+                kind: rt::MessageKind::VideoKey,
+                body: buffer.data_buffer().unwrap().retained(),
+            })
+            .unwrap();
 
         self.frames_count += 1;
     }
 }
 
 extern "C" fn callback(
-    ctx: *mut RecordContext,
+    ctx: *mut SenderContext,
     _: *mut c_void,
     status: Status,
     flags: EncodeInfoFlags,
@@ -104,7 +110,18 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
-    let input = Box::new(RecordContext {
+    // let addr = SocketAddr::V4("192.168.135.174:8080".parse().unwrap());
+    // let addr = SocketAddr::V4("10.0.1.10:8080".parse().unwrap());
+    let addr = SocketAddr::V4("10.0.1.13:8080".parse().unwrap()); // iphone at home
+
+    // let addr = SocketAddr::V4("192.168.135.113:8080".parse().unwrap());
+    // let addr = SocketAddr::V4("192.168.135.219:8080".parse().unwrap()); // iphone in the office
+
+    // let addr = SocketAddr::V4("172.20.10.1:8080".parse().unwrap());
+
+    let tx = rt::create_sender(addr, 0);
+    let input = Box::new(SenderContext {
+        tx,
         frames_count: 0,
         format_desc: None,
     });
