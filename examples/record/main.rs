@@ -64,7 +64,7 @@ impl RecordContext {
 
                 let buf = desc.as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family())).unwrap();
                 let slice = buf.data_pointer().unwrap();
-                println!("format desc {:?}", slice);
+                println!("format desc {:?} len: {}", slice, slice.len());
                 // store current format description
                 self.format_desc = Some(desc.retained());
             }
