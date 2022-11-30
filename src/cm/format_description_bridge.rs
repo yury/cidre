@@ -1,5 +1,30 @@
 use crate::{cf, cm, define_cf_type, os};
 
+pub mod errors {
+    use crate::os::Status;
+
+    /// Invalid parameter.
+    pub const INVALID_PARAMETER: Status = Status(-12712);
+
+    /// Returned when an allocation fails.
+    pub const ALLOCATION_FAILED: Status = Status(-12713);
+
+    /// Returned when the sample description is invalid (e.g. invalid size).
+    pub const INVALID_SERIALIZED_SAMPLE_DESCRIPTION: Status = Status(-12714);
+
+    /// Returned when the format description is invalid (e.g. invalid size).
+    pub const INVALID_FORMAT_DESCRIPTION: Status = Status(-12715);
+
+    /// Returned when the format description has an incompatible format (e.g. unknown format / incompatible atom).
+    pub const INCOMPATIBLE_FORMAT_DESCRIPTION: Status = Status(-12716);
+
+    /// Returned when the sample description is unsupported for the specified format flavor.
+    pub const UNSUPPORTED_SAMPLE_DESCRIPTION_FLAVOR: Status = Status(-12717);
+
+    /// Returned when the slice has an invalid value.
+    pub const INVALID_SLICE: Status = Status(-12719);
+}
+
 define_cf_type!(ImageDescriptionFlavor(cf::String));
 
 impl ImageDescriptionFlavor {

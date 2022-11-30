@@ -18,6 +18,7 @@ pub use format_description_bridge::swap_host_image_desc_to_be;
 pub use format_description_bridge::swap_host_sound_desc_to_be;
 pub use format_description_bridge::ImageDescriptionFlavor;
 pub use format_description_bridge::SoundDescriptionFlavor;
+pub use format_description_bridge::errors as format_description_bridge_errors;
 
 mod time;
 pub use time::Time;
