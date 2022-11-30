@@ -1,4 +1,4 @@
-use std::ptr::slice_from_raw_parts;
+use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
 use crate::{cf, define_cf_type};
 
@@ -111,6 +111,11 @@ impl MutableData {
     #[inline]
     pub fn set_len(&mut self, len: cf::Index) {
         unsafe { CFDataSetLength(self, len) }
+    }
+
+    #[inline]
+    pub fn as_slice_mut(&mut self) -> &mut [u8] {
+        unsafe { &mut *slice_from_raw_parts_mut(self.bytes_ptr_mut() as *mut u8, self.len()) }
     }
 }
 
