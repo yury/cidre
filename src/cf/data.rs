@@ -1,3 +1,5 @@
+use std::ptr::slice_from_raw_parts;
+
 use crate::{cf, define_cf_type};
 
 define_cf_type!(Data(cf::Type));
@@ -66,6 +68,11 @@ impl Data {
                 buffer.as_mut_ptr(),
             )
         }
+    }
+
+    #[inline]
+    pub fn as_slice(&self) -> &[u8] {
+        unsafe { &*slice_from_raw_parts(self.as_ptr() as _, self.len()) }
     }
 }
 

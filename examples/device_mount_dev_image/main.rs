@@ -3,8 +3,7 @@ use std::ffi::c_void;
 use cidre::{
     am::{
         self,
-        device::{self, discovery::NotificationInfo},
-        DeviceInterfaceConnectionType, DeviceSpeed,
+        device::{discovery::NotificationInfo},
     },
     cf,
 };
@@ -60,11 +59,11 @@ async fn main() {
 
     unsafe {
         extern "C" fn cb(
-            s: &cf::Socket,
-            cb_type: cf::SocketCallBackType,
-            address: &cf::Data,
-            data: *const u8,
-            info: *mut c_void,
+            _s: &cf::Socket,
+            _cb_type: cf::SocketCallBackType,
+            _address: &cf::Data,
+            _data: *const u8,
+            _info: *mut c_void,
         ) {
             println!("??????????")
         }

@@ -5,6 +5,7 @@ pub use base::ItemIndex;
 mod format_description;
 pub use format_description::AudioFormatDescription;
 pub use format_description::FormatDescription;
+pub use format_description::FormatDescriptionExtensionKey;
 pub use format_description::MediaType;
 pub use format_description::PixelFormatType;
 pub use format_description::VideoCodecType;
@@ -12,13 +13,13 @@ pub use format_description::VideoDimensions;
 pub use format_description::VideoFormatDescription;
 
 mod format_description_bridge;
+pub use format_description_bridge::errors as format_description_bridge_errors;
 pub use format_description_bridge::swap_be_image_desc_to_host;
 pub use format_description_bridge::swap_be_sound_desc_to_host;
 pub use format_description_bridge::swap_host_image_desc_to_be;
 pub use format_description_bridge::swap_host_sound_desc_to_be;
 pub use format_description_bridge::ImageDescriptionFlavor;
 pub use format_description_bridge::SoundDescriptionFlavor;
-pub use format_description_bridge::errors as format_description_bridge_errors;
 
 mod time;
 pub use time::Time;

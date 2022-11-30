@@ -1,4 +1,4 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, mem::transmute};
 
 use crate::{
     cat,
@@ -77,8 +77,45 @@ impl FormatDescription {
         unsafe { CMFormatDescriptionGetMediaSubType(self) }
     }
 
-    pub fn extensions(&self) -> Option<&cf::Dictionary> {
+    pub fn extensions(&self) -> Option<&cf::DictionaryOf<cf::String, cf::Type>> {
         unsafe { CMFormatDescriptionGetExtensions(self) }
+    }
+
+    pub fn extension<'a>(
+        &'a self,
+        key: &FormatDescriptionExtensionKey,
+    ) -> Option<&'a cf::PropertyList> {
+        unsafe { CMFormatDescriptionGetExtension(self, key) }
+    }
+
+    pub fn original_compression_session_settings(
+        &self,
+    ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+        unsafe {
+            let key = FormatDescriptionExtensionKey::original_compression_settings();
+            transmute(self.extension(key))
+        }
+    }
+
+    pub fn extension_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+        unsafe {
+            let key = FormatDescriptionExtensionKey::sample_description_extension_atoms();
+            transmute(self.extension(key))
+        }
+    }
+
+    pub fn verbatim_sample_description(&self) -> Option<&cf::Data> {
+        unsafe {
+            let key = FormatDescriptionExtensionKey::verbatim_sample_description();
+            transmute(self.extension(key))
+        }
+    }
+
+    pub fn verbatim_iso_sample_entry(&self) -> Option<&cf::Data> {
+        unsafe {
+            let key = FormatDescriptionExtensionKey::verbatim_iso_sample_entry();
+            transmute(self.extension(key))
+        }
     }
 
     pub fn create(
@@ -354,7 +391,73 @@ impl AudioFormatDescription {
     }
 }
 
+define_cf_type!(FormatDescriptionExtensionKey(cf::String));
+
+impl FormatDescriptionExtensionKey {
+    /// This extension contains a media-type-specific dictionary of settings used to produce a compressed media buffer.
+    ///
+    /// This extension is valid for format descriptions of all media types, but the contents of the dictionary are defined
+    /// in a media-specific way.  The dictionary and its contents are valid property list objects. This means that
+    /// dictionary keys are all cf::Strings, and the values are all either cf::Number, cf::String, cf::Boolean, cf::Array,
+    /// cf::Dictionary, cf::Date, or cf::Data.
+    ///
+    /// cf::Dictionary
+    pub fn original_compression_settings() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_OriginalCompressionSettings }
+    }
+
+    /// Sample description extension atoms that were not translated into other entries in the extensions dictionary.
+    ///
+    /// This key is used by sample description bridges to hold sample description
+    /// extension atoms that they do not recognize.
+    /// The extension is a cf::Dictionary mapping cf::Strings of the four-char-code atom types
+    /// to either cf::Datas containing the atom payload or (to represent multiple atoms of a
+    /// specific type) to cf::Arrays of cf::Data containing those payloads.
+    ///
+    /// cf::Dictionary of cf::String (four-char-code, atom type) -> ( cf::Data (atom payload) or cf::Array of cf::Data (atom payload) )
+    pub fn sample_description_extension_atoms() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms }
+    }
+
+    /// Preserves the original SampleDescription data.
+    ///
+    /// This extension is used to ensure that roundtrips from sample descriptions
+    /// to cm::FormatDescriptions back to sample descriptions preserve the exact original
+    /// sample descriptions.
+    ///
+    /// IMPORTANT: If you make a modified clone of a cm::FormatDescription, you must
+    /// delete this extension from the clone, or your modifications could be lost.
+    ///
+    /// cf::Data
+    pub fn verbatim_sample_description() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_VerbatimSampleDescription }
+    }
+
+    /// Preserves the original ISOSampleEntry data.
+    ///
+    /// This extension is used to ensure that roundtrips from ISO Sample Entry (ie. AudioSampleEntry or VisualSampleEntry)
+    /// to cm::FormatDescriptions back to ISO Sample Entry preserve the exact original
+    /// sample descriptions.
+    ///
+    /// IMPORTANT: If you make a modified clone of a CMFormatDescription, you must
+    /// delete this extension from the clone, or your modifications could be lost.
+    ///
+    /// cf::Data
+    pub fn verbatim_iso_sample_entry() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_VerbatimISOSampleEntry }
+    }
+}
+
 extern "C" {
+    static kCMFormatDescriptionExtension_OriginalCompressionSettings:
+        &'static FormatDescriptionExtensionKey;
+    static kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms:
+        &'static FormatDescriptionExtensionKey;
+    static kCMFormatDescriptionExtension_VerbatimSampleDescription:
+        &'static FormatDescriptionExtensionKey;
+    static kCMFormatDescriptionExtension_VerbatimISOSampleEntry:
+        &'static FormatDescriptionExtensionKey;
+
     fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
     fn CMFormatDescriptionGetMediaType(desc: &FormatDescription) -> MediaType;
 
@@ -378,7 +481,13 @@ extern "C" {
 
     fn CMFormatDescriptionGetMediaSubType(desc: &FormatDescription) -> FourCharCode;
 
-    fn CMFormatDescriptionGetExtensions(desc: &FormatDescription) -> Option<&cf::Dictionary>;
+    fn CMFormatDescriptionGetExtensions(
+        desc: &FormatDescription,
+    ) -> Option<&cf::DictionaryOf<cf::String, cf::Type>>;
+    fn CMFormatDescriptionGetExtension<'a>(
+        desc: &'a FormatDescription,
+        extension_key: &FormatDescriptionExtensionKey,
+    ) -> Option<&'a cf::PropertyList>;
 
     fn CMAudioFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,

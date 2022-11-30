@@ -62,14 +62,20 @@ impl RecordContext {
             if self.format_desc.is_none() {
                 let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
 
-                let buf = desc.as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family())).unwrap();
+                let buf = desc
+                    .as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family()))
+                    .unwrap();
                 let slice = buf.data_pointer().unwrap();
                 println!("format desc {:?} len: {}", slice, slice.len());
+                let extensions = desc.extension_atoms().unwrap();
+                let hvcc = cf::String::from_str("hvcC");
+                let value = extensions.get(&hvcc).unwrap().as_data();
+                println!("format desc {:?}", extensions);
+                println!("atoms {:?}", value.as_slice());
                 // store current format description
                 self.format_desc = Some(desc.retained());
             }
         }
-        
 
         self.frames_count += 1;
     }

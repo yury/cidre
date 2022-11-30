@@ -2,6 +2,7 @@ use std::{
     ffi::c_void,
     intrinsics::transmute,
     ops::{Deref, DerefMut},
+    ptr::slice_from_raw_parts,
 };
 
 use super::TypeId;
