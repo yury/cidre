@@ -9,9 +9,15 @@ pub use format_description::PixelFormatType;
 pub use format_description::VideoCodecType;
 pub use format_description::VideoDimensions;
 pub use format_description::VideoFormatDescription;
+pub use format_description::AudioFormatDescription;
 
 mod format_description_bridge;
-pub use format_description_bridge::Flavor as ImageDescriptionFlavor;
+pub use format_description_bridge::ImageDescriptionFlavor;
+pub use format_description_bridge::SoundDescriptionFlavor;
+pub use format_description_bridge::swap_be_image_desc_to_host;
+pub use format_description_bridge::swap_host_image_desc_to_be;
+pub use format_description_bridge::swap_be_sound_desc_to_host;
+pub use format_description_bridge::swap_host_sound_desc_to_be;
 
 mod time;
 pub use time::Time;
