@@ -116,6 +116,44 @@ impl Configuration {
     pub fn set_source_rect(&mut self, value: cg::Rect) {
         unsafe { wsel_setSourceRect(self, value) }
     }
+
+    /// Specifies whether the audio will be captured.  By default audio is not captured.
+    pub fn captures_audio(&self) -> bool {
+        unsafe { rsel_capturesAudio(self) }
+    }
+
+    pub fn set_captures_audio(&mut self, value: bool) {
+        unsafe { wsel_setCapturesAudio(self, value) }
+    }
+
+    /// The sample rate for audio. Default is set to 48000.
+    pub fn sample_rate(&self) -> i64 {
+        unsafe { sc_rsel_sampleRate(self) }
+    }
+
+    pub fn set_sample_rate(&mut self, value: i64) {
+        unsafe { sc_wsel_setSampleRate(self, value) }
+    }
+    
+    /// Channel count. Default is set to two.
+    pub fn channel_count(&self) -> i64 {
+        unsafe { rsel_channelCount(self) }
+    }
+
+    pub fn set_channel_count(&mut self, value: i64) {
+        unsafe { wsel_setChannelCount(self, value) }
+    }
+
+    /// Whether to exclude audio from current process. Default is set to false.
+    pub fn excludes_current_process_audio(&self) -> bool {
+        unsafe {rsel_excludesCurrentProcessAudio(self) }
+    }
+
+    pub fn set_excludes_current_process_audio(&mut self, value: bool) {
+        unsafe {
+            wsel_setExcludesCurrentProcessAudio(self, value)
+        }
+    } 
 }
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
@@ -141,6 +179,20 @@ extern "C" {
 
     fn rsel_sourceRect(id: &Id) -> cg::Rect;
     fn wsel_setSourceRect(id: &Id, value: cg::Rect);
+
+    fn rsel_capturesAudio(id: &Id) -> bool;
+    fn wsel_setCapturesAudio(id: &Id, value: bool);
+
+    fn sc_rsel_sampleRate(id: &Id) -> i64;
+    fn sc_wsel_setSampleRate(id: &Id, value: i64);
+
+    fn rsel_channelCount(id: &Id) -> i64;
+    fn wsel_setChannelCount(id: &Id, value: i64);
+
+    fn rsel_excludesCurrentProcessAudio(id: &Id) -> bool;
+    fn wsel_setExcludesCurrentProcessAudio(id: &Id, value: bool);
+    
+
 }
 
 define_obj_type!(ContentFilter(Id));

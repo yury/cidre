@@ -30,6 +30,11 @@ rwsel(_, id, sourceRect, setSourceRect, CGRect)
 //@property(nonatomic, assign) CGRect destinationRect;
 rwsel(_, id, destinationRect, setDestinationRect, CGRect)
 
+rwsel(, id, capturesAudio, setCapturesAudio, BOOL)
+rwsel(sc_, id, sampleRate, setSampleRate, NSInteger)
+rwsel(, id, channelCount, setChannelCount, NSInteger)
+rwsel(, id, excludesCurrentProcessAudio, setExcludesCurrentProcessAudio, BOOL)
+
 #pragma mark SCRunningApplication
 
 // @property (readonly) NSString *bundleIdentifier;

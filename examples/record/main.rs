@@ -1,4 +1,4 @@
-use std::{ffi::c_void, net::SocketAddr, time::Duration};
+use std::{ffi::c_void, time::Duration};
 
 use cidre::{
     cf,
@@ -26,8 +26,13 @@ impl StreamOutput for FrameCounter {
         &mut self,
         _stream: &sc::Stream,
         sample_buffer: &cm::SampleBuffer,
-        _of_type: sc::OutputType,
+        of_type: sc::OutputType,
     ) {
+        if of_type == sc::OutputType::Audio {
+            // println!("audio buffer {:?}", sample_buffer.format_description());
+            return;
+        }
+        
         self.counter += 1;
         // why without println is not working well?
         // println!("frame {:?}", self.counter);
@@ -110,6 +115,9 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
+    // audio
+    cfg.set_captures_audio(true);
+
     let input = Box::new(RecordContext {
         frames_count: 0,
         format_desc: None,
@@ -185,6 +193,7 @@ async fn main() {
     let d = delegate.delegate();
     let mut error = None;
     stream.add_stream_output(&d, sc::OutputType::Screen, Some(&q), &mut error);
+    stream.add_stream_output(&d, sc::OutputType::Audio, Some(&q), &mut error);
     assert!(error.is_none());
     stream.start().await.expect("started");
 
