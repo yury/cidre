@@ -26,6 +26,7 @@ pub use affine_transform::AffineTransform;
 pub use affine_transform::Components as AffineTransformComponents;
 
 mod error;
+pub use error::Callback as ErrorCallback;
 pub use error::Error;
 
 pub mod image;
@@ -35,6 +36,7 @@ pub use image::Image;
 pub mod image_properties;
 pub use image_properties::Orientation as ImagePropertyOrientation;
 
+#[cfg(target_os = "macos")]
 mod display_stream;
 pub use display_stream::DisplayStream;
 pub use display_stream::FrameStatus as DisplayStreamFrameStatus;

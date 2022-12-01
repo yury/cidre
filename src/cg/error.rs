@@ -1,5 +1,6 @@
 #[derive(Debug, PartialEq, Eq)]
-pub struct Error(pub u32);
+#[repr(transparent)]
+pub struct Error(pub i32);
 
 impl Error {
     pub const SUCCESS: Self = Self(0);
@@ -13,4 +14,17 @@ impl Error {
     pub const TYPE_CHECK: Self = Self(1008);
     pub const INVALID_OPERATION: Self = Self(1010);
     pub const NONE_AVAILABLE: Self = Self(1010);
+
+    /// Set a callback for easier detection of error conditions
+    /// causing CoreGraphics to raise an error.
+    /// Pass None to reset the callback.
+    pub fn set_callback(callback: Option<Callback>) {
+        unsafe { CGErrorSetCallback(callback) }
+    }
+}
+
+pub type Callback = extern "C" fn();
+
+extern "C" {
+    fn CGErrorSetCallback(callback: Option<Callback>);
 }
