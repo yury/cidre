@@ -279,13 +279,13 @@ impl Stream {
     }
 
     pub async fn start(&self) -> Result<(), Retained<cf::Error>> {
-        let (future, block) = blocks::async_ok();
+        let (future, block) = blocks::ok();
         self.start_with_completion_handler(block.escape());
         future.await
     }
 
     pub async fn stop(&self) -> Result<(), Retained<cf::Error>> {
-        let (future, block) = blocks::async_ok();
+        let (future, block) = blocks::ok();
         self.stop_with_completion_handler(block.escape());
         future.await
     }

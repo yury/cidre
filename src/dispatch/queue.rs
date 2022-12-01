@@ -123,7 +123,7 @@ impl Queue {
     }
 
     #[inline]
-    pub fn async_b<F, B: dispatch::Block<F>>(&self, block: &'static mut B) {
+    pub fn async_b<F, B: dispatch::Block<F> + Sync>(&self, block: &'static mut B) {
         unsafe {
             dispatch_async(self, block.ptr());
         }
@@ -146,12 +146,12 @@ impl Queue {
     }
 
     #[inline]
-    pub fn async_once<F: FnOnce() + 'static>(&self, block: F) {
+    pub fn async_once<F: FnOnce() + Sync + 'static>(&self, block: F) {
         self.async_b(blocks::once0(block).escape());
     }
 
     #[inline]
-    pub fn async_mut<F: FnMut() + 'static>(&self, block: F) {
+    pub fn async_mut<F: FnMut() + Sync + 'static>(&self, block: F) {
         self.async_b(blocks::mut0(block).escape());
     }
 

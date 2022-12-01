@@ -5,6 +5,7 @@
 
 // https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
 // https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
+// https://developer.apple.com/documentation/swift/calling-objective-c-apis-asynchronously
 
 use std::{ffi::c_void, mem, ops};
 
@@ -213,6 +214,9 @@ struct MutLayout2<F: Sized + 'static> {
     descriptor: &'static Descriptor2<Self>,
     closure: mem::ManuallyDrop<F>,
 }
+
+unsafe impl<F:Sized + 'static> Sync for OnceLayout2<F> where F: Sync {}
+unsafe impl<F:Sized + 'static> Sync for MutLayout2<F> where F: Sync {}
 
 /// block with static fn
 #[allow(non_camel_case_types)]
@@ -622,7 +626,7 @@ fn async_comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
     (comp, block)
 }
 
-pub fn async_ok() -> (
+pub fn ok() -> (
     Comp<Result<(), Retained<cf::Error>>>,
     BlOnce<impl FnOnce(Option<&'static cf::Error>)>,
 ) {
@@ -638,7 +642,7 @@ pub fn async_ok() -> (
     )
 }
 
-pub fn async_result<T: Retain>() -> (
+pub fn result<T: Retain>() -> (
     Comp<Result<Retained<T>, Retained<cf::Error>>>,
     BlOnce<impl FnOnce(Option<&'static T>, Option<&'static cf::Error>)>,
 ) {

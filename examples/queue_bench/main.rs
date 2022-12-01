@@ -1,4 +1,4 @@
-use std::{ffi::c_void, rc::Rc, sync::Mutex};
+use std::{ffi::c_void, sync::{Mutex, Arc}, rc::Rc};
 
 use cidre::{dispatch, objc::blocks};
 // // use parking_lot::Mutex;
@@ -6,24 +6,22 @@ use cidre::{dispatch, objc::blocks};
 extern "C" fn block_fn(_ctx: *const c_void) {}
 
 fn main() {
-    let q = dispatch::Queue::new();
-    let c = Rc::new(Mutex::new(0));
+    let q = dispatch::Queue::global(0).unwrap();
+    let c = Arc::new(Mutex::new(0));
 
     let cc = c.clone();
-    let b = Box::new(5);
-    // let mut block = blocks_runtime::with_fn(block_fn);
-    let mut block = blocks::mut0(|| {
-        // println!("nice");
+    
+    let mut block = blocks::mut0(move || {
+        let mut v = cc.lock().unwrap();
+        *v += 1;
     });
 
     // let esc = block.escape();
     for _ in 0..1_000_000_000 {
         // q.async_b(block.escape());
-        q.sync_b(&mut block);
+        q.async_b(block.escape());
         // q.sync_b(&mut block);
     }
-
-    // q.sync_b(&mut block);
 
     println!("{:?}", c)
 }

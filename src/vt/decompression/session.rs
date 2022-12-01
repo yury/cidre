@@ -208,32 +208,31 @@ mod tests {
     use std::ffi::c_void;
 
     use crate::{
-        cf,
         cm::{self, VideoCodecType},
         cv, os, vt,
     };
 
     #[test]
     fn create_decompression_session() {
-        let desc =
+        let _desc =
             cm::VideoFormatDescription::video(VideoCodecType::HEVC, 1920, 1080, None).unwrap();
 
         struct Context {}
 
         extern "C" fn callback(
-            output_ref_con: *mut Context,
-            source_frame_ref_con: *mut c_void,
-            status: os::Status,
-            info_flags: vt::DecodeInfoFlags,
-            image_buffer: Option<&cv::ImageBuffer>,
-            pts: cm::Time,
-            duration: cm::Time,
+            _output_ref_con: *mut Context,
+            _source_frame_ref_con: *mut c_void,
+            _status: os::Status,
+            _info_flags: vt::DecodeInfoFlags,
+            _image_buffer: Option<&cv::ImageBuffer>,
+            _pts: cm::Time,
+            _duration: cm::Time,
         ) {
         }
 
         let ctx = Context {};
 
-        let record = vt::DecompressionOutputCallbackRecord::new(ctx, callback);
+        let _record = vt::DecompressionOutputCallbackRecord::new(ctx, callback);
 
         //vt::DecompressionSession::new(&desc, None, None, None).unwrap();
     }

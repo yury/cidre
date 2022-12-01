@@ -243,7 +243,7 @@ impl Device {
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
     ) -> Result<cf::Retained<mtl::Library>, cf::Retained<cf::Error>> {
-        let (future, block) = blocks::async_result();
+        let (future, block) = blocks::result();
         self.library_with_source_options_completion(source, options, block.escape());
         future.await
     }

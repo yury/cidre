@@ -88,7 +88,7 @@ impl ShareableContent {
     }
 
     pub async fn current() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
-        let (future, block) = blocks::async_result();
+        let (future, block) = blocks::result();
 
         Self::current_with_completion(block.escape());
 
