@@ -182,17 +182,6 @@ impl Library {
     }
 }
 
-// impl Debug for Library {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         let mut st = f.debug_struct("Library");
-//         match self.label() {
-//             Some(label) => st.field("label", &Cow::from(label)),
-//             None => st.field("label", &"<none>"),
-//         }
-//         .finish()
-//     }
-// }
-
 pub type ErrorDomain = cf::ErrorDomain;
 
 impl ErrorDomain {

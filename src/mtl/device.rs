@@ -1,8 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{
-    cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::blocks,
-};
+use crate::{cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::blocks};
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 
@@ -238,6 +236,16 @@ impl Device {
         }
 
         unsafe { Ok(transmute(res)) }
+    }
+
+    pub async fn library_with_source_options(
+        &self,
+        source: &cf::String,
+        options: Option<&mtl::CompileOptions>,
+    ) -> Result<cf::Retained<mtl::Library>, cf::Retained<cf::Error>> {
+        let (future, block) = blocks::async_result();
+        self.library_with_source_options_completion(source, options, block.escape());
+        future.await
     }
 
     pub fn library_with_source_options_completion<'ar, F>(

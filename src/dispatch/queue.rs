@@ -130,14 +130,34 @@ impl Queue {
     }
 
     #[inline]
-    pub fn sync_with<F: FnOnce() + 'static>(&self, f: F) {
-        let block = blocks::once0(f);
-        self.sync_b(block.escape());
+    pub fn sync_once<F: FnOnce() + 'static>(&self, f: F) {
+        self.sync_b(blocks::once0(f).escape());
+    }
+
+    #[inline]
+    pub fn sync_mut<F: FnMut() + 'static>(&self, f: F) {
+        self.sync_b(&mut blocks::mut0(f));
+    }
+
+    #[inline]
+    pub fn sync_fn(&self, block: extern "C" fn(*const c_void)) {
+        let mut block = blocks::fn0(block);
+        self.sync_b(&mut block);
     }
 
     #[inline]
     pub fn async_once<F: FnOnce() + 'static>(&self, block: F) {
-        let block = blocks::once0(block);
+        self.async_b(blocks::once0(block).escape());
+    }
+
+    #[inline]
+    pub fn async_mut<F: FnMut() + 'static>(&self, block: F) {
+        self.async_b(blocks::mut0(block).escape());
+    }
+
+    #[inline]
+    pub fn async_fn(&self, block: extern "C" fn(*const c_void)) {
+        let mut block = blocks::fn0(block);
         self.async_b(block.escape());
     }
 
@@ -356,7 +376,7 @@ mod tests {
         q.async_once(b);
 
         let foo2 = Foo {};
-        q.sync_with(move || {
+        q.sync_mut(move || {
             println!("nice {:?}", foo2);
         });
     }

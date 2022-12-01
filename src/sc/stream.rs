@@ -3,10 +3,7 @@ use std::{ffi::c_void, ops::Deref};
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type, dispatch, msg_send,
-    objc::{
-        blocks,
-        Delegate, Id
-    },
+    objc::{blocks, Delegate, Id},
     os,
 };
 

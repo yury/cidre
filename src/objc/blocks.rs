@@ -58,84 +58,84 @@ pub fn once0<R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce() -> R,
 {
-    Layout1::new(Layout1::<F>::invoke0 as _, f)
+    OnceLayout2::new(OnceLayout2::<F>::invoke0 as _, f)
 }
 
 pub fn once1<A, R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce(A) -> R,
 {
-    Layout1::new(Layout1::<F>::invoke1 as _, f)
+    OnceLayout2::new(OnceLayout2::<F>::invoke1 as _, f)
 }
 
 pub fn once2<A, B, R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce(A, B) -> R,
 {
-    Layout1::new(Layout1::<F>::invoke2 as _, f)
+    OnceLayout2::new(OnceLayout2::<F>::invoke2 as _, f)
 }
 
 pub fn once3<A, B, C, R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce(A, B, C) -> R,
 {
-    Layout1::new(Layout1::<F>::invoke3 as _, f)
+    OnceLayout2::new(OnceLayout2::<F>::invoke3 as _, f)
 }
 
 pub fn once4<A, B, C, D, R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce(A, B, C, D) -> R,
 {
-    Layout1::new(Layout1::<F>::invoke4 as _, f)
+    OnceLayout2::new(OnceLayout2::<F>::invoke4 as _, f)
 }
 
 pub fn once5<A, B, C, D, E, R, F: 'static>(f: F) -> BlOnce<F>
 where
     F: FnOnce(A, B, C, D, E) -> R,
 {
-    Layout1::new(Layout1::<F>::invoke5 as _, f)
+    OnceLayout2::new(OnceLayout2::<F>::invoke5 as _, f)
 }
 
 pub fn mut0<R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut() -> R,
 {
-    Layout2::new(Layout2::<F>::invoke0 as _, f)
+    MutLayout2::new(MutLayout2::<F>::invoke0 as _, f)
 }
 
 pub fn mut1<A, R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut(A) -> R,
 {
-    Layout2::new(Layout2::<F>::invoke1 as _, f)
+    MutLayout2::new(MutLayout2::<F>::invoke1 as _, f)
 }
 
 pub fn mut2<A, B, R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut(A, B) -> R,
 {
-    Layout2::new(Layout2::<F>::invoke2 as _, f)
+    MutLayout2::new(MutLayout2::<F>::invoke2 as _, f)
 }
 
 pub fn mut3<A, B, C, R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut(A, B, C) -> R,
 {
-    Layout2::new(Layout2::<F>::invoke3 as _, f)
+    MutLayout2::new(MutLayout2::<F>::invoke3 as _, f)
 }
 
 pub fn mut4<A, B, C, D, R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut(A, B, C, D) -> R,
 {
-    Layout2::new(Layout2::<F>::invoke4 as _, f)
+    MutLayout2::new(MutLayout2::<F>::invoke4 as _, f)
 }
 
 pub fn mut5<A, B, C, D, E, R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut(A, B, C, D, E) -> R,
 {
-    Layout2::new(Layout2::<F>::invoke5 as _, f)
+    MutLayout2::new(MutLayout2::<F>::invoke5 as _, f)
 }
 
 define_options!(Flags(i32));
@@ -185,17 +185,27 @@ pub struct Descriptor2<T: Sized> {
 
 // for completion handlers
 #[repr(C)]
-struct Layout1<F: Sized + 'static> {
+struct OnceLayout2<F: Sized + 'static> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Descriptor1,
-    closure: mem::ManuallyDrop<F>,
+    descriptor: &'static Descriptor2<Self>,
+    closure: Option<F>,
 }
 
+// #[repr(C)]
+// struct OnceLayout1<F: Sized + 'static> {
+//     isa: &'static Class,
+//     flags: Flags,
+//     reserved: i32,
+//     invoke: *const c_void,
+//     descriptor: &'static Descriptor1,
+//     closure: mem::ManuallyDrop<F>,
+// }
+
 #[repr(C)]
-struct Layout2<F: Sized + 'static> {
+struct MutLayout2<F: Sized + 'static> {
     isa: &'static Class,
     flags: Flags,
     reserved: i32,
@@ -223,24 +233,24 @@ impl<F: Sized> bl<F> {
 }
 
 #[repr(transparent)]
-pub struct BlOnce<F: 'static>(&'static mut Layout1<F>);
+pub struct BlOnce<F: 'static>(&'static mut OnceLayout2<F>);
 
 impl<F> BlOnce<F> {
     #[inline]
     pub fn escape<'a>(self) -> &'a mut Block<F> {
-        let res = self.0 as *mut Layout1<F>;
+        let res = self.0 as *mut OnceLayout2<F>;
         std::mem::forget(self);
         unsafe { mem::transmute(res) }
     }
 }
 
 #[repr(transparent)]
-pub struct BlMut<F: 'static>(&'static mut Layout2<F>);
+pub struct BlMut<F: 'static>(&'static mut MutLayout2<F>);
 
 impl<F> BlMut<F> {
     #[inline]
     pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
-        let res = self.0 as *mut Layout2<F>;
+        let res = self.0 as *mut MutLayout2<F>;
         unsafe { mem::transmute(res) }
     }
 }
@@ -248,8 +258,8 @@ impl<F> BlMut<F> {
 impl<F> Drop for BlOnce<F> {
     #[inline]
     fn drop(&mut self) {
+        self.0.closure.take();
         unsafe {
-            mem::ManuallyDrop::drop(&mut self.0.closure);
             _Block_release(self.0 as *mut _ as *const _);
         };
     }
@@ -277,7 +287,7 @@ impl<F> ops::Deref for BlOnce<F> {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        let res = self.0 as *const Layout1<F>;
+        let res = self.0 as *const OnceLayout2<F>;
         unsafe { mem::transmute(res) }
     }
 }
@@ -287,7 +297,7 @@ impl<F> ops::Deref for BlMut<F> {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        let res = self.0 as *const Layout2<F>;
+        let res = self.0 as *const MutLayout2<F>;
         unsafe { mem::transmute(res) }
     }
 }
@@ -295,7 +305,7 @@ impl<F> ops::Deref for BlMut<F> {
 impl<F> ops::DerefMut for BlMut<F> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
-        let res = self.0 as *mut Layout2<F>;
+        let res = self.0 as *mut MutLayout2<F>;
         unsafe { mem::transmute(res) }
     }
 }
@@ -316,19 +326,32 @@ impl<F> ops::DerefMut for bl<F> {
     }
 }
 
-impl<F: Sized> Layout1<F> {
-    const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
-        reserved: 0,
-        size: mem::size_of::<Self>(),
+impl<F: Sized> OnceLayout2<F> {
+    const DESCRIPTOR_2: Descriptor2<Self> = Descriptor2 {
+        descriptor1: Descriptor1 {
+            reserved: 0,
+            size: std::mem::size_of::<Self>(),
+        },
+        copy: Self::copy,
+        dispose: Self::dispose,
     };
+
+    extern "C" fn copy(_dest: &mut Self, _src: &mut Self) {
+        panic!("copy should not be called");
+    }
+
+    extern "C" fn dispose(block: &mut Self) {
+        block.closure.take();
+    }
 
     extern "C" fn invoke0<R>(&mut self) -> R
     where
         F: FnOnce() -> R,
     {
-        unsafe {
-            let closure = mem::ManuallyDrop::take(&mut self.closure);
+        if let Some(closure) = self.closure.take() {
             (closure)()
+        } else {
+            panic!()
         }
     }
 
@@ -336,9 +359,10 @@ impl<F: Sized> Layout1<F> {
     where
         F: FnOnce(A) -> R,
     {
-        unsafe {
-            let closure = mem::ManuallyDrop::take(&mut self.closure);
+        if let Some(closure) = self.closure.take() {
             (closure)(a)
+        } else {
+            panic!()
         }
     }
 
@@ -346,9 +370,10 @@ impl<F: Sized> Layout1<F> {
     where
         F: FnOnce(A, B) -> R,
     {
-        unsafe {
-            let closure = mem::ManuallyDrop::take(&mut self.closure);
+        if let Some(closure) = self.closure.take() {
             (closure)(a, b)
+        } else {
+            panic!()
         }
     }
 
@@ -356,9 +381,10 @@ impl<F: Sized> Layout1<F> {
     where
         F: FnOnce(A, B, C) -> R,
     {
-        unsafe {
-            let closure = mem::ManuallyDrop::take(&mut self.closure);
+        if let Some(closure) = self.closure.take() {
             (closure)(a, b, c)
+        } else {
+            panic!()
         }
     }
 
@@ -366,9 +392,10 @@ impl<F: Sized> Layout1<F> {
     where
         F: FnOnce(A, B, C, D) -> R,
     {
-        unsafe {
-            let closure = mem::ManuallyDrop::take(&mut self.closure);
+        if let Some(closure) = self.closure.take() {
             (closure)(a, b, c, d)
+        } else {
+            panic!()
         }
     }
 
@@ -376,13 +403,15 @@ impl<F: Sized> Layout1<F> {
     where
         F: FnOnce(A, B, C, D, E) -> R,
     {
-        unsafe {
-            let closure = mem::ManuallyDrop::take(&mut self.closure);
+        if let Some(closure) = self.closure.take() {
             (closure)(a, b, c, d, e)
+        } else {
+            panic!()
         }
     }
 
-    const NEW_FLAGS: Flags = Flags(Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1
+    // const NEW_FLAGS: Flags = Flags(Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1
+    const NEW_FLAGS: Flags = Flags(Flags::HAS_COPY_DISPOSE.0 | Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1
 
     fn new(invoke: *const c_void, f: F) -> BlOnce<F> {
         let block = Box::new(Self {
@@ -390,14 +419,14 @@ impl<F: Sized> Layout1<F> {
             flags: Self::NEW_FLAGS,
             reserved: 0,
             invoke,
-            descriptor: &Self::DESCRIPTOR_1,
-            closure: mem::ManuallyDrop::new(f),
+            descriptor: &Self::DESCRIPTOR_2,
+            closure: Some(f),
         });
         BlOnce(Box::leak(block))
     }
 }
 
-impl<F: Sized> Layout2<F> {
+impl<F: Sized> MutLayout2<F> {
     const DESCRIPTOR_2: Descriptor2<Self> = Descriptor2 {
         descriptor1: Descriptor1 {
             reserved: 0,
@@ -529,12 +558,12 @@ mod tests {
         let q = crate::dispatch::Queue::new();
         q.async_b(b.escape());
         q.async_b(b.escape());
-        q.sync_with(|| println!("fuck"));
+        q.async_mut(|| println!("nice"));
+        q.sync_mut(|| println!("fuck"));
 
         println!("finished");
     }
 }
-
 
 use parking_lot::Mutex;
 use std::sync::Arc;

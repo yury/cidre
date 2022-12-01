@@ -1,6 +1,5 @@
 mod base;
 use std::ffi::c_void;
-use std::ops::DerefMut;
 
 pub use base::Function;
 
@@ -51,7 +50,7 @@ where
 {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self as *mut Self as *mut _
+        self.as_ptr()
     }
 }
 
@@ -61,21 +60,21 @@ where
 {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self.deref_mut() as *mut ObjcBlock<F> as *mut _
+        self.as_ptr()
     }
 }
 
 impl Block<extern "C" fn(*const c_void)> for ObjcBlock<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self as *mut Self as *mut _
+        self.as_ptr()
     }
 }
 
 impl Block<extern "C" fn(*const c_void)> for bl<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self as *mut Self as *mut _
+        self.as_ptr()
     }
 }
 
