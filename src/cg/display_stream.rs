@@ -375,7 +375,7 @@ mod tests {
 
         stream.start().unwrap();
 
-        sleep(Duration::from_secs(2));
+        sleep(Duration::from_secs(1));
 
         stream.stop().unwrap();
     }
