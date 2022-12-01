@@ -13,6 +13,13 @@ use crate::{define_options, objc::Class};
 #[repr(transparent)]
 pub struct Block<F>(c_void, std::marker::PhantomData<F>);
 
+impl<F> Block<F> {
+    #[inline]
+    pub unsafe fn as_ptr(&mut self) -> *mut c_void {
+        self as *mut Self as _
+    }
+}
+
 pub fn fn0<R>(f: extern "C" fn(*const c_void) -> R) -> bl<extern "C" fn(*const c_void) -> R> {
     bl::with(f)
 }
@@ -32,6 +39,18 @@ pub fn fn2<A, B, R>(
 pub fn fn3<A, B, C, R>(
     f: extern "C" fn(*const c_void, a: A, b: B, c: C) -> R,
 ) -> bl<extern "C" fn(*const c_void, a: A, b: B, c: C) -> R> {
+    bl::with(f)
+}
+
+pub fn fn4<A, B, C, D, R>(
+    f: extern "C" fn(*const c_void, a: A, b: B, c: C, d: D) -> R,
+) -> bl<extern "C" fn(*const c_void, a: A, b: B, c: C, d: D) -> R> {
+    bl::with(f)
+}
+
+pub fn fn5<A, B, C, D, E, R>(
+    f: extern "C" fn(*const c_void, a: A, b: B, c: C, d: D, e: E) -> R,
+) -> bl<extern "C" fn(*const c_void, a: A, b: B, c: C, d: D, e: E) -> R> {
     bl::with(f)
 }
 
@@ -70,6 +89,13 @@ where
     Layout1::new(Layout1::<F>::invoke4 as _, f)
 }
 
+pub fn once5<A, B, C, D, E, R, F: 'static>(f: F) -> BlOnce<F>
+where
+    F: FnOnce(A, B, C, D, E) -> R,
+{
+    Layout1::new(Layout1::<F>::invoke5 as _, f)
+}
+
 pub fn mut0<R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut() -> R,
@@ -103,6 +129,13 @@ where
     F: FnMut(A, B, C, D) -> R,
 {
     Layout2::new(Layout2::<F>::invoke4 as _, f)
+}
+
+pub fn mut5<A, B, C, D, E, R, F: 'static>(f: F) -> BlMut<F>
+where
+    F: FnMut(A, B, C, D, E) -> R,
+{
+    Layout2::new(Layout2::<F>::invoke5 as _, f)
 }
 
 define_options!(Flags(i32));
@@ -216,7 +249,7 @@ impl<F> Drop for BlOnce<F> {
     #[inline]
     fn drop(&mut self) {
         unsafe {
-            mem::ManuallyDrop::drop(&mut (*self.0).closure);
+            mem::ManuallyDrop::drop(&mut self.0.closure);
             _Block_release(self.0 as *mut _ as *const _);
         };
     }
@@ -339,6 +372,16 @@ impl<F: Sized> Layout1<F> {
         }
     }
 
+    extern "C" fn invoke5<A, B, C, D, E, R>(&mut self, a: A, b: B, c: C, d: D, e: E) -> R
+    where
+        F: FnOnce(A, B, C, D, E) -> R,
+    {
+        unsafe {
+            let closure = mem::ManuallyDrop::take(&mut self.closure);
+            (closure)(a, b, c, d, e)
+        }
+    }
+
     const NEW_FLAGS: Flags = Flags(Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1
 
     fn new(invoke: *const c_void, f: F) -> BlOnce<F> {
@@ -407,6 +450,13 @@ impl<F: Sized> Layout2<F> {
         F: FnMut(A, B, C, D) -> R,
     {
         (self.closure)(a, b, c, d)
+    }
+
+    extern "C" fn invoke5<A, B, C, D, E, R>(&mut self, a: A, b: B, c: C, d: D, e: E) -> R
+    where
+        F: FnMut(A, B, C, D, E) -> R,
+    {
+        (self.closure)(a, b, c, d, e)
     }
 
     const NEW_FLAGS: Flags = Flags(Flags::HAS_COPY_DISPOSE.0 | Flags::NEEDS_FREE.0 | Flags(2).0); // logical retain count 1

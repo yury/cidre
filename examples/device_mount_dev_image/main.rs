@@ -1,10 +1,7 @@
 use std::ffi::c_void;
 
 use cidre::{
-    am::{
-        self,
-        device::{discovery::NotificationInfo},
-    },
+    am::{self, device::discovery::NotificationInfo},
     cf,
 };
 

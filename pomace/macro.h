@@ -128,48 +128,6 @@ extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B(A a, B
 extern inline ClassType * Prefix ## ClassType ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_C(A a, B b, C c) { return  [[ClassType alloc] SEL_A: a SEL_B: b SEL_C: c]; } \
 
 
-#define sel_ch(Prefix, SelfType, SEL_CH) \
-extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^() {\
-void(*ch)(void *) = rb[0]; \
-ch(rb); \
-} ]; } \
-\
-
-#define sel_ch_a(Prefix, SelfType, SEL_CH, CH_A) \
-extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca) {\
-void(*ch)(void *, CH_A) = rb[0]; \
-ch(rb, ca); \
-} ]; } \
-\
-
-#define sel_a_ch_a(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A) \
-extern inline void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca) {\
-void(*ch)(void *, CH_A) = rb[0]; \
-ch(rb, ca); \
-} ]; } \
-\
-
-#define sel_ch_ab(Prefix, SelfType, SEL_CH, CH_A, CH_B) \
-extern inline void Prefix ## sel ## _ ## SEL_CH(SelfType _self, void * _Nonnull * _Nonnull rb) { [_self SEL_CH: ^(CH_A ca, CH_B cb) {\
-void(*ch)(void *, CH_A, CH_B) = rb[0]; \
-ch(rb, ca, cb); \
-} ]; } \
-\
-
-#define sel_a_ch_ab(Prefix, SelfType, SEL_A, A, SEL_CH, CH_A, CH_B) \
-extern inline void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_CH(SelfType _self, A a, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_CH: ^(CH_A ca, CH_B cb) {\
-void(*ch)(void *, CH_A, CH_B) = rb[0]; \
-ch(rb, ca, cb); \
-} ]; } \
-\
-
-#define sel_ab_ch_ab(Prefix, SelfType, SEL_A, A, SEL_B, B, SEL_CH, CH_A, CH_B) \
-extern inline void Prefix ## sel ## _ ## SEL_A ## _ ## SEL_B ## _ ## SEL_CH(SelfType _self, A a, B b, void * _Nonnull * _Nonnull rb) { [_self SEL_A:a SEL_B:b SEL_CH:^(CH_A ca, CH_B cb) {\
-void(*handler)(void *, CH_A, CH_B) = rb[0]; \
-handler(rb, ca, cb); \
-} ]; } \
-\
-
 NS_ASSUME_NONNULL_END
 
 #endif /* macro_h */

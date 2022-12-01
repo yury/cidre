@@ -66,7 +66,7 @@ NS_RETURNS_RETAINED
 rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
 
 //- (void)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options completionHandler:(MTLNewLibraryCompletionHandler)completionHandler
-sel_ab_ch_ab(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id <MTLLibrary> __nullable, NSError * __nullable)
+wsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id)
 
 // - (nullable id <MTLComputePipelineState>)newComputePipelineStateWithFunction:(id <MTLFunction>)computeFunction error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
@@ -131,9 +131,9 @@ rwsel(, id, pixelFormat, setPixelFormat, MTLPixelFormat)
 //rsel(, id, commandQueue, id<MTLCommandQueue>)
 
 // - (void)addScheduledHandler:(MTLCommandBufferHandler)block;
-sel_ch_a(, id<MTLCommandBuffer>, addScheduledHandler, id <MTLCommandBuffer>)
+wsel_a(, id<MTLCommandBuffer>, addScheduledHandler, id)
 // - (void)addCompletedHandler:(MTLCommandBufferHandler)block;
-sel_ch_a(, id<MTLCommandBuffer>, addCompletedHandler, id <MTLCommandBuffer>)
+wsel_a(, id<MTLCommandBuffer>, addCompletedHandler, id)
 
 //- (nullable id <MTLBlitCommandEncoder>)blitCommandEncoder;
 

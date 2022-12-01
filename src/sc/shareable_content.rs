@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::objc::block::{Completion, CompletionHandlerAB};
+use crate::objc::block::async_result;
 use crate::objc::blocks_runtime::Block;
 use crate::{cf, cg, define_obj_type, msg_send, ns, sys};
 
@@ -79,38 +79,22 @@ impl ShareableContent {
         unsafe { rsel_applications(self) }
     }
 
-    pub fn current_with_completion<B>(block: B)
-    where
-        B: FnOnce(Option<&Self>, Option<&cf::Error>) + Send + 'static,
-    {
-        unsafe { cs_shareable_content_with_completion_handler(block.into_raw()) }
-    }
-
-    pub async fn current() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
-        let (future, block_ptr) = Completion::result_or_error();
-        unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
-        future.await
-    }
-
-    pub fn current_with_completion2<'ar, F>(b: &'static mut Block<F>)
+    pub fn current_with_completion<'ar, F>(b: &'static mut Block<F>)
     where
         F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar cf::Error>) -> (),
     {
         unsafe {
-            cs_shareable(b as *mut Block<F> as *mut _);
+            cs_shareable(b.as_ptr());
         }
     }
 
-    // pub async fn current2() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
+    pub async fn current() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
+        let (future, block) = async_result();
 
-    //     let mut bl = BlockFn::new2_mut(move |content, error| {
+        Self::current_with_completion(block.escape());
 
-    //     });
-
-    //     let (future, block_ptr) = Completion::result_or_error();
-    //     unsafe { cs_shareable_content_with_completion_handler(block_ptr) }
-    //     future.await
-    // }
+        future.await
+    }
 }
 
 #[link(name = "sc", kind = "static")]
@@ -118,7 +102,6 @@ extern "C" {
     fn rsel_windows(id: &ns::Id) -> &cf::ArrayOf<Window>;
     fn rsel_displays(id: &ns::Id) -> &cf::ArrayOf<Display>;
     fn rsel_applications(id: &ns::Id) -> &cf::ArrayOf<RunningApplication>;
-    fn cs_shareable_content_with_completion_handler(rb: *const c_void);
 
     fn cs_shareable(block: *mut c_void);
 }
@@ -179,6 +162,17 @@ mod tests {
         );
     }
 
+    #[tokio::test]
+    pub async fn current2() {
+        let f = sc::ShareableContent::current().await.expect("result");
+        assert!(!f.windows().is_empty());
+        println!(
+            "current retain count {:?} {:?}",
+            f.as_type_ref().retain_count(),
+            f.windows().len()
+        );
+    }
+
     #[test]
     pub fn current_with_completion() {
         let sema = dispatch::Semaphore::new(0);
@@ -190,7 +184,7 @@ mod tests {
         });
 
         dispatch::Queue::global(0).unwrap().async_once(move || {
-            ShareableContent::current_with_completion2(bl.escape());
+            ShareableContent::current_with_completion(bl.escape());
         });
 
         sema.wait_forever();

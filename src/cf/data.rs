@@ -103,9 +103,10 @@ impl MutableData {
         unsafe { self.append_bytes(bytes.as_ptr(), bytes.len() as _) }
     }
 
+    /// use `as_slice_mut()`
     #[inline]
-    pub fn bytes_ptr_mut(&mut self) -> *mut u8 {
-        unsafe { CFDataGetMutableBytePtr(self) }
+    pub unsafe fn bytes_ptr_mut(&mut self) -> *mut u8 {
+        CFDataGetMutableBytePtr(self)
     }
 
     #[inline]

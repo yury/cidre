@@ -1,8 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
-
-use crate::objc::block::CompletionHandlerA;
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns, objc::blocks_runtime::Block};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -67,18 +65,18 @@ impl CommandBuffer {
         msg_send!("mtl", self, sel_waitUntilCompleted)
     }
 
-    pub fn add_scheduled_handler<B>(&self, block: B)
+    pub fn add_scheduled_handler<F>(&self, block: &'static mut Block<F>)
     where
-        B: FnOnce(&Self) + Send + 'static,
+        F: FnOnce(&Self) + Send + 'static,
     {
-        unsafe { sel_addScheduledHandler(self, block.into_raw()) }
+        unsafe { wsel_addScheduledHandler(self, block.as_ptr()) }
     }
 
-    pub fn add_completion_handler<B>(&self, block: B)
+    pub fn add_completion_handler<F>(&self, block: &'static mut Block<F>)
     where
-        B: FnOnce(&Self) + Send + 'static,
+        F: FnOnce(&Self) + Send + 'static,
     {
-        unsafe { sel_addCompletedHandler(self, block.into_raw()) }
+        unsafe { wsel_addCompletedHandler(self, block.as_ptr()) }
     }
 
     #[inline]
@@ -120,6 +118,6 @@ impl CommandBuffer {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn sel_addScheduledHandler(id: &ns::Id, rb: *const c_void);
-    fn sel_addCompletedHandler(id: &ns::Id, rb: *const c_void);
+    fn wsel_addScheduledHandler(id: &ns::Id, rb: *mut c_void);
+    fn wsel_addCompletedHandler(id: &ns::Id, rb: *mut c_void);
 }

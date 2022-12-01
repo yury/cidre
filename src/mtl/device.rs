@@ -1,7 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
-    cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::block::CompletionHandlerAB,
+    cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::blocks_runtime::Block,
 };
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
@@ -240,21 +240,20 @@ impl Device {
         unsafe { Ok(transmute(res)) }
     }
 
-    pub fn library_with_source_options_completion<T>(
+    pub fn library_with_source_options_completion<'ar, F>(
         &self,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
-        completion: T,
+        completion: &'static mut Block<F>,
     ) where
-        T: FnOnce(Option<&mtl::library::Library>, Option<&cf::error::Error>),
-        T: Send + 'static,
+        F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar cf::error::Error>) + 'static,
     {
         unsafe {
-            sel_newLibraryWithSource_options_completionHandler(
+            wsel_newLibraryWithSource_options_completionHandler(
                 self,
                 source,
                 options,
-                completion.into_raw(),
+                completion.as_ptr(),
             )
         }
     }
@@ -426,11 +425,11 @@ extern "C" {
 extern "C" {
     // static sel_newCommandQueue: &'static Sel;
 
-    fn sel_newLibraryWithSource_options_completionHandler(
+    fn wsel_newLibraryWithSource_options_completionHandler(
         id: &Device,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
-        rb_bloc: *const c_void,
+        block: *mut c_void,
     );
     fn rsel_registryID(id: &Device) -> u64;
     fn rsel_maxThreadsPerThreadgroup(id: &Device) -> Size;

@@ -274,15 +274,16 @@ extern "C" {
 #[cfg(test)]
 mod tests {
 
-    use crate::{cf, mtl};
+    use crate::{cf, mtl, objc::blocks_runtime};
 
     #[test]
     fn foo() {
         let device = mtl::Device::default().unwrap();
         let source = cf::String::from_str("kernel void function_a() {}");
 
-        device.library_with_source_options_completion(&source, None, move |lib, error| {
+        let handler = blocks_runtime::once2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
+        device.library_with_source_options_completion(&source, None, handler.escape());
     }
 }

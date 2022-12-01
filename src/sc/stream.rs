@@ -3,7 +3,10 @@ use std::{ffi::c_void, ops::Deref};
 use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type, dispatch, msg_send,
-    objc::{block::Completion, Delegate, Id},
+    objc::{
+        blocks_runtime::Block,
+        Delegate, Id, block::async_ok,
+    },
     os,
 };
 
@@ -260,19 +263,33 @@ impl Stream {
         unsafe { test_start(self) }
     }
 
-    pub async fn start(&self) -> Result<(), Retained<cf::Error>> {
-        let (future, block_ptr) = Completion::ok_or_error();
+    pub fn start_with_completion_handler<F>(&self, block: &'static mut Block<F>)
+    where
+        F: FnOnce(Option<&'static cf::Error>),
+    {
         unsafe {
-            sel_startCaptureWithCompletionHandler(self, block_ptr);
+            wsel_startCaptureWithCompletionHandler(self, block.as_ptr());
         }
+    }
+
+    pub fn stop_with_completion_handler<F>(&self, block: &'static mut Block<F>)
+    where
+        F: FnOnce(Option<&'static cf::Error>),
+    {
+        unsafe {
+            wsel_stopCaptureWithCompletionHandler(self, block.as_ptr());
+        }
+    }
+
+    pub async fn start(&self) -> Result<(), Retained<cf::Error>> {
+        let (future, block) = async_ok();
+        self.start_with_completion_handler(block.escape());
         future.await
     }
 
     pub async fn stop(&self) -> Result<(), Retained<cf::Error>> {
-        let (future, block_ptr) = Completion::ok_or_error();
-        unsafe {
-            sel_stopCaptureWithCompletionHandler(self, block_ptr);
-        }
+        let (future, block) = async_ok();
+        self.stop_with_completion_handler(block.escape());
         future.await
     }
 }
@@ -295,8 +312,8 @@ extern "C" {
 
     fn test_start(id: &Id);
 
-    fn sel_startCaptureWithCompletionHandler(id: &Id, rb: *const c_void);
-    fn sel_stopCaptureWithCompletionHandler(id: &Id, rb: *const c_void);
+    fn wsel_startCaptureWithCompletionHandler(id: &Id, rb: *mut c_void);
+    fn wsel_stopCaptureWithCompletionHandler(id: &Id, rb: *mut c_void);
 
 }
 
