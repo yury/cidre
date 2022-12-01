@@ -40,8 +40,10 @@ pub use image_properties::Orientation as ImagePropertyOrientation;
 mod display_stream;
 pub use display_stream::DisplayStream;
 pub use display_stream::FrameStatus as DisplayStreamFrameStatus;
+pub use display_stream::PropertyKey as DisplayStreamPropertyKey;
 pub use display_stream::Update as DisplayStreamUpdate;
 pub use display_stream::UpdateRectType as DisplayStreamUpdateRectType;
+pub use display_stream::YCbCrMatrix as DisplayStreamYCbCrMatrix;
 
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}

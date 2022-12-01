@@ -68,6 +68,86 @@ impl Update {
     }
 }
 
+define_cf_type!(PropertyKey(cf::String));
+
+impl PropertyKey {
+    /// This may be used to request a subregion of the display to be provided as the source of the display stream.  Use
+    /// CGRectCreateDictionaryRepresentation to convert from a cg::Rect to the value used here.   Note: The coordinate system for the
+    /// source rectangle is specified in display logical coordinates and not in pixels, in order to match the normal convention on
+    /// HiDPI displays.
+    pub fn source_rect() -> &'static Self {
+        unsafe { kCGDisplayStreamSourceRect }
+    }
+
+    /// This may be used to request where within the destination buffer the display updates should be placed. Use
+    /// CGRectCreateDictionaryRepresentation to convert from a CGRect to the value used here.   Note: The coordinate system for
+    /// the destination rectangle is always specified in output pixels to match the fact that the output buffer size is also
+    /// specified in terms of pixels.
+    pub fn destination_rect() -> &'static Self {
+        unsafe { kCGDisplayStreamDestinationRect }
+    }
+
+    /// Enable/disable the work the Window Server will do to preserve the display aspect ratio.  By default the Window Server will
+    /// assume that it should preserve the original aspect ratio of the source display rect.  If the aspect ratio of the source display and
+    /// he display stream destination rect are not the same, black borders will be inserted at the top/bottom or right/left sides of the destination
+    /// in order to preserve the source aspect ratio.
+    ///
+    /// cf::Boolean - defaults to true
+    pub fn preserve_aspect_ratio() -> &'static Self {
+        unsafe { kCGDisplayStreamPreserveAspectRatio }
+    }
+
+    /// Set the desired cg::ColorSpace of the output frames.  By default the color space will be that of the display.
+    ///
+    /// Desired output color space (cg::ColorSpaceRef) - defaults to display color space
+    pub fn color_space() -> &'static Self {
+        unsafe { kCGDisplayStreamColorSpace }
+    }
+
+    /// Request that the delta between frame updates be at least as much specified by this value.
+    ///
+    /// cf::Number in seconds, defaults to zero.
+    pub fn minimum_frame_rate() -> &'static Self {
+        unsafe { kCGDisplayStreamMinimumFrameTime }
+    }
+
+    /// Controls whether the cursor is embedded within the provided buffers or not.
+    ///
+    /// cf::Boolean - defaults to false
+    pub fn show_cursor() -> &'static Self {
+        unsafe { kCGDisplayStreamShowCursor }
+    }
+
+    /// Controls how many frames deep the frame queue will be.  Defaults to N.
+    ///
+    /// Queue depth in frames.  Defaults to 3.
+    pub fn queue_depth() -> &'static Self {
+        unsafe { kCGDisplayStreamQueueDepth }
+    }
+
+    /// When outputting frames in 420v or 420f format, this key may be used to control which YCbCrMatrix is used
+    pub fn ycbcr_matric() -> &'static Self {
+        unsafe { kCGDisplayStreamYCbCrMatrix }
+    }
+}
+
+define_cf_type!(YCbCrMatrix(cf::String));
+
+/// Supported YCbCr matrices. Note that these strings have identical values to the equivalent CoreVideo strings.
+impl YCbCrMatrix {
+    pub fn itu_r_709_2() -> &'static Self {
+        unsafe { kCGDisplayStreamYCbCrMatrix_ITU_R_709_2 }
+    }
+
+    pub fn itu_r_601_4() -> &'static Self {
+        unsafe { kCGDisplayStreamYCbCrMatrix_ITU_R_601_4 }
+    }
+
+    pub fn smpte_240m_1995() -> &'static Self {
+        unsafe { kCGDisplayStreamYCbCrMatrix_SMPTE_240M_1995 }
+    }
+}
+
 /// Provides a streaming API for capturing display updates in a realtime manner.  It can also provide
 /// scaling and color space conversion services, as well as allow capturing sub regions of the display. Callbacks can be targetted
 /// at either a traditional cf::RunLoop, or at a dispatch::queue.
@@ -82,7 +162,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::Dictionary>,
+        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         handler: *mut c_void,
     ) -> Option<cf::Retained<DisplayStream>> {
         unsafe {
@@ -102,7 +182,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::Dictionary>,
+        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
     ) -> Option<cf::Retained<DisplayStream>> {
@@ -124,7 +204,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::Dictionary>,
+        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         handler: &mut blocks::Block<F>,
     ) -> Option<cf::Retained<DisplayStream>>
     where
@@ -142,12 +222,16 @@ impl DisplayStream {
         }
     }
 
+    /// 'BGRA' Packed Little Endian ARGB8888
+    /// 'l10r' Packed Little Endian ARGB2101010
+    /// '420v' 2-plane "video" range YCbCr 4:2:0
+    /// '420f' 2-plane "full" range YCbCr 4:2:0
     pub fn with_dispatch_queue<'ar, F>(
         display: cg::DirectDisplayID,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::Dictionary>,
+        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         queue: &dispatch::Queue,
         handler: &mut blocks::Block<F>,
     ) -> Option<cf::Retained<DisplayStream>>
@@ -223,6 +307,19 @@ extern "C" {
     );
     fn CGDisplayStreamUpdateGetDropCount(update_ref: &Update) -> usize;
 
+    static kCGDisplayStreamSourceRect: &'static PropertyKey;
+    static kCGDisplayStreamDestinationRect: &'static PropertyKey;
+    static kCGDisplayStreamPreserveAspectRatio: &'static PropertyKey;
+    static kCGDisplayStreamColorSpace: &'static PropertyKey;
+    static kCGDisplayStreamMinimumFrameTime: &'static PropertyKey;
+    static kCGDisplayStreamShowCursor: &'static PropertyKey;
+    static kCGDisplayStreamQueueDepth: &'static PropertyKey;
+    static kCGDisplayStreamYCbCrMatrix: &'static PropertyKey;
+
+    static kCGDisplayStreamYCbCrMatrix_ITU_R_709_2: &'static YCbCrMatrix;
+    static kCGDisplayStreamYCbCrMatrix_ITU_R_601_4: &'static YCbCrMatrix;
+    static kCGDisplayStreamYCbCrMatrix_SMPTE_240M_1995: &'static YCbCrMatrix;
+
     fn CGDisplayStreamGetTypeID() -> cf::TypeId;
 
     fn CGDisplayStreamCreate(
@@ -230,7 +327,7 @@ extern "C" {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::Dictionary>,
+        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         handler: *mut c_void,
     ) -> Option<cf::Retained<DisplayStream>>;
 
@@ -239,7 +336,7 @@ extern "C" {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::Dictionary>,
+        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
     ) -> Option<cf::Retained<DisplayStream>>;
@@ -254,14 +351,11 @@ extern "C" {
 mod tests {
     use std::{thread::sleep, time::Duration};
 
-
     #[test]
     fn basics() {
         use crate::{cf, cg, dispatch, objc::blocks};
 
-        let mut block = blocks::mut4(|frame_status, b, c, d| {
-            println!("got! {frame_status:?}")
-        });
+        let mut block = blocks::mut4(|frame_status, b, c, d| println!("got! {frame_status:?}"));
 
         let queue = dispatch::Queue::global(0).unwrap();
 
@@ -279,5 +373,7 @@ mod tests {
         stream.start().unwrap();
 
         sleep(Duration::from_secs(2));
+
+        stream.stop().unwrap();
     }
 }
