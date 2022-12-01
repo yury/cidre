@@ -157,6 +157,7 @@ impl DisplayStream {
         unsafe { CGDisplayStreamGetTypeID() }
     }
 
+    #[inline]
     pub unsafe fn create(
         display: cg::DirectDisplayID,
         output_width: usize,
@@ -177,6 +178,7 @@ impl DisplayStream {
         }
     }
 
+    #[inline]
     pub unsafe fn create_with_queue(
         display: cg::DirectDisplayID,
         output_width: usize,
@@ -353,9 +355,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        use crate::{cf, cg, dispatch, objc::blocks};
+        use crate::{cg, dispatch, objc::blocks};
 
-        let mut block = blocks::mut4(|frame_status, b, c, d| println!("got! {frame_status:?}"));
+        let mut block = blocks::mut4(|frame_status, timestamp, surface, _update|
+            println!("got! {timestamp:?} {frame_status:?} {surface:?}"));
 
         let queue = dispatch::Queue::global(0).unwrap();
 
