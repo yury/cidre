@@ -134,7 +134,7 @@ impl Configuration {
     pub fn set_sample_rate(&mut self, value: i64) {
         unsafe { sc_wsel_setSampleRate(self, value) }
     }
-    
+
     /// Channel count. Default is set to two.
     pub fn channel_count(&self) -> i64 {
         unsafe { rsel_channelCount(self) }
@@ -146,14 +146,12 @@ impl Configuration {
 
     /// Whether to exclude audio from current process. Default is set to false.
     pub fn excludes_current_process_audio(&self) -> bool {
-        unsafe {rsel_excludesCurrentProcessAudio(self) }
+        unsafe { rsel_excludesCurrentProcessAudio(self) }
     }
 
     pub fn set_excludes_current_process_audio(&mut self, value: bool) {
-        unsafe {
-            wsel_setExcludesCurrentProcessAudio(self, value)
-        }
-    } 
+        unsafe { wsel_setExcludesCurrentProcessAudio(self, value) }
+    }
 }
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
@@ -191,7 +189,6 @@ extern "C" {
 
     fn rsel_excludesCurrentProcessAudio(id: &Id) -> bool;
     fn wsel_setExcludesCurrentProcessAudio(id: &Id, value: bool);
-    
 
 }
 

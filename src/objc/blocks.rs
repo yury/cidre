@@ -215,8 +215,8 @@ struct MutLayout2<F: Sized + 'static> {
     closure: mem::ManuallyDrop<F>,
 }
 
-unsafe impl<F:Sized + 'static> Sync for OnceLayout2<F> where F: Sync {}
-unsafe impl<F:Sized + 'static> Sync for MutLayout2<F> where F: Sync {}
+unsafe impl<F: Sized + 'static> Sync for OnceLayout2<F> where F: Sync {}
+unsafe impl<F: Sized + 'static> Sync for MutLayout2<F> where F: Sync {}
 
 /// block with static fn
 #[allow(non_camel_case_types)]

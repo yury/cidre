@@ -1,4 +1,8 @@
-use std::{ffi::c_void, sync::{Mutex, Arc}, rc::Rc};
+use std::{
+    ffi::c_void,
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
 
 use cidre::{dispatch, objc::blocks};
 // // use parking_lot::Mutex;
@@ -10,7 +14,7 @@ fn main() {
     let c = Arc::new(Mutex::new(0));
 
     let cc = c.clone();
-    
+
     let mut block = blocks::mut0(move || {
         let mut v = cc.lock().unwrap();
         *v += 1;

@@ -35,5 +35,11 @@ pub use image::Image;
 pub mod image_properties;
 pub use image_properties::Orientation as ImagePropertyOrientation;
 
+mod display_stream;
+pub use display_stream::DisplayStream;
+pub use display_stream::FrameStatus as DisplayStreamFrameStatus;
+pub use display_stream::Update as DisplayStreamUpdate;
+pub use display_stream::UpdateRectType as DisplayStreamUpdateRectType;
+
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {}

@@ -32,7 +32,7 @@ impl StreamOutput for FrameCounter {
             // println!("audio buffer {:?}", sample_buffer.format_description());
             return;
         }
-        
+
         self.counter += 1;
         // why without println is not working well?
         // println!("frame {:?}", self.counter);
