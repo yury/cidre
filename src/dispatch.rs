@@ -37,9 +37,9 @@ pub use source::TimerSource;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
 
-use crate::objc::blocks_runtime::bl;
-use crate::objc::blocks_runtime::BlMut;
-use crate::objc::blocks_runtime::Block as ObjcBlock;
+use crate::objc::blocks::bl;
+use crate::objc::blocks::BlMut;
+use crate::objc::blocks::Block as ObjcBlock;
 
 pub trait Block<F> {
     unsafe fn ptr(&mut self) -> *mut c_void;

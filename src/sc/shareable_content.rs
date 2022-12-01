@@ -1,7 +1,6 @@
 use std::ffi::c_void;
 
-use crate::objc::block::async_result;
-use crate::objc::blocks_runtime::Block;
+use crate::objc::blocks;
 use crate::{cf, cg, define_obj_type, msg_send, ns, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
@@ -79,7 +78,7 @@ impl ShareableContent {
         unsafe { rsel_applications(self) }
     }
 
-    pub fn current_with_completion<'ar, F>(b: &'static mut Block<F>)
+    pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar cf::Error>) -> (),
     {
@@ -89,7 +88,7 @@ impl ShareableContent {
     }
 
     pub async fn current() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
-        let (future, block) = async_result();
+        let (future, block) = blocks::async_result();
 
         Self::current_with_completion(block.escape());
 

@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-pub mod blocks_runtime;
+pub mod blocks;
 
 use crate::cf::{
     runtime::{Release, Retain},
@@ -149,7 +149,6 @@ impl std::fmt::Debug for Id {
 pub struct Sel(NonNull<c_void>);
 
 pub mod autorelease_pool;
-pub mod block;
 pub mod ns;
 pub use autorelease_pool::AutoreleasePoolPage;
 

@@ -2,7 +2,7 @@ use std::ffi::{c_char, c_long, c_void, CStr};
 use std::mem::transmute;
 use std::ptr::NonNull;
 
-use crate::objc::blocks_runtime;
+use crate::objc::blocks;
 use crate::{
     cf::Retained,
     define_obj_type,
@@ -131,13 +131,13 @@ impl Queue {
 
     #[inline]
     pub fn sync_with<F: FnOnce() + 'static>(&self, f: F) {
-        let block = blocks_runtime::once0(f);
+        let block = blocks::once0(f);
         self.sync_b(block.escape());
     }
 
     #[inline]
     pub fn async_once<F: FnOnce() + 'static>(&self, block: F) {
-        let block = blocks_runtime::once0(block);
+        let block = blocks::once0(block);
         self.async_b(block.escape());
     }
 

@@ -1,7 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
-    cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::blocks_runtime::Block,
+    cf, define_obj_type, define_options, io, msg_send, mtl, ns, objc::blocks,
 };
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
@@ -244,7 +244,7 @@ impl Device {
         &self,
         source: &cf::String,
         options: Option<&mtl::CompileOptions>,
-        completion: &'static mut Block<F>,
+        completion: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar cf::error::Error>) + 'static,
     {

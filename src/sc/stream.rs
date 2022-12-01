@@ -4,8 +4,8 @@ use crate::{
     cf::{self, Retained},
     cg, cm, cv, define_obj_type, dispatch, msg_send,
     objc::{
-        blocks_runtime::Block,
-        Delegate, Id, block::async_ok,
+        blocks,
+        Delegate, Id
     },
     os,
 };
@@ -263,7 +263,7 @@ impl Stream {
         unsafe { test_start(self) }
     }
 
-    pub fn start_with_completion_handler<F>(&self, block: &'static mut Block<F>)
+    pub fn start_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'static cf::Error>),
     {
@@ -272,7 +272,7 @@ impl Stream {
         }
     }
 
-    pub fn stop_with_completion_handler<F>(&self, block: &'static mut Block<F>)
+    pub fn stop_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'static cf::Error>),
     {
@@ -282,13 +282,13 @@ impl Stream {
     }
 
     pub async fn start(&self) -> Result<(), Retained<cf::Error>> {
-        let (future, block) = async_ok();
+        let (future, block) = blocks::async_ok();
         self.start_with_completion_handler(block.escape());
         future.await
     }
 
     pub async fn stop(&self) -> Result<(), Retained<cf::Error>> {
-        let (future, block) = async_ok();
+        let (future, block) = blocks::async_ok();
         self.stop_with_completion_handler(block.escape());
         future.await
     }

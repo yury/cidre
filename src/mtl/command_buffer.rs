@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, msg_send, mtl, ns, objc::blocks_runtime::Block};
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns, objc::blocks};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -65,14 +65,14 @@ impl CommandBuffer {
         msg_send!("mtl", self, sel_waitUntilCompleted)
     }
 
-    pub fn add_scheduled_handler<F>(&self, block: &'static mut Block<F>)
+    pub fn add_scheduled_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(&Self) + Send + 'static,
     {
         unsafe { wsel_addScheduledHandler(self, block.as_ptr()) }
     }
 
-    pub fn add_completion_handler<F>(&self, block: &'static mut Block<F>)
+    pub fn add_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(&Self) + Send + 'static,
     {
