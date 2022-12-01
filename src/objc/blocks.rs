@@ -510,7 +510,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::objc::blocks_runtime;
+    use crate::objc::blocks;
 
     #[derive(Debug)]
     struct Foo;
@@ -524,7 +524,7 @@ mod tests {
     #[test]
     fn test_simple_block() {
         let foo = Foo;
-        let mut b = blocks_runtime::mut0(move || println!("nice {foo:?}"));
+        let mut b = blocks::mut0(move || println!("nice {foo:?}"));
 
         let q = crate::dispatch::Queue::new();
         q.async_b(b.escape());

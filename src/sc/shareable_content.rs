@@ -110,7 +110,7 @@ mod tests {
 
     use crate::{
         cf, dispatch,
-        objc::blocks_runtime,
+        objc::blocks,
         sc::{
             self,
             stream::{StreamDelegate, StreamOutput},
@@ -177,7 +177,7 @@ mod tests {
         let sema = dispatch::Semaphore::new(0);
 
         let signal_guard = sema.signal_guard();
-        let bl = blocks_runtime::once2(move |content, error| {
+        let bl = blocks::once2(move |content, error| {
             signal_guard.consume();
             println!("nice {:?} {:?}", content, error);
         });

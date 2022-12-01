@@ -1,6 +1,6 @@
 use std::{ffi::c_void, rc::Rc, sync::Mutex};
 
-use cidre::{dispatch, objc::blocks_runtime};
+use cidre::{dispatch, objc::blocks};
 // // use parking_lot::Mutex;
 
 extern "C" fn block_fn(_ctx: *const c_void) {}
@@ -12,7 +12,7 @@ fn main() {
     let cc = c.clone();
     let b = Box::new(5);
     // let mut block = blocks_runtime::with_fn(block_fn);
-    let mut block = blocks_runtime::mut0(|| {
+    let mut block = blocks::mut0(|| {
         // println!("nice");
     });
 
