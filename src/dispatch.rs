@@ -36,15 +36,13 @@ pub use source::TimerSource;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
 
-use crate::objc::blocks::bl;
-use crate::objc::blocks::BlMut;
-use crate::objc::blocks::Block as ObjcBlock;
+use crate::blocks;
 
 pub trait Block<F> {
     unsafe fn ptr(&mut self) -> *mut c_void;
 }
 
-impl<F> Block<F> for ObjcBlock<F>
+impl<F> Block<F> for blocks::Block<F>
 where
     F: FnOnce() + 'static,
 {
@@ -54,7 +52,7 @@ where
     }
 }
 
-impl<F> Block<F> for BlMut<F>
+impl<F> Block<F> for blocks::BlMut<F>
 where
     F: FnOnce() + 'static,
 {
@@ -64,14 +62,14 @@ where
     }
 }
 
-impl Block<extern "C" fn(*const c_void)> for ObjcBlock<extern "C" fn(*const c_void)> {
+impl Block<extern "C" fn(*const c_void)> for blocks::Block<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
         self.as_ptr()
     }
 }
 
-impl Block<extern "C" fn(*const c_void)> for bl<extern "C" fn(*const c_void)> {
+impl Block<extern "C" fn(*const c_void)> for blocks::bl<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
         self.as_ptr()

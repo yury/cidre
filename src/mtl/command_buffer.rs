@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, msg_send, mtl, ns, objc::blocks};
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns, blocks};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]

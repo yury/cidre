@@ -4,7 +4,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use cidre::{dispatch, objc::blocks};
+use cidre::{dispatch, blocks};
 // // use parking_lot::Mutex;
 
 extern "C" fn block_fn(_ctx: *const c_void) {}

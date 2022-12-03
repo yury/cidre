@@ -37,6 +37,8 @@ pub mod dispatch;
 /// IOSurface
 pub mod io;
 
+pub mod blocks;
+
 /// match
 pub mod mach;
 

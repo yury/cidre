@@ -1,7 +1,5 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-pub mod blocks;
-
 use crate::cf::{
     runtime::{Release, Retain},
     Retained, Type,

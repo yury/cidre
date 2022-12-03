@@ -6,6 +6,7 @@
 // https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
 // https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
 // https://developer.apple.com/documentation/swift/calling-objective-c-apis-asynchronously
+// https://github.com/apple/swift-corelibs-foundation/blob/main/Sources/BlocksRuntime/runtime.c
 
 use std::{ffi::c_void, mem, ops};
 
@@ -530,7 +531,7 @@ extern "C" {
 mod tests {
     use std::rc::Rc;
 
-    use crate::objc::blocks;
+    use crate::blocks;
 
     #[derive(Debug)]
     struct Foo;

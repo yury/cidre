@@ -2,8 +2,8 @@ use std::ffi::{c_char, c_long, c_void, CStr};
 use std::mem::transmute;
 use std::ptr::NonNull;
 
-use crate::objc::blocks;
 use crate::{
+    blocks,
     cf::Retained,
     define_obj_type,
     dispatch::{self, Function},
