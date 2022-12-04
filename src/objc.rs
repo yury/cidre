@@ -1,3 +1,5 @@
+// ref https://github.com/briantkelley/rust-objc4/commit/49cd2b144b055daf2f84927c5649fee7d26f465f#diff-2d62dac910f3cfa6ded5231aadaf4990bb2f2d3462c15194f0c5107a81620a9d
+
 use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::cf::{
@@ -309,16 +311,6 @@ macro_rules! define_obj_type {
                 unsafe { crate::objc::Id::retain(self) }
             }
         }
-
-        // impl std::fmt::Debug for $NewType {
-        //     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        //         let desc = self
-        //             .copy_description()
-        //             .map(|f| f.to_string())
-        //             .unwrap_or_else(|| "no desc".to_string());
-        //         f.debug_tuple("cf::Type").field(&desc).finish()
-        //     }
-        // }
     };
 }
 
@@ -328,36 +320,13 @@ pub struct Delegate<T: Sized> {
     pub obj: crate::cf::Retained<Id>,
 }
 
-// struct ImageInfo {
-//     _version: u32,
-//     _flags: u32,
-// }
-
-// #[link_section = "__DATA,__objc_imageinfo"]
-// #[used]
-// static IMAGE_INFO: ImageInfo = ImageInfo {
-//     _version: 0,
-//     _flags: 0,
-// };
-
-// pub fn sel_processor_count() -> &'static Sel {
-//     #[link_section = "__TEXT,__objc_methname,cstring_literals"]
-//     static STR: [u8; 15] = *b"processorCount\0";
-//     #[link_section = "__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
-//     static SEL: &[u8; 15] = &STR;
-
-//     unsafe {
-//         let ptr = std::ptr::read_volatile(&SEL);
-//         transmute(ptr)
-//     }
-// }
 
 core::arch::global_asm!(
-    "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
+    ".pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
     "L_OBJC_IMAGE_INFO:",
     "    .long    0",
     "    .long    0",
-    "    .popsection",
+    ".popsection",
 );
 
 #[macro_export]
@@ -373,15 +342,15 @@ macro_rules! define_sel {
                     let cmd: *const u8;
 
                     core::arch::asm!(
-                        "    .pushsection __TEXT,__objc_methname,cstring_literals",
+                        ".pushsection __TEXT,__objc_methname,cstring_literals",
                         "2:",
-                        concat!("    .asciz   \"",  $sel, "\""),
+                        concat!("   .asciz   \"",  $sel, "\""),
                         "",
-                        "    .section     __DATA,__objc_selrefs,literal_pointers,no_dead_strip",
-                        "    .p2align 3",
+                        ".section __DATA,__objc_selrefs,literal_pointers,no_dead_strip",
+                        ".p2align 3",
                         "3:",
-                        "    .quad    2b",
-                        "    .popsection",
+                        "   .quad 2b",
+                        ".popsection",
                         "adrp	{y}, 3b@PAGE",
                         "ldr	{x}, [{y}, 3b@PAGEOFF]",
                         y = out(reg) _,
@@ -401,13 +370,14 @@ define_sel!(processor_count, "processorCount");
 
 #[cfg(test)]
 mod tests {
+    use crate::objc::Sel;
 
     #[test]
     fn basics() {
         let proc = crate::ns::ProcessInfo::current();
 
-        // let count: usize = unsafe { proc.sel0(sel_processor_count()) };
+        let count: usize = unsafe { proc.sel0(Sel::processor_count()) };
 
-        // println!("count {:?}", count);
+        println!("count {:?}", count);
     }
 }
