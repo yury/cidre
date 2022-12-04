@@ -522,6 +522,42 @@ impl<F> bl<F> {
     }
 }
 
+impl<R> bl<extern "C" fn(b: *const c_void) -> R> {
+    pub fn call(&self) -> R {
+        (self.invoke)(self as *const Self as _)
+    }
+}
+
+impl<A, R> bl<extern "C" fn(b: *const c_void, a: A) -> R> {
+    pub fn call(&self, a: A) -> R {
+        (self.invoke)(self as *const Self as _, a)
+    }
+}
+
+impl<A, B, R> bl<extern "C" fn(b: *const c_void, a: A, b: B) -> R> {
+    pub fn call(&self, a: A, b: B) -> R {
+        (self.invoke)(self as *const Self as _, a, b)
+    }
+}
+
+impl<A, B, C, R> bl<extern "C" fn(b: *const c_void, a: A, b: B, c: C) -> R> {
+    pub fn call(&self, a: A, b: B, c: C) -> R {
+        (self.invoke)(self as *const Self as _, a, b, c)
+    }
+}
+
+impl<A, B, C, D, R> bl<extern "C" fn(b: *const c_void, a: A, b: B, c: C, d: D) -> R> {
+    pub fn call(&self, a: A, b: B, c: C, d: D) -> R {
+        (self.invoke)(self as *const Self as _, a, b, c, d)
+    }
+}
+
+impl<A, B, C, D, E, R> bl<extern "C" fn(b: *const c_void, a: A, b: B, c: C, d: D, e: E) -> R> {
+    pub fn call(&self, a: A, b: B, c: C, d: D, e: E) -> R {
+        (self.invoke)(self as *const Self as _, a, b, c, d, e)
+    }
+}
+
 #[cfg_attr(
     any(target_os = "macos", target_os = "ios"),
     link(name = "System", kind = "dylib")
