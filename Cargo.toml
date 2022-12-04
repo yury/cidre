@@ -19,6 +19,10 @@ rt = { path = "../rt"}
 name = "metal"
 harness = false
 
+[[bench]]
+name = "call"
+harness = false
+
 #[lib]
 #crate-type = ["staticlib", "rlib"]
 
@@ -26,4 +30,3 @@ harness = false
 lto = true
 strip = "debuginfo"
 panic = "abort"
-
