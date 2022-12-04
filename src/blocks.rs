@@ -172,7 +172,8 @@ impl Flags {
     pub const HAS_EXTENDED_LAYOUT: Self = Self(1 << 31);
 
     const RETAINED_NEEDS_FREE: Self = Self(Self(2).0 | Self::NEEDS_FREE.0);
-    const RETAINED_NEEDS_DROP: Self = Self(Self(2).0 | Self::NEEDS_FREE.0 | Self::HAS_COPY_DISPOSE.0);
+    const RETAINED_NEEDS_DROP: Self =
+        Self(Self(2).0 | Self::NEEDS_FREE.0 | Self::HAS_COPY_DISPOSE.0);
 }
 
 #[repr(C)]
@@ -400,19 +401,24 @@ impl<F: Sized> Layout2Once<F> {
         } else {
             panic!()
         }
-    } 
+    }
 
     fn new(invoke: *const c_void, f: F) -> BlOnce<F> {
+        let flags = if mem::needs_drop::<F>() {
+            Flags::RETAINED_NEEDS_DROP
+        } else {
+            Flags::RETAINED_NEEDS_FREE
+        };
         let block = Box::new(Self {
             isa: unsafe { &_NSConcreteMallocBlock },
-            flags: if mem::needs_drop::<F>() { Flags::RETAINED_NEEDS_DROP } else { Flags::RETAINED_NEEDS_FREE },
+            flags,
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2,
             closure: Some(f),
         });
         let block_ref = Box::leak(block);
-        BlOnce(unsafe { mem::transmute(block_ref) } )
+        BlOnce(unsafe { mem::transmute(block_ref) })
     }
 }
 
@@ -477,19 +483,25 @@ impl<F: Sized> Layout2Mut<F> {
         F: FnMut(A, B, C, D, E) -> R,
     {
         (self.closure)(a, b, c, d, e)
-    }    
+    }
 
     fn new(invoke: *const c_void, f: F) -> BlMut<F> {
+        let flags = if mem::needs_drop::<F>() {
+            Flags::RETAINED_NEEDS_DROP
+        } else {
+            Flags::RETAINED_NEEDS_FREE
+        };
+
         let block = Box::new(Self {
             isa: unsafe { &_NSConcreteMallocBlock },
-            flags: if mem::needs_drop::<F>() { Flags::RETAINED_NEEDS_DROP } else { Flags::RETAINED_NEEDS_FREE },
+            flags,
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_2,
             closure: mem::ManuallyDrop::new(f),
         });
         let block_ref = Box::leak(block);
-        BlMut(unsafe { mem::transmute(block_ref) } )
+        BlMut(unsafe { mem::transmute(block_ref) })
     }
 }
 

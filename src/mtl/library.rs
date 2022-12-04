@@ -263,7 +263,7 @@ extern "C" {
 #[cfg(test)]
 mod tests {
 
-    use crate::{cf, mtl, blocks};
+    use crate::{blocks, cf, mtl};
 
     #[test]
     fn foo() {

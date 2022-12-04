@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cf, cg, define_cf_type, dispatch, io, blocks};
+use crate::{blocks, cf, cg, define_cf_type, dispatch, io};
 
 define_cf_type!(DisplayStream(cf::Type));
 define_cf_type!(Update(cf::Type));
@@ -355,10 +355,11 @@ mod tests {
 
     #[test]
     fn basics() {
-        use crate::{cg, dispatch, blocks};
+        use crate::{blocks, cg, dispatch};
 
-        let mut block = blocks::mut4(|frame_status, timestamp, surface, _update|
-            println!("got! {timestamp:?} {frame_status:?} {surface:?}"));
+        let mut block = blocks::mut4(|frame_status, timestamp, surface, _update| {
+            println!("got! {timestamp:?} {frame_status:?} {surface:?}")
+        });
 
         let queue = dispatch::Queue::global(0).unwrap();
 

@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cf, cg, define_obj_type, msg_send, ns, sys, blocks};
+use crate::{blocks, cf, cg, define_obj_type, msg_send, ns, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -108,8 +108,7 @@ extern "C" {
 mod tests {
 
     use crate::{
-        cf, dispatch,
-        blocks,
+        blocks, cf, dispatch,
         sc::{
             self,
             stream::{StreamDelegate, StreamOutput},

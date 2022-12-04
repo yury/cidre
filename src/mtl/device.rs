@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{cf, define_obj_type, define_options, io, msg_send, mtl, ns, blocks};
+use crate::{blocks, cf, define_obj_type, define_options, io, msg_send, mtl, ns};
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 

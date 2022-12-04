@@ -1,8 +1,9 @@
 use std::{ffi::c_void, ops::Deref};
 
 use crate::{
+    blocks,
     cf::{self, Retained},
-    cg, cm, cv, blocks, define_obj_type, dispatch, msg_send,
+    cg, cm, cv, define_obj_type, dispatch, msg_send,
     objc::{Delegate, Id},
     os,
 };
