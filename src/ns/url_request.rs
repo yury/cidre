@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Retained},
-    define_obj_type, msg_send, ns,
+    define_obj_type, ext_msg_send, ns,
 };
 
 define_obj_type!(URLRequest(ns::Id));
@@ -97,7 +97,7 @@ impl URLRequest {
 
     #[inline]
     pub fn url(&self) -> Option<&cf::URL> {
-        msg_send!("common", self, sel_URL)
+        ext_msg_send!("common", self, sel_URL)
     }
 
     #[inline]
@@ -160,7 +160,7 @@ impl URLRequest {
     }
 
     pub fn mutable_copy(&self) -> Retained<MutableURLRequest> {
-        msg_send!("common", self, sel_mutableCopy)
+        ext_msg_send!("common", self, sel_mutableCopy)
     }
 }
 
@@ -230,7 +230,7 @@ impl MutableURLRequest {
 
     #[inline]
     pub fn set_url(&mut self, value: Option<&cf::URL>) {
-        msg_send!("common", self, sel_setURL, value)
+        ext_msg_send!("common", self, sel_setURL, value)
     }
 
     #[inline]

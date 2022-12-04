@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{cf, define_mtl, define_obj_type, msg_send, ns};
+use crate::{cf, define_mtl, define_obj_type, ext_msg_send, ns};
 
 use super::{argument::Argument, Function, PixelFormat};
 

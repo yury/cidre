@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, msg_send, ns};
+use crate::{cf, define_mtl, define_obj_type, ext_msg_send, ns};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -27,7 +27,7 @@ impl CommandEncoder {
 
     #[inline]
     pub fn end_encoding(&mut self) {
-        msg_send!("mtl", self, sel_endEncoding)
+        ext_msg_send!("mtl", self, sel_endEncoding)
     }
 
     pub fn insert_debug_signpost(&mut self, signpost: &cf::String) {

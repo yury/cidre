@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{define_mtl, define_obj_type, ext_msg_send, mtl, ns};
 
 define_obj_type!(ComputeCommandEncoder(mtl::CommandEncoder));
 
@@ -13,17 +13,17 @@ impl ComputeCommandEncoder {
 
     #[inline]
     pub fn set_compute_pipeline_state(&mut self, state: &mtl::ComputePipelineState) {
-        msg_send!("mtl", self, sel_setComputePipelineState, state)
+        ext_msg_send!("mtl", self, sel_setComputePipelineState, state)
     }
 
     #[inline]
     pub fn set_texture_at_index(&mut self, texture: Option<&mtl::Texture>, index: usize) {
-        msg_send!("mtl", self, sel_setTexture_atIndex, texture, index)
+        ext_msg_send!("mtl", self, sel_setTexture_atIndex, texture, index)
     }
 
     #[inline]
     pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range) {
-        msg_send!("mtl", self, sel_setTextures_withRange, textures, range)
+        ext_msg_send!("mtl", self, sel_setTextures_withRange, textures, range)
     }
 
     #[inline]
@@ -32,7 +32,7 @@ impl ComputeCommandEncoder {
         threads_per_grid: mtl::Size,
         threads_per_threadgroup: mtl::Size,
     ) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_dispatchThreads_threadsPerThreadgroup,
@@ -47,7 +47,7 @@ impl ComputeCommandEncoder {
         threadgroups_per_grid: mtl::Size,
         threads_per_threadgroup: mtl::Size,
     ) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_dispatchThreadgroups_threadsPerThreadgroup,
@@ -58,7 +58,7 @@ impl ComputeCommandEncoder {
 
     #[inline]
     pub fn set_image_block_size(&mut self, width: usize, height: usize) {
-        msg_send!("mtl", self, sel_setImageblockWidth_height, width, height)
+        ext_msg_send!("mtl", self, sel_setImageblockWidth_height, width, height)
     }
 }
 

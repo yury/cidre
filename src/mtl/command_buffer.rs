@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{blocks, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{blocks, define_mtl, define_obj_type, ext_msg_send, mtl, ns};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -42,27 +42,27 @@ impl CommandBuffer {
 
     #[inline]
     pub fn command_queue(&self) -> &mtl::CommandQueue {
-        msg_send!("mtl", self, sel_commandQueue)
+        ext_msg_send!("mtl", self, sel_commandQueue)
     }
 
     #[inline]
     pub fn enqueue(&self) {
-        msg_send!("mtl", self, sel_enqueue)
+        ext_msg_send!("mtl", self, sel_enqueue)
     }
 
     #[inline]
     pub fn commit(&self) {
-        msg_send!("mtl", self, sel_commit)
+        ext_msg_send!("mtl", self, sel_commit)
     }
 
     #[inline]
     pub fn wait_untint_scheduled(&self) {
-        msg_send!("mtl", self, sel_waitUntilScheduled)
+        ext_msg_send!("mtl", self, sel_waitUntilScheduled)
     }
 
     #[inline]
     pub fn wait_until_completed(&self) {
-        msg_send!("mtl", self, sel_waitUntilCompleted)
+        ext_msg_send!("mtl", self, sel_waitUntilCompleted)
     }
 
     pub fn add_scheduled_handler<F>(&self, block: &'static mut blocks::Block<F>)
@@ -81,12 +81,12 @@ impl CommandBuffer {
 
     #[inline]
     pub fn blit_command_encoder<'new>(&self) -> Option<&'new mut mtl::BlitCommandEncoder> {
-        msg_send!("mtl", self, sel_blitCommandEncoder)
+        ext_msg_send!("mtl", self, sel_blitCommandEncoder)
     }
 
     #[inline]
     pub fn compute_command_encoder<'new>(&self) -> Option<&'new mut mtl::ComputeCommandEncoder> {
-        msg_send!("mtl", self, sel_computeCommandEncoder)
+        ext_msg_send!("mtl", self, sel_computeCommandEncoder)
     }
 
     #[inline]
@@ -94,7 +94,7 @@ impl CommandBuffer {
         &self,
         descriptor: &mtl::ComputePassDescriptor,
     ) -> Option<&'new mut mtl::ComputeCommandEncoder> {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_computeCommandEncoderWithDescriptor,
@@ -107,7 +107,7 @@ impl CommandBuffer {
         &self,
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<&'new mut mtl::RenderCommandEncoder> {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_renderCommandEncoderWithDescriptor,

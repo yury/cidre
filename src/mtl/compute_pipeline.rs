@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{cf, define_mtl, define_obj_type, ext_msg_send, mtl, ns};
 
 define_obj_type!(Reflection(ns::Id));
 

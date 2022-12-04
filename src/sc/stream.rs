@@ -3,7 +3,7 @@ use std::{ffi::c_void, ops::Deref};
 use crate::{
     blocks,
     cf::{self, Retained},
-    cg, cm, cv, define_obj_type, dispatch, msg_send,
+    cg, cm, cv, define_obj_type, dispatch, ext_msg_send,
     objc::{Delegate, Id},
     os,
 };
@@ -52,19 +52,19 @@ impl Configuration {
     }
 
     pub fn width(&self) -> usize {
-        msg_send!("common", self, sel_width)
+        ext_msg_send!("common", self, sel_width)
     }
 
     pub fn set_width(&mut self, value: usize) {
-        msg_send!("common", self, sel_setWidth, value)
+        ext_msg_send!("common", self, sel_setWidth, value)
     }
 
     pub fn height(&self) -> usize {
-        msg_send!("common", self, sel_height)
+        ext_msg_send!("common", self, sel_height)
     }
 
     pub fn set_height(&mut self, value: usize) {
-        msg_send!("common", self, sel_setHeight, value)
+        ext_msg_send!("common", self, sel_setHeight, value)
     }
 
     pub fn minimum_frame_interval(&self) -> cm::Time {

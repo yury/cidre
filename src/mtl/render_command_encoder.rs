@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns};
+use crate::{define_mtl, define_obj_type, define_options, ext_msg_send, mtl, ns};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -150,7 +150,7 @@ impl RenderCommandEncoder {
 
     #[inline]
     pub fn set_render_pipeline_state(&mut self, state: &mtl::RenderPipelineState) {
-        msg_send!("mtl", self, sel_setRenderPipelineState, state)
+        ext_msg_send!("mtl", self, sel_setRenderPipelineState, state)
     }
 
     #[inline]
@@ -165,7 +165,7 @@ impl RenderCommandEncoder {
         offset: usize,
         at_index: usize,
     ) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_setVertexBuffer_offset_atIndex,
@@ -182,7 +182,7 @@ impl RenderCommandEncoder {
         offset: usize,
         at_index: usize,
     ) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_setFragmentBuffer_offset_atIndex,
@@ -194,7 +194,7 @@ impl RenderCommandEncoder {
 
     #[inline]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_setFragmentTexture_atIndex,
@@ -211,7 +211,7 @@ impl RenderCommandEncoder {
         vertex_count: usize,
         instance_count: usize,
     ) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_drawPrimitives_vertexStart_vertexCount_instanceCount,
@@ -229,7 +229,7 @@ impl RenderCommandEncoder {
         vertex_start: usize,
         vertex_count: usize,
     ) {
-        msg_send!(
+        ext_msg_send!(
             "mtl",
             self,
             sel_drawPrimitives_vertexStart_vertexCount,

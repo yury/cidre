@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{blocks, cf, define_obj_type, define_options, io, msg_send, mtl, ns};
+use crate::{blocks, cf, define_obj_type, define_options, ext_msg_send, io, mtl, ns};
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 
@@ -67,7 +67,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn name(&self) -> &cf::String {
-        msg_send!("common", self, sel_name)
+        ext_msg_send!("common", self, sel_name)
     }
 
     /// ```
@@ -141,7 +141,7 @@ impl Device {
     ///
     #[inline]
     pub fn command_queue(&self) -> Option<cf::Retained<CommandQueue>> {
-        msg_send!("mtl", self, sel_newCommandQueue)
+        ext_msg_send!("mtl", self, sel_newCommandQueue)
     }
 
     /// ```
@@ -358,7 +358,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn fence(&self) -> Option<cf::Retained<Fence>> {
-        msg_send!("mtl", self, sel_newFence)
+        ext_msg_send!("mtl", self, sel_newFence)
     }
 
     /// ```
