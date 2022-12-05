@@ -611,7 +611,7 @@ mod tests {
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use crate::cf::{self, runtime::Retain, Retained};
+use crate::cf;
 
 struct Shared<T> {
     ready: Option<T>,
@@ -661,7 +661,7 @@ pub fn comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
 }
 
 pub fn ok() -> (
-    Comp<Result<(), Retained<cf::Error>>>,
+    Comp<Result<(), cf::Retained<cf::Error>>>,
     BlOnce<impl FnOnce(Option<&'static cf::Error>)>,
 ) {
     let shared = Shared::new();
@@ -676,8 +676,8 @@ pub fn ok() -> (
     )
 }
 
-pub fn result<T: Retain>() -> (
-    Comp<Result<Retained<T>, Retained<cf::Error>>>,
+pub fn result<T: cf::Retain>() -> (
+    Comp<Result<cf::Retained<T>, cf::Retained<cf::Error>>>,
     BlOnce<impl FnOnce(Option<&'static T>, Option<&'static cf::Error>)>,
 ) {
     let shared = Shared::new();

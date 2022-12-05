@@ -1,4 +1,6 @@
 pub mod runtime;
+pub use runtime::Release;
+pub use runtime::Retain;
 pub use runtime::Retained;
 pub use runtime::Type;
 
