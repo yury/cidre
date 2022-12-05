@@ -409,6 +409,7 @@ impl<F: Sized> Layout2Once<F> {
         } else {
             Flags::RETAINED_NEEDS_FREE
         };
+
         let block = Box::new(Self {
             isa: unsafe { &_NSConcreteMallocBlock },
             flags,
@@ -511,12 +512,12 @@ impl<F> bl<F> {
         size: std::mem::size_of::<Self>(),
     };
 
-    pub fn with(f: F) -> bl<F> {
+    pub fn with(invoke: F) -> bl<F> {
         bl {
             isa: unsafe { &_NSConcreteStackBlock },
             flags: Flags::NONE,
             reserved: 0,
-            invoke: f,
+            invoke,
             descriptor: &Self::DESCRIPTOR,
         }
     }
@@ -690,7 +691,7 @@ pub fn result<T: Retain>() -> (
                 };
 
                 shared.lock().ready(res);
-            }
+            },
         ),
     )
 }

@@ -113,7 +113,7 @@ impl CodecType {
     }
 
     /// The HEVC video codec that supports an alpha channel.
-    /// 
+    ///
     /// MPORTANT NOTE: this constant is used to select the appropriate encoder,
     /// but is NOT used on the encoded content, which is backwards compatible
     /// and hence uses 'hvc1' as its codec type.
