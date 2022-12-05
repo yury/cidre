@@ -654,14 +654,9 @@ impl<T> std::future::Future for Comp<T> {
     }
 }
 
-fn async_comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
+pub fn comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
     let shared = Shared::new();
-    let comp = Comp(shared.clone());
-    let block = once0(move || {
-        shared.lock().ready(());
-    });
-
-    (comp, block)
+    (Comp(shared.clone()), once0(move || shared.lock().ready(())))
 }
 
 pub fn ok() -> (
