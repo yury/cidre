@@ -669,8 +669,8 @@ pub fn ok() -> (
         Comp(shared.clone()),
         once1(move |error: Option<&'static cf::Error>| {
             shared.lock().ready(match error {
-                Some(err) => Err(err.retained()),
                 None => Ok(()),
+                Some(err) => Err(err.retained()),
             });
         }),
     )
@@ -686,8 +686,8 @@ pub fn result<T: cf::Retain>() -> (
         once2(
             move |value: Option<&'static T>, error: Option<&'static cf::Error>| {
                 let res = match error {
-                    Some(err) => Err(err.retained()),
                     None => Ok(unsafe { value.unwrap_unchecked().retained() }),
+                    Some(err) => Err(err.retained()),
                 };
 
                 shared.lock().ready(res);
