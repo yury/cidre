@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, ext_msg_send, ns};
+use crate::{av, cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(Input(ns::Id));
 define_obj_type!(DeviceInput(Input));
@@ -43,11 +43,11 @@ impl Port {
     }
 
     pub fn enabled(&self) -> bool {
-        ext_msg_send!("common", self, sel_isEnabled)
+        msg_send!("common", self, sel_isEnabled)
     }
 
     pub fn set_enabled(&mut self, value: bool) {
-        ext_msg_send!("common", self, sel_isEnabled, value)
+        msg_send!("common", self, sel_isEnabled, value)
     }
 }
 

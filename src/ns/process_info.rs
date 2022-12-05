@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ext_msg_send, msg_send, ns};
+use crate::{define_obj_type, ns, msg_send};
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 #[repr(isize)]
@@ -51,24 +51,31 @@ impl ProcessInfo {
 
     /// ```
     /// use cidre::ns;
-    ///
+    /// 
     /// let pi = ns::ProcessInfo::current();
     /// let count = pi.processor_count();
     /// ```
     #[inline]
     pub fn processor_count(&self) -> usize {
-        msg_send!(self, crate::objc::Sel::processor_count())
+        unsafe {
+            self.sel(crate::objc::sel_processor_count())
+        }
     }
 
     #[inline]
     pub fn processor_count2(&self) -> usize {
-        unsafe { rsel_processorCount(self) }
+        unsafe {
+            rsel_processorCount(self)
+        }
     }
 
     #[inline]
     pub fn processor_count3(&self) -> usize {
-        ext_msg_send!("common", self, sel_processorCount)
+        unsafe {
+            msg_send!("common", self, sel_processorCount)
+        }
     }
+
 
     #[inline]
     pub fn active_processor_count(&self) -> usize {

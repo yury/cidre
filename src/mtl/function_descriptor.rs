@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, ext_msg_send, ns};
+use crate::{cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(FunctionDescriptor(ns::Id));
 
@@ -18,12 +18,12 @@ impl Default for FunctionOptions {
 impl FunctionDescriptor {
     #[inline]
     pub fn name(&self) -> Option<&cf::String> {
-        ext_msg_send!("common", self, sel_name)
+        msg_send!("common", self, sel_name)
     }
 
     #[inline]
     pub fn set_name(&mut self, name: Option<&cf::String>) {
-        ext_msg_send!("common", self, sel_setName, name)
+        msg_send!("common", self, sel_setName, name)
     }
 
     /// ```rust

@@ -201,49 +201,49 @@ macro_rules! define_mtl {
     (device) => {
         #[inline]
         pub fn device(&self) -> &crate::mtl::Device {
-            crate::ext_msg_send!("mtl", self, sel_device)
+            crate::msg_send!("mtl", self, sel_device)
         }
     };
 
     (set_label) => {
         #[inline]
         pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
-            crate::ext_msg_send!("common", self, sel_setLabel, value)
+            crate::msg_send!("common", self, sel_setLabel, value)
         }
     };
 
     (label) => {
         #[inline]
         pub fn label(&self) -> Option<&crate::cf::String> {
-            crate::ext_msg_send!("common", self, sel_label)
+            crate::msg_send!("common", self, sel_label)
         }
     };
 
     (width) => {
         #[inline]
         pub fn width(&self) -> usize {
-            crate::ext_msg_send!("common", self, sel_width)
+            crate::msg_send!("common", self, sel_width)
         }
     };
 
     (set_width) => {
         #[inline]
         pub fn set_width(&mut self, value: usize) {
-            crate::ext_msg_send!("common", self, sel_setWidth, value)
+            crate::msg_send!("common", self, sel_setWidth, value)
         }
     };
 
     (height) => {
         #[inline]
         pub fn height(&self) -> usize {
-            crate::ext_msg_send!("common", self, sel_height)
+            crate::msg_send!("common", self, sel_height)
         }
     };
 
     (set_height) => {
         #[inline]
         pub fn set_height(&mut self, value: usize) {
-            crate::ext_msg_send!("common", self, sel_setHeight, value)
+            crate::msg_send!("common", self, sel_setHeight, value)
         }
     };
 
@@ -277,28 +277,28 @@ macro_rules! define_mtl {
     (gpu_resouce_id) => {
         #[inline]
         pub fn gpu_resouce_id(&self) -> crate::mtl::ResourceID {
-            crate::ext_msg_send!("mtl", self, sel_gpuResourceID)
+            msg_send!("mtl", self, sel_gpuResourceID)
         }
     };
 
     (update_fence) => {
         #[inline]
         pub fn update_fence(&self, fence: &crate::mtl::Fence) {
-            crate::ext_msg_send!("mtl", self, sel_updateFence_a, fence)
+            crate::msg_send!("mtl", self, sel_updateFence_a, fence)
         }
     };
 
     (wait_for_fence) => {
         #[inline]
         pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
-            crate::ext_msg_send!("mtl", self, sel_waitForFence_a, fence)
+            crate::msg_send!("mtl", self, sel_waitForFence_a, fence)
         }
     };
 
     (use_resource) => {
         #[inline]
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage) {
-            crate::ext_msg_send!("mtl", self, sel_useResource_usage, resource, usage)
+            crate::msg_send!("mtl", self, sel_useResource_usage, resource, usage)
         }
     };
 
@@ -310,7 +310,7 @@ macro_rules! define_mtl {
                 static sel_useResources_count_usage: &'static crate::objc::Sel;
             }
             unsafe {
-                self.sel3(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
+                self.sel_abc(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
             }
         }
     };

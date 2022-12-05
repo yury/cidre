@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, ext_msg_send, mtl, ns};
+use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug)]
 #[repr(C)]

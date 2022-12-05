@@ -1,6 +1,6 @@
 use std::{fmt::Debug, intrinsics::transmute};
 
-use crate::{cf, define_mtl, define_obj_type, ext_msg_send, mtl, ns};
+use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
@@ -76,7 +76,7 @@ impl Function {
 
     #[inline]
     pub fn name(&self) -> &cf::String {
-        ext_msg_send!("common", self, sel_name)
+        msg_send!("common", self, sel_name)
     }
 
     #[inline]

@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, ext_msg_send, mtl, ns};
+use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
@@ -39,11 +39,11 @@ impl Descriptor {
     }
 
     pub fn size(&self) -> usize {
-        ext_msg_send!("common", self, sel_size)
+        msg_send!("common", self, sel_size)
     }
 
     pub fn set_size(&mut self, value: usize) {
-        ext_msg_send!("common", self, sel_setSize, value)
+        msg_send!("common", self, sel_setSize, value)
     }
 }
 
@@ -59,7 +59,7 @@ impl Heap {
     );
 
     pub fn size(&self) -> usize {
-        ext_msg_send!("common", self, sel_size)
+        msg_send!("common", self, sel_size)
     }
 
     #[inline]

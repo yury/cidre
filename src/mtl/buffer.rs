@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ext_msg_send, mtl};
+use crate::{define_obj_type, msg_send, mtl};
 
 define_obj_type!(Buffer(mtl::Resource));
 
@@ -16,7 +16,7 @@ impl Buffer {
     /// ```
     #[inline]
     pub fn length(&self) -> usize {
-        ext_msg_send!("common", self, sel_length)
+        msg_send!("common", self, sel_length)
     }
 
     #[inline]
@@ -31,11 +31,11 @@ impl Buffer {
 
     #[inline]
     pub fn contents(&self) -> *mut u8 {
-        ext_msg_send!("mtl", self, sel_content)
+        msg_send!("mtl", self, sel_content)
     }
 
     #[inline]
     pub fn gpu_address(&self) -> u64 {
-        ext_msg_send!("mtl", self, sel_gpuAddress)
+        msg_send!("mtl", self, sel_gpuAddress)
     }
 }

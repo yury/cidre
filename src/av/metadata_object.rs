@@ -1,4 +1,4 @@
-use crate::{cf, cg, cm, define_cf_type, define_obj_type, ext_msg_send, ns};
+use crate::{cf, cg, cm, define_cf_type, define_obj_type, msg_send, ns};
 
 define_cf_type!(Type(cf::String));
 
@@ -158,7 +158,7 @@ impl Object {
     /// return cg::Rect::zero if the metadata has no bounds.
     #[inline]
     pub fn bounds(&self) -> cg::Rect {
-        ext_msg_send!("common", self, sel_bounds)
+        msg_send!("common", self, sel_bounds)
     }
 
     /// The media time associated with this metadata object.

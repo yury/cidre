@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, ext_msg_send, ns};
+use crate::{define_mtl, define_obj_type, msg_send, ns};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]

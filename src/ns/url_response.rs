@@ -1,6 +1,6 @@
 use crate::{
     cf::{self, Retained},
-    define_obj_type, ext_msg_send, ns,
+    define_obj_type, msg_send, ns,
 };
 
 define_obj_type!(URLResponse(ns::Id));
@@ -37,7 +37,7 @@ impl URLResponse {
     }
 
     pub fn url(&self) -> Option<&cf::URL> {
-        ext_msg_send!("common", self, sel_URL)
+        msg_send!("common", self, sel_URL)
     }
 }
 

@@ -37,47 +37,55 @@ impl Id {
     }
 
     #[inline]
-    pub unsafe fn sel0<R>(&self, selector: &Sel) -> R {
+    pub unsafe fn sel<R>(&self, selector: &Sel) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector)
     }
 
     #[inline]
-    pub unsafe fn sel1<A, R>(&self, selector: &Sel, a: A) -> R {
+    pub unsafe fn sel_a<R, A>(&self, selector: &Sel, a: A) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector, a)
     }
 
     #[inline]
-    pub unsafe fn sel2<A, B, R>(&self, selector: &Sel, a: A, b: B) -> R {
+    pub unsafe fn sel_ab<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b)
     }
 
     #[inline]
-    pub unsafe fn sel3<A, B, C, R>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
+    pub unsafe fn sel_abc<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c)
     }
 
     #[inline]
-    pub unsafe fn sel4<A, B, C, D, R>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
+    pub unsafe fn sel_abcd<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d)
     }
 
     #[inline]
-    pub unsafe fn sel5<A, B, C, D, E, R>(&self, selector: &Sel, a: A, b: B, c: C, d: D, e: E) -> R {
+    pub unsafe fn sel_abcde<R, A, B, C, D, E>(
+        &self,
+        selector: &Sel,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+    ) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d, e)
     }
 
     #[inline]
-    pub unsafe fn sel6<A, B, C, D, E, F, R>(
+    pub unsafe fn sel_abcdef<R, A, B, C, D, E, F>(
         &self,
         selector: &Sel,
         a: A,
@@ -92,7 +100,7 @@ impl Id {
         imp(self, selector, a, b, c, d, e, f)
     }
     #[inline]
-    pub unsafe fn sel7<A, B, C, D, E, F, G, R>(
+    pub unsafe fn sel_abcdefg<R, A, B, C, D, E, F, G>(
         &self,
         selector: &Sel,
         a: A,
@@ -152,7 +160,7 @@ where
 }
 
 #[macro_export]
-macro_rules! ext_msg_send {
+macro_rules! msg_send {
     // TODO: we should pass name and kind
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident, $f:ident, $g:ident) => {{
         #[link(name = $lib, kind = "static")]
@@ -160,7 +168,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel7($sel, $a, $b, $c, $d, $e, $f, $g) }
+        unsafe { $self.sel_abcdefg($sel, $a, $b, $c, $d, $e, $f, $g) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident, $f:ident) => {{
         #[link(name = $lib, kind = "static")]
@@ -168,7 +176,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
+        unsafe { $self.sel_abcdef($sel, $a, $b, $c, $d, $e, $f) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident) => {{
         #[link(name = $lib, kind = "static")]
@@ -176,7 +184,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel5($sel, $a, $b, $c, $d, $e) }
+        unsafe { $self.sel_abcde($sel, $a, $b, $c, $d, $e) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident) => {{
         #[link(name = $lib, kind = "static")]
@@ -184,7 +192,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel4($sel, $a, $b, $c, $d) }
+        unsafe { $self.sel_abcd($sel, $a, $b, $c, $d) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident) => {{
         #[link(name = $lib, kind = "static")]
@@ -192,7 +200,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel3($sel, $a, $b, $c) }
+        unsafe { $self.sel_abc($sel, $a, $b, $c) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident) => {{
@@ -201,7 +209,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel2($sel, $a, $b) }
+        unsafe { $self.sel_ab($sel, $a, $b) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:ident) => {{
@@ -210,7 +218,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel1($sel, $a) }
+        unsafe { $self.sel_a($sel, $a) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident) => {{
@@ -219,42 +227,7 @@ macro_rules! ext_msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel0($sel) }
-    }};
-}
-
-#[macro_export]
-macro_rules! msg_send {
-    ($self:ident, $sel:expr, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr) => {{
-        unsafe { $self.sel7($sel, $a, $b, $c, $d, $e, $f, $g) }
-    }};
-
-    ($self:ident, $sel:expr, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr) => {{
-        unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
-    }};
-
-    ($self:ident, $sel:expr, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {{
-        unsafe { $self.sel5($sel, $a, $b, $c, $d, $e) }
-    }};
-
-    ($self:ident, $sel:expr, $a:expr, $b:expr, $c:expr, $d:expr) => {{
-        unsafe { $self.sel4($sel, $a, $b, $c, $d) }
-    }};
-
-    ($self:ident, $sel:expr, $a:expr, $b:expr, $c:expr) => {{
-        unsafe { $self.sel3($sel, $a, $b, $c) }
-    }};
-
-    ($self:ident, $sel:expr, $a:expr, $b:expr) => {{
-        unsafe { $self.sel2($sel, $a, $b) }
-    }};
-
-    ($self:ident, $sel:expr, $a:expr) => {{
-        unsafe { $self.sel1($sel, $a) }
-    }};
-
-    ($self:ident, $sel:expr) => {{
-        unsafe { $self.sel0($sel) }
+        unsafe { $self.sel($sel) }
     }};
 }
 
@@ -328,86 +301,53 @@ pub struct Delegate<T: Sized> {
     pub obj: crate::cf::Retained<Id>,
 }
 
-// struct ImageInfo {
-//     _version: u32,
-//     _flags: u32,
-// }
-
-// #[link_section = "__DATA,__objc_imageinfo"]
-// #[used]
-// static IMAGE_INFO: ImageInfo = ImageInfo {
-//     _version: 0,
-//     _flags: 0,
-// };
-
-// pub fn sel_processor_count() -> &'static Sel {
-//     #[link_section = "__TEXT,__objc_methname,cstring_literals"]
-//     static STR: [u8; 15] = *b"processorCount\0";
-//     #[link_section = "__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
-//     static SEL: &[u8; 15] = &STR;
-
-//     unsafe {
-//         let ptr = std::ptr::read_volatile(&SEL);
-//         transmute(ptr)
-//     }
-// }
-
-core::arch::global_asm!(
-    "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
-    "L_OBJC_IMAGE_INFO:",
-    "    .long    0",
-    "    .long    0",
-    "    .popsection",
-);
-
-#[macro_export]
-macro_rules! define_sel {
-
-    ($name:ident, $sel:literal) => {
-
-        impl crate::objc::Sel {
-
-            #[inline(always)]
-            pub fn $name() -> &'static Self {
-                unsafe {
-                    let cmd: *const u8;
-
-                    core::arch::asm!(
-                        "    .pushsection __TEXT,__objc_methname,cstring_literals",
-                        "2:",
-                        concat!("    .asciz   \"",  $sel, "\""),
-                        "",
-                        "    .section     __DATA,__objc_selrefs,literal_pointers,no_dead_strip",
-                        "    .p2align 3",
-                        "3:",
-                        "    .quad    2b",
-                        "    .popsection",
-                        "adrp	{y}, 3b@PAGE",
-                        "ldr	{x}, [{y}, 3b@PAGEOFF]",
-                        y = out(reg) _,
-                        x = out(reg) cmd,
-                        options(nomem, nostack, pure),
-                    );
-
-                    transmute(cmd)
-                }
-            }
-        }
-
-    };
+struct ImageInfo {
+    _version: u32,
+    _flags: u32,
 }
 
-define_sel!(processor_count, "processorCount");
+#[link_section = "__DATA,__objc_imageinfo"]
+#[used] 
+static IMAGE_INFO: ImageInfo = ImageInfo {
+    _version: 0,
+    _flags: 0
+};
+
+// #[link_section="__TEXT,__objc_methname,cstring_literals"]
+// static STR_ALLOC : [u8; 6] = *b"alloc\0";
+// #[link_section="__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
+// static SEL_ALLOC: &[u8; 6] = &STR_ALLOC;
+
+// #[link_section="__TEXT,__objc_methname,cstring_literals"]
+// static STR_INIT : [u8; 5] = *b"init\0";
+// #[link_section="__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
+// static SEL_INIT: Sel = Sel(&STR_INIT as *const _);
+
+
+pub fn sel_processor_count() -> &'static Sel {
+    #[link_section="__TEXT,__objc_methname,cstring_literals"]
+    static STR : [u8; 15] = *b"processorCount\0";
+    #[link_section="__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
+    static SEL: &[u8; 15] = &STR;
+
+
+    unsafe { 
+        let ptr = std::ptr::read_volatile(&SEL);
+        transmute(ptr) 
+    }
+}
 
 #[cfg(test)]
 mod tests {
+    use super::sel_processor_count;
+
 
     #[test]
-    fn basics() {
-        let proc = crate::ns::ProcessInfo::current();
+    fn basics(){
+        let proc = crate::ns::ProcessInfo::current();        
 
-        // let count: usize = unsafe { proc.sel0(sel_processor_count()) };
+        let count: usize = unsafe { proc.sel(sel_processor_count()) };
 
-        // println!("count {:?}", count);
+        println!("count {:?}" , count);
     }
 }
