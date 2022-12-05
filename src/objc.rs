@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::cf::{
     runtime::{Release, Retain},
@@ -144,7 +144,7 @@ impl std::fmt::Debug for Id {
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Sel(*const u8);
+pub struct Sel(NonNull<c_void>);
 
 pub mod autorelease_pool;
 pub mod ns;
@@ -299,55 +299,4 @@ macro_rules! define_obj_type {
 pub struct Delegate<T: Sized> {
     pub delegate: Box<T>,
     pub obj: crate::cf::Retained<Id>,
-}
-
-struct ImageInfo {
-    _version: u32,
-    _flags: u32,
-}
-
-#[link_section = "__DATA,__objc_imageinfo"]
-#[used] 
-static IMAGE_INFO: ImageInfo = ImageInfo {
-    _version: 0,
-    _flags: 0
-};
-
-// #[link_section="__TEXT,__objc_methname,cstring_literals"]
-// static STR_ALLOC : [u8; 6] = *b"alloc\0";
-// #[link_section="__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
-// static SEL_ALLOC: &[u8; 6] = &STR_ALLOC;
-
-// #[link_section="__TEXT,__objc_methname,cstring_literals"]
-// static STR_INIT : [u8; 5] = *b"init\0";
-// #[link_section="__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
-// static SEL_INIT: Sel = Sel(&STR_INIT as *const _);
-
-
-pub fn sel_processor_count() -> &'static Sel {
-    #[link_section="__TEXT,__objc_methname,cstring_literals"]
-    static STR : [u8; 15] = *b"processorCount\0";
-    #[link_section="__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
-    static SEL: &[u8; 15] = &STR;
-
-
-    unsafe { 
-        let ptr = std::ptr::read_volatile(&SEL);
-        transmute(ptr) 
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::sel_processor_count;
-
-
-    #[test]
-    fn basics(){
-        let proc = crate::ns::ProcessInfo::current();        
-
-        let count: usize = unsafe { proc.sel(sel_processor_count()) };
-
-        println!("count {:?}" , count);
-    }
 }

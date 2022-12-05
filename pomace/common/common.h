@@ -32,8 +32,6 @@ SEL sel_mutableCopy;
 SEL sel_URL;
 SEL sel_setURL;
 
-SEL sel_processorCount;
-
 __attribute__((constructor))
 static void common_initializer()
 {
@@ -62,7 +60,6 @@ static void common_initializer()
       sel_mutableCopy = @selector(mutableCopy);
       sel_URL = @selector(URL);
       sel_setURL = @selector(setURL:);
-      sel_processorCount = @selector(processorCount);
 
       initialized = 1;
     }
