@@ -690,7 +690,7 @@ pub fn result<T: Retain>() -> (
                 };
 
                 shared.lock().ready(res);
-            },
+            }
         ),
     )
 }

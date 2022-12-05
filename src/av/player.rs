@@ -23,9 +23,9 @@ pub enum TimeControlStatus {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum ActionAtItemEnd {
-    ActionAtItemEndAdvance = 0,
-    ActionAtItemEndPause = 1,
-    ActionAtItemEndNone = 2,
+    Advance = 0,
+    Pause = 1,
+    None = 2,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -39,9 +39,9 @@ pub enum HDRMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum AudiovisualBackgroundPlaybackPolicy {
-    AudiovisualBackgroundPlaybackPolicyAutomatic = 1,
-    AudiovisualBackgroundPlaybackPolicyPauses = 2,
-    AudiovisualBackgroundPlaybackPolicyContinuesIfPossible = 3,
+    Automatic = 1,
+    Pauses = 2,
+    ContinuesIfPossible = 3,
 }
 
 define_obj_type!(Player(ns::Id));
