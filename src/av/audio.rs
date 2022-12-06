@@ -1,5 +1,8 @@
 mod unit;
 pub use unit::Unit;
+pub use unit::UnitEffect;
+pub use unit::EqFilterType as UnitEqFilterType;
+pub use unit::UnitEq;
 
 pub mod types;
 pub use types::Angular3DOrientation;

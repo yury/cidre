@@ -251,6 +251,12 @@ rsel(, id, outputNode, AVAudioOutputNode *)
 NS_RETURNS_NOT_RETAINED
 rsel(, id, mainMixerNode, AVAudioMixerNode *)
 
+#pragma mark AVAudioUnitEffect
+
+NS_RETURNS_RETAINED
+asel_a(, AVAudioUnitEffect, initWithAudioComponentDescription, AudioComponentDescription)
+rwsel(, id, bypass, setBypass, BOOL)
+
 //- (void)prepare;
 //- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
 

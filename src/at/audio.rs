@@ -17,3 +17,8 @@ pub use converter::errors;
 pub use converter::Converter;
 pub use converter::DitherAlgorithm;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
+
+mod component;
+pub use component::Description as ComponentDescription;
+pub use component::Flags as ComponentFlags;
+pub use component::InstantiationOptions as ComponentInstantiationOptions;
