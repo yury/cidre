@@ -55,7 +55,7 @@ impl Data {
     }
 
     #[inline]
-    pub fn bytes_ptr(&self) -> *const u8 {
+    pub fn as_ptr(&self) -> *const u8 {
         unsafe { CFDataGetBytePtr(self) }
     }
 
@@ -72,7 +72,7 @@ impl Data {
 
     #[inline]
     pub fn as_slice(&self) -> &[u8] {
-        unsafe { &*slice_from_raw_parts(self.bytes_ptr() as _, self.len()) }
+        unsafe { &*slice_from_raw_parts(self.as_ptr() as _, self.len()) }
     }
 }
 
@@ -105,7 +105,7 @@ impl MutableData {
 
     /// use `as_slice_mut()`
     #[inline]
-    pub unsafe fn bytes_ptr_mut(&mut self) -> *mut u8 {
+    pub unsafe fn as_ptr_mut(&mut self) -> *mut u8 {
         CFDataGetMutableBytePtr(self)
     }
 
@@ -116,7 +116,7 @@ impl MutableData {
 
     #[inline]
     pub fn as_slice_mut(&mut self) -> &mut [u8] {
-        unsafe { &mut *slice_from_raw_parts_mut(self.bytes_ptr_mut() as *mut u8, self.len()) }
+        unsafe { &mut *slice_from_raw_parts_mut(self.as_ptr_mut() as *mut u8, self.len()) }
     }
 }
 

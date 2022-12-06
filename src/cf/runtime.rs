@@ -99,7 +99,7 @@ impl Type {
     }
 
     #[inline]
-    pub unsafe fn as_ptr(&self) -> *const c_void {
+    pub unsafe fn as_type_ptr(&self) -> *const c_void {
         self as *const Type as _
     }
 }

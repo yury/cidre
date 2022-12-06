@@ -406,7 +406,7 @@ impl MutableArray {
 
     #[inline]
     pub fn append(&mut self, value: &Type) {
-        unsafe { self.append_value(value.as_ptr()) }
+        unsafe { self.append_value(value.as_type_ptr()) }
     }
 
     #[inline]
@@ -505,9 +505,9 @@ mod tests {
         let arr3 = cf::Array::new().expect("Array::new");
         let arr4 = arr2.mutable_copy().expect("copy");
         unsafe {
-            assert_eq!(arr1.as_ptr(), arr2.as_ptr());
-            assert_eq!(arr3.as_ptr(), arr2.as_ptr());
-            assert_ne!(arr1.as_ptr(), arr4.as_ptr());
+            assert_eq!(arr1.as_type_ptr(), arr2.as_type_ptr());
+            assert_eq!(arr3.as_type_ptr(), arr2.as_type_ptr());
+            assert_ne!(arr1.as_type_ptr(), arr4.as_type_ptr());
         }
     }
 }

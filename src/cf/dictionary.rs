@@ -104,7 +104,7 @@ impl Dictionary {
     /// ```
     #[inline]
     pub fn contains_type_ref_key(&self, key: &Type) -> bool {
-        unsafe { CFDictionaryContainsKey(self, key.as_ptr()) }
+        unsafe { CFDictionaryContainsKey(self, key.as_type_ptr()) }
     }
 
     #[inline]
@@ -139,13 +139,13 @@ impl Dictionary {
     /// let v = d.value_by_type_ref_key(&key).unwrap();
     /// assert!(v.equal(&value));
     /// unsafe {
-    ///     assert_eq!(v.as_ptr(), value.as_ptr());
+    ///     assert_eq!(v.as_type_ptr(), value.as_type_ptr());
     /// }
     /// ```
     pub fn value_by_type_ref_key<'a>(&'a self, key: &Type) -> Option<&'a Type> {
         unsafe {
             let mut value = Option::None;
-            if CFDictionaryGetValueIfPresent(self, key.as_ptr(), &mut value) {
+            if CFDictionaryGetValueIfPresent(self, key.as_type_ptr(), &mut value) {
                 Some(transmute(value))
             } else {
                 None
@@ -377,11 +377,11 @@ impl MutableDictionary {
     }
 
     pub fn insert(&mut self, key: &cf::String, value: &cf::Type) {
-        unsafe { CFDictionarySetValue(self, key.as_ptr(), value.as_ptr()) }
+        unsafe { CFDictionarySetValue(self, key.as_type_ptr(), value.as_type_ptr()) }
     }
 
     pub fn remove(&mut self, key: &cf::String) {
-        unsafe { CFDictionaryRemoveValue(self, key.as_ptr()) }
+        unsafe { CFDictionaryRemoveValue(self, key.as_type_ptr()) }
     }
 
     pub unsafe fn add_value(&mut self, key: *const c_void, value: *const c_void) {
