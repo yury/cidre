@@ -84,6 +84,7 @@ impl Dictionary {
         unsafe { CFDictionaryGetTypeID() }
     }
 
+    /// try use contains_type_ref_key first
     #[inline]
     pub unsafe fn contains_key(&self, key: *const c_void) -> bool {
         CFDictionaryContainsKey(self, key)
