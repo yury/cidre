@@ -72,7 +72,7 @@ impl Data {
 
     #[inline]
     pub fn as_slice(&self) -> &[u8] {
-        unsafe { &*slice_from_raw_parts(self.as_ptr() as _, self.len()) }
+        unsafe { &*slice_from_raw_parts(self.bytes_ptr() as _, self.len()) }
     }
 }
 

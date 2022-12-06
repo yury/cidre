@@ -1,6 +1,6 @@
 pub type ID = u32;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ErrorCode(pub i64);
 

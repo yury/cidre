@@ -594,7 +594,7 @@ mod tests {
     #[test]
     fn test_simple_block() {
         let foo = Foo;
-        let rc = Rc::new(10);
+        let _rc = Rc::new(10);
         let mut b = blocks::mut0(move || println!("nice {foo:?}"));
 
         let q = crate::dispatch::Queue::new();

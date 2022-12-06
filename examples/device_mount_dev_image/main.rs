@@ -5,7 +5,7 @@ use cidre::{
     cf,
 };
 
-pub extern "C" fn callback(info: &NotificationInfo, context: *mut c_void) {
+pub extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
     match info.safe() {
         am::device::discovery::SafeInfo::Attached(device) => {
             let id = device.identifier().to_string();

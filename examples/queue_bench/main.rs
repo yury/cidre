@@ -24,6 +24,7 @@ fn main() {
     for _ in 0..1_000_000_000 {
         // q.async_b(block.escape());
         q.async_b(block.escape());
+        q.async_fn(block_fn);
         // q.sync_b(&mut block);
     }
 
