@@ -2,6 +2,7 @@ mod unit;
 pub use unit::Unit;
 pub use unit::UnitEffect;
 pub use unit::EqFilterType as UnitEqFilterType;
+pub use unit::EqFilterParameters as UnitEqFilterParamaters;
 pub use unit::UnitEq;
 
 pub mod types;

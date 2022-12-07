@@ -110,6 +110,15 @@ where
     }
 }
 
+impl<T> std::ops::IndexMut<usize> for ArrayOf<T>
+where
+    T: Retain + Release,
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
+    }
+}
+
 impl<T> Release for ArrayOf<T> {
     unsafe fn release(&mut self) {
         self.0.release()
@@ -211,6 +220,15 @@ where
 
     fn index(&self, index: usize) -> &Self::Output {
         unsafe { transmute::<&Type, &T>(&self.0[index]) }
+    }
+}
+
+impl<T> std::ops::IndexMut<usize> for MutArrayOf<T>
+where
+    T: Retain,
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
@@ -396,6 +414,13 @@ impl std::ops::Index<usize> for Array {
     }
 }
 
+impl std::ops::IndexMut<usize> for Array
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        unsafe { CFArrayGetValueAtIndex(self, index as _) }
+    }
+}
+
 define_cf_type!(MutableArray(Array));
 
 impl MutableArray {
@@ -462,7 +487,7 @@ extern "C" {
 
     fn CFArrayGetTypeID() -> TypeId;
 
-    fn CFArrayGetValueAtIndex(array: &Array, idx: Index) -> &Type;
+    fn CFArrayGetValueAtIndex(array: &Array, idx: Index) -> &mut Type;
 
     fn CFArrayCreate(
         allocator: Option<&Allocator>,

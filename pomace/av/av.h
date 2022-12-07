@@ -257,6 +257,20 @@ NS_RETURNS_RETAINED
 asel_a(, AVAudioUnitEffect, initWithAudioComponentDescription, AudioComponentDescription)
 rwsel(, id, bypass, setBypass, BOOL)
 
+#pragma mark AVAudioUnitEQFilterParameters
+
+rwsel(, id, filterType, setFilterType, AVAudioUnitEQFilterType)
+rwsel(, id, frequency, setFrequency, float)
+rwsel(, id, bandwidth, setBandwidth, float)
+rwsel(, id, gain, setGain, float)
+
+#pragma mark AVAudioUnitEQ
+
+asel_a(, AVAudioUnitEQ, initWithNumberOfBands, NSUInteger)
+rsel(, id, bands, NSArray *)
+
+rwsel(, id, globalGain, setGlobalGain, float)
+
 //- (void)prepare;
 //- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
 
