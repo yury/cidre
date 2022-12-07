@@ -1,4 +1,9 @@
-use crate::{av::audio, define_obj_type, objc::Id, cf::{Retained, self}};
+use crate::{
+    av::audio,
+    cf::{self, Retained},
+    define_obj_type,
+    objc::Id,
+};
 
 define_obj_type!(Eq(audio::UnitEffect));
 
@@ -50,103 +55,74 @@ pub enum FilterType {
     ResonantHighShelf = 10,
 }
 
-
 define_obj_type!(FilterParameters(Id));
 
 impl FilterParameters {
-
     pub fn filter_type(&self) -> FilterType {
-        unsafe {
-            rsel_filterType(self)
-        }
+        unsafe { rsel_filterType(self) }
     }
     pub fn set_filter_type(&mut self, value: FilterType) {
-        unsafe {
-            wsel_setFilterType(self, value)
-        }
+        unsafe { wsel_setFilterType(self, value) }
     }
 
     pub fn frequency(&self) -> f32 {
-        unsafe {
-            rsel_frequency(self)
-        }
+        unsafe { rsel_frequency(self) }
     }
 
     pub fn set_frequency(&mut self, value: f32) {
-        unsafe {
-            wsel_setFrequency(self, value)
-        }
-    } 
+        unsafe { wsel_setFrequency(self, value) }
+    }
 
     pub fn bandwidth(&self) -> f32 {
-        unsafe {
-            rsel_bandwidth(self)
-        }
+        unsafe { rsel_bandwidth(self) }
     }
 
     pub fn set_bandwidth(&mut self, value: f32) {
-        unsafe {
-            wsel_setBandwidth(self, value)
-        }
+        unsafe { wsel_setBandwidth(self, value) }
     }
 
     pub fn gain(&self) -> f32 {
-        unsafe {
-            rsel_gain(self)
-        }
+        unsafe { rsel_gain(self) }
     }
 
     pub fn set_gain(&mut self, value: f32) {
-        unsafe {
-            wsel_setGain(self, value)
-        }
-    } 
+        unsafe { wsel_setGain(self, value) }
+    }
 }
 
 define_obj_type!(UnitEq(audio::UnitEffect));
 
 /// UnitEffect that implements a Multi-Band Equalizer.
 impl UnitEq {
-
     /// ```
     /// use cidre::av::audio;
-    /// 
+    ///
     /// let mut equ = audio::UnitEq::with_bands(10);
-    /// 
+    ///
     /// let bands = equ.bands_mut();
     /// bands[0].set_gain(10.0);
     /// assert_eq!(bands.len(), 10);
     /// assert_eq!(equ.global_gain(), 0.0);
-    /// 
+    ///
     /// ```
     pub fn with_bands(number_of_bands: usize) -> Retained<Self> {
-        unsafe {
-            AVAudioUnitEQ_initWithNumberOfBands(number_of_bands)
-        }
+        unsafe { AVAudioUnitEQ_initWithNumberOfBands(number_of_bands) }
     }
 
     pub fn bands(&self) -> &cf::ArrayOf<FilterParameters> {
-        unsafe {
-            rsel_bands(self)
-        }
+        unsafe { rsel_bands(self) }
     }
 
     pub fn bands_mut(&mut self) -> &mut cf::ArrayOf<FilterParameters> {
-        unsafe {
-            rsel_bands(self)
-        }
+        unsafe { rsel_bands(self) }
     }
 
     pub fn global_gain(&self) -> f32 {
-        unsafe {
-            rsel_globalGain(self)
-        }
+        unsafe { rsel_globalGain(self) }
     }
 
     pub fn set_global_gain(&mut self, value: f32) {
-        unsafe {
-            wsel_setGlobalGain(self, value)
-        }
+        unsafe { wsel_setGlobalGain(self, value) }
     }
 }
 
@@ -159,7 +135,7 @@ extern "C" {
     fn rsel_bandwidth(id: &Id) -> f32;
     fn wsel_setBandwidth(id: &Id, value: f32);
     fn rsel_gain(id: &Id) -> f32;
-    fn wsel_setGain(id: &Id, value: f32); 
+    fn wsel_setGain(id: &Id, value: f32);
 
     fn AVAudioUnitEQ_initWithNumberOfBands(number_of_bands: usize) -> Retained<UnitEq>;
     fn rsel_bands(id: &Id) -> &mut cf::ArrayOf<FilterParameters>;
@@ -167,4 +143,3 @@ extern "C" {
     fn rsel_globalGain(id: &Id) -> f32;
     fn wsel_setGlobalGain(id: &Id, value: f32);
 }
-

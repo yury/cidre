@@ -4,8 +4,11 @@ mod effect;
 pub use effect::Effect as UnitEffect;
 
 mod eq;
+pub use eq::FilterParameters as EqFilterParameters;
 pub use eq::FilterType as EqFilterType;
 pub use eq::UnitEq;
-pub use eq::FilterParameters as EqFilterParameters;
+
+mod time_effect;
+pub use time_effect::TimeEffect as UnitTimeEffect;
 
 define_obj_type!(Unit(audio::Node));

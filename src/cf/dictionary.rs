@@ -119,7 +119,10 @@ impl Dictionary {
     }
 
     #[inline]
-    pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<Option<NonNull<c_void>>> {
+    pub unsafe fn raw_value_if_present(
+        &self,
+        key: *const c_void,
+    ) -> Option<Option<NonNull<c_void>>> {
         let mut value = Option::None;
 
         if CFDictionaryGetValueIfPresent(self, key, &mut value) {

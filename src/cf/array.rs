@@ -414,8 +414,7 @@ impl std::ops::Index<usize> for Array {
     }
 }
 
-impl std::ops::IndexMut<usize> for Array
-{
+impl std::ops::IndexMut<usize> for Array {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { CFArrayGetValueAtIndex(self, index as _) }
     }

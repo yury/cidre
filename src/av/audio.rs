@@ -1,9 +1,10 @@
 mod unit;
+pub use unit::EqFilterParameters as UnitEqFilterParamaters;
+pub use unit::EqFilterType as UnitEqFilterType;
 pub use unit::Unit;
 pub use unit::UnitEffect;
-pub use unit::EqFilterType as UnitEqFilterType;
-pub use unit::EqFilterParameters as UnitEqFilterParamaters;
 pub use unit::UnitEq;
+pub use unit::UnitTimeEffect;
 
 pub mod types;
 pub use types::Angular3DOrientation;
