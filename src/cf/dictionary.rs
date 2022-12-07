@@ -84,9 +84,9 @@ impl Dictionary {
         unsafe { CFDictionaryGetTypeID() }
     }
 
-    /// try use contains_type_ref_key first
+    /// try use contains_key first
     #[inline]
-    pub unsafe fn contains_key(&self, key: *const c_void) -> bool {
+    pub unsafe fn contains_raw_key(&self, key: *const c_void) -> bool {
         CFDictionaryContainsKey(self, key)
     }
 
@@ -98,28 +98,28 @@ impl Dictionary {
     ///
     /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
-    /// assert!(d.contains_type_ref_key(&key));
+    /// assert!(d.contains_key(&key));
     ///
     /// let key2 = cf::Number::from_i8(12);
-    /// assert!(!d.contains_type_ref_key(&key2));
+    /// assert!(!d.contains_key(&key2));
     /// ```
     #[inline]
-    pub fn contains_type_ref_key(&self, key: &Type) -> bool {
+    pub fn contains_key(&self, key: &Type) -> bool {
         unsafe { CFDictionaryContainsKey(self, key.as_type_ptr()) }
     }
 
     #[inline]
-    pub unsafe fn contains_value(&self, value: *const c_void) -> bool {
+    pub unsafe fn contains_raw_value(&self, value: *const c_void) -> bool {
         CFDictionaryContainsValue(self, value)
     }
 
     #[inline]
-    pub unsafe fn value(&self, key: *const c_void) -> Option<NonNull<c_void>> {
+    pub unsafe fn raw_value(&self, key: *const c_void) -> Option<NonNull<c_void>> {
         CFDictionaryGetValue(self, key)
     }
 
     #[inline]
-    pub unsafe fn value_if_present(&self, key: *const c_void) -> Option<Option<NonNull<c_void>>> {
+    pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<Option<NonNull<c_void>>> {
         let mut value = Option::None;
 
         if CFDictionaryGetValueIfPresent(self, key, &mut value) {
@@ -137,13 +137,13 @@ impl Dictionary {
     ///
     /// let d = cf::Dictionary::with_keys_values(&[&key], &[&value]).unwrap();
     ///
-    /// let v = d.value_by_type_ref_key(&key).unwrap();
+    /// let v = d.value(&key).unwrap();
     /// assert!(v.equal(&value));
     /// unsafe {
     ///     assert_eq!(v.as_type_ptr(), value.as_type_ptr());
     /// }
     /// ```
-    pub fn value_by_type_ref_key<'a>(&'a self, key: &Type) -> Option<&'a Type> {
+    pub fn value<'a>(&'a self, key: &Type) -> Option<&'a Type> {
         unsafe {
             let mut value = Option::None;
             if CFDictionaryGetValueIfPresent(self, key.as_type_ptr(), &mut value) {
@@ -419,7 +419,7 @@ where
     V: Retain + Release,
 {
     pub fn get(&self, k: &K) -> Option<&V> {
-        unsafe { transmute(self.0.value_by_type_ref_key(transmute(k))) }
+        unsafe { transmute(self.0.value(transmute(k))) }
     }
 }
 
