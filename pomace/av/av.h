@@ -271,6 +271,11 @@ rsel(, id, bands, NSArray *)
 
 rwsel(, id, globalGain, setGlobalGain, float)
 
+#pragma mark AVAudioUnitTimeEffect
+
+NS_RETURNS_RETAINED
+asel_a(, AVAudioUnitTimeEffect, initWithAudioComponentDescription, AudioComponentDescription)
+
 //- (void)prepare;
 //- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
 
