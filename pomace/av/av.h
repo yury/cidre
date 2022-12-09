@@ -421,6 +421,14 @@ typedef void (^ VoidBlock)(void);
 wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
 //- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
 
+#pragma mark - AVAssetReader
+
+NS_RETURNS_RETAINED
+csel_ab(, AVAssetReader, assetReaderWithAsset, AVAsset *, error, NSError **, AVAssetReader *)
+wsel_a(AVAssetReader_, id, addOutput, AVAssetReaderOutput *);
+rsel(, id, startReading, BOOL)
+wsel(, id, cancelReading)
+
 #pragma mark - AVAssetReaderOutput
 
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
