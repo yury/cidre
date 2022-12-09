@@ -3,14 +3,17 @@ use crate::{cf, define_cf_type};
 define_cf_type!(MachPort(cf::Type));
 
 impl MachPort {
+    #[inline]
     pub fn invalidate(&self) {
         unsafe { CFMachPortInvalidate(self) }
     }
 
+    #[inline]
     pub fn is_valid(&self) -> bool {
         unsafe { CFMachPortIsValid(self) }
     }
 
+    #[inline]
     pub fn create_run_loop_source(
         &self,
         allocator: Option<&cf::Allocator>,
@@ -19,6 +22,7 @@ impl MachPort {
         unsafe { CFMachPortCreateRunLoopSource(allocator, self, index) }
     }
 
+    #[inline]
     pub fn port(&self) -> crate::mach::Port {
         unsafe { CFMachPortGetPort(self) }
     }

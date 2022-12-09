@@ -105,14 +105,17 @@ impl Socket {
         Self::create_with_native_in(sock, cb_types, callout, context, None)
     }
 
+    #[inline]
     pub fn native(&self) -> NativeHandle {
         unsafe { CFSocketGetNative(self) }
     }
 
+    #[inline]
     pub fn invalidate(&self) {
         unsafe { CFSocketInvalidate(self) }
     }
 
+    #[inline]
     pub fn is_valid(&self) -> bool {
         unsafe { CFSocketIsValid(self) }
     }
@@ -132,22 +135,27 @@ impl Socket {
         self.create_runloop_source_in(order, None)
     }
 
+    #[inline]
     pub fn flags(&self) -> Flags {
         unsafe { CFSocketGetSocketFlags(self) }
     }
 
+    #[inline]
     pub fn set_flags(&self, flags: Flags) {
         unsafe { CFSocketSetSocketFlags(self, flags) }
     }
 
+    #[inline]
     pub fn enable_callbacks(&self, cb_types: CallBackType) {
         unsafe { CFSocketEnableCallBacks(self, cb_types) }
     }
 
+    #[inline]
     pub fn disable_callbacks(&self, cb_types: CallBackType) {
         unsafe { CFSocketDisableCallBacks(self, cb_types) }
     }
 
+    #[inline]
     pub fn send_data(
         &self,
         address: Option<&cf::Data>,
