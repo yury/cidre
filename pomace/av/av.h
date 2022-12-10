@@ -498,4 +498,16 @@ rsel_ab(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, asset
 
 csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
+
+SEL sel_copyNextSampleBuffer;
+
+__attribute__((constructor))
+static void common_initializer()
+{
+  static int initialized = 0;
+  if (!initialized) {
+    sel_copyNextSampleBuffer = @selector(copyNextSampleBuffer);
+  }
+}
+
 NS_ASSUME_NONNULL_END

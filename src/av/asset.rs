@@ -8,7 +8,13 @@ pub use reader::Reader;
 pub use reader::Status as ReaderStatus;
 
 pub mod reader_output;
+pub use reader_output::ReaderAudioMixOutput;
 pub use reader_output::ReaderOutput;
+pub use reader_output::ReaderOutputCaptionAdaptor;
+pub use reader_output::ReaderOutputMetadataAdaptor;
+pub use reader_output::ReaderSampleReferenceOutput;
+pub use reader_output::ReaderTrackOutput;
+pub use reader_output::ReaderVideoCompositionOutput;
 
 pub mod writer;
 pub use writer::Status as WriterStatus;

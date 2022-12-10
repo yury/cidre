@@ -1,5 +1,3 @@
-use ns::Id;
-
 use crate::{av, cf, define_obj_type, ns};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -65,6 +63,4 @@ extern "C" {
     fn AVAssetReader_wsel_addOutput(reader: &Reader, output: &av::AssetReaderOutput);
     fn rsel_startReading() -> bool;
     fn wsel_cancelReading();
-
-    fn wsel_addOutput(obj: &mut Id, output: &Id);
 }
