@@ -1,4 +1,7 @@
-use crate::{av::MediaType, cf, cm, define_obj_type, msg_send, ns};
+use crate::{
+    av::{self, MediaType},
+    cf, cm, define_obj_type, msg_send, ns,
+};
 
 define_obj_type!(ReaderOutput(ns::Id));
 define_obj_type!(ReaderTrackOutput(ReaderOutput));
@@ -57,10 +60,61 @@ impl ReaderOutput {
     }
 }
 
+impl ReaderTrackOutput {
+    /// Returns an instance of AVAssetReaderTrackOutput for reading from the specified track and
+    /// supplying media data according to the specified output settings.
+    ///
+    /// The track must be one of the tracks contained by the target AVAssetReader's asset.
+    /// A value of nil for outputSettings configures the output to vend samples in their
+    /// original format as stored by the specified track.  Initialization will fail if the output settings
+    /// cannot be used with the specified track.
+    ///
+    /// ReaderTrackOutput can only produce uncompressed output. For audio output settings, this means that
+    /// AVFormatIDKey must be kAudioFormatLinearPCM. For video output settings, this means that the dictionary
+    /// must follow the rules for uncompressed video output, as laid out in AVVideoSettings.h.
+    /// ReaderTrackOutput does not support the AVAudioSettings.h key AVSampleRateConverterAudioQualityKey
+    /// or the following AVVideoSettings.h keys:
+    ///
+    ///  - AVVideoCleanApertureKey
+    ///  - AVVideoPixelAspectRatioKey
+    ///  - AVVideoScalingModeKey
+    ///
+    /// When constructing video output settings the choice of pixel format will affect the performance
+    /// and quality of the decompression. For optimal performance when decompressing video the requested pixel
+    /// format should be one that the decoder supports natively to avoid unnecessary conversions.
+    /// Below are some recommendations:
+    ///   - For H.264 use kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, or kCVPixelFormatType_420YpCbCr8BiPlanarFullRange
+    ///     if the video is known to be full range. For JPEG on iOS, use kCVPixelFormatType_420YpCbCr8BiPlanarFullRange.
+    ///   - For other codecs on OSX, kCVPixelFormatType_422YpCbCr8 is the preferred pixel format for video
+    ///     and is generally the most performant when decoding. If you need to work in the RGB domain then kCVPixelFormatType_32BGRA
+    ///     is recommended on iOS and kCVPixelFormatType_32ARGB is recommended on OSX.
+    ///   - ProRes encoded media can contain up to 12bits/ch. If your source is ProRes encoded and you wish to preserve more
+    ///     than 8bits/ch during decompression then use one of the following pixel formats:
+    ///     kCVPixelFormatType_4444AYpCbCr16, kCVPixelFormatType_422YpCbCr16, kCVPixelFormatType_422YpCbCr10, or kCVPixelFormatType_64ARGB.
+    ///     av::AssetReader does not support scaling with any of these high bit depth pixel formats.
+    ///     If you use them then do not specify kCVPixelBufferWidthKey or kCVPixelBufferHeightKey in your outputSettings dictionary.
+    ///     If you plan to append these sample buffers to an AVAssetWriterInput then note that only the ProRes encoders support these pixel formats.
+    ///   - ProRes 4444 encoded media can contain a mathematically lossless alpha channel. To preserve the alpha channel during decompression use
+    ///     a pixel format with an alpha component such as kCVPixelFormatType_4444AYpCbCr16 or kCVPixelFormatType_64ARGB.
+    ///     To test whether your source contains an alpha channel check that the track's format description has kCMFormatDescriptionExtension_Depth
+    ///     and that its value is 32.
+    pub fn with_track<'ar>(
+        track: &av::asset::Track,
+        output_options: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
+    ) -> Option<cf::Retained<Self>> {
+        unsafe { AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack(track, output_options) }
+    }
+}
+
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn rsel_mediaType(id: &ns::Id) -> &MediaType;
 
     fn rsel_alwaysCopiesSampleData(id: &ns::Id) -> bool;
     fn wsel_setAlwaysCopiesSampleData(id: &ns::Id, value: bool);
+
+    fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack<'ar>(
+        track: &av::asset::Track,
+        output_settings: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
+    ) -> Option<cf::Retained<ReaderTrackOutput>>;
 }

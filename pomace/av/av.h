@@ -431,6 +431,12 @@ wsel(, id, cancelReading)
 
 #pragma mark - AVAssetReaderOutput
 
+//+ (instancetype)assetReaderTrackOutputWithTrack:(AVAssetTrack *)track outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings;
+
+NS_RETURNS_RETAINED
+csel_ab(, AVAssetReaderTrackOutput, assetReaderTrackOutputWithTrack, AVAssetTrack *, outputSettings, NSDictionary * _Nullable, AVAssetReaderTrackOutput *)
+//AVAssetReaderTrackOutput
+
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
 
 #pragma mark - AVAudioConverter
