@@ -1,4 +1,6 @@
-use cidre::{av, cf};
+use std::ops::Deref;
+
+use cidre::{av, cf, cv};
 use tokio;
 
 #[tokio::main]
@@ -13,7 +15,15 @@ async fn main() {
 
     let mut reader = av::AssetReader::with_asset(&asset).unwrap();
 
-    let mut output = av::asset::ReaderTrackOutput::with_track(&tracks[0], None).unwrap();
+    let num = cv::PixelFormatType::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE.to_cf_number();
+
+    let options = cf::DictionaryOf::with_keys_values(
+        &[cv::pixel_buffer_keys::pixel_format_type()],
+        &[num.as_type_ref()],
+    )
+    .unwrap();
+
+    let mut output = av::asset::ReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
     output.set_always_copies_sample_data(false);
     reader.add_output(&output);
     let true = reader.start_reading() else {
@@ -23,10 +33,10 @@ async fn main() {
     };
 
     let mut count = 0;
-    while let Some(_buf) = output.copy_next_sample_buffer() {
-        // let Some(image) = buf.image_buffer() else {
-        //     continue;
-        // };
+    while let Some(buf) = output.copy_next_sample_buffer() {
+        let Some(_image) = buf.image_buffer() else {
+            continue;
+        };
 
         //println!("width {:?}", image.width());
         count += 1;

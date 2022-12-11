@@ -462,6 +462,31 @@ where
 #[repr(transparent)]
 pub struct MutDictionaryOf<K, V>(MutableDictionary, PhantomData<(K, V)>);
 
+impl<K, V> DictionaryOf<K, V>
+where
+    K: Retain,
+    V: Retain,
+{
+    #[inline]
+    pub fn with_keys_values<const N: usize>(
+        keys: &[&K; N],
+        values: &[&V; N],
+    ) -> Option<Retained<DictionaryOf<K, V>>> {
+        unsafe {
+            let dict = Dictionary::create(
+                None,
+                keys.as_ptr() as _,
+                values.as_ptr() as _,
+                N as _,
+                KeyCallBacks::default(),
+                ValueCallBacks::default(),
+            );
+
+            transmute(dict)
+        }
+    }
+}
+
 extern "C" {
     fn CFDictionaryCreateMutable(
         allocator: Option<&cf::Allocator>,

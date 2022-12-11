@@ -102,6 +102,11 @@ impl Type {
     pub unsafe fn as_type_ptr(&self) -> *const c_void {
         self as *const Type as _
     }
+
+    #[inline]
+    pub fn as_type_ref(&self) -> &Type {
+        self
+    }
 }
 
 impl Retain for Type {
