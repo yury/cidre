@@ -421,13 +421,29 @@ typedef void (^ VoidBlock)(void);
 wsel_a(, id, finishWritingWithCompletionHandler, VoidBlock)
 //- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
 
+#pragma mark - AVURLAsset
+
+wsel_ab(, id, loadTracksWithMediaType, AVMediaType, completionHandler, id)
+
+NS_RETURNS_RETAINED
+csel_ab(, AVURLAsset, URLAssetWithURL, NSURL *, options, NSDictionary * _Nullable, AVURLAsset *)
+//+ (instancetype)URLAssetWithURL:(NSURL *)URL options:(nullable NSDictionary<NSString *, id> *)options;
+
 #pragma mark - AVAssetReader
 
 NS_RETURNS_RETAINED
 csel_ab(, AVAssetReader, assetReaderWithAsset, AVAsset *, error, NSError **, AVAssetReader *)
+
 wsel_a(AVAssetReader_, id, addOutput, AVAssetReaderOutput *);
 rsel(, id, startReading, BOOL)
 wsel(, id, cancelReading)
+rsel(AVAssetReader_, AVAssetReader *, status, AVAssetReaderStatus)
+//@property (nonatomic, readonly) NSArray<AVAssetReaderOutput *> *outputs;
+NS_RETURNS_NOT_RETAINED
+rsel(AVAssetReader_, AVAssetReader *, outputs, NSArray *)
+
+rsel_a(AVAssetReader_, id, canAddOutput, AVAssetReaderOutput *, BOOL);
+//- (BOOL)canAddOutput:(AVAssetReaderOutput *)output;
 
 #pragma mark - AVAssetReaderOutput
 

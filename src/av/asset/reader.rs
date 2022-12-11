@@ -40,8 +40,9 @@ impl Reader {
     /// If this method returns `false`, clients can determine the nature of the failure by checking the value of the status and error properties.
     ///
     /// This method throws an exception if reading has already started (`status` has progressed beyond AVAssetReaderStatusUnknown).
+    #[inline]
     pub fn start_reading(&self) -> bool {
-        unsafe { rsel_startReading() }
+        unsafe { rsel_startReading(self) }
     }
 
     /// Cancels any background work and prevents the receiver's outputs from reading more samples.
@@ -50,7 +51,23 @@ impl Reader {
     ///
     /// This method should not be called concurrently with any calls to -[AVAssetReaderOutput copyNextSampleBuffer].
     pub fn cancel_reading(&self) {
-        unsafe { wsel_cancelReading() }
+        unsafe { wsel_cancelReading(self) }
+    }
+
+    pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool {
+        unsafe { AVAssetReader_rsel_canAddOutput(self, output) }
+    }
+
+    pub fn error(&self) -> Option<&cf::Error> {
+        unsafe { rsel_error(self) }
+    }
+
+    pub fn status(&self) -> Status {
+        unsafe { AVAssetReader_rsel_status(self) }
+    }
+
+    pub fn outputs(&self) -> &cf::ArrayOf<av::AssetReaderOutput> {
+        unsafe { AVAssetReader_rsel_outputs(self) }
     }
 }
 
@@ -61,6 +78,11 @@ extern "C" {
         error: &mut Option<&'ar cf::Error>,
     ) -> Option<cf::Retained<Reader>>;
     fn AVAssetReader_wsel_addOutput(reader: &Reader, output: &av::AssetReaderOutput);
-    fn rsel_startReading() -> bool;
-    fn wsel_cancelReading();
+    fn AVAssetReader_rsel_canAddOutput(reader: &Reader, output: &av::AssetReaderOutput) -> bool;
+    fn rsel_startReading(reader: &Reader) -> bool;
+    fn wsel_cancelReading(reader: &Reader);
+
+    fn rsel_error(id: &ns::Id) -> Option<&cf::Error>;
+    fn AVAssetReader_rsel_status(reader: &Reader) -> Status;
+    fn AVAssetReader_rsel_outputs(reader: &Reader) -> &cf::ArrayOf<av::AssetReaderOutput>;
 }

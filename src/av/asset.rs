@@ -1,4 +1,6 @@
-use crate::{define_obj_type, ns};
+use std::ffi::c_void;
+
+use crate::{av, blocks, cf, define_obj_type, ns};
 
 pub mod cache;
 pub use cache::Cache as AssetCache;
@@ -31,3 +33,59 @@ define_obj_type!(Asset(ns::Id));
 define_obj_type!(URLAsset(Asset));
 define_obj_type!(FragmentedAsset(URLAsset));
 define_obj_type!(FragmentedAssetMinder(ns::Id));
+
+impl URLAsset {
+    #[inline]
+    pub fn with_url(
+        url: &cf::URL,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<cf::Retained<URLAsset>> {
+        unsafe { AVURLAsset_URLAssetWithURL_options(url, options) }
+    }
+
+    pub fn load_tracks_with_media_type_completion<'ar, F>(
+        &self,
+        media_type: &av::MediaType,
+        completion: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(Option<&'ar cf::ArrayOf<av::asset::Track>>, Option<&'ar cf::Error>),
+    {
+        unsafe {
+            wsel_loadTracksWithMediaType_completionHandler(self, media_type, completion.as_ptr())
+        }
+    }
+
+    pub fn load_tracks_with_media_type_once<'ar, F>(&self, media_type: &av::MediaType, block: F)
+    where
+        F: FnOnce(Option<&'ar cf::ArrayOf<av::asset::Track>>, Option<&'ar cf::Error>)
+            + 'static
+            + Sync,
+    {
+        let block = blocks::once2(block);
+        self.load_tracks_with_media_type_completion(media_type, block.escape())
+    }
+
+    pub async fn load_tracks_with_media_type(
+        &self,
+        media_type: &av::MediaType,
+    ) -> Result<cf::Retained<cf::ArrayOf<av::asset::Track>>, cf::Retained<cf::Error>> {
+        let (future, block) = blocks::result();
+        self.load_tracks_with_media_type_completion(media_type, block.escape());
+        future.await
+    }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    fn AVURLAsset_URLAssetWithURL_options(
+        url: &cf::URL,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<cf::Retained<URLAsset>>;
+
+    fn wsel_loadTracksWithMediaType_completionHandler(
+        id: &ns::Id,
+        media_type: &av::MediaType,
+        callback: *mut c_void,
+    );
+
+}

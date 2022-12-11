@@ -39,7 +39,7 @@ impl ReaderOutput {
         unsafe { rsel_alwaysCopiesSampleData(self) }
     }
 
-    pub fn set_always_copies_sample_data(&self, value: bool) {
+    pub fn set_always_copies_sample_data(&mut self, value: bool) {
         unsafe { wsel_setAlwaysCopiesSampleData(self, value) }
     }
 
@@ -102,7 +102,12 @@ impl ReaderTrackOutput {
         track: &av::asset::Track,
         output_options: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
     ) -> Option<cf::Retained<Self>> {
-        unsafe { AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack(track, output_options) }
+        unsafe {
+            AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings(
+                track,
+                output_options,
+            )
+        }
     }
 }
 
@@ -113,7 +118,7 @@ extern "C" {
     fn rsel_alwaysCopiesSampleData(id: &ns::Id) -> bool;
     fn wsel_setAlwaysCopiesSampleData(id: &ns::Id, value: bool);
 
-    fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack<'ar>(
+    fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings<'ar>(
         track: &av::asset::Track,
         output_settings: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
     ) -> Option<cf::Retained<ReaderTrackOutput>>;
