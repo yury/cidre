@@ -143,6 +143,7 @@ impl PixelFormatType {
     pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
+    // TODO: how we can optimize that agly long consts?
     pub const _420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
     pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-8v0"));

@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use cidre::{av, cf, cv};
 use tokio;
 
@@ -15,7 +13,7 @@ async fn main() {
 
     let mut reader = av::AssetReader::with_asset(&asset).unwrap();
 
-    let num = cv::PixelFormatType::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE.to_cf_number();
+    let num = cv::PixelFormatType::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE.to_cf_number();
 
     let options = cf::DictionaryOf::with_keys_values(
         &[cv::pixel_buffer_keys::pixel_format_type()],
