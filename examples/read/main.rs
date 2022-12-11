@@ -16,18 +16,21 @@ async fn main() {
     let mut output = av::asset::ReaderTrackOutput::with_track(&tracks[0], None).unwrap();
     output.set_always_copies_sample_data(false);
     reader.add_output(&output);
-    let res = reader.start_reading();
-
-    if !res {
+    let true = reader.start_reading() else {
         println!("error: {:?}", reader.error());
         println!("status: {:?}", reader.status());
         return;
-    }
+    };
+
     let mut count = 0;
     while let Some(_buf) = output.copy_next_sample_buffer() {
-        //  println!("hmm");
+        // let Some(image) = buf.image_buffer() else {
+        //     continue;
+        // };
+
+        //println!("width {:?}", image.width());
         count += 1;
     }
 
-    println!("count {:?}", count);
+    println!("count {:?}, {:?}", count, reader.status());
 }

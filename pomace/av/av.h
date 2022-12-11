@@ -437,7 +437,7 @@ csel_ab(, AVAssetReader, assetReaderWithAsset, AVAsset *, error, NSError **, AVA
 wsel_a(AVAssetReader_, id, addOutput, AVAssetReaderOutput *);
 rsel(, id, startReading, BOOL)
 wsel(, id, cancelReading)
-rsel(AVAssetReader_, AVAssetReader *, status, AVAssetReaderStatus)
+
 //@property (nonatomic, readonly) NSArray<AVAssetReaderOutput *> *outputs;
 NS_RETURNS_NOT_RETAINED
 rsel(AVAssetReader_, AVAssetReader *, outputs, NSArray *)
@@ -522,6 +522,7 @@ csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,
 
 
 SEL sel_copyNextSampleBuffer;
+SEL sel_status;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -529,6 +530,7 @@ static void common_initializer()
   static int initialized = 0;
   if (!initialized) {
     sel_copyNextSampleBuffer = @selector(copyNextSampleBuffer);
+    sel_status = @selector(status);
   }
 }
 

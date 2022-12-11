@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, ns};
+use crate::{av, cf, define_obj_type, msg_send, ns};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
@@ -62,8 +62,9 @@ impl Reader {
         unsafe { rsel_error(self) }
     }
 
+    #[inline]
     pub fn status(&self) -> Status {
-        unsafe { AVAssetReader_rsel_status(self) }
+        msg_send!("av", self, sel_status)
     }
 
     pub fn outputs(&self) -> &cf::ArrayOf<av::AssetReaderOutput> {
@@ -83,6 +84,5 @@ extern "C" {
     fn wsel_cancelReading(reader: &Reader);
 
     fn rsel_error(id: &ns::Id) -> Option<&cf::Error>;
-    fn AVAssetReader_rsel_status(reader: &Reader) -> Status;
     fn AVAssetReader_rsel_outputs(reader: &Reader) -> &cf::ArrayOf<av::AssetReaderOutput>;
 }
