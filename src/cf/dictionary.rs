@@ -471,7 +471,7 @@ where
     pub fn with_keys_values<const N: usize>(
         keys: &[&K; N],
         values: &[&V; N],
-    ) -> Option<Retained<DictionaryOf<K, V>>> {
+    ) -> Retained<DictionaryOf<K, V>> {
         unsafe {
             let dict = Dictionary::create(
                 None,

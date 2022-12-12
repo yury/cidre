@@ -36,10 +36,7 @@ define_obj_type!(FragmentedAssetMinder(ns::Id));
 
 impl URLAsset {
     #[inline]
-    pub fn with_url(
-        url: &cf::URL,
-        options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<URLAsset>> {
+    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> cf::Retained<URLAsset> {
         unsafe { AVURLAsset_URLAssetWithURL_options(url, options) }
     }
 
@@ -80,7 +77,7 @@ extern "C" {
     fn AVURLAsset_URLAssetWithURL_options(
         url: &cf::URL,
         options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<URLAsset>>;
+    ) -> cf::Retained<URLAsset>;
 
     fn wsel_loadTracksWithMediaType_completionHandler(
         id: &ns::Id,

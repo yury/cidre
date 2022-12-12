@@ -4,7 +4,7 @@ use tokio;
 #[tokio::main]
 async fn main() {
     let url = cf::URL::from_str("file:/Users/yury/Downloads/0.mov").unwrap();
-    let asset = av::URLAsset::with_url(&url, None).unwrap();
+    let asset = av::URLAsset::with_url(&url, None);
 
     let tracks = asset
         .load_tracks_with_media_type(&av::MediaType::video())
@@ -13,15 +13,12 @@ async fn main() {
 
     let mut reader = av::AssetReader::with_asset(&asset).unwrap();
 
-    let num = cv::PixelFormatType::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE.to_cf_number();
-
     let options = cf::DictionaryOf::with_keys_values(
         &[cv::pixel_buffer_keys::pixel_format_type()],
-        &[num.as_type_ref()],
-    )
-    .unwrap();
+        &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
+    );
 
-    let mut output = av::asset::ReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
+    let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
     output.set_always_copies_sample_data(false);
     reader.add_output(&output);
     let true = reader.start_reading() else {
@@ -36,7 +33,6 @@ async fn main() {
             continue;
         };
 
-        //println!("width {:?}", image.width());
         count += 1;
     }
 
