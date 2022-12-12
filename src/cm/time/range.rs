@@ -1,6 +1,6 @@
 use crate::cm;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(C)]
 pub struct Range {
     pub start: cm::Time,

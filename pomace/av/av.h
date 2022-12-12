@@ -451,6 +451,11 @@ rsel_a(AVAssetReader_, id, canAddOutput, AVAssetReaderOutput *, BOOL);
 
 NS_RETURNS_RETAINED
 csel_ab(, AVAssetReaderTrackOutput, assetReaderTrackOutputWithTrack, AVAssetTrack *, outputSettings, NSDictionary * _Nullable, AVAssetReaderTrackOutput *)
+
+//@property (nonatomic) BOOL supportsRandomAccess API_AVAILABLE(macos(10.10), ios(8.0), tvos(9.0)) API_UNAVAILABLE(watchos);
+rsel(, id, supportsRandomAccess, BOOL)
+wsel_a(, id, resetForReadingTimeRanges, NSArray *)
+//- (void)resetForReadingTimeRanges:(NSArray<NSValue *> *)timeRanges API_AVAILABLE(macos(10.10), ios(8.0), tvos(9.0)) API_UNAVAILABLE(watchos);
 //AVAssetReaderTrackOutput
 
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
@@ -520,9 +525,17 @@ rsel_ab(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, asset
 
 csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
+#pragma mark NSValue
+
+NS_RETURNS_RETAINED
+csel_a(, NSValue, valueWithCMTimeRange, CMTimeRange, NSValue *)
+//+ (NSValue *)valueWithCMTimeRange:(CMTimeRange)timeRange API_AVAILABLE(macos(10.7), ios(4.0), tvos(9.0), watchos(1.0));
+
 
 SEL sel_copyNextSampleBuffer;
 SEL sel_status;
+SEL sel_timeRange;
+SEL sel_setTimeRange;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -531,6 +544,8 @@ static void common_initializer()
   if (!initialized) {
     sel_copyNextSampleBuffer = @selector(copyNextSampleBuffer);
     sel_status = @selector(status);
+    sel_timeRange = @selector(timeRange);
+    sel_setTimeRange = @selector(setTimeRange:);
   }
 }
 

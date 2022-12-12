@@ -57,3 +57,6 @@ mod url_cache;
 pub use url_cache::CachedURLResponse;
 pub use url_cache::StoragePolicy as URLCacheStoragePolicy;
 pub use url_cache::URLCache;
+
+mod value;
+pub use value::Value;

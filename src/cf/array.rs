@@ -35,7 +35,7 @@ pub struct ArrayOf<T>(Array, PhantomData<T>);
 
 impl<T> ArrayOf<T> {
     #[inline]
-    pub fn new() -> Option<Retained<ArrayOf<T>>> {
+    pub fn new() -> Retained<ArrayOf<T>> {
         unsafe { transmute(Array::new()) }
     }
 
@@ -75,6 +75,22 @@ impl<T> ArrayOf<T> {
 
     #[inline]
     pub fn from_slice(values: &[&T]) -> Option<Retained<Self>>
+    where
+        T: Retain,
+    {
+        unsafe {
+            let arr = Array::create_in(
+                None,
+                values.as_ptr() as _,
+                values.len() as _,
+                Callbacks::default(),
+            );
+            transmute(arr)
+        }
+    }
+
+    #[inline]
+    pub fn from_retained_slice(values: &[cf::Retained<T>]) -> Option<Retained<Self>>
     where
         T: Retain,
     {

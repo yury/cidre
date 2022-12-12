@@ -109,6 +109,16 @@ impl ReaderTrackOutput {
             )
         }
     }
+
+    #[inline]
+    pub fn supports_random_access(&self) -> bool {
+        unsafe { rsel_supportsRandomAccess(self) }
+    }
+
+    #[inline]
+    pub fn reset_for_reading_time_ranges(&mut self, ranges: &cf::ArrayOf<ns::Value>) {
+        unsafe { wsel_resetForReadingTimeRanges(self, ranges) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -117,6 +127,9 @@ extern "C" {
 
     fn rsel_alwaysCopiesSampleData(id: &ns::Id) -> bool;
     fn wsel_setAlwaysCopiesSampleData(id: &ns::Id, value: bool);
+    fn rsel_supportsRandomAccess(id: &ns::Id) -> bool;
+
+    fn wsel_resetForReadingTimeRanges(id: &ns::Id, ranges: &cf::ArrayOf<ns::Value>);
 
     fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings<'ar>(
         track: &av::asset::Track,

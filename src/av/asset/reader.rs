@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, msg_send, ns};
+use crate::{av, cf, cm, define_obj_type, msg_send, ns};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
@@ -65,6 +65,14 @@ impl Reader {
     #[inline]
     pub fn status(&self) -> Status {
         msg_send!("av", self, sel_status)
+    }
+
+    pub fn time_range(&mut self) -> cm::TimeRange {
+        msg_send!("av", self, sel_timeRange)
+    }
+
+    pub fn set_time_range(&mut self, value: cm::TimeRange) {
+        msg_send!("av", self, sel_setTimeRange, value)
     }
 
     pub fn outputs(&self) -> &cf::ArrayOf<av::AssetReaderOutput> {
