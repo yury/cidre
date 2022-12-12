@@ -185,7 +185,7 @@ async fn main() {
     session.set_props(&props).unwrap();
     session.prepare().unwrap();
 
-    let windows = cf::ArrayOf::new().unwrap();
+    let windows = cf::ArrayOf::new();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
 

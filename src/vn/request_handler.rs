@@ -37,7 +37,7 @@ impl ImageRequestHandler {
     ///
     /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
     /// let handler = vn::ImageRequestHandler::with_cv_pixel_buffer(&pixel_buffer, None).unwrap();
-    /// let requests = cf::ArrayOf::new().unwrap();
+    /// let requests = cf::ArrayOf::new();
     /// handler.perform(&requests).unwrap();
     ///
     /// ````
@@ -89,7 +89,7 @@ define_obj_type!(SequenceRequestHandler(ns::Id));
 ///
 /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
 /// let handler = vn::SequenceRequestHandler::new().unwrap();
-/// let requests = cf::ArrayOf::new().unwrap();
+/// let requests = cf::ArrayOf::new();
 /// handler.perform_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
 ///
 /// ````

@@ -405,7 +405,7 @@ mod tests {
         cfg.set_width(display.width() as usize * 2);
         cfg.set_height(display.height() as usize * 2);
 
-        let windows = cf::ArrayOf::<sc::Window>::new().unwrap();
+        let windows = cf::ArrayOf::<sc::Window>::new();
         let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
         let stream = sc::Stream::new(&filter, &cfg);
         let delegate = FameCounter { counter: 0 };
