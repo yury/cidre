@@ -42,7 +42,7 @@ impl DetectBarcodesRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn VNDetectBarcodesRequest_new() -> cf::Retained<DetectBarcodesRequest>;
 

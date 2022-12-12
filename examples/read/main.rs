@@ -29,7 +29,8 @@ async fn main() {
 
     let handler = vn::SequenceRequestHandler::new().unwrap();
     let classify = vn::ClassifyImageRequest::new();
-    let requests_slice: &[&vn::Request] = &[&classify];
+    let horizon = vn::DetectHorizonRequest::new();
+    let requests_slice: &[&vn::Request] = &[&classify, &horizon];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
 
     let mut count = 0;
@@ -53,10 +54,18 @@ async fn main() {
                         results[7].identifier().to_string(),
                         results[8].identifier().to_string(),
                         results[9].identifier().to_string(),
+                        results[10].identifier().to_string(),
+                        results[11].identifier().to_string(),
+                        results[12].identifier().to_string(),
                     ]
                     .join(", ");
 
                     println!("{}, {}", count, ids)
+                }
+            }
+            if let Some(results) = horizon.results() {
+                if !results.is_empty() {
+                    println!("{:?}", results[0].angle());
                 }
             }
         });

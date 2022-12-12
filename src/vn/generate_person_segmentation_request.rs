@@ -56,7 +56,7 @@ extern "C" {
     fn rsel_outputPixelFormat(id: &ns::Id) -> os::Type;
     fn wsel_setOutputPixelFormat(id: &mut ns::Id, value: os::Type);
 
-    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn VNGeneratePersonSegmentationRequest_new() -> cf::Retained<GeneratePersonSegmentationRequest>;
 }

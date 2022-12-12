@@ -22,7 +22,7 @@ impl GenerateObjectnessBasedSaliencyImageRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn VNGenerateObjectnessBasedSaliencyImageRequest_new(
     ) -> cf::Retained<GenerateObjectnessBasedSaliencyImageRequest>;

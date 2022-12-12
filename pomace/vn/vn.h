@@ -62,7 +62,15 @@ rsel(, id, boundingBox, CGRect)
 
 rsel(, id, globalSegmentationMask, VNPixelBufferObservation *)
 
+#pragma mark -VNHorizon
+
+NS_RETURNS_RETAINED
+csel(, VNDetectHorizonRequest, new, VNDetectHorizonRequest *)
+
+
 #pragma mark - VNHorizonObservation
+
+
 
 //@property (readonly, nonatomic, assign) CGAffineTransform transform;
 rsel(, id, transform, CGAffineTransform)

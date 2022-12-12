@@ -23,7 +23,7 @@ impl Request {
     }
 
     #[inline]
-    pub fn results(&self) -> Option<cf::Retained<cf::ArrayOf<vn::Observation>>> {
+    pub fn results(&self) -> Option<&cf::ArrayOf<vn::Observation>> {
         unsafe { rsel_results(self) }
     }
 
@@ -56,8 +56,12 @@ define_obj_type!(DetectHorizonRequest(ImageBasedRequest));
 impl DetectHorizonRequest {
     pub const REVISION_1: usize = 1;
 
-    pub fn results(&self) -> Option<cf::Retained<cf::ArrayOf<vn::HorizonObservation>>> {
+    pub fn results(&self) -> Option<&cf::ArrayOf<vn::HorizonObservation>> {
         unsafe { transmute(rsel_results(self)) }
+    }
+
+    pub fn new() -> cf::Retained<Self> {
+        unsafe { VNDetectHorizonRequest_new() }
     }
 }
 
@@ -69,8 +73,10 @@ extern "C" {
     fn rsel_usesCPUOnly(id: &ns::Id) -> bool;
     fn wsel_setUsesCPUOnly(id: &ns::Id, value: bool);
 
-    fn rsel_results(id: &ns::Id) -> Option<cf::Retained<cf::ArrayOf<vn::Observation>>>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn rsel_regionOfInterest(id: &ns::Id) -> cg::Rect;
     fn wsel_setRegionOfIntereset(id: &mut ns::Id, value: cg::Rect);
+
+    fn VNDetectHorizonRequest_new() -> cf::Retained<DetectHorizonRequest>;
 }

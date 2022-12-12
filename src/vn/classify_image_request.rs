@@ -32,7 +32,7 @@ impl ClassifyImageRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &ns::Id) -> Option<&cf::Array>;
+    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn rsel_supportedIdentifiersAndReturnError<'a, 'ar>(
         id: &'a ns::Id,
