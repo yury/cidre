@@ -30,7 +30,9 @@ async fn main() {
     let handler = vn::SequenceRequestHandler::new().unwrap();
     let classify = vn::ClassifyImageRequest::new();
     let horizon = vn::DetectHorizonRequest::new();
-    let requests_slice: &[&vn::Request] = &[&classify, &horizon];
+    let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
+    let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
+    let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
 
     let mut count = 0;
@@ -66,6 +68,16 @@ async fn main() {
             if let Some(results) = horizon.results() {
                 if !results.is_empty() {
                     println!("{:?}", results[0].angle());
+                }
+            }
+            if let Some(results) = objectness.results() {
+                if !results.is_empty() {
+                    println!("{:?}", results[0]);
+                }
+            }
+            if let Some(results) = attention.results() {
+                if !results.is_empty() {
+                    println!("{:?}", results[0].salient_objects().unwrap());
                 }
             }
         });
