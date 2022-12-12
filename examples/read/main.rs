@@ -1,4 +1,4 @@
-use cidre::{av, cf, cv};
+use cidre::{av, cf, cv, objc::autoreleasepool, vn};
 use tokio;
 
 #[tokio::main]
@@ -27,11 +27,39 @@ async fn main() {
         return;
     };
 
+    let handler = vn::SequenceRequestHandler::new().unwrap();
+    let classify = vn::ClassifyImageRequest::new();
+    let requests_slice: &[&vn::Request] = &[&classify];
+    let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
+
     let mut count = 0;
     while let Some(buf) = output.copy_next_sample_buffer() {
-        let Some(_image) = buf.image_buffer() else {
+        let Some(image) = buf.image_buffer() else {
             continue;
         };
+        autoreleasepool(|| {
+            handler
+                .perform_on_cv_pixel_buffer(&requests, &image)
+                .unwrap();
+            if let Some(results) = classify.results() {
+                if !results.is_empty() {
+                    let ids = [
+                        results[0].identifier().to_string(),
+                        results[1].identifier().to_string(),
+                        results[2].identifier().to_string(),
+                        results[3].identifier().to_string(),
+                        results[5].identifier().to_string(),
+                        results[6].identifier().to_string(),
+                        results[7].identifier().to_string(),
+                        results[8].identifier().to_string(),
+                        results[9].identifier().to_string(),
+                    ]
+                    .join(", ");
+
+                    println!("{}, {}", count, ids)
+                }
+            }
+        });
 
         count += 1;
     }
