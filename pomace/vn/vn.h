@@ -204,6 +204,17 @@ rsel_a(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
 
 csel(, VNRecognizeTextRequest, new, VNRecognizeTextRequest *)
 
+#pragma mark - VNRecognizedTextObservation
+
+//- (NSArray<VNRecognizedText*>*) topCandidates:(NSUInteger)maxCandidateCount;
+rsel_a(, id, topCandidates, NSUInteger, NSArray *)
+
+#pragma mark - VNRecognizedText
+
+rsel(, id, string, NSString *)
+
+#pragma mark - SELECTORS
+
 SEL sel_results;
 SEL sel_supportedIdentifiersAndReturnError;
 

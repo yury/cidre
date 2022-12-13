@@ -44,6 +44,7 @@ pub use observation::HumanObservation;
 pub use observation::Observation;
 pub use observation::PixelBufferObservation;
 pub use observation::RecognizedObjectObservation;
+pub use observation::RecognizedText;
 pub use observation::RecognizedTextObservation;
 pub use observation::RectangleObservation;
 pub use observation::SaliencyImageObservation;

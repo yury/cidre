@@ -32,7 +32,8 @@ async fn main() {
     let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
     let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
     let text = vn::RecognizeTextRequest::new();
-    let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
+    //let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
+    let requests_slice: &[&vn::Request] = &[&text];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
 
     let handler = vn::SequenceRequestHandler::new();
@@ -46,40 +47,46 @@ async fn main() {
             handler
                 .perform_on_cv_pixel_buffer(&requests, &image)
                 .unwrap();
-            if let Some(results) = classify.results() {
-                if !results.is_empty() {
-                    let ids = [
-                        results[0].identifier().to_string(),
-                        results[1].identifier().to_string(),
-                        results[2].identifier().to_string(),
-                        results[3].identifier().to_string(),
-                        results[5].identifier().to_string(),
-                        results[6].identifier().to_string(),
-                        results[7].identifier().to_string(),
-                        results[8].identifier().to_string(),
-                        results[9].identifier().to_string(),
-                        results[10].identifier().to_string(),
-                        results[11].identifier().to_string(),
-                        results[12].identifier().to_string(),
-                    ]
-                    .join(", ");
+            // if let Some(results) = classify.results() {
+            //     if !results.is_empty() {
+            //         let ids = [
+            //             results[0].identifier().to_string(),
+            //             results[1].identifier().to_string(),
+            //             results[2].identifier().to_string(),
+            //             results[3].identifier().to_string(),
+            //             results[5].identifier().to_string(),
+            //             results[6].identifier().to_string(),
+            //             results[7].identifier().to_string(),
+            //             results[8].identifier().to_string(),
+            //             results[9].identifier().to_string(),
+            //             results[10].identifier().to_string(),
+            //             results[11].identifier().to_string(),
+            //             results[12].identifier().to_string(),
+            //         ]
+            //         .join(", ");
 
-                    println!("{}, {}", count, ids)
-                }
-            }
-            if let Some(results) = horizon.results() {
+            //         println!("{}, {}", count, ids)
+            //     }
+            // }
+            // if let Some(results) = horizon.results() {
+            //     if !results.is_empty() {
+            //         println!("{:?}", results[0].angle());
+            //     }
+            // }
+            // if let Some(results) = objectness.results() {
+            //     if !results.is_empty() {
+            //         println!("{:?}", results[0]);
+            //     }
+            // }
+            // if let Some(results) = attention.results() {
+            //     if !results.is_empty() {
+            //         println!("{:?}", results[0].salient_objects().unwrap());
+            //     }
+            // }
+            if let Some(results) = text.results() {
                 if !results.is_empty() {
-                    println!("{:?}", results[0].angle());
-                }
-            }
-            if let Some(results) = objectness.results() {
-                if !results.is_empty() {
-                    println!("{:?}", results[0]);
-                }
-            }
-            if let Some(results) = attention.results() {
-                if !results.is_empty() {
-                    println!("{:?}", results[0].salient_objects().unwrap());
+                    let res = &results[0].top_candidates(1)[0];
+                    println!("res {:?}", res.string());
                 }
             }
         });

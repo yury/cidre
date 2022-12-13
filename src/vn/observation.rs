@@ -3,6 +3,13 @@ use std::mem::transmute;
 use crate::{cf, cg, cm, cv, define_obj_type, ns, vn};
 
 define_obj_type!(Observation(ns::Id));
+define_obj_type!(RecognizedText(ns::Id));
+
+impl RecognizedText {
+    pub fn string(&self) -> &cf::String {
+        unsafe { rsel_string(self) }
+    }
+}
 
 impl Observation {
     /// The unique identifier assigned to an observation.
@@ -147,6 +154,12 @@ impl TextObservation {
 }
 
 define_obj_type!(RecognizedTextObservation(RectangleObservation));
+
+impl RecognizedTextObservation {
+    pub fn top_candidates(&self, max: usize) -> &cf::ArrayOf<RecognizedText> {
+        unsafe { rsel_topCandidates(self, max) }
+    }
+}
 
 define_obj_type!(PixelBufferObservation(Observation));
 
@@ -297,4 +310,11 @@ extern "C" {
         to: &FeaturePrintObservation,
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
+
+    fn rsel_topCandidates(
+        id: &ns::Id,
+        max_candidate_count: usize,
+    ) -> &cf::ArrayOf<vn::RecognizedText>;
+
+    fn rsel_string(id: &ns::Id) -> &cf::String;
 }
