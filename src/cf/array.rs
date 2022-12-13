@@ -185,13 +185,13 @@ pub struct MutArrayOf<T>(MutableArray, PhantomData<T>);
 
 impl<T> MutArrayOf<T> {
     #[inline]
-    pub fn new() -> Option<Retained<MutArrayOf<T>>> {
+    pub fn new() -> Retained<MutArrayOf<T>> {
         Self::with_capacity(0)
     }
 
     #[inline]
-    pub fn with_capacity(capacity: usize) -> Option<Retained<MutArrayOf<T>>> {
-        Self::with_capacity_in(capacity, None)
+    pub fn with_capacity(capacity: usize) -> Retained<MutArrayOf<T>> {
+        unsafe { Self::with_capacity_in(capacity, None).unwrap_unchecked() }
     }
 
     #[inline]
