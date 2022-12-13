@@ -6,7 +6,7 @@
 ///
 /// // assert_ne!(frr, zero);
 /// ```
-#[derive(PartialEq, Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct FrameRateRange {
     pub minium: f32,
@@ -20,7 +20,15 @@ impl Default for FrameRateRange {
     }
 }
 
+impl PartialEq<Self> for FrameRateRange {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { CAFrameRateRangeIsEqualToRange(*self, *other) }
+    }
+}
+
 #[link(name = "QuartzCore", kind = "framework")]
 extern "C" {
     static CAFrameRateRangeDefault: FrameRateRange;
+    fn CAFrameRateRangeIsEqualToRange(range: FrameRateRange, other: FrameRateRange) -> bool;
 }
