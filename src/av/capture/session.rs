@@ -5,6 +5,7 @@ use crate::{
 };
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum VideoOrienation {
     /// Indicates that video should be oriented vertically, home button on the bottom.
@@ -17,6 +18,7 @@ pub enum VideoOrienation {
     LandscapeLeft = 4,
 }
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum InterruptionReason {
     VideoDeviceNotAvailableInBackground = 1,
