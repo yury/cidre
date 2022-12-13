@@ -279,7 +279,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::Array::new().expect("arr");
+    /// let arr = cf::Array::new();
     /// assert_eq!(arr.count(), 0);
     /// ```
     #[inline]
@@ -290,7 +290,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = unsafe { cf::Array::create_in(None, std::ptr::null(), 0, None).expect("arr") };
+    /// let arr = unsafe { cf::Array::create_in(std::ptr::null(), 0, None, None).expect("arr") };
     /// assert_eq!(arr.len(), 0);
     /// ```
     #[inline]
@@ -301,7 +301,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr = cf::Array::new().expect("Array::new");
+    /// let arr = cf::Array::new();
     /// assert_eq!(arr.is_empty(), true);
     /// ```
     #[inline]
@@ -312,7 +312,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr1 = cf::Array::new().expect("Array::new");
+    /// let arr1 = cf::Array::new();
     /// let arr2 = arr1.copy_in(None).expect("copy");
     ///
     /// ```
@@ -324,7 +324,7 @@ impl Array {
     /// ```
     /// use cidre::cf;
     ///
-    /// let arr1 = cf::Array::new().expect("Array::new");
+    /// let arr1 = cf::Array::new();
     /// let arr2 = arr1.copy().expect("copy");
     /// ```
     #[inline]
@@ -343,8 +343,8 @@ impl Array {
     }
 
     #[inline]
-    pub fn new() -> Option<Retained<Array>> {
-        Self::new_in(None)
+    pub fn new() -> Retained<Array> {
+        unsafe { Self::new_in(None).unwrap_unchecked() }
     }
 
     #[inline]
@@ -392,8 +392,8 @@ impl Array {
     ///
     /// let num = cf::Number::from_i32(10);
     ///
-    /// let empty_arr = cf::Array::new().unwrap();
-    /// let mut mut_arr = empty_arr.mutable_copy_in(None, 0).unwrap();
+    /// let empty_arr = cf::Array::new();
+    /// let mut mut_arr = empty_arr.mutable_copy_in(0, None).unwrap();
     ///
     ///
     /// mut_arr.append(&num);
@@ -471,14 +471,14 @@ impl MutableArray {
     }
 
     #[inline]
-    pub fn with_capacity(capacity: Index) -> Option<Retained<MutableArray>> {
-        Self::create_in(capacity, Callbacks::default(), None)
+    pub fn with_capacity(capacity: Index) -> Retained<MutableArray> {
+        unsafe { Self::create_in(capacity, Callbacks::default(), None).unwrap_unchecked() }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let mut arr = cf::MutableArray::new().unwrap();
+    /// let mut arr = cf::MutableArray::new();
     /// assert_eq!(0, arr.len());
     ///
     /// let num = cf::Number::from_i32(0);
@@ -491,7 +491,7 @@ impl MutableArray {
     /// assert_eq!(0, arr.len());
     /// ```
     #[inline]
-    pub fn new() -> Option<Retained<MutableArray>> {
+    pub fn new() -> Retained<MutableArray> {
         Self::with_capacity(0)
     }
 }
@@ -540,9 +540,9 @@ mod tests {
 
     #[test]
     pub fn empty_arrays_are_same() {
-        let arr1 = cf::Array::new().expect("Array::new");
+        let arr1 = cf::Array::new();
         let arr2 = arr1.copy().expect("copy");
-        let arr3 = cf::Array::new().expect("Array::new");
+        let arr3 = cf::Array::new();
         let arr4 = arr2.mutable_copy().expect("copy");
         unsafe {
             assert_eq!(arr1.as_type_ptr(), arr2.as_type_ptr());

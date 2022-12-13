@@ -88,7 +88,7 @@ define_obj_type!(SequenceRequestHandler(ns::Id));
 /// use cidre::{cf, cv, cg, vn};
 ///
 /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
-/// let handler = vn::SequenceRequestHandler::new().unwrap();
+/// let handler = vn::SequenceRequestHandler::new();
 /// let requests = cf::ArrayOf::new();
 /// handler.perform_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
 ///

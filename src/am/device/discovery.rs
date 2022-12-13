@@ -165,7 +165,7 @@ impl QueryBuilder {
     }
 
     pub fn udids(&mut self, udids: &[&str]) -> &mut Self {
-        let mut array = cf::MutableArray::with_capacity(udids.len() as _).unwrap();
+        let mut array = cf::MutableArray::with_capacity(udids.len() as _);
         for u in udids {
             let s = cf::String::from_str(u);
             array.append(&s);
