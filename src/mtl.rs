@@ -305,13 +305,7 @@ macro_rules! define_mtl {
     (use_resources) => {
         #[inline]
         pub fn use_resources(&mut self, resources: &[crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                static sel_useResources_count_usage: &'static crate::objc::Sel;
-            }
-            unsafe {
-                self.sel_abc(sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
-            }
+            crate::msg_send!("mtl", self, sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
         }
     };
 

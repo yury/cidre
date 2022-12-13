@@ -37,55 +37,47 @@ impl Id {
     }
 
     #[inline]
-    pub unsafe fn sel<R>(&self, selector: &Sel) -> R {
+    pub unsafe fn sel0<R>(&self, selector: &Sel) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector)
     }
 
     #[inline]
-    pub unsafe fn sel_a<R, A>(&self, selector: &Sel, a: A) -> R {
+    pub unsafe fn sel1<R, A>(&self, selector: &Sel, a: A) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector, a)
     }
 
     #[inline]
-    pub unsafe fn sel_ab<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
+    pub unsafe fn sel2<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b)
     }
 
     #[inline]
-    pub unsafe fn sel_abc<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
+    pub unsafe fn sel3<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c)
     }
 
     #[inline]
-    pub unsafe fn sel_abcd<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
+    pub unsafe fn sel4<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d)
     }
 
     #[inline]
-    pub unsafe fn sel_abcde<R, A, B, C, D, E>(
-        &self,
-        selector: &Sel,
-        a: A,
-        b: B,
-        c: C,
-        d: D,
-        e: E,
-    ) -> R {
+    pub unsafe fn sel5<R, A, B, C, D, E>(&self, selector: &Sel, a: A, b: B, c: C, d: D, e: E) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E) -> R =
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d, e)
     }
 
     #[inline]
-    pub unsafe fn sel_abcdef<R, A, B, C, D, E, F>(
+    pub unsafe fn sel6<R, A, B, C, D, E, F>(
         &self,
         selector: &Sel,
         a: A,
@@ -100,7 +92,7 @@ impl Id {
         imp(self, selector, a, b, c, d, e, f)
     }
     #[inline]
-    pub unsafe fn sel_abcdefg<R, A, B, C, D, E, F, G>(
+    pub unsafe fn sel7<R, A, B, C, D, E, F, G>(
         &self,
         selector: &Sel,
         a: A,
@@ -162,63 +154,63 @@ where
 #[macro_export]
 macro_rules! msg_send {
     // TODO: we should pass name and kind
-    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident, $f:ident, $g:ident) => {{
+    ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel_abcdefg($sel, $a, $b, $c, $d, $e, $f, $g) }
+        unsafe { $self.sel7($sel, $a, $b, $c, $d, $e, $f, $g) }
     }};
-    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident, $f:ident) => {{
+    ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel_abcdef($sel, $a, $b, $c, $d, $e, $f) }
+        unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
     }};
-    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident, $e:ident) => {{
+    ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel_abcde($sel, $a, $b, $c, $d, $e) }
+        unsafe { $self.sel5($sel, $a, $b, $c, $d, $e) }
     }};
-    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident, $d:ident) => {{
+    ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel_abcd($sel, $a, $b, $c, $d) }
+        unsafe { $self.sel4($sel, $a, $b, $c, $d) }
     }};
-    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident, $c:ident) => {{
+    ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel_abc($sel, $a, $b, $c) }
-    }};
-
-    ($lib:literal, $self:ident, $sel:ident, $a:ident, $b:ident) => {{
-        #[link(name = $lib, kind = "static")]
-        extern "C" {
-            static $sel: &'static crate::objc::Sel;
-        }
-
-        unsafe { $self.sel_ab($sel, $a, $b) }
+        unsafe { $self.sel3($sel, $a, $b, $c) }
     }};
 
-    ($lib:literal, $self:ident, $sel:ident, $a:ident) => {{
+    ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel_a($sel, $a) }
+        unsafe { $self.sel2($sel, $a, $b) }
+    }};
+
+    ($lib:literal, $self:ident, $sel:ident, $a:expr) => {{
+        #[link(name = $lib, kind = "static")]
+        extern "C" {
+            static $sel: &'static crate::objc::Sel;
+        }
+
+        unsafe { $self.sel1($sel, $a) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident) => {{
@@ -227,7 +219,7 @@ macro_rules! msg_send {
             static $sel: &'static crate::objc::Sel;
         }
 
-        unsafe { $self.sel($sel) }
+        unsafe { $self.sel0($sel) }
     }};
 }
 
