@@ -11,8 +11,6 @@ async fn main() {
         .await
         .unwrap();
 
-    let mut reader = av::AssetReader::with_asset(&asset).unwrap();
-
     let options = cf::DictionaryOf::with_keys_values(
         &[cv::pixel_buffer_keys::pixel_format_type()],
         &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
@@ -20,6 +18,8 @@ async fn main() {
 
     let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
     output.set_always_copies_sample_data(false);
+
+    let mut reader = av::AssetReader::with_asset(&asset).unwrap();
     reader.add_output(&output);
     let true = reader.start_reading() else {
         println!("error: {:?}", reader.error());
