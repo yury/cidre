@@ -198,8 +198,6 @@ csel(, VNDetectBarcodesRequest, new, VNDetectBarcodesRequest *)
 //@property (readwrite, nonatomic, copy) NSArray<VNBarcodeSymbology> *symbologies;
 rwsel(, id, symbologies, setSymbologies, NSArray *)
 
-//- (nullable NSArray<VNBarcodeSymbology> *) supportedSymbologiesAndReturnError:(NSError**)error API_AVAILABLE(macos(12.0), ios(15.0), tvos(15.0));
-
 rsel_a(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
 
 SEL sel_results;
