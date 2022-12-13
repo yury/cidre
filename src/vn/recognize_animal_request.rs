@@ -5,9 +5,12 @@ define_obj_type!(RecognizeAnimalsRequest(vn::ImageBasedRequest));
 define_cf_type!(AnimalIdentifier(cf::String));
 
 impl AnimalIdentifier {
+    #[inline]
     pub fn dog() -> &'static Self {
         unsafe { VNAnimalIdentifierDog }
     }
+
+    #[inline]
     pub fn cat() -> &'static Self {
         unsafe { VNAnimalIdentifierCat }
     }
@@ -69,7 +72,6 @@ mod test {
         let supported_ids = request.supported_identifiers().unwrap();
         supported_ids.show();
 
-        println!("what? {:?}", vn::AnimalIdentifier::cat());
         assert_eq!(2, supported_ids.len());
         assert!(supported_ids.contains(vn::AnimalIdentifier::cat()));
         assert!(supported_ids.contains(vn::AnimalIdentifier::dog()));
