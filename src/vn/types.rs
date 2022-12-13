@@ -148,6 +148,7 @@ impl ImageCropAndScaleOption {
     pub const SCALE_FILL_ROTATE90_CCW: Self = Self(Self::SCALE_FILL.0 + 0x100);
 }
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(usize)]
 pub enum ElementType {
     Unknown = 0,
@@ -155,6 +156,7 @@ pub enum ElementType {
     Double = 2,
 }
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum Chirality {
     Unknonw = 0,
@@ -162,6 +164,7 @@ pub enum Chirality {
     Right = 1,
 }
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum PointsClassification {
     Disconnected = 0,
