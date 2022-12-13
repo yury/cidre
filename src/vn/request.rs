@@ -1,6 +1,4 @@
-use std::mem::transmute;
-
-use crate::{cf, cg, define_obj_type, ns, vn};
+use crate::{cf, cg, define_obj_type, msg_send, ns, vn};
 
 define_obj_type!(Request(ns::Id));
 
@@ -24,7 +22,7 @@ impl Request {
 
     #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::Observation>> {
-        unsafe { rsel_results(self) }
+        msg_send!("vn", self, sel_results)
     }
 
     pub const REVISION_UNSPECIFIED: usize = 0;
@@ -56,8 +54,9 @@ define_obj_type!(DetectHorizonRequest(ImageBasedRequest));
 impl DetectHorizonRequest {
     pub const REVISION_1: usize = 1;
 
+    #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::HorizonObservation>> {
-        unsafe { transmute(rsel_results(self)) }
+        msg_send!("vn", self, sel_results)
     }
 
     pub fn new() -> cf::Retained<Self> {
@@ -72,8 +71,6 @@ extern "C" {
 
     fn rsel_usesCPUOnly(id: &ns::Id) -> bool;
     fn wsel_setUsesCPUOnly(id: &ns::Id, value: bool);
-
-    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn rsel_regionOfInterest(id: &ns::Id) -> cg::Rect;
     fn wsel_setRegionOfIntereset(id: &mut ns::Id, value: cg::Rect);

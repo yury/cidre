@@ -27,13 +27,15 @@ async fn main() {
         return;
     };
 
-    let handler = vn::SequenceRequestHandler::new();
     let classify = vn::ClassifyImageRequest::new();
     let horizon = vn::DetectHorizonRequest::new();
     let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
     let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
+    //let text = vn::Rec
     let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
+
+    let handler = vn::SequenceRequestHandler::new();
 
     let mut count = 0;
     while let Some(buf) = output.copy_next_sample_buffer() {

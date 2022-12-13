@@ -1,14 +1,15 @@
 use std::mem::transmute;
 
-use crate::{cf, define_obj_type, ns, vn};
+use crate::{cf, define_obj_type, msg_send, ns, vn};
 
 define_obj_type!(ClassifyImageRequest(vn::ImageBasedRequest));
 
 impl ClassifyImageRequest {
     pub const REVISION_1: usize = 1;
 
+    #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::ClassificationObservation>> {
-        unsafe { transmute(rsel_results(self)) }
+        msg_send!("vn", self, sel_results)
     }
 
     pub fn supported_identifiers<'a, 'ar>(
@@ -32,8 +33,6 @@ impl ClassifyImageRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
-
     fn rsel_supportedIdentifiersAndReturnError<'a, 'ar>(
         id: &'a ns::Id,
         error: &mut Option<&'ar cf::Error>,

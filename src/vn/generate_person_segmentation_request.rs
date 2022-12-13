@@ -1,6 +1,4 @@
-use std::mem::transmute;
-
-use crate::{cf, define_obj_type, ns, os, vn};
+use crate::{cf, define_obj_type, msg_send, ns, os, vn};
 
 /// Person segmentation level options to favor speed over recognition accuracy.
 /// Accurate is the default option.
@@ -39,7 +37,7 @@ impl GeneratePersonSegmentationRequest {
 
     #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::PixelBufferObservation>> {
-        unsafe { transmute(rsel_results(self)) }
+        msg_send!("vn", self, sel_results)
     }
 
     #[inline]
@@ -55,8 +53,6 @@ extern "C" {
 
     fn rsel_outputPixelFormat(id: &ns::Id) -> os::Type;
     fn wsel_setOutputPixelFormat(id: &mut ns::Id, value: os::Type);
-
-    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
 
     fn VNGeneratePersonSegmentationRequest_new() -> cf::Retained<GeneratePersonSegmentationRequest>;
 }

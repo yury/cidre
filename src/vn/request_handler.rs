@@ -99,7 +99,7 @@ impl SequenceRequestHandler {
     /// ```
     /// use cidre::{vn};
     ///
-    /// let sequence_handler = vn::SequenceRequestHandler::new();
+    /// let handler = vn::SequenceRequestHandler::new();
     /// ```
     #[inline]
     pub fn new() -> cf::Retained<Self> {

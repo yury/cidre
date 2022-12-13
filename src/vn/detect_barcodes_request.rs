@@ -1,6 +1,4 @@
-use std::mem::transmute;
-
-use crate::{cf, define_obj_type, ns, vn};
+use crate::{cf, define_obj_type, msg_send, ns, vn};
 
 define_obj_type!(DetectBarcodesRequest(vn::ImageBasedRequest));
 
@@ -9,8 +7,9 @@ impl DetectBarcodesRequest {
     pub const REVISION_2: usize = 2;
     pub const REVISION_3: usize = 3;
 
+    #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::BarcodeObservation>> {
-        unsafe { transmute(rsel_results(self)) }
+        msg_send!("vn", self, sel_results)
     }
 
     pub fn new() -> cf::Retained<Self> {
@@ -42,8 +41,6 @@ impl DetectBarcodesRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
-
     fn VNDetectBarcodesRequest_new() -> cf::Retained<DetectBarcodesRequest>;
 
     fn rsel_symbologies(id: &ns::Id) -> &cf::ArrayOf<vn::BarcodeSymbology>;

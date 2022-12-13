@@ -1,4 +1,4 @@
-use crate::{define_obj_type, vn};
+use crate::{cf, define_obj_type, msg_send, vn};
 
 #[repr(isize)]
 pub enum RecognitionLevel {
@@ -27,4 +27,9 @@ impl RecognizeTextRequest {
     /// As the underlying engine has changed from previous revsions, results can differ but are
     /// generally more accurate.
     pub const REVISION_3: usize = 3;
+
+    #[inline]
+    pub fn results(&self) -> Option<&cf::ArrayOf<vn::RecognizedTextObservation>> {
+        msg_send!("vn", self, sel_results)
+    }
 }

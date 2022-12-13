@@ -1,6 +1,4 @@
-use std::mem::transmute;
-
-use crate::{cf, define_obj_type, ns, vn};
+use crate::{cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(DetectFaceRectanglesRequest(vn::ImageBasedRequest));
 
@@ -11,7 +9,7 @@ impl DetectFaceRectanglesRequest {
 
     #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::FaceObservation>> {
-        unsafe { transmute(rsel_results(self)) }
+        msg_send!("vn", self, sel_results)
     }
 
     #[inline]
@@ -22,7 +20,5 @@ impl DetectFaceRectanglesRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_results(id: &ns::Id) -> Option<&cf::ArrayOf<vn::Observation>>;
-
     fn VNDetectFaceRectanglesRequest_new() -> cf::Retained<DetectFaceRectanglesRequest>;
 }

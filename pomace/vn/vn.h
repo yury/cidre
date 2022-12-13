@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - VNRequest
 
-rsel(, id, results, NSArray *)
 rwsel(, id, revision, setRevision, NSUInteger)
 rwsel(, id, usesCPUOnly, setUsesCPUOnly, BOOL)
 
@@ -197,6 +196,18 @@ rwsel(, id, symbologies, setSymbologies, NSArray *)
 //- (nullable NSArray<VNBarcodeSymbology> *) supportedSymbologiesAndReturnError:(NSError**)error API_AVAILABLE(macos(12.0), ios(15.0), tvos(15.0));
 
 rsel_a(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
+
+SEL sel_results;
+
+__attribute__((constructor))
+static void common_initializer()
+{
+  static int initialized = 0;
+  if (!initialized) {
+    sel_results = @selector(results);
+  }
+}
+
 
 
 NS_ASSUME_NONNULL_END
