@@ -157,10 +157,15 @@ rsel(, id, pointCount, NSUInteger)
 
 #pragma mark - VNClassifyImageRequest
 
-rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
+//rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
 
 NS_RETURNS_RETAINED
 csel(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
+
+#pragma mark - VNRecognizeAnimalsRequest
+
+NS_RETURNS_RETAINED
+csel(, VNRecognizeAnimalsRequest, new, VNRecognizeAnimalsRequest *)
 
 #pragma mark - VNFeaturePrintObservation
 
@@ -198,6 +203,7 @@ rwsel(, id, symbologies, setSymbologies, NSArray *)
 rsel_a(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
 
 SEL sel_results;
+SEL sel_supportedIdentifiersAndReturnError;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -205,6 +211,7 @@ static void common_initializer()
   static int initialized = 0;
   if (!initialized) {
     sel_results = @selector(results);
+    sel_supportedIdentifiersAndReturnError = @selector(supportedIdentifiersAndReturnError:);
   }
 }
 

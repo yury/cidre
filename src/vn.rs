@@ -28,6 +28,10 @@ mod recognize_text_request;
 pub use recognize_text_request::RecognitionLevel as RequestTextRecognitionLevel;
 pub use recognize_text_request::RecognizeTextRequest;
 
+mod recognize_animal_request;
+pub use recognize_animal_request::AnimalIdentifier;
+pub use recognize_animal_request::RecognizeAnimalsRequest;
+
 mod observation;
 pub use observation::BarcodeObservation;
 pub use observation::ClassificationObservation;

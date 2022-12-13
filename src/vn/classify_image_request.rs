@@ -1,6 +1,4 @@
-use std::mem::transmute;
-
-use crate::{cf, define_obj_type, msg_send, ns, vn};
+use crate::{cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(ClassifyImageRequest(vn::ImageBasedRequest));
 
@@ -17,13 +15,20 @@ impl ClassifyImageRequest {
     ) -> Result<&'a cf::ArrayOf<cf::String>, &'ar cf::Error> {
         unsafe {
             let mut error = None;
-            let res = rsel_supportedIdentifiersAndReturnError(self, &mut error);
+            let res = self.supported_identifiers_error(&mut error);
             if res.is_some() {
-                Ok(transmute(res))
+                Ok(res.unwrap_unchecked())
             } else {
                 Err(error.unwrap())
             }
         }
+    }
+
+    pub unsafe fn supported_identifiers_error<'ar>(
+        &self,
+        error: &mut Option<&'ar cf::Error>,
+    ) -> Option<&'ar cf::ArrayOf<cf::String>> {
+        msg_send!("vn", self, sel_supportedIdentifiersAndReturnError, error)
     }
 
     pub fn new() -> cf::Retained<Self> {
@@ -33,11 +38,6 @@ impl ClassifyImageRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_supportedIdentifiersAndReturnError<'a, 'ar>(
-        id: &'a ns::Id,
-        error: &mut Option<&'ar cf::Error>,
-    ) -> Option<&'a cf::ArrayOf<cf::String>>;
-
     fn VNClassifyImageRequest_new() -> cf::Retained<ClassifyImageRequest>;
 }
 

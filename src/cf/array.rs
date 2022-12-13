@@ -44,14 +44,14 @@ impl<T> ArrayOf<T> {
         unsafe { transmute(Array::new_in(allocator)) }
     }
 
-    pub fn contains(&self, value: &T) -> bool {
+    pub fn contains(&self, value: &cf::Type) -> bool {
         if self.is_empty() {
             return false;
         }
         unsafe {
             CFArrayContainsValue(
                 self,
-                cf::Range::new(0, self.count() - 1),
+                cf::Range::new(0, self.count()),
                 value as *const _ as _,
             )
         }
