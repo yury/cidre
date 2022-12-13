@@ -80,10 +80,10 @@ impl<T> ArrayOf<T> {
     {
         unsafe {
             let arr = Array::create_in(
-                None,
                 values.as_ptr() as _,
                 values.len() as _,
                 Callbacks::default(),
+                None,
             );
             transmute(arr)
         }
@@ -96,10 +96,10 @@ impl<T> ArrayOf<T> {
     {
         unsafe {
             let arr = Array::create_in(
-                None,
                 values.as_ptr() as _,
                 values.len() as _,
                 Callbacks::default(),
+                None,
             );
             transmute(arr)
         }
@@ -199,7 +199,7 @@ impl<T> MutArrayOf<T> {
         capacity: usize,
         alloc: Option<&Allocator>,
     ) -> Option<Retained<MutArrayOf<T>>> {
-        let arr = MutableArray::create_in(alloc, capacity as _, Callbacks::default());
+        let arr = MutableArray::create_in(capacity as _, Callbacks::default(), alloc);
         unsafe { transmute(arr) }
     }
 
@@ -334,10 +334,10 @@ impl Array {
 
     #[inline]
     pub unsafe fn create_in(
-        allocator: Option<&Allocator>,
         values: *const c_void,
         num_values: Index,
         callbacks: Option<&Callbacks>,
+        allocator: Option<&Allocator>,
     ) -> Option<Retained<Array>> {
         CFArrayCreate(allocator, values, num_values, callbacks)
     }
@@ -349,7 +349,7 @@ impl Array {
 
     #[inline]
     pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<Array>> {
-        unsafe { Self::create_in(allocator, std::ptr::null(), 0, Callbacks::default()) }
+        unsafe { Self::create_in(std::ptr::null(), 0, Callbacks::default(), allocator) }
     }
 
     /// ```
@@ -361,7 +361,7 @@ impl Array {
     /// ```
     #[inline]
     pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<Retained<Array>> {
-        unsafe { Array::create_in(None, values.as_ptr() as _, N as _, Callbacks::default()) }
+        unsafe { Array::create_in(values.as_ptr() as _, N as _, Callbacks::default(), None) }
     }
 
     #[inline]
@@ -371,10 +371,10 @@ impl Array {
     {
         unsafe {
             Array::create_in(
-                None,
                 values.as_ptr() as _,
                 values.len() as _,
                 Callbacks::default(),
+                None,
             )
         }
     }
@@ -384,7 +384,7 @@ impl Array {
     where
         T: Copy,
     {
-        unsafe { Array::create_in(None, values.as_ptr() as _, N as _, None) }
+        unsafe { Array::create_in(values.as_ptr() as _, N as _, None, None) }
     }
 
     /// ```
@@ -405,8 +405,8 @@ impl Array {
     #[inline]
     pub fn mutable_copy_in(
         &self,
-        allocator: Option<&Allocator>,
         capacity: Index,
+        allocator: Option<&Allocator>,
     ) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutableCopy(allocator, capacity, self) }
     }
@@ -418,7 +418,7 @@ impl Array {
 
     #[inline]
     pub fn mutable_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutableArray>> {
-        self.mutable_copy_in(None, capacity as _)
+        self.mutable_copy_in(capacity as _, None)
     }
 }
 
@@ -463,16 +463,16 @@ impl MutableArray {
 
     #[inline]
     pub fn create_in(
-        allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
+        allocator: Option<&Allocator>,
     ) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
     }
 
     #[inline]
     pub fn with_capacity(capacity: Index) -> Option<Retained<MutableArray>> {
-        Self::create_in(None, capacity, Callbacks::default())
+        Self::create_in(capacity, Callbacks::default(), None)
     }
 
     /// ```

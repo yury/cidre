@@ -27,7 +27,7 @@ async fn main() {
         return;
     };
 
-    let handler = vn::SequenceRequestHandler::new().unwrap();
+    let handler = vn::SequenceRequestHandler::new();
     let classify = vn::ClassifyImageRequest::new();
     let horizon = vn::DetectHorizonRequest::new();
     let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();

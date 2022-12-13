@@ -99,10 +99,10 @@ impl SequenceRequestHandler {
     /// ```
     /// use cidre::{vn};
     ///
-    /// let sequence_handler = vn::SequenceRequestHandler::new().unwrap();
+    /// let sequence_handler = vn::SequenceRequestHandler::new();
     /// ```
     #[inline]
-    pub fn new() -> Option<cf::Retained<Self>> {
+    pub fn new() -> cf::Retained<Self> {
         unsafe { VNSequenceRequestHandler_new() }
     }
 
@@ -184,7 +184,7 @@ extern "C" {
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
 
-    fn VNSequenceRequestHandler_new() -> Option<cf::Retained<SequenceRequestHandler>>;
+    fn VNSequenceRequestHandler_new() -> cf::Retained<SequenceRequestHandler>;
 
     fn rsel_performRequests_onCVPixelBuffer_error<'ar>(
         id: &ns::Id,
