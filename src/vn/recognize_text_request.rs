@@ -32,4 +32,13 @@ impl RecognizeTextRequest {
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::RecognizedTextObservation>> {
         msg_send!("vn", self, sel_results)
     }
+
+    pub fn new() -> cf::Retained<Self> {
+        unsafe { VNRecognizeTextRequest_new() }
+    }
+}
+
+#[link(name = "vn", kind = "static")]
+extern "C" {
+    fn VNRecognizeTextRequest_new() -> cf::Retained<RecognizeTextRequest>;
 }

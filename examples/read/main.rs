@@ -7,7 +7,7 @@ async fn main() {
     let asset = av::URLAsset::with_url(&url, None);
 
     let tracks = asset
-        .load_tracks_with_media_type(&av::MediaType::video())
+        .load_tracks_with_media_type(av::MediaType::video())
         .await
         .unwrap();
 
@@ -31,8 +31,8 @@ async fn main() {
     let horizon = vn::DetectHorizonRequest::new();
     let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
     let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
-    //let text = vn::Rec
-    let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness];
+    let text = vn::RecognizeTextRequest::new();
+    let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
 
     let handler = vn::SequenceRequestHandler::new();

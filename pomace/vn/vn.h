@@ -200,6 +200,10 @@ rwsel(, id, symbologies, setSymbologies, NSArray *)
 
 rsel_a(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
 
+#pragma mark - VNRecognizeTextRequest
+
+csel(, VNRecognizeTextRequest, new, VNRecognizeTextRequest *)
+
 SEL sel_results;
 SEL sel_supportedIdentifiersAndReturnError;
 
