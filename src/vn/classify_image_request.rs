@@ -24,6 +24,11 @@ impl ClassifyImageRequest {
         }
     }
 
+    /// # Safety
+    ///
+    /// use `supported_identifiers`
+    ///
+    #[doc(alias = "supportedIdentifiersAndReturnError:")]
     pub unsafe fn supported_identifiers_error<'ar>(
         &self,
         error: &mut Option<&'ar cf::Error>,
