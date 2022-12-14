@@ -5,6 +5,10 @@ define_obj_type!(ClassifyImageRequest(vn::ImageBasedRequest));
 impl ClassifyImageRequest {
     pub const REVISION_1: usize = 1;
 
+    pub fn new() -> cf::Retained<Self> {
+        unsafe { VNClassifyImageRequest_new() }
+    }
+
     #[inline]
     pub fn results(&self) -> Option<&cf::ArrayOf<vn::ClassificationObservation>> {
         msg_send!("vn", self, sel_results)
@@ -34,10 +38,6 @@ impl ClassifyImageRequest {
         error: &mut Option<&'ar cf::Error>,
     ) -> Option<&'ar cf::ArrayOf<cf::String>> {
         msg_send!("vn", self, sel_supportedIdentifiersAndReturnError, error)
-    }
-
-    pub fn new() -> cf::Retained<Self> {
-        unsafe { VNClassifyImageRequest_new() }
     }
 }
 
