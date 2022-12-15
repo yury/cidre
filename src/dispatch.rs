@@ -11,6 +11,7 @@ pub use group::Group;
 
 mod time;
 pub use time::Time;
+pub use time::WallTime;
 
 pub mod queue;
 pub use queue::Attr;
@@ -35,6 +36,8 @@ pub use source::TimerFlags as SourceTimerFlags;
 pub use source::TimerSource;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
+
+pub mod work_item;
 
 use crate::blocks;
 
