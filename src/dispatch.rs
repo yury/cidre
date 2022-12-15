@@ -82,6 +82,7 @@ impl Block<extern "C" fn(*const c_void)> for blocks::bl<extern "C" fn(*const c_v
 /// This function "parks" the main thread and waits for blocks to be submitted to the main queue.
 /// Applications that call UIApplicationMain (iOS), NSApplicationMain (macOS), or CFRunLoopRun
 /// on the main thread must not call `dispatch::main()`.
+#[doc(alias = "dispatch_main")]
 #[inline]
 pub fn main() {
     unsafe { dispatch_main() }
