@@ -38,6 +38,10 @@ pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
 
 pub mod work_item;
+pub use work_item::WorkItem;
+
+pub mod block;
+pub use block::Flags as BlockFlags;
 
 use crate::blocks;
 

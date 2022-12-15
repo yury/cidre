@@ -275,6 +275,7 @@ impl Attr {
     }
 }
 
+#[link(name = "System", kind = "dylib")]
 extern "C" {
     static _dispatch_main_q: Main;
     static _dispatch_queue_attr_concurrent: Attr;
