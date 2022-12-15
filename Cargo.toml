@@ -22,12 +22,8 @@ harness = false
 #[lib]
 #crate-type = ["staticlib", "rlib"]
 
-[profile.test]
-codegen-units = 1
-
 [profile.release]
 lto = true
-codegen-units = 1
 strip = "debuginfo"
 panic = "abort"
 

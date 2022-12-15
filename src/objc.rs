@@ -292,37 +292,3 @@ pub struct Delegate<T: Sized> {
     pub delegate: Box<T>,
     pub obj: crate::cf::Retained<Id>,
 }
-
-struct ImageInfo {
-    _version: u32,
-    _flags: u32,
-}
-
-#[link_section = "__DATA,__objc_imageinfo"]
-#[used]
-static IMAGE_INFO: ImageInfo = ImageInfo {
-    _version: 0,
-    _flags: 0,
-};
-
-#[inline]
-pub fn sel_processor_count() -> &'static Sel {
-    #[link_section = "__TEXT,__objc_methname,cstring_literals"]
-    #[used]
-    static STR: [u8; 15] = *b"processorCount\0";
-    #[used]
-    #[link_section = "__DATA,__objc_selrefs,literal_pointers,no_dead_strip"]
-    static SEL: &[u8; 15] = &STR;
-    let sel: *const u8;
-    unsafe {
-        core::arch::asm!(
-            "adrp	{y}, {sel}@PAGE",
-             "ldr	{x}, [{y}, {sel}@PAGEOFF]",
-             sel = sym SEL,
-             y = out(reg) _,
-             x = out(reg) sel,
-             options(nomem, nostack, pure),
-        );
-        transmute(sel)
-    }
-}

@@ -54,16 +54,6 @@ impl ProcessInfo {
         unsafe { rsel_processorCount(self) }
     }
 
-    /// ```
-    /// use cidre::ns;
-    /// let pi = ns::ProcessInfo::current();
-    /// assert_eq!(pi.processor_count(), pi.processor_count2());
-    /// ```
-    #[inline]
-    pub fn processor_count2(&self) -> usize {
-        unsafe { self.sel0(crate::objc::sel_processor_count()) }
-    }
-
     #[inline]
     pub fn active_processor_count(&self) -> usize {
         unsafe { rsel_activeProcessorCount(self) }
