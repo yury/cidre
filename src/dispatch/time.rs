@@ -7,8 +7,11 @@ use crate::sys::_types::TimeSpec;
 pub struct Time(u64);
 
 impl Time {
+    #[doc(alias("DISPATCH_TIME_NOW"))]
     pub const NOW: Time = Time(0);
-    pub const FOREVER: Time = Time(!0);
+
+    #[doc(alias("DISPATCH_TIME_FOREVER"))]
+    pub const DISTANT_FUTURE: Time = Time(!0);
 
     #[inline]
     pub fn when_delta_nanos(when: Time, delta: i64) -> Time {
@@ -32,6 +35,9 @@ pub struct WallTime(pub Time);
 
 impl WallTime {
     pub const NOW: Self = Self(Time(!1));
+
+    #[doc(alias("DISPATCH_TIME_FOREVER"))]
+    pub const DISTANT_FUTURE: Self = Self(Time::DISTANT_FUTURE);
 
     // pub fn now() -> Self {
     //     unsafe { dispatch_walltime(std::ptr::null(), 0) }

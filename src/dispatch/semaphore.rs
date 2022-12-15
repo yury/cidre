@@ -33,7 +33,7 @@ impl Semaphore {
 
     #[inline]
     pub fn wait_forever(&self) -> isize {
-        unsafe { dispatch_semaphore_wait(self, super::Time::FOREVER) }
+        unsafe { dispatch_semaphore_wait(self, super::Time::DISTANT_FUTURE) }
     }
 
     #[inline]
