@@ -15,23 +15,16 @@ where
     }
 
     #[inline]
-    pub fn with_qos_class(
+    pub fn with_qos(
         flags: dispatch::block::Flags,
         qos_class: dispatch::QOSClass,
         block: &'static mut B,
     ) -> Self {
-        unsafe {
-            transmute(dispatch_block_create_with_qos_class(
-                flags,
-                qos_class,
-                0,
-                block.ptr(),
-            ))
-        }
+        Self::with_qos_priority(flags, qos_class, 0, block)
     }
 
     #[inline]
-    pub fn with_qos_class_priority(
+    pub fn with_qos_priority(
         flags: dispatch::block::Flags,
         qos_class: dispatch::QOSClass,
         relative_priority: i32,
