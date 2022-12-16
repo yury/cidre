@@ -314,9 +314,9 @@ pub struct Delegate<T: Sized> {
 #[cfg(test)]
 mod tests {
 
-    use crate::dispatch;
-
     use super::autoreleasepool;
+    use crate::{cf, dispatch};
+    use std;
 
     fn autorelease_example<'ar>() -> &'ar mut dispatch::Queue {
         let q = dispatch::Queue::new();
@@ -325,9 +325,13 @@ mod tests {
 
     #[test]
     fn autorelease() {
-        autoreleasepool(|| {
+        let ptr = autoreleasepool(|| {
             let q = autorelease_example();
-            println!("{:?}, {}", q, q.as_type_ref().retain_count());
+            assert_eq!(1, q.as_type_ref().retain_count());
+            unsafe { q.as_type_ref().as_type_ptr() }
         });
+
+        let ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
+        // expect crash: ptr.show()
     }
 }
