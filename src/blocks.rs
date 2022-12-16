@@ -8,7 +8,11 @@
 // https://developer.apple.com/documentation/swift/calling-objective-c-apis-asynchronously
 // https://github.com/apple/swift-corelibs-foundation/blob/main/Sources/BlocksRuntime/runtime.c
 
-use std::{ffi::c_void, mem, ops};
+use std::{
+    ffi::c_void,
+    mem::{self, transmute},
+    ops,
+};
 
 use crate::{define_options, objc::Class};
 
@@ -18,7 +22,8 @@ pub struct Block<F>(c_void, std::marker::PhantomData<F>);
 impl<F> Block<F> {
     #[inline]
     pub unsafe fn as_ptr(&mut self) -> *mut c_void {
-        self as *mut Self as _
+        transmute(self)
+        //self as *mut Self as _
     }
 }
 
@@ -234,9 +239,7 @@ pub struct BlOnce<F: 'static>(&'static mut Block<F>);
 impl<F> BlOnce<F> {
     #[inline]
     pub fn escape<'a>(self) -> &'a mut Block<F> {
-        let ptr = self.0 as *mut Block<F>;
-        std::mem::forget(self);
-        unsafe { &mut *ptr }
+        unsafe { transmute(self) }
     }
 }
 

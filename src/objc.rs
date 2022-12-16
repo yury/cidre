@@ -32,6 +32,11 @@ impl Id {
     }
 
     #[inline]
+    pub unsafe fn autorelease<'ar>(id: &Id) -> &mut Id {
+        objc_autorelease(id)
+    }
+
+    #[inline]
     pub fn as_type_ref(&self) -> &Type {
         &self.0
     }
@@ -229,6 +234,7 @@ extern "C" {
     fn objc_release(obj: &mut Id);
 
     fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
+    fn objc_autorelease<'a>(id: &Id) -> &'a mut Id;
 }
 
 #[macro_export]
@@ -275,6 +281,16 @@ macro_rules! define_obj_type {
             }
         }
 
+        impl crate::cf::runtime::Retained<$NewType> {
+            #[must_use]
+            pub fn autoreleased<'ar>(self) -> &'ar mut $NewType {
+                unsafe {
+                    let res = crate::objc::Id::autorelease(std::mem::transmute(self));
+                    return std::mem::transmute(res);
+                }
+            }
+        }
+
         // impl std::fmt::Debug for $NewType {
         //     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         //         let desc = self
@@ -287,8 +303,31 @@ macro_rules! define_obj_type {
     };
 }
 
+//struct AR<T>(&'static mut Id, PhantomData<T>);
+
 #[repr(C)]
 pub struct Delegate<T: Sized> {
     pub delegate: Box<T>,
     pub obj: crate::cf::Retained<Id>,
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::dispatch;
+
+    use super::autoreleasepool;
+
+    fn autorelease_example<'ar>() -> &'ar mut dispatch::Queue {
+        let q = dispatch::Queue::new();
+        q.autoreleased()
+    }
+
+    #[test]
+    fn autorelease() {
+        autoreleasepool(|| {
+            let q = autorelease_example();
+            println!("{:?}, {}", q, q.as_type_ref().retain_count());
+        });
+    }
 }
