@@ -77,6 +77,7 @@ impl Engine {
     /// use cidre::av;
     ///
     /// let engine = av::audio::Engine::new();
+    /// assert!(!engine.is_running());
     /// ```
     #[inline]
     pub fn new() -> cf::Retained<Engine> {
@@ -200,6 +201,18 @@ impl Engine {
     pub fn reset(&self) {
         unsafe { av_wsel_reset(self) }
     }
+
+    pub fn pause(&self) {
+        unsafe { wsel_pause(self) }
+    }
+
+    pub fn stop(&self) {
+        unsafe { wsel_stop(self) }
+    }
+
+    pub fn is_running(&self) -> bool {
+        unsafe { rsel_isRunning(self) }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -244,4 +257,7 @@ extern "C" {
     fn rsel_mainMixerNode(id: &ns::Id) -> &MixerNode;
 
     fn av_wsel_reset(id: &ns::Id);
+    fn wsel_pause(id: &ns::Id);
+    fn wsel_stop(id: &ns::Id);
+    fn rsel_isRunning(id: &ns::Id) -> bool;
 }

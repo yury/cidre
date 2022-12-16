@@ -235,6 +235,9 @@ wsel_abc(, id, connect, AVAudioNode *, to, AVAudioNode *, format, AVAudioFormat 
 wsel(, id, prepare)
 
 rsel_a(, id, startAndReturnError, NSError **, BOOL);
+wsel(, id, pause);
+wsel(, id, stop);
+rsel(, id, isRunning, BOOL)
 wsel_abcd(, id, connect, AVAudioNode *, toConnectionPoints, NSArray<AVAudioConnectionPoint *> *, fromBus, AVAudioNodeBus, format, AVAudioFormat * _Nullable)
 wsel_ab(, id, disconnectNodeInput, AVAudioNode *, bus, AVAudioNodeBus)
 wsel_a(, id, disconnectNodeInput, AVAudioNode *)
