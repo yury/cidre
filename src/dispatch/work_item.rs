@@ -2,21 +2,30 @@ use std::{ffi::c_void, marker::PhantomData, mem::transmute};
 
 use crate::dispatch;
 
+/// The work you want to perform, encapsulated in a way that lets
+/// you attach a completion handle or execution dependencies.
+///
+/// A dispatch::WorkItem encapsulates work to be performed on a
+/// dispatch queue or within a dispatch group. You can also use
+/// a work item as a dispatch::Source event, registration, or
+/// cancellation handler.
 #[repr(transparent)]
-pub struct WorkItem<F, T: dispatch::Block<F> + 'static>(&'static mut T, PhantomData<F>);
+pub struct WorkItem<F, T>(&'static mut T, PhantomData<F>)
+where
+    T: dispatch::Block<F> + 'static;
 
 impl<F, B> WorkItem<F, B>
 where
     B: dispatch::Block<F> + 'static,
 {
     #[inline]
-    pub fn with_flags(flags: dispatch::block::Flags, block: &'static mut B) -> Self {
+    pub fn with_flags(flags: dispatch::BlockFlags, block: &'static mut B) -> Self {
         unsafe { transmute(dispatch_block_create(flags, block.ptr())) }
     }
 
     #[inline]
     pub fn with_qos(
-        flags: dispatch::block::Flags,
+        flags: dispatch::BlockFlags,
         qos_class: dispatch::QOSClass,
         block: &'static mut B,
     ) -> Self {
@@ -25,7 +34,7 @@ where
 
     #[inline]
     pub fn with_qos_priority(
-        flags: dispatch::block::Flags,
+        flags: dispatch::BlockFlags,
         qos_class: dispatch::QOSClass,
         relative_priority: i32,
         block: &'static mut B,
@@ -41,18 +50,26 @@ where
     }
 
     #[inline]
-    pub fn wait() {
-        todo!();
+    pub fn wait(&self) {
+        unsafe {
+            dispatch_block_wait(self.0 as *const B as _, dispatch::Time::DISTANT_FUTURE);
+        }
     }
 
     #[inline]
-    pub fn wait_timeout(timeout: dispatch::Time) {
-        todo!();
+    pub fn wait_timeout(&self, timeout: dispatch::Time) -> Result<(), ()> {
+        unsafe {
+            if dispatch_block_wait(self.0 as *const B as _, timeout) == 0 {
+                Ok(())
+            } else {
+                Err(())
+            }
+        }
     }
 
     #[inline]
-    pub fn wait_wall_timeout(timeout: dispatch::WallTime) {
-        todo!()
+    pub fn wait_wall_timeout(&self, timeout: dispatch::WallTime) -> Result<(), ()> {
+        self.wait_timeout(timeout.0)
     }
 
     #[inline]
@@ -100,7 +117,7 @@ where
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
-    fn dispatch_block_create(flags: dispatch::block::Flags, block: *mut c_void) -> *mut c_void;
+    fn dispatch_block_create(flags: dispatch::BlockFlags, block: *mut c_void) -> *mut c_void;
     fn dispatch_block_create_with_qos_class(
         flags: dispatch::BlockFlags,
         qos_class: dispatch::QOSClass,
@@ -111,6 +128,7 @@ extern "C" {
     fn _Block_release(block: *const c_void);
     fn dispatch_block_cancel(block: *mut c_void);
     fn dispatch_block_testcancel(block: *const c_void) -> isize;
+    fn dispatch_block_wait(block: *const c_void, timeout: dispatch::Time) -> isize;
 }
 
 #[cfg(test)]
@@ -124,5 +142,7 @@ mod tests {
         assert!(!item.is_canceled());
         item.cancel();
         assert!(item.is_canceled());
+        let res = item.wait_timeout(dispatch::Time::NOW);
+        assert!(matches!(res, Err(())));
     }
 }

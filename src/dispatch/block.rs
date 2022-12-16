@@ -1,6 +1,7 @@
 use crate::define_options;
+use std::ffi::c_ulong;
 
-define_options!(Flags(u32));
+define_options!(Flags(c_ulong));
 
 /// #[doc(alias = "dispatch_block_flags")]
 
