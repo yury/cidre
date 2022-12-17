@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull, marker::PhantomData};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::cf::{
     runtime::{Release, Retain},
@@ -34,11 +34,6 @@ impl Id {
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &Id) -> &mut Id {
         objc_autorelease(id)
-    }
-
-    #[inline]
-    pub unsafe fn return_ar<'ar>(id: &Id) -> *mut Id {
-        objc_autoreleaseReturnValue(id)
     }
 
     #[inline]
@@ -240,9 +235,6 @@ extern "C" {
 
     fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
     fn objc_autorelease<'a>(id: &Id) -> &'a mut Id;
-
-    fn objc_autoreleaseReturnValue<'a>(id: &Id) -> &'a mut Id;
-    fn objc_retainAutoreleasedReturnValue(id: *const Id) -> *mut Id;
 }
 
 #[macro_export]
@@ -297,15 +289,6 @@ macro_rules! define_obj_type {
                     return std::mem::transmute(res);
                 }
             }
-
-            /// Do not use it for now
-            #[must_use]
-            pub unsafe fn return_ar<'ar>(self) -> &'ar crate::objc::AR<$NewType> {
-                unsafe {
-                    let res = crate::objc::Id::return_ar(std::mem::transmute(self));
-                    return std::mem::transmute(res);
-                }
-            }
         }
 
         // impl std::fmt::Debug for $NewType {
@@ -320,31 +303,7 @@ macro_rules! define_obj_type {
     };
 }
 
-#[repr(transparent)]
-pub struct AR<T>(Id, PhantomData<T>);
-
-impl<T> AR<T> where T: Retain {
-    #[inline(always)]
-    pub fn retain(&self) -> Retained<T> {
-        unsafe {
-            // std::arch::asm!("mov r7, r7", options(raw, nomem));
-            transmute(objc_retainAutoreleasedReturnValue(transmute(self)))
-        }
-    }
-}
-
-#[repr(transparent)]
-pub struct OptionAR<T>(Id, PhantomData<T>);
-
-impl<T> OptionAR<T> where T: Retain {
-    #[inline(always)]
-    pub fn retain(&self) -> Option<Retained<T>> {
-        unsafe {
-            // std::arch::asm!("mov r7, r7");
-            transmute(objc_retainAutoreleasedReturnValue(transmute(self)))
-        }
-    }
-}
+//struct AR<T>(&'static mut Id, PhantomData<T>);
 
 #[repr(C)]
 pub struct Delegate<T: Sized> {
@@ -355,19 +314,13 @@ pub struct Delegate<T: Sized> {
 #[cfg(test)]
 mod tests {
 
-    use super::{autoreleasepool, AR};
+    use super::autoreleasepool;
     use crate::{cf, dispatch};
     use std;
 
     fn autorelease_example<'ar>() -> &'ar mut dispatch::Queue {
         let q = dispatch::Queue::new();
         q.autoreleased()
-    }
-
-    fn autorelease_return_example<'ar>() -> &'ar AR<dispatch::Queue> {
-        let q = dispatch::Queue::new();
-        // assert_eq!(1, q.as_type_ref().retain_count());
-        unsafe { q.return_ar() }
     }
 
     #[test]
@@ -381,19 +334,4 @@ mod tests {
         let ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
         // expect crash: ptr.show()
     }
-
-    /// this test shows that we can't use autorelease_rt for now
-    /// we need `unsafe { std::arch::asm!("mov r7, r7", options(raw)) }; ` to work
-    #[test]
-    fn autorelease_ar() {
-        let ptr = autoreleasepool(|| {
-            let q = autorelease_return_example().retain();
-            // this should be 1 actually
-            assert_eq!(2, q.as_type_ref().retain_count());
-            q
-        });
-
-        assert_eq!(1, ptr.as_type_ref().retain_count());
-    }    
 }
-
