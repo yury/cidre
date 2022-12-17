@@ -78,7 +78,7 @@ impl Converter {
         unsafe { rsel_availableEncodeBitRates(self) }
     }
 
-    /// When encoding, an NSArray of NSNumber of bit rates that can be applied based on the current formats and settings.
+    /// When encoding, an cf::Array of cf::Number of bit rates that can be applied based on the current formats and settings.
     /// Returns None if not encoding.
     pub fn applicable_encode_bit_rates(&self) -> Option<&cf::ArrayOf<cf::Number>> {
         unsafe { rsel_applicableEncodeBitRates(self) }
@@ -90,12 +90,13 @@ impl Converter {
         unsafe { rsel_availableEncodeSampleRates(self) }
     }
 
-    /// When encoding, an NSArray of NSNumber of output sample rates that can be applied based on the current formats and settings.
+    /// When encoding, an cf::Array of cf::Number of output sample rates that can be applied based on the current formats and settings.
     /// Returns None if not encoding.
     pub fn applicable_encode_sample_rates(&self) -> Option<&cf::ArrayOf<cf::Number>> {
         unsafe { rsel_applicableEncodeSampleRates(self) }
     }
-    /// When encoding, an NSArray of NSNumber of all output channel layout tags provided by the codec.
+
+    /// When encoding, an cf::Array of cf::Number of all output channel layout tags provided by the codec.
     /// Returns None if not encoding
     pub fn available_encode_channel_layout_tags(&self) -> Option<&cf::ArrayOf<cf::Number>> {
         unsafe { rsel_availableEncodeChannelLayoutTags(self) }
