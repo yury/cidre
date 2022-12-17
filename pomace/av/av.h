@@ -475,6 +475,10 @@ rsel(, id, maximumOutputPacketSize, NSInteger)
 rsel(, id, bitRateStrategy, NSString * _Nullable)
 wsel_a(, id, setBitRateStrategy, NSString * _Nullable)
 
+//- (BOOL)convertToBuffer:(AVAudioPCMBuffer *)outputBuffer fromBuffer:(const AVAudioPCMBuffer *)inputBuffer error:(NSError **)outError;
+rsel_abc(, id, convertToBuffer, AVAudioPCMBuffer *, fromBuffer, const AVAudioPCMBuffer *, error, NSError **, BOOL)
+rsel_abc(, id, convertToBuffer, AVAudioBuffer *, error, NSError **, withInputFromBlock, id, AVAudioConverterOutputStatus)
+
 #pragma mark - AVMetadataObject
 
 rsel(AVMetadataObject_, AVMetadataObject *, time, CMTime)

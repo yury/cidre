@@ -1,4 +1,9 @@
-use crate::{av::audio, cf, define_obj_type, ns};
+use std::{ffi::c_void, mem::transmute};
+
+use crate::{
+    av::{self, audio},
+    blocks, cf, define_obj_type, ns,
+};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
@@ -95,6 +100,47 @@ impl Converter {
     pub fn available_encode_channel_layout_tags(&self) -> Option<&cf::ArrayOf<cf::Number>> {
         unsafe { rsel_availableEncodeChannelLayoutTags(self) }
     }
+
+    pub fn convert_to_buffer_from_buffer(
+        &self,
+        output_buffer: &mut av::AudioPCMBuffer,
+        from_buffer: &av::AudioPCMBuffer,
+    )  -> Result<(), cf::Retained<cf::Error>> {
+        unsafe {
+            let mut error = None;
+            let res = rsel_convertToBuffer_fromBuffer_error(self, output_buffer, from_buffer, &mut error);
+            if error.is_some() {
+                Err(transmute(error))
+            } else {
+                debug_assert!(res);
+                Ok(())
+            }
+        }
+    }
+
+    pub fn convert_to_buffer_with_input_from_block<'ar, F>(
+        &self,
+        output_buffer: &mut av::AudioBuffer,
+        block: &mut blocks::Block<F>,
+    ) -> Result<OutputStatus, cf::Retained<cf::Error>>
+    where
+        F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<&'ar av::AudioBuffer>,
+    {
+        unsafe {
+            let mut error = None;
+            let res = rsel_convertToBuffer_error_withInputFromBlock(
+                self,
+                output_buffer,
+                &mut error,
+                block.as_ptr(),
+            );
+            if error.is_some() {
+                Err(transmute(error))
+            } else {
+                Ok(res)
+            }
+        }
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -109,4 +155,18 @@ extern "C" {
 
     fn rsel_bitRateStrategy(id: &ns::Id) -> Option<&cf::String>;
     fn wsel_setBitRateStrategy(id: &ns::Id, value: Option<&cf::String>);
+
+    fn rsel_convertToBuffer_fromBuffer_error(
+        id: &ns::Id,
+        output_buffer: &mut av::AudioPCMBuffer,
+        from_buffer: &av::AudioPCMBuffer,
+        error: &mut Option<&cf::Error>,
+    ) -> bool;
+    fn rsel_convertToBuffer_error_withInputFromBlock(
+        id: &ns::Id,
+        output_buffer: &mut av::AudioBuffer,
+        error: &mut Option<&cf::Error>,
+        block: *mut c_void,
+    ) -> OutputStatus;
+
 }
