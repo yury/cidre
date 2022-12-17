@@ -105,10 +105,11 @@ impl Converter {
         &self,
         output_buffer: &mut av::AudioPCMBuffer,
         from_buffer: &av::AudioPCMBuffer,
-    )  -> Result<(), cf::Retained<cf::Error>> {
+    ) -> Result<(), cf::Retained<cf::Error>> {
         unsafe {
             let mut error = None;
-            let res = rsel_convertToBuffer_fromBuffer_error(self, output_buffer, from_buffer, &mut error);
+            let res =
+                rsel_convertToBuffer_fromBuffer_error(self, output_buffer, from_buffer, &mut error);
             if error.is_some() {
                 Err(transmute(error))
             } else {
@@ -118,6 +119,11 @@ impl Converter {
         }
     }
 
+    /// Perform any supported conversion
+    ///
+    /// It attempts to fill the buffer to its capacity. On return, the buffer's length indicates the number of
+    /// sample frames successfully converted.
+    #[doc(alias = "convertToBuffer:error:withInputFromBlock:")]
     pub fn convert_to_buffer_with_input_from_block<'ar, F>(
         &self,
         output_buffer: &mut av::AudioBuffer,
