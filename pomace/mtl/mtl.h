@@ -13,100 +13,94 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Common
 
-wsel(, id, reset)
-
-//- (void)enqueue;
-//wsel(, id, enqueue)
-//wsel(, id, commit)
-//wsel(, id, waitUntilScheduled)
-//- (void)waitUntilCompleted;
-//wsel(, id, waitUntilCompleted)
+wsel0(, id, reset)
 
 #pragma mark - MTLDevice
 
 // uint64_t registryID
-rsel(, id, registryID, uint64_t);
+rsel0(, id, registryID, uint64_t);
 
 //@property (readonly) MTLSize maxThreadsPerThreadgroup API_AVAILABLE(macos(10.11), ios(9.0));
-rsel(, id, maxThreadsPerThreadgroup, MTLSize);
+rsel0(, id, maxThreadsPerThreadgroup, MTLSize);
 //@property (readonly, getter=isLowPower) BOOL lowPower API_AVAILABLE(macos(10.11), macCatalyst(13.0))
 //rsel(, id, isLowPower, BOOL);
 
 //@property (readonly) BOOL hasUnifiedMemory API_AVAILABLE(macos(10.15), ios(13.0));
-rsel(, id, hasUnifiedMemory, BOOL);
+rsel0(, id, hasUnifiedMemory, BOOL);
 //@property (readonly) MTLReadWriteTextureTier readWriteTextureSupport API_AVAILABLE(macos(10.13), ios(11.0));
-rsel(, id, readWriteTextureSupport, MTLReadWriteTextureTier);
+rsel0(, id, readWriteTextureSupport, MTLReadWriteTextureTier);
 //@property (readonly) MTLArgumentBuffersTier argumentBuffersSupport API_AVAILABLE(macos(10.13), ios(11.0));
-rsel(, id, argumentBuffersSupport, MTLArgumentBuffersTier);
+rsel0(, id, argumentBuffersSupport, MTLArgumentBuffersTier);
 
 
 //- (nullable id <MTLCommandQueue>)newCommandQueue;
 NS_RETURNS_RETAINED
-rsel(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
+rsel0(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
 
 //- (nullable id <MTLCommandQueue>)newCommandQueueWithMaxCommandBufferCount:(NSUInteger)maxCommandBufferCount;
 NS_RETURNS_RETAINED
-rsel_a(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
+rsel1(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
 
 // - (nullable id <MTLTexture>)newTextureWithDescriptor:(MTLTextureDescriptor *)descriptor;
 NS_RETURNS_RETAINED
-rsel_a(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _Nullable )
+rsel1(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _Nullable )
 
 //- (nullable id <MTLTexture>)newTextureWithDescriptor:(MTLTextureDescriptor *)descriptor iosurface:(IOSurfaceRef)iosurface plane:(NSUInteger)plane API_AVAILABLE(macos(10.11), ios(11.0));
 NS_RETURNS_RETAINED
-rsel_abc(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSurfaceRef, plane, NSUInteger, id <MTLTexture> _Nullable)
+rsel3(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSurfaceRef, plane, NSUInteger, id <MTLTexture> _Nullable)
 
 
 //- (nullable id <MTLLibrary>)newDefaultLibrary;
 NS_RETURNS_RETAINED
-rsel(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
+rsel0(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
 
 //- (nullable id <MTLLibrary>)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
-rsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
+rsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
 
 //- (void)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options completionHandler:(MTLNewLibraryCompletionHandler)completionHandler
-wsel_abc(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id)
+wsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id)
 
 // - (nullable id <MTLComputePipelineState>)newComputePipelineStateWithFunction:(id <MTLFunction>)computeFunction error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
-rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
+rsel2(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
 
 NS_RETURNS_RETAINED
-rsel_ab(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
+rsel2(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
 //- (nullable id <MTLRenderPipelineState>)newRenderPipelineStateWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(__autoreleasing NSError **)error;
 
 //- (nullable id <MTLBuffer>)newBufferWithLength:(NSUInteger)length options:(MTLResourceOptions)options;
 NS_RETURNS_RETAINED
-rsel_ab(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<MTLBuffer> _Nullable)
+rsel2(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<MTLBuffer> _Nullable)
 
 NS_RETURNS_RETAINED
-rsel(, id, newFence, id<MTLFence> _Nullable)
+rsel0(, id, newFence, id<MTLFence> _Nullable)
 
 //- (nullable id <MTLEvent>)newEvent API_AVAILABLE(macos(10.14), ios(12.0));
 NS_RETURNS_RETAINED
-rsel(, id, newEvent, id<MTLEvent> _Nullable)
+rsel0(, id, newEvent, id<MTLEvent> _Nullable)
 
 //@property (readonly) NSUInteger maxBufferLength API_AVAILABLE(macos(10.14), ios(12.0));
-rsel(, id, maxBufferLength, NSUInteger)
+rsel0(, id, maxBufferLength, NSUInteger)
 
 //- (nullable id <MTLSharedEvent>)newSharedEvent API_AVAILABLE(macos(10.14), ios(12.0));
 NS_RETURNS_RETAINED
-rsel(, id, newSharedEvent, id<MTLSharedEvent> _Nullable)
+rsel0(, id, newSharedEvent, id<MTLSharedEvent> _Nullable)
 
 //- (MTLSizeAndAlign)heapTextureSizeAndAlignWithDescriptor:(MTLTextureDescriptor *)desc API_AVAILABLE(macos(10.13), ios(10.0));
-rsel_a(,id, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSizeAndAlign)
+rsel1(,id, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSizeAndAlign)
 //- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
-rsel_ab(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
+rsel2(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 
 NS_RETURNS_RETAINED
-rsel_a(, id, newHeapWithDescriptor, MTLHeapDescriptor *, id<MTLHeap>);
+rsel1(, id, newHeapWithDescriptor, MTLHeapDescriptor *, id<MTLHeap>);
 
 
 
 #pragma mark - CompileOptions
 
-NS_RETURNS_RETAINED csel(, MTLCompileOptions, new, MTLCompileOptions *)
+NS_RETURNS_RETAINED
+csel0(, MTLCompileOptions, new, MTLCompileOptions *)
 
 //@property (readwrite, nonatomic) BOOL fastMathEnabled;
 rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
@@ -131,30 +125,30 @@ rwsel(, id, pixelFormat, setPixelFormat, MTLPixelFormat)
 //rsel(, id, commandQueue, id<MTLCommandQueue>)
 
 // - (void)addScheduledHandler:(MTLCommandBufferHandler)block;
-wsel_a(, id<MTLCommandBuffer>, addScheduledHandler, id)
+wsel1(, id<MTLCommandBuffer>, addScheduledHandler, id)
 // - (void)addCompletedHandler:(MTLCommandBufferHandler)block;
-wsel_a(, id<MTLCommandBuffer>, addCompletedHandler, id)
+wsel1(, id<MTLCommandBuffer>, addCompletedHandler, id)
 
 //- (nullable id <MTLBlitCommandEncoder>)blitCommandEncoder;
 
 NS_RETURNS_RETAINED
-rsel(, id, blitCommandEncoder, id <MTLBlitCommandEncoder> _Nullable)
+rsel0(, id, blitCommandEncoder, id <MTLBlitCommandEncoder> _Nullable)
 
 //- (nullable id <MTLComputeCommandEncoder>)computeCommandEncoder;
 NS_RETURNS_RETAINED
-rsel(, id, computeCommandEncoder, id <MTLComputeCommandEncoder> _Nullable)
+rsel0(, id, computeCommandEncoder, id <MTLComputeCommandEncoder> _Nullable)
 
 // TextureDescriptor
 
 // + (MTLTextureDescriptor*)texture2DDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat width:(NSUInteger)width height:(NSUInteger)height mipmapped:(BOOL)mipmapped;
 
 //NS_RETURNS_RETAINED
-csel_abcd(, MTLTextureDescriptor, texture2DDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, height, NSUInteger, mipmapped, BOOL,  MTLTextureDescriptor * _Nonnull)
+csel4(, MTLTextureDescriptor, texture2DDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, height, NSUInteger, mipmapped, BOOL,  MTLTextureDescriptor * _Nonnull)
 
 //+ (MTLTextureDescriptor*)textureCubeDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat size:(NSUInteger)size mipmapped:(BOOL)mipmapped;
 
 //NS_RETURNS_RETAINED
-csel_abc(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelFormat, size, NSUInteger, mipmapped, BOOL, MTLTextureDescriptor * _Nonnull)
+csel3(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelFormat, size, NSUInteger, mipmapped, BOOL, MTLTextureDescriptor * _Nonnull)
 
 //+ (MTLTextureDescriptor*)textureBufferDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat
 //                                                          width:(NSUInteger)width
@@ -162,7 +156,7 @@ csel_abc(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelF
 //                                                          usage:(MTLTextureUsage)usage
 
 //NS_RETURNS_RETAINED
-csel_abcd(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
+csel4(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
 
 //@property (readwrite, nonatomic) NSUInteger width;
 //rwsel(, id, width, setWidth, NSUInteger)
@@ -194,52 +188,54 @@ rwsel(, id, swizzle, setSwizzle, MTLTextureSwizzleChannels)
 
 //@property (nullable, readonly) id <MTLTexture> parentTexture API_AVAILABLE(macos(10.11), ios(9.0));
 
-rsel(, id, parentTexture, id<MTLTexture> _Nullable)
+rsel0(, id, parentTexture, id<MTLTexture> _Nullable)
 
 //- (nullable id<MTLTexture>)newTextureViewWithPixelFormat:(MTLPixelFormat)pixelFormat;
 NS_RETURNS_RETAINED
-rsel_a(, id, newTextureViewWithPixelFormat, MTLPixelFormat, id <MTLTexture> _Nullable )
+rsel1(, id, newTextureViewWithPixelFormat, MTLPixelFormat, id <MTLTexture> _Nullable )
 
 //@property (nullable, readonly) IOSurfaceRef iosurface API_AVAILABLE(macos(10.11), ios(11.0));
 CF_RETURNS_NOT_RETAINED
-rsel(, id, iosurface, IOSurfaceRef _Nullable )
+rsel0(, id, iosurface, IOSurfaceRef _Nullable )
 
 //@property (readonly) NSUInteger iosurfacePlane API_AVAILABLE(macos(10.11), ios(11.0));
-rsel(, id, iosurfacePlane, NSUInteger)
+rsel0(, id, iosurfacePlane, NSUInteger)
 
 // MTLFunctionConstantValues
 
-NS_RETURNS_RETAINED csel(, MTLFunctionConstantValues, new, MTLFunctionConstantValues *)
+NS_RETURNS_RETAINED
+csel0(, MTLFunctionConstantValues, new, MTLFunctionConstantValues *)
 //- (void)setConstantValue:(const void *)value type:(MTLDataType)type atIndex:(NSUInteger)index;
-wsel_abc(, id, setConstantValue, const void *, type, MTLDataType, atIndex, NSUInteger)
+wsel3(, id, setConstantValue, const void *, type, MTLDataType, atIndex, NSUInteger)
 //- (void)setConstantValues:(const void *)values type:(MTLDataType)type withRange:(NSRange)range;
-wsel_abc(, id, setConstantValues, const void *, type, MTLDataType, withRange, NSRange)
+wsel3(, id, setConstantValues, const void *, type, MTLDataType, withRange, NSRange)
 //- (void)setConstantValue:(const void *)value type:(MTLDataType)type withName:(NSString *)name;
-wsel_abc(, id, setConstantValue, const void *, type, MTLDataType, withName, NSString *)
+wsel3(, id, setConstantValue, const void *, type, MTLDataType, withName, NSString *)
 
 
 
 #pragma mark - MTLHeapDescriptor
 
-NS_RETURNS_RETAINED csel(, MTLHeapDescriptor, new, MTLHeapDescriptor *)
+NS_RETURNS_RETAINED
+csel0(, MTLHeapDescriptor, new, MTLHeapDescriptor *)
 
 
 rwsel(MTLHeapType_MTLHeapDescriptor_, MTLHeapDescriptor *, type, setType, MTLHeapType)
-rsel(MTLHeapType_MTLHeap_, id<MTLHeap>, type, MTLHeapType)
+rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, type, MTLHeapType)
 
 
-rsel(MTLHeapType_MTLHeap_, id<MTLHeap>, currentAllocatedSize, NSUInteger)
+rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, currentAllocatedSize, NSUInteger)
 
-rsel_a(, id, maxAvailableSizeWithAlignment, NSUInteger, NSUInteger)
+rsel1(, id, maxAvailableSizeWithAlignment, NSUInteger, NSUInteger)
 
 
 NS_RETURNS_RETAINED
-rsel_abc(, id, newBufferWithBytes, const void *, length,
+rsel3(, id, newBufferWithBytes, const void *, length,
         NSUInteger, options, MTLResourceOptions,
         id<MTLBuffer> _Nullable)
 
 NS_RETURNS_RETAINED
-rsel_a(, id, newDepthStencilStateWithDescriptor, MTLDepthStencilDescriptor * _Nonnull,
+rsel1(, id, newDepthStencilStateWithDescriptor, MTLDepthStencilDescriptor * _Nonnull,
       id<MTLDepthStencilState> _Nullable)
 
 
@@ -248,21 +244,21 @@ rsel_a(, id, newDepthStencilStateWithDescriptor, MTLDepthStencilDescriptor * _No
 // MTLLibrary
 
 NS_RETURNS_RETAINED
-rsel_a(, id, newFunctionWithName, NSString *, id<MTLFunction> _Nullable)
+rsel1(, id, newFunctionWithName, NSString *, id<MTLFunction> _Nullable)
 
 NS_RETURNS_RETAINED
-rsel_abc(, id, newFunctionWithName, NSString *, constantValues, MTLFunctionConstantValues *, error, NSError * _Nullable * _Nullable, id<MTLFunction> _Nullable)
+rsel3(, id, newFunctionWithName, NSString *, constantValues, MTLFunctionConstantValues *, error, NSError * _Nullable * _Nullable, id<MTLFunction> _Nullable)
 
 //@property (readonly) NSArray <NSString *> *functionNames;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, functionNames, NSArray <NSString *> *)
+rsel0(, id, functionNames, NSArray <NSString *> *)
 
 
 // MTLFunction
 
 //- (id <MTLArgumentEncoder>)newArgumentEncoderWithBufferIndex:(NSUInteger)bufferIndex API_AVAILABLE(macos(10.13), ios(11.0));
 NS_RETURNS_RETAINED
-rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
+rsel1(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
 
 
 #pragma mark - MTLArgumentsEncoder
@@ -273,13 +269,14 @@ rsel_a(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncode
 //rsel(, id, alignment, NSUInteger)
 
 //@property (readonly) MTLFunctionOptions options API_AVAILABLE(macos(11.0), ios(14.0));
-rsel(, id<MTLFunction>, options, MTLFunctionOptions)
+rsel0(, id<MTLFunction>, options, MTLFunctionOptions)
 
 
 // FunctionDescriptor
 
 //+ (nonnull MTLFunctionDescriptor *)functionDescriptor;
-NS_RETURNS_NOT_RETAINED csel(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
+NS_RETURNS_NOT_RETAINED
+csel0(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
 
 #pragma mark - MTLRenderPipelineColorAttachmentDescriptor
 
@@ -305,18 +302,18 @@ rwsel(render_pipeline_, MTLRenderPipelineColorAttachmentDescriptor *, writeMask,
 
 //@property (nullable, readonly) NSArray <MTLArgument *> *vertexArguments;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, vertexArguments, NSArray <MTLArgument *> * _Nullable)
+rsel0(, id, vertexArguments, NSArray <MTLArgument *> * _Nullable)
 //@property (nullable, readonly) NSArray <MTLArgument *> *fragmentArguments;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, fragmentArguments, NSArray <MTLArgument *> * _Nullable)
+rsel0(, id, fragmentArguments, NSArray <MTLArgument *> * _Nullable)
 // @property (nullable, readonly) NSArray <MTLArgument *> *tileArguments;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, tileArguments, NSArray <MTLArgument *> * _Nullable)
+rsel0(, id, tileArguments, NSArray <MTLArgument *> * _Nullable)
 
 #pragma mark - MTLRenderPipelineDescriptor
 
 NS_RETURNS_RETAINED
-csel(, MTLRenderPipelineDescriptor, new, MTLRenderPipelineDescriptor *)
+csel0(, MTLRenderPipelineDescriptor, new, MTLRenderPipelineDescriptor *)
 
 // @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
 NS_RETURNS_NOT_RETAINED
@@ -335,14 +332,14 @@ rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
 //@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
 rwsel(, id, maxTotalThreadsPerThreadgroup, setMaxTotalThreadsPerThreadgroup, NSUInteger)
 //@property (readonly) BOOL threadgroupSizeMatchesTileSize API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
-rsel(, id, threadgroupSizeMatchesTileSize, BOOL)
+rsel0(, id, threadgroupSizeMatchesTileSize, BOOL)
 //@property (readonly) NSUInteger imageblockSampleLength API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
-rsel(, id, imageblockSampleLength, NSUInteger)
+rsel0(, id, imageblockSampleLength, NSUInteger)
 
 #pragma mark - MTLComputePipelineDescriptor
 
 NS_RETURNS_RETAINED
-csel(, MTLComputePipelineDescriptor, new, MTLComputePipelineDescriptor *)
+csel0(, MTLComputePipelineDescriptor, new, MTLComputePipelineDescriptor *)
 
 //@property (readwrite, nonatomic) BOOL threadGroupSizeIsMultipleOfThreadExecutionWidth;
 rwsel(, id, threadGroupSizeIsMultipleOfThreadExecutionWidth, setThreadGroupSizeIsMultipleOfThreadExecutionWidth, BOOL)
@@ -354,33 +351,33 @@ rwsel(, id, computeFunction, setComputeFunction, id <MTLFunction> _Nullable)
 
 //@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup;
 //@property (readonly) NSUInteger threadExecutionWidth;
-rsel(, id, threadExecutionWidth, NSUInteger)
+rsel0(, id, threadExecutionWidth, NSUInteger)
 // @property (readonly) NSUInteger staticThreadgroupMemoryLength API_AVAILABLE(macos(10.13), ios(11.0));
-rsel(, id, staticThreadgroupMemoryLength, NSUInteger)
+rsel0(, id, staticThreadgroupMemoryLength, NSUInteger)
 
 #pragma mark - MTLCommandEncoder
 
-wsel(, id, endEncoding)
-wsel_a(, id, insertDebugSignpost, NSString *)
-wsel_a(, id, pushDebugGroup, NSString *)
-wsel(, id, popDebugGroup)
+wsel0(, id, endEncoding)
+wsel1(, id, insertDebugSignpost, NSString *)
+wsel1(, id, pushDebugGroup, NSString *)
+wsel0(, id, popDebugGroup)
 
 #pragma mark - MTLRenderCommandEncoder
 
 //- (void)setRenderPipelineState:(id <MTLRenderPipelineState>)pipelineState;
 //wsel_a(, id, setRenderPipelineState, id <MTLRenderPipelineState>)
 //- (void)setVertexBytes:(const void *)bytes length:(NSUInteger)length atIndex:(NSUInteger)index API_AVAILABLE(macos(10.11), ios(8.3));
-wsel_abc(, id, setVertexBytes, const void *, length, NSUInteger, atIndex, NSUInteger)
+wsel3(, id, setVertexBytes, const void *, length, NSUInteger, atIndex, NSUInteger)
 //- (void)setVertexBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
-wsel_abc(, id, setVertexBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
+wsel3(, id, setVertexBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
 //- (void)setFragmentBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index
-wsel_abc(, id, setFragmentBuffer, id <MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
+wsel3(, id, setFragmentBuffer, id <MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
 //- (void)useResource:(id <MTLResource>)resource usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
-wsel_ab(, id, useResource, id <MTLResource>, usage, MTLResourceUsage)
+wsel2(, id, useResource, id <MTLResource>, usage, MTLResourceUsage)
 //- (void)useResources:(const id <MTLResource> __nonnull[__nonnull])resources count:(NSUInteger)count usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
-wsel_abc(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, NSUInteger, usage, MTLResourceUsage)
+wsel3(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, NSUInteger, usage, MTLResourceUsage)
 //- (void)useHeap:(id <MTLHeap>)heap API_AVAILABLE(macos(10.13), ios(11.0));
-wsel_a(, id, useHeap, id <MTLHeap> _Nonnull)
+wsel1(, id, useHeap, id <MTLHeap> _Nonnull)
 
 //- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount instanceCount:(NSUInteger)instanceCount;
 //wsel_abcd(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger, instanceCount, NSUInteger)
@@ -393,26 +390,25 @@ wsel_a(, id, useHeap, id <MTLHeap> _Nonnull)
 
 //- (nullable id <MTLRenderCommandEncoder>)renderCommandEncoder;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, renderCommandEncoder, id<MTLRenderCommandEncoder> _Nullable)
+rsel0(, id, renderCommandEncoder, id<MTLRenderCommandEncoder> _Nullable)
 
 #pragma mark - MTLBlitCommandEncoder
 
 //- (void)fillBuffer:(id<MTLBuffer>)buffer range:(NSRange)range value:(uint8_t)value;
-wsel_abc(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
+wsel3(, id, fillBuffer, id<MTLBuffer>, range, NSRange, value, uint8_t)
 
 // - (void)copyFromTexture:(id<MTLTexture>)sourceTexture sourceSlice:(NSUInteger)sourceSlice sourceLevel:(NSUInteger)sourceLevel sourceOrigin:(MTLOrigin)sourceOrigin sourceSize:(MTLSize)sourceSize toTexture:(id<MTLTexture>)destinationTexture destinationSlice:(NSUInteger)destinationSlice destinationLevel:(NSUInteger)destinationLevel destinationOrigin:(MTLOrigin)destinationOrigin;
-wsel_abcdefghi(, id, copyFromTexture, id<MTLTexture>, sourceSlice, NSUInteger, sourceLevel, NSUInteger, sourceOrigin, MTLOrigin, sourceSize, MTLSize, toTexture, id<MTLTexture>, destinationSlice, NSUInteger, destinationLevel, NSUInteger, destinationOrigin, MTLOrigin)
+wsel9(, id, copyFromTexture, id<MTLTexture>, sourceSlice, NSUInteger, sourceLevel, NSUInteger, sourceOrigin, MTLOrigin, sourceSize, MTLSize, toTexture, id<MTLTexture>, destinationSlice, NSUInteger, destinationLevel, NSUInteger, destinationOrigin, MTLOrigin)
 
 //- (void)copyFromTexture:(id<MTLTexture>)sourceTexture toTexture:(id<MTLTexture>)destinationTexture API_AVAILABLE(macos(10.15), ios(13.0));
 
-wsel_ab(, id, copyFromTexture, id<MTLTexture>, toTexture, id<MTLTexture>)
+wsel2(, id, copyFromTexture, id<MTLTexture>, toTexture, id<MTLTexture>)
 
 //- (void)optimizeContentsForGPUAccess:(id<MTLTexture>)texture API_AVAILABLE(macos(10.14), ios(12.0));
-wsel_a(, id, optimizeContentsForGPUAccess, id<MTLTexture>)
+wsel1(, id, optimizeContentsForGPUAccess, id<MTLTexture>)
 
 //- (void) resetCommandsInBuffer:(id<MTLIndirectCommandBuffer>)buffer withRange:(NSRange)range API_AVAILABLE(macos(10.14), ios(12.0));
-wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NSRange)
-
+wsel2(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NSRange)
 
 
 #pragma mark - MTLCommandQueue
@@ -420,32 +416,32 @@ wsel_ab(, id, resetCommandsInBuffer, id<MTLIndirectCommandBuffer>, withRange, NS
 #pragma mark - MTLRenderPassDescriptor
 
 NS_RETURNS_RETAINED
-csel(, MTLRenderPassDescriptor, new, MTLRenderPassDescriptor *)
+csel0(, MTLRenderPassDescriptor, new, MTLRenderPassDescriptor *)
 
 NS_RETURNS_NOT_RETAINED
-csel(, MTLRenderPassDescriptor, renderPassDescriptor, MTLRenderPassDescriptor *)
+csel0(, MTLRenderPassDescriptor, renderPassDescriptor, MTLRenderPassDescriptor *)
 
 //@property (readonly) MTLRenderPassColorAttachmentDescriptorArray *colorAttachments;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, colorAttachments, MTLRenderPassColorAttachmentDescriptorArray *)
+rsel0(, id, colorAttachments, MTLRenderPassColorAttachmentDescriptorArray *)
 
 //@property (copy, nonatomic, null_resettable) MTLRenderPassDepthAttachmentDescriptor *depthAttachment;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, depthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
-wsel_a(, id, setDepthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
+rsel0(, id, depthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
+wsel1(, id, setDepthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
 
 
 //@property (copy, nonatomic, null_resettable) MTLRenderPassStencilAttachmentDescriptor *stencilAttachment;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, stencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
-wsel_a(, id, setStencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
+rsel0(, id, stencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
+wsel1(, id, setStencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
 
 //- (MTLRenderPassColorAttachmentDescriptor *)objectAtIndexedSubscript:(NSUInteger)attachmentIndex;
 NS_RETURNS_NOT_RETAINED
-rsel_a(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPassColorAttachmentDescriptor *)
+rsel1(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPassColorAttachmentDescriptor *)
 
 //- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
-wsel_ab(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+wsel2(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
 
 // @property (nonatomic) NSUInteger tileWidth API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
 
@@ -494,30 +490,30 @@ rwsel(, id, depthResolveFilter, setDepthResolveFilter, MTLMultisampleDepthResolv
 
 #pragma mark - MTLComputePassDescriptor
 
-csel(, MTLComputePassDescriptor, computePassDescriptor, MTLComputePassDescriptor *)
+csel0(, MTLComputePassDescriptor, computePassDescriptor, MTLComputePassDescriptor *)
 //@property (nonatomic) MTLDispatchType dispatchType;
 rwsel(, id, dispatchType, setDispatchType, MTLDispatchType)
 
 //@property (readonly) MTLComputePassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
 NS_RETURNS_NOT_RETAINED
-rsel(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
+rsel0(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
 
 #pragma mark - MTLRenderPipelineColorAttachmentDescriptorArray
 
 
 NS_RETURNS_NOT_RETAINED
-rsel_a(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPipelineColorAttachmentDescriptor *)
+rsel1(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPipelineColorAttachmentDescriptor *)
 
-wsel_ab(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, setObject, MTLRenderPipelineColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+wsel2(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, setObject, MTLRenderPipelineColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
 
 #pragma mark - MTLComputePassSampleBufferAttachmentDescriptorArray
 
 
 NS_RETURNS_NOT_RETAINED
-rsel_a(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLComputePassSampleBufferAttachmentDescriptor *)
+rsel1(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLComputePassSampleBufferAttachmentDescriptor *)
 
 //- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
-wsel_ab(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, setObject, MTLComputePassSampleBufferAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
+wsel2(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, setObject, MTLComputePassSampleBufferAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
 
 #pragma mark - MTLComputePassSampleBufferAttachmentDescriptor
 
@@ -526,11 +522,11 @@ rwsel(, id, sampleBuffer, setSampleBuffer, id<MTLCounterSampleBuffer> _Nullable)
 #pragma mark - MTLBlitPassDescriptor
 
 NS_RETURNS_NOT_RETAINED
-csel(, MTLBlitPassDescriptor, blitPassDescriptor, MTLBlitPassDescriptor *)
+csel0(, MTLBlitPassDescriptor, blitPassDescriptor, MTLBlitPassDescriptor *)
 
 //@property (readonly) MTLBlitPassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
 NS_RETURNS_NOT_RETAINED
-rsel(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
+rsel0(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
 
 
 SEL sel_device;

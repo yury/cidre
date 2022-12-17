@@ -36,13 +36,13 @@ CADisplayLink * cidre_CADisplayLinkWithDelegate(CidreDisplayLinkDelegate * deleg
 }
 //NS_RETURNS_RETAINED
 //csel(, CADisplayLink, new, CADisplayLink *)
-wsel_ab(, CADisplayLink *, addToRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
-wsel_ab(, CADisplayLink *, removeFromRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
+wsel2(, CADisplayLink *, addToRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
+wsel2(, CADisplayLink *, removeFromRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
 
 //@property(readonly, nonatomic) CFTimeInterval timestamp;
-rsel(, CADisplayLink *, timestamp, CFTimeInterval)
-rsel(, CADisplayLink *, duration, CFTimeInterval)
-rsel(, CADisplayLink *, targetTimestamp, CFTimeInterval)
+rsel0(, CADisplayLink *, timestamp, CFTimeInterval)
+rsel0(, CADisplayLink *, duration, CFTimeInterval)
+rsel0(, CADisplayLink *, targetTimestamp, CFTimeInterval)
 
 rwsel(, CADisplayLink *, preferredFrameRateRange, setPreferredFrameRateRange, CAFrameRateRange)
 

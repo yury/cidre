@@ -25,99 +25,97 @@ rwsel(, id, regionOfInterest, setRegionOfInterest, CGRect)
 #pragma mark - VNImageRequestHandler
 
 NS_RETURNS_RETAINED
-cinit_ab(, VNImageRequestHandler, initWithURL, NSURL *, options, NSDictionary *);
+cinit2(, VNImageRequestHandler, initWithURL, NSURL *, options, NSDictionary *);
 
 NS_RETURNS_RETAINED
-cinit_abc(, VNImageRequestHandler, initWithURL, NSURL *, orientation, CGImagePropertyOrientation, options, NSDictionary *);
+cinit3(, VNImageRequestHandler, initWithURL, NSURL *, orientation, CGImagePropertyOrientation, options, NSDictionary *);
 
 NS_RETURNS_RETAINED
-cinit_ab(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, options, NSDictionary *);
+cinit2(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, options, NSDictionary *);
 
 
 NS_RETURNS_RETAINED
-cinit_abc(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, orientation, CGImagePropertyOrientation, options, NSDictionary *);
+cinit3(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, orientation, CGImagePropertyOrientation, options, NSDictionary *);
 
-rsel_ab(, id, performRequests, NSArray<VNRequest *> *, error, NSError **, BOOL)
+rsel2(, id, performRequests, NSArray<VNRequest *> *, error, NSError **, BOOL)
 
 #pragma mark - VNSequenceRequestHandler
 
-csel(, VNSequenceRequestHandler, new, VNSequenceRequestHandler *)
+csel0(, VNSequenceRequestHandler, new, VNSequenceRequestHandler *)
 
-rsel_abc(, id, performRequests, NSArray<VNRequest *> *, onCVPixelBuffer, CVPixelBufferRef, error, NSError **, BOOL)
+rsel3(, id, performRequests, NSArray<VNRequest *> *, onCVPixelBuffer, CVPixelBufferRef, error, NSError **, BOOL)
 
-rsel_abc(, id, performRequests, NSArray<VNRequest *> *, onCMSampleBuffer, CMSampleBufferRef, error, NSError **, BOOL)
+rsel3(, id, performRequests, NSArray<VNRequest *> *, onCMSampleBuffer, CMSampleBufferRef, error, NSError **, BOOL)
 
 #pragma mark - VNObservation
 
-rsel(, id, uuid, NSUUID *)
-rsel(, id, confidence, VNConfidence)
-rsel(, id, timeRange, CMTimeRange)
+rsel0(, id, uuid, NSUUID *)
+rsel0(, id, confidence, VNConfidence)
+rsel0(, id, timeRange, CMTimeRange)
 
 
 #pragma mark - VNDetectedObjectObservation
 
 //@property (readonly, nonatomic, assign) CGRect boundingBox;
-rsel(, id, boundingBox, CGRect)
+rsel0(, id, boundingBox, CGRect)
 
-rsel(, id, globalSegmentationMask, VNPixelBufferObservation *)
+rsel0(, id, globalSegmentationMask, VNPixelBufferObservation *)
 
 #pragma mark -VNHorizon
 
 NS_RETURNS_RETAINED
-csel(, VNDetectHorizonRequest, new, VNDetectHorizonRequest *)
+csel0(, VNDetectHorizonRequest, new, VNDetectHorizonRequest *)
 
 
 #pragma mark - VNHorizonObservation
 
-
-
 //@property (readonly, nonatomic, assign) CGAffineTransform transform;
-rsel(, id, transform, CGAffineTransform)
+rsel0(, id, transform, CGAffineTransform)
 
-rsel(, id, angle, CGFloat)
+rsel0(, id, angle, CGFloat)
 //@property (readonly, nonatomic, assign) CGFloat angle;
 
-rsel_ab(, id, transformForImageWidth, size_t, height, size_t, CGAffineTransform)
+rsel2(, id, transformForImageWidth, size_t, height, size_t, CGAffineTransform)
 
 #pragma mark - VNFaceObservation
 
-rsel(, id, landmarks, VNFaceLandmarks2D *)
-rsel(, id, faceCaptureQuality, NSNumber *)
+rsel0(, id, landmarks, VNFaceLandmarks2D *)
+rsel0(, id, faceCaptureQuality, NSNumber *)
 
-rsel(, id, roll, NSNumber *)
-rsel(, id, yaw, NSNumber *)
-rsel(, id, pitch, NSNumber *)
+rsel0(, id, roll, NSNumber *)
+rsel0(, id, yaw, NSNumber *)
+rsel0(, id, pitch, NSNumber *)
 
 #pragma mark - VNClassificationObservation
 
-rsel(, id, identifier, NSString *)
+rsel0(, id, identifier, NSString *)
 
-rsel(, id, hasPrecisionRecallCurve, BOOL)
+rsel0(, id, hasPrecisionRecallCurve, BOOL)
 
 
 //- (BOOL) hasMinimumRecall:(float)minimumRecall forPrecision:(float)precision;
-rsel_ab(, id, hasMinimumRecall, float, forPrecision, float, BOOL)
+rsel2(, id, hasMinimumRecall, float, forPrecision, float, BOOL)
 //- (BOOL) hasMinimumPrecision:(float)minimumPrecision forRecall:(float)recall;
-rsel_ab(, id, hasMinimumPrecision, float, forRecall, float, BOOL)
+rsel2(, id, hasMinimumPrecision, float, forRecall, float, BOOL)
 
 #pragma mark - VNHumanObservation
 
-rsel(, id, upperBodyOnly, BOOL)
+rsel0(, id, upperBodyOnly, BOOL)
 
 #pragma mark - VNRecognizedObjectObservation
 
-rsel(, id, labels, NSArray *)
+rsel0(, id, labels, NSArray *)
 
 #pragma mark - VNPixelBufferObservation
 
 CF_RETURNS_NOT_RETAINED
-rsel(, id, pixelBuffer, CVPixelBufferRef)
+rsel0(, id, pixelBuffer, CVPixelBufferRef)
 
-rsel(, id, featureName, NSString *)
+rsel0(, id, featureName, NSString *)
 
 #pragma mark - VNTextObservation
 
-rsel(, id, characterBoxes, NSArray *)// NSArray<VNRectangleObservation *> *characterBoxes;
+rsel0(, id, characterBoxes, NSArray *)// NSArray<VNRectangleObservation *> *characterBoxes;
 
 
 #pragma mark - VNGeneratePersonSegmentationRequest
@@ -128,64 +126,64 @@ rwsel(, id, qualityLevel, setQualityLevel, VNGeneratePersonSegmentationRequestQu
 rwsel(, id, outputPixelFormat, setOutputPixelFormat, OSType)
 
 NS_RETURNS_RETAINED
-csel(, VNGeneratePersonSegmentationRequest, new, VNGeneratePersonSegmentationRequest *)
+csel0(, VNGeneratePersonSegmentationRequest, new, VNGeneratePersonSegmentationRequest *)
 
 
 #pragma mark - VNDetectDocumentSegmentationRequest
 
 NS_RETURNS_RETAINED
-csel(, VNDetectDocumentSegmentationRequest, new, VNDetectDocumentSegmentationRequest *)
+csel0(, VNDetectDocumentSegmentationRequest, new, VNDetectDocumentSegmentationRequest *)
 
 #pragma mark - VNSaliencyImageObservation
 
-rsel(, id, salientObjects, NSArray *)
+rsel0(, id, salientObjects, NSArray *)
 
 #pragma mark - VNGenerateAttentionBasedSaliencyImageRequest
 
 NS_RETURNS_RETAINED
-csel(, VNGenerateAttentionBasedSaliencyImageRequest, new, VNGenerateAttentionBasedSaliencyImageRequest *)
+csel0(, VNGenerateAttentionBasedSaliencyImageRequest, new, VNGenerateAttentionBasedSaliencyImageRequest *)
 
 #pragma mark - VNGenerateObjectnessBasedSaliencyImageRequest
 
 NS_RETURNS_RETAINED
-csel(, VNGenerateObjectnessBasedSaliencyImageRequest, new, VNGenerateObjectnessBasedSaliencyImageRequest *)
+csel0(, VNGenerateObjectnessBasedSaliencyImageRequest, new, VNGenerateObjectnessBasedSaliencyImageRequest *)
 
 
 #pragma mark - VNFaceLandmarkRegion
 
-rsel(, id, pointCount, NSUInteger)
+rsel0(, id, pointCount, NSUInteger)
 
 #pragma mark - VNClassifyImageRequest
 
 //rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
 
 NS_RETURNS_RETAINED
-csel(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
+csel0(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
 
 #pragma mark - VNRecognizeAnimalsRequest
 
 NS_RETURNS_RETAINED
-csel(, VNRecognizeAnimalsRequest, new, VNRecognizeAnimalsRequest *)
+csel0(, VNRecognizeAnimalsRequest, new, VNRecognizeAnimalsRequest *)
 
 #pragma mark - VNFeaturePrintObservation
 
-rsel(vn_, VNFeaturePrintObservation *, elementType, VNElementType)
-rsel(vn_, VNFeaturePrintObservation *, elementCount, NSUInteger)
-rsel(vn_, VNFeaturePrintObservation *, data, NSData *)
+rsel0(vn_, VNFeaturePrintObservation *, elementType, VNElementType)
+rsel0(vn_, VNFeaturePrintObservation *, elementCount, NSUInteger)
+rsel0(vn_, VNFeaturePrintObservation *, data, NSData *)
 
-rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
+rsel3(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
 #pragma mark - VNGenerateImageFeaturePrintRequest
 
 rwsel(, id, imageCropAndScaleOption, setImageCropAndScaleOption, VNImageCropAndScaleOption)
 
 NS_RETURNS_RETAINED
-csel(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintRequest *)
+csel0(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintRequest *)
 
 #pragma mark - VNDetectFaceRectanglesRequest
 
 NS_RETURNS_RETAINED
-csel(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
+csel0(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
 
 #pragma mark - VNTrackingRequest
 
@@ -193,25 +191,25 @@ rwsel(, id, trackingLevel, setTrackingLevel, VNRequestTrackingLevel)
 
 #pragma mark - VNDetectBarcodesRequest
 NS_RETURNS_RETAINED
-csel(, VNDetectBarcodesRequest, new, VNDetectBarcodesRequest *)
+csel0(, VNDetectBarcodesRequest, new, VNDetectBarcodesRequest *)
 
 //@property (readwrite, nonatomic, copy) NSArray<VNBarcodeSymbology> *symbologies;
 rwsel(, id, symbologies, setSymbologies, NSArray *)
 
-rsel_a(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
+rsel1(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
 
 #pragma mark - VNRecognizeTextRequest
 
-csel(, VNRecognizeTextRequest, new, VNRecognizeTextRequest *)
+csel0(, VNRecognizeTextRequest, new, VNRecognizeTextRequest *)
 
 #pragma mark - VNRecognizedTextObservation
 
 //- (NSArray<VNRecognizedText*>*) topCandidates:(NSUInteger)maxCandidateCount;
-rsel_a(, id, topCandidates, NSUInteger, NSArray *)
+rsel1(, id, topCandidates, NSUInteger, NSArray *)
 
 #pragma mark - VNRecognizedText
 
-rsel(, id, string, NSString *)
+rsel0(, id, string, NSString *)
 
 #pragma mark - SELECTORS
 

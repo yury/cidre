@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - SCStreamConfiguration
 
-NS_RETURNS_RETAINED csel(, SCStreamConfiguration, new, SCStreamConfiguration *)
+NS_RETURNS_RETAINED
+csel0(, SCStreamConfiguration, new, SCStreamConfiguration *)
 
 rwsel(, id, minimumFrameInterval, setMinimumFrameInterval, CMTime)
 
@@ -39,25 +40,25 @@ rwsel(, id, excludesCurrentProcessAudio, setExcludesCurrentProcessAudio, BOOL)
 
 // @property (readonly) NSString *bundleIdentifier;
 NS_RETURNS_NOT_RETAINED
-rsel(, id, bundleIdentifier, NSString *)
+rsel0(, id, bundleIdentifier, NSString *)
 
 NS_RETURNS_NOT_RETAINED
-rsel(, id, applicationName, NSString *)
+rsel0(, id, applicationName, NSString *)
 
 //@property (readonly) pid_t processID;
-rsel(, id, processID, pid_t)
+rsel0(, id, processID, pid_t)
 
 #pragma mark - SCWindow
 
 //@property (readonly) CGWindowID windowID;
-rsel(, id, windowID, CGWindowID)
+rsel0(, id, windowID, CGWindowID)
 
 #pragma mark - SCShareableContent
 
 //@property (readonly) NSArray<SCWindow *> *windows;
-rsel(, id, windows, NSArray<SCWindow *> *)
-rsel(, id, displays, NSArray<SCDisplay *> *)
-rsel(, id, applications, NSArray<SCRunningApplication *> *)
+rsel0(, id, windows, NSArray<SCWindow *> *)
+rsel0(, id, displays, NSArray<SCDisplay *> *)
+rsel0(, id, applications, NSArray<SCRunningApplication *> *)
 
 
 void cs_shareable(id block) {
@@ -67,12 +68,12 @@ void cs_shareable(id block) {
 #pragma mark - SCContentFilter
 
 NS_RETURNS_RETAINED
-cinit_ab(, SCContentFilter, initWithDisplay, SCDisplay *, excludingWindows, NSArray<SCWindow *>*)
+cinit2(, SCContentFilter, initWithDisplay, SCDisplay *, excludingWindows, NSArray<SCWindow *>*)
 
 #pragma mark - SCStream
 
 NS_RETURNS_RETAINED
-cinit_abc(, SCStream, initWithFilter, SCContentFilter *, configuration, SCStreamConfiguration *, delegate, id<SCStreamDelegate> _Nullable)
+cinit3(, SCStream, initWithFilter, SCContentFilter *, configuration, SCStreamConfiguration *, delegate, id<SCStreamDelegate> _Nullable)
 
 __attribute__((constructor))
 static void cs_initializer()
@@ -108,10 +109,10 @@ SidreStreamOutDelegate * make_stream_out(void * _Nonnull vtable) {
 }
 
 API_AVAILABLE(macos(12.3))
-wsel_a(, id, startCaptureWithCompletionHandler, id)
+wsel1(, id, startCaptureWithCompletionHandler, id)
 
 API_AVAILABLE(macos(12.3))
-wsel_a(, id, stopCaptureWithCompletionHandler, id)
+wsel1(, id, stopCaptureWithCompletionHandler, id)
 
 
 API_AVAILABLE(macos(12.3))
@@ -125,6 +126,6 @@ void test_start(SCStream * stream) {
 //- (BOOL)addStreamOutput:(id<SCStreamOutput>)output type:(SCStreamOutputType)type sampleHandlerQueue:(dispatch_queue_t _Nullable)sampleHandlerQueue error:(NSError **)error NS_SWIFT_ASYNC_NAME (addStreamOutput(_:type:sampleHandlerQueue:)) NS_SWIFT_NAME (addStreamOutput(_:type:sampleHandlerQueue:));
 
 API_AVAILABLE(macos(12.3))
-rsel_abcd(, id, addStreamOutput, id<SCStreamOutput>, type, SCStreamOutputType, sampleHandlerQueue,  dispatch_queue_t _Nullable, error, NSError **, bool)
+rsel4(, id, addStreamOutput, id<SCStreamOutput>, type, SCStreamOutputType, sampleHandlerQueue,  dispatch_queue_t _Nullable, error, NSError **, bool)
 
 NS_ASSUME_NONNULL_END
