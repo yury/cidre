@@ -2,7 +2,7 @@ use std::{ffi::c_void, mem::transmute};
 
 use crate::{
     av::{self, audio},
-    blocks, cf, define_obj_type, ns,
+    blocks, cf, define_obj_type, msg_send, ns,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -102,6 +102,23 @@ impl Converter {
         unsafe { rsel_availableEncodeChannelLayoutTags(self) }
     }
 
+    pub unsafe fn convert_to_buffer_from_buffer_error(
+        &self,
+        output_buffer: &mut av::AudioPCMBuffer,
+        from_buffer: &av::AudioPCMBuffer,
+        error: &mut Option<&cf::Error>,
+    ) -> bool {
+        msg_send!(
+            "av",
+            self,
+            sel_convertToBuffer_fromBuffer_error,
+            self,
+            output_buffer,
+            from_buffer,
+            error
+        )
+    }
+
     pub fn convert_to_buffer_from_buffer(
         &self,
         output_buffer: &mut av::AudioPCMBuffer,
@@ -110,7 +127,7 @@ impl Converter {
         unsafe {
             let mut error = None;
             let res =
-                rsel_convertToBuffer_fromBuffer_error(self, output_buffer, from_buffer, &mut error);
+                self.convert_to_buffer_from_buffer_error(output_buffer, from_buffer, &mut error);
             if error.is_some() {
                 Err(transmute(error))
             } else {
