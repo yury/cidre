@@ -102,6 +102,7 @@ impl Converter {
         unsafe { rsel_availableEncodeChannelLayoutTags(self) }
     }
 
+    #[inline]
     pub unsafe fn convert_to_buffer_from_buffer_error(
         &self,
         output_buffer: &mut av::AudioPCMBuffer,
@@ -137,6 +138,23 @@ impl Converter {
         }
     }
 
+    #[inline]
+    pub unsafe fn convert_to_buffer_error_with_input_from_block(
+        &self,
+        output_buffer: &mut av::AudioBuffer,
+        error: &mut Option<&cf::Error>,
+        block: *mut c_void,
+    ) -> OutputStatus {
+        msg_send!(
+            "av",
+            self,
+            sel_convertToBuffer_error_withInputFromBlock,
+            output_buffer,
+            error,
+            block
+        )
+    }
+
     /// Perform any supported conversion
     ///
     /// It attempts to fill the buffer to its capacity. On return, the buffer's length indicates the number of
@@ -152,7 +170,7 @@ impl Converter {
     {
         unsafe {
             let mut error = None;
-            let res = rsel_convertToBuffer_error_withInputFromBlock(
+            let res = Self::convert_to_buffer_error_with_input_from_block(
                 self,
                 output_buffer,
                 &mut error,
@@ -179,18 +197,4 @@ extern "C" {
 
     fn rsel_bitRateStrategy(id: &ns::Id) -> Option<&cf::String>;
     fn wsel_setBitRateStrategy(id: &ns::Id, value: Option<&cf::String>);
-
-    fn rsel_convertToBuffer_fromBuffer_error(
-        id: &ns::Id,
-        output_buffer: &mut av::AudioPCMBuffer,
-        from_buffer: &av::AudioPCMBuffer,
-        error: &mut Option<&cf::Error>,
-    ) -> bool;
-    fn rsel_convertToBuffer_error_withInputFromBlock(
-        id: &ns::Id,
-        output_buffer: &mut av::AudioBuffer,
-        error: &mut Option<&cf::Error>,
-        block: *mut c_void,
-    ) -> OutputStatus;
-
 }
