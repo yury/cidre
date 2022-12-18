@@ -543,6 +543,8 @@ SEL sel_copyNextSampleBuffer;
 SEL sel_status;
 SEL sel_timeRange;
 SEL sel_setTimeRange;
+SEL sel_convertToBuffer_fromBuffer_error;
+SEL sel_convertToBuffer_error_withInputFromBlock;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -553,6 +555,8 @@ static void common_initializer()
     sel_status = @selector(status);
     sel_timeRange = @selector(timeRange);
     sel_setTimeRange = @selector(setTimeRange:);
+    sel_convertToBuffer_fromBuffer_error = @selector(convertToBuffer:fromBuffer:error:);
+    sel_convertToBuffer_error_withInputFromBlock = @selector(convertToBuffer:error:withInputFromBlock:);
   }
 }
 
