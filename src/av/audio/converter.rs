@@ -131,6 +131,7 @@ impl Converter {
             let res =
                 self.convert_to_buffer_from_buffer_error(output_buffer, from_buffer, &mut error);
             if error.is_some() {
+                debug_assert!(!res);
                 Err(transmute(error))
             } else {
                 debug_assert!(res);
@@ -179,6 +180,7 @@ impl Converter {
                 block.as_ptr(),
             );
             if error.is_some() {
+                debug_assert_eq!(res, OutputStatus::Error);
                 Err(transmute(error))
             } else {
                 Ok(res)
