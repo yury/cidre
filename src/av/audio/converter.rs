@@ -120,6 +120,7 @@ impl Converter {
         )
     }
 
+    #[inline]
     pub fn convert_to_buffer_from_buffer(
         &self,
         output_buffer: &mut av::AudioPCMBuffer,
@@ -160,6 +161,7 @@ impl Converter {
     /// It attempts to fill the buffer to its capacity. On return, the buffer's length indicates the number of
     /// sample frames successfully converted.
     #[doc(alias = "convertToBuffer:error:withInputFromBlock:")]
+    #[inline]
     pub fn convert_to_buffer_with_input_from_block<'ar, F>(
         &self,
         output_buffer: &mut av::AudioBuffer,
