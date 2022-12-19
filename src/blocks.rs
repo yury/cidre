@@ -23,7 +23,6 @@ impl<F> Block<F> {
     #[inline]
     pub unsafe fn as_ptr(&mut self) -> *mut c_void {
         transmute(self)
-        //self as *mut Self as _
     }
 }
 

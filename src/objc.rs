@@ -32,7 +32,7 @@ impl Id {
     }
 
     #[inline]
-    pub unsafe fn autorelease<'ar>(id: &Id) -> &mut Id {
+    pub unsafe fn autorelease<'ar>(id: &mut Id) -> &mut Id {
         objc_autorelease(id)
     }
 
@@ -234,7 +234,7 @@ extern "C" {
     fn objc_release(obj: &mut Id);
 
     fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
-    fn objc_autorelease<'a>(id: &Id) -> &'a mut Id;
+    fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
 }
 
 #[macro_export]
