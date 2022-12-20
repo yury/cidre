@@ -374,6 +374,7 @@ pub struct ConverterRef(NonNull<Converter>);
 impl Deref for ConverterRef {
     type Target = Converter;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         unsafe { self.0.as_ref() }
     }
@@ -387,11 +388,11 @@ pub type ComplexInputDataProc<const L: usize, const N: usize, D> = extern "C" fn
     in_user_data: *mut D,
 ) -> os::Status;
 
-impl Converter {
+impl ConverterRef {
     pub unsafe fn new(
         in_source_format: &audio::StreamBasicDescription,
         in_destination_format: &audio::StreamBasicDescription,
-        out_audio_converer: &mut Option<ConverterRef>,
+        out_audio_converer: &mut Option<Self>,
     ) -> os::Status {
         AudioConverterNew(in_source_format, in_destination_format, out_audio_converer)
     }
@@ -399,13 +400,15 @@ impl Converter {
     pub fn with_formats(
         source_fmt: &audio::StreamBasicDescription,
         dest_fmt: &audio::StreamBasicDescription,
-    ) -> Result<ConverterRef, os::Status> {
+    ) -> Result<Self, os::Status> {
         unsafe {
             let mut out_converter = None;
             Self::new(source_fmt, dest_fmt, &mut out_converter).to_result_unchecked(out_converter)
         }
     }
+}
 
+impl Converter {
     #[inline]
     pub fn reset(&self) -> Result<(), os::Status> {
         unsafe { AudioConverterReset(self).result() }
@@ -608,6 +611,7 @@ impl Converter {
         .result()
     }
 
+    #[inline]
     pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> Result<usize, os::Status> {
         unsafe {
             let mut n = output.len() as u32;
@@ -673,6 +677,7 @@ impl Converter {
 impl Drop for ConverterRef {
     fn drop(&mut self) {
         let res = unsafe { AudioConverterDispose(self) };
+        println!("res {:?}", res);
         debug_assert!(res.is_ok());
     }
 }
