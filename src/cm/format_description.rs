@@ -389,6 +389,10 @@ impl AudioFormatDescription {
             )
         }
     }
+
+    pub fn stream_basic_description(&self) -> Option<&cat::audio::StreamBasicDescription> {
+        unsafe { CMAudioFormatDescriptionGetStreamBasicDescription(self) }
+    }
 }
 
 define_cf_type!(FormatDescriptionExtensionKey(cf::String));
@@ -499,6 +503,10 @@ extern "C" {
         extensions: Option<&cf::Dictionary>,
         format_description_out: &mut Option<Retained<AudioFormatDescription>>,
     ) -> os::Status;
+
+    fn CMAudioFormatDescriptionGetStreamBasicDescription(
+        desc: &AudioFormatDescription,
+    ) -> Option<&cat::audio::StreamBasicDescription>;
 
     fn CMFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,

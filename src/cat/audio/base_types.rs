@@ -1,3 +1,5 @@
+use std::ffi::c_long;
+
 use crate::{define_options, os};
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
@@ -45,6 +47,7 @@ pub struct BufferList<const L: usize, const N: usize> {
 /// A four char code indicating the general kind of data in the stream.
 #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
+#[doc(alias = "AudioFromatID")]
 pub struct FormatID(pub u32);
 
 /// The AudioFormatIDs used to identify individual formats of audio data.
@@ -184,12 +187,14 @@ impl FormatID {
     pub const OPUS: Self = Self(u32::from_be_bytes(*b"opus"));
 }
 
-/// Flags that are specific to each format.
-#[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
-#[repr(transparent)]
-pub struct FormatFlags(pub u32);
+// Flags that are specific to each format.
+// #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
+// #[repr(transparent)]
+// pub struct FormatFlags(pub u32);
 
-/// app audio - IS_BIG_ENDIAN | IS_SIGNED_INTEGER | IS_PACKED
+define_options!(FormatFlags(u32));
+
+/// ios app audio - IS_BIG_ENDIAN | IS_SIGNED_INTEGER | IS_PACKED
 /// mic - IS_SIGNED_INTEGER | IS_PACKED
 
 /// These are the standard AudioFormatFlags for use in the mFormatFlags field of the
@@ -1190,7 +1195,7 @@ pub struct FormatListItem {
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct MPEG4ObjectID(pub i64);
+pub struct MPEG4ObjectID(pub c_long);
 
 impl MPEG4ObjectID {
     pub const AAC_MAIN: Self = Self(1);

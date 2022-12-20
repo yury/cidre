@@ -15,6 +15,7 @@ pub use format::PropertyID as FormatPropertyID;
 mod converter;
 pub use converter::errors;
 pub use converter::Converter;
+pub use converter::ConverterRef;
 pub use converter::DitherAlgorithm;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 

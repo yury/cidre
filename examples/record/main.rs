@@ -1,6 +1,8 @@
 use std::{ffi::c_void, time::Duration};
 
 use cidre::{
+    at::{self, AudioConverter},
+    cat::{audio::MPEG4ObjectID, AudioFormatFlags, AudioFormatID},
     cf,
     cm::{self, SampleBuffer},
     dispatch,
@@ -13,12 +15,31 @@ use cidre::{
 struct FrameCounter {
     counter: usize,
     session: cf::Retained<vt::CompressionSession>,
+    audio_converter: Option<at::AudioConverterRef>,
 }
 
 impl FrameCounter {
     pub fn _counter(&self) -> usize {
         self.counter
     }
+}
+
+fn configured_converter(input_format: &cm::AudioFormatDescription) -> at::AudioConverterRef {
+    let output_asbd = at::audio::StreamBasicDescription {
+        sample_rate: 48_000.0,
+        format_id: AudioFormatID::MPEG4_AAC,
+        format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
+        bytes_per_packet: 0,
+        frames_per_packet: 1024,
+        bytes_per_frame: 0,
+        channels_per_frame: 2,
+        bits_per_channel: 0,
+        reserved: 0,
+    };
+
+    let input_asbd = input_format.stream_basic_description().unwrap();
+
+    AudioConverter::with_formats(&input_asbd, &output_asbd).unwrap()
 }
 
 impl StreamOutput for FrameCounter {
@@ -29,7 +50,11 @@ impl StreamOutput for FrameCounter {
         of_type: sc::OutputType,
     ) {
         if of_type == sc::OutputType::Audio {
-            // println!("audio buffer {:?}", sample_buffer.format_description());
+            if self.audio_converter.is_none() {
+                self.audio_converter = Some(configured_converter(
+                    sample_buffer.format_description().unwrap(),
+                ));
+            }
             return;
         }
 
@@ -189,6 +214,7 @@ async fn main() {
     let delegate = FrameCounter {
         counter: 0,
         session,
+        audio_converter: None,
     };
     let d = delegate.delegate();
     let mut error = None;

@@ -1,4 +1,6 @@
 pub mod mac_types;
+use std::ptr::NonNull;
+
 pub use mac_types::FourCharCode;
 pub use mac_types::ResType;
 pub use mac_types::UniChar;
