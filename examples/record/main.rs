@@ -26,6 +26,8 @@ impl FrameCounter {
 
 fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::AudioConverterRef {
     let output_asbd = at::audio::StreamBasicDescription {
+        //sample_rate: 32_000.0,
+        // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
         format_id: AudioFormatID::MPEG4_AAC,
         format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
@@ -37,7 +39,12 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
         reserved: 0,
     };
 
-    at::AudioConverterRef::with_formats(input_asbd, &output_asbd).unwrap()
+    let c = at::AudioConverterRef::with_formats(input_asbd, &output_asbd).unwrap();
+
+    println!("{:?}", c.applicable_encode_bit_rates());
+    println!("{:?}", c.applicable_encode_sample_rates());
+
+    return c;
 }
 
 impl StreamOutput for FrameCounter {

@@ -116,6 +116,7 @@ impl PropertyID {
 
     /// The property value is an array of AudioValueRange describing applicable bit
     /// rates based on current settings.
+    #[doc(alias = "kAudioConverterApplicableEncodeBitRates")]
     pub const APPLICABLE_ENCODE_BIT_RATES: Self = Self(u32::from_be_bytes(*b"aebr"));
 
     /// The property value is an array of AudioValueRange describing available bit
@@ -462,11 +463,10 @@ impl Converter {
     #[inline]
     pub unsafe fn prop_vec<T: Sized>(&self, property_id: PropertyID) -> Result<Vec<T>, os::Status> {
         let mut info = self.property_info(property_id)?;
-        let len = info.size as usize / size_of::<T>();
-        let mut vec = Vec::with_capacity(len);
-        vec.set_len(len);
+        let mut vec = Vec::with_capacity(info.size as usize / size_of::<T>());
         self.get_property(property_id, &mut info.size, vec.as_mut_ptr() as _)
             .result()?;
+        vec.set_len(info.size as usize / size_of::<T>());
         Ok(vec)
     }
 
@@ -509,12 +509,12 @@ impl Converter {
 
     #[inline]
     pub fn applicable_encode_bit_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { self.prop(PropertyID::APPLICABLE_ENCODE_BIT_RATES) }
+        unsafe { self.prop_vec(PropertyID::APPLICABLE_ENCODE_BIT_RATES) }
     }
 
     #[inline]
     pub fn applicable_encode_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { self.prop(PropertyID::APPLICABLE_ENCODE_SAMPLE_RATES) }
+        unsafe { self.prop_vec(PropertyID::APPLICABLE_ENCODE_SAMPLE_RATES) }
     }
 
     #[inline]
