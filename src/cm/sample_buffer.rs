@@ -310,13 +310,14 @@ impl SampleBuffer {
     /// if called with a non-audio sample buffer. It will return an
     /// error if the CMSampleBuffer does not contain PCM audio data
     /// or if its dataBuffer is not ready.
+    #[doc(alias = "CMSampleBufferCopyPCMDataIntoAudioBufferList")]
     #[inline]
     pub fn copy_pcm_data_into_audio_buffer_list(
         &self,
         frame_offset: i32,
         num_frames: i32,
         buffer_list: &mut cat::audio::BufferList,
-    ) -> os::Status {
+    ) -> Result<(), os::Status> {
         unsafe {
             CMSampleBufferCopyPCMDataIntoAudioBufferList(
                 self,
@@ -324,6 +325,7 @@ impl SampleBuffer {
                 num_frames,
                 buffer_list,
             )
+            .result()
         }
     }
 

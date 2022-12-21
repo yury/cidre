@@ -685,43 +685,16 @@ impl Converter {
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufferList,
-    ) -> Result<audio::StreamPacketDescription, os::Status> {
-        let mut aspd = audio::StreamPacketDescription::default();
-        unsafe {
-            let res = self.fill_complex_buffer(
-                transmute(proc),
-                user_data as *mut _ as _,
-                io_output_data_packet_size,
-                out_output_data,
-                &mut aspd,
-            );
-            if res.is_ok() {
-                Ok(aspd)
-            } else {
-                Err(res)
-            }
-        }
-    }
-    pub fn fill_complex_buf2<D>(
-        &self,
-        proc: ComplexInputDataProc<D>,
-        user_data: &mut D,
-        io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufferList,
     ) -> Result<(), os::Status> {
         unsafe {
-            let res = self.fill_complex_buffer(
+            self.fill_complex_buffer(
                 proc,
                 user_data,
                 io_output_data_packet_size,
                 out_output_data,
                 std::ptr::null_mut(),
-            );
-            if res.is_ok() {
-                Ok(())
-            } else {
-                Err(res)
-            }
+            )
+            .result()
         }
     }
 }

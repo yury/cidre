@@ -1,4 +1,9 @@
-use std::{collections::VecDeque, ffi::c_void, time::Duration};
+use std::{
+    collections::VecDeque,
+    ffi::c_void,
+    mem::{size_of, size_of_val},
+    time::Duration,
+};
 
 use cidre::{
     at,
@@ -80,6 +85,7 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
 struct AudioQueue {
     queue: VecDeque<cf::Retained<cm::SampleBuffer>>,
     last_buffer_offset: i32,
+    input_asbd: at::audio::StreamBasicDescription,
 }
 
 impl AudioQueue {
@@ -91,15 +97,22 @@ impl AudioQueue {
         self.queue.len() > 2
     }
 
-    pub fn fill_audio_buffer(&mut self, buffer: &mut at::audio::BufferList) {
+    pub fn fill_audio_buffer(
+        &mut self,
+        list: &mut at::audio::BufferList,
+    ) -> Result<(), os::Status> {
         let mut left = 1024i32;
         let mut offset: i32 = self.last_buffer_offset as i32;
+        let mut out_offset = 0;
         while let Some(b) = self.queue.pop_front() {
             let samples = b.num_samples() as i32;
             let count = i32::min(samples - offset, left);
-            b.copy_pcm_data_into_audio_buffer_list(offset, count, buffer);
+            list.slice(out_offset, count as _, &self.input_asbd, |slice| {
+                b.copy_pcm_data_into_audio_buffer_list(offset, count, slice)
+            })?;
             left -= count;
             offset = offset + count;
+            out_offset += count as usize;
             if offset < samples {
                 self.last_buffer_offset = offset;
                 self.queue.push_front(b);
@@ -107,7 +120,11 @@ impl AudioQueue {
             } else {
                 offset = 0;
             }
+            if left == 0 {
+                break;
+            }
         }
+        Ok(())
     }
 }
 
@@ -120,9 +137,10 @@ extern "C" fn convert_audio(
 ) -> os::Status {
     let q: &mut AudioQueue = unsafe { &mut *in_user_data };
 
-    q.fill_audio_buffer(io_data);
-
-    os::Status(0)
+    match q.fill_audio_buffer(io_data) {
+        Ok(()) => os::Status(0),
+        Err(status) => status,
+    }
 
     //let frames = i32::min(*io_number_data_packets as i32, buf.num_samples() as _);
     //buf.copy_pcm_data_into_audio_buffer_list(0, frames, io_data)
@@ -137,8 +155,6 @@ impl StreamOutput for FrameCounter {
     ) {
         if of_type == sc::OutputType::Audio {
             if self.audio_counter == 0 {
-                println!("creating {}", sample_buffer.num_samples());
-
                 self.audio_converter = configured_converter(
                     sample_buffer
                         .format_description()
@@ -166,7 +182,7 @@ impl StreamOutput for FrameCounter {
                 let mut size = 1u32;
 
                 self.audio_converter
-                    .fill_complex_buf2(convert_audio, &mut self.audio_queue, &mut size, &mut buf)
+                    .fill_complex_buf(convert_audio, &mut self.audio_queue, &mut size, &mut buf)
                     .unwrap();
 
                 println!("size {}", buf.buffers[0].data_bytes_size,);
@@ -328,6 +344,22 @@ async fn main() {
     let windows = cf::ArrayOf::new();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
+    let input_asbd = at::audio::StreamBasicDescription {
+        //sample_rate: 32_000.0,
+        // sample_rate: 44_100.0,
+        sample_rate: 48_000.0,
+        format_id: AudioFormatID::LINEAR_PCM,
+        //format_flags: AudioFormatFlags(41),
+        format_flags: AudioFormatFlags::IS_FLOAT
+            | AudioFormatFlags::IS_PACKED
+            | AudioFormatFlags::IS_NON_INTERLEAVED,
+        bytes_per_packet: 4,
+        frames_per_packet: 1,
+        bytes_per_frame: 4,
+        channels_per_frame: 2,
+        bits_per_channel: 32,
+        reserved: 0,
+    };
 
     let delegate = FrameCounter {
         video_counter: 0,
@@ -335,6 +367,7 @@ async fn main() {
         audio_queue: AudioQueue {
             queue: Default::default(),
             last_buffer_offset: 0,
+            input_asbd,
         },
         session,
         audio_converter: default_converter(),

@@ -1,6 +1,9 @@
-use std::{ffi::c_long, ptr::slice_from_raw_parts};
+use std::{
+    ffi::c_long,
+    ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
+};
 
-use crate::{define_options, os};
+use crate::{at, define_options, os};
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
 pub mod errors {
@@ -36,12 +39,56 @@ pub struct Buffer {
 }
 
 /// A variable length array of AudioBuffer structures.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct BufferList {
     pub number_buffers: u32,
     /// this is a variable length array of `number_buffers` elements
     pub buffers: [Buffer; 1],
+}
+
+impl BufferList {
+    pub fn as_slice(&self) -> &[Buffer] {
+        unsafe { &*slice_from_raw_parts(self.buffers.as_ptr(), self.number_buffers as _) }
+    }
+
+    pub fn as_mut_slice(&mut self) -> &mut [Buffer] {
+        unsafe {
+            &mut *slice_from_raw_parts_mut(self.buffers.as_mut_ptr(), self.number_buffers as _)
+        }
+    }
+
+    pub fn slice<F, R>(
+        &mut self,
+        frame_offset: usize,
+        frame_count: usize,
+        asbd: &at::audio::StreamBasicDescription,
+        f: F,
+    ) -> R
+    where
+        F: FnOnce(&mut BufferList) -> R,
+    {
+        let bufs = self.as_mut_slice();
+        let mut copy_bufs = Vec::with_capacity(bufs.len());
+        for b in bufs {
+            copy_bufs.push(b.clone());
+            b.data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
+            unsafe {
+                b.data = b
+                    .data
+                    .offset(asbd.bytes_per_packet as isize * frame_offset as isize)
+            }
+        }
+        let r = f(self);
+
+        let bufs = self.as_mut_slice();
+
+        for i in 0..copy_bufs.len() {
+            bufs[i] = copy_bufs[i];
+        }
+
+        r
+    }
 }
 
 /// A four char code indicating the general kind of data in the stream.
