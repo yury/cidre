@@ -1,4 +1,4 @@
-use std::{ffi::c_void, time::Duration};
+use std::{collections::VecDeque, ffi::c_void, time::Duration};
 
 use cidre::{
     at,
@@ -6,22 +6,57 @@ use cidre::{
     cf,
     cm::{self, SampleBuffer},
     dispatch,
-    os::Status,
+    os::{self, Status},
     sc::{self, stream::StreamOutput},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
 };
 
 #[repr(C)]
 struct FrameCounter {
-    counter: usize,
+    video_counter: usize,
+    audio_counter: usize,
+    audio_queue: AudioQueue,
     session: cf::Retained<vt::CompressionSession>,
-    audio_converter: Option<at::AudioConverterRef>,
+    audio_converter: at::AudioConverterRef,
 }
 
 impl FrameCounter {
-    pub fn _counter(&self) -> usize {
-        self.counter
+    pub fn _video_counter(&self) -> usize {
+        self.video_counter
     }
+}
+
+fn default_converter() -> at::AudioConverterRef {
+    let output_asbd = at::audio::StreamBasicDescription {
+        //sample_rate: 32_000.0,
+        // sample_rate: 44_100.0,
+        sample_rate: 48_000.0,
+        format_id: AudioFormatID::MPEG4_AAC,
+        format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
+        bytes_per_packet: 0,
+        frames_per_packet: 1024,
+        bytes_per_frame: 0,
+        channels_per_frame: 2,
+        bits_per_channel: 0,
+        reserved: 0,
+    };
+    let input_asbd = at::audio::StreamBasicDescription {
+        //sample_rate: 32_000.0,
+        // sample_rate: 44_100.0,
+        sample_rate: 48_000.0,
+        format_id: AudioFormatID::LINEAR_PCM,
+        //format_flags: AudioFormatFlags(41),
+        format_flags: AudioFormatFlags::IS_FLOAT
+            | AudioFormatFlags::IS_PACKED
+            | AudioFormatFlags::IS_NON_INTERLEAVED,
+        bytes_per_packet: 4,
+        frames_per_packet: 1,
+        bytes_per_frame: 4,
+        channels_per_frame: 2,
+        bits_per_channel: 32,
+        reserved: 0,
+    };
+    at::AudioConverterRef::with_formats(&input_asbd, &output_asbd).unwrap()
 }
 
 fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::AudioConverterRef {
@@ -39,35 +74,108 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
         reserved: 0,
     };
 
-    let c = at::AudioConverterRef::with_formats(input_asbd, &output_asbd).unwrap();
+    at::AudioConverterRef::with_formats(input_asbd, &output_asbd).unwrap()
+}
 
-    println!("{:?}", c.applicable_encode_bit_rates());
-    println!("{:?}", c.applicable_encode_sample_rates());
+struct AudioQueue {
+    queue: VecDeque<cf::Retained<cm::SampleBuffer>>,
+    last_buffer_offset: i32,
+}
 
-    return c;
+impl AudioQueue {
+    pub fn enqueue(&mut self, sbuf: &cm::SampleBuffer) {
+        self.queue.push_back(sbuf.retained())
+    }
+
+    pub fn is_ready(&self) -> bool {
+        self.queue.len() > 2
+    }
+
+    pub fn fill_audio_buffer(&mut self, buffer: &mut at::audio::BufferList) {
+        let mut left = 1024i32;
+        let mut offset: i32 = self.last_buffer_offset as i32;
+        while let Some(b) = self.queue.pop_front() {
+            let samples = b.num_samples() as i32;
+            let count = i32::min(samples - offset, left);
+            b.copy_pcm_data_into_audio_buffer_list(offset, count, buffer);
+            left -= count;
+            offset = offset + count;
+            if offset < samples {
+                self.last_buffer_offset = offset;
+                self.queue.push_front(b);
+                break;
+            } else {
+                offset = 0;
+            }
+        }
+    }
+}
+
+extern "C" fn convert_audio(
+    _converter: &at::AudioConverter,
+    _io_number_data_packets: &mut u32,
+    io_data: &mut at::audio::BufferList,
+    _out_data_packet_description: *mut at::audio::StreamBasicDescription,
+    in_user_data: *mut AudioQueue,
+) -> os::Status {
+    let q: &mut AudioQueue = unsafe { &mut *in_user_data };
+
+    q.fill_audio_buffer(io_data);
+
+    os::Status(0)
+
+    //let frames = i32::min(*io_number_data_packets as i32, buf.num_samples() as _);
+    //buf.copy_pcm_data_into_audio_buffer_list(0, frames, io_data)
 }
 
 impl StreamOutput for FrameCounter {
     extern "C" fn stream_did_output_sample_buffer_of_type(
         &mut self,
         _stream: &sc::Stream,
-        sample_buffer: &cm::SampleBuffer,
+        sample_buffer: &mut cm::SampleBuffer,
         of_type: sc::OutputType,
     ) {
         if of_type == sc::OutputType::Audio {
-            if self.audio_converter.is_none() {
-                self.audio_converter = Some(configured_converter(
+            if self.audio_counter == 0 {
+                println!("creating {}", sample_buffer.num_samples());
+
+                self.audio_converter = configured_converter(
                     sample_buffer
                         .format_description()
                         .unwrap()
                         .stream_basic_description()
                         .unwrap(),
-                ));
+                );
             }
+
+            self.audio_queue.enqueue(sample_buffer);
+
+            if self.audio_queue.is_ready() {
+                let mut data = [0u8; 2000];
+                let buffer = at::AudioBuffer {
+                    number_channels: 1,
+                    data_bytes_size: data.len() as _,
+                    data: data.as_mut_ptr(),
+                };
+                let buffers = [buffer];
+                let mut buf = at::audio::BufferList {
+                    number_buffers: 1,
+                    buffers,
+                };
+
+                let mut size = 1u32;
+
+                self.audio_converter
+                    .fill_complex_buf2(convert_audio, &mut self.audio_queue, &mut size, &mut buf)
+                    .unwrap();
+
+                println!("size {}", buf.buffers[0].data_bytes_size,);
+            }
+            self.audio_counter += 1;
             return;
         }
 
-        self.counter += 1;
+        self.video_counter += 1;
         // why without println is not working well?
         // println!("frame {:?}", self.counter);
 
@@ -105,12 +213,12 @@ impl RecordContext {
                     .as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family()))
                     .unwrap();
                 let slice = buf.data_pointer().unwrap();
-                println!("format desc {:?} len: {}", slice, slice.len());
-                let extensions = desc.extension_atoms().unwrap();
-                let hvcc = cf::String::from_str("hvcC");
-                let value = extensions.get(&hvcc).unwrap().as_data();
-                println!("format desc {:?}", extensions);
-                println!("atoms {:?}", value.as_slice());
+                // println!("format desc {:?} len: {}", slice, slice.len());
+                // let extensions = desc.extension_atoms().unwrap();
+                // let hvcc = cf::String::from_str("hvcC");
+                // let value = extensions.get(&hvcc).unwrap().as_data();
+                // println!("format desc {:?}", extensions);
+                // println!("atoms {:?}", value.as_slice());
                 // store current format description
                 self.format_desc = Some(desc.retained());
             }
@@ -151,6 +259,7 @@ async fn main() {
 
     // audio
     cfg.set_captures_audio(true);
+    cfg.set_excludes_current_process_audio(false);
 
     let input = Box::new(RecordContext {
         frames_count: 0,
@@ -221,9 +330,14 @@ async fn main() {
     let stream = sc::Stream::new(&filter, &cfg);
 
     let delegate = FrameCounter {
-        counter: 0,
+        video_counter: 0,
+        audio_counter: 0,
+        audio_queue: AudioQueue {
+            queue: Default::default(),
+            last_buffer_offset: 0,
+        },
         session,
-        audio_converter: None,
+        audio_converter: default_converter(),
     };
     let d = delegate.delegate();
     let mut error = None;

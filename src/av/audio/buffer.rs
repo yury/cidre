@@ -15,11 +15,11 @@ impl Buffer {
         unsafe { rsel_format(self) }
     }
 
-    pub fn audio_buffer_list(&self) -> &AudioBufferList<1, 1> {
+    pub fn audio_buffer_list(&self) -> &AudioBufferList {
         unsafe { rsel_audioBufferList(self) }
     }
 
-    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList<1, 1> {
+    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList {
         unsafe { rsel_mutableAudioBufferList(self) }
     }
 }
@@ -152,8 +152,8 @@ impl CompressedBuffer {
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn rsel_format(id: &ns::Id) -> cf::Retained<Format>;
-    fn rsel_audioBufferList(id: &ns::Id) -> &AudioBufferList<1, 1>;
-    fn rsel_mutableAudioBufferList(id: &ns::Id) -> &mut AudioBufferList<1, 1>;
+    fn rsel_audioBufferList(id: &ns::Id) -> &AudioBufferList;
+    fn rsel_mutableAudioBufferList(id: &ns::Id) -> &mut AudioBufferList;
     fn rsel_frameCapacity(id: &ns::Id) -> FrameCount;
     fn rsel_frameLength(id: &ns::Id) -> FrameCount;
     fn wsel_setFrameLength(id: &ns::Id, value: FrameCount);

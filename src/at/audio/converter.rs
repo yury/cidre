@@ -381,11 +381,46 @@ impl Deref for ConverterRef {
     }
 }
 
-pub type ComplexInputDataProc<const L: usize, const N: usize, D> = extern "C" fn(
+/// Callback function for supplying input data to AudioConverterFillComplexBuffer.
+///
+/// This callback function supplies input to AudioConverterFillComplexBuffer.
+/// The AudioConverter requests a minimum number of packets (*ioNumberDataPackets).
+/// The callback may return one or more packets. If this is less than the minimum,
+/// the callback will simply be called again in the near future. Note that ioNumberDataPackets counts
+/// packets in terms of the converter's input format (not its output format).
+///
+/// The callback may be asked to provide multiple input packets in a single call, even for compressed
+/// formats. The callback must update the number of packets pointed to by ioNumberDataPackets
+/// to indicate the number of packets actually being provided, and if the packets require packet
+/// descriptions, these must be filled into the array pointed to by outDataPacketDescription, one
+/// packet description per packet.
+///
+/// The callback is given an audio buffer list pointed to by ioData.  This buffer list may refer to
+/// existing buffers owned and allocated by the audio converter, in which case the callback may
+/// use them and copy input audio data into them.  However, the buffer list may also be empty
+/// (mDataByteSize == 0 and/or mData == NULL), in which case the callback must provide its own
+/// buffers.  The callback manipulates the members of ioData to point to one or more buffers
+/// of audio data (multiple buffers are used with non-interleaved PCM data). The
+/// callback is responsible for not freeing or altering this buffer until it is called again.
+///
+/// For input data that varies from one packet to another in either size (bytes per packet)
+/// or duration (frames per packet), such as when decoding compressed audio, the callback
+/// should expect outDataPacketDescription to be non-null and point to array of packet descriptions,
+/// which the callback must fill in, one for every packet provided by the callback.  Each packet must
+/// have a valid packet description, regardless of whether or not these descriptions are different
+/// from each other.  Packet descriptions are required even if there is only one packet.
+///
+/// If the callback returns an error, it must return zero packets of data.
+/// AudioConverterFillComplexBuffer will stop producing output and return whatever
+/// output has already been produced to its caller, along with the error code. This
+/// mechanism can be used when an input proc has temporarily run out of data, but
+/// has not yet reached end of stream.
+#[doc(alias = "AudioConverterComplexInputDataProc")]
+pub type ComplexInputDataProc<D> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
-    io_data: &mut audio::BufferList<L, N>,
-    out_data_packet_description: *mut *mut audio::StreamBasicDescription,
+    io_data: &mut audio::BufferList,
+    out_data_packet_description: *mut audio::StreamBasicDescription,
     in_user_data: *mut D,
 ) -> os::Status;
 
@@ -546,18 +581,18 @@ impl Converter {
     /// use fill_complex_buf
     ///
     #[inline]
-    pub unsafe fn fill_complex_buffer(
+    pub unsafe fn fill_complex_buffer<D>(
         &self,
-        in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
-        in_input_data_proc_user_data: *mut c_void,
+        in_input_data_proc: ComplexInputDataProc<D>,
+        in_input_data_proc_user_data: *mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufferList<1, 1>,
+        out_output_data: &mut audio::BufferList,
         out_packet_description: *mut audio::StreamPacketDescription,
     ) -> os::Status {
         AudioConverterFillComplexBuffer(
             self,
-            in_input_data_proc,
-            in_input_data_proc_user_data,
+            transmute(in_input_data_proc),
+            transmute(in_input_data_proc_user_data),
             io_output_data_packet_size,
             out_output_data,
             out_packet_description,
@@ -578,8 +613,8 @@ impl Converter {
     pub unsafe fn convert_complex_buffer(
         &self,
         in_number_pcm_frames: u32,
-        in_input_data: *const audio::BufferList<1, 1>,
-        out_output_data: *mut audio::BufferList<1, 1>,
+        in_input_data: *const audio::BufferList,
+        out_output_data: *mut audio::BufferList,
     ) -> os::Status {
         AudioConverterConvertComplexBuffer(
             self,
@@ -590,16 +625,11 @@ impl Converter {
     }
 
     #[inline]
-    pub fn convert_complex_buf<
-        const IL: usize,
-        const IN: usize,
-        const OL: usize,
-        const ON: usize,
-    >(
+    pub fn convert_complex_buf(
         &self,
         frames: u32,
-        input: &audio::BufferList<IL, IN>,
-        output: &mut audio::BufferList<OL, ON>,
+        input: &audio::BufferList,
+        output: &mut audio::BufferList,
     ) -> Result<(), os::Status> {
         unsafe {
             self.convert_complex_buffer(
@@ -651,10 +681,10 @@ impl Converter {
 
     pub fn fill_complex_buf<D>(
         &self,
-        proc: ComplexInputDataProc<1, 1, D>,
+        proc: ComplexInputDataProc<D>,
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufferList<1, 1>,
+        out_output_data: &mut audio::BufferList,
     ) -> Result<audio::StreamPacketDescription, os::Status> {
         let mut aspd = audio::StreamPacketDescription::default();
         unsafe {
@@ -667,6 +697,28 @@ impl Converter {
             );
             if res.is_ok() {
                 Ok(aspd)
+            } else {
+                Err(res)
+            }
+        }
+    }
+    pub fn fill_complex_buf2<D>(
+        &self,
+        proc: ComplexInputDataProc<D>,
+        user_data: &mut D,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut audio::BufferList,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            let res = self.fill_complex_buffer(
+                proc,
+                user_data,
+                io_output_data_packet_size,
+                out_output_data,
+                std::ptr::null_mut(),
+            );
+            if res.is_ok() {
+                Ok(())
             } else {
                 Err(res)
             }
@@ -721,18 +773,18 @@ extern "C" {
 
     fn AudioConverterFillComplexBuffer(
         converter: &Converter,
-        in_input_data_proc: ComplexInputDataProc<1, 1, c_void>,
+        in_input_data_proc: ComplexInputDataProc<c_void>,
         in_input_data_proc_user_data: *mut c_void,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufferList<1, 1>,
+        out_output_data: &mut audio::BufferList,
         out_packet_description: *mut audio::StreamPacketDescription,
     ) -> os::Status;
 
     fn AudioConverterConvertComplexBuffer(
         converter: &Converter,
         in_number_pcm_frames: u32,
-        in_input_data: *const audio::BufferList<1, 1>,
-        out_output_data: *mut audio::BufferList<1, 1>,
+        in_input_data: *const audio::BufferList,
+        out_output_data: *mut audio::BufferList,
     ) -> os::Status;
 
     fn AudioConverterConvertBuffer(

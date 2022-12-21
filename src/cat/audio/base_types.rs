@@ -1,4 +1,4 @@
-use std::ffi::c_long;
+use std::{ffi::c_long, ptr::slice_from_raw_parts};
 
 use crate::{define_options, os};
 
@@ -24,24 +24,24 @@ pub struct ValueRange {
 }
 
 /// A structure to hold a buffer of audio data.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct Buffer<const N: usize> {
+pub struct Buffer {
     /// The number of interleaved channels in the buffer.
     pub number_channels: u32,
     /// The number of bytes in the buffer pointed at by mData.
     pub data_bytes_size: u32,
     /// A pointer to the buffer of audio data.
-    pub data: [u8; N],
+    pub data: *mut u8,
 }
 
 /// A variable length array of AudioBuffer structures.
 #[derive(Debug)]
 #[repr(C)]
-pub struct BufferList<const L: usize, const N: usize> {
+pub struct BufferList {
     pub number_buffers: u32,
     /// this is a variable length array of `number_buffers` elements
-    pub buffers: [Buffer<N>; L],
+    pub buffers: [Buffer; 1],
 }
 
 /// A four char code indicating the general kind of data in the stream.

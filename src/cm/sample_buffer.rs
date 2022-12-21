@@ -1,6 +1,7 @@
 use std::ffi::c_void;
 
 use crate::{
+    cat,
     cf::{self, Allocator, Retained},
     cm, cv, define_cf_type, define_options, os,
 };
@@ -299,6 +300,37 @@ impl SampleBuffer {
     pub fn make_data_ready(&self) -> os::Status {
         unsafe { CMSampleBufferMakeDataReady(self) }
     }
+
+    /// Copies PCM audio data from the given CMSampleBuffer into
+    /// a pre-populated AudioBufferList. The AudioBufferList must
+    /// contain the same number of channels and its data buffers
+    /// must be sized to hold the specified number of frames.
+    /// This API is	specific to audio format sample buffers, and
+    /// will return kCMSampleBufferError_InvalidMediaTypeForOperation
+    /// if called with a non-audio sample buffer. It will return an
+    /// error if the CMSampleBuffer does not contain PCM audio data
+    /// or if its dataBuffer is not ready.
+    #[inline]
+    pub fn copy_pcm_data_into_audio_buffer_list(
+        &self,
+        frame_offset: i32,
+        num_frames: i32,
+        buffer_list: &mut cat::audio::BufferList,
+    ) -> os::Status {
+        unsafe {
+            CMSampleBufferCopyPCMDataIntoAudioBufferList(
+                self,
+                frame_offset,
+                num_frames,
+                buffer_list,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn num_samples(&self) -> cf::Index {
+        unsafe { CMSampleBufferGetNumSamples(self) }
+    }
 }
 
 extern "C" {
@@ -356,6 +388,14 @@ extern "C" {
 
     fn CMSampleBufferInvalidate(sbuf: &SampleBuffer) -> os::Status;
     fn CMSampleBufferMakeDataReady(sbuf: &SampleBuffer) -> os::Status;
+    fn CMSampleBufferCopyPCMDataIntoAudioBufferList(
+        sbuf: &SampleBuffer,
+        frame_offset: i32,
+        num_frames: i32,
+        buffer_list: &mut cat::audio::BufferList,
+    ) -> os::Status;
+
+    fn CMSampleBufferGetNumSamples(sbuf: &SampleBuffer) -> cf::Index;
 }
 
 /// Use attachements()

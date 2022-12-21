@@ -1,6 +1,4 @@
-use std::ffi::c_void;
-
-use crate::{av, define_obj_type, msg_send, ns};
+use crate::{define_obj_type, ns};
 
 define_obj_type!(Player(ns::Id));
 
