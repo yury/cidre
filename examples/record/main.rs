@@ -104,7 +104,7 @@ impl AudioQueue {
         let mut left = 1024i32;
         let mut offset: i32 = self.last_buffer_offset as i32;
         let mut out_offset = 0;
-        let mut cursor = list.cursor();
+        let mut cursor = list.cursor::<2>();
         while let Some(b) = self.queue.pop_front() {
             let samples = b.num_samples() as i32;
             let count = i32::min(samples - offset, left);

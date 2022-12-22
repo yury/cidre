@@ -47,15 +47,21 @@ pub struct BufferList {
     pub buffers: [Buffer; 1],
 }
 
-pub struct BufferListCursor<'a> {
-    original_buffers: Vec<Buffer>,
+pub struct BufferListCursor<'a, const N: usize> {
+    original_buffers: [Option<Buffer>; N],
     list: &'a mut BufferList,
 }
 
-impl<'a> BufferListCursor<'a> {
+impl<'a, const N: usize> BufferListCursor<'a, N> {
     pub fn new(list: &'a mut BufferList) -> Self {
+        let mut original_buffers = [None; N];
+        let slice = list.as_slice();
+        for i in 0..N {
+            original_buffers[i] = Some(slice[i]);
+        }
+
         Self {
-            original_buffers: list.as_slice().to_vec(),
+            original_buffers,
             list,
         }
     }
@@ -67,10 +73,11 @@ impl<'a> BufferListCursor<'a> {
         asbd: &at::audio::StreamBasicDescription,
     ) -> &mut BufferList {
         let bufs = self.list.as_mut_slice();
-        for i in 0..bufs.len() {
+        for i in 0..N {
             bufs[i].data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
             bufs[i].data = unsafe {
                 self.original_buffers[i]
+                    .unwrap_unchecked()
                     .data
                     .offset(asbd.bytes_per_packet as isize * frame_offset as isize)
             };
@@ -79,12 +86,12 @@ impl<'a> BufferListCursor<'a> {
     }
 }
 
-impl Drop for BufferListCursor<'_> {
+impl<const N: usize> Drop for BufferListCursor<'_, N> {
     fn drop(&mut self) {
         let bufs = self.list.as_mut_slice();
 
-        for i in 0..self.original_buffers.len() {
-            bufs[i] = self.original_buffers[i];
+        for i in 0..N {
+            unsafe { bufs[i] = self.original_buffers[i].unwrap_unchecked() };
         }
     }
 }
@@ -100,7 +107,7 @@ impl BufferList {
         }
     }
 
-    pub fn cursor(&mut self) -> BufferListCursor {
+    pub fn cursor<const N: usize>(&mut self) -> BufferListCursor<N> {
         BufferListCursor::new(self)
     }
 }
