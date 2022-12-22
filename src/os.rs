@@ -2,9 +2,11 @@ use crate::mac_types::FourCharCode;
 
 pub type Err = i16;
 
+/// https://www.osstatus.com
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Status(pub i32);
+
 pub type Type = FourCharCode;
 
 pub mod lock;
