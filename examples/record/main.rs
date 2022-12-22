@@ -65,12 +65,14 @@ fn default_converter() -> at::AudioConverterRef {
 }
 
 fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::AudioConverterRef {
+    // https://www.youtube.com/watch?v=yArrLvMYng8
     let output_asbd = at::audio::StreamBasicDescription {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
-        format_id: AudioFormatID::MPEG4_AAC,
-        format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
+        format_id: AudioFormatID::MPEG4_AAC_HE,
+        //format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
+        format_flags: AudioFormatFlags(0),
         bytes_per_packet: 0,
         frames_per_packet: 1024,
         bytes_per_frame: 0,
