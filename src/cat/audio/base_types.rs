@@ -47,6 +47,48 @@ pub struct BufferList {
     pub buffers: [Buffer; 1],
 }
 
+pub struct BufferListCursor<'a> {
+    original_buffers: Vec<Buffer>,
+    list: &'a mut BufferList,
+}
+
+impl<'a> BufferListCursor<'a> {
+    pub fn new(list: &'a mut BufferList) -> Self {
+        Self {
+            original_buffers: list.as_slice().to_vec(),
+            list,
+        }
+    }
+
+    pub fn offset(
+        &mut self,
+        frame_offset: usize,
+        frame_count: usize,
+        asbd: &at::audio::StreamBasicDescription,
+    ) -> &mut BufferList {
+        let bufs = self.list.as_mut_slice();
+        for i in 0..bufs.len() {
+            bufs[i].data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
+            bufs[i].data = unsafe {
+                self.original_buffers[i]
+                    .data
+                    .offset(asbd.bytes_per_packet as isize * frame_offset as isize)
+            };
+        }
+        self.list
+    }
+}
+
+impl Drop for BufferListCursor<'_> {
+    fn drop(&mut self) {
+        let bufs = self.list.as_mut_slice();
+
+        for i in 0..self.original_buffers.len() {
+            bufs[i] = self.original_buffers[i];
+        }
+    }
+}
+
 impl BufferList {
     pub fn as_slice(&self) -> &[Buffer] {
         unsafe { &*slice_from_raw_parts(self.buffers.as_ptr(), self.number_buffers as _) }
@@ -58,36 +100,8 @@ impl BufferList {
         }
     }
 
-    pub fn slice<F, R>(
-        &mut self,
-        frame_offset: usize,
-        frame_count: usize,
-        asbd: &at::audio::StreamBasicDescription,
-        f: F,
-    ) -> R
-    where
-        F: FnOnce(&mut BufferList) -> R,
-    {
-        let bufs = self.as_mut_slice();
-        let mut copy_bufs = Vec::with_capacity(bufs.len());
-        for b in bufs {
-            copy_bufs.push(b.clone());
-            b.data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
-            unsafe {
-                b.data = b
-                    .data
-                    .offset(asbd.bytes_per_packet as isize * frame_offset as isize)
-            }
-        }
-        let r = f(self);
-
-        let bufs = self.as_mut_slice();
-
-        for i in 0..copy_bufs.len() {
-            bufs[i] = copy_bufs[i];
-        }
-
-        r
+    pub fn cursor(&mut self) -> BufferListCursor {
+        BufferListCursor::new(self)
     }
 }
 

@@ -104,12 +104,15 @@ impl AudioQueue {
         let mut left = 1024i32;
         let mut offset: i32 = self.last_buffer_offset as i32;
         let mut out_offset = 0;
+        let mut cursor = list.cursor();
         while let Some(b) = self.queue.pop_front() {
             let samples = b.num_samples() as i32;
             let count = i32::min(samples - offset, left);
-            list.slice(out_offset, count as _, &self.input_asbd, |slice| {
-                b.copy_pcm_data_into_audio_buffer_list(offset, count, slice)
-            })?;
+            b.copy_pcm_data_into_audio_buffer_list(
+                offset,
+                count,
+                cursor.offset(out_offset, count as _, &self.input_asbd),
+            )?;
             left -= count;
             offset = offset + count;
             out_offset += count as usize;
@@ -175,7 +178,7 @@ impl StreamOutput for FrameCounter {
                 };
                 let buffers = [buffer];
                 let mut buf = at::audio::BufferList {
-                    number_buffers: 1,
+                    number_buffers: buffers.len() as _,
                     buffers,
                 };
 
