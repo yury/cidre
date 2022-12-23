@@ -72,10 +72,9 @@ impl<'a, const N: usize> BufferListCursor<'a, N> {
         frame_count: usize,
         asbd: &at::audio::StreamBasicDescription,
     ) -> &mut BufferList {
-        let bufs = self.list.as_mut_slice();
-        for i in 0..N {
-            bufs[i].data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
-            bufs[i].data = unsafe {
+        for (i, buf) in self.list.as_mut_slice().iter_mut().enumerate().take(N) {
+            buf.data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
+            buf.data = unsafe {
                 self.original_buffers[i]
                     .unwrap_unchecked()
                     .data
@@ -88,10 +87,8 @@ impl<'a, const N: usize> BufferListCursor<'a, N> {
 
 impl<const N: usize> Drop for BufferListCursor<'_, N> {
     fn drop(&mut self) {
-        let bufs = self.list.as_mut_slice();
-
-        for i in 0..N {
-            unsafe { bufs[i] = self.original_buffers[i].unwrap_unchecked() };
+        for (i, buf) in self.list.as_mut_slice().iter_mut().enumerate().take(N) {
+            *buf = unsafe { self.original_buffers[i].unwrap_unchecked() };
         }
     }
 }
