@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, cm, cv, define_obj_type, ns, vn};
+use crate::{cf, cg, cm, cv, define_obj_type, msg_send, ns, vn};
 
 define_obj_type!(Observation(ns::Id));
 define_obj_type!(RecognizedText(ns::Id));
@@ -229,6 +229,25 @@ impl FeaturePrintObservation {
         unsafe { vn_rsel_data(self) }
     }
 
+    /// # Safety
+    /// use `compute_distance`
+    #[inline]
+    pub unsafe fn compute_distance_error<'ar>(
+        &self,
+        distance: &mut f32,
+        to: &FeaturePrintObservation,
+        error: &mut Option<&'ar cf::Error>,
+    ) -> bool {
+        msg_send!(
+            "vn",
+            self,
+            sel_computeDistance_toFeaturePrintObservation_error,
+            distance,
+            to,
+            error
+        )
+    }
+
     #[inline]
     pub fn compute_distance<'ar>(
         &self,
@@ -237,12 +256,7 @@ impl FeaturePrintObservation {
         unsafe {
             let mut distance = 0f32;
             let mut error = None;
-            let res = rsel_computeDistance_toFeaturePrintObservation_error(
-                self,
-                &mut distance,
-                to,
-                &mut error,
-            );
+            let res = self.compute_distance_error(&mut distance, to, &mut error);
             if res {
                 Ok(distance)
             } else {
@@ -304,12 +318,12 @@ extern "C" {
 
     // rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
-    fn rsel_computeDistance_toFeaturePrintObservation_error<'ar>(
-        id: &ns::Id,
-        distance: &mut f32,
-        to: &FeaturePrintObservation,
-        error: &mut Option<&'ar cf::Error>,
-    ) -> bool;
+    // fn rsel_computeDistance_toFeaturePrintObservation_error<'ar>(
+    //     id: &ns::Id,
+    //     distance: &mut f32,
+    //     to: &FeaturePrintObservation,
+    //     error: &mut Option<&'ar cf::Error>,
+    // ) -> bool;
 
     fn rsel_topCandidates(
         id: &ns::Id,

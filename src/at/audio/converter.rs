@@ -369,6 +369,7 @@ pub mod errors {
 #[repr(transparent)]
 pub struct Converter(c_void);
 
+/// Useful link on formats https://tech.ebu.ch/docs/techreview/trev_305-moser.pdf
 #[repr(transparent)]
 pub struct ConverterRef(NonNull<Converter>);
 
@@ -425,6 +426,8 @@ pub type ComplexInputDataProc<D> = extern "C" fn(
 ) -> os::Status;
 
 impl ConverterRef {
+    /// # Safety
+    /// use `with_formats`
     pub unsafe fn new(
         in_source_format: &audio::StreamBasicDescription,
         in_destination_format: &audio::StreamBasicDescription,

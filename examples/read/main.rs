@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use cidre::{av, cf, cv, objc::autoreleasepool, vn};
 use tokio;
 
@@ -31,18 +33,22 @@ async fn main() {
     let horizon = vn::DetectHorizonRequest::new();
     let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
     let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
+    let features = vn::GenerateImageFeaturePrintRequest::new();
     let text = vn::RecognizeTextRequest::new();
     //let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
-    let requests_slice: &[&vn::Request] = &[&text];
+    let requests_slice: &[&vn::Request] = &[&features];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
 
     let handler = vn::SequenceRequestHandler::new();
+
+    let mut prev_frame_featurs: Option<cf::Retained<vn::FeaturePrintObservation>> = None;
 
     let mut count = 0;
     while let Some(buf) = output.copy_next_sample_buffer() {
         let Some(image) = buf.image_buffer() else {
             continue;
         };
+        let pts = buf.presentation_time_stamp();
         autoreleasepool(|| {
             handler
                 .perform_on_cv_pixel_buffer(&requests, &image)
@@ -83,10 +89,22 @@ async fn main() {
             //         println!("{:?}", results[0].salient_objects().unwrap());
             //     }
             // }
-            if let Some(results) = text.results() {
+            // if let Some(results) = text.results() {
+            //     if !results.is_empty() {
+            //         let res = &results[0].top_candidates(1)[0];
+            //         println!("res {:?}", res.string());
+            //     }
+            // }
+            if let Some(results) = features.results() {
                 if !results.is_empty() {
-                    let res = &results[0].top_candidates(1)[0];
-                    println!("res {:?}", res.string());
+                    let res = &results[0];
+
+                    if let Some(prev) = prev_frame_featurs.as_ref() {
+                        let dist = res.compute_distance(&prev).unwrap();
+                        println!("pts: {:.2} dist: {}", pts.seconds(), dist);
+                    }
+                    //prev_frame_featurs.insert(res.retained());
+                    prev_frame_featurs = Some(res.retained());
                 }
             }
         });

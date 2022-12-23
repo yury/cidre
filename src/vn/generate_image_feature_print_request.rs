@@ -19,10 +19,16 @@ impl GenerateImageFeaturePrintRequest {
     pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOption) {
         unsafe { wsel_setImageCropAndScaleOption(self, value) }
     }
+
+    #[inline]
+    pub fn new() -> cf::Retained<Self> {
+        unsafe { VNGenerateImageFeaturePrintRequest_new() }
+    }
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
     fn rsel_imageCropAndScaleOption(id: &ns::Id) -> vn::ImageCropAndScaleOption;
     fn wsel_setImageCropAndScaleOption(id: &mut ns::Id, value: vn::ImageCropAndScaleOption);
+    fn VNGenerateImageFeaturePrintRequest_new() -> cf::Retained<GenerateImageFeaturePrintRequest>;
 }

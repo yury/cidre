@@ -26,7 +26,7 @@ pub enum PanningMode {
     VectorBasedPanning = 4,
 }
 
-/// AudioPanningInfo
+#[doc(alias = "AudioPanningInfo")]
 #[repr(C)]
 pub struct PanningInfo<const N: usize> {
     /// the PanningMode to be used for the pan
@@ -60,6 +60,7 @@ pub enum BalanceFadeType {
 }
 
 /// this struct is used with kAudioFormatProperty_BalanceFade
+#[doc(alias = "AudioBalanceFade")]
 #[repr(C)]
 pub struct BalanceFade<const N: usize> {
     /// -1 is full left, 0 is center, +1 is full right
@@ -71,6 +72,7 @@ pub struct BalanceFade<const N: usize> {
     pub channel_layout: *const audio::ChannelLayout<N>,
 }
 
+#[doc(alias = "AudioFormatInfo")]
 #[repr(C)]
 pub struct FormatInfo {
     pub asbd: audio::StreamBasicDescription,
@@ -78,6 +80,8 @@ pub struct FormatInfo {
     pub magic_cookie_size: u32,
 }
 
+/// This struct is used as a specifier for the kAudioFormatProperty_FormatList property
+#[doc(alias = "ExtendedAudioFormatInfo")]
 #[repr(C)]
 pub struct ExtendedFormatInfo {
     pub asbd: audio::StreamBasicDescription,

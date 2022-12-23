@@ -215,6 +215,7 @@ rsel0(, id, string, NSString *)
 
 SEL sel_results;
 SEL sel_supportedIdentifiersAndReturnError;
+SEL sel_computeDistance_toFeaturePrintObservation_error;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -223,6 +224,7 @@ static void common_initializer()
   if (!initialized) {
     sel_results = @selector(results);
     sel_supportedIdentifiersAndReturnError = @selector(supportedIdentifiersAndReturnError:);
+    sel_computeDistance_toFeaturePrintObservation_error = @selector(computeDistance:toFeaturePrintObservation:error:);
   }
 }
 
