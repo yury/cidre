@@ -231,6 +231,7 @@ impl FeaturePrintObservation {
 
     /// # Safety
     /// use `compute_distance`
+    #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[inline]
     pub unsafe fn compute_distance_error<'ar>(
         &self,
@@ -248,6 +249,10 @@ impl FeaturePrintObservation {
         )
     }
 
+    /// Computes the distance between two feature print observations.
+    ///
+    /// Shorter distances indicate greater similarity between feature prints.
+    #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[inline]
     pub fn compute_distance<'ar>(
         &self,

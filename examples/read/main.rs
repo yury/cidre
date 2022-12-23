@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use cidre::{av, cf, cv, objc::autoreleasepool, vn};
 use tokio;
 
@@ -15,7 +13,9 @@ async fn main() {
 
     let options = cf::DictionaryOf::with_keys_values(
         &[cv::pixel_buffer_keys::pixel_format_type()],
-        &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
+        // &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
+        // for ML tasks reading in BGRA is faster 3:55 vs 5:00
+        &[cv::PixelFormatType::_32_BGRA.to_cf_number().as_type_ref()],
     );
 
     let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
@@ -103,7 +103,6 @@ async fn main() {
                         let dist = res.compute_distance(&prev).unwrap();
                         println!("pts: {:.2} dist: {}", pts.seconds(), dist);
                     }
-                    //prev_frame_featurs.insert(res.retained());
                     prev_frame_featurs = Some(res.retained());
                 }
             }
