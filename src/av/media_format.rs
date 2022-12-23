@@ -2,42 +2,59 @@ use crate::{cf, define_cf_type};
 
 define_cf_type!(MediaType(cf::String));
 
+/// Media types
 impl MediaType {
+    /// The media contains video.
+    #[doc(alias = "AVMediaTypeVideo")]
     #[inline]
     pub fn video() -> &'static Self {
         unsafe { AVMediaTypeVideo }
     }
 
+    /// The media contains audio media.
+    #[doc(alias = "AVMediaTypeAudio")]
     #[inline]
     pub fn audio() -> &'static Self {
         unsafe { AVMediaTypeAudio }
     }
 
+    /// The media contains text.
+    #[doc(alias = "AVMediaTypeText")]
     #[inline]
     pub fn text() -> &'static Self {
         unsafe { AVMediaTypeText }
     }
 
+    /// The media contains closed-caption content.
+    #[doc(alias = "AVMediaTypeClosedCaption")]
     #[inline]
     pub fn closed_caption() -> &'static Self {
         unsafe { AVMediaTypeClosedCaption }
     }
 
+    /// The media contains subtitles.
+    #[doc(alias = "AVMediaTypeSubtitle")]
     #[inline]
     pub fn subtitle() -> &'static Self {
         unsafe { AVMediaTypeSubtitle }
     }
 
+    /// The media contains a time code.
+    #[doc(alias = "AVMediaTypeTimecode")]
     #[inline]
     pub fn timecode() -> &'static Self {
         unsafe { AVMediaTypeTimecode }
     }
 
+    /// The media contains metadata.
+    #[doc(alias = "AVMediaTypeMetadata")]
     #[inline]
     pub fn metadata() -> &'static Self {
         unsafe { AVMediaTypeMetadata }
     }
 
+    /// The media contains muxed media.
+    #[doc(alias = "AVMediaTypeMuxed")]
     #[inline]
     pub fn muxed() -> &'static Self {
         unsafe { AVMediaTypeMuxed }
@@ -49,6 +66,8 @@ impl MediaType {
         unsafe { AVMediaTypeMetadataObject }
     }
 
+    /// The media contains depth data.
+    #[doc(alias = "AVMediaTypeDepthData")]
     #[inline]
     pub fn depth_data() -> &'static Self {
         unsafe { AVMediaTypeDepthData }
@@ -57,17 +76,24 @@ impl MediaType {
 
 define_cf_type!(VideoRange(cf::String));
 
+/// Constants that describe a video variant’s dynamic range.
 impl VideoRange {
+    /// Indicates standard-dynamic-range (SDR) video.
+    #[doc(alias = "AVVideoRangeSDR")]
     #[inline]
     pub fn sdr() -> &'static Self {
         unsafe { AVVideoRangeSDR }
     }
 
+    /// Indicates Hybrid-Log Gamma (HLG) high-dynamic-range video.
+    #[doc(alias = "AVVideoRangeHLG")]
     #[inline]
     pub fn hlg() -> &'static Self {
         unsafe { AVVideoRangeHLG }
     }
 
+    /// Indicates Perceptual Quantizer (PQ) high-dynamic-range video.
+    #[doc(alias = "AVVideoRangePQ")]
     #[inline]
     pub fn pq() -> &'static Self {
         unsafe { AVVideoRangePQ }
@@ -81,7 +107,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"com.apple.quicktime-movie".
     /// Files are identified with the .mov and .qt extensions.
-    pub fn qt() -> &'static FileType {
+    #[doc(alias = "AVFileTypeQuickTimeMovie")]
+    pub fn qt() -> &'static Self {
         unsafe { AVFileTypeQuickTimeMovie }
     }
 
@@ -89,21 +116,25 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.mpeg-4".
     /// Files are identified with the .mp4 extension.
+    #[doc(alias = "AVFileTypeMPEG4")]
     #[inline]
-    pub fn mp4() -> &'static FileType {
+    pub fn mp4() -> &'static Self {
         unsafe { AVFileTypeMPEG4 }
     }
 
     /// The value of this UTI is @"com.apple.m4v-video".
     /// Files are identified with the .m4v extension.
-    pub fn m4v() -> &'static FileType {
+    #[doc(alias = "AVFileTypeAppleM4V")]
+    #[inline]
+    pub fn m4v() -> &'static Self {
         unsafe { AVFileTypeAppleM4V }
     }
 
     /// The value of this UTI is @"com.apple.m4a-audio".
     /// Files are identified with the .m4a extension.
+    #[doc(alias = "AVFileTypeAppleM4A")]
     #[inline]
-    pub fn m4a() -> &'static FileType {
+    pub fn m4a() -> &'static Self {
         unsafe { AVFileTypeAppleM4A }
     }
 
@@ -111,7 +142,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.3gpp".
     /// Files are identified with the .3gp, .3gpp, and .sdv extensions.
-    pub fn _3gpp() -> &'static FileType {
+    #[doc(alias = "AVFileType3GPP")]
+    pub fn _3gpp() -> &'static Self {
         unsafe { AVFileType3GPP }
     }
 
@@ -119,7 +151,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.3gpp2".
     /// Files are identified with the .3g2, .3gp2 extensions.
-    pub fn _3gpp2() -> &'static FileType {
+    #[doc(alias = "AVFileType3GPP2")]
+    pub fn _3gpp2() -> &'static Self {
         unsafe { AVFileType3GPP2 }
     }
 
@@ -127,7 +160,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"com.apple.coreaudio-format".
     /// Files are identified with the .caf extension.
-    pub fn caf() -> &'static FileType {
+    #[doc(alias = "AVFileTypeCoreAudioFormat")]
+    pub fn caf() -> &'static Self {
         unsafe { AVFileTypeCoreAudioFormat }
     }
 
@@ -135,7 +169,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"com.microsoft.waveform-audio".
     /// Files are identified with the .wav, .wave, and .bwf extensions.
-    pub fn wav() -> &'static FileType {
+    #[doc(alias = "AVFileTypeWAVE")]
+    pub fn wav() -> &'static Self {
         unsafe { AVFileTypeWAVE }
     }
 
@@ -143,7 +178,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.aiff-audio".
     /// Files are identified with the .aif and .aiff extensions.
-    pub fn aif() -> &'static FileType {
+    #[doc(alias = "AVFileTypeAIFF")]
+    pub fn aif() -> &'static Self {
         unsafe { AVFileTypeAIFF }
     }
 
@@ -151,7 +187,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.aifc-audio".
     /// Files are identified with the .aifc and .cdda extensions.
-    pub fn aifc() -> &'static FileType {
+    #[doc(alias = "AVFileTypeAIFC")]
+    pub fn aifc() -> &'static Self {
         unsafe { AVFileTypeAIFC }
     }
 
@@ -159,7 +196,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"org.3gpp.adaptive-multi-rate-audio".
     /// Files are identified with the .amr extension.
-    pub fn amr() -> &'static FileType {
+    #[doc(alias = "AVFileTypeAMR")]
+    pub fn amr() -> &'static Self {
         unsafe { AVFileTypeAMR }
     }
 
@@ -167,8 +205,9 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.mp3".
     /// Files are identified with the .mp3 extension.
+    #[doc(alias = "AVFileTypeMPEGLayer3")]
     #[inline]
-    pub fn mp3() -> &'static FileType {
+    pub fn mp3() -> &'static Self {
         unsafe { AVFileTypeMPEGLayer3 }
     }
 
@@ -176,7 +215,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.au-audio".
     /// Files are identified with the .au and .snd extensions.
-    pub fn au() -> &'static FileType {
+    #[doc(alias = "AVFileTypeSunAU")]
+    pub fn sun_au() -> &'static Self {
         unsafe { AVFileTypeSunAU }
     }
 
@@ -184,7 +224,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.ac3-audio".
     /// Files are identified with the .ac3 extension.
-    pub fn ac3() -> &'static FileType {
+    #[doc(alias = "AVFileTypeAC3")]
+    pub fn ac3() -> &'static Self {
         unsafe { AVFileTypeAC3 }
     }
 
@@ -192,7 +233,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.enhanced-ac3-audio".
     /// Files are identified with the .eac3 extension.
-    pub fn eac3() -> &'static FileType {
+    #[doc(alias = "AVFileTypeEnhancedAC3")]
+    pub fn eac3() -> &'static Self {
         unsafe { AVFileTypeEnhancedAC3 }
     }
 
@@ -200,7 +242,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.jpeg".
     /// Files are identified with the .jpg or .jpeg extension.
-    pub fn jpeg() -> &'static FileType {
+    #[doc(alias = "AVFileTypeJPEG")]
+    pub fn jpeg() -> &'static Self {
         unsafe { AVFileTypeJPEG }
     }
 
@@ -208,7 +251,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"com.adobe.raw-image".
     /// Files are identified with the .dng extension.
-    pub fn dng() -> &'static FileType {
+    #[doc(alias = "AVFileTypeDNG")]
+    pub fn dng() -> &'static Self {
         unsafe { AVFileTypeDNG }
     }
 
@@ -216,8 +260,9 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.heic".
     /// Files are identified with the .heic extension.
+    #[doc(alias = "AVFileTypeHEIC")]
     #[inline]
-    pub fn heic() -> &'static FileType {
+    pub fn heic() -> &'static Self {
         unsafe { AVFileTypeHEIC }
     }
 
@@ -225,14 +270,16 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.avci".
     /// Files are identified with the .avci extension.
-    pub fn avci() -> &'static FileType {
+    #[doc(alias = "AVFileTypeAVCI")]
+    pub fn avci() -> &'static Self {
         unsafe { AVFileTypeAVCI }
     }
     /// A UTI for the high efficiency image file format containing images compressed with any codec.
     ///
     /// The value of this UTI is @"public.heif".
     /// Files are identified with the .heif extension.
-    pub fn heif() -> &'static FileType {
+    #[doc(alias = "AVFileTypeHEIF")]
+    pub fn heif() -> &'static Self {
         unsafe { AVFileTypeHEIF }
     }
 
@@ -240,7 +287,8 @@ impl FileType {
     ///
     /// The value of this UTI is @"public.tiff".
     /// Files are identified with the .tiff or .tif extension.
-    pub fn tiff() -> &'static FileType {
+    #[doc(alias = "AVFileTypeTIFF")]
+    pub fn tiff() -> &'static Self {
         unsafe { AVFileTypeTIFF }
     }
 
@@ -248,14 +296,16 @@ impl FileType {
     ///
     /// The value of this UTI is @"com.apple.itunes-timed-text".
     /// Files are identified with the .itt extension.
-    pub fn apple_itt() -> &'static FileType {
+    #[doc(alias = "VFileTypeAppleiTT")]
+    pub fn apple_itt() -> &'static Self {
         unsafe { AVFileTypeAppleiTT }
     }
     /// A UTI for the Scenarist closed caption file format
     ///
     /// The value of this UTI is @"com.scenarist.closed-caption".
     /// Files are identified with the .scc extension.
-    pub fn scc() -> &'static FileType {
+    #[doc(alias = "AVFileTypeSCC")]
+    pub fn scc() -> &'static Self {
         unsafe { AVFileTypeSCC }
     }
 }
