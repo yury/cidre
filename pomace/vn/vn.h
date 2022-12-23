@@ -196,7 +196,6 @@ rwsel(, id, trackingLevel, setTrackingLevel, VNRequestTrackingLevel)
 NS_RETURNS_RETAINED
 csel0(, VNDetectBarcodesRequest, new, VNDetectBarcodesRequest *)
 
-//@property (readwrite, nonatomic, copy) NSArray<VNBarcodeSymbology> *symbologies;
 rwsel(, id, symbologies, setSymbologies, NSArray *)
 
 rsel1(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
@@ -207,7 +206,6 @@ csel0(, VNRecognizeTextRequest, new, VNRecognizeTextRequest *)
 
 #pragma mark - VNRecognizedTextObservation
 
-//- (NSArray<VNRecognizedText*>*) topCandidates:(NSUInteger)maxCandidateCount;
 rsel1(, id, topCandidates, NSUInteger, NSArray *)
 
 #pragma mark - VNRecognizedText
