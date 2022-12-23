@@ -66,27 +66,17 @@ rsel0(, id, isVideoBinned, BOOL)
 //@property(nonatomic, readonly) NSArray<AVFrameRateRange *> *videoSupportedFrameRateRanges;
 rsel0(, id, videoSupportedFrameRateRanges, NSArray<AVFrameRateRange *> *)
 
-//@property(nonatomic, readonly) CMFormatDescriptionRef formatDescription;
 rsel0(, id, formatDescription, CMFormatDescriptionRef)
-
-//@property(nonatomic, readonly) AVCaptureAutoFocusSystem autoFocusSystem API_AVAILABLE(macos(10.15), ios(8.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
 rsel0(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
 
-//@property(nonatomic, readonly, getter=isMultiCamSupported) BOOL multiCamSupported API_AVAILABLE(ios(13.0), macCatalyst(14.0)) API_UNAVAILABLE(macos, tvos) API_UNAVAILABLE(watchos);
 #if TARGET_OS_IPHONE
 rsel0(, id, isMultiCamSupported, BOOL)
 #endif
 
-//@property(nonatomic, readonly, getter=isCenterStageSupported) BOOL centerStageSupported API_AVAILABLE(macos(12.3), ios(14.5), macCatalyst(14.5)) API_UNAVAILABLE(tvos) API_UNAVAILABLE(watchos);
-
 rsel0(, id, isCenterStageSupported, BOOL)
 
-//@property(nonatomic, readonly, nullable) AVFrameRateRange *videoFrameRateRangeForCenterStage API_AVAILABLE(macos(12.3), ios(14.5), macCatalyst(14.5)) API_UNAVAILABLE(tvos) API_UNAVAILABLE(watchos);
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, videoFrameRateRangeForCenterStage, AVFrameRateRange* _Nullable)
-
-//+ (nullable AVCaptureDevice *)deviceWithUniqueID:(NSString *)deviceUniqueID;
-// + (nullable AVCaptureDevice *)defaultDeviceWithDeviceType:(AVCaptureDeviceType)deviceType mediaType:(nullable AVMediaType)mediaType position:(AVCaptureDevicePosition)position API_AVAILABLE(macos(10.15), ios(10.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
 
 #pragma mark - AVFrameRateRange
 
@@ -98,18 +88,15 @@ rsel0(,id,  maxFrameDuration, CMTime)
 
 #pragma mark - AVCaptureInput
 
-//@property(nonatomic, readonly) NSArray<AVCaptureInputPort *> *ports;
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, ports, NSArray<AVCaptureInputPort *> *);
 
 
-//@property(nonatomic, readonly) AVCaptureInput *input;
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, input, AVCaptureInput *)
 
 #pragma mark - AVCaptureOutput
 
-// @property(nonatomic, readonly) NSArray<AVCaptureConnection *> *connections;
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, connections, NSArray<AVCaptureConnection *> *)
 
@@ -128,7 +115,6 @@ bool is_mutlicam_supported(void) {
 #if TARGET_OS_OSX
 
 #else
-//@property(nonatomic, readonly) float hardwareCost;
 rsel0(, id, hardwareCost, float)
 rsel0(, id, systemPressureCost, float)
 #endif
@@ -137,7 +123,6 @@ rsel0(, id, systemPressureCost, float)
 
 NS_RETURNS_RETAINED
 csel0(, AVCaptureSession, new, AVCaptureSession *)
-//- (BOOL)canSetSessionPreset:(AVCaptureSessionPreset)preset;
 rsel1(, id, canSetSessionPreset, AVCaptureSessionPreset, BOOL)
 
 NS_RETURNS_NOT_RETAINED
@@ -148,14 +133,10 @@ wsel1(, id, setSessionPreset, AVCaptureSessionPreset)
 NS_RETURNS_NOT_RETAINED
 rsel0(, AVCaptureSession *, inputs, NSArray<__kindof AVCaptureInput *> *)
 
-//- (BOOL)canAddInput:(AVCaptureInput *)input;
 rsel1(, id, canAddInput, AVCaptureInput *, BOOL)
-//- (void)addInput:(AVCaptureInput *)input;
 wsel1(, id, addInput, AVCaptureInput *)
-//- (void)removeInput:(AVCaptureInput *)input;
 wsel1(, id, removeInput, AVCaptureInput *)
 
-//@property(nonatomic, readonly) NSArray<__kindof AVCaptureOutput *> *outputs;
 NS_RETURNS_NOT_RETAINED
 rsel0(, AVCaptureSession *, outputs, NSArray<__kindof AVCaptureOutput *> *)
 
@@ -170,9 +151,7 @@ rsel1(, id, canAddConnection, AVCaptureConnection *, BOOL)
 wsel1(, id, addConnection, AVCaptureConnection *)
 wsel1(, id, removeConnection, AVCaptureConnection *)
 
-//- (void)beginConfiguration;
 wsel0(, id, beginConfiguration)
-//- (void)commitConfiguration;
 wsel0(, id, commitConfiguration)
 
 wsel0(, id, startRunning)
