@@ -310,6 +310,27 @@ impl FileType {
     }
 }
 
+define_cf_type!(FileTypeProfile(cf::String));
+
+/// File type profiles
+impl FileTypeProfile {
+    /// Apple HTTP Live Streaming profile
+    ///
+    /// The profile that is suitable for Apple HTTP Live Streaming.
+    #[doc(alias = "AVFileTypeProfileMPEG4AppleHLS")]
+    pub fn mpeg4_apple_hls() -> &'static Self {
+        unsafe { AVFileTypeProfileMPEG4AppleHLS }
+    }
+
+    /// CMAF compliant profile
+    ///
+    /// The profile that is compliance with CMAF format.
+    #[doc(alias = "AVFileTypeProfileMPEG4CMAFCompliant")]
+    pub fn mpeg4_cmaf_compliant() -> &'static Self {
+        unsafe { AVFileTypeProfileMPEG4CMAFCompliant }
+    }
+}
+
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
     static AVFileTypeQuickTimeMovie: &'static FileType;
@@ -352,6 +373,9 @@ extern "C" {
     static AVVideoRangeSDR: &'static VideoRange;
     static AVVideoRangeHLG: &'static VideoRange;
     static AVVideoRangePQ: &'static VideoRange;
+
+    static AVFileTypeProfileMPEG4AppleHLS: &'static FileTypeProfile;
+    static AVFileTypeProfileMPEG4CMAFCompliant: &'static FileTypeProfile;
 }
 
 #[cfg(test)]

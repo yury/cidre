@@ -1,5 +1,6 @@
 pub mod media_format;
 pub use media_format::FileType;
+pub use media_format::FileTypeProfile;
 pub use media_format::MediaType;
 pub use media_format::VideoRange;
 
