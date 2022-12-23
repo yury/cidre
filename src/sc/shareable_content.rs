@@ -126,7 +126,7 @@ mod tests {
         extern "C" fn stream_did_output_sample_buffer_of_type(
             &mut self,
             _stream: &sc::Stream,
-            _sample_buffer: &crate::cm::SampleBuffer,
+            _sample_buffer: &mut crate::cm::SampleBuffer,
             _of_type: sc::OutputType,
         ) {
             self.bla += 1;

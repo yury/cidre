@@ -258,9 +258,9 @@ impl FeaturePrintObservation {
         &self,
         to: &FeaturePrintObservation,
     ) -> Result<f32, &'ar cf::Error> {
+        let mut distance = 0f32;
+        let mut error = None;
         unsafe {
-            let mut distance = 0f32;
-            let mut error = None;
             let res = self.compute_distance_error(&mut distance, to, &mut error);
             if res {
                 Ok(distance)

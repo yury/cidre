@@ -29,12 +29,12 @@ async fn main() {
         return;
     };
 
-    let classify = vn::ClassifyImageRequest::new();
-    let horizon = vn::DetectHorizonRequest::new();
-    let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
-    let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
+    // let classify = vn::ClassifyImageRequest::new();
+    // let horizon = vn::DetectHorizonRequest::new();
+    // let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
+    // let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
     let features = vn::GenerateImageFeaturePrintRequest::new();
-    let text = vn::RecognizeTextRequest::new();
+    // let text = vn::RecognizeTextRequest::new();
     //let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
     let requests_slice: &[&vn::Request] = &[&features];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();

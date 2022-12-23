@@ -1,9 +1,4 @@
-use std::{
-    collections::VecDeque,
-    ffi::c_void,
-    mem::{size_of, size_of_val},
-    time::Duration,
-};
+use std::{collections::VecDeque, ffi::c_void, time::Duration};
 
 use cidre::{
     at,
