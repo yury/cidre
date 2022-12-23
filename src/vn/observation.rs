@@ -65,7 +65,7 @@ impl FaceObservation {
     /// the capture quality of a face against other captures of the same face in a given set.
     #[inline]
     pub fn face_capture_quality(&self) -> Option<&cf::Number> {
-        unsafe { rsel_faceCaptureQuality(self) }
+        msg_send!("vn", self, sel_faceCaptureQuality)
     }
 
     /// Face roll angle populated by vn::DetectFaceRectanglesRequest.
@@ -281,7 +281,6 @@ extern "C" {
     fn rsel_globalSegmentationMask(id: &ns::Id) -> Option<&vn::PixelBufferObservation>;
 
     fn rsel_landmarks(id: &ns::Id) -> Option<&vn::FaceLandmarks2D>;
-    fn rsel_faceCaptureQuality(id: &ns::Id) -> Option<&cf::Number>;
     fn rsel_roll(id: &ns::Id) -> Option<&cf::Number>;
     fn rsel_yaw(id: &ns::Id) -> Option<&cf::Number>;
     fn rsel_pitch(id: &ns::Id) -> Option<&cf::Number>;

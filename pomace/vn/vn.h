@@ -80,7 +80,6 @@ rsel2(, id, transformForImageWidth, size_t, height, size_t, CGAffineTransform)
 #pragma mark - VNFaceObservation
 
 rsel0(, id, landmarks, VNFaceLandmarks2D *)
-rsel0(, id, faceCaptureQuality, NSNumber *)
 
 rsel0(, id, roll, NSNumber *)
 rsel0(, id, yaw, NSNumber *)
@@ -185,6 +184,10 @@ csel0(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintRequ
 NS_RETURNS_RETAINED
 csel0(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
 
+#pragma mark - VNDetectFaceCaptureQualityRequest
+
+csel0(, VNDetectFaceCaptureQualityRequest, new, VNDetectFaceCaptureQualityRequest *)
+
 #pragma mark - VNTrackingRequest
 
 rwsel(, id, trackingLevel, setTrackingLevel, VNRequestTrackingLevel)
@@ -216,6 +219,7 @@ rsel0(, id, string, NSString *)
 SEL sel_results;
 SEL sel_supportedIdentifiersAndReturnError;
 SEL sel_computeDistance_toFeaturePrintObservation_error;
+SEL sel_faceCaptureQuality;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -225,6 +229,7 @@ static void common_initializer()
     sel_results = @selector(results);
     sel_supportedIdentifiersAndReturnError = @selector(supportedIdentifiersAndReturnError:);
     sel_computeDistance_toFeaturePrintObservation_error = @selector(computeDistance:toFeaturePrintObservation:error:);
+    sel_faceCaptureQuality = @selector(faceCaptureQuality);
   }
 }
 

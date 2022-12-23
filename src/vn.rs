@@ -85,6 +85,9 @@ pub use classify_image_request::ClassifyImageRequest;
 mod detect_face_rectangles_request;
 pub use detect_face_rectangles_request::DetectFaceRectanglesRequest;
 
+mod detect_face_capture_quality_request;
+pub use detect_face_capture_quality_request::DetectFaceCaptureQualityRequest;
+
 mod detect_barcodes_request;
 pub use detect_barcodes_request::DetectBarcodesRequest;
 
