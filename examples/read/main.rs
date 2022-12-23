@@ -1,4 +1,4 @@
-use cidre::{av, cf, cm, cv, objc::autoreleasepool, vn};
+use cidre::{av, cf, cv, objc::autoreleasepool, vn};
 use tokio;
 
 #[tokio::main]
@@ -34,10 +34,10 @@ async fn main() {
     // let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
     // let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
     let features = vn::GenerateImageFeaturePrintRequest::new();
-    let face_quality = vn::DetectFaceCaptureQualityRequest::new();
+    //let face_quality = vn::DetectFaceCaptureQualityRequest::new();
     // let text = vn::RecognizeTextRequest::new();
     //let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
-    let requests_slice: &[&vn::Request] = &[&features, &face_quality];
+    let requests_slice: &[&vn::Request] = &[&features];
     let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
 
     let handler = vn::SequenceRequestHandler::new();
@@ -108,13 +108,13 @@ async fn main() {
                 }
             }
 
-            if let Some(results) = face_quality.results() {
-                if !results.is_empty() {
-                    if let Some(res) = &results[0].face_capture_quality() {
-                        println!("face q: {:.2}", res.to_f64().unwrap());
-                    }
-                }
-            }
+            // if let Some(results) = face_quality.results() {
+            //     if !results.is_empty() {
+            //         if let Some(res) = &results[0].face_capture_quality() {
+            //             println!("face q: {:.2}", res.to_f64().unwrap());
+            //         }
+            //     }
+            // }
         });
 
         count += 1;
