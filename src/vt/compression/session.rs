@@ -73,6 +73,7 @@ impl Session {
         )
     }
 
+    #[doc(alias = "VTCompressionSessionInvalidate")]
     #[inline]
     pub fn invalidate(&mut self) {
         unsafe { VTCompressionSessionInvalidate(self) }
@@ -83,11 +84,13 @@ impl Session {
         self.prepare_to_encode_frames().result()
     }
 
+    #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
     pub fn prepare_to_encode_frames(&mut self) -> os::Status {
         unsafe { VTCompressionSessionPrepareToEncodeFrames(self) }
     }
 
+    #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn encode_frame(
         &self,
@@ -111,16 +114,19 @@ impl Session {
         }
     }
 
+    #[doc(alias = "VTCompressionSessionGetPixelBufferPool")]
     #[inline]
     pub fn pixel_buffer_pool(&self) -> Option<&cv::PixelBufferPool> {
         unsafe { VTCompressionSessionGetPixelBufferPool(self) }
     }
 
+    #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
     pub fn complete_frames(&self) -> os::Status {
         unsafe { VTCompressionSessionCompleteFrames(self) }
     }
 
+    #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
     pub fn complete(&self) -> Result<(), os::Status> {
         self.complete_frames().result()

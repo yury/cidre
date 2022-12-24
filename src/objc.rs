@@ -307,20 +307,8 @@ macro_rules! define_obj_type {
                 }
             }
         }
-
-        // impl std::fmt::Debug for $NewType {
-        //     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        //         let desc = self
-        //             .copy_description()
-        //             .map(|f| f.to_string())
-        //             .unwrap_or_else(|| "no desc".to_string());
-        //         f.debug_tuple("cf::Type").field(&desc).finish()
-        //     }
-        // }
     };
 }
-
-//struct AR<T>(&'static mut Id, PhantomData<T>);
 
 #[repr(C)]
 pub struct Delegate<T: Sized> {
@@ -348,7 +336,7 @@ mod tests {
             unsafe { q.as_type_ref().as_type_ptr() }
         });
 
-        let ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
+        let _ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
         // expect crash: ptr.show()
     }
 }
