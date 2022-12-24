@@ -226,41 +226,49 @@ pub mod keys {
     use crate::cf;
 
     /// A single cf::Number or a cf::Array of cf::Numbers (os::Types)
+    #[doc(alias = "kCVPixelBufferPixelFormatTypeKey")]
     #[inline]
     pub fn pixel_format_type() -> &'static cf::String {
         unsafe { kCVPixelBufferPixelFormatTypeKey }
     }
 
+    #[doc(alias = "kCVPixelBufferWidthKey")]
     #[inline]
     pub fn width() -> &'static cf::String {
         unsafe { kCVPixelBufferWidthKey }
     }
 
+    #[doc(alias = "kCVPixelBufferHeightKey")]
     #[inline]
     pub fn height() -> &'static cf::String {
         unsafe { kCVPixelBufferHeightKey }
     }
 
+    #[doc(alias = "kCVPixelBufferIOSurfacePropertiesKey")]
     #[inline]
     pub fn io_surface_properties() -> &'static cf::String {
         unsafe { kCVPixelBufferIOSurfacePropertiesKey }
     }
 
+    #[doc(alias = "kCVPixelBufferMetalCompatibilityKey")]
     #[inline]
     pub fn metal_compatability() -> &'static cf::String {
         unsafe { kCVPixelBufferMetalCompatibilityKey }
     }
 
+    #[doc(alias = "kCVPixelBufferPlaneAlignmentKey")]
     #[inline]
     pub fn plane_aligment() -> &'static cf::String {
         unsafe { kCVPixelBufferPlaneAlignmentKey }
     }
 
+    #[doc(alias = "kCVPixelBufferExtendedPixelsBottomKey")]
     #[inline]
     pub fn extended_pixels_bottom() -> &'static cf::String {
         unsafe { kCVPixelBufferExtendedPixelsBottomKey }
     }
 
+    #[doc(alias = "kCVPixelBufferCGImageCompatibilityKey")]
     #[inline]
     pub fn cg_image_comaptibility() -> &'static cf::String {
         unsafe { kCVPixelBufferCGImageCompatibilityKey }
