@@ -15,6 +15,8 @@ impl Session {
         unsafe { VTSessionCopyProperty(self, key, allocator) }
     }
 
+    /// # Safety
+    /// use `set_prop`
     #[inline]
     pub unsafe fn set_property(
         &mut self,

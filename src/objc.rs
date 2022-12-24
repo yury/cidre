@@ -179,7 +179,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel7($sel, $a, $b, $c, $d, $e, $f, $g) }
@@ -187,7 +187,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
@@ -195,7 +195,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel5($sel, $a, $b, $c, $d, $e) }
@@ -203,7 +203,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel4($sel, $a, $b, $c, $d) }
@@ -211,7 +211,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel3($sel, $a, $b, $c) }
@@ -220,7 +220,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel2($sel, $a, $b) }
@@ -229,7 +229,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident, $a:expr) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel1($sel, $a) }
@@ -238,7 +238,7 @@ macro_rules! msg_send {
     ($lib:literal, $self:ident, $sel:ident) => {{
         #[link(name = $lib, kind = "static")]
         extern "C" {
-            static $sel: &'static crate::objc::Sel;
+            static $sel: &'static $crate::objc::Sel;
         }
 
         unsafe { $self.sel0($sel) }
@@ -286,23 +286,23 @@ macro_rules! define_obj_type {
 
         impl $crate::cf::runtime::Retain for $NewType {
             #[inline]
-            fn retained(&self) -> crate::cf::runtime::Retained<Self> {
+            fn retained(&self) -> $crate::cf::runtime::Retained<Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained(&self) -> crate::cf::runtime::Retained<Self> {
-                unsafe { crate::objc::Id::retain(self) }
+            pub fn retained(&self) -> $crate::cf::runtime::Retained<Self> {
+                unsafe { $crate::objc::Id::retain(self) }
             }
         }
 
-        impl crate::cf::runtime::Retained<$NewType> {
+        impl $crate::cf::runtime::Retained<$NewType> {
             #[must_use]
             pub fn autoreleased<'ar>(self) -> &'ar mut $NewType {
                 unsafe {
-                    let res = crate::objc::Id::autorelease(std::mem::transmute(self));
+                    let res = $crate::objc::Id::autorelease(std::mem::transmute(self));
                     return std::mem::transmute(res);
                 }
             }

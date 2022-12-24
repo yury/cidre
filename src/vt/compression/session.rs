@@ -29,8 +29,7 @@ impl Session {
     ) -> Result<Retained<Self>, os::Status> {
         unsafe {
             let mut session = None;
-            Self::create(
-                None,
+            Self::create_in(
                 width as _,
                 height as _,
                 codec,
@@ -40,14 +39,15 @@ impl Session {
                 transmute(output_callback),
                 transmute(output_callback_ref_con),
                 &mut session,
+                None,
             )
             .to_result_unchecked(session)
         }
     }
 
+    /// # Safety
     /// use ::new
-    pub unsafe fn create(
-        allocator: Option<&cf::Allocator>,
+    pub unsafe fn create_in(
         width: i32,
         height: i32,
         codec_type: VideoCodecType,
@@ -57,6 +57,7 @@ impl Session {
         output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
         compression_session_out: &mut Option<cf::Retained<Session>>,
+        allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         VTCompressionSessionCreate(
             allocator,
