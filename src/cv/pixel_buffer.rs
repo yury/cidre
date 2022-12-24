@@ -9,33 +9,39 @@ impl PixelBuffer {
     }
 
     /// Width in pixels.
+    #[doc(alias = "CVPixelBufferGetWidth")]
     #[inline]
     pub fn width(&self) -> usize {
         unsafe { CVPixelBufferGetWidth(self) }
     }
 
     /// Height in pixels.
+    #[doc(alias = "CVPixelBufferGetHeight")]
     #[inline]
     pub fn height(&self) -> usize {
         unsafe { CVPixelBufferGetHeight(self) }
     }
 
     /// Returns the PixelFormatType of the PixelBuffer.
+    #[doc(alias = "CVPixelBufferGetPixelFormatType")]
     #[inline]
     pub fn pixel_format_type(&self) -> PixelFormatType {
         unsafe { CVPixelBufferGetPixelFormatType(self) }
     }
 
+    #[doc(alias = "CVPixelBufferGetPlaneCount")]
     #[inline]
     pub fn plane_count(&self) -> usize {
         unsafe { CVPixelBufferGetPlaneCount(self) }
     }
 
+    #[doc(alias = "CVPixelBufferGetWidthOfPlane")]
     #[inline]
     pub fn plane_width(&self, plane_index: usize) -> usize {
         unsafe { CVPixelBufferGetWidthOfPlane(self, plane_index) }
     }
 
+    #[doc(alias = "CVPixelBufferGetHeightOfPlane")]
     #[inline]
     pub fn plane_height(&self, plane_index: usize) -> usize {
         unsafe { CVPixelBufferGetHeightOfPlane(self, plane_index) }
@@ -61,25 +67,25 @@ impl PixelBuffer {
     ) -> Result<cf::Retained<PixelBuffer>, cv::Return> {
         let mut pixel_buffer_out = None;
 
-        let r = Self::create(
-            None,
+        let r = Self::create_in(
             width,
             height,
             pixel_format_type,
             pixel_buffer_attributes,
             &mut pixel_buffer_out,
+            None,
         );
 
         unsafe { r.to_result_unchecked(pixel_buffer_out) }
     }
 
-    pub fn create(
-        allocator: Option<&cf::Allocator>,
+    pub fn create_in(
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormatType,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: &mut Option<cf::Retained<PixelBuffer>>,
+        allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         unsafe {
             CVPixelBufferCreate(
@@ -93,10 +99,14 @@ impl PixelBuffer {
         }
     }
 
+    #[doc(alias = "CVPixelBufferLockBaseAddress")]
+    #[inline]
     pub unsafe fn lock_base_address(&self, flags: LockFlags) -> cv::Return {
         CVPixelBufferLockBaseAddress(self, flags)
     }
 
+    #[doc(alias = "CVPixelBufferUnlockBaseAddress")]
+    #[inline]
     pub unsafe fn unlock_lock_base_address(&self, flags: LockFlags) -> cv::Return {
         CVPixelBufferUnlockBaseAddress(self, flags)
     }
@@ -116,6 +126,7 @@ impl PixelBuffer {
 pub struct BaseAddressLockGuard<'a>(&'a PixelBuffer, LockFlags);
 
 impl<'a> Drop for BaseAddressLockGuard<'a> {
+    #[inline]
     fn drop(&mut self) {
         let res = unsafe { self.0.unlock_lock_base_address(self.1) };
         debug_assert!(res.is_ok());
@@ -177,6 +188,7 @@ impl PixelFormatType {
         cv::pixel_format_description_create(*self)
     }
 
+    #[inline]
     pub fn to_cf_number(&self) -> cf::Retained<cf::Number> {
         cf::Number::from_i32(self.0 as _)
     }
@@ -200,7 +212,6 @@ extern "C" {
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
 
-    //CV_EXPORT CVReturn CVPixelBufferLockBaseAddress( CVPixelBufferRef CV_NONNULL pixelBuffer, CVPixelBufferLockFlags lockFlags ) __OSX_AVAILABLE_STARTING(__MAC_10_4,__IPHONE_4_0);
     fn CVPixelBufferLockBaseAddress(
         pixel_buffer: &PixelBuffer,
         lock_flags: LockFlags,
