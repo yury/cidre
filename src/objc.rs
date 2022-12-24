@@ -277,14 +277,14 @@ macro_rules! define_obj_type {
             }
         }
 
-        impl crate::cf::runtime::Release for $NewType {
+        impl $crate::cf::runtime::Release for $NewType {
             #[inline]
             unsafe fn release(&mut self) {
                 self.0.release()
             }
         }
 
-        impl crate::cf::runtime::Retain for $NewType {
+        impl $crate::cf::runtime::Retain for $NewType {
             #[inline]
             fn retained(&self) -> crate::cf::runtime::Retained<Self> {
                 $NewType::retained(self)

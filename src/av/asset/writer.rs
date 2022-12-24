@@ -73,7 +73,7 @@ impl Writer {
     /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     /// assert_eq!(writer.inputs().len(), 0);
     /// ```
-    pub fn with_url_and_file_type<'a>(
+    pub fn with_url_and_file_type(
         url: &cf::URL,
         file_type: &av::FileType,
     ) -> Result<cf::Retained<Writer>, cf::Retained<cf::Error>> {

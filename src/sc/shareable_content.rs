@@ -79,7 +79,7 @@ impl ShareableContent {
 
     pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)
     where
-        F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar cf::Error>) -> (),
+        F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar cf::Error>),
     {
         unsafe {
             cs_shareable(b.as_ptr());
