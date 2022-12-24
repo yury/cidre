@@ -228,7 +228,7 @@ impl cm::AudioFormatDescription {
         &self,
         flavor: Option<&SoundDescriptionFlavor>,
     ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
-        Self::as_be_sound_desc_cm_buffer_in(&self, flavor, None)
+        Self::as_be_sound_desc_cm_buffer_in(self, flavor, None)
     }
 
     pub fn from_be_sound_desc_data_in(

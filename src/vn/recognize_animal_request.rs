@@ -39,6 +39,8 @@ impl RecognizeAnimalsRequest {
         }
     }
 
+    /// # Safety
+    /// use `supported_identifiers()`
     pub unsafe fn supported_identifiers_error<'ar>(
         &self,
         error: &mut Option<&'ar cf::Error>,

@@ -41,18 +41,24 @@ impl Id {
         &self.0
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel0<R>(&self, selector: &Sel) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector)
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel1<R, A>(&self, selector: &Sel, a: A) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A) -> R = transmute(objc_msgSend as *const c_void);
         imp(self, selector, a)
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel2<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B) -> R =
@@ -60,6 +66,8 @@ impl Id {
         imp(self, selector, a, b)
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel3<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) -> R =
@@ -67,6 +75,8 @@ impl Id {
         imp(self, selector, a, b, c)
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel4<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D) -> R =
@@ -74,6 +84,8 @@ impl Id {
         imp(self, selector, a, b, c, d)
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel5<R, A, B, C, D, E>(&self, selector: &Sel, a: A, b: B, c: C, d: D, e: E) -> R {
         let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E) -> R =
@@ -81,6 +93,8 @@ impl Id {
         imp(self, selector, a, b, c, d, e)
     }
 
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel6<R, A, B, C, D, E, F>(
         &self,
@@ -96,6 +110,9 @@ impl Id {
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d, e, f)
     }
+
+    /// # Safety
+    /// use `msg_send!`
     #[inline]
     pub unsafe fn sel7<R, A, B, C, D, E, F, G>(
         &self,

@@ -333,7 +333,7 @@ impl VideoFormatDescription {
             );
             if res.is_ok() {
                 let slice = std::ptr::slice_from_raw_parts(bytes, size);
-                return Ok(&*slice);
+                Ok(&*slice)
             } else {
                 Err(res)
             }
@@ -355,7 +355,7 @@ impl VideoFormatDescription {
             );
             if res.is_ok() {
                 let slice = std::ptr::slice_from_raw_parts(bytes, size);
-                return Ok(&*slice);
+                Ok(&*slice)
             } else {
                 Err(res)
             }

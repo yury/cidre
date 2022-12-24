@@ -88,6 +88,8 @@ impl Session {
         unsafe { VTDecompressionSessionInvalidate(self) }
     }
 
+    /// Decompresses a video frame.
+    #[doc(alias = "VTDecompressionSessionDecodeFrame")]
     #[inline]
     pub fn decode(
         &self,
@@ -106,6 +108,8 @@ impl Session {
         }
     }
 
+    /// Decompresses a video frame.
+    #[doc(alias = "VTDecompressionSessionDecodeFrame")]
     #[inline]
     pub unsafe fn decode_frame<F>(
         &self,
