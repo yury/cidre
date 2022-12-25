@@ -21,6 +21,8 @@
 		D2A5293E283A1F5800E7B4C6 /* ca.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2A5293B283A1F5800E7B4C6 /* ca.h */; };
 		D2A5294A283A1F6A00E7B4C6 /* ci.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A52949283A1F6A00E7B4C6 /* ci.m */; };
 		D2A5294B283A1F6A00E7B4C6 /* ci.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2A52948283A1F6A00E7B4C6 /* ci.h */; };
+		D2DC5D26295870DB007E2B9D /* sn.m in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D25295870DB007E2B9D /* sn.m */; };
+		D2DC5D27295870DB007E2B9D /* sn.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2DC5D24295870DB007E2B9D /* sn.h */; };
 		D2FA4ADF2820227B001E2A51 /* av.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FA4ADE2820227B001E2A51 /* av.m */; };
 		D2FA4AE02820227B001E2A51 /* av.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2FA4ADD2820227B001E2A51 /* av.h */; };
 		D2FBEBFC27CB653200FD974A /* mtl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FBEBFB27CB653200FD974A /* mtl.m */; };
@@ -98,6 +100,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D2DC5D20295870DB007E2B9D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D2DC5D27295870DB007E2B9D /* sn.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2FA4AD92820227B001E2A51 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,6 +160,9 @@
 		D2A52948283A1F6A00E7B4C6 /* ci.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ci.h; sourceTree = "<group>"; };
 		D2A52949283A1F6A00E7B4C6 /* ci.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ci.m; sourceTree = "<group>"; };
 		D2A52950283A26B800E7B4C6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D2DC5D22295870DB007E2B9D /* libsn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsn.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2DC5D24295870DB007E2B9D /* sn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sn.h; sourceTree = "<group>"; };
+		D2DC5D25295870DB007E2B9D /* sn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sn.m; sourceTree = "<group>"; };
 		D2FA4ADB2820227B001E2A51 /* libav.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libav.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2FA4ADD2820227B001E2A51 /* av.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = av.h; sourceTree = "<group>"; };
 		D2FA4ADE2820227B001E2A51 /* av.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = av.m; sourceTree = "<group>"; };
@@ -200,6 +215,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2A52943283A1F6A00E7B4C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2DC5D1F295870DB007E2B9D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -298,6 +320,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D2DC5D23295870DB007E2B9D /* sn */ = {
+			isa = PBXGroup;
+			children = (
+				D2DC5D24295870DB007E2B9D /* sn.h */,
+				D2DC5D25295870DB007E2B9D /* sn.m */,
+			);
+			path = sn;
+			sourceTree = "<group>";
+		};
 		D2FA4ADC2820227B001E2A51 /* av */ = {
 			isa = PBXGroup;
 			children = (
@@ -320,6 +351,7 @@
 				D20656AE283DCA2200048B17 /* ui */,
 				D21A0FF2287738ED00AB7EF8 /* ns */,
 				D264D29F28F7E7CF002B1B14 /* vn */,
+				D2DC5D23295870DB007E2B9D /* sn */,
 				D2FBEBF827CB653200FD974A /* Products */,
 				D2A5294F283A26B800E7B4C6 /* Frameworks */,
 			);
@@ -337,6 +369,7 @@
 				D20656AD283DCA2200048B17 /* libui.a */,
 				D21A0FF1287738ED00AB7EF8 /* libns.a */,
 				D264D29E28F7E7CF002B1B14 /* libvn.a */,
+				D2DC5D22295870DB007E2B9D /* libsn.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -472,6 +505,23 @@
 			productReference = D2A52946283A1F6A00E7B4C6 /* libci.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D2DC5D21295870DB007E2B9D /* sn */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2DC5D2A295870DB007E2B9D /* Build configuration list for PBXNativeTarget "sn" */;
+			buildPhases = (
+				D2DC5D1E295870DB007E2B9D /* Sources */,
+				D2DC5D1F295870DB007E2B9D /* Frameworks */,
+				D2DC5D20295870DB007E2B9D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = sn;
+			productName = sn;
+			productReference = D2DC5D22295870DB007E2B9D /* libsn.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D2FA4ADA2820227B001E2A51 /* av */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2FA4AE32820227B001E2A51 /* Build configuration list for PBXNativeTarget "av" */;
@@ -536,6 +586,9 @@
 					D2A52945283A1F6A00E7B4C6 = {
 						CreatedOnToolsVersion = 13.4;
 					};
+					D2DC5D21295870DB007E2B9D = {
+						CreatedOnToolsVersion = 14.2;
+					};
 					D2FA4ADA2820227B001E2A51 = {
 						CreatedOnToolsVersion = 13.3.1;
 					};
@@ -566,6 +619,7 @@
 				D20656AC283DCA2200048B17 /* ui */,
 				D21A0FF0287738ED00AB7EF8 /* ns */,
 				D264D29D28F7E7CF002B1B14 /* vn */,
+				D2DC5D21295870DB007E2B9D /* sn */,
 			);
 		};
 /* End PBXProject section */
@@ -624,6 +678,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2A5294A283A1F6A00E7B4C6 /* ci.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2DC5D1E295870DB007E2B9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2DC5D26295870DB007E2B9D /* sn.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -828,6 +890,36 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FD6ZML48V9;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D2DC5D28295870DB007E2B9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D2DC5D29295870DB007E2B9D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1062,6 +1154,15 @@
 			buildConfigurations = (
 				D2A5294D283A1F6A00E7B4C6 /* Debug */,
 				D2A5294E283A1F6A00E7B4C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2DC5D2A295870DB007E2B9D /* Build configuration list for PBXNativeTarget "sn" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2DC5D28295870DB007E2B9D /* Debug */,
+				D2DC5D29295870DB007E2B9D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

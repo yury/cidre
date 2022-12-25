@@ -93,6 +93,7 @@ fn main() {
     xc_build("mtl", sdk, arch, configuration);
     xc_build("ci", sdk, arch, configuration);
     xc_build("vn", sdk, arch, configuration);
+    xc_build("sn", sdk, arch, configuration);
 
     if sdk.eq("iphoneos") || sdk.eq("maccatalyst") {
         xc_build("ca", sdk, arch, configuration);

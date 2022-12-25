@@ -151,9 +151,11 @@ pub struct PixelFormatType(pub os::Type);
 // https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput
 
 impl PixelFormatType {
+    #[doc(alias = "kCVPixelFormatType_1Monochrome")]
     pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
 
     #[doc(alias = "kCMPixelFormat_32BGRA")]
+    #[doc(alias = "kCVPixelFormatType_32BGRA")]
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
 
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));

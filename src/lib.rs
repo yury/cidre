@@ -60,6 +60,9 @@ pub mod vt;
 #[cfg(target_os = "macos")]
 pub mod sc;
 
+/// Sound Analysis
+pub mod sn;
+
 /// CoreAudioTypes
 pub mod cat;
 
