@@ -168,7 +168,7 @@ csel0(, VNRecognizeAnimalsRequest, new, VNRecognizeAnimalsRequest *)
 
 rsel0(vn_, VNFeaturePrintObservation *, elementType, VNElementType)
 rsel0(vn_, VNFeaturePrintObservation *, elementCount, NSUInteger)
-rsel0(vn_, VNFeaturePrintObservation *, data, NSData *)
+
 
 rsel3(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
@@ -218,6 +218,7 @@ SEL sel_results;
 SEL sel_supportedIdentifiersAndReturnError;
 SEL sel_computeDistance_toFeaturePrintObservation_error;
 SEL sel_faceCaptureQuality;
+SEL sel_data;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -228,6 +229,7 @@ static void common_initializer()
     sel_supportedIdentifiersAndReturnError = @selector(supportedIdentifiersAndReturnError:);
     sel_computeDistance_toFeaturePrintObservation_error = @selector(computeDistance:toFeaturePrintObservation:error:);
     sel_faceCaptureQuality = @selector(faceCaptureQuality);
+    sel_data = @selector(data);
   }
 }
 

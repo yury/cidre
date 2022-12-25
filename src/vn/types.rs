@@ -152,8 +152,8 @@ impl ImageCropAndScaleOption {
 #[repr(usize)]
 pub enum ElementType {
     Unknown = 0,
-    Float = 1,
-    Double = 2,
+    F32 = 1,
+    F64 = 2,
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]

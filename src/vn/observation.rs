@@ -225,8 +225,8 @@ impl FeaturePrintObservation {
         unsafe { vn_rsel_elementCount(self) }
     }
 
-    pub fn data(&self) -> Option<&cf::Data> {
-        unsafe { vn_rsel_data(self) }
+    pub fn data(&self) -> &cf::Data {
+        msg_send!("vn", self, sel_data)
     }
 
     /// # Safety
@@ -318,7 +318,6 @@ extern "C" {
 
     fn vn_rsel_elementType(id: &FeaturePrintObservation) -> vn::ElementType;
     fn vn_rsel_elementCount(id: &FeaturePrintObservation) -> usize;
-    fn vn_rsel_data(id: &FeaturePrintObservation) -> Option<&cf::Data>;
 
     // rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 

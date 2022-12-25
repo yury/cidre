@@ -102,7 +102,14 @@ async fn main() {
 
                     if let Some(prev) = prev_frame_featurs.as_ref() {
                         let dist = res.compute_distance(&prev).unwrap();
-                        println!("pts: {:.2} dist: {}", pts.seconds(), dist);
+                        let data = res.data();
+                        println!(
+                            "pts: {:.2} dist: {}, len: {} {:?}",
+                            pts.seconds(),
+                            dist,
+                            data.len(),
+                            res.element_type()
+                        );
                     }
                     prev_frame_featurs = Some(res.retained());
                 }

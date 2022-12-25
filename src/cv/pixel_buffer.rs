@@ -152,7 +152,10 @@ pub struct PixelFormatType(pub os::Type);
 
 impl PixelFormatType {
     pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
+
+    #[doc(alias = "kCMPixelFormat_32BGRA")]
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
+
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
     pub const _420V: Self = Self(os::Type::from_be_bytes(*b"420v"));
     // TODO: how we can optimize that agly long consts?
