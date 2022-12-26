@@ -166,11 +166,7 @@ csel0(, VNRecognizeAnimalsRequest, new, VNRecognizeAnimalsRequest *)
 
 #pragma mark - VNFeaturePrintObservation
 
-rsel0(vn_, VNFeaturePrintObservation *, elementType, VNElementType)
-rsel0(vn_, VNFeaturePrintObservation *, elementCount, NSUInteger)
-
-
-rsel3(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
+// Moved to selectors
 
 #pragma mark - VNGenerateImageFeaturePrintRequest
 
@@ -219,6 +215,8 @@ SEL sel_supportedIdentifiersAndReturnError;
 SEL sel_computeDistance_toFeaturePrintObservation_error;
 SEL sel_faceCaptureQuality;
 SEL sel_data;
+SEL sel_elementCount;
+SEL sel_elementType;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -230,6 +228,8 @@ static void common_initializer()
     sel_computeDistance_toFeaturePrintObservation_error = @selector(computeDistance:toFeaturePrintObservation:error:);
     sel_faceCaptureQuality = @selector(faceCaptureQuality);
     sel_data = @selector(data);
+    sel_elementCount = @selector(elementCount);
+    sel_elementType = @selector(elementType);
   }
 }
 

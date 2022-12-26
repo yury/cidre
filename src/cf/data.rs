@@ -60,14 +60,13 @@ impl Data {
     }
 
     #[inline]
-    pub fn copy_bytes(&self, offset: usize, buffer: &mut [u8]) {
-        unsafe {
-            CFDataGetBytes(
-                self,
-                cf::Range::new(offset as _, buffer.len() as _),
-                buffer.as_mut_ptr(),
-            )
-        }
+    pub fn copy_bytes(&self, buffer: &mut [u8]) {
+        unsafe { self.get_bytes(cf::Range::new(0, buffer.len() as _), buffer.as_mut_ptr()) }
+    }
+
+    #[inline]
+    pub unsafe fn get_bytes(&self, range: cf::Range, buffer: *mut u8) {
+        CFDataGetBytes(self, range, buffer)
     }
 
     #[inline]

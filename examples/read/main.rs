@@ -1,4 +1,9 @@
 use cidre::{av, cf, cv, objc::autoreleasepool, vn};
+use ndarray::{Array2, Axis};
+// Import the linfa prelude and KMeans algorithm
+use linfa::prelude::*;
+use linfa_clustering::{Dbscan, Optics};
+use linfa_reduction::Pca;
 use tokio;
 
 #[tokio::main]
@@ -13,9 +18,10 @@ async fn main() {
 
     let options = cf::DictionaryOf::with_keys_values(
         &[cv::pixel_buffer_keys::pixel_format_type()],
-        // &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
+        &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
         // for ML tasks reading in BGRA is faster 3:55 vs 5:00
-        &[cv::PixelFormatType::_32_BGRA.to_cf_number().as_type_ref()],
+        // if you analyze every frame. If you skip frames it is better to use 420v
+        //&[cv::PixelFormatType::_32_BGRA.to_cf_number().as_type_ref()],
     );
 
     let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
@@ -42,6 +48,8 @@ async fn main() {
 
     let handler = vn::SequenceRequestHandler::new();
 
+    let mut feature_prints: Vec<Vec<f32>> = Vec::with_capacity(50_000);
+
     let mut prev_frame_featurs: Option<cf::Retained<vn::FeaturePrintObservation>> = None;
 
     let mut count = 0;
@@ -49,6 +57,11 @@ async fn main() {
         let Some(image) = buf.image_buffer() else {
             continue;
         };
+        if count % 30 == 0 {
+        } else {
+            count += 1;
+            continue;
+        }
         let pts = buf.presentation_time_stamp();
         autoreleasepool(|| {
             handler
@@ -99,19 +112,13 @@ async fn main() {
             if let Some(results) = features.results() {
                 if !results.is_empty() {
                     let res = &results[0];
+                    feature_prints.push(res.vec_f32());
 
-                    if let Some(prev) = prev_frame_featurs.as_ref() {
-                        let dist = res.compute_distance(&prev).unwrap();
-                        let data = res.data();
-                        println!(
-                            "pts: {:.2} dist: {}, len: {} {:?}",
-                            pts.seconds(),
-                            dist,
-                            data.len(),
-                            res.element_type()
-                        );
-                    }
-                    prev_frame_featurs = Some(res.retained());
+                    // if let Some(prev) = prev_frame_featurs.as_ref() {
+                    //     let dist = res.compute_distance(&prev).unwrap();
+                    //     println!("pts: {:.2} dist: {}", pts.seconds(), dist,);
+                    // }
+                    // prev_frame_featurs = Some(res.retained());
                 }
             }
 
@@ -127,5 +134,45 @@ async fn main() {
         count += 1;
     }
 
-    println!("count {:?}, {:?}", count, reader.status());
+    println!(
+        "count {:?}, {:?} {:?}",
+        count,
+        reader.status(),
+        feature_prints.len()
+    );
+
+    let pca = Pca::params(10);
+
+    let mut arr = Array2::zeros((1446, 2048));
+    for (i, mut row) in arr.axis_iter_mut(Axis(0)).enumerate() {
+        let d = &feature_prints[i];
+        for z in 0..2048 {
+            row[z] = d[z];
+        }
+    }
+    // let dataset = Dataset::from(arr);
+    // let res = pca.fit(&dataset).unwrap();
+    // let arr = res.predict(&dataset);
+    //arr.row_mut(0)
+    //    let arr = Array2::from(feature_prints);
+    println!("arr {:?}", arr);
+
+    let min_points = 5;
+    //let clusters = Dbscan::params(min_points).tolerance(5.0).transform(&arr);
+    //let clusters = Dbscan::params(min_points).tolerance(5.0).transform(&arr);
+    let clusters = Optics::params(min_points)
+        // .tolerance(5.0)
+        .transform((&arr).into())
+        .unwrap();
+    println!("{:#?}", clusters);
+
+    for r in clusters.iter() {
+        println!(
+            "{} {}",
+            r.index(),
+            r.reachability_distance().unwrap_or_default()
+        );
+    }
+
+    // https://towardsdatascience.com/how-to-cluster-images-based-on-visual-similarity-cd6e7209fe34
 }

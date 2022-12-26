@@ -1,6 +1,9 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, cm, cv, define_obj_type, msg_send, ns, vn};
+use crate::{
+    cf, cg, cm, cv, define_obj_type, msg_send, ns,
+    vn::{self, ElementType},
+};
 
 define_obj_type!(Observation(ns::Id));
 define_obj_type!(RecognizedText(ns::Id));
@@ -63,6 +66,7 @@ impl FaceObservation {
     /// that can be used to compare the quality of the face in terms of it capture
     /// attributes (lighting, blur, position). This score can be used to compare
     /// the capture quality of a face against other captures of the same face in a given set.
+    #[doc(alias = "faceCaptureQuality")]
     #[inline]
     pub fn face_capture_quality(&self) -> Option<&cf::Number> {
         msg_send!("vn", self, sel_faceCaptureQuality)
@@ -217,16 +221,47 @@ impl SaliencyImageObservation {
 define_obj_type!(FeaturePrintObservation(Observation));
 
 impl FeaturePrintObservation {
+    #[inline]
     pub fn element_type(&self) -> vn::ElementType {
-        unsafe { vn_rsel_elementType(self) }
+        msg_send!("vn", self, sel_elementType)
     }
 
+    #[inline]
     pub fn element_count(&self) -> usize {
-        unsafe { vn_rsel_elementCount(self) }
+        msg_send!("vn", self, sel_elementCount)
     }
 
+    #[inline]
     pub fn data(&self) -> &cf::Data {
         msg_send!("vn", self, sel_data)
+    }
+
+    #[inline]
+    pub fn vec_f32(&self) -> Vec<f32> {
+        debug_assert!(self.element_type() == ElementType::F32);
+        let count = self.element_count();
+        let mut vec = Vec::with_capacity(count);
+        unsafe {
+            vec.set_len(count);
+            let ptr = vec.as_mut_ptr() as *mut u8;
+            self.data()
+                .get_bytes(cf::Range::new(0, count as isize * 4 as isize), ptr);
+        }
+        vec
+    }
+
+    #[inline]
+    pub fn vec_f64(&self) -> Vec<f64> {
+        debug_assert!(self.element_type() == ElementType::F64);
+        let count = self.element_count();
+        let mut vec = Vec::with_capacity(count);
+        unsafe {
+            vec.set_len(count);
+            let ptr = vec.as_mut_ptr() as *mut u8;
+            self.data()
+                .get_bytes(cf::Range::new(0, count as isize * 8 as isize), ptr);
+        }
+        vec
     }
 
     /// # Safety
@@ -315,9 +350,6 @@ extern "C" {
     fn rsel_upperBodyOnly(id: &ns::Id) -> bool;
 
     fn rsel_salientObjects(id: &ns::Id) -> Option<&cf::ArrayOf<RectangleObservation>>;
-
-    fn vn_rsel_elementType(id: &FeaturePrintObservation) -> vn::ElementType;
-    fn vn_rsel_elementCount(id: &FeaturePrintObservation) -> usize;
 
     // rsel_abc(, id, computeDistance, float *, toFeaturePrintObservation, VNFeaturePrintObservation *, error, NSError **, BOOL)
 
