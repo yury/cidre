@@ -47,6 +47,9 @@ pub mod mach;
 /// Metal
 pub mod mtl;
 
+/// Metal Performance Shaders
+pub mod mps;
+
 /// Foundation
 pub mod ns;
 
