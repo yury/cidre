@@ -11,3 +11,5 @@ pub use self::core::Offset;
 pub use self::core::Origin;
 pub use self::core::Shape;
 pub use self::core::Size;
+
+pub use self::core::NDArray;

@@ -10,3 +10,6 @@ pub use types::Offset;
 pub use types::Origin;
 pub use types::Shape;
 pub use types::Size;
+
+mod nd_array;
+pub use nd_array::NDArray;
