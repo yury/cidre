@@ -44,7 +44,7 @@ impl ExecutionDescriptor {
     }
 
     pub fn wait_until_completed(&self) -> bool {
-        msg_send!("mpsg", self, sel_waitUntilCompleted)
+        msg_send!("mpsg", self, mpsg_sel_waitUntilCompleted)
     }
 
     pub fn set_wait_until_completed(&self, value: bool) {

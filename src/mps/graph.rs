@@ -1,5 +1,7 @@
 mod core;
 use crate::cf;
+use crate::define_obj_type;
+use crate::ns;
 
 pub use self::core::PaddingMode;
 pub use self::core::PaddingStyle;
@@ -21,6 +23,12 @@ pub use tensor_data::TensorData;
 
 mod tensor;
 pub use tensor::Tensor;
+
+mod operation;
+pub use operation::Operation;
+
+mod memory_ops;
+pub use memory_ops::VariableOp;
 
 /// Options to be utilized by the graph
 #[doc(alias = "MPSGraphOptions")]
@@ -101,3 +109,17 @@ pub type TensorDataDictionary = cf::DictionaryOf<Tensor, TensorData>;
 /// A dictionary of tensors and correspondiing shapes for them
 #[doc(alias = "MPSGraphTensorShapedTypeDictionary")]
 pub type TensorShapedTypeDictionary = cf::DictionaryOf<Tensor, ShapedType>;
+
+define_obj_type!(Graph(ns::Id));
+
+impl Graph {
+    #[inline]
+    pub fn new() -> cf::Retained<Graph> {
+        unsafe { MPSGraph_new() }
+    }
+}
+
+#[link(name = "mpsg", kind = "static")]
+extern "C" {
+    fn MPSGraph_new() -> cf::Retained<Graph>;
+}
