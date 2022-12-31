@@ -81,6 +81,7 @@ impl PartialEq<bool> for &Boolean {
     }
 }
 
+#[doc(alias = "CFNumberType")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct NumberType(Index);
