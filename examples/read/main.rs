@@ -44,7 +44,7 @@ async fn main() {
     // let text = vn::RecognizeTextRequest::new();
     //let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];
     let requests_slice: &[&vn::Request] = &[&features];
-    let requests = cf::ArrayOf::from_slice(requests_slice).unwrap();
+    let requests = cf::ArrayOf::from_slice(requests_slice);
 
     let handler = vn::SequenceRequestHandler::new();
 

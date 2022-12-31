@@ -211,7 +211,7 @@ mod tests {
         let request = vn::DetectFaceRectanglesRequest::new();
         let handler = vn::ImageRequestHandler::with_url(&url, None);
 
-        let requests = cf::ArrayOf::<vn::Request>::from_slice(&[&request]).unwrap();
+        let requests = cf::ArrayOf::<vn::Request>::from_slice(&[&request]);
         let error = handler.perform(&requests).expect_err("should be error");
 
         assert!(error.domain().equal(vn::ErrorDomain::vision()));

@@ -286,15 +286,15 @@ impl Number {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = unsafe { cf::Number::create(None, cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void).unwrap() };
+    /// let num = unsafe { cf::Number::create_in(cf::NumberType::I8, &5i8 as *const i8 as *const std::ffi::c_void, None).unwrap() };
     /// assert_eq!(num.number_type(), cf::NumberType::I8);
     /// assert_eq!(num.to_i8().unwrap(), 5i8);
     /// ```
     #[inline]
-    pub unsafe fn create(
-        allocator: Option<&Allocator>,
+    pub unsafe fn create_in(
         the_type: NumberType,
         value_ptr: *const c_void,
+        allocator: Option<&Allocator>,
     ) -> Option<Retained<Self>> {
         CFNumberCreate(allocator, the_type, value_ptr)
     }
@@ -309,7 +309,7 @@ impl Number {
     /// ```
     /// Will return tagged
     pub fn from_i8(value: i8) -> Retained<Self> {
-        unsafe { Self::create(None, NumberType::I8, &value as *const _ as _).unwrap_unchecked() }
+        unsafe { Self::create_in(NumberType::I8, &value as *const _ as _, None).unwrap_unchecked() }
     }
 
     /// ```
@@ -322,7 +322,9 @@ impl Number {
     /// ```
     /// Will return tagged
     pub fn from_i16(value: i16) -> Retained<Self> {
-        unsafe { Self::create(None, NumberType::I16, &value as *const _ as _).unwrap_unchecked() }
+        unsafe {
+            Self::create_in(NumberType::I16, &value as *const _ as _, None).unwrap_unchecked()
+        }
     }
 
     /// ```
@@ -337,12 +339,14 @@ impl Number {
     /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
     #[inline]
     pub fn from_i32(value: i32) -> Retained<Self> {
-        unsafe { Self::create(None, NumberType::I32, &value as *const _ as _).unwrap_unchecked() }
+        unsafe {
+            Self::create_in(NumberType::I32, &value as *const _ as _, None).unwrap_unchecked()
+        }
     }
 
     pub fn from_four_char_code(value: FourCharCode) -> Retained<Self> {
         let val = value as i32;
-        unsafe { Self::create(None, NumberType::I32, &val as *const _ as _).unwrap_unchecked() }
+        unsafe { Self::create_in(NumberType::I32, &val as *const _ as _, None).unwrap_unchecked() }
     }
 
     /// ```
@@ -356,7 +360,9 @@ impl Number {
     /// ```
     #[inline]
     pub fn from_i64(value: i64) -> Retained<Self> {
-        unsafe { Self::create(None, NumberType::I64, &value as *const _ as _).unwrap_unchecked() }
+        unsafe {
+            Self::create_in(NumberType::I64, &value as *const _ as _, None).unwrap_unchecked()
+        }
     }
 
     /// ```
@@ -370,7 +376,7 @@ impl Number {
     /// ```
     #[inline]
     pub fn from_f64(value: f64) -> Option<Retained<Self>> {
-        unsafe { Self::create(None, NumberType::F64, &value as *const _ as _) }
+        unsafe { Self::create_in(NumberType::F64, &value as *const _ as _, None) }
     }
 
     /// ```
@@ -385,7 +391,7 @@ impl Number {
     #[inline]
     pub fn from_duration(value: Duration) -> Retained<Self> {
         unsafe {
-            Self::create(None, NumberType::F64, &value.as_secs_f64() as *const _ as _)
+            Self::create_in(NumberType::F64, &value.as_secs_f64() as *const _ as _, None)
                 .unwrap_unchecked()
         }
     }
