@@ -375,8 +375,10 @@ impl Number {
     /// assert_eq!(true, num.is_float_type());
     /// ```
     #[inline]
-    pub fn from_f64(value: f64) -> Option<Retained<Self>> {
-        unsafe { Self::create_in(NumberType::F64, &value as *const _ as _, None) }
+    pub fn from_f64(value: f64) -> Retained<Self> {
+        unsafe {
+            Self::create_in(NumberType::F64, &value as *const _ as _, None).unwrap_unchecked()
+        }
     }
 
     /// ```

@@ -309,12 +309,12 @@ async fn main() {
     let expected_fr = cf::Number::from_i32(FPS);
     let frame_delay_count = cf::Number::from_i32(0);
     let max_key_frame_interval = cf::Number::from_i32(FPS * 5);
-    let max_key_frame_interval_duration = cf::Number::from_f64(5f64).unwrap();
+    let max_key_frame_interval_duration = cf::Number::from_f64(5f64);
     let rate_limit = cf::Array::from_type_refs(&[
         &cf::Number::from_i32(200_000),
-        &cf::Number::from_f64(0.1f64).unwrap(),
+        &cf::Number::from_f64(0.1f64),
         &cf::Number::from_i32(5_000_000),
-        &cf::Number::from_f64(1.0f64).unwrap(),
+        &cf::Number::from_f64(1.0f64),
     ])
     .unwrap();
 

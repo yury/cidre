@@ -45,7 +45,7 @@ impl MemoryPool {
     pub fn with_age(duration: Duration) -> cf::Retained<Self> {
         let options = cf::Dictionary::with_keys_values(
             &[keys::age_out_period()],
-            &[&cf::Number::from_f64(duration.as_secs_f64()).unwrap()],
+            &[&cf::Number::from_f64(duration.as_secs_f64())],
         )
         .unwrap();
 
