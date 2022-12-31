@@ -60,3 +60,9 @@ pub use url_cache::URLCache;
 
 mod value;
 pub use value::Value;
+
+mod data;
+pub use data::Data;
+pub use data::ReadingOptions as DataReadingOptions;
+pub use data::SearchOptions as DataSearchOptions;
+pub use data::WritingOptions as DataWritingOptions;

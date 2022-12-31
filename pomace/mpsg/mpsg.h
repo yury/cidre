@@ -28,9 +28,10 @@ rwsel(, id, completionHandler, setCompletionHandler, id)
 NS_RETURNS_RETAINED
 rsel3(, id, placeholderWithShape, MPSShape * _Nullable, dataType, MPSDataType, name, NSString * _Nullable, MPSGraphTensor *)
 
-//-(MPSGraphTensor *) placeholderWithShape:(MPSShape * _Nullable) shape
-//                                dataType:(MPSDataType) dataType
-//                                    name:(NSString * _Nullable) name
+NS_RETURNS_RETAINED
+rsel3(, id, constantWithData, NSData *, shape, MPSShape * _Nullable, dataType, MPSDataType, MPSGraphTensor *)
+
+#pragma mark - MPSGraphConvolutionOps
 
 #pragma mark - MPSGraph
 
@@ -53,6 +54,9 @@ SEL sel_dataType;
 SEL sel_shape;
 
 SEL sel_operation;
+SEL sel_options;
+SEL sel_setOptions;
+
 
 
 __attribute__((constructor))
@@ -73,6 +77,9 @@ static void common_initializer()
     sel_dataType = @selector(dataType);
     sel_shape = @selector(shape);
     sel_operation = @selector(operation);
+    
+    sel_options = @selector(options);
+    sel_setOptions = @selector(setOptions:);
   }
 }
 

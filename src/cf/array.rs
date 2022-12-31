@@ -74,7 +74,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn from_slice(values: &[&T]) -> Option<Retained<Self>>
+    pub fn from_slice(values: &[&T]) -> Retained<Self>
     where
         T: Retain,
     {

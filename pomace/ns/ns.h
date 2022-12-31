@@ -159,5 +159,22 @@ rwsel(, id, diskCapacity, setDiskCapacity, NSUInteger)
 rsel0(, id, currentMemoryUsage, NSUInteger)
 rsel0(, id, currentDiskUsage, NSUInteger)
 
+#pragma mark NSData
 
+NS_RETURNS_RETAINED
+csel3(, NSData, dataWithContentsOfFile, NSString *, options, NSDataReadingOptions, error, NSError **, NSData *)
+
+NS_RETURNS_RETAINED
+csel3(, NSData, dataWithContentsOfURL, NSURL *, options, NSDataReadingOptions, error, NSError **, NSData *)
+
+SEL ns_length;
+
+__attribute__((constructor))
+static void common_initializer()
+{
+  static int initialized = 0;
+  if (!initialized) {
+    ns_length = @selector(length);
+  }
+}
 NS_ASSUME_NONNULL_END

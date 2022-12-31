@@ -1,6 +1,7 @@
 mod core;
 use crate::cf;
 use crate::define_obj_type;
+use crate::msg_send;
 use crate::ns;
 
 pub use self::core::PaddingMode;
@@ -29,6 +30,9 @@ pub use operation::Operation;
 
 mod memory_ops;
 pub use memory_ops::VariableOp;
+
+mod convolution_ops;
+pub use convolution_ops::Convolution2DOpDescriptor;
 
 /// Options to be utilized by the graph
 #[doc(alias = "MPSGraphOptions")]
@@ -116,6 +120,16 @@ impl Graph {
     #[inline]
     pub fn new() -> cf::Retained<Graph> {
         unsafe { MPSGraph_new() }
+    }
+
+    #[inline]
+    pub fn options(&self) -> Options {
+        msg_send!("mpsg", self, sel_options)
+    }
+
+    #[inline]
+    pub fn set_options(&mut self, value: Options) {
+        msg_send!("mpsg", self, sel_setOptions, value)
     }
 }
 

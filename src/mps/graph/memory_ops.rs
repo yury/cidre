@@ -15,6 +15,7 @@ impl VariableOp {
 }
 
 impl graph::Graph {
+    #[inline]
     pub fn placeholder_with_shape(
         &self,
         shape: Option<&mps::Shape>,
@@ -22,6 +23,16 @@ impl graph::Graph {
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor> {
         unsafe { rsel_placeholderWithShape_dataType_name(self, shape, data_type, name) }
+    }
+
+    #[inline]
+    pub fn constant_with_data_shape_data_type(
+        &self,
+        data: &ns::Data,
+        shape: &mps::Shape,
+        data_type: mps::DataType,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_constantWithData_shape_dataType(self, data, shape, data_type) }
     }
 }
 
@@ -32,6 +43,13 @@ extern "C" {
         shape: Option<&mps::Shape>,
         data_type: mps::DataType,
         name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
+    fn rsel_constantWithData_shape_dataType(
+        id: &ns::Id,
+        data: &ns::Data,
+        shape: &mps::Shape,
+        data_type: mps::DataType,
     ) -> cf::Retained<graph::Tensor>;
 }
 
