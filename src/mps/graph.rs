@@ -34,6 +34,10 @@ pub use memory_ops::VariableOp;
 mod convolution_ops;
 pub use convolution_ops::Convolution2DOpDescriptor;
 
+mod resize_ops;
+pub use resize_ops::ResizeMode;
+pub use resize_ops::ResizeNearestRoundingMode;
+
 /// Options to be utilized by the graph
 #[doc(alias = "MPSGraphOptions")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]

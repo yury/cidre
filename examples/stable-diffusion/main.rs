@@ -1,7 +1,7 @@
 use cidre::{cf, mps, mps::graph, ns};
 
 fn make_graph(synchonize: bool) -> cf::Retained<graph::Graph> {
-    let mut g = graph::Graph::new();
+    let mut graph = graph::Graph::new();
 
     let options = if synchonize {
         graph::Options::SynchronizeResults
@@ -9,8 +9,8 @@ fn make_graph(synchonize: bool) -> cf::Retained<graph::Graph> {
         graph::Options::None
     };
 
-    g.set_options(options);
-    g
+    graph.set_options(options);
+    graph
 }
 
 fn load_const(
@@ -78,6 +78,17 @@ fn make_conv(
 //         return graph.addition(conv, b, name: nil)
 //     }
 //     return conv
+// }
+
+fn make_upsample_nearest(
+    graph: graph::Graph,
+    x_in: &graph::Tensor,
+    scale_factor: isize,
+) -> &graph::Tensor {
+    todo!();
+}
+// func makeUpsampleNearest(graph: MPSGraph, xIn: MPSGraphTensor, scaleFactor: Int=2) -> MPSGraphTensor {
+//     return graph.resize(xIn, size: [NSNumber(value:xIn.shape![1].intValue * scaleFactor), NSNumber(value:xIn.shape![2].intValue * scaleFactor)], mode: MPSGraphResizeMode.nearest, centerResult: true, alignCorners: false, layout: MPSGraphTensorNamedDataLayout.NHWC, name: nil)
 // }
 
 fn main() {}
