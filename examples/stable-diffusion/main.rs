@@ -14,9 +14,9 @@ fn make_graph(synchonize: bool) -> cf::Retained<graph::Graph> {
 }
 
 fn load_const(
-    g: &graph::Graph,
+    graph: &graph::Graph,
     name: &str,
-    shape: &mps::Shape,
+    shape: &[&cf::Number],
     fp32: bool,
 ) -> cf::Retained<graph::Tensor> {
     let (prefix, data_type, size) = if fp32 {
@@ -34,11 +34,12 @@ fn load_const(
     let numels = shape.iter().fold(1, |acc, x| acc * x.to_i64().unwrap());
     assert_eq!(numels * size, data.length() as i64, "mismatched data sizes");
 
-    g.constant_with_data_shape_data_type(&data, shape, data_type)
+    let shape = cf::ArrayOf::from_slice(shape);
+    graph.constant_with_data_shape_data_type(&data, &shape, data_type)
 }
 
 fn make_conv(
-    g: &graph::Graph,
+    graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
     out_channels: &cf::Number,
@@ -47,13 +48,23 @@ fn make_conv(
     bias: bool,
 ) -> graph::Tensor {
     let w = load_const(
-        g,
+        graph,
         &format!("{name}.weight"),
-        &cf::ArrayOf::from_slice(&[out_channels, &x_in.shape().unwrap()[3], khw, khw]),
+        &[out_channels, &x_in.shape().unwrap()[3], khw, khw],
         false,
     );
 
     let p = khw.to_i64().unwrap() / 2;
+
+    if bias {
+        let one = cf::Number::from_i64(1);
+        let b = load_const(
+            graph,
+            &format!("{name}.bias"),
+            &[&one, &one, &one, out_channels],
+            false,
+        );
+    }
     todo!();
 }
 
