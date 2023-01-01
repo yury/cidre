@@ -35,6 +35,7 @@ impl<T> Array<T>
 where
     T: cf::Release,
 {
+    #[inline]
     pub fn from_slice(objs: &[&T]) -> cf::Retained<Self> {
         unsafe { transmute(NSArray_withObjs(objs.as_ptr() as _, objs.len())) }
     }
@@ -73,12 +74,14 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::ns;
+
     #[test]
     fn basics() {
         let one = ns::Number::with_u8(5);
         let arr: &[&ns::Number] = &[&one];
         let array = ns::Array::from_slice(&arr);
         assert_eq!(1, array.len());
+        assert_eq!(1, array.count());
         assert_eq!(5, array[0].as_u8());
     }
 }
