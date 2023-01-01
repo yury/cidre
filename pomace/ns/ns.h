@@ -169,8 +169,81 @@ csel3(, NSData, dataWithContentsOfURL, NSURL *, options, NSDataReadingOptions, e
 
 rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
 
+#pragma mark - NSNumber
+
+
+
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithChar, char, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithUnsignedChar, unsigned char, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithShort, short, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithUnsignedShort, unsigned short, NSNumber *)
+
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithInt, int, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithUnsignedInt, unsigned int, NSNumber *)
+
+//NS_RETURNS_RETAINED
+//csel1(, NSNumber, numberWithLong, long, NSNumber *)
+//
+//NS_RETURNS_RETAINED
+//csel1(, NSNumber, numberWithUnsignedLong, unsigned long, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithLongLong, long long, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithUnsignedLongLong, unsigned long long, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithFloat, float, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithDouble, double, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithBool, BOOL, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
+
+NS_RETURNS_RETAINED
+csel1(, NSNumber, numberWithUnsignedInteger, NSUInteger, NSNumber *)
+
+rsel1(, id, isEqualToNumber, NSNumber *, BOOL)
+
+
+
+#pragma mark - SELECTORS
+
 SEL ns_length;
 SEL ns_bytes;
+
+SEL ns_charValue;
+SEL ns_unsignedCharValue;
+SEL ns_shortValue;
+SEL ns_unsignedShortValue;
+SEL ns_intValue;
+SEL ns_unsignedIntValue;
+//SEL ns_longValue;
+//SEL ns_unsignedLongValue;
+SEL ns_longLongValue;
+SEL ns_unsignedLongLongValue;
+SEL ns_floatValue;
+SEL ns_doubleValue;
+SEL ns_boolValue;
+SEL ns_integerValue;
+SEL ns_unsignedIntegerValue;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -179,6 +252,23 @@ static void common_initializer()
   if (!initialized) {
     ns_length = @selector(length);
     ns_bytes = @selector(bytes);
+    
+    ns_charValue = @selector(charValue);
+    ns_unsignedCharValue = @selector(unsignedCharValue);
+    ns_shortValue = @selector(shortValue);
+    ns_unsignedShortValue = @selector(unsignedShortValue);
+    ns_intValue = @selector(intValue);
+    ns_unsignedIntValue = @selector(unsignedIntValue);
+//    ns_longValue = @selector(longValue);
+//    ns_unsignedLongValue = @selector(unsignedLongValue);
+    ns_longLongValue = @selector(longLongValue);
+    ns_unsignedLongLongValue = @selector(unsignedLongLongValue);
+    ns_floatValue = @selector(floatValue);
+    ns_doubleValue = @selector(doubleValue);
+    ns_boolValue = @selector(boolValue);
+    ns_integerValue = @selector(integerValue);
+    ns_unsignedIntegerValue = @selector(unsignedIntegerValue);
+
   }
 }
 NS_ASSUME_NONNULL_END
