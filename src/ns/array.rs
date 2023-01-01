@@ -78,6 +78,7 @@ mod tests {
         let one = ns::Number::with_u8(5);
         let arr: &[&ns::Number] = &[&one];
         let array = ns::Array::from_slice(&arr);
+        assert_eq!(1, array.len());
         assert_eq!(5, array[0].as_u8());
     }
 }

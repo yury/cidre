@@ -70,66 +70,81 @@ impl Number {
         unsafe { NSNumber_numberWithUnsignedInteger(value) }
     }
 
+    #[doc(alias = "charValue")]
     #[inline]
     pub fn as_i8(&self) -> i8 {
         msg_send!("ns", self, ns_charValue)
     }
 
+    #[doc(alias = "unsignedCharValue")]
     #[inline]
     pub fn as_u8(&self) -> u8 {
         msg_send!("ns", self, ns_unsignedCharValue)
     }
 
+    #[doc(alias = "shortValue")]
     #[inline]
     pub fn as_i16(&self) -> i16 {
         msg_send!("ns", self, ns_shortValue)
     }
 
+    #[doc(alias = "unsignedShortValue")]
     #[inline]
     pub fn as_u16(&self) -> u16 {
         msg_send!("ns", self, ns_unsignedShortValue)
     }
 
+    #[doc(alias = "intValue")]
+    #[doc(alias = "longValue")]
     #[inline]
     pub fn as_i32(&self) -> i32 {
         msg_send!("ns", self, ns_intValue)
     }
 
+    #[doc(alias = "unsignedIntValue")]
+    #[doc(alias = "unsignedLongValue")]
     #[inline]
     pub fn as_u32(&self) -> u32 {
         msg_send!("ns", self, ns_unsignedIntValue)
     }
 
+    #[doc(alias = "longLongValue")]
     #[inline]
     pub fn as_i64(&self) -> i64 {
         msg_send!("ns", self, ns_longLongValue)
     }
 
+    #[doc(alias = "unsignedLongLongValue")]
     #[inline]
     pub fn as_u64(&self) -> u64 {
         msg_send!("ns", self, ns_unsignedLongLongValue)
     }
 
+    #[doc(alias = "floatValue")]
     #[inline]
     pub fn as_f32(&self) -> f32 {
         msg_send!("ns", self, ns_floatValue)
     }
 
+    #[doc(alias = "doubleValue")]
     #[inline]
     pub fn as_f64(&self) -> f64 {
         msg_send!("ns", self, ns_doubleValue)
     }
 
+    #[doc(alias = "integerValue")]
     #[inline]
     pub fn as_integer(&self) -> ns::Integer {
         msg_send!("ns", self, ns_integerValue)
     }
 
+    #[doc(alias = "unsignedIntegerValue")]
     #[inline]
     pub fn as_uinteger(&self) -> ns::UInteger {
         msg_send!("ns", self, ns_unsignedIntegerValue)
     }
 
+    #[doc(alias = "stringValue")]
     #[inline]
     pub fn string(&self) -> cf::Retained<cf::String> {
         msg_send!("ns", self, ns_stringValue)
