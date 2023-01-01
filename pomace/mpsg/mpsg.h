@@ -51,6 +51,17 @@ rsel4(, id, convolution2DWithSourceTensor, MPSGraphTensor *, weightsTensor, MPSG
 NS_RETURNS_RETAINED
 rsel3(, id, additionWithPrimaryTensor, MPSGraphTensor *, secondaryTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
+NS_RETURNS_RETAINED
+rsel3(, id, multiplicationWithPrimaryTensor, MPSGraphTensor *, secondaryTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
+#pragma mark - MPSGraphActivationOps
+
+NS_RETURNS_RETAINED
+rsel2(, id, sigmoidWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
+//-(MPSGraphTensor *) sigmoidWithTensor:(MPSGraphTensor *) tensor
+//                                 name:(NSString * _Nullable) name;
+
 #pragma mark - MPSGraphResizeOps
 
 NS_RETURNS_RETAINED

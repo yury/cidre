@@ -38,6 +38,7 @@ mod resize_ops;
 pub use resize_ops::ResizeMode;
 pub use resize_ops::ResizeNearestRoundingMode;
 
+mod activation_ops;
 mod arithmetic_ops;
 mod normalization_ops;
 mod shape_ops;

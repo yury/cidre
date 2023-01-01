@@ -111,7 +111,7 @@ fn make_upsample_nearest(
 fn make_group_norm(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
-    name: &cf::String,
+    name: &str,
 ) -> cf::Retained<graph::Tensor> {
     let mut x = x_in.retained();
     if x_in.shape().unwrap().len() == 3 {
@@ -141,6 +141,18 @@ fn make_group_norm(
     let x = graph.normalize(&x, &mean, &variance, Some(&gamma), Some(&beta), 1e-5, None);
 
     graph.reshape(&x, x_in.shape().unwrap(), None)
+}
+
+fn make_swish(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<graph::Tensor> {
+    graph.multiplication(x_in, &graph.sigmoid(x_in, None), None)
+}
+
+fn make_group_norm_swish(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+) -> cf::Retained<graph::Tensor> {
+    make_swish(graph, &make_group_norm(graph, x_in, name))
 }
 
 fn main() {}
