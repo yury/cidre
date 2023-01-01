@@ -61,9 +61,26 @@ rsel7(, id, resizeTensor, MPSGraphTensor *, size, MPSShape *, mode, MPSGraphResi
 NS_RETURNS_RETAINED
 rsel3(, id, expandDimsOfTensor, MPSGraphTensor *, axis, NSInteger, name, NSString *, MPSGraphTensor *)
 
-//-(MPSGraphTensor *) expandDimsOfTensor:(MPSGraphTensor *) tensor
-//                                  axis:(NSInteger) axis
-//                                  name:(NSString * _Nullable) name
+NS_RETURNS_RETAINED
+rsel3(, id, reshapeTensor, MPSGraphTensor *, withShape, MPSShape *, name, NSString *, MPSGraphTensor *)
+//-(MPSGraphTensor *) reshapeTensor:(MPSGraphTensor *) tensor
+//                        withShape:(MPSShape *) shape
+//                             name:(NSString * _Nullable) name
+//MPS_SWIFT_NAME( reshape(_:shape:name:) );
+
+#pragma mark - MPSGraphNormalizationOps
+
+NS_RETURNS_RETAINED
+rsel3(, id, meanOfTensor, MPSGraphTensor *, axes, NSArray *, name, NSString *, MPSGraphTensor *)
+
+NS_RETURNS_RETAINED
+rsel3(, id, varianceOfTensor, MPSGraphTensor *, axes, NSArray *, name, NSString *, MPSGraphTensor *)
+
+NS_RETURNS_RETAINED
+rsel4(, id, varianceOfTensor, MPSGraphTensor *, meanTensor, MPSGraphTensor *, axes, NSArray *, name, NSString *, MPSGraphTensor *)
+
+NS_RETURNS_RETAINED
+rsel7(, id, normalizationWithTensor, MPSGraphTensor *, meanTensor, MPSGraphTensor *, varianceTensor, MPSGraphTensor *, gammaTensor, MPSGraphTensor *, betaTensor, MPSGraphTensor *, epsilon, float, name, NSString *, MPSGraphTensor *)
 
 #pragma mark - MPSGraph
 

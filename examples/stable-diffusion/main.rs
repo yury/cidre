@@ -119,12 +119,28 @@ fn make_group_norm(
     }
 
     let shape = x.shape().unwrap();
-    let n_groups = 32f32;
-    let n_grouped = shape[3].as_f32() / n_groups;
+    let n_groups = ns::Number::with_f32(32f32);
+    let n_grouped = ns::Number::with_f32(shape[3].as_f32() / n_groups.as_f32());
 
-    let gamma = load_const(graph, &format!("{name}.weight"), &[], false);
-    let beta = load_const(graph, &format!("{name}.bias"), &[], false);
-    todo!();
+    let one = ns::Number::with_i32(1);
+    let sh: &[&ns::Number] = &[&one, &one, &one, &n_groups, &n_grouped];
+
+    let gamma = load_const(graph, &format!("{name}.weight"), sh, false);
+    let beta = load_const(graph, &format!("{name}.bias"), sh, false);
+
+    let x = graph.reshape(
+        &x,
+        &mps::Shape::from_slice(&[&shape[0], &shape[1], &shape[2], &n_groups, &n_grouped]),
+        None,
+    );
+
+    let axes: &[&ns::Number] = &[&one, &ns::Number::with_i32(2), &ns::Number::with_i32(4)];
+    let axes = ns::Array::from_slice(axes);
+    let mean = graph.mean(&x, &axes, None);
+    let variance = graph.variance(&x, &axes, None);
+    let x = graph.normalize(&x, &mean, &variance, Some(&gamma), Some(&beta), 1e-5, None);
+
+    graph.reshape(&x, x_in.shape().unwrap(), None)
 }
 
 fn main() {}
