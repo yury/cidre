@@ -245,7 +245,7 @@ impl Number {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_f64(-5.0f64).unwrap();
+    /// let num = cf::Number::from_f64(-5.0f64);
     /// assert_eq!(num.number_type(), cf::NumberType::F64);
     /// assert_eq!(num.to_f64().unwrap(), -5f64);
     /// assert_eq!(true, num.is_float_type());
@@ -369,7 +369,7 @@ impl Number {
     /// ```
     /// use cidre::cf;
     ///
-    /// let num = cf::Number::from_f64(64.0).unwrap();
+    /// let num = cf::Number::from_f64(64.0);
     /// assert_eq!(num.number_type(), cf::NumberType::F64);
     /// assert_eq!(8, num.byte_size());
     /// assert_eq!(64.0, num.to_f64().unwrap());

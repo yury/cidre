@@ -16,7 +16,7 @@ fn make_graph(synchonize: bool) -> cf::Retained<graph::Graph> {
 fn load_const(
     graph: &graph::Graph,
     name: &str,
-    shape: &[&cf::Number],
+    shape: &[&ns::Number],
     fp32: bool,
 ) -> cf::Retained<graph::Tensor> {
     let (prefix, data_type, size) = if fp32 {
@@ -31,10 +31,10 @@ fn load_const(
     )
     .unwrap();
 
-    let numels = shape.iter().fold(1, |acc, x| acc * x.to_i64().unwrap());
+    let numels = shape.iter().fold(1, |acc, x| acc * x.as_i64());
     assert_eq!(numels * size, data.length() as i64, "mismatched data sizes");
 
-    let shape = cf::ArrayOf::from_slice(shape);
+    let shape = ns::Array::from_slice(shape);
     graph.constant_with_data_shape_data_type(&data, &shape, data_type)
 }
 
@@ -42,19 +42,19 @@ fn make_conv(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
-    out_channels: &cf::Number,
-    khw: &cf::Number,
+    out_channels: &ns::Number,
+    khw: &ns::Number,
     stride: usize,
     bias: bool,
-) -> graph::Tensor {
-    let w = load_const(
+) -> cf::Retained<graph::Tensor> {
+    let weights = load_const(
         graph,
         &format!("{name}.weight"),
         &[out_channels, &x_in.shape().unwrap()[3], khw, khw],
         false,
     );
 
-    let p = khw.to_i64().unwrap() as usize / 2;
+    let p = khw.as_i64() as usize / 2;
 
     let conv_desc = graph::Convolution2DOpDescriptor::with(
         stride,
@@ -72,10 +72,10 @@ fn make_conv(
     )
     .unwrap();
 
-    let conv = graph.convolution_2d(x_in, weights, &conv_desc, None);
+    let conv = graph.convolution_2d(x_in, &weights, &conv_desc, None);
 
     if bias {
-        let one = cf::Number::from_i64(1);
+        let one = ns::Number::with_i64(1);
         let b = load_const(
             graph,
             &format!("{name}.bias"),
@@ -90,17 +90,17 @@ fn make_conv(
 fn make_upsample_nearest(
     graph: graph::Graph,
     x_in: &graph::Tensor,
-    scale_factor: isize,
-) -> cf::Retaned<graph::Tensor> {
+    scale_factor: i64,
+) -> cf::Retained<graph::Tensor> {
     let in_shape = x_in.shape().unwrap();
-    let shape: [&cf::Number] = [
-        in_shape[1].to_i64().unwrap() * scale_factor,
-        in_shape[2].to_i64().unwrap() * scale_factor,
+    let shape: &[&ns::Number] = &[
+        &ns::Number::with_i64(in_shape[1].as_i64() * scale_factor),
+        &ns::Number::with_i64(in_shape[2].as_i64() * scale_factor),
     ];
     graph.resize(
         x_in,
-        &mps::Shape::from_slice(&shape),
-        graph::ResizeMode::Nearesta,
+        &mps::Shape::from_slice(shape),
+        graph::ResizeMode::Nearest,
         true,
         false,
         graph::TensorNamedDataLayout::NHWC,
@@ -119,11 +119,12 @@ fn make_group_norm(
     }
 
     let shape = x.shape().unwrap();
-    let n_groups = 32f64;
-    let n_grouped = shape[3].to_f64().unwrap() / n_groups;
+    let n_groups = 32f32;
+    let n_grouped = shape[3].as_f32() / n_groups;
 
-    let gamma = load_const(graph, &format("{name}.weight"), &[], false);
-    let beta = load_const(graph, &format("{name}.weight"), &[], false);
+    let gamma = load_const(graph, &format!("{name}.weight"), &[], false);
+    let beta = load_const(graph, &format!("{name}.bias"), &[], false);
+    todo!();
 }
 
 fn main() {}

@@ -39,7 +39,7 @@ pub use resize_ops::ResizeMode;
 pub use resize_ops::ResizeNearestRoundingMode;
 
 mod arithmetic_ops;
-
+mod normalization_ops;
 mod shape_ops;
 
 /// Options to be utilized by the graph

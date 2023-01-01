@@ -222,6 +222,12 @@ csel1(, NSNumber, numberWithUnsignedInteger, NSUInteger, NSNumber *)
 
 rsel1(, id, isEqualToNumber, NSNumber *, BOOL)
 
+#pragma mark - NSArray
+
+NS_RETURNS_RETAINED
+NSArray * NSArray_withObjs(const NSObject * _Nonnull * _Nonnull objects, NSUInteger count) {
+  return [NSArray arrayWithObjects:objects count: count];
+}
 
 
 #pragma mark - SELECTORS
@@ -244,6 +250,9 @@ SEL ns_doubleValue;
 SEL ns_boolValue;
 SEL ns_integerValue;
 SEL ns_unsignedIntegerValue;
+
+SEL ns_count;
+SEL ns_objectAtIndex_index;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -268,6 +277,9 @@ static void common_initializer()
     ns_boolValue = @selector(boolValue);
     ns_integerValue = @selector(integerValue);
     ns_unsignedIntegerValue = @selector(unsignedIntegerValue);
+    
+    ns_count = @selector(count);
+    ns_objectAtIndex_index = @selector(objectAtIndex:);
 
   }
 }

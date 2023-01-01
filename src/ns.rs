@@ -62,6 +62,9 @@ mod value;
 pub use value::Number;
 pub use value::Value;
 
+mod array;
+pub use array::Array;
+
 mod data;
 pub use data::Data;
 pub use data::ReadingOptions as DataReadingOptions;

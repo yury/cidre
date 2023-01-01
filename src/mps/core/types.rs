@@ -1,4 +1,4 @@
-use crate::{cf, define_options};
+use crate::{cf, define_options, ns};
 
 define_options!(KernelOptions(usize));
 
@@ -334,4 +334,4 @@ pub struct ImageRegion {
     pub size: ImageCoordinate,
 }
 
-pub type Shape = cf::ArrayOf<cf::Number>;
+pub type Shape = ns::Array<ns::Number>;

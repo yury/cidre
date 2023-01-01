@@ -102,7 +102,7 @@ impl Type {
     ///
     /// let n1 = cf::Number::from_i8(4);
     /// let n2 = cf::Number::from_i32(4);
-    /// let n3 = cf::Number::from_f64(3.0).unwrap();
+    /// let n3 = cf::Number::from_f64(3.0);
     ///
     /// assert!(n1.equal(&n2));
     /// assert_eq!(false, n1.equal(&n3));
