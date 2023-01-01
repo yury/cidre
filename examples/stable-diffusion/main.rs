@@ -44,7 +44,7 @@ fn make_conv(
     name: &str,
     out_channels: &cf::Number,
     khw: &cf::Number,
-    stride: isize,
+    stride: usize,
     bias: bool,
 ) -> graph::Tensor {
     let w = load_const(
@@ -54,7 +54,25 @@ fn make_conv(
         false,
     );
 
-    let p = khw.to_i64().unwrap() / 2;
+    let p = khw.to_i64().unwrap() as usize / 2;
+
+    let conv_desc = graph::Convolution2DOpDescriptor::with(
+        stride,
+        stride,
+        1,
+        1,
+        1,
+        p,
+        p,
+        p,
+        p,
+        graph::PaddingStyle::Explicit,
+        graph::TensorNamedDataLayout::NHWC,
+        graph::TensorNamedDataLayout::OIHW,
+    )
+    .unwrap();
+
+    let conv = graph.convolution_2d(x_in, weights, &conv_desc, None);
 
     if bias {
         let one = cf::Number::from_i64(1);
@@ -64,31 +82,48 @@ fn make_conv(
             &[&one, &one, &one, out_channels],
             false,
         );
+        return graph.addition(&conv, &b, None);
     }
-    todo!();
+    conv
 }
-
-// func makeConv(graph: MPSGraph, xIn: MPSGraphTensor, name: String, outChannels: NSNumber, khw: NSNumber, stride: Int = 1, bias: Bool = true) -> MPSGraphTensor {
-//     let w = loadConstant(graph: graph, name: name + ".weight", shape: [outChannels, xIn.shape![3], khw, khw])
-//     let p: Int = khw.intValue / 2;
-//     let convDesc = MPSGraphConvolution2DOpDescriptor(strideInX: stride, strideInY: stride, dilationRateInX: 1, dilationRateInY: 1, groups: 1, paddingLeft: p, paddingRight: p, paddingTop: p, paddingBottom: p, paddingStyle: MPSGraphPaddingStyle.explicit, dataLayout: MPSGraphTensorNamedDataLayout.NHWC, weightsLayout: MPSGraphTensorNamedDataLayout.OIHW)!
-//     let conv = graph.convolution2D(xIn, weights: w, descriptor: convDesc, name: nil)
-//     if (bias) {
-//         let b = loadConstant(graph: graph, name: name + ".bias", shape: [1, 1, 1, outChannels])
-//         return graph.addition(conv, b, name: nil)
-//     }
-//     return conv
-// }
 
 fn make_upsample_nearest(
     graph: graph::Graph,
     x_in: &graph::Tensor,
     scale_factor: isize,
-) -> &graph::Tensor {
-    todo!();
+) -> cf::Retaned<graph::Tensor> {
+    let in_shape = x_in.shape().unwrap();
+    let shape: [&cf::Number] = [
+        in_shape[1].to_i64().unwrap() * scale_factor,
+        in_shape[2].to_i64().unwrap() * scale_factor,
+    ];
+    graph.resize(
+        x_in,
+        &mps::Shape::from_slice(&shape),
+        graph::ResizeMode::Nearesta,
+        true,
+        false,
+        graph::TensorNamedDataLayout::NHWC,
+        None,
+    )
 }
-// func makeUpsampleNearest(graph: MPSGraph, xIn: MPSGraphTensor, scaleFactor: Int=2) -> MPSGraphTensor {
-//     return graph.resize(xIn, size: [NSNumber(value:xIn.shape![1].intValue * scaleFactor), NSNumber(value:xIn.shape![2].intValue * scaleFactor)], mode: MPSGraphResizeMode.nearest, centerResult: true, alignCorners: false, layout: MPSGraphTensorNamedDataLayout.NHWC, name: nil)
-// }
+
+fn make_group_norm(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &cf::String,
+) -> cf::Retained<graph::Tensor> {
+    let mut x = x_in.retained();
+    if x_in.shape().unwrap().len() == 3 {
+        x = graph.expand_dims(&x, 1, None);
+    }
+
+    let shape = x.shape().unwrap();
+    let n_groups = 32f64;
+    let n_grouped = shape[3].to_f64().unwrap() / n_groups;
+
+    let gamma = load_const(graph, &format("{name}.weight"), &[], false);
+    let beta = load_const(graph, &format("{name}.weight"), &[], false);
+}
 
 fn main() {}

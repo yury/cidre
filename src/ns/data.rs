@@ -1,4 +1,4 @@
-use std::mem::transmute;
+use std::{mem::transmute, ptr::slice_from_raw_parts};
 
 use crate::{cf, define_obj_type, define_options, msg_send, ns};
 
@@ -93,8 +93,44 @@ impl Data {
     }
 
     #[inline]
+    pub fn bytes(&self) -> *const u8 {
+        msg_send!("ns", self, ns_bytes)
+    }
+
+    #[inline]
     pub fn len(&self) -> usize {
         self.length()
+    }
+
+    #[inline]
+    pub fn as_slice(&self) -> &[u8] {
+        unsafe { &*slice_from_raw_parts(self.bytes(), self.len()) }
+    }
+
+    /// Writes the contents of the receiver to the file specified by a given path.
+    ///
+    /// Writes the contents of the receiver to the file specified by path (overwriting any existing file at path).
+    /// path is written in the default C-string encoding if possible (that is,
+    /// if no information would be lost), in the Unicode encoding otherwise.
+    ///
+    /// If flag is YES, the receiver is written to an auxiliary file, and then the auxiliary file is renamed to path.
+    /// If flag is NO, the receiver is written directly to path. The YES option guarantees that path,
+    /// if it exists at all, won’t be corrupted even if the system should crash during writing.
+    ///
+    /// If path contains a tilde (~) character, you must expand it with stringByExpandingTildeInPath
+    /// before invoking this method.
+    #[inline]
+    pub fn write_to_file(&self, path: &cf::String, atomically: bool) -> bool {
+        unsafe { rsel_writeToFile_atomically(self, path, atomically) }
+    }
+
+    #[inline]
+    pub fn write_at_path(&self, path: &cf::String, atomically: bool) -> Result<(), ()> {
+        if self.write_to_file(path, atomically) {
+            Ok(())
+        } else {
+            Err(())
+        }
     }
 }
 
@@ -111,4 +147,6 @@ extern "C" {
         options: ReadingOptions,
         error: &mut Option<&cf::Error>,
     ) -> Option<cf::Retained<Data>>;
+
+    fn rsel_writeToFile_atomically(id: &ns::Id, path: &cf::String, atomically: bool) -> bool;
 }

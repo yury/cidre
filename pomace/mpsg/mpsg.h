@@ -33,6 +33,38 @@ rsel3(, id, constantWithData, NSData *, shape, MPSShape * _Nullable, dataType, M
 
 #pragma mark - MPSGraphConvolutionOps
 
+NS_RETURNS_RETAINED
+csel12(, MPSGraphConvolution2DOpDescriptor, descriptorWithStrideInX, NSUInteger, strideInY, NSUInteger, dilationRateInX, NSUInteger, dilationRateInY, NSUInteger, groups, NSUInteger, paddingLeft, NSUInteger, paddingRight, NSUInteger, paddingTop, NSUInteger, paddingBottom, NSUInteger, paddingStyle, MPSGraphPaddingStyle, dataLayout, MPSGraphTensorNamedDataLayout, weightsLayout, MPSGraphTensorNamedDataLayout, MPSGraphConvolution2DOpDescriptor *)
+
+
+//-(MPSGraphTensor *) convolution2DWithSourceTensor:(MPSGraphTensor *) source
+//                                    weightsTensor:(MPSGraphTensor *) weights
+//                                       descriptor:(MPSGraphConvolution2DOpDescriptor *) descriptor
+//                                             name:(NSString * _Nullable) name
+
+
+NS_RETURNS_RETAINED
+rsel4(, id, convolution2DWithSourceTensor, MPSGraphTensor *, weightsTensor, MPSGraphTensor*, descriptor, MPSGraphConvolution2DOpDescriptor *, name, NSString *, MPSGraphTensor *)
+
+#pragma mark - MPSGraphArithmeticOps
+
+NS_RETURNS_RETAINED
+rsel3(, id, additionWithPrimaryTensor, MPSGraphTensor *, secondaryTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
+#pragma mark - MPSGraphResizeOps
+
+NS_RETURNS_RETAINED
+rsel7(, id, resizeTensor, MPSGraphTensor *, size, MPSShape *, mode, MPSGraphResizeMode, centerResult, BOOL, alignCorners, BOOL, layout, MPSGraphTensorNamedDataLayout, name, NSString *, MPSGraphTensor *)
+
+#pragma mark - MPSGraphTensorShapeOps
+
+NS_RETURNS_RETAINED
+rsel3(, id, expandDimsOfTensor, MPSGraphTensor *, axis, NSInteger, name, NSString *, MPSGraphTensor *)
+
+//-(MPSGraphTensor *) expandDimsOfTensor:(MPSGraphTensor *) tensor
+//                                  axis:(NSInteger) axis
+//                                  name:(NSString * _Nullable) name
+
 #pragma mark - MPSGraph
 
 NS_RETURNS_RETAINED

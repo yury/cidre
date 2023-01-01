@@ -167,7 +167,10 @@ csel3(, NSData, dataWithContentsOfFile, NSString *, options, NSDataReadingOption
 NS_RETURNS_RETAINED
 csel3(, NSData, dataWithContentsOfURL, NSURL *, options, NSDataReadingOptions, error, NSError **, NSData *)
 
+rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
+
 SEL ns_length;
+SEL ns_bytes;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -175,6 +178,7 @@ static void common_initializer()
   static int initialized = 0;
   if (!initialized) {
     ns_length = @selector(length);
+    ns_bytes = @selector(bytes);
   }
 }
 NS_ASSUME_NONNULL_END
