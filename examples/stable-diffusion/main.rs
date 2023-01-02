@@ -155,4 +155,33 @@ fn make_group_norm_swish(
     make_swish(graph, &make_group_norm(graph, x_in, name))
 }
 
+fn make_decoder_res_block(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+    out_channels: &ns::Number,
+) -> cf::Retained<graph::Tensor> {
+    let x = make_group_norm_swish(graph, x_in, &format!("{name}.norm1"));
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.conv1"),
+        out_channels,
+        &ns::Number::with_i32(3),
+        1,
+        false,
+    );
+    let x = make_group_norm_swish(graph, &x, &format!("{name}.norm2"));
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.conv2"),
+        out_channels,
+        &ns::Number::with_i32(3),
+        1,
+        false,
+    );
+    todo!();
+}
+
 fn main() {}

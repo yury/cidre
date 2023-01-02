@@ -12,6 +12,9 @@ impl graph::Graph {
         }
     }
 
+    /// Create Multiply op and return the result tensor, it supports broadcasting as well
+    ///
+    /// resultTensor = primary * secondary
     pub fn multiplication(
         &self,
         primary: &graph::Tensor,
