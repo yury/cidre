@@ -40,6 +40,8 @@ pub use resize_ops::ResizeNearestRoundingMode;
 
 mod activation_ops;
 mod arithmetic_ops;
+mod gather_ops;
+mod matrix_multiplication_ops;
 mod normalization_ops;
 mod shape_ops;
 

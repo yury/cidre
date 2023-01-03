@@ -197,4 +197,15 @@ fn make_decoder_res_block(
     graph.addition(&x, x_in, Some(&skip))
 }
 
+pub fn make_decoder_attention(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+) -> cf::Retained<graph::Tensor> {
+    let x = make_group_norm(graph, x_in, &format!("{name}.norm"));
+    let c = &x.shape().unwrap()[3];
+
+    todo!();
+}
+
 fn main() {}

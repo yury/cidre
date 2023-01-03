@@ -1,6 +1,7 @@
 use crate::{cf, mps::graph};
 
 impl graph::Graph {
+    #[inline]
     pub fn addition(
         &self,
         primary: &graph::Tensor,
@@ -12,9 +13,23 @@ impl graph::Graph {
         }
     }
 
+    #[inline]
+    pub fn clamp(
+        &self,
+        tensor: &graph::Tensor,
+        min: &graph::Tensor,
+        max: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe {
+            rsel_clampWithTensor_minValueTensor_maxValueTensor_name(self, tensor, min, max, name)
+        }
+    }
+
     /// Create Multiply op and return the result tensor, it supports broadcasting as well
     ///
     /// resultTensor = primary * secondary
+    #[inline]
     pub fn multiplication(
         &self,
         primary: &graph::Tensor,
@@ -26,6 +41,15 @@ impl graph::Graph {
                 self, primary, secondary, name,
             )
         }
+    }
+
+    #[inline]
+    pub fn round(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_roundWithTensor_name(self, tensor, name) }
     }
 }
 
@@ -44,9 +68,20 @@ extern "C" {
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor>;
 
-    //-(MPSGraphTensor *) multiplicationWithPrimaryTensor:(MPSGraphTensor *) primaryTensor
-    //                                    secondaryTensor:(MPSGraphTensor *) secondaryTensor
-    //                                               name:(NSString * _Nullable) name
-    //MPS_SWIFT_NAME( multiplication(_:_:name:) );
+    fn rsel_clampWithTensor_minValueTensor_maxValueTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        min: &graph::Tensor,
+        max: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
+    fn rsel_roundWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
+    //rsel2(, id, roundWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
 }
