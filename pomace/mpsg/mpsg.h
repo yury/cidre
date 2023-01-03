@@ -60,8 +60,17 @@ rsel4(, id, clampWithTensor, MPSGraphTensor *, minValueTensor, MPSGraphTensor *,
 NS_RETURNS_RETAINED
 rsel2(, id, roundWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
+NS_RETURNS_RETAINED
+rsel2(, id, squareRootWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
+NS_RETURNS_RETAINED
+rsel2(, id, tanhWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
 
 #pragma mark - MPSGraphActivationOps
+
+NS_RETURNS_RETAINED
+rsel2(, id, reLUWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
 NS_RETURNS_RETAINED
 rsel2(, id, sigmoidWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)

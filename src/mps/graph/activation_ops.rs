@@ -2,6 +2,15 @@ use crate::{cf, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
+    pub fn relu(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_reLUWithTensor_name(self, tensor, name) }
+    }
+
+    #[inline]
     pub fn sigmoid(
         &self,
         tensor: &graph::Tensor,
@@ -23,6 +32,12 @@ impl graph::Graph {
 
 #[link(name = "mpsg", kind = "static")]
 extern "C" {
+    fn rsel_reLUWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
     fn rsel_sigmoidWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,

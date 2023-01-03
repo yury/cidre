@@ -51,6 +51,24 @@ impl graph::Graph {
     ) -> cf::Retained<graph::Tensor> {
         unsafe { rsel_roundWithTensor_name(self, tensor, name) }
     }
+
+    #[inline]
+    pub fn square_root(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_squareRootWithTensor_name(self, tensor, name) }
+    }
+
+    #[inline]
+    pub fn tanh(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_tanhWithTensor_name(self, tensor, name) }
+    }
 }
 
 extern "C" {
@@ -82,6 +100,16 @@ extern "C" {
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor>;
 
-    //rsel2(, id, roundWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+    fn rsel_squareRootWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
+    fn rsel_tanhWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
 
 }
