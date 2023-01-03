@@ -247,6 +247,14 @@ impl From<ns::UInteger> for cf::Retained<Number> {
     }
 }
 
+impl PartialEq for Number {
+    fn eq(&self, other: &Self) -> bool {
+        self.is_equal_to_number(other)
+    }
+}
+
+impl Eq for Number {}
+
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSNumber_numberWithChar(value: i8) -> cf::Retained<ns::Number>;

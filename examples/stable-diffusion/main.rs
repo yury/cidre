@@ -181,7 +181,20 @@ fn make_decoder_res_block(
         1,
         false,
     );
-    todo!();
+    let skip = cf::String::from_str("skip");
+    if &x_in.shape().unwrap()[3] != out_channels {
+        let nin_shortcut = make_conv(
+            graph,
+            &x_in,
+            &format!("{name}.nin_shortcut"),
+            out_channels,
+            &ns::Number::with_i32(3),
+            1,
+            false,
+        );
+        return graph.addition(&x, &nin_shortcut, Some(&skip));
+    }
+    graph.addition(&x, x_in, Some(&skip))
 }
 
 fn main() {}
