@@ -62,6 +62,18 @@ impl graph::Graph {
     }
 
     #[inline]
+    fn subtraction(
+        &self,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe {
+            rsel_subtractionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
+        }
+    }
+
+    #[inline]
     pub fn tanh(
         &self,
         tensor: &graph::Tensor,
@@ -103,6 +115,13 @@ extern "C" {
     fn rsel_squareRootWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
+    fn rsel_subtractionWithPrimaryTensor_secondaryTensor_name(
+        graph: &graph::Graph,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor>;
 

@@ -64,6 +64,9 @@ NS_RETURNS_RETAINED
 rsel2(, id, squareRootWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
 NS_RETURNS_RETAINED
+rsel3(, id, subtractionWithPrimaryTensor, MPSGraphTensor *, secondaryTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
+NS_RETURNS_RETAINED
 rsel2(, id, tanhWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
 
