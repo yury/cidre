@@ -62,7 +62,7 @@ impl graph::Graph {
     }
 
     #[inline]
-    fn subtraction(
+    pub fn subtraction(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
@@ -83,6 +83,7 @@ impl graph::Graph {
     }
 }
 
+#[link(name = "mpsg", kind = "static")]
 extern "C" {
     fn rsel_additionWithPrimaryTensor_secondaryTensor_name(
         graph: &graph::Graph,
