@@ -70,3 +70,8 @@ pub use data::Data;
 pub use data::ReadingOptions as DataReadingOptions;
 pub use data::SearchOptions as DataSearchOptions;
 pub use data::WritingOptions as DataWritingOptions;
+
+mod regular_expression;
+pub use regular_expression::MatchingFlags;
+pub use regular_expression::MatchingOptions;
+pub use regular_expression::Options as RegularExpressionOptions;

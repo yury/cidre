@@ -229,6 +229,10 @@ NSArray * NSArray_withObjs(const NSObject * _Nonnull * _Nonnull objects, NSUInte
   return [NSArray arrayWithObjects:objects count: count];
 }
 
+#pragma mark NSRegularExpression
+
+csel3(, NSRegularExpression, regularExpressionWithPattern, NSString *, options, NSRegularExpressionOptions, error, NSError **, NSRegularExpression *)
+
 
 #pragma mark - SELECTORS
 
