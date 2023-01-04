@@ -2,7 +2,7 @@ use std::{
     ffi::c_void,
     marker::PhantomData,
     mem::transmute,
-    ops::{Deref, Index},
+    ops::{Deref, Index, IndexMut},
 };
 
 use crate::{cf, msg_send, ns};
@@ -70,6 +70,13 @@ impl<T> Index<usize> for Array<T> {
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
+        msg_send!("ns", self, ns_objectAtIndex_index, index)
+    }
+}
+
+impl<T> IndexMut<usize> for Array<T> {
+    #[inline]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         msg_send!("ns", self, ns_objectAtIndex_index, index)
     }
 }
