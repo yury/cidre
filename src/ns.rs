@@ -80,3 +80,5 @@ pub use regular_expression::RegularExpression;
 mod text_checking_result;
 pub use text_checking_result::TextCheckingResult;
 pub use text_checking_result::Type as TextCheckingType;
+
+mod string;
