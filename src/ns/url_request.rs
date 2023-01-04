@@ -159,7 +159,7 @@ impl URLRequest {
         unsafe { NSURLRequest_rsel_HTTPBody(self) }
     }
 
-    pub fn mutable_copy(&self) -> Retained<MutableURLRequest> {
+    pub fn mut_copy(&self) -> Retained<MutableURLRequest> {
         msg_send!("common", self, sel_mutableCopy)
     }
 }
@@ -359,8 +359,7 @@ mod tests {
     #[test]
     fn basics() {
         let mut request =
-            ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap())
-                .mutable_copy();
+            ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap()).mut_copy();
         request.set_timeout_interval(61f64);
         assert_eq!(request.timeout_interval(), 61f64);
         request.set_cache_policy(ns::URLRequestCachePolicy::ReloadRevalidatingCacheData);

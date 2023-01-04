@@ -41,7 +41,7 @@ impl Data {
     }
 
     #[inline]
-    pub fn mutable_copy_in(
+    pub fn mut_copy_in(
         &self,
         capacity: cf::Index,
         allocator: Option<&cf::Allocator>,
@@ -50,8 +50,8 @@ impl Data {
     }
 
     #[inline]
-    pub fn mutable_copy(&self, capacity: usize) -> cf::Retained<MutableData> {
-        unsafe { self.mutable_copy_in(capacity as _, None).unwrap_unchecked() }
+    pub fn mut_copy(&self, capacity: usize) -> cf::Retained<MutableData> {
+        unsafe { self.mut_copy_in(capacity as _, None).unwrap_unchecked() }
     }
 
     #[inline]

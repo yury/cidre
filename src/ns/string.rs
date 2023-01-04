@@ -15,6 +15,11 @@ impl String {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.length() == 0
+    }
+
+    #[inline]
     pub fn lowercased(&self) -> cf::Retained<Self> {
         msg_send!("ns", self, ns_lowercaseString)
     }
@@ -57,7 +62,7 @@ impl String {
     }
 
     #[inline]
-    pub fn mutable_copy(&self) -> cf::Retained<ns::String> {
+    pub fn mut_copy(&self) -> cf::Retained<ns::String> {
         msg_send!("ns", self, ns_mutableCopy)
     }
 }

@@ -68,8 +68,8 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn mutable_copy(&self) -> Option<Retained<MutArrayOf<T>>> {
-        let copy = self.0.mutable_copy();
+    pub fn mut_copy(&self) -> Option<Retained<MutArrayOf<T>>> {
+        let copy = self.0.mut_copy();
         unsafe { transmute(copy) }
     }
 
@@ -393,7 +393,7 @@ impl Array {
     /// let num = cf::Number::from_i32(10);
     ///
     /// let empty_arr = cf::Array::new();
-    /// let mut mut_arr = empty_arr.mutable_copy_in(0, None).unwrap();
+    /// let mut mut_arr = empty_arr.mut_copy_in(0, None).unwrap();
     ///
     ///
     /// mut_arr.append(&num);
@@ -403,7 +403,7 @@ impl Array {
     ///
     /// ```
     #[inline]
-    pub fn mutable_copy_in(
+    pub fn mut_copy_in(
         &self,
         capacity: Index,
         allocator: Option<&Allocator>,
@@ -412,13 +412,13 @@ impl Array {
     }
 
     #[inline]
-    pub fn mutable_copy(&self) -> Option<Retained<MutableArray>> {
+    pub fn mut_copy(&self) -> Option<Retained<MutableArray>> {
         unsafe { CFArrayCreateMutableCopy(None, 0, self) }
     }
 
     #[inline]
-    pub fn mutable_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutableArray>> {
-        self.mutable_copy_in(capacity as _, None)
+    pub fn mut_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutableArray>> {
+        self.mut_copy_in(capacity as _, None)
     }
 }
 
@@ -543,7 +543,7 @@ mod tests {
         let arr1 = cf::Array::new();
         let arr2 = arr1.copy().expect("copy");
         let arr3 = cf::Array::new();
-        let arr4 = arr2.mutable_copy().expect("copy");
+        let arr4 = arr2.mut_copy().expect("copy");
         unsafe {
             assert_eq!(arr1.as_type_ptr(), arr2.as_type_ptr());
             assert_eq!(arr3.as_type_ptr(), arr2.as_type_ptr());
