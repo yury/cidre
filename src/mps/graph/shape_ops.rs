@@ -18,7 +18,7 @@ impl graph::Graph {
     #[inline]
     pub fn concat_tensors(
         &self,
-        tensors: ns::Array<graph::Tensor>,
+        tensors: &ns::Array<graph::Tensor>,
         dimension: ns::Integer,
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor> {
@@ -102,7 +102,7 @@ extern "C" {
 
     fn rsel_concatTensors_dimension_name(
         graph: &graph::Graph,
-        tensors: ns::Array<graph::Tensor>,
+        tensors: &ns::Array<graph::Tensor>,
         dimension: ns::Integer,
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor>;

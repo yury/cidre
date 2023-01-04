@@ -37,7 +37,17 @@ impl graph::Graph {
 
     #[inline]
     pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> cf::Retained<graph::Tensor> {
-        unsafe { rsel_constantWithScalar(self, scalar, data_type) }
+        unsafe { rsel_constantWithScalar_dataType(self, scalar, data_type) }
+    }
+
+    #[inline]
+    pub fn constant_shape(
+        &self,
+        scalar: f64,
+        shape: &mps::Shape,
+        data_type: mps::DataType,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_constantWithScalar_shape_dataType(self, scalar, shape, data_type) }
     }
 }
 
@@ -57,12 +67,18 @@ extern "C" {
         data_type: mps::DataType,
     ) -> cf::Retained<graph::Tensor>;
 
-    fn rsel_constantWithScalar(
+    fn rsel_constantWithScalar_dataType(
         id: &ns::Id,
         scalar: f64,
         data_type: mps::DataType,
     ) -> cf::Retained<graph::Tensor>;
 
+    fn rsel_constantWithScalar_shape_dataType(
+        id: &ns::Id,
+        scalar: f64,
+        shape: &mps::Shape,
+        data_type: mps::DataType,
+    ) -> cf::Retained<graph::Tensor>;
 }
 
 #[cfg(test)]

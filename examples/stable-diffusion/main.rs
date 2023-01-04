@@ -88,7 +88,7 @@ fn make_conv(
 }
 
 fn make_upsample_nearest(
-    graph: graph::Graph,
+    graph: &graph::Graph,
     x_in: &graph::Tensor,
     scale_factor: i64,
 ) -> cf::Retained<graph::Tensor> {
@@ -227,6 +227,133 @@ pub fn make_decoder_attention(
     let x = graph.reshape(&x, &x_in.shape().unwrap(), None);
 
     graph.addition(&x, x_in, None)
+}
+
+fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<graph::Tensor> {
+    let one = ns::Number::with_i64(1);
+    let one_shape = mps::Shape::from_slice(&[&one]);
+    let dt = mps::DataType::Float16;
+    let x = graph.clamp(
+        x_in,
+        &graph.constant_shape(0f64, &one_shape, dt),
+        &graph.constant_shape(1f64, &one_shape, dt),
+        None,
+    );
+    let x = graph.multiplication(&x, &graph.constant_shape(255f64, &one_shape, dt), None);
+    let x = graph.round(&x, None);
+    let x = graph.cast(
+        &x,
+        mps::DataType::U8,
+        Some(&cf::String::from_str("cast to uint8 rgba")),
+    );
+    let alpha = graph.constant_shape(
+        255f64,
+        &mps::Shape::from_slice(&[&one, &x.shape().unwrap()[1], &x.shape().unwrap()[2], &one]),
+        mps::DataType::U8,
+    );
+    let tensors: &[&graph::Tensor] = &[&x, &alpha];
+    graph.concat_tensors(&ns::Array::from_slice(tensors), 3, None)
+}
+
+fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<graph::Tensor> {
+    let name = "first_stage_model.decoder";
+    let x = graph.multiplication(
+        x_in,
+        &graph.constant(1f64 / 0.18215f64, mps::DataType::Float16),
+        Some(&cf::String::from_str("rescale")),
+    );
+    let out_channels = ns::Number::with_i64(512);
+    let kwh = ns::Number::with_i64(3);
+    let x = make_conv(
+        graph,
+        &x,
+        "first_stage_model.post_quant_conv",
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    );
+
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.conv_in"),
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    );
+
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.mid.block_1"), &out_channels);
+    let x = make_decoder_attention(graph, &x, &format!("{name}.mid.attn_1"));
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.mid.block_2"), &out_channels);
+
+    // block 3
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.3.block.0"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.3.block.1"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.3.block.2"), &out_channels);
+    let x = make_upsample_nearest(graph, &x, 2);
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.up.3.upsample.conv"),
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    );
+    // block 2
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.2.block.0"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.2.block.1"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.2.block.2"), &out_channels);
+    let x = make_upsample_nearest(graph, &x, 2);
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.up.2.upsample.conv"),
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    );
+
+    // block 1
+    let out_channels = ns::Number::with_i64(256);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.1.block.0"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.1.block.1"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.1.block.2"), &out_channels);
+    let x = make_upsample_nearest(graph, &x, 2);
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.up.1.upsample.conv"),
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    );
+
+    // block 0
+    let out_channels = ns::Number::with_i64(128);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.0.block.0"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.0.block.1"), &out_channels);
+    let x = make_decoder_res_block(graph, &x, &format!("{name}.up.0.block.2"), &out_channels);
+
+    let three = ns::Number::with_i64(3);
+    let x = make_group_norm_swish(graph, &x, &format!("{name}.norm_out"));
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.conv_out"),
+        &three,
+        &three,
+        1,
+        true,
+    );
+    let x = graph.addition(&x, &graph.constant(1f64, mps::DataType::Float16), None);
+    let x = graph.multiplication(&x, &graph.constant(0.5f64, mps::DataType::Float16), None);
+
+    make_byte_converter(graph, &x)
 }
 
 fn make_linear(
