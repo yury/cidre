@@ -1,6 +1,7 @@
 use crate::{cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(String(ns::Id));
+define_obj_type!(MutableString(String));
 
 impl String {
     #[inline]
@@ -53,5 +54,10 @@ impl String {
     #[inline]
     pub fn to_integer(&self) -> ns::Integer {
         msg_send!("ns", self, ns_integerValue)
+    }
+
+    #[inline]
+    pub fn mutable_copy(&self) -> cf::Retained<ns::String> {
+        msg_send!("ns", self, ns_mutableCopy)
     }
 }

@@ -264,6 +264,8 @@ SEL ns_range;
 
 SEL ns_lowercaseString;
 
+SEL ns_mutableCopy;
+
 __attribute__((constructor))
 static void common_initializer()
 {
@@ -293,8 +295,10 @@ static void common_initializer()
 
     ns_resultType = @selector(resultType);
     ns_range = @selector(range);
+
+    ns_lowercaseString = @selector(lowercaseString);
     
-    SEL ns_lowercaseString = @selector(lowercaseString);
+    ns_mutableCopy = @selector(mutableCopy);
 
   }
 }
