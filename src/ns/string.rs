@@ -62,7 +62,7 @@ impl String {
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> cf::Retained<ns::String> {
+    pub fn copy_mut(&self) -> cf::Retained<ns::StringMut> {
         msg_send!("ns", self, ns_mutableCopy)
     }
 }
