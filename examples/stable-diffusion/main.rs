@@ -203,9 +203,66 @@ pub fn make_decoder_attention(
     name: &str,
 ) -> cf::Retained<graph::Tensor> {
     let x = make_group_norm(graph, x_in, &format!("{name}.norm"));
-    let c = &x.shape().unwrap()[3];
+    let shape = x.shape().unwrap();
+    let c = &shape[3];
+    let new_share: &[&ns::Number] = &[
+        &shape[0],
+        &ns::Number::with_i64(shape[1].as_i64() * shape[2].as_i64()),
+        &c,
+    ];
+    let x = graph.reshape(&x, &mps::Shape::from_slice(new_share), None);
+    let q = make_linear(graph, &x, &format!("{name}.q"), c, false);
+    let k = make_linear(graph, &x, &format!("{name}.k"), c, false);
+    let k = graph.multiplication(
+        &k,
+        &graph.constant(1f64 / c.as_f64().sqrt(), mps::DataType::Float16),
+        None,
+    );
+    let k = graph.transpose_tensor_with_dimension(&k, 1, 2, None);
+    let v = make_linear(graph, &x, &format!("{name}.v"), c, false);
+    let att = graph.matrix_multiplication(&q, &k, None);
+    let att = graph.soft_max(&att, 2, None);
+    let att = graph.matrix_multiplication(&att, &v, None);
+    let x = make_linear(graph, &att, &format!("{name}.proj_out"), c, true);
+    let x = graph.reshape(&x, &x_in.shape().unwrap(), None);
 
-    todo!();
+    graph.addition(&x, x_in, None)
+}
+
+fn make_linear(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+    out_channels: &ns::Number,
+    bias: bool,
+) -> cf::Retained<graph::Tensor> {
+    let in_shape = x_in.shape().unwrap();
+    let one = ns::Number::with_i64(1);
+    if in_shape.len() == 2 {
+        let x = graph.reshape(
+            x_in,
+            &mps::Shape::from_slice(&[&in_shape[0], &one, &one, &in_shape[1]]),
+            None,
+        );
+        let x = make_conv(graph, &x, name, out_channels, &one, 1, bias);
+        return graph.reshape(
+            &x,
+            &mps::Shape::from_slice(&[&in_shape[0], out_channels]),
+            None,
+        );
+    };
+
+    let x = graph.reshape(
+        x_in,
+        &mps::Shape::from_slice(&[&in_shape[0], &one, &in_shape[2]]),
+        None,
+    );
+    let x = make_conv(graph, &x, name, out_channels, &one, 1, bias);
+    graph.reshape(
+        &x,
+        &mps::Shape::from_slice(&[&in_shape[0], &in_shape[1], out_channels]),
+        None,
+    )
 }
 
 fn main() {}

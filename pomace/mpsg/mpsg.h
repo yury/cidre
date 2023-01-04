@@ -31,6 +31,10 @@ rsel3(, id, placeholderWithShape, MPSShape * _Nullable, dataType, MPSDataType, n
 NS_RETURNS_RETAINED
 rsel3(, id, constantWithData, NSData *, shape, MPSShape * _Nullable, dataType, MPSDataType, MPSGraphTensor *)
 
+NS_RETURNS_RETAINED
+rsel2(, id, constantWithScalar, double, dataType, MPSDataType, MPSGraphTensor *)
+
+
 #pragma mark - MPSGraphConvolutionOps
 
 NS_RETURNS_RETAINED
