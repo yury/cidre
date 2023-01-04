@@ -230,7 +230,7 @@ impl String {
     }
 
     #[inline]
-    pub fn mut_copy_in(
+    pub fn copy_mut_in(
         &self,
         alloc: Option<&Allocator>,
         max_length: Index,
@@ -239,8 +239,8 @@ impl String {
     }
 
     #[inline]
-    pub fn mut_copy(&self, max_length: Index) -> Option<Retained<StringMut>> {
-        self.mut_copy_in(None, max_length)
+    pub fn copy_mut(&self, max_length: Index) -> Option<Retained<StringMut>> {
+        self.copy_mut_in(None, max_length)
     }
 }
 

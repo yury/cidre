@@ -163,7 +163,7 @@ impl URLRequest {
     }
 
     #[inline]
-    pub fn mut_copy(&self) -> Retained<MutURLRequest> {
+    pub fn copy_mut(&self) -> Retained<MutURLRequest> {
         msg_send!("common", self, sel_mutableCopy)
     }
 }
@@ -358,7 +358,7 @@ mod tests {
     #[test]
     fn basics() {
         let mut request =
-            ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap()).mut_copy();
+            ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap()).copy_mut();
         request.set_timeout_interval(61f64);
         assert_eq!(request.timeout_interval(), 61f64);
         request.set_cache_policy(ns::URLRequestCachePolicy::ReloadRevalidatingCacheData);
