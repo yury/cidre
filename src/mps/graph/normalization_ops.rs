@@ -25,27 +25,27 @@ impl graph::Graph {
     pub fn variance_mean(
         &self,
         tensor: &graph::Tensor,
-        mean_tensor: &graph::Tensor,
+        mean: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor> {
-        unsafe { rsel_varianceOfTensor_meanTensor_axes_name(self, tensor, mean_tensor, axes, name) }
+        unsafe { rsel_varianceOfTensor_meanTensor_axes_name(self, tensor, mean, axes, name) }
     }
 
     #[inline]
     pub fn normalize(
         &self,
         tensor: &graph::Tensor,
-        mean_tensor: &graph::Tensor,
-        variance_tensor: &graph::Tensor,
-        gamma_tensor: Option<&graph::Tensor>,
-        beta_tensor: Option<&graph::Tensor>,
+        mean: &graph::Tensor,
+        variance: &graph::Tensor,
+        gamma: Option<&graph::Tensor>,
+        beta: Option<&graph::Tensor>,
         epsilon: f32,
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor> {
         unsafe {
             rsel_normalizationWithTensor_meanTensor_varianceTensor_gammaTensor_betaTensor_epsilon_name(
-                self, tensor, mean_tensor, variance_tensor, gamma_tensor, beta_tensor, epsilon, name
+                self, tensor, mean, variance, gamma, beta, epsilon, name
             )
         }
     }

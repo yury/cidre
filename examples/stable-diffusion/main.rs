@@ -356,6 +356,46 @@ fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<grap
     make_byte_converter(graph, &x)
 }
 
+fn make_layer_norm(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+) -> cf::Retained<graph::Tensor> {
+    let in_shape = x_in.shape().unwrap();
+    assert_eq!(in_shape.len(), 3, "layernorm requires NTC");
+
+    let one = ns::Number::with_i64(1);
+    let gamma = load_const(
+        graph,
+        &format!("{name}.weight"),
+        &[&one, &one, &in_shape[2]],
+        false,
+    );
+    let beta = load_const(
+        graph,
+        &format!("{name}.bias"),
+        &[&one, &one, &in_shape[2]],
+        false,
+    );
+
+    let two = ns::Number::with_i64(2);
+    let axes: &[&ns::Number] = &[&two];
+    let axes = ns::Array::from_slice(axes);
+
+    let mean = graph.mean(x_in, &axes, None);
+    let variance = graph.variance(x_in, &axes, None);
+    let x = graph.normalize(
+        x_in,
+        &mean,
+        &variance,
+        Some(&gamma),
+        Some(&beta),
+        1e-5f32,
+        None,
+    );
+    graph.reshape(&x, x_in.shape().unwrap(), None)
+}
+
 fn make_linear(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
@@ -390,6 +430,17 @@ fn make_linear(
         &mps::Shape::from_slice(&[&in_shape[0], &in_shape[1], out_channels]),
         None,
     )
+}
+
+fn make_time_embed(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+) -> cf::Retained<graph::Tensor> {
+    let out_channels = ns::Number::with_i64(1280);
+    let x = make_linear(graph, x_in, &format!("{name}.0"), &out_channels, true);
+    let x = make_swish(graph, &x);
+    make_linear(graph, &x, &format!("{name}.2"), &out_channels, true)
 }
 
 fn main() {}
