@@ -116,6 +116,10 @@ NS_RETURNS_RETAINED
 rsel3(, id, expandDimsOfTensor, MPSGraphTensor *, axis, NSInteger, name, NSString *, MPSGraphTensor *)
 
 NS_RETURNS_RETAINED
+rsel3(, id, expandDimsOfTensor, MPSGraphTensor *, axes, NSArray *, name, NSString *, MPSGraphTensor *)
+
+
+NS_RETURNS_RETAINED
 rsel3(, id, reshapeTensor, MPSGraphTensor *, withShape, MPSShape *, name, NSString *, MPSGraphTensor *)
 
 NS_RETURNS_RETAINED

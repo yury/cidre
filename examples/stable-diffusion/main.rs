@@ -443,4 +443,64 @@ fn make_time_embed(
     make_linear(graph, &x, &format!("{name}.2"), &out_channels, true)
 }
 
+fn make_unet_res_block(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    emb_in: &graph::Tensor,
+    name: &str,
+    in_channels: &ns::Number,
+    out_channels: &ns::Number,
+) -> cf::Retained<graph::Tensor> {
+    let kwh = ns::Number::with_i32(3);
+    let x = make_group_norm_swish(graph, x_in, &format!("{name}.in_layers.0"));
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.in_layers.2"),
+        out_channels,
+        &kwh,
+        1,
+        true,
+    );
+    let emb = make_swish(graph, emb_in);
+    let emb = make_linear(
+        graph,
+        &emb,
+        &format!("{name}.emb_layers.1"),
+        out_channels,
+        true,
+    );
+
+    let axes: &[&ns::Number] = &[&ns::Number::with_i32(1), &ns::Number::with_i32(2)];
+    let axes = ns::Array::from_slice(axes);
+    let emb = graph.expand_dims_axes(&emb, &axes, None);
+
+    let x = graph.addition(&x, &emb, None);
+    let x = make_group_norm_swish(graph, &x, &format!("{name}.out_layers.0"));
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.out_layers.3"),
+        out_channels,
+        &kwh,
+        1,
+        true,
+    );
+
+    if in_channels != out_channels {
+        let skip = make_conv(
+            graph,
+            x_in,
+            &format!("{name}.skip_connection"),
+            out_channels,
+            &ns::Number::with_i32(1),
+            1,
+            true,
+        );
+        graph.addition(&x, &skip, None)
+    } else {
+        graph.addition(&x, x_in, None)
+    }
+}
+
 fn main() {}

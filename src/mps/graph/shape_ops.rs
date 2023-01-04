@@ -36,6 +36,16 @@ impl graph::Graph {
     }
 
     #[inline]
+    pub fn expand_dims_axes(
+        &self,
+        tensor: &graph::Tensor,
+        axes: &ns::Array<ns::Number>,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor> {
+        unsafe { rsel_expandDimsOfTensor_axes_name(self, tensor, axes, name) }
+    }
+
+    #[inline]
     pub fn reshape(
         &self,
         tensor: &graph::Tensor,
@@ -111,6 +121,13 @@ extern "C" {
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         axis: isize,
+        name: Option<&cf::String>,
+    ) -> cf::Retained<graph::Tensor>;
+
+    fn rsel_expandDimsOfTensor_axes_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
     ) -> cf::Retained<graph::Tensor>;
 
