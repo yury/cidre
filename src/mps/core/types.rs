@@ -1,4 +1,4 @@
-use crate::{cf, define_options, ns};
+use crate::{define_options, ns};
 
 define_options!(KernelOptions(usize));
 
