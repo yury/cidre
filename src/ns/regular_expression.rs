@@ -27,7 +27,8 @@ impl Options {
     #[doc(alias = "NSRegularExpressionUseUnixLineSeparators")]
     pub const USE_UNIX_LINE_SEPARATORS: Self = Self(1 << 5);
 
-    /// Use Unicode TR#29 to specify word boundaries (otherwise, traditional regular expression word boundaries are used).
+    /// Use Unicode TR#29 to specify word boundaries
+    /// (otherwise, traditional regular expression word boundaries are used).
     #[doc(alias = "NSRegularExpressionUseUnicodeWordBoundaries")]
     pub const USE_UNICODE_WORD_BOUNDARIES: Self = Self(1 << 6);
 }
@@ -117,4 +118,16 @@ extern "C" {
         options: Options,
         error: &mut Option<&cf::Error>,
     ) -> Option<cf::Retained<RegularExpression>>;
+}
+
+#[cfg(test)]
+mod tests {
+    pub use crate::{cf, ns};
+    #[test]
+    fn basics() {
+        let pat =
+            ns::RegularExpression::with_pattern(&cf::String::from_str(".*"), Default::default())
+                .unwrap();
+        println!("pat {:?}", pat);
+    }
 }

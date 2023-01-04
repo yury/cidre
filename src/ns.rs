@@ -75,3 +75,4 @@ mod regular_expression;
 pub use regular_expression::MatchingFlags;
 pub use regular_expression::MatchingOptions;
 pub use regular_expression::Options as RegularExpressionOptions;
+pub use regular_expression::RegularExpression;

@@ -231,6 +231,7 @@ NSArray * NSArray_withObjs(const NSObject * _Nonnull * _Nonnull objects, NSUInte
 
 #pragma mark NSRegularExpression
 
+NS_RETURNS_RETAINED
 csel3(, NSRegularExpression, regularExpressionWithPattern, NSString *, options, NSRegularExpressionOptions, error, NSError **, NSRegularExpression *)
 
 
