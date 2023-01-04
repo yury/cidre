@@ -262,6 +262,8 @@ SEL ns_objectAtIndex_index;
 SEL ns_resultType;
 SEL ns_range;
 
+SEL ns_lowercaseString;
+
 __attribute__((constructor))
 static void common_initializer()
 {
@@ -291,6 +293,8 @@ static void common_initializer()
 
     ns_resultType = @selector(resultType);
     ns_range = @selector(range);
+    
+    SEL ns_lowercaseString = @selector(lowercaseString);
 
   }
 }

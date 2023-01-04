@@ -82,3 +82,4 @@ pub use text_checking_result::TextCheckingResult;
 pub use text_checking_result::Type as TextCheckingType;
 
 mod string;
+pub use string::String;
