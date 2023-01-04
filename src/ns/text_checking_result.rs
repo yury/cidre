@@ -1,4 +1,4 @@
-use crate::{define_obj_type, define_options, ns};
+use crate::{define_obj_type, define_options, msg_send, ns};
 
 define_options!(Type(usize));
 
@@ -57,3 +57,13 @@ impl Type {
 }
 
 define_obj_type!(TextCheckingResult(ns::Id));
+
+impl TextCheckingResult {
+    pub fn result_type(&self) -> Type {
+        msg_send!("ns", self, ns_resultType)
+    }
+
+    pub fn range(&self) -> ns::Range {
+        msg_send!("ns", self, ns_range)
+    }
+}
