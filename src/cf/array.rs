@@ -68,7 +68,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn mut_copy(&self) -> Option<Retained<MutArrayOf<T>>> {
+    pub fn mut_copy(&self) -> Option<Retained<ArrayOfMut<T>>> {
         let copy = self.0.mut_copy();
         unsafe { transmute(copy) }
     }
@@ -181,16 +181,16 @@ where
 }
 
 #[repr(transparent)]
-pub struct MutArrayOf<T>(MutArray, PhantomData<T>);
+pub struct ArrayOfMut<T>(ArrayMut, PhantomData<T>);
 
-impl<T> MutArrayOf<T> {
+impl<T> ArrayOfMut<T> {
     #[inline]
-    pub fn new() -> Retained<MutArrayOf<T>> {
+    pub fn new() -> Retained<ArrayOfMut<T>> {
         Self::with_capacity(0)
     }
 
     #[inline]
-    pub fn with_capacity(capacity: usize) -> Retained<MutArrayOf<T>> {
+    pub fn with_capacity(capacity: usize) -> Retained<ArrayOfMut<T>> {
         unsafe { Self::with_capacity_in(capacity, None).unwrap_unchecked() }
     }
 
@@ -198,8 +198,8 @@ impl<T> MutArrayOf<T> {
     pub fn with_capacity_in(
         capacity: usize,
         alloc: Option<&Allocator>,
-    ) -> Option<Retained<MutArrayOf<T>>> {
-        let arr = MutArray::create_in(capacity as _, Callbacks::default(), alloc);
+    ) -> Option<Retained<ArrayOfMut<T>>> {
+        let arr = ArrayMut::create_in(capacity as _, Callbacks::default(), alloc);
         unsafe { transmute(arr) }
     }
 
@@ -219,7 +219,7 @@ impl<T> MutArrayOf<T> {
     }
 }
 
-impl<T> std::ops::Deref for MutArrayOf<T> {
+impl<T> std::ops::Deref for ArrayOfMut<T> {
     type Target = ArrayOf<T>;
 
     #[inline]
@@ -228,7 +228,7 @@ impl<T> std::ops::Deref for MutArrayOf<T> {
     }
 }
 
-impl<T> std::ops::Index<usize> for MutArrayOf<T>
+impl<T> std::ops::Index<usize> for ArrayOfMut<T>
 where
     T: Retain,
 {
@@ -239,7 +239,7 @@ where
     }
 }
 
-impl<T> std::ops::IndexMut<usize> for MutArrayOf<T>
+impl<T> std::ops::IndexMut<usize> for ArrayOfMut<T>
 where
     T: Retain,
 {
@@ -248,13 +248,13 @@ where
     }
 }
 
-impl<T> Release for MutArrayOf<T> {
+impl<T> Release for ArrayOfMut<T> {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for MutArrayOf<T> {
+impl<T> Retain for ArrayOfMut<T> {
     fn retained(&self) -> Retained<Self> {
         unsafe { transmute(self.0.retained()) }
     }
@@ -407,17 +407,17 @@ impl Array {
         &self,
         capacity: Index,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<MutArray>> {
+    ) -> Option<Retained<ArrayMut>> {
         unsafe { CFArrayCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
-    pub fn mut_copy(&self) -> Option<Retained<MutArray>> {
+    pub fn mut_copy(&self) -> Option<Retained<ArrayMut>> {
         unsafe { CFArrayCreateMutableCopy(None, 0, self) }
     }
 
     #[inline]
-    pub fn mut_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutArray>> {
+    pub fn mut_copy_with_capacity(&self, capacity: usize) -> Option<Retained<ArrayMut>> {
         self.mut_copy_in(capacity as _, None)
     }
 }
@@ -436,9 +436,9 @@ impl std::ops::IndexMut<usize> for Array {
     }
 }
 
-define_cf_type!(MutArray(Array));
+define_cf_type!(ArrayMut(Array));
 
-impl MutArray {
+impl ArrayMut {
     #[inline]
     pub unsafe fn append_value(&mut self, value: *const c_void) {
         CFArrayAppendValue(self, value)
@@ -466,19 +466,19 @@ impl MutArray {
         capacity: Index,
         callbacks: Option<&Callbacks>,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<MutArray>> {
+    ) -> Option<Retained<ArrayMut>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
     }
 
     #[inline]
-    pub fn with_capacity(capacity: Index) -> Retained<MutArray> {
+    pub fn with_capacity(capacity: Index) -> Retained<ArrayMut> {
         unsafe { Self::create_in(capacity, Callbacks::default(), None).unwrap_unchecked() }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let mut arr = cf::MutArray::new();
+    /// let mut arr = cf::ArrayMut::new();
     /// assert_eq!(0, arr.len());
     ///
     /// let num = cf::Number::from_i32(0);
@@ -491,7 +491,7 @@ impl MutArray {
     /// assert_eq!(0, arr.len());
     /// ```
     #[inline]
-    pub fn new() -> Retained<MutArray> {
+    pub fn new() -> Retained<ArrayMut> {
         Self::with_capacity(0)
     }
 }
@@ -519,17 +519,17 @@ extern "C" {
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<MutArray>>;
+    ) -> Option<Retained<ArrayMut>>;
 
     fn CFArrayCreateMutableCopy(
         allocator: Option<&Allocator>,
         capacity: Index,
         array: &Array,
-    ) -> Option<Retained<MutArray>>;
+    ) -> Option<Retained<ArrayMut>>;
 
-    fn CFArrayAppendValue(array: &mut MutArray, value: *const c_void);
+    fn CFArrayAppendValue(array: &mut ArrayMut, value: *const c_void);
 
-    fn CFArrayRemoveAllValues(array: &mut MutArray);
+    fn CFArrayRemoveAllValues(array: &mut ArrayMut);
 
     fn CFArrayContainsValue(array: &Array, range: cf::Range, value: *const c_void) -> bool;
 }

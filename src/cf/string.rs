@@ -234,12 +234,12 @@ impl String {
         &self,
         alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<Retained<MutString>> {
+    ) -> Option<Retained<StringMut>> {
         unsafe { CFStringCreateMutableCopy(alloc, max_length, self) }
     }
 
     #[inline]
-    pub fn mut_copy(&self, max_length: Index) -> Option<Retained<MutString>> {
+    pub fn mut_copy(&self, max_length: Index) -> Option<Retained<StringMut>> {
         self.mut_copy_in(None, max_length)
     }
 }
@@ -330,9 +330,9 @@ impl fmt::Display for String {
 //     }
 // }
 
-define_cf_type!(MutString(String));
+define_cf_type!(StringMut(String));
 
-impl MutString {
+impl StringMut {
     #[inline]
     pub fn append(&mut self, appended_string: &String) {
         unsafe { CFStringAppend(self, appended_string) }
@@ -361,7 +361,7 @@ extern "C" {
     fn CFStringCreateMutable(
         alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<Retained<MutString>>;
+    ) -> Option<Retained<StringMut>>;
     fn CFStringCreateCopy(
         alloc: Option<&Allocator>,
         the_string: &String,
@@ -372,12 +372,12 @@ extern "C" {
         alloc: Option<&Allocator>,
         max_length: Index,
         the_string: &String,
-    ) -> Option<Retained<MutString>>;
+    ) -> Option<Retained<StringMut>>;
     fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
 
-    fn CFStringAppend(the_string: &mut MutString, appended_string: &String);
-    fn CFStringTrim(the_string: &mut MutString, trim_string: &String);
-    fn CFStringTrimWhitespace(the_string: &mut MutString);
+    fn CFStringAppend(the_string: &mut StringMut, appended_string: &String);
+    fn CFStringTrim(the_string: &mut StringMut, trim_string: &String);
+    fn CFStringTrimWhitespace(the_string: &mut StringMut);
 
     fn CFStringCreateWithBytesNoCopy(
         alloc: Option<&Allocator>,

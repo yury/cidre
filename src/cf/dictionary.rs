@@ -350,9 +350,9 @@ extern "C" {
 
 }
 
-define_cf_type!(MutDictionary(Dictionary));
+define_cf_type!(DictionaryMut(Dictionary));
 
-impl MutDictionary {
+impl DictionaryMut {
     pub fn with_capacity(capacity: usize) -> Retained<Self> {
         unsafe { Self::with_capacity_in(None, capacity).unwrap_unchecked() }
     }
@@ -460,7 +460,7 @@ where
 }
 
 #[repr(transparent)]
-pub struct MutDictionaryOf<K, V>(MutDictionary, PhantomData<(K, V)>);
+pub struct DictionaryOfMut<K, V>(DictionaryMut, PhantomData<(K, V)>);
 
 impl<K, V> DictionaryOf<K, V>
 where
@@ -493,15 +493,15 @@ extern "C" {
         capacity: cf::Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<MutDictionary>>;
+    ) -> Option<Retained<DictionaryMut>>;
 
-    fn CFDictionaryAddValue(the_dict: &mut MutDictionary, key: *const c_void, value: *const c_void);
-    fn CFDictionarySetValue(the_dict: &mut MutDictionary, key: *const c_void, value: *const c_void);
+    fn CFDictionaryAddValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);
+    fn CFDictionarySetValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);
     fn CFDictionaryReplaceValue(
-        the_dict: &mut MutDictionary,
+        the_dict: &mut DictionaryMut,
         key: *const c_void,
         value: *const c_void,
     );
-    fn CFDictionaryRemoveValue(the_dict: &mut MutDictionary, key: *const c_void);
-    fn CFDictionaryRemoveAllValues(the_dict: &mut MutDictionary);
+    fn CFDictionaryRemoveValue(the_dict: &mut DictionaryMut, key: *const c_void);
+    fn CFDictionaryRemoveAllValues(the_dict: &mut DictionaryMut);
 }

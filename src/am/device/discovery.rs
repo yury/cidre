@@ -142,7 +142,7 @@ impl Device {
 }
 
 pub struct QueryBuilder {
-    query: Retained<cf::MutDictionary>,
+    query: Retained<cf::DictionaryMut>,
 }
 
 impl QueryBuilder {
@@ -157,7 +157,7 @@ impl QueryBuilder {
     }
 
     pub fn new(matching_mode: &cf::String) -> Self {
-        let mut query = cf::MutDictionary::with_capacity(3);
+        let mut query = cf::DictionaryMut::with_capacity(3);
 
         query.insert(&matching::mode::key(), matching_mode);
 
@@ -165,7 +165,7 @@ impl QueryBuilder {
     }
 
     pub fn udids(&mut self, udids: &[&str]) -> &mut Self {
-        let mut array = cf::MutArray::with_capacity(udids.len() as _);
+        let mut array = cf::ArrayMut::with_capacity(udids.len() as _);
         for u in udids {
             let s = cf::String::from_str(u);
             array.append(&s);
