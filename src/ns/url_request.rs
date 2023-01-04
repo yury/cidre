@@ -142,14 +142,17 @@ impl URLRequest {
         unsafe { NSURLRequest_rsel_requiresDNSSECValidation(self) }
     }
 
+    #[inline]
     pub fn http_method(&self) -> Option<&cf::String> {
         unsafe { NSURLRequest_rsel_HTTPMethod(self) }
     }
 
+    #[inline]
     pub fn all_http_header_fields(&self) -> Option<&cf::DictionaryOf<cf::String, cf::String>> {
         unsafe { NSURLRequest_rsel_allHTTPHeaderFields(self) }
     }
 
+    #[inline]
     pub fn value_for_http_header_field<'a>(&'a self, field: &cf::String) -> Option<&'a cf::String> {
         unsafe { NSURLRequest_rsel_valueForHTTPHeaderField(self, field) }
     }
@@ -159,6 +162,7 @@ impl URLRequest {
         unsafe { NSURLRequest_rsel_HTTPBody(self) }
     }
 
+    #[inline]
     pub fn mut_copy(&self) -> Retained<MutableURLRequest> {
         msg_send!("common", self, sel_mutableCopy)
     }
@@ -356,6 +360,7 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::{cf, ns};
+
     #[test]
     fn basics() {
         let mut request =
