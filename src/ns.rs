@@ -76,3 +76,7 @@ pub use regular_expression::MatchingFlags;
 pub use regular_expression::MatchingOptions;
 pub use regular_expression::Options as RegularExpressionOptions;
 pub use regular_expression::RegularExpression;
+
+mod text_checking_result;
+pub use text_checking_result::TextCheckingResult;
+pub use text_checking_result::Type as TextCheckingType;
