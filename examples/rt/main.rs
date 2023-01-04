@@ -162,7 +162,7 @@ async fn main() {
     ])
     .unwrap();
 
-    let mut props = cf::MutableDictionary::with_capacity(10);
+    let mut props = cf::MutDictionary::with_capacity(10);
     props.insert(keys::real_time(), bool_true);
     props.insert(keys::allow_frame_reordering(), bool_false);
     props.insert(keys::max_key_frame_interval(), &max_key_frame_interval);

@@ -181,7 +181,7 @@ where
 }
 
 #[repr(transparent)]
-pub struct MutArrayOf<T>(MutableArray, PhantomData<T>);
+pub struct MutArrayOf<T>(MutArray, PhantomData<T>);
 
 impl<T> MutArrayOf<T> {
     #[inline]
@@ -199,7 +199,7 @@ impl<T> MutArrayOf<T> {
         capacity: usize,
         alloc: Option<&Allocator>,
     ) -> Option<Retained<MutArrayOf<T>>> {
-        let arr = MutableArray::create_in(capacity as _, Callbacks::default(), alloc);
+        let arr = MutArray::create_in(capacity as _, Callbacks::default(), alloc);
         unsafe { transmute(arr) }
     }
 
@@ -407,17 +407,17 @@ impl Array {
         &self,
         capacity: Index,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<MutableArray>> {
+    ) -> Option<Retained<MutArray>> {
         unsafe { CFArrayCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
-    pub fn mut_copy(&self) -> Option<Retained<MutableArray>> {
+    pub fn mut_copy(&self) -> Option<Retained<MutArray>> {
         unsafe { CFArrayCreateMutableCopy(None, 0, self) }
     }
 
     #[inline]
-    pub fn mut_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutableArray>> {
+    pub fn mut_copy_with_capacity(&self, capacity: usize) -> Option<Retained<MutArray>> {
         self.mut_copy_in(capacity as _, None)
     }
 }
@@ -436,9 +436,9 @@ impl std::ops::IndexMut<usize> for Array {
     }
 }
 
-define_cf_type!(MutableArray(Array));
+define_cf_type!(MutArray(Array));
 
-impl MutableArray {
+impl MutArray {
     #[inline]
     pub unsafe fn append_value(&mut self, value: *const c_void) {
         CFArrayAppendValue(self, value)
@@ -466,19 +466,19 @@ impl MutableArray {
         capacity: Index,
         callbacks: Option<&Callbacks>,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<MutableArray>> {
+    ) -> Option<Retained<MutArray>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
     }
 
     #[inline]
-    pub fn with_capacity(capacity: Index) -> Retained<MutableArray> {
+    pub fn with_capacity(capacity: Index) -> Retained<MutArray> {
         unsafe { Self::create_in(capacity, Callbacks::default(), None).unwrap_unchecked() }
     }
 
     /// ```
     /// use cidre::cf;
     ///
-    /// let mut arr = cf::MutableArray::new();
+    /// let mut arr = cf::MutArray::new();
     /// assert_eq!(0, arr.len());
     ///
     /// let num = cf::Number::from_i32(0);
@@ -491,7 +491,7 @@ impl MutableArray {
     /// assert_eq!(0, arr.len());
     /// ```
     #[inline]
-    pub fn new() -> Retained<MutableArray> {
+    pub fn new() -> Retained<MutArray> {
         Self::with_capacity(0)
     }
 }
@@ -519,17 +519,17 @@ extern "C" {
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<MutableArray>>;
+    ) -> Option<Retained<MutArray>>;
 
     fn CFArrayCreateMutableCopy(
         allocator: Option<&Allocator>,
         capacity: Index,
         array: &Array,
-    ) -> Option<Retained<MutableArray>>;
+    ) -> Option<Retained<MutArray>>;
 
-    fn CFArrayAppendValue(array: &mut MutableArray, value: *const c_void);
+    fn CFArrayAppendValue(array: &mut MutArray, value: *const c_void);
 
-    fn CFArrayRemoveAllValues(array: &mut MutableArray);
+    fn CFArrayRemoveAllValues(array: &mut MutArray);
 
     fn CFArrayContainsValue(array: &Array, range: cf::Range, value: *const c_void) -> bool;
 }

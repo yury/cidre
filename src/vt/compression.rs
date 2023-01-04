@@ -17,7 +17,7 @@ mod tests {
 
     #[test]
     fn session_new() {
-        let mut image_attrs = cf::MutableDictionary::with_capacity(3);
+        let mut image_attrs = cf::MutDictionary::with_capacity(3);
 
         let empty_dict = cf::Dictionary::new().unwrap();
         let pixel_format = cf::Number::from_four_char_code(
@@ -48,7 +48,7 @@ mod tests {
         let expected_fr = cf::Number::from_i32(60);
         let frame_delay_count = cf::Number::from_i32(0);
 
-        let mut props = cf::MutableDictionary::with_capacity(10);
+        let mut props = cf::MutDictionary::with_capacity(10);
         props.insert(keys::real_time(), &bool_true);
         props.insert(keys::allow_frame_reordering(), &bool_false);
         props.insert(

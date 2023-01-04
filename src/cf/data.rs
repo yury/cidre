@@ -3,7 +3,7 @@ use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 use crate::{cf, define_cf_type};
 
 define_cf_type!(Data(cf::Type));
-define_cf_type!(MutableData(Data));
+define_cf_type!(MutData(Data));
 
 impl Data {
     #[inline]
@@ -45,12 +45,12 @@ impl Data {
         &self,
         capacity: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<MutableData>> {
+    ) -> Option<cf::Retained<MutData>> {
         unsafe { CFDataCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
-    pub fn mut_copy(&self, capacity: usize) -> cf::Retained<MutableData> {
+    pub fn mut_copy(&self, capacity: usize) -> cf::Retained<MutData> {
         unsafe { self.mut_copy_in(capacity as _, None).unwrap_unchecked() }
     }
 
@@ -75,17 +75,17 @@ impl Data {
     }
 }
 
-impl MutableData {
+impl MutData {
     #[inline]
     pub fn new_in(
         capacity: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::MutableData>> {
+    ) -> Option<cf::Retained<cf::MutData>> {
         unsafe { CFDataCreateMutable(allocator, capacity) }
     }
 
     #[inline]
-    pub fn with_capacity(capacity: usize) -> cf::Retained<MutableData> {
+    pub fn with_capacity(capacity: usize) -> cf::Retained<MutData> {
         unsafe { Self::new_in(capacity as _, None).unwrap_unchecked() }
     }
 
@@ -143,17 +143,17 @@ extern "C" {
     fn CFDataCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-    ) -> Option<cf::Retained<cf::MutableData>>;
-    fn CFDataAppendBytes(data: &MutableData, bytes: *const u8, length: cf::Index);
+    ) -> Option<cf::Retained<cf::MutData>>;
+    fn CFDataAppendBytes(data: &MutData, bytes: *const u8, length: cf::Index);
     fn CFDataCreateMutableCopy(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
         data: &Data,
-    ) -> Option<cf::Retained<MutableData>>;
+    ) -> Option<cf::Retained<MutData>>;
 
     fn CFDataGetBytePtr(data: &cf::Data) -> *const u8;
     fn CFDataGetBytes(data: &cf::Data, range: cf::Range, buffer: *mut u8);
 
-    fn CFDataGetMutableBytePtr(data: &mut cf::MutableData) -> *mut u8;
-    fn CFDataSetLength(data: &mut cf::MutableData, length: cf::Index);
+    fn CFDataGetMutableBytePtr(data: &mut cf::MutData) -> *mut u8;
+    fn CFDataSetLength(data: &mut cf::MutData, length: cf::Index);
 }

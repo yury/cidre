@@ -26,7 +26,7 @@ pub use number::NumberType;
 pub mod string;
 pub use string::CompareFlags as StringCompareFlags;
 pub use string::Encoding as StringEncoding;
-pub use string::MutableString;
+pub use string::MutString;
 pub use string::String;
 
 pub mod array;
@@ -35,8 +35,8 @@ pub use array::ArrayOf;
 pub use array::Callbacks as ArrayCallbacks;
 pub use array::CopyDescriptionCallBack as ArrayCopyDescriptionCallBack;
 pub use array::EqualCallBack as ArrayEqualCallBack;
+pub use array::MutArray;
 pub use array::MutArrayOf;
-pub use array::MutableArray;
 pub use array::ReleaseCallBack as ArrayReleaseCallBack;
 pub use array::RetainCallBack as ArrayRetainCallBack;
 
@@ -45,7 +45,7 @@ pub use dictionary::ApplierFunction as DictionaryApplierFunction;
 pub use dictionary::Dictionary;
 pub use dictionary::DictionaryOf;
 pub use dictionary::KeyCallBacks as DictionaryKeyCallBacks;
-pub use dictionary::MutableDictionary;
+pub use dictionary::MutDictionary;
 pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
 
 pub mod date;
@@ -74,7 +74,7 @@ pub use notification_center::NotificationCenter;
 pub use notification_center::NotificationName;
 
 mod set;
-pub use set::MutableSet;
+pub use set::MutSet;
 pub use set::Set;
 pub use set::SetOf;
 
@@ -83,7 +83,7 @@ pub use uuid::UUID;
 
 mod data;
 pub use data::Data;
-pub use data::MutableData;
+pub use data::MutData;
 
 pub mod run_loop;
 pub use run_loop::Mode as RunLoopMode;

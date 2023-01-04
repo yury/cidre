@@ -86,7 +86,7 @@ impl<'a> AppsLookupBuilder<'a> {
     }
 
     pub fn lookup(&self) -> Result<cf::Retained<cf::Dictionary>, Error> {
-        let mut options = cf::MutableDictionary::with_capacity(3);
+        let mut options = cf::MutDictionary::with_capacity(3);
         if let Some(ref app_type) = self.application_type {
             options.insert(cfstr!("ApplicationType"), app_type);
         }

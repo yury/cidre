@@ -5,7 +5,7 @@ use crate::{cf, define_cf_type};
 use super::runtime::{Release, Retain};
 
 define_cf_type!(Set(cf::Type));
-define_cf_type!(MutableSet(Set));
+define_cf_type!(MutSet(Set));
 
 impl Set {
     #[inline]
