@@ -437,8 +437,6 @@ csel2(, AVAssetReaderTrackOutput, assetReaderTrackOutputWithTrack, AVAssetTrack 
 //@property (nonatomic) BOOL supportsRandomAccess API_AVAILABLE(macos(10.10), ios(8.0), tvos(9.0)) API_UNAVAILABLE(watchos);
 rsel0(, id, supportsRandomAccess, BOOL)
 wsel1(, id, resetForReadingTimeRanges, NSArray *)
-//- (void)resetForReadingTimeRanges:(NSArray<NSValue *> *)timeRanges API_AVAILABLE(macos(10.10), ios(8.0), tvos(9.0)) API_UNAVAILABLE(watchos);
-//AVAssetReaderTrackOutput
 
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
 
@@ -454,7 +452,6 @@ rsel0(, id, maximumOutputPacketSize, NSInteger)
 rsel0(, id, bitRateStrategy, NSString * _Nullable)
 wsel1(, id, setBitRateStrategy, NSString * _Nullable)
 
-//- (BOOL)convertToBuffer:(AVAudioPCMBuffer *)outputBuffer fromBuffer:(const AVAudioPCMBuffer *)inputBuffer error:(NSError **)outError;
 rsel3(, id, convertToBuffer, AVAudioPCMBuffer *, fromBuffer, const AVAudioPCMBuffer *, error, NSError **, BOOL)
 rsel3(, id, convertToBuffer, AVAudioBuffer *, error, NSError **, withInputFromBlock, id, AVAudioConverterOutputStatus)
 
@@ -482,7 +479,6 @@ rsel0(AVMetadataFaceObject_, AVMetadataFaceObject *, rollAngle, CGFloat)
 
 #pragma mark - AVCaptureMetadataOutput
 
-//@property(nonatomic, readonly) NSArray<AVMetadataObjectType> *availableMetadataObjectTypes;
 rsel0(, id, availableMetadataObjectTypes, NSArray *)
 rwsel(, id, rectOfInterest, setRectOfInterest, CGRect)
 csel0(, AVCaptureMetadataOutput, new, AVCaptureMetadataOutput *)
@@ -503,11 +499,8 @@ rsel0(, id, videoSettings, NSDictionary * _Nullable)
 rsel1(, id, recommendedVideoSettingsForAssetWriterWithOutputFileType, AVFileType, NSDictionary * _Nullable)
 
 rsel2(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, assetWriterOutputFileType, AVFileType, NSDictionary * _Nullable)
-//- (nullable NSDictionary<NSString *, id> *)recommendedVideoSettingsForVideoCodecType:(AVVideoCodecType)videoCodecType assetWriterOutputFileType:(AVFileType)outputFileType API_AVAILABLE(macos(10.15), ios(11.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
 
 #pragma mark - AVCaptureDeviceInput
-
-// + (nullable instancetype)deviceInputWithDevice:(AVCaptureDevice *)device error:(NSError * _Nullable * _Nullable)outError;
 
 csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
@@ -515,7 +508,6 @@ csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  
 
 NS_RETURNS_RETAINED
 csel1(, NSValue, valueWithCMTimeRange, CMTimeRange, NSValue *)
-//+ (NSValue *)valueWithCMTimeRange:(CMTimeRange)timeRange API_AVAILABLE(macos(10.7), ios(4.0), tvos(9.0), watchos(1.0));
 
 
 SEL sel_copyNextSampleBuffer;

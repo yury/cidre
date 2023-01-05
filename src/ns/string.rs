@@ -13,18 +13,13 @@ define_obj_type!(StringMut(String));
 
 impl String {
     #[inline]
-    pub fn length(&self) -> usize {
+    pub fn len(&self) -> usize {
         msg_send!("ns", self, ns_length)
     }
 
     #[inline]
-    pub fn len(&self) -> usize {
-        self.length()
-    }
-
-    #[inline]
     pub fn is_empty(&self) -> bool {
-        self.length() == 0
+        self.len() == 0
     }
 
     #[inline]
@@ -125,7 +120,6 @@ mod tests {
         autoreleasepool(|| {
             let s = ns::String::with_str("10.5");
 
-            assert_eq!(s.length(), 4);
             assert_eq!(s.len(), 4);
             assert!(!s.is_empty());
 
