@@ -2,6 +2,13 @@ use std::env;
 use std::path::PathBuf;
 use std::process::Command;
 
+fn xc_feature_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
+    let env_var = format!("CARGO_FEATURE_{}", pomace.to_uppercase());
+    if env::var_os(&env_var).is_some() {
+        xc_build(pomace, sdk, arch, configuration)
+    }
+}
+
 fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     let mut out_lib_dir = PathBuf::from(&env::var("OUT_DIR").unwrap());
     out_lib_dir.push(pomace);
@@ -89,25 +96,26 @@ fn main() {
 
     xc_build("common", sdk, arch, configuration);
     xc_build("ns", sdk, arch, configuration);
-    xc_build("av", sdk, arch, configuration);
     xc_build("mtl", sdk, arch, configuration);
-    xc_build("ci", sdk, arch, configuration);
     xc_build("vn", sdk, arch, configuration);
     xc_build("sn", sdk, arch, configuration);
     xc_build("mps", sdk, arch, configuration);
     xc_build("mpsg", sdk, arch, configuration);
+    xc_feature_build("ci", sdk, arch, configuration);
+    xc_feature_build("av", sdk, arch, configuration);
 
     if sdk.eq("iphoneos") || sdk.eq("maccatalyst") {
-        xc_build("ca", sdk, arch, configuration);
+        xc_feature_build("ca", sdk, arch, configuration);
         xc_build("ui", sdk, arch, configuration);
     }
-    xc_build("ci", sdk, arch, configuration);
     if sdk.eq("macosx") || sdk.eq("maccatalyst") {
         xc_build("sc", sdk, arch, configuration);
-        println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
-        println!(
-            "cargo:rustc-link-search=framework=/Library/Apple/System/Library/PrivateFrameworks"
-        );
+        if env::var_os("CARGO_FEATURE_PRIVATE").is_some() {
+            println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
+            println!(
+                "cargo:rustc-link-search=framework=/Library/Apple/System/Library/PrivateFrameworks"
+            );
+        }
     } else {
     }
 

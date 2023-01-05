@@ -5,6 +5,35 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+
+default = ["full"]
+
+full = [
+  "private",
+  "am",
+  "blocks",
+  "async",
+  "at",
+  "ca",
+  "ci",
+  "av",
+  "cf",
+]
+
+# Turn on private API
+private = []
+
+blocks = []
+async = []
+
+am = ["private"]
+at = []
+av = []
+ca = []
+ci = []
+cf = []
+
 [dependencies]
 
 tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
@@ -23,6 +52,14 @@ linfa-reduction = "0.6.1"
 name = "metal"
 harness = false
 
+[[example]]
+name = "device_list"
+required-features = ["am"]
+
+[[example]]
+name = "device_mount_dev_image"
+required-features = ["am"]
+
 #[lib]
 #crate-type = ["staticlib", "rlib"]
 
@@ -31,3 +68,5 @@ lto = true
 strip = "debuginfo"
 panic = "abort"
 
+[package.metadata.playground]
+features = ["full"]

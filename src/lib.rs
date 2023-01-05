@@ -5,22 +5,27 @@ pub use mac_types::ResType;
 pub use mac_types::UniChar;
 
 /// Apple Mobile
-#[cfg(target_os = "macos")]
+#[cfg(all(target_os = "macos", feature = "am"))]
 pub mod am;
 
 /// Audio Toolkit
+#[cfg(feature = "at")]
 pub mod at;
 
 /// AudioVisual Foundation (AVFoundation)
+#[cfg(feature = "av")]
 pub mod av;
 
 /// Core Animation
+#[cfg(feature = "ca")]
 pub mod ca;
 
 // Core Image
+#[cfg(feature = "ci")]
 pub mod ci;
 
 /// Core Foundation
+#[cfg(feature = "cf")]
 pub mod cf;
 
 /// Core Graphics
