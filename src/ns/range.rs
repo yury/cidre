@@ -52,6 +52,16 @@ impl Range {
     }
 }
 
+impl From<std::ops::Range<usize>> for Range {
+    #[inline]
+    fn from(value: std::ops::Range<usize>) -> Self {
+        Self {
+            location: value.start,
+            length: value.len(),
+        }
+    }
+}
+
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
     fn NSIntersectionRange(a: Range, b: Range) -> Range;

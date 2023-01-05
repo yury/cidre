@@ -1,5 +1,13 @@
 use crate::{cf, define_obj_type, msg_send, ns};
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(usize)]
+pub enum Encoding {
+    ASCII = 1,
+    UTF8 = 4,
+    MacOSRoman = 30,
+}
+
 define_obj_type!(String(ns::Id));
 define_obj_type!(StringMut(String));
 
@@ -64,5 +72,62 @@ impl String {
     #[inline]
     pub fn copy_mut(&self) -> cf::Retained<ns::StringMut> {
         msg_send!("ns", self, ns_mutableCopy)
+    }
+
+    #[inline]
+    pub fn with_str(str: &str) -> cf::Retained<Self> {
+        unsafe {
+            NSString_initWithBytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8).unwrap()
+        }
+    }
+
+    #[inline]
+    pub fn substring(&self, range: std::ops::Range<usize>) -> cf::Retained<ns::String> {
+        let range: ns::Range = range.into();
+        msg_send!("ns", self, ns_substringWithRange, range)
+    }
+}
+
+impl std::ops::Index<std::ops::Range<usize>> for String {
+    type Output = String;
+
+    fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
+        let res = self.substring(index);
+        res.autoreleased()
+    }
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn NSString_initWithBytes_length_encoding(
+        bytes: *const u8,
+        length: usize,
+        encoding: Encoding,
+    ) -> Option<cf::Retained<String>>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns::{self, try_catch};
+
+    #[test]
+    fn basics() {
+        let s = ns::String::with_str("10.5");
+        assert_eq!(s.length(), 4);
+        assert_eq!(s.len(), 4);
+        assert!(!s.is_empty());
+
+        assert_eq!(s.to_i32(), 10);
+        assert_eq!(s.to_integer(), 10);
+        assert_eq!(s.to_f32(), 10.5f32);
+        assert_eq!(s.to_f64(), 10.5f64);
+        assert_eq!(s.to_bool(), true);
+
+        let sub = s.substring(1..1);
+        assert_eq!(sub.to_i32(), 0);
+        assert_eq!(sub.to_bool(), false);
+
+        let r = try_catch(|| s.substring(1..10));
+        assert!(r.is_err());
     }
 }

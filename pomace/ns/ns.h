@@ -229,10 +229,18 @@ NSArray * NSArray_withObjs(const NSObject * _Nonnull * _Nonnull objects, NSUInte
   return [NSArray arrayWithObjects:objects count: count];
 }
 
-#pragma mark NSRegularExpression
+#pragma mark - NSRegularExpression
 
 NS_RETURNS_RETAINED
 csel3(, NSRegularExpression, regularExpressionWithPattern, NSString *, options, NSRegularExpressionOptions, error, NSError **, NSRegularExpression *)
+
+#pragma mark - NSString
+
+asel3(, NSString, initWithBytes, const void *, length, NSUInteger, encoding, NSStringEncoding)
+
+//- (instancetype)initWithBytes:(const void *)bytes
+//                       length:(NSUInteger)len
+//                     encoding:(NSStringEncoding)encoding;
 
 
 #pragma mark - SELECTORS
@@ -263,8 +271,10 @@ SEL ns_resultType;
 SEL ns_range;
 
 SEL ns_lowercaseString;
+SEL ns_substringWithRange;
 
 SEL ns_mutableCopy;
+
 
 __attribute__((constructor))
 static void common_initializer()
@@ -297,6 +307,7 @@ static void common_initializer()
     ns_range = @selector(range);
 
     ns_lowercaseString = @selector(lowercaseString);
+    ns_substringWithRange = @selector(substringWithRange:);
     
     ns_mutableCopy = @selector(mutableCopy);
 
