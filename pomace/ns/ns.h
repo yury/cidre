@@ -274,6 +274,7 @@ SEL ns_lowercaseString;
 SEL ns_substringWithRange;
 
 SEL ns_mutableCopy;
+SEL ns_isEqualToString;
 
 
 __attribute__((constructor))
@@ -310,6 +311,7 @@ static void common_initializer()
     ns_substringWithRange = @selector(substringWithRange:);
     
     ns_mutableCopy = @selector(mutableCopy);
+    ns_isEqualToString = @selector(isEqualToString:);
 
   }
 }

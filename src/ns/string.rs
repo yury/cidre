@@ -88,6 +88,13 @@ impl String {
     }
 }
 
+impl PartialEq for String {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        msg_send!("ns", self, ns_isEqualToString, other)
+    }
+}
+
 impl std::ops::Index<std::ops::Range<usize>> for String {
     type Output = String;
 
@@ -108,26 +115,38 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::ns::{self, try_catch};
+    use crate::{
+        ns::{self, try_catch},
+        objc::autoreleasepool,
+    };
 
     #[test]
     fn basics() {
-        let s = ns::String::with_str("10.5");
-        assert_eq!(s.length(), 4);
-        assert_eq!(s.len(), 4);
-        assert!(!s.is_empty());
+        autoreleasepool(|| {
+            let s = ns::String::with_str("10.5");
 
-        assert_eq!(s.to_i32(), 10);
-        assert_eq!(s.to_integer(), 10);
-        assert_eq!(s.to_f32(), 10.5f32);
-        assert_eq!(s.to_f64(), 10.5f64);
-        assert_eq!(s.to_bool(), true);
+            assert_eq!(s.length(), 4);
+            assert_eq!(s.len(), 4);
+            assert!(!s.is_empty());
 
-        let sub = s.substring(1..1);
-        assert_eq!(sub.to_i32(), 0);
-        assert_eq!(sub.to_bool(), false);
+            assert_eq!(s.to_i32(), 10);
+            assert_eq!(s.to_integer(), 10);
+            assert_eq!(s.to_f32(), 10.5f32);
+            assert_eq!(s.to_f64(), 10.5f64);
+            assert_eq!(s.to_bool(), true);
 
-        let r = try_catch(|| s.substring(1..10));
-        assert!(r.is_err());
+            let sub = s.substring(1..2);
+            assert_eq!(sub.to_i32(), 0);
+            assert_eq!(sub.to_bool(), false);
+
+            let zero = ns::String::with_str("0");
+            assert_eq!(&zero, &sub);
+
+            let sub = &s[3..4];
+            assert_eq!(sub.to_i32(), 5);
+
+            let r = try_catch(|| s.substring(1..10));
+            assert!(r.is_err());
+        });
     }
 }
