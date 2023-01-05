@@ -25,14 +25,10 @@ impl Data {
         Self::new_in(bytes, length, None)
     }
 
-    #[inline]
-    pub fn length(&self) -> cf::Index {
-        unsafe { CFDataGetLength(self) }
-    }
-
+    #[doc(alias = "length")]
     #[inline]
     pub fn len(&self) -> usize {
-        self.length() as _
+        unsafe { CFDataGetLength(self) as _ }
     }
 
     #[inline]
