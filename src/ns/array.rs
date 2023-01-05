@@ -5,7 +5,7 @@ use std::{
     ops::{Deref, Index, IndexMut},
 };
 
-use crate::{cf, msg_send, ns};
+use crate::{arc, msg_send, ns};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -19,24 +19,24 @@ impl<T> Deref for Array<T> {
     }
 }
 
-impl<T> cf::Release for Array<T> {
+impl<T> arc::Release for Array<T> {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> cf::Retain for Array<T> {
-    fn retained(&self) -> cf::Retained<Self> {
+impl<T> arc::Retain for Array<T> {
+    fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
 
 impl<T> Array<T>
 where
-    T: cf::Release,
+    T: arc::Release,
 {
     #[inline]
-    pub fn from_slice(objs: &[&T]) -> cf::Retained<Self> {
+    pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe { transmute(NSArray_withObjs(objs.as_ptr() as _, objs.len())) }
     }
 
@@ -89,7 +89,7 @@ pub struct ArrayIterator<'a, T> {
 
 impl<'a, T> Iterator for ArrayIterator<'a, T>
 where
-    T: cf::Retain,
+    T: arc::Retain,
 {
     type Item = &'a T;
 
@@ -106,7 +106,7 @@ where
 
 impl<'a, T> ExactSizeIterator for ArrayIterator<'a, T>
 where
-    T: cf::Retain,
+    T: arc::Retain,
 {
     fn len(&self) -> usize {
         self.array.len() - self.index
@@ -115,8 +115,10 @@ where
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSArray_withObjs(objects: *const c_void, count: ns::UInteger)
-        -> cf::Retained<Array<ns::Id>>;
+    fn NSArray_withObjs(
+        objects: *const c_void,
+        count: ns::UInteger,
+    ) -> arc::Retained<Array<ns::Id>>;
 }
 
 #[cfg(test)]

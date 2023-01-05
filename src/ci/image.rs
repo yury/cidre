@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, define_cf_type, define_obj_type, mtl, ns};
+use crate::{arc, cf, define_cf_type, define_obj_type, mtl, ns};
 
 define_obj_type!(Image(ns::Id));
 
@@ -8,7 +8,7 @@ impl Image {
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
         options: Option<&cf::DictionaryOf<ImageOption, cf::Type>>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe { CIImage_imageWithMTLTexture_options(texture, transmute(options)) }
     }
 }
@@ -294,7 +294,7 @@ extern "C" {
     fn CIImage_imageWithMTLTexture_options(
         texture: &mtl::Texture,
         options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<Image>>;
+    ) -> Option<arc::R<Image>>;
 
     static kCIImageColorSpace: &'static ImageOption;
     static kCIImageToneMapHDRtoSDR: &'static ImageOption;

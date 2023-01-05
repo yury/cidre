@@ -1,4 +1,4 @@
-use crate::{cf, cv, define_cf_type, mtl};
+use crate::{arc, cf, cv, define_cf_type, mtl};
 
 define_cf_type!(TextureCache(cf::Type));
 
@@ -9,7 +9,7 @@ impl TextureCache {
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-        cache_out: &mut Option<cf::Retained<TextureCache>>,
+        cache_out: &mut Option<arc::R<TextureCache>>,
     ) -> cv::Return {
         CVMetalTextureCacheCreate(
             allocator,
@@ -25,7 +25,7 @@ impl TextureCache {
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-    ) -> Result<cf::Retained<TextureCache>, cv::Return> {
+    ) -> Result<arc::R<TextureCache>, cv::Return> {
         unsafe {
             let mut cache_out = None;
             Self::create_cache_in(
@@ -49,7 +49,7 @@ impl TextureCache {
         width: usize,
         height: usize,
         plane_index: usize,
-        texture_out: &mut Option<cf::Retained<cv::MetalTexture>>,
+        texture_out: &mut Option<arc::R<cv::MetalTexture>>,
     ) -> cv::Return {
         CVMetalTextureCacheCreateTextureFromImage(
             allocator,
@@ -73,7 +73,7 @@ impl TextureCache {
         width: usize,
         height: usize,
         plane_index: usize,
-    ) -> Result<cf::Retained<cv::MetalTexture>, cv::Return> {
+    ) -> Result<arc::R<cv::MetalTexture>, cv::Return> {
         unsafe {
             let mut texture_out = None;
             self.create_texture_in(
@@ -106,7 +106,7 @@ extern "C" {
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-        cache_out: &mut Option<cf::Retained<TextureCache>>,
+        cache_out: &mut Option<arc::R<TextureCache>>,
     ) -> cv::Return;
 
     fn CVMetalTextureCacheCreateTextureFromImage(
@@ -118,7 +118,7 @@ extern "C" {
         width: usize,
         height: usize,
         plane_index: usize,
-        texture_out: &mut Option<cf::Retained<cv::MetalTexture>>,
+        texture_out: &mut Option<arc::R<cv::MetalTexture>>,
     ) -> cv::Return;
 
     fn CVMetalTextureCacheFlush(texture_cache: &TextureCache, options: usize);

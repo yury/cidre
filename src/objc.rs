@@ -1,9 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-use crate::cf::{
-    runtime::{Release, Retain},
-    Retained, Type,
-};
+use crate::{arc, cf::Type};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -22,7 +19,7 @@ pub struct Id(Type);
 
 impl Id {
     #[inline]
-    pub unsafe fn retain<T: Release>(id: &Id) -> Retained<T> {
+    pub unsafe fn retain<T: arc::Release>(id: &Id) -> arc::R<T> {
         transmute(objc_retain(id))
     }
 
@@ -131,14 +128,14 @@ impl Id {
     }
 }
 
-impl Retain for Id {
+impl arc::Retain for Id {
     #[inline]
-    fn retained(&self) -> Retained<Self> {
+    fn retained(&self) -> arc::R<Self> {
         unsafe { Id::retain(self) }
     }
 }
 
-impl Release for Id {
+impl arc::Release for Id {
     #[inline]
     unsafe fn release(&mut self) {
         Id::release(self)
@@ -277,28 +274,28 @@ macro_rules! define_obj_type {
             }
         }
 
-        impl $crate::cf::runtime::Release for $NewType {
+        impl $crate::arc::Release for $NewType {
             #[inline]
             unsafe fn release(&mut self) {
                 self.0.release()
             }
         }
 
-        impl $crate::cf::runtime::Retain for $NewType {
+        impl $crate::arc::Retain for $NewType {
             #[inline]
-            fn retained(&self) -> $crate::cf::runtime::Retained<Self> {
+            fn retained(&self) -> $crate::arc::R<Self> {
                 $NewType::retained(self)
             }
         }
 
         impl $NewType {
             #[inline]
-            pub fn retained(&self) -> $crate::cf::runtime::Retained<Self> {
+            pub fn retained(&self) -> $crate::arc::R<Self> {
                 unsafe { $crate::objc::Id::retain(self) }
             }
         }
 
-        impl $crate::cf::runtime::Retained<$NewType> {
+        impl $crate::arc::R<$NewType> {
             #[must_use]
             pub fn autoreleased<'ar>(self) -> &'ar mut $NewType {
                 unsafe {
@@ -313,7 +310,7 @@ macro_rules! define_obj_type {
 #[repr(C)]
 pub struct Delegate<T: Sized> {
     pub delegate: Box<T>,
-    pub obj: crate::cf::Retained<Id>,
+    pub obj: crate::arc::R<Id>,
 }
 
 #[cfg(test)]

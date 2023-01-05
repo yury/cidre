@@ -1,4 +1,4 @@
-use crate::{cf, cm, define_cf_type, os};
+use crate::{arc, cf, cm, define_cf_type, os};
 
 define_cf_type!(Clock(cf::Type));
 define_cf_type!(Timebase(cf::Type));
@@ -19,7 +19,7 @@ impl Clock {
     #[inline]
     pub unsafe fn audio_clock_create_in(
         allocator: Option<&cf::Allocator>,
-        clock_out: &mut Option<cf::Retained<Clock>>,
+        clock_out: &mut Option<arc::R<Clock>>,
     ) -> os::Status {
         CMAudioClockCreate(allocator, clock_out)
     }
@@ -32,7 +32,7 @@ impl Clock {
     /// This clock is suitable for use as AVPlayer.masterClock when synchronizing video-only playback
     /// with audio played through other APIs or objects.
     #[inline]
-    pub fn audio_clock() -> Result<cf::Retained<Clock>, os::Status> {
+    pub fn audio_clock() -> Result<arc::R<Clock>, os::Status> {
         let mut clock_out = None;
         unsafe {
             let res = Self::audio_clock_create_in(None, &mut clock_out);
@@ -68,7 +68,7 @@ extern "C" {
     fn CMClockGetHostTimeClock() -> &'static Clock;
     fn CMAudioClockCreate(
         allocator: Option<&cf::Allocator>,
-        clock_out: &mut Option<cf::Retained<Clock>>,
+        clock_out: &mut Option<arc::R<Clock>>,
     ) -> os::Status;
 
     fn CMClockGetTime(clock: &Clock) -> cm::Time;

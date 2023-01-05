@@ -1,8 +1,4 @@
-use crate::{
-    cf::{self, Retained, Type},
-    define_cf_type, define_options,
-    sys::_types::MachPort,
-};
+use crate::{arc, cf, define_cf_type, define_options, sys::_types::MachPort};
 
 pub type Id = u32;
 
@@ -67,7 +63,7 @@ impl LockOptions {
     pub const AVOID_SYNC: Self = Self(2);
 }
 
-define_cf_type!(Surface(Type));
+define_cf_type!(Surface(cf::Type));
 
 impl Surface {
     /// ```
@@ -110,7 +106,7 @@ impl Surface {
     /// props.show();
     /// assert!(props.len() >= 1);
     /// ```
-    pub fn create(properties: &cf::Dictionary) -> Option<Retained<Surface>> {
+    pub fn create(properties: &cf::Dictionary) -> Option<arc::R<Surface>> {
         unsafe { IOSurfaceCreate(properties) }
     }
 
@@ -151,12 +147,12 @@ impl Surface {
     ///
     /// assert!(surf.is_none());
     /// ```
-    pub fn lookup(csid: Id) -> Option<Retained<Surface>> {
+    pub fn lookup(csid: Id) -> Option<arc::R<Surface>> {
         unsafe { IOSurfaceLookup(csid) }
     }
 
     #[inline]
-    pub fn all_values(&self) -> Option<Retained<cf::Dictionary>> {
+    pub fn all_values(&self) -> Option<arc::R<cf::Dictionary>> {
         unsafe { IOSurfaceCopyAllValues(self) }
     }
 
@@ -194,7 +190,7 @@ impl Surface {
     ///
     /// This call does NOT destroy the port.
     #[inline]
-    pub fn from_mach_port(port: MachPort) -> Option<Retained<Surface>> {
+    pub fn from_mach_port(port: MachPort) -> Option<arc::R<Surface>> {
         unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
@@ -234,8 +230,8 @@ impl Surface {
 
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
-    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<Retained<Surface>>;
-    fn IOSurfaceLookup(csid: Id) -> Option<Retained<Surface>>;
+    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<arc::R<Surface>>;
+    fn IOSurfaceLookup(csid: Id) -> Option<arc::R<Surface>>;
     fn IOSurfaceGetID(buffer: &Surface) -> Id;
     fn IOSurfaceGetWidth(buffer: &Surface) -> usize;
     fn IOSurfaceGetHeight(buffer: &Surface) -> usize;
@@ -243,10 +239,10 @@ extern "C" {
     fn IOSurfaceGetWidthOfPlane(buffer: &Surface, plane_index: usize) -> usize;
     fn IOSurfaceGetHeightOfPlane(buffer: &Surface, plane_index: usize) -> usize;
 
-    fn IOSurfaceCopyAllValues(buffer: &Surface) -> Option<Retained<cf::Dictionary>>;
+    fn IOSurfaceCopyAllValues(buffer: &Surface) -> Option<arc::R<cf::Dictionary>>;
 
     fn IOSurfaceCreateMachPort(buffer: &Surface) -> MachPort;
-    fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<Retained<Surface>>;
+    fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<arc::R<Surface>>;
 
     fn IOSurfaceIsInUse(buffer: &Surface) -> bool;
     fn IOSurfaceGetUseCount(buffer: &Surface) -> i32;

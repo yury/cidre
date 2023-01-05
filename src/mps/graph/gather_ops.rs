@@ -1,4 +1,4 @@
-use crate::{cf, mps::graph, ns};
+use crate::{arc, cf, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
@@ -9,7 +9,7 @@ impl graph::Graph {
         axis: ns::UInteger,
         batch_dimensions: ns::UInteger,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_gatherWithUpdatesTensor_indicesTensor_axis_batchDimensions_name(
                 self,
@@ -29,7 +29,7 @@ impl graph::Graph {
         updates: &graph::Tensor,
         indices: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_gatherAlongAxis_withUpdatesTensor_indicesTensor_name(
                 self, axis, updates, indices, name,
@@ -47,7 +47,7 @@ extern "C" {
         axis: ns::UInteger,
         batch_dimensions: ns::UInteger,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_gatherAlongAxis_withUpdatesTensor_indicesTensor_name(
         graph: &graph::Graph,
@@ -55,6 +55,6 @@ extern "C" {
         updates: &graph::Tensor,
         indices: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
 }

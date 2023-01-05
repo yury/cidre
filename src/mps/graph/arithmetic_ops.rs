@@ -1,4 +1,4 @@
-use crate::{cf, mps::graph};
+use crate::{arc, cf, mps::graph};
 
 impl graph::Graph {
     #[inline]
@@ -7,7 +7,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_additionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
         }
@@ -20,7 +20,7 @@ impl graph::Graph {
         min: &graph::Tensor,
         max: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_clampWithTensor_minValueTensor_maxValueTensor_name(self, tensor, min, max, name)
         }
@@ -35,7 +35,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_multiplicationWithPrimaryTensor_secondaryTensor_name(
                 self, primary, secondary, name,
@@ -48,7 +48,7 @@ impl graph::Graph {
         &self,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_roundWithTensor_name(self, tensor, name) }
     }
 
@@ -57,7 +57,7 @@ impl graph::Graph {
         &self,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_squareRootWithTensor_name(self, tensor, name) }
     }
 
@@ -67,18 +67,14 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_subtractionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
         }
     }
 
     #[inline]
-    pub fn tanh(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    pub fn tanh(&self, tensor: &graph::Tensor, name: Option<&cf::String>) -> arc::R<graph::Tensor> {
         unsafe { rsel_tanhWithTensor_name(self, tensor, name) }
     }
 }
@@ -90,14 +86,14 @@ extern "C" {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_multiplicationWithPrimaryTensor_secondaryTensor_name(
         graph: &graph::Graph,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_clampWithTensor_minValueTensor_maxValueTensor_name(
         graph: &graph::Graph,
@@ -105,31 +101,31 @@ extern "C" {
         min: &graph::Tensor,
         max: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_roundWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_squareRootWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_subtractionWithPrimaryTensor_secondaryTensor_name(
         graph: &graph::Graph,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_tanhWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
 }

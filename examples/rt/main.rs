@@ -1,7 +1,7 @@
 use std::{ffi::c_void, net::SocketAddr, time::Duration};
 
 use cidre::{
-    cf,
+    arc, cf,
     cm::{self, SampleBuffer},
     dispatch,
     os::Status,
@@ -12,7 +12,7 @@ use cidre::{
 #[repr(C)]
 struct FrameCounter {
     counter: usize,
-    session: cf::Retained<vt::CompressionSession>,
+    session: arc::R<vt::CompressionSession>,
 }
 
 impl FrameCounter {
@@ -54,7 +54,7 @@ impl StreamOutput for FrameCounter {
 struct SenderContext {
     tx: flume::Sender<rt::Cmd>,
     frames_count: usize,
-    format_desc: Option<cf::Retained<cm::VideoFormatDescription>>,
+    format_desc: Option<arc::R<cm::VideoFormatDescription>>,
 }
 
 impl SenderContext {

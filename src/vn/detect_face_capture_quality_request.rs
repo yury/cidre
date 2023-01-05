@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(DetectFaceCaptureQualityRequest(vn::ImageBasedRequest));
 
@@ -12,12 +12,12 @@ impl DetectFaceCaptureQualityRequest {
     }
 
     #[inline]
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNDetectFaceCaptureQualityRequest_new() }
     }
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNDetectFaceCaptureQualityRequest_new() -> cf::Retained<DetectFaceCaptureQualityRequest>;
+    fn VNDetectFaceCaptureQualityRequest_new() -> arc::R<DetectFaceCaptureQualityRequest>;
 }

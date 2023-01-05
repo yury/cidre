@@ -1,15 +1,15 @@
-use cidre::{cf, mtl, ns};
+use cidre::{arc, cf, mtl, ns};
 use criterion::{criterion_group, criterion_main, Criterion};
 
 struct BenchState {
-    y_texture: cf::Retained<mtl::Texture>,
-    cbcr_texture: cf::Retained<mtl::Texture>,
-    bgra_texture: cf::Retained<mtl::Texture>,
-    macro_state: cf::Retained<mtl::ComputePipelineState>,
-    matrix_state: cf::Retained<mtl::ComputePipelineState>,
-    render_state: cf::Retained<mtl::RenderPipelineState>,
-    render_pass_desc: cf::Retained<mtl::RenderPassDescriptor>,
-    vertex_buf: cf::Retained<mtl::Buffer>,
+    y_texture: arc::R<mtl::Texture>,
+    cbcr_texture: arc::R<mtl::Texture>,
+    bgra_texture: arc::R<mtl::Texture>,
+    macro_state: arc::R<mtl::ComputePipelineState>,
+    matrix_state: arc::R<mtl::ComputePipelineState>,
+    render_state: arc::R<mtl::RenderPipelineState>,
+    render_pass_desc: arc::R<mtl::RenderPassDescriptor>,
+    vertex_buf: arc::R<mtl::Buffer>,
 }
 
 fn foo() -> BenchState {

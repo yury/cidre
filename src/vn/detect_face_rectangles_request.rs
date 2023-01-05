@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(DetectFaceRectanglesRequest(vn::ImageBasedRequest));
 
@@ -13,12 +13,12 @@ impl DetectFaceRectanglesRequest {
     }
 
     #[inline]
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNDetectFaceRectanglesRequest_new() }
     }
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNDetectFaceRectanglesRequest_new() -> cf::Retained<DetectFaceRectanglesRequest>;
+    fn VNDetectFaceRectanglesRequest_new() -> arc::R<DetectFaceRectanglesRequest>;
 }

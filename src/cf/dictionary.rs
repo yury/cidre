@@ -1,16 +1,14 @@
 use crate::define_cf_type;
 
-use crate::cf;
+use crate::{arc, cf};
 
-use super::runtime::Release;
-use super::runtime::Retain;
-use super::{Allocator, HashCode, Index, Retained, String, Type, TypeId};
+use super::{Allocator, HashCode, Index, String, Type, TypeId};
 use std::marker::PhantomData;
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
+pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
 pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 pub type HashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
 
@@ -59,12 +57,12 @@ define_cf_type!(Dictionary(Type));
 
 impl Dictionary {
     #[inline]
-    pub fn new() -> Option<Retained<Self>> {
+    pub fn new() -> Option<arc::R<Self>> {
         Self::new_in(None)
     }
 
     #[inline]
-    pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<Self>> {
+    pub fn new_in(allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFDictionaryCreate(allocator, std::ptr::null(), std::ptr::null(), 0, None, None) }
     }
 
@@ -187,7 +185,7 @@ impl Dictionary {
     pub fn with_keys_values<const N: usize>(
         keys: &[&Type; N],
         values: &[&Type; N],
-    ) -> Option<Retained<Dictionary>> {
+    ) -> Option<arc::R<Dictionary>> {
         unsafe {
             Self::create(
                 None,
@@ -215,7 +213,7 @@ impl Dictionary {
         num_values: Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<Dictionary>> {
+    ) -> Option<arc::R<Dictionary>> {
         CFDictionaryCreate(
             allocator,
             keys,
@@ -298,12 +296,12 @@ impl Dictionary {
     }
 
     #[inline]
-    pub fn copy(&self) -> Retained<Self> {
+    pub fn copy(&self) -> arc::R<Self> {
         unsafe { self.copy_in(None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn copy_in(&self, allocator: Option<&cf::Allocator>) -> Option<Retained<Self>> {
+    pub fn copy_in(&self, allocator: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFDictionaryCreateCopy(allocator, self) }
     }
 }
@@ -335,7 +333,7 @@ extern "C" {
         num_values: Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<Dictionary>>;
+    ) -> Option<arc::R<Dictionary>>;
 
     fn CFDictionaryGetKeysAndValues(
         the_dict: &Dictionary,
@@ -346,21 +344,21 @@ extern "C" {
     fn CFDictionaryCreateCopy(
         allocator: Option<&cf::Allocator>,
         the_dict: &cf::Dictionary,
-    ) -> Option<Retained<cf::Dictionary>>;
+    ) -> Option<arc::R<cf::Dictionary>>;
 
 }
 
 define_cf_type!(DictionaryMut(Dictionary));
 
 impl DictionaryMut {
-    pub fn with_capacity(capacity: usize) -> Retained<Self> {
+    pub fn with_capacity(capacity: usize) -> arc::R<Self> {
         unsafe { Self::with_capacity_in(None, capacity).unwrap_unchecked() }
     }
 
     pub fn with_capacity_in(
         allocator: Option<&Allocator>,
         capacity: usize,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             Self::create(
                 allocator,
@@ -376,7 +374,7 @@ impl DictionaryMut {
         capacity: cf::Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
     }
 
@@ -413,13 +411,13 @@ impl DictionaryMut {
 #[repr(transparent)]
 pub struct DictionaryOf<K, V>(Dictionary, PhantomData<(K, V)>)
 where
-    K: Retain + Release,
-    V: Retain + Release;
+    K: arc::Retain,
+    V: arc::Retain;
 
 impl<K, V> DictionaryOf<K, V>
 where
-    K: Retain + Release,
-    V: Retain + Release,
+    K: arc::Retain,
+    V: arc::Retain,
 {
     pub fn get(&self, k: &K) -> Option<&V> {
         unsafe { transmute(self.0.value(transmute(k))) }
@@ -428,8 +426,8 @@ where
 
 impl<K, V> std::ops::Deref for DictionaryOf<K, V>
 where
-    K: Retain + Release,
-    V: Retain + Release,
+    K: arc::Retain,
+    V: arc::Retain,
 {
     type Target = Dictionary;
 
@@ -439,22 +437,22 @@ where
     }
 }
 
-impl<K, V> Release for DictionaryOf<K, V>
+impl<K, V> arc::Release for DictionaryOf<K, V>
 where
-    K: Retain + Release,
-    V: Retain + Release,
+    K: arc::Retain,
+    V: arc::Retain,
 {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<K, V> Retain for DictionaryOf<K, V>
+impl<K, V> arc::Retain for DictionaryOf<K, V>
 where
-    K: Retain + Release,
-    V: Retain + Release,
+    K: arc::Retain,
+    V: arc::Retain,
 {
-    fn retained(&self) -> Retained<Self> {
+    fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
@@ -464,14 +462,14 @@ pub struct DictionaryOfMut<K, V>(DictionaryMut, PhantomData<(K, V)>);
 
 impl<K, V> DictionaryOf<K, V>
 where
-    K: Retain,
-    V: Retain,
+    K: arc::Retain,
+    V: arc::Retain,
 {
     #[inline]
     pub fn with_keys_values<const N: usize>(
         keys: &[&K; N],
         values: &[&V; N],
-    ) -> Retained<DictionaryOf<K, V>> {
+    ) -> arc::R<DictionaryOf<K, V>> {
         unsafe {
             let dict = Dictionary::create(
                 None,
@@ -493,7 +491,7 @@ extern "C" {
         capacity: cf::Index,
         key_callbacks: Option<&KeyCallBacks>,
         value_callbacks: Option<&ValueCallBacks>,
-    ) -> Option<Retained<DictionaryMut>>;
+    ) -> Option<arc::R<DictionaryMut>>;
 
     fn CFDictionaryAddValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);
     fn CFDictionarySetValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);

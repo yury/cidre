@@ -1,13 +1,13 @@
-use crate::{cf, cv, define_cf_type, os, vt};
+use crate::{arc, cf, cv, define_cf_type, os, vt};
 
 define_cf_type!(Session(vt::Session));
 
 impl Session {
-    pub fn create() -> Result<cf::Retained<Self>, os::Status> {
+    pub fn create() -> Result<arc::R<Self>, os::Status> {
         Self::create_in(None)
     }
 
-    pub fn create_in(allocator: Option<&cf::Allocator>) -> Result<cf::Retained<Self>, os::Status> {
+    pub fn create_in(allocator: Option<&cf::Allocator>) -> Result<arc::R<Self>, os::Status> {
         let mut out = None;
         unsafe { VTPixelRotationSessionCreate(allocator, &mut out).to_result_unchecked(out) }
     }
@@ -39,7 +39,7 @@ impl Session {
 extern "C" {
     fn VTPixelRotationSessionCreate(
         allocator: Option<&cf::Allocator>,
-        pixel_rotation_session_out: &mut Option<cf::Retained<Session>>,
+        pixel_rotation_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status;
 
     fn VTPixelRotationSessionInvalidate(session: &mut Session);

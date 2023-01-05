@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 pub type Identifier = cf::String;
 
@@ -25,7 +25,7 @@ impl Locale {
     ///
     /// let id = loc.get_identifier();
     /// ```
-    pub fn current() -> cf::Retained<Locale> {
+    pub fn current() -> arc::R<Locale> {
         unsafe { CFLocaleCopyCurrent() }
     }
 
@@ -38,6 +38,6 @@ impl Locale {
 extern "C" {
     fn CFLocaleGetSystem() -> &'static Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Identifier;
-    fn CFLocaleCopyCurrent() -> cf::Retained<Locale>;
+    fn CFLocaleCopyCurrent() -> arc::R<Locale>;
 
 }

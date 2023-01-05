@@ -1,6 +1,6 @@
 use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(Data(cf::Type));
 define_cf_type!(DataMut(Data));
@@ -16,12 +16,12 @@ impl Data {
         bytes: *const u8,
         length: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::Data>> {
+    ) -> Option<arc::R<cf::Data>> {
         unsafe { CFDataCreate(allocator, bytes, length) }
     }
 
     #[inline]
-    pub fn new(bytes: *const u8, length: cf::Index) -> Option<cf::Retained<cf::Data>> {
+    pub fn new(bytes: *const u8, length: cf::Index) -> Option<arc::R<cf::Data>> {
         Self::new_in(bytes, length, None)
     }
 
@@ -45,12 +45,12 @@ impl Data {
         &self,
         capacity: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<DataMut>> {
+    ) -> Option<arc::R<DataMut>> {
         unsafe { CFDataCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
-    pub fn copy_mut(&self, capacity: usize) -> cf::Retained<DataMut> {
+    pub fn copy_mut(&self, capacity: usize) -> arc::R<DataMut> {
         unsafe { self.copy_mut_in(capacity as _, None).unwrap_unchecked() }
     }
 
@@ -80,12 +80,12 @@ impl DataMut {
     pub fn new_in(
         capacity: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::DataMut>> {
+    ) -> Option<arc::R<cf::DataMut>> {
         unsafe { CFDataCreateMutable(allocator, capacity) }
     }
 
     #[inline]
-    pub fn with_capacity(capacity: usize) -> cf::Retained<DataMut> {
+    pub fn with_capacity(capacity: usize) -> arc::R<DataMut> {
         unsafe { Self::new_in(capacity as _, None).unwrap_unchecked() }
     }
 
@@ -120,12 +120,12 @@ impl DataMut {
 }
 
 /// ```
-/// use cidre::cf;
-/// let data = cf::Retained::from(&[1u8][..]);
+/// use cidre::{arc, cf};
+/// let data = arc::R::from(&[1u8][..]);
 /// assert_eq!(data.len(), 1);
 /// data.show();
 /// ```
-impl From<&[u8]> for cf::Retained<Data> {
+impl From<&[u8]> for arc::R<Data> {
     fn from(bytes: &[u8]) -> Self {
         unsafe { Data::new(bytes.as_ptr(), bytes.len() as _).unwrap_unchecked() }
     }
@@ -138,18 +138,18 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         bytes: *const u8,
         length: cf::Index,
-    ) -> Option<cf::Retained<cf::Data>>;
+    ) -> Option<arc::R<cf::Data>>;
     fn CFDataGetLength(data: &Data) -> cf::Index;
     fn CFDataCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-    ) -> Option<cf::Retained<cf::DataMut>>;
+    ) -> Option<arc::R<cf::DataMut>>;
     fn CFDataAppendBytes(data: &DataMut, bytes: *const u8, length: cf::Index);
     fn CFDataCreateMutableCopy(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
         data: &Data,
-    ) -> Option<cf::Retained<DataMut>>;
+    ) -> Option<arc::R<DataMut>>;
 
     fn CFDataGetBytePtr(data: &cf::Data) -> *const u8;
     fn CFDataGetBytes(data: &cf::Data, range: cf::Range, buffer: *mut u8);

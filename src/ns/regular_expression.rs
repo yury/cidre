@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, define_options, ns};
+use crate::{arc, cf, define_obj_type, define_options, ns};
 
 define_options!(Options(usize));
 
@@ -89,7 +89,7 @@ impl RegularExpression {
         pattern: &cf::String,
         options: Options,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             NSRegularExpression_regularExpressionWithPattern_options_error(pattern, options, error)
         }
@@ -99,7 +99,7 @@ impl RegularExpression {
     pub fn with_pattern(
         pattern: &cf::String,
         options: Options,
-    ) -> Result<cf::Retained<Self>, &cf::Error> {
+    ) -> Result<arc::R<Self>, &cf::Error> {
         let mut error = None;
         unsafe {
             let res = Self::with_pattern_error(pattern, options, &mut error);
@@ -117,7 +117,7 @@ extern "C" {
         pattern: &cf::String,
         options: Options,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<RegularExpression>>;
+    ) -> Option<arc::R<RegularExpression>>;
 }
 
 #[cfg(test)]

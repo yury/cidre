@@ -1,13 +1,13 @@
 use std::{ffi::c_void, intrinsics::transmute, path::PathBuf};
 
-use crate::cf;
+use crate::{arc, cf};
 
 use super::{Connected, Device, Error, Session};
 
 /// Image Mount Callback
 /// Ownership of the status dictionary *status* passes to the callback function. The dict MUST BE
 /// explicitly released or else it will leak.
-pub type MountCallback<T> = extern "C" fn(status: cf::Retained<cf::Dictionary>, context: *mut T);
+pub type MountCallback<T> = extern "C" fn(status: arc::R<cf::Dictionary>, context: *mut T);
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
@@ -61,7 +61,7 @@ impl<'a> Session<'a> {
         let image_path = ds_path.join("DeveloperDiskImage.dmg");
         let sig_image_path = ds_path.join("DeveloperDiskImage.dmg.signature");
         let sig = std::fs::read(sig_image_path).expect("sig file read");
-        let sig = cf::Retained::from(&sig[..]);
+        let sig = arc::R::from(&sig[..]);
 
         let image_sig_key = cf::String::from_str("ImageSignature");
         let options = cf::Dictionary::with_keys_values(
@@ -80,7 +80,7 @@ impl<'a> Session<'a> {
         image_path: &cf::String,
         options: &cf::Dictionary,
     ) -> Result<(), Error> {
-        extern "C" fn mount_cb(status: cf::Retained<cf::Dictionary>, _context: *mut c_void) {
+        extern "C" fn mount_cb(status: arc::R<cf::Dictionary>, _context: *mut c_void) {
             status.show();
         }
         unsafe {
@@ -136,63 +136,63 @@ pub fn platform_support_path(platform: &str, os_version: &str) -> Option<PathBuf
 }
 
 pub mod image_type {
-    use crate::cf;
+    use crate::{arc, cf};
 
     #[inline]
-    pub fn key() -> cf::Retained<cf::String> {
+    pub fn key() -> arc::R<cf::String> {
         "ImageType".into()
     }
 
     #[inline]
-    pub fn developer() -> cf::Retained<cf::String> {
+    pub fn developer() -> arc::R<cf::String> {
         "Developer".into()
     }
 
     #[inline]
-    pub fn debug() -> cf::Retained<cf::String> {
+    pub fn debug() -> arc::R<cf::String> {
         "Debug".into()
     }
 
     #[inline]
-    pub fn factory() -> cf::Retained<cf::String> {
+    pub fn factory() -> arc::R<cf::String> {
         "Factory".into()
     }
 }
 
 pub mod signature {
-    use crate::cf;
+    use crate::{arc, cf};
 
     #[inline]
-    pub fn key() -> cf::Retained<cf::String> {
+    pub fn key() -> arc::R<cf::String> {
         "ImageSignature".into()
     }
 }
 
 pub mod relay_type {
 
-    use crate::cf;
+    use crate::{arc, cf};
 
     #[inline]
-    pub fn key() -> cf::Retained<cf::String> {
+    pub fn key() -> arc::R<cf::String> {
         "RelayType".into()
     }
 
     #[inline]
-    pub fn file_descriptor() -> cf::Retained<cf::String> {
+    pub fn file_descriptor() -> arc::R<cf::String> {
         "RelayTypeFileDescriptor".into()
     }
 
     #[inline]
-    pub fn data() -> cf::Retained<cf::String> {
+    pub fn data() -> arc::R<cf::String> {
         "RelayTypeData".into()
     }
 }
 
 pub mod location {
-    use crate::cf;
+    use crate::{arc, cf};
 
     #[inline]
-    pub fn key() -> cf::Retained<cf::String> {
+    pub fn key() -> arc::R<cf::String> {
         "RelayLocation".into()
     }
 }

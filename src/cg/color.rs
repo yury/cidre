@@ -1,4 +1,4 @@
-use crate::{cf, cg, define_cf_type};
+use crate::{arc, cf, cg, define_cf_type};
 
 define_cf_type!(Color(cf::Type));
 
@@ -9,7 +9,7 @@ impl Color {
     /// let c = cg::Color::generic_gray(0.5, 0.5);
     /// ```
     #[inline]
-    pub fn generic_gray(gray: cg::Float, alpha: cg::Float) -> cf::Retained<Color> {
+    pub fn generic_gray(gray: cg::Float, alpha: cg::Float) -> arc::R<Color> {
         unsafe { CGColorCreateGenericGray(gray, alpha) }
     }
 
@@ -26,7 +26,7 @@ impl Color {
         green: cg::Float,
         blue: cg::Float,
         alpha: cg::Float,
-    ) -> cf::Retained<Color> {
+    ) -> arc::R<Color> {
         unsafe { CGColorCreateGenericRGB(red, green, blue, alpha) }
     }
 
@@ -38,13 +38,13 @@ impl Color {
 
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {
-    fn CGColorCreateGenericGray(gray: cg::Float, alpha: cg::Float) -> cf::Retained<Color>;
+    fn CGColorCreateGenericGray(gray: cg::Float, alpha: cg::Float) -> arc::R<Color>;
     fn CGColorCreateGenericRGB(
         red: cg::Float,
         green: cg::Float,
         blue: cg::Float,
         alpha: cg::Float,
-    ) -> cf::Retained<Color>;
+    ) -> arc::R<Color>;
 
     fn CGColorGetAlpha(color: &Color) -> cg::Float;
 }

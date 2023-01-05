@@ -1,10 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{
-    av::MediaType,
-    cf::{self, Retained},
-    cm, define_cf_type, define_obj_type, ns,
-};
+use crate::{arc, av::MediaType, cf, cm, define_cf_type, define_obj_type, ns};
 
 use super::SessionPreset;
 
@@ -111,7 +107,7 @@ impl Device {
         device_type: &Type,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             AVCaptureDevice_defaultDeviceWithDeviceType_mediaType_position(
                 device_type,
@@ -149,7 +145,7 @@ impl Device {
         unsafe { rsel_hasTorch(self) }
     }
 
-    pub fn configuration_lock(&mut self) -> Result<ConfigurationLockGuard, Retained<cf::Error>> {
+    pub fn configuration_lock(&mut self) -> Result<ConfigurationLockGuard, arc::R<cf::Error>> {
         let mut error = None;
         unsafe {
             let result = self.lock_for_configuration(&mut error);
@@ -163,10 +159,7 @@ impl Device {
         }
     }
 
-    pub unsafe fn lock_for_configuration(
-        &mut self,
-        error: &mut Option<Retained<cf::Error>>,
-    ) -> bool {
+    pub unsafe fn lock_for_configuration(&mut self, error: &mut Option<arc::R<cf::Error>>) -> bool {
         rsel_lockForConfiguration(self, error)
     }
 
@@ -219,11 +212,11 @@ extern "C" {
         device_type: &Type,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Option<Retained<Device>>;
+    ) -> Option<arc::R<Device>>;
 
     fn rsel_lockForConfiguration(
         device: &mut Device,
-        error: &mut Option<Retained<cf::Error>>,
+        error: &mut Option<arc::R<cf::Error>>,
     ) -> bool;
     fn wsel_unlockForConfiguration(device: &mut Device);
 
@@ -393,7 +386,7 @@ impl DiscoverySession {
         device_types: &cf::ArrayOf<Type>,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Retained<Self> {
+    ) -> arc::R<Self> {
         unsafe {
             AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position(
                 device_types,
@@ -419,7 +412,7 @@ extern "C" {
         device_types: &cf::Array,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Retained<DiscoverySession>;
+    ) -> arc::R<DiscoverySession>;
     fn rsel_devices(id: &ns::Id) -> &cf::ArrayOf<Device>;
     #[cfg(not(target_os = "macos"))]
     fn rsel_supportedMultiCamDeviceSets(id: &ns::Id) -> &cf::ArrayOf<cf::SetOf<Device>>;

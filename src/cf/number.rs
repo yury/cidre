@@ -1,6 +1,6 @@
-use crate::{define_cf_type, FourCharCode};
+use crate::{arc, define_cf_type, FourCharCode};
 
-use super::{Allocator, ComparisonResult, Index, Retained, Type, TypeId};
+use super::{Allocator, ComparisonResult, Index, Type, TypeId};
 
 use std::{convert::From, ffi::c_void, time::Duration};
 
@@ -296,7 +296,7 @@ impl Number {
         the_type: NumberType,
         value_ptr: *const c_void,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         CFNumberCreate(allocator, the_type, value_ptr)
     }
 
@@ -309,7 +309,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged
-    pub fn from_i8(value: i8) -> Retained<Self> {
+    pub fn from_i8(value: i8) -> arc::R<Self> {
         unsafe { Self::create_in(NumberType::I8, &value as *const _ as _, None).unwrap_unchecked() }
     }
 
@@ -322,7 +322,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     /// Will return tagged
-    pub fn from_i16(value: i16) -> Retained<Self> {
+    pub fn from_i16(value: i16) -> arc::R<Self> {
         unsafe {
             Self::create_in(NumberType::I16, &value as *const _ as _, None).unwrap_unchecked()
         }
@@ -339,13 +339,13 @@ impl Number {
     /// ```
     /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
     #[inline]
-    pub fn from_i32(value: i32) -> Retained<Self> {
+    pub fn from_i32(value: i32) -> arc::R<Self> {
         unsafe {
             Self::create_in(NumberType::I32, &value as *const _ as _, None).unwrap_unchecked()
         }
     }
 
-    pub fn from_four_char_code(value: FourCharCode) -> Retained<Self> {
+    pub fn from_four_char_code(value: FourCharCode) -> arc::R<Self> {
         let val = value as i32;
         unsafe { Self::create_in(NumberType::I32, &val as *const _ as _, None).unwrap_unchecked() }
     }
@@ -360,7 +360,7 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     #[inline]
-    pub fn from_i64(value: i64) -> Retained<Self> {
+    pub fn from_i64(value: i64) -> arc::R<Self> {
         unsafe {
             Self::create_in(NumberType::I64, &value as *const _ as _, None).unwrap_unchecked()
         }
@@ -376,7 +376,7 @@ impl Number {
     /// assert_eq!(true, num.is_float_type());
     /// ```
     #[inline]
-    pub fn from_f64(value: f64) -> Retained<Self> {
+    pub fn from_f64(value: f64) -> arc::R<Self> {
         unsafe {
             Self::create_in(NumberType::F64, &value as *const _ as _, None).unwrap_unchecked()
         }
@@ -392,7 +392,7 @@ impl Number {
     /// assert_eq!(1f64, num.to_f64().unwrap());
     /// ```
     #[inline]
-    pub fn from_duration(value: Duration) -> Retained<Self> {
+    pub fn from_duration(value: Duration) -> arc::R<Self> {
         unsafe {
             Self::create_in(NumberType::F64, &value.as_secs_f64() as *const _ as _, None)
                 .unwrap_unchecked()
@@ -400,35 +400,35 @@ impl Number {
     }
 }
 
-impl From<i8> for Retained<Number> {
+impl From<i8> for arc::R<Number> {
     #[inline]
     fn from(value: i8) -> Self {
         Number::from_i8(value)
     }
 }
 
-impl From<i16> for Retained<Number> {
+impl From<i16> for arc::R<Number> {
     #[inline]
     fn from(value: i16) -> Self {
         Number::from_i16(value)
     }
 }
 
-impl From<i32> for Retained<Number> {
+impl From<i32> for arc::R<Number> {
     #[inline]
     fn from(value: i32) -> Self {
         Number::from_i32(value)
     }
 }
 
-impl From<i64> for Retained<Number> {
+impl From<i64> for arc::R<Number> {
     #[inline]
     fn from(value: i64) -> Self {
         Number::from_i64(value)
     }
 }
 
-impl From<Duration> for Retained<Number> {
+impl From<Duration> for arc::R<Number> {
     #[inline]
     fn from(value: Duration) -> Self {
         Number::from_duration(value)
@@ -453,7 +453,7 @@ extern "C" {
         allocator: Option<&Allocator>,
         the_type: NumberType,
         value_ptr: *const c_void,
-    ) -> Option<Retained<Number>>;
+    ) -> Option<arc::R<Number>>;
 
     fn CFNumberGetType(number: &Number) -> NumberType;
     fn CFNumberGetByteSize(number: &Number) -> Index;

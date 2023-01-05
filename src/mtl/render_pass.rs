@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{cf, define_obj_type, mtl, ns};
+use crate::{arc, define_obj_type, mtl, ns};
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
@@ -126,7 +126,7 @@ define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
 
 impl Descriptor {
     #[inline]
-    pub fn new() -> cf::Retained<Descriptor> {
+    pub fn new() -> arc::R<Descriptor> {
         unsafe { MTLRenderPassDescriptor_new() }
     }
 
@@ -228,7 +228,7 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPassDescriptor_new() -> cf::Retained<Descriptor>;
+    fn MTLRenderPassDescriptor_new() -> arc::R<Descriptor>;
     fn MTLRenderPassDescriptor_renderPassDescriptor<'ar>() -> &'ar mut Descriptor;
 
     fn rsel_colorAttachments(id: &ns::Id) -> &mut ColorAttachmentDescriptorArray;

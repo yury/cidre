@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::cf::{self, Retained};
+use crate::{arc, cf};
 
 use super::base::{Device, Error, Notification};
 
@@ -78,7 +78,7 @@ pub struct NotificationInfo {
 }
 
 pub enum SafeInfo<'a> {
-    Attached(Retained<Device>),
+    Attached(arc::R<Device>),
     Detached(&'a Device),
     NotificationStopped,
     Paired(&'a Device),
@@ -127,7 +127,7 @@ impl Device {
     ///
     /// To deal with devices dynamically coming and going, use AMDeviceNotificationSubscribe() instead.
     ///
-    pub fn list() -> Option<cf::Retained<cf::ArrayOf<Device>>> {
+    pub fn list() -> Option<arc::R<cf::ArrayOf<Device>>> {
         unsafe { AMDCreateDeviceList() }
     }
 
@@ -135,14 +135,14 @@ impl Device {
     pub unsafe fn copy_array_of_devices_matching_query(
         note: Option<&Notification>,
         query: &cf::Dictionary,
-        out_array: *mut Option<Retained<cf::ArrayOf<Device>>>,
+        out_array: *mut Option<arc::R<cf::ArrayOf<Device>>>,
     ) -> Error {
         AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array)
     }
 }
 
 pub struct QueryBuilder {
-    query: Retained<cf::DictionaryMut>,
+    query: arc::Retained<cf::DictionaryMut>,
 }
 
 impl QueryBuilder {
@@ -194,7 +194,7 @@ impl QueryBuilder {
     pub fn matching_list<'a>(
         &self,
         note: Option<&Notification>,
-    ) -> Result<Retained<cf::ArrayOf<Device>>, Error> {
+    ) -> Result<arc::R<cf::ArrayOf<Device>>, Error> {
         let mut out_array = None;
         unsafe {
             let query = self.query.copy();
@@ -206,11 +206,11 @@ impl QueryBuilder {
 
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
-    fn AMDCreateDeviceList() -> Option<cf::Retained<cf::ArrayOf<Device>>>;
+    fn AMDCreateDeviceList() -> Option<arc::R<cf::ArrayOf<Device>>>;
     fn AMDCopyArrayOfDevicesMatchingQuery<'a>(
         note: Option<&Notification>,
         query: &cf::Dictionary,
-        out_array: *mut Option<Retained<cf::ArrayOf<Device>>>,
+        out_array: *mut Option<arc::R<cf::ArrayOf<Device>>>,
     ) -> Error;
 }
 
@@ -220,7 +220,7 @@ impl Notification {
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut T,
-        ref_out: &mut Option<Retained<Notification>>,
+        ref_out: &mut Option<arc::R<Notification>>,
     ) -> Error {
         AMDeviceNotificationSubscribe(
             transmute(callback),
@@ -259,7 +259,7 @@ impl Notification {
     }
 }
 
-pub struct SubscriptionGuard(Option<Retained<Notification>>);
+pub struct SubscriptionGuard(Option<arc::R<Notification>>);
 
 impl SubscriptionGuard {
     pub fn note(&self) -> Option<&Notification> {
@@ -292,7 +292,7 @@ extern "C" {
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut c_void,
-        ref_out: &mut Option<Retained<Notification>>,
+        ref_out: &mut Option<arc::R<Notification>>,
     ) -> Error;
 
     fn AMDeviceNotificationUnsubscribe(notification: &Notification) -> Error;
@@ -301,61 +301,61 @@ extern "C" {
 
 pub mod matching {
     pub mod mode {
-        use crate::cf;
+        use crate::{arc, cf};
 
         /// This key determines how the matching works. (Required)
         #[inline]
-        pub fn key() -> cf::Retained<cf::String> {
+        pub fn key() -> arc::R<cf::String> {
             "MatchingMode".into()
         }
 
         /// If a device matches ANY of the criteria it will be part of the returned array.
         #[inline]
-        pub fn any_value() -> cf::Retained<cf::String> {
+        pub fn any_value() -> arc::R<cf::String> {
             "MatchAny".into()
         }
 
         /// Only if a device matches ALL of the criteria will it be part of the returned array.
         #[inline]
-        pub fn all_value() -> cf::Retained<cf::String> {
+        pub fn all_value() -> arc::R<cf::String> {
             "MatchAll".into()
         }
 
         /// Ignore all criteria, just return all devices.
         #[inline]
-        pub fn wildcard_value() -> cf::Retained<cf::String> {
+        pub fn wildcard_value() -> arc::R<cf::String> {
             "MatchWildcard".into()
         }
     }
 
     pub mod criteria {
-        use crate::cf;
+        use crate::{arc, cf};
 
         /// Value is an array of CFStrings of device UDIDs, as returned
         /// by AMDeviceCopyDeviceIdentifier(). Case IN-sensitive.
         #[inline]
-        pub fn udid_key() -> cf::Retained<cf::String> {
+        pub fn udid_key() -> arc::R<cf::String> {
             "MatchUDID".into()
         }
 
         /// Value must be either kAMDCriteriaUSBKey or kAMDCriteriaNetworkKey.
         #[inline]
-        pub fn connection_type_key() -> cf::Retained<cf::String> {
+        pub fn connection_type_key() -> arc::R<cf::String> {
             "MatchConnectionType".into()
         }
 
         #[inline]
-        pub fn usb_value() -> cf::Retained<cf::String> {
+        pub fn usb_value() -> arc::R<cf::String> {
             "MatchConnectionTypeUSB".into()
         }
 
         #[inline]
-        pub fn network_value() -> cf::Retained<cf::String> {
+        pub fn network_value() -> arc::R<cf::String> {
             "MatchConnectionTypeNetwork".into()
         }
 
         #[inline]
-        pub fn paired_device_value() -> cf::Retained<cf::String> {
+        pub fn paired_device_value() -> arc::R<cf::String> {
             "MatchConnectionTypePairedDevice".into()
         }
     }

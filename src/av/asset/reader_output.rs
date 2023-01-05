@@ -1,4 +1,5 @@
 use crate::{
+    arc,
     av::{self, MediaType},
     cf, cm, define_obj_type, msg_send, ns,
 };
@@ -55,7 +56,7 @@ impl ReaderOutput {
     ///
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
     /// (using -addOutput:) and -startReading is not called on that asset reader.
-    pub fn copy_next_sample_buffer(&self) -> Option<cf::Retained<cm::SampleBuffer>> {
+    pub fn copy_next_sample_buffer(&self) -> Option<arc::R<cm::SampleBuffer>> {
         msg_send!("av", self, sel_copyNextSampleBuffer)
     }
 }
@@ -101,7 +102,7 @@ impl ReaderTrackOutput {
     pub fn with_track<'ar>(
         track: &av::asset::Track,
         output_options: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings(
                 track,
@@ -134,5 +135,5 @@ extern "C" {
     fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings<'ar>(
         track: &av::asset::Track,
         output_settings: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
-    ) -> Option<cf::Retained<ReaderTrackOutput>>;
+    ) -> Option<arc::R<ReaderTrackOutput>>;
 }

@@ -1,4 +1,4 @@
-use crate::{cf, mps, mps::graph};
+use crate::{arc, cf, mps, mps::graph};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -27,7 +27,7 @@ impl graph::Graph {
         align_corners: bool,
         layout: graph::TensorNamedDataLayout,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_resizeTensor_size_mode_centerResult_alignCorners_layout_name(
                 self,
@@ -54,5 +54,5 @@ extern "C" {
         align_corners: bool,
         layout: graph::TensorNamedDataLayout,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 }

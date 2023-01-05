@@ -4,7 +4,7 @@ use std::{
     time::Duration,
 };
 
-use crate::{cf, define_obj_type, define_options, dispatch, mach};
+use crate::{arc, define_obj_type, define_options, dispatch, mach};
 
 define_obj_type!(Source(dispatch::Object));
 define_obj_type!(TimerSource(Source));
@@ -151,7 +151,7 @@ impl Source {
         handle: std::ffi::c_ulong,
         mask: std::ffi::c_ulong,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<Source>> {
+    ) -> Option<arc::R<Source>> {
         dispatch_source_create(type_, handle, mask, queue)
     }
 
@@ -160,7 +160,7 @@ impl Source {
         port: mach::Port,
         flags: MachSendFlags,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<Source>> {
+    ) -> Option<arc::R<Source>> {
         unsafe { Self::create(Type::mach_send(), port.0 as _, flags.0 as _, queue) }
     }
     #[inline]
@@ -168,7 +168,7 @@ impl Source {
         port: mach::Port,
         flags: MachRecvFlags,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<Source>> {
+    ) -> Option<arc::R<Source>> {
         unsafe { Self::create(Type::mach_recv(), port.0 as _, flags.0 as _, queue) }
     }
 
@@ -176,7 +176,7 @@ impl Source {
     pub fn new_memory_pressure(
         flags: MemoryPressureFlags,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<Source>> {
+    ) -> Option<arc::R<Source>> {
         unsafe { Self::create(Type::memory_pressure(), 0, flags.0 as _, queue) }
     }
 
@@ -185,7 +185,7 @@ impl Source {
         pid: crate::sys::Pid,
         flags: ProcFlags,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<Source>> {
+    ) -> Option<arc::R<Source>> {
         unsafe { Self::create(Type::proc(), pid as _, flags.0 as _, queue) }
     }
 
@@ -193,17 +193,17 @@ impl Source {
     pub fn new_timer(
         flags: TimerFlags,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<TimerSource>> {
+    ) -> Option<arc::R<TimerSource>> {
         unsafe { transmute(Self::create(Type::timer(), 0, flags.0 as _, queue)) }
     }
 
     #[inline]
-    pub fn new_read(fd: i32, queue: Option<&dispatch::Queue>) -> Option<cf::Retained<Source>> {
+    pub fn new_read(fd: i32, queue: Option<&dispatch::Queue>) -> Option<arc::R<Source>> {
         unsafe { Self::create(Type::read(), fd as _, 0, queue) }
     }
 
     #[inline]
-    pub fn new_write(fd: i32, queue: Option<&dispatch::Queue>) -> Option<cf::Retained<Source>> {
+    pub fn new_write(fd: i32, queue: Option<&dispatch::Queue>) -> Option<arc::R<Source>> {
         unsafe { Self::create(Type::write(), fd as _, 0, queue) }
     }
 
@@ -281,7 +281,7 @@ extern "C" {
         handle: std::ffi::c_ulong,
         mask: std::ffi::c_ulong,
         queue: Option<&dispatch::Queue>,
-    ) -> Option<cf::Retained<Source>>;
+    ) -> Option<arc::R<Source>>;
 
     fn dispatch_source_cancel(source: &mut Source);
     fn dispatch_source_get_handle(source: &Source) -> c_ulong;

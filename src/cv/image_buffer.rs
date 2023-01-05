@@ -1,4 +1,4 @@
-use crate::{cf, cg, cv};
+use crate::{arc, cf, cg, cv};
 
 pub type ImageBuffer = cv::Buffer;
 
@@ -77,7 +77,7 @@ impl ImageBuffer {
     #[inline]
     pub fn create_color_space_form_attachments(
         attachments: &cf::Dictionary,
-    ) -> Option<cf::Retained<cg::ColorSpace>> {
+    ) -> Option<arc::R<cg::ColorSpace>> {
         unsafe { CVImageBufferCreateColorSpaceFromAttachments(attachments) }
     }
 }
@@ -90,7 +90,7 @@ extern "C" {
     fn CVImageBufferIsFlipped(image_buffer: &ImageBuffer) -> bool;
     fn CVImageBufferCreateColorSpaceFromAttachments(
         attachments: &cf::Dictionary,
-    ) -> Option<cf::Retained<cg::ColorSpace>>;
+    ) -> Option<arc::R<cg::ColorSpace>>;
 }
 
 pub mod attachment {

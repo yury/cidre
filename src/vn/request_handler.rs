@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{cf, cg, cm, cv, define_obj_type, ns, vn};
+use crate::{arc, cf, cg, cm, cv, define_obj_type, ns, vn};
 
 define_obj_type!(ImageRequestHandler(ns::Id));
 
@@ -17,7 +17,7 @@ define_obj_type!(ImageRequestHandler(ns::Id));
 impl ImageRequestHandler {
     /// Creates a vn::ImageRequestHandler to be used for performing requests against an image
     /// specified by it's URL
-    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> cf::Retained<Self> {
+    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> arc::R<Self> {
         unsafe { VNImageRequestHandler_initWithURL_options(url, options) }
     }
 
@@ -25,7 +25,7 @@ impl ImageRequestHandler {
         url: &cf::URL,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&cf::Dictionary>,
-    ) -> cf::Retained<Self> {
+    ) -> arc::R<Self> {
         unsafe { VNImageRequestHandler_initWithURL_orientation_options(url, orientation, options) }
     }
 
@@ -45,7 +45,7 @@ impl ImageRequestHandler {
     pub fn with_cv_pixel_buffer(
         pb: &cv::PixelBuffer,
         options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe { VNImageRequestHandler_initWithCVPixelBuffer_options(pb, options) }
     }
 
@@ -54,7 +54,7 @@ impl ImageRequestHandler {
         pb: &cv::PixelBuffer,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             VNImageRequestHandler_initWithCVPixelBuffer_orientation_options(
                 pb,
@@ -102,7 +102,7 @@ impl SequenceRequestHandler {
     /// let handler = vn::SequenceRequestHandler::new();
     /// ```
     #[inline]
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNSequenceRequestHandler_new() }
     }
 
@@ -159,24 +159,24 @@ extern "C" {
     fn VNImageRequestHandler_initWithURL_options(
         url: &cf::URL,
         options: Option<&cf::Dictionary>,
-    ) -> cf::Retained<ImageRequestHandler>;
+    ) -> arc::R<ImageRequestHandler>;
 
     fn VNImageRequestHandler_initWithURL_orientation_options(
         url: &cf::URL,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&cf::Dictionary>,
-    ) -> cf::Retained<ImageRequestHandler>;
+    ) -> arc::R<ImageRequestHandler>;
 
     fn VNImageRequestHandler_initWithCVPixelBuffer_options(
         pb: &cv::PixelBuffer,
         options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<ImageRequestHandler>>;
+    ) -> Option<arc::R<ImageRequestHandler>>;
 
     fn VNImageRequestHandler_initWithCVPixelBuffer_orientation_options(
         pb: &cv::PixelBuffer,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<ImageRequestHandler>>;
+    ) -> Option<arc::R<ImageRequestHandler>>;
 
     fn rsel_performRequests_error<'ar>(
         id: &ns::Id,
@@ -184,7 +184,7 @@ extern "C" {
         error: &mut Option<&'ar cf::Error>,
     ) -> bool;
 
-    fn VNSequenceRequestHandler_new() -> cf::Retained<SequenceRequestHandler>;
+    fn VNSequenceRequestHandler_new() -> arc::R<SequenceRequestHandler>;
 
     fn rsel_performRequests_onCVPixelBuffer_error<'ar>(
         id: &ns::Id,

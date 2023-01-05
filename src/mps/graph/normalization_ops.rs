@@ -1,4 +1,4 @@
-use crate::{cf, mps::graph, ns};
+use crate::{arc, cf, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
@@ -7,7 +7,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_meanOfTensor_axes_name(self, tensor, axes, name) }
     }
 
@@ -17,7 +17,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_varianceOfTensor_axes_name(self, tensor, axes, name) }
     }
 
@@ -28,7 +28,7 @@ impl graph::Graph {
         mean: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_varianceOfTensor_meanTensor_axes_name(self, tensor, mean, axes, name) }
     }
 
@@ -42,7 +42,7 @@ impl graph::Graph {
         beta: Option<&graph::Tensor>,
         epsilon: f32,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_normalizationWithTensor_meanTensor_varianceTensor_gammaTensor_betaTensor_epsilon_name(
                 self, tensor, mean, variance, gamma, beta, epsilon, name
@@ -58,14 +58,14 @@ extern "C" {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_varianceOfTensor_axes_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_varianceOfTensor_meanTensor_axes_name(
         graph: &graph::Graph,
@@ -73,7 +73,7 @@ extern "C" {
         mean_tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_normalizationWithTensor_meanTensor_varianceTensor_gammaTensor_betaTensor_epsilon_name(
         graph: &graph::Graph,
@@ -84,7 +84,7 @@ extern "C" {
         beta_tensor: Option<&graph::Tensor>,
         epsilon: f32,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     //-(MPSGraphTensor *) normalizationWithTensor:(MPSGraphTensor *) tensor
     //                                 meanTensor:(MPSGraphTensor *) mean

@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{arc, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
@@ -34,7 +34,7 @@ impl Descriptor {
     /// let heap = device.new_heap_with_descriptor(&desc).unwrap();
     /// assert!(heap.size() >= 1024);
     /// ```
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { MTLHeapDescriptor_new() }
     }
 
@@ -67,7 +67,7 @@ impl Heap {
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<cf::Retained<mtl::Buffer>> {
+    ) -> Option<arc::R<mtl::Buffer>> {
         unsafe { rsel_newBufferWithLength_options(self, length, options) }
     }
 
@@ -75,7 +75,7 @@ impl Heap {
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<cf::Retained<mtl::Texture>> {
+    ) -> Option<arc::R<mtl::Texture>> {
         unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
     }
 }
@@ -83,16 +83,16 @@ impl Heap {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
 
-    fn MTLHeapDescriptor_new() -> cf::Retained<Descriptor>;
+    fn MTLHeapDescriptor_new() -> arc::R<Descriptor>;
 
     fn rsel_newBufferWithLength_options(
         id: &ns::Id,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<cf::Retained<mtl::Buffer>>;
+    ) -> Option<arc::R<mtl::Buffer>>;
 
     fn rsel_newTextureWithDescriptor(
         id: &ns::Id,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<cf::Retained<mtl::Texture>>;
+    ) -> Option<arc::R<mtl::Texture>>;
 }

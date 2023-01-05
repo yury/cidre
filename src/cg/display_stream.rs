@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{blocks, cf, cg, define_cf_type, dispatch, io};
+use crate::{arc, blocks, cf, cg, define_cf_type, dispatch, io};
 
 define_cf_type!(DisplayStream(cf::Type));
 define_cf_type!(Update(cf::Type));
@@ -44,7 +44,7 @@ impl Update {
     }
 
     #[inline]
-    pub fn merged(first: Option<&Self>, second: Option<&Self>) -> Option<cf::Retained<Self>> {
+    pub fn merged(first: Option<&Self>, second: Option<&Self>) -> Option<arc::R<Self>> {
         unsafe { CGDisplayStreamUpdateCreateMergedUpdate(first, second) }
     }
 
@@ -165,7 +165,7 @@ impl DisplayStream {
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         handler: *mut c_void,
-    ) -> Option<cf::Retained<DisplayStream>> {
+    ) -> Option<arc::R<DisplayStream>> {
         unsafe {
             CGDisplayStreamCreate(
                 display,
@@ -187,7 +187,7 @@ impl DisplayStream {
         properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
-    ) -> Option<cf::Retained<DisplayStream>> {
+    ) -> Option<arc::R<DisplayStream>> {
         unsafe {
             CGDisplayStreamCreateWithDispatchQueue(
                 display,
@@ -208,7 +208,7 @@ impl DisplayStream {
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         handler: &mut blocks::Block<F>,
-    ) -> Option<cf::Retained<DisplayStream>>
+    ) -> Option<arc::R<DisplayStream>>
     where
         F: FnMut(FrameStatus, u64, Option<&'ar io::Surface>, Option<&'ar Update>),
     {
@@ -236,7 +236,7 @@ impl DisplayStream {
         properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         queue: &dispatch::Queue,
         handler: &mut blocks::Block<F>,
-    ) -> Option<cf::Retained<DisplayStream>>
+    ) -> Option<arc::R<DisplayStream>>
     where
         F: FnMut(FrameStatus, u64, Option<&'ar io::Surface>, Option<&'ar Update>),
     {
@@ -300,7 +300,7 @@ extern "C" {
     fn CGDisplayStreamUpdateCreateMergedUpdate(
         first: Option<&Update>,
         second: Option<&Update>,
-    ) -> Option<cf::Retained<Update>>;
+    ) -> Option<arc::R<Update>>;
 
     fn CGDisplayStreamUpdateGetMovedRectsDelta(
         update_ref: &Update,
@@ -331,7 +331,7 @@ extern "C" {
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         handler: *mut c_void,
-    ) -> Option<cf::Retained<DisplayStream>>;
+    ) -> Option<arc::R<DisplayStream>>;
 
     fn CGDisplayStreamCreateWithDispatchQueue(
         display: cg::DirectDisplayID,
@@ -341,7 +341,7 @@ extern "C" {
         properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
-    ) -> Option<cf::Retained<DisplayStream>>;
+    ) -> Option<arc::R<DisplayStream>>;
 
     fn CGDisplayStreamStart(stream: &DisplayStream) -> cg::Error;
     fn CGDisplayStreamStop(stream: &DisplayStream) -> cg::Error;

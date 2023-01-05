@@ -1,7 +1,8 @@
 use std::{cmp::Ordering, intrinsics::transmute};
 
 use crate::{
-    cf::{Allocator, Retained, String},
+    arc,
+    cf::{Allocator, String},
     define_options,
 };
 
@@ -98,7 +99,7 @@ impl Time {
     }
 
     #[inline]
-    pub fn copy_description(&self, allocator: Option<&Allocator>) -> Option<Retained<String>> {
+    pub fn copy_description(&self, allocator: Option<&Allocator>) -> Option<arc::R<String>> {
         unsafe { CMTimeCopyDescription(allocator, *self) }
     }
 
@@ -352,6 +353,5 @@ extern "C" {
     fn CMTimeMaximum(time1: Time, time2: Time) -> Time;
     fn CMTimeMinimum(time1: Time, time2: Time) -> Time;
 
-    fn CMTimeCopyDescription(allocator: Option<&Allocator>, time: Time)
-        -> Option<Retained<String>>;
+    fn CMTimeCopyDescription(allocator: Option<&Allocator>, time: Time) -> Option<arc::R<String>>;
 }

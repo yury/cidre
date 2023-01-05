@@ -1,4 +1,4 @@
-use crate::{cf, cg, define_obj_type, msg_send, ns, vn};
+use crate::{arc, cf, cg, define_obj_type, msg_send, ns, vn};
 
 define_obj_type!(Request(ns::Id));
 
@@ -59,7 +59,7 @@ impl DetectHorizonRequest {
         msg_send!("vn", self, sel_results)
     }
 
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNDetectHorizonRequest_new() }
     }
 }
@@ -75,5 +75,5 @@ extern "C" {
     fn rsel_regionOfInterest(id: &ns::Id) -> cg::Rect;
     fn wsel_setRegionOfIntereset(id: &mut ns::Id, value: cg::Rect);
 
-    fn VNDetectHorizonRequest_new() -> cf::Retained<DetectHorizonRequest>;
+    fn VNDetectHorizonRequest_new() -> arc::R<DetectHorizonRequest>;
 }

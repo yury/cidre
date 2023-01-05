@@ -1,4 +1,4 @@
-use crate::{at, av::audio, cf, define_obj_type, objc::Id};
+use crate::{arc, at, av::audio, define_obj_type, objc::Id};
 
 define_obj_type!(TimeEffect(audio::Unit));
 
@@ -20,7 +20,7 @@ impl TimeEffect {
 
     pub fn with_component_description(
         description: at::audio::ComponentDescription,
-    ) -> cf::Retained<Self> {
+    ) -> arc::R<Self> {
         unsafe { AVAudioUnitTimeEffect_initWithAudioComponentDescription(description) }
     }
 }
@@ -29,7 +29,7 @@ impl TimeEffect {
 extern "C" {
     fn AVAudioUnitTimeEffect_initWithAudioComponentDescription(
         description: at::audio::ComponentDescription,
-    ) -> cf::Retained<TimeEffect>;
+    ) -> arc::R<TimeEffect>;
     fn rsel_bypass(id: &Id) -> bool;
     fn wsel_setBypass(id: &Id, value: bool);
 }

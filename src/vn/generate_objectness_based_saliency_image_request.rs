@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(GenerateObjectnessBasedSaliencyImageRequest(
     vn::ImageBasedRequest
@@ -13,7 +13,7 @@ impl GenerateObjectnessBasedSaliencyImageRequest {
     }
 
     #[inline]
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNGenerateObjectnessBasedSaliencyImageRequest_new() }
     }
 }
@@ -21,5 +21,5 @@ impl GenerateObjectnessBasedSaliencyImageRequest {
 #[link(name = "vn", kind = "static")]
 extern "C" {
     fn VNGenerateObjectnessBasedSaliencyImageRequest_new(
-    ) -> cf::Retained<GenerateObjectnessBasedSaliencyImageRequest>;
+    ) -> arc::R<GenerateObjectnessBasedSaliencyImageRequest>;
 }

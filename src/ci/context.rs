@@ -1,15 +1,15 @@
-use crate::{cf, cg, ci, define_obj_type, ns};
+use crate::{arc, cf, cg, ci, define_obj_type, ns};
 
 define_obj_type!(Context(ns::Id));
 
 impl Context {
     #[inline]
-    pub fn with_options(options: Option<&cf::Dictionary>) -> Option<cf::Retained<Self>> {
+    pub fn with_options(options: Option<&cf::Dictionary>) -> Option<arc::R<Self>> {
         unsafe { CIContext_contextWithOptions(options) }
     }
 
     #[inline]
-    pub fn new() -> Option<cf::Retained<Self>> {
+    pub fn new() -> Option<arc::R<Self>> {
         Self::with_options(None)
     }
 
@@ -44,9 +44,7 @@ impl Context {
 
 #[link(name = "ci", kind = "static")]
 extern "C" {
-    fn CIContext_contextWithOptions(
-        options: Option<&cf::Dictionary>,
-    ) -> Option<cf::Retained<Context>>;
+    fn CIContext_contextWithOptions(options: Option<&cf::Dictionary>) -> Option<arc::R<Context>>;
 
     fn rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error<'ar>(
         context: &ns::Id,

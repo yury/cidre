@@ -1,4 +1,4 @@
-use crate::{av, cf, define_obj_type, msg_send, ns};
+use crate::{arc, av, cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(Input(ns::Id));
 define_obj_type!(DeviceInput(Input));
@@ -11,9 +11,7 @@ impl Input {
 }
 
 impl DeviceInput {
-    pub fn with_device<'a>(
-        device: &av::CaptureDevice,
-    ) -> Result<cf::Retained<Self>, &'a cf::Error> {
+    pub fn with_device<'a>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'a cf::Error> {
         let mut error = None;
         unsafe {
             let res = AVCaptureDeviceInput_deviceInputWithDevice_error(device, &mut error);
@@ -34,7 +32,7 @@ extern "C" {
     fn AVCaptureDeviceInput_deviceInputWithDevice_error<'a>(
         device: &av::CaptureDevice,
         error: &mut Option<&'a cf::Error>,
-    ) -> Option<cf::Retained<DeviceInput>>;
+    ) -> Option<arc::R<DeviceInput>>;
 }
 
 impl Port {

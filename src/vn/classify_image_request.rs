@@ -1,11 +1,11 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(ClassifyImageRequest(vn::ImageBasedRequest));
 
 impl ClassifyImageRequest {
     pub const REVISION_1: usize = 1;
 
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNClassifyImageRequest_new() }
     }
 
@@ -43,7 +43,7 @@ impl ClassifyImageRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNClassifyImageRequest_new() -> cf::Retained<ClassifyImageRequest>;
+    fn VNClassifyImageRequest_new() -> arc::R<ClassifyImageRequest>;
 }
 
 #[cfg(test)]

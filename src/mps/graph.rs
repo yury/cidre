@@ -1,8 +1,5 @@
 mod core;
-use crate::cf;
-use crate::define_obj_type;
-use crate::msg_send;
-use crate::ns;
+use crate::{arc, cf, define_obj_type, msg_send, ns};
 
 pub use self::core::PaddingMode;
 pub use self::core::PaddingStyle;
@@ -129,7 +126,7 @@ define_obj_type!(Graph(ns::Id));
 
 impl Graph {
     #[inline]
-    pub fn new() -> cf::Retained<Graph> {
+    pub fn new() -> arc::R<Graph> {
         unsafe { MPSGraph_new() }
     }
 
@@ -146,5 +143,5 @@ impl Graph {
 
 #[link(name = "mpsg", kind = "static")]
 extern "C" {
-    fn MPSGraph_new() -> cf::Retained<Graph>;
+    fn MPSGraph_new() -> arc::R<Graph>;
 }

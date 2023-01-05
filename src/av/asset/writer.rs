@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{av, cf, cm, define_obj_type, ns};
+use crate::{arc, av, cf, cm, define_obj_type, ns};
 
 use super::WriterInput;
 
@@ -76,7 +76,7 @@ impl Writer {
     pub fn with_url_and_file_type(
         url: &cf::URL,
         file_type: &av::FileType,
-    ) -> Result<cf::Retained<Writer>, cf::Retained<cf::Error>> {
+    ) -> Result<arc::R<Writer>, arc::R<cf::Error>> {
         let mut error = None;
         unsafe {
             let res = AVAssetWriter_assetWriterWithURL_fileType_error(url, file_type, &mut error);
@@ -108,8 +108,8 @@ extern "C" {
     fn AVAssetWriter_assetWriterWithURL_fileType_error<'a>(
         url: &cf::URL,
         file_type: &av::FileType,
-        error: &mut Option<cf::Retained<cf::Error>>,
-    ) -> Option<cf::Retained<Writer>>;
+        error: &mut Option<arc::R<cf::Error>>,
+    ) -> Option<arc::R<Writer>>;
 
     //csel_ab(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
     // fn

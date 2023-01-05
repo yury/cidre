@@ -1,4 +1,4 @@
-use crate::{cf, cv};
+use crate::{arc, cf, cv};
 
 /// ```
 /// use cidre::cv;
@@ -20,11 +20,11 @@ pub fn avaiable_compressed(pixel_format: cv::PixelFormatType) -> bool {
 /// let format = cv::pixel_format_description::create(format).is_none();
 ///
 /// ```
-pub fn create(pixel_format: cv::PixelFormatType) -> Option<cf::Retained<cf::Dictionary>> {
+pub fn create(pixel_format: cv::PixelFormatType) -> Option<arc::R<cf::Dictionary>> {
     unsafe { CVPixelFormatDescriptionCreateWithPixelFormatType(None, pixel_format) }
 }
 
-pub fn all_pixel_formats() -> Option<cf::Retained<cf::ArrayOf<cf::Number>>> {
+pub fn all_pixel_formats() -> Option<arc::R<cf::ArrayOf<cf::Number>>> {
     unsafe { CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(None) }
 }
 
@@ -33,11 +33,11 @@ extern "C" {
     fn CVPixelFormatDescriptionCreateWithPixelFormatType(
         allocator: Option<&cf::Allocator>,
         pixel_format: cv::PixelFormatType,
-    ) -> Option<cf::Retained<cf::Dictionary>>;
+    ) -> Option<arc::R<cf::Dictionary>>;
 
     fn CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(
         alloc: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::ArrayOf<cf::Number>>>;
+    ) -> Option<arc::R<cf::ArrayOf<cf::Number>>>;
 }
 
 pub mod keys {

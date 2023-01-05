@@ -1,7 +1,4 @@
-use crate::{
-    cf::{self, Retained},
-    define_obj_type, ns,
-};
+use crate::{arc, cf, define_obj_type, ns};
 
 define_obj_type!(Configuration(ns::Id));
 
@@ -32,12 +29,12 @@ impl Session {
         unsafe { NSURLSession_sharedSession() }
     }
 
-    pub fn data_task_with_url(&self, url: &cf::URL) -> Retained<DataTask> {
+    pub fn data_task_with_url(&self, url: &cf::URL) -> arc::R<DataTask> {
         unsafe { rsel_dataTaskWithURL(self, url) }
     }
 
     #[inline]
-    pub fn data_task_with_request(&self, request: &ns::URLRequest) -> Retained<DataTask> {
+    pub fn data_task_with_request(&self, request: &ns::URLRequest) -> arc::R<DataTask> {
         unsafe { rsel_dataTaskWithRequest(self, request) }
     }
 }
@@ -165,8 +162,8 @@ pub enum WebSocketCloseCode {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSURLSession_sharedSession() -> &'static Session;
-    fn rsel_dataTaskWithURL(session: &Session, url: &cf::URL) -> Retained<DataTask>;
-    fn rsel_dataTaskWithRequest(session: &Session, request: &ns::URLRequest) -> Retained<DataTask>;
+    fn rsel_dataTaskWithURL(session: &Session, url: &cf::URL) -> arc::R<DataTask>;
+    fn rsel_dataTaskWithRequest(session: &Session, request: &ns::URLRequest) -> arc::R<DataTask>;
 
     fn NSURLSessionTask_wsel_resume(task: &Task);
     fn NSURLSessionTask_wsel_cancel(task: &Task);
@@ -219,12 +216,12 @@ define_obj_type!(WebSocketMessage(ns::Id));
 
 impl WebSocketMessage {
     #[inline]
-    pub fn with_data(data: &cf::Data) -> Retained<Self> {
+    pub fn with_data(data: &cf::Data) -> arc::R<Self> {
         unsafe { NSURLSessionWebSocketMessage_initWithData(data) }
     }
 
     #[inline]
-    pub fn with_string(string: &cf::String) -> Retained<Self> {
+    pub fn with_string(string: &cf::String) -> arc::R<Self> {
         unsafe { NSURLSessionWebSocketMessage_initWithString(string) }
     }
 
@@ -246,9 +243,8 @@ impl WebSocketMessage {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLSessionWebSocketMessage_initWithData(data: &cf::Data) -> Retained<WebSocketMessage>;
-    fn NSURLSessionWebSocketMessage_initWithString(data: &cf::String)
-        -> Retained<WebSocketMessage>;
+    fn NSURLSessionWebSocketMessage_initWithData(data: &cf::Data) -> arc::R<WebSocketMessage>;
+    fn NSURLSessionWebSocketMessage_initWithString(data: &cf::String) -> arc::R<WebSocketMessage>;
     fn NSURLSessionWebSocketMessage_data(msg: &WebSocketMessage) -> Option<&cf::Data>;
     fn NSURLSessionWebSocketMessage_string(msg: &WebSocketMessage) -> Option<&cf::String>;
     fn NSURLSessionWebSocketMessage_type(msg: &WebSocketMessage) -> WebSocketMessageType;

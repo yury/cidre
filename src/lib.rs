@@ -86,6 +86,8 @@ pub mod simd;
 /// Vision
 pub mod vn;
 
+pub mod arc;
+
 #[macro_export]
 macro_rules! define_options {
     ($NewType:ident($BaseType:path)) => {

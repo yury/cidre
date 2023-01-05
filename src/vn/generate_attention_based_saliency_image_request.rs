@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(GenerateAttentionBasedSaliencyImageRequest(
     vn::ImageBasedRequest
@@ -12,7 +12,7 @@ impl GenerateAttentionBasedSaliencyImageRequest {
         msg_send!("vn", self, sel_results)
     }
 
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNGenerateAttentionBasedSaliencyImageRequest_new() }
     }
 }
@@ -20,5 +20,5 @@ impl GenerateAttentionBasedSaliencyImageRequest {
 #[link(name = "vn", kind = "static")]
 extern "C" {
     fn VNGenerateAttentionBasedSaliencyImageRequest_new(
-    ) -> cf::Retained<GenerateAttentionBasedSaliencyImageRequest>;
+    ) -> arc::R<GenerateAttentionBasedSaliencyImageRequest>;
 }

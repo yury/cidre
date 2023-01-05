@@ -2,7 +2,7 @@ use std::ffi::c_void;
 use std::intrinsics::transmute;
 use std::ptr::NonNull;
 
-use crate::{cf, define_cf_type, define_options};
+use crate::{arc, cf, define_cf_type, define_options};
 
 define_cf_type!(Socket(cf::Type));
 
@@ -22,7 +22,7 @@ pub struct Signature {
     pub protocol_family: i32,
     pub socket_type: i32,
     pub protocol: i32,
-    pub address: cf::Retained<cf::Data>,
+    pub address: arc::R<cf::Data>,
 }
 
 define_options!(CallBackType(usize));
@@ -61,7 +61,7 @@ pub struct Context<T> {
     pub info: *mut T,
     pub retain: Option<extern "C" fn(info: *const T)>,
     pub release: Option<extern "C" fn(info: *const T)>,
-    pub copy_description: Option<extern "C" fn(info: *const T) -> Option<cf::Retained<cf::String>>>,
+    pub copy_description: Option<extern "C" fn(info: *const T) -> Option<arc::R<cf::String>>>,
 }
 
 pub type NativeHandle = i32;
@@ -75,7 +75,7 @@ impl Socket {
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<Socket>> {
+    ) -> Option<arc::R<Socket>> {
         CFSocketCreate(
             allocator,
             protocol_family,
@@ -92,7 +92,7 @@ impl Socket {
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<Socket>> {
+    ) -> Option<arc::R<Socket>> {
         CFSocketCreateWithNative(allocator, sock, cb_types, transmute(callout), context)
     }
 
@@ -101,7 +101,7 @@ impl Socket {
         cb_types: CallBackType,
         callout: CallBack<T>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<Socket>> {
+    ) -> Option<arc::R<Socket>> {
         Self::create_with_native_in(sock, cb_types, callout, context, None)
     }
 
@@ -124,14 +124,11 @@ impl Socket {
         &self,
         order: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::RunLoopSource>> {
+    ) -> Option<arc::R<cf::RunLoopSource>> {
         unsafe { CFSocketCreateRunLoopSource(allocator, self, order) }
     }
 
-    pub fn create_runloop_source(
-        &self,
-        order: cf::Index,
-    ) -> Option<cf::Retained<cf::RunLoopSource>> {
+    pub fn create_runloop_source(&self, order: cf::Index) -> Option<arc::R<cf::RunLoopSource>> {
         self.create_runloop_source_in(order, None)
     }
 
@@ -176,7 +173,7 @@ extern "C" {
         cb_types: CallBackType,
         callout: CallBack<c_void>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<Socket>>;
+    ) -> Option<arc::R<Socket>>;
 
     fn CFSocketCreateWithNative(
         allocator: Option<&cf::Allocator>,
@@ -184,7 +181,7 @@ extern "C" {
         cb_types: CallBackType,
         callout: CallBack<c_void>,
         context: Option<NonNull<Context<c_void>>>,
-    ) -> Option<cf::Retained<Socket>>;
+    ) -> Option<arc::R<Socket>>;
 
     fn CFSocketGetNative(s: &Socket) -> NativeHandle;
 
@@ -196,7 +193,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         s: &Socket,
         order: cf::Index,
-    ) -> Option<cf::Retained<cf::RunLoopSource>>;
+    ) -> Option<arc::R<cf::RunLoopSource>>;
 
     fn CFSocketGetSocketFlags(s: &Socket) -> Flags;
     fn CFSocketSetSocketFlags(s: &Socket, flags: Flags);

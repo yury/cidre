@@ -1,12 +1,12 @@
 use std::{ffi::c_void, mem::transmute, ops::Deref};
 
-use crate::{cf, define_obj_type, mach, msg_send, ns, objc::Delegate};
+use crate::{arc, cf, define_obj_type, mach, msg_send, ns, objc::Delegate};
 
 define_obj_type!(Port(ns::Id));
 define_obj_type!(MachPort(Port));
 
 impl Port {
-    pub fn new() -> cf::Retained<Port> {
+    pub fn new() -> arc::R<Port> {
         unsafe { NSPort_port() }
     }
 
@@ -20,7 +20,7 @@ impl Port {
 }
 
 impl MachPort {
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { transmute(Port::new()) }
     }
 
@@ -72,13 +72,13 @@ pub trait MachPortDelegate {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSPort_port() -> cf::Retained<Port>;
+    fn NSPort_port() -> arc::R<Port>;
     fn rsel_machPort(id: &ns::Id) -> mach::Port;
 
     fn wsel_scheduleInRunLoop_forMode(id: &ns::Id, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
     fn wsel_removeFromRunLoop_forMode(id: &ns::Id, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
-    fn make_mach_port_delegate(vtable: *const *const c_void) -> cf::Retained<ns::Id>;
+    fn make_mach_port_delegate(vtable: *const *const c_void) -> arc::R<ns::Id>;
 }
 
 #[cfg(test)]

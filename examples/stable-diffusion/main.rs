@@ -1,6 +1,6 @@
-use cidre::{cf, mps, mps::graph, ns};
+use cidre::{arc, cf, mps, mps::graph, ns};
 
-fn make_graph(synchonize: bool) -> cf::Retained<graph::Graph> {
+fn make_graph(synchonize: bool) -> arc::R<graph::Graph> {
     let mut graph = graph::Graph::new();
 
     let options = if synchonize {
@@ -18,7 +18,7 @@ fn load_const(
     name: &str,
     shape: &[&ns::Number],
     fp32: bool,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let (prefix, data_type, size) = if fp32 {
         ("_fp32", mps::DataType::F32, 4)
     } else {
@@ -46,7 +46,7 @@ fn make_conv(
     khw: &ns::Number,
     stride: usize,
     bias: bool,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let weights = load_const(
         graph,
         &format!("{name}.weight"),
@@ -91,7 +91,7 @@ fn make_upsample_nearest(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     scale_factor: i64,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let in_shape = x_in.shape().unwrap();
     let shape: &[&ns::Number] = &[
         &ns::Number::with_i64(in_shape[1].as_i64() * scale_factor),
@@ -112,7 +112,7 @@ fn make_group_norm(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let mut x = x_in.retained();
     if x_in.shape().unwrap().len() == 3 {
         x = graph.expand_dims(&x, 1, None);
@@ -143,7 +143,7 @@ fn make_group_norm(
     graph.reshape(&x, x_in.shape().unwrap(), None)
 }
 
-fn make_swish(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<graph::Tensor> {
+fn make_swish(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     graph.multiplication(x_in, &graph.sigmoid(x_in, None), None)
 }
 
@@ -151,7 +151,7 @@ fn make_group_norm_swish(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     make_swish(graph, &make_group_norm(graph, x_in, name))
 }
 
@@ -160,7 +160,7 @@ fn make_decoder_res_block(
     x_in: &graph::Tensor,
     name: &str,
     out_channels: &ns::Number,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let x = make_group_norm_swish(graph, x_in, &format!("{name}.norm1"));
     let x = make_conv(
         graph,
@@ -201,7 +201,7 @@ pub fn make_decoder_attention(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let x = make_group_norm(graph, x_in, &format!("{name}.norm"));
     let shape = x.shape().unwrap();
     let c = &shape[3];
@@ -229,7 +229,7 @@ pub fn make_decoder_attention(
     graph.addition(&x, x_in, None)
 }
 
-fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<graph::Tensor> {
+fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     let one = ns::Number::with_i64(1);
     let one_shape = mps::Shape::from_slice(&[&one]);
     let dt = mps::DataType::Float16;
@@ -255,7 +255,7 @@ fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retain
     graph.concat_tensors(&ns::Array::from_slice(tensors), 3, None)
 }
 
-fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> cf::Retained<graph::Tensor> {
+fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     let name = "first_stage_model.decoder";
     let x = graph.multiplication(
         x_in,
@@ -360,7 +360,7 @@ fn make_layer_norm(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let in_shape = x_in.shape().unwrap();
     assert_eq!(in_shape.len(), 3, "layernorm requires NTC");
 
@@ -402,7 +402,7 @@ fn make_linear(
     name: &str,
     out_channels: &ns::Number,
     bias: bool,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let in_shape = x_in.shape().unwrap();
     let one = ns::Number::with_i64(1);
     if in_shape.len() == 2 {
@@ -436,7 +436,7 @@ fn make_time_embed(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let out_channels = ns::Number::with_i64(1280);
     let x = make_linear(graph, x_in, &format!("{name}.0"), &out_channels, true);
     let x = make_swish(graph, &x);
@@ -450,7 +450,7 @@ fn make_unet_res_block(
     name: &str,
     in_channels: &ns::Number,
     out_channels: &ns::Number,
-) -> cf::Retained<graph::Tensor> {
+) -> arc::R<graph::Tensor> {
     let kwh = ns::Number::with_i32(3);
     let x = make_group_norm_swish(graph, x_in, &format!("{name}.in_layers.0"));
     let x = make_conv(

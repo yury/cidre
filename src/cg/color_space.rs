@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(i32)]
@@ -86,7 +86,7 @@ impl ColorSpace {
     /// assert_eq!(cg::ColorSpaceModel::Monochrome, space.model());
     /// ```
     #[inline]
-    pub fn device_gray() -> Option<cf::Retained<ColorSpace>> {
+    pub fn device_gray() -> Option<arc::R<ColorSpace>> {
         unsafe { CGColorSpaceCreateDeviceGray() }
     }
 
@@ -107,7 +107,7 @@ impl ColorSpace {
     /// assert_eq!(cg::ColorSpaceModel::RGB, space.model());
     /// ```
     #[inline]
-    pub fn device_rgb() -> Option<cf::Retained<ColorSpace>> {
+    pub fn device_rgb() -> Option<arc::R<ColorSpace>> {
         unsafe { CGColorSpaceCreateDeviceRGB() }
     }
 
@@ -124,7 +124,7 @@ impl ColorSpace {
     /// assert_eq!(cg::ColorSpaceModel::CMYK, space.model());
     /// ```
     #[inline]
-    pub fn device_cmyk() -> Option<cf::Retained<ColorSpace>> {
+    pub fn device_cmyk() -> Option<arc::R<ColorSpace>> {
         unsafe { CGColorSpaceCreateDeviceCMYK() }
     }
 
@@ -139,7 +139,7 @@ impl ColorSpace {
     /// assert!(actual_name.equal(name));
     /// ```
     #[inline]
-    pub fn with_name(name: &cf::String) -> Option<cf::Retained<ColorSpace>> {
+    pub fn with_name(name: &cf::String) -> Option<arc::R<ColorSpace>> {
         unsafe { CGColorSpaceCreateWithName(name) }
     }
 }
@@ -154,11 +154,11 @@ extern "C" {
     fn CGColorSpaceGetBaseColorSpace(space: &ColorSpace) -> Option<&ColorSpace>;
     fn CGColorSpaceGetColorTableCount(space: &ColorSpace) -> usize;
 
-    fn CGColorSpaceCreateDeviceGray() -> Option<cf::Retained<ColorSpace>>;
-    fn CGColorSpaceCreateDeviceRGB() -> Option<cf::Retained<ColorSpace>>;
-    fn CGColorSpaceCreateDeviceCMYK() -> Option<cf::Retained<ColorSpace>>;
+    fn CGColorSpaceCreateDeviceGray() -> Option<arc::R<ColorSpace>>;
+    fn CGColorSpaceCreateDeviceRGB() -> Option<arc::R<ColorSpace>>;
+    fn CGColorSpaceCreateDeviceCMYK() -> Option<arc::R<ColorSpace>>;
 
-    fn CGColorSpaceCreateWithName(name: &cf::String) -> Option<cf::Retained<ColorSpace>>;
+    fn CGColorSpaceCreateWithName(name: &cf::String) -> Option<arc::R<ColorSpace>>;
 }
 
 pub mod names {

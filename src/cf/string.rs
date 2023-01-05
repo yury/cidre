@@ -1,9 +1,9 @@
 use core::fmt;
 use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
 
-use super::{Allocator, Index, OptionFlags, Range, Retained, Type, TypeId};
+use super::{Allocator, Index, OptionFlags, Range, Type, TypeId};
 
-use crate::{define_cf_type, define_options, UniChar};
+use crate::{arc, define_cf_type, define_options, UniChar};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
@@ -68,7 +68,7 @@ impl String {
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
-    pub fn from_str_no_copy(str: &str) -> Retained<Self> {
+    pub fn from_str_no_copy(str: &str) -> arc::R<Self> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes_no_copy_in(
@@ -95,7 +95,7 @@ impl String {
     /// assert!(s3.has_prefix(&s2));
     ///```
     #[inline]
-    pub fn from_str(str: &str) -> Retained<Self> {
+    pub fn from_str(str: &str) -> arc::R<Self> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes(None, bytes, bytes.len() as _, Encoding::UTF8, false)
@@ -104,7 +104,7 @@ impl String {
     }
 
     #[inline]
-    pub fn from_cstr(cstr: &CStr) -> Retained<Self> {
+    pub fn from_cstr(cstr: &CStr) -> arc::R<Self> {
         unsafe {
             Self::create_with_cstring_in(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
                 .unwrap_unchecked()
@@ -112,7 +112,7 @@ impl String {
     }
 
     #[inline]
-    pub fn from_cstr_no_copy(cstr: &CStr) -> Retained<Self> {
+    pub fn from_cstr_no_copy(cstr: &CStr) -> arc::R<Self> {
         unsafe {
             Self::create_with_cstring_no_copy_in(
                 None,
@@ -153,12 +153,12 @@ impl String {
 
     /// CFStringCreateCopy
     #[inline]
-    pub fn copy_in(&self, alloc: Option<&Allocator>) -> Option<Retained<Self>> {
+    pub fn copy_in(&self, alloc: Option<&Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateCopy(alloc, self) }
     }
 
     #[inline]
-    pub fn copy(&self) -> Option<Retained<Self>> {
+    pub fn copy(&self) -> Option<arc::R<Self>> {
         self.copy_in(None)
     }
 
@@ -170,7 +170,7 @@ impl String {
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             let bytes = bytes.as_ptr();
             CFStringCreateWithBytesNoCopy(
@@ -190,7 +190,7 @@ impl String {
         bytes_with_null: &[u8],
         encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
             CFStringCreateWithCStringNoCopy(alloc, c_str, encoding, contents_deallocator)
@@ -202,7 +202,7 @@ impl String {
         alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
         encoding: Encoding,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
             CFStringCreateWithCString(alloc, c_str, encoding)
@@ -216,7 +216,7 @@ impl String {
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
-    ) -> Option<Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             let bytes = bytes.as_ptr();
             CFStringCreateWithBytes(
@@ -234,12 +234,12 @@ impl String {
         &self,
         alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<Retained<StringMut>> {
+    ) -> Option<arc::R<StringMut>> {
         unsafe { CFStringCreateMutableCopy(alloc, max_length, self) }
     }
 
     #[inline]
-    pub fn copy_mut(&self, max_length: Index) -> Option<Retained<StringMut>> {
+    pub fn copy_mut(&self, max_length: Index) -> Option<arc::R<StringMut>> {
         self.copy_mut_in(None, max_length)
     }
 }
@@ -349,7 +349,7 @@ impl StringMut {
     }
 
     #[inline]
-    pub fn create(alloc: Option<&Allocator>, max_length: Index) -> Option<Retained<Self>> {
+    pub fn create(alloc: Option<&Allocator>, max_length: Index) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
     }
 }
@@ -361,18 +361,16 @@ extern "C" {
     fn CFStringCreateMutable(
         alloc: Option<&Allocator>,
         max_length: Index,
-    ) -> Option<Retained<StringMut>>;
-    fn CFStringCreateCopy(
-        alloc: Option<&Allocator>,
-        the_string: &String,
-    ) -> Option<Retained<String>>;
+    ) -> Option<arc::R<StringMut>>;
+    fn CFStringCreateCopy(alloc: Option<&Allocator>, the_string: &String)
+        -> Option<arc::R<String>>;
     fn CFStringHasPrefix(the_string: &String, prefix: &String) -> bool;
     fn CFStringHasSuffix(the_string: &String, prefix: &String) -> bool;
     fn CFStringCreateMutableCopy(
         alloc: Option<&Allocator>,
         max_length: Index,
         the_string: &String,
-    ) -> Option<Retained<StringMut>>;
+    ) -> Option<arc::R<StringMut>>;
     fn CFStringGetCharacterAtIndex(the_string: &String, idx: Index) -> UniChar;
 
     fn CFStringAppend(the_string: &mut StringMut, appended_string: &String);
@@ -386,20 +384,20 @@ extern "C" {
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<String>>;
+    ) -> Option<arc::R<String>>;
 
     fn CFStringCreateWithCStringNoCopy(
         alloc: Option<&Allocator>,
         c_str: *const c_char,
         encoding: Encoding,
         contents_deallocator: Option<&Allocator>,
-    ) -> Option<Retained<String>>;
+    ) -> Option<arc::R<String>>;
 
     fn CFStringCreateWithCString(
         alloc: Option<&Allocator>,
         c_str: *const c_char,
         encoding: Encoding,
-    ) -> Option<Retained<String>>;
+    ) -> Option<arc::R<String>>;
 
     fn CFStringCreateWithBytes(
         alloc: Option<&Allocator>,
@@ -407,7 +405,7 @@ extern "C" {
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
-    ) -> Option<Retained<String>>;
+    ) -> Option<arc::R<String>>;
 
     fn CFShowStr(str: &String);
 
@@ -428,14 +426,14 @@ extern "C" {
     // fn __CFStringMakeConstantString(str: *const c_char) -> &'static String;
 }
 
-impl From<&'static str> for Retained<String> {
+impl From<&'static str> for arc::R<String> {
     #[inline]
     fn from(s: &'static str) -> Self {
         String::from_str_no_copy(s)
     }
 }
 
-impl From<&std::string::String> for Retained<String> {
+impl From<&std::string::String> for arc::R<String> {
     #[inline]
     fn from(s: &std::string::String) -> Self {
         String::from_str(s.as_str())

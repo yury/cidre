@@ -1,4 +1,5 @@
 use crate::{
+    arc,
     av::{self, FileType},
     cf, define_obj_type, dispatch, ns,
 };
@@ -8,7 +9,7 @@ use super::Output;
 define_obj_type!(VideoDataOutput(Output));
 
 impl VideoDataOutput {
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { AVCaptureVideoDataOutput_new() }
     }
 
@@ -77,7 +78,7 @@ impl VideoDataOutput {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureVideoDataOutput_new() -> cf::Retained<VideoDataOutput>;
+    fn AVCaptureVideoDataOutput_new() -> arc::R<VideoDataOutput>;
 
     fn rsel_alwaysDiscardsLateVideoFrames(id: &ns::Id) -> bool;
     fn wsel_setAlwaysDiscardsLateVideoFrames(id: &ns::Id, value: bool);

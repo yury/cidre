@@ -1,14 +1,11 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
-use super::{
-    runtime::{Release, Retain},
-    Allocator, Index, Retained, String, Type, TypeId,
-};
+use super::{Allocator, Index, String, Type, TypeId};
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<Retained<String>>;
+pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
 pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 
 #[repr(C)]
@@ -35,12 +32,12 @@ pub struct ArrayOf<T>(Array, PhantomData<T>);
 
 impl<T> ArrayOf<T> {
     #[inline]
-    pub fn new() -> Retained<ArrayOf<T>> {
+    pub fn new() -> arc::R<Self> {
         unsafe { transmute(Array::new()) }
     }
 
     #[inline]
-    pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<ArrayOf<T>>> {
+    pub fn new_in(allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
         unsafe { transmute(Array::new_in(allocator)) }
     }
 
@@ -68,15 +65,15 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> Option<Retained<ArrayOfMut<T>>> {
+    pub fn copy_mut(&self) -> Option<arc::R<ArrayOfMut<T>>> {
         let copy = self.0.copy_mut();
         unsafe { transmute(copy) }
     }
 
     #[inline]
-    pub fn from_slice(values: &[&T]) -> Retained<Self>
+    pub fn from_slice(values: &[&T]) -> arc::R<Self>
     where
-        T: Retain,
+        T: arc::Retain,
     {
         unsafe {
             let arr = Array::create_in(
@@ -90,9 +87,9 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn from_retained_slice(values: &[cf::Retained<T>]) -> Option<Retained<Self>>
+    pub fn from_retained_slice(values: &[arc::R<T>]) -> Option<arc::R<Self>>
     where
-        T: Retain,
+        T: arc::Retain,
     {
         unsafe {
             let arr = Array::create_in(
@@ -117,7 +114,7 @@ impl<T> std::ops::Deref for ArrayOf<T> {
 
 impl<T> std::ops::Index<usize> for ArrayOf<T>
 where
-    T: Retain + Release,
+    T: arc::Retain,
 {
     type Output = T;
 
@@ -128,21 +125,21 @@ where
 
 impl<T> std::ops::IndexMut<usize> for ArrayOf<T>
 where
-    T: Retain + Release,
+    T: arc::Retain,
 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
-impl<T> Release for ArrayOf<T> {
+impl<T> arc::Release for ArrayOf<T> {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for ArrayOf<T> {
-    fn retained(&self) -> Retained<Self> {
+impl<T> arc::Retain for ArrayOf<T> {
+    fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
@@ -156,7 +153,7 @@ pub struct ArrayOfIterator<'a, T> {
 
 impl<'a, T> Iterator for ArrayOfIterator<'a, T>
 where
-    T: Retain,
+    T: arc::Retain,
 {
     type Item = &'a T;
 
@@ -173,7 +170,7 @@ where
 
 impl<'a, T> ExactSizeIterator for ArrayOfIterator<'a, T>
 where
-    T: Retain,
+    T: arc::Retain,
 {
     fn len(&self) -> usize {
         self.array.len() - self.index
@@ -185,20 +182,17 @@ pub struct ArrayOfMut<T>(ArrayMut, PhantomData<T>);
 
 impl<T> ArrayOfMut<T> {
     #[inline]
-    pub fn new() -> Retained<ArrayOfMut<T>> {
+    pub fn new() -> arc::R<ArrayOfMut<T>> {
         Self::with_capacity(0)
     }
 
     #[inline]
-    pub fn with_capacity(capacity: usize) -> Retained<ArrayOfMut<T>> {
+    pub fn with_capacity(capacity: usize) -> arc::R<Self> {
         unsafe { Self::with_capacity_in(capacity, None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn with_capacity_in(
-        capacity: usize,
-        alloc: Option<&Allocator>,
-    ) -> Option<Retained<ArrayOfMut<T>>> {
+    pub fn with_capacity_in(capacity: usize, alloc: Option<&Allocator>) -> Option<arc::R<Self>> {
         let arr = ArrayMut::create_in(capacity as _, Callbacks::default(), alloc);
         unsafe { transmute(arr) }
     }
@@ -230,7 +224,7 @@ impl<T> std::ops::Deref for ArrayOfMut<T> {
 
 impl<T> std::ops::Index<usize> for ArrayOfMut<T>
 where
-    T: Retain,
+    T: arc::Retain,
 {
     type Output = T;
 
@@ -241,21 +235,21 @@ where
 
 impl<T> std::ops::IndexMut<usize> for ArrayOfMut<T>
 where
-    T: Retain,
+    T: arc::Retain,
 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
-impl<T> Release for ArrayOfMut<T> {
+impl<T> arc::Release for ArrayOfMut<T> {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for ArrayOfMut<T> {
-    fn retained(&self) -> Retained<Self> {
+impl<T> arc::Retain for ArrayOfMut<T> {
+    fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }
@@ -317,7 +311,7 @@ impl Array {
     ///
     /// ```
     #[inline]
-    pub fn copy_in(&self, allocator: Option<&Allocator>) -> Option<Retained<Array>> {
+    pub fn copy_in(&self, allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFArrayCreateCopy(allocator, self) }
     }
 
@@ -328,7 +322,7 @@ impl Array {
     /// let arr2 = arr1.copy().expect("copy");
     /// ```
     #[inline]
-    pub fn copy(&self) -> Option<Retained<Array>> {
+    pub fn copy(&self) -> Option<arc::R<Array>> {
         self.copy_in(None)
     }
 
@@ -338,17 +332,17 @@ impl Array {
         num_values: Index,
         callbacks: Option<&Callbacks>,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<Array>> {
+    ) -> Option<arc::R<Self>> {
         CFArrayCreate(allocator, values, num_values, callbacks)
     }
 
     #[inline]
-    pub fn new() -> Retained<Array> {
+    pub fn new() -> arc::R<Self> {
         unsafe { Self::new_in(None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn new_in(allocator: Option<&Allocator>) -> Option<Retained<Array>> {
+    pub fn new_in(allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
         unsafe { Self::create_in(std::ptr::null(), 0, Callbacks::default(), allocator) }
     }
 
@@ -360,14 +354,14 @@ impl Array {
     /// assert_eq!(3, arr.len());
     /// ```
     #[inline]
-    pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<Retained<Array>> {
+    pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<arc::R<Self>> {
         unsafe { Array::create_in(values.as_ptr() as _, N as _, Callbacks::default(), None) }
     }
 
     #[inline]
-    pub fn from_slice<T>(values: &[&T]) -> Option<Retained<Array>>
+    pub fn from_slice<T>(values: &[&T]) -> Option<arc::R<Array>>
     where
-        T: Retain + Release,
+        T: arc::Retain,
     {
         unsafe {
             Array::create_in(
@@ -380,7 +374,7 @@ impl Array {
     }
 
     #[inline]
-    pub fn from_copyable<const N: usize, T>(values: &[T; N]) -> Option<Retained<Array>>
+    pub fn from_copyable<const N: usize, T>(values: &[T; N]) -> Option<arc::R<Self>>
     where
         T: Copy,
     {
@@ -407,17 +401,17 @@ impl Array {
         &self,
         capacity: Index,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<ArrayMut>> {
+    ) -> Option<arc::R<ArrayMut>> {
         unsafe { CFArrayCreateMutableCopy(allocator, capacity, self) }
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> Option<Retained<ArrayMut>> {
+    pub fn copy_mut(&self) -> Option<arc::R<ArrayMut>> {
         unsafe { CFArrayCreateMutableCopy(None, 0, self) }
     }
 
     #[inline]
-    pub fn copy_mut_with_capacity(&self, capacity: usize) -> Option<Retained<ArrayMut>> {
+    pub fn copy_mut_with_capacity(&self, capacity: usize) -> Option<arc::R<ArrayMut>> {
         self.copy_mut_in(capacity as _, None)
     }
 }
@@ -466,12 +460,12 @@ impl ArrayMut {
         capacity: Index,
         callbacks: Option<&Callbacks>,
         allocator: Option<&Allocator>,
-    ) -> Option<Retained<ArrayMut>> {
+    ) -> Option<arc::R<ArrayMut>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
     }
 
     #[inline]
-    pub fn with_capacity(capacity: Index) -> Retained<ArrayMut> {
+    pub fn with_capacity(capacity: Index) -> arc::R<Self> {
         unsafe { Self::create_in(capacity, Callbacks::default(), None).unwrap_unchecked() }
     }
 
@@ -491,7 +485,7 @@ impl ArrayMut {
     /// assert_eq!(0, arr.len());
     /// ```
     #[inline]
-    pub fn new() -> Retained<ArrayMut> {
+    pub fn new() -> arc::R<Self> {
         Self::with_capacity(0)
     }
 }
@@ -509,9 +503,9 @@ extern "C" {
         values: *const c_void,
         num_values: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<Array>>;
+    ) -> Option<arc::R<Array>>;
 
-    fn CFArrayCreateCopy(allocator: Option<&Allocator>, array: &Array) -> Option<Retained<Array>>;
+    fn CFArrayCreateCopy(allocator: Option<&Allocator>, array: &Array) -> Option<arc::R<Array>>;
 
     fn CFArrayGetCount(array: &Array) -> Index;
 
@@ -519,13 +513,13 @@ extern "C" {
         allocator: Option<&Allocator>,
         capacity: Index,
         callbacks: Option<&Callbacks>,
-    ) -> Option<Retained<ArrayMut>>;
+    ) -> Option<arc::R<ArrayMut>>;
 
     fn CFArrayCreateMutableCopy(
         allocator: Option<&Allocator>,
         capacity: Index,
         array: &Array,
-    ) -> Option<Retained<ArrayMut>>;
+    ) -> Option<arc::R<ArrayMut>>;
 
     fn CFArrayAppendValue(array: &mut ArrayMut, value: *const c_void);
 

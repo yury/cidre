@@ -3,10 +3,7 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{
-    cf::{self, Retained},
-    define_cf_type, define_options, os,
-};
+use crate::{arc, cf, define_cf_type, define_options, os};
 
 define_options!(Flags(u32));
 
@@ -61,7 +58,7 @@ impl BlockBuffer {
         structure_allocator: Option<&cf::Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
-    ) -> Result<Retained<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
             CMBlockBufferCreateEmpty(
@@ -88,7 +85,7 @@ impl BlockBuffer {
     pub fn with_memory_block(
         len: usize,
         block_allocator: Option<&cf::Allocator>,
-    ) -> Result<Retained<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuffer>, os::Status> {
         unsafe {
             Self::create_with_memory_block(
                 None,
@@ -112,7 +109,7 @@ impl BlockBuffer {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-    ) -> Result<Retained<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuffer>, os::Status> {
         let mut block_buffer_out = None;
         CMBlockBufferCreateWithMemoryBlock(
             structure_allocator,
@@ -243,7 +240,7 @@ impl BlockBuffer {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-    ) -> Result<Retained<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
             Self::create_with_buffer_reference(
@@ -265,7 +262,7 @@ impl BlockBuffer {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
     ) -> os::Status {
         CMBlockBufferCreateWithBufferReference(
             structure_allocator,
@@ -286,7 +283,7 @@ extern "C" {
         structure_allocator: Option<&cf::Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
-        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
     ) -> os::Status;
 
     fn CMBlockBufferCreateWithMemoryBlock(
@@ -298,7 +295,7 @@ extern "C" {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
     ) -> os::Status;
 
     fn CMBlockBufferGetDataLength(the_buffer: &BlockBuffer) -> usize;
@@ -323,7 +320,7 @@ extern "C" {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<Retained<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
     ) -> os::Status;
 
 }

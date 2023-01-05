@@ -1,4 +1,4 @@
-use crate::{cf, cm, define_cf_type, os};
+use crate::{arc, cf, cm, define_cf_type, os};
 
 pub mod errors {
     use crate::os::Status;
@@ -62,7 +62,7 @@ impl cm::VideoFormatDescription {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<cm::BlockBuffer>, os::Status> {
         unsafe {
             let mut buffer_out = None;
             CMVideoFormatDescriptionCopyAsBigEndianImageDescriptionBlockBuffer(
@@ -79,7 +79,7 @@ impl cm::VideoFormatDescription {
     pub fn as_be_image_desc_cm_buffer(
         &self,
         flavor: Option<&ImageDescriptionFlavor>,
-    ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<cm::BlockBuffer>, os::Status> {
         Self::as_be_image_desc_cm_buffer_in(
             self,
             cf::StringEncoding::system_encoding(),
@@ -93,7 +93,7 @@ impl cm::VideoFormatDescription {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
         unsafe {
             CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionBlockBuffer(
@@ -110,7 +110,7 @@ impl cm::VideoFormatDescription {
     pub fn from_be_image_desc_buffer(
         image_description_block_buffer: &cm::BlockBuffer,
         flavor: Option<&ImageDescriptionFlavor>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_image_desc_buffer_in(
             image_description_block_buffer,
             cf::StringEncoding::system_encoding(),
@@ -124,7 +124,7 @@ impl cm::VideoFormatDescription {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
         unsafe {
             CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
@@ -143,7 +143,7 @@ impl cm::VideoFormatDescription {
         data: &[u8],
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_image_desc_data_in(data, string_encoding, flavor, None)
     }
 }
@@ -211,7 +211,7 @@ impl cm::AudioFormatDescription {
         &self,
         flavor: Option<&SoundDescriptionFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<cm::BlockBuffer>, os::Status> {
         unsafe {
             let mut buffer_out = None;
             CMAudioFormatDescriptionCopyAsBigEndianSoundDescriptionBlockBuffer(
@@ -227,7 +227,7 @@ impl cm::AudioFormatDescription {
     pub fn as_be_sound_desc_cm_buffer(
         &self,
         flavor: Option<&SoundDescriptionFlavor>,
-    ) -> Result<cf::Retained<cm::BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<cm::BlockBuffer>, os::Status> {
         Self::as_be_sound_desc_cm_buffer_in(self, flavor, None)
     }
 
@@ -235,7 +235,7 @@ impl cm::AudioFormatDescription {
         data: &[u8],
         flavor: Option<&SoundDescriptionFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
         unsafe {
             CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
@@ -253,7 +253,7 @@ impl cm::AudioFormatDescription {
     pub fn from_be_sound_desc_data(
         data: &[u8],
         flavor: Option<&SoundDescriptionFlavor>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_sound_desc_data_in(data, flavor, None)
     }
 
@@ -261,7 +261,7 @@ impl cm::AudioFormatDescription {
         buffer: &cm::BlockBuffer,
         flavor: Option<&SoundDescriptionFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
         unsafe {
             CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
@@ -278,7 +278,7 @@ impl cm::AudioFormatDescription {
     pub fn from_be_sound_desc_buffer(
         buffer: &cm::BlockBuffer,
         flavor: Option<&SoundDescriptionFlavor>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_sound_desc_buffer_in(buffer, flavor, None)
     }
 }
@@ -300,7 +300,7 @@ extern "C" {
         video_format_description: &cm::VideoFormatDescription,
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
-        block_buffer_out: &mut Option<cf::Retained<cm::BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<cm::BlockBuffer>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionBlockBuffer(
@@ -308,7 +308,7 @@ extern "C" {
         image_description_block_buffer: &cm::BlockBuffer,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescriptionFlavor>,
-        format_description_out: &mut Option<cf::Retained<cm::VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::VideoFormatDescription>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
@@ -317,7 +317,7 @@ extern "C" {
         size: usize,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescriptionFlavor>,
-        format_description_out: &mut Option<cf::Retained<cm::VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::VideoFormatDescription>>,
     ) -> os::Status;
 
     fn CMSwapBigEndianImageDescriptionToHost(
@@ -344,7 +344,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         audio_format_description: &cm::AudioFormatDescription,
         flavor: Option<&SoundDescriptionFlavor>,
-        block_buffer_out: &mut Option<cf::Retained<cm::BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<cm::BlockBuffer>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
@@ -352,13 +352,13 @@ extern "C" {
         sound_description_data: *const u8,
         size: usize,
         flavor: Option<&SoundDescriptionFlavor>,
-        format_description_out: &mut Option<cf::Retained<cm::AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::AudioFormatDescription>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
         block_buffer: &cm::BlockBuffer,
         flavor: Option<&SoundDescriptionFlavor>,
-        format_description_out: &mut Option<cf::Retained<cm::AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::AudioFormatDescription>>,
     ) -> os::Status;
 }

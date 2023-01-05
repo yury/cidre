@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{blocks, cf, cg, define_obj_type, msg_send, ns, sys};
+use crate::{arc, blocks, cf, cg, define_obj_type, msg_send, ns, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -86,7 +86,7 @@ impl ShareableContent {
         }
     }
 
-    pub async fn current() -> Result<cf::Retained<Self>, cf::Retained<cf::Error>> {
+    pub async fn current() -> Result<arc::R<Self>, arc::R<cf::Error>> {
         let (future, block) = blocks::result();
 
         Self::current_with_completion(block.escape());

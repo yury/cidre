@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, ns, vn};
+use crate::{arc, cf, define_obj_type, msg_send, ns, vn};
 
 define_obj_type!(DetectBarcodesRequest(vn::ImageBasedRequest));
 
@@ -12,7 +12,7 @@ impl DetectBarcodesRequest {
         msg_send!("vn", self, sel_results)
     }
 
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNDetectBarcodesRequest_new() }
     }
 
@@ -41,7 +41,7 @@ impl DetectBarcodesRequest {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNDetectBarcodesRequest_new() -> cf::Retained<DetectBarcodesRequest>;
+    fn VNDetectBarcodesRequest_new() -> arc::R<DetectBarcodesRequest>;
 
     fn rsel_symbologies(id: &ns::Id) -> &cf::ArrayOf<vn::BarcodeSymbology>;
 

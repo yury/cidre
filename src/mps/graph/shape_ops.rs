@@ -1,5 +1,5 @@
 use crate::{
-    cf,
+    arc, cf,
     mps::{self, graph},
     ns,
 };
@@ -11,7 +11,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         shape: &mps::Shape,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_broadcastTensor_toShape_name(self, tensor, shape, name) }
     }
 
@@ -21,7 +21,7 @@ impl graph::Graph {
         tensors: &ns::Array<graph::Tensor>,
         dimension: ns::Integer,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_concatTensors_dimension_name(self, tensors, dimension, name) }
     }
 
@@ -31,7 +31,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axis: isize,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_expandDimsOfTensor_axis_name(self, tensor, axis, name) }
     }
 
@@ -41,7 +41,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_expandDimsOfTensor_axes_name(self, tensor, axes, name) }
     }
 
@@ -51,7 +51,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         shape: &mps::Shape,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_reshapeTensor_withShape_name(self, tensor, shape, name) }
     }
 
@@ -62,7 +62,7 @@ impl graph::Graph {
         dimention: ns::UInteger,
         with_dimention: ns::UInteger,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_transposeTensor_dimension_withDimension_name(
                 self,
@@ -80,7 +80,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         to_type: mps::DataType,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_castTensor_toType_name(self, tensor, to_type, name) }
     }
 
@@ -92,7 +92,7 @@ impl graph::Graph {
         start: ns::Integer,
         length: ns::Integer,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_sliceTensor_dimension_start_length_name(
                 self, tensor, dimension, start, length, name,
@@ -108,35 +108,35 @@ extern "C" {
         tensor: &graph::Tensor,
         shape: &mps::Shape,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_concatTensors_dimension_name(
         graph: &graph::Graph,
         tensors: &ns::Array<graph::Tensor>,
         dimension: ns::Integer,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_expandDimsOfTensor_axis_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         axis: isize,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_expandDimsOfTensor_axes_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_reshapeTensor_withShape_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         shape: &mps::Shape,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_transposeTensor_dimension_withDimension_name(
         graph: &graph::Graph,
@@ -144,14 +144,14 @@ extern "C" {
         dimention: ns::UInteger,
         with_dimention: ns::UInteger,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_castTensor_toType_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         to_type: mps::DataType,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_sliceTensor_dimension_start_length_name(
         graph: &graph::Graph,
@@ -160,6 +160,6 @@ extern "C" {
         start: ns::Integer,
         length: ns::Integer,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
 }

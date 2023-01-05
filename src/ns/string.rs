@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, ns};
+use crate::{arc, define_obj_type, msg_send, ns};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -28,7 +28,7 @@ impl String {
     }
 
     #[inline]
-    pub fn lowercased(&self) -> cf::Retained<Self> {
+    pub fn lowercased(&self) -> arc::R<Self> {
         msg_send!("ns", self, ns_lowercaseString)
     }
 
@@ -70,19 +70,19 @@ impl String {
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> cf::Retained<ns::StringMut> {
+    pub fn copy_mut(&self) -> arc::R<ns::StringMut> {
         msg_send!("ns", self, ns_mutableCopy)
     }
 
     #[inline]
-    pub fn with_str(str: &str) -> cf::Retained<Self> {
+    pub fn with_str(str: &str) -> arc::R<Self> {
         unsafe {
             NSString_initWithBytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8).unwrap()
         }
     }
 
     #[inline]
-    pub fn substring(&self, range: std::ops::Range<usize>) -> cf::Retained<ns::String> {
+    pub fn substring(&self, range: std::ops::Range<usize>) -> arc::R<ns::String> {
         let range: ns::Range = range.into();
         msg_send!("ns", self, ns_substringWithRange, range)
     }
@@ -110,7 +110,7 @@ extern "C" {
         bytes: *const u8,
         length: usize,
         encoding: Encoding,
-    ) -> Option<cf::Retained<String>>;
+    ) -> Option<arc::R<String>>;
 }
 
 #[cfg(test)]

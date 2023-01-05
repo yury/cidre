@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, mps, ns};
+use crate::{arc, define_obj_type, mps, ns};
 
 define_obj_type!(TensorData(ns::Id));
 
@@ -15,7 +15,7 @@ impl TensorData {
         todo!()
     }
 
-    pub fn nd_array(&self) -> Option<cf::Retained<mps::NDArray>> {
+    pub fn nd_array(&self) -> Option<arc::R<mps::NDArray>> {
         todo!()
     }
 }

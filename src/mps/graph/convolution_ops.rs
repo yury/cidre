@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, mps::graph, ns};
+use crate::{arc, cf, define_obj_type, mps::graph, ns};
 
 define_obj_type!(Convolution2DOpDescriptor(ns::Id));
 
@@ -16,7 +16,7 @@ impl Convolution2DOpDescriptor {
         padding_style: graph::PaddingStyle,
         data_layout: graph::TensorNamedDataLayout,
         weight_layout: graph::TensorNamedDataLayout,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         unsafe {
             MPSGraphConvolution2DOpDescriptor_descriptorWithStrideInX_strideInY_dilationRateInX_dilationRateInY_groups_paddingLeft_paddingRight_paddingTop_paddingBottom_paddingStyle_dataLayout_weightsLayout(
                 stride_in_x,
@@ -43,7 +43,7 @@ impl graph::Graph {
         weights: &graph::Tensor,
         descriptor: &Convolution2DOpDescriptor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_convolution2DWithSourceTensor(self, source, weights, descriptor, name) }
     }
 }
@@ -63,7 +63,7 @@ extern "C" {
         padding_style: graph::PaddingStyle,
         data_layout: graph::TensorNamedDataLayout,
         weight_layout: graph::TensorNamedDataLayout,
-    ) -> Option<cf::Retained<Convolution2DOpDescriptor>>;
+    ) -> Option<arc::R<Convolution2DOpDescriptor>>;
 
     fn rsel_convolution2DWithSourceTensor(
         graph: &graph::Graph,
@@ -71,5 +71,5 @@ extern "C" {
         weights: &graph::Tensor,
         descriptor: &Convolution2DOpDescriptor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 }

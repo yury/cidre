@@ -1,8 +1,8 @@
-use cidre::{av, cf, cv, objc::autoreleasepool, vn};
+use cidre::{arc, av, cf, cv, objc::autoreleasepool, vn};
 use ndarray::{Array2, Axis};
 // Import the linfa prelude and KMeans algorithm
 use linfa::prelude::*;
-use linfa_clustering::{Dbscan, Optics};
+use linfa_clustering::Optics;
 use linfa_reduction::Pca;
 use tokio;
 
@@ -50,7 +50,7 @@ async fn main() {
 
     let mut feature_prints: Vec<Vec<f32>> = Vec::with_capacity(50_000);
 
-    let mut prev_frame_featurs: Option<cf::Retained<vn::FeaturePrintObservation>> = None;
+    let mut prev_frame_featurs: Option<arc::R<vn::FeaturePrintObservation>> = None;
 
     let mut count = 0;
     while let Some(buf) = output.copy_next_sample_buffer() {

@@ -1,7 +1,7 @@
 use std::{collections::VecDeque, ffi::c_void, time::Duration};
 
 use cidre::{
-    at,
+    arc, at,
     cat::{audio::MPEG4ObjectID, AudioFormatFlags, AudioFormatID},
     cf,
     cm::{self, SampleBuffer},
@@ -16,7 +16,7 @@ struct FrameCounter {
     video_counter: usize,
     audio_counter: usize,
     audio_queue: AudioQueue,
-    session: cf::Retained<vt::CompressionSession>,
+    session: arc::R<vt::CompressionSession>,
     audio_converter: at::AudioConverterRef,
 }
 
@@ -80,7 +80,7 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
 }
 
 struct AudioQueue {
-    queue: VecDeque<cf::Retained<cm::SampleBuffer>>,
+    queue: VecDeque<arc::R<cm::SampleBuffer>>,
     last_buffer_offset: i32,
     input_asbd: at::audio::StreamBasicDescription,
 }
@@ -216,7 +216,7 @@ impl StreamOutput for FrameCounter {
 
 struct RecordContext {
     frames_count: usize,
-    format_desc: Option<cf::Retained<cm::VideoFormatDescription>>,
+    format_desc: Option<arc::R<cm::VideoFormatDescription>>,
 }
 
 impl RecordContext {

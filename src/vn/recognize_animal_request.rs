@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_cf_type, define_obj_type, msg_send, vn};
 
 define_obj_type!(RecognizeAnimalsRequest(vn::ImageBasedRequest));
 
@@ -48,7 +48,7 @@ impl RecognizeAnimalsRequest {
         msg_send!("vn", self, sel_supportedIdentifiersAndReturnError, error)
     }
 
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNRecognizeAnimalsRequest_new() }
     }
 }
@@ -61,7 +61,7 @@ extern "C" {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNRecognizeAnimalsRequest_new() -> cf::Retained<RecognizeAnimalsRequest>;
+    fn VNRecognizeAnimalsRequest_new() -> arc::R<RecognizeAnimalsRequest>;
 }
 
 #[cfg(test)]

@@ -1,9 +1,4 @@
-use crate::{
-    av::audio,
-    cf::{self, Retained},
-    define_obj_type,
-    objc::Id,
-};
+use crate::{arc, av::audio, cf, define_obj_type, objc::Id};
 
 define_obj_type!(Eq(audio::UnitEffect));
 
@@ -105,7 +100,7 @@ impl UnitEq {
     /// assert_eq!(equ.global_gain(), 0.0);
     ///
     /// ```
-    pub fn with_bands(number_of_bands: usize) -> Retained<Self> {
+    pub fn with_bands(number_of_bands: usize) -> arc::R<Self> {
         unsafe { AVAudioUnitEQ_initWithNumberOfBands(number_of_bands) }
     }
 
@@ -137,7 +132,7 @@ extern "C" {
     fn rsel_gain(id: &Id) -> f32;
     fn wsel_setGain(id: &Id, value: f32);
 
-    fn AVAudioUnitEQ_initWithNumberOfBands(number_of_bands: usize) -> Retained<UnitEq>;
+    fn AVAudioUnitEQ_initWithNumberOfBands(number_of_bands: usize) -> arc::R<UnitEq>;
     fn rsel_bands(id: &Id) -> &mut cf::ArrayOf<FilterParameters>;
 
     fn rsel_globalGain(id: &Id) -> f32;

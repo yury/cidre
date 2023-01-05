@@ -1,8 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref};
 
-use crate::{cf, define_cf_type};
-
-use super::runtime::{Release, Retain};
+use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(Set(cf::Type));
 define_cf_type!(SetMut(Set));
@@ -36,15 +34,15 @@ impl Set {
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct SetOf<T: Retain + Release>(Set, PhantomData<T>);
+pub struct SetOf<T: arc::Retain + arc::Release>(Set, PhantomData<T>);
 
 impl<T> SetOf<T>
 where
-    T: Retain + Release,
+    T: arc::Retain + arc::Release,
 {
-    pub fn values(&self) -> Vec<cf::Retained<T>> {
+    pub fn values(&self) -> Vec<arc::R<T>> {
         let len = self.len();
-        let mut vec: Vec<cf::Retained<T>> = Vec::with_capacity(len);
+        let mut vec: Vec<arc::R<T>> = Vec::with_capacity(len);
         unsafe {
             vec.set_len(len);
             self.get_values(vec.as_mut_ptr() as _);
@@ -56,7 +54,7 @@ where
 
 impl<T> Deref for SetOf<T>
 where
-    T: Retain + Release,
+    T: arc::Retain + arc::Release,
 {
     type Target = Set;
 
@@ -65,20 +63,20 @@ where
     }
 }
 
-impl<T> Release for SetOf<T>
+impl<T> arc::Release for SetOf<T>
 where
-    T: Release + Retain,
+    T: arc::Release + arc::Retain,
 {
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
-impl<T> Retain for SetOf<T>
+impl<T> arc::Retain for SetOf<T>
 where
-    T: Release + Retain,
+    T: arc::Release + arc::Retain,
 {
-    fn retained(&self) -> cf::Retained<Self> {
+    fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
 }

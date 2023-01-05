@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(Bundle(cf::Type));
 
@@ -10,7 +10,7 @@ impl Bundle {
     ///
     /// let url = bundle.bundle_url().unwrap();
     /// ```
-    pub fn bundle_url(&self) -> Option<cf::Retained<cf::URL>> {
+    pub fn bundle_url(&self) -> Option<arc::R<cf::URL>> {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
@@ -37,7 +37,7 @@ impl Bundle {
 extern "C" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle() -> Option<&'static Bundle>;
-    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<cf::Retained<cf::URL>>;
+    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<arc::R<cf::URL>>;
 
     fn CFBundleGetValueForInfoDictionaryKey<'a>(
         bundle: &'a Bundle,

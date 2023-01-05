@@ -1,9 +1,6 @@
-use crate::{define_cf_type, define_options};
+use crate::{arc, define_cf_type, define_options};
 
-use super::{
-    runtime::{Retained, Type},
-    String,
-};
+use super::{runtime::Type, String};
 use std::{cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
 
 pub type Index = isize;
@@ -56,7 +53,7 @@ pub enum ComparisonResult {
 ///     assert_eq!("CFNumber", desc.to_string());
 /// }
 /// ```
-pub unsafe fn copy_type_id_description(type_id: TypeId) -> Option<Retained<String>> {
+pub unsafe fn copy_type_id_description(type_id: TypeId) -> Option<arc::R<String>> {
     CFCopyTypeIDDescription(type_id)
 }
 
@@ -118,7 +115,7 @@ impl Type {
     }
 
     #[inline]
-    pub fn description(&self) -> Option<Retained<String>> {
+    pub fn description(&self) -> Option<arc::R<String>> {
         unsafe { CFCopyDescription(Some(self)) }
     }
 }
@@ -190,7 +187,7 @@ impl Allocator {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<Retained<String>>;
+    fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<arc::R<String>>;
 
     static kCFNull: &'static Null;
 
@@ -205,7 +202,7 @@ extern "C" {
     fn CFHash(cf: &Type) -> usize;
 
     fn CFEqual(cf1: &Type, cf2: &Type) -> bool;
-    fn CFCopyDescription(cf: Option<&Type>) -> Option<Retained<String>>;
+    fn CFCopyDescription(cf: Option<&Type>) -> Option<arc::R<String>>;
 
     fn CFAllocatorAllocate(allocator: &Allocator, size: Index, hint: OptionFlags) -> *mut c_void;
     fn CFAllocatorReallocate(

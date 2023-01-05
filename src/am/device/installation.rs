@@ -1,4 +1,4 @@
-use crate::{cf, cfstr};
+use crate::{arc, cf, cfstr};
 
 use super::{Device, Error, Session};
 
@@ -31,7 +31,7 @@ impl<'a> Session<'a> {
     pub fn lookup_applications(
         &self,
         options: &cf::Dictionary,
-    ) -> Result<cf::Retained<cf::Dictionary>, Error> {
+    ) -> Result<arc::R<cf::Dictionary>, Error> {
         unsafe {
             let mut info = None;
             let res = AMDeviceLookupApplications(self, options, &mut info);
@@ -50,8 +50,8 @@ impl<'a> Session<'a> {
 
 pub struct AppsLookupBuilder<'a> {
     session: &'a Session<'a>,
-    application_type: Option<cf::Retained<cf::String>>,
-    attribute: Option<cf::Retained<cf::String>>,
+    application_type: Option<arc::R<cf::String>>,
+    attribute: Option<arc::R<cf::String>>,
 }
 
 impl<'a> AppsLookupBuilder<'a> {
@@ -85,7 +85,7 @@ impl<'a> AppsLookupBuilder<'a> {
         self
     }
 
-    pub fn lookup(&self) -> Result<cf::Retained<cf::Dictionary>, Error> {
+    pub fn lookup(&self) -> Result<arc::R<cf::Dictionary>, Error> {
         let mut options = cf::DictionaryMut::with_capacity(3);
         if let Some(ref app_type) = self.application_type {
             options.insert(cfstr!("ApplicationType"), app_type);
@@ -104,6 +104,6 @@ extern "C" {
     fn AMDeviceLookupApplications(
         device: &Device,
         options: &cf::Dictionary,
-        info: &mut Option<cf::Retained<cf::Dictionary>>,
+        info: &mut Option<arc::R<cf::Dictionary>>,
     ) -> Error;
 }

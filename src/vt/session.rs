@@ -1,7 +1,4 @@
-use crate::{
-    cf::{self, Retained},
-    define_cf_type, os,
-};
+use crate::{arc, cf, define_cf_type, os};
 
 define_cf_type!(Session(cf::Type));
 
@@ -11,7 +8,7 @@ impl Session {
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::Type>> {
+    ) -> Option<arc::R<cf::Type>> {
         unsafe { VTSessionCopyProperty(self, key, allocator) }
     }
 
@@ -47,12 +44,12 @@ impl Session {
 
     pub unsafe fn copy_supported_property_dictionary(
         &self,
-        supported_property_dictionary_out: &mut Option<Retained<cf::Dictionary>>,
+        supported_property_dictionary_out: &mut Option<arc::R<cf::Dictionary>>,
     ) -> os::Status {
         VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
     }
 
-    pub fn supported_properties(&self) -> Result<Retained<cf::Dictionary>, os::Status> {
+    pub fn supported_properties(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
         unsafe {
             let mut supported_property_dictionary_out = None;
             self.copy_supported_property_dictionary(&mut supported_property_dictionary_out)
@@ -73,7 +70,7 @@ extern "C" {
         session: &Session,
         property_key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<cf::Type>>;
+    ) -> Option<arc::R<cf::Type>>;
 
     fn VTSessionSetProperties(
         session: &mut Session,
@@ -82,6 +79,6 @@ extern "C" {
 
     fn VTSessionCopySupportedPropertyDictionary(
         session: &Session,
-        supported_property_dictionary_out: &mut Option<Retained<cf::Dictionary>>,
+        supported_property_dictionary_out: &mut Option<arc::R<cf::Dictionary>>,
     ) -> os::Status;
 }

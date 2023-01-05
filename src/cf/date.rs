@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 use std::ffi::{c_double, c_void};
 
 pub type TimeInterval = c_double;
@@ -27,20 +27,17 @@ impl Date {
     }
 
     #[inline]
-    pub fn new_at_in(
-        at: AbsoluteTime,
-        allocator: Option<&cf::Allocator>,
-    ) -> Option<cf::Retained<Self>> {
+    pub fn new_at_in(at: AbsoluteTime, allocator: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFDateCreate(allocator, at) }
     }
 
     #[inline]
-    pub fn new_at(at: AbsoluteTime) -> Option<cf::Retained<Self>> {
+    pub fn new_at(at: AbsoluteTime) -> Option<arc::R<Self>> {
         Self::new_at_in(at, None)
     }
 
     #[inline]
-    pub fn current() -> Option<cf::Retained<Self>> {
+    pub fn current() -> Option<arc::R<Self>> {
         Self::new_at(absolute_time_current())
     }
 
@@ -82,10 +79,7 @@ extern "C" {
     fn CFAbsoluteTimeGetCurrent() -> AbsoluteTime;
     fn CFDateGetTypeID() -> cf::TypeId;
 
-    fn CFDateCreate(
-        allocator: Option<&cf::Allocator>,
-        at: AbsoluteTime,
-    ) -> Option<cf::Retained<Date>>;
+    fn CFDateCreate(allocator: Option<&cf::Allocator>, at: AbsoluteTime) -> Option<arc::R<Date>>;
     fn CFDateGetAbsoluteTime(the_date: &Date) -> AbsoluteTime;
     fn CFDateGetTimeIntervalSinceDate(the_date: &Date, other_date: &Date) -> TimeInterval;
 

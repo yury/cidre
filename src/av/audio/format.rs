@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{at::audio::StreamBasicDescription, cf, define_obj_type, ns};
+use crate::{arc, at::audio::StreamBasicDescription, cf, define_obj_type, ns};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
@@ -29,7 +29,7 @@ define_obj_type!(Format(ns::Id));
 /// Instances of this class are immutable.
 impl Format {
     /// If the format specifies more than 2 channels, this method fails (returns None).
-    pub fn with_asbd(asbd: &StreamBasicDescription) -> Option<cf::Retained<Format>> {
+    pub fn with_asbd(asbd: &StreamBasicDescription) -> Option<arc::R<Format>> {
         unsafe { AVAudioFormat_initWithStreamDescription(asbd) }
     }
 
@@ -37,14 +37,14 @@ impl Format {
     pub fn with_asbd_and_channel_layout(
         asbd: &StreamBasicDescription,
         layout: Option<&ChannelLayout>,
-    ) -> Option<cf::Retained<Format>> {
+    ) -> Option<arc::R<Format>> {
         unsafe { AVAudioFormat_initWithStreamDescription_channelLayout(asbd, layout) }
     }
 
     pub fn standard_with_sample_rate_and_channels(
         sample_rate: f64,
         channels: ChannelCount,
-    ) -> Option<cf::Retained<Format>> {
+    ) -> Option<arc::R<Format>> {
         unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channels(sample_rate, channels) }
     }
 
@@ -52,7 +52,7 @@ impl Format {
     pub fn standard_with_sample_rate_and_channel_layout(
         sample_rate: f64,
         layout: &ChannelLayout,
-    ) -> cf::Retained<Format> {
+    ) -> arc::R<Format> {
         unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(sample_rate, layout) }
     }
 
@@ -62,7 +62,7 @@ impl Format {
         sample_rate: f64,
         interleaved: bool,
         channel_layout: &ChannelLayout,
-    ) -> cf::Retained<Format> {
+    ) -> arc::R<Format> {
         unsafe {
             AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
                 format,
@@ -73,7 +73,7 @@ impl Format {
         }
     }
 
-    pub fn with_settings(settings: &cf::Dictionary) -> Option<cf::Retained<Format>> {
+    pub fn with_settings(settings: &cf::Dictionary) -> Option<arc::R<Format>> {
         unsafe { AVAudioFormat_initWithSettings(settings) }
     }
 
@@ -123,31 +123,31 @@ extern "C" {
 
     fn AVAudioFormat_initWithStreamDescription(
         asbd: &StreamBasicDescription,
-    ) -> Option<cf::Retained<Format>>;
+    ) -> Option<arc::R<Format>>;
 
     fn AVAudioFormat_initWithStreamDescription_channelLayout(
         asbd: &StreamBasicDescription,
         layout: Option<&ChannelLayout>,
-    ) -> Option<cf::Retained<Format>>;
+    ) -> Option<arc::R<Format>>;
 
     fn AVAudioFormat_initStandardFormatWithSampleRate_channels(
         sample_rate: f64,
         channels: ChannelCount,
-    ) -> Option<cf::Retained<Format>>;
+    ) -> Option<arc::R<Format>>;
 
     fn AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(
         sample_rate: f64,
         layout: &ChannelLayout,
-    ) -> cf::Retained<Format>;
+    ) -> arc::R<Format>;
 
     fn AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
         format: CommonFormat,
         sample_rate: f64,
         interleaved: bool,
         channel_layout: &ChannelLayout,
-    ) -> cf::Retained<Format>;
+    ) -> arc::R<Format>;
 
-    fn AVAudioFormat_initWithSettings(settings: &cf::Dictionary) -> Option<cf::Retained<Format>>;
+    fn AVAudioFormat_initWithSettings(settings: &cf::Dictionary) -> Option<arc::R<Format>>;
 
     fn rsel_settings(id: &ns::Id) -> &cf::Dictionary;
     fn rsel_isInterleaved(id: &ns::Id) -> bool;

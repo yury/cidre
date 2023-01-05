@@ -1,8 +1,8 @@
 use std::ffi::c_void;
 
 use crate::{
-    cat,
-    cf::{self, Allocator, Retained},
+    arc, cat,
+    cf::{self, Allocator},
     cm, cv, define_cf_type, define_options, os,
 };
 
@@ -130,7 +130,7 @@ impl SampleBuffer {
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,
         format_description: Option<&cm::FormatDescription>,
-    ) -> Result<Retained<SampleBuffer>, os::Status> {
+    ) -> Result<arc::R<SampleBuffer>, os::Status> {
         let mut sample_buffer_out = None;
 
         unsafe {
@@ -165,7 +165,7 @@ impl SampleBuffer {
         sample_timing_array: *const SampleTimingInfo,
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
-        sample_buffer_out: &mut Option<Retained<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
     ) -> os::Status {
         CMSampleBufferCreate(
             allocator,
@@ -191,7 +191,7 @@ impl SampleBuffer {
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDescription,
         sample_timing: &SampleTimingInfo,
-        sample_buffer_out: &mut Option<Retained<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
     ) -> os::Status {
         unsafe {
             CMSampleBufferCreateForImageBuffer(
@@ -350,7 +350,7 @@ extern "C" {
         sample_timing_array: *const SampleTimingInfo,
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
-        sample_buffer_out: &mut Option<Retained<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
     ) -> crate::os::Status;
 
     fn CMSampleBufferCreateForImageBuffer(
@@ -361,7 +361,7 @@ extern "C" {
         make_data_ready_refcon: *const c_void,
         format_description: &cm::VideoFormatDescription,
         sample_timing: &SampleTimingInfo,
-        sample_buffer_out: &mut Option<Retained<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
     ) -> crate::os::Status;
 
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuffer) -> bool;

@@ -1,7 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
-    cf::{self, Retained},
+    arc, cf,
     cm::{self, SampleBuffer, VideoCodecType},
     cv, define_cf_type, os, vt,
 };
@@ -42,7 +42,7 @@ impl Session {
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCallbackRecord<O, F>>,
-    ) -> Result<cf::Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         unsafe {
             let mut session = None;
             Self::create_in(
@@ -65,7 +65,7 @@ impl Session {
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCallbackRecord<c_void, c_void>>,
-        decompression_session_out: &mut Option<cf::Retained<Session>>,
+        decompression_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status {
         VTDecompressionSessionCreate(
             allocator,
@@ -148,7 +148,7 @@ impl Session {
     ///
     /// The pixel buffer is in the same format that the session is decompressing to.
     #[inline]
-    pub fn copy_black_pixel_buffer(&self) -> Result<Retained<cv::PixelBuffer>, os::Status> {
+    pub fn copy_black_pixel_buffer(&self) -> Result<arc::R<cv::PixelBuffer>, os::Status> {
         let mut pixel_buffer_out = None;
         unsafe {
             VTDecompressionSessionCopyBlackPixelBuffer(self, &mut pixel_buffer_out)
@@ -177,7 +177,7 @@ extern "C" {
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCallbackRecord<c_void, c_void>>,
-        decompression_session_out: &mut Option<cf::Retained<Session>>,
+        decompression_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status;
 
     fn VTDecompressionSessionInvalidate(session: &Session);
@@ -200,7 +200,7 @@ extern "C" {
 
     fn VTDecompressionSessionCopyBlackPixelBuffer(
         session: &Session,
-        pixel_buffer_out: *mut Option<cf::Retained<cv::PixelBuffer>>,
+        pixel_buffer_out: *mut Option<arc::R<cv::PixelBuffer>>,
     ) -> os::Status;
 
     fn VTIsHardwareDecodeSupported(codec_type: VideoCodecType) -> bool;

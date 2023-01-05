@@ -1,12 +1,8 @@
-use crate::{cf, mps::graph, ns};
+use crate::{arc, cf, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
-    pub fn relu(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    pub fn relu(&self, tensor: &graph::Tensor, name: Option<&cf::String>) -> arc::R<graph::Tensor> {
         unsafe { rsel_reLUWithTensor_name(self, tensor, name) }
     }
 
@@ -15,7 +11,7 @@ impl graph::Graph {
         &self,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_sigmoidWithTensor_name(self, tensor, name) }
     }
 
@@ -25,7 +21,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axis: ns::Integer,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_softMaxWithTensor_axis_name(self, tensor, axis, name) }
     }
 }
@@ -36,19 +32,19 @@ extern "C" {
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_sigmoidWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_softMaxWithTensor_axis_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         axis: ns::Integer,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
 }

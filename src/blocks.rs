@@ -14,7 +14,7 @@ use std::{
     ops,
 };
 
-use crate::{define_options, objc::Class};
+use crate::{arc, define_options, objc::Class};
 
 #[repr(transparent)]
 pub struct Block<F>(c_void, std::marker::PhantomData<F>);
@@ -663,7 +663,7 @@ pub fn comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
 }
 
 pub fn ok() -> (
-    Comp<Result<(), cf::Retained<cf::Error>>>,
+    Comp<Result<(), arc::R<cf::Error>>>,
     BlOnce<impl FnOnce(Option<&'static cf::Error>)>,
 ) {
     let shared = Shared::new();
@@ -678,8 +678,8 @@ pub fn ok() -> (
     )
 }
 
-pub fn result<T: cf::Retain>() -> (
-    Comp<Result<cf::Retained<T>, cf::Retained<cf::Error>>>,
+pub fn result<T: arc::Retain>() -> (
+    Comp<Result<arc::R<T>, arc::R<cf::Error>>>,
     BlOnce<impl FnOnce(Option<&'static T>, Option<&'static cf::Error>)>,
 ) {
     let shared = Shared::new();

@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, ns, os, vn};
+use crate::{arc, cf, define_obj_type, msg_send, ns, os, vn};
 
 /// Person segmentation level options to favor speed over recognition accuracy.
 /// Accurate is the default option.
@@ -41,7 +41,7 @@ impl GeneratePersonSegmentationRequest {
     }
 
     #[inline]
-    pub fn new() -> cf::Retained<GeneratePersonSegmentationRequest> {
+    pub fn new() -> arc::R<GeneratePersonSegmentationRequest> {
         unsafe { VNGeneratePersonSegmentationRequest_new() }
     }
 }
@@ -54,7 +54,7 @@ extern "C" {
     fn rsel_outputPixelFormat(id: &ns::Id) -> os::Type;
     fn wsel_setOutputPixelFormat(id: &mut ns::Id, value: os::Type);
 
-    fn VNGeneratePersonSegmentationRequest_new() -> cf::Retained<GeneratePersonSegmentationRequest>;
+    fn VNGeneratePersonSegmentationRequest_new() -> arc::R<GeneratePersonSegmentationRequest>;
 }
 
 #[cfg(test)]

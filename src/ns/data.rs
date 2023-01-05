@@ -1,6 +1,6 @@
 use std::{mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::{cf, define_obj_type, define_options, msg_send, ns};
+use crate::{arc, cf, define_obj_type, define_options, msg_send, ns};
 
 define_options!(ReadingOptions(usize));
 
@@ -44,7 +44,7 @@ impl Data {
         path: &cf::String,
         options: ReadingOptions,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         NSData_dataWithContentsOfFile_options_error(path, options, error)
     }
 
@@ -52,7 +52,7 @@ impl Data {
     pub fn with_contents_of_file_options(
         path: &cf::String,
         options: ReadingOptions,
-    ) -> Result<cf::Retained<Self>, &cf::Error> {
+    ) -> Result<arc::R<Self>, &cf::Error> {
         unsafe {
             let mut error = None;
             let res = Self::with_contents_of_file_options_error(path, options, &mut error);
@@ -68,7 +68,7 @@ impl Data {
         url: &cf::URL,
         options: ReadingOptions,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<Self>> {
+    ) -> Option<arc::R<Self>> {
         NSData_dataWithContentsOfURL_options_error(url, options, error)
     }
 
@@ -76,7 +76,7 @@ impl Data {
     pub fn with_contents_of_url_options(
         url: &cf::URL,
         options: ReadingOptions,
-    ) -> Result<cf::Retained<Self>, &cf::Error> {
+    ) -> Result<arc::R<Self>, &cf::Error> {
         unsafe {
             let mut error = None;
             let res = Self::with_contents_of_url_options_error(url, options, &mut error);
@@ -140,13 +140,13 @@ extern "C" {
         path: &cf::String,
         options: ReadingOptions,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<Data>>;
+    ) -> Option<arc::R<Data>>;
 
     fn NSData_dataWithContentsOfURL_options_error(
         url: &cf::URL,
         options: ReadingOptions,
         error: &mut Option<&cf::Error>,
-    ) -> Option<cf::Retained<Data>>;
+    ) -> Option<arc::R<Data>>;
 
     fn rsel_writeToFile_atomically(id: &ns::Id, path: &cf::String, atomically: bool) -> bool;
 }

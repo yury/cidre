@@ -1,8 +1,8 @@
 use std::{ffi::c_void, mem::transmute};
 
 use crate::{
-    cat,
-    cf::{self, Allocator, Retained},
+    arc, cat,
+    cf::{self, Allocator},
     cv, define_cf_type, os, FourCharCode,
 };
 
@@ -123,7 +123,7 @@ impl FormatDescription {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<Retained<FormatDescription>>,
+        format_description_out: &mut Option<arc::R<FormatDescription>>,
     ) -> os::Status {
         unsafe {
             CMFormatDescriptionCreate(
@@ -149,7 +149,7 @@ impl FormatDescription {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
-    ) -> Result<Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         let mut format_desc = None;
         let res = Self::create(
             None,
@@ -175,7 +175,7 @@ impl VideoFormatDescription {
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
-    ) -> Result<Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         let mut format_desc = None;
         let res = Self::create_video(
             None,
@@ -194,7 +194,7 @@ impl VideoFormatDescription {
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<Retained<VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<VideoFormatDescription>>,
     ) -> os::Status {
         unsafe {
             CMVideoFormatDescriptionCreate(
@@ -223,7 +223,7 @@ impl VideoFormatDescription {
         pointers: &[*const u8; N],
         sizes: &[usize; N],
         nal_unit_header_length: i32,
-    ) -> Result<Retained<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
         let mut result = None;
 
         unsafe {
@@ -246,7 +246,7 @@ impl VideoFormatDescription {
         sizes: &[usize],
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
-    ) -> Result<Retained<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
         let mut result = None;
 
         unsafe {
@@ -374,7 +374,7 @@ impl AudioFormatDescription {
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<Retained<AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<AudioFormatDescription>>,
     ) -> os::Status {
         unsafe {
             CMAudioFormatDescriptionCreate(
@@ -471,7 +471,7 @@ extern "C" {
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<Retained<VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<VideoFormatDescription>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetDimensions(
@@ -501,7 +501,7 @@ extern "C" {
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<Retained<AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<AudioFormatDescription>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionGetStreamBasicDescription(
@@ -513,7 +513,7 @@ extern "C" {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<Retained<FormatDescription>>,
+        format_description_out: &mut Option<arc::R<FormatDescription>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromH264ParameterSets(
@@ -522,7 +522,7 @@ extern "C" {
         parameter_set_pointers: *const *const u8,
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
-        format_descirption: &mut Option<cf::Retained<FormatDescription>>,
+        format_descirption: &mut Option<arc::R<FormatDescription>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromHEVCParameterSets(
@@ -532,7 +532,7 @@ extern "C" {
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
-        format_descirption: &mut Option<cf::Retained<FormatDescription>>,
+        format_descirption: &mut Option<arc::R<FormatDescription>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetH264ParameterSetAtIndex(

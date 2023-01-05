@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(i32)]
@@ -40,11 +40,11 @@ impl RunLoop {
         unsafe { CFRunLoopStop(self) }
     }
 
-    pub fn current_mode(&self) -> Option<cf::Retained<Mode>> {
+    pub fn current_mode(&self) -> Option<arc::R<Mode>> {
         unsafe { CFRunLoopCopyCurrentMode(self) }
     }
 
-    pub fn all_modes(&self) -> cf::Retained<cf::ArrayOf<Mode>> {
+    pub fn all_modes(&self) -> arc::R<cf::ArrayOf<Mode>> {
         unsafe { CFRunLoopCopyAllModes(self) }
     }
 
@@ -125,8 +125,8 @@ extern "C" {
     fn CFRunLoopStop(rl: &RunLoop);
     fn CFRunLoopGetCurrent() -> &'static RunLoop;
     fn CFRunLoopGetMain() -> &'static RunLoop;
-    fn CFRunLoopCopyCurrentMode(rl: &RunLoop) -> Option<cf::Retained<Mode>>;
-    fn CFRunLoopCopyAllModes(rl: &RunLoop) -> cf::Retained<cf::ArrayOf<Mode>>;
+    fn CFRunLoopCopyCurrentMode(rl: &RunLoop) -> Option<arc::R<Mode>>;
+    fn CFRunLoopCopyAllModes(rl: &RunLoop) -> arc::R<cf::ArrayOf<Mode>>;
     fn CFRunLoopContainsSource(rl: &RunLoop, source: &Source, mode: &Mode) -> bool;
     fn CFRunLoopAddSource(rl: &RunLoop, source: &Source, mode: &Mode);
     fn CFRunLoopRemoveSource(rl: &RunLoop, source: &Source, mode: &Mode);

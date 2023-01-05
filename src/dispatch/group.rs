@@ -1,18 +1,14 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, mem::transmute};
 
-use crate::cf::Retained;
-use crate::define_obj_type;
-
-use crate::dispatch::Object;
-use crate::mtl::Function;
+use crate::{arc, define_obj_type, dispatch};
 
 use super::{Queue, Time};
 
-define_obj_type!(Group(Object));
+define_obj_type!(Group(dispatch::Object));
 
 impl Group {
     #[inline]
-    pub fn new() -> Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { dispatch_group_create() }
     }
 
@@ -22,8 +18,8 @@ impl Group {
     }
 
     #[inline]
-    pub fn notify_f(&self, queue: &Queue, context: *mut c_void, work: Function) {
-        unsafe { dispatch_group_notify_f(self, queue, context, work) }
+    pub fn notify_f<T>(&self, queue: &Queue, context: *mut T, work: dispatch::Function<T>) {
+        unsafe { dispatch_group_notify_f(self, queue, context as _, transmute(work)) }
     }
 
     #[inline]
@@ -39,10 +35,15 @@ impl Group {
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
-    fn dispatch_group_create() -> Retained<Group>;
+    fn dispatch_group_create() -> arc::R<Group>;
     fn dispatch_group_wait(group: &Group, timeout: Time) -> isize;
 
-    fn dispatch_group_notify_f(group: &Group, queue: &Queue, context: *mut c_void, work: Function);
+    fn dispatch_group_notify_f(
+        group: &Group,
+        queue: &Queue,
+        context: *mut c_void,
+        work: dispatch::Function<c_void>,
+    );
     fn dispatch_group_enter(group: &Group);
     fn dispatch_group_leave(group: &Group);
 

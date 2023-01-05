@@ -1,9 +1,7 @@
 use std::{ffi::c_void, ops::Deref};
 
 use crate::{
-    blocks,
-    cf::{self, Retained},
-    cg, cm, cv, define_obj_type, dispatch, msg_send,
+    arc, blocks, cf, cg, cm, cv, define_obj_type, dispatch, msg_send,
     objc::{Delegate, Id},
     os,
 };
@@ -47,7 +45,7 @@ impl Configuration {
     /// cfg.set_shows_cursor(false);
     ///
     /// ```
-    pub fn new() -> Retained<Configuration> {
+    pub fn new() -> arc::R<Self> {
         unsafe { SCStreamConfiguration_new() }
     }
 
@@ -160,7 +158,7 @@ extern "C" {}
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCStreamConfiguration_new() -> Retained<Configuration>;
+    fn SCStreamConfiguration_new() -> arc::R<Configuration>;
 
     fn rsel_minimumFrameInterval(id: &Id) -> cm::Time;
     fn wsel_setMinimumFrameInterval(id: &Id, value: cm::Time);
@@ -199,7 +197,7 @@ impl ContentFilter {
     pub fn with_display_excluding_windows(
         display: &Display,
         windows: &cf::ArrayOf<Window>,
-    ) -> Retained<ContentFilter> {
+    ) -> arc::R<Self> {
         unsafe { SCContentFilter_initWithDisplay_excludingWindows(display, windows) }
     }
 }
@@ -209,7 +207,7 @@ extern "C" {
     fn SCContentFilter_initWithDisplay_excludingWindows(
         display: &Display,
         windows: &cf::ArrayOf<Window>,
-    ) -> Retained<ContentFilter>;
+    ) -> arc::R<ContentFilter>;
 }
 
 define_obj_type!(Stream(Id));
@@ -262,8 +260,8 @@ pub trait StreamOutput {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn make_stream_out(vtable: *const *const c_void) -> Retained<Id>;
-    fn make_stream_delegate(vtable: *const *const c_void) -> Retained<Id>;
+    fn make_stream_out(vtable: *const *const c_void) -> arc::R<Id>;
+    fn make_stream_delegate(vtable: *const *const c_void) -> arc::R<Id>;
 }
 
 impl Stream {
@@ -271,7 +269,7 @@ impl Stream {
         filter: &ContentFilter,
         configuration: &Configuration,
         delegate: &Delegate<T>,
-    ) -> Retained<Self>
+    ) -> arc::R<Self>
     where
         T: StreamDelegate,
     {
@@ -281,7 +279,7 @@ impl Stream {
         }
     }
 
-    pub fn new(filter: &ContentFilter, configuration: &Configuration) -> Retained<Self> {
+    pub fn new(filter: &ContentFilter, configuration: &Configuration) -> arc::R<Self> {
         unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, None) }
     }
 
@@ -328,13 +326,13 @@ impl Stream {
         }
     }
 
-    pub async fn start(&self) -> Result<(), Retained<cf::Error>> {
+    pub async fn start(&self) -> Result<(), arc::R<cf::Error>> {
         let (future, block) = blocks::ok();
         self.start_with_completion_handler(block.escape());
         future.await
     }
 
-    pub async fn stop(&self) -> Result<(), Retained<cf::Error>> {
+    pub async fn stop(&self) -> Result<(), arc::R<cf::Error>> {
         let (future, block) = blocks::ok();
         self.stop_with_completion_handler(block.escape());
         future.await
@@ -347,7 +345,7 @@ extern "C" {
         filter: &ContentFilter,
         configuration: &Configuration,
         delegate: Option<&Id>,
-    ) -> Retained<Stream>;
+    ) -> arc::R<Stream>;
 
     fn rsel_addStreamOutput_type_sampleHandlerQueue_error(
         id: &Id,

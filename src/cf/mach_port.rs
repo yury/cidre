@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(MachPort(cf::Type));
 
@@ -18,7 +18,7 @@ impl MachPort {
         &self,
         allocator: Option<&cf::Allocator>,
         index: cf::Index,
-    ) -> Option<cf::Retained<cf::RunLoopSource>> {
+    ) -> Option<arc::R<cf::RunLoopSource>> {
         unsafe { CFMachPortCreateRunLoopSource(allocator, self, index) }
     }
 
@@ -35,7 +35,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         port: &MachPort,
         index: cf::Index,
-    ) -> Option<cf::Retained<cf::RunLoopSource>>;
+    ) -> Option<arc::R<cf::RunLoopSource>>;
 
     fn CFMachPortGetPort(port: &MachPort) -> crate::mach::Port;
 }

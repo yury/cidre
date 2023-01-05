@@ -1,7 +1,7 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::{
-    cf::{self, Retained},
+    arc, cf,
     cm::{self, SampleBuffer, VideoCodecType},
     cv, define_cf_type, os, vt,
 };
@@ -26,7 +26,7 @@ impl Session {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<T>>,
         output_callback_ref_con: *mut T,
-    ) -> Result<Retained<Self>, os::Status> {
+    ) -> Result<arc::R<Self>, os::Status> {
         unsafe {
             let mut session = None;
             Self::create_in(
@@ -56,7 +56,7 @@ impl Session {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: &mut Option<cf::Retained<Session>>,
+        compression_session_out: &mut Option<arc::R<Session>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         VTCompressionSessionCreate(
@@ -146,7 +146,7 @@ extern "C" {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: &mut Option<cf::Retained<Session>>,
+        compression_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status;
 
     fn VTCompressionSessionInvalidate(session: &mut Session);

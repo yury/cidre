@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, define_options, io, msg_send, mtl, ns};
+use crate::{arc, cf, define_mtl, define_obj_type, define_options, io, msg_send, mtl, ns};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -62,7 +62,7 @@ impl Usage {
     pub const RENDER_TARGET: Self = Self(0x0004);
     pub const PIXEL_FROMAT_VIEW: Self = Self(0x0010);
 
-    pub fn to_cf_number(&self) -> cf::Retained<cf::Number> {
+    pub fn to_cf_number(&self) -> arc::R<cf::Number> {
         cf::Number::from_i64(self.0 as _)
     }
 }
@@ -130,7 +130,7 @@ impl Descriptor {
         pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> cf::Retained<Descriptor> {
+    ) -> arc::R<Descriptor> {
         unsafe {
             MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
                 pixel_format,
@@ -146,7 +146,7 @@ impl Descriptor {
         width: usize,
         resource_options: mtl::resource::Options,
         usage: Usage,
-    ) -> cf::Retained<Descriptor> {
+    ) -> arc::R<Descriptor> {
         unsafe {
             MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
                 pixel_format,
@@ -312,7 +312,7 @@ impl Texture {
     pub fn texture_view_with_pixel_format(
         &self,
         pixel_format: mtl::PixelFormat,
-    ) -> Option<cf::Retained<Texture>> {
+    ) -> Option<arc::R<Texture>> {
         unsafe { rsel_newTextureViewWithPixelFormat(self, pixel_format) }
     }
 
@@ -349,13 +349,13 @@ extern "C" {
         pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> cf::Retained<Descriptor>;
+    ) -> arc::R<Descriptor>;
     fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
         pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: crate::mtl::resource::Options,
         usage: Usage,
-    ) -> cf::Retained<Descriptor>;
+    ) -> arc::R<Descriptor>;
 
     fn rsel_textureType(id: &ns::Id) -> Type;
     fn wsel_textureType(id: &mut ns::Id, value: Type);
@@ -389,7 +389,7 @@ extern "C" {
     fn rsel_newTextureViewWithPixelFormat(
         id: &mtl::Texture,
         pixel_format: mtl::PixelFormat,
-    ) -> Option<cf::Retained<mtl::Texture>>;
+    ) -> Option<arc::R<mtl::Texture>>;
 
     fn rsel_iosurface(id: &mtl::Texture) -> Option<&io::Surface>;
     fn rsel_iosurfacePlane(id: &mtl::Texture) -> usize;

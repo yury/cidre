@@ -1,9 +1,7 @@
-use crate::cf::Retained;
-use crate::define_obj_type;
-use crate::dispatch::Object;
+use crate::{arc, define_obj_type, dispatch};
 
 pub struct SignalGuard {
-    sema: Retained<Semaphore>,
+    sema: arc::R<Semaphore>,
 }
 
 impl SignalGuard {
@@ -17,11 +15,11 @@ impl Drop for SignalGuard {
     }
 }
 
-define_obj_type!(Semaphore(Object));
+define_obj_type!(Semaphore(dispatch::Object));
 
 impl Semaphore {
     #[inline]
-    pub fn new(value: isize) -> Retained<Semaphore> {
+    pub fn new(value: isize) -> arc::R<Semaphore> {
         debug_assert!(value >= 0);
         unsafe { dispatch_semaphore_create(value) }
     }
@@ -51,7 +49,7 @@ impl Semaphore {
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
-    fn dispatch_semaphore_create(value: isize) -> Retained<Semaphore>;
+    fn dispatch_semaphore_create(value: isize) -> arc::R<Semaphore>;
     fn dispatch_semaphore_wait(sema: &Semaphore, timeout: super::Time) -> isize;
     fn dispatch_semaphore_signal(sema: &Semaphore) -> isize;
 }

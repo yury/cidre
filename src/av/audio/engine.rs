@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, ns, os};
+use crate::{arc, cf, define_obj_type, ns, os};
 
 use super::{mixer_node::MixerNode, ConnectionPoint, Format, InputNode, Node, NodeBus, OutputNode};
 
@@ -80,7 +80,7 @@ impl Engine {
     /// assert!(!engine.is_running());
     /// ```
     #[inline]
-    pub fn new() -> cf::Retained<Engine> {
+    pub fn new() -> arc::R<Engine> {
         unsafe { AVAudioEngine_new() }
     }
 
@@ -160,7 +160,7 @@ impl Engine {
     }
 
     #[inline]
-    pub fn start(&self) -> Result<(), cf::Retained<cf::Error>> {
+    pub fn start(&self) -> Result<(), arc::R<cf::Error>> {
         unsafe {
             let mut error = None;
             let res = rsel_startAndReturnError(self, &mut error);
@@ -217,7 +217,7 @@ impl Engine {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAudioEngine_new() -> cf::Retained<Engine>;
+    fn AVAudioEngine_new() -> arc::R<Engine>;
 
     fn wsel_attachNode(id: &ns::Id, node: &Node);
     fn wsel_detachNode(id: &ns::Id, node: &Node);
@@ -238,7 +238,7 @@ extern "C" {
 
     fn wsel_prepare(id: &ns::Id);
 
-    fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<cf::Retained<cf::Error>>) -> bool;
+    fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<arc::R<cf::Error>>) -> bool;
     fn wsel_connect_toConnectionPoints_fromBus_format(
         id: &ns::Id,
         node: &Node,

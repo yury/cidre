@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 #[repr(isize)]
 pub enum RecognitionLevel {
@@ -33,12 +33,12 @@ impl RecognizeTextRequest {
         msg_send!("vn", self, sel_results)
     }
 
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { VNRecognizeTextRequest_new() }
     }
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNRecognizeTextRequest_new() -> cf::Retained<RecognizeTextRequest>;
+    fn VNRecognizeTextRequest_new() -> arc::R<RecognizeTextRequest>;
 }

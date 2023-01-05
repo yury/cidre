@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{av, blocks, cf, define_obj_type, ns};
+use crate::{arc, av, blocks, cf, define_obj_type, ns};
 
 pub mod cache;
 pub use cache::Cache as AssetCache;
@@ -36,7 +36,7 @@ define_obj_type!(FragmentedAssetMinder(ns::Id));
 
 impl URLAsset {
     #[inline]
-    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> cf::Retained<URLAsset> {
+    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> arc::R<URLAsset> {
         unsafe { AVURLAsset_URLAssetWithURL_options(url, options) }
     }
 
@@ -65,7 +65,7 @@ impl URLAsset {
     pub async fn load_tracks_with_media_type(
         &self,
         media_type: &av::MediaType,
-    ) -> Result<cf::Retained<cf::ArrayOf<av::asset::Track>>, cf::Retained<cf::Error>> {
+    ) -> Result<arc::R<cf::ArrayOf<av::asset::Track>>, arc::R<cf::Error>> {
         let (future, block) = blocks::result();
         self.load_tracks_with_media_type_completion(media_type, block.escape());
         future.await
@@ -77,7 +77,7 @@ extern "C" {
     fn AVURLAsset_URLAssetWithURL_options(
         url: &cf::URL,
         options: Option<&cf::Dictionary>,
-    ) -> cf::Retained<URLAsset>;
+    ) -> arc::R<URLAsset>;
 
     fn wsel_loadTracksWithMediaType_completionHandler(
         id: &ns::Id,

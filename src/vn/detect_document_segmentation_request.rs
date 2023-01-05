@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, vn};
+use crate::{arc, cf, define_obj_type, msg_send, vn};
 
 define_obj_type!(DetectDocumentSegmentationRequest(vn::ImageBasedRequest));
 
@@ -10,7 +10,7 @@ impl DetectDocumentSegmentationRequest {
         msg_send!("vn", self, sel_results)
     }
 
-    pub fn new() -> cf::Retained<DetectDocumentSegmentationRequest> {
+    pub fn new() -> arc::R<DetectDocumentSegmentationRequest> {
         unsafe { VNDetectDocumentSegmentationRequest_new() }
     }
 }
@@ -18,5 +18,5 @@ impl DetectDocumentSegmentationRequest {
 #[link(name = "vn", kind = "static")]
 extern "C" {
 
-    fn VNDetectDocumentSegmentationRequest_new() -> cf::Retained<DetectDocumentSegmentationRequest>;
+    fn VNDetectDocumentSegmentationRequest_new() -> arc::R<DetectDocumentSegmentationRequest>;
 }

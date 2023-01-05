@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(Bearer(cf::Type));
 
@@ -56,7 +56,7 @@ impl Bearer {
         &self,
         allocator: Option<&cf::Allocator>,
         attachment_mode: Mode,
-    ) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
         CMCopyDictionaryOfAttachments(allocator, self, attachment_mode)
     }
 
@@ -64,7 +64,7 @@ impl Bearer {
     pub fn dictionary_of_attachments(
         &self,
         attachment_mode: Mode,
-    ) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>> {
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
         unsafe { self.copy_dictionary_of_attachments(None, attachment_mode) }
     }
 }
@@ -85,5 +85,5 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         target: &Bearer,
         attachment_mode: Mode,
-    ) -> Option<cf::Retained<cf::DictionaryOf<cf::String, cf::Type>>>;
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
 }

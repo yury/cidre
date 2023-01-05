@@ -1,4 +1,4 @@
-use crate::cf;
+use crate::{arc, cf};
 
 pub type Float = f64;
 
@@ -20,7 +20,7 @@ impl Point {
     /// let d = cg::Point::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 2);
     /// ```
-    pub fn dictionary_representaion(&self) -> cf::Retained<cf::Dictionary> {
+    pub fn dictionary_representaion(&self) -> arc::R<cf::Dictionary> {
         unsafe { CGPointCreateDictionaryRepresentation(*self) }
     }
 
@@ -48,7 +48,7 @@ impl Size {
     /// let d = cg::Size::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 2);
     /// ```
-    pub fn dictionary_representaion(&self) -> cf::Retained<cf::Dictionary> {
+    pub fn dictionary_representaion(&self) -> arc::R<cf::Dictionary> {
         unsafe { CGSizeCreateDictionaryRepresentation(*self) }
     }
 
@@ -77,7 +77,7 @@ impl Rect {
     /// let d = cg::Rect::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 4);
     /// ```
-    pub fn dictionary_representaion(&self) -> cf::Retained<cf::Dictionary> {
+    pub fn dictionary_representaion(&self) -> arc::R<cf::Dictionary> {
         unsafe { CGRectCreateDictionaryRepresentation(*self) }
     }
 
@@ -98,7 +98,7 @@ pub struct Vector {
 }
 
 extern "C" {
-    fn CGPointCreateDictionaryRepresentation(point: Point) -> cf::Retained<cf::Dictionary>;
-    fn CGSizeCreateDictionaryRepresentation(size: Size) -> cf::Retained<cf::Dictionary>;
-    fn CGRectCreateDictionaryRepresentation(rect: Rect) -> cf::Retained<cf::Dictionary>;
+    fn CGPointCreateDictionaryRepresentation(point: Point) -> arc::R<cf::Dictionary>;
+    fn CGSizeCreateDictionaryRepresentation(size: Size) -> arc::R<cf::Dictionary>;
+    fn CGRectCreateDictionaryRepresentation(rect: Rect) -> arc::R<cf::Dictionary>;
 }

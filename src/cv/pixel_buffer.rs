@@ -1,4 +1,4 @@
-use crate::{cf, cv, define_options, os};
+use crate::{arc, cf, cv, define_options, os};
 
 pub type PixelBuffer = cv::ImageBuffer;
 
@@ -64,7 +64,7 @@ impl PixelBuffer {
         height: usize,
         pixel_format_type: cv::PixelFormatType,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<cf::Retained<PixelBuffer>, cv::Return> {
+    ) -> Result<arc::R<PixelBuffer>, cv::Return> {
         let mut pixel_buffer_out = None;
 
         let r = Self::create_in(
@@ -84,7 +84,7 @@ impl PixelBuffer {
         height: usize,
         pixel_format_type: cv::PixelFormatType,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<cf::Retained<PixelBuffer>>,
+        pixel_buffer_out: &mut Option<arc::R<PixelBuffer>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         unsafe {
@@ -189,12 +189,12 @@ impl PixelFormatType {
         Self(number.to_i32().unwrap_or(0) as u32)
     }
 
-    pub fn to_description(&self) -> Option<cf::Retained<cf::Dictionary>> {
+    pub fn to_description(&self) -> Option<arc::R<cf::Dictionary>> {
         cv::pixel_format_description_create(*self)
     }
 
     #[inline]
-    pub fn to_cf_number(&self) -> cf::Retained<cf::Number> {
+    pub fn to_cf_number(&self) -> arc::R<cf::Number> {
         cf::Number::from_i32(self.0 as _)
     }
 }
@@ -207,7 +207,7 @@ extern "C" {
         height: usize,
         pixel_format_type: cv::PixelFormatType,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<cf::Retained<PixelBuffer>>,
+        pixel_buffer_out: &mut Option<arc::R<PixelBuffer>>,
     ) -> cv::Return;
 
     fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuffer) -> usize;

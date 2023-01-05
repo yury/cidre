@@ -9,10 +9,7 @@ pub mod log;
 pub use base::{Device, Error, Notification};
 pub use discovery::{Action, InterfaceConnectionType, QueryBuilder, Speed};
 
-use crate::{
-    cf::{self, Retained},
-    os,
-};
+use crate::{arc, cf, os};
 
 use self::base::ServiceConnection;
 
@@ -21,7 +18,7 @@ impl Device {
         unsafe { AMDeviceGetConnectionID(self) }
     }
 
-    pub fn identifier(&self) -> Retained<cf::String> {
+    pub fn identifier(&self) -> arc::R<cf::String> {
         unsafe { AMDeviceCopyDeviceIdentifier(self) }
     }
 
@@ -169,7 +166,7 @@ impl<'a> Connected<'a> {
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Option<Retained<cf::Type>> {
+    ) -> Option<arc::R<cf::Type>> {
         AMDeviceCopyValue(self.0, domain, key)
     }
 
@@ -194,7 +191,7 @@ impl<'a> Connected<'a> {
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
         error_out: &mut Error,
-    ) -> Option<cf::Retained<cf::PropertyList>> {
+    ) -> Option<arc::R<cf::PropertyList>> {
         AMDeviceCopyValueWithError(self, domain, key, error_out)
     }
 
@@ -202,7 +199,7 @@ impl<'a> Connected<'a> {
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Result<cf::Retained<cf::PropertyList>, Error> {
+    ) -> Result<arc::R<cf::PropertyList>, Error> {
         let mut error_out = Error::SUCCESS;
         unsafe {
             let value = self.copy_value_with_error(domain, key, &mut error_out);
@@ -214,51 +211,51 @@ impl<'a> Connected<'a> {
         }
     }
 
-    pub fn domain_value(&self, domain: &cf::String) -> Option<Retained<cf::Type>> {
+    pub fn domain_value(&self, domain: &cf::String) -> Option<arc::R<cf::Type>> {
         unsafe { self.copy_value(Some(domain), None) }
     }
 
-    pub fn value(&self, key: &cf::String) -> Option<Retained<cf::Type>> {
+    pub fn value(&self, key: &cf::String) -> Option<arc::R<cf::Type>> {
         unsafe { self.copy_value(None, Some(key)) }
     }
 
     #[inline]
-    pub fn name(&self) -> Retained<cf::String> {
+    pub fn name(&self) -> arc::R<cf::String> {
         let key = cf::String::from_str_no_copy("DeviceName");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn cpu_arch(&self) -> Retained<cf::String> {
+    pub fn cpu_arch(&self) -> arc::R<cf::String> {
         let key = cf::String::from_str_no_copy("CPUArchitecture");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn hardware_model(&self) -> Retained<cf::String> {
+    pub fn hardware_model(&self) -> arc::R<cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_name(&self) -> Retained<cf::String> {
+    pub fn product_name(&self) -> arc::R<cf::String> {
         let key = cf::String::from_str_no_copy("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_type(&self) -> Retained<cf::String> {
+    pub fn product_type(&self) -> arc::R<cf::String> {
         let key = cf::String::from_str_no_copy("ProductType");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
-    pub fn product_version(&self) -> Retained<cf::String> {
+    pub fn product_version(&self) -> arc::R<cf::String> {
         let key = cf::String::from_str_no_copy("ProductVersion");
         let v = self.value(&key);
         unsafe { transmute(v) }
@@ -335,7 +332,7 @@ impl<'a> Session<'a> {
     pub fn secure_start_service(
         &self,
         name: &cf::String,
-    ) -> Result<Retained<ServiceConnection>, Error> {
+    ) -> Result<arc::R<ServiceConnection>, Error> {
         unsafe {
             let mut service = None;
             let foo: *mut c_void = std::ptr::null_mut();
@@ -343,14 +340,14 @@ impl<'a> Session<'a> {
         }
     }
 
-    pub fn start_debug_server(&self) -> Result<Retained<ServiceConnection>, Error> {
+    pub fn start_debug_server(&self) -> Result<arc::R<ServiceConnection>, Error> {
         let name = cf::String::from_str_no_copy("com.apple.debugserver.DVTSecureSocketProxy");
         self.secure_start_service(&name)
     }
 
-    pub fn battery_level(&self) -> Option<cf::Retained<cf::Number>> {
-        let domain: cf::Retained<_> = "com.apple.mobile.battery".into();
-        let key: cf::Retained<_> = "BatteryCurrentCapacity".into();
+    pub fn battery_level(&self) -> Option<arc::R<cf::Number>> {
+        let domain: arc::R<_> = "com.apple.mobile.battery".into();
+        let key: arc::R<_> = "BatteryCurrentCapacity".into();
         unsafe { transmute(self.copy_value(Some(&domain), Some(&key))) }
     }
 }
@@ -373,12 +370,12 @@ impl<'a> Deref for Session<'a> {
 #[link(name = "MobileDevice", kind = "framework")]
 extern "C" {
     fn AMDeviceGetConnectionID(device: &Device) -> u32;
-    fn AMDeviceCopyDeviceIdentifier(device: &Device) -> Retained<cf::String>;
+    fn AMDeviceCopyDeviceIdentifier(device: &Device) -> arc::R<cf::String>;
     fn AMDeviceCopyValue(
         device: &Device,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Option<Retained<cf::Type>>;
+    ) -> Option<arc::R<cf::Type>>;
     fn AMDeviceConnect(device: &Device) -> Error;
     fn AMDeviceDisconnect(device: &Device) -> os::Status;
     fn AMDeviceIsPaired(device: &Device) -> u32;
@@ -410,7 +407,7 @@ extern "C" {
         device: &Device,
         service_name: &cf::String,
         ssl: *mut c_void,
-        service: &mut Option<Retained<ServiceConnection>>,
+        service: &mut Option<arc::R<ServiceConnection>>,
     ) -> Error;
 
     fn AMDeviceCopyValueWithError(
@@ -418,7 +415,7 @@ extern "C" {
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
         error_out: &mut Error,
-    ) -> Option<cf::Retained<cf::PropertyList>>;
+    ) -> Option<arc::R<cf::PropertyList>>;
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }

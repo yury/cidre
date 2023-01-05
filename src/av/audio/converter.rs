@@ -1,6 +1,7 @@
 use std::{ffi::c_void, mem::transmute};
 
 use crate::{
+    arc,
     av::{self, audio},
     blocks, cf, define_obj_type, msg_send, ns,
 };
@@ -125,7 +126,7 @@ impl Converter {
         &self,
         output_buffer: &mut av::AudioPCMBuffer,
         from_buffer: &av::AudioPCMBuffer,
-    ) -> Result<(), cf::Retained<cf::Error>> {
+    ) -> Result<(), arc::R<cf::Error>> {
         unsafe {
             let mut error = None;
             let res =
@@ -167,7 +168,7 @@ impl Converter {
         &self,
         output_buffer: &mut av::AudioBuffer,
         block: &mut blocks::Block<F>,
-    ) -> Result<OutputStatus, cf::Retained<cf::Error>>
+    ) -> Result<OutputStatus, arc::R<cf::Error>>
     where
         F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<&'ar av::AudioBuffer>,
     {

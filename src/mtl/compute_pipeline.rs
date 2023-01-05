@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{arc, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 define_obj_type!(Reflection(ns::Id));
 
@@ -26,7 +26,7 @@ impl Descriptor {
     /// desc.set_thread_group_size_is_multiple_of_thread_execution_width(true);
     /// assert_eq!(true, desc.thread_group_size_is_multiple_of_thread_execution_width());
     /// ```
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         unsafe { MTLComputePipelineDescriptor_new() }
     }
 
@@ -57,7 +57,7 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLComputePipelineDescriptor_new() -> cf::Retained<Descriptor>;
+    fn MTLComputePipelineDescriptor_new() -> arc::R<Descriptor>;
 
     fn rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(id: &ns::Id) -> bool;
     fn wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(id: &mut ns::Id, value: bool);

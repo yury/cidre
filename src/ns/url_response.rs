@@ -1,7 +1,4 @@
-use crate::{
-    cf::{self, Retained},
-    define_obj_type, msg_send, ns,
-};
+use crate::{arc, cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(URLResponse(ns::Id));
 define_obj_type!(HTTPURLResponse(URLResponse));
@@ -15,7 +12,7 @@ impl URLResponse {
     /// assert!(url.equal(response_url));
     /// ```
     #[inline]
-    pub fn with_url(url: &cf::URL) -> Retained<Self> {
+    pub fn with_url(url: &cf::URL) -> arc::R<Self> {
         Self::with_url_mime_type(url, None, 0, None)
     }
 
@@ -25,7 +22,7 @@ impl URLResponse {
         mime_type: Option<&cf::String>,
         expected_content_length: ns::Integer,
         text_encoding_name: Option<&cf::String>,
-    ) -> Retained<Self> {
+    ) -> arc::R<Self> {
         unsafe {
             NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName(
                 url,
@@ -48,5 +45,5 @@ extern "C" {
         mime_type: Option<&cf::String>,
         expectedContentLength: ns::Integer,
         textEncodingName: Option<&cf::String>,
-    ) -> Retained<URLResponse>;
+    ) -> arc::R<URLResponse>;
 }

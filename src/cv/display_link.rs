@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{cf, cg, cv, define_cf_type};
+use crate::{arc, cf, cg, cv, define_cf_type};
 
 define_cf_type!(DisplayLink(cf::Type));
 
@@ -21,7 +21,7 @@ impl DisplayLink {
     #[inline]
     pub unsafe fn create_with_cg_display(
         display_id: cg::DirectDisplayID,
-        display_link_out: &mut Option<cf::Retained<DisplayLink>>,
+        display_link_out: &mut Option<arc::R<DisplayLink>>,
     ) -> cv::Return {
         CVDisplayLinkCreateWithCGDisplay(display_id, display_link_out)
     }
@@ -46,7 +46,7 @@ impl DisplayLink {
     /// ```
     pub fn with_cg_display(
         display_id: cg::DirectDisplayID,
-    ) -> Result<cf::Retained<DisplayLink>, cv::Return> {
+    ) -> Result<arc::R<DisplayLink>, cv::Return> {
         unsafe {
             let mut display_link_out = None;
             Self::create_with_cg_display(display_id, &mut display_link_out)
@@ -104,7 +104,7 @@ extern "C" {
 
     fn CVDisplayLinkCreateWithCGDisplay(
         display_id: cg::DirectDisplayID,
-        display_link_out: &mut Option<cf::Retained<DisplayLink>>,
+        display_link_out: &mut Option<arc::R<DisplayLink>>,
     ) -> cv::Return;
 
     fn CVDisplayLinkStart(link: &DisplayLink) -> cv::Return;

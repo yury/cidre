@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cf, define_mtl, define_obj_type, mtl, ns};
+use crate::{arc, cf, define_mtl, define_obj_type, mtl, ns};
 
 define_obj_type!(FunctionConstantValues(ns::Id));
 
@@ -14,7 +14,7 @@ impl FunctionConstantValues {
     /// fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
     /// fcv.reset();
     /// ```
-    pub fn new() -> cf::Retained<FunctionConstantValues> {
+    pub fn new() -> arc::R<FunctionConstantValues> {
         unsafe { MTLFunctionConstantValues_new() }
     }
 
@@ -56,7 +56,7 @@ impl FunctionConstantValues {
 }
 
 extern "C" {
-    fn MTLFunctionConstantValues_new() -> cf::Retained<FunctionConstantValues>;
+    fn MTLFunctionConstantValues_new() -> arc::R<FunctionConstantValues>;
 
     fn wsel_setConstantValue_type_atIndex(
         id: &FunctionConstantValues,

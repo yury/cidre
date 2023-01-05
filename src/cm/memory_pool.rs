@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(MemoryPool(cf::Type));
 
@@ -37,12 +37,12 @@ impl MemoryPool {
     /// pool.flush();
     ///````
     #[inline]
-    pub fn new() -> cf::Retained<Self> {
+    pub fn new() -> arc::R<Self> {
         Self::create(None)
     }
 
     #[inline]
-    pub fn with_age(duration: Duration) -> cf::Retained<Self> {
+    pub fn with_age(duration: Duration) -> arc::R<Self> {
         let options = cf::Dictionary::with_keys_values(
             &[keys::age_out_period()],
             &[&cf::Number::from_f64(duration.as_secs_f64())],
@@ -53,7 +53,7 @@ impl MemoryPool {
     }
 
     #[inline]
-    pub fn create(options: Option<&cf::Dictionary>) -> cf::Retained<MemoryPool> {
+    pub fn create(options: Option<&cf::Dictionary>) -> arc::R<MemoryPool> {
         unsafe { CMMemoryPoolCreate(options) }
     }
 
@@ -87,7 +87,7 @@ pub mod keys {
 }
 
 extern "C" {
-    fn CMMemoryPoolCreate(options: Option<&cf::Dictionary>) -> cf::Retained<MemoryPool>;
+    fn CMMemoryPoolCreate(options: Option<&cf::Dictionary>) -> arc::R<MemoryPool>;
     fn CMMemoryPoolGetAllocator(pool: &MemoryPool) -> &cf::Allocator;
     fn CMMemoryPoolFlush(pool: &MemoryPool);
     fn CMMemoryPoolInvalidate(pool: &MemoryPool);

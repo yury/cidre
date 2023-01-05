@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{cf, define_mtl, define_obj_type, msg_send, ns};
+use crate::{arc, cf, define_mtl, define_obj_type, msg_send, ns};
 
 use super::{argument::Argument, Function, PixelFormat};
 
@@ -252,7 +252,7 @@ impl Descriptor {
     ///
     /// desc.reset();
     /// ```
-    pub fn new() -> cf::Retained<Descriptor> {
+    pub fn new() -> arc::R<Descriptor> {
         unsafe { MTLRenderPipelineDescriptor_new() }
     }
 
@@ -307,7 +307,7 @@ impl Descriptor {
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLRenderPipelineDescriptor_new() -> cf::Retained<Descriptor>;
+    fn MTLRenderPipelineDescriptor_new() -> arc::R<Descriptor>;
     fn rsel_vertexFunction(id: &ns::Id) -> Option<&Function>;
     fn wsel_setVertexFunction(id: &mut ns::Id, value: Option<&Function>);
 

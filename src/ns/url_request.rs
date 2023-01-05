@@ -1,7 +1,4 @@
-use crate::{
-    cf::{self, Retained},
-    define_obj_type, msg_send, ns,
-};
+use crate::{arc, cf, define_obj_type, msg_send, ns};
 
 define_obj_type!(URLRequest(ns::Id));
 define_obj_type!(URLRequestMut(URLRequest));
@@ -76,7 +73,7 @@ impl URLRequest {
     /// assert!(request.http_body().is_none());
     /// ```
     #[inline]
-    pub fn with_url(url: &cf::URL) -> Retained<URLRequest> {
+    pub fn with_url(url: &cf::URL) -> arc::R<URLRequest> {
         unsafe { NSURLRequest_requestWithURL(url) }
     }
 
@@ -85,7 +82,7 @@ impl URLRequest {
         url: &cf::URL,
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
-    ) -> Retained<URLRequest> {
+    ) -> arc::R<URLRequest> {
         unsafe {
             NSURLRequest_requestWithURL_cachePolicy_timeoutInterval(
                 url,
@@ -163,7 +160,7 @@ impl URLRequest {
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> Retained<URLRequestMut> {
+    pub fn copy_mut(&self) -> arc::R<URLRequestMut> {
         msg_send!("common", self, sel_mutableCopy)
     }
 }
@@ -184,12 +181,12 @@ pub enum Attribution {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLRequest_requestWithURL(url: &cf::URL) -> Retained<URLRequest>;
+    fn NSURLRequest_requestWithURL(url: &cf::URL) -> arc::R<URLRequest>;
     fn NSURLRequest_requestWithURL_cachePolicy_timeoutInterval(
         url: &cf::URL,
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
-    ) -> Retained<URLRequest>;
+    ) -> arc::R<URLRequest>;
 
     fn NSURLRequest_rsel_cachePolicy(request: &URLRequest) -> CachePolicy;
     fn NSURLRequest_rsel_timeoutInterval(request: &URLRequest) -> cf::TimeInterval;
@@ -213,7 +210,7 @@ extern "C" {
 
 impl URLRequestMut {
     #[inline]
-    pub fn with_url(url: &cf::URL) -> Retained<Self> {
+    pub fn with_url(url: &cf::URL) -> arc::R<Self> {
         unsafe { NSMutableURLRequest_requestWithURL(url) }
     }
 
@@ -222,7 +219,7 @@ impl URLRequestMut {
         url: &cf::URL,
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
-    ) -> Retained<Self> {
+    ) -> arc::R<Self> {
         unsafe {
             NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
                 url,
@@ -303,13 +300,13 @@ impl URLRequestMut {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> Retained<URLRequestMut>;
+    fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> arc::R<URLRequestMut>;
 
     fn NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
         url: &cf::URL,
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
-    ) -> Retained<URLRequestMut>;
+    ) -> arc::R<URLRequestMut>;
 
     fn NSMutableURLRequest_wsel_setCachePolicy(request: &URLRequestMut, value: CachePolicy);
 

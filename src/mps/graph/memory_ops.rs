@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, mps, mps::graph, msg_send, ns};
+use crate::{arc, cf, define_obj_type, mps, mps::graph, msg_send, ns};
 
 define_obj_type!(VariableOp(graph::Operation));
 
@@ -21,7 +21,7 @@ impl graph::Graph {
         shape: Option<&mps::Shape>,
         data_type: mps::DataType,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_placeholderWithShape_dataType_name(self, shape, data_type, name) }
     }
 
@@ -31,12 +31,12 @@ impl graph::Graph {
         data: &ns::Data,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_constantWithData_shape_dataType(self, data, shape, data_type) }
     }
 
     #[inline]
-    pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> cf::Retained<graph::Tensor> {
+    pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> arc::R<graph::Tensor> {
         unsafe { rsel_constantWithScalar_dataType(self, scalar, data_type) }
     }
 
@@ -46,7 +46,7 @@ impl graph::Graph {
         scalar: f64,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> cf::Retained<graph::Tensor> {
+    ) -> arc::R<graph::Tensor> {
         unsafe { rsel_constantWithScalar_shape_dataType(self, scalar, shape, data_type) }
     }
 }
@@ -58,27 +58,27 @@ extern "C" {
         shape: Option<&mps::Shape>,
         data_type: mps::DataType,
         name: Option<&cf::String>,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_constantWithData_shape_dataType(
         id: &ns::Id,
         data: &ns::Data,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_constantWithScalar_dataType(
         id: &ns::Id,
         scalar: f64,
         data_type: mps::DataType,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 
     fn rsel_constantWithScalar_shape_dataType(
         id: &ns::Id,
         scalar: f64,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> cf::Retained<graph::Tensor>;
+    ) -> arc::R<graph::Tensor>;
 }
 
 #[cfg(test)]

@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{arc, cf, define_cf_type};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(u32)]
@@ -57,7 +57,7 @@ impl Buffer {
     pub fn copy_attachments(
         &self,
         attachment_mode: AttachmentMode,
-    ) -> Option<cf::Retained<cf::Dictionary>> {
+    ) -> Option<arc::R<cf::Dictionary>> {
         unsafe { CVBufferCopyAttachments(self, attachment_mode) }
     }
 
@@ -66,7 +66,7 @@ impl Buffer {
         &self,
         key: &cf::String,
         attachment_mode: AttachmentMode,
-    ) -> Option<cf::Retained<cf::Type>> {
+    ) -> Option<arc::R<cf::Type>> {
         unsafe { CVBufferCopyAttachment(self, key, attachment_mode) }
     }
 
@@ -102,12 +102,12 @@ extern "C" {
     fn CVBufferCopyAttachments(
         buffer: &Buffer,
         attachment_mode: AttachmentMode,
-    ) -> Option<cf::Retained<cf::Dictionary>>;
+    ) -> Option<arc::R<cf::Dictionary>>;
     fn CVBufferCopyAttachment(
         buffer: &Buffer,
         key: &cf::String,
         attachment_mode: AttachmentMode,
-    ) -> Option<cf::Retained<cf::Type>>;
+    ) -> Option<arc::R<cf::Type>>;
     fn CVBufferHasAttachment(buffer: &Buffer, key: &cf::String) -> bool;
     fn CVBufferGetAttachment<'a>(
         buffer: &'a Buffer,
