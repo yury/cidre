@@ -4,7 +4,7 @@ use crate::{
 };
 
 define_obj_type!(URLRequest(ns::Id));
-define_obj_type!(MutURLRequest(URLRequest));
+define_obj_type!(URLRequestMut(URLRequest));
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -163,7 +163,7 @@ impl URLRequest {
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> Retained<MutURLRequest> {
+    pub fn copy_mut(&self) -> Retained<URLRequestMut> {
         msg_send!("common", self, sel_mutableCopy)
     }
 }
@@ -211,9 +211,9 @@ extern "C" {
     fn NSURLRequest_rsel_HTTPBody(request: &URLRequest) -> Option<&cf::Data>;
 }
 
-impl MutURLRequest {
+impl URLRequestMut {
     #[inline]
-    pub fn with_url(url: &cf::URL) -> Retained<MutURLRequest> {
+    pub fn with_url(url: &cf::URL) -> Retained<Self> {
         unsafe { NSMutableURLRequest_requestWithURL(url) }
     }
 
@@ -222,7 +222,7 @@ impl MutURLRequest {
         url: &cf::URL,
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
-    ) -> Retained<MutURLRequest> {
+    ) -> Retained<Self> {
         unsafe {
             NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
                 url,
@@ -303,52 +303,52 @@ impl MutURLRequest {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> Retained<MutURLRequest>;
+    fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> Retained<URLRequestMut>;
 
     fn NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
         url: &cf::URL,
         cache_policy: CachePolicy,
         timeout_interval: cf::TimeInterval,
-    ) -> Retained<MutURLRequest>;
+    ) -> Retained<URLRequestMut>;
 
-    fn NSMutableURLRequest_wsel_setCachePolicy(request: &MutURLRequest, value: CachePolicy);
+    fn NSMutableURLRequest_wsel_setCachePolicy(request: &URLRequestMut, value: CachePolicy);
 
     fn NSMutableURLRequest_wsel_setTimeoutInterval(
-        request: &MutURLRequest,
+        request: &URLRequestMut,
         value: cf::TimeInterval,
     );
 
     fn NSMutableURLRequest_wsel_setNetworkServiceType(
-        request: &MutURLRequest,
+        request: &URLRequestMut,
         value: NetworkServiceType,
     );
 
-    fn NSMutableURLRequest_wsel_setAllowsCellularAccess(request: &MutURLRequest, value: bool);
+    fn NSMutableURLRequest_wsel_setAllowsCellularAccess(request: &URLRequestMut, value: bool);
 
     fn NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess(
-        request: &MutURLRequest,
+        request: &URLRequestMut,
         value: bool,
     );
 
     fn NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess(
-        request: &MutURLRequest,
+        request: &URLRequestMut,
         value: bool,
     );
 
-    fn NSMutableURLRequest_wsel_setAssumesHTTP3Capable(request: &MutURLRequest, value: bool);
+    fn NSMutableURLRequest_wsel_setAssumesHTTP3Capable(request: &URLRequestMut, value: bool);
 
-    fn NSMutableURLRequest_wsel_setAttribution(request: &MutURLRequest, value: Attribution);
+    fn NSMutableURLRequest_wsel_setAttribution(request: &URLRequestMut, value: Attribution);
 
-    fn NSMutableURLRequest_wsel_setRequiresDNSSECValidation(request: &MutURLRequest, value: bool);
+    fn NSMutableURLRequest_wsel_setRequiresDNSSECValidation(request: &URLRequestMut, value: bool);
 
-    fn NSMutableURLRequest_wsel_setHTTPMethod(request: &MutURLRequest, value: Option<&cf::String>);
+    fn NSMutableURLRequest_wsel_setHTTPMethod(request: &URLRequestMut, value: Option<&cf::String>);
 
     fn NSMutableURLRequest_wsel_setAllHTTPHeaderFields(
-        request: &MutURLRequest,
+        request: &URLRequestMut,
         value: Option<&cf::DictionaryOf<cf::String, cf::String>>,
     );
 
-    fn NSMutableURLRequest_wsel_setHTTPBody(request: &MutURLRequest, value: Option<&cf::Data>);
+    fn NSMutableURLRequest_wsel_setHTTPBody(request: &URLRequestMut, value: Option<&cf::Data>);
 }
 
 #[cfg(test)]
