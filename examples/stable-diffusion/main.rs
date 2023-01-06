@@ -503,7 +503,7 @@ fn make_unet_res_block(
     }
 }
 
-fn make_cross_attention(
+fn make_cross_attn(
     graph: &graph::Graph,
     x_in: &graph::Tensor,
     name: &str,
@@ -619,10 +619,10 @@ fn make_basic_transformer_block(
     save_mem: bool,
 ) -> arc::R<graph::Tensor> {
     let attn1 = make_layer_norm(graph, x_in, &format!("{name}.norm1"));
-    let attn1 = make_cross_attention(graph, &attn1, &format!("{name}.attn1"), None, save_mem);
+    let attn1 = make_cross_attn(graph, &attn1, &format!("{name}.attn1"), None, save_mem);
     let x = graph.add(&attn1, x_in, None);
     let attn2 = make_layer_norm(graph, &x, &format!("{name}.norm2"));
-    let attn2 = make_cross_attention(
+    let attn2 = make_cross_attn(
         graph,
         &attn2,
         &format!("{name}.attn2"),
@@ -633,6 +633,40 @@ fn make_basic_transformer_block(
     let ff = make_layer_norm(graph, &x, &format!("{name}.norm3"));
     let ff = make_feed_forward(graph, &ff, &format!("{name}.ff.net"));
     graph.add(&ff, &x, None)
+}
+
+fn make_spatial_transformer_block(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+    context_in: &graph::Tensor,
+    save_mem: bool,
+) -> arc::R<graph::Tensor> {
+    let one = ns::Number::with_i32(1);
+    let in_shape = x_in.shape().unwrap();
+    let (n, h, w, c) = (&in_shape[0], &in_shape[1], &in_shape[2], &in_shape[3]);
+    let x = make_group_norm(graph, x_in, &format!("{name}.norm"));
+    let x = make_conv(graph, &x, &format!("{name}.proj_in"), c, &one, 1, true);
+    let x = graph.reshape(
+        &x,
+        &mps::Shape::from_slice(&[
+            n,
+            &ns::Number::with_integer(h.as_integer() * w.as_integer()),
+            c,
+        ]),
+        None,
+    );
+    let x = make_basic_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.transformer_blocks.0"),
+        context_in,
+        save_mem,
+    );
+
+    let x = graph.reshape(&x, &mps::Shape::from_slice(&[n, h, w, c]), None);
+    let x = make_conv(graph, &x, &format!("{name}.proj_out"), c, &one, 1, true);
+    graph.add(&x, x_in, None)
 }
 
 fn main() {}
