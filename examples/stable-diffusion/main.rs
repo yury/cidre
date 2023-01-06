@@ -611,17 +611,21 @@ fn make_feed_forward(
     make_linear(graph, &x, &format!("{name}."), dim, true)
 }
 
-// func makeBasicTransformerBlock(graph: MPSGraph, xIn: MPSGraphTensor, name: String, contextIn: MPSGraphTensor, saveMemory: Bool) -> MPSGraphTensor {
-//     var x = xIn
-//     var attn1 = makeLayerNorm(graph: graph, xIn: x, name: name + ".norm1")
-//     attn1 = makeCrossAttention(graph: graph, xIn: attn1, name: name + ".attn1", context: nil, saveMemory: saveMemory)
-//     x = graph.addition(attn1, x, name: nil)
-//     var attn2 = makeLayerNorm(graph: graph, xIn: x, name: name + ".norm2")
-//     attn2 = makeCrossAttention(graph: graph, xIn: attn2, name: name + ".attn2", context: contextIn, saveMemory: saveMemory)
-//     x = graph.addition(attn2, x, name: nil)
-//     var ff = makeLayerNorm(graph: graph, xIn: x, name: name + ".norm3")
-//     ff = makeFeedForward(graph: graph, xIn: ff, name: name + ".ff.net")
-//     return graph.addition(ff, x, name: nil)
-// }
+fn make_basic_transformer_block(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+    context_in: &graph::Tensor,
+    save_mem: bool,
+) -> arc::R<graph::Tensor> {
+    let attn1 = make_layer_norm(graph, x_in, &format!("{name}.norm1"));
+    let attn1 = make_cross_attention(graph, &attn1, &format!("{name}.attn1"), None, save_mem);
+    let x = graph.add(&attn1, x_in, None);
+    let attn2 = make_layer_norm(graph, &x, &format("{name}.norm2"));
+    let x = graph.add(&attn2, &x, None);
+    let ff = make_layer_norm(graph, &x, &format!("{name}.norm3"));
+    let ff = make_feed_forward(graph, &ff, &format!("{name}.ff.net"));
+    graph.add(&ff, &x, None)
+}
 
 fn main() {}
