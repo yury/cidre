@@ -29,6 +29,7 @@ pub mod ci;
 pub mod cf;
 
 /// Core Graphics
+#[cfg(feature = "cg")]
 pub mod cg;
 
 /// Core Media
@@ -50,22 +51,27 @@ pub mod blocks;
 pub mod mach;
 
 /// Metal
+#[cfg(feature = "mtl")]
 pub mod mtl;
 
 /// Metal Performance Shaders
 pub mod mps;
 
 /// Foundation
+#[cfg(feature = "ns")]
 pub mod ns;
 
+#[cfg(feature = "ns")]
 pub mod objc;
 pub mod os;
 pub mod sys;
 
 /// Video Toolbox
+#[cfg(feature = "vt")]
 pub mod vt;
 
-#[cfg(target_os = "macos")]
+/// Screen Capture
+#[cfg(all(target_os = "macos", feature = "sc"))]
 pub mod sc;
 
 /// Sound Analysis

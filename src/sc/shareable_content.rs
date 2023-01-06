@@ -1,15 +1,15 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, cf, cg, define_obj_type, msg_send, ns, sys};
+use crate::{arc, blocks, cg, define_obj_type, msg_send, ns, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
 impl RunningApplication {
-    pub fn bundle_identifier(&self) -> cf::String {
+    pub fn bundle_identifier(&self) -> ns::String {
         unsafe { rsel_bundleIdentifier(self) }
     }
 
-    pub fn application_name(&self) -> cf::String {
+    pub fn application_name(&self) -> ns::String {
         unsafe { rsel_applicationName(self) }
     }
 
@@ -20,8 +20,8 @@ impl RunningApplication {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_bundleIdentifier(id: &ns::Id) -> cf::String;
-    fn rsel_applicationName(id: &ns::Id) -> cf::String;
+    fn rsel_bundleIdentifier(id: &ns::Id) -> ns::String;
+    fn rsel_applicationName(id: &ns::Id) -> ns::String;
     fn rsel_processID(id: &ns::Id) -> sys::Pid;
 }
 
@@ -65,28 +65,28 @@ extern "C" {
 define_obj_type!(ShareableContent(ns::Id));
 
 impl ShareableContent {
-    pub fn windows(&self) -> &cf::ArrayOf<Window> {
+    pub fn windows(&self) -> &ns::Array<Window> {
         unsafe { rsel_windows(self) }
     }
 
-    pub fn displays(&self) -> &cf::ArrayOf<Display> {
+    pub fn displays(&self) -> &ns::Array<Display> {
         unsafe { rsel_displays(self) }
     }
 
-    pub fn applications(&self) -> &cf::ArrayOf<RunningApplication> {
+    pub fn applications(&self) -> &ns::Array<RunningApplication> {
         unsafe { rsel_applications(self) }
     }
 
     pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)
     where
-        F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar cf::Error>),
+        F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar ns::Error>),
     {
         unsafe {
             cs_shareable(b.as_ptr());
         }
     }
 
-    pub async fn current() -> Result<arc::R<Self>, arc::R<cf::Error>> {
+    pub async fn current() -> Result<arc::R<Self>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
 
         Self::current_with_completion(block.escape());
@@ -97,9 +97,9 @@ impl ShareableContent {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_windows(id: &ns::Id) -> &cf::ArrayOf<Window>;
-    fn rsel_displays(id: &ns::Id) -> &cf::ArrayOf<Display>;
-    fn rsel_applications(id: &ns::Id) -> &cf::ArrayOf<RunningApplication>;
+    fn rsel_windows(id: &ns::Id) -> &ns::Array<Window>;
+    fn rsel_displays(id: &ns::Id) -> &ns::Array<Display>;
+    fn rsel_applications(id: &ns::Id) -> &ns::Array<RunningApplication>;
 
     fn cs_shareable(block: *mut c_void);
 }
@@ -108,7 +108,7 @@ extern "C" {
 mod tests {
 
     use crate::{
-        blocks, cf, dispatch,
+        blocks, dispatch, ns,
         sc::{
             self,
             stream::{StreamDelegate, StreamOutput},
@@ -143,7 +143,7 @@ mod tests {
         extern "C" fn stream_did_stop_with_error(
             &mut self,
             _stream: &sc::Stream,
-            _error: Option<&cf::Error>,
+            _error: Option<&ns::Error>,
         ) {
             println!("!!!!")
         }

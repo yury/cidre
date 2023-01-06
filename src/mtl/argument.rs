@@ -1,4 +1,4 @@
-use crate::{cf, define_obj_type, msg_send, ns};
+use crate::{define_obj_type, msg_send, ns};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -155,7 +155,7 @@ define_obj_type!(TextureReferenceType(BaseType));
 define_obj_type!(Argument(ns::Id));
 
 impl Argument {
-    pub fn name(&self) -> &cf::String {
+    pub fn name(&self) -> &ns::String {
         msg_send!("common", self, sel_name)
     }
 }

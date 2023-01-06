@@ -86,6 +86,11 @@ where
     T: objc::Obj,
 {
     #[inline]
+    pub fn new() -> arc::R<Self> {
+        unsafe { transmute(NSArray_array()) }
+    }
+
+    #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe { transmute(NSArray_withObjs(objs.as_ptr() as _, objs.len())) }
     }
@@ -178,6 +183,8 @@ extern "C" {
         objects: *const c_void,
         count: ns::UInteger,
     ) -> arc::Retained<Array<ns::Id>>;
+
+    fn NSArray_array() -> arc::Retained<Array<ns::Id>>;
 }
 
 #[cfg(test)]

@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, av, blocks, cf, define_obj_type, ns};
+use crate::{arc, av, blocks, define_obj_type, ns};
 
 pub mod cache;
 pub use cache::Cache as AssetCache;
@@ -36,7 +36,10 @@ define_obj_type!(FragmentedAssetMinder(ns::Id));
 
 impl URLAsset {
     #[inline]
-    pub fn with_url(url: &cf::URL, options: Option<&cf::Dictionary>) -> arc::R<URLAsset> {
+    pub fn with_url(
+        url: &ns::URL,
+        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
+    ) -> arc::R<URLAsset> {
         unsafe { AVURLAsset_URLAssetWithURL_options(url, options) }
     }
 
@@ -45,7 +48,7 @@ impl URLAsset {
         media_type: &av::MediaType,
         completion: &'static mut blocks::Block<F>,
     ) where
-        F: FnOnce(Option<&'ar cf::ArrayOf<av::asset::Track>>, Option<&'ar cf::Error>),
+        F: FnOnce(Option<&'ar ns::Array<av::asset::Track>>, Option<&'ar ns::Error>),
     {
         unsafe {
             wsel_loadTracksWithMediaType_completionHandler(self, media_type, completion.as_ptr())
@@ -54,7 +57,7 @@ impl URLAsset {
 
     pub fn load_tracks_with_media_type_once<'ar, F>(&self, media_type: &av::MediaType, block: F)
     where
-        F: FnOnce(Option<&'ar cf::ArrayOf<av::asset::Track>>, Option<&'ar cf::Error>)
+        F: FnOnce(Option<&'ar ns::Array<av::asset::Track>>, Option<&'ar ns::Error>)
             + 'static
             + Sync,
     {
@@ -65,7 +68,7 @@ impl URLAsset {
     pub async fn load_tracks_with_media_type(
         &self,
         media_type: &av::MediaType,
-    ) -> Result<arc::R<cf::ArrayOf<av::asset::Track>>, arc::R<cf::Error>> {
+    ) -> Result<arc::R<ns::Array<av::asset::Track>>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
         self.load_tracks_with_media_type_completion(media_type, block.escape());
         future.await
@@ -75,8 +78,8 @@ impl URLAsset {
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn AVURLAsset_URLAssetWithURL_options(
-        url: &cf::URL,
-        options: Option<&cf::Dictionary>,
+        url: &ns::URL,
+        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<URLAsset>;
 
     fn wsel_loadTracksWithMediaType_completionHandler(

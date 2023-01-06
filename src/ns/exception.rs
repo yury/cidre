@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{cf, define_obj_type, ns};
+use crate::{define_obj_type, ns};
 
 use super::objc_runtime::ExceptionName;
 
@@ -129,12 +129,12 @@ extern "C" {
 define_obj_type!(Exception(ns::Id));
 
 impl Exception {
-    pub fn raise(message: &cf::String) -> ! {
+    pub fn raise(message: &ns::String) -> ! {
         unsafe { cidre_raise_exception(message) }
     }
 }
 
-pub fn throw_string(message: &cf::String) -> ! {
+pub fn throw_string(message: &ns::String) -> ! {
     unsafe { cidre_throw_exception(message) }
 }
 
@@ -155,8 +155,8 @@ extern "C" {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn cidre_raise_exception(message: &cf::String) -> !;
-    fn cidre_throw_exception(message: &cf::String) -> !;
+    fn cidre_raise_exception(message: &ns::String) -> !;
+    fn cidre_throw_exception(message: &ns::String) -> !;
     fn cidre_try_catch<'a>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
@@ -208,7 +208,7 @@ mod tests {
     #[test]
     fn test_exception_catch() {
         let err = ns::try_catch(|| {
-            let msg = cf::String::from_str("test");
+            let msg = ns::String::with_str("test");
             ns::exception::Exception::raise(&msg);
         })
         .expect_err("result");
@@ -220,7 +220,7 @@ mod tests {
 
     #[test]
     fn test_throw_catch() {
-        let msg = cf::String::from_str("test");
+        let msg = ns::String::with_str("test");
 
         let err = ns::try_catch(|| {
             ns::exception::throw_string(&msg);
@@ -228,7 +228,7 @@ mod tests {
         .expect_err("result");
 
         assert_eq!(cf::String::type_id(), err.as_type_ref().get_type_id());
-        assert!(msg.equal(err.as_type_ref()));
+        assert!(msg.is_equal(err));
 
         println!("{:?} {:?}", err, err.as_type_ref().retain_count());
     }

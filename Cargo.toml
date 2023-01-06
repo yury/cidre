@@ -11,14 +11,20 @@ default = ["full"]
 
 full = [
   "private",
-  "am",
   "blocks",
   "async",
+
+  "am",
   "at",
   "ca",
   "ci",
   "av",
   "cf",
+  "cg",
+  "ns",
+  "vt",
+  "sc",
+  "mtl",
 ]
 
 # Turn on private API
@@ -27,12 +33,17 @@ private = []
 blocks = []
 async = []
 
-am = ["private"]
+am = ["private", "cf"]
 at = []
-av = []
+av = ["ns"]
 ca = []
-ci = []
+ci = ["ns", "cf"]
 cf = []
+cg = []
+ns = []
+sc = ["ns"]
+vt = ["cf"]
+mtl = ["ns"]
 
 [dependencies]
 

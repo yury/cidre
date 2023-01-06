@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{arc, blocks, cf, define_obj_type, define_options, io, msg_send, mtl, ns};
+use crate::{arc, blocks, define_obj_type, define_options, io, msg_send, mtl, ns};
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 
@@ -62,11 +62,9 @@ impl Device {
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let name = device.name();
-    ///
-    /// name.show_str();
     /// ```
     #[inline]
-    pub fn name(&self) -> &cf::String {
+    pub fn name(&self) -> &ns::String {
         msg_send!("common", self, sel_name)
     }
 
@@ -202,11 +200,11 @@ impl Device {
     }
 
     /// ```
-    /// use cidre::{cf, mtl};
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let source = cf::String::from_str("void function_a() {}");
+    /// let source = ns::String::with_str("void function_a() {}");
     /// let options = None;
     /// let mut err = None;
     /// let lib = device.library_with_source_and_error(&source, options, &mut err).unwrap();
@@ -215,9 +213,9 @@ impl Device {
     #[inline]
     pub fn library_with_source_and_error(
         &self,
-        source: &cf::String,
+        source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Library>> {
         unsafe { rsel_newLibraryWithSource_options_error(self, source, options, error) }
     }
@@ -225,9 +223,9 @@ impl Device {
     #[inline]
     pub fn library_with_source<'a>(
         &self,
-        source: &cf::String,
+        source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<arc::R<Library>, &'a cf::Error> {
+    ) -> Result<arc::R<Library>, &'a ns::Error> {
         let mut error = None;
         let res = Self::library_with_source_and_error(self, source, options, &mut error);
 
@@ -240,9 +238,9 @@ impl Device {
 
     pub async fn library_with_source_options(
         &self,
-        source: &cf::String,
+        source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<arc::R<mtl::Library>, arc::R<cf::Error>> {
+    ) -> Result<arc::R<mtl::Library>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
         self.library_with_source_options_completion(source, options, block.escape());
         future.await
@@ -250,11 +248,11 @@ impl Device {
 
     pub fn library_with_source_options_completion<'ar, F>(
         &self,
-        source: &cf::String,
+        source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         completion: &'static mut blocks::Block<F>,
     ) where
-        F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar cf::error::Error>) + 'static,
+        F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar ns::Error>) + 'static,
     {
         unsafe {
             wsel_newLibraryWithSource_options_completionHandler(
@@ -270,7 +268,7 @@ impl Device {
     pub fn compute_pipeline_state_with_function_error(
         &self,
         function: &mtl::Function,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>> {
         unsafe { rsel_newComputePipelineStateWithFunction_error(self, function, error) }
     }
@@ -279,7 +277,7 @@ impl Device {
     pub unsafe fn render_pipeline_state_with_descriptor_error(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>> {
         rsel_newRenderPipelineStateWithDescriptor_error(self, descriptor, error)
     }
@@ -288,7 +286,7 @@ impl Device {
     pub fn render_pipeline_state_with_descriptor<'a>(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
-    ) -> Result<arc::R<mtl::RenderPipelineState>, &'a cf::Error> {
+    ) -> Result<arc::R<mtl::RenderPipelineState>, &'a ns::Error> {
         let mut error = None;
         unsafe {
             let res =
@@ -305,7 +303,7 @@ impl Device {
     pub fn compute_pipeline_state_with_function<'ar>(
         &self,
         function: &mtl::Function,
-    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar cf::Error> {
+    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar ns::Error> {
         let mut error = None;
         let res = self.compute_pipeline_state_with_function_error(function, &mut error);
 
@@ -435,7 +433,7 @@ extern "C" {
 
     fn wsel_newLibraryWithSource_options_completionHandler(
         id: &Device,
-        source: &cf::String,
+        source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         block: *mut c_void,
     );
@@ -467,9 +465,9 @@ extern "C" {
 
     fn rsel_newLibraryWithSource_options_error(
         id: &Device,
-        source: &cf::String,
+        source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Library>>;
 
     // NS_RETURNS_RETAINED
@@ -477,13 +475,13 @@ extern "C" {
     fn rsel_newComputePipelineStateWithFunction_error<'a>(
         id: &Device,
         function: &mtl::Function,
-        error: &mut Option<&'a cf::Error>,
+        error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     fn rsel_newRenderPipelineStateWithDescriptor_error<'a>(
         id: &Device,
         descriptor: &mtl::RenderPipelineDescriptor,
-        error: &mut Option<&'a cf::Error>,
+        error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     // reuse this in Heap
@@ -533,6 +531,6 @@ mod tests {
         let device = unsafe { mtl::Device::default().unwrap_unchecked() };
 
         let n = device.name();
-        n.show_str()
+        //n.show_str()
     }
 }

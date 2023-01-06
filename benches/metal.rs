@@ -1,4 +1,4 @@
-use cidre::{arc, cf, mtl, ns};
+use cidre::{arc, mtl, ns};
 use criterion::{criterion_group, criterion_main, Criterion};
 
 struct BenchState {
@@ -158,15 +158,15 @@ fn foo() -> BenchState {
     }
 "#;
 
-    let source = cf::String::from_str(source);
+    let source = ns::String::with_str(source);
 
     let lib = device.library_with_source(&source, None).unwrap();
 
     let matrix_transfrom_fn = lib
-        .new_function_with_name(&cf::String::from_str("matrix_transform"))
+        .new_function_with_name(&ns::String::with_str("matrix_transform"))
         .unwrap();
     let macro_transfrom_fn = lib
-        .new_function_with_name(&cf::String::from_str("macro_tranform"))
+        .new_function_with_name(&ns::String::with_str("macro_tranform"))
         .unwrap();
 
     let matrix_state = device
@@ -177,10 +177,10 @@ fn foo() -> BenchState {
         .unwrap();
 
     let vert_fn = lib
-        .new_function_with_name(&cf::String::from_str("vertex_passthrough2"))
+        .new_function_with_name(&ns::String::with_str("vertex_passthrough2"))
         .unwrap();
     let frag_fn = lib
-        .new_function_with_name(&cf::String::from_str("fragment_y_cbcr"))
+        .new_function_with_name(&ns::String::with_str("fragment_y_cbcr"))
         .unwrap();
 
     let mut render_desc = mtl::RenderPipelineDescriptor::new();

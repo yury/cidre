@@ -1,4 +1,4 @@
-use cidre::{cf, cg, ci, mtl, objc::autoreleasepool, simd};
+use cidre::{cf, cg, ci, mtl, ns, objc::autoreleasepool, simd};
 
 #[repr(C)]
 struct Vertex {
@@ -62,13 +62,13 @@ fn main() {
     autoreleasepool(|| {
         let device = mtl::Device::default().unwrap();
 
-        let source = cf::String::from_str(LIB_SRC);
+        let source = ns::String::with_str(LIB_SRC);
         let lib = device.library_with_source(&source, None).unwrap();
 
-        let vertex_fn_name = cf::String::from_str("passthrough");
+        let vertex_fn_name = ns::String::with_str("passthrough");
         let vertex_fn = lib.new_function_with_name(&vertex_fn_name).unwrap();
 
-        let fragment_fn_name = cf::String::from_str("pass_color");
+        let fragment_fn_name = ns::String::with_str("pass_color");
         let fragment_fn = lib.new_function_with_name(&fragment_fn_name).unwrap();
 
         let mut desc = mtl::RenderPipelineDescriptor::new();
@@ -129,11 +129,11 @@ fn main() {
 
         let options = cf::Dictionary::new().unwrap();
         let color_space = cg::ColorSpace::device_rgb().unwrap();
-        let url = cf::URL::from_str("file:///tmp/image.png").unwrap();
+        let url = ns::URL::with_str("file:///tmp/image.png").unwrap();
         context
             .write_png_to_url(&image, &url, ci::Format::rgba8(), &color_space, &options)
             .unwrap();
 
-        println!("image is written to {}", url.cf_string());
+        println!("image is written to {:?}", url.abs_string());
     });
 }

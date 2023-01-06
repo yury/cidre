@@ -99,4 +99,5 @@ type TimeInterval = f64;
 pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;
 
 mod error;
+pub use error::Domain as ErrorDomain;
 pub use error::Error;

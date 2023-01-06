@@ -5,7 +5,7 @@ use cidre::{
     cat::{audio::MPEG4ObjectID, AudioFormatFlags, AudioFormatID},
     cf,
     cm::{self, SampleBuffer},
-    dispatch,
+    dispatch, ns,
     os::{self, Status},
     sc::{self, stream::StreamOutput},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
@@ -341,7 +341,7 @@ async fn main() {
     session.set_props(&props).unwrap();
     session.prepare().unwrap();
 
-    let windows = cf::ArrayOf::new();
+    let windows = ns::Array::new();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
     let input_asbd = at::audio::StreamBasicDescription {

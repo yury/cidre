@@ -14,7 +14,7 @@ use std::{
     ops,
 };
 
-use crate::{arc, define_options, objc::Class};
+use crate::{arc, define_options, ns, objc::Class};
 
 #[repr(transparent)]
 pub struct Block<F>(c_void, std::marker::PhantomData<F>);
@@ -613,8 +613,6 @@ mod tests {
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use crate::cf;
-
 struct Shared<T> {
     ready: Option<T>,
     pending: Option<std::task::Waker>,
@@ -663,13 +661,13 @@ pub fn comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
 }
 
 pub fn ok() -> (
-    Comp<Result<(), arc::R<cf::Error>>>,
-    BlOnce<impl FnOnce(Option<&'static cf::Error>)>,
+    Comp<Result<(), arc::R<ns::Error>>>,
+    BlOnce<impl FnOnce(Option<&'static ns::Error>)>,
 ) {
     let shared = Shared::new();
     (
         Comp(shared.clone()),
-        once1(move |error: Option<&'static cf::Error>| {
+        once1(move |error: Option<&'static ns::Error>| {
             shared.lock().ready(match error {
                 None => Ok(()),
                 Some(err) => Err(err.retained()),
@@ -679,14 +677,14 @@ pub fn ok() -> (
 }
 
 pub fn result<T: arc::Retain>() -> (
-    Comp<Result<arc::R<T>, arc::R<cf::Error>>>,
-    BlOnce<impl FnOnce(Option<&'static T>, Option<&'static cf::Error>)>,
+    Comp<Result<arc::R<T>, arc::R<ns::Error>>>,
+    BlOnce<impl FnOnce(Option<&'static T>, Option<&'static ns::Error>)>,
 ) {
     let shared = Shared::new();
     (
         Comp(shared.clone()),
         once2(
-            move |value: Option<&'static T>, error: Option<&'static cf::Error>| {
+            move |value: Option<&'static T>, error: Option<&'static ns::Error>| {
                 let res = match error {
                     None => Ok(unsafe { value.unwrap_unchecked().retained() }),
                     Some(err) => Err(err.retained()),

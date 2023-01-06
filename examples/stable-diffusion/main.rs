@@ -1,4 +1,4 @@
-use cidre::{arc, cf, mps, mps::graph, ns};
+use cidre::{arc, mps, mps::graph, ns};
 
 fn make_graph(synchonize: bool) -> arc::R<graph::Graph> {
     let mut graph = graph::Graph::new();

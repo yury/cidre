@@ -3,7 +3,7 @@ use std::{ffi::c_void, net::SocketAddr, time::Duration};
 use cidre::{
     arc, cf,
     cm::{self, SampleBuffer},
-    dispatch,
+    dispatch, ns,
     os::Status,
     sc::{self, stream::StreamOutput},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
@@ -185,7 +185,7 @@ async fn main() {
     session.set_props(&props).unwrap();
     session.prepare().unwrap();
 
-    let windows = cf::ArrayOf::new();
+    let windows = ns::Array::new();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
 

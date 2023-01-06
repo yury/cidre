@@ -16,11 +16,11 @@ impl Context {
     pub fn write_png_to_url<'ar>(
         &self,
         image: &ci::Image,
-        url: &cf::URL,
+        url: &ns::URL,
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &cf::Dictionary,
-    ) -> Result<(), &'ar cf::Error> {
+    ) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
             let res = rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error(
@@ -49,10 +49,10 @@ extern "C" {
     fn rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error<'ar>(
         context: &ns::Id,
         image: &ci::Image,
-        url: &cf::URL,
+        url: &ns::URL,
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &cf::Dictionary,
-        error: &mut Option<&'ar cf::Error>,
+        error: &mut Option<&'ar ns::Error>,
     ) -> bool;
 }

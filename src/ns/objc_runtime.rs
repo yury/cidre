@@ -1,3 +1,3 @@
-use crate::{cf, define_cf_type};
+use crate::{define_obj_type, ns};
 
-define_cf_type!(ExceptionName(cf::String));
+define_obj_type!(ExceptionName(ns::String));

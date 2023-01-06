@@ -1,6 +1,6 @@
 use std::{fmt::Debug, intrinsics::transmute};
 
-use crate::{arc, cf, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{arc, define_mtl, define_obj_type, msg_send, mtl, ns};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
@@ -75,7 +75,7 @@ impl Function {
     define_mtl!(device, label, set_label);
 
     #[inline]
-    pub fn name(&self) -> &cf::String {
+    pub fn name(&self) -> &ns::String {
         msg_send!("common", self, sel_name)
     }
 
@@ -94,40 +94,40 @@ impl Library {
     define_mtl!(device, label, set_label);
 
     /// ```
-    /// use cidre::{cf, mtl};
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let source = cf::String::from_str("kernel void function_a() {}; void function_b() {}");
+    /// let source = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
     /// let lib = device.library_with_source(&source, None).unwrap();
     /// let names = lib.function_names();
     /// assert_eq!(1, names.len());
     /// let n = &names[0];
     ///
-    /// let expected_name = cf::String::from_str("function_a");
+    /// let expected_name = ns::String::with_str("function_a");
     ///
-    /// assert!(n.equal(&expected_name));
+    /// assert!(n.eq(&expected_name));
     /// ```
     #[inline]
-    pub fn function_names(&self) -> &cf::ArrayOf<cf::String> {
+    pub fn function_names(&self) -> &ns::Array<ns::String> {
         unsafe { rsel_functionNames(self) }
     }
 
     /// ```
-    /// use cidre::{cf, mtl};
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let source = cf::String::from_str("kernel void function_a() {}");
+    /// let source = ns::String::with_str("kernel void function_a() {}");
     /// let lib = device.library_with_source(&source, None).unwrap();
     ///
-    /// let func_name = cf::String::from_str_no_copy("function_a");
+    /// let func_name = ns::String::with_str_no_copy("function_a");
     /// let func = lib.new_function_with_name(&func_name).unwrap();
     /// let name = func.name();
-    /// assert!(func_name.equal(&name));
+    /// assert!(func_name.is_equal(&name));
     ///
     /// ```
-    pub fn new_function_with_name(&self, name: &cf::String) -> Option<arc::R<Function>> {
+    pub fn new_function_with_name(&self, name: &ns::String) -> Option<arc::R<Function>> {
         unsafe { rsel_newFunctionWithName(self, name) }
     }
 
@@ -136,33 +136,33 @@ impl Library {
     #[inline]
     pub unsafe fn new_function_with_name_constant_values_error<'ar>(
         &self,
-        name: &cf::String,
+        name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
-        error: &mut Option<&'ar cf::Error>,
+        error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Function>> {
         rsel_newFunctionWithName_constantValues_error(self, name, constant_values, error)
     }
 
     /// ```
-    /// use cidre::{cf, mtl};
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let source = cf::String::from_str("kernel void function_a() {}");
+    /// let source = ns::String::with_str("kernel void function_a() {}");
     /// let lib = device.library_with_source(&source, None).unwrap();
     ///
-    /// let func_name = cf::String::from_str_no_copy("function_a");
+    /// let func_name = ns::String::with_str_no_copy("function_a");
     /// let constant_values = mtl::FunctionConstantValues::new();
     /// let func = lib.new_function_with_name_constant_values(&func_name, &constant_values).unwrap();
     /// let name = func.name();
-    /// assert!(func_name.equal(&name));
+    /// assert!(func_name.is_equal(name));
     ///
     /// ```
     pub fn new_function_with_name_constant_values<'ar>(
         &self,
-        name: &cf::String,
+        name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
-    ) -> Result<arc::R<Function>, &'ar cf::Error> {
+    ) -> Result<arc::R<Function>, &'ar ns::Error> {
         let mut error = None;
 
         let res = unsafe {
@@ -182,15 +182,15 @@ impl Library {
     }
 }
 
-pub type ErrorDomain = cf::ErrorDomain;
+pub type ErrorDomain = ns::ErrorDomain;
 
 impl ErrorDomain {
     /// ```
-    /// use cidre::{cf, mtl};
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
-    /// let source = cf::String::from_str("vid function_a() {}");
+    /// let source = ns::String::with_str("vid function_a() {}");
     /// let err = device.library_with_source(&source, None).unwrap_err();
     ///
     /// assert_eq!(mtl::LibraryError::CompileFailure, err.code());
@@ -244,14 +244,14 @@ extern "C" {
     fn rsel_languageVersion(id: &ns::Id) -> LanguageVersion;
     fn wsel_setLanguageVersion(id: &mut ns::Id, value: LanguageVersion);
 
-    fn rsel_functionNames(id: &ns::Id) -> &cf::ArrayOf<cf::String>;
+    fn rsel_functionNames(id: &ns::Id) -> &ns::Array<ns::String>;
 
-    fn rsel_newFunctionWithName(id: &Library, name: &cf::String) -> Option<arc::R<Function>>;
+    fn rsel_newFunctionWithName(id: &Library, name: &ns::String) -> Option<arc::R<Function>>;
     fn rsel_newFunctionWithName_constantValues_error<'ar>(
         id: &Library,
-        name: &cf::String,
+        name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
-        error: &mut Option<&'ar cf::Error>,
+        error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Function>>;
 
     fn rsel_newArgumentEncoderWithBufferIndex(
@@ -263,12 +263,12 @@ extern "C" {
 #[cfg(test)]
 mod tests {
 
-    use crate::{blocks, cf, mtl};
+    use crate::{blocks, mtl, ns};
 
     #[test]
     fn foo() {
         let device = mtl::Device::default().unwrap();
-        let source = cf::String::from_str("kernel void function_a() {}");
+        let source = ns::String::with_str("kernel void function_a() {}");
 
         let handler = blocks::once2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);

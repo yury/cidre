@@ -1,7 +1,7 @@
 use std::{ffi::c_void, ops::Deref};
 
 use crate::{
-    arc, blocks, cf, cg, cm, cv, define_obj_type, dispatch, msg_send,
+    arc, blocks, cg, cm, cv, define_obj_type, dispatch, msg_send, ns,
     objc::{Delegate, Id},
     os,
 };
@@ -196,7 +196,7 @@ define_obj_type!(ContentFilter(Id));
 impl ContentFilter {
     pub fn with_display_excluding_windows(
         display: &Display,
-        windows: &cf::ArrayOf<Window>,
+        windows: &ns::Array<Window>,
     ) -> arc::R<Self> {
         unsafe { SCContentFilter_initWithDisplay_excludingWindows(display, windows) }
     }
@@ -206,14 +206,14 @@ impl ContentFilter {
 extern "C" {
     fn SCContentFilter_initWithDisplay_excludingWindows(
         display: &Display,
-        windows: &cf::ArrayOf<Window>,
+        windows: &ns::Array<Window>,
     ) -> arc::R<ContentFilter>;
 }
 
 define_obj_type!(Stream(Id));
 
 pub trait StreamDelegate {
-    extern "C" fn stream_did_stop_with_error(&mut self, stream: &Stream, error: Option<&cf::Error>);
+    extern "C" fn stream_did_stop_with_error(&mut self, stream: &Stream, error: Option<&ns::Error>);
 
     fn delegate(self) -> Delegate<Self>
     where
@@ -288,7 +288,7 @@ impl Stream {
         delegate: &Delegate<T>,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> bool
     where
         T: StreamOutput,
@@ -310,7 +310,7 @@ impl Stream {
 
     pub fn start_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
-        F: FnOnce(Option<&'static cf::Error>),
+        F: FnOnce(Option<&'static ns::Error>),
     {
         unsafe {
             wsel_startCaptureWithCompletionHandler(self, block.as_ptr());
@@ -319,20 +319,20 @@ impl Stream {
 
     pub fn stop_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
-        F: FnOnce(Option<&'static cf::Error>),
+        F: FnOnce(Option<&'static ns::Error>),
     {
         unsafe {
             wsel_stopCaptureWithCompletionHandler(self, block.as_ptr());
         }
     }
 
-    pub async fn start(&self) -> Result<(), arc::R<cf::Error>> {
+    pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, block) = blocks::ok();
         self.start_with_completion_handler(block.escape());
         future.await
     }
 
-    pub async fn stop(&self) -> Result<(), arc::R<cf::Error>> {
+    pub async fn stop(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, block) = blocks::ok();
         self.stop_with_completion_handler(block.escape());
         future.await
@@ -352,7 +352,7 @@ extern "C" {
         output: &Id,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> bool;
 
     fn test_start(id: &Id);
@@ -366,7 +366,7 @@ extern "C" {
 mod tests {
     use std::time::Duration;
 
-    use crate::{cf, dispatch, sc};
+    use crate::{dispatch, ns, sc};
 
     use super::StreamOutput;
 
@@ -403,7 +403,7 @@ mod tests {
         cfg.set_width(display.width() as usize * 2);
         cfg.set_height(display.height() as usize * 2);
 
-        let windows = cf::ArrayOf::<sc::Window>::new();
+        let windows = ns::Array::new();
         let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
         let stream = sc::Stream::new(&filter, &cfg);
         let delegate = FameCounter { counter: 0 };

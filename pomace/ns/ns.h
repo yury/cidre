@@ -229,6 +229,9 @@ NSArray * NSArray_withObjs(const NSObject * _Nonnull * _Nonnull objects, NSUInte
   return [NSArray arrayWithObjects:objects count: count];
 }
 
+NS_RETURNS_RETAINED
+csel0(, NSArray, array, NSArray *)
+
 #pragma mark - NSRegularExpression
 
 NS_RETURNS_RETAINED
@@ -293,6 +296,11 @@ SEL ns_substringWithRange;
 SEL ns_mutableCopy;
 SEL ns_isEqualToString;
 
+SEL ns_code;
+SEL ns_domain;
+//@property (readonly, copy) NSErrorDomain domain;
+//@property (readonly) NSInteger code;
+
 
 __attribute__((constructor))
 static void common_initializer()
@@ -331,6 +339,9 @@ static void common_initializer()
     
     ns_mutableCopy = @selector(mutableCopy);
     ns_isEqualToString = @selector(isEqualToString:);
+    
+    ns_code = @selector(code);
+    ns_domain = @selector(domain);
 
   }
 }

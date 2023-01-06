@@ -40,8 +40,14 @@ impl Id {
         &self.0
     }
 
+    #[inline]
     pub fn is_equal(&self, other: &Self) -> bool {
         crate::msg_send!("ns", self, ns_isEqual, other)
+    }
+
+    #[inline]
+    pub fn eq(&self, other: &Self) -> bool {
+        self.is_equal(other)
     }
 
     /// # Safety

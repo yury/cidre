@@ -1,4 +1,4 @@
-use cidre::{arc, av, cf, cv, objc::autoreleasepool, vn};
+use cidre::{arc, av, cf, cv, ns, objc::autoreleasepool, vn};
 use ndarray::{Array2, Axis};
 // Import the linfa prelude and KMeans algorithm
 use linfa::prelude::*;
@@ -8,7 +8,7 @@ use tokio;
 
 #[tokio::main]
 async fn main() {
-    let url = cf::URL::from_str("file:/Users/yury/Downloads/0.mov").unwrap();
+    let url = ns::URL::with_str("file:/Users/yury/Downloads/0.mov").unwrap();
     let asset = av::URLAsset::with_url(&url, None);
 
     let tracks = asset
