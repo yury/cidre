@@ -2,7 +2,7 @@ use crate::{arc, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
-    pub fn matrix_multiplication(
+    pub fn mat_mul(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,

@@ -56,7 +56,7 @@ impl graph::Graph {
     }
 
     #[inline]
-    pub fn transpose_tensor_with_dimension(
+    pub fn transpose_with_dimension(
         &self,
         tensor: &graph::Tensor,
         dimention: ns::UInteger,

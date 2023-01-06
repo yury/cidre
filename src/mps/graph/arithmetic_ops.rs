@@ -2,7 +2,7 @@ use crate::{arc, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
-    pub fn addition(
+    pub fn add(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
@@ -30,7 +30,7 @@ impl graph::Graph {
     ///
     /// resultTensor = primary * secondary
     #[inline]
-    pub fn multiplication(
+    pub fn mul(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
@@ -76,6 +76,10 @@ impl graph::Graph {
     #[inline]
     pub fn tanh(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
         unsafe { rsel_tanhWithTensor_name(self, tensor, name) }
+    }
+    #[inline]
+    pub fn erf(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
+        unsafe { rsel_erfWithTensor_name(self, tensor, name) }
     }
 }
 
@@ -123,6 +127,12 @@ extern "C" {
     ) -> arc::R<graph::Tensor>;
 
     fn rsel_tanhWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::R<graph::Tensor>;
+
+    fn rsel_erfWithTensor_name(
         graph: &graph::Graph,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,

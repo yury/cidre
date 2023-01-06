@@ -82,7 +82,7 @@ fn make_conv(
             &[&one, &one, &one, out_channels],
             false,
         );
-        return graph.addition(&conv, &b, None);
+        return graph.add(&conv, &b, None);
     }
     conv
 }
@@ -144,7 +144,7 @@ fn make_group_norm(
 }
 
 fn make_swish(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
-    graph.multiplication(x_in, &graph.sigmoid(x_in, None), None)
+    graph.mul(x_in, &graph.sigmoid(x_in, None), None)
 }
 
 fn make_group_norm_swish(
@@ -192,9 +192,9 @@ fn make_decoder_res_block(
             1,
             false,
         );
-        return graph.addition(&x, &nin_shortcut, Some(&skip));
+        return graph.add(&x, &nin_shortcut, Some(&skip));
     }
-    graph.addition(&x, x_in, Some(&skip))
+    graph.add(&x, x_in, Some(&skip))
 }
 
 pub fn make_decoder_attention(
@@ -213,20 +213,20 @@ pub fn make_decoder_attention(
     let x = graph.reshape(&x, &mps::Shape::from_slice(new_share), None);
     let q = make_linear(graph, &x, &format!("{name}.q"), c, false);
     let k = make_linear(graph, &x, &format!("{name}.k"), c, false);
-    let k = graph.multiplication(
+    let k = graph.mul(
         &k,
         &graph.constant(1f64 / c.as_f64().sqrt(), mps::DataType::Float16),
         None,
     );
-    let k = graph.transpose_tensor_with_dimension(&k, 1, 2, None);
+    let k = graph.transpose_with_dimension(&k, 1, 2, None);
     let v = make_linear(graph, &x, &format!("{name}.v"), c, false);
-    let att = graph.matrix_multiplication(&q, &k, None);
+    let att = graph.mat_mul(&q, &k, None);
     let att = graph.soft_max(&att, 2, None);
-    let att = graph.matrix_multiplication(&att, &v, None);
+    let att = graph.mat_mul(&att, &v, None);
     let x = make_linear(graph, &att, &format!("{name}.proj_out"), c, true);
     let x = graph.reshape(&x, &x_in.shape().unwrap(), None);
 
-    graph.addition(&x, x_in, None)
+    graph.add(&x, x_in, None)
 }
 
 fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
@@ -239,7 +239,7 @@ fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<gra
         &graph.constant_shape(1f64, &one_shape, dt),
         None,
     );
-    let x = graph.multiplication(&x, &graph.constant_shape(255f64, &one_shape, dt), None);
+    let x = graph.mul(&x, &graph.constant_shape(255f64, &one_shape, dt), None);
     let x = graph.round(&x, None);
     let x = graph.cast(
         &x,
@@ -257,7 +257,7 @@ fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<gra
 
 fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     let name = "first_stage_model.decoder";
-    let x = graph.multiplication(
+    let x = graph.mul(
         x_in,
         &graph.constant(1f64 / 0.18215f64, mps::DataType::Float16),
         Some(&ns::String::with_str("rescale")),
@@ -350,8 +350,8 @@ fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Ten
         1,
         true,
     );
-    let x = graph.addition(&x, &graph.constant(1f64, mps::DataType::Float16), None);
-    let x = graph.multiplication(&x, &graph.constant(0.5f64, mps::DataType::Float16), None);
+    let x = graph.add(&x, &graph.constant(1f64, mps::DataType::Float16), None);
+    let x = graph.mul(&x, &graph.constant(0.5f64, mps::DataType::Float16), None);
 
     make_byte_converter(graph, &x)
 }
@@ -475,7 +475,7 @@ fn make_unet_res_block(
     let axes = ns::Array::from_slice(axes);
     let emb = graph.expand_dims_axes(&emb, &axes, None);
 
-    let x = graph.addition(&x, &emb, None);
+    let x = graph.add(&x, &emb, None);
     let x = make_group_norm_swish(graph, &x, &format!("{name}.out_layers.0"));
     let x = make_conv(
         graph,
@@ -497,10 +497,113 @@ fn make_unet_res_block(
             1,
             true,
         );
-        graph.addition(&x, &skip, None)
+        graph.add(&x, &skip, None)
     } else {
-        graph.addition(&x, x_in, None)
+        graph.add(&x, x_in, None)
     }
 }
+
+fn make_cross_attention(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+    context: Option<&graph::Tensor>,
+    save_mem: bool,
+) -> arc::R<graph::Tensor> {
+    let in_shape = x_in.shape().unwrap();
+    let c = &in_shape[2];
+    let n_heads = ns::Number::with_i32(8);
+    let d_head = ns::Number::with_i64(c.as_i64() / 8);
+
+    let q = make_linear(graph, x_in, &format!("{name}.to_q"), c, false);
+    let context = context.unwrap_or(x_in);
+    let k = make_linear(graph, context, &format!("{name}.to_k"), c, false);
+    let v = make_linear(graph, context, &format!("{name}.to_v"), c, false);
+    let n = &in_shape[0];
+    let hw = &in_shape[1];
+    let t = &context.shape().unwrap()[1];
+
+    let q = graph.reshape(
+        &q,
+        &mps::Shape::from_slice(&[n, hw, &n_heads, &d_head]),
+        None,
+    );
+    let k = graph.reshape(
+        &k,
+        &mps::Shape::from_slice(&[n, t, &n_heads, &d_head]),
+        None,
+    );
+    let v = graph.reshape(
+        &v,
+        &mps::Shape::from_slice(&[n, t, &n_heads, &d_head]),
+        None,
+    );
+
+    let q = graph.transpose_with_dimension(&q, 1, 2, None);
+    let k = graph.transpose_with_dimension(&k, 1, 2, None);
+    let k = graph.transpose_with_dimension(&k, 2, 3, None);
+    let k = graph.mul(
+        &k,
+        &graph.constant(1.0f64 / d_head.as_f64().sqrt(), mps::DataType::Float16),
+        None,
+    );
+    let v = graph.transpose_with_dimension(&v, 1, 2, None);
+    let att = if save_mem {
+        todo!();
+    } else {
+        let att = graph.mat_mul(&q, &k, None);
+        let att = graph.soft_max(&att, 3, None);
+        let att = graph.mat_mul(&att, &v, None);
+        graph.transpose_with_dimension(&att, 1, 2, None)
+    };
+    let att = graph.reshape(&att, &x_in.shape().unwrap(), None);
+    make_linear(graph, &att, &format!("{name}.to_out.0"), c, true)
+}
+
+//     if (saveMemory) {
+//         // MEM-HACK - silly graph seems to use less peak memory
+//         var attRes = [MPSGraphTensor]()
+//         let sliceSize = 1
+//         for i in 0..<nHeads.intValue/sliceSize {
+//             let qi = graph.sliceTensor(q, dimension: 1, start: i*sliceSize, length: sliceSize, name: nil)
+//             let ki = graph.sliceTensor(k, dimension: 1, start: i*sliceSize, length: sliceSize, name: nil)
+//             let vi = graph.sliceTensor(v, dimension: 1, start: i*sliceSize, length: sliceSize, name: nil)
+//             var attI = graph.matrixMultiplication(primary: qi, secondary: ki, name: nil)
+//             attI = graph.softMax(with: attI, axis: 3, name: nil)
+//             attI = graph.matrixMultiplication(primary: attI, secondary: vi, name: nil)
+//             attI = graph.transposeTensor(attI, dimension: 1, withDimension: 2, name: nil)
+//             attRes.append(attI)
+//         }
+//         att = graph.concatTensors(attRes, dimension: 2, name: nil)
+//     } else {
+//     }
+//     att = graph.reshape(att, shape: xIn.shape!, name: nil)
+//     return makeLinear(graph: graph, xIn: att, name: name + ".to_out.0", outChannels: c)
+// }
+
+fn make_gelu(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
+    let x = graph.mul(
+        x_in,
+        &graph.constant(1f64 / 2f64.sqrt(), mps::DataType::Float16),
+        None,
+    );
+    let x = graph.erf(&x, None);
+    let x = graph.add(&x, &graph.constant(1f64, mps::DataType::Float16), None);
+    let x = graph.mul(&x, &graph.constant(1f64, mps::DataType::Float16), None);
+    graph.mul(x_in, &x, None)
+}
+
+// func makeFeedForward(graph: MPSGraph, xIn: MPSGraphTensor, name: String) -> MPSGraphTensor {
+//     assert(xIn.shape!.count == 3)
+//     let dim = xIn.shape![2]
+//     let dimMult = dim.intValue * 4
+//     let dimProj = NSNumber(value: dimMult * 2)
+//     let proj = makeLinear(graph: graph, xIn: xIn, name: name + ".0.proj", outChannels: dimProj)
+//     var x = graph.sliceTensor(proj, dimension: 2, start: 0, length: dimMult, name: nil)
+//     var gate = graph.sliceTensor(proj, dimension: 2, start: dimMult, length: dimMult, name: nil)
+//     gate = makeGelu(graph: graph, xIn: gate)
+//     x = graph.multiplication(x, gate, name: nil)
+//     return makeLinear(graph: graph, xIn: x, name: name + ".2", outChannels: dim)
+// }
 
 fn main() {}
