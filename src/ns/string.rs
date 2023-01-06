@@ -71,6 +71,8 @@ impl String {
 
     #[inline]
     pub fn with_str(str: &str) -> arc::R<Self> {
+        // we expect no '\0' inside string.
+        debug_assert!(str.find('\0').is_none());
         unsafe {
             NSString_initWithBytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8).unwrap()
         }
@@ -125,7 +127,6 @@ extern "C" {
         encoding: Encoding,
         free_when_done: bool,
     ) -> Option<arc::R<String>>;
-    //asel4(, NSString, initWithBytesNoCopy, const void *, length, NSUInteger, encoding, NSStringEncoding, freeWhenDone, BOOL)
 }
 
 #[cfg(test)]

@@ -11,8 +11,20 @@ use crate::{arc, msg_send, ns};
 #[repr(transparent)]
 pub struct Array<T>(ns::Id, PhantomData<T>);
 
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ArrayMut<T>(ns::Array<T>);
+
 impl<T> Deref for Array<T> {
     type Target = ns::Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T> Deref for ArrayMut<T> {
+    type Target = Array<T>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -25,7 +37,19 @@ impl<T> arc::Release for Array<T> {
     }
 }
 
+impl<T> arc::Release for ArrayMut<T> {
+    unsafe fn release(&mut self) {
+        self.0.release()
+    }
+}
+
 impl<T> arc::Retain for Array<T> {
+    fn retained(&self) -> arc::R<Self> {
+        unsafe { transmute(self.0.retained()) }
+    }
+}
+
+impl<T> arc::Retain for ArrayMut<T> {
     fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }

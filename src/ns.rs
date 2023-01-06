@@ -64,6 +64,7 @@ pub use value::Value;
 
 mod array;
 pub use array::Array;
+pub use array::ArrayMut;
 
 mod data;
 pub use data::Data;
@@ -85,6 +86,10 @@ mod string;
 pub use string::Encoding as StringEncoding;
 pub use string::String;
 pub use string::StringMut;
+
+mod dictionary;
+pub use dictionary::Dictonary;
+pub use dictionary::DictonaryMut;
 
 mod url;
 pub use url::URL;
