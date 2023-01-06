@@ -85,3 +85,6 @@ mod string;
 pub use string::Encoding as StringEncoding;
 pub use string::String;
 pub use string::StringMut;
+
+mod url;
+pub use url::URL;

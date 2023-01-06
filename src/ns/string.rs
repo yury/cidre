@@ -75,6 +75,18 @@ impl String {
             NSString_initWithBytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8).unwrap()
         }
     }
+    #[inline]
+    pub fn with_str_no_copy(str: &str) -> arc::R<Self> {
+        unsafe {
+            NSString_initWithBytesNoCopy_length_encoding_freeWhenDone(
+                str.as_ptr(),
+                str.len(),
+                Encoding::UTF8,
+                false,
+            )
+            .unwrap()
+        }
+    }
 
     #[inline]
     pub fn substring(&self, range: std::ops::Range<usize>) -> arc::R<ns::String> {
@@ -106,6 +118,14 @@ extern "C" {
         length: usize,
         encoding: Encoding,
     ) -> Option<arc::R<String>>;
+
+    fn NSString_initWithBytesNoCopy_length_encoding_freeWhenDone(
+        bytes: *const u8,
+        length: usize,
+        encoding: Encoding,
+        free_when_done: bool,
+    ) -> Option<arc::R<String>>;
+    //asel4(, NSString, initWithBytesNoCopy, const void *, length, NSUInteger, encoding, NSStringEncoding, freeWhenDone, BOOL)
 }
 
 #[cfg(test)]

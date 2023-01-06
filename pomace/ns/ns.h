@@ -236,11 +236,29 @@ csel3(, NSRegularExpression, regularExpressionWithPattern, NSString *, options, 
 
 #pragma mark - NSString
 
-asel3(, NSString, initWithBytes, const void *, length, NSUInteger, encoding, NSStringEncoding)
+NS_RETURNS_RETAINED
+asel3(, NSString, initWithBytes, const void * _Nonnull, length, NSUInteger, encoding, NSStringEncoding)
+
+NS_RETURNS_RETAINED
+asel4(, NSString, initWithBytesNoCopy, void * _Nonnull, length, NSUInteger, encoding, NSStringEncoding, freeWhenDone, BOOL)
+
+//- (nullable instancetype)initWithBytesNoCopy:(void *)bytes length:(NSUInteger)len encoding:(NSStringEncoding)encoding freeWhenDone:(BOOL)freeBuffer;
 
 //- (instancetype)initWithBytes:(const void *)bytes
 //                       length:(NSUInteger)len
 //                     encoding:(NSStringEncoding)encoding;
+
+#pragma mark - NSURL
+
+NS_RETURNS_RETAINED
+csel3(, NSURL, fileURLWithPath, NSString *, isDirectory, BOOL, relativeToURL, NSURL *, NSURL *)
+
+NS_RETURNS_RETAINED
+csel2(, NSURL, URLWithString, NSString *, relativeToURL, NSURL *, NSURL *)
+
+rsel0(, id, absoluteString, NSString *)
+
+
 
 
 #pragma mark - SELECTORS
