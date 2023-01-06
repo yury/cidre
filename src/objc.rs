@@ -13,6 +13,8 @@ impl Class {
     }
 }
 
+pub trait Obj: arc::Retain {}
+
 /// Use it as NSObject or id
 #[repr(transparent)]
 pub struct Id(Type);
@@ -127,6 +129,8 @@ impl Id {
         imp(self, selector, a, b, c, d, e, f, g)
     }
 }
+
+impl Obj for Id {}
 
 impl arc::Retain for Id {
     #[inline]
@@ -257,6 +261,8 @@ macro_rules! define_obj_type {
         #[derive(Debug)]
         #[repr(transparent)]
         pub struct $NewType($BaseType);
+
+        impl $crate::objc::Obj for $NewType {}
 
         impl std::ops::Deref for $NewType {
             type Target = $BaseType;

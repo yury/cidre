@@ -88,8 +88,8 @@ pub use string::String;
 pub use string::StringMut;
 
 mod dictionary;
-pub use dictionary::Dictonary;
-pub use dictionary::DictonaryMut;
+pub use dictionary::Dictionary;
+pub use dictionary::DictionaryMut;
 
 mod url;
 pub use url::URL;

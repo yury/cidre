@@ -252,6 +252,10 @@ csel2(, NSURL, URLWithString, NSString *, relativeToURL, NSURL *, NSURL *)
 
 rsel0(, id, absoluteString, NSString *)
 
+#pragma mark - NSDictionary
+
+csel0(, NSDictionary, dictionary, NSDictionary *)
+
 
 
 #pragma mark - SELECTORS
