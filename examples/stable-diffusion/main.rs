@@ -593,17 +593,35 @@ fn make_gelu(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor
     graph.mul(x_in, &x, None)
 }
 
-// func makeFeedForward(graph: MPSGraph, xIn: MPSGraphTensor, name: String) -> MPSGraphTensor {
-//     assert(xIn.shape!.count == 3)
-//     let dim = xIn.shape![2]
-//     let dimMult = dim.intValue * 4
-//     let dimProj = NSNumber(value: dimMult * 2)
-//     let proj = makeLinear(graph: graph, xIn: xIn, name: name + ".0.proj", outChannels: dimProj)
-//     var x = graph.sliceTensor(proj, dimension: 2, start: 0, length: dimMult, name: nil)
-//     var gate = graph.sliceTensor(proj, dimension: 2, start: dimMult, length: dimMult, name: nil)
-//     gate = makeGelu(graph: graph, xIn: gate)
-//     x = graph.multiplication(x, gate, name: nil)
-//     return makeLinear(graph: graph, xIn: x, name: name + ".2", outChannels: dim)
+fn make_feed_forward(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    name: &str,
+) -> arc::R<graph::Tensor> {
+    let in_shape = x_in.shape().unwrap();
+    assert_eq!(in_shape.len(), 3);
+    let dim = &in_shape[2];
+    let dim_mult = dim.as_isize() * 4;
+    let dim_proj = ns::Number::with_isize(dim_mult * 2);
+    let proj = make_linear(graph, x_in, &format!("{name}.0.proj"), &dim_proj, true);
+    let x = graph.slice_tensor(&proj, 2, 0, dim_mult, None);
+    let gate = graph.slice_tensor(&proj, 2, dim_mult, dim_mult, None);
+    let gate = make_gelu(graph, &gate);
+    let x = graph.mul(&x, &gate, None);
+    make_linear(graph, &x, &format!("{name}."), dim, true)
+}
+
+// func makeBasicTransformerBlock(graph: MPSGraph, xIn: MPSGraphTensor, name: String, contextIn: MPSGraphTensor, saveMemory: Bool) -> MPSGraphTensor {
+//     var x = xIn
+//     var attn1 = makeLayerNorm(graph: graph, xIn: x, name: name + ".norm1")
+//     attn1 = makeCrossAttention(graph: graph, xIn: attn1, name: name + ".attn1", context: nil, saveMemory: saveMemory)
+//     x = graph.addition(attn1, x, name: nil)
+//     var attn2 = makeLayerNorm(graph: graph, xIn: x, name: name + ".norm2")
+//     attn2 = makeCrossAttention(graph: graph, xIn: attn2, name: name + ".attn2", context: contextIn, saveMemory: saveMemory)
+//     x = graph.addition(attn2, x, name: nil)
+//     var ff = makeLayerNorm(graph: graph, xIn: x, name: name + ".norm3")
+//     ff = makeFeedForward(graph: graph, xIn: ff, name: name + ".ff.net")
+//     return graph.addition(ff, x, name: nil)
 // }
 
 fn main() {}

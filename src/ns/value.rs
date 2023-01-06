@@ -41,6 +41,11 @@ impl Number {
     }
 
     #[inline]
+    pub fn with_isize(value: isize) -> arc::R<Self> {
+        unsafe { NSNumber_numberWithLongLong(value as _) }
+    }
+
+    #[inline]
     pub fn with_u64(value: u64) -> arc::R<Self> {
         unsafe { NSNumber_numberWithUnsignedLongLong(value) }
     }
@@ -112,6 +117,12 @@ impl Number {
     #[inline]
     pub fn as_i64(&self) -> i64 {
         msg_send!("ns", self, ns_longLongValue)
+    }
+
+    #[doc(alias = "longLongValue")]
+    #[inline]
+    pub fn as_isize(&self) -> isize {
+        self.as_i64() as _
     }
 
     #[doc(alias = "unsignedLongLongValue")]
