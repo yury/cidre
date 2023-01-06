@@ -669,4 +669,51 @@ fn make_spatial_transformer_block(
     graph.add(&x, x_in, None)
 }
 
+fn make_output_block(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    emb_in: &graph::Tensor,
+    cond_in: &graph::Tensor,
+    in_channels: &ns::Number,
+    out_channels: &ns::Number,
+    d_head: &ns::Number,
+    name: &str,
+    save_mem: bool,
+    spatial_transformer: bool,
+    upsample: bool,
+) -> arc::R<graph::Tensor> {
+    let x = make_unet_res_block(
+        graph,
+        x_in,
+        emb_in,
+        &format!("{name}.0"),
+        in_channels,
+        out_channels,
+    );
+    let x = if spatial_transformer {
+        make_spatial_transformer_block(graph, &x, &format!("{name}.1"), cond_in, save_mem)
+    } else {
+        x
+    };
+
+    if upsample {
+        let kwh = ns::Number::with_i32(3);
+        let x = make_upsample_nearest(graph, &x, 2);
+        make_conv(
+            graph,
+            &x,
+            &format!(
+                "{name}{}.conv",
+                if spatial_transformer { ".2" } else { ".1" }
+            ),
+            out_channels,
+            &kwh,
+            1,
+            true,
+        )
+    } else {
+        x
+    }
+}
+
 fn main() {}
