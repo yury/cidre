@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, msg_send, ns};
+use crate::{arc, define_obj_type, msg_send, ns};
 
 define_obj_type!(URLRequest(ns::Id));
 define_obj_type!(URLRequestMut(URLRequest));
@@ -54,11 +54,11 @@ pub enum NetworkServiceType {
 
 impl URLRequest {
     /// ```
-    /// use cidre::{cf, ns};
-    /// let url = cf::URL::from_str("https://google.com").unwrap();
+    /// use cidre::ns;
+    /// let url = ns::URL::with_str("https://google.com").unwrap();
     /// let request = ns::URLRequest::with_url(&url);
     /// let request_url = request.url().unwrap();
-    /// assert!(url.cf_string().equal(request_url.cf_string()));
+    /// assert!(url.abs_string().unwrap().eq(&request_url.abs_string().unwrap()));
     /// assert_eq!(request.cache_policy(), ns::URLRequestCachePolicy::UseProtocol);
     /// assert_eq!(request.timeout_interval(), 60f64);
     /// assert_eq!(request.network_service_type(), ns::URLRequestNetworkServiceType::Default);
@@ -73,15 +73,15 @@ impl URLRequest {
     /// assert!(request.http_body().is_none());
     /// ```
     #[inline]
-    pub fn with_url(url: &cf::URL) -> arc::R<URLRequest> {
+    pub fn with_url(url: &ns::URL) -> arc::R<URLRequest> {
         unsafe { NSURLRequest_requestWithURL(url) }
     }
 
     #[inline]
     pub fn with_url_cache_policy_and_timeout(
-        url: &cf::URL,
+        url: &ns::URL,
         cache_policy: CachePolicy,
-        timeout_interval: cf::TimeInterval,
+        timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequest> {
         unsafe {
             NSURLRequest_requestWithURL_cachePolicy_timeoutInterval(
@@ -93,7 +93,7 @@ impl URLRequest {
     }
 
     #[inline]
-    pub fn url(&self) -> Option<&cf::URL> {
+    pub fn url(&self) -> Option<&ns::URL> {
         msg_send!("common", self, sel_URL)
     }
 
@@ -103,7 +103,7 @@ impl URLRequest {
     }
 
     #[inline]
-    pub fn timeout_interval(&self) -> cf::TimeInterval {
+    pub fn timeout_interval(&self) -> ns::TimeInterval {
         unsafe { NSURLRequest_rsel_timeoutInterval(self) }
     }
 
@@ -140,22 +140,22 @@ impl URLRequest {
     }
 
     #[inline]
-    pub fn http_method(&self) -> Option<&cf::String> {
+    pub fn http_method(&self) -> Option<&ns::String> {
         unsafe { NSURLRequest_rsel_HTTPMethod(self) }
     }
 
     #[inline]
-    pub fn all_http_header_fields(&self) -> Option<&cf::DictionaryOf<cf::String, cf::String>> {
+    pub fn all_http_header_fields(&self) -> Option<&ns::Dictionary<ns::String, ns::String>> {
         unsafe { NSURLRequest_rsel_allHTTPHeaderFields(self) }
     }
 
     #[inline]
-    pub fn value_for_http_header_field<'a>(&'a self, field: &cf::String) -> Option<&'a cf::String> {
+    pub fn value_for_http_header_field<'a>(&'a self, field: &ns::String) -> Option<&'a ns::String> {
         unsafe { NSURLRequest_rsel_valueForHTTPHeaderField(self, field) }
     }
 
     #[inline]
-    pub fn http_body(&self) -> Option<&cf::Data> {
+    pub fn http_body(&self) -> Option<&ns::Data> {
         unsafe { NSURLRequest_rsel_HTTPBody(self) }
     }
 
@@ -181,15 +181,15 @@ pub enum Attribution {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLRequest_requestWithURL(url: &cf::URL) -> arc::R<URLRequest>;
+    fn NSURLRequest_requestWithURL(url: &ns::URL) -> arc::R<URLRequest>;
     fn NSURLRequest_requestWithURL_cachePolicy_timeoutInterval(
-        url: &cf::URL,
+        url: &ns::URL,
         cache_policy: CachePolicy,
-        timeout_interval: cf::TimeInterval,
+        timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequest>;
 
     fn NSURLRequest_rsel_cachePolicy(request: &URLRequest) -> CachePolicy;
-    fn NSURLRequest_rsel_timeoutInterval(request: &URLRequest) -> cf::TimeInterval;
+    fn NSURLRequest_rsel_timeoutInterval(request: &URLRequest) -> ns::TimeInterval;
     fn NSURLRequest_rsel_networkServiceType(request: &URLRequest) -> NetworkServiceType;
     fn NSURLRequest_rsel_allowsCellularAccess(request: &URLRequest) -> bool;
     fn NSURLRequest_rsel_allowsExpensiveNetworkAccess(request: &URLRequest) -> bool;
@@ -197,28 +197,28 @@ extern "C" {
     fn NSURLRequest_rsel_assumesHTTP3Capable(request: &URLRequest) -> bool;
     fn NSURLRequest_rsel_attribution(request: &URLRequest) -> Attribution;
     fn NSURLRequest_rsel_requiresDNSSECValidation(request: &URLRequest) -> bool;
-    fn NSURLRequest_rsel_HTTPMethod(request: &URLRequest) -> Option<&cf::String>;
+    fn NSURLRequest_rsel_HTTPMethod(request: &URLRequest) -> Option<&ns::String>;
     fn NSURLRequest_rsel_allHTTPHeaderFields(
         request: &URLRequest,
-    ) -> Option<&cf::DictionaryOf<cf::String, cf::String>>;
+    ) -> Option<&ns::Dictionary<ns::String, ns::String>>;
     fn NSURLRequest_rsel_valueForHTTPHeaderField<'a>(
         request: &'a URLRequest,
-        field: &cf::String,
-    ) -> Option<&'a cf::String>;
-    fn NSURLRequest_rsel_HTTPBody(request: &URLRequest) -> Option<&cf::Data>;
+        field: &ns::String,
+    ) -> Option<&'a ns::String>;
+    fn NSURLRequest_rsel_HTTPBody(request: &URLRequest) -> Option<&ns::Data>;
 }
 
 impl URLRequestMut {
     #[inline]
-    pub fn with_url(url: &cf::URL) -> arc::R<Self> {
+    pub fn with_url(url: &ns::URL) -> arc::R<Self> {
         unsafe { NSMutableURLRequest_requestWithURL(url) }
     }
 
     #[inline]
     pub fn with_url_cache_policy_and_timeout(
-        url: &cf::URL,
+        url: &ns::URL,
         cache_policy: CachePolicy,
-        timeout_interval: cf::TimeInterval,
+        timeout_interval: ns::TimeInterval,
     ) -> arc::R<Self> {
         unsafe {
             NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
@@ -230,7 +230,7 @@ impl URLRequestMut {
     }
 
     #[inline]
-    pub fn set_url(&mut self, value: Option<&cf::URL>) {
+    pub fn set_url(&mut self, value: Option<&ns::URL>) {
         msg_send!("common", self, sel_setURL, value)
     }
 
@@ -240,7 +240,7 @@ impl URLRequestMut {
     }
 
     #[inline]
-    pub fn set_timeout_interval(&mut self, value: cf::TimeInterval) {
+    pub fn set_timeout_interval(&mut self, value: ns::TimeInterval) {
         unsafe { NSMutableURLRequest_wsel_setTimeoutInterval(self, value) }
     }
 
@@ -280,39 +280,39 @@ impl URLRequestMut {
     }
 
     #[inline]
-    pub fn set_http_method(&mut self, value: Option<&cf::String>) {
+    pub fn set_http_method(&mut self, value: Option<&ns::String>) {
         unsafe { NSMutableURLRequest_wsel_setHTTPMethod(self, value) }
     }
 
     #[inline]
     pub fn set_all_http_header_fields(
         &mut self,
-        value: Option<&cf::DictionaryOf<cf::String, cf::String>>,
+        value: Option<&ns::Dictionary<ns::String, ns::String>>,
     ) {
         unsafe { NSMutableURLRequest_wsel_setAllHTTPHeaderFields(self, value) }
     }
 
     #[inline]
-    pub fn set_http_body(&mut self, value: Option<&cf::Data>) {
+    pub fn set_http_body(&mut self, value: Option<&ns::Data>) {
         unsafe { NSMutableURLRequest_wsel_setHTTPBody(self, value) }
     }
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSMutableURLRequest_requestWithURL(url: &cf::URL) -> arc::R<URLRequestMut>;
+    fn NSMutableURLRequest_requestWithURL(url: &ns::URL) -> arc::R<URLRequestMut>;
 
     fn NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
-        url: &cf::URL,
+        url: &ns::URL,
         cache_policy: CachePolicy,
-        timeout_interval: cf::TimeInterval,
+        timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequestMut>;
 
     fn NSMutableURLRequest_wsel_setCachePolicy(request: &URLRequestMut, value: CachePolicy);
 
     fn NSMutableURLRequest_wsel_setTimeoutInterval(
         request: &URLRequestMut,
-        value: cf::TimeInterval,
+        value: ns::TimeInterval,
     );
 
     fn NSMutableURLRequest_wsel_setNetworkServiceType(
@@ -338,24 +338,24 @@ extern "C" {
 
     fn NSMutableURLRequest_wsel_setRequiresDNSSECValidation(request: &URLRequestMut, value: bool);
 
-    fn NSMutableURLRequest_wsel_setHTTPMethod(request: &URLRequestMut, value: Option<&cf::String>);
+    fn NSMutableURLRequest_wsel_setHTTPMethod(request: &URLRequestMut, value: Option<&ns::String>);
 
     fn NSMutableURLRequest_wsel_setAllHTTPHeaderFields(
         request: &URLRequestMut,
-        value: Option<&cf::DictionaryOf<cf::String, cf::String>>,
+        value: Option<&ns::Dictionary<ns::String, ns::String>>,
     );
 
-    fn NSMutableURLRequest_wsel_setHTTPBody(request: &URLRequestMut, value: Option<&cf::Data>);
+    fn NSMutableURLRequest_wsel_setHTTPBody(request: &URLRequestMut, value: Option<&ns::Data>);
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{cf, ns};
+    use crate::ns;
 
     #[test]
     fn basics() {
         let mut request =
-            ns::URLRequest::with_url(&cf::URL::from_str("https://google.com").unwrap()).copy_mut();
+            ns::URLRequest::with_url(&ns::URL::with_str("https://google.com").unwrap()).copy_mut();
         request.set_timeout_interval(61f64);
         assert_eq!(request.timeout_interval(), 61f64);
         request.set_cache_policy(ns::URLRequestCachePolicy::ReloadRevalidatingCacheData);
