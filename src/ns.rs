@@ -97,3 +97,6 @@ pub use url::URL;
 type TimeInterval = f64;
 
 pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;
+
+mod error;
+pub use error::Error;

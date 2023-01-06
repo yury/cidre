@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, ns};
+use crate::{arc, define_obj_type, ns};
 
 define_obj_type!(Configuration(ns::Id));
 
@@ -13,11 +13,11 @@ define_obj_type!(Session(ns::Id));
 
 impl Session {
     /// ```
-    /// use cidre::{ns, cf};
+    /// use cidre::ns;
     ///
     /// let session = ns::URLSession::shared();
     /// println!("session: {:?}", session);
-    /// let url = cf::URL::from_str("https://google.com").unwrap();
+    /// let url = ns::URL::with_str("https://google.com").unwrap();
     /// let data_task = session.data_task_with_url(&url);
     /// assert!(data_task.error().is_none());
     /// assert_eq!(data_task.priority(), 0.5f32);
@@ -29,7 +29,7 @@ impl Session {
         unsafe { NSURLSession_sharedSession() }
     }
 
-    pub fn data_task_with_url(&self, url: &cf::URL) -> arc::R<DataTask> {
+    pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask> {
         unsafe { rsel_dataTaskWithURL(self, url) }
     }
 
@@ -106,7 +106,7 @@ impl Task {
         unsafe { NSURLSessionTask_rsel_state(self) }
     }
 
-    pub fn error(&self) -> Option<&cf::Error> {
+    pub fn error(&self) -> Option<&ns::Error> {
         unsafe { NSURLSessionTask_rsel_error(self) }
     }
 
@@ -162,14 +162,14 @@ pub enum WebSocketCloseCode {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSURLSession_sharedSession() -> &'static Session;
-    fn rsel_dataTaskWithURL(session: &Session, url: &cf::URL) -> arc::R<DataTask>;
+    fn rsel_dataTaskWithURL(session: &Session, url: &ns::URL) -> arc::R<DataTask>;
     fn rsel_dataTaskWithRequest(session: &Session, request: &ns::URLRequest) -> arc::R<DataTask>;
 
     fn NSURLSessionTask_wsel_resume(task: &Task);
     fn NSURLSessionTask_wsel_cancel(task: &Task);
     fn NSURLSessionTask_wsel_suspend(task: &Task);
     fn NSURLSessionTask_rsel_state(task: &Task) -> TaskState;
-    fn NSURLSessionTask_rsel_error(task: &Task) -> Option<&cf::Error>;
+    fn NSURLSessionTask_rsel_error(task: &Task) -> Option<&ns::Error>;
     fn NSURLSessionTask_rsel_taskIdentifier(task: &Task) -> ns::UInteger;
     fn NSURLSessionTask_rsel_originalRequest(task: &Task) -> Option<&ns::URLRequest>;
     fn NSURLSessionTask_rsel_currentRequest(task: &Task) -> Option<&ns::URLRequest>;
@@ -216,22 +216,22 @@ define_obj_type!(WebSocketMessage(ns::Id));
 
 impl WebSocketMessage {
     #[inline]
-    pub fn with_data(data: &cf::Data) -> arc::R<Self> {
+    pub fn with_data(data: &ns::Data) -> arc::R<Self> {
         unsafe { NSURLSessionWebSocketMessage_initWithData(data) }
     }
 
     #[inline]
-    pub fn with_string(string: &cf::String) -> arc::R<Self> {
+    pub fn with_string(string: &ns::String) -> arc::R<Self> {
         unsafe { NSURLSessionWebSocketMessage_initWithString(string) }
     }
 
     #[inline]
-    pub fn data(&self) -> Option<&cf::Data> {
+    pub fn data(&self) -> Option<&ns::Data> {
         unsafe { NSURLSessionWebSocketMessage_data(self) }
     }
 
     #[inline]
-    pub fn string(&self) -> Option<&cf::String> {
+    pub fn string(&self) -> Option<&ns::String> {
         unsafe { NSURLSessionWebSocketMessage_string(self) }
     }
 
@@ -243,9 +243,9 @@ impl WebSocketMessage {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLSessionWebSocketMessage_initWithData(data: &cf::Data) -> arc::R<WebSocketMessage>;
-    fn NSURLSessionWebSocketMessage_initWithString(data: &cf::String) -> arc::R<WebSocketMessage>;
-    fn NSURLSessionWebSocketMessage_data(msg: &WebSocketMessage) -> Option<&cf::Data>;
-    fn NSURLSessionWebSocketMessage_string(msg: &WebSocketMessage) -> Option<&cf::String>;
+    fn NSURLSessionWebSocketMessage_initWithData(data: &ns::Data) -> arc::R<WebSocketMessage>;
+    fn NSURLSessionWebSocketMessage_initWithString(data: &ns::String) -> arc::R<WebSocketMessage>;
+    fn NSURLSessionWebSocketMessage_data(msg: &WebSocketMessage) -> Option<&ns::Data>;
+    fn NSURLSessionWebSocketMessage_string(msg: &WebSocketMessage) -> Option<&ns::String>;
     fn NSURLSessionWebSocketMessage_type(msg: &WebSocketMessage) -> WebSocketMessageType;
 }

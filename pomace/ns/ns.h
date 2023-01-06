@@ -279,6 +279,8 @@ SEL ns_boolValue;
 SEL ns_integerValue;
 SEL ns_unsignedIntegerValue;
 
+SEL ns_isEqual;
+
 SEL ns_count;
 SEL ns_objectAtIndex_index;
 
@@ -315,6 +317,8 @@ static void common_initializer()
     ns_boolValue = @selector(boolValue);
     ns_integerValue = @selector(integerValue);
     ns_unsignedIntegerValue = @selector(unsignedIntegerValue);
+    
+    ns_isEqual = @selector(isEqual:);
     
     ns_count = @selector(count);
     ns_objectAtIndex_index = @selector(objectAtIndex:);

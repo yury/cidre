@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, msg_send, ns};
+use crate::{arc, define_obj_type, msg_send, ns};
 
 define_obj_type!(Value(ns::Id));
 
@@ -146,7 +146,7 @@ impl Number {
 
     #[doc(alias = "stringValue")]
     #[inline]
-    pub fn string(&self) -> arc::R<cf::String> {
+    pub fn string(&self) -> arc::R<ns::String> {
         msg_send!("ns", self, ns_stringValue)
     }
 

@@ -40,6 +40,10 @@ impl Id {
         &self.0
     }
 
+    pub fn is_equal(&self, other: &Self) -> bool {
+        crate::msg_send!("ns", self, ns_isEqual, other)
+    }
+
     /// # Safety
     /// use `msg_send!`
     #[inline]
@@ -311,6 +315,13 @@ macro_rules! define_obj_type {
             }
         }
     };
+}
+
+impl PartialEq for Id {
+    #[inline]
+    fn eq(&self, other: &Self) -> bool {
+        self.is_equal(other)
+    }
 }
 
 #[repr(C)]

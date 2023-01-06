@@ -1,27 +1,27 @@
-use crate::{arc, cf, define_obj_type, msg_send, ns};
+use crate::{arc, define_obj_type, msg_send, ns};
 
 define_obj_type!(URLResponse(ns::Id));
 define_obj_type!(HTTPURLResponse(URLResponse));
 
 impl URLResponse {
     /// ```
-    /// use cidre::{cf, ns};
-    /// let url = cf::URL::from_str("https://google.com").unwrap();
+    /// use cidre::ns;
+    /// let url = ns::URL::with_str("https://google.com").unwrap();
     /// let response = ns::URLResponse::with_url(&url);
     /// let response_url = response.url().unwrap();
-    /// assert!(url.equal(response_url));
+    /// assert!(url.is_equal(&response_url));
     /// ```
     #[inline]
-    pub fn with_url(url: &cf::URL) -> arc::R<Self> {
+    pub fn with_url(url: &ns::URL) -> arc::R<Self> {
         Self::with_url_mime_type(url, None, 0, None)
     }
 
     #[inline]
     pub fn with_url_mime_type(
-        url: &cf::URL,
-        mime_type: Option<&cf::String>,
+        url: &ns::URL,
+        mime_type: Option<&ns::String>,
         expected_content_length: ns::Integer,
-        text_encoding_name: Option<&cf::String>,
+        text_encoding_name: Option<&ns::String>,
     ) -> arc::R<Self> {
         unsafe {
             NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName(
@@ -33,7 +33,7 @@ impl URLResponse {
         }
     }
 
-    pub fn url(&self) -> Option<&cf::URL> {
+    pub fn url(&self) -> Option<&ns::URL> {
         msg_send!("common", self, sel_URL)
     }
 }
@@ -41,9 +41,9 @@ impl URLResponse {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName(
-        url: &cf::URL,
-        mime_type: Option<&cf::String>,
+        url: &ns::URL,
+        mime_type: Option<&ns::String>,
         expectedContentLength: ns::Integer,
-        textEncodingName: Option<&cf::String>,
+        textEncodingName: Option<&ns::String>,
     ) -> arc::R<URLResponse>;
 }

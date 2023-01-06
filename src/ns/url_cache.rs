@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, ns};
+use crate::{arc, define_obj_type, ns};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(usize)]
@@ -30,7 +30,7 @@ impl URLCache {
     pub fn with_capacity(
         mem_capacity: usize,
         disk_capacity: usize,
-        directory_url: Option<&cf::URL>,
+        directory_url: Option<&ns::URL>,
     ) -> arc::R<Self> {
         unsafe {
             NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL(
@@ -73,7 +73,7 @@ extern "C" {
     fn NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL(
         mem_capacity: usize,
         disk_capacity: usize,
-        directory_url: Option<&cf::URL>,
+        directory_url: Option<&ns::URL>,
     ) -> arc::R<URLCache>;
 
     fn rsel_memoryCapacity(id: &ns::Id) -> usize;
