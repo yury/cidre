@@ -1,5 +1,5 @@
 mod core;
-use crate::{arc, cf, define_obj_type, msg_send, ns};
+use crate::{arc, define_obj_type, msg_send, ns};
 
 pub use self::core::PaddingMode;
 pub use self::core::PaddingStyle;
@@ -116,11 +116,11 @@ impl Default for ExecutionStage {
 
 /// A dictionary of tensors and correspondiing tensorData for them
 #[doc(alias = "MPSGraphTensorDataDictionary")]
-pub type TensorDataDictionary = cf::DictionaryOf<Tensor, TensorData>;
+pub type TensorDataDictionary = ns::Dictionary<Tensor, TensorData>;
 
 /// A dictionary of tensors and correspondiing shapes for them
 #[doc(alias = "MPSGraphTensorShapedTypeDictionary")]
-pub type TensorShapedTypeDictionary = cf::DictionaryOf<Tensor, ShapedType>;
+pub type TensorShapedTypeDictionary = ns::Dictionary<Tensor, ShapedType>;
 
 define_obj_type!(Graph(ns::Id));
 

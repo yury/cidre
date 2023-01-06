@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, mps::graph, ns};
+use crate::{arc, define_obj_type, mps::graph, ns};
 
 define_obj_type!(Convolution2DOpDescriptor(ns::Id));
 
@@ -42,7 +42,7 @@ impl graph::Graph {
         source: &graph::Tensor,
         weights: &graph::Tensor,
         descriptor: &Convolution2DOpDescriptor,
-        name: Option<&cf::String>,
+        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor> {
         unsafe { rsel_convolution2DWithSourceTensor(self, source, weights, descriptor, name) }
     }
@@ -70,6 +70,6 @@ extern "C" {
         source: &graph::Tensor,
         weights: &graph::Tensor,
         descriptor: &Convolution2DOpDescriptor,
-        name: Option<&cf::String>,
+        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 }

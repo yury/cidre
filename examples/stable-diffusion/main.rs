@@ -181,7 +181,7 @@ fn make_decoder_res_block(
         1,
         false,
     );
-    let skip = cf::String::from_str("skip");
+    let skip = ns::String::with_str("skip");
     if &x_in.shape().unwrap()[3] != out_channels {
         let nin_shortcut = make_conv(
             graph,
@@ -244,7 +244,7 @@ fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<gra
     let x = graph.cast(
         &x,
         mps::DataType::U8,
-        Some(&cf::String::from_str("cast to uint8 rgba")),
+        Some(&ns::String::with_str("cast to uint8 rgba")),
     );
     let alpha = graph.constant_shape(
         255f64,
@@ -260,7 +260,7 @@ fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Ten
     let x = graph.multiplication(
         x_in,
         &graph.constant(1f64 / 0.18215f64, mps::DataType::Float16),
-        Some(&cf::String::from_str("rescale")),
+        Some(&ns::String::with_str("rescale")),
     );
     let out_channels = ns::Number::with_i64(512);
     let kwh = ns::Number::with_i64(3);

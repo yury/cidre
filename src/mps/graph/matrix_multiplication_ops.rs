@@ -1,4 +1,4 @@
-use crate::{arc, cf, mps::graph};
+use crate::{arc, mps::graph, ns};
 
 impl graph::Graph {
     #[inline]
@@ -6,7 +6,7 @@ impl graph::Graph {
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
-        name: Option<&cf::String>,
+        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_matrixMultiplicationWithPrimaryTensor_secondaryTensor_name(
@@ -22,7 +22,7 @@ extern "C" {
         graph: &graph::Graph,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
-        name: Option<&cf::String>,
+        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 
 }
