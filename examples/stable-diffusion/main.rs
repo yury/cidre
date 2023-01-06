@@ -621,7 +621,7 @@ fn make_basic_transformer_block(
     let attn1 = make_layer_norm(graph, x_in, &format!("{name}.norm1"));
     let attn1 = make_cross_attention(graph, &attn1, &format!("{name}.attn1"), None, save_mem);
     let x = graph.add(&attn1, x_in, None);
-    let attn2 = make_layer_norm(graph, &x, &format("{name}.norm2"));
+    let attn2 = make_layer_norm(graph, &x, &format!("{name}.norm2"));
     let x = graph.add(&attn2, &x, None);
     let ff = make_layer_norm(graph, &x, &format!("{name}.norm3"));
     let ff = make_feed_forward(graph, &ff, &format!("{name}.ff.net"));
