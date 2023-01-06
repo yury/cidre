@@ -1,6 +1,6 @@
 use std::{mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::{arc, cf, define_obj_type, define_options, msg_send, ns};
+use crate::{arc, define_obj_type, define_options, msg_send, ns};
 
 define_options!(ReadingOptions(usize));
 
@@ -41,18 +41,18 @@ define_obj_type!(Data(ns::Id));
 impl Data {
     #[inline]
     pub unsafe fn with_contents_of_file_options_error(
-        path: &cf::String,
+        path: &ns::String,
         options: ReadingOptions,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Self>> {
         NSData_dataWithContentsOfFile_options_error(path, options, error)
     }
 
     #[inline]
     pub fn with_contents_of_file_options(
-        path: &cf::String,
+        path: &ns::String,
         options: ReadingOptions,
-    ) -> Result<arc::R<Self>, &cf::Error> {
+    ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
             let res = Self::with_contents_of_file_options_error(path, options, &mut error);
@@ -65,18 +65,18 @@ impl Data {
 
     #[inline]
     pub unsafe fn with_contents_of_url_options_error(
-        url: &cf::URL,
+        url: &ns::URL,
         options: ReadingOptions,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Self>> {
         NSData_dataWithContentsOfURL_options_error(url, options, error)
     }
 
     #[inline]
     pub fn with_contents_of_url_options(
-        url: &cf::URL,
+        url: &ns::URL,
         options: ReadingOptions,
-    ) -> Result<arc::R<Self>, &cf::Error> {
+    ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
             let res = Self::with_contents_of_url_options_error(url, options, &mut error);
@@ -120,12 +120,12 @@ impl Data {
     /// If path contains a tilde (~) character, you must expand it with stringByExpandingTildeInPath
     /// before invoking this method.
     #[inline]
-    pub fn write_to_file(&self, path: &cf::String, atomically: bool) -> bool {
+    pub fn write_to_file(&self, path: &ns::String, atomically: bool) -> bool {
         unsafe { rsel_writeToFile_atomically(self, path, atomically) }
     }
 
     #[inline]
-    pub fn write_at_path(&self, path: &cf::String, atomically: bool) -> Result<(), ()> {
+    pub fn write_at_path(&self, path: &ns::String, atomically: bool) -> Result<(), ()> {
         if self.write_to_file(path, atomically) {
             Ok(())
         } else {
@@ -137,16 +137,16 @@ impl Data {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSData_dataWithContentsOfFile_options_error(
-        path: &cf::String,
+        path: &ns::String,
         options: ReadingOptions,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
 
     fn NSData_dataWithContentsOfURL_options_error(
-        url: &cf::URL,
+        url: &ns::URL,
         options: ReadingOptions,
-        error: &mut Option<&cf::Error>,
+        error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
 
-    fn rsel_writeToFile_atomically(id: &ns::Id, path: &cf::String, atomically: bool) -> bool;
+    fn rsel_writeToFile_atomically(id: &ns::Id, path: &ns::String, atomically: bool) -> bool;
 }

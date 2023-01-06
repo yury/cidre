@@ -26,7 +26,7 @@ fn load_const(
     };
 
     let data = ns::Data::with_contents_of_file_options(
-        &cf::String::from_str(&format!("bins/{name}{prefix}.bin")),
+        &ns::String::with_str(&format!("bins/{name}{prefix}.bin")),
         ns::DataReadingOptions::MAPPED_ALWAYS,
     )
     .unwrap();
