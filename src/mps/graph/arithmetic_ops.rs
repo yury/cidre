@@ -62,7 +62,7 @@ impl graph::Graph {
     }
 
     #[inline]
-    pub fn subtraction(
+    pub fn sub(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
@@ -70,6 +70,18 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor> {
         unsafe {
             rsel_subtractionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
+        }
+    }
+
+    #[inline]
+    pub fn div(
+        &self,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::R<graph::Tensor> {
+        unsafe {
+            rsel_divisionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
         }
     }
 
@@ -131,6 +143,13 @@ extern "C" {
     ) -> arc::R<graph::Tensor>;
 
     fn rsel_subtractionWithPrimaryTensor_secondaryTensor_name(
+        graph: &graph::Graph,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::R<graph::Tensor>;
+
+    fn rsel_divisionWithPrimaryTensor_secondaryTensor_name(
         graph: &graph::Graph,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,

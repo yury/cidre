@@ -1203,4 +1203,62 @@ fn make_time_features(graph: &graph::Graph, t_in: &graph::Tensor) -> arc::R<grap
     )
 }
 
+fn make_sqrt_one_minus(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
+    graph.square_root(
+        &graph.sub(&graph.constant(1.0, mps::DataType::Float16), x_in, None),
+        None,
+    )
+}
+
+fn make_diffusion_step(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    eta_uncond_in: &graph::Tensor,
+    eta_cond_in: &graph::Tensor,
+    t_in: &graph::Tensor,
+    t_prev_in: &graph::Tensor,
+    guidance_scale_in: &graph::Tensor,
+) -> arc::R<graph::Tensor> {
+    // superconditioning
+    let delta_cond = graph.mul(
+        &graph.sub(&eta_cond_in, &eta_uncond_in, None),
+        &guidance_scale_in,
+        None,
+    );
+    let delta_cond = graph.tanh(&delta_cond, None); // NOTE: normal SD doesn't clamp here iirc
+    let eta = graph.add(eta_uncond_in, &delta_cond, None);
+
+    // scheduler conditioning
+    let alphas_comprod = load_const(
+        graph,
+        "alphas_cumprod",
+        &[&ns::Number::with_i32(1000)],
+        false,
+    );
+    let alpha_in = graph.gather_along_axis(0, &alphas_comprod, t_in, None);
+    let alphas_comprod_prev = graph.concat(
+        &[
+            &graph.constant(1.0, mps::DataType::Float16),
+            &alphas_comprod,
+        ],
+        0,
+        None,
+    );
+
+    let t_prev_in_offset = graph.relu(
+        &graph.add(&t_prev_in, &graph.constant(1.0, mps::DataType::I32), None),
+        None,
+    );
+
+    let alpha_prev_in = graph.gather_along_axis(0, &alphas_comprod_prev, &t_prev_in_offset, None);
+
+    // scheduler step
+    let delta_x0 = graph.mul(&make_sqrt_one_minus(graph, &alpha_in), &eta, None);
+    let pred_x0_unscaled = graph.sub(x_in, &delta_x0, None);
+    let pred_x0 = graph.div(&pred_x0_unscaled, &graph.square_root(&alpha_in, None), None);
+    let dir_x = graph.mul(&make_sqrt_one_minus(graph, &alpha_prev_in), &eta, None);
+    let x_prev_base = graph.mul(&graph.square_root(&alpha_prev_in, None), &pred_x0, None);
+    graph.add(&x_prev_base, &dir_x, None)
+}
+
 fn main() {}
