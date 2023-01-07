@@ -251,8 +251,7 @@ fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<gra
         &mps::Shape::from_slice(&[&one, &x.shape().unwrap()[1], &x.shape().unwrap()[2], &one]),
         mps::DataType::U8,
     );
-    let tensors: &[&graph::Tensor] = &[&x, &alpha];
-    graph.concat_tensors(&ns::Array::from_slice(tensors), 3, None)
+    graph.concat(&[&x, &alpha], 3, None)
 }
 
 fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
@@ -942,6 +941,99 @@ fn make_unet_an_unexpected_journey(
 
     saved_inputs.push(emb.retained());
     saved_inputs.push(x.retained());
+    saved_inputs
+}
+
+fn make_unet_the_desolation_of_smaug(
+    graph: &graph::Graph,
+    saved_inputs_in: Vec<arc::R<graph::Tensor>>,
+    name: &str,
+    save_mem: bool,
+) -> Vec<arc::R<graph::Tensor>> {
+    let mut saved_inputs = saved_inputs_in.clone();
+    let cond_in = saved_inputs.pop().unwrap();
+    let x = saved_inputs.pop().unwrap();
+    let emb = saved_inputs.pop().unwrap();
+
+    let in_channels = ns::Number::with_i32(2560);
+    let out_channels = ns::Number::with_i32(1280);
+    let d_head = ns::Number::with_i32(160);
+    // output blocks
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.0"),
+        save_mem,
+        false,
+        false,
+    );
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.1"),
+        save_mem,
+        false,
+        false,
+    );
+
+    // upsample
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.2"),
+        save_mem,
+        false,
+        true,
+    );
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.3"),
+        save_mem,
+        true,
+        false,
+    );
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.4"),
+        save_mem,
+        true,
+        false,
+    );
+
+    saved_inputs.push(emb);
+    saved_inputs.push(x);
     saved_inputs
 }
 

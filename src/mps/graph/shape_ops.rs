@@ -16,6 +16,17 @@ impl graph::Graph {
     }
 
     #[inline]
+    pub fn concat(
+        &self,
+        tensors: &[&graph::Tensor],
+        dimension: ns::Integer,
+        name: Option<&ns::String>,
+    ) -> arc::R<graph::Tensor> {
+        let tensors = ns::Array::from_slice(tensors);
+        self.concat_tensors(&tensors, dimension, name)
+    }
+
+    #[inline]
     pub fn concat_tensors(
         &self,
         tensors: &ns::Array<graph::Tensor>,
