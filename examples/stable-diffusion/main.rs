@@ -716,4 +716,233 @@ fn make_output_block(
     }
 }
 
+fn make_unet_an_unexpected_journey(
+    graph: &graph::Graph,
+    x_in: &graph::Tensor,
+    temb_in: &graph::Tensor,
+    cond_in: &graph::Tensor,
+    name: &str,
+    save_mem: bool,
+) -> Vec<arc::R<graph::Tensor>> {
+    let emb = make_time_embed(graph, temb_in, &format!("{name}.time_embed"));
+    let mut saved_inputs = Vec::new();
+
+    let mut x = x_in.retained();
+
+    if !save_mem {
+        let in_shape = x_in.shape().unwrap();
+        let cond_shape = cond_in.shape().unwrap();
+        x = graph.broadcast(
+            &x,
+            &mps::Shape::from_slice(&[&cond_shape[0], &in_shape[2], &in_shape[3]]),
+            None,
+        )
+    }
+
+    let in_channels = ns::Number::with_i32(320);
+    let out_channels = ns::Number::with_i32(320);
+    let kwh = ns::Number::with_i32(3);
+
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.0.0"),
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    );
+    saved_inputs.push(x.retained());
+
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}input_blocks.1.0"),
+        &in_channels,
+        &out_channels,
+    );
+
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.1.1"),
+        cond_in,
+        save_mem,
+    );
+    saved_inputs.push(x.retained());
+
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.2.0"),
+        &in_channels,
+        &out_channels,
+    );
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.2.1"),
+        cond_in,
+        save_mem,
+    );
+    saved_inputs.push(x.retained());
+
+    // downsample
+
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.3.0.op"),
+        &out_channels,
+        &kwh,
+        2,
+        true,
+    );
+
+    saved_inputs.push(x.retained());
+
+    let out_channels = ns::Number::with_i32(640);
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.4.0"),
+        &in_channels,
+        &out_channels,
+    );
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.4.1"),
+        cond_in,
+        save_mem,
+    );
+    saved_inputs.push(x.retained());
+
+    let in_channels = ns::Number::with_i32(640);
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.5.0"),
+        &in_channels,
+        &out_channels,
+    );
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.5.1"),
+        cond_in,
+        save_mem,
+    );
+    saved_inputs.push(x.retained());
+
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.6.0.op"),
+        &out_channels,
+        &kwh,
+        2,
+        true,
+    );
+    saved_inputs.push(x.retained());
+
+    let out_channels = ns::Number::with_i32(1280);
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.7.0"),
+        &in_channels,
+        &out_channels,
+    );
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.7.1"),
+        cond_in,
+        save_mem,
+    );
+    saved_inputs.push(x.retained());
+
+    let in_channels = ns::Number::with_i32(1280);
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.8.0"),
+        &in_channels,
+        &out_channels,
+    );
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.8.1"),
+        cond_in,
+        save_mem,
+    );
+    saved_inputs.push(x.retained());
+
+    let x = make_conv(
+        graph,
+        &x,
+        &format!("{name}.input_blocks.9.0.op"),
+        &out_channels,
+        &kwh,
+        2,
+        true,
+    );
+    saved_inputs.push(x.retained());
+
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.10.0"),
+        &in_channels,
+        &out_channels,
+    );
+    saved_inputs.push(x.retained());
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.input_blocks.11.0"),
+        &in_channels,
+        &out_channels,
+    );
+    saved_inputs.push(x.retained());
+
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.middle_block.0"),
+        &in_channels,
+        &out_channels,
+    );
+    let x = make_spatial_transformer_block(
+        graph,
+        &x,
+        &format!("{name}.middle_block.1"),
+        cond_in,
+        save_mem,
+    );
+    let x = make_unet_res_block(
+        graph,
+        &x,
+        &emb,
+        &format!("{name}.middle_block.2"),
+        &in_channels,
+        &out_channels,
+    );
+
+    saved_inputs.push(emb.retained());
+    saved_inputs.push(x.retained());
+    saved_inputs
+}
+
 fn main() {}
