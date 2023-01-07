@@ -1037,4 +1037,170 @@ fn make_unet_the_desolation_of_smaug(
     saved_inputs
 }
 
+fn make_unet_the_battle_of_the_five_armies(
+    graph: &graph::Graph,
+    saved_inputs_in: Vec<arc::R<graph::Tensor>>,
+    name: &str,
+    save_mem: bool,
+) -> arc::R<graph::Tensor> {
+    let mut saved_inputs = saved_inputs_in.clone();
+    let cond_in = saved_inputs.pop().unwrap();
+    let x = saved_inputs.pop().unwrap();
+    let emb = saved_inputs.pop().unwrap();
+
+    let in_channels = ns::Number::with_i32(1920);
+    let out_channels = ns::Number::with_i32(1280);
+    let d_head = ns::Number::with_i32(160);
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.5"),
+        save_mem,
+        true,
+        true,
+    );
+    let out_channels = ns::Number::with_i32(640);
+    let d_head = ns::Number::with_i32(80);
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.6"),
+        save_mem,
+        true,
+        false,
+    );
+
+    let in_channels = ns::Number::with_i32(1280);
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.7"),
+        save_mem,
+        true,
+        false,
+    );
+    let in_channels = ns::Number::with_i32(960);
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.8"),
+        save_mem,
+        true,
+        true,
+    );
+
+    let out_channels = ns::Number::with_i32(320);
+    let d_head = ns::Number::with_i32(40);
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.9"),
+        save_mem,
+        true,
+        false,
+    );
+    let in_channels = ns::Number::with_i32(640);
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.10"),
+        save_mem,
+        true,
+        false,
+    );
+    let x = graph.concat(&[&x, &saved_inputs.pop().unwrap()], 3, None);
+    let x = make_output_block(
+        graph,
+        &x,
+        &emb,
+        &cond_in,
+        &in_channels,
+        &out_channels,
+        &d_head,
+        &format!("{name}.output_blocks.11"),
+        save_mem,
+        true,
+        false,
+    );
+
+    // out
+
+    let x = make_group_norm_swish(graph, &x, "model.diffusion_model.out.0");
+    let out_channels = ns::Number::with_i32(4);
+    let kwh = ns::Number::with_i32(3);
+    make_conv(
+        graph,
+        &x,
+        "model.diffusion_model.out.2",
+        &out_channels,
+        &kwh,
+        1,
+        true,
+    )
+}
+
+fn make_time_features(graph: &graph::Graph, t_in: &graph::Tensor) -> arc::R<graph::Tensor> {
+    let temb = graph.cast(
+        t_in,
+        mps::DataType::F32,
+        Some(&ns::String::with_str("temb")),
+    );
+    let coeffs = load_const(
+        graph,
+        "temb_coefficients",
+        &[&ns::Number::with_i32(160)],
+        true,
+    );
+    let coeffs = graph.cast(
+        &coeffs,
+        mps::DataType::F32,
+        Some(&ns::String::with_str("coeffs")),
+    );
+    let temb = graph.mul(&temb, &coeffs, None);
+    let temb = graph.concat(&[&graph.cos(&temb, None), &graph.sin(&temb, None)], 0, None);
+    let shape: &[&ns::Number] = &[&ns::Number::with_i32(1), &ns::Number::with_i32(320)];
+    let temb = graph.reshape(&temb, &mps::Shape::from_slice(shape), None);
+    graph.cast(
+        &temb,
+        mps::DataType::Float16,
+        Some(&ns::String::with_str("temb fp16")),
+    )
+}
+
 fn main() {}

@@ -82,6 +82,12 @@ rsel2(, id, tanhWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *
 NS_RETURNS_RETAINED
 rsel2(, id, erfWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
 
+NS_RETURNS_RETAINED
+rsel2(, id, cosWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
+NS_RETURNS_RETAINED
+rsel2(, id, sinWithTensor, MPSGraphTensor *, name, NSString *, MPSGraphTensor *)
+
 
 #pragma mark - MPSGraphActivationOps
 

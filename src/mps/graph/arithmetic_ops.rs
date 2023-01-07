@@ -77,9 +77,20 @@ impl graph::Graph {
     pub fn tanh(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
         unsafe { rsel_tanhWithTensor_name(self, tensor, name) }
     }
+
     #[inline]
     pub fn erf(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
         unsafe { rsel_erfWithTensor_name(self, tensor, name) }
+    }
+
+    #[inline]
+    pub fn cos(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
+        unsafe { rsel_cosWithTensor_name(self, tensor, name) }
+    }
+
+    #[inline]
+    pub fn sin(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
+        unsafe { rsel_sinWithTensor_name(self, tensor, name) }
     }
 }
 
@@ -138,4 +149,15 @@ extern "C" {
         name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 
+    fn rsel_cosWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::R<graph::Tensor>;
+
+    fn rsel_sinWithTensor_name(
+        graph: &graph::Graph,
+        tensor: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::R<graph::Tensor>;
 }
