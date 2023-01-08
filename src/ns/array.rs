@@ -111,12 +111,8 @@ where
     }
 
     #[inline]
-    pub fn iter(&self) -> ArrayIterator<T> {
-        ArrayIterator {
-            array: self,
-            index: 0,
-            len: self.len(),
-        }
+    pub fn iter(&self) -> ns::FEIterator<Self, T> {
+        ns::FastEnumeration::iter(self)
     }
 }
 
@@ -176,6 +172,9 @@ where
         self.array.len() - self.index
     }
 }
+
+impl<T> ns::FastEnumeration<T> for Array<T> where T: objc::Obj {}
+impl<T> ns::FastEnumeration<T> for ArrayMut<T> where T: objc::Obj {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

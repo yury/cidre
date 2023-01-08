@@ -66,6 +66,19 @@ mod array;
 pub use array::Array;
 pub use array::ArrayMut;
 
+mod dictionary;
+pub use dictionary::Dictionary;
+pub use dictionary::DictionaryMut;
+
+mod enumerator;
+pub use enumerator::FEIterator;
+pub use enumerator::FastEnumeration;
+pub use enumerator::FastEnumerationState;
+
+// mod set;
+// pub use set::Set;
+// pub use set::SetMut;
+
 mod data;
 pub use data::Data;
 pub use data::ReadingOptions as DataReadingOptions;
@@ -86,10 +99,6 @@ mod string;
 pub use string::Encoding as StringEncoding;
 pub use string::String;
 pub use string::StringMut;
-
-mod dictionary;
-pub use dictionary::Dictionary;
-pub use dictionary::DictionaryMut;
 
 mod url;
 pub use url::URL;

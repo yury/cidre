@@ -298,8 +298,8 @@ SEL ns_isEqualToString;
 
 SEL ns_code;
 SEL ns_domain;
-//@property (readonly, copy) NSErrorDomain domain;
-//@property (readonly) NSInteger code;
+
+SEL ns_countByEnumeratingWithState_objects_count;
 
 
 __attribute__((constructor))
@@ -342,6 +342,8 @@ static void common_initializer()
     
     ns_code = @selector(code);
     ns_domain = @selector(domain);
+    
+    ns_countByEnumeratingWithState_objects_count = @selector(countByEnumeratingWithState:objects:count:);
 
   }
 }

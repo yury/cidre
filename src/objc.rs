@@ -13,7 +13,97 @@ impl Class {
     }
 }
 
-pub trait Obj: arc::Retain {}
+pub trait Obj: arc::Retain {
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel0<R>(&self, selector: &Sel) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel) -> R = transmute(objc_msgSend as *const c_void);
+        imp(self, selector)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel1<R, A>(&self, selector: &Sel, a: A) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel2<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A, B) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel3<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A, B, C) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel4<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A, B, C, D) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel5<R, A, B, C, D, E>(&self, selector: &Sel, a: A, b: B, c: C, d: D, e: E) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A, B, C, D, E) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d, e)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel6<R, A, B, C, D, E, F>(
+        &self,
+        selector: &Sel,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+        f: F,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A, B, C, D, E, F) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d, e, f)
+    }
+
+    /// # Safety
+    /// use `msg_send!`
+    #[inline]
+    unsafe fn sel7<R, A, B, C, D, E, F, G>(
+        &self,
+        selector: &Sel,
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+        f: F,
+        g: G,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Self, &Sel, A, B, C, D, E, F, G) -> R =
+            transmute(objc_msgSend as *const c_void);
+        imp(self, selector, a, b, c, d, e, f, g)
+    }
+}
 
 /// Use it as NSObject or id
 #[repr(transparent)]
@@ -48,95 +138,6 @@ impl Id {
     #[inline]
     pub fn eq(&self, other: &Self) -> bool {
         self.is_equal(other)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel0<R>(&self, selector: &Sel) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel) -> R = transmute(objc_msgSend as *const c_void);
-        imp(self, selector)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel1<R, A>(&self, selector: &Sel, a: A) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A) -> R = transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel2<R, A, B>(&self, selector: &Sel, a: A, b: B) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B) -> R =
-            transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a, b)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel3<R, A, B, C>(&self, selector: &Sel, a: A, b: B, c: C) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C) -> R =
-            transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a, b, c)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel4<R, A, B, C, D>(&self, selector: &Sel, a: A, b: B, c: C, d: D) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D) -> R =
-            transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a, b, c, d)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel5<R, A, B, C, D, E>(&self, selector: &Sel, a: A, b: B, c: C, d: D, e: E) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E) -> R =
-            transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a, b, c, d, e)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel6<R, A, B, C, D, E, F>(
-        &self,
-        selector: &Sel,
-        a: A,
-        b: B,
-        c: C,
-        d: D,
-        e: E,
-        f: F,
-    ) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E, F) -> R =
-            transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a, b, c, d, e, f)
-    }
-
-    /// # Safety
-    /// use `msg_send!`
-    #[inline]
-    pub unsafe fn sel7<R, A, B, C, D, E, F, G>(
-        &self,
-        selector: &Sel,
-        a: A,
-        b: B,
-        c: C,
-        d: D,
-        e: E,
-        f: F,
-        g: G,
-    ) -> R {
-        let imp: unsafe extern "C" fn(&Id, &Sel, A, B, C, D, E, F, G) -> R =
-            transmute(objc_msgSend as *const c_void);
-        imp(self, selector, a, b, c, d, e, f, g)
     }
 }
 
@@ -188,6 +189,7 @@ where
 macro_rules! msg_send {
     // TODO: we should pass name and kind
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
@@ -196,6 +198,7 @@ macro_rules! msg_send {
         unsafe { $self.sel7($sel, $a, $b, $c, $d, $e, $f, $g) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
@@ -204,6 +207,7 @@ macro_rules! msg_send {
         unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
@@ -212,6 +216,7 @@ macro_rules! msg_send {
         unsafe { $self.sel5($sel, $a, $b, $c, $d, $e) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
@@ -225,10 +230,11 @@ macro_rules! msg_send {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel3($sel, $a, $b, $c) }
+        unsafe { $crate::objc::Obj::sel3($self, $sel, $a, $b, $c) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
@@ -238,6 +244,7 @@ macro_rules! msg_send {
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:expr) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
@@ -247,6 +254,7 @@ macro_rules! msg_send {
     }};
 
     ($lib:literal, $self:ident, $sel:ident) => {{
+        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
