@@ -74,45 +74,45 @@ where
     }
 }
 
-impl<K, V> arc::Release for Dictionary<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
-    unsafe fn release(&mut self) {
-        self.0.release()
-    }
-}
+// impl<K, V> arc::Release for Dictionary<K, V>
+// where
+//     K: objc::Obj,
+//     V: objc::Obj,
+// {
+//     unsafe fn release(&mut self) {
+//         self.0.release()
+//     }
+// }
 
-impl<K, V> arc::Retain for Dictionary<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
-    fn retained(&self) -> arc::Retained<Self> {
-        unsafe { transmute(self.0.retained()) }
-    }
-}
+// impl<K, V> arc::Retain for Dictionary<K, V>
+// where
+//     K: objc::Obj,
+//     V: objc::Obj,
+// {
+//     fn retained(&self) -> arc::Retained<Self> {
+//         unsafe { transmute(self.0.retained()) }
+//     }
+// }
 
-impl<K, V> arc::Release for DictionaryMut<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
-    unsafe fn release(&mut self) {
-        self.0.release()
-    }
-}
+// impl<K, V> arc::Release for DictionaryMut<K, V>
+// where
+//     K: objc::Obj,
+//     V: objc::Obj,
+// {
+//     unsafe fn release(&mut self) {
+//         self.0.release()
+//     }
+// }
 
-impl<K, V> arc::Retain for DictionaryMut<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
-    fn retained(&self) -> arc::Retained<Self> {
-        unsafe { transmute(self.0.retained()) }
-    }
-}
+// impl<K, V> arc::Retain for DictionaryMut<K, V>
+// where
+//     K: objc::Obj,
+//     V: objc::Obj,
+// {
+//     fn retained(&self) -> arc::Retained<Self> {
+//         unsafe { transmute(self.0.retained()) }
+//     }
+// }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

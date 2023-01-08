@@ -1,6 +1,6 @@
-use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
+use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-use crate::{arc, cf::Type};
+use crate::{arc, cf::Type, msg_send};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -13,7 +13,44 @@ impl Class {
     }
 }
 
+impl<T> arc::Release for T
+where
+    T: Obj,
+{
+    #[inline]
+    unsafe fn release(&mut self) {
+        println!("release");
+        objc_release(transmute(self))
+    }
+}
+
+impl<T> arc::Retain for T
+where
+    T: Obj,
+{
+    fn retained(&self) -> arc::R<Self> {
+        unsafe { Self::retain(self) }
+    }
+}
+
 pub trait Obj: arc::Retain {
+    #[inline]
+    unsafe fn retain(id: &Self) -> arc::R<Self> {
+        transmute(objc_retain(transmute(id)))
+    }
+
+    fn resonds_to_sel(&self, sel: &Self) -> bool {
+        msg_send!("ns", self, ns_respondsToSelector, sel)
+    }
+
+    fn description(&self) -> &crate::ns::String {
+        msg_send!("ns", self, ns_description)
+    }
+
+    fn debug_description(&self) -> &crate::ns::String {
+        msg_send!("ns", self, ns_debugDescription)
+    }
+
     /// # Safety
     /// use `msg_send!`
     #[inline]
@@ -143,28 +180,10 @@ impl Id {
 
 impl Obj for Id {}
 
-impl arc::Retain for Id {
-    #[inline]
-    fn retained(&self) -> arc::R<Self> {
-        unsafe { Id::retain(self) }
-    }
-}
-
-impl arc::Release for Id {
-    #[inline]
-    unsafe fn release(&mut self) {
-        Id::release(self)
-    }
-}
-
 impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let desc = self
-            .as_type_ref()
-            .description()
-            .map(|f| f.to_string())
-            .unwrap_or_else(|| "no desc".to_string());
-        f.debug_tuple("NS").field(&desc).finish()
+        let desc = self.description();
+        f.debug_tuple("NS").field(&Cow::from(desc)).finish()
     }
 }
 
@@ -230,6 +249,8 @@ macro_rules! msg_send {
             static $sel: &'static $crate::objc::Sel;
         }
 
+        //use $crate::objc::Obj;
+        //unsafe { $self.sel3($sel, $a, $b, $c) }
         unsafe { $crate::objc::Obj::sel3($self, $sel, $a, $b, $c) }
     }};
 
@@ -244,23 +265,21 @@ macro_rules! msg_send {
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:expr) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel1($sel, $a) }
+        unsafe { $crate::objc::Obj::sel1($self, $sel, $a) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel0($sel) }
+        unsafe { $crate::objc::Obj::sel0($self, $sel) }
     }};
 }
 
@@ -298,24 +317,10 @@ macro_rules! define_obj_type {
             }
         }
 
-        impl $crate::arc::Release for $NewType {
-            #[inline]
-            unsafe fn release(&mut self) {
-                self.0.release()
-            }
-        }
-
-        impl $crate::arc::Retain for $NewType {
-            #[inline]
-            fn retained(&self) -> $crate::arc::R<Self> {
-                $NewType::retained(self)
-            }
-        }
-
         impl $NewType {
             #[inline]
             pub fn retained(&self) -> $crate::arc::R<Self> {
-                unsafe { $crate::objc::Id::retain(self) }
+                unsafe { $crate::objc::Obj::retain(self) }
             }
         }
 

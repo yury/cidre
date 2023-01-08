@@ -300,6 +300,11 @@ SEL ns_code;
 SEL ns_domain;
 
 SEL ns_countByEnumeratingWithState_objects_count;
+SEL ns_respondsToSelector;
+SEL ns_description;
+SEL ns_debugDescription;
+SEL ns_cStringUsingEncoding;
+SEL ns_lengthOfBytesUsingEncoding;
 
 
 __attribute__((constructor))
@@ -344,6 +349,12 @@ static void common_initializer()
     ns_domain = @selector(domain);
     
     ns_countByEnumeratingWithState_objects_count = @selector(countByEnumeratingWithState:objects:count:);
+    
+    ns_respondsToSelector = @selector(respondsToSelector:);
+    ns_description = @selector(description);
+    ns_debugDescription = @selector(debugDescription);
+    ns_cStringUsingEncoding = @selector(cStringUsingEncoding:);
+    ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
 
   }
 }

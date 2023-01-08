@@ -45,42 +45,6 @@ where
     }
 }
 
-impl<T> arc::Release for Array<T>
-where
-    T: objc::Obj,
-{
-    unsafe fn release(&mut self) {
-        self.0.release()
-    }
-}
-
-impl<T> arc::Release for ArrayMut<T>
-where
-    T: objc::Obj,
-{
-    unsafe fn release(&mut self) {
-        self.0.release()
-    }
-}
-
-impl<T> arc::Retain for Array<T>
-where
-    T: objc::Obj,
-{
-    fn retained(&self) -> arc::R<Self> {
-        unsafe { transmute(self.0.retained()) }
-    }
-}
-
-impl<T> arc::Retain for ArrayMut<T>
-where
-    T: objc::Obj,
-{
-    fn retained(&self) -> arc::R<Self> {
-        unsafe { transmute(self.0.retained()) }
-    }
-}
-
 impl<T> Array<T>
 where
     T: objc::Obj,
@@ -114,6 +78,18 @@ where
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
         ns::FastEnumeration::iter(self)
     }
+
+    #[inline(never)]
+    pub fn foo() {
+        let one = ns::Number::with_i32(5);
+        let arr: &[&ns::Number] = &[&one];
+        let array = ns::Array::from_slice(&arr);
+
+        let mut k = 0;
+        for i in array.iter() {
+            k += 1;
+        }
+    }
 }
 
 impl<T> Index<usize> for Array<T>
@@ -138,40 +114,14 @@ where
     }
 }
 
-pub struct ArrayIterator<'a, T>
-where
-    T: objc::Obj,
-{
-    array: &'a Array<T>,
-    index: usize,
-    len: usize,
-}
-
-impl<'a, T> Iterator for ArrayIterator<'a, T>
-where
-    T: objc::Obj,
-{
-    type Item = &'a T;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.index < self.len {
-            let res = &self.array[self.index];
-            self.index += 1;
-            Some(res)
-        } else {
-            None
-        }
-    }
-}
-
-impl<'a, T> ExactSizeIterator for ArrayIterator<'a, T>
-where
-    T: objc::Obj,
-{
-    fn len(&self) -> usize {
-        self.array.len() - self.index
-    }
-}
+// impl<'a, T, const N: usize> ExactSizeIterator for ns::FEIterator<'a, Array<T>, T, N>
+// where
+//     T: objc::Obj + 'a,
+// {
+//     fn len(&self) -> usize {
+//         self.enu.len() - self.index
+//     }
+// }
 
 impl<T> ns::FastEnumeration<T> for Array<T> where T: objc::Obj {}
 impl<T> ns::FastEnumeration<T> for ArrayMut<T> where T: objc::Obj {}
@@ -192,15 +142,18 @@ mod tests {
 
     #[test]
     fn basics() {
-        let one = ns::Number::with_u8(5);
+        let one = ns::Number::with_i32(5);
         let arr: &[&ns::Number] = &[&one];
         let array = ns::Array::from_slice(&arr);
         assert_eq!(1, array.len());
-        assert_eq!(1, array.count());
-        assert_eq!(5, array[0].as_u8());
+        assert_eq!(5, array[0].as_i32());
 
+        let mut k = 0;
         for i in array.iter() {
-            println!("{}", i.as_f64());
+            k += 1;
+            //            println!("{:?}", i);
         }
+
+        assert_eq!(1, k);
     }
 }

@@ -1,6 +1,6 @@
-use std::{ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
+use std::{arch::asm, ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::{msg_send, ns, objc};
+use crate::{msg_send, objc};
 
 #[derive(Debug)]
 #[repr(C)]
@@ -22,12 +22,21 @@ impl FastEnumerationState {
     }
 }
 
-pub trait FastEnumeration<T>: objc::Obj {
+impl Default for FastEnumerationState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+pub trait FastEnumeration<T>: objc::Obj
+where
+    T: objc::Obj,
+{
     #[inline]
     fn count_by_enumerating(
         &self,
         state: &mut FastEnumerationState,
-        objects: *const *mut T,
+        objects: *mut *mut T,
         count: usize,
     ) -> usize {
         msg_send!(
@@ -40,10 +49,7 @@ pub trait FastEnumeration<T>: objc::Obj {
         )
     }
 
-    fn iter(&self) -> FEIterator<Self, T>
-    where
-        T: objc::Obj,
-    {
+    fn iter(&self) -> FEIterator<Self, T> {
         FEIterator::new(self)
     }
 }
@@ -54,13 +60,13 @@ where
     E: objc::Obj + FastEnumeration<T>,
     T: objc::Obj + 'a,
 {
-    enu: &'a E,
+    pub obj: &'a E,
     state: FastEnumerationState,
     objects: [*mut T; N],
     slice: &'a [*mut T],
     mutation: *const u32,
     slice_index: usize,
-    index: usize,
+    pub index: usize,
 }
 
 impl<'a, E, T, const N: usize> FEIterator<'a, E, T, N>
@@ -68,22 +74,22 @@ where
     E: objc::Obj + FastEnumeration<T>,
     T: objc::Obj + 'a,
 {
-    pub fn new(enu: &'a E) -> Self {
+    pub fn new(obj: &'a E) -> Self {
         let mut res = Self {
-            enu,
-            state: FastEnumerationState::new(),
+            obj,
+            state: Default::default(),
             objects: [std::ptr::null_mut(); N],
             mutation: std::ptr::null(),
             slice: &[],
             slice_index: 0,
             index: 0,
         };
-        let len = enu.count_by_enumerating(&mut res.state, res.objects.as_ptr(), N);
+
+        let len = obj.count_by_enumerating(&mut res.state, res.objects.as_mut_ptr(), N);
 
         let ptr = res.state.items_ptr as *mut *mut T;
         res.slice = unsafe { &*slice_from_raw_parts(ptr, len) };
         res.mutation = res.state.mutations_ptr;
-
         res
     }
 }
@@ -108,8 +114,8 @@ where
             return None;
         }
         let len = self
-            .enu
-            .count_by_enumerating(&mut self.state, self.objects.as_ptr(), N);
+            .obj
+            .count_by_enumerating(&mut self.state, self.objects.as_mut_ptr(), N);
         let ptr = self.state.items_ptr as *mut *mut T;
         self.slice = unsafe { &*slice_from_raw_parts(ptr, len) };
         self.mutation = self.state.mutations_ptr;
@@ -118,15 +124,6 @@ where
         self.next()
     }
 }
-
-// impl<'a, T> ExactSizeIterator for ArrayIterator<'a, T>
-// where
-//     T: objc::Obj,
-// {
-//     fn len(&self) -> usize {
-//         self.array.len() - self.index
-//     }
-// }
 
 #[cfg(test)]
 mod tests {
@@ -139,7 +136,30 @@ mod tests {
         let nums: &[&ns::Number] = &[&one, &one];
         let arr = ns::Array::from_slice(nums);
         let sum = arr.iter().map(|v| v.as_i32()).sum();
+        // let mut sum = 0;
+        // for i in arr.iter() {
+        //     sum += i.as_i32();
+        // }
 
         assert_eq!(2, sum);
+    }
+
+    #[test]
+    fn basics2() {
+        let one = ns::Number::with_i64(1);
+
+        let arr: &[&ns::Number] = &[&one];
+        let array = ns::Array::from_slice(arr);
+        println!("start");
+
+        let mut k = 0;
+        for i in array.iter() {
+            k += 1;
+            println!("{:?}", i);
+        }
+
+        println!("end");
+
+        assert_eq!(1, k);
     }
 }
