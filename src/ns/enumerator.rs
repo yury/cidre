@@ -1,4 +1,4 @@
-use std::{arch::asm, ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
+use std::{ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
 
 use crate::{msg_send, objc};
 
@@ -36,7 +36,7 @@ where
     fn count_by_enumerating(
         &self,
         state: &mut FastEnumerationState,
-        objects: *mut *mut T,
+        objects: *mut *const T,
         count: usize,
     ) -> usize {
         msg_send!(
@@ -49,6 +49,7 @@ where
         )
     }
 
+    #[inline]
     fn iter(&self) -> FEIterator<Self, T> {
         FEIterator::new(self)
     }
@@ -62,8 +63,8 @@ where
 {
     pub obj: &'a E,
     state: FastEnumerationState,
-    objects: [*mut T; N],
-    slice: &'a [*mut T],
+    objects: [*const T; N],
+    slice: &'a [*const T],
     mutation: *const u32,
     slice_index: usize,
     pub index: usize,
@@ -75,22 +76,21 @@ where
     T: objc::Obj + 'a,
 {
     pub fn new(obj: &'a E) -> Self {
-        let mut res = Self {
+        let mut objects = [std::ptr::null(); N];
+        let mut state = Default::default();
+        let len = obj.count_by_enumerating(&mut state, objects.as_mut_ptr(), N);
+        let slice = unsafe { &*slice_from_raw_parts(state.items_ptr as _, len) };
+        let mutation = state.mutations_ptr;
+
+        Self {
             obj,
-            state: Default::default(),
-            objects: [std::ptr::null_mut(); N],
-            mutation: std::ptr::null(),
-            slice: &[],
+            state,
+            objects,
+            slice,
+            mutation,
             slice_index: 0,
             index: 0,
-        };
-
-        let len = obj.count_by_enumerating(&mut res.state, res.objects.as_mut_ptr(), N);
-
-        let ptr = res.state.items_ptr as *mut *mut T;
-        res.slice = unsafe { &*slice_from_raw_parts(ptr, len) };
-        res.mutation = res.state.mutations_ptr;
-        res
+        }
     }
 }
 
@@ -116,8 +116,7 @@ where
         let len = self
             .obj
             .count_by_enumerating(&mut self.state, self.objects.as_mut_ptr(), N);
-        let ptr = self.state.items_ptr as *mut *mut T;
-        self.slice = unsafe { &*slice_from_raw_parts(ptr, len) };
+        self.slice = unsafe { &*slice_from_raw_parts(self.state.items_ptr as _, len) };
         self.mutation = self.state.mutations_ptr;
         self.slice_index = 0;
 
@@ -150,15 +149,12 @@ mod tests {
 
         let arr: &[&ns::Number] = &[&one];
         let array = ns::Array::from_slice(arr);
-        println!("start");
 
         let mut k = 0;
         for i in array.iter() {
             k += 1;
-            println!("{:?}", i);
+            //            println!("{:?}", i);
         }
-
-        println!("end");
 
         assert_eq!(1, k);
     }

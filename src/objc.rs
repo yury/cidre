@@ -19,7 +19,6 @@ where
 {
     #[inline]
     unsafe fn release(&mut self) {
-        println!("release");
         objc_release(transmute(self))
     }
 }
@@ -208,40 +207,37 @@ where
 macro_rules! msg_send {
     // TODO: we should pass name and kind
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel7($sel, $a, $b, $c, $d, $e, $f, $g) }
+        unsafe { $crate::objc::Obj::sel7($self, $sel, $a, $b, $c, $d, $e, $f, $g) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
+        //unsafe { $self.sel6($sel, $a, $b, $c, $d, $e, $f) }
+        unsafe { $crate::objc::Obj::sel6($self, $sel, $a, $b, $c, $d, $e, $f) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel5($sel, $a, $b, $c, $d, $e) }
+        unsafe { $crate::objc::Obj::sel5($self, $sel, $a, $b, $c, $d, $e) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr, $d:expr) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel4($sel, $a, $b, $c, $d) }
+        unsafe { $crate::objc::Obj::sel4($self, $sel, $a, $b, $c, $d) }
     }};
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr, $c:expr) => {{
         #[link(name = $lib, kind = "static")]
@@ -249,19 +245,16 @@ macro_rules! msg_send {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        //use $crate::objc::Obj;
-        //unsafe { $self.sel3($sel, $a, $b, $c) }
         unsafe { $crate::objc::Obj::sel3($self, $sel, $a, $b, $c) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:expr, $b:expr) => {{
-        use $crate::objc::Obj;
         #[link(name = $lib, kind = "static")]
         extern "C" {
             static $sel: &'static $crate::objc::Sel;
         }
 
-        unsafe { $self.sel2($sel, $a, $b) }
+        unsafe { $crate::objc::Obj::sel2($self, $sel, $a, $b) }
     }};
 
     ($lib:literal, $self:ident, $sel:ident, $a:expr) => {{

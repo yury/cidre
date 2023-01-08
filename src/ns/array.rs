@@ -78,18 +78,6 @@ where
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
         ns::FastEnumeration::iter(self)
     }
-
-    #[inline(never)]
-    pub fn foo() {
-        let one = ns::Number::with_i32(5);
-        let arr: &[&ns::Number] = &[&one];
-        let array = ns::Array::from_slice(&arr);
-
-        let mut k = 0;
-        for i in array.iter() {
-            k += 1;
-        }
-    }
 }
 
 impl<T> Index<usize> for Array<T>
@@ -128,11 +116,7 @@ impl<T> ns::FastEnumeration<T> for ArrayMut<T> where T: objc::Obj {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSArray_withObjs(
-        objects: *const c_void,
-        count: ns::UInteger,
-    ) -> arc::Retained<Array<ns::Id>>;
-
+    fn NSArray_withObjs(objects: *const ns::Id, count: ns::UInteger) -> arc::R<Array<ns::Id>>;
     fn NSArray_array() -> arc::Retained<Array<ns::Id>>;
 }
 
@@ -144,12 +128,12 @@ mod tests {
     fn basics() {
         let one = ns::Number::with_i32(5);
         let arr: &[&ns::Number] = &[&one];
-        let array = ns::Array::from_slice(&arr);
-        assert_eq!(1, array.len());
-        assert_eq!(5, array[0].as_i32());
+        let arr = ns::Array::from_slice(arr);
+        assert_eq!(1, arr.len());
+        assert_eq!(5, arr[0].as_i32());
 
         let mut k = 0;
-        for i in array.iter() {
+        for i in arr.iter() {
             k += 1;
             //            println!("{:?}", i);
         }
