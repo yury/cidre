@@ -232,6 +232,17 @@ NSArray * NSArray_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
 NS_RETURNS_RETAINED
 csel0(, NSArray, array, NSArray *)
 
+#pragma mark - NSSet
+
+NS_RETURNS_RETAINED
+NSSet * NSSet_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
+  return [NSSet setWithObjects:objects count: count];
+}
+
+NS_RETURNS_RETAINED
+csel0(, NSSet, set, NSSet *)
+
+
 #pragma mark - NSRegularExpression
 
 NS_RETURNS_RETAINED

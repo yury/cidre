@@ -75,9 +75,9 @@ pub use enumerator::FEIterator;
 pub use enumerator::FastEnumeration;
 pub use enumerator::FastEnumerationState;
 
-// mod set;
-// pub use set::Set;
-// pub use set::SetMut;
+mod set;
+pub use set::Set;
+pub use set::SetMut;
 
 mod data;
 pub use data::Data;

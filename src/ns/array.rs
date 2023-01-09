@@ -4,7 +4,7 @@ use std::{
     ops::{Deref, Index, IndexMut},
 };
 
-use crate::{arc, msg_send, ns, objc, objc::Obj};
+use crate::{arc, msg_send, ns, objc};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -70,7 +70,7 @@ where
 
     #[inline]
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
-        //println!("{}", self.debug_description());
+        // ns::FEIterator::new(self, self.len())
         ns::FastEnumeration::iter(self)
     }
 }
@@ -97,15 +97,6 @@ where
     }
 }
 
-// impl<'a, T, const N: usize> ExactSizeIterator for ns::FEIterator<'a, Array<T>, T, N>
-// where
-//     T: objc::Obj + 'a,
-// {
-//     fn len(&self) -> usize {
-//         self.enu.len() - self.index
-//     }
-// }
-
 impl<T> ns::FastEnumeration<T> for Array<T> where T: objc::Obj {}
 impl<T> ns::FastEnumeration<T> for ArrayMut<T> where T: objc::Obj {}
 
@@ -130,7 +121,7 @@ mod tests {
         let mut k = 0;
         for i in arr.iter() {
             k += 1;
-            //            println!("{:?}", i);
+            println!("{:?}", i);
         }
 
         assert_eq!(1, k);

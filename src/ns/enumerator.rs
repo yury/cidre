@@ -71,6 +71,7 @@ where
     state: FastEnumerationState,
     index: usize,
     len: usize,
+    total_index: usize,
 }
 
 impl<'a, E, T, const N: usize> FEIterator<'a, E, T, N>
@@ -86,9 +87,20 @@ where
             items: &[],
             index: 0,
             len: 0,
+            total_index: 0,
         }
     }
 }
+
+// impl<'a, E, T, const N: usize> ExactSizeIterator for FEIterator<'a, E, T, N>
+// where
+//     E: objc::Obj + FastEnumeration<T>,
+//     T: objc::Obj + 'a,
+// {
+//     fn len(&self) -> usize {
+//         self.total_len - self.total_index
+//     }
+// }
 
 impl<'a, E, T, const N: usize> Iterator for FEIterator<'a, E, T, N>
 where
@@ -105,27 +117,30 @@ where
             }
             self.index = 0;
 
-            let len = self
+            self.len = self
                 .obj
                 .count_by_enumerating(&mut self.state, &mut self.objects, N);
 
-            if self.state.items_ptr == self.objects.as_ptr() as _ {
-                // this is the common case for things like NSArray
-            } else {
-                // Most cocoa classes will emit their own inner pointer buffers instead of traversing this path. Notable exceptions include NSDictionary and NSSet
-            }
-
-            if len == 0 {
+            if self.len == 0 {
                 return None;
             }
 
-            self.items =
-                unsafe { &*slice_from_raw_parts(self.state.items_ptr as *const *const T, len) };
-            self.len = len;
+            // if self.state.items_ptr == self.objects.as_ptr() as _ {
+            //     // this is the common case for things like NSArray
+            //     println!("im here1");
+            // } else {
+            //     // Most cocoa classes will emit their own inner pointer buffers instead of traversing this path. Notable exceptions include NSDictionary and NSSet
+            //     println!("im here");
+            // }
+
+            self.items = unsafe {
+                &*slice_from_raw_parts(self.state.items_ptr as *const *const T, self.len)
+            };
         }
 
         let item = unsafe { transmute(self.items[self.index]) };
         self.index += 1;
+        self.total_index += 1;
         Some(item)
     }
 }
@@ -154,21 +169,21 @@ mod tests {
         assert_eq!(1, arr.len());
 
         let mut k = 0;
-        for i in arr.iter() {
+        for _ in arr.iter() {
             k += 1;
             //println!("{:?}", i);
         }
 
         assert_eq!(1, k);
     }
+
     #[test]
     fn basics3() {
         let one = ns::String::with_str("1");
 
         let arr: &[&ns::String] = &[&one, &one];
         let arr = ns::Array::from_slice(arr);
-        //assert_eq!(1, arr.len());
-        //assert_eq!(5, arr[0].as_i32());
+        assert_eq!(2, arr.len());
 
         let mut k = 0;
         for i in arr.iter() {
@@ -177,5 +192,18 @@ mod tests {
         }
 
         assert_eq!(2, k);
+    }
+
+    #[test]
+    fn basics4() {
+        const N: usize = 100;
+        let mut vec: Vec<&ns::Number> = Vec::with_capacity(N);
+        let two = ns::Number::with_i64(2);
+        for _ in 0..N {
+            vec.push(&two);
+        }
+        let arr = ns::Array::from_slice(&vec[..]);
+        let sum = arr.iter().map(|v| v.as_i32()).sum();
+        assert_eq!(200, sum);
     }
 }
