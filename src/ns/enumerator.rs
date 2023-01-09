@@ -105,34 +105,28 @@ where
             }
             self.index = 0;
 
-            self.len = self
+            let len = self
                 .obj
                 .count_by_enumerating(&mut self.state, &mut self.objects, N);
 
             if self.state.items_ptr == self.objects.as_ptr() as _ {
                 // this is the common case for things like NSArray
-                //println!("use objects");
-
-                //self.objects = objects;
             } else {
                 // Most cocoa classes will emit their own inner pointer buffers instead of traversing this path. Notable exceptions include NSDictionary and NSSet
-                //println!("using items_ptr");
             }
 
-            //println!("len {0}", self.len);
-
-            if self.len == 0 {
+            if len == 0 {
                 return None;
             }
-            self.items = unsafe {
-                &*slice_from_raw_parts(self.state.items_ptr as *const *const T, self.len)
-            };
+
+            self.items =
+                unsafe { &*slice_from_raw_parts(self.state.items_ptr as *const *const T, len) };
+            self.len = len;
         }
 
-        let item: &T = unsafe { transmute(self.items[self.index]) };
-
+        let item = unsafe { transmute(self.items[self.index]) };
         self.index += 1;
-        return Some(item);
+        Some(item)
     }
 }
 
