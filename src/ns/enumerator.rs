@@ -146,13 +146,7 @@ mod tests {
 
         let nums: &[&ns::Number] = &[&one, &one];
         let arr = ns::Array::from_slice(nums);
-        let sum = arr
-            .iter()
-            .map(|v| {
-                println!("nice");
-                v.as_i32()
-            })
-            .sum();
+        let sum = arr.iter().map(|v| v.as_i32()).sum();
 
         assert_eq!(2, sum);
     }
