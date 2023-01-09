@@ -1,11 +1,10 @@
 use std::{
-    ffi::c_void,
     marker::PhantomData,
     mem::transmute,
     ops::{Deref, Index, IndexMut},
 };
 
-use crate::{arc, msg_send, ns, objc};
+use crate::{arc, msg_send, ns, objc, objc::Obj};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -60,13 +59,8 @@ where
     }
 
     #[inline]
-    pub fn count(&self) -> usize {
-        msg_send!("ns", self, ns_count)
-    }
-
-    #[inline]
     pub fn len(&self) -> usize {
-        self.count()
+        msg_send!("ns", self, ns_count)
     }
 
     #[inline]
@@ -76,6 +70,7 @@ where
 
     #[inline]
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
+        //println!("{}", self.debug_description());
         ns::FastEnumeration::iter(self)
     }
 }

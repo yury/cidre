@@ -225,7 +225,7 @@ rsel1(, id, isEqualToNumber, NSNumber *, BOOL)
 #pragma mark - NSArray
 
 NS_RETURNS_RETAINED
-NSArray * NSArray_withObjs(const NSObject * _Nonnull * _Nonnull objects, NSUInteger count) {
+NSArray * NSArray_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
   return [NSArray arrayWithObjects:objects count: count];
 }
 
@@ -305,6 +305,7 @@ SEL ns_description;
 SEL ns_debugDescription;
 SEL ns_cStringUsingEncoding;
 SEL ns_lengthOfBytesUsingEncoding;
+//SEL ns_retainCount;
 
 
 __attribute__((constructor))
@@ -355,6 +356,8 @@ static void common_initializer()
     ns_debugDescription = @selector(debugDescription);
     ns_cStringUsingEncoding = @selector(cStringUsingEncoding:);
     ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
+    
+//    ns_retainCount = @selector(retainCount);
 
   }
 }

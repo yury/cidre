@@ -1,4 +1,4 @@
-use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ptr::NonNull};
+use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ops::Deref, ptr::NonNull};
 
 use crate::{arc, cf::Type, msg_send};
 
@@ -38,17 +38,22 @@ pub trait Obj: arc::Retain {
         transmute(objc_retain(transmute(id)))
     }
 
+    #[inline]
     fn resonds_to_sel(&self, sel: &Self) -> bool {
         msg_send!("ns", self, ns_respondsToSelector, sel)
     }
 
+    #[inline]
     fn description(&self) -> &crate::ns::String {
         msg_send!("ns", self, ns_description)
     }
 
+    #[inline]
     fn debug_description(&self) -> &crate::ns::String {
         msg_send!("ns", self, ns_debugDescription)
     }
+
+    // fn retain_count(&self) -> usize {}
 
     /// # Safety
     /// use `msg_send!`
@@ -146,15 +151,15 @@ pub trait Obj: arc::Retain {
 pub struct Id(Type);
 
 impl Id {
-    #[inline]
-    pub unsafe fn retain<T: arc::Release>(id: &Id) -> arc::R<T> {
-        transmute(objc_retain(id))
-    }
+    // #[inline]
+    // pub unsafe fn retain<T: arc::Release>(id: &Id) -> arc::R<T> {
+    //     transmute(objc_retain(id))
+    // }
 
-    #[inline]
-    pub unsafe fn release(id: &mut Id) {
-        objc_release(id)
-    }
+    // #[inline]
+    // pub unsafe fn release(id: &mut Id) {
+    //     objc_release(id)
+    // }
 
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &mut Id {
