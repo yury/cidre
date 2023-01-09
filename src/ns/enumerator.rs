@@ -67,6 +67,7 @@ where
 {
     pub obj: &'a E,
     objects: [*const T; N],
+    items: &'a [*const T],
     state: FastEnumerationState,
     index: usize,
     len: usize,
@@ -82,6 +83,7 @@ where
             obj,
             state: Default::default(),
             objects: [std::ptr::null(); N],
+            items: &[],
             index: 0,
             len: 0,
         }
@@ -122,12 +124,12 @@ where
             if self.len == 0 {
                 return None;
             }
+            self.items = unsafe {
+                &*slice_from_raw_parts(self.state.items_ptr as *const *const T, self.len)
+            };
         }
 
-        let item: &T = unsafe {
-            let items = &*slice_from_raw_parts(self.state.items_ptr, self.len);
-            transmute(items[self.index])
-        };
+        let item: &T = unsafe { transmute(self.items[self.index]) };
 
         self.index += 1;
         return Some(item);
