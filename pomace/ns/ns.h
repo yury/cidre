@@ -37,7 +37,6 @@ CidreMachPortDelegate * make_mach_port_delegate(void * _Nonnull vtable[_Nonnull 
 NS_RETURNS_NOT_RETAINED
 csel0(, NSProcessInfo, processInfo, NSProcessInfo *)
 
-rsel0(, id, thermalState, NSProcessInfoThermalState)
 rsel0(, id, isLowPowerModeEnabled, BOOL)
 rsel0(, id, processorCount, NSUInteger)
 rsel0(, id, activeProcessorCount, NSUInteger)
@@ -270,8 +269,6 @@ rsel0(, id, absoluteString, NSString *)
 
 csel0(, NSDictionary, dictionary, NSDictionary *)
 
-
-
 #pragma mark - SELECTORS
 
 SEL ns_length;
@@ -312,8 +309,8 @@ SEL ns_domain;
 
 SEL ns_countByEnumeratingWithState_objects_count;
 SEL ns_respondsToSelector;
-SEL ns_description;
-SEL ns_debugDescription;
+//SEL ns_description;
+//SEL ns_debugDescription;
 SEL ns_cStringUsingEncoding;
 SEL ns_lengthOfBytesUsingEncoding;
 //SEL ns_retainCount;
@@ -363,8 +360,8 @@ static void common_initializer()
     ns_countByEnumeratingWithState_objects_count = @selector(countByEnumeratingWithState:objects:count:);
     
     ns_respondsToSelector = @selector(respondsToSelector:);
-    ns_description = @selector(description);
-    ns_debugDescription = @selector(debugDescription);
+//    ns_description = @selector(description);
+//    ns_debugDescription = @selector(debugDescription);
     ns_cStringUsingEncoding = @selector(cStringUsingEncoding:);
     ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
     

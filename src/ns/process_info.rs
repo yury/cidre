@@ -1,4 +1,7 @@
-use crate::{define_obj_type, ns};
+use crate::{
+    define_obj_type, ns,
+    objc::{self, Obj},
+};
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 #[repr(isize)]
@@ -25,7 +28,7 @@ pub enum ThermalState {
 define_obj_type!(ProcessInfo(ns::Id));
 
 impl ProcessInfo {
-    /// ```
+    /// ```no_run
     /// use cidre::ns;
     ///
     /// let pi = ns::ProcessInfo::current();
@@ -41,7 +44,7 @@ impl ProcessInfo {
 
     #[inline]
     pub fn thermal_state(&self) -> ThermalState {
-        unsafe { rsel_thermalState(self) }
+        unsafe { self.call0(objc::msg_send::thermal_state) }
     }
 
     #[inline]
@@ -73,11 +76,25 @@ impl ProcessInfo {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSProcessInfo_processInfo() -> &'static ProcessInfo;
-    fn rsel_thermalState(id: &ns::Id) -> ThermalState;
     fn rsel_isLowPowerModeEnabled(id: &ns::Id) -> bool;
     fn rsel_processorCount(id: &ns::Id) -> usize;
     fn rsel_activeProcessorCount(id: &ns::Id) -> usize;
 
     fn rsel_isMacCatalystApp(id: &ns::Id) -> bool;
     fn rsel_isiOSAppOnMac(id: &ns::Id) -> bool;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let pi = ns::ProcessInfo::current();
+
+        assert_ne!(pi.thermal_state(), ns::ProcessInfoThermalState::Critical);
+        assert_eq!(pi.is_low_power_mode_enabled(), false);
+        assert!(pi.processor_count() > 1);
+        assert!(pi.active_processor_count() > 1);
+    }
 }

@@ -6,6 +6,7 @@
 //
 
 #import "ns.h"
+#import <Foundation/Foundation.h>
 
 @implementation CidreMachPortDelegate
 

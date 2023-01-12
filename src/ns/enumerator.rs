@@ -1,16 +1,16 @@
 use std::{ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::{msg_send, objc};
+use crate::objc::{msg_send, Obj};
 
-// static MUTATIONS_TARGET: u32 = 0;
-// static MUTATIONS_PTR: &u32 = &MUTATIONS_TARGET;
+static MUTATIONS_TARGET: u32 = 0;
+static MUTATIONS_PTR: &u32 = &MUTATIONS_TARGET;
 
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct FastEnumerationState {
     pub state: u32,
     pub items_ptr: *const *const c_void,
-    pub mutations_ptr: *mut u32,
+    pub mutations_ptr: &'static u32,
     pub extra: [u32; 5],
 }
 
@@ -19,7 +19,7 @@ impl FastEnumerationState {
         Self {
             state: 0,
             items_ptr: std::ptr::null(),
-            mutations_ptr: std::ptr::null_mut(),
+            mutations_ptr: MUTATIONS_PTR,
             extra: Default::default(),
         }
     }
@@ -31,10 +31,7 @@ impl Default for FastEnumerationState {
     }
 }
 
-pub trait FastEnumeration<T>: objc::Obj
-where
-    T: objc::Obj,
-{
+pub trait FastEnumeration<T: Obj>: Obj {
     #[inline]
     fn count_by_enumerating(
         &self,
@@ -42,14 +39,14 @@ where
         objects: &mut [*const T],
         count: usize,
     ) -> usize {
-        msg_send!(
-            "ns",
-            self,
-            ns_countByEnumeratingWithState_objects_count,
-            state,
-            objects,
-            count
-        )
+        unsafe {
+            self.call3(
+                msg_send::count_by_enumerating_with_state_objects_count,
+                state,
+                objects,
+                count,
+            )
+        }
     }
 
     #[inline]
@@ -59,11 +56,12 @@ where
 }
 
 // https://github.com/apple/swift-corelibs-foundation/blob/main/Darwin/Foundation-swiftoverlay/NSFastEnumeration.swift
+// https://www.mikeash.com/pyblog/friday-qa-2010-04-16-implementing-fast-enumeration.html
 #[derive(Debug)]
 pub struct FEIterator<'a, E, T, const N: usize = 16>
 where
-    E: objc::Obj + FastEnumeration<T>,
-    T: objc::Obj + 'a,
+    E: Obj + FastEnumeration<T>,
+    T: Obj + 'a,
 {
     pub obj: &'a E,
     objects: [*const T; N],
@@ -76,8 +74,8 @@ where
 
 impl<'a, E, T, const N: usize> FEIterator<'a, E, T, N>
 where
-    E: objc::Obj + FastEnumeration<T>,
-    T: objc::Obj + 'a,
+    E: Obj + FastEnumeration<T>,
+    T: Obj + 'a,
 {
     pub fn new(obj: &'a E) -> Self {
         Self {
@@ -104,8 +102,8 @@ where
 
 impl<'a, E, T, const N: usize> Iterator for FEIterator<'a, E, T, N>
 where
-    E: objc::Obj + FastEnumeration<T>,
-    T: objc::Obj + 'a,
+    E: Obj + FastEnumeration<T>,
+    T: Obj + 'a,
 {
     type Item = &'a T;
 
@@ -117,10 +115,13 @@ where
             }
             self.index = 0;
 
+            // let mut state = self.state.clone();
+            // let mut objects = [std::ptr::null(); N];
+
             self.len = self
                 .obj
                 .count_by_enumerating(&mut self.state, &mut self.objects, N);
-
+            // println!("len = {}", self.len);
             if self.len == 0 {
                 return None;
             }
@@ -136,6 +137,8 @@ where
             self.items = unsafe {
                 &*slice_from_raw_parts(self.state.items_ptr as *const *const T, self.len)
             };
+            // self.state = state;
+            // self.objects = objects;
         }
 
         let item = unsafe { transmute(self.items[self.index]) };
@@ -147,7 +150,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::ns;
+    use crate::{ns, objc::Obj};
 
     #[test]
     fn basics1() {
@@ -205,5 +208,16 @@ mod tests {
         let arr = ns::Array::from_slice(&vec[..]);
         let sum = arr.iter().map(|v| v.as_i32()).sum();
         assert_eq!(200, sum);
+    }
+
+    #[test]
+    fn basics5() {
+        let two = ns::Number::with_i32(10);
+        let set: &[&ns::Number] = &[&two, &two, &two];
+        let set = ns::Set::from_slice(set);
+        println!("{}", set.description());
+        //        assert_eq!(1, set.len());
+        let sum = set.iter().map(|v| v.as_i32()).sum();
+        assert_eq!(10, sum);
     }
 }

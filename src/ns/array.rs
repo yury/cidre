@@ -4,28 +4,24 @@ use std::{
     ops::{Deref, Index, IndexMut},
 };
 
-use crate::{arc, msg_send, ns, objc};
+use crate::{
+    arc, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Array<T>(ns::Id, PhantomData<T>)
-where
-    T: objc::Obj;
+pub struct Array<T: Obj>(ns::Id, PhantomData<T>);
 
-impl<T> objc::Obj for Array<T> where T: objc::Obj {}
+impl<T: Obj> Obj for Array<T> where T: Obj {}
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct ArrayMut<T>(ns::Array<T>)
-where
-    T: objc::Obj;
+pub struct ArrayMut<T: Obj>(ns::Array<T>);
 
-impl<T> objc::Obj for ArrayMut<T> where T: objc::Obj {}
+impl<T: Obj> Obj for ArrayMut<T> {}
 
-impl<T> Deref for Array<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Deref for Array<T> {
     type Target = ns::Id;
 
     fn deref(&self) -> &Self::Target {
@@ -33,10 +29,7 @@ where
     }
 }
 
-impl<T> Deref for ArrayMut<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Deref for ArrayMut<T> {
     type Target = Array<T>;
 
     fn deref(&self) -> &Self::Target {
@@ -44,10 +37,7 @@ where
     }
 }
 
-impl<T> Array<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Array<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
         unsafe { transmute(NSArray_array()) }
@@ -60,7 +50,7 @@ where
 
     #[inline]
     pub fn len(&self) -> usize {
-        msg_send!("ns", self, ns_count)
+        unsafe { self.call0(msg_send::count) }
     }
 
     #[inline]
@@ -70,35 +60,31 @@ where
 
     #[inline]
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
-        // ns::FEIterator::new(self, self.len())
         ns::FastEnumeration::iter(self)
     }
 }
 
-impl<T> Index<usize> for Array<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Index<usize> for Array<T> {
     type Output = T;
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        msg_send!("ns", self, ns_objectAtIndex_index, index)
+        unsafe { self.call1(msg_send::object_at_index, index) }
     }
 }
 
-impl<T> IndexMut<usize> for Array<T>
+impl<T: Obj> IndexMut<usize> for Array<T>
 where
-    T: objc::Obj,
+    T: Obj,
 {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        msg_send!("ns", self, ns_objectAtIndex_index, index)
+        unsafe { self.call1(msg_send::object_at_index, index) }
     }
 }
 
-impl<T> ns::FastEnumeration<T> for Array<T> where T: objc::Obj {}
-impl<T> ns::FastEnumeration<T> for ArrayMut<T> where T: objc::Obj {}
+impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}
+impl<T: Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

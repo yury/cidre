@@ -71,8 +71,12 @@ required-features = ["am"]
 name = "device_mount_dev_image"
 required-features = ["am"]
 
-#[lib]
+[lib]
 #crate-type = ["staticlib", "rlib"]
+#crate-type = ["staticlib", "rlib"]
+
+[profile.dev]
+opt-level = 1
 
 [profile.release]
 lto = true

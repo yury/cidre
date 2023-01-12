@@ -93,7 +93,7 @@ define_obj_type!(Library(ns::Id));
 impl Library {
     define_mtl!(device, label, set_label);
 
-    /// ```
+    /// ```no_run
     /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();

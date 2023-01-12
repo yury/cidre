@@ -1,4 +1,9 @@
-use cidre::{arc, mps, mps::graph, ns};
+use cidre::{
+    arc, mps,
+    mps::graph,
+    ns,
+    objc::{autoreleasepool, Obj},
+};
 
 fn make_graph(synchonize: bool) -> arc::R<graph::Graph> {
     let mut graph = graph::Graph::new();
@@ -1261,4 +1266,15 @@ fn make_diffusion_step(
     graph.add(&x_prev_base, &dir_x, None)
 }
 
-fn main() {}
+fn main() {
+    // unsafe {
+    autoreleasepool(|| {
+        let one = ns::Number::with_i32(5);
+        let arr: &[&ns::Number] = &[&one];
+        let arr = ns::Array::from_slice(arr);
+        assert_eq!(1, arr.len());
+        let f = &arr[0];
+    })
+    // let desc = cidre::objc::Id::retain_autoreleased(Some(num.debug_description()));
+    // }
+}

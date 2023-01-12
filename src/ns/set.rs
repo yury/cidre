@@ -1,31 +1,23 @@
-use std::{
-    marker::PhantomData,
-    mem::transmute,
-    ops::{Deref, Index, IndexMut},
+use std::{marker::PhantomData, mem::transmute, ops::Deref};
+
+use crate::{
+    arc, ns,
+    objc::{msg_send, Obj},
 };
 
-use crate::{arc, msg_send, ns, objc};
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Set<T: Obj>(ns::Id, PhantomData<T>);
+
+impl<T: Obj> Obj for Set<T> {}
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Set<T>(ns::Id, PhantomData<T>)
-where
-    T: objc::Obj;
+pub struct SetMut<T: Obj>(ns::Set<T>);
 
-impl<T> objc::Obj for Set<T> where T: objc::Obj {}
+impl<T: Obj> Obj for SetMut<T> {}
 
-#[derive(Debug)]
-#[repr(transparent)]
-pub struct SetMut<T>(ns::Set<T>)
-where
-    T: objc::Obj;
-
-impl<T> objc::Obj for SetMut<T> where T: objc::Obj {}
-
-impl<T> Deref for Set<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Deref for Set<T> {
     type Target = ns::Id;
 
     fn deref(&self) -> &Self::Target {
@@ -33,10 +25,7 @@ where
     }
 }
 
-impl<T> Deref for SetMut<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Deref for SetMut<T> {
     type Target = Set<T>;
 
     fn deref(&self) -> &Self::Target {
@@ -44,10 +33,7 @@ where
     }
 }
 
-impl<T> Set<T>
-where
-    T: objc::Obj,
-{
+impl<T: Obj> Set<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
         unsafe { transmute(NSSet_set()) }
@@ -60,7 +46,7 @@ where
 
     #[inline]
     pub fn len(&self) -> usize {
-        msg_send!("ns", self, ns_count)
+        unsafe { self.call0(msg_send::count) }
     }
 
     #[inline]
@@ -70,14 +56,12 @@ where
 
     #[inline]
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
-        // ns::FEIterator::new(self, self.len())
-        //let _n = self.len();
         ns::FastEnumeration::iter(self)
     }
 }
 
-impl<T> ns::FastEnumeration<T> for Set<T> where T: objc::Obj {}
-impl<T> ns::FastEnumeration<T> for SetMut<T> where T: objc::Obj {}
+impl<T> ns::FastEnumeration<T> for Set<T> where T: Obj {}
+impl<T> ns::FastEnumeration<T> for SetMut<T> where T: Obj {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

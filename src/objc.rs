@@ -1,4 +1,4 @@
-use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ops::Deref, ptr::NonNull};
+use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::{arc, cf::Type, msg_send};
 
@@ -39,21 +39,19 @@ pub trait Obj: arc::Retain {
     }
 
     #[inline]
-    fn resonds_to_sel(&self, sel: &Self) -> bool {
+    fn responds_to_sel(&self, sel: &Self) -> bool {
         msg_send!("ns", self, ns_respondsToSelector, sel)
     }
 
     #[inline]
     fn description(&self) -> &crate::ns::String {
-        msg_send!("ns", self, ns_description)
+        unsafe { self.call0(msg_send::description) }
     }
 
     #[inline]
-    fn debug_description(&self) -> &crate::ns::String {
-        msg_send!("ns", self, ns_debugDescription)
+    fn debug_description(&self) -> arc::R<crate::ns::String> {
+        unsafe { self.call0(msg_send::debug_description) }
     }
-
-    // fn retain_count(&self) -> usize {}
 
     /// # Safety
     /// use `msg_send!`
@@ -144,6 +142,47 @@ pub trait Obj: arc::Retain {
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d, e, f, g)
     }
+
+    #[inline]
+    unsafe fn call0<R>(&self, send: unsafe extern "C" fn()) -> R {
+        let imp: unsafe extern "C" fn(&Self, *const c_void) -> R = transmute(send as *const c_void);
+        imp(self, std::ptr::null())
+    }
+
+    #[inline]
+    unsafe fn call1<R, A>(&self, send: unsafe extern "C" fn(), a: A) -> R {
+        let imp: unsafe extern "C" fn(&Self, *const c_void, A) -> R =
+            transmute(send as *const c_void);
+        imp(self, std::ptr::null(), a)
+    }
+
+    #[inline]
+    unsafe fn call2<R, A, B>(&self, send: unsafe extern "C" fn(), a: A, b: B) -> R {
+        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B) -> R =
+            transmute(send as *const c_void);
+        imp(self, std::ptr::null(), a, b)
+    }
+
+    #[inline]
+    unsafe fn call3<R, A, B, C>(&self, send: unsafe extern "C" fn(), a: A, b: B, c: C) -> R {
+        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C) -> R =
+            transmute(send as *const c_void);
+        imp(self, std::ptr::null(), a, b, c)
+    }
+
+    #[inline]
+    unsafe fn call4<R, A, B, C, D>(
+        &self,
+        send: unsafe extern "C" fn(),
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C, D) -> R =
+            transmute(send as *const c_void);
+        imp(self, std::ptr::null(), a, b, c, d)
+    }
 }
 
 /// Use it as NSObject or id
@@ -164,6 +203,11 @@ impl Id {
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &mut Id {
         objc_autorelease(id)
+    }
+
+    #[inline]
+    pub unsafe fn retain_autoreleased<'ar>(id: Option<&Id>) -> Option<&Id> {
+        objc_retainAutoreleasedReturnValue(id)
     }
 
     #[inline]
@@ -288,6 +332,7 @@ extern "C" {
 
     fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
     fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
+    fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
 }
 
 #[macro_export]
@@ -371,3 +416,12 @@ mod tests {
         // expect crash: ptr.show()
     }
 }
+
+pub mod msg_send;
+
+// global_asm!(
+//     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
+//     "    .long    0",
+//     "    .long    0",
+//     "    .popsection",
+// );
