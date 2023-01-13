@@ -78,4 +78,21 @@ extern "C" {
     #[link_name = "objc_msgSend$mutableCopy"]
     pub fn mutable_copy();
 
+    #[link_name = "objc_msgSend$memoryCapacity"]
+    pub fn memory_capacity();
+
+    #[link_name = "objc_msgSend$setMemoryCapacity:"]
+    pub fn set_memory_capacity();
+
+    #[link_name = "objc_msgSend$diskCapacity"]
+    pub fn disk_capacity();
+
+    #[link_name = "objc_msgSend$setDiskCapacity:"]
+    pub fn set_disk_capacity();
+
+    #[link_name = "objc_msgSend$currentMemoryUsage"]
+    pub fn current_memory_usage();
+
+    #[link_name = "objc_msgSend$currentDiskUsage"]
+    pub fn current_disk_usage();
 }

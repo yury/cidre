@@ -152,12 +152,6 @@ csel0(, NSURLCache, sharedURLCache, NSURLCache *)
 
 asel3(, NSURLCache, initWithMemoryCapacity, NSUInteger, diskCapacity, NSUInteger, directoryURL, NSURL * _Nullable)
 
-rwsel(, id, memoryCapacity, setMemoryCapacity, NSUInteger)
-rwsel(, id, diskCapacity, setDiskCapacity, NSUInteger)
-
-rsel0(, id, currentMemoryUsage, NSUInteger)
-rsel0(, id, currentDiskUsage, NSUInteger)
-
 #pragma mark NSData
 
 NS_RETURNS_RETAINED
