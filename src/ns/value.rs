@@ -69,12 +69,12 @@ impl Number {
 
     #[inline]
     pub fn with_i64(value: i64) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithLongLong(value) }
+        unsafe { NS_NUMBER.call1(number_with_long_long, value) }
     }
 
     #[inline]
     pub fn with_isize(value: isize) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithLongLong(value as _) }
+        Self::with_i64(value as _)
     }
 
     #[inline]
@@ -334,6 +334,9 @@ extern "C" {
 
     #[link_name = "objc_msgSend$numberWithUnsignedInt:"]
     fn number_with_unsigned_int();
+
+    #[link_name = "objc_msgSend$numberWithLongLong:"]
+    fn number_with_long_long();
 }
 
 #[cfg(test)]
