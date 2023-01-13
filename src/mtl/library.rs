@@ -185,7 +185,7 @@ impl Library {
 pub type ErrorDomain = ns::ErrorDomain;
 
 impl ErrorDomain {
-    /// ```
+    /// ```no_run
     /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -274,5 +274,15 @@ mod tests {
             println!("nice!!! {:?} {:?}", lib, error);
         });
         device.library_with_source_options_completion(&source, None, handler.escape());
+    }
+
+    #[test]
+    fn error_basics() {
+        let device = mtl::Device::default().unwrap();
+
+        let source = ns::String::with_str("vid function_a() {}");
+        let err = device.library_with_source(&source, None).unwrap_err();
+
+        assert_eq!(mtl::LibraryError::CompileFailure, err.code());
     }
 }

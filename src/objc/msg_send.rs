@@ -1,5 +1,11 @@
 // we define (or just common?) all selectrs calls here
 extern "C" {
+    #[link_name = "objc_msgSend$code"]
+    pub fn code();
+
+    #[link_name = "objc_msgSend$domain"]
+    pub fn domain();
+
     #[link_name = "objc_msgSend$count"]
     pub fn count();
 
@@ -11,6 +17,9 @@ extern "C" {
 
     #[link_name = "objc_msgSend$name"]
     pub fn name();
+
+    #[link_name = "objc_msgSend$setName"]
+    pub fn set_name();
 
     #[link_name = "objc_msgSend$lowercaseString"]
     pub fn lowercase_string();
@@ -77,6 +86,12 @@ extern "C" {
 
     #[link_name = "objc_msgSend$isEqualToString:"]
     pub fn is_equal_to_string();
+
+    #[link_name = "objc_msgSend$substringWithRange:"]
+    pub fn substring_with_range();
+
+    #[link_name = "objc_msgSend$cStringUsingEncoding:"]
+    pub fn c_string_using_encoding();
 
     #[link_name = "objc_msgSend$mutableCopy"]
     pub fn mutable_copy();

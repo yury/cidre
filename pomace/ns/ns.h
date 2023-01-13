@@ -267,15 +267,10 @@ SEL ns_isEqual;
 SEL ns_resultType;
 SEL ns_range;
 
-SEL ns_substringWithRange;
-
-SEL ns_mutableCopy;
-
 SEL ns_code;
 SEL ns_domain;
 
 SEL ns_respondsToSelector;
-SEL ns_cStringUsingEncoding;
 SEL ns_lengthOfBytesUsingEncoding;
 //SEL ns_retainCount;
 
@@ -291,18 +286,11 @@ static void common_initializer()
 
     ns_resultType = @selector(resultType);
     ns_range = @selector(range);
-
-    ns_substringWithRange = @selector(substringWithRange:);
-    
-    ns_mutableCopy = @selector(mutableCopy);
     
     ns_code = @selector(code);
     ns_domain = @selector(domain);
     
     ns_respondsToSelector = @selector(respondsToSelector:);
-//    ns_description = @selector(description);
-//    ns_debugDescription = @selector(debugDescription);
-    ns_cStringUsingEncoding = @selector(cStringUsingEncoding:);
     ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
     
 //    ns_retainCount = @selector(retainCount);

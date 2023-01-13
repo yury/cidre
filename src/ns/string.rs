@@ -99,12 +99,12 @@ impl String {
     #[inline]
     pub fn substring(&self, range: std::ops::Range<usize>) -> arc::R<ns::String> {
         let range: ns::Range = range.into();
-        msg_send!("ns", self, ns_substringWithRange, range)
+        unsafe { self.call1(msg_send::substring_with_range, range) }
     }
 
     #[inline]
     pub fn c_string(&self, encoding: Encoding) -> *const i8 {
-        msg_send!("ns", self, ns_cStringUsingEncoding, encoding)
+        unsafe { self.call1(msg_send::c_string_using_encoding, encoding) }
     }
 
     #[inline]

@@ -498,7 +498,6 @@ extern "C" {
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<Buffer>>;
 
-    // fn rsel_newFence<'create>(id: &Device) -> Option<Retained<'create, Fence>>;
     fn rsel_newEvent(id: &Device) -> Option<arc::R<Event>>;
 
     fn rsel_maxBufferLength(id: &Device) -> usize;
@@ -530,7 +529,7 @@ mod tests {
     fn it_works() {
         let device = unsafe { mtl::Device::default().unwrap_unchecked() };
 
-        let n = device.name();
+        let _n = device.name();
         //n.show_str()
     }
 }

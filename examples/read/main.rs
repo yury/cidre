@@ -50,7 +50,7 @@ async fn main() {
 
     let mut feature_prints: Vec<Vec<f32>> = Vec::with_capacity(50_000);
 
-    let mut prev_frame_featurs: Option<arc::R<vn::FeaturePrintObservation>> = None;
+    let _prev_frame_featurs: Option<arc::R<vn::FeaturePrintObservation>> = None;
 
     let mut count = 0;
     while let Some(buf) = output.copy_next_sample_buffer() {
