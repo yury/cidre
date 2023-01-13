@@ -1,4 +1,7 @@
-use crate::{arc, define_obj_type, ns};
+use crate::{
+    arc, define_obj_type, ns,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(URL(ns::Id));
 
@@ -50,7 +53,7 @@ impl URL {
 
     #[inline]
     pub fn abs_string(&self) -> Option<&ns::String> {
-        unsafe { rsel_absoluteString(self) }
+        unsafe { self.call0(msg_send::absolute_string) }
     }
 }
 
@@ -66,8 +69,6 @@ extern "C" {
         str: &ns::String,
         relative_to: Option<&ns::URL>,
     ) -> Option<arc::R<ns::URL>>;
-
-    fn rsel_absoluteString(id: &ns::Id) -> Option<&ns::String>;
 }
 
 #[cfg(test)]

@@ -37,7 +37,7 @@ fn load_const(
     .unwrap();
 
     let numels = shape.iter().fold(1, |acc, x| acc * x.as_i64());
-    assert_eq!(numels * size, data.length() as i64, "mismatched data sizes");
+    assert_eq!(numels * size, data.len() as i64, "mismatched data sizes");
 
     let shape = ns::Array::from_slice(shape);
     graph.constant_with_data_shape_data_type(&data, &shape, data_type)

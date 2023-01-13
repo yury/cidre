@@ -9,6 +9,9 @@ extern "C" {
     #[link_name = "objc_msgSend$bytes"]
     pub fn bytes();
 
+    #[link_name = "objc_msgSend$name"]
+    pub fn name();
+
     #[link_name = "objc_msgSend$lowercaseString"]
     pub fn lowercase_string();
 
@@ -95,4 +98,7 @@ extern "C" {
 
     #[link_name = "objc_msgSend$currentDiskUsage"]
     pub fn current_disk_usage();
+
+    #[link_name = "objc_msgSend$absoluteString"]
+    pub fn absolute_string();
 }

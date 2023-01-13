@@ -53,7 +53,7 @@ pub enum NetworkServiceType {
 }
 
 impl URLRequest {
-    /// ```
+    /// ```no_run
     /// use cidre::ns;
     /// let url = ns::URL::with_str("https://google.com").unwrap();
     /// let request = ns::URLRequest::with_url(&url);
@@ -369,5 +369,34 @@ mod tests {
             request.network_service_type(),
             ns::URLRequestNetworkServiceType::AVStreaming
         );
+    }
+
+    #[test]
+    fn basics1() {
+        let url = ns::URL::with_str("https://google.com").unwrap();
+        let request = ns::URLRequest::with_url(&url);
+        let request_url = request.url().unwrap();
+        assert!(url
+            .abs_string()
+            .unwrap()
+            .eq(&request_url.abs_string().unwrap()));
+        assert_eq!(
+            request.cache_policy(),
+            ns::URLRequestCachePolicy::UseProtocol
+        );
+        assert_eq!(request.timeout_interval(), 60f64);
+        assert_eq!(
+            request.network_service_type(),
+            ns::URLRequestNetworkServiceType::Default
+        );
+        assert!(request.allows_cellular_access());
+        assert!(request.allows_expensive_network_access());
+        assert!(request.allows_constrained_network_access());
+        assert!(!request.assumes_http3_capable());
+        assert_eq!(request.attribution(), ns::URLRequestAttribution::Developer);
+        assert!(!request.requires_dns_sec_validation());
+        assert!(request.http_method().is_some());
+        assert!(request.all_http_header_fields().is_none());
+        assert!(request.http_body().is_none());
     }
 }

@@ -26,10 +26,10 @@ impl FunctionDescriptor {
         msg_send!("common", self, sel_setName, name)
     }
 
-    /// ```rust
+    /// ```no_run
     /// use cidre::{cf, mtl};
     ///
-    /// let mut fd = mtl::FunctionDescriptor::default();
+    /// let fd = mtl::FunctionDescriptor::default();
     ///
     /// assert!(fd.name().is_none());
     ///
@@ -50,4 +50,25 @@ impl FunctionDescriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     fn MTLFunctionDescriptor_functionDescriptor<'a>() -> &'a mut FunctionDescriptor;
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::{cf, mtl};
+
+    #[test]
+    fn basics() {
+        let fd = mtl::FunctionDescriptor::default();
+
+        assert!(fd.name().is_none());
+
+        let name = cf::String::from_str("hello");
+
+        fd.set_name(Some(&name));
+
+        let actual_name = fd.name().unwrap();
+
+        assert!(name.equal(&actual_name));
+    }
 }
