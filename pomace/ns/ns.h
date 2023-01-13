@@ -164,18 +164,6 @@ rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
 
 #pragma mark - NSNumber
   
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithShort, short, NSNumber *)
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithUnsignedShort, unsigned short, NSNumber *)
-
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithInt, int, NSNumber *)
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithUnsignedInt, unsigned int, NSNumber *)
 
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithLongLong, long long, NSNumber *)

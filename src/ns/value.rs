@@ -13,13 +13,13 @@ impl Number {
     }
 
     #[inline]
-    pub fn tagged_i8(value: i8) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_char, value) }
+    pub fn with_u8(value: u8) -> arc::R<Self> {
+        unsafe { NS_NUMBER.call1(number_with_unsigned_char, value) }
     }
 
     #[inline]
-    pub fn with_u8(value: u8) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_char, value) }
+    pub fn tagged_i8(value: i8) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_char, value) }
     }
 
     #[inline]
@@ -38,13 +38,33 @@ impl Number {
     }
 
     #[inline]
+    pub fn tagged_i16(value: i16) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_short, value) }
+    }
+
+    #[inline]
+    pub fn tagged_u16(value: u16) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_unsigned_short, value) }
+    }
+
+    #[inline]
     pub fn with_i32(value: i32) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithInt(value) }
+        unsafe { NS_NUMBER.call1(number_with_int, value) }
     }
 
     #[inline]
     pub fn with_u32(value: u32) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithUnsignedInt(value) }
+        unsafe { NS_NUMBER.call1(number_with_unsigned_int, value) }
+    }
+
+    #[inline]
+    pub fn tagged_i32(value: i32) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_int, value) }
+    }
+
+    #[inline]
+    pub fn tagged_u32(value: u32) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_unsigned_int, value) }
     }
 
     #[inline]
@@ -283,9 +303,6 @@ extern "C" {
 
     static NS_NUMBER: &'static Class;
 
-    fn NSNumber_numberWithInt(value: i32) -> arc::R<ns::Number>;
-    fn NSNumber_numberWithUnsignedInt(value: u32) -> arc::R<ns::Number>;
-
     fn NSNumber_numberWithLongLong(value: i64) -> arc::R<ns::Number>;
     fn NSNumber_numberWithUnsignedLongLong(value: u64) -> arc::R<ns::Number>;
 
@@ -312,16 +329,29 @@ extern "C" {
     #[link_name = "objc_msgSend$numberWithUnsignedShort:"]
     fn number_with_unsigned_short();
 
+    #[link_name = "objc_msgSend$numberWithInt:"]
+    fn number_with_int();
+
+    #[link_name = "objc_msgSend$numberWithUnsignedInt:"]
+    fn number_with_unsigned_int();
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{ns, objc::Obj};
     #[test]
-    fn basics() {
-        let i8 = ns::Number::tagged_i8(3);
-        let u8 = ns::Number::tagged_u8(3);
+    fn tagged_pointers() {
+        let i8 = ns::Number::tagged_i8(i8::MAX - 1);
+        let u8 = ns::Number::tagged_u8(u8::MAX - 1);
+        let i16 = ns::Number::tagged_i16(i16::MAX - 1);
+        let u16 = ns::Number::tagged_u16(u16::MAX - 1);
+        let i32 = ns::Number::tagged_i32(i32::MAX - 1);
+        let u32 = ns::Number::tagged_u32(u32::MAX - 1);
         assert!(i8.is_tagged_pointer());
         assert!(u8.is_tagged_pointer());
+        assert!(i16.is_tagged_pointer());
+        assert!(u16.is_tagged_pointer());
+        assert!(i32.is_tagged_pointer());
+        assert!(u32.is_tagged_pointer());
     }
 }
