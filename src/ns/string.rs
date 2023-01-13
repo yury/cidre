@@ -1,6 +1,9 @@
 use std::{borrow::Cow, ffi::CStr, fmt, str::from_utf8_unchecked};
 
-use crate::{arc, define_obj_type, msg_send, ns};
+use crate::{
+    arc, define_obj_type, msg_send, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -16,7 +19,7 @@ define_obj_type!(StringMut(String));
 impl String {
     #[inline]
     pub fn len(&self) -> usize {
-        msg_send!("ns", self, ns_length)
+        unsafe { self.call0(msg_send::length) }
     }
 
     #[inline]
@@ -26,32 +29,32 @@ impl String {
 
     #[inline]
     pub fn lowercased(&self) -> arc::R<Self> {
-        msg_send!("ns", self, ns_lowercaseString)
+        unsafe { self.call0(msg_send::lowercase_string) }
     }
 
     #[inline]
     pub fn to_i32(&self) -> i32 {
-        msg_send!("ns", self, ns_intValue)
+        unsafe { self.call0(msg_send::int_value) }
     }
 
     #[inline]
     pub fn to_i64(&self) -> i64 {
-        msg_send!("ns", self, ns_longLongValue)
+        unsafe { self.call0(msg_send::long_long_value) }
     }
 
     #[inline]
     pub fn to_f32(&self) -> f32 {
-        msg_send!("ns", self, ns_floatValue)
+        unsafe { self.call0(msg_send::float_value) }
     }
 
     #[inline]
     pub fn to_f64(&self) -> f64 {
-        msg_send!("ns", self, ns_doubleValue)
+        unsafe { self.call0(msg_send::double_value) }
     }
 
     #[inline]
     pub fn to_bool(&self) -> bool {
-        msg_send!("ns", self, ns_boolValue)
+        unsafe { self.call0(msg_send::bool_value) }
     }
 
     /// The ns::Integer value of the string.
@@ -63,12 +66,12 @@ impl String {
     /// use an ns::Scanner object for localized scanning of numeric values from a string.
     #[inline]
     pub fn to_integer(&self) -> ns::Integer {
-        msg_send!("ns", self, ns_integerValue)
+        unsafe { self.call0(msg_send::integer_value) }
     }
 
     #[inline]
     pub fn copy_mut(&self) -> arc::R<ns::StringMut> {
-        msg_send!("ns", self, ns_mutableCopy)
+        unsafe { self.call0(msg_send::mutable_copy) }
     }
 
     #[inline]
@@ -108,12 +111,17 @@ impl String {
     pub fn len_of_bytes(&self, encoding: Encoding) -> ns::UInteger {
         msg_send!("ns", self, ns_lengthOfBytesUsingEncoding, encoding)
     }
+
+    #[inline]
+    pub unsafe fn utf8_chars(&self) -> *const i8 {
+        unsafe { self.call0(msg_send::utf8_string) }
+    }
 }
 
 impl PartialEq for String {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        msg_send!("ns", self, ns_isEqualToString, other)
+        unsafe { self.call1(msg_send::is_equal_to_string, other) }
     }
 }
 
@@ -151,7 +159,7 @@ impl fmt::Display for String {
 impl<'a> From<&'a String> for Cow<'a, str> {
     fn from(nsstr: &'a String) -> Self {
         unsafe {
-            let c_str = nsstr.c_string(Encoding::UTF8);
+            let c_str = nsstr.utf8_chars();
             if c_str.is_null() {
                 let bytes_required = nsstr.len_of_bytes(Encoding::UTF8);
 

@@ -192,12 +192,6 @@ csel1(, NSNumber, numberWithInt, int, NSNumber *)
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithUnsignedInt, unsigned int, NSNumber *)
 
-//NS_RETURNS_RETAINED
-//csel1(, NSNumber, numberWithLong, long, NSNumber *)
-//
-//NS_RETURNS_RETAINED
-//csel1(, NSNumber, numberWithUnsignedLong, unsigned long, NSNumber *)
-
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithLongLong, long long, NSNumber *)
 
@@ -271,46 +265,22 @@ csel0(, NSDictionary, dictionary, NSDictionary *)
 
 #pragma mark - SELECTORS
 
-SEL ns_length;
 SEL ns_bytes;
 
-SEL ns_charValue;
-SEL ns_unsignedCharValue;
-SEL ns_shortValue;
-SEL ns_unsignedShortValue;
-SEL ns_intValue;
-SEL ns_unsignedIntValue;
-//SEL ns_longValue;
-//SEL ns_unsignedLongValue;
-SEL ns_longLongValue;
-SEL ns_unsignedLongLongValue;
-SEL ns_floatValue;
-SEL ns_doubleValue;
-SEL ns_boolValue;
-SEL ns_integerValue;
-SEL ns_unsignedIntegerValue;
 
 SEL ns_isEqual;
-
-SEL ns_count;
-SEL ns_objectAtIndex_index;
 
 SEL ns_resultType;
 SEL ns_range;
 
-SEL ns_lowercaseString;
 SEL ns_substringWithRange;
 
 SEL ns_mutableCopy;
-SEL ns_isEqualToString;
 
 SEL ns_code;
 SEL ns_domain;
 
-SEL ns_countByEnumeratingWithState_objects_count;
 SEL ns_respondsToSelector;
-//SEL ns_description;
-//SEL ns_debugDescription;
 SEL ns_cStringUsingEncoding;
 SEL ns_lengthOfBytesUsingEncoding;
 //SEL ns_retainCount;
@@ -321,43 +291,19 @@ static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-    ns_length = @selector(length);
     ns_bytes = @selector(bytes);
     
-    ns_charValue = @selector(charValue);
-    ns_unsignedCharValue = @selector(unsignedCharValue);
-    ns_shortValue = @selector(shortValue);
-    ns_unsignedShortValue = @selector(unsignedShortValue);
-    ns_intValue = @selector(intValue);
-    ns_unsignedIntValue = @selector(unsignedIntValue);
-//    ns_longValue = @selector(longValue);
-//    ns_unsignedLongValue = @selector(unsignedLongValue);
-    ns_longLongValue = @selector(longLongValue);
-    ns_unsignedLongLongValue = @selector(unsignedLongLongValue);
-    ns_floatValue = @selector(floatValue);
-    ns_doubleValue = @selector(doubleValue);
-    ns_boolValue = @selector(boolValue);
-    ns_integerValue = @selector(integerValue);
-    ns_unsignedIntegerValue = @selector(unsignedIntegerValue);
-    
     ns_isEqual = @selector(isEqual:);
-    
-    ns_count = @selector(count);
-    ns_objectAtIndex_index = @selector(objectAtIndex:);
 
     ns_resultType = @selector(resultType);
     ns_range = @selector(range);
 
-    ns_lowercaseString = @selector(lowercaseString);
     ns_substringWithRange = @selector(substringWithRange:);
     
     ns_mutableCopy = @selector(mutableCopy);
-    ns_isEqualToString = @selector(isEqualToString:);
     
     ns_code = @selector(code);
     ns_domain = @selector(domain);
-    
-    ns_countByEnumeratingWithState_objects_count = @selector(countByEnumeratingWithState:objects:count:);
     
     ns_respondsToSelector = @selector(respondsToSelector:);
 //    ns_description = @selector(description);

@@ -1,26 +1,17 @@
 use std::{marker::PhantomData, mem::transmute};
 
-use crate::{arc, msg_send, ns, objc};
+use crate::{
+    arc, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Dictionary<K, V>(ns::Id, PhantomData<(K, V)>)
-where
-    K: objc::Obj,
-    V: objc::Obj;
+pub struct Dictionary<K: Obj, V: Obj>(ns::Id, PhantomData<(K, V)>);
 
-impl<K, V> objc::Obj for Dictionary<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
-}
+impl<K: Obj, V: Obj> Obj for Dictionary<K, V> {}
 
-impl<K, V> Dictionary<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
+impl<K: Obj, V: Obj> Dictionary<K, V> {
     #[inline]
     pub fn new() -> arc::R<Self> {
         unsafe { transmute(NSDictionary_dictionary()) }
@@ -28,7 +19,7 @@ where
 
     #[inline]
     pub fn len(&self) -> usize {
-        msg_send!("ns", self, ns_count)
+        unsafe { self.call0(msg_send::count) }
     }
 
     pub fn is_empty(&self) -> bool {
@@ -38,23 +29,11 @@ where
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct DictionaryMut<K, V>(Dictionary<K, V>)
-where
-    K: objc::Obj,
-    V: objc::Obj;
+pub struct DictionaryMut<K: Obj, V: Obj>(Dictionary<K, V>);
 
-impl<K, V> objc::Obj for DictionaryMut<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
-}
+impl<K: Obj, V: Obj> Obj for DictionaryMut<K, V> {}
 
-impl<K, V> std::ops::Deref for Dictionary<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
+impl<K: Obj, V: Obj> std::ops::Deref for Dictionary<K, V> {
     type Target = ns::Id;
 
     fn deref(&self) -> &Self::Target {
@@ -62,57 +41,13 @@ where
     }
 }
 
-impl<K, V> std::ops::Deref for DictionaryMut<K, V>
-where
-    K: objc::Obj,
-    V: objc::Obj,
-{
+impl<K: Obj, V: Obj> std::ops::Deref for DictionaryMut<K, V> {
     type Target = Dictionary<K, V>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
-
-// impl<K, V> arc::Release for Dictionary<K, V>
-// where
-//     K: objc::Obj,
-//     V: objc::Obj,
-// {
-//     unsafe fn release(&mut self) {
-//         self.0.release()
-//     }
-// }
-
-// impl<K, V> arc::Retain for Dictionary<K, V>
-// where
-//     K: objc::Obj,
-//     V: objc::Obj,
-// {
-//     fn retained(&self) -> arc::Retained<Self> {
-//         unsafe { transmute(self.0.retained()) }
-//     }
-// }
-
-// impl<K, V> arc::Release for DictionaryMut<K, V>
-// where
-//     K: objc::Obj,
-//     V: objc::Obj,
-// {
-//     unsafe fn release(&mut self) {
-//         self.0.release()
-//     }
-// }
-
-// impl<K, V> arc::Retain for DictionaryMut<K, V>
-// where
-//     K: objc::Obj,
-//     V: objc::Obj,
-// {
-//     fn retained(&self) -> arc::Retained<Self> {
-//         unsafe { transmute(self.0.retained()) }
-//     }
-// }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

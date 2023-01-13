@@ -1,6 +1,9 @@
 use std::{mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::{arc, define_obj_type, define_options, msg_send, ns};
+use crate::{
+    arc, define_obj_type, define_options, ns,
+    objc::{msg_send, Obj},
+};
 
 define_options!(ReadingOptions(usize));
 
@@ -88,18 +91,13 @@ impl Data {
     }
 
     #[inline]
-    pub fn length(&self) -> usize {
-        msg_send!("ns", self, ns_length)
-    }
-
-    #[inline]
     pub fn bytes(&self) -> *const u8 {
-        msg_send!("ns", self, ns_bytes)
+        unsafe { self.call0(msg_send::bytes) }
     }
 
     #[inline]
     pub fn len(&self) -> usize {
-        self.length()
+        unsafe { self.call0(msg_send::length) }
     }
 
     #[inline]

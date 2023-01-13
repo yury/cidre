@@ -1,7 +1,9 @@
-use crate::{arc, define_obj_type, msg_send, ns};
+use crate::{
+    arc, define_obj_type, ns,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(Value(ns::Id));
-
 define_obj_type!(Number(Value));
 
 impl Number {
@@ -78,45 +80,45 @@ impl Number {
     #[doc(alias = "charValue")]
     #[inline]
     pub fn as_i8(&self) -> i8 {
-        msg_send!("ns", self, ns_charValue)
+        unsafe { self.call0(msg_send::char_value) }
     }
 
     #[doc(alias = "unsignedCharValue")]
     #[inline]
     pub fn as_u8(&self) -> u8 {
-        msg_send!("ns", self, ns_unsignedCharValue)
+        unsafe { self.call0(msg_send::unsigned_char_value) }
     }
 
     #[doc(alias = "shortValue")]
     #[inline]
     pub fn as_i16(&self) -> i16 {
-        msg_send!("ns", self, ns_shortValue)
+        unsafe { self.call0(msg_send::short_value) }
     }
 
     #[doc(alias = "unsignedShortValue")]
     #[inline]
     pub fn as_u16(&self) -> u16 {
-        msg_send!("ns", self, ns_unsignedShortValue)
+        unsafe { self.call0(msg_send::unsigned_short_value) }
     }
 
     #[doc(alias = "intValue")]
     #[doc(alias = "longValue")]
     #[inline]
     pub fn as_i32(&self) -> i32 {
-        msg_send!("ns", self, ns_intValue)
+        unsafe { self.call0(msg_send::int_value) }
     }
 
     #[doc(alias = "unsignedIntValue")]
     #[doc(alias = "unsignedLongValue")]
     #[inline]
     pub fn as_u32(&self) -> u32 {
-        msg_send!("ns", self, ns_unsignedIntValue)
+        unsafe { self.call0(msg_send::unsingned_int_value) }
     }
 
     #[doc(alias = "longLongValue")]
     #[inline]
     pub fn as_i64(&self) -> i64 {
-        msg_send!("ns", self, ns_longLongValue)
+        unsafe { self.call0(msg_send::long_long_value) }
     }
 
     #[doc(alias = "longLongValue")]
@@ -128,37 +130,37 @@ impl Number {
     #[doc(alias = "unsignedLongLongValue")]
     #[inline]
     pub fn as_u64(&self) -> u64 {
-        msg_send!("ns", self, ns_unsignedLongLongValue)
+        unsafe { self.call0(msg_send::unsigned_long_long_value) }
     }
 
     #[doc(alias = "floatValue")]
     #[inline]
     pub fn as_f32(&self) -> f32 {
-        msg_send!("ns", self, ns_floatValue)
+        unsafe { self.call0(msg_send::float_value) }
     }
 
     #[doc(alias = "doubleValue")]
     #[inline]
     pub fn as_f64(&self) -> f64 {
-        msg_send!("ns", self, ns_doubleValue)
+        unsafe { self.call0(msg_send::double_value) }
     }
 
     #[doc(alias = "integerValue")]
     #[inline]
     pub fn as_integer(&self) -> ns::Integer {
-        msg_send!("ns", self, ns_integerValue)
+        unsafe { self.call0(msg_send::integer_value) }
     }
 
     #[doc(alias = "unsignedIntegerValue")]
     #[inline]
     pub fn as_uinteger(&self) -> ns::UInteger {
-        msg_send!("ns", self, ns_unsignedIntegerValue)
+        unsafe { self.call0(msg_send::unsigned_integer_value) }
     }
 
     #[doc(alias = "stringValue")]
     #[inline]
     pub fn string(&self) -> arc::R<ns::String> {
-        msg_send!("ns", self, ns_stringValue)
+        unsafe { self.call0(msg_send::string_value) }
     }
 
     #[inline]
