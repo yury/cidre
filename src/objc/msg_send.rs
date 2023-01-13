@@ -1,5 +1,9 @@
 // we define (or just common?) all selectrs calls here
 extern "C" {
+
+    #[link_name = "objc_msgSend$respondsToSelector:"]
+    pub fn responds_to_selector();
+
     #[link_name = "objc_msgSend$code"]
     pub fn code();
 

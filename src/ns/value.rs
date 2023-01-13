@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{msg_send, Obj},
+    objc::{msg_send, Class, Obj},
 };
 
 define_obj_type!(Value(ns::Id));
@@ -9,22 +9,32 @@ define_obj_type!(Number(Value));
 impl Number {
     #[inline]
     pub fn with_i8(value: i8) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithChar(value) }
+        unsafe { NS_NUMBER.call1(number_with_char, value) }
+    }
+
+    #[inline]
+    pub fn tagged_i8(value: i8) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_char, value) }
     }
 
     #[inline]
     pub fn with_u8(value: u8) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithUnsignedChar(value) }
+        unsafe { NS_NUMBER.call1(number_with_unsigned_char, value) }
+    }
+
+    #[inline]
+    pub fn tagged_u8(value: u8) -> &'static Self {
+        unsafe { NS_NUMBER.call1(number_with_unsigned_char, value) }
     }
 
     #[inline]
     pub fn with_i16(value: i16) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithShort(value) }
+        unsafe { NS_NUMBER.call1(number_with_short, value) }
     }
 
     #[inline]
     pub fn with_u16(value: u16) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithUnsignedShort(value) }
+        unsafe { NS_NUMBER.call1(number_with_unsigned_short, value) }
     }
 
     #[inline]
@@ -270,11 +280,8 @@ impl Eq for Number {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSNumber_numberWithChar(value: i8) -> arc::R<ns::Number>;
-    fn NSNumber_numberWithUnsignedChar(value: u8) -> arc::R<ns::Number>;
 
-    fn NSNumber_numberWithShort(value: i16) -> arc::R<ns::Number>;
-    fn NSNumber_numberWithUnsignedShort(value: u16) -> arc::R<ns::Number>;
+    static NS_NUMBER: &'static Class;
 
     fn NSNumber_numberWithInt(value: i32) -> arc::R<ns::Number>;
     fn NSNumber_numberWithUnsignedInt(value: u32) -> arc::R<ns::Number>;
@@ -290,4 +297,31 @@ extern "C" {
     fn NSNumber_numberWithUnsignedInteger(value: ns::UInteger) -> arc::R<ns::Number>;
 
     fn rsel_isEqualToNumber(id: &ns::Id, number: &Number) -> bool;
+}
+
+extern "C" {
+    #[link_name = "objc_msgSend$numberWithChar:"]
+    fn number_with_char();
+
+    #[link_name = "objc_msgSend$numberWithUnsignedChar:"]
+    fn number_with_unsigned_char();
+
+    #[link_name = "objc_msgSend$numberWithShort:"]
+    fn number_with_short();
+
+    #[link_name = "objc_msgSend$numberWithUnsignedShort:"]
+    fn number_with_unsigned_short();
+
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{ns, objc::Obj};
+    #[test]
+    fn basics() {
+        let i8 = ns::Number::tagged_i8(3);
+        let u8 = ns::Number::tagged_u8(3);
+        assert!(i8.is_tagged_pointer());
+        assert!(u8.is_tagged_pointer());
+    }
 }

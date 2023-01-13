@@ -1,6 +1,6 @@
 use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-use crate::{arc, cf::Type, msg_send};
+use crate::{arc, cf::Type};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -13,20 +13,16 @@ impl Class {
     }
 }
 
-impl<T> arc::Release for T
-where
-    T: Obj,
-{
+impl Obj for Class {}
+
+impl<T: Obj> arc::Release for T {
     #[inline]
     unsafe fn release(&mut self) {
         objc_release(transmute(self))
     }
 }
 
-impl<T> arc::Retain for T
-where
-    T: Obj,
-{
+impl<T: Obj> arc::Retain for T {
     fn retained(&self) -> arc::R<Self> {
         unsafe { Self::retain(self) }
     }
@@ -39,11 +35,6 @@ pub trait Obj: arc::Retain {
     }
 
     #[inline]
-    fn responds_to_sel(&self, sel: &Self) -> bool {
-        msg_send!("ns", self, ns_respondsToSelector, sel)
-    }
-
-    #[inline]
     fn description(&self) -> &crate::ns::String {
         unsafe { self.call0(msg_send::description) }
     }
@@ -51,6 +42,16 @@ pub trait Obj: arc::Retain {
     #[inline]
     fn debug_description(&self) -> arc::R<crate::ns::String> {
         unsafe { self.call0(msg_send::debug_description) }
+    }
+
+    #[inline]
+    fn responds_to_sel(&self, sel: &Sel) -> bool {
+        unsafe { self.call1(msg_send::responds_to_selector, sel) }
+    }
+
+    #[inline]
+    fn is_tagged_pointer(&self) -> bool {
+        ((self as *const Self as usize) >> 63) == 1
     }
 
     /// # Safety
@@ -182,6 +183,21 @@ pub trait Obj: arc::Retain {
         let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C, D) -> R =
             transmute(send as *const c_void);
         imp(self, std::ptr::null(), a, b, c, d)
+    }
+
+    #[inline]
+    unsafe fn call5<R, A, B, C, D, E>(
+        &self,
+        send: unsafe extern "C" fn(),
+        a: A,
+        b: B,
+        c: C,
+        d: D,
+        e: E,
+    ) -> R {
+        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C, D, E) -> R =
+            transmute(send as *const c_void);
+        imp(self, std::ptr::null(), a, b, c, d, e)
     }
 }
 

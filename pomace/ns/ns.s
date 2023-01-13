@@ -5,9 +5,24 @@
 _wsel_scheduleInRunLoop_forMode:        ; @wsel_scheduleInRunLoop_forMode
 	.cfi_startproc
 ; %bb.0:
-	mov	x3, x2
-	mov	x2, x1
-	b	"_objc_msgSend$scheduleInRunLoop:forMode:"
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	x2, [sp, #8]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	bl	"_objc_msgSend$scheduleInRunLoop:forMode:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_wsel_removeFromRunLoop_forMode ; -- Begin function wsel_removeFromRunLoop_forMode
@@ -15,9 +30,24 @@ _wsel_scheduleInRunLoop_forMode:        ; @wsel_scheduleInRunLoop_forMode
 _wsel_removeFromRunLoop_forMode:        ; @wsel_removeFromRunLoop_forMode
 	.cfi_startproc
 ; %bb.0:
-	mov	x3, x2
-	mov	x2, x1
-	b	"_objc_msgSend$removeFromRunLoop:forMode:"
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	x2, [sp, #8]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldr	x3, [sp, #8]
+	bl	"_objc_msgSend$removeFromRunLoop:forMode:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSPort_port                    ; -- Begin function NSPort_port
@@ -25,12 +55,17 @@ _wsel_removeFromRunLoop_forMode:        ; @wsel_removeFromRunLoop_forMode
 _NSPort_port:                           ; @NSPort_port
 	.cfi_startproc
 ; %bb.0:
-Lloh0:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_@PAGE
-Lloh1:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_@PAGEOFF]
-	b	_objc_msgSend$port
-	.loh AdrpLdr	Lloh0, Lloh1
+	bl	_objc_msgSend$port
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_machPort                  ; -- Begin function rsel_machPort
@@ -38,7 +73,19 @@ Lloh1:
 _rsel_machPort:                         ; @rsel_machPort
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$machPort
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$machPort
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_make_mach_port_delegate        ; -- Begin function make_mach_port_delegate
@@ -46,26 +93,29 @@ _rsel_machPort:                         ; @rsel_machPort
 _make_mach_port_delegate:               ; @make_mach_port_delegate
 	.cfi_startproc
 ; %bb.0:
-	stp	x20, x19, [sp, #-32]!           ; 16-byte Folded Spill
+	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
 	add	x29, sp, #16
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	mov	x19, x0
-Lloh2:
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.1@PAGE
-Lloh3:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.1@PAGEOFF]
 	bl	_objc_opt_new
-	ldr	q0, [x19]
-	stur	q0, [x0, #8]
+	str	x0, [sp]
+	ldr	x8, [sp]
+	adrp	x9, _OBJC_IVAR_$_CidreMachPortDelegate._vtable@PAGE
+	ldrsw	x9, [x9, _OBJC_IVAR_$_CidreMachPortDelegate._vtable@PAGEOFF]
+	ldr	x1, [sp, #8]
+	add	x0, x8, x9
+	mov	x2, #16
+	mov	x3, #-1
+	bl	___memcpy_chk
+	ldr	x0, [sp]
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp], #32             ; 16-byte Folded Reload
+	add	sp, sp, #32
 	ret
-	.loh AdrpLdr	Lloh2, Lloh3
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSProcessInfo_processInfo      ; -- Begin function NSProcessInfo_processInfo
@@ -73,20 +123,17 @@ Lloh3:
 _NSProcessInfo_processInfo:             ; @NSProcessInfo_processInfo
 	.cfi_startproc
 ; %bb.0:
-Lloh4:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.2@PAGE
-Lloh5:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.2@PAGEOFF]
-	b	_objc_msgSend$processInfo
-	.loh AdrpLdr	Lloh4, Lloh5
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_rsel_thermalState              ; -- Begin function rsel_thermalState
-	.p2align	2
-_rsel_thermalState:                     ; @rsel_thermalState
-	.cfi_startproc
-; %bb.0:
-	b	_objc_msgSend$thermalState
+	bl	_objc_msgSend$processInfo
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_isLowPowerModeEnabled     ; -- Begin function rsel_isLowPowerModeEnabled
@@ -94,7 +141,20 @@ _rsel_thermalState:                     ; @rsel_thermalState
 _rsel_isLowPowerModeEnabled:            ; @rsel_isLowPowerModeEnabled
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$isLowPowerModeEnabled
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$isLowPowerModeEnabled
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_processorCount            ; -- Begin function rsel_processorCount
@@ -102,7 +162,19 @@ _rsel_isLowPowerModeEnabled:            ; @rsel_isLowPowerModeEnabled
 _rsel_processorCount:                   ; @rsel_processorCount
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$processorCount
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$processorCount
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_activeProcessorCount      ; -- Begin function rsel_activeProcessorCount
@@ -110,7 +182,19 @@ _rsel_processorCount:                   ; @rsel_processorCount
 _rsel_activeProcessorCount:             ; @rsel_activeProcessorCount
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$activeProcessorCount
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$activeProcessorCount
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_isMacCatalystApp          ; -- Begin function rsel_isMacCatalystApp
@@ -118,7 +202,20 @@ _rsel_activeProcessorCount:             ; @rsel_activeProcessorCount
 _rsel_isMacCatalystApp:                 ; @rsel_isMacCatalystApp
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$isMacCatalystApp
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$isMacCatalystApp
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_isiOSAppOnMac             ; -- Begin function rsel_isiOSAppOnMac
@@ -126,7 +223,20 @@ _rsel_isMacCatalystApp:                 ; @rsel_isMacCatalystApp
 _rsel_isiOSAppOnMac:                    ; @rsel_isiOSAppOnMac
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$isiOSAppOnMac
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$isiOSAppOnMac
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_cidre_raise_exception          ; -- Begin function cidre_raise_exception
@@ -140,29 +250,22 @@ _cidre_raise_exception:                 ; @cidre_raise_exception
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-Lloh6:
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.3@PAGE
-Lloh7:
-	ldr	x8, [x8, _OBJC_CLASSLIST_REFERENCES_$_.3@PAGEOFF]
-Lloh8:
-	adrp	x9, _NSGenericException@GOTPAGE
-Lloh9:
-	ldr	x9, [x9, _NSGenericException@GOTPAGEOFF]
-Lloh10:
-	ldr	x2, [x9]
-	str	x0, [sp]
-Lloh11:
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.3@PAGEOFF]
+	adrp	x8, _NSGenericException@GOTPAGE
+	ldr	x8, [x8, _NSGenericException@GOTPAGEOFF]
+	ldr	x2, [x8]
+	ldr	x8, [sp, #8]
+	mov	x9, sp
+	str	x8, [x9]
 	adrp	x3, l__unnamed_cfstring_@PAGE
-Lloh12:
 	add	x3, x3, l__unnamed_cfstring_@PAGEOFF
-	mov	x0, x8
 	bl	"_objc_msgSend$raise:format:"
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
 	add	sp, sp, #32
 	ret
-	.loh AdrpAdd	Lloh11, Lloh12
-	.loh AdrpLdrGotLdr	Lloh8, Lloh9, Lloh10
-	.loh AdrpLdr	Lloh6, Lloh7
 	.cfi_endproc
                                         ; -- End function
 	.globl	_cidre_throw_exception          ; -- Begin function cidre_throw_exception
@@ -170,11 +273,14 @@ Lloh12:
 _cidre_throw_exception:                 ; @cidre_throw_exception
 	.cfi_startproc
 ; %bb.0:
-	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
-	mov	x29, sp
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
 	bl	_objc_exception_throw
 	.cfi_endproc
                                         ; -- End function
@@ -186,37 +292,56 @@ Lfunc_begin0:
 	.cfi_personality 155, ___objc_personality_v0
 	.cfi_lsda 16, Lexception0
 ; %bb.0:
-	stp	x20, x19, [sp, #-32]!           ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
-	add	x29, sp, #16
+	sub	sp, sp, #64
+	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
+	add	x29, sp, #48
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	mov	x8, x0
+	stur	x0, [x29, #-16]
+	str	x1, [sp, #24]
+	ldur	x8, [x29, #-16]
+	ldr	x0, [sp, #24]
 Ltmp0:
-	mov	x0, x1
 	blr	x8
 Ltmp1:
-; %bb.1:
-	mov	x0, #0
-LBB14_2:
-	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp], #32             ; 16-byte Folded Reload
-	ret
-LBB14_3:
+	b	LBB13_1
+LBB13_1:
+                                        ; kill: def $x8 killed $xzr
+	stur	xzr, [x29, #-8]
+	b	LBB13_5
+LBB13_2:
 Ltmp2:
+	mov	x8, x1
+	str	x0, [sp, #16]
+	str	w8, [sp, #12]
+	b	LBB13_3
+LBB13_3:
+	ldr	w8, [sp, #12]
+	subs	w8, w8, #1
+	b.ne	LBB13_6
+	b	LBB13_4
+LBB13_4:
+	ldr	x0, [sp, #16]
 	bl	_objc_begin_catch
-	mov	x19, x0
+	str	x0, [sp]
+	ldr	x8, [sp]
+	stur	x8, [x29, #-8]
 	bl	_objc_end_catch
-	mov	x0, x19
-	b	LBB14_2
+	b	LBB13_5
+LBB13_5:
+	ldur	x0, [x29, #-8]
+	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
+	add	sp, sp, #64
+	ret
+LBB13_6:
+	ldr	x0, [sp, #16]
+	bl	__Unwind_Resume
 Lfunc_end0:
 	.cfi_endproc
 	.section	__TEXT,__gcc_except_tab
 	.p2align	2
-GCC_except_table14:
+GCC_except_table13:
 Lexception0:
 	.byte	255                             ; @LPStart Encoding = omit
 	.byte	155                             ; @TType Encoding = indirect pcrel sdata4
@@ -250,12 +375,17 @@ Lttbase0:
 _NSURLSession_sharedSession:            ; @NSURLSession_sharedSession
 	.cfi_startproc
 ; %bb.0:
-Lloh13:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.4@PAGE
-Lloh14:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.4@PAGEOFF]
-	b	_objc_msgSend$sharedSession
-	.loh AdrpLdr	Lloh13, Lloh14
+	bl	_objc_msgSend$sharedSession
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_dataTaskWithURL           ; -- Begin function rsel_dataTaskWithURL
@@ -263,8 +393,22 @@ Lloh14:
 _rsel_dataTaskWithURL:                  ; @rsel_dataTaskWithURL
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$dataTaskWithURL:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$dataTaskWithURL:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_dataTaskWithRequest       ; -- Begin function rsel_dataTaskWithRequest
@@ -272,8 +416,22 @@ _rsel_dataTaskWithURL:                  ; @rsel_dataTaskWithURL
 _rsel_dataTaskWithRequest:              ; @rsel_dataTaskWithRequest
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$dataTaskWithRequest:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$dataTaskWithRequest:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_wsel_resume   ; -- Begin function NSURLSessionTask_wsel_resume
@@ -281,7 +439,19 @@ _rsel_dataTaskWithRequest:              ; @rsel_dataTaskWithRequest
 _NSURLSessionTask_wsel_resume:          ; @NSURLSessionTask_wsel_resume
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$resume
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$resume
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_wsel_cancel   ; -- Begin function NSURLSessionTask_wsel_cancel
@@ -289,7 +459,19 @@ _NSURLSessionTask_wsel_resume:          ; @NSURLSessionTask_wsel_resume
 _NSURLSessionTask_wsel_cancel:          ; @NSURLSessionTask_wsel_cancel
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$cancel
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$cancel
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_wsel_suspend  ; -- Begin function NSURLSessionTask_wsel_suspend
@@ -297,7 +479,19 @@ _NSURLSessionTask_wsel_cancel:          ; @NSURLSessionTask_wsel_cancel
 _NSURLSessionTask_wsel_suspend:         ; @NSURLSessionTask_wsel_suspend
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$suspend
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$suspend
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_state    ; -- Begin function NSURLSessionTask_rsel_state
@@ -305,7 +499,19 @@ _NSURLSessionTask_wsel_suspend:         ; @NSURLSessionTask_wsel_suspend
 _NSURLSessionTask_rsel_state:           ; @NSURLSessionTask_rsel_state
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$state
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$state
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_error    ; -- Begin function NSURLSessionTask_rsel_error
@@ -313,7 +519,19 @@ _NSURLSessionTask_rsel_state:           ; @NSURLSessionTask_rsel_state
 _NSURLSessionTask_rsel_error:           ; @NSURLSessionTask_rsel_error
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$error
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$error
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_taskIdentifier ; -- Begin function NSURLSessionTask_rsel_taskIdentifier
@@ -321,7 +539,19 @@ _NSURLSessionTask_rsel_error:           ; @NSURLSessionTask_rsel_error
 _NSURLSessionTask_rsel_taskIdentifier:  ; @NSURLSessionTask_rsel_taskIdentifier
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$taskIdentifier
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$taskIdentifier
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_originalRequest ; -- Begin function NSURLSessionTask_rsel_originalRequest
@@ -329,7 +559,19 @@ _NSURLSessionTask_rsel_taskIdentifier:  ; @NSURLSessionTask_rsel_taskIdentifier
 _NSURLSessionTask_rsel_originalRequest: ; @NSURLSessionTask_rsel_originalRequest
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$originalRequest
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$originalRequest
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_currentRequest ; -- Begin function NSURLSessionTask_rsel_currentRequest
@@ -337,7 +579,19 @@ _NSURLSessionTask_rsel_originalRequest: ; @NSURLSessionTask_rsel_originalRequest
 _NSURLSessionTask_rsel_currentRequest:  ; @NSURLSessionTask_rsel_currentRequest
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$currentRequest
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$currentRequest
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_response ; -- Begin function NSURLSessionTask_rsel_response
@@ -345,7 +599,19 @@ _NSURLSessionTask_rsel_currentRequest:  ; @NSURLSessionTask_rsel_currentRequest
 _NSURLSessionTask_rsel_response:        ; @NSURLSessionTask_rsel_response
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$response
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$response
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_rsel_priority ; -- Begin function NSURLSessionTask_rsel_priority
@@ -353,7 +619,19 @@ _NSURLSessionTask_rsel_response:        ; @NSURLSessionTask_rsel_response
 _NSURLSessionTask_rsel_priority:        ; @NSURLSessionTask_rsel_priority
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$priority
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$priority
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionTask_wsel_setPriority ; -- Begin function NSURLSessionTask_wsel_setPriority
@@ -361,7 +639,21 @@ _NSURLSessionTask_rsel_priority:        ; @NSURLSessionTask_rsel_priority
 _NSURLSessionTask_wsel_setPriority:     ; @NSURLSessionTask_wsel_setPriority
 	.cfi_startproc
 ; %bb.0:
-	b	"_objc_msgSend$setPriority:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	s0, [sp, #4]
+	ldr	x0, [sp, #8]
+	ldr	s0, [sp, #4]
+	bl	"_objc_msgSend$setPriority:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_requestWithURL    ; -- Begin function NSURLRequest_requestWithURL
@@ -369,13 +661,21 @@ _NSURLSessionTask_wsel_setPriority:     ; @NSURLSessionTask_wsel_setPriority
 _NSURLRequest_requestWithURL:           ; @NSURLRequest_requestWithURL
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh15:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.5@PAGE
-Lloh16:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.5@PAGEOFF]
-	b	"_objc_msgSend$requestWithURL:"
-	.loh AdrpLdr	Lloh15, Lloh16
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$requestWithURL:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_requestWithURL_cachePolicy_timeoutInterval ; -- Begin function NSURLRequest_requestWithURL_cachePolicy_timeoutInterval
@@ -383,14 +683,26 @@ Lloh16:
 _NSURLRequest_requestWithURL_cachePolicy_timeoutInterval: ; @NSURLRequest_requestWithURL_cachePolicy_timeoutInterval
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh17:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	d0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.5@PAGE
-Lloh18:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.5@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$requestWithURL:cachePolicy:timeoutInterval:"
-	.loh AdrpLdr	Lloh17, Lloh18
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	d0, [sp, #8]
+	bl	"_objc_msgSend$requestWithURL:cachePolicy:timeoutInterval:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_cachePolicy  ; -- Begin function NSURLRequest_rsel_cachePolicy
@@ -398,7 +710,19 @@ Lloh18:
 _NSURLRequest_rsel_cachePolicy:         ; @NSURLRequest_rsel_cachePolicy
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$cachePolicy
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$cachePolicy
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_timeoutInterval ; -- Begin function NSURLRequest_rsel_timeoutInterval
@@ -406,7 +730,19 @@ _NSURLRequest_rsel_cachePolicy:         ; @NSURLRequest_rsel_cachePolicy
 _NSURLRequest_rsel_timeoutInterval:     ; @NSURLRequest_rsel_timeoutInterval
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$timeoutInterval
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$timeoutInterval
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_networkServiceType ; -- Begin function NSURLRequest_rsel_networkServiceType
@@ -414,7 +750,19 @@ _NSURLRequest_rsel_timeoutInterval:     ; @NSURLRequest_rsel_timeoutInterval
 _NSURLRequest_rsel_networkServiceType:  ; @NSURLRequest_rsel_networkServiceType
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$networkServiceType
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$networkServiceType
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_allowsCellularAccess ; -- Begin function NSURLRequest_rsel_allowsCellularAccess
@@ -422,7 +770,20 @@ _NSURLRequest_rsel_networkServiceType:  ; @NSURLRequest_rsel_networkServiceType
 _NSURLRequest_rsel_allowsCellularAccess: ; @NSURLRequest_rsel_allowsCellularAccess
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$allowsCellularAccess
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$allowsCellularAccess
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_allowsExpensiveNetworkAccess ; -- Begin function NSURLRequest_rsel_allowsExpensiveNetworkAccess
@@ -430,7 +791,20 @@ _NSURLRequest_rsel_allowsCellularAccess: ; @NSURLRequest_rsel_allowsCellularAcce
 _NSURLRequest_rsel_allowsExpensiveNetworkAccess: ; @NSURLRequest_rsel_allowsExpensiveNetworkAccess
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$allowsExpensiveNetworkAccess
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$allowsExpensiveNetworkAccess
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_allowsConstrainedNetworkAccess ; -- Begin function NSURLRequest_rsel_allowsConstrainedNetworkAccess
@@ -438,7 +812,20 @@ _NSURLRequest_rsel_allowsExpensiveNetworkAccess: ; @NSURLRequest_rsel_allowsExpe
 _NSURLRequest_rsel_allowsConstrainedNetworkAccess: ; @NSURLRequest_rsel_allowsConstrainedNetworkAccess
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$allowsConstrainedNetworkAccess
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$allowsConstrainedNetworkAccess
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_assumesHTTP3Capable ; -- Begin function NSURLRequest_rsel_assumesHTTP3Capable
@@ -446,7 +833,20 @@ _NSURLRequest_rsel_allowsConstrainedNetworkAccess: ; @NSURLRequest_rsel_allowsCo
 _NSURLRequest_rsel_assumesHTTP3Capable: ; @NSURLRequest_rsel_assumesHTTP3Capable
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$assumesHTTP3Capable
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$assumesHTTP3Capable
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_attribution  ; -- Begin function NSURLRequest_rsel_attribution
@@ -454,7 +854,19 @@ _NSURLRequest_rsel_assumesHTTP3Capable: ; @NSURLRequest_rsel_assumesHTTP3Capable
 _NSURLRequest_rsel_attribution:         ; @NSURLRequest_rsel_attribution
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$attribution
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$attribution
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_requiresDNSSECValidation ; -- Begin function NSURLRequest_rsel_requiresDNSSECValidation
@@ -462,7 +874,20 @@ _NSURLRequest_rsel_attribution:         ; @NSURLRequest_rsel_attribution
 _NSURLRequest_rsel_requiresDNSSECValidation: ; @NSURLRequest_rsel_requiresDNSSECValidation
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$requiresDNSSECValidation
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$requiresDNSSECValidation
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_HTTPMethod   ; -- Begin function NSURLRequest_rsel_HTTPMethod
@@ -470,7 +895,19 @@ _NSURLRequest_rsel_requiresDNSSECValidation: ; @NSURLRequest_rsel_requiresDNSSEC
 _NSURLRequest_rsel_HTTPMethod:          ; @NSURLRequest_rsel_HTTPMethod
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$HTTPMethod
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$HTTPMethod
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_allHTTPHeaderFields ; -- Begin function NSURLRequest_rsel_allHTTPHeaderFields
@@ -478,7 +915,19 @@ _NSURLRequest_rsel_HTTPMethod:          ; @NSURLRequest_rsel_HTTPMethod
 _NSURLRequest_rsel_allHTTPHeaderFields: ; @NSURLRequest_rsel_allHTTPHeaderFields
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$allHTTPHeaderFields
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$allHTTPHeaderFields
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_valueForHTTPHeaderField ; -- Begin function NSURLRequest_rsel_valueForHTTPHeaderField
@@ -486,8 +935,22 @@ _NSURLRequest_rsel_allHTTPHeaderFields: ; @NSURLRequest_rsel_allHTTPHeaderFields
 _NSURLRequest_rsel_valueForHTTPHeaderField: ; @NSURLRequest_rsel_valueForHTTPHeaderField
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$valueForHTTPHeaderField:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$valueForHTTPHeaderField:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLRequest_rsel_HTTPBody     ; -- Begin function NSURLRequest_rsel_HTTPBody
@@ -495,7 +958,19 @@ _NSURLRequest_rsel_valueForHTTPHeaderField: ; @NSURLRequest_rsel_valueForHTTPHea
 _NSURLRequest_rsel_HTTPBody:            ; @NSURLRequest_rsel_HTTPBody
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$HTTPBody
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$HTTPBody
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_requestWithURL ; -- Begin function NSMutableURLRequest_requestWithURL
@@ -503,13 +978,21 @@ _NSURLRequest_rsel_HTTPBody:            ; @NSURLRequest_rsel_HTTPBody
 _NSMutableURLRequest_requestWithURL:    ; @NSMutableURLRequest_requestWithURL
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh19:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.6@PAGE
-Lloh20:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.6@PAGEOFF]
-	b	"_objc_msgSend$requestWithURL:"
-	.loh AdrpLdr	Lloh19, Lloh20
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$requestWithURL:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval ; -- Begin function NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval
@@ -517,14 +1000,26 @@ Lloh20:
 _NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval: ; @NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh21:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	d0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.6@PAGE
-Lloh22:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.6@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$requestWithURL:cachePolicy:timeoutInterval:"
-	.loh AdrpLdr	Lloh21, Lloh22
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	d0, [sp, #8]
+	bl	"_objc_msgSend$requestWithURL:cachePolicy:timeoutInterval:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_rsel_cachePolicy ; -- Begin function NSMutableURLRequest_rsel_cachePolicy
@@ -532,7 +1027,19 @@ Lloh22:
 _NSMutableURLRequest_rsel_cachePolicy:  ; @NSMutableURLRequest_rsel_cachePolicy
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$cachePolicy
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$cachePolicy
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setCachePolicy ; -- Begin function NSMutableURLRequest_wsel_setCachePolicy
@@ -540,8 +1047,22 @@ _NSMutableURLRequest_rsel_cachePolicy:  ; @NSMutableURLRequest_rsel_cachePolicy
 _NSMutableURLRequest_wsel_setCachePolicy: ; @NSMutableURLRequest_wsel_setCachePolicy
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setCachePolicy:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$setCachePolicy:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setTimeoutInterval ; -- Begin function NSMutableURLRequest_wsel_setTimeoutInterval
@@ -549,7 +1070,21 @@ _NSMutableURLRequest_wsel_setCachePolicy: ; @NSMutableURLRequest_wsel_setCachePo
 _NSMutableURLRequest_wsel_setTimeoutInterval: ; @NSMutableURLRequest_wsel_setTimeoutInterval
 	.cfi_startproc
 ; %bb.0:
-	b	"_objc_msgSend$setTimeoutInterval:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	d0, [sp]
+	ldr	x0, [sp, #8]
+	ldr	d0, [sp]
+	bl	"_objc_msgSend$setTimeoutInterval:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setNetworkServiceType ; -- Begin function NSMutableURLRequest_wsel_setNetworkServiceType
@@ -557,8 +1092,22 @@ _NSMutableURLRequest_wsel_setTimeoutInterval: ; @NSMutableURLRequest_wsel_setTim
 _NSMutableURLRequest_wsel_setNetworkServiceType: ; @NSMutableURLRequest_wsel_setNetworkServiceType
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setNetworkServiceType:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$setNetworkServiceType:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setAllowsCellularAccess ; -- Begin function NSMutableURLRequest_wsel_setAllowsCellularAccess
@@ -566,8 +1115,25 @@ _NSMutableURLRequest_wsel_setNetworkServiceType: ; @NSMutableURLRequest_wsel_set
 _NSMutableURLRequest_wsel_setAllowsCellularAccess: ; @NSMutableURLRequest_wsel_setAllowsCellularAccess
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setAllowsCellularAccess:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	mov	w9, #1
+	and	w8, w8, w9
+	strb	w8, [sp, #7]
+	ldr	x0, [sp, #8]
+	ldrb	w8, [sp, #7]
+	and	w2, w8, #0x1
+	bl	"_objc_msgSend$setAllowsCellularAccess:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess ; -- Begin function NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess
@@ -575,8 +1141,25 @@ _NSMutableURLRequest_wsel_setAllowsCellularAccess: ; @NSMutableURLRequest_wsel_s
 _NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess: ; @NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setAllowsExpensiveNetworkAccess:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	mov	w9, #1
+	and	w8, w8, w9
+	strb	w8, [sp, #7]
+	ldr	x0, [sp, #8]
+	ldrb	w8, [sp, #7]
+	and	w2, w8, #0x1
+	bl	"_objc_msgSend$setAllowsExpensiveNetworkAccess:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess ; -- Begin function NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess
@@ -584,8 +1167,25 @@ _NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess: ; @NSMutableURLReques
 _NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess: ; @NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setAllowsConstrainedNetworkAccess:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	mov	w9, #1
+	and	w8, w8, w9
+	strb	w8, [sp, #7]
+	ldr	x0, [sp, #8]
+	ldrb	w8, [sp, #7]
+	and	w2, w8, #0x1
+	bl	"_objc_msgSend$setAllowsConstrainedNetworkAccess:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setAssumesHTTP3Capable ; -- Begin function NSMutableURLRequest_wsel_setAssumesHTTP3Capable
@@ -593,8 +1193,25 @@ _NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess: ; @NSMutableURLRequ
 _NSMutableURLRequest_wsel_setAssumesHTTP3Capable: ; @NSMutableURLRequest_wsel_setAssumesHTTP3Capable
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setAssumesHTTP3Capable:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	mov	w9, #1
+	and	w8, w8, w9
+	strb	w8, [sp, #7]
+	ldr	x0, [sp, #8]
+	ldrb	w8, [sp, #7]
+	and	w2, w8, #0x1
+	bl	"_objc_msgSend$setAssumesHTTP3Capable:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setAttribution ; -- Begin function NSMutableURLRequest_wsel_setAttribution
@@ -602,8 +1219,22 @@ _NSMutableURLRequest_wsel_setAssumesHTTP3Capable: ; @NSMutableURLRequest_wsel_se
 _NSMutableURLRequest_wsel_setAttribution: ; @NSMutableURLRequest_wsel_setAttribution
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setAttribution:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$setAttribution:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setRequiresDNSSECValidation ; -- Begin function NSMutableURLRequest_wsel_setRequiresDNSSECValidation
@@ -611,8 +1242,25 @@ _NSMutableURLRequest_wsel_setAttribution: ; @NSMutableURLRequest_wsel_setAttribu
 _NSMutableURLRequest_wsel_setRequiresDNSSECValidation: ; @NSMutableURLRequest_wsel_setRequiresDNSSECValidation
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setRequiresDNSSECValidation:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	mov	w9, #1
+	and	w8, w8, w9
+	strb	w8, [sp, #7]
+	ldr	x0, [sp, #8]
+	ldrb	w8, [sp, #7]
+	and	w2, w8, #0x1
+	bl	"_objc_msgSend$setRequiresDNSSECValidation:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setHTTPMethod ; -- Begin function NSMutableURLRequest_wsel_setHTTPMethod
@@ -620,8 +1268,22 @@ _NSMutableURLRequest_wsel_setRequiresDNSSECValidation: ; @NSMutableURLRequest_ws
 _NSMutableURLRequest_wsel_setHTTPMethod: ; @NSMutableURLRequest_wsel_setHTTPMethod
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setHTTPMethod:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$setHTTPMethod:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setAllHTTPHeaderFields ; -- Begin function NSMutableURLRequest_wsel_setAllHTTPHeaderFields
@@ -629,8 +1291,22 @@ _NSMutableURLRequest_wsel_setHTTPMethod: ; @NSMutableURLRequest_wsel_setHTTPMeth
 _NSMutableURLRequest_wsel_setAllHTTPHeaderFields: ; @NSMutableURLRequest_wsel_setAllHTTPHeaderFields
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setAllHTTPHeaderFields:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$setAllHTTPHeaderFields:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSMutableURLRequest_wsel_setHTTPBody ; -- Begin function NSMutableURLRequest_wsel_setHTTPBody
@@ -638,8 +1314,22 @@ _NSMutableURLRequest_wsel_setAllHTTPHeaderFields: ; @NSMutableURLRequest_wsel_se
 _NSMutableURLRequest_wsel_setHTTPBody:  ; @NSMutableURLRequest_wsel_setHTTPBody
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setHTTPBody:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$setHTTPBody:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName ; -- Begin function NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName
@@ -647,35 +1337,29 @@ _NSMutableURLRequest_wsel_setHTTPBody:  ; @NSMutableURLRequest_wsel_setHTTPBody
 _NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName: ; @NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName
 	.cfi_startproc
 ; %bb.0:
-	stp	x22, x21, [sp, #-48]!           ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #16]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
-	add	x29, sp, #32
+	sub	sp, sp, #64
+	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
+	add	x29, sp, #48
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	mov	x19, x3
-	mov	x20, x2
-	mov	x21, x1
-	mov	x22, x0
-Lloh23:
+                                        ; implicit-def: $x8
+	stur	x0, [x29, #-8]
+	stur	x1, [x29, #-16]
+	str	x2, [sp, #24]
+	str	x3, [sp, #16]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.7@PAGE
-Lloh24:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.7@PAGEOFF]
 	bl	_objc_alloc
-	mov	x2, x22
-	mov	x3, x21
-	mov	x4, x20
-	mov	x5, x19
-	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp], #48             ; 16-byte Folded Reload
-	b	"_objc_msgSend$initWithURL:MIMEType:expectedContentLength:textEncodingName:"
-	.loh AdrpLdr	Lloh23, Lloh24
+	ldr	x1, [sp, #8]                    ; 8-byte Folded Reload
+	ldur	x2, [x29, #-8]
+	ldur	x3, [x29, #-16]
+	ldr	x4, [sp, #24]
+	ldr	x5, [sp, #16]
+	bl	"_objc_msgSend$initWithURL:MIMEType:expectedContentLength:textEncodingName:"
+	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
+	add	sp, sp, #64
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionWebSocketMessage_initWithData ; -- Begin function NSURLSessionWebSocketMessage_initWithData
@@ -683,25 +1367,23 @@ Lloh24:
 _NSURLSessionWebSocketMessage_initWithData: ; @NSURLSessionWebSocketMessage_initWithData
 	.cfi_startproc
 ; %bb.0:
-	stp	x20, x19, [sp, #-32]!           ; 16-byte Folded Spill
+	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
 	add	x29, sp, #16
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	mov	x19, x0
-Lloh25:
+                                        ; implicit-def: $x8
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.8@PAGE
-Lloh26:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.8@PAGEOFF]
 	bl	_objc_alloc
-	mov	x2, x19
+	ldr	x1, [sp]                        ; 8-byte Folded Reload
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$initWithData:"
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp], #32             ; 16-byte Folded Reload
-	b	"_objc_msgSend$initWithData:"
-	.loh AdrpLdr	Lloh25, Lloh26
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionWebSocketMessage_initWithString ; -- Begin function NSURLSessionWebSocketMessage_initWithString
@@ -709,25 +1391,23 @@ Lloh26:
 _NSURLSessionWebSocketMessage_initWithString: ; @NSURLSessionWebSocketMessage_initWithString
 	.cfi_startproc
 ; %bb.0:
-	stp	x20, x19, [sp, #-32]!           ; 16-byte Folded Spill
+	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
 	add	x29, sp, #16
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	mov	x19, x0
-Lloh27:
+                                        ; implicit-def: $x8
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.8@PAGE
-Lloh28:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.8@PAGEOFF]
 	bl	_objc_alloc
-	mov	x2, x19
+	ldr	x1, [sp]                        ; 8-byte Folded Reload
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$initWithString:"
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp], #32             ; 16-byte Folded Reload
-	b	"_objc_msgSend$initWithString:"
-	.loh AdrpLdr	Lloh27, Lloh28
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionWebSocketMessage_rsel_type ; -- Begin function NSURLSessionWebSocketMessage_rsel_type
@@ -735,7 +1415,19 @@ Lloh28:
 _NSURLSessionWebSocketMessage_rsel_type: ; @NSURLSessionWebSocketMessage_rsel_type
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$type
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$type
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionWebSocketMessage_rsel_data ; -- Begin function NSURLSessionWebSocketMessage_rsel_data
@@ -743,7 +1435,19 @@ _NSURLSessionWebSocketMessage_rsel_type: ; @NSURLSessionWebSocketMessage_rsel_ty
 _NSURLSessionWebSocketMessage_rsel_data: ; @NSURLSessionWebSocketMessage_rsel_data
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$data
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$data
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLSessionWebSocketMessage_rsel_string ; -- Begin function NSURLSessionWebSocketMessage_rsel_string
@@ -751,7 +1455,19 @@ _NSURLSessionWebSocketMessage_rsel_data: ; @NSURLSessionWebSocketMessage_rsel_da
 _NSURLSessionWebSocketMessage_rsel_string: ; @NSURLSessionWebSocketMessage_rsel_string
 	.cfi_startproc
 ; %bb.0:
-	b	_objc_msgSend$string
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	ldr	x0, [sp, #8]
+	bl	_objc_msgSend$string
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLCache_sharedURLCache      ; -- Begin function NSURLCache_sharedURLCache
@@ -759,12 +1475,17 @@ _NSURLSessionWebSocketMessage_rsel_string: ; @NSURLSessionWebSocketMessage_rsel_
 _NSURLCache_sharedURLCache:             ; @NSURLCache_sharedURLCache
 	.cfi_startproc
 ; %bb.0:
-Lloh29:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.9@PAGE
-Lloh30:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.9@PAGEOFF]
-	b	_objc_msgSend$sharedURLCache
-	.loh AdrpLdr	Lloh29, Lloh30
+	bl	_objc_msgSend$sharedURLCache
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL ; -- Begin function NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL
@@ -772,83 +1493,27 @@ Lloh30:
 _NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL: ; @NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL
 	.cfi_startproc
 ; %bb.0:
-	stp	x22, x21, [sp, #-48]!           ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #16]             ; 16-byte Folded Spill
+	sub	sp, sp, #48
 	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
 	add	x29, sp, #32
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	mov	x19, x2
-	mov	x20, x1
-	mov	x21, x0
-Lloh31:
+                                        ; implicit-def: $x8
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.9@PAGE
-Lloh32:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.9@PAGEOFF]
 	bl	_objc_alloc
-	mov	x2, x21
-	mov	x3, x20
-	mov	x4, x19
+	ldr	x1, [sp]                        ; 8-byte Folded Reload
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	x4, [sp, #8]
+	bl	"_objc_msgSend$initWithMemoryCapacity:diskCapacity:directoryURL:"
 	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp], #48             ; 16-byte Folded Reload
-	b	"_objc_msgSend$initWithMemoryCapacity:diskCapacity:directoryURL:"
-	.loh AdrpLdr	Lloh31, Lloh32
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_rsel_memoryCapacity            ; -- Begin function rsel_memoryCapacity
-	.p2align	2
-_rsel_memoryCapacity:                   ; @rsel_memoryCapacity
-	.cfi_startproc
-; %bb.0:
-	b	_objc_msgSend$memoryCapacity
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_wsel_setMemoryCapacity         ; -- Begin function wsel_setMemoryCapacity
-	.p2align	2
-_wsel_setMemoryCapacity:                ; @wsel_setMemoryCapacity
-	.cfi_startproc
-; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setMemoryCapacity:"
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_rsel_diskCapacity              ; -- Begin function rsel_diskCapacity
-	.p2align	2
-_rsel_diskCapacity:                     ; @rsel_diskCapacity
-	.cfi_startproc
-; %bb.0:
-	b	_objc_msgSend$diskCapacity
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_wsel_setDiskCapacity           ; -- Begin function wsel_setDiskCapacity
-	.p2align	2
-_wsel_setDiskCapacity:                  ; @wsel_setDiskCapacity
-	.cfi_startproc
-; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$setDiskCapacity:"
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_rsel_currentMemoryUsage        ; -- Begin function rsel_currentMemoryUsage
-	.p2align	2
-_rsel_currentMemoryUsage:               ; @rsel_currentMemoryUsage
-	.cfi_startproc
-; %bb.0:
-	b	_objc_msgSend$currentMemoryUsage
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_rsel_currentDiskUsage          ; -- Begin function rsel_currentDiskUsage
-	.p2align	2
-_rsel_currentDiskUsage:                 ; @rsel_currentDiskUsage
-	.cfi_startproc
-; %bb.0:
-	b	_objc_msgSend$currentDiskUsage
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSData_dataWithContentsOfFile_options_error ; -- Begin function NSData_dataWithContentsOfFile_options_error
@@ -856,15 +1521,26 @@ _rsel_currentDiskUsage:                 ; @rsel_currentDiskUsage
 _NSData_dataWithContentsOfFile_options_error: ; @NSData_dataWithContentsOfFile_options_error
 	.cfi_startproc
 ; %bb.0:
-	mov	x4, x2
-	mov	x2, x0
-Lloh33:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	x2, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.10@PAGE
-Lloh34:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.10@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$dataWithContentsOfFile:options:error:"
-	.loh AdrpLdr	Lloh33, Lloh34
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	x4, [sp, #8]
+	bl	"_objc_msgSend$dataWithContentsOfFile:options:error:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSData_dataWithContentsOfURL_options_error ; -- Begin function NSData_dataWithContentsOfURL_options_error
@@ -872,15 +1548,26 @@ Lloh34:
 _NSData_dataWithContentsOfURL_options_error: ; @NSData_dataWithContentsOfURL_options_error
 	.cfi_startproc
 ; %bb.0:
-	mov	x4, x2
-	mov	x2, x0
-Lloh35:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	x2, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.10@PAGE
-Lloh36:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.10@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$dataWithContentsOfURL:options:error:"
-	.loh AdrpLdr	Lloh35, Lloh36
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	x4, [sp, #8]
+	bl	"_objc_msgSend$dataWithContentsOfURL:options:error:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_writeToFile_atomically    ; -- Begin function rsel_writeToFile_atomically
@@ -888,9 +1575,28 @@ Lloh36:
 _rsel_writeToFile_atomically:           ; @rsel_writeToFile_atomically
 	.cfi_startproc
 ; %bb.0:
-	mov	x3, x2
-	mov	x2, x1
-	b	"_objc_msgSend$writeToFile:atomically:"
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	mov	w8, #1
+	and	w8, w2, w8
+	strb	w8, [sp, #15]
+	ldur	x0, [x29, #-8]
+	ldr	x2, [sp, #16]
+	ldrb	w8, [sp, #15]
+	and	w3, w8, #0x1
+	bl	"_objc_msgSend$writeToFile:atomically:"
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithChar        ; -- Begin function NSNumber_numberWithChar
@@ -898,13 +1604,21 @@ _rsel_writeToFile_atomically:           ; @rsel_writeToFile_atomically
 _NSNumber_numberWithChar:               ; @NSNumber_numberWithChar
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh37:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	sturb	w0, [x29, #-1]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh38:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithChar:"
-	.loh AdrpLdr	Lloh37, Lloh38
+	ldursb	w2, [x29, #-1]
+	bl	"_objc_msgSend$numberWithChar:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithUnsignedChar ; -- Begin function NSNumber_numberWithUnsignedChar
@@ -912,13 +1626,21 @@ Lloh38:
 _NSNumber_numberWithUnsignedChar:       ; @NSNumber_numberWithUnsignedChar
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh39:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	sturb	w0, [x29, #-1]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh40:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithUnsignedChar:"
-	.loh AdrpLdr	Lloh39, Lloh40
+	ldurb	w2, [x29, #-1]
+	bl	"_objc_msgSend$numberWithUnsignedChar:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithShort       ; -- Begin function NSNumber_numberWithShort
@@ -926,13 +1648,21 @@ Lloh40:
 _NSNumber_numberWithShort:              ; @NSNumber_numberWithShort
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh41:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	sturh	w0, [x29, #-2]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh42:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithShort:"
-	.loh AdrpLdr	Lloh41, Lloh42
+	ldursh	w2, [x29, #-2]
+	bl	"_objc_msgSend$numberWithShort:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithUnsignedShort ; -- Begin function NSNumber_numberWithUnsignedShort
@@ -940,13 +1670,21 @@ Lloh42:
 _NSNumber_numberWithUnsignedShort:      ; @NSNumber_numberWithUnsignedShort
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh43:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	sturh	w0, [x29, #-2]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh44:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithUnsignedShort:"
-	.loh AdrpLdr	Lloh43, Lloh44
+	ldurh	w2, [x29, #-2]
+	bl	"_objc_msgSend$numberWithUnsignedShort:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithInt         ; -- Begin function NSNumber_numberWithInt
@@ -954,13 +1692,21 @@ Lloh44:
 _NSNumber_numberWithInt:                ; @NSNumber_numberWithInt
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh45:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	stur	w0, [x29, #-4]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh46:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithInt:"
-	.loh AdrpLdr	Lloh45, Lloh46
+	ldur	w2, [x29, #-4]
+	bl	"_objc_msgSend$numberWithInt:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithUnsignedInt ; -- Begin function NSNumber_numberWithUnsignedInt
@@ -968,13 +1714,21 @@ Lloh46:
 _NSNumber_numberWithUnsignedInt:        ; @NSNumber_numberWithUnsignedInt
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh47:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	stur	w0, [x29, #-4]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh48:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithUnsignedInt:"
-	.loh AdrpLdr	Lloh47, Lloh48
+	ldur	w2, [x29, #-4]
+	bl	"_objc_msgSend$numberWithUnsignedInt:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithLongLong    ; -- Begin function NSNumber_numberWithLongLong
@@ -982,13 +1736,21 @@ Lloh48:
 _NSNumber_numberWithLongLong:           ; @NSNumber_numberWithLongLong
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh49:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh50:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithLongLong:"
-	.loh AdrpLdr	Lloh49, Lloh50
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$numberWithLongLong:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithUnsignedLongLong ; -- Begin function NSNumber_numberWithUnsignedLongLong
@@ -996,13 +1758,21 @@ Lloh50:
 _NSNumber_numberWithUnsignedLongLong:   ; @NSNumber_numberWithUnsignedLongLong
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh51:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh52:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithUnsignedLongLong:"
-	.loh AdrpLdr	Lloh51, Lloh52
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$numberWithUnsignedLongLong:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithFloat       ; -- Begin function NSNumber_numberWithFloat
@@ -1010,12 +1780,21 @@ Lloh52:
 _NSNumber_numberWithFloat:              ; @NSNumber_numberWithFloat
 	.cfi_startproc
 ; %bb.0:
-Lloh53:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	stur	s0, [x29, #-4]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh54:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithFloat:"
-	.loh AdrpLdr	Lloh53, Lloh54
+	ldur	s0, [x29, #-4]
+	bl	"_objc_msgSend$numberWithFloat:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithDouble      ; -- Begin function NSNumber_numberWithDouble
@@ -1023,12 +1802,21 @@ Lloh54:
 _NSNumber_numberWithDouble:             ; @NSNumber_numberWithDouble
 	.cfi_startproc
 ; %bb.0:
-Lloh55:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	d0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh56:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithDouble:"
-	.loh AdrpLdr	Lloh55, Lloh56
+	ldr	d0, [sp, #8]
+	bl	"_objc_msgSend$numberWithDouble:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithBool        ; -- Begin function NSNumber_numberWithBool
@@ -1036,13 +1824,24 @@ Lloh56:
 _NSNumber_numberWithBool:               ; @NSNumber_numberWithBool
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh57:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	mov	w8, #1
+	and	w8, w0, w8
+	sturb	w8, [x29, #-1]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh58:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithBool:"
-	.loh AdrpLdr	Lloh57, Lloh58
+	ldurb	w8, [x29, #-1]
+	and	w2, w8, #0x1
+	bl	"_objc_msgSend$numberWithBool:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithInteger     ; -- Begin function NSNumber_numberWithInteger
@@ -1050,13 +1849,21 @@ Lloh58:
 _NSNumber_numberWithInteger:            ; @NSNumber_numberWithInteger
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh59:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh60:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithInteger:"
-	.loh AdrpLdr	Lloh59, Lloh60
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$numberWithInteger:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSNumber_numberWithUnsignedInteger ; -- Begin function NSNumber_numberWithUnsignedInteger
@@ -1064,13 +1871,21 @@ Lloh60:
 _NSNumber_numberWithUnsignedInteger:    ; @NSNumber_numberWithUnsignedInteger
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh61:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
-Lloh62:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
-	b	"_objc_msgSend$numberWithUnsignedInteger:"
-	.loh AdrpLdr	Lloh61, Lloh62
+	ldr	x2, [sp, #8]
+	bl	"_objc_msgSend$numberWithUnsignedInteger:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_rsel_isEqualToNumber           ; -- Begin function rsel_isEqualToNumber
@@ -1078,8 +1893,23 @@ Lloh62:
 _rsel_isEqualToNumber:                  ; @rsel_isEqualToNumber
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$isEqualToNumber:"
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
+	ldr	x0, [sp, #8]
+	ldr	x2, [sp]
+	bl	"_objc_msgSend$isEqualToNumber:"
+	and	w0, w0, #0x1
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSArray_withObjs               ; -- Begin function NSArray_withObjs
@@ -1087,14 +1917,24 @@ _rsel_isEqualToNumber:                  ; @rsel_isEqualToNumber
 _NSArray_withObjs:                      ; @NSArray_withObjs
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh63:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.12@PAGE
-Lloh64:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.12@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$arrayWithObjects:count:"
-	.loh AdrpLdr	Lloh63, Lloh64
+	ldr	x2, [sp, #8]
+	ldr	x3, [sp]
+	bl	"_objc_msgSend$arrayWithObjects:count:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSArray_array                  ; -- Begin function NSArray_array
@@ -1102,12 +1942,17 @@ Lloh64:
 _NSArray_array:                         ; @NSArray_array
 	.cfi_startproc
 ; %bb.0:
-Lloh65:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.12@PAGE
-Lloh66:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.12@PAGEOFF]
-	b	_objc_msgSend$array
-	.loh AdrpLdr	Lloh65, Lloh66
+	bl	_objc_msgSend$array
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSSet_withObjs                 ; -- Begin function NSSet_withObjs
@@ -1115,14 +1960,24 @@ Lloh66:
 _NSSet_withObjs:                        ; @NSSet_withObjs
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh67:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.13@PAGE
-Lloh68:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.13@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$setWithObjects:count:"
-	.loh AdrpLdr	Lloh67, Lloh68
+	ldr	x2, [sp, #8]
+	ldr	x3, [sp]
+	bl	"_objc_msgSend$setWithObjects:count:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSSet_set                      ; -- Begin function NSSet_set
@@ -1130,12 +1985,17 @@ Lloh68:
 _NSSet_set:                             ; @NSSet_set
 	.cfi_startproc
 ; %bb.0:
-Lloh69:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.13@PAGE
-Lloh70:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.13@PAGEOFF]
-	b	_objc_msgSend$set
-	.loh AdrpLdr	Lloh69, Lloh70
+	bl	_objc_msgSend$set
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSRegularExpression_regularExpressionWithPattern_options_error ; -- Begin function NSRegularExpression_regularExpressionWithPattern_options_error
@@ -1143,15 +2003,26 @@ Lloh70:
 _NSRegularExpression_regularExpressionWithPattern_options_error: ; @NSRegularExpression_regularExpressionWithPattern_options_error
 	.cfi_startproc
 ; %bb.0:
-	mov	x4, x2
-	mov	x2, x0
-Lloh71:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	str	x8, [sp, #16]
+	str	x2, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.14@PAGE
-Lloh72:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.14@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$regularExpressionWithPattern:options:error:"
-	.loh AdrpLdr	Lloh71, Lloh72
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	x4, [sp, #8]
+	bl	"_objc_msgSend$regularExpressionWithPattern:options:error:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSString_initWithBytes_length_encoding ; -- Begin function NSString_initWithBytes_length_encoding
@@ -1159,33 +2030,27 @@ Lloh72:
 _NSString_initWithBytes_length_encoding: ; @NSString_initWithBytes_length_encoding
 	.cfi_startproc
 ; %bb.0:
-	stp	x22, x21, [sp, #-48]!           ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #16]             ; 16-byte Folded Spill
+	sub	sp, sp, #48
 	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
 	add	x29, sp, #32
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	mov	x19, x2
-	mov	x20, x1
-	mov	x21, x0
-Lloh73:
+                                        ; implicit-def: $x8
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.15@PAGE
-Lloh74:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.15@PAGEOFF]
 	bl	_objc_alloc
-	mov	x2, x21
-	mov	x3, x20
-	mov	x4, x19
+	ldr	x1, [sp]                        ; 8-byte Folded Reload
+	ldur	x2, [x29, #-8]
+	ldr	x3, [sp, #16]
+	ldr	x4, [sp, #8]
+	bl	"_objc_msgSend$initWithBytes:length:encoding:"
 	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp], #48             ; 16-byte Folded Reload
-	b	"_objc_msgSend$initWithBytes:length:encoding:"
-	.loh AdrpLdr	Lloh73, Lloh74
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSString_initWithBytesNoCopy_length_encoding_freeWhenDone ; -- Begin function NSString_initWithBytesNoCopy_length_encoding_freeWhenDone
@@ -1193,35 +2058,32 @@ Lloh74:
 _NSString_initWithBytesNoCopy_length_encoding_freeWhenDone: ; @NSString_initWithBytesNoCopy_length_encoding_freeWhenDone
 	.cfi_startproc
 ; %bb.0:
-	stp	x22, x21, [sp, #-48]!           ; 16-byte Folded Spill
-	stp	x20, x19, [sp, #16]             ; 16-byte Folded Spill
-	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
-	add	x29, sp, #32
+	sub	sp, sp, #64
+	stp	x29, x30, [sp, #48]             ; 16-byte Folded Spill
+	add	x29, sp, #48
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-	.cfi_offset w21, -40
-	.cfi_offset w22, -48
-	mov	x19, x3
-	mov	x20, x2
-	mov	x21, x1
-	mov	x22, x0
-Lloh75:
+                                        ; implicit-def: $x8
+	stur	x0, [x29, #-8]
+	stur	x1, [x29, #-16]
+	str	x2, [sp, #24]
+	mov	w8, #1
+	and	w8, w3, w8
+	strb	w8, [sp, #23]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.15@PAGE
-Lloh76:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.15@PAGEOFF]
 	bl	_objc_alloc
-	mov	x2, x22
-	mov	x3, x21
-	mov	x4, x20
-	mov	x5, x19
-	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x22, x21, [sp], #48             ; 16-byte Folded Reload
-	b	"_objc_msgSend$initWithBytesNoCopy:length:encoding:freeWhenDone:"
-	.loh AdrpLdr	Lloh75, Lloh76
+	ldr	x1, [sp, #8]                    ; 8-byte Folded Reload
+	ldur	x2, [x29, #-8]
+	ldur	x3, [x29, #-16]
+	ldr	x4, [sp, #24]
+	ldrb	w8, [sp, #23]
+	and	w5, w8, #0x1
+	bl	"_objc_msgSend$initWithBytesNoCopy:length:encoding:freeWhenDone:"
+	ldp	x29, x30, [sp, #48]             ; 16-byte Folded Reload
+	add	sp, sp, #64
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURL_fileURLWithPath_isDirectory_relativeToURL ; -- Begin function NSURL_fileURLWithPath_isDirectory_relativeToURL
@@ -1229,15 +2091,29 @@ Lloh76:
 _NSURL_fileURLWithPath_isDirectory_relativeToURL: ; @NSURL_fileURLWithPath_isDirectory_relativeToURL
 	.cfi_startproc
 ; %bb.0:
-	mov	x4, x2
-	mov	x2, x0
-Lloh77:
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	stur	x0, [x29, #-8]
+	mov	w9, #1
+	and	w8, w8, w9
+	sturb	w8, [x29, #-9]
+	str	x2, [sp, #8]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.16@PAGE
-Lloh78:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.16@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$fileURLWithPath:isDirectory:relativeToURL:"
-	.loh AdrpLdr	Lloh77, Lloh78
+	ldur	x2, [x29, #-8]
+	ldurb	w8, [x29, #-9]
+	ldr	x4, [sp, #8]
+	and	w3, w8, #0x1
+	bl	"_objc_msgSend$fileURLWithPath:isDirectory:relativeToURL:"
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSURL_URLWithString_relativeToURL ; -- Begin function NSURL_URLWithString_relativeToURL
@@ -1245,22 +2121,24 @@ Lloh78:
 _NSURL_URLWithString_relativeToURL:     ; @NSURL_URLWithString_relativeToURL
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x0
-Lloh79:
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
+	add	x29, sp, #16
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	mov	x8, x1
+                                        ; implicit-def: $x1
+	str	x0, [sp, #8]
+	str	x8, [sp]
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.16@PAGE
-Lloh80:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.16@PAGEOFF]
-	mov	x3, x1
-	b	"_objc_msgSend$URLWithString:relativeToURL:"
-	.loh AdrpLdr	Lloh79, Lloh80
-	.cfi_endproc
-                                        ; -- End function
-	.globl	_rsel_absoluteString            ; -- Begin function rsel_absoluteString
-	.p2align	2
-_rsel_absoluteString:                   ; @rsel_absoluteString
-	.cfi_startproc
-; %bb.0:
-	b	_objc_msgSend$absoluteString
+	ldr	x2, [sp, #8]
+	ldr	x3, [sp]
+	bl	"_objc_msgSend$URLWithString:relativeToURL:"
+	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
+	add	sp, sp, #32
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.globl	_NSDictionary_dictionary        ; -- Begin function NSDictionary_dictionary
@@ -1268,397 +2146,128 @@ _rsel_absoluteString:                   ; @rsel_absoluteString
 _NSDictionary_dictionary:               ; @NSDictionary_dictionary
 	.cfi_startproc
 ; %bb.0:
-Lloh81:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
 	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.17@PAGE
-Lloh82:
 	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.17@PAGEOFF]
-	b	_objc_msgSend$dictionary
-	.loh AdrpLdr	Lloh81, Lloh82
+	bl	_objc_msgSend$dictionary
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
-	.globl	_rsel_objectAtIndex             ; -- Begin function rsel_objectAtIndex
+	.globl	_foo                            ; -- Begin function foo
 	.p2align	2
-_rsel_objectAtIndex:                    ; @rsel_objectAtIndex
+_foo:                                   ; @foo
 	.cfi_startproc
 ; %bb.0:
-	mov	x2, x1
-	b	"_objc_msgSend$objectAtIndex:"
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	adrp	x8, _ns_number@GOTPAGE
+	ldr	x8, [x8, _ns_number@GOTPAGEOFF]
+	ldr	x0, [x8]
+	mov	x2, #5
+	bl	"_objc_msgSend$numberWithInteger:"
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
+	.cfi_endproc
+                                        ; -- End function
+	.globl	_foo2                           ; -- Begin function foo2
+	.p2align	2
+_foo2:                                  ; @foo2
+	.cfi_startproc
+; %bb.0:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+                                        ; implicit-def: $x1
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
+	mov	x2, #5
+	bl	"_objc_msgSend$numberWithInteger:"
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.p2align	2                               ; -- Begin function common_initializer
 _common_initializer:                    ; @common_initializer
 	.cfi_startproc
 ; %bb.0:
-Lloh83:
+	stp	x29, x30, [sp, #-16]!           ; 16-byte Folded Spill
+	mov	x29, sp
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	adrp	x8, _common_initializer.initialized@PAGE
+	ldr	w8, [x8, _common_initializer.initialized@PAGEOFF]
+	cbnz	w8, LBB95_2
+	b	LBB95_1
+LBB95_1:
 	adrp	x8, _OBJC_SELECTOR_REFERENCES_@PAGE
-Lloh84:
 	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_@PAGEOFF]
-Lloh85:
-	adrp	x9, _ns_length@GOTPAGE
-Lloh86:
-	ldr	x9, [x9, _ns_length@GOTPAGEOFF]
-Lloh87:
+	adrp	x9, _ns_isEqual@GOTPAGE
+	ldr	x9, [x9, _ns_isEqual@GOTPAGEOFF]
 	str	x8, [x9]
-Lloh88:
 	adrp	x8, _OBJC_SELECTOR_REFERENCES_.19@PAGE
-Lloh89:
 	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.19@PAGEOFF]
-Lloh90:
-	adrp	x9, _ns_bytes@GOTPAGE
-Lloh91:
-	ldr	x9, [x9, _ns_bytes@GOTPAGEOFF]
-Lloh92:
-	str	x8, [x9]
-Lloh93:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.21@PAGE
-Lloh94:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.21@PAGEOFF]
-Lloh95:
-	adrp	x9, _ns_charValue@GOTPAGE
-Lloh96:
-	ldr	x9, [x9, _ns_charValue@GOTPAGEOFF]
-Lloh97:
-	str	x8, [x9]
-Lloh98:
-	adrp	x8, _ns_unsignedCharValue@GOTPAGE
-Lloh99:
-	ldr	x8, [x8, _ns_unsignedCharValue@GOTPAGEOFF]
-Lloh100:
-	adrp	x9, _OBJC_SELECTOR_REFERENCES_.23@PAGE
-Lloh101:
-	ldr	x9, [x9, _OBJC_SELECTOR_REFERENCES_.23@PAGEOFF]
-Lloh102:
-	str	x9, [x8]
-Lloh103:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.25@PAGE
-Lloh104:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.25@PAGEOFF]
-Lloh105:
-	adrp	x9, _ns_shortValue@GOTPAGE
-Lloh106:
-	ldr	x9, [x9, _ns_shortValue@GOTPAGEOFF]
-Lloh107:
-	str	x8, [x9]
-Lloh108:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.27@PAGE
-Lloh109:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.27@PAGEOFF]
-Lloh110:
-	adrp	x9, _ns_unsignedShortValue@GOTPAGE
-Lloh111:
-	ldr	x9, [x9, _ns_unsignedShortValue@GOTPAGEOFF]
-Lloh112:
-	str	x8, [x9]
-Lloh113:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.29@PAGE
-Lloh114:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.29@PAGEOFF]
-Lloh115:
-	adrp	x9, _ns_intValue@GOTPAGE
-Lloh116:
-	ldr	x9, [x9, _ns_intValue@GOTPAGEOFF]
-Lloh117:
-	str	x8, [x9]
-Lloh118:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.31@PAGE
-Lloh119:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.31@PAGEOFF]
-Lloh120:
-	adrp	x9, _ns_unsignedIntValue@GOTPAGE
-Lloh121:
-	ldr	x9, [x9, _ns_unsignedIntValue@GOTPAGEOFF]
-Lloh122:
-	str	x8, [x9]
-Lloh123:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.33@PAGE
-Lloh124:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.33@PAGEOFF]
-Lloh125:
-	adrp	x9, _ns_longLongValue@GOTPAGE
-Lloh126:
-	ldr	x9, [x9, _ns_longLongValue@GOTPAGEOFF]
-Lloh127:
-	str	x8, [x9]
-Lloh128:
-	adrp	x8, _ns_unsignedLongLongValue@GOTPAGE
-Lloh129:
-	ldr	x8, [x8, _ns_unsignedLongLongValue@GOTPAGEOFF]
-Lloh130:
-	adrp	x9, _OBJC_SELECTOR_REFERENCES_.35@PAGE
-Lloh131:
-	ldr	x9, [x9, _OBJC_SELECTOR_REFERENCES_.35@PAGEOFF]
-Lloh132:
-	str	x9, [x8]
-Lloh133:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.37@PAGE
-Lloh134:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.37@PAGEOFF]
-Lloh135:
-	adrp	x9, _ns_floatValue@GOTPAGE
-Lloh136:
-	ldr	x9, [x9, _ns_floatValue@GOTPAGEOFF]
-Lloh137:
-	str	x8, [x9]
-Lloh138:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.39@PAGE
-Lloh139:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.39@PAGEOFF]
-Lloh140:
-	adrp	x9, _ns_doubleValue@GOTPAGE
-Lloh141:
-	ldr	x9, [x9, _ns_doubleValue@GOTPAGEOFF]
-Lloh142:
-	str	x8, [x9]
-Lloh143:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.41@PAGE
-Lloh144:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.41@PAGEOFF]
-Lloh145:
-	adrp	x9, _ns_boolValue@GOTPAGE
-Lloh146:
-	ldr	x9, [x9, _ns_boolValue@GOTPAGEOFF]
-Lloh147:
-	str	x8, [x9]
-Lloh148:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.43@PAGE
-Lloh149:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.43@PAGEOFF]
-Lloh150:
-	adrp	x9, _ns_integerValue@GOTPAGE
-Lloh151:
-	ldr	x9, [x9, _ns_integerValue@GOTPAGEOFF]
-Lloh152:
-	str	x8, [x9]
-Lloh153:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.45@PAGE
-Lloh154:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.45@PAGEOFF]
-Lloh155:
-	adrp	x9, _ns_unsignedIntegerValue@GOTPAGE
-Lloh156:
-	ldr	x9, [x9, _ns_unsignedIntegerValue@GOTPAGEOFF]
-Lloh157:
-	str	x8, [x9]
-Lloh158:
-	adrp	x8, _ns_isEqual@GOTPAGE
-Lloh159:
-	ldr	x8, [x8, _ns_isEqual@GOTPAGEOFF]
-Lloh160:
-	adrp	x9, _OBJC_SELECTOR_REFERENCES_.47@PAGE
-Lloh161:
-	ldr	x9, [x9, _OBJC_SELECTOR_REFERENCES_.47@PAGEOFF]
-Lloh162:
-	str	x9, [x8]
-Lloh163:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.49@PAGE
-Lloh164:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.49@PAGEOFF]
-Lloh165:
-	adrp	x9, _ns_count@GOTPAGE
-Lloh166:
-	ldr	x9, [x9, _ns_count@GOTPAGEOFF]
-Lloh167:
-	str	x8, [x9]
-Lloh168:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.51@PAGE
-Lloh169:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.51@PAGEOFF]
-Lloh170:
-	adrp	x9, _ns_objectAtIndex_index@GOTPAGE
-Lloh171:
-	ldr	x9, [x9, _ns_objectAtIndex_index@GOTPAGEOFF]
-Lloh172:
-	str	x8, [x9]
-Lloh173:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.53@PAGE
-Lloh174:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.53@PAGEOFF]
-Lloh175:
 	adrp	x9, _ns_resultType@GOTPAGE
-Lloh176:
 	ldr	x9, [x9, _ns_resultType@GOTPAGEOFF]
-Lloh177:
 	str	x8, [x9]
-Lloh178:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.55@PAGE
-Lloh179:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.55@PAGEOFF]
-Lloh180:
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.21@PAGE
+	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.21@PAGEOFF]
 	adrp	x9, _ns_range@GOTPAGE
-Lloh181:
 	ldr	x9, [x9, _ns_range@GOTPAGEOFF]
-Lloh182:
 	str	x8, [x9]
-Lloh183:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.57@PAGE
-Lloh184:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.57@PAGEOFF]
-Lloh185:
-	adrp	x9, _ns_lowercaseString@GOTPAGE
-Lloh186:
-	ldr	x9, [x9, _ns_lowercaseString@GOTPAGEOFF]
-Lloh187:
-	str	x8, [x9]
-Lloh188:
-	adrp	x8, _ns_substringWithRange@GOTPAGE
-Lloh189:
-	ldr	x8, [x8, _ns_substringWithRange@GOTPAGEOFF]
-Lloh190:
-	adrp	x9, _OBJC_SELECTOR_REFERENCES_.59@PAGE
-Lloh191:
-	ldr	x9, [x9, _OBJC_SELECTOR_REFERENCES_.59@PAGEOFF]
-Lloh192:
-	str	x9, [x8]
-Lloh193:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.61@PAGE
-Lloh194:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.61@PAGEOFF]
-Lloh195:
-	adrp	x9, _ns_mutableCopy@GOTPAGE
-Lloh196:
-	ldr	x9, [x9, _ns_mutableCopy@GOTPAGEOFF]
-Lloh197:
-	str	x8, [x9]
-Lloh198:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.63@PAGE
-Lloh199:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.63@PAGEOFF]
-Lloh200:
-	adrp	x9, _ns_isEqualToString@GOTPAGE
-Lloh201:
-	ldr	x9, [x9, _ns_isEqualToString@GOTPAGEOFF]
-Lloh202:
-	str	x8, [x9]
-Lloh203:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.65@PAGE
-Lloh204:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.65@PAGEOFF]
-Lloh205:
-	adrp	x9, _ns_code@GOTPAGE
-Lloh206:
-	ldr	x9, [x9, _ns_code@GOTPAGEOFF]
-Lloh207:
-	str	x8, [x9]
-Lloh208:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.67@PAGE
-Lloh209:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.67@PAGEOFF]
-Lloh210:
-	adrp	x9, _ns_domain@GOTPAGE
-Lloh211:
-	ldr	x9, [x9, _ns_domain@GOTPAGEOFF]
-Lloh212:
-	str	x8, [x9]
-Lloh213:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.69@PAGE
-Lloh214:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.69@PAGEOFF]
-Lloh215:
-	adrp	x9, _ns_countByEnumeratingWithState_objects_count@GOTPAGE
-Lloh216:
-	ldr	x9, [x9, _ns_countByEnumeratingWithState_objects_count@GOTPAGEOFF]
-Lloh217:
-	str	x8, [x9]
-Lloh218:
-	adrp	x8, _ns_respondsToSelector@GOTPAGE
-Lloh219:
-	ldr	x8, [x8, _ns_respondsToSelector@GOTPAGEOFF]
-Lloh220:
-	adrp	x9, _OBJC_SELECTOR_REFERENCES_.71@PAGE
-Lloh221:
-	ldr	x9, [x9, _OBJC_SELECTOR_REFERENCES_.71@PAGEOFF]
-Lloh222:
-	str	x9, [x8]
-Lloh223:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.73@PAGE
-Lloh224:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.73@PAGEOFF]
-Lloh225:
-	adrp	x9, _ns_cStringUsingEncoding@GOTPAGE
-Lloh226:
-	ldr	x9, [x9, _ns_cStringUsingEncoding@GOTPAGEOFF]
-Lloh227:
-	str	x8, [x9]
-Lloh228:
-	adrp	x8, _OBJC_SELECTOR_REFERENCES_.75@PAGE
-Lloh229:
-	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.75@PAGEOFF]
-Lloh230:
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.23@PAGE
+	ldr	x8, [x8, _OBJC_SELECTOR_REFERENCES_.23@PAGEOFF]
 	adrp	x9, _ns_lengthOfBytesUsingEncoding@GOTPAGE
-Lloh231:
 	ldr	x9, [x9, _ns_lengthOfBytesUsingEncoding@GOTPAGEOFF]
-Lloh232:
 	str	x8, [x9]
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGE
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.11@PAGEOFF]
+	bl	_objc_opt_class
+	adrp	x8, _ns_number@GOTPAGE
+	ldr	x8, [x8, _ns_number@GOTPAGEOFF]
+	str	x0, [x8]
+	b	LBB95_2
+LBB95_2:
+	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
 	ret
-	.loh AdrpLdrGotStr	Lloh230, Lloh231, Lloh232
-	.loh AdrpLdr	Lloh228, Lloh229
-	.loh AdrpLdrGotStr	Lloh225, Lloh226, Lloh227
-	.loh AdrpLdr	Lloh223, Lloh224
-	.loh AdrpLdr	Lloh220, Lloh221
-	.loh AdrpLdrGotStr	Lloh218, Lloh219, Lloh222
-	.loh AdrpLdrGotStr	Lloh215, Lloh216, Lloh217
-	.loh AdrpLdr	Lloh213, Lloh214
-	.loh AdrpLdrGotStr	Lloh210, Lloh211, Lloh212
-	.loh AdrpLdr	Lloh208, Lloh209
-	.loh AdrpLdrGotStr	Lloh205, Lloh206, Lloh207
-	.loh AdrpLdr	Lloh203, Lloh204
-	.loh AdrpLdrGotStr	Lloh200, Lloh201, Lloh202
-	.loh AdrpLdr	Lloh198, Lloh199
-	.loh AdrpLdrGotStr	Lloh195, Lloh196, Lloh197
-	.loh AdrpLdr	Lloh193, Lloh194
-	.loh AdrpLdr	Lloh190, Lloh191
-	.loh AdrpLdrGotStr	Lloh188, Lloh189, Lloh192
-	.loh AdrpLdrGotStr	Lloh185, Lloh186, Lloh187
-	.loh AdrpLdr	Lloh183, Lloh184
-	.loh AdrpLdrGotStr	Lloh180, Lloh181, Lloh182
-	.loh AdrpLdr	Lloh178, Lloh179
-	.loh AdrpLdrGotStr	Lloh175, Lloh176, Lloh177
-	.loh AdrpLdr	Lloh173, Lloh174
-	.loh AdrpLdrGotStr	Lloh170, Lloh171, Lloh172
-	.loh AdrpLdr	Lloh168, Lloh169
-	.loh AdrpLdrGotStr	Lloh165, Lloh166, Lloh167
-	.loh AdrpLdr	Lloh163, Lloh164
-	.loh AdrpLdr	Lloh160, Lloh161
-	.loh AdrpLdrGotStr	Lloh158, Lloh159, Lloh162
-	.loh AdrpLdrGotStr	Lloh155, Lloh156, Lloh157
-	.loh AdrpLdr	Lloh153, Lloh154
-	.loh AdrpLdrGotStr	Lloh150, Lloh151, Lloh152
-	.loh AdrpLdr	Lloh148, Lloh149
-	.loh AdrpLdrGotStr	Lloh145, Lloh146, Lloh147
-	.loh AdrpLdr	Lloh143, Lloh144
-	.loh AdrpLdrGotStr	Lloh140, Lloh141, Lloh142
-	.loh AdrpLdr	Lloh138, Lloh139
-	.loh AdrpLdrGotStr	Lloh135, Lloh136, Lloh137
-	.loh AdrpLdr	Lloh133, Lloh134
-	.loh AdrpLdr	Lloh130, Lloh131
-	.loh AdrpLdrGotStr	Lloh128, Lloh129, Lloh132
-	.loh AdrpLdrGotStr	Lloh125, Lloh126, Lloh127
-	.loh AdrpLdr	Lloh123, Lloh124
-	.loh AdrpLdrGotStr	Lloh120, Lloh121, Lloh122
-	.loh AdrpLdr	Lloh118, Lloh119
-	.loh AdrpLdrGotStr	Lloh115, Lloh116, Lloh117
-	.loh AdrpLdr	Lloh113, Lloh114
-	.loh AdrpLdrGotStr	Lloh110, Lloh111, Lloh112
-	.loh AdrpLdr	Lloh108, Lloh109
-	.loh AdrpLdrGotStr	Lloh105, Lloh106, Lloh107
-	.loh AdrpLdr	Lloh103, Lloh104
-	.loh AdrpLdr	Lloh100, Lloh101
-	.loh AdrpLdrGotStr	Lloh98, Lloh99, Lloh102
-	.loh AdrpLdrGotStr	Lloh95, Lloh96, Lloh97
-	.loh AdrpLdr	Lloh93, Lloh94
-	.loh AdrpLdrGotStr	Lloh90, Lloh91, Lloh92
-	.loh AdrpLdr	Lloh88, Lloh89
-	.loh AdrpLdrGotStr	Lloh85, Lloh86, Lloh87
-	.loh AdrpLdr	Lloh83, Lloh84
 	.cfi_endproc
                                         ; -- End function
 	.p2align	2                               ; -- Begin function -[CidreMachPortDelegate handleMachMessage:]
 "-[CidreMachPortDelegate handleMachMessage:]": ; @"\01-[CidreMachPortDelegate handleMachMessage:]"
 	.cfi_startproc
 ; %bb.0:
-	mov	x1, x2
-	ldp	x0, x2, [x0, #8]
-	br	x2
+	sub	sp, sp, #48
+	stp	x29, x30, [sp, #32]             ; 16-byte Folded Spill
+	add	x29, sp, #32
+	.cfi_def_cfa w29, 16
+	.cfi_offset w30, -8
+	.cfi_offset w29, -16
+	stur	x0, [x29, #-8]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	ldur	x8, [x29, #-8]
+	ldr	x8, [x8, #16]
+	str	x8, [sp]
+	ldr	x8, [sp]
+	ldur	x9, [x29, #-8]
+	ldr	x0, [x9, #8]
+	ldr	x1, [sp, #8]
+	blr	x8
+	ldp	x29, x30, [sp, #32]             ; 16-byte Folded Reload
+	add	sp, sp, #48
+	ret
 	.cfi_endproc
                                         ; -- End function
 	.section	__DATA,__objc_classrefs,regular,no_dead_strip
@@ -1766,317 +2375,59 @@ _OBJC_CLASSLIST_REFERENCES_$_.16:
 _OBJC_CLASSLIST_REFERENCES_$_.17:
 	.quad	_OBJC_CLASS_$_NSDictionary
 
+	.comm	_ns_number,8,3                  ; @ns_number
+.zerofill __DATA,__bss,_common_initializer.initialized,4,2 ; @common_initializer.initialized
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_:                  ; @OBJC_METH_VAR_NAME_
-	.asciz	"length"
+	.asciz	"isEqual:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_
 _OBJC_SELECTOR_REFERENCES_:
 	.quad	l_OBJC_METH_VAR_NAME_
 
-	.comm	_ns_length,8,3                  ; @ns_length
+	.comm	_ns_isEqual,8,3                 ; @ns_isEqual
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.18:               ; @OBJC_METH_VAR_NAME_.18
-	.asciz	"bytes"
+	.asciz	"resultType"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.19
 _OBJC_SELECTOR_REFERENCES_.19:
 	.quad	l_OBJC_METH_VAR_NAME_.18
 
-	.comm	_ns_bytes,8,3                   ; @ns_bytes
+	.comm	_ns_resultType,8,3              ; @ns_resultType
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.20:               ; @OBJC_METH_VAR_NAME_.20
-	.asciz	"charValue"
+	.asciz	"range"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.21
 _OBJC_SELECTOR_REFERENCES_.21:
 	.quad	l_OBJC_METH_VAR_NAME_.20
 
-	.comm	_ns_charValue,8,3               ; @ns_charValue
+	.comm	_ns_range,8,3                   ; @ns_range
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_METH_VAR_NAME_.22:               ; @OBJC_METH_VAR_NAME_.22
-	.asciz	"unsignedCharValue"
+	.asciz	"lengthOfBytesUsingEncoding:"
 
 	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
 	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.23
 _OBJC_SELECTOR_REFERENCES_.23:
 	.quad	l_OBJC_METH_VAR_NAME_.22
 
-	.comm	_ns_unsignedCharValue,8,3       ; @ns_unsignedCharValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.24:               ; @OBJC_METH_VAR_NAME_.24
-	.asciz	"shortValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.25
-_OBJC_SELECTOR_REFERENCES_.25:
-	.quad	l_OBJC_METH_VAR_NAME_.24
-
-	.comm	_ns_shortValue,8,3              ; @ns_shortValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.26:               ; @OBJC_METH_VAR_NAME_.26
-	.asciz	"unsignedShortValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.27
-_OBJC_SELECTOR_REFERENCES_.27:
-	.quad	l_OBJC_METH_VAR_NAME_.26
-
-	.comm	_ns_unsignedShortValue,8,3      ; @ns_unsignedShortValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.28:               ; @OBJC_METH_VAR_NAME_.28
-	.asciz	"intValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.29
-_OBJC_SELECTOR_REFERENCES_.29:
-	.quad	l_OBJC_METH_VAR_NAME_.28
-
-	.comm	_ns_intValue,8,3                ; @ns_intValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.30:               ; @OBJC_METH_VAR_NAME_.30
-	.asciz	"unsignedIntValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.31
-_OBJC_SELECTOR_REFERENCES_.31:
-	.quad	l_OBJC_METH_VAR_NAME_.30
-
-	.comm	_ns_unsignedIntValue,8,3        ; @ns_unsignedIntValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.32:               ; @OBJC_METH_VAR_NAME_.32
-	.asciz	"longLongValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.33
-_OBJC_SELECTOR_REFERENCES_.33:
-	.quad	l_OBJC_METH_VAR_NAME_.32
-
-	.comm	_ns_longLongValue,8,3           ; @ns_longLongValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.34:               ; @OBJC_METH_VAR_NAME_.34
-	.asciz	"unsignedLongLongValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.35
-_OBJC_SELECTOR_REFERENCES_.35:
-	.quad	l_OBJC_METH_VAR_NAME_.34
-
-	.comm	_ns_unsignedLongLongValue,8,3   ; @ns_unsignedLongLongValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.36:               ; @OBJC_METH_VAR_NAME_.36
-	.asciz	"floatValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.37
-_OBJC_SELECTOR_REFERENCES_.37:
-	.quad	l_OBJC_METH_VAR_NAME_.36
-
-	.comm	_ns_floatValue,8,3              ; @ns_floatValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.38:               ; @OBJC_METH_VAR_NAME_.38
-	.asciz	"doubleValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.39
-_OBJC_SELECTOR_REFERENCES_.39:
-	.quad	l_OBJC_METH_VAR_NAME_.38
-
-	.comm	_ns_doubleValue,8,3             ; @ns_doubleValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.40:               ; @OBJC_METH_VAR_NAME_.40
-	.asciz	"boolValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.41
-_OBJC_SELECTOR_REFERENCES_.41:
-	.quad	l_OBJC_METH_VAR_NAME_.40
-
-	.comm	_ns_boolValue,8,3               ; @ns_boolValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.42:               ; @OBJC_METH_VAR_NAME_.42
-	.asciz	"integerValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.43
-_OBJC_SELECTOR_REFERENCES_.43:
-	.quad	l_OBJC_METH_VAR_NAME_.42
-
-	.comm	_ns_integerValue,8,3            ; @ns_integerValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.44:               ; @OBJC_METH_VAR_NAME_.44
-	.asciz	"unsignedIntegerValue"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.45
-_OBJC_SELECTOR_REFERENCES_.45:
-	.quad	l_OBJC_METH_VAR_NAME_.44
-
-	.comm	_ns_unsignedIntegerValue,8,3    ; @ns_unsignedIntegerValue
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.46:               ; @OBJC_METH_VAR_NAME_.46
-	.asciz	"isEqual:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.47
-_OBJC_SELECTOR_REFERENCES_.47:
-	.quad	l_OBJC_METH_VAR_NAME_.46
-
-	.comm	_ns_isEqual,8,3                 ; @ns_isEqual
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.48:               ; @OBJC_METH_VAR_NAME_.48
-	.asciz	"count"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.49
-_OBJC_SELECTOR_REFERENCES_.49:
-	.quad	l_OBJC_METH_VAR_NAME_.48
-
-	.comm	_ns_count,8,3                   ; @ns_count
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.50:               ; @OBJC_METH_VAR_NAME_.50
-	.asciz	"objectAtIndex:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.51
-_OBJC_SELECTOR_REFERENCES_.51:
-	.quad	l_OBJC_METH_VAR_NAME_.50
-
-	.comm	_ns_objectAtIndex_index,8,3     ; @ns_objectAtIndex_index
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.52:               ; @OBJC_METH_VAR_NAME_.52
-	.asciz	"resultType"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.53
-_OBJC_SELECTOR_REFERENCES_.53:
-	.quad	l_OBJC_METH_VAR_NAME_.52
-
-	.comm	_ns_resultType,8,3              ; @ns_resultType
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.54:               ; @OBJC_METH_VAR_NAME_.54
-	.asciz	"range"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.55
-_OBJC_SELECTOR_REFERENCES_.55:
-	.quad	l_OBJC_METH_VAR_NAME_.54
-
-	.comm	_ns_range,8,3                   ; @ns_range
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.56:               ; @OBJC_METH_VAR_NAME_.56
-	.asciz	"lowercaseString"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.57
-_OBJC_SELECTOR_REFERENCES_.57:
-	.quad	l_OBJC_METH_VAR_NAME_.56
-
-	.comm	_ns_lowercaseString,8,3         ; @ns_lowercaseString
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.58:               ; @OBJC_METH_VAR_NAME_.58
-	.asciz	"substringWithRange:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.59
-_OBJC_SELECTOR_REFERENCES_.59:
-	.quad	l_OBJC_METH_VAR_NAME_.58
-
-	.comm	_ns_substringWithRange,8,3      ; @ns_substringWithRange
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.60:               ; @OBJC_METH_VAR_NAME_.60
-	.asciz	"mutableCopy"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.61
-_OBJC_SELECTOR_REFERENCES_.61:
-	.quad	l_OBJC_METH_VAR_NAME_.60
-
-	.comm	_ns_mutableCopy,8,3             ; @ns_mutableCopy
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.62:               ; @OBJC_METH_VAR_NAME_.62
-	.asciz	"isEqualToString:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.63
-_OBJC_SELECTOR_REFERENCES_.63:
-	.quad	l_OBJC_METH_VAR_NAME_.62
-
-	.comm	_ns_isEqualToString,8,3         ; @ns_isEqualToString
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.64:               ; @OBJC_METH_VAR_NAME_.64
-	.asciz	"code"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.65
-_OBJC_SELECTOR_REFERENCES_.65:
-	.quad	l_OBJC_METH_VAR_NAME_.64
-
-	.comm	_ns_code,8,3                    ; @ns_code
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.66:               ; @OBJC_METH_VAR_NAME_.66
-	.asciz	"domain"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.67
-_OBJC_SELECTOR_REFERENCES_.67:
-	.quad	l_OBJC_METH_VAR_NAME_.66
-
-	.comm	_ns_domain,8,3                  ; @ns_domain
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.68:               ; @OBJC_METH_VAR_NAME_.68
-	.asciz	"countByEnumeratingWithState:objects:count:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.69
-_OBJC_SELECTOR_REFERENCES_.69:
-	.quad	l_OBJC_METH_VAR_NAME_.68
-
-	.comm	_ns_countByEnumeratingWithState_objects_count,8,3 ; @ns_countByEnumeratingWithState_objects_count
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.70:               ; @OBJC_METH_VAR_NAME_.70
-	.asciz	"respondsToSelector:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.71
-_OBJC_SELECTOR_REFERENCES_.71:
-	.quad	l_OBJC_METH_VAR_NAME_.70
-
-	.comm	_ns_respondsToSelector,8,3      ; @ns_respondsToSelector
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.72:               ; @OBJC_METH_VAR_NAME_.72
-	.asciz	"cStringUsingEncoding:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.73
-_OBJC_SELECTOR_REFERENCES_.73:
-	.quad	l_OBJC_METH_VAR_NAME_.72
-
-	.comm	_ns_cStringUsingEncoding,8,3    ; @ns_cStringUsingEncoding
-	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.74:               ; @OBJC_METH_VAR_NAME_.74
-	.asciz	"lengthOfBytesUsingEncoding:"
-
-	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
-	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.75
-_OBJC_SELECTOR_REFERENCES_.75:
-	.quad	l_OBJC_METH_VAR_NAME_.74
-
 	.comm	_ns_lengthOfBytesUsingEncoding,8,3 ; @ns_lengthOfBytesUsingEncoding
 	.section	__TEXT,__objc_classname,cstring_literals
 l_OBJC_CLASS_NAME_:                     ; @OBJC_CLASS_NAME_
 	.asciz	"CidreMachPortDelegate"
 
-l_OBJC_CLASS_NAME_.76:                  ; @OBJC_CLASS_NAME_.76
+l_OBJC_CLASS_NAME_.24:                  ; @OBJC_CLASS_NAME_.24
 	.asciz	"NSMachPortDelegate"
 
-l_OBJC_CLASS_NAME_.77:                  ; @OBJC_CLASS_NAME_.77
+l_OBJC_CLASS_NAME_.25:                  ; @OBJC_CLASS_NAME_.25
 	.asciz	"NSPortDelegate"
 
-l_OBJC_CLASS_NAME_.78:                  ; @OBJC_CLASS_NAME_.78
+l_OBJC_CLASS_NAME_.26:                  ; @OBJC_CLASS_NAME_.26
 	.asciz	"NSObject"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
@@ -2084,110 +2435,113 @@ l_OBJC_METH_VAR_TYPE_:                  ; @OBJC_METH_VAR_TYPE_
 	.asciz	"B24@0:8@16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.79:               ; @OBJC_METH_VAR_NAME_.79
+l_OBJC_METH_VAR_NAME_.27:               ; @OBJC_METH_VAR_NAME_.27
 	.asciz	"class"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.80:               ; @OBJC_METH_VAR_TYPE_.80
+l_OBJC_METH_VAR_TYPE_.28:               ; @OBJC_METH_VAR_TYPE_.28
 	.asciz	"#16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.81:               ; @OBJC_METH_VAR_NAME_.81
+l_OBJC_METH_VAR_NAME_.29:               ; @OBJC_METH_VAR_NAME_.29
 	.asciz	"self"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.82:               ; @OBJC_METH_VAR_TYPE_.82
+l_OBJC_METH_VAR_TYPE_.30:               ; @OBJC_METH_VAR_TYPE_.30
 	.asciz	"@16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.83:               ; @OBJC_METH_VAR_NAME_.83
+l_OBJC_METH_VAR_NAME_.31:               ; @OBJC_METH_VAR_NAME_.31
 	.asciz	"performSelector:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.84:               ; @OBJC_METH_VAR_TYPE_.84
+l_OBJC_METH_VAR_TYPE_.32:               ; @OBJC_METH_VAR_TYPE_.32
 	.asciz	"@24@0:8:16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.85:               ; @OBJC_METH_VAR_NAME_.85
+l_OBJC_METH_VAR_NAME_.33:               ; @OBJC_METH_VAR_NAME_.33
 	.asciz	"performSelector:withObject:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.86:               ; @OBJC_METH_VAR_TYPE_.86
+l_OBJC_METH_VAR_TYPE_.34:               ; @OBJC_METH_VAR_TYPE_.34
 	.asciz	"@32@0:8:16@24"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.87:               ; @OBJC_METH_VAR_NAME_.87
+l_OBJC_METH_VAR_NAME_.35:               ; @OBJC_METH_VAR_NAME_.35
 	.asciz	"performSelector:withObject:withObject:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.88:               ; @OBJC_METH_VAR_TYPE_.88
+l_OBJC_METH_VAR_TYPE_.36:               ; @OBJC_METH_VAR_TYPE_.36
 	.asciz	"@40@0:8:16@24@32"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.89:               ; @OBJC_METH_VAR_NAME_.89
+l_OBJC_METH_VAR_NAME_.37:               ; @OBJC_METH_VAR_NAME_.37
 	.asciz	"isProxy"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.90:               ; @OBJC_METH_VAR_TYPE_.90
+l_OBJC_METH_VAR_TYPE_.38:               ; @OBJC_METH_VAR_TYPE_.38
 	.asciz	"B16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.91:               ; @OBJC_METH_VAR_NAME_.91
+l_OBJC_METH_VAR_NAME_.39:               ; @OBJC_METH_VAR_NAME_.39
 	.asciz	"isKindOfClass:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.92:               ; @OBJC_METH_VAR_TYPE_.92
+l_OBJC_METH_VAR_TYPE_.40:               ; @OBJC_METH_VAR_TYPE_.40
 	.asciz	"B24@0:8#16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.93:               ; @OBJC_METH_VAR_NAME_.93
+l_OBJC_METH_VAR_NAME_.41:               ; @OBJC_METH_VAR_NAME_.41
 	.asciz	"isMemberOfClass:"
 
-l_OBJC_METH_VAR_NAME_.94:               ; @OBJC_METH_VAR_NAME_.94
+l_OBJC_METH_VAR_NAME_.42:               ; @OBJC_METH_VAR_NAME_.42
 	.asciz	"conformsToProtocol:"
 
+l_OBJC_METH_VAR_NAME_.43:               ; @OBJC_METH_VAR_NAME_.43
+	.asciz	"respondsToSelector:"
+
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.95:               ; @OBJC_METH_VAR_TYPE_.95
+l_OBJC_METH_VAR_TYPE_.44:               ; @OBJC_METH_VAR_TYPE_.44
 	.asciz	"B24@0:8:16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.96:               ; @OBJC_METH_VAR_NAME_.96
+l_OBJC_METH_VAR_NAME_.45:               ; @OBJC_METH_VAR_NAME_.45
 	.asciz	"retain"
 
-l_OBJC_METH_VAR_NAME_.97:               ; @OBJC_METH_VAR_NAME_.97
+l_OBJC_METH_VAR_NAME_.46:               ; @OBJC_METH_VAR_NAME_.46
 	.asciz	"release"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.98:               ; @OBJC_METH_VAR_TYPE_.98
+l_OBJC_METH_VAR_TYPE_.47:               ; @OBJC_METH_VAR_TYPE_.47
 	.asciz	"Vv16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.99:               ; @OBJC_METH_VAR_NAME_.99
+l_OBJC_METH_VAR_NAME_.48:               ; @OBJC_METH_VAR_NAME_.48
 	.asciz	"autorelease"
 
-l_OBJC_METH_VAR_NAME_.100:              ; @OBJC_METH_VAR_NAME_.100
+l_OBJC_METH_VAR_NAME_.49:               ; @OBJC_METH_VAR_NAME_.49
 	.asciz	"retainCount"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.101:              ; @OBJC_METH_VAR_TYPE_.101
+l_OBJC_METH_VAR_TYPE_.50:               ; @OBJC_METH_VAR_TYPE_.50
 	.asciz	"Q16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.102:              ; @OBJC_METH_VAR_NAME_.102
+l_OBJC_METH_VAR_NAME_.51:               ; @OBJC_METH_VAR_NAME_.51
 	.asciz	"zone"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.103:              ; @OBJC_METH_VAR_TYPE_.103
+l_OBJC_METH_VAR_TYPE_.52:               ; @OBJC_METH_VAR_TYPE_.52
 	.asciz	"^{_NSZone=}16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.104:              ; @OBJC_METH_VAR_NAME_.104
+l_OBJC_METH_VAR_NAME_.53:               ; @OBJC_METH_VAR_NAME_.53
 	.asciz	"hash"
 
-l_OBJC_METH_VAR_NAME_.105:              ; @OBJC_METH_VAR_NAME_.105
+l_OBJC_METH_VAR_NAME_.54:               ; @OBJC_METH_VAR_NAME_.54
 	.asciz	"superclass"
 
-l_OBJC_METH_VAR_NAME_.106:              ; @OBJC_METH_VAR_NAME_.106
+l_OBJC_METH_VAR_NAME_.55:               ; @OBJC_METH_VAR_NAME_.55
 	.asciz	"description"
 
 	.section	__DATA,__objc_const
@@ -2195,66 +2549,66 @@ l_OBJC_METH_VAR_NAME_.106:              ; @OBJC_METH_VAR_NAME_.106
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_NSObject:
 	.long	24                              ; 0x18
 	.long	19                              ; 0x13
+	.quad	l_OBJC_METH_VAR_NAME_
+	.quad	l_OBJC_METH_VAR_TYPE_
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.27
+	.quad	l_OBJC_METH_VAR_TYPE_.28
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.29
+	.quad	l_OBJC_METH_VAR_TYPE_.30
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.31
+	.quad	l_OBJC_METH_VAR_TYPE_.32
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.33
+	.quad	l_OBJC_METH_VAR_TYPE_.34
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.35
+	.quad	l_OBJC_METH_VAR_TYPE_.36
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.37
+	.quad	l_OBJC_METH_VAR_TYPE_.38
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.39
+	.quad	l_OBJC_METH_VAR_TYPE_.40
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.41
+	.quad	l_OBJC_METH_VAR_TYPE_.40
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.42
+	.quad	l_OBJC_METH_VAR_TYPE_
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.43
+	.quad	l_OBJC_METH_VAR_TYPE_.44
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.45
+	.quad	l_OBJC_METH_VAR_TYPE_.30
+	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.46
-	.quad	l_OBJC_METH_VAR_TYPE_
+	.quad	l_OBJC_METH_VAR_TYPE_.47
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.79
-	.quad	l_OBJC_METH_VAR_TYPE_.80
+	.quad	l_OBJC_METH_VAR_NAME_.48
+	.quad	l_OBJC_METH_VAR_TYPE_.30
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.81
-	.quad	l_OBJC_METH_VAR_TYPE_.82
+	.quad	l_OBJC_METH_VAR_NAME_.49
+	.quad	l_OBJC_METH_VAR_TYPE_.50
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.83
-	.quad	l_OBJC_METH_VAR_TYPE_.84
+	.quad	l_OBJC_METH_VAR_NAME_.51
+	.quad	l_OBJC_METH_VAR_TYPE_.52
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.85
-	.quad	l_OBJC_METH_VAR_TYPE_.86
+	.quad	l_OBJC_METH_VAR_NAME_.53
+	.quad	l_OBJC_METH_VAR_TYPE_.50
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.87
-	.quad	l_OBJC_METH_VAR_TYPE_.88
+	.quad	l_OBJC_METH_VAR_NAME_.54
+	.quad	l_OBJC_METH_VAR_TYPE_.28
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.89
-	.quad	l_OBJC_METH_VAR_TYPE_.90
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.91
-	.quad	l_OBJC_METH_VAR_TYPE_.92
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.93
-	.quad	l_OBJC_METH_VAR_TYPE_.92
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.94
-	.quad	l_OBJC_METH_VAR_TYPE_
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.70
-	.quad	l_OBJC_METH_VAR_TYPE_.95
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.96
-	.quad	l_OBJC_METH_VAR_TYPE_.82
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.97
-	.quad	l_OBJC_METH_VAR_TYPE_.98
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.99
-	.quad	l_OBJC_METH_VAR_TYPE_.82
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.100
-	.quad	l_OBJC_METH_VAR_TYPE_.101
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.102
-	.quad	l_OBJC_METH_VAR_TYPE_.103
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.104
-	.quad	l_OBJC_METH_VAR_TYPE_.101
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.105
-	.quad	l_OBJC_METH_VAR_TYPE_.80
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.106
-	.quad	l_OBJC_METH_VAR_TYPE_.82
+	.quad	l_OBJC_METH_VAR_NAME_.55
+	.quad	l_OBJC_METH_VAR_TYPE_.30
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.107:              ; @OBJC_METH_VAR_NAME_.107
+l_OBJC_METH_VAR_NAME_.56:               ; @OBJC_METH_VAR_NAME_.56
 	.asciz	"debugDescription"
 
 	.section	__DATA,__objc_const
@@ -2262,30 +2616,30 @@ l_OBJC_METH_VAR_NAME_.107:              ; @OBJC_METH_VAR_NAME_.107
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSObject:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.107
-	.quad	l_OBJC_METH_VAR_TYPE_.82
+	.quad	l_OBJC_METH_VAR_NAME_.56
+	.quad	l_OBJC_METH_VAR_TYPE_.30
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_PROP_NAME_ATTR_:                 ; @OBJC_PROP_NAME_ATTR_
 	.asciz	"hash"
 
-l_OBJC_PROP_NAME_ATTR_.108:             ; @OBJC_PROP_NAME_ATTR_.108
+l_OBJC_PROP_NAME_ATTR_.57:              ; @OBJC_PROP_NAME_ATTR_.57
 	.asciz	"TQ,R"
 
-l_OBJC_PROP_NAME_ATTR_.109:             ; @OBJC_PROP_NAME_ATTR_.109
+l_OBJC_PROP_NAME_ATTR_.58:              ; @OBJC_PROP_NAME_ATTR_.58
 	.asciz	"superclass"
 
-l_OBJC_PROP_NAME_ATTR_.110:             ; @OBJC_PROP_NAME_ATTR_.110
+l_OBJC_PROP_NAME_ATTR_.59:              ; @OBJC_PROP_NAME_ATTR_.59
 	.asciz	"T#,R"
 
-l_OBJC_PROP_NAME_ATTR_.111:             ; @OBJC_PROP_NAME_ATTR_.111
+l_OBJC_PROP_NAME_ATTR_.60:              ; @OBJC_PROP_NAME_ATTR_.60
 	.asciz	"description"
 
-l_OBJC_PROP_NAME_ATTR_.112:             ; @OBJC_PROP_NAME_ATTR_.112
+l_OBJC_PROP_NAME_ATTR_.61:              ; @OBJC_PROP_NAME_ATTR_.61
 	.asciz	"T@\"NSString\",R,C"
 
-l_OBJC_PROP_NAME_ATTR_.113:             ; @OBJC_PROP_NAME_ATTR_.113
+l_OBJC_PROP_NAME_ATTR_.62:              ; @OBJC_PROP_NAME_ATTR_.62
 	.asciz	"debugDescription"
 
 	.section	__DATA,__objc_const
@@ -2294,44 +2648,44 @@ __OBJC_$_PROP_LIST_NSObject:
 	.long	16                              ; 0x10
 	.long	4                               ; 0x4
 	.quad	l_OBJC_PROP_NAME_ATTR_
-	.quad	l_OBJC_PROP_NAME_ATTR_.108
-	.quad	l_OBJC_PROP_NAME_ATTR_.109
-	.quad	l_OBJC_PROP_NAME_ATTR_.110
-	.quad	l_OBJC_PROP_NAME_ATTR_.111
-	.quad	l_OBJC_PROP_NAME_ATTR_.112
-	.quad	l_OBJC_PROP_NAME_ATTR_.113
-	.quad	l_OBJC_PROP_NAME_ATTR_.112
+	.quad	l_OBJC_PROP_NAME_ATTR_.57
+	.quad	l_OBJC_PROP_NAME_ATTR_.58
+	.quad	l_OBJC_PROP_NAME_ATTR_.59
+	.quad	l_OBJC_PROP_NAME_ATTR_.60
+	.quad	l_OBJC_PROP_NAME_ATTR_.61
+	.quad	l_OBJC_PROP_NAME_ATTR_.62
+	.quad	l_OBJC_PROP_NAME_ATTR_.61
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.114:              ; @OBJC_METH_VAR_TYPE_.114
+l_OBJC_METH_VAR_TYPE_.63:               ; @OBJC_METH_VAR_TYPE_.63
 	.asciz	"B24@0:8@\"Protocol\"16"
 
-l_OBJC_METH_VAR_TYPE_.115:              ; @OBJC_METH_VAR_TYPE_.115
+l_OBJC_METH_VAR_TYPE_.64:               ; @OBJC_METH_VAR_TYPE_.64
 	.asciz	"@\"NSString\"16@0:8"
 
 	.section	__DATA,__objc_const
 	.p2align	3                               ; @"_OBJC_$_PROTOCOL_METHOD_TYPES_NSObject"
 __OBJC_$_PROTOCOL_METHOD_TYPES_NSObject:
 	.quad	l_OBJC_METH_VAR_TYPE_
-	.quad	l_OBJC_METH_VAR_TYPE_.80
-	.quad	l_OBJC_METH_VAR_TYPE_.82
-	.quad	l_OBJC_METH_VAR_TYPE_.84
-	.quad	l_OBJC_METH_VAR_TYPE_.86
-	.quad	l_OBJC_METH_VAR_TYPE_.88
-	.quad	l_OBJC_METH_VAR_TYPE_.90
-	.quad	l_OBJC_METH_VAR_TYPE_.92
-	.quad	l_OBJC_METH_VAR_TYPE_.92
-	.quad	l_OBJC_METH_VAR_TYPE_.114
-	.quad	l_OBJC_METH_VAR_TYPE_.95
-	.quad	l_OBJC_METH_VAR_TYPE_.82
-	.quad	l_OBJC_METH_VAR_TYPE_.98
-	.quad	l_OBJC_METH_VAR_TYPE_.82
-	.quad	l_OBJC_METH_VAR_TYPE_.101
-	.quad	l_OBJC_METH_VAR_TYPE_.103
-	.quad	l_OBJC_METH_VAR_TYPE_.101
-	.quad	l_OBJC_METH_VAR_TYPE_.80
-	.quad	l_OBJC_METH_VAR_TYPE_.115
-	.quad	l_OBJC_METH_VAR_TYPE_.115
+	.quad	l_OBJC_METH_VAR_TYPE_.28
+	.quad	l_OBJC_METH_VAR_TYPE_.30
+	.quad	l_OBJC_METH_VAR_TYPE_.32
+	.quad	l_OBJC_METH_VAR_TYPE_.34
+	.quad	l_OBJC_METH_VAR_TYPE_.36
+	.quad	l_OBJC_METH_VAR_TYPE_.38
+	.quad	l_OBJC_METH_VAR_TYPE_.40
+	.quad	l_OBJC_METH_VAR_TYPE_.40
+	.quad	l_OBJC_METH_VAR_TYPE_.63
+	.quad	l_OBJC_METH_VAR_TYPE_.44
+	.quad	l_OBJC_METH_VAR_TYPE_.30
+	.quad	l_OBJC_METH_VAR_TYPE_.47
+	.quad	l_OBJC_METH_VAR_TYPE_.30
+	.quad	l_OBJC_METH_VAR_TYPE_.50
+	.quad	l_OBJC_METH_VAR_TYPE_.52
+	.quad	l_OBJC_METH_VAR_TYPE_.50
+	.quad	l_OBJC_METH_VAR_TYPE_.28
+	.quad	l_OBJC_METH_VAR_TYPE_.64
+	.quad	l_OBJC_METH_VAR_TYPE_.64
 
 	.private_extern	__OBJC_PROTOCOL_$_NSObject ; @"_OBJC_PROTOCOL_$_NSObject"
 	.section	__DATA,__data
@@ -2340,7 +2694,7 @@ __OBJC_$_PROTOCOL_METHOD_TYPES_NSObject:
 	.p2align	3
 __OBJC_PROTOCOL_$_NSObject:
 	.quad	0
-	.quad	l_OBJC_CLASS_NAME_.78
+	.quad	l_OBJC_CLASS_NAME_.26
 	.quad	0
 	.quad	__OBJC_$_PROTOCOL_INSTANCE_METHODS_NSObject
 	.quad	0
@@ -2369,11 +2723,11 @@ __OBJC_$_PROTOCOL_REFS_NSPortDelegate:
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.116:              ; @OBJC_METH_VAR_NAME_.116
+l_OBJC_METH_VAR_NAME_.65:               ; @OBJC_METH_VAR_NAME_.65
 	.asciz	"handlePortMessage:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.117:              ; @OBJC_METH_VAR_TYPE_.117
+l_OBJC_METH_VAR_TYPE_.66:               ; @OBJC_METH_VAR_TYPE_.66
 	.asciz	"v24@0:8@16"
 
 	.section	__DATA,__objc_const
@@ -2381,18 +2735,18 @@ l_OBJC_METH_VAR_TYPE_.117:              ; @OBJC_METH_VAR_TYPE_.117
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSPortDelegate:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.116
-	.quad	l_OBJC_METH_VAR_TYPE_.117
+	.quad	l_OBJC_METH_VAR_NAME_.65
+	.quad	l_OBJC_METH_VAR_TYPE_.66
 	.quad	0
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.118:              ; @OBJC_METH_VAR_TYPE_.118
+l_OBJC_METH_VAR_TYPE_.67:               ; @OBJC_METH_VAR_TYPE_.67
 	.asciz	"v24@0:8@\"NSPortMessage\"16"
 
 	.section	__DATA,__objc_const
 	.p2align	3                               ; @"_OBJC_$_PROTOCOL_METHOD_TYPES_NSPortDelegate"
 __OBJC_$_PROTOCOL_METHOD_TYPES_NSPortDelegate:
-	.quad	l_OBJC_METH_VAR_TYPE_.118
+	.quad	l_OBJC_METH_VAR_TYPE_.67
 
 	.private_extern	__OBJC_PROTOCOL_$_NSPortDelegate ; @"_OBJC_PROTOCOL_$_NSPortDelegate"
 	.section	__DATA,__data
@@ -2401,7 +2755,7 @@ __OBJC_$_PROTOCOL_METHOD_TYPES_NSPortDelegate:
 	.p2align	3
 __OBJC_PROTOCOL_$_NSPortDelegate:
 	.quad	0
-	.quad	l_OBJC_CLASS_NAME_.77
+	.quad	l_OBJC_CLASS_NAME_.25
 	.quad	__OBJC_$_PROTOCOL_REFS_NSPortDelegate
 	.quad	0
 	.quad	0
@@ -2430,11 +2784,11 @@ __OBJC_$_PROTOCOL_REFS_NSMachPortDelegate:
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.119:              ; @OBJC_METH_VAR_NAME_.119
+l_OBJC_METH_VAR_NAME_.68:               ; @OBJC_METH_VAR_NAME_.68
 	.asciz	"handleMachMessage:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.120:              ; @OBJC_METH_VAR_TYPE_.120
+l_OBJC_METH_VAR_TYPE_.69:               ; @OBJC_METH_VAR_TYPE_.69
 	.asciz	"v24@0:8^v16"
 
 	.section	__DATA,__objc_const
@@ -2442,13 +2796,13 @@ l_OBJC_METH_VAR_TYPE_.120:              ; @OBJC_METH_VAR_TYPE_.120
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSMachPortDelegate:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.119
-	.quad	l_OBJC_METH_VAR_TYPE_.120
+	.quad	l_OBJC_METH_VAR_NAME_.68
+	.quad	l_OBJC_METH_VAR_TYPE_.69
 	.quad	0
 
 	.p2align	3                               ; @"_OBJC_$_PROTOCOL_METHOD_TYPES_NSMachPortDelegate"
 __OBJC_$_PROTOCOL_METHOD_TYPES_NSMachPortDelegate:
-	.quad	l_OBJC_METH_VAR_TYPE_.120
+	.quad	l_OBJC_METH_VAR_TYPE_.69
 
 	.private_extern	__OBJC_PROTOCOL_$_NSMachPortDelegate ; @"_OBJC_PROTOCOL_$_NSMachPortDelegate"
 	.section	__DATA,__data
@@ -2457,7 +2811,7 @@ __OBJC_$_PROTOCOL_METHOD_TYPES_NSMachPortDelegate:
 	.p2align	3
 __OBJC_PROTOCOL_$_NSMachPortDelegate:
 	.quad	0
-	.quad	l_OBJC_CLASS_NAME_.76
+	.quad	l_OBJC_CLASS_NAME_.24
 	.quad	__OBJC_$_PROTOCOL_REFS_NSMachPortDelegate
 	.quad	0
 	.quad	0
@@ -2514,16 +2868,16 @@ _OBJC_METACLASS_$_CidreMachPortDelegate:
 __OBJC_$_INSTANCE_METHODS_CidreMachPortDelegate:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.119
-	.quad	l_OBJC_METH_VAR_TYPE_.120
+	.quad	l_OBJC_METH_VAR_NAME_.68
+	.quad	l_OBJC_METH_VAR_TYPE_.69
 	.quad	"-[CidreMachPortDelegate handleMachMessage:]"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.121:              ; @OBJC_METH_VAR_NAME_.121
+l_OBJC_METH_VAR_NAME_.70:               ; @OBJC_METH_VAR_NAME_.70
 	.asciz	"_vtable"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.122:              ; @OBJC_METH_VAR_TYPE_.122
+l_OBJC_METH_VAR_TYPE_.71:               ; @OBJC_METH_VAR_TYPE_.71
 	.asciz	"[2^v]"
 
 	.section	__DATA,__objc_const
@@ -2532,8 +2886,8 @@ __OBJC_$_INSTANCE_VARIABLES_CidreMachPortDelegate:
 	.long	32                              ; 0x20
 	.long	1                               ; 0x1
 	.quad	_OBJC_IVAR_$_CidreMachPortDelegate._vtable
-	.quad	l_OBJC_METH_VAR_NAME_.121
-	.quad	l_OBJC_METH_VAR_TYPE_.122
+	.quad	l_OBJC_METH_VAR_NAME_.70
+	.quad	l_OBJC_METH_VAR_TYPE_.71
 	.long	3                               ; 0x3
 	.long	16                              ; 0x10
 
@@ -2542,13 +2896,13 @@ __OBJC_$_PROP_LIST_CidreMachPortDelegate:
 	.long	16                              ; 0x10
 	.long	4                               ; 0x4
 	.quad	l_OBJC_PROP_NAME_ATTR_
-	.quad	l_OBJC_PROP_NAME_ATTR_.108
-	.quad	l_OBJC_PROP_NAME_ATTR_.109
-	.quad	l_OBJC_PROP_NAME_ATTR_.110
-	.quad	l_OBJC_PROP_NAME_ATTR_.111
-	.quad	l_OBJC_PROP_NAME_ATTR_.112
-	.quad	l_OBJC_PROP_NAME_ATTR_.113
-	.quad	l_OBJC_PROP_NAME_ATTR_.112
+	.quad	l_OBJC_PROP_NAME_ATTR_.57
+	.quad	l_OBJC_PROP_NAME_ATTR_.58
+	.quad	l_OBJC_PROP_NAME_ATTR_.59
+	.quad	l_OBJC_PROP_NAME_ATTR_.60
+	.quad	l_OBJC_PROP_NAME_ATTR_.61
+	.quad	l_OBJC_PROP_NAME_ATTR_.62
+	.quad	l_OBJC_PROP_NAME_ATTR_.61
 
 	.p2align	3                               ; @"_OBJC_CLASS_RO_$_CidreMachPortDelegate"
 __OBJC_CLASS_RO_$_CidreMachPortDelegate:
@@ -2572,12 +2926,12 @@ l_OBJC_LABEL_CLASS_$:
 	.section	__DATA,__mod_init_func,mod_init_funcs
 	.p2align	3
 	.quad	_common_initializer
-	.no_dead_strip	__OBJC_LABEL_PROTOCOL_$_NSMachPortDelegate
+	.no_dead_strip	__OBJC_PROTOCOL_$_NSObject
 	.no_dead_strip	__OBJC_LABEL_PROTOCOL_$_NSObject
+	.no_dead_strip	__OBJC_PROTOCOL_$_NSPortDelegate
 	.no_dead_strip	__OBJC_LABEL_PROTOCOL_$_NSPortDelegate
 	.no_dead_strip	__OBJC_PROTOCOL_$_NSMachPortDelegate
-	.no_dead_strip	__OBJC_PROTOCOL_$_NSObject
-	.no_dead_strip	__OBJC_PROTOCOL_$_NSPortDelegate
+	.no_dead_strip	__OBJC_LABEL_PROTOCOL_$_NSMachPortDelegate
 	.section	__DATA,__objc_imageinfo,regular,no_dead_strip
 L_OBJC_IMAGE_INFO:
 	.long	0

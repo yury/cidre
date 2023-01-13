@@ -163,16 +163,7 @@ csel3(, NSData, dataWithContentsOfURL, NSURL *, options, NSDataReadingOptions, e
 rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
 
 #pragma mark - NSNumber
-
-
-
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithChar, char, NSNumber *)
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithUnsignedChar, unsigned char, NSNumber *)
-
+  
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithShort, short, NSNumber *)
 
@@ -251,50 +242,39 @@ csel3(, NSURL, fileURLWithPath, NSString *, isDirectory, BOOL, relativeToURL, NS
 NS_RETURNS_RETAINED
 csel2(, NSURL, URLWithString, NSString *, relativeToURL, NSURL *, NSURL *)
 
-rsel0(, id, absoluteString, NSString *)
-
 #pragma mark - NSDictionary
 
 csel0(, NSDictionary, dictionary, NSDictionary *)
 
 #pragma mark - SELECTORS
 
-SEL ns_bytes;
-
-
 SEL ns_isEqual;
 
 SEL ns_resultType;
 SEL ns_range;
 
-SEL ns_code;
-SEL ns_domain;
-
-SEL ns_respondsToSelector;
 SEL ns_lengthOfBytesUsingEncoding;
 //SEL ns_retainCount;
 
+Class NS_NUMBER;
+Class NS_STRING;
+Class NS_MUTABLE_STRING;
 
 __attribute__((constructor))
 static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-    ns_bytes = @selector(bytes);
-    
     ns_isEqual = @selector(isEqual:);
 
     ns_resultType = @selector(resultType);
     ns_range = @selector(range);
     
-    ns_code = @selector(code);
-    ns_domain = @selector(domain);
-    
-    ns_respondsToSelector = @selector(respondsToSelector:);
     ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
-    
-//    ns_retainCount = @selector(retainCount);
 
+    NS_NUMBER = [NSNumber class];
+    NS_STRING = [NSString class];
+    NS_MUTABLE_STRING = [NSMutableString class];
   }
 }
 NS_ASSUME_NONNULL_END
