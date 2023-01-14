@@ -63,6 +63,10 @@ linfa-reduction = "0.6.1"
 name = "metal"
 harness = false
 
+[[bench]]
+name = "alloc"
+harness = false
+
 [[example]]
 name = "device_list"
 required-features = ["am"]

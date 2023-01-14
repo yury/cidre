@@ -11,6 +11,16 @@ impl Class {
     pub fn as_type_ref(&self) -> &Type {
         &self.0
     }
+
+    #[inline]
+    pub unsafe fn alloc<T: Obj>(&self) -> &'static T {
+        self.call0(msg_send::alloc)
+    }
+
+    #[inline]
+    pub unsafe fn new<T: Obj>(&self) -> &'static T {
+        self.call0(msg_send::new)
+    }
 }
 
 impl Obj for Class {}
@@ -50,7 +60,7 @@ pub trait Obj: arc::Retain {
     }
 
     #[inline]
-    fn is_tagged_pointer(&self) -> bool {
+    fn is_tagged_ptr(&self) -> bool {
         ((self as *const Self as usize) >> 63) == 1
     }
 

@@ -163,10 +163,6 @@ csel3(, NSData, dataWithContentsOfURL, NSURL *, options, NSDataReadingOptions, e
 rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
 
 #pragma mark - NSNumber
-  
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithLongLong, long long, NSNumber *)
 
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithUnsignedLongLong, unsigned long long, NSNumber *)
@@ -198,12 +194,23 @@ NSArray * NSArray_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
 NS_RETURNS_RETAINED
 csel0(, NSArray, array, NSArray *)
 
+
 #pragma mark - NSSet
 
 NS_RETURNS_RETAINED
 NSSet * NSSet_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
   return [NSSet setWithObjects:objects count: count];
 }
+
+NS_RETURNS_RETAINED
+NSNumber * foo() {
+  return [NSNumber numberWithInteger:(NSIntegerMax - 1)];
+}
+
+NSNumber * foo1() {
+  return [[NSNumber alloc] initWithInteger:(NSIntegerMax - 1)];
+}
+
 
 NS_RETURNS_RETAINED
 csel0(, NSSet, set, NSSet *)

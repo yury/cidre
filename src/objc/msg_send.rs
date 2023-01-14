@@ -1,5 +1,13 @@
 // we define (or just common?) all selectrs calls here
 extern "C" {
+    #[link_name = "objc_msgSend$alloc"]
+    pub fn alloc();
+
+    #[link_name = "objc_msgSend$init"]
+    pub fn init();
+
+    #[link_name = "objc_msgSend$new"]
+    pub fn new();
 
     #[link_name = "objc_msgSend$respondsToSelector:"]
     pub fn responds_to_selector();

@@ -1264,11 +1264,7 @@ fn make_diffusion_step(
 fn main() {
     // unsafe {
     autoreleasepool(|| {
-        let one = ns::Number::with_i32(5);
-        let arr: &[&ns::Number] = &[&one];
-        let arr = ns::Array::from_slice(arr);
-        assert_eq!(1, arr.len());
-        let f = &arr[0];
+        let i64 = ns::Number::with_i64(i64::MAX - 1);
     })
     // let desc = cidre::objc::Id::retain_autoreleased(Some(num.debug_description()));
     // }
