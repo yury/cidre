@@ -79,7 +79,7 @@ define_obj_type!(Descriptor(ns::Id));
 impl Descriptor {
     define_mtl!(storage_mode, set_storage_mode);
 
-    /// ```rust
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let mut td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
@@ -117,7 +117,7 @@ impl Descriptor {
         }
     }
 
-    /// ```rust
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let td = mtl::TextureDescriptor::new_cube_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, false);
@@ -263,7 +263,7 @@ impl Descriptor {
 
 define_obj_type!(Texture(mtl::Resource));
 
-/// ```
+/// ```no_run
 /// use cidre::mtl;
 ///
 /// let device = mtl::Device::default().unwrap();
@@ -280,7 +280,7 @@ define_obj_type!(Texture(mtl::Resource));
 impl Texture {
     define_mtl!(width, height, depth, gpu_resouce_id);
 
-    /// ```rust
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -300,7 +300,6 @@ impl Texture {
     /// assert!(tv.parent_texture().is_some());
     /// assert_eq!(tv.width(), 100);
     /// assert_eq!(tv.height(), 200);
-
     ///
     /// ```
     #[inline]
@@ -393,4 +392,91 @@ extern "C" {
 
     fn rsel_iosurface(id: &mtl::Texture) -> Option<&io::Surface>;
     fn rsel_iosurfacePlane(id: &mtl::Texture) -> usize;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mtl;
+
+    #[test]
+    fn basics1() {
+        let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
+            mtl::PixelFormat::A8Unorm,
+            100,
+            200,
+            false,
+        );
+
+        assert_eq!(td.texture_type(), mtl::TextureType::_2D);
+        assert_eq!(td.pixel_format(), mtl::PixelFormat::A8Unorm);
+        assert_eq!(td.width(), 100);
+        assert_eq!(td.height(), 200);
+        assert_eq!(td.depth(), 1);
+        assert_eq!(td.mipmap_level_count(), 1);
+        assert_eq!(td.sample_count(), 1);
+        assert_eq!(td.array_len(), 1);
+
+        td.set_width(200);
+        assert_eq!(td.width(), 200);
+
+        td.set_height(300);
+        assert_eq!(td.height(), 300);
+    }
+
+    #[test]
+    fn basics2() {
+        let td = mtl::TextureDescriptor::new_cube_with_pixel_format(
+            mtl::PixelFormat::A8Unorm,
+            100,
+            false,
+        );
+
+        assert_eq!(td.texture_type(), mtl::TextureType::Cube);
+    }
+
+    #[test]
+    fn basics3() {
+        let device = mtl::Device::default().unwrap();
+
+        let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
+            mtl::PixelFormat::A8Unorm,
+            100,
+            200,
+            false,
+        );
+
+        let t = device.texture_with_descriptor(&td).unwrap();
+
+        assert_eq!(t.width(), 100);
+        assert_eq!(t.height(), 200);
+        assert_eq!(t.depth(), 1);
+    }
+
+    #[test]
+    fn basics4() {
+        let device = mtl::Device::default().unwrap();
+
+        let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
+            mtl::PixelFormat::A8Unorm,
+            100,
+            200,
+            false,
+        );
+
+        let t = device.texture_with_descriptor(&td).unwrap();
+
+        assert!(t.parent_texture().is_none());
+        assert!(t.io_surface().is_none());
+        assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
+        assert!(t.io_surface().is_none());
+        assert_eq!(t.io_surface_plane(), 0);
+
+        let tv = t
+            .texture_view_with_pixel_format(mtl::PixelFormat::A8Unorm)
+            .unwrap();
+
+        assert!(tv.parent_texture().is_some());
+        assert_eq!(tv.width(), 100);
+        assert_eq!(tv.height(), 200);
+    }
 }

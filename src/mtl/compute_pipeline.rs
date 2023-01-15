@@ -7,25 +7,6 @@ define_obj_type!(Descriptor(ns::Id));
 impl Descriptor {
     define_mtl!(label, set_label);
 
-    /// ```
-    /// use cidre::{cf, mtl};
-    ///
-    /// let mut desc = mtl::ComputePipelineDescriptor::new();
-    ///
-    /// assert!(desc.label().is_none());
-    ///
-    /// let label = cf::String::from_str("label");
-    ///
-    /// desc.set_label(Some(&label));
-    ///
-    /// let lb = desc.label().unwrap();
-    ///
-    /// assert!(lb.equal(&label));
-    ///
-    /// assert_eq!(false, desc.thread_group_size_is_multiple_of_thread_execution_width());
-    /// desc.set_thread_group_size_is_multiple_of_thread_execution_width(true);
-    /// assert_eq!(true, desc.thread_group_size_is_multiple_of_thread_execution_width());
-    /// ```
     pub fn new() -> arc::R<Self> {
         unsafe { MTLComputePipelineDescriptor_new() }
     }
@@ -91,7 +72,36 @@ impl State {
 extern "C" {
     fn rsel_maxTotalThreadsPerThreadgroup(id: &ns::Id) -> usize;
     fn wsel_setMaxTotalThreadsPerThreadgroup(id: &mut ns::Id, value: usize);
-    // rwsel(, id, maxTotalThreadsPerThreadgroup, setMaxTotalThreadsPerThreadgroup, NSUInteger)
     fn rsel_threadExecutionWidth(id: &ns::Id) -> usize;
     fn rsel_staticThreadgroupMemoryLength(id: &ns::Id) -> usize;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{mtl, ns};
+
+    #[test]
+    fn basics() {
+        let mut desc = mtl::ComputePipelineDescriptor::new();
+
+        assert!(desc.label().is_none());
+
+        let label = ns::String::with_str("label");
+
+        desc.set_label(Some(&label));
+
+        let lb = desc.label().unwrap();
+
+        assert!(lb.is_equal(&label));
+
+        assert_eq!(
+            false,
+            desc.thread_group_size_is_multiple_of_thread_execution_width()
+        );
+        desc.set_thread_group_size_is_multiple_of_thread_execution_width(true);
+        assert_eq!(
+            true,
+            desc.thread_group_size_is_multiple_of_thread_execution_width()
+        );
+    }
 }

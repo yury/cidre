@@ -214,7 +214,7 @@ macro_rules! define_mtl {
 
     (label) => {
         #[inline]
-        pub fn label(&self) -> Option<&crate::cf::String> {
+        pub fn label(&self) -> Option<&crate::ns::String> {
             unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::label) }
         }
     };

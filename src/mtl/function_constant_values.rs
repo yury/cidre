@@ -6,14 +6,7 @@ define_obj_type!(FunctionConstantValues(ns::Id));
 
 impl FunctionConstantValues {
     define_mtl!(reset);
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let mut fcv = mtl::FunctionConstantValues::new();
-    /// let v = false;
-    /// fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
-    /// fcv.reset();
-    /// ```
+
     pub fn new() -> arc::R<FunctionConstantValues> {
         unsafe { MTLFunctionConstantValues_new() }
     }
@@ -36,15 +29,6 @@ impl FunctionConstantValues {
         unsafe { wsel_setConstantValues_type_withRange(self, value, type_, with_range) }
     }
 
-    /// ```
-    /// use cidre::{cf, mtl};
-    ///
-    /// let mut fcv = mtl::FunctionConstantValues::new();
-    /// let v = false;
-    /// let name = cf::String::from_str("name");
-    /// fcv.set_value_with_name(&v as *const bool as _, mtl::DataType::Bool, &name);
-    /// fcv.reset();
-    /// ```
     pub fn set_value_with_name(
         &mut self,
         value: *const c_void,
@@ -76,4 +60,26 @@ extern "C" {
         type_: mtl::DataType,
         with_name: &cf::String,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, mtl};
+
+    #[test]
+    fn basics1() {
+        let mut fcv = mtl::FunctionConstantValues::new();
+        let v = false;
+        fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
+        fcv.reset();
+    }
+
+    #[test]
+    fn basics2() {
+        let mut fcv = mtl::FunctionConstantValues::new();
+        let v = false;
+        let name = cf::String::from_str("name");
+        fcv.set_value_with_name(&v as *const bool as _, mtl::DataType::Bool, &name);
+        fcv.reset();
+    }
 }

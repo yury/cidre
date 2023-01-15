@@ -345,13 +345,13 @@ impl Device {
         )
     }
 
-    /// ```
-    /// use cidre::{cf, mtl};
+    /// ```no_run
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let mut fence = device.fence().unwrap();
-    /// let label = cf::String::from_str("nice");
+    /// let label = ns::String::with_str("nice");
     /// fence.set_label(Some(&label));
     /// ```
     #[inline]
@@ -359,13 +359,13 @@ impl Device {
         msg_send!("mtl", self, sel_newFence)
     }
 
-    /// ```
-    /// use cidre::{cf, mtl};
+    /// ```no_run
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let mut event = device.event().unwrap();
-    /// let label = cf::String::from_str("nice");
+    /// let label = ns::String::with_str("nice");
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
@@ -373,13 +373,13 @@ impl Device {
         unsafe { rsel_newEvent(self) }
     }
 
-    /// ```
-    /// use cidre::{cf, mtl};
+    /// ```no_run
+    /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
     ///
     /// let mut event = device.shared_event().unwrap();
-    /// let label = cf::String::from_str("nice");
+    /// let label = ns::String::with_str("nice");
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
@@ -523,7 +523,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::mtl;
+    use crate::{mtl, ns};
 
     #[test]
     fn it_works() {
@@ -531,5 +531,23 @@ mod tests {
 
         let _n = device.name();
         //n.show_str()
+    }
+
+    #[test]
+    fn basics1() {
+        let device = mtl::Device::default().unwrap();
+
+        let mut fence = device.fence().unwrap();
+        let label = ns::String::with_str("nice");
+        fence.set_label(Some(&label));
+    }
+
+    #[test]
+    fn basics2() {
+        let device = mtl::Device::default().unwrap();
+
+        let mut event = device.shared_event().unwrap();
+        let label = ns::String::with_str("nice");
+        event.set_label(Some(&label));
     }
 }

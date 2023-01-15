@@ -242,7 +242,7 @@ define_obj_type!(Descriptor(ns::Id));
 impl Descriptor {
     define_mtl!(reset);
 
-    /// ```
+    /// ```no_run
     /// use cidre::{cf, mtl};
     ///
     /// let mut desc = mtl::RenderPipelineDescriptor::new();
@@ -432,4 +432,18 @@ define_obj_type!(MeshRenderPipelineDescriptor(ns::Id));
 
 impl MeshRenderPipelineDescriptor {
     define_mtl!(reset, label, set_label);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mtl;
+    #[test]
+    fn basics() {
+        let mut desc = mtl::RenderPipelineDescriptor::new();
+
+        assert!(desc.vertex_function().is_none());
+        assert!(desc.fragment_function().is_none());
+
+        desc.reset();
+    }
 }

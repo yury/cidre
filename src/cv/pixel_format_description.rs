@@ -1,6 +1,6 @@
 use crate::{arc, cf, cv};
 
-/// ```
+/// ```no_run
 /// use cidre::cv;
 ///
 /// let format = cv::PixelFormatType::LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
