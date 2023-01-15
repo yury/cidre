@@ -1,4 +1,7 @@
-use crate::{define_obj_type, msg_send, ns};
+use crate::{
+    define_obj_type, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -156,6 +159,6 @@ define_obj_type!(Argument(ns::Id));
 
 impl Argument {
     pub fn name(&self) -> &ns::String {
-        msg_send!("common", self, sel_name)
+        unsafe { self.call0(msg_send::name) }
     }
 }

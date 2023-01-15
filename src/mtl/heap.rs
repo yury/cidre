@@ -1,4 +1,7 @@
-use crate::{arc, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{
+    arc, define_mtl, define_obj_type, mtl, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
@@ -22,7 +25,7 @@ impl Descriptor {
         set_resource_options
     );
 
-    /// ```
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let mut desc = mtl::HeapDescriptor::new();
@@ -39,11 +42,11 @@ impl Descriptor {
     }
 
     pub fn size(&self) -> usize {
-        msg_send!("common", self, sel_size)
+        unsafe { self.call0(msg_send::size) }
     }
 
     pub fn set_size(&mut self, value: usize) {
-        msg_send!("common", self, sel_setSize, value)
+        unsafe { self.call1(msg_send::set_size, value) }
     }
 }
 
@@ -59,7 +62,7 @@ impl Heap {
     );
 
     pub fn size(&self) -> usize {
-        msg_send!("common", self, sel_size)
+        unsafe { self.call0(msg_send::size) }
     }
 
     #[inline]
@@ -95,4 +98,21 @@ extern "C" {
         id: &ns::Id,
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::R<mtl::Texture>>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mtl;
+
+    #[test]
+    fn basics() {
+        let mut desc = mtl::HeapDescriptor::new();
+        assert_eq!(0, desc.size());
+        desc.set_size(1024);
+        assert_eq!(1024, desc.size());
+
+        let device = mtl::Device::default().unwrap();
+        let heap = device.new_heap_with_descriptor(&desc).unwrap();
+        assert!(heap.size() >= 1024);
+    }
 }

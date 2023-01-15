@@ -24,6 +24,12 @@ extern "C" {
     #[link_name = "objc_msgSend$length"]
     pub fn length();
 
+    #[link_name = "objc_msgSend$size"]
+    pub fn size();
+
+    #[link_name = "objc_msgSend$setSize:"]
+    pub fn set_size();
+
     #[link_name = "objc_msgSend$bytes"]
     pub fn bytes();
 
