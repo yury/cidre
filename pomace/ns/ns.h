@@ -135,6 +135,7 @@ wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPBody, NSData * _Nullab
 
 #pragma mark NSURLResponse
 
+NS_RETURNS_RETAINED
 asel4(, NSURLResponse, initWithURL, NSURL *, MIMEType, NSString *, expectedContentLength, NSInteger, textEncodingName, NSString *)
 
 #pragma mark NSURLSessionWebSocketMessage
@@ -165,55 +166,11 @@ rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
 #pragma mark - NSNumber
 
 NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithUnsignedLongLong, unsigned long long, NSNumber *)
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithFloat, float, NSNumber *)
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithDouble, double, NSNumber *)
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithBool, BOOL, NSNumber *)
-
-NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithUnsignedInteger, NSUInteger, NSNumber *)
+//NS_RETURNS_RETAINED
+//csel1(, NSNumber, numberWithUnsignedInteger, NSUInteger, NSNumber *)
 
-rsel1(, id, isEqualToNumber, NSNumber *, BOOL)
-
-#pragma mark - NSArray
-
-NS_RETURNS_RETAINED
-NSArray * NSArray_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
-  return [NSArray arrayWithObjects:objects count: count];
-}
-
-NS_RETURNS_RETAINED
-csel0(, NSArray, array, NSArray *)
-
-
-#pragma mark - NSSet
-
-NS_RETURNS_RETAINED
-NSSet * NSSet_withObjs(id _Nullable * _Nonnull objects, NSUInteger count) {
-  return [NSSet setWithObjects:objects count: count];
-}
-
-NS_RETURNS_RETAINED
-NSNumber * foo() {
-  return [NSNumber numberWithInteger:(NSIntegerMax - 1)];
-}
-
-NSNumber * foo1() {
-  return [[NSNumber alloc] initWithInteger:(NSIntegerMax - 1)];
-}
-
-
-NS_RETURNS_RETAINED
-csel0(, NSSet, set, NSSet *)
 
 
 #pragma mark - NSRegularExpression
@@ -243,8 +200,6 @@ csel0(, NSDictionary, dictionary, NSDictionary *)
 
 #pragma mark - SELECTORS
 
-SEL ns_isEqual;
-
 SEL ns_resultType;
 SEL ns_range;
 
@@ -252,15 +207,21 @@ SEL ns_lengthOfBytesUsingEncoding;
 //SEL ns_retainCount;
 
 Class NS_NUMBER;
+Class NS_ARRAY;
+Class NS_MUTABLE_ARRAY;
 Class NS_STRING;
 Class NS_MUTABLE_STRING;
+Class NS_SET;
+Class NS_MUTABLE_SET;
+Class NS_URL;
+Class NS_DATA;
+Class NS_MUTABLE_DATA;
 
 __attribute__((constructor))
 static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-    ns_isEqual = @selector(isEqual:);
 
     ns_resultType = @selector(resultType);
     ns_range = @selector(range);
@@ -268,8 +229,17 @@ static void common_initializer()
     ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
 
     NS_NUMBER = [NSNumber class];
+    NS_ARRAY = [NSArray class];
+    NS_MUTABLE_ARRAY = [NSMutableArray class];
     NS_STRING = [NSString class];
     NS_MUTABLE_STRING = [NSMutableString class];
+    
+    NS_SET = [NSSet class];
+    NS_MUTABLE_SET = [NSMutableSet class];
+    
+    NS_URL = [NSURL class];
+    NS_DATA = [NSData class];
+    NS_MUTABLE_DATA = [NSMutableData class];
   }
 }
 NS_ASSUME_NONNULL_END

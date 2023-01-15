@@ -243,7 +243,7 @@ impl Id {
 
     #[inline]
     pub fn is_equal(&self, other: &Self) -> bool {
-        crate::msg_send!("ns", self, ns_isEqual, other)
+        unsafe { self.call1(msg_send::is_equal, other) }
     }
 
     #[inline]

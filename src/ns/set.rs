@@ -1,8 +1,8 @@
-use std::{marker::PhantomData, mem::transmute, ops::Deref};
+use std::{marker::PhantomData, ops::Deref};
 
 use crate::{
     arc, ns,
-    objc::{msg_send, Obj},
+    objc::{msg_send, Class, Obj},
 };
 
 #[derive(Debug)]
@@ -36,12 +36,18 @@ impl<T: Obj> Deref for SetMut<T> {
 impl<T: Obj> Set<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(NSSet_set()) }
+        unsafe { NS_SET.alloc::<Self>().call0(msg_send::init) }
     }
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        unsafe { transmute(NSSet_withObjs(objs.as_ptr() as _, objs.len())) }
+        unsafe {
+            NS_SET.alloc::<Self>().call2(
+                msg_send::init_with_objects_count,
+                objs.as_ptr(),
+                objs.len(),
+            )
+        }
     }
 
     #[inline]
@@ -65,8 +71,7 @@ impl<T> ns::FastEnumeration<T> for SetMut<T> where T: Obj {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSSet_withObjs(objects: *const ns::Id, count: ns::UInteger) -> arc::R<Set<ns::Id>>;
-    fn NSSet_set() -> arc::R<Set<ns::Id>>;
+    static NS_SET: &'static Class;
 }
 
 #[cfg(test)]

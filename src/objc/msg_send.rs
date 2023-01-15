@@ -99,6 +99,9 @@ extern "C" {
     #[link_name = "objc_msgSend$isEqualToString:"]
     pub fn is_equal_to_string();
 
+    #[link_name = "objc_msgSend$isEqual:"]
+    pub fn is_equal();
+
     #[link_name = "objc_msgSend$substringWithRange:"]
     pub fn substring_with_range();
 
@@ -128,4 +131,10 @@ extern "C" {
 
     #[link_name = "objc_msgSend$absoluteString"]
     pub fn absolute_string();
+
+    #[link_name = "objc_msgSend$initWithObjects:count:"]
+    pub fn init_with_objects_count();
+
+    #[link_name = "objc_msgSend$initWithCapacity:"]
+    pub fn init_with_capacity();
 }

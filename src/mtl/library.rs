@@ -113,20 +113,6 @@ impl Library {
         unsafe { rsel_functionNames(self) }
     }
 
-    /// ```
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let source = ns::String::with_str("kernel void function_a() {}");
-    /// let lib = device.library_with_source(&source, None).unwrap();
-    ///
-    /// let func_name = ns::String::with_str_no_copy("function_a");
-    /// let func = lib.new_function_with_name(&func_name).unwrap();
-    /// let name = func.name();
-    /// assert!(func_name.is_equal(&name));
-    ///
-    /// ```
     pub fn new_function_with_name(&self, name: &ns::String) -> Option<arc::R<Function>> {
         unsafe { rsel_newFunctionWithName(self, name) }
     }
@@ -143,7 +129,7 @@ impl Library {
         rsel_newFunctionWithName_constantValues_error(self, name, constant_values, error)
     }
 
-    /// ```
+    /// ```no_run
     /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -277,6 +263,21 @@ mod tests {
     }
 
     #[test]
+    fn function_names() {
+        let device = mtl::Device::default().unwrap();
+
+        let source = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
+        let lib = device.library_with_source(&source, None).unwrap();
+        let names = lib.function_names();
+        assert_eq!(1, names.len());
+        let n = &names[0];
+
+        let expected_name = ns::String::with_str("function_a");
+
+        assert!(n.eq(&expected_name));
+    }
+
+    #[test]
     fn error_basics() {
         let device = mtl::Device::default().unwrap();
 
@@ -284,5 +285,34 @@ mod tests {
         let err = device.library_with_source(&source, None).unwrap_err();
 
         assert_eq!(mtl::LibraryError::CompileFailure, err.code());
+    }
+
+    #[test]
+    fn new_function_with_name() {
+        let device = mtl::Device::default().unwrap();
+
+        let source = ns::String::with_str("kernel void function_a() {}");
+        let lib = device.library_with_source(&source, None).unwrap();
+
+        let func_name = ns::String::with_str_no_copy("function_a");
+        let func = lib.new_function_with_name(&func_name).unwrap();
+        let name = func.name();
+        assert!(func_name.is_equal(&name));
+    }
+
+    #[test]
+    fn new_function_with_name_constant_values() {
+        let device = mtl::Device::default().unwrap();
+
+        let source = ns::String::with_str("kernel void function_a() {}");
+        let lib = device.library_with_source(&source, None).unwrap();
+
+        let func_name = ns::String::with_str_no_copy("function_a");
+        let constant_values = mtl::FunctionConstantValues::new();
+        let func = lib
+            .new_function_with_name_constant_values(&func_name, &constant_values)
+            .unwrap();
+        let name = func.name();
+        assert!(func_name.is_equal(name));
     }
 }

@@ -1,12 +1,11 @@
 use std::{
     marker::PhantomData,
-    mem::transmute,
     ops::{Deref, Index, IndexMut},
 };
 
 use crate::{
     arc, ns,
-    objc::{msg_send, Obj},
+    objc::{msg_send, Class, Obj},
 };
 
 #[derive(Debug)]
@@ -40,12 +39,18 @@ impl<T: Obj> Deref for ArrayMut<T> {
 impl<T: Obj> Array<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(NSArray_array()) }
+        unsafe { NS_ARRAY.alloc::<Self>().call0(msg_send::init) }
     }
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        unsafe { transmute(NSArray_withObjs(objs.as_ptr() as _, objs.len())) }
+        unsafe {
+            NS_ARRAY.alloc::<Self>().call2(
+                msg_send::init_with_objects_count,
+                objs.as_ptr(),
+                objs.len(),
+            )
+        }
     }
 
     #[inline]
@@ -82,19 +87,40 @@ where
         unsafe { self.call1(msg_send::object_at_index, index) }
     }
 }
+impl<T: Obj> ArrayMut<T> {
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> arc::R<Self> {
+        unsafe {
+            NS_MUTABLE_ARRAY
+                .alloc::<Self>()
+                .call1(msg_send::init_with_capacity, capacity)
+        }
+    }
+}
 
 impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}
 impl<T: Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSArray_withObjs(objects: *const ns::Id, count: ns::UInteger) -> arc::R<Array<ns::Id>>;
-    fn NSArray_array() -> arc::Retained<Array<ns::Id>>;
+    static NS_ARRAY: &'static Class;
+    static NS_MUTABLE_ARRAY: &'static Class;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::ns;
+    use crate::{ns, objc::Obj};
+
+    #[test]
+    fn empty() {
+        let empty = ns::Array::<ns::Number>::new();
+        assert!(empty.is_empty());
+        assert!(!empty.is_tagged_ptr());
+
+        let empty = ns::ArrayMut::<ns::Number>::with_capacity(10);
+        assert!(empty.is_empty());
+        assert!(!empty.is_tagged_ptr());
+    }
 
     #[test]
     fn basics() {

@@ -4,7 +4,7 @@ define_obj_type!(URLResponse(ns::Id));
 define_obj_type!(HTTPURLResponse(URLResponse));
 
 impl URLResponse {
-    /// ```
+    /// ```no_run
     /// use cidre::ns;
     /// let url = ns::URL::with_str("https://google.com").unwrap();
     /// let response = ns::URLResponse::with_url(&url);
@@ -46,4 +46,17 @@ extern "C" {
         expectedContentLength: ns::Integer,
         textEncodingName: Option<&ns::String>,
     ) -> arc::R<URLResponse>;
+}
+
+#[cfg(test)]
+mod test {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let url = ns::URL::with_str("https://google.com").unwrap();
+        let response = ns::URLResponse::with_url(&url);
+        let response_url = response.url().unwrap();
+        assert!(url.is_equal(&response_url));
+    }
 }
