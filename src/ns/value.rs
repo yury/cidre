@@ -35,12 +35,16 @@ impl Number {
 
     #[inline]
     pub fn with_i16(value: i16) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_short, value) }
+        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_short, value) }
     }
 
     #[inline]
     pub fn with_u16(value: u16) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_short, value) }
+        unsafe {
+            NS_NUMBER
+                .alloc::<Self>()
+                .call1(init_with_unsigned_short, value)
+        }
     }
 
     #[inline]
@@ -55,18 +59,23 @@ impl Number {
 
     #[inline]
     pub fn with_i32(value: i32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_int, value) }
+        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_int, value) }
     }
 
     #[inline]
     pub fn with_u32(value: u32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_int, value) }
+        unsafe {
+            NS_NUMBER
+                .alloc::<Self>()
+                .call1(init_with_unsigned_int, value)
+        }
     }
 
     #[inline]
     pub fn tagged_i32(value: i32) -> &'static Self {
         unsafe { NS_NUMBER.call1(number_with_int, value) }
     }
+
     #[inline]
     pub fn tagged_i32_alloc(value: i32) -> &'static Self {
         unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_int, value) }
@@ -82,6 +91,7 @@ impl Number {
         unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_integer, value) }
     }
 
+    // just for benchmarks
     #[inline]
     pub fn with_i64_retain_auto(value: i64) -> arc::R<Self> {
         unsafe {
@@ -90,6 +100,7 @@ impl Number {
         }
     }
 
+    // just for benchmarks
     #[inline]
     pub fn with_i64_call(value: i64) -> arc::R<Self> {
         unsafe { NSNumber_numberWithInteger(value) }
@@ -102,32 +113,50 @@ impl Number {
 
     #[inline]
     pub fn with_u64(value: u64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_integer, value) }
+        unsafe {
+            NS_NUMBER
+                .alloc::<Self>()
+                .call1(init_with_unsigned_integer, value)
+        }
     }
 
     #[inline]
     pub fn with_f32(value: f32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_float, value) }
+        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_float, value) }
     }
+
+    // #[inline]
+    // pub fn tagged_f32(value: f32) -> &'static Self {
+    //     unsafe { NS_NUMBER.call1(number_with_float, value) }
+    // }
 
     #[inline]
     pub fn with_f64(value: f64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_double, value) }
+        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_double, value) }
     }
 
     #[inline]
     pub fn with_bool(value: bool) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_bool, value) }
+        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_bool, value) }
     }
+
+    // #[inline]
+    // pub fn tagged_bool(value: bool) -> &'static Self {
+    //     unsafe { NS_NUMBER.call1(number_with_bool, value) }
+    // }
 
     #[inline]
     pub fn with_integer(value: ns::Integer) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_integer, value) }
+        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_integer, value) }
     }
 
     #[inline]
     pub fn with_uinteger(value: ns::UInteger) -> arc::R<Self> {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_integer, value) }
+        unsafe {
+            NS_NUMBER
+                .alloc::<Self>()
+                .call1(init_with_unsigned_integer, value)
+        }
     }
 
     #[doc(alias = "charValue")]
@@ -326,6 +355,7 @@ extern "C" {
 
     static NS_NUMBER: &'static Class;
 
+    // just for benchmarks
     fn NSNumber_numberWithInteger(value: i64) -> arc::R<ns::Number>;
 }
 
@@ -345,8 +375,14 @@ extern "C" {
     #[link_name = "objc_msgSend$numberWithShort:"]
     fn number_with_short();
 
+    #[link_name = "objc_msgSend$initWithShort:"]
+    fn init_with_short();
+
     #[link_name = "objc_msgSend$numberWithUnsignedShort:"]
     fn number_with_unsigned_short();
+
+    #[link_name = "objc_msgSend$initWithUnsignedShort:"]
+    fn init_with_unsigned_short();
 
     #[link_name = "objc_msgSend$numberWithInt:"]
     fn number_with_int();
@@ -357,14 +393,23 @@ extern "C" {
     #[link_name = "objc_msgSend$numberWithUnsignedInt:"]
     fn number_with_unsigned_int();
 
-    #[link_name = "objc_msgSend$numberWithFloat:"]
-    fn number_with_float();
+    #[link_name = "objc_msgSend$initWithUnsignedInt:"]
+    fn init_with_unsigned_int();
 
-    #[link_name = "objc_msgSend$numberWithDouble:"]
-    fn number_with_double();
+    // #[link_name = "objc_msgSend$numberWithFloat:"]
+    // fn number_with_float();
 
-    #[link_name = "objc_msgSend$numberWithBool:"]
-    fn number_with_bool();
+    #[link_name = "objc_msgSend$initWithFloat:"]
+    fn init_with_float();
+
+    #[link_name = "objc_msgSend$initWithDouble:"]
+    fn init_with_double();
+
+    // #[link_name = "objc_msgSend$numberWithBool:"]
+    // fn number_with_bool();
+
+    #[link_name = "objc_msgSend$initWithBool:"]
+    fn init_with_bool();
 
     #[link_name = "objc_msgSend$numberWithInteger:"]
     fn number_with_integer();
@@ -372,8 +417,8 @@ extern "C" {
     #[link_name = "objc_msgSend$initWithInteger:"]
     fn init_with_integer();
 
-    #[link_name = "objc_msgSend$numberWithUnsignedInteger:"]
-    fn number_with_unsigned_integer();
+    #[link_name = "objc_msgSend$initWithUnsignedInteger:"]
+    fn init_with_unsigned_integer();
 
     #[link_name = "objc_msgSend$isEqualToNumber:"]
     fn is_equal_to_number();
@@ -381,30 +426,40 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ns, objc::Obj};
+    use crate::{
+        ns,
+        objc::{autoreleasepool, Obj},
+    };
 
     #[test]
     fn tagged_pointers() {
-        let i8 = ns::Number::tagged_i8(i8::MAX - 1);
-        let u8 = ns::Number::tagged_u8(u8::MAX - 1);
-        let i16 = ns::Number::tagged_i16(i16::MAX - 1);
-        let u16 = ns::Number::tagged_u16(u16::MAX - 1);
-        let i32 = ns::Number::tagged_i32(i32::MAX - 1);
-        let u32 = ns::Number::tagged_u32(u32::MAX - 1);
-        let i64 = ns::Number::with_i64(i64::MAX - 1);
-        let i64_tagged = ns::Number::with_i64(1);
+        autoreleasepool(|| {
+            // let b = ns::Number::tagged_bool(true);
+            let i8 = ns::Number::tagged_i8(i8::MAX - 1);
+            let u8 = ns::Number::tagged_u8(u8::MAX - 1);
+            let i16 = ns::Number::tagged_i16(i16::MAX - 1);
+            let u16 = ns::Number::tagged_u16(u16::MAX - 1);
+            let i32 = ns::Number::tagged_i32(i32::MAX - 1);
+            let u32 = ns::Number::tagged_u32(u32::MAX - 1);
+            // let f32 = ns::Number::tagged_f32(f32::MAX - 1f32);
+            let i64 = ns::Number::with_i64(i64::MAX - 1);
+            let i64_tagged = ns::Number::with_i64(1);
 
-        assert!(i8.is_tagged_ptr());
-        assert!(u8.is_tagged_ptr());
-        assert!(i16.is_tagged_ptr());
-        assert!(u16.is_tagged_ptr());
-        assert!(i32.is_tagged_ptr());
-        assert!(u32.is_tagged_ptr());
-        assert!(!i64.is_tagged_ptr());
-        assert!(i64_tagged.is_tagged_ptr());
+            // println!("{:?}", b.debug_description());
+            // assert!(b.is_tagged_ptr());
+            assert!(i8.is_tagged_ptr());
+            assert!(u8.is_tagged_ptr());
+            assert!(i16.is_tagged_ptr());
+            assert!(u16.is_tagged_ptr());
+            assert!(i32.is_tagged_ptr());
+            assert!(u32.is_tagged_ptr());
+            // assert!(f32.is_tagged_ptr());
+            assert!(!i64.is_tagged_ptr());
+            assert!(i64_tagged.is_tagged_ptr());
 
-        let _s = i8.string();
-        let _s = u8.string();
-        let _s = i16.string();
+            let _s = i8.string();
+            let _s = u8.string();
+            let _s = i16.string();
+        });
     }
 }
