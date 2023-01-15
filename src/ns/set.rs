@@ -36,17 +36,15 @@ impl<T: Obj> Deref for SetMut<T> {
 impl<T: Obj> Set<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { NS_SET.alloc::<Self>().call0(msg_send::init) }
+        unsafe { NS_SET.alloc().call0(msg_send::init) }
     }
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe {
-            NS_SET.alloc::<Self>().call2(
-                msg_send::init_with_objects_count,
-                objs.as_ptr(),
-                objs.len(),
-            )
+            NS_SET
+                .alloc()
+                .call2(msg_send::init_with_objects_count, objs.as_ptr(), objs.len())
         }
     }
 
@@ -71,7 +69,7 @@ impl<T> ns::FastEnumeration<T> for SetMut<T> where T: Obj {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_SET: &'static Class;
+    static NS_SET: &'static Class<ns::Set<ns::Id>>;
 }
 
 #[cfg(test)]

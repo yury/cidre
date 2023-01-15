@@ -11,16 +11,12 @@ define_obj_type!(Number(Value));
 impl Number {
     #[inline]
     pub fn with_i8(value: i8) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_char, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_char, value) }
     }
 
     #[inline]
     pub fn with_u8(value: u8) -> arc::R<Self> {
-        unsafe {
-            NS_NUMBER
-                .alloc::<Self>()
-                .call1(init_with_unsigned_char, value)
-        }
+        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_char, value) }
     }
 
     #[inline]
@@ -35,16 +31,12 @@ impl Number {
 
     #[inline]
     pub fn with_i16(value: i16) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_short, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_short, value) }
     }
 
     #[inline]
     pub fn with_u16(value: u16) -> arc::R<Self> {
-        unsafe {
-            NS_NUMBER
-                .alloc::<Self>()
-                .call1(init_with_unsigned_short, value)
-        }
+        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_short, value) }
     }
 
     #[inline]
@@ -59,16 +51,12 @@ impl Number {
 
     #[inline]
     pub fn with_i32(value: i32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_int, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
     }
 
     #[inline]
     pub fn with_u32(value: u32) -> arc::R<Self> {
-        unsafe {
-            NS_NUMBER
-                .alloc::<Self>()
-                .call1(init_with_unsigned_int, value)
-        }
+        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_int, value) }
     }
 
     #[inline]
@@ -78,7 +66,7 @@ impl Number {
 
     #[inline]
     pub fn tagged_i32_alloc(value: i32) -> &'static Self {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_int, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
     }
 
     #[inline]
@@ -88,7 +76,7 @@ impl Number {
 
     #[inline]
     pub fn with_i64(value: i64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_integer, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
     }
 
     // just for benchmarks
@@ -113,16 +101,12 @@ impl Number {
 
     #[inline]
     pub fn with_u64(value: u64) -> arc::R<Self> {
-        unsafe {
-            NS_NUMBER
-                .alloc::<Self>()
-                .call1(init_with_unsigned_integer, value)
-        }
+        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
     }
 
     #[inline]
     pub fn with_f32(value: f32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_float, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_float, value) }
     }
 
     // #[inline]
@@ -132,12 +116,12 @@ impl Number {
 
     #[inline]
     pub fn with_f64(value: f64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_double, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_double, value) }
     }
 
     #[inline]
     pub fn with_bool(value: bool) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_bool, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_bool, value) }
     }
 
     // #[inline]
@@ -147,16 +131,12 @@ impl Number {
 
     #[inline]
     pub fn with_integer(value: ns::Integer) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc::<Self>().call1(init_with_integer, value) }
+        unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
     }
 
     #[inline]
     pub fn with_uinteger(value: ns::UInteger) -> arc::R<Self> {
-        unsafe {
-            NS_NUMBER
-                .alloc::<Self>()
-                .call1(init_with_unsigned_integer, value)
-        }
+        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
     }
 
     #[doc(alias = "charValue")]
@@ -353,7 +333,7 @@ impl Eq for Number {}
 #[link(name = "ns", kind = "static")]
 extern "C" {
 
-    static NS_NUMBER: &'static Class;
+    static NS_NUMBER: &'static Class<ns::Number>;
 
     // just for benchmarks
     fn NSNumber_numberWithInteger(value: i64) -> arc::R<ns::Number>;

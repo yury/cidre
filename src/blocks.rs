@@ -196,7 +196,7 @@ pub struct Descriptor2<T: Sized> {
 // for completion handlers
 #[repr(C)]
 struct Layout2Once<F: Sized + 'static> {
-    isa: &'static Class,
+    isa: &'static Class<ns::Id>,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
@@ -206,7 +206,7 @@ struct Layout2Once<F: Sized + 'static> {
 
 #[repr(C)]
 struct Layout2Mut<F: Sized + 'static> {
-    isa: &'static Class,
+    isa: &'static Class<ns::Id>,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
@@ -218,7 +218,7 @@ struct Layout2Mut<F: Sized + 'static> {
 #[allow(non_camel_case_types)]
 #[repr(C)]
 pub struct bl<F: Sized> {
-    isa: &'static Class,
+    isa: &'static Class<ns::Id>,
     flags: Flags,
     reserved: i32,
     invoke: F,
@@ -570,9 +570,9 @@ impl<A, B, C, D, E, R> bl<extern "C" fn(b: *const c_void, a: A, b: B, c: C, d: D
     link(name = "BlocksRuntime", kind = "dylib")
 )]
 extern "C" {
-    static _NSConcreteGlobalBlock: Class;
-    static _NSConcreteStackBlock: Class;
-    static _NSConcreteMallocBlock: Class;
+    static _NSConcreteGlobalBlock: Class<ns::Id>;
+    static _NSConcreteStackBlock: Class<ns::Id>;
+    static _NSConcreteMallocBlock: Class<ns::Id>;
 
     fn _Block_copy(block: *const c_void) -> *const c_void;
     fn _Block_release(block: *const c_void);

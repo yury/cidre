@@ -1,29 +1,31 @@
-use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, ptr::NonNull};
+use std::{
+    borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref, ptr::NonNull,
+};
 
 use crate::{arc, cf::Type};
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Class(Type);
+pub struct Class<T: Obj>(Type, PhantomData<T>);
 
-impl Class {
+impl<T: Obj> Class<T> {
     #[inline]
     pub fn as_type_ref(&self) -> &Type {
         &self.0
     }
 
     #[inline]
-    pub unsafe fn alloc<T: Obj>(&self) -> &'static T {
+    pub unsafe fn alloc(&self) -> &'static T {
         self.call0(msg_send::alloc)
     }
 
     #[inline]
-    pub unsafe fn new<T: Obj>(&self) -> &'static T {
+    pub unsafe fn new(&self) -> &'static T {
         self.call0(msg_send::new)
     }
 }
 
-impl Obj for Class {}
+impl<T: Obj> Obj for Class<T> {}
 
 impl<T: Obj> arc::Release for T {
     #[inline]

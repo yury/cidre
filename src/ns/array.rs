@@ -39,17 +39,15 @@ impl<T: Obj> Deref for ArrayMut<T> {
 impl<T: Obj> Array<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { NS_ARRAY.alloc::<Self>().call0(msg_send::init) }
+        unsafe { NS_ARRAY.alloc().call0(msg_send::init) }
     }
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe {
-            NS_ARRAY.alloc::<Self>().call2(
-                msg_send::init_with_objects_count,
-                objs.as_ptr(),
-                objs.len(),
-            )
+            NS_ARRAY
+                .alloc()
+                .call2(msg_send::init_with_objects_count, objs.as_ptr(), objs.len())
         }
     }
 
@@ -92,7 +90,7 @@ impl<T: Obj> ArrayMut<T> {
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
         unsafe {
             NS_MUTABLE_ARRAY
-                .alloc::<Self>()
+                .alloc()
                 .call1(msg_send::init_with_capacity, capacity)
         }
     }
@@ -103,8 +101,8 @@ impl<T: Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_ARRAY: &'static Class;
-    static NS_MUTABLE_ARRAY: &'static Class;
+    static NS_ARRAY: &'static Class<ns::Array<ns::Id>>;
+    static NS_MUTABLE_ARRAY: &'static Class<ns::ArrayMut<ns::Id>>;
 }
 
 #[cfg(test)]
