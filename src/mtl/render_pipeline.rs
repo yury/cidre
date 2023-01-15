@@ -86,8 +86,8 @@ pub enum TessellationFactorFormat {
 #[repr(usize)]
 pub enum TessellationControlPointIndexType {
     None = 0,
-    UInt16 = 1,
-    UInt32 = 2,
+    U16 = 1,
+    U32 = 2,
 }
 
 define_obj_type!(ColorAttachmentDescriptor(ns::Id));

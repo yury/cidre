@@ -207,70 +207,57 @@ macro_rules! define_mtl {
 
     (set_label) => {
         #[inline]
-        pub fn set_label(&mut self, value: Option<&crate::cf::String>) {
-            crate::msg_send!("common", self, sel_setLabel, value)
+        pub fn set_label(&mut self, value: Option<&crate::ns::String>) {
+            unsafe { $crate::objc::Obj::call1(self, $crate::objc::msg_send::set_label, value) }
         }
     };
 
     (label) => {
         #[inline]
         pub fn label(&self) -> Option<&crate::cf::String> {
-            crate::msg_send!("common", self, sel_label)
+            unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::label) }
         }
     };
 
     (width) => {
         #[inline]
         pub fn width(&self) -> usize {
-            crate::msg_send!("common", self, sel_width)
+            unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::width) }
         }
     };
 
     (set_width) => {
         #[inline]
         pub fn set_width(&mut self, value: usize) {
-            crate::msg_send!("common", self, sel_setWidth, value)
+            unsafe { $crate::objc::Obj::call1(self, $crate::objc::msg_send::set_width, value)}
         }
     };
 
     (height) => {
         #[inline]
         pub fn height(&self) -> usize {
-            crate::msg_send!("common", self, sel_height)
+            unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::height) }
         }
     };
 
     (set_height) => {
         #[inline]
         pub fn set_height(&mut self, value: usize) {
-            crate::msg_send!("common", self, sel_setHeight, value)
+            unsafe { $crate::objc::Obj::call1(self, $crate::objc::msg_send::set_height, value)}
         }
     };
 
     (depth) => {
         #[inline]
         pub fn depth(&self) -> usize {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_depth(
-                    id: &crate::ns::Id,
-                ) -> usize;
-            }
-            unsafe { rsel_depth(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::depth) }
         }
     };
 
     (set_depth) => {
         #[inline]
         pub fn set_depth(&mut self, value: usize) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setDepth(
-                    id: &mut crate::ns::Id,
-                    value: usize
-                );
-            }
-            unsafe { wsel_setDepth(self, value) }
+            unsafe { $crate::objc::Obj::call1(self, $crate::objc::msg_send::set_depth, value)}
         }
     };
 
@@ -433,11 +420,7 @@ macro_rules! define_mtl {
     (reset) => {
         #[inline]
         pub fn reset(&mut self) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_reset(id: &mut crate::ns::Id);
-            }
-            unsafe { wsel_reset(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::reset) }
         }
     };
 

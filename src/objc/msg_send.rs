@@ -146,4 +146,31 @@ extern "C" {
 
     #[link_name = "objc_msgSend$URL"]
     pub fn url();
+
+    #[link_name = "objc_msgSend$width"]
+    pub fn width();
+
+    #[link_name = "objc_msgSend$height"]
+    pub fn height();
+
+    #[link_name = "objc_msgSend$depth"]
+    pub fn depth();
+
+    #[link_name = "objc_msgSend$label"]
+    pub fn label();
+
+    #[link_name = "objc_msgSend$setWidth:"]
+    pub fn set_width();
+
+    #[link_name = "objc_msgSend$setHeight:"]
+    pub fn set_height();
+
+    #[link_name = "objc_msgSend$setDepth:"]
+    pub fn set_depth();
+
+    #[link_name = "objc_msgSend$setLabel:"]
+    pub fn set_label();
+
+    #[link_name = "objc_msgSend$reset"]
+    pub fn reset();
 }
