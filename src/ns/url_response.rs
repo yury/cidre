@@ -1,4 +1,7 @@
-use crate::{arc, define_obj_type, msg_send, ns};
+use crate::{
+    arc, define_obj_type, ns,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(URLResponse(ns::Id));
 define_obj_type!(HTTPURLResponse(URLResponse));
@@ -34,7 +37,7 @@ impl URLResponse {
     }
 
     pub fn url(&self) -> Option<&ns::URL> {
-        msg_send!("common", self, sel_URL)
+        unsafe { self.call0(msg_send::url) }
     }
 }
 

@@ -137,4 +137,7 @@ extern "C" {
 
     #[link_name = "objc_msgSend$initWithCapacity:"]
     pub fn init_with_capacity();
+
+    #[link_name = "objc_msgSend$URL"]
+    pub fn url();
 }
