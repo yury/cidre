@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, ops::Deref};
+use std::{marker::PhantomData, mem::transmute, ops::Deref};
 
 use crate::{
     arc, ns,
@@ -36,7 +36,7 @@ impl<T: Obj> Deref for SetMut<T> {
 impl<T: Obj> Set<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { NS_SET.alloc().call0(msg_send::init) }
+        unsafe { transmute(NS_SET.alloc_init()) }
     }
 
     #[inline]

@@ -1,5 +1,6 @@
 use std::{
     marker::PhantomData,
+    mem::transmute,
     ops::{Deref, Index, IndexMut},
 };
 
@@ -39,7 +40,14 @@ impl<T: Obj> Deref for ArrayMut<T> {
 impl<T: Obj> Array<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { NS_ARRAY.alloc().call0(msg_send::init) }
+        unsafe { transmute(NS_ARRAY.alloc_init()) }
+    }
+
+    // use new() with uses alloc_init and it is faster
+    // _new() is slower
+    #[inline]
+    pub fn _new() -> arc::R<Self> {
+        unsafe { transmute(NS_ARRAY.new()) }
     }
 
     #[inline]

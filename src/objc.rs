@@ -1,6 +1,4 @@
-use std::{
-    borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref, ptr::NonNull,
-};
+use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
 use crate::{arc, cf::Type};
 
@@ -20,7 +18,13 @@ impl<T: Obj> Class<T> {
     }
 
     #[inline]
-    pub unsafe fn new(&self) -> &'static T {
+    pub unsafe fn alloc_init(&self) -> arc::R<T> {
+        self.alloc().call0(msg_send::init)
+    }
+
+    // in general alloc_init is faster
+    #[inline]
+    pub unsafe fn new(&self) -> arc::R<T> {
         self.call0(msg_send::new)
     }
 }
