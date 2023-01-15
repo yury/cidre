@@ -9,7 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-SEL sel_length;
 SEL sel_name;
 SEL sel_label;
 SEL sel_setLabel;
@@ -38,7 +37,6 @@ static void common_initializer()
     static int initialized = 0;
     if (!initialized) {
       
-      sel_length = @selector(length);
       sel_name = @selector(name);
       sel_label = @selector(label);
       sel_setName = @selector(setName:);
