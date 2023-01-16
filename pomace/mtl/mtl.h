@@ -16,11 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 NS_RETURNS_RETAINED
 rsel0(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
 
-//- (nullable id <MTLCommandQueue>)newCommandQueueWithMaxCommandBufferCount:(NSUInteger)maxCommandBufferCount;
 NS_RETURNS_RETAINED
 rsel1(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
 
-// - (nullable id <MTLTexture>)newTextureWithDescriptor:(MTLTextureDescriptor *)descriptor;
 NS_RETURNS_RETAINED
 rsel1(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _Nullable )
 
