@@ -170,8 +170,8 @@ pub trait Obj: arc::Retain {
 
     #[inline]
     unsafe fn call0<R>(&self, send: unsafe extern "C" fn()) -> R {
-        let imp: unsafe extern "C" fn(&Self, *const c_void) -> R = transmute(send as *const c_void);
-        imp(self, std::ptr::null())
+        let imp: unsafe extern "C" fn(&Self) -> R = transmute(send as *const c_void);
+        imp(self)
     }
 
     #[inline]
@@ -453,7 +453,6 @@ mod tests {
         });
 
         let _ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
-        // expect crash: ptr.show()
     }
 }
 

@@ -1,5 +1,3 @@
-use std::{arch::asm, mem::transmute};
-
 use crate::{
     arc, define_obj_type, ns,
     objc::{msg_send, Class, Obj},
@@ -9,11 +7,13 @@ define_obj_type!(Value(ns::Id));
 define_obj_type!(Number(Value));
 
 impl Number {
+    #[must_use]
     #[inline]
     pub fn with_i8(value: i8) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_char, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_u8(value: u8) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_char, value) }
@@ -29,11 +29,13 @@ impl Number {
         unsafe { NS_NUMBER.call1(number_with_unsigned_char, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_i16(value: i16) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_short, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_u16(value: u16) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_short, value) }
@@ -49,11 +51,13 @@ impl Number {
         unsafe { NS_NUMBER.call1(number_with_unsigned_short, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_i32(value: i32) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_u32(value: u32) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_int, value) }
@@ -64,6 +68,7 @@ impl Number {
         unsafe { NS_NUMBER.call1(number_with_int, value) }
     }
 
+    // for benches
     #[inline]
     pub fn tagged_i32_alloc(value: i32) -> &'static Self {
         unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
@@ -74,11 +79,14 @@ impl Number {
         unsafe { NS_NUMBER.call1(number_with_unsigned_int, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_i64(value: i64) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
     }
 
+    // for benches
+    #[must_use]
     #[inline]
     pub fn with_i64_ar_retain(value: i64) -> arc::R<Self> {
         Self::with_i64_ar(value).retain()
@@ -89,22 +97,25 @@ impl Number {
         unsafe { NS_NUMBER.call1(number_with_integer, value) }
     }
 
-    // just for benchmarks
+    // for benches
     #[inline]
     pub fn with_i64_call(value: i64) -> arc::R<Self> {
         unsafe { NSNumber_numberWithInteger(value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_isize(value: isize) -> arc::R<Self> {
         Self::with_i64(value as _)
     }
 
+    #[must_use]
     #[inline]
     pub fn with_u64(value: u64) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_f32(value: f32) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_float, value) }
@@ -115,6 +126,7 @@ impl Number {
     //     unsafe { NS_NUMBER.call1(number_with_float, value) }
     // }
 
+    #[must_use]
     #[inline]
     pub fn with_f64(value: f64) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_double, value) }
@@ -130,11 +142,13 @@ impl Number {
     //     unsafe { NS_NUMBER.call1(number_with_bool, value) }
     // }
 
+    #[must_use]
     #[inline]
     pub fn with_integer(value: ns::Integer) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
     }
 
+    #[must_use]
     #[inline]
     pub fn with_uinteger(value: ns::UInteger) -> arc::R<Self> {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
@@ -222,8 +236,14 @@ impl Number {
 
     #[doc(alias = "stringValue")]
     #[inline]
-    pub fn string(&self) -> arc::R<ns::String> {
+    pub fn string_ar(&self) -> arc::Rar<ns::String> {
         unsafe { self.call0(msg_send::string_value) }
+    }
+
+    #[doc(alias = "stringValue")]
+    #[inline]
+    pub fn string(&self) -> arc::R<ns::String> {
+        self.string_ar().retain()
     }
 
     #[inline]
@@ -446,6 +466,10 @@ mod tests {
 
     #[test]
     fn rar() {
+        autoreleasepool(|| {
+            let s = autoreleasepool(|| ns::Number::with_i32(10).string());
+            println!("{:?}", s);
+        });
         //        let foo = autoreleasepool(|| ns::Number::with_i64_ar(10));
     }
 }

@@ -15,4 +15,8 @@
   cb( _vtable[0], msg);
 }
 
+- (void)foo {
+  NSString *num = [[[NSNumber alloc] initWithInt: 5] stringValue];
+}
+
 @end

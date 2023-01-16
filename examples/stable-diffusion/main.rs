@@ -1264,7 +1264,7 @@ fn make_diffusion_step(
 fn main() {
     // unsafe {
     autoreleasepool(|| {
-        let i64 = ns::Number::with_i64(i64::MAX - 1);
+        let i64 = ns::Number::with_i64(1).string();
     })
     // let desc = cidre::objc::Id::retain_autoreleased(Some(num.debug_description()));
     // }

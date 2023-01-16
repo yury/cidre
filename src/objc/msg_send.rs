@@ -233,4 +233,10 @@ extern "C" {
 
     #[link_name = "objc_msgSend$sharedSession"]
     pub fn shared_session();
+
+    #[link_name = "objc_msgSend$objectAtIndexedSubscript:"]
+    pub fn object_at_indexed_subscript();
+
+    #[link_name = "objc_msgSend$setObject:atIndexedSubscript::"]
+    pub fn set_object_at_indexed_subscript();
 }

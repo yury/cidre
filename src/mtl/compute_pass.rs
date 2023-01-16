@@ -1,56 +1,45 @@
 use std::ops::Index;
 
-use crate::{define_obj_type, ns};
+use crate::{
+    arc, define_obj_type,
+    mtl::msg_send,
+    ns,
+    objc::{self, Class, Obj},
+};
 
 use super::{CounterSampleBuffer, DispatchType};
 
 define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
-    /// ```
-    /// use cidre::{mtl, objc};
-    ///
-    /// objc::autoreleasepool(|| {
-    ///     let cpd = mtl::ComputePassDescriptor::default();
-    ///
-    ///     assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
-    /// })
-    /// ```
     #[inline]
-    pub fn default<'ar>() -> &'ar Descriptor {
-        unsafe { MTLComputePassDescriptor_computePassDescriptor() }
+    pub fn default() -> arc::R<Descriptor> {
+        unsafe { MTL_COMPUTE_PASS_DESCRIPTOR.alloc_init() }
     }
 
     #[inline]
     pub fn dispatch_type(&self) -> DispatchType {
-        unsafe { rsel_dispatchType(self) }
+        unsafe { self.call0(msg_send::dispatch_type) }
     }
 
     #[inline]
     pub fn set_dispatch_type(&mut self, value: DispatchType) {
-        unsafe { wsel_setDispatchType(self, value) }
+        unsafe { self.call1(msg_send::set_dispatch_type, value) }
     }
 
     #[inline]
     pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray {
-        unsafe { MTLComputePassDescriptor_sampleBufferAttachments(self) }
+        unsafe { self.call0(msg_send::sample_buffer_attachments) }
     }
 
     #[inline]
     pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufferAttachmentDescriptorArray {
-        unsafe { MTLComputePassDescriptor_sampleBufferAttachments(self) }
+        unsafe { self.call0(msg_send::sample_buffer_attachments) }
     }
 }
 
 extern "C" {
-    fn MTLComputePassDescriptor_computePassDescriptor<'ar>() -> &'ar Descriptor;
-
-    fn rsel_dispatchType(id: &ns::Id) -> DispatchType;
-    fn wsel_setDispatchType(id: &mut ns::Id, value: DispatchType);
-
-    fn MTLComputePassDescriptor_sampleBufferAttachments(
-        id: &ns::Id,
-    ) -> &mut SampleBufferAttachmentDescriptorArray;
+    static MTL_COMPUTE_PASS_DESCRIPTOR: &'static Class<Descriptor>;
 }
 
 define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
@@ -58,19 +47,15 @@ define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
 impl SampleBufferAttachmentDescriptorArray {
     #[inline]
     pub fn get_at(&self, index: usize) -> &SampleBufferAttachmentDescriptor {
-        unsafe {
-            MTLComputePassSampleBufferAttachmentDescriptorArray_objectAtIndexedSubscript(
-                self, index,
-            )
-        }
+        unsafe { self.call1(objc::msg_send::object_at_indexed_subscript, index) }
     }
 
     #[inline]
     pub fn set_at(&mut self, index: usize, value: &SampleBufferAttachmentDescriptor) {
         unsafe {
-            MTLComputePassSampleBufferAttachmentDescriptorArray_setObjectAtIndexedSubscript(
-                self,
-                Some(value),
+            self.call2(
+                objc::msg_send::set_object_at_indexed_subscript,
+                value,
                 index,
             )
         }
@@ -78,11 +63,8 @@ impl SampleBufferAttachmentDescriptorArray {
 
     #[inline]
     pub fn reset_at(&mut self, index: usize) {
-        unsafe {
-            MTLComputePassSampleBufferAttachmentDescriptorArray_setObjectAtIndexedSubscript(
-                self, None, index,
-            )
-        }
+        let none: Option<&SampleBufferAttachmentDescriptor> = None;
+        unsafe { self.call2(objc::msg_send::set_object_at_indexed_subscript, none, index) }
     }
 }
 
@@ -95,36 +77,29 @@ impl Index<usize> for SampleBufferAttachmentDescriptorArray {
     }
 }
 
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn MTLComputePassSampleBufferAttachmentDescriptorArray_objectAtIndexedSubscript(
-        id: &ns::Id,
-        index: usize,
-    ) -> &SampleBufferAttachmentDescriptor;
-
-    fn MTLComputePassSampleBufferAttachmentDescriptorArray_setObjectAtIndexedSubscript(
-        id: &mut ns::Id,
-        value: Option<&SampleBufferAttachmentDescriptor>,
-        index: usize,
-    );
-}
-
 define_obj_type!(SampleBufferAttachmentDescriptor(ns::Id));
 
 impl SampleBufferAttachmentDescriptor {
     #[inline]
     pub fn sample_buffer(&self) -> Option<&CounterSampleBuffer> {
-        unsafe { rsel_sampleBuffer(self) }
+        unsafe { self.call0(msg_send::sample_buffer) }
     }
 
     #[inline]
     pub fn set_sample_bufer(&mut self, value: Option<&CounterSampleBuffer>) {
-        unsafe { wsel_setSampleBuffer(self, value) }
+        unsafe { self.call1(msg_send::set_sample_buffer, value) }
     }
 }
 
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_sampleBuffer(id: &ns::Id) -> Option<&CounterSampleBuffer>;
-    fn wsel_setSampleBuffer(id: &mut ns::Id, value: Option<&CounterSampleBuffer>);
+#[cfg(test)]
+mod tests {
+    use crate::{mtl, objc};
+    #[test]
+    fn basics() {
+        objc::autoreleasepool(|| {
+            let cpd = mtl::ComputePassDescriptor::default();
+
+            assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
+        })
+    }
 }

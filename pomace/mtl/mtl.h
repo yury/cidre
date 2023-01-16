@@ -11,10 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - Common
-
-wsel0(, id, reset)
-
 #pragma mark - MTLDevice
 
 // uint64_t registryID
@@ -488,12 +484,6 @@ rwsel(, id, clearDepth, setClearDepth, double)
 //@property (nonatomic) MTLMultisampleDepthResolveFilter depthResolveFilter API_AVAILABLE(macos(10.14), ios(9.0));
 rwsel(, id, depthResolveFilter, setDepthResolveFilter, MTLMultisampleDepthResolveFilter)
 
-#pragma mark - MTLComputePassDescriptor
-
-csel0(, MTLComputePassDescriptor, computePassDescriptor, MTLComputePassDescriptor *)
-//@property (nonatomic) MTLDispatchType dispatchType;
-rwsel(, id, dispatchType, setDispatchType, MTLDispatchType)
-
 //@property (readonly) MTLComputePassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
 NS_RETURNS_NOT_RETAINED
 rsel0(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
@@ -505,19 +495,6 @@ NS_RETURNS_NOT_RETAINED
 rsel1(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPipelineColorAttachmentDescriptor *)
 
 wsel2(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, setObject, MTLRenderPipelineColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
-
-#pragma mark - MTLComputePassSampleBufferAttachmentDescriptorArray
-
-
-NS_RETURNS_NOT_RETAINED
-rsel1(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLComputePassSampleBufferAttachmentDescriptor *)
-
-//- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
-wsel2(MTLComputePassSampleBufferAttachmentDescriptorArray_, MTLComputePassSampleBufferAttachmentDescriptorArray *, setObject, MTLComputePassSampleBufferAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
-
-#pragma mark - MTLComputePassSampleBufferAttachmentDescriptor
-
-rwsel(, id, sampleBuffer, setSampleBuffer, id<MTLCounterSampleBuffer> _Nullable)
 
 #pragma mark - MTLBlitPassDescriptor
 
@@ -570,12 +547,15 @@ SEL sel_setFragmentBuffer_offset_atIndex;
 SEL sel_setRenderPipelineState;
 SEL sel_computeCommandEncoderWithDescriptor;
 
+Class MTL_COMPUTE_PASS_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer()
 {
     static int initialized = 0;
     if (!initialized) {
+      
+      MTL_COMPUTE_PASS_DESCRIPTOR = [MTLComputePassDescriptor class];
       
       sel_device = @selector(device);
       sel_commandBuffer = @selector(commandBuffer);
