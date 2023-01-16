@@ -32,18 +32,6 @@ CidreMachPortDelegate * make_mach_port_delegate(void * _Nonnull vtable[_Nonnull 
   return result;
 }
 
-#pragma mark - NSProcessInfo
-
-NS_RETURNS_NOT_RETAINED
-csel0(, NSProcessInfo, processInfo, NSProcessInfo *)
-
-rsel0(, id, isLowPowerModeEnabled, BOOL)
-rsel0(, id, processorCount, NSUInteger)
-rsel0(, id, activeProcessorCount, NSUInteger)
-
-rsel0(, id, isMacCatalystApp, BOOL)
-rsel0(, id, isiOSAppOnMac, BOOL)
-
 void cidre_raise_exception(NSString *message) {
   [NSException raise:NSGenericException format:@"%@", message];
 }
@@ -213,6 +201,7 @@ Class NS_MUTABLE_SET;
 Class NS_URL;
 Class NS_DATA;
 Class NS_MUTABLE_DATA;
+Class NS_PROCESS_INFO;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -234,6 +223,7 @@ static void common_initializer()
     NS_URL = [NSURL class];
     NS_DATA = [NSData class];
     NS_MUTABLE_DATA = [NSMutableData class];
+    NS_PROCESS_INFO = [NSProcessInfo class];
   }
 }
 NS_ASSUME_NONNULL_END

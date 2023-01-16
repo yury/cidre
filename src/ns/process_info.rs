@@ -1,6 +1,6 @@
 use crate::{
     define_obj_type, ns,
-    objc::{self, Obj},
+    objc::{self, msg_send, Class, Obj},
 };
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -39,7 +39,7 @@ impl ProcessInfo {
     /// assert!(pi.active_processor_count() > 1);
     /// ```
     pub fn current() -> &'static ProcessInfo {
-        unsafe { NSProcessInfo_processInfo() }
+        unsafe { NS_PROCESS_INFO.call0(msg_send::process_info) }
     }
 
     #[inline]
@@ -49,39 +49,33 @@ impl ProcessInfo {
 
     #[inline]
     pub fn is_low_power_mode_enabled(&self) -> bool {
-        unsafe { rsel_isLowPowerModeEnabled(self) }
+        unsafe { self.call0(msg_send::is_low_power_mode_enabled) }
     }
 
     #[inline]
     pub fn processor_count(&self) -> usize {
-        unsafe { rsel_processorCount(self) }
+        unsafe { self.call0(msg_send::processor_count) }
     }
 
     #[inline]
     pub fn active_processor_count(&self) -> usize {
-        unsafe { rsel_activeProcessorCount(self) }
+        unsafe { self.call0(msg_send::active_processor_count) }
     }
 
     #[inline]
     pub fn is_mac_catalyst_app(&self) -> bool {
-        unsafe { rsel_isMacCatalystApp(self) }
+        unsafe { self.call0(msg_send::is_mac_catalyst_app) }
     }
 
     #[inline]
     pub fn is_ios_app_on_mac(&self) -> bool {
-        unsafe { rsel_isiOSAppOnMac(self) }
+        unsafe { self.call0(msg_send::is_ios_app_on_mac) }
     }
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSProcessInfo_processInfo() -> &'static ProcessInfo;
-    fn rsel_isLowPowerModeEnabled(id: &ns::Id) -> bool;
-    fn rsel_processorCount(id: &ns::Id) -> usize;
-    fn rsel_activeProcessorCount(id: &ns::Id) -> usize;
-
-    fn rsel_isMacCatalystApp(id: &ns::Id) -> bool;
-    fn rsel_isiOSAppOnMac(id: &ns::Id) -> bool;
+    static NS_PROCESS_INFO: &'static Class<ProcessInfo>;
 }
 
 #[cfg(test)]
