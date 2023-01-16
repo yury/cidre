@@ -1,3 +1,4 @@
+use crate::objc;
 use std::ops::{Deref, DerefMut};
 
 pub trait Release {
@@ -73,3 +74,4 @@ impl<T: Retain> Clone for Retained<T> {
 }
 
 pub type R<T> = Retained<T>;
+pub type Rar<T> = objc::ReturnedAutoReleased<T>;

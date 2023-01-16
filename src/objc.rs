@@ -1,4 +1,12 @@
-use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
+use std::{
+    arch::asm,
+    borrow::Cow,
+    ffi::c_void,
+    intrinsics::transmute,
+    marker::PhantomData,
+    ops::{Deref, DerefMut},
+    ptr::NonNull,
+};
 
 use crate::{arc, cf::Type};
 
@@ -450,6 +458,44 @@ mod tests {
 }
 
 pub mod msg_send;
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ReturnedAutoReleased<T: Obj + 'static>(&'static mut T);
+
+impl<T: Obj> ReturnedAutoReleased<T> {
+    #[inline]
+    pub fn retain(self) -> arc::R<T> {
+        unsafe {
+            asm!("mov x29, x29");
+            transmute(Id::retain_autoreleased(transmute(self)))
+        }
+    }
+
+    #[inline]
+    pub fn option_retain(value: Option<Self>) -> Option<arc::R<T>> {
+        unsafe {
+            asm!("mov x29, x29");
+            transmute(Id::retain_autoreleased(transmute(value)))
+        }
+    }
+}
+
+impl<T: Obj> Deref for ReturnedAutoReleased<T> {
+    type Target = T;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
 
 // global_asm!(
 //     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",

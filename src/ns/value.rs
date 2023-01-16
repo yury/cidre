@@ -1,4 +1,4 @@
-use std::mem::transmute;
+use std::{arch::asm, mem::transmute};
 
 use crate::{
     arc, define_obj_type, ns,
@@ -79,13 +79,14 @@ impl Number {
         unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
     }
 
-    // just for benchmarks
     #[inline]
-    pub fn with_i64_retain_auto(value: i64) -> arc::R<Self> {
-        unsafe {
-            let r = NS_NUMBER.call1(number_with_integer, value);
-            transmute(ns::Id::retain_autoreleased(r))
-        }
+    pub fn with_i64_ar_retain(value: i64) -> arc::R<Self> {
+        Self::with_i64_ar(value).retain()
+    }
+
+    #[inline]
+    pub fn with_i64_ar(value: i64) -> arc::Rar<Self> {
+        unsafe { NS_NUMBER.call1(number_with_integer, value) }
     }
 
     // just for benchmarks
@@ -441,5 +442,10 @@ mod tests {
             let _s = u8.string();
             let _s = i16.string();
         });
+    }
+
+    #[test]
+    fn rar() {
+        //        let foo = autoreleasepool(|| ns::Number::with_i64_ar(10));
     }
 }
