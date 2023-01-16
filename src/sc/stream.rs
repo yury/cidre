@@ -1,8 +1,8 @@
 use std::{ffi::c_void, ops::Deref};
 
 use crate::{
-    arc, blocks, cg, cm, cv, define_obj_type, dispatch, msg_send, ns,
-    objc::{Delegate, Id},
+    arc, blocks, cg, cm, cv, define_obj_type, dispatch, ns,
+    objc::{msg_send, Delegate, Id, Obj},
     os,
 };
 
@@ -29,7 +29,7 @@ pub enum OutputType {
 define_obj_type!(Configuration(Id));
 
 impl Configuration {
-    /// ```
+    /// ```no_run
     /// use cidre::{sc, cm, cv};
     ///
     /// let mut cfg = sc::StreamConfiguration::new();
@@ -50,19 +50,19 @@ impl Configuration {
     }
 
     pub fn width(&self) -> usize {
-        msg_send!("common", self, sel_width)
+        unsafe { self.call0(msg_send::width) }
     }
 
     pub fn set_width(&mut self, value: usize) {
-        msg_send!("common", self, sel_setWidth, value)
+        unsafe { self.call1(msg_send::set_width, value) }
     }
 
     pub fn height(&self) -> usize {
-        msg_send!("common", self, sel_height)
+        unsafe { self.call0(msg_send::height) }
     }
 
     pub fn set_height(&mut self, value: usize) {
-        msg_send!("common", self, sel_setHeight, value)
+        unsafe { self.call1(msg_send::set_height, value) }
     }
 
     pub fn minimum_frame_interval(&self) -> cm::Time {
@@ -366,7 +366,7 @@ extern "C" {
 mod tests {
     use std::time::Duration;
 
-    use crate::{dispatch, ns, sc};
+    use crate::{cm, cv, dispatch, ns, sc};
 
     use super::StreamOutput;
 
@@ -392,6 +392,21 @@ mod tests {
             // why without println is not working well?
             println!("frame {:?}", self.counter);
         }
+    }
+
+    #[test]
+    fn basics() {
+        let mut cfg = sc::StreamConfiguration::new();
+
+        cfg.set_width(200);
+        assert_eq!(200, cfg.width());
+        cfg.set_height(300);
+        assert_eq!(300, cfg.height());
+
+        cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
+        cfg.set_pixel_format(cv::PixelFormatType::_32_BGRA);
+        cfg.set_scales_to_fit(false);
+        cfg.set_shows_cursor(false);
     }
 
     #[tokio::test]

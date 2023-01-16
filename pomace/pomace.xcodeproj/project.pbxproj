@@ -15,8 +15,6 @@
 		D2520D01280BFC4A00FD6562 /* sc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2520CFE280BFC4A00FD6562 /* sc.h */; };
 		D264D2A228F7E7CF002B1B14 /* vn.m in Sources */ = {isa = PBXBuildFile; fileRef = D264D2A128F7E7CF002B1B14 /* vn.m */; };
 		D264D2A328F7E7CF002B1B14 /* vn.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D264D2A028F7E7CF002B1B14 /* vn.h */; };
-		D273EB56281C3D160032B428 /* common.m in Sources */ = {isa = PBXBuildFile; fileRef = D273EB55281C3D160032B428 /* common.m */; };
-		D273EB57281C3D160032B428 /* common.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D273EB54281C3D160032B428 /* common.h */; };
 		D2A5293D283A1F5800E7B4C6 /* ca.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A5293C283A1F5800E7B4C6 /* ca.m */; };
 		D2A5293E283A1F5800E7B4C6 /* ca.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2A5293B283A1F5800E7B4C6 /* ca.h */; };
 		D2A5294A283A1F6A00E7B4C6 /* ci.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A52949283A1F6A00E7B4C6 /* ci.m */; };
@@ -71,16 +69,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				D264D2A328F7E7CF002B1B14 /* vn.h in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D273EB50281C3D160032B428 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-				D273EB57281C3D160032B428 /* common.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,7 +162,6 @@
 		D264D29E28F7E7CF002B1B14 /* libvn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libvn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D264D2A028F7E7CF002B1B14 /* vn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vn.h; sourceTree = "<group>"; };
 		D264D2A128F7E7CF002B1B14 /* vn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = vn.m; sourceTree = "<group>"; };
-		D273EB52281C3D160032B428 /* libcommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D273EB54281C3D160032B428 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
 		D273EB55281C3D160032B428 /* common.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = common.m; sourceTree = "<group>"; };
 		D2A52939283A1F5800E7B4C6 /* libca.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libca.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -224,13 +211,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D264D29B28F7E7CF002B1B14 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D273EB4F281C3D160032B428 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -426,7 +406,6 @@
 			children = (
 				D2FBEBF727CB653200FD974A /* libmtl.a */,
 				D2520CFC280BFC4A00FD6562 /* libsc.a */,
-				D273EB52281C3D160032B428 /* libcommon.a */,
 				D2FA4ADB2820227B001E2A51 /* libav.a */,
 				D2A52939283A1F5800E7B4C6 /* libca.a */,
 				D2A52946283A1F6A00E7B4C6 /* libci.a */,
@@ -518,23 +497,6 @@
 			name = vn;
 			productName = vn;
 			productReference = D264D29E28F7E7CF002B1B14 /* libvn.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		D273EB51281C3D160032B428 /* common */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D273EB5A281C3D160032B428 /* Build configuration list for PBXNativeTarget "common" */;
-			buildPhases = (
-				D273EB4E281C3D160032B428 /* Sources */,
-				D273EB4F281C3D160032B428 /* Frameworks */,
-				D273EB50281C3D160032B428 /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = common;
-			productName = common;
-			productReference = D273EB52281C3D160032B428 /* libcommon.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2A52938283A1F5800E7B4C6 /* ca */ = {
@@ -677,9 +639,6 @@
 					D264D29D28F7E7CF002B1B14 = {
 						CreatedOnToolsVersion = 14.1;
 					};
-					D273EB51281C3D160032B428 = {
-						CreatedOnToolsVersion = 13.3.1;
-					};
 					D2A52938283A1F5800E7B4C6 = {
 						CreatedOnToolsVersion = 13.4;
 					};
@@ -718,7 +677,6 @@
 			targets = (
 				D2FBEBF627CB653200FD974A /* mtl */,
 				D2520CFB280BFC4A00FD6562 /* sc */,
-				D273EB51281C3D160032B428 /* common */,
 				D2FA4ADA2820227B001E2A51 /* av */,
 				D2A52938283A1F5800E7B4C6 /* ca */,
 				D2A52945283A1F6A00E7B4C6 /* ci */,
@@ -762,14 +720,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D264D2A228F7E7CF002B1B14 /* vn.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D273EB4E281C3D160032B428 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D273EB56281C3D160032B428 /* common.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -932,32 +882,6 @@
 			name = Debug;
 		};
 		D264D2A628F7E7CF002B1B14 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FD6ZML48V9;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		D273EB58281C3D160032B428 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FD6ZML48V9;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D273EB59281C3D160032B428 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -1311,15 +1235,6 @@
 			buildConfigurations = (
 				D264D2A528F7E7CF002B1B14 /* Debug */,
 				D264D2A628F7E7CF002B1B14 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D273EB5A281C3D160032B428 /* Build configuration list for PBXNativeTarget "common" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D273EB58281C3D160032B428 /* Debug */,
-				D273EB59281C3D160032B428 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

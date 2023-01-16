@@ -1,4 +1,9 @@
-use crate::{cf, define_obj_type, mps::graph, msg_send, ns};
+use crate::{
+    cf, define_obj_type,
+    mps::graph,
+    msg_send, ns,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(Operation(ns::Id));
 
@@ -26,6 +31,6 @@ impl Operation {
 
     #[inline]
     pub fn name(&self) -> &cf::String {
-        msg_send!("common", self, sel_name)
+        unsafe { self.call0(msg_send::name) }
     }
 }

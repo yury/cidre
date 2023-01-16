@@ -1,4 +1,7 @@
-use crate::{cf, define_obj_type, msg_send, ns};
+use crate::{
+    cf, define_obj_type, msg_send, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
@@ -159,8 +162,8 @@ impl Device {
     }
 
     #[inline]
-    pub fn name(&self) -> &cf::String {
-        msg_send!("common", self, sel_name)
+    pub fn name(&self) -> &ns::String {
+        unsafe { self.call0(msg_send::name) }
     }
 
     #[inline]

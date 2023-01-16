@@ -1,6 +1,10 @@
 use std::{ffi::c_void, mem::transmute, ops::Deref};
 
-use crate::{arc, cf, define_obj_type, mach, msg_send, ns, objc::Delegate};
+use crate::{
+    arc, cf, define_obj_type, mach, ns,
+    objc::Delegate,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(Port(ns::Id));
 define_obj_type!(MachPort(Port));
@@ -11,11 +15,11 @@ impl Port {
     }
 
     pub fn invalidate(&self) {
-        msg_send!("common", self, sel_invalidate)
+        unsafe { self.call0(msg_send::invalidate) }
     }
 
     pub fn is_valid(&self) -> bool {
-        msg_send!("common", self, sel_isValid)
+        unsafe { self.call0(msg_send::is_valid) }
     }
 }
 
@@ -42,12 +46,12 @@ impl MachPort {
     {
         let obj = delegate.obj.deref();
 
-        msg_send!("common", self, sel_setDelegate, obj)
+        unsafe { self.call1(msg_send::set_delegate, obj) }
     }
 
     pub fn remove_delegate(&mut self) {
         let none: Option<&ns::Id> = None;
-        msg_send!("common", self, sel_setDelegate, none)
+        unsafe { self.call1(msg_send::set_delegate, none) }
     }
 }
 

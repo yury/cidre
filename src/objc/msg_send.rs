@@ -36,7 +36,7 @@ extern "C" {
     #[link_name = "objc_msgSend$name"]
     pub fn name();
 
-    #[link_name = "objc_msgSend$setName"]
+    #[link_name = "objc_msgSend$setName:"]
     pub fn set_name();
 
     #[link_name = "objc_msgSend$lowercaseString"]
@@ -147,6 +147,9 @@ extern "C" {
     #[link_name = "objc_msgSend$URL"]
     pub fn url();
 
+    #[link_name = "objc_msgSend$setURL:"]
+    pub fn set_url();
+
     #[link_name = "objc_msgSend$width"]
     pub fn width();
 
@@ -173,4 +176,34 @@ extern "C" {
 
     #[link_name = "objc_msgSend$reset"]
     pub fn reset();
+
+    #[link_name = "objc_msgSend$frame"]
+    pub fn frame();
+
+    #[link_name = "objc_msgSend$bounds"]
+    pub fn bounds();
+
+    #[link_name = "objc_msgSend$setFrame:"]
+    pub fn set_frame();
+
+    #[link_name = "objc_msgSend$setBounds:"]
+    pub fn set_bounds();
+
+    #[link_name = "objc_msgSend$setEnabled:"]
+    pub fn set_enabled();
+
+    #[link_name = "objc_msgSend$isEnabled"]
+    pub fn is_enabled();
+
+    #[link_name = "objc_msgSend$invalidate"]
+    pub fn invalidate();
+
+    #[link_name = "objc_msgSend$isValid"]
+    pub fn is_valid();
+
+    #[link_name = "objc_msgSend$delegate"]
+    pub fn delegate();
+
+    #[link_name = "objc_msgSend$setDelegate:"]
+    pub fn set_delegate();
 }

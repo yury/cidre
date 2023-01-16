@@ -94,7 +94,6 @@ fn main() {
         x => panic!("unknown profile: {x}"),
     };
 
-    xc_build("common", sdk, arch, configuration);
     xc_build("vn", sdk, arch, configuration);
     xc_build("sn", sdk, arch, configuration);
     xc_build("mps", sdk, arch, configuration);

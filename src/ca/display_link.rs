@@ -1,6 +1,10 @@
 use std::ffi::c_void;
 
-use crate::{ca, cf, define_obj_type, msg_send, ns, objc::Delegate};
+use crate::{
+    ca, cf, define_obj_type, msg_send, ns,
+    objc::Delegate,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(DisplayLink(ns::Id));
 
@@ -45,7 +49,7 @@ impl DisplayLink {
     /// it has been implicitly retained) and releases the 'target' object
     #[inline]
     pub fn invalidate(&self) {
-        msg_send!("common", self, sel_invalidate)
+        unsafe { self.call0(msg_send::invalidate) }
     }
 
     #[inline]

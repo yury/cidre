@@ -1,4 +1,7 @@
-use crate::{arc, define_obj_type, msg_send, ns};
+use crate::{
+    arc, define_obj_type, ns,
+    objc::{msg_send, Obj},
+};
 
 define_obj_type!(URLRequest(ns::Id));
 define_obj_type!(URLRequestMut(URLRequest));
@@ -94,7 +97,7 @@ impl URLRequest {
 
     #[inline]
     pub fn url(&self) -> Option<&ns::URL> {
-        msg_send!("common", self, sel_URL)
+        unsafe { crate::objc::Obj::call0(self, crate::objc::msg_send::url) }
     }
 
     #[inline]
@@ -161,7 +164,7 @@ impl URLRequest {
 
     #[inline]
     pub fn copy_mut(&self) -> arc::R<URLRequestMut> {
-        msg_send!("common", self, sel_mutableCopy)
+        unsafe { self.call0(msg_send::mutable_copy) }
     }
 }
 
@@ -231,7 +234,7 @@ impl URLRequestMut {
 
     #[inline]
     pub fn set_url(&mut self, value: Option<&ns::URL>) {
-        msg_send!("common", self, sel_setURL, value)
+        unsafe { self.call1(msg_send::set_url, value) }
     }
 
     #[inline]

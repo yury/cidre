@@ -1,6 +1,9 @@
 use std::{fmt::Debug, intrinsics::transmute};
 
-use crate::{arc, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{
+    arc, define_mtl, define_obj_type, mtl, ns,
+    objc::{msg_send, Obj},
+};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
@@ -76,7 +79,7 @@ impl Function {
 
     #[inline]
     pub fn name(&self) -> &ns::String {
-        msg_send!("common", self, sel_name)
+        unsafe { self.call0(msg_send::name) }
     }
 
     #[inline]

@@ -1,6 +1,10 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, cg, define_obj_type, msg_send, ns, sys};
+use crate::{
+    arc, blocks, cg, define_obj_type, ns,
+    objc::{msg_send, Obj},
+    sys,
+};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -33,15 +37,15 @@ impl Display {
     }
 
     pub fn width(&self) -> isize {
-        msg_send!("common", self, sel_width)
+        unsafe { self.call0(msg_send::width) }
     }
 
     pub fn height(&self) -> isize {
-        msg_send!("common", self, sel_height)
+        unsafe { self.call0(msg_send::height) }
     }
 
     pub fn frame(&self) -> cg::Rect {
-        msg_send!("common", self, sel_frame)
+        unsafe { self.call0(msg_send::frame) }
     }
 }
 
@@ -53,7 +57,7 @@ impl Window {
     }
 
     pub fn frame(&self) -> cg::Rect {
-        msg_send!("common", self, sel_frame)
+        unsafe { self.call0(msg_send::frame) }
     }
 }
 

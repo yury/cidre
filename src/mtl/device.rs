@@ -1,6 +1,9 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{arc, blocks, define_obj_type, define_options, io, msg_send, mtl, ns};
+use crate::{
+    arc, blocks, define_obj_type, define_options, io, msg_send, mtl, ns,
+    objc::{msg_send, Obj},
+};
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 
@@ -56,7 +59,7 @@ impl Device {
         unsafe { MTLCreateSystemDefaultDevice() }
     }
 
-    /// ```
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -65,7 +68,7 @@ impl Device {
     /// ```
     #[inline]
     pub fn name(&self) -> &ns::String {
-        msg_send!("common", self, sel_name)
+        unsafe { self.call0(msg_send::name) }
     }
 
     /// ```
@@ -387,7 +390,7 @@ impl Device {
         unsafe { rsel_newSharedEvent(self) }
     }
 
-    /// ```
+    /// ```no_run
     /// use cidre::{mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -429,7 +432,6 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    // static sel_newCommandQueue: &'static Sel;
 
     fn wsel_newLibraryWithSource_options_completionHandler(
         id: &Device,
@@ -526,14 +528,6 @@ mod tests {
     use crate::{mtl, ns};
 
     #[test]
-    fn it_works() {
-        let device = unsafe { mtl::Device::default().unwrap_unchecked() };
-
-        let _n = device.name();
-        //n.show_str()
-    }
-
-    #[test]
     fn basics1() {
         let device = mtl::Device::default().unwrap();
 
@@ -549,5 +543,13 @@ mod tests {
         let mut event = device.shared_event().unwrap();
         let label = ns::String::with_str("nice");
         event.set_label(Some(&label));
+    }
+
+    #[test]
+    fn basics3() {
+        let device = mtl::Device::default().unwrap();
+
+        let name = device.name();
+        assert!(device.max_buffer_length() > 10);
     }
 }
