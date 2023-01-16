@@ -136,12 +136,7 @@ csel3(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelForm
 //NS_RETURNS_RETAINED
 csel4(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
 
-//@property (readwrite, nonatomic) NSUInteger width;
-//rwsel(, id, width, setWidth, NSUInteger)
-//@property (readwrite, nonatomic) NSUInteger height;
-//rwsel(, id, height, setHeight, NSUInteger)
-//@property (readwrite, nonatomic) NSUInteger depth;
-rwsel(, id, depth, setDepth, NSUInteger)
+
 //@property (readwrite, nonatomic) NSUInteger mipmapLevelCount;
 rwsel(, id, mipmapLevelCount, setMipmapLevelCount, NSUInteger)
 //@property (readonly) NSUInteger sampleCount;
