@@ -1,4 +1,7 @@
-use crate::{arc, define_obj_type, ns};
+use crate::{
+    arc, define_obj_type, ns,
+    objc::{msg_send, Class, Obj},
+};
 
 define_obj_type!(Configuration(ns::Id));
 
@@ -12,7 +15,7 @@ define_obj_type!(WebSocketTask(Task));
 define_obj_type!(Session(ns::Id));
 
 impl Session {
-    /// ```
+    /// ```no_run
     /// use cidre::ns;
     ///
     /// let session = ns::URLSession::shared();
@@ -26,7 +29,7 @@ impl Session {
     /// assert_eq!(data_task.state(), ns::URLSessionTaskState::Running);
     /// ```
     pub fn shared() -> &'static Session {
-        unsafe { NSURLSession_sharedSession() }
+        unsafe { NS_URL_SESSION.call0(msg_send::shared_session) }
     }
 
     pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask> {
@@ -161,7 +164,6 @@ pub enum WebSocketCloseCode {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLSession_sharedSession() -> &'static Session;
     fn rsel_dataTaskWithURL(session: &Session, url: &ns::URL) -> arc::R<DataTask>;
     fn rsel_dataTaskWithRequest(session: &Session, request: &ns::URLRequest) -> arc::R<DataTask>;
 
@@ -243,9 +245,29 @@ impl WebSocketMessage {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
+    static NS_URL_SESSION: &'static Class<Session>;
+
     fn NSURLSessionWebSocketMessage_initWithData(data: &ns::Data) -> arc::R<WebSocketMessage>;
     fn NSURLSessionWebSocketMessage_initWithString(data: &ns::String) -> arc::R<WebSocketMessage>;
     fn NSURLSessionWebSocketMessage_data(msg: &WebSocketMessage) -> Option<&ns::Data>;
     fn NSURLSessionWebSocketMessage_string(msg: &WebSocketMessage) -> Option<&ns::String>;
     fn NSURLSessionWebSocketMessage_type(msg: &WebSocketMessage) -> WebSocketMessageType;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let session = ns::URLSession::shared();
+        println!("session: {:?}", session);
+        let url = ns::URL::with_str("https://google.com").unwrap();
+        let data_task = session.data_task_with_url(&url);
+        assert!(data_task.error().is_none());
+        assert_eq!(data_task.priority(), 0.5f32);
+        assert_eq!(data_task.state(), ns::URLSessionTaskState::Suspended);
+        data_task.resume();
+        assert_eq!(data_task.state(), ns::URLSessionTaskState::Running);
+    }
 }

@@ -51,10 +51,9 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
 
 #pragma mark - NSURLSession
 
-NS_RETURNS_NOT_RETAINED
-csel0(, NSURLSession, sharedSession, NSURLSession *)
-
+NS_RETURNS_RETAINED
 rsel1(, id, dataTaskWithURL, NSURL *, NSURLSessionDataTask *)
+NS_RETURNS_RETAINED
 rsel1(, id, dataTaskWithRequest, NSURLRequest *, NSURLSessionDataTask *)
 
 #pragma mark - NSURLSessionTask
@@ -202,6 +201,7 @@ Class NS_URL;
 Class NS_DATA;
 Class NS_MUTABLE_DATA;
 Class NS_PROCESS_INFO;
+Class NS_URL_SESSION;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -224,6 +224,7 @@ static void common_initializer()
     NS_DATA = [NSData class];
     NS_MUTABLE_DATA = [NSMutableData class];
     NS_PROCESS_INFO = [NSProcessInfo class];
+    NS_URL_SESSION = [NSURLSession class];
   }
 }
 NS_ASSUME_NONNULL_END

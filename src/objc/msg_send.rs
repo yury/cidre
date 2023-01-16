@@ -230,4 +230,7 @@ extern "C" {
 
     #[link_name = "objc_msgSend$processInfo"]
     pub fn process_info();
+
+    #[link_name = "objc_msgSend$sharedSession"]
+    pub fn shared_session();
 }
