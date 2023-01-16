@@ -200,9 +200,6 @@ csel0(, NSDictionary, dictionary, NSDictionary *)
 
 #pragma mark - SELECTORS
 
-SEL ns_resultType;
-SEL ns_range;
-
 SEL ns_lengthOfBytesUsingEncoding;
 //SEL ns_retainCount;
 
@@ -222,9 +219,6 @@ static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-
-    ns_resultType = @selector(resultType);
-    ns_range = @selector(range);
     
     ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
 

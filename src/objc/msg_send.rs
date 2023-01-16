@@ -108,6 +108,12 @@ extern "C" {
     #[link_name = "objc_msgSend$isEqual:"]
     pub fn is_equal();
 
+    #[link_name = "objc_msgSend$range"]
+    pub fn range();
+
+    #[link_name = "objc_msgSend$resultType"]
+    pub fn result_type();
+
     #[link_name = "objc_msgSend$substringWithRange:"]
     pub fn substring_with_range();
 

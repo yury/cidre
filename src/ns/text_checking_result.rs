@@ -1,4 +1,7 @@
-use crate::{define_obj_type, define_options, msg_send, ns};
+use crate::{
+    define_obj_type, define_options, ns,
+    objc::{msg_send, Obj},
+};
 
 define_options!(Type(usize));
 
@@ -59,11 +62,13 @@ impl Type {
 define_obj_type!(TextCheckingResult(ns::Id));
 
 impl TextCheckingResult {
+    #[inline]
     pub fn result_type(&self) -> Type {
-        msg_send!("ns", self, ns_resultType)
+        unsafe { self.call0(msg_send::result_type) }
     }
 
+    #[inline]
     pub fn range(&self) -> ns::Range {
-        msg_send!("ns", self, ns_range)
+        unsafe { self.call0(msg_send::range) }
     }
 }
