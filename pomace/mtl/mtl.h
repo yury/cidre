@@ -12,14 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - MTLDevice
-rsel0(, id, hasUnifiedMemory, BOOL);
-//@property (readonly) MTLReadWriteTextureTier readWriteTextureSupport API_AVAILABLE(macos(10.13), ios(11.0));
-rsel0(, id, readWriteTextureSupport, MTLReadWriteTextureTier);
-//@property (readonly) MTLArgumentBuffersTier argumentBuffersSupport API_AVAILABLE(macos(10.13), ios(11.0));
-rsel0(, id, argumentBuffersSupport, MTLArgumentBuffersTier);
 
-
-//- (nullable id <MTLCommandQueue>)newCommandQueue;
 NS_RETURNS_RETAINED
 rsel0(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
 

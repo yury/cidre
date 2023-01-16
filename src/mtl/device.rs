@@ -83,10 +83,10 @@ impl Device {
 
     #[inline]
     pub fn has_unified_memory(&self) -> bool {
-        unsafe { rsel_hasUnifiedMemory(self) }
+        unsafe { self.call0(crate::mtl::msg_send::has_unified_memory) }
     }
 
-    /// ```
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -96,11 +96,11 @@ impl Device {
     /// assert_ne!(tier, mtl::ReadWriteTextureTier::None);
     #[inline]
     pub fn read_write_texture_support(&self) -> ReadWriteTextureTier {
-        unsafe { rsel_readWriteTextureSupport(self) }
+        unsafe { self.call0(crate::mtl::msg_send::read_write_texture_support) }
     }
 
     /// Example
-    /// ```
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -110,7 +110,7 @@ impl Device {
     /// assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
     #[inline]
     pub fn argument_buffers_support(&self) -> ArgumentBuffersTier {
-        unsafe { rsel_argumentBuffersSupport(self) }
+        unsafe { self.call0(crate::mtl::msg_send::argument_buffers_support) }
     }
 
     /// ```
@@ -421,9 +421,6 @@ extern "C" {
         options: Option<&mtl::CompileOptions>,
         block: *mut c_void,
     );
-    fn rsel_hasUnifiedMemory(id: &Device) -> bool;
-    fn rsel_readWriteTextureSupport(id: &Device) -> ReadWriteTextureTier;
-    fn rsel_argumentBuffersSupport(id: &Device) -> ArgumentBuffersTier;
     fn rsel_newCommandQueueWithMaxCommandBufferCount(
         id: &Device,
         maxCommandBufferCount: usize,
@@ -534,11 +531,20 @@ mod tests {
     fn basics4() {
         let device = mtl::Device::default().unwrap();
         let registry_id = device.registry_id();
+
         assert_ne!(0, registry_id);
         let size = device.max_threads_per_threadgroup();
 
         assert_ne!(0, size.width);
         assert_ne!(0, size.height);
         assert_ne!(0, size.depth);
+
+        assert!(device.has_unified_memory());
+
+        let tier = device.read_write_texture_support();
+        assert_ne!(tier, mtl::ReadWriteTextureTier::None);
+
+        let tier = device.argument_buffers_support();
+        assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
     }
 }

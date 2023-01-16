@@ -20,4 +20,13 @@ extern "C" {
     #[link_name = "objc_msgSend$maxThreadsPerThreadgroup"]
     pub fn max_threads_per_threadgroup();
 
+    #[link_name = "objc_msgSend$hasUnifiedMemory"]
+    pub fn has_unified_memory();
+
+    #[link_name = "objc_msgSend$readWriteTextureSupport"]
+    pub fn read_write_texture_support();
+
+    #[link_name = "objc_msgSend$argumentBuffersSupport"]
+    pub fn argument_buffers_support();
+
 }
