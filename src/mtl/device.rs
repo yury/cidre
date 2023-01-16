@@ -71,32 +71,14 @@ impl Device {
         unsafe { self.call0(msg_send::name) }
     }
 
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let registry_id = device.registry_id();
-    ///
-    /// assert_ne!(0, registry_id);
     #[inline]
     pub fn registry_id(&self) -> u64 {
-        unsafe { rsel_registryID(self) }
+        unsafe { self.call0(crate::mtl::msg_send::registry_id) }
     }
 
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let size = device.max_threads_per_threadgroup();
-    ///
-    /// assert_ne!(0, size.width);
-    /// assert_ne!(0, size.height);
-    /// assert_ne!(0, size.depth);
     #[inline]
     pub fn max_threads_per_threadgroup(&self) -> Size {
-        unsafe { rsel_maxThreadsPerThreadgroup(self) }
+        unsafe { self.call0(crate::mtl::msg_send::max_threads_per_threadgroup) }
     }
 
     #[inline]
@@ -439,12 +421,9 @@ extern "C" {
         options: Option<&mtl::CompileOptions>,
         block: *mut c_void,
     );
-    fn rsel_registryID(id: &Device) -> u64;
-    fn rsel_maxThreadsPerThreadgroup(id: &Device) -> Size;
     fn rsel_hasUnifiedMemory(id: &Device) -> bool;
     fn rsel_readWriteTextureSupport(id: &Device) -> ReadWriteTextureTier;
     fn rsel_argumentBuffersSupport(id: &Device) -> ArgumentBuffersTier;
-    // fn rsel_newCommandQueue<'create>(id: &Device) -> Option<Retained<'create, CommandQueue>>;
     fn rsel_newCommandQueueWithMaxCommandBufferCount(
         id: &Device,
         maxCommandBufferCount: usize,
@@ -472,8 +451,6 @@ extern "C" {
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Library>>;
 
-    // NS_RETURNS_RETAINED
-    // rsel_ab(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
     fn rsel_newComputePipelineStateWithFunction_error<'a>(
         id: &Device,
         function: &mtl::Function,
@@ -551,5 +528,17 @@ mod tests {
 
         let name = device.name();
         assert!(device.max_buffer_length() > 10);
+    }
+
+    #[test]
+    fn basics4() {
+        let device = mtl::Device::default().unwrap();
+        let registry_id = device.registry_id();
+        assert_ne!(0, registry_id);
+        let size = device.max_threads_per_threadgroup();
+
+        assert_ne!(0, size.width);
+        assert_ne!(0, size.height);
+        assert_ne!(0, size.depth);
     }
 }

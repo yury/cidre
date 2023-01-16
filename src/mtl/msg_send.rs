@@ -1,4 +1,7 @@
 extern "C" {
+    #[link_name = "objc_msgSend$registryID"]
+    pub fn registry_id();
+
     #[link_name = "objc_msgSend$sampleBuffer"]
     pub fn sample_buffer();
 
@@ -13,5 +16,8 @@ extern "C" {
 
     #[link_name = "objc_msgSend$sampleBufferAttachments"]
     pub fn sample_buffer_attachments();
+
+    #[link_name = "objc_msgSend$maxThreadsPerThreadgroup"]
+    pub fn max_threads_per_threadgroup();
 
 }
