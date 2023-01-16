@@ -508,28 +508,14 @@ mod tests {
         let mut fence = device.fence().unwrap();
         let label = ns::String::with_str("nice");
         fence.set_label(Some(&label));
-    }
-
-    #[test]
-    fn basics2() {
-        let device = mtl::Device::default().unwrap();
 
         let mut event = device.shared_event().unwrap();
         let label = ns::String::with_str("nice");
         event.set_label(Some(&label));
-    }
-
-    #[test]
-    fn basics3() {
-        let device = mtl::Device::default().unwrap();
 
         let name = device.name();
         assert!(device.max_buffer_length() > 10);
-    }
 
-    #[test]
-    fn basics4() {
-        let device = mtl::Device::default().unwrap();
         let registry_id = device.registry_id();
 
         assert_ne!(0, registry_id);
