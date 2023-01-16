@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns};
+use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns, objc::Obj};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -149,8 +149,8 @@ impl RenderCommandEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
     #[inline]
-    pub fn set_render_pipeline_state(&mut self, state: &mtl::RenderPipelineState) {
-        msg_send!("mtl", self, sel_setRenderPipelineState, state)
+    pub fn set_render_pipeline_state(&mut self, value: &mtl::RenderPipelineState) {
+        unsafe { self.call1(crate::mtl::msg_send::set_render_pipeline_state, value) }
     }
 
     #[inline]

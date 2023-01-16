@@ -343,9 +343,6 @@ wsel0(, id, popDebugGroup)
 
 #pragma mark - MTLRenderCommandEncoder
 
-//- (void)setRenderPipelineState:(id <MTLRenderPipelineState>)pipelineState;
-//wsel_a(, id, setRenderPipelineState, id <MTLRenderPipelineState>)
-//- (void)setVertexBytes:(const void *)bytes length:(NSUInteger)length atIndex:(NSUInteger)index API_AVAILABLE(macos(10.11), ios(8.3));
 wsel3(, id, setVertexBytes, const void *, length, NSUInteger, atIndex, NSUInteger)
 //- (void)setVertexBuffer:(nullable id <MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
 wsel3(, id, setVertexBuffer, id<MTLBuffer> _Nullable, offset, NSUInteger, atIndex, NSUInteger)
@@ -527,7 +524,6 @@ SEL sel_drawPrimitives_vertexStart_vertexCount;
 SEL sel_drawPrimitives_vertexStart_vertexCount_instanceCount;
 SEL sel_setVertexBuffer_offset_atIndex;
 SEL sel_setFragmentBuffer_offset_atIndex;
-SEL sel_setRenderPipelineState;
 SEL sel_computeCommandEncoderWithDescriptor;
 
 Class MTL_COMPUTE_PASS_DESCRIPTOR;
@@ -576,7 +572,6 @@ static void mtl_initializer()
       sel_drawPrimitives_vertexStart_vertexCount_instanceCount = @selector(drawPrimitives:vertexStart:vertexCount:instanceCount:);
       sel_setVertexBuffer_offset_atIndex = @selector(setVertexBuffer:offset:atIndex:);
       sel_setFragmentBuffer_offset_atIndex = @selector(setFragmentBuffer:offset:atIndex:);
-      sel_setRenderPipelineState = @selector(setRenderPipelineState:);
       sel_computeCommandEncoderWithDescriptor = @selector(computeCommandEncoderWithDescriptor:);
 
 

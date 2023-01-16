@@ -514,6 +514,7 @@ mod tests {
         event.set_label(Some(&label));
 
         let name = device.name();
+
         assert!(device.max_buffer_length() > 10);
 
         let registry_id = device.registry_id();

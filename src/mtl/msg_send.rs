@@ -29,4 +29,7 @@ extern "C" {
     #[link_name = "objc_msgSend$argumentBuffersSupport"]
     pub fn argument_buffers_support();
 
+    #[link_name = "objc_msgSend$setRenderPipelineState:"]
+    pub fn set_render_pipeline_state();
+
 }
