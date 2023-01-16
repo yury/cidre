@@ -301,11 +301,7 @@ macro_rules! define_mtl {
     (use_heap) => {
         #[inline]
         pub fn use_heap(&mut self, heap: &crate::mtl::Heap) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_useHeap(id: &mut crate::ns::Id, heap: &crate::mtl::Heap);
-            }
-            unsafe { wsel_useHeap(self, heap) }
+            unsafe { $crate::objc::Obj::call1(self, $crate::mtl::msg_send::use_heap, heap) }
         }
     };
 

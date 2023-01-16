@@ -19,6 +19,7 @@ rsel0(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
 NS_RETURNS_RETAINED
 rsel1(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
 
+
 NS_RETURNS_RETAINED
 rsel1(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _Nullable )
 
@@ -351,7 +352,7 @@ wsel2(, id, useResource, id <MTLResource>, usage, MTLResourceUsage)
 //- (void)useResources:(const id <MTLResource> __nonnull[__nonnull])resources count:(NSUInteger)count usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
 wsel3(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, NSUInteger, usage, MTLResourceUsage)
 //- (void)useHeap:(id <MTLHeap>)heap API_AVAILABLE(macos(10.13), ios(11.0));
-wsel1(, id, useHeap, id <MTLHeap> _Nonnull)
+//wsel1(, id, useHeap, id <MTLHeap> _Nonnull)
 
 //- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount instanceCount:(NSUInteger)instanceCount;
 //wsel_abcd(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger, instanceCount, NSUInteger)

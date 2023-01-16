@@ -32,4 +32,7 @@ extern "C" {
     #[link_name = "objc_msgSend$setRenderPipelineState:"]
     pub fn set_render_pipeline_state();
 
+    #[link_name = "objc_msgSend$useHeap:"]
+    pub fn use_heap();
+
 }
