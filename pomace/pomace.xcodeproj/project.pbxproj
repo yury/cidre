@@ -162,8 +162,6 @@
 		D264D29E28F7E7CF002B1B14 /* libvn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libvn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D264D2A028F7E7CF002B1B14 /* vn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vn.h; sourceTree = "<group>"; };
 		D264D2A128F7E7CF002B1B14 /* vn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = vn.m; sourceTree = "<group>"; };
-		D273EB54281C3D160032B428 /* common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		D273EB55281C3D160032B428 /* common.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = common.m; sourceTree = "<group>"; };
 		D2A52939283A1F5800E7B4C6 /* libca.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libca.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A5293B283A1F5800E7B4C6 /* ca.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ca.h; sourceTree = "<group>"; };
 		D2A5293C283A1F5800E7B4C6 /* ca.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ca.m; sourceTree = "<group>"; };
@@ -305,15 +303,6 @@
 			path = vn;
 			sourceTree = "<group>";
 		};
-		D273EB53281C3D160032B428 /* common */ = {
-			isa = PBXGroup;
-			children = (
-				D273EB54281C3D160032B428 /* common.h */,
-				D273EB55281C3D160032B428 /* common.m */,
-			);
-			path = common;
-			sourceTree = "<group>";
-		};
 		D2A5293A283A1F5800E7B4C6 /* ca */ = {
 			isa = PBXGroup;
 			children = (
@@ -386,7 +375,6 @@
 				D2520D05280C502500FD6562 /* macro.h */,
 				D2FBEBF927CB653200FD974A /* mtl */,
 				D2520CFD280BFC4A00FD6562 /* sc */,
-				D273EB53281C3D160032B428 /* common */,
 				D2FA4ADC2820227B001E2A51 /* av */,
 				D2A5293A283A1F5800E7B4C6 /* ca */,
 				D2A52947283A1F6A00E7B4C6 /* ci */,
