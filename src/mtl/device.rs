@@ -378,8 +378,13 @@ impl Device {
     /// fence.set_label(Some(&label));
     /// ```
     #[inline]
+    pub fn fence_ar(&self) -> Option<arc::Rar<Fence>> {
+        unsafe { self.call0(mtl::msg_send::new_fence) }
+    }
+
+    #[inline]
     pub fn fence(&self) -> Option<arc::R<Fence>> {
-        msg_send!("mtl", self, sel_newFence)
+        arc::Rar::option_retain(self.fence_ar())
     }
 
     /// ```no_run
@@ -392,8 +397,13 @@ impl Device {
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
+    pub fn event_ar(&self) -> Option<arc::Rar<Event>> {
+        unsafe { self.call0(mtl::msg_send::new_event) }
+    }
+
+    #[inline]
     pub fn event(&self) -> Option<arc::R<Event>> {
-        unsafe { rsel_newEvent(self) }
+        arc::Rar::option_retain(self.event_ar())
     }
 
     /// ```no_run
@@ -406,8 +416,13 @@ impl Device {
     /// event.set_label(Some(&label));
     /// ```
     #[inline]
+    pub fn shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>> {
+        unsafe { self.call0(mtl::msg_send::new_shared_event) }
+    }
+
+    #[inline]
     pub fn shared_event(&self) -> Option<arc::R<SharedEvent>> {
-        unsafe { rsel_newSharedEvent(self) }
+        arc::Rar::option_retain(self.shared_event_ar())
     }
 
     /// ```no_run
@@ -419,12 +434,17 @@ impl Device {
     /// ```
     #[inline]
     pub fn max_buffer_length(&self) -> usize {
-        unsafe { rsel_maxBufferLength(self) }
+        unsafe { self.call0(mtl::msg_send::max_buffer_length) }
     }
 
     #[inline]
     pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign {
-        unsafe { rsel_heapTextureSizeAndAlignWithDescriptor(self, descriptor) }
+        unsafe {
+            self.call1(
+                mtl::msg_send::heap_texture_size_and_align_with_descriptor,
+                descriptor,
+            )
+        }
     }
 
     #[inline]
@@ -498,17 +518,6 @@ extern "C" {
         error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
-    fn rsel_newEvent(id: &Device) -> Option<arc::R<Event>>;
-
-    fn rsel_maxBufferLength(id: &Device) -> usize;
-
-    fn rsel_newSharedEvent(id: &Device) -> Option<arc::R<SharedEvent>>;
-
-    fn rsel_heapTextureSizeAndAlignWithDescriptor(
-        id: &Device,
-        descriptor: &mtl::TextureDescriptor,
-    ) -> SizeAndAlign;
-
     fn rsel_heapBufferSizeAndAlignWithLength(
         id: &Device,
         length: usize,
@@ -566,5 +575,7 @@ mod tests {
 
         let _t = device.texture_with_descriptor(&td).unwrap();
         let _t = device.texture_with_descriptor_ar(&td).unwrap();
+
+        assert!(device.max_buffer_length() > 10);
     }
 }

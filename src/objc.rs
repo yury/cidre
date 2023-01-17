@@ -59,8 +59,13 @@ pub trait Obj: arc::Retain {
     }
 
     #[inline]
-    fn description(&self) -> &crate::ns::String {
+    fn description_ar(&self) -> arc::Rar<crate::ns::String> {
         unsafe { self.call0(msg_send::description) }
+    }
+
+    #[inline]
+    fn description(&self) -> arc::R<crate::ns::String> {
+        self.description_ar().retain()
     }
 
     #[inline]
@@ -271,7 +276,7 @@ impl Obj for Id {}
 impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self.description();
-        f.debug_tuple("NS").field(&Cow::from(desc)).finish()
+        f.debug_tuple("NS").field(&Cow::from(desc.deref())).finish()
     }
 }
 

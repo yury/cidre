@@ -33,22 +33,6 @@ rsel2(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError
 NS_RETURNS_RETAINED
 rsel2(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
 
-NS_RETURNS_RETAINED
-rsel0(, id, newFence, id<MTLFence> _Nullable)
-
-//- (nullable id <MTLEvent>)newEvent API_AVAILABLE(macos(10.14), ios(12.0));
-NS_RETURNS_RETAINED
-rsel0(, id, newEvent, id<MTLEvent> _Nullable)
-
-//@property (readonly) NSUInteger maxBufferLength API_AVAILABLE(macos(10.14), ios(12.0));
-rsel0(, id, maxBufferLength, NSUInteger)
-
-//- (nullable id <MTLSharedEvent>)newSharedEvent API_AVAILABLE(macos(10.14), ios(12.0));
-NS_RETURNS_RETAINED
-rsel0(, id, newSharedEvent, id<MTLSharedEvent> _Nullable)
-
-//- (MTLSizeAndAlign)heapTextureSizeAndAlignWithDescriptor:(MTLTextureDescriptor *)desc API_AVAILABLE(macos(10.13), ios(10.0));
-rsel1(,id, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSizeAndAlign)
 //- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
 rsel2(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 

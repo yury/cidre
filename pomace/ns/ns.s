@@ -1281,7 +1281,7 @@ Lloh113:
 	mov	w2, #5
 	bl	"_objc_msgSend$initWithInt:"
 	mov	x19, x0
-	bl	_objc_msgSend$stringValue
+	bl	_objc_msgSend$description
 	mov	x29, x29
 	bl	_objc_retainAutoreleasedReturnValue
 	mov	x20, x0

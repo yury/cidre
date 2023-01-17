@@ -80,7 +80,22 @@ extern "C" {
     #[link_name = "objc_msgSend$newDefaultLibrary"]
     pub fn new_default_library();
 
+    #[link_name = "objc_msgSend$newFence"]
+    pub fn new_fence();
+
+    #[link_name = "objc_msgSend$newEvent"]
+    pub fn new_event();
+
+    #[link_name = "objc_msgSend$newSharedEvent"]
+    pub fn new_shared_event();
+
     #[link_name = "objc_msgSend$newTextureWithDescriptor:"]
     pub fn new_texture_with_descriptor();
+
+    #[link_name = "objc_msgSend$maxBufferLength"]
+    pub fn max_buffer_length();
+
+    #[link_name = "objc_msgSend$heapTextureSizeAndAlignWithDescriptor:"]
+    pub fn heap_texture_size_and_align_with_descriptor();
 
 }

@@ -16,7 +16,7 @@
 }
 
 - (void)foo {
-  NSString *num = [[[NSNumber alloc] initWithInt: 5] stringValue];
+  NSString *num = [[[NSNumber alloc] initWithInt: 5] description];
 }
 
 @end
