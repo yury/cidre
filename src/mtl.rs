@@ -307,45 +307,29 @@ macro_rules! define_mtl {
 
     (push_debug_group) => {
         #[inline]
-        pub fn push_debug_group(&mut self, debug_group: &crate::cf::String) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_pushDebugGroup(id: &mut crate::ns::Id, debug_group: &crate::cf::String);
-            }
-            unsafe { wsel_pushDebugGroup(self, debug_group) }
+        pub fn push_debug_group(&mut self, debug_group: &crate::ns::String) {
+            unsafe { $crate::objc::Obj::call1(self, $crate::mtl::msg_send::push_debug_group, debug_group) }
         }
     };
 
     (pop_debug_group) => {
         #[inline]
         pub fn pop_debug_group(&mut self) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_popDebugGroup(id: &mut crate::ns::Id);
-            }
-            unsafe { wsel_popDebugGroup(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::mtl::msg_send::pop_debug_group) }
         }
     };
 
     (storage_mode) => {
         #[inline]
         pub fn storage_mode(&self) -> crate::mtl::StorageMode {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_storageMode(id: &crate::ns::Id) -> crate::mtl::StorageMode;
-            }
-            unsafe { rsel_storageMode(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::mtl::msg_send::storage_mode) }
         }
     };
 
     (set_storage_mode) => {
         #[inline]
         pub fn set_storage_mode(&mut self, value: crate::mtl::StorageMode) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setStorageMode(id: &crate::ns::Id, value: crate::mtl::StorageMode);
-            }
-            unsafe { wsel_setStorageMode(self, value) }
+            unsafe { $crate::objc::Obj::call1(self, $crate::mtl::msg_send::set_storage_mode, value) }
         }
     };
 

@@ -35,4 +35,16 @@ extern "C" {
     #[link_name = "objc_msgSend$useHeap:"]
     pub fn use_heap();
 
+    #[link_name = "objc_msgSend$pushDebugGroup:"]
+    pub fn push_debug_group();
+
+    #[link_name = "objc_msgSend$popDebugGroup"]
+    pub fn pop_debug_group();
+
+    #[link_name = "objc_msgSend$storageMode"]
+    pub fn storage_mode();
+
+    #[link_name = "objc_msgSend$setStorageMode"]
+    pub fn set_storage_mode();
+
 }

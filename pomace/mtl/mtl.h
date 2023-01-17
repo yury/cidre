@@ -87,7 +87,6 @@ rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
 
 //@property (readwrite, nonatomic) MTLResourceOptions resourceOptions;
 rwsel(, id, resourceOptions, setResourceOptions, MTLResourceOptions)
-rwsel(, id, storageMode, setStorageMode, MTLStorageMode)
 rwsel(, id, cpuCacheMode, setCpuCacheMode, MTLCPUCacheMode)
 rwsel(, id, hazardTrackingMode, setHazardTrackingMode, MTLHazardTrackingMode)
 
@@ -332,8 +331,6 @@ rsel0(, id, staticThreadgroupMemoryLength, NSUInteger)
 
 wsel0(, id, endEncoding)
 wsel1(, id, insertDebugSignpost, NSString *)
-wsel1(, id, pushDebugGroup, NSString *)
-wsel0(, id, popDebugGroup)
 
 #pragma mark - MTLRenderCommandEncoder
 
@@ -346,8 +343,6 @@ wsel3(, id, setFragmentBuffer, id <MTLBuffer> _Nullable, offset, NSUInteger, atI
 wsel2(, id, useResource, id <MTLResource>, usage, MTLResourceUsage)
 //- (void)useResources:(const id <MTLResource> __nonnull[__nonnull])resources count:(NSUInteger)count usage:(MTLResourceUsage)usage API_AVAILABLE(macos(10.13), ios(11.0));
 wsel3(, id, useResources, const id <MTLResource> _Nonnull * _Nonnull, count, NSUInteger, usage, MTLResourceUsage)
-//- (void)useHeap:(id <MTLHeap>)heap API_AVAILABLE(macos(10.13), ios(11.0));
-//wsel1(, id, useHeap, id <MTLHeap> _Nonnull)
 
 //- (void)drawPrimitives:(MTLPrimitiveType)primitiveType vertexStart:(NSUInteger)vertexStart vertexCount:(NSUInteger)vertexCount instanceCount:(NSUInteger)instanceCount;
 //wsel_abcd(ic_, id, drawPrimitives, MTLPrimitiveType, vertexStart, NSUInteger, vertexCount, NSUInteger, instanceCount, NSUInteger)
