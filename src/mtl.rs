@@ -266,7 +266,7 @@ macro_rules! define_mtl {
     (gpu_resouce_id) => {
         #[inline]
         pub fn gpu_resouce_id(&self) -> crate::mtl::ResourceID {
-            msg_send!("mtl", self, sel_gpuResourceID)
+            unsafe { $crate::objc::Obj::call0(self, $crate::mtl::msg_send::gpu_resource_id) }
         }
     };
 
@@ -336,66 +336,42 @@ macro_rules! define_mtl {
     (cpu_cache_mode) => {
         #[inline]
         pub fn cpu_cache_mode(&self) -> crate::mtl::CPUCacheMode {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_cpuCacheMode(id: &crate::ns::Id) -> crate::mtl::CPUCacheMode;
-            }
-            unsafe { rsel_cpuCacheMode(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::mtl::msg_send::cpu_cache_mode) }
         }
     };
 
     (set_cpu_cache_mode) => {
         #[inline]
         pub fn set_cpu_cache_mode(&mut self, value: crate::mtl::CPUCacheMode) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_setCpuCacheMode(id: &crate::ns::Id, value: crate::mtl::CPUCacheMode);
-            }
-            unsafe { rsel_setCpuCacheMode(self, value) }
+            unsafe { $crate::objc::Obj::call1(self, $crate::mtl::msg_send::set_cpu_cache_mode, value) }
         }
     };
 
     (hazard_tracking_mode) => {
         #[inline]
         pub fn hazard_tracking_mode(&self) -> crate::mtl::HazardTrackingMode {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_hazardTrackingMode(id: &crate::ns::Id) -> crate::mtl::HazardTrackingMode;
-            }
-            unsafe { rsel_hazardTrackingMode(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::mtl::msg_send::hazard_tracking_mode) }
         }
     };
 
     (set_hazard_tracking_mode) => {
         #[inline]
         pub fn set_hazard_tracking_mode(&mut self, value: crate::mtl::HazardTrackingMode) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setHazardTrackingMode(id: &mut crate::ns::Id, value: crate::mtl::HazardTrackingMode);
-            }
-            unsafe { wsel_setHazardTrackingMode(self, value) }
+            unsafe { $crate::objc::Obj::call1(self, $crate::mtl::msg_send::set_hazard_tracking_mode, value) }
         }
     };
 
     (resource_options) => {
         #[inline]
         pub fn resource_options(&self) -> crate::mtl::ResourceOptions {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn rsel_resourceOptions(id: &crate::ns::Id) -> crate::mtl::ResourceOptions;
-            }
-            unsafe { rsel_resourceOptions(self) }
+            unsafe { $crate::objc::Obj::call0(self, $crate::mtl::msg_send::resource_options) }
         }
     };
 
     (set_resource_options) => {
         #[inline]
         pub fn set_resource_options(&mut self, value: crate::mtl::ResourceOptions) {
-            #[link(name = "mtl", kind = "static")]
-            extern "C" {
-                fn wsel_setResourceOptions(id: &mut crate::ns::Id, value: crate::mtl::ResourceOptions);
-            }
-            unsafe { wsel_setResourceOptions(self, value) }
+            unsafe { $crate::objc::Obj::call1(self, $crate::mtl::msg_send::set_resource_options, value) }
         }
     };
 

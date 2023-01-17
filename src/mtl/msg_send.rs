@@ -44,7 +44,40 @@ extern "C" {
     #[link_name = "objc_msgSend$storageMode"]
     pub fn storage_mode();
 
-    #[link_name = "objc_msgSend$setStorageMode"]
+    #[link_name = "objc_msgSend$setStorageMode:"]
     pub fn set_storage_mode();
+
+    #[link_name = "objc_msgSend$newHeapWithDescriptor:"]
+    pub fn new_heap_with_descriptor();
+
+    #[link_name = "objc_msgSend$newBufferWithBytes:length:options:"]
+    pub fn new_buffer_with_bytes_length_options();
+
+    #[link_name = "objc_msgSend$cpuCacheMode"]
+    pub fn cpu_cache_mode();
+
+    #[link_name = "objc_msgSend$setCpuCacheMode:"]
+    pub fn set_cpu_cache_mode();
+
+    #[link_name = "objc_msgSend$resourceOptions"]
+    pub fn resource_options();
+
+    #[link_name = "objc_msgSend$setResourceOptions:"]
+    pub fn set_resource_options();
+
+    #[link_name = "objc_msgSend$hazardTrackingMode"]
+    pub fn hazard_tracking_mode();
+
+    #[link_name = "objc_msgSend$setHazardTrackingMode:"]
+    pub fn set_hazard_tracking_mode();
+
+    #[link_name = "objc_msgSend$gpuResourceID"]
+    pub fn gpu_resource_id();
+
+    #[link_name = "objc_msgSend$newBufferWithLength:options:"]
+    pub fn new_buffer_with_length_options();
+
+    #[link_name = "objc_msgSend$newDefaultLibrary"]
+    pub fn new_default_library();
 
 }

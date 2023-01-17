@@ -1,6 +1,6 @@
 use crate::{
     arc, define_mtl, define_obj_type, mtl, ns,
-    objc::{msg_send, Obj},
+    objc::{msg_send, Class, Obj},
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -37,14 +37,17 @@ impl Descriptor {
     /// let heap = device.new_heap_with_descriptor(&desc).unwrap();
     /// assert!(heap.size() >= 1024);
     /// ```
+    #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { MTLHeapDescriptor_new() }
+        unsafe { MTL_HEAP_DESCRIPTOR.alloc_init() }
     }
 
+    #[inline]
     pub fn size(&self) -> usize {
         unsafe { self.call0(msg_send::size) }
     }
 
+    #[inline]
     pub fn set_size(&mut self, value: usize) {
         unsafe { self.call1(msg_send::set_size, value) }
     }
@@ -61,8 +64,24 @@ impl Heap {
         resource_options
     );
 
+    #[inline]
     pub fn size(&self) -> usize {
         unsafe { self.call0(msg_send::size) }
+    }
+
+    #[inline]
+    pub fn buffer_with_length_and_options_ar(
+        &self,
+        length: usize,
+        options: mtl::ResourceOptions,
+    ) -> Option<arc::Rar<mtl::Buffer>> {
+        unsafe {
+            self.call2(
+                mtl::msg_send::new_buffer_with_length_options,
+                length,
+                options,
+            )
+        }
     }
 
     #[inline]
@@ -71,7 +90,7 @@ impl Heap {
         length: usize,
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buffer>> {
-        unsafe { rsel_newBufferWithLength_options(self, length, options) }
+        arc::Rar::option_retain(self.buffer_with_length_and_options_ar(length, options))
     }
 
     #[inline]
@@ -86,13 +105,7 @@ impl Heap {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
 
-    fn MTLHeapDescriptor_new() -> arc::R<Descriptor>;
-
-    fn rsel_newBufferWithLength_options(
-        id: &ns::Id,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buffer>>;
+    static MTL_HEAP_DESCRIPTOR: &'static Class<Descriptor>;
 
     fn rsel_newTextureWithDescriptor(
         id: &ns::Id,

@@ -172,16 +172,13 @@ impl Device {
         unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
     }
 
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// assert!(device.default_library().is_none());
-    /// ```
+    #[inline]
+    pub fn default_library_ar(&self) -> Option<arc::Rar<Library>> {
+        unsafe { self.call0(mtl::msg_send::new_default_library) }
+    }
     #[inline]
     pub fn default_library(&self) -> Option<arc::R<Library>> {
-        unsafe { rsel_newDefaultLibrary(self) }
+        arc::Rar::option_retain(self.default_library_ar())
     }
 
     /// ```
@@ -300,14 +297,45 @@ impl Device {
     }
 
     #[inline]
+    pub fn buffer_with_length_and_options_ar(
+        &self,
+        length: usize,
+        options: mtl::ResourceOptions,
+    ) -> Option<arc::Rar<mtl::Buffer>> {
+        unsafe {
+            self.call2(
+                mtl::msg_send::new_buffer_with_length_options,
+                length,
+                options,
+            )
+        }
+    }
+
+    #[inline]
     pub fn buffer_with_length_and_options(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<Buffer>> {
-        unsafe { rsel_newBufferWithLength_options(self, length, options) }
+    ) -> Option<arc::R<mtl::Buffer>> {
+        arc::Rar::option_retain(self.buffer_with_length_and_options_ar(length, options))
     }
 
+    #[inline]
+    pub fn buffer_with_bytes_length_and_options_ar(
+        &self,
+        bytes: *const c_void,
+        length: usize,
+        options: mtl::ResourceOptions,
+    ) -> Option<arc::Rar<Buffer>> {
+        unsafe {
+            self.call3(
+                mtl::msg_send::new_buffer_with_bytes_length_options,
+                bytes,
+                length,
+                options,
+            )
+        }
+    }
     #[inline]
     pub fn buffer_with_bytes_length_and_options(
         &self,
@@ -315,19 +343,31 @@ impl Device {
         length: usize,
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<Buffer>> {
-        unsafe { rsel_newBufferWithBytes_length_options(self, bytes, length, options) }
+        arc::Rar::option_retain(
+            self.buffer_with_bytes_length_and_options_ar(bytes, length, options),
+        )
     }
 
+    #[inline]
+    pub fn buffer_with_slice_ar<T: Sized>(
+        &self,
+        slice: &[T],
+        options: mtl::ResourceOptions,
+    ) -> Option<arc::Rar<Buffer>> {
+        self.buffer_with_bytes_length_and_options_ar(
+            slice.as_ptr() as _,
+            std::mem::size_of::<T>() * slice.len(),
+            options,
+        )
+    }
+
+    #[inline]
     pub fn buffer_with_slice<T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<Buffer>> {
-        self.buffer_with_bytes_length_and_options(
-            slice.as_ptr() as _,
-            std::mem::size_of::<T>() * slice.len(),
-            options,
-        )
+        arc::Rar::option_retain(self.buffer_with_slice_ar(slice, options))
     }
 
     /// ```no_run
@@ -399,11 +439,19 @@ impl Device {
     }
 
     #[inline]
+    pub fn new_heap_with_descriptor_ar(
+        &self,
+        descriptor: &mtl::HeapDescriptor,
+    ) -> Option<arc::Rar<mtl::Heap>> {
+        unsafe { self.call1(mtl::msg_send::new_heap_with_descriptor, descriptor) }
+    }
+
+    #[inline]
     pub fn new_heap_with_descriptor(
         &self,
         descriptor: &mtl::HeapDescriptor,
     ) -> Option<arc::R<mtl::Heap>> {
-        unsafe { rsel_newHeapWithDescriptor(self, descriptor) }
+        arc::Rar::option_retain(self.new_heap_with_descriptor_ar(descriptor))
     }
 }
 
@@ -439,8 +487,6 @@ extern "C" {
         plane: usize,
     ) -> Option<arc::R<mtl::Texture>>;
 
-    fn rsel_newDefaultLibrary(id: &Device) -> Option<arc::R<Library>>;
-
     fn rsel_newLibraryWithSource_options_error(
         id: &Device,
         source: &ns::String,
@@ -460,20 +506,6 @@ extern "C" {
         error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
-    // reuse this in Heap
-    fn rsel_newBufferWithLength_options(
-        id: &ns::Id,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<arc::R<Buffer>>;
-
-    fn rsel_newBufferWithBytes_length_options(
-        id: &Device,
-        bytes: *const c_void,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<arc::R<Buffer>>;
-
     fn rsel_newEvent(id: &Device) -> Option<arc::R<Event>>;
 
     fn rsel_maxBufferLength(id: &Device) -> usize;
@@ -491,10 +523,6 @@ extern "C" {
         options: mtl::ResourceOptions,
     ) -> SizeAndAlign;
 
-    fn rsel_newHeapWithDescriptor(
-        id: &Device,
-        descriptor: &mtl::HeapDescriptor,
-    ) -> Option<arc::R<mtl::Heap>>;
 }
 
 #[cfg(test)]
@@ -513,7 +541,7 @@ mod tests {
         let label = ns::String::with_str("nice");
         event.set_label(Some(&label));
 
-        let name = device.name();
+        let _name = device.name();
 
         assert!(device.max_buffer_length() > 10);
 
@@ -533,5 +561,8 @@ mod tests {
 
         let tier = device.argument_buffers_support();
         assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
+
+        assert!(device.default_library_ar().is_none());
+        assert!(device.default_library().is_none());
     }
 }

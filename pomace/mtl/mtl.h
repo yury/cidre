@@ -27,11 +27,6 @@ rsel1(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _N
 NS_RETURNS_RETAINED
 rsel3(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSurfaceRef, plane, NSUInteger, id <MTLTexture> _Nullable)
 
-
-//- (nullable id <MTLLibrary>)newDefaultLibrary;
-NS_RETURNS_RETAINED
-rsel0(, id, newDefaultLibrary, id <MTLLibrary> _Nullable)
-
 //- (nullable id <MTLLibrary>)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
 rsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
@@ -45,11 +40,6 @@ rsel2(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError
 
 NS_RETURNS_RETAINED
 rsel2(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
-//- (nullable id <MTLRenderPipelineState>)newRenderPipelineStateWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(__autoreleasing NSError **)error;
-
-//- (nullable id <MTLBuffer>)newBufferWithLength:(NSUInteger)length options:(MTLResourceOptions)options;
-NS_RETURNS_RETAINED
-rsel2(, id, newBufferWithLength, NSUInteger, options, MTLResourceOptions, id<MTLBuffer> _Nullable)
 
 NS_RETURNS_RETAINED
 rsel0(, id, newFence, id<MTLFence> _Nullable)
@@ -70,11 +60,6 @@ rsel1(,id, heapTextureSizeAndAlignWithDescriptor, MTLTextureDescriptor *, MTLSiz
 //- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
 rsel2(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 
-NS_RETURNS_RETAINED
-rsel1(, id, newHeapWithDescriptor, MTLHeapDescriptor *, id<MTLHeap>);
-
-
-
 #pragma mark - CompileOptions
 
 NS_RETURNS_RETAINED
@@ -84,11 +69,6 @@ csel0(, MTLCompileOptions, new, MTLCompileOptions *)
 rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
 //@property (readwrite, nonatomic) MTLLanguageVersion languageVersion
 rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
-
-//@property (readwrite, nonatomic) MTLResourceOptions resourceOptions;
-rwsel(, id, resourceOptions, setResourceOptions, MTLResourceOptions)
-rwsel(, id, cpuCacheMode, setCpuCacheMode, MTLCPUCacheMode)
-rwsel(, id, hazardTrackingMode, setHazardTrackingMode, MTLHazardTrackingMode)
 
 //@property (readwrite, nonatomic) MTLTextureType textureType;
 rwsel(, id, textureType, setTextureType, MTLTextureType)
@@ -188,10 +168,6 @@ wsel3(, id, setConstantValue, const void *, type, MTLDataType, withName, NSStrin
 
 #pragma mark - MTLHeapDescriptor
 
-NS_RETURNS_RETAINED
-csel0(, MTLHeapDescriptor, new, MTLHeapDescriptor *)
-
-
 rwsel(MTLHeapType_MTLHeapDescriptor_, MTLHeapDescriptor *, type, setType, MTLHeapType)
 rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, type, MTLHeapType)
 
@@ -199,12 +175,6 @@ rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, type, MTLHeapType)
 rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, currentAllocatedSize, NSUInteger)
 
 rsel1(, id, maxAvailableSizeWithAlignment, NSUInteger, NSUInteger)
-
-
-NS_RETURNS_RETAINED
-rsel3(, id, newBufferWithBytes, const void *, length,
-        NSUInteger, options, MTLResourceOptions,
-        id<MTLBuffer> _Nullable)
 
 NS_RETURNS_RETAINED
 rsel1(, id, newDepthStencilStateWithDescriptor, MTLDepthStencilDescriptor * _Nonnull,
@@ -507,7 +477,6 @@ SEL sel_setTextures_withRange;
 SEL sel_setImageblockWidth_height;
 SEL sel_contents;
 SEL sel_gpuAddress;
-SEL sel_gpuResourceID;
 SEL sel_renderCommandEncoderWithDescriptor;
 SEL sel_drawPrimitives_vertexStart_vertexCount;
 SEL sel_drawPrimitives_vertexStart_vertexCount_instanceCount;
@@ -516,6 +485,7 @@ SEL sel_setFragmentBuffer_offset_atIndex;
 SEL sel_computeCommandEncoderWithDescriptor;
 
 Class MTL_COMPUTE_PASS_DESCRIPTOR;
+Class MTL_HEAP_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -524,6 +494,7 @@ static void mtl_initializer()
     if (!initialized) {
       
       MTL_COMPUTE_PASS_DESCRIPTOR = [MTLComputePassDescriptor class];
+      MTL_HEAP_DESCRIPTOR = [MTLHeapDescriptor class];
       
       sel_device = @selector(device);
       sel_commandBuffer = @selector(commandBuffer);
@@ -555,7 +526,6 @@ static void mtl_initializer()
       sel_setImageblockWidth_height = @selector(setImageblockWidth:height:);
       sel_contents = @selector(contents);
       sel_gpuAddress = @selector(gpuAddress);
-      sel_gpuResourceID = @selector(gpuResourceID);
       sel_renderCommandEncoderWithDescriptor = @selector(renderCommandEncoderWithDescriptor:);
       sel_drawPrimitives_vertexStart_vertexCount = @selector(drawPrimitives:vertexStart:vertexCount:);
       sel_drawPrimitives_vertexStart_vertexCount_instanceCount = @selector(drawPrimitives:vertexStart:vertexCount:instanceCount:);
