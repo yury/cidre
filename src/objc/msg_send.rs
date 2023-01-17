@@ -129,6 +129,12 @@ extern "C" {
     #[link_name = "objc_msgSend$resultType"]
     pub fn result_type();
 
+    #[link_name = "objc_msgSend$type"]
+    pub fn _type();
+
+    #[link_name = "objc_msgSend$setType:"]
+    pub fn set_type();
+
     #[link_name = "objc_msgSend$substringWithRange:"]
     pub fn substring_with_range();
 

@@ -51,6 +51,16 @@ impl Descriptor {
     pub fn set_size(&mut self, value: usize) {
         unsafe { self.call1(msg_send::set_size, value) }
     }
+
+    #[inline]
+    pub fn _type(&self) -> Type {
+        unsafe { self.call0(msg_send::_type) }
+    }
+
+    #[inline]
+    pub fn set_type(&self, value: Type) {
+        unsafe { self.call1(msg_send::set_type, value) }
+    }
 }
 
 define_obj_type!(Heap(ns::Id));
@@ -107,6 +117,11 @@ impl Heap {
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::R<mtl::Texture>> {
         arc::Rar::option_retain(self.texture_with_descriptor_ar(descriptor))
+    }
+
+    #[inline]
+    pub fn _type(&self) -> Type {
+        unsafe { self.call0(msg_send::_type) }
     }
 }
 

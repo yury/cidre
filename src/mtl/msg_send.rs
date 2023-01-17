@@ -74,6 +74,33 @@ extern "C" {
     #[link_name = "objc_msgSend$setHazardTrackingMode:"]
     pub fn set_hazard_tracking_mode();
 
+    #[link_name = "objc_msgSend$usage"]
+    pub fn usage();
+
+    #[link_name = "objc_msgSend$setUsage:"]
+    pub fn set_usage();
+
+    #[link_name = "objc_msgSend$allowGPUOptimizedContents"]
+    pub fn allow_gpu_optimized_contents();
+
+    #[link_name = "objc_msgSend$setAllowGPUOptimizedContents"]
+    pub fn set_allow_gpu_optimized_contents();
+
+    #[link_name = "objc_msgSend$compressionType"]
+    pub fn compression_type();
+
+    #[link_name = "objc_msgSend$setCompressionType:"]
+    pub fn set_compression_type();
+
+    #[link_name = "objc_msgSend$swizzle"]
+    pub fn swizzle();
+
+    #[link_name = "objc_msgSend$setSwizzle:"]
+    pub fn set_swizzle();
+
+    #[link_name = "objc_msgSend$parentTexture"]
+    pub fn parent_texture();
+
     #[link_name = "objc_msgSend$gpuResourceID"]
     pub fn gpu_resource_id();
 
@@ -94,6 +121,9 @@ extern "C" {
 
     #[link_name = "objc_msgSend$newTextureWithDescriptor:"]
     pub fn new_texture_with_descriptor();
+
+    #[link_name = "objc_msgSend$newTextureViewWithPixelFormat:"]
+    pub fn new_texture_view_with_pixel_format();
 
     #[link_name = "objc_msgSend$maxBufferLength"]
     pub fn max_buffer_length();

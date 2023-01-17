@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_mtl, define_obj_type, define_options, io, msg_send, mtl, ns};
+use crate::{arc, cf, define_mtl, define_obj_type, define_options, io, mtl, ns, objc::Obj};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -222,42 +222,42 @@ impl Descriptor {
 
     #[inline]
     pub fn usage(&self) -> Usage {
-        unsafe { rsel_usage(self) }
+        unsafe { self.call0(mtl::msg_send::usage) }
     }
 
     #[inline]
     pub fn set_usage(&mut self, value: Usage) {
-        unsafe { wsel_setUsage(self, value) }
+        unsafe { self.call1(mtl::msg_send::set_usage, value) }
     }
 
     #[inline]
     pub fn allow_gpu_optimized_contents(&self) -> bool {
-        unsafe { rsel_allowGPUOptimizedContents(self) }
+        unsafe { self.call0(mtl::msg_send::allow_gpu_optimized_contents) }
     }
 
     #[inline]
     pub fn set_allow_gpu_optimized_contents(&mut self, value: bool) {
-        unsafe { wsel_setAllowGPUOptimizedContents(self, value) }
+        unsafe { self.call1(mtl::msg_send::set_allow_gpu_optimized_contents, value) }
     }
 
     #[inline]
     pub fn compression_type(&self) -> CompressionType {
-        unsafe { MTLTextureDescriptor_rsel_compressionType(self) }
+        unsafe { self.call0(mtl::msg_send::compression_type) }
     }
 
     #[inline]
     pub fn set_compression_type(&mut self, value: CompressionType) {
-        unsafe { MTLTextureDescriptor_wsel_setCompressionType(self, value) }
+        unsafe { self.call1(mtl::msg_send::set_compression_type, value) }
     }
 
     #[inline]
     pub fn swizzle(&self) -> SwizzleChannels {
-        unsafe { rsel_swizzle(self) }
+        unsafe { self.call0(mtl::msg_send::swizzle) }
     }
 
     #[inline]
     pub fn set_swizzle(&mut self, value: SwizzleChannels) {
-        unsafe { wsel_setSwizzle(self, value) }
+        unsafe { self.call1(mtl::msg_send::set_swizzle, value) }
     }
 }
 
@@ -304,7 +304,20 @@ impl Texture {
     /// ```
     #[inline]
     pub fn parent_texture(&self) -> Option<&Texture> {
-        unsafe { rsel_parentTexture(self) }
+        unsafe { self.call0(mtl::msg_send::parent_texture) }
+    }
+
+    #[inline]
+    pub fn texture_view_with_pixel_format_ar(
+        &self,
+        pixel_format: mtl::PixelFormat,
+    ) -> Option<arc::Rar<Texture>> {
+        unsafe {
+            self.call1(
+                mtl::msg_send::new_texture_view_with_pixel_format,
+                pixel_format,
+            )
+        }
     }
 
     #[inline]
@@ -312,7 +325,7 @@ impl Texture {
         &self,
         pixel_format: mtl::PixelFormat,
     ) -> Option<arc::R<Texture>> {
-        unsafe { rsel_newTextureViewWithPixelFormat(self, pixel_format) }
+        arc::Rar::option_retain(self.texture_view_with_pixel_format_ar(pixel_format))
     }
 
     #[inline]
@@ -370,25 +383,6 @@ extern "C" {
 
     fn rsel_arrayLength(id: &ns::Id) -> usize;
     fn wsel_setArrayLength(id: &mut ns::Id, value: usize);
-
-    fn rsel_usage(id: &ns::Id) -> Usage;
-    fn wsel_setUsage(id: &mut ns::Id, value: Usage);
-
-    fn rsel_allowGPUOptimizedContents(id: &ns::Id) -> bool;
-    fn wsel_setAllowGPUOptimizedContents(id: &mut ns::Id, value: bool);
-
-    fn MTLTextureDescriptor_rsel_compressionType(id: &ns::Id) -> CompressionType;
-    fn MTLTextureDescriptor_wsel_setCompressionType(id: &ns::Id, value: CompressionType);
-
-    fn rsel_swizzle(id: &ns::Id) -> SwizzleChannels;
-    fn wsel_setSwizzle(id: &mut ns::Id, value: SwizzleChannels);
-
-    fn rsel_parentTexture(id: &mtl::Texture) -> Option<&mtl::Texture>;
-
-    fn rsel_newTextureViewWithPixelFormat(
-        id: &mtl::Texture,
-        pixel_format: mtl::PixelFormat,
-    ) -> Option<arc::R<mtl::Texture>>;
 
     fn rsel_iosurface(id: &mtl::Texture) -> Option<&io::Surface>;
     fn rsel_iosurfacePlane(id: &mtl::Texture) -> usize;

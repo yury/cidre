@@ -93,28 +93,7 @@ rwsel(MTLTextureDescriptor_, MTLTextureDescriptor *, sampleCount, setSampleCount
 //@property (readwrite, nonatomic) NSUInteger arrayLength;
 rwsel(, id, arrayLength, setArrayLength, NSUInteger)
 
-//@property (readwrite, nonatomic) MTLTextureUsage usage API_AVAILABLE(macos(10.11), ios(9.0));
-rwsel(, id, usage, setUsage, MTLTextureUsage)
-
-//@property (readwrite, nonatomic) BOOL allowGPUOptimizedContents API_AVAILABLE(macos(10.14), ios(12.0));
-rwsel(, id, allowGPUOptimizedContents, setAllowGPUOptimizedContents, BOOL)
-
-//@property (readwrite, nonatomic) MTLTextureCompressionType compressionType API_AVAILABLE(macos(12.0), ios(15.0));
-
-// rwsel(MTLTextureDescriptor_, MTLTextureDescriptor *, compressionType, setCompressionType, MTLTextureCompressionType)
-
-//@property (readwrite, nonatomic) MTLTextureSwizzleChannels swizzle API_AVAILABLE(macos(10.15), ios(13.0));
-rwsel(, id, swizzle, setSwizzle, MTLTextureSwizzleChannels)
-
 // MTLTexture
-
-//@property (nullable, readonly) id <MTLTexture> parentTexture API_AVAILABLE(macos(10.11), ios(9.0));
-
-rsel0(, id, parentTexture, id<MTLTexture> _Nullable)
-
-//- (nullable id<MTLTexture>)newTextureViewWithPixelFormat:(MTLPixelFormat)pixelFormat;
-NS_RETURNS_RETAINED
-rsel1(, id, newTextureViewWithPixelFormat, MTLPixelFormat, id <MTLTexture> _Nullable )
 
 //@property (nullable, readonly) IOSurfaceRef iosurface API_AVAILABLE(macos(10.11), ios(11.0));
 CF_RETURNS_NOT_RETAINED
@@ -137,9 +116,6 @@ wsel3(, id, setConstantValue, const void *, type, MTLDataType, withName, NSStrin
 
 
 #pragma mark - MTLHeapDescriptor
-
-rwsel(MTLHeapType_MTLHeapDescriptor_, MTLHeapDescriptor *, type, setType, MTLHeapType)
-rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, type, MTLHeapType)
 
 
 rsel0(MTLHeapType_MTLHeap_, id<MTLHeap>, currentAllocatedSize, NSUInteger)
