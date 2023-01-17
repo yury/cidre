@@ -94,23 +94,25 @@ impl Heap {
     }
 
     #[inline]
+    pub fn texture_with_descriptor_ar(
+        &self,
+        descriptor: &mtl::TextureDescriptor,
+    ) -> Option<arc::Rar<mtl::Texture>> {
+        unsafe { self.call1(mtl::msg_send::new_texture_with_descriptor, descriptor) }
+    }
+
+    #[inline]
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::R<mtl::Texture>> {
-        unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
+        arc::Rar::option_retain(self.texture_with_descriptor_ar(descriptor))
     }
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-
     static MTL_HEAP_DESCRIPTOR: &'static Class<Descriptor>;
-
-    fn rsel_newTextureWithDescriptor(
-        id: &ns::Id,
-        descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::R<mtl::Texture>>;
 }
 
 #[cfg(test)]
@@ -126,6 +128,8 @@ mod tests {
 
         let device = mtl::Device::default().unwrap();
         let heap = device.new_heap_with_descriptor(&desc).unwrap();
+        assert!(heap.size() >= 1024);
+        let heap = device.new_heap_with_descriptor_ar(&desc).unwrap();
         assert!(heap.size() >= 1024);
     }
 }

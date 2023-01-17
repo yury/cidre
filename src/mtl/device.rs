@@ -144,22 +144,20 @@ impl Device {
         unsafe { rsel_newCommandQueueWithMaxCommandBufferCount(self, max_command_buffer_count) }
     }
 
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
-    ///
-    /// let t = device.texture_with_descriptor(&td).unwrap();
-    ///
-    /// ```
+    #[inline]
+    pub fn texture_with_descriptor_ar(
+        &self,
+        descriptor: &mtl::TextureDescriptor,
+    ) -> Option<arc::Rar<mtl::Texture>> {
+        unsafe { self.call1(mtl::msg_send::new_texture_with_descriptor, descriptor) }
+    }
+
     #[inline]
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::R<mtl::Texture>> {
-        unsafe { rsel_newTextureWithDescriptor(self, descriptor) }
+        arc::Rar::option_retain(self.texture_with_descriptor_ar(descriptor))
     }
 
     #[inline]
@@ -474,12 +472,6 @@ extern "C" {
         maxCommandBufferCount: usize,
     ) -> Option<arc::R<CommandQueue>>;
 
-    // reuse in Heap
-    fn rsel_newTextureWithDescriptor(
-        id: &ns::Id,
-        descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::R<mtl::Texture>>;
-
     fn rsel_newTextureWithDescriptor_iosurface_plane(
         id: &Device,
         descriptor: &mtl::TextureDescriptor,
@@ -564,5 +556,15 @@ mod tests {
 
         assert!(device.default_library_ar().is_none());
         assert!(device.default_library().is_none());
+
+        let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
+            mtl::PixelFormat::A8Unorm,
+            100,
+            200,
+            false,
+        );
+
+        let _t = device.texture_with_descriptor(&td).unwrap();
+        let _t = device.texture_with_descriptor_ar(&td).unwrap();
     }
 }

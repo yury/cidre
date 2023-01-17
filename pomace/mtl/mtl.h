@@ -19,22 +19,14 @@ rsel0(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
 NS_RETURNS_RETAINED
 rsel1(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
 
-
-NS_RETURNS_RETAINED
-rsel1(, id, newTextureWithDescriptor, MTLTextureDescriptor *, id <MTLTexture> _Nullable )
-
-//- (nullable id <MTLTexture>)newTextureWithDescriptor:(MTLTextureDescriptor *)descriptor iosurface:(IOSurfaceRef)iosurface plane:(NSUInteger)plane API_AVAILABLE(macos(10.11), ios(11.0));
 NS_RETURNS_RETAINED
 rsel3(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSurfaceRef, plane, NSUInteger, id <MTLTexture> _Nullable)
 
-//- (nullable id <MTLLibrary>)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
 rsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
 
-//- (void)newLibraryWithSource:(NSString *)source options:(nullable MTLCompileOptions *)options completionHandler:(MTLNewLibraryCompletionHandler)completionHandler
 wsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id)
 
-// - (nullable id <MTLComputePipelineState>)newComputePipelineStateWithFunction:(id <MTLFunction>)computeFunction error:(__autoreleasing NSError **)error;
 NS_RETURNS_RETAINED
 rsel2(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
 

@@ -80,4 +80,7 @@ extern "C" {
     #[link_name = "objc_msgSend$newDefaultLibrary"]
     pub fn new_default_library();
 
+    #[link_name = "objc_msgSend$newTextureWithDescriptor:"]
+    pub fn new_texture_with_descriptor();
+
 }
