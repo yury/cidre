@@ -1,5 +1,5 @@
 use crate::{
-    define_obj_type, msg_send, mtl,
+    define_obj_type, mtl,
     objc::{msg_send, Obj},
 };
 
@@ -28,12 +28,12 @@ impl Buffer {
 
     #[inline]
     pub fn contents(&self) -> *mut u8 {
-        msg_send!("mtl", self, sel_content)
+        unsafe { self.call0(mtl::msg_send::contents) }
     }
 
     #[inline]
     pub fn gpu_address(&self) -> u64 {
-        msg_send!("mtl", self, sel_gpuAddress)
+        unsafe { self.call0(mtl::msg_send::gpu_address) }
     }
 }
 

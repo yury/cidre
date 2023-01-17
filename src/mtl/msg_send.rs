@@ -53,6 +53,9 @@ extern "C" {
     #[link_name = "objc_msgSend$newBufferWithBytes:length:options:"]
     pub fn new_buffer_with_bytes_length_options();
 
+    #[link_name = "objc_msgSend$newCommandQueue"]
+    pub fn new_command_queue();
+
     #[link_name = "objc_msgSend$cpuCacheMode"]
     pub fn cpu_cache_mode();
 
@@ -98,4 +101,9 @@ extern "C" {
     #[link_name = "objc_msgSend$heapTextureSizeAndAlignWithDescriptor:"]
     pub fn heap_texture_size_and_align_with_descriptor();
 
+    #[link_name = "objc_msgSend$contents"]
+    pub fn contents();
+
+    #[link_name = "objc_msgSend$gpuAddress"]
+    pub fn gpu_address();
 }

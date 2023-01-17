@@ -113,7 +113,7 @@ impl Device {
         unsafe { self.call0(crate::mtl::msg_send::argument_buffers_support) }
     }
 
-    /// ```
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -123,8 +123,13 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[inline]
+    pub fn command_queue_ar(&self) -> Option<arc::Rar<CommandQueue>> {
+        unsafe { self.call0(mtl::msg_send::new_command_queue) }
+    }
+
+    #[inline]
     pub fn command_queue(&self) -> Option<arc::R<CommandQueue>> {
-        msg_send!("mtl", self, sel_newCommandQueue)
+        arc::Rar::option_retain(self.command_queue_ar())
     }
 
     /// ```
@@ -577,5 +582,8 @@ mod tests {
         let _t = device.texture_with_descriptor_ar(&td).unwrap();
 
         assert!(device.max_buffer_length() > 10);
+
+        let _queue = device.command_queue_ar().unwrap();
+        let _queue = device.command_queue().unwrap();
     }
 }

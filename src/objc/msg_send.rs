@@ -198,6 +198,9 @@ extern "C" {
     #[link_name = "objc_msgSend$reset"]
     pub fn reset();
 
+    #[link_name = "objc_msgSend$device"]
+    pub fn device();
+
     #[link_name = "objc_msgSend$frame"]
     pub fn frame();
 

@@ -14,9 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - MTLDevice
 
 NS_RETURNS_RETAINED
-rsel0(, id, newCommandQueue, id <MTLCommandQueue> _Nullable);
-
-NS_RETURNS_RETAINED
 rsel1(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
 
 NS_RETURNS_RETAINED
@@ -37,9 +34,6 @@ rsel2(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *,
 rsel2(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 
 #pragma mark - CompileOptions
-
-NS_RETURNS_RETAINED
-csel0(, MTLCompileOptions, new, MTLCompileOptions *)
 
 //@property (readwrite, nonatomic) BOOL fastMathEnabled;
 rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
@@ -421,7 +415,6 @@ NS_RETURNS_NOT_RETAINED
 rsel0(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
 
 
-SEL sel_device;
 SEL sel_commandBuffer;
 SEL sel_commandBufferWithUnretainedReferences;
 SEL sel_commandQueue;
@@ -451,8 +444,6 @@ SEL sel_dispatchThreadgroups_threadsPerThreadgroup;
 //- (void)setTextures:(const id <MTLTexture> __nullable [__nonnull])textures withRange:(NSRange)range
 SEL sel_setTextures_withRange;
 SEL sel_setImageblockWidth_height;
-SEL sel_contents;
-SEL sel_gpuAddress;
 SEL sel_renderCommandEncoderWithDescriptor;
 SEL sel_drawPrimitives_vertexStart_vertexCount;
 SEL sel_drawPrimitives_vertexStart_vertexCount_instanceCount;
@@ -462,6 +453,7 @@ SEL sel_computeCommandEncoderWithDescriptor;
 
 Class MTL_COMPUTE_PASS_DESCRIPTOR;
 Class MTL_HEAP_DESCRIPTOR;
+Class MTL_COMPILE_OPTIONS;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -471,8 +463,8 @@ static void mtl_initializer()
       
       MTL_COMPUTE_PASS_DESCRIPTOR = [MTLComputePassDescriptor class];
       MTL_HEAP_DESCRIPTOR = [MTLHeapDescriptor class];
+      MTL_COMPILE_OPTIONS = [MTLCompileOptions class];
       
-      sel_device = @selector(device);
       sel_commandBuffer = @selector(commandBuffer);
       sel_commandBufferWithUnretainedReferences = @selector(commandBufferWithUnretainedReferences);
       
@@ -500,8 +492,6 @@ static void mtl_initializer()
       sel_dispatchThreadgroups_threadsPerThreadgroup = @selector(dispatchThreadgroups:threadsPerThreadgroup:);
       sel_setTextures_withRange = @selector(setTextures:withRange:);
       sel_setImageblockWidth_height = @selector(setImageblockWidth:height:);
-      sel_contents = @selector(contents);
-      sel_gpuAddress = @selector(gpuAddress);
       sel_renderCommandEncoderWithDescriptor = @selector(renderCommandEncoderWithDescriptor:);
       sel_drawPrimitives_vertexStart_vertexCount = @selector(drawPrimitives:vertexStart:vertexCount:);
       sel_drawPrimitives_vertexStart_vertexCount_instanceCount = @selector(drawPrimitives:vertexStart:vertexCount:instanceCount:);

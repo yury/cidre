@@ -203,7 +203,7 @@ macro_rules! define_mtl {
     (device) => {
         #[inline]
         pub fn device(&self) -> &crate::mtl::Device {
-            crate::msg_send!("mtl", self, sel_device)
+            unsafe { $crate::objc::Obj::call0(self, $crate::objc::msg_send::device) }
         }
     };
 

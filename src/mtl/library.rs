@@ -2,7 +2,7 @@ use std::{fmt::Debug, intrinsics::transmute};
 
 use crate::{
     arc, define_mtl, define_obj_type, mtl, ns,
-    objc::{msg_send, Obj},
+    objc::{msg_send, Class, Obj},
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -36,7 +36,7 @@ pub enum OptimizationLevel {
 define_obj_type!(CompileOptions(ns::Id));
 
 impl CompileOptions {
-    /// ```
+    /// ```no_run
     /// use cidre::mtl;
     ///
     /// let mut options = mtl::CompileOptions::new();
@@ -52,7 +52,7 @@ impl CompileOptions {
     ///
     /// ```
     pub fn new() -> arc::R<CompileOptions> {
-        unsafe { MTLCompileOptions_new() }
+        unsafe { MTL_COMPILE_OPTIONS.alloc_init() }
     }
 
     pub fn fast_math_enabled(&self) -> bool {
@@ -226,7 +226,8 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLCompileOptions_new() -> arc::R<CompileOptions>;
+    static MTL_COMPILE_OPTIONS: &'static Class<CompileOptions>;
+
     fn rsel_fastMathEnabled(id: &ns::Id) -> bool;
     fn wsel_setFastMathEnabled(id: &mut ns::Id, value: bool);
 
@@ -317,5 +318,19 @@ mod tests {
             .unwrap();
         let name = func.name();
         assert!(func_name.is_equal(name));
+    }
+
+    #[test]
+    fn compile_options() {
+        let mut options = mtl::CompileOptions::new();
+
+        assert_eq!(true, options.fast_math_enabled());
+        options.set_fast_math_enabled(false);
+        assert_eq!(false, options.fast_math_enabled());
+
+        assert_ne!(options.language_version(), mtl::LanguageVersion::_2_0);
+
+        options.set_language_version(mtl::LanguageVersion::_2_4);
+        assert_eq!(options.language_version(), mtl::LanguageVersion::_2_4);
     }
 }
