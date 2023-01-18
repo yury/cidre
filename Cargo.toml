@@ -1,83 +1,9 @@
-[package]
-name = "cidre"
-version = "0.1.0"
-edition = "2021"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[features]
-
-default = ["full"]
-
-full = [
-  "private",
-  "blocks",
-  "async",
-
-  "am",
-  "at",
-  "ca",
-  "ci",
-  "av",
-  "cf",
-  "cg",
-  "ns",
-  "vt",
-  "sc",
-  "mtl",
+members = [
+  "cidre",
+  "cidre-macros",
 ]
-
-# Turn on private API
-private = []
-
-blocks = []
-async = []
-
-am = ["private", "cf"]
-at = []
-av = ["ns"]
-ca = []
-ci = ["ns", "cf"]
-cf = []
-cg = []
-ns = []
-sc = ["ns"]
-vt = ["cf"]
-mtl = ["ns"]
-
-[dependencies]
-
-tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
-parking_lot = "0.12.0"
-
-[dev-dependencies]
-criterion = "0.3"
-flume = {version = "0.10", features = ["async"]}
-rt = { path = "../rt"}
-ndarray = "0.15"
-linfa = "0.6.1"
-linfa-clustering = "0.6.1"
-linfa-reduction = "0.6.1"
-
-[[bench]]
-name = "metal"
-harness = false
-
-[[bench]]
-name = "alloc"
-harness = false
-
-[[example]]
-name = "device_list"
-required-features = ["am"]
-
-[[example]]
-name = "device_mount_dev_image"
-required-features = ["am"]
-
-[lib]
-#crate-type = ["staticlib", "rlib"]
-#crate-type = ["staticlib", "rlib"]
 
 [profile.dev]
 opt-level = 1
@@ -86,6 +12,3 @@ opt-level = 1
 lto = true
 strip = "debuginfo"
 panic = "abort"
-
-[package.metadata.playground]
-features = ["full"]

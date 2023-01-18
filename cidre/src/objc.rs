@@ -9,7 +9,6 @@ use std::{
 };
 
 use crate::{arc, cf::Type};
-
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Class<T: Obj>(Type, PhantomData<T>);
@@ -501,9 +500,28 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
     }
 }
 
+pub use cidre_macros::msg_send as msg_send2;
+
 // global_asm!(
 //     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
 //     "    .long    0",
 //     "    .long    0",
 //     "    .popsection",
 // );
+
+#[cfg(test)]
+mod tests1 {
+    use crate::{arc, ns, objc};
+
+    pub struct Foo;
+
+    impl Foo {
+        #[objc::msg_send2(setName:foo:)]
+        pub fn foo(&self, bla: i8) -> arc::Rar<ns::Number>;
+    }
+
+    #[test]
+    fn basics() {
+        // foo();
+    }
+}
