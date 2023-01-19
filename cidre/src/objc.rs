@@ -501,6 +501,7 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
 }
 
 pub use cidre_macros::msg_send as msg_send2;
+pub use cidre_macros::rar_retain;
 
 // global_asm!(
 //     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
@@ -516,12 +517,20 @@ mod tests1 {
     pub struct Foo;
 
     impl Foo {
+        /// Nice doc
         #[objc::msg_send2(setName:foo:)]
-        pub fn foo(&self, bla: i8) -> arc::Rar<ns::Number>;
+        pub fn foo_ar(&mut self, name: i8, foo: &i32) -> Option<arc::Rar<ns::Number>>;
+
+        /// Nice doc
+        #[objc::rar_retain()]
+        pub fn foo(&mut self, name: i8, foo: &i32) -> Option<arc::R<ns::Number>>;
+
+        #[objc::msg_send2(setName:foo:)]
+        pub fn foo2(&self, name: i8, foo: i32);
     }
 
     #[test]
     fn basics() {
-        // foo();
+        let mut f = Foo;
     }
 }
