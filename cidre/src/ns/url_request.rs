@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{msg_send, Obj},
+    objc::{self, msg_send, Obj},
 };
 
 define_obj_type!(URLRequest(ns::Id));
@@ -95,72 +95,47 @@ impl URLRequest {
         }
     }
 
-    #[inline]
-    pub fn url(&self) -> Option<&ns::URL> {
-        unsafe { crate::objc::Obj::call0(self, crate::objc::msg_send::url) }
-    }
+    #[objc::msg_send2(URL)]
+    pub fn url(&self) -> Option<&ns::URL>;
 
-    #[inline]
-    pub fn cache_policy(&self) -> CachePolicy {
-        unsafe { NSURLRequest_rsel_cachePolicy(self) }
-    }
+    #[objc::msg_send2(cachePolicy)]
+    pub fn cache_policy(&self) -> CachePolicy;
 
-    #[inline]
-    pub fn timeout_interval(&self) -> ns::TimeInterval {
-        unsafe { NSURLRequest_rsel_timeoutInterval(self) }
-    }
+    #[objc::msg_send2(timeoutInterval)]
+    pub fn timeout_interval(&self) -> ns::TimeInterval;
 
-    #[inline]
-    pub fn network_service_type(&self) -> NetworkServiceType {
-        unsafe { NSURLRequest_rsel_networkServiceType(self) }
-    }
+    #[objc::msg_send2(networkServiceType)]
+    pub fn network_service_type(&self) -> NetworkServiceType;
 
-    #[inline]
-    pub fn allows_cellular_access(&self) -> bool {
-        unsafe { NSURLRequest_rsel_allowsCellularAccess(self) }
-    }
+    #[objc::msg_send2(allowsCellularAccess)]
+    pub fn allows_cellular_access(&self) -> bool;
 
-    #[inline]
-    pub fn allows_expensive_network_access(&self) -> bool {
-        unsafe { NSURLRequest_rsel_allowsExpensiveNetworkAccess(self) }
-    }
+    #[objc::msg_send2(allowsExpensiveNetworkAccess)]
+    pub fn allows_expensive_network_access(&self) -> bool;
 
-    #[inline]
-    pub fn allows_constrained_network_access(&self) -> bool {
-        unsafe { NSURLRequest_rsel_allowsConstrainedNetworkAccess(self) }
-    }
+    #[objc::msg_send2(allowsConstrainedNetworkAccess)]
+    pub fn allows_constrained_network_access(&self) -> bool;
 
-    pub fn assumes_http3_capable(&self) -> bool {
-        unsafe { NSURLRequest_rsel_assumesHTTP3Capable(self) }
-    }
+    #[objc::msg_send2(assumesHTTP3Capable)]
+    pub fn assumes_http3_capable(&self) -> bool;
 
-    pub fn attribution(&self) -> Attribution {
-        unsafe { NSURLRequest_rsel_attribution(self) }
-    }
+    #[objc::msg_send2(attribution)]
+    pub fn attribution(&self) -> Attribution;
 
-    pub fn requires_dns_sec_validation(&self) -> bool {
-        unsafe { NSURLRequest_rsel_requiresDNSSECValidation(self) }
-    }
+    #[objc::msg_send2(requiresDNSSECValidation)]
+    pub fn requires_dns_sec_validation(&self) -> bool;
 
-    #[inline]
-    pub fn http_method(&self) -> Option<&ns::String> {
-        unsafe { NSURLRequest_rsel_HTTPMethod(self) }
-    }
+    #[objc::msg_send2(HTTPMethod)]
+    pub fn http_method(&self) -> Option<&ns::String>;
 
-    #[inline]
-    pub fn all_http_header_fields(&self) -> Option<&ns::Dictionary<ns::String, ns::String>> {
-        unsafe { NSURLRequest_rsel_allHTTPHeaderFields(self) }
-    }
+    #[objc::msg_send2(allHTTPHeaderFields)]
+    pub fn all_http_header_fields(&self) -> Option<&ns::Dictionary<ns::String, ns::String>>;
 
-    #[inline]
-    pub fn value_for_http_header_field<'a>(&'a self, field: &ns::String) -> Option<&'a ns::String> {
-        unsafe { NSURLRequest_rsel_valueForHTTPHeaderField(self, field) }
-    }
+    #[objc::msg_send2(valueForHTTPHeaderField:)]
+    pub fn value_for_http_header_field<'a>(&'a self, field: &ns::String) -> Option<&'a ns::String>;
 
-    #[inline]
-    pub fn http_body(&self) -> Option<&ns::Data> {
-        unsafe { NSURLRequest_rsel_HTTPBody(self) }
-    }
+    #[objc::msg_send2(HTTPBody)]
+    pub fn http_body(&self) -> Option<&ns::Data>;
 
     #[inline]
     pub fn copy_mut(&self) -> arc::R<URLRequestMut> {
@@ -190,25 +165,6 @@ extern "C" {
         cache_policy: CachePolicy,
         timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequest>;
-
-    fn NSURLRequest_rsel_cachePolicy(request: &URLRequest) -> CachePolicy;
-    fn NSURLRequest_rsel_timeoutInterval(request: &URLRequest) -> ns::TimeInterval;
-    fn NSURLRequest_rsel_networkServiceType(request: &URLRequest) -> NetworkServiceType;
-    fn NSURLRequest_rsel_allowsCellularAccess(request: &URLRequest) -> bool;
-    fn NSURLRequest_rsel_allowsExpensiveNetworkAccess(request: &URLRequest) -> bool;
-    fn NSURLRequest_rsel_allowsConstrainedNetworkAccess(request: &URLRequest) -> bool;
-    fn NSURLRequest_rsel_assumesHTTP3Capable(request: &URLRequest) -> bool;
-    fn NSURLRequest_rsel_attribution(request: &URLRequest) -> Attribution;
-    fn NSURLRequest_rsel_requiresDNSSECValidation(request: &URLRequest) -> bool;
-    fn NSURLRequest_rsel_HTTPMethod(request: &URLRequest) -> Option<&ns::String>;
-    fn NSURLRequest_rsel_allHTTPHeaderFields(
-        request: &URLRequest,
-    ) -> Option<&ns::Dictionary<ns::String, ns::String>>;
-    fn NSURLRequest_rsel_valueForHTTPHeaderField<'a>(
-        request: &'a URLRequest,
-        field: &ns::String,
-    ) -> Option<&'a ns::String>;
-    fn NSURLRequest_rsel_HTTPBody(request: &URLRequest) -> Option<&ns::Data>;
 }
 
 impl URLRequestMut {
@@ -232,30 +188,20 @@ impl URLRequestMut {
         }
     }
 
-    #[inline]
-    pub fn set_url(&mut self, value: Option<&ns::URL>) {
-        unsafe { self.call1(msg_send::set_url, value) }
-    }
+    #[objc::msg_send2(setURL:)]
+    pub fn set_url(&mut self, value: Option<&ns::URL>);
 
-    #[inline]
-    pub fn set_cache_policy(&mut self, value: CachePolicy) {
-        unsafe { NSMutableURLRequest_wsel_setCachePolicy(self, value) }
-    }
+    #[objc::msg_send2(setCachePolicy:)]
+    pub fn set_cache_policy(&mut self, value: CachePolicy);
 
-    #[inline]
-    pub fn set_timeout_interval(&mut self, value: ns::TimeInterval) {
-        unsafe { NSMutableURLRequest_wsel_setTimeoutInterval(self, value) }
-    }
+    #[objc::msg_send2(setTimeoutInterval:)]
+    pub fn set_timeout_interval(&mut self, value: ns::TimeInterval);
 
-    #[inline]
-    pub fn set_network_service_type(&mut self, value: NetworkServiceType) {
-        unsafe { NSMutableURLRequest_wsel_setNetworkServiceType(self, value) }
-    }
+    #[objc::msg_send2(setNetworkServiceType:)]
+    pub fn set_network_service_type(&mut self, value: NetworkServiceType);
 
-    #[inline]
-    pub fn set_allows_cellular_access(&mut self, value: bool) {
-        unsafe { NSMutableURLRequest_wsel_setAllowsCellularAccess(self, value) }
-    }
+    #[objc::msg_send2(setAllowsCellularAccess:)]
+    pub fn set_allows_cellular_access(&mut self, value: bool);
 
     #[inline]
     pub fn set_allows_expensive_network_access(&mut self, value: bool) {

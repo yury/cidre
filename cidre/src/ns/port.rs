@@ -3,7 +3,7 @@ use std::{ffi::c_void, mem::transmute, ops::Deref};
 use crate::{
     arc, cf, define_obj_type, mach, ns,
     objc::Delegate,
-    objc::{msg_send, Obj},
+    objc::{self, msg_send, Obj},
 };
 
 define_obj_type!(Port(ns::Id));
@@ -14,13 +14,11 @@ impl Port {
         unsafe { NSPort_port() }
     }
 
-    pub fn invalidate(&self) {
-        unsafe { self.call0(msg_send::invalidate) }
-    }
+    #[objc::msg_send2(invalidate)]
+    pub fn invalidate(&self);
 
-    pub fn is_valid(&self) -> bool {
-        unsafe { self.call0(msg_send::is_valid) }
-    }
+    #[objc::msg_send2(isValid)]
+    pub fn is_valid(&self) -> bool;
 }
 
 impl MachPort {
@@ -28,17 +26,14 @@ impl MachPort {
         unsafe { transmute(Port::new()) }
     }
 
-    pub fn mach_port(&self) -> mach::Port {
-        unsafe { rsel_machPort(self) }
-    }
+    #[objc::msg_send2(machPort)]
+    pub fn mach_port(&self) -> mach::Port;
 
-    pub fn schedule_in_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode) {
-        unsafe { wsel_scheduleInRunLoop_forMode(self, run_loop, mode) }
-    }
+    #[objc::msg_send2(scheduleInRunLoop:forMode:)]
+    pub fn schedule_in_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
-    pub fn remove_from_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode) {
-        unsafe { wsel_removeFromRunLoop_forMode(self, run_loop, mode) }
-    }
+    #[objc::msg_send2(scheduleInRunLoop:forMode:)]
+    pub fn remove_from_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
     pub fn set_delegate<D>(&mut self, delegate: &Delegate<D>)
     where
@@ -77,11 +72,6 @@ pub trait MachPortDelegate {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn NSPort_port() -> arc::R<Port>;
-    fn rsel_machPort(id: &ns::Id) -> mach::Port;
-
-    fn wsel_scheduleInRunLoop_forMode(id: &ns::Id, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
-    fn wsel_removeFromRunLoop_forMode(id: &ns::Id, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
-
     fn make_mach_port_delegate(vtable: *const *const c_void) -> arc::R<ns::Id>;
 }
 

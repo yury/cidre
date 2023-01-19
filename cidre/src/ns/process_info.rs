@@ -1,6 +1,6 @@
 use crate::{
     define_obj_type, ns,
-    objc::{self, msg_send, Class, Obj},
+    objc::{self, Class},
 };
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -38,39 +38,31 @@ impl ProcessInfo {
     /// assert!(pi.processor_count() > 1);
     /// assert!(pi.active_processor_count() > 1);
     /// ```
-    pub fn current() -> &'static ProcessInfo {
-        unsafe { NS_PROCESS_INFO.call0(msg_send::process_info) }
-    }
+    #[objc::cls_msg_send(processInfo)]
+    pub fn current() -> &'static ProcessInfo;
 
     #[inline]
-    pub fn thermal_state(&self) -> ThermalState {
-        unsafe { self.call0(objc::msg_send::thermal_state) }
+    pub fn cls() -> &'static Class<Self> {
+        unsafe { NS_PROCESS_INFO }
     }
 
-    #[inline]
-    pub fn is_low_power_mode_enabled(&self) -> bool {
-        unsafe { self.call0(msg_send::is_low_power_mode_enabled) }
-    }
+    #[objc::msg_send2(thermalState)]
+    pub fn thermal_state(&self) -> ThermalState;
 
-    #[inline]
-    pub fn processor_count(&self) -> usize {
-        unsafe { self.call0(msg_send::processor_count) }
-    }
+    #[objc::msg_send2(isLowPowerModeEnabled)]
+    pub fn is_low_power_mode_enabled(&self) -> bool;
 
-    #[inline]
-    pub fn active_processor_count(&self) -> usize {
-        unsafe { self.call0(msg_send::active_processor_count) }
-    }
+    #[objc::msg_send2(processorCount)]
+    pub fn processor_count(&self) -> usize;
 
-    #[inline]
-    pub fn is_mac_catalyst_app(&self) -> bool {
-        unsafe { self.call0(msg_send::is_mac_catalyst_app) }
-    }
+    #[objc::msg_send2(activeProcessorCount)]
+    pub fn active_processor_count(&self) -> usize;
 
-    #[inline]
-    pub fn is_ios_app_on_mac(&self) -> bool {
-        unsafe { self.call0(msg_send::is_ios_app_on_mac) }
-    }
+    #[objc::msg_send2(isMacCatalystApp)]
+    pub fn is_mac_catalyst_app(&self) -> bool;
+
+    #[objc::msg_send2(isiOSAppOnMac)]
+    pub fn is_ios_app_on_mac(&self) -> bool;
 }
 
 #[link(name = "ns", kind = "static")]

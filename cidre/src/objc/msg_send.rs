@@ -93,23 +93,14 @@ extern "C" {
     #[link_name = "objc_msgSend$objectAtIndex:"]
     pub fn object_at_index();
 
-    #[link_name = "objc_msgSend$thermalState"]
-    pub fn thermal_state();
+    // #[link_name = "objc_msgSend$thermalState"]
+    // pub fn thermal_state();
 
     #[link_name = "objc_msgSend$isLowPowerModeEnabled"]
     pub fn is_low_power_mode_enabled();
 
-    #[link_name = "objc_msgSend$processorCount"]
-    pub fn processor_count();
-
     #[link_name = "objc_msgSend$activeProcessorCount"]
     pub fn active_processor_count();
-
-    #[link_name = "objc_msgSend$isMacCatalystApp"]
-    pub fn is_mac_catalyst_app();
-
-    #[link_name = "objc_msgSend$isiOSAppOnMac"]
-    pub fn is_ios_app_on_mac();
 
     #[link_name = "objc_msgSend$isEqualToString:"]
     pub fn is_equal_to_string();

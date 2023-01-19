@@ -13,16 +13,19 @@ fn get_fn_args(group: TokenStream) -> Vec<String> {
     let mut prev = None;
     let mut vars = Vec::with_capacity(10);
 
+    let mut can_be_name = false;
     for t in group.into_iter() {
         match t {
             TokenTree::Ident(i) => {
                 prev = Some(i.to_string());
             }
-            TokenTree::Punct(p) if p.as_char() == ':' => {
+            TokenTree::Punct(p) if can_be_name && p.as_char() == ':' => {
                 if let Some(id) = prev.take() {
                     vars.push(id)
                 }
+                can_be_name = false;
             }
+            TokenTree::Punct(p) if p.as_char() == ',' => can_be_name = true,
             _ => prev = None,
         }
     }
@@ -30,14 +33,20 @@ fn get_fn_args(group: TokenStream) -> Vec<String> {
 }
 #[proc_macro_attribute]
 pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, true)
-}
-#[proc_macro_attribute]
-pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false)
+    gen_msg_send(sel, func, true, false)
 }
 
-fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool) -> TokenStream {
+#[proc_macro_attribute]
+pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
+    gen_msg_send(sel, func, false, false)
+}
+
+#[proc_macro_attribute]
+pub fn cls_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
+    gen_msg_send(sel, func, false, true)
+}
+
+fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool, class: bool) -> TokenStream {
     let extern_name = sel.to_string().replace(' ', "");
     let args_count = sel_args_count(sel);
 
@@ -63,10 +72,18 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool) -> TokenStrea
     };
 
     let fn_name = fn_name.to_string();
+    let mut generics = Vec::new();
 
-    let Some(TokenTree::Group(args)) = iter.next() else {
-        panic!("foo");
+    let args = loop {
+        let Some(tt) = iter.next() else {
+            panic!("need more tokens");
+        };
+        match tt {
+            TokenTree::Group(args) => break args,
+            _ => generics.push(tt),
+        }
     };
+    let gen = TokenStream::from_iter(generics.into_iter()).to_string();
 
     let ts = TokenStream::from_iter(iter);
     let mut ret = ts.to_string();
@@ -77,28 +94,39 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool) -> TokenStrea
     let vars = get_fn_args(args.stream());
     let fn_args_count = vars.len();
     if !retain {
-        assert!(fn_args_count == args_count);
+        assert_eq!(fn_args_count, args_count);
     }
 
     let pre = pre.join(" ");
     let vars = vars.join(", ");
 
-    let (fn_args, call_args) = if fn_args_count == 0 {
-        let fn_args = fn_args.replace("& self", "id: &Self");
-        let fn_args = fn_args.replace("& mut self", "id: &mut Self");
+    let (mut fn_args, mut call_args) = if fn_args_count == 0 {
+        let fn_args = fn_args
+            .replacen("( &", "(id:", 1)
+            .replacen("self", "Self", 1);
         (fn_args, "sig(self)".to_string())
     } else {
-        let fn_args = fn_args.replace("& self", "id: &Self, imp: *const std::ffi::c_void");
-        let fn_args = fn_args.replace("& mut self", "id: &mut Self, imp: *const std::ffi::c_void");
+        let fn_args = fn_args
+            .replacen("(", "(id:", 1)
+            .replace("self", "Self, imp: *const std::ffi::c_void");
         (fn_args, format!("sig(self, std::ptr::null(), {})", vars))
     };
+
+    if class {
+        fn_args = fn_args.replacen("(", "(cls: *const std::ffi::c_void, ", 1);
+        call_args = call_args.replacen(
+            "sig(self",
+            "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+            1,
+        );
+    }
 
     let flow = if retain {
         if option {
             format!(
                 "
                 #[inline]
-                {pre} {fn_name}{args} {ret} {{
+                {pre} {fn_name}{gen}{args} {ret} {{
                     arc::Rar::option_retain(self.{fn_name}_ar({vars}) )
                 }}
                 "
@@ -107,7 +135,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool) -> TokenStrea
             format!(
                 "
                 #[inline]
-                {pre} {fn_name}{args} {ret} {{
+                {pre} {fn_name}{gen}{args} {ret} {{
                     self.{fn_name}_ar({vars}).retain()
                 }}
                 "
@@ -116,21 +144,21 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool) -> TokenStrea
     } else {
         format!(
             "
-        #[inline]
-        {pre} {fn_name}{args} {ret} {{
-            extern \"C\" {{
-                #[link_name = \"objc_msgSend${extern_name}\"]
-                fn msg_send();
-            }}
+            #[inline]
+            {pre} {fn_name}{gen}{args} {ret} {{
+                extern \"C\" {{
+                    #[link_name = \"objc_msgSend${extern_name}\"]
+                    fn msg_send();
+                }}
 
-            unsafe {{
-                let fn_ptr = msg_send as *const std::ffi::c_void;
-                let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
+                unsafe {{
+                    let fn_ptr = msg_send as *const std::ffi::c_void;
+                    let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
 
-                {call_args}
+                    {call_args}
+                }}
             }}
-        }}
-        "
+            "
         )
     };
 

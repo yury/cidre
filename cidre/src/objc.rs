@@ -496,6 +496,7 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
     }
 }
 
+pub use cidre_macros::cls_msg_send;
 pub use cidre_macros::msg_send as msg_send2;
 pub use cidre_macros::rar_retain;
 
