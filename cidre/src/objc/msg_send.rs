@@ -111,12 +111,6 @@ extern "C" {
     #[link_name = "objc_msgSend$isiOSAppOnMac"]
     pub fn is_ios_app_on_mac();
 
-    #[link_name = "objc_msgSend$countByEnumeratingWithState:objects:count:"]
-    pub fn count_by_enumerating_with_state_objects_count();
-
-    #[link_name = "objc_msgSend$UTF8String"]
-    pub fn utf8_string();
-
     #[link_name = "objc_msgSend$isEqualToString:"]
     pub fn is_equal_to_string();
 

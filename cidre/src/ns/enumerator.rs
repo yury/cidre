@@ -1,6 +1,6 @@
 use std::{ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::objc::{msg_send, Obj};
+use crate::objc::{self, msg_send, Obj};
 
 static MUTATIONS_TARGET: u32 = 0;
 static MUTATIONS_PTR: &u32 = &MUTATIONS_TARGET;
@@ -32,22 +32,13 @@ impl Default for FastEnumerationState {
 }
 
 pub trait FastEnumeration<T: Obj>: Obj {
-    #[inline]
+    #[objc::msg_send2(countByEnumeratingWithState:objects:count:)]
     fn count_by_enumerating(
         &self,
         state: &mut FastEnumerationState,
         objects: &mut [*const T],
         count: usize,
-    ) -> usize {
-        unsafe {
-            self.call3(
-                msg_send::count_by_enumerating_with_state_objects_count,
-                state,
-                objects,
-                count,
-            )
-        }
-    }
+    ) -> usize;
 
     #[inline]
     fn iter(&self) -> FEIterator<Self, T> {
