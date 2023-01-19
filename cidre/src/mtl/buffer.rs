@@ -1,7 +1,4 @@
-use crate::{
-    define_obj_type, mtl,
-    objc::{msg_send, Obj},
-};
+use crate::{define_obj_type, mtl, objc};
 
 define_obj_type!(Buffer(mtl::Resource));
 
@@ -16,25 +13,18 @@ impl Buffer {
     /// assert_eq!(buffer.len(), 10);
     ///
     /// ```
-    #[inline]
-    pub fn len(&self) -> usize {
-        unsafe { self.call0(msg_send::length) }
-    }
+    #[objc::msg_send2(length)]
+    pub fn len(&self) -> usize;
 
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+    #[objc::msg_send2(contents)]
+    pub fn contents(&self) -> *mut u8;
 
-    #[inline]
-    pub fn contents(&self) -> *mut u8 {
-        unsafe { self.call0(mtl::msg_send::contents) }
-    }
-
-    #[inline]
-    pub fn gpu_address(&self) -> u64 {
-        unsafe { self.call0(mtl::msg_send::gpu_address) }
-    }
+    #[objc::msg_send2(gpuAddress)]
+    pub fn gpu_address(&self) -> u64;
 }
 
 #[cfg(test)]

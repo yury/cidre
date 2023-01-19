@@ -2,7 +2,7 @@ use std::{fmt::Debug, intrinsics::transmute};
 
 use crate::{
     arc, define_mtl, define_obj_type, mtl, ns,
-    objc::{msg_send, Class, Obj},
+    objc::{self, Class},
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -55,21 +55,17 @@ impl CompileOptions {
         unsafe { MTL_COMPILE_OPTIONS.alloc_init() }
     }
 
-    pub fn fast_math_enabled(&self) -> bool {
-        unsafe { rsel_fastMathEnabled(self) }
-    }
+    #[objc::msg_send2(fastMathEnabled)]
+    pub fn fast_math_enabled(&self) -> bool;
 
-    pub fn set_fast_math_enabled(&mut self, value: bool) {
-        unsafe { wsel_setFastMathEnabled(self, value) }
-    }
+    #[objc::msg_send2(setFastMathEnabled:)]
+    pub fn set_fast_math_enabled(&mut self, value: bool);
 
-    pub fn language_version(&self) -> LanguageVersion {
-        unsafe { rsel_languageVersion(self) }
-    }
+    #[objc::msg_send2(languageVersion)]
+    pub fn language_version(&self) -> LanguageVersion;
 
-    pub fn set_language_version(&mut self, value: LanguageVersion) {
-        unsafe { wsel_setLanguageVersion(self, value) }
-    }
+    #[objc::msg_send2(setLanguageVersion:)]
+    pub fn set_language_version(&mut self, value: LanguageVersion);
 }
 
 define_obj_type!(Function(ns::Id));
@@ -77,18 +73,20 @@ define_obj_type!(Function(ns::Id));
 impl Function {
     define_mtl!(device, label, set_label);
 
-    #[inline]
-    pub fn name(&self) -> &ns::String {
-        unsafe { self.call0(msg_send::name) }
-    }
+    #[objc::msg_send2(name)]
+    pub fn name(&self) -> &ns::String;
 
-    #[inline]
+    #[objc::msg_send2(newArgumentEncoderWithBufferIndex:)]
+    pub fn new_argument_encoder_with_buffer_index_ar(
+        &self,
+        index: ns::UInteger,
+    ) -> arc::Rar<mtl::ArgumentEncoder>;
+
+    #[objc::rar_retain()]
     pub fn new_argument_encoder_with_buffer_index(
         &self,
         index: ns::UInteger,
-    ) -> arc::R<mtl::ArgumentEncoder> {
-        unsafe { rsel_newArgumentEncoderWithBufferIndex(self, index) }
-    }
+    ) -> arc::R<mtl::ArgumentEncoder>;
 }
 
 define_obj_type!(Library(ns::Id));
@@ -111,26 +109,32 @@ impl Library {
     ///
     /// assert!(n.eq(&expected_name));
     /// ```
-    #[inline]
-    pub fn function_names(&self) -> &ns::Array<ns::String> {
-        unsafe { rsel_functionNames(self) }
-    }
+    #[objc::msg_send2(functionNames)]
+    pub fn function_names(&self) -> &ns::Array<ns::String>;
 
-    pub fn new_function_with_name(&self, name: &ns::String) -> Option<arc::R<Function>> {
-        unsafe { rsel_newFunctionWithName(self, name) }
-    }
+    #[objc::msg_send2(newFunctionWithName:)]
+    pub fn new_function_with_name_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
+
+    #[objc::rar_retain()]
+    pub fn new_function_with_name(&self, name: &ns::String) -> Option<arc::R<Function>>;
 
     /// # Safety
     /// Use new_function_with_name_constant_values
-    #[inline]
+    #[objc::msg_send2(newFunctionWithName:constantValues:error:)]
+    pub unsafe fn new_function_with_name_constant_values_error_ar<'ar>(
+        &self,
+        name: &ns::String,
+        constant_values: &mtl::FunctionConstantValues,
+        error: &mut Option<&'ar ns::Error>,
+    ) -> Option<arc::Rar<Function>>;
+
+    #[objc::rar_retain()]
     pub unsafe fn new_function_with_name_constant_values_error<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&'ar ns::Error>,
-    ) -> Option<arc::R<Function>> {
-        rsel_newFunctionWithName_constantValues_error(self, name, constant_values, error)
-    }
+    ) -> Option<arc::R<Function>>;
 
     /// ```no_run
     /// use cidre::{ns, mtl};
@@ -227,27 +231,6 @@ extern "C" {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_COMPILE_OPTIONS: &'static Class<CompileOptions>;
-
-    fn rsel_fastMathEnabled(id: &ns::Id) -> bool;
-    fn wsel_setFastMathEnabled(id: &mut ns::Id, value: bool);
-
-    fn rsel_languageVersion(id: &ns::Id) -> LanguageVersion;
-    fn wsel_setLanguageVersion(id: &mut ns::Id, value: LanguageVersion);
-
-    fn rsel_functionNames(id: &ns::Id) -> &ns::Array<ns::String>;
-
-    fn rsel_newFunctionWithName(id: &Library, name: &ns::String) -> Option<arc::R<Function>>;
-    fn rsel_newFunctionWithName_constantValues_error<'ar>(
-        id: &Library,
-        name: &ns::String,
-        constant_values: &mtl::FunctionConstantValues,
-        error: &mut Option<&'ar ns::Error>,
-    ) -> Option<arc::R<Function>>;
-
-    fn rsel_newArgumentEncoderWithBufferIndex(
-        id: &Function,
-        index: ns::UInteger,
-    ) -> arc::R<mtl::ArgumentEncoder>;
 }
 
 #[cfg(test)]

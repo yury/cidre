@@ -1,6 +1,6 @@
 use crate::{
     arc, define_mtl, define_obj_type, mtl, ns,
-    objc::{msg_send, Class, Obj},
+    objc::{self, Class},
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -42,25 +42,17 @@ impl Descriptor {
         unsafe { MTL_HEAP_DESCRIPTOR.alloc_init() }
     }
 
-    #[inline]
-    pub fn size(&self) -> usize {
-        unsafe { self.call0(msg_send::size) }
-    }
+    #[objc::msg_send2(size)]
+    pub fn size(&self) -> usize;
 
-    #[inline]
-    pub fn set_size(&mut self, value: usize) {
-        unsafe { self.call1(msg_send::set_size, value) }
-    }
+    #[objc::msg_send2(setSize:)]
+    pub fn set_size(&mut self, value: usize);
 
-    #[inline]
-    pub fn _type(&self) -> Type {
-        unsafe { self.call0(msg_send::_type) }
-    }
+    #[objc::msg_send2(type)]
+    pub fn _type(&self) -> Type;
 
-    #[inline]
-    pub fn set_type(&self, value: Type) {
-        unsafe { self.call1(msg_send::set_type, value) }
-    }
+    #[objc::msg_send2(setType:)]
+    pub fn set_type(&self, value: Type);
 }
 
 define_obj_type!(Heap(ns::Id));
@@ -74,55 +66,37 @@ impl Heap {
         resource_options
     );
 
-    #[inline]
-    pub fn size(&self) -> usize {
-        unsafe { self.call0(msg_send::size) }
-    }
+    #[objc::msg_send2(size)]
+    pub fn size(&self) -> usize;
 
-    #[inline]
+    #[objc::msg_send2(newBufferWithLength:options:)]
     pub fn buffer_with_length_and_options_ar(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buffer>> {
-        unsafe {
-            self.call2(
-                mtl::msg_send::new_buffer_with_length_options,
-                length,
-                options,
-            )
-        }
-    }
+    ) -> Option<arc::Rar<mtl::Buffer>>;
 
-    #[inline]
+    #[objc::rar_retain()]
     pub fn buffer_with_length_and_options(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buffer>> {
-        arc::Rar::option_retain(self.buffer_with_length_and_options_ar(length, options))
-    }
+    ) -> Option<arc::R<mtl::Buffer>>;
 
-    #[inline]
+    #[objc::msg_send2(newTextureWithDescriptor:)]
     pub fn texture_with_descriptor_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::Rar<mtl::Texture>> {
-        unsafe { self.call1(mtl::msg_send::new_texture_with_descriptor, descriptor) }
-    }
+    ) -> Option<arc::Rar<mtl::Texture>>;
 
-    #[inline]
+    #[objc::rar_retain()]
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::R<mtl::Texture>> {
-        arc::Rar::option_retain(self.texture_with_descriptor_ar(descriptor))
-    }
+    ) -> Option<arc::R<mtl::Texture>>;
 
-    #[inline]
-    pub fn _type(&self) -> Type {
-        unsafe { self.call0(msg_send::_type) }
-    }
+    #[objc::msg_send2(type)]
+    pub fn _type(&self) -> Type;
 }
 
 #[link(name = "mtl", kind = "static")]

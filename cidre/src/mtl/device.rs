@@ -1,8 +1,8 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
-    arc, blocks, define_obj_type, define_options, io, msg_send, mtl, ns,
-    objc::{msg_send, Obj},
+    arc, blocks, define_obj_type, define_options, io, mtl, ns,
+    objc::{self, Obj},
 };
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
@@ -66,25 +66,17 @@ impl Device {
     ///
     /// let name = device.name();
     /// ```
-    #[inline]
-    pub fn name(&self) -> &ns::String {
-        unsafe { self.call0(msg_send::name) }
-    }
+    #[objc::msg_send2(name)]
+    pub fn name(&self) -> &ns::String;
 
-    #[inline]
-    pub fn registry_id(&self) -> u64 {
-        unsafe { self.call0(crate::mtl::msg_send::registry_id) }
-    }
+    #[objc::msg_send2(registryID)]
+    pub fn registry_id(&self) -> u64;
 
-    #[inline]
-    pub fn max_threads_per_threadgroup(&self) -> Size {
-        unsafe { self.call0(crate::mtl::msg_send::max_threads_per_threadgroup) }
-    }
+    #[objc::msg_send2(maxThreadsPerThreadgroup)]
+    pub fn max_threads_per_threadgroup(&self) -> Size;
 
-    #[inline]
-    pub fn has_unified_memory(&self) -> bool {
-        unsafe { self.call0(crate::mtl::msg_send::has_unified_memory) }
-    }
+    #[objc::msg_send2(hasUnifiedMemory)]
+    pub fn has_unified_memory(&self) -> bool;
 
     /// ```no_run
     /// use cidre::mtl;
@@ -94,10 +86,8 @@ impl Device {
     /// let tier = device.read_write_texture_support();
     ///
     /// assert_ne!(tier, mtl::ReadWriteTextureTier::None);
-    #[inline]
-    pub fn read_write_texture_support(&self) -> ReadWriteTextureTier {
-        unsafe { self.call0(crate::mtl::msg_send::read_write_texture_support) }
-    }
+    #[objc::msg_send2(readWriteTextureSupport)]
+    pub fn read_write_texture_support(&self) -> ReadWriteTextureTier;
 
     /// Example
     /// ```no_run
@@ -108,10 +98,8 @@ impl Device {
     /// let tier = device.argument_buffers_support();
     ///
     /// assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
-    #[inline]
-    pub fn argument_buffers_support(&self) -> ArgumentBuffersTier {
-        unsafe { self.call0(crate::mtl::msg_send::argument_buffers_support) }
-    }
+    #[objc::msg_send2(argumentBuffersSupport)]
+    pub fn argument_buffers_support(&self) -> ArgumentBuffersTier;
 
     /// ```no_run
     /// use cidre::mtl;
@@ -122,15 +110,11 @@ impl Device {
     ///
     /// queue.as_type_ref().show();
     ///
-    #[inline]
-    pub fn command_queue_ar(&self) -> Option<arc::Rar<CommandQueue>> {
-        unsafe { self.call0(mtl::msg_send::new_command_queue) }
-    }
+    #[objc::msg_send2(newCommandQueue)]
+    pub fn command_queue_ar(&self) -> Option<arc::Rar<CommandQueue>>;
 
-    #[inline]
-    pub fn command_queue(&self) -> Option<arc::R<CommandQueue>> {
-        arc::Rar::option_retain(self.command_queue_ar())
-    }
+    #[objc::rar_retain()]
+    pub fn command_queue(&self) -> Option<arc::R<CommandQueue>>;
 
     /// ```
     /// use cidre::mtl;
@@ -141,29 +125,29 @@ impl Device {
     ///
     /// queue.as_type_ref().show();
     ///
-    #[inline]
+    #[objc::msg_send2(newCommandQueueWithMaxCommandBufferCount:)]
+    pub fn command_queue_with_max_command_buffer_count_ar(
+        &self,
+        max_command_buffer_count: usize,
+    ) -> Option<arc::Rar<CommandQueue>>;
+
+    #[objc::rar_retain()]
     pub fn command_queue_with_max_command_buffer_count(
         &self,
         max_command_buffer_count: usize,
-    ) -> Option<arc::R<CommandQueue>> {
-        unsafe { rsel_newCommandQueueWithMaxCommandBufferCount(self, max_command_buffer_count) }
-    }
+    ) -> Option<arc::R<CommandQueue>>;
 
-    #[inline]
+    #[objc::msg_send2(newTextureWithDescriptor:)]
     pub fn texture_with_descriptor_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::Rar<mtl::Texture>> {
-        unsafe { self.call1(mtl::msg_send::new_texture_with_descriptor, descriptor) }
-    }
+    ) -> Option<arc::Rar<mtl::Texture>>;
 
-    #[inline]
+    #[objc::rar_retain()]
     pub fn texture_with_descriptor(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::R<mtl::Texture>> {
-        arc::Rar::option_retain(self.texture_with_descriptor_ar(descriptor))
-    }
+    ) -> Option<arc::R<mtl::Texture>>;
 
     #[inline]
     pub fn texture_with_surface(
@@ -492,10 +476,6 @@ extern "C" {
         options: Option<&mtl::CompileOptions>,
         block: *mut c_void,
     );
-    fn rsel_newCommandQueueWithMaxCommandBufferCount(
-        id: &Device,
-        maxCommandBufferCount: usize,
-    ) -> Option<arc::R<CommandQueue>>;
 
     fn rsel_newTextureWithDescriptor_iosurface_plane(
         id: &Device,

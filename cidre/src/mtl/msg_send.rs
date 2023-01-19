@@ -1,6 +1,4 @@
 extern "C" {
-    #[link_name = "objc_msgSend$registryID"]
-    pub fn registry_id();
 
     #[link_name = "objc_msgSend$sampleBuffer"]
     pub fn sample_buffer();
@@ -19,9 +17,6 @@ extern "C" {
 
     #[link_name = "objc_msgSend$maxThreadsPerThreadgroup"]
     pub fn max_threads_per_threadgroup();
-
-    #[link_name = "objc_msgSend$hasUnifiedMemory"]
-    pub fn has_unified_memory();
 
     #[link_name = "objc_msgSend$readWriteTextureSupport"]
     pub fn read_write_texture_support();

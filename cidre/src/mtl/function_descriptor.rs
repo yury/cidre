@@ -1,6 +1,6 @@
 use crate::{
     define_obj_type, ns,
-    objc::{msg_send, Obj},
+    objc::{self, msg_send, Obj},
 };
 
 define_obj_type!(FunctionDescriptor(ns::Id));
@@ -19,15 +19,11 @@ impl Default for FunctionOptions {
 }
 
 impl FunctionDescriptor {
-    #[inline]
-    pub fn name(&self) -> Option<&ns::String> {
-        unsafe { self.call0(msg_send::name) }
-    }
+    #[objc::msg_send2(name)]
+    pub fn name(&self) -> Option<&ns::String>;
 
-    #[inline]
-    pub fn set_name(&mut self, name: Option<&ns::String>) {
-        unsafe { self.call1(msg_send::set_name, name) }
-    }
+    #[objc::msg_send2(setName:)]
+    pub fn set_name(&mut self, name: Option<&ns::String>);
 
     /// ```no_run
     /// use cidre::{ns, mtl};

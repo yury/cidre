@@ -203,48 +203,36 @@ impl URLRequestMut {
     #[objc::msg_send2(setAllowsCellularAccess:)]
     pub fn set_allows_cellular_access(&mut self, value: bool);
 
-    #[inline]
-    pub fn set_allows_expensive_network_access(&mut self, value: bool) {
-        unsafe { NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess(self, value) }
-    }
+    #[objc::msg_send2(setAllowsExpensiveNetworkAccess:)]
+    pub fn set_allows_expensive_network_access(&mut self, value: bool);
 
-    #[inline]
-    pub fn set_allows_constrained_network_access(&mut self, value: bool) {
-        unsafe { NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess(self, value) }
-    }
+    #[objc::msg_send2(setAllowsConstrainedNetworkAccess:)]
+    pub fn set_allows_constrained_network_access(&mut self, value: bool);
 
     #[inline]
     pub fn set_assumes_http3_capable(&mut self, value: bool) {
         unsafe { NSMutableURLRequest_wsel_setAssumesHTTP3Capable(self, value) }
     }
 
-    #[inline]
-    pub fn set_attribution(&mut self, value: Attribution) {
-        unsafe { NSMutableURLRequest_wsel_setAttribution(self, value) }
-    }
+    #[objc::msg_send2(setAttribution:)]
+    pub fn set_attribution(&mut self, value: Attribution);
 
     #[inline]
     pub fn set_requires_dns_sec_validation(&mut self, value: bool) {
         unsafe { NSMutableURLRequest_wsel_setRequiresDNSSECValidation(self, value) }
     }
 
-    #[inline]
-    pub fn set_http_method(&mut self, value: Option<&ns::String>) {
-        unsafe { NSMutableURLRequest_wsel_setHTTPMethod(self, value) }
-    }
+    #[objc::msg_send2(setHTTPMethod:)]
+    pub fn set_http_method(&mut self, value: Option<&ns::String>);
 
-    #[inline]
+    #[objc::msg_send2(setAllHTTPHeaderFields:)]
     pub fn set_all_http_header_fields(
         &mut self,
         value: Option<&ns::Dictionary<ns::String, ns::String>>,
-    ) {
-        unsafe { NSMutableURLRequest_wsel_setAllHTTPHeaderFields(self, value) }
-    }
+    );
 
-    #[inline]
-    pub fn set_http_body(&mut self, value: Option<&ns::Data>) {
-        unsafe { NSMutableURLRequest_wsel_setHTTPBody(self, value) }
-    }
+    #[objc::msg_send2(setHTTPBody:)]
+    pub fn set_http_body(&mut self, value: Option<&ns::Data>);
 }
 
 #[link(name = "ns", kind = "static")]
@@ -257,44 +245,8 @@ extern "C" {
         timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequestMut>;
 
-    fn NSMutableURLRequest_wsel_setCachePolicy(request: &URLRequestMut, value: CachePolicy);
-
-    fn NSMutableURLRequest_wsel_setTimeoutInterval(
-        request: &URLRequestMut,
-        value: ns::TimeInterval,
-    );
-
-    fn NSMutableURLRequest_wsel_setNetworkServiceType(
-        request: &URLRequestMut,
-        value: NetworkServiceType,
-    );
-
-    fn NSMutableURLRequest_wsel_setAllowsCellularAccess(request: &URLRequestMut, value: bool);
-
-    fn NSMutableURLRequest_wsel_setAllowsExpensiveNetworkAccess(
-        request: &URLRequestMut,
-        value: bool,
-    );
-
-    fn NSMutableURLRequest_wsel_setAllowsConstrainedNetworkAccess(
-        request: &URLRequestMut,
-        value: bool,
-    );
-
     fn NSMutableURLRequest_wsel_setAssumesHTTP3Capable(request: &URLRequestMut, value: bool);
-
-    fn NSMutableURLRequest_wsel_setAttribution(request: &URLRequestMut, value: Attribution);
-
     fn NSMutableURLRequest_wsel_setRequiresDNSSECValidation(request: &URLRequestMut, value: bool);
-
-    fn NSMutableURLRequest_wsel_setHTTPMethod(request: &URLRequestMut, value: Option<&ns::String>);
-
-    fn NSMutableURLRequest_wsel_setAllHTTPHeaderFields(
-        request: &URLRequestMut,
-        value: Option<&ns::Dictionary<ns::String, ns::String>>,
-    );
-
-    fn NSMutableURLRequest_wsel_setHTTPBody(request: &URLRequestMut, value: Option<&ns::Data>);
 }
 
 #[cfg(test)]

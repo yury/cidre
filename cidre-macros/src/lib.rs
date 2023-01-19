@@ -14,17 +14,20 @@ fn get_fn_args(group: TokenStream) -> Vec<String> {
     let mut vars = Vec::with_capacity(10);
 
     let mut can_be_name = false;
+    let mut level = 0;
     for t in group.into_iter() {
         match t {
             TokenTree::Ident(i) => {
                 prev = Some(i.to_string());
             }
-            TokenTree::Punct(p) if can_be_name && p.as_char() == ':' => {
+            TokenTree::Punct(p) if can_be_name && level == 0 && p.as_char() == ':' => {
                 if let Some(id) = prev.take() {
                     vars.push(id)
                 }
                 can_be_name = false;
             }
+            TokenTree::Punct(p) if p.as_char() == '<' => level += 1,
+            TokenTree::Punct(p) if p.as_char() == '>' => level -= 1,
             TokenTree::Punct(p) if p.as_char() == ',' => can_be_name = true,
             _ => prev = None,
         }
