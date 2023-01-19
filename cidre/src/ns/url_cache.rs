@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{msg_send, Obj},
+    objc::{self, Class},
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -26,8 +26,11 @@ impl URLCache {
     /// assert_eq!(0, cache.current_memory_usage());
     ///
     /// ```
-    pub fn shared() -> &'static Self {
-        unsafe { NSURLCache_sharedURLCache() }
+    #[objc::cls_msg_send(sharedURLCache)]
+    pub fn shared() -> &'static Self;
+
+    pub fn cls() -> &'static Class<Self> {
+        unsafe { NS_URL_CACHE }
     }
 
     pub fn with_capacity(
@@ -44,40 +47,28 @@ impl URLCache {
         }
     }
 
-    #[inline]
-    pub fn memory_capacity(&self) -> usize {
-        unsafe { self.call0(msg_send::memory_capacity) }
-    }
+    #[objc::msg_send2(memoryCapacity)]
+    pub fn memory_capacity(&self) -> usize;
 
-    #[inline]
-    pub fn set_memory_capacity(&self, value: usize) {
-        unsafe { self.call1(msg_send::set_memory_capacity, value) }
-    }
+    #[objc::msg_send2(setMemoryCapacity:)]
+    pub fn set_memory_capacity(&self, value: usize);
 
-    #[inline]
-    pub fn disk_capacity(&self) -> usize {
-        unsafe { self.call0(msg_send::disk_capacity) }
-    }
+    #[objc::msg_send2(diskCapacity)]
+    pub fn disk_capacity(&self) -> usize;
 
-    #[inline]
-    pub fn set_disk_capacity(&self, value: usize) {
-        unsafe { self.call1(msg_send::set_disk_capacity, value) }
-    }
+    #[objc::msg_send2(setDiskCapacity:)]
+    pub fn set_disk_capacity(&self, value: usize);
 
-    #[inline]
-    pub fn current_memory_usage(&self) -> usize {
-        unsafe { self.call0(msg_send::current_memory_usage) }
-    }
+    #[objc::msg_send2(currentMemoryUsage)]
+    pub fn current_memory_usage(&self) -> usize;
 
-    #[inline]
-    pub fn current_disk_usage(&self) -> usize {
-        unsafe { self.call0(msg_send::current_disk_usage) }
-    }
+    #[objc::msg_send2(currentDiskUsage)]
+    pub fn current_disk_usage(&self) -> usize;
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLCache_sharedURLCache() -> &'static URLCache;
+    static NS_URL_CACHE: &'static Class<URLCache>;
 
     fn NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL(
         mem_capacity: usize,

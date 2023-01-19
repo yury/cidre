@@ -255,10 +255,8 @@ impl Id {
         &self.0
     }
 
-    #[inline]
-    pub fn is_equal(&self, other: &Self) -> bool {
-        unsafe { self.call1(msg_send::is_equal, other) }
-    }
+    #[msg_send2(isEqual:)]
+    pub fn is_equal(&self, other: &Self) -> bool;
 
     #[inline]
     pub fn eq(&self, other: &Self) -> bool {
@@ -506,28 +504,3 @@ pub use cidre_macros::rar_retain;
 //     "    .long    0",
 //     "    .popsection",
 // );
-
-#[cfg(test)]
-mod tests1 {
-    use crate::{arc, ns, objc};
-
-    pub struct Foo;
-
-    impl Foo {
-        /// Nice doc
-        #[objc::msg_send2(setName:foo:)]
-        pub fn foo_ar(&mut self, name: i8, foo: &i32) -> Option<arc::Rar<ns::Number>>;
-
-        /// Nice doc
-        #[objc::rar_retain()]
-        pub fn foo(&mut self, name: i8, foo: &i32) -> Option<arc::R<ns::Number>>;
-
-        #[objc::msg_send2(setName:foo:)]
-        pub fn foo2(&self, name: i8, foo: i32);
-    }
-
-    #[test]
-    fn basics() {
-        let mut f = Foo;
-    }
-}

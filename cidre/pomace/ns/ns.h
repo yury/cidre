@@ -202,6 +202,7 @@ Class NS_DATA;
 Class NS_MUTABLE_DATA;
 Class NS_PROCESS_INFO;
 Class NS_URL_SESSION;
+Class NS_URL_CACHE;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -225,6 +226,7 @@ static void common_initializer()
     NS_MUTABLE_DATA = [NSMutableData class];
     NS_PROCESS_INFO = [NSProcessInfo class];
     NS_URL_SESSION = [NSURLSession class];
+    NS_URL_CACHE = [NSURLCache class];
   }
 }
 NS_ASSUME_NONNULL_END

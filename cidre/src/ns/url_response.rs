@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{msg_send, Obj},
+    objc::{self, msg_send, Obj},
 };
 
 define_obj_type!(URLResponse(ns::Id));
@@ -36,9 +36,8 @@ impl URLResponse {
         }
     }
 
-    pub fn url(&self) -> Option<&ns::URL> {
-        unsafe { self.call0(msg_send::url) }
-    }
+    #[objc::msg_send2(URL)]
+    pub fn url(&self) -> Option<&ns::URL>;
 }
 
 #[link(name = "ns", kind = "static")]

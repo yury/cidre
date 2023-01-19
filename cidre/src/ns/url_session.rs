@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{self, msg_send, Class, Obj},
+    objc::{self, Class},
 };
 
 define_obj_type!(Configuration(ns::Id));
@@ -94,61 +94,38 @@ pub enum MultipathServiceType {
 }
 
 impl Task {
-    pub fn resume(&self) {
-        unsafe {
-            NSURLSessionTask_wsel_resume(self);
-        }
-    }
+    #[objc::msg_send2(resume)]
+    pub fn resume(&self);
 
-    pub fn cancel(&self) {
-        unsafe {
-            NSURLSessionTask_wsel_cancel(self);
-        }
-    }
+    #[objc::msg_send2(cancel)]
+    pub fn cancel(&self);
 
-    pub fn suspend(&self) {
-        unsafe {
-            NSURLSessionTask_wsel_suspend(self);
-        }
-    }
+    #[objc::msg_send2(suspend)]
+    pub fn suspend(&self);
 
-    pub fn state(&self) -> TaskState {
-        unsafe { NSURLSessionTask_rsel_state(self) }
-    }
+    #[objc::msg_send2(state)]
+    pub fn state(&self) -> TaskState;
 
-    pub fn error(&self) -> Option<&ns::Error> {
-        unsafe { NSURLSessionTask_rsel_error(self) }
-    }
+    #[objc::msg_send2(error)]
+    pub fn error(&self) -> Option<&ns::Error>;
 
-    #[inline]
-    pub fn task_identifier(&self) -> ns::UInteger {
-        unsafe { NSURLSessionTask_rsel_taskIdentifier(self) }
-    }
+    #[objc::msg_send2(taskIdentifier)]
+    pub fn task_identifier(&self) -> ns::UInteger;
 
-    #[inline]
-    pub fn original_request(&self) -> Option<&ns::URLRequest> {
-        unsafe { NSURLSessionTask_rsel_originalRequest(self) }
-    }
+    #[objc::msg_send2(originalRequest)]
+    pub fn original_request(&self) -> Option<&ns::URLRequest>;
 
-    #[inline]
-    pub fn current_request(&self) -> Option<&ns::URLRequest> {
-        unsafe { NSURLSessionTask_rsel_currentRequest(self) }
-    }
+    #[objc::msg_send2(currentRequest)]
+    pub fn current_request(&self) -> Option<&ns::URLRequest>;
 
-    #[inline]
-    pub fn response(&self) -> Option<&ns::URLResponse> {
-        unsafe { NSURLSessionTask_rsel_response(self) }
-    }
+    #[objc::msg_send2(response)]
+    pub fn response(&self) -> Option<&ns::URLResponse>;
 
-    #[inline]
-    pub fn priority(&self) -> f32 {
-        unsafe { NSURLSessionTask_rsel_priority(self) }
-    }
+    #[objc::msg_send2(priority)]
+    pub fn priority(&self) -> f32;
 
-    #[inline]
-    pub fn set_priority(&mut self, value: f32) {
-        unsafe { NSURLSessionTask_wsel_setPriority(self, value) }
-    }
+    #[objc::msg_send2(setPriority:)]
+    pub fn set_priority(&mut self, value: f32);
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -167,25 +144,6 @@ pub enum WebSocketCloseCode {
     MandatoryExtensionMissing = 1010,
     InternalServerError = 1011,
     TLSHandshakeFailure = 1015,
-}
-
-#[link(name = "ns", kind = "static")]
-extern "C" {
-    fn rsel_dataTaskWithURL(session: &Session, url: &ns::URL) -> arc::R<DataTask>;
-    fn rsel_dataTaskWithRequest(session: &Session, request: &ns::URLRequest) -> arc::R<DataTask>;
-
-    fn NSURLSessionTask_wsel_resume(task: &Task);
-    fn NSURLSessionTask_wsel_cancel(task: &Task);
-    fn NSURLSessionTask_wsel_suspend(task: &Task);
-    fn NSURLSessionTask_rsel_state(task: &Task) -> TaskState;
-    fn NSURLSessionTask_rsel_error(task: &Task) -> Option<&ns::Error>;
-    fn NSURLSessionTask_rsel_taskIdentifier(task: &Task) -> ns::UInteger;
-    fn NSURLSessionTask_rsel_originalRequest(task: &Task) -> Option<&ns::URLRequest>;
-    fn NSURLSessionTask_rsel_currentRequest(task: &Task) -> Option<&ns::URLRequest>;
-    fn NSURLSessionTask_rsel_response(task: &Task) -> Option<&ns::URLResponse>;
-    fn NSURLSessionTask_rsel_priority(task: &Task) -> f32;
-    fn NSURLSessionTask_wsel_setPriority(task: &Task, value: f32);
-
 }
 
 pub struct TaskPriority;
