@@ -2,7 +2,7 @@ use std::{borrow::Cow, ffi::CStr, fmt, str::from_utf8_unchecked};
 
 use crate::{
     arc, define_obj_type, msg_send, ns,
-    objc::{msg_send, Obj},
+    objc::{self, msg_send, Obj},
 };
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -17,45 +17,34 @@ define_obj_type!(String(ns::Id));
 define_obj_type!(StringMut(String));
 
 impl String {
-    #[inline]
-    pub fn len(&self) -> usize {
-        unsafe { self.call0(msg_send::length) }
-    }
+    #[objc::msg_send2(length)]
+    pub fn len(&self) -> usize;
 
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
-    #[inline]
-    pub fn lowercased(&self) -> arc::R<Self> {
-        unsafe { self.call0(msg_send::lowercase_string) }
-    }
+    #[objc::msg_send2(lowercaseString)]
+    pub fn lowercased_ar(&self) -> arc::Rar<Self>;
 
-    #[inline]
-    pub fn to_i32(&self) -> i32 {
-        unsafe { self.call0(msg_send::int_value) }
-    }
+    #[objc::rar_retain()]
+    pub fn lowercased(&self) -> arc::R<Self>;
 
-    #[inline]
-    pub fn to_i64(&self) -> i64 {
-        unsafe { self.call0(msg_send::long_long_value) }
-    }
+    #[objc::msg_send2(intValue)]
+    pub fn to_i32(&self) -> i32;
 
-    #[inline]
-    pub fn to_f32(&self) -> f32 {
-        unsafe { self.call0(msg_send::float_value) }
-    }
+    #[objc::msg_send2(longLongValue)]
+    pub fn to_i64(&self) -> i64;
 
-    #[inline]
-    pub fn to_f64(&self) -> f64 {
-        unsafe { self.call0(msg_send::double_value) }
-    }
+    #[objc::msg_send2(floatValue)]
+    pub fn to_f32(&self) -> f32;
 
-    #[inline]
-    pub fn to_bool(&self) -> bool {
-        unsafe { self.call0(msg_send::bool_value) }
-    }
+    #[objc::msg_send2(doubleValue)]
+    pub fn to_f64(&self) -> f64;
+
+    #[objc::msg_send2(boolValue)]
+    pub fn to_bool(&self) -> bool;
 
     /// The ns::Integer value of the string.
     ///
@@ -64,15 +53,12 @@ impl String {
     /// begin with a valid decimal text representation of a number.
     /// This property uses formatting information stored in the non-localized value;
     /// use an ns::Scanner object for localized scanning of numeric values from a string.
-    #[inline]
-    pub fn to_integer(&self) -> ns::Integer {
-        unsafe { self.call0(msg_send::integer_value) }
-    }
+    #[objc::msg_send2(integerValue)]
+    pub fn to_integer(&self) -> ns::Integer;
 
-    #[inline]
-    pub fn copy_mut(&self) -> arc::R<ns::StringMut> {
-        unsafe { self.call0(msg_send::mutable_copy) }
-    }
+    // TODO: check Rar
+    #[objc::msg_send2(mutableCopy)]
+    pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
 
     #[inline]
     pub fn with_str(str: &str) -> arc::R<Self> {
@@ -107,15 +93,11 @@ impl String {
         unsafe { self.call1(msg_send::c_string_using_encoding, encoding) }
     }
 
-    #[inline]
-    pub fn len_of_bytes(&self, encoding: Encoding) -> ns::UInteger {
-        msg_send!("ns", self, ns_lengthOfBytesUsingEncoding, encoding)
-    }
+    #[objc::msg_send2(lengthOfBytesUsingEncoding:)]
+    pub fn len_of_bytes(&self, encoding: Encoding) -> ns::UInteger;
 
-    #[inline]
-    pub unsafe fn utf8_chars(&self) -> *const i8 {
-        unsafe { self.call0(msg_send::utf8_string) }
-    }
+    #[objc::msg_send2(UTF8String)]
+    pub unsafe fn utf8_chars(&self) -> *const i8;
 }
 
 impl PartialEq for String {
@@ -222,6 +204,8 @@ mod tests {
 
             let r = try_catch(|| s.substring(1..10));
             assert!(r.is_err());
+
+            let _l = s.lowercased();
         });
     }
 }

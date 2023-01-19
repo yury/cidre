@@ -6,7 +6,7 @@ use std::{
 
 use crate::{
     arc, ns,
-    objc::{msg_send, Class, Obj},
+    objc::{self, msg_send, Class, Obj},
 };
 
 #[derive(Debug)]
@@ -59,10 +59,8 @@ impl<T: Obj> Array<T> {
         }
     }
 
-    #[inline]
-    pub fn len(&self) -> usize {
-        unsafe { self.call0(msg_send::count) }
-    }
+    #[objc::msg_send2(count)]
+    pub fn len(&self) -> usize;
 
     #[inline]
     pub fn is_empty(&self) -> bool {
@@ -78,20 +76,16 @@ impl<T: Obj> Array<T> {
 impl<T: Obj> Index<usize> for Array<T> {
     type Output = T;
 
-    #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
-        unsafe { self.call1(msg_send::object_at_index, index) }
-    }
+    #[objc::msg_send2(objectAtIndex:)]
+    fn index(&self, index: usize) -> &Self::Output;
 }
 
 impl<T: Obj> IndexMut<usize> for Array<T>
 where
     T: Obj,
 {
-    #[inline]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        unsafe { self.call1(msg_send::object_at_index, index) }
-    }
+    #[objc::msg_send2(objectAtIndex:)]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output;
 }
 impl<T: Obj> ArrayMut<T> {
     #[inline]

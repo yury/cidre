@@ -19,10 +19,8 @@ impl<T: Obj> Class<T> {
         &self.0
     }
 
-    #[inline]
-    pub unsafe fn alloc(&self) -> &'static T {
-        self.call0(msg_send::alloc)
-    }
+    #[msg_send2(alloc)]
+    pub unsafe fn alloc(&self) -> &'static T;
 
     #[inline]
     pub unsafe fn alloc_init(&self) -> arc::R<T> {
@@ -30,10 +28,8 @@ impl<T: Obj> Class<T> {
     }
 
     // in general alloc_init is faster
-    #[inline]
-    pub unsafe fn new(&self) -> arc::R<T> {
-        self.call0(msg_send::new)
-    }
+    #[msg_send2(new)]
+    pub unsafe fn new(&self) -> arc::R<T>;
 }
 
 impl<T: Obj> Obj for Class<T> {}
