@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{msg_send, Class, Obj},
+    objc::{self, msg_send, Class, Obj},
 };
 
 define_obj_type!(Configuration(ns::Id));
@@ -28,18 +28,25 @@ impl Session {
     /// data_task.resume();
     /// assert_eq!(data_task.state(), ns::URLSessionTaskState::Running);
     /// ```
-    pub fn shared() -> &'static Session {
-        unsafe { NS_URL_SESSION.call0(msg_send::shared_session) }
-    }
-
-    pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask> {
-        unsafe { rsel_dataTaskWithURL(self, url) }
-    }
+    #[objc::cls_msg_send(sharedSession)]
+    pub fn shared() -> &'static Session;
 
     #[inline]
-    pub fn data_task_with_request(&self, request: &ns::URLRequest) -> arc::R<DataTask> {
-        unsafe { rsel_dataTaskWithRequest(self, request) }
+    pub fn cls() -> &'static Class<Self> {
+        unsafe { NS_URL_SESSION }
     }
+
+    #[objc::msg_send2(dataTaskWithURL:)]
+    pub fn data_task_with_url_ar(&self, url: &ns::URL) -> arc::Rar<DataTask>;
+
+    #[objc::rar_retain()]
+    pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask>;
+
+    #[objc::msg_send2(dataTaskWithRequest:)]
+    pub fn data_task_with_request_ar(&self, request: &ns::URLRequest) -> arc::Rar<DataTask>;
+
+    #[objc::rar_retain()]
+    pub fn data_task_with_request(&self, request: &ns::URLRequest) -> arc::R<DataTask>;
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
