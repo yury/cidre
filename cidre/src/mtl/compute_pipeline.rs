@@ -1,4 +1,7 @@
-use crate::{arc, define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{
+    arc, define_mtl, define_obj_type, mtl, ns,
+    objc::{self, Class},
+};
 
 define_obj_type!(Reflection(ns::Id));
 
@@ -8,43 +11,35 @@ impl Descriptor {
     define_mtl!(label, set_label);
 
     pub fn new() -> arc::R<Self> {
-        unsafe { MTLComputePipelineDescriptor_new() }
+        unsafe { Self::cls().alloc_init() }
     }
 
-    pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool {
-        unsafe { rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(self) }
+    pub fn cls() -> &'static Class<Self> {
+        unsafe { MTL_COMPUTE_PIPELINE_DESCRIPTOR }
     }
 
-    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, value: bool) {
-        unsafe { wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(self, value) }
-    }
+    #[objc::msg_send2(threadGroupSizeIsMultipleOfThreadExecutionWidth)]
+    pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool;
 
-    pub fn compute_function(&self) -> Option<&mtl::Function> {
-        unsafe { rsel_computeFunction(self) }
-    }
+    #[objc::msg_send2(setThreadGroupSizeIsMultipleOfThreadExecutionWidth:)]
+    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
 
-    pub fn set_compute_function(&mut self, value: Option<&mtl::Function>) {
-        unsafe { wsel_setComputeFunction(self, value) }
-    }
+    #[objc::msg_send2(computeFunction)]
+    pub fn compute_function(&self) -> Option<&mtl::Function>;
 
-    pub fn max_total_threads_per_threadgroup(&self) -> usize {
-        unsafe { rsel_maxTotalThreadsPerThreadgroup(self) }
-    }
+    #[objc::msg_send2(setComputeFunction:)]
+    pub fn set_compute_function(&mut self, value: Option<&mtl::Function>);
 
-    pub fn set_max_total_threads_per_threadgroup(&mut self, value: usize) {
-        unsafe { wsel_setMaxTotalThreadsPerThreadgroup(self, value) }
-    }
+    #[objc::msg_send2(maxTotalThreadsPerThreadgroup)]
+    pub fn max_total_threads_per_threadgroup(&self) -> usize;
+
+    #[objc::msg_send2(setMaxTotalThreadsPerThreadgroup:)]
+    pub fn set_max_total_threads_per_threadgroup(&mut self, value: usize);
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLComputePipelineDescriptor_new() -> arc::R<Descriptor>;
-
-    fn rsel_threadGroupSizeIsMultipleOfThreadExecutionWidth(id: &ns::Id) -> bool;
-    fn wsel_setThreadGroupSizeIsMultipleOfThreadExecutionWidth(id: &mut ns::Id, value: bool);
-
-    fn rsel_computeFunction(id: &ns::Id) -> Option<&mtl::Function>;
-    fn wsel_setComputeFunction(id: &mut ns::Id, value: Option<&mtl::Function>);
+    static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static Class<Descriptor>;
 }
 
 define_obj_type!(State(ns::Id));
@@ -52,28 +47,14 @@ define_obj_type!(State(ns::Id));
 impl State {
     define_mtl!(device, label, gpu_resouce_id);
 
-    #[inline]
-    pub fn max_total_threads_per_threadgroup(&self) -> usize {
-        unsafe { rsel_maxTotalThreadsPerThreadgroup(self) }
-    }
+    #[objc::msg_send2(maxTotalThreadsPerThreadgroup)]
+    pub fn max_total_threads_per_threadgroup(&self) -> usize;
 
-    #[inline]
-    pub fn thread_execution_width(&self) -> usize {
-        unsafe { rsel_threadExecutionWidth(self) }
-    }
+    #[objc::msg_send2(threadExecutionWidth)]
+    pub fn thread_execution_width(&self) -> usize;
 
-    #[inline]
-    pub fn static_threadgroup_memory_length(&self) -> usize {
-        unsafe { rsel_staticThreadgroupMemoryLength(self) }
-    }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_maxTotalThreadsPerThreadgroup(id: &ns::Id) -> usize;
-    fn wsel_setMaxTotalThreadsPerThreadgroup(id: &mut ns::Id, value: usize);
-    fn rsel_threadExecutionWidth(id: &ns::Id) -> usize;
-    fn rsel_staticThreadgroupMemoryLength(id: &ns::Id) -> usize;
+    #[objc::msg_send2(staticThreadgroupMemoryLength)]
+    pub fn static_threadgroup_memory_length(&self) -> usize;
 }
 
 #[cfg(test)]

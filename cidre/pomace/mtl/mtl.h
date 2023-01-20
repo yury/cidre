@@ -13,11 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - MTLDevice
 
-NS_RETURNS_RETAINED
-rsel1(, id, newCommandQueueWithMaxCommandBufferCount, NSUInteger, id <MTLCommandQueue> _Nullable )
-
-NS_RETURNS_RETAINED
-rsel3(, id, newTextureWithDescriptor, MTLTextureDescriptor *, iosurface, IOSurfaceRef, plane, NSUInteger, id <MTLTexture> _Nullable)
 
 NS_RETURNS_RETAINED
 rsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
@@ -25,18 +20,15 @@ rsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Null
 wsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id)
 
 NS_RETURNS_RETAINED
-rsel2(, id, newComputePipelineStateWithFunction, id<MTLFunction>, error, NSError * _Nullable * _Nullable, id<MTLComputePipelineState> _Nullable)
-
-NS_RETURNS_RETAINED
 rsel2(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
 
-//- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
-rsel2(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
+////- (MTLSizeAndAlign)heapBufferSizeAndAlignWithLength:(NSUInteger)length options:(MTLResourceOptions)options API_AVAILABLE(macos(10.13), ios(10.0));
+//rsel2(,id, heapBufferSizeAndAlignWithLength, NSUInteger, options, MTLResourceOptions, MTLSizeAndAlign)
 
 #pragma mark - CompileOptions
 
 //@property (readwrite, nonatomic) BOOL fastMathEnabled;
-rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
+//rwsel(, id, fastMathEnabled, setFastMathEnabled, BOOL)
 //@property (readwrite, nonatomic) MTLLanguageVersion languageVersion
 rwsel(, id, languageVersion, setLanguageVersion, MTLLanguageVersion)
 
@@ -215,25 +207,6 @@ rwsel(, id, maxTotalThreadsPerThreadgroup, setMaxTotalThreadsPerThreadgroup, NSU
 rsel0(, id, threadgroupSizeMatchesTileSize, BOOL)
 //@property (readonly) NSUInteger imageblockSampleLength API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
 rsel0(, id, imageblockSampleLength, NSUInteger)
-
-#pragma mark - MTLComputePipelineDescriptor
-
-NS_RETURNS_RETAINED
-csel0(, MTLComputePipelineDescriptor, new, MTLComputePipelineDescriptor *)
-
-//@property (readwrite, nonatomic) BOOL threadGroupSizeIsMultipleOfThreadExecutionWidth;
-rwsel(, id, threadGroupSizeIsMultipleOfThreadExecutionWidth, setThreadGroupSizeIsMultipleOfThreadExecutionWidth, BOOL)
-
-//@property (nullable, readwrite, nonatomic, strong) id <MTLFunction> computeFunction;
-rwsel(, id, computeFunction, setComputeFunction, id <MTLFunction> _Nullable)
-
-#pragma mark - MTLComputePipelineState
-
-//@property (readonly) NSUInteger maxTotalThreadsPerThreadgroup;
-//@property (readonly) NSUInteger threadExecutionWidth;
-rsel0(, id, threadExecutionWidth, NSUInteger)
-// @property (readonly) NSUInteger staticThreadgroupMemoryLength API_AVAILABLE(macos(10.13), ios(11.0));
-rsel0(, id, staticThreadgroupMemoryLength, NSUInteger)
 
 #pragma mark - MTLCommandEncoder
 
@@ -423,6 +396,8 @@ Class MTL_COMPUTE_PASS_DESCRIPTOR;
 Class MTL_HEAP_DESCRIPTOR;
 Class MTL_COMPILE_OPTIONS;
 
+Class MTL_COMPUTE_PIPELINE_DESCRIPTOR;
+
 __attribute__((constructor))
 static void mtl_initializer()
 {
@@ -432,6 +407,8 @@ static void mtl_initializer()
       MTL_COMPUTE_PASS_DESCRIPTOR = [MTLComputePassDescriptor class];
       MTL_HEAP_DESCRIPTOR = [MTLHeapDescriptor class];
       MTL_COMPILE_OPTIONS = [MTLCompileOptions class];
+      
+      MTL_COMPUTE_PIPELINE_DESCRIPTOR = [MTLComputePipelineDescriptor class];
       
       sel_commandBuffer = @selector(commandBuffer);
       sel_commandBufferWithUnretainedReferences = @selector(commandBufferWithUnretainedReferences);
