@@ -1,9 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{
-    arc, blocks, define_obj_type, define_options, io, mtl, ns,
-    objc::{self, Obj},
-};
+use crate::{arc, blocks, define_obj_type, define_options, io, mtl, ns, objc};
 
 use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
 
@@ -159,14 +156,11 @@ impl Device {
         unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
     }
 
-    #[inline]
-    pub fn default_library_ar(&self) -> Option<arc::Rar<Library>> {
-        unsafe { self.call0(mtl::msg_send::new_default_library) }
-    }
-    #[inline]
-    pub fn default_library(&self) -> Option<arc::R<Library>> {
-        arc::Rar::option_retain(self.default_library_ar())
-    }
+    #[objc::msg_send2(newDefaultLibrary)]
+    pub fn default_library_ar(&self) -> Option<arc::Rar<Library>>;
+
+    #[objc::rar_retain()]
+    pub fn default_library(&self) -> Option<arc::R<Library>>;
 
     /// ```
     /// use cidre::{ns, mtl};
@@ -283,57 +277,35 @@ impl Device {
         unsafe { Ok(transmute(res)) }
     }
 
-    #[inline]
+    #[objc::msg_send2(newBufferWithLength:options:)]
     pub fn buffer_with_length_and_options_ar(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buffer>> {
-        unsafe {
-            self.call2(
-                mtl::msg_send::new_buffer_with_length_options,
-                length,
-                options,
-            )
-        }
-    }
+    ) -> Option<arc::Rar<mtl::Buffer>>;
 
-    #[inline]
+    #[objc::rar_retain()]
     pub fn buffer_with_length_and_options(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buffer>> {
-        arc::Rar::option_retain(self.buffer_with_length_and_options_ar(length, options))
-    }
+    ) -> Option<arc::R<mtl::Buffer>>;
 
-    #[inline]
+    #[objc::msg_send2(newBufferWithBytes:length:options:)]
     pub fn buffer_with_bytes_length_and_options_ar(
         &self,
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<Buffer>> {
-        unsafe {
-            self.call3(
-                mtl::msg_send::new_buffer_with_bytes_length_options,
-                bytes,
-                length,
-                options,
-            )
-        }
-    }
-    #[inline]
+    ) -> Option<arc::Rar<Buffer>>;
+
+    #[objc::rar_retain()]
     pub fn buffer_with_bytes_length_and_options(
         &self,
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<Buffer>> {
-        arc::Rar::option_retain(
-            self.buffer_with_bytes_length_and_options_ar(bytes, length, options),
-        )
-    }
+    ) -> Option<arc::R<Buffer>>;
 
     #[inline]
     pub fn buffer_with_slice_ar<T: Sized>(
@@ -396,15 +368,11 @@ impl Device {
     /// let label = ns::String::with_str("nice");
     /// event.set_label(Some(&label));
     /// ```
-    #[inline]
-    pub fn shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>> {
-        unsafe { self.call0(mtl::msg_send::new_shared_event) }
-    }
+    #[objc::msg_send2(newSharedEvent)]
+    pub fn shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>>;
 
-    #[inline]
-    pub fn shared_event(&self) -> Option<arc::R<SharedEvent>> {
-        arc::Rar::option_retain(self.shared_event_ar())
-    }
+    #[objc::rar_retain()]
+    pub fn shared_event(&self) -> Option<arc::R<SharedEvent>>;
 
     /// ```no_run
     /// use cidre::{mtl};

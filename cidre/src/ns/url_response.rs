@@ -1,7 +1,4 @@
-use crate::{
-    arc, define_obj_type, ns,
-    objc::{self, msg_send, Obj},
-};
+use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(URLResponse(ns::Id));
 define_obj_type!(HTTPURLResponse(URLResponse));

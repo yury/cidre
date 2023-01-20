@@ -1,16 +1,9 @@
-use crate::{av::MediaType, define_obj_type, ns};
+use crate::{av::MediaType, define_obj_type, ns, objc};
 
 define_obj_type!(Track(ns::Id));
 define_obj_type!(FragmentedTrack(Track));
 
 impl Track {
-    #[inline]
-    pub fn media_type(&self) -> &MediaType {
-        unsafe { rsel_mediaType(self) }
-    }
-}
-
-#[link(name = "av", kind = "static")]
-extern "C" {
-    fn rsel_mediaType(id: &ns::Id) -> &MediaType;
+    #[objc::msg_send2(mediaType)]
+    pub fn media_type(&self) -> &MediaType;
 }

@@ -196,8 +196,6 @@ pub use sampler::MinMagFilter as SamplerMinMagFilter;
 pub use sampler::MipFilter as SamplerMipFilter;
 pub use sampler::State as SamplerState;
 
-pub mod msg_send;
-
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {

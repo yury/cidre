@@ -383,22 +383,6 @@ rsel1(, id, appendSampleBuffer, CMSampleBufferRef, BOOL)
 NS_RETURNS_RETAINED
 csel3(, AVAssetWriter, assetWriterWithURL, NSURL *, fileType, AVFileType, error, NSError * _Nullable * _Nullable, AVAssetWriter *)
 
-rwsel(, id, shouldOptimizeForNetworkUse, setShouldOptimizeForNetworkUse, BOOL)
-//- (BOOL)canAddInput:(AVAssetWriterInput *)input;
-rsel1(AVAssetWriter_, AVAssetWriter *, canAddInput, AVAssetWriterInput *, BOOL)
-wsel1(AVAssetWriter_, AVAssetWriter *, addInput, AVAssetWriterInput *)
-
-wsel0(, id, startWriting)
-wsel1(, id, startSessionAtSourceTime, CMTime);
-wsel1(, id, endSessionAtSourceTime, CMTime);
-wsel0(, id, cancelWriting)
-//- (void)endSessionAtSourceTime:(CMTime)endTime;
-wsel0(, id, finishWriting)
-
-rsel0(, id, error, NSError * _Nullable)
-//@property (nonatomic, readonly) NSArray<AVAssetWriterInput *> *inputs;
-rsel0(AVAssetWriter_, id, inputs, NSArray<AVAssetWriterInput *> *)
-
 typedef void (^ VoidBlock)(void);
 wsel1(, id, finishWritingWithCompletionHandler, VoidBlock)
 //- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
