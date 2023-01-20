@@ -1,16 +1,12 @@
-use crate::{
-    arc, av, cf, define_obj_type, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{arc, av, cf, define_obj_type, ns, objc};
 
 define_obj_type!(Input(ns::Id));
 define_obj_type!(DeviceInput(Input));
 define_obj_type!(Port(ns::Id));
 
 impl Input {
-    pub fn ports(&self) -> &cf::ArrayOf<Port> {
-        unsafe { rsel_ports(self) }
-    }
+    #[objc::msg_send2(ports)]
+    pub fn ports(&self) -> &ns::Array<Port>;
 }
 
 impl DeviceInput {
@@ -28,10 +24,6 @@ impl DeviceInput {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn rsel_ports(input: &Input) -> &cf::ArrayOf<Port>;
-
-    //csel_ab(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
-
     fn AVCaptureDeviceInput_deviceInputWithDevice_error<'a>(
         device: &av::CaptureDevice,
         error: &mut Option<&'a cf::Error>,
@@ -39,22 +31,14 @@ extern "C" {
 }
 
 impl Port {
-    pub fn input(&self) -> &Input {
-        unsafe { rsel_input(self) }
-    }
+    #[objc::msg_send2(input)]
+    pub fn input(&self) -> &Input;
 
-    pub fn enabled(&self) -> bool {
-        unsafe { self.call0(msg_send::is_enabled) }
-    }
+    #[objc::msg_send2(isEnabled)]
+    pub fn enabled(&self) -> bool;
 
-    pub fn set_enabled(&mut self, value: bool) {
-        unsafe { self.call1(msg_send::set_enabled, value) }
-    }
-}
-
-#[link(name = "av", kind = "static")]
-extern "C" {
-    fn rsel_input(port: &Port) -> &Input;
+    #[objc::msg_send2(setEnabled:)]
+    pub fn set_enabled(&mut self, value: bool);
 }
 
 pub mod port_notifications {

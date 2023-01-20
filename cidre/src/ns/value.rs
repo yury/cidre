@@ -1,6 +1,6 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{msg_send, Class, Obj},
+    objc::{self, Class, Obj},
 };
 
 define_obj_type!(Value(ns::Id));
@@ -154,102 +154,58 @@ impl Number {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
     }
 
-    #[doc(alias = "charValue")]
-    #[inline]
-    pub fn as_i8(&self) -> i8 {
-        unsafe { self.call0(msg_send::char_value) }
-    }
+    #[objc::msg_send2(charValue)]
+    pub fn as_i8(&self) -> i8;
 
-    #[doc(alias = "unsignedCharValue")]
-    #[inline]
-    pub fn as_u8(&self) -> u8 {
-        unsafe { self.call0(msg_send::unsigned_char_value) }
-    }
+    #[objc::msg_send2(unsignedCharValue)]
+    pub fn as_u8(&self) -> u8;
 
-    #[doc(alias = "shortValue")]
-    #[inline]
-    pub fn as_i16(&self) -> i16 {
-        unsafe { self.call0(msg_send::short_value) }
-    }
+    #[objc::msg_send2(shortValue)]
+    pub fn as_i16(&self) -> i16;
 
-    #[doc(alias = "unsignedShortValue")]
-    #[inline]
-    pub fn as_u16(&self) -> u16 {
-        unsafe { self.call0(msg_send::unsigned_short_value) }
-    }
+    #[objc::msg_send2(unsignedShortValue)]
+    pub fn as_u16(&self) -> u16;
 
-    #[doc(alias = "intValue")]
-    #[doc(alias = "longValue")]
-    #[inline]
-    pub fn as_i32(&self) -> i32 {
-        unsafe { self.call0(msg_send::int_value) }
-    }
+    #[objc::msg_send2(intValue)]
+    pub fn as_i32(&self) -> i32;
 
-    #[doc(alias = "unsignedIntValue")]
-    #[doc(alias = "unsignedLongValue")]
-    #[inline]
-    pub fn as_u32(&self) -> u32 {
-        unsafe { self.call0(msg_send::unsingned_int_value) }
-    }
+    #[objc::msg_send2(unsignedIntValue)]
+    pub fn as_u32(&self) -> u32;
 
-    #[doc(alias = "longLongValue")]
-    #[inline]
-    pub fn as_i64(&self) -> i64 {
-        unsafe { self.call0(msg_send::long_long_value) }
-    }
+    #[objc::msg_send2(longLongValue)]
+    pub fn as_i64(&self) -> i64;
 
-    #[doc(alias = "longLongValue")]
-    #[inline]
-    pub fn as_isize(&self) -> isize {
-        self.as_i64() as _
-    }
+    #[objc::msg_send2(longLongValue)]
+    pub fn as_isize(&self) -> isize;
 
-    #[doc(alias = "unsignedLongLongValue")]
-    #[inline]
-    pub fn as_u64(&self) -> u64 {
-        unsafe { self.call0(msg_send::unsigned_long_long_value) }
-    }
+    #[objc::msg_send2(unsignedLongLongValue)]
+    pub fn as_u64(&self) -> u64;
 
-    #[doc(alias = "floatValue")]
-    #[inline]
-    pub fn as_f32(&self) -> f32 {
-        unsafe { self.call0(msg_send::float_value) }
-    }
+    #[objc::msg_send2(unsignedLongLongValue)]
+    pub fn as_usize(&self) -> usize;
 
-    #[doc(alias = "doubleValue")]
-    #[inline]
-    pub fn as_f64(&self) -> f64 {
-        unsafe { self.call0(msg_send::double_value) }
-    }
+    #[objc::msg_send2(floatValue)]
+    pub fn as_f32(&self) -> f32;
 
-    #[doc(alias = "integerValue")]
-    #[inline]
-    pub fn as_integer(&self) -> ns::Integer {
-        unsafe { self.call0(msg_send::integer_value) }
-    }
+    #[objc::msg_send2(doubleValue)]
+    pub fn as_f64(&self) -> f64;
 
-    #[doc(alias = "unsignedIntegerValue")]
-    #[inline]
-    pub fn as_uinteger(&self) -> ns::UInteger {
-        unsafe { self.call0(msg_send::unsigned_integer_value) }
-    }
+    #[objc::msg_send2(integerValue)]
+    pub fn as_integer(&self) -> ns::Integer;
 
-    #[doc(alias = "stringValue")]
-    #[inline]
-    pub fn string_ar(&self) -> arc::Rar<ns::String> {
-        unsafe { self.call0(msg_send::string_value) }
-    }
+    #[objc::msg_send2(unsignedIntegerValue)]
+    pub fn as_uinteger(&self) -> ns::UInteger;
 
-    #[doc(alias = "stringValue")]
+    #[objc::msg_send2(stringValue)]
+    pub fn string_ar(&self) -> arc::Rar<ns::String>;
+
     #[inline]
     pub fn string(&self) -> arc::R<ns::String> {
         self.string_ar().retain()
     }
 
-    #[inline]
-    pub fn is_equal_to_number(&self, number: &ns::Number) -> bool {
-        unsafe { self.call1(is_equal_to_number, number) }
-    }
+    #[objc::msg_send2(isEqualToNumber:)]
+    pub fn is_equal_to_number(&self, number: &ns::Number) -> bool;
 }
 
 impl From<i8> for arc::R<Number> {
@@ -421,8 +377,6 @@ extern "C" {
     #[link_name = "objc_msgSend$initWithUnsignedInteger:"]
     fn init_with_unsigned_integer();
 
-    #[link_name = "objc_msgSend$isEqualToNumber:"]
-    fn is_equal_to_number();
 }
 
 #[cfg(test)]

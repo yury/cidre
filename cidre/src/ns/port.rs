@@ -1,10 +1,6 @@
 use std::{ffi::c_void, mem::transmute, ops::Deref};
 
-use crate::{
-    arc, cf, define_obj_type, mach, ns,
-    objc::Delegate,
-    objc::{self, msg_send, Obj},
-};
+use crate::{arc, cf, define_obj_type, mach, ns, objc, objc::Delegate};
 
 define_obj_type!(Port(ns::Id));
 define_obj_type!(MachPort(Port));
@@ -35,18 +31,19 @@ impl MachPort {
     #[objc::msg_send2(scheduleInRunLoop:forMode:)]
     pub fn remove_from_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
+    #[objc::msg_send2(setDelegate:)]
+    fn _set_delegate(&self, delegate: Option<&ns::Id>);
+
     pub fn set_delegate<D>(&mut self, delegate: &Delegate<D>)
     where
         D: MachPortDelegate,
     {
         let obj = delegate.obj.deref();
-
-        unsafe { self.call1(msg_send::set_delegate, obj) }
+        self._set_delegate(Some(obj))
     }
 
     pub fn remove_delegate(&mut self) {
-        let none: Option<&ns::Id> = None;
-        unsafe { self.call1(msg_send::set_delegate, none) }
+        self._set_delegate(None)
     }
 }
 

@@ -1,9 +1,6 @@
 use std::{borrow::Cow, ffi::CStr, fmt, str::from_utf8_unchecked};
 
-use crate::{
-    arc, define_obj_type, msg_send, ns,
-    objc::{self, msg_send, Obj},
-};
+use crate::{arc, define_obj_type, ns, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -82,16 +79,19 @@ impl String {
         }
     }
 
-    #[inline]
-    pub fn substring(&self, range: std::ops::Range<usize>) -> arc::R<ns::String> {
-        let range: ns::Range = range.into();
-        unsafe { self.call1(msg_send::substring_with_range, range) }
-    }
+    #[objc::msg_send2(substringWithRange:)]
+    pub fn substring_with_range_ar(&self, range: ns::Range) -> arc::Rar<Self>;
+
+    #[objc::rar_retain()]
+    pub fn substring_with_range(&self, range: ns::Range) -> arc::R<Self>;
 
     #[inline]
-    pub fn c_string(&self, encoding: Encoding) -> *const i8 {
-        unsafe { self.call1(msg_send::c_string_using_encoding, encoding) }
+    pub fn substring(&self, range: std::ops::Range<usize>) -> arc::R<ns::String> {
+        self.substring_with_range(range.into())
     }
+
+    #[objc::msg_send2(cStringUsingEncoding:)]
+    pub fn c_string(&self, encoding: Encoding) -> *const i8;
 
     #[objc::msg_send2(lengthOfBytesUsingEncoding:)]
     pub fn len_of_bytes(&self, encoding: Encoding) -> ns::UInteger;
@@ -101,10 +101,8 @@ impl String {
 }
 
 impl PartialEq for String {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        unsafe { self.call1(msg_send::is_equal_to_string, other) }
-    }
+    #[objc::msg_send2(isEqualToString:)]
+    fn eq(&self, other: &Self) -> bool;
 }
 
 impl std::ops::Index<std::ops::Range<usize>> for String {

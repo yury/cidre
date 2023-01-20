@@ -1,7 +1,4 @@
-use crate::{
-    cf, cg, cm, define_cf_type, define_obj_type, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{cf, cg, cm, define_cf_type, define_obj_type, ns, objc};
 
 define_cf_type!(Type(cf::String));
 
@@ -159,10 +156,8 @@ impl Object {
     /// expressed as scalar values from 0. - 1. If the original video has been scaled
     /// down, the bounds of the metadata object still are meaningful. This property may
     /// return cg::Rect::zero if the metadata has no bounds.
-    #[inline]
-    pub fn bounds(&self) -> cg::Rect {
-        unsafe { self.call0(msg_send::bounds) }
-    }
+    #[objc::msg_send2(bounds)]
+    pub fn bounds(&self) -> cg::Rect;
 
     /// The media time associated with this metadata object.
     ///
@@ -170,10 +165,8 @@ impl Object {
     /// For capture, it is the time at which this object was captured. If this metadata
     /// object originates from a cm::SampleBuffer, its time matches the sample buffer's
     /// presentation time. This property may return cm::Time::invalid.
-    #[inline]
-    pub fn time(&self) -> cm::Time {
-        unsafe { AVMetadataObject_rsel_time(self) }
-    }
+    #[objc::msg_send2(time)]
+    pub fn time(&self) -> cm::Time;
 
     /// The media duration associated with this metadata object.
     ///
@@ -181,35 +174,18 @@ impl Object {
     /// of the metadata object. If this metadata object originates from a cm::SampleBuffer,
     /// its duration matches the sample buffer's duration.
     /// This property may return cm::Time::invalid.
-    #[inline]
-    pub fn duration(&self) -> cm::Time {
-        unsafe { AVMetadataObject_rsel_duration(self) }
-    }
+    #[objc::msg_send2(duration)]
+    pub fn duration(&self) -> cm::Time;
 
-    #[inline]
-    pub fn object_type(&self) -> &Type {
-        unsafe { AVMetadataObject_rsel_type(self) }
-    }
-}
-
-#[link(name = "av", kind = "static")]
-extern "C" {
-    fn AVMetadataObject_rsel_time(id: &ns::Id) -> cm::Time;
-    fn AVMetadataObject_rsel_duration(id: &ns::Id) -> cm::Time;
-    fn AVMetadataObject_rsel_type(id: &ns::Id) -> &Type;
+    #[objc::msg_send2(type)]
+    pub fn object_type(&self) -> &Type;
 }
 
 define_obj_type!(BodyObject(Object));
 
 impl BodyObject {
-    #[inline]
-    pub fn body_id(&self) -> isize {
-        unsafe { AVMetadataBodyObject_bodyID(self) }
-    }
-}
-
-extern "C" {
-    fn AVMetadataBodyObject_bodyID(id: &ns::Id) -> isize;
+    #[objc::msg_send2(bodyID)]
+    pub fn body_id(&self) -> isize;
 }
 
 define_obj_type!(CatBodyObject(BodyObject));
@@ -221,49 +197,42 @@ define_obj_type!(MachineReadableCodeObject(Object));
 define_obj_type!(SalientObject(Object));
 
 impl SalientObject {
-    #[inline]
-    pub fn object_id(&self) -> isize {
-        unsafe { AVMetadataSalientObject_objectID(self) }
-    }
+    #[objc::msg_send2(objectID)]
+    pub fn object_id(&self) -> isize;
 }
 
 impl FaceObject {
-    #[inline]
-    pub fn face_id(&self) -> isize {
-        unsafe { AVMetadataFaceObject_faceID(self) }
-    }
+    #[objc::msg_send2(faceID)]
+    pub fn face_id(&self) -> isize;
+
+    #[objc::msg_send2(hasRollAngle)]
+    pub fn has_roll_angle(&self) -> bool;
+
+    #[objc::msg_send2(rollAngle)]
+    fn _roll_angle(&self) -> cg::Float;
 
     /// The roll angle of the face in degrees.
     #[inline]
     pub fn roll_angle(&self) -> Option<cg::Float> {
-        unsafe {
-            if AVMetadataFaceObject_hasRollAngle(self) {
-                Some(AVMetadataFaceObject_rollAngle(self))
-            } else {
-                None
-            }
+        if self.has_roll_angle() {
+            Some(self._roll_angle())
+        } else {
+            None
         }
     }
+    #[objc::msg_send2(hasYawAngle)]
+    pub fn has_yaw_angle(&self) -> bool;
+
+    #[objc::msg_send2(yawAngle)]
+    fn _yaw_angle(&self) -> cg::Float;
 
     /// The yaw angle of the face in degrees.
     #[inline]
     pub fn yaw_angle(&self) -> Option<cg::Float> {
-        unsafe {
-            if AVMetadataFaceObject_hasYawAngle(self) {
-                Some(AVMetadataFaceObject_yawAngle(self))
-            } else {
-                None
-            }
+        if self.has_yaw_angle() {
+            Some(self._yaw_angle())
+        } else {
+            None
         }
     }
-}
-
-extern "C" {
-    fn AVMetadataSalientObject_objectID(id: &ns::Id) -> isize;
-
-    fn AVMetadataFaceObject_faceID(id: &ns::Id) -> isize;
-    fn AVMetadataFaceObject_hasRollAngle(id: &ns::Id) -> bool;
-    fn AVMetadataFaceObject_hasYawAngle(id: &ns::Id) -> bool;
-    fn AVMetadataFaceObject_yawAngle(id: &ns::Id) -> cg::Float;
-    fn AVMetadataFaceObject_rollAngle(id: &ns::Id) -> cg::Float;
 }

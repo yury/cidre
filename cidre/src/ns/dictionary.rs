@@ -2,7 +2,7 @@ use std::{marker::PhantomData, mem::transmute};
 
 use crate::{
     arc, ns,
-    objc::{msg_send, Obj},
+    objc::{self, Obj},
 };
 
 #[derive(Debug)]
@@ -17,10 +17,8 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
         unsafe { transmute(NSDictionary_dictionary()) }
     }
 
-    #[inline]
-    pub fn len(&self) -> usize {
-        unsafe { self.call0(msg_send::count) }
-    }
+    #[objc::msg_send2(count)]
+    pub fn len(&self) -> usize;
 
     pub fn is_empty(&self) -> bool {
         self.len() == 0

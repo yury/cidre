@@ -1,20 +1,13 @@
-use crate::{
-    define_obj_type, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{define_obj_type, ns, objc};
 
 define_obj_type!(Error(ns::Id));
 
 impl Error {
-    #[inline]
-    pub fn code(&self) -> ns::Integer {
-        unsafe { self.call0(msg_send::code) }
-    }
+    #[objc::msg_send2(code)]
+    pub fn code(&self) -> ns::Integer;
 
-    #[inline]
-    pub fn domain(&self) -> &ns::ErrorDomain {
-        unsafe { self.call0(msg_send::domain) }
-    }
+    #[objc::msg_send2(domain)]
+    pub fn domain(&self) -> &ns::ErrorDomain;
 }
 
 define_obj_type!(Domain(ns::String));

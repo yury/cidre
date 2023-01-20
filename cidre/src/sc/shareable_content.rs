@@ -1,85 +1,60 @@
 use std::ffi::c_void;
 
-use crate::{
-    arc, blocks, cg, define_obj_type, ns,
-    objc::{msg_send, Obj},
-    sys,
-};
+use crate::{arc, blocks, cg, define_obj_type, ns, objc, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
 impl RunningApplication {
-    pub fn bundle_identifier(&self) -> ns::String {
-        unsafe { rsel_bundleIdentifier(self) }
-    }
+    #[objc::msg_send2(bundleIdentifier)]
+    pub fn bundle_identifier(&self) -> ns::String;
 
-    pub fn application_name(&self) -> ns::String {
-        unsafe { rsel_applicationName(self) }
-    }
+    #[objc::msg_send2(applicationName)]
+    pub fn application_name(&self) -> ns::String;
 
-    pub fn process_id(&self) -> sys::Pid {
-        unsafe { rsel_processID(self) }
-    }
-}
-
-#[link(name = "sc", kind = "static")]
-extern "C" {
-    fn rsel_bundleIdentifier(id: &ns::Id) -> ns::String;
-    fn rsel_applicationName(id: &ns::Id) -> ns::String;
-    fn rsel_processID(id: &ns::Id) -> sys::Pid;
+    #[objc::msg_send2(processID)]
+    pub fn process_id(&self) -> sys::Pid;
 }
 
 define_obj_type!(Display(ns::Id));
 
 impl Display {
-    pub fn display_id(&self) -> cg::DirectDisplayID {
-        todo!()
-    }
+    #[objc::msg_send2(displayID)]
+    pub fn display_id(&self) -> cg::DirectDisplayID;
 
-    pub fn width(&self) -> isize {
-        unsafe { self.call0(msg_send::width) }
-    }
+    #[objc::msg_send2(width)]
+    pub fn width(&self) -> isize;
 
-    pub fn height(&self) -> isize {
-        unsafe { self.call0(msg_send::height) }
-    }
+    #[objc::msg_send2(height)]
+    pub fn height(&self) -> isize;
 
-    pub fn frame(&self) -> cg::Rect {
-        unsafe { self.call0(msg_send::frame) }
-    }
+    #[objc::msg_send2(frame)]
+    pub fn frame(&self) -> cg::Rect;
 }
 
 define_obj_type!(Window(ns::Id));
 
 impl Window {
-    pub fn id(&self) -> cg::WindowID {
-        unsafe { rsel_windowID(self) }
-    }
+    #[objc::msg_send2(windowID)]
+    pub fn id(&self) -> cg::WindowID;
 
-    pub fn frame(&self) -> cg::Rect {
-        unsafe { self.call0(msg_send::frame) }
-    }
+    #[objc::msg_send2(frame)]
+    pub fn frame(&self) -> cg::Rect;
 }
 
 #[link(name = "sc", kind = "static")]
-extern "C" {
-    fn rsel_windowID(id: &ns::Id) -> cg::WindowID;
-}
+extern "C" {}
 
 define_obj_type!(ShareableContent(ns::Id));
 
 impl ShareableContent {
-    pub fn windows(&self) -> &ns::Array<Window> {
-        unsafe { rsel_windows(self) }
-    }
+    #[objc::msg_send2(windows)]
+    pub fn windows(&self) -> &ns::Array<Window>;
 
-    pub fn displays(&self) -> &ns::Array<Display> {
-        unsafe { rsel_displays(self) }
-    }
+    #[objc::msg_send2(displays)]
+    pub fn displays(&self) -> &ns::Array<Display>;
 
-    pub fn applications(&self) -> &ns::Array<RunningApplication> {
-        unsafe { rsel_applications(self) }
-    }
+    #[objc::msg_send2(applications)]
+    pub fn applications(&self) -> &ns::Array<RunningApplication>;
 
     pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)
     where
@@ -101,10 +76,6 @@ impl ShareableContent {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn rsel_windows(id: &ns::Id) -> &ns::Array<Window>;
-    fn rsel_displays(id: &ns::Id) -> &ns::Array<Display>;
-    fn rsel_applications(id: &ns::Id) -> &ns::Array<RunningApplication>;
-
     fn cs_shareable(block: *mut c_void);
 }
 

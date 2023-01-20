@@ -1,7 +1,4 @@
-use crate::{
-    arc, define_obj_type, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(URL(ns::Id));
 
@@ -51,10 +48,8 @@ impl URL {
         Self::with_string_relative_to(&string, None)
     }
 
-    #[inline]
-    pub fn abs_string(&self) -> Option<&ns::String> {
-        unsafe { self.call0(msg_send::absolute_string) }
-    }
+    #[objc::msg_send2(absoluteString)]
+    pub fn abs_string(&self) -> Option<&ns::String>;
 }
 
 #[link(name = "ns", kind = "static")]

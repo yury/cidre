@@ -2,8 +2,7 @@ use std::{ffi::c_void, ops::Deref};
 
 use crate::{
     arc, blocks, cg, cm, cv, define_obj_type, dispatch, ns,
-    objc::{msg_send, Delegate, Id, Obj},
-    os,
+    objc::{self, Delegate, Id},
 };
 
 use super::{Display, Window};
@@ -49,108 +48,85 @@ impl Configuration {
         unsafe { SCStreamConfiguration_new() }
     }
 
-    pub fn width(&self) -> usize {
-        unsafe { self.call0(msg_send::width) }
-    }
+    #[objc::msg_send2(width)]
+    pub fn width(&self) -> usize;
 
-    pub fn set_width(&mut self, value: usize) {
-        unsafe { self.call1(msg_send::set_width, value) }
-    }
+    #[objc::msg_send2(setWidth:)]
+    pub fn set_width(&mut self, value: usize);
 
-    pub fn height(&self) -> usize {
-        unsafe { self.call0(msg_send::height) }
-    }
+    #[objc::msg_send2(height)]
+    pub fn height(&self) -> usize;
 
-    pub fn set_height(&mut self, value: usize) {
-        unsafe { self.call1(msg_send::set_height, value) }
-    }
+    #[objc::msg_send2(setHeight:)]
+    pub fn set_height(&mut self, value: usize);
 
-    pub fn minimum_frame_interval(&self) -> cm::Time {
-        unsafe { rsel_minimumFrameInterval(self) }
-    }
+    #[objc::msg_send2(minimumFrameInterval)]
+    pub fn minimum_frame_interval(&self) -> cm::Time;
 
-    pub fn set_minimum_frame_interval(&mut self, value: cm::Time) {
-        unsafe { wsel_setMinimumFrameInterval(self, value) }
-    }
+    #[objc::msg_send2(setMinimumFrameInterval:)]
+    pub fn set_minimum_frame_interval(&mut self, value: cm::Time);
 
     /// 'BGRA': Packed Little Endian ARGB8888
     /// 'l10r': Packed Little Endian ARGB2101010
     /// '420v': 2-plane "video" range YCbCr 4:2:0
     /// '420f': 2-plane "full" range YCbCr 4:2:0
-    pub fn pixel_format(&self) -> cv::PixelFormatType {
-        unsafe { cv::PixelFormatType(sc_rsel_pixelFormat(self)) }
-    }
+    #[objc::msg_send2(pixelFormat)]
+    pub fn pixel_format(&self) -> cv::PixelFormatType;
 
-    pub fn set_pixel_format(&mut self, value: cv::PixelFormatType) {
-        unsafe { sc_wsel_setPixelFormat(self, value.0) }
-    }
+    #[objc::msg_send2(setPixelFormat:)]
+    pub fn set_pixel_format(&mut self, value: cv::PixelFormatType);
 
-    pub fn scales_to_fit(&self) -> bool {
-        unsafe { rsel_scalesToFit(self) }
-    }
+    #[objc::msg_send2(scalesToFit)]
+    pub fn scales_to_fit(&self) -> bool;
 
-    pub fn set_scales_to_fit(&mut self, value: bool) {
-        unsafe { wsel_setScalesToFit(self, value) }
-    }
+    #[objc::msg_send2(setScalesToFit:)]
+    pub fn set_scales_to_fit(&mut self, value: bool);
 
-    pub fn shows_cursor(&self) -> bool {
-        unsafe { rsel_showsCursor(self) }
-    }
+    #[objc::msg_send2(showsCursor)]
+    pub fn shows_cursor(&self) -> bool;
 
-    pub fn set_shows_cursor(&mut self, value: bool) {
-        unsafe { wsel_setShowsCursor(self, value) }
-    }
-    pub fn background_color(&self) -> cg::Color {
-        unsafe { rsel_backgroundColor(self) }
-    }
+    #[objc::msg_send2(setShowsCursor:)]
+    pub fn set_shows_cursor(&mut self, value: bool);
 
-    pub fn set_background_color(&mut self, value: cg::Color) {
-        unsafe { wsel_setBackgroundColor(self, value) }
-    }
+    #[objc::msg_send2(backgroundColor)]
+    pub fn background_color(&self) -> cg::Color;
 
-    pub fn source_rect(&self) -> cg::Rect {
-        unsafe { rsel_sourceRect(self) }
-    }
+    #[objc::msg_send2(setBackgroundColor:)]
+    pub fn set_background_color(&mut self, value: cg::Color);
 
-    pub fn set_source_rect(&mut self, value: cg::Rect) {
-        unsafe { wsel_setSourceRect(self, value) }
-    }
+    #[objc::msg_send2(sourceRect)]
+    pub fn source_rect(&self) -> cg::Rect;
+
+    #[objc::msg_send2(setSourceRect:)]
+    pub fn set_source_rect(&mut self, value: cg::Rect);
 
     /// Specifies whether the audio will be captured.  By default audio is not captured.
-    pub fn captures_audio(&self) -> bool {
-        unsafe { rsel_capturesAudio(self) }
-    }
+    #[objc::msg_send2(capturesAudio)]
+    pub fn captures_audio(&self) -> bool;
 
-    pub fn set_captures_audio(&mut self, value: bool) {
-        unsafe { wsel_setCapturesAudio(self, value) }
-    }
+    #[objc::msg_send2(setCapturesAudio:)]
+    pub fn set_captures_audio(&mut self, value: bool);
 
     /// The sample rate for audio. Default is set to 48000.
-    pub fn sample_rate(&self) -> i64 {
-        unsafe { sc_rsel_sampleRate(self) }
-    }
+    #[objc::msg_send2(sampleRate)]
+    pub fn sample_rate(&self) -> i64;
 
-    pub fn set_sample_rate(&mut self, value: i64) {
-        unsafe { sc_wsel_setSampleRate(self, value) }
-    }
+    #[objc::msg_send2(setSampleRate:)]
+    pub fn set_sample_rate(&mut self, value: i64);
 
     /// Channel count. Default is set to two.
-    pub fn channel_count(&self) -> i64 {
-        unsafe { rsel_channelCount(self) }
-    }
+    #[objc::msg_send2(channelCount)]
+    pub fn channel_count(&self) -> i64;
 
-    pub fn set_channel_count(&mut self, value: i64) {
-        unsafe { wsel_setChannelCount(self, value) }
-    }
+    #[objc::msg_send2(setChannelCount:)]
+    pub fn set_channel_count(&mut self, value: i64);
 
     /// Whether to exclude audio from current process. Default is set to false.
-    pub fn excludes_current_process_audio(&self) -> bool {
-        unsafe { rsel_excludesCurrentProcessAudio(self) }
-    }
+    #[objc::msg_send2(excludesCurrentProcessAudio)]
+    pub fn excludes_current_process_audio(&self) -> bool;
 
-    pub fn set_excludes_current_process_audio(&mut self, value: bool) {
-        unsafe { wsel_setExcludesCurrentProcessAudio(self, value) }
-    }
+    #[objc::msg_send2(setExcludesCurrentProcessAudio:)]
+    pub fn set_excludes_current_process_audio(&mut self, value: bool);
 }
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
@@ -159,35 +135,6 @@ extern "C" {}
 #[link(name = "sc", kind = "static")]
 extern "C" {
     fn SCStreamConfiguration_new() -> arc::R<Configuration>;
-
-    fn rsel_minimumFrameInterval(id: &Id) -> cm::Time;
-    fn wsel_setMinimumFrameInterval(id: &Id, value: cm::Time);
-    fn sc_rsel_pixelFormat(id: &Id) -> os::Type;
-    fn sc_wsel_setPixelFormat(id: &mut Id, value: os::Type);
-
-    fn rsel_scalesToFit(id: &Id) -> bool;
-    fn wsel_setScalesToFit(id: &Id, value: bool);
-
-    fn rsel_showsCursor(id: &Id) -> bool;
-    fn wsel_setShowsCursor(id: &Id, value: bool);
-
-    fn rsel_backgroundColor(id: &Id) -> cg::Color;
-    fn wsel_setBackgroundColor(id: &Id, value: cg::Color);
-
-    fn rsel_sourceRect(id: &Id) -> cg::Rect;
-    fn wsel_setSourceRect(id: &Id, value: cg::Rect);
-
-    fn rsel_capturesAudio(id: &Id) -> bool;
-    fn wsel_setCapturesAudio(id: &Id, value: bool);
-
-    fn sc_rsel_sampleRate(id: &Id) -> i64;
-    fn sc_wsel_setSampleRate(id: &Id, value: i64);
-
-    fn rsel_channelCount(id: &Id) -> i64;
-    fn wsel_setChannelCount(id: &Id, value: i64);
-
-    fn rsel_excludesCurrentProcessAudio(id: &Id) -> bool;
-    fn wsel_setExcludesCurrentProcessAudio(id: &Id, value: bool);
 
 }
 

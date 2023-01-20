@@ -10,8 +10,10 @@ define_obj_type!(Descriptor(ns::Id));
 impl Descriptor {
     #[inline]
     pub fn default() -> arc::R<Descriptor> {
-        unsafe { MTL_COMPUTE_PASS_DESCRIPTOR.alloc_init() }
+        unsafe { MTL_COMPUTE_PASS_DESCRIPTOR.alloc().init() }
     }
+    #[objc::msg_send2(init)]
+    fn init(&self) -> arc::R<Self>;
 
     #[objc::msg_send2(dispatchType)]
     pub fn dispatch_type(&self) -> DispatchType;

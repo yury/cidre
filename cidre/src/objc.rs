@@ -22,11 +22,6 @@ impl<T: Obj> Class<T> {
     #[msg_send2(alloc)]
     pub unsafe fn alloc(&self) -> &'static T;
 
-    #[inline]
-    pub unsafe fn alloc_init(&self) -> arc::R<T> {
-        self.alloc().call0(msg_send::init)
-    }
-
     // in general alloc_init is faster
     #[msg_send2(new)]
     pub unsafe fn new(&self) -> arc::R<T>;
@@ -53,25 +48,20 @@ pub trait Obj: arc::Retain {
         transmute(objc_retain(transmute(id)))
     }
 
-    #[inline]
-    fn description_ar(&self) -> arc::Rar<crate::ns::String> {
-        unsafe { self.call0(msg_send::description) }
-    }
+    #[msg_send2(description)]
+    fn description_ar(&self) -> arc::Rar<crate::ns::String>;
 
-    #[inline]
-    fn description(&self) -> arc::R<crate::ns::String> {
-        self.description_ar().retain()
-    }
+    #[rar_retain()]
+    fn description(&self) -> arc::R<crate::ns::String>;
 
-    #[inline]
-    fn debug_description(&self) -> arc::R<crate::ns::String> {
-        unsafe { self.call0(msg_send::debug_description) }
-    }
+    #[msg_send2(debugDescription)]
+    fn debug_description_ar(&self) -> arc::Rar<crate::ns::String>;
 
-    #[inline]
-    fn responds_to_sel(&self, sel: &Sel) -> bool {
-        unsafe { self.call1(msg_send::responds_to_selector, sel) }
-    }
+    #[rar_retain()]
+    fn debug_description(&self) -> arc::R<crate::ns::String>;
+
+    #[msg_send2(respondsToSelector:)]
+    fn responds_to_sel(&self, sel: &Sel) -> bool;
 
     #[inline]
     fn is_tagged_ptr(&self) -> bool {
@@ -453,8 +443,6 @@ mod tests {
         let _ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
     }
 }
-
-pub mod msg_send;
 
 #[derive(Debug)]
 #[repr(transparent)]

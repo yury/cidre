@@ -1,7 +1,4 @@
-use crate::{
-    arc, define_obj_type, ns,
-    objc::{self, msg_send, Obj},
-};
+use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(URLRequest(ns::Id));
 define_obj_type!(URLRequestMut(URLRequest));
@@ -137,10 +134,11 @@ impl URLRequest {
     #[objc::msg_send2(HTTPBody)]
     pub fn http_body(&self) -> Option<&ns::Data>;
 
-    #[inline]
-    pub fn copy_mut(&self) -> arc::R<URLRequestMut> {
-        unsafe { self.call0(msg_send::mutable_copy) }
-    }
+    #[objc::msg_send2(mutableCopy)]
+    pub fn copy_mut_ar(&self) -> arc::Rar<URLRequestMut>;
+
+    #[objc::rar_retain()]
+    pub fn copy_mut(&self) -> arc::R<URLRequestMut>;
 }
 
 /// enum is used to indicate whether the

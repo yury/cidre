@@ -39,8 +39,11 @@ impl Descriptor {
     /// ```
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { MTL_HEAP_DESCRIPTOR.alloc_init() }
+        unsafe { MTL_HEAP_DESCRIPTOR.alloc().init() }
     }
+
+    #[objc::msg_send2(init)]
+    fn init(&self) -> arc::R<Self>;
 
     #[objc::msg_send2(size)]
     pub fn size(&self) -> usize;

@@ -428,12 +428,6 @@ wsel1(, id, setBitRateStrategy, NSString * _Nullable)
 rsel3(, id, convertToBuffer, AVAudioPCMBuffer *, fromBuffer, const AVAudioPCMBuffer *, error, NSError **, BOOL)
 rsel3(, id, convertToBuffer, AVAudioBuffer *, error, NSError **, withInputFromBlock, id, AVAudioConverterOutputStatus)
 
-#pragma mark - AVMetadataObject
-
-rsel0(AVMetadataObject_, AVMetadataObject *, time, CMTime)
-rsel0(AVMetadataObject_, AVMetadataObject *, duration, CMTime)
-rsel0(AVMetadataObject_, AVMetadataObject *, type, AVMetadataObjectType)
-
 #pragma mark - AVMetadataBodyObject
 
 rsel0(AVMetadataBodyObject_, AVMetadataBodyObject *, bodyID, NSInteger)
@@ -441,14 +435,6 @@ rsel0(AVMetadataBodyObject_, AVMetadataBodyObject *, bodyID, NSInteger)
 #pragma mark - AVMetadataSalientObject
 
 rsel0(AVMetadataSalientObject_, AVMetadataSalientObject *, objectID, NSInteger)
-
-#pragma mark - AVMetadataFaceObject
-
-rsel0(AVMetadataFaceObject_, AVMetadataFaceObject *, faceID, NSInteger)
-rsel0(AVMetadataFaceObject_, AVMetadataFaceObject *, hasRollAngle, BOOL)
-rsel0(AVMetadataFaceObject_, AVMetadataFaceObject *, hasYawAngle, BOOL)
-rsel0(AVMetadataFaceObject_, AVMetadataFaceObject *, yawAngle, CGFloat)
-rsel0(AVMetadataFaceObject_, AVMetadataFaceObject *, rollAngle, CGFloat)
 
 #pragma mark - AVCaptureMetadataOutput
 

@@ -1,36 +1,21 @@
-use crate::{
-    cf, define_obj_type,
-    mps::graph,
-    msg_send, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{define_obj_type, mps::graph, ns, objc};
 
 define_obj_type!(Operation(ns::Id));
 
 impl Operation {
-    #[inline]
-    pub fn input_tensors(&self) -> &cf::ArrayOf<graph::Tensor> {
-        msg_send!("mpsg", self, sel_inputTensors)
-    }
+    #[objc::msg_send2(inputTensors)]
+    pub fn input_tensors(&self) -> &ns::Array<graph::Tensor>;
 
-    #[inline]
-    pub fn output_tensors(&self) -> &cf::ArrayOf<graph::Tensor> {
-        msg_send!("mpsg", self, sel_outputTensors)
-    }
+    #[objc::msg_send2(outputTensors)]
+    pub fn output_tensors(&self) -> &ns::Array<graph::Tensor>;
 
-    #[inline]
-    pub fn control_deps(&self) -> &cf::ArrayOf<Self> {
-        msg_send!("mpsg", self, sel_controlDependencies)
-    }
+    #[objc::msg_send2(controlDependencies)]
+    pub fn control_deps(&self) -> &ns::Array<Self>;
 
     /// Graph on which the operation is defined
-    #[inline]
-    pub fn graph(&self) -> &graph::Graph {
-        msg_send!("mpsg", self, sel_graph)
-    }
+    #[objc::msg_send2(graph)]
+    pub fn graph(&self) -> &graph::Graph;
 
-    #[inline]
-    pub fn name(&self) -> &cf::String {
-        unsafe { self.call0(msg_send::name) }
-    }
+    #[objc::msg_send2(name)]
+    pub fn name(&self) -> &ns::String;
 }

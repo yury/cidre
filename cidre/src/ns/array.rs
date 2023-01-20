@@ -1,4 +1,5 @@
 use std::{
+    ffi::c_void,
     marker::PhantomData,
     mem::transmute,
     ops::{Deref, Index, IndexMut},
@@ -6,7 +7,7 @@ use std::{
 
 use crate::{
     arc, ns,
-    objc::{self, msg_send, Class, Obj},
+    objc::{self, Class, Obj},
 };
 
 #[derive(Debug)]
@@ -40,8 +41,11 @@ impl<T: Obj> Deref for ArrayMut<T> {
 impl<T: Obj> Array<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(NS_ARRAY.alloc_init()) }
+        unsafe { transmute(NS_ARRAY.alloc().init()) }
     }
+
+    #[objc::msg_send2(init)]
+    fn init(&self) -> arc::R<Self>;
 
     // use new() with uses alloc_init and it is faster
     // _new() is slower
@@ -53,11 +57,16 @@ impl<T: Obj> Array<T> {
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe {
-            NS_ARRAY
-                .alloc()
-                .call2(msg_send::init_with_objects_count, objs.as_ptr(), objs.len())
+            transmute(
+                NS_ARRAY
+                    .alloc()
+                    .init_with_objects_count(objs.as_ptr() as _, objs.len()),
+            )
         }
     }
+
+    #[objc::msg_send2(initWithObjects:count:)]
+    fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<Self>;
 
     #[objc::msg_send2(count)]
     pub fn len(&self) -> usize;
@@ -87,15 +96,15 @@ where
     #[objc::msg_send2(objectAtIndex:)]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output;
 }
+
 impl<T: Obj> ArrayMut<T> {
     #[inline]
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
-        unsafe {
-            NS_MUTABLE_ARRAY
-                .alloc()
-                .call1(msg_send::init_with_capacity, capacity)
-        }
+        unsafe { transmute(NS_MUTABLE_ARRAY.alloc().init_with_capacity(capacity)) }
     }
+
+    #[objc::msg_send2(initWithCapacity:)]
+    fn init_with_capacity(&self, capacity: usize) -> arc::R<Self>;
 }
 
 impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}

@@ -36,30 +36,8 @@ rwsel(sc_, id, sampleRate, setSampleRate, NSInteger)
 rwsel(, id, channelCount, setChannelCount, NSInteger)
 rwsel(, id, excludesCurrentProcessAudio, setExcludesCurrentProcessAudio, BOOL)
 
-#pragma mark SCRunningApplication
-
-// @property (readonly) NSString *bundleIdentifier;
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, bundleIdentifier, NSString *)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, applicationName, NSString *)
-
-//@property (readonly) pid_t processID;
-rsel0(, id, processID, pid_t)
-
-#pragma mark - SCWindow
-
-//@property (readonly) CGWindowID windowID;
-rsel0(, id, windowID, CGWindowID)
 
 #pragma mark - SCShareableContent
-
-//@property (readonly) NSArray<SCWindow *> *windows;
-rsel0(, id, windows, NSArray<SCWindow *> *)
-rsel0(, id, displays, NSArray<SCDisplay *> *)
-rsel0(, id, applications, NSArray<SCRunningApplication *> *)
-
 
 void cs_shareable(id block) {
   [SCShareableContent getShareableContentWithCompletionHandler:block];

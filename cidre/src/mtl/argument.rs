@@ -1,7 +1,4 @@
-use crate::{
-    define_obj_type, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{define_obj_type, ns, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -158,7 +155,6 @@ define_obj_type!(TextureReferenceType(BaseType));
 define_obj_type!(Argument(ns::Id));
 
 impl Argument {
-    pub fn name(&self) -> &ns::String {
-        unsafe { self.call0(msg_send::name) }
-    }
+    #[objc::msg_send2(name)]
+    pub fn name(&self) -> &ns::String;
 }

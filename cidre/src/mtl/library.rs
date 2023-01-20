@@ -52,8 +52,11 @@ impl CompileOptions {
     ///
     /// ```
     pub fn new() -> arc::R<CompileOptions> {
-        unsafe { MTL_COMPILE_OPTIONS.alloc_init() }
+        unsafe { MTL_COMPILE_OPTIONS.alloc().init() }
     }
+
+    #[objc::msg_send2(init)]
+    fn init(&self) -> arc::R<Self>;
 
     #[objc::msg_send2(fastMathEnabled)]
     pub fn fast_math_enabled(&self) -> bool;

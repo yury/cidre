@@ -1,8 +1,8 @@
-use std::{marker::PhantomData, mem::transmute, ops::Deref};
+use std::{ffi::c_void, marker::PhantomData, mem::transmute, ops::Deref};
 
 use crate::{
     arc, ns,
-    objc::{msg_send, Class, Obj},
+    objc::{self, Class, Obj},
 };
 
 #[derive(Debug)]
@@ -36,22 +36,27 @@ impl<T: Obj> Deref for SetMut<T> {
 impl<T: Obj> Set<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(NS_SET.alloc_init()) }
+        unsafe { transmute(NS_SET.alloc().init()) }
     }
+
+    #[objc::msg_send2(init)]
+    fn init(&self) -> arc::R<Self>;
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe {
-            NS_SET
-                .alloc()
-                .call2(msg_send::init_with_objects_count, objs.as_ptr(), objs.len())
+            transmute(
+                NS_SET
+                    .alloc()
+                    .init_with_objects_count(objs.as_ptr() as _, objs.len()),
+            )
         }
     }
+    #[objc::msg_send2(initWithObjects:count:)]
+    fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<Self>;
 
-    #[inline]
-    pub fn len(&self) -> usize {
-        unsafe { self.call0(msg_send::count) }
-    }
+    #[objc::msg_send2(count)]
+    pub fn len(&self) -> usize;
 
     #[inline]
     pub fn is_empty(&self) -> bool {

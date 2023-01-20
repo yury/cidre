@@ -1,6 +1,6 @@
 use std::{ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::objc::{self, msg_send, Obj};
+use crate::objc::{self, Obj};
 
 static MUTATIONS_TARGET: u32 = 0;
 static MUTATIONS_PTR: &u32 = &MUTATIONS_TARGET;
