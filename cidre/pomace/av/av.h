@@ -416,17 +416,6 @@ csel2(, AVURLAsset, URLAssetWithURL, NSURL *, options, NSDictionary * _Nullable,
 NS_RETURNS_RETAINED
 csel2(, AVAssetReader, assetReaderWithAsset, AVAsset *, error, NSError **, AVAssetReader *)
 
-wsel1(AVAssetReader_, id, addOutput, AVAssetReaderOutput *);
-rsel0(, id, startReading, BOOL)
-wsel0(, id, cancelReading)
-
-//@property (nonatomic, readonly) NSArray<AVAssetReaderOutput *> *outputs;
-NS_RETURNS_NOT_RETAINED
-rsel0(AVAssetReader_, AVAssetReader *, outputs, NSArray *)
-
-rsel1(AVAssetReader_, id, canAddOutput, AVAssetReaderOutput *, BOOL);
-//- (BOOL)canAddOutput:(AVAssetReaderOutput *)output;
-
 #pragma mark - AVAssetReaderOutput
 
 //+ (instancetype)assetReaderTrackOutputWithTrack:(AVAssetTrack *)track outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings;

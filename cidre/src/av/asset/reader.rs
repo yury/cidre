@@ -1,4 +1,4 @@
-use crate::{arc, av, cf, cm, define_obj_type, msg_send, ns};
+use crate::{arc, av, cf, cm, define_obj_type, ns, objc};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
@@ -29,10 +29,8 @@ impl Reader {
         }
     }
 
-    #[inline]
-    pub fn add_output(&mut self, output: &av::AssetReaderOutput) {
-        unsafe { AVAssetReader_wsel_addOutput(self, output) }
-    }
+    #[objc::msg_send2(addOutput:)]
+    pub fn add_output(&mut self, output: &av::AssetReaderOutput);
 
     /// Prepares the receiver for reading sample buffers from the asset.
     ///
@@ -40,44 +38,34 @@ impl Reader {
     /// If this method returns `false`, clients can determine the nature of the failure by checking the value of the status and error properties.
     ///
     /// This method throws an exception if reading has already started (`status` has progressed beyond AVAssetReaderStatusUnknown).
-    #[inline]
-    pub fn start_reading(&self) -> bool {
-        unsafe { rsel_startReading(self) }
-    }
+    #[objc::msg_send2(startReading)]
+    pub fn start_reading(&self) -> bool;
 
     /// Cancels any background work and prevents the receiver's outputs from reading more samples.
     ///
     /// Clients that want to stop reading samples from the receiver before reaching the end of its time range should call this method to stop any background read ahead operations that the may have been in progress.
     ///
     /// This method should not be called concurrently with any calls to -[AVAssetReaderOutput copyNextSampleBuffer].
-    pub fn cancel_reading(&self) {
-        unsafe { wsel_cancelReading(self) }
-    }
+    #[objc::msg_send2(cancelReading)]
+    pub fn cancel_reading(&self);
 
-    pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool {
-        unsafe { AVAssetReader_rsel_canAddOutput(self, output) }
-    }
+    #[objc::msg_send2(canAddOutput:)]
+    pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool;
 
-    pub fn error(&self) -> Option<&cf::Error> {
-        unsafe { rsel_error(self) }
-    }
+    #[objc::msg_send2(error)]
+    pub fn error(&self) -> Option<&cf::Error>;
 
-    #[inline]
-    pub fn status(&self) -> Status {
-        msg_send!("av", self, sel_status)
-    }
+    #[objc::msg_send2(status)]
+    pub fn status(&self) -> Status;
 
-    pub fn time_range(&mut self) -> cm::TimeRange {
-        msg_send!("av", self, sel_timeRange)
-    }
+    #[objc::msg_send2(timeRange)]
+    pub fn time_range(&mut self) -> cm::TimeRange;
 
-    pub fn set_time_range(&mut self, value: cm::TimeRange) {
-        msg_send!("av", self, sel_setTimeRange, value)
-    }
+    #[objc::msg_send2(setTimeRange:)]
+    pub fn set_time_range(&mut self, value: cm::TimeRange);
 
-    pub fn outputs(&self) -> &cf::ArrayOf<av::AssetReaderOutput> {
-        unsafe { AVAssetReader_rsel_outputs(self) }
-    }
+    #[objc::msg_send2(outputs)]
+    pub fn outputs(&self) -> &ns::Array<av::AssetReaderOutput>;
 }
 
 #[link(name = "av", kind = "static")]
@@ -86,11 +74,4 @@ extern "C" {
         asset: &av::Asset,
         error: &mut Option<&'ar cf::Error>,
     ) -> Option<arc::R<Reader>>;
-    fn AVAssetReader_wsel_addOutput(reader: &Reader, output: &av::AssetReaderOutput);
-    fn AVAssetReader_rsel_canAddOutput(reader: &Reader, output: &av::AssetReaderOutput) -> bool;
-    fn rsel_startReading(reader: &Reader) -> bool;
-    fn wsel_cancelReading(reader: &Reader);
-
-    fn rsel_error(id: &ns::Id) -> Option<&cf::Error>;
-    fn AVAssetReader_rsel_outputs(reader: &Reader) -> &cf::ArrayOf<av::AssetReaderOutput>;
 }
