@@ -42,19 +42,19 @@ impl Descriptor {
         unsafe { MTL_HEAP_DESCRIPTOR.alloc().init() }
     }
 
-    #[objc::msg_send2(init)]
+    #[objc::msg_send(init)]
     fn init(&self) -> arc::R<Self>;
 
-    #[objc::msg_send2(size)]
+    #[objc::msg_send(size)]
     pub fn size(&self) -> usize;
 
-    #[objc::msg_send2(setSize:)]
+    #[objc::msg_send(setSize:)]
     pub fn set_size(&mut self, value: usize);
 
-    #[objc::msg_send2(type)]
+    #[objc::msg_send(type)]
     pub fn _type(&self) -> Type;
 
-    #[objc::msg_send2(setType:)]
+    #[objc::msg_send(setType:)]
     pub fn set_type(&self, value: Type);
 }
 
@@ -69,10 +69,10 @@ impl Heap {
         resource_options
     );
 
-    #[objc::msg_send2(size)]
+    #[objc::msg_send(size)]
     pub fn size(&self) -> usize;
 
-    #[objc::msg_send2(newBufferWithLength:options:)]
+    #[objc::msg_send(newBufferWithLength:options:)]
     pub fn buffer_with_length_and_options_ar(
         &self,
         length: usize,
@@ -86,7 +86,7 @@ impl Heap {
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buffer>>;
 
-    #[objc::msg_send2(newTextureWithDescriptor:)]
+    #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn texture_with_descriptor_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
@@ -98,7 +98,7 @@ impl Heap {
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::R<mtl::Texture>>;
 
-    #[objc::msg_send2(type)]
+    #[objc::msg_send(type)]
     pub fn _type(&self) -> Type;
 }
 

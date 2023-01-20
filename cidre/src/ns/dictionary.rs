@@ -17,7 +17,7 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
         unsafe { transmute(NSDictionary_dictionary()) }
     }
 
-    #[objc::msg_send2(count)]
+    #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
     pub fn is_empty(&self) -> bool {

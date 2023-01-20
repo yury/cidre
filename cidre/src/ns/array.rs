@@ -44,7 +44,7 @@ impl<T: Obj> Array<T> {
         unsafe { transmute(NS_ARRAY.alloc().init()) }
     }
 
-    #[objc::msg_send2(init)]
+    #[objc::msg_send(init)]
     fn init(&self) -> arc::R<Self>;
 
     // use new() with uses alloc_init and it is faster
@@ -65,10 +65,10 @@ impl<T: Obj> Array<T> {
         }
     }
 
-    #[objc::msg_send2(initWithObjects:count:)]
+    #[objc::msg_send(initWithObjects:count:)]
     fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<Self>;
 
-    #[objc::msg_send2(count)]
+    #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
     #[inline]
@@ -85,7 +85,7 @@ impl<T: Obj> Array<T> {
 impl<T: Obj> Index<usize> for Array<T> {
     type Output = T;
 
-    #[objc::msg_send2(objectAtIndex:)]
+    #[objc::msg_send(objectAtIndex:)]
     fn index(&self, index: usize) -> &Self::Output;
 }
 
@@ -93,7 +93,7 @@ impl<T: Obj> IndexMut<usize> for Array<T>
 where
     T: Obj,
 {
-    #[objc::msg_send2(objectAtIndex:)]
+    #[objc::msg_send(objectAtIndex:)]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output;
 }
 
@@ -103,7 +103,7 @@ impl<T: Obj> ArrayMut<T> {
         unsafe { transmute(NS_MUTABLE_ARRAY.alloc().init_with_capacity(capacity)) }
     }
 
-    #[objc::msg_send2(initWithCapacity:)]
+    #[objc::msg_send(initWithCapacity:)]
     fn init_with_capacity(&self, capacity: usize) -> arc::R<Self>;
 }
 

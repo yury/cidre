@@ -4,6 +4,6 @@ define_obj_type!(Track(ns::Id));
 define_obj_type!(FragmentedTrack(Track));
 
 impl Track {
-    #[objc::msg_send2(mediaType)]
+    #[objc::msg_send(mediaType)]
     pub fn media_type(&self) -> &MediaType;
 }

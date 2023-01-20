@@ -5,39 +5,39 @@ use crate::{arc, blocks, cg, define_obj_type, ns, objc, sys};
 define_obj_type!(RunningApplication(ns::Id));
 
 impl RunningApplication {
-    #[objc::msg_send2(bundleIdentifier)]
+    #[objc::msg_send(bundleIdentifier)]
     pub fn bundle_identifier(&self) -> ns::String;
 
-    #[objc::msg_send2(applicationName)]
+    #[objc::msg_send(applicationName)]
     pub fn application_name(&self) -> ns::String;
 
-    #[objc::msg_send2(processID)]
+    #[objc::msg_send(processID)]
     pub fn process_id(&self) -> sys::Pid;
 }
 
 define_obj_type!(Display(ns::Id));
 
 impl Display {
-    #[objc::msg_send2(displayID)]
+    #[objc::msg_send(displayID)]
     pub fn display_id(&self) -> cg::DirectDisplayID;
 
-    #[objc::msg_send2(width)]
+    #[objc::msg_send(width)]
     pub fn width(&self) -> isize;
 
-    #[objc::msg_send2(height)]
+    #[objc::msg_send(height)]
     pub fn height(&self) -> isize;
 
-    #[objc::msg_send2(frame)]
+    #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;
 }
 
 define_obj_type!(Window(ns::Id));
 
 impl Window {
-    #[objc::msg_send2(windowID)]
+    #[objc::msg_send(windowID)]
     pub fn id(&self) -> cg::WindowID;
 
-    #[objc::msg_send2(frame)]
+    #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;
 }
 
@@ -47,13 +47,13 @@ extern "C" {}
 define_obj_type!(ShareableContent(ns::Id));
 
 impl ShareableContent {
-    #[objc::msg_send2(windows)]
+    #[objc::msg_send(windows)]
     pub fn windows(&self) -> &ns::Array<Window>;
 
-    #[objc::msg_send2(displays)]
+    #[objc::msg_send(displays)]
     pub fn displays(&self) -> &ns::Array<Display>;
 
-    #[objc::msg_send2(applications)]
+    #[objc::msg_send(applications)]
     pub fn applications(&self) -> &ns::Array<RunningApplication>;
 
     pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)

@@ -29,7 +29,7 @@ impl Reader {
         }
     }
 
-    #[objc::msg_send2(addOutput:)]
+    #[objc::msg_send(addOutput:)]
     pub fn add_output(&mut self, output: &av::AssetReaderOutput);
 
     /// Prepares the receiver for reading sample buffers from the asset.
@@ -38,7 +38,7 @@ impl Reader {
     /// If this method returns `false`, clients can determine the nature of the failure by checking the value of the status and error properties.
     ///
     /// This method throws an exception if reading has already started (`status` has progressed beyond AVAssetReaderStatusUnknown).
-    #[objc::msg_send2(startReading)]
+    #[objc::msg_send(startReading)]
     pub fn start_reading(&self) -> bool;
 
     /// Cancels any background work and prevents the receiver's outputs from reading more samples.
@@ -46,25 +46,25 @@ impl Reader {
     /// Clients that want to stop reading samples from the receiver before reaching the end of its time range should call this method to stop any background read ahead operations that the may have been in progress.
     ///
     /// This method should not be called concurrently with any calls to -[AVAssetReaderOutput copyNextSampleBuffer].
-    #[objc::msg_send2(cancelReading)]
+    #[objc::msg_send(cancelReading)]
     pub fn cancel_reading(&self);
 
-    #[objc::msg_send2(canAddOutput:)]
+    #[objc::msg_send(canAddOutput:)]
     pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool;
 
-    #[objc::msg_send2(error)]
+    #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&cf::Error>;
 
-    #[objc::msg_send2(status)]
+    #[objc::msg_send(status)]
     pub fn status(&self) -> Status;
 
-    #[objc::msg_send2(timeRange)]
+    #[objc::msg_send(timeRange)]
     pub fn time_range(&mut self) -> cm::TimeRange;
 
-    #[objc::msg_send2(setTimeRange:)]
+    #[objc::msg_send(setTimeRange:)]
     pub fn set_time_range(&mut self, value: cm::TimeRange);
 
-    #[objc::msg_send2(outputs)]
+    #[objc::msg_send(outputs)]
     pub fn outputs(&self) -> &ns::Array<av::AssetReaderOutput>;
 }
 

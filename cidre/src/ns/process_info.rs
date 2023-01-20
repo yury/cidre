@@ -46,22 +46,22 @@ impl ProcessInfo {
         unsafe { NS_PROCESS_INFO }
     }
 
-    #[objc::msg_send2(thermalState)]
+    #[objc::msg_send(thermalState)]
     pub fn thermal_state(&self) -> ThermalState;
 
-    #[objc::msg_send2(isLowPowerModeEnabled)]
+    #[objc::msg_send(isLowPowerModeEnabled)]
     pub fn is_low_power_mode_enabled(&self) -> bool;
 
-    #[objc::msg_send2(processorCount)]
+    #[objc::msg_send(processorCount)]
     pub fn processor_count(&self) -> usize;
 
-    #[objc::msg_send2(activeProcessorCount)]
+    #[objc::msg_send(activeProcessorCount)]
     pub fn active_processor_count(&self) -> usize;
 
-    #[objc::msg_send2(isMacCatalystApp)]
+    #[objc::msg_send(isMacCatalystApp)]
     pub fn is_mac_catalyst_app(&self) -> bool;
 
-    #[objc::msg_send2(isiOSAppOnMac)]
+    #[objc::msg_send(isiOSAppOnMac)]
     pub fn is_ios_app_on_mac(&self) -> bool;
 }
 

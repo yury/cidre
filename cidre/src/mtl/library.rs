@@ -55,19 +55,19 @@ impl CompileOptions {
         unsafe { MTL_COMPILE_OPTIONS.alloc().init() }
     }
 
-    #[objc::msg_send2(init)]
+    #[objc::msg_send(init)]
     fn init(&self) -> arc::R<Self>;
 
-    #[objc::msg_send2(fastMathEnabled)]
+    #[objc::msg_send(fastMathEnabled)]
     pub fn fast_math_enabled(&self) -> bool;
 
-    #[objc::msg_send2(setFastMathEnabled:)]
+    #[objc::msg_send(setFastMathEnabled:)]
     pub fn set_fast_math_enabled(&mut self, value: bool);
 
-    #[objc::msg_send2(languageVersion)]
+    #[objc::msg_send(languageVersion)]
     pub fn language_version(&self) -> LanguageVersion;
 
-    #[objc::msg_send2(setLanguageVersion:)]
+    #[objc::msg_send(setLanguageVersion:)]
     pub fn set_language_version(&mut self, value: LanguageVersion);
 }
 
@@ -76,10 +76,10 @@ define_obj_type!(Function(ns::Id));
 impl Function {
     define_mtl!(device, label, set_label);
 
-    #[objc::msg_send2(name)]
+    #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 
-    #[objc::msg_send2(newArgumentEncoderWithBufferIndex:)]
+    #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
     pub fn new_argument_encoder_with_buffer_index_ar(
         &self,
         index: ns::UInteger,
@@ -112,10 +112,10 @@ impl Library {
     ///
     /// assert!(n.eq(&expected_name));
     /// ```
-    #[objc::msg_send2(functionNames)]
+    #[objc::msg_send(functionNames)]
     pub fn function_names(&self) -> &ns::Array<ns::String>;
 
-    #[objc::msg_send2(newFunctionWithName:)]
+    #[objc::msg_send(newFunctionWithName:)]
     pub fn new_function_with_name_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
 
     #[objc::rar_retain()]
@@ -123,7 +123,7 @@ impl Library {
 
     /// # Safety
     /// Use new_function_with_name_constant_values
-    #[objc::msg_send2(newFunctionWithName:constantValues:error:)]
+    #[objc::msg_send(newFunctionWithName:constantValues:error:)]
     pub unsafe fn new_function_with_name_constant_values_error_ar<'ar>(
         &self,
         name: &ns::String,

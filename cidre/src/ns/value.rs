@@ -154,49 +154,49 @@ impl Number {
         unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
     }
 
-    #[objc::msg_send2(charValue)]
+    #[objc::msg_send(charValue)]
     pub fn as_i8(&self) -> i8;
 
-    #[objc::msg_send2(unsignedCharValue)]
+    #[objc::msg_send(unsignedCharValue)]
     pub fn as_u8(&self) -> u8;
 
-    #[objc::msg_send2(shortValue)]
+    #[objc::msg_send(shortValue)]
     pub fn as_i16(&self) -> i16;
 
-    #[objc::msg_send2(unsignedShortValue)]
+    #[objc::msg_send(unsignedShortValue)]
     pub fn as_u16(&self) -> u16;
 
-    #[objc::msg_send2(intValue)]
+    #[objc::msg_send(intValue)]
     pub fn as_i32(&self) -> i32;
 
-    #[objc::msg_send2(unsignedIntValue)]
+    #[objc::msg_send(unsignedIntValue)]
     pub fn as_u32(&self) -> u32;
 
-    #[objc::msg_send2(longLongValue)]
+    #[objc::msg_send(longLongValue)]
     pub fn as_i64(&self) -> i64;
 
-    #[objc::msg_send2(longLongValue)]
+    #[objc::msg_send(longLongValue)]
     pub fn as_isize(&self) -> isize;
 
-    #[objc::msg_send2(unsignedLongLongValue)]
+    #[objc::msg_send(unsignedLongLongValue)]
     pub fn as_u64(&self) -> u64;
 
-    #[objc::msg_send2(unsignedLongLongValue)]
+    #[objc::msg_send(unsignedLongLongValue)]
     pub fn as_usize(&self) -> usize;
 
-    #[objc::msg_send2(floatValue)]
+    #[objc::msg_send(floatValue)]
     pub fn as_f32(&self) -> f32;
 
-    #[objc::msg_send2(doubleValue)]
+    #[objc::msg_send(doubleValue)]
     pub fn as_f64(&self) -> f64;
 
-    #[objc::msg_send2(integerValue)]
+    #[objc::msg_send(integerValue)]
     pub fn as_integer(&self) -> ns::Integer;
 
-    #[objc::msg_send2(unsignedIntegerValue)]
+    #[objc::msg_send(unsignedIntegerValue)]
     pub fn as_uinteger(&self) -> ns::UInteger;
 
-    #[objc::msg_send2(stringValue)]
+    #[objc::msg_send(stringValue)]
     pub fn string_ar(&self) -> arc::Rar<ns::String>;
 
     #[inline]
@@ -204,7 +204,7 @@ impl Number {
         self.string_ar().retain()
     }
 
-    #[objc::msg_send2(isEqualToNumber:)]
+    #[objc::msg_send(isEqualToNumber:)]
     pub fn is_equal_to_number(&self, number: &ns::Number) -> bool;
 }
 

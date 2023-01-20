@@ -40,19 +40,19 @@ define_obj_type!(CommandBuffer(ns::Id));
 impl CommandBuffer {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
-    #[objc::msg_send2(commandQueue)]
+    #[objc::msg_send(commandQueue)]
     pub fn command_queue(&self) -> &mtl::CommandQueue;
 
-    #[objc::msg_send2(enqueue)]
+    #[objc::msg_send(enqueue)]
     pub fn enqueue(&self);
 
-    #[objc::msg_send2(commit)]
+    #[objc::msg_send(commit)]
     pub fn commit(&self);
 
-    #[objc::msg_send2(waitUntilScheduled)]
+    #[objc::msg_send(waitUntilScheduled)]
     pub fn wait_untint_scheduled(&self);
 
-    #[objc::msg_send2(waitUntilCompleted)]
+    #[objc::msg_send(waitUntilCompleted)]
     pub fn wait_until_completed(&self);
 
     pub fn add_scheduled_handler<F>(&self, block: &'static mut blocks::Block<F>)
@@ -91,7 +91,7 @@ impl CommandBuffer {
         )
     }
 
-    #[objc::msg_send2(newRenderCommandEncoderWithDescriptor:)]
+    #[objc::msg_send(newRenderCommandEncoderWithDescriptor:)]
     pub fn render_command_encoder_with_descriptor_ar(
         &self,
         descriptor: &mtl::RenderPassDescriptor,

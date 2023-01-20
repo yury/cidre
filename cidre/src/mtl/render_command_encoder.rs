@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns, objc, objc::Obj};
+use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns, objc};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -148,7 +148,7 @@ define_obj_type!(RenderCommandEncoder(mtl::CommandEncoder));
 impl RenderCommandEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
-    #[objc::msg_send2(setRenderPipelineState:)]
+    #[objc::msg_send(setRenderPipelineState:)]
     pub fn set_render_pipeline_state(&mut self, value: &mtl::RenderPipelineState);
 
     #[inline]
@@ -190,10 +190,10 @@ impl RenderCommandEncoder {
         )
     }
 
-    #[objc::msg_send2(setFragmentTexture:atIndex:)]
+    #[objc::msg_send(setFragmentTexture:atIndex:)]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);
 
-    #[objc::msg_send2(drawPrimitives:vertexStart:vertexCount:instanceCount:)]
+    #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:instanceCount:)]
     pub fn draw_primitives_instance_count(
         &mut self,
         primitive_type: PrimitiveType,
@@ -202,7 +202,7 @@ impl RenderCommandEncoder {
         instance_count: usize,
     );
 
-    #[objc::msg_send2(drawPrimitives:vertexStart:vertexCount:)]
+    #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:)]
     pub fn draw_primitives(
         &mut self,
         primitive_type: PrimitiveType,

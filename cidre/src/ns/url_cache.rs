@@ -47,22 +47,22 @@ impl URLCache {
         }
     }
 
-    #[objc::msg_send2(memoryCapacity)]
+    #[objc::msg_send(memoryCapacity)]
     pub fn memory_capacity(&self) -> usize;
 
-    #[objc::msg_send2(setMemoryCapacity:)]
+    #[objc::msg_send(setMemoryCapacity:)]
     pub fn set_memory_capacity(&self, value: usize);
 
-    #[objc::msg_send2(diskCapacity)]
+    #[objc::msg_send(diskCapacity)]
     pub fn disk_capacity(&self) -> usize;
 
-    #[objc::msg_send2(setDiskCapacity:)]
+    #[objc::msg_send(setDiskCapacity:)]
     pub fn set_disk_capacity(&self, value: usize);
 
-    #[objc::msg_send2(currentMemoryUsage)]
+    #[objc::msg_send(currentMemoryUsage)]
     pub fn current_memory_usage(&self) -> usize;
 
-    #[objc::msg_send2(currentDiskUsage)]
+    #[objc::msg_send(currentDiskUsage)]
     pub fn current_disk_usage(&self) -> usize;
 }
 

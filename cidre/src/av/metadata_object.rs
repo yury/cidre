@@ -156,7 +156,7 @@ impl Object {
     /// expressed as scalar values from 0. - 1. If the original video has been scaled
     /// down, the bounds of the metadata object still are meaningful. This property may
     /// return cg::Rect::zero if the metadata has no bounds.
-    #[objc::msg_send2(bounds)]
+    #[objc::msg_send(bounds)]
     pub fn bounds(&self) -> cg::Rect;
 
     /// The media time associated with this metadata object.
@@ -165,7 +165,7 @@ impl Object {
     /// For capture, it is the time at which this object was captured. If this metadata
     /// object originates from a cm::SampleBuffer, its time matches the sample buffer's
     /// presentation time. This property may return cm::Time::invalid.
-    #[objc::msg_send2(time)]
+    #[objc::msg_send(time)]
     pub fn time(&self) -> cm::Time;
 
     /// The media duration associated with this metadata object.
@@ -174,17 +174,17 @@ impl Object {
     /// of the metadata object. If this metadata object originates from a cm::SampleBuffer,
     /// its duration matches the sample buffer's duration.
     /// This property may return cm::Time::invalid.
-    #[objc::msg_send2(duration)]
+    #[objc::msg_send(duration)]
     pub fn duration(&self) -> cm::Time;
 
-    #[objc::msg_send2(type)]
+    #[objc::msg_send(type)]
     pub fn object_type(&self) -> &Type;
 }
 
 define_obj_type!(BodyObject(Object));
 
 impl BodyObject {
-    #[objc::msg_send2(bodyID)]
+    #[objc::msg_send(bodyID)]
     pub fn body_id(&self) -> isize;
 }
 
@@ -197,18 +197,18 @@ define_obj_type!(MachineReadableCodeObject(Object));
 define_obj_type!(SalientObject(Object));
 
 impl SalientObject {
-    #[objc::msg_send2(objectID)]
+    #[objc::msg_send(objectID)]
     pub fn object_id(&self) -> isize;
 }
 
 impl FaceObject {
-    #[objc::msg_send2(faceID)]
+    #[objc::msg_send(faceID)]
     pub fn face_id(&self) -> isize;
 
-    #[objc::msg_send2(hasRollAngle)]
+    #[objc::msg_send(hasRollAngle)]
     pub fn has_roll_angle(&self) -> bool;
 
-    #[objc::msg_send2(rollAngle)]
+    #[objc::msg_send(rollAngle)]
     fn _roll_angle(&self) -> cg::Float;
 
     /// The roll angle of the face in degrees.
@@ -220,10 +220,10 @@ impl FaceObject {
             None
         }
     }
-    #[objc::msg_send2(hasYawAngle)]
+    #[objc::msg_send(hasYawAngle)]
     pub fn has_yaw_angle(&self) -> bool;
 
-    #[objc::msg_send2(yawAngle)]
+    #[objc::msg_send(yawAngle)]
     fn _yaw_angle(&self) -> cg::Float;
 
     /// The yaw angle of the face in degrees.

@@ -5,7 +5,7 @@ define_obj_type!(DeviceInput(Input));
 define_obj_type!(Port(ns::Id));
 
 impl Input {
-    #[objc::msg_send2(ports)]
+    #[objc::msg_send(ports)]
     pub fn ports(&self) -> &ns::Array<Port>;
 }
 
@@ -31,13 +31,13 @@ extern "C" {
 }
 
 impl Port {
-    #[objc::msg_send2(input)]
+    #[objc::msg_send(input)]
     pub fn input(&self) -> &Input;
 
-    #[objc::msg_send2(isEnabled)]
+    #[objc::msg_send(isEnabled)]
     pub fn enabled(&self) -> bool;
 
-    #[objc::msg_send2(setEnabled:)]
+    #[objc::msg_send(setEnabled:)]
     pub fn set_enabled(&mut self, value: bool);
 }
 

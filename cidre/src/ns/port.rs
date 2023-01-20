@@ -10,10 +10,10 @@ impl Port {
         unsafe { NSPort_port() }
     }
 
-    #[objc::msg_send2(invalidate)]
+    #[objc::msg_send(invalidate)]
     pub fn invalidate(&self);
 
-    #[objc::msg_send2(isValid)]
+    #[objc::msg_send(isValid)]
     pub fn is_valid(&self) -> bool;
 }
 
@@ -22,16 +22,16 @@ impl MachPort {
         unsafe { transmute(Port::new()) }
     }
 
-    #[objc::msg_send2(machPort)]
+    #[objc::msg_send(machPort)]
     pub fn mach_port(&self) -> mach::Port;
 
-    #[objc::msg_send2(scheduleInRunLoop:forMode:)]
+    #[objc::msg_send(scheduleInRunLoop:forMode:)]
     pub fn schedule_in_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
-    #[objc::msg_send2(scheduleInRunLoop:forMode:)]
+    #[objc::msg_send(scheduleInRunLoop:forMode:)]
     pub fn remove_from_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
-    #[objc::msg_send2(setDelegate:)]
+    #[objc::msg_send(setDelegate:)]
     fn _set_delegate(&self, delegate: Option<&ns::Id>);
 
     pub fn set_delegate<D>(&mut self, delegate: &Delegate<D>)

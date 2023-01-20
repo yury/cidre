@@ -13,17 +13,17 @@ impl Buffer {
     /// assert_eq!(buffer.len(), 10);
     ///
     /// ```
-    #[objc::msg_send2(length)]
+    #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
-    #[objc::msg_send2(contents)]
+    #[objc::msg_send(contents)]
     pub fn contents(&self) -> *mut u8;
 
-    #[objc::msg_send2(gpuAddress)]
+    #[objc::msg_send(gpuAddress)]
     pub fn gpu_address(&self) -> u64;
 }
 

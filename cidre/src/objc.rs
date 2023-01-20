@@ -19,11 +19,11 @@ impl<T: Obj> Class<T> {
         &self.0
     }
 
-    #[msg_send2(alloc)]
+    #[msg_send(alloc)]
     pub unsafe fn alloc(&self) -> &'static T;
 
     // in general alloc_init is faster
-    #[msg_send2(new)]
+    #[msg_send(new)]
     pub unsafe fn new(&self) -> arc::R<T>;
 }
 
@@ -48,19 +48,19 @@ pub trait Obj: arc::Retain {
         transmute(objc_retain(transmute(id)))
     }
 
-    #[msg_send2(description)]
+    #[msg_send(description)]
     fn description_ar(&self) -> arc::Rar<crate::ns::String>;
 
     #[rar_retain()]
     fn description(&self) -> arc::R<crate::ns::String>;
 
-    #[msg_send2(debugDescription)]
+    #[msg_send(debugDescription)]
     fn debug_description_ar(&self) -> arc::Rar<crate::ns::String>;
 
     #[rar_retain()]
     fn debug_description(&self) -> arc::R<crate::ns::String>;
 
-    #[msg_send2(respondsToSelector:)]
+    #[msg_send(respondsToSelector:)]
     fn responds_to_sel(&self, sel: &Sel) -> bool;
 
     #[inline]
@@ -245,7 +245,7 @@ impl Id {
         &self.0
     }
 
-    #[msg_send2(isEqual:)]
+    #[msg_send(isEqual:)]
     pub fn is_equal(&self, other: &Self) -> bool;
 
     #[inline]
@@ -483,7 +483,7 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
 }
 
 pub use cidre_macros::cls_msg_send;
-pub use cidre_macros::msg_send as msg_send2;
+pub use cidre_macros::msg_send;
 pub use cidre_macros::rar_retain;
 
 // global_asm!(

@@ -14,7 +14,7 @@ define_obj_type!(String(ns::Id));
 define_obj_type!(StringMut(String));
 
 impl String {
-    #[objc::msg_send2(length)]
+    #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
     #[inline]
@@ -22,25 +22,25 @@ impl String {
         self.len() == 0
     }
 
-    #[objc::msg_send2(lowercaseString)]
+    #[objc::msg_send(lowercaseString)]
     pub fn lowercased_ar(&self) -> arc::Rar<Self>;
 
     #[objc::rar_retain()]
     pub fn lowercased(&self) -> arc::R<Self>;
 
-    #[objc::msg_send2(intValue)]
+    #[objc::msg_send(intValue)]
     pub fn to_i32(&self) -> i32;
 
-    #[objc::msg_send2(longLongValue)]
+    #[objc::msg_send(longLongValue)]
     pub fn to_i64(&self) -> i64;
 
-    #[objc::msg_send2(floatValue)]
+    #[objc::msg_send(floatValue)]
     pub fn to_f32(&self) -> f32;
 
-    #[objc::msg_send2(doubleValue)]
+    #[objc::msg_send(doubleValue)]
     pub fn to_f64(&self) -> f64;
 
-    #[objc::msg_send2(boolValue)]
+    #[objc::msg_send(boolValue)]
     pub fn to_bool(&self) -> bool;
 
     /// The ns::Integer value of the string.
@@ -50,11 +50,11 @@ impl String {
     /// begin with a valid decimal text representation of a number.
     /// This property uses formatting information stored in the non-localized value;
     /// use an ns::Scanner object for localized scanning of numeric values from a string.
-    #[objc::msg_send2(integerValue)]
+    #[objc::msg_send(integerValue)]
     pub fn to_integer(&self) -> ns::Integer;
 
     // TODO: check Rar
-    #[objc::msg_send2(mutableCopy)]
+    #[objc::msg_send(mutableCopy)]
     pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
 
     #[inline]
@@ -79,7 +79,7 @@ impl String {
         }
     }
 
-    #[objc::msg_send2(substringWithRange:)]
+    #[objc::msg_send(substringWithRange:)]
     pub fn substring_with_range_ar(&self, range: ns::Range) -> arc::Rar<Self>;
 
     #[objc::rar_retain()]
@@ -90,18 +90,18 @@ impl String {
         self.substring_with_range(range.into())
     }
 
-    #[objc::msg_send2(cStringUsingEncoding:)]
+    #[objc::msg_send(cStringUsingEncoding:)]
     pub fn c_string(&self, encoding: Encoding) -> *const i8;
 
-    #[objc::msg_send2(lengthOfBytesUsingEncoding:)]
+    #[objc::msg_send(lengthOfBytesUsingEncoding:)]
     pub fn len_of_bytes(&self, encoding: Encoding) -> ns::UInteger;
 
-    #[objc::msg_send2(UTF8String)]
+    #[objc::msg_send(UTF8String)]
     pub unsafe fn utf8_chars(&self) -> *const i8;
 }
 
 impl PartialEq for String {
-    #[objc::msg_send2(isEqualToString:)]
+    #[objc::msg_send(isEqualToString:)]
     fn eq(&self, other: &Self) -> bool;
 }
 

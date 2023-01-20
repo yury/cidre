@@ -3,19 +3,19 @@ use crate::{define_obj_type, mps::graph, ns, objc};
 define_obj_type!(Operation(ns::Id));
 
 impl Operation {
-    #[objc::msg_send2(inputTensors)]
+    #[objc::msg_send(inputTensors)]
     pub fn input_tensors(&self) -> &ns::Array<graph::Tensor>;
 
-    #[objc::msg_send2(outputTensors)]
+    #[objc::msg_send(outputTensors)]
     pub fn output_tensors(&self) -> &ns::Array<graph::Tensor>;
 
-    #[objc::msg_send2(controlDependencies)]
+    #[objc::msg_send(controlDependencies)]
     pub fn control_deps(&self) -> &ns::Array<Self>;
 
     /// Graph on which the operation is defined
-    #[objc::msg_send2(graph)]
+    #[objc::msg_send(graph)]
     pub fn graph(&self) -> &graph::Graph;
 
-    #[objc::msg_send2(name)]
+    #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 }

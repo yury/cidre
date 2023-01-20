@@ -63,16 +63,16 @@ impl Device {
     ///
     /// let name = device.name();
     /// ```
-    #[objc::msg_send2(name)]
+    #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 
-    #[objc::msg_send2(registryID)]
+    #[objc::msg_send(registryID)]
     pub fn registry_id(&self) -> u64;
 
-    #[objc::msg_send2(maxThreadsPerThreadgroup)]
+    #[objc::msg_send(maxThreadsPerThreadgroup)]
     pub fn max_threads_per_threadgroup(&self) -> Size;
 
-    #[objc::msg_send2(hasUnifiedMemory)]
+    #[objc::msg_send(hasUnifiedMemory)]
     pub fn has_unified_memory(&self) -> bool;
 
     /// ```no_run
@@ -83,7 +83,7 @@ impl Device {
     /// let tier = device.read_write_texture_support();
     ///
     /// assert_ne!(tier, mtl::ReadWriteTextureTier::None);
-    #[objc::msg_send2(readWriteTextureSupport)]
+    #[objc::msg_send(readWriteTextureSupport)]
     pub fn read_write_texture_support(&self) -> ReadWriteTextureTier;
 
     /// Example
@@ -95,7 +95,7 @@ impl Device {
     /// let tier = device.argument_buffers_support();
     ///
     /// assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
-    #[objc::msg_send2(argumentBuffersSupport)]
+    #[objc::msg_send(argumentBuffersSupport)]
     pub fn argument_buffers_support(&self) -> ArgumentBuffersTier;
 
     /// ```no_run
@@ -107,7 +107,7 @@ impl Device {
     ///
     /// queue.as_type_ref().show();
     ///
-    #[objc::msg_send2(newCommandQueue)]
+    #[objc::msg_send(newCommandQueue)]
     pub fn command_queue_ar(&self) -> Option<arc::Rar<CommandQueue>>;
 
     #[objc::rar_retain()]
@@ -122,7 +122,7 @@ impl Device {
     ///
     /// queue.as_type_ref().show();
     ///
-    #[objc::msg_send2(newCommandQueueWithMaxCommandBufferCount:)]
+    #[objc::msg_send(newCommandQueueWithMaxCommandBufferCount:)]
     pub fn command_queue_with_max_command_buffer_count_ar(
         &self,
         max_command_buffer_count: usize,
@@ -134,7 +134,7 @@ impl Device {
         max_command_buffer_count: usize,
     ) -> Option<arc::R<CommandQueue>>;
 
-    #[objc::msg_send2(newTextureWithDescriptor:)]
+    #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn texture_with_descriptor_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
@@ -156,7 +156,7 @@ impl Device {
         unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
     }
 
-    #[objc::msg_send2(newDefaultLibrary)]
+    #[objc::msg_send(newDefaultLibrary)]
     pub fn default_library_ar(&self) -> Option<arc::Rar<Library>>;
 
     #[objc::rar_retain()]
@@ -277,7 +277,7 @@ impl Device {
         unsafe { Ok(transmute(res)) }
     }
 
-    #[objc::msg_send2(newBufferWithLength:options:)]
+    #[objc::msg_send(newBufferWithLength:options:)]
     pub fn buffer_with_length_and_options_ar(
         &self,
         length: usize,
@@ -291,7 +291,7 @@ impl Device {
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buffer>>;
 
-    #[objc::msg_send2(newBufferWithBytes:length:options:)]
+    #[objc::msg_send(newBufferWithBytes:length:options:)]
     pub fn buffer_with_bytes_length_and_options_ar(
         &self,
         bytes: *const c_void,
@@ -338,7 +338,7 @@ impl Device {
     /// let label = ns::String::with_str("nice");
     /// fence.set_label(Some(&label));
     /// ```
-    #[objc::msg_send2(newFence)]
+    #[objc::msg_send(newFence)]
     pub fn fence_ar(&self) -> Option<arc::Rar<Fence>>;
 
     #[objc::rar_retain()]
@@ -353,7 +353,7 @@ impl Device {
     /// let label = ns::String::with_str("nice");
     /// event.set_label(Some(&label));
     /// ```
-    #[objc::msg_send2(newEvent)]
+    #[objc::msg_send(newEvent)]
     pub fn event_ar(&self) -> Option<arc::Rar<Event>>;
 
     #[objc::rar_retain()]
@@ -368,7 +368,7 @@ impl Device {
     /// let label = ns::String::with_str("nice");
     /// event.set_label(Some(&label));
     /// ```
-    #[objc::msg_send2(newSharedEvent)]
+    #[objc::msg_send(newSharedEvent)]
     pub fn shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>>;
 
     #[objc::rar_retain()]
@@ -381,22 +381,22 @@ impl Device {
     ///
     /// assert!(device.max_buffer_length() > 10);
     /// ```
-    #[objc::msg_send2(maxBufferLength)]
+    #[objc::msg_send(maxBufferLength)]
     pub fn max_buffer_length(&self) -> usize;
 
     /// Returns the size and alignment, in bytes, of a texture if you create it from a heap.
-    #[objc::msg_send2(heapTextureSizeAndAlignWithDescriptor:)]
+    #[objc::msg_send(heapTextureSizeAndAlignWithDescriptor:)]
     pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign;
 
     /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
-    #[objc::msg_send2(heapBufferSizeAndAlignWithLength:options:)]
+    #[objc::msg_send(heapBufferSizeAndAlignWithLength:options:)]
     pub fn heap_buffer_size_and_align(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
     ) -> SizeAndAlign;
 
-    #[objc::msg_send2(newHeapWithDescriptor:)]
+    #[objc::msg_send(newHeapWithDescriptor:)]
     pub fn new_heap_with_descriptor_ar(
         &self,
         descriptor: &mtl::HeapDescriptor,

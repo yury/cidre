@@ -12,19 +12,19 @@ impl Descriptor {
     pub fn default() -> arc::R<Descriptor> {
         unsafe { MTL_COMPUTE_PASS_DESCRIPTOR.alloc().init() }
     }
-    #[objc::msg_send2(init)]
+    #[objc::msg_send(init)]
     fn init(&self) -> arc::R<Self>;
 
-    #[objc::msg_send2(dispatchType)]
+    #[objc::msg_send(dispatchType)]
     pub fn dispatch_type(&self) -> DispatchType;
 
-    #[objc::msg_send2(setDispatchType:)]
+    #[objc::msg_send(setDispatchType:)]
     pub fn set_dispatch_type(&mut self, value: DispatchType);
 
-    #[objc::msg_send2(sampleBufferAttachments)]
+    #[objc::msg_send(sampleBufferAttachments)]
     pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray;
 
-    #[objc::msg_send2(sampleBufferAttachments)]
+    #[objc::msg_send(sampleBufferAttachments)]
     pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufferAttachmentDescriptorArray;
 }
 
@@ -35,13 +35,13 @@ extern "C" {
 define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
 
 impl SampleBufferAttachmentDescriptorArray {
-    #[objc::msg_send2(objectAtIndexedSubscript:)]
+    #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn get_at(&self, index: usize) -> Option<&SampleBufferAttachmentDescriptor>;
 
-    #[objc::msg_send2(setObject:atIndexedSubscript:)]
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set_at(&mut self, index: usize, value: &SampleBufferAttachmentDescriptor);
 
-    #[objc::msg_send2(setObject:atIndexedSubscript:)]
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set_option_at(&mut self, index: usize, value: Option<&SampleBufferAttachmentDescriptor>);
 
     #[inline]
@@ -53,10 +53,10 @@ impl SampleBufferAttachmentDescriptorArray {
 define_obj_type!(SampleBufferAttachmentDescriptor(ns::Id));
 
 impl SampleBufferAttachmentDescriptor {
-    #[objc::msg_send2(sampleBuffer)]
+    #[objc::msg_send(sampleBuffer)]
     pub fn sample_buffer(&self) -> Option<&CounterSampleBuffer>;
 
-    #[objc::msg_send2(setSampleBuffer:)]
+    #[objc::msg_send(setSampleBuffer:)]
     pub fn set_sample_bufer(&mut self, value: Option<&CounterSampleBuffer>);
 }
 

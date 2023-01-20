@@ -199,52 +199,52 @@ pub use sampler::State as SamplerState;
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {
-        #[$crate::objc::msg_send2(device)]
+        #[$crate::objc::msg_send(device)]
         pub fn device(&self) -> &crate::mtl::Device;
     };
 
     (set_label) => {
-        #[$crate::objc::msg_send2(setLabel:)]
+        #[$crate::objc::msg_send(setLabel:)]
         pub fn set_label(&mut self, value: Option<&crate::ns::String>);
     };
 
     (label) => {
-        #[$crate::objc::msg_send2(label)]
+        #[$crate::objc::msg_send(label)]
         pub fn label(&self) -> Option<&crate::ns::String>;
     };
 
     (width) => {
-        #[$crate::objc::msg_send2(width)]
+        #[$crate::objc::msg_send(width)]
         pub fn width(&self) -> usize;
     };
 
     (set_width) => {
-        #[$crate::objc::msg_send2(setWidth:)]
+        #[$crate::objc::msg_send(setWidth:)]
         pub fn set_width(&mut self, value: usize);
     };
 
     (height) => {
-        #[$crate::objc::msg_send2(height)]
+        #[$crate::objc::msg_send(height)]
         pub fn height(&self) -> usize;
     };
 
     (set_height) => {
-        #[$crate::objc::msg_send2(setHeight:)]
+        #[$crate::objc::msg_send(setHeight:)]
         pub fn set_height(&mut self, value: usize);
     };
 
     (depth) => {
-        #[$crate::objc::msg_send2(depth)]
+        #[$crate::objc::msg_send(depth)]
         pub fn depth(&self) -> usize;
     };
 
     (set_depth) => {
-        #[$crate::objc::msg_send2(setDepth:)]
+        #[$crate::objc::msg_send(setDepth:)]
         pub fn set_depth(&mut self, value: usize);
     };
 
     (gpu_resouce_id) => {
-        #[$crate::objc::msg_send2(resourceID)]
+        #[$crate::objc::msg_send(resourceID)]
         pub fn gpu_resouce_id(&self) -> crate::mtl::ResourceID;
     };
 
@@ -263,7 +263,7 @@ macro_rules! define_mtl {
     };
 
     (use_resource) => {
-        #[$crate::objc::msg_send2(useResource:usage:)]
+        #[$crate::objc::msg_send(useResource:usage:)]
         pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage);
     };
 
@@ -275,62 +275,62 @@ macro_rules! define_mtl {
     };
 
     (use_heap) => {
-        #[$crate::objc::msg_send2(useHeap:)]
+        #[$crate::objc::msg_send(useHeap:)]
         pub fn use_heap(&mut self, heap: &crate::mtl::Heap);
     };
 
     (push_debug_group) => {
-        #[$crate::objc::msg_send2(pushDebugGroup:)]
+        #[$crate::objc::msg_send(pushDebugGroup:)]
         pub fn push_debug_group(&mut self, debug_group: &crate::ns::String);
     };
 
     (pop_debug_group) => {
-        #[$crate::objc::msg_send2(popDebugGroup)]
+        #[$crate::objc::msg_send(popDebugGroup)]
         pub fn pop_debug_group(&mut self);
     };
 
     (storage_mode) => {
-        #[$crate::objc::msg_send2(storageMode)]
+        #[$crate::objc::msg_send(storageMode)]
         pub fn storage_mode(&self) -> crate::mtl::StorageMode;
     };
 
     (set_storage_mode) => {
-        #[$crate::objc::msg_send2(setStorageMode:)]
+        #[$crate::objc::msg_send(setStorageMode:)]
         pub fn set_storage_mode(&mut self, value: crate::mtl::StorageMode);
     };
 
     (cpu_cache_mode) => {
-        #[$crate::objc::msg_send2(cpuCacheMode)]
+        #[$crate::objc::msg_send(cpuCacheMode)]
         pub fn cpu_cache_mode(&self) -> crate::mtl::CPUCacheMode;
     };
 
     (set_cpu_cache_mode) => {
-        #[$crate::objc::msg_send2(setCpuCacheMode:)]
+        #[$crate::objc::msg_send(setCpuCacheMode:)]
         pub fn set_cpu_cache_mode(&mut self, value: crate::mtl::CPUCacheMode);
     };
 
     (hazard_tracking_mode) => {
-        #[$crate::objc::msg_send2(hazardTrackingMode)]
+        #[$crate::objc::msg_send(hazardTrackingMode)]
         pub fn hazard_tracking_mode(&self) -> crate::mtl::HazardTrackingMode;
     };
 
     (set_hazard_tracking_mode) => {
-        #[$crate::objc::msg_send2(setHazardTrackingMode:)]
+        #[$crate::objc::msg_send(setHazardTrackingMode:)]
         pub fn set_hazard_tracking_mode(&mut self, value: crate::mtl::HazardTrackingMode);
     };
 
     (resource_options) => {
-        #[$crate::objc::msg_send2(resourceOptions)]
+        #[$crate::objc::msg_send(resourceOptions)]
         pub fn resource_options(&self) -> crate::mtl::ResourceOptions;
     };
 
     (set_resource_options) => {
-        #[$crate::objc::msg_send2(setResourceOptions:)]
+        #[$crate::objc::msg_send(setResourceOptions:)]
         pub fn set_resource_options(&mut self, value: crate::mtl::ResourceOptions);
     };
 
     (reset) => {
-        #[$crate::objc::msg_send2(reset)]
+        #[$crate::objc::msg_send(reset)]
         pub fn reset(&mut self);
     };
 

@@ -16,10 +16,10 @@ impl Default for FunctionOptions {
 }
 
 impl FunctionDescriptor {
-    #[objc::msg_send2(name)]
+    #[objc::msg_send(name)]
     pub fn name(&self) -> Option<&ns::String>;
 
-    #[objc::msg_send2(setName:)]
+    #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, name: Option<&ns::String>);
 
     /// ```no_run

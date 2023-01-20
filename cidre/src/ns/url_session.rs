@@ -36,13 +36,13 @@ impl Session {
         unsafe { NS_URL_SESSION }
     }
 
-    #[objc::msg_send2(dataTaskWithURL:)]
+    #[objc::msg_send(dataTaskWithURL:)]
     pub fn data_task_with_url_ar(&self, url: &ns::URL) -> arc::Rar<DataTask>;
 
     #[objc::rar_retain()]
     pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask>;
 
-    #[objc::msg_send2(dataTaskWithRequest:)]
+    #[objc::msg_send(dataTaskWithRequest:)]
     pub fn data_task_with_request_ar(&self, request: &ns::URLRequest) -> arc::Rar<DataTask>;
 
     #[objc::rar_retain()]
@@ -94,37 +94,37 @@ pub enum MultipathServiceType {
 }
 
 impl Task {
-    #[objc::msg_send2(resume)]
+    #[objc::msg_send(resume)]
     pub fn resume(&self);
 
-    #[objc::msg_send2(cancel)]
+    #[objc::msg_send(cancel)]
     pub fn cancel(&self);
 
-    #[objc::msg_send2(suspend)]
+    #[objc::msg_send(suspend)]
     pub fn suspend(&self);
 
-    #[objc::msg_send2(state)]
+    #[objc::msg_send(state)]
     pub fn state(&self) -> TaskState;
 
-    #[objc::msg_send2(error)]
+    #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;
 
-    #[objc::msg_send2(taskIdentifier)]
+    #[objc::msg_send(taskIdentifier)]
     pub fn task_identifier(&self) -> ns::UInteger;
 
-    #[objc::msg_send2(originalRequest)]
+    #[objc::msg_send(originalRequest)]
     pub fn original_request(&self) -> Option<&ns::URLRequest>;
 
-    #[objc::msg_send2(currentRequest)]
+    #[objc::msg_send(currentRequest)]
     pub fn current_request(&self) -> Option<&ns::URLRequest>;
 
-    #[objc::msg_send2(response)]
+    #[objc::msg_send(response)]
     pub fn response(&self) -> Option<&ns::URLResponse>;
 
-    #[objc::msg_send2(priority)]
+    #[objc::msg_send(priority)]
     pub fn priority(&self) -> f32;
 
-    #[objc::msg_send2(setPriority:)]
+    #[objc::msg_send(setPriority:)]
     pub fn set_priority(&mut self, value: f32);
 }
 

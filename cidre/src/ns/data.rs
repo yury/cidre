@@ -87,10 +87,10 @@ impl Data {
         }
     }
 
-    #[objc::msg_send2(bytes)]
+    #[objc::msg_send(bytes)]
     pub fn bytes(&self) -> *const u8;
 
-    #[objc::msg_send2(length)]
+    #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
     #[inline]

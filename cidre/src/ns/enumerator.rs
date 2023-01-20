@@ -32,7 +32,7 @@ impl Default for FastEnumerationState {
 }
 
 pub trait FastEnumeration<T: Obj>: Obj {
-    #[objc::msg_send2(countByEnumeratingWithState:objects:count:)]
+    #[objc::msg_send(countByEnumeratingWithState:objects:count:)]
     fn count_by_enumerating(
         &self,
         state: &mut FastEnumerationState,

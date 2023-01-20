@@ -33,7 +33,7 @@ impl URLResponse {
         }
     }
 
-    #[objc::msg_send2(URL)]
+    #[objc::msg_send(URL)]
     pub fn url(&self) -> Option<&ns::URL>;
 }
 

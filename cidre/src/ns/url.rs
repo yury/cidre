@@ -48,7 +48,7 @@ impl URL {
         Self::with_string_relative_to(&string, None)
     }
 
-    #[objc::msg_send2(absoluteString)]
+    #[objc::msg_send(absoluteString)]
     pub fn abs_string(&self) -> Option<&ns::String>;
 }
 

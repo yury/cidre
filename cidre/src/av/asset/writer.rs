@@ -22,37 +22,37 @@ pub enum Status {
 define_obj_type!(Writer(ns::Id));
 
 impl Writer {
-    #[objc::msg_send2(shouldOptimizeForNetworkUse)]
+    #[objc::msg_send(shouldOptimizeForNetworkUse)]
     pub fn should_optimize_for_network_use(&self) -> bool;
 
-    #[objc::msg_send2(setShouldOptimizeForNetworkUse:)]
+    #[objc::msg_send(setShouldOptimizeForNetworkUse:)]
     pub fn set_should_optimize_for_network_use(&self, value: bool);
 
-    #[objc::msg_send2(canAddInput:)]
+    #[objc::msg_send(canAddInput:)]
     pub fn can_add_input(&self, input: &WriterInput) -> bool;
 
-    #[objc::msg_send2(addInput:)]
+    #[objc::msg_send(addInput:)]
     pub fn add_input(&self, input: &WriterInput);
 
-    #[objc::msg_send2(startWriting)]
+    #[objc::msg_send(startWriting)]
     pub fn start_writing(&self);
 
-    #[objc::msg_send2(startSessionAtSourceTime:)]
+    #[objc::msg_send(startSessionAtSourceTime:)]
     pub fn start_session_at_source_time(&self, start_time: cm::Time);
 
-    #[objc::msg_send2(endSessionAtSourceTime:)]
+    #[objc::msg_send(endSessionAtSourceTime:)]
     pub fn end_session_at_source_time(&self, start_time: cm::Time);
 
-    #[objc::msg_send2(finishWriting)]
+    #[objc::msg_send(finishWriting)]
     pub fn finish_writing(&self);
 
-    #[objc::msg_send2(cancelWriting)]
+    #[objc::msg_send(cancelWriting)]
     pub fn cancel_writing(&self);
 
-    #[objc::msg_send2(error)]
+    #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;
 
-    #[objc::msg_send2(inputes)]
+    #[objc::msg_send(inputes)]
     pub fn inputs(&self) -> &ns::Array<WriterInput>;
 
     /// ```

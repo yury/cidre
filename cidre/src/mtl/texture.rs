@@ -157,16 +157,16 @@ impl Descriptor {
         }
     }
 
-    #[objc::msg_send2(textureType)]
+    #[objc::msg_send(textureType)]
     pub fn texture_type(&self) -> Type;
 
-    #[objc::msg_send2(setTextureType:)]
+    #[objc::msg_send(setTextureType:)]
     pub fn set_texture_type(&mut self, value: Type);
 
-    #[objc::msg_send2(pixelFormat)]
+    #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> mtl::PixelFormat;
 
-    #[objc::msg_send2(setPixelFormat:)]
+    #[objc::msg_send(setPixelFormat:)]
     pub fn set_pixel_format(&mut self, value: mtl::PixelFormat);
 
     define_mtl!(
@@ -182,47 +182,47 @@ impl Descriptor {
         set_cpu_cache_mode
     );
 
-    #[objc::msg_send2(mipmapLevelCount)]
+    #[objc::msg_send(mipmapLevelCount)]
     pub fn mipmap_level_count(&self) -> usize;
 
-    #[objc::msg_send2(setMipmapLevelCount:)]
+    #[objc::msg_send(setMipmapLevelCount:)]
     pub fn set_mipmap_level_count(&mut self, value: usize);
 
-    #[objc::msg_send2(sampleCount)]
+    #[objc::msg_send(sampleCount)]
     pub fn sample_count(&self) -> usize;
 
-    #[objc::msg_send2(setSampleCount:)]
+    #[objc::msg_send(setSampleCount:)]
     pub fn set_sample_count(&mut self, value: usize);
 
-    #[objc::msg_send2(arrayLength)]
+    #[objc::msg_send(arrayLength)]
     pub fn array_len(&self) -> usize;
 
-    #[objc::msg_send2(setArrayLength:)]
+    #[objc::msg_send(setArrayLength:)]
     pub fn set_array_len(&mut self, value: usize);
 
-    #[objc::msg_send2(usage)]
+    #[objc::msg_send(usage)]
     pub fn usage(&self) -> Usage;
 
-    #[objc::msg_send2(setUsage:)]
+    #[objc::msg_send(setUsage:)]
     pub fn set_usage(&mut self, value: Usage);
 
     /// Allow GPU-optimization for the contents of this texture. The default value is true.
-    #[objc::msg_send2(allowGPUOptimizedContents)]
+    #[objc::msg_send(allowGPUOptimizedContents)]
     pub fn allow_gpu_optimized_contents(&self) -> bool;
 
-    #[objc::msg_send2(setAllowGPUOptimizedContents:)]
+    #[objc::msg_send(setAllowGPUOptimizedContents:)]
     pub fn set_allow_gpu_optimized_contents(&mut self, value: bool);
 
-    #[objc::msg_send2(compressionType)]
+    #[objc::msg_send(compressionType)]
     pub fn compression_type(&self) -> CompressionType;
 
-    #[objc::msg_send2(setCompressionType:)]
+    #[objc::msg_send(setCompressionType:)]
     pub fn set_compression_type(&mut self, value: CompressionType);
 
-    #[objc::msg_send2(swizzle)]
+    #[objc::msg_send(swizzle)]
     pub fn swizzle(&self) -> SwizzleChannels;
 
-    #[objc::msg_send2(setSwizzle:)]
+    #[objc::msg_send(setSwizzle:)]
     pub fn set_swizzle(&mut self, value: SwizzleChannels);
 }
 
@@ -267,10 +267,10 @@ impl Texture {
     /// assert_eq!(tv.height(), 200);
     ///
     /// ```
-    #[objc::msg_send2(parentTexture)]
+    #[objc::msg_send(parentTexture)]
     pub fn parent_texture(&self) -> Option<&Texture>;
 
-    #[objc::msg_send2(newTextureViewWithPixelFormat:)]
+    #[objc::msg_send(newTextureViewWithPixelFormat:)]
     pub fn texture_view_with_pixel_format_ar(
         &self,
         pixel_format: mtl::PixelFormat,
@@ -282,16 +282,16 @@ impl Texture {
         pixel_format: mtl::PixelFormat,
     ) -> Option<arc::R<Texture>>;
 
-    #[objc::msg_send2(iosurface)]
+    #[objc::msg_send(iosurface)]
     pub fn io_surface(&self) -> Option<&io::Surface>;
 
-    #[objc::msg_send2(iosurfacePlane)]
+    #[objc::msg_send(iosurfacePlane)]
     pub fn io_surface_plane(&self) -> usize;
 
-    #[objc::msg_send2(textureType)]
+    #[objc::msg_send(textureType)]
     pub fn texture_type(&self) -> Type;
 
-    #[objc::msg_send2(pixelFormat)]
+    #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> mtl::PixelFormat;
 }
 

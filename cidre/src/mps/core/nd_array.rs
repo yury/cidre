@@ -7,6 +7,6 @@ impl NDArray {
     /// The dimensionality and size of the copy region is given by the size of the NDArray
     /// For subregions, use a NDArray view.
     #[doc(alias = "readBytes:strideBytes:")]
-    #[objc::msg_send2(readBytes:strideBytes:)]
+    #[objc::msg_send(readBytes:strideBytes:)]
     pub fn read_bytes(&self, bytes: *mut u8, stride_bytes: *mut isize);
 }

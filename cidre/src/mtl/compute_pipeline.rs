@@ -13,29 +13,29 @@ impl Descriptor {
     pub fn new() -> arc::R<Self> {
         unsafe { Self::cls().alloc().init() }
     }
-    #[objc::msg_send2(init)]
+    #[objc::msg_send(init)]
     fn init(&self) -> arc::R<Self>;
 
     pub fn cls() -> &'static Class<Self> {
         unsafe { MTL_COMPUTE_PIPELINE_DESCRIPTOR }
     }
 
-    #[objc::msg_send2(threadGroupSizeIsMultipleOfThreadExecutionWidth)]
+    #[objc::msg_send(threadGroupSizeIsMultipleOfThreadExecutionWidth)]
     pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool;
 
-    #[objc::msg_send2(setThreadGroupSizeIsMultipleOfThreadExecutionWidth:)]
+    #[objc::msg_send(setThreadGroupSizeIsMultipleOfThreadExecutionWidth:)]
     pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
 
-    #[objc::msg_send2(computeFunction)]
+    #[objc::msg_send(computeFunction)]
     pub fn compute_function(&self) -> Option<&mtl::Function>;
 
-    #[objc::msg_send2(setComputeFunction:)]
+    #[objc::msg_send(setComputeFunction:)]
     pub fn set_compute_function(&mut self, value: Option<&mtl::Function>);
 
-    #[objc::msg_send2(maxTotalThreadsPerThreadgroup)]
+    #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
 
-    #[objc::msg_send2(setMaxTotalThreadsPerThreadgroup:)]
+    #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
     pub fn set_max_total_threads_per_threadgroup(&mut self, value: usize);
 }
 
@@ -49,13 +49,13 @@ define_obj_type!(State(ns::Id));
 impl State {
     define_mtl!(device, label, gpu_resouce_id);
 
-    #[objc::msg_send2(maxTotalThreadsPerThreadgroup)]
+    #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
 
-    #[objc::msg_send2(threadExecutionWidth)]
+    #[objc::msg_send(threadExecutionWidth)]
     pub fn thread_execution_width(&self) -> usize;
 
-    #[objc::msg_send2(staticThreadgroupMemoryLength)]
+    #[objc::msg_send(staticThreadgroupMemoryLength)]
     pub fn static_threadgroup_memory_length(&self) -> usize;
 }
 

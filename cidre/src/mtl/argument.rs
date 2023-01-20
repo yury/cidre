@@ -155,6 +155,6 @@ define_obj_type!(TextureReferenceType(BaseType));
 define_obj_type!(Argument(ns::Id));
 
 impl Argument {
-    #[objc::msg_send2(name)]
+    #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 }

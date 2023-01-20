@@ -39,7 +39,7 @@ impl<T: Obj> Set<T> {
         unsafe { transmute(NS_SET.alloc().init()) }
     }
 
-    #[objc::msg_send2(init)]
+    #[objc::msg_send(init)]
     fn init(&self) -> arc::R<Self>;
 
     #[inline]
@@ -52,10 +52,10 @@ impl<T: Obj> Set<T> {
             )
         }
     }
-    #[objc::msg_send2(initWithObjects:count:)]
+    #[objc::msg_send(initWithObjects:count:)]
     fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<Self>;
 
-    #[objc::msg_send2(count)]
+    #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
     #[inline]

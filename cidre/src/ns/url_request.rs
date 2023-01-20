@@ -92,49 +92,49 @@ impl URLRequest {
         }
     }
 
-    #[objc::msg_send2(URL)]
+    #[objc::msg_send(URL)]
     pub fn url(&self) -> Option<&ns::URL>;
 
-    #[objc::msg_send2(cachePolicy)]
+    #[objc::msg_send(cachePolicy)]
     pub fn cache_policy(&self) -> CachePolicy;
 
-    #[objc::msg_send2(timeoutInterval)]
+    #[objc::msg_send(timeoutInterval)]
     pub fn timeout_interval(&self) -> ns::TimeInterval;
 
-    #[objc::msg_send2(networkServiceType)]
+    #[objc::msg_send(networkServiceType)]
     pub fn network_service_type(&self) -> NetworkServiceType;
 
-    #[objc::msg_send2(allowsCellularAccess)]
+    #[objc::msg_send(allowsCellularAccess)]
     pub fn allows_cellular_access(&self) -> bool;
 
-    #[objc::msg_send2(allowsExpensiveNetworkAccess)]
+    #[objc::msg_send(allowsExpensiveNetworkAccess)]
     pub fn allows_expensive_network_access(&self) -> bool;
 
-    #[objc::msg_send2(allowsConstrainedNetworkAccess)]
+    #[objc::msg_send(allowsConstrainedNetworkAccess)]
     pub fn allows_constrained_network_access(&self) -> bool;
 
-    #[objc::msg_send2(assumesHTTP3Capable)]
+    #[objc::msg_send(assumesHTTP3Capable)]
     pub fn assumes_http3_capable(&self) -> bool;
 
-    #[objc::msg_send2(attribution)]
+    #[objc::msg_send(attribution)]
     pub fn attribution(&self) -> Attribution;
 
-    #[objc::msg_send2(requiresDNSSECValidation)]
+    #[objc::msg_send(requiresDNSSECValidation)]
     pub fn requires_dns_sec_validation(&self) -> bool;
 
-    #[objc::msg_send2(HTTPMethod)]
+    #[objc::msg_send(HTTPMethod)]
     pub fn http_method(&self) -> Option<&ns::String>;
 
-    #[objc::msg_send2(allHTTPHeaderFields)]
+    #[objc::msg_send(allHTTPHeaderFields)]
     pub fn all_http_header_fields(&self) -> Option<&ns::Dictionary<ns::String, ns::String>>;
 
-    #[objc::msg_send2(valueForHTTPHeaderField:)]
+    #[objc::msg_send(valueForHTTPHeaderField:)]
     pub fn value_for_http_header_field<'a>(&'a self, field: &ns::String) -> Option<&'a ns::String>;
 
-    #[objc::msg_send2(HTTPBody)]
+    #[objc::msg_send(HTTPBody)]
     pub fn http_body(&self) -> Option<&ns::Data>;
 
-    #[objc::msg_send2(mutableCopy)]
+    #[objc::msg_send(mutableCopy)]
     pub fn copy_mut_ar(&self) -> arc::Rar<URLRequestMut>;
 
     #[objc::rar_retain()]
@@ -186,50 +186,46 @@ impl URLRequestMut {
         }
     }
 
-    #[objc::msg_send2(setURL:)]
+    #[objc::msg_send(setURL:)]
     pub fn set_url(&mut self, value: Option<&ns::URL>);
 
-    #[objc::msg_send2(setCachePolicy:)]
+    #[objc::msg_send(setCachePolicy:)]
     pub fn set_cache_policy(&mut self, value: CachePolicy);
 
-    #[objc::msg_send2(setTimeoutInterval:)]
+    #[objc::msg_send(setTimeoutInterval:)]
     pub fn set_timeout_interval(&mut self, value: ns::TimeInterval);
 
-    #[objc::msg_send2(setNetworkServiceType:)]
+    #[objc::msg_send(setNetworkServiceType:)]
     pub fn set_network_service_type(&mut self, value: NetworkServiceType);
 
-    #[objc::msg_send2(setAllowsCellularAccess:)]
+    #[objc::msg_send(setAllowsCellularAccess:)]
     pub fn set_allows_cellular_access(&mut self, value: bool);
 
-    #[objc::msg_send2(setAllowsExpensiveNetworkAccess:)]
+    #[objc::msg_send(setAllowsExpensiveNetworkAccess:)]
     pub fn set_allows_expensive_network_access(&mut self, value: bool);
 
-    #[objc::msg_send2(setAllowsConstrainedNetworkAccess:)]
+    #[objc::msg_send(setAllowsConstrainedNetworkAccess:)]
     pub fn set_allows_constrained_network_access(&mut self, value: bool);
 
-    #[inline]
-    pub fn set_assumes_http3_capable(&mut self, value: bool) {
-        unsafe { NSMutableURLRequest_wsel_setAssumesHTTP3Capable(self, value) }
-    }
+    #[objc::msg_send(setAssumesHTTP3Capable:)]
+    pub fn set_assumes_http3_capable(&mut self, value: bool);
 
-    #[objc::msg_send2(setAttribution:)]
+    #[objc::msg_send(setAttribution:)]
     pub fn set_attribution(&mut self, value: Attribution);
 
-    #[inline]
-    pub fn set_requires_dns_sec_validation(&mut self, value: bool) {
-        unsafe { NSMutableURLRequest_wsel_setRequiresDNSSECValidation(self, value) }
-    }
+    #[objc::msg_send(setRequiresDNSSECValidation:)]
+    pub fn set_requires_dns_sec_validation(&mut self, value: bool);
 
-    #[objc::msg_send2(setHTTPMethod:)]
+    #[objc::msg_send(setHTTPMethod:)]
     pub fn set_http_method(&mut self, value: Option<&ns::String>);
 
-    #[objc::msg_send2(setAllHTTPHeaderFields:)]
+    #[objc::msg_send(setAllHTTPHeaderFields:)]
     pub fn set_all_http_header_fields(
         &mut self,
         value: Option<&ns::Dictionary<ns::String, ns::String>>,
     );
 
-    #[objc::msg_send2(setHTTPBody:)]
+    #[objc::msg_send(setHTTPBody:)]
     pub fn set_http_body(&mut self, value: Option<&ns::Data>);
 }
 

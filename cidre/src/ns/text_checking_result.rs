@@ -59,9 +59,9 @@ impl Type {
 define_obj_type!(TextCheckingResult(ns::Id));
 
 impl TextCheckingResult {
-    #[objc::msg_send2(resultType)]
+    #[objc::msg_send(resultType)]
     pub fn result_type(&self) -> Type;
 
-    #[objc::msg_send2(range)]
+    #[objc::msg_send(range)]
     pub fn range(&self) -> ns::Range;
 }

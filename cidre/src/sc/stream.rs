@@ -48,84 +48,84 @@ impl Configuration {
         unsafe { SCStreamConfiguration_new() }
     }
 
-    #[objc::msg_send2(width)]
+    #[objc::msg_send(width)]
     pub fn width(&self) -> usize;
 
-    #[objc::msg_send2(setWidth:)]
+    #[objc::msg_send(setWidth:)]
     pub fn set_width(&mut self, value: usize);
 
-    #[objc::msg_send2(height)]
+    #[objc::msg_send(height)]
     pub fn height(&self) -> usize;
 
-    #[objc::msg_send2(setHeight:)]
+    #[objc::msg_send(setHeight:)]
     pub fn set_height(&mut self, value: usize);
 
-    #[objc::msg_send2(minimumFrameInterval)]
+    #[objc::msg_send(minimumFrameInterval)]
     pub fn minimum_frame_interval(&self) -> cm::Time;
 
-    #[objc::msg_send2(setMinimumFrameInterval:)]
+    #[objc::msg_send(setMinimumFrameInterval:)]
     pub fn set_minimum_frame_interval(&mut self, value: cm::Time);
 
     /// 'BGRA': Packed Little Endian ARGB8888
     /// 'l10r': Packed Little Endian ARGB2101010
     /// '420v': 2-plane "video" range YCbCr 4:2:0
     /// '420f': 2-plane "full" range YCbCr 4:2:0
-    #[objc::msg_send2(pixelFormat)]
+    #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> cv::PixelFormatType;
 
-    #[objc::msg_send2(setPixelFormat:)]
+    #[objc::msg_send(setPixelFormat:)]
     pub fn set_pixel_format(&mut self, value: cv::PixelFormatType);
 
-    #[objc::msg_send2(scalesToFit)]
+    #[objc::msg_send(scalesToFit)]
     pub fn scales_to_fit(&self) -> bool;
 
-    #[objc::msg_send2(setScalesToFit:)]
+    #[objc::msg_send(setScalesToFit:)]
     pub fn set_scales_to_fit(&mut self, value: bool);
 
-    #[objc::msg_send2(showsCursor)]
+    #[objc::msg_send(showsCursor)]
     pub fn shows_cursor(&self) -> bool;
 
-    #[objc::msg_send2(setShowsCursor:)]
+    #[objc::msg_send(setShowsCursor:)]
     pub fn set_shows_cursor(&mut self, value: bool);
 
-    #[objc::msg_send2(backgroundColor)]
+    #[objc::msg_send(backgroundColor)]
     pub fn background_color(&self) -> cg::Color;
 
-    #[objc::msg_send2(setBackgroundColor:)]
+    #[objc::msg_send(setBackgroundColor:)]
     pub fn set_background_color(&mut self, value: cg::Color);
 
-    #[objc::msg_send2(sourceRect)]
+    #[objc::msg_send(sourceRect)]
     pub fn source_rect(&self) -> cg::Rect;
 
-    #[objc::msg_send2(setSourceRect:)]
+    #[objc::msg_send(setSourceRect:)]
     pub fn set_source_rect(&mut self, value: cg::Rect);
 
     /// Specifies whether the audio will be captured.  By default audio is not captured.
-    #[objc::msg_send2(capturesAudio)]
+    #[objc::msg_send(capturesAudio)]
     pub fn captures_audio(&self) -> bool;
 
-    #[objc::msg_send2(setCapturesAudio:)]
+    #[objc::msg_send(setCapturesAudio:)]
     pub fn set_captures_audio(&mut self, value: bool);
 
     /// The sample rate for audio. Default is set to 48000.
-    #[objc::msg_send2(sampleRate)]
+    #[objc::msg_send(sampleRate)]
     pub fn sample_rate(&self) -> i64;
 
-    #[objc::msg_send2(setSampleRate:)]
+    #[objc::msg_send(setSampleRate:)]
     pub fn set_sample_rate(&mut self, value: i64);
 
     /// Channel count. Default is set to two.
-    #[objc::msg_send2(channelCount)]
+    #[objc::msg_send(channelCount)]
     pub fn channel_count(&self) -> i64;
 
-    #[objc::msg_send2(setChannelCount:)]
+    #[objc::msg_send(setChannelCount:)]
     pub fn set_channel_count(&mut self, value: i64);
 
     /// Whether to exclude audio from current process. Default is set to false.
-    #[objc::msg_send2(excludesCurrentProcessAudio)]
+    #[objc::msg_send(excludesCurrentProcessAudio)]
     pub fn excludes_current_process_audio(&self) -> bool;
 
-    #[objc::msg_send2(setExcludesCurrentProcessAudio:)]
+    #[objc::msg_send(setExcludesCurrentProcessAudio:)]
     pub fn set_excludes_current_process_audio(&mut self, value: bool);
 }
 
