@@ -124,12 +124,12 @@ mod tests {
 
         let fence = device.fence().unwrap();
 
-        let mut blit_encoder = command_buffer.blit_command_encoder().unwrap();
+        let blit_encoder = command_buffer.blit_command_encoder().unwrap();
 
         blit_encoder.update_fence(&fence);
         blit_encoder.end_encoding();
 
-        let mut compute_encoder = command_buffer.compute_command_encoder().unwrap();
+        let compute_encoder = command_buffer.compute_command_encoder().unwrap();
         compute_encoder.wait_for_fence(&fence);
         compute_encoder.end_encoding();
 

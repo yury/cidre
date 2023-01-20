@@ -239,8 +239,6 @@ extern "C" {
         timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequestMut>;
 
-    fn NSMutableURLRequest_wsel_setAssumesHTTP3Capable(request: &URLRequestMut, value: bool);
-    fn NSMutableURLRequest_wsel_setRequiresDNSSECValidation(request: &URLRequestMut, value: bool);
 }
 
 #[cfg(test)]
