@@ -110,7 +110,7 @@ fn main() {
         let command_queue = device.command_queue().unwrap();
         let command_buffer = command_queue.command_buffer().unwrap();
 
-        let encoder = command_buffer
+        let mut encoder = command_buffer
             .render_command_encoder_with_descriptor(&render_pass_desc)
             .unwrap();
 

@@ -366,15 +366,11 @@ impl Device {
     /// let label = ns::String::with_str("nice");
     /// fence.set_label(Some(&label));
     /// ```
-    #[inline]
-    pub fn fence_ar(&self) -> Option<arc::Rar<Fence>> {
-        unsafe { self.call0(mtl::msg_send::new_fence) }
-    }
+    #[objc::msg_send2(newFence)]
+    pub fn fence_ar(&self) -> Option<arc::Rar<Fence>>;
 
-    #[inline]
-    pub fn fence(&self) -> Option<arc::R<Fence>> {
-        arc::Rar::option_retain(self.fence_ar())
-    }
+    #[objc::rar_retain()]
+    pub fn fence(&self) -> Option<arc::R<Fence>>;
 
     /// ```no_run
     /// use cidre::{ns, mtl};
@@ -385,15 +381,11 @@ impl Device {
     /// let label = ns::String::with_str("nice");
     /// event.set_label(Some(&label));
     /// ```
-    #[inline]
-    pub fn event_ar(&self) -> Option<arc::Rar<Event>> {
-        unsafe { self.call0(mtl::msg_send::new_event) }
-    }
+    #[objc::msg_send2(newEvent)]
+    pub fn event_ar(&self) -> Option<arc::Rar<Event>>;
 
-    #[inline]
-    pub fn event(&self) -> Option<arc::R<Event>> {
-        arc::Rar::option_retain(self.event_ar())
-    }
+    #[objc::rar_retain()]
+    pub fn event(&self) -> Option<arc::R<Event>>;
 
     /// ```no_run
     /// use cidre::{ns, mtl};
@@ -421,45 +413,32 @@ impl Device {
     ///
     /// assert!(device.max_buffer_length() > 10);
     /// ```
-    #[inline]
-    pub fn max_buffer_length(&self) -> usize {
-        unsafe { self.call0(mtl::msg_send::max_buffer_length) }
-    }
+    #[objc::msg_send2(maxBufferLength)]
+    pub fn max_buffer_length(&self) -> usize;
 
-    #[inline]
-    pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign {
-        unsafe {
-            self.call1(
-                mtl::msg_send::heap_texture_size_and_align_with_descriptor,
-                descriptor,
-            )
-        }
-    }
+    /// Returns the size and alignment, in bytes, of a texture if you create it from a heap.
+    #[objc::msg_send2(heapTextureSizeAndAlignWithDescriptor:)]
+    pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign;
 
-    #[inline]
+    /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
+    #[objc::msg_send2(heapBufferSizeAndAlignWithLength:options:)]
     pub fn heap_buffer_size_and_align(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> SizeAndAlign {
-        unsafe { rsel_heapBufferSizeAndAlignWithLength(self, length, options) }
-    }
+    ) -> SizeAndAlign;
 
-    #[inline]
+    #[objc::msg_send2(newHeapWithDescriptor:)]
     pub fn new_heap_with_descriptor_ar(
         &self,
         descriptor: &mtl::HeapDescriptor,
-    ) -> Option<arc::Rar<mtl::Heap>> {
-        unsafe { self.call1(mtl::msg_send::new_heap_with_descriptor, descriptor) }
-    }
+    ) -> Option<arc::Rar<mtl::Heap>>;
 
-    #[inline]
+    #[objc::rar_retain()]
     pub fn new_heap_with_descriptor(
         &self,
         descriptor: &mtl::HeapDescriptor,
-    ) -> Option<arc::R<mtl::Heap>> {
-        arc::Rar::option_retain(self.new_heap_with_descriptor_ar(descriptor))
-    }
+    ) -> Option<arc::R<mtl::Heap>>;
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -502,12 +481,6 @@ extern "C" {
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
-
-    fn rsel_heapBufferSizeAndAlignWithLength(
-        id: &Device,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> SizeAndAlign;
 
 }
 

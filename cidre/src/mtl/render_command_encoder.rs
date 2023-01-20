@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns, objc::Obj};
+use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns, objc, objc::Obj};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -148,10 +148,8 @@ define_obj_type!(RenderCommandEncoder(mtl::CommandEncoder));
 impl RenderCommandEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
-    #[inline]
-    pub fn set_render_pipeline_state(&mut self, value: &mtl::RenderPipelineState) {
-        unsafe { self.call1(crate::mtl::msg_send::set_render_pipeline_state, value) }
-    }
+    #[objc::msg_send2(setRenderPipelineState:)]
+    pub fn set_render_pipeline_state(&mut self, value: &mtl::RenderPipelineState);
 
     #[inline]
     pub fn set_vertex_bytes(&mut self, bytes: &[u8], at_index: usize) {
@@ -192,52 +190,25 @@ impl RenderCommandEncoder {
         )
     }
 
-    #[inline]
-    pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_setFragmentTexture_atIndex,
-            texture,
-            at_index
-        )
-    }
+    #[objc::msg_send2(setFragmentTexture:atIndex:)]
+    pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);
 
-    #[inline]
+    #[objc::msg_send2(drawPrimitives:vertexStart:vertexCount:instanceCount:)]
     pub fn draw_primitives_instance_count(
         &mut self,
         primitive_type: PrimitiveType,
         vertex_start: usize,
         vertex_count: usize,
         instance_count: usize,
-    ) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_drawPrimitives_vertexStart_vertexCount_instanceCount,
-            primitive_type,
-            vertex_start,
-            vertex_count,
-            instance_count
-        )
-    }
+    );
 
-    #[inline]
+    #[objc::msg_send2(drawPrimitives:vertexStart:vertexCount:)]
     pub fn draw_primitives(
         &mut self,
         primitive_type: PrimitiveType,
         vertex_start: usize,
         vertex_count: usize,
-    ) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_drawPrimitives_vertexStart_vertexCount,
-            primitive_type,
-            vertex_start,
-            vertex_count
-        )
-    }
+    );
 }
 
 #[link(name = "mtl", kind = "static")]

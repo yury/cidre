@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{blocks, define_mtl, define_obj_type, msg_send, mtl, ns, objc};
+use crate::{arc, blocks, define_mtl, define_obj_type, msg_send, mtl, ns, objc};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -69,7 +69,6 @@ impl CommandBuffer {
         unsafe { wsel_addCompletedHandler(self, block.as_ptr()) }
     }
 
-    #[inline]
     pub fn blit_command_encoder<'new>(&self) -> Option<&'new mut mtl::BlitCommandEncoder> {
         msg_send!("mtl", self, sel_blitCommandEncoder)
     }
@@ -92,18 +91,17 @@ impl CommandBuffer {
         )
     }
 
-    #[inline]
-    pub fn render_command_encoder_with_descriptor<'new>(
+    #[objc::msg_send2(newRenderCommandEncoderWithDescriptor:)]
+    pub fn render_command_encoder_with_descriptor_ar(
         &self,
         descriptor: &mtl::RenderPassDescriptor,
-    ) -> Option<&'new mut mtl::RenderCommandEncoder> {
-        msg_send!(
-            "mtl",
-            self,
-            sel_renderCommandEncoderWithDescriptor,
-            descriptor
-        )
-    }
+    ) -> Option<arc::Rar<mtl::RenderCommandEncoder>>;
+
+    #[objc::rar_retain()]
+    pub fn render_command_encoder_with_descriptor(
+        &self,
+        descriptor: &mtl::RenderPassDescriptor,
+    ) -> Option<arc::R<mtl::RenderCommandEncoder>>;
 }
 
 #[link(name = "mtl", kind = "static")]

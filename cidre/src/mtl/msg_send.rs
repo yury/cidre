@@ -24,18 +24,6 @@ extern "C" {
     #[link_name = "objc_msgSend$argumentBuffersSupport"]
     pub fn argument_buffers_support();
 
-    #[link_name = "objc_msgSend$setRenderPipelineState:"]
-    pub fn set_render_pipeline_state();
-
-    #[link_name = "objc_msgSend$useHeap:"]
-    pub fn use_heap();
-
-    #[link_name = "objc_msgSend$pushDebugGroup:"]
-    pub fn push_debug_group();
-
-    #[link_name = "objc_msgSend$popDebugGroup"]
-    pub fn pop_debug_group();
-
     #[link_name = "objc_msgSend$storageMode"]
     pub fn storage_mode();
 
@@ -50,30 +38,6 @@ extern "C" {
 
     #[link_name = "objc_msgSend$newCommandQueue"]
     pub fn new_command_queue();
-
-    #[link_name = "objc_msgSend$cpuCacheMode"]
-    pub fn cpu_cache_mode();
-
-    #[link_name = "objc_msgSend$setCpuCacheMode:"]
-    pub fn set_cpu_cache_mode();
-
-    #[link_name = "objc_msgSend$resourceOptions"]
-    pub fn resource_options();
-
-    #[link_name = "objc_msgSend$setResourceOptions:"]
-    pub fn set_resource_options();
-
-    #[link_name = "objc_msgSend$hazardTrackingMode"]
-    pub fn hazard_tracking_mode();
-
-    #[link_name = "objc_msgSend$setHazardTrackingMode:"]
-    pub fn set_hazard_tracking_mode();
-
-    #[link_name = "objc_msgSend$usage"]
-    pub fn usage();
-
-    #[link_name = "objc_msgSend$setUsage:"]
-    pub fn set_usage();
 
     #[link_name = "objc_msgSend$allowGPUOptimizedContents"]
     pub fn allow_gpu_optimized_contents();

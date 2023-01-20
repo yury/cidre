@@ -93,14 +93,6 @@ rwsel(MTLTextureDescriptor_, MTLTextureDescriptor *, sampleCount, setSampleCount
 //@property (readwrite, nonatomic) NSUInteger arrayLength;
 rwsel(, id, arrayLength, setArrayLength, NSUInteger)
 
-// MTLTexture
-
-//@property (nullable, readonly) IOSurfaceRef iosurface API_AVAILABLE(macos(10.11), ios(11.0));
-CF_RETURNS_NOT_RETAINED
-rsel0(, id, iosurface, IOSurfaceRef _Nullable )
-
-//@property (readonly) NSUInteger iosurfacePlane API_AVAILABLE(macos(10.11), ios(11.0));
-rsel0(, id, iosurfacePlane, NSUInteger)
 
 // MTLFunctionConstantValues
 

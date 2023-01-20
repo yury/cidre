@@ -323,7 +323,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("render", |b| {
         b.iter(|| {
             let cmd_buf = queue.command_buffer().unwrap();
-            let encoder = cmd_buf
+            let mut encoder = cmd_buf
                 .render_command_encoder_with_descriptor(&state.render_pass_desc)
                 .unwrap();
             encoder.set_render_pipeline_state(&state.render_state);

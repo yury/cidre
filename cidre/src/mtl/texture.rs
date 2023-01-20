@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_mtl, define_obj_type, define_options, io, mtl, ns, objc::Obj};
+use crate::{arc, cf, define_mtl, define_obj_type, define_options, io, mtl, ns, objc};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -157,25 +157,17 @@ impl Descriptor {
         }
     }
 
-    #[inline]
-    pub fn texture_type(&self) -> Type {
-        unsafe { rsel_textureType(self) }
-    }
+    #[objc::msg_send2(textureType)]
+    pub fn texture_type(&self) -> Type;
 
-    #[inline]
-    pub fn set_texture_type(&mut self, value: Type) {
-        unsafe { wsel_textureType(self, value) }
-    }
+    #[objc::msg_send2(setTextureType:)]
+    pub fn set_texture_type(&mut self, value: Type);
 
-    #[inline]
-    pub fn pixel_format(&self) -> mtl::PixelFormat {
-        unsafe { rsel_pixelFormat(self) }
-    }
+    #[objc::msg_send2(pixelFormat)]
+    pub fn pixel_format(&self) -> mtl::PixelFormat;
 
-    #[inline]
-    pub fn set_pixel_format(&mut self, value: mtl::PixelFormat) {
-        unsafe { wsel_setPixelFormat(self, value) }
-    }
+    #[objc::msg_send2(setPixelFormat:)]
+    pub fn set_pixel_format(&mut self, value: mtl::PixelFormat);
 
     define_mtl!(
         width,
@@ -190,75 +182,48 @@ impl Descriptor {
         set_cpu_cache_mode
     );
 
-    #[inline]
-    pub fn mipmap_level_count(&self) -> usize {
-        unsafe { rsel_mipmapLevelCount(self) }
-    }
+    #[objc::msg_send2(mipmapLevelCount)]
+    pub fn mipmap_level_count(&self) -> usize;
 
-    #[inline]
-    pub fn set_mipmap_level_count(&mut self, value: usize) {
-        unsafe { wsel_setMipmapLevelCount(self, value) }
-    }
+    #[objc::msg_send2(setMipmapLevelCount:)]
+    pub fn set_mipmap_level_count(&mut self, value: usize);
 
-    #[inline]
-    pub fn sample_count(&self) -> usize {
-        unsafe { MTLTextureDescriptor_rsel_sampleCount(self) }
-    }
+    #[objc::msg_send2(sampleCount)]
+    pub fn sample_count(&self) -> usize;
 
-    #[inline]
-    pub fn set_sample_count(&mut self, value: usize) {
-        unsafe { MTLTextureDescriptor_wsel_setSampleCount(self, value) }
-    }
+    #[objc::msg_send2(setSampleCount:)]
+    pub fn set_sample_count(&mut self, value: usize);
 
-    #[inline]
-    pub fn array_len(&self) -> usize {
-        unsafe { rsel_arrayLength(self) }
-    }
+    #[objc::msg_send2(arrayLength)]
+    pub fn array_len(&self) -> usize;
 
-    #[inline]
-    pub fn set_array_len(&mut self, value: usize) {
-        unsafe { wsel_setArrayLength(self, value) }
-    }
+    #[objc::msg_send2(setArrayLength:)]
+    pub fn set_array_len(&mut self, value: usize);
 
-    #[inline]
-    pub fn usage(&self) -> Usage {
-        unsafe { self.call0(mtl::msg_send::usage) }
-    }
+    #[objc::msg_send2(usage)]
+    pub fn usage(&self) -> Usage;
 
-    #[inline]
-    pub fn set_usage(&mut self, value: Usage) {
-        unsafe { self.call1(mtl::msg_send::set_usage, value) }
-    }
+    #[objc::msg_send2(setUsage:)]
+    pub fn set_usage(&mut self, value: Usage);
 
-    #[inline]
-    pub fn allow_gpu_optimized_contents(&self) -> bool {
-        unsafe { self.call0(mtl::msg_send::allow_gpu_optimized_contents) }
-    }
+    /// Allow GPU-optimization for the contents of this texture. The default value is true.
+    #[objc::msg_send2(allowGPUOptimizedContents)]
+    pub fn allow_gpu_optimized_contents(&self) -> bool;
 
-    #[inline]
-    pub fn set_allow_gpu_optimized_contents(&mut self, value: bool) {
-        unsafe { self.call1(mtl::msg_send::set_allow_gpu_optimized_contents, value) }
-    }
+    #[objc::msg_send2(setAllowGPUOptimizedContents:)]
+    pub fn set_allow_gpu_optimized_contents(&mut self, value: bool);
 
-    #[inline]
-    pub fn compression_type(&self) -> CompressionType {
-        unsafe { self.call0(mtl::msg_send::compression_type) }
-    }
+    #[objc::msg_send2(compressionType)]
+    pub fn compression_type(&self) -> CompressionType;
 
-    #[inline]
-    pub fn set_compression_type(&mut self, value: CompressionType) {
-        unsafe { self.call1(mtl::msg_send::set_compression_type, value) }
-    }
+    #[objc::msg_send2(setCompressionType:)]
+    pub fn set_compression_type(&mut self, value: CompressionType);
 
-    #[inline]
-    pub fn swizzle(&self) -> SwizzleChannels {
-        unsafe { self.call0(mtl::msg_send::swizzle) }
-    }
+    #[objc::msg_send2(swizzle)]
+    pub fn swizzle(&self) -> SwizzleChannels;
 
-    #[inline]
-    pub fn set_swizzle(&mut self, value: SwizzleChannels) {
-        unsafe { self.call1(mtl::msg_send::set_swizzle, value) }
-    }
+    #[objc::msg_send2(setSwizzle:)]
+    pub fn set_swizzle(&mut self, value: SwizzleChannels);
 }
 
 define_obj_type!(Texture(mtl::Resource));
@@ -302,51 +267,32 @@ impl Texture {
     /// assert_eq!(tv.height(), 200);
     ///
     /// ```
-    #[inline]
-    pub fn parent_texture(&self) -> Option<&Texture> {
-        unsafe { self.call0(mtl::msg_send::parent_texture) }
-    }
+    #[objc::msg_send2(parentTexture)]
+    pub fn parent_texture(&self) -> Option<&Texture>;
 
-    #[inline]
+    #[objc::msg_send2(newTextureViewWithPixelFormat:)]
     pub fn texture_view_with_pixel_format_ar(
         &self,
         pixel_format: mtl::PixelFormat,
-    ) -> Option<arc::Rar<Texture>> {
-        unsafe {
-            self.call1(
-                mtl::msg_send::new_texture_view_with_pixel_format,
-                pixel_format,
-            )
-        }
-    }
+    ) -> Option<arc::Rar<Texture>>;
 
-    #[inline]
+    #[objc::rar_retain()]
     pub fn texture_view_with_pixel_format(
         &self,
         pixel_format: mtl::PixelFormat,
-    ) -> Option<arc::R<Texture>> {
-        arc::Rar::option_retain(self.texture_view_with_pixel_format_ar(pixel_format))
-    }
+    ) -> Option<arc::R<Texture>>;
 
-    #[inline]
-    pub fn io_surface(&self) -> Option<&io::Surface> {
-        unsafe { rsel_iosurface(self) }
-    }
+    #[objc::msg_send2(iosurface)]
+    pub fn io_surface(&self) -> Option<&io::Surface>;
 
-    #[inline]
-    pub fn io_surface_plane(&self) -> usize {
-        unsafe { rsel_iosurfacePlane(self) }
-    }
+    #[objc::msg_send2(iosurfacePlane)]
+    pub fn io_surface_plane(&self) -> usize;
 
-    #[inline]
-    pub fn texture_type(&self) -> Type {
-        unsafe { rsel_textureType(self) }
-    }
+    #[objc::msg_send2(textureType)]
+    pub fn texture_type(&self) -> Type;
 
-    #[inline]
-    pub fn pixel_format(&self) -> mtl::PixelFormat {
-        unsafe { rsel_pixelFormat(self) }
-    }
+    #[objc::msg_send2(pixelFormat)]
+    pub fn pixel_format(&self) -> mtl::PixelFormat;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -368,24 +314,6 @@ extern "C" {
         resource_options: crate::mtl::resource::Options,
         usage: Usage,
     ) -> arc::R<Descriptor>;
-
-    fn rsel_textureType(id: &ns::Id) -> Type;
-    fn wsel_textureType(id: &mut ns::Id, value: Type);
-
-    fn rsel_pixelFormat(id: &ns::Id) -> mtl::PixelFormat;
-    fn wsel_setPixelFormat(id: &mut ns::Id, value: mtl::PixelFormat);
-
-    fn rsel_mipmapLevelCount(id: &ns::Id) -> usize;
-    fn wsel_setMipmapLevelCount(id: &mut ns::Id, value: usize);
-
-    fn MTLTextureDescriptor_rsel_sampleCount(id: &ns::Id) -> usize;
-    fn MTLTextureDescriptor_wsel_setSampleCount(id: &mut ns::Id, value: usize);
-
-    fn rsel_arrayLength(id: &ns::Id) -> usize;
-    fn wsel_setArrayLength(id: &mut ns::Id, value: usize);
-
-    fn rsel_iosurface(id: &mtl::Texture) -> Option<&io::Surface>;
-    fn rsel_iosurfacePlane(id: &mtl::Texture) -> usize;
 }
 
 #[cfg(test)]
