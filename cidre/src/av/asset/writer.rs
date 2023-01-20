@@ -52,10 +52,10 @@ impl Writer {
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;
 
-    #[objc::msg_send(inputes)]
+    #[objc::msg_send(inputs)]
     pub fn inputs(&self) -> &ns::Array<WriterInput>;
 
-    /// ```
+    /// ```no_run
     /// use cidre::{av, cf};
     /// let url = cf::URL::from_str("file://tmp/bla.mp4").unwrap();
     ///
@@ -84,4 +84,16 @@ extern "C" {
         file_type: &av::FileType,
         error: &mut Option<arc::R<cf::Error>>,
     ) -> Option<arc::R<Writer>>;
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn basics() {
+        use crate::{av, cf};
+        let url = cf::URL::from_str("file://tmp/bla.mp4").unwrap();
+
+        let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
+        assert_eq!(writer.inputs().len(), 0);
+    }
 }
