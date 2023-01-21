@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{arc, define_obj_type, mtl, ns};
+use crate::{arc, define_cls_init, define_obj_type, mtl, ns, objc};
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
@@ -124,171 +124,91 @@ define_obj_type!(ColorAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(DepthAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
 
+define_cls_init!(Descriptor, MTL_RENDER_PASS_DESCRIPTOR);
+
 impl Descriptor {
-    #[inline]
-    pub fn new() -> arc::R<Descriptor> {
-        unsafe { MTLRenderPassDescriptor_new() }
-    }
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray;
 
-    #[inline]
-    pub fn default<'ar>() -> &'ar mut Descriptor {
-        unsafe { MTLRenderPassDescriptor_renderPassDescriptor() }
-    }
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescriptorArray;
 
-    #[inline]
-    pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray {
-        unsafe { rsel_colorAttachments(self) }
-    }
+    #[objc::msg_send(depthAttachment)]
+    pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor;
 
-    #[inline]
-    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescriptorArray {
-        unsafe { rsel_colorAttachments(self) }
-    }
+    #[objc::msg_send(setDepthAttachment:)]
+    pub fn _set_depth_attachemnt(&mut self, value: Option<&DepthAttachmentDescriptor>);
 
-    #[inline]
-    pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor {
-        unsafe { rsel_depthAttachment(self) }
-    }
-
-    #[inline]
-    pub fn set_depth_attachemnt(&mut self, value: &DepthAttachmentDescriptor) {
-        unsafe { wsel_setDepthAttachment(self, Some(value)) }
-    }
+    #[objc::msg_send(setDepthAttachment:)]
+    pub fn set_depth_attachemnt(&mut self, value: &DepthAttachmentDescriptor);
 
     #[inline]
     pub fn reset_depth_attachemnt(&mut self) {
-        unsafe { wsel_setDepthAttachment(self, None) }
+        self._set_depth_attachemnt(None)
     }
 
-    #[inline]
-    pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor {
-        unsafe { rsel_stencilAttachment(self) }
-    }
+    #[objc::msg_send(stencilAttachment)]
+    pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor;
 
-    #[inline]
-    pub fn set_stencil_attachemnt(&mut self, value: &StencilAttachmentDescriptor) {
-        unsafe { wsel_setStencilAttachment(self, Some(value)) }
-    }
+    #[objc::msg_send(setStencilAttachment:)]
+    pub fn set_stencil_attachemnt_option(&mut self, value: Option<&StencilAttachmentDescriptor>);
+
+    #[objc::msg_send(setStencilAttachment:)]
+    pub fn set_stencil_attachemnt(&mut self, value: &StencilAttachmentDescriptor);
 
     #[inline]
     pub fn reset_stencil_attachemnt(&mut self) {
-        unsafe { wsel_setStencilAttachment(self, None) }
+        self.set_stencil_attachemnt_option(None)
     }
 
-    #[inline]
-    pub fn title_width(&self) -> usize {
-        unsafe { rsel_tileWidth(self) }
-    }
+    #[objc::msg_send(tileWidth)]
+    pub fn tile_width(&self) -> usize;
 
-    #[inline]
-    pub fn set_title_width(&mut self, value: usize) {
-        unsafe { wsel_setTileWidth(self, value) }
-    }
+    #[objc::msg_send(setTileWidth:)]
+    pub fn set_tile_width(&mut self, value: usize);
 
-    #[inline]
-    pub fn title_height(&self) -> usize {
-        unsafe { rsel_tileHeight(self) }
-    }
+    #[objc::msg_send(tileHeight)]
+    pub fn tile_height(&self) -> usize;
 
-    #[inline]
-    pub fn set_title_height(&mut self, value: usize) {
-        unsafe { wsel_setTileHeight(self, value) }
-    }
+    #[objc::msg_send(setTileHeight:)]
+    pub fn set_tile_height(&mut self, value: usize);
 
-    #[inline]
-    pub fn render_target_width(&self) -> usize {
-        unsafe { rsel_renderTargetWidth(self) }
-    }
+    #[objc::msg_send(renderTargetWidth)]
+    pub fn render_target_width(&self) -> usize;
 
-    #[inline]
-    pub fn set_render_target_width(&mut self, value: usize) {
-        unsafe { wsel_setRenderTargetWidth(self, value) }
-    }
+    #[objc::msg_send(setRenderTargetWidth:)]
+    pub fn set_render_target_width(&mut self, value: usize);
 
-    #[inline]
-    pub fn render_target_height(&self) -> usize {
-        unsafe { rsel_renderTargetHeight(self) }
-    }
+    #[objc::msg_send(renderTargetHeight)]
+    pub fn render_target_height(&self) -> usize;
 
-    #[inline]
-    pub fn set_render_target_height(&mut self, value: usize) {
-        unsafe { wsel_setRenderTargetHeight(self, value) }
-    }
+    #[objc::msg_send(setRenderTargetHeight:)]
+    pub fn set_render_target_height(&mut self, value: usize);
 
-    #[inline]
-    pub fn default_raster_sample_count(&self) -> usize {
-        unsafe { rsel_defaultRasterSampleCount(self) }
-    }
+    #[objc::msg_send(defaultRasterSampleCount)]
+    pub fn default_raster_sample_count(&self) -> usize;
 
-    #[inline]
-    pub fn set_default_raster_sample_count(&mut self, value: usize) {
-        unsafe { wsel_setSetDefaultRasterSampleCount(self, value) }
-    }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn MTLRenderPassDescriptor_new() -> arc::R<Descriptor>;
-    fn MTLRenderPassDescriptor_renderPassDescriptor<'ar>() -> &'ar mut Descriptor;
-
-    fn rsel_colorAttachments(id: &ns::Id) -> &mut ColorAttachmentDescriptorArray;
-
-    fn rsel_depthAttachment(id: &ns::Id) -> &DepthAttachmentDescriptor;
-    fn wsel_setDepthAttachment(id: &mut ns::Id, value: Option<&DepthAttachmentDescriptor>);
-
-    fn rsel_stencilAttachment(id: &ns::Id) -> &StencilAttachmentDescriptor;
-    fn wsel_setStencilAttachment(id: &mut ns::Id, value: Option<&StencilAttachmentDescriptor>);
-
-    fn rsel_tileWidth(id: &ns::Id) -> usize;
-    fn wsel_setTileWidth(id: &mut ns::Id, value: usize);
-    fn rsel_tileHeight(id: &ns::Id) -> usize;
-    fn wsel_setTileHeight(id: &mut ns::Id, value: usize);
-
-    fn rsel_defaultRasterSampleCount(id: &ns::Id) -> usize;
-    fn wsel_setSetDefaultRasterSampleCount(id: &mut ns::Id, value: usize);
-
-    fn rsel_renderTargetWidth(id: &ns::Id) -> usize;
-    fn wsel_setRenderTargetWidth(id: &mut ns::Id, value: usize);
-    fn rsel_renderTargetHeight(id: &ns::Id) -> usize;
-    fn wsel_setRenderTargetHeight(id: &mut ns::Id, value: usize);
-
+    #[objc::msg_send(setDefaultRasterSampleCount:)]
+    pub fn set_default_raster_sample_count(&mut self, value: usize);
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
 
 impl ColorAttachmentDescriptorArray {
-    #[inline]
-    pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor {
-        unsafe {
-            MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index)
-        }
-    }
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor;
 
-    #[inline]
-    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor {
-        unsafe {
-            MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(self, index)
-        }
-    }
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor;
 
-    #[inline]
-    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor) {
-        unsafe {
-            MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
-                self,
-                Some(value),
-                index,
-            )
-        }
-    }
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
+    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor);
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
+    pub fn set_at_option(&mut self, index: usize, value: Option<&ColorAttachmentDescriptor>);
 
     #[inline]
     pub fn reset_at(&mut self, index: usize) {
-        unsafe {
-            MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
-                self, None, index,
-            )
-        }
+        self.set_at_option(index, None)
     }
 }
 
@@ -308,189 +228,93 @@ impl IndexMut<usize> for ColorAttachmentDescriptorArray {
     }
 }
 
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn MTLRenderPassColorAttachmentDescriptorArray_rsel_objectAtIndexedSubscript(
-        id: &ns::Id,
-        index: usize,
-    ) -> &mut ColorAttachmentDescriptor;
-
-    fn MTLRenderPassColorAttachmentDescriptorArray_wsel_setObjectAtIndexedSubscript(
-        id: &mut ns::Id,
-        value: Option<&ColorAttachmentDescriptor>,
-        index: usize,
-    );
-}
-
 impl AttachmentDescriptor {
-    #[inline]
-    pub fn texture(&self) -> Option<&mtl::Texture> {
-        unsafe { rsel_texture(self) }
-    }
+    #[objc::msg_send(texture)]
+    pub fn texture(&self) -> Option<&mtl::Texture>;
 
-    #[inline]
-    pub fn set_texture(&mut self, value: &mtl::Texture) {
-        unsafe { wsel_setTexture(self, Some(value)) }
-    }
+    #[objc::msg_send(setTexture:)]
+    pub fn set_texture(&mut self, value: &mtl::Texture);
+
+    #[objc::msg_send(setTexture:)]
+    pub fn set_texture_option(&mut self, value: Option<&mtl::Texture>);
 
     #[inline]
     pub fn remove_texture(&mut self) {
-        unsafe { wsel_setTexture(self, None) }
+        self.set_texture_option(None)
     }
 
-    #[inline]
-    pub fn level(&self) -> usize {
-        unsafe { rsel_level(self) }
-    }
+    #[objc::msg_send(level)]
+    pub fn level(&self) -> usize;
 
-    #[inline]
-    pub fn set_level(&mut self, value: usize) {
-        unsafe { wsel_setLevel(self, value) }
-    }
+    #[objc::msg_send(setLevel:)]
+    pub fn set_level(&mut self, value: usize);
 
-    #[inline]
-    pub fn slice(&self) -> usize {
-        unsafe { rsel_slice(self) }
-    }
+    #[objc::msg_send(slice)]
+    pub fn slice(&self) -> usize;
 
-    #[inline]
-    pub fn set_slice(&mut self, value: usize) {
-        unsafe { wsel_setSlice(self, value) }
-    }
+    #[objc::msg_send(setSlice:)]
+    pub fn set_slice(&mut self, value: usize);
 
-    #[inline]
-    pub fn depth_plane(&self) -> usize {
-        unsafe { rsel_depthPlane(self) }
-    }
+    #[objc::msg_send(depthPlane)]
+    pub fn depth_plane(&self) -> usize;
 
-    #[inline]
-    pub fn set_depth_plane(&mut self, value: usize) {
-        unsafe { wsel_setDepthPlane(self, value) }
-    }
+    #[objc::msg_send(setDepthPlane:)]
+    pub fn set_depth_plane(&mut self, value: usize);
 
-    #[inline]
-    pub fn resolve_texture(&self) -> Option<&mtl::Texture> {
-        unsafe { rsel_resolveTexture(self) }
-    }
+    #[objc::msg_send(resolveTexture)]
+    pub fn resolve_texture(&self) -> Option<&mtl::Texture>;
 
-    #[inline]
-    pub fn set_resolve_texture(&mut self, value: Option<&mtl::Texture>) {
-        unsafe { wsel_setResolveTexture(self, value) }
-    }
+    #[objc::msg_send(setResolveTexture:)]
+    pub fn set_resolve_texture(&mut self, value: Option<&mtl::Texture>);
 
-    #[inline]
-    pub fn resolve_level(&self) -> usize {
-        unsafe { rsel_resolveLevel(self) }
-    }
+    #[objc::msg_send(resolveLevel)]
+    pub fn resolve_level(&self) -> usize;
 
-    #[inline]
-    pub fn set_resolve_level(&mut self, value: usize) {
-        unsafe { wsel_setResolveLevel(self, value) }
-    }
+    #[objc::msg_send(setResolveLevel:)]
+    pub fn set_resolve_level(&mut self, value: usize);
 
-    #[inline]
-    pub fn resolve_slice(&self) -> usize {
-        unsafe { rsel_resolveSlice(self) }
-    }
+    #[objc::msg_send(resolveSlice)]
+    pub fn resolve_slice(&self) -> usize;
 
-    #[inline]
-    pub fn set_resolve_slice(&mut self, value: usize) {
-        unsafe { wsel_setResolveSlice(self, value) }
-    }
+    #[objc::msg_send(setResolveSlice:)]
+    pub fn set_resolve_slice(&mut self, value: usize);
 
-    #[inline]
-    pub fn resolve_depth_plane(&self) -> usize {
-        unsafe { rsel_resolveDepthPlane(self) }
-    }
+    #[objc::msg_send(resolveDepthPlane)]
+    pub fn resolve_depth_plane(&self) -> usize;
 
-    #[inline]
-    pub fn set_resolve_depth_plane(&mut self, value: usize) {
-        unsafe { wsel_setResolveDepthPlane(self, value) }
-    }
+    #[objc::msg_send(setResolveDepthPlane:)]
+    pub fn set_resolve_depth_plane(&mut self, value: usize);
 
-    #[inline]
-    pub fn load_action(&self) -> LoadAction {
-        unsafe { rsel_loadAction(self) }
-    }
+    #[objc::msg_send(loadAction)]
+    pub fn load_action(&self) -> LoadAction;
 
-    #[inline]
-    pub fn set_load_action(&mut self, value: LoadAction) {
-        unsafe { wsel_setLoadAction(self, value) }
-    }
+    #[objc::msg_send(setLoadAction:)]
+    pub fn set_load_action(&mut self, value: LoadAction);
 
-    #[inline]
-    pub fn store_action(&self) -> StoreAction {
-        unsafe { rsel_storeAction(self) }
-    }
+    #[objc::msg_send(storeAction)]
+    pub fn store_action(&self) -> StoreAction;
 
-    #[inline]
-    pub fn set_store_action(&mut self, value: StoreAction) {
-        unsafe { wsel_setStoreAction(self, value) }
-    }
+    #[objc::msg_send(setStoreAction:)]
+    pub fn set_store_action(&mut self, value: StoreAction);
 
-    #[inline]
-    pub fn store_action_options(&self) -> StoreActionOptions {
-        unsafe { rsel_storeActionOptions(self) }
-    }
+    #[objc::msg_send(storeActionOptions)]
+    pub fn store_action_options(&self) -> StoreActionOptions;
 
-    #[inline]
-    pub fn set_store_action_options(&mut self, value: StoreActionOptions) {
-        unsafe { wsel_setStoreActionOptions(self, value) }
-    }
+    #[objc::msg_send(setStoreActionOptions:)]
+    pub fn set_store_action_options(&mut self, value: StoreActionOptions);
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn rsel_texture(id: &ns::Id) -> Option<&mtl::Texture>;
-    fn wsel_setTexture(id: &mut ns::Id, value: Option<&mtl::Texture>);
-
-    fn rsel_level(id: &ns::Id) -> usize;
-    fn wsel_setLevel(id: &mut ns::Id, value: usize);
-
-    fn rsel_slice(id: &ns::Id) -> usize;
-    fn wsel_setSlice(id: &mut ns::Id, value: usize);
-
-    fn rsel_depthPlane(id: &ns::Id) -> usize;
-    fn wsel_setDepthPlane(id: &mut ns::Id, value: usize);
-
-    fn rsel_resolveTexture(id: &ns::Id) -> Option<&mtl::Texture>;
-    fn wsel_setResolveTexture(id: &mut ns::Id, value: Option<&mtl::Texture>);
-
-    fn rsel_resolveLevel(id: &ns::Id) -> usize;
-    fn wsel_setResolveLevel(id: &mut ns::Id, value: usize);
-
-    fn rsel_resolveSlice(id: &ns::Id) -> usize;
-    fn wsel_setResolveSlice(id: &mut ns::Id, value: usize);
-
-    fn rsel_resolveDepthPlane(id: &ns::Id) -> usize;
-    fn wsel_setResolveDepthPlane(id: &mut ns::Id, value: usize);
-
-    fn rsel_loadAction(id: &ns::Id) -> LoadAction;
-    fn wsel_setLoadAction(id: &mut ns::Id, value: LoadAction);
-
-    fn rsel_storeAction(id: &ns::Id) -> StoreAction;
-    fn wsel_setStoreAction(id: &mut ns::Id, value: StoreAction);
-
-    fn rsel_storeActionOptions(id: &ns::Id) -> StoreActionOptions;
-    fn wsel_setStoreActionOptions(id: &mut ns::Id, value: StoreActionOptions);
+    static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Descriptor>;
 }
 
 impl ColorAttachmentDescriptor {
-    #[inline]
-    pub fn clear_color(&self) -> ClearColor {
-        unsafe { rsel_clearColor(self) }
-    }
+    #[objc::msg_send(clearColor)]
+    pub fn clear_color(&self) -> ClearColor;
 
-    #[inline]
-    pub fn set_clear_color(&mut self, value: ClearColor) {
-        unsafe { wsel_setClearColor(self, value) }
-    }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_clearColor(id: &ns::Id) -> ClearColor;
-    fn wsel_setClearColor(id: &mut ns::Id, value: ClearColor);
+    #[objc::msg_send(setClearColor:)]
+    pub fn set_clear_color(&mut self, value: ClearColor);
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -502,32 +326,15 @@ pub enum MultisampleDepthResolveFilter {
 }
 
 impl DepthAttachmentDescriptor {
-    #[inline]
-    pub fn clear_depth(&self) -> f64 {
-        unsafe { rsel_clearDepth(self) }
-    }
+    #[objc::msg_send(clearDepth)]
+    pub fn clear_depth(&self) -> f64;
 
-    #[inline]
-    pub fn set_clear_depth(&mut self, value: f64) {
-        unsafe { wsel_setClearDepth(self, value) }
-    }
+    #[objc::msg_send(setClearDepth:)]
+    pub fn set_clear_depth(&mut self, value: f64);
 
-    #[inline]
-    pub fn depth_resolve_filter(&self) -> MultisampleDepthResolveFilter {
-        unsafe { rsel_depthResolveFilter(self) }
-    }
+    #[objc::msg_send(depthResolveFilter)]
+    pub fn depth_resolve_filter(&self) -> MultisampleDepthResolveFilter;
 
-    #[inline]
-    pub fn set_depth_resolve_filter(&mut self, value: MultisampleDepthResolveFilter) {
-        unsafe { wsel_setDepthResolveFilter(self, value) }
-    }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_clearDepth(id: &ns::Id) -> f64;
-    fn wsel_setClearDepth(id: &mut ns::Id, value: f64);
-
-    fn rsel_depthResolveFilter(id: &ns::Id) -> MultisampleDepthResolveFilter;
-    fn wsel_setDepthResolveFilter(id: &mut ns::Id, value: MultisampleDepthResolveFilter);
+    #[objc::msg_send(setDepthResolveFilter:)]
+    pub fn set_depth_resolve_filter(&mut self, value: MultisampleDepthResolveFilter);
 }

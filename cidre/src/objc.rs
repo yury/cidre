@@ -362,6 +362,25 @@ extern "C" {
     fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
     fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
 }
+
+#[macro_export]
+macro_rules! define_cls_init {
+    ($NewType:ident, $CLS:ident) => {
+        impl $crate::arc::A<$NewType> {
+            #[$crate::objc::msg_send(init)]
+            pub fn init(self) -> arc::R<$NewType>;
+        }
+
+        impl $NewType {
+            $crate::define_cls!($CLS);
+
+            pub fn new() -> $crate::arc::R<$NewType> {
+                Self::alloc().init()
+            }
+        }
+    };
+}
+
 #[macro_export]
 macro_rules! define_cls {
     ($CLS:ident) => {

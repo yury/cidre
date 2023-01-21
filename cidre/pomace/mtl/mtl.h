@@ -84,91 +84,11 @@ csel0(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
 NS_RETURNS_RETAINED
 csel0(, MTLRenderPipelineDescriptor, new, MTLRenderPipelineDescriptor *)
 
-// @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> vertexFunction;
 NS_RETURNS_NOT_RETAINED
 rwsel(, id, vertexFunction, setVertexFunction, id <MTLFunction> _Nullable)
-// @property (nullable, readwrite, nonatomic, strong) id <MTLFunction> fragmentFunction;
 NS_RETURNS_NOT_RETAINED
 rwsel(, id, fragmentFunction, setFragmentFunction, id <MTLFunction> _Nullable)
-// @property (nullable, copy, nonatomic) MTLVertexDescriptor *vertexDescriptor;
-
-//@property (readwrite, nonatomic) NSUInteger rasterSampleCount;
 rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
-
-#pragma mark - MTLRenderPassDescriptor
-
-NS_RETURNS_RETAINED
-csel0(, MTLRenderPassDescriptor, new, MTLRenderPassDescriptor *)
-
-NS_RETURNS_NOT_RETAINED
-csel0(, MTLRenderPassDescriptor, renderPassDescriptor, MTLRenderPassDescriptor *)
-
-//@property (readonly) MTLRenderPassColorAttachmentDescriptorArray *colorAttachments;
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, colorAttachments, MTLRenderPassColorAttachmentDescriptorArray *)
-
-//@property (copy, nonatomic, null_resettable) MTLRenderPassDepthAttachmentDescriptor *depthAttachment;
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, depthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
-wsel1(, id, setDepthAttachment, MTLRenderPassDepthAttachmentDescriptor *)
-
-
-//@property (copy, nonatomic, null_resettable) MTLRenderPassStencilAttachmentDescriptor *stencilAttachment;
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, stencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
-wsel1(, id, setStencilAttachment, MTLRenderPassStencilAttachmentDescriptor *)
-
-//- (MTLRenderPassColorAttachmentDescriptor *)objectAtIndexedSubscript:(NSUInteger)attachmentIndex;
-NS_RETURNS_NOT_RETAINED
-rsel1(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPassColorAttachmentDescriptor *)
-
-//- (void)setObject:(nullable MTLRenderPassColorAttachmentDescriptor *)attachment atIndexedSubscript:(NSUInteger)attachmentIndex;
-wsel2(MTLRenderPassColorAttachmentDescriptorArray_, MTLRenderPassColorAttachmentDescriptorArray *, setObject, MTLRenderPassColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
-
-// @property (nonatomic) NSUInteger tileWidth API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
-
-// @property (nonatomic) NSUInteger tileHeight API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(11.0), tvos(14.5));
-
-// rwsel(, id, tileWidth, setTileWidth, NSUInteger)
-// rwsel(, id, tileHeight, setTileHeight, NSUInteger)
-
-rwsel(, id, defaultRasterSampleCount, setDefaultRasterSampleCount, NSUInteger)
-rwsel(, id, renderTargetWidth, setRenderTargetWidth, NSUInteger)
-rwsel(, id, renderTargetHeight, setRenderTargetHeight, NSUInteger)
-
-
-
-#pragma mark - MTLRenderPassAttachmentDescriptor
-
-//@property (nullable, nonatomic, strong) id <MTLTexture> texture;
-
-rwsel(, id, texture, setTexture, id<MTLTexture> _Nullable)
-//@property (nonatomic) NSUInteger level;
-rwsel(, id, level, setLevel, NSUInteger)
-rwsel(, id, slice, setSlice, NSUInteger)
-rwsel(, id, depthPlane, setDepthPlane, NSUInteger)
-
-rwsel(, id, resolveTexture, setResolveTexture, id<MTLTexture> _Nullable)
-rwsel(, id, resolveLevel, setResolveLevel, NSUInteger)
-rwsel(, id, resolveSlice, setResolveSlice, NSUInteger)
-rwsel(, id, resolveDepthPlane, setResolveDepthPlane, NSUInteger)
-
-//@property (nonatomic) MTLLoadAction loadAction;
-rwsel(, id, loadAction, setLoadAction, MTLLoadAction)
-rwsel(, id, storeAction, setStoreAction, MTLStoreAction)
-rwsel(, id, storeActionOptions, setStoreActionOptions, MTLStoreActionOptions)
-
-#pragma mark - MTLRenderPassColorAttachmentDescriptor
-
-// @property (nonatomic) MTLClearColor clearColor;
-rwsel(, id, clearColor, setClearColor, MTLClearColor)
-
-#pragma mark - MTLRenderPassDepthAttachmentDescriptor
-
-// @property (nonatomic) double clearDepth;
-rwsel(, id, clearDepth, setClearDepth, double)
-//@property (nonatomic) MTLMultisampleDepthResolveFilter depthResolveFilter API_AVAILABLE(macos(10.14), ios(9.0));
-rwsel(, id, depthResolveFilter, setDepthResolveFilter, MTLMultisampleDepthResolveFilter)
 
 //@property (readonly) MTLComputePassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
 NS_RETURNS_NOT_RETAINED
@@ -231,6 +151,7 @@ Class MTL_HEAP_DESCRIPTOR;
 Class MTL_COMPILE_OPTIONS;
 
 Class MTL_COMPUTE_PIPELINE_DESCRIPTOR;
+Class MTL_RENDER_PASS_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -243,6 +164,7 @@ static void mtl_initializer()
       MTL_COMPILE_OPTIONS = [MTLCompileOptions class];
       
       MTL_COMPUTE_PIPELINE_DESCRIPTOR = [MTLComputePipelineDescriptor class];
+      MTL_RENDER_PASS_DESCRIPTOR = [MTLRenderPassDescriptor class];
       
       
       sel_commandQueue = @selector(commandQueue);
