@@ -124,7 +124,7 @@ fn main() {
 
         command_buffer.commit();
 
-        let context = ci::Context::new().unwrap();
+        let context = ci::Context::new();
         let image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
 
         let options = cf::Dictionary::new().unwrap();

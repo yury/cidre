@@ -11,53 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - SCStreamConfiguration
-
-NS_RETURNS_RETAINED
-csel0(, SCStreamConfiguration, new, SCStreamConfiguration *)
-
-rwsel(, id, minimumFrameInterval, setMinimumFrameInterval, CMTime)
-
-//@property(nonatomic, assign) OSType pixelFormat;
-rwsel(sc_, SCStreamConfiguration *, pixelFormat, setPixelFormat, OSType)
-//@property(nonatomic, assign) BOOL scalesToFit;
-rwsel(, id, scalesToFit, setScalesToFit, BOOL)
-// @property(nonatomic, assign) BOOL showsCursor;
-rwsel(, id, showsCursor, setShowsCursor, BOOL)
-// @property(nonatomic, assign) CGColorRef backgroundColor;
-rwsel(sc_, SCStreamConfiguration *, backgroundColor, setBackgroundColor, CGColorRef)
-//@property(nonatomic, assign) CGRect sourceRect;
-rwsel(_, id, sourceRect, setSourceRect, CGRect)
-//@property(nonatomic, assign) CGRect destinationRect;
-rwsel(_, id, destinationRect, setDestinationRect, CGRect)
-
-rwsel(, id, capturesAudio, setCapturesAudio, BOOL)
-rwsel(sc_, id, sampleRate, setSampleRate, NSInteger)
-rwsel(, id, channelCount, setChannelCount, NSInteger)
-rwsel(, id, excludesCurrentProcessAudio, setExcludesCurrentProcessAudio, BOOL)
-
-
-#pragma mark - SCShareableContent
-
-void cs_shareable(id block) {
-  [SCShareableContent getShareableContentWithCompletionHandler:block];
-}
-
-#pragma mark - SCContentFilter
-
-NS_RETURNS_RETAINED
-cinit2(, SCContentFilter, initWithDisplay, SCDisplay *, excludingWindows, NSArray<SCWindow *>*)
-
-#pragma mark - SCStream
-
-NS_RETURNS_RETAINED
-cinit3(, SCStream, initWithFilter, SCContentFilter *, configuration, SCStreamConfiguration *, delegate, id<SCStreamDelegate> _Nullable)
-
-__attribute__((constructor))
-static void cs_initializer()
-{
-}
-
 @interface SidreStreamDelegate : NSObject<SCStreamDelegate> {
   @public void * _vtable[2];
 }
@@ -86,24 +39,22 @@ SidreStreamOutDelegate * make_stream_out(void * _Nonnull vtable) {
   return result;
 }
 
-API_AVAILABLE(macos(12.3))
-wsel1(, id, startCaptureWithCompletionHandler, id)
 
-API_AVAILABLE(macos(12.3))
-wsel1(, id, stopCaptureWithCompletionHandler, id)
+Class SC_STREAM_CONFIGURATION;
+Class SC_CONTENT_FILTER;
+Class SC_STREAM;
+Class SC_SHAREABLE_CONTENT;
 
-
-API_AVAILABLE(macos(12.3))
-void test_start(SCStream * stream) {
-  NSLog(@"starging!!!!");
-  [stream startCaptureWithCompletionHandler:^(NSError * _Nullable error) {
-    NSLog(@"what ??? %@", error);
-  }];
+__attribute__((constructor))
+static void common_initializer()
+{
+  static int initialized = 0;
+  if (!initialized) {
+    SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
+    SC_CONTENT_FILTER = [SCContentFilter class];
+    SC_STREAM = [SCStream class];
+    SC_SHAREABLE_CONTENT = [SCShareableContent class];
+  }
 }
-
-//- (BOOL)addStreamOutput:(id<SCStreamOutput>)output type:(SCStreamOutputType)type sampleHandlerQueue:(dispatch_queue_t _Nullable)sampleHandlerQueue error:(NSError **)error NS_SWIFT_ASYNC_NAME (addStreamOutput(_:type:sampleHandlerQueue:)) NS_SWIFT_NAME (addStreamOutput(_:type:sampleHandlerQueue:));
-
-API_AVAILABLE(macos(12.3))
-rsel4(, id, addStreamOutput, id<SCStreamOutput>, type, SCStreamOutputType, sampleHandlerQueue,  dispatch_queue_t _Nullable, error, NSError **, bool)
 
 NS_ASSUME_NONNULL_END

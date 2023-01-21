@@ -21,8 +21,8 @@ pub struct Block<F>(c_void, std::marker::PhantomData<F>);
 
 impl<F> Block<F> {
     #[inline]
-    pub unsafe fn as_ptr(&mut self) -> *mut c_void {
-        transmute(self)
+    pub fn as_ptr(&mut self) -> *mut c_void {
+        unsafe { transmute(self) }
     }
 }
 

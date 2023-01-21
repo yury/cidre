@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, cg, define_obj_type, ns, objc, sys};
+use crate::{arc, blocks, cg, define_cls, define_obj_type, ns, objc, sys};
 
 define_obj_type!(RunningApplication(ns::Id));
 
@@ -42,11 +42,15 @@ impl Window {
 }
 
 #[link(name = "sc", kind = "static")]
-extern "C" {}
+extern "C" {
+    static SC_SHAREABLE_CONTENT: &'static objc::Class<ShareableContent>;
+}
 
 define_obj_type!(ShareableContent(ns::Id));
 
 impl ShareableContent {
+    define_cls!(SC_SHAREABLE_CONTENT);
+
     #[objc::msg_send(windows)]
     pub fn windows(&self) -> &ns::Array<Window>;
 
@@ -56,13 +60,14 @@ impl ShareableContent {
     #[objc::msg_send(applications)]
     pub fn applications(&self) -> &ns::Array<RunningApplication>;
 
+    #[objc::cls_msg_send(getShareableContentWithCompletionHandler:)]
+    pub fn get_shareable_content_with_completion_handler(block: *mut c_void);
+
     pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar ns::Error>),
     {
-        unsafe {
-            cs_shareable(b.as_ptr());
-        }
+        Self::get_shareable_content_with_completion_handler(b.as_ptr());
     }
 
     pub async fn current() -> Result<arc::R<Self>, arc::R<ns::Error>> {
@@ -72,11 +77,6 @@ impl ShareableContent {
 
         future.await
     }
-}
-
-#[link(name = "sc", kind = "static")]
-extern "C" {
-    fn cs_shareable(block: *mut c_void);
 }
 
 #[cfg(test)]

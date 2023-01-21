@@ -1,8 +1,8 @@
 use std::{ffi::c_void, ops::Deref};
 
 use crate::{
-    arc, blocks, cg, cm, cv, define_obj_type, dispatch, ns,
-    objc::{self, Delegate, Id},
+    arc, blocks, cg, cm, cv, define_cls, define_obj_type, dispatch, ns,
+    objc::{self, Delegate},
 };
 
 use super::{Display, Window};
@@ -25,7 +25,7 @@ pub enum OutputType {
     Audio,
 }
 
-define_obj_type!(Configuration(Id));
+define_obj_type!(Configuration(ns::Id), SC_STREAM_CONFIGURATION);
 
 impl Configuration {
     /// ```no_run
@@ -44,10 +44,6 @@ impl Configuration {
     /// cfg.set_shows_cursor(false);
     ///
     /// ```
-    pub fn new() -> arc::R<Self> {
-        unsafe { SCStreamConfiguration_new() }
-    }
-
     #[objc::msg_send(width)]
     pub fn width(&self) -> usize;
 
@@ -129,35 +125,36 @@ impl Configuration {
     pub fn set_excludes_current_process_audio(&mut self, value: bool);
 }
 
-#[link(name = "ScreenCaptureKit", kind = "framework")]
-extern "C" {}
-
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCStreamConfiguration_new() -> arc::R<Configuration>;
-
+    static SC_STREAM_CONFIGURATION: &'static objc::Class<Configuration>;
+    static SC_CONTENT_FILTER: &'static objc::Class<ContentFilter>;
+    static SC_STREAM: &'static objc::Class<Stream>;
 }
 
-define_obj_type!(ContentFilter(Id));
+define_obj_type!(ContentFilter(ns::Id));
 
-impl ContentFilter {
-    pub fn with_display_excluding_windows(
-        display: &Display,
-        windows: &ns::Array<Window>,
-    ) -> arc::R<Self> {
-        unsafe { SCContentFilter_initWithDisplay_excludingWindows(display, windows) }
-    }
-}
-
-#[link(name = "sc", kind = "static")]
-extern "C" {
-    fn SCContentFilter_initWithDisplay_excludingWindows(
+impl arc::A<ContentFilter> {
+    #[objc::msg_send(initWithDisplay:excludingWindows:)]
+    pub fn init_with_display_excluding_windows(
+        self,
         display: &Display,
         windows: &ns::Array<Window>,
     ) -> arc::R<ContentFilter>;
 }
 
-define_obj_type!(Stream(Id));
+impl ContentFilter {
+    define_cls!(SC_CONTENT_FILTER);
+
+    pub fn with_display_excluding_windows(
+        display: &Display,
+        windows: &ns::Array<Window>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_display_excluding_windows(display, windows)
+    }
+}
+
+define_obj_type!(Stream(ns::Id));
 
 pub trait StreamDelegate {
     extern "C" fn stream_did_stop_with_error(&mut self, stream: &Stream, error: Option<&ns::Error>);
@@ -207,11 +204,23 @@ pub trait StreamOutput {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn make_stream_out(vtable: *const *const c_void) -> arc::R<Id>;
-    fn make_stream_delegate(vtable: *const *const c_void) -> arc::R<Id>;
+    fn make_stream_out(vtable: *const *const c_void) -> arc::R<ns::Id>;
+    fn make_stream_delegate(vtable: *const *const c_void) -> arc::R<ns::Id>;
+}
+
+impl arc::A<Stream> {
+    #[objc::msg_send(initWithFilter:configuration:delegate:)]
+    pub fn init_with_filter_configuration_delegate(
+        self,
+        filter: &ContentFilter,
+        configuration: &Configuration,
+        delegate: Option<&ns::Id>,
+    ) -> arc::R<Stream>;
 }
 
 impl Stream {
+    define_cls!(SC_STREAM);
+
     pub fn with_delegate<T>(
         filter: &ContentFilter,
         configuration: &Configuration,
@@ -221,14 +230,21 @@ impl Stream {
         T: StreamDelegate,
     {
         let delegate = delegate.obj.deref();
-        unsafe {
-            SCStream_initWithFilter_configuration_delegate(filter, configuration, Some(delegate))
-        }
+        Self::alloc().init_with_filter_configuration_delegate(filter, configuration, Some(delegate))
     }
 
     pub fn new(filter: &ContentFilter, configuration: &Configuration) -> arc::R<Self> {
-        unsafe { SCStream_initWithFilter_configuration_delegate(filter, configuration, None) }
+        Self::alloc().init_with_filter_configuration_delegate(filter, configuration, None)
     }
+
+    #[objc::msg_send(addStreamOutput:type:sampleHandlerQueue:error:)]
+    fn add_stream_output_type_sample_handler_queue_error(
+        &self,
+        output: &ns::Id,
+        output_type: OutputType,
+        queue: Option<&dispatch::Queue>,
+        error: &mut Option<&ns::Error>,
+    ) -> bool;
 
     pub fn add_stream_output<T>(
         &self,
@@ -240,37 +256,35 @@ impl Stream {
     where
         T: StreamOutput,
     {
-        unsafe {
-            rsel_addStreamOutput_type_sampleHandlerQueue_error(
-                self,
-                delegate.obj.deref(),
-                output_type,
-                queue,
-                error,
-            )
-        }
+        self.add_stream_output_type_sample_handler_queue_error(
+            delegate.obj.deref(),
+            output_type,
+            queue,
+            error,
+        )
     }
 
     pub fn start_sync(&self) {
         unsafe { test_start(self) }
     }
 
+    #[objc::msg_send(startCaptureWithCompletionHandler:)]
+    fn _start_with_completion_handler(&self, rb: *mut c_void);
+
     pub fn start_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'static ns::Error>),
     {
-        unsafe {
-            wsel_startCaptureWithCompletionHandler(self, block.as_ptr());
-        }
+        self._start_with_completion_handler(block.as_ptr());
     }
+    #[objc::msg_send(stopCaptureWithCompletionHandler:)]
+    fn _stop_with_completion_handler(&self, rb: *mut c_void);
 
     pub fn stop_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'static ns::Error>),
     {
-        unsafe {
-            wsel_stopCaptureWithCompletionHandler(self, block.as_ptr());
-        }
+        self._stop_with_completion_handler(block.as_ptr())
     }
 
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
@@ -288,25 +302,7 @@ impl Stream {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    fn SCStream_initWithFilter_configuration_delegate(
-        filter: &ContentFilter,
-        configuration: &Configuration,
-        delegate: Option<&Id>,
-    ) -> arc::R<Stream>;
-
-    fn rsel_addStreamOutput_type_sampleHandlerQueue_error(
-        id: &Id,
-        output: &Id,
-        output_type: OutputType,
-        queue: Option<&dispatch::Queue>,
-        error: &mut Option<&ns::Error>,
-    ) -> bool;
-
-    fn test_start(id: &Id);
-
-    fn wsel_startCaptureWithCompletionHandler(id: &Id, rb: *mut c_void);
-    fn wsel_stopCaptureWithCompletionHandler(id: &Id, rb: *mut c_void);
-
+    fn test_start(id: &ns::Id);
 }
 
 #[cfg(test)]
