@@ -20,15 +20,6 @@ csel3(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelForm
 //NS_RETURNS_RETAINED
 csel4(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
 
-// MTLFunctionConstantValues
-
-NS_RETURNS_RETAINED
-csel0(, MTLFunctionConstantValues, new, MTLFunctionConstantValues *)
-wsel3(, id, setConstantValue, const void *, type, MTLDataType, atIndex, NSUInteger)
-wsel3(, id, setConstantValues, const void *, type, MTLDataType, withRange, NSRange)
-wsel3(, id, setConstantValue, const void *, type, MTLDataType, withName, NSString *)
-
-
 // MTLFunction
 
 NS_RETURNS_RETAINED
@@ -43,6 +34,7 @@ Class MTL_RENDER_PASS_DESCRIPTOR;
 Class MTL_BLIT_PASS_DESCRIPTOR;
 Class MTL_RENDER_PIPELINE_DESCRIPTOR;
 Class MTL_FUNCTION_DESCRIPTOR;
+Class MTL_FUNCTION_CONSTANT_VALUES;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -59,6 +51,7 @@ static void mtl_initializer()
       MTL_BLIT_PASS_DESCRIPTOR = [MTLBlitPassDescriptor class];
       MTL_RENDER_PIPELINE_DESCRIPTOR = [MTLRenderPipelineDescriptor class];
       MTL_FUNCTION_DESCRIPTOR = [MTLFunctionDescriptor class];
+      MTL_FUNCTION_CONSTANT_VALUES = [MTLFunctionConstantValues class];
 
       initialized = 1;
     }

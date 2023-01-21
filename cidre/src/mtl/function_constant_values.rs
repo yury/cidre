@@ -1,65 +1,35 @@
 use std::ffi::c_void;
 
-use crate::{arc, cf, define_mtl, define_obj_type, mtl, ns};
+use crate::{arc, cf, define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(FunctionConstantValues(ns::Id));
+define_obj_type!(FunctionConstantValues(ns::Id), MTL_FUNCTION_CONSTANT_VALUES);
 
 impl FunctionConstantValues {
     define_mtl!(reset);
 
-    pub fn new() -> arc::R<FunctionConstantValues> {
-        unsafe { MTLFunctionConstantValues_new() }
-    }
-
+    #[objc::msg_send(setConstantValue:type:atIndex:)]
     pub fn set_value_at(
         &mut self,
         value: *const c_void,
         type_: mtl::DataType,
         at_index: ns::UInteger,
-    ) {
-        unsafe { wsel_setConstantValue_type_atIndex(self, value, type_, at_index) }
-    }
+    );
 
-    pub fn set_values(
-        &mut self,
-        value: *const c_void,
-        type_: mtl::DataType,
-        with_range: ns::Range,
-    ) {
-        unsafe { wsel_setConstantValues_type_withRange(self, value, type_, with_range) }
-    }
+    #[objc::msg_send(setConstantValues:type:withRange:)]
+    pub fn set_values(&mut self, value: *const c_void, type_: mtl::DataType, with_range: ns::Range);
 
+    #[objc::msg_send(setConstantValue:type:withName:)]
     pub fn set_value_with_name(
         &mut self,
         value: *const c_void,
         type_: mtl::DataType,
         name: &cf::String,
-    ) {
-        unsafe { wsel_setConstantValue_type_withName(self, value, type_, name) }
-    }
+    );
 }
 
+#[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLFunctionConstantValues_new() -> arc::R<FunctionConstantValues>;
-
-    fn wsel_setConstantValue_type_atIndex(
-        id: &FunctionConstantValues,
-        value: *const c_void,
-        type_: mtl::DataType,
-        at_index: ns::UInteger,
-    );
-    fn wsel_setConstantValues_type_withRange(
-        id: &FunctionConstantValues,
-        values: *const c_void,
-        type_: mtl::DataType,
-        with_range: ns::Range,
-    );
-    fn wsel_setConstantValue_type_withName(
-        id: &FunctionConstantValues,
-        value: *const c_void,
-        type_: mtl::DataType,
-        with_name: &cf::String,
-    );
+    static MTL_FUNCTION_CONSTANT_VALUES: &'static objc::Class<FunctionConstantValues>;
 }
 
 #[cfg(test)]
