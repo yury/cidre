@@ -61,55 +61,6 @@ rsel0(NSURLSessionTask_, NSURLSessionTask *, response, NSURLResponse * _Nullable
 
 rwsel(NSURLSessionTask_, NSURLSessionTask *, priority, setPriority, float)
 
-#pragma mark - NSURLRequest
-
-NS_RETURNS_RETAINED
-csel1(, NSURLRequest, requestWithURL, NSURL *, NSURLRequest *)
-
-NS_RETURNS_RETAINED
-csel3(, NSURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
-
-rsel0(NSURLRequest_, NSURLRequest *, cachePolicy, NSURLRequestCachePolicy)
-rsel0(NSURLRequest_, NSURLRequest *, timeoutInterval, NSTimeInterval)
-rsel0(NSURLRequest_, NSURLRequest *, networkServiceType, NSURLRequestNetworkServiceType)
-rsel0(NSURLRequest_, NSURLRequest *, allowsCellularAccess, BOOL)
-rsel0(NSURLRequest_, NSURLRequest *, allowsExpensiveNetworkAccess, BOOL)
-rsel0(NSURLRequest_, NSURLRequest *, allowsConstrainedNetworkAccess, BOOL)
-rsel0(NSURLRequest_, NSURLRequest *, assumesHTTP3Capable, BOOL)
-rsel0(NSURLRequest_, NSURLRequest *, attribution, NSURLRequestAttribution)
-rsel0(NSURLRequest_, NSURLRequest *, requiresDNSSECValidation, BOOL)
-
-rsel0(NSURLRequest_, NSURLRequest *, HTTPMethod, NSString *)
-rsel0(NSURLRequest_, NSURLRequest *, allHTTPHeaderFields, NSDictionary * _Nullable)
-
-rsel1(NSURLRequest_, NSURLRequest *, valueForHTTPHeaderField, NSString *, NSString * _Nullable)
-rsel0(NSURLRequest_, NSURLRequest *, HTTPBody, NSData * _Nullable)
-
-#pragma mark - NSMutableURLRequest
-
-NS_RETURNS_RETAINED
-csel1(, NSMutableURLRequest, requestWithURL, NSURL *, NSURLRequest *)
-
-NS_RETURNS_RETAINED
-csel3(, NSMutableURLRequest, requestWithURL, NSURL *, cachePolicy, NSURLRequestCachePolicy, timeoutInterval, NSTimeInterval, NSURLRequest *)
-
-rsel0(NSMutableURLRequest_, NSMutableURLRequest *, cachePolicy, NSURLRequestCachePolicy)
-
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setCachePolicy, NSURLRequestCachePolicy)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setTimeoutInterval, NSTimeInterval)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setNetworkServiceType, NSURLRequestNetworkServiceType)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setAllowsCellularAccess, BOOL)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setAllowsExpensiveNetworkAccess, BOOL)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setAllowsConstrainedNetworkAccess, BOOL)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setAssumesHTTP3Capable, BOOL)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setAttribution, NSURLRequestAttribution)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setRequiresDNSSECValidation, BOOL)
-
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPMethod, NSString * _Nullable)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setAllHTTPHeaderFields, NSDictionary * _Nullable)
-wsel1(NSMutableURLRequest_, NSMutableURLRequest *, setHTTPBody, NSData * _Nullable)
-
-
 #pragma mark NSURLResponse
 
 NS_RETURNS_RETAINED
@@ -168,6 +119,8 @@ Class NS_DICTIONARY;
 Class NS_MUTABLE_DICTIONARY;
 Class NS_PORT;
 Class NS_MACH_PORT;
+Class NS_URL_REQUEST;
+Class NS_MUTABLE_URL_REQUEST;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -196,6 +149,9 @@ static void common_initializer()
     
     NS_PORT = [NSPort class];
     NS_MACH_PORT = [NSMachPort class];
+    
+    NS_URL_REQUEST = [NSURLRequest class];
+    NS_MUTABLE_URL_REQUEST = [NSMutableURLRequest class];
   }
 }
 NS_ASSUME_NONNULL_END

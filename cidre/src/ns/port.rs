@@ -1,22 +1,11 @@
 use std::{ffi::c_void, ops::Deref};
 
-use crate::{arc, cf, define_cls, define_obj_type, mach, ns, objc, objc::Delegate};
+use crate::{arc, cf, define_cls_init, define_obj_type, mach, ns, objc, objc::Delegate};
 
-define_obj_type!(Port(ns::Id));
-define_obj_type!(MachPort(Port));
-
-impl arc::A<Port> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<Port>;
-}
+define_obj_type!(Port(ns::Id), NS_PORT);
+define_obj_type!(MachPort(Port), NS_MACH_PORT);
 
 impl Port {
-    define_cls!(NS_PORT);
-
-    pub fn new() -> arc::R<Port> {
-        Self::alloc().init()
-    }
-
     #[objc::msg_send(invalidate)]
     pub fn invalidate(&self);
 
@@ -24,18 +13,7 @@ impl Port {
     pub fn is_valid(&self) -> bool;
 }
 
-impl arc::A<MachPort> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<MachPort>;
-}
-
 impl MachPort {
-    define_cls!(NS_MACH_PORT);
-
-    pub fn new() -> arc::R<Self> {
-        Self::alloc().init()
-    }
-
     #[objc::msg_send(machPort)]
     pub fn mach_port(&self) -> mach::Port;
 

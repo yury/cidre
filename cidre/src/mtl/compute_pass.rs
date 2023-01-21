@@ -44,14 +44,20 @@ impl SampleBufferAttachmentDescriptorArray {
     pub fn get_at(&self, index: usize) -> Option<&SampleBufferAttachmentDescriptor>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_at(&mut self, index: usize, value: &SampleBufferAttachmentDescriptor);
+    pub fn set_object_at(
+        &mut self,
+        object: Option<&SampleBufferAttachmentDescriptor>,
+        index: usize,
+    );
 
-    #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_option_at(&mut self, index: usize, value: Option<&SampleBufferAttachmentDescriptor>);
+    #[inline]
+    pub fn set_at(&mut self, index: usize, value: &SampleBufferAttachmentDescriptor) {
+        self.set_object_at(Some(value), index)
+    }
 
     #[inline]
     pub fn reset_at(&mut self, index: usize) {
-        self.set_option_at(index, None)
+        self.set_object_at(None, index)
     }
 }
 

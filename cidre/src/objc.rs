@@ -1,5 +1,5 @@
 use std::{
-    arch::{asm, global_asm},
+    arch::asm,
     borrow::Cow,
     ffi::c_void,
     intrinsics::transmute,
@@ -437,6 +437,10 @@ macro_rules! define_obj_type {
                 }
             }
         }
+    };
+    ($NewType:ident($BaseType:path), $CLS:ident) => {
+        $crate::define_obj_type!($NewType($BaseType));
+        $crate::define_cls_init!($NewType, $CLS);
     };
 }
 

@@ -56,7 +56,6 @@ wsel3(, id, setConstantValues, const void *, type, MTLDataType, withRange, NSRan
 wsel3(, id, setConstantValue, const void *, type, MTLDataType, withName, NSString *)
 
 
-
 #pragma mark - MTLHeapDescriptor
 
 
@@ -78,38 +77,6 @@ rsel1(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder
 //+ (nonnull MTLFunctionDescriptor *)functionDescriptor;
 NS_RETURNS_NOT_RETAINED
 csel0(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
-
-#pragma mark - MTLRenderPipelineDescriptor
-
-NS_RETURNS_RETAINED
-csel0(, MTLRenderPipelineDescriptor, new, MTLRenderPipelineDescriptor *)
-
-NS_RETURNS_NOT_RETAINED
-rwsel(, id, vertexFunction, setVertexFunction, id <MTLFunction> _Nullable)
-NS_RETURNS_NOT_RETAINED
-rwsel(, id, fragmentFunction, setFragmentFunction, id <MTLFunction> _Nullable)
-rwsel(, id, rasterSampleCount, setRasterSampleCount, NSUInteger)
-
-//@property (readonly) MTLComputePassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
-NS_RETURNS_NOT_RETAINED
-rsel0(, MTLComputePassDescriptor *, sampleBufferAttachments, MTLComputePassSampleBufferAttachmentDescriptorArray *)
-
-#pragma mark - MTLRenderPipelineColorAttachmentDescriptorArray
-
-
-NS_RETURNS_NOT_RETAINED
-rsel1(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, objectAtIndexedSubscript, NSUInteger, MTLRenderPipelineColorAttachmentDescriptor *)
-
-wsel2(MTLRenderPipelineColorAttachmentDescriptorArray_, MTLRenderPipelineColorAttachmentDescriptorArray *, setObject, MTLRenderPipelineColorAttachmentDescriptor * _Nullable, atIndexedSubscript, NSUInteger)
-
-#pragma mark - MTLBlitPassDescriptor
-
-NS_RETURNS_NOT_RETAINED
-csel0(, MTLBlitPassDescriptor, blitPassDescriptor, MTLBlitPassDescriptor *)
-
-//@property (readonly) MTLBlitPassSampleBufferAttachmentDescriptorArray * sampleBufferAttachments;
-NS_RETURNS_NOT_RETAINED
-rsel0(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
 
 
 SEL sel_commandQueue;
@@ -152,6 +119,8 @@ Class MTL_COMPILE_OPTIONS;
 
 Class MTL_COMPUTE_PIPELINE_DESCRIPTOR;
 Class MTL_RENDER_PASS_DESCRIPTOR;
+Class MTL_BLIT_PASS_DESCRIPTOR;
+Class MTL_RENDER_PIPELINE_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -165,6 +134,8 @@ static void mtl_initializer()
       
       MTL_COMPUTE_PIPELINE_DESCRIPTOR = [MTLComputePipelineDescriptor class];
       MTL_RENDER_PASS_DESCRIPTOR = [MTLRenderPassDescriptor class];
+      MTL_BLIT_PASS_DESCRIPTOR = [MTLBlitPassDescriptor class];
+      MTL_RENDER_PIPELINE_DESCRIPTOR = [MTLRenderPipelineDescriptor class];
       
       
       sel_commandQueue = @selector(commandQueue);

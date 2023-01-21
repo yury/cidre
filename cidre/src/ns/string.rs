@@ -1,6 +1,6 @@
 use std::{borrow::Cow, ffi::CStr, fmt, str::from_utf8_unchecked};
 
-use crate::{arc, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
 
 use super::Class;
 
@@ -12,13 +12,10 @@ pub enum Encoding {
     MacOSRoman = 30,
 }
 
-define_obj_type!(String(ns::Id));
-define_obj_type!(StringMut(String));
+define_obj_type!(String(ns::Id), NS_STRING);
+define_obj_type!(StringMut(String), NS_MUTABLE_STRING);
 
 impl arc::A<String> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<String>;
-
     #[objc::msg_send(initWithBytes:length:encoding:)]
     pub fn init_with_bytes_length_encoding(
         self,
@@ -38,12 +35,6 @@ impl arc::A<String> {
 }
 
 impl String {
-    define_cls!(NS_STRING);
-
-    pub fn new() -> arc::R<Self> {
-        Self::alloc().init()
-    }
-
     #[inline]
     pub fn with_str(str: &str) -> arc::R<Self> {
         unsafe {
@@ -142,19 +133,6 @@ impl std::ops::Index<std::ops::Range<usize>> for String {
     fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
         let res = self.substring(index);
         res.autoreleased()
-    }
-}
-
-impl arc::A<StringMut> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<StringMut>;
-}
-
-impl StringMut {
-    define_cls!(NS_MUTABLE_STRING);
-
-    pub fn new() -> arc::R<Self> {
-        Self::alloc().init()
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(URLRequest(ns::Id));
 define_obj_type!(URLRequestMut(URLRequest));
@@ -52,7 +52,21 @@ pub enum NetworkServiceType {
     CallSignaling = 11,
 }
 
+impl arc::A<URLRequest> {
+    #[objc::msg_send(initWithURL:)]
+    pub fn init_with_url(self, url: &ns::URL) -> arc::R<URLRequest>;
+
+    #[objc::msg_send(initWithURL:cachePolicy:timeoutInterval:)]
+    pub fn init_with_url_cache_policy_timeout(
+        self,
+        url: &ns::URL,
+        cache_policy: CachePolicy,
+        timeout: ns::TimeInterval,
+    ) -> arc::R<URLRequest>;
+}
+
 impl URLRequest {
+    define_cls!(NS_URL_REQUEST);
     /// ```no_run
     /// use cidre::ns;
     /// let url = ns::URL::with_str("https://google.com").unwrap();
@@ -74,7 +88,7 @@ impl URLRequest {
     /// ```
     #[inline]
     pub fn with_url(url: &ns::URL) -> arc::R<URLRequest> {
-        unsafe { NSURLRequest_requestWithURL(url) }
+        Self::alloc().init_with_url(url)
     }
 
     #[inline]
@@ -83,13 +97,7 @@ impl URLRequest {
         cache_policy: CachePolicy,
         timeout_interval: ns::TimeInterval,
     ) -> arc::R<URLRequest> {
-        unsafe {
-            NSURLRequest_requestWithURL_cachePolicy_timeoutInterval(
-                url,
-                cache_policy,
-                timeout_interval,
-            )
-        }
+        Self::alloc().init_with_url_cache_policy_timeout(url, cache_policy, timeout_interval)
     }
 
     #[objc::msg_send(URL)]
@@ -154,21 +162,25 @@ pub enum Attribution {
     /// the user.
     User = 1,
 }
+impl arc::A<URLRequestMut> {
+    #[objc::msg_send(initWithURL:)]
+    pub fn init_with_url(self, url: &ns::URL) -> arc::R<URLRequestMut>;
 
-#[link(name = "ns", kind = "static")]
-extern "C" {
-    fn NSURLRequest_requestWithURL(url: &ns::URL) -> arc::R<URLRequest>;
-    fn NSURLRequest_requestWithURL_cachePolicy_timeoutInterval(
+    #[objc::msg_send(initWithURL:cachePolicy:timeoutInterval:)]
+    pub fn init_with_url_cache_policy_timeout(
+        self,
         url: &ns::URL,
         cache_policy: CachePolicy,
-        timeout_interval: ns::TimeInterval,
-    ) -> arc::R<URLRequest>;
+        timeout: ns::TimeInterval,
+    ) -> arc::R<URLRequestMut>;
 }
 
 impl URLRequestMut {
+    define_cls!(NS_MUTABLE_URL_REQUEST);
+
     #[inline]
     pub fn with_url(url: &ns::URL) -> arc::R<Self> {
-        unsafe { NSMutableURLRequest_requestWithURL(url) }
+        Self::alloc().init_with_url(url)
     }
 
     #[inline]
@@ -177,13 +189,7 @@ impl URLRequestMut {
         cache_policy: CachePolicy,
         timeout_interval: ns::TimeInterval,
     ) -> arc::R<Self> {
-        unsafe {
-            NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
-                url,
-                cache_policy,
-                timeout_interval,
-            )
-        }
+        Self::alloc().init_with_url_cache_policy_timeout(url, cache_policy, timeout_interval)
     }
 
     #[objc::msg_send(setURL:)]
@@ -231,14 +237,8 @@ impl URLRequestMut {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSMutableURLRequest_requestWithURL(url: &ns::URL) -> arc::R<URLRequestMut>;
-
-    fn NSMutableURLRequest_requestWithURL_cachePolicy_timeoutInterval(
-        url: &ns::URL,
-        cache_policy: CachePolicy,
-        timeout_interval: ns::TimeInterval,
-    ) -> arc::R<URLRequestMut>;
-
+    static NS_URL_REQUEST: &'static objc::Class<URLRequest>;
+    static NS_MUTABLE_URL_REQUEST: &'static objc::Class<URLRequestMut>;
 }
 
 #[cfg(test)]

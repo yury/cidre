@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{arc, define_cls_init, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_obj_type, mtl, ns, objc};
 
 #[derive(Debug, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
@@ -117,14 +117,12 @@ impl ClearColor {
     }
 }
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
 
 define_obj_type!(AttachmentDescriptor(ns::Id));
 define_obj_type!(ColorAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(DepthAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
-
-define_cls_init!(Descriptor, MTL_RENDER_PASS_DESCRIPTOR);
 
 impl Descriptor {
     #[objc::msg_send(colorAttachments)]
@@ -202,13 +200,16 @@ impl ColorAttachmentDescriptorArray {
     pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor);
-    #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_at_option(&mut self, index: usize, value: Option<&ColorAttachmentDescriptor>);
+    pub fn set_object_at(&mut self, object: Option<&ColorAttachmentDescriptor>, index: usize);
+
+    #[inline]
+    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor) {
+        self.set_object_at(Some(value), index);
+    }
 
     #[inline]
     pub fn reset_at(&mut self, index: usize) {
-        self.set_at_option(index, None)
+        self.set_object_at(None, index);
     }
 }
 
