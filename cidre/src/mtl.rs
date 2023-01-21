@@ -249,17 +249,13 @@ macro_rules! define_mtl {
     };
 
     (update_fence) => {
-        #[inline]
-        pub fn update_fence(&self, fence: &crate::mtl::Fence) {
-            crate::msg_send!("mtl", self, sel_updateFence_a, fence)
-        }
+        #[$crate::objc::msg_send(updateFence:)]
+        pub fn update_fence(&self, fence: &crate::mtl::Fence);
     };
 
     (wait_for_fence) => {
-        #[inline]
-        pub fn wait_for_fence(&self, fence: &crate::mtl::Fence) {
-            crate::msg_send!("mtl", self, sel_waitForFence_a, fence)
-        }
+        #[$crate::objc::msg_send(waitForFence:)]
+        pub fn wait_for_fence(&self, fence: &crate::mtl::Fence);
     };
 
     (use_resource) => {
@@ -268,9 +264,12 @@ macro_rules! define_mtl {
     };
 
     (use_resources) => {
+        #[$crate::objc::msg_send(useResources:count:usage:)]
+        pub fn use_resources_count(&mut self, resources: *const &crate::mtl::Resource, count: usize, usage: crate::mtl::ResourceUsage);
+
         #[inline]
-        pub fn use_resources(&mut self, resources: &[crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
-            crate::msg_send!("mtl", self, sel_useResources_count_usage, resources.as_ptr(), resources.len(), usage)
+        pub fn use_resources(&mut self, resources: &[&crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
+            self.use_resources_count(resources.as_ptr(), resources.len(), usage);
         }
     };
 

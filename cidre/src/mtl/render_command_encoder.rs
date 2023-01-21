@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{define_mtl, define_obj_type, define_options, msg_send, mtl, ns, objc};
+use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -156,39 +156,21 @@ impl RenderCommandEncoder {
         unsafe { wsel_setVertexBytes(self, bytes.as_ptr() as _, bytes.len(), at_index) }
     }
 
-    #[inline]
+    #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
     pub fn set_vertex_buffer(
         &mut self,
         buffer: Option<&mtl::Buffer>,
         offset: usize,
         at_index: usize,
-    ) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_setVertexBuffer_offset_atIndex,
-            buffer,
-            offset,
-            at_index
-        )
-    }
+    );
 
-    #[inline]
+    #[objc::msg_send(setFragmentBuffer:offset:atIndex:)]
     pub fn set_fragment_buffer(
         &mut self,
         buffer: Option<&mtl::Buffer>,
         offset: usize,
         at_index: usize,
-    ) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_setFragmentBuffer_offset_atIndex,
-            buffer,
-            offset,
-            at_index
-        )
-    }
+    );
 
     #[objc::msg_send(setFragmentTexture:atIndex:)]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);
