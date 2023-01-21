@@ -1,5 +1,5 @@
 use crate::{
-    arc, define_obj_type, ns,
+    arc, define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
@@ -14,7 +14,18 @@ pub enum StoragePolicy {
 define_obj_type!(CachedURLResponse(ns::Id));
 define_obj_type!(URLCache(ns::Id));
 
+impl arc::A<URLCache> {
+    #[objc::msg_send(initWithMemoryCapacity:diskCapacity:directoryURL:)]
+    pub fn init_with_capacity(
+        self,
+        mem_capacity: usize,
+        disk_capacity: usize,
+        directory_url: Option<&ns::URL>,
+    ) -> arc::R<URLCache>;
+}
+
 impl URLCache {
+    define_cls!(NS_URL_CACHE);
     /// ```no_run
     /// use cidre::ns;
     ///
@@ -29,22 +40,12 @@ impl URLCache {
     #[objc::cls_msg_send(sharedURLCache)]
     pub fn shared() -> &'static Self;
 
-    pub fn cls() -> &'static Class<Self> {
-        unsafe { NS_URL_CACHE }
-    }
-
     pub fn with_capacity(
         mem_capacity: usize,
         disk_capacity: usize,
         directory_url: Option<&ns::URL>,
     ) -> arc::R<Self> {
-        unsafe {
-            NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL(
-                mem_capacity,
-                disk_capacity,
-                directory_url,
-            )
-        }
+        Self::alloc().init_with_capacity(mem_capacity, disk_capacity, directory_url)
     }
 
     #[objc::msg_send(memoryCapacity)]
@@ -69,13 +70,6 @@ impl URLCache {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_URL_CACHE: &'static Class<URLCache>;
-
-    fn NSURLCache_initWithMemoryCapacity_diskCapacity_directoryURL(
-        mem_capacity: usize,
-        disk_capacity: usize,
-        directory_url: Option<&ns::URL>,
-    ) -> arc::R<URLCache>;
-
 }
 
 #[cfg(test)]

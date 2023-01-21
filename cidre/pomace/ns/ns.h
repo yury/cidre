@@ -39,48 +39,6 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
   }
 }
 
-#pragma mark - NSURLSession
-
-NS_RETURNS_RETAINED
-rsel1(, id, dataTaskWithURL, NSURL *, NSURLSessionDataTask *)
-NS_RETURNS_RETAINED
-rsel1(, id, dataTaskWithRequest, NSURLRequest *, NSURLSessionDataTask *)
-
-#pragma mark - NSURLSessionTask
-
-wsel0(NSURLSessionTask_, NSURLSessionTask *, resume)
-wsel0(NSURLSessionTask_, NSURLSessionTask *, cancel)
-wsel0(NSURLSessionTask_, NSURLSessionTask *, suspend)
-rsel0(NSURLSessionTask_, NSURLSessionTask *, state, NSURLSessionTaskState)
-rsel0(NSURLSessionTask_, NSURLSessionTask *, error, NSError *)
-
-rsel0(NSURLSessionTask_, NSURLSessionTask *, taskIdentifier, NSUInteger)
-rsel0(NSURLSessionTask_, NSURLSessionTask *, originalRequest, NSURLRequest * _Nullable)
-rsel0(NSURLSessionTask_, NSURLSessionTask *, currentRequest, NSURLRequest * _Nullable)
-rsel0(NSURLSessionTask_, NSURLSessionTask *, response, NSURLResponse * _Nullable)
-
-rwsel(NSURLSessionTask_, NSURLSessionTask *, priority, setPriority, float)
-
-#pragma mark NSURLResponse
-
-NS_RETURNS_RETAINED
-asel4(, NSURLResponse, initWithURL, NSURL *, MIMEType, NSString *, expectedContentLength, NSInteger, textEncodingName, NSString *)
-
-#pragma mark NSURLSessionWebSocketMessage
-
-asel1(, NSURLSessionWebSocketMessage, initWithData, NSData *)
-asel1(, NSURLSessionWebSocketMessage, initWithString, NSString *)
-
-rsel0(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, type, NSURLSessionWebSocketMessageType)
-rsel0(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, data, NSData * _Nullable)
-rsel0(NSURLSessionWebSocketMessage_, NSURLSessionWebSocketMessage *, string, NSString * _Nullable)
-
-#pragma mark NSURLCache
-
-csel0(, NSURLCache, sharedURLCache, NSURLCache *)
-
-asel3(, NSURLCache, initWithMemoryCapacity, NSUInteger, diskCapacity, NSUInteger, directoryURL, NSURL * _Nullable)
-
 #pragma mark NSData
 
 NS_RETURNS_RETAINED
@@ -121,6 +79,8 @@ Class NS_PORT;
 Class NS_MACH_PORT;
 Class NS_URL_REQUEST;
 Class NS_MUTABLE_URL_REQUEST;
+Class NS_URL_RESPONSE;
+Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -152,6 +112,8 @@ static void common_initializer()
     
     NS_URL_REQUEST = [NSURLRequest class];
     NS_MUTABLE_URL_REQUEST = [NSMutableURLRequest class];
+    NS_URL_RESPONSE = [NSURLResponse class];
+    NS_URL_SESSION_WEB_SOCKET_MESSAGE = [NSURLSessionWebSocketMessage class];
   }
 }
 NS_ASSUME_NONNULL_END

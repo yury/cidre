@@ -1,5 +1,5 @@
 use crate::{
-    arc, define_obj_type, ns,
+    arc, define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
@@ -181,42 +181,40 @@ pub enum WebSocketMessageType {
 
 define_obj_type!(WebSocketMessage(ns::Id));
 
+impl arc::A<WebSocketMessage> {
+    #[objc::msg_send(initWithData:)]
+    pub fn init_with_data(self, data: &ns::Data) -> arc::R<WebSocketMessage>;
+
+    #[objc::msg_send(initWithString:)]
+    pub fn init_with_string(self, string: &ns::String) -> arc::R<WebSocketMessage>;
+}
 impl WebSocketMessage {
+    define_cls!(NS_URL_SESSION_WEB_SOCKET_MESSAGE);
+
     #[inline]
     pub fn with_data(data: &ns::Data) -> arc::R<Self> {
-        unsafe { NSURLSessionWebSocketMessage_initWithData(data) }
+        Self::alloc().init_with_data(data)
     }
 
     #[inline]
     pub fn with_string(string: &ns::String) -> arc::R<Self> {
-        unsafe { NSURLSessionWebSocketMessage_initWithString(string) }
+        Self::alloc().init_with_string(string)
     }
 
-    #[inline]
-    pub fn data(&self) -> Option<&ns::Data> {
-        unsafe { NSURLSessionWebSocketMessage_data(self) }
-    }
+    #[objc::msg_send(data)]
+    pub fn data(&self) -> Option<&ns::Data>;
 
-    #[inline]
-    pub fn string(&self) -> Option<&ns::String> {
-        unsafe { NSURLSessionWebSocketMessage_string(self) }
-    }
+    #[objc::msg_send(string)]
+    pub fn string(&self) -> Option<&ns::String>;
 
-    #[inline]
-    pub fn type_(&self) -> WebSocketMessageType {
-        unsafe { NSURLSessionWebSocketMessage_type(self) }
-    }
+    #[objc::msg_send(type)]
+    pub fn type_(&self) -> WebSocketMessageType;
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_URL_SESSION: &'static Class<Session>;
-
-    fn NSURLSessionWebSocketMessage_initWithData(data: &ns::Data) -> arc::R<WebSocketMessage>;
-    fn NSURLSessionWebSocketMessage_initWithString(data: &ns::String) -> arc::R<WebSocketMessage>;
-    fn NSURLSessionWebSocketMessage_data(msg: &WebSocketMessage) -> Option<&ns::Data>;
-    fn NSURLSessionWebSocketMessage_string(msg: &WebSocketMessage) -> Option<&ns::String>;
-    fn NSURLSessionWebSocketMessage_type(msg: &WebSocketMessage) -> WebSocketMessageType;
+    static NS_URL_SESSION_WEB_SOCKET_MESSAGE: &'static Class<WebSocketMessage>;
 }
 
 #[cfg(test)]

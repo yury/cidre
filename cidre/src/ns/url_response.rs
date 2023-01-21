@@ -1,9 +1,21 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(URLResponse(ns::Id));
 define_obj_type!(HTTPURLResponse(URLResponse));
 
+impl arc::A<URLResponse> {
+    #[objc::msg_send(initWithURL:MIMEType:expectedContentLength:textEncodingName:)]
+    fn init_with_url_mimt_type(
+        self,
+        url: &ns::URL,
+        mime_type: Option<&ns::String>,
+        expected_content_length: ns::Integer,
+        text_encoding_name: Option<&ns::String>,
+    ) -> arc::R<URLResponse>;
+}
+
 impl URLResponse {
+    define_cls!(NS_URL_RESPONSE);
     /// ```no_run
     /// use cidre::ns;
     /// let url = ns::URL::with_str("https://google.com").unwrap();
@@ -13,7 +25,7 @@ impl URLResponse {
     /// ```
     #[inline]
     pub fn with_url(url: &ns::URL) -> arc::R<Self> {
-        Self::with_url_mime_type(url, None, 0, None)
+        Self::alloc().init_with_url_mimt_type(url, None, 0, None)
     }
 
     #[inline]
@@ -23,14 +35,12 @@ impl URLResponse {
         expected_content_length: ns::Integer,
         text_encoding_name: Option<&ns::String>,
     ) -> arc::R<Self> {
-        unsafe {
-            NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName(
-                url,
-                mime_type,
-                expected_content_length,
-                text_encoding_name,
-            )
-        }
+        Self::alloc().init_with_url_mimt_type(
+            url,
+            mime_type,
+            expected_content_length,
+            text_encoding_name,
+        )
     }
 
     #[objc::msg_send(URL)]
@@ -39,12 +49,7 @@ impl URLResponse {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURLResponse_initWithURL_MIMEType_expectedContentLength_textEncodingName(
-        url: &ns::URL,
-        mime_type: Option<&ns::String>,
-        expectedContentLength: ns::Integer,
-        textEncodingName: Option<&ns::String>,
-    ) -> arc::R<URLResponse>;
+    static NS_URL_RESPONSE: &'static objc::Class<URLResponse>;
 }
 
 #[cfg(test)]
