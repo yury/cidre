@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, cf, define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(FunctionConstantValues(ns::Id), MTL_FUNCTION_CONSTANT_VALUES);
 
@@ -23,7 +23,7 @@ impl FunctionConstantValues {
         &mut self,
         value: *const c_void,
         type_: mtl::DataType,
-        name: &cf::String,
+        name: &ns::String,
     );
 }
 
@@ -34,7 +34,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{cf, mtl};
+    use crate::{mtl, ns};
 
     #[test]
     fn basics1() {
@@ -48,7 +48,7 @@ mod tests {
     fn basics2() {
         let mut fcv = mtl::FunctionConstantValues::new();
         let v = false;
-        let name = cf::String::from_str("name");
+        let name = ns::String::with_str("name");
         fcv.set_value_with_name(&v as *const bool as _, mtl::DataType::Bool, &name);
         fcv.reset();
     }
