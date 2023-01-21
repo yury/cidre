@@ -9,11 +9,14 @@ fn sel_args_count(sel: TokenStream) -> usize {
         .count()
 }
 
-fn get_fn_args(group: TokenStream) -> Vec<String> {
+fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
     let mut prev = None;
     let mut vars = Vec::with_capacity(10);
+    if debug {
+        println!("tokens {:?}", group);
+    }
 
-    let mut can_be_name = false;
+    let mut can_be_name = class;
     let mut level = 0;
     for t in group.into_iter() {
         match t {
@@ -36,21 +39,38 @@ fn get_fn_args(group: TokenStream) -> Vec<String> {
 }
 #[proc_macro_attribute]
 pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, true, false)
+    gen_msg_send(sel, func, true, false, false)
 }
 
 #[proc_macro_attribute]
 pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false, false)
+    gen_msg_send(sel, func, false, false, false)
+}
+
+#[proc_macro_attribute]
+pub fn msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
+    gen_msg_send(sel, func, false, false, true)
 }
 
 #[proc_macro_attribute]
 pub fn cls_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false, true)
+    gen_msg_send(sel, func, false, true, false)
 }
 
-fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool, class: bool) -> TokenStream {
+#[proc_macro_attribute]
+pub fn cls_msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
+    gen_msg_send(sel, func, false, true, true)
+}
+
+fn gen_msg_send(
+    sel: TokenStream,
+    func: TokenStream,
+    retain: bool,
+    class: bool,
+    debug: bool,
+) -> TokenStream {
     let extern_name = sel.to_string().replace(' ', "");
+    let is_init = extern_name.starts_with("init");
     let args_count = sel_args_count(sel);
 
     let mut iter = func.into_iter();
@@ -94,18 +114,20 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool, class: bool) 
     let option = ret.contains("-> Option");
 
     let fn_args = args.to_string();
-    let vars = get_fn_args(args.stream());
+    let vars = get_fn_args(args.stream(), class, debug);
     let fn_args_count = vars.len();
     if !retain {
-        assert_eq!(fn_args_count, args_count);
+        assert_eq!(
+            fn_args_count, args_count,
+            "left: fn_args_count, right: sel_args_count"
+        );
     }
-
     let pre = pre.join(" ");
     let vars = vars.join(", ");
 
     let (mut fn_args, mut call_args) = if fn_args_count == 0 {
         let fn_args = fn_args
-            .replacen("( &", "(id:", 1)
+            .replacen("( &", "(id: &", 1)
             .replacen("self", "Self", 1);
         (fn_args, "sig(self)".to_string())
     } else {
@@ -116,12 +138,25 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool, class: bool) 
     };
 
     if class {
-        fn_args = fn_args.replacen("(", "(cls: *const std::ffi::c_void, ", 1);
-        call_args = call_args.replacen(
-            "sig(self",
-            "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-            1,
-        );
+        if fn_args_count == 0 {
+            fn_args = fn_args.replacen("(", "(cls: *const std::ffi::c_void", 1);
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
+        } else {
+            fn_args = fn_args.replacen(
+                "(id:",
+                "(cls: *const std::ffi::c_void, id: *const std::ffi::c_void,",
+                1,
+            );
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
+        }
     }
 
     let flow = if retain {
@@ -164,6 +199,9 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, retain: bool, class: bool) 
             "
         )
     };
+    if debug {
+        println!("{}", flow.to_string());
+    }
 
     flow.parse().unwrap()
 }

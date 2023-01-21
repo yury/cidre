@@ -7,17 +7,26 @@ define_obj_type!(Reflection(ns::Id));
 
 define_obj_type!(Descriptor(ns::Id));
 
+impl arc::A<Descriptor> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<Descriptor>;
+}
+
 impl Descriptor {
     define_mtl!(label, set_label);
 
-    pub fn new() -> arc::R<Self> {
-        unsafe { Self::cls().alloc().init() }
-    }
-    #[objc::msg_send(init)]
-    fn init(&self) -> arc::R<Self>;
-
+    #[inline]
     pub fn cls() -> &'static Class<Self> {
         unsafe { MTL_COMPUTE_PIPELINE_DESCRIPTOR }
+    }
+
+    #[inline]
+    pub fn alloc() -> arc::A<Self> {
+        Self::cls().alloc()
+    }
+
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
     }
 
     #[objc::msg_send(threadGroupSizeIsMultipleOfThreadExecutionWidth)]

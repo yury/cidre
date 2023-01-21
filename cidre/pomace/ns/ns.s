@@ -1222,8 +1222,21 @@ Lloh110:
 	ldr	x8, [x8, _NS_URL_SESSION@GOTPAGEOFF]
 Lloh111:
 	str	x0, [x8]
+Lloh112:
+	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.7@PAGE
+Lloh113:
+	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.7@PAGEOFF]
+	bl	_objc_opt_class
+Lloh114:
+	adrp	x8, _NS_URL_CACHE@GOTPAGE
+Lloh115:
+	ldr	x8, [x8, _NS_URL_CACHE@GOTPAGEOFF]
+Lloh116:
+	str	x0, [x8]
 	ldp	x29, x30, [sp], #16             ; 16-byte Folded Reload
 	ret
+	.loh AdrpLdrGotStr	Lloh114, Lloh115, Lloh116
+	.loh AdrpLdr	Lloh112, Lloh113
 	.loh AdrpLdrGotStr	Lloh109, Lloh110, Lloh111
 	.loh AdrpLdr	Lloh107, Lloh108
 	.loh AdrpLdrGotStr	Lloh104, Lloh105, Lloh106
@@ -1261,35 +1274,34 @@ Lloh111:
 	br	x2
 	.cfi_endproc
                                         ; -- End function
-	.p2align	2                               ; -- Begin function -[CidreMachPortDelegate foo]
-"-[CidreMachPortDelegate foo]":         ; @"\01-[CidreMachPortDelegate foo]"
+	.p2align	2                               ; -- Begin function -[CidreMachPortDelegate initWithFoo]
+"-[CidreMachPortDelegate initWithFoo]": ; @"\01-[CidreMachPortDelegate initWithFoo]"
 	.cfi_startproc
 ; %bb.0:
-	stp	x20, x19, [sp, #-32]!           ; 16-byte Folded Spill
+	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]             ; 16-byte Folded Spill
 	add	x29, sp, #16
 	.cfi_def_cfa w29, 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-Lloh112:
-	adrp	x8, _OBJC_CLASSLIST_REFERENCES_$_.9@PAGE
-Lloh113:
-	ldr	x0, [x8, _OBJC_CLASSLIST_REFERENCES_$_.9@PAGEOFF]
-	bl	_objc_alloc
-	mov	w2, #5
-	bl	"_objc_msgSend$initWithInt:"
-	mov	x19, x0
-	bl	_objc_msgSend$mutableCopy
-	mov	x20, x0
-	mov	x0, x19
+Lloh117:
+	adrp	x8, l_OBJC_CLASSLIST_SUP_REFS_$_@PAGE
+Lloh118:
+	ldr	x8, [x8, l_OBJC_CLASSLIST_SUP_REFS_$_@PAGEOFF]
+	stp	x0, x8, [sp]
+Lloh119:
+	adrp	x8, _OBJC_SELECTOR_REFERENCES_.23@PAGE
+Lloh120:
+	ldr	x1, [x8, _OBJC_SELECTOR_REFERENCES_.23@PAGEOFF]
+	mov	x0, sp
+	bl	_objc_msgSendSuper2
 	bl	_objc_release
-	mov	x0, x20
+	mov	x0, #0
 	ldp	x29, x30, [sp, #16]             ; 16-byte Folded Reload
-	ldp	x20, x19, [sp], #32             ; 16-byte Folded Reload
-	b	_objc_release
-	.loh AdrpLdr	Lloh112, Lloh113
+	add	sp, sp, #32
+	ret
+	.loh AdrpLdr	Lloh119, Lloh120
+	.loh AdrpLdr	Lloh117, Lloh118
 	.cfi_endproc
                                         ; -- End function
 	.section	__DATA,__objc_classrefs,regular,no_dead_strip
@@ -1436,21 +1448,36 @@ _OBJC_CLASSLIST_REFERENCES_$_.21:
 	.quad	_OBJC_CLASS_$_NSURLSession
 
 	.comm	_NS_URL_SESSION,8,3             ; @NS_URL_SESSION
+	.comm	_NS_URL_CACHE,8,3               ; @NS_URL_CACHE
+	.section	__DATA,__objc_superrefs,regular,no_dead_strip
+	.p2align	3                               ; @"OBJC_CLASSLIST_SUP_REFS_$_"
+l_OBJC_CLASSLIST_SUP_REFS_$_:
+	.quad	_OBJC_CLASS_$_CidreMachPortDelegate
+
+	.section	__TEXT,__objc_methname,cstring_literals
+l_OBJC_METH_VAR_NAME_.22:               ; @OBJC_METH_VAR_NAME_.22
+	.asciz	"init"
+
+	.section	__DATA,__objc_selrefs,literal_pointers,no_dead_strip
+	.p2align	3                               ; @OBJC_SELECTOR_REFERENCES_.23
+_OBJC_SELECTOR_REFERENCES_.23:
+	.quad	l_OBJC_METH_VAR_NAME_.22
+
 	.section	__TEXT,__objc_classname,cstring_literals
 l_OBJC_CLASS_NAME_:                     ; @OBJC_CLASS_NAME_
 	.asciz	"CidreMachPortDelegate"
 
-l_OBJC_CLASS_NAME_.22:                  ; @OBJC_CLASS_NAME_.22
+l_OBJC_CLASS_NAME_.24:                  ; @OBJC_CLASS_NAME_.24
 	.asciz	"NSMachPortDelegate"
 
-l_OBJC_CLASS_NAME_.23:                  ; @OBJC_CLASS_NAME_.23
+l_OBJC_CLASS_NAME_.25:                  ; @OBJC_CLASS_NAME_.25
 	.asciz	"NSPortDelegate"
 
-l_OBJC_CLASS_NAME_.24:                  ; @OBJC_CLASS_NAME_.24
+l_OBJC_CLASS_NAME_.26:                  ; @OBJC_CLASS_NAME_.26
 	.asciz	"NSObject"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.25:               ; @OBJC_METH_VAR_NAME_.25
+l_OBJC_METH_VAR_NAME_.27:               ; @OBJC_METH_VAR_NAME_.27
 	.asciz	"isEqual:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
@@ -1458,113 +1485,113 @@ l_OBJC_METH_VAR_TYPE_:                  ; @OBJC_METH_VAR_TYPE_
 	.asciz	"B24@0:8@16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.26:               ; @OBJC_METH_VAR_NAME_.26
+l_OBJC_METH_VAR_NAME_.28:               ; @OBJC_METH_VAR_NAME_.28
 	.asciz	"class"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.27:               ; @OBJC_METH_VAR_TYPE_.27
+l_OBJC_METH_VAR_TYPE_.29:               ; @OBJC_METH_VAR_TYPE_.29
 	.asciz	"#16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.28:               ; @OBJC_METH_VAR_NAME_.28
+l_OBJC_METH_VAR_NAME_.30:               ; @OBJC_METH_VAR_NAME_.30
 	.asciz	"self"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.29:               ; @OBJC_METH_VAR_TYPE_.29
+l_OBJC_METH_VAR_TYPE_.31:               ; @OBJC_METH_VAR_TYPE_.31
 	.asciz	"@16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.30:               ; @OBJC_METH_VAR_NAME_.30
+l_OBJC_METH_VAR_NAME_.32:               ; @OBJC_METH_VAR_NAME_.32
 	.asciz	"performSelector:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.31:               ; @OBJC_METH_VAR_TYPE_.31
+l_OBJC_METH_VAR_TYPE_.33:               ; @OBJC_METH_VAR_TYPE_.33
 	.asciz	"@24@0:8:16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.32:               ; @OBJC_METH_VAR_NAME_.32
+l_OBJC_METH_VAR_NAME_.34:               ; @OBJC_METH_VAR_NAME_.34
 	.asciz	"performSelector:withObject:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.33:               ; @OBJC_METH_VAR_TYPE_.33
+l_OBJC_METH_VAR_TYPE_.35:               ; @OBJC_METH_VAR_TYPE_.35
 	.asciz	"@32@0:8:16@24"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.34:               ; @OBJC_METH_VAR_NAME_.34
+l_OBJC_METH_VAR_NAME_.36:               ; @OBJC_METH_VAR_NAME_.36
 	.asciz	"performSelector:withObject:withObject:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.35:               ; @OBJC_METH_VAR_TYPE_.35
+l_OBJC_METH_VAR_TYPE_.37:               ; @OBJC_METH_VAR_TYPE_.37
 	.asciz	"@40@0:8:16@24@32"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.36:               ; @OBJC_METH_VAR_NAME_.36
+l_OBJC_METH_VAR_NAME_.38:               ; @OBJC_METH_VAR_NAME_.38
 	.asciz	"isProxy"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.37:               ; @OBJC_METH_VAR_TYPE_.37
+l_OBJC_METH_VAR_TYPE_.39:               ; @OBJC_METH_VAR_TYPE_.39
 	.asciz	"B16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.38:               ; @OBJC_METH_VAR_NAME_.38
+l_OBJC_METH_VAR_NAME_.40:               ; @OBJC_METH_VAR_NAME_.40
 	.asciz	"isKindOfClass:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.39:               ; @OBJC_METH_VAR_TYPE_.39
+l_OBJC_METH_VAR_TYPE_.41:               ; @OBJC_METH_VAR_TYPE_.41
 	.asciz	"B24@0:8#16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.40:               ; @OBJC_METH_VAR_NAME_.40
+l_OBJC_METH_VAR_NAME_.42:               ; @OBJC_METH_VAR_NAME_.42
 	.asciz	"isMemberOfClass:"
 
-l_OBJC_METH_VAR_NAME_.41:               ; @OBJC_METH_VAR_NAME_.41
+l_OBJC_METH_VAR_NAME_.43:               ; @OBJC_METH_VAR_NAME_.43
 	.asciz	"conformsToProtocol:"
 
-l_OBJC_METH_VAR_NAME_.42:               ; @OBJC_METH_VAR_NAME_.42
+l_OBJC_METH_VAR_NAME_.44:               ; @OBJC_METH_VAR_NAME_.44
 	.asciz	"respondsToSelector:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.43:               ; @OBJC_METH_VAR_TYPE_.43
+l_OBJC_METH_VAR_TYPE_.45:               ; @OBJC_METH_VAR_TYPE_.45
 	.asciz	"B24@0:8:16"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.44:               ; @OBJC_METH_VAR_NAME_.44
+l_OBJC_METH_VAR_NAME_.46:               ; @OBJC_METH_VAR_NAME_.46
 	.asciz	"retain"
 
-l_OBJC_METH_VAR_NAME_.45:               ; @OBJC_METH_VAR_NAME_.45
+l_OBJC_METH_VAR_NAME_.47:               ; @OBJC_METH_VAR_NAME_.47
 	.asciz	"release"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.46:               ; @OBJC_METH_VAR_TYPE_.46
+l_OBJC_METH_VAR_TYPE_.48:               ; @OBJC_METH_VAR_TYPE_.48
 	.asciz	"Vv16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.47:               ; @OBJC_METH_VAR_NAME_.47
+l_OBJC_METH_VAR_NAME_.49:               ; @OBJC_METH_VAR_NAME_.49
 	.asciz	"autorelease"
 
-l_OBJC_METH_VAR_NAME_.48:               ; @OBJC_METH_VAR_NAME_.48
+l_OBJC_METH_VAR_NAME_.50:               ; @OBJC_METH_VAR_NAME_.50
 	.asciz	"retainCount"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.49:               ; @OBJC_METH_VAR_TYPE_.49
+l_OBJC_METH_VAR_TYPE_.51:               ; @OBJC_METH_VAR_TYPE_.51
 	.asciz	"Q16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.50:               ; @OBJC_METH_VAR_NAME_.50
+l_OBJC_METH_VAR_NAME_.52:               ; @OBJC_METH_VAR_NAME_.52
 	.asciz	"zone"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.51:               ; @OBJC_METH_VAR_TYPE_.51
+l_OBJC_METH_VAR_TYPE_.53:               ; @OBJC_METH_VAR_TYPE_.53
 	.asciz	"^{_NSZone=}16@0:8"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.52:               ; @OBJC_METH_VAR_NAME_.52
+l_OBJC_METH_VAR_NAME_.54:               ; @OBJC_METH_VAR_NAME_.54
 	.asciz	"hash"
 
-l_OBJC_METH_VAR_NAME_.53:               ; @OBJC_METH_VAR_NAME_.53
+l_OBJC_METH_VAR_NAME_.55:               ; @OBJC_METH_VAR_NAME_.55
 	.asciz	"superclass"
 
-l_OBJC_METH_VAR_NAME_.54:               ; @OBJC_METH_VAR_NAME_.54
+l_OBJC_METH_VAR_NAME_.56:               ; @OBJC_METH_VAR_NAME_.56
 	.asciz	"description"
 
 	.section	__DATA,__objc_const
@@ -1572,11 +1599,8 @@ l_OBJC_METH_VAR_NAME_.54:               ; @OBJC_METH_VAR_NAME_.54
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_NSObject:
 	.long	24                              ; 0x18
 	.long	19                              ; 0x13
-	.quad	l_OBJC_METH_VAR_NAME_.25
+	.quad	l_OBJC_METH_VAR_NAME_.27
 	.quad	l_OBJC_METH_VAR_TYPE_
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.26
-	.quad	l_OBJC_METH_VAR_TYPE_.27
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.28
 	.quad	l_OBJC_METH_VAR_TYPE_.29
@@ -1597,41 +1621,44 @@ __OBJC_$_PROTOCOL_INSTANCE_METHODS_NSObject:
 	.quad	l_OBJC_METH_VAR_TYPE_.39
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.40
-	.quad	l_OBJC_METH_VAR_TYPE_.39
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.41
-	.quad	l_OBJC_METH_VAR_TYPE_
+	.quad	l_OBJC_METH_VAR_TYPE_.41
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.42
-	.quad	l_OBJC_METH_VAR_TYPE_.43
+	.quad	l_OBJC_METH_VAR_TYPE_.41
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.43
+	.quad	l_OBJC_METH_VAR_TYPE_
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.44
-	.quad	l_OBJC_METH_VAR_TYPE_.29
+	.quad	l_OBJC_METH_VAR_TYPE_.45
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.45
-	.quad	l_OBJC_METH_VAR_TYPE_.46
+	.quad	l_OBJC_METH_VAR_NAME_.46
+	.quad	l_OBJC_METH_VAR_TYPE_.31
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.47
-	.quad	l_OBJC_METH_VAR_TYPE_.29
+	.quad	l_OBJC_METH_VAR_TYPE_.48
 	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.48
-	.quad	l_OBJC_METH_VAR_TYPE_.49
+	.quad	l_OBJC_METH_VAR_NAME_.49
+	.quad	l_OBJC_METH_VAR_TYPE_.31
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.50
 	.quad	l_OBJC_METH_VAR_TYPE_.51
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.52
-	.quad	l_OBJC_METH_VAR_TYPE_.49
-	.quad	0
-	.quad	l_OBJC_METH_VAR_NAME_.53
-	.quad	l_OBJC_METH_VAR_TYPE_.27
+	.quad	l_OBJC_METH_VAR_TYPE_.53
 	.quad	0
 	.quad	l_OBJC_METH_VAR_NAME_.54
+	.quad	l_OBJC_METH_VAR_TYPE_.51
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.55
 	.quad	l_OBJC_METH_VAR_TYPE_.29
+	.quad	0
+	.quad	l_OBJC_METH_VAR_NAME_.56
+	.quad	l_OBJC_METH_VAR_TYPE_.31
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.55:               ; @OBJC_METH_VAR_NAME_.55
+l_OBJC_METH_VAR_NAME_.57:               ; @OBJC_METH_VAR_NAME_.57
 	.asciz	"debugDescription"
 
 	.section	__DATA,__objc_const
@@ -1639,30 +1666,30 @@ l_OBJC_METH_VAR_NAME_.55:               ; @OBJC_METH_VAR_NAME_.55
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSObject:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.55
-	.quad	l_OBJC_METH_VAR_TYPE_.29
+	.quad	l_OBJC_METH_VAR_NAME_.57
+	.quad	l_OBJC_METH_VAR_TYPE_.31
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
 l_OBJC_PROP_NAME_ATTR_:                 ; @OBJC_PROP_NAME_ATTR_
 	.asciz	"hash"
 
-l_OBJC_PROP_NAME_ATTR_.56:              ; @OBJC_PROP_NAME_ATTR_.56
+l_OBJC_PROP_NAME_ATTR_.58:              ; @OBJC_PROP_NAME_ATTR_.58
 	.asciz	"TQ,R"
 
-l_OBJC_PROP_NAME_ATTR_.57:              ; @OBJC_PROP_NAME_ATTR_.57
+l_OBJC_PROP_NAME_ATTR_.59:              ; @OBJC_PROP_NAME_ATTR_.59
 	.asciz	"superclass"
 
-l_OBJC_PROP_NAME_ATTR_.58:              ; @OBJC_PROP_NAME_ATTR_.58
+l_OBJC_PROP_NAME_ATTR_.60:              ; @OBJC_PROP_NAME_ATTR_.60
 	.asciz	"T#,R"
 
-l_OBJC_PROP_NAME_ATTR_.59:              ; @OBJC_PROP_NAME_ATTR_.59
+l_OBJC_PROP_NAME_ATTR_.61:              ; @OBJC_PROP_NAME_ATTR_.61
 	.asciz	"description"
 
-l_OBJC_PROP_NAME_ATTR_.60:              ; @OBJC_PROP_NAME_ATTR_.60
+l_OBJC_PROP_NAME_ATTR_.62:              ; @OBJC_PROP_NAME_ATTR_.62
 	.asciz	"T@\"NSString\",R,C"
 
-l_OBJC_PROP_NAME_ATTR_.61:              ; @OBJC_PROP_NAME_ATTR_.61
+l_OBJC_PROP_NAME_ATTR_.63:              ; @OBJC_PROP_NAME_ATTR_.63
 	.asciz	"debugDescription"
 
 	.section	__DATA,__objc_const
@@ -1671,44 +1698,44 @@ __OBJC_$_PROP_LIST_NSObject:
 	.long	16                              ; 0x10
 	.long	4                               ; 0x4
 	.quad	l_OBJC_PROP_NAME_ATTR_
-	.quad	l_OBJC_PROP_NAME_ATTR_.56
-	.quad	l_OBJC_PROP_NAME_ATTR_.57
 	.quad	l_OBJC_PROP_NAME_ATTR_.58
 	.quad	l_OBJC_PROP_NAME_ATTR_.59
 	.quad	l_OBJC_PROP_NAME_ATTR_.60
 	.quad	l_OBJC_PROP_NAME_ATTR_.61
-	.quad	l_OBJC_PROP_NAME_ATTR_.60
+	.quad	l_OBJC_PROP_NAME_ATTR_.62
+	.quad	l_OBJC_PROP_NAME_ATTR_.63
+	.quad	l_OBJC_PROP_NAME_ATTR_.62
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.62:               ; @OBJC_METH_VAR_TYPE_.62
+l_OBJC_METH_VAR_TYPE_.64:               ; @OBJC_METH_VAR_TYPE_.64
 	.asciz	"B24@0:8@\"Protocol\"16"
 
-l_OBJC_METH_VAR_TYPE_.63:               ; @OBJC_METH_VAR_TYPE_.63
+l_OBJC_METH_VAR_TYPE_.65:               ; @OBJC_METH_VAR_TYPE_.65
 	.asciz	"@\"NSString\"16@0:8"
 
 	.section	__DATA,__objc_const
 	.p2align	3                               ; @"_OBJC_$_PROTOCOL_METHOD_TYPES_NSObject"
 __OBJC_$_PROTOCOL_METHOD_TYPES_NSObject:
 	.quad	l_OBJC_METH_VAR_TYPE_
-	.quad	l_OBJC_METH_VAR_TYPE_.27
 	.quad	l_OBJC_METH_VAR_TYPE_.29
 	.quad	l_OBJC_METH_VAR_TYPE_.31
 	.quad	l_OBJC_METH_VAR_TYPE_.33
 	.quad	l_OBJC_METH_VAR_TYPE_.35
 	.quad	l_OBJC_METH_VAR_TYPE_.37
 	.quad	l_OBJC_METH_VAR_TYPE_.39
-	.quad	l_OBJC_METH_VAR_TYPE_.39
-	.quad	l_OBJC_METH_VAR_TYPE_.62
-	.quad	l_OBJC_METH_VAR_TYPE_.43
-	.quad	l_OBJC_METH_VAR_TYPE_.29
-	.quad	l_OBJC_METH_VAR_TYPE_.46
-	.quad	l_OBJC_METH_VAR_TYPE_.29
-	.quad	l_OBJC_METH_VAR_TYPE_.49
+	.quad	l_OBJC_METH_VAR_TYPE_.41
+	.quad	l_OBJC_METH_VAR_TYPE_.41
+	.quad	l_OBJC_METH_VAR_TYPE_.64
+	.quad	l_OBJC_METH_VAR_TYPE_.45
+	.quad	l_OBJC_METH_VAR_TYPE_.31
+	.quad	l_OBJC_METH_VAR_TYPE_.48
+	.quad	l_OBJC_METH_VAR_TYPE_.31
 	.quad	l_OBJC_METH_VAR_TYPE_.51
-	.quad	l_OBJC_METH_VAR_TYPE_.49
-	.quad	l_OBJC_METH_VAR_TYPE_.27
-	.quad	l_OBJC_METH_VAR_TYPE_.63
-	.quad	l_OBJC_METH_VAR_TYPE_.63
+	.quad	l_OBJC_METH_VAR_TYPE_.53
+	.quad	l_OBJC_METH_VAR_TYPE_.51
+	.quad	l_OBJC_METH_VAR_TYPE_.29
+	.quad	l_OBJC_METH_VAR_TYPE_.65
+	.quad	l_OBJC_METH_VAR_TYPE_.65
 
 	.private_extern	__OBJC_PROTOCOL_$_NSObject ; @"_OBJC_PROTOCOL_$_NSObject"
 	.section	__DATA,__data
@@ -1717,7 +1744,7 @@ __OBJC_$_PROTOCOL_METHOD_TYPES_NSObject:
 	.p2align	3
 __OBJC_PROTOCOL_$_NSObject:
 	.quad	0
-	.quad	l_OBJC_CLASS_NAME_.24
+	.quad	l_OBJC_CLASS_NAME_.26
 	.quad	0
 	.quad	__OBJC_$_PROTOCOL_INSTANCE_METHODS_NSObject
 	.quad	0
@@ -1746,11 +1773,11 @@ __OBJC_$_PROTOCOL_REFS_NSPortDelegate:
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.64:               ; @OBJC_METH_VAR_NAME_.64
+l_OBJC_METH_VAR_NAME_.66:               ; @OBJC_METH_VAR_NAME_.66
 	.asciz	"handlePortMessage:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.65:               ; @OBJC_METH_VAR_TYPE_.65
+l_OBJC_METH_VAR_TYPE_.67:               ; @OBJC_METH_VAR_TYPE_.67
 	.asciz	"v24@0:8@16"
 
 	.section	__DATA,__objc_const
@@ -1758,18 +1785,18 @@ l_OBJC_METH_VAR_TYPE_.65:               ; @OBJC_METH_VAR_TYPE_.65
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSPortDelegate:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.64
-	.quad	l_OBJC_METH_VAR_TYPE_.65
+	.quad	l_OBJC_METH_VAR_NAME_.66
+	.quad	l_OBJC_METH_VAR_TYPE_.67
 	.quad	0
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.66:               ; @OBJC_METH_VAR_TYPE_.66
+l_OBJC_METH_VAR_TYPE_.68:               ; @OBJC_METH_VAR_TYPE_.68
 	.asciz	"v24@0:8@\"NSPortMessage\"16"
 
 	.section	__DATA,__objc_const
 	.p2align	3                               ; @"_OBJC_$_PROTOCOL_METHOD_TYPES_NSPortDelegate"
 __OBJC_$_PROTOCOL_METHOD_TYPES_NSPortDelegate:
-	.quad	l_OBJC_METH_VAR_TYPE_.66
+	.quad	l_OBJC_METH_VAR_TYPE_.68
 
 	.private_extern	__OBJC_PROTOCOL_$_NSPortDelegate ; @"_OBJC_PROTOCOL_$_NSPortDelegate"
 	.section	__DATA,__data
@@ -1778,7 +1805,7 @@ __OBJC_$_PROTOCOL_METHOD_TYPES_NSPortDelegate:
 	.p2align	3
 __OBJC_PROTOCOL_$_NSPortDelegate:
 	.quad	0
-	.quad	l_OBJC_CLASS_NAME_.23
+	.quad	l_OBJC_CLASS_NAME_.25
 	.quad	__OBJC_$_PROTOCOL_REFS_NSPortDelegate
 	.quad	0
 	.quad	0
@@ -1807,11 +1834,11 @@ __OBJC_$_PROTOCOL_REFS_NSMachPortDelegate:
 	.quad	0
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.67:               ; @OBJC_METH_VAR_NAME_.67
+l_OBJC_METH_VAR_NAME_.69:               ; @OBJC_METH_VAR_NAME_.69
 	.asciz	"handleMachMessage:"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.68:               ; @OBJC_METH_VAR_TYPE_.68
+l_OBJC_METH_VAR_TYPE_.70:               ; @OBJC_METH_VAR_TYPE_.70
 	.asciz	"v24@0:8^v16"
 
 	.section	__DATA,__objc_const
@@ -1819,13 +1846,13 @@ l_OBJC_METH_VAR_TYPE_.68:               ; @OBJC_METH_VAR_TYPE_.68
 __OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSMachPortDelegate:
 	.long	24                              ; 0x18
 	.long	1                               ; 0x1
-	.quad	l_OBJC_METH_VAR_NAME_.67
-	.quad	l_OBJC_METH_VAR_TYPE_.68
+	.quad	l_OBJC_METH_VAR_NAME_.69
+	.quad	l_OBJC_METH_VAR_TYPE_.70
 	.quad	0
 
 	.p2align	3                               ; @"_OBJC_$_PROTOCOL_METHOD_TYPES_NSMachPortDelegate"
 __OBJC_$_PROTOCOL_METHOD_TYPES_NSMachPortDelegate:
-	.quad	l_OBJC_METH_VAR_TYPE_.68
+	.quad	l_OBJC_METH_VAR_TYPE_.70
 
 	.private_extern	__OBJC_PROTOCOL_$_NSMachPortDelegate ; @"_OBJC_PROTOCOL_$_NSMachPortDelegate"
 	.section	__DATA,__data
@@ -1834,7 +1861,7 @@ __OBJC_$_PROTOCOL_METHOD_TYPES_NSMachPortDelegate:
 	.p2align	3
 __OBJC_PROTOCOL_$_NSMachPortDelegate:
 	.quad	0
-	.quad	l_OBJC_CLASS_NAME_.22
+	.quad	l_OBJC_CLASS_NAME_.24
 	.quad	__OBJC_$_PROTOCOL_REFS_NSMachPortDelegate
 	.quad	0
 	.quad	0
@@ -1887,31 +1914,27 @@ _OBJC_METACLASS_$_CidreMachPortDelegate:
 	.quad	__OBJC_METACLASS_RO_$_CidreMachPortDelegate
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.69:               ; @OBJC_METH_VAR_NAME_.69
-	.asciz	"foo"
-
-	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.70:               ; @OBJC_METH_VAR_TYPE_.70
-	.asciz	"v16@0:8"
+l_OBJC_METH_VAR_NAME_.71:               ; @OBJC_METH_VAR_NAME_.71
+	.asciz	"initWithFoo"
 
 	.section	__DATA,__objc_const
 	.p2align	3                               ; @"_OBJC_$_INSTANCE_METHODS_CidreMachPortDelegate"
 __OBJC_$_INSTANCE_METHODS_CidreMachPortDelegate:
 	.long	24                              ; 0x18
 	.long	2                               ; 0x2
-	.quad	l_OBJC_METH_VAR_NAME_.67
-	.quad	l_OBJC_METH_VAR_TYPE_.68
-	.quad	"-[CidreMachPortDelegate handleMachMessage:]"
 	.quad	l_OBJC_METH_VAR_NAME_.69
 	.quad	l_OBJC_METH_VAR_TYPE_.70
-	.quad	"-[CidreMachPortDelegate foo]"
+	.quad	"-[CidreMachPortDelegate handleMachMessage:]"
+	.quad	l_OBJC_METH_VAR_NAME_.71
+	.quad	l_OBJC_METH_VAR_TYPE_.31
+	.quad	"-[CidreMachPortDelegate initWithFoo]"
 
 	.section	__TEXT,__objc_methname,cstring_literals
-l_OBJC_METH_VAR_NAME_.71:               ; @OBJC_METH_VAR_NAME_.71
+l_OBJC_METH_VAR_NAME_.72:               ; @OBJC_METH_VAR_NAME_.72
 	.asciz	"_vtable"
 
 	.section	__TEXT,__objc_methtype,cstring_literals
-l_OBJC_METH_VAR_TYPE_.72:               ; @OBJC_METH_VAR_TYPE_.72
+l_OBJC_METH_VAR_TYPE_.73:               ; @OBJC_METH_VAR_TYPE_.73
 	.asciz	"[2^v]"
 
 	.section	__DATA,__objc_const
@@ -1920,8 +1943,8 @@ __OBJC_$_INSTANCE_VARIABLES_CidreMachPortDelegate:
 	.long	32                              ; 0x20
 	.long	1                               ; 0x1
 	.quad	_OBJC_IVAR_$_CidreMachPortDelegate._vtable
-	.quad	l_OBJC_METH_VAR_NAME_.71
-	.quad	l_OBJC_METH_VAR_TYPE_.72
+	.quad	l_OBJC_METH_VAR_NAME_.72
+	.quad	l_OBJC_METH_VAR_TYPE_.73
 	.long	3                               ; 0x3
 	.long	16                              ; 0x10
 
@@ -1930,13 +1953,13 @@ __OBJC_$_PROP_LIST_CidreMachPortDelegate:
 	.long	16                              ; 0x10
 	.long	4                               ; 0x4
 	.quad	l_OBJC_PROP_NAME_ATTR_
-	.quad	l_OBJC_PROP_NAME_ATTR_.56
-	.quad	l_OBJC_PROP_NAME_ATTR_.57
 	.quad	l_OBJC_PROP_NAME_ATTR_.58
 	.quad	l_OBJC_PROP_NAME_ATTR_.59
 	.quad	l_OBJC_PROP_NAME_ATTR_.60
 	.quad	l_OBJC_PROP_NAME_ATTR_.61
-	.quad	l_OBJC_PROP_NAME_ATTR_.60
+	.quad	l_OBJC_PROP_NAME_ATTR_.62
+	.quad	l_OBJC_PROP_NAME_ATTR_.63
+	.quad	l_OBJC_PROP_NAME_ATTR_.62
 
 	.p2align	3                               ; @"_OBJC_CLASS_RO_$_CidreMachPortDelegate"
 __OBJC_CLASS_RO_$_CidreMachPortDelegate:

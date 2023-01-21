@@ -1,5 +1,5 @@
 use std::{
-    arch::asm,
+    arch::{asm, global_asm},
     borrow::Cow,
     ffi::c_void,
     intrinsics::transmute,
@@ -20,7 +20,7 @@ impl<T: Obj> Class<T> {
     }
 
     #[msg_send(alloc)]
-    pub unsafe fn alloc(&self) -> &'static T;
+    pub fn alloc(&self) -> arc::A<T>;
 
     // in general alloc_init is faster
     #[msg_send(new)]
@@ -362,6 +362,23 @@ extern "C" {
     fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
     fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
 }
+#[macro_export]
+macro_rules! define_cls {
+    ($CLS:ident) => {
+        #[inline]
+        pub fn cls() -> &'static $crate::objc::Class<Self> {
+            unsafe {
+                println!("{:?}", $CLS);
+            };
+            unsafe { std::mem::transmute($CLS) }
+        }
+
+        #[inline]
+        pub fn alloc() -> $crate::arc::A<Self> {
+            Self::cls().alloc()
+        }
+    };
+}
 
 #[macro_export]
 macro_rules! define_obj_type {
@@ -483,7 +500,9 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
 }
 
 pub use cidre_macros::cls_msg_send;
+pub use cidre_macros::cls_msg_send_debug;
 pub use cidre_macros::msg_send;
+pub use cidre_macros::msg_send_debug;
 pub use cidre_macros::rar_retain;
 
 // global_asm!(

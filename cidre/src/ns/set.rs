@@ -33,27 +33,34 @@ impl<T: Obj> Deref for SetMut<T> {
     }
 }
 
+impl<T: Obj> arc::A<Set<T>> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<Set<T>>;
+
+    #[objc::msg_send(initWithObjects:count:)]
+    pub fn init_with_objects_count(self, ptr: *const c_void, count: usize) -> arc::R<Set<T>>;
+}
+
 impl<T: Obj> Set<T> {
     #[inline]
-    pub fn new() -> arc::R<Self> {
-        unsafe { transmute(NS_SET.alloc().init()) }
+    pub fn cls() -> &'static Class<Self> {
+        unsafe { transmute(NS_SET) }
     }
 
-    #[objc::msg_send(init)]
-    fn init(&self) -> arc::R<Self>;
+    #[inline]
+    pub fn alloc() -> arc::A<Self> {
+        Self::cls().alloc()
+    }
+
+    #[inline]
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
+    }
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        unsafe {
-            transmute(
-                NS_SET
-                    .alloc()
-                    .init_with_objects_count(objs.as_ptr() as _, objs.len()),
-            )
-        }
+        Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
     }
-    #[objc::msg_send(initWithObjects:count:)]
-    fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<Self>;
 
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;

@@ -1,5 +1,5 @@
 use crate::{
-    arc, define_obj_type, ns,
+    arc, define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
@@ -7,13 +7,18 @@ use super::{CounterSampleBuffer, DispatchType};
 
 define_obj_type!(Descriptor(ns::Id));
 
-impl Descriptor {
-    #[inline]
-    pub fn default() -> arc::R<Descriptor> {
-        unsafe { MTL_COMPUTE_PASS_DESCRIPTOR.alloc().init() }
-    }
+impl arc::A<Descriptor> {
     #[objc::msg_send(init)]
-    fn init(&self) -> arc::R<Self>;
+    pub fn init(self) -> arc::R<Descriptor>;
+}
+
+impl Descriptor {
+    define_cls!(MTL_COMPUTE_PASS_DESCRIPTOR);
+
+    #[inline]
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
+    }
 
     #[objc::msg_send(dispatchType)]
     pub fn dispatch_type(&self) -> DispatchType;
@@ -66,7 +71,7 @@ mod tests {
     #[test]
     fn basics() {
         objc::autoreleasepool(|| {
-            let cpd = mtl::ComputePassDescriptor::default();
+            let cpd = mtl::ComputePassDescriptor::new();
 
             assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
         })

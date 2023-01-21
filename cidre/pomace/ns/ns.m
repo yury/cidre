@@ -15,8 +15,9 @@
   cb( _vtable[0], msg);
 }
 
-- (void)foo {
-  NSNumber *num = [[[NSNumber alloc] initWithInt: 5] mutableCopy];
+- (nullable instancetype)initWithFoo {
+  self = [super init];
+  return nil;
 }
 
 @end

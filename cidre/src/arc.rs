@@ -11,6 +11,10 @@ pub trait Retain: Sized + Release {
 
 #[derive(Debug)]
 #[repr(transparent)]
+pub struct Allocated<T: Release + 'static>(&'static mut T);
+
+#[derive(Debug)]
+#[repr(transparent)]
 pub struct Retained<T: Release + 'static>(&'static mut T);
 
 impl<T: Retain + PartialEq> PartialEq for Retained<T> {
@@ -29,6 +33,13 @@ impl<T: Retain> Retained<T> {
     #[inline]
     pub fn retained(&self) -> Self {
         self.0.retained()
+    }
+}
+
+impl<T: Release> Drop for Allocated<T> {
+    #[inline]
+    fn drop(&mut self) {
+        unsafe { self.0.release() }
     }
 }
 
@@ -73,5 +84,6 @@ impl<T: Retain> Clone for Retained<T> {
     }
 }
 
+pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
 pub type Rar<T> = objc::ReturnedAutoReleased<T>;

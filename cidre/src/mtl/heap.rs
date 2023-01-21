@@ -1,5 +1,5 @@
 use crate::{
-    arc, define_mtl, define_obj_type, mtl, ns,
+    arc, define_cls, define_mtl, define_obj_type, mtl, ns,
     objc::{self, Class},
 };
 
@@ -13,7 +13,13 @@ pub enum Type {
 
 define_obj_type!(Descriptor(ns::Id));
 
+impl arc::A<Descriptor> {
+    #[objc::msg_send(init)]
+    fn init(self) -> arc::R<Descriptor>;
+}
+
 impl Descriptor {
+    define_cls!(MTL_HEAP_DESCRIPTOR);
     define_mtl!(
         storage_mode,
         set_storage_mode,
@@ -39,11 +45,8 @@ impl Descriptor {
     /// ```
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { MTL_HEAP_DESCRIPTOR.alloc().init() }
+        Self::alloc().init()
     }
-
-    #[objc::msg_send(init)]
-    fn init(&self) -> arc::R<Self>;
 
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;

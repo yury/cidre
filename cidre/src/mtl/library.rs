@@ -1,7 +1,7 @@
 use std::{fmt::Debug, intrinsics::transmute};
 
 use crate::{
-    arc, define_mtl, define_obj_type, mtl, ns,
+    arc, define_cls, define_mtl, define_obj_type, mtl, ns,
     objc::{self, Class},
 };
 
@@ -35,7 +35,13 @@ pub enum OptimizationLevel {
 
 define_obj_type!(CompileOptions(ns::Id));
 
+impl arc::A<CompileOptions> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<CompileOptions>;
+}
+
 impl CompileOptions {
+    define_cls!(MTL_COMPILE_OPTIONS);
     /// ```no_run
     /// use cidre::mtl;
     ///
@@ -52,11 +58,8 @@ impl CompileOptions {
     ///
     /// ```
     pub fn new() -> arc::R<CompileOptions> {
-        unsafe { MTL_COMPILE_OPTIONS.alloc().init() }
+        Self::alloc().init()
     }
-
-    #[objc::msg_send(init)]
-    fn init(&self) -> arc::R<Self>;
 
     #[objc::msg_send(fastMathEnabled)]
     pub fn fast_math_enabled(&self) -> bool;

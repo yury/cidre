@@ -1,101 +1,131 @@
 use crate::{
     arc, define_obj_type, ns,
-    objc::{self, Class, Obj},
+    objc::{self, Class},
 };
 
 define_obj_type!(Value(ns::Id));
 define_obj_type!(Number(Value));
 
+// initializers
+impl arc::A<Number> {
+    #[objc::msg_send(initWithChar:)]
+    fn init_with_char(self, value: i8) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithUnsignedChar:)]
+    fn init_with_unsigned_char(self, value: u8) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithShort:)]
+    fn init_with_short(self, value: i16) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithUnsignedShort:)]
+    fn init_with_unsinged_short(self, value: u16) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithInt:)]
+    fn init_with_int(self, value: i32) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithUnsignedInt:)]
+    fn init_with_unsigned_int(self, value: u32) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithLongLong:)]
+    fn init_with_long_long(self, value: i64) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithUnsignedLongLong:)]
+    fn init_with_unsigned_long_long(self, value: u64) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithFloat:)]
+    fn init_with_float(self, value: f32) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithDouble:)]
+    fn init_with_double(self, value: f64) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithBool:)]
+    fn init_with_bool(self, value: bool) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithInteger:)]
+    fn init_with_integer(self, value: ns::Integer) -> arc::R<Number>;
+
+    #[objc::msg_send(initWithUnsignedInteger:)]
+    fn init_with_unsigned_integer(self, value: ns::UInteger) -> arc::R<Number>;
+}
+
 impl Number {
-    #[must_use]
+    #[inline]
+    pub fn cls() -> &'static Class<Self> {
+        unsafe { NS_NUMBER }
+    }
+
+    #[inline]
+    pub fn alloc() -> arc::A<Self> {
+        Self::cls().alloc()
+    }
+
     #[inline]
     pub fn with_i8(value: i8) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_char, value) }
+        Self::alloc().init_with_char(value)
     }
 
-    #[must_use]
     #[inline]
     pub fn with_u8(value: u8) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_char, value) }
+        Self::alloc().init_with_unsigned_char(value)
     }
 
-    #[inline]
-    pub fn tagged_i8(value: i8) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_char, value) }
-    }
+    #[objc::cls_msg_send(numberWithChar:)]
+    pub fn tagged_i8(value: i8) -> &'static Self;
 
-    #[inline]
-    pub fn tagged_u8(value: u8) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_char, value) }
-    }
+    #[objc::cls_msg_send(numberWithUnsignedChar:)]
+    pub fn tagged_u8(value: u8) -> &'static Self;
 
-    #[must_use]
     #[inline]
     pub fn with_i16(value: i16) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_short, value) }
+        Self::alloc().init_with_short(value)
     }
 
-    #[must_use]
     #[inline]
     pub fn with_u16(value: u16) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_short, value) }
+        Self::alloc().init_with_unsinged_short(value)
     }
 
-    #[inline]
-    pub fn tagged_i16(value: i16) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_short, value) }
-    }
+    #[objc::cls_msg_send(numberWithShort:)]
+    pub fn tagged_i16(value: i16) -> &'static Self;
 
-    #[inline]
-    pub fn tagged_u16(value: u16) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_short, value) }
-    }
+    #[objc::cls_msg_send(numberWithUnsignedShort:)]
+    pub fn tagged_u16(value: u16) -> &'static Self;
 
-    #[must_use]
     #[inline]
     pub fn with_i32(value: i32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
+        Self::alloc().init_with_int(value)
     }
 
-    #[must_use]
     #[inline]
     pub fn with_u32(value: u32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_int, value) }
+        Self::alloc().init_with_unsigned_int(value)
     }
 
-    #[inline]
-    pub fn tagged_i32(value: i32) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_int, value) }
-    }
+    #[objc::cls_msg_send(numberWithInt:)]
+    pub fn tagged_i32(value: i32) -> &'static Self;
 
     // for benches
-    #[inline]
-    pub fn tagged_i32_alloc(value: i32) -> &'static Self {
-        unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
-    }
+    // #[inline]
+    // pub fn tagged_i32_alloc(value: i32) -> &'static Self {
+    //     unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
+    // }
 
-    #[inline]
-    pub fn tagged_u32(value: u32) -> &'static Self {
-        unsafe { NS_NUMBER.call1(number_with_unsigned_int, value) }
-    }
+    #[objc::cls_msg_send(numberWithUnsignedInt:)]
+    pub fn tagged_u32(value: u32) -> &'static Self;
 
-    #[must_use]
     #[inline]
     pub fn with_i64(value: i64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
+        Self::alloc().init_with_long_long(value)
     }
 
     // for benches
-    #[must_use]
     #[inline]
     pub fn with_i64_ar_retain(value: i64) -> arc::R<Self> {
         Self::with_i64_ar(value).retain()
     }
 
-    #[inline]
-    pub fn with_i64_ar(value: i64) -> arc::Rar<Self> {
-        unsafe { NS_NUMBER.call1(number_with_integer, value) }
-    }
+    #[objc::cls_msg_send(numberWithLongLong:)]
+    pub fn with_i64_ar(value: i64) -> arc::Rar<Self>;
 
     // for benches
     #[inline]
@@ -103,55 +133,40 @@ impl Number {
         unsafe { NSNumber_numberWithInteger(value) }
     }
 
-    #[must_use]
     #[inline]
     pub fn with_isize(value: isize) -> arc::R<Self> {
         Self::with_i64(value as _)
     }
 
-    #[must_use]
     #[inline]
     pub fn with_u64(value: u64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
+        Self::alloc().init_with_unsigned_long_long(value)
     }
 
-    #[must_use]
     #[inline]
     pub fn with_f32(value: f32) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_float, value) }
+        Self::alloc().init_with_float(value)
     }
 
-    // #[inline]
-    // pub fn tagged_f32(value: f32) -> &'static Self {
-    //     unsafe { NS_NUMBER.call1(number_with_float, value) }
-    // }
-
-    #[must_use]
     #[inline]
     pub fn with_f64(value: f64) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_double, value) }
+        Self::alloc().init_with_double(value)
     }
 
     #[inline]
     pub fn with_bool(value: bool) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_bool, value) }
+        Self::alloc().init_with_bool(value)
     }
 
-    // #[inline]
-    // pub fn tagged_bool(value: bool) -> &'static Self {
-    //     unsafe { NS_NUMBER.call1(number_with_bool, value) }
-    // }
-
-    #[must_use]
     #[inline]
     pub fn with_integer(value: ns::Integer) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_integer, value) }
+        Self::alloc().init_with_integer(value)
     }
 
     #[must_use]
     #[inline]
     pub fn with_uinteger(value: ns::UInteger) -> arc::R<Self> {
-        unsafe { NS_NUMBER.alloc().call1(init_with_unsigned_integer, value) }
+        Self::alloc().init_with_unsigned_integer(value)
     }
 
     #[objc::msg_send(charValue)]
@@ -316,69 +331,6 @@ extern "C" {
     fn NSNumber_numberWithInteger(value: i64) -> arc::R<ns::Number>;
 }
 
-extern "C" {
-    #[link_name = "objc_msgSend$numberWithChar:"]
-    fn number_with_char();
-
-    #[link_name = "objc_msgSend$initWithChar:"]
-    fn init_with_char();
-
-    #[link_name = "objc_msgSend$numberWithUnsignedChar:"]
-    fn number_with_unsigned_char();
-
-    #[link_name = "objc_msgSend$initWithUnsignedChar:"]
-    fn init_with_unsigned_char();
-
-    #[link_name = "objc_msgSend$numberWithShort:"]
-    fn number_with_short();
-
-    #[link_name = "objc_msgSend$initWithShort:"]
-    fn init_with_short();
-
-    #[link_name = "objc_msgSend$numberWithUnsignedShort:"]
-    fn number_with_unsigned_short();
-
-    #[link_name = "objc_msgSend$initWithUnsignedShort:"]
-    fn init_with_unsigned_short();
-
-    #[link_name = "objc_msgSend$numberWithInt:"]
-    fn number_with_int();
-
-    #[link_name = "objc_msgSend$initWithInt:"]
-    fn init_with_int();
-
-    #[link_name = "objc_msgSend$numberWithUnsignedInt:"]
-    fn number_with_unsigned_int();
-
-    #[link_name = "objc_msgSend$initWithUnsignedInt:"]
-    fn init_with_unsigned_int();
-
-    // #[link_name = "objc_msgSend$numberWithFloat:"]
-    // fn number_with_float();
-
-    #[link_name = "objc_msgSend$initWithFloat:"]
-    fn init_with_float();
-
-    #[link_name = "objc_msgSend$initWithDouble:"]
-    fn init_with_double();
-
-    // #[link_name = "objc_msgSend$numberWithBool:"]
-    // fn number_with_bool();
-
-    #[link_name = "objc_msgSend$initWithBool:"]
-    fn init_with_bool();
-
-    #[link_name = "objc_msgSend$numberWithInteger:"]
-    fn number_with_integer();
-
-    #[link_name = "objc_msgSend$initWithInteger:"]
-    fn init_with_integer();
-
-    #[link_name = "objc_msgSend$initWithUnsignedInteger:"]
-    fn init_with_unsigned_integer();
-
-}
-
 #[cfg(test)]
 mod tests {
     use crate::{
@@ -425,5 +377,12 @@ mod tests {
             println!("{:?}", s);
         });
         //        let foo = autoreleasepool(|| ns::Number::with_i64_ar(10));
+    }
+
+    #[test]
+    fn basics() {
+        let f = ns::Number::with_i8(10);
+
+        assert_eq!(f.as_usize(), 10usize);
     }
 }

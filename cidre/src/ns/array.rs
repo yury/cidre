@@ -6,7 +6,7 @@ use std::{
 };
 
 use crate::{
-    arc, ns,
+    arc, define_cls, ns,
     objc::{self, Class, Obj},
 };
 
@@ -38,14 +38,21 @@ impl<T: Obj> Deref for ArrayMut<T> {
     }
 }
 
+impl<T: Obj> arc::A<Array<T>> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<Array<T>>;
+
+    #[objc::msg_send(initWithObjects:count:)]
+    pub fn init_with_objects_count(self, ptr: *const c_void, count: usize) -> arc::R<Array<T>>;
+}
+
 impl<T: Obj> Array<T> {
+    define_cls!(NS_ARRAY);
+
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(NS_ARRAY.alloc().init()) }
+        Self::alloc().init()
     }
-
-    #[objc::msg_send(init)]
-    fn init(&self) -> arc::R<Self>;
 
     // use new() with uses alloc_init and it is faster
     // _new() is slower
@@ -56,17 +63,8 @@ impl<T: Obj> Array<T> {
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        unsafe {
-            transmute(
-                NS_ARRAY
-                    .alloc()
-                    .init_with_objects_count(objs.as_ptr() as _, objs.len()),
-            )
-        }
+        Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
     }
-
-    #[objc::msg_send(initWithObjects:count:)]
-    fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<Self>;
 
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
@@ -97,14 +95,26 @@ where
     fn index_mut(&mut self, index: usize) -> &mut Self::Output;
 }
 
+impl<T: Obj> arc::A<ArrayMut<T>> {
+    #[objc::msg_send(initWithCapacity:)]
+    pub fn init_with_capacity(self, capacity: usize) -> arc::R<ArrayMut<T>>;
+
+    #[objc::msg_send(initWithObjects:count:)]
+    pub fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<ArrayMut<T>>;
+}
+
 impl<T: Obj> ArrayMut<T> {
+    define_cls!(NS_MUTABLE_ARRAY);
+
     #[inline]
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
-        unsafe { transmute(NS_MUTABLE_ARRAY.alloc().init_with_capacity(capacity)) }
+        Self::alloc().init_with_capacity(capacity)
     }
 
-    #[objc::msg_send(initWithCapacity:)]
-    fn init_with_capacity(&self, capacity: usize) -> arc::R<Self>;
+    #[inline]
+    pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
+        Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
+    }
 }
 
 impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}
