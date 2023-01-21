@@ -36,18 +36,28 @@ impl SearchOptions {
     pub const ANCHORED: Self = Self(1 << 1);
 }
 
-define_obj_type!(Data(ns::Id));
+define_obj_type!(Data(ns::Id), NS_DATA);
+define_obj_type!(DataMut(Data), NS_MUTABLE_DATA);
 
-impl Data {
-    #[inline]
-    pub unsafe fn with_contents_of_file_options_error(
+impl arc::A<Data> {
+    #[objc::msg_send(initWithContentsOfFile:options:error:)]
+    pub fn init_with_contents_of_file_options_error(
+        self,
         path: &ns::String,
         options: ReadingOptions,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Self>> {
-        NSData_dataWithContentsOfFile_options_error(path, options, error)
-    }
+    ) -> Option<arc::R<Data>>;
 
+    #[objc::msg_send(initWithContentsOfURL:options:error:)]
+    pub fn init_with_contents_of_url_options_error(
+        self,
+        url: &ns::URL,
+        options: ReadingOptions,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<Data>>;
+}
+
+impl Data {
     #[inline]
     pub fn with_contents_of_file_options(
         path: &ns::String,
@@ -55,21 +65,13 @@ impl Data {
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
-            let res = Self::with_contents_of_file_options_error(path, options, &mut error);
+            let res =
+                Self::alloc().init_with_contents_of_file_options_error(path, options, &mut error);
             match res {
                 Some(r) => Ok(r),
                 None => Err(transmute(error)),
             }
         }
-    }
-
-    #[inline]
-    pub unsafe fn with_contents_of_url_options_error(
-        url: &ns::URL,
-        options: ReadingOptions,
-        error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Self>> {
-        NSData_dataWithContentsOfURL_options_error(url, options, error)
     }
 
     #[inline]
@@ -79,7 +81,8 @@ impl Data {
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
-            let res = Self::with_contents_of_url_options_error(url, options, &mut error);
+            let res =
+                Self::alloc().init_with_contents_of_url_options_error(url, options, &mut error);
             match res {
                 Some(r) => Ok(r),
                 None => Err(transmute(error)),
@@ -110,10 +113,8 @@ impl Data {
     ///
     /// If path contains a tilde (~) character, you must expand it with stringByExpandingTildeInPath
     /// before invoking this method.
-    #[inline]
-    pub fn write_to_file(&self, path: &ns::String, atomically: bool) -> bool {
-        unsafe { rsel_writeToFile_atomically(self, path, atomically) }
-    }
+    #[objc::msg_send(writeToFile:atomically:)]
+    pub fn write_to_file(&self, path: &ns::String, atomically: bool) -> bool;
 
     #[inline]
     pub fn write_at_path(&self, path: &ns::String, atomically: bool) -> Result<(), ()> {
@@ -127,17 +128,6 @@ impl Data {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSData_dataWithContentsOfFile_options_error(
-        path: &ns::String,
-        options: ReadingOptions,
-        error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Data>>;
-
-    fn NSData_dataWithContentsOfURL_options_error(
-        url: &ns::URL,
-        options: ReadingOptions,
-        error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Data>>;
-
-    fn rsel_writeToFile_atomically(id: &ns::Id, path: &ns::String, atomically: bool) -> bool;
+    static NS_DATA: &'static objc::Class<Data>;
+    static NS_MUTABLE_DATA: &'static objc::Class<DataMut>;
 }

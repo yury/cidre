@@ -39,16 +39,6 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
   }
 }
 
-#pragma mark NSData
-
-NS_RETURNS_RETAINED
-csel3(, NSData, dataWithContentsOfFile, NSString *, options, NSDataReadingOptions, error, NSError **, NSData *)
-
-NS_RETURNS_RETAINED
-csel3(, NSData, dataWithContentsOfURL, NSURL *, options, NSDataReadingOptions, error, NSError **, NSData *)
-
-rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
-
 #pragma mark - NSNumber
 
 NS_RETURNS_RETAINED
