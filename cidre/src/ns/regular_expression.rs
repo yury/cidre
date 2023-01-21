@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, define_options, ns};
+use crate::{arc, cf, define_cls, define_obj_type, define_options, ns, objc};
 
 define_options!(Options(usize));
 
@@ -83,26 +83,27 @@ impl MatchingFlags {
 
 define_obj_type!(RegularExpression(ns::Id));
 
-impl RegularExpression {
-    #[inline]
-    pub fn with_pattern_error(
-        pattern: &cf::String,
+impl arc::A<RegularExpression> {
+    #[objc::msg_send(initWithPattern:options:error:)]
+    pub fn init_with_pattern_options_error(
+        self,
+        pattern: &ns::String,
         options: Options,
-        error: &mut Option<&cf::Error>,
-    ) -> Option<arc::R<Self>> {
-        unsafe {
-            NSRegularExpression_regularExpressionWithPattern_options_error(pattern, options, error)
-        }
-    }
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<RegularExpression>>;
+}
+
+impl RegularExpression {
+    define_cls!(NS_REGULAR_EXPRESSION);
 
     #[inline]
     pub fn with_pattern(
-        pattern: &cf::String,
+        pattern: &ns::String,
         options: Options,
-    ) -> Result<arc::R<Self>, &cf::Error> {
+    ) -> Result<arc::R<Self>, &ns::Error> {
         let mut error = None;
         unsafe {
-            let res = Self::with_pattern_error(pattern, options, &mut error);
+            let res = Self::alloc().init_with_pattern_options_error(pattern, options, &mut error);
             match res {
                 Some(res) => Ok(res),
                 None => Err(error.unwrap_unchecked()),
@@ -113,11 +114,7 @@ impl RegularExpression {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSRegularExpression_regularExpressionWithPattern_options_error(
-        pattern: &cf::String,
-        options: Options,
-        error: &mut Option<&cf::Error>,
-    ) -> Option<arc::R<RegularExpression>>;
+    static NS_REGULAR_EXPRESSION: &'static objc::Class<RegularExpression>;
 }
 
 #[cfg(test)]
@@ -126,7 +123,7 @@ mod tests {
     #[test]
     fn basics() {
         let pat =
-            ns::RegularExpression::with_pattern(&cf::String::from_str(".*"), Default::default())
+            ns::RegularExpression::with_pattern(&ns::String::with_str(".*"), Default::default())
                 .unwrap();
         println!("pat {:?}", pat);
     }

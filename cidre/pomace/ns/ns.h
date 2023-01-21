@@ -44,12 +44,6 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 
-#pragma mark - NSRegularExpression
-
-NS_RETURNS_RETAINED
-csel3(, NSRegularExpression, regularExpressionWithPattern, NSString *, options, NSRegularExpressionOptions, error, NSError **, NSRegularExpression *)
-
-
 Class NS_NUMBER;
 Class NS_ARRAY;
 Class NS_MUTABLE_ARRAY;
@@ -71,6 +65,7 @@ Class NS_URL_REQUEST;
 Class NS_MUTABLE_URL_REQUEST;
 Class NS_URL_RESPONSE;
 Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
+Class NS_REGULAR_EXPRESSION;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -104,6 +99,8 @@ static void common_initializer()
     NS_MUTABLE_URL_REQUEST = [NSMutableURLRequest class];
     NS_URL_RESPONSE = [NSURLResponse class];
     NS_URL_SESSION_WEB_SOCKET_MESSAGE = [NSURLSessionWebSocketMessage class];
+    
+    NS_REGULAR_EXPRESSION = [NSRegularExpression class];
   }
 }
 NS_ASSUME_NONNULL_END
