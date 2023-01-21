@@ -81,6 +81,7 @@ pub use set::SetMut;
 
 mod data;
 pub use data::Data;
+pub use data::DataMut;
 pub use data::ReadingOptions as DataReadingOptions;
 pub use data::SearchOptions as DataSearchOptions;
 pub use data::WritingOptions as DataWritingOptions;

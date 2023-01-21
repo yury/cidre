@@ -1,5 +1,5 @@
 use crate::{
-    define_obj_type, ns,
+    define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
@@ -28,6 +28,7 @@ pub enum ThermalState {
 define_obj_type!(ProcessInfo(ns::Id));
 
 impl ProcessInfo {
+    define_cls!(NS_PROCESS_INFO);
     /// ```no_run
     /// use cidre::ns;
     ///
@@ -40,11 +41,6 @@ impl ProcessInfo {
     /// ```
     #[objc::cls_msg_send(processInfo)]
     pub fn current() -> &'static ProcessInfo;
-
-    #[inline]
-    pub fn cls() -> &'static Class<Self> {
-        unsafe { NS_PROCESS_INFO }
-    }
 
     #[objc::msg_send(thermalState)]
     pub fn thermal_state(&self) -> ThermalState;

@@ -96,6 +96,10 @@ impl Data {
     #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     #[inline]
     pub fn as_slice(&self) -> &[u8] {
         unsafe { &*slice_from_raw_parts(self.bytes(), self.len()) }
@@ -130,4 +134,18 @@ impl Data {
 extern "C" {
     static NS_DATA: &'static objc::Class<Data>;
     static NS_MUTABLE_DATA: &'static objc::Class<DataMut>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let data = ns::Data::new();
+        assert!(data.is_empty());
+
+        let data = ns::DataMut::new();
+        assert!(data.is_empty());
+    }
 }
