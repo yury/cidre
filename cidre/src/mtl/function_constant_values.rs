@@ -37,19 +37,12 @@ mod tests {
     use crate::{mtl, ns};
 
     #[test]
-    fn basics1() {
+    fn basics() {
         let mut fcv = mtl::FunctionConstantValues::new();
         let v = false;
         fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
         fcv.reset();
-    }
-
-    #[test]
-    fn basics2() {
-        let mut fcv = mtl::FunctionConstantValues::new();
-        let v = false;
         let name = ns::String::with_str("name");
         fcv.set_value_with_name(&v as *const bool as _, mtl::DataType::Bool, &name);
-        fcv.reset();
     }
 }
