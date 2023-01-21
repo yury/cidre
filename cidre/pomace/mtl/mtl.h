@@ -50,11 +50,6 @@ rsel1(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder
 
 SEL sel_updateFence_a;
 SEL sel_waitForFence_a;
-SEL sel_newCommandQueue;
-SEL sel_newFence;
-SEL sel_useResource_usage;
-SEL sel_useResources_count_usage;
-SEL sel_enqueue;
 //- (void)setTexture:(nullable id <MTLTexture>)texture atIndex:(NSUInteger)index;
 SEL sel_setTexture_atIndex;
 SEL sel_setFragmentTexture_atIndex;
@@ -107,11 +102,6 @@ static void mtl_initializer()
 //      sel_computeCommandEncoder = @selector(computeCommandEncoder);
       sel_updateFence_a = @selector(updateFence:);
       sel_waitForFence_a = @selector(waitForFence:);
-      sel_newCommandQueue = @selector(newCommandQueue);
-      sel_newFence = @selector(newFence);
-      sel_useResource_usage = @selector(useResource:usage:);
-      sel_useResources_count_usage = @selector(useResources:count:usage:);
-      sel_enqueue = @selector(enqueue);
       sel_setTexture_atIndex = @selector(setTexture:atIndex:);
       sel_setFragmentTexture_atIndex = @selector(setFragmentTexture:atIndex:);
       sel_setArgumentBuffer_offset = @selector(setArgumentBuffer:offset:);
