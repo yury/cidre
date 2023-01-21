@@ -43,6 +43,11 @@ pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
+pub fn cls_rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
+    gen_msg_send(sel, func, true, true, false)
+}
+
+#[proc_macro_attribute]
 pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
     gen_msg_send(sel, func, false, false, false)
 }
@@ -70,7 +75,7 @@ fn gen_msg_send(
     debug: bool,
 ) -> TokenStream {
     let extern_name = sel.to_string().replace(' ', "");
-    let is_init = extern_name.starts_with("init");
+    let _is_init = extern_name.starts_with("init");
     let args_count = sel_args_count(sel);
 
     let mut iter = func.into_iter();
@@ -170,12 +175,16 @@ fn gen_msg_send(
     }
 
     let flow = if retain {
+        let mut self_ = "self.".to_string();
+        if class {
+            self_ = "Self::".to_string();
+        }
         if option {
             format!(
                 "
                 #[inline]
                 {pre} {fn_name}{gen}{args} {ret_full} {{
-                    arc::Rar::option_retain(self.{fn_name}_ar({vars}) )
+                    arc::Rar::option_retain({self_}{fn_name}_ar({vars}) )
                 }}
                 "
             )
@@ -184,7 +193,7 @@ fn gen_msg_send(
                 "
                 #[inline]
                 {pre} {fn_name}{gen}{args} {ret_full} {{
-                    self.{fn_name}_ar({vars}).retain()
+                    {self_}{fn_name}_ar({vars}).retain()
                 }}
                 "
             )

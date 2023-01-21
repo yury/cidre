@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_mtl, define_obj_type, define_options, io, mtl, ns, objc};
+use crate::{arc, cf, define_cls, define_mtl, define_obj_type, define_options, io, mtl, ns, objc};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -77,6 +77,7 @@ pub enum CompressionType {
 define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
+    define_cls!(MTL_TEXTURE_DESCRIPTOR);
     define_mtl!(storage_mode, set_storage_mode);
 
     /// ```no_run
@@ -100,22 +101,21 @@ impl Descriptor {
     /// assert_eq!(td.height(), 300);
     ///
     /// ```
-    #[inline]
-    pub fn new_2d_with_pixel_format<'ar>(
+    #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
+    pub fn new_2d_with_pixel_format_ar(
         pixel_format: mtl::PixelFormat,
         width: usize,
         height: usize,
         mipmapped: bool,
-    ) -> &'ar mut Descriptor {
-        unsafe {
-            MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped(
-                pixel_format,
-                width,
-                height,
-                mipmapped,
-            )
-        }
-    }
+    ) -> arc::Rar<Descriptor>;
+
+    #[objc::cls_rar_retain()]
+    pub fn new_2d_with_pixel_format(
+        pixel_format: mtl::PixelFormat,
+        width: usize,
+        height: usize,
+        mipmapped: bool,
+    ) -> arc::R<Descriptor>;
 
     /// ```no_run
     /// use cidre::mtl;
@@ -125,37 +125,35 @@ impl Descriptor {
     /// assert_eq!(td.texture_type(), mtl::TextureType::Cube);
     ///
     /// ```
-    #[inline]
+    #[objc::cls_msg_send(textureCubeDescriptorWithPixelFormat:size:mipmapped:)]
+    pub fn new_cube_with_pixel_format_ar(
+        pixel_format: mtl::PixelFormat,
+        size: usize,
+        mipmapped: bool,
+    ) -> arc::Rar<Descriptor>;
+
+    #[objc::cls_rar_retain()]
     pub fn new_cube_with_pixel_format(
         pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> arc::R<Descriptor> {
-        unsafe {
-            MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
-                pixel_format,
-                size,
-                mipmapped,
-            )
-        }
-    }
+    ) -> arc::R<Descriptor>;
 
-    #[inline]
+    #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:resourceOptions:usage:)]
+    pub fn with_resource_options_ar(
+        pixel_format: mtl::PixelFormat,
+        width: usize,
+        resource_options: mtl::resource::Options,
+        usage: Usage,
+    ) -> arc::Rar<Descriptor>;
+
+    #[objc::cls_rar_retain()]
     pub fn with_resource_options(
         pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: mtl::resource::Options,
         usage: Usage,
-    ) -> arc::R<Descriptor> {
-        unsafe {
-            MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
-                pixel_format,
-                width,
-                resource_options,
-                usage,
-            )
-        }
-    }
+    ) -> arc::R<Descriptor>;
 
     #[objc::msg_send(textureType)]
     pub fn texture_type(&self) -> Type;
@@ -297,23 +295,7 @@ impl Texture {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_height_mipmapped<'ar>(
-        pixel_format: mtl::PixelFormat,
-        width: usize,
-        height: usize,
-        mipmapped: bool,
-    ) -> &'ar mut Descriptor;
-    fn MTLTextureDescriptor_textureCubeDescriptorWithPixelFormat_size_mipmapped(
-        pixel_format: mtl::PixelFormat,
-        size: usize,
-        mipmapped: bool,
-    ) -> arc::R<Descriptor>;
-    fn MTLTextureDescriptor_texture2DDescriptorWithPixelFormat_width_resourceOptions_usage(
-        pixel_format: mtl::PixelFormat,
-        width: usize,
-        resource_options: crate::mtl::resource::Options,
-        usage: Usage,
-    ) -> arc::R<Descriptor>;
+    static MTL_TEXTURE_DESCRIPTOR: &'static objc::Class<Descriptor>;
 }
 
 #[cfg(test)]
@@ -322,7 +304,7 @@ mod tests {
 
     #[test]
     fn basics1() {
-        let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
+        let mut td = mtl::TextureDescriptor::new_2d_with_pixel_format(
             mtl::PixelFormat::A8Unorm,
             100,
             200,

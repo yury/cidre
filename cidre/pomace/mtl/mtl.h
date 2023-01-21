@@ -11,15 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NS_RETURNS_RETAINED
-csel4(, MTLTextureDescriptor, texture2DDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, height, NSUInteger, mipmapped, BOOL,  MTLTextureDescriptor * _Nonnull)
-
-NS_RETURNS_RETAINED
-csel3(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelFormat, size, NSUInteger, mipmapped, BOOL, MTLTextureDescriptor * _Nonnull)
-
-//NS_RETURNS_RETAINED
-csel4(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
-
 Class MTL_COMPUTE_PASS_DESCRIPTOR;
 Class MTL_HEAP_DESCRIPTOR;
 Class MTL_COMPILE_OPTIONS;
@@ -30,6 +21,7 @@ Class MTL_BLIT_PASS_DESCRIPTOR;
 Class MTL_RENDER_PIPELINE_DESCRIPTOR;
 Class MTL_FUNCTION_DESCRIPTOR;
 Class MTL_FUNCTION_CONSTANT_VALUES;
+Class MTL_TEXTURE_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -47,6 +39,7 @@ static void mtl_initializer()
       MTL_RENDER_PIPELINE_DESCRIPTOR = [MTLRenderPipelineDescriptor class];
       MTL_FUNCTION_DESCRIPTOR = [MTLFunctionDescriptor class];
       MTL_FUNCTION_CONSTANT_VALUES = [MTLFunctionConstantValues class];
+      MTL_TEXTURE_DESCRIPTOR = [MTLTextureDescriptor class];
 
       initialized = 1;
     }
