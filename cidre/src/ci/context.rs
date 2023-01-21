@@ -1,17 +1,28 @@
-use crate::{arc, cf, cg, ci, define_obj_type, ns};
+use crate::{arc, cf, cg, ci, define_obj_type, ns, objc};
 
-define_obj_type!(Context(ns::Id));
+define_obj_type!(Context(ns::Id), CI_CONTEXT);
+
+impl arc::A<Context> {
+    #[objc::msg_send(initWithOptions:)]
+    pub fn init_with_options(self, options: Option<&cf::Dictionary>) -> Option<arc::R<Context>>;
+}
 
 impl Context {
     #[inline]
     pub fn with_options(options: Option<&cf::Dictionary>) -> Option<arc::R<Self>> {
-        unsafe { CIContext_contextWithOptions(options) }
+        Self::alloc().init_with_options(options)
     }
 
-    #[inline]
-    pub fn new() -> Option<arc::R<Self>> {
-        Self::with_options(None)
-    }
+    #[objc::msg_send(writePNGRepresentationOfImage:toURL:format:colorSpace:options:error:)]
+    fn write_png_to_url_format_colorspace_options_error<'ar>(
+        &self,
+        image: &ci::Image,
+        url: &ns::URL,
+        format: ci::Format,
+        color_space: &cg::ColorSpace,
+        options: &cf::Dictionary,
+        error: &mut Option<&'ar ns::Error>,
+    ) -> bool;
 
     pub fn write_png_to_url<'ar>(
         &self,
@@ -21,38 +32,25 @@ impl Context {
         color_space: &cg::ColorSpace,
         options: &cf::Dictionary,
     ) -> Result<(), &'ar ns::Error> {
-        unsafe {
-            let mut error = None;
-            let res = rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error(
-                self,
-                image,
-                url,
-                format,
-                color_space,
-                options,
-                &mut error,
-            );
+        let mut error = None;
+        let res = self.write_png_to_url_format_colorspace_options_error(
+            image,
+            url,
+            format,
+            color_space,
+            options,
+            &mut error,
+        );
 
-            if res {
-                Ok(())
-            } else {
-                Err(error.unwrap())
-            }
+        if res {
+            Ok(())
+        } else {
+            Err(error.unwrap())
         }
     }
 }
 
 #[link(name = "ci", kind = "static")]
 extern "C" {
-    fn CIContext_contextWithOptions(options: Option<&cf::Dictionary>) -> Option<arc::R<Context>>;
-
-    fn rsel_writePNGRepresentationOfImage_toURL_format_colorSpace_options_error<'ar>(
-        context: &ns::Id,
-        image: &ci::Image,
-        url: &ns::URL,
-        format: ci::Format,
-        color_space: &cg::ColorSpace,
-        options: &cf::Dictionary,
-        error: &mut Option<&'ar ns::Error>,
-    ) -> bool;
+    static CI_CONTEXT: &'static objc::Class<Context>;
 }

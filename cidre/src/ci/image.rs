@@ -1,15 +1,24 @@
-use std::mem::transmute;
-
-use crate::{arc, cf, define_cf_type, define_obj_type, mtl, ns};
+use crate::{arc, cf, define_cf_type, define_cls, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(Image(ns::Id));
 
+impl arc::A<Image> {
+    #[objc::msg_send(initWithMTLTexture:options:)]
+    pub fn init_with_mlt_texture_options(
+        self,
+        texture: &mtl::Texture,
+        options: Option<&cf::DictionaryOf<ImageOption, cf::Type>>,
+    ) -> Option<arc::R<Image>>;
+}
+
 impl Image {
+    define_cls!(CI_IMAGE);
+
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
         options: Option<&cf::DictionaryOf<ImageOption, cf::Type>>,
     ) -> Option<arc::R<Self>> {
-        unsafe { CIImage_imageWithMTLTexture_options(texture, transmute(options)) }
+        Self::alloc().init_with_mlt_texture_options(texture, options)
     }
 }
 
@@ -291,10 +300,7 @@ impl ImageOption {
 
 #[link(name = "ci", kind = "static")]
 extern "C" {
-    fn CIImage_imageWithMTLTexture_options(
-        texture: &mtl::Texture,
-        options: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<Image>>;
+    static CI_IMAGE: &'static objc::Class<Image>;
 
     static kCIImageColorSpace: &'static ImageOption;
     static kCIImageToneMapHDRtoSDR: &'static ImageOption;
