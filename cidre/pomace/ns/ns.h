@@ -10,16 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - Common
-
-wsel2(, id, scheduleInRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
-wsel2(, id, removeFromRunLoop, NSRunLoop *, forMode, NSRunLoopMode)
-
-#pragma mark - NSPort
-
-csel0(, NSPort, port, NSPort *)
-rsel0(, id, machPort, uint32_t)
-
 @interface CidreMachPortDelegate : NSObject<NSMachPortDelegate> {
   @public void * _vtable[2];
 }
@@ -155,40 +145,11 @@ rsel2(, id, writeToFile,NSString *,atomically, BOOL, BOOL)
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 
-//NS_RETURNS_RETAINED
-//csel1(, NSNumber, numberWithUnsignedInteger, NSUInteger, NSNumber *)
-
-
-
 #pragma mark - NSRegularExpression
 
 NS_RETURNS_RETAINED
 csel3(, NSRegularExpression, regularExpressionWithPattern, NSString *, options, NSRegularExpressionOptions, error, NSError **, NSRegularExpression *)
 
-#pragma mark - NSString
-
-NS_RETURNS_RETAINED
-asel3(, NSString, initWithBytes, const void * _Nonnull, length, NSUInteger, encoding, NSStringEncoding)
-
-NS_RETURNS_RETAINED
-asel4(, NSString, initWithBytesNoCopy, void * _Nonnull, length, NSUInteger, encoding, NSStringEncoding, freeWhenDone, BOOL)
-
-#pragma mark - NSURL
-
-NS_RETURNS_RETAINED
-csel3(, NSURL, fileURLWithPath, NSString *, isDirectory, BOOL, relativeToURL, NSURL *, NSURL *)
-
-NS_RETURNS_RETAINED
-csel2(, NSURL, URLWithString, NSString *, relativeToURL, NSURL *, NSURL *)
-
-#pragma mark - NSDictionary
-
-csel0(, NSDictionary, dictionary, NSDictionary *)
-
-#pragma mark - SELECTORS
-
-SEL ns_lengthOfBytesUsingEncoding;
-//SEL ns_retainCount;
 
 Class NS_NUMBER;
 Class NS_ARRAY;
@@ -203,14 +164,16 @@ Class NS_MUTABLE_DATA;
 Class NS_PROCESS_INFO;
 Class NS_URL_SESSION;
 Class NS_URL_CACHE;
+Class NS_DICTIONARY;
+Class NS_MUTABLE_DICTIONARY;
+Class NS_PORT;
+Class NS_MACH_PORT;
 
 __attribute__((constructor))
 static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-    
-    ns_lengthOfBytesUsingEncoding = @selector(lengthOfBytesUsingEncoding:);
 
     NS_NUMBER = [NSNumber class];
     NS_ARRAY = [NSArray class];
@@ -221,12 +184,18 @@ static void common_initializer()
     NS_SET = [NSSet class];
     NS_MUTABLE_SET = [NSMutableSet class];
     
+    NS_DICTIONARY = [NSDictionary class];
+    NS_MUTABLE_DICTIONARY= [NSMutableDictionary class];
+    
     NS_URL = [NSURL class];
     NS_DATA = [NSData class];
     NS_MUTABLE_DATA = [NSMutableData class];
     NS_PROCESS_INFO = [NSProcessInfo class];
     NS_URL_SESSION = [NSURLSession class];
     NS_URL_CACHE = [NSURLCache class];
+    
+    NS_PORT = [NSPort class];
+    NS_MACH_PORT = [NSMachPort class];
   }
 }
 NS_ASSUME_NONNULL_END

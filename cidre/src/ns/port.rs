@@ -1,13 +1,20 @@
-use std::{ffi::c_void, mem::transmute, ops::Deref};
+use std::{ffi::c_void, ops::Deref};
 
-use crate::{arc, cf, define_obj_type, mach, ns, objc, objc::Delegate};
+use crate::{arc, cf, define_cls, define_obj_type, mach, ns, objc, objc::Delegate};
 
 define_obj_type!(Port(ns::Id));
 define_obj_type!(MachPort(Port));
 
+impl arc::A<Port> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<Port>;
+}
+
 impl Port {
+    define_cls!(NS_PORT);
+
     pub fn new() -> arc::R<Port> {
-        unsafe { NSPort_port() }
+        Self::alloc().init()
     }
 
     #[objc::msg_send(invalidate)]
@@ -17,9 +24,16 @@ impl Port {
     pub fn is_valid(&self) -> bool;
 }
 
+impl arc::A<MachPort> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<MachPort>;
+}
+
 impl MachPort {
+    define_cls!(NS_MACH_PORT);
+
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(Port::new()) }
+        Self::alloc().init()
     }
 
     #[objc::msg_send(machPort)]
@@ -68,7 +82,8 @@ pub trait MachPortDelegate {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSPort_port() -> arc::R<Port>;
+    static NS_PORT: &'static objc::Class<Port>;
+    static NS_MACH_PORT: &'static objc::Class<MachPort>;
     fn make_mach_port_delegate(vtable: *const *const c_void) -> arc::R<ns::Id>;
 }
 
