@@ -202,8 +202,6 @@ NS_RETURNS_NOT_RETAINED
 rsel0(MTLBlitPassDescriptor_, MTLBlitPassDescriptor *, sampleBufferAttachments, MTLBlitPassSampleBufferAttachmentDescriptorArray *)
 
 
-SEL sel_commandBuffer;
-SEL sel_commandBufferWithUnretainedReferences;
 SEL sel_commandQueue;
 SEL sel_commit;
 SEL sel_endEncoding;
@@ -256,8 +254,6 @@ static void mtl_initializer()
       
       MTL_COMPUTE_PIPELINE_DESCRIPTOR = [MTLComputePipelineDescriptor class];
       
-      sel_commandBuffer = @selector(commandBuffer);
-      sel_commandBufferWithUnretainedReferences = @selector(commandBufferWithUnretainedReferences);
       
       sel_commandQueue = @selector(commandQueue);
       sel_commit = @selector(commit);

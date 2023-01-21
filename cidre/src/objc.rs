@@ -367,9 +367,6 @@ macro_rules! define_cls {
     ($CLS:ident) => {
         #[inline]
         pub fn cls() -> &'static $crate::objc::Class<Self> {
-            unsafe {
-                println!("{:?}", $CLS);
-            };
             unsafe { std::mem::transmute($CLS) }
         }
 

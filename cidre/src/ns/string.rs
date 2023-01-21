@@ -1,6 +1,8 @@
 use std::{borrow::Cow, ffi::CStr, fmt, str::from_utf8_unchecked};
 
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+use super::Class;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -13,7 +15,58 @@ pub enum Encoding {
 define_obj_type!(String(ns::Id));
 define_obj_type!(StringMut(String));
 
+impl arc::A<String> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<String>;
+
+    #[objc::msg_send(initWithBytes:length:encoding:)]
+    pub fn init_with_bytes_length_encoding(
+        self,
+        bytes: *const u8,
+        length: usize,
+        encoding: ns::StringEncoding,
+    ) -> Option<arc::R<String>>;
+
+    #[objc::msg_send(initWithBytesNoCopy:length:encoding:freeWhenDone:)]
+    pub fn init_with_bytes_no_copy_length_encoding_free_when_done(
+        self,
+        bytes: *const u8,
+        length: usize,
+        encoding: ns::StringEncoding,
+        free_when_done: bool,
+    ) -> Option<arc::R<String>>;
+}
+
 impl String {
+    define_cls!(NS_STRING);
+
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
+    }
+
+    #[inline]
+    pub fn with_str(str: &str) -> arc::R<Self> {
+        unsafe {
+            Self::alloc()
+                .init_with_bytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8)
+                .unwrap_unchecked()
+        }
+    }
+
+    #[inline]
+    pub fn with_str_no_copy(str: &str) -> arc::R<Self> {
+        unsafe {
+            Self::alloc()
+                .init_with_bytes_no_copy_length_encoding_free_when_done(
+                    str.as_ptr(),
+                    str.len(),
+                    Encoding::UTF8,
+                    false,
+                )
+                .unwrap_unchecked()
+        }
+    }
+
     #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
@@ -57,28 +110,6 @@ impl String {
     #[objc::msg_send(mutableCopy)]
     pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
 
-    #[inline]
-    pub fn with_str(str: &str) -> arc::R<Self> {
-        // we expect no '\0' inside string.
-        debug_assert!(str.find('\0').is_none());
-        unsafe {
-            NSString_initWithBytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8).unwrap()
-        }
-    }
-
-    #[inline]
-    pub fn with_str_no_copy(str: &str) -> arc::R<Self> {
-        unsafe {
-            NSString_initWithBytesNoCopy_length_encoding_freeWhenDone(
-                str.as_ptr(),
-                str.len(),
-                Encoding::UTF8,
-                false,
-            )
-            .unwrap()
-        }
-    }
-
     #[objc::msg_send(substringWithRange:)]
     pub fn substring_with_range_ar(&self, range: ns::Range) -> arc::Rar<Self>;
 
@@ -114,20 +145,23 @@ impl std::ops::Index<std::ops::Range<usize>> for String {
     }
 }
 
+impl arc::A<StringMut> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<StringMut>;
+}
+
+impl StringMut {
+    define_cls!(NS_MUTABLE_STRING);
+
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
+    }
+}
+
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSString_initWithBytes_length_encoding(
-        bytes: *const u8,
-        length: usize,
-        encoding: Encoding,
-    ) -> Option<arc::R<String>>;
-
-    fn NSString_initWithBytesNoCopy_length_encoding_freeWhenDone(
-        bytes: *const u8,
-        length: usize,
-        encoding: Encoding,
-        free_when_done: bool,
-    ) -> Option<arc::R<String>>;
+    static NS_STRING: &'static Class<String>;
+    static NS_MUTABLE_STRING: &'static Class<StringMut>;
 }
 
 impl fmt::Display for String {
@@ -179,6 +213,8 @@ mod tests {
     #[test]
     fn basics() {
         autoreleasepool(|| {
+            let m = ns::StringMut::new();
+            assert!(m.is_empty());
             let s = ns::String::with_str("10.5");
 
             assert_eq!(s.len(), 4);

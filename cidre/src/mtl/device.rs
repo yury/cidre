@@ -146,15 +146,21 @@ impl Device {
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::R<mtl::Texture>>;
 
-    #[inline]
+    #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
+    pub fn texture_with_surface_ar(
+        &self,
+        descriptor: &mtl::TextureDescriptor,
+        surface: &io::Surface,
+        plane: usize,
+    ) -> Option<arc::Rar<mtl::Texture>>;
+
+    #[objc::rar_retain()]
     pub fn texture_with_surface(
         &self,
         descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
         plane: usize,
-    ) -> Option<arc::R<mtl::Texture>> {
-        unsafe { rsel_newTextureWithDescriptor_iosurface_plane(self, descriptor, surface, plane) }
-    }
+    ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newDefaultLibrary)]
     pub fn default_library_ar(&self) -> Option<arc::Rar<Library>>;
@@ -162,7 +168,7 @@ impl Device {
     #[objc::rar_retain()]
     pub fn default_library(&self) -> Option<arc::R<Library>>;
 
-    /// ```
+    /// ```no_run
     /// use cidre::{ns, mtl};
     ///
     /// let device = mtl::Device::default().unwrap();
@@ -173,15 +179,21 @@ impl Device {
     /// let lib = device.library_with_source_and_error(&source, options, &mut err).unwrap();
     ///
     /// ```
-    #[inline]
+    #[objc::msg_send(newLibraryWithSource:options:error:)]
+    pub fn library_with_source_and_error_ar(
+        &self,
+        source: &ns::String,
+        options: Option<&mtl::CompileOptions>,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::Rar<Library>>;
+
+    #[objc::rar_retain()]
     pub fn library_with_source_and_error(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Library>> {
-        unsafe { rsel_newLibraryWithSource_options_error(self, source, options, error) }
-    }
+    ) -> Option<arc::R<Library>>;
 
     #[inline]
     pub fn library_with_source<'a>(
@@ -209,41 +221,42 @@ impl Device {
         future.await
     }
 
+    #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
     pub fn library_with_source_options_completion<'ar, F>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         completion: &'static mut blocks::Block<F>,
     ) where
-        F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar ns::Error>) + 'static,
-    {
-        unsafe {
-            wsel_newLibraryWithSource_options_completionHandler(
-                self,
-                source,
-                options,
-                completion.as_ptr(),
-            )
-        }
-    }
+        F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar ns::Error>) + 'static;
 
-    #[inline]
-    pub fn compute_pipeline_state_with_function_error(
+    #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
+    pub fn compute_pipeline_state_with_function_error_ar<'a>(
         &self,
         function: &mtl::Function,
-        error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<mtl::ComputePipelineState>> {
-        unsafe { rsel_newComputePipelineStateWithFunction_error(self, function, error) }
-    }
+        error: &mut Option<&'a ns::Error>,
+    ) -> Option<arc::Rar<mtl::ComputePipelineState>>;
 
-    #[inline]
+    #[objc::rar_retain()]
+    pub fn compute_pipeline_state_with_function_error<'a>(
+        &self,
+        function: &mtl::Function,
+        error: &mut Option<&'a ns::Error>,
+    ) -> Option<arc::R<mtl::ComputePipelineState>>;
+
+    #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
+    pub unsafe fn render_pipeline_state_with_descriptor_error_ar(
+        &self,
+        descriptor: &mtl::RenderPipelineDescriptor,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::Rar<mtl::RenderPipelineState>>;
+
+    #[objc::rar_retain]
     pub unsafe fn render_pipeline_state_with_descriptor_error(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<mtl::RenderPipelineState>> {
-        rsel_newRenderPipelineStateWithDescriptor_error(self, descriptor, error)
-    }
+    ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
     pub fn render_pipeline_state_with_descriptor<'a>(
@@ -414,44 +427,6 @@ extern "C" {
     fn MTLCreateSystemDefaultDevice() -> Option<arc::R<Device>>;
 }
 
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-
-    fn wsel_newLibraryWithSource_options_completionHandler(
-        id: &Device,
-        source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
-        block: *mut c_void,
-    );
-
-    fn rsel_newTextureWithDescriptor_iosurface_plane(
-        id: &Device,
-        descriptor: &mtl::TextureDescriptor,
-        surface: &io::Surface,
-        plane: usize,
-    ) -> Option<arc::R<mtl::Texture>>;
-
-    fn rsel_newLibraryWithSource_options_error(
-        id: &Device,
-        source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
-        error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Library>>;
-
-    fn rsel_newComputePipelineStateWithFunction_error<'a>(
-        id: &Device,
-        function: &mtl::Function,
-        error: &mut Option<&'a ns::Error>,
-    ) -> Option<arc::R<mtl::ComputePipelineState>>;
-
-    fn rsel_newRenderPipelineStateWithDescriptor_error<'a>(
-        id: &Device,
-        descriptor: &mtl::RenderPipelineDescriptor,
-        error: &mut Option<&'a ns::Error>,
-    ) -> Option<arc::R<mtl::RenderPipelineState>>;
-
-}
-
 #[cfg(test)]
 mod tests {
     use crate::{mtl, ns};
@@ -506,5 +481,12 @@ mod tests {
 
         let _queue = device.command_queue_ar().unwrap();
         let _queue = device.command_queue().unwrap();
+
+        let source = ns::String::with_str("void function_a() {}");
+        let options = None;
+        let mut err = None;
+        let _lib = device
+            .library_with_source_and_error(&source, options, &mut err)
+            .unwrap();
     }
 }

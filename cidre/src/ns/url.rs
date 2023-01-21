@@ -1,15 +1,36 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+use super::Class;
 
 define_obj_type!(URL(ns::Id));
 
+impl arc::A<URL> {
+    #[objc::msg_send(initFileURLWithPath:isDirectory:relativeToURL:)]
+    pub fn init_with_path_is_dir_relative_to_url(
+        self,
+        path: &ns::String,
+        is_dir: bool,
+        relative_to: Option<&ns::URL>,
+    ) -> arc::R<URL>;
+
+    #[objc::msg_send(initWithString:relativeToURL:)]
+    pub fn init_with_string_relative_to(
+        self,
+        string: &ns::String,
+        relative_to: Option<&ns::URL>,
+    ) -> Option<arc::R<ns::URL>>;
+}
+
 impl URL {
+    define_cls!(NS_URL);
+
     #[inline]
     pub fn file_url_relative_to(
         path: &ns::String,
         is_dir: bool,
         relative_to: Option<&ns::URL>,
     ) -> arc::R<Self> {
-        unsafe { NSURL_fileURLWithPath_isDirectory_relativeToURL(path, is_dir, relative_to) }
+        Self::alloc().init_with_path_is_dir_relative_to_url(path, is_dir, relative_to)
     }
 
     #[inline]
@@ -28,12 +49,12 @@ impl URL {
         str: &ns::String,
         relative_to: Option<&ns::URL>,
     ) -> Option<arc::R<Self>> {
-        unsafe { NSURL_URLWithString_relativeToURL(str, relative_to) }
+        Self::alloc().init_with_string_relative_to(str, relative_to)
     }
 
     #[inline]
     pub fn with_string(str: &ns::String) -> Option<arc::R<Self>> {
-        unsafe { NSURL_URLWithString_relativeToURL(str, None) }
+        Self::alloc().init_with_string_relative_to(str, None)
     }
 
     #[inline]
@@ -49,21 +70,15 @@ impl URL {
     }
 
     #[objc::msg_send(absoluteString)]
-    pub fn abs_string(&self) -> Option<&ns::String>;
+    pub fn abs_string_ar(&self) -> Option<arc::Rar<ns::String>>;
+
+    #[objc::rar_retain()]
+    pub fn abs_string(&self) -> Option<arc::R<ns::String>>;
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn NSURL_fileURLWithPath_isDirectory_relativeToURL(
-        path: &ns::String,
-        is_dir: bool,
-        relative_to: Option<&ns::URL>,
-    ) -> arc::R<ns::URL>;
-
-    fn NSURL_URLWithString_relativeToURL(
-        str: &ns::String,
-        relative_to: Option<&ns::URL>,
-    ) -> Option<arc::R<ns::URL>>;
+    static NS_URL: &'static Class<URL>;
 }
 
 #[cfg(test)]

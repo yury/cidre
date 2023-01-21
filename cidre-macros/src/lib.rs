@@ -110,10 +110,20 @@ fn gen_msg_send(
 
     let ts = TokenStream::from_iter(iter);
     let mut ret = ts.to_string();
+    let mut ret_full = ts.to_string();
+    if let Some((a, _)) = ret.split_once("where") {
+        ret = format!("{};", a)
+    }
     assert_eq!(ret.pop().expect(";"), ';');
-    let option = ret.contains("-> Option");
+    assert_eq!(ret_full.pop().expect(";"), ';');
+    let option = ret_full.contains("-> Option");
 
     let fn_args = args.to_string();
+    if debug {
+        println!("ret: {}", ret);
+        println!("fn_args: {}", fn_args);
+    }
+
     let vars = get_fn_args(args.stream(), class, debug);
     let fn_args_count = vars.len();
     if !retain {
@@ -164,7 +174,7 @@ fn gen_msg_send(
             format!(
                 "
                 #[inline]
-                {pre} {fn_name}{gen}{args} {ret} {{
+                {pre} {fn_name}{gen}{args} {ret_full} {{
                     arc::Rar::option_retain(self.{fn_name}_ar({vars}) )
                 }}
                 "
@@ -173,7 +183,7 @@ fn gen_msg_send(
             format!(
                 "
                 #[inline]
-                {pre} {fn_name}{gen}{args} {ret} {{
+                {pre} {fn_name}{gen}{args} {ret_full} {{
                     self.{fn_name}_ar({vars}).retain()
                 }}
                 "
@@ -183,7 +193,7 @@ fn gen_msg_send(
         format!(
             "
             #[inline]
-            {pre} {fn_name}{gen}{args} {ret} {{
+            {pre} {fn_name}{gen}{args} {ret_full} {{
                 extern \"C\" {{
                     #[link_name = \"objc_msgSend${extern_name}\"]
                     fn msg_send();
