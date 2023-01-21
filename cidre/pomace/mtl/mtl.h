@@ -11,16 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - MTLDevice
-
-
-NS_RETURNS_RETAINED
-rsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, error, NSError * _Nullable * _Nullable, id <MTLLibrary> _Nullable)
-
-wsel3(, id, newLibraryWithSource, NSString *, options, MTLCompileOptions * _Nullable, completionHandler, id)
-
-NS_RETURNS_RETAINED
-rsel2(, id, newRenderPipelineStateWithDescriptor, MTLRenderPipelineDescriptor *, error, NSError * _Nullable * _Nullable, id<MTLRenderPipelineState> _Nullable)
 
 #pragma mark - MTLCommandBuffer
 
