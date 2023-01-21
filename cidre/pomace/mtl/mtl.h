@@ -20,11 +20,6 @@ csel3(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelForm
 //NS_RETURNS_RETAINED
 csel4(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
 
-//// MTLFunction
-//
-//NS_RETURNS_RETAINED
-//rsel1(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
-
 Class MTL_COMPUTE_PASS_DESCRIPTOR;
 Class MTL_HEAP_DESCRIPTOR;
 Class MTL_COMPILE_OPTIONS;
