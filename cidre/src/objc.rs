@@ -157,62 +157,6 @@ pub trait Obj: arc::Retain {
             transmute(objc_msgSend as *const c_void);
         imp(self, selector, a, b, c, d, e, f, g)
     }
-
-    #[inline]
-    unsafe fn call0<R>(&self, send: unsafe extern "C" fn()) -> R {
-        let imp: unsafe extern "C" fn(&Self) -> R = transmute(send as *const c_void);
-        imp(self)
-    }
-
-    #[inline]
-    unsafe fn call1<R, A>(&self, send: unsafe extern "C" fn(), a: A) -> R {
-        let imp: unsafe extern "C" fn(&Self, *const c_void, A) -> R =
-            transmute(send as *const c_void);
-        imp(self, std::ptr::null(), a)
-    }
-
-    #[inline]
-    unsafe fn call2<R, A, B>(&self, send: unsafe extern "C" fn(), a: A, b: B) -> R {
-        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B) -> R =
-            transmute(send as *const c_void);
-        imp(self, std::ptr::null(), a, b)
-    }
-
-    #[inline]
-    unsafe fn call3<R, A, B, C>(&self, send: unsafe extern "C" fn(), a: A, b: B, c: C) -> R {
-        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C) -> R =
-            transmute(send as *const c_void);
-        imp(self, std::ptr::null(), a, b, c)
-    }
-
-    #[inline]
-    unsafe fn call4<R, A, B, C, D>(
-        &self,
-        send: unsafe extern "C" fn(),
-        a: A,
-        b: B,
-        c: C,
-        d: D,
-    ) -> R {
-        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C, D) -> R =
-            transmute(send as *const c_void);
-        imp(self, std::ptr::null(), a, b, c, d)
-    }
-
-    #[inline]
-    unsafe fn call5<R, A, B, C, D, E>(
-        &self,
-        send: unsafe extern "C" fn(),
-        a: A,
-        b: B,
-        c: C,
-        d: D,
-        e: E,
-    ) -> R {
-        let imp: unsafe extern "C" fn(&Self, *const c_void, A, B, C, D, E) -> R =
-            transmute(send as *const c_void);
-        imp(self, std::ptr::null(), a, b, c, d, e)
-    }
 }
 
 /// Use it as NSObject or id
