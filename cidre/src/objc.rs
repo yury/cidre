@@ -164,16 +164,6 @@ pub trait Obj: arc::Retain {
 pub struct Id(Type);
 
 impl Id {
-    // #[inline]
-    // pub unsafe fn retain<T: arc::Release>(id: &Id) -> arc::R<T> {
-    //     transmute(objc_retain(id))
-    // }
-
-    // #[inline]
-    // pub unsafe fn release(id: &mut Id) {
-    //     objc_release(id)
-    // }
-
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &mut Id {
         objc_autorelease(id)
