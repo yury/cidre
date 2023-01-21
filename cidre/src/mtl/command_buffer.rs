@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, define_mtl, define_obj_type, msg_send, mtl, ns, objc};
+use crate::{arc, blocks, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -55,41 +55,49 @@ impl CommandBuffer {
     #[objc::msg_send(waitUntilCompleted)]
     pub fn wait_until_completed(&self);
 
+    #[objc::msg_send(addScheduledHandler:)]
+    fn _add_scheduled_handler(&self, block: *mut c_void);
+
     pub fn add_scheduled_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(&Self) + Send + 'static,
     {
-        unsafe { wsel_addScheduledHandler(self, block.as_ptr()) }
+        self._add_scheduled_handler(block.as_ptr());
     }
+
+    #[objc::msg_send(addCompletionHandler:)]
+    fn _add_completion_handler(&self, block: *mut c_void);
 
     pub fn add_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(&Self) + Send + 'static,
     {
-        unsafe { wsel_addCompletedHandler(self, block.as_ptr()) }
+        self._add_completion_handler(block.as_ptr());
     }
 
-    pub fn blit_command_encoder<'new>(&self) -> Option<&'new mut mtl::BlitCommandEncoder> {
-        msg_send!("mtl", self, sel_blitCommandEncoder)
-    }
+    #[objc::msg_send(blitCommandEncoder)]
+    pub fn blit_command_encoder_ar(&self) -> Option<arc::Rar<mtl::BlitCommandEncoder>>;
 
-    #[inline]
-    pub fn compute_command_encoder<'new>(&self) -> Option<&'new mut mtl::ComputeCommandEncoder> {
-        msg_send!("mtl", self, sel_computeCommandEncoder)
-    }
+    #[objc::rar_retain()]
+    pub fn blit_command_encoder(&self) -> Option<arc::R<mtl::BlitCommandEncoder>>;
 
-    #[inline]
-    pub fn compute_command_encoder_with_descriptor<'new>(
+    #[objc::msg_send(computeCommandEncoder)]
+    pub fn compute_command_encoder_ar(&self) -> Option<arc::Rar<mtl::ComputeCommandEncoder>>;
+
+    #[objc::rar_retain()]
+    pub fn compute_command_encoder(&self) -> Option<arc::R<mtl::ComputeCommandEncoder>>;
+
+    #[objc::msg_send(computeCommandEncoderWithDescriptor:)]
+    pub fn compute_command_encoder_with_descriptor_ar(
         &self,
         descriptor: &mtl::ComputePassDescriptor,
-    ) -> Option<&'new mut mtl::ComputeCommandEncoder> {
-        msg_send!(
-            "mtl",
-            self,
-            sel_computeCommandEncoderWithDescriptor,
-            descriptor
-        )
-    }
+    ) -> Option<arc::Rar<mtl::ComputeCommandEncoder>>;
+
+    #[objc::rar_retain()]
+    pub fn compute_command_encoder_with_descriptor(
+        &self,
+        descriptor: &mtl::ComputePassDescriptor,
+    ) -> Option<arc::R<mtl::ComputeCommandEncoder>>;
 
     #[objc::msg_send(newRenderCommandEncoderWithDescriptor:)]
     pub fn render_command_encoder_with_descriptor_ar(
@@ -102,10 +110,4 @@ impl CommandBuffer {
         &self,
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<arc::R<mtl::RenderCommandEncoder>>;
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn wsel_addScheduledHandler(id: &ns::Id, rb: *mut c_void);
-    fn wsel_addCompletedHandler(id: &ns::Id, rb: *mut c_void);
 }

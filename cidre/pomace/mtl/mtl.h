@@ -11,23 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-#pragma mark - MTLCommandBuffer
-
-wsel1(, id<MTLCommandBuffer>, addScheduledHandler, id)
-wsel1(, id<MTLCommandBuffer>, addCompletedHandler, id)
-
-NS_RETURNS_RETAINED
-rsel0(, id, blitCommandEncoder, id <MTLBlitCommandEncoder> _Nullable)
-
-//- (nullable id <MTLComputeCommandEncoder>)computeCommandEncoder;
-NS_RETURNS_RETAINED
-rsel0(, id, computeCommandEncoder, id <MTLComputeCommandEncoder> _Nullable)
-
-// TextureDescriptor
-
-// + (MTLTextureDescriptor*)texture2DDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat width:(NSUInteger)width height:(NSUInteger)height mipmapped:(BOOL)mipmapped;
-
 NS_RETURNS_RETAINED
 csel4(, MTLTextureDescriptor, texture2DDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, height, NSUInteger, mipmapped, BOOL,  MTLTextureDescriptor * _Nonnull)
 
@@ -35,11 +18,6 @@ csel4(, MTLTextureDescriptor, texture2DDescriptorWithPixelFormat, MTLPixelFormat
 
 NS_RETURNS_RETAINED
 csel3(, MTLTextureDescriptor, textureCubeDescriptorWithPixelFormat, MTLPixelFormat, size, NSUInteger, mipmapped, BOOL, MTLTextureDescriptor * _Nonnull)
-
-//+ (MTLTextureDescriptor*)textureBufferDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat
-//                                                          width:(NSUInteger)width
-//                                                resourceOptions:(MTLResourceOptions)resourceOptions
-//                                                          usage:(MTLTextureUsage)usage
 
 //NS_RETURNS_RETAINED
 csel4(, MTLTextureDescriptor, textureBufferDescriptorWithPixelFormat, MTLPixelFormat, width, NSUInteger, resourceOptions, MTLResourceOptions, usage, MTLTextureUsage, MTLTextureDescriptor * _Nullable)
@@ -69,23 +47,7 @@ NS_RETURNS_RETAINED
 rsel1(, id, newArgumentEncoderWithBufferIndex, NSUInteger,id <MTLArgumentEncoder>)
 
 
-#pragma mark - MTLArgumentsEncoder
 
-
-// FunctionDescriptor
-
-//+ (nonnull MTLFunctionDescriptor *)functionDescriptor;
-NS_RETURNS_NOT_RETAINED
-csel0(, MTLFunctionDescriptor, functionDescriptor, MTLFunctionDescriptor *)
-
-
-SEL sel_commandQueue;
-SEL sel_commit;
-SEL sel_endEncoding;
-SEL sel_waitUntilCompleted;
-SEL sel_waitUntilScheduled;
-SEL sel_blitCommandEncoder;
-SEL sel_computeCommandEncoder;
 SEL sel_updateFence_a;
 SEL sel_waitForFence_a;
 SEL sel_newCommandQueue;
@@ -121,6 +83,7 @@ Class MTL_COMPUTE_PIPELINE_DESCRIPTOR;
 Class MTL_RENDER_PASS_DESCRIPTOR;
 Class MTL_BLIT_PASS_DESCRIPTOR;
 Class MTL_RENDER_PIPELINE_DESCRIPTOR;
+Class MTL_FUNCTION_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer()
@@ -136,15 +99,12 @@ static void mtl_initializer()
       MTL_RENDER_PASS_DESCRIPTOR = [MTLRenderPassDescriptor class];
       MTL_BLIT_PASS_DESCRIPTOR = [MTLBlitPassDescriptor class];
       MTL_RENDER_PIPELINE_DESCRIPTOR = [MTLRenderPipelineDescriptor class];
+      MTL_FUNCTION_DESCRIPTOR = [MTLFunctionDescriptor class];
       
-      
-      sel_commandQueue = @selector(commandQueue);
-      sel_commit = @selector(commit);
-      sel_endEncoding = @selector(endEncoding);
-      sel_waitUntilCompleted = @selector(waitUntilCompleted);
-      sel_waitUntilScheduled = @selector(waitUntilScheduled);
-      sel_blitCommandEncoder = @selector(blitCommandEncoder);
-      sel_computeCommandEncoder = @selector(computeCommandEncoder);
+//      sel_waitUntilCompleted = @selector(waitUntilCompleted);
+//      sel_waitUntilScheduled = @selector(waitUntilScheduled);
+//      sel_blitCommandEncoder = @selector(blitCommandEncoder);
+//      sel_computeCommandEncoder = @selector(computeCommandEncoder);
       sel_updateFence_a = @selector(updateFence:);
       sel_waitForFence_a = @selector(waitForFence:);
       sel_newCommandQueue = @selector(newCommandQueue);

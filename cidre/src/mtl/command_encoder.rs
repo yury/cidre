@@ -1,4 +1,4 @@
-use crate::{cf, define_mtl, define_obj_type, msg_send, ns};
+use crate::{define_mtl, define_obj_type, ns, objc};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -25,18 +25,9 @@ define_obj_type!(CommandEncoder(ns::Id));
 impl CommandEncoder {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
-    #[inline]
-    pub fn end_encoding(&mut self) {
-        msg_send!("mtl", self, sel_endEncoding)
-    }
+    #[objc::msg_send(endEncoding)]
+    pub fn end_encoding(&mut self);
 
-    pub fn insert_debug_signpost(&mut self, signpost: &cf::String) {
-        unsafe { wsel_insertDebugSignpost(self, signpost) }
-    }
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn wsel_insertDebugSignpost(id: &mut ns::Id, signpost: &cf::String);
-
+    #[objc::msg_send(insertDebugSignpost:)]
+    pub fn insert_debug_signpost(&mut self, signpost: &ns::String);
 }

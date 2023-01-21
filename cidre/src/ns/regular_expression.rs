@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cls, define_obj_type, define_options, ns, objc};
+use crate::{arc, define_cls, define_obj_type, define_options, ns, objc};
 
 define_options!(Options(usize));
 
