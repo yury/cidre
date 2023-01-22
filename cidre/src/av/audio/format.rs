@@ -1,5 +1,3 @@
-use std::intrinsics::transmute;
-
 use crate::{arc, at::audio::StreamBasicDescription, cf, define_obj_type, ns, objc};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
