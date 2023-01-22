@@ -88,24 +88,22 @@ pub enum Position {
 
 define_obj_type!(Device(ns::Id));
 
-impl arc::A<Device> {}
-
 impl Device {
     define_cls!(AV_CAPTURE_DEVICE);
 
+    #[objc::cls_msg_send(defaultDeviceWithDeviceType:mediaType:position:)]
+    pub fn with_device_type_media_and_position_ar(
+        device_type: &Type,
+        media_type: Option<&MediaType>,
+        position: Position,
+    ) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
     pub fn with_device_type_media_and_position(
         device_type: &Type,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Option<arc::R<Self>> {
-        unsafe {
-            AVCaptureDevice_defaultDeviceWithDeviceType_mediaType_position(
-                device_type,
-                media_type,
-                position,
-            )
-        }
-    }
+    ) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(uniqueID)]
     pub fn unique_id(&self) -> &ns::String;
@@ -190,16 +188,8 @@ impl<'a> DerefMut for ConfigurationLockGuard<'a> {
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
-    fn AVCaptureDevice_defaultDeviceWithDeviceType_mediaType_position(
-        device_type: &Type,
-        media_type: Option<&MediaType>,
-        position: Position,
-    ) -> Option<arc::R<Device>>;
-
     fn wsel_setActiveFormat(device: &mut Device, value: &Format);
-
     fn wsel_setActiveVideoMinFrameDuration(device: &mut Device, value: cm::Time);
-
     fn wsel_setActiveVideoMaxFrameDuration(device: &mut Device, value: cm::Time);
 }
 

@@ -21,44 +21,15 @@ rsel0(, AVCaptureSystemPressureState *, factors, AVCaptureSystemPressureFactors)
 
 #endif
 
-#pragma mark - AVCaptureDevice
-
-NS_RETURNS_RETAINED
-csel3(, AVCaptureDevice, defaultDeviceWithDeviceType, AVCaptureDeviceType, mediaType, AVMediaType _Nullable, position, AVCaptureDevicePosition, AVCaptureDevice * _Nullable)
 
 NS_RETURNS_RETAINED
 csel1(, AVCaptureDevice, deviceWithUniqueID, NSString *, AVCaptureDevice * _Nullable)
 
-NS_RETURNS_NOT_RETAINED
-rsel0(, AVCaptureDevice *, uniqueID, NSString *)
-
-//- (BOOL)lockForConfiguration:(NSError * _Nullable * _Nullable)outError;
-rsel1(, id, lockForConfiguration, NSError * _Nullable * _Nullable, BOOL)
-//- (void)unlockForConfiguration;
-wsel0(, id, unlockForConfiguration)
-
-//- (BOOL)supportsAVCaptureSessionPreset:(AVCaptureSessionPreset)preset;
-rsel1(, id, supportsAVCaptureSessionPreset, AVCaptureSessionPreset, BOOL)
-
-//@property(nonatomic, readonly) NSArray<AVCaptureDeviceFormat *> *formats
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, formats, NSArray<AVCaptureDeviceFormat *> *)
-
-//@property(nonatomic, retain) AVCaptureDeviceFormat *activeFormat
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, activeFormat, AVCaptureDeviceFormat *)
 wsel1(, id, setActiveFormat, AVCaptureDeviceFormat* )
 
-//@property(nonatomic) CMTime activeVideoMinFrameDuration API_AVAILABLE(ios(7.0), macCatalyst(14.0)) API_UNAVAILABLE(tvos);
-rsel0(, id, activeVideoMinFrameDuration, CMTime)
 wsel1(, id, setActiveVideoMinFrameDuration, CMTime)
-rsel0(, id, activeVideoMaxFrameDuration, CMTime)
 wsel1(, id, setActiveVideoMaxFrameDuration, CMTime)
 
-// @property(nonatomic, readonly) BOOL hasTorch;
-rsel0(, id, hasTorch, BOOL)
-
-//@property(nonatomic, readonly, getter=isVideoBinned) BOOL videoBinned API_UNAVAILABLE(macos);
 #if TARGET_OS_IPHONE
 rsel0(, id, isVideoBinned, BOOL)
 #endif
@@ -72,11 +43,6 @@ rsel0(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
 #if TARGET_OS_IPHONE
 rsel0(, id, isMultiCamSupported, BOOL)
 #endif
-
-rsel0(, id, isCenterStageSupported, BOOL)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, videoFrameRateRangeForCenterStage, AVFrameRateRange* _Nullable)
 
 #pragma mark - AVCaptureInput
 
@@ -314,23 +280,6 @@ wsel1(, id, resetForReadingTimeRanges, NSArray *)
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
 
 
-#pragma mark - AVCaptureVideoDataOutput
-
-
-NS_RETURNS_RETAINED
-csel0(, AVCaptureVideoDataOutput, new, AVCaptureVideoDataOutput *)
-
-rwsel(, AVCaptureVideoDataOutput *, alwaysDiscardsLateVideoFrames, setAlwaysDiscardsLateVideoFrames, BOOL)
-
-rsel0(, id, availableVideoCVPixelFormatTypes, NSArray *)
-rsel0(, id, availableVideoCodecTypes, NSArray *)
-
-rsel0(, id, sampleBufferCallbackQueue, dispatch_queue_t _Nullable)
-rsel0(, id, videoSettings, NSDictionary * _Nullable)
-rsel1(, id, recommendedVideoSettingsForAssetWriterWithOutputFileType, AVFileType, NSDictionary * _Nullable)
-
-rsel2(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, assetWriterOutputFileType, AVFileType, NSDictionary * _Nullable)
-
 #pragma mark - AVCaptureDeviceInput
 
 csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
@@ -340,6 +289,7 @@ Class AV_CAPTURE_SESSION;
 Class AV_CAPTURE_MULTI_CAM_SESSION;
 Class AV_CAPTURE_METADATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_DISCOVERY_SESSION;
+Class AV_CAPTURE_VIDEO_DATA_OUTPUT;
 
 Class AV_AUDIO_ENGINE;
 
@@ -358,6 +308,7 @@ static void common_initializer()
     AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
     AV_CAPTURE_SESSION = [AVCaptureSession class];
     AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
+    AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
 #if TARGET_OS_OSX
 #else
     AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];

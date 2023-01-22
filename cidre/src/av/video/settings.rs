@@ -1,75 +1,75 @@
-use crate::{cf, define_cf_type};
+use crate::{define_obj_type, ns};
 
 pub mod keys {
-    use crate::cf;
+    use crate::ns;
 
-    pub fn codec() -> &'static cf::String {
+    pub fn codec() -> &'static ns::String {
         unsafe { AVVideoCodecKey }
     }
 
-    pub fn pixel_aspect_ratio() -> &'static cf::String {
+    pub fn pixel_aspect_ratio() -> &'static ns::String {
         unsafe { AVVideoPixelAspectRatioKey }
     }
 
-    pub fn clean_aperture() -> &'static cf::String {
+    pub fn clean_aperture() -> &'static ns::String {
         unsafe { AVVideoCleanApertureKey }
     }
 
-    pub fn scaling_mode() -> &'static cf::String {
+    pub fn scaling_mode() -> &'static ns::String {
         unsafe { AVVideoScalingModeKey }
     }
 
-    pub fn color_properites() -> &'static cf::String {
+    pub fn color_properites() -> &'static ns::String {
         unsafe { AVVideoColorPropertiesKey }
     }
 
-    pub fn allow_wide_color() -> &'static cf::String {
+    pub fn allow_wide_color() -> &'static ns::String {
         unsafe { AVVideoAllowWideColorKey }
     }
 
-    pub fn compression_properties() -> &'static cf::String {
+    pub fn compression_properties() -> &'static ns::String {
         unsafe { AVVideoCompressionPropertiesKey }
     }
 
-    pub fn decompression_properties() -> &'static cf::String {
+    pub fn decompression_properties() -> &'static ns::String {
         unsafe { AVVideoDecompressionPropertiesKey }
     }
 
-    pub fn encoder_specification() -> &'static cf::String {
+    pub fn encoder_specification() -> &'static ns::String {
         unsafe { AVVideoEncoderSpecificationKey }
     }
 
     /// For best results, always use even number values for AVVideoWidthKey and
     /// AVVideoHeightKey when encoding to AVVideoCodecTypeH264 or any other
     /// format that uses 4:2:0 downsampling
-    pub fn width() -> &'static cf::String {
+    pub fn width() -> &'static ns::String {
         unsafe { AVVideoWidthKey }
     }
 
     /// For best results, always use even number values for AVVideoWidthKey and
     /// AVVideoHeightKey when encoding to AVVideoCodecTypeH264 or any other
     /// format that uses 4:2:0 downsampling
-    pub fn height() -> &'static cf::String {
+    pub fn height() -> &'static ns::String {
         unsafe { AVVideoHeightKey }
     }
 
     extern "C" {
-        static AVVideoWidthKey: &'static cf::String;
-        static AVVideoHeightKey: &'static cf::String;
+        static AVVideoWidthKey: &'static ns::String;
+        static AVVideoHeightKey: &'static ns::String;
 
-        static AVVideoCodecKey: &'static cf::String;
-        static AVVideoPixelAspectRatioKey: &'static cf::String;
-        static AVVideoCleanApertureKey: &'static cf::String;
-        static AVVideoScalingModeKey: &'static cf::String;
-        static AVVideoColorPropertiesKey: &'static cf::String;
-        static AVVideoAllowWideColorKey: &'static cf::String;
-        static AVVideoCompressionPropertiesKey: &'static cf::String;
-        static AVVideoDecompressionPropertiesKey: &'static cf::String;
-        static AVVideoEncoderSpecificationKey: &'static cf::String;
+        static AVVideoCodecKey: &'static ns::String;
+        static AVVideoPixelAspectRatioKey: &'static ns::String;
+        static AVVideoCleanApertureKey: &'static ns::String;
+        static AVVideoScalingModeKey: &'static ns::String;
+        static AVVideoColorPropertiesKey: &'static ns::String;
+        static AVVideoAllowWideColorKey: &'static ns::String;
+        static AVVideoCompressionPropertiesKey: &'static ns::String;
+        static AVVideoDecompressionPropertiesKey: &'static ns::String;
+        static AVVideoEncoderSpecificationKey: &'static ns::String;
     }
 }
 
-define_cf_type!(CodecType(cf::String));
+define_obj_type!(CodecType(ns::String));
 
 impl CodecType {
     /// The HEVC video codec.
