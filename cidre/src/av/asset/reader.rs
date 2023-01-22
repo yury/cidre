@@ -1,4 +1,4 @@
-use crate::{arc, av, cf, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_obj_type, ns, objc};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
@@ -18,7 +18,7 @@ pub enum Status {
 define_obj_type!(Reader(ns::Id));
 
 impl Reader {
-    pub fn with_asset<'ar>(asset: &av::Asset) -> Result<arc::R<Reader>, &'ar cf::Error> {
+    pub fn with_asset<'ar>(asset: &av::Asset) -> Result<arc::R<Reader>, &'ar ns::Error> {
         let mut error = None;
         unsafe {
             if let Some(reader) = AVAssetReader_assetReaderWithAsset_error(asset, &mut error) {
@@ -53,7 +53,7 @@ impl Reader {
     pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool;
 
     #[objc::msg_send(error)]
-    pub fn error(&self) -> Option<&cf::Error>;
+    pub fn error(&self) -> Option<&ns::Error>;
 
     #[objc::msg_send(status)]
     pub fn status(&self) -> Status;
@@ -72,6 +72,6 @@ impl Reader {
 extern "C" {
     fn AVAssetReader_assetReaderWithAsset_error<'ar>(
         asset: &av::Asset,
-        error: &mut Option<&'ar cf::Error>,
+        error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Reader>>;
 }

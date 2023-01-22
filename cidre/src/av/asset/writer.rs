@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{arc, av, cf, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_obj_type, ns, objc};
 
 use super::WriterInput;
 
@@ -56,16 +56,16 @@ impl Writer {
     pub fn inputs(&self) -> &ns::Array<WriterInput>;
 
     /// ```no_run
-    /// use cidre::{av, cf};
-    /// let url = cf::URL::from_str("file://tmp/bla.mp4").unwrap();
+    /// use cidre::{av, ns};
+    /// let url = ns::URL::with_str("file://tmp/bla.mp4").unwrap();
     ///
     /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     /// assert_eq!(writer.inputs().len(), 0);
     /// ```
     pub fn with_url_and_file_type(
-        url: &cf::URL,
+        url: &ns::URL,
         file_type: &av::FileType,
-    ) -> Result<arc::R<Writer>, arc::R<cf::Error>> {
+    ) -> Result<arc::R<Writer>, arc::R<ns::Error>> {
         let mut error = None;
         unsafe {
             let res = AVAssetWriter_assetWriterWithURL_fileType_error(url, file_type, &mut error);
@@ -80,9 +80,9 @@ impl Writer {
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn AVAssetWriter_assetWriterWithURL_fileType_error<'a>(
-        url: &cf::URL,
+        url: &ns::URL,
         file_type: &av::FileType,
-        error: &mut Option<arc::R<cf::Error>>,
+        error: &mut Option<arc::R<ns::Error>>,
     ) -> Option<arc::R<Writer>>;
 }
 
@@ -90,8 +90,8 @@ extern "C" {
 mod tests {
     #[test]
     fn basics() {
-        use crate::{av, cf};
-        let url = cf::URL::from_str("file://tmp/bla.mp4").unwrap();
+        use crate::{av, ns};
+        let url = ns::URL::with_str("file://tmp/bla.mp4").unwrap();
 
         let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
         assert_eq!(writer.inputs().len(), 0);

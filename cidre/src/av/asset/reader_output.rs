@@ -1,7 +1,7 @@
 use crate::{
     arc,
     av::{self, MediaType},
-    cf, cm, define_obj_type, msg_send, ns,
+    cf, cm, define_obj_type, ns, objc,
 };
 
 define_obj_type!(ReaderOutput(ns::Id));
@@ -22,9 +22,8 @@ define_obj_type!(ReaderOutputCaptionAdaptor(ns::Id));
 /// MPORTANT PERFORMANCE NOTE: Make sure to set the alwaysCopiesSampleData property to false
 /// if you do not need to modify the sample data in-place, to avoid unnecessary and inefficient copying.
 impl ReaderOutput {
-    pub fn media_type(&self) -> &MediaType {
-        unsafe { rsel_mediaType(self) }
-    }
+    #[objc::msg_send(mediaType)]
+    pub fn media_type(&self) -> &MediaType;
 
     /// Indicates whether or not the data in buffers gets copied before being vended to the client.
     ///
@@ -36,13 +35,11 @@ impl ReaderOutput {
     /// when possible can lead to performance improvements.
     ///
     /// Default value is true
-    pub fn always_copies_sample_data(&self) -> bool {
-        unsafe { rsel_alwaysCopiesSampleData(self) }
-    }
+    #[objc::msg_send(alwaysCopiesSampleData)]
+    pub fn always_copies_sample_data(&self) -> bool;
 
-    pub fn set_always_copies_sample_data(&mut self, value: bool) {
-        unsafe { wsel_setAlwaysCopiesSampleData(self, value) }
-    }
+    #[objc::msg_send(setAlwaysCopiesSampleData:)]
+    pub fn set_always_copies_sample_data(&mut self, value: bool);
 
     /// Copies the next sample buffer for the output synchronously.
     ///
@@ -56,9 +53,8 @@ impl ReaderOutput {
     ///
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
     /// (using -addOutput:) and -startReading is not called on that asset reader.
-    pub fn copy_next_sample_buffer(&self) -> Option<arc::R<cm::SampleBuffer>> {
-        msg_send!("av", self, sel_copyNextSampleBuffer)
-    }
+    #[objc::msg_send(copyNextSampleBuffer)]
+    pub fn copy_next_sample_buffer(&self) -> Option<arc::R<cm::SampleBuffer>>;
 }
 
 impl ReaderTrackOutput {
@@ -111,27 +107,15 @@ impl ReaderTrackOutput {
         }
     }
 
-    #[inline]
-    pub fn supports_random_access(&self) -> bool {
-        unsafe { rsel_supportsRandomAccess(self) }
-    }
+    #[objc::msg_send(supportsRandomAccess)]
+    pub fn supports_random_access(&self) -> bool;
 
-    #[inline]
-    pub fn reset_for_reading_time_ranges(&mut self, ranges: &cf::ArrayOf<ns::Value>) {
-        unsafe { wsel_resetForReadingTimeRanges(self, ranges) }
-    }
+    #[objc::msg_send(resetForReadingTimeRanges:)]
+    pub fn reset_for_reading_time_ranges(&mut self, ranges: &ns::Array<ns::Value>);
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn rsel_mediaType(id: &ns::Id) -> &MediaType;
-
-    fn rsel_alwaysCopiesSampleData(id: &ns::Id) -> bool;
-    fn wsel_setAlwaysCopiesSampleData(id: &ns::Id, value: bool);
-    fn rsel_supportsRandomAccess(id: &ns::Id) -> bool;
-
-    fn wsel_resetForReadingTimeRanges(id: &ns::Id, ranges: &cf::ArrayOf<ns::Value>);
-
     fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings<'ar>(
         track: &av::asset::Track,
         output_settings: Option<&cf::DictionaryOf<cf::String, cf::Type>>,

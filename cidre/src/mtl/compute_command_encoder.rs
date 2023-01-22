@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, msg_send, mtl, ns};
+use crate::{define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(ComputeCommandEncoder(mtl::CommandEncoder));
 
@@ -11,56 +11,29 @@ impl ComputeCommandEncoder {
         use_heap
     );
 
-    #[inline]
-    pub fn set_compute_pipeline_state(&mut self, state: &mtl::ComputePipelineState) {
-        msg_send!("mtl", self, sel_setComputePipelineState, state)
-    }
+    #[objc::msg_send(setComputePipelineState:)]
+    pub fn set_compute_pipeline_state(&mut self, state: &mtl::ComputePipelineState);
 
-    #[inline]
-    pub fn set_texture_at_index(&mut self, texture: Option<&mtl::Texture>, index: usize) {
-        msg_send!("mtl", self, sel_setTexture_atIndex, texture, index)
-    }
+    #[objc::msg_send(setTexture:atIndex:)]
+    pub fn set_texture_at_index(&mut self, texture: Option<&mtl::Texture>, index: usize);
 
-    #[inline]
-    pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range) {
-        msg_send!("mtl", self, sel_setTextures_withRange, textures, range)
-    }
+    #[objc::msg_send(setTextures:withRange:)]
+    pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range);
 
-    #[inline]
+    #[objc::msg_send(dispatchThreads:threadsPerThreadgroup:)]
     pub fn dispatch_threads(
         &mut self,
         threads_per_grid: mtl::Size,
         threads_per_threadgroup: mtl::Size,
-    ) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_dispatchThreads_threadsPerThreadgroup,
-            threads_per_grid,
-            threads_per_threadgroup
-        )
-    }
+    );
 
-    #[inline]
+    #[objc::msg_send(dispatchThreadgroups:threadsPerThreadgroup:)]
     pub fn dispatch_threadgroups(
         &mut self,
         threadgroups_per_grid: mtl::Size,
         threads_per_threadgroup: mtl::Size,
-    ) {
-        msg_send!(
-            "mtl",
-            self,
-            sel_dispatchThreadgroups_threadsPerThreadgroup,
-            threadgroups_per_grid,
-            threads_per_threadgroup
-        )
-    }
+    );
 
-    #[inline]
-    pub fn set_image_block_size(&mut self, width: usize, height: usize) {
-        msg_send!("mtl", self, sel_setImageblockWidth_height, width, height)
-    }
+    #[objc::msg_send(setImageblockWidth:height:)]
+    pub fn set_image_block_size(&mut self, width: usize, height: usize);
 }
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {}

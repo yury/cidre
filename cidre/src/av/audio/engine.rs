@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, ns, os};
+use crate::{arc, define_obj_type, ns, objc, os};
 
 use super::{mixer_node::MixerNode, ConnectionPoint, Format, InputNode, Node, NodeBus, OutputNode};
 
@@ -73,28 +73,18 @@ define_obj_type!(Engine(ns::Id));
 /// audio device and rendering in response to requests from the client, normally at or
 /// faster than realtime rate.
 impl Engine {
-    /// ```
-    /// use cidre::av;
-    ///
-    /// let engine = av::audio::Engine::new();
-    /// assert!(!engine.is_running());
-    /// ```
     #[inline]
     pub fn new() -> arc::R<Engine> {
         unsafe { AVAudioEngine_new() }
     }
 
-    #[inline]
-    pub fn attach_node(&self, node: &Node) {
-        unsafe { wsel_attachNode(self, node) }
-    }
+    #[objc::msg_send(attachNode:)]
+    pub fn attach_node(&self, node: &Node);
 
-    #[inline]
-    pub fn detach_node(&self, node: &Node) {
-        unsafe { wsel_detachNode(self, node) }
-    }
+    #[objc::msg_send(detachNode:)]
+    pub fn detach_node(&self, node: &Node);
 
-    #[inline]
+    #[objc::msg_send(connect:to:fromBus:toBus:format:)]
     pub fn connect_node_to_node_bus_to_bus(
         &self,
         node_from: &Node,
@@ -102,65 +92,37 @@ impl Engine {
         from_bus: NodeBus,
         to_bus: NodeBus,
         format: Option<&Format>,
-    ) {
-        unsafe {
-            wsel_connect_to_fromBus_toBus_format(self, node_from, node_to, from_bus, to_bus, format)
-        }
-    }
-    #[inline]
-    pub fn connect_node_to_node(&self, node_from: &Node, node_to: &Node, format: Option<&Format>) {
-        unsafe { wsel_connect_to_format(self, node_from, node_to, format) }
-    }
+    );
 
+    #[objc::msg_send(connect:to:format:)]
+    pub fn connect_node_to_node(&self, node_from: &Node, node_to: &Node, format: Option<&Format>);
+
+    #[objc::msg_send(connect:toConnectionPoints:fromBus:format:)]
     pub fn connect_node_to_connection_points_from_bus(
         &self,
         node: &Node,
-        connection_pods: &cf::ArrayOf<ConnectionPoint>,
+        connection_pods: &ns::Array<ConnectionPoint>,
         from_bus: NodeBus,
         format: Option<&Format>,
-    ) {
-        unsafe {
-            wsel_connect_toConnectionPoints_fromBus_format(
-                self,
-                node,
-                connection_pods,
-                from_bus,
-                format,
-            )
-        }
-    }
+    );
 
-    pub fn disconnect_node_input_bus(&self, node: &Node, bus: NodeBus) {
-        unsafe {
-            wsel_disconnectNodeInput_bus(self, node, bus);
-        }
-    }
+    #[objc::msg_send(disconnectNodeInput:bus:)]
+    pub fn disconnect_node_input_bus(&self, node: &Node, bus: NodeBus);
 
-    pub fn disconnect_node_input(&self, node: &Node) {
-        unsafe {
-            wsel_disconnectNodeInput(self, node);
-        }
-    }
+    #[objc::msg_send(disconnectNodeInput:)]
+    pub fn disconnect_node_input(&self, node: &Node);
 
-    pub fn disconnect_node_output_bus(&self, node: &Node, bus: NodeBus) {
-        unsafe {
-            wsel_disconnectNodeOutput_bus(self, node, bus);
-        }
-    }
+    #[objc::msg_send(disconnectNodeOutput:bus:)]
+    pub fn disconnect_node_output_bus(&self, node: &Node, bus: NodeBus);
 
-    pub fn disconnect_node_output(&self, node: &Node) {
-        unsafe {
-            wsel_disconnectNodeOutput(self, node);
-        }
-    }
+    #[objc::msg_send(disconnectNodeOutput:)]
+    pub fn disconnect_node_output(&self, node: &Node);
+
+    #[objc::msg_send(prepare)]
+    pub fn prepare(&self);
 
     #[inline]
-    pub fn prepare(&self) {
-        unsafe { wsel_prepare(self) }
-    }
-
-    #[inline]
-    pub fn start(&self) -> Result<(), arc::R<cf::Error>> {
+    pub fn start(&self) -> Result<(), arc::R<ns::Error>> {
         unsafe {
             let mut error = None;
             let res = rsel_startAndReturnError(self, &mut error);
@@ -172,92 +134,59 @@ impl Engine {
         }
     }
 
-    /// ```
+    /// ```no_run
     /// use cidre::av;
     ///
     /// let engine = av::audio::Engine::new();
     /// let input_node = engine.input_node();
     /// let en = input_node.engine().expect("engine");
     /// ```
-    pub fn input_node(&self) -> &InputNode {
-        unsafe { rsel_inputNode(self) }
-    }
+    #[objc::msg_send(inputNode)]
+    pub fn input_node(&self) -> &InputNode;
 
-    /// ```
+    /// ```no_run
     /// use cidre::av;
     ///
     /// let engine = av::audio::Engine::new();
     /// let output_node = engine.output_node();
     ///
     /// ```
-    pub fn output_node(&self) -> &OutputNode {
-        unsafe { rsel_outputNode(self) }
-    }
+    #[objc::msg_send(outputNode)]
+    pub fn output_node(&self) -> &OutputNode;
 
-    pub fn main_mixer_node(&self) -> &MixerNode {
-        unsafe { rsel_mainMixerNode(self) }
-    }
+    #[objc::msg_send(mainMixerNode)]
+    pub fn main_mixer_node(&self) -> &MixerNode;
 
-    pub fn reset(&self) {
-        unsafe { av_wsel_reset(self) }
-    }
+    #[objc::msg_send(reset)]
+    pub fn reset(&self);
 
-    pub fn pause(&self) {
-        unsafe { wsel_pause(self) }
-    }
+    #[objc::msg_send(pause)]
+    pub fn pause(&self);
 
-    pub fn stop(&self) {
-        unsafe { wsel_stop(self) }
-    }
+    #[objc::msg_send(stop)]
+    pub fn stop(&self);
 
-    pub fn is_running(&self) -> bool {
-        unsafe { rsel_isRunning(self) }
-    }
+    #[objc::msg_send(isRunning)]
+    pub fn is_running(&self) -> bool;
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
     fn AVAudioEngine_new() -> arc::R<Engine>;
 
-    fn wsel_attachNode(id: &ns::Id, node: &Node);
-    fn wsel_detachNode(id: &ns::Id, node: &Node);
-    fn wsel_connect_to_fromBus_toBus_format(
-        id: &ns::Id,
-        node_from: &Node,
-        node_to: &Node,
-        from_bus: NodeBus,
-        to_bus: NodeBus,
-        format: Option<&Format>,
-    );
-    fn wsel_connect_to_format(
-        id: &ns::Id,
-        node_from: &Node,
-        node_to: &Node,
-        format: Option<&Format>,
-    );
+    fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<arc::R<ns::Error>>) -> bool;
+}
 
-    fn wsel_prepare(id: &ns::Id);
+#[cfg(test)]
+mod tests {
+    use crate::av;
 
-    fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<arc::R<cf::Error>>) -> bool;
-    fn wsel_connect_toConnectionPoints_fromBus_format(
-        id: &ns::Id,
-        node: &Node,
-        connection_pods: &cf::ArrayOf<ConnectionPoint>,
-        from_bus: NodeBus,
-        format: Option<&Format>,
-    );
-
-    fn wsel_disconnectNodeInput_bus(id: &ns::Id, node: &Node, bus: NodeBus);
-    fn wsel_disconnectNodeInput(id: &ns::Id, node: &Node);
-    fn wsel_disconnectNodeOutput_bus(id: &ns::Id, node: &Node, bus: NodeBus);
-    fn wsel_disconnectNodeOutput(id: &ns::Id, node: &Node);
-
-    fn rsel_inputNode(id: &ns::Id) -> &InputNode;
-    fn rsel_outputNode(id: &ns::Id) -> &OutputNode;
-    fn rsel_mainMixerNode(id: &ns::Id) -> &MixerNode;
-
-    fn av_wsel_reset(id: &ns::Id);
-    fn wsel_pause(id: &ns::Id);
-    fn wsel_stop(id: &ns::Id);
-    fn rsel_isRunning(id: &ns::Id) -> bool;
+    #[test]
+    fn basics() {
+        let engine = av::audio::Engine::new();
+        assert!(!engine.is_running());
+        let output_node = engine.output_node();
+        let input_node = engine.input_node();
+        let en = input_node.engine().expect("engine");
+    }
 }

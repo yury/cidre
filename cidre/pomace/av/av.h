@@ -463,11 +463,6 @@ rsel2(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, assetWr
 
 csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
-#pragma mark NSValue
-
-NS_RETURNS_RETAINED
-csel1(, NSValue, valueWithCMTimeRange, CMTimeRange, NSValue *)
-
 
 SEL sel_copyNextSampleBuffer;
 SEL sel_status;
@@ -476,14 +471,6 @@ SEL sel_setTimeRange;
 SEL sel_convertToBuffer_fromBuffer_error;
 SEL sel_convertToBuffer_error_withInputFromBlock;
 SEL sel_scheduleBuffer_completionHandler;
-SEL sel_stop;
-SEL sel_play;
-SEL sel_pause;
-SEL sel_isPlaying;
-SEL sel_volume;
-SEL sel_setVolume;
-SEL sel_pan;
-SEL sel_setPan;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -497,14 +484,6 @@ static void common_initializer()
     sel_convertToBuffer_fromBuffer_error = @selector(convertToBuffer:fromBuffer:error:);
     sel_convertToBuffer_error_withInputFromBlock = @selector(convertToBuffer:error:withInputFromBlock:);
     sel_scheduleBuffer_completionHandler = @selector(scheduleBuffer:completionHandler:);
-    sel_stop = @selector(stop);
-    sel_play = @selector(play);
-    sel_pause = @selector(pause);
-    sel_isPlaying = @selector(isPlaying);
-    sel_volume = @selector(volume);
-    sel_setVolume = @selector(setVolume:);
-    sel_pan = @selector(pan);
-    sel_setPan = @selector(setPan:);
   }
 }
 

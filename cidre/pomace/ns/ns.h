@@ -44,6 +44,7 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 
+Class NS_VALUE;
 Class NS_NUMBER;
 Class NS_ARRAY;
 Class NS_MUTABLE_ARRAY;
@@ -74,6 +75,7 @@ static void common_initializer()
   static int initialized = 0;
   if (!initialized) {
 
+    NS_VALUE = [NSValue class];
     NS_NUMBER = [NSNumber class];
     NS_ARRAY = [NSArray class];
     NS_MUTABLE_ARRAY = [NSMutableArray class];

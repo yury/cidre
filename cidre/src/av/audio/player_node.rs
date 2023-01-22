@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{
     av::{self, audio},
-    define_obj_type, msg_send,
+    define_obj_type, objc,
 };
 
 /// Options controlling buffer scheduling.
@@ -29,20 +29,12 @@ pub enum CompletionCallbackType {
 define_obj_type!(PlayerNode(audio::Node));
 
 impl PlayerNode {
-    #[inline]
+    #[objc::msg_send(scheduleBuffer:completionHandler:)]
     pub unsafe fn schedule_buffer_completion_hander(
         &self,
         buffer: &av::AudioPCMBuffer,
         handler: *mut c_void,
-    ) {
-        msg_send!(
-            "av",
-            self,
-            sel_scheduleBuffer_completionHandler,
-            buffer,
-            handler
-        )
-    }
+    );
 
     /// Schedule playing samples from an av::AudioPCMBuffer.
     ///
@@ -52,45 +44,29 @@ impl PlayerNode {
         unsafe { self.schedule_buffer_completion_hander(buffer, std::ptr::null_mut()) }
     }
 
-    #[inline]
-    pub fn play(&self) {
-        msg_send!("av", self, sel_play)
-    }
+    #[objc::msg_send(play)]
+    pub fn play(&self);
 
-    #[inline]
-    pub fn stop(&self) {
-        msg_send!("av", self, sel_stop)
-    }
+    #[objc::msg_send(stop)]
+    pub fn stop(&self);
 
-    #[inline]
-    pub fn pause(&self) {
-        msg_send!("av", self, sel_pause)
-    }
+    #[objc::msg_send(pause)]
+    pub fn pause(&self);
 
-    #[inline]
-    pub fn is_playing(&self) -> bool {
-        msg_send!("av", self, sel_isPlaying)
-    }
+    #[objc::msg_send(isPlaying)]
+    pub fn is_playing(&self) -> bool;
 
     // - Mixing
 
-    #[inline]
-    pub fn volume(&self) -> f32 {
-        msg_send!("av", self, sel_volume)
-    }
+    #[objc::msg_send(volume)]
+    pub fn volume(&self) -> f32;
 
-    #[inline]
-    pub fn set_volume(&self, value: f32) {
-        msg_send!("av", self, sel_setVolume, value)
-    }
+    #[objc::msg_send(setVolume:)]
+    pub fn set_volume(&self, value: f32);
 
-    #[inline]
-    pub fn pan(&self) -> f32 {
-        msg_send!("av", self, sel_pan)
-    }
+    #[objc::msg_send(pan)]
+    pub fn pan(&self) -> f32;
 
-    #[inline]
-    pub fn set_pan(&self, value: f32) {
-        msg_send!("av", self, sel_setPan, value)
-    }
+    #[objc::msg_send(setPan:)]
+    pub fn set_pan(&self, value: f32);
 }

@@ -1,9 +1,19 @@
 use crate::{
-    arc, define_obj_type, ns,
+    arc, define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
 define_obj_type!(Value(ns::Id));
+
+impl Value {
+    define_cls!(NS_VALUE);
+}
+
+impl PartialEq for Value {
+    #[objc::msg_send(isEqualToValue:)]
+    fn eq(&self, other: &Self) -> bool;
+}
+
 define_obj_type!(Number(Value));
 
 // initializers
@@ -49,15 +59,7 @@ impl arc::A<Number> {
 }
 
 impl Number {
-    #[inline]
-    pub fn cls() -> &'static Class<Self> {
-        unsafe { NS_NUMBER }
-    }
-
-    #[inline]
-    pub fn alloc() -> arc::A<Self> {
-        Self::cls().alloc()
-    }
+    define_cls!(NS_NUMBER);
 
     #[inline]
     pub fn with_i8(value: i8) -> arc::R<Self> {
@@ -325,6 +327,7 @@ impl Eq for Number {}
 #[link(name = "ns", kind = "static")]
 extern "C" {
 
+    static NS_VALUE: &'static Class<ns::Value>;
     static NS_NUMBER: &'static Class<ns::Number>;
 
     // just for benchmarks

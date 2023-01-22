@@ -1,5 +1,5 @@
 use crate::{
-    cg, cm, cv, define_obj_type, msg_send, ns, objc,
+    cg, cm, cv, define_obj_type, ns, objc,
     vn::{self, ElementType},
 };
 
@@ -213,22 +213,13 @@ impl FeaturePrintObservation {
     /// # Safety
     /// use `compute_distance`
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
-    #[inline]
+    #[objc::msg_send(computeDistance:toFeaturePrintObservation:error:)]
     pub unsafe fn compute_distance_error<'ar>(
         &self,
         distance: &mut f32,
         to: &FeaturePrintObservation,
         error: &mut Option<&'ar ns::Error>,
-    ) -> bool {
-        msg_send!(
-            "vn",
-            self,
-            sel_computeDistance_toFeaturePrintObservation_error,
-            distance,
-            to,
-            error
-        )
-    }
+    ) -> bool;
 
     /// Computes the distance between two feature print observations.
     ///
@@ -251,6 +242,3 @@ impl FeaturePrintObservation {
         }
     }
 }
-
-#[link(name = "vn", kind = "static")]
-extern "C" {}
