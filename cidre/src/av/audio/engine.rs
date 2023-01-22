@@ -54,7 +54,7 @@ pub enum ManualRenderingMode {
     ManualRenderingModeRealtime = 1,
 }
 
-define_obj_type!(Engine(ns::Id));
+define_obj_type!(Engine(ns::Id), AV_AUDIO_ENGINE);
 
 /// An AVAudioEngine contains a group of connected AVAudioNodes ("nodes"), each of which performs
 /// an audio signal generation, processing, or input/output task.
@@ -73,11 +73,6 @@ define_obj_type!(Engine(ns::Id));
 /// audio device and rendering in response to requests from the client, normally at or
 /// faster than realtime rate.
 impl Engine {
-    #[inline]
-    pub fn new() -> arc::R<Engine> {
-        unsafe { AVAudioEngine_new() }
-    }
-
     #[objc::msg_send(attachNode:)]
     pub fn attach_node(&self, node: &Node);
 
@@ -172,7 +167,7 @@ impl Engine {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAudioEngine_new() -> arc::R<Engine>;
+    static AV_AUDIO_ENGINE: &'static objc::Class<Engine>;
 
     fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<arc::R<ns::Error>>) -> bool;
 }

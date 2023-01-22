@@ -1,4 +1,4 @@
-use crate::{arc, av, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
@@ -17,11 +17,22 @@ pub enum Status {
 
 define_obj_type!(Reader(ns::Id));
 
+impl arc::A<Reader> {
+    #[objc::msg_send(initWithAsset:error:)]
+    pub fn init_with_assert_error(
+        self,
+        asset: &av::Asset,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<Reader>>;
+}
+
 impl Reader {
+    define_cls!(AV_ASSET_READER);
+
     pub fn with_asset<'ar>(asset: &av::Asset) -> Result<arc::R<Reader>, &'ar ns::Error> {
         let mut error = None;
         unsafe {
-            if let Some(reader) = AVAssetReader_assetReaderWithAsset_error(asset, &mut error) {
+            if let Some(reader) = Self::alloc().init_with_assert_error(asset, &mut error) {
                 Ok(reader)
             } else {
                 Err(error.unwrap_unchecked())
@@ -70,8 +81,5 @@ impl Reader {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAssetReader_assetReaderWithAsset_error<'ar>(
-        asset: &av::Asset,
-        error: &mut Option<&'ar ns::Error>,
-    ) -> Option<arc::R<Reader>>;
+    static AV_ASSET_READER: &'static objc::Class<Reader>;
 }

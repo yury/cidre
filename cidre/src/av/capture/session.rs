@@ -1,4 +1,4 @@
-use crate::{arc, av, cf, define_obj_type, ns};
+use crate::{arc, av, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -24,198 +24,96 @@ pub enum InterruptionReason {
     VideoDeviceNotAvailableDueToSystemPressure = 5,
 }
 
-define_obj_type!(Session(ns::Id));
+define_obj_type!(Session(ns::Id), AV_CAPTURE_SESSION);
 
 impl Session {
-    #[inline]
-    pub fn new() -> arc::R<Session> {
-        unsafe { AVCaptureSession_new() }
-    }
+    #[objc::msg_send(canSetSessionPreset:)]
+    pub fn can_set_session_preset(&self, preset: &av::CaptureSessionPreset) -> bool;
 
-    #[inline]
-    pub fn can_set_session_preset(&self, preset: &av::CaptureSessionPreset) -> bool {
-        unsafe { rsel_canSetSessionPreset(self, preset) }
-    }
+    #[objc::msg_send(sessionPreset)]
+    pub fn session_preset(&self) -> &av::CaptureSessionPreset;
 
-    #[inline]
-    pub fn session_preset(&self) -> &av::CaptureSessionPreset {
-        unsafe { rsel_sessionPreset(self) }
-    }
+    #[objc::msg_send(setSessionPreset:)]
+    pub fn set_session_preset(&self, value: &av::CaptureSessionPreset);
 
-    #[inline]
-    pub fn set_session_preset(&self, value: &av::CaptureSessionPreset) {
-        unsafe { wsel_setSessionPreset(self, value) }
-    }
+    #[objc::msg_send(inputs)]
+    pub fn inputs(&self) -> &ns::Array<av::CaptureInput>;
 
-    #[inline]
-    pub fn inputs(&self) -> &cf::ArrayOf<av::CaptureInput> {
-        unsafe { rsel_inputs(self) }
-    }
+    #[objc::msg_send(canAddInput:)]
+    pub fn can_add_input(&self, input: &av::CaptureInput) -> bool;
 
-    #[inline]
-    pub fn can_add_input(&self, input: &av::CaptureInput) -> bool {
-        unsafe { rsel_canAddInput(self, input) }
-    }
+    #[objc::msg_send(addInput:)]
+    pub fn add_input(&mut self, input: &av::CaptureInput);
 
-    #[inline]
-    pub fn add_input(&mut self, input: &av::CaptureInput) {
-        unsafe { wsel_addInput(self, input) }
-    }
+    #[objc::msg_send(removeInput:)]
+    pub fn remove_input(&mut self, input: &av::CaptureInput);
 
-    #[inline]
-    pub fn remove_input(&mut self, input: &av::CaptureInput) {
-        unsafe { wsel_removeInput(self, input) }
-    }
+    #[objc::msg_send(outputs)]
+    pub fn outputs(&self) -> &ns::Array<av::CaptureOutput>;
 
-    #[inline]
-    pub fn outputs(&self) -> &cf::ArrayOf<av::CaptureOutput> {
-        unsafe { rsel_outputs(self) }
-    }
+    #[objc::msg_send(canAddOutput:)]
+    pub fn can_add_output(&self, output: &av::CaptureOutput) -> bool;
 
-    #[inline]
-    pub fn can_add_output(&self, output: &av::CaptureOutput) -> bool {
-        unsafe { rsel_canAddOutput(self, output) }
-    }
+    #[objc::msg_send(addOutput:)]
+    pub fn add_output(&mut self, output: &av::CaptureOutput);
 
-    #[inline]
-    pub fn add_output(&mut self, output: &av::CaptureOutput) {
-        unsafe { wsel_addOutput(self, output) }
-    }
+    #[objc::msg_send(removeOutput:)]
+    pub fn remove_output(&mut self, output: &av::CaptureOutput);
 
-    #[inline]
-    pub fn remove_output(&mut self, output: &av::CaptureOutput) {
-        unsafe { wsel_removeOutput(self, output) }
-    }
+    #[objc::msg_send(addInputWithNoConnections:)]
+    pub fn add_input_without_connections(&mut self, input: &av::CaptureInput);
 
-    #[inline]
-    pub fn add_input_without_connections(&mut self, input: &av::CaptureInput) {
-        unsafe { wsel_addInputWithNoConnections(self, input) }
-    }
+    #[objc::msg_send(addOutputWithNoConnections:)]
+    pub fn add_output_without_connections(&mut self, output: &av::CaptureOutput);
 
-    #[inline]
-    pub fn add_output_without_connections(&mut self, output: &av::CaptureOutput) {
-        unsafe { wsel_addOutputWithNoConnections(self, output) }
-    }
+    #[objc::msg_send(connections)]
+    pub fn connections(&self) -> &ns::Array<av::CaptureConnection>;
 
-    #[inline]
-    pub fn connections(&self) -> &cf::ArrayOf<av::CaptureConnection> {
-        unsafe { rsel_connections(self) }
-    }
+    #[objc::msg_send(canAddConnection:)]
+    pub fn can_add_connection(&self, connection: &av::CaptureConnection) -> bool;
 
-    #[inline]
-    pub fn can_add_connection(&self, connection: &av::CaptureConnection) -> bool {
-        unsafe { rsel_canAddConnection(self, connection) }
-    }
+    #[objc::msg_send(addConnection:)]
+    pub fn add_connection(&mut self, connection: &av::CaptureConnection);
 
-    #[inline]
-    pub fn add_connection(&mut self, connection: &av::CaptureConnection) {
-        unsafe { wsel_addConnection(self, connection) }
-    }
+    #[objc::msg_send(removeConnection:)]
+    pub fn remove_connection(&mut self, connection: &av::CaptureConnection);
 
-    #[inline]
-    pub fn remove_connection(&mut self, connection: &av::CaptureConnection) {
-        unsafe { wsel_removeConnection(self, connection) }
-    }
+    #[objc::msg_send(beginConfiguration)]
+    pub fn begin_configuration(&mut self);
 
-    #[inline]
-    pub fn begin_configuration(&mut self) {
-        unsafe { wsel_beginConfiguration(self) }
-    }
+    #[objc::msg_send(commitConfiguration)]
+    pub fn commit_configuration(&mut self);
 
-    #[inline]
-    pub fn commit_configuration(&mut self) {
-        unsafe { wsel_commitConfiguration(self) }
-    }
+    #[objc::msg_send(startRunning)]
+    pub fn start_running(&mut self);
 
-    #[inline]
-    pub fn start_running(&mut self) {
-        unsafe { wsel_startRunning(self) }
-    }
+    #[objc::msg_send(stopRunning)]
+    pub fn stop_running(&mut self);
 
-    #[inline]
-    pub fn stop_running(&mut self) {
-        unsafe { wsel_stopRunning(self) }
-    }
+    #[objc::msg_send(usesApplicationAudioSession)]
+    pub fn uses_application_audio_session(&self) -> bool;
 
-    #[inline]
-    pub fn uses_application_audio_session(&self) -> bool {
-        unsafe { rsel_usesApplicationAudioSession(self) }
-    }
-
-    #[inline]
-    pub fn set_uses_application_audio_session(&mut self, value: bool) {
-        unsafe { wsel_setUsesApplicationAudioSession(self, value) }
-    }
+    #[objc::msg_send(setUsesApplicationAudioSession:)]
+    pub fn set_uses_application_audio_session(&mut self, value: bool);
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureSession_new() -> arc::R<Session>;
-    fn rsel_canSetSessionPreset(session: &Session, preset: &av::CaptureSessionPreset) -> bool;
-    fn rsel_sessionPreset(session: &Session) -> &av::CaptureSessionPreset;
-    fn wsel_setSessionPreset(session: &Session, value: &av::CaptureSessionPreset);
-
-    fn rsel_inputs(session: &Session) -> &cf::ArrayOf<av::CaptureInput>;
-    fn rsel_canAddInput(session: &Session, input: &av::CaptureInput) -> bool;
-    fn wsel_addInput(session: &mut Session, input: &av::CaptureInput);
-    fn wsel_removeInput(session: &mut Session, input: &av::CaptureInput);
-
-    fn rsel_outputs(session: &Session) -> &cf::ArrayOf<av::CaptureOutput>;
-    fn rsel_canAddOutput(session: &Session, output: &av::CaptureOutput) -> bool;
-    fn wsel_addOutput(session: &mut Session, output: &av::CaptureOutput);
-    fn wsel_removeOutput(session: &mut Session, output: &av::CaptureOutput);
-
-    fn wsel_addInputWithNoConnections(session: &mut Session, input: &av::CaptureInput);
-    fn wsel_addOutputWithNoConnections(session: &mut Session, output: &av::CaptureOutput);
-
-    fn rsel_connections(id: &ns::Id) -> &cf::ArrayOf<av::CaptureConnection>;
-
-    fn rsel_canAddConnection(session: &Session, connection: &av::CaptureConnection) -> bool;
-    fn wsel_addConnection(session: &mut Session, connection: &av::CaptureConnection);
-    fn wsel_removeConnection(session: &mut Session, connection: &av::CaptureConnection);
-
-    fn wsel_beginConfiguration(session: &mut Session);
-    fn wsel_commitConfiguration(session: &mut Session);
-
-    fn wsel_startRunning(session: &mut Session);
-    fn wsel_stopRunning(session: &mut Session);
-
-    // rwsel(, id, usesApplicationAudioSession, setUsesApplicationAudioSession, BOOL)
-    fn rsel_usesApplicationAudioSession(session: &Session) -> bool;
-    fn wsel_setUsesApplicationAudioSession(session: &Session, value: bool);
+    static AV_CAPTURE_SESSION: &'static objc::Class<Session>;
+    static AV_CAPTURE_MULTI_CAM_SESSION: &'static objc::Class<MultiCamSession>;
 }
 
-define_obj_type!(MultiCamSession(Session));
+define_obj_type!(MultiCamSession(Session), AV_CAPTURE_MULTI_CAM_SESSION);
 
 impl MultiCamSession {
-    #[inline]
-    pub fn new() -> arc::R<MultiCamSession> {
-        unsafe { AVCaptureMultiCamSession_new() }
-    }
-    /// ```
+    /// ```no_run
     /// use cidre::av;
     ///
     /// assert!(!av::CaptureMultiCamSession::is_multicam_supported());
     /// ```
-    pub fn is_multicam_supported() -> bool {
-        unsafe { is_mutlicam_supported() }
-    }
-
     #[cfg(not(target_os = "macos"))]
-    pub fn hardware_cost(&self) -> f32 {
-        unsafe { rsel_hardwareCost(self) }
-    }
-
-    #[cfg(not(target_os = "macos"))]
-    pub fn system_pressure_cost(&self) -> f32 {
-        unsafe { rsel_systemPressureCost(self) }
-    }
-}
-
-#[link(name = "av", kind = "static")]
-extern "C" {
-    fn AVCaptureMultiCamSession_new() -> arc::R<MultiCamSession>;
-    fn is_mutlicam_supported() -> bool;
+    #[objc::cls_msg_send(isMultiCamSupported)]
+    pub fn is_multicam_supported() -> bool;
 
     /// The value of this property is a float from 0.0 => 1.0 indicating
     /// how much of the session's available hardware is in use as a percentage,
@@ -243,9 +141,12 @@ extern "C" {
     ///       reciprocal of the min frame duration) of a source device to a lower value.
     ///       By doing so, you only pay the hardware cost for the max frame rate you intend to use.
     #[cfg(not(target_os = "macos"))]
-    fn rsel_hardwareCost(session: &MultiCamSession) -> f32;
+    #[objc::msg_send(hardwareCost)]
+    pub fn hardware_cost(&self) -> f32;
+
     #[cfg(not(target_os = "macos"))]
-    fn rsel_systemPressureCost(session: &MultiCamSession) -> f32;
+    #[objc::msg_send(systemPressureCost)]
+    pub fn system_pressure_cost(&self) -> f32;
 }
 
 define_obj_type!(Connection(ns::Id));

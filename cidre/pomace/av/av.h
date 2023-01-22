@@ -112,63 +112,6 @@ bool is_mutlicam_supported(void) {
 #endif
 }
 
-#if TARGET_OS_OSX
-
-#else
-rsel0(, id, hardwareCost, float)
-rsel0(, id, systemPressureCost, float)
-#endif
-
-#pragma mark - AVCaptureSession
-
-NS_RETURNS_RETAINED
-csel0(, AVCaptureSession, new, AVCaptureSession *)
-rsel1(, id, canSetSessionPreset, AVCaptureSessionPreset, BOOL)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, sessionPreset, AVCaptureSessionPreset)
-
-wsel1(, id, setSessionPreset, AVCaptureSessionPreset)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, AVCaptureSession *, inputs, NSArray<__kindof AVCaptureInput *> *)
-
-rsel1(, id, canAddInput, AVCaptureInput *, BOOL)
-wsel1(, id, addInput, AVCaptureInput *)
-wsel1(, id, removeInput, AVCaptureInput *)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, AVCaptureSession *, outputs, NSArray<__kindof AVCaptureOutput *> *)
-
-rsel1(, id, canAddOutput, AVCaptureOutput *, BOOL)
-wsel1(, id, addOutput, AVCaptureOutput *)
-wsel1(, id, removeOutput, AVCaptureOutput *)
-
-wsel1(, id, addInputWithNoConnections, AVCaptureInput *)
-wsel1(, id, addOutputWithNoConnections, AVCaptureOutput *)
-
-rsel1(, id, canAddConnection, AVCaptureConnection *, BOOL)
-wsel1(, id, addConnection, AVCaptureConnection *)
-wsel1(, id, removeConnection, AVCaptureConnection *)
-
-wsel0(, id, beginConfiguration)
-wsel0(, id, commitConfiguration)
-
-wsel0(, id, startRunning)
-wsel0(, id, stopRunning)
-
-rwsel(, id, usesApplicationAudioSession, setUsesApplicationAudioSession, BOOL)
-
-#pragma mark - AVCaptureMultiCamSession
-
-#if TARGET_OS_OSX
-
-#else
-
-NS_RETURNS_RETAINED
-csel0(, AVCaptureMultiCamSession, new, AVCaptureMultiCamSession *)
-#endif
-
 #pragma mark - AVCaptureDeviceDiscoverySession
 
 NS_RETURNS_RETAINED
@@ -189,15 +132,6 @@ rsel0(, id, supportedMultiCamDeviceSets, NSArray<NSSet<AVCaptureDevice *> *> *)
 wsel0(av_, id, reset)
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, engine, AVAudioEngine * _Nullable)
-
-
-#pragma mark - AVAudioNode
-
-//@property (nonatomic, readonly) NSUInteger numberOfInputs;
-rsel0(, id, numberOfInputs, NSUInteger)
-//@property (nonatomic, readonly) NSUInteger numberOfOutputs;
-rsel0(, id, numberOfOutputs, NSUInteger)
-
 
 #pragma mark - AVAudioEngine
 
@@ -413,34 +347,6 @@ wsel1(, id, resetForReadingTimeRanges, NSArray *)
 
 rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
 
-#pragma mark - AVAudioConverter
-
-rsel0(, id, availableEncodeChannelLayoutTags, NSArray<NSNumber *> * _Nullable)
-rsel0(, id, applicableEncodeSampleRates, NSArray<NSNumber *> * _Nullable)
-rsel0(, id, availableEncodeSampleRates, NSArray<NSNumber *> * _Nullable)
-rsel0(, id, applicableEncodeBitRates, NSArray<NSNumber *> * _Nullable)
-rsel0(, id, availableEncodeBitRates, NSArray<NSNumber *> * _Nullable)
-rsel0(, id, maximumOutputPacketSize, NSInteger)
-
-rsel0(, id, bitRateStrategy, NSString * _Nullable)
-wsel1(, id, setBitRateStrategy, NSString * _Nullable)
-
-rsel3(, id, convertToBuffer, AVAudioPCMBuffer *, fromBuffer, const AVAudioPCMBuffer *, error, NSError **, BOOL)
-rsel3(, id, convertToBuffer, AVAudioBuffer *, error, NSError **, withInputFromBlock, id, AVAudioConverterOutputStatus)
-
-#pragma mark - AVMetadataBodyObject
-
-rsel0(AVMetadataBodyObject_, AVMetadataBodyObject *, bodyID, NSInteger)
-
-#pragma mark - AVMetadataSalientObject
-
-rsel0(AVMetadataSalientObject_, AVMetadataSalientObject *, objectID, NSInteger)
-
-#pragma mark - AVCaptureMetadataOutput
-
-rsel0(, id, availableMetadataObjectTypes, NSArray *)
-rwsel(, id, rectOfInterest, setRectOfInterest, CGRect)
-csel0(, AVCaptureMetadataOutput, new, AVCaptureMetadataOutput *)
 
 #pragma mark - AVCaptureVideoDataOutput
 
@@ -464,26 +370,30 @@ rsel2(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, assetWr
 csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
 
-SEL sel_copyNextSampleBuffer;
-SEL sel_status;
-SEL sel_timeRange;
-SEL sel_setTimeRange;
-SEL sel_convertToBuffer_fromBuffer_error;
-SEL sel_convertToBuffer_error_withInputFromBlock;
-SEL sel_scheduleBuffer_completionHandler;
+Class AV_CAPTURE_SESSION;
+Class AV_CAPTURE_MULTI_CAM_SESSION;
+Class AV_CAPTURE_METADATA_OUTPUT;
+
+Class AV_AUDIO_ENGINE;
+
+Class AV_ASSET_READER;
+Class AV_ASSET_READER_TRACK_OUTPUT;
+
 
 __attribute__((constructor))
 static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-    sel_copyNextSampleBuffer = @selector(copyNextSampleBuffer);
-    sel_status = @selector(status);
-    sel_timeRange = @selector(timeRange);
-    sel_setTimeRange = @selector(setTimeRange:);
-    sel_convertToBuffer_fromBuffer_error = @selector(convertToBuffer:fromBuffer:error:);
-    sel_convertToBuffer_error_withInputFromBlock = @selector(convertToBuffer:error:withInputFromBlock:);
-    sel_scheduleBuffer_completionHandler = @selector(scheduleBuffer:completionHandler:);
+    AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
+    AV_CAPTURE_SESSION = [AVCaptureSession class];
+#if TARGET_OS_OSX
+#else
+    AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
+#endif
+    AV_AUDIO_ENGINE = [AVAudioEngine class];
+    AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
+    AV_ASSET_READER = [AVAssetReader class];
   }
 }
 

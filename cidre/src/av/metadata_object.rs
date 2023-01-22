@@ -1,6 +1,6 @@
-use crate::{cf, cg, cm, define_cf_type, define_obj_type, ns, objc};
+use crate::{cg, cm, define_obj_type, ns, objc};
 
-define_cf_type!(Type(cf::String));
+define_obj_type!(Type(ns::String));
 
 impl Type {
     pub fn human_body() -> &'static Type {
