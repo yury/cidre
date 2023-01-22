@@ -369,7 +369,7 @@ rsel2(, id, recommendedVideoSettingsForVideoCodecType, AVVideoCodecType, assetWr
 
 csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
 
-
+Class AV_CAPTURE_DEVICE;
 Class AV_CAPTURE_SESSION;
 Class AV_CAPTURE_MULTI_CAM_SESSION;
 Class AV_CAPTURE_METADATA_OUTPUT;
@@ -385,6 +385,7 @@ static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
+    AV_CAPTURE_DEVICE = [AVCaptureDevice class];
     AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
     AV_CAPTURE_SESSION = [AVCaptureSession class];
 #if TARGET_OS_OSX
