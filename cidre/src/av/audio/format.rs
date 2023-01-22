@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{arc, at::audio::StreamBasicDescription, cf, define_obj_type, ns};
+use crate::{arc, at::audio::StreamBasicDescription, cf, define_obj_type, ns, objc};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
@@ -83,39 +83,26 @@ impl Format {
     /// let format = av::AudioFormat::standard_with_sample_rate_and_channels(44_100f64, 2).unwrap();
     /// let settings = format.settings();
     /// ```
-    pub fn settings(&self) -> &cf::DictionaryOf<cf::String, ns::Id> {
-        unsafe { transmute(rsel_settings(self)) }
-    }
+    #[objc::msg_send(settings)]
+    pub fn settings(&self) -> &ns::Dictionary<ns::String, ns::Id>;
 
-    #[inline]
-    pub fn is_interleaved(&self) -> bool {
-        unsafe { rsel_isInterleaved(self) }
-    }
+    #[objc::msg_send(isInterleaved)]
+    pub fn is_interleaved(&self) -> bool;
 
-    #[inline]
-    pub fn common_format(&self) -> CommonFormat {
-        unsafe { rsel_commonFormat(self) }
-    }
+    #[objc::msg_send(commonFormat)]
+    pub fn common_format(&self) -> CommonFormat;
 
-    #[inline]
-    pub fn channel_count(&self) -> ChannelCount {
-        unsafe { av_format_rsel_channelCount(self) }
-    }
+    #[objc::msg_send(channelCount)]
+    pub fn channel_count(&self) -> ChannelCount;
 
-    #[inline]
-    pub fn absd(&self) -> &StreamBasicDescription {
-        unsafe { rsel_streamDescription(self) }
-    }
+    #[objc::msg_send(streamDescription)]
+    pub fn absd(&self) -> &StreamBasicDescription;
 
-    #[inline]
-    pub fn channel_layout(&self) -> Option<&ChannelLayout> {
-        unsafe { rsel_channelLayout(self) }
-    }
+    #[objc::msg_send(channelLayout)]
+    pub fn channel_layout(&self) -> Option<&ChannelLayout>;
 
-    #[inline]
-    pub fn magic_cookie(&self) -> Option<&cf::Data> {
-        unsafe { rsel_magicCookie(self) }
-    }
+    #[objc::msg_send(magicCookie)]
+    pub fn magic_cookie(&self) -> Option<&ns::Data>;
 }
 
 #[link(name = "av", kind = "static")]
@@ -148,14 +135,5 @@ extern "C" {
     ) -> arc::R<Format>;
 
     fn AVAudioFormat_initWithSettings(settings: &cf::Dictionary) -> Option<arc::R<Format>>;
-
-    fn rsel_settings(id: &ns::Id) -> &cf::Dictionary;
-    fn rsel_isInterleaved(id: &ns::Id) -> bool;
-    fn rsel_commonFormat(id: &ns::Id) -> CommonFormat;
-    fn av_format_rsel_channelCount(id: &ns::Id) -> ChannelCount;
-    fn rsel_streamDescription(id: &ns::Id) -> &StreamBasicDescription;
-    fn rsel_channelLayout(id: &ns::Id) -> Option<&ChannelLayout>;
-
-    fn rsel_magicCookie(id: &ns::Id) -> Option<&cf::Data>;
 
 }

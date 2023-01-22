@@ -109,58 +109,17 @@ asel4(, AVAudioFormat, initWithCommonFormat, AVAudioCommonFormat, sampleRate, do
 NS_RETURNS_RETAINED
 asel1(, AVAudioFormat, initWithSettings, NSDictionary *);
 
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, settings, NSDictionary *)
-rsel0(, id, isInterleaved, BOOL)
-rsel0(, id, commonFormat, AVAudioCommonFormat)
-rsel0(av_format_, AVAudioFormat *, channelCount, AVAudioChannelCount)
-rsel0(, id, streamDescription, const AudioStreamBasicDescription *)
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, channelLayout, AVAudioChannelLayout * _Nullable)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, magicCookie, NSData * _Nullable)
-
-#pragma mark - AVAudioBuffer
-
-rsel0(, id, format, AVAudioFormat *)
-rsel0(, id, audioBufferList, const AudioBufferList *)
-rsel0(, id, mutableAudioBufferList, AudioBufferList *)
-
 #pragma mark - AVAudioPCMBuffer
 
 //- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity NS_DESIGNATED_INITIALIZER;
 asel2(, AVAudioPCMBuffer, initWithPCMFormat,AVAudioFormat *, frameCapacity, AVAudioFrameCount)
 
-rsel0(, AVAudioPCMBuffer *, frameLength, AVAudioFrameCount)
-wsel1(, AVAudioPCMBuffer *, setFrameLength, AVAudioFrameCount)
-rsel0(, AVAudioPCMBuffer *, frameCapacity, AVAudioFrameCount)
-//@property (nonatomic, readonly) AVAudioFrameCount frameCapacity;
-rsel0(, id, stride, NSUInteger)
 
 #pragma mark - AVAudioCompressedBuffer
 
 asel2(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount)
 
 asel3(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount, maximumPacketSize, NSInteger)
-
-
-rsel0(, id, packetCapacity, AVAudioPacketCount)
-rsel0(, id, packetCount, AVAudioPacketCount)
-wsel1(, id, setPacketCount, AVAudioPacketCount)
-
-rsel0(, id, maximumPacketSize, NSInteger)
-rsel0(, id, byteCapacity, uint32_t)
-
-rwsel(, id, byteLength, setByteLength, uint32_t)
-
-//@property (nonatomic, readonly, nullable) AudioStreamPacketDescription *packetDescriptions;
-rsel0(, id, packetDescriptions, AudioStreamPacketDescription * _Nullable)
-
-rsel0(, AVAudioCompressedBuffer *, data, void *)
-//@property (nonatomic) uint32_t byteLength API_AVAILABLE(macosx(10.13), ios(11.0), watchos(4.0), tvos(11.0));
-
-//- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity
 
 #pragma mark - AVAssetWriterInput
 

@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     arc,
     at::{audio::StreamPacketDescription, AudioBufferList},
-    define_obj_type, ns,
+    define_obj_type, ns, objc,
 };
 
 use super::{Format, FrameCount, PacketCount};
@@ -12,17 +12,14 @@ define_obj_type!(Buffer(ns::Id));
 
 /// A buffer of audio data, with a format.
 impl Buffer {
-    pub fn format(&self) -> arc::R<Format> {
-        unsafe { rsel_format(self) }
-    }
+    #[objc::msg_send(format)]
+    pub fn format(&self) -> &Format;
 
-    pub fn audio_buffer_list(&self) -> &AudioBufferList {
-        unsafe { rsel_audioBufferList(self) }
-    }
+    #[objc::msg_send(audioBufferList)]
+    pub fn audio_buffer_list(&self) -> &AudioBufferList;
 
-    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList {
-        unsafe { rsel_mutableAudioBufferList(self) }
-    }
+    #[objc::msg_send(mutableAudioBufferList)]
+    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList;
 }
 
 define_obj_type!(PCMBuffer(Buffer));
@@ -43,25 +40,21 @@ impl PCMBuffer {
     /// the mDataByteSize in each of the underlying AudioBufferList's AudioBuffer's correspondingly,
     /// and vice versa. Note that in the case of deinterleaved formats, mDataByteSize will refers
     /// the size of one channel's worth of audio samples.
-    pub fn frame_length(&self) -> FrameCount {
-        unsafe { rsel_frameLength(self) }
-    }
+    #[objc::msg_send(frameLength)]
+    pub fn frame_length(&self) -> FrameCount;
 
-    pub fn set_frame_length(&self, value: FrameCount) {
-        unsafe { wsel_setFrameLength(self, value) }
-    }
+    #[objc::msg_send(setFrameLength:)]
+    pub fn set_frame_length(&self, value: FrameCount);
 
     /// The buffer's number of interleaved channels.
     ///
     /// Useful in conjunction with floatChannelData etc.
-    pub fn stride(&self) -> usize {
-        unsafe { rsel_stride(self) }
-    }
+    #[objc::msg_send(stride)]
+    pub fn stride(&self) -> usize;
 
     /// The buffer's capacity, in audio sample frames.
-    pub fn frame_capacity(&self) -> FrameCount {
-        unsafe { rsel_frameCapacity(self) }
-    }
+    #[objc::msg_send(frameCapacity)]
+    pub fn frame_capacity(&self) -> FrameCount;
 }
 
 define_obj_type!(CompressedBuffer(ns::Id));
@@ -69,59 +62,41 @@ define_obj_type!(CompressedBuffer(ns::Id));
 /// Use with compressed audio formats.
 impl CompressedBuffer {
     /// The number of compressed packets the buffer can contain.
-    #[inline]
-    pub fn packet_capacity(&self) -> PacketCount {
-        unsafe { rsel_packetCapacity(self) }
-    }
+    #[objc::msg_send(packetCapacity)]
+    pub fn packet_capacity(&self) -> PacketCount;
 
     /// The current number of compressed packets in the buffer.
     ///
     /// You may modify the packetCount as part of an operation that modifies
     /// its contents. The packetCount must be less than or equal to the packet_capacity.
-    #[inline]
-    pub fn packet_count(&self) -> PacketCount {
-        unsafe { rsel_packetCount(self) }
-    }
+    #[objc::msg_send(packetCount)]
+    pub fn packet_count(&self) -> PacketCount;
 
-    #[inline]
-    pub fn set_packet_count(&self, value: PacketCount) {
-        unsafe { wsel_setPacketCount(self, value) }
-    }
+    #[objc::msg_send(setPacketCount:)]
+    pub fn set_packet_count(&self, value: PacketCount);
 
     /// The maximum size of a compressed packet in bytes.
-    #[inline]
-    pub fn maximum_packet_size(&self) -> isize {
-        unsafe { rsel_maximumPacketSize(self) }
-    }
+    #[objc::msg_send(maximumPacketSize)]
+    pub fn maximum_packet_size(&self) -> isize;
 
     /// The buffer's capacity in bytes
-    #[inline]
-    pub fn byte_capacity(&self) -> u32 {
-        unsafe { rsel_byteCapacity(self) }
-    }
+    #[objc::msg_send(byteCapacity)]
+    pub fn byte_capacity(&self) -> u32;
 
-    #[inline]
-    pub fn byte_length(&self) -> u32 {
-        unsafe { rsel_byteLength(self) }
-    }
+    #[objc::msg_send(byteLength)]
+    pub fn byte_length(&self) -> u32;
 
-    #[inline]
-    pub fn set_byte_length(&self, value: u32) {
-        unsafe { wsel_setByteLength(self, value) }
-    }
+    #[objc::msg_send(setByteLength:)]
+    pub fn set_byte_length(&self, value: u32);
 
     /// Access the buffer's array of packet descriptions, if any.
     ///
     /// If the format has constant bytes per packet (format.streamDescription->mBytesPerPacket != 0), then this will return nil.
-    #[inline]
-    pub fn packet_descriptions(&self) -> Option<&StreamPacketDescription> {
-        unsafe { rsel_packetDescriptions(self) }
-    }
+    #[objc::msg_send(packetDescriptions)]
+    pub fn packet_descriptions(&self) -> Option<&StreamPacketDescription>;
 
-    #[inline]
-    pub fn data(&self) -> *const c_void {
-        unsafe { rsel_data(self) }
-    }
+    #[objc::msg_send(data)]
+    pub fn data(&self) -> *const c_void;
 
     /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
     ///
@@ -152,34 +127,11 @@ impl CompressedBuffer {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn rsel_format(id: &ns::Id) -> arc::R<Format>;
-    fn rsel_audioBufferList(id: &ns::Id) -> &AudioBufferList;
-    fn rsel_mutableAudioBufferList(id: &ns::Id) -> &mut AudioBufferList;
-    fn rsel_frameCapacity(id: &ns::Id) -> FrameCount;
-    fn rsel_frameLength(id: &ns::Id) -> FrameCount;
-    fn wsel_setFrameLength(id: &ns::Id, value: FrameCount);
 
     fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(
         format: &Format,
         frame_capacity: FrameCount,
     ) -> arc::R<PCMBuffer>;
-
-    fn rsel_stride(id: &ns::Id) -> usize;
-
-    fn rsel_packetCapacity(id: &ns::Id) -> PacketCount;
-
-    fn rsel_packetCount(id: &ns::Id) -> PacketCount;
-    fn wsel_setPacketCount(id: &ns::Id, value: PacketCount);
-
-    fn rsel_maximumPacketSize(id: &ns::Id) -> isize;
-    fn rsel_byteCapacity(id: &ns::Id) -> u32;
-
-    fn rsel_byteLength(id: &ns::Id) -> u32;
-    fn wsel_setByteLength(id: &ns::Id, value: u32);
-
-    fn rsel_packetDescriptions(id: &ns::Id) -> Option<&StreamPacketDescription>;
-
-    fn rsel_data(id: &ns::Id) -> *const c_void;
 
     fn AVAudioCompressedBuffer_initWithFormat_packetCapacity(
         format: &Format,
