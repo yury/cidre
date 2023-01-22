@@ -121,25 +121,6 @@ asel2(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity
 
 asel3(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount, maximumPacketSize, NSInteger)
 
-#pragma mark - AVAssetWriterInput
-
-csel2(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, AVAssetWriterInput *)
-
-csel3(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, sourceFormatHint, CMFormatDescriptionRef _Nullable, AVAssetWriterInput *)
-
-
-rsel0(, id, mediaType, AVMediaType)
-rsel0(, id, outputSettings, NSDictionary * _Nullable)
-
-rsel0(, id, isReadyForMoreMediaData, BOOL)
-
-rsel0(, id, expectsMediaDataInRealTime, BOOL)
-wsel1(, id, setExpectsMediaDataInRealTime, BOOL)
-
-wsel0(, id, markAsFinished)
-
-//- (BOOL)appendSampleBuffer:(CMSampleBufferRef)sampleBuffer;
-rsel1(, id, appendSampleBuffer, CMSampleBufferRef, BOOL)
 
 #pragma mark - AVAssetWriter
 
