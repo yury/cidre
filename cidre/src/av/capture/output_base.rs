@@ -1,24 +1,14 @@
-use crate::{av, cf, define_obj_type, ns};
+use crate::{av, define_obj_type, ns, objc};
 
 define_obj_type!(Output(ns::Id));
 
 impl Output {
-    pub fn connections(&self) -> &cf::ArrayOf<av::CaptureConnection> {
-        unsafe { rsel_connections(self) }
-    }
+    #[objc::msg_send(connections)]
+    pub fn connections(&self) -> &ns::Array<av::CaptureConnection>;
 
+    #[objc::msg_send(connectionWithMediaType:)]
     pub fn connection_with_media_type(
         &self,
-        media_type: av::MediaType,
-    ) -> Option<&av::CaptureConnection> {
-        unsafe { rsel_connectionWithMediaType(self, media_type) }
-    }
-}
-
-extern "C" {
-    fn rsel_connections(output: &Output) -> &cf::ArrayOf<av::CaptureConnection>;
-    fn rsel_connectionWithMediaType(
-        output: &Output,
         media_type: av::MediaType,
     ) -> Option<&av::CaptureConnection>;
 }

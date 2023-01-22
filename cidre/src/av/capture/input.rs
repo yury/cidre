@@ -1,4 +1,4 @@
-use crate::{arc, av, cf, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(Input(ns::Id));
 define_obj_type!(DeviceInput(Input));
@@ -9,11 +9,22 @@ impl Input {
     pub fn ports(&self) -> &ns::Array<Port>;
 }
 
+impl arc::A<DeviceInput> {
+    #[objc::msg_send(initWithDevice:error:)]
+    pub fn init_with_device_error(
+        self,
+        device: &av::CaptureDevice,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<DeviceInput>>;
+}
+
 impl DeviceInput {
-    pub fn with_device<'a>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'a cf::Error> {
+    define_cls!(AV_CAPTURE_DEVICE_INPUT);
+
+    pub fn with_device<'a>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'a ns::Error> {
         let mut error = None;
         unsafe {
-            let res = AVCaptureDeviceInput_deviceInputWithDevice_error(device, &mut error);
+            let res = Self::alloc().init_with_device_error(device, &mut error);
             match error {
                 Some(e) => Err(e),
                 None => Ok(res.unwrap_unchecked()),
@@ -24,10 +35,7 @@ impl DeviceInput {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureDeviceInput_deviceInputWithDevice_error<'a>(
-        device: &av::CaptureDevice,
-        error: &mut Option<&'a cf::Error>,
-    ) -> Option<arc::R<DeviceInput>>;
+    static AV_CAPTURE_DEVICE_INPUT: &'static objc::Class<DeviceInput>;
 }
 
 impl Port {

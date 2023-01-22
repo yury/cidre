@@ -53,15 +53,6 @@ rsel0(, id, ports, NSArray<AVCaptureInputPort *> *);
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, input, AVCaptureInput *)
 
-#pragma mark - AVCaptureOutput
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, connections, NSArray<AVCaptureConnection *> *)
-
-
-NS_RETURNS_NOT_RETAINED
-rsel1(, id, connectionWithMediaType, AVMediaType, AVCaptureConnection * _Nullable)
-
 bool is_mutlicam_supported(void) {
 #if TARGET_OS_OSX
   return NO;
@@ -69,61 +60,9 @@ bool is_mutlicam_supported(void) {
   return [AVCaptureMultiCamSession isMultiCamSupported];
 #endif
 }
-
-#pragma mark - AVCaptureDeviceDiscoverySession
-
-NS_RETURNS_RETAINED
-csel3(, AVCaptureDeviceDiscoverySession, discoverySessionWithDeviceTypes, NSArray<AVCaptureDeviceType> *, mediaType, AVMediaType _Nullable, position, AVCaptureDevicePosition, AVCaptureDeviceDiscoverySession *)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, devices, NSArray<AVCaptureDevice *> *)
-
-#if TARGET_OS_OSX
-
-#else
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, supportedMultiCamDeviceSets, NSArray<NSSet<AVCaptureDevice *> *> *)
-
-#endif
-
-wsel0(av_, id, reset)
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, engine, AVAudioEngine * _Nullable)
-
 #pragma mark - AVAudioEngine
 
-NS_RETURNS_RETAINED
-csel0(, AVAudioEngine, new, AVAudioEngine *)
-
-//- (void)attachNode:(AVAudioNode *)node;
-wsel1(, id, attachNode, AVAudioNode *)
-wsel1(, id, detachNode, AVAudioNode *)
-
-wsel5(, id, connect, AVAudioNode *, to, AVAudioNode *, fromBus, AVAudioNodeBus, toBus, AVAudioNodeBus, format, AVAudioFormat * _Nullable)
-wsel3(, id, connect, AVAudioNode *, to, AVAudioNode *, format, AVAudioFormat * _Nullable)
-
-wsel0(, id, prepare)
-
 rsel1(, id, startAndReturnError, NSError **, BOOL);
-wsel0(, id, pause);
-wsel0(, id, stop);
-rsel0(, id, isRunning, BOOL)
-wsel4(, id, connect, AVAudioNode *, toConnectionPoints, NSArray<AVAudioConnectionPoint *> *, fromBus, AVAudioNodeBus, format, AVAudioFormat * _Nullable)
-wsel2(, id, disconnectNodeInput, AVAudioNode *, bus, AVAudioNodeBus)
-wsel1(, id, disconnectNodeInput, AVAudioNode *)
-
-wsel2(, id, disconnectNodeOutput, AVAudioNode *, bus, AVAudioNodeBus)
-wsel1(, id, disconnectNodeOutput, AVAudioNode *)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, inputNode, AVAudioInputNode *)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, outputNode, AVAudioOutputNode *)
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, mainMixerNode, AVAudioMixerNode *)
 
 #pragma mark AVAudioUnitEffect
 
@@ -290,6 +229,7 @@ Class AV_CAPTURE_MULTI_CAM_SESSION;
 Class AV_CAPTURE_METADATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_DISCOVERY_SESSION;
 Class AV_CAPTURE_VIDEO_DATA_OUTPUT;
+Class AV_CAPTURE_DEVICE_INPUT;
 
 Class AV_AUDIO_ENGINE;
 
@@ -309,6 +249,7 @@ static void common_initializer()
     AV_CAPTURE_SESSION = [AVCaptureSession class];
     AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
     AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
+    AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
 #if TARGET_OS_OSX
 #else
     AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
