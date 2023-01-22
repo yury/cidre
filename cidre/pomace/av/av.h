@@ -78,14 +78,6 @@ rsel0(, id, isCenterStageSupported, BOOL)
 NS_RETURNS_NOT_RETAINED
 rsel0(, id, videoFrameRateRangeForCenterStage, AVFrameRateRange* _Nullable)
 
-#pragma mark - AVFrameRateRange
-
-rsel0(,id, minFrameRate, Float64)
-rsel0(,id, maxFrameRate, Float64)
-
-rsel0(,id,  minFrameDuration, CMTime)
-rsel0(,id,  maxFrameDuration, CMTime)
-
 #pragma mark - AVCaptureInput
 
 NS_RETURNS_NOT_RETAINED
@@ -191,32 +183,6 @@ rwsel(, id, globalGain, setGlobalGain, float)
 
 NS_RETURNS_RETAINED
 asel1(, AVAudioUnitTimeEffect, initWithAudioComponentDescription, AudioComponentDescription)
-
-//- (void)prepare;
-//- (void)connect:(AVAudioNode *)node1 to:(AVAudioNode *)node2 format:(AVAudioFormat * __nullable)format;
-
-#pragma mark - AVAudioTime
-
-NS_RETURNS_RETAINED
-csel1(, AVAudioTime, timeWithHostTime, uint64_t, AVAudioTime *)
-NS_RETURNS_RETAINED
-csel2(, AVAudioTime, timeWithAudioTimeStamp, const AudioTimeStamp *, sampleRate, double, AVAudioTime *)
-NS_RETURNS_RETAINED
-csel2(, AVAudioTime, timeWithSampleTime, AVAudioFramePosition, atRate, double, AVAudioTime *)
-
-NS_RETURNS_RETAINED
-csel3(, AVAudioTime, timeWithHostTime, uint64_t, sampleTime, AVAudioFramePosition, atRate, double, AVAudioTime *)
-
-
-rsel0(, id, hostTime, uint64_t)
-rsel0(, id, audioTimeStamp, AudioTimeStamp)
-rsel0(, id, sampleRate, double)
-rsel0(, id, isSampleTimeValid, BOOL)
-rsel0(, id, isHostTimeValid, BOOL)
-rsel0(, id, sampleTime, AVAudioFramePosition)
-
-NS_RETURNS_RETAINED
-rsel1(, id, extrapolateTimeFromAnchor, AVAudioTime *, AVAudioTime * _Nullable)
 
 #pragma mark - AVAudioCommonFormat
 
@@ -373,11 +339,14 @@ Class AV_CAPTURE_DEVICE;
 Class AV_CAPTURE_SESSION;
 Class AV_CAPTURE_MULTI_CAM_SESSION;
 Class AV_CAPTURE_METADATA_OUTPUT;
+Class AV_CAPTURE_DEVICE_DISCOVERY_SESSION;
 
 Class AV_AUDIO_ENGINE;
 
 Class AV_ASSET_READER;
 Class AV_ASSET_READER_TRACK_OUTPUT;
+
+Class AV_AUDIO_TIME;
 
 
 __attribute__((constructor))
@@ -388,11 +357,13 @@ static void common_initializer()
     AV_CAPTURE_DEVICE = [AVCaptureDevice class];
     AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
     AV_CAPTURE_SESSION = [AVCaptureSession class];
+    AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
 #if TARGET_OS_OSX
 #else
     AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
 #endif
     AV_AUDIO_ENGINE = [AVAudioEngine class];
+    AV_AUDIO_TIME = [AVAudioTime class];
     AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
     AV_ASSET_READER = [AVAssetReader class];
   }

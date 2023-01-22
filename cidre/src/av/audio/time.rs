@@ -1,8 +1,31 @@
-use crate::{arc, cat, define_obj_type, ns};
+use crate::{arc, cat, define_cls, define_obj_type, ns, objc};
 
 use super::FramePosition;
 
 define_obj_type!(Time(ns::Id));
+
+impl arc::A<Time> {
+    #[objc::msg_send(initWithAudioTimeStamp:sampleRate:)]
+    pub fn init_with_audio_timestamp_sample_rate(
+        self,
+        ts: &cat::AudioTimeStamp,
+        sample_rate: f64,
+    ) -> arc::R<Time>;
+
+    #[objc::msg_send(initWithHostTime:)]
+    pub fn init_with_host_time(self, host_time: u64) -> arc::R<Time>;
+
+    #[objc::msg_send(initWithHostTime:sampleTime:atRate:)]
+    pub fn init_with_host_time_sample_rate_at_rate(
+        self,
+        host_time: u64,
+        sample_time: FramePosition,
+        at_rate: f64,
+    ) -> arc::R<Time>;
+
+    #[objc::msg_send(initWithSampleTime:atRate:)]
+    pub fn init_with_sample_time_at_rate(self, time: FramePosition, at_rate: f64) -> arc::R<Time>;
+}
 
 /// Represent a moment in time.
 ///
@@ -22,12 +45,13 @@ define_obj_type!(Time(ns::Id));
 /// frequency) so client code wanting to do what should be straightforward time computations can at
 /// least not be cluttered by ugly multiplications and divisions by the host clock frequency.
 impl Time {
+    define_cls!(AV_AUDIO_TIME);
     pub fn with_timestamp(ts: &cat::AudioTimeStamp, sample_rate: f64) -> arc::R<Time> {
-        unsafe { AVAudioTime_timeWithAudioTimeStamp_sampleRate(ts, sample_rate) }
+        Self::alloc().init_with_audio_timestamp_sample_rate(ts, sample_rate)
     }
 
     pub fn with_host_time(host_time: u64) -> arc::R<Time> {
-        unsafe { AVAudioTime_timeWithHostTime(host_time) }
+        Self::alloc().init_with_host_time(host_time)
     }
 
     pub fn with_host_time_sample_rate_at_rate(
@@ -35,45 +59,30 @@ impl Time {
         sample_time: FramePosition,
         at_rate: f64,
     ) -> arc::R<Time> {
-        unsafe { AVAudioTime_timeWithHostTime_sampleTime_atRate(host_time, sample_time, at_rate) }
+        Self::alloc().init_with_host_time_sample_rate_at_rate(host_time, sample_time, at_rate)
     }
 
     pub fn with_sample_time(time: FramePosition, at_rate: f64) -> arc::R<Time> {
-        unsafe { AVAudioTime_timeWithSampleTime_atRate(time, at_rate) }
+        Self::alloc().init_with_sample_time_at_rate(time, at_rate)
     }
 
-    /// ```
-    /// use cidre::av;
-    /// let time = av::AudioTime::with_host_time(101);
-    ///
-    /// assert_eq!(time.host_time(), 101);
-    /// assert_eq!(time.sample_rate(), 0f64);
-    /// assert_eq!(time.is_sample_time_valid(), false);
-    /// assert_eq!(time.is_host_time_valid(), true);
-    /// ```
-    pub fn host_time(&self) -> u64 {
-        unsafe { rsel_hostTime(self) }
-    }
+    #[objc::msg_send(hostTime)]
+    pub fn host_time(&self) -> u64;
 
-    pub fn sample_rate(&self) -> f64 {
-        unsafe { rsel_sampleRate(self) }
-    }
+    #[objc::msg_send(sampleRate)]
+    pub fn sample_rate(&self) -> f64;
 
-    pub fn sample_time(&self) -> FramePosition {
-        unsafe { rsel_sampleTime(self) }
-    }
+    #[objc::msg_send(sampleTime)]
+    pub fn sample_time(&self) -> FramePosition;
 
-    pub fn is_sample_time_valid(&self) -> bool {
-        unsafe { rsel_isSampleTimeValid(self) }
-    }
+    #[objc::msg_send(isSampleTimeValid)]
+    pub fn is_sample_time_valid(&self) -> bool;
 
-    pub fn is_host_time_valid(&self) -> bool {
-        unsafe { rsel_isHostTimeValid(self) }
-    }
+    #[objc::msg_send(isHostTimeValid)]
+    pub fn is_host_time_valid(&self) -> bool;
 
-    pub fn audio_timestamp(&self) -> cat::AudioTimeStamp {
-        unsafe { rsel_audioTimeStamp(self) }
-    }
+    #[objc::msg_send(audioTimeStamp)]
+    pub fn audio_timestamp(&self) -> cat::AudioTimeStamp;
 
     /// If anchorTime is an AVAudioTime where both host time and sample time are valid,
     /// and self is another timestamp where only one of the two is valid, this method
@@ -88,34 +97,28 @@ impl Time {
     /// but no host time representation.AVAudioTime *time0 = [AVAudioTime timeWithSampleTime: 0.0 atRate: 44100.0];
     /// anchor has a valid host time representation and sample time representation.AVAudioTime *anchor = [player playerTimeForNodeTime: player.lastRenderTime];
     /// fill in valid host time representationAVAudioTime *fullTime0 = [time0 extrapolateTimeFromAnchor: anchor];
-    pub fn extrapolate_time_from_anchor(&self, anchor: &Time) -> Option<arc::R<Time>> {
-        unsafe { rsel_extrapolateTimeFromAnchor(self, anchor) }
-    }
+    #[objc::msg_send(extrapolateTimeFromAnchor:)]
+    pub fn extrapolate_time_from_anchor_ar(&self, anchor: &Time) -> Option<arc::Rar<Time>>;
+
+    #[objc::rar_retain]
+    pub fn extrapolate_time_from_anchor(&self, anchor: &Time) -> Option<arc::R<Time>>;
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAudioTime_timeWithAudioTimeStamp_sampleRate(
-        ts: &cat::AudioTimeStamp,
-        sample_rate: f64,
-    ) -> arc::R<Time>;
-    fn AVAudioTime_timeWithHostTime<'a>(host_time: u64) -> arc::R<Time>;
-    fn AVAudioTime_timeWithSampleTime_atRate(
-        sample_time: FramePosition,
-        sample_rate: f64,
-    ) -> arc::R<Time>;
-    fn AVAudioTime_timeWithHostTime_sampleTime_atRate(
-        host_time: u64,
-        sample_time: FramePosition,
-        at_rate: f64,
-    ) -> arc::R<Time>;
+    static AV_AUDIO_TIME: &'static objc::Class<Time>;
+}
 
-    fn rsel_hostTime(time: &Time) -> u64;
-    fn rsel_sampleRate(time: &Time) -> f64;
+#[cfg(test)]
+mod tests {
+    use crate::av;
+    #[test]
+    fn basics() {
+        let time = av::AudioTime::with_host_time(101);
 
-    fn rsel_isSampleTimeValid(time: &Time) -> bool;
-    fn rsel_isHostTimeValid(time: &Time) -> bool;
-    fn rsel_sampleTime(time: &Time) -> FramePosition;
-    fn rsel_audioTimeStamp(time: &Time) -> cat::AudioTimeStamp;
-    fn rsel_extrapolateTimeFromAnchor(time: &Time, anchor: &Time) -> Option<arc::R<Time>>;
+        assert_eq!(time.host_time(), 101);
+        assert_eq!(time.sample_rate(), 0f64);
+        assert_eq!(time.is_sample_time_valid(), false);
+        assert_eq!(time.is_host_time_valid(), true);
+    }
 }

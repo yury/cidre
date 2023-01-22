@@ -259,50 +259,27 @@ define_obj_type!(Format(ns::Id));
 
 impl Format {
     #[cfg(not(target_os = "macos"))]
-    pub fn is_video_binned(&self) -> bool {
-        unsafe { rsel_isVideoBinned(self) }
-    }
+    #[objc::msg_send(isVideoBinned)]
+    pub fn is_video_binned(&self) -> bool;
 
-    pub fn video_supported_frame_rate_ranges(&self) -> &cf::ArrayOf<FrameRateRange> {
-        unsafe { rsel_videoSupportedFrameRateRanges(self) }
-    }
+    #[objc::msg_send(videoSupportedFrameRateRanges)]
+    pub fn video_supported_frame_rate_ranges(&self) -> &ns::Array<FrameRateRange>;
 
-    pub fn format_description(&self) -> &cm::FormatDescription {
-        unsafe { rsel_formatDescription(self) }
-    }
+    #[objc::msg_send(formatDescription)]
+    pub fn format_description(&self) -> &cm::FormatDescription;
 
-    pub fn auto_focus_system(&self) -> AutoFocusSystem {
-        unsafe { rsel_autoFocusSystem(self) }
-    }
+    #[objc::msg_send(autoFocusSystem)]
+    pub fn auto_focus_system(&self) -> AutoFocusSystem;
 
     #[cfg(not(target_os = "macos"))]
-    pub fn is_mutli_cam_supported(&self) -> bool {
-        unsafe { rsel_isMultiCamSupported(self) }
-    }
+    #[objc::msg_send(isMultiCamSupported)]
+    pub fn is_mutli_cam_supported(&self) -> bool;
 
-    pub fn is_center_sstage_supported(&self) -> bool {
-        unsafe { rsel_isCenterStageSupported(self) }
-    }
+    #[objc::msg_send(isCenterStageSupported)]
+    pub fn is_center_stage_supported(&self) -> bool;
 
-    pub fn video_frame_rate_range_for_center_stage(&self) -> Option<&FrameRateRange> {
-        unsafe { rsel_videoFrameRateRangeForCenterStage(self) }
-    }
-}
-
-#[link(name = "av", kind = "static")]
-extern "C" {
-    #[cfg(not(target_os = "macos"))]
-    fn rsel_isVideoBinned(format: &Format) -> bool;
-    #[cfg(not(target_os = "macos"))]
-    fn rsel_isMultiCamSupported(format: &Format) -> bool;
-
-    fn rsel_isCenterStageSupported(format: &Format) -> bool;
-
-    fn rsel_videoSupportedFrameRateRanges(format: &Format) -> &cf::ArrayOf<FrameRateRange>;
-    fn rsel_formatDescription(format: &Format) -> &cm::FormatDescription;
-    fn rsel_autoFocusSystem(format: &Format) -> AutoFocusSystem;
-
-    fn rsel_videoFrameRateRangeForCenterStage(format: &Format) -> Option<&FrameRateRange>;
+    #[objc::msg_send(videoFrameRateRangeForCenterStage)]
+    pub fn video_frame_rate_range_for_center_stage(&self) -> Option<&FrameRateRange>;
 }
 
 pub mod notifications {
@@ -335,40 +312,32 @@ define_obj_type!(CaptureAudioChannel(ns::Id));
 define_obj_type!(DiscoverySession(ns::Id));
 
 impl DiscoverySession {
+    define_cls!(AV_CAPTURE_DEVICE_DISCOVERY_SESSION);
+
+    #[objc::cls_msg_send(discoverySessionWithDeviceTypes:mediaType:position:)]
+    pub fn with_device_types_media_and_position_ar(
+        device_types: &cf::ArrayOf<Type>,
+        media_type: Option<&MediaType>,
+        position: Position,
+    ) -> arc::Rar<Self>;
+    #[objc::cls_rar_retain]
     pub fn with_device_types_media_and_position(
         device_types: &cf::ArrayOf<Type>,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> arc::R<Self> {
-        unsafe {
-            AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position(
-                device_types,
-                media_type,
-                position,
-            )
-        }
-    }
+    ) -> arc::R<Self>;
 
-    pub fn devices(&self) -> &cf::ArrayOf<Device> {
-        unsafe { rsel_devices(self) }
-    }
+    #[objc::msg_send(devices)]
+    pub fn devices(&self) -> &ns::Array<Device>;
 
     #[cfg(not(target_os = "macos"))]
-    pub fn supported_multi_cam_device_sets(&self) -> &cf::ArrayOf<cf::SetOf<Device>> {
-        unsafe { rsel_supportedMultiCamDeviceSets(self) }
-    }
+    #[objc::msg_send(supportedMultiCamDeviceSets)]
+    pub fn supported_multi_cam_device_sets(&self) -> &ns::Array<ns::Set<Device>>;
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVCaptureDeviceDiscoverySession_discoverySessionWithDeviceTypes_mediaType_position(
-        device_types: &cf::Array,
-        media_type: Option<&MediaType>,
-        position: Position,
-    ) -> arc::R<DiscoverySession>;
-    fn rsel_devices(id: &ns::Id) -> &cf::ArrayOf<Device>;
-    #[cfg(not(target_os = "macos"))]
-    fn rsel_supportedMultiCamDeviceSets(id: &ns::Id) -> &cf::ArrayOf<cf::SetOf<Device>>;
+    static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
 }
 
 #[derive(Debug, Clone, Copy)]
