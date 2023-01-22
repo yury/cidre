@@ -12,224 +12,43 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - VNRequest
+Class VN_DETECT_HORIZON_REQUEST;
+Class VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST;
+Class VN_RECOGNIZE_ANIMALS_REQUEST;
+Class VN_GENERATE_PERSON_SEGMENTAION_REQUEST;
+Class VN_CLASSIFY_IMAGE_REQUEST;
+Class VN_DETECT_BARCODES_REQUEST;
+Class VN_RECOGNIZE_TEXT_REQUEST;
+Class VN_GENERATE_OBJECTNESS_BASED_SALIENCY_IMAGE_REQUEST;
+Class VN_DETECT_DOCUMENT_SEGMENTATION_REQUEST;
+Class VN_GENERATE_ATTENTION_BAED_SALIENCY_IMAGE_REQUEST;
+Class VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST;
+Class VN_DETECT_FACE_RECTANGLES_REQUEST;
+Class VN_IMAGE_REQUEST_HANDLER;
+Class VN_SEQUENCE_REQUEST_HANDLER;
 
-rwsel(, id, revision, setRevision, NSUInteger)
-rwsel(, id, usesCPUOnly, setUsesCPUOnly, BOOL)
-
-#pragma mark - VNImageBasedRequest
-
-//@property (readwrite, nonatomic, assign) CGRect regionOfInterest;
-rwsel(, id, regionOfInterest, setRegionOfInterest, CGRect)
-
-#pragma mark - VNImageRequestHandler
-
-NS_RETURNS_RETAINED
-cinit2(, VNImageRequestHandler, initWithURL, NSURL *, options, NSDictionary *);
-
-NS_RETURNS_RETAINED
-cinit3(, VNImageRequestHandler, initWithURL, NSURL *, orientation, CGImagePropertyOrientation, options, NSDictionary *);
-
-NS_RETURNS_RETAINED
-cinit2(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, options, NSDictionary *);
-
-
-NS_RETURNS_RETAINED
-cinit3(, VNImageRequestHandler, initWithCVPixelBuffer, CVPixelBufferRef, orientation, CGImagePropertyOrientation, options, NSDictionary *);
-
-rsel2(, id, performRequests, NSArray<VNRequest *> *, error, NSError **, BOOL)
-
-#pragma mark - VNSequenceRequestHandler
-
-csel0(, VNSequenceRequestHandler, new, VNSequenceRequestHandler *)
-
-rsel3(, id, performRequests, NSArray<VNRequest *> *, onCVPixelBuffer, CVPixelBufferRef, error, NSError **, BOOL)
-
-rsel3(, id, performRequests, NSArray<VNRequest *> *, onCMSampleBuffer, CMSampleBufferRef, error, NSError **, BOOL)
-
-#pragma mark - VNObservation
-
-rsel0(, id, uuid, NSUUID *)
-rsel0(, id, confidence, VNConfidence)
-rsel0(, id, timeRange, CMTimeRange)
-
-
-#pragma mark - VNDetectedObjectObservation
-
-//@property (readonly, nonatomic, assign) CGRect boundingBox;
-rsel0(, id, boundingBox, CGRect)
-
-rsel0(, id, globalSegmentationMask, VNPixelBufferObservation *)
-
-#pragma mark -VNHorizon
-
-NS_RETURNS_RETAINED
-csel0(, VNDetectHorizonRequest, new, VNDetectHorizonRequest *)
-
-
-#pragma mark - VNHorizonObservation
-
-//@property (readonly, nonatomic, assign) CGAffineTransform transform;
-rsel0(, id, transform, CGAffineTransform)
-
-rsel0(, id, angle, CGFloat)
-//@property (readonly, nonatomic, assign) CGFloat angle;
-
-rsel2(, id, transformForImageWidth, size_t, height, size_t, CGAffineTransform)
-
-#pragma mark - VNFaceObservation
-
-rsel0(, id, landmarks, VNFaceLandmarks2D *)
-
-rsel0(, id, roll, NSNumber *)
-rsel0(, id, yaw, NSNumber *)
-rsel0(, id, pitch, NSNumber *)
-
-#pragma mark - VNClassificationObservation
-
-rsel0(, id, identifier, NSString *)
-
-rsel0(, id, hasPrecisionRecallCurve, BOOL)
-
-
-//- (BOOL) hasMinimumRecall:(float)minimumRecall forPrecision:(float)precision;
-rsel2(, id, hasMinimumRecall, float, forPrecision, float, BOOL)
-//- (BOOL) hasMinimumPrecision:(float)minimumPrecision forRecall:(float)recall;
-rsel2(, id, hasMinimumPrecision, float, forRecall, float, BOOL)
-
-#pragma mark - VNHumanObservation
-
-rsel0(, id, upperBodyOnly, BOOL)
-
-#pragma mark - VNRecognizedObjectObservation
-
-rsel0(, id, labels, NSArray *)
-
-#pragma mark - VNPixelBufferObservation
-
-CF_RETURNS_NOT_RETAINED
-rsel0(, id, pixelBuffer, CVPixelBufferRef)
-
-rsel0(, id, featureName, NSString *)
-
-#pragma mark - VNTextObservation
-
-rsel0(, id, characterBoxes, NSArray *)// NSArray<VNRectangleObservation *> *characterBoxes;
-
-
-#pragma mark - VNGeneratePersonSegmentationRequest
-
-rwsel(, id, qualityLevel, setQualityLevel, VNGeneratePersonSegmentationRequestQualityLevel)
-
-//@property (readwrite, nonatomic) OSType outputPixelFormat;
-rwsel(, id, outputPixelFormat, setOutputPixelFormat, OSType)
-
-NS_RETURNS_RETAINED
-csel0(, VNGeneratePersonSegmentationRequest, new, VNGeneratePersonSegmentationRequest *)
-
-
-#pragma mark - VNDetectDocumentSegmentationRequest
-
-NS_RETURNS_RETAINED
-csel0(, VNDetectDocumentSegmentationRequest, new, VNDetectDocumentSegmentationRequest *)
-
-#pragma mark - VNSaliencyImageObservation
-
-rsel0(, id, salientObjects, NSArray *)
-
-#pragma mark - VNGenerateAttentionBasedSaliencyImageRequest
-
-NS_RETURNS_RETAINED
-csel0(, VNGenerateAttentionBasedSaliencyImageRequest, new, VNGenerateAttentionBasedSaliencyImageRequest *)
-
-#pragma mark - VNGenerateObjectnessBasedSaliencyImageRequest
-
-NS_RETURNS_RETAINED
-csel0(, VNGenerateObjectnessBasedSaliencyImageRequest, new, VNGenerateObjectnessBasedSaliencyImageRequest *)
-
-
-#pragma mark - VNFaceLandmarkRegion
-
-rsel0(, id, pointCount, NSUInteger)
-
-#pragma mark - VNClassifyImageRequest
-
-//rsel_a(, id, supportedIdentifiersAndReturnError, NSError **, NSArray *)
-
-NS_RETURNS_RETAINED
-csel0(, VNClassifyImageRequest, new, VNClassifyImageRequest *)
-
-#pragma mark - VNRecognizeAnimalsRequest
-
-NS_RETURNS_RETAINED
-csel0(, VNRecognizeAnimalsRequest, new, VNRecognizeAnimalsRequest *)
-
-#pragma mark - VNFeaturePrintObservation
-
-// Moved to selectors
-
-#pragma mark - VNGenerateImageFeaturePrintRequest
-
-rwsel(, id, imageCropAndScaleOption, setImageCropAndScaleOption, VNImageCropAndScaleOption)
-
-NS_RETURNS_RETAINED
-csel0(, VNGenerateImageFeaturePrintRequest, new, VNGenerateImageFeaturePrintRequest *)
-
-#pragma mark - VNDetectFaceRectanglesRequest
-
-NS_RETURNS_RETAINED
-csel0(, VNDetectFaceRectanglesRequest, new, VNDetectFaceRectanglesRequest *)
-
-#pragma mark - VNDetectFaceCaptureQualityRequest
-
-csel0(, VNDetectFaceCaptureQualityRequest, new, VNDetectFaceCaptureQualityRequest *)
-
-#pragma mark - VNTrackingRequest
-
-rwsel(, id, trackingLevel, setTrackingLevel, VNRequestTrackingLevel)
-
-#pragma mark - VNDetectBarcodesRequest
-NS_RETURNS_RETAINED
-csel0(, VNDetectBarcodesRequest, new, VNDetectBarcodesRequest *)
-
-rwsel(, id, symbologies, setSymbologies, NSArray *)
-
-rsel1(, id, supportedSymbologiesAndReturnError, NSError **, NSArray *)
-
-#pragma mark - VNRecognizeTextRequest
-
-csel0(, VNRecognizeTextRequest, new, VNRecognizeTextRequest *)
-
-#pragma mark - VNRecognizedTextObservation
-
-rsel1(, id, topCandidates, NSUInteger, NSArray *)
-
-#pragma mark - VNRecognizedText
-
-rsel0(, id, string, NSString *)
-
-#pragma mark - SELECTORS
-
-SEL sel_results;
-SEL sel_supportedIdentifiersAndReturnError;
-SEL sel_computeDistance_toFeaturePrintObservation_error;
-SEL sel_faceCaptureQuality;
-SEL sel_data;
-SEL sel_elementCount;
-SEL sel_elementType;
 
 __attribute__((constructor))
 static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
-    sel_results = @selector(results);
-    sel_supportedIdentifiersAndReturnError = @selector(supportedIdentifiersAndReturnError:);
-    sel_computeDistance_toFeaturePrintObservation_error = @selector(computeDistance:toFeaturePrintObservation:error:);
-    sel_faceCaptureQuality = @selector(faceCaptureQuality);
-    sel_data = @selector(data);
-    sel_elementCount = @selector(elementCount);
-    sel_elementType = @selector(elementType);
+    
+    VN_DETECT_HORIZON_REQUEST = [ VNDetectHorizonRequest class];
+    VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST = [VNDetectFaceCaptureQualityRequest class];
+    VN_RECOGNIZE_ANIMALS_REQUEST = [VNRecognizeAnimalsRequest class];
+    VN_GENERATE_PERSON_SEGMENTAION_REQUEST = [VNGeneratePersonSegmentationRequest class];
+    VN_CLASSIFY_IMAGE_REQUEST = [VNClassifyImageRequest class];
+    VN_DETECT_BARCODES_REQUEST = [VNDetectBarcodesRequest class];
+    VN_RECOGNIZE_TEXT_REQUEST = [VNRecognizeTextRequest class];
+    VN_GENERATE_OBJECTNESS_BASED_SALIENCY_IMAGE_REQUEST = [VNGenerateObjectnessBasedSaliencyImageRequest class];
+    VN_DETECT_DOCUMENT_SEGMENTATION_REQUEST = [VNDetectDocumentSegmentationRequest class];
+    VN_GENERATE_ATTENTION_BAED_SALIENCY_IMAGE_REQUEST = [VNGenerateAttentionBasedSaliencyImageRequest class];
+    VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST = [VNGenerateImageFeaturePrintRequest class];
+    VN_DETECT_FACE_RECTANGLES_REQUEST = [VNDetectFaceRectanglesRequest class];
+    VN_IMAGE_REQUEST_HANDLER = [VNImageRequestHandler class];
+    VN_SEQUENCE_REQUEST_HANDLER = [VNSequenceRequestHandler class];
+  
   }
 }
 

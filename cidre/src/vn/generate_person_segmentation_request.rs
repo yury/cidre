@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, msg_send, ns, os, vn};
+use crate::{arc, define_obj_type, ns, objc, os, vn};
 
 /// Person segmentation level options to favor speed over recognition accuracy.
 /// Accurate is the default option.
@@ -10,51 +10,34 @@ pub enum QualityLevel {
     Fast,
 }
 
-define_obj_type!(GeneratePersonSegmentationRequest(vn::StatefulRequest));
+define_obj_type!(
+    GeneratePersonSegmentationRequest(vn::StatefulRequest),
+    VN_GENERATE_PERSON_SEGMENTAION_REQUEST
+);
 
 impl GeneratePersonSegmentationRequest {
     pub const REVISION_1: usize = 1;
 
-    #[inline]
-    pub fn quality_level(&self) -> QualityLevel {
-        unsafe { rsel_qualityLevel(self) }
-    }
+    #[objc::msg_send(qualityLevel)]
+    pub fn quality_level(&self) -> QualityLevel;
 
-    #[inline]
-    pub fn set_quality_level(&mut self, value: QualityLevel) {
-        unsafe { wsel_setQualityLevel(self, value) }
-    }
+    #[objc::msg_send(setQualityLevel:)]
+    pub fn set_quality_level(&mut self, value: QualityLevel);
 
-    #[inline]
-    pub fn output_pixel_format(&self) -> os::Type {
-        unsafe { rsel_outputPixelFormat(self) }
-    }
+    #[objc::msg_send(outputPixelFormat)]
+    pub fn output_pixel_format(&self) -> os::Type;
 
-    #[inline]
-    pub fn set_output_pixel_format(&mut self, value: os::Type) {
-        unsafe { wsel_setOutputPixelFormat(self, value) }
-    }
+    #[objc::msg_send(setOutputPixelFormat:)]
+    pub fn set_output_pixel_format(&mut self, value: os::Type);
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::PixelBufferObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
-
-    #[inline]
-    pub fn new() -> arc::R<GeneratePersonSegmentationRequest> {
-        unsafe { VNGeneratePersonSegmentationRequest_new() }
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::PixelBufferObservation>>;
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_qualityLevel(id: &ns::Id) -> QualityLevel;
-    fn wsel_setQualityLevel(id: &mut ns::Id, value: QualityLevel);
-
-    fn rsel_outputPixelFormat(id: &ns::Id) -> os::Type;
-    fn wsel_setOutputPixelFormat(id: &mut ns::Id, value: os::Type);
-
-    fn VNGeneratePersonSegmentationRequest_new() -> arc::R<GeneratePersonSegmentationRequest>;
+    static VN_GENERATE_PERSON_SEGMENTAION_REQUEST:
+        &'static objc::Class<GeneratePersonSegmentationRequest>;
 }
 
 #[cfg(test)]

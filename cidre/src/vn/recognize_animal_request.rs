@@ -1,8 +1,11 @@
-use crate::{arc, cf, define_cf_type, define_obj_type, msg_send, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
-define_obj_type!(RecognizeAnimalsRequest(vn::ImageBasedRequest));
+define_obj_type!(
+    RecognizeAnimalsRequest(vn::ImageBasedRequest),
+    VN_RECOGNIZE_ANIMALS_REQUEST
+);
 
-define_cf_type!(AnimalIdentifier(cf::String));
+define_obj_type!(AnimalIdentifier(ns::String));
 
 impl AnimalIdentifier {
     #[inline]
@@ -20,14 +23,10 @@ impl RecognizeAnimalsRequest {
     pub const REVISION_1: usize = 1;
     pub const REVISION_2: usize = 2;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::RecognizedObjectObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::RecognizedObjectObservation>>;
 
-    pub fn supported_identifiers<'a, 'ar>(
-        &'a self,
-    ) -> Result<&'a cf::ArrayOf<AnimalIdentifier>, &'ar cf::Error> {
+    pub fn supported_identifiers(&self) -> Result<arc::R<ns::Array<AnimalIdentifier>>, &ns::Error> {
         unsafe {
             let mut error = None;
             let res = self.supported_identifiers_error(&mut error);
@@ -41,16 +40,17 @@ impl RecognizeAnimalsRequest {
 
     /// # Safety
     /// use `supported_identifiers()`
-    pub unsafe fn supported_identifiers_error<'ar>(
+    #[objc::msg_send(supportedIdentifiersAndReturnError:)]
+    pub unsafe fn supported_identifiers_error_ar(
         &self,
-        error: &mut Option<&'ar cf::Error>,
-    ) -> Option<&'ar cf::ArrayOf<AnimalIdentifier>> {
-        msg_send!("vn", self, sel_supportedIdentifiersAndReturnError, error)
-    }
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::Rar<ns::Array<AnimalIdentifier>>>;
 
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNRecognizeAnimalsRequest_new() }
-    }
+    #[objc::rar_retain()]
+    pub unsafe fn supported_identifiers_error(
+        &self,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<ns::Array<AnimalIdentifier>>>;
 }
 
 #[link(name = "Vision", kind = "framework")]
@@ -61,7 +61,7 @@ extern "C" {
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNRecognizeAnimalsRequest_new() -> arc::R<RecognizeAnimalsRequest>;
+    static VN_RECOGNIZE_ANIMALS_REQUEST: &'static objc::Class<RecognizeAnimalsRequest>;
 }
 
 #[cfg(test)]
@@ -72,7 +72,6 @@ mod test {
     fn basics() {
         let mut request = vn::RecognizeAnimalsRequest::new();
         let supported_ids = request.supported_identifiers().unwrap();
-        supported_ids.show();
 
         assert_eq!(2, supported_ids.len());
         assert!(supported_ids.contains(vn::AnimalIdentifier::cat()));
@@ -82,10 +81,8 @@ mod test {
 
         request.set_revision(10);
 
-        let error = request
+        let _error = request
             .supported_identifiers()
             .expect_err("should be error");
-
-        error.show();
     }
 }

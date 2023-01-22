@@ -1,10 +1,10 @@
-use crate::{cf, define_cf_type, define_options};
+use crate::{define_obj_type, define_options, ns};
 
 pub type Confidence = f32;
 pub type AspectRatio = f32;
 pub type Degrees = f32;
 
-define_cf_type!(BarcodeSymbology(cf::String));
+define_obj_type!(BarcodeSymbology(ns::String));
 
 impl BarcodeSymbology {
     #[doc(alias = "VNBarcodeSymbologyAztec")]

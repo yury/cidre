@@ -15,21 +15,21 @@ struct BenchState {
 fn foo() -> BenchState {
     let device = mtl::Device::default().unwrap();
 
-    let y_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let mut y_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::R8Unorm,
         1920,
         1080,
         false,
     );
     y_texture_desc.set_usage(mtl::TextureUsage::SHADER_READ);
-    let cbcr_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let mut cbcr_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::RG8Unorm,
         1920 / 2,
         1080 / 2,
         false,
     );
     cbcr_texture_desc.set_usage(mtl::TextureUsage::SHADER_READ);
-    let bgra_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let mut bgra_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::BGRA8Unorm,
         1920,
         1080,
@@ -192,12 +192,12 @@ fn foo() -> BenchState {
         .render_pipeline_state_with_descriptor(&render_desc)
         .unwrap();
 
-    let render_pass_desc = mtl::RenderPassDescriptor::default();
+    let mut render_pass_desc = mtl::RenderPassDescriptor::new();
     let foo = &mut render_pass_desc.color_attachments_mut()[0];
     foo.set_load_action(mtl::LoadAction::DontCare);
     foo.set_store_action(mtl::StoreAction::DontCare);
 
-    let desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+    let mut desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
         mtl::PixelFormat::BGRA8Unorm,
         1920,
         1080,
@@ -261,7 +261,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("matrix", |b| {
         b.iter(|| {
             let cmd_buf = queue.command_buffer().unwrap();
-            let encoder = cmd_buf.compute_command_encoder().unwrap();
+            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
             encoder.set_compute_pipeline_state(&state.matrix_state);
             encoder.set_texture_at_index(Some(&state.y_texture), 0);
             encoder.set_texture_at_index(Some(&state.cbcr_texture), 1);
@@ -276,7 +276,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("macro", |b| {
         b.iter(|| {
             let cmd_buf = queue.command_buffer().unwrap();
-            let encoder = cmd_buf.compute_command_encoder().unwrap();
+            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
             encoder.set_compute_pipeline_state(&state.macro_state);
             encoder.set_texture_at_index(Some(&state.y_texture), 0);
             encoder.set_texture_at_index(Some(&state.cbcr_texture), 1);
@@ -291,7 +291,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("macro untracked", |b| {
         b.iter(|| {
             let cmd_buf = queue.command_buffer_with_unretained_refs().unwrap();
-            let encoder = cmd_buf.compute_command_encoder().unwrap();
+            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
             encoder.set_compute_pipeline_state(&state.macro_state);
             encoder.set_texture_at_index(Some(&state.y_texture), 0);
             encoder.set_texture_at_index(Some(&state.cbcr_texture), 1);
@@ -310,7 +310,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("macro with textures", |b| {
         b.iter(|| {
             let cmd_buf = queue.command_buffer().unwrap();
-            let encoder = cmd_buf.compute_command_encoder().unwrap();
+            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
             encoder.set_compute_pipeline_state(&state.macro_state);
             encoder.set_textures_with_range(textures_ptr, range);
             encoder.dispatch_threads(grid_size, threads_per_group);

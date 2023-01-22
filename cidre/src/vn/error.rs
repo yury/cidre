@@ -1,6 +1,6 @@
-use crate::cf;
+use crate::ns;
 
-pub type Domain = cf::ErrorDomain;
+pub type Domain = ns::ErrorDomain;
 
 impl Domain {
     pub fn vision() -> &'static Domain {

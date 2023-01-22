@@ -66,6 +66,7 @@ Class NS_MUTABLE_URL_REQUEST;
 Class NS_URL_RESPONSE;
 Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
 Class NS_REGULAR_EXPRESSION;
+Class NS_UUID;
 
 __attribute__((constructor))
 static void common_initializer()
@@ -101,6 +102,7 @@ static void common_initializer()
     NS_URL_SESSION_WEB_SOCKET_MESSAGE = [NSURLSessionWebSocketMessage class];
     
     NS_REGULAR_EXPRESSION = [NSRegularExpression class];
+    NS_UUID = [NSUUID class];
   }
 }
 NS_ASSUME_NONNULL_END

@@ -1,29 +1,23 @@
-use crate::{arc, cf, cg, define_obj_type, msg_send, ns, vn};
+use crate::{arc, cg, define_obj_type, ns, objc, vn};
 
 define_obj_type!(Request(ns::Id));
 
 impl Request {
     /// The specific algorithm or implementation revision that is to be used to perform the request.
-    pub fn revision(&self) -> usize {
-        unsafe { rsel_revision(self) }
-    }
+    #[objc::msg_send(revision)]
+    pub fn revision(&self) -> usize;
 
-    pub fn set_revision(&mut self, value: usize) {
-        unsafe { wsel_setRevision(self, value) }
-    }
+    #[objc::msg_send(setRevision:)]
+    pub fn set_revision(&mut self, value: usize);
 
-    pub fn uses_cpu_only(&self) -> bool {
-        unsafe { rsel_usesCPUOnly(self) }
-    }
+    #[objc::msg_send(usesCPUOnly)]
+    pub fn uses_cpu_only(&self) -> bool;
 
-    pub fn set_uses_cpu_only(&mut self, value: bool) {
-        unsafe { wsel_setUsesCPUOnly(self, value) }
-    }
+    #[objc::msg_send(setUsesCPUOnly:)]
+    pub fn set_uses_cpu_only(&mut self, value: bool);
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::Observation>> {
-        msg_send!("vn", self, sel_results)
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::Observation>>;
 
     pub const REVISION_UNSPECIFIED: usize = 0;
 }
@@ -38,42 +32,26 @@ impl ImageBasedRequest {
     /// The default value for this property is { { 0, 0 }, { 1, 1 } }.  Setting this
     /// property to a rectangle that is outside of the normalized coordinate space will
     /// be accepted but result in the request failing to be performed.
-    #[inline]
-    pub fn region_of_interest(&self) -> cg::Rect {
-        unsafe { rsel_regionOfInterest(self) }
-    }
+    #[objc::msg_send(regionOfInterest)]
+    pub fn region_of_interest(&self) -> cg::Rect;
 
-    #[inline]
-    pub fn set_region_of_interest(&mut self, value: cg::Rect) {
-        unsafe { wsel_setRegionOfIntereset(self, value) }
-    }
+    #[objc::msg_send(setRegionOfInterest:)]
+    pub fn set_region_of_interest(&mut self, value: cg::Rect);
 }
 
-define_obj_type!(DetectHorizonRequest(ImageBasedRequest));
+define_obj_type!(
+    DetectHorizonRequest(ImageBasedRequest),
+    VN_DETECT_HORIZON_REQUEST
+);
 
 impl DetectHorizonRequest {
     pub const REVISION_1: usize = 1;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::HorizonObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
-
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNDetectHorizonRequest_new() }
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::HorizonObservation>>;
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_revision(id: &ns::Id) -> usize;
-    fn wsel_setRevision(id: &ns::Id, value: usize);
-
-    fn rsel_usesCPUOnly(id: &ns::Id) -> bool;
-    fn wsel_setUsesCPUOnly(id: &ns::Id, value: bool);
-
-    fn rsel_regionOfInterest(id: &ns::Id) -> cg::Rect;
-    fn wsel_setRegionOfIntereset(id: &mut ns::Id, value: cg::Rect);
-
-    fn VNDetectHorizonRequest_new() -> arc::R<DetectHorizonRequest>;
+    static VN_DETECT_HORIZON_REQUEST: &'static objc::Class<DetectHorizonRequest>;
 }

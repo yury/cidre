@@ -1,56 +1,52 @@
-use crate::{arc, cf, define_obj_type, msg_send, ns, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
-define_obj_type!(DetectBarcodesRequest(vn::ImageBasedRequest));
+define_obj_type!(
+    DetectBarcodesRequest(vn::ImageBasedRequest),
+    VN_DETECT_BARCODES_REQUEST
+);
 
 impl DetectBarcodesRequest {
     pub const REVISION_1: usize = 1;
     pub const REVISION_2: usize = 2;
     pub const REVISION_3: usize = 3;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::BarcodeObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::BarcodeObservation>>;
 
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNDetectBarcodesRequest_new() }
-    }
+    #[objc::msg_send(symbologies)]
+    pub fn symbologies(&self) -> &ns::Array<vn::BarcodeSymbology>;
 
-    pub fn symbologies(&self) -> &cf::ArrayOf<vn::BarcodeSymbology> {
-        unsafe { rsel_symbologies(self) }
-    }
+    #[objc::msg_send(setSymbologies:)]
+    pub fn set_symbologies(&mut self, value: &ns::Array<vn::BarcodeSymbology>);
 
-    pub fn set_symbologies(&mut self, value: &cf::ArrayOf<vn::BarcodeSymbology>) {
-        unsafe { wsel_setSymbologies(self, value) }
-    }
+    #[objc::msg_send(supportedSymbologiesAndReturnError:)]
+    fn supported_symbologies_and_return_error_ar(
+        &self,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::Rar<ns::Array<vn::BarcodeSymbology>>>;
+
+    #[objc::rar_retain()]
+    fn supported_symbologies_and_return_error(
+        &self,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<ns::Array<vn::BarcodeSymbology>>>;
 
     pub fn supported_symbologies<'ar>(
         &self,
-    ) -> Result<&cf::ArrayOf<vn::BarcodeSymbology>, &'ar cf::Error> {
-        unsafe {
-            let mut error = None;
-            let res = rsel_supportedSymbologiesAndReturnError(self, &mut error);
-            if let Some(r) = res {
-                Ok(r)
-            } else {
-                Err(error.unwrap())
-            }
+    ) -> Result<arc::R<ns::Array<vn::BarcodeSymbology>>, &'ar ns::Error> {
+        let mut error = None;
+        let res = self.supported_symbologies_and_return_error(&mut error);
+        if let Some(r) = res {
+            Ok(r)
+        } else {
+            Err(error.unwrap())
         }
     }
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNDetectBarcodesRequest_new() -> arc::R<DetectBarcodesRequest>;
-
-    fn rsel_symbologies(id: &ns::Id) -> &cf::ArrayOf<vn::BarcodeSymbology>;
-
-    fn wsel_setSymbologies(id: &mut ns::Id, value: &cf::ArrayOf<vn::BarcodeSymbology>);
-
-    fn rsel_supportedSymbologiesAndReturnError<'ar, 'a>(
-        id: &'a ns::Id,
-        error: &mut Option<&'ar cf::Error>,
-    ) -> Option<&'a cf::ArrayOf<vn::BarcodeSymbology>>;
+    static VN_DETECT_BARCODES_REQUEST: &'static objc::Class<DetectBarcodesRequest>;
 }
 
 #[cfg(test)]

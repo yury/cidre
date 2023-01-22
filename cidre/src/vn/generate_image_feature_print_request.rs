@@ -1,34 +1,25 @@
-use crate::{arc, cf, define_obj_type, msg_send, ns, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
-define_obj_type!(GenerateImageFeaturePrintRequest(vn::ImageBasedRequest));
+define_obj_type!(
+    GenerateImageFeaturePrintRequest(vn::ImageBasedRequest),
+    VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST
+);
 
 impl GenerateImageFeaturePrintRequest {
     pub const REVISION_1: usize = 1;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::FeaturePrintObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::FeaturePrintObservation>>;
 
-    #[inline]
-    pub fn image_crop_and_scale_option(&self) -> vn::ImageCropAndScaleOption {
-        unsafe { rsel_imageCropAndScaleOption(self) }
-    }
+    #[objc::msg_send(imageCropAndScaleOption)]
+    pub fn image_crop_and_scale_option(&self) -> vn::ImageCropAndScaleOption;
 
-    #[inline]
-    pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOption) {
-        unsafe { wsel_setImageCropAndScaleOption(self, value) }
-    }
-
-    #[inline]
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNGenerateImageFeaturePrintRequest_new() }
-    }
+    #[objc::msg_send(setImageCropAndScaleOption:)]
+    pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOption);
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn rsel_imageCropAndScaleOption(id: &ns::Id) -> vn::ImageCropAndScaleOption;
-    fn wsel_setImageCropAndScaleOption(id: &mut ns::Id, value: vn::ImageCropAndScaleOption);
-    fn VNGenerateImageFeaturePrintRequest_new() -> arc::R<GenerateImageFeaturePrintRequest>;
+    static VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST:
+        &'static objc::Class<GenerateImageFeaturePrintRequest>;
 }

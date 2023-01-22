@@ -1,25 +1,34 @@
-use crate::{arc, cf, define_obj_type, msg_send, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
-define_obj_type!(ClassifyImageRequest(vn::ImageBasedRequest));
+define_obj_type!(
+    ClassifyImageRequest(vn::ImageBasedRequest),
+    VN_CLASSIFY_IMAGE_REQUEST
+);
 
 impl ClassifyImageRequest {
     pub const REVISION_1: usize = 1;
 
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNClassifyImageRequest_new() }
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::ClassificationObservation>>;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::ClassificationObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
+    #[objc::msg_send(supportedIdentifiersAndReturnError:)]
+    pub fn supported_identifiers_and_return_error_ar(
+        &self,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
 
-    pub fn supported_identifiers<'a, 'ar>(
-        &'a self,
-    ) -> Result<&'a cf::ArrayOf<cf::String>, &'ar cf::Error> {
+    #[objc::rar_retain()]
+    pub fn supported_identifiers_and_return_error(
+        &self,
+        error: &mut Option<&ns::Error>,
+    ) -> Option<arc::R<ns::Array<ns::String>>>;
+
+    pub fn supported_identifiers<'ar>(
+        &self,
+    ) -> Result<arc::R<ns::Array<ns::String>>, &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.supported_identifiers_error(&mut error);
+            let res = self.supported_identifiers_and_return_error(&mut error);
             if res.is_some() {
                 Ok(res.unwrap_unchecked())
             } else {
@@ -27,23 +36,11 @@ impl ClassifyImageRequest {
             }
         }
     }
-
-    /// # Safety
-    ///
-    /// use `supported_identifiers`
-    ///
-    #[doc(alias = "supportedIdentifiersAndReturnError:")]
-    pub unsafe fn supported_identifiers_error<'ar>(
-        &self,
-        error: &mut Option<&'ar cf::Error>,
-    ) -> Option<&'ar cf::ArrayOf<cf::String>> {
-        msg_send!("vn", self, sel_supportedIdentifiersAndReturnError, error)
-    }
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNClassifyImageRequest_new() -> arc::R<ClassifyImageRequest>;
+    static VN_CLASSIFY_IMAGE_REQUEST: &'static objc::Class<ClassifyImageRequest>;
 }
 
 #[cfg(test)]
@@ -54,7 +51,6 @@ mod test {
     fn basics() {
         let mut request = vn::ClassifyImageRequest::new();
         let supported_ids = request.supported_identifiers().unwrap();
-        supported_ids.show();
 
         assert!(request.results().is_none());
 
@@ -63,7 +59,5 @@ mod test {
         let error = request
             .supported_identifiers()
             .expect_err("should be error");
-
-        error.show();
     }
 }

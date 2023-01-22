@@ -1,23 +1,30 @@
-use crate::{arc, cf, define_obj_type, msg_send, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
-define_obj_type!(DetectFaceCaptureQualityRequest(vn::ImageBasedRequest));
+define_obj_type!(
+    DetectFaceCaptureQualityRequest(vn::ImageBasedRequest),
+    VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST
+);
 
 impl DetectFaceCaptureQualityRequest {
     pub const REVISION_1: usize = 1;
     pub const REVISION_2: usize = 2;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::FaceObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
-
-    #[inline]
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNDetectFaceCaptureQualityRequest_new() }
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::FaceObservation>>;
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNDetectFaceCaptureQualityRequest_new() -> arc::R<DetectFaceCaptureQualityRequest>;
+    static VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST:
+        &'static objc::Class<DetectFaceCaptureQualityRequest>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::vn;
+    #[test]
+    fn basics() {
+        let mut request = vn::DetectFaceCaptureQualityRequest::new();
+        request.set_revision(vn::DetectFaceCaptureQualityRequest::REVISION_2);
+    }
 }

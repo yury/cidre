@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, msg_send, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
 #[repr(isize)]
 pub enum RecognitionLevel {
@@ -6,7 +6,10 @@ pub enum RecognitionLevel {
     Fast,
 }
 
-define_obj_type!(RecognizeTextRequest(vn::ImageBasedRequest));
+define_obj_type!(
+    RecognizeTextRequest(vn::ImageBasedRequest),
+    VN_RECOGNIZE_TEXT_REQUEST
+);
 
 impl RecognizeTextRequest {
     /// only supports English
@@ -28,17 +31,11 @@ impl RecognizeTextRequest {
     /// generally more accurate.
     pub const REVISION_3: usize = 3;
 
-    #[inline]
-    pub fn results(&self) -> Option<&cf::ArrayOf<vn::RecognizedTextObservation>> {
-        msg_send!("vn", self, sel_results)
-    }
-
-    pub fn new() -> arc::R<Self> {
-        unsafe { VNRecognizeTextRequest_new() }
-    }
+    #[objc::msg_send(results)]
+    pub fn results(&self) -> Option<&ns::Array<vn::RecognizedTextObservation>>;
 }
 
 #[link(name = "vn", kind = "static")]
 extern "C" {
-    fn VNRecognizeTextRequest_new() -> arc::R<RecognizeTextRequest>;
+    static VN_RECOGNIZE_TEXT_REQUEST: &'static objc::Class<RecognizeTextRequest>;
 }

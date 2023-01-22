@@ -104,6 +104,9 @@ pub use string::StringMut;
 mod url;
 pub use url::URL;
 
+mod uuid;
+pub use uuid::UUID;
+
 type TimeInterval = f64;
 
 pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;

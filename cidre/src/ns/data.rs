@@ -105,6 +105,12 @@ impl Data {
         unsafe { &*slice_from_raw_parts(self.bytes(), self.len()) }
     }
 
+    #[objc::msg_send(getBytes:length:)]
+    pub fn get_bytes(&self, buffer: *mut u8, length: usize);
+
+    #[objc::msg_send(getBytes:range:)]
+    pub fn get_bytes_range(&self, buffer: *mut u8, range: ns::Range);
+
     /// Writes the contents of the receiver to the file specified by a given path.
     ///
     /// Writes the contents of the receiver to the file specified by path (overwriting any existing file at path).

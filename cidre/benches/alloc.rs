@@ -40,13 +40,13 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             });
         })
     });
-    c.bench_function("alloc_tagged_alloc", |b| {
-        b.iter(|| {
-            autoreleasepool(|| {
-                ns::Number::tagged_i32_alloc(10);
-            });
-        })
-    });
+    // c.bench_function("alloc_tagged_alloc", |b| {
+    //     b.iter(|| {
+    //         autoreleasepool(|| {
+    //             ns::Number::tagged_i32_alloc(10);
+    //         });
+    //     })
+    // });
     c.bench_function("alloc_with_ar_retain", |b| {
         b.iter(|| {
             autoreleasepool(|| {

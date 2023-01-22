@@ -66,6 +66,9 @@ impl<T: Obj> Array<T> {
         Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
     }
 
+    #[objc::msg_send(containsObject:)]
+    pub fn contains(&self, object: &T) -> bool;
+
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
