@@ -1,182 +1,153 @@
-use crate::{arc, mps::graph, ns};
+use crate::{arc, mps::graph, ns, objc};
 
 impl graph::Graph {
-    #[inline]
+    #[objc::msg_send(additionWithPrimaryTensor:secondaryTensor:name:)]
+    pub fn add_ar(
+        &self,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn add(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe {
-            rsel_additionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
-        }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
+    #[objc::msg_send(clampWithTensor:minValueTensor:maxValueTensor:name:)]
+    pub fn clamp_ar(
+        &self,
+        tensor: &graph::Tensor,
+        min: &graph::Tensor,
+        max: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn clamp(
         &self,
         tensor: &graph::Tensor,
         min: &graph::Tensor,
         max: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe {
-            rsel_clampWithTensor_minValueTensor_maxValueTensor_name(self, tensor, min, max, name)
-        }
-    }
+    ) -> arc::R<graph::Tensor>;
 
     /// Create Multiply op and return the result tensor, it supports broadcasting as well
     ///
     /// resultTensor = primary * secondary
-    #[inline]
+    #[objc::msg_send(multiplicationWithPrimaryTensor:secondaryTensor:name:)]
+    pub fn mul_ar(
+        &self,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn mul(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe {
-            rsel_multiplicationWithPrimaryTensor_secondaryTensor_name(
-                self, primary, secondary, name,
-            )
-        }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
-    pub fn round(
+    #[objc::msg_send(roundWithTensor:name:)]
+    pub fn round_ar(
         &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_roundWithTensor_name(self, tensor, name) }
-    }
+    ) -> arc::Rar<graph::Tensor>;
 
-    #[inline]
+    #[objc::rar_retain]
+    pub fn round(&self, tensor: &graph::Tensor, name: Option<&ns::String>)
+        -> arc::R<graph::Tensor>;
+
+    #[objc::msg_send(squareRootWithTensor:name:)]
+    pub fn square_root_ar(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn square_root(
         &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_squareRootWithTensor_name(self, tensor, name) }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
+    #[objc::msg_send(subtractionWithPrimaryTensor:secondaryTensor:name:)]
+    pub fn sub_ar(
+        &self,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn sub(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe {
-            rsel_subtractionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
-        }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
+    #[objc::msg_send(divisionWithPrimaryTensor:secondaryTensor:name:)]
+    pub fn div_ar(
+        &self,
+        primary: &graph::Tensor,
+        secondary: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn div(
         &self,
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe {
-            rsel_divisionWithPrimaryTensor_secondaryTensor_name(self, primary, secondary, name)
-        }
-    }
-
-    #[inline]
-    pub fn tanh(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
-        unsafe { rsel_tanhWithTensor_name(self, tensor, name) }
-    }
-
-    #[inline]
-    pub fn erf(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
-        unsafe { rsel_erfWithTensor_name(self, tensor, name) }
-    }
-
-    #[inline]
-    pub fn cos(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
-        unsafe { rsel_cosWithTensor_name(self, tensor, name) }
-    }
-
-    #[inline]
-    pub fn sin(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
-        unsafe { rsel_sinWithTensor_name(self, tensor, name) }
-    }
-}
-
-#[link(name = "mpsg", kind = "static")]
-extern "C" {
-    fn rsel_additionWithPrimaryTensor_secondaryTensor_name(
-        graph: &graph::Graph,
-        primary: &graph::Tensor,
-        secondary: &graph::Tensor,
-        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 
-    fn rsel_multiplicationWithPrimaryTensor_secondaryTensor_name(
-        graph: &graph::Graph,
-        primary: &graph::Tensor,
-        secondary: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_clampWithTensor_minValueTensor_maxValueTensor_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        min: &graph::Tensor,
-        max: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_roundWithTensor_name(
-        graph: &graph::Graph,
+    #[objc::msg_send(tanhWithTensor:name:)]
+    pub fn tanh_ar(
+        &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
+    ) -> arc::Rar<graph::Tensor>;
 
-    fn rsel_squareRootWithTensor_name(
-        graph: &graph::Graph,
+    #[objc::rar_retain]
+    pub fn tanh(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
+
+    #[objc::msg_send(erfWithTensor:name:)]
+    pub fn erf_ar(
+        &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
+    ) -> arc::Rar<graph::Tensor>;
 
-    fn rsel_subtractionWithPrimaryTensor_secondaryTensor_name(
-        graph: &graph::Graph,
-        primary: &graph::Tensor,
-        secondary: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
+    #[objc::rar_retain]
+    pub fn erf(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
 
-    fn rsel_divisionWithPrimaryTensor_secondaryTensor_name(
-        graph: &graph::Graph,
-        primary: &graph::Tensor,
-        secondary: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_tanhWithTensor_name(
-        graph: &graph::Graph,
+    #[objc::msg_send(cosWithTensor:name:)]
+    pub fn cos_ar(
+        &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
+    ) -> arc::Rar<graph::Tensor>;
 
-    fn rsel_erfWithTensor_name(
-        graph: &graph::Graph,
+    #[objc::rar_retain]
+    pub fn cos(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
+
+    #[objc::msg_send(sinWithTensor:name:)]
+    pub fn sin_ar(
+        &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
+    ) -> arc::Rar<graph::Tensor>;
 
-    fn rsel_cosWithTensor_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_sinWithTensor_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
+    #[objc::rar_retain]
+    pub fn sin(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
 }

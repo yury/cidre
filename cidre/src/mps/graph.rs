@@ -1,5 +1,5 @@
 mod core;
-use crate::{arc, define_obj_type, msg_send, ns};
+use crate::{arc, define_obj_type, ns, objc};
 
 pub use self::core::PaddingMode;
 pub use self::core::PaddingStyle;
@@ -122,26 +122,17 @@ pub type TensorDataDictionary = ns::Dictionary<Tensor, TensorData>;
 #[doc(alias = "MPSGraphTensorShapedTypeDictionary")]
 pub type TensorShapedTypeDictionary = ns::Dictionary<Tensor, ShapedType>;
 
-define_obj_type!(Graph(ns::Id));
+define_obj_type!(Graph(ns::Id), MPS_GRAPH);
 
 impl Graph {
-    #[inline]
-    pub fn new() -> arc::R<Graph> {
-        unsafe { MPSGraph_new() }
-    }
+    #[objc::msg_send(options)]
+    pub fn options(&self) -> Options;
 
-    #[inline]
-    pub fn options(&self) -> Options {
-        msg_send!("mpsg", self, sel_options)
-    }
-
-    #[inline]
-    pub fn set_options(&mut self, value: Options) {
-        msg_send!("mpsg", self, sel_setOptions, value)
-    }
+    #[objc::msg_send(setOptions:)]
+    pub fn set_options(&mut self, value: Options);
 }
 
 #[link(name = "mpsg", kind = "static")]
 extern "C" {
-    fn MPSGraph_new() -> arc::R<Graph>;
+    static MPS_GRAPH: &'static objc::Class<Graph>;
 }

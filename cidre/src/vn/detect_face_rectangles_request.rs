@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, msg_send, ns, objc, vn};
+use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
     DetectFaceRectanglesRequest(vn::ImageBasedRequest),

@@ -1,21 +1,14 @@
-use crate::{arc, define_obj_type, mps, ns};
+use crate::{define_obj_type, mps, ns, objc};
 
 define_obj_type!(TensorData(ns::Id));
 
 impl TensorData {
-    pub fn shape(&self) -> mps::Shape {
-        todo!()
-    }
+    #[objc::msg_send(shape)]
+    pub fn shape(&self) -> mps::Shape;
 
-    pub fn data_type(&self) -> mps::DataType {
-        todo!()
-    }
+    #[objc::msg_send(dataType)]
+    pub fn data_type(&self) -> mps::DataType;
 
-    pub fn device(&self) -> &mps::graph::Device {
-        todo!()
-    }
-
-    pub fn nd_array(&self) -> Option<arc::R<mps::NDArray>> {
-        todo!()
-    }
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> &mps::graph::Device;
 }

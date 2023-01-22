@@ -1,50 +1,43 @@
-use crate::{arc, mps::graph, ns};
+use crate::{arc, mps::graph, ns, objc};
 
 impl graph::Graph {
-    #[inline]
-    pub fn relu(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor> {
-        unsafe { rsel_reLUWithTensor_name(self, tensor, name) }
-    }
+    #[objc::msg_send(reLUWithTensor:name:)]
+    pub fn relu_ar(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
 
-    #[inline]
+    #[objc::rar_retain]
+    pub fn relu(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
+
+    #[objc::msg_send(sigmoidWithTensor:name:)]
+    pub fn sigmoid_ar(
+        &self,
+        tensor: &graph::Tensor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn sigmoid(
         &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_sigmoidWithTensor_name(self, tensor, name) }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
+    #[objc::msg_send(softMaxWithTensor:axis:name:)]
+    pub fn soft_max_ar(
+        &self,
+        tensor: &graph::Tensor,
+        axis: ns::Integer,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn soft_max(
         &self,
         tensor: &graph::Tensor,
         axis: ns::Integer,
         name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_softMaxWithTensor_axis_name(self, tensor, axis, name) }
-    }
-}
-
-#[link(name = "mpsg", kind = "static")]
-extern "C" {
-    fn rsel_reLUWithTensor_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
-
-    fn rsel_sigmoidWithTensor_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_softMaxWithTensor_axis_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        axis: ns::Integer,
-        name: Option<&ns::String>,
-    ) -> arc::R<graph::Tensor>;
-
 }

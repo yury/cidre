@@ -1,4 +1,4 @@
-use crate::{arc, cf, mps, mps::graph};
+use crate::{arc, mps, mps::graph, ns, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -17,7 +17,19 @@ pub enum ResizeNearestRoundingMode {
 }
 
 impl graph::Graph {
-    #[inline]
+    #[objc::msg_send(resizeTensor:size:mode:centerResult:alignCorners:layout:name:)]
+    pub fn resize_ar(
+        &self,
+        tensor: &graph::Tensor,
+        size: &mps::Shape,
+        mode: graph::ResizeMode,
+        center_result: bool,
+        align_corners: bool,
+        layout: graph::TensorNamedDataLayout,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn resize(
         &self,
         tensor: &graph::Tensor,
@@ -26,33 +38,6 @@ impl graph::Graph {
         center_result: bool,
         align_corners: bool,
         layout: graph::TensorNamedDataLayout,
-        name: Option<&cf::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe {
-            rsel_resizeTensor_size_mode_centerResult_alignCorners_layout_name(
-                self,
-                tensor,
-                size,
-                mode,
-                center_result,
-                align_corners,
-                layout,
-                name,
-            )
-        }
-    }
-}
-
-#[link(name = "mpsg", kind = "static")]
-extern "C" {
-    fn rsel_resizeTensor_size_mode_centerResult_alignCorners_layout_name(
-        graph: &graph::Graph,
-        tensor: &graph::Tensor,
-        size: &mps::Shape,
-        mode: graph::ResizeMode,
-        center_result: bool,
-        align_corners: bool,
-        layout: graph::TensorNamedDataLayout,
-        name: Option<&cf::String>,
+        name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 }

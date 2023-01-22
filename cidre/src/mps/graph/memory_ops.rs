@@ -1,80 +1,65 @@
-use crate::{arc, cf, define_obj_type, mps, mps::graph, msg_send, ns};
+use crate::{arc, cf, define_obj_type, mps, mps::graph, ns, objc};
 
 define_obj_type!(VariableOp(graph::Operation));
 
 impl VariableOp {
-    #[inline]
-    pub fn shape(&self) -> &mps::Shape {
-        msg_send!("mpsg", self, sel_shape)
-    }
+    #[objc::msg_send(shape)]
+    pub fn shape(&self) -> &mps::Shape;
 
-    #[inline]
-    pub fn data_type(&self) -> mps::DataType {
-        msg_send!("mpsg", self, sel_dataType)
-    }
+    #[objc::msg_send(dataType)]
+    pub fn data_type(&self) -> mps::DataType;
 }
 
 impl graph::Graph {
-    #[inline]
+    #[objc::msg_send(placeholderWithShape:dataType:name:)]
+    pub fn placeholder_with_shape_ar(
+        &self,
+        shape: Option<&mps::Shape>,
+        data_type: mps::DataType,
+        name: Option<&cf::String>,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain()]
     pub fn placeholder_with_shape(
         &self,
         shape: Option<&mps::Shape>,
         data_type: mps::DataType,
         name: Option<&cf::String>,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_placeholderWithShape_dataType_name(self, shape, data_type, name) }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
+    #[objc::msg_send(constantWithData:shape:dataType:)]
+    pub fn constant_with_data_shape_data_type_ar(
+        &self,
+        data: &ns::Data,
+        shape: &mps::Shape,
+        data_type: mps::DataType,
+    ) -> arc::Rar<graph::Tensor>;
+
+    #[objc::rar_retain]
     pub fn constant_with_data_shape_data_type(
         &self,
         data: &ns::Data,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_constantWithData_shape_dataType(self, data, shape, data_type) }
-    }
+    ) -> arc::R<graph::Tensor>;
 
-    #[inline]
-    pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> arc::R<graph::Tensor> {
-        unsafe { rsel_constantWithScalar_dataType(self, scalar, data_type) }
-    }
+    #[objc::msg_send(constantWithScalar:dataType:)]
+    pub fn constant_ar(&self, scalar: f64, data_type: mps::DataType) -> arc::Rar<graph::Tensor>;
 
-    #[inline]
-    pub fn constant_shape(
+    #[objc::rar_retain]
+    pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> arc::R<graph::Tensor>;
+
+    #[objc::msg_send(constantWithScalar:shape:dataType:)]
+    pub fn constant_shape_ar(
         &self,
         scalar: f64,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> arc::R<graph::Tensor> {
-        unsafe { rsel_constantWithScalar_shape_dataType(self, scalar, shape, data_type) }
-    }
-}
+    ) -> arc::Rar<graph::Tensor>;
 
-#[link(name = "mpsg", kind = "static")]
-extern "C" {
-    fn rsel_placeholderWithShape_dataType_name(
-        id: &ns::Id,
-        shape: Option<&mps::Shape>,
-        data_type: mps::DataType,
-        name: Option<&cf::String>,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_constantWithData_shape_dataType(
-        id: &ns::Id,
-        data: &ns::Data,
-        shape: &mps::Shape,
-        data_type: mps::DataType,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_constantWithScalar_dataType(
-        id: &ns::Id,
-        scalar: f64,
-        data_type: mps::DataType,
-    ) -> arc::R<graph::Tensor>;
-
-    fn rsel_constantWithScalar_shape_dataType(
-        id: &ns::Id,
+    #[objc::rar_retain]
+    pub fn constant_shape(
+        &self,
         scalar: f64,
         shape: &mps::Shape,
         data_type: mps::DataType,
