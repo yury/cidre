@@ -1,7 +1,4 @@
-use crate::{
-    cf, define_obj_type, msg_send, ns,
-    objc::{msg_send, Obj},
-};
+use crate::{cf, define_cls, define_obj_type, ns, objc};
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
@@ -101,98 +98,60 @@ pub mod notifications {
 define_obj_type!(Device(ns::Id));
 
 impl Device {
-    #[inline]
-    pub fn user_interface_idiom(&self) -> UserInterfaceIdiom {
-        unsafe { rsel_userInterfaceIdiom(self) }
-    }
+    define_cls!(UI_DEVICE);
 
-    #[inline]
-    pub fn is_multitasking_supported(&self) -> bool {
-        unsafe { rsel_isMultitaskingSupported(self) }
-    }
+    #[objc::cls_msg_send(currentDevice)]
+    pub fn current() -> &'static Device;
 
-    #[inline]
-    pub fn proximity_state(&self) -> bool {
-        unsafe { rsel_proximityState(self) }
-    }
+    #[objc::msg_send(userInterfaceIdiom)]
+    pub fn user_interface_idiom(&self) -> UserInterfaceIdiom;
 
-    #[inline]
-    pub fn is_proximity_monitoring_enabled(&self) -> bool {
-        unsafe { rsel_isProximityMonitoringEnabled(self) }
-    }
+    #[objc::msg_send(isMultitaskingSupported)]
+    pub fn is_multitasking_supported(&self) -> bool;
 
-    #[inline]
-    pub fn set_proximity_monitoring_enabled(&self, value: bool) {
-        unsafe { wsel_setProximityMonitoringEnabled(self, value) }
-    }
+    #[objc::msg_send(proximityState)]
+    pub fn proximity_state(&self) -> bool;
 
-    #[inline]
-    pub fn battery_level(&self) -> f32 {
-        unsafe { rsel_batteryLevel(self) }
-    }
+    #[objc::msg_send(isProximityMonitoringEnabled)]
+    pub fn is_proximity_monitoring_enabled(&self) -> bool;
 
-    #[inline]
-    pub fn battery_state(&self) -> BatteryState {
-        unsafe { rsel_batteryState(self) }
-    }
+    #[objc::msg_send(setProximityMonitoringEnabled:)]
+    pub fn set_proximity_monitoring_enabled(&self, value: bool);
 
-    #[inline]
-    pub fn is_battery_monitoring_enabled(&self) -> bool {
-        unsafe { rsel_isBatteryMonitoringEnabled(self) }
-    }
+    #[objc::msg_send(batteryLevel)]
+    pub fn battery_level(&self) -> f32;
 
-    #[inline]
-    pub fn set_battery_monitoring_enabled(&self, value: bool) {
-        unsafe { wsel_setBatteryMonitoringEnabled(self, value) }
-    }
+    #[objc::msg_send(batteryState)]
+    pub fn battery_state(&self) -> BatteryState;
 
-    #[inline]
-    pub fn identifier_for_vendor(&self) -> Option<&cf::UUID> {
-        unsafe { rsel_identifierForVendor(self) }
-    }
+    #[objc::msg_send(isBatteryMonitoringEnabled)]
+    pub fn is_battery_monitoring_enabled(&self) -> bool;
 
-    #[inline]
-    pub fn model(&self) -> &cf::String {
-        unsafe { rsel_model(self) }
-    }
+    #[objc::msg_send(setBatteryMonitoringEnabled:)]
+    pub fn set_battery_monitoring_enabled(&self, value: bool);
 
-    #[inline]
-    pub fn system_name(&self) -> &cf::String {
-        unsafe { rsel_UIDevice_systemName(self) }
-    }
+    #[objc::msg_send(identifierForVendor)]
+    pub fn identifier_for_vendor(&self) -> Option<&ns::UUID>;
 
-    #[inline]
-    pub fn name(&self) -> &ns::String {
-        unsafe { self.call0(msg_send::name) }
-    }
+    #[objc::msg_send(model)]
+    pub fn model(&self) -> &ns::String;
 
-    #[inline]
-    pub fn system_version(&self) -> &cf::String {
-        unsafe { rsel_UIDevice_systemVersion(self) }
-    }
+    #[objc::msg_send(systemName)]
+    pub fn system_name(&self) -> &ns::String;
+
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> &ns::String;
+
+    #[objc::msg_send(systemVersion)]
+    pub fn system_version(&self) -> &ns::String;
 
     /// Returns current device orientation. This will return Orientation::Unknown
     /// unless device orientation notifications are being generated.
-    #[inline]
-    pub fn orientation(&self) -> Orientation {
-        unsafe { rsel_orientation(self) }
-    }
+    #[objc::msg_send(orientation)]
+    pub fn orientation(&self) -> Orientation;
 }
 
 #[link(name = "ui", kind = "static")]
 extern "C" {
-    fn rsel_orientation(device: &Device) -> Orientation;
-    fn rsel_UIDevice_systemVersion(device: &Device) -> &cf::String;
-    fn rsel_model(device: &Device) -> &cf::String;
-    fn rsel_UIDevice_systemName(device: &Device) -> &cf::String;
-    fn rsel_userInterfaceIdiom(device: &Device) -> UserInterfaceIdiom;
-    fn rsel_isMultitaskingSupported(device: &Device) -> bool;
-    fn rsel_proximityState(device: &Device) -> bool;
-    fn rsel_isProximityMonitoringEnabled(device: &Device) -> bool;
-    fn wsel_setProximityMonitoringEnabled(device: &Device, value: bool);
-    fn rsel_batteryLevel(device: &Device) -> f32;
-    fn rsel_batteryState(device: &Device) -> BatteryState;
-    fn rsel_isBatteryMonitoringEnabled(device: &Device) -> bool;
-    fn wsel_setBatteryMonitoringEnabled(device: &Device, value: bool);
-    fn rsel_identifierForVendor(device: &Device) -> Option<&cf::UUID>;
+    static UI_DEVICE: &'static objc::Class<Device>;
 }
