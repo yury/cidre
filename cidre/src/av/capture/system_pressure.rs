@@ -1,10 +1,7 @@
-#[cfg(not(target_os = "macos"))]
 use crate::{define_obj_type, ns, objc};
 
-#[cfg(not(target_os = "macos"))]
 define_obj_type!(Level(ns::String));
 
-#[cfg(not(target_os = "macos"))]
 impl Level {
     #[inline]
     pub fn nominal() -> &'static Self {
@@ -32,7 +29,6 @@ impl Level {
     }
 }
 
-#[cfg(not(target_os = "macos"))]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum Factors {
@@ -42,10 +38,8 @@ pub enum Factors {
     DepthModuleTemperature = 1 << 2,
 }
 
-#[cfg(not(target_os = "macos"))]
 define_obj_type!(State(ns::Id));
 
-#[cfg(not(target_os = "macos"))]
 impl State {
     #[objc::msg_send(level)]
     pub fn level(&self) -> &Level;
@@ -54,7 +48,6 @@ impl State {
     pub fn factors(&self) -> Factors;
 }
 
-#[cfg(not(target_os = "macos"))]
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
     static AVCaptureSystemPressureLevelNominal: &'static Level;
