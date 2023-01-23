@@ -1,4 +1,4 @@
-use crate::{arc, av::audio, cf, define_obj_type, objc::Id};
+use crate::{arc, av::audio, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(Eq(audio::UnitEffect));
 
@@ -50,91 +50,78 @@ pub enum FilterType {
     ResonantHighShelf = 10,
 }
 
-define_obj_type!(FilterParameters(Id));
+define_obj_type!(FilterParameters(ns::Id));
 
 impl FilterParameters {
-    pub fn filter_type(&self) -> FilterType {
-        unsafe { rsel_filterType(self) }
-    }
-    pub fn set_filter_type(&mut self, value: FilterType) {
-        unsafe { wsel_setFilterType(self, value) }
-    }
+    #[objc::msg_send(filterType)]
+    pub fn filter_type(&self) -> FilterType;
 
-    pub fn frequency(&self) -> f32 {
-        unsafe { rsel_frequency(self) }
-    }
+    #[objc::msg_send(setFilterType:)]
+    pub fn set_filter_type(&mut self, value: FilterType);
 
-    pub fn set_frequency(&mut self, value: f32) {
-        unsafe { wsel_setFrequency(self, value) }
-    }
+    #[objc::msg_send(frequency)]
+    pub fn frequency(&self) -> f32;
 
-    pub fn bandwidth(&self) -> f32 {
-        unsafe { rsel_bandwidth(self) }
-    }
+    #[objc::msg_send(setFrequency:)]
+    pub fn set_frequency(&mut self, value: f32);
 
-    pub fn set_bandwidth(&mut self, value: f32) {
-        unsafe { wsel_setBandwidth(self, value) }
-    }
+    #[objc::msg_send(bandwidth)]
+    pub fn bandwidth(&self) -> f32;
 
-    pub fn gain(&self) -> f32 {
-        unsafe { rsel_gain(self) }
-    }
+    #[objc::msg_send(setBandwidth:)]
+    pub fn set_bandwidth(&mut self, value: f32);
 
-    pub fn set_gain(&mut self, value: f32) {
-        unsafe { wsel_setGain(self, value) }
-    }
+    #[objc::msg_send(gain)]
+    pub fn gain(&self) -> f32;
+
+    #[objc::msg_send(setGain:)]
+    pub fn set_gain(&mut self, value: f32);
 }
 
 define_obj_type!(UnitEq(audio::UnitEffect));
 
+impl arc::A<UnitEq> {
+    #[objc::msg_send(initWithNumberOfBands:)]
+    pub fn init_with_number_of_bands(self, number_of_bands: usize) -> arc::R<UnitEq>;
+}
+
 /// UnitEffect that implements a Multi-Band Equalizer.
 impl UnitEq {
-    /// ```
-    /// use cidre::av::audio;
-    ///
-    /// let mut equ = audio::UnitEq::with_bands(10);
-    ///
-    /// let bands = equ.bands_mut();
-    /// bands[0].set_gain(10.0);
-    /// assert_eq!(bands.len(), 10);
-    /// assert_eq!(equ.global_gain(), 0.0);
-    ///
-    /// ```
+    define_cls!(AV_AUDIO_UNIT_EQ);
+
     pub fn with_bands(number_of_bands: usize) -> arc::R<Self> {
-        unsafe { AVAudioUnitEQ_initWithNumberOfBands(number_of_bands) }
+        Self::alloc().init_with_number_of_bands(number_of_bands)
     }
 
-    pub fn bands(&self) -> &cf::ArrayOf<FilterParameters> {
-        unsafe { rsel_bands(self) }
-    }
+    #[objc::msg_send(bands)]
+    pub fn bands(&self) -> &ns::Array<FilterParameters>;
 
-    pub fn bands_mut(&mut self) -> &mut cf::ArrayOf<FilterParameters> {
-        unsafe { rsel_bands(self) }
-    }
+    #[objc::msg_send(bands)]
+    pub fn bands_mut(&mut self) -> &mut ns::Array<FilterParameters>;
 
-    pub fn global_gain(&self) -> f32 {
-        unsafe { rsel_globalGain(self) }
-    }
+    #[objc::msg_send(globalGain)]
+    pub fn global_gain(&self) -> f32;
 
-    pub fn set_global_gain(&mut self, value: f32) {
-        unsafe { wsel_setGlobalGain(self, value) }
-    }
+    #[objc::msg_send(setGlobalGain:)]
+    pub fn set_global_gain(&mut self, value: f32);
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn rsel_filterType(id: &Id) -> FilterType;
-    fn wsel_setFilterType(id: &Id, value: FilterType);
-    fn rsel_frequency(id: &Id) -> f32;
-    fn wsel_setFrequency(id: &Id, value: f32);
-    fn rsel_bandwidth(id: &Id) -> f32;
-    fn wsel_setBandwidth(id: &Id, value: f32);
-    fn rsel_gain(id: &Id) -> f32;
-    fn wsel_setGain(id: &Id, value: f32);
+    static AV_AUDIO_UNIT_EQ: &'static objc::Class<UnitEq>;
+}
 
-    fn AVAudioUnitEQ_initWithNumberOfBands(number_of_bands: usize) -> arc::R<UnitEq>;
-    fn rsel_bands(id: &Id) -> &mut cf::ArrayOf<FilterParameters>;
+#[cfg(test)]
+mod tests {
+    use crate::av::audio;
 
-    fn rsel_globalGain(id: &Id) -> f32;
-    fn wsel_setGlobalGain(id: &Id, value: f32);
+    #[test]
+    fn basics() {
+        let mut equ = audio::UnitEq::with_bands(10);
+
+        let bands = equ.bands_mut();
+        bands[0].set_gain(10.0);
+        assert_eq!(bands.len(), 10);
+        assert_eq!(equ.global_gain(), 0.0);
+    }
 }

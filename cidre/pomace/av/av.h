@@ -77,13 +77,6 @@ rwsel(, id, frequency, setFrequency, float)
 rwsel(, id, bandwidth, setBandwidth, float)
 rwsel(, id, gain, setGain, float)
 
-#pragma mark AVAudioUnitEQ
-
-asel1(, AVAudioUnitEQ, initWithNumberOfBands, NSUInteger)
-rsel0(, id, bands, NSArray *)
-
-rwsel(, id, globalGain, setGlobalGain, float)
-
 #pragma mark AVAudioUnitTimeEffect
 
 NS_RETURNS_RETAINED
@@ -178,6 +171,8 @@ Class AV_ASSET_READER_TRACK_OUTPUT;
 
 Class AV_AUDIO_TIME;
 
+Class AV_AUDIO_UNIT_EQ;
+
 
 __attribute__((constructor))
 static void common_initializer()
@@ -196,6 +191,9 @@ static void common_initializer()
 #endif
     AV_AUDIO_ENGINE = [AVAudioEngine class];
     AV_AUDIO_TIME = [AVAudioTime class];
+    AV_AUDIO_UNIT_EQ = [AVAudioUnitEQ class];
+    
+    
     AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
     AV_ASSET_READER = [AVAssetReader class];
   }
