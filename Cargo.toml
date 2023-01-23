@@ -4,6 +4,8 @@ members = [
   "cidre",
   "cidre-macros",
 ]
+# [build]
+# target = "aarch64-apple-ios"
 
 [profile.dev]
 opt-level = 1

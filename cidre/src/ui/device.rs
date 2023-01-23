@@ -1,4 +1,4 @@
-use crate::{cf, define_cls, define_obj_type, ns, objc};
+use crate::{define_cls, define_obj_type, ns, objc};
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]

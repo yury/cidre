@@ -38,11 +38,17 @@ pub use image_properties::Orientation as ImagePropertyOrientation;
 
 #[cfg(target_os = "macos")]
 mod display_stream;
+#[cfg(target_os = "macos")]
 pub use display_stream::DisplayStream;
+#[cfg(target_os = "macos")]
 pub use display_stream::FrameStatus as DisplayStreamFrameStatus;
+#[cfg(target_os = "macos")]
 pub use display_stream::PropertyKey as DisplayStreamPropertyKey;
+#[cfg(target_os = "macos")]
 pub use display_stream::Update as DisplayStreamUpdate;
+#[cfg(target_os = "macos")]
 pub use display_stream::UpdateRectType as DisplayStreamUpdateRectType;
+#[cfg(target_os = "macos")]
 pub use display_stream::YCbCrMatrix as DisplayStreamYCbCrMatrix;
 
 #[link(name = "CoreGraphics", kind = "framework")]
