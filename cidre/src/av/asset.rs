@@ -1,6 +1,7 @@
 use std::ffi::c_void;
 
-use crate::{arc, av, blocks, define_obj_type, ns};
+use crate::define_cls;
+use crate::{arc, av, blocks, define_obj_type, ns, objc};
 
 pub mod cache;
 pub use cache::Cache as AssetCache;
@@ -34,13 +35,24 @@ define_obj_type!(URLAsset(Asset));
 define_obj_type!(FragmentedAsset(URLAsset));
 define_obj_type!(FragmentedAssetMinder(ns::Id));
 
+impl arc::A<URLAsset> {
+    #[objc::msg_send(initWithURL:options:)]
+    pub fn init_with_url_options(
+        self,
+        url: &ns::URL,
+        options: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Option<arc::R<URLAsset>>;
+}
+
 impl URLAsset {
+    define_cls!(AV_URL_ASSET);
+
     #[inline]
     pub fn with_url(
         url: &ns::URL,
-        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
-    ) -> arc::R<URLAsset> {
-        unsafe { AVURLAsset_URLAssetWithURL_options(url, options) }
+        options: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_url_options(url, options)
     }
 
     pub fn load_tracks_with_media_type_completion<'ar, F>(
@@ -77,10 +89,7 @@ impl URLAsset {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVURLAsset_URLAssetWithURL_options(
-        url: &ns::URL,
-        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
-    ) -> arc::R<URLAsset>;
+    static AV_URL_ASSET: &'static objc::Class<URLAsset>;
 
     fn wsel_loadTracksWithMediaType_completionHandler(
         id: &ns::Id,

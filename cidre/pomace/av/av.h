@@ -37,28 +37,10 @@ wsel1(, id, finishWritingWithCompletionHandler, VoidBlock)
 
 wsel2(, id, loadTracksWithMediaType, AVMediaType, completionHandler, id)
 
-NS_RETURNS_RETAINED
-csel2(, AVURLAsset, URLAssetWithURL, NSURL *, options, NSDictionary * _Nullable, AVURLAsset *)
-//+ (instancetype)URLAssetWithURL:(NSURL *)URL options:(nullable NSDictionary<NSString *, id> *)options;
-
-#pragma mark - AVAssetReader
-
-NS_RETURNS_RETAINED
-csel2(, AVAssetReader, assetReaderWithAsset, AVAsset *, error, NSError **, AVAssetReader *)
-
 #pragma mark - AVAssetReaderOutput
-
-//+ (instancetype)assetReaderTrackOutputWithTrack:(AVAssetTrack *)track outputSettings:(nullable NSDictionary<NSString *, id> *)outputSettings;
 
 NS_RETURNS_RETAINED
 csel2(, AVAssetReaderTrackOutput, assetReaderTrackOutputWithTrack, AVAssetTrack *, outputSettings, NSDictionary * _Nullable, AVAssetReaderTrackOutput *)
-
-//@property (nonatomic) BOOL supportsRandomAccess API_AVAILABLE(macos(10.10), ios(8.0), tvos(9.0)) API_UNAVAILABLE(watchos);
-rsel0(, id, supportsRandomAccess, BOOL)
-wsel1(, id, resetForReadingTimeRanges, NSArray *)
-
-rwsel(, id, alwaysCopiesSampleData, setAlwaysCopiesSampleData, BOOL)
-
 
 #pragma mark - AVCaptureDeviceInput
 
@@ -74,6 +56,7 @@ Class AV_CAPTURE_DEVICE_INPUT;
 
 Class AV_AUDIO_ENGINE;
 
+Class AV_URL_ASSET;
 Class AV_ASSET_WRITER;
 Class AV_ASSET_READER;
 Class AV_ASSET_READER_TRACK_OUTPUT;
@@ -113,6 +96,7 @@ static void common_initializer()
     AV_AUDIO_UNIT_TIME_EFFECT = [AVAudioUnitTimeEffect class];
     
     
+    AV_URL_ASSET = [AVURLAsset class];
     AV_ASSET_WRITER = [AVAssetWriter class];
     AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
     AV_ASSET_READER = [AVAssetReader class];
