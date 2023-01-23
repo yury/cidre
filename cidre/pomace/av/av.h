@@ -15,15 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - AVCaptureSystemPressureState
 
 #if TARGET_OS_IPHONE
-//@property(atomic, readonly) AVCaptureSystemPressureLevel level;
+
 rsel0(, AVCaptureSystemPressureState *, level, AVCaptureSystemPressureLevel)
 rsel0(, AVCaptureSystemPressureState *, factors, AVCaptureSystemPressureFactors)
 
 #endif
-
-
-NS_RETURNS_RETAINED
-csel1(, AVCaptureDevice, deviceWithUniqueID, NSString *, AVCaptureDevice * _Nullable)
 
 wsel1(, id, setActiveFormat, AVCaptureDeviceFormat* )
 
@@ -40,80 +36,9 @@ rsel0(, id, videoSupportedFrameRateRanges, NSArray<AVFrameRateRange *> *)
 rsel0(, id, formatDescription, CMFormatDescriptionRef)
 rsel0(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
 
-#if TARGET_OS_IPHONE
-rsel0(, id, isMultiCamSupported, BOOL)
-#endif
-
-#pragma mark - AVCaptureInput
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, ports, NSArray<AVCaptureInputPort *> *);
-
-
-NS_RETURNS_NOT_RETAINED
-rsel0(, id, input, AVCaptureInput *)
-
-bool is_mutlicam_supported(void) {
-#if TARGET_OS_OSX
-  return NO;
-#else
-  return [AVCaptureMultiCamSession isMultiCamSupported];
-#endif
-}
 #pragma mark - AVAudioEngine
 
 rsel1(, id, startAndReturnError, NSError **, BOOL);
-
-#pragma mark AVAudioUnitEffect
-
-NS_RETURNS_RETAINED
-asel1(, AVAudioUnitEffect, initWithAudioComponentDescription, AudioComponentDescription)
-rwsel(, id, bypass, setBypass, BOOL)
-
-#pragma mark AVAudioUnitEQFilterParameters
-
-rwsel(, id, filterType, setFilterType, AVAudioUnitEQFilterType)
-rwsel(, id, frequency, setFrequency, float)
-rwsel(, id, bandwidth, setBandwidth, float)
-rwsel(, id, gain, setGain, float)
-
-#pragma mark AVAudioUnitTimeEffect
-
-NS_RETURNS_RETAINED
-asel1(, AVAudioUnitTimeEffect, initWithAudioComponentDescription, AudioComponentDescription)
-
-#pragma mark - AVAudioCommonFormat
-
-NS_RETURNS_RETAINED
-asel1(, AVAudioFormat, initWithStreamDescription, const AudioStreamBasicDescription *)
-
-NS_RETURNS_RETAINED
-asel2(, AVAudioFormat, initWithStreamDescription, const AudioStreamBasicDescription *, channelLayout, AVAudioChannelLayout * _Nullable)
-
-NS_RETURNS_RETAINED
-asel2(, AVAudioFormat, initStandardFormatWithSampleRate, double, channels, AVAudioChannelCount)
-
-NS_RETURNS_RETAINED
-asel2(, AVAudioFormat, initStandardFormatWithSampleRate, double, channelLayout, AVAudioChannelLayout *)
-
-NS_RETURNS_RETAINED
-asel4(, AVAudioFormat, initWithCommonFormat, AVAudioCommonFormat, sampleRate, double, interleaved, BOOL, channelLayout, AVAudioChannelLayout *)
-
-NS_RETURNS_RETAINED
-asel1(, AVAudioFormat, initWithSettings, NSDictionary *);
-
-#pragma mark - AVAudioPCMBuffer
-
-//- (nullable instancetype)initWithPCMFormat:(AVAudioFormat *)format frameCapacity:(AVAudioFrameCount)frameCapacity NS_DESIGNATED_INITIALIZER;
-asel2(, AVAudioPCMBuffer, initWithPCMFormat,AVAudioFormat *, frameCapacity, AVAudioFrameCount)
-
-
-#pragma mark - AVAudioCompressedBuffer
-
-asel2(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount)
-
-asel3(, AVAudioCompressedBuffer, initWithFormat, AVAudioFormat *, packetCapacity, AVAudioPacketCount, maximumPacketSize, NSInteger)
-
 
 #pragma mark - AVAssetWriter
 
@@ -172,6 +97,13 @@ Class AV_ASSET_READER_TRACK_OUTPUT;
 Class AV_AUDIO_TIME;
 
 Class AV_AUDIO_UNIT_EQ;
+Class AV_AUDIO_UNIT_EFFECT;
+Class AV_AUDIO_UNIT_TIME_EFFECT;
+
+Class AV_AUDIO_PCM_BUFFER;
+Class AV_AUDIO_COMPRESSED_BUFFER;
+Class AV_AUDIO_FORMAT;
+
 
 
 __attribute__((constructor))
@@ -191,11 +123,19 @@ static void common_initializer()
 #endif
     AV_AUDIO_ENGINE = [AVAudioEngine class];
     AV_AUDIO_TIME = [AVAudioTime class];
+    AV_AUDIO_UNIT_EFFECT = [AVAudioUnitEffect class];
     AV_AUDIO_UNIT_EQ = [AVAudioUnitEQ class];
+    
+    AV_AUDIO_UNIT_TIME_EFFECT = [AVAudioUnitTimeEffect class];
     
     
     AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
     AV_ASSET_READER = [AVAssetReader class];
+    
+    AV_AUDIO_FORMAT = [AVAudioFormat class];
+    
+    AV_AUDIO_PCM_BUFFER = [AVAudioPCMBuffer class];
+    AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
   }
 }
 

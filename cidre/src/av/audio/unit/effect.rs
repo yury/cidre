@@ -1,28 +1,32 @@
-use crate::{arc, at, av::audio, define_obj_type, objc::Id};
+use crate::{arc, at, av::audio, define_cls, define_obj_type, objc};
 
 define_obj_type!(Effect(audio::Unit));
 
+impl arc::A<Effect> {
+    #[objc::msg_send(initWithAudioComponentDescription:)]
+    pub fn init_with_audio_component_description(
+        self,
+        description: at::audio::ComponentDescription,
+    ) -> arc::R<Effect>;
+}
+
 impl Effect {
+    define_cls!(AV_AUDIO_UNIT_EFFECT);
+
     pub fn with_component_description(
         description: at::audio::ComponentDescription,
     ) -> arc::R<Self> {
-        unsafe { AVAudioUnitEffect_initWithAudioComponentDescription(description) }
+        Self::alloc().init_with_audio_component_description(description)
     }
 
-    pub fn bypass(&self) -> bool {
-        unsafe { rsel_bypass(self) }
-    }
+    #[objc::msg_send(bypass)]
+    pub fn bypass(&self) -> bool;
 
-    pub fn set_bypass(&mut self, value: bool) {
-        unsafe { wsel_setBypass(self, value) }
-    }
+    #[objc::msg_send(setBypass:)]
+    pub fn set_bypass(&mut self, value: bool);
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAudioUnitEffect_initWithAudioComponentDescription(
-        description: at::audio::ComponentDescription,
-    ) -> arc::R<Effect>;
-    fn rsel_bypass(id: &Id) -> bool;
-    fn wsel_setBypass(id: &Id, value: bool);
+    static AV_AUDIO_UNIT_EFFECT: &'static objc::Class<Effect>;
 }

@@ -105,6 +105,12 @@ impl Device {
         position: Position,
     ) -> Option<arc::R<Self>>;
 
+    #[objc::cls_msg_send(deviceWithUniqueID:)]
+    pub fn with_unique_id_ar(unique_id: ns::String) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_unique_id(unique_id: ns::String) -> Option<arc::R<Self>>;
+
     #[objc::msg_send(uniqueID)]
     pub fn unique_id(&self) -> &ns::String;
 

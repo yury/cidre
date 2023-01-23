@@ -1,4 +1,4 @@
-use crate::{arc, at::audio::StreamBasicDescription, cf, define_obj_type, ns, objc};
+use crate::{arc, at::audio::StreamBasicDescription, cf, define_cls, define_obj_type, ns, objc};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
@@ -20,38 +20,84 @@ pub enum CommonFormat {
 
 define_obj_type!(Format(ns::Id));
 
+impl arc::A<Format> {
+    #[objc::msg_send(initWithStreamDescription:)]
+    pub fn init_with_stream_description(
+        self,
+        asbd: &StreamBasicDescription,
+    ) -> Option<arc::R<Format>>;
+
+    #[objc::msg_send(initWithStreamDescription:channelLayout:)]
+    pub fn init_with_stream_description_channel_layout(
+        self,
+        asbd: &StreamBasicDescription,
+        layout: Option<&ChannelLayout>,
+    ) -> Option<arc::R<Format>>;
+
+    #[objc::msg_send(initStandardFormatWithSampleRate:channels:)]
+    pub fn init_standard_with_sample_rate_channels(
+        self,
+        sample_rate: f64,
+        channels: ChannelCount,
+    ) -> Option<arc::R<Format>>;
+
+    #[objc::msg_send(initStandardFormatWithSampleRate:channelLayout:)]
+    pub fn init_standard_with_sample_rate_channel_layout(
+        self,
+        sample_rate: f64,
+        layout: &ChannelLayout,
+    ) -> arc::R<Format>;
+
+    #[objc::msg_send(initWithCommonFormat:sampleRate:interleaved:channelLayout:)]
+    pub fn init_with_common_format_sample_rate_interleaved_channel_layout(
+        self,
+        format: CommonFormat,
+        sample_rate: f64,
+        interleaved: bool,
+        channel_layout: &ChannelLayout,
+    ) -> arc::R<Format>;
+
+    #[objc::msg_send(initWithSettings:)]
+    pub fn init_with_settings(
+        self,
+        settings: &ns::Dictionary<ns::String, ns::Id>,
+    ) -> Option<arc::R<Format>>;
+}
+
 /// AVAudioFormat wraps a Core Audio AudioStreamBasicDescription struct, with convenience
 /// initializers and accessors for common formats, including Core Audio's standard deinterleaved
 /// 32-bit floating point.
 ///
 /// Instances of this class are immutable.
 impl Format {
+    define_cls!(AV_AUDIO_FORMAT);
+
     /// If the format specifies more than 2 channels, this method fails (returns None).
-    pub fn with_asbd(asbd: &StreamBasicDescription) -> Option<arc::R<Format>> {
-        unsafe { AVAudioFormat_initWithStreamDescription(asbd) }
+    pub fn with_asbd(asbd: &StreamBasicDescription) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_stream_description(asbd)
     }
 
     /// the channel layout. Can be None only if asbd specifies 1 or 2 channels.
     pub fn with_asbd_and_channel_layout(
         asbd: &StreamBasicDescription,
         layout: Option<&ChannelLayout>,
-    ) -> Option<arc::R<Format>> {
-        unsafe { AVAudioFormat_initWithStreamDescription_channelLayout(asbd, layout) }
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_stream_description_channel_layout(asbd, layout)
     }
 
     pub fn standard_with_sample_rate_and_channels(
         sample_rate: f64,
         channels: ChannelCount,
-    ) -> Option<arc::R<Format>> {
-        unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channels(sample_rate, channels) }
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_standard_with_sample_rate_channels(sample_rate, channels)
     }
 
     /// Initialize to deinterleaved float with the specified sample rate and channel layout.
     pub fn standard_with_sample_rate_and_channel_layout(
         sample_rate: f64,
         layout: &ChannelLayout,
-    ) -> arc::R<Format> {
-        unsafe { AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(sample_rate, layout) }
+    ) -> arc::R<Self> {
+        Self::alloc().init_standard_with_sample_rate_channel_layout(sample_rate, layout)
     }
 
     /// Initialize to float with the specified sample rate, channel layout and interleavedness.
@@ -61,18 +107,16 @@ impl Format {
         interleaved: bool,
         channel_layout: &ChannelLayout,
     ) -> arc::R<Format> {
-        unsafe {
-            AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
-                format,
-                sample_rate,
-                interleaved,
-                channel_layout,
-            )
-        }
+        Self::alloc().init_with_common_format_sample_rate_interleaved_channel_layout(
+            format,
+            sample_rate,
+            interleaved,
+            channel_layout,
+        )
     }
 
-    pub fn with_settings(settings: &cf::Dictionary) -> Option<arc::R<Format>> {
-        unsafe { AVAudioFormat_initWithSettings(settings) }
+    pub fn with_settings(settings: &ns::Dictionary<ns::String, ns::Id>) -> Option<arc::R<Format>> {
+        Self::alloc().init_with_settings(settings)
     }
 
     /// ```
@@ -105,33 +149,5 @@ impl Format {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-
-    fn AVAudioFormat_initWithStreamDescription(
-        asbd: &StreamBasicDescription,
-    ) -> Option<arc::R<Format>>;
-
-    fn AVAudioFormat_initWithStreamDescription_channelLayout(
-        asbd: &StreamBasicDescription,
-        layout: Option<&ChannelLayout>,
-    ) -> Option<arc::R<Format>>;
-
-    fn AVAudioFormat_initStandardFormatWithSampleRate_channels(
-        sample_rate: f64,
-        channels: ChannelCount,
-    ) -> Option<arc::R<Format>>;
-
-    fn AVAudioFormat_initStandardFormatWithSampleRate_channelLayout(
-        sample_rate: f64,
-        layout: &ChannelLayout,
-    ) -> arc::R<Format>;
-
-    fn AVAudioFormat_initWithCommonFormat_sampleRate_interleaved_channelLayout(
-        format: CommonFormat,
-        sample_rate: f64,
-        interleaved: bool,
-        channel_layout: &ChannelLayout,
-    ) -> arc::R<Format>;
-
-    fn AVAudioFormat_initWithSettings(settings: &cf::Dictionary) -> Option<arc::R<Format>>;
-
+    static AV_AUDIO_FORMAT: &'static objc::Class<Format>;
 }

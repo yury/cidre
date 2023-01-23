@@ -180,8 +180,8 @@ mod tests {
     fn basics() {
         let engine = av::audio::Engine::new();
         assert!(!engine.is_running());
-        let output_node = engine.output_node();
+        let _output_node = engine.output_node();
         let input_node = engine.input_node();
-        let en = input_node.engine().expect("engine");
+        let _en = input_node.engine().expect("engine");
     }
 }

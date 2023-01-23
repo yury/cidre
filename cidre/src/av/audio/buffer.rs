@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     arc,
     at::{audio::StreamPacketDescription, AudioBufferList},
-    define_obj_type, ns, objc,
+    define_cls, define_obj_type, ns, objc,
 };
 
 use super::{Format, FrameCount, PacketCount};
@@ -24,14 +24,25 @@ impl Buffer {
 
 define_obj_type!(PCMBuffer(Buffer));
 
+impl arc::A<PCMBuffer> {
+    #[objc::msg_send(initWithPCMFormat:frameCapacity:)]
+    pub fn init_with_pcm_format_frame_capacity(
+        self,
+        format: &Format,
+        frame_capacity: FrameCount,
+    ) -> Option<arc::R<PCMBuffer>>;
+}
+
 /// Provides a number of methods useful for manipulating buffers of
 /// audio in PCM format.
 impl PCMBuffer {
+    define_cls!(AV_AUDIO_PCM_BUFFER);
+
     pub fn with_format_and_frame_capacity(
         format: &Format,
         frame_capacity: FrameCount,
-    ) -> arc::R<Self> {
-        unsafe { AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(format, frame_capacity) }
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_pcm_format_frame_capacity(format, frame_capacity)
     }
     /// The current number of valid sample frames in the buffer.
     ///
@@ -59,8 +70,51 @@ impl PCMBuffer {
 
 define_obj_type!(CompressedBuffer(ns::Id));
 
+impl arc::A<CompressedBuffer> {
+    #[objc::msg_send(initWithFormat:packetCapacity:)]
+    pub fn init_with_format_and_packet_capacity(
+        self,
+        format: &Format,
+        packet_capacity: PacketCount,
+    ) -> arc::R<CompressedBuffer>;
+
+    #[objc::msg_send(initWithFormat:packetCapacity:maximumPacketSize:)]
+    pub fn init_with_format_packet_capacity_and_maximum_packet_size(
+        self,
+        format: &Format,
+        packet_capacity: PacketCount,
+        maximum_packet_size: isize,
+    ) -> arc::R<CompressedBuffer>;
+}
+
 /// Use with compressed audio formats.
 impl CompressedBuffer {
+    define_cls!(AV_AUDIO_COMPRESSED_BUFFER);
+
+    /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
+    ///
+    /// This fails if the format is PCM or if the format has variable bytes per packet (for example, format.streamDescription->mBytesPerPacket == 0).
+    #[inline]
+    pub fn with_format_and_packet_capacity(
+        format: &Format,
+        packet_capacity: PacketCount,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_format_and_packet_capacity(format, packet_capacity)
+    }
+
+    #[inline]
+    pub fn with_format_packet_capacity_and_maximum_packet_size(
+        format: &Format,
+        packet_capacity: PacketCount,
+        maximum_packet_size: isize,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_format_packet_capacity_and_maximum_packet_size(
+            format,
+            packet_capacity,
+            maximum_packet_size,
+        )
+    }
+
     /// The number of compressed packets the buffer can contain.
     #[objc::msg_send(packetCapacity)]
     pub fn packet_capacity(&self) -> PacketCount;
@@ -97,49 +151,10 @@ impl CompressedBuffer {
 
     #[objc::msg_send(data)]
     pub fn data(&self) -> *const c_void;
-
-    /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
-    ///
-    /// This fails if the format is PCM or if the format has variable bytes per packet (for example, format.streamDescription->mBytesPerPacket == 0).
-    #[inline]
-    pub fn with_format_and_packet_capacity(
-        format: &Format,
-        packet_capacity: PacketCount,
-    ) -> arc::R<Self> {
-        unsafe { AVAudioCompressedBuffer_initWithFormat_packetCapacity(format, packet_capacity) }
-    }
-
-    #[inline]
-    pub fn with_format_packet_capacity_and_maximum_packet_size(
-        format: &Format,
-        packet_capacity: PacketCount,
-        maximum_packet_size: isize,
-    ) -> arc::R<Self> {
-        unsafe {
-            AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
-                format,
-                packet_capacity,
-                maximum_packet_size,
-            )
-        }
-    }
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-
-    fn AVAudioPCMBuffer_initWithPCMFormat_frameCapacity(
-        format: &Format,
-        frame_capacity: FrameCount,
-    ) -> arc::R<PCMBuffer>;
-
-    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity(
-        format: &Format,
-        packet_capacity: PacketCount,
-    ) -> arc::R<CompressedBuffer>;
-    fn AVAudioCompressedBuffer_initWithFormat_packetCapacity_maximumPacketSize(
-        format: &Format,
-        packet_capacity: PacketCount,
-        maximum_packet_size: isize,
-    ) -> arc::R<CompressedBuffer>;
+    static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PCMBuffer>;
+    static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuffer>;
 }
