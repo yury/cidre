@@ -29,10 +29,6 @@ rsel0(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
 
 #pragma mark - AVAssetWriter
 
-//+ (nullable instancetype)assetWriterWithURL:(NSURL *)outputURL fileType:(AVFileType)outputFileType error:(NSError * _Nullable * _Nullable)outError;
-NS_RETURNS_RETAINED
-csel3(, AVAssetWriter, assetWriterWithURL, NSURL *, fileType, AVFileType, error, NSError * _Nullable * _Nullable, AVAssetWriter *)
-
 typedef void (^ VoidBlock)(void);
 wsel1(, id, finishWritingWithCompletionHandler, VoidBlock)
 //- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
@@ -78,6 +74,7 @@ Class AV_CAPTURE_DEVICE_INPUT;
 
 Class AV_AUDIO_ENGINE;
 
+Class AV_ASSET_WRITER;
 Class AV_ASSET_READER;
 Class AV_ASSET_READER_TRACK_OUTPUT;
 
@@ -116,6 +113,7 @@ static void common_initializer()
     AV_AUDIO_UNIT_TIME_EFFECT = [AVAudioUnitTimeEffect class];
     
     
+    AV_ASSET_WRITER = [AVAssetWriter class];
     AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
     AV_ASSET_READER = [AVAssetReader class];
     

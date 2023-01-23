@@ -19,10 +19,10 @@ define_obj_type!(Reader(ns::Id));
 
 impl arc::A<Reader> {
     #[objc::msg_send(initWithAsset:error:)]
-    pub fn init_with_assert_error(
+    pub fn init_with_assert_error<'ar>(
         self,
         asset: &av::Asset,
-        error: &mut Option<&ns::Error>,
+        error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Reader>>;
 }
 

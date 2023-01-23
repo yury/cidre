@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{arc, av, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
 use super::WriterInput;
 
@@ -21,7 +21,19 @@ pub enum Status {
 
 define_obj_type!(Writer(ns::Id));
 
+impl arc::A<Writer> {
+    #[objc::msg_send(initWithURL:fileType:error:)]
+    pub fn init_with_url_file_type_error<'ar>(
+        self,
+        url: &ns::URL,
+        file_type: &av::FileType,
+        error: &mut Option<&'ar ns::Error>,
+    ) -> Option<arc::R<Writer>>;
+}
+
 impl Writer {
+    define_cls!(AV_ASSET_WRITER);
+
     #[objc::msg_send(shouldOptimizeForNetworkUse)]
     pub fn should_optimize_for_network_use(&self) -> bool;
 
@@ -62,13 +74,13 @@ impl Writer {
     /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     /// assert_eq!(writer.inputs().len(), 0);
     /// ```
-    pub fn with_url_and_file_type(
+    pub fn with_url_and_file_type<'ar>(
         url: &ns::URL,
         file_type: &av::FileType,
-    ) -> Result<arc::R<Writer>, arc::R<ns::Error>> {
+    ) -> Result<arc::R<Writer>, &'ar ns::Error> {
         let mut error = None;
         unsafe {
-            let res = AVAssetWriter_assetWriterWithURL_fileType_error(url, file_type, &mut error);
+            let res = Self::alloc().init_with_url_file_type_error(url, file_type, &mut error);
             match error {
                 None => Ok(transmute(res)),
                 Some(e) => Err(e),
@@ -79,11 +91,7 @@ impl Writer {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAssetWriter_assetWriterWithURL_fileType_error<'a>(
-        url: &ns::URL,
-        file_type: &av::FileType,
-        error: &mut Option<arc::R<ns::Error>>,
-    ) -> Option<arc::R<Writer>>;
+    static AV_ASSET_WRITER: &'static objc::Class<Writer>;
 }
 
 #[cfg(test)]
