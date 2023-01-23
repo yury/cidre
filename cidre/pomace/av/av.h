@@ -12,15 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma mark - AVCaptureSystemPressureState
-
-#if TARGET_OS_IPHONE
-
-rsel0(, AVCaptureSystemPressureState *, level, AVCaptureSystemPressureLevel)
-rsel0(, AVCaptureSystemPressureState *, factors, AVCaptureSystemPressureFactors)
-
-#endif
-
 wsel1(, id, setActiveFormat, AVCaptureDeviceFormat* )
 
 wsel1(, id, setActiveVideoMinFrameDuration, CMTime)
