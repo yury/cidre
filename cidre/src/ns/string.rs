@@ -119,7 +119,7 @@ impl String {
     pub fn len_of_bytes(&self, encoding: Encoding) -> ns::UInteger;
 
     #[objc::msg_send(UTF8String)]
-    pub unsafe fn utf8_chars(&self) -> *const i8;
+    pub unsafe fn utf8_chars_ar(&self) -> *const i8;
 }
 
 impl PartialEq for String {
@@ -151,7 +151,7 @@ impl fmt::Display for String {
 impl<'a> From<&'a String> for Cow<'a, str> {
     fn from(nsstr: &'a String) -> Self {
         unsafe {
-            let c_str = nsstr.utf8_chars();
+            let c_str = nsstr.utf8_chars_ar();
             if c_str.is_null() {
                 let bytes_required = nsstr.len_of_bytes(Encoding::UTF8);
 

@@ -116,11 +116,14 @@ impl Engine {
     #[objc::msg_send(prepare)]
     pub fn prepare(&self);
 
+    #[objc::msg_send(startAndReturnError:)]
+    pub fn start_and_return_error<'ar>(&self, error: &mut Option<&'ar ns::Error>) -> bool;
+
     #[inline]
-    pub fn start(&self) -> Result<(), arc::R<ns::Error>> {
+    pub fn start<'ar>(&self) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = rsel_startAndReturnError(self, &mut error);
+            let res = self.start_and_return_error(&mut error);
             if res {
                 Ok(())
             } else {
@@ -168,8 +171,6 @@ impl Engine {
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_AUDIO_ENGINE: &'static objc::Class<Engine>;
-
-    fn rsel_startAndReturnError(id: &ns::Id, error: &mut Option<arc::R<ns::Error>>) -> bool;
 }
 
 #[cfg(test)]

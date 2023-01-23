@@ -36,10 +36,6 @@ rsel0(, id, videoSupportedFrameRateRanges, NSArray<AVFrameRateRange *> *)
 rsel0(, id, formatDescription, CMFormatDescriptionRef)
 rsel0(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
 
-#pragma mark - AVAudioEngine
-
-rsel1(, id, startAndReturnError, NSError **, BOOL);
-
 #pragma mark - AVAssetWriter
 
 //+ (nullable instancetype)assetWriterWithURL:(NSURL *)outputURL fileType:(AVFileType)outputFileType error:(NSError * _Nullable * _Nullable)outError;
