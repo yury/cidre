@@ -1,20 +1,20 @@
-use std::{ffi::c_void, mem::transmute, ptr::slice_from_raw_parts};
+use std::{ffi::c_ulong, ptr::slice_from_raw_parts};
 
 use crate::objc::{self, Obj};
 
-static MUTATIONS_TARGET: u32 = 0;
-static MUTATIONS_PTR: &u32 = &MUTATIONS_TARGET;
+static MUTATIONS_TARGET: c_ulong = 0;
+static MUTATIONS_PTR: &c_ulong = &MUTATIONS_TARGET;
 
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct FastEnumerationState {
-    pub state: u32,
-    pub items_ptr: *const *const c_void,
-    pub mutations_ptr: &'static u32,
-    pub extra: [u32; 5],
+pub struct FastEnumerationState<T> {
+    pub state: c_ulong,
+    pub items_ptr: *const *const T,
+    pub mutations_ptr: &'static c_ulong,
+    pub extra: [c_ulong; 5],
 }
 
-impl FastEnumerationState {
+impl<T> FastEnumerationState<T> {
     pub fn new() -> Self {
         Self {
             state: 0,
@@ -25,7 +25,7 @@ impl FastEnumerationState {
     }
 }
 
-impl Default for FastEnumerationState {
+impl<T> Default for FastEnumerationState<T> {
     fn default() -> Self {
         Self::new()
     }
@@ -35,8 +35,8 @@ pub trait FastEnumeration<T: Obj>: Obj {
     #[objc::msg_send(countByEnumeratingWithState:objects:count:)]
     fn count_by_enumerating(
         &self,
-        state: &mut FastEnumerationState,
-        objects: &mut [*const T],
+        state: &mut FastEnumerationState<T>,
+        objects: *mut *const T,
         count: usize,
     ) -> usize;
 
@@ -57,7 +57,7 @@ where
     pub obj: &'a E,
     objects: [*const T; N],
     items: &'a [*const T],
-    state: FastEnumerationState,
+    state: FastEnumerationState<T>,
     index: usize,
     len: usize,
     total_index: usize,
@@ -73,7 +73,7 @@ where
             obj,
             state: Default::default(),
             objects: [std::ptr::null(); N],
-            items: &[],
+            items: &mut [],
             index: 0,
             len: 0,
             total_index: 0,
@@ -98,41 +98,28 @@ where
 {
     type Item = &'a T;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.index + 1 > self.len {
             if self.len > 0 && self.len < N {
-                // we have processed last batch
                 return None;
             }
             self.index = 0;
 
-            // let mut state = self.state.clone();
-            // let mut objects = [std::ptr::null(); N];
-
-            self.len = self
+            let len = self
                 .obj
-                .count_by_enumerating(&mut self.state, &mut self.objects, N);
-            // println!("len = {}", self.len);
-            if self.len == 0 {
+                .count_by_enumerating(&mut self.state, self.objects.as_mut_ptr(), N);
+
+            if len == 0 {
                 return None;
             }
 
-            // if self.state.items_ptr == self.objects.as_ptr() as _ {
-            //     // this is the common case for things like NSArray
-            //     println!("im here1");
-            // } else {
-            //     // Most cocoa classes will emit their own inner pointer buffers instead of traversing this path. Notable exceptions include NSDictionary and NSSet
-            //     println!("im here");
-            // }
+            self.items = unsafe { &*slice_from_raw_parts(self.state.items_ptr, len) };
 
-            self.items = unsafe {
-                &*slice_from_raw_parts(self.state.items_ptr as *const *const T, self.len)
-            };
-            // self.state = state;
-            // self.objects = objects;
+            self.len = len;
         }
 
-        let item = unsafe { transmute(self.items[self.index]) };
+        let item = unsafe { self.items[self.index].as_ref().unwrap_unchecked() };
         self.index += 1;
         self.total_index += 1;
         Some(item)
