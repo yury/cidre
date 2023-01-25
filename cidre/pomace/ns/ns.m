@@ -7,6 +7,7 @@
 
 #import "ns.h"
 #import <Foundation/Foundation.h>
+#import <objc/objc.h>
 
 @implementation CidreMachPortDelegate
 
@@ -15,9 +16,8 @@
   cb( _vtable[0], msg);
 }
 
-- (nullable instancetype)initWithFoo {
-  self = [super init];
-  return nil;
+- (void)foo {
+  
 }
 
 @end

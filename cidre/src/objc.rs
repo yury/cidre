@@ -19,6 +19,7 @@ impl<T: Obj> Class<T> {
         &self.0
     }
 
+    #[must_use]
     #[msg_send(alloc)]
     pub fn alloc(&self) -> arc::A<T>;
 
@@ -132,6 +133,10 @@ extern "C" {
     // fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
     fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
     fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
+
+    fn object_getIndexedIvars(obj: &Id) -> *mut c_void;
+    fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
+    fn sel_registerName(str: *const u8) -> &'static Sel;
 }
 
 #[macro_export]
@@ -219,6 +224,47 @@ impl PartialEq for Id {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.is_equal(other)
+    }
+}
+
+// how we should model delegates
+trait Protocol: Sized {}
+
+trait SCStreamOut: Protocol {
+    // #[prl_msg_send(stream:didOutputSampleBuffer:ofType:)]
+    fn stream_did_output_sample_buffer_of_type(&self, _t: u32);
+    extern "C" fn iml_stream_did_output_sample_buffer_of_type(id: &Id, _cmd: &Sel, t: u32) {
+        unsafe {
+            // TODO: can be optimized here if we know size of object.
+            // NSObject is 8 bytes
+            let slf: &mut Self = transmute(object_getIndexedIvars(id));
+            slf.stream_did_output_sample_buffer_of_type(t)
+        }
+    }
+    fn sel_stream_did_output_sample_buffer_of_type() -> &'static Sel {
+        unsafe { sel_registerName(b"stream:DidOutputSampleBuffer:ofType:\0".as_ptr()) }
+    }
+    // #[msg_send(stream:didOutputSampleBuffer:ofType:)]
+    fn opt_stream_did_output_sample(&self, _t: u32) {
+        unimplemented!();
+    }
+
+    fn sel_opt_stream_did_output_sample_buffer_of_type() -> &'static Sel {
+        unsafe { sel_registerName(b"stream:DidOutputSampleBuffer:ofType:\0".as_ptr()) }
+    }
+}
+
+struct Foo;
+
+impl Protocol for Foo {}
+
+impl SCStreamOut for Foo {
+    fn stream_did_output_sample_buffer_of_type(&self, _t: u32) {
+        todo!()
+    }
+
+    fn opt_stream_did_output_sample(&self, _t: u32) {
+        todo!()
     }
 }
 

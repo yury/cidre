@@ -27,7 +27,6 @@ Class VN_DETECT_FACE_RECTANGLES_REQUEST;
 Class VN_IMAGE_REQUEST_HANDLER;
 Class VN_SEQUENCE_REQUEST_HANDLER;
 
-
 __attribute__((constructor))
 static void common_initializer()
 {

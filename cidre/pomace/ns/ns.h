@@ -44,6 +44,7 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
 NS_RETURNS_RETAINED
 csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 
+Class NS_OBJECT;
 Class NS_VALUE;
 Class NS_NUMBER;
 Class NS_ARRAY;
@@ -69,12 +70,15 @@ Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
 Class NS_REGULAR_EXPRESSION;
 Class NS_UUID;
 
+
+
 __attribute__((constructor))
 static void common_initializer()
 {
   static int initialized = 0;
   if (!initialized) {
 
+    NS_OBJECT = [NSObject class];
     NS_VALUE = [NSValue class];
     NS_NUMBER = [NSNumber class];
     NS_ARRAY = [NSArray class];
