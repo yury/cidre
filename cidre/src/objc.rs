@@ -231,7 +231,7 @@ impl PartialEq for Id {
 trait Protocol: Sized {}
 
 trait SCStreamOut: Protocol {
-    // #[prl_msg_send(stream:didOutputSampleBuffer:ofType:)]
+    // #[proto_msg_send(stream:didOutputSampleBuffer:ofType:)]
     fn stream_did_output_sample_buffer_of_type(&self, _t: u32);
     extern "C" fn iml_stream_did_output_sample_buffer_of_type(id: &Id, _cmd: &Sel, t: u32) {
         unsafe {
@@ -251,6 +251,14 @@ trait SCStreamOut: Protocol {
 
     fn sel_opt_stream_did_output_sample_buffer_of_type() -> &'static Sel {
         unsafe { sel_registerName(b"stream:DidOutputSampleBuffer:ofType:\0".as_ptr()) }
+    }
+    extern "C" fn iml_opt_stream_did_output_sample_buffer_of_type(id: &Id, _cmd: &Sel, t: u32) {
+        unsafe {
+            // TODO: can be optimized here if we know size of object.
+            // NSObject is 8 bytes
+            let slf: &mut Self = transmute(object_getIndexedIvars(id));
+            slf.opt_stream_did_output_sample(t)
+        }
     }
 }
 
