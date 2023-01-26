@@ -134,9 +134,9 @@ extern "C" {
     fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
     fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
 
-    fn object_getIndexedIvars(obj: &Id) -> *mut c_void;
-    fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
-    fn sel_registerName(str: *const u8) -> &'static Sel;
+    pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
+    pub fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
+    pub fn sel_registerName(str: *const u8) -> &'static Sel;
 }
 
 #[macro_export]
@@ -230,50 +230,29 @@ impl PartialEq for Id {
 // how we should model delegates
 trait Protocol: Sized {}
 
-trait SCStreamOut: Protocol {
-    // #[proto_msg_send(stream:didOutputSampleBuffer:ofType:)]
-    fn stream_did_output_sample_buffer_of_type(&self, _t: u32);
-    extern "C" fn iml_stream_did_output_sample_buffer_of_type(id: &Id, _cmd: &Sel, t: u32) {
-        unsafe {
-            // TODO: can be optimized here if we know size of object.
-            // NSObject is 8 bytes
-            let slf: &mut Self = transmute(object_getIndexedIvars(id));
-            slf.stream_did_output_sample_buffer_of_type(t)
-        }
-    }
-    fn sel_stream_did_output_sample_buffer_of_type() -> &'static Sel {
-        unsafe { sel_registerName(b"stream:DidOutputSampleBuffer:ofType:\0".as_ptr()) }
-    }
-    // #[msg_send(stream:didOutputSampleBuffer:ofType:)]
-    fn opt_stream_did_output_sample(&self, _t: u32) {
-        unimplemented!();
-    }
+use crate::objc;
 
-    fn sel_opt_stream_did_output_sample_buffer_of_type() -> &'static Sel {
-        unsafe { sel_registerName(b"stream:DidOutputSampleBuffer:ofType:\0".as_ptr()) }
-    }
-    extern "C" fn iml_opt_stream_did_output_sample_buffer_of_type(id: &Id, _cmd: &Sel, t: u32) {
-        unsafe {
-            // TODO: can be optimized here if we know size of object.
-            // NSObject is 8 bytes
-            let slf: &mut Self = transmute(object_getIndexedIvars(id));
-            slf.opt_stream_did_output_sample(t)
-        }
-    }
+trait SCStreamOut: Protocol {
+    #[proto_msg_send(stream:didOutputSampleBuffer:ofType:)]
+    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32);
+
+    #[proto_msg_send(stream2:)]
+    fn opt_stream_did_output_sample_buffer_of_type(&self, t: u32);
 }
 
 struct Foo;
 
 impl Protocol for Foo {}
 
+#[register_cls]
 impl SCStreamOut for Foo {
-    fn stream_did_output_sample_buffer_of_type(&self, _t: u32) {
-        todo!()
+    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32) {
+        println!("{t}{t2}{t3}")
     }
 
-    fn opt_stream_did_output_sample(&self, _t: u32) {
-        todo!()
-    }
+    // fn opt_stream_did_output_sample(&self, _t: u32) {
+    //     todo!()
+    // }
 }
 
 #[repr(C)]
@@ -349,7 +328,9 @@ pub use cidre_macros::cls_msg_send_debug;
 pub use cidre_macros::cls_rar_retain;
 pub use cidre_macros::msg_send;
 pub use cidre_macros::msg_send_debug;
+pub use cidre_macros::proto_msg_send;
 pub use cidre_macros::rar_retain;
+pub use cidre_macros::register_cls;
 
 // global_asm!(
 //     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",

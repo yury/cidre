@@ -37,6 +37,116 @@ fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
     }
     vars
 }
+
+#[proc_macro_attribute]
+pub fn register_cls(_attr: TokenStream, body: TokenStream) -> TokenStream {
+    //println!("{:#?}", body);
+    body
+}
+
+#[proc_macro_attribute]
+pub fn proto_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let extern_name = sel.to_string().replace(' ', "");
+    let args_count = sel_args_count(sel);
+    let mut iter = func.into_iter();
+    let mut pre: Vec<String> = Vec::with_capacity(3);
+
+    while let Some(t) = iter.next() {
+        match t {
+            TokenTree::Ident(v) => {
+                let s = v.to_string();
+                if s == "fn" {
+                    pre.push(s);
+                    break;
+                } else {
+                    pre.push(s);
+                }
+            }
+            _ => continue,
+        }
+    }
+    let Some(TokenTree::Ident(fn_name)) = iter.next() else {
+        panic!("foo");
+    };
+
+    let fn_name = fn_name.to_string();
+    let mut generics = Vec::new();
+
+    let args = loop {
+        let Some(tt) = iter.next() else {
+            panic!("need more tokens");
+        };
+        match tt {
+            TokenTree::Group(args) => break args,
+            _ => generics.push(tt),
+        }
+    };
+    let gen = TokenStream::from_iter(generics.into_iter()).to_string();
+
+    let ts = TokenStream::from_iter(iter);
+    let mut ret = ts.to_string();
+    let mut ret_full = ts.to_string();
+    assert_eq!(ret.pop().expect(";"), ';');
+    assert_eq!(ret_full.pop().expect(";"), ';');
+    let pre = pre.join(" ");
+    if let Some((a, _)) = ret.split_once("where") {
+        ret = format!("{};", a)
+    }
+    let class = false;
+    let debug = false;
+    let vars = get_fn_args(args.stream(), class, debug);
+    let fn_args_count = vars.len();
+    assert_eq!(
+        fn_args_count, args_count,
+        "left: fn_args_count, right: sel_args_count"
+    );
+
+    let vars = vars.join(", ");
+    let fn_args = args.to_string();
+    let (fn_args, call_args) = if fn_args_count == 0 {
+        let fn_args = "(id: *const std::ffi::c_void, cmd: *const std::ffi::c_void)".to_string();
+        (fn_args, "()".to_string())
+    } else {
+        let fn_args = fn_args
+            .replacen(
+                "(& self",
+                "(id: *const std::ffi::c_void, cmd: *const std::ffi::c_void",
+                1,
+            )
+            .replacen(
+                "(& mut self",
+                "(id: *const std::ffi::c_void, cmd: *const std::ffi::c_void",
+                1,
+            );
+        (fn_args, format!("({})", vars))
+    };
+    let opt_impl = if fn_name.starts_with("opt_") {
+        "{ unimplemented!() }"
+    } else {
+        ";"
+    };
+
+    let flow = format!(
+        "
+        #[inline]
+        {pre} {fn_name}{gen}{args}{ret_full}{opt_impl}
+        
+        fn sel_{fn_name}() -> &'static objc::Sel {{
+            unsafe {{ objc::sel_registerName(b\"{extern_name}\\0\".as_ptr()) }}
+        }}
+
+        extern \"C\" fn iml_{fn_name}{gen}{fn_args}{ret_full} {{
+             unsafe {{
+                 let slf: &mut Self = std::mem::transmute(objc::object_getIndexedIvars(id));
+                 slf.{fn_name}{call_args}
+             }}
+         }}
+    "
+    );
+
+    flow.parse().unwrap()
+}
+
 #[proc_macro_attribute]
 pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
     gen_msg_send(sel, func, true, false, false)
@@ -183,7 +293,7 @@ fn gen_msg_send(
             format!(
                 "
                 #[inline]
-                {pre} {fn_name}{gen}{args} {ret_full} {{
+                {pre} {fn_name}{gen}{args}{ret_full} {{
                     arc::Rar::option_retain({self_}{fn_name}_ar({vars}) )
                 }}
                 "
@@ -192,7 +302,7 @@ fn gen_msg_send(
             format!(
                 "
                 #[inline]
-                {pre} {fn_name}{gen}{args} {ret_full} {{
+                {pre} {fn_name}{gen}{args}{ret_full} {{
                     {self_}{fn_name}_ar({vars}).retain()
                 }}
                 "
@@ -202,7 +312,7 @@ fn gen_msg_send(
         format!(
             "
             #[inline]
-            {pre} {fn_name}{gen}{args} {ret_full} {{
+            {pre} {fn_name}{gen}{args}{ret_full} {{
                 extern \"C\" {{
                     #[link_name = \"objc_msgSend${extern_name}\"]
                     fn msg_send();
