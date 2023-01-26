@@ -84,14 +84,14 @@ pub fn proto_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
     let gen = TokenStream::from_iter(generics.into_iter()).to_string();
 
     let ts = TokenStream::from_iter(iter);
-    let mut ret = ts.to_string();
     let mut ret_full = ts.to_string();
-    assert_eq!(ret.pop().expect(";"), ';');
+    // let mut ret = ts.to_string();
+    // assert_eq!(ret.pop().expect(";"), ';');
     assert_eq!(ret_full.pop().expect(";"), ';');
     let pre = pre.join(" ");
-    if let Some((a, _)) = ret.split_once("where") {
-        ret = format!("{};", a)
-    }
+    // if let Some((a, _)) = ret.split_once("where") {
+    //     ret = format!("{};", a)
+    // }
     let class = false;
     let debug = false;
     let vars = get_fn_args(args.stream(), class, debug);
