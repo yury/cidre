@@ -11,7 +11,7 @@ use std::{
 use crate::{arc, cf::Type};
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Class<T: Obj>(Type, PhantomData<T>);
+pub struct Class<T: Obj, const INSTANCE_EXTRA: usize = 0>(Type, PhantomData<T>);
 
 impl<T: Obj> Class<T> {
     #[inline]
@@ -43,7 +43,7 @@ impl<T: Obj> arc::Retain for T {
     }
 }
 
-pub trait Obj: arc::Retain {
+pub trait Obj: Sized + arc::Retain {
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
         transmute(objc_retain(transmute(id)))
@@ -227,33 +227,38 @@ impl PartialEq for Id {
     }
 }
 
-// how we should model delegates
-trait Protocol: Sized {}
-
 use crate::objc;
+pub trait FastEnumeration2<T: Obj>: Obj {
+    #[objc::msg_send(countByEnumeratingWithState:objects:count:)]
+    fn count_by_enumerating(
+        &self,
+        state: &mut crate::ns::FastEnumerationState<T>,
+        objects: *mut *const T,
+        count: usize,
+    ) -> usize;
+}
 
-trait SCStreamOut: Protocol {
+trait SCStreamOut: Sized {
     #[proto_msg_send(stream:didOutputSampleBuffer:ofType:)]
-    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32);
+    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32) -> u32;
 
     #[proto_msg_send(stream2:)]
-    fn opt_stream_did_output_sample_buffer_of_type(&self, t: u32);
+    fn opt_stream_did_output_sample(&self, t: u32);
 }
 
-struct Foo;
-
-impl Protocol for Foo {}
-
-#[register_cls]
+#[register_cls(FooDelegate)]
 impl SCStreamOut for Foo {
-    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32) {
-        println!("{t}{t2}{t3}")
+    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32) -> u32 {
+        1
     }
 
-    // fn opt_stream_did_output_sample(&self, _t: u32) {
-    //     todo!()
-    // }
+    fn opt_stream_did_output_sample(&self, _t: u32) {}
 }
+
+pub struct Foo;
+
+//define_obj_type!(FooDelegate<SCStreamOut(Foo)>(Id));
+define_obj_type!(FooDelegate(Id));
 
 #[repr(C)]
 pub struct Delegate<T: Sized> {

@@ -1,4 +1,4 @@
-use proc_macro::{TokenStream, TokenTree};
+use proc_macro::{Delimiter, TokenStream, TokenTree};
 
 fn sel_args_count(sel: TokenStream) -> usize {
     sel.into_iter()
@@ -39,9 +39,32 @@ fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
 }
 
 #[proc_macro_attribute]
-pub fn register_cls(_attr: TokenStream, body: TokenStream) -> TokenStream {
-    //println!("{:#?}", body);
-    body
+pub fn register_cls(attr: TokenStream, body: TokenStream) -> TokenStream {
+    println!("{:#?}", attr);
+    let iter = body.into_iter();
+    let (len, _) = iter.size_hint();
+    let mut tokens = Vec::with_capacity(len);
+    // let func_names = Vec::with_capacity(5);
+    for t in iter {
+        match &t {
+            TokenTree::Group(g) if g.delimiter() == Delimiter::Brace => {
+                // println!("{g:?}");
+                for t in g.stream() {
+                    println!("--- {t:?}");
+                }
+            }
+            // TokenTree::Ident(i) => {
+            //     println!("{i:?}");
+            // }
+            TokenTree::Literal(l) => {
+                println!("{l:?}");
+            }
+            _ => {}
+        };
+        tokens.push(t);
+    }
+    println!("size {len}");
+    "".parse().unwrap()
 }
 
 #[proc_macro_attribute]
@@ -85,13 +108,8 @@ pub fn proto_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
 
     let ts = TokenStream::from_iter(iter);
     let mut ret_full = ts.to_string();
-    // let mut ret = ts.to_string();
-    // assert_eq!(ret.pop().expect(";"), ';');
     assert_eq!(ret_full.pop().expect(";"), ';');
     let pre = pre.join(" ");
-    // if let Some((a, _)) = ret.split_once("where") {
-    //     ret = format!("{};", a)
-    // }
     let class = false;
     let debug = false;
     let vars = get_fn_args(args.stream(), class, debug);
@@ -136,10 +154,10 @@ pub fn proto_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
         }}
 
         extern \"C\" fn iml_{fn_name}{gen}{fn_args}{ret_full} {{
-             unsafe {{
-                 let slf: &mut Self = std::mem::transmute(objc::object_getIndexedIvars(id));
-                 slf.{fn_name}{call_args}
-             }}
+            unsafe {{
+                let slf: &mut Self = std::mem::transmute(objc::object_getIndexedIvars(id));
+                slf.{fn_name}{call_args}
+            }}
          }}
     "
     );

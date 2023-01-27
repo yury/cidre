@@ -47,6 +47,7 @@ mtl = ["ns"]
 
 [dependencies]
 
+once_cell = "1.17.0"
 tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = "0.12.0"
 cidre-macros = { path = "../cidre-macros"}
