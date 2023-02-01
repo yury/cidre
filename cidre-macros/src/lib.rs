@@ -177,6 +177,8 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let mut fn_body = "".to_string();
 
     let mut impl_trait_functions = Vec::new();
+    let mut has_optionals = false;
+    let mut fn_names = vec![];
 
     while let Some(token) = iter.next() {
         let collection = if trait_name.is_empty() {
@@ -229,13 +231,13 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                     ext = "extern \"C\" ";
                                     fn_args_str = fn_args_str.replacen(
                                         "(& self",
-                                        "(&self, cmd: Option<&objc::Sel>",
+                                        "(&self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
 
                                     fn_args_str = fn_args_str.replacen(
                                         "(& mut self",
-                                        "(&mut self, cmd: Option<&objc::Sel>",
+                                        "(&mut self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
                                     format!("Some(unsafe {{ objc::sel_registerName(b\"{sel}\\0\".as_ptr()) }})")
@@ -257,6 +259,8 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 } else {
                                     TokenStream::from_iter(generics.clone().into_iter()).to_string()
                                 };
+
+                                fn_names.push(fn_name.clone());
 
                                 let impl_fn = format!(
                                     "
@@ -283,7 +287,10 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                     panic!("not a group");
                                 };
                                 match read_objc_attr(g) {
-                                    Some(ObjcAttr::Optional) => is_optional = true,
+                                    Some(ObjcAttr::Optional) => {
+                                        has_optionals = true;
+                                        is_optional = true;
+                                    }
                                     Some(ObjcAttr::MsgSend(s)) => sel = s,
                                     None => continue,
                                 }
@@ -315,13 +322,18 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
     let fns = impl_trait_functions.join("\n");
 
+    let add_methods = if has_optionals {
+        "fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>);".to_string() //" { panic!(\"use #[objc::cls_builder]\") }".to_string()
+    } else {
+        add_methods_fn(&fn_names).to_string()
+    };
+
     let code = format!(
         "
 
 {pre} {trait_name} {after} {{
     {fns}
-
-    fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>) {{ panic!(\"use #[objc::cls_builder]\") }}
+    {add_methods}
 }}
         "
     );
@@ -356,7 +368,7 @@ fn add_methods_fn(fns: &[String]) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn cls_builder(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
+pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
     let mut tokens = vec![];
 
     let mut iter = tr_impl.clone().into_iter();

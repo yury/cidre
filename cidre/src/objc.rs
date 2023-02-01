@@ -276,8 +276,7 @@ impl PartialEq for Id {
     }
 }
 
-//define_obj_type!(FooDelegate<SCStreamOut(Foo)>(Id));
-define_obj_type!(FooDelegate(Id));
+//define_obj_type!(FooDelegate(Id));
 
 #[repr(C)]
 pub struct Delegate<T: Sized> {
@@ -347,7 +346,7 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
     }
 }
 
-pub use cidre_macros::cls_builder;
+pub use cidre_macros::add_methods;
 pub use cidre_macros::cls_msg_send;
 pub use cidre_macros::cls_msg_send_debug;
 pub use cidre_macros::cls_rar_retain;
@@ -366,7 +365,24 @@ pub use cidre_macros::rar_retain;
 
 #[cfg(test)]
 mod tests2 {
-    // use crate::{ns, objc, objc::Obj};
+    use crate::objc;
+
+    #[objc::obj_trait]
+    trait Foo: objc::Obj {
+        #[objc::msg_send(count)]
+        fn count(&self) -> usize;
+
+        #[objc::optional]
+        #[objc::msg_send(count2)]
+        fn count2(&self) -> usize;
+    }
+
+    #[objc::add_methods]
+    impl ObjFoo for objc::Id {
+        extern "C" fn count(&self, _cmd: Option<&objc::Sel>) -> usize {
+            todo!()
+        }
+    }
 
     // struct Foo;
 
