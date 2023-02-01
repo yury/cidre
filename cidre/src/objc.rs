@@ -180,6 +180,12 @@ extern "C" {
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
     // pub fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
     pub fn sel_registerName(str: *const u8) -> &'static Sel;
+    pub fn class_addMethod(
+        cls: &Class<Id>,
+        name: &Sel,
+        imp: extern "C" fn(),
+        types: *const u8,
+    ) -> bool;
 }
 
 #[macro_export]
@@ -341,6 +347,7 @@ impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
     }
 }
 
+pub use cidre_macros::cls_builder;
 pub use cidre_macros::cls_msg_send;
 pub use cidre_macros::cls_msg_send_debug;
 pub use cidre_macros::cls_rar_retain;

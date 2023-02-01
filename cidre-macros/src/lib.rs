@@ -123,7 +123,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
         panic!("expect #[objc::msg_send(...)]")
     };
 
-    let mut fn_name = "".to_string();
+    let mut fn_name = None;
 
     while let Some(tt) = iter.next() {
         match tt {
@@ -131,15 +131,15 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
                 let Some(TokenTree::Ident(name)) = iter.next() else {
                     panic!("expect function name");
                 };
-                fn_name = name.to_string();
+                fn_name = Some(name.to_string());
             }
             _ => {} //
         }
     }
 
-    if fn_name.is_empty() {
+    let Some(fn_name) = fn_name else {
         panic!("function name not found");
-    }
+    };
 
     let getter: TokenStream = format!(
         "
@@ -159,10 +159,10 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn obj_trait(_sel: TokenStream, func: TokenStream) -> TokenStream {
-    let mut original_trait = func.clone();
+pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
+    let mut original_trait = tr.clone();
 
-    let mut iter = func.into_iter();
+    let mut iter = tr.into_iter();
     let mut before_trait_name_tokens = vec![];
     let mut after_trait_name_tokens = vec![];
     let mut trait_name = "".to_string();
@@ -320,6 +320,8 @@ pub fn obj_trait(_sel: TokenStream, func: TokenStream) -> TokenStream {
 
 {pre} {trait_name} {after} {{
     {fns}
+
+    fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>) {{ panic!(\"use #[objc::cls_builder]\") }}
 }}
         "
     );
@@ -328,6 +330,66 @@ pub fn obj_trait(_sel: TokenStream, func: TokenStream) -> TokenStream {
 
     original_trait.extend(ts);
     original_trait
+}
+
+fn add_methods_fn(fns: &[String]) -> TokenStream {
+    let mut res = "
+    fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>) {
+        let cls: &objc::Class<objc::Id> = unsafe { std::mem::transmute(cls) };
+        "
+    .to_string();
+    for f in fns {
+        let add = format!(
+            "
+    if let Some(sel) = Self::sel_{f}() {{
+        unsafe {{
+            let f: extern \"C\" fn() = std::mem::transmute(Self::{f} as *const u8);
+            objc::class_addMethod(cls, sel, f, std::ptr::null());
+        }}
+    }}
+            "
+        );
+        res.push_str(&add);
+    }
+    res.push_str("\n}");
+    res.parse().unwrap()
+}
+
+#[proc_macro_attribute]
+pub fn cls_builder(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
+    let mut tokens = vec![];
+
+    let mut iter = tr_impl.clone().into_iter();
+    let mut fns = vec![];
+
+    while let Some(tt) = iter.next() {
+        match tt {
+            TokenTree::Group(g) => {
+                let mut body = g.stream().into_iter();
+                while let Some(tt) = body.next() {
+                    match tt {
+                        TokenTree::Ident(i) if i.to_string().eq("fn") => {
+                            let Some(TokenTree::Ident(f)) = body.next() else {
+                              panic!("expected function name");
+                            };
+                            fns.push(f.to_string());
+                        }
+                        _ => continue,
+                    }
+                }
+                let imp = add_methods_fn(&fns);
+                let mut stream = g.stream();
+                stream.extend(imp);
+                let g = Group::new(g.delimiter(), stream);
+                tokens.push(TokenTree::Group(g));
+            }
+            _ => tokens.push(tt),
+        }
+    }
+
+    // println!("fns {fns:?}");
+
+    TokenStream::from_iter(tokens.into_iter())
 }
 
 #[proc_macro_attribute]
