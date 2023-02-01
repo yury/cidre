@@ -31,6 +31,7 @@ impl<T> Default for FastEnumerationState<T> {
     }
 }
 
+//#[protocol]
 pub trait FastEnumeration<T: Obj>: Obj {
     #[objc::msg_send(countByEnumeratingWithState:objects:count:)]
     fn count_by_enumerating(

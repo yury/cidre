@@ -9,9 +9,51 @@ use std::{
 };
 
 use crate::{arc, cf::Type};
+
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Class<T: Obj, const INSTANCE_EXTRA: usize = 0>(Type, PhantomData<T>);
+pub struct Class<T: Obj>(Type, PhantomData<T>);
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ClassInstExtra<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
+const NS_OBJECT_SIZE: usize = 8;
+
+pub trait ObjExtra<I>: Obj {
+    fn inner(&self) -> &I {
+        unsafe {
+            let ptr: *const u8 = transmute(self);
+            std::mem::transmute(ptr.offset(NS_OBJECT_SIZE as _))
+        }
+    }
+    fn inner_mut(&mut self) -> &I {
+        unsafe {
+            let ptr: *mut u8 = transmute(self);
+            std::mem::transmute(ptr.offset(NS_OBJECT_SIZE as _))
+        }
+    }
+}
+
+impl<T: ObjExtra<T>, I: Sized> ClassInstExtra<T, I> {
+    #[inline]
+    pub fn alloc_init(&self, var: I) -> Option<arc::R<T>> {
+        unsafe {
+            let inst = class_createInstance(std::mem::transmute(self), std::mem::size_of::<I>());
+            let Some(a) = inst else {
+                return None;
+            };
+
+            // we may skip init?
+            //let a = a.init();
+
+            let ptr: *mut u8 = transmute(a);
+            let d_ptr: *mut I = ptr.offset(NS_OBJECT_SIZE as _) as _;
+            *d_ptr = var;
+
+            std::mem::transmute(ptr)
+        }
+    }
+}
 
 impl<T: Obj> Class<T> {
     #[inline]
@@ -130,12 +172,13 @@ extern "C" {
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
     fn objc_release(obj: &mut Id);
 
+    fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     // fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
     fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
     fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
 
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
-    pub fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
+    // pub fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
     pub fn sel_registerName(str: *const u8) -> &'static Sel;
 }
 
@@ -227,36 +270,6 @@ impl PartialEq for Id {
     }
 }
 
-use crate::objc;
-pub trait FastEnumeration2<T: Obj>: Obj {
-    #[objc::msg_send(countByEnumeratingWithState:objects:count:)]
-    fn count_by_enumerating(
-        &self,
-        state: &mut crate::ns::FastEnumerationState<T>,
-        objects: *mut *const T,
-        count: usize,
-    ) -> usize;
-}
-
-trait SCStreamOut: Sized {
-    #[proto_msg_send(stream:didOutputSampleBuffer:ofType:)]
-    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32) -> u32;
-
-    #[proto_msg_send(stream2:)]
-    fn opt_stream_did_output_sample(&self, t: u32);
-}
-
-#[register_cls(FooDelegate)]
-impl SCStreamOut for Foo {
-    fn stream_did_output_sample_buffer_of_type(&self, t: u32, t2: u32, t3: u32) -> u32 {
-        1
-    }
-
-    fn opt_stream_did_output_sample(&self, _t: u32) {}
-}
-
-pub struct Foo;
-
 //define_obj_type!(FooDelegate<SCStreamOut(Foo)>(Id));
 define_obj_type!(FooDelegate(Id));
 
@@ -333,9 +346,9 @@ pub use cidre_macros::cls_msg_send_debug;
 pub use cidre_macros::cls_rar_retain;
 pub use cidre_macros::msg_send;
 pub use cidre_macros::msg_send_debug;
-pub use cidre_macros::proto_msg_send;
+pub use cidre_macros::obj_trait;
+pub use cidre_macros::optional;
 pub use cidre_macros::rar_retain;
-pub use cidre_macros::register_cls;
 
 // global_asm!(
 //     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
@@ -343,3 +356,23 @@ pub use cidre_macros::register_cls;
 //     "    .long    0",
 //     "    .popsection",
 // );
+
+#[cfg(test)]
+mod tests2 {
+    // use crate::{ns, objc, objc::Obj};
+
+    // struct Foo;
+
+    // #[link(name = "ns", kind = "static")]
+    // extern "C" {
+    //     static NS_OBJECT: &'static objc::ClassInstExtra<ns::Id, Foo>;
+    // }
+
+    // #[test]
+    // fn basics() {
+    //     let cls: &'static objc::ClassInstExtra<ns::Id, Foo> =
+    //         unsafe { std::mem::transmute(NS_OBJECT) };
+    //     let f = cls.alloc_init(Foo).unwrap();
+    //     println!("{:?}", f.debug_description());
+    // }
+}

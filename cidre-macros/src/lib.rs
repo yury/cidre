@@ -1,4 +1,54 @@
-use proc_macro::{Delimiter, TokenStream, TokenTree};
+use proc_macro::{Group, TokenStream, TokenTree};
+
+enum ObjcAttr {
+    Optional,
+    MsgSend(String),
+}
+
+fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
+    let mut iter = group.stream().into_iter();
+    let Some(TokenTree::Ident(ident)) = iter.next() else {
+        return None;
+    };
+
+    if !ident.to_string().eq("objc") {
+        return None;
+    }
+
+    let Some(TokenTree::Punct(p)) = iter.next() else {
+        return None;
+    };
+
+    assert_eq!(p.as_char(), ':');
+
+    let Some(TokenTree::Punct(p)) = iter.next() else {
+        return None;
+    };
+
+    assert_eq!(p.as_char(), ':');
+
+    while let Some(tt) = iter.next() {
+        match tt {
+            TokenTree::Group(v) => panic!("didnt expect group {v}"),
+            TokenTree::Ident(v) => {
+                if v.to_string().eq("optional") {
+                    return Some(ObjcAttr::Optional);
+                } else if v.to_string().eq("msg_send") {
+                    let Some(TokenTree::Group(a)) = iter.next() else {
+                        return None;
+                    };
+                    let sel = a.stream().to_string().replace(' ', "");
+                    return Some(ObjcAttr::MsgSend(sel));
+                }
+                return None;
+            }
+            TokenTree::Punct(v) => panic!("did't expect punct {v}"),
+            TokenTree::Literal(v) => panic!("did't expect literal {v}"),
+        }
+    }
+
+    panic!("Unexpected attribute")
+}
 
 fn sel_args_count(sel: TokenStream) -> usize {
     sel.into_iter()
@@ -39,133 +89,6 @@ fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
 }
 
 #[proc_macro_attribute]
-pub fn register_cls(attr: TokenStream, body: TokenStream) -> TokenStream {
-    println!("{:#?}", attr);
-    let iter = body.into_iter();
-    let (len, _) = iter.size_hint();
-    let mut tokens = Vec::with_capacity(len);
-    // let func_names = Vec::with_capacity(5);
-    for t in iter {
-        match &t {
-            TokenTree::Group(g) if g.delimiter() == Delimiter::Brace => {
-                // println!("{g:?}");
-                for t in g.stream() {
-                    println!("--- {t:?}");
-                }
-            }
-            // TokenTree::Ident(i) => {
-            //     println!("{i:?}");
-            // }
-            TokenTree::Literal(l) => {
-                println!("{l:?}");
-            }
-            _ => {}
-        };
-        tokens.push(t);
-    }
-    println!("size {len}");
-    "".parse().unwrap()
-}
-
-#[proc_macro_attribute]
-pub fn proto_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let extern_name = sel.to_string().replace(' ', "");
-    let args_count = sel_args_count(sel);
-    let mut iter = func.into_iter();
-    let mut pre: Vec<String> = Vec::with_capacity(3);
-
-    while let Some(t) = iter.next() {
-        match t {
-            TokenTree::Ident(v) => {
-                let s = v.to_string();
-                if s == "fn" {
-                    pre.push(s);
-                    break;
-                } else {
-                    pre.push(s);
-                }
-            }
-            _ => continue,
-        }
-    }
-    let Some(TokenTree::Ident(fn_name)) = iter.next() else {
-        panic!("foo");
-    };
-
-    let fn_name = fn_name.to_string();
-    let mut generics = Vec::new();
-
-    let args = loop {
-        let Some(tt) = iter.next() else {
-            panic!("need more tokens");
-        };
-        match tt {
-            TokenTree::Group(args) => break args,
-            _ => generics.push(tt),
-        }
-    };
-    let gen = TokenStream::from_iter(generics.into_iter()).to_string();
-
-    let ts = TokenStream::from_iter(iter);
-    let mut ret_full = ts.to_string();
-    assert_eq!(ret_full.pop().expect(";"), ';');
-    let pre = pre.join(" ");
-    let class = false;
-    let debug = false;
-    let vars = get_fn_args(args.stream(), class, debug);
-    let fn_args_count = vars.len();
-    assert_eq!(
-        fn_args_count, args_count,
-        "left: fn_args_count, right: sel_args_count"
-    );
-
-    let vars = vars.join(", ");
-    let fn_args = args.to_string();
-    let (fn_args, call_args) = if fn_args_count == 0 {
-        let fn_args = "(id: *const std::ffi::c_void, cmd: *const std::ffi::c_void)".to_string();
-        (fn_args, "()".to_string())
-    } else {
-        let fn_args = fn_args
-            .replacen(
-                "(& self",
-                "(id: *const std::ffi::c_void, cmd: *const std::ffi::c_void",
-                1,
-            )
-            .replacen(
-                "(& mut self",
-                "(id: *const std::ffi::c_void, cmd: *const std::ffi::c_void",
-                1,
-            );
-        (fn_args, format!("({})", vars))
-    };
-    let opt_impl = if fn_name.starts_with("opt_") {
-        "{ unimplemented!() }"
-    } else {
-        ";"
-    };
-
-    let flow = format!(
-        "
-        #[inline]
-        {pre} {fn_name}{gen}{args}{ret_full}{opt_impl}
-        
-        fn sel_{fn_name}() -> &'static objc::Sel {{
-            unsafe {{ objc::sel_registerName(b\"{extern_name}\\0\".as_ptr()) }}
-        }}
-
-        extern \"C\" fn iml_{fn_name}{gen}{fn_args}{ret_full} {{
-            unsafe {{
-                let slf: &mut Self = std::mem::transmute(objc::object_getIndexedIvars(id));
-                slf.{fn_name}{call_args}
-            }}
-         }}
-    "
-    );
-
-    flow.parse().unwrap()
-}
-
-#[proc_macro_attribute]
 pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
     gen_msg_send(sel, func, true, false, false)
 }
@@ -178,6 +101,233 @@ pub fn cls_rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
     gen_msg_send(sel, func, false, false, false)
+}
+
+/// Should generate static fn sel_xxx function that gets selector.
+/// So user can check selector with is_reponds_to_sel
+#[proc_macro_attribute]
+pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
+    let mut iter = func.clone().into_iter();
+    let Some(TokenTree::Punct(p)) = iter.next() else {
+        panic!("expect #[objc::msg_send(...)]")
+    };
+
+    if p.as_char() != '#' {
+        panic!("expect #[objc::msg_send(...)]")
+    }
+    let Some(TokenTree::Group(g)) = iter.next() else {
+        panic!("expect #[objc::msg_send(...)]")
+    };
+
+    let Some(ObjcAttr::MsgSend(extern_name)) = read_objc_attr(g) else {
+        panic!("expect #[objc::msg_send(...)]")
+    };
+
+    let mut fn_name = "".to_string();
+
+    while let Some(tt) = iter.next() {
+        match tt {
+            TokenTree::Ident(i) if i.to_string().eq("fn") => {
+                let Some(TokenTree::Ident(name)) = iter.next() else {
+                    panic!("expect function name");
+                };
+                fn_name = name.to_string();
+            }
+            _ => {} //
+        }
+    }
+
+    if fn_name.is_empty() {
+        panic!("function name not found");
+    }
+
+    let getter: TokenStream = format!(
+        "
+    /// `@selector({extern_name})` but dynamic
+    /// use this function to check if object responds to selector
+    fn sel_{fn_name}() -> &'static objc::Sel {{
+        unsafe {{ objc::sel_registerName(b\"{extern_name}\\0\".as_ptr()) }}
+    }}
+        "
+    )
+    .parse()
+    .unwrap();
+
+    let mut func = func;
+    func.extend(getter.into_iter());
+    func
+}
+
+#[proc_macro_attribute]
+pub fn obj_trait(_sel: TokenStream, func: TokenStream) -> TokenStream {
+    let mut original_trait = func.clone();
+
+    let mut iter = func.into_iter();
+    let mut before_trait_name_tokens = vec![];
+    let mut after_trait_name_tokens = vec![];
+    let mut trait_name = "".to_string();
+    let mut expect_trait_name = false;
+    let mut is_optional = false;
+    let mut sel = "".to_string();
+    let mut fn_name; // = "".to_string();
+    let mut generics = Vec::new();
+    //let mut fn_args = Vec::new();
+    let mut fn_args_str; // = "".to_string();
+    let mut result = Vec::new();
+    let mut fn_body = "".to_string();
+
+    let mut impl_trait_functions = Vec::new();
+
+    while let Some(token) = iter.next() {
+        let collection = if trait_name.is_empty() {
+            &mut before_trait_name_tokens
+        } else {
+            &mut after_trait_name_tokens
+        };
+        match &token {
+            TokenTree::Group(g) => {
+                let mut iter = g.stream().into_iter();
+                while let Some(token) = iter.next() {
+                    match token {
+                        TokenTree::Group(g) => println!("group {g}"),
+                        TokenTree::Ident(i) => {
+                            let str = i.to_string();
+                            if str.eq("fn") {
+                                let Some(TokenTree::Ident(name)) = iter.next() else {
+                                    panic!("expect fn name");
+                                };
+                                fn_name = name.to_string();
+                                let args = loop {
+                                    let Some(tt) = iter.next() else {
+                                        panic!("need more tokens");
+                                    };
+                                    match tt {
+                                        TokenTree::Group(args) => break args,
+                                        _ => generics.push(tt),
+                                    }
+                                };
+                                fn_args_str = args.to_string();
+                                while let Some(tt) = iter.next() {
+                                    match tt {
+                                        TokenTree::Punct(ref p) if p.as_char() == ';' => {
+                                            result.push(tt);
+                                            break;
+                                        }
+                                        TokenTree::Group(ref g) => {
+                                            fn_body = g.to_string();
+                                            break;
+                                        }
+                                        _ => result.push(tt),
+                                    }
+                                }
+
+                                let mut ext = "";
+
+                                let register_sel = if sel.is_empty() {
+                                    "None".to_string()
+                                } else {
+                                    ext = "extern \"C\" ";
+                                    fn_args_str = fn_args_str.replacen(
+                                        "(& self",
+                                        "(&self, cmd: Option<&objc::Sel>",
+                                        1,
+                                    );
+
+                                    fn_args_str = fn_args_str.replacen(
+                                        "(& mut self",
+                                        "(&mut self, cmd: Option<&objc::Sel>",
+                                        1,
+                                    );
+                                    format!("Some(unsafe {{ objc::sel_registerName(b\"{sel}\\0\".as_ptr()) }})")
+                                };
+
+                                if is_optional && !sel.is_empty() && fn_body.is_empty() {
+                                    result.pop(); // remove ;
+                                    fn_body = "{ unimplemented!() }".to_string();
+                                }
+
+                                let ret = if result.is_empty() {
+                                    "".to_string()
+                                } else {
+                                    TokenStream::from_iter(result.clone().into_iter()).to_string()
+                                };
+
+                                let gen = if generics.is_empty() {
+                                    "".to_string()
+                                } else {
+                                    TokenStream::from_iter(generics.clone().into_iter()).to_string()
+                                };
+
+                                let impl_fn = format!(
+                                    "
+    {ext}fn {fn_name}{gen}{fn_args_str}{ret} {fn_body}
+
+    fn sel_{fn_name}() -> Option<&'static objc::Sel> {{ {register_sel} }}
+
+                                    "
+                                );
+                                impl_trait_functions.push(impl_fn);
+
+                                is_optional = false;
+                                sel.clear();
+                                fn_name.clear();
+                                fn_body.clear();
+                                fn_args_str.clear();
+                                //fn_args.clear();
+                                result.clear();
+                            }
+                        }
+                        TokenTree::Punct(p) => match p.as_char() {
+                            '#' => {
+                                let TokenTree::Group(g) = iter.next().unwrap() else {
+                                    panic!("not a group");
+                                };
+                                match read_objc_attr(g) {
+                                    Some(ObjcAttr::Optional) => is_optional = true,
+                                    Some(ObjcAttr::MsgSend(s)) => sel = s,
+                                    None => continue,
+                                }
+                            }
+                            _ => panic!("other char {p}"),
+                        },
+                        TokenTree::Literal(l) => println!("lit {l}"),
+                    }
+                }
+            }
+            TokenTree::Ident(i) => {
+                let str = i.to_string();
+                if expect_trait_name {
+                    expect_trait_name = false;
+                    trait_name = str;
+                    continue;
+                }
+                collection.push(token.clone());
+                if str == "trait" {
+                    expect_trait_name = true;
+                }
+            }
+            TokenTree::Punct(_) | TokenTree::Literal(_) => collection.push(token),
+        }
+    }
+
+    let pre = TokenStream::from_iter(before_trait_name_tokens.into_iter()).to_string();
+    let trait_name = format!("Obj{trait_name}");
+    let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
+    let fns = impl_trait_functions.join("\n");
+
+    let code = format!(
+        "
+
+{pre} {trait_name} {after} {{
+    {fns}
+}}
+        "
+    );
+
+    let ts: TokenStream = code.parse().unwrap();
+
+    original_trait.extend(ts);
+    original_trait
 }
 
 #[proc_macro_attribute]
@@ -310,39 +460,39 @@ fn gen_msg_send(
         if option {
             format!(
                 "
-                #[inline]
-                {pre} {fn_name}{gen}{args}{ret_full} {{
-                    arc::Rar::option_retain({self_}{fn_name}_ar({vars}) )
-                }}
+    #[inline]
+    {pre} {fn_name}{gen}{args}{ret_full} {{
+        arc::Rar::option_retain({self_}{fn_name}_ar({vars}) )
+    }}
                 "
             )
         } else {
             format!(
                 "
-                #[inline]
-                {pre} {fn_name}{gen}{args}{ret_full} {{
-                    {self_}{fn_name}_ar({vars}).retain()
-                }}
+    #[inline]
+    {pre} {fn_name}{gen}{args}{ret_full} {{
+        {self_}{fn_name}_ar({vars}).retain()
+    }}
                 "
             )
         }
     } else {
         format!(
             "
-            #[inline]
-            {pre} {fn_name}{gen}{args}{ret_full} {{
-                extern \"C\" {{
-                    #[link_name = \"objc_msgSend${extern_name}\"]
-                    fn msg_send();
-                }}
+    #[inline]
+    {pre} {fn_name}{gen}{args}{ret_full} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSend${extern_name}\"]
+            fn msg_send();
+        }}
 
-                unsafe {{
-                    let fn_ptr = msg_send as *const std::ffi::c_void;
-                    let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
+        unsafe {{
+            let fn_ptr = msg_send as *const std::ffi::c_void;
+            let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
 
-                    {call_args}
-                }}
-            }}
+            {call_args}
+        }}
+    }}
             "
         )
     };
