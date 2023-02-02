@@ -1,9 +1,6 @@
-use std::{ffi::c_void, ops::Deref};
+use std::ffi::c_void;
 
-use crate::{
-    arc, blocks, cg, cm, cv, define_cls, define_obj_type, dispatch, ns,
-    objc::{self, Delegate},
-};
+use crate::{arc, blocks, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc};
 
 use super::{Display, Window};
 
@@ -156,112 +153,85 @@ impl ContentFilter {
 
 define_obj_type!(Stream(ns::Id));
 
-pub trait StreamDelegate {
-    extern "C" fn stream_did_stop_with_error(&mut self, stream: &Stream, error: Option<&ns::Error>);
-
-    fn delegate(self) -> Delegate<Self>
-    where
-        Self: Sized,
-    {
-        let b = Box::new(self);
-        let table: [*const c_void; 2] = [
-            b.as_ref() as *const _ as _,
-            Self::stream_did_stop_with_error as _,
-        ];
-
-        let ptr = table.as_ptr();
-
-        let obj = unsafe { make_stream_delegate(ptr as _) };
-
-        Delegate { delegate: b, obj }
-    }
-}
-
-pub trait StreamOutput {
-    extern "C" fn stream_did_output_sample_buffer_of_type(
+#[objc::obj_trait]
+pub trait Output: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(stream:didOutputSampleBuffer:ofType:)]
+    fn stream_did_output_sample_buffer(
         &mut self,
         stream: &Stream,
-        sample_buffer: &mut cm::SampleBuffer,
-        of_type: OutputType,
+        sample_bufer: &mut cm::SampleBuffer,
+        kind: OutputType,
     );
-
-    fn delegate(self) -> Delegate<Self>
-    where
-        Self: Sized,
-    {
-        let b = Box::new(self);
-        let table: [*const c_void; 2] = [
-            b.as_ref() as *const _ as _,
-            Self::stream_did_output_sample_buffer_of_type as _,
-        ];
-
-        let ptr = table.as_ptr();
-        let obj = unsafe { make_stream_out(ptr as _) };
-
-        Delegate { delegate: b, obj }
-    }
 }
 
-#[link(name = "sc", kind = "static")]
-extern "C" {
-    fn make_stream_out(vtable: *const *const c_void) -> arc::R<ns::Id>;
-    fn make_stream_delegate(vtable: *const *const c_void) -> arc::R<ns::Id>;
+#[objc::obj_trait]
+pub trait Delegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(stream:didStopWithError:)]
+    fn stream_did_stop_with_error(&mut self, stream: &Stream, error: &ns::Error);
 }
+
+impl Delegate for objc::Any {}
 
 impl arc::A<Stream> {
     #[objc::msg_send(initWithFilter:configuration:delegate:)]
-    pub fn init_with_filter_configuration_delegate(
+    pub fn init_with_filter_configuration_delegate<D: Delegate>(
         self,
         filter: &ContentFilter,
         configuration: &Configuration,
-        delegate: Option<&ns::Id>,
+        delegate: Option<&D>,
     ) -> arc::R<Stream>;
 }
 
 impl Stream {
     define_cls!(SC_STREAM);
 
-    pub fn with_delegate<T>(
+    pub fn with_delegate<T, D: Delegate>(
         filter: &ContentFilter,
         configuration: &Configuration,
-        delegate: &Delegate<T>,
-    ) -> arc::R<Self>
-    where
-        T: StreamDelegate,
-    {
-        let delegate = delegate.obj.deref();
-        Self::alloc().init_with_filter_configuration_delegate(filter, configuration, Some(delegate))
+        delegate: &D,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_filter_configuration_delegate::<D>(
+            filter,
+            configuration,
+            Some(&delegate),
+        )
     }
 
     pub fn new(filter: &ContentFilter, configuration: &Configuration) -> arc::R<Self> {
-        Self::alloc().init_with_filter_configuration_delegate(filter, configuration, None)
+        Self::alloc().init_with_filter_configuration_delegate::<objc::Any>(
+            filter,
+            configuration,
+            objc::NONE,
+        )
     }
 
     #[objc::msg_send(addStreamOutput:type:sampleHandlerQueue:error:)]
-    fn add_stream_output_type_sample_handler_queue_error(
+    fn add_stream_output_type_sample_handler_queue_error<D: Output>(
         &self,
-        output: &ns::Id,
+        output: &D,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
         error: &mut Option<&ns::Error>,
     ) -> bool;
 
-    pub fn add_stream_output<T>(
+    pub fn add_stream_output<'ar, D: Output>(
         &self,
-        delegate: &Delegate<T>,
+        output: &D,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
-        error: &mut Option<&ns::Error>,
-    ) -> bool
-    where
-        T: StreamOutput,
-    {
-        self.add_stream_output_type_sample_handler_queue_error(
-            delegate.obj.deref(),
+    ) -> Result<(), &'ar ns::Error> {
+        let mut error = None;
+        if self.add_stream_output_type_sample_handler_queue_error(
+            output,
             output_type,
             queue,
-            error,
-        )
+            &mut error,
+        ) {
+            return Ok(());
+        }
+        Err(error.unwrap())
     }
 
     pub fn start_sync(&self) {
@@ -311,8 +281,6 @@ mod tests {
 
     use crate::{cm, cv, dispatch, ns, sc};
 
-    use super::StreamOutput;
-
     #[repr(C)]
     struct FameCounter {
         counter: u32,
@@ -321,19 +289,6 @@ mod tests {
     impl FameCounter {
         pub fn counter(&self) -> u32 {
             self.counter
-        }
-    }
-
-    impl StreamOutput for FameCounter {
-        extern "C" fn stream_did_output_sample_buffer_of_type(
-            &mut self,
-            _stream: &sc::Stream,
-            _sample_buffer: &mut crate::cm::SampleBuffer,
-            _of_type: sc::OutputType,
-        ) {
-            self.counter += 1;
-            // why without println is not working well?
-            println!("frame {:?}", self.counter);
         }
     }
 

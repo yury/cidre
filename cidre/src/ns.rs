@@ -24,6 +24,8 @@ pub use exception::UncaughtExceptionHandler;
 
 mod port;
 pub use port::MachPort;
+pub use port::MachPortDelegate;
+pub use port::ObjMachPortDelegate;
 pub use port::Port;
 
 mod url_request;

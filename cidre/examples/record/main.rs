@@ -7,7 +7,7 @@ use cidre::{
     cm::{self, SampleBuffer},
     dispatch, ns,
     os::{self, Status},
-    sc::{self, stream::StreamOutput},
+    sc::{self, stream::Output},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
 };
 

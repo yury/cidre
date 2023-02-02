@@ -1,3 +1,4 @@
+/// This is all dirty hacks. We need to reimplement it with syn and quote
 use proc_macro::{Group, TokenStream, TokenTree};
 
 enum ObjcAttr {
@@ -318,7 +319,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     }
 
     let pre = TokenStream::from_iter(before_trait_name_tokens.into_iter()).to_string();
-    let trait_name = format!("Obj{trait_name}");
+    let obj_trait_name = format!("Obj{trait_name}");
     let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
     let fns = impl_trait_functions.join("\n");
 
@@ -331,10 +332,12 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let code = format!(
         "
 
-{pre} {trait_name} {after} {{
+{pre} {obj_trait_name} {after} {{
     {fns}
     {add_methods}
 }}
+
+// impl {trait_name} for objc::Opt {{}}
         "
     );
 

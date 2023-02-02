@@ -116,6 +116,10 @@ pub trait Obj: Sized + arc::Retain {
 #[repr(transparent)]
 pub struct Id(Type);
 
+crate::define_obj_type!(Any(Id));
+
+pub const NONE: Option<&'static Any> = None;
+
 impl Id {
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &mut Id {
@@ -276,13 +280,11 @@ impl PartialEq for Id {
     }
 }
 
-//define_obj_type!(FooDelegate(Id));
-
-#[repr(C)]
-pub struct Delegate<T: Sized> {
-    pub delegate: Box<T>,
-    pub obj: crate::arc::R<Id>,
-}
+// #[repr(C)]
+// pub struct Delegate<T: Sized> {
+//     pub delegate: Box<T>,
+//     pub obj: crate::arc::R<Id>,
+// }
 
 #[cfg(test)]
 mod tests {
