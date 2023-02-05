@@ -29,15 +29,24 @@ impl<T: Retain + PartialOrd> PartialOrd for Retained<T> {
     }
 }
 
+impl<T: Retain> AsRef<T> for Retained<T> {
+    #[inline]
+    fn as_ref(&self) -> &T {
+        self.0
+    }
+}
+
+impl<T: Retain> AsMut<T> for Retained<T> {
+    #[inline]
+    fn as_mut(&mut self) -> &mut T {
+        self.0
+    }
+}
+
 impl<T: Retain> Retained<T> {
     #[inline]
     pub fn retained(&self) -> Self {
         self.0.retained()
-    }
-
-    #[inline]
-    pub fn as_ref(&self) -> &T {
-        self.0
     }
 
     #[must_use]
