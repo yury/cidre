@@ -5,14 +5,14 @@ use cidre::{
     cat::{audio::MPEG4ObjectID, AudioFormatFlags, AudioFormatID},
     cf,
     cm::{self, SampleBuffer},
-    dispatch, ns,
+    define_obj_type, dispatch, ns, objc,
     os::{self, Status},
-    sc::{self, stream::Output},
+    sc::{self, stream::Output, stream::OutputImpl},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
 };
 
 #[repr(C)]
-struct FrameCounter {
+pub struct FrameCounterInner {
     video_counter: usize,
     audio_counter: usize,
     audio_queue: AudioQueue,
@@ -20,9 +20,85 @@ struct FrameCounter {
     audio_converter: at::AudioConverterRef,
 }
 
-impl FrameCounter {
+impl FrameCounterInner {
     pub fn _video_counter(&self) -> usize {
         self.video_counter
+    }
+}
+
+define_obj_type!(FrameCounter + OutputImpl, FrameCounterInner, FRAME_COUNTER);
+
+impl Output for FrameCounter {}
+
+#[objc::add_methods]
+impl OutputImpl for FrameCounter {
+    extern "C" fn impl_stream_did_output_sample_buffer(
+        &mut self,
+        _cmd: Option<&cidre::objc::Sel>,
+        _stream: &sc::Stream,
+        sample_buffer: &mut cm::SampleBuffer,
+        kind: sc::OutputType,
+    ) {
+        let mut inner = self.inner_mut();
+        if kind == sc::OutputType::Audio {
+            if inner.audio_counter == 0 {
+                inner.audio_converter = configured_converter(
+                    sample_buffer
+                        .format_description()
+                        .unwrap()
+                        .stream_basic_description()
+                        .unwrap(),
+                );
+            }
+
+            inner.audio_queue.enqueue(sample_buffer);
+
+            if inner.audio_queue.is_ready() {
+                let mut data = [0u8; 2000];
+                let buffer = at::AudioBuffer {
+                    number_channels: 1,
+                    data_bytes_size: data.len() as _,
+                    data: data.as_mut_ptr(),
+                };
+                let buffers = [buffer];
+                let mut buf = at::audio::BufferList {
+                    number_buffers: buffers.len() as _,
+                    buffers,
+                };
+
+                let mut size = 1u32;
+
+                inner
+                    .audio_converter
+                    .fill_complex_buf(convert_audio, &mut inner.audio_queue, &mut size, &mut buf)
+                    .unwrap();
+
+                println!("size {}", buf.buffers[0].data_bytes_size,);
+            }
+            inner.audio_counter += 1;
+            return;
+        }
+
+        inner.video_counter += 1;
+        // why without println is not working well?
+        // println!("frame {:?}", self.counter);
+
+        let img = sample_buffer.image_buffer();
+        if img.is_none() {
+            return;
+        }
+        let img = unsafe { img.unwrap_unchecked() };
+        let pts = sample_buffer.presentation_time_stamp();
+        let dur = sample_buffer.duration();
+
+        let mut flags = None;
+
+        let res = inner
+            .session
+            .encode_frame(img, pts, dur, None, std::ptr::null_mut(), &mut flags);
+        if res.is_err() {
+            println!("err {:?}", res);
+        }
     }
 }
 
@@ -144,74 +220,6 @@ extern "C" fn convert_audio(
 
     //let frames = i32::min(*io_number_data_packets as i32, buf.num_samples() as _);
     //buf.copy_pcm_data_into_audio_buffer_list(0, frames, io_data)
-}
-
-impl StreamOutput for FrameCounter {
-    extern "C" fn stream_did_output_sample_buffer_of_type(
-        &mut self,
-        _stream: &sc::Stream,
-        sample_buffer: &mut cm::SampleBuffer,
-        of_type: sc::OutputType,
-    ) {
-        if of_type == sc::OutputType::Audio {
-            if self.audio_counter == 0 {
-                self.audio_converter = configured_converter(
-                    sample_buffer
-                        .format_description()
-                        .unwrap()
-                        .stream_basic_description()
-                        .unwrap(),
-                );
-            }
-
-            self.audio_queue.enqueue(sample_buffer);
-
-            if self.audio_queue.is_ready() {
-                let mut data = [0u8; 2000];
-                let buffer = at::AudioBuffer {
-                    number_channels: 1,
-                    data_bytes_size: data.len() as _,
-                    data: data.as_mut_ptr(),
-                };
-                let buffers = [buffer];
-                let mut buf = at::audio::BufferList {
-                    number_buffers: buffers.len() as _,
-                    buffers,
-                };
-
-                let mut size = 1u32;
-
-                self.audio_converter
-                    .fill_complex_buf(convert_audio, &mut self.audio_queue, &mut size, &mut buf)
-                    .unwrap();
-
-                println!("size {}", buf.buffers[0].data_bytes_size,);
-            }
-            self.audio_counter += 1;
-            return;
-        }
-
-        self.video_counter += 1;
-        // why without println is not working well?
-        // println!("frame {:?}", self.counter);
-
-        let img = sample_buffer.image_buffer();
-        if img.is_none() {
-            return;
-        }
-        let img = unsafe { img.unwrap_unchecked() };
-        let pts = sample_buffer.presentation_time_stamp();
-        let dur = sample_buffer.duration();
-
-        let mut flags = None;
-
-        let res = self
-            .session
-            .encode_frame(img, pts, dur, None, std::ptr::null_mut(), &mut flags);
-        if res.is_err() {
-            println!("err {:?}", res);
-        }
-    }
 }
 
 struct RecordContext {
@@ -361,7 +369,7 @@ async fn main() {
         reserved: 0,
     };
 
-    let delegate = FrameCounter {
+    let inner = FrameCounterInner {
         video_counter: 0,
         audio_counter: 0,
         audio_queue: AudioQueue {
@@ -372,11 +380,13 @@ async fn main() {
         session,
         audio_converter: default_converter(),
     };
-    let d = delegate.delegate();
-    let mut error = None;
-    stream.add_stream_output(&d, sc::OutputType::Screen, Some(&q), &mut error);
-    stream.add_stream_output(&d, sc::OutputType::Audio, Some(&q), &mut error);
-    assert!(error.is_none());
+    let delegate = FrameCounter::with(inner);
+    stream
+        .add_stream_output(delegate.as_ref(), sc::OutputType::Screen, Some(&q))
+        .unwrap();
+    stream
+        .add_stream_output(delegate.as_ref(), sc::OutputType::Audio, Some(&q))
+        .unwrap();
     stream.start().await.expect("started");
 
     tokio::time::sleep(Duration::from_secs(100_200)).await;

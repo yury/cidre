@@ -1,7 +1,4 @@
-use crate::{
-    define_cls, define_obj_type, ns,
-    objc::{self, Class},
-};
+use crate::{define_cls, define_obj_type, ns, objc};
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 #[repr(isize)]
@@ -63,7 +60,7 @@ impl ProcessInfo {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_PROCESS_INFO: &'static Class<ProcessInfo>;
+    static NS_PROCESS_INFO: &'static objc::Class<ProcessInfo>;
 }
 
 #[cfg(test)]

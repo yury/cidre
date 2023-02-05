@@ -34,6 +34,22 @@ impl<T: Retain> Retained<T> {
     pub fn retained(&self) -> Self {
         self.0.retained()
     }
+
+    #[inline]
+    pub fn as_ref(&self) -> &T {
+        self.0
+    }
+
+    #[must_use]
+    pub fn autoreleased<'ar>(self) -> &'ar mut T
+    where
+        T: objc::Obj,
+    {
+        unsafe {
+            let res = objc::Id::autorelease(std::mem::transmute(self));
+            return std::mem::transmute(res);
+        }
+    }
 }
 
 impl<T: Release> Drop for Allocated<T> {

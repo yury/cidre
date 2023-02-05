@@ -83,46 +83,29 @@ impl ShareableContent {
 mod tests {
 
     use crate::{
-        blocks, dispatch, ns,
+        blocks, define_obj_type, dispatch, objc,
         sc::{
             self,
-            stream::{StreamDelegate, StreamOutput},
+            stream::{Delegate, DelegateImpl, Output, OutputImpl},
         },
     };
 
     use super::ShareableContent;
 
-    #[repr(C)]
-    struct Foo {
-        bla: u32,
-    }
+    define_obj_type!(OutputObj + OutputImpl, usize, OUTPUT_CLS);
 
-    impl StreamOutput for Foo {
-        extern "C" fn stream_did_output_sample_buffer_of_type(
-            &mut self,
-            _stream: &sc::Stream,
-            _sample_buffer: &mut crate::cm::SampleBuffer,
-            _of_type: sc::OutputType,
-        ) {
-            self.bla += 1;
-            println!("nice {0}", self.bla);
-        }
-    }
+    impl Output for OutputObj {}
 
-    #[repr(C)]
-    struct Foo2 {
-        bla: u32,
-    }
+    #[objc::add_methods]
+    impl OutputImpl for OutputObj {}
 
-    impl StreamDelegate for Foo2 {
-        extern "C" fn stream_did_stop_with_error(
-            &mut self,
-            _stream: &sc::Stream,
-            _error: Option<&ns::Error>,
-        ) {
-            println!("!!!!")
-        }
-    }
+    define_obj_type!(DelegateObj + DelegateImpl, usize, OUTPUT_CLS);
+
+    impl Delegate for DelegateObj {}
+
+    #[objc::add_methods]
+    impl DelegateImpl for DelegateObj {}
+
     #[tokio::test]
     pub async fn current() {
         let f = sc::ShareableContent::current().await.expect("result");

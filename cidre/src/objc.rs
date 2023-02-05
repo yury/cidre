@@ -17,24 +17,9 @@ pub struct Class<T: Obj>(Type, PhantomData<T>);
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ClassInstExtra<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
-const NS_OBJECT_SIZE: usize = 8;
+pub const NS_OBJECT_SIZE: usize = 8;
 
-pub trait ObjExtra<I>: Obj {
-    fn inner(&self) -> &I {
-        unsafe {
-            let ptr: *const u8 = transmute(self);
-            std::mem::transmute(ptr.offset(NS_OBJECT_SIZE as _))
-        }
-    }
-    fn inner_mut(&mut self) -> &I {
-        unsafe {
-            let ptr: *mut u8 = transmute(self);
-            std::mem::transmute(ptr.offset(NS_OBJECT_SIZE as _))
-        }
-    }
-}
-
-impl<T: ObjExtra<T>, I: Sized> ClassInstExtra<T, I> {
+impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
     #[inline]
     pub fn alloc_init(&self, var: I) -> Option<arc::R<T>> {
         unsafe {
@@ -190,6 +175,15 @@ extern "C" {
         imp: extern "C" fn(),
         types: *const u8,
     ) -> bool;
+
+    pub fn objc_allocateClassPair(
+        super_cls: &Class<Id>,
+        name: *const u8,
+        extra_bytes: usize,
+    ) -> Option<&'static Class<Id>>;
+    pub fn objc_registerClassPair(cls: &Class<Id>);
+    pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
+    pub static NS_OBJECT: &'static crate::objc::Class<Id>;
 }
 
 #[macro_export]
@@ -227,6 +221,64 @@ macro_rules! define_cls {
 
 #[macro_export]
 macro_rules! define_obj_type {
+    ($NewType:ident $(+ $TraitImpl:path)*, $InnerType:path, $CLS:ident) => {
+        $crate::define_obj_type!($NewType(objc::Id));
+
+        impl $NewType {
+
+            #[inline]
+            pub fn inner(&self) -> &$InnerType {
+                unsafe {
+                    let ptr: *const u8 = std::mem::transmute(self);
+                    std::mem::transmute(ptr.offset(objc::NS_OBJECT_SIZE as _))
+                }
+            }
+
+            #[inline]
+            pub fn inner_mut(&mut self) -> &mut $InnerType {
+                unsafe {
+                    let ptr: *mut u8 = std::mem::transmute(self);
+                    std::mem::transmute(ptr.offset($crate::objc::NS_OBJECT_SIZE as _))
+                }
+            }
+
+            pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
+                let name = stringify!($CLS);
+                let name = format!("{name}\0");
+                let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
+                let cls = cls.unwrap();
+                $(<Self as $TraitImpl>::cls_add_methods(cls);)*
+
+                if std::mem::needs_drop::<$InnerType>() {
+                    extern "C" fn impl_dealloc(s: &mut $NewType, _sel: Option<$crate::objc::Sel>) {
+                        std::mem::drop(s);
+                    }
+                    unsafe {
+                        let sel = $crate::objc::sel_registerName(b"dealloc\0".as_ptr());
+                        let imp: extern "C" fn() = std::mem::transmute(impl_dealloc as *const u8);
+                        $crate::objc::class_addMethod(cls, sel, imp, std::ptr::null());
+                    }
+                }
+                unsafe { $crate::objc::objc_registerClassPair(cls) };
+                unsafe { std::mem::transmute(cls) }
+            }
+
+            pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
+                let name = stringify!($CLS);
+                let name = format!("{name}\0");
+                let cls = unsafe {$crate::objc::objc_getClass(name.as_ptr()) };
+                match cls {
+                    Some(c) => unsafe { std::mem::transmute(c) }
+                    None => Self::register_cls()
+                }
+            }
+
+            pub fn with(inner: $InnerType) -> $crate::arc::R<Self> {
+                Self::cls().alloc_init(inner).unwrap()
+            }
+        }
+    };
+
     ($NewType:ident($BaseType:path)) => {
         #[derive(Debug)]
         #[repr(transparent)]
@@ -257,15 +309,6 @@ macro_rules! define_obj_type {
             }
         }
 
-        impl $crate::arc::R<$NewType> {
-            #[must_use]
-            pub fn autoreleased<'ar>(self) -> &'ar mut $NewType {
-                unsafe {
-                    let res = $crate::objc::Id::autorelease(std::mem::transmute(self));
-                    return std::mem::transmute(res);
-                }
-            }
-        }
     };
     ($NewType:ident($BaseType:path), $CLS:ident) => {
         $crate::define_obj_type!($NewType($BaseType));
@@ -279,12 +322,6 @@ impl PartialEq for Id {
         self.is_equal(other)
     }
 }
-
-// #[repr(C)]
-// pub struct Delegate<T: Sized> {
-//     pub delegate: Box<T>,
-//     pub obj: crate::arc::R<Id>,
-// }
 
 #[cfg(test)]
 mod tests {
@@ -367,6 +404,7 @@ pub use cidre_macros::rar_retain;
 
 #[cfg(test)]
 mod tests2 {
+
     use crate::objc;
 
     #[objc::obj_trait]
@@ -379,25 +417,27 @@ mod tests2 {
         fn count2(&self) -> usize;
     }
 
-    #[objc::add_methods]
-    impl ObjFoo for objc::Id {
-        extern "C" fn count(&self, _cmd: Option<&objc::Sel>) -> usize {
-            todo!()
+    pub struct D;
+
+    impl Drop for D {
+        fn drop(&mut self) {
+            println!("drop");
         }
     }
 
-    // struct Foo;
+    define_obj_type!(Bla + FooImpl, D, BLA_USIZE);
 
-    // #[link(name = "ns", kind = "static")]
-    // extern "C" {
-    //     static NS_OBJECT: &'static objc::ClassInstExtra<ns::Id, Foo>;
-    // }
+    impl Foo for Bla {}
 
-    // #[test]
-    // fn basics() {
-    //     let cls: &'static objc::ClassInstExtra<ns::Id, Foo> =
-    //         unsafe { std::mem::transmute(NS_OBJECT) };
-    //     let f = cls.alloc_init(Foo).unwrap();
-    //     println!("{:?}", f.debug_description());
-    // }
+    #[objc::add_methods]
+    impl FooImpl for Bla {
+        extern "C" fn impl_count(&self, _cmd: Option<&objc::Sel>) -> usize {
+            0
+        }
+    }
+
+    #[test]
+    fn basics() {
+        Bla::with(D);
+    }
 }

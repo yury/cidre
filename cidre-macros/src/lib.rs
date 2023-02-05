@@ -146,8 +146,8 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
         "
     /// `@selector({extern_name})` but dynamic
     /// use this function to check if object responds to selector
-    fn sel_{fn_name}() -> &'static objc::Sel {{
-        unsafe {{ objc::sel_registerName(b\"{extern_name}\\0\".as_ptr()) }}
+    fn sel_{fn_name}() -> Option<&'static objc::Sel> {{
+        unsafe {{ Some(objc::sel_registerName(b\"{extern_name}\\0\".as_ptr())) }}
     }}
         "
     )
@@ -265,13 +265,20 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
 
                                 let impl_fn = format!(
                                     "
-    {ext}fn {fn_name}{gen}{fn_args_str}{ret} {fn_body}
-
-    fn sel_{fn_name}() -> Option<&'static objc::Sel> {{ {register_sel} }}
+    {ext}fn impl_{fn_name}{gen}{fn_args_str}{ret} {fn_body}
 
                                     "
                                 );
                                 impl_trait_functions.push(impl_fn);
+
+                                if !is_optional {
+                                    let impl_sel = format!(
+                                        "
+    fn sel_{fn_name}() -> Option<&'static objc::Sel> {{ {register_sel} }}
+        "
+                                    );
+                                    impl_trait_functions.push(impl_sel);
+                                }
 
                                 is_optional = false;
                                 sel.clear();
@@ -319,8 +326,8 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     }
 
     let pre = TokenStream::from_iter(before_trait_name_tokens.into_iter()).to_string();
-    let obj_trait_name = format!("Obj{trait_name}");
-    let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
+    let obj_trait_name = format!("{trait_name}Impl");
+    //let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
     let fns = impl_trait_functions.join("\n");
 
     let add_methods = if has_optionals {
@@ -332,12 +339,12 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let code = format!(
         "
 
-{pre} {obj_trait_name} {after} {{
+{pre} {obj_trait_name}: {trait_name} {{
     {fns}
     {add_methods}
 }}
 
-// impl {trait_name} for objc::Opt {{}}
+// impl {trait_name} for objc::Any {{}}
         "
     );
 
@@ -358,8 +365,8 @@ fn add_methods_fn(fns: &[String]) -> TokenStream {
             "
     if let Some(sel) = Self::sel_{f}() {{
         unsafe {{
-            let f: extern \"C\" fn() = std::mem::transmute(Self::{f} as *const u8);
-            objc::class_addMethod(cls, sel, f, std::ptr::null());
+            let imp: extern \"C\" fn() = std::mem::transmute(Self::impl_{f} as *const u8);
+            objc::class_addMethod(cls, sel, imp, std::ptr::null());
         }}
     }}
             "
@@ -387,7 +394,7 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
                             let Some(TokenTree::Ident(f)) = body.next() else {
                               panic!("expected function name");
                             };
-                            fns.push(f.to_string());
+                            fns.push(f.to_string().replacen("impl_", "", 1));
                         }
                         _ => continue,
                     }
