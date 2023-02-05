@@ -479,7 +479,7 @@ fn gen_msg_send(
     let mut ret = ts.to_string();
     let mut ret_full = ts.to_string();
     if let Some((a, _)) = ret.split_once("where") {
-        ret = format!("{};", a)
+        ret = format!("{a};")
     }
     assert_eq!(ret.pop().expect(";"), ';');
     assert_eq!(ret_full.pop().expect(";"), ';');
@@ -487,8 +487,8 @@ fn gen_msg_send(
 
     let fn_args = args.to_string();
     if debug {
-        println!("ret: {}", ret);
-        println!("fn_args: {}", fn_args);
+        println!("ret: {ret}");
+        println!("fn_args: {fn_args}");
     }
 
     let vars = get_fn_args(args.stream(), class, debug);
@@ -509,14 +509,14 @@ fn gen_msg_send(
         (fn_args, "sig(self)".to_string())
     } else {
         let fn_args = fn_args
-            .replacen("(", "(id:", 1)
+            .replacen('(', "(id:", 1)
             .replace("self", "Self, imp: *const std::ffi::c_void");
-        (fn_args, format!("sig(self, std::ptr::null(), {})", vars))
+        (fn_args, format!("sig(self, std::ptr::null(), {vars})"))
     };
 
     if class {
         if fn_args_count == 0 {
-            fn_args = fn_args.replacen("(", "(cls: *const std::ffi::c_void", 1);
+            fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
             call_args = call_args.replacen(
                 "sig(self",
                 "sig(Self::cls() as *const _ as *const std::ffi::c_void",
@@ -581,7 +581,7 @@ fn gen_msg_send(
         )
     };
     if debug {
-        println!("{}", flow.to_string());
+        println!("{flow}");
     }
 
     flow.parse().unwrap()

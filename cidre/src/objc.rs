@@ -245,8 +245,7 @@ macro_rules! define_obj_type {
             }
 
             pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
-                let name = stringify!($CLS);
-                let name = format!("{name}\0");
+                let name = concat!(stringify!($CLS), "\0");
                 let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
@@ -267,8 +266,7 @@ macro_rules! define_obj_type {
             }
 
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
-                let name = stringify!($CLS);
-                let name = format!("{name}\0");
+                let name = concat!(stringify!($CLS), "\0");
                 let cls = unsafe {$crate::objc::objc_getClass(name.as_ptr()) };
                 match cls {
                     Some(c) => unsafe { std::mem::transmute(c) }

@@ -242,6 +242,11 @@ impl String {
     pub fn copy_mut(&self, max_length: Index) -> Option<arc::R<StringMut>> {
         self.copy_mut_in(None, max_length)
     }
+
+    #[inline]
+    pub fn as_ns_string(&self) -> &crate::ns::String {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 #[macro_export]
@@ -451,6 +456,9 @@ mod tests {
         assert_eq!(s.length(), 5);
         let std_str = s.to_string();
         assert_eq!(std_str.chars().count(), 5);
+
+        let ns_str = s.as_ns_string();
+        assert_eq!(&ns_str.to_string(), "hello");
     }
 
     #[test]

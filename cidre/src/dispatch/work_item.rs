@@ -108,7 +108,7 @@ where
 impl<F, B> Clone for WorkItem<F, B>
 where
     B: dispatch::Block<F>,
-    F: FnMut() -> (),
+    F: FnMut(),
 {
     fn clone(&self) -> Self {
         unsafe { transmute(_Block_copy(self.0 as *const B as _)) }
