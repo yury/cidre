@@ -51,7 +51,7 @@ mod tests {
 
     #[test]
     fn create() {
-        use ns::MachPortDelegate;
+        // use ns::MachPortDelegate;
 
         let mach = ns::MachPort::new();
         // mach.delegate().unwrap().handle_mach_message()
@@ -60,8 +60,5 @@ mod tests {
         assert!(mach.is_valid());
         mach.invalidate();
         assert!(!mach.is_valid());
-
-        // TODO: investigate why invalidate decrease refs count
-        std::mem::forget(mach);
     }
 }

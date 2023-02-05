@@ -6,8 +6,24 @@ use crate::{
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
 pub enum Type {
+    /// A heap that automatically places new resource allocations.
+    ///
+    /// In this mode, resources are placed in the heap automatically.
+    /// Automatically placed resources have optimal GPU-specific layout, and may perform better than mtl::HeapType::Placement.
+    /// This heap type is recommended when the heap primarily contains temporary write-often resources.
     Automatic = 0,
+
+    /// The app controls placement of resources on the heap.
+    ///
+    /// Use placement heaps when you need direct control over memory use and heap fragmentation.
+    /// Typically, you use placement heaps for resources you keep for long time periods and rarely change.
+    ///
+    /// In this mode, the app places resources in the heap.
+    /// Manually placed resources allow the app to control memory usage and heap fragmentation directly.
+    /// This heap type is recommended when the heap primarily contains persistent write-rarely resources.
     Placement = 1,
+
+    /// The heap contains sparse texture tiles.
     Sparce = 2,
 }
 

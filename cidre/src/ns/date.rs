@@ -27,3 +27,20 @@ impl Date {
 extern "C" {
     static NS_DATE: &'static objc::Class<ns::Date>;
 }
+
+#[cfg(test)]
+mod tests {
+    use std::{thread::sleep, time::Duration};
+
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let d = ns::Date::with_time_interval_since_now(0.0);
+        sleep(Duration::from_millis(10));
+        assert_ne!(d.time_interval_since_now(), 0.0);
+        let d = ns::Date::new();
+        sleep(Duration::from_millis(10));
+        assert_ne!(d.time_interval_since_now(), 0.0);
+    }
+}

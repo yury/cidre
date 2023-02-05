@@ -267,7 +267,6 @@ macro_rules! define_obj_type {
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
                 let name = stringify!($CLS);
                 let name = format!("{name}\0");
-                println!("name {name:?}");
                 let cls = unsafe {$crate::objc::objc_getClass(name.as_ptr()) };
                 match cls {
                     Some(c) => unsafe { std::mem::transmute(c) }
@@ -440,6 +439,6 @@ mod tests2 {
 
     #[test]
     fn basics() {
-        Bla::with(D);
+        let d = Bla::with(D).retained().inner();
     }
 }

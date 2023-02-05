@@ -1,4 +1,4 @@
-use cidre::{cf, cg, ci, mtl, ns, objc::autoreleasepool, simd};
+use cidre::{cg, ci, mtl, ns, objc::autoreleasepool, simd};
 
 #[repr(C)]
 struct Vertex {

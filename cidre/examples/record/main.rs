@@ -20,12 +20,6 @@ pub struct FrameCounterInner {
     audio_converter: at::AudioConverterRef,
 }
 
-impl Drop for FrameCounterInner {
-    fn drop(&mut self) {
-        println!("dropping!!!")
-    }
-}
-
 impl FrameCounterInner {
     pub fn _video_counter(&self) -> usize {
         self.video_counter
@@ -86,8 +80,6 @@ impl OutputImpl for FrameCounter {
         }
 
         inner.video_counter += 1;
-        // why without println is not working well?
-        // println!("frame {:?}", self.counter);
 
         let img = sample_buffer.image_buffer();
         if img.is_none() {
@@ -279,7 +271,7 @@ extern "C" fn callback(
 async fn main() {
     const FPS: i32 = 60;
 
-    let q = dispatch::Queue::serial_with_autoreleasepool();
+    let queue = dispatch::Queue::serial_with_autoreleasepool();
     let content = sc::ShareableContent::current().await.expect("content");
     let ref display = content.displays()[0];
     let mut cfg = sc::StreamConfiguration::new();
@@ -287,7 +279,6 @@ async fn main() {
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);
 
-    println!("1");
     // audio
     cfg.set_captures_audio(true);
     cfg.set_excludes_current_process_audio(false);
@@ -312,8 +303,6 @@ async fn main() {
     )
     .unwrap();
 
-    println!("2");
-
     println!(
         "rendering with {}x{}",
         display.width() * 2,
@@ -334,8 +323,6 @@ async fn main() {
         &cf::Number::from_f64(1.0f64),
     ])
     .unwrap();
-
-    println!("hmmm");
 
     let mut props = cf::DictionaryMut::with_capacity(10);
     props.insert(keys::real_time(), bool_true);
@@ -359,7 +346,6 @@ async fn main() {
 
     session.set_props(&props).unwrap();
     session.prepare().unwrap();
-    println!("hmmm2");
 
     let windows = ns::Array::new();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
@@ -380,7 +366,6 @@ async fn main() {
         bits_per_channel: 32,
         reserved: 0,
     };
-    println!("hmmm3");
 
     let inner = FrameCounterInner {
         video_counter: 0,
@@ -394,17 +379,12 @@ async fn main() {
         audio_converter: default_converter(),
     };
     let delegate = FrameCounter::with(inner);
-    println!("hmmm4");
     stream
-        .add_stream_output(delegate.as_ref(), sc::OutputType::Screen, Some(&q))
+        .add_stream_output(delegate.as_ref(), sc::OutputType::Screen, Some(&queue))
         .unwrap();
-    println!("hmmm5");
     stream
-        .add_stream_output(delegate.as_ref(), sc::OutputType::Audio, Some(&q))
+        .add_stream_output(delegate.as_ref(), sc::OutputType::Audio, Some(&queue))
         .unwrap();
-    println!("hmmm6");
-    println!("nice");
-    stream.start().await.expect("started");
 
     tokio::time::sleep(Duration::from_secs(100_200)).await;
 
