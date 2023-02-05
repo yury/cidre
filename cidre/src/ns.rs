@@ -113,9 +113,10 @@ mod run_loop;
 pub use run_loop::RunLoop;
 pub use run_loop::RunLoopMode;
 
-type TimeInterval = f64;
-
-pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;
+mod date;
+pub use date::Date;
+pub use date::TimeInterval;
+pub use date::TIME_INTERVAL_SINCE_1970;
 
 mod error;
 pub use error::Domain as ErrorDomain;

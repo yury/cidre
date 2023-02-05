@@ -1,4 +1,5 @@
 mod unit;
+pub use unit::Eq;
 pub use unit::EqFilterParameters as UnitEqFilterParamaters;
 pub use unit::EqFilterType as UnitEqFilterType;
 pub use unit::Unit;
