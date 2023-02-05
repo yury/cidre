@@ -106,7 +106,7 @@ impl String {
     #[inline]
     pub fn from_cstr(cstr: &CStr) -> arc::R<Self> {
         unsafe {
-            Self::create_with_cstring_in(None, cstr.to_bytes_with_nul(), Encoding::UTF8)
+            Self::create_with_cstring_in(cstr.to_bytes_with_nul(), Encoding::UTF8, None)
                 .unwrap_unchecked()
         }
     }
@@ -199,9 +199,9 @@ impl String {
 
     #[inline]
     pub fn create_with_cstring_in(
-        alloc: Option<&Allocator>,
         bytes_with_null: &[u8],
         encoding: Encoding,
+        alloc: Option<&Allocator>,
     ) -> Option<arc::R<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
@@ -232,15 +232,15 @@ impl String {
     #[inline]
     pub fn copy_mut_in(
         &self,
-        alloc: Option<&Allocator>,
         max_length: Index,
+        alloc: Option<&Allocator>,
     ) -> Option<arc::R<StringMut>> {
         unsafe { CFStringCreateMutableCopy(alloc, max_length, self) }
     }
 
     #[inline]
-    pub fn copy_mut(&self, max_length: Index) -> Option<arc::R<StringMut>> {
-        self.copy_mut_in(None, max_length)
+    pub fn copy_mut(&self, max_length: Index) -> arc::R<StringMut> {
+        unsafe { self.copy_mut_in(max_length, None).unwrap_unchecked() }
     }
 
     #[inline]
@@ -328,12 +328,6 @@ impl fmt::Display for String {
         fmt.write_str(&Cow::from(self))
     }
 }
-
-// impl fmt::Debug for String {
-//     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         fmt.write_str(&Cow::from(self))
-//     }
-// }
 
 define_cf_type!(StringMut(String));
 
