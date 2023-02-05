@@ -29,13 +29,13 @@ impl DisplayLink {
     /// to a single run-loop, but it may be added in multiple modes at once.
     /// While added to a run-loop it will implicitly be retained.
     #[objc::msg_send(addToRunLoop:forMode:)]
-    pub fn add_to_run_loop_for_mode(&self, runloop: &cf::RunLoop, mode: &cf::RunLoopMode);
+    pub fn add_to_run_loop_for_mode(&self, runloop: &ns::RunLoop, mode: &ns::RunLoopMode);
 
     /// Removes the receiver from the given mode of the runloop. This will
     /// implicitly release it when removed from the last mode it has been
     /// registered for.
     #[objc::msg_send(removeFromRunLoop:forMode:)]
-    pub fn remove_from_run_loop_for_mode(&self, runloop: &cf::RunLoop, mode: &cf::RunLoopMode);
+    pub fn remove_from_run_loop_for_mode(&self, runloop: &ns::RunLoop, mode: &ns::RunLoopMode);
 
     /// Removes the object from all runloop modes (releasing the receiver if
     /// it has been implicitly retained) and releases the 'target' object

@@ -57,6 +57,7 @@ Class NS_URL_RESPONSE;
 Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
 Class NS_REGULAR_EXPRESSION;
 Class NS_UUID;
+Class NS_RUN_LOOP;
 
 
 
@@ -97,6 +98,7 @@ static void common_initializer()
     
     NS_REGULAR_EXPRESSION = [NSRegularExpression class];
     NS_UUID = [NSUUID class];
+    NS_RUN_LOOP = [NSRunLoop class];
   }
 }
 NS_ASSUME_NONNULL_END

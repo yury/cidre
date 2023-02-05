@@ -109,6 +109,10 @@ pub use url::URL;
 mod uuid;
 pub use uuid::UUID;
 
+mod run_loop;
+pub use run_loop::RunLoop;
+pub use run_loop::RunLoopMode;
+
 type TimeInterval = f64;
 
 pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;
