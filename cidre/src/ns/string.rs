@@ -1,6 +1,6 @@
-use std::{borrow::Cow, ffi::CStr, fmt, str::from_utf8_unchecked};
+use std::{borrow::Cow, fmt};
 
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, cf, define_obj_type, ns, objc};
 
 use super::Class;
 
@@ -120,6 +120,10 @@ impl String {
 
     #[objc::msg_send(UTF8String)]
     pub unsafe fn utf8_chars_ar(&self) -> *const i8;
+
+    pub fn as_cf_string(&self) -> &cf::String {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 impl PartialEq for String {
@@ -144,40 +148,7 @@ extern "C" {
 
 impl fmt::Display for String {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.write_str(&Cow::from(self))
-    }
-}
-
-impl<'a> From<&'a String> for Cow<'a, str> {
-    fn from(nsstr: &'a String) -> Self {
-        unsafe {
-            let c_str = nsstr.utf8_chars_ar();
-            if c_str.is_null() {
-                let bytes_required = nsstr.len_of_bytes(Encoding::UTF8);
-
-                let mut buffer = Vec::with_capacity(bytes_required as _);
-                buffer.set_len(bytes_required as _);
-                todo!();
-                // let mut used_buf_len: Index = 0;
-                // CFStringGetBytes(
-                //     cfstr,
-                //     range,
-                //     Encoding::UTF8,
-                //     0,
-                //     false,
-                //     buffer.as_mut_ptr(),
-                //     buffer.len() as _,
-                //     &mut used_buf_len,
-                // );
-
-                // debug_assert_eq!(bytes_required, used_buf_len);
-
-                Cow::Owned(std::string::String::from_utf8_unchecked(buffer))
-            } else {
-                let cstr = CStr::from_ptr(c_str);
-                Cow::Borrowed(from_utf8_unchecked(cstr.to_bytes()))
-            }
-        }
+        fmt.write_str(&Cow::from(self.as_cf_string()))
     }
 }
 

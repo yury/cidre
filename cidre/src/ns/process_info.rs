@@ -75,5 +75,7 @@ mod tests {
         assert_eq!(pi.is_low_power_mode_enabled(), false);
         assert!(pi.processor_count() > 1);
         assert!(pi.active_processor_count() > 1);
+        assert!(!pi.is_ios_app_on_mac());
+        assert!(!pi.is_mac_catalyst_app());
     }
 }

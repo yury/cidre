@@ -135,7 +135,9 @@ impl Obj for Id {}
 impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self.description();
-        f.debug_tuple("NS").field(&Cow::from(desc.deref())).finish()
+        f.debug_tuple("NS")
+            .field(&Cow::from(desc.as_cf_string()))
+            .finish()
     }
 }
 
@@ -406,7 +408,7 @@ pub use cidre_macros::rar_retain;
 #[cfg(test)]
 mod tests2 {
 
-    use crate::objc;
+    use crate::{objc, objc::Obj};
 
     #[objc::obj_trait]
     trait Foo: objc::Obj {
@@ -418,11 +420,15 @@ mod tests2 {
         fn count2(&self) -> usize;
     }
 
+    static mut DROP_CALLED: bool = false;
+
     pub struct D;
 
     impl Drop for D {
         fn drop(&mut self) {
-            println!("drop");
+            unsafe {
+                DROP_CALLED = true;
+            }
         }
     }
 
@@ -439,6 +445,14 @@ mod tests2 {
 
     #[test]
     fn basics() {
-        let d = Bla::with(D).retained().inner();
+        unsafe {
+            DROP_CALLED = false;
+        }
+        {
+            let d = Bla::with(D);
+            let desc = d.description();
+            assert!(desc.to_string().starts_with("<BLA_USIZE: "));
+        }
+        assert!(unsafe { DROP_CALLED });
     }
 }
