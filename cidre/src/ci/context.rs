@@ -1,15 +1,20 @@
-use crate::{arc, cf, cg, ci, define_obj_type, ns, objc};
+use crate::{arc, cg, ci, define_obj_type, ns, objc};
 
 define_obj_type!(Context(ns::Id), CI_CONTEXT);
 
 impl arc::A<Context> {
     #[objc::msg_send(initWithOptions:)]
-    pub fn init_with_options(self, options: Option<&cf::Dictionary>) -> Option<arc::R<Context>>;
+    pub fn init_with_options(
+        self,
+        options: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Option<arc::R<Context>>;
 }
 
 impl Context {
     #[inline]
-    pub fn with_options(options: Option<&cf::Dictionary>) -> Option<arc::R<Self>> {
+    pub fn with_options(
+        options: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_options(options)
     }
 
@@ -20,7 +25,7 @@ impl Context {
         url: &ns::URL,
         format: ci::Format,
         color_space: &cg::ColorSpace,
-        options: &cf::Dictionary,
+        options: &ns::Dictionary<ns::String, ns::Id>,
         error: &mut Option<&'ar ns::Error>,
     ) -> bool;
 
@@ -30,7 +35,7 @@ impl Context {
         url: &ns::URL,
         format: ci::Format,
         color_space: &cg::ColorSpace,
-        options: &cf::Dictionary,
+        options: &ns::Dictionary<ns::String, ns::Id>,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
         let res = self.write_png_to_url_format_colorspace_options_error(
@@ -54,3 +59,6 @@ impl Context {
 extern "C" {
     static CI_CONTEXT: &'static objc::Class<Context>;
 }
+
+#[link(name = "CoreImage", kind = "framework")]
+extern "C" {}

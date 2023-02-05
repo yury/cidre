@@ -93,13 +93,12 @@ fn make_upsample_nearest(
     scale_factor: i64,
 ) -> arc::R<graph::Tensor> {
     let in_shape = x_in.shape().unwrap();
-    let shape: &[&ns::Number] = &[
-        &ns::Number::with_i64(in_shape[1].as_i64() * scale_factor),
-        &ns::Number::with_i64(in_shape[2].as_i64() * scale_factor),
-    ];
     graph.resize(
         x_in,
-        &mps::Shape::from_slice(shape),
+        &mps::Shape::from_slice(&[
+            &ns::Number::with_i64(in_shape[1].as_i64() * scale_factor).as_ref(),
+            &ns::Number::with_i64(in_shape[2].as_i64() * scale_factor).as_ref(),
+        ]),
         graph::ResizeMode::Nearest,
         true,
         false,
@@ -205,12 +204,12 @@ pub fn make_decoder_attention(
     let x = make_group_norm(graph, x_in, &format!("{name}.norm"));
     let shape = x.shape().unwrap();
     let c = &shape[3];
-    let new_share: &[&ns::Number] = &[
+    let new_shape: &[&ns::Number] = &[
         &shape[0],
         &ns::Number::with_i64(shape[1].as_i64() * shape[2].as_i64()),
         &c,
     ];
-    let x = graph.reshape(&x, &mps::Shape::from_slice(new_share), None);
+    let x = graph.reshape(&x, &mps::Shape::from_slice(new_shape), None);
     let q = make_linear(graph, &x, &format!("{name}.q"), c, false);
     let k = make_linear(graph, &x, &format!("{name}.k"), c, false);
     let k = graph.mul(

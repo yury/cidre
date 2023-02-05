@@ -55,5 +55,4 @@ extern "C" {
         qos_class: QOSClass,
         relative_priority: i32,
     );
-
 }

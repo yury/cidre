@@ -124,14 +124,20 @@ fn main() {
 
         command_buffer.commit();
 
-        let context = ci::Context::new();
         let image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
 
-        let options = cf::Dictionary::new().unwrap();
+        let context = ci::Context::new();
+
         let color_space = cg::ColorSpace::device_rgb().unwrap();
         let url = ns::URL::with_str("file:///tmp/image.png").unwrap();
         context
-            .write_png_to_url(&image, &url, ci::Format::rgba8(), &color_space, &options)
+            .write_png_to_url(
+                &image,
+                &url,
+                ci::Format::rgba8(),
+                &color_space,
+                ns::Dictionary::new().as_ref(),
+            )
             .unwrap();
 
         println!("image is written to {:?}", url.abs_string());

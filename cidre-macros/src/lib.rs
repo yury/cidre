@@ -38,7 +38,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
                     let Some(TokenTree::Group(a)) = iter.next() else {
                         return None;
                     };
-                    let sel = a.stream().to_string().replace(' ', "");
+                    let sel = a.stream().to_string().replace(' ', "").replace('\n', "");
                     return Some(ObjcAttr::MsgSend(sel));
                 }
                 return None;
@@ -436,7 +436,7 @@ fn gen_msg_send(
     class: bool,
     debug: bool,
 ) -> TokenStream {
-    let extern_name = sel.to_string().replace(' ', "");
+    let extern_name = sel.to_string().replace(' ', "").replace('\n', "");
     let _is_init = extern_name.starts_with("init");
     let args_count = sel_args_count(sel);
 

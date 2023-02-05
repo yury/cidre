@@ -99,7 +99,7 @@ impl CommandBuffer {
         descriptor: &mtl::ComputePassDescriptor,
     ) -> Option<arc::R<mtl::ComputeCommandEncoder>>;
 
-    #[objc::msg_send(newRenderCommandEncoderWithDescriptor:)]
+    #[objc::msg_send(renderCommandEncoderWithDescriptor:)]
     pub fn render_command_encoder_with_descriptor_ar(
         &self,
         descriptor: &mtl::RenderPassDescriptor,

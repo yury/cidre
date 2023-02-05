@@ -25,5 +25,5 @@ impl Date {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_DATE: &'static objc::Class<ns::Id>;
+    static NS_DATE: &'static objc::Class<ns::Date>;
 }
