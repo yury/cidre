@@ -43,7 +43,11 @@ impl<T: Obj> arc::A<Array<T>> {
     pub fn init(self) -> arc::R<Array<T>>;
 
     #[objc::msg_send(initWithObjects:count:)]
-    pub fn init_with_objects_count(self, ptr: *const c_void, count: usize) -> arc::R<Array<T>>;
+    pub unsafe fn init_with_objects_count(
+        self,
+        ptr: *const c_void,
+        count: usize,
+    ) -> arc::R<Array<T>>;
 }
 
 impl<T: Obj> Array<T> {
@@ -63,7 +67,7 @@ impl<T: Obj> Array<T> {
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
+        unsafe { Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len()) }
     }
 
     #[objc::msg_send(containsObject:)]
@@ -103,7 +107,11 @@ impl<T: Obj> arc::A<ArrayMut<T>> {
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<ArrayMut<T>>;
 
     #[objc::msg_send(initWithObjects:count:)]
-    pub fn init_with_objects_count(&self, ptr: *const c_void, count: usize) -> arc::R<ArrayMut<T>>;
+    pub unsafe fn init_with_objects_count(
+        &self,
+        ptr: *const c_void,
+        count: usize,
+    ) -> arc::R<ArrayMut<T>>;
 }
 
 impl<T: Obj> ArrayMut<T> {
@@ -116,7 +124,7 @@ impl<T: Obj> ArrayMut<T> {
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
+        unsafe { Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len()) }
     }
 }
 

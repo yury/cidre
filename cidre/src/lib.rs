@@ -156,6 +156,7 @@ macro_rules! define_options {
 #[cfg(test)]
 mod tests {
     use crate::cf;
+
     #[test]
     fn it_works() {
         let f = {
