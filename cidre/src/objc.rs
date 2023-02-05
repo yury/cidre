@@ -29,11 +29,11 @@ impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
             };
 
             // we may skip init?
-            //let a = a.init();
+            // let a = a.init();
 
             let ptr: *mut u8 = transmute(a);
-            let d_ptr: *mut I = ptr.offset(NS_OBJECT_SIZE as _) as _;
-            *d_ptr = var;
+            let d_ptr: *mut std::mem::ManuallyDrop<I> = ptr.offset(NS_OBJECT_SIZE as _) as _;
+            *d_ptr = std::mem::ManuallyDrop::new(var);
 
             std::mem::transmute(ptr)
         }
@@ -251,7 +251,8 @@ macro_rules! define_obj_type {
 
                 if std::mem::needs_drop::<$InnerType>() {
                     extern "C" fn impl_dealloc(s: &mut $NewType, _sel: Option<$crate::objc::Sel>) {
-                        std::mem::drop(s);
+                        let ptr = s.inner_mut() as *mut _;
+                        unsafe { std::ptr::drop_in_place(ptr); }
                     }
                     unsafe {
                         let sel = $crate::objc::sel_registerName(b"dealloc\0".as_ptr());
@@ -266,6 +267,7 @@ macro_rules! define_obj_type {
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
                 let name = stringify!($CLS);
                 let name = format!("{name}\0");
+                println!("name {name:?}");
                 let cls = unsafe {$crate::objc::objc_getClass(name.as_ptr()) };
                 match cls {
                     Some(c) => unsafe { std::mem::transmute(c) }
