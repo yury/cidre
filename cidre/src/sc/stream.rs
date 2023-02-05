@@ -234,10 +234,6 @@ impl Stream {
         Err(error.unwrap())
     }
 
-    pub fn start_sync(&self) {
-        unsafe { test_start(self) }
-    }
-
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
     fn _start_with_completion_handler(&self, rb: *mut c_void);
 
@@ -270,10 +266,10 @@ impl Stream {
     }
 }
 
-#[link(name = "sc", kind = "static")]
-extern "C" {
-    fn test_start(id: &ns::Id);
-}
+// #[link(name = "sc", kind = "static")]
+// extern "C" {
+//     fn test_start(id: &ns::Id);
+// }
 
 #[cfg(test)]
 mod tests {

@@ -91,6 +91,22 @@ impl<T: Release> DerefMut for Retained<T> {
     }
 }
 
+impl<T: Release + objc::Obj> Retained<T> {
+    /// #Safety
+    /// Use `return_ar` macro
+    #[inline]
+    pub unsafe fn return_ar(self) -> crate::arc::Rar<T> {
+        unsafe { std::mem::transmute(objc::objc_autoreleaseReturnValue(std::mem::transmute(self))) }
+    }
+}
+
+#[macro_export]
+macro_rules! return_ar {
+    ($r:path) => {
+        return unsafe { $r.return_ar() }
+    };
+}
+
 /// ```
 /// use cidre::cf;
 ///

@@ -107,12 +107,12 @@ pub const NONE: Option<&'static Any> = None;
 
 impl Id {
     #[inline]
-    pub unsafe fn autorelease<'ar>(id: &mut Id) -> &mut Id {
+    pub unsafe fn autorelease<'ar>(id: &mut Id) -> &'ar mut Id {
         objc_autorelease(id)
     }
 
     #[inline]
-    pub unsafe fn retain_autoreleased<'ar>(id: Option<&Id>) -> Option<&Id> {
+    pub unsafe fn retain_autoreleased_return<'ar>(id: Option<&Id>) -> Option<&'ar Id> {
         objc_retainAutoreleasedReturnValue(id)
     }
 
@@ -164,12 +164,11 @@ extern "C" {
     fn objc_release(obj: &mut Id);
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
-    // fn objc_msgSend(id: &Id, sel: &Sel, args: ...) -> *const c_void;
-    fn objc_autorelease<'a>(id: &mut Id) -> &'a mut Id;
-    fn objc_retainAutoreleasedReturnValue<'a>(obj: Option<&Id>) -> Option<&'a Id>;
+    fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
+    fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
+    pub fn objc_autoreleaseReturnValue(obj: Option<&Id>) -> arc::Rar<Id>;
 
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
-    // pub fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::R<Id>>;
     pub fn sel_registerName(str: *const u8) -> &'static Sel;
     pub fn class_addMethod(
         cls: &Class<Id>,
@@ -199,6 +198,8 @@ macro_rules! define_cls_init {
         impl $NewType {
             $crate::define_cls!($CLS);
 
+            /// shortcut to `Self::alloc().init()`
+            #[inline]
             pub fn new() -> $crate::arc::R<$NewType> {
                 Self::alloc().init()
             }
@@ -267,7 +268,7 @@ macro_rules! define_obj_type {
 
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
                 let name = concat!(stringify!($CLS), "\0");
-                let cls = unsafe {$crate::objc::objc_getClass(name.as_ptr()) };
+                let cls = unsafe { $crate::objc::objc_getClass(name.as_ptr()) };
                 match cls {
                     Some(c) => unsafe { std::mem::transmute(c) }
                     None => Self::register_cls()
@@ -275,7 +276,7 @@ macro_rules! define_obj_type {
             }
 
             pub fn with(inner: $InnerType) -> $crate::arc::R<Self> {
-                Self::cls().alloc_init(inner).unwrap()
+                unsafe { Self::cls().alloc_init(inner).unwrap_unchecked() }
             }
         }
     };
@@ -328,18 +329,18 @@ impl PartialEq for Id {
 mod tests {
 
     use super::autoreleasepool;
-    use crate::{cf, dispatch};
+    use crate::{arc, cf, dispatch, return_ar};
     use std;
 
-    fn autorelease_example<'ar>() -> &'ar mut dispatch::Queue {
+    fn autorelease_example() -> arc::Rar<dispatch::Queue> {
         let q = dispatch::Queue::new();
-        q.autoreleased()
+        return_ar!(q)
     }
 
     #[test]
     fn autorelease() {
         let ptr = autoreleasepool(|| {
-            let q = autorelease_example();
+            let q = autorelease_example().retain();
             assert_eq!(1, q.as_type_ref().retain_count());
             unsafe { q.as_type_ref().as_type_ptr() }
         });
@@ -357,7 +358,7 @@ impl<T: Obj> ReturnedAutoReleased<T> {
     pub fn retain(self) -> arc::R<T> {
         unsafe {
             asm!("mov x29, x29");
-            transmute(Id::retain_autoreleased(transmute(self)))
+            transmute(Id::retain_autoreleased_return(transmute(self)))
         }
     }
 
@@ -365,7 +366,7 @@ impl<T: Obj> ReturnedAutoReleased<T> {
     pub fn option_retain(value: Option<Self>) -> Option<arc::R<T>> {
         unsafe {
             asm!("mov x29, x29");
-            transmute(Id::retain_autoreleased(transmute(value)))
+            transmute(Id::retain_autoreleased_return(transmute(value)))
         }
     }
 }
