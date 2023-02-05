@@ -1,31 +1,29 @@
-use std::ffi::c_void;
+use crate::{arc, ca, cf, define_obj_type, ns, objc};
 
-use crate::{arc, ca, cf, define_obj_type, ns, objc, objc::Delegate};
+define_obj_type!(DisplayLink(ns::Id), CA_DISPLAY_LINK);
 
-define_obj_type!(DisplayLink(ns::Id));
-
-pub trait DisplayLinkDelegate {
-    extern "C" fn on_display_link(&mut self, link: &DisplayLink);
-
-    fn delegate(self) -> Delegate<Self>
-    where
-        Self: Sized,
-    {
-        let b = Box::new(self);
-        let table: [*const c_void; 2] = [
-            b.as_ref() as *const _ as _,
-            // &self as *const _ as *const _,
-            Self::on_display_link as _,
-        ];
-
-        let ptr = table.as_ptr();
-        let obj = unsafe { make_display_link_delegate(ptr as _) };
-
-        Delegate { delegate: b, obj }
-    }
+#[objc::obj_trait]
+pub trait Target: objc::Obj {
+    #[objc::msg_send(onDisplayLink:)]
+    fn on_display_link(&mut self, link: &DisplayLink);
 }
 
 impl DisplayLink {
+    #[objc::cls_msg_send(displayLinkWithTarget:selector:)]
+    pub fn with_target_selector_ar(target: &ns::Id, selector: &objc::Sel) -> arc::Rar<Self>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_target_selector(target: &ns::Id, selector: &objc::Sel) -> arc::R<Self>;
+
+    pub fn with<D: TargetImpl>(target: &D) -> arc::R<Self> {
+        unsafe {
+            Self::with_target_selector(
+                std::mem::transmute(target),
+                D::sel_on_display_link().unwrap_unchecked(),
+            )
+        }
+    }
+
     /// Adds the receiver to the given run-loop and mode. Unless paused, it
     /// will fire every vsync until removed. Each object may only be added
     /// to a single run-loop, but it may be added in multiple modes at once.
@@ -68,5 +66,5 @@ impl DisplayLink {
 
 #[link(name = "ca", kind = "static")]
 extern "C" {
-    fn make_display_link_delegate(vtable: *const *const c_void) -> arc::R<ns::Id>;
+    static CA_DISPLAY_LINK: &'static objc::Class<ns::Id>;
 }

@@ -10,18 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CidreMachPortDelegate : NSObject<NSMachPortDelegate> {
-  @public void * _vtable[2];
-}
-@end
-
-NS_RETURNS_RETAINED
-CidreMachPortDelegate * make_mach_port_delegate(void * _Nonnull vtable[_Nonnull 2]) {
-  CidreMachPortDelegate * result = [CidreMachPortDelegate new];
-  memcpy(result->_vtable, vtable, 2 * sizeof(void *));
-  return result;
-}
-
 void cidre_raise_exception(NSString *message) {
   [NSException raise:NSGenericException format:@"%@", message];
 }
