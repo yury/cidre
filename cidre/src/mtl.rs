@@ -95,7 +95,7 @@ pub use command_buffer::Status as CommandBufferStatus;
 
 pub mod render_pipeline;
 pub use render_pipeline::BlendFactor;
-pub use render_pipeline::BlendOperation;
+pub use render_pipeline::BlendOp;
 pub use render_pipeline::ColorAttachmentDescriptor as RenderPipelineColorAttachmentDescriptor;
 pub use render_pipeline::ColorAttachmentDescriptorArray as RenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::ColorWriteMask;

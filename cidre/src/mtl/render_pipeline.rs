@@ -9,28 +9,28 @@ use super::{argument::Argument, Function, PixelFormat};
 pub enum BlendFactor {
     Zero = 0,
     One = 1,
-    SourceColor = 2,
-    OneMinusSourceColor = 3,
-    SourceAlpha = 4,
-    OneMinusSourceAlpha = 5,
-    DestinationColor = 6,
-    OneMinusDestinationColor = 7,
-    DestinationAlpha = 8,
-    OneMinusDestinationAlpha = 9,
-    SourceAlphaSaturated = 10,
+    SrcColor = 2,
+    OneMinusSrcColor = 3,
+    SrcAlpha = 4,
+    OneMinusSrcAlpha = 5,
+    DstColor = 6,
+    OneMinusDstColor = 7,
+    DstAlpha = 8,
+    OneMinusDstAlpha = 9,
+    SrcAlphaSaturated = 10,
     BlendColor = 11,
     OneMinusBlendColor = 12,
     BlendAlpha = 13,
     OneMinusBlendAlpha = 14,
-    Source1Color = 15,
-    OneMinusSource1Color = 16,
-    Source1Alpha = 17,
-    OneMinusSource1Alpha = 18,
+    Src1Color = 15,
+    OneMinusSrc1Color = 16,
+    Src1Alpha = 17,
+    OneMinusSrc1Alpha = 18,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
-pub enum BlendOperation {
+pub enum BlendOp {
     Add = 0,
     Subtract = 1,
     ReverseSubtract = 2,
@@ -112,16 +112,16 @@ impl ColorAttachmentDescriptor {
     pub fn set_src_rgb_blend_factor(&mut self, value: BlendFactor);
 
     #[objc::msg_send(destinationRGBBlendFactor)]
-    pub fn dest_rgb_blend_factor(&self) -> BlendFactor;
+    pub fn dst_rgb_blend_factor(&self) -> BlendFactor;
 
     #[objc::msg_send(setDestinationRGBBlendFactor:)]
-    pub fn set_dest_rgb_blend_factor(&mut self, value: BlendFactor);
+    pub fn set_dst_rgb_blend_factor(&mut self, value: BlendFactor);
 
     #[objc::msg_send(rgbBlendOperation)]
-    pub fn rgb_blend_operation(&self) -> BlendOperation;
+    pub fn rgb_blend_op(&self) -> BlendOp;
 
     #[objc::msg_send(setRgbBlendOperation:)]
-    pub fn set_rgb_blend_operation(&mut self, value: BlendOperation);
+    pub fn set_rgb_blend_op(&mut self, value: BlendOp);
 
     #[objc::msg_send(sourceAlphaBlendFactor)]
     pub fn src_alpha_blend_factor(&self) -> BlendFactor;
@@ -130,16 +130,16 @@ impl ColorAttachmentDescriptor {
     pub fn set_src_alpha_blend_factor(&mut self, value: BlendFactor);
 
     #[objc::msg_send(destinationAlphaBlendFactor)]
-    pub fn dest_alpha_blend_factor(&self) -> BlendFactor;
+    pub fn dst_alpha_blend_factor(&self) -> BlendFactor;
 
     #[objc::msg_send(setDestinationAlphaBlendFactor:)]
-    pub fn set_dest_alpha_blend_factor(&mut self, value: BlendFactor);
+    pub fn set_dst_alpha_blend_factor(&mut self, value: BlendFactor);
 
     #[objc::msg_send(alphaBlendOperation)]
-    pub fn alpha_blend_operation(&self) -> BlendOperation;
+    pub fn alpha_blend_op(&self) -> BlendOp;
 
     #[objc::msg_send(setAlphaBlendOperation:)]
-    pub fn alpha_rgb_blend_operation(&mut self, value: BlendOperation);
+    pub fn alpha_rgb_blend_op(&mut self, value: BlendOp);
 
     #[objc::msg_send(writeMask)]
     pub fn write_mask(&self) -> ColorWriteMask;
@@ -152,13 +152,13 @@ define_obj_type!(Reflection(ns::Id));
 
 impl Reflection {
     #[objc::msg_send(vertexArguments)]
-    pub fn vertex_arguments(&self) -> Option<&ns::Array<Argument>>;
+    pub fn vertex_args(&self) -> Option<&ns::Array<Argument>>;
 
     #[objc::msg_send(fragmentArguments)]
-    pub fn fragment_arguments(&self) -> Option<&ns::Array<Argument>>;
+    pub fn fragment_args(&self) -> Option<&ns::Array<Argument>>;
 
     #[objc::msg_send(tileArguments)]
-    pub fn tile_arguments(&self) -> Option<&ns::Array<Argument>>;
+    pub fn tile_args(&self) -> Option<&ns::Array<Argument>>;
 }
 
 define_obj_type!(Descriptor(ns::Id));
@@ -179,26 +179,16 @@ impl Descriptor {
     /// ```
 
     #[objc::msg_send(vertexFunction)]
-    pub fn vertex_function(&self) -> Option<&Function>;
+    pub fn vertex_fn(&self) -> Option<&Function>;
 
     #[objc::msg_send(setVertexFunction:)]
-    pub fn set_vertex_function(&mut self, value: Option<&Function>);
-
-    #[inline]
-    pub fn set_vertex_fn(&mut self, value: &Function) {
-        self.set_vertex_function(Some(value))
-    }
+    pub fn set_vertex_fn(&mut self, value: Option<&Function>);
 
     #[objc::msg_send(fragmentFunction)]
-    pub fn fragment_function(&self) -> Option<&Function>;
+    pub fn fragment_fn(&self) -> Option<&Function>;
 
     #[objc::msg_send(setFragmentFunction:)]
-    pub fn set_fragment_function(&mut self, value: Option<&Function>);
-
-    #[inline]
-    pub fn set_fragment_fn(&mut self, value: &Function) {
-        self.set_fragment_function(Some(value))
-    }
+    pub fn set_fragment_fn(&mut self, value: Option<&Function>);
 
     #[objc::msg_send(colorAttachments)]
     pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray;
@@ -295,8 +285,8 @@ mod tests {
     fn basics() {
         let mut desc = mtl::RenderPipelineDescriptor::new();
 
-        assert!(desc.vertex_function().is_none());
-        assert!(desc.fragment_function().is_none());
+        assert!(desc.vertex_fn().is_none());
+        assert!(desc.fragment_fn().is_none());
 
         desc.reset();
     }
