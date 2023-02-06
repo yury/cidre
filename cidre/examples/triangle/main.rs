@@ -95,7 +95,7 @@ fn main() {
         ca.set_clear_color(mtl::ClearColor::red());
         ca.set_load_action(mtl::LoadAction::Clear);
         ca.set_store_action(mtl::StoreAction::Store);
-        ca.set_texture(&rgba_texture);
+        ca.set_texture(Some(&rgba_texture));
 
         let triangle = [
             Vertex::with((-1.0, 1.0), (1.0, 0.0, 0.0)),

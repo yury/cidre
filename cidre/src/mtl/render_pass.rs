@@ -135,15 +135,7 @@ impl Descriptor {
     pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor;
 
     #[objc::msg_send(setDepthAttachment:)]
-    pub fn _set_depth_attachemnt(&mut self, value: Option<&DepthAttachmentDescriptor>);
-
-    #[objc::msg_send(setDepthAttachment:)]
-    pub fn set_depth_attachemnt(&mut self, value: &DepthAttachmentDescriptor);
-
-    #[inline]
-    pub fn reset_depth_attachemnt(&mut self) {
-        self._set_depth_attachemnt(None)
-    }
+    pub fn set_depth_attachemnt(&mut self, value: Option<&DepthAttachmentDescriptor>);
 
     #[objc::msg_send(stencilAttachment)]
     pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor;
@@ -153,11 +145,6 @@ impl Descriptor {
 
     #[objc::msg_send(setStencilAttachment:)]
     pub fn set_stencil_attachemnt(&mut self, value: &StencilAttachmentDescriptor);
-
-    #[inline]
-    pub fn reset_stencil_attachemnt(&mut self) {
-        self.set_stencil_attachemnt_option(None)
-    }
 
     #[objc::msg_send(tileWidth)]
     pub fn tile_width(&self) -> usize;
@@ -194,23 +181,13 @@ define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
 
 impl ColorAttachmentDescriptorArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor;
+    pub fn get_at(&self, index: usize) -> Option<&ColorAttachmentDescriptor>;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor;
+    pub fn get_mut_at(&mut self, index: usize) -> Option<&mut ColorAttachmentDescriptor>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, object: Option<&ColorAttachmentDescriptor>, index: usize);
-
-    #[inline]
-    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDescriptor) {
-        self.set_object_at(Some(value), index);
-    }
-
-    #[inline]
-    pub fn reset_at(&mut self, index: usize) {
-        self.set_object_at(None, index);
-    }
+    pub fn set_at(&mut self, object: Option<&ColorAttachmentDescriptor>, index: usize);
 }
 
 impl Index<usize> for ColorAttachmentDescriptorArray {
@@ -218,14 +195,14 @@ impl Index<usize> for ColorAttachmentDescriptorArray {
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        self.get_at(index)
+        self.get_at(index).unwrap()
     }
 }
 
 impl IndexMut<usize> for ColorAttachmentDescriptorArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut_at(index)
+        self.get_mut_at(index).unwrap()
     }
 }
 
@@ -234,15 +211,7 @@ impl AttachmentDescriptor {
     pub fn texture(&self) -> Option<&mtl::Texture>;
 
     #[objc::msg_send(setTexture:)]
-    pub fn set_texture(&mut self, value: &mtl::Texture);
-
-    #[objc::msg_send(setTexture:)]
-    pub fn set_texture_option(&mut self, value: Option<&mtl::Texture>);
-
-    #[inline]
-    pub fn remove_texture(&mut self) {
-        self.set_texture_option(None)
-    }
+    pub fn set_texture(&mut self, value: Option<&mtl::Texture>);
 
     #[objc::msg_send(level)]
     pub fn level(&self) -> usize;

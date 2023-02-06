@@ -208,7 +208,7 @@ fn foo() -> BenchState {
 
     let text = device.texture_with_descriptor(&desc).unwrap();
 
-    foo.set_texture(&text);
+    foo.set_texture(Some(&text));
 
     let vertex_data = [
         -1.0f32, -1.0, 0.0, 1.0, // -
