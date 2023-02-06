@@ -8,8 +8,8 @@ impl ArgumentEncoder {
     #[objc::msg_send(encodedLength)]
     pub fn encoded_length(&self) -> usize;
 
-    #[objc::msg_send(aligment)]
-    pub fn aligment(&self) -> usize;
+    #[objc::msg_send(alignment)]
+    pub fn alignment(&self) -> usize;
 
     #[objc::msg_send(setArgumentBuffer:offset:)]
     pub fn set_argument_buffer(&mut self, buffer: Option<&mtl::Buffer>, offset: usize);
