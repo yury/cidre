@@ -116,18 +116,18 @@ impl Library {
     /// assert!(n.eq(&expected_name));
     /// ```
     #[objc::msg_send(functionNames)]
-    pub fn function_names(&self) -> &ns::Array<ns::String>;
+    pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
     #[objc::msg_send(newFunctionWithName:)]
-    pub fn new_function_with_name_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
+    pub fn new_fn_with_name_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
 
     #[objc::rar_retain()]
-    pub fn new_function_with_name(&self, name: &ns::String) -> Option<arc::R<Function>>;
+    pub fn new_fn_with_name(&self, name: &ns::String) -> Option<arc::R<Function>>;
 
     /// # Safety
     /// Use new_function_with_name_constant_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
-    pub unsafe fn new_function_with_name_constant_values_error_ar<'ar>(
+    pub unsafe fn new_fn_with_name_constant_values_error_ar<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
@@ -135,29 +135,14 @@ impl Library {
     ) -> Option<arc::Rar<Function>>;
 
     #[objc::rar_retain()]
-    pub unsafe fn new_function_with_name_constant_values_error<'ar>(
+    pub unsafe fn new_fn_with_name_constant_values_error<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Function>>;
 
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let source = ns::String::with_str("kernel void function_a() {}");
-    /// let lib = device.library_with_source(&source, None).unwrap();
-    ///
-    /// let func_name = ns::String::with_str_no_copy("function_a");
-    /// let constant_values = mtl::FunctionConstantValues::new();
-    /// let func = lib.new_function_with_name_constant_values(&func_name, &constant_values).unwrap();
-    /// let name = func.name();
-    /// assert!(func_name.is_equal(name));
-    ///
-    /// ```
-    pub fn new_function_with_name_constant_values<'ar>(
+    pub fn new_fn_with_name_constant_values<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
@@ -165,12 +150,7 @@ impl Library {
         let mut error = None;
 
         let res = unsafe {
-            Self::new_function_with_name_constant_values_error(
-                self,
-                name,
-                constant_values,
-                &mut error,
-            )
+            Self::new_fn_with_name_constant_values_error(self, name, constant_values, &mut error)
         };
 
         if let Some(err) = error {
@@ -261,7 +241,7 @@ mod tests {
 
         let source = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
         let lib = device.library_with_source(&source, None).unwrap();
-        let names = lib.function_names();
+        let names = lib.fn_names();
         assert_eq!(1, names.len());
         let n = &names[0];
 
@@ -288,7 +268,7 @@ mod tests {
         let lib = device.library_with_source(&source, None).unwrap();
 
         let func_name = ns::String::with_str_no_copy("function_a");
-        let func = lib.new_function_with_name(&func_name).unwrap();
+        let func = lib.new_fn_with_name(&func_name).unwrap();
         let name = func.name();
         assert!(func_name.is_equal(&name));
     }
@@ -303,7 +283,7 @@ mod tests {
         let func_name = ns::String::with_str_no_copy("function_a");
         let constant_values = mtl::FunctionConstantValues::new();
         let func = lib
-            .new_function_with_name_constant_values(&func_name, &constant_values)
+            .new_fn_with_name_constant_values(&func_name, &constant_values)
             .unwrap();
         let name = func.name();
         assert!(func_name.is_equal(name));

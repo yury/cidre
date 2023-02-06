@@ -66,10 +66,10 @@ fn main() {
         let lib = device.library_with_source(&source, None).unwrap();
 
         let vertex_fn_name = ns::String::with_str("passthrough");
-        let vertex_fn = lib.new_function_with_name(&vertex_fn_name).unwrap();
+        let vertex_fn = lib.new_fn_with_name(&vertex_fn_name).unwrap();
 
         let fragment_fn_name = ns::String::with_str("pass_color");
-        let fragment_fn = lib.new_function_with_name(&fragment_fn_name).unwrap();
+        let fragment_fn = lib.new_fn_with_name(&fragment_fn_name).unwrap();
 
         let mut desc = mtl::RenderPipelineDescriptor::new();
         desc.set_raster_sample_count(4);
