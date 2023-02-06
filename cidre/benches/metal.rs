@@ -185,8 +185,8 @@ fn foo() -> BenchState {
 
     let mut render_desc = mtl::RenderPipelineDescriptor::new();
 
-    render_desc.set_fragment_function(Some(&frag_fn));
-    render_desc.set_vertex_function(Some(&vert_fn));
+    render_desc.set_fragment_fn(Some(&frag_fn));
+    render_desc.set_vertex_fn(Some(&vert_fn));
 
     let render_state = device
         .render_pipeline_state_with_descriptor(&render_desc)

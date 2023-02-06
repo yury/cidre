@@ -73,8 +73,8 @@ fn main() {
 
         let mut desc = mtl::RenderPipelineDescriptor::new();
         desc.set_raster_sample_count(4);
-        desc.set_vertex_fn(&vertex_fn);
-        desc.set_fragment_fn(&fragment_fn);
+        desc.set_vertex_fn(Some(&vertex_fn));
+        desc.set_fragment_fn(Some(&fragment_fn));
         desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
 
         let pipeline_state = device.render_pipeline_state_with_descriptor(&desc).unwrap();

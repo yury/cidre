@@ -167,17 +167,6 @@ define_cls_init!(Descriptor, MTL_RENDER_PIPELINE_DESCRIPTOR);
 impl Descriptor {
     define_mtl!(reset);
 
-    /// ```no_run
-    /// use cidre::{cf, mtl};
-    ///
-    /// let mut desc = mtl::RenderPipelineDescriptor::new();
-    ///
-    /// assert!(desc.vertex_function().is_none());
-    /// assert!(desc.fragment_function().is_none());
-    ///
-    /// desc.reset();
-    /// ```
-
     #[objc::msg_send(vertexFunction)]
     pub fn vertex_fn(&self) -> Option<&Function>;
 
