@@ -59,6 +59,3 @@ impl Context {
 extern "C" {
     static CI_CONTEXT: &'static objc::Class<Context>;
 }
-
-#[link(name = "CoreImage", kind = "framework")]
-extern "C" {}

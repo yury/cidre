@@ -59,6 +59,16 @@ impl<T: Retain> Retained<T> {
             return std::mem::transmute(res);
         }
     }
+
+    /// #Safety
+    /// Use `return_ar` macro
+    #[inline]
+    pub unsafe fn return_ar(self) -> crate::arc::Rar<T>
+    where
+        T: objc::Obj,
+    {
+        unsafe { std::mem::transmute(objc::objc_autoreleaseReturnValue(std::mem::transmute(self))) }
+    }
 }
 
 impl<T: Release> Drop for Allocated<T> {
@@ -88,15 +98,6 @@ impl<T: Release> DerefMut for Retained<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0
-    }
-}
-
-impl<T: Release + objc::Obj> Retained<T> {
-    /// #Safety
-    /// Use `return_ar` macro
-    #[inline]
-    pub unsafe fn return_ar(self) -> crate::arc::Rar<T> {
-        unsafe { std::mem::transmute(objc::objc_autoreleaseReturnValue(std::mem::transmute(self))) }
     }
 }
 

@@ -187,6 +187,7 @@ extern "C" {
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
 }
 
+/// Same as define_cls but with open `init`
 #[macro_export]
 macro_rules! define_cls_init {
     ($NewType:ident, $CLS:ident) => {

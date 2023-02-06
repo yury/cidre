@@ -29,7 +29,7 @@ impl Object {
         unsafe { dispatch_set_context(self, context) }
     }
 
-    pub fn get_context(&self) -> *mut c_void {
+    pub fn context(&self) -> *mut c_void {
         unsafe { dispatch_get_context(self) }
     }
 

@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, cf, define_obj_type, ns, objc};
 
 define_obj_type!(RunLoopMode(ns::String));
 
@@ -11,10 +11,17 @@ impl RunLoop {
     #[objc::cls_msg_send(mainRunLoop)]
     pub fn main() -> &'static Self;
 
+    #[objc::msg_send(getCFRunLoop)]
+    pub fn as_cf_run_loop(&self) -> &cf::RunLoop;
+
+    //- (void)addTimer:(NSTimer *)timer forMode:(NSRunLoopMode)mode;
+    //pub fn add_timer(&self, c    )
+
     #[objc::msg_send(run)]
     pub fn run(&self);
 
-    // pub fn run_until(&self, date: ns::Date)
+    #[objc::msg_send(runUntilDate:)]
+    pub fn run_until_date(&self, date: ns::Date);
 }
 
 #[link(name = "ns", kind = "static")]

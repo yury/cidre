@@ -59,6 +59,7 @@ Class NS_REGULAR_EXPRESSION;
 Class NS_UUID;
 Class NS_RUN_LOOP;
 Class NS_DATE;
+Class NS_TIMER;
 
 
 
@@ -101,6 +102,8 @@ static void common_initializer()
     NS_UUID = [NSUUID class];
     NS_RUN_LOOP = [NSRunLoop class];
     NS_DATE = [NSDate class];
+    
+    NS_TIMER = [NSTimer class];
   }
 }
 NS_ASSUME_NONNULL_END
