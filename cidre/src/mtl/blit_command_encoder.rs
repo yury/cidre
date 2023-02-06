@@ -48,10 +48,10 @@ impl BlitCommandEncoder {
         src_level: usize,
         src_origin: mtl::Origin,
         src_size: mtl::Size,
-        dest_texture: &mtl::Texture,
-        dest_slice: usize,
-        dest_level: usize,
-        dest_origin: mtl::Origin,
+        dst_texture: &mtl::Texture,
+        dst_slice: usize,
+        dst_level: usize,
+        dst_origin: mtl::Origin,
     );
 
     #[objc::msg_send(copyFromTexture:toTexture:)]
