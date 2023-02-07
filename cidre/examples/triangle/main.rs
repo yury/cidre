@@ -103,20 +103,18 @@ fn main() {
             Vertex::with((1.0, 1.0), (0.0, 0.0, 1.0)),
         ];
 
-        let vertex_buffer = device
-            .buffer_with_slice(&triangle, Default::default())
-            .unwrap();
+        let vertex_buffer = device.new_buf_slice(&triangle, Default::default()).unwrap();
 
-        let command_queue = device.command_queue().unwrap();
-        let command_buffer = command_queue.command_buffer().unwrap();
+        let command_queue = device.new_cmd_queue().unwrap();
+        let command_buffer = command_queue.new_cmd_buf().unwrap();
 
         let mut encoder = command_buffer
-            .render_command_encoder_with_descriptor(&render_pass_desc)
+            .new_render_cmd_enc_desc(&render_pass_desc)
             .unwrap();
 
-        encoder.set_render_pipeline_state(&pipeline_state);
+        encoder.set_render_ps(&pipeline_state);
 
-        encoder.set_vertex_buffer(Some(&vertex_buffer), 0, 0);
+        encoder.set_vertex_buf(Some(&vertex_buffer), 0, 0);
 
         encoder.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
 

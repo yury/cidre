@@ -1,8 +1,8 @@
 use crate::{define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(ComputeCommandEncoder(mtl::CommandEncoder));
+define_obj_type!(ComputeCmdEncoder(mtl::CmdEncoder));
 
-impl ComputeCommandEncoder {
+impl ComputeCmdEncoder {
     define_mtl!(
         update_fence,
         wait_for_fence,
@@ -12,10 +12,10 @@ impl ComputeCommandEncoder {
     );
 
     #[objc::msg_send(setComputePipelineState:)]
-    pub fn set_compute_pipeline_state(&mut self, state: &mtl::ComputePipelineState);
+    pub fn set_compute_ps(&mut self, state: &mtl::ComputePipelineState);
 
     #[objc::msg_send(setTexture:atIndex:)]
-    pub fn set_texture_at_index(&mut self, texture: Option<&mtl::Texture>, index: usize);
+    pub fn set_texture(&mut self, texture: Option<&mtl::Texture>, index: usize);
 
     #[objc::msg_send(setTextures:withRange:)]
     pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range);

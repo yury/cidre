@@ -1,21 +1,21 @@
 use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
-use super::CommandBuffer;
+use super::CmdBuf;
 
-define_obj_type!(CommandQueue(ns::Id));
+define_obj_type!(CmdQueue(ns::Id));
 
-impl CommandQueue {
+impl CmdQueue {
     define_mtl!(device, label, set_label);
 
     #[objc::msg_send(commandBuffer)]
-    pub fn command_buffer_ar(&self) -> Option<arc::Rar<CommandBuffer>>;
+    pub fn new_cmd_buf_ar(&self) -> Option<arc::Rar<CmdBuf>>;
 
     #[objc::rar_retain()]
-    pub fn command_buffer(&self) -> Option<arc::R<CommandBuffer>>;
+    pub fn new_cmd_buf(&self) -> Option<arc::R<CmdBuf>>;
 
     #[objc::msg_send(commandBufferWithUnretainedReferences)]
-    pub fn command_buffer_with_unretained_refs_ar(&self) -> Option<arc::Rar<CommandBuffer>>;
+    pub fn new_cmd_buf_unretained_refs_ar(&self) -> Option<arc::Rar<CmdBuf>>;
 
     #[objc::rar_retain()]
-    pub fn command_buffer_with_unretained_refs(&self) -> Option<arc::R<CommandBuffer>>;
+    pub fn new_cmd_buf_unretained_refs(&self) -> Option<arc::R<CmdBuf>>;
 }

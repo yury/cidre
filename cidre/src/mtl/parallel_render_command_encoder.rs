@@ -1,17 +1,13 @@
-use crate::{define_obj_type, ns};
+use crate::{arc, define_obj_type, objc};
 
-use super::{CommandEncoder, RenderCommandEncoder};
+use super::RenderCmdEncoder;
 
-define_obj_type!(ParallelRenderCommandEncoder(CommandEncoder));
+define_obj_type!(ParallelRenderCmdEncoder(RenderCmdEncoder));
 
-impl ParallelRenderCommandEncoder {
-    #[inline]
-    pub fn render_command_encoder<'ar>(&self) -> Option<&'ar RenderCommandEncoder> {
-        unsafe { rsel_renderCommandEncoder(self) }
-    }
-}
+impl ParallelRenderCmdEncoder {
+    #[objc::msg_send(renderCommandEncoder)]
+    pub fn render_cmd_encoder_ar(&self) -> Option<arc::Rar<Self>>;
 
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn rsel_renderCommandEncoder<'ar>(id: &ns::Id) -> Option<&'ar RenderCommandEncoder>;
+    #[objc::rar_retain]
+    pub fn render_cmd_encoder(&self) -> Option<arc::R<Self>>;
 }

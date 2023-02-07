@@ -12,11 +12,11 @@ impl ArgumentEncoder {
     pub fn alignment(&self) -> usize;
 
     #[objc::msg_send(setArgumentBuffer:offset:)]
-    pub fn set_argument_buffer(&mut self, buffer: Option<&mtl::Buffer>, offset: usize);
+    pub fn set_argument_buffer(&mut self, buffer: Option<&mtl::Buf>, offset: usize);
 
     /// Encodes a reference to a buffer into the argument buffer.
     #[objc::msg_send(setBuffer:offset:atIndex:)]
-    pub fn set_buffer(&mut self, buffer: Option<&mtl::Buffer>, offset: usize, at_index: usize);
+    pub fn set_buffer(&mut self, buffer: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
     /// Set a texture at the given bind point index.
     ///

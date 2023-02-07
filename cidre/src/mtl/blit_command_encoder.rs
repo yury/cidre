@@ -9,36 +9,13 @@ impl BlitOption {
     pub const ROW_LINEAR_PVRTC: Self = Self(1 << 2);
 }
 
-define_obj_type!(BlitCommandEncoder(mtl::CommandEncoder));
+define_obj_type!(BlitCmdEncoder(mtl::CmdEncoder));
 
-/// ```no_run
-/// use cidre::{mtl};
-///
-/// let device = mtl::Device::default().unwrap();
-///
-/// let command_queue = device.command_queue().unwrap();
-/// let command_buffer = command_queue.command_buffer().unwrap();
-///
-/// let fence = device.fence().unwrap();
-///
-/// let mut blit_encoder = command_buffer.blit_command_encoder().unwrap();
-///
-/// blit_encoder.update_fence(&fence);
-/// blit_encoder.end_encoding();
-///
-/// let mut compute_encoder = command_buffer.compute_command_encoder().unwrap();
-/// compute_encoder.wait_for_fence(&fence);
-/// compute_encoder.end_encoding();
-///
-/// command_buffer.commit();
-/// command_buffer.wait_until_completed();
-///
-/// ```
-impl BlitCommandEncoder {
+impl BlitCmdEncoder {
     define_mtl!(update_fence, wait_for_fence);
 
     #[objc::msg_send(fillBuffer:range:value:)]
-    pub fn fill_buffer(&self, buffer: &mtl::Buffer, range: ns::Range, value: u8);
+    pub fn fill_buffer(&self, buffer: &mtl::Buf, range: ns::Range, value: u8);
 
     #[objc::msg_send(copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:)]
     pub fn copy_texture(
@@ -76,21 +53,21 @@ mod tests {
     fn basics() {
         let device = mtl::Device::default().unwrap();
 
-        let command_queue = device.command_queue().unwrap();
-        let command_buffer = command_queue.command_buffer().unwrap();
+        let cmd_queue = device.new_cmd_queue().unwrap();
+        let cmd_buf = cmd_queue.new_cmd_buf().unwrap();
 
-        let fence = device.fence().unwrap();
+        let fence = device.new_fence().unwrap();
 
-        let mut blit_encoder = command_buffer.blit_command_encoder().unwrap();
+        let mut blit_enc = cmd_buf.new_blit_cmd_enc().unwrap();
 
-        blit_encoder.update_fence(&fence);
-        blit_encoder.end_encoding();
+        blit_enc.update_fence(&fence);
+        blit_enc.end_encoding();
 
-        let mut compute_encoder = command_buffer.compute_command_encoder().unwrap();
-        compute_encoder.wait_for_fence(&fence);
-        compute_encoder.end_encoding();
+        let mut compute_enc = cmd_buf.new_compute_cmd_enc().unwrap();
+        compute_enc.wait_for_fence(&fence);
+        compute_enc.end_encoding();
 
-        command_buffer.commit();
-        command_buffer.wait_until_completed();
+        cmd_buf.commit();
+        cmd_buf.wait_until_completed();
     }
 }

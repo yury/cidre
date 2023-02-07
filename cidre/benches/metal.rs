@@ -9,7 +9,7 @@ struct BenchState {
     matrix_state: arc::R<mtl::ComputePipelineState>,
     render_state: arc::R<mtl::RenderPipelineState>,
     render_pass_desc: arc::R<mtl::RenderPassDescriptor>,
-    vertex_buf: arc::R<mtl::Buffer>,
+    vertex_buf: arc::R<mtl::Buf>,
 }
 
 fn foo() -> BenchState {
@@ -163,10 +163,10 @@ fn foo() -> BenchState {
     let lib = device.library_with_source(&source, None).unwrap();
 
     let matrix_transfrom_fn = lib
-        .new_function_with_name(&ns::String::with_str("matrix_transform"))
+        .new_fn_with_name(&ns::String::with_str("matrix_transform"))
         .unwrap();
     let macro_transfrom_fn = lib
-        .new_function_with_name(&ns::String::with_str("macro_tranform"))
+        .new_fn_with_name(&ns::String::with_str("macro_tranform"))
         .unwrap();
 
     let matrix_state = device
@@ -177,10 +177,10 @@ fn foo() -> BenchState {
         .unwrap();
 
     let vert_fn = lib
-        .new_function_with_name(&ns::String::with_str("vertex_passthrough2"))
+        .new_fn_with_name(&ns::String::with_str("vertex_passthrough2"))
         .unwrap();
     let frag_fn = lib
-        .new_function_with_name(&ns::String::with_str("fragment_y_cbcr"))
+        .new_fn_with_name(&ns::String::with_str("fragment_y_cbcr"))
         .unwrap();
 
     let mut render_desc = mtl::RenderPipelineDescriptor::new();
@@ -218,7 +218,7 @@ fn foo() -> BenchState {
     ];
 
     let vertex_buf = device
-        .buffer_with_slice(&vertex_data, mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT)
+        .new_buf_slice(&vertex_data, mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT)
         .unwrap();
 
     BenchState {
@@ -236,7 +236,7 @@ fn foo() -> BenchState {
 pub fn criterion_benchmark(c: &mut Criterion) {
     let state = foo();
 
-    let queue = state.bgra_texture.device().command_queue().unwrap();
+    let queue = state.bgra_texture.device().new_cmd_queue().unwrap();
 
     let depth = 1;
     let width = state.matrix_state.thread_execution_width();
@@ -260,12 +260,12 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("matrix", |b| {
         b.iter(|| {
-            let cmd_buf = queue.command_buffer().unwrap();
-            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
-            encoder.set_compute_pipeline_state(&state.matrix_state);
-            encoder.set_texture_at_index(Some(&state.y_texture), 0);
-            encoder.set_texture_at_index(Some(&state.cbcr_texture), 1);
-            encoder.set_texture_at_index(Some(&state.bgra_texture), 2);
+            let cmd_buf = queue.new_cmd_buf().unwrap();
+            let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
+            encoder.set_compute_ps(&state.matrix_state);
+            encoder.set_texture(Some(&state.y_texture), 0);
+            encoder.set_texture(Some(&state.cbcr_texture), 1);
+            encoder.set_texture(Some(&state.bgra_texture), 2);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
             cmd_buf.commit();
@@ -275,12 +275,12 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("macro", |b| {
         b.iter(|| {
-            let cmd_buf = queue.command_buffer().unwrap();
-            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
-            encoder.set_compute_pipeline_state(&state.macro_state);
-            encoder.set_texture_at_index(Some(&state.y_texture), 0);
-            encoder.set_texture_at_index(Some(&state.cbcr_texture), 1);
-            encoder.set_texture_at_index(Some(&state.bgra_texture), 2);
+            let cmd_buf = queue.new_cmd_buf().unwrap();
+            let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
+            encoder.set_compute_ps(&state.macro_state);
+            encoder.set_texture(Some(&state.y_texture), 0);
+            encoder.set_texture(Some(&state.cbcr_texture), 1);
+            encoder.set_texture(Some(&state.bgra_texture), 2);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
             cmd_buf.commit();
@@ -290,12 +290,12 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("macro untracked", |b| {
         b.iter(|| {
-            let cmd_buf = queue.command_buffer_with_unretained_refs().unwrap();
-            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
-            encoder.set_compute_pipeline_state(&state.macro_state);
-            encoder.set_texture_at_index(Some(&state.y_texture), 0);
-            encoder.set_texture_at_index(Some(&state.cbcr_texture), 1);
-            encoder.set_texture_at_index(Some(&state.bgra_texture), 2);
+            let cmd_buf = queue.new_cmd_buf_unretained_refs().unwrap();
+            let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
+            encoder.set_compute_ps(&state.macro_state);
+            encoder.set_texture(Some(&state.y_texture), 0);
+            encoder.set_texture(Some(&state.cbcr_texture), 1);
+            encoder.set_texture(Some(&state.bgra_texture), 2);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
             cmd_buf.commit();
@@ -309,9 +309,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("macro with textures", |b| {
         b.iter(|| {
-            let cmd_buf = queue.command_buffer().unwrap();
-            let mut encoder = cmd_buf.compute_command_encoder().unwrap();
-            encoder.set_compute_pipeline_state(&state.macro_state);
+            let cmd_buf = queue.new_cmd_buf().unwrap();
+            let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
+            encoder.set_compute_ps(&state.macro_state);
             encoder.set_textures_with_range(textures_ptr, range);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
@@ -322,12 +322,12 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("render", |b| {
         b.iter(|| {
-            let cmd_buf = queue.command_buffer().unwrap();
+            let cmd_buf = queue.new_cmd_buf().unwrap();
             let mut encoder = cmd_buf
-                .render_command_encoder_with_descriptor(&state.render_pass_desc)
+                .new_render_cmd_enc_desc(&state.render_pass_desc)
                 .unwrap();
-            encoder.set_render_pipeline_state(&state.render_state);
-            encoder.set_vertex_buffer(Some(&state.vertex_buf), 0, 0);
+            encoder.set_render_ps(&state.render_state);
+            encoder.set_vertex_buf(Some(&state.vertex_buf), 0, 0);
             encoder.set_fragment_texture_at(Some(&state.y_texture), 0);
             encoder.set_fragment_texture_at(Some(&state.cbcr_texture), 1);
             encoder.draw_primitives(mtl::PrimitiveType::TriangleStrip, 0, 4);

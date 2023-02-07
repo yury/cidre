@@ -2,7 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{arc, blocks, define_obj_type, define_options, io, mtl, ns, objc};
 
-use super::{event::SharedEvent, Buffer, CommandQueue, Event, Fence, Library, Size};
+use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Library, Size};
 
 define_options!(PipelineOption(usize));
 
@@ -108,10 +108,10 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[objc::msg_send(newCommandQueue)]
-    pub fn command_queue_ar(&self) -> Option<arc::Rar<CommandQueue>>;
+    pub fn new_cmd_queue_ar(&self) -> Option<arc::Rar<CmdQueue>>;
 
     #[objc::rar_retain()]
-    pub fn command_queue(&self) -> Option<arc::R<CommandQueue>>;
+    pub fn new_cmd_queue(&self) -> Option<arc::R<CmdQueue>>;
 
     /// ```
     /// use cidre::mtl;
@@ -123,16 +123,16 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[objc::msg_send(newCommandQueueWithMaxCommandBufferCount:)]
-    pub fn command_queue_with_max_command_buffer_count_ar(
+    pub fn new_cmd_queue_max_cmd_buf_count_ar(
         &self,
-        max_command_buffer_count: usize,
-    ) -> Option<arc::Rar<CommandQueue>>;
+        max_cmd_buf_count: usize,
+    ) -> Option<arc::Rar<CmdQueue>>;
 
     #[objc::rar_retain()]
-    pub fn command_queue_with_max_command_buffer_count(
+    pub fn new_cmd_queue_max_cmd_buf_count(
         &self,
-        max_command_buffer_count: usize,
-    ) -> Option<arc::R<CommandQueue>>;
+        max_cmd_buf_count: usize,
+    ) -> Option<arc::R<CmdQueue>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn texture_with_descriptor_ar(
@@ -291,42 +291,42 @@ impl Device {
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn buffer_with_length_and_options_ar(
+    pub fn new_buf_len_opts_ar(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buffer>>;
+    ) -> Option<arc::Rar<mtl::Buf>>;
 
     #[objc::rar_retain()]
-    pub fn buffer_with_length_and_options(
+    pub fn new_buf_len_opts(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buffer>>;
+    ) -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newBufferWithBytes:length:options:)]
-    pub fn buffer_with_bytes_length_and_options_ar(
+    pub fn new_buffer_bytes_len_opts_ar(
         &self,
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<Buffer>>;
+    ) -> Option<arc::Rar<Buf>>;
 
     #[objc::rar_retain()]
-    pub fn buffer_with_bytes_length_and_options(
+    pub fn new_buffer_bytes_len_opts(
         &self,
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<Buffer>>;
+    ) -> Option<arc::R<Buf>>;
 
     #[inline]
-    pub fn buffer_with_slice_ar<T: Sized>(
+    pub fn new_buffer_slice_ar<T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<Buffer>> {
-        self.buffer_with_bytes_length_and_options_ar(
+    ) -> Option<arc::Rar<mtl::Buf>> {
+        self.new_buffer_bytes_len_opts_ar(
             slice.as_ptr() as _,
             std::mem::size_of::<T>() * slice.len(),
             options,
@@ -334,28 +334,19 @@ impl Device {
     }
 
     #[inline]
-    pub fn buffer_with_slice<T: Sized>(
+    pub fn new_buf_slice<T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<Buffer>> {
-        arc::Rar::option_retain(self.buffer_with_slice_ar(slice, options))
+    ) -> Option<arc::R<mtl::Buf>> {
+        arc::Rar::option_retain(self.new_buffer_slice_ar(slice, options))
     }
 
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let mut fence = device.fence().unwrap();
-    /// let label = ns::String::with_str("nice");
-    /// fence.set_label(Some(&label));
-    /// ```
     #[objc::msg_send(newFence)]
-    pub fn fence_ar(&self) -> Option<arc::Rar<Fence>>;
+    pub fn new_fence_ar(&self) -> Option<arc::Rar<Fence>>;
 
     #[objc::rar_retain()]
-    pub fn fence(&self) -> Option<arc::R<Fence>>;
+    pub fn new_fence(&self) -> Option<arc::R<Fence>>;
 
     /// ```no_run
     /// use cidre::{ns, mtl};
@@ -367,10 +358,10 @@ impl Device {
     /// event.set_label(Some(&label));
     /// ```
     #[objc::msg_send(newEvent)]
-    pub fn event_ar(&self) -> Option<arc::Rar<Event>>;
+    pub fn new_event_ar(&self) -> Option<arc::Rar<Event>>;
 
     #[objc::rar_retain()]
-    pub fn event(&self) -> Option<arc::R<Event>>;
+    pub fn new_event(&self) -> Option<arc::R<Event>>;
 
     /// ```no_run
     /// use cidre::{ns, mtl};
@@ -382,10 +373,10 @@ impl Device {
     /// event.set_label(Some(&label));
     /// ```
     #[objc::msg_send(newSharedEvent)]
-    pub fn shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>>;
+    pub fn new_shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>>;
 
     #[objc::rar_retain()]
-    pub fn shared_event(&self) -> Option<arc::R<SharedEvent>>;
+    pub fn new_shared_event(&self) -> Option<arc::R<SharedEvent>>;
 
     /// ```no_run
     /// use cidre::{mtl};
@@ -410,16 +401,11 @@ impl Device {
     ) -> SizeAndAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
-    pub fn new_heap_with_descriptor_ar(
-        &self,
-        descriptor: &mtl::HeapDescriptor,
-    ) -> Option<arc::Rar<mtl::Heap>>;
+    pub fn new_heap_desc_ar(&self, descriptor: &mtl::HeapDescriptor)
+        -> Option<arc::Rar<mtl::Heap>>;
 
     #[objc::rar_retain()]
-    pub fn new_heap_with_descriptor(
-        &self,
-        descriptor: &mtl::HeapDescriptor,
-    ) -> Option<arc::R<mtl::Heap>>;
+    pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -435,11 +421,11 @@ mod tests {
     fn basics1() {
         let device = mtl::Device::default().unwrap();
 
-        let mut fence = device.fence().unwrap();
+        let mut fence = device.new_fence().unwrap();
         let label = ns::String::with_str("nice");
         fence.set_label(Some(&label));
 
-        let mut event = device.shared_event().unwrap();
+        let mut event = device.new_shared_event().unwrap();
         let label = ns::String::with_str("nice");
         event.set_label(Some(&label));
 

@@ -1,18 +1,8 @@
 use crate::{define_obj_type, mtl, objc};
 
-define_obj_type!(Buffer(mtl::Resource));
+define_obj_type!(Buf(mtl::Resource));
 
-impl Buffer {
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let buffer = device.buffer_with_length_and_options(10, Default::default()).unwrap();
-    ///
-    /// assert_eq!(buffer.len(), 10);
-    ///
-    /// ```
+impl Buf {
     #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
@@ -34,9 +24,7 @@ mod tests {
     fn basics() {
         let device = mtl::Device::default().unwrap();
 
-        let buffer = device
-            .buffer_with_length_and_options(10, Default::default())
-            .unwrap();
+        let buffer = device.new_buf_len_opts(10, Default::default()).unwrap();
 
         assert_eq!(buffer.len(), 10);
     }

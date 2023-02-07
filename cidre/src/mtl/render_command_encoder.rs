@@ -143,13 +143,13 @@ impl RenderStages {
     pub const MESH: Self = Self(1usize << 4);
 }
 
-define_obj_type!(RenderCommandEncoder(mtl::CommandEncoder));
+define_obj_type!(RenderCmdEncoder(mtl::CmdEncoder));
 
-impl RenderCommandEncoder {
+impl RenderCmdEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
     #[objc::msg_send(setRenderPipelineState:)]
-    pub fn set_render_pipeline_state(&mut self, value: &mtl::RenderPipelineState);
+    pub fn set_render_ps(&mut self, value: &mtl::RenderPipelineState);
 
     #[inline]
     pub fn set_vertex_bytes(&mut self, bytes: &[u8], at_index: usize) {
@@ -157,20 +157,10 @@ impl RenderCommandEncoder {
     }
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
-    pub fn set_vertex_buffer(
-        &mut self,
-        buffer: Option<&mtl::Buffer>,
-        offset: usize,
-        at_index: usize,
-    );
+    pub fn set_vertex_buf(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
     #[objc::msg_send(setFragmentBuffer:offset:atIndex:)]
-    pub fn set_fragment_buffer(
-        &mut self,
-        buffer: Option<&mtl::Buffer>,
-        offset: usize,
-        at_index: usize,
-    );
+    pub fn set_fragment_buf(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
     #[objc::msg_send(setFragmentTexture:atIndex:)]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);

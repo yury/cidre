@@ -20,9 +20,9 @@ impl BarrierScope {
     pub const RENDER_TARGETS: Self = Self(1 << 2);
 }
 
-define_obj_type!(CommandEncoder(ns::Id));
+define_obj_type!(CmdEncoder(ns::Id));
 
-impl CommandEncoder {
+impl CmdEncoder {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
     #[objc::msg_send(endEncoding)]

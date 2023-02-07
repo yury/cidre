@@ -4,27 +4,27 @@ fn main() {
     autoreleasepool(|| {
         let device = mtl::Device::default().unwrap();
 
-        let command_queue = device.command_queue().unwrap();
-        let command_buffer = command_queue.command_buffer().unwrap();
+        let cmd_queue = device.new_cmd_queue().unwrap();
+        let cmd_buf = cmd_queue.new_cmd_buf().unwrap();
 
-        let cmd_queue = command_buffer.command_queue();
+        let cmd_queue = cmd_buf.cmd_queue();
         let dev = cmd_queue.device();
 
         assert!(dev.as_type_ref().equal(device.as_type_ref()));
-        assert!(cmd_queue.as_type_ref().equal(command_queue.as_type_ref()));
+        assert!(cmd_queue.as_type_ref().equal(cmd_queue.as_type_ref()));
 
-        let fence = device.fence().unwrap();
+        let fence = device.new_fence().unwrap();
 
-        let mut blit_encoder = command_buffer.blit_command_encoder().unwrap();
+        let mut blit_enc = cmd_buf.new_blit_cmd_enc().unwrap();
 
-        blit_encoder.update_fence(&fence);
-        blit_encoder.end_encoding();
+        blit_enc.update_fence(&fence);
+        blit_enc.end_encoding();
 
-        let mut compute_encoder = command_buffer.compute_command_encoder().unwrap();
-        compute_encoder.wait_for_fence(&fence);
-        compute_encoder.end_encoding();
+        let mut compute_enc = cmd_buf.new_compute_cmd_enc().unwrap();
+        compute_enc.wait_for_fence(&fence);
+        compute_enc.end_encoding();
 
-        command_buffer.commit();
-        command_buffer.wait_until_completed();
+        cmd_buf.commit();
+        cmd_buf.wait_until_completed();
     });
 }

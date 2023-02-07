@@ -51,7 +51,7 @@ pub use library::OptimizationLevel as LibraryOptimizationLevel;
 pub use library::Type as LibraryType;
 
 mod command_queue;
-pub use command_queue::CommandQueue;
+pub use command_queue::CmdQueue;
 
 pub mod texture;
 pub use texture::CompressionType as TextureCompressionType;
@@ -76,7 +76,7 @@ mod argument_encoder;
 pub use argument_encoder::ArgumentEncoder;
 
 mod buffer;
-pub use buffer::Buffer;
+pub use buffer::Buf;
 
 mod function_descriptor;
 pub use function_descriptor::FunctionDescriptor;
@@ -88,10 +88,10 @@ pub use compute_pipeline::Reflection as ComputePipelineReflection;
 pub use compute_pipeline::State as ComputePipelineState;
 
 pub mod command_buffer;
-pub use command_buffer::CommandBuffer;
+pub use command_buffer::CmdBuf;
 pub use command_buffer::DispatchType;
-pub use command_buffer::Error as CommandBufferError;
-pub use command_buffer::Status as CommandBufferStatus;
+pub use command_buffer::Error as CmdBufErr;
+pub use command_buffer::Status as CmdBufStatus;
 
 pub mod render_pipeline;
 pub use render_pipeline::BlendFactor;
@@ -128,11 +128,11 @@ pub use blit_pass::SampleBufferAttachmentDescriptorArray as BlitPassSampleBuffer
 
 pub mod command_encoder;
 pub use command_encoder::BarrierScope;
-pub use command_encoder::CommandEncoder;
+pub use command_encoder::CmdEncoder;
 pub use command_encoder::ResourceUsage;
 
 mod blit_command_encoder;
-pub use blit_command_encoder::BlitCommandEncoder;
+pub use blit_command_encoder::BlitCmdEncoder;
 pub use blit_command_encoder::BlitOption;
 
 pub mod render_command_encoder;
@@ -143,7 +143,7 @@ pub use render_command_encoder::DrawPatchIndirectArguments;
 pub use render_command_encoder::DrawPrimitivesIndirectArguments;
 pub use render_command_encoder::PrimitiveType;
 pub use render_command_encoder::QuadTessellationFactorsHalf;
-pub use render_command_encoder::RenderCommandEncoder;
+pub use render_command_encoder::RenderCmdEncoder;
 pub use render_command_encoder::RenderStages;
 pub use render_command_encoder::ScissorRect;
 pub use render_command_encoder::TriangleFillMode;
@@ -154,10 +154,10 @@ pub use render_command_encoder::VisibilityResultMode;
 pub use render_command_encoder::Winding;
 
 mod compute_command_encoder;
-pub use compute_command_encoder::ComputeCommandEncoder;
+pub use compute_command_encoder::ComputeCmdEncoder;
 
 mod parallel_render_command_encoder;
-pub use parallel_render_command_encoder::ParallelRenderCommandEncoder;
+pub use parallel_render_command_encoder::ParallelRenderCmdEncoder;
 
 pub mod render_pass;
 pub use render_pass::AttachmentDescriptor as RenderPassAttachmentDescriptor;

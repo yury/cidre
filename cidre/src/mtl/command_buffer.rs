@@ -35,22 +35,22 @@ pub enum DispatchType {
     Concurrent,
 }
 
-define_obj_type!(CommandBuffer(ns::Id));
+define_obj_type!(CmdBuf(ns::Id));
 
-impl CommandBuffer {
+impl CmdBuf {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
 
     #[objc::msg_send(commandQueue)]
-    pub fn command_queue(&self) -> &mtl::CommandQueue;
+    pub fn cmd_queue(&self) -> &mtl::CmdQueue;
 
     #[objc::msg_send(enqueue)]
-    pub fn enqueue(&self);
+    pub fn enque(&self);
 
     #[objc::msg_send(commit)]
     pub fn commit(&self);
 
     #[objc::msg_send(waitUntilScheduled)]
-    pub fn wait_untint_scheduled(&self);
+    pub fn wait_until_scheduled(&self);
 
     #[objc::msg_send(waitUntilCompleted)]
     pub fn wait_until_completed(&self);
@@ -76,38 +76,38 @@ impl CommandBuffer {
     }
 
     #[objc::msg_send(blitCommandEncoder)]
-    pub fn blit_command_encoder_ar(&self) -> Option<arc::Rar<mtl::BlitCommandEncoder>>;
+    pub fn new_blit_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::BlitCmdEncoder>>;
 
     #[objc::rar_retain()]
-    pub fn blit_command_encoder(&self) -> Option<arc::R<mtl::BlitCommandEncoder>>;
+    pub fn new_blit_cmd_enc(&self) -> Option<arc::R<mtl::BlitCmdEncoder>>;
 
     #[objc::msg_send(computeCommandEncoder)]
-    pub fn compute_command_encoder_ar(&self) -> Option<arc::Rar<mtl::ComputeCommandEncoder>>;
+    pub fn new_compute_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
 
     #[objc::rar_retain()]
-    pub fn compute_command_encoder(&self) -> Option<arc::R<mtl::ComputeCommandEncoder>>;
+    pub fn new_compute_cmd_enc(&self) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     #[objc::msg_send(computeCommandEncoderWithDescriptor:)]
-    pub fn compute_command_encoder_with_descriptor_ar(
+    pub fn new_compute_cmd_enc_desc_ar(
         &self,
         descriptor: &mtl::ComputePassDescriptor,
-    ) -> Option<arc::Rar<mtl::ComputeCommandEncoder>>;
+    ) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
 
     #[objc::rar_retain()]
-    pub fn compute_command_encoder_with_descriptor(
+    pub fn new_compute_cmd_enc_desc(
         &self,
         descriptor: &mtl::ComputePassDescriptor,
-    ) -> Option<arc::R<mtl::ComputeCommandEncoder>>;
+    ) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     #[objc::msg_send(renderCommandEncoderWithDescriptor:)]
-    pub fn render_command_encoder_with_descriptor_ar(
+    pub fn new_render_cmd_enc_desc_ar(
         &self,
         descriptor: &mtl::RenderPassDescriptor,
-    ) -> Option<arc::Rar<mtl::RenderCommandEncoder>>;
+    ) -> Option<arc::Rar<mtl::RenderCmdEncoder>>;
 
     #[objc::rar_retain()]
-    pub fn render_command_encoder_with_descriptor(
+    pub fn new_render_cmd_enc_desc(
         &self,
         descriptor: &mtl::RenderPassDescriptor,
-    ) -> Option<arc::R<mtl::RenderCommandEncoder>>;
+    ) -> Option<arc::R<mtl::RenderCmdEncoder>>;
 }

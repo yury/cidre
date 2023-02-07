@@ -92,18 +92,18 @@ impl Heap {
     pub fn size(&self) -> usize;
 
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn buffer_with_length_and_options_ar(
+    pub fn new_buf_length_and_options_ar(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buffer>>;
+    ) -> Option<arc::Rar<mtl::Buf>>;
 
     #[objc::rar_retain()]
-    pub fn buffer_with_length_and_options(
+    pub fn new_buf_length_and_options(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buffer>>;
+    ) -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn texture_with_descriptor_ar(
