@@ -465,8 +465,8 @@ mod tests {
 
         assert!(device.max_buffer_length() > 10);
 
-        let _queue = device.command_queue_ar().unwrap();
-        let _queue = device.command_queue().unwrap();
+        let _queue = device.new_cmd_queue_ar().unwrap();
+        let _queue = device.new_cmd_queue().unwrap();
 
         let source = ns::String::with_str("void function_a() {}");
         let options = None;

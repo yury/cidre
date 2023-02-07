@@ -47,18 +47,6 @@ impl Descriptor {
         set_resource_options
     );
 
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let mut desc = mtl::HeapDescriptor::new();
-    /// assert_eq!(0, desc.size());
-    /// desc.set_size(1024);
-    /// assert_eq!(1024, desc.size());
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    /// let heap = device.new_heap_with_descriptor(&desc).unwrap();
-    /// assert!(heap.size() >= 1024);
-    /// ```
     #[inline]
     pub fn new() -> arc::R<Self> {
         Self::alloc().init()
@@ -138,9 +126,9 @@ mod tests {
         assert_eq!(1024, desc.size());
 
         let device = mtl::Device::default().unwrap();
-        let heap = device.new_heap_with_descriptor(&desc).unwrap();
+        let heap = device.new_heap_desc(&desc).unwrap();
         assert!(heap.size() >= 1024);
-        let heap = device.new_heap_with_descriptor_ar(&desc).unwrap();
+        let heap = device.new_heap_desc_ar(&desc).unwrap();
         assert!(heap.size() >= 1024);
     }
 }
