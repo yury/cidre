@@ -146,30 +146,38 @@ pub enum WebSocketCloseCode {
     TLSHandshakeFailure = 1015,
 }
 
-pub struct TaskPriority;
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[repr(transparent)]
+pub struct TaskPriority(pub f32);
 
 impl TaskPriority {
     #[inline]
-    pub fn default() -> f32 {
+    pub fn default() -> Self {
         unsafe { NSURLSessionTaskPriorityDefault }
     }
 
     #[inline]
-    pub fn low() -> f32 {
+    pub fn low() -> Self {
         unsafe { NSURLSessionTaskPriorityLow }
     }
 
     #[inline]
-    pub fn high() -> f32 {
+    pub fn high() -> Self {
         unsafe { NSURLSessionTaskPriorityHigh }
+    }
+}
+
+impl Default for TaskPriority {
+    fn default() -> Self {
+        TaskPriority::default()
     }
 }
 
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
-    static NSURLSessionTaskPriorityDefault: f32;
-    static NSURLSessionTaskPriorityLow: f32;
-    static NSURLSessionTaskPriorityHigh: f32;
+    static NSURLSessionTaskPriorityDefault: TaskPriority;
+    static NSURLSessionTaskPriorityLow: TaskPriority;
+    static NSURLSessionTaskPriorityHigh: TaskPriority;
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
