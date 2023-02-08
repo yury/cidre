@@ -15,7 +15,7 @@ impl BlitCmdEncoder {
     define_mtl!(update_fence, wait_for_fence);
 
     #[objc::msg_send(fillBuffer:range:value:)]
-    pub fn fill_buffer(&self, buffer: &mtl::Buf, range: ns::Range, value: u8);
+    pub fn fill_buf(&self, buffer: &mtl::Buf, range: ns::Range, value: u8);
 
     #[objc::msg_send(copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:)]
     pub fn copy_texture(
@@ -38,11 +38,7 @@ impl BlitCmdEncoder {
     pub fn optimize_contents_for_gpu_access(&self, texture: &mtl::Texture);
 
     #[objc::msg_send(resetCommandsInBuffer:withRange:)]
-    pub fn reset_commands_in_buffer_with_range(
-        &self,
-        buffer: &mtl::IndirectCommandBuffer,
-        range: ns::Range,
-    );
+    pub fn reset_cmds_in_buf(&self, buf: &mtl::IndirectCmdBuf, range: ns::Range);
 }
 
 #[cfg(test)]

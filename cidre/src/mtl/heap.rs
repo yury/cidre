@@ -59,7 +59,7 @@ impl Descriptor {
     pub fn set_size(&mut self, value: usize);
 
     #[objc::msg_send(type)]
-    pub fn _type(&self) -> Type;
+    pub fn type_(&self) -> Type;
 
     #[objc::msg_send(setType:)]
     pub fn set_type(&self, value: Type);

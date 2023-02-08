@@ -135,19 +135,16 @@ impl Device {
     ) -> Option<arc::R<CmdQueue>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn texture_with_descriptor_ar(
+    pub fn new_texture_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
     ) -> Option<arc::Rar<mtl::Texture>>;
 
     #[objc::rar_retain()]
-    pub fn texture_with_descriptor(
-        &self,
-        descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::R<mtl::Texture>>;
+    pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
-    pub fn texture_with_surface_ar(
+    pub fn new_texture_with_surface_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
@@ -155,7 +152,7 @@ impl Device {
     ) -> Option<arc::Rar<mtl::Texture>>;
 
     #[objc::rar_retain()]
-    pub fn texture_with_surface(
+    pub fn new_texture_with_surface(
         &self,
         descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
@@ -163,24 +160,13 @@ impl Device {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newDefaultLibrary)]
-    pub fn default_library_ar(&self) -> Option<arc::Rar<Library>>;
+    pub fn new_default_lib_ar(&self) -> Option<arc::Rar<Library>>;
 
     #[objc::rar_retain()]
-    pub fn default_library(&self) -> Option<arc::R<Library>>;
+    pub fn new_default_lib(&self) -> Option<arc::R<Library>>;
 
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let source = ns::String::with_str("void function_a() {}");
-    /// let options = None;
-    /// let mut err = None;
-    /// let lib = device.library_with_source_and_error(&source, options, &mut err).unwrap();
-    ///
-    /// ```
     #[objc::msg_send(newLibraryWithSource:options:error:)]
-    pub fn library_with_source_and_error_ar(
+    pub fn new_lib_with_src_err_ar(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
@@ -188,7 +174,7 @@ impl Device {
     ) -> Option<arc::Rar<Library>>;
 
     #[objc::rar_retain()]
-    pub fn library_with_source_and_error(
+    pub fn new_lib_with_src_err(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
@@ -196,13 +182,13 @@ impl Device {
     ) -> Option<arc::R<Library>>;
 
     #[inline]
-    pub fn library_with_source<'a>(
+    pub fn new_lib_with_src<'a>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
     ) -> Result<arc::R<Library>, &'a ns::Error> {
         let mut error = None;
-        let res = Self::library_with_source_and_error(self, source, options, &mut error);
+        let res = Self::new_lib_with_src_err(self, source, options, &mut error);
 
         if let Some(err) = error {
             return Err(err);
@@ -211,18 +197,18 @@ impl Device {
         unsafe { Ok(transmute(res)) }
     }
 
-    pub async fn library_with_source_options(
+    pub async fn new_lib_with_src_options(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
     ) -> Result<arc::R<mtl::Library>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
-        self.library_with_source_options_completion(source, options, block.escape());
+        self.new_lib_with_src_options_completion(source, options, block.escape());
         future.await
     }
 
     #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
-    pub fn library_with_source_options_completion<'ar, F>(
+    pub fn new_lib_with_src_options_completion<'ar, F>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
@@ -231,42 +217,41 @@ impl Device {
         F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar ns::Error>) + 'static;
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
-    pub fn compute_pipeline_state_with_function_error_ar<'a>(
+    pub fn new_compute_ps_with_fn_err_ar<'a>(
         &self,
         function: &mtl::Function,
         error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::Rar<mtl::ComputePipelineState>>;
 
     #[objc::rar_retain()]
-    pub fn compute_pipeline_state_with_function_error<'a>(
+    pub fn new_compute_ps_with_fn_err<'a>(
         &self,
         function: &mtl::Function,
         error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
-    pub unsafe fn render_pipeline_state_with_descriptor_error_ar(
+    pub unsafe fn new_render_ps_err_ar(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::Rar<mtl::RenderPipelineState>>;
 
     #[objc::rar_retain]
-    pub unsafe fn render_pipeline_state_with_descriptor_error(
+    pub unsafe fn new_render_ps_err(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
-    pub fn render_pipeline_state_with_descriptor<'a>(
+    pub fn new_render_ps<'a>(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'a ns::Error> {
         let mut error = None;
         unsafe {
-            let res =
-                Self::render_pipeline_state_with_descriptor_error(self, descriptor, &mut error);
+            let res = Self::new_render_ps_err(self, descriptor, &mut error);
             if res.is_some() {
                 Ok(transmute(res))
             } else {
@@ -276,12 +261,12 @@ impl Device {
     }
 
     #[inline]
-    pub fn compute_pipeline_state_with_function<'ar>(
+    pub fn new_compute_ps_with_fn<'ar>(
         &self,
         function: &mtl::Function,
     ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar ns::Error> {
         let mut error = None;
-        let res = self.compute_pipeline_state_with_function_error(function, &mut error);
+        let res = self.new_compute_ps_with_fn_err(function, &mut error);
 
         if let Some(err) = error {
             return Err(err);
@@ -305,7 +290,7 @@ impl Device {
     ) -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newBufferWithBytes:length:options:)]
-    pub fn new_buffer_bytes_len_opts_ar(
+    pub fn new_buf_bytes_len_opts_ar(
         &self,
         bytes: *const c_void,
         length: usize,
@@ -313,7 +298,7 @@ impl Device {
     ) -> Option<arc::Rar<Buf>>;
 
     #[objc::rar_retain()]
-    pub fn new_buffer_bytes_len_opts(
+    pub fn new_buf_bytes_len_opts(
         &self,
         bytes: *const c_void,
         length: usize,
@@ -321,12 +306,12 @@ impl Device {
     ) -> Option<arc::R<Buf>>;
 
     #[inline]
-    pub fn new_buffer_slice_ar<T: Sized>(
+    pub fn new_buf_slice_ar<T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<arc::Rar<mtl::Buf>> {
-        self.new_buffer_bytes_len_opts_ar(
+        self.new_buf_bytes_len_opts_ar(
             slice.as_ptr() as _,
             std::mem::size_of::<T>() * slice.len(),
             options,
@@ -339,7 +324,7 @@ impl Device {
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buf>> {
-        arc::Rar::option_retain(self.new_buffer_slice_ar(slice, options))
+        arc::Rar::option_retain(self.new_buf_slice_ar(slice, options))
     }
 
     #[objc::msg_send(newFence)]
@@ -348,43 +333,18 @@ impl Device {
     #[objc::rar_retain()]
     pub fn new_fence(&self) -> Option<arc::R<Fence>>;
 
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let mut event = device.event().unwrap();
-    /// let label = ns::String::with_str("nice");
-    /// event.set_label(Some(&label));
-    /// ```
     #[objc::msg_send(newEvent)]
     pub fn new_event_ar(&self) -> Option<arc::Rar<Event>>;
 
     #[objc::rar_retain()]
     pub fn new_event(&self) -> Option<arc::R<Event>>;
 
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let mut event = device.shared_event().unwrap();
-    /// let label = ns::String::with_str("nice");
-    /// event.set_label(Some(&label));
-    /// ```
     #[objc::msg_send(newSharedEvent)]
     pub fn new_shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>>;
 
     #[objc::rar_retain()]
     pub fn new_shared_event(&self) -> Option<arc::R<SharedEvent>>;
 
-    /// ```no_run
-    /// use cidre::{mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// assert!(device.max_buffer_length() > 10);
-    /// ```
     #[objc::msg_send(maxBufferLength)]
     pub fn max_buffer_length(&self) -> usize;
 
@@ -450,8 +410,8 @@ mod tests {
         let tier = device.argument_buffers_support();
         assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
 
-        assert!(device.default_library_ar().is_none());
-        assert!(device.default_library().is_none());
+        assert!(device.new_default_lib_ar().is_none());
+        assert!(device.new_default_lib().is_none());
 
         let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
             mtl::PixelFormat::A8Unorm,
@@ -460,8 +420,8 @@ mod tests {
             false,
         );
 
-        let _t = device.texture_with_descriptor(&td).unwrap();
-        let _t = device.texture_with_descriptor_ar(&td).unwrap();
+        let _t = device.new_texture(&td).unwrap();
+        let _t = device.new_texture_ar(&td).unwrap();
 
         assert!(device.max_buffer_length() > 10);
 
@@ -472,7 +432,7 @@ mod tests {
         let options = None;
         let mut err = None;
         let _lib = device
-            .library_with_source_and_error(&source, options, &mut err)
+            .new_lib_with_src_err(&source, options, &mut err)
             .unwrap();
     }
 }

@@ -80,27 +80,6 @@ impl Descriptor {
     define_cls!(MTL_TEXTURE_DESCRIPTOR);
     define_mtl!(storage_mode, set_storage_mode);
 
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let mut td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
-    ///
-    /// assert_eq!(td.texture_type(), mtl::TextureType::_2D);
-    /// assert_eq!(td.pixel_format(), mtl::PixelFormat::A8Unorm);
-    /// assert_eq!(td.width(), 100);
-    /// assert_eq!(td.height(), 200);
-    /// assert_eq!(td.depth(), 1);
-    /// assert_eq!(td.mipmap_level_count(), 1);
-    /// assert_eq!(td.sample_count(), 1);
-    /// assert_eq!(td.array_len(), 1);
-    ///
-    /// td.set_width(200);
-    /// assert_eq!(td.width(), 200);
-
-    /// td.set_height(300);
-    /// assert_eq!(td.height(), 300);
-    ///
-    /// ```
     #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
     pub fn new_2d_with_pixel_format_ar(
         pixel_format: mtl::PixelFormat,
@@ -140,7 +119,7 @@ impl Descriptor {
     ) -> arc::R<Descriptor>;
 
     #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:resourceOptions:usage:)]
-    pub fn with_resource_options_ar(
+    pub fn new_2d_with_resource_options_ar(
         pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: mtl::resource::Options,
@@ -148,7 +127,7 @@ impl Descriptor {
     ) -> arc::Rar<Descriptor>;
 
     #[objc::cls_rar_retain()]
-    pub fn with_resource_options(
+    pub fn new_2d_with_resource_options(
         pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: mtl::resource::Options,
@@ -161,11 +140,23 @@ impl Descriptor {
     #[objc::msg_send(setTextureType:)]
     pub fn set_texture_type(&mut self, value: Type);
 
+    #[inline]
+    pub fn with_texture_type(&mut self, value: Type) -> &mut Self {
+        self.set_texture_type(value);
+        self
+    }
+
     #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> mtl::PixelFormat;
 
     #[objc::msg_send(setPixelFormat:)]
     pub fn set_pixel_format(&mut self, value: mtl::PixelFormat);
+
+    #[inline]
+    pub fn with_pixel_format(&mut self, value: mtl::PixelFormat) -> &mut Self {
+        self.set_pixel_format(value);
+        self
+    }
 
     define_mtl!(
         width,
@@ -226,45 +217,9 @@ impl Descriptor {
 
 define_obj_type!(Texture(mtl::Resource));
 
-/// ```no_run
-/// use cidre::mtl;
-///
-/// let device = mtl::Device::default().unwrap();
-///
-/// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
-///
-/// let t = device.texture_with_descriptor(&td).unwrap();
-///
-/// assert_eq!(t.width(), 100);
-/// assert_eq!(t.height(), 200);
-/// assert_eq!(t.depth(), 1);
-///
-/// ```
 impl Texture {
     define_mtl!(width, height, depth, gpu_resouce_id);
 
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let td = mtl::TextureDescriptor::new_2d_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, 200, false);
-    ///
-    /// let t = device.texture_with_descriptor(&td).unwrap();
-    ///
-    /// assert!(t.parent_texture().is_none());
-    /// assert!(t.io_surface().is_none());
-    /// assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
-    /// assert!(t.io_surface().is_none());
-    /// assert_eq!(t.io_surface_plane(), 0);
-    ///
-    /// let tv = t.texture_view_with_pixel_format(mtl::PixelFormat::A8Unorm).unwrap();
-    ///
-    /// assert!(tv.parent_texture().is_some());
-    /// assert_eq!(tv.width(), 100);
-    /// assert_eq!(tv.height(), 200);
-    ///
-    /// ```
     #[objc::msg_send(parentTexture)]
     pub fn parent_texture(&self) -> Option<&Texture>;
 
@@ -349,7 +304,7 @@ mod tests {
             false,
         );
 
-        let t = device.texture_with_descriptor(&td).unwrap();
+        let t = device.new_texture(&td).unwrap();
 
         assert_eq!(t.width(), 100);
         assert_eq!(t.height(), 200);
@@ -367,7 +322,7 @@ mod tests {
             false,
         );
 
-        let t = device.texture_with_descriptor(&td).unwrap();
+        let t = device.new_texture(&td).unwrap();
 
         assert!(t.parent_texture().is_none());
         assert!(t.io_surface().is_none());

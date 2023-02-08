@@ -100,13 +100,13 @@ impl CmdBuf {
     ) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     #[objc::msg_send(renderCommandEncoderWithDescriptor:)]
-    pub fn new_render_cmd_enc_desc_ar(
+    pub fn new_render_cmd_enc_ar(
         &self,
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<arc::Rar<mtl::RenderCmdEncoder>>;
 
     #[objc::rar_retain()]
-    pub fn new_render_cmd_enc_desc(
+    pub fn new_render_cmd_enc(
         &self,
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<arc::R<mtl::RenderCmdEncoder>>;

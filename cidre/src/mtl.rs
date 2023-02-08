@@ -184,9 +184,9 @@ pub use counters::CounterSet;
 pub use counters::Descriptor as CounterSampleBufferDescriptor;
 
 pub mod indirect_command_buffer;
-pub use indirect_command_buffer::Descriptor as IndirectCommandBufferDescriptor;
-pub use indirect_command_buffer::ExecutionRange as IndirectCommandBufferExecutionRange;
-pub use indirect_command_buffer::IndirectCommandBuffer;
+pub use indirect_command_buffer::Descriptor as IndirectCmdBufDescriptor;
+pub use indirect_command_buffer::ExecutionRange as IndirectCmBufExecutionRange;
+pub use indirect_command_buffer::IndirectCmdBuf;
 
 pub mod sampler;
 pub use sampler::AddressMode as SamplerAddressMode;

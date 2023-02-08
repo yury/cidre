@@ -83,13 +83,13 @@ impl Function {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
-    pub fn new_argument_encoder_with_buffer_index_ar(
+    pub fn new_argument_encoder_with_buf_index_ar(
         &self,
         index: ns::UInteger,
     ) -> arc::Rar<mtl::ArgumentEncoder>;
 
     #[objc::rar_retain()]
-    pub fn new_argument_encoder_with_buffer_index(
+    pub fn new_argument_encoder_with_buf_index(
         &self,
         index: ns::UInteger,
     ) -> arc::R<mtl::ArgumentEncoder>;
@@ -100,34 +100,19 @@ define_obj_type!(Library(ns::Id));
 impl Library {
     define_mtl!(device, label, set_label);
 
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let source = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
-    /// let lib = device.library_with_source(&source, None).unwrap();
-    /// let names = lib.function_names();
-    /// assert_eq!(1, names.len());
-    /// let n = &names[0];
-    ///
-    /// let expected_name = ns::String::with_str("function_a");
-    ///
-    /// assert!(n.eq(&expected_name));
-    /// ```
     #[objc::msg_send(functionNames)]
     pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
     #[objc::msg_send(newFunctionWithName:)]
-    pub fn new_fn_with_name_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
+    pub fn new_fn_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
 
     #[objc::rar_retain()]
-    pub fn new_fn_with_name(&self, name: &ns::String) -> Option<arc::R<Function>>;
+    pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Function>>;
 
     /// # Safety
     /// Use new_function_with_name_constant_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
-    pub unsafe fn new_fn_with_name_constant_values_error_ar<'ar>(
+    pub unsafe fn new_fn_const_values_err_ar<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
@@ -135,23 +120,21 @@ impl Library {
     ) -> Option<arc::Rar<Function>>;
 
     #[objc::rar_retain()]
-    pub unsafe fn new_fn_with_name_constant_values_error<'ar>(
+    pub unsafe fn new_fn_const_values_err<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Function>>;
 
-    pub fn new_fn_with_name_constant_values<'ar>(
+    pub fn new_fn_const_values<'ar>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
     ) -> Result<arc::R<Function>, &'ar ns::Error> {
         let mut error = None;
 
-        let res = unsafe {
-            Self::new_fn_with_name_constant_values_error(self, name, constant_values, &mut error)
-        };
+        let res = unsafe { Self::new_fn_const_values_err(self, name, constant_values, &mut error) };
 
         if let Some(err) = error {
             return Err(err);
@@ -164,17 +147,6 @@ impl Library {
 pub type ErrorDomain = ns::ErrorDomain;
 
 impl ErrorDomain {
-    /// ```no_run
-    /// use cidre::{ns, mtl};
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let source = ns::String::with_str("vid function_a() {}");
-    /// let err = device.library_with_source(&source, None).unwrap_err();
-    ///
-    /// assert_eq!(mtl::LibraryError::CompileFailure, err.code());
-    ///
-    /// ```
     pub fn library() -> &'static ErrorDomain {
         unsafe { MTLLibraryErrorDomain }
     }
@@ -232,7 +204,7 @@ mod tests {
         let handler = blocks::once2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
-        device.library_with_source_options_completion(&source, None, handler.escape());
+        device.new_lib_with_src_options_completion(&source, None, handler.escape());
     }
 
     #[test]
@@ -240,7 +212,7 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let source = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
-        let lib = device.library_with_source(&source, None).unwrap();
+        let lib = device.new_lib_with_src(&source, None).unwrap();
         let names = lib.fn_names();
         assert_eq!(1, names.len());
         let n = &names[0];
@@ -255,7 +227,7 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let source = ns::String::with_str("vid function_a() {}");
-        let err = device.library_with_source(&source, None).unwrap_err();
+        let err = device.new_lib_with_src(&source, None).unwrap_err();
 
         assert_eq!(mtl::LibraryError::CompileFailure, err.code());
     }
@@ -265,10 +237,10 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let source = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.library_with_source(&source, None).unwrap();
+        let lib = device.new_lib_with_src(&source, None).unwrap();
 
         let func_name = ns::String::with_str_no_copy("function_a");
-        let func = lib.new_fn_with_name(&func_name).unwrap();
+        let func = lib.new_fn(&func_name).unwrap();
         let name = func.name();
         assert!(func_name.is_equal(&name));
     }
@@ -278,12 +250,12 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let source = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.library_with_source(&source, None).unwrap();
+        let lib = device.new_lib_with_src(&source, None).unwrap();
 
         let func_name = ns::String::with_str_no_copy("function_a");
         let constant_values = mtl::FunctionConstantValues::new();
         let func = lib
-            .new_fn_with_name_constant_values(&func_name, &constant_values)
+            .new_fn_const_values(&func_name, &constant_values)
             .unwrap();
         let name = func.name();
         assert!(func_name.is_equal(name));

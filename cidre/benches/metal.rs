@@ -37,9 +37,9 @@ fn foo() -> BenchState {
     );
     bgra_texture_desc.set_usage(mtl::TextureUsage::SHADER_WRITE);
 
-    let y_texture = device.texture_with_descriptor(&y_texture_desc).unwrap();
-    let cbcr_texture = device.texture_with_descriptor(&cbcr_texture_desc).unwrap();
-    let bgra_texture = device.texture_with_descriptor(&bgra_texture_desc).unwrap();
+    let y_texture = device.new_texture(&y_texture_desc).unwrap();
+    let cbcr_texture = device.new_texture(&cbcr_texture_desc).unwrap();
+    let bgra_texture = device.new_texture(&bgra_texture_desc).unwrap();
 
     let source = r#"
     using namespace metal;
@@ -160,27 +160,21 @@ fn foo() -> BenchState {
 
     let source = ns::String::with_str(source);
 
-    let lib = device.library_with_source(&source, None).unwrap();
+    let lib = device.new_lib_with_src(&source, None).unwrap();
 
     let matrix_transfrom_fn = lib
-        .new_fn_with_name(&ns::String::with_str("matrix_transform"))
+        .new_fn(&ns::String::with_str("matrix_transform"))
         .unwrap();
-    let macro_transfrom_fn = lib
-        .new_fn_with_name(&ns::String::with_str("macro_tranform"))
-        .unwrap();
+    let macro_transfrom_fn = lib.new_fn(&ns::String::with_str("macro_tranform")).unwrap();
 
-    let matrix_state = device
-        .compute_pipeline_state_with_function(&matrix_transfrom_fn)
-        .unwrap();
-    let macro_state = device
-        .compute_pipeline_state_with_function(&macro_transfrom_fn)
-        .unwrap();
+    let matrix_state = device.new_compute_ps_with_fn(&matrix_transfrom_fn).unwrap();
+    let macro_state = device.new_compute_ps_with_fn(&macro_transfrom_fn).unwrap();
 
     let vert_fn = lib
-        .new_fn_with_name(&ns::String::with_str("vertex_passthrough2"))
+        .new_fn(&ns::String::with_str("vertex_passthrough2"))
         .unwrap();
     let frag_fn = lib
-        .new_fn_with_name(&ns::String::with_str("fragment_y_cbcr"))
+        .new_fn(&ns::String::with_str("fragment_y_cbcr"))
         .unwrap();
 
     let mut render_desc = mtl::RenderPipelineDescriptor::new();
@@ -188,9 +182,7 @@ fn foo() -> BenchState {
     render_desc.set_fragment_fn(Some(&frag_fn));
     render_desc.set_vertex_fn(Some(&vert_fn));
 
-    let render_state = device
-        .render_pipeline_state_with_descriptor(&render_desc)
-        .unwrap();
+    let render_state = device.new_render_ps(&render_desc).unwrap();
 
     let mut render_pass_desc = mtl::RenderPassDescriptor::new();
     let foo = &mut render_pass_desc.color_attachments_mut()[0];
@@ -206,7 +198,7 @@ fn foo() -> BenchState {
     desc.set_usage(mtl::TextureUsage::RENDER_TARGET);
     desc.set_storage_mode(mtl::StorageMode::Memoryless);
 
-    let text = device.texture_with_descriptor(&desc).unwrap();
+    let text = device.new_texture(&desc).unwrap();
 
     foo.set_texture(Some(&text));
 
@@ -323,9 +315,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("render", |b| {
         b.iter(|| {
             let cmd_buf = queue.new_cmd_buf().unwrap();
-            let mut encoder = cmd_buf
-                .new_render_cmd_enc_desc(&state.render_pass_desc)
-                .unwrap();
+            let mut encoder = cmd_buf.new_render_cmd_enc(&state.render_pass_desc).unwrap();
             encoder.set_render_ps(&state.render_state);
             encoder.set_vertex_buf(Some(&state.vertex_buf), 0, 0);
             encoder.set_fragment_texture_at(Some(&state.y_texture), 0);

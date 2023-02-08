@@ -8,8 +8,8 @@ pub struct ExecutionRange {
 }
 
 define_obj_type!(Descriptor(ns::Id));
-define_obj_type!(IndirectCommandBuffer(mtl::Resource));
+define_obj_type!(IndirectCmdBuf(mtl::Resource));
 
-impl IndirectCommandBuffer {
+impl IndirectCmdBuf {
     define_mtl!(gpu_resouce_id);
 }

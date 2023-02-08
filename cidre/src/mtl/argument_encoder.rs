@@ -12,11 +12,11 @@ impl ArgumentEncoder {
     pub fn alignment(&self) -> usize;
 
     #[objc::msg_send(setArgumentBuffer:offset:)]
-    pub fn set_argument_buffer(&mut self, buffer: Option<&mtl::Buf>, offset: usize);
+    pub fn set_argument_buf(&mut self, buffer: Option<&mtl::Buf>, offset: usize);
 
     /// Encodes a reference to a buffer into the argument buffer.
     #[objc::msg_send(setBuffer:offset:atIndex:)]
-    pub fn set_buffer(&mut self, buffer: Option<&mtl::Buf>, offset: usize, at_index: usize);
+    pub fn set_buf(&mut self, buffer: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
     /// Set a texture at the given bind point index.
     ///
@@ -41,29 +41,17 @@ impl ArgumentEncoder {
 
     /// Encodes a reference to a render pipeline state into the argument buffer.
     #[objc::msg_send(setRenderPipelineState:atIndex:)]
-    pub fn set_render_pipeline_state(
-        &mut self,
-        state: Option<&mtl::RenderPipelineState>,
-        at_index: usize,
-    );
+    pub fn set_render_ps(&mut self, state: Option<&mtl::RenderPipelineState>, at_index: usize);
 
     /// Sets a compute pipeline state at a given bind point index
     ///    
     /// Encodes a reference to a compute pipeline state into the argument buffer.
     #[objc::msg_send(setComputePipelineState:atIndex:)]
-    pub fn set_compute_pipeline_state(
-        &mut self,
-        state: Option<&mtl::ComputePipelineState>,
-        at_index: usize,
-    );
+    pub fn set_compute_ps(&mut self, state: Option<&mtl::ComputePipelineState>, at_index: usize);
 
     /// Sets an indirect command buffer at a given bind point index
     ///
     /// Encodes a reference to an indirect command buffer into the argument buffer.
     #[objc::msg_send(setIndirectCommandBuffer:atIndex:)]
-    pub fn set_indirect_command_buffer(
-        &mut self,
-        buffer: Option<&mtl::IndirectCommandBuffer>,
-        at_index: usize,
-    );
+    pub fn set_indirect_cmd_buf(&mut self, buffer: Option<&mtl::IndirectCmdBuf>, at_index: usize);
 }

@@ -63,21 +63,20 @@ fn main() {
         let device = mtl::Device::default().unwrap();
 
         let source = ns::String::with_str(LIB_SRC);
-        let lib = device.library_with_source(&source, None).unwrap();
+        let lib = device.new_lib_with_src(&source, None).unwrap();
 
         let vertex_fn_name = ns::String::with_str("passthrough");
-        let vertex_fn = lib.new_fn_with_name(&vertex_fn_name).unwrap();
+        let vertex_fn = lib.new_fn(&vertex_fn_name).unwrap();
 
         let fragment_fn_name = ns::String::with_str("pass_color");
-        let fragment_fn = lib.new_fn_with_name(&fragment_fn_name).unwrap();
+        let fragment_fn = lib.new_fn(&fragment_fn_name).unwrap();
 
-        let mut desc = mtl::RenderPipelineDescriptor::new();
+        let mut desc = mtl::RenderPipelineDescriptor::new().with_fns(&vertex_fn, &fragment_fn);
+
         desc.set_raster_sample_count(4);
-        desc.set_vertex_fn(Some(&vertex_fn));
-        desc.set_fragment_fn(Some(&fragment_fn));
         desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
 
-        let pipeline_state = device.render_pipeline_state_with_descriptor(&desc).unwrap();
+        let pipeline_state = device.new_render_ps(&desc).unwrap();
 
         let render_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
             mtl::PixelFormat::RGBA8Unorm,
@@ -86,9 +85,7 @@ fn main() {
             false,
         );
 
-        let rgba_texture = device
-            .texture_with_descriptor(&render_texture_desc)
-            .unwrap();
+        let rgba_texture = device.new_texture(&render_texture_desc).unwrap();
 
         let mut render_pass_desc = mtl::RenderPassDescriptor::new();
         let ca = &mut render_pass_desc.color_attachments_mut()[0];
@@ -105,12 +102,10 @@ fn main() {
 
         let vertex_buffer = device.new_buf_slice(&triangle, Default::default()).unwrap();
 
-        let command_queue = device.new_cmd_queue().unwrap();
-        let command_buffer = command_queue.new_cmd_buf().unwrap();
+        let cmd_queue = device.new_cmd_queue().unwrap();
+        let cmd_buf = cmd_queue.new_cmd_buf().unwrap();
 
-        let mut encoder = command_buffer
-            .new_render_cmd_enc_desc(&render_pass_desc)
-            .unwrap();
+        let mut encoder = cmd_buf.new_render_cmd_enc(&render_pass_desc).unwrap();
 
         encoder.set_render_ps(&pipeline_state);
 
@@ -120,7 +115,7 @@ fn main() {
 
         encoder.end_encoding();
 
-        command_buffer.commit();
+        cmd_buf.commit();
 
         let image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
 

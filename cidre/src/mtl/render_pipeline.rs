@@ -164,6 +164,15 @@ impl Reflection {
 define_obj_type!(Descriptor(ns::Id));
 define_cls_init!(Descriptor, MTL_RENDER_PIPELINE_DESCRIPTOR);
 
+impl arc::R<Descriptor> {
+    #[inline]
+    pub fn with_fns(mut self, vertex_fn: &Function, fragment_fn: &Function) -> Self {
+        self.set_vertex_fn(Some(vertex_fn));
+        self.set_fragment_fn(Some(&fragment_fn));
+        self
+    }
+}
+
 impl Descriptor {
     define_mtl!(reset);
 
