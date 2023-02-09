@@ -106,6 +106,7 @@ impl Surface {
     /// props.show();
     /// assert!(props.len() >= 1);
     /// ```
+    #[inline]
     pub fn create(properties: &cf::Dictionary) -> Option<arc::R<Surface>> {
         unsafe { IOSurfaceCreate(properties) }
     }
@@ -147,6 +148,7 @@ impl Surface {
     ///
     /// assert!(surf.is_none());
     /// ```
+    #[inline]
     pub fn lookup(csid: Id) -> Option<arc::R<Surface>> {
         unsafe { IOSurfaceLookup(csid) }
     }
@@ -226,6 +228,12 @@ impl Surface {
     pub fn seed(&self) -> u32 {
         unsafe { IOSurfaceGetSeed(self) }
     }
+
+    /// Returns the total allocation size of the buffer including all planes.
+    #[inline]
+    pub fn alloc_size(&self) -> usize {
+        unsafe { IOSurfaceGetAllocSize(self) }
+    }
 }
 
 extern "C" {
@@ -252,6 +260,7 @@ extern "C" {
     fn IOSurfaceAllowsPixelSizeCasting(buffer: &Surface) -> bool;
 
     fn IOSurfaceGetSeed(buffer: &Surface) -> u32;
+    fn IOSurfaceGetAllocSize(buffer: &Surface) -> usize;
 
 }
 

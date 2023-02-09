@@ -682,6 +682,7 @@ impl Converter {
         )
     }
 
+    #[inline]
     pub fn fill_complex_buf<D>(
         &self,
         proc: ComplexInputDataProc<D>,

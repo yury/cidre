@@ -40,6 +40,7 @@ impl OutputImpl for FrameCounter {
         kind: sc::OutputType,
     ) {
         let mut inner = self.inner_mut();
+
         if kind == sc::OutputType::Audio {
             if inner.audio_counter == 0 {
                 inner.audio_converter = configured_converter(
@@ -51,7 +52,7 @@ impl OutputImpl for FrameCounter {
                 );
             }
 
-            inner.audio_queue.enqueue(sample_buffer);
+            inner.audio_queue.enque(sample_buffer);
 
             if inner.audio_queue.is_ready() {
                 let mut data = [0u8; 2000];
@@ -73,8 +74,9 @@ impl OutputImpl for FrameCounter {
                     .fill_complex_buf(convert_audio, &mut inner.audio_queue, &mut size, &mut buf)
                     .unwrap();
 
-                println!("size {}", buf.buffers[0].data_bytes_size,);
+                //println!("size {}", buf.buffers[0].data_bytes_size,);
             }
+
             inner.audio_counter += 1;
             return;
         }
@@ -160,10 +162,12 @@ struct AudioQueue {
 }
 
 impl AudioQueue {
-    pub fn enqueue(&mut self, sbuf: &cm::SampleBuffer) {
+    #[inline]
+    pub fn enque(&mut self, sbuf: &cm::SampleBuffer) {
         self.queue.push_back(sbuf.retained())
     }
 
+    #[inline]
     pub fn is_ready(&self) -> bool {
         self.queue.len() > 2
     }
@@ -231,10 +235,10 @@ impl RecordContext {
             if self.format_desc.is_none() {
                 let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
 
-                let buf = desc
-                    .as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family()))
-                    .unwrap();
-                let slice = buf.data_pointer().unwrap();
+                // let buf = desc
+                //     .as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family()))
+                //     .unwrap();
+                //let slice = buf.data_pointer().unwrap();
                 // println!("format desc {:?} len: {}", slice, slice.len());
                 // let extensions = desc.extension_atoms().unwrap();
                 // let hvcc = cf::String::from_str("hvcC");
@@ -385,6 +389,8 @@ async fn main() {
     stream
         .add_stream_output(delegate.as_ref(), sc::OutputType::Audio, Some(&queue))
         .unwrap();
+
+    stream.start().await.unwrap();
 
     tokio::time::sleep(Duration::from_secs(100_200)).await;
 
