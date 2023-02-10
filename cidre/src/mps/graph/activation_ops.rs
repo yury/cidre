@@ -2,11 +2,7 @@ use crate::{arc, mps::graph, ns, objc};
 
 impl graph::Graph {
     #[objc::msg_send(reLUWithTensor:name:)]
-    pub fn relu_ar(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    pub fn relu_ar(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn relu(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
@@ -16,7 +12,7 @@ impl graph::Graph {
         &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn sigmoid(
@@ -31,7 +27,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axis: ns::Integer,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn soft_max(

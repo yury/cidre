@@ -67,7 +67,7 @@ impl String {
     }
 
     #[objc::msg_send(lowercaseString)]
-    pub fn lowercased_ar(&self) -> arc::Rar<Self>;
+    pub fn lowercased_ar(&self) -> &'ar Self;
 
     #[objc::rar_retain()]
     pub fn lowercased(&self) -> arc::R<Self>;
@@ -102,7 +102,7 @@ impl String {
     pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
 
     #[objc::msg_send(substringWithRange:)]
-    pub fn substring_with_range_ar(&self, range: ns::Range) -> arc::Rar<Self>;
+    pub fn substring_with_range_ar(&self, range: ns::Range) -> &'ar Self;
 
     #[objc::rar_retain()]
     pub fn substring_with_range(&self, range: ns::Range) -> arc::R<Self>;
@@ -134,9 +134,9 @@ impl PartialEq for String {
 impl std::ops::Index<std::ops::Range<usize>> for String {
     type Output = String;
 
+    #[inline]
     fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
-        let res = self.substring(index);
-        res.autoreleased()
+        self.substring_with_range_ar(index.into())
     }
 }
 

@@ -19,7 +19,7 @@ impl Device {
     pub fn device_type(&self) -> DeviceType;
 
     #[objc::cls_msg_send(deviceWithMTLDevice:)]
-    pub fn with_mtl_device_ar(mtl_device: &mtl::Device) -> arc::Rar<Device>;
+    pub fn with_mtl_device_ar(mtl_device: &mtl::Device) -> &'ar Device;
 
     #[objc::cls_rar_retain()]
     pub fn with_mtl_device(mtl_device: &mtl::Device) -> arc::R<Device>;

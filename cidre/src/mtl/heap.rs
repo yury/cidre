@@ -84,7 +84,7 @@ impl Heap {
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buf>>;
+    ) -> Option<&'ar mtl::Buf>;
 
     #[objc::rar_retain()]
     pub fn new_buf_length_and_options(
@@ -97,7 +97,7 @@ impl Heap {
     pub fn texture_with_descriptor_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::Rar<mtl::Texture>>;
+    ) -> Option<&'ar mtl::Texture>;
 
     #[objc::rar_retain()]
     pub fn texture_with_descriptor(

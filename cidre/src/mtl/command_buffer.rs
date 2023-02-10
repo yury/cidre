@@ -76,13 +76,13 @@ impl CmdBuf {
     }
 
     #[objc::msg_send(blitCommandEncoder)]
-    pub fn new_blit_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::BlitCmdEncoder>>;
+    pub fn new_blit_cmd_enc_ar(&self) -> Option<&'ar mtl::BlitCmdEncoder>;
 
     #[objc::rar_retain()]
     pub fn new_blit_cmd_enc(&self) -> Option<arc::R<mtl::BlitCmdEncoder>>;
 
     #[objc::msg_send(computeCommandEncoder)]
-    pub fn new_compute_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
+    pub fn new_compute_cmd_enc_ar(&self) -> Option<&'ar mtl::ComputeCmdEncoder>;
 
     #[objc::rar_retain()]
     pub fn new_compute_cmd_enc(&self) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
@@ -91,7 +91,7 @@ impl CmdBuf {
     pub fn new_compute_cmd_enc_desc_ar(
         &self,
         descriptor: &mtl::ComputePassDescriptor,
-    ) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
+    ) -> Option<&'ar mtl::ComputeCmdEncoder>;
 
     #[objc::rar_retain()]
     pub fn new_compute_cmd_enc_desc(
@@ -103,7 +103,7 @@ impl CmdBuf {
     pub fn new_render_cmd_enc_ar(
         &self,
         descriptor: &mtl::RenderPassDescriptor,
-    ) -> Option<arc::Rar<mtl::RenderCmdEncoder>>;
+    ) -> Option<&'ar mtl::RenderCmdEncoder>;
 
     #[objc::rar_retain()]
     pub fn new_render_cmd_enc(

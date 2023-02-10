@@ -123,11 +123,11 @@ impl Number {
     // for benches
     #[inline]
     pub fn with_i64_ar_retain(value: i64) -> arc::R<Self> {
-        Self::with_i64_ar(value).retain()
+        arc::rar_retain(Self::with_i64_ar(value))
     }
 
     #[objc::cls_msg_send(numberWithLongLong:)]
-    pub fn with_i64_ar(value: i64) -> arc::Rar<Self>;
+    pub fn with_i64_ar(value: i64) -> &'ar Self;
 
     // for benches
     #[inline]
@@ -214,12 +214,10 @@ impl Number {
     pub fn as_uinteger(&self) -> ns::UInteger;
 
     #[objc::msg_send(stringValue)]
-    pub fn string_ar(&self) -> arc::Rar<ns::String>;
+    pub fn string_ar(&self) -> &'ar ns::String;
 
-    #[inline]
-    pub fn string(&self) -> arc::R<ns::String> {
-        self.string_ar().retain()
-    }
+    #[objc::rar_retain]
+    pub fn string(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(isEqualToNumber:)]
     pub fn is_equal_to_number(&self, number: &ns::Number) -> bool;

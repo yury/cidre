@@ -143,9 +143,6 @@ impl URLRequest {
     pub fn http_body(&self) -> Option<&ns::Data>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut_ar(&self) -> arc::Rar<URLRequestMut>;
-
-    #[objc::rar_retain()]
     pub fn copy_mut(&self) -> arc::R<URLRequestMut>;
 }
 

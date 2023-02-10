@@ -473,7 +473,14 @@ fn gen_msg_send(
             _ => generics.push(tt),
         }
     };
-    let gen = TokenStream::from_iter(generics.into_iter()).to_string();
+    let mut gen = TokenStream::from_iter(generics.into_iter()).to_string();
+    if fn_name.ends_with("_ar") {
+        if gen.is_empty() {
+            gen = "<'ar>".to_string();
+        } else {
+            gen = gen.replacen('<', "<'ar,", 1);
+        }
+    }
 
     let ts = TokenStream::from_iter(iter);
     let mut ret = ts.to_string();
@@ -546,7 +553,7 @@ fn gen_msg_send(
                 "
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
-        arc::Rar::option_retain({self_}{fn_name}_ar({vars}) )
+        arc::rar_retain_option({self_}{fn_name}_ar({vars}) )
     }}
                 "
             )
@@ -555,7 +562,7 @@ fn gen_msg_send(
                 "
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
-        {self_}{fn_name}_ar({vars}).retain()
+        arc::rar_retain({self_}{fn_name}_ar({vars}))
     }}
                 "
             )

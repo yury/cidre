@@ -1,5 +1,8 @@
 use crate::objc;
-use std::ops::{Deref, DerefMut};
+use std::{
+    arch::asm,
+    ops::{Deref, DerefMut},
+};
 
 pub trait Release {
     unsafe fn release(&mut self);
@@ -60,15 +63,26 @@ impl<T: Retain> Retained<T> {
         }
     }
 
-    /// #Safety
-    /// Use `return_ar` macro
-    #[inline]
-    pub unsafe fn return_ar(self) -> crate::arc::Rar<T>
+    #[must_use]
+    pub unsafe fn return_ar<'ar>(self) -> &'ar mut T
     where
         T: objc::Obj,
     {
-        unsafe { std::mem::transmute(objc::objc_autoreleaseReturnValue(std::mem::transmute(self))) }
+        unsafe {
+            let res = objc::objc_autoreleaseReturnValue(std::mem::transmute(self));
+            return std::mem::transmute(res);
+        }
     }
+
+    // /// #Safety
+    // /// Use `return_ar` macro
+    // #[inline]
+    // pub unsafe fn return_ar(self) -> crate::arc::Rar<T>
+    // where
+    //     T: objc::Obj,
+    // {
+    //     unsafe { std::mem::transmute(objc::objc_autoreleaseReturnValue(std::mem::transmute(self))) }
+    // }
 }
 
 impl<T: Release> Drop for Allocated<T> {
@@ -128,4 +142,23 @@ impl<T: Retain> Clone for Retained<T> {
 
 pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
-pub type Rar<T> = objc::ReturnedAutoReleased<T>;
+
+#[inline]
+pub fn rar_retain_option<T: objc::Obj>(id: Option<&T>) -> Option<R<T>> {
+    unsafe {
+        asm!("mov x29, x29");
+        std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
+            std::mem::transmute(id),
+        ))
+    }
+}
+
+#[inline]
+pub fn rar_retain<T: objc::Obj>(id: &T) -> R<T> {
+    unsafe {
+        asm!("mov x29, x29");
+        std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
+            std::mem::transmute(id),
+        ))
+    }
+}

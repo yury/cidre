@@ -7,7 +7,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn add(
@@ -24,7 +24,7 @@ impl graph::Graph {
         min: &graph::Tensor,
         max: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn clamp(
@@ -44,7 +44,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn mul(
@@ -55,11 +55,8 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(roundWithTensor:name:)]
-    pub fn round_ar(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    pub fn round_ar(&self, tensor: &graph::Tensor, name: Option<&ns::String>)
+        -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn round(&self, tensor: &graph::Tensor, name: Option<&ns::String>)
@@ -70,7 +67,7 @@ impl graph::Graph {
         &self,
         tensor: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn square_root(
@@ -85,7 +82,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn sub(
@@ -101,7 +98,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn div(
@@ -112,41 +109,25 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(tanhWithTensor:name:)]
-    pub fn tanh_ar(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    pub fn tanh_ar(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn tanh(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(erfWithTensor:name:)]
-    pub fn erf_ar(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    pub fn erf_ar(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn erf(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(cosWithTensor:name:)]
-    pub fn cos_ar(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    pub fn cos_ar(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn cos(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(sinWithTensor:name:)]
-    pub fn sin_ar(
-        &self,
-        tensor: &graph::Tensor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    pub fn sin_ar(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn sin(&self, tensor: &graph::Tensor, name: Option<&ns::String>) -> arc::R<graph::Tensor>;

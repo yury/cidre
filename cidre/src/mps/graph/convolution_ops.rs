@@ -19,7 +19,7 @@ impl Convolution2DOpDescriptor {
         padding_style: graph::PaddingStyle,
         data_layout: graph::TensorNamedDataLayout,
         weight_layout: graph::TensorNamedDataLayout,
-    ) -> Option<arc::Rar<Self>>;
+    ) -> Option<&'ar Self>;
 
     #[objc::cls_rar_retain]
     pub fn with(
@@ -46,7 +46,7 @@ impl graph::Graph {
         weights: &graph::Tensor,
         descriptor: &Convolution2DOpDescriptor,
         name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
+    ) -> &'ar graph::Tensor;
 
     #[objc::rar_retain]
     pub fn convolution_2d(

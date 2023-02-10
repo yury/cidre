@@ -37,13 +37,13 @@ impl Session {
     }
 
     #[objc::msg_send(dataTaskWithURL:)]
-    pub fn data_task_with_url_ar(&self, url: &ns::URL) -> arc::Rar<DataTask>;
+    pub fn data_task_with_url_ar(&self, url: &ns::URL) -> &'ar DataTask;
 
     #[objc::rar_retain()]
     pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask>;
 
     #[objc::msg_send(dataTaskWithRequest:)]
-    pub fn data_task_with_request_ar(&self, request: &ns::URLRequest) -> arc::Rar<DataTask>;
+    pub fn data_task_with_request_ar(&self, request: &ns::URLRequest) -> &'ar DataTask;
 
     #[objc::rar_retain()]
     pub fn data_task_with_request(&self, request: &ns::URLRequest) -> arc::R<DataTask>;

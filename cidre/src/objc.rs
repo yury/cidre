@@ -1,12 +1,4 @@
-use std::{
-    arch::asm,
-    borrow::Cow,
-    ffi::c_void,
-    intrinsics::transmute,
-    marker::PhantomData,
-    ops::{Deref, DerefMut},
-    ptr::NonNull,
-};
+use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
 use crate::{arc, cf::Type};
 
@@ -77,13 +69,13 @@ pub trait Obj: Sized + arc::Retain {
     }
 
     #[msg_send(description)]
-    fn description_ar(&self) -> arc::Rar<crate::ns::String>;
+    fn description_ar(&self) -> &'ar crate::ns::String;
 
-    #[rar_retain()]
+    #[rar_retain]
     fn description(&self) -> arc::R<crate::ns::String>;
 
     #[msg_send(debugDescription)]
-    fn debug_description_ar(&self) -> arc::Rar<crate::ns::String>;
+    fn debug_description_ar(&self) -> &'ar crate::ns::String;
 
     #[rar_retain()]
     fn debug_description(&self) -> arc::R<crate::ns::String>;
@@ -111,10 +103,10 @@ impl Id {
         objc_autorelease(id)
     }
 
-    #[inline]
-    pub unsafe fn retain_autoreleased_return<'ar>(id: Option<&Id>) -> Option<&'ar Id> {
-        objc_retainAutoreleasedReturnValue(id)
-    }
+    // #[inline]
+    // pub unsafe fn retain_autoreleased_return<'ar>(id: Option<&Id>) -> Option<arc::R<Id>> {
+    //     objc_retainAutoreleasedReturnValue(id)
+    // }
 
     #[inline]
     pub fn as_type_ref(&self) -> &Type {
@@ -165,8 +157,8 @@ extern "C" {
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
-    fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
-    pub fn objc_autoreleaseReturnValue(obj: Option<&Id>) -> arc::Rar<Id>;
+    pub fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<arc::R<Id>>;
+    pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
 
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
     pub fn sel_registerName(str: *const u8) -> &'static Sel;
@@ -330,10 +322,10 @@ impl PartialEq for Id {
 mod tests {
 
     use super::autoreleasepool;
-    use crate::{arc, cf, dispatch, return_ar};
+    use crate::{cf, dispatch, return_ar};
     use std;
 
-    fn autorelease_example() -> arc::Rar<dispatch::Queue> {
+    fn autorelease_example_ar<'ar>() -> &'ar dispatch::Queue {
         let q = dispatch::Queue::new();
         return_ar!(q)
     }
@@ -341,50 +333,12 @@ mod tests {
     #[test]
     fn autorelease() {
         let ptr = autoreleasepool(|| {
-            let q = autorelease_example().retain();
-            assert_eq!(1, q.as_type_ref().retain_count());
+            let q = autorelease_example_ar().retained();
+            assert_eq!(2, q.as_type_ref().retain_count());
             unsafe { q.as_type_ref().as_type_ptr() }
         });
 
         let _ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
-    }
-}
-
-#[derive(Debug)]
-#[repr(transparent)]
-pub struct ReturnedAutoReleased<T: Obj + 'static>(&'static mut T);
-
-impl<T: Obj> ReturnedAutoReleased<T> {
-    #[inline]
-    pub fn retain(self) -> arc::R<T> {
-        unsafe {
-            asm!("mov x29, x29");
-            transmute(Id::retain_autoreleased_return(transmute(self)))
-        }
-    }
-
-    #[inline]
-    pub fn option_retain(value: Option<Self>) -> Option<arc::R<T>> {
-        unsafe {
-            asm!("mov x29, x29");
-            transmute(Id::retain_autoreleased_return(transmute(value)))
-        }
-    }
-}
-
-impl<T: Obj> Deref for ReturnedAutoReleased<T> {
-    type Target = T;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        self.0
-    }
-}
-
-impl<T: Obj> DerefMut for ReturnedAutoReleased<T> {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
     }
 }
 

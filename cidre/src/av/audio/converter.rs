@@ -143,7 +143,7 @@ impl Converter {
         block: &mut blocks::Block<F>,
     ) -> Result<OutputStatus, arc::R<cf::Error>>
     where
-        F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<arc::Rar<av::AudioBuffer>>,
+        F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<&'ar av::AudioBuffer>,
     {
         unsafe {
             let mut error = None;

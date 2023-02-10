@@ -86,7 +86,7 @@ impl Function {
     pub fn new_argument_encoder_with_buf_index_ar(
         &self,
         index: ns::UInteger,
-    ) -> arc::Rar<mtl::ArgumentEncoder>;
+    ) -> &'ar mtl::ArgumentEncoder;
 
     #[objc::rar_retain()]
     pub fn new_argument_encoder_with_buf_index(
@@ -104,7 +104,7 @@ impl Library {
     pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
     #[objc::msg_send(newFunctionWithName:)]
-    pub fn new_fn_ar(&self, name: &ns::String) -> Option<arc::Rar<Function>>;
+    pub fn new_fn_ar(&self, name: &ns::String) -> Option<&'ar Function>;
 
     #[objc::rar_retain()]
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Function>>;
@@ -112,12 +112,12 @@ impl Library {
     /// # Safety
     /// Use new_function_with_name_constant_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
-    pub unsafe fn new_fn_const_values_err_ar<'ar>(
+    pub unsafe fn new_fn_const_values_err_ar(
         &self,
         name: &ns::String,
         constant_values: &mtl::FunctionConstantValues,
         error: &mut Option<&'ar ns::Error>,
-    ) -> Option<arc::Rar<Function>>;
+    ) -> Option<&'ar Function>;
 
     #[objc::rar_retain()]
     pub unsafe fn new_fn_const_values_err<'ar>(

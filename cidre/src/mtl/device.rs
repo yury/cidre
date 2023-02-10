@@ -108,7 +108,7 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[objc::msg_send(newCommandQueue)]
-    pub fn new_cmd_queue_ar(&self) -> Option<arc::Rar<CmdQueue>>;
+    pub fn new_cmd_queue_ar(&self) -> Option<&'ar CmdQueue>;
 
     #[objc::rar_retain()]
     pub fn new_cmd_queue(&self) -> Option<arc::R<CmdQueue>>;
@@ -126,7 +126,7 @@ impl Device {
     pub fn new_cmd_queue_max_cmd_buf_count_ar(
         &self,
         max_cmd_buf_count: usize,
-    ) -> Option<arc::Rar<CmdQueue>>;
+    ) -> Option<&'ar CmdQueue>;
 
     #[objc::rar_retain()]
     pub fn new_cmd_queue_max_cmd_buf_count(
@@ -135,10 +135,7 @@ impl Device {
     ) -> Option<arc::R<CmdQueue>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn new_texture_ar(
-        &self,
-        descriptor: &mtl::TextureDescriptor,
-    ) -> Option<arc::Rar<mtl::Texture>>;
+    pub fn new_texture_ar(&self, descriptor: &mtl::TextureDescriptor) -> Option<&'ar mtl::Texture>;
 
     #[objc::rar_retain()]
     pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
@@ -149,7 +146,7 @@ impl Device {
         descriptor: &mtl::TextureDescriptor,
         surface: &io::Surface,
         plane: usize,
-    ) -> Option<arc::Rar<mtl::Texture>>;
+    ) -> Option<&'ar mtl::Texture>;
 
     #[objc::rar_retain()]
     pub fn new_texture_with_surface(
@@ -160,7 +157,7 @@ impl Device {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newDefaultLibrary)]
-    pub fn new_default_lib_ar(&self) -> Option<arc::Rar<Library>>;
+    pub fn new_default_lib_ar(&self) -> Option<&'ar Library>;
 
     #[objc::rar_retain()]
     pub fn new_default_lib(&self) -> Option<arc::R<Library>>;
@@ -171,7 +168,7 @@ impl Device {
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::Rar<Library>>;
+    ) -> Option<&'ar Library>;
 
     #[objc::rar_retain()]
     pub fn new_lib_with_src_err(
@@ -221,7 +218,7 @@ impl Device {
         &self,
         function: &mtl::Function,
         error: &mut Option<&'a ns::Error>,
-    ) -> Option<arc::Rar<mtl::ComputePipelineState>>;
+    ) -> Option<&'ar mtl::ComputePipelineState>;
 
     #[objc::rar_retain()]
     pub fn new_compute_ps_with_fn_err<'a>(
@@ -235,7 +232,7 @@ impl Device {
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::Rar<mtl::RenderPipelineState>>;
+    ) -> Option<&'ar mtl::RenderPipelineState>;
 
     #[objc::rar_retain]
     pub unsafe fn new_render_ps_err(
@@ -280,7 +277,7 @@ impl Device {
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buf>>;
+    ) -> Option<&'ar mtl::Buf>;
 
     #[objc::rar_retain()]
     pub fn new_buf_len_opts(
@@ -295,7 +292,7 @@ impl Device {
         bytes: *const c_void,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<Buf>>;
+    ) -> Option<&'ar Buf>;
 
     #[objc::rar_retain()]
     pub fn new_buf_bytes_len_opts(
@@ -306,11 +303,11 @@ impl Device {
     ) -> Option<arc::R<Buf>>;
 
     #[inline]
-    pub fn new_buf_slice_ar<T: Sized>(
+    pub fn new_buf_slice_ar<'ar, T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
-    ) -> Option<arc::Rar<mtl::Buf>> {
+    ) -> Option<&'ar mtl::Buf> {
         self.new_buf_bytes_len_opts_ar(
             slice.as_ptr() as _,
             std::mem::size_of::<T>() * slice.len(),
@@ -324,23 +321,23 @@ impl Device {
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buf>> {
-        arc::Rar::option_retain(self.new_buf_slice_ar(slice, options))
+        arc::rar_retain_option(self.new_buf_slice_ar(slice, options))
     }
 
     #[objc::msg_send(newFence)]
-    pub fn new_fence_ar(&self) -> Option<arc::Rar<Fence>>;
+    pub fn new_fence_ar(&self) -> Option<&'ar Fence>;
 
     #[objc::rar_retain()]
     pub fn new_fence(&self) -> Option<arc::R<Fence>>;
 
     #[objc::msg_send(newEvent)]
-    pub fn new_event_ar(&self) -> Option<arc::Rar<Event>>;
+    pub fn new_event_ar(&self) -> Option<&'ar Event>;
 
     #[objc::rar_retain()]
     pub fn new_event(&self) -> Option<arc::R<Event>>;
 
     #[objc::msg_send(newSharedEvent)]
-    pub fn new_shared_event_ar(&self) -> Option<arc::Rar<SharedEvent>>;
+    pub fn new_shared_event_ar(&self) -> Option<&'ar SharedEvent>;
 
     #[objc::rar_retain()]
     pub fn new_shared_event(&self) -> Option<arc::R<SharedEvent>>;
@@ -361,8 +358,7 @@ impl Device {
     ) -> SizeAndAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
-    pub fn new_heap_desc_ar(&self, descriptor: &mtl::HeapDescriptor)
-        -> Option<arc::Rar<mtl::Heap>>;
+    pub fn new_heap_desc_ar(&self, descriptor: &mtl::HeapDescriptor) -> Option<&'ar mtl::Heap>;
 
     #[objc::rar_retain()]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
