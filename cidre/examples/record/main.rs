@@ -3,10 +3,7 @@ use std::{collections::VecDeque, ffi::c_void, time::Duration};
 use cidre::{
     arc, at,
     cat::{audio::MPEG4ObjectID, AudioFormatFlags, AudioFormatID},
-    cf,
-    cm::{self, SampleBuffer},
-    define_obj_type, dispatch, ns, objc,
-    os::{self, Status},
+    cf, cm, define_obj_type, dispatch, ns, objc, os,
     sc::{self, stream::Output, stream::OutputImpl},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
 };
@@ -74,7 +71,7 @@ impl OutputImpl for FrameCounter {
                     .fill_complex_buf(convert_audio, &mut inner.audio_queue, &mut size, &mut buf)
                     .unwrap();
 
-                //println!("size {}", buf.buffers[0].data_bytes_size,);
+                // println!("size {}", buf.buffers[0].data_bytes_size,);
             }
 
             inner.audio_counter += 1;
@@ -108,7 +105,8 @@ fn default_converter() -> at::AudioConverterRef {
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
         format_id: AudioFormatID::MPEG4_AAC,
-        format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
+        format_flags: Default::default(),
+        // format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
         bytes_per_packet: 0,
         frames_per_packet: 1024,
         bytes_per_frame: 0,
@@ -230,7 +228,7 @@ struct RecordContext {
 }
 
 impl RecordContext {
-    pub fn handle_sample_buffer(&mut self, buffer: &SampleBuffer) {
+    pub fn handle_sample_buffer(&mut self, buffer: &cm::SampleBuffer) {
         if self.frames_count % 1000 == 0 {
             if self.format_desc.is_none() {
                 let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
@@ -257,9 +255,9 @@ impl RecordContext {
 extern "C" fn callback(
     ctx: *mut RecordContext,
     _: *mut c_void,
-    status: Status,
+    status: os::Status,
     flags: EncodeInfoFlags,
-    buffer: Option<&SampleBuffer>,
+    buffer: Option<&cm::SampleBuffer>,
 ) {
     if status.is_err() || buffer.is_none() {
         println!("status {:?} Flags: {:#b}", status, flags);

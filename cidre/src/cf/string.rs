@@ -45,6 +45,8 @@ impl CompareFlags {
     pub const FORCED_ORDERING: Self = Self(OptionFlags(512));
 }
 
+// https://github.com/apportable/Foundation/blob/master/System/CoreFoundation/src/CFString.c
+
 define_cf_type!(String(Type));
 
 impl String {
@@ -64,7 +66,7 @@ impl String {
     /// let s1 = cf::String::from_str_no_copy("nice");
     /// let s2 = cf::String::from_str_no_copy("nice");
     ///
-    /// assert_eq!(4, s1.length());
+    /// assert_eq!(4, s1.len());
     /// assert!(s1.equal(&s2));
     ///```
     #[inline]
@@ -90,7 +92,7 @@ impl String {
     /// let s2 = cf::String::from_str("nice");
     /// let s3 = cf::String::from_str("nice string");
     ///
-    /// assert_eq!(4, s1.length());
+    /// assert_eq!(4, s1.len());
     /// assert!(s1.equal(&s2));
     /// assert!(s3.has_prefix(&s2));
     ///```
@@ -130,7 +132,7 @@ impl String {
     }
 
     #[inline]
-    pub fn length(&self) -> Index {
+    pub fn len(&self) -> Index {
         unsafe { CFStringGetLength(self) }
     }
 
@@ -247,6 +249,45 @@ impl String {
     pub fn as_ns_string(&self) -> &crate::ns::String {
         unsafe { std::mem::transmute(self) }
     }
+
+    #[inline]
+    pub fn to_string(&self) -> std::string::String {
+        unsafe {
+            let range = crate::cf::Range {
+                location: 0,
+                length: self.len(),
+            };
+            let mut bytes_required: Index = 0;
+            CFStringGetBytes(
+                self,
+                range,
+                Encoding::UTF8,
+                0,
+                false,
+                std::ptr::null_mut(),
+                0,
+                &mut bytes_required,
+            );
+
+            let mut buffer = Vec::with_capacity(bytes_required as _);
+            buffer.set_len(bytes_required as _);
+            let mut used_buf_len: Index = 0;
+            CFStringGetBytes(
+                self,
+                range,
+                Encoding::UTF8,
+                0,
+                false,
+                buffer.as_mut_ptr(),
+                buffer.len() as _,
+                &mut used_buf_len,
+            );
+
+            debug_assert_eq!(bytes_required, used_buf_len);
+
+            std::string::String::from_utf8_unchecked(buffer)
+        }
+    }
 }
 
 #[macro_export]
@@ -274,39 +315,7 @@ impl<'a> From<&'a String> for Cow<'a, str> {
         unsafe {
             let c_str = CFStringGetCStringPtr(cfstr, Encoding::UTF8);
             if c_str.is_null() {
-                let range = crate::cf::Range {
-                    location: 0,
-                    length: cfstr.length(),
-                };
-                let mut bytes_required: Index = 0;
-                CFStringGetBytes(
-                    cfstr,
-                    range,
-                    Encoding::UTF8,
-                    0,
-                    false,
-                    std::ptr::null_mut(),
-                    0,
-                    &mut bytes_required,
-                );
-
-                let mut buffer = Vec::with_capacity(bytes_required as _);
-                buffer.set_len(bytes_required as _);
-                let mut used_buf_len: Index = 0;
-                CFStringGetBytes(
-                    cfstr,
-                    range,
-                    Encoding::UTF8,
-                    0,
-                    false,
-                    buffer.as_mut_ptr(),
-                    buffer.len() as _,
-                    &mut used_buf_len,
-                );
-
-                debug_assert_eq!(bytes_required, used_buf_len);
-
-                Cow::Owned(std::string::String::from_utf8_unchecked(buffer))
+                Cow::Owned(cfstr.to_string())
             } else {
                 let cstr = CStr::from_ptr(c_str);
                 Cow::Borrowed(from_utf8_unchecked(cstr.to_bytes()))
@@ -447,7 +456,7 @@ mod tests {
     #[test]
     fn it_works() {
         let s = cf::String::from_str("hello");
-        assert_eq!(s.length(), 5);
+        assert_eq!(s.len(), 5);
         let std_str = s.to_string();
         assert_eq!(std_str.chars().count(), 5);
 
