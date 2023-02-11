@@ -2,7 +2,7 @@ use std::{collections::VecDeque, ffi::c_void, time::Duration};
 
 use cidre::{
     arc, at,
-    cat::{audio::MPEG4ObjectID, AudioFormatFlags, AudioFormatID},
+    cat::{AudioFormatFlags, AudioFormatID},
     cf, cm, define_obj_type, dispatch, ns, objc, os,
     sc::{self, stream::Output, stream::OutputImpl},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
@@ -80,11 +80,9 @@ impl OutputImpl for FrameCounter {
 
         inner.video_counter += 1;
 
-        let img = sample_buffer.image_buffer();
-        if img.is_none() {
+        let Some(img) = sample_buffer.image_buffer() else {
             return;
-        }
-        let img = unsafe { img.unwrap_unchecked() };
+        };
         let pts = sample_buffer.presentation_time_stamp();
         let dur = sample_buffer.duration();
 

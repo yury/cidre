@@ -134,6 +134,7 @@ impl PartialEq for String {
 impl std::ops::Index<std::ops::Range<usize>> for String {
     type Output = String;
 
+    /// Return autoreleased
     #[inline]
     fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
         self.substring_with_range_ar(index.into())
