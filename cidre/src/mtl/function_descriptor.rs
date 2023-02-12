@@ -45,6 +45,6 @@ mod tests {
 
         let actual_name = fd.name().unwrap();
 
-        assert!(name.is_equal(&actual_name));
+        assert_eq!(name.as_ref(), actual_name);
     }
 }
