@@ -74,12 +74,12 @@ impl String {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes_no_copy_in(
-                None,
                 bytes,
                 bytes.len() as _,
                 Encoding::UTF8,
                 false,
                 Allocator::null(),
+                None,
             )
             .unwrap_unchecked()
         }
@@ -160,18 +160,18 @@ impl String {
     }
 
     #[inline]
-    pub fn copy(&self) -> Option<arc::R<Self>> {
-        self.copy_in(None)
+    pub fn copy(&self) -> arc::R<Self> {
+        unsafe { std::mem::transmute(self.copy_in(None)) }
     }
 
     #[inline]
     pub fn create_with_bytes_no_copy_in(
-        alloc: Option<&Allocator>,
         bytes: &[u8],
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
+        alloc: Option<&Allocator>,
     ) -> Option<arc::R<Self>> {
         unsafe {
             let bytes = bytes.as_ptr();
