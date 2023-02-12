@@ -706,7 +706,6 @@ impl Converter {
 impl Drop for ConverterRef {
     fn drop(&mut self) {
         let res = unsafe { AudioConverterDispose(self) };
-        println!("res {:?}", res);
         debug_assert!(res.is_ok());
     }
 }
