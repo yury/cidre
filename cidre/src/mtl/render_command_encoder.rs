@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
@@ -151,9 +149,17 @@ impl RenderCmdEncoder {
     #[objc::msg_send(setRenderPipelineState:)]
     pub fn set_render_ps(&mut self, value: &mtl::RenderPipelineState);
 
+    #[objc::msg_send(setVertexBytes:length:atIndex:)]
+    pub fn set_vertex_bytes(
+        &mut self,
+        bytes: *const u8,
+        length: ns::UInteger,
+        at_index: ns::UInteger,
+    );
+
     #[inline]
-    pub fn set_vertex_bytes(&mut self, bytes: &[u8], at_index: usize) {
-        unsafe { wsel_setVertexBytes(self, bytes.as_ptr() as _, bytes.len(), at_index) }
+    pub fn set_vertex_slice(&mut self, slice: &[u8], at_index: ns::UInteger) {
+        self.set_vertex_bytes(slice.as_ptr(), slice.len(), at_index)
     }
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
@@ -181,9 +187,4 @@ impl RenderCmdEncoder {
         vertex_start: usize,
         vertex_count: usize,
     );
-}
-
-#[link(name = "mtl", kind = "static")]
-extern "C" {
-    fn wsel_setVertexBytes(id: &mut ns::Id, bytes: *const c_void, length: usize, at_index: usize);
 }
