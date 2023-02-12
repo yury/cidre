@@ -11,6 +11,12 @@ pub type Type = FourCharCode;
 
 pub mod lock;
 
+impl PartialEq<i32> for Status {
+    fn eq(&self, other: &i32) -> bool {
+        self.0.eq(other)
+    }
+}
+
 impl Status {
     #[inline]
     pub fn is_ok(&self) -> bool {

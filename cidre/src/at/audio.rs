@@ -25,3 +25,10 @@ pub use component::Flags as ComponentFlags;
 pub use component::InstantiationOptions as ComponentInstantiationOptions;
 
 mod unit;
+
+mod file;
+pub use file::errors as file_errors;
+pub use file::FileID;
+pub use file::FileTypeID;
+pub use file::Flags as FileFlags;
+pub use file::Permissions as FilePermissions;

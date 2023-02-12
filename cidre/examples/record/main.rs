@@ -21,6 +21,59 @@ impl FrameCounterInner {
     pub fn _video_counter(&self) -> usize {
         self.video_counter
     }
+
+    fn handle_audio(&mut self, sample_buffer: &mut cm::SampleBuffer) {
+        if self.audio_counter == 0 {
+            let format_desc = sample_buffer.format_description().unwrap();
+            let sbd = format_desc.stream_basic_description().unwrap();
+            println!("{:?}", sbd);
+            self.audio_converter = configured_converter(sbd);
+        }
+
+        self.audio_queue.enque(sample_buffer);
+
+        if self.audio_queue.is_ready() {
+            let mut data = [0u8; 2000];
+            let buffer = at::AudioBuffer {
+                number_channels: 1,
+                data_bytes_size: data.len() as _,
+                data: data.as_mut_ptr(),
+            };
+            let buffers = [buffer];
+            let mut buf = at::audio::BufferList {
+                number_buffers: buffers.len() as _,
+                buffers,
+            };
+
+            let mut size = 1u32;
+
+            self.audio_converter
+                .fill_complex_buf(convert_audio, &mut self.audio_queue, &mut size, &mut buf)
+                .unwrap();
+
+            // println!("size {}", buf.buffers[0].data_bytes_size,);
+        }
+
+        self.audio_counter += 1;
+    }
+
+    fn handle_video(&mut self, sample_buffer: &mut cm::SampleBuffer) {
+        let Some(img) = sample_buffer.image_buffer() else {
+            return;
+        };
+        self.video_counter += 1;
+        let pts = sample_buffer.presentation_time_stamp();
+        let dur = sample_buffer.duration();
+
+        let mut flags = None;
+
+        let res = self
+            .session
+            .encode_frame(img, pts, dur, None, std::ptr::null_mut(), &mut flags);
+        if res.is_err() {
+            println!("err {:?}", res);
+        }
+    }
 }
 
 define_obj_type!(FrameCounter + OutputImpl, FrameCounterInner, FRAME_COUNTER);
@@ -36,63 +89,10 @@ impl OutputImpl for FrameCounter {
         sample_buffer: &mut cm::SampleBuffer,
         kind: sc::OutputType,
     ) {
-        let mut inner = self.inner_mut();
-
-        if kind == sc::OutputType::Audio {
-            if inner.audio_counter == 0 {
-                inner.audio_converter = configured_converter(
-                    sample_buffer
-                        .format_description()
-                        .unwrap()
-                        .stream_basic_description()
-                        .unwrap(),
-                );
-            }
-
-            inner.audio_queue.enque(sample_buffer);
-
-            if inner.audio_queue.is_ready() {
-                let mut data = [0u8; 2000];
-                let buffer = at::AudioBuffer {
-                    number_channels: 1,
-                    data_bytes_size: data.len() as _,
-                    data: data.as_mut_ptr(),
-                };
-                let buffers = [buffer];
-                let mut buf = at::audio::BufferList {
-                    number_buffers: buffers.len() as _,
-                    buffers,
-                };
-
-                let mut size = 1u32;
-
-                inner
-                    .audio_converter
-                    .fill_complex_buf(convert_audio, &mut inner.audio_queue, &mut size, &mut buf)
-                    .unwrap();
-
-                // println!("size {}", buf.buffers[0].data_bytes_size,);
-            }
-
-            inner.audio_counter += 1;
-            return;
-        }
-
-        inner.video_counter += 1;
-
-        let Some(img) = sample_buffer.image_buffer() else {
-            return;
-        };
-        let pts = sample_buffer.presentation_time_stamp();
-        let dur = sample_buffer.duration();
-
-        let mut flags = None;
-
-        let res = inner
-            .session
-            .encode_frame(img, pts, dur, None, std::ptr::null_mut(), &mut flags);
-        if res.is_err() {
-            println!("err {:?}", res);
+        if kind == sc::OutputType::Screen {
+            self.inner_mut().handle_video(sample_buffer)
+        } else if kind == sc::OutputType::Audio {
+            self.inner_mut().handle_audio(sample_buffer);
         }
     }
 }
