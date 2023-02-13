@@ -151,6 +151,15 @@ impl Device {
 
     #[objc::msg_send(unlockForConfiguration)]
     pub unsafe fn unlock_for_configuration(&mut self);
+
+    #[objc::msg_send(setActiveFormat:)]
+    pub unsafe fn set_active_format(&mut self, value: &Format);
+
+    #[objc::msg_send(setActiveVideoMinFrameDuration:)]
+    pub unsafe fn set_active_video_min_frame_duration(&mut self, value: cm::Time);
+
+    #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
+    pub unsafe fn set_active_video_max_frame_duration(&mut self, value: cm::Time);
 }
 
 pub struct ConfigurationLockGuard<'a> {
@@ -159,15 +168,15 @@ pub struct ConfigurationLockGuard<'a> {
 
 impl<'a> ConfigurationLockGuard<'a> {
     pub fn set_active_format(&mut self, value: &Format) {
-        unsafe { wsel_setActiveFormat(self.device, value) }
+        unsafe { self.device.set_active_format(value) }
     }
 
     pub fn set_active_video_min_frame_duration(&mut self, value: cm::Time) {
-        unsafe { wsel_setActiveVideoMinFrameDuration(self.device, value) }
+        unsafe { self.device.set_active_video_min_frame_duration(value) }
     }
 
     pub fn set_active_video_max_frame_duration(&mut self, value: cm::Time) {
-        unsafe { wsel_setActiveVideoMaxFrameDuration(self.device, value) }
+        unsafe { self.device.set_active_video_max_frame_duration(value) }
     }
 }
 
@@ -194,9 +203,6 @@ impl<'a> DerefMut for ConfigurationLockGuard<'a> {
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
-    fn wsel_setActiveFormat(device: &mut Device, value: &Format);
-    fn wsel_setActiveVideoMinFrameDuration(device: &mut Device, value: cm::Time);
-    fn wsel_setActiveVideoMaxFrameDuration(device: &mut Device, value: cm::Time);
 }
 
 #[repr(isize)]

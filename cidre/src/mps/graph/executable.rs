@@ -10,9 +10,6 @@ impl ExecutionDescriptor {
     pub fn scheduled_handler<F>(&self) -> Option<&Block<F>>
     where
         F: FnOnce(&cf::ArrayOf<graph::TensorData>, Option<&cf::Error>);
-    // {
-    //     unsafe { transmute(rsel_scheduledHandler(self)) }
-    // }
 
     #[objc::msg_send(setScheduledHandler:)]
     fn _set_scheduled_handler(&self, block: *mut c_void);
