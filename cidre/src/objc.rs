@@ -331,6 +331,8 @@ impl PartialEq for Id {
     }
 }
 
+/// Can throw any object. You may need ns::Exception::raise.
+/// [read more](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Exceptions/Tasks/HandlingExceptions.html)
 pub fn throw(obj: &Id) -> ! {
     unsafe { cidre_throw(obj) }
 }
