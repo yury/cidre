@@ -331,6 +331,51 @@ impl PartialEq for Id {
     }
 }
 
+pub fn throw(obj: &Id) -> ! {
+    unsafe { cidre_throw(obj) }
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn cidre_throw(obj: &Id) -> !;
+    fn cidre_try_catch<'ar>(
+        during: extern "C" fn(ctx: *mut c_void),
+        ctx: *mut c_void,
+    ) -> Option<&'ar Id>;
+}
+
+pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar Id>
+where
+    F: FnOnce() -> R,
+{
+    let mut result = None;
+    let mut wrapper = Some(|| result = Some(f()));
+
+    let f = type_helper(&wrapper);
+    let ctx = &mut wrapper as *mut _ as *mut c_void;
+
+    unsafe {
+        match cidre_try_catch(transmute(f), ctx) {
+            None => Ok(result.unwrap_unchecked()),
+            Some(e) => Err(e),
+        }
+    }
+}
+
+#[inline]
+fn type_helper<F>(_t: &Option<F>) -> extern "C" fn(t: &mut Option<F>)
+where
+    F: FnOnce(),
+{
+    extern "C" fn during<F>(f: &mut Option<F>)
+    where
+        F: FnOnce(),
+    {
+        unsafe { f.take().unwrap_unchecked()() };
+    }
+    during
+}
+
 #[cfg(test)]
 mod tests {
 

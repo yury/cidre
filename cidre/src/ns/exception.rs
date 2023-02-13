@@ -134,10 +134,6 @@ impl Exception {
     }
 }
 
-pub fn throw(message: &ns::Id) -> ! {
-    unsafe { cidre_throw_exception(message) }
-}
-
 pub type UncaughtExceptionHandler = extern "C" fn(exception: &Exception);
 
 pub fn get_uncaought_exception_handler() -> *const UncaughtExceptionHandler {
@@ -156,29 +152,24 @@ extern "C" {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn cidre_raise_exception(message: &ns::String) -> !;
-    fn cidre_throw_exception(message: &ns::Id) -> !;
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
     ) -> Option<&'ar ns::Id>;
 }
 
-pub fn try_catch_obj<'ar, F, R>(f: F) -> Result<R, &'ar ns::Id>
+#[inline]
+fn type_helper<F>(_t: &Option<F>) -> extern "C" fn(t: &mut Option<F>)
 where
-    F: FnOnce() -> R,
+    F: FnOnce(),
 {
-    let mut result = None;
-    let mut wrapper = Some(|| result = Some(f()));
-
-    let f = type_helper(&wrapper);
-    let ctx = &mut wrapper as *mut _ as *mut c_void;
-
-    unsafe {
-        match cidre_try_catch(transmute(f), ctx) {
-            None => Ok(result.unwrap_unchecked()),
-            Some(e) => Err(e),
-        }
+    extern "C" fn during<F>(f: &mut Option<F>)
+    where
+        F: FnOnce(),
+    {
+        unsafe { f.take().unwrap_unchecked()() };
     }
+    during
 }
 
 pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar ns::Exception>
@@ -199,23 +190,9 @@ where
     }
 }
 
-#[inline]
-fn type_helper<F>(_t: &Option<F>) -> extern "C" fn(t: &mut Option<F>)
-where
-    F: FnOnce(),
-{
-    extern "C" fn during<F>(f: &mut Option<F>)
-    where
-        F: FnOnce(),
-    {
-        unsafe { f.take().unwrap_unchecked()() };
-    }
-    during
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::{cf, ns};
+    use crate::{cf, ns, objc};
 
     #[test]
     fn test_catch() {
@@ -240,8 +217,8 @@ mod tests {
     fn test_throw_catch() {
         let msg = ns::String::with_str("test");
 
-        let exc = ns::try_catch_obj(|| {
-            ns::exception::throw(&msg);
+        let exc = objc::try_catch(|| {
+            objc::throw(&msg);
         })
         .expect_err("result");
 
