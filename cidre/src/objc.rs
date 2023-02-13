@@ -272,10 +272,11 @@ macro_rules! define_obj_type {
                 unsafe { Self::cls().alloc_init(inner).unwrap_unchecked() }
             }
         }
+
     };
 
     ($NewType:ident($BaseType:path)) => {
-        #[derive(Debug)]
+        #[derive(Debug, PartialEq)]
         #[repr(transparent)]
         pub struct $NewType($BaseType);
 
@@ -303,6 +304,18 @@ macro_rules! define_obj_type {
                 unsafe { $crate::objc::Obj::retain(self) }
             }
         }
+
+        // impl PartialEq<$BaseType> for $NewType {
+        //     fn eq(&self, other: &$BaseType) -> bool {
+        //         self.0.eq(other)
+        //     }
+        // }
+
+        // impl PartialEq for $NewType where $BaseType: PartialEq {
+        //     fn eq(&self, other: &$NewType) -> bool {
+        //         self.is_equal(other)
+        //     }
+        // }
 
     };
     ($NewType:ident($BaseType:path), $CLS:ident) => {

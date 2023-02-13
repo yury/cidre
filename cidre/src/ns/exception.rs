@@ -157,13 +157,13 @@ extern "C" {
 extern "C" {
     fn cidre_raise_exception(message: &ns::String) -> !;
     fn cidre_throw_exception(message: &ns::String) -> !;
-    fn cidre_try_catch<'a>(
+    fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
-    ) -> Option<&'a ns::Id>;
+    ) -> Option<&'ar ns::Error>;
 }
 
-pub fn try_catch<'a, F, R>(f: F) -> Result<R, &'a ns::Id>
+pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar ns::Error>
 where
     F: FnOnce() -> R,
 {

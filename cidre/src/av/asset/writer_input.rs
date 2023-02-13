@@ -1,17 +1,23 @@
-use crate::{arc, av::MediaType, cm, define_cls, define_obj_type, ns, objc};
+use crate::{
+    arc,
+    av::MediaType,
+    cm, define_cls, define_obj_type,
+    ns::{self, try_catch},
+    objc,
+};
 
 define_obj_type!(WriterInput(ns::Id));
 
 impl arc::A<WriterInput> {
     #[objc::msg_send(initWithMediaType:outputSettings:)]
-    pub fn try_init_media_type_and_output_settings(
+    pub fn init_media_type_and_output_settings_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput>;
 
     #[objc::msg_send(initWithMediaType:outputSettings:sourceFormatHint:)]
-    pub fn try_with_media_type_output_settings_source_and_format_hint(
+    pub fn with_media_type_output_settings_source_and_format_hint_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -22,19 +28,28 @@ impl arc::A<WriterInput> {
 impl WriterInput {
     define_cls!(AV_ASSET_WRITER_INPUT);
 
-    pub fn try_with_media_type_and_output_settings(
+    pub fn with_media_type_and_output_settings_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput> {
-        Self::alloc().try_init_media_type_and_output_settings(media_type, output_settings)
+        Self::alloc().init_media_type_and_output_settings_throws(media_type, output_settings)
     }
 
-    pub fn try_with_media_type_output_settings_source_and_format_hint(
+    pub fn try_with_media_type_and_output_settings<'ar>(
+        media_type: &MediaType,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Result<arc::R<WriterInput>, &'ar ns::Error> {
+        try_catch(|| {
+            Self::alloc().init_media_type_and_output_settings_throws(media_type, output_settings)
+        })
+    }
+
+    pub fn with_media_type_output_settings_source_and_format_hint_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDescription>,
     ) -> arc::R<WriterInput> {
-        Self::alloc().try_with_media_type_output_settings_source_and_format_hint(
+        Self::alloc().with_media_type_output_settings_source_and_format_hint_throws(
             media_type,
             output_settings,
             source_format_hint,
@@ -45,7 +60,7 @@ impl WriterInput {
         media_type: &MediaType,
         source_format_hint: &cm::FormatDescription,
     ) -> arc::R<WriterInput> {
-        Self::alloc().try_with_media_type_output_settings_source_and_format_hint(
+        Self::alloc().with_media_type_output_settings_source_and_format_hint_throws(
             media_type,
             None,
             Some(source_format_hint),
@@ -53,7 +68,7 @@ impl WriterInput {
     }
 
     pub fn with_media_type(media_type: &MediaType) -> arc::R<WriterInput> {
-        Self::try_with_media_type_and_output_settings(media_type, None)
+        Self::with_media_type_and_output_settings_throws(media_type, None)
     }
 
     #[objc::msg_send(mediaType)]
@@ -93,4 +108,23 @@ impl WriterInput {
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_ASSET_WRITER_INPUT: &'static objc::Class<WriterInput>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{av, objc::Obj};
+
+    #[test]
+    fn basics() {
+        let input = av::asset::WriterInput::with_media_type(av::MediaType::video());
+        assert_eq!(input.media_type(), av::MediaType::video());
+        av::asset::WriterInput::with_media_type(av::MediaType::muxed());
+        av::asset::WriterInput::with_media_type(av::MediaType::audio());
+        av::asset::WriterInput::with_media_type(av::MediaType::text());
+        av::asset::WriterInput::with_media_type(av::MediaType::closed_caption());
+        av::asset::WriterInput::with_media_type(av::MediaType::subtitle());
+        av::asset::WriterInput::with_media_type(av::MediaType::depth_data());
+        let input = av::asset::WriterInput::with_media_type(av::MediaType::timecode());
+        println!("{:?}", input);
+    }
 }

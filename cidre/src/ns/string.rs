@@ -124,11 +124,9 @@ impl String {
     pub fn as_cf_string(&self) -> &cf::String {
         unsafe { std::mem::transmute(self) }
     }
-}
 
-impl PartialEq for String {
     #[objc::msg_send(isEqualToString:)]
-    fn eq(&self, other: &Self) -> bool;
+    pub fn eq_ns_string(&self, other: &Self) -> bool;
 }
 
 impl std::ops::Index<std::ops::Range<usize>> for String {

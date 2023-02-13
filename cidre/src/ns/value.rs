@@ -7,11 +7,9 @@ define_obj_type!(Value(ns::Id));
 
 impl Value {
     define_cls!(NS_VALUE);
-}
 
-impl PartialEq for Value {
     #[objc::msg_send(isEqualToValue:)]
-    fn eq(&self, other: &Self) -> bool;
+    pub fn eq_to_value(&self, other: &Self) -> bool;
 }
 
 define_obj_type!(Number(Value));
@@ -220,7 +218,7 @@ impl Number {
     pub fn string(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(isEqualToNumber:)]
-    pub fn is_equal_to_number(&self, number: &ns::Number) -> bool;
+    pub fn eq_to_number(&self, number: &ns::Number) -> bool;
 }
 
 impl From<i8> for arc::R<Number> {
@@ -311,12 +309,6 @@ impl From<ns::UInteger> for arc::R<Number> {
     #[inline]
     fn from(value: ns::UInteger) -> Self {
         Number::with_uinteger(value)
-    }
-}
-
-impl PartialEq for Number {
-    fn eq(&self, other: &Self) -> bool {
-        self.is_equal_to_number(other)
     }
 }
 
