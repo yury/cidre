@@ -187,86 +187,109 @@ pub mod errors {
     use crate::os::Status;
     /// 0x7768743F, 2003334207
     /// An unspecified error has occurred.
+    #[doc(alias = "kAudioFileUnspecifiedError")]
     pub const UNSPECIFIED: Status = Status(i32::from_be_bytes(*b"wht?"));
 
     /// 0x7479703F, 1954115647
     /// The file type is not supported.
+    #[doc(alias = "kAudioFileUnsupportedFileTypeError")]
     pub const UNSUPPORTED_FILE_TYPE: Status = Status(i32::from_be_bytes(*b"typ?"));
 
     /// 0x666D743F, 1718449215
     /// The data format is not supported by this file type.
+    #[doc(alias = "kAudioFileUnsupportedDataFormatError")]
     pub const UNSUPPORTED_DATA_FORMAT: Status = Status(i32::from_be_bytes(*b"fmt?"));
 
     /// 0x7074793F, 1886681407
     /// The property is not supported.
+    #[doc(alias = "kAudioFileUnsupportedPropertyError")]
     pub const UNSUPPORTED_PROPERTY: Status = Status(i32::from_be_bytes(*b"pty?"));
 
     /// 0x2173697A,  561211770
     /// The size of the property data was not correct.
+    #[doc(alias = "kAudioFileBadPropertySizeError")]
     pub const BAD_PROPERTY_SIZE: Status = Status(i32::from_be_bytes(*b"!siz"));
 
     /// 0x70726D3F, 1886547263
     /// The operation violated the file permissions. For example, an attempt was made to write to a file opened with the kAudioFileReadPermission constant.
+    #[doc(alias = "kAudioFilePermissionsError")]
     pub const PERMISSIONS: Status = Status(i32::from_be_bytes(*b"!prm"));
 
     /// 0x6F70746D, 1869640813
     /// The chunks following the audio data chunk are preventing the extension of the audio data chunk. To write more data, you must optimize the file.
+    #[doc(alias = "kAudioFileNotOptimizedError")]
     pub const NOT_OPTIMIZED: Status = Status(i32::from_be_bytes(*b"optm"));
 
     /// 0x63686B3F, 1667787583
     /// Either the chunk does not exist in the file or it is not supported by the file.
+    #[doc(alias = "kAudioFileInvalidChunkError")]
     pub const INVALID_CHUNK: Status = Status(i32::from_be_bytes(*b"chk?"));
 
     /// 0x6F66663F, 1868981823
     /// The file offset was too large for the file type. The AIFF and WAVE file format types have 32-bit file size limits.
+    #[doc(alias = "kAudioFileDoesNotAllow64BitDataSizeError")]
     pub const DOES_NOT_ALLOW64_BIT_DATA_SIZE: Status = Status(i32::from_be_bytes(*b"off?"));
 
     /// 0x70636B3F, 1885563711
     /// The file offset was too large for the file type. The AIFF and WAVE file format types have 32-bit file size limits.
+    #[doc(alias = "kAudioFileInvalidPacketOffsetError")]
     pub const INVALID_PACKET_OFFSET: Status = Status(i32::from_be_bytes(*b"pck?"));
 
     /// 0x6465703F, 1684369471
     /// The file offset was too large for the file type. The AIFF and WAVE file format types have 32-bit file size limits.
+    #[doc(alias = "kAudioFileInvalidPacketDependencyError")]
     pub const INVALID_PACKET_DEPENDENCY: Status = Status(i32::from_be_bytes(*b"dep?"));
 
     /// 0x6474613F, 1685348671
     /// The file is malformed, or otherwise not a valid instance of an audio file of its type.
+    #[doc(alias = "kAudioFileInvalidFileError")]
     pub const INVALID_FILE: Status = Status(i32::from_be_bytes(*b"dta?"));
 
     /// 0x6F703F3F
     /// The file is malformed, or otherwise not a valid instance of an audio file of its type.
+    #[doc(alias = "kAudioFileOperationNotSupportedError")]
     pub const OPERATION_NOT_SUPPORTED: Status = Status(i32::from_be_bytes(*b"op??"));
 
     /// The file is closed.
+    #[doc(alias = "kAudioFileNotOpenError")]
     pub const NOT_OPEN: Status = Status(-38);
 
     /// End of file.
+    #[doc(alias = "kAudioFileEndOfFileError")]
     pub const END_OF_FILE: Status = Status(-39);
 
     /// Invalid file position.
+    #[doc(alias = "kAudioFilePositionError")]
     pub const POSITION: Status = Status(-40);
 
     /// File not found.
+    #[doc(alias = "kAudioFileFileNotFoundError")]
     pub const FILE_NOT_FOUND: Status = Status(-43);
 }
 
 define_options!(Flags(u32));
 
+/// These are flags that can be used with the create call
 impl Flags {
     /// If set, then the CreateURL call will erase the contents of an existing file
     /// If not set, then the CreateURL call will fail if the file already exists
+    #[doc(alias = "kAudioFileFlags_EraseFile")]
     pub const ERASE_FILE: Self = Self(1);
 
     /// Normally, newly created and optimized files will have padding added in order to page align
     /// the data to 4KB boundaries. This makes reading the data more efficient.
     /// When disk space is a concern, this flag can be set so that the padding will not be added.
+    #[doc(alias = "kAudioFileFlags_DontPageAlignAudioData")]
     pub const DONT_PAGE_ALIGN_AUDIO_DATA: Self = Self(2);
 }
 
 #[repr(i8)]
 pub enum Permissions {
+    #[doc(alias = "kAudioFileReadPermission")]
     Read = 0x01,
+    #[doc(alias = "kAudioFileWritePermission")]
     Write = 0x2,
+    #[doc(alias = "kAudioFileReadWritePermission")]
     ReadWrite = 0x3,
 }
 
