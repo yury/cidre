@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{define_obj_type, ns};
+use crate::{define_obj_type, ns, objc};
 
 use super::objc_runtime::ExceptionName;
 
@@ -132,6 +132,15 @@ impl Exception {
     pub fn raise(message: &ns::String) -> ! {
         unsafe { cidre_raise_exception(message) }
     }
+
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> &ns::ExceptionName;
+
+    #[objc::msg_send(reason)]
+    pub fn reason(&self) -> Option<&ns::String>;
+
+    #[objc::msg_send(userInfo)]
+    pub fn user_info(&self) -> Option<&ns::Dictionary<ns::Id, ns::Id>>;
 }
 
 pub type UncaughtExceptionHandler = extern "C" fn(exception: &Exception);
@@ -202,15 +211,19 @@ mod tests {
 
     #[test]
     fn test_exception_catch() {
-        let err = ns::try_catch(|| {
-            let msg = ns::String::with_str("test");
-            ns::Exception::raise(&msg);
+        let reason = ns::String::with_str("test");
+        let ex = ns::try_catch(|| {
+            ns::Exception::raise(&reason);
         })
         .expect_err("result");
 
-        assert_ne!(cf::String::type_id(), err.as_type_ref().get_type_id());
+        assert!(ex.user_info().is_none());
+        assert!(ex.name().eq(ns::ExceptionName::generic()));
+        assert!(ex.reason().unwrap().eq(&reason));
 
-        println!("{:?} {:?}", err, err.as_type_ref().retain_count());
+        assert_ne!(cf::String::type_id(), ex.as_type_ref().get_type_id());
+
+        println!("{:?} {:?}", ex, ex.as_type_ref().retain_count());
     }
 
     #[test]
