@@ -14,8 +14,8 @@ void cidre_raise_exception(NSString *message) {
   [NSException raise:NSGenericException format:@"%@", message];
 }
 
-void cidre_throw_exception(NSString *message) {
-  @throw message;
+void cidre_throw_exception(id ex) {
+  @throw ex;
 }
 
 id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {

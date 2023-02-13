@@ -10,14 +10,14 @@ define_obj_type!(WriterInput(ns::Id));
 
 impl arc::A<WriterInput> {
     #[objc::msg_send(initWithMediaType:outputSettings:)]
-    pub fn init_media_type_and_output_settings_throws(
+    pub fn init_media_type_output_settings_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput>;
 
     #[objc::msg_send(initWithMediaType:outputSettings:sourceFormatHint:)]
-    pub fn with_media_type_output_settings_source_and_format_hint_throws(
+    pub fn with_media_type_output_settings_source_format_hint_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -28,39 +28,39 @@ impl arc::A<WriterInput> {
 impl WriterInput {
     define_cls!(AV_ASSET_WRITER_INPUT);
 
-    pub fn with_media_type_and_output_settings_throws(
+    pub fn with_media_type_output_settings_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput> {
-        Self::alloc().init_media_type_and_output_settings_throws(media_type, output_settings)
+        Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
     }
 
-    pub fn try_with_media_type_and_output_settings<'ar>(
+    pub fn with_media_type_and_output_settings<'ar>(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> Result<arc::R<WriterInput>, &'ar ns::Error> {
+    ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
         try_catch(|| {
-            Self::alloc().init_media_type_and_output_settings_throws(media_type, output_settings)
+            Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
         })
     }
 
-    pub fn with_media_type_output_settings_source_and_format_hint_throws(
+    pub fn with_media_type_output_settings_source_format_hint_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDescription>,
     ) -> arc::R<WriterInput> {
-        Self::alloc().with_media_type_output_settings_source_and_format_hint_throws(
+        Self::alloc().with_media_type_output_settings_source_format_hint_throws(
             media_type,
             output_settings,
             source_format_hint,
         )
     }
 
-    pub fn try_with_media_type_and_format_hint(
+    pub fn with_media_type_format_hint_throws(
         media_type: &MediaType,
         source_format_hint: &cm::FormatDescription,
     ) -> arc::R<WriterInput> {
-        Self::alloc().with_media_type_output_settings_source_and_format_hint_throws(
+        Self::alloc().with_media_type_output_settings_source_format_hint_throws(
             media_type,
             None,
             Some(source_format_hint),
@@ -68,7 +68,7 @@ impl WriterInput {
     }
 
     pub fn with_media_type(media_type: &MediaType) -> arc::R<WriterInput> {
-        Self::with_media_type_and_output_settings_throws(media_type, None)
+        Self::with_media_type_output_settings_throws(media_type, None)
     }
 
     #[objc::msg_send(mediaType)]
@@ -101,8 +101,17 @@ impl WriterInput {
     /// the writing operation’s status is complete, failed, or canceled.
     /// If the status is AVAssetWriterStatusFailed, the asset writer’s error property
     /// contains an error object that describes the failure.
+    ///
+    /// This method throws an exception if the sample buffer's media type does not match the asset writer input's media type.
     #[objc::msg_send(appendSampleBuffer:)]
-    pub fn append_sample_buffer(&self, buffer: &cm::SampleBuffer) -> bool;
+    pub fn append_sample_buffer_throws(&self, buffer: &cm::SampleBuffer) -> bool;
+
+    pub fn append_sample_buffer<'ar>(
+        &self,
+        buffer: &cm::SampleBuffer,
+    ) -> Result<bool, &'ar ns::Exception> {
+        try_catch(|| self.append_sample_buffer_throws(buffer))
+    }
 }
 
 #[link(name = "av", kind = "static")]
@@ -112,7 +121,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{av, objc::Obj};
+    use crate::av;
 
     #[test]
     fn basics() {

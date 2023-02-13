@@ -134,7 +134,7 @@ impl Exception {
     }
 }
 
-pub fn throw_string(message: &ns::String) -> ! {
+pub fn throw(message: &ns::Id) -> ! {
     unsafe { cidre_throw_exception(message) }
 }
 
@@ -156,14 +156,14 @@ extern "C" {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     fn cidre_raise_exception(message: &ns::String) -> !;
-    fn cidre_throw_exception(message: &ns::String) -> !;
+    fn cidre_throw_exception(message: &ns::Id) -> !;
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
-    ) -> Option<&'ar ns::Error>;
+    ) -> Option<&'ar ns::Id>;
 }
 
-pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar ns::Error>
+pub fn try_catch_obj<'ar, F, R>(f: F) -> Result<R, &'ar ns::Id>
 where
     F: FnOnce() -> R,
 {
@@ -177,6 +177,24 @@ where
         match cidre_try_catch(transmute(f), ctx) {
             None => Ok(result.unwrap_unchecked()),
             Some(e) => Err(e),
+        }
+    }
+}
+
+pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar ns::Exception>
+where
+    F: FnOnce() -> R,
+{
+    let mut result = None;
+    let mut wrapper = Some(|| result = Some(f()));
+
+    let f = type_helper(&wrapper);
+    let ctx = &mut wrapper as *mut _ as *mut c_void;
+
+    unsafe {
+        match cidre_try_catch(transmute(f), ctx) {
+            None => Ok(result.unwrap_unchecked()),
+            Some(e) => Err(transmute(e)),
         }
     }
 }
@@ -222,14 +240,14 @@ mod tests {
     fn test_throw_catch() {
         let msg = ns::String::with_str("test");
 
-        let err = ns::try_catch(|| {
-            ns::exception::throw_string(&msg);
+        let exc = ns::try_catch_obj(|| {
+            ns::exception::throw(&msg);
         })
         .expect_err("result");
 
-        assert_eq!(cf::String::type_id(), err.as_type_ref().get_type_id());
-        assert!(msg.is_equal(err));
+        assert_eq!(cf::String::type_id(), exc.as_type_ref().get_type_id());
+        assert!(msg.is_equal(&exc));
 
-        println!("{:?} {:?}", err, err.as_type_ref().retain_count());
+        println!("{:?} {:?}", exc, exc.as_type_ref().retain_count());
     }
 }

@@ -75,6 +75,8 @@ impl FileID {
     }
 
     /// Close an existing audio file.
+    #[doc(alias = "AudioFileClose")]
+    #[inline]
     pub fn close(&mut self) -> os::Status {
         unsafe { AudioFileClose(self) }
     }
