@@ -2,6 +2,7 @@ use std::ffi::c_void;
 
 use crate::{cat::audio, cf, define_options, os};
 
+#[derive(Debug)]
 #[doc(alias = "AudioFileID")]
 #[repr(transparent)]
 pub struct FileID(&'static mut c_void);
@@ -213,12 +214,14 @@ pub mod errors {
     pub const BAD_PROPERTY_SIZE: Status = Status(i32::from_be_bytes(*b"!siz"));
 
     /// 0x70726D3F, 1886547263
-    /// The operation violated the file permissions. For example, an attempt was made to write to a file opened with the kAudioFileReadPermission constant.
+    /// The operation violated the file permissions. For example, an attempt was made to write to a file
+    /// opened with the kAudioFileReadPermission constant.
     #[doc(alias = "kAudioFilePermissionsError")]
     pub const PERMISSIONS: Status = Status(i32::from_be_bytes(*b"!prm"));
 
     /// 0x6F70746D, 1869640813
-    /// The chunks following the audio data chunk are preventing the extension of the audio data chunk. To write more data, you must optimize the file.
+    /// The chunks following the audio data chunk are preventing the extension of the audio data chunk.
+    ///  To write more data, you must optimize the file.
     #[doc(alias = "kAudioFileNotOptimizedError")]
     pub const NOT_OPTIMIZED: Status = Status(i32::from_be_bytes(*b"optm"));
 
@@ -356,6 +359,7 @@ mod tests {
         )
         .unwrap();
 
-        //audio::FileID::open(&path, audio::FilePermissions::Read, audio::FileTypeID::M4A).unwrap();
+        audio::FileID::open(&path, audio::FilePermissions::Read, audio::FileTypeID::M4A)
+            .expect_err("should be error");
     }
 }
