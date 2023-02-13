@@ -55,17 +55,12 @@ impl URLAsset {
         Self::alloc().init_with_url_options(url, options)
     }
 
-    pub fn load_tracks_with_media_type_completion<'ar, F>(
+    #[objc::msg_send(loadTracksWithMediaType:completionHandler:)]
+    pub fn load_tracks_with_media_type_completion(
         &self,
         media_type: &av::MediaType,
-        completion: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'ar ns::Array<av::asset::Track>>, Option<&'ar ns::Error>),
-    {
-        unsafe {
-            wsel_loadTracksWithMediaType_completionHandler(self, media_type, completion.as_ptr())
-        }
-    }
+        completion: *mut c_void,
+    );
 
     pub fn load_tracks_with_media_type_once<'ar, F>(&self, media_type: &av::MediaType, block: F)
     where
@@ -74,7 +69,7 @@ impl URLAsset {
             + Sync,
     {
         let block = blocks::once2(block);
-        self.load_tracks_with_media_type_completion(media_type, block.escape())
+        self.load_tracks_with_media_type_completion(media_type, block.escape().as_ptr())
     }
 
     pub async fn load_tracks_with_media_type(
@@ -82,7 +77,7 @@ impl URLAsset {
         media_type: &av::MediaType,
     ) -> Result<arc::R<ns::Array<av::asset::Track>>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
-        self.load_tracks_with_media_type_completion(media_type, block.escape());
+        self.load_tracks_with_media_type_completion(media_type, block.escape().as_ptr());
         future.await
     }
 }
@@ -90,11 +85,4 @@ impl URLAsset {
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_URL_ASSET: &'static objc::Class<URLAsset>;
-
-    fn wsel_loadTracksWithMediaType_completionHandler(
-        id: &ns::Id,
-        media_type: &av::MediaType,
-        callback: *mut c_void,
-    );
-
 }

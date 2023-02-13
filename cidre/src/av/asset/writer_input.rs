@@ -1,75 +1,78 @@
-use crate::{arc, av::MediaType, cf, cm, define_obj_type, ns};
+use crate::{arc, av::MediaType, cm, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(WriterInput(ns::Id));
 
-impl WriterInput {
-    pub fn with_media_type_and_output_settings(
+impl arc::A<WriterInput> {
+    #[objc::msg_send(initWithMediaType:outputSettings:)]
+    pub fn try_init_media_type_and_output_settings(
+        self,
         media_type: &MediaType,
-        output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> arc::R<WriterInput>;
+
+    #[objc::msg_send(initWithMediaType:outputSettings:sourceFormatHint:)]
+    pub fn try_with_media_type_output_settings_source_and_format_hint(
+        self,
+        media_type: &MediaType,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
+        source_format_hint: Option<&cm::FormatDescription>,
+    ) -> arc::R<WriterInput>;
+}
+
+impl WriterInput {
+    define_cls!(AV_ASSET_WRITER_INPUT);
+
+    pub fn try_with_media_type_and_output_settings(
+        media_type: &MediaType,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput> {
-        unsafe {
-            AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings(
-                media_type,
-                output_settings,
-            )
-        }
+        Self::alloc().try_init_media_type_and_output_settings(media_type, output_settings)
     }
 
-    pub fn with_media_type_output_settings_source_and_format_hint(
+    pub fn try_with_media_type_output_settings_source_and_format_hint(
         media_type: &MediaType,
-        output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDescription>,
     ) -> arc::R<WriterInput> {
-        unsafe {
-            AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint(
-                media_type,
-                output_settings,
-                source_format_hint,
-            )
-        }
+        Self::alloc().try_with_media_type_output_settings_source_and_format_hint(
+            media_type,
+            output_settings,
+            source_format_hint,
+        )
     }
 
-    pub fn with_media_type_and_format_hint(
+    pub fn try_with_media_type_and_format_hint(
         media_type: &MediaType,
         source_format_hint: &cm::FormatDescription,
     ) -> arc::R<WriterInput> {
-        unsafe {
-            AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint(
-                media_type,
-                None,
-                Some(source_format_hint),
-            )
-        }
+        Self::alloc().try_with_media_type_output_settings_source_and_format_hint(
+            media_type,
+            None,
+            Some(source_format_hint),
+        )
     }
 
     pub fn with_media_type(media_type: &MediaType) -> arc::R<WriterInput> {
-        Self::with_media_type_and_output_settings(media_type, None)
+        Self::try_with_media_type_and_output_settings(media_type, None)
     }
 
-    pub fn media_type(&self) -> &MediaType {
-        unsafe { rsel_mediaType(self) }
-    }
+    #[objc::msg_send(mediaType)]
+    pub fn media_type(&self) -> &MediaType;
 
-    pub fn output_settings(&self) -> Option<&cf::DictionaryOf<cf::String, ns::Id>> {
-        unsafe { rsel_outputSettings(self) }
-    }
+    #[objc::msg_send(outputSettings)]
+    pub fn output_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
 
-    #[inline]
-    pub fn is_ready_for_more_media_data(&self) -> bool {
-        unsafe { rsel_isReadyForMoreMediaData(self) }
-    }
+    #[objc::msg_send(isReadyForMoreMediaData)]
+    pub fn is_ready_for_more_media_data(&self) -> bool;
 
-    pub fn expects_media_data_in_real_time(&self) -> bool {
-        unsafe { rsel_expectsMediaDataInRealTime(self) }
-    }
+    #[objc::msg_send(expectsMediaDataInRealTime)]
+    pub fn expects_media_data_in_real_time(&self) -> bool;
 
-    pub fn set_expects_media_data_in_real_time(&self, value: bool) {
-        unsafe { wsel_setExpectsMediaDataInRealTime(self, value) }
-    }
+    #[objc::msg_send(setExpectsMediaDataInRealTime:)]
+    pub fn set_expects_media_data_in_real_time(&mut self, value: bool);
 
-    pub fn mark_as_finished(&self) {
-        unsafe { wsel_markAsFinished(self) }
-    }
+    #[objc::msg_send(markAsFinished)]
+    pub fn mark_as_finished(&mut self);
 
     /// Order the samples you append according to storage requirements.
     /// For example, if you’re working with sample buffers containing compressed video,
@@ -83,34 +86,11 @@ impl WriterInput {
     /// the writing operation’s status is complete, failed, or canceled.
     /// If the status is AVAssetWriterStatusFailed, the asset writer’s error property
     /// contains an error object that describes the failure.
-    #[inline]
-    pub fn append_sample_buffer(&self, buffer: &cm::SampleBuffer) -> bool {
-        unsafe { rsel_appendSampleBuffer(self, buffer) }
-    }
+    #[objc::msg_send(appendSampleBuffer:)]
+    pub fn append_sample_buffer(&self, buffer: &cm::SampleBuffer) -> bool;
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings<'a>(
-        media_type: &MediaType,
-        output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
-    ) -> arc::R<WriterInput>;
-
-    fn AVAssetWriterInput_assetWriterInputWithMediaType_outputSettings_sourceFormatHint<'a>(
-        media_type: &MediaType,
-        output_settings: Option<&cf::DictionaryOf<cf::String, ns::Id>>,
-        source_format_hint: Option<&cm::FormatDescription>,
-    ) -> arc::R<WriterInput>;
-
-    // csel_abc(, AVAssetWriterInput, assetWriterInputWithMediaType, AVMediaType, outputSettings, NSDictionary * _Nullable, sourceFormatHint, CMFormatDescriptionRef, AVAssetWriterInput *)
-
-    fn rsel_mediaType(id: &ns::Id) -> &MediaType;
-    fn rsel_outputSettings(id: &ns::Id) -> Option<&cf::DictionaryOf<cf::String, ns::Id>>;
-    fn rsel_isReadyForMoreMediaData(id: &ns::Id) -> bool;
-    fn rsel_expectsMediaDataInRealTime(id: &ns::Id) -> bool;
-    fn wsel_setExpectsMediaDataInRealTime(id: &ns::Id, value: bool);
-
-    fn wsel_markAsFinished(id: &ns::Id);
-
-    fn rsel_appendSampleBuffer(id: &ns::Id, buffer: &cm::SampleBuffer) -> bool;
+    static AV_ASSET_WRITER_INPUT: &'static objc::Class<WriterInput>;
 }
