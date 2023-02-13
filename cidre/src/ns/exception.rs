@@ -204,7 +204,7 @@ mod tests {
     fn test_exception_catch() {
         let err = ns::try_catch(|| {
             let msg = ns::String::with_str("test");
-            ns::exception::Exception::raise(&msg);
+            ns::Exception::raise(&msg);
         })
         .expect_err("result");
 
@@ -217,10 +217,7 @@ mod tests {
     fn test_throw_catch() {
         let msg = ns::String::with_str("test");
 
-        let exc = objc::try_catch(|| {
-            objc::throw(&msg);
-        })
-        .expect_err("result");
+        let exc = objc::try_catch(|| objc::throw(&msg)).expect_err("result");
 
         assert_eq!(cf::String::type_id(), exc.as_type_ref().get_type_id());
         assert!(msg.is_equal(&exc));
