@@ -212,10 +212,7 @@ mod tests {
     #[test]
     fn test_exception_catch() {
         let reason = ns::String::with_str("test");
-        let ex = ns::try_catch(|| {
-            ns::Exception::raise(&reason);
-        })
-        .expect_err("result");
+        let ex = ns::try_catch(|| ns::Exception::raise(&reason)).expect_err("result");
 
         assert!(ex.user_info().is_none());
         assert!(ex.name().eq(ns::ExceptionName::generic()));
