@@ -21,8 +21,8 @@ impl FileID {
     ) -> Result<Self, os::Status> {
         let mut result = None;
         unsafe {
-            let res = AudioFileCreateWithURL(url, type_id, format, flags, &mut result);
-            res.to_result_unchecked(result)
+            AudioFileCreateWithURL(url, type_id, format, flags, &mut result)
+                .to_result_unchecked(result)
         }
     }
 
