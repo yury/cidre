@@ -13,12 +13,13 @@ pub enum PathStyle {
 define_cf_type!(URL(cf::Type));
 
 impl URL {
+    #[doc(alias = "CFURLGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CFURLGetTypeID() }
     }
 
-    /// CFURLCreateWithBytes
+    #[doc(alias = "CFURLCreateWithBytes")]
     #[inline]
     pub fn with_bytes_in(
         url_bytes: *const u8,
@@ -30,6 +31,7 @@ impl URL {
         unsafe { CFURLCreateWithBytes(allocator, url_bytes, length, encoding, base_url) }
     }
 
+    #[doc(alias = "CFURLCreateWithString")]
     #[inline]
     pub fn with_cf_string_in(
         url_string: &cf::String,
@@ -39,6 +41,7 @@ impl URL {
         unsafe { CFURLCreateWithString(allocator, url_string, base_url) }
     }
 
+    #[doc(alias = "CFURLCreateWithFileSystemPath")]
     #[inline]
     pub fn with_file_system_path_in(
         file_path: &cf::String,
@@ -136,6 +139,7 @@ impl URL {
     /// let https = cf::String::from_str_no_copy("https");
     /// assert!(https.equal(&scheme));
     /// ```
+    #[doc(alias = "CFURLCopyScheme")]
     #[inline]
     pub fn scheme(&self) -> Option<arc::R<cf::String>> {
         unsafe { CFURLCopyScheme(self) }
@@ -153,6 +157,7 @@ impl URL {
     /// assert_eq!(-1, url2.port());
     ///
     /// ```
+    #[doc(alias = "CFURLGetPortNumber")]
     #[inline]
     pub fn port(&self) -> i32 {
         unsafe { CFURLGetPortNumber(self) }
