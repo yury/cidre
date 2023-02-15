@@ -169,7 +169,6 @@ mod tests {
             let v = b"he".to_vec();
             let _s = cf::String::create_with_bytes_no_copy_in(
                 &v,
-                2,
                 cf::StringEncoding::UTF8,
                 false,
                 cf::Allocator::null(),

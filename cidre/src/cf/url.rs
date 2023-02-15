@@ -1,3 +1,5 @@
+use std::{os::unix::prelude::OsStrExt, path::Path};
+
 use crate::{arc, cf, define_cf_type};
 
 #[derive(Debug, PartialEq, Eq)]
@@ -45,6 +47,22 @@ impl URL {
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<URL>> {
         unsafe { CFURLCreateWithFileSystemPath(allocator, file_path, path_style, is_directory) }
+    }
+
+    #[inline]
+    pub fn with_path(path: &Path, is_dir: bool) -> Option<arc::R<URL>> {
+        let bytes = path.as_os_str().as_bytes();
+        let encoding = cf::StringEncoding::system_encoding();
+        let Some(path) = cf::String::create_with_bytes_no_copy_in(
+            bytes,
+            encoding,
+            false,
+            cf::Allocator::null(),
+            None,
+        ) else {
+            return None;
+        };
+        cf::URL::with_file_system_path_in(&path, PathStyle::Posix, is_dir, None)
     }
 
     /// ```

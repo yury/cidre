@@ -1,7 +1,7 @@
 use crate::{arc, define_cf_type, define_options};
 
 use super::{runtime::Type, String};
-use std::{cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
+use std::{borrow::Cow, cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
 
 pub type Index = isize;
 pub type TypeId = usize;
@@ -115,18 +115,17 @@ impl Type {
     }
 
     #[inline]
-    pub fn description(&self) -> Option<arc::R<String>> {
-        unsafe { CFCopyDescription(Some(self)) }
+    pub fn description(&self) -> arc::R<String> {
+        unsafe { CFCopyDescription(Some(self)).unwrap_unchecked() }
     }
 }
 
 impl Debug for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let desc = self
-            .description()
-            .map(|f| f.to_string())
-            .unwrap_or_else(|| "no desc".to_string());
-        f.debug_tuple("cf::Type").field(&desc).finish()
+        let desc = self.description();
+        f.debug_tuple("cf::Type")
+            .field(&Cow::from(desc.as_ref()))
+            .finish()
     }
 }
 

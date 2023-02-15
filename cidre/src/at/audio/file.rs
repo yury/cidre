@@ -36,7 +36,7 @@ impl FileID {
     /// * `type_hint` - A hint for the file type of the designated file. For files without filename extensions
     ///                 and with types not easily or uniquely determined from the data (such as ADTS or AC3),
     ///                 use this hint to indicate the file type. Otherwise, pass 0. Only use this hint in macOS versions 10.3.1 or greater.
-    ///                  In all earlier versions, any attempt to open these files fails
+    ///                 In all earlier versions, any attempt to open these files fails
     #[doc(alias = "AudioFileOpenURL")]
     pub fn open(
         url: &cf::URL,

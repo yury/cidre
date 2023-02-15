@@ -24,6 +24,7 @@ impl Encoding {
     /// let encoding = cf::StringEncoding::system_encoding();
     /// assert_eq!(encoding, cf::StringEncoding::MAC_ROMAN);
     /// ```
+    #[inline]
     pub fn system_encoding() -> Self {
         unsafe { CFStringGetSystemEncoding() }
     }
@@ -75,7 +76,6 @@ impl String {
         unsafe {
             Self::create_with_bytes_no_copy_in(
                 bytes,
-                bytes.len() as _,
                 Encoding::UTF8,
                 false,
                 Allocator::null(),
@@ -99,10 +99,7 @@ impl String {
     #[inline]
     pub fn from_str(str: &str) -> arc::R<Self> {
         let bytes = str.as_bytes();
-        unsafe {
-            Self::create_with_bytes(None, bytes, bytes.len() as _, Encoding::UTF8, false)
-                .unwrap_unchecked()
-        }
+        unsafe { Self::create_with_bytes(None, bytes, Encoding::UTF8, false).unwrap_unchecked() }
     }
 
     #[inline]
@@ -167,18 +164,16 @@ impl String {
     #[inline]
     pub fn create_with_bytes_no_copy_in(
         bytes: &[u8],
-        num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
         contents_deallocator: Option<&Allocator>,
         alloc: Option<&Allocator>,
     ) -> Option<arc::R<Self>> {
         unsafe {
-            let bytes = bytes.as_ptr();
             CFStringCreateWithBytesNoCopy(
                 alloc,
-                bytes,
-                num_bytes,
+                bytes.as_ptr(),
+                bytes.len() as _,
                 encoding,
                 is_external_representation,
                 contents_deallocator,
@@ -215,16 +210,14 @@ impl String {
     pub fn create_with_bytes(
         alloc: Option<&Allocator>,
         bytes: &[u8],
-        num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
     ) -> Option<arc::R<Self>> {
         unsafe {
-            let bytes = bytes.as_ptr();
             CFStringCreateWithBytes(
                 alloc,
-                bytes,
-                num_bytes,
+                bytes.as_ptr(),
+                bytes.len() as _,
                 encoding,
                 is_external_representation,
             )

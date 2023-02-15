@@ -54,12 +54,13 @@ cidre-macros = { path = "../cidre-macros"}
 
 [dev-dependencies]
 criterion = "0.3"
-flume = {version = "0.10", features = ["async"]}
+flume = { version = "0.10", features = ["async"] }
 rt = { path = "../../rt"}
 ndarray = "0.15"
 linfa = "0.6.1"
 linfa-clustering = "0.6.1"
 linfa-reduction = "0.6.1"
+clap = { version = "4.1.4", features = ["default", "derive"] }
 
 [[bench]]
 name = "metal"
@@ -76,6 +77,9 @@ required-features = ["am"]
 [[example]]
 name = "device_mount_dev_image"
 required-features = ["am"]
+
+[[example]]
+name = "audio"
 
 [lib]
 # proc-macro = true
