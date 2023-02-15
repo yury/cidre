@@ -25,12 +25,18 @@ enum Commands {
     Decode(DecodeArgs),
 }
 
+impl Commands {
+    fn run(&self) {
+        match self {
+            Self::Encode(args) => encode(args),
+            Self::Decode(args) => decode(args),
+        }
+    }
+}
+
 fn main() {
     let cli = Cli::parse();
-    match cli.command {
-        Commands::Encode(ref args) => encode(args),
-        Commands::Decode(ref args) => decode(args),
-    }
+    cli.command.run()
 }
 
 #[derive(clap::Args, Debug)]
