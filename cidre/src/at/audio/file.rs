@@ -3,6 +3,191 @@ use std::ffi::c_void;
 use crate::{cat::audio, cf, define_options, os};
 
 #[derive(Debug)]
+#[doc(alias = "AudioFilePropertyID")]
+#[repr(transparent)]
+pub struct PropertyID(pub u32);
+
+impl PropertyID {
+    /// The format of the audio data file.
+    /// An `FileTypeID` that identifies the format of the file
+    #[doc(alias = "kAudioFilePropertyFileFormat")]
+    pub const FILE_FORMAT: Self = Self(u32::from_be_bytes(*b"ffmt"));
+
+    /// An `audio::StreamBasicDescription` describing the format of the audio data
+    #[doc(alias = "kAudioFilePropertyDataFormat")]
+    pub const DATA_FORMAT: Self = Self(u32::from_be_bytes(*b"dfmt"));
+
+    /// A `u32` indicating whether an Audio File has been optimized.
+    /// Optimized means it is ready to start having sound data written to it.
+    /// A value of 0 indicates the file needs to be optimized.
+    /// A value of 1 indicates the file is currently optimized.
+    #[doc(alias = "kAudioFilePropertyIsOptimized")]
+    pub const IS_OPTIMIZED: Self = Self(u32::from_be_bytes(*b"optm"));
+
+    /// A `*const c_void` pointing to memory set up by the caller.
+    /// Some file types require that a magic cookie be provided before packets can be written
+    /// to the file, so this property should be set before calling
+    /// write_bytes()/write_packets() if a magic cookie exists.
+    #[doc(alias = "kAudioFilePropertyMagicCookieData")]
+    pub const MAGIC_COOKIE_DATA: Self = Self(u32::from_be_bytes(*b"mgic"));
+
+    /// A `u64` that indicates the number of bytes of audio data contained in the file
+    #[doc(alias = "kAudioFilePropertyAudioDataByteCount")]
+    pub const DATA_BYTE_COUNT: Self = Self(u32::from_be_bytes(*b"bcnt"));
+
+    /// A `u64` that indicates the number of packets of audio data contained in the file
+    #[doc(alias = "kAudioFilePropertyAudioDataPacketCount")]
+    pub const DATA_PACKET_COUNT: Self = Self(u32::from_be_bytes(*b"pcnt"));
+
+    /// A `u32` that indicates the maximum size of a packet for the data contained in the file
+    #[doc(alias = "kAudioFilePropertyMaximumPacketSize")]
+    pub const MAXIMUM_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"psze"));
+
+    /// a `s64` that indicates the byte offset in the file of the audio data.
+    #[doc(alias = "kAudioFilePropertyDataOffset")]
+    pub const DATA_OFFSET: Self = Self(u32::from_be_bytes(*b"doff"));
+
+    /// An `audio::ChannelLayout` struct.
+    #[doc(alias = "kAudioFilePropertyChannelLayout")]
+    pub const CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"cmap"));
+
+    // kAudioFilePropertyDeferSizeUpdates		=	'dszu',
+    #[doc(alias = "kAudioFilePropertyDeferSizeUpdates")]
+    pub const DEFER_SIZE_UPDATES: Self = Self(u32::from_be_bytes(*b"dszu"));
+
+    #[doc(alias = "kAudioFilePropertyDataFormatName")]
+    pub const DATA_FORMAT_NAME: Self = Self(u32::from_be_bytes(*b"fnme"));
+
+    #[doc(alias = "kAudioFilePropertyMarkerList")]
+    pub const MARKER_LIST: Self = Self(u32::from_be_bytes(*b"mkls"));
+
+    #[doc(alias = "kAudioFilePropertyRegionList")]
+    pub const REGION_LIST: Self = Self(u32::from_be_bytes(*b"rgls"));
+
+    #[doc(alias = "kAudioFilePropertyPacketToFrame")]
+    pub const PACKET_TO_FRAME: Self = Self(u32::from_be_bytes(*b"pkfr"));
+
+    #[doc(alias = "kAudioFilePropertyFrameToPacket")]
+    pub const FRAME_TO_PACKET: Self = Self(u32::from_be_bytes(*b"frpk"));
+
+    #[doc(alias = "kAudioFilePropertyRestrictsRandomAccess")]
+    pub const RESTRICTS_RANDOM_ACCESS: Self = Self(u32::from_be_bytes(*b"rrap"));
+
+    #[doc(alias = "kAudioFilePropertyPacketToRollDistance")]
+    pub const PACKET_TO_ROLL_DISTANCE: Self = Self(u32::from_be_bytes(*b"pkrl"));
+
+    #[doc(alias = "kAudioFilePropertyPreviousIndependentPacket")]
+    pub const PREVIOUS_INDEPENDENT_PACKET: Self = Self(u32::from_be_bytes(*b"pind"));
+
+    /// Pass an AudioIndependentPacketTranslation with mPacket filled out and get mIndependentlyDecodablePacket back.
+    /// A value of -1 means that no independent packet is present in the stream in the direction of interest. Otherwise,
+    /// for kAudioFilePropertyPreviousIndependentPacket, mIndependentlyDecodablePacket will be less than mPacket, and
+    /// for kAudioFilePropertyNextIndependentPacket, mIndependentlyDecodablePacket will be greater than mPacket.
+    #[doc(alias = "kAudioFilePropertyNextIndependentPacket")]
+    pub const NEXT_INDEPENDENT_PACKET: Self = Self(u32::from_be_bytes(*b"nind"));
+
+    /// Pass an AudioPacketDependencyInfoTranslation with mPacket filled out and get mIsIndependentlyDecodable
+    /// and mPrerollPacketCount back.
+    /// A value of 0 for mIsIndependentlyDecodable indicates that the specified packet is not independently decodable.
+    /// A value of 1 for mIsIndependentlyDecodable indicates that the specified packet is independently decodable.
+    /// For independently decodable packets, mPrerollPacketCount indicates the count of packets that must be decoded
+    /// after the packet with the specified number in order to refresh the decoder.
+    /// If the value of kAudioFilePropertyRestrictsRandomAccess is 1, either kAudioFilePropertyPacketToRollDistance or
+    /// kAudioFilePropertyPacketToDependencyInfo must be used in order to identify an appropriate random access point.
+    #[doc(alias = "kAudioFilePropertyPacketToDependencyInfo")]
+    pub const PACKET_TO_DEPENDENCY_INFO: Self = Self(u32::from_be_bytes(*b"pkdp"));
+
+    /// pass an AudioBytePacketTranslation struct with mPacket filled out and get mByte back.
+    /// mByteOffsetInPacket is ignored. If the mByte value is an estimate then
+    /// kBytePacketTranslationFlag_IsEstimate will be set in the mFlags field.
+    #[doc(alias = "kAudioFilePropertyPacketToByte")]
+    pub const PACKET_TO_BYTE: Self = Self(u32::from_be_bytes(*b"pkby"));
+
+    /// pass an AudioBytePacketTranslation struct with mByte filled out and get mPacket and
+    /// mByteOffsetInPacket back. If the mPacket value is an estimate then
+    /// kBytePacketTranslationFlag_IsEstimate will be set in the mFlags field
+    #[doc(alias = "kAudioFilePropertyByteToPacket")]
+    pub const BYTE_TO_PACKET: Self = Self(u32::from_be_bytes(*b"bypk"));
+
+    /// returns an array of `os::Type` four char codes for each kind of chunk in the file.
+    #[doc(alias = "kAudioFilePropertyChunkIDs")]
+    pub const CHUNK_IDS: Self = Self(u32::from_be_bytes(*b"chid"));
+
+    /// returns a CFDictionary filled with information about the data contained in the file.
+    /// See dictionary key constants already defined for info string types.
+    /// AudioFileComponents are free to add keys to the dictionaries that they return for this property...
+    /// caller is responsible for releasing the CFObject
+    #[doc(alias = "kAudioFilePropertyInfoDictionary")]
+    pub const INFO_DICTIONARY: Self = Self(u32::from_be_bytes(*b"info"));
+
+    /// Gets or sets an AudioFilePacketTableInfo struct for the file types that support it.
+    /// When setting, the sum of mNumberValidFrames, mPrimingFrames and mRemainderFrames must be the same as the total
+    /// number of frames in all packets. If not you will get a kAudio_ParamError. The best way to ensure this is to get the value of
+    /// the property and make sure the sum of the three values you set has the same sum as the three values you got.
+    #[doc(alias = "kAudioFilePropertyPacketTableInfo")]
+    pub const PACKET_TABLE_INFO: Self = Self(u32::from_be_bytes(*b"pnfo"));
+
+    /// In order to support formats such as AAC SBR where an encoded data stream can be decoded to
+    /// multiple destination formats, this property returns an array of AudioFormatListItems (see AudioFormat.h) of those formats.
+    /// The default behavior is to return the an AudioFormatListItem that has the same AudioStreamBasicDescription
+    /// that kAudioFilePropertyDataFormat returns.
+    #[doc(alias = "kAudioFilePropertyFormatList")]
+    pub const FORMAT_LIST: Self = Self(u32::from_be_bytes(*b"flst"));
+
+    #[doc(alias = "kAudioFilePropertyPacketSizeUpperBound")]
+    pub const PACKET_SIZE_UPPER_BOUND: Self = Self(u32::from_be_bytes(*b"pkub"));
+
+    /// Pass an AudioPacketRangeByteCountTranslation with mPacket and mPacketCount filled out
+    /// and get mByteCountUpperBound back. The value of mByteCountUpperBound can be used to allocate a buffer
+    /// for use with AudioFileReadPacketData in order to accommodate the entire packet range.
+    /// May require scanning in order to obtain the requested information, but even if so, no scanning will occur
+    /// beyond the last packet in the specified range.
+    /// For file formats in which packets are directly accessible and stored both contiguously and byte-aligned,
+    /// the returned upper bound will be equal to the total size of the packets in the range. Otherwise the
+    /// upper bound may reflect per-packet storage overhead.
+    #[doc(alias = "kAudioFilePropertyPacketRangeByteCountUpperBound")]
+    pub const PACKET_RANGE_BYTE_COUNT_UPPER_BOUND: Self = Self(u32::from_be_bytes(*b"prub"));
+
+    /// The value is a `f64` of the duration in seconds of data that is expected to be written.
+    /// Setting this property before any data has been written reserves space in the file header for a packet table
+    /// and/or other information so that it can appear before the audio data. Otherwise the packet table may get written at the
+    /// end of the file, preventing the file from being streamable.
+    #[doc(alias = "kAudioFilePropertyReserveDuration")]
+    pub const RESERVE_DURATION: Self = Self(u32::from_be_bytes(*b"rsrv"));
+
+    /// The value is a `f64` representing an estimated duration in seconds.
+    /// If duration can be calculated without scanning the entire file,
+    /// or all the audio data packets have been scanned, the value will
+    /// accurately reflect the duration of the audio data.
+    #[doc(alias = "kAudioFilePropertyEstimatedDuration")]
+    pub const ESTIMATED_DURATION: Self = Self(u32::from_be_bytes(*b"edur"));
+
+    /// Returns the bit rate for the audio data as a `u32`. For some formats this will be approximate.
+    #[doc(alias = "kAudioFilePropertyBitRate")]
+    pub const BIT_RATE: Self = Self(u32::from_be_bytes(*b"brat"));
+
+    #[doc(alias = "kAudioFilePropertyID3Tag")]
+    pub const ID3_TAG: Self = Self(u32::from_be_bytes(*b"id3t"));
+
+    #[doc(alias = "kAudioFilePropertyID3TagOffset")]
+    pub const ID3_TAG_OFFSET: Self = Self(u32::from_be_bytes(*b"id3o"));
+
+    #[doc(alias = "kAudioFilePropertySourceBitDepth")]
+    pub const SOURCE_BIT_DEPTH: Self = Self(u32::from_be_bytes(*b"sbtd"));
+
+    #[doc(alias = "kAudioFilePropertyAlbumArtwork")]
+    pub const ALBUM_ARTWORK: Self = Self(u32::from_be_bytes(*b"aart"));
+
+    /// A `u32` that indicates the number of audio tracks contained in the file. (get property only)
+    #[doc(alias = "kAudioFilePropertyAudioTrackCount")]
+    pub const AUDIO_TRACK_COUNT: Self = Self(u32::from_be_bytes(*b"atct"));
+
+    /// A `u32` that indicates the number of audio tracks contained in the file. (set property only)
+    #[doc(alias = "kAudioFilePropertyUseAudioTrack")]
+    pub const USE_AUDIO_TRACK: Self = Self(u32::from_be_bytes(*b"uatk"));
+}
+
+#[derive(Debug)]
 #[doc(alias = "AudioFileID")]
 #[repr(transparent)]
 pub struct FileID(&'static mut c_void);
@@ -72,6 +257,23 @@ impl FileID {
                 buffer,
             );
             res.result()
+        }
+    }
+
+    pub fn property_info(&self, property_id: PropertyID) -> Result<(u32, bool), os::Status> {
+        unsafe {
+            let mut data_size = 0;
+            let mut is_writable = 0;
+            let res = AudioFileGetPropertyInfo(
+                self,
+                property_id,
+                Some(&mut data_size),
+                Some(&mut is_writable),
+            );
+            match res {
+                os::Status::NO_ERR => Ok((data_size, is_writable == 1)),
+                _ => Err(res),
+            }
         }
     }
 
@@ -315,6 +517,13 @@ extern "C" {
         in_permissions: Permissions,
         in_file_type_hint: FileTypeID,
         out_audio_file: &mut Option<FileID>,
+    ) -> os::Status;
+
+    fn AudioFileGetPropertyInfo(
+        file: &FileID,
+        property_id: PropertyID,
+        data_size: Option<&mut u32>,
+        is_writable: Option<&mut u32>,
     ) -> os::Status;
 
     fn AudioFileWritePackets(

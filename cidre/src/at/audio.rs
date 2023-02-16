@@ -32,3 +32,4 @@ pub use file::FileID;
 pub use file::FileTypeID;
 pub use file::Flags as FileFlags;
 pub use file::Permissions as FilePermissions;
+pub use file::PropertyID as FilePropertyID;

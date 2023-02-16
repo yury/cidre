@@ -18,9 +18,11 @@ impl PartialEq<i32> for Status {
 }
 
 impl Status {
+    pub const NO_ERR: Self = Self(0);
+
     #[inline]
     pub fn is_ok(&self) -> bool {
-        self.0 == 0
+        *self == Self::NO_ERR
     }
 
     #[inline]
