@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{arc, av::MediaType, cf, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av::MediaType, cf, cg, cm, define_cls, define_obj_type, ns, objc};
 
 use super::SessionPreset;
 
@@ -132,6 +132,9 @@ impl Device {
     #[objc::msg_send(hasTorch)]
     pub fn has_torch(&self) -> bool;
 
+    #[objc::msg_send(isRampingVideoZoom)]
+    pub fn is_ramping_video_zoom(&self) -> bool;
+
     pub fn configuration_lock(&mut self) -> Result<ConfigurationLockGuard, arc::R<cf::Error>> {
         let mut error = None;
         unsafe {
@@ -160,6 +163,12 @@ impl Device {
 
     #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
     pub unsafe fn set_active_video_max_frame_duration(&mut self, value: cm::Time);
+
+    #[objc::msg_send(rampToVideoZoomFactor:withRate:)]
+    pub unsafe fn ramp_to_video_zoom_factor_throws(&mut self, factor: cg::Float, rate: f32);
+
+    #[objc::msg_send(cancelVideoZoomRamp)]
+    pub unsafe fn cancel_video_zoom_ramp_throws(&mut self);
 }
 
 pub struct ConfigurationLockGuard<'a> {
@@ -177,6 +186,14 @@ impl<'a> ConfigurationLockGuard<'a> {
 
     pub fn set_active_video_max_frame_duration(&mut self, value: cm::Time) {
         unsafe { self.device.set_active_video_max_frame_duration(value) }
+    }
+
+    pub fn ramp_to_video_zoom_factor(&mut self, factor: cg::Float, rate: f32) {
+        unsafe { self.device.ramp_to_video_zoom_factor_throws(factor, rate) }
+    }
+
+    pub fn cancel_video_zoom_ramp(&mut self) {
+        unsafe { self.device.cancel_video_zoom_ramp_throws() }
     }
 }
 

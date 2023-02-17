@@ -277,6 +277,26 @@ impl FileID {
         }
     }
 
+    #[inline]
+    pub unsafe fn get_property(
+        &self,
+        property_id: PropertyID,
+        data_size: *mut u32,
+        property_data: *mut c_void,
+    ) -> os::Status {
+        AudioFileGetProperty(self, property_id, data_size, property_data)
+    }
+
+    #[inline]
+    pub unsafe fn set_property(
+        &mut self,
+        property_id: PropertyID,
+        data_size: u32,
+        property_data: *const c_void,
+    ) -> os::Status {
+        AudioFileSetProperty(self, property_id, data_size, property_data)
+    }
+
     /// Close an existing audio file.
     #[doc(alias = "AudioFileClose")]
     #[inline]
@@ -526,6 +546,20 @@ extern "C" {
         is_writable: Option<&mut u32>,
     ) -> os::Status;
 
+    fn AudioFileGetProperty(
+        file: &FileID,
+        property_id: PropertyID,
+        data_size: *mut u32,
+        property_data: *mut c_void,
+    ) -> os::Status;
+
+    fn AudioFileSetProperty(
+        file: &mut FileID,
+        property_id: PropertyID,
+        data_size: u32,
+        property_data: *const c_void,
+    ) -> os::Status;
+
     fn AudioFileWritePackets(
         file: &mut FileID,
         use_cache: bool,
@@ -560,13 +594,19 @@ mod tests {
             reserved: 0,
         };
 
-        audio::FileID::create(
+        let file = audio::FileID::create(
             &path,
             audio::FileTypeID::M4A,
             &asbd,
             audio::FileFlags::ERASE_FILE,
         )
         .unwrap();
+
+        // let (size, writable) = file
+        //     .property_info(audio::FilePropertyID::INFO_DICTIONARY)
+        //     .unwrap();
+
+        // println!("{size} {writable}");
 
         audio::FileID::open(&path, audio::FilePermissions::Read, audio::FileTypeID::M4A)
             .expect_err("should be error");
