@@ -57,8 +57,8 @@ define_cf_type!(Dictionary(Type));
 
 impl Dictionary {
     #[inline]
-    pub fn new() -> Option<arc::R<Self>> {
-        Self::new_in(None)
+    pub fn new() -> arc::R<Self> {
+        unsafe { Self::new_in(None).unwrap_unchecked() }
     }
 
     #[inline]
@@ -303,6 +303,12 @@ impl Dictionary {
     #[inline]
     pub fn copy_in(&self, allocator: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFDictionaryCreateCopy(allocator, self) }
+    }
+}
+
+impl Default for arc::R<Dictionary> {
+    fn default() -> Self {
+        Dictionary::new()
     }
 }
 

@@ -19,7 +19,7 @@ mod tests {
     fn session_new() {
         let mut image_attrs = cf::DictionaryMut::with_capacity(3);
 
-        let empty_dict = cf::Dictionary::new().unwrap();
+        let empty_dict = cf::Dictionary::new();
         let pixel_format = cf::Number::from_four_char_code(
             cv::PixelFormatType::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE.0,
         );

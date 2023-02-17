@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{cat::audio, cf, define_options, os};
+use crate::{arc, cat::audio, cf, define_options, os};
 
 #[derive(Debug)]
 #[doc(alias = "AudioFilePropertyID")]
@@ -381,6 +381,16 @@ impl FileID {
         self.set_prop(PropertyID::RESERVE_DURATION, &value)
     }
 
+    #[inline]
+    pub fn estimated_duration(&self) -> Result<f64, os::Status> {
+        self.get_prop::<f64>(PropertyID::ESTIMATED_DURATION)
+    }
+
+    #[inline]
+    pub fn info_dictionary(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
+        self.get_prop::<arc::R<cf::Dictionary>>(PropertyID::INFO_DICTIONARY)
+    }
+
     /// Close an existing audio file.
     #[doc(alias = "AudioFileClose")]
     #[inline]
@@ -750,7 +760,26 @@ mod tests {
 
         file.set_reserve_duration(1000f64).unwrap();
 
-        // assert_eq!(1000f64, file.reserve_duration().unwrap());
+        let (size, writable) = file
+            .property_info(audio::FilePropertyID::ESTIMATED_DURATION)
+            .unwrap();
+
+        assert_eq!(size, std::mem::size_of::<f64>());
+        assert_eq!(writable, false);
+
+        assert_eq!(0f64, file.estimated_duration().unwrap());
+
+        let (size, writable) = file
+            .property_info(audio::FilePropertyID::INFO_DICTIONARY)
+            .unwrap();
+
+        assert_eq!(size, std::mem::size_of::<usize>());
+        assert_eq!(writable, false);
+
+        let info = file.info_dictionary().unwrap();
+
+        assert!(!info.is_empty());
+        info.show();
 
         file.close();
         std::mem::forget(file);
