@@ -356,7 +356,7 @@ impl FormatFlags {
 
     /// Set if all the flags would be clear in order to preserve 0 as the wild card
     /// value.
-    pub const ARE_ALL_CLEAR: Self = Self(0x80000000);
+    pub const ALL_CLEAR: Self = Self(0x80000000);
 
     pub const LINEAR_PCM_IS_FLOAT: Self = Self::IS_FLOAT;
     pub const LINEAR_PCM_IS_BIG_ENDIAN: Self = Self::IS_BIG_ENDIAN;
@@ -384,7 +384,7 @@ impl FormatFlags {
     pub const LINEAR_PCM_SAMPLE_FRACTION_MASK: Self =
         Self(0x3f << Self::LINEAR_PCM_SAMPLE_FRACTION_SHIFT.0);
 
-    pub const LINEAR_PCM_ARE_ALL_CLEAR: Self = Self::ARE_ALL_CLEAR;
+    pub const LINEAR_PCM_ARE_ALL_CLEAR: Self = Self::ALL_CLEAR;
 
     /// This flag is set for Apple Lossless data that was sourced from 16 bit native
     /// endian signed integer data.

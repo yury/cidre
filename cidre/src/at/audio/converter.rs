@@ -429,20 +429,20 @@ impl ConverterRef {
     /// # Safety
     /// use `with_formats`
     pub unsafe fn new(
-        in_source_format: &audio::StreamBasicDescription,
-        in_destination_format: &audio::StreamBasicDescription,
+        src_format: &audio::StreamBasicDescription,
+        dst_format: &audio::StreamBasicDescription,
         out_audio_converer: &mut Option<Self>,
     ) -> os::Status {
-        AudioConverterNew(in_source_format, in_destination_format, out_audio_converer)
+        AudioConverterNew(src_format, dst_format, out_audio_converer)
     }
 
     pub fn with_formats(
-        source_fmt: &audio::StreamBasicDescription,
-        dest_fmt: &audio::StreamBasicDescription,
+        src_fmt: &audio::StreamBasicDescription,
+        dst_fmt: &audio::StreamBasicDescription,
     ) -> Result<Self, os::Status> {
         unsafe {
             let mut out_converter = None;
-            Self::new(source_fmt, dest_fmt, &mut out_converter).to_result_unchecked(out_converter)
+            Self::new(src_fmt, dst_fmt, &mut out_converter).to_result_unchecked(out_converter)
         }
     }
 }

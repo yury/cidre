@@ -401,7 +401,7 @@ impl FileID {
 impl Drop for FileID {
     fn drop(&mut self) {
         let res = self.close();
-        debug_assert_eq!(res, 0);
+        debug_assert_eq!(res, 0, "failed to close audio file properly");
     }
 }
 
@@ -632,9 +632,9 @@ extern "C" {
     fn AudioFileClose(file: *const OpaqueFileID) -> os::Status;
 
     fn AudioFileOpenURL(
-        in_file_url: &cf::URL,
-        in_permissions: Permissions,
-        in_file_type_hint: FileTypeID,
+        file_url: &cf::URL,
+        permissions: Permissions,
+        file_type_hint: FileTypeID,
         out_audio_file: &mut Option<FileID>,
     ) -> os::Status;
 
