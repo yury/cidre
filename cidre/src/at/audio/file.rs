@@ -238,8 +238,7 @@ impl FileID {
     ) -> Result<Self, os::Status> {
         let mut result = None;
         unsafe {
-            let res = AudioFileOpenURL(url, permissions, type_hint, &mut result);
-            res.to_result_unchecked(result)
+            AudioFileOpenURL(url, permissions, type_hint, &mut result).to_result_unchecked(result)
         }
     }
 
@@ -255,7 +254,7 @@ impl FileID {
         buffer: *const c_void,
     ) -> Result<(), os::Status> {
         unsafe {
-            let res = AudioFileWritePackets(
+            AudioFileWritePackets(
                 self.0,
                 use_cache,
                 num_bytes,
@@ -263,8 +262,8 @@ impl FileID {
                 starting_packet,
                 num_packets,
                 buffer,
-            );
-            res.result()
+            )
+            .result()
         }
     }
 
@@ -300,7 +299,7 @@ impl FileID {
 
     #[doc(alias = "AudioFileGetProperty")]
     #[inline]
-    pub fn get_prop<T: Default>(&self, property_id: PropertyID) -> Result<T, os::Status> {
+    pub fn prop<T: Default>(&self, property_id: PropertyID) -> Result<T, os::Status> {
         let mut value = T::default();
         let mut size = std::mem::size_of::<T>() as u32;
         unsafe {
@@ -338,7 +337,7 @@ impl FileID {
 
     #[inline]
     pub fn defer_size_updates(&self) -> Result<bool, os::Status> {
-        Ok(self.get_prop::<u32>(PropertyID::DEFER_SIZE_UPDATES)? == 1)
+        Ok(self.prop::<u32>(PropertyID::DEFER_SIZE_UPDATES)? == 1)
     }
 
     #[inline]
@@ -349,18 +348,18 @@ impl FileID {
 
     #[inline]
     pub fn optimized(&self) -> Result<bool, os::Status> {
-        Ok(self.get_prop::<u32>(PropertyID::IS_OPTIMIZED)? == 1)
+        Ok(self.prop::<u32>(PropertyID::IS_OPTIMIZED)? == 1)
     }
 
     /// Read only
     #[inline]
     pub fn file_format(&self) -> Result<FileTypeID, os::Status> {
-        self.get_prop::<FileTypeID>(PropertyID::FILE_FORMAT)
+        self.prop::<FileTypeID>(PropertyID::FILE_FORMAT)
     }
 
     #[inline]
     pub fn data_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
-        self.get_prop::<audio::StreamBasicDescription>(PropertyID::DATA_FORMAT)
+        self.prop::<audio::StreamBasicDescription>(PropertyID::DATA_FORMAT)
     }
 
     #[inline]
@@ -373,7 +372,7 @@ impl FileID {
 
     #[inline]
     pub fn reserve_duration(&self) -> Result<f64, os::Status> {
-        self.get_prop::<f64>(PropertyID::RESERVE_DURATION)
+        self.prop::<f64>(PropertyID::RESERVE_DURATION)
     }
 
     #[inline]
@@ -383,12 +382,12 @@ impl FileID {
 
     #[inline]
     pub fn estimated_duration(&self) -> Result<f64, os::Status> {
-        self.get_prop::<f64>(PropertyID::ESTIMATED_DURATION)
+        self.prop::<f64>(PropertyID::ESTIMATED_DURATION)
     }
 
     #[inline]
     pub fn info_dictionary(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
-        self.get_prop::<arc::R<cf::Dictionary>>(PropertyID::INFO_DICTIONARY)
+        self.prop::<arc::R<cf::Dictionary>>(PropertyID::INFO_DICTIONARY)
     }
 
     /// Close an existing audio file.
