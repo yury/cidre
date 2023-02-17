@@ -51,7 +51,10 @@ impl PropertyID {
     #[doc(alias = "kAudioFilePropertyChannelLayout")]
     pub const CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"cmap"));
 
-    // kAudioFilePropertyDeferSizeUpdates		=	'dszu',
+    /// A u32. If 1, then updating the files sizes in the header is not done for every write,
+    /// but deferred until the file is read, optimized or closed. This is more efficient, but less safe
+    /// since, if the application crashes before the size is updated, the file may not be readable.
+    /// The default value is one, it doesn't update the header.
     #[doc(alias = "kAudioFilePropertyDeferSizeUpdates")]
     pub const DEFER_SIZE_UPDATES: Self = Self(u32::from_be_bytes(*b"dszu"));
 
@@ -188,9 +191,14 @@ impl PropertyID {
 }
 
 #[derive(Debug)]
+#[doc(alias = "OpaqueAudioFileID")]
+#[repr(transparent)]
+pub struct OpaqueFileID(c_void);
+
+#[derive(Debug)]
 #[doc(alias = "AudioFileID")]
 #[repr(transparent)]
-pub struct FileID(&'static mut c_void);
+pub struct FileID(&'static mut OpaqueFileID);
 
 impl FileID {
     /// Creates a new audio file (or initialises an existing file)
@@ -248,7 +256,7 @@ impl FileID {
     ) -> Result<(), os::Status> {
         unsafe {
             let res = AudioFileWritePackets(
-                self,
+                self.0,
                 use_cache,
                 num_bytes,
                 packet_descriptions,
@@ -267,7 +275,7 @@ impl FileID {
             let mut data_size = 0;
             let mut is_writable = 0;
             let res = AudioFileGetPropertyInfo(
-                self,
+                self.0,
                 property_id,
                 Some(&mut data_size),
                 Some(&mut is_writable),
@@ -287,7 +295,34 @@ impl FileID {
         data_size: *mut u32,
         property_data: *mut c_void,
     ) -> os::Status {
-        AudioFileGetProperty(self, property_id, data_size, property_data)
+        AudioFileGetProperty(self.0, property_id, data_size, property_data)
+    }
+
+    #[doc(alias = "AudioFileGetProperty")]
+    #[inline]
+    pub fn get_prop<T: Default>(&self, property_id: PropertyID) -> Result<T, os::Status> {
+        let mut value = T::default();
+        let mut size = std::mem::size_of::<T>() as u32;
+        unsafe {
+            self.get_property(property_id, &mut size, &mut value as *mut T as _)
+                .result()?;
+        }
+        Ok(value)
+    }
+
+    #[doc(alias = "AudioFileSetProperty")]
+    #[inline]
+    pub fn set_prop<T: Sized>(
+        &mut self,
+        property_id: PropertyID,
+        value: &T,
+    ) -> Result<(), os::Status> {
+        let size = std::mem::size_of::<T>() as u32;
+        unsafe {
+            self.set_property(property_id, size, value as *const T as _)
+                .result()?;
+        }
+        Ok(())
     }
 
     #[doc(alias = "AudioFileSetProperty")]
@@ -298,29 +333,65 @@ impl FileID {
         data_size: u32,
         property_data: *const c_void,
     ) -> os::Status {
-        AudioFileSetProperty(self, property_id, data_size, property_data)
+        AudioFileSetProperty(self.0, property_id, data_size, property_data)
+    }
+
+    #[inline]
+    pub fn defer_size_updates(&self) -> Result<bool, os::Status> {
+        Ok(self.get_prop::<u32>(PropertyID::DEFER_SIZE_UPDATES)? == 1)
+    }
+
+    #[inline]
+    pub fn set_defer_size_updates(&mut self, value: bool) -> Result<(), os::Status> {
+        let v: u32 = value as _;
+        self.set_prop::<u32>(PropertyID::DEFER_SIZE_UPDATES, &v)
+    }
+
+    /// Read only
+    #[inline]
+    pub fn file_format(&self) -> Result<FileTypeID, os::Status> {
+        self.get_prop::<FileTypeID>(PropertyID::FILE_FORMAT)
+    }
+
+    #[inline]
+    pub fn data_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
+        self.get_prop::<audio::StreamBasicDescription>(PropertyID::DATA_FORMAT)
+    }
+
+    #[inline]
+    pub fn set_data_format(
+        &mut self,
+        asbd: &audio::StreamBasicDescription,
+    ) -> Result<(), os::Status> {
+        self.set_prop(PropertyID::DATA_FORMAT, asbd)
     }
 
     /// Close an existing audio file.
     #[doc(alias = "AudioFileClose")]
     #[inline]
     pub fn close(&mut self) -> os::Status {
-        unsafe { AudioFileClose(self) }
+        unsafe { AudioFileClose(self.0) }
     }
 }
 
 impl Drop for FileID {
     fn drop(&mut self) {
         let res = self.close();
-
-        debug_assert!(res == 0 || res == errors::NOT_OPEN);
+        debug_assert_eq!(res, 0);
     }
 }
 
 /// Identifier for an audio file type.
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[doc(alias = "AudioFileTypeID")]
 #[repr(transparent)]
 pub struct FileTypeID(pub u32);
+
+impl Default for FileTypeID {
+    fn default() -> Self {
+        Self(0)
+    }
+}
 
 impl FileTypeID {
     /// Audio Interchange File Format (AIFF)
@@ -534,7 +605,7 @@ extern "C" {
         out_audio_file: &mut Option<FileID>,
     ) -> os::Status;
 
-    fn AudioFileClose(file: &mut FileID) -> os::Status;
+    fn AudioFileClose(file: *const OpaqueFileID) -> os::Status;
 
     fn AudioFileOpenURL(
         in_file_url: &cf::URL,
@@ -544,28 +615,28 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioFileGetPropertyInfo(
-        file: &FileID,
+        file: *const OpaqueFileID,
         property_id: PropertyID,
         data_size: Option<&mut u32>,
         is_writable: Option<&mut u32>,
     ) -> os::Status;
 
     fn AudioFileGetProperty(
-        file: &FileID,
+        file: *const OpaqueFileID,
         property_id: PropertyID,
         data_size: *mut u32,
         property_data: *mut c_void,
     ) -> os::Status;
 
     fn AudioFileSetProperty(
-        file: &mut FileID,
+        file: *mut OpaqueFileID,
         property_id: PropertyID,
         data_size: u32,
         property_data: *const c_void,
     ) -> os::Status;
 
     fn AudioFileWritePackets(
-        file: &mut FileID,
+        file: *mut OpaqueFileID,
         use_cache: bool,
         num_bytes: u32,
         packet_descriptions: Option<&audio::StreamPacketDescription>,
@@ -581,24 +652,18 @@ mod tests {
 
     #[test]
     fn basics() {
-        let path = cf::URL::from_str("file:///tmp/mp3.mp3").unwrap();
+        let path = cf::URL::from_str("file:///tmp/m4a.m4a").unwrap();
 
         let asbd = audio::StreamBasicDescription {
-            //sample_rate: 32_000.0,
-            // sample_rate: 44_100.0,
-            sample_rate: 48_000.0,
             format_id: audio::FormatID::MPEG4_AAC,
-            format_flags: Default::default(),
-            // format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
-            bytes_per_packet: 0,
+            format_flags: audio::FormatFlags::ARE_ALL_CLEAR,
             frames_per_packet: 1024,
-            bytes_per_frame: 0,
+            sample_rate: 48_000.0,
             channels_per_frame: 2,
-            bits_per_channel: 0,
-            reserved: 0,
+            ..Default::default()
         };
 
-        let file = audio::FileID::create(
+        let mut file = audio::FileID::create(
             &path,
             audio::FileTypeID::M4A,
             &asbd,
@@ -606,13 +671,37 @@ mod tests {
         )
         .unwrap();
 
-        // let (size, writable) = file
-        //     .property_info(audio::FilePropertyID::INFO_DICTIONARY)
-        //     .unwrap();
+        let defer_size_updates = file.defer_size_updates().unwrap();
 
-        // println!("{size} {writable}");
+        assert!(defer_size_updates);
 
-        audio::FileID::open(&path, audio::FilePermissions::Read, audio::FileTypeID::M4A)
-            .expect_err("should be error");
+        file.set_defer_size_updates(false).unwrap();
+
+        let defer_size_updates = file.defer_size_updates().unwrap();
+
+        assert!(!defer_size_updates);
+
+        assert_eq!(file.file_format().unwrap(), audio::FileTypeID::M4A);
+
+        let (_size, writable) = file
+            .property_info(audio::FilePropertyID::FILE_FORMAT)
+            .unwrap();
+
+        assert_eq!(writable, false);
+
+        let (_size, writable) = file
+            .property_info(audio::FilePropertyID::DATA_FORMAT)
+            .unwrap();
+
+        assert_eq!(writable, true);
+
+        let file_asbd = file.data_format().unwrap();
+
+        assert_eq!(file_asbd, asbd);
+
+        file.set_data_format(&asbd).unwrap();
+
+        file.close();
+        std::mem::forget(file);
     }
 }

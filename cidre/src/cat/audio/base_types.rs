@@ -422,7 +422,7 @@ impl FormatFlags {
 /// indivisible chunk of compressed data, for example an AAC packet will contain
 /// 1024 sample frames.
 ///
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct StreamBasicDescription {
     /// The number of sample frames per second of the data in the stream.
