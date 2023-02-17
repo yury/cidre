@@ -671,6 +671,13 @@ mod tests {
         )
         .unwrap();
 
+        let (size, writable) = file
+            .property_info(audio::FilePropertyID::DEFER_SIZE_UPDATES)
+            .unwrap();
+
+        assert_eq!(size as usize, std::mem::size_of::<u32>());
+        assert_eq!(writable, true);
+
         let defer_size_updates = file.defer_size_updates().unwrap();
 
         assert!(defer_size_updates);
