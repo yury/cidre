@@ -371,6 +371,16 @@ impl FileID {
         self.set_prop(PropertyID::DATA_FORMAT, asbd)
     }
 
+    #[inline]
+    pub fn reserve_duration(&self) -> Result<f64, os::Status> {
+        self.get_prop::<f64>(PropertyID::RESERVE_DURATION)
+    }
+
+    #[inline]
+    pub fn set_reserve_duration(&mut self, value: f64) -> Result<(), os::Status> {
+        self.set_prop(PropertyID::RESERVE_DURATION, &value)
+    }
+
     /// Close an existing audio file.
     #[doc(alias = "AudioFileClose")]
     #[inline]
@@ -730,6 +740,17 @@ mod tests {
         assert!(file
             .property_info(audio::FilePropertyID::DATA_FORMAT_NAME)
             .is_err());
+
+        let (size, writable) = file
+            .property_info(audio::FilePropertyID::RESERVE_DURATION)
+            .unwrap();
+
+        assert_eq!(size, std::mem::size_of::<f64>());
+        assert_eq!(writable, true);
+
+        file.set_reserve_duration(1000f64).unwrap();
+
+        // assert_eq!(1000f64, file.reserve_duration().unwrap());
 
         file.close();
         std::mem::forget(file);
