@@ -347,6 +347,11 @@ impl FileID {
         self.set_prop::<u32>(PropertyID::DEFER_SIZE_UPDATES, &v)
     }
 
+    #[inline]
+    pub fn optimized(&self) -> Result<bool, os::Status> {
+        Ok(self.get_prop::<u32>(PropertyID::IS_OPTIMIZED)? == 1)
+    }
+
     /// Read only
     #[inline]
     pub fn file_format(&self) -> Result<FileTypeID, os::Status> {
@@ -712,6 +717,15 @@ mod tests {
         assert_eq!(file_asbd, asbd);
 
         file.set_data_format(&asbd).unwrap();
+
+        let (size, writable) = file
+            .property_info(audio::FilePropertyID::IS_OPTIMIZED)
+            .unwrap();
+
+        assert_eq!(size as usize, std::mem::size_of::<u32>());
+        assert_eq!(writable, false);
+
+        assert_eq!(file.optimized().unwrap(), false);
 
         file.close();
         std::mem::forget(file);
