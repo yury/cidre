@@ -343,7 +343,7 @@ impl FileID {
     #[inline]
     pub fn set_defer_size_updates(&mut self, value: bool) -> Result<(), os::Status> {
         let v: u32 = value as _;
-        self.set_prop::<u32>(PropertyID::DEFER_SIZE_UPDATES, &v)
+        self.set_prop(PropertyID::DEFER_SIZE_UPDATES, &v)
     }
 
     #[inline]
@@ -354,12 +354,12 @@ impl FileID {
     /// Read only
     #[inline]
     pub fn file_format(&self) -> Result<FileTypeID, os::Status> {
-        self.prop::<FileTypeID>(PropertyID::FILE_FORMAT)
+        self.prop(PropertyID::FILE_FORMAT)
     }
 
     #[inline]
     pub fn data_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
-        self.prop::<audio::StreamBasicDescription>(PropertyID::DATA_FORMAT)
+        self.prop(PropertyID::DATA_FORMAT)
     }
 
     #[inline]
@@ -372,7 +372,7 @@ impl FileID {
 
     #[inline]
     pub fn reserve_duration(&self) -> Result<f64, os::Status> {
-        self.prop::<f64>(PropertyID::RESERVE_DURATION)
+        self.prop(PropertyID::RESERVE_DURATION)
     }
 
     #[inline]
@@ -382,12 +382,12 @@ impl FileID {
 
     #[inline]
     pub fn estimated_duration(&self) -> Result<f64, os::Status> {
-        self.prop::<f64>(PropertyID::ESTIMATED_DURATION)
+        self.prop(PropertyID::ESTIMATED_DURATION)
     }
 
     #[inline]
     pub fn info_dictionary(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
-        self.prop::<arc::R<cf::Dictionary>>(PropertyID::INFO_DICTIONARY)
+        self.prop(PropertyID::INFO_DICTIONARY)
     }
 
     /// Close an existing audio file.
