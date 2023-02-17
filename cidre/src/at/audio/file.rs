@@ -683,16 +683,21 @@ mod tests {
 
         assert_eq!(file.file_format().unwrap(), audio::FileTypeID::M4A);
 
-        let (_size, writable) = file
+        let (size, writable) = file
             .property_info(audio::FilePropertyID::FILE_FORMAT)
             .unwrap();
 
+        assert_eq!(size as usize, std::mem::size_of::<audio::FileTypeID>());
         assert_eq!(writable, false);
 
-        let (_size, writable) = file
+        let (size, writable) = file
             .property_info(audio::FilePropertyID::DATA_FORMAT)
             .unwrap();
 
+        assert_eq!(
+            size as usize,
+            std::mem::size_of::<audio::StreamBasicDescription>()
+        );
         assert_eq!(writable, true);
 
         let file_asbd = file.data_format().unwrap();
