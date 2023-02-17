@@ -727,6 +727,10 @@ mod tests {
 
         assert_eq!(file.optimized().unwrap(), false);
 
+        assert!(file
+            .property_info(audio::FilePropertyID::DATA_FORMAT_NAME)
+            .is_err());
+
         file.close();
         std::mem::forget(file);
     }
