@@ -270,7 +270,7 @@ impl FileID {
 
     #[doc(alias = "AudioFileGetPropertyInfo")]
     #[inline]
-    pub fn property_info(&self, property_id: PropertyID) -> Result<(u32, bool), os::Status> {
+    pub fn property_info(&self, property_id: PropertyID) -> Result<(usize, bool), os::Status> {
         unsafe {
             let mut data_size = 0;
             let mut is_writable = 0;
@@ -281,7 +281,7 @@ impl FileID {
                 Some(&mut is_writable),
             );
             match res {
-                os::Status::NO_ERR => Ok((data_size, is_writable == 1)),
+                os::Status::NO_ERR => Ok((data_size as _, is_writable == 1)),
                 _ => Err(res),
             }
         }
@@ -680,7 +680,7 @@ mod tests {
             .property_info(audio::FilePropertyID::DEFER_SIZE_UPDATES)
             .unwrap();
 
-        assert_eq!(size as usize, std::mem::size_of::<u32>());
+        assert_eq!(size, std::mem::size_of::<u32>());
         assert_eq!(writable, true);
 
         let defer_size_updates = file.defer_size_updates().unwrap();
@@ -699,7 +699,7 @@ mod tests {
             .property_info(audio::FilePropertyID::FILE_FORMAT)
             .unwrap();
 
-        assert_eq!(size as usize, std::mem::size_of::<audio::FileTypeID>());
+        assert_eq!(size, std::mem::size_of::<audio::FileTypeID>());
         assert_eq!(writable, false);
 
         let (size, writable) = file
@@ -722,7 +722,7 @@ mod tests {
             .property_info(audio::FilePropertyID::IS_OPTIMIZED)
             .unwrap();
 
-        assert_eq!(size as usize, std::mem::size_of::<u32>());
+        assert_eq!(size, std::mem::size_of::<u32>());
         assert_eq!(writable, false);
 
         assert_eq!(file.optimized().unwrap(), false);
