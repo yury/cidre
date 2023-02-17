@@ -260,6 +260,8 @@ impl FileID {
         }
     }
 
+    #[doc(alias = "AudioFileGetPropertyInfo")]
+    #[inline]
     pub fn property_info(&self, property_id: PropertyID) -> Result<(u32, bool), os::Status> {
         unsafe {
             let mut data_size = 0;
@@ -277,6 +279,7 @@ impl FileID {
         }
     }
 
+    #[doc(alias = "AudioFileGetProperty")]
     #[inline]
     pub unsafe fn get_property(
         &self,
@@ -287,6 +290,7 @@ impl FileID {
         AudioFileGetProperty(self, property_id, data_size, property_data)
     }
 
+    #[doc(alias = "AudioFileSetProperty")]
     #[inline]
     pub unsafe fn set_property(
         &mut self,
