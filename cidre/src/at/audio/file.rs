@@ -248,13 +248,38 @@ impl FileID {
         &mut self,
         use_cache: bool,
         num_bytes: u32,
-        packet_descriptions: Option<&audio::StreamPacketDescription>,
+        packet_descriptions: *const audio::StreamPacketDescription,
         starting_packet: isize,
         num_packets: *mut u32,
-        buffer: *const c_void,
+        buffer: *const u8,
     ) -> Result<(), os::Status> {
         unsafe {
             AudioFileWritePackets(
+                self.0,
+                use_cache,
+                num_bytes,
+                packet_descriptions,
+                starting_packet,
+                num_packets,
+                buffer,
+            )
+            .result()
+        }
+    }
+
+    #[doc(alias = "AudioFileWritePackets")]
+    #[inline]
+    pub fn read_packets(
+        &mut self,
+        use_cache: bool,
+        num_bytes: &mut u32,
+        packet_descriptions: *mut audio::StreamPacketDescription,
+        starting_packet: isize,
+        num_packets: *mut u32,
+        buffer: *mut u8,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            AudioFileReadPacketData(
                 self.0,
                 use_cache,
                 num_bytes,
@@ -663,10 +688,20 @@ extern "C" {
         file: *mut OpaqueFileID,
         use_cache: bool,
         num_bytes: u32,
-        packet_descriptions: Option<&audio::StreamPacketDescription>,
+        packet_descriptions: *const audio::StreamPacketDescription,
         starting_packet: isize,
         num_packets: *mut u32,
-        buffer: *const c_void,
+        buffer: *const u8,
+    ) -> os::Status;
+
+    fn AudioFileReadPacketData(
+        file: *mut OpaqueFileID,
+        use_cache: bool,
+        num_bytes: *mut u32,
+        packet_descriptions: *const audio::StreamPacketDescription,
+        starting_packet: isize,
+        num_packets: *mut u32,
+        buffer: *mut u8,
     ) -> os::Status;
 }
 
@@ -680,7 +715,7 @@ mod tests {
 
         let asbd = audio::StreamBasicDescription {
             format_id: audio::FormatID::MPEG4_AAC,
-            format_flags: audio::FormatFlags::ARE_ALL_CLEAR,
+            format_flags: audio::FormatFlags::ALL_CLEAR,
             frames_per_packet: 1024,
             sample_rate: 48_000.0,
             channels_per_frame: 2,

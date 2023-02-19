@@ -421,7 +421,7 @@ pub type ComplexInputDataProc<D> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufferList,
-    out_data_packet_description: *mut audio::StreamBasicDescription,
+    out_data_packet_descriptions: *mut audio::StreamPacketDescription,
     in_user_data: *mut D,
 ) -> os::Status;
 
@@ -556,6 +556,16 @@ impl Converter {
     }
 
     #[inline]
+    pub fn compression_magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+        unsafe { self.prop_vec(PropertyID::COMPRESSION_MAGIC_COOKIE) }
+    }
+
+    #[inline]
+    pub fn decompression_magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+        unsafe { self.prop_vec(PropertyID::DECOMPRESSION_MAGIC_COOKIE) }
+    }
+
+    #[inline]
     pub fn current_output_stream_description(
         &self,
     ) -> Result<audio::StreamBasicDescription, os::Status> {
@@ -680,6 +690,27 @@ impl Converter {
             io_output_data_size,
             out_output_data,
         )
+    }
+
+    #[inline]
+    pub fn fill_complex_buf_desc<D>(
+        &self,
+        proc: ComplexInputDataProc<D>,
+        user_data: &mut D,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut audio::BufferList,
+        out_packet_description: &mut Vec<audio::StreamPacketDescription>,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            self.fill_complex_buffer(
+                proc,
+                user_data,
+                io_output_data_packet_size,
+                out_output_data,
+                out_packet_description.as_mut_ptr(),
+            )
+            .result()
+        }
     }
 
     #[inline]
