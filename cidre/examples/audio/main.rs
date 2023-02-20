@@ -6,10 +6,6 @@ use clap::Parser;
 #[derive(clap::Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    /// Turn debugging information on
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
-
     #[command(subcommand)]
     command: Commands,
 }
@@ -70,13 +66,8 @@ extern "C" fn data_proc(
 
     let buf_len = *io_number_data_packets as usize * ctx.max_packet_size as usize;
 
-    unsafe {
-        if ctx.buffer.len() == buf_len {
-        } else if ctx.buffer.capacity() >= buf_len {
-            ctx.buffer.set_len(buf_len);
-        } else {
-            ctx.buffer.resize(buf_len, 0u8);
-        }
+    if ctx.buffer.len() != buf_len {
+        ctx.buffer.resize(buf_len, 0u8);
     }
 
     let packet_descriptions_ptr = if ctx.uses_packet_descriptions {
