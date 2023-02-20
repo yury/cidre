@@ -59,7 +59,7 @@ struct Context {
     packet_descriptions: Vec<audio::StreamPacketDescription>,
 }
 
-extern "C" fn input_data_proc(
+extern "C" fn data_proc(
     _converter: &audio::Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufferList,
@@ -80,8 +80,10 @@ extern "C" fn input_data_proc(
     }
 
     let packet_descriptions_ptr = if ctx.uses_packet_descriptions {
-        ctx.packet_descriptions
-            .resize(*io_number_data_packets as _, Default::default());
+        if ctx.packet_descriptions.len() != *io_number_data_packets as usize {
+            ctx.packet_descriptions
+                .resize(*io_number_data_packets as _, Default::default());
+        }
         unsafe { *out_data_packet_descriptions = ctx.packet_descriptions.as_mut_ptr() };
         ctx.packet_descriptions.as_mut_ptr()
     } else {
@@ -129,7 +131,7 @@ fn encode(args: &EncodeArgs) {
     let src_uses_packet_descriptions =
         src_asbd.bytes_per_packet == 0 || src_asbd.frames_per_packet == 0;
 
-    // Create the output file as PCM or AAC of the same sampling rate and number of channels as
+    // Create the dst file as AAC of the same sampling rate and number of channels as
     // the input.
     let dst_asbd = audio::StreamBasicDescription {
         sample_rate: src_asbd.sample_rate,
@@ -189,7 +191,7 @@ fn encode(args: &EncodeArgs) {
         };
 
         conv.fill_complex_buf_desc(
-            input_data_proc,
+            data_proc,
             &mut ctx,
             &mut num_packets,
             &mut list,
@@ -217,6 +219,9 @@ fn encode(args: &EncodeArgs) {
         }
     }
 
+    // Obtain the magic cookie from the encoder and write it to the file.
+    // Note that the sample waits until the end of the encoding to do this, because the magic cookie
+    // may update during the encoding process.
     let cookie = conv.compression_magic_cookie().unwrap();
     unsafe {
         dst_file
@@ -318,7 +323,7 @@ fn decode(args: &DecodeArgs) {
             }],
         };
 
-        conv.fill_complex_buf(input_data_proc, &mut ctx, &mut num_packets, &mut list)
+        conv.fill_complex_buf(data_proc, &mut ctx, &mut num_packets, &mut list)
             .unwrap();
 
         if num_packets > 0 {
