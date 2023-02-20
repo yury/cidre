@@ -63,7 +63,7 @@ extern "C" fn input_data_proc(
     _converter: &audio::Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufferList,
-    #[allow(unused)] mut out_data_packet_descriptions: *mut audio::StreamPacketDescription,
+    out_data_packet_descriptions: *mut *mut audio::StreamPacketDescription,
     in_user_data: *mut Context,
 ) -> os::Status {
     let ctx = unsafe { &mut *in_user_data };
@@ -79,11 +79,10 @@ extern "C" fn input_data_proc(
         }
     }
 
-    // let mut descritpions = std::ptr::null_mut();
-    out_data_packet_descriptions = if ctx.uses_packet_descriptions {
-        println!("use packet descriptions?");
+    let packet_descriptions_ptr = if ctx.uses_packet_descriptions {
         ctx.packet_descriptions
             .resize(*io_number_data_packets as _, Default::default());
+        unsafe { *out_data_packet_descriptions = ctx.packet_descriptions.as_mut_ptr() };
         ctx.packet_descriptions.as_mut_ptr()
     } else {
         std::ptr::null_mut()
@@ -97,7 +96,7 @@ extern "C" fn input_data_proc(
     match ctx.file.read_packets(
         true,
         &mut io_data.buffers[0].data_bytes_size,
-        out_data_packet_descriptions,
+        packet_descriptions_ptr,
         ctx.packet,
         io_number_data_packets,
         io_data.buffers[0].data,
@@ -106,7 +105,10 @@ extern "C" fn input_data_proc(
             ctx.packet += *io_number_data_packets as isize;
             os::Status::NO_ERR
         }
-        Err(e) => e,
+        Err(e) => {
+            eprintln!("error {e:?}");
+            e
+        }
     }
 }
 
@@ -161,7 +163,6 @@ fn encode(args: &EncodeArgs) {
     let mut packet_descriptions =
         vec![audio::StreamPacketDescription::default(); packets_per_loop as _];
 
-    // let packet_buffer  = std::vector<uint8_t> packetBuffer((size_t)(packetsPerLoop * maxOutputPacketSize));
     let mut packet_buffer = vec![0u8; packets_per_loop as usize * max_dst_packet_size as usize];
     let mut starting_packet = 0isize;
 
@@ -243,13 +244,100 @@ fn decode(args: &DecodeArgs) {
         return eprintln!("src file doesn't exists `{}`", args.src.to_string_lossy());
     };
     let src = cf::URL::with_path(args.src.as_path(), false).unwrap();
-    let _in_file =
+    let src_file =
         audio::FileID::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
+    let src_asbd = src_file.data_format().unwrap();
+
+    let src_uses_packet_descriptions =
+        src_asbd.bytes_per_packet == 0 || src_asbd.frames_per_packet == 0;
+
+    let dst_asbd = audio::StreamBasicDescription {
+        sample_rate: src_asbd.sample_rate,
+        channels_per_frame: src_asbd.channels_per_frame,
+        format_id: audio::FormatID::LINEAR_PCM,
+        format_flags: audio::FormatFlags::IS_FLOAT | audio::FormatFlags::IS_PACKED,
+        bytes_per_packet: 4 * src_asbd.channels_per_frame,
+        frames_per_packet: 1,
+        bytes_per_frame: 4 * src_asbd.channels_per_frame,
+        bits_per_channel: 32,
+        ..Default::default()
+    };
     let dst = match args.dst {
         Some(ref dst) => dst.clone(),
-        None => args.src.with_extension("aac"),
+        None => args.src.with_extension("wav"),
     };
+    let dst = cf::URL::with_path(dst.as_path(), false).unwrap();
 
-    println!("{src:?} {dst:?}")
+    let mut dst_file = audio::FileID::create(
+        &dst,
+        audio::FileTypeID::WAVE,
+        &dst_asbd,
+        audio::FileFlags::ERASE_FILE,
+    )
+    .unwrap();
+
+    let packets_per_loop = 10_000u32;
+
+    let mut conv = audio::ConverterRef::with_formats(&src_asbd, &dst_asbd).unwrap();
+
+    match src_file.magic_cookie_data() {
+        Ok(cookie) => {
+            conv.set_decompression_magic_cookie(cookie).unwrap();
+        }
+        Err(audio::file_errors::UNSUPPORTED_PROPERTY) => {}
+        Err(e) => {
+            return eprintln!("Error {e:?}");
+        }
+    }
+
+    let max_src_packet_size = src_file.maximum_packet_size().unwrap();
+    let max_dst_packet_size = dst_asbd.bytes_per_packet;
+
+    let mut packet_buffer = vec![0u8; packets_per_loop as usize * max_dst_packet_size as usize];
+    let mut starting_packet = 0isize;
+
+    let mut ctx = Context {
+        packet: 0,
+        buffer: Default::default(),
+        file: src_file,
+        asbd: src_asbd,
+        max_packet_size: max_src_packet_size,
+        uses_packet_descriptions: src_uses_packet_descriptions,
+        packet_descriptions: Default::default(),
+    };
+    loop {
+        let mut num_packets = packets_per_loop;
+
+        let mut list = audio::BufferList {
+            number_buffers: 1,
+            buffers: [audio::Buffer {
+                number_channels: dst_asbd.channels_per_frame,
+                data_bytes_size: packet_buffer.len() as _,
+                data: packet_buffer.as_mut_ptr(),
+            }],
+        };
+
+        conv.fill_complex_buf(input_data_proc, &mut ctx, &mut num_packets, &mut list)
+            .unwrap();
+
+        if num_packets > 0 {
+            dst_file
+                .write_packets(
+                    true,
+                    list.buffers[0].data_bytes_size,
+                    std::ptr::null(),
+                    starting_packet,
+                    &mut num_packets,
+                    list.buffers[0].data,
+                )
+                .unwrap();
+
+            starting_packet += num_packets as isize;
+        }
+
+        if num_packets < packets_per_loop {
+            break;
+        }
+    }
 }

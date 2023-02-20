@@ -1,4 +1,10 @@
-use std::{ffi::c_void, intrinsics::transmute, mem::size_of, ops::Deref, ptr::NonNull};
+use std::{
+    ffi::c_void,
+    intrinsics::transmute,
+    mem::size_of,
+    ops::{Deref, DerefMut},
+    ptr::NonNull,
+};
 
 use crate::{cat::audio, os};
 
@@ -382,6 +388,12 @@ impl Deref for ConverterRef {
     }
 }
 
+impl DerefMut for ConverterRef {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { self.0.as_mut() }
+    }
+}
+
 /// Callback function for supplying input data to AudioConverterFillComplexBuffer.
 ///
 /// This callback function supplies input to AudioConverterFillComplexBuffer.
@@ -421,7 +433,7 @@ pub type ComplexInputDataProc<D> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufferList,
-    out_data_packet_descriptions: *mut audio::StreamPacketDescription,
+    out_data_packet_descriptions: *mut *mut audio::StreamPacketDescription,
     in_user_data: *mut D,
 ) -> os::Status;
 
@@ -480,7 +492,7 @@ impl Converter {
 
     #[inline]
     pub unsafe fn set_property(
-        &self,
+        &mut self,
         property_id: PropertyID,
         in_property_data_size: u32,
         in_property_data: *const c_void,
@@ -489,7 +501,7 @@ impl Converter {
     }
 
     pub unsafe fn set_prop<T: Sized>(
-        &self,
+        &mut self,
         property_id: PropertyID,
         value: &T,
     ) -> Result<(), os::Status> {
@@ -506,6 +518,21 @@ impl Converter {
             .result()?;
         vec.set_len(info.size as usize / size_of::<T>());
         Ok(vec)
+    }
+
+    #[inline]
+    pub unsafe fn set_prop_vec<T: Sized>(
+        &mut self,
+        property_id: PropertyID,
+        value: Vec<T>,
+    ) -> Result<(), os::Status> {
+        self.set_property(
+            property_id,
+            (value.len() * std::mem::size_of::<T>()) as u32,
+            value.as_ptr() as _,
+        )
+        .result()?;
+        Ok(())
     }
 
     #[inline]
@@ -566,6 +593,11 @@ impl Converter {
     }
 
     #[inline]
+    pub fn set_decompression_magic_cookie(&mut self, value: Vec<u8>) -> Result<(), os::Status> {
+        unsafe { self.set_prop_vec(PropertyID::DECOMPRESSION_MAGIC_COOKIE, value) }
+    }
+
+    #[inline]
     pub fn current_output_stream_description(
         &self,
     ) -> Result<audio::StreamBasicDescription, os::Status> {
@@ -585,7 +617,7 @@ impl Converter {
     }
 
     #[inline]
-    pub fn set_encode_bit_rate(&self, value: u32) -> Result<(), os::Status> {
+    pub fn set_encode_bit_rate(&mut self, value: u32) -> Result<(), os::Status> {
         unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &value) }
     }
 

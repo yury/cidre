@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{arc, cat::audio, cf, define_options, os};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[doc(alias = "AudioFilePropertyID")]
 #[repr(transparent)]
 pub struct PropertyID(pub u32);
@@ -361,6 +361,27 @@ impl FileID {
     }
 
     #[inline]
+    pub unsafe fn prop_vec<T: Sized>(&self, property_id: PropertyID) -> Result<Vec<T>, os::Status> {
+        let (size, _writable) = self.property_info(property_id)?;
+        let mut sz: u32 = size as _;
+        let mut vec = Vec::with_capacity(size / std::mem::size_of::<T>());
+        self.get_property(property_id, &mut sz, vec.as_mut_ptr() as _)
+            .result()?;
+        vec.set_len(sz as usize / std::mem::size_of::<T>());
+        Ok(vec)
+    }
+
+    #[inline]
+    pub fn magic_cookie_data(&self) -> Result<Vec<u8>, os::Status> {
+        unsafe { self.prop_vec(PropertyID::MAGIC_COOKIE_DATA) }
+    }
+
+    #[inline]
+    pub fn maximum_packet_size(&self) -> Result<u32, os::Status> {
+        self.prop(PropertyID::MAXIMUM_PACKET_SIZE)
+    }
+
+    #[inline]
     pub fn defer_size_updates(&self) -> Result<bool, os::Status> {
         Ok(self.prop::<u32>(PropertyID::DEFER_SIZE_UPDATES)? == 1)
     }
@@ -698,7 +719,7 @@ extern "C" {
         file: *mut OpaqueFileID,
         use_cache: bool,
         num_bytes: *mut u32,
-        packet_descriptions: *const audio::StreamPacketDescription,
+        packet_descriptions: *mut audio::StreamPacketDescription,
         starting_packet: isize,
         num_packets: *mut u32,
         buffer: *mut u8,
