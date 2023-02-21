@@ -72,6 +72,7 @@ pub use converter::PrimeInfo as ConverterPrimeInfo;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 pub mod settings;
+pub use settings::all_formats_keys;
 pub use settings::Quality;
 
 pub mod speech_synthesis;

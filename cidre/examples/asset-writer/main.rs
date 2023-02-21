@@ -1,6 +1,6 @@
 use std::{path::PathBuf, sync::Arc};
 
-use cidre::{at::audio, av, blocks, cf, cm, dispatch, os};
+use cidre::{at::audio, av, blocks, cat, cf, cm, dispatch, ns, os};
 use clap::Parser;
 
 #[derive(clap::Parser)]
@@ -86,8 +86,22 @@ async fn encode(args: &EncodeArgs) {
 
     let desc = cm::AudioFormatDescription::with_asbd(&src_asbd).unwrap();
 
-    let input =
-        av::AssetWriterInput::with_media_type_format_hint_throws(av::MediaType::audio(), &desc);
+    let settings = ns::Dictionary::with_keys_values(
+        &[
+            av::audio::all_formats_keys::id(),
+            av::audio::all_formats_keys::number_of_channels(),
+        ],
+        &[
+            cat::AudioFormatID::MPEG4_AAC.to_ns_number().as_ref(),
+            ns::Number::tagged_i16(src_asbd.channels_per_frame as _).as_ref(),
+        ],
+    );
+
+    let input = av::AssetWriterInput::with_media_type_output_settings_source_format_hint_throws(
+        av::MediaType::audio(),
+        Some(settings.as_ref()),
+        Some(&desc),
+    );
     asset_writer.add_input(&input).unwrap();
     asset_writer.start_writing();
     asset_writer.start_session_at_source_time(cm::Time::zero());
