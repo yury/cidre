@@ -302,6 +302,7 @@ fn decode(args: &DecodeArgs) {
         uses_packet_descriptions: src_uses_packet_descriptions,
         packet_descriptions: Default::default(),
     };
+
     loop {
         let mut num_packets = packets_per_loop;
 

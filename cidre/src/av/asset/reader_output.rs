@@ -1,7 +1,7 @@
 use crate::{
     arc,
     av::{self, MediaType},
-    cf, cm, define_obj_type, ns, objc,
+    cm, define_cls, define_obj_type, ns, objc,
 };
 
 define_obj_type!(ReaderOutput(ns::Id));
@@ -41,6 +41,9 @@ impl ReaderOutput {
     #[objc::msg_send(setAlwaysCopiesSampleData:)]
     pub fn set_always_copies_sample_data(&mut self, value: bool);
 
+    #[objc::msg_send(supportsRandomAccess)]
+    pub fn supports_random_access(&self) -> bool;
+
     /// Copies the next sample buffer for the output synchronously.
     ///
     /// The client is responsible for calling cf::Release on the returned cm::SampleBuffer
@@ -54,10 +57,28 @@ impl ReaderOutput {
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
     /// (using -addOutput:) and -startReading is not called on that asset reader.
     #[objc::msg_send(copyNextSampleBuffer)]
-    pub fn copy_next_sample_buffer(&self) -> Option<arc::R<cm::SampleBuffer>>;
+    pub fn copy_next_sample_buffer_throws(&mut self) -> Option<arc::R<cm::SampleBuffer>>;
+
+    #[inline]
+    pub fn copy_next_sample_buffer<'ar>(
+        &mut self,
+    ) -> Result<Option<arc::R<cm::SampleBuffer>>, &'ar ns::Exception> {
+        ns::try_catch(|| self.copy_next_sample_buffer_throws())
+    }
+}
+
+impl arc::A<ReaderTrackOutput> {
+    #[objc::msg_send(initWithTrack:outputSettings:)]
+    pub fn init_with_track_throws(
+        self,
+        track: &av::asset::Track,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> arc::R<ReaderTrackOutput>;
 }
 
 impl ReaderTrackOutput {
+    define_cls!(AV_ASSET_READER_TRACK_OUTPUT);
+
     /// Returns an instance of AVAssetReaderTrackOutput for reading from the specified track and
     /// supplying media data according to the specified output settings.
     ///
@@ -95,20 +116,19 @@ impl ReaderTrackOutput {
     ///     a pixel format with an alpha component such as kCVPixelFormatType_4444AYpCbCr16 or kCVPixelFormatType_64ARGB.
     ///     To test whether your source contains an alpha channel check that the track's format description has kCMFormatDescriptionExtension_Depth
     ///     and that its value is 32.
-    pub fn with_track<'ar>(
+    pub fn with_track_throws(
         track: &av::asset::Track,
-        output_options: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
-    ) -> Option<arc::R<Self>> {
-        unsafe {
-            AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings(
-                track,
-                output_options,
-            )
-        }
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_track_throws(track, output_settings)
     }
 
-    #[objc::msg_send(supportsRandomAccess)]
-    pub fn supports_random_access(&self) -> bool;
+    pub fn with_track<'ar>(
+        track: &av::asset::Track,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Result<arc::R<Self>, &'ar ns::Exception> {
+        ns::try_catch(|| Self::with_track_throws(track, output_settings))
+    }
 
     #[objc::msg_send(resetForReadingTimeRanges:)]
     pub fn reset_for_reading_time_ranges(&mut self, ranges: &ns::Array<ns::Value>);
@@ -116,8 +136,5 @@ impl ReaderTrackOutput {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    fn AVAssetReaderTrackOutput_assetReaderTrackOutputWithTrack_outputSettings<'ar>(
-        track: &av::asset::Track,
-        output_settings: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
-    ) -> Option<arc::R<ReaderTrackOutput>>;
+    static AV_ASSET_READER_TRACK_OUTPUT: &'static objc::Class<ReaderTrackOutput>;
 }

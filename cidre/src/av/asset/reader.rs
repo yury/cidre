@@ -41,7 +41,15 @@ impl Reader {
     }
 
     #[objc::msg_send(addOutput:)]
-    pub fn add_output(&mut self, output: &av::AssetReaderOutput);
+    pub fn add_output_throws(&mut self, output: &av::AssetReaderOutput);
+
+    #[inline]
+    pub fn add_output<'ar>(
+        &mut self,
+        output: &av::AssetReaderOutput,
+    ) -> Result<(), &ns::Exception> {
+        ns::try_catch(|| self.add_output_throws(output))
+    }
 
     /// Prepares the receiver for reading sample buffers from the asset.
     ///
@@ -50,7 +58,7 @@ impl Reader {
     ///
     /// This method throws an exception if reading has already started (`status` has progressed beyond AVAssetReaderStatusUnknown).
     #[objc::msg_send(startReading)]
-    pub fn start_reading(&self) -> bool;
+    pub fn start_reading(&mut self) -> bool;
 
     /// Cancels any background work and prevents the receiver's outputs from reading more samples.
     ///
@@ -58,7 +66,7 @@ impl Reader {
     ///
     /// This method should not be called concurrently with any calls to -[AVAssetReaderOutput copyNextSampleBuffer].
     #[objc::msg_send(cancelReading)]
-    pub fn cancel_reading(&self);
+    pub fn cancel_reading(&mut self);
 
     #[objc::msg_send(canAddOutput:)]
     pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool;
@@ -70,7 +78,7 @@ impl Reader {
     pub fn status(&self) -> Status;
 
     #[objc::msg_send(timeRange)]
-    pub fn time_range(&mut self) -> cm::TimeRange;
+    pub fn time_range(&self) -> cm::TimeRange;
 
     #[objc::msg_send(setTimeRange:)]
     pub fn set_time_range(&mut self, value: cm::TimeRange);
