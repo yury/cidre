@@ -16,6 +16,14 @@ impl<K: Obj, V: Obj> Obj for Dictionary<K, V> {}
 impl<K: Obj, V: Obj> arc::A<Dictionary<K, V>> {
     #[objc::msg_send(init)]
     pub fn init(self) -> arc::R<Dictionary<K, V>>;
+
+    #[objc::msg_send(initWithObjects:forKeys:count:)]
+    pub fn init_with_objects_for_keys_count_throws(
+        self,
+        objects: *const V,
+        keys: *const K,
+        count: usize,
+    ) -> arc::R<Dictionary<K, V>>;
 }
 
 impl<K: Obj, V: Obj> Dictionary<K, V> {
@@ -31,6 +39,14 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
 
     pub fn is_empty(&self) -> bool {
         self.len() == 0
+    }
+
+    pub fn with_keys_values<const N: usize>(keys: &[&K; N], objects: &[&V; N]) -> arc::R<Self> {
+        Self::alloc().init_with_objects_for_keys_count_throws(
+            unsafe { std::mem::transmute(objects.as_ptr()) },
+            unsafe { std::mem::transmute(keys.as_ptr()) },
+            N,
+        )
     }
 }
 
@@ -97,5 +113,13 @@ mod tests {
             ns::DictionaryMut::with_capacity(10);
         assert!(dict.is_empty());
         assert_eq!(dict.len(), 0);
+
+        let dict = ns::Dictionary::with_keys_values(
+            &[ns::Number::with_i8(10).as_ref()],
+            &[ns::Number::with_i16(20).as_ref()],
+        );
+
+        assert!(!dict.is_empty());
+        assert_eq!(dict.len(), 1);
     }
 }

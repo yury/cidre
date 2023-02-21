@@ -1,7 +1,8 @@
 use crate::{
     arc,
     av::MediaType,
-    cm, define_cls, define_obj_type,
+    blocks::Block,
+    cm, define_cls, define_obj_type, dispatch,
     ns::{self, try_catch},
     objc,
 };
@@ -104,14 +105,22 @@ impl WriterInput {
     ///
     /// This method throws an exception if the sample buffer's media type does not match the asset writer input's media type.
     #[objc::msg_send(appendSampleBuffer:)]
-    pub fn append_sample_buffer_throws(&self, buffer: &cm::SampleBuffer) -> bool;
+    pub fn append_sample_buffer_throws(&mut self, buffer: &cm::SampleBuffer) -> bool;
 
     pub fn append_sample_buffer<'ar>(
-        &self,
+        &mut self,
         buffer: &cm::SampleBuffer,
     ) -> Result<bool, &'ar ns::Exception> {
         try_catch(|| self.append_sample_buffer_throws(buffer))
     }
+
+    #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]
+    pub fn request_media_data_when_ready_on_queue_throws<F>(
+        &self,
+        queue: &dispatch::Queue,
+        block: &'static Block<F>,
+    ) where
+        F: FnMut();
 }
 
 #[link(name = "av", kind = "static")]

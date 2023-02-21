@@ -1,6 +1,6 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 
-use cidre::{at::audio, av, cf, os};
+use cidre::{at::audio, av, blocks, cf, cm, dispatch, os};
 use clap::Parser;
 
 #[derive(clap::Parser)]
@@ -65,14 +65,56 @@ async fn encode(args: &EncodeArgs) {
     track_output.set_always_copies_sample_data(false);
 
     asset_reader.add_output(&track_output).unwrap();
+    let dst = match args.dst {
+        Some(ref dst) => dst.clone(),
+        None => args.src.with_extension("m4a"),
+    };
 
-    assert!(asset_reader.start_reading());
-
-    while let Some(buf) = track_output.copy_next_sample_buffer_throws() {
-        println!("buf {}", buf.num_samples());
+    if dst.exists() {
+        std::fs::remove_file(&dst).unwrap();
     }
 
+    let dst = cf::URL::with_path(dst.as_path(), false).unwrap();
+
+    let mut asset_writer =
+        av::AssetWriter::with_url_and_file_type(dst.as_ns_url(), av::FileType::m4a()).unwrap();
+
+    assert!(asset_reader.start_reading());
+    let mut buf = track_output.copy_next_sample_buffer_throws().unwrap();
+    let fd = buf.format_description().unwrap();
+    let src_asbd = fd.stream_basic_description().unwrap();
+
+    let desc = cm::AudioFormatDescription::with_asbd(&src_asbd).unwrap();
+
+    let input =
+        av::AssetWriterInput::with_media_type_format_hint_throws(av::MediaType::audio(), &desc);
+    asset_writer.add_input(&input).unwrap();
+    asset_writer.start_writing();
+    asset_writer.start_session_at_source_time(cm::Time::zero());
+
+    let sema = Arc::new(dispatch::Semaphore::new(0));
+    let queue = dispatch::Queue::serial_with_autoreleasepool();
+    let mut inp = input.retained();
+    let sem = sema.clone();
+
+    let mut block = blocks::mut0(move || {
+        while inp.is_ready_for_more_media_data() {
+            inp.append_sample_buffer_throws(&buf);
+            let Some(b) = track_output.copy_next_sample_buffer_throws() else {
+                inp.mark_as_finished();
+                sem.signal();
+                break;
+            };
+            buf = b;
+        }
+    });
+
+    input.request_media_data_when_ready_on_queue_throws(&queue, block.escape());
+
+    sema.wait_forever();
+
     asset_reader.cancel_reading();
+    asset_writer.finish_writing();
 }
 
 #[derive(clap::Args, Debug)]

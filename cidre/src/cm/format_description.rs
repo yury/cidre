@@ -366,15 +366,24 @@ impl VideoFormatDescription {
 pub type AudioFormatDescription = FormatDescription;
 
 impl AudioFormatDescription {
-    pub fn audio(
-        allocator: Option<&cf::Allocator>,
+    pub fn with_asbd(
+        asbd: &cat::audio::StreamBasicDescription,
+    ) -> Result<arc::R<Self>, os::Status> {
+        let mut res = None;
+        unsafe {
+            Self::audio_in(asbd, 0, None, 0, None, None, &mut res, None).to_result_unchecked(res)
+        }
+    }
+
+    pub fn audio_in(
         asbd: &cat::audio::StreamBasicDescription,
         layout_size: usize,
         layout: Option<&cat::AudioChannelLayout<1>>,
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<arc::R<AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<Self>>,
+        allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         unsafe {
             CMAudioFormatDescriptionCreate(

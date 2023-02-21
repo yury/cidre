@@ -1,4 +1,4 @@
-use cidre::{arc, av, cf, cv, ns, objc::autoreleasepool, vn};
+use cidre::{arc, av, cv, ns, objc::autoreleasepool, vn};
 use ndarray::{Array2, Axis};
 // Import the linfa prelude and KMeans algorithm
 use linfa::prelude::*;
@@ -16,19 +16,23 @@ async fn main() {
         .await
         .unwrap();
 
-    let options = cf::DictionaryOf::with_keys_values(
-        &[cv::pixel_buffer_keys::pixel_format_type()],
-        &[cv::PixelFormatType::_420V.to_cf_number().as_type_ref()],
+    let options = ns::Dictionary::with_keys_values(
+        &[cv::pixel_buffer_keys::pixel_format_type().as_ns_string()],
+        &[cv::PixelFormatType::_420V
+            .to_cf_number()
+            .as_ns_number()
+            .as_ref()],
         // for ML tasks reading in BGRA is faster 3:55 vs 5:00
         // if you analyze every frame. If you skip frames it is better to use 420v
         //&[cv::PixelFormatType::_32_BGRA.to_cf_number().as_type_ref()],
     );
 
     let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
+    // let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], None).unwrap();
     output.set_always_copies_sample_data(false);
 
     let mut reader = av::AssetReader::with_asset(&asset).unwrap();
-    reader.add_output(&output);
+    reader.add_output_throws(&output);
     let true = reader.start_reading() else {
         println!("error: {:?}", reader.error());
         println!("status: {:?}", reader.status());
@@ -53,7 +57,7 @@ async fn main() {
     let _prev_frame_featurs: Option<arc::R<vn::FeaturePrintObservation>> = None;
 
     let mut count = 0;
-    while let Some(buf) = output.copy_next_sample_buffer() {
+    while let Some(buf) = output.copy_next_sample_buffer_throws() {
         let Some(image) = buf.image_buffer() else {
             continue;
         };

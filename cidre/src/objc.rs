@@ -120,6 +120,11 @@ impl Id {
     pub fn eq(&self, other: &Self) -> bool {
         self.is_equal(other)
     }
+
+    #[inline]
+    pub fn as_ref(&self) -> &Self {
+        self
+    }
 }
 
 impl Obj for Id {}

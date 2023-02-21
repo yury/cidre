@@ -38,28 +38,32 @@ impl Writer {
     pub fn should_optimize_for_network_use(&self) -> bool;
 
     #[objc::msg_send(setShouldOptimizeForNetworkUse:)]
-    pub fn set_should_optimize_for_network_use(&self, value: bool);
+    pub fn set_should_optimize_for_network_use(&mut self, value: bool);
 
     #[objc::msg_send(canAddInput:)]
     pub fn can_add_input(&self, input: &WriterInput) -> bool;
 
     #[objc::msg_send(addInput:)]
-    pub fn add_input(&self, input: &WriterInput);
+    pub fn add_input_throws(&mut self, input: &WriterInput);
+
+    pub fn add_input<'ar>(&mut self, input: &WriterInput) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| self.add_input_throws(input))
+    }
 
     #[objc::msg_send(startWriting)]
-    pub fn start_writing(&self);
+    pub fn start_writing(&mut self);
 
     #[objc::msg_send(startSessionAtSourceTime:)]
-    pub fn start_session_at_source_time(&self, start_time: cm::Time);
+    pub fn start_session_at_source_time(&mut self, start_time: cm::Time);
 
     #[objc::msg_send(endSessionAtSourceTime:)]
-    pub fn end_session_at_source_time(&self, start_time: cm::Time);
+    pub fn end_session_at_source_time(&mut self, start_time: cm::Time);
 
     #[objc::msg_send(finishWriting)]
-    pub fn finish_writing(&self);
+    pub fn finish_writing(&mut self);
 
     #[objc::msg_send(cancelWriting)]
-    pub fn cancel_writing(&self);
+    pub fn cancel_writing(&mut self);
 
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;

@@ -1,4 +1,4 @@
-use crate::{arc, define_cf_type, FourCharCode};
+use crate::{arc, define_cf_type, ns, FourCharCode};
 
 use super::{Allocator, ComparisonResult, Index, Type, TypeId};
 
@@ -397,6 +397,11 @@ impl Number {
             Self::create_in(NumberType::F64, &value.as_secs_f64() as *const _ as _, None)
                 .unwrap_unchecked()
         }
+    }
+
+    #[inline]
+    pub fn as_ns_number(&self) -> &ns::Number {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
