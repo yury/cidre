@@ -1,6 +1,6 @@
 use std::{path::PathBuf, sync::Arc};
 
-use cidre::{at::audio, av, blocks, cat, cf, cm, dispatch, ns, os};
+use cidre::{arc, at::audio, av, blocks, cat, cf, cm, dispatch, ns, os};
 use clap::Parser;
 
 #[derive(clap::Parser)]
@@ -45,17 +45,18 @@ struct EncodeArgs {
     dst: Option<PathBuf>,
 }
 
-async fn encode(args: &EncodeArgs) {
-    let true = args.src.is_file() else {
-        return eprintln!("src file doesn't exists `{}`", args.src.to_string_lossy());
+async fn reader_and_output(
+    path: &PathBuf,
+) -> (arc::R<av::AssetReader>, arc::R<av::AssetReaderTrackOutput>) {
+    let true = path.is_file() else {
+        panic!("src file doesn't exists `{}`", path.to_string_lossy());
     };
 
-    let src = cf::URL::with_path(args.src.as_path(), false).unwrap();
+    let src = cf::URL::with_path(path.as_path(), false).unwrap();
 
     let src_asset = av::URLAsset::with_url(src.as_ns_url(), None).unwrap();
     let mut asset_reader = av::AssetReader::with_asset(&src_asset).unwrap();
 
-    println!("asset reader {asset_reader:?}");
     let tracks = src_asset
         .load_tracks_with_media_type(av::MediaType::audio())
         .await
@@ -65,56 +66,96 @@ async fn encode(args: &EncodeArgs) {
     track_output.set_always_copies_sample_data(false);
 
     asset_reader.add_output(&track_output).unwrap();
-    let dst = match args.dst {
-        Some(ref dst) => dst.clone(),
-        None => args.src.with_extension("m4a"),
-    };
+    (asset_reader, track_output)
+}
 
-    if dst.exists() {
-        std::fs::remove_file(&dst).unwrap();
+fn writer_and_input(
+    path: &PathBuf,
+    file_type: &av::FileType,
+    reader: &mut av::AssetReader,
+    output: &mut av::AssetReaderTrackOutput,
+) -> (
+    arc::R<av::AssetWriter>,
+    arc::R<av::AssetWriterInput>,
+    arc::R<cm::SampleBuffer>,
+) {
+    if path.exists() {
+        std::fs::remove_file(&path).unwrap();
     }
 
-    let dst = cf::URL::with_path(dst.as_path(), false).unwrap();
+    let dst = cf::URL::with_path(path.as_path(), false).unwrap();
 
-    let mut asset_writer =
-        av::AssetWriter::with_url_and_file_type(dst.as_ns_url(), av::FileType::m4a()).unwrap();
+    let mut writer = av::AssetWriter::with_url_and_file_type(dst.as_ns_url(), file_type).unwrap();
 
-    assert!(asset_reader.start_reading());
-    let mut buf = track_output.copy_next_sample_buffer_throws().unwrap();
+    assert!(reader.start_reading());
+    let buf = output.copy_next_sample_buffer_throws().unwrap();
     let fd = buf.format_description().unwrap();
     let src_asbd = fd.stream_basic_description().unwrap();
-
     let desc = cm::AudioFormatDescription::with_asbd(&src_asbd).unwrap();
 
-    let settings = ns::Dictionary::with_keys_values(
-        &[
-            av::audio::all_formats_keys::id(),
-            av::audio::all_formats_keys::number_of_channels(),
-        ],
-        &[
-            cat::AudioFormatID::MPEG4_AAC.to_ns_number().as_ref(),
-            ns::Number::tagged_i16(src_asbd.channels_per_frame as _).as_ref(),
-        ],
-    );
+    let settings = if file_type == av::FileType::m4a() {
+        ns::Dictionary::with_keys_values(
+            &[
+                av::audio::all_formats_keys::id(),
+                av::audio::all_formats_keys::number_of_channels(),
+            ],
+            &[
+                cat::AudioFormatID::MPEG4_AAC.to_ns_number().as_ref(),
+                ns::Number::tagged_i16(src_asbd.channels_per_frame as _).as_ref(),
+            ],
+        )
+    } else {
+        ns::Dictionary::with_keys_values(
+            &[
+                av::audio::all_formats_keys::id(),
+                // av::audio::all_formats_keys::number_of_channels(),
+                // av::audio::all_formats_keys::sample_rate(),
+                // av::audio::linear_pcm_keys::bit_depth(),
+                // av::audio::linear_pcm_keys::is_float(),
+            ],
+            &[
+                cat::AudioFormatID::LINEAR_PCM.to_ns_number().as_ref(),
+                // ns::Number::tagged_i16(src_asbd.channels_per_frame as _).as_ref(),
+                // ns::Number::tagged_i16(src_asbd.sample_rate as _).as_ref(),
+                // ns::Number::tagged_i16(32).as_ref(),
+                // ns::Number::tagged_i16(0).as_ref(),
+            ],
+        )
+    };
 
-    let input = av::AssetWriterInput::with_media_type_output_settings_source_format_hint_throws(
+    let input = av::AssetWriterInput::with_media_type_output_settings_source_format_hint(
         av::MediaType::audio(),
         Some(settings.as_ref()),
         Some(&desc),
-    );
-    asset_writer.add_input(&input).unwrap();
-    asset_writer.start_writing();
-    asset_writer.start_session_at_source_time(cm::Time::zero());
+    )
+    .unwrap();
+
+    writer.add_input(&input).unwrap();
+
+    (writer, input, buf)
+}
+
+fn write(
+    reader: &mut av::AssetReader,
+    writer: &mut av::AssetWriter,
+    output: &mut av::AssetReaderTrackOutput,
+    input: &mut av::AssetWriterInput,
+    first_buf: &cm::SampleBuffer,
+) {
+    let mut buf = first_buf.retained();
+    writer.start_writing();
+    writer.start_session_at_source_time(cm::Time::zero());
 
     let sema = Arc::new(dispatch::Semaphore::new(0));
     let queue = dispatch::Queue::serial_with_autoreleasepool();
-    let mut inp = input.retained();
     let sem = sema.clone();
+    let mut inp = input.retained();
+    let mut out = output.retained();
 
     let mut block = blocks::mut0(move || {
         while inp.is_ready_for_more_media_data() {
             inp.append_sample_buffer_throws(&buf);
-            let Some(b) = track_output.copy_next_sample_buffer_throws() else {
+            let Some(b) = out.copy_next_sample_buffer_throws() else {
                 inp.mark_as_finished();
                 sem.signal();
                 break;
@@ -127,8 +168,22 @@ async fn encode(args: &EncodeArgs) {
 
     sema.wait_forever();
 
-    asset_reader.cancel_reading();
-    asset_writer.finish_writing();
+    writer.finish_writing();
+    reader.cancel_reading();
+}
+
+async fn encode(args: &EncodeArgs) {
+    let (mut reader, mut output) = reader_and_output(&args.src).await;
+
+    let dst = match args.dst {
+        Some(ref dst) => dst.clone(),
+        None => args.src.with_extension("m4a"),
+    };
+
+    let (mut writer, mut input, mut buf) =
+        writer_and_input(&dst, av::FileType::m4a(), &mut reader, &mut output);
+
+    write(&mut reader, &mut writer, &mut output, &mut input, &mut buf);
 }
 
 #[derive(clap::Args, Debug)]
@@ -141,8 +196,15 @@ struct DecodeArgs {
 }
 
 async fn decode(args: &DecodeArgs) {
-    let true = args.src.is_file() else {
-        return eprintln!("src file doesn't exists `{}`", args.src.to_string_lossy());
+    let (mut reader, mut output) = reader_and_output(&args.src).await;
+
+    let dst = match args.dst {
+        Some(ref dst) => dst.clone(),
+        None => args.src.with_extension("wav"),
     };
-    let src = cf::URL::with_path(args.src.as_path(), false).unwrap();
+
+    let (mut writer, mut input, mut buf) =
+        writer_and_input(&dst, av::FileType::wav(), &mut reader, &mut output);
+
+    write(&mut reader, &mut writer, &mut output, &mut input, &mut buf);
 }

@@ -57,7 +57,7 @@ impl Writer {
     pub fn start_session_at_source_time(&mut self, start_time: cm::Time);
 
     #[objc::msg_send(endSessionAtSourceTime:)]
-    pub fn end_session_at_source_time(&mut self, start_time: cm::Time);
+    pub fn end_session_at_source_time(&mut self, end_time: cm::Time);
 
     #[objc::msg_send(finishWriting)]
     pub fn finish_writing(&mut self);

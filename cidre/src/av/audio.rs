@@ -73,6 +73,9 @@ pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 pub mod settings;
 pub use settings::all_formats_keys;
+pub use settings::bit_rate_strategy;
+pub use settings::file_keys;
+pub use settings::linear_pcm_keys;
 pub use settings::Quality;
 
 pub mod speech_synthesis;
