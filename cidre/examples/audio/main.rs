@@ -42,6 +42,14 @@ struct EncodeArgs {
 
     #[arg(value_name = "AAC FILE")]
     dst: Option<PathBuf>,
+
+    #[arg(
+        short,
+        long,
+        value_name = "skip write to file",
+        default_value_t = false
+    )]
+    skip_write: bool,
 }
 
 #[repr(C)]
@@ -191,16 +199,18 @@ fn encode(args: &EncodeArgs) {
         .unwrap();
 
         if num_packets > 0 {
-            dst_file
-                .write_packets(
-                    true,
-                    list.buffers[0].data_bytes_size,
-                    packet_descriptions.as_ptr(),
-                    starting_packet,
-                    &mut num_packets,
-                    list.buffers[0].data as _,
-                )
-                .unwrap();
+            if !args.skip_write {
+                dst_file
+                    .write_packets(
+                        true,
+                        list.buffers[0].data_bytes_size,
+                        packet_descriptions.as_ptr(),
+                        starting_packet,
+                        &mut num_packets,
+                        list.buffers[0].data as _,
+                    )
+                    .unwrap();
+            }
 
             starting_packet += num_packets as isize;
         }
@@ -215,14 +225,16 @@ fn encode(args: &EncodeArgs) {
     // may update during the encoding process.
     let cookie = conv.compression_magic_cookie().unwrap();
     unsafe {
-        dst_file
-            .set_property(
-                audio::FilePropertyID::MAGIC_COOKIE_DATA,
-                cookie.len() as _,
-                cookie.as_ptr() as _,
-            )
-            .result()
-            .unwrap();
+        if !args.skip_write {
+            dst_file
+                .set_property(
+                    audio::FilePropertyID::MAGIC_COOKIE_DATA,
+                    cookie.len() as _,
+                    cookie.as_ptr() as _,
+                )
+                .result()
+                .unwrap();
+        }
     }
 }
 

@@ -405,19 +405,21 @@ pub mod attachment_keys {
     use crate::cf;
 
     /// cf::Boolean (absence of this key implies Sync)
+    #[doc(alias = "kCMSampleAttachmentKey_NotSync")]
     #[inline]
     pub fn not_sync() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_NotSync }
     }
 
     /// cf::Boolean (absence of this key implies not Partial Sync. If NotSync is false, PartialSync should be ignored.)
+    #[doc(alias = "kCMSampleAttachmentKey_PartialSync")]
     #[inline]
     pub fn partial_sync() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_PartialSync }
     }
 
     /// kCFBooleanTrue, kCFBooleanFalse, or absent if unknown
-    #[inline]
+    #[doc(alias = "kCMSampleAttachmentKey_HasRedundantCoding")]
     pub fn has_redundant_coding() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_HasRedundantCoding }
     }
@@ -425,38 +427,56 @@ pub mod attachment_keys {
     /// kCFBooleanTrue, kCFBooleanFalse, or absent if unknown
     ///
     /// A frame is considered droppable if and only if kCMSampleAttachmentKey_IsDependedOnByOthers is present and set to kCFBooleanFalse.
+    #[doc(alias = "kCMSampleAttachmentKey_IsDependedOnByOthers")]
     #[inline]
     pub fn is_depended_on_by_others() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_IsDependedOnByOthers }
     }
 
     /// kCFBooleanTrue (e.g., non-I-frame), kCFBooleanFalse (e.g. I-frame), or absent if unknown
+    #[doc(alias = "kCMSampleAttachmentKey_DependsOnOthers")]
     #[inline]
     pub fn depends_on_others() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DependsOnOthers }
     }
 
     /// cf::Boolean
+    #[doc(alias = "kCMSampleAttachmentKey_EarlierDisplayTimesAllowed")]
     #[inline]
     pub fn earlier_display_times_allowed() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_EarlierDisplayTimesAllowed }
     }
 
     /// cf::Boolean
+    #[doc(alias = "kCMSampleAttachmentKey_DisplayImmediately")]
     #[inline]
     pub fn display_immediately() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DisplayImmediately }
     }
 
     /// cf::Boolean
+    #[doc(alias = "kCMSampleAttachmentKey_DoNotDisplay")]
     #[inline]
     pub fn do_not_display() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_DoNotDisplay }
     }
 
+    #[doc(alias = "kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData")]
     #[inline]
     pub fn cryptor_subsample_auxiliary_data() -> &'static cf::String {
         unsafe { kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData }
+    }
+
+    ///  HDR10+ per frame metadata
+    ///
+    /// The attachment is cf::Data containing HDR10+ metadata within an User Data Registered
+    /// ITU-T T-35 SEI message (see ISO/IEC 23008-2-2020 section D.3.6) as little endian in the cf::Data.
+    /// This attachment will override any HDR10+ metadata stored within the compressed data.
+    /// The data shall start with the field itu_t_t35_country_code with the value 0xb5.
+    #[doc(alias = "kCMSampleAttachmentKey_HDR10PlusPerFrameData")]
+    #[inline]
+    pub fn hdr10plus_per_frame_data() -> &'static cf::String {
+        unsafe { kCMSampleAttachmentKey_HDR10PlusPerFrameData }
     }
 
     // https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
@@ -470,6 +490,7 @@ pub mod attachment_keys {
         static kCMSampleAttachmentKey_DisplayImmediately: &'static cf::String;
         static kCMSampleAttachmentKey_DoNotDisplay: &'static cf::String;
         static kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData: &'static cf::String;
+        static kCMSampleAttachmentKey_HDR10PlusPerFrameData: &'static cf::String;
     }
 }
 
