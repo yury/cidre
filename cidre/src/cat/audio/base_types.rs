@@ -457,11 +457,19 @@ impl StreamBasicDescription {
     }
 }
 
+/// This structure describes the packet layout of a buffer of data where the size of
+/// each packet may not be the same or where there is extraneous data between
+/// packets.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
 #[repr(C)]
 pub struct StreamPacketDescription {
+    /// The number of bytes from the start of the buffer to the beginning of the
+    /// packet.
     pub start_offset: i64,
+    /// The number of sample frames of data in the packet. For formats with a
+    /// constant number of frames per packet, this field is set to 0.
     pub variable_frames_in_packet: u32,
+    /// The number of bytes in the packet.
     pub data_byte_size: u32,
 }
 
