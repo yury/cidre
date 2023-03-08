@@ -281,6 +281,12 @@ pub enum PrimeMethod {
     None,
 }
 
+impl Default for PrimeMethod {
+    fn default() -> Self {
+        Self::Normal
+    }
+}
+
 /// When using AudioConverterFillComplexBuffer() (either a single call or a series of calls), some
 /// conversions, particularly involving sample-rate conversion, ideally require a certain
 /// number of input frames previous to the normal start input frame and beyond the end of
@@ -619,6 +625,14 @@ impl Converter {
     #[inline]
     pub fn set_encode_bit_rate(&mut self, value: u32) -> Result<(), os::Status> {
         unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &value) }
+    }
+
+    pub fn prime_method(&self) -> Result<PrimeMethod, os::Status> {
+        unsafe { self.prop(PropertyID::PRIME_METHOD) }
+    }
+
+    pub fn set_prime_method(&mut self, value: PrimeMethod) -> Result<(), os::Status> {
+        unsafe { self.set_prop(PropertyID::PRIME_METHOD, &value) }
     }
 
     ///
