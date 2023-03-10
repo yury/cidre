@@ -156,6 +156,7 @@ fn encode(args: &EncodeArgs) {
     .unwrap();
 
     let conv = audio::ConverterRef::with_formats(&src_asbd, &dst_asbd).unwrap();
+
     let max_src_packet_size = src_asbd.bytes_per_packet;
     let max_dst_packet_size = conv.maximum_output_packet_size().unwrap();
 
@@ -165,6 +166,7 @@ fn encode(args: &EncodeArgs) {
         vec![audio::StreamPacketDescription::default(); packets_per_loop as _];
 
     let mut packet_buffer = vec![0u8; packets_per_loop as usize * max_dst_packet_size as usize];
+    let packet_buffer_len = packet_buffer.len();
     let mut starting_packet = 0isize;
 
     let mut ctx = Context {
@@ -176,18 +178,18 @@ fn encode(args: &EncodeArgs) {
         uses_packet_descriptions: src_uses_packet_descriptions,
         packet_descriptions: Default::default(),
     };
+    let mut list = audio::BufferList {
+        number_buffers: 1,
+        buffers: [audio::Buffer {
+            number_channels: dst_asbd.channels_per_frame,
+            data_bytes_size: packet_buffer_len as _,
+            data: packet_buffer.as_mut_ptr(),
+        }],
+    };
 
     loop {
+        list.buffers[0].data_bytes_size = packet_buffer_len as _;
         let mut num_packets = packets_per_loop;
-
-        let mut list = audio::BufferList {
-            number_buffers: 1,
-            buffers: [audio::Buffer {
-                number_channels: dst_asbd.channels_per_frame,
-                data_bytes_size: packet_buffer.len() as _,
-                data: packet_buffer.as_mut_ptr(),
-            }],
-        };
 
         conv.fill_complex_buf_desc(
             data_proc,
@@ -207,7 +209,7 @@ fn encode(args: &EncodeArgs) {
                         packet_descriptions.as_ptr(),
                         starting_packet,
                         &mut num_packets,
-                        list.buffers[0].data as _,
+                        packet_buffer.as_ptr(),
                     )
                     .unwrap();
             }
@@ -224,6 +226,7 @@ fn encode(args: &EncodeArgs) {
     // Note that the sample waits until the end of the encoding to do this, because the magic cookie
     // may update during the encoding process.
     let cookie = conv.compression_magic_cookie().unwrap();
+
     unsafe {
         if !args.skip_write {
             dst_file

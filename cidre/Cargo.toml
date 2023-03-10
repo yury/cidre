@@ -55,7 +55,7 @@ cidre-macros = { path = "../cidre-macros"}
 [dev-dependencies]
 criterion = "0.3"
 flume = { version = "0.10", features = ["async"] }
-rt = { path = "../../rt"}
+# rt = { path = "../../rt"}
 ndarray = "0.15"
 linfa = "0.6.1"
 linfa-clustering = "0.6.1"
