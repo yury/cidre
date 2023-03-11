@@ -1,4 +1,6 @@
-use crate::{define_options, os};
+use std::ffi::c_void;
+
+use crate::{arc, cf, define_options, os};
 
 define_options!(Flags(u32));
 
@@ -78,4 +80,71 @@ pub struct Description {
 
     /// Must be set to zero unless a known specific value is requested.
     pub flags_mask: u32,
+}
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Component(c_void);
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ComponentInstance(c_void);
+
+impl Component {
+    pub fn count(desc: &Description) -> u32 {
+        unsafe { AudioComponentCount(desc) }
+    }
+
+    pub fn name(&self) -> Result<arc::R<cf::String>, os::Status> {
+        unsafe {
+            let mut res = None;
+            AudioComponentCopyName(self, &mut res).to_result_unchecked(res)
+        }
+    }
+
+    pub fn find_next<'a>(
+        in_component: Option<&Component>,
+        in_desc: &Description,
+    ) -> Option<&'a Component> {
+        unsafe { AudioComponentFindNext(in_component, in_desc) }
+    }
+}
+
+extern "C" {
+    fn AudioComponentFindNext(
+        in_component: Option<&Component>,
+        in_desc: &Description,
+    ) -> Option<&'static Component>;
+
+    fn AudioComponentCount(in_desc: &Description) -> u32;
+
+    fn AudioComponentCopyName(
+        in_component: &Component,
+        out_name: &mut Option<arc::R<cf::String>>,
+    ) -> os::Status;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::at::audio;
+
+    #[test]
+    fn basics() {
+        let desc = audio::ComponentDescription {
+            type_: u32::from_be_bytes(*b"aenc"),
+            // sub_type: 0,
+            sub_type: u32::from_be_bytes(*b"aac "),
+            manufacturer: 0,
+            flags: 0,
+            flags_mask: 0,
+        };
+
+        let count = audio::Component::count(&desc);
+
+        let comp = audio::Component::find_next(None, &desc).unwrap();
+
+        println!("count {count}, {:?}", comp.name().unwrap());
+
+        assert!(count > 0);
+    }
 }

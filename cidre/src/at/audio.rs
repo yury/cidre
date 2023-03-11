@@ -20,6 +20,8 @@ pub use converter::DitherAlgorithm;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 mod component;
+pub use component::Component;
+pub use component::ComponentInstance;
 pub use component::Description as ComponentDescription;
 pub use component::Flags as ComponentFlags;
 pub use component::InstantiationOptions as ComponentInstantiationOptions;
@@ -33,3 +35,8 @@ pub use file::FileTypeID;
 pub use file::Flags as FileFlags;
 pub use file::Permissions as FilePermissions;
 pub use file::PropertyID as FilePropertyID;
+
+mod codec;
+pub use codec::Codec;
+pub use codec::MagicCookieInfo as CodecMagicCookieInfo;
+pub use codec::PropertyID as CodecPropertyID;
