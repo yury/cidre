@@ -64,6 +64,151 @@ impl CodecRef {
             Err(res)
         }
     }
+
+    #[inline]
+    pub fn produce_output_packets(
+        &mut self,
+        data: &mut [u8],
+    ) -> Result<(u32, os::Status), os::Status> {
+        let mut data_len: u32 = data.len() as _;
+        let mut packets_len: u32 = 0;
+        let mut status = os::Status::NO_ERR;
+
+        unsafe {
+            let res = AudioCodecProduceOutputPackets(
+                &mut self.0,
+                data.as_mut_ptr(),
+                &mut data_len,
+                &mut packets_len,
+                std::ptr::null_mut(),
+                &mut status,
+            );
+            if res.is_ok() {
+                Ok((data_len, status))
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    #[inline]
+    pub fn produce_output_packets_with_descriptions(
+        &mut self,
+        data: &mut [u8],
+        out_packet_descriptions: &mut [audio::StreamPacketDescription],
+    ) -> Result<(u32, u32, os::Status), os::Status> {
+        let mut data_len: u32 = data.len() as _;
+        let mut packets_len: u32 = out_packet_descriptions.len() as _;
+        let mut status = os::Status::NO_ERR;
+
+        unsafe {
+            let res = AudioCodecProduceOutputPackets(
+                &mut self.0,
+                data.as_mut_ptr(),
+                &mut data_len,
+                &mut packets_len,
+                out_packet_descriptions.as_mut_ptr(),
+                &mut status,
+            );
+            if res.is_ok() {
+                Ok((data_len, packets_len, status))
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    pub fn append_input_buffer_list(
+        &mut self,
+        in_buffer_list: &audio::BufferList,
+    ) -> Result<u32, os::Status> {
+        let mut bytes_consumed: u32 = 0;
+        let mut packets_len: u32 = 0;
+        unsafe {
+            let res = AudioCodecAppendInputBufferList(
+                &mut self.0,
+                in_buffer_list,
+                &mut packets_len,
+                std::ptr::null(),
+                &mut bytes_consumed,
+            );
+            if res.is_ok() {
+                Ok(bytes_consumed)
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    pub fn append_input_buffer_list_with_descriptions(
+        &mut self,
+        in_buffer_list: &audio::BufferList,
+        packet_descriptions: &mut [audio::StreamPacketDescription],
+    ) -> Result<(u32, u32), os::Status> {
+        let mut bytes_consumed: u32 = 0;
+        let mut packets_len: u32 = packet_descriptions.len() as _;
+        unsafe {
+            let res = AudioCodecAppendInputBufferList(
+                &mut self.0,
+                in_buffer_list,
+                &mut packets_len,
+                packet_descriptions.as_ptr(),
+                &mut bytes_consumed,
+            );
+            if res.is_ok() {
+                Ok((bytes_consumed, packets_len))
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    pub fn produce_output_buffer_list(
+        &mut self,
+        buffer_list: &mut audio::BufferList,
+    ) -> Result<os::Status, os::Status> {
+        let mut number_packets: u32 = 0;
+        let mut status = os::Status::NO_ERR;
+        unsafe {
+            let res = AudioCodecProduceOutputBufferList(
+                &mut self.0,
+                buffer_list,
+                &mut number_packets,
+                std::ptr::null_mut(),
+                &mut status,
+            );
+
+            if res.is_ok() {
+                Ok(status)
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    pub fn produce_output_buffer_list_with_descriptions(
+        &mut self,
+        buffer_list: &mut audio::BufferList,
+        packet_descriptions: &mut [audio::StreamPacketDescription],
+    ) -> Result<(u32, os::Status), os::Status> {
+        let mut number_packets: u32 = packet_descriptions.len() as _;
+        let mut status = os::Status::NO_ERR;
+        unsafe {
+            let res = AudioCodecProduceOutputBufferList(
+                &mut self.0,
+                buffer_list,
+                &mut number_packets,
+                packet_descriptions.as_mut_ptr(),
+                &mut status,
+            );
+
+            if res.is_ok() {
+                Ok((number_packets, status))
+            } else {
+                Err(res)
+            }
+        }
+    }
 }
 
 impl Codec {
@@ -131,6 +276,31 @@ extern "C" {
         io_input_data_byte_size: &mut u32,
         io_number_packets: &mut u32,
         in_packet_description: *const audio::StreamPacketDescription,
+    ) -> os::Status;
+
+    fn AudioCodecProduceOutputPackets(
+        in_codec: &mut Codec,
+        out_output_data: *mut u8,
+        io_output_data_byte_size: &mut u32,
+        io_number_packets: &mut u32,
+        out_packet_description: *mut audio::StreamPacketDescription,
+        out_status: &mut os::Status,
+    ) -> os::Status;
+
+    fn AudioCodecAppendInputBufferList(
+        in_codec: &mut Codec,
+        in_buffer_list: *const audio::BufferList,
+        io_number_packets: &mut u32,
+        in_packet_descriptions: *const audio::StreamPacketDescription,
+        out_bytes_consumed: &mut u32,
+    ) -> os::Status;
+
+    fn AudioCodecProduceOutputBufferList(
+        in_codec: &mut Codec,
+        io_buffer_list: &mut audio::BufferList,
+        io_number_packets: &mut u32,
+        out_packet_description: *mut audio::StreamPacketDescription,
+        out_status: &mut os::Status,
     ) -> os::Status;
 
 }
