@@ -1,4 +1,4 @@
-/// Functions that take Function<T> type as a parameter also
+/// Functions that take `Function<T>` type as a parameter also
 /// take a pointer to contextual data that you provide.
 /// When your dispatch function is called, the pointer to that contextual
 /// data is passed as the parameter to the function.

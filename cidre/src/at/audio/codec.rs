@@ -1,33 +1,8 @@
-use std::{
-    ops::{Deref, DerefMut},
-    ptr::NonNull,
-};
-
 use crate::{at::audio, os};
 
-#[derive(Debug)]
-#[repr(transparent)]
-pub struct Codec(audio::ComponentInstance);
+pub type Codec = audio::ComponentInstance;
+pub struct CodecRef(audio::ComponentInstanceRef);
 pub struct PropertyID(u32);
-
-#[derive(Debug)]
-#[repr(transparent)]
-pub struct CodecRef(NonNull<Codec>);
-
-impl Deref for CodecRef {
-    type Target = Codec;
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        unsafe { self.0.as_ref() }
-    }
-}
-
-impl DerefMut for CodecRef {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { self.0.as_mut() }
-    }
-}
 
 /// Structure holding the magic cookie information.
 #[repr(C)]
@@ -39,8 +14,60 @@ pub struct MagicCookieInfo {
     pub value: *const u8,
 }
 
+impl audio::ComponentInstanceRef {
+    pub fn into_codec(
+        mut self,
+        input_format: *const audio::StreamBasicDescription,
+        output_format: *const audio::StreamBasicDescription,
+        magic_cookie: Option<&[u8]>,
+    ) -> Result<CodecRef, os::Status> {
+        let res = unsafe { self.init_codec(input_format, output_format, magic_cookie) };
+        if res.is_ok() {
+            Ok(CodecRef(self))
+        } else {
+            Err(res.err().unwrap())
+        }
+    }
+}
+
+impl Drop for CodecRef {
+    fn drop(&mut self) {
+        let res = unsafe { self.0.uninitialize() };
+        debug_assert!(res.is_ok());
+    }
+}
+
+impl CodecRef {
+    /// Append as much of the given data to the codec's input buffer as possible
+    /// and return in (data_len, packets_len) the amount of data and packets used.
+    #[inline]
+    pub fn append_input_data(
+        &mut self,
+        data: &[u8],
+        packets: &[audio::StreamPacketDescription],
+    ) -> Result<(u32, u32), os::Status> {
+        let mut data_len: u32 = data.len() as _;
+        let mut packets_len: u32 = packets.len() as _;
+        let res = unsafe {
+            AudioCodecAppendInputData(
+                &mut self.0,
+                data.as_ptr(),
+                &mut data_len,
+                &mut packets_len,
+                packets.as_ptr(),
+            )
+        };
+
+        if res.is_ok() {
+            Ok((data_len, packets_len))
+        } else {
+            Err(res)
+        }
+    }
+}
+
 impl Codec {
-    pub fn initialize(
+    pub unsafe fn init_codec(
         &mut self,
         input_format: *const audio::StreamBasicDescription,
         output_format: *const audio::StreamBasicDescription,
@@ -97,6 +124,15 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioCodecUninitialize(in_codec: &mut Codec) -> os::Status;
+
+    fn AudioCodecAppendInputData(
+        in_codec: &mut Codec,
+        in_input_data: *const u8,
+        io_input_data_byte_size: &mut u32,
+        io_number_packets: &mut u32,
+        in_packet_description: *const audio::StreamPacketDescription,
+    ) -> os::Status;
+
 }
 
 #[cfg(test)]
@@ -127,6 +163,15 @@ mod tests {
             frames_per_packet: 1024,
             ..Default::default()
         };
+
+        let desc = audio::ComponentDescription {
+            type_: u32::from_be_bytes(*b"aenc"),
+            sub_type: u32::from_be_bytes(*b"aac "),
+            ..Default::default()
+        };
+
+        let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
+        let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
 
         // println!("nice");
         // let codec = audio::Codec::new(&src_asbd, &dst_asbd, None).unwrap();
