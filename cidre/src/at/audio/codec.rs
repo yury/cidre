@@ -35,6 +35,7 @@ pub struct MagicCookieInfo {
     /// The size of the magic cookie
     pub size: u32,
     /// Generic const pointer to magic cookie
+    /// usually it is esds
     pub value: *const u8,
 }
 
@@ -81,7 +82,7 @@ impl Codec {
 impl Drop for Codec {
     fn drop(&mut self) {
         let res = unsafe { self.uninitialize() };
-        // debug_assert!(res.is_ok());
+        debug_assert!(res.is_ok());
     }
 }
 

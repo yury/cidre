@@ -1,4 +1,7 @@
-use std::ffi::c_void;
+use std::{
+    ffi::c_void,
+    ops::{Deref, DerefMut},
+};
 
 use crate::{arc, cf, define_options, os};
 
@@ -63,13 +66,16 @@ impl InstantiationOptions {
 ///
 /// A structure describing the unique and identifying IDs of an audio component
 ///
+#[derive(Default, Debug)]
 #[repr(C, align(4))]
 pub struct Description {
     /// A 4-char code identifying the generic type of an audio component.
+    /// `aenc` for example
     pub type_: os::Type,
 
     /// A 4-char code identifying the a specific individual component. type/
     /// subtype/manufacturer triples must be globally unique.
+    /// `aac ` for example
     pub sub_type: os::Type,
 
     ///  Vendor identification.
@@ -82,6 +88,40 @@ pub struct Description {
     pub flags_mask: u32,
 }
 
+impl Description {
+    #[doc(alias = "AudioComponentCount")]
+    pub fn components_count(&self) -> u32 {
+        unsafe { AudioComponentCount(self) }
+    }
+}
+
+impl IntoIterator for Description {
+    type Item = &'static Component;
+
+    type IntoIter = Iter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        Iter {
+            desc: self,
+            component: None,
+        }
+    }
+}
+
+pub struct Iter {
+    desc: Description,
+    component: Option<&'static Component>,
+}
+
+impl Iterator for Iter {
+    type Item = &'static Component;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.component = unsafe { AudioComponentFindNext(self.component, &self.desc) };
+        self.component
+    }
+}
+
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Component(c_void);
@@ -90,23 +130,74 @@ pub struct Component(c_void);
 #[repr(transparent)]
 pub struct ComponentInstance(c_void);
 
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ComponentInstanceRef(&'static mut ComponentInstance);
+
+impl Drop for ComponentInstanceRef {
+    fn drop(&mut self) {
+        let res = unsafe { AudioComponentInstanceDispose(self.0) };
+        debug_assert!(res.is_ok());
+    }
+}
+
+impl Deref for ComponentInstanceRef {
+    type Target = ComponentInstance;
+
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl DerefMut for ComponentInstanceRef {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
+
 impl Component {
-    pub fn count(desc: &Description) -> u32 {
-        unsafe { AudioComponentCount(desc) }
+    #[inline]
+    pub fn name(&self) -> Result<arc::R<cf::String>, os::Status> {
+        let mut res = None;
+        unsafe { AudioComponentCopyName(self, &mut res).to_result_unchecked(res) }
     }
 
-    pub fn name(&self) -> Result<arc::R<cf::String>, os::Status> {
+    #[inline]
+    pub fn description(&self) -> Result<Description, os::Status> {
+        let mut desc = Description::default();
         unsafe {
-            let mut res = None;
-            AudioComponentCopyName(self, &mut res).to_result_unchecked(res)
+            let res = AudioComponentGetDescription(self, &mut desc);
+            if res.is_ok() {
+                Ok(desc)
+            } else {
+                Err(res)
+            }
         }
     }
 
-    pub fn find_next<'a>(
-        in_component: Option<&Component>,
-        in_desc: &Description,
-    ) -> Option<&'a Component> {
-        unsafe { AudioComponentFindNext(in_component, in_desc) }
+    #[inline]
+    pub fn version(&self) -> Result<u32, os::Status> {
+        unsafe {
+            let mut version = 0;
+            let res = AudioComponentGetVersion(self, &mut version);
+            if res.is_ok() {
+                Ok(version)
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    pub fn new_instance(&self) -> Result<ComponentInstanceRef, os::Status> {
+        unsafe {
+            let mut instance = None;
+            let res = AudioComponentInstanceNew(self, &mut instance);
+            if res.is_ok() {
+                Ok(ComponentInstanceRef(instance.unwrap_unchecked()))
+            } else {
+                Err(res)
+            }
+        }
     }
 }
 
@@ -122,6 +213,20 @@ extern "C" {
         in_component: &Component,
         out_name: &mut Option<arc::R<cf::String>>,
     ) -> os::Status;
+
+    fn AudioComponentGetDescription(
+        component: &Component,
+        out_desc: &mut Description,
+    ) -> os::Status;
+
+    fn AudioComponentGetVersion(component: &Component, out_version: &mut u32) -> os::Status;
+
+    fn AudioComponentInstanceNew(
+        component: &Component,
+        out_instance: &mut Option<&'static mut ComponentInstance>,
+    ) -> os::Status;
+
+    fn AudioComponentInstanceDispose(instance: &mut ComponentInstance) -> os::Status;
 }
 
 #[cfg(test)]
@@ -131,20 +236,31 @@ mod tests {
     #[test]
     fn basics() {
         let desc = audio::ComponentDescription {
-            type_: u32::from_be_bytes(*b"aenc"),
-            // sub_type: 0,
-            sub_type: u32::from_be_bytes(*b"aac "),
-            manufacturer: 0,
-            flags: 0,
-            flags_mask: 0,
+            // type_: u32::from_be_bytes(*b"aenc"),
+            // sub_type: u32::from_be_bytes(*b"aac "),
+            ..Default::default()
         };
 
-        let count = audio::Component::count(&desc);
+        let count = desc.components_count();
 
-        let comp = audio::Component::find_next(None, &desc).unwrap();
-
-        println!("count {count}, {:?}", comp.name().unwrap());
+        for c in desc.into_iter() {
+            let name = c.name().unwrap();
+            let version = c.version().unwrap();
+            let desc = c.description().unwrap();
+            println!("v. {version}: {name:?}\n {desc:?}");
+        }
 
         assert!(count > 0);
+    }
+
+    #[test]
+    fn aac() {
+        let desc = audio::ComponentDescription {
+            type_: u32::from_be_bytes(*b"aenc"),
+            sub_type: u32::from_be_bytes(*b"aac "),
+            ..Default::default()
+        };
+
+        let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
     }
 }
