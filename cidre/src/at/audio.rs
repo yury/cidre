@@ -41,3 +41,6 @@ mod codec;
 pub use codec::Codec;
 pub use codec::MagicCookieInfo as CodecMagicCookieInfo;
 pub use codec::PropertyID as CodecPropertyID;
+pub use codec::DECODER_COMPONENT_TYPE;
+pub use codec::ENCODER_COMPONENT_TYPE;
+pub use codec::UNITY_CODEC_COMPONENT_TYPE;

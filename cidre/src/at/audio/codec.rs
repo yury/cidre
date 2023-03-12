@@ -2,7 +2,107 @@ use crate::{at::audio, os};
 
 pub type Codec = audio::ComponentInstance;
 pub struct CodecRef(audio::ComponentInstanceRef);
-pub struct PropertyID(u32);
+pub struct PropertyID(pub u32);
+
+impl PropertyID {
+    /// An array of audio::StreamBasicDescription structs describing what formats
+    /// the codec supports for input data
+    #[doc(alias = "kAudioCodecPropertySupportedInputFormats")]
+    pub const SUPPORTED_INPUT_FORMATS: Self = Self(u32::from_be_bytes(*b"ifm#"));
+
+    /// An array of audio::StreamBasicDescription structs describing what formats
+    /// the codec supports for output data
+    #[doc(alias = "kAudioCodecPropertySupportedOutputFormats")]
+    pub const SUPPORTED_OUTPUT_FORMATS: Self = Self(u32::from_be_bytes(*b"ofm#"));
+
+    /// An array of audio::ValueRange indicating the valid ranges for the
+    /// output sample rate of the codec for the current bit rate.
+    /// This property is only relevant to encoders.
+    /// See also kAudioCodecPropertyAvailableOutputSampleRates.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyAvailableInputSampleRates")]
+    pub const AVAILABLE_INPUT_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"aisr"));
+
+    /// An array of AudioValueRange indicating the valid ranges for the
+    /// output sample rate of the codec.
+    /// Required for encoders.
+    /// (see also kAudioCodecPropertyApplicableOutputSampleRates)
+    #[doc(alias = "kAudioCodecPropertyAvailableOutputSampleRates")]
+    pub const AVAILABLE_OUTPUT_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"aosr"));
+
+    /// An array of AudioValueRange that indicate the target bit rates
+    /// supported by the encoder. This can be total bit rate or bit
+    /// rate per channel as appropriate.
+    /// This property is only relevant to encoders.
+    /// (see also kAudioCodecPropertyApplicableBitRateRange)
+    #[doc(alias = "kAudioCodecPropertyAvailableBitRateRange")]
+    pub const AVAILABLE_BIT_RATE_RANGE: Self = Self(u32::from_be_bytes(*b"abrt"));
+
+    /// A u32 indicating the minimum number of input packets
+    /// that need to be supplied to the codec. The actual input the
+    /// codec accepts could be less than this.
+    /// For most codecs this value will be 1.
+    #[doc(alias = "kAudioCodecPropertyMinimumNumberInputPackets")]
+    pub const MINIMUM_NUMBER_INPUT_PACKETS: Self = Self(u32::from_be_bytes(*b"mnip"));
+
+    /// A u32 indicating the minimum number of output packets
+    /// that need to be handled from the codec. The actual output
+    /// might be less than this.
+    /// For most codecs this value will be 1.
+    #[doc(alias = "kAudioCodecPropertyMinimumNumberOutputPackets")]
+    pub const MINIMUM_NUMBER_OUTPUT_PACKETS: Self = Self(u32::from_be_bytes(*b"mnop"));
+
+    /// An array of u32 that specifies the number of channels the codec is
+    /// capable of encoding or decoding to. 0xFFFFFFFF means any number
+    /// of channels.
+    #[doc(alias = "kAudioCodecPropertyAvailableNumberChannels")]
+    pub const AVAILABLE_NUMBER_CHANNELS: Self = Self(u32::from_be_bytes(*b"cmnc"));
+
+    /// A u32 indicating if the codec wants to do a sample rate conversion (if
+    /// necessary) because it can do it in a way that is meaningful for quality.
+    /// Value is 1 if true, 0 otherwise.
+    #[doc(alias = "kAudioCodecPropertyDoesSampleRateConversion")]
+    pub const DOES_SAMPLE_RATE_CONVERSION: Self = Self(u32::from_be_bytes(*b"lmrc"));
+
+    /// An array of audio::ChannelLayoutTag that specifies what channel layouts the codec is
+    /// capable of using on input.
+    #[doc(alias = "kAudioCodecPropertyAvailableInputChannelLayoutTags")]
+    pub const AVAILABLE_INPUT_CHANNEL_LAYOUT_TAGS: Self = Self(u32::from_be_bytes(*b"aicl"));
+
+    /// An array of audio::ChannelLayoutTag that specifies what channel layouts the codec is
+    /// capable of using on output.
+    #[doc(alias = "kAudioCodecPropertyAvailableOutputChannelLayoutTags")]
+    pub const AVAILABLE_OUTPUT_CHANNEL_LAYOUT_TAGS: Self = Self(u32::from_be_bytes(*b"aocl"));
+
+    /// An array of AudioStreamBasicDescription indicating what the codec supports
+    /// for input data given an output format that's passed in as the first member of
+    /// the array (and is overwritten on the reply). Always a subset of
+    /// kAudioCodecPropertySupportedInputFormats
+    #[doc(alias = "kAudioCodecPropertyInputFormatsForOutputFormat")]
+    pub const INPUT_FORMATS_FOR_OUTPUT_FORMAT: Self = Self(u32::from_be_bytes(*b"if4o"));
+
+    /// An array of AudioStreamBasicDescription indicating what the codec supports
+    /// for output data given an input format that's passed in as the first member of
+    /// the array (and is overwritten on the reply). Always a subset of
+    /// kAudioCodecPropertySupportedOutputFormats
+    #[doc(alias = "kAudioCodecPropertyOutputFormatsForInputFormat")]
+    pub const OUTPUT_FORMATS_FOR_INPUT_FORMAT: Self = Self(u32::from_be_bytes(*b"of4i"));
+
+    /// Takes an audio::FormatInfo on input. This audio::FormatInfo is validated either through
+    /// the provided magic cookie or the AudioStreamBasicDescription and where applicable,
+    /// wildcards are overwritten with default values.
+    #[doc(alias = "kAudioCodecPropertyFormatInfo")]
+    pub const FORMAT_INFO: Self = Self(u32::from_be_bytes(*b"acfi"));
+}
+
+#[doc(alias = "kAudioDecoderComponentType")]
+pub const DECODER_COMPONENT_TYPE: os::Type = u32::from_be_bytes(*b"adec");
+
+#[doc(alias = "kAudioEncoderComponentType")]
+pub const ENCODER_COMPONENT_TYPE: os::Type = u32::from_be_bytes(*b"aenc");
+
+#[doc(alias = "kAudioUnityCodecComponentType")]
+pub const UNITY_CODEC_COMPONENT_TYPE: os::Type = u32::from_be_bytes(*b"acdc");
 
 /// Structure holding the magic cookie information.
 #[repr(C)]
@@ -31,6 +131,7 @@ impl audio::ComponentInstanceRef {
 }
 
 impl Drop for CodecRef {
+    #[inline]
     fn drop(&mut self) {
         let res = unsafe { self.0.uninitialize() };
         debug_assert!(res.is_ok());
@@ -118,6 +219,7 @@ impl CodecRef {
         }
     }
 
+    #[inline]
     pub fn append_input_buffer_list(
         &mut self,
         in_buffer_list: &audio::BufferList,
@@ -140,6 +242,7 @@ impl CodecRef {
         }
     }
 
+    #[inline]
     pub fn append_input_buffer_list_with_descriptions(
         &mut self,
         in_buffer_list: &audio::BufferList,
@@ -163,6 +266,7 @@ impl CodecRef {
         }
     }
 
+    #[inline]
     pub fn produce_output_buffer_list(
         &mut self,
         buffer_list: &mut audio::BufferList,
@@ -312,7 +416,7 @@ mod tests {
     #[test]
     fn basics() {
         let channels_per_frame = 2;
-        let sample_rate = 44100.0;
+        let sample_rate = 44_100.0;
         let src_asbd = audio::StreamBasicDescription {
             sample_rate,
             channels_per_frame,
@@ -335,16 +439,12 @@ mod tests {
         };
 
         let desc = audio::ComponentDescription {
-            type_: u32::from_be_bytes(*b"aenc"),
+            type_: audio::ENCODER_COMPONENT_TYPE,
             sub_type: u32::from_be_bytes(*b"aac "),
             ..Default::default()
         };
 
         let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
         let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
-
-        // println!("nice");
-        // let codec = audio::Codec::new(&src_asbd, &dst_asbd, None).unwrap();
-        // println!("codec {codec:?}");
     }
 }
