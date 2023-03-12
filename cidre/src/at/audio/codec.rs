@@ -2,9 +2,10 @@ use crate::{at::audio, os};
 
 pub type Codec = audio::ComponentInstance;
 pub struct CodecRef(audio::ComponentInstanceRef);
-pub struct PropertyID(pub u32);
+pub struct GlobalPropertyID(pub u32);
+pub struct InstancePropertyID(pub u32);
 
-impl PropertyID {
+impl GlobalPropertyID {
     /// An array of audio::StreamBasicDescription structs describing what formats
     /// the codec supports for input data
     #[doc(alias = "kAudioCodecPropertySupportedInputFormats")]
@@ -93,6 +94,285 @@ impl PropertyID {
     /// wildcards are overwritten with default values.
     #[doc(alias = "kAudioCodecPropertyFormatInfo")]
     pub const FORMAT_INFO: Self = Self(u32::from_be_bytes(*b"acfi"));
+}
+
+/// Properties which can be set or read on an instance of the
+/// underlying audio codec. These properties are dependent on the
+/// codec's current state. A property may be read/write or read
+/// only, depending on the data format of the codec.
+///
+/// These properties may have different values depending on whether the
+/// codec is initialized or not. All properties can be read at any time
+/// the codec is open. However, to ensure the codec is in a valid
+/// operational state and therefore the property value is valid the codec
+/// must be initialized at the time the property is read.
+///
+/// Properties that are writable are only writable when the codec
+/// is not initialized.
+impl InstancePropertyID {
+    /// A u32 indicating the maximum input buffer size for the codec
+    /// in bytes.
+    /// Not writable, but can vary on some codecs depending on the bit stream
+    /// format being handled.
+    #[doc(alias = "kAudioCodecPropertyInputBufferSize")]
+    pub const INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"tbuf"));
+
+    /// A u32 indicating the number of frames of audio data encapsulated in each
+    /// packet of data in the codec's format. For encoders, this is the
+    /// output format. For decoders this is the input format.
+    /// Formats with variable frames per packet should return a maximum value
+    /// for this property.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyPacketFrameSize")]
+    pub const PACKET_FRAME_SIZE: Self = Self(u32::from_be_bytes(*b"pakf"));
+
+    /// A u32 where 0 indicates that all packets in the codec's format
+    /// have the same byte size (sometimes referred to as CBR codecs),
+    /// and 1 indicates that they vary in size (sometimes referred to as
+    /// VBR codecs). The maximum size of a variable packet is up to
+    /// the one indicated in kAudioCodecPropertyMaximumPacketByteSize.
+    /// Any codec that reports 1 for this property must be able to handle packet
+    /// descriptions, though it does not have to require them.
+    /// May be writable.
+    #[doc(alias = "kAudioCodecPropertyHasVariablePacketByteSizes")]
+    pub const HAS_VARIABLE_PACKET_BYTE_SIZES: Self = Self(u32::from_be_bytes(*b"vpk?"));
+
+    /// A u32 where 0 indicates that all packets in the codec's format
+    /// are independently decodable, and 1 indicates that some may not be
+    /// independently decodable.
+    #[doc(alias = "kAudioCodecPropertyEmploysDependentPackets")]
+    pub const EMPLOYS_DEPENDENT_PACKETS: Self = Self(u32::from_be_bytes(*b"dpk?"));
+
+    /// A u32 indicating the maximum number of bytes a packet of data
+    /// in the codec's format will be. If the format is constant bit rate,
+    /// all packets will be this size. If it is variable bit rate, the packets
+    /// will never exceed this size.
+    /// This always refers to the encoded data, so for encoders it refers to the
+    /// output data and for decoders the input data.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyMaximumPacketByteSize")]
+    pub const MAXIMUM_PACKET_BYTE_SIZE: Self = Self(u32::from_be_bytes(*b"pakb"));
+
+    /// A u32 indicating the maximum number of bits in an output packet of an encoder.
+    /// The output packet size will not exceed this number. The size should be smaller
+    /// than kAudioCodecPropertyMaximumPacketByteSize. This property will configure the
+    /// encoder to VBR mode with the highest VBR quality that can maintain the packet
+    /// size limit. kAudioCodecPropertySoundQualityForVBR can be used to retrieve the
+    /// quality setting that will be used given that packet size limit.
+    /// Writeable if supported.
+    #[doc(alias = "kAudioCodecPropertyPacketSizeLimitForVBR")]
+    pub const PACKET_SIZE_LIMIT_FOR_VBR: Self = Self(u32::from_be_bytes(*b"pakl"));
+
+    /// An AudioStreamBasicDescription describing the format the codec
+    /// expects its input data in
+    /// Almost always writable, but if the codec only supports one unique input format
+    /// it does not have to be
+    #[doc(alias = "kAudioCodecPropertyCurrentInputFormat")]
+    pub const CURRENT_INPUT_FORMAT: Self = Self(u32::from_be_bytes(*b"ifmt"));
+
+    /// An AudioStreamBasicDescription describing the format the codec
+    /// provides its output data in
+    /// Almost always writable, but if the codec only supports one unique output format
+    /// it does not have to be
+    #[doc(alias = "kAudioCodecPropertyCurrentOutputFormat")]
+    pub const CURRENT_OUTPUT_FORMAT: Self = Self(u32::from_be_bytes(*b"ofmt"));
+
+    /// An untyped buffer of out of band configuration data the codec
+    /// requires to process the stream of data correctly. The contents
+    /// of this data is private to the codec.
+    /// Not all codecs have magic cookies. If a call to AudioCodecGetPropertyInfo
+    /// returns a size greater than 0 then the codec may take one.
+    /// Writable if present.
+    #[doc(alias = "kAudioCodecPropertyMagicCookie")]
+    pub const MAGIC_COOKIE: Self = Self(u32::from_be_bytes(*b"kuki"));
+
+    /// A u32 indicating the number of bytes in the codec's input
+    /// buffer. The amount of available buffer space is simply the
+    /// answer from kAudioCodecPropertyInputBufferSize minus the answer
+    /// from this property.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyUsedInputBufferSize")]
+    pub const USED_INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"ubuf"));
+
+    /// A u32 where 0 means the codec is uninitialized and anything
+    /// else means the codec is initialized. This should never be settable directly.
+    /// Must be set by AudioCodecInitialize and AudioCodecUninitialize.
+    #[doc(alias = "kAudioCodecPropertyIsInitialized")]
+    pub const IS_INITIALIZED: Self = Self(u32::from_be_bytes(*b"init"));
+
+    /// A u32 containing the number of bits per second to aim for when encoding
+    /// data. This property is usually only relevant to encoders, but if a decoder
+    /// can know what bit rate it's set to it may report it.
+    /// This property is irrelevant if the encoder is configured as kAudioCodecBitRateControlMode_Variable.
+    /// Writable on encoders if supported.
+    #[doc(alias = "kAudioCodecPropertyCurrentTargetBitRate")]
+    pub const CURRENT_TARGET_BIT_RATE: Self = Self(u32::from_be_bytes(*b"brat"));
+
+    /// A f64 containing the current input sample rate in Hz. No Default.
+    /// May be writable. If only one sample rate is supported it does not have to be.
+    #[doc(alias = "kAudioCodecPropertyCurrentInputSampleRate")]
+    pub const CURRENT_INPUT_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"cisr"));
+
+    /// A f64 containing the current output sample rate in Hz. No Default.
+    /// May be writable. If only one sample rate is supported it does not have to be.
+    #[doc(alias = "kAudioCodecPropertyCurrentOutputSampleRate")]
+    pub const CURRENT_OUTPUT_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"cosr"));
+
+    /// A u32 that sets the tradeoff between sound quality and CPU time consumption.
+    /// The property value is between [0 - 0x7F].
+    /// Some enum constants are defined below for convenience.
+    /// Writable if supported.
+    #[doc(alias = "kAudioCodecPropertyQualitySetting")]
+    pub const QUALITY_SETTING: Self = Self(u32::from_be_bytes(*b"srcq"));
+
+    /// An array of audio::ValueRange indicating the target bit rates
+    /// supported by the encoder in its current configuration.
+    /// This property is only relevant to encoders.
+    /// See also kAudioCodecPropertyAvailableBitRateRange.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyApplicableBitRateRange")]
+    pub const APPLICABLE_BIT_RATE_RANGE: Self = Self(u32::from_be_bytes(*b"brta"));
+
+    /// An array of AudioValueRange indicating the recommended bit rates
+    /// at given sample rate.
+    /// This property is only relevant to encoders.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyRecommendedBitRateRange")]
+    pub const RECOMMENDED_BIT_RATE_RANGE: Self = Self(u32::from_be_bytes(*b"brtr"));
+
+    /// An array of AudioValueRange indicating the valid ranges for the
+    /// input sample rate of the codec for the current bit rate.
+    /// This property is only relevant to encoders.
+    /// See also kAudioCodecPropertyAvailableInputSampleRates.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyApplicableInputSampleRates")]
+    pub const APPLICABLE_INPUT_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"isra"));
+
+    /// An array of audio::ValueRange indicating the valid ranges for the
+    /// output sample rate of the codec for the current bit rate.
+    /// This property is only relevant to encoders.
+    /// See also kAudioCodecPropertyAvailableOutputSampleRates.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyApplicableOutputSampleRates")]
+    pub const APPLICABLE_OUTPUT_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"osra"));
+
+    /// A u32 indicating the number of zeros (samples) that were appended
+    /// to the last packet of input data to make a complete packet encoding.
+    /// Encoders only. No default.
+    /// Not writable.
+    #[doc(alias = "kAudioCodecPropertyPaddedZeros")]
+    pub const PADDED_ZEROS: Self = Self(u32::from_be_bytes(*b"pad0"));
+
+    /// A u32 specifying priming method.
+    /// See enum below.
+    /// May be writable. Some encoders offer the option of padding out the last packet, and this
+    /// may be set here.
+    #[doc(alias = "kAudioCodecPropertyPrimeMethod")]
+    pub const PRIME_METHOD: Self = Self(u32::from_be_bytes(*b"prmm"));
+
+    /// A pointer to an audio::CodecPrimeInfo struct.
+    /// Not writable on encoders. On decoders this may be writable, telling the decoder to trim the
+    /// first and/or last packet.
+    #[doc(alias = "kAudioCodecPropertyPrimeInfo")]
+    pub const PRIME_INFO: Self = Self(u32::from_be_bytes(*b"prim"));
+
+    /// An audio::ChannelLayout that specifies the channel layout that the codec is using for input.
+    /// May be writable. If only one channel layout is supported it does not have to be.
+    #[doc(alias = "kAudioCodecPropertyCurrentInputChannelLayout")]
+    pub const CURRENT_INPUT_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"icl "));
+
+    /// An audio::ChannelLayout that specifies the channel layout that the codec is using for output.
+    /// If settable on a encoder, it means the encoder can re-map channels
+    /// May be writable. If only one channel layout is supported or the codec does no channel remapping
+    /// (ie, output channel layout always equals the input channel layout) it does not have to be.
+    #[doc(alias = "kAudioCodecPropertyCurrentOutputChannelLayout")]
+    pub const CURRENT_OUTPUT_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"ocl "));
+
+    /// A cf::Dictionary that lists both the settable codec settings and their values.
+    /// Encoders only.
+    /// Obviously this will be linked to many of the other properties listed herein and as such
+    /// it potentially will cause synchronization problems. Therefore, when setting this property
+    /// on an encoder a GetProperty should be done first to retrieve the current dictionary,
+    /// and only one setting within the dictionary should change with each SetProperty call,
+    /// as it is not guaranteed that changing one property will not have side effects.
+    /// Writable if supported.
+    #[doc(alias = "kAudioCodecPropertySettings")]
+    pub const SETTINGS: Self = Self(u32::from_be_bytes(*b"acs "));
+
+    /// An array of audio::FormatListItem structs list all formats that can be handled by the decoder
+    /// For decoders, takes a Magic Cookie that gets passed in on the GetProperty call. No default.
+    /// On input, the outPropertyData parameter passed to GetProperty should begin with a
+    /// audio::CodecMagicCookieInfo struct which will be overwritten by the AudioFormatListItems
+    /// returned from the property. For encoders, returns a list of formats which will be in the
+    /// bitstream. No input data required.
+    /// Important note: this encoder property is only applicable to audio formats which are made of
+    /// two or more layers where the base layers(s) can be decoded by systems which aren't capable of
+    /// handling the enhancement layers. For example, a High Efficiency AAC bitstream which contains
+    /// an AAC Low Complexity base layer can be decoded by any AAC decoder.
+    #[doc(alias = "kAudioCodecPropertyFormatList")]
+    pub const FORMAT_LIST: Self = Self(u32::from_be_bytes(*b"acfl"));
+
+    /// A u32 indicating which bit rate control mode will be applied to encoders that
+    /// can produce variable packet sizes (sometimes referred to as VBR encoders).
+    /// Although the packet size may be variable, a constant bit rate can be maintained
+    /// over a transmission channel when decoding in real-time with a fixed end-to-end audio delay.
+    /// E.g., MP3 and MPEG-AAC use a bit reservoir mechanism to meet that constraint.
+    /// See enum below.
+    /// Only needs to be settable if the codec supports multiple bit rate control strategies.
+    #[doc(alias = "kAudioCodecPropertyBitRateControlMode")]
+    pub const BIT_RATE_CONTROL_MODE: Self = Self(u32::from_be_bytes(*b"acbf"));
+
+    /// A u32 that sets a target sound quality level.
+    /// Unlike kAudioCodecPropertyQualitySetting which is relevant to all BitRate Control Modes,
+    /// this property only needs to be set by an encoder configured at kAudioCodecBitRateControlMode_Variable.
+    /// The property value is between [0 - 0x7F].
+    /// See also kAudioCodecPropertyQualitySetting
+    /// Writable if supported.
+    #[doc(alias = "kAudioCodecPropertySoundQualityForVBR")]
+    pub const SOUND_QUALITY_FOR_VBR: Self = Self(u32::from_be_bytes(*b"vbrq"));
+
+    /// A u32 that can be used to set the target bit rate when the encoder is configured
+    /// for VBR mode (kAudioCodecBitRateControlMode_Variable). Writable if supported.
+    #[doc(alias = "kAudioCodecPropertyBitRateForVBR")]
+    pub const BIT_RATE_FOR_VBR: Self = Self(u32::from_be_bytes(*b"vbrb"));
+
+    /// A u32 specifying the delay mode. See enum below.
+    /// Writable if supported.
+    #[doc(alias = "kAudioCodecPropertyDelayMode")]
+    pub const DELAY_MODE: Self = Self(u32::from_be_bytes(*b"dmod"));
+
+    /// An i32 number in the range [-128, 127] to allow encoding quality adjustements on a packet by packet basis.
+    /// This property can be set on an initialized encoder object without having to uninitialize and re-intialize it
+    /// and allows to adjust the encoder quality level for every packet. This is useful for packets streamed over
+    /// unreliable IP networks where the encoder needs to adapt immediately to network condition changes.
+    /// Escape property ID's start with a '^' symbol as the first char code. This bypasses the initilization check.
+    #[doc(alias = "kAudioCodecPropertyAdjustLocalQuality")]
+    pub const ADJUST_LOCAL_QUALITY: Self = Self(u32::from_be_bytes(*b"^qal"));
+
+    /// A f32 specifying the program target level in dB FS for decoders.
+    /// Supported target levels are in the range of -31.0 to -20.0dB.
+    /// This property controls the decoding of broadcast loudness
+    /// normalization metadata with goal of achieving consistent loudness across various
+    /// programs. The property complies with the target level defined in the MPEG Audio
+    /// standard ISO/IEC 14496-3. It will override kAudioCodecPropertyProgramTargetLevelConstant.
+    #[doc(alias = "kAudioCodecPropertyProgramTargetLevel")]
+    pub const PROGRAM_TARGET_LEVEL: Self = Self(u32::from_be_bytes(*b"pptl"));
+
+    /// A u32 specifying the DRC mode. Supported modes are defined as enum with the
+    /// prefix kDynamicRangeControlMode (see below). This property controls which
+    /// dynamic range compression scheme is applied if the information is present in
+    /// the bitstream. The default is kDynamicRangeControlMode_None.
+    #[doc(alias = "kAudioCodecPropertyDynamicRangeControlMode")]
+    pub const DYNAMIC_RANGE_CONTROL_MODE: Self = Self(u32::from_be_bytes(*b"mdrc"));
+
+    /// A u32 specifying the program target level constant in dB FS (Full Scale) for decoders.
+    /// Supported target levels are defined as enum with the prefix kProgramTargetLevel
+    /// (see below). This property controls the decoding of broadcast loudness
+    /// normalization metadata with the goal of achieving consistent loudness across various
+    /// programs. The property complies with the target level defined in the MPEG Audio
+    /// standard ISO/IEC 14496-3. The default is kProgramTargetLevel_None.
+    #[doc(alias = "kAudioCodecPropertyProgramTargetLevelConstant")]
+    pub const PROGRAM_TARGET_LEVEL_CONSTANT: Self = Self(u32::from_be_bytes(*b"ptlc"));
 }
 
 #[doc(alias = "kAudioDecoderComponentType")]
