@@ -687,6 +687,27 @@ extern "C" {
         out_status: &mut os::Status,
     ) -> os::Status;
 
+    fn AudioCodecSetProperty(
+        in_codec: &mut Codec,
+        in_property_id: u32,
+        in_property_size: u32,
+        in_property_data: *const u8,
+    ) -> os::Status;
+
+    fn AudioCodecGetProperty(
+        in_codec: &Codec,
+        in_property_id: u32,
+        io_property_data_size: &mut u32,
+        out_property_data: *mut u8,
+    ) -> os::Status;
+
+    fn AudioCodecGetPropertyInfo(
+        in_codec: &Codec,
+        in_property_id: u32,
+        out_size: *mut u32,
+        out_writable: *mut bool,
+    ) -> os::Status;
+
 }
 
 #[cfg(test)]
