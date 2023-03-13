@@ -39,8 +39,9 @@ pub use file::PropertyID as FilePropertyID;
 
 mod codec;
 pub use codec::Codec;
+pub use codec::GlobalPropertyID as CodecGlobalPropertyID;
+pub use codec::InstancePropertyID as CodecInstancePropertyID;
 pub use codec::MagicCookieInfo as CodecMagicCookieInfo;
-pub use codec::PropertyID as CodecPropertyID;
 pub use codec::DECODER_COMPONENT_TYPE;
 pub use codec::ENCODER_COMPONENT_TYPE;
 pub use codec::UNITY_CODEC_COMPONENT_TYPE;
