@@ -18,6 +18,7 @@ full = [
   "at",
   "ca",
   "ci",
+  "cm",
   "av",
   "cf",
   "cg",
@@ -37,6 +38,7 @@ am = ["private", "cf"]
 at = []
 av = ["ns"]
 ca = []
+cm = []
 ci = ["ns", "cf"]
 cf = []
 cg = []

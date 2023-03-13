@@ -12,40 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-wsel1(, id, setActiveFormat, AVCaptureDeviceFormat* )
-
-wsel1(, id, setActiveVideoMinFrameDuration, CMTime)
-wsel1(, id, setActiveVideoMaxFrameDuration, CMTime)
-
-#if TARGET_OS_IPHONE
-rsel0(, id, isVideoBinned, BOOL)
-#endif
-
-//@property(nonatomic, readonly) NSArray<AVFrameRateRange *> *videoSupportedFrameRateRanges;
-rsel0(, id, videoSupportedFrameRateRanges, NSArray<AVFrameRateRange *> *)
-
-rsel0(, id, formatDescription, CMFormatDescriptionRef)
-rsel0(, id, autoFocusSystem, AVCaptureAutoFocusSystem)
-
-#pragma mark - AVAssetWriter
-
-typedef void (^ VoidBlock)(void);
-wsel1(, id, finishWritingWithCompletionHandler, VoidBlock)
-//- (void)finishWritingWithCompletionHandler:(void (^)(void))handler API_AVAILABLE(macos(10.9), ios(6.0), tvos(9.0))
-
-#pragma mark - AVURLAsset
-
-wsel2(, id, loadTracksWithMediaType, AVMediaType, completionHandler, id)
-
-#pragma mark - AVAssetReaderOutput
-
-NS_RETURNS_RETAINED
-csel2(, AVAssetReaderTrackOutput, assetReaderTrackOutputWithTrack, AVAssetTrack *, outputSettings, NSDictionary * _Nullable, AVAssetReaderTrackOutput *)
-
-#pragma mark - AVCaptureDeviceInput
-
-csel2(, AVCaptureDeviceInput, deviceInputWithDevice, AVCaptureDevice *, error,  NSError * _Nullable * _Nullable, AVCaptureDeviceInput * _Nullable)
-
 Class AV_CAPTURE_DEVICE;
 Class AV_CAPTURE_SESSION;
 Class AV_CAPTURE_MULTI_CAM_SESSION;
@@ -71,8 +37,6 @@ Class AV_AUDIO_UNIT_TIME_EFFECT;
 Class AV_AUDIO_PCM_BUFFER;
 Class AV_AUDIO_COMPRESSED_BUFFER;
 Class AV_AUDIO_FORMAT;
-
-
 
 __attribute__((constructor))
 static void mtl_initializer(void)

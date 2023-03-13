@@ -33,6 +33,7 @@ pub mod cf;
 pub mod cg;
 
 /// Core Media
+#[cfg(feature = "cm")]
 pub mod cm;
 
 /// Core Video
