@@ -62,7 +62,7 @@ Class NS_UUID;
 Class NS_VALUE;
 
 __attribute__((constructor))
-static void common_initializer()
+static void common_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {
