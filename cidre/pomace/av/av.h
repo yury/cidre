@@ -75,7 +75,7 @@ Class AV_AUDIO_FORMAT;
 
 
 __attribute__((constructor))
-static void common_initializer()
+static void mtl_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {

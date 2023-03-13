@@ -24,7 +24,7 @@ Class MTL_FUNCTION_CONSTANT_VALUES;
 Class MTL_TEXTURE_DESCRIPTOR;
 
 __attribute__((constructor))
-static void mtl_initializer()
+static void mtl_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {

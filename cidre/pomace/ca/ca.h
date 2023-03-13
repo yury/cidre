@@ -16,7 +16,7 @@ API_AVAILABLE(ios(3.1), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos)
 Class CA_DISPLAY_LINK;
 
 __attribute__((constructor))
-static void common_initializer()
+static void mtl_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {

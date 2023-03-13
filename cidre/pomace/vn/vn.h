@@ -28,7 +28,7 @@ Class VN_IMAGE_REQUEST_HANDLER;
 Class VN_SEQUENCE_REQUEST_HANDLER;
 
 __attribute__((constructor))
-static void common_initializer()
+static void mtl_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {

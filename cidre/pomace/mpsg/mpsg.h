@@ -16,7 +16,7 @@ Class MPS_GRAPH;
 Class MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR;
 
 __attribute__((constructor))
-static void common_initializer()
+static void mtl_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {
