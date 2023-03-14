@@ -592,21 +592,11 @@ impl CodecRef {
         }
     }
 
-    #[doc(alias = "AudioCodecGetPropertyInfo")]
-    #[inline]
-    pub unsafe fn prop_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
-        let (mut size, mut writable) = (0u32, false);
-        unsafe {
-            AudioCodecGetPropertyInfo(&self.0, property_id, &mut size, &mut writable).result()?
-        };
-        Ok((size, writable))
-    }
-
     #[inline]
     pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
         let prop_id = InstancePropertyID::MAGIC_COOKIE.0;
         unsafe {
-            let (mut size, _) = self.prop_info(prop_id)?;
+            let (mut size, _) = self.0.prop_info(prop_id)?;
             let mut vec = vec![0u8; size as _];
             AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr()).result()?;
             Ok(vec)
@@ -626,44 +616,6 @@ impl CodecRef {
             .result()?;
         }
         Ok(value as _)
-    }
-
-    #[inline]
-    pub fn applicable_input_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
-        let prop_id = InstancePropertyID::APPLICABLE_INPUT_SAMPLE_RATES.0;
-        let (mut size, mut writable) = (0u32, false);
-        unsafe {
-            let (mut size, _) = self.prop_info(prop_id)?;
-            AudioCodecGetPropertyInfo(&self.0, prop_id, &mut size, &mut writable).result()?
-        };
-        let len = size as usize / std::mem::size_of::<audio::ValueRange>();
-        if len == 0 {
-            return Ok(vec![]);
-        }
-        let mut vec = vec![audio::ValueRange::default(); len];
-        unsafe {
-            AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
-        }
-        Ok(vec)
-    }
-
-    #[inline]
-    pub fn applicable_output_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
-        let prop_id = InstancePropertyID::APPLICABLE_OUTPUT_SAMPLE_RATES.0;
-        let (mut size, mut writable) = (0u32, false);
-        unsafe {
-            let (mut size, _) = self.prop_info(prop_id)?;
-            AudioCodecGetPropertyInfo(&self.0, prop_id, &mut size, &mut writable).result()?
-        };
-        let len = size as usize / std::mem::size_of::<audio::ValueRange>();
-        if len == 0 {
-            return Ok(vec![]);
-        }
-        let mut vec = vec![audio::ValueRange::default(); len];
-        unsafe {
-            AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
-        }
-        Ok(vec)
     }
 }
 
@@ -689,6 +641,52 @@ impl Codec {
             }
             .result()
         }
+    }
+
+    #[doc(alias = "AudioCodecGetPropertyInfo")]
+    #[inline]
+    pub fn prop_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
+        let (mut size, mut writable) = (0u32, false);
+        unsafe {
+            AudioCodecGetPropertyInfo(&self, property_id, &mut size, &mut writable).result()?
+        };
+        Ok((size, writable))
+    }
+
+    #[doc(alias = "AudioCodecGetProperty")]
+    #[inline]
+    pub unsafe fn prop_vec<T: Sized + Default + Clone>(
+        &self,
+        property_id: u32,
+    ) -> Result<Vec<T>, os::Status> {
+        let (mut size, _) = self.prop_info(property_id)?;
+        let mut vec = vec![T::default(); size as usize / std::mem::size_of::<T>()];
+        unsafe {
+            AudioCodecGetProperty(self, property_id, &mut size, vec.as_mut_ptr() as _).result()?;
+        }
+        Ok(vec)
+    }
+
+    #[inline]
+    pub fn applicable_input_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        unsafe { self.prop_vec(InstancePropertyID::APPLICABLE_INPUT_SAMPLE_RATES.0) }
+    }
+
+    #[inline]
+    pub fn applicable_output_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        unsafe { self.prop_vec(InstancePropertyID::APPLICABLE_OUTPUT_SAMPLE_RATES.0) }
+    }
+
+    #[inline]
+    pub fn recommended_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        unsafe { self.prop_vec(InstancePropertyID::RECOMMENDED_BIT_RATE_RANGE.0) }
+    }
+
+    #[inline]
+    pub fn supported_input_formats(
+        &self,
+    ) -> Result<Vec<audio::StreamBasicDescription>, os::Status> {
+        unsafe { self.prop_vec(GlobalPropertyID::SUPPORTED_INPUT_FORMATS.0) }
     }
 
     /// Flushes all the data in the codec and clears the input buffer. Note that
@@ -817,7 +815,21 @@ mod tests {
             ..Default::default()
         };
 
-        let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
+        let inst = desc.into_iter().last().unwrap();
+
+        let inst = inst.new_instance().unwrap();
+
+        let range = inst.recommended_bit_rate_range().unwrap();
+        println!("{range:?}");
+
+        let supported_input_formats = inst.supported_input_formats().unwrap();
+        println!("{supported_input_formats:?}");
+        assert!(!supported_input_formats.is_empty());
+
+        let applicable_output_sample_rates = inst.applicable_output_sample_rates().unwrap();
+        println!("{applicable_output_sample_rates:?}");
+        // assert!(!applicable_output_sample_rates.is_empty());
+
         let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
         let cookie_info = codec.magic_cookie().unwrap();
         assert!(!cookie_info.is_empty());
