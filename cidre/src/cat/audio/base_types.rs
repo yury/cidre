@@ -19,11 +19,20 @@ pub mod errors {
 }
 
 /// This structure holds a pair of numbers that represent a continuous range of values.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 #[repr(C)]
 pub struct ValueRange {
     pub minimum: f64,
     pub maximum: f64,
+}
+
+impl Default for ValueRange {
+    fn default() -> Self {
+        Self {
+            minimum: 0.0f64,
+            maximum: 0.0f64,
+        }
+    }
 }
 
 /// A structure to hold a buffer of audio data.

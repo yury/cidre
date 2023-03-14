@@ -28,14 +28,14 @@ impl GlobalPropertyID {
     #[doc(alias = "kAudioCodecPropertyAvailableInputSampleRates")]
     pub const AVAILABLE_INPUT_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"aisr"));
 
-    /// An array of AudioValueRange indicating the valid ranges for the
+    /// An array of audio::ValueRange indicating the valid ranges for the
     /// output sample rate of the codec.
     /// Required for encoders.
     /// (see also kAudioCodecPropertyApplicableOutputSampleRates)
     #[doc(alias = "kAudioCodecPropertyAvailableOutputSampleRates")]
     pub const AVAILABLE_OUTPUT_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"aosr"));
 
-    /// An array of AudioValueRange that indicate the target bit rates
+    /// An array of audio::ValueRange that indicate the target bit rates
     /// supported by the encoder. This can be total bit rate or bit
     /// rate per channel as appropriate.
     /// This property is only relevant to encoders.
@@ -244,7 +244,7 @@ impl InstancePropertyID {
     #[doc(alias = "kAudioCodecPropertyRecommendedBitRateRange")]
     pub const RECOMMENDED_BIT_RATE_RANGE: Self = Self(u32::from_be_bytes(*b"brtr"));
 
-    /// An array of AudioValueRange indicating the valid ranges for the
+    /// An array of audio::ValueRange indicating the valid ranges for the
     /// input sample rate of the codec for the current bit rate.
     /// This property is only relevant to encoders.
     /// See also kAudioCodecPropertyAvailableInputSampleRates.
@@ -604,16 +604,11 @@ impl CodecRef {
 
     #[inline]
     pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+        let prop_id = InstancePropertyID::MAGIC_COOKIE.0;
         unsafe {
-            let (mut size, _) = self.prop_info(InstancePropertyID::MAGIC_COOKIE.0)?;
+            let (mut size, _) = self.prop_info(prop_id)?;
             let mut vec = vec![0u8; size as _];
-            AudioCodecGetProperty(
-                &self.0,
-                InstancePropertyID::MAGIC_COOKIE.0,
-                &mut size,
-                vec.as_mut_ptr(),
-            )
-            .result()?;
+            AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr()).result()?;
             Ok(vec)
         }
     }
@@ -631,6 +626,44 @@ impl CodecRef {
             .result()?;
         }
         Ok(value as _)
+    }
+
+    #[inline]
+    pub fn applicable_input_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        let prop_id = InstancePropertyID::APPLICABLE_INPUT_SAMPLE_RATES.0;
+        let (mut size, mut writable) = (0u32, false);
+        unsafe {
+            let (mut size, _) = self.prop_info(prop_id)?;
+            AudioCodecGetPropertyInfo(&self.0, prop_id, &mut size, &mut writable).result()?
+        };
+        let len = size as usize / std::mem::size_of::<audio::ValueRange>();
+        if len == 0 {
+            return Ok(vec![]);
+        }
+        let mut vec = vec![audio::ValueRange::default(); len];
+        unsafe {
+            AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
+        }
+        Ok(vec)
+    }
+
+    #[inline]
+    pub fn applicable_output_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        let prop_id = InstancePropertyID::APPLICABLE_OUTPUT_SAMPLE_RATES.0;
+        let (mut size, mut writable) = (0u32, false);
+        unsafe {
+            let (mut size, _) = self.prop_info(prop_id)?;
+            AudioCodecGetPropertyInfo(&self.0, prop_id, &mut size, &mut writable).result()?
+        };
+        let len = size as usize / std::mem::size_of::<audio::ValueRange>();
+        if len == 0 {
+            return Ok(vec![]);
+        }
+        let mut vec = vec![audio::ValueRange::default(); len];
+        unsafe {
+            AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
+        }
+        Ok(vec)
     }
 }
 
@@ -791,6 +824,8 @@ mod tests {
         let max_packet_size = codec.maximum_packet_byte_size().unwrap();
         assert_eq!(max_packet_size, 1536);
 
-        codec.show();
+        // let applicable_output_sample_rates = codec.applicable_output_sample_rates().unwrap();
+        // println!("{applicable_output_sample_rates:?}");
+        // assert!(!applicable_output_sample_rates.is_empty());
     }
 }
