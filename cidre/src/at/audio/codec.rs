@@ -813,8 +813,13 @@ mod tests {
 
         let inst = inst.new_instance().unwrap();
 
-        let range = inst.recommended_bit_rate_range().unwrap();
-        println!("{range:?}");
+        let recommended_bit_rate_range = inst.recommended_bit_rate_range().unwrap();
+        println!("{recommended_bit_rate_range:?}");
+        assert!(!recommended_bit_rate_range.is_empty());
+
+        let applicable_output_sample_rates = inst.applicable_output_sample_rates().unwrap();
+        println!("{applicable_output_sample_rates:?}");
+        assert!(!applicable_output_sample_rates.is_empty());
 
         let supported_input_formats = inst.supported_input_formats().unwrap();
         println!("{supported_input_formats:?}");
@@ -829,9 +834,5 @@ mod tests {
         assert!(!cookie_info.is_empty());
         let max_packet_size = codec.maximum_packet_byte_size().unwrap();
         assert_eq!(max_packet_size, 1536);
-
-        // let applicable_output_sample_rates = codec.applicable_output_sample_rates().unwrap();
-        // println!("{applicable_output_sample_rates:?}");
-        // assert!(!applicable_output_sample_rates.is_empty());
     }
 }
