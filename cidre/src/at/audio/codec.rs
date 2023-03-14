@@ -170,7 +170,7 @@ impl InstancePropertyID {
     #[doc(alias = "kAudioCodecPropertyCurrentInputFormat")]
     pub const CURRENT_INPUT_FORMAT: Self = Self(u32::from_be_bytes(*b"ifmt"));
 
-    /// An AudioStreamBasicDescription describing the format the codec
+    /// An audio::StreamBasicDescription describing the format the codec
     /// provides its output data in
     /// Almost always writable, but if the codec only supports one unique output format
     /// it does not have to be
@@ -429,7 +429,7 @@ impl CodecRef {
     ) -> Result<(u32, u32), os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = packets.len() as _;
-        let res = unsafe {
+        unsafe {
             AudioCodecAppendInputData(
                 &mut self.0,
                 data.as_ptr(),
@@ -437,13 +437,10 @@ impl CodecRef {
                 &mut packets_len,
                 packets.as_ptr(),
             )
-        };
-
-        if res.is_ok() {
-            Ok((data_len, packets_len))
-        } else {
-            Err(res)
+            .result()?;
         }
+
+        Ok((data_len, packets_len))
     }
 
     #[inline]
@@ -456,20 +453,18 @@ impl CodecRef {
         let mut status = os::Status::NO_ERR;
 
         unsafe {
-            let res = AudioCodecProduceOutputPackets(
+            AudioCodecProduceOutputPackets(
                 &mut self.0,
                 data.as_mut_ptr(),
                 &mut data_len,
                 &mut packets_len,
                 std::ptr::null_mut(),
                 &mut status,
-            );
-            if res.is_ok() {
-                Ok((data_len, status))
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
         }
+
+        Ok((data_len, status))
     }
 
     #[inline]
@@ -483,20 +478,17 @@ impl CodecRef {
         let mut status = os::Status::NO_ERR;
 
         unsafe {
-            let res = AudioCodecProduceOutputPackets(
+            AudioCodecProduceOutputPackets(
                 &mut self.0,
                 data.as_mut_ptr(),
                 &mut data_len,
                 &mut packets_len,
                 out_packet_descriptions.as_mut_ptr(),
                 &mut status,
-            );
-            if res.is_ok() {
-                Ok((data_len, packets_len, status))
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
         }
+        Ok((data_len, packets_len, status))
     }
 
     #[inline]
@@ -507,19 +499,17 @@ impl CodecRef {
         let mut bytes_consumed: u32 = 0;
         let mut packets_len: u32 = 0;
         unsafe {
-            let res = AudioCodecAppendInputBufferList(
+            AudioCodecAppendInputBufferList(
                 &mut self.0,
                 in_buffer_list,
                 &mut packets_len,
                 std::ptr::null(),
                 &mut bytes_consumed,
-            );
-            if res.is_ok() {
-                Ok(bytes_consumed)
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
         }
+
+        Ok(bytes_consumed)
     }
 
     #[inline]
@@ -531,19 +521,17 @@ impl CodecRef {
         let mut bytes_consumed: u32 = 0;
         let mut packets_len: u32 = packet_descriptions.len() as _;
         unsafe {
-            let res = AudioCodecAppendInputBufferList(
+            AudioCodecAppendInputBufferList(
                 &mut self.0,
                 in_buffer_list,
                 &mut packets_len,
                 packet_descriptions.as_ptr(),
                 &mut bytes_consumed,
-            );
-            if res.is_ok() {
-                Ok((bytes_consumed, packets_len))
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
         }
+
+        Ok((bytes_consumed, packets_len))
     }
 
     #[inline]
@@ -554,20 +542,17 @@ impl CodecRef {
         let mut number_packets: u32 = 0;
         let mut status = os::Status::NO_ERR;
         unsafe {
-            let res = AudioCodecProduceOutputBufferList(
+            AudioCodecProduceOutputBufferList(
                 &mut self.0,
                 buffer_list,
                 &mut number_packets,
                 std::ptr::null_mut(),
                 &mut status,
-            );
-
-            if res.is_ok() {
-                Ok(status)
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
         }
+
+        Ok(status)
     }
 
     pub fn produce_output_buffer_list_with_descriptions(
@@ -578,19 +563,42 @@ impl CodecRef {
         let mut number_packets: u32 = packet_descriptions.len() as _;
         let mut status = os::Status::NO_ERR;
         unsafe {
-            let res = AudioCodecProduceOutputBufferList(
+            AudioCodecProduceOutputBufferList(
                 &mut self.0,
                 buffer_list,
                 &mut number_packets,
                 packet_descriptions.as_mut_ptr(),
                 &mut status,
-            );
+            )
+            .result()?;
+        }
 
-            if res.is_ok() {
-                Ok((number_packets, status))
-            } else {
-                Err(res)
-            }
+        Ok((number_packets, status))
+    }
+
+    #[inline]
+    pub unsafe fn property_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
+        let mut size: u32 = 0;
+        let mut writable: bool = false;
+        unsafe {
+            AudioCodecGetPropertyInfo(&self.0, property_id, &mut size, &mut writable).result()?
+        };
+        Ok((size, writable))
+    }
+
+    #[inline]
+    pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+        unsafe {
+            let (mut size, _) = self.property_info(InstancePropertyID::MAGIC_COOKIE.0)?;
+            let mut vec = vec![0u8; size as _];
+            AudioCodecGetProperty(
+                &self.0,
+                InstancePropertyID::MAGIC_COOKIE.0,
+                &mut size,
+                vec.as_mut_ptr(),
+            )
+            .result()?;
+            Ok(vec)
         }
     }
 }
@@ -747,5 +755,6 @@ mod tests {
 
         let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
         let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
+        let cookie_info = codec.magic_cookie().unwrap();
     }
 }
