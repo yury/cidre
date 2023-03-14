@@ -405,12 +405,10 @@ impl audio::ComponentInstanceRef {
         output_format: *const audio::StreamBasicDescription,
         magic_cookie: Option<&[u8]>,
     ) -> Result<CodecRef, os::Status> {
-        let res = unsafe { self.init_codec(input_format, output_format, magic_cookie) };
-        if res.is_ok() {
-            Ok(CodecRef(self))
-        } else {
-            Err(res.err().unwrap())
+        unsafe {
+            self.init_codec(input_format, output_format, magic_cookie)?;
         }
+        Ok(CodecRef(self))
     }
 }
 
@@ -559,6 +557,7 @@ impl CodecRef {
         Ok(status)
     }
 
+    #[inline]
     pub fn produce_output_buffer_list_with_descriptions(
         &mut self,
         buffer_list: &mut audio::BufferList,
@@ -580,10 +579,23 @@ impl CodecRef {
         Ok((number_packets, status))
     }
 
+    #[doc(alias = "AudioCodecSetProperty")]
+    #[inline]
+    pub unsafe fn set_prop(
+        &mut self,
+        property_id: u32,
+        property_size: u32,
+        property_data: *const u8,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            AudioCodecSetProperty(&mut self.0, property_id, property_size, property_data).result()
+        }
+    }
+
+    #[doc(alias = "AudioCodecGetPropertyInfo")]
     #[inline]
     pub unsafe fn prop_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
-        let mut size: u32 = 0;
-        let mut writable: bool = false;
+        let (mut size, mut writable) = (0u32, false);
         unsafe {
             AudioCodecGetPropertyInfo(&self.0, property_id, &mut size, &mut writable).result()?
         };
@@ -608,8 +620,7 @@ impl CodecRef {
 
     #[inline]
     pub fn maximum_packet_byte_size(&self) -> Result<usize, os::Status> {
-        let mut value: u32 = 0;
-        let mut size: u32 = std::mem::size_of_val(&value) as _;
+        let (mut value, mut size) = (0u32, 4u32);
         unsafe {
             AudioCodecGetProperty(
                 &self.0,
@@ -631,7 +642,7 @@ impl Codec {
         magic_cookie: Option<&[u8]>,
     ) -> Result<(), os::Status> {
         unsafe {
-            let res = match magic_cookie {
+            match magic_cookie {
                 Some(cookie) => AudioCodecInitialize(
                     self,
                     input_format,
@@ -642,8 +653,8 @@ impl Codec {
                 None => {
                     AudioCodecInitialize(self, input_format, output_format, std::ptr::null(), 0)
                 }
-            };
-            res.result()
+            }
+            .result()
         }
     }
 
@@ -779,5 +790,7 @@ mod tests {
         assert!(!cookie_info.is_empty());
         let max_packet_size = codec.maximum_packet_byte_size().unwrap();
         assert_eq!(max_packet_size, 1536);
+
+        codec.show();
     }
 }

@@ -227,6 +227,8 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioComponentInstanceDispose(instance: &mut ComponentInstance) -> os::Status;
+
+    //fn CAShow(in_object: *const c_void);
 }
 
 #[cfg(test)]
