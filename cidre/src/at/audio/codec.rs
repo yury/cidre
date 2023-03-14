@@ -827,7 +827,7 @@ mod tests {
 
         let applicable_output_sample_rates = inst.applicable_output_sample_rates().unwrap();
         println!("{applicable_output_sample_rates:?}");
-        // assert!(!applicable_output_sample_rates.is_empty());
+        assert!(!applicable_output_sample_rates.is_empty());
 
         let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
         let cookie_info = codec.magic_cookie().unwrap();
