@@ -2,7 +2,11 @@ use crate::{at::audio, os};
 
 pub type Codec = audio::ComponentInstance;
 pub struct CodecRef(audio::ComponentInstanceRef);
+
+#[repr(transparent)]
 pub struct GlobalPropertyID(pub u32);
+
+#[repr(transparent)]
 pub struct InstancePropertyID(pub u32);
 
 impl GlobalPropertyID {
@@ -577,7 +581,7 @@ impl CodecRef {
     }
 
     #[inline]
-    pub unsafe fn property_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
+    pub unsafe fn prop_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
         let mut size: u32 = 0;
         let mut writable: bool = false;
         unsafe {
@@ -589,7 +593,7 @@ impl CodecRef {
     #[inline]
     pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
         unsafe {
-            let (mut size, _) = self.property_info(InstancePropertyID::MAGIC_COOKIE.0)?;
+            let (mut size, _) = self.prop_info(InstancePropertyID::MAGIC_COOKIE.0)?;
             let mut vec = vec![0u8; size as _];
             AudioCodecGetProperty(
                 &self.0,
@@ -600,6 +604,22 @@ impl CodecRef {
             .result()?;
             Ok(vec)
         }
+    }
+
+    #[inline]
+    pub fn maximum_packet_byte_size(&self) -> Result<usize, os::Status> {
+        let mut value: u32 = 0;
+        let mut size: u32 = std::mem::size_of_val(&value) as _;
+        unsafe {
+            AudioCodecGetProperty(
+                &self.0,
+                InstancePropertyID::MAXIMUM_PACKET_BYTE_SIZE.0,
+                &mut size,
+                &mut value as *mut u32 as *mut u8,
+            )
+            .result()?;
+        }
+        Ok(value as _)
     }
 }
 
@@ -756,5 +776,8 @@ mod tests {
         let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
         let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
         let cookie_info = codec.magic_cookie().unwrap();
+        assert!(!cookie_info.is_empty());
+        let max_packet_size = codec.maximum_packet_byte_size().unwrap();
+        assert_eq!(max_packet_size, 1536);
     }
 }
