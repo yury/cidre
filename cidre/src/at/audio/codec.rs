@@ -594,13 +594,7 @@ impl CodecRef {
 
     #[inline]
     pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
-        let prop_id = InstancePropertyID::MAGIC_COOKIE.0;
-        unsafe {
-            let (mut size, _) = self.0.prop_info(prop_id)?;
-            let mut vec = vec![0u8; size as _];
-            AudioCodecGetProperty(&self.0, prop_id, &mut size, vec.as_mut_ptr()).result()?;
-            Ok(vec)
-        }
+        unsafe { self.0.prop_vec(InstancePropertyID::MAGIC_COOKIE.0) }
     }
 
     #[inline]
