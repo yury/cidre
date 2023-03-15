@@ -1,5 +1,56 @@
 use crate::{at::audio, os};
 
+/// AudioCodec components translate audio data from one format to another. There
+/// are three kinds of AudioCodec components. Decoder components ('adec')
+/// translate data that isn't in linear PCM into linear PCM formatted data.
+/// Encoder components ('aenc') translate linear PCM data into some other format.
+/// Unity codecs ('acdc') translate between different flavors of the same type
+/// (e.g. 16 bit signed integer linear PCM into 32 bit floating point linear PCM).
+///
+/// AudioCodec components are standard components and are managed by the Component
+/// Manager.
+///
+/// Once an AudioCodec is found that implements the translation in question,
+/// it has to be set up to do the translation. This can be done by setting the
+/// appropriate properties or by calling AudioCodecInitialize. If the translation
+/// is specified by properties, AudioCodecInitialize still needs to be called
+/// prior to appending input data or producing output data.
+
+/// AudioCodecInitialize puts the codec into the "initialized" state. In this state,
+/// the format information for the translation cannot be changed. The codec
+/// has to be in the initialized state for AudioCodecAppendInputData and
+/// AudioCodecProduceOutputData to work. They will return kAudioCodecStateError
+/// if the codec isn't initialized.
+///
+/// AudioCodecUninitialize will return the codec to the uninitialized state and
+/// release any allocated resources. The codec may then be configured freely. It is not
+/// necessary to call AudioCodecUninitialize prior to closing the codec.
+///
+/// Once in the initialized state, the codec is ready to receive input and produce
+/// output using the AudioCodecAppendInputData and AudioCodecProduceOutputData
+/// routines. Input data can be fed into an encoder and some decoders in any size (even
+/// byte by byte). Input data fed to a decoder should be in terms of whole packets in the
+/// encoded format if the format is variable bit rate and is not self framing (e.g. MPEG-4 AAC).
+/// Output data can only be produced in whole packet sizes. Both routines will return
+/// the amount of data they consume/produce.
+///
+/// AudioCodecProduceOutputData also returns a status code to the caller that
+/// indicates the result of the operation (success or failure) as well as the
+/// state of the input buffer.
+///
+/// The combination of AppendInputData and ProduceOutputPackets can be thought of a "push-pull"
+/// model of data handling. First, the input data is pushed into the component and the
+/// resulting output data gets pulled out of that same component.
+///
+/// Basic Workflow
+/// 1. Find the appropriate codec component
+/// 2. Open the codec component
+/// 3. Configure it (AudioCodecGetPropertyInfo, AudioCodecGetProperty, AudioCodecSetProperty)
+/// 4. AudioCodecInitialize
+/// 5. Loop
+/// 	a. AppendInputData (EOF is signaled by passing a 0-sized buffer)
+/// 	b. ProduceOutputPackets
+/// 6. Close the codec component
 pub type Codec = audio::ComponentInstance;
 pub struct CodecRef(audio::ComponentInstanceRef);
 
@@ -379,6 +430,42 @@ impl InstancePropertyID {
     pub const PROGRAM_TARGET_LEVEL_CONSTANT: Self = Self(u32::from_be_bytes(*b"ptlc"));
 }
 
+/// Constants defining various bit rate control modes
+/// to be used with kAudioCodecPropertyBitRateControlMode.
+/// These modes are only applicable to encoders that can produce
+/// variable packet sizes, such as AAC.
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(u32)]
+pub enum BitRateControlMode {
+    /// The encoder maintains a constant bit rate suitable for use over a transmission
+    /// channel when decoding in real-time with a fixed end-to-end audio delay.  
+    /// Note that while a constant bit rate is maintained in this mode, the number of bits
+    /// allocated to encode each fixed length of audio data may be variable
+    /// (ie. packet sizes are variable).
+    /// E.g., MP3 and MPEG-AAC use a bit reservoir mechanism to meet that constraint.
+    Constant = 0,
+
+    ///  The provided target bit rate is achieved over a long term average
+    ///  (typically after the first 1000 packets). This mode is similar to
+    ///  BitRateControlMode::Constant in the sense that the
+    ///  target bit rate will be maintained in a long term average. However, it does not
+    ///  provide constant delay when using constant bit rate transmission. This mode offers
+    ///  a better sound quality than BitRateControlMode::Constant
+    ///  can, that is, a more efficient encoding is performed.
+    LongTermAverage = 1,
+
+    /// Encoder dynamically allocates the bit resources according to the characteristics
+    /// of the underlying signal. However, some constraints are applied in order to limit
+    /// the variation of the bit rate.
+    VariableConstrained = 2,
+
+    /// Similar to the VBR constrained mode, however the packet size is virtually unconstrained.
+    /// The coding process targets constant sound quality, and the sound quality level is
+    /// set by kAudioCodecPropertySoundQualityForVBR.
+    /// This mode usually provides the best tradeoff between quality and bit rate.
+    Variable = 3,
+}
+
 #[doc(alias = "kAudioDecoderComponentType")]
 pub const DECODER_COMPONENT_TYPE: os::Type = u32::from_be_bytes(*b"adec");
 
@@ -449,10 +536,10 @@ impl CodecRef {
     pub fn produce_output_packets(
         &mut self,
         data: &mut [u8],
-    ) -> Result<(u32, os::Status), os::Status> {
+    ) -> Result<(u32, ProduceOutputPacketStatus), os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = 0;
-        let mut status = os::Status::NO_ERR;
+        let mut status = ProduceOutputPacketStatus::Failure;
 
         unsafe {
             AudioCodecProduceOutputPackets(
@@ -474,10 +561,10 @@ impl CodecRef {
         &mut self,
         data: &mut [u8],
         out_packet_descriptions: &mut [audio::StreamPacketDescription],
-    ) -> Result<(u32, u32, os::Status), os::Status> {
+    ) -> Result<(u32, u32, ProduceOutputPacketStatus), os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = out_packet_descriptions.len() as _;
-        let mut status = os::Status::NO_ERR;
+        let mut status = ProduceOutputPacketStatus::Failure;
 
         unsafe {
             AudioCodecProduceOutputPackets(
@@ -662,6 +749,39 @@ impl Codec {
     }
 
     #[inline]
+    pub fn bit_rate_control_mode(&self) -> Result<BitRateControlMode, os::Status> {
+        let (mut size, mut value) = (4u32, 0u32);
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::BIT_RATE_CONTROL_MODE.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(std::mem::transmute(value))
+        }
+    }
+
+    #[inline]
+    pub fn set_bit_rate_control_mode(
+        &mut self,
+        value: BitRateControlMode,
+    ) -> Result<(), os::Status> {
+        let (size, value) = (4u32, value as u32);
+        unsafe {
+            AudioCodecSetProperty(
+                self,
+                InstancePropertyID::BIT_RATE_CONTROL_MODE.0,
+                size,
+                &value as *const _ as _,
+            )
+            .result()?;
+            Ok(())
+        }
+    }
+
+    #[inline]
     pub fn applicable_input_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
         unsafe { self.prop_vec(InstancePropertyID::APPLICABLE_INPUT_SAMPLE_RATES.0) }
     }
@@ -706,6 +826,39 @@ impl Drop for Codec {
     }
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[repr(u32)]
+pub enum ProduceOutputPacketStatus {
+    /// Couldn't complete the request due to an error. It is possible
+    /// that some output data was produced. This is reflected in the value
+    /// returned in ioNumberPackets.
+    Failure = 1,
+
+    /// The number of requested output packets was produced without incident
+    /// and there isn't any more input data to process
+    Success = 2,
+
+    /// The number of requested output packets was produced and there is
+    /// enough input data to produce at least one more packet of output data
+    SuccessHasMore = 3,
+
+    /// There was insufficient input data to produce the requested
+    /// number of output packets, The value returned in ioNumberPackets
+    /// holds the number of output packets produced.
+    NeedsMoreInputData = 4,
+
+    /// The end-of-file marker was hit during the processing. Fewer
+    /// than the requested number of output packets may have been
+    /// produced. Check the value returned in ioNumberPackets for the
+    /// actual number produced. Note that not all formats have EOF
+    /// markers in them.    
+    AtEOF = 5,
+
+    /// No input packets were provided, but the decoder supports packet
+    /// loss concealment, so output packets were still created.
+    SuccessConcealed = 6,
+}
+
 extern "C" {
     fn AudioCodecReset(in_codec: &mut Codec) -> os::Status;
     fn AudioCodecInitialize(
@@ -732,7 +885,7 @@ extern "C" {
         io_output_data_byte_size: &mut u32,
         io_number_packets: &mut u32,
         out_packet_description: *mut audio::StreamPacketDescription,
-        out_status: &mut os::Status,
+        out_status: &mut ProduceOutputPacketStatus,
     ) -> os::Status;
 
     fn AudioCodecAppendInputBufferList(
@@ -828,6 +981,9 @@ mod tests {
         let applicable_output_sample_rates = inst.applicable_output_sample_rates().unwrap();
         println!("{applicable_output_sample_rates:?}");
         assert!(!applicable_output_sample_rates.is_empty());
+
+        let mode = inst.bit_rate_control_mode().unwrap();
+        assert_eq!(audio::CodecBitRateControlMode::LongTermAverage, mode);
 
         let codec = inst.into_codec(&src_asbd, &dst_asbd, None).unwrap();
         let cookie_info = codec.magic_cookie().unwrap();

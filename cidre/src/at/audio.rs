@@ -38,10 +38,12 @@ pub use file::Permissions as FilePermissions;
 pub use file::PropertyID as FilePropertyID;
 
 mod codec;
+pub use codec::BitRateControlMode as CodecBitRateControlMode;
 pub use codec::Codec;
 pub use codec::GlobalPropertyID as CodecGlobalPropertyID;
 pub use codec::InstancePropertyID as CodecInstancePropertyID;
 pub use codec::MagicCookieInfo as CodecMagicCookieInfo;
+pub use codec::ProduceOutputPacketStatus as CodecProduceOutputPacketStatus;
 pub use codec::DECODER_COMPONENT_TYPE;
 pub use codec::ENCODER_COMPONENT_TYPE;
 pub use codec::UNITY_CODEC_COMPONENT_TYPE;
