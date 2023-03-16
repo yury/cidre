@@ -50,10 +50,23 @@ pub struct Buffer {
 /// A variable length array of AudioBuffer structures.
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct BufferList {
+pub struct BufferList<const N: usize = 1> {
     pub number_buffers: u32,
     /// this is a variable length array of `number_buffers` elements
-    pub buffers: [Buffer; 1],
+    pub buffers: [Buffer; N],
+}
+
+impl<const N: usize> Default for BufferList<N> {
+    fn default() -> Self {
+        Self {
+            number_buffers: N as _,
+            buffers: [Buffer {
+                number_channels: 1,
+                data_bytes_size: 0,
+                data: std::ptr::null_mut(),
+            }; N],
+        }
+    }
 }
 
 pub struct BufferListCursor<'a, const N: usize> {

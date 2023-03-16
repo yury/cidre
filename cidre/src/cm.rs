@@ -31,6 +31,7 @@ pub use time::TimeScale;
 pub use time::TimeValue;
 
 pub mod sample_buffer;
+pub use sample_buffer::BlockBufferAudioBufferList;
 pub use sample_buffer::Flags as SampleBufferFlags;
 pub use sample_buffer::SampleBuffer;
 pub use sample_buffer::SampleTimingInfo;

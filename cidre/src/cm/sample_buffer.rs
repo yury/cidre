@@ -250,18 +250,18 @@ impl SampleBuffer {
         unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, value) }
     }
 
-    /// Returns the size in bytes of a specified sample in a CMSampleBuffer.
+    /// Returns the size in bytes of a specified sample in a cm::SampleBuffer.
     ///
-    /// Size in bytes of the specified sample in the CMSampleBuffer.
+    /// Size in bytes of the specified sample in the cm::SampleBuffer.
     #[inline]
     pub fn sample_size(&self, sample_index: cm::ItemIndex) -> usize {
         unsafe { CMSampleBufferGetSampleSize(self, sample_index) }
     }
 
-    /// Returns the total size in bytes of sample data in a CMSampleBuffer.
+    /// Returns the total size in bytes of sample data in a cm::SampleBuffer.
     ///
-    /// Total size in bytes of sample data in the CMSampleBuffer.
-    /// If there are no sample sizes in this CMSampleBuffer, a size of 0 will be returned.  
+    /// Total size in bytes of sample data in the cm::SampleBuffer.
+    /// If there are no sample sizes in this cm::SampleBuffer, a size of 0 will be returned.  
     #[inline]
     pub fn total_sample_size(&self) -> usize {
         unsafe { CMSampleBufferGetTotalSampleSize(self) }
@@ -358,9 +358,70 @@ impl SampleBuffer {
         }
     }
 
+    #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
+    pub fn audio_buffer_list<const N: usize>(
+        &self,
+    ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
+        self.audio_buffer_list_in(Flags::AUDIO_BUFFER_LIST_ASSURE16_BYTE_ALIGNMENT, None, None)
+    }
+
+    /// Creates an audio::BufferList containing the data from the cm::SampleBuffer,
+    /// and a cm::BlockBuffer which references (and manages the lifetime of) the
+    /// data in that audio::BufferList. The data may or may not be copied,
+    /// depending on the contiguity and 16-byte alignment of the cm::SampleBuffer's
+    /// data. The buffers placed in the audio::BufferList are guaranteed to be contiguous.
+    /// The buffers in the audio::BufferList will be 16-byte-aligned if
+    /// kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment is passed in.
+    #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
+    pub fn audio_buffer_list_in<const N: usize>(
+        &self,
+        flags: Flags,
+        block_buffer_structure_allocator: Option<&cf::Allocator>,
+        block_buffer_allocator: Option<&cf::Allocator>,
+    ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
+        let mut block_buff = None;
+        let mut list = audio::BufferList::<N>::default();
+        unsafe {
+            CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+                self,
+                std::ptr::null_mut(),
+                std::mem::transmute(&mut list),
+                std::mem::size_of::<audio::BufferList<N>>(),
+                block_buffer_structure_allocator,
+                block_buffer_allocator,
+                flags,
+                &mut block_buff,
+            )
+            .result()?;
+
+            Ok(BlockBufferAudioBufferList {
+                list,
+                block: block_buff.unwrap_unchecked(),
+            })
+        }
+    }
+
     #[inline]
     pub fn num_samples(&self) -> cf::Index {
         unsafe { CMSampleBufferGetNumSamples(self) }
+    }
+}
+
+#[derive(Debug)]
+pub struct BlockBufferAudioBufferList<const N: usize> {
+    list: audio::BufferList<N>,
+    block: arc::R<cm::BlockBuffer>,
+}
+
+impl<const N: usize> BlockBufferAudioBufferList<N> {
+    #[inline]
+    pub fn list(&self) -> &audio::BufferList<N> {
+        &self.list
+    }
+
+    #[inline]
+    pub fn block(&self) -> &cm::BlockBuffer {
+        &self.block
     }
 }
 
@@ -430,6 +491,17 @@ extern "C" {
         sbuf: &SampleBuffer,
         packet_descriptions_pointer_out: *mut audio::StreamPacketDescription,
         packet_descriptions_size_out: *mut usize,
+    ) -> os::Status;
+
+    fn CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+        sbuf: &SampleBuffer,
+        buffer_list_size_needed_out: *mut usize,
+        buffer_list_out: *mut audio::BufferList,
+        buffer_list_size: usize,
+        block_buffer_structure_allocator: Option<&cf::Allocator>,
+        block_buffer_allocator: Option<&cf::Allocator>,
+        flags: Flags,
+        block_buffer_out: &mut Option<arc::R<cm::BlockBuffer>>,
     ) -> os::Status;
 
     fn CMSampleBufferGetNumSamples(sbuf: &SampleBuffer) -> cf::Index;
