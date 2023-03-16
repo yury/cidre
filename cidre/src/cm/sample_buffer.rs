@@ -1,7 +1,9 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, ptr::slice_from_raw_parts};
 
 use crate::{
-    arc, cat,
+    arc,
+    at::audio,
+    cat,
     cf::{self, Allocator},
     cm, cv, define_cf_type, define_options, os,
 };
@@ -329,6 +331,33 @@ impl SampleBuffer {
         }
     }
 
+    /// Returns a pointer to (and size of) a constant array of
+    /// AudioStreamPacketDescriptions for the variable bytes per
+    /// packet or variable frames per packet audio data in the
+    /// provided CMSampleBuffer.  The pointer will remain valid
+    /// as long as the sbuf continues to be retained.
+    /// Constant bitrate, constant frames-per-packet audio yields a
+    /// return value of noErr and no packet descriptions.  This API is
+    /// specific to audio format sample buffers, and will return
+    /// kCMSampleBufferError_InvalidMediaTypeForOperation if called
+    /// with a non-audio sample buffer.
+    #[doc(alias = "CMSampleBufferGetAudioStreamPacketDescriptionsPtr")]
+    #[inline]
+    pub fn audio_stream_packet_descriptions(
+        &self,
+    ) -> Result<Option<&[audio::StreamPacketDescription]>, os::Status> {
+        let ptr: *mut audio::StreamPacketDescription = std::ptr::null_mut();
+        let mut size = 0;
+        unsafe {
+            CMSampleBufferGetAudioStreamPacketDescriptionsPtr(self, ptr, &mut size).result()?;
+            if ptr.is_null() {
+                return Ok(None);
+            }
+
+            Ok(Some(&*slice_from_raw_parts(ptr, size)))
+        }
+    }
+
     #[inline]
     pub fn num_samples(&self) -> cf::Index {
         unsafe { CMSampleBufferGetNumSamples(self) }
@@ -395,6 +424,12 @@ extern "C" {
         frame_offset: i32,
         num_frames: i32,
         buffer_list: &mut cat::audio::BufferList,
+    ) -> os::Status;
+
+    fn CMSampleBufferGetAudioStreamPacketDescriptionsPtr(
+        sbuf: &SampleBuffer,
+        packet_descriptions_pointer_out: *mut audio::StreamPacketDescription,
+        packet_descriptions_size_out: *mut usize,
     ) -> os::Status;
 
     fn CMSampleBufferGetNumSamples(sbuf: &SampleBuffer) -> cf::Index;

@@ -38,6 +38,7 @@ pub use file::Permissions as FilePermissions;
 pub use file::PropertyID as FilePropertyID;
 
 mod codec;
+pub use codec::quality as codec_quality;
 pub use codec::BitRateControlMode as CodecBitRateControlMode;
 pub use codec::Codec;
 pub use codec::GlobalPropertyID as CodecGlobalPropertyID;

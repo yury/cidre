@@ -52,6 +52,8 @@ use crate::{at::audio, os};
 /// 	b. ProduceOutputPackets
 /// 6. Close the codec component
 pub type Codec = audio::ComponentInstance;
+
+/// Initialized Codec Instance
 pub struct CodecRef(audio::ComponentInstanceRef);
 
 #[repr(transparent)]
@@ -666,19 +668,6 @@ impl CodecRef {
         Ok((number_packets, status))
     }
 
-    #[doc(alias = "AudioCodecSetProperty")]
-    #[inline]
-    pub unsafe fn set_prop(
-        &mut self,
-        property_id: u32,
-        property_size: u32,
-        property_data: *const u8,
-    ) -> Result<(), os::Status> {
-        unsafe {
-            AudioCodecSetProperty(&mut self.0, property_id, property_size, property_data).result()
-        }
-    }
-
     #[inline]
     pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
         unsafe { self.0.prop_vec(InstancePropertyID::MAGIC_COOKIE.0) }
@@ -697,6 +686,11 @@ impl CodecRef {
             .result()?;
         }
         Ok(value as _)
+    }
+
+    #[inline]
+    pub fn quality(&self) -> Result<u32, os::Status> {
+        self.0.quality()
     }
 }
 
@@ -748,6 +742,35 @@ impl Codec {
         Ok(vec)
     }
 
+    pub unsafe fn set_prop<T: Sized>(
+        &mut self,
+        property_id: u32,
+        value: &T,
+    ) -> Result<(), os::Status> {
+        let size = std::mem::size_of::<T>() as u32;
+        unsafe { AudioCodecSetProperty(self, property_id, size, &value as *const _ as _).result() }
+    }
+
+    #[inline]
+    pub fn quality(&self) -> Result<u32, os::Status> {
+        let (mut size, mut value) = (4u32, 0u32);
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::QUALITY_SETTING.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(value)
+        }
+    }
+
+    #[inline]
+    pub fn set_quality(&mut self, value: u32) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstancePropertyID::QUALITY_SETTING.0, &value) }
+    }
+
     #[inline]
     pub fn bit_rate_control_mode(&self) -> Result<BitRateControlMode, os::Status> {
         let (mut size, mut value) = (4u32, 0u32);
@@ -768,17 +791,7 @@ impl Codec {
         &mut self,
         value: BitRateControlMode,
     ) -> Result<(), os::Status> {
-        let (size, value) = (4u32, value as u32);
-        unsafe {
-            AudioCodecSetProperty(
-                self,
-                InstancePropertyID::BIT_RATE_CONTROL_MODE.0,
-                size,
-                &value as *const _ as _,
-            )
-            .result()?;
-            Ok(())
-        }
+        unsafe { self.set_prop(InstancePropertyID::BIT_RATE_CONTROL_MODE.0, &value) }
     }
 
     #[inline]
@@ -847,7 +860,7 @@ pub enum ProduceOutputPacketStatus {
     /// holds the number of output packets produced.
     NeedsMoreInputData = 4,
 
-    /// The end-of-file marker was hit during the processing. Fewer
+    /// The end-of-fle marker was hit during the processing. Fewer
     /// than the requested number of output packets may have been
     /// produced. Check the value returned in ioNumberPackets for the
     /// actual number produced. Note that not all formats have EOF
@@ -859,8 +872,17 @@ pub enum ProduceOutputPacketStatus {
     SuccessConcealed = 6,
 }
 
+pub mod quality {
+    pub const MAX: u32 = 0x7F;
+    pub const HIGH: u32 = 0x60;
+    pub const MEDIUM: u32 = 0x40;
+    pub const LOW: u32 = 0x20;
+    pub const MIN: u32 = 0x00;
+}
+
 extern "C" {
     fn AudioCodecReset(in_codec: &mut Codec) -> os::Status;
+
     fn AudioCodecInitialize(
         in_codec: &mut Codec,
         in_input_format: *const audio::StreamBasicDescription,
@@ -990,5 +1012,8 @@ mod tests {
         assert!(!cookie_info.is_empty());
         let max_packet_size = codec.maximum_packet_byte_size().unwrap();
         assert_eq!(max_packet_size, 1536);
+
+        let quality = codec.quality().unwrap();
+        assert_eq!(quality, audio::codec_quality::MEDIUM);
     }
 }
