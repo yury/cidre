@@ -21,43 +21,53 @@ define_obj_type!(Type(ns::String));
 /// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
 /// ```
 impl Type {
+    #[doc(alias = "AVCaptureDeviceTypeExternalUnknown")]
     #[cfg(target_os = "macos")]
     pub fn external_unknown() -> &'static Self {
         unsafe { AVCaptureDeviceTypeExternalUnknown }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
     pub fn built_in_microphone() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInMicrophone }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInWideAngleCamera")]
     pub fn built_in_wide_angle_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInWideAngleCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInTelephotoCamera")]
     pub fn built_in_telephoto_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTelephotoCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInUltraWideCamera")]
     pub fn built_in_ultra_wide_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInUltraWideCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInDualCamera")]
     pub fn built_in_dual_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInDualCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInDualWideCamera")]
     pub fn built_in_dual_wide_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInDualWideCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInTripleCamera")]
     pub fn built_in_tripple_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTripleCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInTrueDepthCamera")]
     pub fn built_in_true_depth_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTrueDepthCamera }
     }
 
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInLiDARDepthCamera")]
     pub fn built_in_lidar_depth_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInLiDARDepthCamera }
     }
@@ -79,6 +89,7 @@ extern "C" {
     static AVCaptureDeviceTypeBuiltInLiDARDepthCamera: &'static Type;
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(isize)]
 pub enum Position {
     Unspecified = 0,
@@ -222,6 +233,7 @@ extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum TorchMode {
     Off = 0,
@@ -229,6 +241,7 @@ pub enum TorchMode {
     Auto = 2,
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum FocusMode {
     Locked = 0,
@@ -236,7 +249,7 @@ pub enum FocusMode {
     ContinuousAutoFocus = 2,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum AutoFocusSystem {
     None = 0,
