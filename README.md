@@ -1,4 +1,16 @@
 
+## Goals
+
+- Performance 
+- Zero cost objc interop
+
+### Performance 
+
+- Zero cost selectors calls
+- Almost fully integrated async blocks
+- C API interface
+
+
 ### Shortcuts
 
 - length -> len
