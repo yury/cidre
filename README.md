@@ -3,6 +3,8 @@
 
 - Performance 
 - Zero cost objc interop
+- ML friendly
+- Rusty API
 
 ### Performance 
 
