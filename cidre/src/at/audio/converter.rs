@@ -669,35 +669,36 @@ impl Converter {
     ///
     /// Use [`.convert_complex_buf()`].
     #[inline]
-    pub unsafe fn convert_complex_buffer(
+    pub unsafe fn convert_complex_buffer<const N1: usize, const N2: usize>(
         &self,
         in_number_pcm_frames: u32,
-        in_input_data: *const audio::BufferList,
-        out_output_data: *mut audio::BufferList,
+        in_input_data: *const audio::BufferList<N1>,
+        out_output_data: *mut audio::BufferList<N2>,
     ) -> os::Status {
         AudioConverterConvertComplexBuffer(
             self,
             in_number_pcm_frames,
-            in_input_data,
-            out_output_data,
+            std::mem::transmute(in_input_data),
+            std::mem::transmute(out_output_data),
         )
     }
 
+    /// Converts PCM data from an input buffer list to an output buffer list.
+    ///
+    /// This function will fail for any conversion where there is a
+    /// variable relationship between the input and output data buffer sizes. This
+    /// includes sample rate conversions and most compressed formats. In these cases,
+    /// use AudioConverterFillComplexBuffer. Generally this function is only appropriate for
+    /// PCM-to-PCM conversions where there is no sample rate conversion.
+    #[doc(alias = "AudioConverterConvertComplexBuffer")]
     #[inline]
-    pub fn convert_complex_buf(
+    pub fn convert_complex_buf<const N1: usize, const N2: usize>(
         &self,
         frames: u32,
-        input: &audio::BufferList,
-        output: &mut audio::BufferList,
+        input: &audio::BufferList<N1>,
+        output: &mut audio::BufferList<N2>,
     ) -> Result<(), os::Status> {
-        unsafe {
-            self.convert_complex_buffer(
-                frames,
-                input as *const _ as *const _,
-                output as *mut _ as *mut _,
-            )
-        }
-        .result()
+        unsafe { self.convert_complex_buffer(frames, input as *const _, output as *mut _) }.result()
     }
 
     #[inline]

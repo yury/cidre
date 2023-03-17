@@ -450,6 +450,39 @@ impl FormatFlags {
     pub const APPLE_LOSSLESS_32_BIT_SOURCE_DATA: Self = Self(4);
 }
 
+impl std::fmt::Display for FormatFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FormatFlags")
+            .field("raw", &self.0)
+            .field("IS_FLOAT", &self.contains(FormatFlags::IS_FLOAT))
+            .field("IS_BIG_ENDIAN", &self.contains(FormatFlags::IS_BIG_ENDIAN))
+            .field(
+                "IS_SIGNED_INTEGER",
+                &self.contains(FormatFlags::IS_SIGNED_INTEGER),
+            )
+            .field("IS_PACKED", &self.contains(FormatFlags::IS_PACKED))
+            .field(
+                "IS_ALIGNED_HIGH",
+                &self.contains(FormatFlags::IS_ALIGNED_HIGH),
+            )
+            .field(
+                "IS_NON_INTERLEAVED",
+                &self.contains(FormatFlags::IS_NON_INTERLEAVED),
+            )
+            .field(
+                "IS_NON_MIXABLE",
+                &self.contains(FormatFlags::IS_NON_MIXABLE),
+            )
+            .field("ALL_CLEAR", &self.contains(FormatFlags::ALL_CLEAR))
+            .field("NATIVE_ENDIAN", &self.contains(FormatFlags::NATIVE_ENDIAN))
+            .field(
+                "NATIVE_FLOAT_PACKED",
+                &self.contains(FormatFlags::NATIVE_FLOAT_PACKED),
+            )
+            .finish()
+    }
+}
+
 /// This structure encapsulates all the information for describing the basic
 /// format properties of a stream of audio data.
 ///
