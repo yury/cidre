@@ -12,12 +12,8 @@ define_options!(Flags(u32));
 
 impl Flags {
     /// Make sure memory involved in audio buffer lists is 16-byte aligned
-    pub const AUDIO_BUFFER_LIST_ASSURE16_BYTE_ALIGNMENT: Self = Self(1 << 0);
+    pub const AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT: Self = Self(1 << 0);
 }
-
-// use super::{formaFormatDescription};
-
-// pub type ArrayRetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 
 pub type SampleBufferMakeDataReadyCallback =
     extern "C" fn(sbuf: &SampleBuffer, make_data_ready_refcon: *const c_void);
@@ -47,15 +43,6 @@ impl SampleTimingInfo {
         unsafe { kCMTimingInfoInvalid }
     }
 }
-
-// typedef OSStatus (*CMSampleBufferMakeDataReadyCallback)
-// 	(CMSampleBufferRef CM_NONNULL sbuf,	/*! @param sbuf
-// 											The CMSampleBuffer to make ready. */
-// 	void * CM_NULLABLE makeDataReadyRefcon)	/*! @param makeDataReadyRefcon
-// 												Client refcon provided to CMSampleBufferCreate.
-// 												For example, it could point at info about the
-// 												scheduled read that needs to be forced to finish. */
-// 	API_AVAILABLE(macos(10.7), ios(4.0), tvos(9.0), watchos(6.0));
 
 define_cf_type!(SampleBuffer(cm::AttachmentBearer));
 
@@ -224,29 +211,37 @@ impl SampleBuffer {
         unsafe { CMSampleBufferSetDataBuffer(self, data_buffer).result() }
     }
 
+    /// Returns the output duration of a sample buffer.
+    #[doc(alias = "CMSampleBufferGetDuration")]
     #[inline]
     pub fn duration(&self) -> cm::Time {
         unsafe { CMSampleBufferGetDuration(self) }
     }
 
+    /// Returns the presentation timestamp that’s the earliest numerically of all the samples in a sample buffer.
+    #[doc(alias = "CMSampleBufferGetPresentationTimeStamp")]
     #[inline]
-    pub fn presentation_time_stamp(&self) -> cm::Time {
+    pub fn pts(&self) -> cm::Time {
         unsafe { CMSampleBufferGetPresentationTimeStamp(self) }
     }
 
+    /// Returns the decode timestamp that’s the earliest numerically of all the samples in a sample buffer.
+    #[doc(alias = "CMSampleBufferGetDecodeTimeStamp")]
     #[inline]
-    pub fn decode_time_stamp(&self) -> cm::Time {
+    pub fn dts(&self) -> cm::Time {
         unsafe { CMSampleBufferGetDecodeTimeStamp(self) }
     }
 
     /// Returns the output presentation timestamp of the CMSampleBuffer.
+    #[doc(alias = "CMSampleBufferGetOutputPresentationTimeStamp")]
     #[inline]
-    pub fn output_presentation_time_stamp(&self) -> cm::Time {
+    pub fn output_pts(&self) -> cm::Time {
         unsafe { CMSampleBufferGetOutputPresentationTimeStamp(self) }
     }
 
+    #[doc(alias = "CMSampleBufferSetOutputPresentationTimeStamp")]
     #[inline]
-    pub fn set_output_presentation_time_stamp(&self, value: cm::Time) {
+    pub fn set_output_pts(&self, value: cm::Time) {
         unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, value) }
     }
 
@@ -272,8 +267,9 @@ impl SampleBuffer {
         unsafe { CMSampleBufferGetFormatDescription(self) }
     }
 
-    /// Returns a reference to a CMSampleBuffer's immutable array of mutable sample attachments dictionaries (one dictionary
-    /// per sample in the CMSampleBuffer)
+    /// Returns a reference to a cm::SampleBuffer's immutable array of mutable sample attachments dictionaries (one dictionary
+    /// per sample in the cm::SampleBuffer)
+    #[doc(alias = "CMSampleBufferGetSampleAttachmentsArray")]
     #[inline]
     pub fn attachments(
         &self,
@@ -282,6 +278,8 @@ impl SampleBuffer {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 
+    /// Returns a value that indicates whether a sample buffer is valid.
+    #[doc(alias = "CMSampleBufferIsValid")]
     #[inline]
     pub fn is_valid(&self) -> bool {
         unsafe { CMSampleBufferIsValid(self) }
@@ -292,25 +290,27 @@ impl SampleBuffer {
     /// An invalid sample buffer cannot be used -- all accessors will return kCMSampleBufferError_Invalidated.
     /// It is not a good idea to do this to a sample buffer that another module may be accessing concurrently.
     /// Example of use: the invalidation callback could cancel pending I/O.
+    #[doc(alias = "CMSampleBufferInvalidate")]
     #[inline]
     pub fn invalidate(&self) -> os::Status {
         unsafe { CMSampleBufferInvalidate(self) }
     }
 
     /// Makes a CMSampleBuffer's data ready, by calling the client's CMSampleBufferMakeDataReadyCallback.
+    #[doc(alias = "CMSampleBufferMakeDataReady")]
     #[inline]
     pub fn make_data_ready(&self) -> os::Status {
         unsafe { CMSampleBufferMakeDataReady(self) }
     }
 
-    /// Copies PCM audio data from the given CMSampleBuffer into
-    /// a pre-populated AudioBufferList. The AudioBufferList must
+    /// Copies PCM audio data from the given cm::SampleBuffer into
+    /// a pre-populated audio::BufferList. The audio::BufferList must
     /// contain the same number of channels and its data buffers
     /// must be sized to hold the specified number of frames.
     /// This API is	specific to audio format sample buffers, and
     /// will return kCMSampleBufferError_InvalidMediaTypeForOperation
     /// if called with a non-audio sample buffer. It will return an
-    /// error if the CMSampleBuffer does not contain PCM audio data
+    /// error if the cm::SampleBuffer does not contain PCM audio data
     /// or if its dataBuffer is not ready.
     #[doc(alias = "CMSampleBufferCopyPCMDataIntoAudioBufferList")]
     #[inline]
@@ -363,7 +363,11 @@ impl SampleBuffer {
     pub fn audio_buffer_list<const N: usize>(
         &self,
     ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
-        self.audio_buffer_list_in(Flags::AUDIO_BUFFER_LIST_ASSURE16_BYTE_ALIGNMENT, None, None)
+        self.audio_buffer_list_in(
+            Flags::AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT,
+            None,
+            None,
+        )
     }
 
     /// Creates an audio::BufferList containing the data from the cm::SampleBuffer,

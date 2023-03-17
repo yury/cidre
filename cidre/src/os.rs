@@ -3,9 +3,21 @@ use crate::mac_types::FourCharCode;
 pub type Err = i16;
 
 /// https://www.osstatus.com
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Status(pub i32);
+
+impl std::fmt::Debug for Status {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("os::Status")
+            .field("raw", &self.0)
+            .field(
+                "help",
+                &format!("https://www.osstatus.com?search={}", self.0),
+            )
+            .finish()
+    }
+}
 
 pub type Type = FourCharCode;
 
