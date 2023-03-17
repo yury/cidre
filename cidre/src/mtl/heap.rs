@@ -1,7 +1,4 @@
-use crate::{
-    arc, define_cls, define_mtl, define_obj_type, mtl, ns,
-    objc::{self, Class},
-};
+use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
@@ -111,7 +108,7 @@ impl Heap {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_HEAP_DESCRIPTOR: &'static Class<Descriptor>;
+    static MTL_HEAP_DESCRIPTOR: &'static objc::Class<Descriptor>;
 }
 
 #[cfg(test)]
