@@ -546,7 +546,7 @@ pub mod attachment_keys {
         unsafe { kCMSampleAttachmentKey_IsDependedOnByOthers }
     }
 
-    /// kCFBooleanTrue (e.g., non-I-frame), kCFBooleanFalse (e.g. I-frame), or absent if unknown
+    /// cf::Boolean::value_true() (e.g., non-I-frame), cf::Boolean::value_false() (e.g. I-frame), or absent if unknown
     #[doc(alias = "kCMSampleAttachmentKey_DependsOnOthers")]
     #[inline]
     pub fn depends_on_others() -> &'static cf::String {
@@ -641,13 +641,13 @@ pub mod buffer_attachment_keys {
     /// If this attachment is on a buffer containing no samples, the first following buffer that contains samples is the
     /// buffer that contains the first samples from the next song.  The value of this attachment is a CFTypeRef.  This
     /// transition identifier should be unique within a playlist, so each transition in a playlist is uniquely
-    /// identifiable.  A CFNumberRef counter that increments with each transition is a simple example.
+    /// identifiable. A cf::Number counter that increments with each transition is a simple example.
     #[inline]
     pub fn transition_id() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_TransitionID }
     }
 
-    /// he duration that should be removed at the beginning of the sample buffer, after decoding.
+    /// The duration that should be removed at the beginning of the sample buffer, after decoding.
     #[inline]
     pub fn trim_duration_at_start() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_TrimDurationAtStart }
@@ -656,8 +656,8 @@ pub mod buffer_attachment_keys {
     /// The duration that should be removed at the end of the sample buffer, after decoding.
     ///
     /// If this attachment is not present, the trim duration is zero (nothing removed).
-    /// This is a CMTime in CFDictionary format as made by CMTimeCopyAsDictionary;
-    /// use CMTimeMakeFromDictionary to convert to CMTime.
+    /// This is a cm::Time in cf::Dictionary format as made by CMTimeCopyAsDictionary;
+    /// use CMTimeMakeFromDictionary to convert to cm::Time.
     #[inline]
     pub fn trim_duration_at_end() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_TrimDurationAtEnd }
@@ -815,18 +815,23 @@ pub mod errors {
     use crate::os::Status;
 
     /// An allocation failed.
+    #[doc(alias = "kCMSampleBufferError_AllocationFailed")]
     pub const ALLOCATION_FAILED: Status = Status(-12730);
 
     ///  NULL or 0 was passed for a required parameter.
+    #[doc(alias = "kCMSampleBufferError_RequiredParameterMissing")]
     pub const REQUIRED_PARAMETER_MISSING: Status = Status(-12731);
 
     /// Attempt was made to set a dataBuffer on a CMSampleBuffer that already has one.
+    #[doc(alias = "kCMSampleBufferError_AlreadyHasDataBuffer")]
     pub const ALREADY_HAS_DATA_BUFFER: Status = Status(-12732);
 
     /// Buffer could not be made ready.
+    #[doc(alias = "kCMSampleBufferError_BufferNotReady")]
     pub const BUFFER_NOT_READY: Status = Status(-12733);
 
     /// Sample index was not between 0 and numSamples-1, inclusive.
+    #[doc(alias = "kCMSampleBufferError_SampleIndexOutOfRange")]
     pub const SAMPLE_INDEX_OUT_OF_RANGE: Status = Status(-12734);
 
     /// Attempt to get sample size information when there was none.
