@@ -399,6 +399,9 @@ impl AudioFormatDescription {
         }
     }
 
+    /// Returns a read-only pointer to the audio stream description in an audio format description.
+    ///
+    /// This API is specific to audio format descriptions, and returns `None` if used with a non-audio format descriptions.
     pub fn stream_basic_description(&self) -> Option<&cat::audio::StreamBasicDescription> {
         unsafe { CMAudioFormatDescriptionGetStreamBasicDescription(self) }
     }
