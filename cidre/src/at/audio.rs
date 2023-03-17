@@ -41,6 +41,7 @@ mod codec;
 pub use codec::quality as codec_quality;
 pub use codec::BitRateControlMode as CodecBitRateControlMode;
 pub use codec::Codec;
+pub use codec::CodecRef;
 pub use codec::GlobalPropertyID as CodecGlobalPropertyID;
 pub use codec::InstancePropertyID as CodecInstancePropertyID;
 pub use codec::MagicCookieInfo as CodecMagicCookieInfo;

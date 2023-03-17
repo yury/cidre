@@ -583,16 +583,16 @@ impl CodecRef {
     }
 
     #[inline]
-    pub fn append_input_buffer_list(
+    pub fn append_input_buffer_list<const N: usize>(
         &mut self,
-        in_buffer_list: &audio::BufferList,
+        in_buffer_list: &audio::BufferList<N>,
     ) -> Result<u32, os::Status> {
         let mut bytes_consumed: u32 = 0;
         let mut packets_len: u32 = 0;
         unsafe {
             AudioCodecAppendInputBufferList(
                 &mut self.0,
-                in_buffer_list,
+                std::mem::transmute(in_buffer_list),
                 &mut packets_len,
                 std::ptr::null(),
                 &mut bytes_consumed,
@@ -1015,5 +1015,63 @@ mod tests {
 
         let quality = codec.quality().unwrap();
         assert_eq!(quality, audio::codec_quality::MEDIUM);
+    }
+
+    #[test]
+    fn codec_init() {
+        let sample_rate = 48000.0;
+        let channels_per_frame = 2;
+        let src_asbd = audio::StreamBasicDescription {
+            sample_rate,
+            format_id: audio::FormatID(1819304813),
+            // format_id: audio::FormatID::LINEAR_PCM,
+            format_flags: audio::FormatFlags(41),
+            // format_flags: audio::FormatFlags(0),
+            bytes_per_packet: 4,
+            frames_per_packet: 1,
+            bytes_per_frame: 4,
+            channels_per_frame,
+            bits_per_channel: 32,
+            reserved: 0,
+        };
+
+        let src_asbd2 = audio::StreamBasicDescription {
+            sample_rate,
+            channels_per_frame,
+            format_id: audio::FormatID::LINEAR_PCM,
+            format_flags: audio::FormatFlags::NATIVE_FLOAT_PACKED, //audio::FormatFlags::IS_FLOAT | audio::FormatFlags::IS_PACKED,
+            bytes_per_packet: 4 * channels_per_frame,
+            frames_per_packet: 1,
+            bytes_per_frame: 4 * channels_per_frame,
+            bits_per_channel: 32,
+            ..Default::default()
+        };
+
+        println!(
+            "
+                {src_asbd:#?}
+                {src_asbd2:#?}
+            "
+        );
+
+        let dst_asbd = audio::StreamBasicDescription {
+            sample_rate,
+            channels_per_frame,
+            format_id: audio::FormatID::MPEG4_AAC,
+            format_flags: audio::FormatFlags::ALL_CLEAR,
+            frames_per_packet: 1024,
+            ..Default::default()
+        };
+
+        let desc = audio::ComponentDescription {
+            type_: audio::ENCODER_COMPONENT_TYPE,
+            sub_type: u32::from_be_bytes(*b"aac "),
+            ..Default::default()
+        };
+
+        let inst = desc.into_iter().last().unwrap();
+
+        let inst = inst.new_instance().unwrap();
+        let codec = inst.into_codec(&src_asbd2, &dst_asbd, None).unwrap();
     }
 }

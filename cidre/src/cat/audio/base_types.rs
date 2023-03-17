@@ -348,13 +348,16 @@ define_options!(FormatFlags(u32));
 /// in the AudioHardware usage of this structure.
 impl FormatFlags {
     /// Set for floating point, clear for integer.
+    #[doc(alias = "kAudioFormatFlagIsFloat")]
     pub const IS_FLOAT: Self = Self(1u32 << 0);
 
     /// Set for big endian, clear for little endian.
+    #[doc(alias = "kAudioFormatFlagIsBigEndian")]
     pub const IS_BIG_ENDIAN: Self = Self(1u32 << 1);
 
     /// Set for signed integer, clear for unsigned integer. This is only valid if
     /// AudioFormatFlags::IS_FLOAT is clear.
+    #[doc(alias = "kAudioFormatFlagIsSignedInteger")]
     pub const IS_SIGNED_INTEGER: Self = Self(1u32 << 2);
 
     /// Set if the sample bits occupy the entire available bits for the channel,
@@ -363,33 +366,51 @@ impl FormatFlags {
     /// AudioStreamBasicDescription is filled out such that the fields have the
     /// following relationship:
     ///     ((bits_per_sample / 8) * channels_per_frame) == bytes_per_frame
+    #[doc(alias = "kAudioFormatFlagIsPacked")]
     pub const IS_PACKED: Self = Self(1u32 << 3);
 
     /// Set if the sample bits are placed into the high bits of the channel, clear
     /// for low bit placement. This is only valid if kAudioFormatFlagIsPacked is
     /// clear.
+    #[doc(alias = "kAudioFormatFlagIsAlignedHigh")]
     pub const IS_ALIGNED_HIGH: Self = Self(1u32 << 4);
 
     /// Set if the samples for each channel are located contiguously and the
     /// channels are layed out end to end, clear if the samples for each frame are
     /// layed out contiguously and the frames layed out end to end.
+    #[doc(alias = "kAudioFormatFlagIsNonInterleaved")]
     pub const IS_NON_INTERLEAVED: Self = Self(1u32 << 5);
 
     /// Set to indicate when a format is non-mixable. Note that this flag is only
     /// used when interacting with the HAL's stream format information. It is not a
     /// valid flag for any other uses.
+    #[doc(alias = "kLinearPCMFormatFlagIsNonMixable")]
     pub const IS_NON_MIXABLE: Self = Self(1u32 << 6);
 
     /// Set if all the flags would be clear in order to preserve 0 as the wild card
     /// value.
+    #[doc(alias = "kAudioFormatFlagsAreAllClear")]
     pub const ALL_CLEAR: Self = Self(0x80000000);
 
+    #[doc(alias = "kLinearPCMFormatFlagIsFloat")]
     pub const LINEAR_PCM_IS_FLOAT: Self = Self::IS_FLOAT;
+
+    #[doc(alias = "kLinearPCMFormatFlagIsBigEndian")]
     pub const LINEAR_PCM_IS_BIG_ENDIAN: Self = Self::IS_BIG_ENDIAN;
+
+    #[doc(alias = "kLinearPCMFormatFlagIsSignedInteger")]
     pub const LINEAR_PCM_IS_SIGNED_INTEGER: Self = Self::IS_SIGNED_INTEGER;
+
+    #[doc(alias = "kLinearPCMFormatFlagIsPacked")]
     pub const LINEAR_PCM_IS_PACKED: Self = Self::IS_PACKED;
+
+    #[doc(alias = "kLinearPCMFormatFlagIsAlignedHigh")]
     pub const LINEAR_PCM_IS_ALIGNED_HIGH: Self = Self::IS_ALIGNED_HIGH;
+
+    #[doc(alias = "kLinearPCMFormatFlagIsNonInterleaved")]
     pub const LINEAR_PCM_IS_NON_INTERLEAVED: Self = Self::IS_NON_INTERLEAVED;
+
+    #[doc(alias = "kLinearPCMFormatFlagIsNonMixable")]
     pub const LINEAR_PCM_IS_NON_MIXABLE: Self = Self::IS_NON_MIXABLE;
 
     pub const NATIVE_ENDIAN: Self = Self(0);
