@@ -1,12 +1,6 @@
 use std::{ffi::c_void, ptr::slice_from_raw_parts};
 
-use crate::{
-    arc,
-    at::audio,
-    cat,
-    cf::{self, Allocator},
-    cm, cv, define_cf_type, define_options, os,
-};
+use crate::{arc, at::audio, cat, cf, cm, cv, define_cf_type, define_options, os};
 
 define_options!(Flags(u32));
 
@@ -143,7 +137,7 @@ impl SampleBuffer {
 
     /// [CMSampleBufferCreate](https://developer.apple.com/documentation/coremedia/1489723-cmsamplebuffercreate?language=objc)
     pub unsafe fn create_in(
-        allocator: Option<&Allocator>,
+        allocator: Option<&cf::Allocator>,
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
@@ -173,7 +167,7 @@ impl SampleBuffer {
     }
 
     pub fn create_for_image_buffer_in(
-        allocator: Option<&Allocator>,
+        allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuffer,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
@@ -435,7 +429,7 @@ extern "C" {
     static kCMTimingInfoInvalid: SampleTimingInfo;
 
     fn CMSampleBufferCreate(
-        allocator: Option<&Allocator>,
+        allocator: Option<&cf::Allocator>,
         data_buffer: Option<&cm::BlockBuffer>,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
@@ -450,7 +444,7 @@ extern "C" {
     ) -> crate::os::Status;
 
     fn CMSampleBufferCreateForImageBuffer(
-        allocator: Option<&Allocator>,
+        allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuffer,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
