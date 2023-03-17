@@ -640,12 +640,12 @@ impl Converter {
     /// use fill_complex_buf
     ///
     #[inline]
-    pub unsafe fn fill_complex_buffer<D>(
+    pub unsafe fn fill_complex_buffer<const N: usize, D>(
         &self,
         in_input_data_proc: ComplexInputDataProc<D>,
         in_input_data_proc_user_data: *mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufferList,
+        out_output_data: &mut audio::BufferList<N>,
         out_packet_description: *mut audio::StreamPacketDescription,
     ) -> os::Status {
         AudioConverterFillComplexBuffer(
@@ -653,7 +653,7 @@ impl Converter {
             transmute(in_input_data_proc),
             transmute(in_input_data_proc_user_data),
             io_output_data_packet_size,
-            out_output_data,
+            transmute(out_output_data),
             out_packet_description,
         )
     }
@@ -760,12 +760,12 @@ impl Converter {
     }
 
     #[inline]
-    pub fn fill_complex_buf<D>(
+    pub fn fill_complex_buf<const N: usize, D>(
         &self,
         proc: ComplexInputDataProc<D>,
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufferList,
+        out_output_data: &mut audio::BufferList<N>,
     ) -> Result<(), os::Status> {
         unsafe {
             self.fill_complex_buffer(

@@ -170,12 +170,12 @@ impl AudioQueue {
 
     pub fn fill_audio_buffer(
         &mut self,
-        list: &mut at::audio::BufferList,
+        list: &mut at::audio::BufferList<2>,
     ) -> Result<(), os::Status> {
         let mut left = 1024i32;
         let mut offset: i32 = self.last_buffer_offset as i32;
         let mut out_offset = 0;
-        let mut cursor = list.cursor::<2>();
+        let mut cursor = list.cursor();
         while let Some(b) = self.queue.pop_front() {
             let samples = b.num_samples() as i32;
             let count = i32::min(samples - offset, left);
@@ -211,7 +211,7 @@ extern "C" fn convert_audio(
 ) -> os::Status {
     let q: &mut AudioQueue = unsafe { &mut *in_user_data };
 
-    match q.fill_audio_buffer(io_data) {
+    match q.fill_audio_buffer(unsafe { std::mem::transmute(io_data) }) {
         Ok(()) => os::Status(0),
         Err(status) => status,
     }

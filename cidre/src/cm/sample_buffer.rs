@@ -314,18 +314,18 @@ impl SampleBuffer {
     /// or if its dataBuffer is not ready.
     #[doc(alias = "CMSampleBufferCopyPCMDataIntoAudioBufferList")]
     #[inline]
-    pub fn copy_pcm_data_into_audio_buffer_list(
+    pub fn copy_pcm_data_into_audio_buffer_list<const N: usize>(
         &self,
         frame_offset: i32,
         num_frames: i32,
-        buffer_list: &mut cat::audio::BufferList,
+        buffer_list: &mut cat::audio::BufferList<N>,
     ) -> Result<(), os::Status> {
         unsafe {
             CMSampleBufferCopyPCMDataIntoAudioBufferList(
                 self,
                 frame_offset,
                 num_frames,
-                buffer_list,
+                std::mem::transmute(buffer_list),
             )
             .result()
         }
@@ -359,6 +359,7 @@ impl SampleBuffer {
     }
 
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
+    #[inline]
     pub fn audio_buffer_list<const N: usize>(
         &self,
     ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
@@ -373,6 +374,7 @@ impl SampleBuffer {
     /// The buffers in the audio::BufferList will be 16-byte-aligned if
     /// kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment is passed in.
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
+    #[inline]
     pub fn audio_buffer_list_in<const N: usize>(
         &self,
         flags: Flags,
