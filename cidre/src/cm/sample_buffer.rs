@@ -818,7 +818,7 @@ pub mod errors {
     #[doc(alias = "kCMSampleBufferError_AllocationFailed")]
     pub const ALLOCATION_FAILED: Status = Status(-12730);
 
-    ///  NULL or 0 was passed for a required parameter.
+    /// NULL or 0 was passed for a required parameter.
     #[doc(alias = "kCMSampleBufferError_RequiredParameterMissing")]
     pub const REQUIRED_PARAMETER_MISSING: Status = Status(-12731);
 
@@ -835,38 +835,50 @@ pub mod errors {
     pub const SAMPLE_INDEX_OUT_OF_RANGE: Status = Status(-12734);
 
     /// Attempt to get sample size information when there was none.
+    #[doc(alias = "kCMSampleBufferError_BufferHasNoSampleSizes")]
     pub const BUFFER_HAS_NO_SAMPLE_SIZES: Status = Status(-12735);
 
     /// Attempt to get sample timing information when there was none.
+    #[doc(alias = "kCMSampleBufferError_BufferHasNoSampleTimingInfo")]
     pub const BUFFER_HAS_NO_SAMPLE_TIMING_INFO: Status = Status(-12736);
 
     /// Output array was not large enough for the array being requested.
+    #[doc(alias = "kCMSampleBufferError_ArrayTooSmall")]
     pub const ARRAY_TOO_SMALL: Status = Status(-12737);
 
     /// Timing info or size array entry count was not 0, 1, or numSamples.
+    #[doc(alias = "kCMSampleBufferError_InvalidEntryCount")]
     pub const INVALID_ENTRY_COUNT: Status = Status(-12738);
 
     /// Sample buffer does not contain sample sizes.  This can happen when the samples in the buffer are non-contiguous (eg. non-interleaved audio, where the channel values for a single sample are scattered through the buffer).
+    #[doc(alias = "kCMSampleBufferError_CannotSubdivide")]
     pub const CANNOT_SUBDIVIDE: Status = Status(-12739);
 
     /// buffer unexpectedly contains a non-numeric sample timing info
+    #[doc(alias = "kCMSampleBufferError_SampleTimingInfoInvalid")]
     pub const SAMPLE_TIMING_INFO_INVALID: Status = Status(-12740);
 
     /// the media type specified by a format description is not valid for the given operation (eg. a CMSampleBuffer with a non-audio format description passed to CMSampleBufferGetAudioStreamPacketDescriptionsPtr).
+    #[doc(alias = "kCMSampleBufferError_InvalidMediaTypeForOperation")]
     pub const INVALID_MEDIA_TYPE_FOR_OPERATION: Status = Status(-12741);
 
     /// Buffer contains bad data. Only returned by CMSampleBuffer functions that inspect its sample data.
+    #[doc(alias = "kCMSampleBufferError_InvalidSampleData")]
     pub const INVALID_SAMPLE_DATA: Status = Status(-12742);
 
     /// the format of the given media does not match the given format description (eg. a format description paired with a CVImageBuffer that fails CMVideoFormatDescriptionMatchesImageBuffer).
+    #[doc(alias = "kCMSampleBufferError_InvalidMediaFormat")]
     pub const INVALID_MEDIA_FORMAT: Status = Status(-12743);
 
     /// the sample buffer was invalidated.
+    #[doc(alias = "kCMSampleBufferError_Invalidated")]
     pub const INVALIDATED: Status = Status(-12744);
 
     /// the sample buffer's data loading operation failed (generic error).
+    #[doc(alias = "kCMSampleBufferError_DataFailed")]
     pub const DATA_FAILED: Status = Status(-16750);
 
     /// the sample buffer's data loading operation was canceled.
+    #[doc(alias = "kCMSampleBufferError_DataCanceled")]
     pub const DATA_CANCELED: Status = Status(-16751);
 }
