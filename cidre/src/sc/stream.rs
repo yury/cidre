@@ -132,6 +132,9 @@ extern "C" {
 define_obj_type!(ContentFilter(ns::Id));
 
 impl arc::A<ContentFilter> {
+    #[objc::msg_send(initWithDesktopIndependentWindow:)]
+    pub fn init_with_desktop_independent_window(self, window: &Window) -> arc::R<ContentFilter>;
+
     #[objc::msg_send(initWithDisplay:excludingWindows:)]
     pub fn init_with_display_excluding_windows(
         self,
@@ -142,6 +145,11 @@ impl arc::A<ContentFilter> {
 
 impl ContentFilter {
     define_cls!(SC_CONTENT_FILTER);
+
+    /// Will create a sc::ContentFilter that captures just the independent window passed in.
+    pub fn with_desktop_independent_window(window: &Window) -> arc::R<ContentFilter> {
+        Self::alloc().init_with_desktop_independent_window(window)
+    }
 
     pub fn with_display_excluding_windows(
         display: &Display,

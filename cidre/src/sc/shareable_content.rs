@@ -6,10 +6,10 @@ define_obj_type!(RunningApplication(ns::Id));
 
 impl RunningApplication {
     #[objc::msg_send(bundleIdentifier)]
-    pub fn bundle_identifier(&self) -> ns::String;
+    pub fn bundle_identifier(&self) -> &ns::String;
 
     #[objc::msg_send(applicationName)]
-    pub fn application_name(&self) -> ns::String;
+    pub fn application_name(&self) -> &ns::String;
 
     #[objc::msg_send(processID)]
     pub fn process_id(&self) -> sys::Pid;
@@ -39,6 +39,33 @@ impl Window {
 
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;
+
+    #[objc::msg_send(title)]
+    pub fn title(&self) -> Option<&ns::String>;
+
+    #[objc::msg_send(windowLayer)]
+    pub fn window_layer(&self) -> ns::Integer;
+
+    #[objc::msg_send(owningApplication)]
+    pub fn owning_application(&self) -> Option<&RunningApplication>;
+
+    #[objc::msg_send(isOnScreen)]
+    pub fn is_on_screen(&self) -> bool;
+
+    #[objc::msg_send(isActive)]
+    pub fn is_active(&self) -> bool;
+}
+
+impl std::fmt::Display for Window {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Window")
+            .field("id", &self.id())
+            .field("frame", &self.frame())
+            .field("title", &self.title())
+            .field("is_on_screen", &self.is_on_screen())
+            .field("is_active", &self.is_active())
+            .finish()
+    }
 }
 
 #[link(name = "sc", kind = "static")]
