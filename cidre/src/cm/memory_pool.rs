@@ -30,7 +30,7 @@ define_cf_type!(MemoryPool(cf::Type));
 /// Such "aging out" is done during the pool's cf::Allocator::allocate and
 /// cf::Allocator::deallocate methods.
 impl MemoryPool {
-    ///```rust
+    ///```
     /// use cidre::cm;
     /// let mut pool = cm::MemoryPool::new();
     /// let allocator = pool.pool_allocator();

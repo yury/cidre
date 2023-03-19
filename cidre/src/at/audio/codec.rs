@@ -510,10 +510,28 @@ impl Drop for CodecRef {
 }
 
 impl CodecRef {
+    #[doc(alias = "AudioCodecAppendInputData")]
+    #[inline]
+    pub fn append_data(&mut self, data: &[u8]) -> Result<(u32, u32), os::Status> {
+        let mut data_len: u32 = data.len() as _;
+        let mut packets_len: u32 = 0;
+        unsafe {
+            AudioCodecAppendInputData(
+                &mut self.0,
+                data.as_ptr(),
+                &mut data_len,
+                &mut packets_len,
+                std::ptr::null(),
+            )
+            .result()?;
+        }
+        Ok((data_len, packets_len))
+    }
     /// Append as much of the given data to the codec's input buffer as possible
     /// and return in (data_len, packets_len) the amount of data and packets used.
+    #[doc(alias = "AudioCodecAppendInputData")]
     #[inline]
-    pub fn append_input_data(
+    pub fn append_data_with_descriptions(
         &mut self,
         data: &[u8],
         packets: &[audio::StreamPacketDescription],
@@ -534,8 +552,9 @@ impl CodecRef {
         Ok((data_len, packets_len))
     }
 
+    #[doc(alias = "AudioCodecProduceOutputPackets")]
     #[inline]
-    pub fn produce_output_packets(
+    pub fn produce_packets(
         &mut self,
         data: &mut [u8],
     ) -> Result<(u32, ProduceOutputPacketStatus), os::Status> {
@@ -558,8 +577,9 @@ impl CodecRef {
         Ok((data_len, status))
     }
 
+    #[doc(alias = "AudioCodecProduceOutputPackets")]
     #[inline]
-    pub fn produce_output_packets_with_descriptions(
+    pub fn produce_packets_with_descriptions(
         &mut self,
         data: &mut [u8],
         out_packet_descriptions: &mut [audio::StreamPacketDescription],
@@ -582,8 +602,9 @@ impl CodecRef {
         Ok((data_len, packets_len, status))
     }
 
+    #[doc(alias = "AudioCodecAppendInputBufferList")]
     #[inline]
-    pub fn append_input_buffer_list<const N: usize>(
+    pub fn append_buffer_list<const N: usize>(
         &mut self,
         in_buffer_list: &audio::BufferList<N>,
     ) -> Result<u32, os::Status> {
@@ -603,8 +624,9 @@ impl CodecRef {
         Ok(bytes_consumed)
     }
 
+    #[doc(alias = "AudioCodecAppendInputBufferList")]
     #[inline]
-    pub fn append_input_buffer_list_with_descriptions(
+    pub fn append_buffer_list_with_descriptions(
         &mut self,
         in_buffer_list: &audio::BufferList,
         packet_descriptions: &mut [audio::StreamPacketDescription],
@@ -625,8 +647,9 @@ impl CodecRef {
         Ok((bytes_consumed, packets_len))
     }
 
+    #[doc(alias = "AudioCodecProduceOutputBufferList")]
     #[inline]
-    pub fn produce_output_buffer_list(
+    pub fn produce_buffer_list(
         &mut self,
         buffer_list: &mut audio::BufferList,
     ) -> Result<os::Status, os::Status> {
@@ -646,8 +669,9 @@ impl CodecRef {
         Ok(status)
     }
 
+    #[doc(alias = "AudioCodecProduceOutputBufferList")]
     #[inline]
-    pub fn produce_output_buffer_list_with_descriptions(
+    pub fn produce_buffer_list_with_descriptions(
         &mut self,
         buffer_list: &mut audio::BufferList,
         packet_descriptions: &mut [audio::StreamPacketDescription],
@@ -680,6 +704,21 @@ impl CodecRef {
             AudioCodecGetProperty(
                 &self.0,
                 InstancePropertyID::MAXIMUM_PACKET_BYTE_SIZE.0,
+                &mut size,
+                &mut value as *mut u32 as *mut u8,
+            )
+            .result()?;
+        }
+        Ok(value as _)
+    }
+
+    #[inline]
+    pub fn input_buffer_size(&self) -> Result<usize, os::Status> {
+        let (mut value, mut size) = (0u32, 4u32);
+        unsafe {
+            AudioCodecGetProperty(
+                &self.0,
+                InstancePropertyID::INPUT_BUFFER_SIZE.0,
                 &mut size,
                 &mut value as *mut u32 as *mut u8,
             )
@@ -1072,6 +1111,6 @@ mod tests {
         let inst = desc.into_iter().last().unwrap();
 
         let inst = inst.new_instance().unwrap();
-        let codec = inst.into_codec(&src_asbd2, &dst_asbd, None).unwrap();
+        let _codec = inst.into_codec(&src_asbd2, &dst_asbd, None).unwrap();
     }
 }
