@@ -27,7 +27,7 @@ use crate::{at::audio, os};
 /// necessary to call AudioCodecUninitialize prior to closing the codec.
 ///
 /// Once in the initialized state, the codec is ready to receive input and produce
-/// output using the AudioCodecAppendInputData and AudioCodecProduceOutputData
+/// output using the `append_data` and `produce_data`
 /// routines. Input data can be fed into an encoder and some decoders in any size (even
 /// byte by byte). Input data fed to a decoder should be in terms of whole packets in the
 /// encoded format if the format is variable bit rate and is not self framing (e.g. MPEG-4 AAC).
@@ -38,7 +38,7 @@ use crate::{at::audio, os};
 /// indicates the result of the operation (success or failure) as well as the
 /// state of the input buffer.
 ///
-/// The combination of AppendInputData and ProduceOutputPackets can be thought of a "push-pull"
+/// The combination of `append_data` and `produce_packets` can be thought of a "push-pull"
 /// model of data handling. First, the input data is pushed into the component and the
 /// resulting output data gets pulled out of that same component.
 ///
@@ -48,8 +48,8 @@ use crate::{at::audio, os};
 /// 3. Configure it (AudioCodecGetPropertyInfo, AudioCodecGetProperty, AudioCodecSetProperty)
 /// 4. AudioCodecInitialize
 /// 5. Loop
-/// 	a. AppendInputData (EOF is signaled by passing a 0-sized buffer)
-/// 	b. ProduceOutputPackets
+/// 	a. append_data (EOF is signaled by passing a 0-sized buffer)
+/// 	b. produce_packets
 /// 6. Close the codec component
 pub type Codec = audio::ComponentInstance;
 
