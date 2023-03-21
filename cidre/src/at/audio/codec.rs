@@ -487,6 +487,19 @@ pub struct MagicCookieInfo {
     pub value: *const u8,
 }
 
+#[derive(Debug)]
+pub struct Consumed {
+    pub bytes: u32,
+    pub packets: u32,
+}
+
+#[derive(Debug)]
+pub struct Produced {
+    pub bytes: u32,
+    pub packets: u32,
+    pub status: ProduceOutputPacketStatus,
+}
+
 impl audio::ComponentInstanceRef {
     pub fn into_codec(
         mut self,
@@ -512,7 +525,7 @@ impl Drop for CodecRef {
 impl CodecRef {
     #[doc(alias = "AudioCodecAppendInputData")]
     #[inline]
-    pub fn append_data(&mut self, data: &[u8]) -> Result<(u32, u32), os::Status> {
+    pub fn append_data(&mut self, data: &[u8]) -> Result<Consumed, os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = 0;
         unsafe {
@@ -525,7 +538,10 @@ impl CodecRef {
             )
             .result()?;
         }
-        Ok((data_len, packets_len))
+        Ok(Consumed {
+            bytes: data_len,
+            packets: packets_len,
+        })
     }
     /// Append as much of the given data to the codec's input buffer as possible
     /// and return in (data_len, packets_len) the amount of data and packets used.
@@ -535,7 +551,7 @@ impl CodecRef {
         &mut self,
         data: &[u8],
         packets: &[audio::StreamPacketDescription],
-    ) -> Result<(u32, u32), os::Status> {
+    ) -> Result<Consumed, os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = packets.len() as _;
         unsafe {
@@ -549,7 +565,10 @@ impl CodecRef {
             .result()?;
         }
 
-        Ok((data_len, packets_len))
+        Ok(Consumed {
+            bytes: data_len,
+            packets: packets_len,
+        })
     }
 
     #[doc(alias = "AudioCodecProduceOutputPackets")]
@@ -583,7 +602,7 @@ impl CodecRef {
         &mut self,
         data: &mut [u8],
         out_packet_descriptions: &mut [audio::StreamPacketDescription],
-    ) -> Result<(u32, u32, ProduceOutputPacketStatus), os::Status> {
+    ) -> Result<Produced, os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = out_packet_descriptions.len() as _;
         let mut status = ProduceOutputPacketStatus::Failure;
@@ -599,7 +618,11 @@ impl CodecRef {
             )
             .result()?;
         }
-        Ok((data_len, packets_len, status))
+        Ok(Produced {
+            bytes: data_len,
+            packets: packets_len,
+            status,
+        })
     }
 
     #[doc(alias = "AudioCodecAppendInputBufferList")]
@@ -630,7 +653,7 @@ impl CodecRef {
         &mut self,
         in_buffer_list: &audio::BufferList,
         packet_descriptions: &mut [audio::StreamPacketDescription],
-    ) -> Result<(u32, u32), os::Status> {
+    ) -> Result<Consumed, os::Status> {
         let mut bytes_consumed: u32 = 0;
         let mut packets_len: u32 = packet_descriptions.len() as _;
         unsafe {
@@ -644,7 +667,10 @@ impl CodecRef {
             .result()?;
         }
 
-        Ok((bytes_consumed, packets_len))
+        Ok(Consumed {
+            bytes: bytes_consumed,
+            packets: packets_len,
+        })
     }
 
     #[doc(alias = "AudioCodecProduceOutputBufferList")]
