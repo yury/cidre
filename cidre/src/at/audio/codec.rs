@@ -525,7 +525,7 @@ impl Drop for CodecRef {
 impl CodecRef {
     #[doc(alias = "AudioCodecAppendInputData")]
     #[inline]
-    pub fn append_data(&mut self, data: &[u8]) -> Result<Consumed, os::Status> {
+    pub fn append(&mut self, data: &[u8]) -> Result<Consumed, os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = 0;
         unsafe {
@@ -547,7 +547,7 @@ impl CodecRef {
     /// and return in (data_len, packets_len) the amount of data and packets used.
     #[doc(alias = "AudioCodecAppendInputData")]
     #[inline]
-    pub fn append_data_with_descriptions(
+    pub fn append_data(
         &mut self,
         data: &[u8],
         packets: &[audio::StreamPacketDescription],
@@ -573,12 +573,12 @@ impl CodecRef {
 
     #[doc(alias = "AudioCodecProduceOutputPackets")]
     #[inline]
-    pub fn produce_packets(
+    pub fn produce_packet(
         &mut self,
         data: &mut [u8],
     ) -> Result<(u32, ProduceOutputPacketStatus), os::Status> {
         let mut data_len: u32 = data.len() as _;
-        let mut packets_len: u32 = 0;
+        let mut packets_len: u32 = 1;
         let mut status = ProduceOutputPacketStatus::Failure;
 
         unsafe {
@@ -598,7 +598,7 @@ impl CodecRef {
 
     #[doc(alias = "AudioCodecProduceOutputPackets")]
     #[inline]
-    pub fn produce_packets_with_descriptions(
+    pub fn produce_packets(
         &mut self,
         data: &mut [u8],
         out_packet_descriptions: &mut [audio::StreamPacketDescription],
