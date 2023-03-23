@@ -126,8 +126,8 @@ impl FormatDescription {
         self.video_configuration("avcC")
     }
 
-    pub fn hevc(&self) -> Option<Vec<u8>> {
-        self.video_configuration("hevc")
+    pub fn hvcc(&self) -> Option<Vec<u8>> {
+        self.video_configuration("hvcC")
     }
 
     pub fn verbatim_sample_description(&self) -> Option<&cf::Data> {
