@@ -627,29 +627,7 @@ impl CodecRef {
 
     #[doc(alias = "AudioCodecAppendInputBufferList")]
     #[inline]
-    pub fn append_buffer_list<const N: usize>(
-        &mut self,
-        in_buffer_list: &audio::BufferList<N>,
-    ) -> Result<u32, os::Status> {
-        let mut bytes_consumed: u32 = 0;
-        let mut packets_len: u32 = 0;
-        unsafe {
-            AudioCodecAppendInputBufferList(
-                &mut self.0,
-                std::mem::transmute(in_buffer_list),
-                &mut packets_len,
-                std::ptr::null(),
-                &mut bytes_consumed,
-            )
-            .result()?;
-        }
-
-        Ok(bytes_consumed)
-    }
-
-    #[doc(alias = "AudioCodecAppendInputBufferList")]
-    #[inline]
-    pub fn append_buffer_list_with_descriptions(
+    pub fn append_buffer_list(
         &mut self,
         in_buffer_list: &audio::BufferList,
         packet_descriptions: &mut [audio::StreamPacketDescription],
@@ -678,14 +656,14 @@ impl CodecRef {
     pub fn produce_buffer_list(
         &mut self,
         buffer_list: &mut audio::BufferList,
+        number_of_packets: &mut u32,
     ) -> Result<os::Status, os::Status> {
-        let mut number_packets: u32 = 0;
         let mut status = os::Status::NO_ERR;
         unsafe {
             AudioCodecProduceOutputBufferList(
                 &mut self.0,
                 buffer_list,
-                &mut number_packets,
+                number_of_packets,
                 std::ptr::null_mut(),
                 &mut status,
             )

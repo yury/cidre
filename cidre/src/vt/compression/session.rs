@@ -79,17 +79,23 @@ impl Session {
         unsafe { VTCompressionSessionInvalidate(self) }
     }
 
-    #[inline]
-    pub fn prepare(&mut self) -> Result<(), os::Status> {
-        self.prepare_to_encode_frames().result()
-    }
-
     #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
-    pub fn prepare_to_encode_frames(&mut self) -> os::Status {
+    pub fn prepare(&mut self) -> Result<(), os::Status> {
+        unsafe { self.prepare_to_encode_frames().result() }
+    }
+
+    /// #Safety
+    /// use `prepare`
+    #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
+    #[inline]
+    pub unsafe fn prepare_to_encode_frames(&mut self) -> os::Status {
         unsafe { VTCompressionSessionPrepareToEncodeFrames(self) }
     }
 
+    /// Encoded frames may or may not be output before the function returns.
+    /// The client should not modify the pixel data after making this call.
+    /// The session and/or encoder retains the image buffer as long as necessary.
     #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn encode_frame(

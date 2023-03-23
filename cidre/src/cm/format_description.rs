@@ -104,6 +104,32 @@ impl FormatDescription {
         }
     }
 
+    fn video_configuration(&self, key: &str) -> Option<Vec<u8>> {
+        let Some(dict) = self.extension_atoms() else {
+            return None;
+        };
+        let key = cf::String::from_str(key);
+        let Some(value) = dict.get(&key) else {
+            return None;
+        };
+
+        let Some(data) = value.try_as_data() else {
+            return None;
+        };
+
+        let mut res = vec![0u8; data.len()];
+        data.copy_bytes(&mut res);
+        Some(res)
+    }
+
+    pub fn avcc(&self) -> Option<Vec<u8>> {
+        self.video_configuration("avcC")
+    }
+
+    pub fn hevc(&self) -> Option<Vec<u8>> {
+        self.video_configuration("hevc")
+    }
+
     pub fn verbatim_sample_description(&self) -> Option<&cf::Data> {
         unsafe {
             let key = FormatDescriptionExtensionKey::verbatim_sample_description();
