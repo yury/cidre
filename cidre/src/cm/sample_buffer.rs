@@ -272,6 +272,25 @@ impl SampleBuffer {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 
+    #[inline]
+    pub fn is_key_frame(&self) -> bool {
+        match self.attachments(false) {
+            Some(arr) => {
+                if arr.is_empty() {
+                    true
+                } else {
+                    let dict = &arr[0];
+                    match dict.value(&attachment_keys::not_sync()) {
+                        None => true,
+                        // TODO: shave call here with direct pointer comp
+                        Some(v) => cf::Boolean::value_false().equal(v),
+                    }
+                }
+            }
+            None => true,
+        }
+    }
+
     /// Returns a value that indicates whether a sample buffer is valid.
     #[doc(alias = "CMSampleBufferIsValid")]
     #[inline]
