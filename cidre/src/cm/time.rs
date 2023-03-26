@@ -47,6 +47,7 @@ pub enum TimeRoundingMethod {
 }
 
 impl Default for TimeRoundingMethod {
+    #[inline]
     fn default() -> Self {
         Self::RoundAwayFromZero
     }

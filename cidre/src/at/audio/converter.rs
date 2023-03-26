@@ -385,6 +385,8 @@ pub struct Converter(c_void);
 #[repr(transparent)]
 pub struct ConverterRef(NonNull<Converter>);
 
+unsafe impl Send for ConverterRef {}
+
 impl Deref for ConverterRef {
     type Target = Converter;
 

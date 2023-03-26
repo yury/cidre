@@ -56,6 +56,8 @@ pub struct BufferList<const N: usize = 1> {
     pub buffers: [Buffer; N],
 }
 
+unsafe impl<const N: usize> Send for BufferList<N> {}
+
 impl<const N: usize> Default for BufferList<N> {
     fn default() -> Self {
         Self {

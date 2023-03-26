@@ -702,6 +702,38 @@ impl CodecRef {
     }
 
     #[inline]
+    pub fn current_output_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
+        let mut value = audio::StreamBasicDescription::default();
+        let mut size = std::mem::size_of::<audio::StreamBasicDescription>() as u32;
+        unsafe {
+            AudioCodecGetProperty(
+                &self.0,
+                InstancePropertyID::CURRENT_OUTPUT_FORMAT.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+        }
+        Ok(value)
+    }
+
+    #[inline]
+    pub fn current_input_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
+        let mut value = audio::StreamBasicDescription::default();
+        let mut size = std::mem::size_of::<audio::StreamBasicDescription>() as u32;
+        unsafe {
+            AudioCodecGetProperty(
+                &self.0,
+                InstancePropertyID::CURRENT_INPUT_FORMAT.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+        }
+        Ok(value)
+    }
+
+    #[inline]
     pub fn maximum_packet_byte_size(&self) -> Result<usize, os::Status> {
         let (mut value, mut size) = (0u32, 4u32);
         unsafe {
