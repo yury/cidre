@@ -823,7 +823,7 @@ impl Codec {
         value: &T,
     ) -> Result<(), os::Status> {
         let size = std::mem::size_of::<T>() as u32;
-        unsafe { AudioCodecSetProperty(self, property_id, size, &value as *const _ as _).result() }
+        unsafe { AudioCodecSetProperty(self, property_id, size, value as *const _ as _).result() }
     }
 
     #[inline]
@@ -867,6 +867,25 @@ impl Codec {
         value: BitRateControlMode,
     ) -> Result<(), os::Status> {
         unsafe { self.set_prop(InstancePropertyID::BIT_RATE_CONTROL_MODE.0, &value) }
+    }
+
+    #[inline]
+    pub fn set_current_target_bit_rate(&mut self, value: u32) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstancePropertyID::CURRENT_TARGET_BIT_RATE.0, &value) }
+    }
+    #[inline]
+    pub fn current_target_bit_rate(&self) -> Result<u32, os::Status> {
+        let (mut size, mut value) = (4u32, 0u32);
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::CURRENT_TARGET_BIT_RATE.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(value)
+        }
     }
 
     #[inline]
