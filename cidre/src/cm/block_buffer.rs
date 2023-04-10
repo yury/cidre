@@ -9,9 +9,24 @@ define_options!(Flags(u32));
 
 impl Flags {
     pub const NONE: Self = Self(0);
+    /// When passed to routines that accept block allocators, causes the memory block
+    /// to be allocated immediately.
+    #[doc(alias = "kCMBlockBufferAssureMemoryNowFlag")]
     pub const ASSURE_MEMORY_NOW: Self = Self(1u32 << 0);
+    /// Used with CMBlockBufferCreateContiguous() to cause it to always produce an allocated
+    /// copy of the desired data.
+    #[doc(alias = "kCMBlockBufferAlwaysCopyDataFlag")]
     pub const ALWAYS_COPY_DATA: Self = Self(1u32 << 1);
+
+    /// Passed to CMBlockBufferAppendBufferReference()
+    /// and CMBlockBufferCreateWithBufferReference()
+    /// to suppress reference depth optimization
+    #[doc(alias = "kCMBlockBufferDontOptimizeDepthFlag")]
     pub const DONT_OPTIMIZE_DEPTH: Self = Self(1u32 << 2);
+
+    /// Passed to CMBlockBufferAppendBufferReference() and
+    /// CMBlockBufferCreateWithBufferReference()
+    /// to allow references into a CMBlockBuffer that may not yet be populated.
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
