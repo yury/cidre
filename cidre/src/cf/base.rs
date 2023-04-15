@@ -267,7 +267,7 @@ impl PropertyList {
     }
 
     pub fn as_boolean(&self) -> &crate::cf::Boolean {
-        assert!(self.get_type_id() == crate::cf::Boolean::type_id());
+        debug_assert!(self.get_type_id() == crate::cf::Boolean::type_id());
         unsafe { transmute(self) }
     }
 

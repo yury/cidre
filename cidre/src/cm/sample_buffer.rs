@@ -280,10 +280,12 @@ impl SampleBuffer {
                     true
                 } else {
                     let dict = &arr[0];
-                    match dict.value(&attachment_keys::not_sync()) {
+                    match dict.get(&attachment_keys::not_sync()) {
                         None => true,
-                        // TODO: shave call here with direct pointer comp
-                        Some(v) => cf::Boolean::value_false().equal(v),
+                        Some(not_sync) => unsafe {
+                            not_sync.as_type_ptr() == cf::Boolean::value_false().as_type_ptr()
+                        },
+                        // Some(v) => cf::Boolean::value_false().equal(v),
                     }
                 }
             }
