@@ -4,6 +4,7 @@ pub use stream::Configuration as StreamConfiguration;
 pub use stream::ContentFilter;
 pub use stream::Delegate as StreamDelegate;
 pub use stream::DelegateImpl as StreamDelegateImpl;
+pub use stream::FrameInfo;
 pub use stream::FrameStatus;
 pub use stream::Output as StreamOutputImpl;
 pub use stream::Output as StreamOutput;

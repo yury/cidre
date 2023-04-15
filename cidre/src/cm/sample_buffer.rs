@@ -268,7 +268,7 @@ impl SampleBuffer {
     pub fn attachments(
         &self,
         create_if_necessary: bool,
-    ) -> Option<&cf::ArrayOf<cf::DictionaryMut>> {
+    ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropertyList>>> {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 
@@ -493,7 +493,7 @@ extern "C" {
     fn CMSampleBufferGetSampleAttachmentsArray(
         sbuf: &SampleBuffer,
         create_if_necessary: bool,
-    ) -> Option<&cf::ArrayOf<cf::DictionaryMut>>;
+    ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropertyList>>>;
 
     fn CMSampleBufferIsValid(sbuf: &SampleBuffer) -> bool;
 
