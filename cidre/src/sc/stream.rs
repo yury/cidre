@@ -6,13 +6,61 @@ use super::{Display, Window};
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
-pub enum Status {
+pub enum FrameStatus {
     Complete,
     Idle,
     Blank,
     Suspended,
     Started,
     Stopped,
+}
+
+define_obj_type!(FrameInfo(ns::String));
+
+impl FrameInfo {
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer that denotes the frames sc::FrameStatus
+    pub fn status() -> &'static Self {
+        unsafe { SCStreamFrameInfoStatus }
+    }
+
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer for the mach absolute
+    /// time when the event occurred. For a frame event, this is when the frame was displayed by the window server.
+    pub fn display_time() -> &'static Self {
+        unsafe { SCStreamFrameInfoDisplayTime }
+    }
+
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer for the display resolution
+    /// associated with the frame. Display resolution is the pixel to point scaling factor.
+    /// It should be in the range of [1, 4].
+    pub fn scale_factor() -> &'static Self {
+        unsafe { SCStreamFrameInfoScaleFactor }
+    }
+
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer for the content scale
+    /// associated with the frame. Content scale is the scaling factor from original content
+    /// size to its size in surface.
+    pub fn content_scale() -> &'static Self {
+        unsafe { SCStreamFrameInfoContentScale }
+    }
+
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer for the content rect
+    /// associated with the frame. Content rect is the size and location of content in points in surface.
+    pub fn content_rect() -> &'static Self {
+        unsafe { SCStreamFrameInfoContentRect }
+    }
+
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer for an array of rectangles
+    /// that is the union of both rectangles that were redrawn and rectangles that were moved.
+    /// This is an array of cg::Rect in ns::Value. The cg::Rects elements are specified in pixels.
+    pub fn dirty_rects() -> &'static Self {
+        unsafe { SCStreamFrameInfoDirtyRects }
+    }
+
+    /// The key for the cf::Dictionary attached to the cm::SampleBuffer for the onscreen location
+    /// of the captured content
+    pub fn screen_rect() -> &'static Self {
+        unsafe { SCStreamFrameInfoScreenRect }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -127,6 +175,14 @@ extern "C" {
     static SC_STREAM_CONFIGURATION: &'static objc::Class<Configuration>;
     static SC_CONTENT_FILTER: &'static objc::Class<ContentFilter>;
     static SC_STREAM: &'static objc::Class<Stream>;
+
+    static SCStreamFrameInfoStatus: &'static FrameInfo;
+    static SCStreamFrameInfoDisplayTime: &'static FrameInfo;
+    static SCStreamFrameInfoScaleFactor: &'static FrameInfo;
+    static SCStreamFrameInfoContentScale: &'static FrameInfo;
+    static SCStreamFrameInfoContentRect: &'static FrameInfo;
+    static SCStreamFrameInfoDirtyRects: &'static FrameInfo;
+    static SCStreamFrameInfoScreenRect: &'static FrameInfo;
 }
 
 define_obj_type!(ContentFilter(ns::Id));

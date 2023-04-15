@@ -4,10 +4,10 @@ pub use stream::Configuration as StreamConfiguration;
 pub use stream::ContentFilter;
 pub use stream::Delegate as StreamDelegate;
 pub use stream::DelegateImpl as StreamDelegateImpl;
+pub use stream::FrameStatus;
 pub use stream::Output as StreamOutputImpl;
 pub use stream::Output as StreamOutput;
 pub use stream::OutputType;
-pub use stream::Status;
 pub use stream::Stream;
 
 pub mod shareable_content;

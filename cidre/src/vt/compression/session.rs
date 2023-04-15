@@ -96,6 +96,9 @@ impl Session {
     /// Encoded frames may or may not be output before the function returns.
     /// The client should not modify the pixel data after making this call.
     /// The session and/or encoder retains the image buffer as long as necessary.
+    ///
+    /// If you don't know duration. Set it invalid.
+    /// TODO: investigate. Right now we keep buf to calculate ts delta
     #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn encode_frame(
