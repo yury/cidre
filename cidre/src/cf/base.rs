@@ -1,4 +1,4 @@
-use crate::{arc, define_cf_type, define_options};
+use crate::{arc, cf, define_cf_type, define_options};
 
 use super::{runtime::Type, String};
 use std::{borrow::Cow, cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
@@ -138,11 +138,47 @@ impl Null {
 
 define_cf_type!(Allocator(Type));
 
+pub type AllocatorRetainCallBack = extern "C" fn(info: *const c_void) -> *const c_void;
+pub type AllocatorReleaseCallBack = extern "C" fn(info: *const c_void);
+pub type AllocatorCopyDescriptionCallBack =
+    extern "C" fn(info: *const c_void) -> Option<arc::R<cf::String>>;
+pub type AllocatorAllocateCallBack =
+    extern "C" fn(alloc_size: cf::Index, hint: cf::OptionFlags, info: *mut c_void) -> *mut c_void;
+pub type AllocatorRealloacteCallBack = extern "C" fn(
+    ptr: *mut c_void,
+    new_size: cf::Index,
+    hint: cf::OptionFlags,
+    info: *mut c_void,
+) -> *mut c_void;
+pub type AllocatorDealloacteCallBack = extern "C" fn(ptr: *mut c_void, info: *mut c_void);
+pub type AllocatorPreferredSizeCallBack =
+    extern "C" fn(size: cf::Index, hint: cf::OptionFlags, info: *mut c_void) -> cf::Index;
+
+#[repr(C)]
+pub struct AllocatorContext {
+    index: cf::Index,
+    info: *const c_void,
+    retain: AllocatorRetainCallBack,
+    release: AllocatorReleaseCallBack,
+    copy_description: AllocatorCopyDescriptionCallBack,
+    allocate: AllocatorAllocateCallBack,
+    reallocate: AllocatorRealloacteCallBack,
+    deallocate: AllocatorDealloacteCallBack,
+    preferred_size: AllocatorPreferredSizeCallBack,
+}
+
 /// Most of the time when specifying an allocator to Create functions, the None
 /// argument indicates "use the default"; this is the same as using Allocator::default()
-/// or the return value from CFAllocatorGetDefault().  This assures that you will use
+/// or the return value from cf::Allocator::default().  This assures that you will use
 /// the allocator in effect at that time.
 impl Allocator {
+    pub fn new_in(
+        context: &mut AllocatorContext,
+        allocator: Option<&Allocator>,
+    ) -> Option<arc::R<Allocator>> {
+        unsafe { CFAllocatorCreate(allocator, context) }
+    }
+
     /// This is a synonym for NULL, if you'd rather use a named constant.
     #[inline]
     pub fn default() -> Option<&'static Allocator> {
@@ -161,6 +197,14 @@ impl Allocator {
     #[inline]
     pub fn null() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorNull }
+    }
+
+    /// Special allocator argument to cf::Allocator::create() which means
+    /// "use the functions given in the context to allocate the allocator
+    /// itself as well
+    #[inline]
+    pub fn use_context() -> Option<&'static Allocator> {
+        unsafe { kCFAllocatorUseContext }
     }
 
     #[inline]
@@ -193,6 +237,7 @@ extern "C" {
     static kCFAllocatorDefault: Option<&'static Allocator>;
     static kCFAllocatorSystemDefault: Option<&'static Allocator>;
     static kCFAllocatorNull: Option<&'static Allocator>;
+    static kCFAllocatorUseContext: Option<&'static Allocator>;
 
     fn CFGetAllocator<'a>(cf: &Type) -> Option<&'a Allocator>;
     fn CFShow(cf: Option<&Type>);
@@ -211,6 +256,10 @@ extern "C" {
         hint: OptionFlags,
     ) -> *mut c_void;
     fn CFAllocatorDeallocate(allocator: &Allocator, ptr: *mut c_void);
+    fn CFAllocatorCreate(
+        allocator: Option<&Allocator>,
+        context: *mut AllocatorContext,
+    ) -> Option<arc::R<Allocator>>;
 }
 
 define_cf_type!(PropertyList(Type));
