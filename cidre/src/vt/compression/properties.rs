@@ -24,6 +24,7 @@ pub mod keys {
     /// The number of pending frames in the compression session.
     ///
     /// This number may decrease asynchronously.
+    #[doc(alias = "kVTCompressionPropertyKey_NumberOfPendingFrames")]
     #[inline]
     pub fn number_of_pending_frames() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_NumberOfPendingFrames }
@@ -34,6 +35,7 @@ pub mod keys {
     ///
     /// This is false if separate pools are used because the video encoder's
     /// and the client's pixel buffer attributes were incompatible.
+    #[doc(alias = "kVTCompressionPropertyKey_PixelBufferPoolIsShared")]
     #[inline]
     pub fn pixel_buffer_is_shared() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PixelBufferPoolIsShared }
@@ -42,6 +44,7 @@ pub mod keys {
     /// The video encoder's pixel buffer attributes for the compression session.
     ///
     /// You can use these to create a pixel buffer pool for source pixel buffers.
+    #[doc(alias = "kVTCompressionPropertyKey_VideoEncoderPixelBufferAttributes")]
     #[inline]
     pub fn video_encoder_pixel_buffer_attributes() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_VideoEncoderPixelBufferAttributes }
@@ -66,6 +69,7 @@ pub mod keys {
     /// kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
     /// and both limits will be enforced - requiring a keyframe every X
     /// frames or every Y seconds, whichever comes first.
+    #[doc(alias = "kVTCompressionPropertyKey_MaxKeyFrameInterval")]
     #[inline]
     pub fn max_key_frame_interval() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaxKeyFrameInterval }
@@ -82,6 +86,7 @@ pub mod keys {
     /// kVTCompressionPropertyKey_MaxKeyFrameInterval,
     /// and both limits will be enforced - requiring a keyframe every X
     /// frames or every Y seconds, whichever comes first.
+    #[doc(alias = "kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration")]
     #[inline]
     pub fn max_key_frame_interval_duration() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration }
@@ -90,16 +95,37 @@ pub mod keys {
     /// Enables temporal compression.
     ///
     /// True by default.  Set this to false to require key-frame-only compression.
+    #[doc(alias = "kVTCompressionPropertyKey_AllowTemporalCompression")]
     #[inline]
     pub fn allow_temporal_compression() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AllowTemporalCompression }
     }
 
+    /// Enables frame reordering.
+    ///
+    /// In order to encode B frames, a video encoder must reorder frames,
+    /// which means that the order in which they will be emitted and
+    /// stored (the decode order) is different from the order in which
+    /// they were presented to the video encoder (the display order).
+    /// True by default. Set this to false to prevent frame reordering.
+    #[doc(alias = "kVTCompressionPropertyKey_AllowFrameReordering")]
     #[inline]
     pub fn allow_frame_reordering() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AllowFrameReordering }
     }
 
+    /// Enables Open GOP (Group Of Pictures) encoding.
+    ///
+    /// Only applicable to certain video encoders. For HEVC encoding the property
+    /// value is kCFBooleanTrue by default - which means that the encoder may use
+    /// Open GOP structures, but it is not guaranteed to. Set this to kCFBooleanFalse
+    /// to prevent the encoder from using any form of Open GOP during encoding.
+    /// If set to kCFBooleanFalse, this will mean that the encoder will generate groups
+    /// of pictures that are independently decodable; there will be no frame dependencies
+    /// across sync samples (frames where kCMSampleAttachmentKey_NotSync is absent or kCFBooleanFalse)
+    /// When the value is kCFBooleanTrue, the encoder may use Open GOP frame dependency
+    /// structures to increase compression efficiency or quality.
+    #[doc(alias = "kVTCompressionPropertyKey_AllowOpenGOP")]
     #[inline]
     pub fn allow_open_gop() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AllowOpenGOP }
@@ -113,6 +139,7 @@ pub mod keys {
     /// Note that bit rate settings only have an effect when timing
     /// information is provided for source frames, and that some codecs do
     /// not support limiting to specified bit rates.
+    #[doc(alias = "kVTCompressionPropertyKey_AverageBitRate")]
     #[inline]
     pub fn avarage_bit_rate() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AverageBitRate }
@@ -130,6 +157,7 @@ pub mod keys {
     /// Note that data rate settings only have an effect when timing
     /// information is provided for source frames, and that some codecs do
     /// not support limiting to specified data rates.
+    #[doc(alias = "kVTCompressionPropertyKey_DataRateLimits")]
     #[inline]
     pub fn data_rate_limits() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_DataRateLimits }
@@ -142,27 +170,32 @@ pub mod keys {
     /// number in the range of 0.0 to 1.0, where low = 0.25, normal = 0.50,
     /// high = 0.75, and 1.0 implies lossless compression for encoders that
     /// support it.
+    #[doc(alias = "kVTCompressionPropertyKey_Quality")]
     #[inline]
     pub fn quality() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_Quality }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_TargetQualityForAlpha")]
     #[inline]
     pub fn target_quality_for_alpha() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_TargetQualityForAlpha }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_MoreFramesBeforeStart")]
     #[inline]
     pub fn more_frames_before_start() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MoreFramesBeforeStart }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_MoreFramesAfterEnd")]
     #[inline]
     pub fn more_frames_after_end() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MoreFramesAfterEnd }
     }
 
-    /// Hint for the video encoder that it should maximize its speed during encode, sacrificing quality if needed
+    /// Hint for the video encoder that it should maximize its speed during encode, sacrificing quality
+    /// if needed
     ///
     /// Video encoders sometimes have a tradeoff available between encoding speed and quality at a given bitrate.
     /// For example, by spending more time refining encoding decisions, it may be possible to make marginal improvements on quality.
@@ -175,178 +208,235 @@ pub mod keys {
     /// ProRes hardware encoders currently prioritize speed over quality by default.
     /// Not all video encoders support this property.
     /// By default, this property is NULL.
+    #[doc(alias = "kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality")]
     #[inline]
     pub fn prioritize_encoding_speed_over_quality() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_ProfileLevel")]
     #[inline]
     pub fn profile_level() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ProfileLevel }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_OutputBitDepth")]
     #[inline]
     pub fn output_bit_depth() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_OutputBitDepth }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_HDRMetadataInsertionMode")]
     #[inline]
     pub fn hdr_metadata_insertion_mode() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_HDRMetadataInsertionMode }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_H264EntropyMode")]
     #[inline]
     pub fn h264_entropy_mode() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_H264EntropyMode }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_Depth")]
     #[inline]
     pub fn depth() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_Depth }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_MaxFrameDelayCount")]
     #[inline]
     pub fn max_frame_delay_count() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaxFrameDelayCount }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_MaxH264SliceBytes")]
     #[inline]
     pub fn max_h264_slice_bytes() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaxH264SliceBytes }
     }
 
+    /// Hints the video encoder that compression is, or is not, being performed in real time.
+    ///
+    /// For offline compression, clients are advised to set this property to kCFBooleanFalse.
+    /// This indicates that the timeline of the frames is not connected to wall-clock time at all.
+    /// This allows the video encoder to run either slower than real-time or faster than real-time,
+    /// depending upon the situation and device capabilities.
+    /// For real-time compression, clients are advised to set this property to kCFBooleanTrue.
+    /// This indicates that the timeline of frames is connected to real time (so, for example,
+    /// the client expects to encode one second of frames each second, on average).
+    /// In such a case, it is important that encoding keep up, but it is also not valuable to encode
+    /// substantially faster than real time.  
+    /// When this property is set to kCFBooleanTrue, the video encoder may use the value of the
+    /// kVTCompressionPropertyKey_ExpectedFrameRate property to optimize energy usage,
+    /// by anticipating that encoding requests will happen at this rate.
+    /// By default, this property is NULL, indicating unknown.  
+    #[doc(alias = "kVTCompressionPropertyKey_RealTime")]
     #[inline]
     pub fn real_time() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_RealTime }
     }
 
+    /// Hints to the video encoder that it should maximize power efficiency during encode.
+    ///
+    /// For compression where the client is operating in the background, clients may set this property to kCFBooleanTrue, which indicates that
+    /// the encoder can take steps to minimize impact on power usage and other system activity.
+    /// Setting the property to NULL is equivalent to setting it to kCFBooleanFalse.
+    /// Not all video encoders support this property.
+    /// By default, this property is NULL.
+    /// If the kVTCompressionPropertyKey_RealTime property is set to kCFBooleanTrue,
+    /// the video encoder may act as though this property were set to kCFBooleanFalse.
+    #[doc(alias = "kVTCompressionPropertyKey_MaximizePowerEfficiency")]
     #[inline]
     pub fn maximize_power_efficiecy() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaximizePowerEfficiency }
     }
 
-    /// Hint
+    #[doc(alias = "kVTCompressionPropertyKey_SourceFrameCount")]
     #[inline]
     pub fn source_frame_count() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_SourceFrameCount }
     }
 
-    /// Hint
+    #[doc(alias = "kVTCompressionPropertyKey_ExpectedFrameRate")]
     #[inline]
     pub fn expected_frame_rate() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ExpectedFrameRate }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_BaseLayerFrameRateFraction")]
     #[inline]
     pub fn base_layer_frame_rate_fraction() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_BaseLayerFrameRateFraction }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_BaseLayerBitRateFraction")]
     #[inline]
     pub fn base_layer_bit_rate_fraction() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_BaseLayerBitRateFraction }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_ExpectedDuration")]
     #[inline]
     pub fn expected_duration() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ExpectedDuration }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_BaseLayerFrameRate")]
     #[inline]
     pub fn base_layer_frame_rate() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_BaseLayerFrameRate }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_SupportsBaseFrameQP")]
     #[inline]
     pub fn support_base_frame_qp() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_SupportsBaseFrameQP }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_CleanAperture")]
     #[inline]
     pub fn clean_aperture() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_CleanAperture }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_PixelAspectRatio")]
     #[inline]
     pub fn pixel_aspect_ratio() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PixelAspectRatio }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_FieldCount")]
     #[inline]
     pub fn field_count() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_FieldCount }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_FieldDetail")]
     #[inline]
     pub fn field_detail() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_FieldDetail }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_AspectRatio16x9")]
     #[inline]
     pub fn aspect_ratio_16x9() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AspectRatio16x9 }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_ProgressiveScan")]
     #[inline]
     pub fn progressive_scan() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ProgressiveScan }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_ColorPrimaries")]
     #[inline]
     pub fn color_primaries() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ColorPrimaries }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_TransferFunction")]
     #[inline]
     pub fn transfer_function() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_TransferFunction }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_YCbCrMatrix")]
     #[inline]
     pub fn ycbcr_matrix() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_YCbCrMatrix }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_ICCProfile")]
     #[inline]
     pub fn icc_profile() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ICCProfile }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_MasteringDisplayColorVolume")]
     #[inline]
     pub fn master_display_color_volume() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MasteringDisplayColorVolume }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_ContentLightLevelInfo")]
     #[inline]
     pub fn content_light_level_info() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ContentLightLevelInfo }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_GammaLevel")]
     #[inline]
     pub fn gamma_level() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_GammaLevel }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_AlphaChannelMode")]
     #[inline]
     pub fn alpha_channel_mode() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_AlphaChannelMode }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_PixelTransferProperties")]
     #[inline]
     pub fn pixel_transfer_properties() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PixelTransferProperties }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_MultiPassStorage")]
     #[inline]
     pub fn multi_pass_storage() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MultiPassStorage }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_EncoderID")]
     #[inline]
     pub fn encoder_id() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_EncoderID }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_PreserveDynamicHDRMetadata")]
     #[inline]
     pub fn preserve_dynamic_hdr_metadata() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PreserveDynamicHDRMetadata }
@@ -358,6 +448,7 @@ pub mod keys {
     /// familiar with frame QP.
     /// This is not supported in all encoders or in all encoder operating modes. kVTPropertyNotSupportedErr will be
     /// returned when this option is not supported.
+    #[doc(alias = "kVTCompressionPropertyKey_MaxAllowedFrameQP")]
     #[inline]
     pub fn max_allowed_frame_qp() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_MaxAllowedFrameQP }
@@ -374,6 +465,7 @@ pub mod keys {
     ///   Encoder will encode a P frame by using one of acknowledged LTR frames
     /// as the reference. Encoder will encode a new reference frame using an acknowledged LTR,
     /// or an IDR if no LTR frames have been acknowledged.
+    #[doc(alias = "kVTCompressionPropertyKey_EnableLTR")]
     #[inline]
     pub fn enable_ltr() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_EnableLTR }
@@ -393,6 +485,7 @@ pub mod keys {
     /// stremaing CDNs which specifically require that data rates not drop even during low motion and activity scenes.
     /// This is not supported in all encoders or in all encoder operating modes. kVTPropertyNotSupportedErr will be
     /// returned when this option is not supported.
+    #[doc(alias = "kVTCompressionPropertyKey_ConstantBitRate")]
     #[inline]
     pub fn constant_bit_rate() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ConstantBitRate }
