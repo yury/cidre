@@ -66,7 +66,7 @@ async fn main() {
             count += 1;
             continue;
         }
-        let pts = buf.presentation_time_stamp();
+        let pts = buf.pts();
         autoreleasepool(|| {
             handler
                 .perform_on_cv_pixel_buffer(&requests, &image)

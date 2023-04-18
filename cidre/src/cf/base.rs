@@ -138,33 +138,33 @@ impl Null {
 
 define_cf_type!(Allocator(Type));
 
-pub type AllocatorRetainCallBack = extern "C" fn(info: *const c_void) -> *const c_void;
-pub type AllocatorReleaseCallBack = extern "C" fn(info: *const c_void);
-pub type AllocatorCopyDescriptionCallBack =
-    extern "C" fn(info: *const c_void) -> Option<arc::R<cf::String>>;
-pub type AllocatorAllocateCallBack =
-    extern "C" fn(alloc_size: cf::Index, hint: cf::OptionFlags, info: *mut c_void) -> *mut c_void;
-pub type AllocatorRealloacteCallBack = extern "C" fn(
+pub type AllocatorRetainCallBack<T = c_void> = extern "C" fn(info: *const T) -> *const T;
+pub type AllocatorReleaseCallBack<T = c_void> = extern "C" fn(info: *const T);
+pub type AllocatorCopyDescriptionCallBack<T = c_void> =
+    extern "C" fn(info: *const T) -> Option<arc::R<cf::String>>;
+pub type AllocatorAllocateCallBack<T = c_void> =
+    extern "C" fn(alloc_size: Index, hint: cf::OptionFlags, info: *mut T) -> *mut c_void;
+pub type AllocatorRealloacteCallBack<T = c_void> = extern "C" fn(
     ptr: *mut c_void,
     new_size: cf::Index,
     hint: cf::OptionFlags,
-    info: *mut c_void,
+    info: *mut T,
 ) -> *mut c_void;
-pub type AllocatorDealloacteCallBack = extern "C" fn(ptr: *mut c_void, info: *mut c_void);
-pub type AllocatorPreferredSizeCallBack =
-    extern "C" fn(size: cf::Index, hint: cf::OptionFlags, info: *mut c_void) -> cf::Index;
+pub type AllocatorDealloacteCallBack<T = c_void> = extern "C" fn(ptr: *mut c_void, info: *mut T);
+pub type AllocatorPreferredSizeCallBack<T = c_void> =
+    extern "C" fn(size: cf::Index, hint: cf::OptionFlags, info: *mut T) -> Index;
 
 #[repr(C)]
-pub struct AllocatorContext {
-    index: cf::Index,
-    info: *const c_void,
-    retain: AllocatorRetainCallBack,
-    release: AllocatorReleaseCallBack,
-    copy_description: AllocatorCopyDescriptionCallBack,
-    allocate: AllocatorAllocateCallBack,
-    reallocate: AllocatorRealloacteCallBack,
-    deallocate: AllocatorDealloacteCallBack,
-    preferred_size: AllocatorPreferredSizeCallBack,
+pub struct AllocatorContext<T = c_void> {
+    version: Index,
+    info: *const T,
+    retain: AllocatorRetainCallBack<T>,
+    release: AllocatorReleaseCallBack<T>,
+    copy_description: AllocatorCopyDescriptionCallBack<T>,
+    allocate: AllocatorAllocateCallBack<T>,
+    reallocate: AllocatorRealloacteCallBack<T>,
+    deallocate: AllocatorDealloacteCallBack<T>,
+    preferred_size: AllocatorPreferredSizeCallBack<T>,
 }
 
 /// Most of the time when specifying an allocator to Create functions, the None
@@ -172,20 +172,30 @@ pub struct AllocatorContext {
 /// or the return value from cf::Allocator::default().  This assures that you will use
 /// the allocator in effect at that time.
 impl Allocator {
-    pub fn new_in(
-        context: &mut AllocatorContext,
+    #[doc(alias = "CFAllocatorCreate")]
+    #[inline]
+    pub fn new<T>(context: &mut AllocatorContext<T>) -> Option<arc::R<Allocator>> {
+        Self::new_in(context, None)
+    }
+
+    #[doc(alias = "CFAllocatorCreate")]
+    #[inline]
+    pub fn new_in<T>(
+        context: &mut AllocatorContext<T>,
         allocator: Option<&Allocator>,
     ) -> Option<arc::R<Allocator>> {
-        unsafe { CFAllocatorCreate(allocator, context) }
+        unsafe { CFAllocatorCreate(allocator, std::mem::transmute(context)) }
     }
 
     /// This is a synonym for NULL, if you'd rather use a named constant.
+    #[doc(alias = "kCFAllocatorDefault")]
     #[inline]
     pub fn default() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorDefault }
     }
 
     /// Default system allocator; you rarely need to use this.
+    #[doc(alias = "kCFAllocatorSystemDefault")]
     #[inline]
     pub fn system_default() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorSystemDefault }
@@ -194,6 +204,7 @@ impl Allocator {
     /// Null allocator which does nothing and allocates no memory. This allocator
     /// is useful as the `bytes_deallocator` in [`cf::Data`] or `contents_deallocator`
     /// in cf::String where the memory should not be freed.
+    #[doc(alias = "kCFAllocatorNull")]
     #[inline]
     pub fn null() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorNull }
@@ -202,16 +213,19 @@ impl Allocator {
     /// Special allocator argument to cf::Allocator::create() which means
     /// "use the functions given in the context to allocate the allocator
     /// itself as well
+    #[doc(alias = "kCFAllocatorUseContext")]
     #[inline]
     pub fn use_context() -> Option<&'static Allocator> {
         unsafe { kCFAllocatorUseContext }
     }
 
+    #[doc(alias = "CFAllocatorAllocate")]
     #[inline]
     pub unsafe fn allocate(&self, size: Index, hint: OptionFlags) -> *mut c_void {
         CFAllocatorAllocate(self, size, hint)
     }
 
+    #[doc(alias = "CFAllocatorReallocate")]
     #[inline]
     pub unsafe fn reallocate(
         &self,
@@ -222,9 +236,16 @@ impl Allocator {
         CFAllocatorReallocate(self, ptr, new_size, hint)
     }
 
+    #[doc(alias = "CFAllocatorDeallocate")]
     #[inline]
     pub unsafe fn deallocate(&self, ptr: *mut c_void) {
         CFAllocatorDeallocate(self, ptr)
+    }
+
+    #[doc(alias = "CFAllocatorGetPreferredSizeForSize")]
+    #[inline]
+    pub fn preferred_size(&self, size: Index, hint: cf::OptionFlags) -> Index {
+        unsafe { CFAllocatorGetPreferredSizeForSize(self, size, hint) }
     }
 }
 
@@ -258,8 +279,14 @@ extern "C" {
     fn CFAllocatorDeallocate(allocator: &Allocator, ptr: *mut c_void);
     fn CFAllocatorCreate(
         allocator: Option<&Allocator>,
-        context: *mut AllocatorContext,
+        context: &mut AllocatorContext,
     ) -> Option<arc::R<Allocator>>;
+
+    fn CFAllocatorGetPreferredSizeForSize(
+        allocator: &Allocator,
+        size: Index,
+        hint: cf::OptionFlags,
+    ) -> Index;
 }
 
 define_cf_type!(PropertyList(Type));
@@ -357,5 +384,102 @@ impl PropertyList {
     pub fn as_dictionary(&self) -> &crate::cf::Dictionary {
         assert!(self.get_type_id() == crate::cf::Dictionary::type_id());
         unsafe { transmute(self) }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::c_void;
+
+    use crate::{arc, cf};
+
+    #[test]
+    fn custom_allocator_with_padding() {
+        let system = cf::Allocator::system_default().unwrap();
+        const PADDING: isize = 10isize;
+
+        extern "C" fn retain(info: *const cf::Allocator) -> *const cf::Allocator {
+            unsafe {
+                let rf = info.as_ref().unwrap().retained();
+                let res = rf.as_ref() as *const cf::Allocator;
+                std::mem::forget(rf);
+                res
+            }
+        }
+        extern "C" fn release(info: *const cf::Allocator) {
+            let retained: arc::R<cf::Allocator> = unsafe { std::mem::transmute(info) };
+            std::mem::drop(retained);
+        }
+
+        extern "C" fn copy_description(info: *const cf::Allocator) -> Option<arc::R<cf::String>> {
+            unsafe { info.as_ref().map(|a| a.description()) }
+        }
+
+        extern "C" fn allocate(
+            size: cf::Index,
+            hint: cf::OptionFlags,
+            info: *mut cf::Allocator,
+        ) -> *mut c_void {
+            unsafe {
+                info.as_ref()
+                    .map(|a| a.allocate(size + PADDING, hint).offset(PADDING))
+                    .unwrap_or(std::ptr::null_mut())
+            }
+        }
+
+        extern "C" fn reallocate(
+            ptr: *mut c_void,
+            new_size: cf::Index,
+            hint: cf::OptionFlags,
+            info: *mut cf::Allocator,
+        ) -> *mut c_void {
+            unsafe {
+                info.as_ref()
+                    .map(|a| {
+                        a.reallocate(ptr.offset(-PADDING), new_size + PADDING, hint)
+                            .offset(PADDING)
+                    })
+                    .unwrap_or(std::ptr::null_mut())
+            }
+        }
+
+        extern "C" fn deallocate(ptr: *mut c_void, info: *mut cf::Allocator) {
+            unsafe { info.as_ref().unwrap().deallocate(ptr.offset(-PADDING)) }
+        }
+
+        extern "C" fn preferred_size(
+            size: cf::Index,
+            hint: cf::OptionFlags,
+            info: *mut cf::Allocator,
+        ) -> cf::Index {
+            // what we can pass here?
+            unsafe { info.as_ref().unwrap().preferred_size(size, hint) }
+        }
+
+        let mut context = cf::AllocatorContext::<cf::Allocator> {
+            version: 0,
+            info: system as *const _,
+            retain,
+            release,
+            copy_description,
+            allocate,
+            reallocate,
+            deallocate,
+            preferred_size,
+        };
+
+        let alloc = cf::Allocator::new(&mut context).unwrap();
+
+        let mem = unsafe { alloc.allocate(10, cf::OptionFlags::NONE) };
+        assert!(!mem.is_null());
+        let buf: *mut u8 = mem.cast();
+        let slice = unsafe { std::slice::from_raw_parts_mut(buf, 10) };
+        slice[0] = 10;
+        let bigger =
+            unsafe { std::slice::from_raw_parts_mut(buf.offset(-PADDING), 10 + PADDING as usize) };
+
+        bigger[0] = 1;
+        assert_eq!(bigger[PADDING as usize], 10);
+        unsafe { alloc.deallocate(mem) };
     }
 }

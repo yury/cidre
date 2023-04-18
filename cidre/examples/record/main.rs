@@ -62,7 +62,7 @@ impl FrameCounterInner {
             return;
         };
         self.video_counter += 1;
-        let pts = sample_buffer.presentation_time_stamp();
+        let pts = sample_buffer.pts();
         let dur = sample_buffer.duration();
 
         let mut flags = None;
