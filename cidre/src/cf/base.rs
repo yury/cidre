@@ -399,6 +399,7 @@ mod tests {
         const PADDING: isize = 10isize;
 
         extern "C" fn retain(info: *const cf::Allocator) -> *const cf::Allocator {
+            eprintln!("retain");
             unsafe {
                 let rf = info.as_ref().unwrap().retained();
                 let res = rf.as_ref() as *const cf::Allocator;
@@ -407,6 +408,7 @@ mod tests {
             }
         }
         extern "C" fn release(info: *const cf::Allocator) {
+            eprintln!("release");
             let retained: arc::R<cf::Allocator> = unsafe { std::mem::transmute(info) };
             std::mem::drop(retained);
         }
@@ -452,8 +454,7 @@ mod tests {
             hint: cf::OptionFlags,
             info: *mut cf::Allocator,
         ) -> cf::Index {
-            // what we can pass here?
-            unsafe { info.as_ref().unwrap().preferred_size(size, hint) }
+            unsafe { info.as_ref().unwrap().preferred_size(size + PADDING, hint) - PADDING }
         }
 
         let mut context = cf::AllocatorContext::<cf::Allocator> {
@@ -469,6 +470,8 @@ mod tests {
         };
 
         let alloc = cf::Allocator::new(&mut context).unwrap();
+
+        assert_eq!(alloc.preferred_size(10, cf::OptionFlags::NONE), 10);
 
         let mem = unsafe { alloc.allocate(10, cf::OptionFlags::NONE) };
         assert!(!mem.is_null());
