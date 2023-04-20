@@ -667,11 +667,11 @@ impl TimeStampFlags {
 #[repr(C)]
 pub struct ClassDescription {
     /// The four char code codec type.
-    pub m_type: os::Type,
+    pub ty: os::Type,
     /// The four char code codec subtype.
-    pub m_sub_type: os::Type,
+    pub sub_type: os::Type,
     /// The four char code codec manufacturer.
-    pub m_manufacturer: os::Type,
+    pub manufacturer: os::Type,
 }
 
 /// A tag identifying how the channel is to be used.
