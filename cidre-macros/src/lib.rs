@@ -436,7 +436,7 @@ fn gen_msg_send(
     class: bool,
     debug: bool,
 ) -> TokenStream {
-    let extern_name = sel.to_string().replace(' ', "").replace('\n', "");
+    let extern_name = sel.to_string().replace([' ', '\n'], "");
     let _is_init = extern_name.starts_with("init");
     let args_count = sel_args_count(sel);
 

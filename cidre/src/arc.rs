@@ -59,7 +59,7 @@ impl<T: Retain> Retained<T> {
     {
         unsafe {
             let res = objc::Id::autorelease(std::mem::transmute(self));
-            return std::mem::transmute(res);
+            std::mem::transmute(res)
         }
     }
 
@@ -70,7 +70,7 @@ impl<T: Retain> Retained<T> {
     {
         unsafe {
             let res = objc::objc_autoreleaseReturnValue(std::mem::transmute(self));
-            return std::mem::transmute(res);
+            std::mem::transmute(res)
         }
     }
 
