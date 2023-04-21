@@ -311,7 +311,7 @@ impl SampleBuffer {
         unsafe { CMSampleBufferInvalidate(self) }
     }
 
-    /// Makes a CMSampleBuffer's data ready, by calling the client's CMSampleBufferMakeDataReadyCallback.
+    /// Makes a cm::SampleBuffer's data ready, by calling the client's cm::SampleBufferMakeDataReadyCallback.
     #[doc(alias = "CMSampleBufferMakeDataReady")]
     #[inline]
     pub fn make_data_ready(&self) -> os::Status {
