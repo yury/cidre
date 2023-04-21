@@ -134,7 +134,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
                 };
                 fn_name = Some(name.to_string());
             }
-            _ => {} //
+            _ => {} // panic?
         }
     }
 

@@ -21,7 +21,7 @@ pub enum Type {
     Placement = 1,
 
     /// The heap contains sparse texture tiles.
-    Sparce = 2,
+    Sparse = 2,
 }
 
 define_obj_type!(Descriptor(ns::Id));

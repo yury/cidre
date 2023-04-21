@@ -288,6 +288,17 @@ impl BlockBuffer {
             block_buffer_out,
         )
     }
+
+    /// Assures that the system allocates memory for all memory blocks in a
+    /// block buffer.
+    ///
+    /// Traverses the possibly complex cm::BlockBuffer, allocating the memory
+    /// for any constituent memory blocks that are not yet allocated.
+    #[doc(alias = "CMBlockBufferAssureBlockMemory")]
+    #[inline]
+    pub fn assure_block_memory(&mut self) -> Result<(), os::Status> {
+        unsafe { CMBlockBufferAssureBlockMemory(self).result() }
+    }
 }
 
 extern "C" {
@@ -337,6 +348,8 @@ extern "C" {
         flags: Flags,
         block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
     ) -> os::Status;
+
+    fn CMBlockBufferAssureBlockMemory(buffer: &mut BlockBuffer) -> os::Status;
 
 }
 
