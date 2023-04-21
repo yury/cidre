@@ -100,8 +100,13 @@ impl Time {
     }
 
     #[inline]
-    pub fn copy_description(&self, allocator: Option<&Allocator>) -> Option<arc::R<String>> {
+    pub fn description_in(&self, allocator: Option<&Allocator>) -> Option<arc::R<String>> {
         unsafe { CMTimeCopyDescription(allocator, *self) }
+    }
+
+    #[inline]
+    pub fn description(&self) -> Option<arc::R<String>> {
+        unsafe { CMTimeCopyDescription(None, *self) }
     }
 
     /// Converts a Time to seconds.
