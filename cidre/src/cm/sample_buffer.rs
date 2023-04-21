@@ -311,7 +311,8 @@ impl SampleBuffer {
         unsafe { CMSampleBufferInvalidate(self) }
     }
 
-    /// Makes a cm::SampleBuffer's data ready, by calling the client's cm::SampleBufferMakeDataReadyCallback.
+    /// Makes a cm::SampleBuffer's data ready, by calling the client's
+    /// cm::SampleBufferMakeDataReadyCallback.
     #[doc(alias = "CMSampleBufferMakeDataReady")]
     #[inline]
     pub fn make_data_ready(&self) -> os::Status {
@@ -349,7 +350,7 @@ impl SampleBuffer {
     /// Returns a pointer to (and size of) a constant array of
     /// AudioStreamPacketDescriptions for the variable bytes per
     /// packet or variable frames per packet audio data in the
-    /// provided CMSampleBuffer.  The pointer will remain valid
+    /// provided cm::SampleBuffer.  The pointer will remain valid
     /// as long as the sbuf continues to be retained.
     /// Constant bitrate, constant frames-per-packet audio yields a
     /// return value of noErr and no packet descriptions.  This API is
@@ -837,7 +838,7 @@ pub mod errors {
     #[doc(alias = "kCMSampleBufferError_RequiredParameterMissing")]
     pub const REQUIRED_PARAMETER_MISSING: Status = Status(-12731);
 
-    /// Attempt was made to set a dataBuffer on a CMSampleBuffer that already has one.
+    /// Attempt was made to set a dataBuffer on a cm::SampleBuffer that already has one.
     #[doc(alias = "kCMSampleBufferError_AlreadyHasDataBuffer")]
     pub const ALREADY_HAS_DATA_BUFFER: Status = Status(-12732);
 
@@ -873,15 +874,20 @@ pub mod errors {
     #[doc(alias = "kCMSampleBufferError_SampleTimingInfoInvalid")]
     pub const SAMPLE_TIMING_INFO_INVALID: Status = Status(-12740);
 
-    /// the media type specified by a format description is not valid for the given operation (eg. a CMSampleBuffer with a non-audio format description passed to CMSampleBufferGetAudioStreamPacketDescriptionsPtr).
+    /// the media type specified by a format description is not valid for the given
+    /// operation (eg. a cm::SampleBuffer with a non-audio format description passed
+    /// to cm::SampleBufferGetAudioStreamPacketDescriptionsPtr).
     #[doc(alias = "kCMSampleBufferError_InvalidMediaTypeForOperation")]
     pub const INVALID_MEDIA_TYPE_FOR_OPERATION: Status = Status(-12741);
 
-    /// Buffer contains bad data. Only returned by CMSampleBuffer functions that inspect its sample data.
+    /// Buffer contains bad data. Only returned by cm::SampleBuffer functions
+    /// that inspect its sample data.
     #[doc(alias = "kCMSampleBufferError_InvalidSampleData")]
     pub const INVALID_SAMPLE_DATA: Status = Status(-12742);
 
-    /// the format of the given media does not match the given format description (eg. a format description paired with a CVImageBuffer that fails CMVideoFormatDescriptionMatchesImageBuffer).
+    /// The format of the given media does not match the given format description
+    /// (eg. a format description paired with a cv::ImageBuffer that fails
+    /// cm::VideoFormatDescriptionMatchesImageBuffer).
     #[doc(alias = "kCMSampleBufferError_InvalidMediaFormat")]
     pub const INVALID_MEDIA_FORMAT: Status = Status(-12743);
 
