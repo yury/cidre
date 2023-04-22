@@ -188,6 +188,8 @@ pub use indirect_command_buffer::Descriptor as IndirectCmdBufDescriptor;
 pub use indirect_command_buffer::ExecutionRange as IndirectCmBufExecutionRange;
 pub use indirect_command_buffer::IndirectCmdBuf;
 
+pub mod indirect_command_encoder;
+
 pub mod sampler;
 pub use sampler::AddressMode as SamplerAddressMode;
 pub use sampler::BorderColor as SamplerBorderColor;
