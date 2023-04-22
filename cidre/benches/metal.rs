@@ -255,9 +255,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             let cmd_buf = queue.new_cmd_buf().unwrap();
             let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
             encoder.set_compute_ps(&state.matrix_state);
-            encoder.set_texture(Some(&state.y_texture), 0);
-            encoder.set_texture(Some(&state.cbcr_texture), 1);
-            encoder.set_texture(Some(&state.bgra_texture), 2);
+            encoder.set_texture_at(Some(&state.y_texture), 0);
+            encoder.set_texture_at(Some(&state.cbcr_texture), 1);
+            encoder.set_texture_at(Some(&state.bgra_texture), 2);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
             cmd_buf.commit();
@@ -270,9 +270,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             let cmd_buf = queue.new_cmd_buf().unwrap();
             let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
             encoder.set_compute_ps(&state.macro_state);
-            encoder.set_texture(Some(&state.y_texture), 0);
-            encoder.set_texture(Some(&state.cbcr_texture), 1);
-            encoder.set_texture(Some(&state.bgra_texture), 2);
+            encoder.set_texture_at(Some(&state.y_texture), 0);
+            encoder.set_texture_at(Some(&state.cbcr_texture), 1);
+            encoder.set_texture_at(Some(&state.bgra_texture), 2);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
             cmd_buf.commit();
@@ -285,9 +285,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             let cmd_buf = queue.new_cmd_buf_unretained_refs().unwrap();
             let mut encoder = cmd_buf.new_compute_cmd_enc().unwrap();
             encoder.set_compute_ps(&state.macro_state);
-            encoder.set_texture(Some(&state.y_texture), 0);
-            encoder.set_texture(Some(&state.cbcr_texture), 1);
-            encoder.set_texture(Some(&state.bgra_texture), 2);
+            encoder.set_texture_at(Some(&state.y_texture), 0);
+            encoder.set_texture_at(Some(&state.cbcr_texture), 1);
+            encoder.set_texture_at(Some(&state.bgra_texture), 2);
             encoder.dispatch_threads(grid_size, threads_per_group);
             encoder.end_encoding();
             cmd_buf.commit();
@@ -317,7 +317,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             let cmd_buf = queue.new_cmd_buf().unwrap();
             let mut encoder = cmd_buf.new_render_cmd_enc(&state.render_pass_desc).unwrap();
             encoder.set_render_ps(&state.render_state);
-            encoder.set_vertex_buf(Some(&state.vertex_buf), 0, 0);
+            encoder.set_vertex_buf_at(Some(&state.vertex_buf), 0, 0);
             encoder.set_fragment_texture_at(Some(&state.y_texture), 0);
             encoder.set_fragment_texture_at(Some(&state.cbcr_texture), 1);
             encoder.draw_primitives(mtl::PrimitiveType::TriangleStrip, 0, 4);

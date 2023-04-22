@@ -150,7 +150,7 @@ impl RenderCmdEncoder {
     pub fn set_render_ps(&mut self, value: &mtl::RenderPipelineState);
 
     #[objc::msg_send(setVertexBytes:length:atIndex:)]
-    pub fn set_vertex_bytes(
+    pub fn set_vertex_bytes_at(
         &mut self,
         bytes: *const u8,
         length: ns::UInteger,
@@ -158,16 +158,48 @@ impl RenderCmdEncoder {
     );
 
     #[inline]
-    pub fn set_vertex_slice(&mut self, slice: &[u8], at_index: ns::UInteger) {
-        self.set_vertex_bytes(slice.as_ptr(), slice.len(), at_index)
+    pub fn set_vertex_slice_at(&mut self, slice: &[u8], at_index: usize) {
+        self.set_vertex_bytes_at(slice.as_ptr(), slice.len(), at_index)
     }
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
-    pub fn set_vertex_buf(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
+    pub fn set_vertex_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
+    /// Set the offset within the current global buffer for all vertex shaders at the given bind point index.
+    ///
+    /// Call this method to change the offset you specified when binding a single buffer with
+    /// the set_vertex_buf_at method or multiple buffers with the setVertexBuffers:offsets:withRange:
+    /// method. You can also use this method to specify a data offset after binding data directly
+    /// to the vertex shader with the setVertexBytes:length:atIndex: method. Don’t rebind a buffer
+    /// or block of data if you’re only updating its offset.
+    ///
+    /// For buffers in the device address space, align the offset to the data type consumed by
+    /// the vertex shader (which is always less than or equal to 16 bytes).
+    ///
+    /// For buffers in the constant address space, align the offset to 256 bytes in macOS.
+    /// In iOS, align the offset to the maximum of either the data type consumed by the vertex
+    /// shader, or 4 bytes. A 16-byte alignment is safe in iOS if you don’t need to consider
+    /// the data type.
+    ///
+    /// # Arguments:
+    /// * `offset` - Where the data begins, in bytes, from the start of the buffer.
+    /// * `index` - The index in the buffer argument table.
+    #[objc::msg_send(setVertexBufferOffset:atIndex:)]
+    pub fn set_vertex_buf_offset_at(&mut self, offset: usize, index: usize);
+
+    /// Set a global sampler for all vertex shaders at the given bind point index.
+    #[objc::msg_send(setVertexSamplerState:atIndex:)]
+    pub fn set_vertex_sampler_state_at(
+        &mut self,
+        sampler: Option<&mtl::SamplerState>,
+        at_index: usize,
+    );
+
+    /// Set a global buffer for all fragment shaders at the given bind point index.
     #[objc::msg_send(setFragmentBuffer:offset:atIndex:)]
-    pub fn set_fragment_buf(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
+    pub fn set_fragment_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
+    /// Set a global texture for all fragment shaders at the given bind point index.
     #[objc::msg_send(setFragmentTexture:atIndex:)]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);
 

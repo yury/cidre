@@ -76,7 +76,7 @@ fn main() {
         desc.set_raster_sample_count(4);
         desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
 
-        let pipeline_state = device.new_render_ps(&desc).unwrap();
+        let render_ps = device.new_render_ps(&desc).unwrap();
 
         let render_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
             mtl::PixelFormat::RGBA8Unorm,
@@ -107,9 +107,9 @@ fn main() {
 
         let mut encoder = cmd_buf.new_render_cmd_enc(&render_pass_desc).unwrap();
 
-        encoder.set_render_ps(&pipeline_state);
+        encoder.set_render_ps(&render_ps);
 
-        encoder.set_vertex_buf(Some(&vertex_buffer), 0, 0);
+        encoder.set_vertex_buf_at(Some(&vertex_buffer), 0, 0);
 
         encoder.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
 
