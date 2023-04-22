@@ -94,8 +94,11 @@ impl ComputeCmdEncoder {
     pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range);
 
     #[inline]
-    pub fn set_textures(&mut self, textures: &[&mtl::Texture]) {
-        self.set_textures_with_range(textures.as_ptr(), ns::Range::new(0, textures.len()))
+    pub fn set_textures_at(&mut self, textures: &[&mtl::Texture], start_index: usize) {
+        self.set_textures_with_range(
+            textures.as_ptr(),
+            ns::Range::new(start_index, textures.len()),
+        )
     }
 
     #[objc::msg_send(dispatchThreads:threadsPerThreadgroup:)]
