@@ -12,7 +12,7 @@ impl Buf {
     }
 
     #[objc::msg_send(contents)]
-    pub fn contents(&self) -> *mut u8;
+    pub unsafe fn contents(&self) -> *mut u8;
 
     #[inline]
     pub fn as_slice(&self) -> &[u8] {
