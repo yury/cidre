@@ -196,6 +196,10 @@ pub use sampler::MinMagFilter as SamplerMinMagFilter;
 pub use sampler::MipFilter as SamplerMipFilter;
 pub use sampler::State as SamplerState;
 
+pub mod visible_function_table;
+pub use visible_function_table::Descriptor as VisibleFnTableDescriptor;
+pub use visible_function_table::VisibleFnTable;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {
