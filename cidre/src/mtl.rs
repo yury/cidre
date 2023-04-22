@@ -193,6 +193,8 @@ pub use indirect_command_buffer::ExecutionRange as IndirectCmBufExecutionRange;
 pub use indirect_command_buffer::IndirectCmdBuf;
 
 pub mod indirect_command_encoder;
+pub use indirect_command_encoder::IndirectComputeCmd;
+pub use indirect_command_encoder::IndirectRenderCmd;
 
 pub mod sampler;
 pub use sampler::AddressMode as SamplerAddressMode;

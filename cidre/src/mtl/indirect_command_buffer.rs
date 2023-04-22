@@ -19,7 +19,25 @@ impl IndirectCmdBuf {
     #[objc::msg_send(resetWithRange:)]
     pub fn reset_with_range(&mut self, range: ns::Range);
 
-    // - (id <MTLIndirectRenderCommand>)indirectRenderCommandAtIndex:(NSUInteger)commandIndex;
-    // pub fn inderect_render_cmd_at_throws(&self) -> &mtl::InderectRen
-    // - (id <MTLIndirectComputeCommand>)indirectComputeCommandAtIndex:(NSUInteger)commandIndex API_AVAILABLE(macos(11.0), macCatalyst(14.0), ios(13.0));
+    #[objc::msg_send(indirectRenderCommandAtIndex:)]
+    pub fn indirect_render_cmd_at_throws(&self, index: usize) -> &mtl::IndirectRenderCmd;
+
+    #[inline]
+    pub fn indirect_render_cmd_at<'ar>(
+        &self,
+        index: usize,
+    ) -> Result<&mtl::IndirectRenderCmd, &'ar ns::Exception> {
+        ns::try_catch(|| self.indirect_render_cmd_at_throws(index))
+    }
+
+    #[objc::msg_send(indirectComputeCommandAtIndex:)]
+    pub fn indirect_compute_cmd_at_throws(&self, index: usize) -> &mtl::IndirectComputeCmd;
+
+    #[inline]
+    pub fn indirect_compute_cmd_at<'ar>(
+        &self,
+        index: usize,
+    ) -> Result<&mtl::IndirectComputeCmd, &'ar ns::Exception> {
+        ns::try_catch(|| self.indirect_compute_cmd_at_throws(index))
+    }
 }
