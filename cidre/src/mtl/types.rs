@@ -22,3 +22,10 @@ pub struct Origin {
 pub struct ResourceID {
     _impl: u64,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(C)]
+pub struct Region {
+    pub origin: Origin,
+    pub size: Size,
+}

@@ -114,6 +114,41 @@ impl IndirectRenderCmd {
 define_obj_type!(IndirectComputeCmd(ns::Id));
 
 impl IndirectComputeCmd {
+    #[objc::msg_send(setComputePipelineState:)]
+    pub fn set_compute_ps(&mut self, ps: &mtl::ComputePipelineState);
+
+    #[objc::msg_send(setKernelBuffer:offset:atIndex:)]
+    pub fn set_kernel_buf_at(&mut self, buf: &mtl::Buf, offset: usize, index: usize);
+
+    #[objc::msg_send(concurrentDispatchThreadgroups:threadsPerThreadgroup:)]
+    pub fn concurrent_dispatch_thread_groups(
+        &mut self,
+        threadgroups_per_grid: mtl::Size,
+        threads_per_threadgroup: mtl::Size,
+    );
+
+    #[objc::msg_send(concurrentDispatchThreads:threadsPerThreadgroup:)]
+    pub fn concurrent_dispatch_threads(
+        &mut self,
+        threads_per_grid: mtl::Size,
+        threads_per_threadgroup: mtl::Size,
+    );
+
+    #[objc::msg_send(setBarrier)]
+    pub fn set_barrier(&mut self);
+
+    #[objc::msg_send(clearBarrier)]
+    pub fn clear_barrier(&mut self);
+
+    #[objc::msg_send(setImageblockWidth:height:)]
+    pub fn set_image_block_size(&mut self, width: usize, height: usize);
+
     #[objc::msg_send(reset)]
     pub fn reset(&mut self);
+
+    #[objc::msg_send(setThreadgroupMemoryLength:atIndex:)]
+    pub fn set_threadgroup_memory_len_at(&mut self, length: usize, index: usize);
+
+    #[objc::msg_send(setStageInRegion:)]
+    pub fn set_stage_in_region(&mut self, region: mtl::Region);
 }

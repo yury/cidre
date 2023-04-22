@@ -1,5 +1,6 @@
 pub mod types;
 pub use types::Origin;
+pub use types::Region;
 pub use types::ResourceID;
 pub use types::Size;
 
