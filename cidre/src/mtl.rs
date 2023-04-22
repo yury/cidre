@@ -3,6 +3,9 @@ pub use types::Origin;
 pub use types::ResourceID;
 pub use types::Size;
 
+pub mod stage_input_output_descriptor;
+pub use stage_input_output_descriptor::IndexType;
+
 mod pixel_format;
 pub use pixel_format::PixelFormat;
 
