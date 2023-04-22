@@ -363,6 +363,10 @@ impl Device {
     #[objc::rar_retain()]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
 
+    /// Query device support for using ray tracing from compute pipelines.
+    #[objc::msg_send(supportsRaytracing)]
+    pub fn supports_raytracing(&self) -> bool;
+
     /// Query device support for using function pointers from compute pipelines.
     #[objc::msg_send(supportsFunctionPointers)]
     pub fn supports_function_pointers(&self) -> bool;
@@ -393,6 +397,7 @@ mod tests {
     fn basics1() {
         let device = mtl::Device::default().unwrap();
 
+        assert!(device.supports_raytracing());
         assert!(device.supports_function_pointers());
         assert!(device.supports_function_pointers_from_render());
         assert!(device.supports_raytracing_from_render());
