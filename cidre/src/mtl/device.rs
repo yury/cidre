@@ -362,6 +362,22 @@ impl Device {
 
     #[objc::rar_retain()]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
+
+    /// Query device support for using function pointers from compute pipelines.
+    #[objc::msg_send(supportsFunctionPointers)]
+    pub fn supports_function_pointers(&self) -> bool;
+
+    /// Query device support for using function pointers from render pipeline stages.
+    #[objc::msg_send(supportsFunctionPointersFromRender)]
+    pub fn supports_function_pointers_from_render(&self) -> bool;
+
+    /// Query device support for using ray tracing from render pipeline stages.
+    #[objc::msg_send(supportsRaytracingFromRender)]
+    pub fn supports_raytracing_from_render(&self) -> bool;
+
+    /// Query device support for using ray tracing primitive motion blur.
+    #[objc::msg_send(supportsPrimitiveMotionBlur)]
+    pub fn supports_primitive_motion_blur(&self) -> bool;
 }
 
 #[link(name = "Metal", kind = "framework")]
@@ -376,6 +392,11 @@ mod tests {
     #[test]
     fn basics1() {
         let device = mtl::Device::default().unwrap();
+
+        assert!(device.supports_function_pointers());
+        assert!(device.supports_function_pointers_from_render());
+        assert!(device.supports_raytracing_from_render());
+        assert!(device.supports_primitive_motion_blur());
 
         let mut fence = device.new_fence().unwrap();
         let label = ns::String::with_str("nice");
