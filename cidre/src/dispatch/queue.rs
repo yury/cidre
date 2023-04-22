@@ -33,9 +33,28 @@ impl QOSClass {
 pub struct Priority(pub c_long);
 
 impl Priority {
+    /// Items dispatched to the queue will run at high priority,
+    /// i.e. the queue will be scheduled for execution before
+    /// any default priority or low priority queue.
     pub const HIGH: Self = Self(2);
+
+    /// Items dispatched to the queue will run at the default
+    /// priority, i.e. the queue will be scheduled for execution
+    /// after all high priority queues have been scheduled, but
+    /// before any low priority queues have been scheduled.
     pub const DEFAULT: Self = Self(0);
+
+    /// Items dispatched to the queue will run at low priority,
+    /// i.e. the queue will be scheduled for execution after all
+    /// default priority and high priority queues have been
+    /// scheduled.   
     pub const LOW: Self = Self(-2);
+
+    /// Items dispatched to the queue will run at background priority, i.e. the queue
+    /// will be scheduled for execution after all higher priority queues have been
+    /// scheduled and the system will run items on this queue on a thread with
+    /// background status as per setpriority(2) (i.e. disk I/O is throttled and the
+    /// thread's scheduling priority is set to lowest value).
     pub const BACKGROUND: Self = Self(-1 << 15);
 }
 
