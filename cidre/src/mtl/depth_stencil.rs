@@ -1,0 +1,74 @@
+use crate::{arc, define_obj_type, ns, objc};
+
+#[doc(alias = "MTLCompareFunction")]
+#[derive(Debug, Eq, PartialEq)]
+#[repr(usize)]
+pub enum CompareFn {
+    Never = 0,
+    Less = 1,
+    Equal = 2,
+    LessEqual = 3,
+    Greater = 4,
+    NotEqual = 5,
+    GreaterEqual = 6,
+    Always = 7,
+}
+
+#[doc(alias = "MTLStencilOperation")]
+#[derive(Debug, Eq, PartialEq)]
+#[repr(usize)]
+pub enum StencilOp {
+    Keep = 0,
+    Zero = 1,
+    Replace = 2,
+    IncrementClamp = 3,
+    DecrementClamp = 4,
+    Invert = 5,
+    IncrementWrap = 6,
+    DecrementWrap = 7,
+}
+
+define_obj_type!(StencilDescriptor(ns::Id), MTL_STENCIL_DESCRIPTOR);
+
+impl StencilDescriptor {
+    #[objc::msg_send(stencilCompareFunction)]
+    pub fn compare_fn(&self) -> CompareFn;
+
+    #[objc::msg_send(setStencilCompareFunction:)]
+    pub fn set_compare_fn(&mut self, value: CompareFn);
+
+    #[objc::msg_send(stencilFailureOperation)]
+    pub fn failure_op(&self) -> StencilOp;
+
+    #[objc::msg_send(setStencilFailureOperation:)]
+    pub fn set_failure_op(&mut self, value: StencilOp);
+
+    #[objc::msg_send(depthFailureOperation)]
+    pub fn depth_failure_op(&self) -> StencilOp;
+
+    #[objc::msg_send(setDepthFailureOperation:)]
+    pub fn set_depth_failure_op(&mut self, value: StencilOp);
+
+    #[objc::msg_send(depthStencilPassOperation)]
+    pub fn depth_stencil_op(&self) -> StencilOp;
+
+    #[objc::msg_send(setDepthStencilPassOperation:)]
+    pub fn set_depth_stencil_op(&mut self, value: StencilOp);
+
+    #[objc::msg_send(readMask)]
+    pub fn read_mask(&self) -> u32;
+
+    #[objc::msg_send(setReadMask:)]
+    pub fn set_read_mask(&mut self, value: u32);
+
+    #[objc::msg_send(writeMask)]
+    pub fn write_mask(&self) -> u32;
+
+    #[objc::msg_send(setWriteMask:)]
+    pub fn set_write_mask(&mut self, value: u32);
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    static MTL_STENCIL_DESCRIPTOR: &'static objc::Class<StencilDescriptor>;
+}

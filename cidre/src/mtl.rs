@@ -162,6 +162,11 @@ pub use render_command_encoder::ViewPort;
 pub use render_command_encoder::VisibilityResultMode;
 pub use render_command_encoder::Winding;
 
+pub mod depth_stencil;
+pub use depth_stencil::CompareFn;
+pub use depth_stencil::StencilDescriptor;
+pub use depth_stencil::StencilOp;
+
 mod compute_command_encoder;
 pub use compute_command_encoder::ComputeCmdEncoder;
 
