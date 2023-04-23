@@ -64,7 +64,7 @@ mod tests {
     fn basics() {
         let device = mtl::Device::default().unwrap();
 
-        let mut buffer = device.new_buf_len_opts(10, Default::default()).unwrap();
+        let mut buffer = device.new_buf(10, Default::default()).unwrap();
         buffer.as_slice_mut()[1] = 10;
 
         assert_eq!(buffer.len(), 10);

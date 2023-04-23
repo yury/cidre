@@ -204,7 +204,7 @@ mod tests {
         let handler = blocks::once2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
-        device.new_lib_with_src_options_completion(&source, None, handler.escape());
+        device.new_lib_with_src_completion(&source, None, handler.escape());
     }
 
     #[test]

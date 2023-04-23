@@ -194,18 +194,18 @@ impl Device {
         unsafe { Ok(transmute(res)) }
     }
 
-    pub async fn new_lib_with_src_options(
+    pub async fn new_lib_with_src_opts(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
     ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
-        self.new_lib_with_src_options_completion(source, options, block.escape());
+        self.new_lib_with_src_completion(source, options, block.escape());
         future.await
     }
 
     #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
-    pub fn new_lib_with_src_options_completion<'ar, F>(
+    pub fn new_lib_with_src_completion<'ar, F>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
@@ -273,21 +273,15 @@ impl Device {
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf_len_opts_ar(
-        &self,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<&'ar mtl::Buf>;
+    pub fn new_buf_ar(&self, length: usize, options: mtl::ResourceOptions)
+        -> Option<&'ar mtl::Buf>;
 
     #[objc::rar_retain()]
-    pub fn new_buf_len_opts(
-        &self,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buf>>;
+    pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
+        -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newBufferWithBytes:length:options:)]
-    pub fn new_buf_bytes_len_opts_ar(
+    pub fn new_buf_with_bytes_ar(
         &self,
         bytes: *const c_void,
         length: usize,
@@ -295,7 +289,7 @@ impl Device {
     ) -> Option<&'ar Buf>;
 
     #[objc::rar_retain()]
-    pub fn new_buf_bytes_len_opts(
+    pub fn new_buf_with_bytes(
         &self,
         bytes: *const c_void,
         length: usize,
@@ -303,12 +297,12 @@ impl Device {
     ) -> Option<arc::R<Buf>>;
 
     #[inline]
-    pub fn new_buf_slice_ar<'ar, T: Sized>(
+    pub fn new_buf_with_slice_ar<'ar, T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<&'ar mtl::Buf> {
-        self.new_buf_bytes_len_opts_ar(
+        self.new_buf_with_bytes_ar(
             slice.as_ptr() as _,
             std::mem::size_of::<T>() * slice.len(),
             options,
@@ -316,12 +310,12 @@ impl Device {
     }
 
     #[inline]
-    pub fn new_buf_slice<T: Sized>(
+    pub fn new_buf_with_slice<T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buf>> {
-        arc::rar_retain_option(self.new_buf_slice_ar(slice, options))
+        arc::rar_retain_option(self.new_buf_with_slice_ar(slice, options))
     }
 
     #[objc::msg_send(newFence)]

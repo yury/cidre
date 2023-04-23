@@ -100,7 +100,9 @@ fn main() {
             Vertex::with((1.0, 1.0), (0.0, 0.0, 1.0)),
         ];
 
-        let vertex_buffer = device.new_buf_slice(&triangle, Default::default()).unwrap();
+        let vertex_buffer = device
+            .new_buf_with_slice(&triangle, Default::default())
+            .unwrap();
 
         let cmd_queue = device.new_cmd_queue().unwrap();
         let cmd_buf = cmd_queue.new_cmd_buf().unwrap();
