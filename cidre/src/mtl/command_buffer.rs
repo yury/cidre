@@ -130,4 +130,9 @@ impl CmdBuf {
         drawable: &D,
         at_time: cf::TimeInterval,
     );
+
+    /// If an error occurred during execution, the ns::Error may contain more details
+    /// about the problem.
+    #[objc::msg_send(error)]
+    pub fn error(&self) -> Option<&ns::Error>;
 }
