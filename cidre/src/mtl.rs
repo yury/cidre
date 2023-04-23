@@ -1,7 +1,9 @@
 pub mod types;
+pub use types::Coordinate2D;
 pub use types::Origin;
 pub use types::Region;
 pub use types::ResourceID;
+pub use types::SamplePosition;
 pub use types::Size;
 
 pub mod stage_input_output_descriptor;
