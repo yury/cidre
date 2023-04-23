@@ -363,6 +363,20 @@ impl Device {
     #[objc::rar_retain()]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
 
+    /// The maximum threadgroup memory available to a compute kernel, in bytes.
+    #[objc::msg_send(maxThreadgroupMemoryLength)]
+    pub fn max_threadgroup_memory_len(&self) -> usize;
+
+    /// The maximum number of unique argument buffer samplers per app.
+    ///
+    /// This limit is only applicable to samplers that have their supportArgumentBuffers
+    /// property set to true. A `mtl::SamplerState` object is considered unique if the
+    /// configuration of its originating `mtl::SamplerDescriptor` properties is unique.
+    /// For example, two samplers with equal min_filter values but different mag_filter values
+    /// are considered unique.
+    #[objc::msg_send(maxArgumentBufferSamplerCount)]
+    pub fn max_argument_buf_sampler_count(&self) -> usize;
+
     /// Query device support for using ray tracing from compute pipelines.
     #[objc::msg_send(supportsRaytracing)]
     pub fn supports_raytracing(&self) -> bool;
