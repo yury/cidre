@@ -2,9 +2,9 @@ use std::ffi::c_void;
 
 use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(FnConstantValues(ns::Id), MTL_FUNCTION_CONSTANT_VALUES);
+define_obj_type!(FnConstValues(ns::Id), MTL_FUNCTION_CONSTANT_VALUES);
 
-impl FnConstantValues {
+impl FnConstValues {
     define_mtl!(reset);
 
     #[objc::msg_send(setConstantValue:type:atIndex:)]
@@ -29,7 +29,7 @@ impl FnConstantValues {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_FUNCTION_CONSTANT_VALUES: &'static objc::Class<FnConstantValues>;
+    static MTL_FUNCTION_CONSTANT_VALUES: &'static objc::Class<FnConstValues>;
 }
 
 #[cfg(test)]
@@ -38,7 +38,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut fcv = mtl::FnConstantValues::new();
+        let mut fcv = mtl::FnConstValues::new();
         let v = false;
         fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
         fcv.reset();

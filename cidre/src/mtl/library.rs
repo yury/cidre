@@ -110,31 +110,63 @@ impl Lib {
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
 
     /// # Safety
-    /// Use new_function_with_name_constant_values
+    /// Use new_fn_const_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
-    pub unsafe fn new_fn_const_values_err_ar(
+    pub unsafe fn new_fn_with_consts_err_ar(
         &self,
         name: &ns::String,
-        constant_values: &mtl::FnConstantValues,
+        constant_values: &mtl::FnConstValues,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<&'ar Fn>;
 
     #[objc::rar_retain()]
-    pub unsafe fn new_fn_const_values_err<'ar>(
+    pub unsafe fn new_fn_with_consts_err<'ar>(
         &self,
         name: &ns::String,
-        constant_values: &mtl::FnConstantValues,
+        constant_values: &mtl::FnConstValues,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
-    pub fn new_fn_const_values<'ar>(
+    pub fn new_fn_with_consts<'ar>(
         &self,
         name: &ns::String,
-        constant_values: &mtl::FnConstantValues,
+        constant_values: &mtl::FnConstValues,
     ) -> Result<arc::R<Fn>, &'ar ns::Error> {
         let mut error = None;
 
-        let res = unsafe { Self::new_fn_const_values_err(self, name, constant_values, &mut error) };
+        let res = unsafe { Self::new_fn_with_consts_err(self, name, constant_values, &mut error) };
+
+        if let Some(err) = error {
+            return Err(err);
+        }
+
+        unsafe { Ok(transmute(res)) }
+    }
+
+    #[objc::msg_send(newFunctionWithName:descriptor:error:)]
+    pub unsafe fn new_fn_with_desc_err_ar(
+        &self,
+        name: &ns::String,
+        descriptor: &mtl::FnDescriptor,
+        error: &mut Option<&'ar ns::Error>,
+    ) -> Option<&'ar Fn>;
+
+    #[objc::rar_retain()]
+    pub unsafe fn new_fn_with_desc_err<'ar>(
+        &self,
+        name: &ns::String,
+        descriptor: &mtl::FnDescriptor,
+        error: &mut Option<&'ar ns::Error>,
+    ) -> Option<arc::R<Fn>>;
+
+    pub fn new_fn_with_desc<'ar>(
+        &self,
+        name: &ns::String,
+        descriptor: &mtl::FnDescriptor,
+    ) -> Result<arc::R<Fn>, &'ar ns::Error> {
+        let mut error = None;
+
+        let res = unsafe { Self::new_fn_with_desc_err(self, name, descriptor, &mut error) };
 
         if let Some(err) = error {
             return Err(err);
@@ -147,7 +179,7 @@ impl Lib {
 pub type ErrorDomain = ns::ErrorDomain;
 
 impl ErrorDomain {
-    pub fn library() -> &'static ErrorDomain {
+    pub fn lib() -> &'static ErrorDomain {
         unsafe { MTLLibraryErrorDomain }
     }
 }
@@ -253,9 +285,9 @@ mod tests {
         let lib = device.new_lib_with_src(&source, None).unwrap();
 
         let func_name = ns::String::with_str_no_copy("function_a");
-        let constant_values = mtl::FnConstantValues::new();
+        let constant_values = mtl::FnConstValues::new();
         let func = lib
-            .new_fn_const_values(&func_name, &constant_values)
+            .new_fn_with_consts(&func_name, &constant_values)
             .unwrap();
         let name = func.name();
         assert!(func_name.is_equal(name));

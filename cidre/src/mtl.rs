@@ -79,7 +79,7 @@ pub mod drawable;
 pub use drawable::Drawable;
 
 mod function_constant_values;
-pub use function_constant_values::FnConstantValues;
+pub use function_constant_values::FnConstValues;
 
 mod argument_encoder;
 pub use argument_encoder::ArgumentEncoder;
