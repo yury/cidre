@@ -100,6 +100,13 @@ define_obj_type!(Lib(ns::Id));
 impl Lib {
     define_mtl!(device, label, set_label);
 
+    /// The installName provided when this mtl::Lib was created.
+    ///
+    /// Always nil if the type of the library is not mtl::LibType::Dynamic.
+    /// [read more](https://developer.apple.com/documentation/metal/mtllibrary/3554039-installname?language=objc)
+    #[objc::msg_send(installName)]
+    pub fn install_name(&self) -> Option<&ns::String>;
+
     #[objc::msg_send(functionNames)]
     pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
@@ -127,6 +134,7 @@ impl Lib {
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
+    #[inline]
     pub fn new_fn_with_consts<'ar>(
         &self,
         name: &ns::String,
@@ -305,5 +313,14 @@ mod tests {
 
         options.set_language_version(mtl::LanguageVersion::_2_4);
         assert_eq!(options.language_version(), mtl::LanguageVersion::_2_4);
+    }
+
+    #[test]
+    fn install_name() {
+        let device = mtl::Device::default().unwrap();
+        let source = ns::String::with_str("kernel void function_a() {}");
+        let lib = device.new_lib_with_src(&source, None).unwrap();
+
+        assert!(lib.install_name().is_none());
     }
 }
