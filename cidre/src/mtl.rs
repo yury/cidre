@@ -75,6 +75,9 @@ pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAndAlign;
 
+pub mod drawable;
+pub use drawable::Drawable;
+
 mod function_constant_values;
 pub use function_constant_values::FunctionConstantValues;
 

@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{arc, blocks, cf, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -110,4 +110,24 @@ impl CmdBuf {
         &self,
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<arc::R<mtl::RenderCmdEncoder>>;
+
+    /// Add a drawable present that will be invoked when this command buffer has
+    /// been scheduled for execution.
+    ///
+    /// The submission thread will be lock stepped with present call been serviced
+    /// by window server
+    #[objc::msg_send(presentDrawable:)]
+    pub fn present_drawable<O: objc::Obj, D: mtl::Drawable<O>>(&self, drawable: &D);
+
+    /// Add a drawable present that will be invoked when this command buffer has been
+    /// scheduled for execution.
+    ///
+    /// The submission thread will be lock stepped with present call been serviced
+    /// by window server
+    #[objc::msg_send(presentDrawable:atTime:)]
+    pub fn present_drawable_at<O: objc::Obj, D: mtl::Drawable<O>>(
+        &self,
+        drawable: &D,
+        at_time: cf::TimeInterval,
+    );
 }
