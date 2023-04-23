@@ -23,6 +23,7 @@ Class MTL_FUNCTION_DESCRIPTOR;
 Class MTL_FUNCTION_CONSTANT_VALUES;
 Class MTL_TEXTURE_DESCRIPTOR;
 Class MTL_STENCIL_DESCRIPTOR;
+Class MTL_DEPTH_STENCIL_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -42,6 +43,7 @@ static void mtl_initializer(void)
       MTL_FUNCTION_CONSTANT_VALUES = [MTLFunctionConstantValues class];
       MTL_TEXTURE_DESCRIPTOR = [MTLTextureDescriptor class];
       MTL_STENCIL_DESCRIPTOR = [MTLStencilDescriptor class];
+      MTL_DEPTH_STENCIL_DESCRIPTOR = [MTLDepthStencilDescriptor class];
 
       initialized = 1;
     }

@@ -164,6 +164,8 @@ pub use render_command_encoder::Winding;
 
 pub mod depth_stencil;
 pub use depth_stencil::CompareFn;
+pub use depth_stencil::DepthStencilDescriptor;
+pub use depth_stencil::State as DepthStencilState;
 pub use depth_stencil::StencilDescriptor;
 pub use depth_stencil::StencilOp;
 
