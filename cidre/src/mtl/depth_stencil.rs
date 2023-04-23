@@ -1,7 +1,7 @@
 use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
 #[doc(alias = "MTLCompareFunction")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum CompareFn {
     /// A new value never passes the comparison test.
@@ -23,7 +23,7 @@ pub enum CompareFn {
 }
 
 #[doc(alias = "MTLStencilOperation")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum StencilOp {
     /// Keep the current stencil value.
