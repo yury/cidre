@@ -156,6 +156,8 @@ impl DepthStencilDescriptor {
 
 define_obj_type!(State(ns::Id));
 
+/// A depth and stencil state object that specifies the depth and stencil
+/// configuration and operations used in a render pass.
 impl State {
     define_mtl!(label, device);
 }

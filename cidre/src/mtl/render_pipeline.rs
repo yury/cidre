@@ -2,7 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use crate::{arc, define_cls_init, define_mtl, define_obj_type, ns, objc};
 
-use super::{argument::Argument, Function, PixelFormat};
+use super::{argument::Argument, Fn, PixelFormat};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
@@ -69,7 +69,7 @@ pub enum TessellationPartitionMode {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
-pub enum TessellationFactorStepFunction {
+pub enum TessellationFactorStepFn {
     Constant = 0,
     PerPatch = 1,
     PerInstance = 2,
@@ -166,7 +166,7 @@ define_cls_init!(Descriptor, MTL_RENDER_PIPELINE_DESCRIPTOR);
 
 impl arc::R<Descriptor> {
     #[inline]
-    pub fn with_fns(mut self, vertex_fn: &Function, fragment_fn: &Function) -> Self {
+    pub fn with_fns(mut self, vertex_fn: &Fn, fragment_fn: &Fn) -> Self {
         self.set_vertex_fn(Some(vertex_fn));
         self.set_fragment_fn(Some(fragment_fn));
         self
@@ -177,16 +177,16 @@ impl Descriptor {
     define_mtl!(reset);
 
     #[objc::msg_send(vertexFunction)]
-    pub fn vertex_fn(&self) -> Option<&Function>;
+    pub fn vertex_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setVertexFunction:)]
-    pub fn set_vertex_fn(&mut self, value: Option<&Function>);
+    pub fn set_vertex_fn(&mut self, value: Option<&Fn>);
 
     #[objc::msg_send(fragmentFunction)]
-    pub fn fragment_fn(&self) -> Option<&Function>;
+    pub fn fragment_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setFragmentFunction:)]
-    pub fn set_fragment_fn(&mut self, value: Option<&Function>);
+    pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
 
     #[objc::msg_send(colorAttachments)]
     pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray;
@@ -205,7 +205,7 @@ extern "C" {
     static MTL_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<Descriptor>;
 }
 
-define_obj_type!(FunctionsDescriptor(ns::Id));
+define_obj_type!(FnsDescriptor(ns::Id));
 
 define_obj_type!(State(ns::Id));
 

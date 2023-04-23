@@ -2,7 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{arc, blocks, define_obj_type, define_options, io, mtl, ns, objc};
 
-use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Library, Size};
+use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
 define_options!(PipelineOption(usize));
 
@@ -157,10 +157,10 @@ impl Device {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newDefaultLibrary)]
-    pub fn new_default_lib_ar(&self) -> Option<&'ar Library>;
+    pub fn new_default_lib_ar(&self) -> Option<&'ar Lib>;
 
     #[objc::rar_retain()]
-    pub fn new_default_lib(&self) -> Option<arc::R<Library>>;
+    pub fn new_default_lib(&self) -> Option<arc::R<Lib>>;
 
     #[objc::msg_send(newLibraryWithSource:options:error:)]
     pub fn new_lib_with_src_err_ar(
@@ -168,7 +168,7 @@ impl Device {
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&ns::Error>,
-    ) -> Option<&'ar Library>;
+    ) -> Option<&'ar Lib>;
 
     #[objc::rar_retain()]
     pub fn new_lib_with_src_err(
@@ -176,14 +176,14 @@ impl Device {
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<Library>>;
+    ) -> Option<arc::R<Lib>>;
 
     #[inline]
     pub fn new_lib_with_src<'a>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<arc::R<Library>, &'a ns::Error> {
+    ) -> Result<arc::R<Lib>, &'a ns::Error> {
         let mut error = None;
         let res = Self::new_lib_with_src_err(self, source, options, &mut error);
 
@@ -198,7 +198,7 @@ impl Device {
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<arc::R<mtl::Library>, arc::R<ns::Error>> {
+    ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
         self.new_lib_with_src_options_completion(source, options, block.escape());
         future.await
@@ -211,19 +211,19 @@ impl Device {
         options: Option<&mtl::CompileOptions>,
         completion: &'static mut blocks::Block<F>,
     ) where
-        F: FnOnce(Option<&'ar mtl::library::Library>, Option<&'ar ns::Error>) + 'static;
+        F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
     pub fn new_compute_ps_with_fn_err_ar<'a>(
         &self,
-        function: &mtl::Function,
+        function: &mtl::Fn,
         error: &mut Option<&'a ns::Error>,
     ) -> Option<&'ar mtl::ComputePipelineState>;
 
     #[objc::rar_retain()]
     pub fn new_compute_ps_with_fn_err<'a>(
         &self,
-        function: &mtl::Function,
+        function: &mtl::Fn,
         error: &mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
@@ -260,7 +260,7 @@ impl Device {
     #[inline]
     pub fn new_compute_ps_with_fn<'ar>(
         &self,
-        function: &mtl::Function,
+        function: &mtl::Fn,
     ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar ns::Error> {
         let mut error = None;
         let res = self.new_compute_ps_with_fn_err(function, &mut error);

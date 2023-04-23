@@ -6,7 +6,7 @@ impl ArgumentEncoder {
     define_mtl!(device, label, set_label);
 
     #[objc::msg_send(encodedLength)]
-    pub fn encoded_length(&self) -> usize;
+    pub fn encoded_len(&self) -> usize;
 
     #[objc::msg_send(alignment)]
     pub fn alignment(&self) -> usize;

@@ -74,9 +74,9 @@ impl CompileOptions {
     pub fn set_language_version(&mut self, value: LanguageVersion);
 }
 
-define_obj_type!(Function(ns::Id));
+define_obj_type!(Fn(ns::Id));
 
-impl Function {
+impl Fn {
     define_mtl!(device, label, set_label);
 
     #[objc::msg_send(name)]
@@ -95,19 +95,19 @@ impl Function {
     ) -> arc::R<mtl::ArgumentEncoder>;
 }
 
-define_obj_type!(Library(ns::Id));
+define_obj_type!(Lib(ns::Id));
 
-impl Library {
+impl Lib {
     define_mtl!(device, label, set_label);
 
     #[objc::msg_send(functionNames)]
     pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
     #[objc::msg_send(newFunctionWithName:)]
-    pub fn new_fn_ar(&self, name: &ns::String) -> Option<&'ar Function>;
+    pub fn new_fn_ar(&self, name: &ns::String) -> Option<&'ar Fn>;
 
     #[objc::rar_retain()]
-    pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Function>>;
+    pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
 
     /// # Safety
     /// Use new_function_with_name_constant_values
@@ -115,23 +115,23 @@ impl Library {
     pub unsafe fn new_fn_const_values_err_ar(
         &self,
         name: &ns::String,
-        constant_values: &mtl::FunctionConstantValues,
+        constant_values: &mtl::FnConstantValues,
         error: &mut Option<&'ar ns::Error>,
-    ) -> Option<&'ar Function>;
+    ) -> Option<&'ar Fn>;
 
     #[objc::rar_retain()]
     pub unsafe fn new_fn_const_values_err<'ar>(
         &self,
         name: &ns::String,
-        constant_values: &mtl::FunctionConstantValues,
+        constant_values: &mtl::FnConstantValues,
         error: &mut Option<&'ar ns::Error>,
-    ) -> Option<arc::R<Function>>;
+    ) -> Option<arc::R<Fn>>;
 
     pub fn new_fn_const_values<'ar>(
         &self,
         name: &ns::String,
-        constant_values: &mtl::FunctionConstantValues,
-    ) -> Result<arc::R<Function>, &'ar ns::Error> {
+        constant_values: &mtl::FnConstantValues,
+    ) -> Result<arc::R<Fn>, &'ar ns::Error> {
         let mut error = None;
 
         let res = unsafe { Self::new_fn_const_values_err(self, name, constant_values, &mut error) };
@@ -154,7 +154,7 @@ impl ErrorDomain {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(usize)]
-pub enum FunctionType {
+pub enum FnType {
     Vertex = 1,
     Fragment = 2,
     Kernel = 3,
@@ -253,7 +253,7 @@ mod tests {
         let lib = device.new_lib_with_src(&source, None).unwrap();
 
         let func_name = ns::String::with_str_no_copy("function_a");
-        let constant_values = mtl::FunctionConstantValues::new();
+        let constant_values = mtl::FnConstantValues::new();
         let func = lib
             .new_fn_const_values(&func_name, &constant_values)
             .unwrap();

@@ -36,10 +36,10 @@ impl Descriptor {
     pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
 
     #[objc::msg_send(computeFunction)]
-    pub fn compute_function(&self) -> Option<&mtl::Function>;
+    pub fn compute_fn(&self) -> Option<&mtl::Fn>;
 
     #[objc::msg_send(setComputeFunction:)]
-    pub fn set_compute_function(&mut self, value: Option<&mtl::Function>);
+    pub fn set_compute_fn(&mut self, value: Option<&mtl::Fn>);
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;

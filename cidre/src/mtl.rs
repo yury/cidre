@@ -49,12 +49,12 @@ mod library;
 pub use library::CompileOptions;
 pub use library::Error as LibraryError;
 pub use library::ErrorDomain as LibraryErrorDomain;
-pub use library::Function;
-pub use library::FunctionType;
+pub use library::Fn;
+pub use library::FnType;
 pub use library::LanguageVersion;
-pub use library::Library;
-pub use library::OptimizationLevel as LibraryOptimizationLevel;
-pub use library::Type as LibraryType;
+pub use library::Lib;
+pub use library::OptimizationLevel as LibOptimizationLevel;
+pub use library::Type as LibType;
 
 mod command_queue;
 pub use command_queue::CmdQueue;
@@ -79,7 +79,7 @@ pub mod drawable;
 pub use drawable::Drawable;
 
 mod function_constant_values;
-pub use function_constant_values::FunctionConstantValues;
+pub use function_constant_values::FnConstantValues;
 
 mod argument_encoder;
 pub use argument_encoder::ArgumentEncoder;
@@ -88,8 +88,8 @@ mod buffer;
 pub use buffer::Buf;
 
 mod function_descriptor;
-pub use function_descriptor::FunctionDescriptor;
-pub use function_descriptor::FunctionOptions;
+pub use function_descriptor::FnDescriptor;
+pub use function_descriptor::FnOptions;
 
 pub mod compute_pipeline;
 pub use compute_pipeline::Descriptor as ComputePipelineDescriptor;
@@ -109,14 +109,14 @@ pub use render_pipeline::ColorAttachmentDescriptor as RenderPipelineColorAttachm
 pub use render_pipeline::ColorAttachmentDescriptorArray as RenderPipelineColorAttachmentDescriptorArray;
 pub use render_pipeline::ColorWriteMask;
 pub use render_pipeline::Descriptor as RenderPipelineDescriptor;
-pub use render_pipeline::FunctionsDescriptor as RenderPipelineFunctionsDescriptor;
+pub use render_pipeline::FnsDescriptor as RenderPipelineFnsDescriptor;
 pub use render_pipeline::MeshRenderPipelineDescriptor;
 pub use render_pipeline::PrimitiveTopologyClass;
 pub use render_pipeline::Reflection as RenderPipelineReflection;
 pub use render_pipeline::State as RenderPipelineState;
 pub use render_pipeline::TessellationControlPointIndexType;
 pub use render_pipeline::TessellationFactorFormat;
-pub use render_pipeline::TessellationFactorStepFunction;
+pub use render_pipeline::TessellationFactorStepFn;
 pub use render_pipeline::TessellationPartitionMode;
 pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptor;
 pub use render_pipeline::TileRenderPipelineColorAttachmentDescriptorArray;
