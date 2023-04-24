@@ -29,17 +29,18 @@ Class MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR;
 Class MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR;
 Class MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR;
 
+Class MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
-      
-      MTL_COMPUTE_PASS_DESCRIPTOR = [MTLComputePassDescriptor class];
       MTL_HEAP_DESCRIPTOR = [MTLHeapDescriptor class];
       MTL_COMPILE_OPTIONS = [MTLCompileOptions class];
       
+      MTL_COMPUTE_PASS_DESCRIPTOR = [MTLComputePassDescriptor class];
       MTL_COMPUTE_PIPELINE_DESCRIPTOR = [MTLComputePipelineDescriptor class];
       MTL_RENDER_PASS_DESCRIPTOR = [MTLRenderPassDescriptor class];
       MTL_BLIT_PASS_DESCRIPTOR = [MTLBlitPassDescriptor class];
@@ -53,6 +54,8 @@ static void mtl_initializer(void)
       MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR = [MTLVisibleFunctionTableDescriptor class];
       MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR = [MTLIntersectionFunctionTableDescriptor class];
       MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR = [MTLCounterSampleBufferDescriptor class];
+      
+      MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR = [MTLAccelerationStructureGeometryDescriptor class];
 
       initialized = 1;
     }

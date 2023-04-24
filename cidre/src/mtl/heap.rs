@@ -76,31 +76,66 @@ impl Heap {
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;
 
+    #[objc::msg_send(usedSize)]
+    pub fn used_size(&self) -> usize;
+
+    #[objc::msg_send(currentAllocatedSize)]
+    pub fn current_allocated_size(&self) -> usize;
+
+    #[objc::msg_send(maxAvailableSizeWithAlignment:)]
+    pub fn max_available_size_with_alignment(&self, alignment: usize) -> usize;
+
+    /// Create a new buffer backed by heap memory.
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf_length_and_options_ar(
-        &self,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<&'ar mtl::Buf>;
+    pub fn new_buf_ar(&self, length: usize, options: mtl::ResourceOptions)
+        -> Option<&'ar mtl::Buf>;
 
     #[objc::rar_retain()]
-    pub fn new_buf_length_and_options(
-        &self,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buf>>;
+    pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
+        -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn texture_with_descriptor_ar(
-        &self,
-        descriptor: &mtl::TextureDescriptor,
-    ) -> Option<&'ar mtl::Texture>;
+    pub fn new_texture_ar(&self, descriptor: &mtl::TextureDescriptor) -> Option<&'ar mtl::Texture>;
 
     #[objc::rar_retain()]
-    pub fn texture_with_descriptor(
+    pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
+
+    #[objc::msg_send(setPurgeableState:)]
+    pub fn set_purgeable_state(&mut self, state: mtl::PurgableState);
+
+    #[objc::msg_send(newBufferWithLength:options:offset:)]
+    pub fn new_buf_with_offset_ar(
+        &self,
+        length: usize,
+        options: mtl::ResouceOptions,
+        offset: usize,
+    ) -> Option<&'ar mtl::Buf>;
+
+    #[objc::rar_retain]
+    pub fn new_buf_with_offset(
+        &self,
+        length: usize,
+        options: mtl::ResouceOptions,
+        offset: usize,
+    ) -> Option<arc::R<mtl::Buf>>;
+
+    #[objc::msg_send(newTextureWithDescriptor:offset:)]
+    pub fn new_texture_with_offset_ar(
         &self,
         descriptor: &mtl::TextureDescriptor,
+        offset: usize,
+    ) -> Option<&'ar mtl::Texture>;
+
+    #[objc::rar_retain]
+    pub fn new_texture_with_offset(
+        &self,
+        descriptor: &mtl::TextureDescriptor,
+        offset: usize,
     ) -> Option<arc::R<mtl::Texture>>;
+
+    //- (nullable id <MTLAccelerationStructure>)newAccelerationStructureWithSize:(NSUInteger)size API_AVAILABLE(macos(13.0), ios(16.0));
+
+    // pub fn new_acceleration_structure(&self, size: usize) -> Option<&'ar mtl::Acce
 
     #[objc::msg_send(type)]
     pub fn _type(&self) -> Type;

@@ -9,6 +9,13 @@ pub use types::Size;
 pub mod stage_input_output_descriptor;
 pub use stage_input_output_descriptor::IndexType;
 
+mod acceleration_structure;
+pub use acceleration_structure::Descriptor as AccelerationStructureDescriptor;
+pub use acceleration_structure::GeometryDescriptor as AccelerationStructureGeometryDescriptor;
+pub use acceleration_structure::InstanceOptions as AccelerationStructureInstanceOptions;
+pub use acceleration_structure::MotionBorderMode;
+pub use acceleration_structure::Usage as AccelerationStructureUsage;
+
 mod pixel_format;
 pub use pixel_format::PixelFormat;
 
