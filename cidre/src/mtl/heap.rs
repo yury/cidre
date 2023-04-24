@@ -135,7 +135,7 @@ impl Heap {
 
     //- (nullable id <MTLAccelerationStructure>)newAccelerationStructureWithSize:(NSUInteger)size API_AVAILABLE(macos(13.0), ios(16.0));
 
-    // pub fn new_acceleration_structure(&self, size: usize) -> Option<&'ar mtl::Acce
+    // pub fn new_acceleration_structure(&self, size: usize) -> Option<&'ar mtl::Accel
 
     #[objc::msg_send(type)]
     pub fn _type(&self) -> Type;

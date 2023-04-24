@@ -1,4 +1,4 @@
-pub mod types;
+mod types;
 pub use types::Coordinate2D;
 pub use types::Origin;
 pub use types::Region;
@@ -6,7 +6,7 @@ pub use types::ResourceID;
 pub use types::SamplePosition;
 pub use types::Size;
 
-pub mod stage_input_output_descriptor;
+mod stage_input_output_descriptor;
 pub use stage_input_output_descriptor::AttributeFormat;
 pub use stage_input_output_descriptor::IndexType;
 
@@ -21,7 +21,7 @@ pub use acceleration_structure::Usage as AccelerationStructureUsage;
 mod pixel_format;
 pub use pixel_format::PixelFormat;
 
-pub mod argument;
+mod argument;
 pub use argument::Access as ArgumentAccess;
 pub use argument::ArrayType;
 pub use argument::BaseType;
@@ -68,7 +68,7 @@ pub use library::Type as LibType;
 mod command_queue;
 pub use command_queue::CmdQueue;
 
-pub mod texture;
+mod texture;
 pub use texture::CompressionType as TextureCompressionType;
 pub use texture::Descriptor as TextureDescriptor;
 pub use texture::Swizzle as TextureSwizzle;
@@ -77,14 +77,14 @@ pub use texture::Texture;
 pub use texture::Type as TextureType;
 pub use texture::Usage as TextureUsage;
 
-pub mod device;
+mod device;
 pub use device::ArgumentBuffersTier;
 pub use device::Device;
 pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAndAlign;
 
-pub mod drawable;
+mod drawable;
 pub use drawable::Drawable;
 
 mod function_constant_values;
@@ -103,18 +103,18 @@ mod function_descriptor;
 pub use function_descriptor::FnDescriptor;
 pub use function_descriptor::FnOptions;
 
-pub mod compute_pipeline;
+mod compute_pipeline;
 pub use compute_pipeline::Descriptor as ComputePipelineDescriptor;
 pub use compute_pipeline::Reflection as ComputePipelineReflection;
 pub use compute_pipeline::State as ComputePipelineState;
 
-pub mod command_buffer;
+mod command_buffer;
 pub use command_buffer::CmdBuf;
 pub use command_buffer::DispatchType;
 pub use command_buffer::Error as CmdBufErr;
 pub use command_buffer::Status as CmdBufStatus;
 
-pub mod render_pipeline;
+mod render_pipeline;
 pub use render_pipeline::BlendFactor;
 pub use render_pipeline::BlendOp;
 pub use render_pipeline::ColorAttachmentDescriptor as RenderPipelineColorAttachmentDescriptor;
@@ -142,12 +142,12 @@ pub use event::Event;
 pub use event::SharedEvent;
 pub use event::SharedEventHandle;
 
-pub mod blit_pass;
+mod blit_pass;
 pub use blit_pass::Descriptor as BlitPassDescriptor;
 pub use blit_pass::SampleBufferAttachmentDescriptor as BlitPassSampleBufferAttachmentDescriptor;
 pub use blit_pass::SampleBufferAttachmentDescriptorArray as BlitPassSampleBufferAttachmentDescriptorArray;
 
-pub mod command_encoder;
+mod command_encoder;
 pub use command_encoder::BarrierScope;
 pub use command_encoder::CmdEncoder;
 pub use command_encoder::ResourceUsage;
@@ -156,7 +156,7 @@ mod blit_command_encoder;
 pub use blit_command_encoder::BlitCmdEncoder;
 pub use blit_command_encoder::BlitOption;
 
-pub mod render_command_encoder;
+mod render_command_encoder;
 pub use render_command_encoder::CullMode;
 pub use render_command_encoder::DepthClipMode;
 pub use render_command_encoder::DrawIndexedPrimitivesIndirectArguments;
@@ -174,7 +174,7 @@ pub use render_command_encoder::ViewPort;
 pub use render_command_encoder::VisibilityResultMode;
 pub use render_command_encoder::Winding;
 
-pub mod depth_stencil;
+mod depth_stencil;
 pub use depth_stencil::CompareFn;
 pub use depth_stencil::DepthStencilDescriptor;
 pub use depth_stencil::State as DepthStencilState;
@@ -187,7 +187,7 @@ pub use compute_command_encoder::ComputeCmdEncoder;
 mod parallel_render_command_encoder;
 pub use parallel_render_command_encoder::ParallelRenderCmdEncoder;
 
-pub mod render_pass;
+mod render_pass;
 pub use render_pass::AttachmentDescriptor as RenderPassAttachmentDescriptor;
 pub use render_pass::ClearColor;
 pub use render_pass::ColorAttachmentDescriptor as RenderPassColorAttachmentDescriptor;
@@ -199,28 +199,28 @@ pub use render_pass::StencilAttachmentDescriptor as RenderPassStencilAttachmentD
 pub use render_pass::StoreAction;
 pub use render_pass::StoreActionOptions;
 
-pub mod compute_pass;
+mod compute_pass;
 pub use compute_pass::Descriptor as ComputePassDescriptor;
 pub use compute_pass::SampleBufferAttachmentDescriptor as ComputePassSampleBufferAttachmentDescriptor;
 pub use compute_pass::SampleBufferAttachmentDescriptorArray as ComputePassSampleBufferAttachmentDescriptorArray;
 
-pub mod counters;
+mod counters;
 pub use counters::Counter;
 pub use counters::CounterResultStatistic;
 pub use counters::CounterSampleBuffer;
 pub use counters::CounterSet;
 pub use counters::Descriptor as CounterSampleBufferDescriptor;
 
-pub mod indirect_command_buffer;
+mod indirect_command_buffer;
 pub use indirect_command_buffer::Descriptor as IndirectCmdBufDescriptor;
 pub use indirect_command_buffer::ExecutionRange as IndirectCmBufExecutionRange;
 pub use indirect_command_buffer::IndirectCmdBuf;
 
-pub mod indirect_command_encoder;
+mod indirect_command_encoder;
 pub use indirect_command_encoder::IndirectComputeCmd;
 pub use indirect_command_encoder::IndirectRenderCmd;
 
-pub mod sampler;
+mod sampler;
 pub use sampler::AddressMode as SamplerAddressMode;
 pub use sampler::BorderColor as SamplerBorderColor;
 pub use sampler::Descriptor as SamplerDescriptor;
@@ -228,11 +228,11 @@ pub use sampler::MinMagFilter as SamplerMinMagFilter;
 pub use sampler::MipFilter as SamplerMipFilter;
 pub use sampler::State as SamplerState;
 
-pub mod visible_function_table;
+mod visible_function_table;
 pub use visible_function_table::Descriptor as VisibleFnTableDescriptor;
 pub use visible_function_table::VisibleFnTable;
 
-pub mod intersection_function_table;
+mod intersection_function_table;
 pub use intersection_function_table::Descriptor as IntersectionFnTableDescriptor;
 pub use intersection_function_table::IntersectionFnSignature;
 pub use intersection_function_table::IntersectionFnTable;
