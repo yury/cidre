@@ -39,5 +39,5 @@ define_obj_type!(Descriptor(ns::Id));
 define_obj_type!(State(ns::Id));
 
 impl State {
-    define_mtl!(device, label, gpu_resouce_id);
+    define_mtl!(device, label, gpu_resource_id);
 }

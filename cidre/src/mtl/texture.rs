@@ -218,7 +218,7 @@ impl Descriptor {
 define_obj_type!(Texture(mtl::Resource));
 
 impl Texture {
-    define_mtl!(width, height, depth, gpu_resouce_id);
+    define_mtl!(width, height, depth, gpu_resource_id);
 
     #[objc::msg_send(parentTexture)]
     pub fn parent_texture(&self) -> Option<&Texture>;

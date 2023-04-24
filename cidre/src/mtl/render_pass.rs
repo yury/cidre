@@ -69,7 +69,7 @@ pub enum StoreActionOptions {
     CustomSamplePositions = 1 << 0,
 }
 
-#[derive(Debug, Copy, Clone, Debug, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct ClearColor {
     pub red: f64,

@@ -11,7 +11,7 @@ define_obj_type!(Descriptor(ns::Id));
 define_obj_type!(IndirectCmdBuf(mtl::Resource));
 
 impl IndirectCmdBuf {
-    define_mtl!(gpu_resouce_id);
+    define_mtl!(gpu_resource_id);
 
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;

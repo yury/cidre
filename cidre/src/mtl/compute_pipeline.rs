@@ -56,7 +56,7 @@ extern "C" {
 define_obj_type!(State(ns::Id));
 
 impl State {
-    define_mtl!(device, label, gpu_resouce_id);
+    define_mtl!(device, label, gpu_resource_id);
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
