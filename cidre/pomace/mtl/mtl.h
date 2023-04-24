@@ -26,6 +26,8 @@ Class MTL_STENCIL_DESCRIPTOR;
 Class MTL_DEPTH_STENCIL_DESCRIPTOR;
 
 Class MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR;
+Class MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -48,6 +50,7 @@ static void mtl_initializer(void)
       MTL_DEPTH_STENCIL_DESCRIPTOR = [MTLDepthStencilDescriptor class];
       
       MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR = [MTLVisibleFunctionTableDescriptor class];
+      MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR = [MTLIntersectionFunctionTableDescriptor class];
 
       initialized = 1;
     }

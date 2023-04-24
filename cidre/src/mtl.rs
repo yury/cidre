@@ -81,6 +81,9 @@ pub use drawable::Drawable;
 mod function_constant_values;
 pub use function_constant_values::FnConstValues;
 
+mod function_handle;
+pub use function_handle::FnHandle;
+
 mod argument_encoder;
 pub use argument_encoder::ArgumentEncoder;
 
@@ -219,6 +222,11 @@ pub use sampler::State as SamplerState;
 pub mod visible_function_table;
 pub use visible_function_table::Descriptor as VisibleFnTableDescriptor;
 pub use visible_function_table::VisibleFnTable;
+
+pub mod intersection_function_table;
+pub use intersection_function_table::Descriptor as IntersectionFnTableDescriptor;
+pub use intersection_function_table::IntersectionFnSignature;
+pub use intersection_function_table::IntersectionFnTable;
 
 #[macro_export]
 macro_rules! define_mtl {

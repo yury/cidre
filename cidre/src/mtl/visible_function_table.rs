@@ -9,15 +9,32 @@ impl Descriptor {
 
     #[objc::msg_send(setFunctionCount:)]
     pub fn set_fn_count(&mut self, value: usize);
-
-    // pub fn set_fn_at(&mut self, function: Option<&mtl::FnHandle>, index: usize);
-    //- (void)setFunction:(nullable id <MTLFunctionHandle>)function atIndex:(NSUInteger)index;
 }
 
 define_obj_type!(VisibleFnTable(mtl::Resource));
 
 impl VisibleFnTable {
     define_mtl!(gpu_resource_id);
+
+    /// Sets a table entry to point to a callable function.
+    #[objc::msg_send(setFunction:atIndex:)]
+    pub fn set_fn_at<O: objc::Obj, H: mtl::FnHandle<O>>(
+        &mut self,
+        function: Option<&H>,
+        index: usize,
+    );
+
+    /// Sets a range of table entries to point to an array of callable functions.
+    ///
+    /// # Arguments
+    /// * `functions` - An array of function handles for the functions to be called.
+    /// * `range` - A range of indices to change in the table.
+    #[objc::msg_send(setFunctions:withRange:)]
+    pub fn set_fns_with_range<O: objc::Obj, H: mtl::FnHandle<O>>(
+        &mut self,
+        functions: *const Option<&H>,
+        range: ns::Range,
+    );
 }
 
 #[link(name = "mtl", kind = "static")]
