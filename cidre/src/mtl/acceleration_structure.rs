@@ -162,6 +162,18 @@ impl TriangleGeometryDescriptor {
 
     #[objc::msg_send(setTriangleCount:)]
     pub fn set_triangle_count(&mut self, value: usize);
+
+    #[objc::msg_send(transformationMatrixBuffer)]
+    pub fn tranformation_matrix_buf(&self) -> Option<&mtl::Buf>;
+
+    #[objc::msg_send(setTransformationMatrixBuffer:)]
+    pub fn set_tranformation_matrix_buf(&mut self, value: Option<&mtl::Buf>);
+
+    #[objc::msg_send(transformationMatrixBufferOffset)]
+    pub fn tranformation_matrix_buf_offset(&self) -> usize;
+
+    #[objc::msg_send(setTransformationMatrixBufferOffset:)]
+    pub fn set_tranformation_matrix_buf_offset(&mut self, value: usize);
 }
 
 extern "C" {
