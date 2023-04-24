@@ -176,9 +176,21 @@ impl TriangleGeometryDescriptor {
     pub fn set_tranformation_matrix_buf_offset(&mut self, value: usize);
 }
 
+define_obj_type!(
+    MotionBoundingBoxGeometryDescriptor(GeometryDescriptor),
+    MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR
+);
+
+impl MotionBoundingBoxGeometryDescriptor {
+    //
+}
+
 extern "C" {
     static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDescriptor>;
     static MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR:
+        &'static objc::Class<TriangleGeometryDescriptor>;
+
+    static MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR:
         &'static objc::Class<TriangleGeometryDescriptor>;
 
 }

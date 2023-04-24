@@ -15,6 +15,7 @@ pub use acceleration_structure::Descriptor as AccelerationStructureDescriptor;
 pub use acceleration_structure::GeometryDescriptor as AccelerationStructureGeometryDescriptor;
 pub use acceleration_structure::InstanceOptions as AccelerationStructureInstanceOptions;
 pub use acceleration_structure::MotionBorderMode;
+pub use acceleration_structure::MotionBoundingBoxGeometryDescriptor;
 pub use acceleration_structure::Usage as AccelerationStructureUsage;
 
 mod pixel_format;
