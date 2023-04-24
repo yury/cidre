@@ -210,7 +210,7 @@ fn foo() -> BenchState {
     ];
 
     let vertex_buf = device
-        .new_buf_slice(&vertex_data, mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT)
+        .new_buf_with_slice(&vertex_data, mtl::ResourceOptions::CPU_CACHE_MODE_DEFAULT)
         .unwrap();
 
     BenchState {

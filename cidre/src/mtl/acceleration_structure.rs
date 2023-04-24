@@ -109,6 +109,64 @@ pub enum MotionBorderMode {
     Vanish = 1,
 }
 
+define_obj_type!(
+    TriangleGeometryDescriptor(GeometryDescriptor),
+    MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR
+);
+
+impl TriangleGeometryDescriptor {
+    #[objc::msg_send(vertexBuffer)]
+    pub fn vertex_buf(&self) -> Option<&mtl::Buf>;
+
+    #[objc::msg_send(setVertexBuffer:)]
+    pub fn set_vertex_buf(&mut self, value: Option<&mtl::Buf>);
+
+    #[objc::msg_send(vertexBufferOffset)]
+    pub fn vertex_buf_offset(&self) -> usize;
+
+    #[objc::msg_send(setVertexBufferOffset:)]
+    pub fn set_vertex_buf_offset(&self, value: usize);
+
+    #[objc::msg_send(vertexFormat)]
+    pub fn vertex_format(&self) -> mtl::AttributeFormat;
+
+    #[objc::msg_send(setVertexFormat:)]
+    pub fn set_vertex_format(&mut self, value: mtl::AttributeFormat);
+
+    #[objc::msg_send(vertexStride)]
+    pub fn vertex_stride(&self) -> usize;
+
+    #[objc::msg_send(setVertexStride:)]
+    pub fn set_vertex_stride(&mut self, value: usize);
+
+    #[objc::msg_send(indexBuffer)]
+    pub fn index_buf(&self) -> Option<&mtl::Buf>;
+
+    #[objc::msg_send(setIndexBuffer:)]
+    pub fn set_index_buf(&mut self, value: Option<&mtl::Buf>);
+
+    #[objc::msg_send(indexBufferOffset)]
+    pub fn index_buf_offset(&self) -> usize;
+
+    #[objc::msg_send(setIndexBufferOffset:)]
+    pub fn set_index_buf_offset(&mut self, value: usize);
+
+    #[objc::msg_send(indexType)]
+    pub fn index_type(&self) -> mtl::IndexType;
+
+    #[objc::msg_send(setIndexType:)]
+    pub fn set_index_type(&mut self, value: mtl::IndexType);
+
+    #[objc::msg_send(triangleCount)]
+    pub fn triangle_count(&self) -> usize;
+
+    #[objc::msg_send(setTriangleCount:)]
+    pub fn set_triangle_count(&mut self, value: usize);
+}
+
 extern "C" {
-    static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDescriptor>;
+    static MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR:
+        &'static objc::Class<TriangleGeometryDescriptor>;
+
 }

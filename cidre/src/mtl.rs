@@ -7,6 +7,7 @@ pub use types::SamplePosition;
 pub use types::Size;
 
 pub mod stage_input_output_descriptor;
+pub use stage_input_output_descriptor::AttributeFormat;
 pub use stage_input_output_descriptor::IndexType;
 
 mod acceleration_structure;

@@ -31,6 +31,8 @@ Class MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR;
 
 Class MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR;
 
+Class MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -56,6 +58,7 @@ static void mtl_initializer(void)
       MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR = [MTLCounterSampleBufferDescriptor class];
       
       MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR = [MTLAccelerationStructureGeometryDescriptor class];
+      MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR = [MTLAccelerationStructureTriangleGeometryDescriptor class];
 
       initialized = 1;
     }
