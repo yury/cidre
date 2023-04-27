@@ -62,6 +62,9 @@ pub mod mps;
 #[cfg(feature = "ns")]
 pub mod ns;
 
+/// Network
+pub mod nw;
+
 #[cfg(feature = "ns")]
 pub mod objc;
 pub mod os;
