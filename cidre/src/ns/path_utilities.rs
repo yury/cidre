@@ -1,4 +1,4 @@
-use crate::define_options;
+use crate::{arc, define_options, ns};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -106,8 +106,49 @@ impl SearchPathDomainMask {
     pub const ALL: Self = Self(0x0ffff);
 }
 
-// FOUNDATION_EXPORT NSArray<NSString *> *NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory directory, NSSearchPathDomainMask domainMask, BOOL expandTilde);
+#[inline]
+pub fn search_path_for_dirs_in_domains_ar<'ar>(
+    directory: SearchPathDirectory,
+    domain_mask: SearchPathDomainMask,
+    expand_tilde: bool,
+) -> &'ar ns::Array<ns::String> {
+    unsafe { NSSearchPathForDirectoriesInDomains(directory, domain_mask, expand_tilde) }
+}
 
-// extern "C" {
+#[inline]
+pub fn search_path_for_dirs_in_domains(
+    directory: SearchPathDirectory,
+    domain_mask: SearchPathDomainMask,
+    expand_tilde: bool,
+) -> arc::R<ns::Array<ns::String>> {
+    arc::rar_retain(search_path_for_dirs_in_domains_ar(
+        directory,
+        domain_mask,
+        expand_tilde,
+    ))
+}
 
-// }
+#[link(name = "Foundation", kind = "framework")]
+extern "C" {
+    fn NSSearchPathForDirectoriesInDomains<'ar>(
+        directory: SearchPathDirectory,
+        domain_mask: SearchPathDomainMask,
+        expand_tilde: bool,
+    ) -> &'ar ns::Array<ns::String>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let res = ns::search_path_for_dirs_in_domains(
+            ns::SearchPathDirectory::User,
+            ns::SearchPathDomainMask::LOCAL,
+            false,
+        );
+        assert!(!res.is_empty());
+        println!("{res:?}");
+    }
+}

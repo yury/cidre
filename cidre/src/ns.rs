@@ -134,5 +134,7 @@ pub use file_manager::URLRelationship;
 pub use file_manager::VolumeEnumerationOptions;
 
 mod path_utilities;
+pub use path_utilities::search_path_for_dirs_in_domains;
+pub use path_utilities::search_path_for_dirs_in_domains_ar;
 pub use path_utilities::SearchPathDirectory;
 pub use path_utilities::SearchPathDomainMask;
