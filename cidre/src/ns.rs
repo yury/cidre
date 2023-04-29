@@ -135,3 +135,4 @@ pub use file_manager::VolumeEnumerationOptions;
 
 mod path_utilities;
 pub use path_utilities::SearchPathDirectory;
+pub use path_utilities::SearchPathDomainMask;

@@ -1,3 +1,5 @@
+use crate::define_options;
+
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum SearchPathDirectory {
@@ -8,7 +10,7 @@ pub enum SearchPathDirectory {
     DemoApplication,
 
     /// developer applications (Developer/Applications). DEPRECATED - there is no one single Developer directory.
-    #[depricated(note = "there is no one single Developer directory")]
+    #[deprecated(note = "there is no one single Developer directory")]
     DeveloperApplication,
 
     /// System and network administration applications (Administration)
@@ -18,7 +20,7 @@ pub enum SearchPathDirectory {
     Library,
 
     /// Developer resources (Developer) DEPRECATED - there is no one single Developer directory.
-    #[depricated(note = "there is no one single Developer directory")]
+    #[deprecated(note = "there is no one single Developer directory")]
     Developer,
 
     /// User home directories (Users)
@@ -84,3 +86,24 @@ pub enum SearchPathDirectory {
     /// Location of Trash directory
     Trash = 102,
 }
+
+define_options!(SearchPathDomainMask(usize));
+
+impl SearchPathDomainMask {
+    /// user's home directory --- place to install user's personal items (~)
+    pub const USER: Self = Self(1);
+
+    /// local to the current machine --- place to install items available to everyone on this machine (/Library)
+    pub const LOCAL: Self = Self(2);
+
+    /// publically available location in the local area network --- place to install items available on the network (/Network)
+    pub const NETWORK: Self = Self(4);
+
+    /// provided by Apple, unmodifiable (/System)
+    pub const SYSTEM: Self = Self(8);
+
+    /// all domains: all of the above and future items
+    pub const ALL: Self = Self(0x0ffff);
+}
+
+// FOUNDATION_EXPORT NSArray<NSString *> *NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory directory, NSSearchPathDomainMask domainMask, BOOL expandTilde);
