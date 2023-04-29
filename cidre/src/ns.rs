@@ -132,3 +132,6 @@ pub use file_manager::FileManager;
 pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
 pub use file_manager::URLRelationship;
 pub use file_manager::VolumeEnumerationOptions;
+
+mod path_utilities;
+pub use path_utilities::SearchPathDirectory;
