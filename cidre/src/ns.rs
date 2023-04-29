@@ -123,3 +123,12 @@ pub use error::Domain as ErrorDomain;
 pub use error::Error;
 
 mod timer;
+pub use timer::Timer;
+
+mod file_manager;
+pub use file_manager::DirectoryEnumerationOptions;
+pub use file_manager::FileManager;
+pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
+pub use file_manager::URLRelationship;
+pub use file_manager::URLResourceKey;
+pub use file_manager::VolumeEnumerationOptions;

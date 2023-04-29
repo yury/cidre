@@ -61,6 +61,8 @@ Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
 Class NS_UUID;
 Class NS_VALUE;
 
+Class NS_FILE_MANAGER;
+
 __attribute__((constructor))
 static void common_initializer(void)
 {
@@ -95,6 +97,8 @@ static void common_initializer(void)
     NS_URL_SESSION_WEB_SOCKET_MESSAGE = [NSURLSessionWebSocketMessage class];
     NS_UUID = [NSUUID class];
     NS_VALUE = [NSValue class];
+    
+    NS_FILE_MANAGER = [NSFileManager class];
   }
 }
 NS_ASSUME_NONNULL_END
