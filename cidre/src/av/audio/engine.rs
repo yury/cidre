@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc, os};
+use crate::{arc, av, define_obj_type, ns, objc, os};
 
 use super::{mixer_node::MixerNode, ConnectionPoint, Format, InputNode, Node, NodeBus, OutputNode};
 
@@ -46,12 +46,12 @@ pub enum ManualRenderingStatus {
 #[repr(isize)]
 pub enum ManualRenderingMode {
     /// The engine operates in an offline mode without any realtime constraints.
-    ManualRenderingModeOffline = 0,
+    Offline = 0,
     /// The engine operates under realtime constraints, i.e. it will not make any blocking call
     ///	(e.g. calling libdispatch, blocking on a mutex, allocating memory etc.) while rendering.
     /// Note that only the block based render mechanism can be used in this mode
     /// (see `AVAudioEngine(manualRenderingBlock)`.
-    ManualRenderingModeRealtime = 1,
+    Realtime = 1,
 }
 
 define_obj_type!(Engine(ns::Id), AV_AUDIO_ENGINE);
@@ -120,7 +120,7 @@ impl Engine {
     pub fn start_and_return_error<'ar>(&self, error: &mut Option<&'ar ns::Error>) -> bool;
 
     #[inline]
-    pub fn start<'ar>(&self) -> Result<(), &'ar ns::Error> {
+    pub fn start<'ar>(&mut self) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
             let res = self.start_and_return_error(&mut error);
@@ -166,6 +166,105 @@ impl Engine {
 
     #[objc::msg_send(isRunning)]
     pub fn is_running(&self) -> bool;
+
+    /// Set the engine to operate in a manual rendering mode with the specified render format and
+    /// maximum frame count.
+    ///
+    /// Use this method to configure the engine to render in response to requests from the client.
+    /// The engine must be in a stopped state before calling this method.
+    /// The render format must be a PCM format and match the format of the buffer to which
+    /// the engine is asked to render (see `renderOffline:toBuffer:error:`).
+    ///
+    /// It is advised to enable manual rendering mode soon after the engine is created, and
+    /// before accessing any of mainMixerNode, inputNode or outputNode of the engine.
+    /// Otherwise, accessing or interacting with the engine before enabling manual rendering
+    /// mode could have the unintended side-effect of configuring the hardware for device-rendering
+    /// mode.
+    ///
+    /// The input data in manual rendering mode can be supplied through the source nodes, e.g.
+    /// `av::audio::PlayerNode`, `av::audio::InputNode` etc.
+    ///
+    /// When switching to manual rendering mode, the engine:
+    /// 1. Switches the input and output nodes to manual rendering mode. Their input and output
+    ///     formats may change.
+    /// 2. Removes any taps previously installed on the input and output nodes.
+    /// 3. Maintains all the engine connections as is.
+    #[objc::msg_send(enableManualRenderingMode:format:maximumFrameCount:error:)]
+    pub fn enable_manual_rendering_mode_error<'ar>(
+        &mut self,
+        mode: ManualRenderingMode,
+        format: &av::AudioFormat,
+        max_frame_count: av::AudioFrameCount,
+        error: &mut Option<&'ar ns::Error>,
+    );
+
+    #[inline]
+    pub fn enable_manual_rendering_mode<'ar>(
+        &mut self,
+        mode: ManualRenderingMode,
+        format: &av::AudioFormat,
+        max_frame_count: av::AudioFrameCount,
+    ) -> Result<(), &'ar ns::Error> {
+        let mut error = None;
+        self.enable_manual_rendering_mode_error(mode, format, max_frame_count, &mut error);
+        if let Some(err) = error {
+            return Err(err);
+        }
+        Ok(())
+    }
+
+    #[objc::msg_send(disableManualRenderingMode)]
+    pub fn disable_manual_rendering_mode(&mut self);
+
+    #[objc::msg_send(renderOffline:toBuffer:error:)]
+    pub fn render_offline_error<'ar>(
+        &mut self,
+        number_of_frames: av::AudioFrameCount,
+        to_buf: &mut av::audio::PCMBuffer,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> av::audio::EngineManualRenderingStatus;
+
+    #[inline]
+    pub fn render_offline<'ar>(
+        &mut self,
+        number_of_frames: av::AudioFrameCount,
+        to_buf: &mut av::audio::PCMBuffer,
+    ) -> Result<av::audio::EngineManualRenderingStatus, &'ar ns::Error> {
+        let mut error = None;
+        let status = self.render_offline_error(number_of_frames, to_buf, &mut error);
+        if status == ManualRenderingStatus::Error && error.is_some() {
+            return Err(unsafe { error.unwrap_unchecked() });
+        }
+        Ok(status)
+    }
+
+    #[objc::msg_send(isInManualRenderingMode)]
+    pub fn is_in_manual_rendering_mode(&self) -> bool;
+
+    #[objc::msg_send(manualRenderingMode)]
+    pub fn manual_rendering_mode(&self) -> ManualRenderingMode;
+
+    /// The render format of the engine in manual rendering mode.
+    ///
+    /// Querying this property when the engine is not in manual rendering mode will return an
+    /// invalid format, with zero sample rate and channel count.
+    #[objc::msg_send(manualRenderingFormat)]
+    pub fn manual_rendering_format(&self) -> &av::audio::Format;
+
+    /// The maximum number of PCM sample frames the engine can produce in any single render call in
+    /// the manual rendering mode.
+    ///
+    /// Querying this property when the engine is not in manual rendering mode will return zero.
+    #[objc::msg_send(manualRenderingMaximumFrameCount)]
+    pub fn manual_rendering_max_frame_count(&self) -> av::audio::FrameCount;
+
+    /// Indicates where the engine is on its render timeline in manual rendering mode.
+    ///
+    /// The timeline in manual rendering mode starts at a sample time of zero, and is in terms
+    /// of the render format's sample rate. Resetting the engine (see `reset`) will reset the
+    /// timeline back to zero.
+    #[objc::msg_send(manualRenderingSampleTime)]
+    pub fn manual_rendering_sample_time(&self) -> av::audio::FramePosition;
 }
 
 #[link(name = "av", kind = "static")]
@@ -175,14 +274,48 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::av;
+    use crate::{av, ns};
 
     #[test]
     fn basics() {
         let engine = av::audio::Engine::new();
         assert!(!engine.is_running());
+        assert!(!engine.is_in_manual_rendering_mode());
+        assert_eq!(engine.manual_rendering_format().channel_count(), 0);
         let _output_node = engine.output_node();
         let input_node = engine.input_node();
         let _en = input_node.engine().expect("engine");
+    }
+
+    #[test]
+    fn manual_redering_modes() {
+        let format =
+            av::audio::Format::standard_with_sample_rate_and_channels(44_100.0, 2).unwrap();
+        let mut engine = av::audio::Engine::new();
+        engine
+            .enable_manual_rendering_mode(
+                av::audio::engine::ManualRenderingMode::Offline,
+                &format,
+                1024,
+            )
+            .expect("Failed to enter manual rendering mode");
+        assert!(engine.is_in_manual_rendering_mode());
+
+        assert_eq!(
+            engine.manual_rendering_format().channel_count(),
+            format.channel_count()
+        );
+
+        let mut pcm_buf =
+            av::audio::PCMBuffer::with_format_and_frame_capacity(&format, 1024).unwrap();
+
+        pcm_buf.set_frame_length(1024);
+
+        engine.start().expect("Failed to start engine");
+        assert!(engine.is_running());
+
+        // this is segfault with swift too https://gist.github.com/yury/2a74943c65b69a3a593a2c096ac36b54
+        // we didn't connect any inputs :)
+        // let status = engine.render_offline_error(1024, &mut pcm_buf, std::ptr::null_mut());
     }
 }

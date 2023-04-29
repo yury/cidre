@@ -55,7 +55,7 @@ impl PCMBuffer {
     pub fn frame_length(&self) -> FrameCount;
 
     #[objc::msg_send(setFrameLength:)]
-    pub fn set_frame_length(&self, value: FrameCount);
+    pub fn set_frame_length(&mut self, value: FrameCount);
 
     /// The buffer's number of interleaved channels.
     ///

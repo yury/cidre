@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 Class UI_DEVICE;
 
 __attribute__((constructor))
-static void mtl_initializer(void)
+static void ui_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {
