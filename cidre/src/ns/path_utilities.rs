@@ -90,20 +90,24 @@ pub enum SearchPathDirectory {
 define_options!(SearchPathDomainMask(usize));
 
 impl SearchPathDomainMask {
-    /// user's home directory --- place to install user's personal items (~)
+    /// User's home directory --- place to install user's personal items (~)
     pub const USER: Self = Self(1);
 
-    /// local to the current machine --- place to install items available to everyone on this machine (/Library)
+    /// Local to the current machine --- place to install items available to everyone on this machine (/Library)
     pub const LOCAL: Self = Self(2);
 
-    /// publically available location in the local area network --- place to install items available on the network (/Network)
+    /// Publically available location in the local area network --- place to install items available on the network (/Network)
     pub const NETWORK: Self = Self(4);
 
-    /// provided by Apple, unmodifiable (/System)
+    /// Provided by Apple, unmodifiable (/System)
     pub const SYSTEM: Self = Self(8);
 
-    /// all domains: all of the above and future items
+    /// All domains: all of the above and future items
     pub const ALL: Self = Self(0x0ffff);
 }
 
 // FOUNDATION_EXPORT NSArray<NSString *> *NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory directory, NSSearchPathDomainMask domainMask, BOOL expandTilde);
+
+// extern "C" {
+
+// }
