@@ -104,6 +104,7 @@ pub use string::String;
 pub use string::StringMut;
 
 mod url;
+pub use url::ResourceKey as URLResourceKey;
 pub use url::URL;
 
 mod uuid;
@@ -130,5 +131,4 @@ pub use file_manager::DirectoryEnumerationOptions;
 pub use file_manager::FileManager;
 pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
 pub use file_manager::URLRelationship;
-pub use file_manager::URLResourceKey;
 pub use file_manager::VolumeEnumerationOptions;

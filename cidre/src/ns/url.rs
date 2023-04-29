@@ -2,6 +2,8 @@ use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 use super::Class;
 
+define_obj_type!(ResourceKey(ns::String));
+
 define_obj_type!(URL(ns::Id));
 
 impl arc::A<URL> {
