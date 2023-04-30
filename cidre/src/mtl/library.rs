@@ -34,6 +34,36 @@ impl VertexAttribute {
     pub fn is_patch_ctrl_point_data(&self) -> bool;
 }
 
+define_obj_type!(Attribute(ns::Id));
+
+impl Attribute {
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> &ns::String;
+
+    #[objc::msg_send(attributeIndex)]
+    pub fn attribute_index(&self) -> usize;
+
+    #[objc::msg_send(attributeType)]
+    pub fn attribute_type(&self) -> mtl::DataType;
+
+    #[objc::msg_send(isActive)]
+    pub fn is_active(&self) -> bool;
+
+    #[objc::msg_send(isPatchData)]
+    pub fn is_patch_data(&self) -> bool;
+
+    #[objc::msg_send(isPatchControlPointData)]
+    pub fn is_patch_ctrl_point_data(&self) -> bool;
+}
+
+// @property (readonly) NSUInteger                   attributeIndex;
+// @property (readonly) MTLDataType                  attributeType;
+// @property (readonly, getter=isActive) BOOL        active;
+// @property (readonly, getter=isPatchData) BOOL              patchData API_AVAILABLE(macos(10.12), ios(10.0));
+// @property (readonly, getter=isPatchControlPointData) BOOL  patchControlPointData API_AVAILABLE(macos(10.12), ios(10.0));
+
+// @end
+
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
 pub enum LanguageVersion {
@@ -137,6 +167,9 @@ impl Fn {
 
     #[objc::msg_send(vertexAttributes)]
     pub fn vertext_attributes(&self) -> Option<&ns::Array<mtl::VertexAttribute>>;
+
+    #[objc::msg_send(stageInputAttributes)]
+    pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attribute>>;
 }
 
 define_obj_type!(Lib(ns::Id));
