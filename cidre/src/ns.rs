@@ -128,13 +128,22 @@ pub use timer::Timer;
 
 mod file_manager;
 pub use file_manager::DirectoryEnumerationOptions;
+pub use file_manager::FileAttributeKey;
+pub use file_manager::FileAttributeType;
 pub use file_manager::FileManager;
+pub use file_manager::FileProtectionType;
 pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
 pub use file_manager::URLRelationship;
 pub use file_manager::VolumeEnumerationOptions;
 
 mod path_utilities;
+pub use path_utilities::full_user_name;
+pub use path_utilities::home_directory;
+pub use path_utilities::home_directory_for_user;
+pub use path_utilities::home_directory_for_user_ar;
 pub use path_utilities::search_path_for_dirs_in_domains;
 pub use path_utilities::search_path_for_dirs_in_domains_ar;
+pub use path_utilities::temporary_directory;
+pub use path_utilities::user_name;
 pub use path_utilities::SearchPathDirectory;
 pub use path_utilities::SearchPathDomainMask;

@@ -1,4 +1,72 @@
-use crate::{arc, define_options, ns};
+use crate::{
+    arc, define_options, ns,
+    objc::{self, Obj},
+};
+
+impl ns::String {
+    #[objc::cls_msg_send(pathWithComponents:)]
+    pub fn path_with_components_ar(components: ns::Array<ns::String>) -> &'ar Self;
+
+    #[objc::cls_rar_retain]
+    pub fn path_with_components(components: ns::Array<ns::String>) -> arc::R<Self>;
+
+    #[objc::msg_send(pathComponents)]
+    pub fn path_components_ar(&self) -> &'ar ns::Array<ns::String>;
+
+    #[objc::rar_retain]
+    pub fn path_components(&self) -> arc::R<ns::Array<ns::String>>;
+
+    #[objc::msg_send(isAbsolutePath)]
+    pub fn is_absolute_path(&self) -> bool;
+
+    #[objc::msg_send(lastPathComponent)]
+    pub fn last_path_component_ar(&self) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn last_path_component(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(stringByDeletingLastPathComponent)]
+    pub fn string_by_deleting_last_path_component_ar(&self) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn string_by_deleting_last_path_component(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(stringByAppendingPathComponent:)]
+    pub fn string_by_appending_path_component_ar(&self, str: &ns::String) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn string_by_appending_path_component(&self, str: &ns::String) -> arc::R<ns::String>;
+
+    #[objc::msg_send(pathExtension)]
+    pub fn path_extension_ar(&self) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn path_extension(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(stringByDeletingPathExtension)]
+    pub fn string_by_deleting_path_extension_ar(&self) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn string_by_deleting_path_extension(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(stringByAppendingPathExtension:)]
+    pub fn string_by_appending_path_extension_ar(&self, str: &ns::String) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn string_by_appending_path_extension(&self, str: &ns::String) -> arc::R<ns::String>;
+
+    #[objc::msg_send(stringByAbbreviatingWithTildeInPath)]
+    pub fn string_by_abbreviating_with_tilde_in_path_ar(&self) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn string_by_abbreviating_with_tilde_in_path(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(stringByExpandingTildeInPath)]
+    pub fn string_by_expanding_tilde_in_path_ar(&self) -> &'ar ns::String;
+
+    #[objc::rar_retain]
+    pub fn string_by_expanding_tilde_in_path(&self) -> arc::R<ns::String>;
+}
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -135,20 +203,100 @@ extern "C" {
         domain_mask: SearchPathDomainMask,
         expand_tilde: bool,
     ) -> &'ar ns::Array<ns::String>;
+
+    fn NSUserName() -> &'static ns::String;
+    fn NSFullUserName() -> &'static ns::String;
+    fn NSHomeDirectory() -> &'static ns::String;
+    fn NSTemporaryDirectory() -> &'static ns::String;
+    fn NSHomeDirectoryForUser<'ar>(user_name: Option<&ns::String>) -> Option<&'ar ns::String>;
+}
+
+#[doc(alias = "NSUserName")]
+#[inline]
+pub fn user_name() -> &'static ns::String {
+    unsafe { NSUserName() }
+}
+
+#[doc(alias = "NSFullUserName")]
+#[inline]
+pub fn full_user_name() -> &'static ns::String {
+    unsafe { NSFullUserName() }
+}
+
+#[doc(alias = "NSHomeDirectory")]
+#[inline]
+pub fn home_directory() -> &'static ns::String {
+    unsafe { NSHomeDirectory() }
+}
+
+#[doc(alias = "NSTemporaryDirectory")]
+#[inline]
+pub fn temporary_directory() -> &'static ns::String {
+    unsafe { NSTemporaryDirectory() }
+}
+
+#[doc(alias = "NSHomeDirectoryForUser")]
+#[inline]
+pub fn home_directory_for_user_ar<'ar>(user_name: Option<&ns::String>) -> Option<&'ar ns::String> {
+    unsafe { NSHomeDirectoryForUser(user_name) }
+}
+
+#[doc(alias = "NSHomeDirectoryForUser")]
+#[inline]
+pub fn home_directory_for_user(user_name: Option<&ns::String>) -> Option<arc::R<ns::String>> {
+    arc::rar_retain_option(home_directory_for_user_ar(user_name))
+}
+
+impl<T: Obj> ns::Array<T> {
+    #[objc::msg_send(pathsMatchingExtensions:)]
+    pub fn paths_matching_extensions_ar(
+        &self,
+        filter_types: &ns::Array<ns::String>,
+    ) -> &'ar ns::Array<ns::String>;
+
+    #[objc::rar_retain]
+    pub fn paths_matching_extensions(
+        &self,
+        filter_types: &ns::Array<ns::String>,
+    ) -> arc::R<ns::Array<ns::String>>;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::ns;
+    use crate::{ns, objc};
 
     #[test]
     fn basics() {
+        let uname1 = ns::user_name();
+        let uname2 = ns::user_name();
+
+        unsafe {
+            assert_eq!(
+                uname1.as_type_ref().as_type_ptr(),
+                uname2.as_type_ref().as_type_ptr()
+            );
+        }
+        objc::autoreleasepool(|| {
+            let _user_name = ns::user_name();
+        });
+
+        let _fun = ns::full_user_name();
+
+        let home = ns::home_directory();
+        let parent = home.string_by_deleting_last_path_component();
+        assert_eq!(parent.to_string(), "/Users");
+
+        let home2 = ns::home_directory_for_user(Some(ns::user_name()))
+            .expect("Failed to get current user home folder");
+
+        assert!(home.is_equal(home2.as_ref()));
+
         let res = ns::search_path_for_dirs_in_domains(
             ns::SearchPathDirectory::User,
             ns::SearchPathDomainMask::LOCAL,
             false,
         );
+
         assert!(!res.is_empty());
-        println!("{res:?}");
     }
 }
