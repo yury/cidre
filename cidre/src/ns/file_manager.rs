@@ -92,6 +92,112 @@ impl FileManager {
         }
         unsafe { Ok(res.unwrap_unchecked()) }
     }
+
+    #[objc::msg_send(URLForDirectory:inDomain:appropriateForURL:create:error:)]
+    pub fn url_for_dir_error_ar<'ear>(
+        &self,
+        directory: ns::SearchPathDirectory,
+        in_domain: ns::SearchPathDomainMask,
+        appropriate_for_url: Option<&ns::URL>,
+        create: bool,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> Option<&'ar ns::URL>;
+
+    #[objc::rar_retain]
+    pub fn url_for_dir_error<'ear>(
+        &self,
+        directory: ns::SearchPathDirectory,
+        in_domain: ns::SearchPathDomainMask,
+        appropriate_for_url: Option<&ns::URL>,
+        create: bool,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<ns::URL>>;
+
+    pub fn url_for_dir<'ear>(
+        &self,
+        directory: ns::SearchPathDirectory,
+        in_domain: ns::SearchPathDomainMask,
+        appropriate_for_url: Option<&ns::URL>,
+        create: bool,
+    ) -> Result<arc::R<ns::URL>, Option<&'ear ns::Error>> {
+        let mut error = None;
+        let res = self.url_for_dir_error(
+            directory,
+            in_domain,
+            appropriate_for_url,
+            create,
+            &mut error,
+        );
+        if let Some(url) = res {
+            return Ok(url);
+        }
+        Err(error)
+    }
+
+    #[objc::msg_send(createDirectoryAtURL:withIntermediateDirectories:attributes:error:)]
+    pub fn create_dir_at_url_error<'ear>(
+        &self,
+        url: &ns::URL,
+        create_intermediates: bool,
+        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn create_dir_at_url<'ear>(
+        &self,
+        url: &ns::URL,
+        create_intermediates: bool,
+        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+    ) -> Result<(), &'ear ns::Error> {
+        let mut error = None;
+        let res = self.create_dir_at_url_error(url, create_intermediates, attributes, &mut error);
+        if res {
+            Ok(())
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
+        }
+    }
+
+    #[objc::msg_send(createDirectoryAtPath:withIntermediateDirectories:attributes:error:)]
+    pub fn create_dir_at_path_error<'ear>(
+        &self,
+        path: &ns::String,
+        create_intermediates: bool,
+        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    #[inline]
+    pub fn create_dir_at_path<'ear>(
+        &self,
+        path: &ns::String,
+        create_intermediates: bool,
+        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+    ) -> Result<(), &'ear ns::Error> {
+        let mut error = None;
+        if self.create_dir_at_path_error(path, create_intermediates, attributes, &mut error) {
+            Ok(())
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
+        }
+    }
+
+    #[objc::msg_send(removeItemAtPath:error:)]
+    pub fn remove_item_at_path_error<'ear>(
+        &self,
+        path: &ns::String,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    #[inline]
+    pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> Result<(), &'ear ns::Error> {
+        let mut error = None;
+        if self.remove_item_at_path_error(path, &mut error) {
+            Ok(())
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
+        }
+    }
 }
 
 #[link(name = "ns", kind = "static")]
@@ -382,5 +488,43 @@ mod tests {
             .contents_of_dir_at_url(&url, None, Default::default())
             .expect("Failed to list {url:?}");
         assert!(!list.is_empty());
+    }
+
+    #[test]
+    fn throws() {
+        //> Passing a directory and domain pair that makes no sense
+        //> (for example NSDesktopDirectory and NSNetworkDomainMask) raises an exception.
+        //
+        // but actually it doesn't raises an exception. It just return none as error and none as result
+        let fm = ns::FileManager::default();
+
+        let err = ns::try_catch(|| {
+            fm.url_for_dir(
+                ns::SearchPathDirectory::Desktop,
+                ns::SearchPathDomainMask::NETWORK,
+                None,
+                true,
+            )
+            .err()
+            .unwrap()
+        });
+        assert_eq!(Ok(None), err);
+    }
+
+    #[test]
+    pub fn create_dir() {
+        let parent = ns::String::with_str("/tmp/foo");
+
+        let path = ns::String::with_str("/tmp/foo/nest");
+        let fm = ns::FileManager::default();
+
+        let _r = fm.remove_item_at_path(&parent); // don't care about result for now
+
+        fm.create_dir_at_path(&path, false, None)
+            .expect_err("should fail");
+
+        fm.create_dir_at_path(path.as_ref(), true, None).unwrap();
+
+        fm.remove_item_at_path(&parent).unwrap();
     }
 }

@@ -118,5 +118,9 @@ fn main() {
     } else {
     }
 
+    // let cc_args =
+    //     format!("-fobjc-exceptions -fobjc-arc -fobjc-arc-exceptions -Wl,-objc_stubs_small -O1");
+    // println!("cargo:cc_args={cc_args}");
+
     println!("cargo:rerun-if-changed=./pomace/");
 }
