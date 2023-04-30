@@ -173,6 +173,9 @@ impl Fn {
 
     #[objc::msg_send(options)]
     pub fn options(&self) -> mtl::FnOptions;
+
+    #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
+    pub fn new_argument_enc_with_buf_index(&self, buf_index: usize) -> mtl::ArgumentEncoder;
 }
 
 define_obj_type!(Lib(ns::Id));
