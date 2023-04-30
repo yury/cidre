@@ -11,6 +11,7 @@ pub use stage_input_output_descriptor::AttributeFormat;
 pub use stage_input_output_descriptor::IndexType;
 
 mod acceleration_structure;
+pub use acceleration_structure::AccelerationStructure;
 pub use acceleration_structure::Descriptor as AccelerationStructureDescriptor;
 pub use acceleration_structure::GeometryDescriptor as AccelerationStructureGeometryDescriptor;
 pub use acceleration_structure::InstanceOptions as AccelerationStructureInstanceOptions;
@@ -83,6 +84,7 @@ pub use device::Device;
 pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAndAlign;
+pub use device::SparsePageSize;
 
 mod drawable;
 pub use drawable::Drawable;
@@ -215,6 +217,7 @@ mod indirect_command_buffer;
 pub use indirect_command_buffer::Descriptor as IndirectCmdBufDescriptor;
 pub use indirect_command_buffer::ExecutionRange as IndirectCmBufExecutionRange;
 pub use indirect_command_buffer::IndirectCmdBuf;
+pub use indirect_command_buffer::IndirectCmdType;
 
 mod indirect_command_encoder;
 pub use indirect_command_encoder::IndirectComputeCmd;

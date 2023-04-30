@@ -60,6 +60,12 @@ impl Descriptor {
 
     #[objc::msg_send(setType:)]
     pub fn set_type(&self, value: Type);
+
+    #[objc::msg_send(sparsePageSize)]
+    pub fn sparse_page_size(&self) -> mtl::SparsePageSize;
+
+    #[objc::msg_send(setSparsePageSize:)]
+    pub fn set_sparse_page_size(&mut self, value: mtl::SparsePageSize);
 }
 
 define_obj_type!(Heap(ns::Id));
@@ -133,12 +139,74 @@ impl Heap {
         offset: usize,
     ) -> Option<arc::R<mtl::Texture>>;
 
-    //- (nullable id <MTLAccelerationStructure>)newAccelerationStructureWithSize:(NSUInteger)size API_AVAILABLE(macos(13.0), ios(16.0));
+    #[objc::msg_send(newTextureWithDescriptor:offset:)]
+    pub fn new_texture_with_desc_offset_ar(
+        &self,
+        descriptor: &mtl::TextureDescriptor,
+        offset: usize,
+    ) -> Option<&'ar mtl::Texture>;
 
-    // pub fn new_acceleration_structure(&self, size: usize) -> Option<&'ar mtl::Accel
+    #[objc::rar_retain]
+    pub fn new_texture_with_desc_offset(
+        &self,
+        descriptor: &mtl::TextureDescriptor,
+        offset: usize,
+    ) -> Option<arc::R<mtl::Texture>>;
+
+    #[objc::msg_send(newAccelerationStructureWithSize:)]
+    pub fn new_acceleration_structure_size_ar(
+        &self,
+        size: usize,
+    ) -> Option<&'ar mtl::AccelerationStructure>;
+
+    #[objc::rar_retain]
+    pub fn new_acceleration_structure_size(
+        &self,
+        size: usize,
+    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+
+    #[objc::msg_send(newAccelerationStructureWithSize:offset:)]
+    pub fn new_acceleration_structure_size_offset_ar(
+        &self,
+        size: usize,
+        offset: usize,
+    ) -> Option<&'ar mtl::AccelerationStructure>;
+
+    #[objc::rar_retain]
+    pub fn new_acceleration_structure_size_offset(
+        &self,
+        size: usize,
+        offset: usize,
+    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+
+    #[objc::msg_send(newAccelerationStructureWithDescriptor:)]
+    pub fn new_acceleration_structure_with_desc_ar(
+        &self,
+        descriptor: &mtl::AccelerationStructureDescriptor,
+    ) -> Option<&'ar mtl::AccelerationStructure>;
+
+    #[objc::rar_retain]
+    pub fn new_acceleration_structure_with_desc(
+        &self,
+        descriptor: &mtl::AccelerationStructureDescriptor,
+    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+
+    #[objc::msg_send(newAccelerationStructureWithDescriptor:offset:)]
+    pub fn new_acceleration_structure_with_desc_offset_ar(
+        &self,
+        descriptor: &mtl::AccelerationStructureDescriptor,
+        offset: usize,
+    ) -> Option<&'ar mtl::AccelerationStructure>;
+
+    #[objc::rar_retain]
+    pub fn new_acceleration_structure_with_desc_offset(
+        &self,
+        descriptor: &mtl::AccelerationStructureDescriptor,
+        offset: usize,
+    ) -> Option<arc::R<mtl::AccelerationStructure>>;
 
     #[objc::msg_send(type)]
-    pub fn _type(&self) -> Type;
+    pub fn type_(&self) -> Type;
 }
 
 #[link(name = "mtl", kind = "static")]

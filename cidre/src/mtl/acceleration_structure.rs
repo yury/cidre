@@ -185,6 +185,15 @@ impl MotionBoundingBoxGeometryDescriptor {
     //
 }
 
+define_obj_type!(AccelerationStructure(mtl::Resource));
+
+impl AccelerationStructure {
+    #[objc::msg_send(size)]
+    pub fn size(&self) -> usize;
+
+    define_mtl!(gpu_resource_id);
+}
+
 extern "C" {
     static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDescriptor>;
     static MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR:
