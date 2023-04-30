@@ -29,6 +29,11 @@ pub use io_node::OutputNode;
 mod mixer_node;
 pub use mixer_node::MixerNode;
 
+mod mixing;
+pub use mixing::Mixing;
+pub use mixing::MixingDestination;
+pub use mixing::StereoMixing;
+
 mod time;
 pub use time::Time;
 

@@ -25,7 +25,7 @@ pub enum ManualRenderingStatus {
     /// for the description of the error.
     Error = -1,
     /// All of the requested data was returned successfully.
-    Succes = 0,
+    Success = 0,
     /// Applicable only to the input node, when it provides input data for rendering
     /// (see `AVAudioInputNode(setManualRenderingInputPCMFormat:inputBlock:)`).
     /// Indicates that not enough input data was returned by the input node to satisfy the
@@ -274,7 +274,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::av;
+    use crate::{av, ns, objc};
 
     #[test]
     fn basics() {
@@ -317,5 +317,22 @@ mod tests {
         // this is segfault with swift too https://gist.github.com/yury/2a74943c65b69a3a593a2c096ac36b54
         // we didn't connect any inputs :)
         // let status = engine.render_offline_err(1024, &mut pcm_buf, std::ptr::null_mut());
+
+        engine.stop();
+
+        let player_node = av::AudioPlayerNode::new();
+        engine.attach_node(&player_node);
+        engine.connect_node_to_node(&player_node, engine.main_mixer_node(), None);
+        engine.start().expect("Failed to start engine");
+        assert_eq!(engine.manual_rendering_sample_time(), 0);
+        player_node.play();
+
+        let status = engine.render_offline(1024, &mut pcm_buf).unwrap();
+
+        //eprintln!("{engine:?}");
+
+        assert_eq!(status, av::audio::EngineManualRenderingStatus::Success);
+        assert_eq!(pcm_buf.frame_length(), 1024);
+        assert_eq!(engine.manual_rendering_sample_time(), 1024);
     }
 }

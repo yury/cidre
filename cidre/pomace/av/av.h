@@ -20,6 +20,8 @@ Class AV_CAPTURE_DEVICE_DISCOVERY_SESSION;
 Class AV_CAPTURE_VIDEO_DATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_INPUT;
 
+Class AV_AUDIO_PLAYER_NODE;
+
 Class AV_AUDIO_ENGINE;
 
 Class AV_URL_ASSET;
@@ -53,6 +55,8 @@ static void mtl_initializer(void)
 #else
     AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
 #endif
+    AV_AUDIO_PLAYER_NODE = [AVAudioPlayerNode class];
+    
     AV_AUDIO_ENGINE = [AVAudioEngine class];
     AV_AUDIO_TIME = [AVAudioTime class];
     AV_AUDIO_UNIT_EFFECT = [AVAudioUnitEffect class];

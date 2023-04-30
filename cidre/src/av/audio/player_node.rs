@@ -1,6 +1,7 @@
 use std::ffi::c_void;
 
 use crate::{
+    arc,
     av::{self, audio},
     define_obj_type, objc,
 };
@@ -26,7 +27,7 @@ pub enum CompletionCallbackType {
     DataPlayedBack = 2,
 }
 
-define_obj_type!(PlayerNode(audio::Node));
+define_obj_type!(PlayerNode(audio::Node), AV_AUDIO_PLAYER_NODE);
 
 impl PlayerNode {
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
@@ -69,4 +70,9 @@ impl PlayerNode {
 
     #[objc::msg_send(setPan:)]
     pub fn set_pan(&self, value: f32);
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    static AV_AUDIO_PLAYER_NODE: &'static objc::Class<PlayerNode>;
 }

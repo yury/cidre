@@ -123,7 +123,7 @@ impl Lib {
         &self,
         name: &ns::String,
         constant_values: &mtl::FnConstValues,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     ) -> Option<&'ar Fn>;
 
     #[objc::rar_retain()]
@@ -131,7 +131,7 @@ impl Lib {
         &self,
         name: &ns::String,
         constant_values: &mtl::FnConstValues,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
     #[inline]
@@ -144,11 +144,11 @@ impl Lib {
 
         let res = unsafe { Self::new_fn_with_consts_err(self, name, constant_values, &mut error) };
 
-        if let Some(err) = error {
-            return Err(err);
+        if let Some(func) = res {
+            Ok(func)
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
         }
-
-        unsafe { Ok(transmute(res)) }
     }
 
     #[objc::msg_send(newFunctionWithName:descriptor:error:)]
@@ -176,11 +176,11 @@ impl Lib {
 
         let res = unsafe { Self::new_fn_with_desc_err(self, name, descriptor, &mut error) };
 
-        if let Some(err) = error {
-            return Err(err);
+        if let Some(func) = res {
+            Ok(func)
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
         }
-
-        unsafe { Ok(transmute(res)) }
     }
 }
 
