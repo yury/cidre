@@ -214,7 +214,7 @@ impl FeaturePrintObservation {
     /// use `compute_distance`
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[objc::msg_send(computeDistance:toFeaturePrintObservation:error:)]
-    pub unsafe fn compute_distance_error<'ar>(
+    pub unsafe fn compute_distance_err<'ar>(
         &self,
         distance: &mut f32,
         to: &FeaturePrintObservation,
@@ -233,7 +233,7 @@ impl FeaturePrintObservation {
         let mut distance = 0f32;
         let mut error = None;
         unsafe {
-            let res = self.compute_distance_error(&mut distance, to, &mut error);
+            let res = self.compute_distance_err(&mut distance, to, &mut error);
             if res {
                 Ok(distance)
             } else {

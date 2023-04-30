@@ -85,7 +85,7 @@ define_obj_type!(RegularExpression(ns::Id));
 
 impl arc::A<RegularExpression> {
     #[objc::msg_send(initWithPattern:options:error:)]
-    pub fn init_with_pattern_options_error(
+    pub fn init_with_pattern_options_err(
         self,
         pattern: &ns::String,
         options: Options,
@@ -103,7 +103,7 @@ impl RegularExpression {
     ) -> Result<arc::R<Self>, &ns::Error> {
         let mut error = None;
         unsafe {
-            let res = Self::alloc().init_with_pattern_options_error(pattern, options, &mut error);
+            let res = Self::alloc().init_with_pattern_options_err(pattern, options, &mut error);
             match res {
                 Some(res) => Ok(res),
                 None => Err(error.unwrap_unchecked()),

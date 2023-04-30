@@ -117,13 +117,13 @@ impl Engine {
     pub fn prepare(&self);
 
     #[objc::msg_send(startAndReturnError:)]
-    pub fn start_and_return_error<'ar>(&self, error: &mut Option<&'ar ns::Error>) -> bool;
+    pub fn start_and_return_err<'ar>(&self, error: &mut Option<&'ar ns::Error>) -> bool;
 
     #[inline]
     pub fn start<'ar>(&mut self) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.start_and_return_error(&mut error);
+            let res = self.start_and_return_err(&mut error);
             if res {
                 Ok(())
             } else {
@@ -190,7 +190,7 @@ impl Engine {
     /// 2. Removes any taps previously installed on the input and output nodes.
     /// 3. Maintains all the engine connections as is.
     #[objc::msg_send(enableManualRenderingMode:format:maximumFrameCount:error:)]
-    pub fn enable_manual_rendering_mode_error<'ar>(
+    pub fn enable_manual_rendering_mode_err<'ar>(
         &mut self,
         mode: ManualRenderingMode,
         format: &av::AudioFormat,
@@ -206,7 +206,7 @@ impl Engine {
         max_frame_count: av::AudioFrameCount,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        self.enable_manual_rendering_mode_error(mode, format, max_frame_count, &mut error);
+        self.enable_manual_rendering_mode_err(mode, format, max_frame_count, &mut error);
         if let Some(err) = error {
             return Err(err);
         }
@@ -217,7 +217,7 @@ impl Engine {
     pub fn disable_manual_rendering_mode(&mut self);
 
     #[objc::msg_send(renderOffline:toBuffer:error:)]
-    pub fn render_offline_error<'ar>(
+    pub fn render_offline_err<'ar>(
         &mut self,
         number_of_frames: av::AudioFrameCount,
         to_buf: &mut av::audio::PCMBuffer,
@@ -231,7 +231,7 @@ impl Engine {
         to_buf: &mut av::audio::PCMBuffer,
     ) -> Result<av::audio::EngineManualRenderingStatus, &'ar ns::Error> {
         let mut error = None;
-        let status = self.render_offline_error(number_of_frames, to_buf, &mut error);
+        let status = self.render_offline_err(number_of_frames, to_buf, &mut error);
         if status == ManualRenderingStatus::Error && error.is_some() {
             return Err(unsafe { error.unwrap_unchecked() });
         }
@@ -274,7 +274,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{av, ns};
+    use crate::av;
 
     #[test]
     fn basics() {
@@ -316,6 +316,6 @@ mod tests {
 
         // this is segfault with swift too https://gist.github.com/yury/2a74943c65b69a3a593a2c096ac36b54
         // we didn't connect any inputs :)
-        // let status = engine.render_offline_error(1024, &mut pcm_buf, std::ptr::null_mut());
+        // let status = engine.render_offline_err(1024, &mut pcm_buf, std::ptr::null_mut());
     }
 }

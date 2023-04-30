@@ -95,7 +95,7 @@ impl ImageRequestHandler {
     }
 
     #[objc::msg_send(performRequests:error:)]
-    pub fn perform_request_error(
+    pub fn perform_request_err(
         &self,
         requests: &ns::Array<vn::Request>,
         error: &mut Option<&ns::Error>,
@@ -105,7 +105,7 @@ impl ImageRequestHandler {
     pub fn perform<'ar>(&self, requests: &ns::Array<vn::Request>) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.perform_request_error(requests, &mut error);
+            let res = self.perform_request_err(requests, &mut error);
 
             if res {
                 Ok(())
@@ -132,7 +132,7 @@ define_obj_type!(SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER);
 /// ````
 impl SequenceRequestHandler {
     #[objc::msg_send(performRequests:onCVPixelBuffer:error:)]
-    pub fn perform_requests_on_cv_pixel_buffer_error(
+    pub fn perform_requests_on_cv_pixel_buffer_err(
         &self,
         requests: &ns::Array<vn::Request>,
         pixel_buffer: &cv::PixelBuffer,
@@ -146,8 +146,7 @@ impl SequenceRequestHandler {
         pixel_buffer: &cv::PixelBuffer,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        let res =
-            self.perform_requests_on_cv_pixel_buffer_error(requests, pixel_buffer, &mut error);
+        let res = self.perform_requests_on_cv_pixel_buffer_err(requests, pixel_buffer, &mut error);
 
         if res {
             Ok(())
@@ -156,7 +155,7 @@ impl SequenceRequestHandler {
         }
     }
     #[objc::msg_send(performRequests:onCMSampleBuffer:error:)]
-    pub fn perform_requests_on_cm_sample_buffer_error(
+    pub fn perform_requests_on_cm_sample_buffer_err(
         &self,
         requests: &ns::Array<vn::Request>,
         sample_buffer: &cm::SampleBuffer,
@@ -171,11 +170,8 @@ impl SequenceRequestHandler {
     ) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.perform_requests_on_cm_sample_buffer_error(
-                requests,
-                sample_buffer,
-                &mut error,
-            );
+            let res =
+                self.perform_requests_on_cm_sample_buffer_err(requests, sample_buffer, &mut error);
 
             if res {
                 Ok(())

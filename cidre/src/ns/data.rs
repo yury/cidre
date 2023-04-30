@@ -41,7 +41,7 @@ define_obj_type!(DataMut(Data), NS_MUTABLE_DATA);
 
 impl arc::A<Data> {
     #[objc::msg_send(initWithContentsOfFile:options:error:)]
-    pub fn init_with_contents_of_file_options_error(
+    pub fn init_with_contents_of_file_options_err(
         self,
         path: &ns::String,
         options: ReadingOptions,
@@ -49,7 +49,7 @@ impl arc::A<Data> {
     ) -> Option<arc::R<Data>>;
 
     #[objc::msg_send(initWithContentsOfURL:options:error:)]
-    pub fn init_with_contents_of_url_options_error(
+    pub fn init_with_contents_of_url_options_err(
         self,
         url: &ns::URL,
         options: ReadingOptions,
@@ -66,7 +66,7 @@ impl Data {
         unsafe {
             let mut error = None;
             let res =
-                Self::alloc().init_with_contents_of_file_options_error(path, options, &mut error);
+                Self::alloc().init_with_contents_of_file_options_err(path, options, &mut error);
             match res {
                 Some(r) => Ok(r),
                 None => Err(transmute(error)),
@@ -81,8 +81,7 @@ impl Data {
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
-            let res =
-                Self::alloc().init_with_contents_of_url_options_error(url, options, &mut error);
+            let res = Self::alloc().init_with_contents_of_url_options_err(url, options, &mut error);
             match res {
                 Some(r) => Ok(r),
                 None => Err(transmute(error)),

@@ -61,7 +61,7 @@ impl FileManager {
     pub fn default() -> &'static FileManager;
 
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]
-    pub fn contents_of_dir_at_url_error_ar(
+    pub fn contents_of_dir_at_url_err_ar(
         &self,
         url: &ns::URL,
         including_props_for_keys: Option<&ns::Array<ns::URLResourceKey>>,
@@ -70,7 +70,7 @@ impl FileManager {
     ) -> Option<&'ar ns::Array<ns::URL>>;
 
     #[objc::rar_retain]
-    pub fn contents_of_dir_at_url_error<'ear>(
+    pub fn contents_of_dir_at_url_err<'ear>(
         &self,
         url: &ns::URL,
         including_props_for_keys: Option<&ns::Array<ns::URLResourceKey>>,
@@ -86,7 +86,7 @@ impl FileManager {
     ) -> Result<arc::R<ns::Array<ns::URL>>, &'ar ns::Error> {
         let mut error = None;
         let res =
-            self.contents_of_dir_at_url_error(url, including_props_for_keys, options, &mut error);
+            self.contents_of_dir_at_url_err(url, including_props_for_keys, options, &mut error);
         if res.is_none() {
             return Err(unsafe { error.unwrap_unchecked() });
         }
@@ -94,7 +94,7 @@ impl FileManager {
     }
 
     #[objc::msg_send(URLForDirectory:inDomain:appropriateForURL:create:error:)]
-    pub fn url_for_dir_error_ar<'ear>(
+    pub fn url_for_dir_err_ar<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
@@ -104,7 +104,7 @@ impl FileManager {
     ) -> Option<&'ar ns::URL>;
 
     #[objc::rar_retain]
-    pub fn url_for_dir_error<'ear>(
+    pub fn url_for_dir_err<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
@@ -121,7 +121,7 @@ impl FileManager {
         create: bool,
     ) -> Result<arc::R<ns::URL>, Option<&'ear ns::Error>> {
         let mut error = None;
-        let res = self.url_for_dir_error(
+        let res = self.url_for_dir_err(
             directory,
             in_domain,
             appropriate_for_url,
@@ -135,7 +135,7 @@ impl FileManager {
     }
 
     #[objc::msg_send(createDirectoryAtURL:withIntermediateDirectories:attributes:error:)]
-    pub fn create_dir_at_url_error<'ear>(
+    pub fn create_dir_at_url_err<'ear>(
         &self,
         url: &ns::URL,
         create_intermediates: bool,
@@ -150,7 +150,7 @@ impl FileManager {
         attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        let res = self.create_dir_at_url_error(url, create_intermediates, attributes, &mut error);
+        let res = self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error);
         if res {
             Ok(())
         } else {
@@ -159,7 +159,7 @@ impl FileManager {
     }
 
     #[objc::msg_send(createDirectoryAtPath:withIntermediateDirectories:attributes:error:)]
-    pub fn create_dir_at_path_error<'ear>(
+    pub fn create_dir_at_path_err<'ear>(
         &self,
         path: &ns::String,
         create_intermediates: bool,
@@ -175,7 +175,7 @@ impl FileManager {
         attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        if self.create_dir_at_path_error(path, create_intermediates, attributes, &mut error) {
+        if self.create_dir_at_path_err(path, create_intermediates, attributes, &mut error) {
             Ok(())
         } else {
             Err(unsafe { error.unwrap_unchecked() })
@@ -183,7 +183,7 @@ impl FileManager {
     }
 
     #[objc::msg_send(removeItemAtPath:error:)]
-    pub fn remove_item_at_path_error<'ear>(
+    pub fn remove_item_at_path_err<'ear>(
         &self,
         path: &ns::String,
         error: *mut Option<&'ear ns::Error>,
@@ -192,7 +192,7 @@ impl FileManager {
     #[inline]
     pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        if self.remove_item_at_path_error(path, &mut error) {
+        if self.remove_item_at_path_err(path, &mut error) {
             Ok(())
         } else {
             Err(unsafe { error.unwrap_unchecked() })

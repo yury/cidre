@@ -233,7 +233,7 @@ pub trait Output: objc::Obj {
 pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(stream:didStopWithError:)]
-    fn stream_did_stop_with_error(&mut self, stream: &Stream, error: &ns::Error);
+    fn stream_did_stop_with_err(&mut self, stream: &Stream, error: &ns::Error);
 }
 
 impl Delegate for objc::Any {}
@@ -272,7 +272,7 @@ impl Stream {
     }
 
     #[objc::msg_send(addStreamOutput:type:sampleHandlerQueue:error:)]
-    fn add_stream_output_type_sample_handler_queue_error<D: Output>(
+    fn add_stream_output_type_sample_handler_queue_err<D: Output>(
         &self,
         output: &D,
         output_type: OutputType,
@@ -287,7 +287,7 @@ impl Stream {
         queue: Option<&dispatch::Queue>,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        if self.add_stream_output_type_sample_handler_queue_error(
+        if self.add_stream_output_type_sample_handler_queue_err(
             output,
             output_type,
             queue,

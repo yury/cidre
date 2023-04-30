@@ -186,7 +186,7 @@ impl<'a> Connected<'a> {
     /// Returns kAMDInvalidArgumentError if device is not a valid device ref, or if domain or key arguments are
     /// non-NULL and not string.
     ///
-    pub unsafe fn copy_value_with_error(
+    pub unsafe fn copy_value_with_err(
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
@@ -202,7 +202,7 @@ impl<'a> Connected<'a> {
     ) -> Result<arc::R<cf::PropertyList>, Error> {
         let mut error_out = Error::SUCCESS;
         unsafe {
-            let value = self.copy_value_with_error(domain, key, &mut error_out);
+            let value = self.copy_value_with_err(domain, key, &mut error_out);
             if error_out.is_err() {
                 Err(error_out)
             } else {

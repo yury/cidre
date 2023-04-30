@@ -11,7 +11,7 @@ impl Input {
 
 impl arc::A<DeviceInput> {
     #[objc::msg_send(initWithDevice:error:)]
-    pub fn init_with_device_error(
+    pub fn init_with_device_err(
         self,
         device: &av::CaptureDevice,
         error: &mut Option<&ns::Error>,
@@ -24,7 +24,7 @@ impl DeviceInput {
     pub fn with_device<'a>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'a ns::Error> {
         let mut error = None;
         unsafe {
-            let res = Self::alloc().init_with_device_error(device, &mut error);
+            let res = Self::alloc().init_with_device_err(device, &mut error);
             match error {
                 Some(e) => Err(e),
                 None => Ok(res.unwrap_unchecked()),

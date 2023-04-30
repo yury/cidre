@@ -19,7 +19,7 @@ impl Context {
     }
 
     #[objc::msg_send(writePNGRepresentationOfImage:toURL:format:colorSpace:options:error:)]
-    fn write_png_to_url_format_colorspace_options_error<'ar>(
+    fn write_png_to_url_format_colorspace_options_err<'ar>(
         &self,
         image: &ci::Image,
         url: &ns::URL,
@@ -38,7 +38,7 @@ impl Context {
         options: &ns::Dictionary<ns::String, ns::Id>,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        let res = self.write_png_to_url_format_colorspace_options_error(
+        let res = self.write_png_to_url_format_colorspace_options_err(
             image,
             url,
             format,

@@ -12,13 +12,13 @@ impl ClassifyImageRequest {
     pub fn results(&self) -> Option<&ns::Array<vn::ClassificationObservation>>;
 
     #[objc::msg_send(supportedIdentifiersAndReturnError:)]
-    pub fn supported_identifiers_and_return_error_ar(
+    pub fn supported_identifiers_and_return_err_ar(
         &self,
         error: &mut Option<&ns::Error>,
     ) -> Option<&'ar ns::Array<ns::String>>;
 
     #[objc::rar_retain()]
-    pub fn supported_identifiers_and_return_error(
+    pub fn supported_identifiers_and_return_err(
         &self,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::String>>>;
@@ -28,7 +28,7 @@ impl ClassifyImageRequest {
     ) -> Result<arc::R<ns::Array<ns::String>>, &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.supported_identifiers_and_return_error(&mut error);
+            let res = self.supported_identifiers_and_return_err(&mut error);
             if res.is_some() {
                 Ok(res.unwrap_unchecked())
             } else {

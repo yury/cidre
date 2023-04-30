@@ -96,7 +96,7 @@ impl Converter {
     pub fn available_encode_channel_layout_tags(&self) -> Option<&ns::Array<ns::Number>>;
 
     #[objc::msg_send(convertToBuffer:fromBuffer:error:)]
-    pub unsafe fn convert_to_buffer_from_buffer_error(
+    pub unsafe fn convert_to_buffer_from_buffer_err(
         &self,
         output_buffer: &mut av::AudioPCMBuffer,
         from_buffer: &av::AudioPCMBuffer,
@@ -112,7 +112,7 @@ impl Converter {
         unsafe {
             let mut error = None;
             let res =
-                self.convert_to_buffer_from_buffer_error(output_buffer, from_buffer, &mut error);
+                self.convert_to_buffer_from_buffer_err(output_buffer, from_buffer, &mut error);
             if error.is_some() {
                 debug_assert!(!res);
                 Err(transmute(error))
@@ -124,7 +124,7 @@ impl Converter {
     }
 
     #[objc::msg_send(convertToBuffer:error:withInputFromBlock:)]
-    pub unsafe fn convert_to_buffer_error_with_input_from_block(
+    pub unsafe fn convert_to_buffer_err_with_input_from_block(
         &self,
         output_buffer: &mut av::AudioBuffer,
         error: &mut Option<&cf::Error>,
@@ -147,7 +147,7 @@ impl Converter {
     {
         unsafe {
             let mut error = None;
-            let res = Self::convert_to_buffer_error_with_input_from_block(
+            let res = Self::convert_to_buffer_err_with_input_from_block(
                 self,
                 output_buffer,
                 &mut error,

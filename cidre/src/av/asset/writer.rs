@@ -23,7 +23,7 @@ define_obj_type!(Writer(ns::Id));
 
 impl arc::A<Writer> {
     #[objc::msg_send(initWithURL:fileType:error:)]
-    pub fn init_with_url_file_type_error<'ar>(
+    pub fn init_with_url_file_type_err<'ar>(
         self,
         url: &ns::URL,
         file_type: &av::FileType,
@@ -84,7 +84,7 @@ impl Writer {
     ) -> Result<arc::R<Writer>, &'ar ns::Error> {
         let mut error = None;
         unsafe {
-            let res = Self::alloc().init_with_url_file_type_error(url, file_type, &mut error);
+            let res = Self::alloc().init_with_url_file_type_err(url, file_type, &mut error);
             match error {
                 None => Ok(transmute(res)),
                 Some(e) => Err(e),
