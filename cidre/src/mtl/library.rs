@@ -1,5 +1,3 @@
-use std::{fmt::Debug, intrinsics::transmute};
-
 use crate::{
     arc, define_cls, define_mtl, define_obj_type, mtl, ns,
     objc::{self, Class},
@@ -22,7 +20,10 @@ pub enum LanguageVersion {
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum Type {
+    /// A library that can create pipeline state objects.
     Executable = 0,
+
+    /// A library that you can dynamically link to from other libraries.
     Dynamic = 1,
 }
 
@@ -93,6 +94,9 @@ impl Fn {
         &self,
         index: ns::UInteger,
     ) -> arc::R<mtl::ArgumentEncoder>;
+
+    #[objc::msg_send(functionType)]
+    pub fn fn_type(&self) -> mtl::FnType;
 }
 
 define_obj_type!(Lib(ns::Id));
@@ -100,13 +104,7 @@ define_obj_type!(Lib(ns::Id));
 impl Lib {
     define_mtl!(device, label, set_label);
 
-    /// The installName provided when this mtl::Lib was created.
-    ///
-    /// Always nil if the type of the library is not mtl::LibType::Dynamic.
-    /// [read more](https://developer.apple.com/documentation/metal/mtllibrary/3554039-installname?language=objc)
-    #[objc::msg_send(installName)]
-    pub fn install_name(&self) -> Option<&ns::String>;
-
+    /// The array contains ns::String objects, with the name of each function in library.
     #[objc::msg_send(functionNames)]
     pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
@@ -147,7 +145,7 @@ impl Lib {
         if let Some(func) = res {
             Ok(func)
         } else {
-            Err(unsafe { error.unwrap_unchecked() })
+            Err(error.unwrap())
         }
     }
 
@@ -182,6 +180,16 @@ impl Lib {
             Err(unsafe { error.unwrap_unchecked() })
         }
     }
+
+    #[objc::msg_send(type)]
+    pub fn type_(&self) -> mtl::LibType;
+
+    /// The installName provided when this mtl::Lib was created.
+    ///
+    /// Always nil if the type of the library is not mtl::LibType::Dynamic.
+    /// [read more](https://developer.apple.com/documentation/metal/mtllibrary/3554039-installname?language=objc)
+    #[objc::msg_send(installName)]
+    pub fn install_name(&self) -> Option<&ns::String>;
 }
 
 pub type ErrorDomain = ns::ErrorDomain;
@@ -192,9 +200,11 @@ impl ErrorDomain {
     }
 }
 
+#[doc(alias = "MTLFunctionType")]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(usize)]
 pub enum FnType {
+    /// A vertex shader, usable for a mtl::RenderPipelineState.
     Vertex = 1,
     Fragment = 2,
     Kernel = 3,
@@ -322,5 +332,6 @@ mod tests {
         let lib = device.new_lib_with_src(&source, None).unwrap();
 
         assert!(lib.install_name().is_none());
+        assert_eq!(mtl::LibType::Executable, lib.type_());
     }
 }
