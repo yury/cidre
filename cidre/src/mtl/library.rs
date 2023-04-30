@@ -171,11 +171,11 @@ impl Fn {
     #[objc::msg_send(stageInputAttributes)]
     pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attribute>>;
 
-    #[objc::msg_send(options)]
-    pub fn options(&self) -> mtl::FnOptions;
-
     #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
     pub fn new_argument_enc_with_buf_index(&self, buf_index: usize) -> mtl::ArgumentEncoder;
+
+    #[objc::msg_send(options)]
+    pub fn options(&self) -> mtl::FnOptions;
 }
 
 define_obj_type!(Lib(ns::Id));
