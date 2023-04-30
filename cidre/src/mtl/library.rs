@@ -170,6 +170,9 @@ impl Fn {
 
     #[objc::msg_send(stageInputAttributes)]
     pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attribute>>;
+
+    #[objc::msg_send(options)]
+    pub fn options(&self) -> mtl::FnOptions;
 }
 
 define_obj_type!(Lib(ns::Id));
@@ -366,6 +369,7 @@ mod tests {
         let func = lib.new_fn(&func_name).unwrap();
         let name = func.name();
         assert!(func_name.is_equal(&name));
+        assert_eq!(func.options(), mtl::FnOptions::None);
     }
 
     #[test]

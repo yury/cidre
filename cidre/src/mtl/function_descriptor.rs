@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(FnDescriptor(ns::Id), MTL_FUNCTION_DESCRIPTOR);
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(usize)]
 pub enum FnOptions {
     None = 0,
