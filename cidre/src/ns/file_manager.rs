@@ -198,6 +198,30 @@ impl FileManager {
             Err(unsafe { error.unwrap_unchecked() })
         }
     }
+
+    #[objc::msg_send(currentDirectoryPath)]
+    pub fn current_dir_path(&self) -> &ns::String;
+
+    #[objc::msg_send(changeCurrentDirectoryPath:)]
+    pub fn change_current_dir_path(&self, path: &ns::String) -> bool;
+
+    #[objc::msg_send(fileExistsAtPath:)]
+    pub fn file_exists_at_path(&self, path: &ns::String) -> bool;
+
+    #[objc::msg_send(fileExistsAtPath:isDirectory:)]
+    pub fn file_exists_at_path_is_dir(&self, path: &ns::String, is_dir: *mut bool) -> bool;
+
+    #[objc::msg_send(isReadableFileAtPath:)]
+    pub fn is_readable_file_at_path(&self, path: &ns::String) -> bool;
+
+    #[objc::msg_send(isWritableFileAtPath:)]
+    pub fn is_writable_file_at_path(&self, path: &ns::String) -> bool;
+
+    #[objc::msg_send(isExecutableFileAtPath:)]
+    pub fn is_executable_file_at_path(&self, path: &ns::String) -> bool;
+
+    #[objc::msg_send(isDeletableFileAtPath:)]
+    pub fn is_deletable_file_at_path(&self, path: &ns::String) -> bool;
 }
 
 #[link(name = "ns", kind = "static")]
@@ -498,6 +522,9 @@ mod tests {
         // but actually it doesn't raises an exception. It just return none as error and none as result
         let fm = ns::FileManager::default();
 
+        let pwd = fm.current_dir_path();
+        assert!(!pwd.is_empty());
+
         let err = ns::try_catch(|| {
             fm.url_for_dir(
                 ns::SearchPathDirectory::Desktop,
@@ -523,8 +550,10 @@ mod tests {
         fm.create_dir_at_path(&path, false, None)
             .expect_err("should fail");
 
-        fm.create_dir_at_path(path.as_ref(), true, None).unwrap();
+        fm.create_dir_at_path(&path, true, None).unwrap();
+        assert!(fm.file_exists_at_path(&path));
 
         fm.remove_item_at_path(&parent).unwrap();
+        assert!(!fm.file_exists_at_path(&parent));
     }
 }
