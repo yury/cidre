@@ -64,6 +64,7 @@ pub use library::FnType;
 pub use library::LanguageVersion;
 pub use library::Lib;
 pub use library::OptimizationLevel as LibOptimizationLevel;
+pub use library::PatchType;
 pub use library::Type as LibType;
 
 mod command_queue;

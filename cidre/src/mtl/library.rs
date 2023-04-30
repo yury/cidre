@@ -3,6 +3,15 @@ use crate::{
     objc::{self, Class},
 };
 
+// typedef NS_ENUM(NSUInteger, MTLPatchType) {
+#[derive(Debug, Clone, Copy, PartialEq)]
+#[repr(usize)]
+pub enum PatchType {
+    None = 0,
+    Triangle = 1,
+    Quad = 2,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
 pub enum LanguageVersion {
@@ -97,6 +106,12 @@ impl Fn {
 
     #[objc::msg_send(functionType)]
     pub fn fn_type(&self) -> mtl::FnType;
+
+    #[objc::msg_send(patchType)]
+    pub fn patch_type(&self) -> mtl::PatchType;
+
+    #[objc::msg_send(patchControlPointCount)]
+    pub fn patch_ctrl_point(&self) -> isize;
 }
 
 define_obj_type!(Lib(ns::Id));
