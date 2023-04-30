@@ -66,6 +66,7 @@ pub use library::Lib;
 pub use library::OptimizationLevel as LibOptimizationLevel;
 pub use library::PatchType;
 pub use library::Type as LibType;
+pub use library::VertexAttribute;
 
 mod command_queue;
 pub use command_queue::CmdQueue;

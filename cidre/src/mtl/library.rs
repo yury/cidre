@@ -12,6 +12,28 @@ pub enum PatchType {
     Quad = 2,
 }
 
+define_obj_type!(VertexAttribute(ns::Id));
+
+impl VertexAttribute {
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> &ns::String;
+
+    #[objc::msg_send(attributeIndex)]
+    pub fn attribute_index(&self) -> usize;
+
+    #[objc::msg_send(attributeType)]
+    pub fn attribute_type(&self) -> mtl::DataType;
+
+    #[objc::msg_send(isActive)]
+    pub fn is_active(&self) -> bool;
+
+    #[objc::msg_send(isPatchData)]
+    pub fn is_patch_data(&self) -> bool;
+
+    #[objc::msg_send(isPatchControlPointData)]
+    pub fn is_patch_ctrl_point_data(&self) -> bool;
+}
+
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
 pub enum LanguageVersion {
@@ -112,6 +134,9 @@ impl Fn {
 
     #[objc::msg_send(patchControlPointCount)]
     pub fn patch_ctrl_point(&self) -> isize;
+
+    #[objc::msg_send(vertexAttributes)]
+    pub fn vertext_attributes(&self) -> Option<&ns::Array<mtl::VertexAttribute>>;
 }
 
 define_obj_type!(Lib(ns::Id));
