@@ -167,7 +167,7 @@ impl Device {
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&ns::Error>,
     ) -> Option<&'ar Lib>;
 
     #[objc::rar_retain()]
@@ -175,23 +175,21 @@ impl Device {
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&ns::Error>,
     ) -> Option<arc::R<Lib>>;
 
     #[inline]
-    pub fn new_lib_with_src<'a>(
+    pub fn new_lib_with_src<'ear>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
-    ) -> Result<arc::R<Lib>, &'a ns::Error> {
+    ) -> Result<arc::R<Lib>, &'ear ns::Error> {
         let mut error = None;
-        let res = Self::new_lib_with_src_err(self, source, options, &mut error);
-
-        if let Some(err) = error {
-            return Err(err);
+        if let Some(lib) = Self::new_lib_with_src_err(self, source, options, &mut error) {
+            return Ok(lib);
         }
 
-        unsafe { Ok(transmute(res)) }
+        Err(unsafe { error.unwrap_unchecked() })
     }
 
     pub async fn new_lib_with_src_opts(
