@@ -4,7 +4,7 @@ define_obj_type!(MetalLayer(ca::Layer), CA_METAL_LAYER);
 
 pub trait MetalDrawable<T: objc::Obj>: mtl::Drawable<T> {
     #[objc::msg_send(texture)]
-    fn texture(&self);
+    fn texture(&self) -> &mtl::Texture;
 
     #[objc::msg_send(layer)]
     fn layer(&self) -> &MetalLayer;
@@ -18,6 +18,9 @@ impl MetalDrawable<ns::Id> for AnyMetalDrawable {}
 impl MetalLayer {
     #[objc::msg_send(device)]
     pub fn device(&self) -> Option<&mtl::Device>;
+
+    #[objc::msg_send(preferredDevice)]
+    pub fn preferred_device(&self) -> Option<&mtl::Device>;
 
     #[objc::msg_send(setDevice:)]
     pub fn set_device(&mut self, value: Option<&mtl::Device>);
@@ -33,12 +36,16 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::ca;
+    use crate::{ca, ca::MetalDrawable, cg};
 
     #[test]
     fn basics() {
-        let metal_layer = ca::MetalLayer::new();
-        let drawable = metal_layer.next_drawable();
-        println!("{drawable:?}");
+        let mut metal_layer = ca::MetalLayer::new();
+        metal_layer.set_bounds(cg::Rect::new(0.0, 0.0, 100.0, 100.0));
+        let device = metal_layer.preferred_device().unwrap().retained();
+        metal_layer.set_device(Some(&device));
+        let drawable = metal_layer.next_drawable().unwrap();
+        let texture = drawable.texture();
+        println!("{drawable:?} {texture:?}");
     }
 }
