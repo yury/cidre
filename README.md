@@ -13,7 +13,7 @@
 - Developer can finish critical path without deallocations.
 - Zero cost selectors calls (XCode 14.3)
 - Almost fully integrated async blocks
-- C API interface
+- Apple's C API interfaces
 
 ### Shortcuts
 
