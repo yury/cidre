@@ -1,4 +1,4 @@
-use crate::{ca, cg, define_obj_type, define_options, ns, objc};
+use crate::{arc, ca, cg, define_obj_type, define_options, ns, objc};
 
 define_obj_type!(ContentsGravity(ns::String));
 define_obj_type!(ContentsFormat(ns::String));
@@ -32,7 +32,7 @@ impl CornerMask {
     pub const MAX_X_MAX_Y: Self = Self(1 << 3);
 }
 
-define_obj_type!(Layer(ns::Id));
+define_obj_type!(Layer(ns::Id), CA_LAYER);
 impl Layer {
     #[objc::msg_send(bounds)]
     pub fn bounds(&self) -> cg::Rect;
@@ -81,4 +81,15 @@ impl Layer {
 
     #[objc::msg_send(insertSublayer:atIndex:)]
     pub fn insert_sublayer_at(&mut self, layer: &Self, index: u32);
+
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> Option<&ns::String>;
+
+    #[objc::msg_send(setName:)]
+    pub fn set_name(&mut self, value: Option<&ns::String>);
+}
+
+#[link(name = "ca", kind = "static")]
+extern "C" {
+    static CA_LAYER: &'static objc::Class<Layer>;
 }

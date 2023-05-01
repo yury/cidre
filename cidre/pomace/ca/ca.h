@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //API_AVAILABLE(ios(3.1), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos)
 Class CA_DISPLAY_LINK;
+Class CA_LAYER;
 Class CA_METAL_LAYER;
 
 __attribute__((constructor))
@@ -26,6 +27,7 @@ static void ca_initializer(void)
 #else
     CA_DISPLAY_LINK = [CADisplayLink class];
 #endif
+    CA_LAYER = [CALayer class];
     CA_METAL_LAYER = [CAMetalLayer class];
     
     initialized = 1;
