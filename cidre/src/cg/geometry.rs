@@ -88,6 +88,14 @@ impl Rect {
             size: Size { width, height },
         }
     }
+
+    #[inline]
+    pub fn with_size(width: Float, height: Float) -> Self {
+        Self {
+            origin: Point::zero(),
+            size: Size { width, height },
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]

@@ -13,7 +13,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-//API_AVAILABLE(ios(3.1), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos)
 Class CA_DISPLAY_LINK;
 Class CA_LAYER;
 Class CA_METAL_LAYER;

@@ -42,7 +42,7 @@ mod tests {
     fn basics() {
         let mut metal_layer = ca::MetalLayer::new();
         metal_layer.set_name(Some(&ns::String::with_str("mtl_layer")));
-        metal_layer.set_bounds(cg::Rect::new(0.0, 0.0, 100.0, 100.0));
+        metal_layer.set_bounds(cg::Rect::with_size(100.0, 100.0));
         let device = metal_layer.preferred_device().unwrap().retained();
         metal_layer.set_device(Some(&device));
         let drawable = metal_layer.next_drawable().unwrap();
