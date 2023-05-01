@@ -15,3 +15,9 @@ pub use base::current_media_time;
 
 mod transform3d;
 pub use transform3d::Transform3D;
+
+mod layer;
+pub use layer::Layer;
+mod metal_layer;
+pub use metal_layer::MetalDrawable;
+pub use metal_layer::MetalLayer;
