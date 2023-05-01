@@ -47,7 +47,8 @@ static void mtl_initializer(void)
     VN_DETECT_FACE_RECTANGLES_REQUEST = [VNDetectFaceRectanglesRequest class];
     VN_IMAGE_REQUEST_HANDLER = [VNImageRequestHandler class];
     VN_SEQUENCE_REQUEST_HANDLER = [VNSequenceRequestHandler class];
-  
+    
+    initialized = 1;
   }
 }
 

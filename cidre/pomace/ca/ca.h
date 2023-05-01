@@ -27,6 +27,8 @@ static void ca_initializer(void)
     CA_DISPLAY_LINK = [CADisplayLink class];
 #endif
     CA_METAL_LAYER = [CAMetalLayer class];
+    
+    initialized = 1;
   }
 }
 

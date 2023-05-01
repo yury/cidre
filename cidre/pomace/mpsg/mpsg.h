@@ -24,6 +24,8 @@ static void mtl_initializer(void)
     MPS_GRAPH_DEVICE = [MPSGraphDevice class];
     MPS_GRAPH = [MPSGraph class];
     MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR = [MPSGraphConvolution2DOpDescriptor class];
+    
+    initialized = 1;
   }
 }
 

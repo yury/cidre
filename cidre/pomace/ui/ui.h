@@ -20,6 +20,8 @@ static void ui_initializer(void)
   static int initialized = 0;
   if (!initialized) {
     UI_DEVICE = [UIDevice class];
+    
+    initialized = 1;
   }
 }
 

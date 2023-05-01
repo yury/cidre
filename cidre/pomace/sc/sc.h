@@ -25,6 +25,8 @@ static void mtl_initializer(void)
     SC_CONTENT_FILTER = [SCContentFilter class];
     SC_STREAM = [SCStream class];
     SC_SHAREABLE_CONTENT = [SCShareableContent class];
+    
+    initialized = 1;
   }
 }
 

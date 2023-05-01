@@ -17,6 +17,7 @@ static void mtl_initializer(void)
   static int initialized = 0;
   if (!initialized) {
 
+    initialized = 1;
   }
 }
 

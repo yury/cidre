@@ -99,6 +99,8 @@ static void common_initializer(void)
     NS_VALUE = [NSValue class];
     
     NS_FILE_MANAGER = [NSFileManager class];
+    
+    initialized = 1;
   }
 }
 NS_ASSUME_NONNULL_END

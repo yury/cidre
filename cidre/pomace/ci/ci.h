@@ -21,6 +21,8 @@ static void ci_initializer(void)
   if (!initialized) {
     CI_IMAGE = [CIImage class];
     CI_CONTEXT = [CIContext class];
+    
+    initialized = 1;
   }
 }
 
