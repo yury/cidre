@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 __attribute__((constructor))
-static void mtl_initializer(void)
+static void mps_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {

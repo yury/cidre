@@ -75,6 +75,8 @@ static void mtl_initializer(void)
     
     AV_AUDIO_PCM_BUFFER = [AVAudioPCMBuffer class];
     AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
+    
+    initialized = 1;
   }
 }
 
