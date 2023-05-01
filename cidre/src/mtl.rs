@@ -75,6 +75,7 @@ pub use command_queue::CmdQueue;
 mod texture;
 pub use texture::CompressionType as TextureCompressionType;
 pub use texture::Descriptor as TextureDescriptor;
+pub use texture::SharedTextureHandle;
 pub use texture::Swizzle as TextureSwizzle;
 pub use texture::SwizzleChannels as TextureSwizzleChannels;
 pub use texture::Texture;

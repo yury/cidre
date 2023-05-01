@@ -1,4 +1,4 @@
-use crate::{cg, define_obj_type, define_options, ns, objc};
+use crate::{ca, cg, define_obj_type, define_options, ns, objc};
 
 define_obj_type!(ContentsGravity(ns::String));
 define_obj_type!(ContentsFormat(ns::String));
@@ -57,6 +57,24 @@ impl Layer {
 
     #[objc::msg_send(setAnchorPoint:)]
     pub fn set_anchor_point(&mut self, value: cg::Point);
+
+    #[objc::msg_send(transform)]
+    pub fn transform(&self) -> ca::Transform3D;
+
+    #[objc::msg_send(setTransform:)]
+    pub fn set_transform(&mut self, value: ca::Transform3D);
+
+    #[objc::msg_send(frame)]
+    pub fn frame(&self) -> cg::Rect;
+
+    #[objc::msg_send(setFrame:)]
+    pub fn set_frame(&mut self, value: cg::Rect);
+
+    #[objc::msg_send(isHidden)]
+    pub fn is_hidden(&self) -> bool;
+
+    #[objc::msg_send(setHidden:)]
+    pub fn set_hidden(&mut self, value: bool);
 
     #[objc::msg_send(addSublayer:)]
     pub fn add_sublayer(&mut self, layer: &Self);
