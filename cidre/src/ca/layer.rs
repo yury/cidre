@@ -87,6 +87,15 @@ impl Layer {
 
     #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, value: Option<&ns::String>);
+
+    #[objc::msg_send(needsLayout)]
+    pub fn needs_layout(&self) -> bool;
+
+    #[objc::msg_send(setNeedsLayout)]
+    pub fn set_needs_layout(&mut self);
+
+    #[objc::msg_send(layoutIfNeeded)]
+    pub fn layout_if_needed(&mut self);
 }
 
 #[link(name = "ca", kind = "static")]
