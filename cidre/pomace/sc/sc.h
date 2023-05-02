@@ -21,11 +21,15 @@ static void mtl_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {
-    SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
-    SC_CONTENT_FILTER = [SCContentFilter class];
-    SC_STREAM = [SCStream class];
-    SC_SHAREABLE_CONTENT = [SCShareableContent class];
-    
+    if (@available(macOS 12.3, *)) {
+      SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
+      SC_CONTENT_FILTER = [SCContentFilter class];
+      SC_STREAM = [SCStream class];
+      SC_SHAREABLE_CONTENT = [SCShareableContent class];
+    } else {
+      // Fallback on earlier versions
+    }
+
     initialized = 1;
   }
 }

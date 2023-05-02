@@ -36,3 +36,7 @@ pub use layer::Layer;
 mod metal_layer;
 pub use metal_layer::MetalDrawable;
 pub use metal_layer::MetalLayer;
+
+mod renderer;
+pub use renderer::OptionKey as RendererOptionKey;
+pub use renderer::Renderer;

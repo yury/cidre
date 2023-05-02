@@ -1,20 +1,33 @@
 use crate::{arc, cf, cv, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(Renderer(ns::Id));
+define_obj_type!(OptionKey(ns::String));
 
+impl OptionKey {
+    #[inline]
+    pub fn color_space() -> &'static Self {
+        unsafe { kCARendererColorSpace }
+    }
+
+    #[inline]
+    pub fn metal_cmd_queue() -> &'static Self {
+        unsafe { kCARendererMetalCommandQueue }
+    }
+}
+
+define_obj_type!(Renderer(ns::Id));
 impl Renderer {
     define_cls!(CA_RENDERER);
 
     #[objc::cls_msg_send(rendererWithMTLTexture:options:)]
     pub fn with_mtl_texture_ar(
         texture: &mtl::Texture,
-        options: Option<&ns::Dictionary<ns::String, ns::Id>>,
+        options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
     ) -> &'ar Self;
 
     #[objc::rar_retain]
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
-        options: Option<&ns::Dictionary<ns::String, ns::Id>>,
+        options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
     ) -> arc::R<Self>;
 
     #[objc::msg_send(layer)]
@@ -55,4 +68,9 @@ impl Renderer {
 #[link(name = "ca", kind = "static")]
 extern "C" {
     static CA_RENDERER: &'static objc::Class<Renderer>;
+}
+
+extern "C" {
+    static kCARendererColorSpace: &'static OptionKey;
+    static kCARendererMetalCommandQueue: &'static OptionKey;
 }
