@@ -18,6 +18,7 @@ Class CA_ANIMATION;
 Class CA_MEDIA_TIMING_FUNCTION;
 Class CA_LAYER;
 Class CA_METAL_LAYER;
+Class CA_RENDERER;
 
 __attribute__((constructor))
 static void ca_initializer(void)
@@ -32,6 +33,7 @@ static void ca_initializer(void)
 #endif
     CA_LAYER = [CALayer class];
     CA_METAL_LAYER = [CAMetalLayer class];
+    CA_RENDERER = [CARenderer class];
     
     initialized = 1;
   }
