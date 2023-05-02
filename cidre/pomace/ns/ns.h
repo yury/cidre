@@ -62,6 +62,8 @@ Class NS_UUID;
 Class NS_VALUE;
 
 Class NS_FILE_MANAGER;
+Class NS_NOTIFICATION;
+Class NS_CODER;
 
 __attribute__((constructor))
 static void common_initializer(void)
@@ -99,6 +101,8 @@ static void common_initializer(void)
     NS_VALUE = [NSValue class];
     
     NS_FILE_MANAGER = [NSFileManager class];
+    NS_NOTIFICATION = [NSNotification class];
+    NS_CODER = [NSCoder class];
     
     initialized = 1;
   }

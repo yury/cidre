@@ -147,3 +147,10 @@ pub use path_utilities::temporary_directory;
 pub use path_utilities::user_name;
 pub use path_utilities::SearchPathDirectory;
 pub use path_utilities::SearchPathDomainMask;
+
+mod notification;
+pub use notification::Notification;
+pub use notification::NotificationName;
+
+mod coder;
+pub use coder::Coder;

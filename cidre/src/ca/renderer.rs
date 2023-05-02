@@ -1,4 +1,4 @@
-use crate::{arc, cf, cv, define_cls, define_obj_type, ns, objc};
+use crate::{arc, ca, cf, cg, cv, define_cls, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(OptionKey(ns::String));
 
@@ -24,7 +24,7 @@ impl Renderer {
         options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
     ) -> &'ar Self;
 
-    #[objc::rar_retain]
+    #[objc::cls_rar_retain]
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
         options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
@@ -46,7 +46,7 @@ impl Renderer {
     #[objc::msg_send(beginFrameAtTime:timeStamp:)]
     pub fn begin_frame_at(&mut self, time_stamp: cf::TimeInterval, ts: Option<&cv::TimeStamp>);
 
-    #[objc::msg_send(updateBounds)]
+    #[objc::msg_send(updateBounds:)]
     pub fn update_bounds(&mut self, bounds: cg::Rect);
 
     #[objc::msg_send(addUpdateRect:)]
