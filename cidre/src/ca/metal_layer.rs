@@ -48,5 +48,8 @@ mod tests {
         let drawable = metal_layer.next_drawable().unwrap();
         let texture = drawable.texture();
         println!("{drawable:?} {texture:?}");
+
+        let animation_keys = metal_layer.animation_keys();
+        assert!(animation_keys.is_none());
     }
 }

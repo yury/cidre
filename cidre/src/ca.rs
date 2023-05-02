@@ -13,6 +13,13 @@ pub use frame_rate_range::FrameRateRange;
 mod base;
 pub use base::current_media_time;
 
+mod animation;
+pub use animation::Animation;
+
+mod media_timing_function;
+pub use media_timing_function::MediaTimingFn;
+pub use media_timing_function::Name as MediaTimingFnName;
+
 mod transform3d;
 pub use transform3d::Transform3D;
 

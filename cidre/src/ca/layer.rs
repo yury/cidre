@@ -96,6 +96,24 @@ impl Layer {
 
     #[objc::msg_send(layoutIfNeeded)]
     pub fn layout_if_needed(&mut self);
+
+    #[objc::msg_send(layoutSublayers)]
+    pub fn layout_sublayers(&self);
+
+    #[objc::msg_send(resizeSublayersWithOldSize:)]
+    pub fn resize_sublayers_with_old_size(&self, size: cg::Size);
+
+    #[objc::msg_send(resizeWithOldSuperlayerSize:)]
+    pub fn resize_with_old_superlayer_size(&self, size: cg::Size);
+
+    #[objc::msg_send(removeAllAnimations)]
+    pub fn remove_all_animations(&mut self);
+
+    #[objc::msg_send(removeAnimationForKey:)]
+    pub fn remove_animation_for_key(&mut self, key: &ns::String);
+
+    #[objc::msg_send(animationKeys)]
+    pub fn animation_keys(&self) -> Option<&ns::Array<ns::String>>;
 }
 
 #[link(name = "ca", kind = "static")]

@@ -14,6 +14,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class CA_DISPLAY_LINK;
+Class CA_ANIMATION;
+Class CA_MEDIA_TIMING_FUNCTION;
 Class CA_LAYER;
 Class CA_METAL_LAYER;
 
@@ -22,6 +24,8 @@ static void ca_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {
+    CA_ANIMATION = [CAAnimation class];
+    CA_MEDIA_TIMING_FUNCTION = [CAMediaTimingFunction class];
 #ifdef TARGET_OS_MAC
 #else
     CA_DISPLAY_LINK = [CADisplayLink class];
