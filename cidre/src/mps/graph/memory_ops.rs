@@ -80,7 +80,7 @@ mod tests {
         assert_eq!(1, tensor.as_type_ref().retain_count());
         // this will crash, since we released graph. Same crash will be in Swift too.
         // We may add lifetime to tensor
-        //assert_eq!("mps_placeholder", tensor.operation().name().to_string());
+        // assert_eq!("mps_placeholder", tensor.operation().name().to_string());
     }
     #[test]
     pub fn basics() {

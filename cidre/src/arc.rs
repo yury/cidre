@@ -146,6 +146,7 @@ pub type R<T> = Retained<T>;
 #[inline]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<&T>) -> Option<R<T>> {
     unsafe {
+        // see comments in rar_retain
         asm!("mov x29, x29");
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
@@ -156,6 +157,9 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<&T>) -> Option<R<T>> {
 #[inline]
 pub fn rar_retain<T: objc::Obj>(id: &T) -> R<T> {
     unsafe {
+        // latest runtimes don't need this marker anymore.
+        // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24
+        // but mechmarks show that on macos it is not a case yet. Need to check on iOS.
         asm!("mov x29, x29");
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
