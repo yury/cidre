@@ -1,3 +1,4 @@
+use std::arch::asm;
 use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
 use crate::{arc, cf::Type};
@@ -52,8 +53,17 @@ impl<T: Obj> Obj for Class<T> {}
 impl<T: Obj> arc::Release for T {
     #[inline]
     unsafe fn release(&mut self) {
-        objc_release(transmute(self))
+        release_non_c_abi(transmute(self))
+        // objc_release(transmute(self))
     }
+}
+#[inline]
+unsafe fn release_non_c_abi(obj: &mut c_void) {
+    asm!(
+        "bl _objc_release_{x}",
+        x = in(reg) obj,
+        clobber_abi("C")
+    );
 }
 
 impl<T: Obj> arc::Retain for T {
