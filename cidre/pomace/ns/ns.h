@@ -66,6 +66,9 @@ Class NS_NOTIFICATION;
 Class NS_NOTIFICATION_CENTER;
 Class NS_CODER;
 
+Class NS_OPERATION;
+Class NS_OPERATION_QUEUE;
+
 __attribute__((constructor))
 static void common_initializer(void)
 {
@@ -105,6 +108,9 @@ static void common_initializer(void)
     NS_NOTIFICATION = [NSNotification class];
     NS_NOTIFICATION_CENTER = [NSNotificationCenter class];
     NS_CODER = [NSCoder class];
+    
+    NS_OPERATION = [NSOperation class];
+    NS_OPERATION_QUEUE = [NSOperationQueue class];
     
     initialized = 1;
   }

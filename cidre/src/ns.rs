@@ -150,7 +150,12 @@ pub use path_utilities::SearchPathDomainMask;
 
 mod notification;
 pub use notification::Notification;
+pub use notification::NotificationCenter;
 pub use notification::NotificationName;
+
+mod operation;
+pub use operation::Operation;
+pub use operation::OperationQueue;
 
 mod coder;
 pub use coder::Coder;

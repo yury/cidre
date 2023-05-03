@@ -1,6 +1,12 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc};
+use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(NotificationName(ns::String));
+
+impl NotificationName {
+    pub fn with_raw(raw: arc::R<ns::String>) -> arc::R<Self> {
+        unsafe { std::mem::transmute(raw) }
+    }
+}
 
 define_obj_type!(Notification(ns::Id));
 
@@ -45,7 +51,7 @@ impl Notification {
 define_obj_type!(NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER);
 impl NotificationCenter {
     #[objc::cls_msg_send(defaultCenter)]
-    pub fn default() -> &'static Self;
+    pub fn default() -> &'static mut Self;
 
     #[objc::msg_send(postNotification:)]
     pub fn post(&self, notification: &ns::Notification);
@@ -64,11 +70,65 @@ impl NotificationCenter {
     #[objc::msg_send(removeObserver:)]
     pub fn remove_observer(&mut self, observer: &ns::Id);
 
-    //pub fn add_observer_for(&mut self, name: )
+    #[objc::msg_send(addObserverForName:object:queue:usingBlock:)]
+    pub fn add_observer_for_ar<'bar, B>(
+        &mut self,
+        name: &ns::NotificationName,
+        object: Option<&ns::Id>,
+        queue: Option<&ns::OperationQueue>,
+        using_block: &'static mut blocks::Block<B>,
+    ) -> &'ar ns::Id
+    where
+        B: FnMut(&'bar ns::Notification);
+
+    #[objc::rar_retain]
+    pub fn add_observer_for<'bar, B>(
+        &mut self,
+        name: &ns::NotificationName,
+        object: Option<&ns::Id>,
+        queue: Option<&ns::OperationQueue>,
+        using_block: &'static mut blocks::Block<B>,
+    ) -> arc::R<ns::Id>
+    where
+        B: FnMut(&'bar ns::Notification);
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_NOTIFICATION: &'static objc::Class<Notification>;
     static NS_NOTIFICATION_CENTER: &'static objc::Class<NotificationCenter>;
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
+
+    use crate::{blocks, ns};
+
+    #[test]
+    fn basics() {
+        let nc = ns::NotificationCenter::default();
+        let counter = std::sync::Arc::new(std::sync::Mutex::new(0));
+        let c = counter.clone();
+        let mut block = blocks::mut1(move |note| {
+            println!("{note:?}");
+            let mut guard = c.lock().unwrap();
+            *guard += 1;
+        });
+        let name = ns::NotificationName::with_raw(ns::String::with_str("test"));
+        let token = nc.add_observer_for(&name, None, None, block.escape());
+        nc.post_with_name_object(&name, None);
+        nc.post_with_name_object(&name, None);
+
+        {
+            let guard = counter.lock().unwrap();
+            assert_eq!(2, *guard);
+        }
+        nc.remove_observer(&token);
+        nc.post_with_name_object(&name, None);
+        {
+            let guard = counter.lock().unwrap();
+            assert_eq!(2, *guard);
+        }
+    }
 }
