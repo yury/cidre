@@ -6,6 +6,11 @@ impl NotificationName {
     pub fn with_raw(raw: arc::R<ns::String>) -> arc::R<Self> {
         unsafe { std::mem::transmute(raw) }
     }
+
+    pub fn with_str(str: &str) -> arc::R<Self> {
+        let raw = ns::String::with_str(str);
+        unsafe { std::mem::transmute(raw) }
+    }
 }
 
 define_obj_type!(Notification(ns::Id));
@@ -101,21 +106,23 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{sync::atomic::AtomicUsize, sync::atomic::Ordering};
+    use std::sync::{Arc, Mutex};
 
     use crate::{blocks, ns};
 
     #[test]
     fn basics() {
         let nc = ns::NotificationCenter::default();
-        let counter = std::sync::Arc::new(std::sync::Mutex::new(0));
-        let c = counter.clone();
-        let mut block = blocks::mut1(move |note| {
+        let counter = Arc::new(Mutex::new(0));
+        let block_counter = counter.clone();
+        let mut block = blocks::mut1(move |note: &ns::Notification| {
             println!("{note:?}");
-            let mut guard = c.lock().unwrap();
+            let expected_name = ns::String::with_str("test");
+            assert!(expected_name.is_equal(note.name()));
+            let mut guard = block_counter.lock().unwrap();
             *guard += 1;
         });
-        let name = ns::NotificationName::with_raw(ns::String::with_str("test"));
+        let name = ns::NotificationName::with_str("test");
         let token = nc.add_observer_for(&name, None, None, block.escape());
         nc.post_with_name_object(&name, None);
         nc.post_with_name_object(&name, None);
