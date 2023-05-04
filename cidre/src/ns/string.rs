@@ -1,6 +1,9 @@
 use std::{borrow::Cow, fmt};
 
-use crate::{arc, cf, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
+
+#[cfg(feature = "cf")]
+use crate::cf;
 
 use super::Class;
 
@@ -121,6 +124,7 @@ impl String {
     #[objc::msg_send(UTF8String)]
     pub unsafe fn utf8_chars_ar(&self) -> *const i8;
 
+    #[cfg(feature = "cf")]
     pub fn as_cf(&self) -> &cf::String {
         unsafe { std::mem::transmute(self) }
     }
@@ -136,6 +140,24 @@ impl std::ops::Index<std::ops::Range<usize>> for String {
     #[inline]
     fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
         self.substring_with_range_ar(index.into())
+    }
+}
+
+impl StringMut {
+    #[objc::msg_send(replaceCharactersInRange:withString:)]
+    pub fn replace_characters_in_throws(&mut self, range: ns::Range, with_string: &ns::String);
+
+    pub fn replace_characters_in<'ar>(
+        &mut self,
+        range: ns::Range,
+        with_string: &ns::String,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| self.replace_characters_in_throws(range, with_string))
+    }
+
+    #[inline]
+    pub fn as_cf_mut(&self) -> &cf::StringMut {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
@@ -189,5 +211,15 @@ mod tests {
 
             let _l = s.lowercased();
         });
+    }
+
+    #[test]
+    fn mut_throws() {
+        let one = ns::String::with_str("1");
+        let mut zero = ns::String::with_str("0").copy_mut();
+        zero.replace_characters_in(ns::Range::new(0, 1), &one)
+            .unwrap();
+        zero.replace_characters_in(ns::Range::new(0, 10), &one)
+            .expect_err("Should be exceptions");
     }
 }
