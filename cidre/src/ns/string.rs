@@ -143,7 +143,16 @@ impl std::ops::Index<std::ops::Range<usize>> for String {
     }
 }
 
+impl arc::A<StringMut> {
+    #[objc::msg_send(initWithCapacity:)]
+    pub fn with_capacity(self, capacity: usize) -> arc::R<StringMut>;
+}
+
 impl StringMut {
+    pub fn with_capacity(capacity: usize) -> arc::R<Self> {
+        Self::alloc().with_capacity(capacity)
+    }
+
     #[objc::msg_send(replaceCharactersInRange:withString:)]
     pub fn replace_characters_in_throws(&mut self, range: ns::Range, with_string: &ns::String);
 
@@ -154,6 +163,33 @@ impl StringMut {
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| self.replace_characters_in_throws(range, with_string))
     }
+
+    #[objc::msg_send(insertString:atIndex:)]
+    pub fn insert_string_at_throws(&mut self, string: &ns::String, at_index: ns::UInteger);
+
+    pub fn insert_string_at<'ar>(
+        &mut self,
+        string: &ns::String,
+        at_index: ns::UInteger,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| self.insert_string_at_throws(string, at_index))
+    }
+
+    #[objc::msg_send(deleteCharactersInRange:)]
+    pub fn delete_characters_in_throws(&mut self, range: ns::Range);
+
+    pub fn delete_characters_in<'ar>(
+        &mut self,
+        range: ns::Range,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| self.delete_characters_in_throws(range))
+    }
+
+    #[objc::msg_send(append:)]
+    pub fn append(&mut self, string: &ns::String);
+
+    #[objc::msg_send(setString:)]
+    pub fn set(&mut self, string: &ns::String);
 
     #[inline]
     pub fn as_cf_mut(&self) -> &cf::StringMut {
