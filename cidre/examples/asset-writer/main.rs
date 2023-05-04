@@ -1,7 +1,7 @@
+use clap::Parser;
 use std::{path::PathBuf, sync::Arc};
 
 use cidre::{arc, av, blocks, cat, cf, cm, dispatch, ns};
-use clap::Parser;
 
 #[derive(clap::Parser)]
 #[command(author, version, about, long_about = None)]
@@ -54,7 +54,7 @@ async fn reader_and_output(
 
     let src = cf::URL::with_path(path.as_path(), false).unwrap();
 
-    let src_asset = av::URLAsset::with_url(src.as_ns_url(), None).unwrap();
+    let src_asset = av::URLAsset::with_url(src.as_ns(), None).unwrap();
     let mut asset_reader = av::AssetReader::with_asset(&src_asset).unwrap();
 
     let tracks = src_asset
@@ -85,7 +85,7 @@ fn writer_and_input(
 
     let dst = cf::URL::with_path(path.as_path(), false).unwrap();
 
-    let mut writer = av::AssetWriter::with_url_and_file_type(dst.as_ns_url(), file_type).unwrap();
+    let mut writer = av::AssetWriter::with_url_and_file_type(dst.as_ns(), file_type).unwrap();
 
     assert!(reader.start_reading());
     let buf = output.copy_next_sample_buffer_throws().unwrap();

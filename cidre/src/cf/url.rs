@@ -1,6 +1,9 @@
 use std::{os::unix::prelude::OsStrExt, path::Path};
 
-use crate::{arc, cf, define_cf_type, ns};
+use crate::{arc, cf, define_cf_type};
+
+#[cfg(feature = "ns")]
+use crate::ns;
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
@@ -163,8 +166,9 @@ impl URL {
         unsafe { CFURLGetPortNumber(self) }
     }
 
+    #[cfg(feature = "ns")]
     #[inline]
-    pub fn as_ns_url(&self) -> &ns::URL {
+    pub fn as_ns(&self) -> &ns::URL {
         unsafe { std::mem::transmute(self) }
     }
 }

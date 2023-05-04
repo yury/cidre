@@ -1,5 +1,8 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
+#[cfg(feature = "cf")]
+use crate::cf;
+
 use super::Class;
 
 define_obj_type!(ResourceKey(ns::String));
@@ -76,6 +79,12 @@ impl URL {
 
     #[objc::rar_retain()]
     pub fn abs_string(&self) -> Option<arc::R<ns::String>>;
+
+    #[cfg(feature = "cf")]
+    #[inline]
+    pub fn as_cf(&self) -> &cf::URL {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 #[link(name = "ns", kind = "static")]

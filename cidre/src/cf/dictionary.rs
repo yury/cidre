@@ -1,8 +1,8 @@
-use crate::{define_cf_type, ns, objc};
+#[cfg(feature = "ns")]
+use crate::ns;
+use crate::{arc, cf, define_cf_type, objc};
+use cf::{Allocator, HashCode, Index, String, Type, TypeId};
 
-use crate::{arc, cf};
-
-use super::{Allocator, HashCode, Index, String, Type, TypeId};
 use std::marker::PhantomData;
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
@@ -436,7 +436,8 @@ where
     V: objc::Obj,
 {
     /// Toll-Free Bridged
-    pub fn as_cf(&self) -> &ns::Dictionary<K, V> {
+    #[cfg(feature = "ns")]
+    pub fn as_ns(&self) -> &ns::Dictionary<K, V> {
         unsafe { transmute(self) }
     }
 }
