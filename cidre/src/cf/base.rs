@@ -1,5 +1,8 @@
 use crate::{arc, cf, define_cf_type, define_options};
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
 use super::{runtime::Type, String};
 use std::{borrow::Cow, cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
 
@@ -133,6 +136,12 @@ impl Null {
     #[inline]
     pub fn value() -> &'static Null {
         unsafe { kCFNull }
+    }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns(&self) -> &ns::Null {
+        unsafe { std::mem::transmute(self) }
     }
 }
 

@@ -64,6 +64,9 @@ mod value;
 pub use value::Number;
 pub use value::Value;
 
+mod null;
+pub use null::Null;
+
 mod array;
 pub use array::Array;
 pub use array::ArrayMut;

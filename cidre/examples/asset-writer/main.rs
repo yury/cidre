@@ -1,6 +1,6 @@
 use std::{path::PathBuf, sync::Arc};
 
-use cidre::{arc, at::audio, av, blocks, cat, cf, cm, dispatch, ns, os};
+use cidre::{arc, av, blocks, cat, cf, cm, dispatch, ns};
 use clap::Parser;
 
 #[derive(clap::Parser)]

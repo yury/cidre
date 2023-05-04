@@ -145,13 +145,13 @@ impl Fn {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
-    pub fn new_argument_encoder_with_buf_index_ar(
+    pub fn new_argument_enc_with_buf_index_ar(
         &self,
         index: ns::UInteger,
     ) -> &'ar mtl::ArgumentEncoder;
 
     #[objc::rar_retain()]
-    pub fn new_argument_encoder_with_buf_index(
+    pub fn new_argument_enc_with_buf_index(
         &self,
         index: ns::UInteger,
     ) -> arc::R<mtl::ArgumentEncoder>;
@@ -170,9 +170,6 @@ impl Fn {
 
     #[objc::msg_send(stageInputAttributes)]
     pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attribute>>;
-
-    #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
-    pub fn new_argument_enc_with_buf_index(&self, buf_index: usize) -> mtl::ArgumentEncoder;
 
     #[objc::msg_send(options)]
     pub fn options(&self) -> mtl::FnOptions;
