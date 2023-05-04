@@ -5,6 +5,9 @@ use super::{Allocator, Index, OptionFlags, Range, Type, TypeId};
 
 use crate::{arc, define_cf_type, define_options, UniChar};
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Encoding(u32);
@@ -238,8 +241,9 @@ impl String {
         unsafe { self.copy_mut_in(max_length, None).unwrap_unchecked() }
     }
 
+    #[cfg(feature = "ns")]
     #[inline]
-    pub fn as_ns_string(&self) -> &crate::ns::String {
+    pub fn as_ns(&self) -> &ns::String {
         unsafe { std::mem::transmute(self) }
     }
 
@@ -453,7 +457,7 @@ mod tests {
         let std_str = s.to_string();
         assert_eq!(std_str.chars().count(), 5);
 
-        let ns_str = s.as_ns_string();
+        let ns_str = s.as_ns();
         assert_eq!(&ns_str.to_string(), "hello");
     }
 

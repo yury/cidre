@@ -1,6 +1,9 @@
 use std::fmt::Debug;
 
-use crate::{arc, cf, define_cf_type, ns};
+use crate::{arc, cf, define_cf_type};
+
+#[cfg(feature = "ns")]
+use crate::ns;
 
 define_cf_type!(Error(cf::Type));
 pub type Domain = cf::String;
@@ -53,6 +56,7 @@ impl Error {
         unsafe { CFErrorCopyRecoverySuggestion(self) }
     }
 
+    #[cfg(feature = "ns")]
     #[inline]
     pub fn as_ns(&self) -> &ns::Error {
         unsafe { std::mem::transmute(self) }

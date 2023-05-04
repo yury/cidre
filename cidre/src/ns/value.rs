@@ -1,5 +1,5 @@
 use crate::{
-    arc, define_cls, define_obj_type, ns,
+    arc, cf, define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
@@ -219,6 +219,11 @@ impl Number {
 
     #[objc::msg_send(isEqualToNumber:)]
     pub fn eq_to_number(&self, number: &ns::Number) -> bool;
+
+    #[inline]
+    pub fn as_cf(&self) -> &cf::Number {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 impl From<i8> for arc::R<Number> {

@@ -1,4 +1,7 @@
-use crate::{arc, define_cf_type, ns, FourCharCode};
+use crate::{arc, define_cf_type, FourCharCode};
+
+#[cfg(feature = "ns")]
+use crate::ns;
 
 use super::{Allocator, ComparisonResult, Index, Type, TypeId};
 
@@ -399,8 +402,9 @@ impl Number {
         }
     }
 
+    #[cfg(feature = "ns")]
     #[inline]
-    pub fn as_ns_number(&self) -> &ns::Number {
+    pub fn as_ns(&self) -> &ns::Number {
         unsafe { std::mem::transmute(self) }
     }
 }
