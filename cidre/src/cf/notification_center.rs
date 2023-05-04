@@ -1,8 +1,14 @@
 use std::ffi::c_void;
 
-use crate::{cf, define_cf_type};
+use crate::{cf, define_cf_type, ns};
 
 define_cf_type!(NotificationName(cf::String));
+
+impl NotificationName {
+    pub fn as_ns(&self) -> &ns::NotificationName {
+        unsafe { std::mem::transmute(self) }
+    }
+}
 
 pub type NotificationCallback = extern "C" fn(
     center: &NotificationCenter,
@@ -21,7 +27,7 @@ impl NotificationCenter {
     /// let nc = cf::NotificationCenter::local_center();
     /// nc.show();
     /// ```
-    pub fn local_center<'a>() -> &'a NotificationCenter {
+    pub fn local_center<'a>() -> &'a mut NotificationCenter {
         unsafe { CFNotificationCenterGetLocalCenter() }
     }
 
@@ -58,8 +64,9 @@ impl NotificationCenter {
         unsafe { CFNotificationCenterRemoveEveryObserver(self, observer) }
     }
 
+    #[doc(alias = "CFNotificationCenterPostNotification")]
     pub fn post_notification(
-        &self,
+        &mut self,
         name: &NotificationName,
         object: *const c_void,
         user_info: Option<&cf::Dictionary>,
@@ -87,7 +94,7 @@ pub enum NotificationSuspensionBehavior {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFNotificationCenterGetTypeID() -> cf::TypeId;
-    fn CFNotificationCenterGetLocalCenter<'a>() -> &'a NotificationCenter;
+    fn CFNotificationCenterGetLocalCenter<'a>() -> &'a mut NotificationCenter;
     fn CFNotificationCenterAddObserver(
         center: &mut NotificationCenter,
         observer: *const c_void,
@@ -108,7 +115,7 @@ extern "C" {
     );
 
     fn CFNotificationCenterPostNotification(
-        center: &NotificationCenter,
+        center: &mut NotificationCenter,
         name: &NotificationName,
         object: *const c_void,
         user_info: Option<&cf::Dictionary>,

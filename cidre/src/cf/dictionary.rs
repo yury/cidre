@@ -1,4 +1,4 @@
-use crate::define_cf_type;
+use crate::{define_cf_type, ns, objc};
 
 use crate::{arc, cf};
 
@@ -427,6 +427,17 @@ where
 {
     pub fn get(&self, k: &K) -> Option<&V> {
         unsafe { transmute(self.0.value(transmute(k))) }
+    }
+}
+
+impl<K, V> DictionaryOf<K, V>
+where
+    K: objc::Obj,
+    V: objc::Obj,
+{
+    /// Toll-Free Bridged
+    pub fn as_cf(&self) -> &ns::Dictionary<K, V> {
+        unsafe { transmute(self) }
     }
 }
 

@@ -121,7 +121,7 @@ impl String {
     #[objc::msg_send(UTF8String)]
     pub unsafe fn utf8_chars_ar(&self) -> *const i8;
 
-    pub fn as_cf_string(&self) -> &cf::String {
+    pub fn as_cf(&self) -> &cf::String {
         unsafe { std::mem::transmute(self) }
     }
 
@@ -147,7 +147,7 @@ extern "C" {
 
 impl fmt::Display for String {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        fmt.write_str(&Cow::from(self.as_cf_string()))
+        fmt.write_str(&Cow::from(self.as_cf()))
     }
 }
 

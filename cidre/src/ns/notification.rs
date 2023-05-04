@@ -1,4 +1,4 @@
-use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{arc, blocks, cf, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(NotificationName(ns::String));
 
@@ -10,6 +10,10 @@ impl NotificationName {
     pub fn with_str(str: &str) -> arc::R<Self> {
         let raw = ns::String::with_str(str);
         unsafe { std::mem::transmute(raw) }
+    }
+
+    pub fn as_cf(&self) -> &cf::NotificationName {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
@@ -108,7 +112,7 @@ extern "C" {
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use crate::{blocks, ns};
+    use crate::{blocks, cf, ns};
 
     #[test]
     fn basics() {
@@ -133,6 +137,7 @@ mod tests {
         }
         nc.remove_observer(&token);
         nc.post_with_name_object(&name, None);
+
         {
             let guard = counter.lock().unwrap();
             assert_eq!(2, *guard);

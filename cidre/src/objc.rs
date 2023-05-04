@@ -140,9 +140,7 @@ impl Obj for Id {}
 impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self.description();
-        f.debug_tuple("NS")
-            .field(&Cow::from(desc.as_cf_string()))
-            .finish()
+        f.debug_tuple("NS").field(&Cow::from(desc.as_cf())).finish()
     }
 }
 
