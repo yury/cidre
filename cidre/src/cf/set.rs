@@ -2,6 +2,12 @@ use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref};
 
 use crate::{arc, cf, define_cf_type};
 
+#[cfg(freature = "ns")]
+use crate::ns;
+
+#[cfg(freature = "ns")]
+use crate::objc::Obj;
+
 define_cf_type!(Set(cf::Type));
 define_cf_type!(SetMut(Set));
 
@@ -49,6 +55,13 @@ where
         };
 
         vec
+    }
+}
+
+#[cfg(freature = "ns")]
+impl<T: Obj> SetOf<T> {
+    pub fn as_ns(&self) -> &ns::Set<T> {
+        unsafe { std::mem::transmute(self) }
     }
 }
 

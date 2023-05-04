@@ -5,6 +5,9 @@ use crate::{
     objc::{self, Class, Obj},
 };
 
+#[cfg(feature = "cf")]
+use crate::cf;
+
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Set<T: Obj>(ns::Id, PhantomData<T>);
@@ -73,6 +76,12 @@ impl<T: Obj> Set<T> {
     #[inline]
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
         ns::FastEnumeration::iter(self)
+    }
+
+    #[cfg(feature = "cf")]
+    #[inline]
+    pub fn as_cf(&self) -> &cf::Set {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
