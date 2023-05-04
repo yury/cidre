@@ -5,6 +5,7 @@ define_obj_type!(Null(ns::Id));
 impl Null {
     define_cls!(NS_NULL);
 
+    /// The singleton instance of ns::Null. Equal to cf::Null::value().
     #[objc::cls_msg_send(null)]
     pub fn value() -> &'static Self;
 
