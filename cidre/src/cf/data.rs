@@ -2,6 +2,9 @@ use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
 use crate::{arc, cf, define_cf_type};
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
 define_cf_type!(Data(cf::Type));
 define_cf_type!(DataMut(Data));
 
@@ -69,6 +72,12 @@ impl Data {
     pub fn as_slice(&self) -> &[u8] {
         unsafe { &*slice_from_raw_parts(self.bytes_ptr() as _, self.len()) }
     }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns(&self) -> &ns::Data {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 impl DataMut {
@@ -112,6 +121,12 @@ impl DataMut {
     #[inline]
     pub fn as_slice_mut(&mut self) -> &mut [u8] {
         unsafe { &mut *slice_from_raw_parts_mut(self.bytes_ptr_mut() as *mut u8, self.len()) }
+    }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns_mut(&mut self) -> &mut ns::DataMut {
+        unsafe { std::mem::transmute(self) }
     }
 }
 

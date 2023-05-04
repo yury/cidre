@@ -1,6 +1,6 @@
 use std::{mem::transmute, ptr::slice_from_raw_parts};
 
-use crate::{arc, define_obj_type, define_options, ns, objc};
+use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
 define_options!(ReadingOptions(usize));
 
@@ -132,6 +132,17 @@ impl Data {
         } else {
             Err(())
         }
+    }
+
+    #[inline]
+    pub fn as_cf(&self) -> &cf::Data {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl DataMut {
+    pub fn as_cf_mut(&mut self) -> &mut cf::DataMut {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
