@@ -88,6 +88,17 @@ extern "C" {
     static AV_PLAYER: &'static objc::Class<Player>;
 }
 
+impl ns::NotificationName {
+    pub fn av_player_rate_did_change() -> &'static ns::NotificationName {
+        unsafe { AVPlayerRateDidChangeNotification }
+    }
+}
+
+#[link(name = "AVFoundation", kind = "framework")]
+extern "C" {
+    static AVPlayerRateDidChangeNotification: &'static ns::NotificationName;
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{av, ns};
