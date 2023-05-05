@@ -58,6 +58,7 @@ impl Priority {
     pub const BACKGROUND: Self = Self(-1 << 15);
 }
 
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
 #[repr(usize)]
 pub enum AutoreleaseFrequency {
     Inherit = 0,
@@ -93,7 +94,7 @@ impl Queue {
     }
 
     #[inline]
-    pub fn main() -> &'static Queue {
+    pub fn main() -> &'static Main {
         Main::default()
     }
 
@@ -124,11 +125,13 @@ impl Queue {
         unsafe { Self::global_with_flags(identifier, 0) }
     }
 
+    #[doc(alias = "dispatch_get_global_queue")]
     #[inline]
     pub unsafe fn global_with_flags<'a>(identifier: isize, flags: usize) -> Option<&'a Global> {
         dispatch_get_global_queue(identifier, flags)
     }
 
+    #[doc(alias = "dispatch_sync")]
     #[inline]
     pub fn sync_b<F, B>(&self, block: &mut B)
     where
@@ -139,6 +142,7 @@ impl Queue {
         }
     }
 
+    #[doc(alias = "dispatch_async")]
     #[inline]
     pub fn async_b<F, B: dispatch::Block<F> + Sync>(&self, block: &'static mut B) {
         unsafe {
@@ -178,41 +182,49 @@ impl Queue {
         self.async_b(block.escape());
     }
 
+    #[doc(alias = "dispatch_async_f")]
     #[inline]
     pub fn async_f<T>(&self, context: *mut T, work: Function<T>) {
         unsafe { dispatch_async_f(self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_sync_f")]
     #[inline]
     pub fn sync_f<T>(&self, context: *mut T, work: Function<T>) {
         unsafe { dispatch_sync_f(self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_async_and_wait_f")]
     #[inline]
     pub fn async_and_wait_f<T>(&self, context: *mut T, work: Function<T>) {
         unsafe { dispatch_async_and_wait_f(self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_after_f")]
     #[inline]
     pub fn after_f<T>(&self, when: super::Time, context: *mut T, work: Function<T>) {
         unsafe { dispatch_after_f(when, self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_barrier_async_f")]
     #[inline]
     pub fn barrier_async_f<T>(&self, context: *mut T, work: Function<T>) {
         unsafe { dispatch_barrier_async_f(self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_barrier_sync_f")]
     #[inline]
     pub fn barrier_sync_f<T>(&self, context: *mut T, work: Function<T>) {
         unsafe { dispatch_barrier_sync_f(self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_barrier_async_and_wait_f")]
     #[inline]
     pub fn barrier_async_and_wait_f<T>(&self, context: *mut T, work: Function<T>) {
         unsafe { dispatch_barrier_async_and_wait_f(self, context as _, transmute(work)) }
     }
 
+    #[doc(alias = "dispatch_group_async_f")]
     #[inline]
     pub fn group_async_f<T>(&self, group: &super::Group, context: *mut T, work: Function<T>) {
         unsafe { dispatch_group_async_f(group, self, context as _, transmute(work)) }

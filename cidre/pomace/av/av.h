@@ -40,6 +40,8 @@ Class AV_AUDIO_PCM_BUFFER;
 Class AV_AUDIO_COMPRESSED_BUFFER;
 Class AV_AUDIO_FORMAT;
 
+Class AV_PLAYER;
+
 __attribute__((constructor))
 static void mtl_initializer(void)
 {
@@ -75,6 +77,8 @@ static void mtl_initializer(void)
     
     AV_AUDIO_PCM_BUFFER = [AVAudioPCMBuffer class];
     AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
+    
+    AV_PLAYER = [AVPlayer class];
     
     initialized = 1;
   }

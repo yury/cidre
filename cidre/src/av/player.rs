@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 pub mod item;
 pub use item::Item as PlayerItem;
@@ -45,4 +45,57 @@ pub enum AudiovisualBackgroundPlaybackPolicy {
 }
 
 define_obj_type!(Player(ns::Id));
+
+impl arc::A<Player> {
+    #[objc::msg_send(initWithURL:)]
+    pub fn init_with_url(self, url: &ns::URL) -> arc::R<Player>;
+    #[objc::msg_send(initWithPlayerItem:)]
+    pub fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
+}
+
+impl Player {
+    define_cls!(AV_PLAYER);
+
+    pub fn with_url(url: &ns::URL) -> arc::R<Self> {
+        Self::alloc().init_with_url(url)
+    }
+
+    pub fn with_player_item_throws(item: Option<&PlayerItem>) -> arc::R<Self> {
+        Self::alloc().init_with_player_item_throws(item)
+    }
+
+    pub fn with_player_item<'ar>(
+        item: Option<&PlayerItem>,
+    ) -> Result<arc::R<Self>, &'ar ns::Exception> {
+        ns::try_catch(|| Self::with_player_item_throws(item))
+    }
+
+    #[objc::msg_send(status)]
+    pub fn status(&self) -> Status;
+
+    /// If the receiver's status is Status::Failed, this describes the error that caused the failure.
+    ///
+    /// The value of this property is an ns::Error that describes what caused the receiver to no longer be able to play items.
+    /// If the receiver's status is not Status::Failed, the value of this property is nil.
+    #[objc::msg_send(error)]
+    pub fn error(&self) -> Option<&ns::Error>;
+}
+
 define_obj_type!(QueuePlayer(Player));
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    static AV_PLAYER: &'static objc::Class<Player>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{av, ns};
+
+    #[test]
+    fn basics() {
+        let url = ns::URL::with_str("file:///tmp/file.mp4").expect("Url is not valid");
+        let player = av::Player::with_url(&url);
+        assert_eq!(player.status(), av::PlayerStatus::Unknown);
+    }
+}
