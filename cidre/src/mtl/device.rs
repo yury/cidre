@@ -108,9 +108,6 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[objc::msg_send(newCommandQueue)]
-    pub fn new_cmd_queue_ar(&self) -> Option<&'ar CmdQueue>;
-
-    #[objc::rar_retain()]
     pub fn new_cmd_queue(&self) -> Option<arc::R<CmdQueue>>;
 
     /// ```
@@ -123,32 +120,15 @@ impl Device {
     /// queue.as_type_ref().show();
     ///
     #[objc::msg_send(newCommandQueueWithMaxCommandBufferCount:)]
-    pub fn new_cmd_queue_max_cmd_buf_count_ar(
-        &self,
-        max_cmd_buf_count: usize,
-    ) -> Option<&'ar CmdQueue>;
-
-    #[objc::rar_retain()]
     pub fn new_cmd_queue_max_cmd_buf_count(
         &self,
         max_cmd_buf_count: usize,
     ) -> Option<arc::R<CmdQueue>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn new_texture_ar(&self, descriptor: &mtl::TextureDescriptor) -> Option<&'ar mtl::Texture>;
-
-    #[objc::rar_retain()]
     pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
-    pub fn new_texture_with_surface_ar(
-        &self,
-        descriptor: &mtl::TextureDescriptor,
-        surface: &io::Surface,
-        plane: usize,
-    ) -> Option<&'ar mtl::Texture>;
-
-    #[objc::rar_retain()]
     pub fn new_texture_with_surface(
         &self,
         descriptor: &mtl::TextureDescriptor,
@@ -157,20 +137,9 @@ impl Device {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newDefaultLibrary)]
-    pub fn new_default_lib_ar(&self) -> Option<&'ar Lib>;
-
-    #[objc::rar_retain()]
     pub fn new_default_lib(&self) -> Option<arc::R<Lib>>;
 
     #[objc::msg_send(newLibraryWithSource:options:error:)]
-    pub fn new_lib_with_src_err_ar(
-        &self,
-        source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
-        error: *mut Option<&ns::Error>,
-    ) -> Option<&'ar Lib>;
-
-    #[objc::rar_retain()]
     pub fn new_lib_with_src_err(
         &self,
         source: &ns::String,
@@ -212,13 +181,6 @@ impl Device {
         F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
-    pub fn new_compute_ps_with_fn_err_ar<'a>(
-        &self,
-        function: &mtl::Fn,
-        error: &mut Option<&'a ns::Error>,
-    ) -> Option<&'ar mtl::ComputePipelineState>;
-
-    #[objc::rar_retain()]
     pub fn new_compute_ps_with_fn_err<'a>(
         &self,
         function: &mtl::Fn,
@@ -226,13 +188,6 @@ impl Device {
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
-    pub unsafe fn new_render_ps_err_ar(
-        &self,
-        descriptor: &mtl::RenderPipelineDescriptor,
-        error: &mut Option<&ns::Error>,
-    ) -> Option<&'ar mtl::RenderPipelineState>;
-
-    #[objc::rar_retain]
     pub unsafe fn new_render_ps_err(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
@@ -271,22 +226,10 @@ impl Device {
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf_ar(&self, length: usize, options: mtl::ResourceOptions)
-        -> Option<&'ar mtl::Buf>;
-
-    #[objc::rar_retain()]
     pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
         -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newBufferWithBytes:length:options:)]
-    pub fn new_buf_with_bytes_ar(
-        &self,
-        bytes: *const c_void,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> Option<&'ar Buf>;
-
-    #[objc::rar_retain()]
     pub fn new_buf_with_bytes(
         &self,
         bytes: *const c_void,
@@ -295,43 +238,25 @@ impl Device {
     ) -> Option<arc::R<Buf>>;
 
     #[inline]
-    pub fn new_buf_with_slice_ar<'ar, T: Sized>(
+    pub fn new_buf_with_slice<T: Sized>(
         &self,
         slice: &[T],
         options: mtl::ResourceOptions,
-    ) -> Option<&'ar mtl::Buf> {
-        self.new_buf_with_bytes_ar(
+    ) -> Option<arc::R<mtl::Buf>> {
+        self.new_buf_with_bytes(
             slice.as_ptr() as _,
             std::mem::size_of::<T>() * slice.len(),
             options,
         )
     }
 
-    #[inline]
-    pub fn new_buf_with_slice<T: Sized>(
-        &self,
-        slice: &[T],
-        options: mtl::ResourceOptions,
-    ) -> Option<arc::R<mtl::Buf>> {
-        arc::rar_retain_option(self.new_buf_with_slice_ar(slice, options))
-    }
-
     #[objc::msg_send(newFence)]
-    pub fn new_fence_ar(&self) -> Option<&'ar Fence>;
-
-    #[objc::rar_retain()]
     pub fn new_fence(&self) -> Option<arc::R<Fence>>;
 
     #[objc::msg_send(newEvent)]
-    pub fn new_event_ar(&self) -> Option<&'ar Event>;
-
-    #[objc::rar_retain()]
     pub fn new_event(&self) -> Option<arc::R<Event>>;
 
     #[objc::msg_send(newSharedEvent)]
-    pub fn new_shared_event_ar(&self) -> Option<&'ar SharedEvent>;
-
-    #[objc::rar_retain()]
     pub fn new_shared_event(&self) -> Option<arc::R<SharedEvent>>;
 
     #[objc::msg_send(maxBufferLength)]
@@ -350,9 +275,6 @@ impl Device {
     ) -> SizeAndAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
-    pub fn new_heap_desc_ar(&self, descriptor: &mtl::HeapDescriptor) -> Option<&'ar mtl::Heap>;
-
-    #[objc::rar_retain()]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
 
     /// The maximum threadgroup memory available to a compute kernel, in bytes.
@@ -438,7 +360,6 @@ mod tests {
         let tier = device.argument_buffers_support();
         assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
 
-        assert!(device.new_default_lib_ar().is_none());
         assert!(device.new_default_lib().is_none());
 
         let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
@@ -449,11 +370,9 @@ mod tests {
         );
 
         let _t = device.new_texture(&td).unwrap();
-        let _t = device.new_texture_ar(&td).unwrap();
 
         assert!(device.max_buffer_length() > 10);
 
-        let _queue = device.new_cmd_queue_ar().unwrap();
         let _queue = device.new_cmd_queue().unwrap();
 
         let source = ns::String::with_str("void function_a() {}");

@@ -462,6 +462,9 @@ fn gen_msg_send(
     };
 
     let fn_name = fn_name.to_string();
+    if extern_name.starts_with("new") && fn_name.ends_with("_ar") {
+        panic!("can't use _ar functions with methods started with `new`. See #3");
+    }
     let mut generics = Vec::new();
 
     let args = loop {

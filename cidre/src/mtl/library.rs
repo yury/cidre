@@ -134,12 +134,6 @@ impl Fn {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
-    pub fn new_argument_enc_with_buf_index_ar(
-        &self,
-        index: ns::UInteger,
-    ) -> &'ar mtl::ArgumentEncoder;
-
-    #[objc::rar_retain()]
     pub fn new_argument_enc_with_buf_index(
         &self,
         index: ns::UInteger,
@@ -174,22 +168,11 @@ impl Lib {
     pub fn fn_names(&self) -> &ns::Array<ns::String>;
 
     #[objc::msg_send(newFunctionWithName:)]
-    pub fn new_fn_ar(&self, name: &ns::String) -> Option<&'ar Fn>;
-
-    #[objc::rar_retain()]
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
 
     /// # Safety
     /// Use new_fn_const_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
-    pub unsafe fn new_fn_with_consts_err_ar(
-        &self,
-        name: &ns::String,
-        constant_values: &mtl::FnConstValues,
-        error: *mut Option<&'ar ns::Error>,
-    ) -> Option<&'ar Fn>;
-
-    #[objc::rar_retain()]
     pub unsafe fn new_fn_with_consts_err<'ar>(
         &self,
         name: &ns::String,
@@ -215,14 +198,6 @@ impl Lib {
     }
 
     #[objc::msg_send(newFunctionWithName:descriptor:error:)]
-    pub unsafe fn new_fn_with_desc_err_ar(
-        &self,
-        name: &ns::String,
-        descriptor: &mtl::FnDescriptor,
-        error: &mut Option<&'ar ns::Error>,
-    ) -> Option<&'ar Fn>;
-
-    #[objc::rar_retain()]
     pub unsafe fn new_fn_with_desc_err<'ar>(
         &self,
         name: &ns::String,

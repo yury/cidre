@@ -93,31 +93,16 @@ impl Heap {
 
     /// Create a new buffer backed by heap memory.
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf_ar(&self, length: usize, options: mtl::ResourceOptions)
-        -> Option<&'ar mtl::Buf>;
-
-    #[objc::rar_retain()]
     pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
         -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn new_texture_ar(&self, descriptor: &mtl::TextureDescriptor) -> Option<&'ar mtl::Texture>;
-
-    #[objc::rar_retain()]
     pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(setPurgeableState:)]
     pub fn set_purgeable_state(&mut self, state: mtl::PurgableState);
 
     #[objc::msg_send(newBufferWithLength:options:offset:)]
-    pub fn new_buf_with_offset_ar(
-        &self,
-        length: usize,
-        options: mtl::ResouceOptions,
-        offset: usize,
-    ) -> Option<&'ar mtl::Buf>;
-
-    #[objc::rar_retain]
     pub fn new_buf_with_offset(
         &self,
         length: usize,
@@ -126,13 +111,6 @@ impl Heap {
     ) -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newTextureWithDescriptor:offset:)]
-    pub fn new_texture_with_offset_ar(
-        &self,
-        descriptor: &mtl::TextureDescriptor,
-        offset: usize,
-    ) -> Option<&'ar mtl::Texture>;
-
-    #[objc::rar_retain]
     pub fn new_texture_with_offset(
         &self,
         descriptor: &mtl::TextureDescriptor,
@@ -140,13 +118,6 @@ impl Heap {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newTextureWithDescriptor:offset:)]
-    pub fn new_texture_with_desc_offset_ar(
-        &self,
-        descriptor: &mtl::TextureDescriptor,
-        offset: usize,
-    ) -> Option<&'ar mtl::Texture>;
-
-    #[objc::rar_retain]
     pub fn new_texture_with_desc_offset(
         &self,
         descriptor: &mtl::TextureDescriptor,
@@ -154,25 +125,12 @@ impl Heap {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newAccelerationStructureWithSize:)]
-    pub fn new_acceleration_structure_size_ar(
-        &self,
-        size: usize,
-    ) -> Option<&'ar mtl::AccelerationStructure>;
-
-    #[objc::rar_retain]
     pub fn new_acceleration_structure_size(
         &self,
         size: usize,
     ) -> Option<arc::R<mtl::AccelerationStructure>>;
 
     #[objc::msg_send(newAccelerationStructureWithSize:offset:)]
-    pub fn new_acceleration_structure_size_offset_ar(
-        &self,
-        size: usize,
-        offset: usize,
-    ) -> Option<&'ar mtl::AccelerationStructure>;
-
-    #[objc::rar_retain]
     pub fn new_acceleration_structure_size_offset(
         &self,
         size: usize,
@@ -180,25 +138,12 @@ impl Heap {
     ) -> Option<arc::R<mtl::AccelerationStructure>>;
 
     #[objc::msg_send(newAccelerationStructureWithDescriptor:)]
-    pub fn new_acceleration_structure_with_desc_ar(
-        &self,
-        descriptor: &mtl::AccelerationStructureDescriptor,
-    ) -> Option<&'ar mtl::AccelerationStructure>;
-
-    #[objc::rar_retain]
     pub fn new_acceleration_structure_with_desc(
         &self,
         descriptor: &mtl::AccelerationStructureDescriptor,
     ) -> Option<arc::R<mtl::AccelerationStructure>>;
 
     #[objc::msg_send(newAccelerationStructureWithDescriptor:offset:)]
-    pub fn new_acceleration_structure_with_desc_offset_ar(
-        &self,
-        descriptor: &mtl::AccelerationStructureDescriptor,
-        offset: usize,
-    ) -> Option<&'ar mtl::AccelerationStructure>;
-
-    #[objc::rar_retain]
     pub fn new_acceleration_structure_with_desc_offset(
         &self,
         descriptor: &mtl::AccelerationStructureDescriptor,
@@ -227,8 +172,6 @@ mod tests {
 
         let device = mtl::Device::default().unwrap();
         let heap = device.new_heap_desc(&desc).unwrap();
-        assert!(heap.size() >= 1024);
-        let heap = device.new_heap_desc_ar(&desc).unwrap();
         assert!(heap.size() >= 1024);
     }
 }

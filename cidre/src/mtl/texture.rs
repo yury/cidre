@@ -224,12 +224,6 @@ impl Texture {
     pub fn parent_texture(&self) -> Option<&Texture>;
 
     #[objc::msg_send(newTextureViewWithPixelFormat:)]
-    pub fn texture_view_with_pixel_format_ar(
-        &self,
-        pixel_format: mtl::PixelFormat,
-    ) -> Option<&'ar Texture>;
-
-    #[objc::rar_retain()]
     pub fn texture_view_with_pixel_format(
         &self,
         pixel_format: mtl::PixelFormat,

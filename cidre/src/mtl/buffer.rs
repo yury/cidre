@@ -30,14 +30,6 @@ impl Buf {
     pub fn did_modify_range(&self, range: ns::Range);
 
     #[objc::msg_send(newTextureWithDescriptor:offset:bytesPerRow:)]
-    pub fn new_texture_with_descriptor_ar(
-        &self,
-        descritptor: &mtl::TextureDescriptor,
-        offset: usize,
-        bytes_per_row: usize,
-    ) -> Option<&'ar mtl::Texture>;
-
-    #[objc::rar_retain()]
     pub fn new_texture_with_descriptor(
         &self,
         descritptor: &mtl::TextureDescriptor,
