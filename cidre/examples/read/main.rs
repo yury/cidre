@@ -1,4 +1,4 @@
-use cidre::{arc, av, cv, ns, objc::autoreleasepool, vn};
+use cidre::{arc, av, cv, ns, objc::ar_pool, vn};
 use ndarray::{Array2, Axis};
 // Import the linfa prelude and KMeans algorithm
 use linfa::prelude::*;
@@ -64,7 +64,7 @@ async fn main() {
             continue;
         }
         let pts = buf.pts();
-        autoreleasepool(|| {
+        ar_pool(|| {
             handler
                 .perform_on_cv_pixel_buffer(&requests, &image)
                 .unwrap();

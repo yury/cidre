@@ -23,9 +23,9 @@ impl DetectBarcodesRequest {
     fn supported_symbologies_and_return_err_ar(
         &self,
         error: &mut Option<&ns::Error>,
-    ) -> Option<&'ar ns::Array<vn::BarcodeSymbology>>;
+    ) -> Option<arc::Rar<ns::Array<vn::BarcodeSymbology>>>;
 
-    #[objc::rar_retain()]
+    #[objc::rar_retain]
     fn supported_symbologies_and_return_err(
         &self,
         error: &mut Option<&ns::Error>,

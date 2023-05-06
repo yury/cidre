@@ -75,7 +75,7 @@ impl URL {
     }
 
     #[objc::msg_send(absoluteString)]
-    pub fn abs_string_ar(&self) -> Option<&'ar ns::String>;
+    pub fn abs_string_ar(&self) -> Option<arc::Rar<ns::String>>;
 
     #[objc::rar_retain()]
     pub fn abs_string(&self) -> Option<arc::R<ns::String>>;

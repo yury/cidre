@@ -76,7 +76,7 @@ mod tests {
     use crate::{mtl, objc};
     #[test]
     fn basics() {
-        objc::autoreleasepool(|| {
+        objc::ar_pool(|| {
             let cpd = mtl::ComputePassDescriptor::new();
 
             assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);

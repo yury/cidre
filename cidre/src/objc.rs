@@ -77,15 +77,15 @@ pub trait Obj: Sized + arc::Retain {
     }
 
     #[msg_send(description)]
-    fn description_ar(&self) -> &'ar crate::ns::String;
+    fn description_ar(&self) -> arc::Rar<crate::ns::String>;
 
     #[rar_retain]
     fn description(&self) -> arc::R<crate::ns::String>;
 
     #[msg_send(debugDescription)]
-    fn debug_description_ar(&self) -> &'ar crate::ns::String;
+    fn debug_description_ar(&self) -> arc::Rar<crate::ns::String>;
 
-    #[rar_retain()]
+    #[rar_retain]
     fn debug_description(&self) -> arc::R<crate::ns::String>;
 
     #[msg_send(respondsToSelector:)]
@@ -152,10 +152,10 @@ pub mod autorelease_pool;
 pub mod ns;
 pub use autorelease_pool::AutoreleasePoolPage;
 
-pub fn autoreleasepool<T, F>(f: F) -> T
+pub fn ar_pool<R, F>(f: F) -> R
 where
-    F: FnOnce() -> T,
-    T: Clone, // Autoreleased doesn't implement Clone
+    F: FnOnce() -> R,
+    R: Clone, // Autoreleased doesn't implement Clone
 {
     let _page = AutoreleasePoolPage::push();
     f()
@@ -392,7 +392,7 @@ where
 #[cfg(test)]
 mod tests {
 
-    use super::autoreleasepool;
+    use super::ar_pool;
     use crate::{cf, dispatch, return_ar};
     use std;
 
@@ -403,7 +403,7 @@ mod tests {
 
     #[test]
     fn autorelease() {
-        let ptr = autoreleasepool(|| {
+        let ptr = ar_pool(|| {
             let q = autorelease_example_ar().retained();
             assert_eq!(2, q.as_type_ref().retain_count());
             unsafe { q.as_type_ref().as_type_ptr() }

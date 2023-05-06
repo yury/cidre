@@ -17,7 +17,7 @@ impl graph::Graph {
         shape: Option<&mps::Shape>,
         data_type: mps::DataType,
         name: Option<&cf::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn placeholder_with_shape(
@@ -33,7 +33,7 @@ impl graph::Graph {
         data: &ns::Data,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn constant_with_data_shape_data_type(
@@ -44,7 +44,7 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(constantWithScalar:dataType:)]
-    pub fn constant_ar(&self, scalar: f64, data_type: mps::DataType) -> &'ar graph::Tensor;
+    pub fn constant_ar(&self, scalar: f64, data_type: mps::DataType) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> arc::R<graph::Tensor>;
@@ -55,7 +55,7 @@ impl graph::Graph {
         scalar: f64,
         shape: &mps::Shape,
         data_type: mps::DataType,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn constant_shape(

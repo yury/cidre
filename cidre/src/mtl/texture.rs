@@ -86,7 +86,7 @@ impl Descriptor {
         width: usize,
         height: usize,
         mipmapped: bool,
-    ) -> &'ar Descriptor;
+    ) -> arc::Rar<Descriptor>;
 
     #[objc::cls_rar_retain()]
     pub fn new_2d_with_pixel_format(
@@ -109,7 +109,7 @@ impl Descriptor {
         pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
-    ) -> &'ar Descriptor;
+    ) -> arc::Rar<Descriptor>;
 
     #[objc::cls_rar_retain()]
     pub fn new_cube_with_pixel_format(
@@ -124,7 +124,7 @@ impl Descriptor {
         width: usize,
         resource_options: mtl::resource::Options,
         usage: Usage,
-    ) -> &'ar Descriptor;
+    ) -> arc::Rar<Descriptor>;
 
     #[objc::cls_rar_retain()]
     pub fn new_2d_with_resource_options(

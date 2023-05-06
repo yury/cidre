@@ -11,7 +11,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         shape: &mps::Shape,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn broadcast(
@@ -37,7 +37,7 @@ impl graph::Graph {
         tensors: &ns::Array<graph::Tensor>,
         dimension: ns::Integer,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn concat_tensors(
@@ -53,7 +53,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axis: isize,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn expand_dims(
@@ -69,7 +69,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn expand_dims_axes(
@@ -85,7 +85,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         shape: &mps::Shape,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn reshape(
@@ -102,7 +102,7 @@ impl graph::Graph {
         dimention: ns::UInteger,
         with_dimention: ns::UInteger,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn transpose_with_dimension(
@@ -119,7 +119,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         to_type: mps::DataType,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn cast(
@@ -137,7 +137,7 @@ impl graph::Graph {
         start: ns::Integer,
         length: ns::Integer,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain()]
     pub fn slice_tensor(

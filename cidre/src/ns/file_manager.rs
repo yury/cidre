@@ -67,7 +67,7 @@ impl FileManager {
         including_props_for_keys: Option<&ns::Array<ns::URLResourceKey>>,
         options: DirectoryEnumerationOptions,
         error: *mut Option<&'ar ns::Error>,
-    ) -> Option<&'ar ns::Array<ns::URL>>;
+    ) -> Option<arc::Rar<ns::Array<ns::URL>>>;
 
     #[objc::rar_retain]
     pub fn contents_of_dir_at_url_err<'ear>(
@@ -101,7 +101,7 @@ impl FileManager {
         appropriate_for_url: Option<&ns::URL>,
         create: bool,
         error: *mut Option<&'ear ns::Error>,
-    ) -> Option<&'ar ns::URL>;
+    ) -> Option<arc::Rar<ns::URL>>;
 
     #[objc::rar_retain]
     pub fn url_for_dir_err<'ear>(

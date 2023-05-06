@@ -98,7 +98,7 @@ impl Time {
     /// anchor has a valid host time representation and sample time representation.AVAudioTime *anchor = [player playerTimeForNodeTime: player.lastRenderTime];
     /// fill in valid host time representationAVAudioTime *fullTime0 = [time0 extrapolateTimeFromAnchor: anchor];
     #[objc::msg_send(extrapolateTimeFromAnchor:)]
-    pub fn extrapolate_time_from_anchor_ar(&self, anchor: &Time) -> Option<&'ar Time>;
+    pub fn extrapolate_time_from_anchor_ar(&self, anchor: &Time) -> Option<arc::Rar<Time>>;
 
     #[objc::rar_retain]
     pub fn extrapolate_time_from_anchor(&self, anchor: &Time) -> Option<arc::R<Time>>;

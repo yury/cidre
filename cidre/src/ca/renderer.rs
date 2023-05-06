@@ -22,7 +22,7 @@ impl Renderer {
     pub fn with_mtl_texture_ar(
         texture: &mtl::Texture,
         options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
-    ) -> &'ar Self;
+    ) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
     pub fn with_mtl_texture(

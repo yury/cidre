@@ -9,7 +9,7 @@ impl graph::Graph {
         axis: ns::UInteger,
         batch_dimensions: ns::UInteger,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn gather(
@@ -28,7 +28,7 @@ impl graph::Graph {
         updates: &graph::Tensor,
         indices: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn gather_along_axis(

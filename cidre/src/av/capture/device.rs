@@ -107,7 +107,7 @@ impl Device {
         device_type: &Type,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> Option<&'ar Self>;
+    ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn with_device_type_media_and_position(
@@ -117,7 +117,7 @@ impl Device {
     ) -> Option<arc::R<Self>>;
 
     #[objc::cls_msg_send(deviceWithUniqueID:)]
-    pub fn with_unique_id_ar(unique_id: ns::String) -> Option<&'ar Self>;
+    pub fn with_unique_id_ar(unique_id: ns::String) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn with_unique_id(unique_id: ns::String) -> Option<arc::R<Self>>;
@@ -351,7 +351,8 @@ impl DiscoverySession {
         device_types: &cf::ArrayOf<Type>,
         media_type: Option<&MediaType>,
         position: Position,
-    ) -> &'ar Self;
+    ) -> arc::Rar<Self>;
+
     #[objc::cls_rar_retain]
     pub fn with_device_types_media_and_position(
         device_types: &cf::ArrayOf<Type>,

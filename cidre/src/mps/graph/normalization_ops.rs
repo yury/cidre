@@ -7,7 +7,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn mean(
@@ -23,7 +23,7 @@ impl graph::Graph {
         tensor: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn variance(
@@ -40,7 +40,7 @@ impl graph::Graph {
         mean: &graph::Tensor,
         axes: &ns::Array<ns::Number>,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn variance_mean(
@@ -61,7 +61,7 @@ impl graph::Graph {
         beta: Option<&graph::Tensor>,
         epsilon: f32,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn normalize(

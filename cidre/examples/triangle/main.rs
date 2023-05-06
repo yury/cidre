@@ -1,4 +1,4 @@
-use cidre::{cg, ci, mtl, ns, objc::autoreleasepool, simd};
+use cidre::{cg, ci, mtl, ns, objc::ar_pool, simd};
 
 #[repr(C)]
 struct Vertex {
@@ -59,7 +59,7 @@ fragment float4 pass_color(
 "###;
 
 fn main() {
-    autoreleasepool(|| {
+    ar_pool(|| {
         let device = mtl::Device::default().unwrap();
 
         let source = ns::String::with_str(LIB_SRC);

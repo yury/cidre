@@ -15,7 +15,7 @@ impl ClassifyImageRequest {
     pub fn supported_identifiers_and_return_err_ar(
         &self,
         error: &mut Option<&ns::Error>,
-    ) -> Option<&'ar ns::Array<ns::String>>;
+    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
 
     #[objc::rar_retain()]
     pub fn supported_identifiers_and_return_err(

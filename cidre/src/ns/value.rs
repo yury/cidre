@@ -125,7 +125,7 @@ impl Number {
     }
 
     #[objc::cls_msg_send(numberWithLongLong:)]
-    pub fn with_i64_ar(value: i64) -> &'ar Self;
+    pub fn with_i64_ar(value: i64) -> arc::Rar<Self>;
 
     // for benches
     #[inline]
@@ -212,7 +212,7 @@ impl Number {
     pub fn as_uinteger(&self) -> ns::UInteger;
 
     #[objc::msg_send(stringValue)]
-    pub fn string_ar(&self) -> &'ar ns::String;
+    pub fn string_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string(&self) -> arc::R<ns::String>;
@@ -333,12 +333,12 @@ extern "C" {
 mod tests {
     use crate::{
         ns,
-        objc::{autoreleasepool, Obj},
+        objc::{ar_pool, Obj},
     };
 
     #[test]
     fn tagged_pointers() {
-        autoreleasepool(|| {
+        ar_pool(|| {
             // let b = ns::Number::tagged_bool(true);
             let i8 = ns::Number::tagged_i8(i8::MAX - 1);
             let u8 = ns::Number::tagged_u8(u8::MAX - 1);
@@ -370,8 +370,8 @@ mod tests {
 
     #[test]
     fn rar() {
-        autoreleasepool(|| {
-            let s = autoreleasepool(|| ns::Number::with_i32(10).string());
+        ar_pool(|| {
+            let s = ar_pool(|| ns::Number::with_i32(10).string());
             println!("{:?}", s);
         });
         //        let foo = autoreleasepool(|| ns::Number::with_i64_ar(10));

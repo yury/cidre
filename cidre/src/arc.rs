@@ -2,6 +2,7 @@ use crate::objc;
 use std::{
     arch::asm,
     ops::{Deref, DerefMut},
+    ptr::NonNull,
 };
 
 pub trait Release {
@@ -140,11 +141,31 @@ impl<T: Retain> Clone for Retained<T> {
     }
 }
 
+#[repr(transparent)]
+pub struct ReturnedAutoReleased<T: objc::Obj>(NonNull<T>);
+
+impl<T: objc::Obj> Deref for ReturnedAutoReleased<T> {
+    type Target = T;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        unsafe { self.0.as_ref() }
+    }
+}
+
+impl<T: objc::Obj> DerefMut for ReturnedAutoReleased<T> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { self.0.as_mut() }
+    }
+}
+
 pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
+pub type Rar<T> = ReturnedAutoReleased<T>;
 
 #[inline]
-pub fn rar_retain_option<T: objc::Obj>(id: Option<&T>) -> Option<R<T>> {
+pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
     unsafe {
         // see comments in rar_retain
         asm!("mov x29, x29");
@@ -155,7 +176,7 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<&T>) -> Option<R<T>> {
 }
 
 #[inline]
-pub fn rar_retain<T: objc::Obj>(id: &T) -> R<T> {
+pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
     unsafe {
         // latest runtimes don't need this marker anymore.
         // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24

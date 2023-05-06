@@ -70,9 +70,9 @@ impl String {
     }
 
     #[objc::msg_send(lowercaseString)]
-    pub fn lowercased_ar(&self) -> &'ar Self;
+    pub fn lowercased_ar(&self) -> arc::Rar<Self>;
 
-    #[objc::rar_retain()]
+    #[objc::rar_retain]
     pub fn lowercased(&self) -> arc::R<Self>;
 
     #[objc::msg_send(intValue)]
@@ -105,7 +105,7 @@ impl String {
     pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
 
     #[objc::msg_send(substringWithRange:)]
-    pub fn substring_with_range_ar(&self, range: ns::Range) -> &'ar Self;
+    pub fn substring_with_range_ar(&self, range: ns::Range) -> arc::Rar<Self>;
 
     #[objc::rar_retain()]
     pub fn substring_with_range(&self, range: ns::Range) -> arc::R<Self>;
@@ -133,15 +133,15 @@ impl String {
     pub fn eq_ns_string(&self, other: &Self) -> bool;
 }
 
-impl std::ops::Index<std::ops::Range<usize>> for String {
-    type Output = String;
+// impl std::ops::Index<std::ops::Range<usize>> for String {
+//     type Output = arc::Rar<String>;
 
-    /// Return autoreleased
-    #[inline]
-    fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
-        self.substring_with_range_ar(index.into())
-    }
-}
+//     /// Return autoreleased
+//     #[inline]
+//     fn index(&self, index: std::ops::Range<usize>) -> &Self::Output {
+//         &self.substring_with_range_ar(index.into())
+//     }
+// }
 
 impl arc::A<StringMut> {
     #[objc::msg_send(initWithCapacity:)]
@@ -213,12 +213,12 @@ impl fmt::Display for String {
 mod tests {
     use crate::{
         ns::{self, try_catch},
-        objc::autoreleasepool,
+        objc::ar_pool,
     };
 
     #[test]
     fn basics() {
-        autoreleasepool(|| {
+        ar_pool(|| {
             let m = ns::StringMut::new();
             assert!(m.is_empty());
             let s = ns::String::with_str("10.5");
@@ -239,8 +239,9 @@ mod tests {
             let zero = ns::String::with_str("0");
             assert_eq!(&zero, &sub);
 
-            let sub = &s[3..4];
-            assert_eq!(sub.to_i32(), 5);
+            // TODO:
+            // let sub = &s[3..4];
+            // assert_eq!(sub.to_i32(), 5);
 
             let r = try_catch(|| s.substring(1..10));
             assert!(r.is_err());

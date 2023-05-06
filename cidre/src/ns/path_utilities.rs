@@ -5,13 +5,13 @@ use crate::{
 
 impl ns::String {
     #[objc::cls_msg_send(pathWithComponents:)]
-    pub fn path_with_components_ar(components: ns::Array<ns::String>) -> &'ar Self;
+    pub fn path_with_components_ar(components: ns::Array<ns::String>) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
     pub fn path_with_components(components: ns::Array<ns::String>) -> arc::R<Self>;
 
     #[objc::msg_send(pathComponents)]
-    pub fn path_components_ar(&self) -> &'ar ns::Array<ns::String>;
+    pub fn path_components_ar(&self) -> arc::Rar<ns::Array<ns::String>>;
 
     #[objc::rar_retain]
     pub fn path_components(&self) -> arc::R<ns::Array<ns::String>>;
@@ -20,49 +20,49 @@ impl ns::String {
     pub fn is_absolute_path(&self) -> bool;
 
     #[objc::msg_send(lastPathComponent)]
-    pub fn last_path_component_ar(&self) -> &'ar ns::String;
+    pub fn last_path_component_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn last_path_component(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByDeletingLastPathComponent)]
-    pub fn string_by_deleting_last_path_component_ar(&self) -> &'ar ns::String;
+    pub fn string_by_deleting_last_path_component_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string_by_deleting_last_path_component(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByAppendingPathComponent:)]
-    pub fn string_by_appending_path_component_ar(&self, str: &ns::String) -> &'ar ns::String;
+    pub fn string_by_appending_path_component_ar(&self, str: &ns::String) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string_by_appending_path_component(&self, str: &ns::String) -> arc::R<ns::String>;
 
     #[objc::msg_send(pathExtension)]
-    pub fn path_extension_ar(&self) -> &'ar ns::String;
+    pub fn path_extension_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn path_extension(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByDeletingPathExtension)]
-    pub fn string_by_deleting_path_extension_ar(&self) -> &'ar ns::String;
+    pub fn string_by_deleting_path_extension_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string_by_deleting_path_extension(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByAppendingPathExtension:)]
-    pub fn string_by_appending_path_extension_ar(&self, str: &ns::String) -> &'ar ns::String;
+    pub fn string_by_appending_path_extension_ar(&self, str: &ns::String) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string_by_appending_path_extension(&self, str: &ns::String) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByAbbreviatingWithTildeInPath)]
-    pub fn string_by_abbreviating_with_tilde_in_path_ar(&self) -> &'ar ns::String;
+    pub fn string_by_abbreviating_with_tilde_in_path_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string_by_abbreviating_with_tilde_in_path(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByExpandingTildeInPath)]
-    pub fn string_by_expanding_tilde_in_path_ar(&self) -> &'ar ns::String;
+    pub fn string_by_expanding_tilde_in_path_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
     pub fn string_by_expanding_tilde_in_path(&self) -> arc::R<ns::String>;
@@ -179,7 +179,7 @@ pub fn search_path_for_dirs_in_domains_ar<'ar>(
     directory: SearchPathDirectory,
     domain_mask: SearchPathDomainMask,
     expand_tilde: bool,
-) -> &'ar ns::Array<ns::String> {
+) -> arc::Rar<ns::Array<ns::String>> {
     unsafe { NSSearchPathForDirectoriesInDomains(directory, domain_mask, expand_tilde) }
 }
 
@@ -198,17 +198,17 @@ pub fn search_path_for_dirs_in_domains(
 
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
-    fn NSSearchPathForDirectoriesInDomains<'ar>(
+    fn NSSearchPathForDirectoriesInDomains(
         directory: SearchPathDirectory,
         domain_mask: SearchPathDomainMask,
         expand_tilde: bool,
-    ) -> &'ar ns::Array<ns::String>;
+    ) -> arc::Rar<ns::Array<ns::String>>;
 
     fn NSUserName() -> &'static ns::String;
     fn NSFullUserName() -> &'static ns::String;
     fn NSHomeDirectory() -> &'static ns::String;
     fn NSTemporaryDirectory() -> &'static ns::String;
-    fn NSHomeDirectoryForUser<'ar>(user_name: Option<&ns::String>) -> Option<&'ar ns::String>;
+    fn NSHomeDirectoryForUser(user_name: Option<&ns::String>) -> Option<arc::Rar<ns::String>>;
 }
 
 #[doc(alias = "NSUserName")]
@@ -237,7 +237,7 @@ pub fn temporary_directory() -> &'static ns::String {
 
 #[doc(alias = "NSHomeDirectoryForUser")]
 #[inline]
-pub fn home_directory_for_user_ar<'ar>(user_name: Option<&ns::String>) -> Option<&'ar ns::String> {
+pub fn home_directory_for_user_ar(user_name: Option<&ns::String>) -> Option<arc::Rar<ns::String>> {
     unsafe { NSHomeDirectoryForUser(user_name) }
 }
 
@@ -252,7 +252,7 @@ impl<T: Obj> ns::Array<T> {
     pub fn paths_matching_extensions_ar(
         &self,
         filter_types: &ns::Array<ns::String>,
-    ) -> &'ar ns::Array<ns::String>;
+    ) -> arc::Rar<ns::Array<ns::String>>;
 
     #[objc::rar_retain]
     pub fn paths_matching_extensions(
@@ -276,7 +276,7 @@ mod tests {
                 uname2.as_type_ref().as_type_ptr()
             );
         }
-        objc::autoreleasepool(|| {
+        objc::ar_pool(|| {
             let _user_name = ns::user_name();
         });
 

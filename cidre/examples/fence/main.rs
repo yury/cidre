@@ -1,7 +1,7 @@
-use cidre::{mtl, objc::autoreleasepool};
+use cidre::{mtl, objc::ar_pool};
 
 fn main() {
-    autoreleasepool(|| {
+    ar_pool(|| {
         let device = mtl::Device::default().unwrap();
 
         let cmd_queue = device.new_cmd_queue().unwrap();

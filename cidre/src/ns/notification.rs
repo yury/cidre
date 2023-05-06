@@ -86,7 +86,7 @@ impl NotificationCenter {
         object: Option<&ns::Id>,
         queue: Option<&ns::OperationQueue>,
         using_block: &'static mut blocks::Block<B>,
-    ) -> &'ar ns::Id
+    ) -> arc::Rar<ns::Id>
     where
         B: FnMut(&'bar ns::Notification);
 

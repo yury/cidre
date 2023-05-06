@@ -7,7 +7,7 @@ impl graph::Graph {
         primary: &graph::Tensor,
         secondary: &graph::Tensor,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn mat_mul(

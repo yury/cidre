@@ -27,7 +27,7 @@ impl graph::Graph {
         align_corners: bool,
         layout: graph::TensorNamedDataLayout,
         name: Option<&ns::String>,
-    ) -> &'ar graph::Tensor;
+    ) -> arc::Rar<graph::Tensor>;
 
     #[objc::rar_retain]
     pub fn resize(

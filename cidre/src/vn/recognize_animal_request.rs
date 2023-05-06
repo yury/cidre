@@ -46,7 +46,7 @@ impl RecognizeAnimalsRequest {
     pub unsafe fn supported_identifiers_err_ar(
         &self,
         error: &mut Option<&ns::Error>,
-    ) -> Option<&'ar ns::Array<AnimalIdentifier>>;
+    ) -> Option<arc::Rar<ns::Array<AnimalIdentifier>>>;
 
     #[objc::rar_retain]
     pub unsafe fn supported_identifiers_err(
