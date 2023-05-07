@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, mps::graph, ns, objc};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
@@ -100,6 +100,78 @@ impl GRUDDescriptor {
 
     #[objc::msg_send(setOutputGateActivation:)]
     pub fn set_output_gate_activation(&mut self, value: RNNActivation);
+}
+
+impl graph::Graph {
+    #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:inputWeight:bias:initState:mask:descriptor:name:)]
+    pub fn single_gate_rnn_bias_mask_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn_bias_mask(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:inputWeight:bias:initState:descriptor:name:)]
+    pub fn single_gate_rnn_bias_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn_bias(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:initState:descriptor:name:)]
+    pub fn single_gate_rnn_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
 }
 
 #[link(name = "mpsg", kind = "static")]
