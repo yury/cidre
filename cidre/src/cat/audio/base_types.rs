@@ -9,13 +9,33 @@ use crate::{at, define_options, ns, os};
 pub mod errors {
     use crate::os::Status;
 
-    pub const UNIMPLEMENTED_ERROR: Status = Status(-4);
-    pub const FILE_NOT_FOUND_ERROR: Status = Status(-43);
-    pub const FILE_PERMISSION_ERROR: Status = Status(-54);
-    pub const TOO_MANY_FILES_OPEN_ERROR: Status = Status(-42);
-    pub const BAD_FILE_PATH_ERROR: Status = Status(i32::from_be_bytes(*b"!pth"));
-    pub const PARAM_ERROR: Status = Status(-50);
-    pub const MEM_FULL_ERROR: Status = Status(-108);
+    /// Unimplemented core routine.
+    #[doc(alias = "kAudio_UnimplementedError")]
+    pub const UNIMPLEMENTED: Status = Status(-4);
+
+    /// File not found.
+    #[doc(alias = "kAudio_FileNotFoundError")]
+    pub const FILE_NOT_FOUND: Status = Status(-43);
+
+    /// File cannot be opened due to either file, directory, or sandbox permissions.
+    #[doc(alias = "kAudio_FilePermissionError")]
+    pub const FILE_PERMISSION: Status = Status(-54);
+
+    /// File cannot be opened because too many files are already open.
+    #[doc(alias = "kAudio_TooManyFilesOpenError")]
+    pub const TOO_MANY_FILES_OPEN: Status = Status(-42);
+
+    /// File cannot be opened because the specified path is malformed.
+    #[doc(alias = "kAudio_BadFilePathError")]
+    pub const BAD_FILE_PATH: Status = Status(i32::from_be_bytes(*b"!pth"));
+
+    /// Error in user parameter list.
+    #[doc(alias = "kAudio_ParamError")]
+    pub const PARAM: Status = Status(-50);
+
+    /// Not enough room in heap zone.
+    #[doc(alias = "kAudio_MemFullError")]
+    pub const MEM_FULL: Status = Status(-108);
 }
 
 /// This structure holds a pair of numbers that represent a continuous range of values.
