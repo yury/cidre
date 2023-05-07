@@ -42,6 +42,10 @@ mod matrix_multiplication_ops;
 mod normalization_ops;
 mod shape_ops;
 
+mod rnn_ops;
+pub use rnn_ops::RNNActivation;
+pub use rnn_ops::SingleGateRNNDescriptor;
+
 /// Options to be utilized by the graph
 #[doc(alias = "MPSGraphOptions")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
