@@ -2,6 +2,7 @@ use crate::{arc, define_obj_type, ns, objc};
 
 /// Describes the action an ns::Coder should take when it encounters decode failures (e.g. corrupt data)
 /// for non-TopLevel decodes.
+#[doc(alias = "NSDecodingFailurePolicy")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum DecodingFailurePolicy {

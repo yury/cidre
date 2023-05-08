@@ -15,7 +15,8 @@ Class MPS_GRAPH_DEVICE;
 Class MPS_GRAPH;
 Class MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR;
 Class MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR;
-Class MPS_GRAPH_GRUD_DESCRITPTOR;
+Class MPS_GRAPH_LSTM_DESCRIPTOR;
+Class MPS_GRAPH_GRU_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mpsg_initializer(void)
@@ -27,7 +28,8 @@ static void mpsg_initializer(void)
     MPS_GRAPH = [MPSGraph class];
     MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR = [MPSGraphConvolution2DOpDescriptor class];
     MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR = [MPSGraphSingleGateRNNDescriptor class];
-    MPS_GRAPH_GRUD_DESCRITPTOR = [MPSGraphGRUDescriptor class];
+    MPS_GRAPH_GRU_DESCRIPTOR = [MPSGraphGRUDescriptor class];
+    MPS_GRAPH_LSTM_DESCRIPTOR = [MPSGraphLSTMDescriptor class];
     
     initialized = 1;
   }

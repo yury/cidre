@@ -49,9 +49,71 @@ impl SingleGateRNNDescriptor {
     #[objc::msg_send(setActivation:)]
     pub fn set_activation(&mut self, value: RNNActivation);
 }
+define_obj_type!(LSTMDescriptor(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
+impl LSTMDescriptor {
+    #[objc::msg_send(reverse)]
+    pub fn reverse(&self) -> bool;
 
-define_obj_type!(GRUDDescriptor(ns::Id), MPS_GRAPH_GRUD_DESCRITPTOR);
-impl GRUDDescriptor {
+    #[objc::msg_send(setReverse:)]
+    pub fn set_reverse(&mut self, value: bool);
+
+    #[objc::msg_send(bidirectional)]
+    pub fn bidirectional(&self) -> bool;
+
+    #[objc::msg_send(setBidirectional:)]
+    pub fn set_bidirectional(&mut self, value: bool);
+
+    #[objc::msg_send(produceCell)]
+    pub fn produce_cell(&self) -> bool;
+
+    #[objc::msg_send(setProduceCell:)]
+    pub fn set_produce_cell(&mut self, value: bool);
+
+    #[objc::msg_send(training)]
+    pub fn training(&self) -> bool;
+
+    #[objc::msg_send(setTraining:)]
+    pub fn set_training(&mut self, value: bool);
+
+    #[objc::msg_send(forgetGateLast)]
+    pub fn forget_gate_last(&self) -> bool;
+
+    #[objc::msg_send(setForgetGateLast:)]
+    pub fn set_forget_gate_last(&mut self, value: bool);
+
+    #[objc::msg_send(inputGateActivation)]
+    pub fn input_gate_activation(&self) -> RNNActivation;
+
+    #[objc::msg_send(setInputGateActivation:)]
+    pub fn set_input_gate_activation(&mut self, value: RNNActivation);
+
+    #[objc::msg_send(forgetGateActivation)]
+    pub fn forget_gate_activation(&self) -> RNNActivation;
+
+    #[objc::msg_send(setForgetGateActivation:)]
+    pub fn set_forget_gate_activation(&mut self, value: RNNActivation);
+
+    #[objc::msg_send(cellGateActivation)]
+    pub fn cell_gate_activation(&self) -> RNNActivation;
+
+    #[objc::msg_send(setCellGateActivation:)]
+    pub fn set_cell_gate_activation(&mut self, value: RNNActivation);
+
+    #[objc::msg_send(outputGateActivation)]
+    pub fn output_gate_activation(&self) -> RNNActivation;
+
+    #[objc::msg_send(setOutputGateActivation:)]
+    pub fn set_output_gate_activation(&mut self, value: RNNActivation);
+
+    #[objc::msg_send(activation)]
+    pub fn activation(&self) -> RNNActivation;
+
+    #[objc::msg_send(setActivation:)]
+    pub fn set_activation(&mut self, value: RNNActivation);
+}
+
+define_obj_type!(GRUDescriptor(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
+impl GRUDescriptor {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;
 
@@ -172,12 +234,162 @@ impl graph::Graph {
         descriptor: &SingleGateRNNDescriptor,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
+        zState:stageGradient:inputWeight:bias:initState:mask:descriptor:name:)]
+    pub fn single_gate_rnn_grad_stage_mask_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        stage_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn_grad_stage_mask(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        stage_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
+        zState:inputWeight:bias:initState:mask:descriptor:name:)]
+    pub fn single_gate_rnn_grad_bias_mask_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn_grad_bias_mask(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
+        zState:inputWeight:bias:initState:descriptor:name:)]
+    pub fn single_gate_rnn_grad_bias_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn_grad_bias(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
+        zState:initState:descriptor:name:)]
+    pub fn single_gate_rnn_grad_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn single_gate_rnn_grad(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        init_state: Option<&graph::Tensor>,
+        descriptor: &SingleGateRNNDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:inputWeight:bias:initState:
+        initCell:mask:peephole:descriptor:name:)]
+    pub fn lstm_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        peephole: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn lstm(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        peephole: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
 }
 
 #[link(name = "mpsg", kind = "static")]
 extern "C" {
     static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRNNDescriptor>;
-    static MPS_GRAPH_GRUD_DESCRITPTOR: &'static objc::Class<GRUDDescriptor>;
+    static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LSTMDescriptor>;
+    static MPS_GRAPH_GRU_DESCRIPTOR: &'static objc::Class<GRUDescriptor>;
 }
 
 #[cfg(test)]
