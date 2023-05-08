@@ -269,7 +269,7 @@ pub struct Size {
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(C)]
 #[doc(alias = "MPSDimensionSlice")]
-pub struct DimentionSlice {
+pub struct DimensionSlice {
     /// The position of the first element in the slice
     pub start: usize,
 

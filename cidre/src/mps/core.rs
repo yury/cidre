@@ -2,7 +2,7 @@ mod types;
 
 pub use types::AliasingStrategy;
 pub use types::DataType;
-pub use types::DimentionSlice;
+pub use types::DimensionSlice;
 pub use types::ImageEdgeMode;
 pub use types::ImageFeatureChannelFormat;
 pub use types::KernelOptions;
@@ -13,3 +13,4 @@ pub use types::Size;
 
 mod nd_array;
 pub use nd_array::NDArray;
+pub use nd_array::NDArrayDescriptor;

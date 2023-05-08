@@ -3,7 +3,7 @@ pub mod graph;
 mod core;
 pub use self::core::AliasingStrategy;
 pub use self::core::DataType;
-pub use self::core::DimentionSlice;
+pub use self::core::DimensionSlice;
 pub use self::core::ImageEdgeMode;
 pub use self::core::ImageFeatureChannelFormat;
 pub use self::core::KernelOptions;
