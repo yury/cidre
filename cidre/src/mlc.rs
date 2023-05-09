@@ -17,6 +17,11 @@ pub use types::RegularizationType;
 pub use types::SampleMode;
 pub use types::SoftmaxOp;
 
+mod tensor_descriptor;
+pub use tensor_descriptor::TensorDescriptor;
+
+mod tensor;
+
 mod activation_descriptor;
 pub use activation_descriptor::ActivationDescriptor;
 
@@ -25,6 +30,9 @@ pub use activation_layer::ActivationLayer;
 
 mod arithmetic_layer;
 pub use arithmetic_layer::ArithmeticLayer;
+
+mod batch_normalization_layer;
+pub use batch_normalization_layer::BatchNormalizationLayer;
 
 mod optimizer_descriptor;
 pub use optimizer_descriptor::OptimizerDescriptor;

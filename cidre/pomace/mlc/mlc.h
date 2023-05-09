@@ -21,6 +21,8 @@ Class MLC_OPTIMIZER_DESCRIPTOR;
 Class MLC_ADAM_OPTIMIZER;
 Class MLC_ADAMW_OPTIMIZER;
 Class MLC_ARITHMETIC_LAYER;
+Class MLC_BATCH_NORMALIZATION_LAYER;
+Class MLC_TENSOR_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mlc_initializer(void)
@@ -37,6 +39,8 @@ static void mlc_initializer(void)
       MLC_ADAM_OPTIMIZER = [MLCAdamOptimizer class];
       MLC_ADAMW_OPTIMIZER = [MLCAdamWOptimizer class];
       MLC_ARITHMETIC_LAYER = [MLCArithmeticLayer class];
+      MLC_BATCH_NORMALIZATION_LAYER = [MLCBatchNormalizationLayer class];
+      MLC_TENSOR_DESCRIPTOR = [MLCTensorDescriptor class];
 
       initialized = 1;
     }

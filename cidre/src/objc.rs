@@ -211,6 +211,9 @@ macro_rules! define_cls_init {
     };
 }
 
+/// Use when:
+/// + (instancetype)new NS_UNAVAILABLE;
+/// - (instancetype)init NS_UNAVAILABLE;
 #[macro_export]
 macro_rules! define_cls {
     ($CLS:ident) => {
