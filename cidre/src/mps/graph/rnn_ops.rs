@@ -166,61 +166,14 @@ impl GRUDescriptor {
 
 impl graph::Graph {
     #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:inputWeight:bias:initState:mask:descriptor:name:)]
-    pub fn single_gate_rnn_bias_mask_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn single_gate_rnn_bias_mask(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:inputWeight:bias:initState:descriptor:name:)]
-    pub fn single_gate_rnn_bias_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn single_gate_rnn_bias(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:initState:descriptor:name:)]
     pub fn single_gate_rnn_ar(
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
         descriptor: &SingleGateRNNDescriptor,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
@@ -230,113 +183,27 @@ impl graph::Graph {
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
         descriptor: &SingleGateRNNDescriptor,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
     #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
         zState:stageGradient:inputWeight:bias:initState:mask:descriptor:name:)]
-    pub fn single_gate_rnn_grad_stage_mask_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        stage_gradient: Option<&graph::Tensor>,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn single_gate_rnn_grad_stage_mask(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        stage_gradient: Option<&graph::Tensor>,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
-        zState:inputWeight:bias:initState:mask:descriptor:name:)]
-    pub fn single_gate_rnn_grad_bias_mask_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn single_gate_rnn_grad_bias_mask(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
-        zState:inputWeight:bias:initState:descriptor:name:)]
-    pub fn single_gate_rnn_grad_bias_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn single_gate_rnn_grad_bias(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
-        zState:initState:descriptor:name:)]
     pub fn single_gate_rnn_grad_ar(
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
         source_gradient: &graph::Tensor,
         z_state: &graph::Tensor,
+        stage_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
         descriptor: &SingleGateRNNDescriptor,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
@@ -348,77 +215,27 @@ impl graph::Graph {
         recurrent_weight: &graph::Tensor,
         source_gradient: &graph::Tensor,
         z_state: &graph::Tensor,
+        stage_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
         descriptor: &SingleGateRNNDescriptor,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
     #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:inputWeight:bias:initState:
         initCell:mask:peephole:descriptor:name:)]
-    pub fn lstm_bias_mask_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        init_cell: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn lstm_bias_mask(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        init_cell: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:inputWeight:bias:initState:
-        initCell:descriptor:name:)]
-    pub fn lstm_bias_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        init_cell: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
-    pub fn lstm_bias(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        init_cell: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
-        name: Option<&ns::String>,
-    ) -> arc::R<ns::Array<graph::Tensor>>;
-
-    #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:initState:
-        initCell:descriptor:name:)]
     pub fn lstm_ar(
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         init_cell: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        peephole: Option<&graph::Tensor>,
         descriptor: &LSTMDescriptor,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
@@ -428,9 +245,128 @@ impl graph::Graph {
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         init_cell: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        peephole: Option<&graph::Tensor>,
         descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(
+        LSTMGradientsWithSourceTensor:recurrentWeight:
+        sourceGradient:zState:cellOutputFwd:stateGradient:
+        cellGradient:inputWeight:bias:initState:initCell:
+        mask:peephole:descriptor:name:)]
+    pub fn lstm_grad_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        cell_output_fwd: &graph::Tensor,
+        state_gradient: Option<&graph::Tensor>,
+        cell_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        peephole: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn lstm_grad(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        cell_output_fwd: &graph::Tensor,
+        state_gradient: Option<&graph::Tensor>,
+        cell_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        peephole: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(
+        GRUWithSourceTensor:recurrentWeight:inputWeight:
+        bias:initState:mask:secondaryBias:descriptor:name:
+    )]
+    pub fn gru_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        secondary_bias: Option<&graph::Tensor>,
+        descriptor: &GRUDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn gru(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        secondary_bias: Option<&graph::Tensor>,
+        descriptor: &GRUDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(
+        GRUGradientsWithSourceTensor:reccurentWeight:
+        sourceGradient:zState:outputFwd:stateGradient:inputWeight:
+        bias:initState:mask:secondaryBias:descriptor:name:
+    )]
+    pub fn gru_grad_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        output_fwd: &graph::Tensor,
+        state_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        secondary_bias: Option<&graph::Tensor>,
+        descriptor: &GRUDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn gru_grad(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        source_gradient: &graph::Tensor,
+        z_state: &graph::Tensor,
+        output_fwd: &graph::Tensor,
+        state_gradient: Option<&graph::Tensor>,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        mask: Option<&graph::Tensor>,
+        secondary_bias: Option<&graph::Tensor>,
+        descriptor: &GRUDescriptor,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 }
