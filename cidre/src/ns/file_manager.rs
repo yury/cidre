@@ -222,6 +222,75 @@ impl FileManager {
 
     #[objc::msg_send(isDeletableFileAtPath:)]
     pub fn is_deletable_file_at_path(&self, path: &ns::String) -> bool;
+
+    #[objc::msg_send(setUbiquitous:itemAtURL:destinationURL:error:)]
+    pub fn set_ubiquitous_item_err<'ar>(
+        &mut self,
+        value: bool,
+        item_at_url: &ns::URL,
+        dest_url: &ns::URL,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> bool;
+
+    #[inline]
+    pub fn set_ubiquitous_item<'ar>(
+        &mut self,
+        value: bool,
+        item_at_url: &ns::URL,
+        dest_url: &ns::URL,
+    ) -> Result<(), &'ar ns::Error> {
+        let mut error = None;
+        let res = self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error);
+        if res {
+            Ok(())
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
+        }
+    }
+
+    #[objc::msg_send(isUbiquitousItemAtURL:)]
+    pub fn is_ubiquitous_item(&self, item_at_url: &ns::URL) -> bool;
+
+    #[objc::msg_send(startDownloadingUbiquitousItemAtURL:error:)]
+    pub fn start_downloading_ubquitous_item_err<'ar>(
+        &mut self,
+        item_at_url: &ns::URL,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> bool;
+
+    pub fn start_downloading_ubquitous_item<'ar>(
+        &mut self,
+        item_at_url: &ns::URL,
+    ) -> Result<(), &'ar ns::Error> {
+        let mut error = None;
+        let res = self.start_downloading_ubquitous_item_err(item_at_url, &mut error);
+        if res {
+            Ok(())
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
+        }
+    }
+
+    #[objc::msg_send(evictUbiquitousItemAtURL:error:)]
+    pub fn evict_ubiquitous_item_err<'ar>(
+        &mut self,
+        item_at_url: &ns::URL,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> bool;
+
+    #[inline]
+    pub fn evict_ubiquitous_item<'ar>(
+        &mut self,
+        item_at_url: &ns::URL,
+    ) -> Result<(), &'ar ns::Error> {
+        let mut error = None;
+        let res = self.evict_ubiquitous_item_err(item_at_url, &mut error);
+        if res {
+            Ok(())
+        } else {
+            Err(unsafe { error.unwrap_unchecked() })
+        }
+    }
 }
 
 #[link(name = "ns", kind = "static")]
