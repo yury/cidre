@@ -1,9 +1,11 @@
 mod types;
 pub use types::ActivationType;
 pub use types::ArithmeticOp;
+pub use types::ComparisonOp;
 pub use types::ConvolutionType;
 pub use types::DataType;
 pub use types::DeviceType;
+pub use types::GradientClippingType;
 pub use types::LSTMResultMode;
 pub use types::LossType;
 pub use types::PaddingPolicy;

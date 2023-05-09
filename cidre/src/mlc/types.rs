@@ -1,4 +1,6 @@
-#[derive(Debug, Eq, PartialEq)]
+use crate::{arc, ns};
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum DataType {
     Invalid = 0,
@@ -25,7 +27,7 @@ pub enum DataType {
     U8 = 9,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum RandomInitializerType {
     Invalid = 0,
@@ -40,7 +42,7 @@ pub enum RandomInitializerType {
     Xavier = 3,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum DeviceType {
     /// The CPU device
@@ -62,7 +64,7 @@ pub enum DeviceType {
 }
 
 #[doc(alias = "MLCArithmeticOperation")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum ArithmeticOp {
     /// An operation that calculates the elementwise sum of its two inputs.
@@ -156,9 +158,16 @@ pub enum ArithmeticOp {
     Max = 29,
 }
 
+impl ArithmeticOp {
+    #[inline]
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCArithmeticOperationDebugDescription(self) }
+    }
+}
+
 /// A loss function.
 #[doc(alias = "MLCLossType")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum LossType {
     /// The mean absolute error loss.
@@ -189,9 +198,16 @@ pub enum LossType {
     Log = 8,
 }
 
+impl LossType {
+    #[inline]
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCLossTypeDebugDescription(self) }
+    }
+}
+
 /// An activation type that you specify for an activation descriptor.
 #[doc(alias = "MLCActivationType")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum ActivationType {
     None = 0,
@@ -336,7 +352,14 @@ pub enum ActivationType {
     Clamp = 20,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl ActivationType {
+    /// Returns a textual description of the arithmetic operation, suitable for debugging
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCActivationTypeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum ConvolutionType {
     /// The standard convolution type.
@@ -349,7 +372,13 @@ pub enum ConvolutionType {
     Depthwise = 2,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl ConvolutionType {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCConvolutionTypeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum PaddingPolicy {
     /// The "same" padding policy.
@@ -360,7 +389,14 @@ pub enum PaddingPolicy {
     UsePaddingSize = 2,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl PaddingPolicy {
+    #[inline]
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCPaddingPolicyDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum PaddingType {
     /// The zero padding type.
@@ -373,7 +409,13 @@ pub enum PaddingType {
     Constant = 3,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl PaddingType {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCPaddingTypeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum PoolingType {
     /// The max pooling type.
@@ -384,7 +426,13 @@ pub enum PoolingType {
     L2Norm = 3,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl PoolingType {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCPoolingTypeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum ReductionType {
     /// No reduction.
@@ -409,7 +457,14 @@ pub enum ReductionType {
     All = 9,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl ReductionType {
+    #[inline]
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCReductionTypeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum RegularizationType {
     /// No regularization.
@@ -422,7 +477,7 @@ pub enum RegularizationType {
     L2 = 2,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum SampleMode {
     /// The nearest sample mode.
@@ -431,7 +486,13 @@ pub enum SampleMode {
     Linear = 1,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl SampleMode {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCSampleModeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum SoftmaxOp {
     /// The standard softmax operation.
@@ -440,7 +501,14 @@ pub enum SoftmaxOp {
     LogSoftmax = 1,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl SoftmaxOp {
+    #[inline]
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCSoftmaxOperationDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum LSTMResultMode {
     /// The output result mode. When selected for an LSTM layer, the layer will produce a single result tensor representing the final output of the LSTM.
@@ -448,4 +516,80 @@ pub enum LSTMResultMode {
     /// The output and states result mode. When selected for an LSTM layer, the layer will produce three result tensors representing the final output of
     ///  the LSTM, the last hidden state, and the cell state, respectively.
     OutputAndStates = 1,
+}
+
+impl LSTMResultMode {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCLSTMResultModeDebugDescription(self) }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(usize)]
+pub enum ComparisonOp {
+    Equal = 0,
+    NotEqual = 1,
+    Less = 2,
+    Greater = 3,
+    LessOrEqual = 4,
+    GreaterOrEqual = 5,
+    LogicalAND = 6,
+    LogicalOR = 7,
+    LogicalNOT = 8,
+    LogicalNAND = 9,
+    LogicalNOR = 10,
+    LogicalXOR = 11,
+}
+
+impl ComparisonOp {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCComparisonOperationDebugDescription(self) }
+    }
+}
+
+/// The type of clipping applied to gradient
+#[doc(alias = "MLCGradientClippingType")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(usize)]
+pub enum GradientClippingType {
+    ByValue = 0,
+    ByNorm = 1,
+    ByGlobalNorm = 2,
+}
+
+impl GradientClippingType {
+    pub fn debug_description(self) -> &'static ns::String {
+        unsafe { MLCGradientClippingTypeDebugDescription(self) }
+    }
+}
+
+#[link(name = "MLCompute", kind = "framework")]
+extern "C" {
+    fn MLCActivationTypeDebugDescription(activationType: ActivationType) -> &'static ns::String;
+    fn MLCArithmeticOperationDebugDescription(op: ArithmeticOp) -> &'static ns::String;
+    fn MLCPaddingPolicyDebugDescription(policy: PaddingPolicy) -> &'static ns::String;
+    fn MLCLossTypeDebugDescription(loss_type: LossType) -> &'static ns::String;
+    fn MLCReductionTypeDebugDescription(reduction_type: ReductionType) -> &'static ns::String;
+    fn MLCPaddingTypeDebugDescription(padding_type: PaddingType) -> &'static ns::String;
+    fn MLCConvolutionTypeDebugDescription(convolution_type: ConvolutionType)
+        -> &'static ns::String;
+    fn MLCPoolingTypeDebugDescription(pooling_type: PoolingType) -> &'static ns::String;
+    fn MLCSoftmaxOperationDebugDescription(operation: SoftmaxOp) -> &'static ns::String;
+    fn MLCSampleModeDebugDescription(mode: SampleMode) -> &'static ns::String;
+    fn MLCLSTMResultModeDebugDescription(mode: LSTMResultMode) -> &'static ns::String;
+    fn MLCComparisonOperationDebugDescription(operation: ComparisonOp) -> &'static ns::String;
+    fn MLCGradientClippingTypeDebugDescription(
+        gradient_clipping_type: GradientClippingType,
+    ) -> &'static ns::String;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mlc;
+
+    #[test]
+    fn basics() {
+        let desc = mlc::ActivationType::ReLU.debug_description();
+        assert_eq!(desc.to_string(), "ReLU")
+    }
 }
