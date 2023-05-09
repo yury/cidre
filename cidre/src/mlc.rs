@@ -23,6 +23,9 @@ pub use activation_descriptor::ActivationDescriptor;
 mod activation_layer;
 pub use activation_layer::ActivationLayer;
 
+mod optimizer;
+pub use optimizer::Optimizer;
+
 mod layer;
 pub use layer::Layer;
 
