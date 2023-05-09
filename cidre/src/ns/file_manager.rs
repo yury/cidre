@@ -121,14 +121,14 @@ impl FileManager {
         create: bool,
     ) -> Result<arc::R<ns::URL>, Option<&'ear ns::Error>> {
         let mut error = None;
-        let res = self.url_for_dir_err(
+        let url = self.url_for_dir_err(
             directory,
             in_domain,
             appropriate_for_url,
             create,
             &mut error,
         );
-        if let Some(url) = res {
+        if let Some(url) = url {
             return Ok(url);
         }
         Err(error)
@@ -150,8 +150,7 @@ impl FileManager {
         attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        let res = self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error);
-        if res {
+        if self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error) {
             Ok(())
         } else {
             Err(unsafe { error.unwrap_unchecked() })
@@ -209,7 +208,7 @@ impl FileManager {
     pub fn file_exists_at_path(&self, path: &ns::String) -> bool;
 
     #[objc::msg_send(fileExistsAtPath:isDirectory:)]
-    pub fn file_exists_at_path_is_dir(&self, path: &ns::String, is_dir: *mut bool) -> bool;
+    pub fn file_exists_at_path_is_dir(&self, path: &ns::String, is_dir: &mut bool) -> bool;
 
     #[objc::msg_send(isReadableFileAtPath:)]
     pub fn is_readable_file_at_path(&self, path: &ns::String) -> bool;
@@ -240,8 +239,7 @@ impl FileManager {
         dest_url: &ns::URL,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        let res = self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error);
-        if res {
+        if self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error) {
             Ok(())
         } else {
             Err(unsafe { error.unwrap_unchecked() })
@@ -263,8 +261,7 @@ impl FileManager {
         item_at_url: &ns::URL,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        let res = self.start_downloading_ubquitous_item_err(item_at_url, &mut error);
-        if res {
+        if self.start_downloading_ubquitous_item_err(item_at_url, &mut error) {
             Ok(())
         } else {
             Err(unsafe { error.unwrap_unchecked() })
@@ -284,8 +281,7 @@ impl FileManager {
         item_at_url: &ns::URL,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        let res = self.evict_ubiquitous_item_err(item_at_url, &mut error);
-        if res {
+        if self.evict_ubiquitous_item_err(item_at_url, &mut error) {
             Ok(())
         } else {
             Err(unsafe { error.unwrap_unchecked() })
