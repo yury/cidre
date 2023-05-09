@@ -15,6 +15,9 @@
 		D2520D01280BFC4A00FD6562 /* sc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2520CFE280BFC4A00FD6562 /* sc.h */; };
 		D264D2A228F7E7CF002B1B14 /* vn.m in Sources */ = {isa = PBXBuildFile; fileRef = D264D2A128F7E7CF002B1B14 /* vn.m */; };
 		D264D2A328F7E7CF002B1B14 /* vn.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D264D2A028F7E7CF002B1B14 /* vn.h */; };
+		D27864E62A0A29F400E64871 /* mlc.m in Sources */ = {isa = PBXBuildFile; fileRef = D27864E52A0A29F400E64871 /* mlc.m */; };
+		D27864E72A0A29F400E64871 /* mlc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D27864E42A0A29F400E64871 /* mlc.h */; };
+		D27864ED2A0A2BBC00E64871 /* MLCompute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27864EB2A0A2A8600E64871 /* MLCompute.framework */; };
 		D2A5293D283A1F5800E7B4C6 /* ca.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A5293C283A1F5800E7B4C6 /* ca.m */; };
 		D2A5293E283A1F5800E7B4C6 /* ca.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2A5293B283A1F5800E7B4C6 /* ca.h */; };
 		D2A5294A283A1F6A00E7B4C6 /* ci.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A52949283A1F6A00E7B4C6 /* ci.m */; };
@@ -69,6 +72,16 @@
 			dstSubfolderSpec = 16;
 			files = (
 				D264D2A328F7E7CF002B1B14 /* vn.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D27864E02A0A29F400E64871 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D27864E72A0A29F400E64871 /* mlc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,6 +175,10 @@
 		D264D29E28F7E7CF002B1B14 /* libvn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libvn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D264D2A028F7E7CF002B1B14 /* vn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vn.h; sourceTree = "<group>"; };
 		D264D2A128F7E7CF002B1B14 /* vn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = vn.m; sourceTree = "<group>"; };
+		D27864E22A0A29F400E64871 /* libmlc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmlc.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D27864E42A0A29F400E64871 /* mlc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mlc.h; sourceTree = "<group>"; };
+		D27864E52A0A29F400E64871 /* mlc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mlc.m; sourceTree = "<group>"; };
+		D27864EB2A0A2A8600E64871 /* MLCompute.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MLCompute.framework; path = System/Library/Frameworks/MLCompute.framework; sourceTree = SDKROOT; };
 		D2A52939283A1F5800E7B4C6 /* libca.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libca.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A5293B283A1F5800E7B4C6 /* ca.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ca.h; sourceTree = "<group>"; };
 		D2A5293C283A1F5800E7B4C6 /* ca.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ca.m; sourceTree = "<group>"; };
@@ -212,6 +229,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D27864DF2A0A29F400E64871 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D27864ED2A0A2BBC00E64871 /* MLCompute.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +328,15 @@
 			path = vn;
 			sourceTree = "<group>";
 		};
+		D27864E32A0A29F400E64871 /* mlc */ = {
+			isa = PBXGroup;
+			children = (
+				D27864E42A0A29F400E64871 /* mlc.h */,
+				D27864E52A0A29F400E64871 /* mlc.m */,
+			);
+			path = mlc;
+			sourceTree = "<group>";
+		};
 		D2A5293A283A1F5800E7B4C6 /* ca */ = {
 			isa = PBXGroup;
 			children = (
@@ -324,6 +358,7 @@
 		D2A5294F283A26B800E7B4C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D27864EB2A0A2A8600E64871 /* MLCompute.framework */,
 				D237F0B329327506005B7880 /* libsystem_blocks.tbd */,
 				D237F0B1293274EF005B7880 /* CoreFoundation.framework */,
 				D237F0AF293274C3005B7880 /* libSystem.B.tbd */,
@@ -384,6 +419,7 @@
 				D2DC5D23295870DB007E2B9D /* sn */,
 				D2DC5D35295B5064007E2B9D /* mps */,
 				D2DC5D42295B506F007E2B9D /* mpsg */,
+				D27864E32A0A29F400E64871 /* mlc */,
 				D2FBEBF827CB653200FD974A /* Products */,
 				D2A5294F283A26B800E7B4C6 /* Frameworks */,
 			);
@@ -403,6 +439,7 @@
 				D2DC5D22295870DB007E2B9D /* libsn.a */,
 				D2DC5D34295B5064007E2B9D /* libmps.a */,
 				D2DC5D41295B506F007E2B9D /* libmpsg.a */,
+				D27864E22A0A29F400E64871 /* libmlc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -485,6 +522,23 @@
 			name = vn;
 			productName = vn;
 			productReference = D264D29E28F7E7CF002B1B14 /* libvn.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		D27864E12A0A29F400E64871 /* mlc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D27864E82A0A29F400E64871 /* Build configuration list for PBXNativeTarget "mlc" */;
+			buildPhases = (
+				D27864DE2A0A29F400E64871 /* Sources */,
+				D27864DF2A0A29F400E64871 /* Frameworks */,
+				D27864E02A0A29F400E64871 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mlc;
+			productName = mlc;
+			productReference = D27864E22A0A29F400E64871 /* libmlc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2A52938283A1F5800E7B4C6 /* ca */ = {
@@ -627,6 +681,9 @@
 					D264D29D28F7E7CF002B1B14 = {
 						CreatedOnToolsVersion = 14.1;
 					};
+					D27864E12A0A29F400E64871 = {
+						CreatedOnToolsVersion = 14.3;
+					};
 					D2A52938283A1F5800E7B4C6 = {
 						CreatedOnToolsVersion = 13.4;
 					};
@@ -674,6 +731,7 @@
 				D2DC5D21295870DB007E2B9D /* sn */,
 				D2DC5D33295B5064007E2B9D /* mps */,
 				D2DC5D40295B506F007E2B9D /* mpsg */,
+				D27864E12A0A29F400E64871 /* mlc */,
 			);
 		};
 /* End PBXProject section */
@@ -708,6 +766,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D264D2A228F7E7CF002B1B14 /* vn.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D27864DE2A0A29F400E64871 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D27864E62A0A29F400E64871 /* mlc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -874,6 +940,34 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FD6ZML48V9;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D27864E92A0A29F400E64871 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D27864EA2A0A29F400E64871 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -1223,6 +1317,15 @@
 			buildConfigurations = (
 				D264D2A528F7E7CF002B1B14 /* Debug */,
 				D264D2A628F7E7CF002B1B14 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D27864E82A0A29F400E64871 /* Build configuration list for PBXNativeTarget "mlc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D27864E92A0A29F400E64871 /* Debug */,
+				D27864EA2A0A29F400E64871 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -55,6 +55,10 @@ pub mod mach;
 #[cfg(feature = "mtl")]
 pub mod mtl;
 
+/// MLCompute
+#[cfg(feature = "mlc")]
+pub mod mlc;
+
 /// Metal Performance Shaders
 pub mod mps;
 

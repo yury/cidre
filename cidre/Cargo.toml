@@ -26,6 +26,7 @@ full = [
   "vt",
   "sc",
   "mtl",
+  "mlc",
 ]
 
 # Turn on private API
@@ -46,6 +47,7 @@ ns = []
 sc = ["ns"]
 vt = ["cf"]
 mtl = ["ns"]
+mlc = ["mtl"]
 
 [dependencies]
 

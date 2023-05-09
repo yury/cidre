@@ -103,6 +103,7 @@ fn main() {
     xc_feature_build("ci", sdk, arch, configuration);
     xc_feature_build("av", sdk, arch, configuration);
     xc_feature_build("ca", sdk, arch, configuration);
+    xc_feature_build("mlc", sdk, arch, configuration);
 
     if sdk.eq("iphoneos") || sdk.eq("maccatalyst") {
         xc_build("ui", sdk, arch, configuration);
