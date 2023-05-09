@@ -1,4 +1,4 @@
-use crate::{arc, ns};
+use crate::ns;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
@@ -215,74 +215,96 @@ pub enum ActivationType {
     /// The ReLU activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = x >= 0 ? x : a * x`
+    /// ```pseudo
+    /// f(x) = x >= 0 ? x : a * x`
+    /// ```
     ReLU = 1,
 
     /// The linear activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = a * x + b`
+    /// ```pseudo
+    /// f(x) = a * x + b
+    /// ```
     Linear = 2,
 
     /// The sigmoid activation type.
     /// This activation type implements the following function:
-    /// `f(x) = 1 / (1 + e⁻ˣ)`
+    /// ```pseudo
+    /// f(x) = 1 / (1 + e⁻ˣ)
+    /// ```
     Sigmoid = 3,
 
     /// The hard sigmoid activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = clamp((x * a) + b, 0, 1)`
+    /// ```pseudo
+    /// f(x) = clamp((x * a) + b, 0, 1)
+    /// ```
     HardSigmoid = 4,
 
     /// The hyperbolic tangent (TanH) activation type.
     /// This activation type implements the following function:
-    /// `f(x) = a * tanh(b * x)`
+    /// ```pseudo
+    /// f(x) = a * tanh(b * x)
+    /// ```
     TanH = 5,
 
     /// The absolute activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = fabs(x)`
+    /// ```pseudo
+    /// f(x) = fabs(x)
+    /// ```
     Absolute = 6,
 
     /// The parametric soft plus activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = a * log(1 + e^(b * x))`
+    /// ```pseudo
+    /// f(x) = a * log(1 + e^(b * x))
+    /// ```
     SoftPlus = 7,
 
     /// The parametric soft sign activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = x / (1 + abs(x))`
+    /// ```pseudo
+    /// f(x) = x / (1 + abs(x))
+    /// ```
     SoftSign = 8,
 
     /// The parametric ELU activation type.
     /// This activation type implements the following function:
-    /// `f(x) = x >= 0 ? x : a * (exp(x) - 1)`
+    /// ```pseudo
+    /// f(x) = x >= 0 ? x : a * (exp(x) - 1)
+    /// ```
     ELU = 9,
 
     /// The ReLUN activation type.
     ///
     /// This activation type implements the following function:
-    /// `f(x) = min((x >= 0 ? x : a * x), b)`
+    /// ```pseudo
+    /// f(x) = min((x >= 0 ? x : a * x), b)
+    /// ```
     ReLUN = 10,
 
     /// The log sigmoid activation type.
     ///
     /// This activation type implements the following function:
-    ///  `f(x) = log(1 / (1 + exp(-x)))`
+    /// ```pseudo
+    /// f(x) = log(1 / (1 + exp(-x)))
+    /// ```
     LogSigmoid = 11,
 
     /// The SELU activation type.
     ///
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = scale * (max(0, x) + min(0, α * (exp(x) − 1)))
     /// ```
     /// where:
-    /// ```
+    /// ```pseudo
     /// α = 1.6732632423543772848170429916717
     /// scale = 1.0507009873554804934193349852946
     /// ```
@@ -291,7 +313,7 @@ pub enum ActivationType {
     /// The CELU activation type.
     ///
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = max(0, x) + min(0, a * (exp(x / a) − 1))
     /// ```
     CELU = 13,
@@ -299,7 +321,7 @@ pub enum ActivationType {
     /// The hard shrink activation type.
     ///
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = x, if x > a or x < −a, else 0
     /// ```
     HardShrink = 14,
@@ -307,14 +329,14 @@ pub enum ActivationType {
     /// The soft shrink activation type.
     ///
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = x - a, if x > a, x + a, if x < −a, else 0
     /// ```
     SoftShrink = 15,
 
     /// The hyperbolic tangent (TanH) shrink activation type.
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = x - tanh(x)
     /// ```
     TanHShrink = 16,
@@ -322,14 +344,14 @@ pub enum ActivationType {
     /// The threshold activation type.
     ///
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     ///  f(x) = x, if x > a, else b
     /// ```
     Threshold = 17,
 
     /// The GELU activation type.
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = x * CDF(x)
     /// ```
     GELU = 18,
@@ -337,7 +359,7 @@ pub enum ActivationType {
     /// The hardswish activation type.
     ///
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     /// f(x) = 0, if x <= -3
     /// f(x) = x, if x >= +3
     /// f(x) = x * (x + 3)/6, otherwise
@@ -346,7 +368,7 @@ pub enum ActivationType {
 
     /// The clamp activation type.
     /// This activation type implements the following function:
-    /// ```
+    /// ```pseudo
     ///  f(x) = min(max(x, a), b)
     /// ```
     Clamp = 20,

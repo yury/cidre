@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc};
+use crate::{define_obj_type, mlc, ns, objc};
 
 define_obj_type!(Optimizer(ns::Id));
 
@@ -32,7 +32,7 @@ impl Optimizer {
     pub fn regularization_scale(&self) -> f32;
 
     #[objc::msg_send(gradientClippingType)]
-    pub fn grad_clipping_type(&self) -> mlc::GradClippingType;
+    pub fn grad_clipping_type(&self) -> mlc::GradientClippingType;
 
     #[objc::msg_send(maximumClippingNorm)]
     pub fn max_clipping_norm(&self) -> f32;
