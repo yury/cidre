@@ -355,7 +355,7 @@ impl graph::Graph {
 
     #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:inputWeight:bias:initState:
         initCell:mask:peephole:descriptor:name:)]
-    pub fn lstm_ar(
+    pub fn lstm_bias_mask_ar(
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
@@ -370,7 +370,7 @@ impl graph::Graph {
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
     #[objc::rar_retain]
-    pub fn lstm(
+    pub fn lstm_bias_mask(
         &self,
         source: &graph::Tensor,
         recurrent_weight: &graph::Tensor,
@@ -380,6 +380,56 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:inputWeight:bias:initState:
+        initCell:descriptor:name:)]
+    pub fn lstm_bias_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn lstm_bias(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        input_weight: Option<&graph::Tensor>,
+        bias: Option<&graph::Tensor>,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::R<ns::Array<graph::Tensor>>;
+
+    #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:initState:
+        initCell:descriptor:name:)]
+    pub fn lstm_ar(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
+        descriptor: &LSTMDescriptor,
+        name: Option<&ns::String>,
+    ) -> arc::Rar<ns::Array<graph::Tensor>>;
+
+    #[objc::rar_retain]
+    pub fn lstm(
+        &self,
+        source: &graph::Tensor,
+        recurrent_weight: &graph::Tensor,
+        init_state: Option<&graph::Tensor>,
+        init_cell: Option<&graph::Tensor>,
         descriptor: &LSTMDescriptor,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
