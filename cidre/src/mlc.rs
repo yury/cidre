@@ -23,6 +23,9 @@ pub use activation_descriptor::ActivationDescriptor;
 mod activation_layer;
 pub use activation_layer::ActivationLayer;
 
+mod arithmetic_layer;
+pub use arithmetic_layer::ArithmeticLayer;
+
 mod optimizer_descriptor;
 pub use optimizer_descriptor::OptimizerDescriptor;
 
@@ -31,6 +34,9 @@ pub use optimizer::Optimizer;
 
 mod adam_optimizer;
 pub use adam_optimizer::AdamOptimizer;
+
+mod adamw_optimizer;
+pub use adamw_optimizer::AdamWOptimizer;
 
 mod layer;
 pub use layer::Layer;

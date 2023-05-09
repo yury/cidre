@@ -19,6 +19,8 @@ Class MLC_ACTIVATION_DESCRIPTOR;
 Class MLC_ACTIVATION_LAYER;
 Class MLC_OPTIMIZER_DESCRIPTOR;
 Class MLC_ADAM_OPTIMIZER;
+Class MLC_ADAMW_OPTIMIZER;
+Class MLC_ARITHMETIC_LAYER;
 
 __attribute__((constructor))
 static void mlc_initializer(void)
@@ -33,6 +35,8 @@ static void mlc_initializer(void)
       MLC_ACTIVATION_LAYER = [MLCActivationLayer class];
       MLC_OPTIMIZER_DESCRIPTOR = [MLCOptimizerDescriptor class];
       MLC_ADAM_OPTIMIZER = [MLCAdamOptimizer class];
+      MLC_ADAMW_OPTIMIZER = [MLCAdamWOptimizer class];
+      MLC_ARITHMETIC_LAYER = [MLCArithmeticLayer class];
 
       initialized = 1;
     }
