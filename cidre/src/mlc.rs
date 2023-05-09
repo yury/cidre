@@ -20,5 +20,11 @@ pub use types::SoftmaxOp;
 mod activation_descriptor;
 pub use activation_descriptor::ActivationDescriptor;
 
+mod activation_layer;
+pub use activation_layer::ActivationLayer;
+
+mod layer;
+pub use layer::Layer;
+
 mod device;
 pub use device::Device;
