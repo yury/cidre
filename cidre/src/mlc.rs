@@ -17,5 +17,8 @@ pub use types::RegularizationType;
 pub use types::SampleMode;
 pub use types::SoftmaxOp;
 
+mod activation_descriptor;
+pub use activation_descriptor::ActivationDescriptor;
+
 mod device;
 pub use device::Device;

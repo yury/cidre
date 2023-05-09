@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class MLC_DEVICE;
 Class MLC_GRAPH;
+Class MLC_ACTIVATION_DESCRIPTOR;
 
 __attribute__((constructor))
 static void mlc_initializer(void)
@@ -23,6 +24,7 @@ static void mlc_initializer(void)
       
       MLC_DEVICE = [MLCDevice class];
       MLC_GRAPH = [MLCGraph class];
+      MLC_ACTIVATION_DESCRIPTOR = [MLCActivationDescriptor class];
 
       initialized = 1;
     }
