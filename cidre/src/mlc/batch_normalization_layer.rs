@@ -9,8 +9,14 @@ impl BatchNormalizationLayer {
     #[objc::msg_send(featureChannelCount)]
     pub fn feature_channel_count(&self) -> usize;
 
-    // @property (readonly, nonatomic, retain) MLCTensor *mean;c
-    // pub fn mean(&self) -> &mlc::Tensor;
+    #[objc::msg_send(mean)]
+    pub fn mean(&self) -> &mlc::Tensor;
+
+    #[objc::msg_send(beta)]
+    pub fn beta(&self) -> Option<&mlc::Tensor>;
+
+    #[objc::msg_send(gamma)]
+    pub fn gamma(&self) -> Option<&mlc::Tensor>;
 }
 
 extern "C" {

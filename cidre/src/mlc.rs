@@ -26,6 +26,9 @@ pub use tensor::Tensor;
 mod activation_descriptor;
 pub use activation_descriptor::ActivationDescriptor;
 
+mod layer;
+pub use layer::Layer;
+
 mod activation_layer;
 pub use activation_layer::ActivationLayer;
 
@@ -46,9 +49,6 @@ pub use adam_optimizer::AdamOptimizer;
 
 mod adamw_optimizer;
 pub use adamw_optimizer::AdamWOptimizer;
-
-mod layer;
-pub use layer::Layer;
 
 mod device;
 pub use device::Device;
