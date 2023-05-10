@@ -21,6 +21,7 @@ mod tensor_descriptor;
 pub use tensor_descriptor::TensorDescriptor;
 
 mod tensor;
+pub use tensor::Tensor;
 
 mod activation_descriptor;
 pub use activation_descriptor::ActivationDescriptor;
