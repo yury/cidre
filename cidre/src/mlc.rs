@@ -20,6 +20,12 @@ pub use types::SoftmaxOp;
 mod tensor_descriptor;
 pub use tensor_descriptor::TensorDescriptor;
 
+mod tensor_data;
+pub use tensor_data::TensorData;
+
+mod tensor_parameter;
+pub use tensor_parameter::TensorParameter;
+
 mod tensor;
 pub use tensor::Tensor;
 
