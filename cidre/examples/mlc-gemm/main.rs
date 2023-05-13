@@ -46,8 +46,7 @@ fn main() {
         let r = r.unwrap();
 
         let mut buf_o = vec![0.0f32; 4];
-        r.copy_data_from_device_memory_to_buf(&mut buf_o, true)
-            .unwrap();
+        r.copy_from_device_mem_to_buf(&mut buf_o, true).unwrap();
         println!("output {buf_o:?}, {time}");
         assert_eq!(buf_o, [8.0f32, 11.0f32, 16.0f32, 23.0f32]);
     });

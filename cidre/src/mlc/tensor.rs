@@ -39,7 +39,7 @@ impl Tensor {
     }
 
     #[objc::msg_send(copyDataFromDeviceMemoryToBytes:length:synchronizeWithDevice:)]
-    pub fn copy_data_from_device_memory_to_bytes(
+    pub fn copy_from_device_mem_to_bytes(
         &self,
         buf: *mut u8,
         length: usize,
@@ -47,12 +47,12 @@ impl Tensor {
     ) -> bool;
 
     #[inline]
-    pub fn copy_data_from_device_memory_to_buf<T: Sized>(
+    pub fn copy_from_device_mem_to_buf<T: Sized>(
         &self,
         buf: &mut [T],
         sync_with_device: bool,
     ) -> Result<(), ()> {
-        if self.copy_data_from_device_memory_to_bytes(
+        if self.copy_from_device_mem_to_bytes(
             buf.as_mut_ptr() as _,
             buf.len() * std::mem::size_of::<T>(),
             sync_with_device,
