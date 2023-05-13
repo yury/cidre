@@ -56,7 +56,7 @@ impl InferenceGraph {
     }
 
     #[objc::msg_send(executeWithInputsData:batchSize:options:completionHandler:)]
-    pub fn execute_with_inputs_data_batch_size_options<'ar, F>(
+    pub fn execute<'ar, F>(
         &self,
         input_data: &ns::Dictionary<ns::String, mlc::TensorData>,
         batch_size: usize,

@@ -51,9 +51,8 @@ fn main() {
         assert_eq!(buf_o, [8.0f32, 11.0f32, 16.0f32, 23.0f32]);
     });
 
-    let inputs_data = ns::Dictionary::with_keys_values(&keys, &values);
-    plan.execute_with_inputs_data_batch_size_options(
-        &inputs_data,
+    plan.execute(
+        &ns::Dictionary::with_keys_values(&keys, &values),
         0,
         Default::default(),
         Some(completion_handler.escape()),
