@@ -126,10 +126,182 @@ impl<T: Obj> ArrayMut<T> {
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe { Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len()) }
     }
+    #[objc::msg_send(addObject:)]
+    pub fn push(&mut self, obj: &T);
+
+    #[objc::msg_send(removeLastObject)]
+    pub fn remove_last(&mut self);
+
+    #[objc::msg_send(removeObjectAtIndex:)]
+    pub fn remove(&mut self, index: usize);
+
+    #[objc::msg_send(insertObject:atIndex:)]
+    pub fn insert_obj(&mut self, obj: &T, at_index: usize);
+
+    #[inline]
+    pub fn insert(&mut self, index: usize, element: &T) {
+        self.insert_obj(element, index)
+    }
+}
+
+impl<T: Obj> arc::R<ArrayMut<T>> {
+    pub fn freeze(self) -> arc::R<Array<T>> {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}
 impl<T: Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
+
+impl From<&[&str]> for arc::R<ns::Array<ns::String>> {
+    fn from(value: &[&str]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::String::with_str(*v));
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+    }
+}
+
+impl From<&[i8]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[i8]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::tagged_i8(*v));
+        }
+        ns::Array::from_slice(&values)
+    }
+}
+
+impl From<&[u8]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[u8]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::tagged_u8(*v));
+        }
+        ns::Array::from_slice(&values)
+    }
+}
+
+impl From<&[i16]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[i16]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::tagged_i16(*v));
+        }
+        ns::Array::from_slice(&values)
+    }
+}
+
+impl From<&[u16]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[u16]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::tagged_u16(*v));
+        }
+        ns::Array::from_slice(&values)
+    }
+}
+
+impl From<&[i32]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[i32]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::tagged_i32(*v));
+        }
+        ns::Array::from_slice(&values)
+    }
+}
+
+impl From<&[u32]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[u32]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::tagged_u32(*v));
+        }
+        ns::Array::from_slice(&values)
+    }
+}
+
+impl From<&[i64]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[i64]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::with_i64(*v));
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+    }
+}
+
+impl From<&[u64]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[u64]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::with_u64(*v));
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+    }
+}
+
+impl<const N: usize> From<[i8; N]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: [i8; N]) -> Self {
+        let mut vals = [std::ptr::null(); N];
+        for (i, v) in value.iter().enumerate() {
+            vals[i] = ns::Number::tagged_i8(*v);
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
+    }
+}
+
+impl<const N: usize> From<[u8; N]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: [u8; N]) -> Self {
+        let mut vals = [std::ptr::null(); N];
+        for (i, v) in value.iter().enumerate() {
+            vals[i] = ns::Number::tagged_u8(*v);
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
+    }
+}
+
+impl<const N: usize> From<[i16; N]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: [i16; N]) -> Self {
+        let mut vals = [std::ptr::null(); N];
+        for (i, v) in value.iter().enumerate() {
+            vals[i] = ns::Number::tagged_i16(*v);
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
+    }
+}
+
+impl<const N: usize> From<[u16; N]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: [u16; N]) -> Self {
+        let mut vals = [std::ptr::null(); N];
+        for (i, v) in value.iter().enumerate() {
+            vals[i] = ns::Number::tagged_u16(*v);
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
+    }
+}
+
+impl<const N: usize> From<[i32; N]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: [i32; N]) -> Self {
+        let mut vals = [std::ptr::null(); N];
+        for (i, v) in value.iter().enumerate() {
+            vals[i] = ns::Number::tagged_i32(*v);
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
+    }
+}
+
+impl<const N: usize> From<[u32; N]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: [u32; N]) -> Self {
+        let mut vals = [std::ptr::null(); N];
+        for (i, v) in value.iter().enumerate() {
+            vals[i] = ns::Number::tagged_u32(*v);
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
+    }
+}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

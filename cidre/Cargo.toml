@@ -74,6 +74,10 @@ harness = false
 name = "alloc"
 harness = false
 
+[[bench]]
+name = "ns_array_from"
+harness = false
+
 [[example]]
 name = "device_list"
 required-features = ["am"]

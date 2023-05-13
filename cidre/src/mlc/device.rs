@@ -1,9 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, mlc, mtl, ns, objc};
 
-define_obj_type!(Device(ns::Id));
+define_obj_type!(Device(ns::Id), MLC_DEVICE);
 impl Device {
-    define_cls!(MLC_DEVICE);
-
     #[objc::cls_msg_send(aneDevice)]
     pub fn ane_ar() -> Option<arc::Rar<Device>>;
 

@@ -5,7 +5,9 @@ pub use types::ComparisonOp;
 pub use types::ConvolutionType;
 pub use types::DataType;
 pub use types::DeviceType;
+pub use types::ExecutionOptions;
 pub use types::GradientClippingType;
+pub use types::GraphCompilationOptions;
 pub use types::LSTMResultMode;
 pub use types::LossType;
 pub use types::PaddingPolicy;
@@ -61,6 +63,9 @@ pub use device::Device;
 
 mod graph;
 pub use graph::Graph;
+
+mod inference_graph;
+pub use inference_graph::InferenceGraph;
 
 mod matmul;
 pub use matmul::Descriptor as MatMulDescriptor;

@@ -61,7 +61,7 @@ impl<'a> Session<'a> {
         let image_path = ds_path.join("DeveloperDiskImage.dmg");
         let sig_image_path = ds_path.join("DeveloperDiskImage.dmg.signature");
         let sig = std::fs::read(sig_image_path).expect("sig file read");
-        let sig = arc::R::from(&sig[..]);
+        let sig: arc::R<cf::Data> = arc::R::from(&sig[..]);
 
         let image_sig_key = cf::String::from_str("ImageSignature");
         let options = cf::Dictionary::with_keys_values(

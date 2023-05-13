@@ -1,4 +1,4 @@
-use crate::ns;
+use crate::{define_options, ns};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
@@ -583,6 +583,23 @@ impl GradientClippingType {
     pub fn debug_description(self) -> &'static ns::String {
         unsafe { MLCGradientClippingTypeDebugDescription(self) }
     }
+}
+
+define_options!(GraphCompilationOptions(u64));
+
+impl GraphCompilationOptions {
+    pub const DEBUG_LAYERS: Self = Self(0x01);
+    pub const DISABLE_LAYER_FUSION: Self = Self(0x02);
+    pub const LINK_GRAPHS: Self = Self(0x04);
+    pub const COMPUTE_ALL_GRADIENTS: Self = Self(0x08);
+}
+define_options!(ExecutionOptions(u64));
+impl ExecutionOptions {
+    pub const SKIP_WRITING_INPUT_DATA_TO_DEVICE: Self = Self(0x01);
+    pub const SYNCHRONOUS: Self = Self(0x02);
+    pub const PROFILING: Self = Self(0x04);
+    pub const FORWARD_FOR_INFERENCE: Self = Self(0x08);
+    pub const PER_LAYER_PROFILING: Self = Self(0x10);
 }
 
 #[link(name = "MLCompute", kind = "framework")]

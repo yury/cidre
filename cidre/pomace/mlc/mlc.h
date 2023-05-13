@@ -29,6 +29,7 @@ Class MLC_TENSOR;
 Class MLC_GRAPH;
 Class MLC_MATMUL_DESCRIPTOR;
 Class MLC_MATMUL_LAYER;
+Class MLC_INFERENCE_GRAPH;
 
 __attribute__((constructor))
 static void mlc_initializer(void)
@@ -53,6 +54,7 @@ static void mlc_initializer(void)
       MLC_GRAPH = [MLCGraph class];
       MLC_MATMUL_DESCRIPTOR = [MLCMatMulDescriptor class];
       MLC_MATMUL_LAYER = [MLCMatMulLayer class];
+      MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
 
       initialized = 1;
     }
