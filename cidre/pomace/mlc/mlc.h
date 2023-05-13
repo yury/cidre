@@ -25,6 +25,10 @@ Class MLC_BATCH_NORMALIZATION_LAYER;
 Class MLC_TENSOR_DESCRIPTOR;
 Class MLC_TENSOR_PARAMETER;
 Class MLC_TENSOR_DATA;
+Class MLC_TENSOR;
+Class MLC_GRAPH;
+Class MLC_MATMUL_DESCRIPTOR;
+Class MLC_MATMUL_LAYER;
 
 __attribute__((constructor))
 static void mlc_initializer(void)
@@ -45,6 +49,10 @@ static void mlc_initializer(void)
       MLC_TENSOR_DESCRIPTOR = [MLCTensorDescriptor class];
       MLC_TENSOR_PARAMETER = [MLCTensorParameter class];
       MLC_TENSOR_DATA = [MLCTensorData class];
+      MLC_TENSOR = [MLCTensor class];
+      MLC_GRAPH = [MLCGraph class];
+      MLC_MATMUL_DESCRIPTOR = [MLCMatMulDescriptor class];
+      MLC_MATMUL_LAYER = [MLCMatMulLayer class];
 
       initialized = 1;
     }

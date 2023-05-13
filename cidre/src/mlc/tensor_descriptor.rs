@@ -48,6 +48,19 @@ impl TensorDescriptor {
         data_type: mlc::DataType,
     ) -> Option<arc::R<Self>>;
 
+    pub fn with_shape<const N: usize>(
+        shape: [i32; N],
+        data_type: mlc::DataType,
+    ) -> Option<arc::R<Self>> {
+        let mut sh: [*const ns::Number; N] = [std::ptr::null(); N];
+        for (i, v) in shape.iter().enumerate() {
+            sh[i] = ns::Number::tagged_i32(*v);
+        }
+        let shape = ns::Array::from_slice(unsafe { std::mem::transmute(&sh[..]) });
+
+        Self::with_shape_dt(&shape, data_type)
+    }
+
     #[objc::cls_msg_send(
         descriptorWithShape:
         sequenceLengths:sortedSequences:
@@ -158,4 +171,18 @@ impl TensorDescriptor {
 #[link(name = "mlc", kind = "static")]
 extern "C" {
     static MLC_TENSOR_DESCRIPTOR: &'static objc::Class<TensorDescriptor>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::mlc;
+
+    #[test]
+    fn basics() {
+        let desc = mlc::TensorDescriptor::with_shape([-1, 2, 3, 4], mlc::DataType::F16).unwrap();
+        assert_eq!(4, desc.ndim());
+        assert_eq!(4, mlc::TensorDescriptor::max_ndim());
+        println!("shape {:?}", desc.shape());
+        println!("max {}", mlc::TensorDescriptor::max_ndim());
+    }
 }

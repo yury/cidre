@@ -58,3 +58,10 @@ pub use adamw_optimizer::AdamWOptimizer;
 
 mod device;
 pub use device::Device;
+
+mod graph;
+pub use graph::Graph;
+
+mod matmul;
+pub use matmul::Descriptor as MatMulDescriptor;
+pub use matmul::Layer as MatMulLayer;
