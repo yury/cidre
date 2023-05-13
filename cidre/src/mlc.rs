@@ -67,6 +67,9 @@ pub use graph::Graph;
 mod inference_graph;
 pub use inference_graph::InferenceGraph;
 
+mod training_graph;
+pub use training_graph::TrainingGraph;
+
 mod matmul;
 pub use matmul::Descriptor as MatMulDescriptor;
 pub use matmul::Layer as MatMulLayer;

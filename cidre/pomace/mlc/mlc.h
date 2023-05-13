@@ -30,6 +30,7 @@ Class MLC_GRAPH;
 Class MLC_MATMUL_DESCRIPTOR;
 Class MLC_MATMUL_LAYER;
 Class MLC_INFERENCE_GRAPH;
+Class MLC_TRAINING_GRAPH;
 
 __attribute__((constructor))
 static void mlc_initializer(void)
@@ -55,6 +56,7 @@ static void mlc_initializer(void)
       MLC_MATMUL_DESCRIPTOR = [MLCMatMulDescriptor class];
       MLC_MATMUL_LAYER = [MLCMatMulLayer class];
       MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
+      MLC_TRAINING_GRAPH = [MLCTrainingGraph class];
 
       initialized = 1;
     }
