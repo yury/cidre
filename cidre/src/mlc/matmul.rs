@@ -50,6 +50,10 @@ impl Layer {
 
     #[objc::msg_send(descriptor)]
     pub fn descriptor(&self) -> &Descriptor;
+
+    pub fn new() -> arc::R<Self> {
+        Self::with_descriptor(&Descriptor::new()).unwrap()
+    }
 }
 
 #[link(name = "mlc", kind = "static")]

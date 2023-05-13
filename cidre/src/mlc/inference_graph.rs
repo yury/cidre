@@ -10,6 +10,12 @@ impl InferenceGraph {
     #[objc::cls_rar_retain]
     pub fn with_graph_objects(graph_objects: &ns::Array<mlc::Graph>) -> arc::R<Self>;
 
+    #[inline]
+    pub fn with_graphs_slice(graph_objects: &[&mlc::Graph]) -> arc::R<Self> {
+        let graph_objects = ns::Array::from_slice(graph_objects);
+        Self::with_graph_objects(&graph_objects)
+    }
+
     // #[objc::add]
     // - (BOOL)addInputs:(NSDictionary<NSString *, MLCTensor *> *)inputs;
     #[objc::msg_send(addInputs:)]
@@ -37,7 +43,7 @@ impl InferenceGraph {
     ) -> bool;
 
     #[inline]
-    pub fn compile_with_options(
+    pub fn compile(
         &mut self,
         options: mlc::GraphCompilationOptions,
         device: &mlc::Device,

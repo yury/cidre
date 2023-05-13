@@ -11,28 +11,14 @@ fn main() {
     let buf_b = [1f32, 2.0, 3.0, 4.0];
     let buf_c = [1f32, 1.0, 1.0, 1.0];
 
-    let dat_a = mlc::TensorData::with_bytes_no_copy(
-        buf_a.as_ptr() as _,
-        buf_a.len() * std::mem::size_of::<f32>(),
-    );
-
-    let dat_b = mlc::TensorData::with_bytes_no_copy(
-        buf_b.as_ptr() as _,
-        buf_b.len() * std::mem::size_of::<f32>(),
-    );
-
-    let dat_c = mlc::TensorData::with_bytes_no_copy(
-        buf_c.as_ptr() as _,
-        buf_c.len() * std::mem::size_of::<f32>(),
-    );
+    let dat_a = mlc::TensorData::with_slice_no_copy(&buf_a);
+    let dat_b = mlc::TensorData::with_slice_no_copy(&buf_b);
+    let dat_c = mlc::TensorData::with_slice_no_copy(&buf_c);
 
     let graph = mlc::Graph::new();
 
     let t_ab = graph
-        .node_with_layer_sources(
-            &mlc::MatMulLayer::with_descriptor(&mlc::MatMulDescriptor::new()).unwrap(),
-            &[&t_a, &t_b],
-        )
+        .node_with_layer_sources(&mlc::MatMulLayer::new(), &[&t_a, &t_b])
         .unwrap();
     graph
         .node_with_layer_sources(
@@ -41,8 +27,7 @@ fn main() {
         )
         .unwrap();
 
-    let mut plan =
-        mlc::InferenceGraph::with_graph_objects(&ns::Array::from_slice(&[graph.as_ref()]));
+    let mut plan = mlc::InferenceGraph::with_graphs_slice(&[graph.as_ref()]);
 
     let a = ns::String::with_str("A");
     let b = ns::String::with_str("B");
@@ -53,11 +38,8 @@ fn main() {
     let inputs = ns::Dictionary::with_keys_values(&keys, &values);
     plan.add_inputs(&inputs).unwrap();
 
-    plan.compile_with_options(
-        mlc::GraphCompilationOptions::DEBUG_LAYERS,
-        &mlc::Device::new(),
-    )
-    .unwrap();
+    plan.compile(Default::default(), &mlc::Device::new())
+        .unwrap();
 
     let values = [dat_a.as_ref(), dat_b.as_ref(), dat_c.as_ref()];
     let completion_handler = blocks::once3(|r: Option<&mlc::Tensor>, _e, time| {

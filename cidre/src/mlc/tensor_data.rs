@@ -24,12 +24,13 @@ impl TensorData {
     #[objc::cls_rar_retain]
     pub fn with_bytes_no_copy(bytes: *const u8, length: usize) -> arc::R<Self>;
 
-    pub fn with_slice_no_copy_ar(slice: &[u8]) -> arc::Rar<Self> {
-        Self::with_bytes_no_copy_ar(slice.as_ptr(), slice.len())
+    #[inline]
+    pub fn with_slice_no_copy_ar<T: Sized>(slice: &[T]) -> arc::Rar<Self> {
+        Self::with_bytes_no_copy_ar(slice.as_ptr() as _, slice.len() * std::mem::size_of::<T>())
     }
 
     #[objc::cls_rar_retain]
-    pub fn with_slice_no_copy(slice: &[u8]) -> arc::R<Self>;
+    pub fn with_slice_no_copy<T>(slice: &[T]) -> arc::R<Self>;
 }
 
 #[link(name = "mlc", kind = "static")]
