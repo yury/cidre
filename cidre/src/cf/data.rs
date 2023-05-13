@@ -132,7 +132,7 @@ impl DataMut {
 
 /// ```
 /// use cidre::{arc, cf};
-/// let data = arc::R::from(&[1u8][..]);
+/// let data: arc::R<cf::Data> = arc::R::from(&[1u8][..]);
 /// assert_eq!(data.len(), 1);
 /// data.show();
 /// ```
