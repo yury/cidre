@@ -243,6 +243,26 @@ impl From<&[u64]> for arc::R<ns::Array<ns::Number>> {
     }
 }
 
+impl From<&[f32]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[f32]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::with_f32(*v));
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+    }
+}
+
+impl From<&[f64]> for arc::R<ns::Array<ns::Number>> {
+    fn from(value: &[f64]) -> Self {
+        let mut values = Vec::with_capacity(value.len());
+        for v in value.iter() {
+            values.push(ns::Number::with_f64(*v));
+        }
+        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+    }
+}
+
 impl<const N: usize> From<[i8; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [i8; N]) -> Self {
         let mut vals = [std::ptr::null(); N];
