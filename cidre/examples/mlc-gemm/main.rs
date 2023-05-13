@@ -42,7 +42,7 @@ fn main() {
         .unwrap();
 
     let values = [dat_a.as_ref(), dat_b.as_ref(), dat_c.as_ref()];
-    let completion_handler = blocks::once3(|r: Option<&mlc::Tensor>, _e, time| {
+    let handler = blocks::once3(|r: Option<&mlc::Tensor>, _e, time| {
         let r = r.unwrap();
 
         let mut buf_o = vec![0.0f32; 4];
@@ -51,10 +51,6 @@ fn main() {
         assert_eq!(buf_o, [8.0f32, 11.0f32, 16.0f32, 23.0f32]);
     });
 
-    plan.execute(
-        &ns::Dictionary::with_keys_values(&keys, &values),
-        0,
-        Default::default(),
-        Some(completion_handler.escape()),
-    );
+    let input_data = ns::Dictionary::with_keys_values(&keys, &values);
+    plan.execute(&input_data, 0, Default::default(), Some(handler.escape()));
 }
