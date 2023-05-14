@@ -74,14 +74,14 @@ define_obj_type!(Engine(ns::Id), AV_AUDIO_ENGINE);
 /// faster than realtime rate.
 impl Engine {
     #[objc::msg_send(attachNode:)]
-    pub fn attach_node(&self, node: &Node);
+    pub fn attach_node(&mut self, node: &Node);
 
     #[objc::msg_send(detachNode:)]
-    pub fn detach_node(&self, node: &Node);
+    pub fn detach_node(&mut self, node: &Node);
 
     #[objc::msg_send(connect:to:fromBus:toBus:format:)]
     pub fn connect_node_to_node_bus_to_bus(
-        &self,
+        &mut self,
         node_from: &Node,
         node_to: &Node,
         from_bus: NodeBus,
@@ -90,11 +90,16 @@ impl Engine {
     );
 
     #[objc::msg_send(connect:to:format:)]
-    pub fn connect_node_to_node(&self, node_from: &Node, node_to: &Node, format: Option<&Format>);
+    pub fn connect_node_to_node(
+        &mut self,
+        node_from: &Node,
+        node_to: &Node,
+        format: Option<&Format>,
+    );
 
     #[objc::msg_send(connect:toConnectionPoints:fromBus:format:)]
     pub fn connect_node_to_connection_points_from_bus(
-        &self,
+        &mut self,
         node: &Node,
         connection_pods: &ns::Array<ConnectionPoint>,
         from_bus: NodeBus,
@@ -102,19 +107,19 @@ impl Engine {
     );
 
     #[objc::msg_send(disconnectNodeInput:bus:)]
-    pub fn disconnect_node_input_bus(&self, node: &Node, bus: NodeBus);
+    pub fn disconnect_node_input_bus(&mut self, node: &Node, bus: NodeBus);
 
     #[objc::msg_send(disconnectNodeInput:)]
-    pub fn disconnect_node_input(&self, node: &Node);
+    pub fn disconnect_node_input(&mut self, node: &Node);
 
     #[objc::msg_send(disconnectNodeOutput:bus:)]
-    pub fn disconnect_node_output_bus(&self, node: &Node, bus: NodeBus);
+    pub fn disconnect_node_output_bus(&mut self, node: &Node, bus: NodeBus);
 
     #[objc::msg_send(disconnectNodeOutput:)]
-    pub fn disconnect_node_output(&self, node: &Node);
+    pub fn disconnect_node_output(&mut self, node: &Node);
 
     #[objc::msg_send(prepare)]
-    pub fn prepare(&self);
+    pub fn prepare(&mut self);
 
     #[objc::msg_send(startAndReturnError:)]
     pub fn start_and_return_err<'ar>(&self, error: &mut Option<&'ar ns::Error>) -> bool;
@@ -331,7 +336,8 @@ mod tests {
 
         let player_node = av::AudioPlayerNode::new();
         engine.attach_node(&player_node);
-        engine.connect_node_to_node(&player_node, engine.main_mixer_node(), None);
+        let mixer_node = engine.main_mixer_node().retained();
+        engine.connect_node_to_node(&player_node, &mixer_node, None);
         engine.start().expect("Failed to start engine");
         assert_eq!(engine.manual_rendering_sample_time(), 0);
         player_node.play();

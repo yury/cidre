@@ -1,6 +1,5 @@
-use std::{thread::sleep, time::Duration};
-
 use cidre::{av, blocks};
+use std::{thread::sleep, time::Duration};
 
 fn main() {
     let mut engine = av::AudioEngine::new();
