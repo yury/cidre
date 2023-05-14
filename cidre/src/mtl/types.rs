@@ -16,9 +16,9 @@ pub struct Origin {
     pub z: usize,
 }
 
+/// Handle of the GPU resource suitable for storing in an Argument Buffer
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
-/// Handle of the GPU resource suitable for storing in an Argument Buffer
 pub struct ResourceID {
     _impl: u64,
 }
@@ -71,6 +71,7 @@ impl Region {
 }
 
 /// Identify a sample within a pixel. Origin is top-left with a range [0,1) for both x and y.
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct SamplePosition {
     pub x: f32,
     pub y: f32,

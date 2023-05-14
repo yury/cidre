@@ -111,6 +111,7 @@ impl PixelBuffer {
         CVPixelBufferUnlockBaseAddress(self, flags)
     }
 
+    #[inline]
     pub fn base_address_lock(&self, flags: LockFlags) -> Result<BaseAddressLockGuard, cv::Return> {
         unsafe {
             let res = self.lock_base_address(flags);
@@ -132,10 +133,6 @@ impl<'a> Drop for BaseAddressLockGuard<'a> {
         debug_assert!(res.is_ok());
     }
 }
-
-// #[derive(Clone, Copy, PartialEq, Eq)]
-// #[repr(transparent)]
-// pub struct LockFlags(pub cv::OptionFlags);
 
 define_options!(LockFlags(cv::OptionFlags));
 
@@ -176,13 +173,13 @@ impl PixelFormatType {
 
     pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
 
-    /// kCVPixelFormatType_OneComponent8
+    #[doc(alias = "kCVPixelFormatType_OneComponent8")]
     pub const ONE_COMPONENT_8: Self = Self(os::Type::from_be_bytes(*b"L008"));
 
-    /// kCVPixelFormatType_OneComponent16Half  = 'L00h'
+    #[doc(alias = "kCVPixelFormatType_OneComponent16Half")]
     pub const ONE_COMPONENT_16_HALF: Self = Self(os::Type::from_be_bytes(*b"L00h"));
 
-    ///  kCVPixelFormatType_OneComponent32Float = 'L00f'
+    #[doc(alias = "kCVPixelFormatType_OneComponent32Float")]
     pub const ONE_COMPONENT_32_FLOAT: Self = Self(os::Type::from_be_bytes(*b"L00f"));
 
     pub fn from_cf_number(number: &cf::Number) -> Self {

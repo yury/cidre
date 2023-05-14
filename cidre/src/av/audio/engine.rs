@@ -128,8 +128,7 @@ impl Engine {
     pub fn start<'ar>(&mut self) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.start_and_return_err(&mut error);
-            if res {
+            if self.start_and_return_err(&mut error) {
                 Ok(())
             } else {
                 Err(error.unwrap_unchecked())
@@ -343,8 +342,6 @@ mod tests {
         player_node.play();
 
         let status = engine.render_offline(1024, &mut pcm_buf).unwrap();
-
-        //eprintln!("{engine:?}");
 
         assert_eq!(status, av::audio::EngineManualRenderingStatus::Success);
         assert_eq!(pcm_buf.frame_length(), 1024);
