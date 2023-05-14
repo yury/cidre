@@ -275,6 +275,34 @@ impl VertexBufferLayoutDescriptor {
 }
 
 define_obj_type!(VertexBufferLayoutDescriptorArray(ns::Id));
+impl VertexBufferLayoutDescriptorArray {
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn object_at(&self, index: usize) -> &VertexBufferLayoutDescriptor;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn object_at_mut(&mut self, index: usize) -> &mut VertexBufferLayoutDescriptor;
+
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
+    pub fn set_object_at(
+        &mut self,
+        buffer_desc: Option<&VertexBufferLayoutDescriptor>,
+        index: usize,
+    );
+}
+
+impl std::ops::Index<usize> for VertexBufferLayoutDescriptorArray {
+    type Output = VertexBufferLayoutDescriptor;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.object_at(index)
+    }
+}
+
+impl std::ops::IndexMut<usize> for VertexBufferLayoutDescriptorArray {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.object_at_mut(index)
+    }
+}
 
 define_obj_type!(
     VertexAttributeDescriptor(ns::Id),
@@ -302,6 +330,30 @@ impl VertexAttributeDescriptor {
 }
 
 define_obj_type!(VertexAttributeDescriptorArray(ns::Id));
+impl VertexAttributeDescriptorArray {
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn object_at(&self, index: usize) -> &VertexAttributeDescriptor;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn object_at_mut(&mut self, index: usize) -> &mut VertexAttributeDescriptor;
+
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
+    pub fn set_object_at(&mut self, buffer_desc: Option<&VertexAttributeDescriptor>, index: usize);
+}
+
+impl std::ops::Index<usize> for VertexAttributeDescriptorArray {
+    type Output = VertexAttributeDescriptor;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.object_at(index)
+    }
+}
+
+impl std::ops::IndexMut<usize> for VertexAttributeDescriptorArray {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.object_at_mut(index)
+    }
+}
 
 define_obj_type!(Descriptor(ns::Id), MTL_VERTEX_DESCRIPTOR);
 impl Descriptor {
