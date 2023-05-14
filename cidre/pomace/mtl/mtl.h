@@ -35,6 +35,7 @@ Class MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR;
 
 Class MTL_VERTEX_DESCRIPTOR;
 Class MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR;
+Class MTL_VERTEX_ATTRIBUTE_DESCRIPTOR;
 
 
 __attribute__((constructor))
@@ -67,6 +68,7 @@ static void mtl_initializer(void)
       MTL_VERTEX_DESCRIPTOR = [MTLVertexDescriptor class];
       
       MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR = [MTLVertexBufferLayoutDescriptor class];
+      MTL_VERTEX_ATTRIBUTE_DESCRIPTOR = [MTLVertexAttributeDescriptor class];
 
       initialized = 1;
     }

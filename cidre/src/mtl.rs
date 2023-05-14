@@ -195,6 +195,7 @@ pub use parallel_render_command_encoder::ParallelRenderCmdEncoder;
 
 mod vertex_descriptor;
 pub use vertex_descriptor::Descriptor as VertexDescriptor;
+pub use vertex_descriptor::VertexAttributeDescriptor;
 pub use vertex_descriptor::VertexAttributeDescriptorArray;
 pub use vertex_descriptor::VertexBufferLayoutDescriptor;
 pub use vertex_descriptor::VertexBufferLayoutDescriptorArray;

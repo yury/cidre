@@ -275,6 +275,32 @@ impl VertexBufferLayoutDescriptor {
 }
 
 define_obj_type!(VertexBufferLayoutDescriptorArray(ns::Id));
+
+define_obj_type!(
+    VertexAttributeDescriptor(ns::Id),
+    MTL_VERTEX_ATTRIBUTE_DESCRIPTOR
+);
+
+impl VertexAttributeDescriptor {
+    #[objc::msg_send(vertexFormat)]
+    pub fn vertex_format(&self) -> VertexFormat;
+
+    #[objc::msg_send(setVertexFormat:)]
+    pub fn set_vertex_format(&mut self, value: VertexFormat);
+
+    #[objc::msg_send(offset)]
+    pub fn offset(&self) -> usize;
+
+    #[objc::msg_send(setOffset:)]
+    pub fn set_offset(&mut self, value: usize);
+
+    #[objc::msg_send(bufferIndex)]
+    pub fn buf_index(&self) -> usize;
+
+    #[objc::msg_send(setBufferIndex:)]
+    pub fn set_buf_index(&self, value: usize);
+}
+
 define_obj_type!(VertexAttributeDescriptorArray(ns::Id));
 
 define_obj_type!(Descriptor(ns::Id), MTL_VERTEX_DESCRIPTOR);
@@ -296,6 +322,7 @@ impl Descriptor {
 extern "C" {
     static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Descriptor>;
     static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufferLayoutDescriptor>;
+    static MTL_VERTEX_ATTRIBUTE_DESCRIPTOR: &'static objc::Class<VertexAttributeDescriptor>;
 }
 
 #[cfg(test)]
