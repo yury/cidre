@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, mlc, objc};
+use crate::{define_cls, define_obj_type, mlc, objc};
 
 define_obj_type!(BatchNormalizationLayer(mlc::Layer));
 

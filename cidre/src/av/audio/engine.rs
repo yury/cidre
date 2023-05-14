@@ -142,6 +142,9 @@ impl Engine {
     #[objc::msg_send(inputNode)]
     pub fn input_node(&self) -> &InputNode;
 
+    #[objc::msg_send(inputNode)]
+    pub fn input_node_mut(&self) -> &mut InputNode;
+
     /// ```no_run
     /// use cidre::av;
     ///

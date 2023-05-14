@@ -247,7 +247,7 @@ pub struct BlMut<F: 'static>(&'static mut Block<F>);
 
 impl<F> BlMut<F> {
     #[inline]
-    pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
+    pub fn escape(&mut self) -> &'static mut Block<F> {
         let ptr = self.0 as *mut Block<F>;
         unsafe { &mut *ptr }
     }

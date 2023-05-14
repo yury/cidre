@@ -1,4 +1,4 @@
-use crate::{av, define_obj_type, ns, objc};
+use crate::{av, blocks::Block, define_obj_type, ns, objc};
 
 define_obj_type!(Node(ns::Id));
 
@@ -43,4 +43,17 @@ impl Node {
     /// The maximum render pipeline latency downstream of the node, in seconds.
     #[objc::msg_send(outputPresentationLatency)]
     pub fn output_presentation_latency(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(installTapOnBus:bufferSize:format:block:)]
+    pub fn install_tap_on_bus<'b, B>(
+        &mut self,
+        bus: av::AudioNodeBus,
+        buffer_size: av::AudioFrameCount,
+        format: Option<&av::AudioFormat>,
+        tap_block: &'static Block<B>,
+    ) where
+        B: FnMut(&'b av::AudioPCMBuffer, &'b av::AudioTime);
+
+    #[objc::msg_send(removeTapOnBus:)]
+    pub fn remove_tap_on_bus(&mut self, bus: av::AudioNodeBus);
 }
