@@ -31,8 +31,15 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("array_with_vec_inside_5", |b| {
         b.iter(|| {
             ar_pool(|| {
-                let _v: arc::R<ns::Array<ns::Number>> =
-                    [10i64, 11i64, 12i64, 13i64, 14i64][..].into();
+                let _v: arc::R<ns::Array<ns::Number>> = [10i64, 11, 12, 13, 14][..].into();
+            })
+        })
+    });
+
+    c.bench_function("array_with_buf_inside_5", |b| {
+        b.iter(|| {
+            ar_pool(|| {
+                let _v: arc::R<ns::Array<ns::Number>> = [10i32, 11, 12, 13, 14][..].into();
             })
         })
     });
@@ -41,7 +48,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         b.iter(|| {
             ar_pool(|| {
                 let mut arr = ns::ArrayMut::with_capacity(5);
-                for i in [10i64, 11i64, 12i64, 13i64, 14i64].iter() {
+                for i in [10i64, 11, 12, 13, 14].iter() {
                     arr.push(ns::Number::with_i64(*i).as_ref());
                 }
                 let _v: arc::R<ns::Array<ns::Number>> = arr.freeze();

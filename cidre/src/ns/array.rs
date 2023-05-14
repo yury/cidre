@@ -1,7 +1,7 @@
 use std::{
     ffi::c_void,
     marker::PhantomData,
-    mem::transmute,
+    mem::{transmute, MaybeUninit},
     ops::{Deref, Index, IndexMut},
 };
 
@@ -265,9 +265,10 @@ impl From<&[f64]> for arc::R<ns::Array<ns::Number>> {
 
 impl<const N: usize> From<[i8; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [i8; N]) -> Self {
-        let mut vals = [std::ptr::null(); N];
+        let mut vals: [MaybeUninit<&'static ns::Number>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
         for (i, v) in value.iter().enumerate() {
-            vals[i] = ns::Number::tagged_i8(*v);
+            vals[i].write(ns::Number::tagged_i8(*v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }
@@ -275,9 +276,10 @@ impl<const N: usize> From<[i8; N]> for arc::R<ns::Array<ns::Number>> {
 
 impl<const N: usize> From<[u8; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [u8; N]) -> Self {
-        let mut vals = [std::ptr::null(); N];
+        let mut vals: [MaybeUninit<&'static ns::Number>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
         for (i, v) in value.iter().enumerate() {
-            vals[i] = ns::Number::tagged_u8(*v);
+            vals[i].write(ns::Number::tagged_u8(*v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }
@@ -285,9 +287,10 @@ impl<const N: usize> From<[u8; N]> for arc::R<ns::Array<ns::Number>> {
 
 impl<const N: usize> From<[i16; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [i16; N]) -> Self {
-        let mut vals = [std::ptr::null(); N];
+        let mut vals: [MaybeUninit<&'static ns::Number>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
         for (i, v) in value.iter().enumerate() {
-            vals[i] = ns::Number::tagged_i16(*v);
+            vals[i].write(ns::Number::tagged_i16(*v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }
@@ -295,9 +298,10 @@ impl<const N: usize> From<[i16; N]> for arc::R<ns::Array<ns::Number>> {
 
 impl<const N: usize> From<[u16; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [u16; N]) -> Self {
-        let mut vals = [std::ptr::null(); N];
+        let mut vals: [MaybeUninit<&'static ns::Number>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
         for (i, v) in value.iter().enumerate() {
-            vals[i] = ns::Number::tagged_u16(*v);
+            vals[i].write(ns::Number::tagged_u16(*v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }
@@ -305,9 +309,10 @@ impl<const N: usize> From<[u16; N]> for arc::R<ns::Array<ns::Number>> {
 
 impl<const N: usize> From<[i32; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [i32; N]) -> Self {
-        let mut vals = [std::ptr::null(); N];
+        let mut vals: [MaybeUninit<&'static ns::Number>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
         for (i, v) in value.iter().enumerate() {
-            vals[i] = ns::Number::tagged_i32(*v);
+            vals[i].write(ns::Number::tagged_i32(*v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }
@@ -315,9 +320,10 @@ impl<const N: usize> From<[i32; N]> for arc::R<ns::Array<ns::Number>> {
 
 impl<const N: usize> From<[u32; N]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: [u32; N]) -> Self {
-        let mut vals = [std::ptr::null(); N];
+        let mut vals: [MaybeUninit<&'static ns::Number>; N] =
+            unsafe { MaybeUninit::uninit().assume_init() };
         for (i, v) in value.iter().enumerate() {
-            vals[i] = ns::Number::tagged_u32(*v);
+            vals[i].write(ns::Number::tagged_u32(*v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }

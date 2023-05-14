@@ -48,23 +48,17 @@ pub use rnn_ops::SingleGateRNNDescriptor;
 
 /// Options to be utilized by the graph
 #[doc(alias = "MPSGraphOptions")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(u64)]
 pub enum Options {
     None = 0,
 
     /// Synchronize results using a blit encoder if on a GPU
+    #[default]
     SynchronizeResults = 1,
 
     /// Prints more logging info
     Verbose = 2,
-}
-
-impl Default for Options {
-    #[inline]
-    fn default() -> Self {
-        Options::SynchronizeResults
-    }
 }
 
 #[doc(alias = "MPSGraphOptimization")]

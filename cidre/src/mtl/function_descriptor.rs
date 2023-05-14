@@ -2,17 +2,12 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(FnDescriptor(ns::Id), MTL_FUNCTION_DESCRIPTOR);
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 #[repr(usize)]
 pub enum FnOptions {
+    #[default]
     None = 0,
     CompileToBinary = 1 << 0,
-}
-
-impl Default for FnOptions {
-    fn default() -> Self {
-        FnOptions::None
-    }
 }
 
 impl FnDescriptor {

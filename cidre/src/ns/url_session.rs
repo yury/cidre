@@ -152,7 +152,7 @@ pub struct TaskPriority(pub f32);
 
 impl TaskPriority {
     #[inline]
-    pub fn default() -> Self {
+    pub fn default_priority() -> Self {
         unsafe { NSURLSessionTaskPriorityDefault }
     }
 
@@ -169,7 +169,7 @@ impl TaskPriority {
 
 impl Default for TaskPriority {
     fn default() -> Self {
-        TaskPriority::default()
+        TaskPriority::default_priority()
     }
 }
 
