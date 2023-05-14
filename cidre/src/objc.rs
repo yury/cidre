@@ -121,18 +121,13 @@ impl Id {
         &self.0
     }
 
-    #[msg_send(isEqual:)]
-    pub fn is_equal(&self, other: &Self) -> bool;
-
     #[inline]
-    pub fn eq(&self, other: &Self) -> bool {
-        self.is_equal(other)
-    }
-
-    #[inline]
-    pub fn as_ref(&self) -> &Self {
+    pub fn as_id_ref(&self) -> &Self {
         self
     }
+
+    #[msg_send(isEqual:)]
+    pub fn is_equal(&self, other: &Self) -> bool;
 }
 
 impl Obj for Id {}
@@ -164,7 +159,7 @@ where
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
-    fn objc_release(obj: &mut Id);
+    // fn objc_release(obj: &mut Id);
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;

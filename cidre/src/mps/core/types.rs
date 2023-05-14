@@ -139,13 +139,13 @@ pub enum DataType {
     F32 = Self::FLOAT_BIT | 32u32,
 
     /// 16-bit floating point (half-precision).  (IEEE-754-2008 float16 exchange format)
-    Float16 = Self::FLOAT_BIT | 16u32,
+    F16 = Self::FLOAT_BIT | 16u32,
 
     ///Complex number composed of two 32-bit floating point numbers (single-precision).
-    ComplexFloat32 = Self::FLOAT_BIT | Self::COMPLEX_BIT as u32 | 64u32,
+    ComplexF32 = Self::FLOAT_BIT | Self::COMPLEX_BIT | 64u32,
 
     /// Complex number composed of two 16-bit floating point numbers (half-precision).  (IEEE-754-2008 float16 exchange format)
-    ComplexFloat16 = Self::FLOAT_BIT | Self::COMPLEX_BIT as u32 | 32u32,
+    ComplexF16 = Self::FLOAT_BIT | Self::COMPLEX_BIT | 32u32,
 
     /// Signed 8-bit integer.
     I8 = Self::SIGNED_BIT as u32 | 8u32,

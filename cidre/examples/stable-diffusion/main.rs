@@ -22,7 +22,7 @@ fn load_const(
     let (prefix, data_type, size) = if fp32 {
         ("_fp32", mps::DataType::F32, 4)
     } else {
-        ("", mps::DataType::Float16, 2)
+        ("", mps::DataType::F16, 2)
     };
 
     let data = ns::Data::with_contents_of_file_options(
@@ -214,7 +214,7 @@ pub fn make_decoder_attention(
     let k = make_linear(graph, &x, &format!("{name}.k"), c, false);
     let k = graph.mul(
         &k,
-        &graph.constant(1f64 / c.as_f64().sqrt(), mps::DataType::Float16),
+        &graph.constant(1f64 / c.as_f64().sqrt(), mps::DataType::F16),
         None,
     );
     let k = graph.transpose_with_dimension(&k, 1, 2, None);
@@ -231,7 +231,7 @@ pub fn make_decoder_attention(
 fn make_byte_converter(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     let one = ns::Number::with_i64(1);
     let one_shape = mps::Shape::from_slice(&[&one]);
-    let dt = mps::DataType::Float16;
+    let dt = mps::DataType::F16;
     let x = graph.clamp(
         x_in,
         &graph.constant_shape(0f64, &one_shape, dt),
@@ -257,7 +257,7 @@ fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Ten
     let name = "first_stage_model.decoder";
     let x = graph.mul(
         x_in,
-        &graph.constant(1f64 / 0.18215f64, mps::DataType::Float16),
+        &graph.constant(1f64 / 0.18215f64, mps::DataType::F16),
         Some(&ns::String::with_str("rescale")),
     );
     let out_channels = ns::Number::with_i64(512);
@@ -348,8 +348,8 @@ fn make_decoder(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Ten
         1,
         true,
     );
-    let x = graph.add(&x, &graph.constant(1f64, mps::DataType::Float16), None);
-    let x = graph.mul(&x, &graph.constant(0.5f64, mps::DataType::Float16), None);
+    let x = graph.add(&x, &graph.constant(1f64, mps::DataType::F16), None);
+    let x = graph.mul(&x, &graph.constant(0.5f64, mps::DataType::F16), None);
 
     make_byte_converter(graph, &x)
 }
@@ -542,7 +542,7 @@ fn make_cross_attn(
     let k = graph.transpose_with_dimension(&k, 2, 3, None);
     let k = graph.mul(
         &k,
-        &graph.constant(1.0f64 / d_head.as_f64().sqrt(), mps::DataType::Float16),
+        &graph.constant(1.0f64 / d_head.as_f64().sqrt(), mps::DataType::F16),
         None,
     );
     let v = graph.transpose_with_dimension(&v, 1, 2, None);
@@ -582,12 +582,12 @@ fn make_cross_attn(
 fn make_gelu(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     let x = graph.mul(
         x_in,
-        &graph.constant(1f64 / 2f64.sqrt(), mps::DataType::Float16),
+        &graph.constant(1f64 / 2f64.sqrt(), mps::DataType::F16),
         None,
     );
     let x = graph.erf(&x, None);
-    let x = graph.add(&x, &graph.constant(1f64, mps::DataType::Float16), None);
-    let x = graph.mul(&x, &graph.constant(1f64, mps::DataType::Float16), None);
+    let x = graph.add(&x, &graph.constant(1f64, mps::DataType::F16), None);
+    let x = graph.mul(&x, &graph.constant(1f64, mps::DataType::F16), None);
     graph.mul(x_in, &x, None)
 }
 
@@ -1197,14 +1197,14 @@ fn make_time_features(graph: &graph::Graph, t_in: &graph::Tensor) -> arc::R<grap
     let temb = graph.reshape(&temb, &mps::Shape::from_slice(shape), None);
     graph.cast(
         &temb,
-        mps::DataType::Float16,
+        mps::DataType::F16,
         Some(&ns::String::with_str("temb fp16")),
     )
 }
 
 fn make_sqrt_one_minus(graph: &graph::Graph, x_in: &graph::Tensor) -> arc::R<graph::Tensor> {
     graph.square_root(
-        &graph.sub(&graph.constant(1.0, mps::DataType::Float16), x_in, None),
+        &graph.sub(&graph.constant(1.0, mps::DataType::F16), x_in, None),
         None,
     )
 }
@@ -1236,10 +1236,7 @@ fn make_diffusion_step(
     );
     let alpha_in = graph.gather_along_axis(0, &alphas_comprod, t_in, None);
     let alphas_comprod_prev = graph.concat(
-        &[
-            &graph.constant(1.0, mps::DataType::Float16),
-            &alphas_comprod,
-        ],
+        &[&graph.constant(1.0, mps::DataType::F16), &alphas_comprod],
         0,
         None,
     );
