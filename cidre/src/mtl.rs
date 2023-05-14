@@ -193,6 +193,12 @@ pub use compute_command_encoder::ComputeCmdEncoder;
 mod parallel_render_command_encoder;
 pub use parallel_render_command_encoder::ParallelRenderCmdEncoder;
 
+mod vertex_descriptor;
+pub use vertex_descriptor::Descriptor as VertexDescriptor;
+pub use vertex_descriptor::VertexAttributeDescriptorArray;
+pub use vertex_descriptor::VertexBufferLayoutDescriptorArray;
+pub use vertex_descriptor::VertexFormat;
+
 mod render_pass;
 pub use render_pass::AttachmentDescriptor as RenderPassAttachmentDescriptor;
 pub use render_pass::ClearColor;

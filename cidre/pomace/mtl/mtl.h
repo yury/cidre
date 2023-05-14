@@ -33,6 +33,8 @@ Class MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR;
 Class MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR;
 Class MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR;
 
+Class MTL_VERTEX_DESCRIPTOR;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -60,6 +62,8 @@ static void mtl_initializer(void)
       MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR = [MTLAccelerationStructureGeometryDescriptor class];
       MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR = [MTLAccelerationStructureTriangleGeometryDescriptor class];
       MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR = [MTLAccelerationStructureMotionBoundingBoxGeometryDescriptor self];
+      
+      MTL_VERTEX_DESCRIPTOR = [MTLVertexDescriptor class];
 
       initialized = 1;
     }
