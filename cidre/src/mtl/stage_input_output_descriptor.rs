@@ -14,93 +14,93 @@ pub enum AttributeFormat {
 
     /// Two unsigned 8-bit values.
     #[doc(alias = "MTLAttributeFormatUChar2")]
-    UChar2 = 1,
+    U8x2 = 1,
 
     /// Three unsigned 8-bit values.
     #[doc(alias = "MTLAttributeFormatUChar3")]
-    UChar3 = 2,
+    U8x3 = 2,
 
     /// Four unsigned 8-bit values.
     #[doc(alias = "MTLAttributeFormatUChar4")]
-    UChar4 = 3,
+    U8x4 = 3,
 
     /// Two signed 8-bit two's complement values.
     #[doc(alias = "MTLAttributeFormatChar2")]
-    Char2 = 4,
+    I8x2 = 4,
 
     /// Three signed 8-bit two's complement values.
     #[doc(alias = "MTLAttributeFormatChar3")]
-    Char3 = 5,
+    I8x3 = 5,
 
     /// Four signed 8-bit two's complement values.
     #[doc(alias = "MTLAttributeFormatChar4")]
-    Char4 = 6,
+    I8x4 = 6,
 
     /// Two unsigned normalized 8-bit values.
     #[doc(alias = "MTLAttributeFormatUChar2Normalized")]
-    UChar2Normalized = 7,
+    U8x2Normalized = 7,
 
     /// Three unsigned normalized 8-bit values.
     #[doc(alias = "MTLAttributeFormatUChar3Normalized")]
-    UChar3Normalized = 8,
+    U8x3Normalized = 8,
 
     /// Four unsigned normalized 8-bit values.
     #[doc(alias = "MTLAttributeFormatUChar4Normalized")]
-    UChar4Normalized = 9,
+    U8x4Normalized = 9,
 
-    Char2Normalized = 10,
-    Char3Normalized = 11,
-    Char4Normalized = 12,
+    I8x2Normalized = 10,
+    I8x3Normalized = 11,
+    I8x4Normalized = 12,
 
-    UShort2 = 13,
-    UShort3 = 14,
-    UShort4 = 15,
+    U16x2 = 13,
+    U16x3 = 14,
+    U16x4 = 15,
 
-    Short2 = 16,
-    Short3 = 17,
-    Short4 = 18,
+    I16x2 = 16,
+    I16x3 = 17,
+    I16x4 = 18,
 
-    UShort2Normalized = 19,
-    UShort3Normalized = 20,
-    UShort4Normalized = 21,
+    U16x2Normalized = 19,
+    U16x3Normalized = 20,
+    U16x4Normalized = 21,
 
-    Short2Normalized = 22,
-    Short3Normalized = 23,
-    Short4Normalized = 24,
+    I16x2Normalized = 22,
+    I16x3Normalized = 23,
+    I16x4Normalized = 24,
 
-    Half2 = 25,
-    Half3 = 26,
-    Half4 = 27,
+    F16x2 = 25,
+    F16x3 = 26,
+    F16x4 = 27,
 
-    Float = 28,
-    Float2 = 29,
-    Float3 = 30,
-    Float4 = 31,
+    F32 = 28,
+    F32x2 = 29,
+    F32x3 = 30,
+    F32x4 = 31,
 
-    Int = 32,
-    Int2 = 33,
-    Int3 = 34,
-    Int4 = 35,
+    I32 = 32,
+    I32x2 = 33,
+    I32x3 = 34,
+    I32x4 = 35,
 
-    UInt = 36,
-    UInt2 = 37,
-    UInt3 = 38,
-    UInt4 = 39,
+    U32 = 36,
+    U32x2 = 37,
+    U32x3 = 38,
+    U32x4 = 39,
 
-    Int1010102Normalized = 40,
-    UInt1010102Normalized = 41,
+    I1010102Normalized = 40,
+    U1010102Normalized = 41,
 
     UChar4NormalizedBGRA = 42,
 
-    UChar = 45,
-    Char = 46,
-    UCharNormalized = 47,
-    CharNormalized = 48,
+    U8 = 45,
+    I8 = 46,
+    U8Normalized = 47,
+    I8Normalized = 48,
 
-    UShort = 49,
-    Short = 50,
-    UShortNormalized = 51,
-    ShortNormalized = 52,
+    U16 = 49,
+    I16 = 50,
+    U16Normalized = 51,
+    I16Normalized = 52,
 
-    Half = 53,
+    F16 = 53,
 }
