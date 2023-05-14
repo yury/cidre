@@ -217,12 +217,11 @@ impl Device {
     ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar ns::Error> {
         let mut error = None;
         let res = self.new_compute_ps_with_fn_err(function, &mut error);
-
-        if let Some(err) = error {
-            return Err(err);
+        if res.is_some() {
+            Ok(unsafe { transmute(res) })
+        } else {
+            Err(unsafe { transmute(error) })
         }
-
-        unsafe { Ok(transmute(res)) }
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
