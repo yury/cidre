@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -213,6 +213,67 @@ pub enum VertexFormat {
     F16 = 53,
 }
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(usize)]
+pub enum VertexStepFn {
+    /// The vertex function fetches attribute data once
+    /// and uses that data for every vertex.
+    #[doc(alias = "MTLVertexStepFunctionConstant")]
+    Constant = 0,
+
+    /// The vertex function fetches and uses new attribute
+    /// data for every vertex.
+    #[doc(alias = "MTLVertexStepFunctionPerVertex")]
+    PerVertex = 1,
+
+    /// The vertex function regularly fetches new attribute data for a number
+    /// of instances that is determined by step_rate.
+    #[doc(alias = "MTLVertexStepFunctionPerInstance")]
+    PerInstance = 2,
+
+    /// The post-tessellation vertex function fetches data based
+    /// on the patch index of the patch.
+    #[doc(alias = "MTLVertexStepFunctionPerPatch")]
+    PerPatch = 3,
+
+    /// The post-tessellation vertex function fetches data based on
+    /// the control-point indices associated with the patch.
+    #[doc(alias = "MTLVertexStepFunctionPerPatchControlPoint")]
+    PerPatchControlPoint = 4,
+}
+
+define_obj_type!(
+    VertexBufferLayoutDescriptor(ns::Id),
+    MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR
+);
+impl VertexBufferLayoutDescriptor {
+    /// The distance, in bytes, between the attribute data
+    /// of two vertices in the buffer.
+    ///
+    /// The stride must be a multiple of 4 bytes. The default value is 0.
+    #[objc::msg_send(stride)]
+    pub fn stride(&self) -> usize;
+
+    #[objc::msg_send(setStride:)]
+    pub fn set_stride(&mut self, value: usize);
+
+    /// The circumstances under which the vertex and its attributes
+    /// are presented to the vertex function.
+    #[objc::msg_send(stepFunction)]
+    pub fn step_fn(&self) -> VertexStepFn;
+
+    #[objc::msg_send(setStepFunction:)]
+    pub fn set_step_fn(&mut self, value: VertexStepFn);
+
+    /// The interval at which the vertex and its attributes are presented
+    /// to the vertex function.
+    #[objc::msg_send(stepRate)]
+    pub fn step_rate(&self) -> usize;
+
+    #[objc::msg_send(setStepRate:)]
+    pub fn set_step_rate(&mut self, value: usize);
+}
+
 define_obj_type!(VertexBufferLayoutDescriptorArray(ns::Id));
 define_obj_type!(VertexAttributeDescriptorArray(ns::Id));
 
@@ -234,6 +295,7 @@ impl Descriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufferLayoutDescriptor>;
 }
 
 #[cfg(test)]
@@ -243,5 +305,7 @@ mod tests {
     #[test]
     fn basics() {
         let descriptor = mtl::VertexDescriptor::new();
+        let descriptor = mtl::VertexBufferLayoutDescriptor::new();
+        assert_eq!(descriptor.stride(), 0);
     }
 }

@@ -196,8 +196,10 @@ pub use parallel_render_command_encoder::ParallelRenderCmdEncoder;
 mod vertex_descriptor;
 pub use vertex_descriptor::Descriptor as VertexDescriptor;
 pub use vertex_descriptor::VertexAttributeDescriptorArray;
+pub use vertex_descriptor::VertexBufferLayoutDescriptor;
 pub use vertex_descriptor::VertexBufferLayoutDescriptorArray;
 pub use vertex_descriptor::VertexFormat;
+pub use vertex_descriptor::VertexStepFn;
 
 mod render_pass;
 pub use render_pass::AttachmentDescriptor as RenderPassAttachmentDescriptor;
