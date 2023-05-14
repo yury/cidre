@@ -78,16 +78,10 @@ impl PartialOrd for Date {
 extern "C" {
     fn CFAbsoluteTimeGetCurrent() -> AbsoluteTime;
     fn CFDateGetTypeID() -> cf::TypeId;
-
     fn CFDateCreate(allocator: Option<&cf::Allocator>, at: AbsoluteTime) -> Option<arc::R<Date>>;
     fn CFDateGetAbsoluteTime(the_date: &Date) -> AbsoluteTime;
     fn CFDateGetTimeIntervalSinceDate(the_date: &Date, other_date: &Date) -> TimeInterval;
-
-    fn CFDateCompare(
-        the_date: &Date,
-        other_date: &Date,
-        context: *mut c_void,
-    ) -> cf::ComparisonResult;
+    fn CFDateCompare(date: &Date, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult;
 }
 
 #[cfg(test)]

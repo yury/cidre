@@ -66,7 +66,7 @@ async fn main() {
             count += 1;
             continue;
         }
-        let pts = buf.pts();
+        let _pts = buf.pts();
         ar_pool(|| {
             handler
                 .perform_on_cv_pixel_buffer(&requests, &image)
@@ -145,7 +145,7 @@ async fn main() {
         feature_prints.len()
     );
 
-    let pca = Pca::params(10);
+    let _pca = Pca::params(10);
 
     let mut arr = Array2::zeros((1446, 2048));
     for (i, mut row) in arr.axis_iter_mut(Axis(0)).enumerate() {
