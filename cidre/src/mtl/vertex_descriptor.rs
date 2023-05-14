@@ -310,11 +310,11 @@ define_obj_type!(
 );
 
 impl VertexAttributeDescriptor {
-    #[objc::msg_send(vertexFormat)]
-    pub fn vertex_format(&self) -> VertexFormat;
+    #[objc::msg_send(format)]
+    pub fn format(&self) -> VertexFormat;
 
-    #[objc::msg_send(setVertexFormat:)]
-    pub fn set_vertex_format(&mut self, value: VertexFormat);
+    #[objc::msg_send(setFormat:)]
+    pub fn set_format(&mut self, value: VertexFormat);
 
     #[objc::msg_send(offset)]
     pub fn offset(&self) -> usize;
@@ -383,7 +383,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let descriptor = mtl::VertexDescriptor::new();
+        let mut descriptor = mtl::VertexDescriptor::new();
+        let attrs = descriptor.attributes_mut();
+        attrs[0].set_format(mtl::VertexFormat::U8x2);
+        assert_eq!(descriptor.attributes()[0].format(), mtl::VertexFormat::U8x2);
         let descriptor = mtl::VertexBufferLayoutDescriptor::new();
         assert_eq!(descriptor.stride(), 0);
     }
