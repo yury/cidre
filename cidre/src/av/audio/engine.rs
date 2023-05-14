@@ -155,17 +155,23 @@ impl Engine {
     #[objc::msg_send(outputNode)]
     pub fn output_node(&self) -> &OutputNode;
 
+    #[objc::msg_send(outputNode)]
+    pub fn output_node_mut(&self) -> &mut OutputNode;
+
     #[objc::msg_send(mainMixerNode)]
     pub fn main_mixer_node(&self) -> &MixerNode;
 
+    #[objc::msg_send(mainMixerNode)]
+    pub fn main_mixer_node_mut(&mut self) -> &mut MixerNode;
+
     #[objc::msg_send(reset)]
-    pub fn reset(&self);
+    pub fn reset(&mut self);
 
     #[objc::msg_send(pause)]
-    pub fn pause(&self);
+    pub fn pause(&mut self);
 
     #[objc::msg_send(stop)]
-    pub fn stop(&self);
+    pub fn stop(&mut self);
 
     #[objc::msg_send(isRunning)]
     pub fn is_running(&self) -> bool;
