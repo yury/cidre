@@ -214,9 +214,9 @@ impl Lib {
     ) -> Result<arc::R<Fn>, &'ar ns::Error> {
         let mut error = None;
 
-        let res = unsafe { Self::new_fn_with_consts_err(self, name, constant_values, &mut error) };
-
-        if let Some(func) = res {
+        if let Some(func) =
+            unsafe { Self::new_fn_with_consts_err(self, name, constant_values, &mut error) }
+        {
             Ok(func)
         } else {
             Err(error.unwrap())
@@ -238,9 +238,9 @@ impl Lib {
     ) -> Result<arc::R<Fn>, &'ar ns::Error> {
         let mut error = None;
 
-        let res = unsafe { Self::new_fn_with_desc_err(self, name, descriptor, &mut error) };
-
-        if let Some(func) = res {
+        if let Some(func) =
+            unsafe { Self::new_fn_with_desc_err(self, name, descriptor, &mut error) }
+        {
             Ok(func)
         } else {
             Err(unsafe { error.unwrap_unchecked() })
