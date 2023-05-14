@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, mlc, mtl, ns, objc};
+use crate::{arc, define_obj_type, mlc, mtl, ns, objc};
 
 define_obj_type!(Device(ns::Id), MLC_DEVICE);
 impl Device {

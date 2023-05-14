@@ -452,16 +452,10 @@ impl Drop for FileID {
 }
 
 /// Identifier for an audio file type.
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 #[doc(alias = "AudioFileTypeID")]
 #[repr(transparent)]
 pub struct FileTypeID(pub u32);
-
-impl Default for FileTypeID {
-    fn default() -> Self {
-        Self(0)
-    }
-}
 
 impl FileTypeID {
     /// Audio Interchange File Format (AIFF)

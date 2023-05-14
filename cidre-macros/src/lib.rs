@@ -160,7 +160,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
 pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let mut original_trait = tr.clone();
 
-    let mut iter = tr.into_iter();
+    let iter = tr.into_iter();
     let mut before_trait_name_tokens = vec![];
     let mut after_trait_name_tokens = vec![];
     let mut trait_name = "".to_string();
