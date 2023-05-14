@@ -1,3 +1,5 @@
+use std::mem::MaybeUninit;
+
 use crate::{
     cg, cm, cv, define_obj_type, ns, objc,
     vn::{self, ElementType},
@@ -188,26 +190,28 @@ impl FeaturePrintObservation {
     pub fn vec_f32(&self) -> Vec<f32> {
         debug_assert!(self.element_type() == ElementType::F32);
         let count = self.element_count();
-        let mut vec = Vec::with_capacity(count);
+        let mut vec: Vec<MaybeUninit<f32>> = Vec::with_capacity(count);
         unsafe {
             vec.set_len(count);
             let ptr = vec.as_mut_ptr() as *mut u8;
-            self.data().get_bytes(ptr, count * 4);
+            self.data()
+                .get_bytes(ptr, count * std::mem::size_of::<f32>());
+            std::mem::transmute(vec)
         }
-        vec
     }
 
     #[inline]
     pub fn vec_f64(&self) -> Vec<f64> {
         debug_assert!(self.element_type() == ElementType::F64);
         let count = self.element_count();
-        let mut vec = Vec::with_capacity(count);
+        let mut vec: Vec<MaybeUninit<f64>> = Vec::with_capacity(count);
         unsafe {
             vec.set_len(count);
             let ptr = vec.as_mut_ptr() as *mut u8;
-            self.data().get_bytes(ptr, count * 8);
+            self.data()
+                .get_bytes(ptr, count * std::mem::size_of::<f64>());
+            std::mem::transmute(vec)
         }
-        vec
     }
 
     /// # Safety

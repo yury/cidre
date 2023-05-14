@@ -148,14 +148,14 @@ pub enum DataType {
     ComplexF16 = Self::FLOAT_BIT | Self::COMPLEX_BIT | 32u32,
 
     /// Signed 8-bit integer.
-    I8 = Self::SIGNED_BIT as u32 | 8u32,
+    I8 = Self::SIGNED_BIT | 8u32,
 
     ///  Signed 16-bit integer.
-    I16 = Self::SIGNED_BIT as u32 | 16u32,
+    I16 = Self::SIGNED_BIT | 16u32,
 
     ///
-    I32 = Self::SIGNED_BIT as u32 | 32u32,
-    I64 = Self::SIGNED_BIT as u32 | 64u32,
+    I32 = Self::SIGNED_BIT | 32u32,
+    I64 = Self::SIGNED_BIT | 64u32,
 
     /// Unsigned 8-bit integer. Not normalized
     U8 = 8,
