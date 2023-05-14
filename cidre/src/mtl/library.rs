@@ -309,7 +309,6 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-
     use crate::{blocks, mtl, ns};
 
     #[test]
