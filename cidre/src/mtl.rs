@@ -58,6 +58,7 @@ pub use heap::Type as HeapType;
 mod library;
 pub use library::Attribute;
 pub use library::CompileOptions;
+pub use library::CompileSymbolVisibility;
 pub use library::Error as LibraryError;
 pub use library::ErrorDomain as LibraryErrorDomain;
 pub use library::Fn;

@@ -1,7 +1,6 @@
 use crate::{cf, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(Null(ns::Id));
-
 impl Null {
     define_cls!(NS_NULL);
 

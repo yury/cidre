@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
 // typedef NS_ENUM(NSUInteger, MTLPatchType) {
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PatchType {
     None = 0,
@@ -84,6 +84,14 @@ pub enum OptimizationLevel {
     Size = 1,
 }
 
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum CompileSymbolVisibility {
+    #[default]
+    Default = 0,
+    Hidden = 1,
+}
+
 define_obj_type!(CompileOptions(ns::Id));
 
 impl arc::A<CompileOptions> {
@@ -123,6 +131,24 @@ impl CompileOptions {
 
     #[objc::msg_send(setLanguageVersion:)]
     pub fn set_language_version(&mut self, value: LanguageVersion);
+
+    #[objc::msg_send(compileSymbolVisibility)]
+    pub fn compile_symbol_visibility(&self) -> CompileSymbolVisibility;
+
+    #[objc::msg_send(setCompileSymbolVisibility:)]
+    pub fn set_compile_symbol_visibility(&mut self, value: CompileSymbolVisibility);
+
+    #[objc::msg_send(allowReferencingUndefinedSymbols)]
+    pub fn allow_referencing_undefined_symbols(&self) -> bool;
+
+    #[objc::msg_send(setAllowReferencingUndefinedSymbols:)]
+    pub fn set_allow_referencing_undefined_symbols(&mut self, value: bool);
+
+    #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
+    pub fn max_total_threads_per_threadgroup(&self) -> usize;
+
+    #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
+    pub fn set_max_total_threads_per_threadgroup(&mut self, value: usize);
 }
 
 define_obj_type!(Fn(ns::Id));
