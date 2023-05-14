@@ -38,7 +38,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
                     let Some(TokenTree::Group(a)) = iter.next() else {
                         return None;
                     };
-                    let sel = a.stream().to_string().replace(' ', "").replace('\n', "");
+                    let sel = a.stream().to_string().replace([' ', '\n'], "");
                     return Some(ObjcAttr::MsgSend(sel));
                 }
                 return None;
@@ -53,10 +53,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
 
 fn sel_args_count(sel: TokenStream) -> usize {
     sel.into_iter()
-        .filter(|t| match t {
-            TokenTree::Punct(v) if v.as_char() == ':' => true,
-            _ => false,
-        })
+        .filter(|t| matches!(t, TokenTree::Punct(v) if v.as_char() == ':'))
         .count()
 }
 
@@ -181,7 +178,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let mut has_optionals = false;
     let mut fn_names = vec![];
 
-    while let Some(token) = iter.next() {
+    for token in iter {
         let collection = if trait_name.is_empty() {
             &mut before_trait_name_tokens
         } else {
@@ -210,7 +207,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                     }
                                 };
                                 fn_args_str = args.to_string();
-                                while let Some(tt) = iter.next() {
+                                for tt in iter.by_ref() {
                                     match tt {
                                         TokenTree::Punct(ref p) if p.as_char() == ';' => {
                                             result.push(tt);
@@ -381,10 +378,10 @@ fn add_methods_fn(fns: &[String]) -> TokenStream {
 pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
     let mut tokens = vec![];
 
-    let mut iter = tr_impl.clone().into_iter();
+    let iter = tr_impl.into_iter();
     let mut fns = vec![];
 
-    while let Some(tt) = iter.next() {
+    for tt in iter {
         match tt {
             TokenTree::Group(g) => {
                 let mut body = g.stream().into_iter();
@@ -443,7 +440,7 @@ fn gen_msg_send(
     let mut iter = func.into_iter();
     let mut pre: Vec<String> = Vec::with_capacity(3);
 
-    while let Some(t) = iter.next() {
+    for t in iter.by_ref() {
         match t {
             TokenTree::Ident(v) => {
                 let s = v.to_string();

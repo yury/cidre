@@ -259,7 +259,7 @@ impl Stream {
         Self::alloc().init_with_filter_configuration_delegate::<D>(
             filter,
             configuration,
-            Some(&delegate),
+            Some(delegate),
         )
     }
 

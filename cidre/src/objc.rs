@@ -25,7 +25,7 @@ impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
             // let a = a.init();
 
             let ptr: *mut u8 = transmute(a);
-            let d_ptr: *mut std::mem::ManuallyDrop<I> = ptr.offset(NS_OBJECT_SIZE as _) as _;
+            let d_ptr: *mut std::mem::ManuallyDrop<I> = ptr.add(NS_OBJECT_SIZE) as _;
             *d_ptr = std::mem::ManuallyDrop::new(var);
 
             std::mem::transmute(ptr)

@@ -162,3 +162,4 @@ pub use operation::OperationQueue;
 
 mod coder;
 pub use coder::Coder;
+pub use coder::DecodingFailurePolicy;

@@ -4,7 +4,7 @@ use std::process::Command;
 
 fn xc_feature_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     let env_var = format!("CARGO_FEATURE_{}", pomace.to_uppercase());
-    if env::var_os(&env_var).is_some() {
+    if env::var_os(env_var).is_some() {
         xc_build(pomace, sdk, arch, configuration)
     }
 }

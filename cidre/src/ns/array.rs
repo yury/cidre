@@ -157,7 +157,7 @@ impl From<&[&str]> for arc::R<ns::Array<ns::String>> {
     fn from(value: &[&str]) -> Self {
         let mut values = Vec::with_capacity(value.len());
         for v in value.iter() {
-            values.push(ns::String::with_str(*v));
+            values.push(ns::String::with_str(v));
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
     }

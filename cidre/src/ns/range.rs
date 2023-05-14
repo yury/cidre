@@ -37,7 +37,7 @@ impl Range {
     /// ```
     #[inline]
     pub fn location_in_range(location: UInteger, range: &Self) -> bool {
-        !(location < range.location) && (location - range.location) < range.length
+        location >= range.location && (location - range.location) < range.length
     }
 
     /// ```
