@@ -26,37 +26,40 @@ impl AudioDataOutputSampleBufferDelegateImpl for OutputDelegate {
         sample_buffer: &cm::SampleBuffer,
         _connection: &av::CaptureConnection,
     ) {
-        println!("sample buffer: {:?}", sample_buffer.format_description());
+        println!("sample buffer: {:?}", sample_buffer.num_samples());
     }
 }
 
 fn main() {
-    let device_types = ns::Array::from_slice(&[
-        DeviceType::built_in_microphone(),
-        DeviceType::external_unknown(),
-    ]);
-    let discovery_session = DiscoverySession::with_device_types_media_and_position(
-        &device_types,
-        Some(av::MediaType::audio()),
-        DevicePosition::Unspecified,
-    );
+    let mic = {
+        let device_types = ns::Array::from_slice(&[
+            DeviceType::built_in_microphone(),
+            DeviceType::external_unknown(),
+        ]);
+        let discovery_session = DiscoverySession::with_device_types_media_and_position(
+            &device_types,
+            Some(av::MediaType::audio()),
+            DevicePosition::Unspecified,
+        );
+        discovery_session.devices().last().unwrap().retained()
+    };
 
-    let audio_input =
-        av::CaptureDeviceInput::with_device(discovery_session.devices().last().unwrap()).unwrap();
+    let input = DeviceInput::with_device(mic.as_ref()).unwrap();
+
     let mut session = av::CaptureSession::new();
 
-    if session.can_add_input(&audio_input) {
-        session.add_input(&audio_input);
+    if session.can_add_input(&input) {
+        session.add_input(&input);
     } else {
         panic!("can't add input");
     }
 
     let queue = dispatch::Queue::new();
     let delegate = OutputDelegate::with(OutputDelegateInner {});
-    let mut audio_output = av::capture::AudioDataOutput::new();
-    audio_output.set_sample_buffer_delegate(Some(delegate.as_ref()), Some(&queue));
+    let mut output = av::capture::AudioDataOutput::new();
+    output.set_sample_buffer_delegate(Some(delegate.as_ref()), Some(&queue));
 
-    session.add_output(&audio_output);
+    session.add_output(&output);
 
     session.start_running();
 

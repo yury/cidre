@@ -76,6 +76,9 @@ impl<T: Obj> Array<T> {
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
+    #[objc::msg_send(firstObject)]
+    pub fn first(&self) -> Option<&T>;
+
     #[objc::msg_send(lastObject)]
     pub fn last(&self) -> Option<&T>;
 
