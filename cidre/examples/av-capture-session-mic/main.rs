@@ -47,6 +47,8 @@ fn main() {
 
     if session.can_add_input(&audio_input) {
         session.add_input(&audio_input);
+    } else {
+        panic!("can't add input");
     }
 
     let queue = dispatch::Queue::new();

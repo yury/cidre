@@ -1,7 +1,7 @@
 use cidre::{
     av,
     av::{capture::device, MediaType},
-    cf,
+    ns,
 };
 
 fn main() {
@@ -15,7 +15,7 @@ fn main() {
     )
     .expect("device");
 
-    let mut types = cf::ArrayOfMut::with_capacity(1);
+    let mut types = ns::ArrayMut::with_capacity(1);
     types.push(device::Type::built_in_wide_angle_camera());
     let discrover_session = device::DiscoverySession::with_device_types_media_and_position(
         &types,
