@@ -342,20 +342,19 @@ pub mod notifications {
 define_obj_type!(CaptureAudioChannel(ns::Id));
 
 define_obj_type!(DiscoverySession(ns::Id));
-
 impl DiscoverySession {
     define_cls!(AV_CAPTURE_DEVICE_DISCOVERY_SESSION);
 
     #[objc::cls_msg_send(discoverySessionWithDeviceTypes:mediaType:position:)]
     pub fn with_device_types_media_and_position_ar(
-        device_types: &cf::ArrayOf<Type>,
+        device_types: &ns::Array<Type>,
         media_type: Option<&MediaType>,
         position: Position,
     ) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
     pub fn with_device_types_media_and_position(
-        device_types: &cf::ArrayOf<Type>,
+        device_types: &ns::Array<Type>,
         media_type: Option<&MediaType>,
         position: Position,
     ) -> arc::R<Self>;

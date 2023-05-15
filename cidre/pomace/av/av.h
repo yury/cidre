@@ -18,6 +18,7 @@ Class AV_CAPTURE_MULTI_CAM_SESSION;
 Class AV_CAPTURE_METADATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_DISCOVERY_SESSION;
 Class AV_CAPTURE_VIDEO_DATA_OUTPUT;
+Class AV_CAPTURE_AUDIO_DATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_INPUT;
 
 Class AV_AUDIO_PLAYER_NODE;
@@ -52,6 +53,7 @@ static void mtl_initializer(void)
     AV_CAPTURE_SESSION = [AVCaptureSession class];
     AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
     AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
+    AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
     AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
 #if TARGET_OS_OSX
 #else

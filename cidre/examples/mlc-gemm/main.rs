@@ -34,8 +34,8 @@ fn main() {
     let c = ns::String::with_str("C");
 
     let keys = [a.as_ref(), b.as_ref(), c.as_ref()];
-    let inputs =
-        ns::Dictionary::with_keys_values(&keys, &[t_a.as_ref(), t_b.as_ref(), t_c.as_ref()]);
+    let values = [t_a.as_ref(), t_b.as_ref(), t_c.as_ref()];
+    let inputs = ns::Dictionary::with_keys_values(&keys, &values);
     plan.add_inputs(&inputs).unwrap();
 
     plan.compile(Default::default(), &mlc::Device::new())

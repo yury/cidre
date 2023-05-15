@@ -1,19 +1,56 @@
-use crate::{
-    arc,
-    av::{self, FileType},
-    define_obj_type, dispatch, ns, objc,
-};
+use crate::{arc, av, cm, define_obj_type, dispatch, ns, objc};
 
 use super::Output;
+
+#[objc::obj_trait]
+pub trait VideoDataOutputSampleBufferDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:didOutputSampleBuffer:fromConnection:)]
+    fn capture_output_did_output_sample_buffer_from_connection(
+        &mut self,
+        output: &av::CaptureOutput,
+        sample_buffer: &cm::SampleBuffer,
+        connection: &av::CaptureConnection,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:didDropSampleBuffer:fromConnection:)]
+    fn capture_output_did_drop_sample_buffer_from_connection(
+        &mut self,
+        output: &av::CaptureOutput,
+        sample_buffer: &cm::SampleBuffer,
+        connection: &av::CaptureConnection,
+    );
+}
 
 define_obj_type!(VideoDataOutput(Output), AV_CAPTURE_VIDEO_DATA_OUTPUT);
 
 impl VideoDataOutput {
+    #[objc::msg_send(setSampleBufferDelegate:queue:)]
+    pub fn set_sample_buffer_delegate<D: VideoDataOutputSampleBufferDelegate>(
+        &mut self,
+        delegate: Option<&D>,
+        queue: Option<&dispatch::Queue>,
+    );
+
     #[objc::msg_send(alwaysDiscardsLateVideoFrames)]
     pub fn always_discard_late_video_frames(&self) -> bool;
 
     #[objc::msg_send(setAlwaysDiscardsLateVideoFrames:)]
     pub fn set_always_discard_late_video_frames(&mut self, value: bool);
+
+    /// Indicates whether the receiver automatically configures the size of output buffers.
+    #[objc::msg_send(automaticallyConfiguresOutputBufferDimensions)]
+    pub fn automatically_configures_output_buffer_dimensions(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyConfiguresOutputBufferDimensions:)]
+    pub fn set_automatically_configures_output_buffer_dimensions(&mut self, value: bool);
+
+    #[objc::msg_send(deliversPreviewSizedOutputBuffers)]
+    pub fn delivers_preview_sized_output_buffers(&self) -> bool;
+
+    #[objc::msg_send(setDeliversPreviewSizedOutputBuffers:)]
+    pub fn set_delivers_preview_sized_output_buffers(&mut self, value: bool);
 
     /// Indicates the supported video pixel formats that can be specified in videoSettings.
     ///
@@ -52,7 +89,7 @@ impl VideoDataOutput {
     pub fn recommended_video_settings_for_video_codec_type_asset_writer_output_file_type<'a>(
         &'a self,
         codec_type: &av::VideoCodecType,
-        output_file_type: &FileType,
+        output_file_type: &av::FileType,
     ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
 }
 
