@@ -46,7 +46,7 @@ fn main() {
 
     let input = DeviceInput::with_device(mic.as_ref()).unwrap();
 
-    let mut session = av::CaptureSession::new();
+    let mut session = Session::new();
 
     if session.can_add_input(&input) {
         session.add_input(&input);
