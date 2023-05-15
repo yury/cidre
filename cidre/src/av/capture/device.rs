@@ -62,14 +62,36 @@ impl Type {
         unsafe { AVCaptureDeviceTypeBuiltInTripleCamera }
     }
 
+    /// A device that consists of two cameras, one YUV and one Infrared.
+    /// The infrared camera provides high quality depth information that is synchronized
+    /// and perspective corrected to frames produced by the YUV camera. While the resolution
+    /// of the depth data and YUV frames may differ, their field of view and aspect ratio
+    /// always match. Note that devices of this type may only be discovered using an
+    /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInTrueDepthCamera")]
     pub fn built_in_true_depth_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTrueDepthCamera }
     }
-
+    /// A device that consists of two cameras, one YUV and one LiDAR.
+    /// The LiDAR camera provides high quality, high accuracy depth information by measuring
+    /// the round trip of an artificial light signal emitted by a laser. The depth
+    /// is synchronized and perspective corrected to frames produced by the paired YUV camera.
+    /// While the resolution of the depth data and YUV frames may differ, their field of view
+    /// and aspect ratio always match. Note that devices of this type may only be discovered
+    /// using an av::CaptureDeviceDiscoverySession or
+    /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInLiDARDepthCamera")]
     pub fn built_in_lidar_depth_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInLiDARDepthCamera }
+    }
+
+    /// A distortion corrected cut out from an ultra wide camera, made to approximate
+    /// an overhead camera pointing at a desk.
+    /// Supports multicam operation.
+    #[doc(alias = "AVCaptureDeviceTypeDeskViewCamera")]
+    #[cfg(target_os = "macos")]
+    pub fn desk_view_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeDeskViewCamera }
     }
 }
 
@@ -87,6 +109,8 @@ extern "C" {
     static AVCaptureDeviceTypeBuiltInTripleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTrueDepthCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInLiDARDepthCamera: &'static Type;
+    #[cfg(target_os = "macos")]
+    static AVCaptureDeviceTypeDeskViewCamera: &'static Type;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
