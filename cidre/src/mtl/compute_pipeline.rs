@@ -84,7 +84,7 @@ mod tests {
 
         let lb = desc.label().unwrap();
 
-        assert!(lb.is_equal(&label));
+        assert!(lb.eq(&label));
 
         assert_eq!(
             false,
