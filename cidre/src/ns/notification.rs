@@ -112,7 +112,7 @@ extern "C" {
 mod tests {
     use std::sync::{Arc, Mutex};
 
-    use crate::{blocks, cf, ns};
+    use crate::{blocks, ns};
 
     #[test]
     fn basics() {

@@ -2,16 +2,17 @@ use std::ops::{Index, IndexMut};
 
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
-#[derive(Debug, PartialEq, Copy, Clone, Eq)]
+#[derive(Debug, Default, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
 pub enum LoadAction {
+    #[default]
     DontCare = 0,
     Load = 1,
     Clear = 2,
 }
 
 /// Types of actions performed for an attachment at the end of a rendering pass.
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreAction {
     /// The GPU has permission to discard the rendered contents of the attachment
@@ -21,6 +22,7 @@ pub enum StoreAction {
     /// but not afterwards. Some GPUs may still store the contents back to the texture,
     /// but you can’t rely on that behavior. You must assume that GPU discarded
     /// the texture’s contents.
+    #[default]
     DontCare = 0,
     /// The GPU stores the rendered contents to the texture.
     Store = 1,
@@ -62,9 +64,10 @@ pub enum StoreAction {
     CustomSampleDepthStore = 5,
 }
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreActionOptions {
+    #[default]
     None = 0,
     CustomSamplePositions = 1 << 0,
 }
@@ -125,14 +128,9 @@ impl ClearColor {
         }
     }
 }
-
-define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
-
-define_obj_type!(AttachmentDescriptor(ns::Id));
-define_obj_type!(ColorAttachmentDescriptor(AttachmentDescriptor));
-define_obj_type!(DepthAttachmentDescriptor(AttachmentDescriptor));
 define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
 
+define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
 impl Descriptor {
     #[objc::msg_send(colorAttachments)]
     pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray;
@@ -187,7 +185,6 @@ impl Descriptor {
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
-
 impl ColorAttachmentDescriptorArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn get_at(&self, index: usize) -> Option<&ColorAttachmentDescriptor>;
@@ -215,6 +212,7 @@ impl IndexMut<usize> for ColorAttachmentDescriptorArray {
     }
 }
 
+define_obj_type!(AttachmentDescriptor(ns::Id));
 impl AttachmentDescriptor {
     #[objc::msg_send(texture)]
     pub fn texture(&self) -> Option<&mtl::Texture>;
@@ -288,6 +286,7 @@ extern "C" {
     static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Descriptor>;
 }
 
+define_obj_type!(ColorAttachmentDescriptor(AttachmentDescriptor));
 impl ColorAttachmentDescriptor {
     #[objc::msg_send(clearColor)]
     pub fn clear_color(&self) -> ClearColor;
@@ -304,6 +303,7 @@ pub enum MultisampleDepthResolveFilter {
     Max = 2,
 }
 
+define_obj_type!(DepthAttachmentDescriptor(AttachmentDescriptor));
 impl DepthAttachmentDescriptor {
     #[objc::msg_send(clearDepth)]
     pub fn clear_depth(&self) -> f64;
