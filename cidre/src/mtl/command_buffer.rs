@@ -111,6 +111,19 @@ impl CmdBuf {
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<arc::R<mtl::RenderCmdEncoder>>;
 
+    pub fn render<F: FnMut(&mut mtl::RenderCmdEncoder)>(
+        &mut self,
+        descriptor: &mtl::RenderPassDescriptor,
+        mut commands: F,
+    ) {
+        let Some(mut encoder) = self.new_render_cmd_enc(descriptor) else {
+            // TODO: should be error
+            return;
+        };
+        commands(&mut encoder);
+        encoder.end_encoding();
+    }
+
     /// Add a drawable present that will be invoked when this command buffer has
     /// been scheduled for execution.
     ///

@@ -105,17 +105,13 @@ fn main() {
             .unwrap();
 
         let cmd_queue = device.new_cmd_queue().unwrap();
-        let cmd_buf = cmd_queue.new_cmd_buf().unwrap();
+        let mut cmd_buf = cmd_queue.new_cmd_buf().unwrap();
 
-        let mut encoder = cmd_buf.new_render_cmd_enc(&render_pass_desc).unwrap();
-
-        encoder.set_render_ps(&render_ps);
-
-        encoder.set_vertex_buf_at(Some(&vertex_buffer), 0, 0);
-
-        encoder.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
-
-        encoder.end_encoding();
+        cmd_buf.render(&render_pass_desc, |enc| {
+            enc.set_render_ps(&render_ps);
+            enc.set_vertex_buf_at(Some(&vertex_buffer), 0, 0);
+            enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
+        });
 
         cmd_buf.commit();
 
