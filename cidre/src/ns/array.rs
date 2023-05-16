@@ -159,7 +159,13 @@ impl<T: Obj> arc::R<ArrayMut<T>> {
 impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}
 impl<T: Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
 
-impl From<&[&str]> for arc::R<ns::Array<ns::String>> {
+impl<T: Obj> From<&[&T]> for arc::R<Array<T>> {
+    fn from(value: &[&T]) -> Self {
+        Array::from_slice(value)
+    }
+}
+
+impl From<&[&str]> for arc::R<Array<ns::String>> {
     fn from(value: &[&str]) -> Self {
         let mut values = Vec::with_capacity(value.len());
         for v in value.iter() {
