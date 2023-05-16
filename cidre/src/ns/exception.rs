@@ -149,7 +149,7 @@ pub fn get_uncaought_exception_handler() -> *const UncaughtExceptionHandler {
     unsafe { NSGetUncaughtExceptionHandler() }
 }
 
-pub fn set_uncaught_exception_handler(handler: *const UncaughtExceptionHandler) {
+pub unsafe fn set_uncaught_exception_handler(handler: *const UncaughtExceptionHandler) {
     unsafe { NSSetUncaughtExceptionHandler(handler) }
 }
 

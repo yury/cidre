@@ -8,7 +8,7 @@ extern "C" fn exception_handler(exception: &ns::Exception) {
 }
 
 fn main() {
-    ns::set_uncaught_exception_handler(exception_handler as _);
+    unsafe { ns::set_uncaught_exception_handler(exception_handler as _) };
 
     // ns::Exception::raise(&cf::String::from_str("str"));
 

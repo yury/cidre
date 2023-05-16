@@ -1,3 +1,4 @@
+use std::mem::MaybeUninit;
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref};
 
 use crate::{arc, cf, define_cf_type};
@@ -48,13 +49,12 @@ where
 {
     pub fn values(&self) -> Vec<arc::R<T>> {
         let len = self.len();
-        let mut vec: Vec<arc::R<T>> = Vec::with_capacity(len);
+        let mut vec: Vec<MaybeUninit<arc::R<T>>> = Vec::with_capacity(len);
         unsafe {
             vec.set_len(len);
             self.get_values(vec.as_mut_ptr() as _);
-        };
-
-        vec
+            std::mem::transmute(vec)
+        }
     }
 }
 
