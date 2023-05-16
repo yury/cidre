@@ -354,7 +354,6 @@ impl<'a> Session<'a> {
 
 impl<'a> Drop for Session<'a> {
     fn drop(&mut self) {
-        println!("dropping session");
         _ = unsafe { AMDeviceStopSession(self) };
     }
 }
