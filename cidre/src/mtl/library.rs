@@ -344,7 +344,7 @@ mod tests {
         let source = ns::String::with_str("vid function_a() {}");
         let err = device.new_lib_with_src(&source, None).unwrap_err();
 
-        assert_eq!(mtl::LibraryError::CompileFailure, err.code());
+        assert_eq!(mtl::LibError::CompileFailure, err.code());
     }
 
     #[test]
