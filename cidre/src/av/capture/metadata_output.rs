@@ -15,7 +15,6 @@ pub trait MetadataOutputObjectsDelegate {
 }
 
 define_obj_type!(MetadataOutput(Output), AV_CAPTURE_METADATA_OUTPUT);
-
 impl MetadataOutput {
     #[objc::msg_send(setMetadataObjectsDelegate:queue:)]
     pub fn set_meta_data_objects_delegate<D: MetadataOutputObjectsDelegate>(
