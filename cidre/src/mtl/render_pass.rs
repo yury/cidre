@@ -115,6 +115,15 @@ impl ClearColor {
             alpha: 1.0,
         }
     }
+
+    pub const fn clear() -> Self {
+        Self {
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 0.0,
+        }
+    }
 }
 
 define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
