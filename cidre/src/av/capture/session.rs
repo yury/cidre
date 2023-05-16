@@ -156,34 +156,34 @@ impl MultiCamSession {
 define_obj_type!(Connection(ns::Id));
 
 pub mod notifications {
-    use crate::cf;
+    use crate::ns;
 
-    pub fn runtime_error() -> &'static cf::NotificationName {
+    pub fn runtime_error() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionRuntimeErrorNotification }
     }
 
-    pub fn did_start_running() -> &'static cf::NotificationName {
+    pub fn did_start_running() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionDidStartRunningNotification }
     }
 
-    pub fn did_stop_running() -> &'static cf::NotificationName {
+    pub fn did_stop_running() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionDidStopRunningNotification }
     }
 
-    pub fn was_interrupted() -> &'static cf::NotificationName {
+    pub fn was_interrupted() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionWasInterruptedNotification }
     }
 
-    pub fn interruption_ended() -> &'static cf::NotificationName {
+    pub fn interruption_ended() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionInterruptionEndedNotification }
     }
 
     #[link(name = "AVFoundation", kind = "framework")]
     extern "C" {
-        static AVCaptureSessionRuntimeErrorNotification: &'static cf::NotificationName;
-        static AVCaptureSessionDidStartRunningNotification: &'static cf::NotificationName;
-        static AVCaptureSessionDidStopRunningNotification: &'static cf::NotificationName;
-        static AVCaptureSessionWasInterruptedNotification: &'static cf::NotificationName;
-        static AVCaptureSessionInterruptionEndedNotification: &'static cf::NotificationName;
+        static AVCaptureSessionRuntimeErrorNotification: &'static ns::NotificationName;
+        static AVCaptureSessionDidStartRunningNotification: &'static ns::NotificationName;
+        static AVCaptureSessionDidStopRunningNotification: &'static ns::NotificationName;
+        static AVCaptureSessionWasInterruptedNotification: &'static ns::NotificationName;
+        static AVCaptureSessionInterruptionEndedNotification: &'static ns::NotificationName;
     }
 }
