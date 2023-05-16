@@ -95,6 +95,10 @@ impl Session {
 
     #[objc::msg_send(setUsesApplicationAudioSession:)]
     pub fn set_uses_application_audio_session(&mut self, value: bool);
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(hardwareCost)]
+    pub fn hardware_cost(&self) -> f32;
 }
 
 #[link(name = "av", kind = "static")]
