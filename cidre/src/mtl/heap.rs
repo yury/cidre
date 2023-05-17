@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Default)]
 #[repr(isize)]
 pub enum Type {
     /// A heap that automatically places new resource allocations.
@@ -8,6 +8,7 @@ pub enum Type {
     /// In this mode, resources are placed in the heap automatically.
     /// Automatically placed resources have optimal GPU-specific layout, and may perform better than mtl::HeapType::Placement.
     /// This heap type is recommended when the heap primarily contains temporary write-often resources.
+    #[default]
     Automatic = 0,
 
     /// The app controls placement of resources on the heap.

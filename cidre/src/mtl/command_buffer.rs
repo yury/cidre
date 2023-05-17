@@ -81,11 +81,29 @@ impl CmdBuf {
     #[objc::rar_retain()]
     pub fn new_blit_cmd_enc(&self) -> Option<arc::R<mtl::BlitCmdEncoder>>;
 
+    pub fn blit<F: FnMut(&mut mtl::BlitCmdEncoder)>(&mut self, mut commands: F) {
+        let Some(mut encoder) = self.new_blit_cmd_enc() else {
+            // TODO: should be error
+            return;
+        };
+        commands(&mut encoder);
+        encoder.end_encoding();
+    }
+
     #[objc::msg_send(computeCommandEncoder)]
     pub fn new_compute_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
 
     #[objc::rar_retain()]
     pub fn new_compute_cmd_enc(&self) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
+
+    pub fn compute<F: FnMut(&mut mtl::ComputeCmdEncoder)>(&mut self, mut commands: F) {
+        let Some(mut encoder) = self.new_compute_cmd_enc() else {
+            // TODO: should be error
+            return;
+        };
+        commands(&mut encoder);
+        encoder.end_encoding();
+    }
 
     #[objc::msg_send(computeCommandEncoderWithDescriptor:)]
     pub fn new_compute_cmd_enc_desc_ar(
