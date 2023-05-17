@@ -82,10 +82,9 @@ impl CmdBuf {
     pub fn new_blit_cmd_enc(&self) -> Option<arc::R<mtl::BlitCmdEncoder>>;
 
     pub fn blit<F: FnMut(&mut mtl::BlitCmdEncoder)>(&mut self, mut commands: F) {
-        let Some(mut encoder) = self.new_blit_cmd_enc() else {
-            // TODO: should be error
-            return;
-        };
+        let mut encoder = self
+            .new_blit_cmd_enc()
+            .expect("Can't create blit command encoder");
         commands(&mut encoder);
         encoder.end_encoding();
     }
@@ -97,10 +96,9 @@ impl CmdBuf {
     pub fn new_compute_cmd_enc(&self) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     pub fn compute<F: FnMut(&mut mtl::ComputeCmdEncoder)>(&mut self, mut commands: F) {
-        let Some(mut encoder) = self.new_compute_cmd_enc() else {
-            // TODO: should be error
-            return;
-        };
+        let mut encoder = self
+            .new_compute_cmd_enc()
+            .expect("Can't create compute command encoder");
         commands(&mut encoder);
         encoder.end_encoding();
     }
@@ -134,10 +132,9 @@ impl CmdBuf {
         descriptor: &mtl::RenderPassDescriptor,
         mut commands: F,
     ) {
-        let Some(mut encoder) = self.new_render_cmd_enc(descriptor) else {
-            // TODO: should be error
-            return;
-        };
+        let mut encoder = self
+            .new_render_cmd_enc(descriptor)
+            .expect("Can't create render command encoder");
         commands(&mut encoder);
         encoder.end_encoding();
     }
