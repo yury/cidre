@@ -40,18 +40,18 @@ fn main() {
             av::FileType::mp4()
         )
     );
-
-    session.begin_configuration();
-
-    if session.can_add_output(&video_output) {
-        session.add_output(&video_output);
-    }
-
     let device_input = av::CaptureDeviceInput::with_device(&device).expect("intput");
-    println!("{:?}", device_input);
-    if session.can_add_input(&device_input) {
-        session.add_input(&device_input)
-    }
+
+    session.configure(|s| {
+        if s.can_add_output(&video_output) {
+            s.add_output(&video_output);
+        }
+
+        println!("{:?}", device_input);
+        if s.can_add_input(&device_input) {
+            s.add_input(&device_input)
+        }
+    });
     println!("{:?}", video_output.available_video_cv_pixel_format_types());
     println!("{:?}", video_output.available_video_codec_types());
     println!("{:?}", video_output.video_settings());
@@ -67,7 +67,5 @@ fn main() {
             av::FileType::mp4()
         )
     );
-
-    session.commit_configuration();
     session.start_running();
 }

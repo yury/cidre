@@ -84,6 +84,12 @@ impl Session {
     #[objc::msg_send(commitConfiguration)]
     pub fn commit_configuration(&mut self);
 
+    pub fn configure<F: FnMut(&mut Self)>(&mut self, mut config: F) {
+        self.begin_configuration();
+        config(self);
+        self.commit_configuration();
+    }
+
     #[objc::msg_send(startRunning)]
     pub fn start_running(&mut self);
 

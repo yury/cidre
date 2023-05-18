@@ -45,21 +45,22 @@ fn main() {
     };
 
     let input = DeviceInput::with_device(mic.as_ref()).unwrap();
-
-    let mut session = Session::new();
-
-    if session.can_add_input(&input) {
-        session.add_input(&input);
-    } else {
-        panic!("can't add input");
-    }
-
     let queue = dispatch::Queue::new();
     let delegate = OutputDelegate::with(OutputDelegateInner {});
     let mut output = av::capture::AudioDataOutput::new();
     output.set_sample_buffer_delegate(Some(delegate.as_ref()), Some(&queue));
 
-    session.add_output(&output);
+    let mut session = Session::new();
+
+    session.configure(|s| {
+        if s.can_add_input(&input) {
+            s.add_input(&input);
+        } else {
+            panic!("can't add input");
+        }
+
+        s.add_output(&output);
+    });
 
     session.start_running();
 
