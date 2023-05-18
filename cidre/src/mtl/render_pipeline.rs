@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{arc, define_cls_init, define_mtl, define_obj_type, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
 use super::{argument::Argument, Fn, PixelFormat};
 
@@ -161,8 +161,7 @@ impl Reflection {
     pub fn tile_args(&self) -> Option<&ns::Array<Argument>>;
 }
 
-define_obj_type!(Descriptor(ns::Id));
-define_cls_init!(Descriptor, MTL_RENDER_PIPELINE_DESCRIPTOR);
+define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PIPELINE_DESCRIPTOR);
 
 impl arc::R<Descriptor> {
     #[inline]
