@@ -266,7 +266,39 @@ define_obj_type!(TileRenderPipelineColorAttachmentDescriptorArray(ns::Id));
 define_obj_type!(TileRenderPipelineDescriptor(ns::Id));
 
 impl TileRenderPipelineDescriptor {
-    define_mtl!(reset);
+    define_mtl!(reset, label, set_label);
+
+    #[objc::msg_send(tileFunction)]
+    pub fn tile_fn(&self) -> &mtl::Fn;
+
+    #[objc::msg_send(setTileFunction:)]
+    pub fn set_tile_fn(&mut self, value: &mtl::Fn);
+
+    #[objc::msg_send(rasterSampleCount)]
+    pub fn raster_sample_count(&self) -> usize;
+
+    #[objc::msg_send(setRasterSampleCount:)]
+    pub fn set_raster_sample_count(&mut self, value: usize);
+
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attachments(&self) -> &TileRenderPipelineColorAttachmentDescriptorArray;
+
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attachments_mut(
+        &mut self,
+    ) -> &mut TileRenderPipelineColorAttachmentDescriptorArray;
+
+    #[objc::msg_send(threadgroupSizeMatchesTileSize)]
+    pub fn threadgroup_size_matches_tile_size(&self) -> bool;
+
+    #[objc::msg_send(setThreadgroupSizeMatchesTileSize:)]
+    pub fn set_threadgroup_size_matches_tile_size(&mut self, value: bool);
+
+    #[objc::msg_send(tileBuffers)]
+    pub fn tile_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+
+    #[objc::msg_send(tileBuffers)]
+    pub fn tile_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
 }
 
 define_obj_type!(MeshRenderPipelineDescriptor(ns::Id));
