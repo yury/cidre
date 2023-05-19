@@ -28,6 +28,9 @@ pub mod ci;
 #[cfg(feature = "cf")]
 pub mod cf;
 
+#[cfg(feature = "ct")]
+pub mod ct;
+
 /// Core Graphics
 #[cfg(feature = "cg")]
 pub mod cg;

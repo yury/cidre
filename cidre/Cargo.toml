@@ -19,6 +19,7 @@ full = [
   "ca",
   "ci",
   "cm",
+  "ct",
   "av",
   "cf",
   "cg",
@@ -48,6 +49,7 @@ sc = ["ns"]
 vt = ["cf"]
 mtl = ["ns"]
 mlc = ["mtl"]
+ct = ["cf"]
 
 [dependencies]
 
