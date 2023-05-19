@@ -36,6 +36,12 @@ pub use image::Image;
 pub mod image_properties;
 pub use image_properties::Orientation as ImagePropertyOrientation;
 
+mod font;
+pub use font::Font;
+pub use font::FontPostScriptFormat;
+pub use font::Glyph;
+pub use font::Index as FontIndex;
+
 #[cfg(target_os = "macos")]
 mod display_stream;
 #[cfg(target_os = "macos")]
