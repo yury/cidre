@@ -5,11 +5,11 @@ define_cf_type!(TextureCache(cf::Type));
 impl TextureCache {
     #[inline]
     pub unsafe fn create_cache_in(
-        allocator: Option<&cf::Allocator>,
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
         cache_out: &mut Option<arc::R<TextureCache>>,
+        allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVMetalTextureCacheCreate(
             allocator,
@@ -29,11 +29,11 @@ impl TextureCache {
         unsafe {
             let mut cache_out = None;
             Self::create_cache_in(
-                None,
                 cache_attributes,
                 metal_device,
                 texture_attributes,
                 &mut cache_out,
+                None,
             )
             .to_result_unchecked(cache_out)
         }
@@ -42,7 +42,6 @@ impl TextureCache {
     #[inline]
     pub unsafe fn create_texture_in(
         &self,
-        allocator: Option<&cf::Allocator>,
         source_image: &cv::ImageBuffer,
         texture_attributes: Option<&cf::Dictionary>,
         pixel_format: mtl::PixelFormat,
@@ -50,6 +49,7 @@ impl TextureCache {
         height: usize,
         plane_index: usize,
         texture_out: &mut Option<arc::R<cv::MetalTexture>>,
+        allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVMetalTextureCacheCreateTextureFromImage(
             allocator,
@@ -77,7 +77,6 @@ impl TextureCache {
         unsafe {
             let mut texture_out = None;
             self.create_texture_in(
-                None,
                 source_image,
                 texture_attributes,
                 pixel_format,
@@ -85,6 +84,7 @@ impl TextureCache {
                 height,
                 plane_index,
                 &mut texture_out,
+                None,
             )
             .to_result_unchecked(texture_out)
         }
