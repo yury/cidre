@@ -52,11 +52,12 @@ mod test {
         let mut request = vn::ClassifyImageRequest::new();
         let supported_ids = request.supported_identifiers().unwrap();
 
+        assert!(!supported_ids.is_empty());
         assert!(request.results().is_none());
 
         request.set_revision(10);
 
-        let error = request
+        request
             .supported_identifiers()
             .expect_err("should be error");
     }
