@@ -25,6 +25,8 @@ Class AV_AUDIO_PLAYER_NODE;
 
 Class AV_AUDIO_ENGINE;
 
+Class AV_AUDIO_CONNECTION_POINT;
+
 Class AV_URL_ASSET;
 Class AV_ASSET_WRITER;
 Class AV_ASSET_READER;
@@ -65,6 +67,7 @@ static void mtl_initializer(void)
     AV_AUDIO_TIME = [AVAudioTime class];
     AV_AUDIO_UNIT_EFFECT = [AVAudioUnitEffect class];
     AV_AUDIO_UNIT_EQ = [AVAudioUnitEQ class];
+    AV_AUDIO_CONNECTION_POINT = [AVAudioConnectionPoint class];
     
     AV_AUDIO_UNIT_TIME_EFFECT = [AVAudioUnitTimeEffect class];
     
