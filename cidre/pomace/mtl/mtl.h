@@ -37,6 +37,8 @@ Class MTL_VERTEX_DESCRIPTOR;
 Class MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR;
 Class MTL_VERTEX_ATTRIBUTE_DESCRIPTOR;
 
+Class MTL_PIPELINE_BUFFER_DESCRIPTOR;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -69,6 +71,8 @@ static void mtl_initializer(void)
       
       MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR = [MTLVertexBufferLayoutDescriptor class];
       MTL_VERTEX_ATTRIBUTE_DESCRIPTOR = [MTLVertexAttributeDescriptor class];
+      
+      MTL_PIPELINE_BUFFER_DESCRIPTOR = [MTLPipelineBufferDescriptor class];
 
       initialized = 1;
     }

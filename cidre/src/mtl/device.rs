@@ -249,6 +249,12 @@ impl Device {
         )
     }
 
+    #[objc::msg_send(newDepthStencilStateWithDescriptor:)]
+    pub fn new_depth_stencil_state(
+        &self,
+        descriptor: &mtl::DepthStencilDescriptor,
+    ) -> Option<arc::R<mtl::DepthStencilState>>;
+
     #[objc::msg_send(newFence)]
     pub fn new_fence(&self) -> Option<arc::R<Fence>>;
 

@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{arc, define_mtl, define_obj_type, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 use super::{argument::Argument, Fn, PixelFormat};
 
@@ -273,6 +273,156 @@ define_obj_type!(MeshRenderPipelineDescriptor(ns::Id));
 
 impl MeshRenderPipelineDescriptor {
     define_mtl!(reset, label, set_label);
+
+    /// Optional shader function responsible for determining how many threadgroups of the mesh shader to run,
+    /// can optionally provide payload data for the mesh stage.
+    /// If this is None, no payload data is available to the mesh function, and the draw command determines
+    /// how many threadgroups of the mesh stage to run.
+    /// The default value is None.
+    #[objc::msg_send(objectFunction)]
+    pub fn object_fn(&self) -> Option<&Fn>;
+
+    #[objc::msg_send(setObjectFunction:)]
+    pub fn set_object_fn(&mut self, value: Option<&Fn>);
+
+    /// Shader function responsible for exporting a chunk of geometry per threadgroup for the rasterizer.
+    /// The default value is None.
+    #[objc::msg_send(meshFunction)]
+    pub fn mesh_fn(&self) -> Option<&Fn>;
+
+    #[objc::msg_send(setMeshFunction:)]
+    pub fn set_mesh_fn(&mut self, value: Option<&Fn>);
+
+    /// Like a classical render pipeline, this fragments covered by the rasterized geometry are shaded
+    /// with this function.
+    /// The default value is None. To create a pipeline, you must either set fragment_fn to Some,
+    /// or set_rasterization_enabled to false.
+    #[objc::msg_send(fragmentFunction)]
+    pub fn fragment_fn(&self) -> Option<&Fn>;
+
+    #[objc::msg_send(setFragmentFunction:)]
+    pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
+
+    #[objc::msg_send(maxTotalThreadsPerObjectThreadgroup)]
+    pub fn max_total_threads_per_obj_threadgroup(&self) -> usize;
+
+    #[objc::msg_send(setMaxTotalThreadsPerObjectThreadgroup:)]
+    pub fn set_max_total_threads_per_obj_threadgroup(&mut self, value: usize);
+
+    #[objc::msg_send(maxTotalThreadsPerMeshThreadgroup)]
+    pub fn max_total_threads_per_mesh_threadgroup(&self) -> usize;
+
+    #[objc::msg_send(setMaxTotalThreadsPerMeshThreadgroup:)]
+    pub fn set_max_total_threads_per_mesh_threadgroup(&mut self, value: usize);
+
+    #[objc::msg_send(objectThreadgroupSizeIsMultipleOfThreadExecutionWidth)]
+    pub fn obj_threadgroup_size_is_multiple_of_thread_execution_width(&self) -> bool;
+
+    #[objc::msg_send(setObjectThreadgroupSizeIsMultipleOfThreadExecutionWidth:)]
+    pub fn set_obj_threadgroup_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
+
+    #[objc::msg_send(meshThreadgroupSizeIsMultipleOfThreadExecutionWidth)]
+    pub fn mesh_threadgroup_size_is_multiple_of_thread_execution_width(&self) -> bool;
+
+    #[objc::msg_send(setMeshThreadgroupSizeIsMultipleOfThreadExecutionWidth:)]
+    pub fn set_mesh_threadgroup_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
+
+    #[objc::msg_send(payloadMemoryLength)]
+    pub fn payload_mem_len(&self) -> usize;
+
+    #[objc::msg_send(setPayloadMemoryLength:)]
+    pub fn set_payload_mem_len(&mut self, value: usize);
+
+    #[objc::msg_send(maxTotalThreadgroupsPerMeshGrid)]
+    pub fn max_total_threadgroups_per_mesh_grid(&self) -> usize;
+
+    #[objc::msg_send(setMaxTotalThreadgroupsPerMeshGrid:)]
+    pub fn set_max_total_threadgroups_per_mesh_grid(&mut self, value: usize);
+
+    /// Provide mutability information on the buffers used by obj_fn.
+    /// Specifying these values is optional; it may be used to optimize the shader code.
+    #[objc::msg_send(objectBuffers)]
+    pub fn obj_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+
+    #[objc::msg_send(objectBuffers)]
+    pub fn obj_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+
+    /// Specifying these values is optional; it may be used to optimize the shader code.
+    #[objc::msg_send(meshBuffers)]
+    pub fn mesh_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+
+    #[objc::msg_send(meshBuffers)]
+    pub fn mesh_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+
+    /// Specifying these values is optional; it may be used to optimize the shader code.
+    #[objc::msg_send(fragmentBuffers)]
+    pub fn fragment_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+
+    #[objc::msg_send(fragmentBuffers)]
+    pub fn fragment_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+
+    /// The number of samples per fragment of the render pass in which this pipeline will be used.
+    #[objc::msg_send(rasterSampleCount)]
+    pub fn raster_sample_count(&self) -> usize;
+
+    #[objc::msg_send(setRasterSampleCount:)]
+    pub fn set_raster_sample_count(&mut self, value: usize);
+
+    /// Whether the alpha value exported by the fragment shader for the first color attachment
+    /// is converted to a sample mask, which is subsequently AND-ed with the fragments' sample mask
+    /// The default value is false.
+    #[objc::msg_send(isAlphaToCoverageEnabled)]
+    pub fn is_alpha_to_coverage_enabled(&self) -> bool;
+
+    #[objc::msg_send(setAlphaToCoverageEnabled:)]
+    pub fn set_alpha_to_coverage_enabled(&self, value: bool);
+
+    #[objc::msg_send(isAlphaToOneEnabled)]
+    pub fn is_alpha_to_one_enabled(&self) -> bool;
+
+    #[objc::msg_send(setAlphaToOneEnabled:)]
+    pub fn set_alpha_to_one_enabled(&self, value: bool);
+
+    /// Whether rasterization is disabled, all primitives are dropped prior to rasterization.
+    /// Default is true
+    #[objc::msg_send(isRasterizationEnabled)]
+    pub fn is_rasterization_enabled(&self) -> bool;
+
+    #[objc::msg_send(setRasterizationEnabled:)]
+    pub fn set_rasterization_enabled(&self, value: bool);
+
+    /// The maximum value that can be passed to setVertexAmplificationCount when using this pipeline.
+    /// The default value is 1. The value must be supported by the device, which can be checked with
+    /// supports_vertex_amplification_count.
+    #[objc::msg_send(maxVertexAmplificationCount)]
+    pub fn max_vertex_amplification_count(&self) -> usize;
+
+    #[objc::msg_send(setMaxVertexAmplificationCount:)]
+    pub fn set_max_vertex_amplification_count(&mut self, value: usize);
+
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attachments(&self) -> &mtl::RenderPipelineColorAttachmentDescriptorArray;
+
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attachments_mut(
+        &mut self,
+    ) -> &mut mtl::RenderPipelineColorAttachmentDescriptorArray;
+
+    /// The pixel format of the depth attachment of the render pass in which this pipeline will be used.
+    /// The default value is mtl::PixelFormat::Invalid; indicating no depth attachment will be used.
+    #[objc::msg_send(depthAttachmentPixelFormat)]
+    pub fn depth_attachment_pixel_format(&self) -> PixelFormat;
+
+    #[objc::msg_send(setDepthAttachmentPixelFormat:)]
+    pub fn set_depth_attachment_pixel_format(&mut self, value: PixelFormat);
+
+    /// The pixel format of the stencil attachment of the render pass in which this pipeline will be used.
+    /// The default value is mtl::PixelFormat::Invalid; indicating no stencil attachment will be used.
+    #[objc::msg_send(stencilAttachmentPixelFormat)]
+    pub fn stencil_attachment_pixel_format(&self) -> PixelFormat;
+
+    #[objc::msg_send(setStencilAttachmentPixelFormat:)]
+    pub fn set_stencil_attachment_pixel_format(&mut self, value: PixelFormat);
 }
 
 #[cfg(test)]

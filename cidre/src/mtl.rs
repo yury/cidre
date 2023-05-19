@@ -254,6 +254,11 @@ pub use intersection_function_table::Descriptor as IntersectionFnTableDescriptor
 pub use intersection_function_table::IntersectionFnSignature;
 pub use intersection_function_table::IntersectionFnTable;
 
+mod pipeline;
+pub use pipeline::Mutability;
+pub use pipeline::PipelineBufferDescriptor;
+pub use pipeline::PipelineBufferDescriptorArray;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {
