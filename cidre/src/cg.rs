@@ -42,6 +42,13 @@ pub use font::FontPostScriptFormat;
 pub use font::Glyph;
 pub use font::Index as FontIndex;
 
+mod path;
+pub use path::ElementType as PathElementType;
+pub use path::LineCap;
+pub use path::LineJoin;
+pub use path::Path;
+pub use path::PathMut;
+
 #[cfg(target_os = "macos")]
 mod display_stream;
 #[cfg(target_os = "macos")]
