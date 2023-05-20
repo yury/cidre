@@ -39,6 +39,15 @@ impl Font {
     pub fn with_ui_type_size(ui_type: UIFontType, size: cg::Float) -> Option<arc::R<Self>> {
         unsafe { CTFontCreateUIFontForLanguage(ui_type, size, None) }
     }
+
+    #[inline]
+    pub fn path_for_glyph(
+        &self,
+        glyph: cg::Glyph,
+        matrix: Option<&cg::AffineTransform>,
+    ) -> Option<arc::R<cg::Path>> {
+        unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
+    }
 }
 
 define_options!(Options(usize));
@@ -97,16 +106,26 @@ extern "C" {
         language: Option<&cf::String>,
     ) -> Option<arc::R<Font>>;
 
+    fn CTFontCreatePathForGlyph(
+        font: &Font,
+        glyph: cg::Glyph,
+        matrix: Option<&cg::AffineTransform>,
+    ) -> Option<arc::R<cg::Path>>;
+
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{cf, ct};
+    use crate::{cf, cg, ct};
 
     #[test]
     fn basics() {
-        let _font = ct::Font::with_name_size_matrix(&cf::String::from_str("None"), 12.0, None);
-        let font = ct::Font::with_name_size(&cf::String::from_str("None"), 12.0);
+        let _font = ct::Font::with_name_size_matrix(&cf::String::from_str("None"), 28.0, None);
+        let font = ct::Font::with_name_size(&cf::String::from_str("None"), 28.0);
         font.show();
+
+        let j_glyph = cg::Glyph::new(45);
+        let path = font.path_for_glyph(j_glyph, None).unwrap();
+        path.show();
     }
 }
