@@ -1,4 +1,6 @@
-use crate::{arc, cf, cg, define_cf_type};
+use std::ffi::c_void;
+
+use crate::{arc, blocks::Block, cf, cg, define_cf_type};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
@@ -25,6 +27,15 @@ pub enum ElementType {
     AddCurveToPoint,
     CloseSubpath,
 }
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct PathElement {
+    type_: ElementType,
+    points: *const cg::Point,
+}
+
+pub type PathApplierFn<T> = extern "C" fn(info: *mut T, element: *const PathElement);
 
 define_cf_type!(Path(cf::Type));
 impl Path {
@@ -135,6 +146,113 @@ impl Path {
     #[inline]
     pub fn bounding_box(&self) -> cg::Rect {
         unsafe { CGPathGetBoundingBox(self) }
+    }
+
+    #[inline]
+    pub fn path_bounding_box(&self) -> cg::Rect {
+        unsafe { CGPathGetPathBoundingBox(self) }
+    }
+
+    #[inline]
+    pub fn contains_point(
+        &self,
+        m: Option<&cg::AffineTransform>,
+        point: cg::Point,
+        eo_fill: bool,
+    ) -> bool {
+        unsafe { CGPathContainsPoint(self, m, point, eo_fill) }
+    }
+
+    #[inline]
+    pub fn apply<T: Sized>(&self, info: &mut T, function: PathApplierFn<T>) {
+        unsafe {
+            CGPathApply(
+                self,
+                info as *mut T as *mut c_void,
+                std::mem::transmute(function),
+            )
+        }
+    }
+
+    #[inline]
+    pub fn apply_block<'a, B>(&self, block: &mut Block<B>)
+    where
+        B: FnMut(&'a PathElement),
+    {
+        unsafe { CGPathApplyWithBlock(self, block.as_ptr()) }
+    }
+
+    #[inline]
+    pub fn copy_normalizing(&self, even_odd_fill_rule: bool) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyByNormalizing(self, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn copy_unioning_path(
+        &self,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyByUnioningPath(self, mask_path, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn copy_intersecting_path(
+        &self,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyByIntersectingPath(self, mask_path, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn copy_subtructing_path(
+        &self,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyBySubtractingPath(self, mask_path, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn copy_symmetric_diff_of_path(
+        &self,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyBySymmetricDifferenceOfPath(self, mask_path, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn copy_line_by_substructing_path(
+        &self,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyOfLineBySubtractingPath(self, mask_path, even_odd_fill_rule) }
+    }
+    #[inline]
+    pub fn copy_line_by_intersecting_path(
+        &self,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyOfLineByIntersectingPath(self, mask_path, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn separate_components(&self, even_odd_fill_rule: bool) -> arc::R<cf::ArrayOf<Path>> {
+        unsafe { CGPathCreateSeparateComponents(self, even_odd_fill_rule) }
+    }
+
+    #[inline]
+    pub fn copy_flattering(&self, flattening_threshold: cg::Float) -> arc::R<Self> {
+        unsafe { CGPathCreateCopyByFlattening(self, flattening_threshold) }
+    }
+
+    #[inline]
+    pub fn intersects_path(&self, other: &Path, even_odd_fill_rule: bool) -> bool {
+        unsafe { CGPathIntersectsPath(self, other, even_odd_fill_rule) }
     }
 }
 
@@ -419,11 +537,62 @@ extern "C" {
     fn CGPathIsRect(path: &Path) -> bool;
     fn CGPathGetCurrentPoint(path: &Path) -> cg::Point;
     fn CGPathGetBoundingBox(path: &Path) -> cg::Rect;
+    fn CGPathGetPathBoundingBox(path: &Path) -> cg::Rect;
+
+    fn CGPathContainsPoint(
+        path: &Path,
+        m: Option<&cg::AffineTransform>,
+        point: cg::Point,
+        eo_fill: bool,
+    ) -> bool;
+
+    fn CGPathApply(path: &Path, info: *mut c_void, function: PathApplierFn<c_void>);
+    fn CGPathApplyWithBlock(path: &Path, block: *mut c_void);
+    fn CGPathCreateCopyByNormalizing(path: &Path, even_odd_fill_rule: bool) -> arc::R<Path>;
+    fn CGPathCreateCopyByUnioningPath(
+        path: &Path,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Path>;
+    fn CGPathCreateCopyByIntersectingPath(
+        path: &Path,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Path>;
+    fn CGPathCreateCopyBySubtractingPath(
+        path: &Path,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Path>;
+    fn CGPathCreateCopyBySymmetricDifferenceOfPath(
+        path: &Path,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Path>;
+    fn CGPathCreateCopyOfLineBySubtractingPath(
+        path: &Path,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Path>;
+    fn CGPathCreateCopyOfLineByIntersectingPath(
+        path: &Path,
+        mask_path: Option<&Path>,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<Path>;
+
+    fn CGPathCreateSeparateComponents(
+        path: &Path,
+        even_odd_fill_rule: bool,
+    ) -> arc::R<cf::ArrayOf<Path>>;
+    fn CGPathCreateCopyByFlattening(path: &Path, flattening_threshold: cg::Float) -> arc::R<Path>;
+
+    fn CGPathIntersectsPath(path: &Path, other: &Path, even_odd_fill_rule: bool) -> bool;
+
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::cg;
+    use crate::{blocks, cg};
 
     #[test]
     fn basics() {
@@ -439,6 +608,10 @@ mod tests {
             cg::LineJoin::Round,
             0.0f64,
         );
-        path.show();
+
+        let mut block = blocks::mut1(|element| {
+            println!("{:?}", element);
+        });
+        path.apply_block(&mut block);
     }
 }

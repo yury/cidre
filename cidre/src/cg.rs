@@ -47,6 +47,8 @@ pub use path::ElementType as PathElementType;
 pub use path::LineCap;
 pub use path::LineJoin;
 pub use path::Path;
+pub use path::PathApplierFn;
+pub use path::PathElement;
 pub use path::PathMut;
 
 #[cfg(target_os = "macos")]
