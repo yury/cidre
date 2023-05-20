@@ -116,6 +116,26 @@ impl Path {
     ) -> arc::R<Self> {
         unsafe { CGPathCreateWithRoundedRect(rect, corner_width, corner_height, transform) }
     }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        unsafe { CGPathIsEmpty(self) }
+    }
+
+    #[inline]
+    pub fn is_rect(&self) -> bool {
+        unsafe { CGPathIsRect(self) }
+    }
+
+    #[inline]
+    pub fn current_point(&self) -> cg::Point {
+        unsafe { CGPathGetCurrentPoint(self) }
+    }
+
+    #[inline]
+    pub fn bounding_box(&self) -> cg::Rect {
+        unsafe { CGPathGetBoundingBox(self) }
+    }
 }
 
 impl PartialEq for Path {
@@ -155,6 +175,7 @@ impl PathMut {
         unsafe { CGPathAddLineToPoint(self, m, x, y) }
     }
 
+    #[inline]
     pub fn add_quad_curve_to_point(
         &mut self,
         m: Option<&cg::AffineTransform>,
@@ -166,6 +187,7 @@ impl PathMut {
         unsafe { CGPathAddQuadCurveToPoint(self, m, cpx, cpy, x, y) }
     }
 
+    #[inline]
     pub fn add_curve_to_point(
         &mut self,
         m: Option<&cg::AffineTransform>,
@@ -177,6 +199,76 @@ impl PathMut {
         y: cg::Float,
     ) {
         unsafe { CGPathAddCurveToPoint(self, m, cp1x, cp1y, cp2x, cp2y, x, y) }
+    }
+
+    #[inline]
+    pub fn close_subpath(&mut self) {
+        unsafe { CGPathCloseSubpath(self) }
+    }
+
+    #[inline]
+    pub fn add_rect(&mut self, m: Option<&cg::AffineTransform>, rect: cg::Rect) {
+        unsafe { CGPathAddRect(self, m, rect) }
+    }
+
+    #[inline]
+    pub fn add_rects(&mut self, m: Option<&cg::AffineTransform>, rects: &[cg::Rect]) {
+        unsafe { CGPathAddRects(self, m, rects.as_ptr(), rects.len()) }
+    }
+
+    #[inline]
+    pub fn add_lines(&mut self, m: Option<&cg::AffineTransform>, points: &[cg::Point]) {
+        unsafe { CGPathAddLines(self, m, points.as_ptr(), points.len()) }
+    }
+
+    #[inline]
+    pub fn add_ellipse_in_rect(&mut self, m: Option<&cg::AffineTransform>, rect: cg::Rect) {
+        unsafe { CGPathAddEllipseInRect(self, m, rect) }
+    }
+
+    #[inline]
+    pub fn add_relative_arc(
+        &mut self,
+        m: Option<&cg::AffineTransform>,
+        x: cg::Float,
+        y: cg::Float,
+        radius: cg::Float,
+        start_angle: cg::Float,
+        delta: cg::Float,
+    ) {
+        unsafe { CGPathAddRelativeArc(self, m, x, y, radius, start_angle, delta) }
+    }
+
+    #[inline]
+    pub fn add_arc(
+        &mut self,
+        m: Option<&cg::AffineTransform>,
+        x: cg::Float,
+        y: cg::Float,
+        radius: cg::Float,
+        start_angle: cg::Float,
+        end_ange: cg::Float,
+        clockwise: bool,
+    ) {
+        unsafe { CGPathAddArc(self, m, x, y, radius, start_angle, end_ange, clockwise) }
+    }
+
+    #[inline]
+    pub fn add_arc_to_point(
+        &mut self,
+        m: Option<&cg::AffineTransform>,
+        x1: cg::Float,
+        y1: cg::Float,
+        x2: cg::Float,
+        y2: cg::Float,
+        radius: cg::Float,
+    ) {
+        unsafe { CGPathAddArcToPoint(self, m, x1, y1, x2, y2, radius) }
+    }
+
+    #[inline]
+    pub fn add_path(&mut self, m: Option<&cg::AffineTransform>, path2: &Path) {
+        unsafe { CGPathAddPath(self, m, path2) }
     }
 }
 
@@ -271,6 +363,62 @@ extern "C" {
         y: cg::Float,
     );
 
+    fn CGPathCloseSubpath(path: &mut PathMut);
+
+    fn CGPathAddRect(path: &mut PathMut, m: Option<&cg::AffineTransform>, rect: cg::Rect);
+
+    fn CGPathAddRects(
+        path: &mut PathMut,
+        m: Option<&cg::AffineTransform>,
+        rects: *const cg::Rect,
+        count: usize,
+    );
+
+    fn CGPathAddLines(
+        path: &mut PathMut,
+        m: Option<&cg::AffineTransform>,
+        rects: *const cg::Point,
+        count: usize,
+    );
+
+    fn CGPathAddEllipseInRect(path: &mut PathMut, m: Option<&cg::AffineTransform>, rect: cg::Rect);
+
+    fn CGPathAddRelativeArc(
+        path: &mut PathMut,
+        m: Option<&cg::AffineTransform>,
+        x: cg::Float,
+        y: cg::Float,
+        radius: cg::Float,
+        start_angle: cg::Float,
+        delta: cg::Float,
+    );
+
+    fn CGPathAddArc(
+        path: &mut PathMut,
+        m: Option<&cg::AffineTransform>,
+        x: cg::Float,
+        y: cg::Float,
+        radius: cg::Float,
+        start_angle: cg::Float,
+        end_ange: cg::Float,
+        clockwise: bool,
+    );
+
+    fn CGPathAddArcToPoint(
+        path: &mut PathMut,
+        m: Option<&cg::AffineTransform>,
+        x1: cg::Float,
+        y1: cg::Float,
+        x2: cg::Float,
+        y2: cg::Float,
+        radius: cg::Float,
+    );
+
+    fn CGPathAddPath(path1: &mut PathMut, m: Option<&cg::AffineTransform>, path2: &Path);
+    fn CGPathIsEmpty(path: &Path) -> bool;
+    fn CGPathIsRect(path: &Path) -> bool;
+    fn CGPathGetCurrentPoint(path: &Path) -> cg::Point;
+    fn CGPathGetBoundingBox(path: &Path) -> cg::Rect;
 }
 
 #[cfg(test)]
