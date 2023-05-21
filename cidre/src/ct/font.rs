@@ -2,11 +2,13 @@ use crate::{arc, cf, cg, ct, define_cf_type, define_options, UniChar};
 
 define_cf_type!(Font(cf::Type));
 impl Font {
+    #[doc(alias = "CTFontGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CTFontGetTypeID() }
     }
 
+    #[doc(alias = "CTFontCreateWithName")]
     #[inline]
     pub fn with_name_size_matrix(
         name: &cf::String,
@@ -16,16 +18,19 @@ impl Font {
         unsafe { CTFontCreateWithName(name, size, matrix) }
     }
 
+    #[doc(alias = "CTFontCreateWithName")]
     #[inline]
     pub fn with_name_size(name: &cf::String, size: cg::Float) -> arc::R<Self> {
         unsafe { CTFontCreateWithName(name, size, None) }
     }
 
+    #[doc(alias = "CTFontCreateWithName")]
     #[inline]
     pub fn with_name_matrix(name: &cf::String, matrix: &cg::AffineTransform) -> arc::R<Self> {
         unsafe { CTFontCreateWithName(name, 1.0, Some(matrix)) }
     }
 
+    #[doc(alias = "CTFontCreateUIFontForLanguage")]
     #[inline]
     pub fn with_ui_type_size_lang(
         ui_type: UIFontType,
@@ -35,26 +40,31 @@ impl Font {
         unsafe { CTFontCreateUIFontForLanguage(ui_type, size, language) }
     }
 
+    #[doc(alias = "CTFontCreateUIFontForLanguage")]
     #[inline]
     pub fn with_ui_type_size(ui_type: UIFontType, size: cg::Float) -> Option<arc::R<Self>> {
         unsafe { CTFontCreateUIFontForLanguage(ui_type, size, None) }
     }
 
+    #[doc(alias = "CTFontGetSize")]
     #[inline]
     pub fn size(&self) -> cg::Float {
         unsafe { CTFontGetSize(self) }
     }
 
+    #[doc(alias = "CTFontGetMatrix")]
     #[inline]
     pub fn matrix(&self) -> cg::AffineTransform {
         unsafe { CTFontGetMatrix(self) }
     }
 
+    #[doc(alias = "CTFontGetSymbolicTraits")]
     #[inline]
     pub fn symbolic_traits(&self) -> ct::FontSymbolicTraits {
         unsafe { CTFontGetSymbolicTraits(self) }
     }
 
+    #[doc(alias = "CTFontGetGlyphsForCharacters")]
     #[inline]
     pub fn glyphs_for_characters(
         &self,
@@ -77,6 +87,7 @@ impl Font {
         }
     }
 
+    #[doc(alias = "CTFontGetBoundingRectsForGlyphs")]
     #[inline]
     pub fn bounding_rect_for_glyphs(
         &self,
@@ -94,6 +105,7 @@ impl Font {
         }
     }
 
+    #[doc(alias = "CTFontGetBoundingRectsForGlyphs")]
     #[inline]
     pub fn bounding_rects_for_glyphs(
         &self,
@@ -114,6 +126,7 @@ impl Font {
         }
     }
 
+    #[doc(alias = "CTFontGetOpticalBoundsForGlyphs")]
     #[inline]
     pub fn optical_bounds_for_glyphs(
         &self,
@@ -134,6 +147,7 @@ impl Font {
     }
 
     /// This function returns the summed glyph advance of an array of glyphs.
+    #[doc(alias = "CTFontGetAdvancesForGlyphs")]
     #[inline]
     pub fn advance_for_glyphs(
         &self,
@@ -154,6 +168,7 @@ impl Font {
     /// This function returns the summed glyph advance of an array of glyphs.
     /// Individual glyph advances are passed back via the advances parameter.
     /// These are the ideal metrics for each glyph scaled and transformed in font space.
+    #[doc(alias = "CTFontGetAdvancesForGlyphs")]
     #[inline]
     pub fn advances_for_glyphs(
         &self,
@@ -174,6 +189,7 @@ impl Font {
         }
     }
 
+    #[doc(alias = "CTFontCreatePathForGlyph")]
     #[inline]
     pub fn path_for_glyph(
         &self,
@@ -181,6 +197,12 @@ impl Font {
         matrix: Option<&cg::AffineTransform>,
     ) -> Option<arc::R<cg::Path>> {
         unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
+    }
+
+    #[doc(alias = "CTFontGetCapHeight")]
+    #[inline]
+    pub fn cap_height(&self) -> cg::Float {
+        unsafe { CTFontGetCapHeight(self) }
     }
 }
 
@@ -279,6 +301,8 @@ extern "C" {
         bounding_rects: *mut cg::Rect,
         count: cf::Index,
     ) -> cg::Rect;
+
+    fn CTFontGetCapHeight(font: &Font) -> cg::Float;
 
 }
 
