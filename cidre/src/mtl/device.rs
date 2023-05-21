@@ -249,6 +249,15 @@ impl Device {
         )
     }
 
+    #[inline]
+    pub fn new_buf_from_vec<T: Sized>(
+        &self,
+        vec: Vec<T>,
+        options: mtl::ResouceOptions,
+    ) -> Option<arc::R<mtl::Buf>> {
+        self.new_buf_with_slice(&vec, options)
+    }
+
     #[objc::msg_send(newDepthStencilStateWithDescriptor:)]
     pub fn new_depth_stencil_state(
         &self,

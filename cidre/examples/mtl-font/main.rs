@@ -201,8 +201,10 @@ extern "C" fn apply(compiler: *mut GlyphCompiler, element: *mut cg::PathElement)
 }
 
 fn main() {
+    let mut verticies = Vec::<f32>::new();
+    let mut byte_offsets = Vec::<usize>::new();
     let font = ct::Font::with_name_size(cf::String::from_str("Verdana").as_ref(), 28.0);
-    let utf16 = "abcdef$@".encode_utf16().collect::<Vec<u16>>();
+    let utf16 = "`1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
     let mut glyphs = vec![cg::Glyph::new(0); utf16.len()];
     font.glyphs_for_characters(&utf16, &mut glyphs).unwrap();
     let mut compiler = GlyphCompiler::default();
@@ -212,13 +214,23 @@ fn main() {
             compiler.begin(gg);
             path.apply(&mut compiler, apply);
             compiler.end();
+            eprintln!("bounds: {:?}", compiler.builder.build());
+            byte_offsets.push(verticies.len() * 4 * 2);
+            verticies.extend_from_slice(&compiler.vertices);
             eprintln!(
                 "{:?} {:?}",
                 compiler.vertices.len(),
-                compiler.vertices.len() / 4
+                compiler.vertices.len() / 4 / 2
             );
         } else {
             eprintln!("no path for {:?}", g);
         }
     }
+
+    let device = mtl::Device::default().unwrap();
+    let buf = device
+        .new_buf_from_vec(verticies, mtl::ResouceOptions::default())
+        .unwrap();
+
+    buf.as_type_ref().show();
 }

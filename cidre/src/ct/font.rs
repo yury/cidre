@@ -41,15 +41,6 @@ impl Font {
     }
 
     #[inline]
-    pub fn path_for_glyph(
-        &self,
-        glyph: cg::Glyph,
-        matrix: Option<&cg::AffineTransform>,
-    ) -> Option<arc::R<cg::Path>> {
-        unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
-    }
-
-    #[inline]
     pub fn size(&self) -> cg::Float {
         unsafe { CTFontGetSize(self) }
     }
@@ -84,6 +75,54 @@ impl Font {
                 Err(())
             }
         }
+    }
+
+    /// This function returns the summed glyph advance of an array of glyphs.
+    pub fn advance_for_glyphs(
+        &self,
+        orientation: ct::FontOrientation,
+        glyphs: &[cg::Glyph],
+    ) -> f64 {
+        unsafe {
+            CTFontGetAdvancesForGlyphs(
+                self,
+                orientation,
+                glyphs.as_ptr(),
+                std::ptr::null_mut(),
+                glyphs.len() as _,
+            )
+        }
+    }
+
+    /// This function returns the summed glyph advance of an array of glyphs.
+    /// Individual glyph advances are passed back via the advances parameter.
+    /// These are the ideal metrics for each glyph scaled and transformed in font space.
+    pub fn advances_for_glyphs(
+        &self,
+        orientation: ct::FontOrientation,
+        glyphs: &[cg::Glyph],
+        advances: &mut [cg::Size],
+    ) -> f64 {
+        let len = glyphs.len();
+        assert!(len <= advances.len());
+        unsafe {
+            CTFontGetAdvancesForGlyphs(
+                self,
+                orientation,
+                glyphs.as_ptr(),
+                advances.as_mut_ptr(),
+                glyphs.len() as _,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn path_for_glyph(
+        &self,
+        glyph: cg::Glyph,
+        matrix: Option<&cg::AffineTransform>,
+    ) -> Option<arc::R<cg::Path>> {
+        unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
     }
 }
 
@@ -158,6 +197,15 @@ extern "C" {
         glyphs: *mut cg::Glyph,
         count: cf::Index,
     ) -> bool;
+
+    fn CTFontGetAdvancesForGlyphs(
+        font: &Font,
+        orientation: ct::FontOrientation,
+        glyphs: *const cg::Glyph,
+        advances: *mut cg::Size,
+        count: cf::Index,
+    ) -> f64;
+
 }
 
 #[cfg(test)]
