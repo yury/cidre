@@ -199,6 +199,12 @@ impl Font {
         unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
     }
 
+    #[doc(alias = "CTFontGetLeading")]
+    #[inline]
+    pub fn leading(&self) -> cg::Float {
+        unsafe { CTFontGetLeading(self) }
+    }
+
     #[doc(alias = "CTFontGetUnderlinePosition")]
     #[inline]
     pub fn underline_position(&self) -> cg::Float {
@@ -217,6 +223,7 @@ impl Font {
         unsafe { CTFontGetSlantAngle(self) }
     }
 
+    /// Returns the font underline position metric scaled based on the point size and matrix of the font reference.
     #[doc(alias = "CTFontGetCapHeight")]
     #[inline]
     pub fn cap_height(&self) -> cg::Float {
@@ -327,6 +334,7 @@ extern "C" {
         count: cf::Index,
     ) -> cg::Rect;
 
+    fn CTFontGetLeading(font: &Font) -> cg::Float;
     fn CTFontGetUnderlinePosition(font: &Font) -> cg::Float;
     fn CTFontGetUnderlineThickness(font: &Font) -> cg::Float;
     fn CTFontGetSlantAngle(font: &Font) -> cg::Float;
