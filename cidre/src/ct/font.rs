@@ -77,7 +77,27 @@ impl Font {
         }
     }
 
+    #[inline]
+    pub fn optical_bounds_for_glyphs(
+        &self,
+        glyphs: &[cg::Glyph],
+        bounding_rects: &mut [cg::Rect],
+    ) -> cg::Rect {
+        let len = glyphs.len();
+        assert!(len <= bounding_rects.len());
+        unsafe {
+            CTFontGetOpticalBoundsForGlyphs(
+                self,
+                glyphs.as_ptr(),
+                bounding_rects.as_mut_ptr(),
+                len as _,
+                Default::default(),
+            )
+        }
+    }
+
     /// This function returns the summed glyph advance of an array of glyphs.
+    #[inline]
     pub fn advance_for_glyphs(
         &self,
         orientation: ct::FontOrientation,
@@ -97,6 +117,7 @@ impl Font {
     /// This function returns the summed glyph advance of an array of glyphs.
     /// Individual glyph advances are passed back via the advances parameter.
     /// These are the ideal metrics for each glyph scaled and transformed in font space.
+    #[inline]
     pub fn advances_for_glyphs(
         &self,
         orientation: ct::FontOrientation,
@@ -206,6 +227,13 @@ extern "C" {
         count: cf::Index,
     ) -> f64;
 
+    fn CTFontGetOpticalBoundsForGlyphs(
+        font: &Font,
+        glyphs: *const cg::Glyph,
+        bounding_rects: *mut cg::Rect,
+        count: cf::Index,
+        options: cf::OptionFlags,
+    ) -> cg::Rect;
 }
 
 #[cfg(test)]
