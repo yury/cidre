@@ -1,4 +1,4 @@
-use crate::{arc, cf, cg, define_cf_type, define_options};
+use crate::{arc, cf, cg, ct, define_cf_type, define_options, UniChar};
 
 define_cf_type!(Font(cf::Type));
 impl Font {
@@ -47,6 +47,43 @@ impl Font {
         matrix: Option<&cg::AffineTransform>,
     ) -> Option<arc::R<cg::Path>> {
         unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
+    }
+
+    #[inline]
+    pub fn size(&self) -> cg::Float {
+        unsafe { CTFontGetSize(self) }
+    }
+
+    #[inline]
+    pub fn matrix(&self) -> cg::AffineTransform {
+        unsafe { CTFontGetMatrix(self) }
+    }
+
+    #[inline]
+    pub fn symbolic_traits(&self) -> ct::FontSymbolicTraits {
+        unsafe { CTFontGetSymbolicTraits(self) }
+    }
+
+    #[inline]
+    pub fn glyphs_for_characters(
+        &self,
+        charactes: &[UniChar],
+        glyphs: &mut [cg::Glyph],
+    ) -> Result<(), ()> {
+        let len = charactes.len();
+        assert!(len <= glyphs.len());
+        unsafe {
+            if CTFontGetGlyphsForCharacters(
+                self,
+                charactes.as_ptr(),
+                glyphs.as_mut_ptr(),
+                len as isize,
+            ) {
+                Ok(())
+            } else {
+                Err(())
+            }
+        }
     }
 }
 
@@ -111,6 +148,16 @@ extern "C" {
         glyph: cg::Glyph,
         matrix: Option<&cg::AffineTransform>,
     ) -> Option<arc::R<cg::Path>>;
+
+    fn CTFontGetSize(font: &Font) -> cg::Float;
+    fn CTFontGetMatrix(font: &Font) -> cg::AffineTransform;
+    fn CTFontGetSymbolicTraits(font: &Font) -> ct::FontSymbolicTraits;
+    fn CTFontGetGlyphsForCharacters(
+        font: &Font,
+        charactes: *const UniChar,
+        glyphs: *mut cg::Glyph,
+        count: cf::Index,
+    ) -> bool;
 }
 
 #[cfg(test)]
@@ -126,5 +173,17 @@ mod tests {
         let j_glyph = cg::Glyph::new(45);
         let path = font.path_for_glyph(j_glyph, None).unwrap();
         path.show();
+
+        let utf16 = "Jabcdef ".encode_utf16().collect::<Vec<u16>>();
+        let mut glyphs = vec![cg::Glyph::new(0); utf16.len()];
+        font.glyphs_for_characters(&utf16, &mut glyphs).unwrap();
+        assert_eq!(j_glyph, glyphs[0]);
+        for g in glyphs {
+            if let Some(path) = font.path_for_glyph(g, None) {
+                path.show();
+            } else {
+                eprintln!("no path for glyph {:?}", g);
+            }
+        }
     }
 }

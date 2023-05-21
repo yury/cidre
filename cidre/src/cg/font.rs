@@ -2,9 +2,11 @@ use crate::{arc, cf, cg, define_cf_type};
 
 define_cf_type!(Font(cf::Type));
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Index(pub u16);
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Glyph(pub Index);
 
