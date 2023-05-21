@@ -199,6 +199,19 @@ impl Font {
         unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
     }
 
+    #[doc(alias = "CTFontGetAscent")]
+    #[inline]
+    pub fn ascent(&self) -> cg::Float {
+        unsafe { CTFontGetAscent(self) }
+    }
+
+    #[doc(alias = "CTFontGetDescent")]
+    #[inline]
+    pub fn descent(&self) -> cg::Float {
+        unsafe { CTFontGetDescent(self) }
+    }
+
+    /// Returns the scaled font leading metric.
     #[doc(alias = "CTFontGetLeading")]
     #[inline]
     pub fn leading(&self) -> cg::Float {
@@ -334,6 +347,8 @@ extern "C" {
         count: cf::Index,
     ) -> cg::Rect;
 
+    fn CTFontGetAscent(font: &Font) -> cg::Float;
+    fn CTFontGetDescent(font: &Font) -> cg::Float;
     fn CTFontGetLeading(font: &Font) -> cg::Float;
     fn CTFontGetUnderlinePosition(font: &Font) -> cg::Float;
     fn CTFontGetUnderlineThickness(font: &Font) -> cg::Float;
