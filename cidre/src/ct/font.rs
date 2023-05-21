@@ -78,6 +78,43 @@ impl Font {
     }
 
     #[inline]
+    pub fn bounding_rect_for_glyphs(
+        &self,
+        orientation: ct::FontOrientation,
+        glyphs: &[cg::Glyph],
+    ) -> cg::Rect {
+        unsafe {
+            CTFontGetBoundingRectsForGlyphs(
+                self,
+                orientation,
+                glyphs.as_ptr(),
+                std::ptr::null_mut(),
+                glyphs.len() as _,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn bounding_rects_for_glyphs(
+        &self,
+        orientation: ct::FontOrientation,
+        glyphs: &[cg::Glyph],
+        bounding_rects: &mut [cg::Rect],
+    ) -> cg::Rect {
+        let len = glyphs.len();
+        assert!(len <= bounding_rects.len());
+        unsafe {
+            CTFontGetBoundingRectsForGlyphs(
+                self,
+                orientation,
+                glyphs.as_ptr(),
+                bounding_rects.as_mut_ptr(),
+                glyphs.len() as _,
+            )
+        }
+    }
+
+    #[inline]
     pub fn optical_bounds_for_glyphs(
         &self,
         glyphs: &[cg::Glyph],
@@ -234,6 +271,15 @@ extern "C" {
         count: cf::Index,
         options: cf::OptionFlags,
     ) -> cg::Rect;
+
+    fn CTFontGetBoundingRectsForGlyphs(
+        font: &Font,
+        orientation: ct::FontOrientation,
+        glyphs: *const cg::Glyph,
+        bounding_rects: *mut cg::Rect,
+        count: cf::Index,
+    ) -> cg::Rect;
+
 }
 
 #[cfg(test)]
