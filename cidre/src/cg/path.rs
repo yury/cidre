@@ -30,12 +30,38 @@ pub enum ElementType {
 
 #[derive(Debug)]
 #[repr(C)]
-pub struct PathElement {
-    type_: ElementType,
-    points: *const cg::Point,
+pub struct Element {
+    pub type_: ElementType,
+    points: *mut cg::Point,
 }
 
-pub type PathApplierFn<T> = extern "C" fn(info: *mut T, element: *const PathElement);
+impl Element {
+    #[inline]
+    pub fn points(&self) -> &[cg::Point] {
+        use ElementType::*;
+        let len = match self.type_ {
+            MoveToPoint | AddLineToPoint => 1,
+            AddQuadCurveToPoint => 2,
+            AddCurveToPoint => 3,
+            CloseSubpath => return &[],
+        };
+        unsafe { std::slice::from_raw_parts(self.points, len) }
+    }
+
+    #[inline]
+    pub fn points_mut(&mut self) -> &mut [cg::Point] {
+        use ElementType::*;
+        let len = match self.type_ {
+            MoveToPoint | AddLineToPoint => 1,
+            AddQuadCurveToPoint => 2,
+            AddCurveToPoint => 3,
+            CloseSubpath => return &mut [],
+        };
+        unsafe { std::slice::from_raw_parts_mut(self.points, len) }
+    }
+}
+
+pub type PathApplierFn<T> = extern "C" fn(info: *mut T, element: *mut Element);
 
 define_cf_type!(Path(cf::Type));
 impl Path {
@@ -175,9 +201,17 @@ impl Path {
     }
 
     #[inline]
+    pub fn apply_block_mut<'a, B>(&self, block: &mut Block<B>)
+    where
+        B: FnMut(&'a mut Element),
+    {
+        unsafe { CGPathApplyWithBlock(self, block.as_ptr()) }
+    }
+
+    #[inline]
     pub fn apply_block<'a, B>(&self, block: &mut Block<B>)
     where
-        B: FnMut(&'a PathElement),
+        B: FnMut(&'a Element),
     {
         unsafe { CGPathApplyWithBlock(self, block.as_ptr()) }
     }
@@ -284,17 +318,22 @@ impl PathMut {
     }
 
     #[inline]
-    pub fn add_line_to_point(
-        &mut self,
-        m: Option<&cg::AffineTransform>,
-        x: cg::Float,
-        y: cg::Float,
-    ) {
+    pub fn move_to<F: Into<f64>>(&mut self, x: F, y: F) {
+        self.move_to_point(None, x.into(), y.into())
+    }
+
+    #[inline]
+    pub fn line_to_point(&mut self, m: Option<&cg::AffineTransform>, x: cg::Float, y: cg::Float) {
         unsafe { CGPathAddLineToPoint(self, m, x, y) }
     }
 
     #[inline]
-    pub fn add_quad_curve_to_point(
+    pub fn line_to<F: Into<f64>>(&mut self, x: F, y: F) {
+        self.line_to_point(None, x.into(), y.into())
+    }
+
+    #[inline]
+    pub fn quad_curve_to_point(
         &mut self,
         m: Option<&cg::AffineTransform>,
         cpx: cg::Float,
@@ -306,7 +345,12 @@ impl PathMut {
     }
 
     #[inline]
-    pub fn add_curve_to_point(
+    pub fn quad_to<F: Into<f64>>(&mut self, cpx: F, cpy: F, x: F, y: F) {
+        self.quad_curve_to_point(None, cpx.into(), cpy.into(), x.into(), y.into())
+    }
+
+    #[inline]
+    pub fn curve_to_point(
         &mut self,
         m: Option<&cg::AffineTransform>,
         cp1x: cg::Float,
@@ -317,6 +361,19 @@ impl PathMut {
         y: cg::Float,
     ) {
         unsafe { CGPathAddCurveToPoint(self, m, cp1x, cp1y, cp2x, cp2y, x, y) }
+    }
+
+    #[inline]
+    pub fn curve_to<F: Into<f64>>(&mut self, cp1x: F, cp1y: F, cp2x: F, cp2y: F, x: F, y: F) {
+        self.curve_to_point(
+            None,
+            cp1x.into(),
+            cp1y.into(),
+            cp2x.into(),
+            cp2y.into(),
+            x.into(),
+            y.into(),
+        )
     }
 
     #[inline]
@@ -372,7 +429,7 @@ impl PathMut {
     }
 
     #[inline]
-    pub fn add_arc_to_point(
+    pub fn arc_to_point(
         &mut self,
         m: Option<&cg::AffineTransform>,
         x1: cg::Float,
@@ -382,6 +439,18 @@ impl PathMut {
         radius: cg::Float,
     ) {
         unsafe { CGPathAddArcToPoint(self, m, x1, y1, x2, y2, radius) }
+    }
+
+    #[inline]
+    pub fn arc_to<F: Into<f64>>(&mut self, x1: F, y1: F, x2: F, y2: F, radius: F) {
+        self.arc_to_point(
+            None,
+            x1.into(),
+            y1.into(),
+            x2.into(),
+            y2.into(),
+            radius.into(),
+        )
     }
 
     #[inline]
@@ -585,9 +654,7 @@ extern "C" {
         even_odd_fill_rule: bool,
     ) -> arc::R<cf::ArrayOf<Path>>;
     fn CGPathCreateCopyByFlattening(path: &Path, flattening_threshold: cg::Float) -> arc::R<Path>;
-
     fn CGPathIntersectsPath(path: &Path, other: &Path, even_odd_fill_rule: bool) -> bool;
-
 }
 
 #[cfg(test)]
@@ -608,10 +675,19 @@ mod tests {
             cg::LineJoin::Round,
             0.0f64,
         );
+        path.show();
 
-        let mut block = blocks::mut1(|element| {
-            println!("{:?}", element);
+        let mut block = blocks::mut1(|element: &mut cg::PathElement| {
+            println!("{:?} {:?}", element, element.points());
         });
-        path.apply_block(&mut block);
+        path.apply_block_mut(&mut block);
+
+        let mut path = cg::PathMut::new();
+        path.move_to(10, 10);
+        path.line_to(10, 20);
+        path.quad_to(40, 40, 30, 30);
+        path.curve_to(10, 20, 30, -40, 10, 20);
+        path.close_subpath();
+        path.show();
     }
 }

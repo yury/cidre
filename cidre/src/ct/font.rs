@@ -111,7 +111,6 @@ extern "C" {
         glyph: cg::Glyph,
         matrix: Option<&cg::AffineTransform>,
     ) -> Option<arc::R<cg::Path>>;
-
 }
 
 #[cfg(test)]

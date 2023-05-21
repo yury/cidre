@@ -49,7 +49,7 @@ sc = ["ns"]
 vt = ["cf"]
 mtl = ["ns"]
 mlc = ["mtl"]
-ct = ["cf"]
+ct = ["cf", "cg"]
 
 [dependencies]
 
