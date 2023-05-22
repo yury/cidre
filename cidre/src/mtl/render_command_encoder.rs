@@ -161,6 +161,35 @@ impl RenderCmdEncoder {
     #[objc::msg_send(setCullMode:)]
     pub fn set_cull_mode(&mut self, cull_mode: mtl::CullMode);
 
+    #[objc::msg_send(setDepthStencilState:)]
+    pub fn set_depth_stencil_state(&mut self, depth_stencil_state: Option<&mtl::DepthStencilState>);
+
+    #[objc::msg_send(setStencilReferenceValue:)]
+    pub fn set_stencil_reference_value(&mut self, reference_value: u32);
+
+    #[objc::msg_send(setStencilFrontReferenceValue:backReferenceValue:)]
+    pub fn set_stencil_front_back_reference_values(
+        &mut self,
+        front_reference_value: u32,
+        back_reference_value: u32,
+    );
+
+    #[objc::msg_send(setVisibilityResultMode:offset:)]
+    pub fn set_visibility_result_mode(&mut self, mode: mtl::VisibilityResultMode, offset: usize);
+
+    #[objc::msg_send(setColorStoreAction:atIndex:)]
+    pub fn set_color_store_action(
+        &mut self,
+        store_action: mtl::StoreAction,
+        color_attachment_index: usize,
+    );
+
+    #[objc::msg_send(setDepthStoreAction:)]
+    pub fn set_depth_store_action(&mut self, store_action: mtl::StoreAction);
+
+    #[objc::msg_send(setStencilStoreAction:)]
+    pub fn set_stencil_store_action(&mut self, store_action: mtl::StoreAction);
+
     #[objc::msg_send(setVertexBytes:length:atIndex:)]
     pub fn set_vertex_bytes_at(
         &mut self,
