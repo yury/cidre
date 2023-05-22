@@ -199,6 +199,18 @@ impl Font {
         unsafe { CTFontCreatePathForGlyph(self, glyph, matrix) }
     }
 
+    #[doc(alias = "CTFontCopyNameForGlyph")]
+    #[inline]
+    pub fn name_for_glyph(&self, glyph: cg::Glyph) -> Option<arc::R<cf::String>> {
+        unsafe { CTFontCopyNameForGlyph(self, glyph) }
+    }
+
+    #[doc(alias = "CTFontGetGlyphWithName")]
+    #[inline]
+    pub fn glyph_with_name(&self, name: &cf::String) -> cg::Glyph {
+        unsafe { CTFontGetGlyphWithName(self, name) }
+    }
+
     #[doc(alias = "CTFontGetAscent")]
     #[inline]
     pub fn ascent(&self) -> cg::Float {
@@ -248,6 +260,18 @@ impl Font {
     #[inline]
     pub fn x_height(&self) -> cg::Float {
         unsafe { CTFontGetXHeight(self) }
+    }
+
+    #[doc(alias = "CTFontGetUnitsPerEm")]
+    #[inline]
+    pub fn units_per_em(&self) -> u32 {
+        unsafe { CTFontGetUnitsPerEm(self) }
+    }
+
+    #[doc(alias = "CTFontCopySupportedLanguages")]
+    #[inline]
+    pub fn supported_languages(&self) -> arc::R<cf::ArrayOf<cf::String>> {
+        unsafe { CTFontCopySupportedLanguages(self) }
     }
 }
 
@@ -313,6 +337,9 @@ extern "C" {
         matrix: Option<&cg::AffineTransform>,
     ) -> Option<arc::R<cg::Path>>;
 
+    fn CTFontGetGlyphWithName(font: &Font, name: &cf::String) -> cg::Glyph;
+
+    fn CTFontCopyNameForGlyph(font: &Font, glyph: cg::Glyph) -> Option<arc::R<cf::String>>;
     fn CTFontGetSize(font: &Font) -> cg::Float;
     fn CTFontGetMatrix(font: &Font) -> cg::AffineTransform;
     fn CTFontGetSymbolicTraits(font: &Font) -> ct::FontSymbolicTraits;
@@ -355,6 +382,9 @@ extern "C" {
     fn CTFontGetSlantAngle(font: &Font) -> cg::Float;
     fn CTFontGetCapHeight(font: &Font) -> cg::Float;
     fn CTFontGetXHeight(font: &Font) -> cg::Float;
+    fn CTFontGetUnitsPerEm(font: &Font) -> u32;
+
+    fn CTFontCopySupportedLanguages(font: &Font) -> arc::R<cf::ArrayOf<cf::String>>;
 }
 
 #[cfg(test)]
@@ -363,7 +393,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let _font = ct::Font::with_name_size_matrix(&cf::String::from_str("None"), 28.0, None);
+        let font = ct::Font::with_name_size_matrix(&cf::String::from_str("None"), 28.0, None);
+        let langs = font.supported_languages();
+        assert!(langs.len() > 0);
+        println!("langs {:?}", langs);
         let font = ct::Font::with_name_size(&cf::String::from_str("None"), 28.0);
         font.show();
 
@@ -378,6 +411,8 @@ mod tests {
         for g in glyphs {
             if let Some(path) = font.path_for_glyph(g, None) {
                 path.show();
+                let name = font.name_for_glyph(g).unwrap();
+                name.show();
             } else {
                 eprintln!("no path for glyph {:?}", g);
             }
