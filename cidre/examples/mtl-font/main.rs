@@ -2,7 +2,7 @@
 
 use std::cmp::min;
 
-use cidre::{blocks, cf, cg, ct, mtl, UniChar};
+use cidre::{blocks, cf, cg, ci, ct, mtl, ns, UniChar};
 
 enum TriangleKind {
     Solid,
@@ -200,8 +200,49 @@ extern "C" fn apply(compiler: *mut GlyphCompiler, element: *mut cg::PathElement)
     }
 }
 
+static LIB_SRC: &str = r###"
+
+using namespace metal;
+           
+typedef struct {
+    float4 position;
+} Vertex;
+
+typedef struct {
+    float4 position [[position]];
+    float2 coord2;
+} Varyings;
+
+vertex Varyings glyph_vertex(
+    unsigned short vid [[ vertex_id ]],
+    constant Vertex *verticies [[buffer(0)]]
+) {
+    Varyings out;
+    constant Vertex &v = verticies[vid];
+    out.position = float4(float2(v.position.xy), 0.0, 1.0);
+    out.coord2 = float2(v.position.zw);
+
+    return out;
+}
+
+fragment float4 glyph_fragment(
+    Varyings in [[stage_in]],
+    bool is_front_face [[front_facing]]
+) {
+    if (in.coord2.x * in.coord2.x - in.coord2.y > 0.0) {
+        discard_fragment();
+    }
+    float4 color = float4(1, 0, 0, 1);
+    // Upper 4 bits: front faces
+	// Lower 4 bits: back faces
+	return color * (is_front_face ? 16.0 / 255.0 : 1.0 / 255.0);
+}
+
+"###;
+
 fn main() {
     let mut verticies = Vec::<f32>::new();
+    let mut triangles = Vec::<usize>::new();
     let mut byte_offsets = Vec::<usize>::new();
     let font = ct::Font::with_name_size(cf::String::from_str("Verdana").as_ref(), 28.0);
     let utf16 = "`1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
@@ -214,14 +255,9 @@ fn main() {
             compiler.begin(gg);
             path.apply(&mut compiler, apply);
             compiler.end();
-            eprintln!("bounds: {:?}", compiler.builder.build());
             byte_offsets.push(verticies.len() * 4 * 2);
+            triangles.push(compiler.vertices.len() / 4 / 3);
             verticies.extend_from_slice(&compiler.vertices);
-            eprintln!(
-                "{:?} {:?}",
-                compiler.vertices.len(),
-                compiler.vertices.len() / 4 / 2
-            );
         } else {
             eprintln!("no path for {:?}", g);
         }
@@ -232,5 +268,62 @@ fn main() {
         .new_buf_from_vec(verticies, mtl::ResouceOptions::default())
         .unwrap();
 
-    buf.as_type_ref().show();
+    let source = ns::String::with_str(LIB_SRC);
+    let lib = device.new_lib_with_src(&source, None).unwrap();
+
+    let vertex_fn_name = ns::String::with_str("glyph_vertex");
+    let vertex_fn = lib.new_fn(&vertex_fn_name).unwrap();
+
+    let fragment_fn_name = ns::String::with_str("glyph_fragment");
+    let fragment_fn = lib.new_fn(&fragment_fn_name).unwrap();
+
+    let mut desc = mtl::RenderPipelineDescriptor::new().with_fns(&vertex_fn, &fragment_fn);
+
+    desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
+
+    let render_ps = device.new_render_ps(&desc).unwrap();
+
+    let render_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
+        mtl::PixelFormat::RGBA8Unorm,
+        1920,
+        1080,
+        false,
+    );
+
+    let rgba_texture = device.new_texture(&render_texture_desc).unwrap();
+
+    let mut render_pass_desc = mtl::RenderPassDescriptor::new();
+    let ca = &mut render_pass_desc.color_attachments_mut()[0];
+    ca.set_clear_color(mtl::ClearColor::blue());
+    ca.set_load_action(mtl::LoadAction::Clear);
+    ca.set_store_action(mtl::StoreAction::Store);
+    ca.set_texture(Some(&rgba_texture));
+    let cmd_queue = device.new_cmd_queue().unwrap();
+    let mut cmd_buf = cmd_queue.new_cmd_buf().unwrap();
+
+    cmd_buf.render(&render_pass_desc, |enc| {
+        enc.set_render_ps(&render_ps);
+        enc.set_vertex_buf_at(Some(&buf), 0, 0);
+        enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangles[0]);
+    });
+
+    cmd_buf.commit();
+
+    let image = ci::Image::with_mtl_texture(&rgba_texture, None).unwrap();
+
+    let context = ci::Context::new();
+
+    let color_space = cg::ColorSpace::device_rgb().unwrap();
+    let url = ns::URL::with_str("file:///tmp/image.png").unwrap();
+    context
+        .write_png_to_url(
+            &image,
+            &url,
+            ci::Format::rgba8(),
+            &color_space,
+            ns::Dictionary::new().as_ref(),
+        )
+        .unwrap();
+
+    println!("image is written to {:?}", url.abs_string());
 }

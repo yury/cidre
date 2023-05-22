@@ -149,6 +149,18 @@ impl RenderCmdEncoder {
     #[objc::msg_send(setRenderPipelineState:)]
     pub fn set_render_ps(&mut self, value: &mtl::RenderPipelineState);
 
+    #[objc::msg_send(setViewport:)]
+    pub fn set_viewport(&mut self, viewport: mtl::ViewPort);
+
+    #[objc::msg_send(setTriangleFillMode:)]
+    pub fn set_triangle_fill_mode(&mut self, fill_mode: mtl::TriangleFillMode);
+
+    #[objc::msg_send(setFrontFacingWinding:)]
+    pub fn set_front_facing_winding(&mut self, font_facing_winding: mtl::Winding);
+
+    #[objc::msg_send(setCullMode:)]
+    pub fn set_cull_mode(&mut self, cull_mode: mtl::CullMode);
+
     #[objc::msg_send(setVertexBytes:length:atIndex:)]
     pub fn set_vertex_bytes_at(
         &mut self,
