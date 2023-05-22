@@ -139,7 +139,7 @@ impl ColorAttachmentDescriptor {
     pub fn alpha_blend_op(&self) -> BlendOp;
 
     #[objc::msg_send(setAlphaBlendOperation:)]
-    pub fn alpha_rgb_blend_op(&mut self, value: BlendOp);
+    pub fn set_alpha_blend_op(&mut self, value: BlendOp);
 
     #[objc::msg_send(writeMask)]
     pub fn write_mask(&self) -> ColorWriteMask;

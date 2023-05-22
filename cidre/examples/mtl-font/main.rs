@@ -85,9 +85,9 @@ impl GlyphCompiler {
     }
 
     pub fn line_to<F: Into<f32>>(&mut self, x: F, y: F) {
-        self.countour_count += 1;
         let x = x.into();
         let y = y.into();
+        self.countour_count += 1;
         if self.countour_count >= 2 {
             self.push_triangle(
                 self.first_x,
@@ -219,7 +219,7 @@ vertex Varyings glyph_vertex(
 ) {
     Varyings out;
     constant Vertex &v = verticies[vid];
-    out.position = float4(float2(v.position.xy), 0.0, 1.0);
+    out.position = float4(float2(v.position.xy), 1.0, 1.0);
     out.coord2 = float2(v.position.zw);
 
     return out;
@@ -232,31 +232,33 @@ fragment float4 glyph_fragment(
     if (in.coord2.x * in.coord2.x - in.coord2.y > 0.0) {
         discard_fragment();
     }
-    float4 color = float4(1, 0, 0, 1);
+    float4 color = float4(1, 1, 1, 1);
     // Upper 4 bits: front faces
 	// Lower 4 bits: back faces
 	return color * (is_front_face ? 16.0 / 255.0 : 1.0 / 255.0);
+	// return color * (is_front_face ? 1.0 / 255.0 :  16.0 / 255.0);
 }
 
 "###;
 
 fn main() {
     let mut verticies = Vec::<f32>::new();
-    let mut triangles = Vec::<usize>::new();
+    let mut nverticies = Vec::<usize>::new();
     let mut byte_offsets = Vec::<usize>::new();
     let font = ct::Font::with_name_size(cf::String::from_str("Verdana").as_ref(), 28.0);
-    let utf16 = "`1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
+    let utf16 = "e1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;`'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
     let mut glyphs = vec![cg::Glyph::new(0); utf16.len()];
     font.glyphs_for_characters(&utf16, &mut glyphs).unwrap();
+    let scale = cg::AffineTransform::new_scale(1.0 / (1920.0 * 0.05), -1.0 / (1080.0 * 0.05));
     let mut compiler = GlyphCompiler::default();
     for g in glyphs {
-        if let Some(path) = font.path_for_glyph(g, None) {
+        if let Some(path) = font.path_for_glyph(g, Some(&scale)) {
             let gg = Glyph::default();
             compiler.begin(gg);
             path.apply(&mut compiler, apply);
             compiler.end();
             byte_offsets.push(verticies.len() * 4 * 2);
-            triangles.push(compiler.vertices.len() / 4 / 3);
+            nverticies.push(compiler.vertices.len() / 4);
             verticies.extend_from_slice(&compiler.vertices);
         } else {
             eprintln!("no path for {:?}", g);
@@ -279,7 +281,15 @@ fn main() {
 
     let mut desc = mtl::RenderPipelineDescriptor::new().with_fns(&vertex_fn, &fragment_fn);
 
-    desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
+    let ca = &mut desc.color_attachments_mut()[0];
+    ca.set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
+    ca.set_blening_enabled(true);
+    ca.set_rgb_blend_op(mtl::BlendOp::Add);
+    ca.set_alpha_blend_op(mtl::BlendOp::Add);
+    ca.set_src_rgb_blend_factor(mtl::BlendFactor::One);
+    ca.set_src_alpha_blend_factor(mtl::BlendFactor::One);
+    ca.set_dst_rgb_blend_factor(mtl::BlendFactor::One);
+    ca.set_dst_alpha_blend_factor(mtl::BlendFactor::One);
 
     let render_ps = device.new_render_ps(&desc).unwrap();
 
@@ -294,7 +304,7 @@ fn main() {
 
     let mut render_pass_desc = mtl::RenderPassDescriptor::new();
     let ca = &mut render_pass_desc.color_attachments_mut()[0];
-    ca.set_clear_color(mtl::ClearColor::blue());
+    ca.set_clear_color(mtl::ClearColor::clear());
     ca.set_load_action(mtl::LoadAction::Clear);
     ca.set_store_action(mtl::StoreAction::Store);
     ca.set_texture(Some(&rgba_texture));
@@ -303,8 +313,17 @@ fn main() {
 
     cmd_buf.render(&render_pass_desc, |enc| {
         enc.set_render_ps(&render_ps);
+        enc.set_viewport(mtl::ViewPort {
+            origin_x: 0.0,
+            origin_y: 0.0,
+            width: 1920.0,
+            height: 1080.0,
+            z_near: 0.0,
+            z_far: 1.0,
+        });
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
-        enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangles[0]);
+        println!("triangles = {}", nverticies[0]);
+        enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
     });
 
     cmd_buf.commit();
@@ -314,7 +333,7 @@ fn main() {
     let context = ci::Context::new();
 
     let color_space = cg::ColorSpace::device_rgb().unwrap();
-    let url = ns::URL::with_str("file:///tmp/image.png").unwrap();
+    let url = ns::URL::with_str("file:///tmp/image@2x.png").unwrap();
     context
         .write_png_to_url(
             &image,
