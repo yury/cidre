@@ -1,38 +1,47 @@
 pub mod keys {
     use crate::cf;
 
+    #[inline]
     pub fn scaling_mode() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_ScalingMode }
     }
 
+    #[inline]
     pub fn desination_clean_aperture() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationCleanAperture }
     }
 
+    #[inline]
     pub fn destination_pixel_aspect_ration() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationPixelAspectRatio }
     }
 
+    #[inline]
     pub fn downsampling_mode() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DownsamplingMode }
     }
 
+    #[inline]
     pub fn destination_color_primaries() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationColorPrimaries }
     }
 
+    #[inline]
     pub fn destination_transfer_function() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationTransferFunction }
     }
 
+    #[inline]
     pub fn destination_icc_profile() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationICCProfile }
     }
 
+    #[inline]
     pub fn destination_ycbcr_matrix() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationYCbCrMatrix }
     }
 
+    #[inline]
     pub fn real_time() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_RealTime }
     }
@@ -54,18 +63,22 @@ pub mod keys {
 pub mod scaling_mode {
     use crate::cf;
 
+    #[inline]
     pub fn normal() -> &'static cf::String {
         unsafe { kVTScalingMode_Normal }
     }
 
+    #[inline]
     pub fn crop_source_to_clean_aperture() -> &'static cf::String {
         unsafe { kVTScalingMode_CropSourceToCleanAperture }
     }
 
+    #[inline]
     pub fn letter_box() -> &'static cf::String {
         unsafe { kVTScalingMode_Letterbox }
     }
 
+    #[inline]
     pub fn trim() -> &'static cf::String {
         unsafe { kVTScalingMode_Trim }
     }
@@ -82,10 +95,12 @@ pub mod downsampling_mode {
     use crate::cf;
 
     // Default
+    #[inline]
     pub fn decimate() -> &'static cf::String {
         unsafe { kVTDownsamplingMode_Decimate }
     }
 
+    #[inline]
     pub fn average() -> &'static cf::String {
         unsafe { kVTDownsamplingMode_Average }
     }

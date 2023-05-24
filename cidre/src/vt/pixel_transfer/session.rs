@@ -3,31 +3,31 @@ use crate::{arc, cf, cv, define_cf_type, os, vt};
 define_cf_type!(Session(vt::Session));
 
 impl Session {
+    #[inline]
     pub fn create() -> Result<arc::R<Self>, os::Status> {
         Self::create_in(None)
     }
 
+    #[inline]
     pub fn create_in(allocator: Option<&cf::Allocator>) -> Result<arc::R<Self>, os::Status> {
         unsafe {
-            let mut pixel_transfer_session_out = None;
-            VTPixelTransferSessionCreate(allocator, &mut pixel_transfer_session_out)
-                .to_result_unchecked(pixel_transfer_session_out)
+            let mut result = None;
+            VTPixelTransferSessionCreate(allocator, &mut result).to_result_unchecked(result)
         }
     }
 
-    pub fn invalidate(&self) {
+    #[inline]
+    pub fn invalidate(&mut self) {
         unsafe { VTPixelTransferSessionInvalidate(self) }
     }
 
     #[inline]
     pub fn transfer_image(
         &self,
-        source_buffer: &cv::PixelBuffer,
-        destination_buffer: &cv::PixelBuffer,
+        src_buf: &cv::PixelBuffer,
+        dst_buf: &cv::PixelBuffer,
     ) -> Result<(), os::Status> {
-        unsafe {
-            VTPixelTransferSessionTransferImage(self, source_buffer, destination_buffer).result()
-        }
+        unsafe { VTPixelTransferSessionTransferImage(self, src_buf, dst_buf).result() }
     }
 }
 
@@ -36,8 +36,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         pixel_transfer_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status;
-
-    fn VTPixelTransferSessionInvalidate(session: &Session);
+    fn VTPixelTransferSessionInvalidate(session: &mut Session);
     fn VTPixelTransferSessionTransferImage(
         session: &Session,
         source_buffer: &cv::PixelBuffer,

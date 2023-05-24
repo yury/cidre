@@ -23,19 +23,23 @@ pub mod keys {
 pub mod rotation {
     use crate::cf;
 
+    #[inline]
     pub fn _0() -> &'static cf::String {
         unsafe { kVTRotation_0 }
     }
 
-    pub fn _cw_90() -> &'static cf::String {
+    #[inline]
+    pub fn cw_90() -> &'static cf::String {
         unsafe { kVTRotation_CW90 }
     }
 
+    #[inline]
     pub fn _180() -> &'static cf::String {
         unsafe { kVTRotation_180 }
     }
 
-    pub fn _ccw_90() -> &'static cf::String {
+    #[inline]
+    pub fn ccw_90() -> &'static cf::String {
         unsafe { kVTRotation_CCW90 }
     }
 
