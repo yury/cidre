@@ -311,8 +311,8 @@ impl PropertyID {
         let mut size = self.info(0, std::ptr::null())?;
         let len = size as usize / size_of::<T>();
         let mut result = Vec::with_capacity(len);
-        result.set_len(len);
         self.value(0, std::ptr::null(), &mut size, result.as_mut_ptr() as _)?;
+        result.set_len(len);
         Ok(result)
     }
 
@@ -324,13 +324,13 @@ impl PropertyID {
         let mut size = self.info(spec_size, specifier as *const _ as _)?;
         let len = size as usize / size_of::<T>();
         let mut result = Vec::with_capacity(len);
-        result.set_len(len);
         self.value(
             spec_size,
             specifier as *const _ as _,
             &mut size,
             result.as_mut_ptr() as _,
         )?;
+        result.set_len(len);
         Ok(result)
     }
 

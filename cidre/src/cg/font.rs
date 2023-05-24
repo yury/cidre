@@ -156,8 +156,8 @@ impl Font {
         let len = glyphs.len();
         let mut result = Vec::<std::mem::MaybeUninit<i32>>::with_capacity(len);
         unsafe {
-            result.set_len(len);
             if CGFontGetGlyphAdvances(self, glyphs.as_ptr(), len, result.as_mut_ptr() as _) {
+                result.set_len(len);
                 Ok(std::mem::transmute(result))
             } else {
                 Err(())
@@ -175,8 +175,8 @@ impl Font {
         let len = glyphs.len();
         let mut result = Vec::<std::mem::MaybeUninit<cg::Rect>>::with_capacity(len);
         unsafe {
-            result.set_len(len);
             if CGFontGetGlyphBBoxes(self, glyphs.as_ptr(), len, result.as_mut_ptr() as _) {
+                result.set_len(len);
                 Ok(std::mem::transmute(result))
             } else {
                 Err(())

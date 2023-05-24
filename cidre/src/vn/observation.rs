@@ -186,32 +186,27 @@ impl FeaturePrintObservation {
     #[objc::msg_send(data)]
     pub fn data(&self) -> &ns::Data;
 
-    #[inline]
-    pub fn vec_f32(&self) -> Vec<f32> {
-        debug_assert!(self.element_type() == ElementType::F32);
+    pub fn vec_of<T: Sized>(&self) -> Vec<T> {
         let count = self.element_count();
-        let mut vec: Vec<MaybeUninit<f32>> = Vec::with_capacity(count);
+        let mut vec: Vec<MaybeUninit<T>> = Vec::with_capacity(count);
         unsafe {
-            vec.set_len(count);
             let ptr = vec.as_mut_ptr() as *mut u8;
-            self.data()
-                .get_bytes(ptr, count * std::mem::size_of::<f32>());
+            self.data().get_bytes(ptr, count * std::mem::size_of::<T>());
+            vec.set_len(count);
             std::mem::transmute(vec)
         }
     }
 
     #[inline]
+    pub fn vec_f32(&self) -> Vec<f32> {
+        debug_assert!(self.element_type() == ElementType::F32);
+        self.vec_of::<f32>()
+    }
+
+    #[inline]
     pub fn vec_f64(&self) -> Vec<f64> {
         debug_assert!(self.element_type() == ElementType::F64);
-        let count = self.element_count();
-        let mut vec: Vec<MaybeUninit<f64>> = Vec::with_capacity(count);
-        unsafe {
-            vec.set_len(count);
-            let ptr = vec.as_mut_ptr() as *mut u8;
-            self.data()
-                .get_bytes(ptr, count * std::mem::size_of::<f64>());
-            std::mem::transmute(vec)
-        }
+        self.vec_of::<f64>()
     }
 
     /// # Safety
