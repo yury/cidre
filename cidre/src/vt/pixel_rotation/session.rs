@@ -27,52 +27,34 @@ impl Session {
 
     #[inline]
     pub fn set_rotate_0(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::rotation(), Some(rotation::_0()))
-                .result()
-        }
+        self.set_prop(keys::rotation(), Some(rotation::_0()))
     }
 
     #[inline]
     pub fn set_rotate_cw_90(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::rotation(), Some(rotation::cw_90()))
-                .result()
-        }
+        self.set_prop(keys::rotation(), Some(rotation::cw_90()))
     }
 
     #[inline]
     pub fn set_rotate_ccw_90(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::rotation(), Some(rotation::ccw_90()))
-                .result()
-        }
+        self.set_prop(keys::rotation(), Some(rotation::ccw_90()))
     }
 
     #[inline]
     pub fn set_rotate_180(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::rotation(), Some(rotation::_180()))
-                .result()
-        }
+        self.set_prop(keys::rotation(), Some(rotation::_180()))
     }
 
     #[inline]
     pub fn set_vertical_flip(&mut self, value: bool) -> Result<(), os::Status> {
         let value: &'static cf::Boolean = value.into();
-        unsafe {
-            self.set_property(keys::flip_vertical_orientation(), Some(value))
-                .result()
-        }
+        self.set_prop(keys::flip_vertical_orientation(), Some(value))
     }
 
     #[inline]
     pub fn set_horizontal_flip(&mut self, value: bool) -> Result<(), os::Status> {
         let value: &'static cf::Boolean = value.into();
-        unsafe {
-            self.set_property(keys::flip_horizontal_orientation(), Some(value))
-                .result()
-        }
+        self.set_prop(keys::flip_horizontal_orientation(), Some(value))
     }
 
     #[inline]

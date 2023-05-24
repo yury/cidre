@@ -69,7 +69,7 @@ pub mod scaling_mode {
     }
 
     #[inline]
-    pub fn crop_source_to_clean_aperture() -> &'static cf::String {
+    pub fn crop_src_to_clean_aperture() -> &'static cf::String {
         unsafe { kVTScalingMode_CropSourceToCleanAperture }
     }
 

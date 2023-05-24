@@ -1,7 +1,12 @@
 use crate::{
     arc, cf, cv, define_cf_type, os,
-    vt::{self, pixel_transfer_properties::keys},
+    vt::{
+        self,
+        pixel_transfer_properties::{keys, scaling_mode},
+    },
 };
+
+use super::properties::keys::scaling_mode;
 
 define_cf_type!(Session(vt::Session));
 
@@ -22,6 +27,41 @@ impl Session {
     pub fn set_realtime(&mut self, value: bool) -> Result<(), os::Status> {
         let value: &'static cf::Boolean = value.into();
         unsafe { self.set_property(keys::real_time(), Some(value)).result() }
+    }
+
+    #[inline]
+    pub fn set_scaling_normal(&mut self) -> Result<(), os::Status> {
+        unsafe {
+            self.set_property(keys::scaling_mode(), Some(scaling_mode::normal()))
+                .result()
+        }
+    }
+
+    #[inline]
+    pub fn set_scaling_crop_src_to_clean_aperture(&mut self) -> Result<(), os::Status> {
+        unsafe {
+            self.set_property(
+                keys::scaling_mode(),
+                Some(scaling_mode::crop_src_to_clean_aperture()),
+            )
+            .result()
+        }
+    }
+
+    #[inline]
+    pub fn set_scaling_letter_box(&mut self) -> Result<(), os::Status> {
+        unsafe {
+            self.set_property(keys::scaling_mode(), Some(scaling_mode::letter_box()))
+                .result()
+        }
+    }
+
+    #[inline]
+    pub fn set_scaling_trim(&mut self) -> Result<(), os::Status> {
+        unsafe {
+            self.set_property(keys::scaling_mode(), Some(scaling_mode::trim()))
+                .result()
+        }
     }
 
     #[inline]
