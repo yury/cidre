@@ -1,4 +1,7 @@
-use crate::{arc, cf, cv, define_cf_type, os, vt};
+use crate::{
+    arc, cf, cv, define_cf_type, os,
+    vt::{self, pixel_transfer_properties::keys},
+};
 
 define_cf_type!(Session(vt::Session));
 
@@ -14,6 +17,11 @@ impl Session {
             let mut result = None;
             VTPixelTransferSessionCreate(allocator, &mut result).to_result_unchecked(result)
         }
+    }
+
+    pub fn set_realtime(&mut self, value: bool) -> Result<(), os::Status> {
+        let value: &'static cf::Boolean = value.into();
+        unsafe { self.set_property(keys::real_time(), Some(value)).result() }
     }
 
     #[inline]
