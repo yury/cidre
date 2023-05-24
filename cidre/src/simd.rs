@@ -45,15 +45,48 @@ pub struct f32x2x2(pub [f32x2; 2]);
 #[derive(Debug, Copy, Clone)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
-pub struct f32x3x2([f32x2; 3]);
+pub struct f32x3x2(pub [f32x2; 3]);
 
+#[derive(Debug, Copy, Clone)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
-pub struct f32x4x2([f32x2; 4]);
+pub struct f32x4x2(pub [f32x2; 4]);
 
+#[derive(Debug, Copy, Clone)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
-pub struct f32x2x3([f32x3; 2]);
+pub struct f32x2x3(pub [f32x3; 2]);
+
+#[derive(Debug, Copy, Clone)]
+#[allow(non_camel_case_types)]
+#[repr(transparent)]
+pub struct f32x3x3(pub [f32x3; 3]);
+
+impl f32x3x3 {
+    pub fn diagonal(v: f32x3) -> Self {
+        Self([
+            f32x3::with_xyz_f32(v.x(), 0.0, 0.0),
+            f32x3::with_xyz_f32(0.0, v.y(), 0.0),
+            f32x3::with_xyz_f32(0.0, 0.0, v.z()),
+        ])
+    }
+
+    pub const fn identity() -> Self {
+        Self([
+            f32x3::with_xyz_f32(1.0, 0.0, 0.0),
+            f32x3::with_xyz_f32(0.0, 1.0, 0.0),
+            f32x3::with_xyz_f32(0.0, 0.0, 1.0),
+        ])
+    }
+
+    pub const fn translate(tx: f32, ty: f32) -> Self {
+        Self([
+            f32x3::with_xyz_f32(1.0, 0.0, tx),
+            f32x3::with_xyz_f32(0.0, 1.0, ty),
+            f32x3::with_xyz_f32(0.0, 0.0, 1.0),
+        ])
+    }
+}
 
 pub mod packed {
     use super::Simd;

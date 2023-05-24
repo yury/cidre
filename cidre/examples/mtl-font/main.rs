@@ -1,8 +1,6 @@
 // port of https://github.com/evanw/theta/blob/master/src/core/font.sk
 
-use std::cmp::min;
-
-use cidre::{blocks, cf, cg, ci, ct, mtl, ns, UniChar};
+use cidre::{cf, cg, ci, ct, mtl, ns, simd};
 
 enum TriangleKind {
     Solid,
@@ -215,11 +213,12 @@ typedef struct {
 
 vertex Varyings glyph_vertex(
     unsigned short vid [[ vertex_id ]],
-    constant Vertex *verticies [[buffer(0)]]
+    constant Vertex *verticies [[buffer(0)]],
+    constant float3x3 &matrix [[buffer(1)]]
 ) {
     Varyings out;
     constant Vertex &v = verticies[vid];
-    out.position = float4(float2(v.position.xy), 1.0, 1.0);
+    out.position = float4(matrix * float3(float2(v.position.xy), 1.0), 1.0);
     out.coord2 = float2(v.position.zw);
 
     return out;
@@ -227,26 +226,46 @@ vertex Varyings glyph_vertex(
 
 fragment float4 glyph_fragment(
     Varyings in [[stage_in]],
-    bool is_front_face [[front_facing]]
+    bool is_front_face [[front_facing]],
+    constant float4 &color [[buffer(0)]]
 ) {
     if (in.coord2.x * in.coord2.x - in.coord2.y > 0.0) {
         discard_fragment();
     }
-    float4 color = float4(1, 1, 1, 1);
     // Upper 4 bits: front faces
-	// Lower 4 bits: back faces
-	return color * (is_front_face ? 16.0 / 255.0 : 1.0 / 255.0);
-	// return color * (is_front_face ? 1.0 / 255.0 :  16.0 / 255.0);
+    // Lower 4 bits: back faces
+    return color * (is_front_face ? 16.0 / 255.0 : 1.0 / 255.0);
 }
 
 "###;
+
+/// 6x subpixel AA pattern
+///
+///   R = (f(x - 2/3, y) + f(x - 1/3, y) + f(x, y)) / 3
+///   G = (f(x - 1/3, y) + f(x, y) + f(x + 1/3, y)) / 3
+///   B = (f(x, y) + f(x + 1/3, y) + f(x + 2/3, y)) / 3
+///
+/// The shader would require three texture lookups if the texture format
+/// stored data for offsets -1/3, 0, and +1/3 since the shader also needs
+/// data for offsets -2/3 and +2/3. To avoid this, the texture format stores
+/// data for offsets 0, +1/3, and +2/3 instead. That way the shader can get
+/// data for offsets -2/3 and -1/3 with only one additional texture lookup.
+///
+const JITTER_PATTERN: [(f32, f32); 6] = [
+    (-1.0 / 12.0, -5.0 / 12.0),
+    (1.0 / 12.0, 1.0 / 12.0),
+    (3.0 / 12.0, -1.0 / 12.0),
+    (5.0 / 12.0, 5.0 / 12.0),
+    (7.0 / 12.0, -3.0 / 12.0),
+    (9.0 / 12.0, 3.0 / 12.0),
+];
 
 fn main() {
     let mut verticies = Vec::<f32>::new();
     let mut nverticies = Vec::<usize>::new();
     let mut byte_offsets = Vec::<usize>::new();
     let font = ct::Font::with_name_size(cf::String::from_str("Verdana").as_ref(), 28.0);
-    let utf16 = "e1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;`'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
+    let utf16 = "1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;`'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
     let mut glyphs = vec![cg::Glyph::new(0); utf16.len()];
     font.glyphs_for_characters(&utf16, &mut glyphs).unwrap();
     let scale = cg::AffineTransform::new_scale(1.0 / (1920.0 * 0.05), -1.0 / (1080.0 * 0.05));
@@ -322,8 +341,21 @@ fn main() {
             z_far: 1.0,
         });
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
-        println!("triangles = {}", nverticies[0]);
-        enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
+        for j in 0..JITTER_PATTERN.len() {
+            let (tx, ty) = JITTER_PATTERN[j];
+            let t = simd::f32x3x3::translate(tx, ty);
+            enc.set_vertex_slice_at(&[t], 1);
+            if j % 2 == 0 {
+                let color = simd::f32x4::with_xyzw(
+                    if j == 0 { 1.0 } else { 0.0 },
+                    if j == 2 { 1.0 } else { 0.0 },
+                    if j == 4 { 1.0 } else { 0.0 },
+                    1.0,
+                );
+                enc.set_fragment_slice_at(&[color], 0);
+            }
+            enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
+        }
     });
 
     cmd_buf.commit();

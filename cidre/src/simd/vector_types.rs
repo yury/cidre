@@ -136,6 +136,13 @@ impl<T: Default + Copy> Simd<T, 4, 3> {
     accessors!(x, y, z);
 }
 
+impl Simd<f32, 4, 3> {
+    #[inline]
+    pub const fn with_xyz_f32(x: f32, y: f32, z: f32) -> Self {
+        Self([x, y, z, 0.0])
+    }
+}
+
 impl<T: Copy> Simd<T, 4, 4> {
     #[inline]
     pub fn with_xyzw(x: T, y: T, z: T, w: T) -> Self {

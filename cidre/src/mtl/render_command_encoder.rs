@@ -199,8 +199,12 @@ impl RenderCmdEncoder {
     );
 
     #[inline]
-    pub fn set_vertex_slice_at(&mut self, slice: &[u8], at_index: usize) {
-        self.set_vertex_bytes_at(slice.as_ptr(), slice.len(), at_index)
+    pub fn set_vertex_slice_at<T>(&mut self, slice: &[T], at_index: usize) {
+        self.set_vertex_bytes_at(
+            slice.as_ptr().cast(),
+            slice.len() * std::mem::size_of::<T>(),
+            at_index,
+        )
     }
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
@@ -239,6 +243,18 @@ impl RenderCmdEncoder {
     /// Set a global buffer for all fragment shaders at the given bind point index.
     #[objc::msg_send(setFragmentBuffer:offset:atIndex:)]
     pub fn set_fragment_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
+
+    #[objc::msg_send(setFragmentBytes:length:atIndex:)]
+    pub fn set_fragment_bytes_at(&mut self, bytes: *const u8, len: usize, at_index: usize);
+
+    #[inline]
+    pub fn set_fragment_slice_at<T>(&mut self, slice: &[T], at_index: usize) {
+        self.set_fragment_bytes_at(
+            slice.as_ptr().cast(),
+            slice.len() * std::mem::size_of::<T>(),
+            at_index,
+        )
+    }
 
     /// Set a global texture for all fragment shaders at the given bind point index.
     #[objc::msg_send(setFragmentTexture:atIndex:)]
