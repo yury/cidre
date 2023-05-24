@@ -65,8 +65,10 @@ pub enum CullMode {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum Winding {
-    Clockwise = 0,
-    CounterClockwise = 1,
+    /// ClockWise
+    CW = 0,
+    /// CounterClockWise
+    CCW = 1,
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -207,6 +209,11 @@ impl RenderCmdEncoder {
         )
     }
 
+    #[inline]
+    pub fn set_vertex_arg_at<T>(&mut self, arg: &T, at_index: usize) {
+        self.set_vertex_bytes_at(arg as *const T as _, std::mem::size_of::<T>(), at_index)
+    }
+
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
     pub fn set_vertex_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
@@ -254,6 +261,11 @@ impl RenderCmdEncoder {
             slice.len() * std::mem::size_of::<T>(),
             at_index,
         )
+    }
+
+    #[inline]
+    pub fn set_fragment_arg_at<T>(&mut self, value: &T, at_index: usize) {
+        self.set_fragment_bytes_at(value as *const T as _, std::mem::size_of::<T>(), at_index)
     }
 
     /// Set a global texture for all fragment shaders at the given bind point index.

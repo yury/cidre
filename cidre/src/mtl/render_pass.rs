@@ -75,77 +75,42 @@ pub enum StoreActionOptions {
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct ClearColor {
-    pub red: f64,
-    pub green: f64,
-    pub blue: f64,
-    pub alpha: f64,
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
+    pub a: f64,
 }
 
 impl ClearColor {
-    #[inline]
-    pub fn new(red: f64, green: f64, blue: f64, alpha: f64) -> Self {
-        Self {
-            red,
-            green,
-            blue,
-            alpha,
-        }
+    pub const fn new(r: f64, g: f64, b: f64, a: f64) -> Self {
+        Self { r, g, b, a }
     }
 
     pub const fn red() -> Self {
-        Self {
-            red: 1.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }
+        Self::new(1.0, 0.0, 0.0, 1.0)
     }
 
     pub const fn green() -> Self {
-        Self {
-            red: 0.0,
-            green: 1.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }
+        Self::new(0.0, 1.0, 0.0, 1.0)
     }
 
     pub const fn blue() -> Self {
-        Self {
-            red: 0.0,
-            green: 0.0,
-            blue: 1.0,
-            alpha: 1.0,
-        }
+        Self::new(0.0, 0.0, 1.0, 1.0)
     }
 
     pub const fn clear() -> Self {
-        Self {
-            red: 0.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 0.0,
-        }
+        Self::new(0.0, 0.0, 0.0, 0.0)
     }
 
     pub const fn black() -> Self {
-        Self {
-            red: 0.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 1.0,
-        }
+        Self::new(0.0, 0.0, 0.0, 1.0)
     }
 
     pub const fn white() -> Self {
-        Self {
-            red: 1.0,
-            green: 1.0,
-            blue: 1.0,
-            alpha: 1.0,
-        }
+        Self::new(1.0, 1.0, 1.0, 1.0)
     }
 }
+
 define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
 
 define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
@@ -205,10 +170,10 @@ impl Descriptor {
 define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
 impl ColorAttachmentDescriptorArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> Option<&ColorAttachmentDescriptor>;
+    pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut_at(&mut self, index: usize) -> Option<&mut ColorAttachmentDescriptor>;
+    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set_at(&mut self, object: Option<&ColorAttachmentDescriptor>, index: usize);
@@ -219,14 +184,14 @@ impl Index<usize> for ColorAttachmentDescriptorArray {
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        self.get_at(index).unwrap()
+        self.get_at(index)
     }
 }
 
 impl IndexMut<usize> for ColorAttachmentDescriptorArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut_at(index).unwrap()
+        self.get_mut_at(index)
     }
 }
 

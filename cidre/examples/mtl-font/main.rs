@@ -340,11 +340,12 @@ fn main() {
             z_near: 0.0,
             z_far: 1.0,
         });
+        enc.set_front_facing_winding(mtl::Winding::CCW);
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
         for j in 0..JITTER_PATTERN.len() {
             let (tx, ty) = JITTER_PATTERN[j];
             let t = simd::f32x3x3::translate(tx, ty);
-            enc.set_vertex_slice_at(&[t], 1);
+            enc.set_vertex_arg_at(&t, 1);
             if j % 2 == 0 {
                 let color = simd::f32x4::with_xyzw(
                     if j == 0 { 1.0 } else { 0.0 },
@@ -352,7 +353,7 @@ fn main() {
                     if j == 4 { 1.0 } else { 0.0 },
                     1.0,
                 );
-                enc.set_fragment_slice_at(&[color], 0);
+                enc.set_fragment_arg_at(&color, 0);
             }
             enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
         }
