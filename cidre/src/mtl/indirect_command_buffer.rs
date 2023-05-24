@@ -39,16 +39,16 @@ impl Descriptor {
     pub fn set_cmd_types(&mut self, value: IndirectCmdType);
 
     #[objc::msg_send(inheritPipelineState)]
-    pub fn inherit_pipeline_state(&self) -> bool;
+    pub fn inherit_ps(&self) -> bool;
 
     #[objc::msg_send(setInheritPipelineState:)]
-    pub fn set_inherit_pipeline_state(&self, value: bool) -> bool;
+    pub fn set_inherit_ps(&self, value: bool) -> bool;
 
     #[objc::msg_send(inheritBuffers)]
-    pub fn inherit_buffers(&self) -> bool;
+    pub fn inherit_bufs(&self) -> bool;
 
     #[objc::msg_send(setInheritBuffers:)]
-    pub fn set_inherit_buffers(&self, value: bool);
+    pub fn set_inherit_bufs(&self, value: bool);
 
     #[objc::msg_send(maxVertexBufferBindCount)]
     pub fn max_vertex_buf_bind_count(&self) -> usize;

@@ -1,5 +1,3 @@
-use std::ops::{Index, IndexMut};
-
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
 #[derive(Debug, Default, PartialEq, Copy, Clone, Eq)]
@@ -125,16 +123,16 @@ impl Descriptor {
     pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor;
 
     #[objc::msg_send(setDepthAttachment:)]
-    pub fn set_depth_attachemnt(&mut self, value: Option<&DepthAttachmentDescriptor>);
+    pub fn set_depth_attachment(&mut self, value: Option<&DepthAttachmentDescriptor>);
 
     #[objc::msg_send(stencilAttachment)]
     pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor;
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attachemnt_option(&mut self, value: Option<&StencilAttachmentDescriptor>);
+    pub fn set_stencil_attachment_option(&mut self, value: Option<&StencilAttachmentDescriptor>);
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attachemnt(&mut self, value: &StencilAttachmentDescriptor);
+    pub fn set_stencil_attachment(&mut self, value: &StencilAttachmentDescriptor);
 
     #[objc::msg_send(tileWidth)]
     pub fn tile_width(&self) -> usize;
@@ -179,7 +177,7 @@ impl ColorAttachmentDescriptorArray {
     pub fn set_at(&mut self, object: Option<&ColorAttachmentDescriptor>, index: usize);
 }
 
-impl Index<usize> for ColorAttachmentDescriptorArray {
+impl std::ops::Index<usize> for ColorAttachmentDescriptorArray {
     type Output = ColorAttachmentDescriptor;
 
     #[inline]
@@ -188,7 +186,7 @@ impl Index<usize> for ColorAttachmentDescriptorArray {
     }
 }
 
-impl IndexMut<usize> for ColorAttachmentDescriptorArray {
+impl std::ops::IndexMut<usize> for ColorAttachmentDescriptorArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.get_mut_at(index)
