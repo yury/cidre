@@ -3,7 +3,8 @@ use crate::{define_obj_type, mlc, ns, objc};
 define_obj_type!(Optimizer(ns::Id));
 
 impl Optimizer {
-    /// The learning rate.  This property is 'readwrite' so that callers can implement a 'decay' during training
+    /// The learning rate.
+    /// This property is 'readwrite' so that callers can implement a 'decay' during training
     #[objc::msg_send(learningRate)]
     pub fn learning_rate(&self) -> f32;
 

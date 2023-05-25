@@ -5,6 +5,10 @@ pub type Identifier = cf::String;
 define_cf_type!(Locale(cf::Type));
 
 impl Locale {
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CFLocaleGetTypeID() }
+    }
     /// ```
     /// use cidre::cf;
     ///
@@ -14,7 +18,7 @@ impl Locale {
     ///
     ///
     /// ```
-    pub fn system<'get>() -> &'get Locale {
+    pub fn system() -> &'static Locale {
         unsafe { CFLocaleGetSystem() }
     }
 
@@ -39,5 +43,5 @@ extern "C" {
     fn CFLocaleGetSystem() -> &'static Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Identifier;
     fn CFLocaleCopyCurrent() -> arc::R<Locale>;
-
+    fn CFLocaleGetTypeID() -> cf::TypeId;
 }

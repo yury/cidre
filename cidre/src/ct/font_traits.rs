@@ -8,7 +8,7 @@ impl FontSymbolicTraits {
     pub const CONDENSED: Self = Self(1 << 6); // Additional detail available via kCTFontWidthTrait
     pub const MONO_SPACE: Self = Self(1 << 10); // Use fixed-pitch glyphs if available. May have multiple glyph advances (most CJK glyphs may contain two spaces)
     pub const VERTICAL: Self = Self(1 << 11); // Use vertical glyph variants and metrics
-    pub const UIOPTIMIZED: Self = Self(1 << 12); // Synthesize appropriate attributes for UI rendering such as control titles if necessary
+    pub const UI_OPTIMIZED: Self = Self(1 << 12); // Synthesize appropriate attributes for UI rendering such as control titles if necessary
     pub const COLOR_GLYPHS: Self = Self(1 << 13); // Color glyphs ('sbix', 'COLR', or 'SVG ') are available.
     pub const COMPOSITE: Self = Self(1 << 14); // The font is a CFR (Composite font reference), a cascade list is expected per font.
 
