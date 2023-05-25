@@ -51,8 +51,8 @@ where
         let len = self.len();
         let mut vec: Vec<MaybeUninit<arc::R<T>>> = Vec::with_capacity(len);
         unsafe {
-            vec.set_len(len);
             self.get_values(vec.as_mut_ptr() as _);
+            vec.set_len(len);
             std::mem::transmute(vec)
         }
     }
@@ -72,7 +72,7 @@ where
     type Target = Set;
 
     fn deref(&self) -> &Self::Target {
-        todo!()
+        &self.0
     }
 }
 

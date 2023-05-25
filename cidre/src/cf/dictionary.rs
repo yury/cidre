@@ -117,14 +117,11 @@ impl Dictionary {
     }
 
     #[inline]
-    pub unsafe fn raw_value_if_present(
-        &self,
-        key: *const c_void,
-    ) -> Option<Option<NonNull<c_void>>> {
-        let mut value = Option::None;
+    pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<NonNull<c_void>> {
+        let mut value = None;
 
         if CFDictionaryGetValueIfPresent(self, key, &mut value) {
-            Some(value)
+            value
         } else {
             None
         }
@@ -243,9 +240,9 @@ impl Dictionary {
         let len = self.len();
         let mut keys: Vec<&Type> = Vec::with_capacity(len);
         unsafe {
+            let keys_ptr = keys.as_ptr() as *mut *const c_void;
+            self.keys_and_values(keys_ptr, std::ptr::null_mut());
             keys.set_len(len);
-            let keys = keys.as_ptr() as *const *const c_void;
-            self.keys_and_values(keys, std::ptr::null());
         }
         keys
     }
@@ -269,9 +266,9 @@ impl Dictionary {
         let len = self.len();
         let mut values: Vec<&Type> = Vec::with_capacity(len);
         unsafe {
+            let values_ptr = values.as_ptr() as *mut *const c_void;
+            self.keys_and_values(std::ptr::null_mut(), values_ptr);
             values.set_len(len);
-            let values = values.as_ptr() as *const *const c_void;
-            self.keys_and_values(std::ptr::null(), values);
         }
         values
     }
@@ -281,17 +278,17 @@ impl Dictionary {
         let mut keys: Vec<&Type> = Vec::with_capacity(len);
         let mut values: Vec<&Type> = Vec::with_capacity(len);
         unsafe {
+            let keys_ptr = keys.as_ptr() as *mut *const c_void;
+            let values_ptr = values.as_ptr() as *mut *const c_void;
+            self.keys_and_values(keys_ptr, values_ptr);
             keys.set_len(len);
             values.set_len(len);
-            let keys = keys.as_ptr() as *const *const c_void;
-            let values = values.as_ptr() as *const *const c_void;
-            self.keys_and_values(keys, values);
         }
         (keys, values)
     }
 
     #[inline]
-    pub unsafe fn keys_and_values(&self, keys: *const *const c_void, values: *const *const c_void) {
+    pub unsafe fn keys_and_values(&self, keys: *mut *const c_void, values: *mut *const c_void) {
         CFDictionaryGetKeysAndValues(self, keys, values)
     }
 
@@ -343,8 +340,8 @@ extern "C" {
 
     fn CFDictionaryGetKeysAndValues(
         the_dict: &Dictionary,
-        keys: *const *const c_void,
-        values: *const *const c_void,
+        keys: *mut *const c_void,
+        values: *mut *const c_void,
     );
 
     fn CFDictionaryCreateCopy(
