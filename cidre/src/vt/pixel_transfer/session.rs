@@ -6,8 +6,6 @@ use crate::{
     },
 };
 
-use super::properties::keys::scaling_mode;
-
 define_cf_type!(Session(vt::Session));
 
 impl Session {

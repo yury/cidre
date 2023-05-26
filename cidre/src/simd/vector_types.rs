@@ -116,6 +116,7 @@ impl<T: Copy> Simd<T, 1, 1> {
     pub fn with_x(x: T) -> Self {
         Self([x])
     }
+
     accessors!(x);
 }
 
@@ -123,6 +124,11 @@ impl<T: Copy> Simd<T, 2, 2> {
     #[inline]
     pub fn with_xy(x: T, y: T) -> Self {
         Self([x, y])
+    }
+
+    #[inline]
+    pub fn with_rg(r: T, g: T) -> Self {
+        Self([r, g])
     }
 
     accessors!(x, y);
@@ -133,6 +139,12 @@ impl<T: Default + Copy> Simd<T, 4, 3> {
     pub fn with_xyz(x: T, y: T, z: T) -> Self {
         Self([x, y, z, Default::default()])
     }
+
+    #[inline]
+    pub fn with_rgb(r: T, g: T, b: T) -> Self {
+        Self([r, g, b, Default::default()])
+    }
+
     accessors!(x, y, z);
 }
 
@@ -141,6 +153,11 @@ impl Simd<f32, 4, 3> {
     pub const fn with_xyz_f32(x: f32, y: f32, z: f32) -> Self {
         Self([x, y, z, 0.0])
     }
+
+    #[inline]
+    pub const fn with_rgb_f32(r: f32, g: f32, b: f32) -> Self {
+        Self([r, g, b, 0.0])
+    }
 }
 
 impl<T: Copy> Simd<T, 4, 4> {
@@ -148,6 +165,12 @@ impl<T: Copy> Simd<T, 4, 4> {
     pub fn with_xyzw(x: T, y: T, z: T, w: T) -> Self {
         Self([x, y, z, w])
     }
+
+    #[inline]
+    pub fn with_rgba(r: T, g: T, b: T, a: T) -> Self {
+        Self([r, g, b, a])
+    }
+
     accessors!(x, y, z, w);
 }
 

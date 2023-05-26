@@ -347,7 +347,7 @@ fn main() {
             let t = simd::f32x3x3::translate(tx, ty);
             enc.set_vertex_arg_at(&t, 1);
             if j % 2 == 0 {
-                let color = simd::f32x4::with_xyzw(
+                let color = simd::f32x4::with_rgba(
                     if j == 0 { 1.0 } else { 0.0 },
                     if j == 2 { 1.0 } else { 0.0 },
                     if j == 4 { 1.0 } else { 0.0 },
