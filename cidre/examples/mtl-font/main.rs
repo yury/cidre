@@ -302,7 +302,7 @@ fn main() {
 
     let ca = &mut desc.color_attachments_mut()[0];
     ca.set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
-    ca.set_blening_enabled(true);
+    ca.set_blending_enabled(true);
     ca.set_rgb_blend_op(mtl::BlendOp::Add);
     ca.set_alpha_blend_op(mtl::BlendOp::Add);
     ca.set_src_rgb_blend_factor(mtl::BlendFactor::One);

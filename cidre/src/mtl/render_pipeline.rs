@@ -100,10 +100,10 @@ impl ColorAttachmentDescriptor {
     pub fn set_pixel_format(&mut self, value: PixelFormat);
 
     #[objc::msg_send(isBlendingEnabled)]
-    pub fn blening_enabled(&self) -> bool;
+    pub fn blending_enabled(&self) -> bool;
 
     #[objc::msg_send(setBlendingEnabled:)]
-    pub fn set_blening_enabled(&mut self, value: bool);
+    pub fn set_blending_enabled(&mut self, value: bool);
 
     #[objc::msg_send(sourceRGBBlendFactor)]
     pub fn src_rgb_blend_factor(&self) -> BlendFactor;
