@@ -81,7 +81,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let desc = ct::FontDescriptor::with_name_size(cf::String::from_str("hello").as_ref(), 10.0);
+        let name = cf::String::from_str("hello");
+        let desc = ct::FontDescriptor::with_name_size(&name, 10.0);
         desc.show();
     }
 }
