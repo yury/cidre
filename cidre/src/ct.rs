@@ -23,3 +23,6 @@ pub use run::Run;
 pub use run::Status as RunStatus;
 
 mod line;
+pub use line::Line;
+pub use line::LineBoundsOptions;
+pub use line::LineTruncationType;
