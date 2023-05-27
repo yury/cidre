@@ -107,5 +107,9 @@ pub use socket::Socket;
 mod mach_port;
 pub use mach_port::MachPort;
 
+mod attributed_string;
+pub use attributed_string::AttributedString;
+pub use attributed_string::AttributedStringMut;
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {}
