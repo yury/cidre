@@ -140,7 +140,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{cf, ct};
+    use crate::ct;
 
     #[test]
     fn basics() {

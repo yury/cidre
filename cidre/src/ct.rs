@@ -34,3 +34,8 @@ pub use paragraph_style::ParagraphStyleSetting;
 pub use paragraph_style::ParagraphStyleSpecifier;
 pub use paragraph_style::TextAlignment;
 pub use paragraph_style::WritingDirection;
+
+mod string_attributes;
+pub use string_attributes::AttributeName as StringAttributeName;
+pub use string_attributes::UnderlineStyle;
+pub use string_attributes::UnderlineStyleModifiers;

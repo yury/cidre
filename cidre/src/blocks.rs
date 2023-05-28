@@ -1,7 +1,7 @@
 // TODO:
-// 1. Pure fn block is global _NSConcreteGlobalBlock
-// 2. Pure fn block with fields - _NSConcreteMallocBlock
-// 3. NoEscaping block - _NSConcreteStackBlock
+// - [ ] Pure fn block is global _NSConcreteGlobalBlock
+// - [ ] Pure fn block with fields - _NSConcreteMallocBlock
+// - [x] NoEscaping block - _NSConcreteStackBlock
 
 // https://opensource.apple.com/source/libclosure/libclosure-79/BlockImplementation.txt.auto.html
 // https://github.com/apple-oss-distributions/libclosure/blob/main/BlockImplementation.txt
