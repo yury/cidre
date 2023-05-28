@@ -1,4 +1,8 @@
-use crate::{arc, cf, cg, ct, define_cf_type, define_options};
+use crate::{
+    arc,
+    blocks::{self, Block},
+    cf, cg, ct, define_cf_type, define_options,
+};
 
 define_options!(LineBoundsOptions(usize));
 
@@ -60,8 +64,36 @@ impl Line {
     ) -> f64 {
         unsafe { CTLineGetTypographicBounds(self, ascent, descent, leading) }
     }
+
+    #[inline]
     pub fn bounds(&self, options: LineBoundsOptions) -> cg::Rect {
         unsafe { CTLineGetBoundsWithOptions(self, options) }
+    }
+
+    #[inline]
+    pub fn trainling_whitspace(&self) -> f64 {
+        unsafe { CTLineGetTrailingWhitespaceWidth(self) }
+    }
+    #[inline]
+    pub fn index_for_position(&self, position: cg::Point) -> cf::Index {
+        unsafe { CTLineGetStringIndexForPosition(self, position) }
+    }
+
+    #[inline]
+    pub fn enumerate_caret_offsets_block<F>(&self, block: &mut Block<F>)
+    where
+        F: FnMut(f64, cf::Index, bool, *mut bool),
+    {
+        unsafe { CTLineEnumerateCaretOffsets(self, block.as_ptr()) }
+    }
+
+    #[inline]
+    pub fn enumerate_caret_offsets<F>(&self, block: &mut F)
+    where
+        F: FnMut(f64, cf::Index, bool, *mut bool),
+    {
+        let mut block = blocks::no_esc4(block);
+        unsafe { CTLineEnumerateCaretOffsets(self, block.as_ptr()) }
     }
 }
 
@@ -84,6 +116,11 @@ extern "C" {
     ) -> f64;
 
     fn CTLineGetBoundsWithOptions(line: &Line, options: LineBoundsOptions) -> cg::Rect;
+    fn CTLineGetTrailingWhitespaceWidth(line: &Line) -> f64;
+    fn CTLineGetStringIndexForPosition(line: &Line, position: cg::Point) -> cf::Index;
+
+    fn CTLineEnumerateCaretOffsets(line: &Line, block: *mut std::ffi::c_void);
+
 }
 
 #[cfg(test)]
@@ -116,6 +153,17 @@ mod tests {
         let bounds = line.bounds(Default::default());
 
         assert_eq!(bounds.size.width, width);
+        assert_eq!(line.trainling_whitspace(), 0.0);
+
+        let mut offsets = Vec::new();
+
+        let mut block =
+            |offset: f64, _char_index: cf::Index, _leading_edge: bool, _stop: *mut bool| {
+                offsets.push(offset);
+            };
+
+        line.enumerate_caret_offsets(&mut block);
+        assert_eq!(offsets.len(), 8);
 
         line.show();
     }

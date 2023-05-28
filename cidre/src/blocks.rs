@@ -102,6 +102,48 @@ where
     Layout2Once::new(Layout2Once::<F>::invoke5 as _, f)
 }
 
+pub fn no_esc0<R, F>(f: &mut F) -> NoEscBlMut<F>
+where
+    F: FnMut() -> R,
+{
+    Layout1Mut::new(Layout1Mut::<F>::invoke0 as _, f)
+}
+
+pub fn no_esc1<A, R, F>(f: &mut F) -> NoEscBlMut<F>
+where
+    F: FnMut(A) -> R,
+{
+    Layout1Mut::new(Layout1Mut::<F>::invoke1 as _, f)
+}
+
+pub fn no_esc2<A, B, R, F>(f: &mut F) -> NoEscBlMut<F>
+where
+    F: FnMut(A, B) -> R,
+{
+    Layout1Mut::new(Layout1Mut::<F>::invoke2 as _, f)
+}
+
+pub fn no_esc3<A, B, C, R, F>(f: &mut F) -> NoEscBlMut<F>
+where
+    F: FnMut(A, B, C) -> R,
+{
+    Layout1Mut::new(Layout1Mut::<F>::invoke3 as _, f)
+}
+
+pub fn no_esc4<A, B, C, D, R, F>(f: &mut F) -> NoEscBlMut<F>
+where
+    F: FnMut(A, B, C, D) -> R,
+{
+    Layout1Mut::new(Layout1Mut::<F>::invoke4 as _, f)
+}
+
+pub fn no_esc5<A, B, C, D, E, R, F>(f: &mut F) -> NoEscBlMut<F>
+where
+    F: FnMut(A, B, C, D, E) -> R,
+{
+    Layout1Mut::new(Layout1Mut::<F>::invoke5 as _, f)
+}
+
 pub fn mut0<R, F: 'static>(f: F) -> BlMut<F>
 where
     F: FnMut() -> R,
@@ -130,7 +172,7 @@ where
     Layout2Mut::new(Layout2Mut::<F>::invoke3 as _, f)
 }
 
-pub fn mut4<A, B, C, D, R, F: 'static>(f: F) -> BlMut<F>
+pub fn mut4<A, B, C, D, R, F>(f: F) -> BlMut<F>
 where
     F: FnMut(A, B, C, D) -> R,
 {
@@ -175,9 +217,99 @@ impl Flags {
     pub const HAS_SIGNATURE: Self = Self(1 << 30);
     pub const HAS_EXTENDED_LAYOUT: Self = Self(1 << 31);
 
-    const RETAINED_NEEDS_FREE: Self = Self(Self(2).0 | Self::NEEDS_FREE.0);
-    const RETAINED_NEEDS_DROP: Self =
-        Self(Self(2).0 | Self::NEEDS_FREE.0 | Self::HAS_COPY_DISPOSE.0);
+    const RETAINED_NEEDS_FREE: Self = Self(2 | Self::NEEDS_FREE.0);
+    const RETAINED_NEEDS_DROP: Self = Self(2 | Self::NEEDS_FREE.0 | Self::HAS_COPY_DISPOSE.0);
+}
+
+#[repr(C)]
+pub struct Layout1Mut<'a, F> {
+    isa: &'static Class<ns::Id>,
+    flags: Flags,
+    reserved: i32,
+    invoke: *const c_void,
+    descriptor: &'static Descriptor1,
+    closure: &'a mut F,
+}
+
+pub type NoEscBlMut<'a, F> = Layout1Mut<'a, F>;
+
+impl<'a, F> std::ops::Deref for Layout1Mut<'a, F> {
+    type Target = Block<F>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl<'a, F> std::ops::DerefMut for Layout1Mut<'a, F> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl<'a, F> Layout1Mut<'a, F> {
+    const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
+        reserved: 0,
+        size: std::mem::size_of::<&'static Class<ns::Id>>()
+            + std::mem::size_of::<Flags>()
+            + std::mem::size_of::<i32>()
+            + std::mem::size_of::<*const c_void>()
+            + std::mem::size_of::<&'static Descriptor1>()
+            + std::mem::size_of::<&'static c_void>(), // emulating &mut F
+    };
+
+    extern "C" fn invoke0<R>(&mut self) -> R
+    where
+        F: FnMut() -> R,
+    {
+        (self.closure)()
+    }
+
+    extern "C" fn invoke1<A, R>(&mut self, a: A) -> R
+    where
+        F: FnMut(A) -> R,
+    {
+        (self.closure)(a)
+    }
+
+    extern "C" fn invoke2<A, B, R>(&mut self, a: A, b: B) -> R
+    where
+        F: FnMut(A, B) -> R,
+    {
+        (self.closure)(a, b)
+    }
+
+    extern "C" fn invoke3<A, B, C, R>(&mut self, a: A, b: B, c: C) -> R
+    where
+        F: FnMut(A, B, C) -> R,
+    {
+        (self.closure)(a, b, c)
+    }
+
+    extern "C" fn invoke4<A, B, C, D, R>(&mut self, a: A, b: B, c: C, d: D) -> R
+    where
+        F: FnMut(A, B, C, D) -> R,
+    {
+        (self.closure)(a, b, c, d)
+    }
+
+    extern "C" fn invoke5<A, B, C, D, E, R>(&mut self, a: A, b: B, c: C, d: D, e: E) -> R
+    where
+        F: FnMut(A, B, C, D, E) -> R,
+    {
+        (self.closure)(a, b, c, d, e)
+    }
+
+    fn new(invoke: *const c_void, f: &'a mut F) -> Layout1Mut<'a, F> {
+        Self {
+            isa: unsafe { &_NSConcreteStackBlock },
+            flags: Default::default(),
+            reserved: 0,
+            invoke,
+            descriptor: &Self::DESCRIPTOR_1,
+            closure: f,
+        }
+    }
 }
 
 #[repr(C)]
