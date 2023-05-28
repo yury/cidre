@@ -118,7 +118,6 @@ extern "C" {
     fn CTLineGetBoundsWithOptions(line: &Line, options: LineBoundsOptions) -> cg::Rect;
     fn CTLineGetTrailingWhitespaceWidth(line: &Line) -> f64;
     fn CTLineGetStringIndexForPosition(line: &Line, position: cg::Point) -> cf::Index;
-
     fn CTLineEnumerateCaretOffsets(line: &Line, block: *mut std::ffi::c_void);
 
 }

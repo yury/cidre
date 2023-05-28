@@ -26,3 +26,11 @@ mod line;
 pub use line::Line;
 pub use line::LineBoundsOptions;
 pub use line::LineTruncationType;
+
+mod paragraph_style;
+pub use paragraph_style::LineBreakMode;
+pub use paragraph_style::ParagraphStyle;
+pub use paragraph_style::ParagraphStyleSetting;
+pub use paragraph_style::ParagraphStyleSpecifier;
+pub use paragraph_style::TextAlignment;
+pub use paragraph_style::WritingDirection;
