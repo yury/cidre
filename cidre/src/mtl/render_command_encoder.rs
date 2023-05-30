@@ -288,4 +288,25 @@ impl RenderCmdEncoder {
         vertex_start: usize,
         vertex_count: usize,
     );
+
+    #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:)]
+    pub fn draw_indexed_primitives_instance_count(
+        &mut self,
+        primitive_type: mtl::PrimitiveType,
+        index_cound: usize,
+        index_type: mtl::IndexType,
+        index_buffer: mtl::Buf,
+        index_buffer_offset: usize,
+        instance_count: usize,
+    );
+
+    #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:)]
+    pub fn draw_indexed_primitives(
+        &mut self,
+        primitive_type: mtl::PrimitiveType,
+        index_cound: usize,
+        index_type: mtl::IndexType,
+        index_buffer: mtl::Buf,
+        index_buffer_offset: usize,
+    );
 }
