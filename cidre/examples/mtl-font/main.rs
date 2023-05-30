@@ -328,7 +328,7 @@ fn main() {
     ca.set_store_action(mtl::StoreAction::Store);
     ca.set_texture(Some(&rgba_texture));
     let cmd_queue = device.new_cmd_queue().unwrap();
-    let mut cmd_buf = cmd_queue.new_cmd_buf().unwrap();
+    let mut cmd_buf = cmd_queue.new_cmd_buf_unretained_refs().unwrap();
 
     cmd_buf.render(&render_pass_desc, |enc| {
         enc.set_render_ps(&render_ps);
@@ -341,7 +341,12 @@ fn main() {
             z_far: 1.0,
         });
         enc.set_front_facing_winding(mtl::Winding::CCW);
+        let t = simd::f32x3x3::translate(0.0, 0.0);
+        // enc.set_vertex_arg_at(&t, 1);
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
+        // let color = simd::f32x4::with_rgba(1.0, 0.0, 0.0, 1.0);
+        // enc.set_fragment_arg_at(&color, 0);
+        // enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
         for j in 0..JITTER_PATTERN.len() {
             let (tx, ty) = JITTER_PATTERN[j];
             let t = simd::f32x3x3::translate(tx, ty);
