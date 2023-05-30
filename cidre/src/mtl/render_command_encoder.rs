@@ -45,9 +45,8 @@ pub struct ScissorRect {
 #[derive(Debug, PartialEq)]
 #[repr(C)]
 pub struct ViewPort {
-    // double originX, originY, width, height, znear, zfar;
-    pub origin_x: f64,
-    pub origin_y: f64,
+    pub x: f64,
+    pub y: f64,
     pub width: f64,
     pub height: f64,
     pub z_near: f64,
