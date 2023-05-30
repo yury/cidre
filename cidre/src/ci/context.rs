@@ -29,6 +29,7 @@ impl Context {
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
+    #[inline]
     pub fn write_png_to_url<'ear>(
         &self,
         image: &ci::Image,
