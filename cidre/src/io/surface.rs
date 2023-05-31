@@ -19,9 +19,9 @@ pub enum ComponentName {
 #[repr(i32)]
 pub enum ComponentType {
     Unknown = 0,
-    UnsignedInteger = 1,
-    SignedInteger = 2,
-    Float = 3,
+    U32 = 1,
+    S32 = 2,
+    F32 = 3,
     SignedNormalized = 4,
 }
 
@@ -154,35 +154,15 @@ impl Surface {
     }
 
     #[inline]
-    pub fn all_values(&self) -> Option<arc::R<cf::Dictionary>> {
+    pub fn all_values(&self) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
         unsafe { IOSurfaceCopyAllValues(self) }
     }
 
-    /// ```
-    /// use cidre::{cf, io, mach};
-    ///
-    /// let width = cf::Number::from_i32(100);
-    /// let height = cf::Number::from_i32(200);
-    ///
-    /// let properties = cf::Dictionary::with_keys_values(
-    ///   &[
-    ///     io::surface::keys::width(),
-    ///     io::surface::keys::height()
-    ///   ],
-    ///   &[
-    ///     &width,
-    ///     &height
-    ///   ]
-    /// ).unwrap();
-    ///
-    /// let surf = io::Surface::create(&properties).unwrap();
-    /// let port = surf.create_mach_port();
-    /// let surf2 = io::Surface::from_mach_port(port).unwrap();
-    /// port.task_self_deallocate();
-    /// assert!(surf.equal(&surf2));
-    /// assert_eq!(false, surf.is_in_use());
-    /// assert_eq!(false, surf2.is_in_use());
-    /// ```
+    #[inline]
+    pub fn remove_all_values(&mut self) {
+        unsafe { IOSurfaceRemoveAllValues(self) }
+    }
+
     #[inline]
     pub fn create_mach_port(&self) -> MachPort {
         unsafe { IOSurfaceCreateMachPort(self) }
@@ -247,7 +227,9 @@ extern "C" {
     fn IOSurfaceGetWidthOfPlane(buffer: &Surface, plane_index: usize) -> usize;
     fn IOSurfaceGetHeightOfPlane(buffer: &Surface, plane_index: usize) -> usize;
 
-    fn IOSurfaceCopyAllValues(buffer: &Surface) -> Option<arc::R<cf::Dictionary>>;
+    fn IOSurfaceCopyAllValues(
+        buffer: &Surface,
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
 
     fn IOSurfaceCreateMachPort(buffer: &Surface) -> MachPort;
     fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<arc::R<Surface>>;
@@ -261,6 +243,8 @@ extern "C" {
 
     fn IOSurfaceGetSeed(buffer: &Surface) -> u32;
     fn IOSurfaceGetAllocSize(buffer: &Surface) -> usize;
+
+    fn IOSurfaceRemoveAllValues(buffer: &mut Surface);
 
 }
 
@@ -287,6 +271,7 @@ pub mod keys {
     pub fn height() -> &'static String {
         unsafe { kIOSurfaceHeight }
     }
+
     #[inline]
     pub fn bytes_per_row() -> &'static String {
         unsafe { kIOSurfaceBytesPerRow }
@@ -309,41 +294,90 @@ pub mod keys {
     pub fn element_height() -> &'static String {
         unsafe { kIOSurfaceElementHeight }
     }
+
     #[inline]
     pub fn offset() -> &'static String {
         unsafe { kIOSurfaceOffset }
     }
+
     #[inline]
     pub fn plane_info() -> &'static String {
         unsafe { kIOSurfacePlaneInfo }
     }
+
     #[inline]
     pub fn plane_width() -> &'static String {
         unsafe { kIOSurfacePlaneWidth }
     }
+
     #[inline]
     pub fn plane_height() -> &'static String {
         unsafe { kIOSurfacePlaneHeight }
     }
+
     #[inline]
     pub fn plane_bytes_per_row() -> &'static String {
         unsafe { kIOSurfacePlaneBytesPerRow }
     }
+
     #[inline]
     pub fn plane_offset() -> &'static String {
         unsafe { kIOSurfacePlaneOffset }
     }
+
     #[inline]
     pub fn plane_size() -> &'static String {
         unsafe { kIOSurfacePlaneSize }
     }
+
     #[inline]
     pub fn plane_base() -> &'static String {
         unsafe { kIOSurfacePlaneBase }
     }
+
     #[inline]
     pub fn plane_bits_per_element() -> &'static String {
         unsafe { kIOSurfacePlaneBitsPerElement }
+    }
+
+    #[inline]
+    pub fn plane_bytes_per_element() -> &'static String {
+        unsafe { kIOSurfacePlaneBytesPerElement }
+    }
+
+    #[inline]
+    pub fn plane_element_width() -> &'static String {
+        unsafe { kIOSurfacePlaneElementWidth }
+    }
+
+    #[inline]
+    pub fn plane_element_height() -> &'static String {
+        unsafe { kIOSurfacePlaneElementHeight }
+    }
+
+    #[inline]
+    pub fn cache_mode() -> &'static String {
+        unsafe { kIOSurfaceCacheMode }
+    }
+
+    #[inline]
+    pub fn pixel_format() -> &'static String {
+        unsafe { kIOSurfacePixelFormat }
+    }
+
+    #[inline]
+    pub fn pixel_size_casting_allowed() -> &'static String {
+        unsafe { kIOSurfacePixelSizeCastingAllowed }
+    }
+
+    #[inline]
+    pub fn plane_component_bit_depths() -> &'static String {
+        unsafe { kIOSurfacePlaneComponentBitDepths }
+    }
+
+    #[inline]
+    pub fn plane_component_bit_offsets() -> &'static String {
+        unsafe { kIOSurfacePlaneComponentBitOffsets }
     }
 
     extern "C" {
@@ -363,13 +397,40 @@ pub mod keys {
         static kIOSurfacePlaneSize: &'static String;
         static kIOSurfacePlaneBase: &'static String;
         static kIOSurfacePlaneBitsPerElement: &'static String;
-        // static kIOSurfacePlaneBytesPerElement: &'static String;
-        // static kIOSurfacePlaneElementWidth: &'static String;
-        // static kIOSurfacePlaneElementHeight: &'static String;
-        // static kIOSurfaceCacheMode: &'static String;
-        // static kIOSurfacePixelFormat: &'static String;
-        // static kIOSurfacePixelSizeCastingAllowed: &'static String;
-        // static kIOSurfacePlaneComponentBitDepths: &'static String;
-        // static kIOSurfacePlaneComponentBitOffsets: &'static String;
+        static kIOSurfacePlaneBytesPerElement: &'static String;
+        static kIOSurfacePlaneElementWidth: &'static String;
+        static kIOSurfacePlaneElementHeight: &'static String;
+        static kIOSurfaceCacheMode: &'static String;
+        static kIOSurfacePixelFormat: &'static String;
+        static kIOSurfacePixelSizeCastingAllowed: &'static String;
+        static kIOSurfacePlaneComponentBitDepths: &'static String;
+        static kIOSurfacePlaneComponentBitOffsets: &'static String;
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{cf, io};
+
+    #[test]
+    fn basics() {
+        let width = cf::Number::from_i32(100);
+        let height = cf::Number::from_i32(200);
+
+        let properties = cf::Dictionary::with_keys_values(
+            &[io::surface::keys::width(), io::surface::keys::height()],
+            &[&width, &height],
+        )
+        .unwrap();
+
+        let surf = io::Surface::create(&properties).unwrap();
+        let port = surf.create_mach_port();
+        let surf2 = io::Surface::from_mach_port(port).unwrap();
+        port.task_self_deallocate();
+        assert!(surf.equal(&surf2));
+        assert_eq!(false, surf.is_in_use());
+        assert_eq!(false, surf2.is_in_use());
+        let vals = surf2.all_values().unwrap();
+        vals.show();
     }
 }
