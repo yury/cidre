@@ -3,9 +3,12 @@ use std::mem::transmute;
 use std::ptr::NonNull;
 
 use crate::{
-    arc, blocks, define_obj_type,
+    arc, define_obj_type,
     dispatch::{self, Function},
 };
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(Queue(dispatch::Object));
 define_obj_type!(Global(Queue));
@@ -131,6 +134,7 @@ impl Queue {
         dispatch_get_global_queue(identifier, flags)
     }
 
+    #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_sync")]
     #[inline]
     pub fn sync_b<F, B>(&self, block: &mut B)
@@ -142,6 +146,7 @@ impl Queue {
         }
     }
 
+    #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_async")]
     #[inline]
     pub fn async_b<F, B: dispatch::Block<F> + Sync>(&self, block: &'static mut B) {
@@ -150,32 +155,38 @@ impl Queue {
         }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn sync_once<F: FnOnce() + 'static>(&self, f: F) {
         self.sync_b(blocks::once0(f).escape());
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn sync_mut<F: FnMut() + 'static>(&self, f: F) {
         self.sync_b(&mut blocks::mut0(f));
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn sync_fn(&self, block: extern "C" fn(*const c_void)) {
         let mut block = blocks::fn0(block);
         self.sync_b(&mut block);
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn async_once<F: FnOnce() + Sync + 'static>(&self, block: F) {
         self.async_b(blocks::once0(block).escape());
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn async_mut<F: FnMut() + Sync + 'static>(&self, block: F) {
         self.async_b(blocks::mut0(block).escape());
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn async_fn(&self, block: extern "C" fn(*const c_void)) {
         let mut block = blocks::fn0(block);

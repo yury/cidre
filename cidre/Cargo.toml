@@ -28,6 +28,12 @@ full = [
   "sc",
   "mtl",
   "mlc",
+  "cv",
+  "objc",
+  "mps",
+  "dispatch",
+  "simd",
+  "io"
 ]
 
 # Turn on private API
@@ -37,19 +43,27 @@ blocks = []
 async = []
 
 am = ["private", "cf"]
-at = []
+at = ["cat"]
 av = ["ns"]
 ca = []
-cm = []
+cm = ["at"]
+cv = []
 ci = ["ns", "cf"]
 cf = []
-cg = []
-ns = []
+cg = ["cf", "dispatch", "io"]
+ns = ["objc"]
 sc = ["ns"]
-vt = ["cf"]
+vt = ["cf", "cv", "cg", "cm"]
 mtl = ["ns"]
 mlc = ["mtl"]
+dispatch = ["cf", "ns"]
+io = ["cf"]
+sn = ["ns"]
+cat = []
 ct = ["cf", "cg"]
+mps = ["mtl"]
+simd = []
+objc = []
 
 [dependencies]
 

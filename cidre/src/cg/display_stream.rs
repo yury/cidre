@@ -1,6 +1,9 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, cf, cg, define_cf_type, dispatch, io};
+use crate::{arc, cf, cg, define_cf_type, dispatch, io};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_cf_type!(DisplayStream(cf::Type));
 define_cf_type!(Update(cf::Type));
@@ -201,6 +204,7 @@ impl DisplayStream {
         }
     }
 
+    #[cfg(feature = "blocks")]
     pub fn with_runloop<'ar, F>(
         display: cg::DirectDisplayID,
         output_width: usize,
@@ -228,6 +232,7 @@ impl DisplayStream {
     /// 'l10r' Packed Little Endian ARGB2101010
     /// '420v' 2-plane "video" range YCbCr 4:2:0
     /// '420f' 2-plane "full" range YCbCr 4:2:0
+    #[cfg(feature = "blocks")]
     pub fn with_dispatch_queue<'ar, F>(
         display: cg::DirectDisplayID,
         output_width: usize,

@@ -31,10 +31,15 @@ pub use pixel_format_description::all_pixel_formats as pixel_format_description_
 pub use pixel_format_description::avaiable_compressed as compressed_pixel_format_available;
 pub use pixel_format_description::create as pixel_format_description_create;
 
+#[cfg(feature = "mtl")]
 pub mod metal;
+#[cfg(feature = "mtl")]
 pub use metal::texture_cache_keys as metal_texture_cache_keys;
+#[cfg(feature = "mtl")]
 pub use metal::texture_keys as metal_texture_keys;
+#[cfg(feature = "mtl")]
 pub use metal::Texture as MetalTexture;
+#[cfg(feature = "mtl")]
 pub use metal::TextureCache as MetalTextureCache;
 
 #[cfg(target_os = "macos")]

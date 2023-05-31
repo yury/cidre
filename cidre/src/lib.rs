@@ -40,15 +40,19 @@ pub mod cg;
 pub mod cm;
 
 /// Core Video
+#[cfg(feature = "cv")]
 pub mod cv;
 
 /// Grand Central Dispatch
+#[cfg(feature = "dispatch")]
 pub mod dispatch;
 
 /// IOSurface
+#[cfg(feature = "io")]
 pub mod io;
 
 /// cidre vision of obj-c blocks impl in rust
+#[cfg(feature = "blocks")]
 pub mod blocks;
 
 /// match
@@ -63,6 +67,7 @@ pub mod mtl;
 pub mod mlc;
 
 /// Metal Performance Shaders
+#[cfg(feature = "mps")]
 pub mod mps;
 
 /// Foundation
@@ -70,6 +75,7 @@ pub mod mps;
 pub mod ns;
 
 /// Network
+#[cfg(feature = "nw")]
 pub mod nw;
 
 #[cfg(feature = "ns")]
@@ -86,9 +92,11 @@ pub mod vt;
 pub mod sc;
 
 /// Sound Analysis
+#[cfg(feature = "sn")]
 pub mod sn;
 
 /// CoreAudioTypes
+#[cfg(feature = "cat")]
 pub mod cat;
 
 #[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
@@ -98,9 +106,11 @@ pub mod time;
 
 pub mod dns_sd;
 
+#[cfg(feature = "simd")]
 pub mod simd;
 
 /// Vision
+#[cfg(feature = "simd")]
 pub mod vn;
 
 pub mod arc;

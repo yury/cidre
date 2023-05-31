@@ -1,4 +1,7 @@
+#[cfg(feature = "objc")]
 use crate::objc;
+
+#[cfg(feature = "objc")]
 use std::{
     arch::asm,
     ops::{Deref, DerefMut},
@@ -52,7 +55,10 @@ impl<T: Retain> Retained<T> {
     pub fn retained(&self) -> Self {
         self.0.retained()
     }
+}
 
+#[cfg(feature = "objc")]
+impl<T: Retain> Retained<T> {
     #[must_use]
     pub fn autoreleased<'ar>(self) -> &'ar mut T
     where
@@ -100,7 +106,7 @@ impl<T: Release> Drop for Retained<T> {
     }
 }
 
-impl<T: Release> Deref for Retained<T> {
+impl<T: Release> std::ops::Deref for Retained<T> {
     type Target = T;
 
     #[inline]
@@ -109,7 +115,7 @@ impl<T: Release> Deref for Retained<T> {
     }
 }
 
-impl<T: Release> DerefMut for Retained<T> {
+impl<T: Release> std::ops::DerefMut for Retained<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0
@@ -141,9 +147,11 @@ impl<T: Retain> Clone for Retained<T> {
     }
 }
 
+#[cfg(feature = "objc")]
 #[repr(transparent)]
 pub struct ReturnedAutoReleased<T: objc::Obj>(NonNull<T>);
 
+#[cfg(feature = "objc")]
 impl<T: objc::Obj> Deref for ReturnedAutoReleased<T> {
     type Target = T;
 
@@ -153,6 +161,7 @@ impl<T: objc::Obj> Deref for ReturnedAutoReleased<T> {
     }
 }
 
+#[cfg(feature = "objc")]
 impl<T: objc::Obj> DerefMut for ReturnedAutoReleased<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
@@ -162,8 +171,10 @@ impl<T: objc::Obj> DerefMut for ReturnedAutoReleased<T> {
 
 pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
+#[cfg(feature = "objc")]
 pub type Rar<T> = ReturnedAutoReleased<T>;
 
+#[cfg(feature = "objc")]
 #[inline]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
     unsafe {
@@ -175,6 +186,7 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
     }
 }
 
+#[cfg(feature = "objc")]
 #[inline]
 pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
     unsafe {

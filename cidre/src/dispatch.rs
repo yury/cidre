@@ -37,18 +37,23 @@ pub use source::TimerSource;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
 
+#[cfg(feature = "blocks")]
 pub mod work_item;
+#[cfg(feature = "blocks")]
 pub use work_item::WorkItem;
 
 pub mod block;
 pub use block::Flags as BlockFlags;
 
+#[cfg(feature = "blocks")]
 use crate::blocks;
 
+#[cfg(feature = "blocks")]
 pub trait Block<F> {
     unsafe fn ptr(&mut self) -> *mut c_void;
 }
 
+#[cfg(feature = "blocks")]
 impl<F> Block<F> for blocks::Block<F>
 where
     F: FnOnce() + 'static,
@@ -59,6 +64,7 @@ where
     }
 }
 
+#[cfg(feature = "blocks")]
 impl<F> Block<F> for blocks::BlMut<F>
 where
     F: FnOnce() + 'static,
@@ -69,6 +75,7 @@ where
     }
 }
 
+#[cfg(feature = "blocks")]
 impl Block<extern "C" fn(*const c_void)> for blocks::Block<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
@@ -76,6 +83,7 @@ impl Block<extern "C" fn(*const c_void)> for blocks::Block<extern "C" fn(*const 
     }
 }
 
+#[cfg(feature = "blocks")]
 impl Block<extern "C" fn(*const c_void)> for blocks::bl<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {

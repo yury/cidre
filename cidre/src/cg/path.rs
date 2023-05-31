@@ -1,6 +1,9 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks::Block, cf, cg, define_cf_type};
+use crate::{arc, cf, cg, define_cf_type};
+
+#[cfg(feature = "blocks")]
+use crate::blocks::Block;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
@@ -200,6 +203,7 @@ impl Path {
         }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn apply_block_mut<'a, B>(&self, block: &mut Block<B>)
     where
@@ -208,6 +212,7 @@ impl Path {
         unsafe { CGPathApplyWithBlock(self, block.as_ptr()) }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn apply_block<'a, B>(&self, block: &mut Block<B>)
     where

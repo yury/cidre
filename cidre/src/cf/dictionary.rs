@@ -1,6 +1,9 @@
 #[cfg(feature = "ns")]
 use crate::ns;
-use crate::{arc, cf, define_cf_type, objc};
+#[cfg(feature = "objc")]
+use crate::objc;
+
+use crate::{arc, cf, define_cf_type};
 use cf::{Allocator, HashCode, Index, String, Type, TypeId};
 
 use std::marker::PhantomData;
@@ -427,6 +430,7 @@ where
     }
 }
 
+#[cfg(feature = "objc")]
 impl<K, V> DictionaryOf<K, V>
 where
     K: objc::Obj,

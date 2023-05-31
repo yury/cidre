@@ -3,7 +3,10 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{at, define_options, ns, os};
+use crate::{at, define_options, os};
+
+#[cfg(feature = "ns")]
+use crate::ns;
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
 pub mod errors {
@@ -337,6 +340,7 @@ impl FormatID {
     #[doc(alias = "kAudioFormatOpus")]
     pub const OPUS: Self = Self(u32::from_be_bytes(*b"opus"));
 
+    #[cfg(feature = "ns")]
     pub fn to_ns_number(self) -> &'static ns::Number {
         ns::Number::tagged_i32(self.0 as _)
     }

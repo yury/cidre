@@ -1,10 +1,14 @@
 use std::ffi::c_void;
 
-use crate::{cf, define_cf_type, ns};
+use crate::{cf, define_cf_type};
+
+#[cfg(feature = "ns")]
+use crate::ns;
 
 define_cf_type!(NotificationName(cf::String));
 
 impl NotificationName {
+    #[cfg(feature = "ns")]
     pub fn as_ns(&self) -> &ns::NotificationName {
         unsafe { std::mem::transmute(self) }
     }

@@ -1,4 +1,7 @@
-use crate::{arc, blocks, cf, define_cls, define_obj_type, ns, objc};
+use crate::{arc, cf, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(NotificationName(ns::String));
 
@@ -79,6 +82,7 @@ impl NotificationCenter {
     #[objc::msg_send(removeObserver:)]
     pub fn remove_observer(&mut self, observer: &ns::Id);
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(addObserverForName:object:queue:usingBlock:)]
     pub fn add_observer_for_ar<'bar, B>(
         &mut self,
@@ -90,6 +94,7 @@ impl NotificationCenter {
     where
         B: FnMut(&'bar ns::Notification);
 
+    #[cfg(feature = "blocks")]
     #[objc::rar_retain]
     pub fn add_observer_for<'bar, B>(
         &mut self,
