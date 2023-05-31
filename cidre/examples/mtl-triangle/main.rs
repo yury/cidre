@@ -109,14 +109,7 @@ fn main() {
 
         cmd_buf.render(&render_pass_desc, |enc| {
             enc.set_render_ps(&render_ps);
-            enc.set_viewport(mtl::ViewPort {
-                x: 0.0,
-                y: 0.0,
-                width: 1920.0,
-                height: 1080.0,
-                z_near: -1.0,
-                z_far: 1.0,
-            });
+            enc.set_vp_rect(0, 0, 1920, 1080);
             enc.set_vertex_buf_at(Some(&vertex_buffer), 0, 0);
             enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
         });

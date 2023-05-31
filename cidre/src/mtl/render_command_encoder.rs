@@ -151,7 +151,19 @@ impl RenderCmdEncoder {
     pub fn set_render_ps(&mut self, value: &mtl::RenderPipelineState);
 
     #[objc::msg_send(setViewport:)]
-    pub fn set_viewport(&mut self, viewport: mtl::ViewPort);
+    pub fn set_vp(&mut self, viewport: mtl::ViewPort);
+
+    #[inline]
+    pub fn set_vp_rect<F: Into<f64>>(&mut self, x: F, y: F, width: F, height: F) {
+        self.set_vp(ViewPort {
+            x: x.into(),
+            y: y.into(),
+            width: width.into(),
+            height: height.into(),
+            z_near: 0.into(),
+            z_far: 1.into(),
+        })
+    }
 
     #[objc::msg_send(setTriangleFillMode:)]
     pub fn set_triangle_fill_mode(&mut self, fill_mode: mtl::TriangleFillMode);
