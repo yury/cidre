@@ -12,8 +12,8 @@
 
 - Developer can finish critical path without deallocations.
 - Zero cost selectors calls (XCode 14.3) [WWDC video 3:10](https://developer.apple.com/videos/play/wwdc2022/110363/)
-- Almost fully integrated async blocks
-- Apple's C API interfaces
+- Integrated async blocks
+- Zero cost Apple's C API interfaces
 
 ### Shortcuts
 
