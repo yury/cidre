@@ -11,6 +11,7 @@ default = ["full"]
 
 full = [
   "private",
+
   "blocks",
   "async",
 
@@ -43,9 +44,9 @@ full = [
 private = []
 
 blocks = []
-async = ["dep:tokio", "dep:parking_lot"]
+async = ["dep:parking_lot"]
 
-am = ["private", "cf"]
+am = ["private", "cf", "dep:tokio"]
 at = ["cat"]
 av = ["ns"]
 ca = ["ns"]
@@ -78,7 +79,6 @@ cidre-macros = { optional = true, path = "../cidre-macros"}
 
 [dev-dependencies]
 criterion = "0.3"
-flume = { version = "0.10", features = ["async"] }
 # rt = { path = "../../rt"}
 ndarray = "0.15"
 linfa = "0.6.1"
