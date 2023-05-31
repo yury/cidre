@@ -1,9 +1,4 @@
 use cidre::{arc, av, cv, ns, objc::ar_pool, vn};
-use ndarray::{Array2, Axis};
-// Import the linfa prelude and KMeans algorithm
-use linfa::prelude::*;
-use linfa_clustering::Optics;
-use linfa_reduction::Pca;
 use tokio;
 
 #[tokio::main]
@@ -144,39 +139,6 @@ async fn main() {
         reader.status(),
         feature_prints.len()
     );
-
-    let _pca = Pca::params(10);
-
-    let mut arr = Array2::zeros((1446, 2048));
-    for (i, mut row) in arr.axis_iter_mut(Axis(0)).enumerate() {
-        let d = &feature_prints[i];
-        for z in 0..2048 {
-            row[z] = d[z];
-        }
-    }
-    // let dataset = Dataset::from(arr);
-    // let res = pca.fit(&dataset).unwrap();
-    // let arr = res.predict(&dataset);
-    //arr.row_mut(0)
-    //    let arr = Array2::from(feature_prints);
-    println!("arr {:?}", arr);
-
-    let min_points = 5;
-    //let clusters = Dbscan::params(min_points).tolerance(5.0).transform(&arr);
-    //let clusters = Dbscan::params(min_points).tolerance(5.0).transform(&arr);
-    let clusters = Optics::params(min_points)
-        // .tolerance(5.0)
-        .transform((&arr).into())
-        .unwrap();
-    println!("{:#?}", clusters);
-
-    for r in clusters.iter() {
-        println!(
-            "{} {}",
-            r.index(),
-            r.reachability_distance().unwrap_or_default()
-        );
-    }
 
     // https://towardsdatascience.com/how-to-cluster-images-based-on-visual-similarity-cd6e7209fe34
 }
