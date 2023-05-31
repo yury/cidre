@@ -332,7 +332,7 @@ fn main() {
 
     cmd_buf.render(&render_pass_desc, |enc| {
         enc.set_render_ps(&render_ps);
-        enc.set_viewport(mtl::ViewPort {
+        enc.set_vp(mtl::ViewPort {
             x: 0.0,
             y: 0.0,
             width: 1920.0,

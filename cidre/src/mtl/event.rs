@@ -7,11 +7,9 @@ impl Event {
 }
 
 define_obj_type!(SharedEventHandle(ns::Id));
-
 impl SharedEventHandle {
     define_mtl!(label);
 }
 
 define_obj_type!(SharedEvent(Event));
-
 impl SharedEvent {}

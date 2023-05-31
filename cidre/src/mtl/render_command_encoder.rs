@@ -133,7 +133,6 @@ pub struct TriangleTessellationFactorsHalf {
 }
 
 define_options!(RenderStages(usize));
-
 impl RenderStages {
     pub const VERTEX: Self = Self(1usize << 0);
     pub const FRAGMENT: Self = Self(1usize << 1);
@@ -143,7 +142,6 @@ impl RenderStages {
 }
 
 define_obj_type!(RenderCmdEncoder(mtl::CmdEncoder));
-
 impl RenderCmdEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 

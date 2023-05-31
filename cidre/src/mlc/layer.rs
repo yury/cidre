@@ -1,7 +1,6 @@
 use crate::{define_obj_type, mlc, ns, objc};
 
 define_obj_type!(Layer(ns::Id));
-
 impl Layer {
     #[objc::msg_send(layerID)]
     pub fn layer_id(&self) -> usize;
