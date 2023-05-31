@@ -98,11 +98,11 @@ name = "ns_array_from"
 harness = false
 
 [[example]]
-name = "device-list"
+name = "am-device-list"
 required-features = ["am"]
 
 [[example]]
-name = "device-mount-dev-image"
+name = "am-device-mount-dev-image"
 required-features = ["am"]
 
 [[example]]
