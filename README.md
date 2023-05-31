@@ -26,4 +26,6 @@
 - operation -> op
 - error -> err
 - options -> opts
+- command -> cmd
+- throws -> _throws (not shortcut but indicator of exception)
 

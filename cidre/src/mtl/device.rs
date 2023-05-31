@@ -5,7 +5,6 @@ use crate::{arc, blocks, define_obj_type, define_options, io, mtl, ns, objc};
 use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
 define_options!(PipelineOption(usize));
-
 impl PipelineOption {
     pub const NONE: Self = Self(0);
     pub const ARGUMENT_INFO: Self = Self(1 << 0);
@@ -44,7 +43,6 @@ pub struct SizeAndAlign {
 }
 
 define_obj_type!(Device(ns::Id));
-
 impl Device {
     /// ```
     /// use cidre::mtl;
@@ -56,13 +54,6 @@ impl Device {
         unsafe { MTLCreateSystemDefaultDevice() }
     }
 
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let name = device.name();
-    /// ```
     #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 

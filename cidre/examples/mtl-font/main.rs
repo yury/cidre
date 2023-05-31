@@ -341,7 +341,7 @@ fn main() {
             z_far: 1.0,
         });
         enc.set_front_facing_winding(mtl::Winding::CCW);
-        let t = simd::f32x3x3::translate(0.0, 0.0);
+        // let t = simd::f32x3x3::translate(0.0, 0.0);
         // enc.set_vertex_arg_at(&t, 1);
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
         // let color = simd::f32x4::with_rgba(1.0, 0.0, 0.0, 1.0);
