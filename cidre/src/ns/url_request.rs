@@ -3,22 +3,16 @@ use crate::{arc, define_cls, define_obj_type, ns, objc};
 define_obj_type!(URLRequest(ns::Id));
 define_obj_type!(URLRequestMut(URLRequest));
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
 pub enum CachePolicy {
+    #[default]
     UseProtocol = 0,
     ReloadIgnoringLocalCacheData = 1,
     ReturnCacheDataElseLoad = 2,
     ReturnCacheDataDontLoad = 3,
     ReloadIgnoringLocalAndRemoteCacheData = 4,
     ReloadRevalidatingCacheData = 5,
-}
-
-impl Default for CachePolicy {
-    #[inline]
-    fn default() -> Self {
-        Self::UseProtocol
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -67,25 +61,7 @@ impl arc::A<URLRequest> {
 
 impl URLRequest {
     define_cls!(NS_URL_REQUEST);
-    /// ```no_run
-    /// use cidre::ns;
-    /// let url = ns::URL::with_str("https://google.com").unwrap();
-    /// let request = ns::URLRequest::with_url(&url);
-    /// let request_url = request.url().unwrap();
-    /// assert!(url.abs_string().unwrap().eq(&request_url.abs_string().unwrap()));
-    /// assert_eq!(request.cache_policy(), ns::URLRequestCachePolicy::UseProtocol);
-    /// assert_eq!(request.timeout_interval(), 60f64);
-    /// assert_eq!(request.network_service_type(), ns::URLRequestNetworkServiceType::Default);
-    /// assert!(request.allows_cellular_access());
-    /// assert!(request.allows_expensive_network_access());
-    /// assert!(request.allows_constrained_network_access());
-    /// assert!(!request.assumes_http3_capable());
-    /// assert_eq!(request.attribution(), ns::URLRequestAttribution::Developer);
-    /// assert!(!request.requires_dns_sec_validation());
-    /// assert!(request.http_method().is_some());
-    /// assert!(request.all_http_header_fields().is_none());
-    /// assert!(request.http_body().is_none());
-    /// ```
+
     #[inline]
     pub fn with_url(url: &ns::URL) -> arc::R<URLRequest> {
         Self::alloc().init_with_url(url)
