@@ -3,7 +3,7 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{at, define_options, os};
+use crate::{define_options, os};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -117,7 +117,7 @@ impl<'a, const N: usize> BufferListCursor<'a, N> {
         &mut self,
         frame_offset: usize,
         frame_count: usize,
-        asbd: &at::audio::StreamBasicDescription,
+        asbd: &StreamBasicDescription,
     ) -> &mut BufferList<N> {
         for (i, buf) in self.list.as_mut_slice().iter_mut().enumerate().take(N) {
             buf.data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
