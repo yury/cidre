@@ -46,7 +46,7 @@ Class AV_AUDIO_FORMAT;
 Class AV_PLAYER;
 
 __attribute__((constructor))
-static void mtl_initializer(void)
+static void av_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {

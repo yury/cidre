@@ -80,6 +80,7 @@ pub mod nw;
 
 #[cfg(feature = "ns")]
 pub mod objc;
+
 pub mod os;
 pub mod sys;
 
@@ -99,7 +100,10 @@ pub mod sn;
 #[cfg(feature = "cat")]
 pub mod cat;
 
-#[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
+#[cfg(all(
+    any(target_os = "ios", target = "aarch64-apple-ios-macabi"),
+    feature = "ui"
+))]
 pub mod ui;
 
 pub mod time;
@@ -110,7 +114,7 @@ pub mod dns_sd;
 pub mod simd;
 
 /// Vision
-#[cfg(feature = "simd")]
+#[cfg(feature = "vn")]
 pub mod vn;
 
 pub mod arc;

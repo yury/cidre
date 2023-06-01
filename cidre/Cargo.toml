@@ -37,7 +37,10 @@ full = [
   "simd",
   "cat",
   "vn",
-  "io"
+  "sn",
+  "ui",
+  "io",
+  "nw"
 ]
 
 # Turn on private API
@@ -63,6 +66,8 @@ vt = ["cf", "cv", "cg", "cm"]
 io = ["cf"]
 sn = ["ns"]
 vn = ["ns"]
+nw = ["ns", "dispatch"]
+ui = ["ns"]
 ct = ["cf", "cg"]
 mtl = ["ns"]
 mlc = ["mtl"]
