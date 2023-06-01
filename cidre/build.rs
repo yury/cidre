@@ -13,7 +13,7 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     let mut out_lib_dir = PathBuf::from(&env::var("OUT_DIR").unwrap());
     out_lib_dir.push(pomace);
 
-    let status = if sdk.eq("maccatalyst") {
+    let status = if sdk == "maccatalyst" {
         let c = Command::new("xcrun")
             .arg("--show-sdk-path")
             .output()
@@ -60,7 +60,7 @@ fn xc_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
 
     let mut s = out_lib_dir.to_str().unwrap().to_string();
 
-    if !sdk.eq("macosx") {
+    if sdk != "macosx" {
         s.push('-');
         s.push_str(sdk);
     }
@@ -105,10 +105,10 @@ fn main() {
     xc_feature_build("ca", sdk, arch, configuration);
     xc_feature_build("mlc", sdk, arch, configuration);
 
-    if sdk.eq("iphoneos") || sdk.eq("maccatalyst") {
+    if sdk == "iphoneos" || sdk == "maccatalyst" {
         xc_build("ui", sdk, arch, configuration);
     }
-    if sdk.eq("macosx") || sdk.eq("maccatalyst") {
+    if sdk == "macosx" || sdk == "maccatalyst" {
         xc_feature_build("sc", sdk, arch, configuration);
         if env::var_os("CARGO_FEATURE_PRIVATE").is_some() {
             println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
@@ -116,12 +116,7 @@ fn main() {
                 "cargo:rustc-link-search=framework=/Library/Apple/System/Library/PrivateFrameworks"
             );
         }
-    } else {
     }
-
-    // let cc_args =
-    //     format!("-fobjc-exceptions -fobjc-arc -fobjc-arc-exceptions -Wl,-objc_stubs_small -O1");
-    // println!("cargo:cc_args={cc_args}");
 
     println!("cargo:rerun-if-changed=./pomace/");
 }

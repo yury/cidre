@@ -770,10 +770,10 @@ impl<T> Shared<T> {
 }
 
 #[cfg(feature = "async")]
-pub struct Comp<R>(Arc<Mutex<Shared<R>>>);
+pub struct Completion<R>(Arc<Mutex<Shared<R>>>);
 
 #[cfg(feature = "async")]
-impl<T> std::future::Future for Comp<T> {
+impl<T> std::future::Future for Completion<T> {
     type Output = T;
 
     fn poll(
@@ -792,19 +792,22 @@ impl<T> std::future::Future for Comp<T> {
 }
 
 #[cfg(feature = "async")]
-pub fn comp0() -> (Comp<()>, BlOnce<impl FnOnce()>) {
+pub fn comp0() -> (Completion<()>, BlOnce<impl FnOnce()>) {
     let shared = Shared::new();
-    (Comp(shared.clone()), once0(move || shared.lock().ready(())))
+    (
+        Completion(shared.clone()),
+        once0(move || shared.lock().ready(())),
+    )
 }
 
 #[cfg(feature = "async")]
 pub fn ok() -> (
-    Comp<Result<(), arc::R<ns::Error>>>,
+    Completion<Result<(), arc::R<ns::Error>>>,
     BlOnce<impl FnOnce(Option<&'static ns::Error>)>,
 ) {
     let shared = Shared::new();
     (
-        Comp(shared.clone()),
+        Completion(shared.clone()),
         once1(move |error: Option<&'static ns::Error>| {
             shared.lock().ready(match error {
                 None => Ok(()),
@@ -816,12 +819,12 @@ pub fn ok() -> (
 
 #[cfg(feature = "async")]
 pub fn result<T: arc::Retain>() -> (
-    Comp<Result<arc::R<T>, arc::R<ns::Error>>>,
+    Completion<Result<arc::R<T>, arc::R<ns::Error>>>,
     BlOnce<impl FnOnce(Option<&'static T>, Option<&'static ns::Error>)>,
 ) {
     let shared = Shared::new();
     (
-        Comp(shared.clone()),
+        Completion(shared.clone()),
         once2(
             move |value: Option<&'static T>, error: Option<&'static ns::Error>| {
                 let res = match error {
