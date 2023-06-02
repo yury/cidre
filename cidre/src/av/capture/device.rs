@@ -1,6 +1,10 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{arc, av::MediaType, cf, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{
+    arc,
+    av::{self, MediaType},
+    cf, cg, cm, define_cls, define_obj_type, ns, objc,
+};
 
 use super::SessionPreset;
 
@@ -312,17 +316,43 @@ pub enum MicrophoneMode {
 }
 
 define_obj_type!(Format(ns::Id));
-
 impl Format {
-    #[cfg(not(target_os = "macos"))]
-    #[objc::msg_send(isVideoBinned)]
-    pub fn is_video_binned(&self) -> bool;
+    #[objc::msg_send(mediaType)]
+    pub fn media_type(&self) -> &av::MediaType;
+
+    #[objc::msg_send(formatDescription)]
+    pub fn format_description(&self) -> &cm::FormatDescription;
 
     #[objc::msg_send(videoSupportedFrameRateRanges)]
     pub fn video_supported_frame_rate_ranges(&self) -> &ns::Array<FrameRateRange>;
 
-    #[objc::msg_send(formatDescription)]
-    pub fn format_description(&self) -> &cm::FormatDescription;
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(videoFieldOfView)]
+    pub fn video_fov(&self) -> f32;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(isVideoBinned)]
+    pub fn is_video_binned(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(isVideoStabilizationModeSupported:)]
+    pub fn is_video_stabilization_mode_supported(&self, mode: VideoStabilizationMode) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(videoMaxZoomFactor)]
+    pub fn video_max_zoom_factor(&self) -> cg::Float;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(videoZoomFactorUpscaleThreshold)]
+    pub fn video_zoom_factor_upscale_threshold(&self) -> cg::Float;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(minExposureDuration)]
+    pub fn min_exposure_duration(&self) -> cm::Time;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(maxExposureDuration)]
+    pub fn max_exposure_duration(&self) -> cm::Time;
 
     #[objc::msg_send(autoFocusSystem)]
     pub fn auto_focus_system(&self) -> AutoFocusSystem;
