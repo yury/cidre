@@ -327,7 +327,7 @@ mod tests {
 
         timer.activate();
 
-        sleep(Duration::from_secs(1));
+        sleep(Duration::from_millis(500));
 
         let times = timer.fired_count();
         println!("timer fired {}", times);
