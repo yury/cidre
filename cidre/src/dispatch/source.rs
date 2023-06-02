@@ -314,7 +314,7 @@ mod tests {
 
     #[test]
     fn timer() {
-        let mut timer = dispatch::Source::new_timer(dispatch::SourceTimerFlags::default(), None)
+        let mut timer = dispatch::Source::new_timer(Default::default(), None)
             .unwrap()
             .retained();
 
