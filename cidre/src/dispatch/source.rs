@@ -323,9 +323,9 @@ mod tests {
             Duration::from_nanos(100),
             Duration::from_secs(0),
         );
-        timer.activate();
-
         assert_eq!(timer.fired_count(), 0);
+
+        timer.activate();
 
         sleep(Duration::from_secs(1));
 
