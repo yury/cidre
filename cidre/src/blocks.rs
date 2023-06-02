@@ -744,8 +744,10 @@ mod tests {
 
 #[cfg(feature = "async")]
 use parking_lot::Mutex;
+#[cfg(feature = "async")]
 use std::sync::Arc;
 
+#[cfg(feature = "async")]
 struct Shared<T> {
     ready: Option<T>,
     pending: Option<std::task::Waker>,

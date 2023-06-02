@@ -1,10 +1,16 @@
 use std::{ffi::c_void, mem::transmute};
 
 use crate::{
-    arc, cat,
+    arc,
     cf::{self, Allocator},
-    cv, define_cf_type, os, FourCharCode,
+    define_cf_type, os, FourCharCode,
 };
+
+#[cfg(feature = "cv")]
+use crate::cv;
+
+#[cfg(feature = "cat")]
+use crate::cat;
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
@@ -239,6 +245,7 @@ impl VideoFormatDescription {
         unsafe { CMVideoFormatDescriptionGetDimensions(self) }
     }
 
+    #[cfg(feature = "cv")]
     #[inline]
     pub fn matches_image_buffer(&self, image_buffer: &cv::ImageBuffer) -> bool {
         unsafe { CMVideoFormatDescriptionMatchesImageBuffer(self, image_buffer) }
@@ -391,6 +398,7 @@ impl VideoFormatDescription {
 
 pub type AudioFormatDescription = FormatDescription;
 
+#[cfg(feature = "cat")]
 impl AudioFormatDescription {
     pub fn with_asbd(
         asbd: &cat::audio::StreamBasicDescription,
@@ -516,6 +524,7 @@ extern "C" {
         video_desc: &VideoFormatDescription,
     ) -> VideoDimensions;
 
+    #[cfg(feature = "cv")]
     fn CMVideoFormatDescriptionMatchesImageBuffer(
         video_desc: &VideoFormatDescription,
         image_buffer: &cv::ImageBuffer,
@@ -531,6 +540,7 @@ extern "C" {
         extension_key: &FormatDescriptionExtensionKey,
     ) -> Option<&'a cf::PropertyList>;
 
+    #[cfg(feature = "cat")]
     fn CMAudioFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
         asbd: &cat::audio::StreamBasicDescription,
@@ -542,6 +552,7 @@ extern "C" {
         format_description_out: &mut Option<arc::R<AudioFormatDescription>>,
     ) -> os::Status;
 
+    #[cfg(feature = "cat")]
     fn CMAudioFormatDescriptionGetStreamBasicDescription(
         desc: &AudioFormatDescription,
     ) -> Option<&cat::audio::StreamBasicDescription>;

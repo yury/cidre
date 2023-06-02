@@ -3,7 +3,7 @@ fn main() {
     let devices = am::Device::list().unwrap();
 
     for d in devices.iter() {
-        let f = d.connected().expect("connected");
+        let f = d.connected().expect("Failed to connect to device");
         println!(
             "uuid: {:?}, if: {:?} {:?}",
             f.identifier().to_string(),

@@ -1,9 +1,15 @@
 use std::ffi::c_void;
 
-use crate::{arc, cf, cg, define_cf_type, dispatch, io};
+use crate::{arc, cf, cg, define_cf_type};
+
+#[cfg(feature = "io")]
+use crate::io;
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 define_cf_type!(DisplayStream(cf::Type));
 define_cf_type!(Update(cf::Type));
@@ -181,6 +187,7 @@ impl DisplayStream {
         }
     }
 
+    #[cfg(feature = "dispatch")]
     #[inline]
     pub unsafe fn create_with_queue(
         display: cg::DirectDisplayID,
@@ -204,7 +211,7 @@ impl DisplayStream {
         }
     }
 
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "io"))]
     pub fn with_runloop<'ar, F>(
         display: cg::DirectDisplayID,
         output_width: usize,
@@ -232,7 +239,7 @@ impl DisplayStream {
     /// 'l10r' Packed Little Endian ARGB2101010
     /// '420v' 2-plane "video" range YCbCr 4:2:0
     /// '420f' 2-plane "full" range YCbCr 4:2:0
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "io"))]
     pub fn with_dispatch_queue<'ar, F>(
         display: cg::DirectDisplayID,
         output_width: usize,
@@ -338,6 +345,7 @@ extern "C" {
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>>;
 
+    #[cfg(feature = "dispatch")]
     fn CGDisplayStreamCreateWithDispatchQueue(
         display: cg::DirectDisplayID,
         output_width: usize,

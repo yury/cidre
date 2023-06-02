@@ -1,6 +1,12 @@
 use std::{ffi::c_void, ptr::slice_from_raw_parts};
 
-use crate::{arc, at::audio, cat, cf, cm, cv, define_cf_type, define_options, os};
+use crate::{arc, cf, cm, define_cf_type, define_options, os};
+
+#[cfg(feature = "cv")]
+use crate::cv;
+
+#[cfg(feature = "cat")]
+use crate::cat;
 
 define_options!(Flags(u32));
 
@@ -166,6 +172,7 @@ impl SampleBuffer {
         )
     }
 
+    #[cfg(feature = "cv")]
     pub fn create_for_image_buffer_in(
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuffer,
@@ -190,6 +197,7 @@ impl SampleBuffer {
         }
     }
 
+    #[cfg(feature = "cv")]
     #[inline]
     pub fn image_buffer(&self) -> Option<&cv::ImageBuffer> {
         unsafe { CMSampleBufferGetImageBuffer(self) }
@@ -328,6 +336,7 @@ impl SampleBuffer {
     /// if called with a non-audio sample buffer. It will return an
     /// error if the cm::SampleBuffer does not contain PCM audio data
     /// or if its dataBuffer is not ready.
+    #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferCopyPCMDataIntoAudioBufferList")]
     #[inline]
     pub fn copy_pcm_data_into_audio_buffer_list<const N: usize>(
@@ -357,12 +366,13 @@ impl SampleBuffer {
     /// specific to audio format sample buffers, and will return
     /// kCMSampleBufferError_InvalidMediaTypeForOperation if called
     /// with a non-audio sample buffer.
+    #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioStreamPacketDescriptionsPtr")]
     #[inline]
     pub fn audio_stream_packet_descriptions(
         &self,
-    ) -> Result<Option<&[audio::StreamPacketDescription]>, os::Status> {
-        let ptr: *mut audio::StreamPacketDescription = std::ptr::null_mut();
+    ) -> Result<Option<&[cat::audio::StreamPacketDescription]>, os::Status> {
+        let ptr: *mut cat::audio::StreamPacketDescription = std::ptr::null_mut();
         let mut size = 0;
         unsafe {
             CMSampleBufferGetAudioStreamPacketDescriptionsPtr(self, ptr, &mut size).result()?;
@@ -374,6 +384,7 @@ impl SampleBuffer {
         }
     }
 
+    #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
     #[inline]
     pub fn audio_buffer_list<const N: usize>(
@@ -393,6 +404,7 @@ impl SampleBuffer {
     /// data. The buffers placed in the audio::BufferList are guaranteed to be contiguous.
     /// The buffers in the audio::BufferList will be 16-byte-aligned if
     /// kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment is passed in.
+    #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
     #[inline]
     pub fn audio_buffer_list_in<const N: usize>(
@@ -402,13 +414,13 @@ impl SampleBuffer {
         block_buffer_allocator: Option<&cf::Allocator>,
     ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
         let mut block_buff = None;
-        let mut list = audio::BufferList::<N>::default();
+        let mut list = cat::audio::BufferList::<N>::default();
         unsafe {
             CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
                 self,
                 std::ptr::null_mut(),
                 std::mem::transmute(&mut list),
-                std::mem::size_of::<audio::BufferList<N>>(),
+                std::mem::size_of::<cat::audio::BufferList<N>>(),
                 block_buffer_structure_allocator,
                 block_buffer_allocator,
                 flags,
@@ -429,15 +441,17 @@ impl SampleBuffer {
     }
 }
 
+#[cfg(feature = "cat")]
 #[derive(Debug)]
 pub struct BlockBufferAudioBufferList<const N: usize> {
-    list: audio::BufferList<N>,
+    list: cat::audio::BufferList<N>,
     block: arc::R<cm::BlockBuffer>,
 }
 
+#[cfg(feature = "cat")]
 impl<const N: usize> BlockBufferAudioBufferList<N> {
     #[inline]
-    pub fn list(&self) -> &audio::BufferList<N> {
+    pub fn list(&self) -> &cat::audio::BufferList<N> {
         &self.list
     }
 
@@ -465,6 +479,7 @@ extern "C" {
         sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
     ) -> crate::os::Status;
 
+    #[cfg(feature = "cv")]
     fn CMSampleBufferCreateForImageBuffer(
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuffer,
@@ -479,6 +494,7 @@ extern "C" {
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuffer) -> bool;
     fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuffer);
 
+    #[cfg(feature = "cv")]
     fn CMSampleBufferGetImageBuffer(sbuf: &SampleBuffer) -> Option<&cv::ImageBuffer>;
     fn CMSampleBufferGetDataBuffer(sbuf: &SampleBuffer) -> Option<&cm::BlockBuffer>;
     fn CMSampleBufferSetDataBuffer(
@@ -502,6 +518,7 @@ extern "C" {
 
     fn CMSampleBufferInvalidate(sbuf: &SampleBuffer) -> os::Status;
     fn CMSampleBufferMakeDataReady(sbuf: &SampleBuffer) -> os::Status;
+    #[cfg(feature = "cat")]
     fn CMSampleBufferCopyPCMDataIntoAudioBufferList(
         sbuf: &SampleBuffer,
         frame_offset: i32,
@@ -509,16 +526,18 @@ extern "C" {
         buffer_list: &mut cat::audio::BufferList,
     ) -> os::Status;
 
+    #[cfg(feature = "cat")]
     fn CMSampleBufferGetAudioStreamPacketDescriptionsPtr(
         sbuf: &SampleBuffer,
-        packet_descriptions_pointer_out: *mut audio::StreamPacketDescription,
+        packet_descriptions_pointer_out: *mut cat::audio::StreamPacketDescription,
         packet_descriptions_size_out: *mut usize,
     ) -> os::Status;
 
+    #[cfg(feature = "cat")]
     fn CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
         sbuf: &SampleBuffer,
         buffer_list_size_needed_out: *mut usize,
-        buffer_list_out: *mut audio::BufferList,
+        buffer_list_out: *mut cat::audio::BufferList,
         buffer_list_size: usize,
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,

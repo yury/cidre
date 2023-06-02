@@ -113,7 +113,7 @@ pub enum ImageFeatureChannelFormat {
 
     /// IEEE-754 16-bit floating-point value. "half precision" Representable normal range is +-[2**-14, 65504], 0, Infinity, NaN. 11 bits of precision + exponent
     #[doc(alias = "MPSImageFeatureChannelFormatFloat16")]
-    Float16 = 3,
+    F16 = 3,
 
     /// IEEE-754 32-bit floating-point value.  "single precision" (standard float type in C) 24 bits of precision + exponent
     #[doc(alias = "MPSImageFeatureChannelFormatFloat32")]
