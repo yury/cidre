@@ -111,7 +111,7 @@ name = "am-device-mount-dev-image"
 required-features = ["am"]
 
 [[example]]
-name = "audio"
+name = "at-audio"
 
 [lib]
 # proc-macro = true
