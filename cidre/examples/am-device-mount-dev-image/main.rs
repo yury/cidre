@@ -35,8 +35,8 @@ pub extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
 #[tokio::main]
 async fn main() {
     let devices = am::device::QueryBuilder::new_match_all()
-        // .udids(&["00008103-001505940231001E"])
-        .udids(&["00008110-00124CDE3AB8801E"])
+        .udids(&["00008103-001505940231001E"])
+        // .udids(&["00008120-000168A20210C01E"])
         .matching_list(None)
         .unwrap();
 

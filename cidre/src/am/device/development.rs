@@ -118,11 +118,17 @@ pub fn platform_support_path(platform: &str, os_version: &str) -> Option<PathBuf
         .join("Platforms")
         .join(platform)
         .join("DeviceSupport");
-    let version: String = os_version
+    let version = os_version
         .splitn(3, '.')
         .take(2)
-        .collect::<Vec<_>>()
-        .join(".");
+        .map(|s| u32::from_str_radix(s, 10).unwrap_or_default())
+        .collect::<Vec<_>>();
+    let major = version[0].to_string();
+    let mut minor = version[1];
+
+    let version = format!("{major}.{minor}");
+
+    let mut matched_majors = Vec::new();
 
     for directory in std::fs::read_dir(&prefix).expect("folder exists") {
         let directory = directory.expect("folder exists");
@@ -130,6 +136,17 @@ pub fn platform_support_path(platform: &str, os_version: &str) -> Option<PathBuf
         if name.starts_with(&version) {
             return Some(prefix.join(name));
         }
+        if name.starts_with(&major) {
+            matched_majors.push(name);
+        }
+    }
+
+    while minor > 0 {
+        let version = format!("{major}.{minor}");
+        if matched_majors.contains(&version) {
+            return Some(prefix.join(version));
+        }
+        minor -= 1;
     }
 
     None
