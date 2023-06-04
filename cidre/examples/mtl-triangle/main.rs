@@ -105,7 +105,7 @@ fn main() {
             .unwrap();
 
         let cmd_queue = device.new_cmd_queue().unwrap();
-        let mut cmd_buf = cmd_queue.new_cmd_buf().unwrap();
+        let mut cmd_buf = cmd_queue.new_cmd_buf_unretained_refs().unwrap();
 
         cmd_buf.render(&render_pass_desc, |enc| {
             enc.set_render_ps(&render_ps);

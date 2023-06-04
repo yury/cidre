@@ -55,7 +55,7 @@ pub enum StorageMode {
     /// that will never be accessed by the CPU directly, so no
     /// conherency of any kind must be maintained.
     Private = 2,
-    /// his mode allows creation of resources that do not have a GPU or CPU memory backing, but do have on-chip storage for TBDR
+    /// This mode allows creation of resources that do not have a GPU or CPU memory backing, but do have on-chip storage for TBDR
     /// devices. The contents of the on-chip storage is undefined and does not persist, but its configuration is controlled by the
     /// mtl::Texture descriptor. Textures created with MTLStorageModeMemoryless dont have an IOAccelResource at any point in their
     /// lifetime. The only way to populate such resource is to perform rendering operations on it. Blit operations are disallowed.

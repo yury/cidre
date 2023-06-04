@@ -1,4 +1,7 @@
-use crate::{arc, cf, define_cls, define_mtl, define_obj_type, define_options, io, mtl, ns, objc};
+use crate::{arc, cf, define_cls, define_mtl, define_obj_type, define_options, mtl, ns, objc};
+
+#[cfg(feature = "io")]
+use crate::io;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
@@ -78,7 +81,6 @@ define_obj_type!(Descriptor(ns::Id));
 
 impl Descriptor {
     define_cls!(MTL_TEXTURE_DESCRIPTOR);
-    define_mtl!(storage_mode, set_storage_mode);
 
     #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
     pub fn new_2d_with_pixel_format_ar(
@@ -168,7 +170,11 @@ impl Descriptor {
         resource_options,
         set_resource_options,
         cpu_cache_mode,
-        set_cpu_cache_mode
+        set_cpu_cache_mode,
+        storage_mode,
+        set_storage_mode,
+        hazard_tracking_mode,
+        set_hazard_tracking_mode
     );
 
     #[objc::msg_send(mipmapLevelCount)]
@@ -229,6 +235,7 @@ impl Texture {
         pixel_format: mtl::PixelFormat,
     ) -> Option<arc::R<Texture>>;
 
+    #[cfg(feature = "io")]
     #[objc::msg_send(iosurface)]
     pub fn io_surface(&self) -> Option<&io::Surface>;
 

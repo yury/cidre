@@ -97,6 +97,7 @@ impl ShareableContent {
         Self::get_shareable_content_with_completion_handler(b.as_ptr());
     }
 
+    #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn current() -> Result<arc::R<Self>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
 

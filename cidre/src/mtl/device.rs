@@ -1,6 +1,9 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{arc, blocks, define_obj_type, define_options, io, mtl, ns, objc};
+use crate::{arc, blocks, define_obj_type, define_options, mtl, ns, objc};
+
+#[cfg(feature = "io")]
+use crate::io;
 
 use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
@@ -119,6 +122,7 @@ impl Device {
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
 
+    #[cfg(feature = "io")]
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
     pub fn new_texture_with_surface(
         &self,
@@ -218,6 +222,14 @@ impl Device {
     #[objc::msg_send(newBufferWithLength:options:)]
     pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
         -> Option<arc::R<mtl::Buf>>;
+
+    pub fn new_buf_of<T: Sized>(
+        &self,
+        len: usize,
+        options: mtl::ResouceOptions,
+    ) -> Option<arc::R<mtl::Buf>> {
+        self.new_buf(std::mem::size_of::<T>() * len, options)
+    }
 
     #[objc::msg_send(newBufferWithBytes:length:options:)]
     pub fn new_buf_with_bytes(

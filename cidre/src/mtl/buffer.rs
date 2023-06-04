@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(Buf(mtl::Resource));
@@ -20,8 +22,20 @@ impl Buf {
     }
 
     #[inline]
+    pub fn as_slice_of<T: Sized>(&self) -> &[T] {
+        let len = self.len() / std::mem::size_of::<T>();
+        unsafe { std::slice::from_raw_parts(self.contents() as _, len) }
+    }
+
+    #[inline]
     pub fn as_slice_mut(&mut self) -> &mut [u8] {
         unsafe { std::slice::from_raw_parts_mut(self.contents(), self.len()) }
+    }
+
+    #[inline]
+    pub fn as_slice_of_mut<T: Sized>(&mut self) -> &mut [u8] {
+        let len = self.len() / std::mem::size_of::<T>();
+        unsafe { std::slice::from_raw_parts_mut(self.contents() as _, len) }
     }
 
     /// Inform the device of the range of a buffer that the CPU has modified,
