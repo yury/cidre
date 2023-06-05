@@ -484,14 +484,16 @@ fn gen_msg_send(
             _ => generics.push(tt),
         }
     };
-    let mut gen = TokenStream::from_iter(generics.into_iter()).to_string();
-    if fn_name.ends_with("_ar") {
-        if gen.is_empty() {
-            gen = "<'ar>".to_string();
+    let gen = if fn_name.ends_with("_ar") {
+        if generics.is_empty() {
+            Cow::Borrowed("<'ar>")
         } else {
-            gen = gen.replacen('<', "<'ar,", 1);
+            let gen = TokenStream::from_iter(generics.into_iter()).to_string();
+            Cow::Owned(gen.replacen('<', "<'ar,", 1))
         }
-    }
+    } else {
+        Cow::Owned(TokenStream::from_iter(generics.into_iter()).to_string())
+    };
 
     let ts = TokenStream::from_iter(iter);
     let mut ret = ts.to_string();
