@@ -1,6 +1,5 @@
 use cidre::{
-    av,
-    av::{capture::device, MediaType},
+    av::{self, capture::device},
     ns,
 };
 
@@ -19,7 +18,7 @@ fn main() {
     types.push(device::Type::built_in_wide_angle_camera());
     let discrover_session = device::DiscoverySession::with_device_types_media_and_position(
         &types,
-        Some(MediaType::video()),
+        Some(av::MediaType::video()),
         device::Position::Front,
     );
 

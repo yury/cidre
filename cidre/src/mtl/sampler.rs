@@ -29,9 +29,12 @@ pub enum AddressMode {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BorderColor {
-    TransparentBlack = 0, // {0,0,0,0}
-    OpaqueBlack = 1,      // {0,0,0,1}
-    OpaqueWhite = 2,      // {1,1,1,1}
+    /// {0,0,0,0}
+    TransparentBlack = 0,
+    /// {0,0,0,1}
+    OpaqueBlack = 1,
+    /// {1,1,1,1}
+    OpaqueWhite = 2,
 }
 
 define_obj_type!(Descriptor(ns::Id));

@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 /// This is all dirty hacks. We need to reimplement it with syn and quote
 use proc_macro::{Group, TokenStream, TokenTree};
 
@@ -51,11 +53,11 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
     panic!("Unexpected attribute")
 }
 
-fn sel_args_count(sel: TokenStream) -> usize {
-    sel.into_iter()
-        .filter(|t| matches!(t, TokenTree::Punct(v) if v.as_char() == ':'))
-        .count()
-}
+// fn sel_args_count(sel: TokenStream) -> usize {
+//     sel.into_iter()
+//         .filter(|t| matches!(t, TokenTree::Punct(v) if v.as_char() == ':'))
+//         .count()
+// }
 
 fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
     let mut prev = None;
@@ -163,7 +165,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let iter = tr.into_iter();
     let mut before_trait_name_tokens = vec![];
     let mut after_trait_name_tokens = vec![];
-    let mut trait_name = "".to_string();
+    let mut trait_name = Cow::Borrowed("");
     let mut expect_trait_name = false;
     let mut is_optional = false;
     let mut sel = "".to_string();
@@ -172,9 +174,9 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     //let mut fn_args = Vec::new();
     let mut fn_args_str; // = "".to_string();
     let mut result = Vec::new();
-    let mut fn_body = "".to_string();
+    let mut fn_body = Cow::Borrowed("");
 
-    let mut impl_trait_functions = Vec::new();
+    let mut impl_trait_functions = vec![];
     let mut has_optionals = false;
     let mut fn_names = vec![];
 
@@ -192,7 +194,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                         TokenTree::Group(g) => println!("group {g}"),
                         TokenTree::Ident(i) => {
                             let str = i.to_string();
-                            if str.eq("fn") {
+                            if str == "fn" {
                                 let Some(TokenTree::Ident(name)) = iter.next() else {
                                     panic!("expect fn name");
                                 };
@@ -214,7 +216,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                             break;
                                         }
                                         TokenTree::Group(ref g) => {
-                                            fn_body = g.to_string();
+                                            fn_body = Cow::Owned(g.to_string());
                                             break;
                                         }
                                         _ => result.push(tt),
@@ -224,7 +226,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 let mut ext = "";
 
                                 let register_sel = if sel.is_empty() {
-                                    "None".to_string()
+                                    Cow::Borrowed("None")
                                 } else {
                                     ext = "extern \"C\" ";
                                     fn_args_str = fn_args_str.replacen(
@@ -238,24 +240,30 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                         "(&mut self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
-                                    format!("Some(unsafe {{ objc::sel_registerName(b\"{sel}\\0\".as_ptr()) }})")
+                                    Cow::Owned(format!("Some(unsafe {{ objc::sel_registerName(b\"{sel}\\0\".as_ptr()) }})"))
                                 };
 
                                 if is_optional && !sel.is_empty() && fn_body.is_empty() {
                                     result.pop(); // remove ;
-                                    fn_body = "{ unimplemented!() }".to_string();
+                                    fn_body = Cow::Borrowed("{ unimplemented!() }");
                                 }
 
                                 let ret = if result.is_empty() {
-                                    "".to_string()
+                                    Cow::Borrowed("")
                                 } else {
-                                    TokenStream::from_iter(result.clone().into_iter()).to_string()
+                                    Cow::Owned(
+                                        TokenStream::from_iter(result.clone().into_iter())
+                                            .to_string(),
+                                    )
                                 };
 
                                 let gen = if generics.is_empty() {
-                                    "".to_string()
+                                    Cow::Borrowed("")
                                 } else {
-                                    TokenStream::from_iter(generics.clone().into_iter()).to_string()
+                                    Cow::Owned(
+                                        TokenStream::from_iter(generics.clone().into_iter())
+                                            .to_string(),
+                                    )
                                 };
 
                                 fn_names.push(fn_name.clone());
@@ -280,7 +288,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 is_optional = false;
                                 sel.clear();
                                 fn_name.clear();
-                                fn_body.clear();
+                                fn_body = Cow::Borrowed("");
                                 fn_args_str.clear();
                                 //fn_args.clear();
                                 result.clear();
@@ -310,7 +318,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                 let str = i.to_string();
                 if expect_trait_name {
                     expect_trait_name = false;
-                    trait_name = str;
+                    trait_name = Cow::Owned(str);
                     continue;
                 }
                 collection.push(token.clone());
@@ -328,9 +336,10 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let fns = impl_trait_functions.join("\n");
 
     let add_methods = if has_optionals {
-        "fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>);".to_string() //" { panic!(\"use #[objc::cls_builder]\") }".to_string()
+        Cow::Borrowed("fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>);")
+    //" { panic!(\"use #[objc::cls_builder]\") }".to_string()
     } else {
-        add_methods_fn(&fn_names).to_string()
+        Cow::Owned(add_methods_fn(&fn_names).to_string())
     };
 
     let code = format!(
@@ -434,8 +443,10 @@ fn gen_msg_send(
     debug: bool,
 ) -> TokenStream {
     let extern_name = sel.to_string().replace([' ', '\n'], "");
+    // let args_count = sel_args_count(sel);
+    // reduce allocations and just search for ':'
+    let args_count = extern_name.matches(':').count();
     // let _is_init = extern_name.starts_with("init");
-    let args_count = sel_args_count(sel);
 
     let mut iter = func.into_iter();
     let mut pre: Vec<String> = Vec::with_capacity(3);
@@ -484,12 +495,11 @@ fn gen_msg_send(
 
     let ts = TokenStream::from_iter(iter);
     let mut ret = ts.to_string();
-    let mut ret_full = ts.to_string();
-    if let Some((a, _)) = ret.split_once("where") {
-        ret = format!("{a};")
-    }
     assert_eq!(ret.pop().expect(";"), ';');
-    assert_eq!(ret_full.pop().expect(";"), ';');
+    let ret_full = ret.to_string();
+    if let Some((a, _)) = ret.split_once("where") {
+        ret = format!("{a}")
+    }
     let option = ret_full.contains("-> Option");
 
     let fn_args = args.to_string();

@@ -421,13 +421,6 @@ pub use cidre_macros::obj_trait;
 pub use cidre_macros::optional;
 pub use cidre_macros::rar_retain;
 
-// global_asm!(
-//     "    .pushsection __DATA,__objc_imageinfo,regular,no_dead_strip",
-//     "    .long    0",
-//     "    .long    0",
-//     "    .popsection",
-// );
-
 #[cfg(test)]
 mod tests2 {
 
@@ -473,6 +466,7 @@ mod tests2 {
         }
         {
             let d = Bla::with(D);
+            let r = d.retained();
             let desc = d.description();
             assert!(desc.to_string().starts_with("<BLA_USIZE: "));
         }
