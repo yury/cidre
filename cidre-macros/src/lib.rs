@@ -434,7 +434,7 @@ fn gen_msg_send(
     debug: bool,
 ) -> TokenStream {
     let extern_name = sel.to_string().replace([' ', '\n'], "");
-    let _is_init = extern_name.starts_with("init");
+    // let _is_init = extern_name.starts_with("init");
     let args_count = sel_args_count(sel);
 
     let mut iter = func.into_iter();
@@ -544,10 +544,7 @@ fn gen_msg_send(
     }
 
     let flow = if retain {
-        let mut self_ = "self.".to_string();
-        if class {
-            self_ = "Self::".to_string();
-        }
+        let self_ = if class { "Self::" } else { "self." };
         if option {
             format!(
                 "

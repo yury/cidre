@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(Buf(mtl::Resource));
