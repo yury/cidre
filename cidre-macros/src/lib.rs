@@ -61,7 +61,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
 
 fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
     let mut prev = None;
-    let mut vars = Vec::with_capacity(10);
+    let mut vars = vec![];
     if debug {
         println!("tokens {:?}", group);
     }
@@ -73,15 +73,18 @@ fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
             TokenTree::Ident(i) => {
                 prev = Some(i);
             }
-            TokenTree::Punct(p) if can_be_name && level == 0 && p.as_char() == ':' => {
-                if let Some(id) = prev.take() {
-                    vars.push(id.to_string())
+            TokenTree::Punct(p) => match p.as_char() {
+                ':' if can_be_name && level == 0 => {
+                    if let Some(id) = prev.take() {
+                        vars.push(id.to_string())
+                    }
+                    can_be_name = false;
                 }
-                can_be_name = false;
-            }
-            TokenTree::Punct(p) if p.as_char() == '<' => level += 1,
-            TokenTree::Punct(p) if p.as_char() == '>' => level -= 1,
-            TokenTree::Punct(p) if p.as_char() == ',' => can_be_name = true,
+                '>' => level -= 1,
+                '<' => level += 1,
+                ',' => can_be_name = true,
+                _ => prev = None,
+            },
             _ => prev = None,
         }
     }
@@ -519,7 +522,11 @@ fn gen_msg_send(
         );
     }
     let pre = pre.join(" ");
-    let vars = vars.join(", ");
+    let vars = if vars.is_empty() {
+        Cow::Borrowed("")
+    } else {
+        Cow::Owned(vars.join(", "))
+    };
 
     let (mut fn_args, mut call_args) = if fn_args_count == 0 {
         let fn_args = fn_args
