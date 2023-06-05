@@ -71,11 +71,11 @@ fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
     for t in group.into_iter() {
         match t {
             TokenTree::Ident(i) => {
-                prev = Some(i.to_string());
+                prev = Some(i);
             }
             TokenTree::Punct(p) if can_be_name && level == 0 && p.as_char() == ':' => {
                 if let Some(id) = prev.take() {
-                    vars.push(id)
+                    vars.push(id.to_string())
                 }
                 can_be_name = false;
             }
