@@ -342,7 +342,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
         Cow::Borrowed("fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>);")
     //" { panic!(\"use #[objc::cls_builder]\") }".to_string()
     } else {
-        Cow::Owned(add_methods_fn(&fn_names).to_string())
+        Cow::Owned(add_methods_fn(&fn_names))
     };
 
     let code = format!(
@@ -363,7 +363,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     original_trait
 }
 
-fn add_methods_fn(fns: &[String]) -> TokenStream {
+fn add_methods_fn(fns: &[String]) -> String {
     let mut res = "
     fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>) {
         let cls: &objc::Class<objc::Id> = unsafe { std::mem::transmute(cls) };
@@ -383,7 +383,7 @@ fn add_methods_fn(fns: &[String]) -> TokenStream {
         res.push_str(&add);
     }
     res.push_str("\n}");
-    res.parse().unwrap()
+    res
 }
 
 #[proc_macro_attribute]
@@ -408,7 +408,7 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
                         _ => continue,
                     }
                 }
-                let imp = add_methods_fn(&fns);
+                let imp: TokenStream = add_methods_fn(&fns).parse().unwrap();
                 let mut stream = g.stream();
                 stream.extend(imp);
                 let g = Group::new(g.delimiter(), stream);
@@ -469,7 +469,7 @@ fn gen_msg_send(
         }
     }
     let Some(TokenTree::Ident(fn_name)) = iter.next() else {
-        panic!("foo");
+        panic!("expected function name");
     };
 
     let fn_name = fn_name.to_string();
@@ -515,7 +515,9 @@ fn gen_msg_send(
 
     let vars = get_fn_args(args.stream(), class, debug);
     let fn_args_count = vars.len();
-    if !retain {
+    if retain {
+        assert_eq!(args_count, 0, "retain should not have selector args");
+    } else {
         assert_eq!(
             fn_args_count, args_count,
             "left: fn_args_count, right: sel_args_count"
