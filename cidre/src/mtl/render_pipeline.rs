@@ -202,6 +202,7 @@ impl Descriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_TILE_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<TileRenderPipelineDescriptor>;
 }
 
 define_obj_type!(FnsDescriptor(ns::Id));
@@ -215,10 +216,13 @@ impl State {
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
 
     #[objc::msg_send(threadgroupSizeMatchesTileSize)]
-    pub fn threadgourp_size_matches_tile_size(&self) -> bool;
+    pub fn threadgroup_size_matches_tile_size(&self) -> bool;
 
     #[objc::msg_send(imageblockSampleLength)]
     pub fn imageblock_sample_length(&self) -> usize;
+
+    #[objc::msg_send(supportIndirectCommandBuffers)]
+    pub fn support_indirect_cmd_bufs(&self) -> bool;
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
@@ -261,9 +265,53 @@ impl IndexMut<usize> for ColorAttachmentDescriptorArray {
 }
 
 define_obj_type!(TileRenderPipelineColorAttachmentDescriptor(ns::Id));
+
+impl TileRenderPipelineColorAttachmentDescriptor {
+    #[objc::msg_send(pixelFormat)]
+    pub fn pixel_format(&self) -> mtl::PixelFormat;
+
+    #[objc::msg_send(setPixelFormat:)]
+    pub fn set_pixel_format(&mut self, value: mtl::PixelFormat);
+}
+
 define_obj_type!(TileRenderPipelineColorAttachmentDescriptorArray(ns::Id));
 
-define_obj_type!(TileRenderPipelineDescriptor(ns::Id));
+impl TileRenderPipelineColorAttachmentDescriptorArray {
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn obj_at(&self, index: usize) -> &TileRenderPipelineColorAttachmentDescriptor;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn obj_at_mut(&self, index: usize) -> &mut TileRenderPipelineColorAttachmentDescriptor;
+}
+
+impl std::ops::Index<usize> for TileRenderPipelineColorAttachmentDescriptorArray {
+    type Output = TileRenderPipelineColorAttachmentDescriptor;
+
+    #[inline]
+    fn index(&self, index: usize) -> &Self::Output {
+        self.obj_at(index)
+    }
+}
+
+impl std::ops::IndexMut<usize> for TileRenderPipelineColorAttachmentDescriptorArray {
+    #[inline]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.obj_at_mut(index)
+    }
+}
+
+impl arc::R<TileRenderPipelineDescriptor> {
+    #[inline]
+    pub fn with_fn(mut self, tile_fn: &Fn) -> Self {
+        self.set_tile_fn(tile_fn);
+        self
+    }
+}
+
+define_obj_type!(
+    TileRenderPipelineDescriptor(ns::Id),
+    MTL_TILE_RENDER_PIPELINE_DESCRIPTOR
+);
 
 impl TileRenderPipelineDescriptor {
     define_mtl!(reset, label, set_label);

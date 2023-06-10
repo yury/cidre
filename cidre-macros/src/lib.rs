@@ -14,7 +14,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
         return None;
     };
 
-    if !ident.to_string().eq("objc") {
+    if ident.to_string() != "objc" {
         return None;
     }
 

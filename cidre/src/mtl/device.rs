@@ -219,6 +219,31 @@ impl Device {
         }
     }
 
+    #[objc::msg_send(newRenderPipelineStateWithTileDescriptor:options:reflection:error:)]
+    pub unsafe fn new_tile_render_ps_err<'ar>(
+        &self,
+        desc: &mtl::TileRenderPipelineDescriptor,
+        options: mtl::PipelineOption,
+        reflection: *mut Option<&'ar mtl::RenderPipelineReflection>,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> Option<arc::R<mtl::RenderPipelineState>>;
+
+    pub fn new_tile_render_ps<'ar>(
+        &self,
+        desc: &mtl::TileRenderPipelineDescriptor,
+        options: mtl::PipelineOption,
+    ) -> Result<arc::R<mtl::RenderPipelineState>, &'ar ns::Error> {
+        let mut error = None;
+        unsafe {
+            let res = self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), &mut error);
+            if res.is_some() {
+                Ok(transmute(res))
+            } else {
+                Err(transmute(error))
+            }
+        }
+    }
+
     #[objc::msg_send(newBufferWithLength:options:)]
     pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
         -> Option<arc::R<mtl::Buf>>;
