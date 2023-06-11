@@ -51,7 +51,6 @@ impl KVChangeKey {
     }
 }
 
-#[objc::obj_trait]
 pub trait KVObserving {
     #[objc::msg_send(observeValueForKeyPath:ofObject:change:context:)]
     fn observe_value_for_key_path(
@@ -63,46 +62,65 @@ pub trait KVObserving {
     );
 }
 
-define_obj_type!(
-    Observer + KVObservingImpl,
-    Box<dyn FnMut(&ns::String, &ns::Id, &ns::Dictionary<KVChangeKey, ns::Id>)>,
-    FRAME_COUNTER
-);
-
-impl KVObserving for Observer {}
-impl KVObservingImpl for Observer {
-    extern "C" fn impl_observe_value_for_key_path(
-        &mut self,
-        _cmd: Option<&objc::Sel>,
-        key_path: Option<&ns::String>,
-        of_object: Option<&ns::Id>,
-        change: Option<&ns::Dictionary<KVChangeKey, ns::Id>>,
-        _context: *mut c_void,
-    ) {
-        unsafe {
-            (self.inner_mut())(
-                key_path.unwrap_unchecked(),
-                of_object.unwrap_unchecked(),
-                change.unwrap_unchecked(),
-            )
-        }
-    }
+pub struct Observer<F>
+where
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+{
+    closure: F,
+    cidre_observer: Option<arc::R<CidreObserver>>,
 }
 
-impl Observer {
-    pub fn with_obj<O, F>(
+impl<F> Observer<F>
+where
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+{
+    extern "C" fn change_handler(
+        &mut self,
+        key_path: Option<&ns::String>,
+        object: Option<&ns::Id>,
+        change: Option<&ns::Dictionary<KVChangeKey, ns::Id>>,
+    ) {
+        (self.closure)(key_path, object, change)
+    }
+
+    pub fn with_obj<O>(
         object: &mut O,
         key_path: &ns::String,
         options: KVOOptions,
         closure: F,
-    ) -> arc::R<Self>
+    ) -> Box<Self>
     where
-        O: KVObserverRegistration,
-        F: FnMut(&ns::String, &ns::Id, &ns::Dictionary<KVChangeKey, ns::Id>) + 'static,
+        O: objc::Obj + KVObserverRegistration,
     {
-        let observer = Observer::with(Box::new(closure));
-        object.add_observer(&observer, key_path, options, std::ptr::null_mut());
-        observer
+        let res = Box::new(Self {
+            closure,
+            cidre_observer: None,
+        });
+        let raw = Box::into_raw(res);
+
+        let o = unsafe {
+            cidre_create_observer(
+                std::mem::transmute(object),
+                key_path,
+                options,
+                raw as *mut c_void,
+                Self::change_handler as _,
+            )
+        };
+        let mut res = unsafe { Box::from_raw(raw) };
+        res.cidre_observer = Some(o);
+        res
+    }
+}
+
+impl<F> Drop for Observer<F>
+where
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+{
+    fn drop(&mut self) {
+        if let Some(o) = self.cidre_observer.take() {
+            o.invalide()
+        }
     }
 }
 
@@ -128,6 +146,12 @@ pub trait KVObserverRegistration {
     fn remove_observer(&mut self, observer: &ns::Id, for_key_path: &ns::String);
 }
 
+define_obj_type!(CidreObserver(ns::Id));
+impl CidreObserver {
+    #[objc::msg_send(invalidate)]
+    pub fn invalide(&self);
+}
+
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
     static NSKeyValueChangeKindKey: &'static KVChangeKey;
@@ -137,10 +161,58 @@ extern "C" {
     static NSKeyValueChangeNotificationIsPriorKey: &'static KVChangeKey;
 }
 
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn cidre_create_observer(
+        obj: &ns::Id,
+        key_path: &ns::String,
+        options: KVOOptions,
+        context: *mut c_void,
+        fn_ptr: *const c_void,
+    ) -> arc::R<CidreObserver>;
+
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::ns;
+
+    use super::KVOOptions;
+
+    static mut CALLS_COUNT: usize = 0;
+
     #[test]
     fn basics() {
-        // TODO:
+        let mut q = ns::OperationQueue::new();
+
+        let _observer = ns::Observer::with_obj(
+            q.as_mut(),
+            &ns::String::with_str("name"),
+            KVOOptions::NEW,
+            |key, obj, change| {
+                println!("{:?} {:?} {:?}", key, obj, change);
+                unsafe {
+                    CALLS_COUNT += 1;
+                }
+            },
+        );
+
+        q.set_name(Some(&ns::String::with_str("nice")));
+
+        let pi = ns::ProcessInfo::current();
+
+        let _observer = ns::Observer::with_obj(
+            pi,
+            &ns::String::with_str("thermalState"),
+            KVOOptions::INITIAL,
+            |key, obj, change| {
+                println!("{:?} {:?} {:?}", key, obj, change);
+                unsafe {
+                    CALLS_COUNT += 1;
+                }
+            },
+        );
+
+        assert_eq!(unsafe { CALLS_COUNT }, 2);
     }
 }

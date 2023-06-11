@@ -157,6 +157,7 @@ pub use notification::NotificationCenter;
 pub use notification::NotificationName;
 
 mod operation;
+pub use operation::BlockOperation;
 pub use operation::Operation;
 pub use operation::OperationQueue;
 
@@ -171,6 +172,5 @@ pub use key_value_observing::KVOOptions;
 pub use key_value_observing::KVObserverRegistration;
 pub use key_value_observing::KVObserverRegistrationImpl;
 pub use key_value_observing::KVObserving;
-pub use key_value_observing::KVObservingImpl;
 pub use key_value_observing::KVSetMutationKind;
 pub use key_value_observing::Observer;

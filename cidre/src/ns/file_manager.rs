@@ -58,7 +58,7 @@ impl FileManager {
     }
 
     #[objc::cls_msg_send(defaultManager)]
-    pub fn default() -> &'static FileManager;
+    pub fn default() -> &'static mut FileManager;
 
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]
     pub fn contents_of_dir_at_url_err_ar(
@@ -202,7 +202,7 @@ impl FileManager {
     pub fn current_dir_path(&self) -> &ns::String;
 
     #[objc::msg_send(changeCurrentDirectoryPath:)]
-    pub fn change_current_dir_path(&self, path: &ns::String) -> bool;
+    pub fn change_current_dir_path(&mut self, path: &ns::String) -> bool;
 
     #[objc::msg_send(fileExistsAtPath:)]
     pub fn file_exists_at_path(&self, path: &ns::String) -> bool;

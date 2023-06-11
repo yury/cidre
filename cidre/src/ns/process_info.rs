@@ -24,6 +24,8 @@ pub enum ThermalState {
 
 define_obj_type!(ProcessInfo(ns::Id));
 
+impl ns::KVObserverRegistration for ProcessInfo {}
+
 impl ProcessInfo {
     define_cls!(NS_PROCESS_INFO);
     /// ```no_run
@@ -37,7 +39,7 @@ impl ProcessInfo {
     /// assert!(pi.active_processor_count() > 1);
     /// ```
     #[objc::cls_msg_send(processInfo)]
-    pub fn current() -> &'static ProcessInfo;
+    pub fn current() -> &'static mut ProcessInfo;
 
     #[objc::msg_send(thermalState)]
     pub fn thermal_state(&self) -> ThermalState;

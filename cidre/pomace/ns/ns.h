@@ -69,14 +69,43 @@ Class NS_NOTIFICATION_CENTER;
 Class NS_CODER;
 
 Class NS_OPERATION;
+Class NS_BLOCK_OPERATION;
 Class NS_OPERATION_QUEUE;
+
+typedef void cidre_change(
+                          void * _Nullable,
+                          NSString * _Nullable,
+                          id _Nullable,
+                          NSDictionary<NSKeyValueChangeKey,id> * _Nullable
+                          );
+
+@interface CidreObserver : NSObject
+- (instancetype)initWithObject: (NSObject *)obj
+                       keyPath: (NSString *)keyPath
+                       options: (NSKeyValueObservingOptions)options
+                       context: (void *)context
+                         fnPtr: (cidre_change *)fn_ptr;
+
+- (void)invalidate;
+@end
+
+NS_RETURNS_RETAINED CidreObserver *
+cidre_create_observer(
+                      NSObject * obj,
+                      NSString * keyPath,
+                      NSKeyValueObservingOptions options,
+                      void * context,
+                      cidre_change * fn_ptr
+) {
+  return [[CidreObserver alloc] initWithObject:obj keyPath:keyPath options:options context:context fnPtr:fn_ptr];
+}
+
 
 __attribute__((constructor))
 static void common_initializer(void)
 {
   static int initialized = 0;
   if (!initialized) {
-
     NS_ARRAY = [NSArray class];
     NS_DATA = [NSData class];
     NS_DATE = [NSDate class];
@@ -114,7 +143,9 @@ static void common_initializer(void)
     NS_CODER = [NSCoder class];
     
     NS_OPERATION = [NSOperation class];
+    NS_BLOCK_OPERATION = [NSBlockOperation class];
     NS_OPERATION_QUEUE = [NSOperationQueue class];
+
     
     initialized = 1;
   }
