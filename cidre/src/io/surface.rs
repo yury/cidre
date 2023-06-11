@@ -214,6 +214,11 @@ impl Surface {
     pub fn alloc_size(&self) -> usize {
         unsafe { IOSurfaceGetAllocSize(self) }
     }
+
+    #[inline]
+    pub unsafe fn from_raw(ptr: *mut u8) -> arc::R<Self> {
+        std::mem::transmute(ptr)
+    }
 }
 
 extern "C" {
