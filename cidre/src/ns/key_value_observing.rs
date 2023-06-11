@@ -177,8 +177,6 @@ extern "C" {
 mod tests {
     use crate::ns;
 
-    use super::KVOOptions;
-
     static mut CALLS_COUNT: usize = 0;
 
     #[test]
@@ -188,7 +186,7 @@ mod tests {
         let _observer = ns::Observer::with_obj(
             q.as_mut(),
             &ns::String::with_str("name"),
-            KVOOptions::NEW,
+            ns::KVOOptions::NEW,
             |key, obj, change| {
                 println!("{:?} {:?} {:?}", key, obj, change);
                 unsafe {
@@ -204,7 +202,7 @@ mod tests {
         let _observer = ns::Observer::with_obj(
             pi,
             &ns::String::with_str("thermalState"),
-            KVOOptions::INITIAL,
+            ns::KVOOptions::INITIAL,
             |key, obj, change| {
                 println!("{:?} {:?} {:?}", key, obj, change);
                 unsafe {
