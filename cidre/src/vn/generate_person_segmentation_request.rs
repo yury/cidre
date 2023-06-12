@@ -43,7 +43,7 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::{
-        cv::PixelFormatType, vn::generate_person_segmentation_request::QualityLevel,
+        cv::PixelFormat, vn::generate_person_segmentation_request::QualityLevel,
         vn::GeneratePersonSegmentationRequest,
     };
 
@@ -55,7 +55,7 @@ mod tests {
 
         assert_eq!(
             request.output_pixel_format(),
-            PixelFormatType::ONE_COMPONENT_8.0
+            PixelFormat::ONE_COMPONENT_8.0
         );
 
         assert!(request.results().is_none());

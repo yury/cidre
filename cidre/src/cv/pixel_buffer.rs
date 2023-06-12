@@ -25,7 +25,7 @@ impl PixelBuffer {
         unsafe { CVPixelBufferGetHeight(self) }
     }
 
-    /// Returns the PixelFormatType of the PixelBuffer.
+    /// Returns the PixelFormat of the PixelBuffer.
     #[doc(alias = "CVPixelBufferGetPixelFormatType")]
     #[inline]
     pub fn pixel_format(&self) -> PixelFormat {
@@ -53,11 +53,11 @@ impl PixelBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// assert_eq!(200, pixel_buffer.width());
     /// assert_eq!(100, pixel_buffer.height());
-    /// assert_eq!(cv::PixelFormatType::_32_BGRA, pixel_buffer.pixel_format());
+    /// assert_eq!(cv::PixelFormat::_32_BGRA, pixel_buffer.pixel_format());
     /// assert_eq!(0, pixel_buffer.plane_count());
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     ///
@@ -132,6 +132,7 @@ impl PixelBuffer {
         unsafe { CVPixelBufferGetIOSurface(self) }
     }
 
+    /// Call to create a single cv::PixelBuffer for a passed-in IOSurface.
     #[cfg(freature = "io")]
     #[inline]
     pub fn create_in(

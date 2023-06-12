@@ -71,7 +71,7 @@ impl ImageRequestHandler {
     /// ```no_run
     /// use cidre::{ns, cv, cg, vn};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     /// let handler = vn::ImageRequestHandler::with_cv_pixel_buffer(&pixel_buffer, None).unwrap();
     /// let requests = ns::Array::new();
     /// handler.perform(&requests).unwrap();
@@ -124,7 +124,7 @@ define_obj_type!(SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER);
 /// ```no_run
 /// use cidre::{ns, cv, cg, vn};
 ///
-/// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormatType::_32_BGRA, None).unwrap();
+/// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
 /// let handler = vn::SequenceRequestHandler::new();
 /// let requests = ns::Array::new();
 /// handler.perform_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
