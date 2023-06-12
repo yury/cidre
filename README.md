@@ -27,5 +27,6 @@
 - error -> err
 - options -> opts
 - command -> cmd
+- pointer -> ptr
 - throws -> _throws (not shortcut but indicator of exception)
 

@@ -178,7 +178,7 @@ impl BlockBuffer {
     /// original cm::BlockBuffer is referenced - once the cm::BlockBuffer is released for the last time, any pointers
     /// into it will be invalid.
     #[inline]
-    pub unsafe fn get_data_pointer(
+    pub unsafe fn get_data_ptr(
         &self,
         offset: usize,
         length_at_offset_out: *mut usize,
@@ -195,12 +195,12 @@ impl BlockBuffer {
     }
 
     #[inline]
-    pub fn data_pointer_at(&self, offset: usize) -> Result<(&[u8], usize), os::Status> {
+    pub fn data_ptr_at(&self, offset: usize) -> Result<(&[u8], usize), os::Status> {
         let mut length_at_offset_out = 0;
         let mut total_length_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.get_data_pointer(
+            let res = self.get_data_ptr(
                 offset,
                 &mut length_at_offset_out,
                 &mut total_length_out,
@@ -219,7 +219,7 @@ impl BlockBuffer {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.get_data_pointer(
+            let res = self.get_data_ptr(
                 0,
                 &mut length_at_offset_out,
                 std::ptr::null_mut(),
@@ -240,7 +240,7 @@ impl BlockBuffer {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.get_data_pointer(
+            let res = self.get_data_ptr(
                 0,
                 &mut length_at_offset_out,
                 std::ptr::null_mut(),
