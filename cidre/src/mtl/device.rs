@@ -99,7 +99,7 @@ impl Device {
     pub fn new_default_lib(&self) -> Option<arc::R<Lib>>;
 
     #[objc::msg_send(newLibraryWithSource:options:error:)]
-    pub fn new_lib_with_src_err(
+    pub unsafe fn new_lib_with_src_err(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOptions>,
@@ -113,11 +113,13 @@ impl Device {
         options: Option<&mtl::CompileOptions>,
     ) -> Result<arc::R<Lib>, &'ear ns::Error> {
         let mut error = None;
-        if let Some(lib) = Self::new_lib_with_src_err(self, source, options, &mut error) {
-            return Ok(lib);
+        unsafe {
+            if let Some(lib) = Self::new_lib_with_src_err(self, source, options, &mut error) {
+                Ok(lib)
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
-
-        Err(unsafe { error.unwrap_unchecked() })
     }
 
     pub async fn new_lib_with_src_opts(
@@ -385,9 +387,6 @@ mod tests {
 
         let source = ns::String::with_str("void function_a() {}");
         let options = None;
-        let mut err = None;
-        let _lib = device
-            .new_lib_with_src_err(&source, options, &mut err)
-            .unwrap();
+        let _lib = device.new_lib_with_src(&source, options).unwrap();
     }
 }
