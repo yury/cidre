@@ -112,10 +112,10 @@ impl Configuration {
     /// '420v': 2-plane "video" range YCbCr 4:2:0
     /// '420f': 2-plane "full" range YCbCr 4:2:0
     #[objc::msg_send(pixelFormat)]
-    pub fn pixel_format(&self) -> cv::PixelFormatType;
+    pub fn pixel_format(&self) -> cv::PixelFormat;
 
     #[objc::msg_send(setPixelFormat:)]
-    pub fn set_pixel_format(&mut self, value: cv::PixelFormatType);
+    pub fn set_pixel_format(&mut self, value: cv::PixelFormat);
 
     #[objc::msg_send(scalesToFit)]
     pub fn scales_to_fit(&self) -> bool;
@@ -370,7 +370,7 @@ mod tests {
         assert_eq!(300, cfg.height());
 
         cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
-        cfg.set_pixel_format(cv::PixelFormatType::_32_BGRA);
+        cfg.set_pixel_format(cv::PixelFormat::_32_BGRA);
         cfg.set_scales_to_fit(false);
         cfg.set_shows_cursor(false);
     }

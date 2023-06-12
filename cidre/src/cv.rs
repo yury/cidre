@@ -20,7 +20,7 @@ pub use image_buffer::ImageBuffer;
 pub mod pixel_buffer;
 pub use pixel_buffer::keys as pixel_buffer_keys;
 pub use pixel_buffer::PixelBuffer;
-pub use pixel_buffer::PixelFormatType;
+pub use pixel_buffer::PixelFormat;
 
 pub mod pixel_buffer_pool;
 pub use pixel_buffer_pool::FlushFlags as PixelBufferPoolFlushFlags;

@@ -21,7 +21,7 @@ mod tests {
 
         let empty_dict = cf::Dictionary::new();
         let pixel_format = cf::Number::from_four_char_code(
-            cv::PixelFormatType::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE.0,
+            cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE.0,
         );
 
         image_attrs.insert(cv::pixel_buffer::keys::io_surface_properties(), &empty_dict);

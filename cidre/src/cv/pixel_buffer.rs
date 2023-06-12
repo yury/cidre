@@ -1,5 +1,8 @@
 use crate::{arc, cf, cv, define_options, os};
 
+#[cfg(feature = "io")]
+use crate::io;
+
 pub type PixelBuffer = cv::ImageBuffer;
 
 impl PixelBuffer {
@@ -25,7 +28,7 @@ impl PixelBuffer {
     /// Returns the PixelFormatType of the PixelBuffer.
     #[doc(alias = "CVPixelBufferGetPixelFormatType")]
     #[inline]
-    pub fn pixel_format_type(&self) -> PixelFormatType {
+    pub fn pixel_format(&self) -> PixelFormat {
         unsafe { CVPixelBufferGetPixelFormatType(self) }
     }
 
@@ -54,7 +57,7 @@ impl PixelBuffer {
     ///
     /// assert_eq!(200, pixel_buffer.width());
     /// assert_eq!(100, pixel_buffer.height());
-    /// assert_eq!(cv::PixelFormatType::_32_BGRA, pixel_buffer.pixel_format_type());
+    /// assert_eq!(cv::PixelFormatType::_32_BGRA, pixel_buffer.pixel_format());
     /// assert_eq!(0, pixel_buffer.plane_count());
     /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
     ///
@@ -62,7 +65,7 @@ impl PixelBuffer {
     pub fn new(
         width: usize,
         height: usize,
-        pixel_format_type: cv::PixelFormatType,
+        pixel_format_type: cv::PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
     ) -> Result<arc::R<PixelBuffer>, cv::Return> {
         let mut pixel_buffer_out = None;
@@ -82,7 +85,7 @@ impl PixelBuffer {
     pub fn create_in(
         width: usize,
         height: usize,
-        pixel_format_type: cv::PixelFormatType,
+        pixel_format_type: cv::PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: &mut Option<arc::R<PixelBuffer>>,
         allocator: Option<&cf::Allocator>,
@@ -122,6 +125,35 @@ impl PixelBuffer {
             }
         }
     }
+
+    #[cfg(feature = "io")]
+    #[inline]
+    pub fn get_io_surface(&self) -> Option<&io::Surface> {
+        unsafe { CVPixelBufferGetIOSurface(self) }
+    }
+
+    #[cfg(freature = "io")]
+    #[inline]
+    pub fn create_in(
+        surface: &io::Surface,
+        pixel_buffer_attributes: Option<&cf::Dictionary>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Result<arc::R<Self>, cv::Return> {
+        let mut butter = None;
+        unsafe {
+            let res = CVPixelBufferCreateWithIOSurface(
+                allocator,
+                surface,
+                pixel_buffer_attributes,
+                &mut buffer,
+            );
+            if res.is_ok() {
+                Ok(buffer.take_unchacked())
+            } else {
+                Err(res)
+            }
+        }
+    }
 }
 
 pub struct BaseAddressLockGuard<'a>(&'a PixelBuffer, LockFlags);
@@ -143,11 +175,11 @@ impl LockFlags {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct PixelFormatType(pub os::Type);
+pub struct PixelFormat(pub os::Type);
 
 // https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput
 
-impl PixelFormatType {
+impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_1Monochrome")]
     pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
 
@@ -202,14 +234,14 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         width: usize,
         height: usize,
-        pixel_format_type: cv::PixelFormatType,
+        pixel_format_type: PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: &mut Option<arc::R<PixelBuffer>>,
     ) -> cv::Return;
 
     fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuffer) -> usize;
     fn CVPixelBufferGetHeight(pixel_buffer: &PixelBuffer) -> usize;
-    fn CVPixelBufferGetPixelFormatType(pixel_buffer: &PixelBuffer) -> PixelFormatType;
+    fn CVPixelBufferGetPixelFormatType(pixel_buffer: &PixelBuffer) -> PixelFormat;
     fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuffer) -> usize;
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
@@ -221,6 +253,17 @@ extern "C" {
     fn CVPixelBufferUnlockBaseAddress(
         pixel_buffer: &PixelBuffer,
         lock_flags: LockFlags,
+    ) -> cv::Return;
+
+    #[cfg(feature = "io")]
+    fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuffer) -> Option<&io::Surface>;
+
+    #[cfg(feature = "io")]
+    fn CVPixelBufferCreateWithIOSurface(
+        allocator: Option<&cf::Allocator>,
+        surface: &io::Surface,
+        pixel_buffer_attributes: Option<&cf::Dictionary>,
+        pixel_buffer_out: *mut Option<&cv::PixelBuffer>,
     ) -> cv::Return;
 }
 
