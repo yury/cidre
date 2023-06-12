@@ -1,5 +1,3 @@
-use std::{ffi::c_void, intrinsics::transmute};
-
 use crate::{arc, blocks, define_obj_type, define_options, mtl, ns, objc};
 
 #[cfg(feature = "io")]
@@ -38,9 +36,10 @@ pub enum SparsePageSize {
     _256 = 103,
 }
 
+#[doc(alias = "MTLSizeAndAlign")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(C)]
-pub struct SizeAndAlign {
+pub struct SizeAlign {
     pub size: usize,
     pub align: usize,
 }
@@ -69,50 +68,15 @@ impl Device {
     #[objc::msg_send(hasUnifiedMemory)]
     pub fn has_unified_memory(&self) -> bool;
 
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let tier = device.read_write_texture_support();
-    ///
-    /// assert_ne!(tier, mtl::ReadWriteTextureTier::None);
     #[objc::msg_send(readWriteTextureSupport)]
     pub fn read_write_texture_support(&self) -> ReadWriteTextureTier;
 
-    /// Example
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let tier = device.argument_buffers_support();
-    ///
-    /// assert_ne!(tier, mtl::ArgumentBuffersTier::_1);
     #[objc::msg_send(argumentBuffersSupport)]
     pub fn argument_buffers_support(&self) -> ArgumentBuffersTier;
 
-    /// ```no_run
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let queue = device.command_queue().unwrap();
-    ///
-    /// queue.as_type_ref().show();
-    ///
     #[objc::msg_send(newCommandQueue)]
     pub fn new_cmd_queue(&self) -> Option<arc::R<CmdQueue>>;
 
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let device = mtl::Device::default().unwrap();
-    ///
-    /// let queue = device.command_queue_with_max_command_buffer_count(1).unwrap();
-    ///
-    /// queue.as_type_ref().show();
-    ///
     #[objc::msg_send(newCommandQueueWithMaxCommandBufferCount:)]
     pub fn new_cmd_queue_max_cmd_buf_count(
         &self,
@@ -176,17 +140,17 @@ impl Device {
         F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
-    pub fn new_compute_ps_with_fn_err<'a>(
+    pub unsafe fn new_compute_ps_with_fn_err<'a>(
         &self,
         function: &mtl::Fn,
-        error: &mut Option<&'a ns::Error>,
+        error: *mut Option<&'a ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
     pub unsafe fn new_render_ps_err(
         &self,
         descriptor: &mtl::RenderPipelineDescriptor,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
@@ -198,9 +162,9 @@ impl Device {
         unsafe {
             let res = Self::new_render_ps_err(self, descriptor, &mut error);
             if res.is_some() {
-                Ok(transmute(res))
+                Ok(res.unwrap_unchecked())
             } else {
-                Err(transmute(error))
+                Err(error.unwrap_unchecked())
             }
         }
     }
@@ -211,11 +175,13 @@ impl Device {
         function: &mtl::Fn,
     ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar ns::Error> {
         let mut error = None;
-        let res = self.new_compute_ps_with_fn_err(function, &mut error);
-        if res.is_some() {
-            Ok(unsafe { transmute(res) })
-        } else {
-            Err(unsafe { transmute(error) })
+        unsafe {
+            let res = self.new_compute_ps_with_fn_err(function, &mut error);
+            if res.is_some() {
+                Ok(res.unwrap_unchecked())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 
@@ -237,9 +203,9 @@ impl Device {
         unsafe {
             let res = self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), &mut error);
             if res.is_some() {
-                Ok(transmute(res))
+                Ok(res.unwrap_unchecked())
             } else {
-                Err(transmute(error))
+                Err(error.unwrap_unchecked())
             }
         }
     }
@@ -259,7 +225,7 @@ impl Device {
     #[objc::msg_send(newBufferWithBytes:length:options:)]
     pub fn new_buf_with_bytes(
         &self,
-        bytes: *const c_void,
+        bytes: *const u8,
         length: usize,
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<Buf>>;
@@ -306,7 +272,7 @@ impl Device {
 
     /// Returns the size and alignment, in bytes, of a texture if you create it from a heap.
     #[objc::msg_send(heapTextureSizeAndAlignWithDescriptor:)]
-    pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAndAlign;
+    pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAlign;
 
     /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
     #[objc::msg_send(heapBufferSizeAndAlignWithLength:options:)]
@@ -314,7 +280,7 @@ impl Device {
         &self,
         length: usize,
         options: mtl::ResourceOptions,
-    ) -> SizeAndAlign;
+    ) -> SizeAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;

@@ -88,7 +88,7 @@ pub use device::ArgumentBuffersTier;
 pub use device::Device;
 pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
-pub use device::SizeAndAlign;
+pub use device::SizeAlign;
 pub use device::SparsePageSize;
 
 mod drawable;
