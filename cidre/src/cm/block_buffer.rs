@@ -37,7 +37,7 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
+    /// let b = cm::BlockBuffer::new(0, cm::BlockBufferFlags::NONE).expect("hmm");
     ///
     /// assert_eq!(b.get_type_id(), cm::BlockBuffer::type_id());
     /// ```
@@ -49,7 +49,7 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE).expect("hmm");
+    /// let b = cm::BlockBuffer::new_in(0, cm::BlockBufferFlags::NONE, None).expect("hmm");
     ///
     /// assert!(b.is_empty());
     /// ```
@@ -61,18 +61,19 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::create_empty(None, 0, cm::BlockBufferFlags::NONE)
+    /// let b = cm::BlockBuffer::new(0, cm::BlockBufferFlags::NONE)
     ///     .expect("empty block buffer");
     ///
     /// assert!(b.is_empty());
     /// assert!(b.data_len() == 0);
     ///
     /// ```
+    #[doc(alias = "CMBlockBufferCreateEmpty")]
     #[inline]
-    pub fn create_empty(
-        structure_allocator: Option<&cf::Allocator>,
+    pub fn new_in(
         sub_block_capacity: u32,
         flags: Flags,
+        structure_allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<BlockBuffer>, os::Status> {
         unsafe {
             let mut block_buffer_out = None;
@@ -84,6 +85,12 @@ impl BlockBuffer {
             )
             .to_result_unchecked(block_buffer_out)
         }
+    }
+
+    #[doc(alias = "CMBlockBufferCreateEmpty")]
+    #[inline]
+    pub fn new(sub_block_capacity: u32, flags: Flags) -> Result<arc::R<BlockBuffer>, os::Status> {
+        Self::new_in(sub_block_capacity, flags, None)
     }
 
     /// ```
@@ -102,21 +109,20 @@ impl BlockBuffer {
         block_allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<BlockBuffer>, os::Status> {
         unsafe {
-            Self::create_with_memory_block(
-                None,
+            Self::create_with_memory_block_in(
                 std::ptr::null_mut(),
                 len,
                 block_allocator,
                 0,
                 len,
                 Flags::ASSURE_MEMORY_NOW,
+                None,
             )
         }
     }
 
     #[inline]
-    pub unsafe fn create_with_memory_block(
-        structure_allocator: Option<&cf::Allocator>,
+    pub unsafe fn create_with_memory_block_in(
         memory_block: *mut c_void,
         block_length: usize,
         block_allocator: Option<&cf::Allocator>,
@@ -124,6 +130,7 @@ impl BlockBuffer {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
+        structure_allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<BlockBuffer>, os::Status> {
         let mut block_buffer_out = None;
         CMBlockBufferCreateWithMemoryBlock(

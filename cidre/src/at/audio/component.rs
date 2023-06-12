@@ -263,6 +263,6 @@ mod tests {
             ..Default::default()
         };
 
-        let inst = desc.into_iter().last().unwrap().new_instance().unwrap();
+        let _inst = desc.into_iter().last().unwrap().new_instance().unwrap();
     }
 }
