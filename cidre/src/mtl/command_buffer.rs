@@ -76,8 +76,10 @@ impl CmdBuf {
     }
 
     #[inline]
-    pub fn add_completed_handler_fn(&mut self, func: extern "C" fn(*const c_void, &mut Self)) {
-        let mut block = blocks::fn1(func);
+    pub fn add_completed_handler_fn<'a>(
+        &mut self,
+        block: &mut blocks::Block<extern "C" fn(*const c_void, &'a mut Self)>,
+    ) {
         self._add_completed_handler(block.as_ptr());
     }
 
@@ -133,6 +135,7 @@ impl CmdBuf {
         descriptor: &mtl::RenderPassDescriptor,
     ) -> Option<arc::R<mtl::RenderCmdEncoder>>;
 
+    #[inline]
     pub fn render<F: FnMut(&mut mtl::RenderCmdEncoder)>(
         &mut self,
         descriptor: &mtl::RenderPassDescriptor,
@@ -175,4 +178,10 @@ impl CmdBuf {
 
     #[objc::msg_send(GPUEndTime)]
     pub fn gpu_end_time(&self) -> cf::TimeInterval;
+
+    #[objc::msg_send(kernelStartTime)]
+    pub fn kernel_start_time(&self) -> cf::TimeInterval;
+
+    #[objc::msg_send(kernelEndTime)]
+    pub fn kernel_end_time(&self) -> cf::TimeInterval;
 }
