@@ -130,12 +130,21 @@ pub mod keys {
     /// By default, textures will age out after one second.  Setting a maximum
     /// texture age of zero will disable the age-out mechanism completely.
     /// TextureCache::flush() can be used to force eviction in either case.
+    #[inline]
     pub fn maximum_texture_age() -> &'static cf::String {
         unsafe { kCVMetalTextureCacheMaximumTextureAgeKey }
+    }
+
+    /// Property that can be placed on a cv::MetalTextureCache to instruct the mtl::TextureUsage of the created mtl::Texture.
+    #[doc(alias = "kCVMetalTextureUsage")]
+    #[inline]
+    pub fn texture_usage() -> &'static cf::String {
+        unsafe { kCVMetalTextureUsage }
     }
 
     #[link(name = "CoreVideo", kind = "framework")]
     extern "C" {
         static kCVMetalTextureCacheMaximumTextureAgeKey: &'static cf::String;
+        static kCVMetalTextureUsage: &'static cf::String;
     }
 }

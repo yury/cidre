@@ -81,7 +81,6 @@ pub trait Obj: Sized + arc::Retain {
             clobber_abi("C"),
         );
         transmute(result)
-        // transmute(objc_retain(transmute(id)))
     }
 
     #[msg_send(description)]
