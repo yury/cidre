@@ -3,8 +3,9 @@ use crate::{arc, cf, cv, define_cf_type, mtl};
 define_cf_type!(TextureCache(cf::Type));
 
 impl TextureCache {
+    #[doc(alias = "CVMetalTextureCacheCreate")]
     #[inline]
-    pub unsafe fn create_cache_in(
+    pub unsafe fn create_in(
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
@@ -20,6 +21,7 @@ impl TextureCache {
         )
     }
 
+    #[doc(alias = "CVMetalTextureCacheCreate")]
     #[inline]
     pub fn create(
         cache_attributes: Option<&cf::Dictionary>,
@@ -28,7 +30,7 @@ impl TextureCache {
     ) -> Result<arc::R<TextureCache>, cv::Return> {
         unsafe {
             let mut cache_out = None;
-            Self::create_cache_in(
+            Self::create_in(
                 cache_attributes,
                 metal_device,
                 texture_attributes,
@@ -39,6 +41,7 @@ impl TextureCache {
         }
     }
 
+    #[doc(alias = "CVMetalTextureCacheCreateTextureFromImage")]
     #[inline]
     pub unsafe fn create_texture_in(
         &self,
@@ -64,6 +67,7 @@ impl TextureCache {
         )
     }
 
+    #[doc(alias = "CVMetalTextureCacheCreateTextureFromImage")]
     #[inline]
     pub fn texture(
         &self,
@@ -93,6 +97,7 @@ impl TextureCache {
     /// Performs internal housekeeping/recycling operations
     ///
     /// This call must be made periodically to give the texture cache a chance to do internal housekeeping operations.
+    #[doc(alias = "CVMetalTextureCacheFlush")]
     #[inline]
     pub fn flush(&self) {
         unsafe { CVMetalTextureCacheFlush(self, 0) }
