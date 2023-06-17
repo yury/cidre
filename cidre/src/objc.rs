@@ -73,7 +73,15 @@ impl<T: Obj> arc::Retain for T {
 pub trait Obj: Sized + arc::Retain {
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
-        transmute(objc_retain(transmute(id)))
+        let result: *mut Self;
+        core::arch::asm!(
+            "bl _objc_retain_{obj:x}",
+            obj = in(reg) id,
+            lateout("x0") result,
+            clobber_abi("C"),
+        );
+        transmute(result)
+        // transmute(objc_retain(transmute(id)))
     }
 
     #[msg_send(description)]
@@ -158,7 +166,7 @@ where
 
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
-    fn objc_retain<'a>(obj: &Id) -> &'a Id;
+    // fn objc_retain<'a>(obj: &Id) -> &'a Id;
     // fn objc_release(obj: &mut Id);
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;

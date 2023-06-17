@@ -3,7 +3,6 @@ use crate::objc;
 
 #[cfg(feature = "objc")]
 use std::{
-    arch::asm,
     ops::{Deref, DerefMut},
     ptr::NonNull,
 };
@@ -177,6 +176,8 @@ pub type Rar<T> = ReturnedAutoReleased<T>;
 #[cfg(feature = "objc")]
 #[inline]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
+    use std::arch::asm;
+
     unsafe {
         // see comments in rar_retain
         asm!("mov x29, x29");
@@ -189,6 +190,8 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
 #[cfg(feature = "objc")]
 #[inline]
 pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
+    use std::arch::asm;
+
     unsafe {
         // latest runtimes don't need this marker anymore.
         // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24
