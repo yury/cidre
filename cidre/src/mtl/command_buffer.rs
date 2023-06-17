@@ -60,19 +60,25 @@ impl CmdBuf {
 
     pub fn add_scheduled_handler<F>(&self, block: &'static mut blocks::Block<F>)
     where
-        F: FnOnce(&Self) + Send + 'static,
+        F: FnOnce(&mut Self) + Send + 'static,
     {
         self._add_scheduled_handler(block.as_ptr());
     }
 
-    #[objc::msg_send(addCompletionHandler:)]
-    fn _add_completion_handler(&self, block: *mut c_void);
+    #[objc::msg_send(addCompletedHandler:)]
+    fn _add_completed_handler(&mut self, block: *mut c_void);
 
-    pub fn add_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
+    pub fn add_completed_handler<F>(&mut self, block: &'static mut blocks::Block<F>)
     where
-        F: FnOnce(&Self) + Send + 'static,
+        F: FnOnce(&mut Self) + Send + 'static,
     {
-        self._add_completion_handler(block.as_ptr());
+        self._add_completed_handler(block.as_ptr());
+    }
+
+    #[inline]
+    pub fn add_completed_handler_fn(&mut self, func: extern "C" fn(*const c_void, &mut Self)) {
+        let mut block = blocks::fn1(func);
+        self._add_completed_handler(block.as_ptr());
     }
 
     #[objc::msg_send(blitCommandEncoder)]
@@ -163,4 +169,10 @@ impl CmdBuf {
     /// about the problem.
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;
+
+    #[objc::msg_send(GPUStartTime)]
+    pub fn gpu_start_time(&self) -> cf::TimeInterval;
+
+    #[objc::msg_send(GPUEndTime)]
+    pub fn gpu_end_time(&self) -> cf::TimeInterval;
 }
