@@ -145,6 +145,7 @@ impl CmdBuf {
             .new_render_cmd_enc(descriptor)
             .expect("Can't create render command encoder");
         commands(&mut encoder);
+        // TODO: think. may be it should be guard?
         encoder.end_encoding();
     }
 
