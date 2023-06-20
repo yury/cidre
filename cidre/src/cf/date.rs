@@ -21,16 +21,19 @@ pub fn absolute_time_current() -> AbsoluteTime {
 define_cf_type!(Date(cf::Type));
 
 impl Date {
+    #[doc(alias = "CFDateGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CFDateGetTypeID() }
     }
 
+    #[doc(alias = "CFDateCreate")]
     #[inline]
     pub fn new_at_in(at: AbsoluteTime, allocator: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFDateCreate(allocator, at) }
     }
 
+    #[doc(alias = "CFDateCreate")]
     #[inline]
     pub fn new_at(at: AbsoluteTime) -> Option<arc::R<Self>> {
         Self::new_at_in(at, None)
@@ -41,16 +44,19 @@ impl Date {
         Self::new_at(absolute_time_current())
     }
 
+    #[doc(alias = "CFDateGetAbsoluteTime")]
     #[inline]
     pub fn absolute_time(&self) -> AbsoluteTime {
         unsafe { CFDateGetAbsoluteTime(self) }
     }
 
+    #[doc(alias = "CFDateGetTimeIntervalSinceDate")]
     #[inline]
     pub fn time_interval_since_date(&self, other_date: &Date) -> TimeInterval {
         unsafe { CFDateGetTimeIntervalSinceDate(self, other_date) }
     }
 
+    #[doc(alias = "CFDateCompare")]
     #[inline]
     pub unsafe fn compare(&self, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult {
         CFDateCompare(self, other_date, context)
