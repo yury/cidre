@@ -203,6 +203,12 @@ impl SampleBuffer {
         unsafe { CMSampleBufferGetImageBuffer(self) }
     }
 
+    #[cfg(feature = "cv")]
+    #[inline]
+    pub fn image_buffer_mut(&mut self) -> Option<&mut cv::ImageBuffer> {
+        unsafe { std::mem::transmute(CMSampleBufferGetImageBuffer(self)) }
+    }
+
     #[inline]
     pub fn data_buffer(&self) -> Option<&cm::BlockBuffer> {
         unsafe { CMSampleBufferGetDataBuffer(self) }

@@ -132,6 +132,12 @@ impl PixelBuffer {
         unsafe { CVPixelBufferGetIOSurface(self) }
     }
 
+    #[cfg(feature = "io")]
+    #[inline]
+    pub fn get_io_surface_mut(&mut self) -> Option<&mut io::Surface> {
+        unsafe { std::mem::transmute(CVPixelBufferGetIOSurface(self)) }
+    }
+
     /// Call to create a single cv::PixelBuffer for a passed-in IOSurface.
     #[cfg(freature = "io")]
     #[inline]
