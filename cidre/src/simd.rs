@@ -87,6 +87,39 @@ impl f32x3x3 {
         ])
     }
 }
+#[derive(Debug, Copy, Clone)]
+#[allow(non_camel_case_types)]
+#[repr(transparent)]
+pub struct f32x4x4(pub [f32x4; 4]);
+
+impl f32x4x4 {
+    pub fn diagonal(v: f32x4) -> Self {
+        Self([
+            f32x4::with_xyzw_f32(v.x(), 0.0, 0.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, v.y(), 0.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, 0.0, v.z(), 0.0),
+            f32x4::with_xyzw_f32(0.0, 0.0, 0.0, v.w()),
+        ])
+    }
+
+    pub const fn identity() -> Self {
+        Self([
+            f32x4::with_xyzw_f32(1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, 1.0, 0.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, 0.0, 1.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, 0.0, 0.0, 1.0),
+        ])
+    }
+
+    pub const fn translate(tx: f32, ty: f32, tz: f32) -> Self {
+        Self([
+            f32x4::with_xyzw_f32(1.0, 0.0, 0.0, tx),
+            f32x4::with_xyzw_f32(0.0, 1.0, 0.0, ty),
+            f32x4::with_xyzw_f32(0.0, 0.0, 1.0, tz),
+            f32x4::with_xyzw_f32(0.0, 0.0, 0.0, 1.0),
+        ])
+    }
+}
 
 pub mod packed {
     use super::Simd;

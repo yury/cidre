@@ -111,6 +111,18 @@ macro_rules! accessors {
 #[repr(transparent)]
 pub struct Simd<T, const LANES: usize, const N: usize>([T; LANES]);
 
+impl<T: PartialEq, const LANES: usize, const N: usize> PartialEq for Simd<T, LANES, N> {
+    fn eq(&self, other: &Self) -> bool {
+        for i in 0..N {
+            if self.0[i] != other.0[i] {
+                return false;
+            }
+        }
+        true
+    }
+}
+impl<const LANES: usize, const N: usize> Eq for Simd<f32, LANES, N> {}
+
 impl<T: Copy> Simd<T, 1, 1> {
     #[inline]
     pub fn with_x(x: T) -> Self {
@@ -172,6 +184,18 @@ impl<T: Copy> Simd<T, 4, 4> {
     }
 
     accessors!(x, y, z, w);
+}
+
+impl Simd<f32, 4, 4> {
+    #[inline]
+    pub const fn with_xyzw_f32(x: f32, y: f32, z: f32, w: f32) -> Self {
+        Self([x, y, z, w])
+    }
+
+    #[inline]
+    pub const fn with_rgba_f32(r: f32, g: f32, b: f32, a: f32) -> Self {
+        Self([r, g, b, a])
+    }
 }
 
 #[cfg(test)]
