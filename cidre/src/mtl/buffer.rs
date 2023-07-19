@@ -31,7 +31,7 @@ impl Buf {
     }
 
     #[inline]
-    pub fn as_slice_of_mut<T: Sized>(&mut self) -> &mut [u8] {
+    pub fn as_slice_of_mut<T: Sized>(&mut self) -> &mut [T] {
         let len = self.len() / std::mem::size_of::<T>();
         unsafe { std::slice::from_raw_parts_mut(self.contents() as _, len) }
     }
@@ -40,6 +40,15 @@ impl Buf {
     /// allowing the implementation to invalidate  its caches of the buffer's content.
     #[objc::msg_send(didModifyRange:)]
     pub fn did_modify_range(&self, range: ns::Range);
+
+    pub fn did_modify<T: Sized>(&self, range: std::ops::Range<usize>) {
+        let start = range.start * std::mem::size_of::<T>();
+        let end = range.end * std::mem::size_of::<T>();
+        self.did_modify_range(ns::Range {
+            location: start,
+            length: end - start,
+        })
+    }
 
     #[objc::msg_send(newTextureWithDescriptor:offset:bytesPerRow:)]
     pub fn new_texture_with_descriptor(
