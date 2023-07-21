@@ -170,6 +170,19 @@ impl arc::R<Descriptor> {
         self.set_fragment_fn(Some(fragment_fn));
         self
     }
+
+    #[inline]
+    pub fn with_fns_vertex_desc(
+        mut self,
+        vertex_fn: &Fn,
+        fragment_fn: &Fn,
+        vertex_desc: &mtl::VertexDescriptor,
+    ) -> Self {
+        self.set_vertex_fn(Some(vertex_fn));
+        self.set_fragment_fn(Some(fragment_fn));
+        self.set_vertex_desc(Some(vertex_desc));
+        self
+    }
 }
 
 impl Descriptor {
@@ -180,6 +193,12 @@ impl Descriptor {
 
     #[objc::msg_send(setVertexFunction:)]
     pub fn set_vertex_fn(&mut self, value: Option<&Fn>);
+
+    #[objc::msg_send(vertexDescriptor)]
+    pub fn vertex_desc(&self) -> Option<&mtl::VertexDescriptor>;
+
+    #[objc::msg_send(setVertexDescriptor:)]
+    pub fn set_vertex_desc(&mut self, value: Option<&mtl::VertexDescriptor>);
 
     #[objc::msg_send(fragmentFunction)]
     pub fn fragment_fn(&self) -> Option<&Fn>;

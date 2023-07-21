@@ -309,20 +309,43 @@ impl RenderCmdEncoder {
         instance_count: usize,
     );
 
+    // - (void)drawIndexedPrimitives:(MTLPrimitiveType)primitiveType
+    // indexCount:(NSUInteger)indexCount
+    // indexType:(MTLIndexType)indexType
+    // indexBuffer:(id <MTLBuffer>)indexBuffer
+    // indexBufferOffset:(NSUInteger)indexBufferOffset
+    // instanceCount:(NSUInteger)instanceCount
+    // baseVertex:(NSInteger)baseVertex
+    // baseInstance:(NSUInteger)baseInstance API_AVAILABLE(macos(10.11), ios(9.0));
+    #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:baseVertex:baseInstance:)]
+    pub fn draw_indexed_primitives_index_type_index_count_instance_count(
+        &mut self,
+        primitive_type: mtl::PrimitiveType,
+        index_count: usize,
+        index_type: mtl::IndexType,
+        index_buffer: &mtl::Buf,
+        index_buffer_offset: usize,
+        instance_count: usize,
+        base_vertex: isize,
+        base_instance: usize,
+    );
+
     #[inline]
     pub fn draw_indexed_triangles_u16(
         &mut self,
         index_buffer: &mtl::Buf,
         index_range: &std::ops::Range<usize>,
-        instance_count: usize,
+        instance_range: &std::ops::Range<usize>,
     ) {
-        self.draw_indexed_primitives_instance_count(
+        self.draw_indexed_primitives_index_type_index_count_instance_count(
             mtl::PrimitiveType::Triangle,
             index_range.len(),
             mtl::IndexType::U16,
             index_buffer,
-            index_range.start,
-            instance_count,
+            index_range.start * std::mem::size_of::<u16>(),
+            instance_range.len(),
+            0, // base vertex,
+            instance_range.start,
         );
     }
 
@@ -331,15 +354,17 @@ impl RenderCmdEncoder {
         &mut self,
         index_buffer: &mtl::Buf,
         index_range: &std::ops::Range<usize>,
-        instance_count: usize,
+        instance_range: &std::ops::Range<usize>,
     ) {
-        self.draw_indexed_primitives_instance_count(
+        self.draw_indexed_primitives_index_type_index_count_instance_count(
             mtl::PrimitiveType::Triangle,
             index_range.len(),
             mtl::IndexType::U32,
             index_buffer,
-            index_range.start,
-            instance_count,
+            index_range.start * std::mem::size_of::<u32>(),
+            instance_range.len(),
+            0, // base vertex,
+            instance_range.start,
         );
     }
 

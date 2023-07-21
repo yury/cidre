@@ -259,6 +259,11 @@ pub use pipeline::Mutability;
 pub use pipeline::PipelineBufferDescriptor;
 pub use pipeline::PipelineBufferDescriptorArray;
 
+mod capture_manager;
+pub use capture_manager::CaptureDescriptor;
+pub use capture_manager::CaptureDestination;
+pub use capture_manager::CaptureManager;
+
 #[macro_export]
 macro_rules! define_mtl {
     (device) => {
