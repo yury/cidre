@@ -42,6 +42,9 @@ Class MTL_PIPELINE_BUFFER_DESCRIPTOR;
 
 Class MTL_TILE_RENDER_PIPELINE_DESCRIPTOR;
 
+Class MTL_CAPTURE_DESCRIPTOR;
+Class MTL_CAPTURE_MANAGER;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -78,6 +81,9 @@ static void mtl_initializer(void)
       MTL_PIPELINE_BUFFER_DESCRIPTOR = [MTLPipelineBufferDescriptor class];
       
       MTL_TILE_RENDER_PIPELINE_DESCRIPTOR = [MTLTileRenderPipelineDescriptor class];
+      
+      MTL_CAPTURE_DESCRIPTOR = [MTLCaptureDescriptor class];
+      MTL_CAPTURE_MANAGER = [MTLCaptureManager class];
 
       initialized = 1;
     }
