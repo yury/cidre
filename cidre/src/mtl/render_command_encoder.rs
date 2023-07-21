@@ -302,20 +302,54 @@ impl RenderCmdEncoder {
     pub fn draw_indexed_primitives_instance_count(
         &mut self,
         primitive_type: mtl::PrimitiveType,
-        index_cound: usize,
+        index_count: usize,
         index_type: mtl::IndexType,
-        index_buffer: mtl::Buf,
+        index_buffer: &mtl::Buf,
         index_buffer_offset: usize,
         instance_count: usize,
     );
+
+    #[inline]
+    pub fn draw_indexed_triangles_u16(
+        &mut self,
+        index_buffer: &mtl::Buf,
+        index_range: &std::ops::Range<usize>,
+        instance_count: usize,
+    ) {
+        self.draw_indexed_primitives_instance_count(
+            mtl::PrimitiveType::Triangle,
+            index_range.len(),
+            mtl::IndexType::U16,
+            index_buffer,
+            index_range.start,
+            instance_count,
+        );
+    }
+
+    #[inline]
+    pub fn draw_indexed_triangles_u32(
+        &mut self,
+        index_buffer: &mtl::Buf,
+        index_range: &std::ops::Range<usize>,
+        instance_count: usize,
+    ) {
+        self.draw_indexed_primitives_instance_count(
+            mtl::PrimitiveType::Triangle,
+            index_range.len(),
+            mtl::IndexType::U32,
+            index_buffer,
+            index_range.start,
+            instance_count,
+        );
+    }
 
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:)]
     pub fn draw_indexed_primitives(
         &mut self,
         primitive_type: mtl::PrimitiveType,
-        index_cound: usize,
+        index_count: usize,
         index_type: mtl::IndexType,
-        index_buffer: mtl::Buf,
+        index_buffer: &mtl::Buf,
         index_buffer_offset: usize,
     );
 }
