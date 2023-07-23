@@ -119,6 +119,45 @@ impl f32x4x4 {
             f32x4::with_xyzw_f32(0.0, 0.0, 0.0, 1.0),
         ])
     }
+
+    #[inline]
+    pub fn tx(&self) -> f32 {
+        self[0].w()
+    }
+
+    #[inline]
+    pub fn set_tx(&mut self, value: f32) {
+        self[0].set_w(value)
+    }
+
+    #[inline]
+    pub fn ty(&self) -> f32 {
+        self[1].w()
+    }
+
+    #[inline]
+    pub fn set_ty(&mut self, value: f32) {
+        self[1].set_w(value)
+    }
+
+    #[inline]
+    pub fn tz(&self) -> f32 {
+        self[2].w()
+    }
+}
+
+impl std::ops::Index<usize> for f32x4x4 {
+    type Output = f32x4;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl std::ops::IndexMut<usize> for f32x4x4 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.0[index]
+    }
 }
 
 pub mod packed {

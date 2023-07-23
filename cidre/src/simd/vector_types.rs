@@ -1,3 +1,5 @@
+use std::hash::{Hash, Hasher};
+
 macro_rules! accessors {
     (x) => {
         #[inline]
@@ -108,13 +110,14 @@ macro_rules! accessors {
 }
 
 #[derive(Debug, Copy, Clone)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Simd<T, const LANES: usize, const N: usize>([T; LANES]);
 
 impl<T: PartialEq, const LANES: usize, const N: usize> PartialEq for Simd<T, LANES, N> {
     fn eq(&self, other: &Self) -> bool {
         for i in 0..N {
             if self.0[i] != other.0[i] {
+                // TODO: use abs
                 return false;
             }
         }
@@ -122,6 +125,13 @@ impl<T: PartialEq, const LANES: usize, const N: usize> PartialEq for Simd<T, LAN
     }
 }
 impl<const LANES: usize, const N: usize> Eq for Simd<f32, LANES, N> {}
+
+impl<const LANES: usize, const N: usize> Hash for Simd<f32, LANES, N> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        let s = format!("{self:?}");
+        s.hash(state);
+    }
+}
 
 impl<T: Copy> Simd<T, 1, 1> {
     #[inline]
