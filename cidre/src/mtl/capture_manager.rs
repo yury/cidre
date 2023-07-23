@@ -21,6 +21,12 @@ impl CaptureDescriptor {
 
     #[objc::msg_send(setDestination:)]
     pub fn set_dst(&self, value: CaptureDestination);
+
+    #[objc::msg_send(outputURL)]
+    pub fn output_url(&self) -> Option<&ns::URL>;
+
+    #[objc::msg_send(setOutputURL:)]
+    pub fn set_output_url(&mut self, value: Option<&ns::URL>);
 }
 
 define_obj_type!(CaptureManager(ns::Id));
