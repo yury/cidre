@@ -122,11 +122,17 @@ impl Descriptor {
     #[objc::msg_send(depthAttachment)]
     pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor;
 
+    #[objc::msg_send(depthAttachment)]
+    pub fn depth_attachment_mut(&mut self) -> &mut DepthAttachmentDescriptor;
+
     #[objc::msg_send(setDepthAttachment:)]
     pub fn set_depth_attachment(&mut self, value: Option<&DepthAttachmentDescriptor>);
 
     #[objc::msg_send(stencilAttachment)]
     pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor;
+
+    #[objc::msg_send(stencilAttachment)]
+    pub fn stencil_attachment_mut(&self) -> &mut StencilAttachmentDescriptor;
 
     #[objc::msg_send(setStencilAttachment:)]
     pub fn set_stencil_attachment_option(&mut self, value: Option<&StencilAttachmentDescriptor>);

@@ -120,4 +120,13 @@ pub enum PixelFormat {
 
     BGRA10XR = 552,
     BGRA10XRSRGB = 553,
+
+    Depth16Unorm = 250,
+    Depth32Float = 252,
+    Stencil8 = 253,
+    Depth24UnormStencil8 = 255,
+    Depth32FloatStencil8 = 260,
+
+    X32Stencil8 = 261,
+    X24Stencil8 = 262,
 }

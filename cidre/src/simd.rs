@@ -144,6 +144,11 @@ impl f32x4x4 {
     pub fn tz(&self) -> f32 {
         self[2].w()
     }
+
+    #[inline]
+    pub fn set_tz(&mut self, value: f32) {
+        self[2].set_w(value)
+    }
 }
 
 impl std::ops::Index<usize> for f32x4x4 {

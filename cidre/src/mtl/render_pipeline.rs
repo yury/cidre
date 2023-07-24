@@ -217,6 +217,18 @@ impl Descriptor {
 
     #[objc::msg_send(setRasterSampleCount:)]
     pub fn set_raster_sample_count(&mut self, value: usize);
+
+    #[objc::msg_send(depthAttachmentPixelFormat)]
+    pub fn depth_attachment_pixel_format(&self) -> PixelFormat;
+
+    #[objc::msg_send(setDepthAttachmentPixelFormat:)]
+    pub fn set_depth_attachment_pixel_format(&mut self, value: PixelFormat);
+
+    #[objc::msg_send(stencilAttachmentPixelFormat)]
+    pub fn stencil_attachment_pixel_format(&self) -> PixelFormat;
+
+    #[objc::msg_send(setStencilAttachmentPixelFormat:)]
+    pub fn set_stencil_attachment_pixel_format(&mut self, value: PixelFormat);
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
