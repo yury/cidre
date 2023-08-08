@@ -39,6 +39,10 @@ pub mod cg;
 #[cfg(feature = "cm")]
 pub mod cm;
 
+/// Core Motion
+#[cfg(feature = "core_motion")]
+pub mod core_motion;
+
 /// Core Video
 #[cfg(feature = "cv")]
 pub mod cv;

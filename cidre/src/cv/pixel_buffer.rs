@@ -138,15 +138,24 @@ impl PixelBuffer {
         unsafe { std::mem::transmute(CVPixelBufferGetIOSurface(self)) }
     }
 
-    /// Call to create a single cv::PixelBuffer for a passed-in IOSurface.
-    #[cfg(freature = "io")]
+    #[cfg(feature = "io")]
     #[inline]
-    pub fn create_in(
+    pub fn with_io_surface(
+        surface: &io::Surface,
+        pixel_buffer_attributes: Option<&cf::Dictionary>,
+    ) -> Result<arc::R<Self>, cv::Return> {
+        Self::with_io_surface_in(surface, pixel_buffer_attributes, None)
+    }
+
+    /// Call to create a single cv::PixelBuffer for a passed-in IOSurface.
+    #[cfg(feature = "io")]
+    #[inline]
+    pub fn with_io_surface_in(
         surface: &io::Surface,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, cv::Return> {
-        let mut butter = None;
+        let mut buffer = None;
         unsafe {
             let res = CVPixelBufferCreateWithIOSurface(
                 allocator,
@@ -155,7 +164,7 @@ impl PixelBuffer {
                 &mut buffer,
             );
             if res.is_ok() {
-                Ok(buffer.take_unchacked())
+                Ok(buffer.unwrap_unchecked())
             } else {
                 Err(res)
             }
@@ -270,7 +279,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         surface: &io::Surface,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: *mut Option<&cv::PixelBuffer>,
+        pixel_buffer_out: *mut Option<arc::R<cv::PixelBuffer>>,
     ) -> cv::Return;
 }
 

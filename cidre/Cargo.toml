@@ -40,7 +40,8 @@ full = [
   "sn",
   "ui",
   "io",
-  "nw"
+  "nw",
+  "core_motion"
 ]
 
 # Turn on private API
@@ -74,6 +75,7 @@ mlc = ["mtl"]
 mps = ["mtl"]
 mpsg = ["mps"]
 dispatch = ["cf", "ns"]
+core_motion = ["ns"]
 
 [dependencies]
 

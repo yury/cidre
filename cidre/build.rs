@@ -76,6 +76,7 @@ fn main() {
         "aarch64-apple-ios" => "iphoneos",
         "x86_64-apple-ios" | "aarch64-apple-ios-sim" => "iphonesimulator",
         "aarch64-apple-ios-macabi" => "maccatalyst",
+        "aarch64-apple-tvos" => "tvos",
         x => panic!("unknown tripple: {x}"),
     };
 
@@ -83,6 +84,7 @@ fn main() {
         "aarch64-apple-ios-macabi"
         | "aarch64-apple-darwin"
         | "aarch64-apple-ios"
+        | "aarch64-apple-tvos"
         | "aarch64-apple-ios-sim" => "arm64",
         "x86_64-apple-ios" | "x86_64-apple-darwin" => "x86_64",
         x => panic!("unknown tripple: {x}"),
