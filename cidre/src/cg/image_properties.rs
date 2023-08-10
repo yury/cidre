@@ -27,3 +27,9 @@ pub enum Orientation {
     /// 0th row on left,   0th column at bottom - 90 deg CCW
     Left,
 }
+
+impl Default for Orientation {
+    fn default() -> Self {
+        Self::Up
+    }
+}
