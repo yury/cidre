@@ -100,6 +100,10 @@ cidre_create_observer(
   return [[CidreObserver alloc] initWithObject:obj keyPath:keyPath options:options context:context fnPtr:fn_ptr];
 }
 
+void cidre_log(NSString * str) {
+  NSLog(@"%@", str);
+}
+
 
 __attribute__((constructor))
 static void common_initializer(void)

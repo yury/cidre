@@ -203,6 +203,12 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_32BGRA")]
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
 
+    #[doc(alias = "kCVPixelFormatType_Lossless_32BGRA")]
+    pub const LOSSLESS_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"&GRA"));
+
+    #[doc(alias = "kCVPixelFormatType_Lossy_32BGRA")]
+    pub const LOSSY_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"-GRA"));
+
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
     pub const _420V: Self = Self(os::Type::from_be_bytes(*b"420v"));
     // TODO: how we can optimize that agly long consts?

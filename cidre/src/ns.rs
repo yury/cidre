@@ -174,3 +174,23 @@ pub use key_value_observing::KVObserverRegistrationImpl;
 pub use key_value_observing::KVObserving;
 pub use key_value_observing::KVSetMutationKind;
 pub use key_value_observing::Observer;
+
+pub fn log(str: &crate::ns::String) {
+    unsafe {
+        cidre_log(str);
+    }
+}
+
+#[macro_export]
+macro_rules! ns_log {
+    ($($arg:tt)*) => {{
+        let rstr = format!("{}",format_args!($($arg)*));
+        let ns_str = $crate::ns::String::with_str_no_copy(&rstr);
+        $crate::ns::log(ns_str.as_ref());
+    }};
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    fn cidre_log(str: &crate::ns::String);
+}
