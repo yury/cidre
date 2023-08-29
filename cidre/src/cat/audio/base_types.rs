@@ -699,7 +699,7 @@ pub struct ClassDescription {
 }
 
 /// A tag identifying how the channel is to be used.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default, Copy, Clone)]
 #[repr(transparent)]
 pub struct ChannelLabel(pub u32);
 
@@ -852,7 +852,7 @@ impl ChannelLabel {
 
 /// These constants are for use in the mChannelBitmap field of an
 /// AudioChannelLayout structure
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Default)]
 #[repr(transparent)]
 pub struct ChannelBitmap(pub u32);
 
@@ -1382,10 +1382,18 @@ impl ChannelLayoutTag {
 
     /// needs to be ORed with the actual number of channels
     pub const UNKNOWN: Self = Self(0xFFFF0000);
+
+    /// The low 16 bits of an AudioChannelLayoutTag gives the number of channels except
+    /// for `kAudioChannelLayoutTag_UseChannelDescriptions` and
+    /// `kAudioChannelLayoutTag_UseChannelBitmap`
+    #[inline]
+    pub fn number_of_channels(&self) -> u32 {
+        self.0 & 0x0000FFFF
+    }
 }
 
 /// This structure describes a single channel.
-#[derive(Debug)]
+#[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
 pub struct ChannelDescription {
     /// The AudioChannelLabel that describes the channel.

@@ -873,6 +873,7 @@ impl Codec {
     pub fn set_current_target_bit_rate(&mut self, value: u32) -> Result<(), os::Status> {
         unsafe { self.set_prop(InstancePropertyID::CURRENT_TARGET_BIT_RATE.0, &value) }
     }
+
     #[inline]
     pub fn current_target_bit_rate(&self) -> Result<u32, os::Status> {
         let (mut size, mut value) = (4u32, 0u32);
@@ -880,6 +881,116 @@ impl Codec {
             AudioCodecGetProperty(
                 self,
                 InstancePropertyID::CURRENT_TARGET_BIT_RATE.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(value)
+        }
+    }
+
+    /// A f64 containing the current input sample rate in Hz. No Default.
+    /// May be writable. If only one sample rate is supported it does not have to be.
+    #[inline]
+    pub fn set_current_input_sample_rate(&mut self, value: f64) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstancePropertyID::CURRENT_INPUT_SAMPLE_RATE.0, &value) }
+    }
+
+    #[inline]
+    pub fn current_input_sample_rate(&self) -> Result<f64, os::Status> {
+        let (mut size, mut value) = (8u32, 0f64);
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::CURRENT_INPUT_SAMPLE_RATE.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(value)
+        }
+    }
+
+    #[inline]
+    pub fn set_current_output_sample_rate(&mut self, value: f64) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstancePropertyID::CURRENT_OUTPUT_SAMPLE_RATE.0, &value) }
+    }
+
+    /// A f64 containing the current output sample rate in Hz. No Default.
+    /// May be writable. If only one sample rate is supported it does not have to be.
+    #[inline]
+    pub fn current_output_sample_rate(&self) -> Result<f64, os::Status> {
+        let (mut size, mut value) = (8u32, 0f64);
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::CURRENT_OUTPUT_SAMPLE_RATE.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(value)
+        }
+    }
+
+    #[inline]
+    pub fn set_current_input_channel_layout<const N: usize>(
+        &mut self,
+        value: &audio::ChannelLayout<N>,
+    ) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstancePropertyID::CURRENT_INPUT_CHANNEL_LAYOUT.0, value) }
+    }
+
+    #[inline]
+    pub fn current_input_channel_layout<const N: usize>(
+        &self,
+    ) -> Result<audio::ChannelLayout<N>, os::Status> {
+        let (mut size, mut value) = (
+            std::mem::size_of::<audio::ChannelLayout<N>>() as u32,
+            audio::ChannelLayout {
+                channel_layout_tag: audio::ChannelLayoutTag::MONO,
+                channel_bitmap: audio::ChannelBitmap::CENTER,
+                number_channel_descriptions: N as _,
+                channel_descriptions: [audio::ChannelDescription::default(); N],
+            },
+        );
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::CURRENT_INPUT_CHANNEL_LAYOUT.0,
+                &mut size,
+                &mut value as *mut _ as _,
+            )
+            .result()?;
+            Ok(value)
+        }
+    }
+
+    #[inline]
+    pub fn set_current_output_channel_layout<const N: usize>(
+        &mut self,
+        value: &audio::ChannelLayout<N>,
+    ) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstancePropertyID::CURRENT_OUTPUT_CHANNEL_LAYOUT.0, value) }
+    }
+
+    #[inline]
+    pub fn current_output_channel_layout<const N: usize>(
+        &self,
+    ) -> Result<audio::ChannelLayout<N>, os::Status> {
+        let (mut size, mut value) = (
+            std::mem::size_of::<audio::ChannelLayout<N>>() as u32,
+            audio::ChannelLayout {
+                channel_layout_tag: audio::ChannelLayoutTag::MONO,
+                channel_bitmap: audio::ChannelBitmap::CENTER,
+                number_channel_descriptions: N as _,
+                channel_descriptions: [audio::ChannelDescription::default(); N],
+            },
+        );
+        unsafe {
+            AudioCodecGetProperty(
+                self,
+                InstancePropertyID::CURRENT_OUTPUT_CHANNEL_LAYOUT.0,
                 &mut size,
                 &mut value as *mut _ as _,
             )
@@ -901,6 +1012,11 @@ impl Codec {
     #[inline]
     pub fn recommended_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
         unsafe { self.prop_vec(InstancePropertyID::RECOMMENDED_BIT_RATE_RANGE.0) }
+    }
+
+    #[inline]
+    pub fn applicable_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        unsafe { self.prop_vec(InstancePropertyID::APPLICABLE_BIT_RATE_RANGE.0) }
     }
 
     #[inline]
