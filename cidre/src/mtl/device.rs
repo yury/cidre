@@ -219,7 +219,7 @@ impl Device {
     pub fn new_buf_of<T: Sized>(
         &self,
         len: usize,
-        options: mtl::ResouceOptions,
+        options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buf>> {
         self.new_buf(std::mem::size_of::<T>() * len, options)
     }
@@ -249,7 +249,7 @@ impl Device {
     pub fn new_buf_from_vec<T: Sized>(
         &self,
         vec: Vec<T>,
-        options: mtl::ResouceOptions,
+        options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buf>> {
         self.new_buf_with_slice(&vec, options)
     }

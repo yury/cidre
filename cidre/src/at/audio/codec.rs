@@ -1,5 +1,7 @@
 use crate::{at::audio, os};
 
+use super::ComponentInstanceRef;
+
 /// AudioCodec components translate audio data from one format to another. There
 /// are three kinds of AudioCodec components. Decoder components ('adec')
 /// translate data that isn't in linear PCM into linear PCM formatted data.
@@ -519,6 +521,14 @@ impl Drop for CodecRef {
     fn drop(&mut self) {
         let res = unsafe { self.0.uninitialize() };
         debug_assert!(res.is_ok());
+    }
+}
+
+impl std::ops::Deref for CodecRef {
+    type Target = ComponentInstanceRef;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

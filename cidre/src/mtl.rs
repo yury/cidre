@@ -34,7 +34,7 @@ pub use argument::TextureReferenceType;
 pub use argument::Type as ArgumentType;
 
 mod resource;
-pub use resource::Options as ResouceOptions;
+pub use resource::Options as ResourceOptions;
 pub use resource::Resource;
 
 pub use resource::CPUCacheMode;
@@ -42,7 +42,6 @@ pub use resource::HazardTrackingMode;
 pub use resource::PurgableState;
 pub use resource::StorageMode;
 
-pub use resource::Options as ResourceOptions;
 pub use resource::CPU_CACHE_MODE_MASK;
 pub use resource::CPU_CACHE_MODE_SHIFT;
 pub use resource::HAZARD_TRACKING_MODE_MASK;

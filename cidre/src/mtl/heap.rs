@@ -107,7 +107,7 @@ impl Heap {
     pub fn new_buf_with_offset(
         &self,
         length: usize,
-        options: mtl::ResouceOptions,
+        options: mtl::ResourceOptions,
         offset: usize,
     ) -> Option<arc::R<mtl::Buf>>;
 
