@@ -377,4 +377,28 @@ impl RenderCmdEncoder {
         index_buffer: &mtl::Buf,
         index_buffer_offset: usize,
     );
+
+    #[objc::msg_send(dispatchThreadsPerTile:)]
+    pub fn dispatch_threads_per_tile(&self, threads_per_tile: mtl::Size);
+
+    #[objc::msg_send(tileWidth)]
+    pub fn tile_width(&self) -> usize;
+
+    #[objc::msg_send(tileHeight)]
+    pub fn tile_height(&self) -> usize;
+
+    #[objc::msg_send(setTileTexture:atIndex:)]
+    pub fn set_tile_texture_at(&mut self, texture: Option<&mtl::Texture>, index: usize);
+
+    #[objc::msg_send(setTileTextures:withRange:)]
+    pub fn set_tile_textures_with_range(
+        &mut self,
+        ptr: *const Option<&mtl::Texture>,
+        range: ns::Range,
+    );
+
+    #[inline]
+    pub fn set_tile_textures(&mut self, textures: &[Option<&mtl::Texture>]) {
+        self.set_tile_textures_with_range(textures.as_ptr(), ns::Range::new(0, textures.len()));
+    }
 }

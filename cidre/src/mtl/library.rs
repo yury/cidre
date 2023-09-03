@@ -196,6 +196,10 @@ impl Lib {
     #[objc::msg_send(newFunctionWithName:)]
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
 
+    pub fn new_fn_str(&self, name: &str) -> Option<arc::R<Fn>> {
+        self.new_fn(ns::String::with_str_no_copy(name).as_ref())
+    }
+
     /// # Safety
     /// Use new_fn_const_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]

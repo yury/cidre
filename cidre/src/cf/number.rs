@@ -369,6 +369,13 @@ impl Number {
         }
     }
 
+    #[inline]
+    pub fn from_usize(value: usize) -> arc::R<Self> {
+        unsafe {
+            Self::create_in(NumberType::I64, &value as *const _ as _, None).unwrap_unchecked()
+        }
+    }
+
     /// ```
     /// use cidre::cf;
     ///

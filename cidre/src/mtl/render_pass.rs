@@ -169,6 +169,12 @@ impl Descriptor {
 
     #[objc::msg_send(setDefaultRasterSampleCount:)]
     pub fn set_default_raster_sample_count(&mut self, value: usize);
+
+    #[objc::msg_send(imageblockSampleLength)]
+    pub fn imageblock_sample_length(&self);
+
+    #[objc::msg_send(setImageblockSampleLength:)]
+    pub fn set_imageblock_sample_length(&self, value: usize);
 }
 
 define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
