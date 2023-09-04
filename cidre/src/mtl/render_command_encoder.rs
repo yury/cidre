@@ -248,6 +248,22 @@ impl RenderCmdEncoder {
     #[objc::msg_send(setVertexBufferOffset:atIndex:)]
     pub fn set_vertex_buf_offset_at(&mut self, offset: usize, index: usize);
 
+    #[objc::msg_send(setVertexBuffers:offsets:withRange:)]
+    pub fn set_vertex_buffers_offsets_with_range(
+        &mut self,
+        buffers: *const &mtl::Buf,
+        offsets: *const usize,
+        range: ns::Range,
+    );
+
+    pub fn set_vertex_bufs<const N: usize>(&mut self, bufs: &[&mtl::Buf; N]) {
+        self.set_vertex_buffers_offsets_with_range(
+            bufs.as_ptr(),
+            [0; N].as_ptr(),
+            ns::Range::new(0, N),
+        )
+    }
+
     /// Set a global sampler for all vertex shaders at the given bind point index.
     #[objc::msg_send(setVertexSamplerState:atIndex:)]
     pub fn set_vertex_sampler_state_at(
