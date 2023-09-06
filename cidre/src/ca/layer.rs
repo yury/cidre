@@ -1,4 +1,6 @@
-use crate::{arc, ca, cg, define_obj_type, define_options, ns, objc};
+use ns::Id;
+
+use crate::{arc, ca, cf, cg, define_obj_type, define_options, ns, objc};
 
 define_obj_type!(ContentsGravity(ns::String));
 define_obj_type!(ContentsFormat(ns::String));
@@ -114,6 +116,15 @@ impl Layer {
 
     #[objc::msg_send(animationKeys)]
     pub fn animation_keys(&self) -> Option<&ns::Array<ns::String>>;
+
+    #[objc::msg_send(contents)]
+    pub fn contents(&self) -> Option<&Id>;
+
+    #[objc::msg_send(setContents:)]
+    pub fn set_ns_contents(&mut self, contents: Option<&ns::Id>);
+
+    #[objc::msg_send(setContents:)]
+    pub fn set_cf_contents(&mut self, contents: Option<&cf::Type>);
 }
 
 #[link(name = "ca", kind = "static")]
