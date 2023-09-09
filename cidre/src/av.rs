@@ -113,6 +113,8 @@ pub use video::CodecType as VideoCodecType;
 
 pub mod sample_buffer;
 pub use sample_buffer::DisplayLayer as SampleBufferDisplayLayer;
+pub use sample_buffer::QueuedSampleBufferRendering;
 pub use sample_buffer::VideoRenderer as SampleBufferVideoRenderer;
+pub use sample_buffer::QueuedSampleBufferRenderingStatus;
 
 mod time;
