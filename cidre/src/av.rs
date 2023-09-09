@@ -1,3 +1,6 @@
+pub mod animation;
+pub use animation::LayerVideoGravity;
+
 pub mod media_format;
 pub use media_format::FileType;
 pub use media_format::FileTypeProfile;
@@ -107,5 +110,9 @@ pub use audio::SpeechUtterance;
 pub mod video;
 pub use video::settings_keys as video_settings_keys;
 pub use video::CodecType as VideoCodecType;
+
+pub mod sample_buffer;
+pub use sample_buffer::DisplayLayer as SampleBufferDisplayLayer;
+pub use sample_buffer::VideoRenderer as SampleBufferVideoRenderer;
 
 mod time;

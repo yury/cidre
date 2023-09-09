@@ -19,6 +19,7 @@ Class CA_MEDIA_TIMING_FUNCTION;
 Class CA_LAYER;
 Class CA_METAL_LAYER;
 Class CA_RENDERER;
+Class CA_TRANSACTION;
 
 __attribute__((constructor))
 static void ca_initializer(void)
@@ -27,13 +28,11 @@ static void ca_initializer(void)
   if (!initialized) {
     CA_ANIMATION = [CAAnimation class];
     CA_MEDIA_TIMING_FUNCTION = [CAMediaTimingFunction class];
-#ifdef TARGET_OS_MAC
-#else
     CA_DISPLAY_LINK = [CADisplayLink class];
-#endif
     CA_LAYER = [CALayer class];
     CA_METAL_LAYER = [CAMetalLayer class];
     CA_RENDERER = [CARenderer class];
+    CA_TRANSACTION = [CATransaction class];
     
     initialized = 1;
   }

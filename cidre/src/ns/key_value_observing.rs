@@ -142,6 +142,7 @@ pub trait KVObserverRegistration {
         for_key_path: &ns::String,
         context: *mut c_void,
     );
+
     #[objc::msg_send(removeObserver:forKeyPath:)]
     fn remove_observer(&mut self, observer: &ns::Id, for_key_path: &ns::String);
 }

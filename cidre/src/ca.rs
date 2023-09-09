@@ -36,3 +36,6 @@ pub use metal_layer::MetalLayer;
 mod renderer;
 pub use renderer::OptionKey as RendererOptionKey;
 pub use renderer::Renderer;
+
+mod transaction;
+pub use transaction::Transaction;

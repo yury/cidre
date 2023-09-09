@@ -45,6 +45,9 @@ Class AV_AUDIO_FORMAT;
 
 Class AV_PLAYER;
 
+Class AV_SAMPLE_BUFFER_DISPLAY_LAYER;
+Class AV_SAMPLE_BUFFER_VIDEO_RENDERER;
+
 __attribute__((constructor))
 static void av_initializer(void)
 {
@@ -84,6 +87,9 @@ static void av_initializer(void)
     AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
     
     AV_PLAYER = [AVPlayer class];
+
+    AV_SAMPLE_BUFFER_DISPLAY_LAYER = [AVSampleBufferDisplayLayer class];
+    AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
     
     initialized = 1;
   }

@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 
 /// This is all dirty hacks. We need to reimplement it with syn and quote
-use proc_macro::{Group, TokenStream, TokenTree};
+use proc_macro::{Delimiter, Group, TokenStream, TokenTree};
 
 enum ObjcAttr {
     Optional,
@@ -171,6 +171,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let mut trait_name = Cow::Borrowed("");
     let mut expect_trait_name = false;
     let mut is_optional = false;
+    let mut skip = false;
     let mut sel = "".to_string();
     let mut fn_name; // = "".to_string();
     let mut generics = Vec::new();
@@ -218,7 +219,9 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                             result.push(tt);
                                             break;
                                         }
-                                        TokenTree::Group(ref g) => {
+                                        TokenTree::Group(ref g)
+                                            if g.delimiter() == Delimiter::Brace =>
+                                        {
                                             fn_body = Cow::Owned(g.to_string());
                                             break;
                                         }
@@ -247,8 +250,12 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 };
 
                                 if is_optional && !sel.is_empty() && fn_body.is_empty() {
-                                    result.pop(); // remove ;
+                                    result.pop(); // remove ';'
                                     fn_body = Cow::Borrowed("{ unimplemented!() }");
+                                }
+
+                                if !is_optional && sel.is_empty() {
+                                    skip = true;
                                 }
 
                                 let ret = if result.is_empty() {
@@ -269,17 +276,26 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                     )
                                 };
 
-                                fn_names.push(fn_name.clone());
+                                let impl_fn = if skip {
+                                    format!(
+                                        "
+    {ext}fn {fn_name}{gen}{fn_args_str}{ret} {fn_body}
 
-                                let impl_fn = format!(
                                     "
+                                    )
+                                } else {
+                                    fn_names.push(fn_name.clone());
+                                    format!(
+                                        "
     {ext}fn impl_{fn_name}{gen}{fn_args_str}{ret} {fn_body}
 
                                     "
-                                );
+                                    )
+                                };
+
                                 impl_trait_functions.push(impl_fn);
 
-                                if !is_optional {
+                                if !is_optional && !skip {
                                     let impl_sel = format!(
                                         "
     fn sel_{fn_name}() -> Option<&'static objc::Sel> {{ {register_sel} }}
@@ -293,6 +309,8 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 fn_name.clear();
                                 fn_body = Cow::Borrowed("");
                                 fn_args_str.clear();
+                                generics.clear();
+                                skip = false;
                                 //fn_args.clear();
                                 result.clear();
                             }
@@ -311,7 +329,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                     None => continue,
                                 }
                             }
-                            _ => panic!("other char {p}"),
+                            _ => panic!("other char '{p}'"),
                         },
                         TokenTree::Literal(l) => println!("lit {l}"),
                     }
@@ -352,8 +370,6 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     {fns}
     {add_methods}
 }}
-
-// impl {trait_name} for objc::Any {{}}
         "
     );
 
@@ -401,7 +417,7 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
                     match tt {
                         TokenTree::Ident(i) if i.to_string().eq("fn") => {
                             let Some(TokenTree::Ident(f)) = body.next() else {
-                              panic!("expected function name");
+                                panic!("expected function name");
                             };
                             fns.push(f.to_string().replacen("impl_", "", 1));
                         }
