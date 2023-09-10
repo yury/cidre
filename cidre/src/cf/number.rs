@@ -1,4 +1,4 @@
-use crate::{arc, define_cf_type, FourCharCode};
+use crate::{arc, cf, define_cf_type, FourCharCode};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -51,6 +51,11 @@ impl Boolean {
     #[inline]
     pub fn value_false() -> &'static Boolean {
         unsafe { kCFBooleanFalse }
+    }
+
+    #[inline]
+    pub fn as_prop_list(&self) -> &cf::PropertyList {
+        unsafe { std::mem::transmute(self) }
     }
 }
 

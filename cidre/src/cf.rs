@@ -46,6 +46,7 @@ pub use dictionary::ApplierFunction as DictionaryApplierFunction;
 pub use dictionary::Dictionary;
 pub use dictionary::DictionaryMut;
 pub use dictionary::DictionaryOf;
+pub use dictionary::DictionaryOfMut;
 pub use dictionary::KeyCallBacks as DictionaryKeyCallBacks;
 pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
 

@@ -479,6 +479,20 @@ where
 #[repr(transparent)]
 pub struct DictionaryOfMut<K, V>(DictionaryMut, PhantomData<(K, V)>);
 
+impl<K, V> DictionaryOfMut<K, V>
+where
+    K: arc::Retain,
+    V: arc::Retain,
+{
+    pub fn insert(&mut self, key: &K, value: &V) {
+        unsafe { CFDictionarySetValue(&mut self.0, key as *const _ as _, value as *const _ as _) }
+    }
+
+    pub fn remove(&mut self, key: &K) {
+        unsafe { CFDictionaryRemoveValue(&mut self.0, key as *const _ as _) }
+    }
+}
+
 impl<K, V> DictionaryOf<K, V>
 where
     K: arc::Retain,
@@ -501,6 +515,26 @@ where
 
             transmute(dict)
         }
+    }
+}
+
+impl<K, V> arc::Release for DictionaryOfMut<K, V>
+where
+    K: arc::Release,
+    V: arc::Release,
+{
+    unsafe fn release(&mut self) {
+        self.0.release()
+    }
+}
+
+impl<K, V> arc::Retain for DictionaryOfMut<K, V>
+where
+    K: arc::Retain,
+    V: arc::Retain,
+{
+    fn retained(&self) -> arc::Retained<Self> {
+        unsafe { std::mem::transmute(self.0.retained()) }
     }
 }
 

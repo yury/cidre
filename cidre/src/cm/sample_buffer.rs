@@ -284,6 +284,20 @@ impl SampleBuffer {
         &self,
         create_if_necessary: bool,
     ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropertyList>>> {
+        unsafe {
+            std::mem::transmute(CMSampleBufferGetSampleAttachmentsArray(
+                self,
+                create_if_necessary,
+            ))
+        }
+    }
+
+    #[doc(alias = "CMSampleBufferGetSampleAttachmentsArray")]
+    #[inline]
+    pub fn attachments_mut(
+        &mut self,
+        create_if_necessary: bool,
+    ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>> {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 
@@ -519,7 +533,7 @@ extern "C" {
     fn CMSampleBufferGetSampleAttachmentsArray(
         sbuf: &SampleBuffer,
         create_if_necessary: bool,
-    ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropertyList>>>;
+    ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>>;
 
     fn CMSampleBufferIsValid(sbuf: &SampleBuffer) -> bool;
 
