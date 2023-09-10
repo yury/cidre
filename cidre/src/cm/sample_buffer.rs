@@ -18,7 +18,7 @@ impl Flags {
 pub type SampleBufferMakeDataReadyCallback =
     extern "C" fn(sbuf: &SampleBuffer, make_data_ready_refcon: *const c_void);
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 #[repr(C)]
 pub struct SampleTimingInfo {
     /// The duration of the sample. If a single struct applies to
@@ -181,8 +181,8 @@ impl SampleBuffer {
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDescription,
         sample_timing: &SampleTimingInfo,
-        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
-    ) -> os::Status {
+    ) -> Result<arc::R<SampleBuffer>, os::Status> {
+        let mut result = None;
         unsafe {
             CMSampleBufferCreateForImageBuffer(
                 allocator,
@@ -192,8 +192,9 @@ impl SampleBuffer {
                 make_data_ready_refcon,
                 format_description,
                 sample_timing,
-                sample_buffer_out,
+                &mut result,
             )
+            .to_result_unchecked(result)
         }
     }
 
