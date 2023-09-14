@@ -18,10 +18,10 @@ impl Transaction {
     pub fn unlock();
 
     #[objc::cls_msg_send(disableActions)]
-    pub fn disable_action() -> bool;
+    pub fn disable_actions() -> bool;
 
     #[objc::cls_msg_send(setDisableActions:)]
-    pub fn set_disable_action(value: bool);
+    pub fn set_disable_actions(value: bool);
 
     #[inline]
     pub fn perform<R, F: FnMut() -> R>(mut f: F) -> R {
@@ -29,6 +29,13 @@ impl Transaction {
         let r = f();
         Self::commit();
         r
+    }
+    #[inline]
+    pub fn perform_with_disabled_actions<R, F: FnMut() -> R>(mut f: F) -> R {
+        Self::perform(|| {
+            Self::set_disable_actions(true);
+            f()
+        })
     }
 }
 
