@@ -17,6 +17,12 @@ impl Transaction {
     #[objc::cls_msg_send(unlock)]
     pub fn unlock();
 
+    #[objc::cls_msg_send(disableActions)]
+    pub fn disable_action() -> bool;
+
+    #[objc::cls_msg_send(setDisableActions:)]
+    pub fn set_disable_action(value: bool);
+
     #[inline]
     pub fn perform<R, F: FnMut() -> R>(mut f: F) -> R {
         Self::begin();
