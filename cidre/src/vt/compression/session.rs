@@ -90,7 +90,7 @@ impl Session {
     #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
     pub unsafe fn prepare_to_encode_frames(&mut self) -> os::Status {
-        unsafe { VTCompressionSessionPrepareToEncodeFrames(self) }
+        VTCompressionSessionPrepareToEncodeFrames(self)
     }
 
     /// Encoded frames may or may not be output before the function returns.
@@ -102,7 +102,7 @@ impl Session {
     #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn encode_frame(
-        &self,
+        &mut self,
         image_buffer: &cv::ImageBuffer,
         pts: cm::Time,
         duration: cm::Time,
@@ -120,6 +120,27 @@ impl Session {
                 source_frame_ref_con,
                 info_flags_out,
             )
+        }
+    }
+
+    #[inline]
+    pub fn enc_frame(
+        &mut self,
+        image_buffer: &cv::ImageBuffer,
+        pts: cm::Time,
+        duration: cm::Time,
+        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            self.encode_frame(
+                image_buffer,
+                pts,
+                duration,
+                None,
+                std::ptr::null_mut(),
+                info_flags_out,
+            )
+            .to_result_unchecked(Some(()))
         }
     }
 
