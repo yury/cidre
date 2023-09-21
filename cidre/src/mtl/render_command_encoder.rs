@@ -42,31 +42,48 @@ pub struct ScissorRect {
     pub height: usize,
 }
 
+/// A 3D rectangular region for the viewport clipping.
 #[derive(Debug, PartialEq)]
 #[repr(C)]
 pub struct ViewPort {
+    /// The x coordinate of the upper-left corner of the viewport.
     pub x: f64,
+    /// The y coordinate of the upper-left corner of the viewport.
     pub y: f64,
+    /// The width of the viewport, in pixels.
     pub width: f64,
+    /// The height of the viewport, in pixels.
     pub height: f64,
+    /// The z coordinate of the near clipping plane of the viewport.
     pub z_near: f64,
+    /// The z coordinate of the far clipping plane of the viewport.
     pub z_far: f64,
 }
 
+/// The mode that determines whether to perform culling and which type of primitive to cull.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum CullMode {
+    /// Does not cull any primitives.
     None = 0,
+
+    /// Culls front-facing primitives.
     Front = 1,
+
+    /// Culls back-facing primitives.
     Back = 2,
 }
 
+/// The vertex winding rule that determines a front-facing primitive.
+#[doc(alias = "MTLWinding")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum Winding {
-    /// ClockWise
+    /// Primitives whose vertices are specified in clockwise order are front-facing.
+    #[doc(alias = "MTLWindingClockwise")]
     CW = 0,
-    /// CounterClockWise
+    /// Primitives whose vertices are specified in counter-clockwise order are front-facing.
+    #[doc(alias = "MTLWindingCounterClockwise")]
     CCW = 1,
 }
 
@@ -93,6 +110,7 @@ pub struct DrawPrimitivesIndirectArguments {
     pub base_instance: u32,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct DrawIndexedPrimitivesIndirectArguments {
     pub index_count: u32,
@@ -118,6 +136,7 @@ pub struct DrawPatchIndirectArguments {
     pub base_instance: u32,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct QuadTessellationFactorsHalf {
     /* NOTE: edgeTessellationFactor and insideTessellationFactor are interpreted as half (16-bit floats) */
@@ -125,6 +144,7 @@ pub struct QuadTessellationFactorsHalf {
     pub inside_tessellation_factor: [u16; 2],
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct TriangleTessellationFactorsHalf {
     /* NOTE: edgeTessellationFactor and insideTessellationFactor are interpreted as half (16-bit floats) */
@@ -133,6 +153,7 @@ pub struct TriangleTessellationFactorsHalf {
 }
 
 define_options!(RenderStages(usize));
+
 impl RenderStages {
     pub const VERTEX: Self = Self(1usize << 0);
     pub const FRAGMENT: Self = Self(1usize << 1);

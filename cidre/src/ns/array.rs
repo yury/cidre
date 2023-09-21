@@ -37,6 +37,7 @@ impl<T: Obj> Deref for ArrayMut<T> {
         &self.0
     }
 }
+
 impl<T: Obj> std::ops::DerefMut for ArrayMut<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
