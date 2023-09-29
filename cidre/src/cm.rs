@@ -55,5 +55,9 @@ pub mod memory_pool;
 pub use memory_pool::keys as memory_pool_options;
 pub use memory_pool::MemoryPool;
 
+pub mod simple_queue;
+pub use simple_queue::Error as SimpleQueueError;
+pub use simple_queue::SimpleQueue;
+
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C" {}
