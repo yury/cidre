@@ -37,28 +37,28 @@ static void mlc_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
-      
-      MLC_DEVICE = [MLCDevice class];
-      MLC_GRAPH = [MLCGraph class];
-      MLC_ACTIVATION_DESCRIPTOR = [MLCActivationDescriptor class];
-//      MLC_LAYER = [MLCLayer class];
-      MLC_ACTIVATION_LAYER = [MLCActivationLayer class];
-      MLC_OPTIMIZER_DESCRIPTOR = [MLCOptimizerDescriptor class];
-      MLC_ADAM_OPTIMIZER = [MLCAdamOptimizer class];
-      MLC_ADAMW_OPTIMIZER = [MLCAdamWOptimizer class];
-      MLC_ARITHMETIC_LAYER = [MLCArithmeticLayer class];
-      MLC_BATCH_NORMALIZATION_LAYER = [MLCBatchNormalizationLayer class];
-      MLC_TENSOR_DESCRIPTOR = [MLCTensorDescriptor class];
-      MLC_TENSOR_PARAMETER = [MLCTensorParameter class];
-      MLC_TENSOR_DATA = [MLCTensorData class];
-      MLC_TENSOR = [MLCTensor class];
-      MLC_GRAPH = [MLCGraph class];
-      MLC_MATMUL_DESCRIPTOR = [MLCMatMulDescriptor class];
-      MLC_MATMUL_LAYER = [MLCMatMulLayer class];
-      MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
-      MLC_TRAINING_GRAPH = [MLCTrainingGraph class];
-
-      initialized = 1;
+        
+        MLC_DEVICE = [MLCDevice class];
+        MLC_GRAPH = [MLCGraph class];
+        MLC_ACTIVATION_DESCRIPTOR = [MLCActivationDescriptor class];
+        //      MLC_LAYER = [MLCLayer class];
+        MLC_ACTIVATION_LAYER = [MLCActivationLayer class];
+        MLC_OPTIMIZER_DESCRIPTOR = [MLCOptimizerDescriptor class];
+        MLC_ADAM_OPTIMIZER = [MLCAdamOptimizer class];
+        MLC_ADAMW_OPTIMIZER = [MLCAdamWOptimizer class];
+        MLC_ARITHMETIC_LAYER = [MLCArithmeticLayer class];
+        MLC_BATCH_NORMALIZATION_LAYER = [MLCBatchNormalizationLayer class];
+        MLC_TENSOR_DESCRIPTOR = [MLCTensorDescriptor class];
+        MLC_TENSOR_PARAMETER = [MLCTensorParameter class];
+        MLC_TENSOR_DATA = [MLCTensorData class];
+        MLC_TENSOR = [MLCTensor class];
+        MLC_GRAPH = [MLCGraph class];
+        MLC_MATMUL_DESCRIPTOR = [MLCMatMulDescriptor class];
+        MLC_MATMUL_LAYER = [MLCMatMulLayer class];
+        MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
+        MLC_TRAINING_GRAPH = [MLCTrainingGraph class];
+        
+        initialized = 1;
     }
 }
 

@@ -17,14 +17,14 @@ Class MPS_NDARRAY;
 __attribute__((constructor))
 static void mps_initializer(void)
 {
-  static int initialized = 0;
-  if (!initialized) {
-    
-    MPS_NDARRAY_DESCRIPTOR = [MPSNDArrayDescriptor class];
-    MPS_NDARRAY = [MPSNDArray class];
-
-    initialized = 1;
-  }
+    static int initialized = 0;
+    if (!initialized) {
+        
+        MPS_NDARRAY_DESCRIPTOR = [MPSNDArrayDescriptor class];
+        MPS_NDARRAY = [MPSNDArray class];
+        
+        initialized = 1;
+    }
 }
 
 

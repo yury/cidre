@@ -17,13 +17,13 @@ Class CI_CONTEXT;
 __attribute__((constructor))
 static void ci_initializer(void)
 {
-  static int initialized = 0;
-  if (!initialized) {
-    CI_IMAGE = [CIImage class];
-    CI_CONTEXT = [CIContext class];
-    
-    initialized = 1;
-  }
+    static int initialized = 0;
+    if (!initialized) {
+        CI_IMAGE = [CIImage class];
+        CI_CONTEXT = [CIContext class];
+        
+        initialized = 1;
+    }
 }
 
 NS_ASSUME_NONNULL_END

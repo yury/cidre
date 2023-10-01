@@ -19,16 +19,16 @@ Class SC_SHAREABLE_CONTENT;
 __attribute__((constructor))
 static void mtl_initializer(void)
 {
-  static int initialized = 0;
-  if (!initialized) {
-
-    SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
-    SC_CONTENT_FILTER = [SCContentFilter class];
-    SC_STREAM = [SCStream class];
-    SC_SHAREABLE_CONTENT = [SCShareableContent class];
-
-    initialized = 1;
-  }
+    static int initialized = 0;
+    if (!initialized) {
+        
+        SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
+        SC_CONTENT_FILTER = [SCContentFilter class];
+        SC_STREAM = [SCStream class];
+        SC_SHAREABLE_CONTENT = [SCShareableContent class];
+        
+        initialized = 1;
+    }
 }
 
 NS_ASSUME_NONNULL_END

@@ -51,48 +51,48 @@ Class AV_SAMPLE_BUFFER_VIDEO_RENDERER;
 __attribute__((constructor))
 static void av_initializer(void)
 {
-  static int initialized = 0;
-  if (!initialized) {
-    AV_CAPTURE_DEVICE = [AVCaptureDevice class];
-    AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
-    AV_CAPTURE_SESSION = [AVCaptureSession class];
-    AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
-    AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
-    AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
-    AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
+    static int initialized = 0;
+    if (!initialized) {
+        AV_CAPTURE_DEVICE = [AVCaptureDevice class];
+        AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
+        AV_CAPTURE_SESSION = [AVCaptureSession class];
+        AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
+        AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
+        AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
+        AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
 #if TARGET_OS_OSX
 #else
-    AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
+        AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
 #endif
-    AV_AUDIO_PLAYER_NODE = [AVAudioPlayerNode class];
-    
-    AV_AUDIO_ENGINE = [AVAudioEngine class];
-    AV_AUDIO_TIME = [AVAudioTime class];
-    AV_AUDIO_UNIT_EFFECT = [AVAudioUnitEffect class];
-    AV_AUDIO_UNIT_EQ = [AVAudioUnitEQ class];
-    AV_AUDIO_CONNECTION_POINT = [AVAudioConnectionPoint class];
-    
-    AV_AUDIO_UNIT_TIME_EFFECT = [AVAudioUnitTimeEffect class];
-    
-    
-    AV_URL_ASSET = [AVURLAsset class];
-    AV_ASSET_WRITER = [AVAssetWriter class];
-    AV_ASSET_WRITER_INPUT = [AVAssetWriterInput class];
-    AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
-    AV_ASSET_READER = [AVAssetReader class];
-    
-    AV_AUDIO_FORMAT = [AVAudioFormat class];
-    
-    AV_AUDIO_PCM_BUFFER = [AVAudioPCMBuffer class];
-    AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
-    
-    AV_PLAYER = [AVPlayer class];
-
-    AV_SAMPLE_BUFFER_DISPLAY_LAYER = [AVSampleBufferDisplayLayer class];
-    AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
-    
-    initialized = 1;
-  }
+        AV_AUDIO_PLAYER_NODE = [AVAudioPlayerNode class];
+        
+        AV_AUDIO_ENGINE = [AVAudioEngine class];
+        AV_AUDIO_TIME = [AVAudioTime class];
+        AV_AUDIO_UNIT_EFFECT = [AVAudioUnitEffect class];
+        AV_AUDIO_UNIT_EQ = [AVAudioUnitEQ class];
+        AV_AUDIO_CONNECTION_POINT = [AVAudioConnectionPoint class];
+        
+        AV_AUDIO_UNIT_TIME_EFFECT = [AVAudioUnitTimeEffect class];
+        
+        
+        AV_URL_ASSET = [AVURLAsset class];
+        AV_ASSET_WRITER = [AVAssetWriter class];
+        AV_ASSET_WRITER_INPUT = [AVAssetWriterInput class];
+        AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
+        AV_ASSET_READER = [AVAssetReader class];
+        
+        AV_AUDIO_FORMAT = [AVAudioFormat class];
+        
+        AV_AUDIO_PCM_BUFFER = [AVAudioPCMBuffer class];
+        AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
+        
+        AV_PLAYER = [AVPlayer class];
+        
+        AV_SAMPLE_BUFFER_DISPLAY_LAYER = [AVSampleBufferDisplayLayer class];
+        AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
+        
+        initialized = 1;
+    }
 }
 
 NS_ASSUME_NONNULL_END

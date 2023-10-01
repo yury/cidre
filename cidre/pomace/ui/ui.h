@@ -17,12 +17,12 @@ Class UI_DEVICE;
 __attribute__((constructor))
 static void ui_initializer(void)
 {
-  static int initialized = 0;
-  if (!initialized) {
-    UI_DEVICE = [UIDevice class];
-    
-    initialized = 1;
-  }
+    static int initialized = 0;
+    if (!initialized) {
+        UI_DEVICE = [UIDevice class];
+        
+        initialized = 1;
+    }
 }
 
 NS_ASSUME_NONNULL_END
