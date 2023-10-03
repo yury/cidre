@@ -318,6 +318,26 @@ impl RenderCmdEncoder {
     #[objc::msg_send(setFragmentTexture:atIndex:)]
     pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);
 
+    #[objc::msg_send(setFragmentTextures:withRange:)]
+    pub fn set_fragment_textures_with_range(
+        &mut self,
+        ptr: *const Option<&mtl::Texture>,
+        range: ns::Range,
+    );
+
+    #[inline]
+    pub fn set_fragment_textures_with_array<const N: usize>(
+        &mut self,
+        arr: &[Option<&mtl::Texture>; N],
+    ) {
+        self.set_fragment_textures_with_range(arr.as_ptr(), ns::Range::new(0, N));
+    }
+
+    #[inline]
+    pub fn set_fragment_textures_with_slice(&mut self, slice: &[Option<&mtl::Texture>]) {
+        self.set_fragment_textures_with_range(slice.as_ptr(), ns::Range::new(0, slice.len()));
+    }
+
     #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:instanceCount:)]
     pub fn draw_primitives_instance_count(
         &mut self,
