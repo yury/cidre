@@ -52,6 +52,7 @@ impl DecodeInfoFlags {
     pub const ASYNCHRONOUS: Self = Self(1u32 << 0);
     pub const FRAME_DROPPED: Self = Self(1u32 << 1);
     pub const IMAGE_BUFFER_MODIFIABLE: Self = Self(1u32 << 2);
+    pub const SKIPPED_LEADING_FRAME_DROPPED: Self = Self(1u32 << 3);
 }
 
 define_options!(EncodeInfoFlags(u32));

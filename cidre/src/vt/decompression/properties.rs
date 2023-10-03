@@ -30,8 +30,14 @@ pub mod keys {
         unsafe { kVTDecompressionPropertyKey_ContentHasInterframeDependencies }
     }
 
+    /// Hints the video decoder that decompression is, or is not, being performed in real time.
     pub fn real_time() -> &'static cf::String {
         unsafe { kVTDecompressionPropertyKey_RealTime }
+    }
+
+    /// `cf::Boolean`, Read; assumed false by default
+    pub fn using_hardware_accelerated_video_decoder() -> &'static cf::String {
+        unsafe { kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder }
     }
 
     pub fn maximize_power_efficiency() -> &'static cf::String {
@@ -97,6 +103,8 @@ pub mod keys {
         static kVTDecompressionPropertyKey_ContentHasInterframeDependencies: &'static cf::String;
 
         static kVTDecompressionPropertyKey_RealTime: &'static cf::String;
+        static kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder:
+            &'static cf::String;
 
         static kVTDecompressionPropertyKey_MaximizePowerEfficiency: &'static cf::String;
         static kVTDecompressionPropertyKey_ThreadCount: &'static cf::String;
@@ -116,5 +124,41 @@ pub mod keys {
         static kVTDecompressionPropertyKey_PropagatePerFrameHDRDisplayMetadata: &'static cf::String;
         static kVTDecompressionPropertyKey_PixelTransferProperties: &'static cf::String;
 
+    }
+}
+
+pub mod video_decoder_specification {
+    use crate::cf;
+
+    /// If set to `cf::Boolean::value_true()`, the VideoToolbox will use a hardware accelerated video decoder if available.  If set to
+    /// `cf::Boolean::value_false()`, hardware decode will never be used.
+    ///
+    /// This key is set in the `decoderSpecification` passed in to `vt::DecompressionSession::new()`.  Set it
+    /// to `cf::Boolean::value_true()` to allow hardware accelerated decode.  To  prevent hardware decode,
+    /// this property can be set to `cf::Boolean::value_false()`.
+    /// In MacOS 10.15 and later, hardware decode is enabled in vt::DecompressionSessions by default.
+    ///
+    /// `cf::Boolean`, Optional, true by default
+    #[doc(alias = "kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder")]
+    pub fn enable_hardware_accelerated_video_decoder() -> &'static cf::String {
+        unsafe { kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder }
+    }
+
+    /// if set to `cf::Boolean::value_true()`, the VideoToolbox will try to allocate a hardware accelerated
+    /// decoder and return an error if that isn't possible.
+    /// Setting this key automatically implies kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder --
+    /// there is no need to set both and the Enable key does nothing if the Require key is set.
+    #[doc(alias = "kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder")]
+    pub fn require_hardware_accelerated_video_decoder() -> &'static cf::String {
+        unsafe { kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder }
+    }
+
+    #[link(name = "VideoToolbox", kind = "framework")]
+    extern "C" {
+        static kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder:
+            &'static cf::String;
+
+        static kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder:
+            &'static cf::String;
     }
 }
