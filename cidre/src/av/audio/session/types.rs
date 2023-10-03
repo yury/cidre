@@ -5,6 +5,12 @@ define_cf_type!(Port(cf::String));
 impl Port {
     /* input port types */
 
+    /// A Continuity Microphone is an iOS device that a user trusts to use for audio input on Apple TV.
+    #[inline]
+    pub fn continuity_microphone() -> &'static Self {
+        unsafe { AVAudioSessionPortContinuityMicrophone }
+    }
+
     /// Line level input on a dock connector
     #[inline]
     pub fn line_in() -> &'static Self {
@@ -133,6 +139,7 @@ impl Port {
 
 #[link(name = "AVFAudio", kind = "framework")]
 extern "C" {
+    static AVAudioSessionPortContinuityMicrophone: &'static Port;
     static AVAudioSessionPortLineIn: &'static Port;
     static AVAudioSessionPortBuiltInMic: &'static Port;
     static AVAudioSessionPortHeadsetMic: &'static Port;
