@@ -4,6 +4,8 @@ use crate::define_options;
 
 use super::{Boolean, Integer, KernReturn, Natural, Port, PortName};
 
+pub type Number = Natural;
+
 // https://web.mit.edu/darwin/src/modules/xnu/osfmk/man/mach_msg.html
 
 define_options!(HeaderBits(u32));

@@ -55,6 +55,18 @@ pub mod vm_map;
 pub mod vm_statistics;
 pub use vm_statistics::VMAllocationFlags;
 
+pub mod task;
+
+pub mod task_info;
+pub use task_info::TaskBasicInfo;
+pub use task_info::TaskFlavor;
+
+pub mod time_value;
+pub use time_value::TimeValue;
+
+pub mod policy;
+pub use policy::Policy;
+
 #[inline]
 pub fn msg_receive(header: &mut MsgHeader) -> MsgReturn {
     unsafe { mach_msg_receive(header) }
