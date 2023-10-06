@@ -199,6 +199,31 @@ impl SampleBuffer {
     }
 
     #[cfg(feature = "cv")]
+    pub fn create_for_image_buffer(
+        image_buffer: &cv::ImageBuffer,
+        data_ready: bool,
+        make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
+        make_data_ready_refcon: *const c_void,
+        format_description: &cm::FormatDescription,
+        sample_timing: &SampleTimingInfo,
+    ) -> Result<arc::R<SampleBuffer>, os::Status> {
+        let mut result = None;
+        unsafe {
+            CMSampleBufferCreateForImageBuffer(
+                None,
+                image_buffer,
+                data_ready,
+                make_data_ready_callback,
+                make_data_ready_refcon,
+                format_description,
+                sample_timing,
+                &mut result,
+            )
+            .to_result_unchecked(result)
+        }
+    }
+
+    #[cfg(feature = "cv")]
     #[inline]
     pub fn image_buffer(&self) -> Option<&cv::ImageBuffer> {
         unsafe { CMSampleBufferGetImageBuffer(self) }

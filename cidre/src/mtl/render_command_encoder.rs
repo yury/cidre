@@ -455,7 +455,15 @@ impl RenderCmdEncoder {
     );
 
     #[inline]
-    pub fn set_tile_textures(&mut self, textures: &[Option<&mtl::Texture>]) {
+    pub fn set_tile_textures_with_slice(&mut self, textures: &[Option<&mtl::Texture>]) {
         self.set_tile_textures_with_range(textures.as_ptr(), ns::Range::new(0, textures.len()));
+    }
+
+    #[inline]
+    pub fn set_tile_textures_with_array<const N: usize>(
+        &mut self,
+        textures: &[Option<&mtl::Texture>; N],
+    ) {
+        self.set_tile_textures_with_range(textures.as_ptr(), ns::Range::new(0, N));
     }
 }

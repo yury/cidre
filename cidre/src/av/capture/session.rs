@@ -1,4 +1,4 @@
-use crate::{arc, av, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -101,6 +101,9 @@ impl Session {
 
     #[objc::msg_send(setUsesApplicationAudioSession:)]
     pub fn set_uses_application_audio_session(&mut self, value: bool);
+
+    #[objc::msg_send(synchronizationClock)]
+    pub fn synchronization_clock(&self) -> Option<&cm::Clock>;
 
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(hardwareCost)]
