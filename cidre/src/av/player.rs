@@ -75,7 +75,8 @@ impl Player {
 
     /// If the receiver's status is Status::Failed, this describes the error that caused the failure.
     ///
-    /// The value of this property is an ns::Error that describes what caused the receiver to no longer be able to play items.
+    /// The value of this property is an ns::Error that describes what caused the receiver
+    /// to no longer be able to play items.
     /// If the receiver's status is not Status::Failed, the value of this property is nil.
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;

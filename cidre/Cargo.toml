@@ -93,10 +93,6 @@ criterion = "0.5"
 clap = { version = "4.3", features = ["default", "derive"] }
 
 [[bench]]
-name = "metal"
-harness = false
-
-[[bench]]
 name = "alloc"
 harness = false
 
