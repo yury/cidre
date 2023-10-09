@@ -18,6 +18,7 @@ define_obj_type!(Concurent(Queue));
 
 define_obj_type!(Attr(dispatch::Object));
 
+#[doc(alias = "DispatchQoS")]
 #[repr(transparent)]
 pub struct QOSClass(pub u32);
 
