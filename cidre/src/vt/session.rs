@@ -8,8 +8,11 @@ impl Session {
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<arc::R<cf::Type>> {
-        unsafe { VTSessionCopyProperty(self, key, allocator) }
+    ) -> Result<arc::R<cf::PropertyList>, os::Status> {
+        unsafe {
+            let mut value = None;
+            VTSessionCopyProperty(self, key, allocator, &mut value).to_result_unchecked(value)
+        }
     }
 
     /// # Safety
@@ -56,6 +59,33 @@ impl Session {
                 .to_result_unchecked(supported_property_dictionary_out)
         }
     }
+
+    pub unsafe fn copy_serializable_properties(
+        &self,
+        allocator: Option<&cf::Allocator>,
+        dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
+    ) -> os::Status {
+        unsafe { VTSessionCopySerializableProperties(self, allocator, dictionary_out) }
+    }
+
+    pub fn serializable_properties_in(
+        &self,
+        allocator: Option<&cf::Allocator>,
+    ) -> Result<Option<arc::R<cf::Dictionary>>, os::Status> {
+        unsafe {
+            let mut dictionary_out = None;
+            let res = self.copy_serializable_properties(allocator, &mut dictionary_out);
+            if res.is_ok() {
+                Ok(dictionary_out)
+            } else {
+                Err(res)
+            }
+        }
+    }
+
+    pub fn serializable_properties(&self) -> Result<Option<arc::R<cf::Dictionary>>, os::Status> {
+        self.serializable_properties_in(None)
+    }
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
@@ -70,7 +100,8 @@ extern "C" {
         session: &Session,
         property_key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<arc::R<cf::Type>>;
+        property_value_out: *mut Option<arc::R<cf::PropertyList>>,
+    ) -> os::Status;
 
     fn VTSessionSetProperties(
         session: &mut Session,
@@ -79,6 +110,12 @@ extern "C" {
 
     fn VTSessionCopySupportedPropertyDictionary(
         session: &Session,
-        supported_property_dictionary_out: &mut Option<arc::R<cf::Dictionary>>,
+        supported_property_dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
+    ) -> os::Status;
+
+    fn VTSessionCopySerializableProperties(
+        session: &Session,
+        allocator: Option<&cf::Allocator>,
+        dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
     ) -> os::Status;
 }
