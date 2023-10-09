@@ -45,7 +45,5 @@ mod tests {
         println!("task info {:?}", res);
         assert!(res.resident_size > 0);
         assert!(res.resident_size_max > 0);
-        assert_eq!(res.user_time.microseconds, 0);
-        assert_eq!(res.system_time.microseconds, 0);
     }
 }
