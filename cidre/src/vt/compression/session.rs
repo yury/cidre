@@ -6,6 +6,9 @@ use crate::{
     cv, define_cf_type, os, vt,
 };
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
 define_cf_type!(Session(vt::Session));
 
 pub type OutputCallback<T> = extern "C" fn(
@@ -144,6 +147,61 @@ impl Session {
         }
     }
 
+    #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn encode_frame_with_output_handler(
+        &mut self,
+        image_buffer: &cv::ImageBuffer,
+        pts: cm::Time,
+        duration: cm::Time,
+        frame_properties: Option<&cf::Dictionary>,
+        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        block: &'static mut blocks::BlMut<
+            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuffer>),
+        >,
+    ) -> os::Status {
+        unsafe {
+            VTCompressionSessionEncodeFrameWithOutputHandler(
+                self,
+                image_buffer,
+                pts,
+                duration,
+                frame_properties,
+                info_flags_out,
+                block.as_ptr(),
+            )
+        }
+    }
+
+    #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn enc_frame_with_output_handler(
+        &mut self,
+        image_buffer: &cv::ImageBuffer,
+        pts: cm::Time,
+        duration: cm::Time,
+        frame_properties: Option<&cf::Dictionary>,
+        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        block: &'static mut blocks::BlMut<
+            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuffer>),
+        >,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            VTCompressionSessionEncodeFrameWithOutputHandler(
+                self,
+                image_buffer,
+                pts,
+                duration,
+                frame_properties,
+                info_flags_out,
+                block.as_ptr(),
+            )
+            .result()
+        }
+    }
+
     #[doc(alias = "VTCompressionSessionGetPixelBufferPool")]
     #[inline]
     pub fn pixel_buffer_pool(&self) -> Option<&cv::PixelBufferPool> {
@@ -152,14 +210,14 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete_frames(&self) -> os::Status {
-        unsafe { VTCompressionSessionCompleteFrames(self) }
+    pub fn complete_frames(&self, complete_until_pts: cm::Time) -> os::Status {
+        unsafe { VTCompressionSessionCompleteFrames(self, complete_until_pts) }
     }
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete(&self) -> Result<(), os::Status> {
-        self.complete_frames().result()
+    pub fn complete(&self, complete_until_pts: cm::Time) -> Result<(), os::Status> {
+        self.complete_frames(complete_until_pts).result()
     }
 
     // TODO: multipass
@@ -181,7 +239,6 @@ extern "C" {
 
     fn VTCompressionSessionInvalidate(session: &mut Session);
     fn VTCompressionSessionPrepareToEncodeFrames(session: &mut Session) -> os::Status;
-
     fn VTCompressionSessionEncodeFrame(
         session: &Session,
         image_buffer: &cv::ImageBuffer,
@@ -191,8 +248,20 @@ extern "C" {
         source_frame_ref_con: *mut c_void,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Status;
+    fn VTCompressionSessionEncodeFrameWithOutputHandler(
+        session: &Session,
+        image_buffer: &cv::ImageBuffer,
+        pts: cm::Time,
+        duration: cm::Time,
+        frame_properties: Option<&cf::Dictionary>,
+        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        output_handler: *mut c_void,
+    ) -> os::Status;
 
     fn VTCompressionSessionGetPixelBufferPool(session: &Session) -> Option<&cv::PixelBufferPool>;
+    fn VTCompressionSessionCompleteFrames(
+        session: &Session,
+        complete_until_pts: cm::Time,
+    ) -> os::Status;
 
-    fn VTCompressionSessionCompleteFrames(session: &Session) -> os::Status;
 }

@@ -162,6 +162,12 @@ impl Time {
         self.is_valid() && (self.flags.0 & TimeFlags::POSITIVE_INFINITY.0) != 0
     }
 
+    #[inline]
+    pub const fn is_numeric(&self) -> bool {
+        (self.flags.0 & (TimeFlags::VALID.0 | TimeFlags::IMPLIED_VALUE_FLAGS_MASK.0))
+            == TimeFlags::VALID.0
+    }
+
     /// Returns Time from a f64 number of seconds, and a preferred timescale.
     ///
     /// ```
@@ -172,7 +178,7 @@ impl Time {
     /// ```
     #[inline]
     pub const fn is_valid(&self) -> bool {
-        self.flags.0 & TimeFlags::VALID.0 != 0
+        (self.flags.0 & TimeFlags::VALID.0) != 0
     }
 
     /// ```
@@ -328,8 +334,21 @@ impl Default for Time {
     }
 }
 
-// pub type CMSampleBufferRef = *const c_void;
-// pub type CMFormatDescriptionRef = *const c_void;
+#[cfg(test)]
+mod tests {
+    use crate::cm;
+
+    #[test]
+    fn basics() {
+        let invalid = cm::Time::invalid();
+        assert!(invalid.is_invalid());
+        assert!(!invalid.is_numeric());
+
+        let valid = cm::Time::default();
+        assert!(valid.is_valid());
+        assert!(valid.is_numeric());
+    }
+}
 
 extern "C" {
     static kCMTimeInvalid: Time;
