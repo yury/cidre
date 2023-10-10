@@ -4,15 +4,21 @@ define_cf_type!(Session(cf::Type));
 
 impl Session {
     #[inline]
-    pub fn property(
+    pub fn property_in(
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<cf::PropertyList>, os::Status> {
-        unsafe {
-            let mut value = None;
-            VTSessionCopyProperty(self, key, allocator, &mut value).to_result_unchecked(value)
-        }
+    ) -> Result<Option<arc::R<cf::PropertyList>>, os::Status> {
+        let mut value = None;
+        unsafe { VTSessionCopyProperty(self, key, allocator, &mut value).to_result_option(value) }
+    }
+
+    #[inline]
+    pub fn property(
+        &self,
+        key: &cf::String,
+    ) -> Result<Option<arc::R<cf::PropertyList>>, os::Status> {
+        self.property_in(key, None)
     }
 
     /// # Safety

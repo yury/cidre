@@ -50,6 +50,15 @@ impl Status {
     }
 
     #[inline]
+    pub fn to_result_option<T>(self, option: Option<T>) -> Result<Option<T>, Self> {
+        if self.is_ok() {
+            Ok(option)
+        } else {
+            Err(self)
+        }
+    }
+
+    #[inline]
     pub fn result(self) -> Result<(), Self> {
         if self.is_ok() {
             Ok(())

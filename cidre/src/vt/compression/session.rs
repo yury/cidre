@@ -177,15 +177,15 @@ impl Session {
     #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enc_frame_with_output_handler(
+    pub fn enc_frame_with_output_handler<'a>(
         &mut self,
         image_buffer: &cv::ImageBuffer,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
-        block: &'static mut blocks::BlMut<
-            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuffer>),
+        block: &'static mut blocks::Block<
+            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&'a cm::SampleBuffer>),
         >,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -216,8 +216,14 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete(&self, complete_until_pts: cm::Time) -> Result<(), os::Status> {
+    pub fn complete_until_pts(&self, complete_until_pts: cm::Time) -> Result<(), os::Status> {
         self.complete_frames(complete_until_pts).result()
+    }
+
+    #[doc(alias = "VTCompressionSessionCompleteFrames")]
+    #[inline]
+    pub fn complete_all(&self) -> Result<(), os::Status> {
+        self.complete_frames(cm::Time::invalid()).result()
     }
 
     // TODO: multipass

@@ -37,7 +37,7 @@ pub mod keys {
     /// and the client's pixel buffer attributes were incompatible.
     #[doc(alias = "kVTCompressionPropertyKey_PixelBufferPoolIsShared")]
     #[inline]
-    pub fn pixel_buffer_is_shared() -> &'static cf::String {
+    pub fn pixel_buffer_pool_is_shared() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PixelBufferPoolIsShared }
     }
 
