@@ -615,142 +615,177 @@ pub mod profile_level {
     pub mod h264 {
         use crate::cf;
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_1_3")]
         pub fn baseline_1_3() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_1_3 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_3_0")]
         pub fn baseline_3_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_3_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_3_1")]
         pub fn baseline_3_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_3_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_3_2")]
         pub fn baseline_3_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_3_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_4_0")]
         pub fn baseline_4_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_4_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_4_1")]
         pub fn baseline_4_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_4_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_4_2")]
         pub fn baseline_4_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_4_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_5_0")]
         pub fn baseline_5_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_5_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_5_1")]
         pub fn baseline_5_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_5_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_5_2")]
         pub fn baseline_5_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_5_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Baseline_AutoLevel")]
         pub fn baseline_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_AutoLevel }
         }
 
-        pub fn consstrained_baseline_auto_level() -> &'static cf::String {
+        #[doc(alias = "kVTProfileLevel_H264_ConstrainedBaseline_AutoLevel")]
+        pub fn constrained_baseline_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_ConstrainedBaseline_AutoLevel }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_3_0")]
         pub fn main_3_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_3_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_3_1")]
         pub fn main_3_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_3_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_3_2")]
         pub fn main_3_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_3_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_4_0")]
         pub fn main_4_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_4_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_4_1")]
         pub fn main_4_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_4_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_4_2")]
         pub fn main_4_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_4_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_5_0")]
         pub fn main_5_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_5_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_5_1")]
         pub fn main_5_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_5_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_5_2")]
         pub fn main_5_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_5_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Main_AutoLevel")]
         pub fn main_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_AutoLevel }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Extended_5_0")]
         pub fn extended_5_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Extended_5_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_Extended_AutoLevel")]
         pub fn extended_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Extended_AutoLevel }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_3_0")]
         pub fn high_3_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_3_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_3_1")]
         pub fn high_3_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_3_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_3_2")]
         pub fn high_3_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_3_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_4_0")]
         pub fn high_4_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_4_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_4_1")]
         pub fn high_4_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_4_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_4_2")]
         pub fn high_4_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_4_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_5_0")]
         pub fn high_5_0() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_5_0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_5_1")]
         pub fn high_5_1() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_5_1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_5_2")]
         pub fn high_5_2() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_5_2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_High_AutoLevel")]
         pub fn high_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_AutoLevel }
         }
 
+        #[doc(alias = "kVTProfileLevel_H264_ConstrainedHigh_AutoLevel")]
         pub fn constrained_high_auto_level() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_ConstrainedHigh_AutoLevel }
         }
