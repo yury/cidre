@@ -57,7 +57,6 @@ extern "C" {
     static kCAMediaTimingFunctionEaseOut: &'static Name;
     static kCAMediaTimingFunctionEaseInOut: &'static Name;
     static kCAMediaTimingFunctionDefault: &'static Name;
-
 }
 
 #[link(name = "ca", kind = "static")]
