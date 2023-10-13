@@ -157,7 +157,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
     .unwrap();
 
     let mut func = func;
-    func.extend(getter.into_iter());
+    func.extend(getter);
     func
 }
 
@@ -351,7 +351,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
         }
     }
 
-    let pre = TokenStream::from_iter(before_trait_name_tokens.into_iter()).to_string();
+    let pre = TokenStream::from_iter(before_trait_name_tokens).to_string();
     let obj_trait_name = format!("{trait_name}Impl");
     //let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
     let fns = impl_trait_functions.join("\n");
@@ -436,7 +436,7 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
 
     // println!("fns {fns:?}");
 
-    TokenStream::from_iter(tokens.into_iter())
+    TokenStream::from_iter(tokens)
 }
 
 #[proc_macro_attribute]
@@ -507,11 +507,11 @@ fn gen_msg_send(
         if generics.is_empty() {
             Cow::Borrowed("<'ar>")
         } else {
-            let gen = TokenStream::from_iter(generics.into_iter()).to_string();
+            let gen = TokenStream::from_iter(generics).to_string();
             Cow::Owned(gen.replacen('<', "<'ar,", 1))
         }
     } else {
-        Cow::Owned(TokenStream::from_iter(generics.into_iter()).to_string())
+        Cow::Owned(TokenStream::from_iter(generics).to_string())
     };
 
     let ts = TokenStream::from_iter(iter);
@@ -519,7 +519,7 @@ fn gen_msg_send(
     assert_eq!(ret.pop().expect(";"), ';');
     let ret_full = ret.to_string();
     if let Some((a, _)) = ret.split_once("where") {
-        ret = format!("{a}")
+        ret = a.to_string();
     }
     let option = ret_full.contains("-> Option");
 
