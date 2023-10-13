@@ -1,15 +1,15 @@
 use crate::{arc, cf, cg, cv};
 
-pub type ImageBuffer = cv::Buffer;
+pub type ImageBuf = cv::Buf;
 
-impl ImageBuffer {
-    /// Returns the full encoded dimensions of a cv::ImageBuffer.  For example, for an NTSC DV frame this would be 720x480
+impl ImageBuf {
+    /// Returns the full encoded dimensions of a cv::ImageBuf.  For example, for an NTSC DV frame this would be 720x480
     ///
     /// Example:
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// let size = pixel_buffer.encoded_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0 }, size);
@@ -23,7 +23,7 @@ impl ImageBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// let display_size = pixel_buffer.display_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
@@ -38,7 +38,7 @@ impl ImageBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// let rect = pixel_buffer.clean_rect();
     /// assert_eq!(cg::Rect { origin: cg::Point::zero(), size: cg::Size { width: 200.0, height: 100.0 }}, rect);
@@ -53,7 +53,7 @@ impl ImageBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// assert_eq!(true, pixel_buffer.is_flipped());
     /// ```
@@ -65,7 +65,7 @@ impl ImageBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// ```
 
@@ -83,11 +83,11 @@ impl ImageBuffer {
 }
 
 extern "C" {
-    fn CVImageBufferGetColorSpace(image_buffer: &ImageBuffer) -> Option<&cg::ColorSpace>;
-    fn CVImageBufferGetEncodedSize(image_buffer: &ImageBuffer) -> cg::Size;
-    fn CVImageBufferGetDisplaySize(image_buffer: &ImageBuffer) -> cg::Size;
-    fn CVImageBufferGetCleanRect(image_buffer: &ImageBuffer) -> cg::Rect;
-    fn CVImageBufferIsFlipped(image_buffer: &ImageBuffer) -> bool;
+    fn CVImageBufferGetColorSpace(image_buffer: &ImageBuf) -> Option<&cg::ColorSpace>;
+    fn CVImageBufferGetEncodedSize(image_buffer: &ImageBuf) -> cg::Size;
+    fn CVImageBufferGetDisplaySize(image_buffer: &ImageBuf) -> cg::Size;
+    fn CVImageBufferGetCleanRect(image_buffer: &ImageBuf) -> cg::Rect;
+    fn CVImageBufferIsFlipped(image_buffer: &ImageBuf) -> bool;
     fn CVImageBufferCreateColorSpaceFromAttachments(
         attachments: &cf::Dictionary,
     ) -> Option<arc::R<cg::ColorSpace>>;

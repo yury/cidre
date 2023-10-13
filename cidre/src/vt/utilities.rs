@@ -1,7 +1,7 @@
 use crate::{arc, cf, cg, cv, os};
 
 pub fn create_cg_image_from_cv_pixel_buffer(
-    pixel_buffer: &cv::PixelBuffer,
+    pixel_buffer: &cv::PixelBuf,
     options: Option<&cf::Dictionary>,
 ) -> Result<arc::R<cg::Image>, os::Status> {
     let mut image_out = None;
@@ -13,7 +13,7 @@ pub fn create_cg_image_from_cv_pixel_buffer(
 
 extern "C" {
     fn VTCreateCGImageFromCVPixelBuffer(
-        pixel_buffer: &cv::PixelBuffer,
+        pixel_buffer: &cv::PixelBuf,
         options: Option<&cf::Dictionary>,
         image_out: *mut Option<arc::R<cg::Image>>,
     ) -> os::Status;

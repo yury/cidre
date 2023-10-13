@@ -22,7 +22,7 @@ impl FrameCounterInner {
         self.video_counter
     }
 
-    fn handle_audio(&mut self, sample_buffer: &mut cm::SampleBuffer) {
+    fn handle_audio(&mut self, sample_buffer: &mut cm::SampleBuf) {
         if self.audio_counter == 0 {
             let format_desc = sample_buffer.format_description().unwrap();
             let sbd = format_desc.stream_basic_description().unwrap();
@@ -57,7 +57,7 @@ impl FrameCounterInner {
         self.audio_counter += 1;
     }
 
-    fn handle_video(&mut self, sample_buffer: &mut cm::SampleBuffer) {
+    fn handle_video(&mut self, sample_buffer: &mut cm::SampleBuf) {
         let Some(img) = sample_buffer.image_buffer() else {
             return;
         };
@@ -86,7 +86,7 @@ impl OutputImpl for FrameCounter {
         &mut self,
         _cmd: Option<&cidre::objc::Sel>,
         _stream: &sc::Stream,
-        sample_buffer: &mut cm::SampleBuffer,
+        sample_buffer: &mut cm::SampleBuf,
         kind: sc::OutputType,
     ) {
         if kind == sc::OutputType::Screen {
@@ -152,14 +152,14 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
 }
 
 struct AudioQueue {
-    queue: VecDeque<arc::R<cm::SampleBuffer>>,
+    queue: VecDeque<arc::R<cm::SampleBuf>>,
     last_buffer_offset: i32,
     input_asbd: at::audio::StreamBasicDescription,
 }
 
 impl AudioQueue {
     #[inline]
-    pub fn enque(&mut self, sbuf: &cm::SampleBuffer) {
+    pub fn enque(&mut self, sbuf: &cm::SampleBuf) {
         self.queue.push_back(sbuf.retained())
     }
 
@@ -226,7 +226,7 @@ struct RecordContext {
 }
 
 impl RecordContext {
-    pub fn handle_sample_buffer(&mut self, buffer: &cm::SampleBuffer) {
+    pub fn handle_sample_buffer(&mut self, buffer: &cm::SampleBuf) {
         if self.frames_count % 1000 == 0 {
             if self.format_desc.is_none() {
                 let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
@@ -255,7 +255,7 @@ extern "C" fn callback(
     _: *mut c_void,
     status: os::Status,
     flags: EncodeInfoFlags,
-    buffer: Option<&cm::SampleBuffer>,
+    buffer: Option<&cm::SampleBuf>,
 ) {
     if status.is_err() || buffer.is_none() {
         println!("status {:?} Flags: {:#b}", status, flags);

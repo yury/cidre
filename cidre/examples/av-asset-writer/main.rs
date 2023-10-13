@@ -77,7 +77,7 @@ fn writer_and_input(
 ) -> (
     arc::R<av::AssetWriter>,
     arc::R<av::AssetWriterInput>,
-    arc::R<cm::SampleBuffer>,
+    arc::R<cm::SampleBuf>,
 ) {
     if path.exists() {
         std::fs::remove_file(&path).unwrap();
@@ -140,7 +140,7 @@ fn write(
     writer: &mut av::AssetWriter,
     output: &mut av::AssetReaderTrackOutput,
     input: &mut av::AssetWriterInput,
-    first_buf: &cm::SampleBuffer,
+    first_buf: &cm::SampleBuf,
 ) {
     let mut buf = first_buf.retained();
     writer.start_writing();

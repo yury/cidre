@@ -30,16 +30,16 @@ impl Flags {
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
-define_cf_type!(BlockBuffer(cf::Type));
+define_cf_type!(BlockBuf(cf::Type));
 
-impl BlockBuffer {
+impl BlockBuf {
     /// # Example
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::new(0, cm::BlockBufferFlags::NONE).expect("hmm");
+    /// let b = cm::BlockBuf::new(0, cm::BlockBufFlags::NONE).expect("hmm");
     ///
-    /// assert_eq!(b.get_type_id(), cm::BlockBuffer::type_id());
+    /// assert_eq!(b.get_type_id(), cm::BlockBuf::type_id());
     /// ```
     #[inline]
     pub fn type_id() -> cf::TypeId {
@@ -49,7 +49,7 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::new_in(0, cm::BlockBufferFlags::NONE, None).expect("hmm");
+    /// let b = cm::BlockBuf::new_in(0, cm::BlockBufFlags::NONE, None).expect("hmm");
     ///
     /// assert!(b.is_empty());
     /// ```
@@ -61,7 +61,7 @@ impl BlockBuffer {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::new(0, cm::BlockBufferFlags::NONE)
+    /// let b = cm::BlockBuf::new(0, cm::BlockBufFlags::NONE)
     ///     .expect("empty block buffer");
     ///
     /// assert!(b.is_empty());
@@ -74,29 +74,29 @@ impl BlockBuffer {
         sub_block_capacity: u32,
         flags: Flags,
         structure_allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuf>, os::Status> {
         unsafe {
-            let mut block_buffer_out = None;
+            let mut block_buf_out = None;
             CMBlockBufferCreateEmpty(
                 structure_allocator,
                 sub_block_capacity,
                 flags,
-                &mut block_buffer_out,
+                &mut block_buf_out,
             )
-            .to_result_unchecked(block_buffer_out)
+            .to_result_unchecked(block_buf_out)
         }
     }
 
     #[doc(alias = "CMBlockBufferCreateEmpty")]
     #[inline]
-    pub fn new(sub_block_capacity: u32, flags: Flags) -> Result<arc::R<BlockBuffer>, os::Status> {
+    pub fn new(sub_block_capacity: u32, flags: Flags) -> Result<arc::R<BlockBuf>, os::Status> {
         Self::new_in(sub_block_capacity, flags, None)
     }
 
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuffer::with_memory_block(10, None)
+    /// let b = cm::BlockBuf::with_memory_block(10, None)
     ///     .expect("empty block buffer");
     ///
     /// assert_eq!(false, b.is_empty());
@@ -107,7 +107,7 @@ impl BlockBuffer {
     pub fn with_memory_block(
         len: usize,
         block_allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuf>, os::Status> {
         unsafe {
             Self::create_with_memory_block_in(
                 std::ptr::null_mut(),
@@ -131,8 +131,8 @@ impl BlockBuffer {
         data_length: usize,
         flags: Flags,
         structure_allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<BlockBuffer>, os::Status> {
-        let mut block_buffer_out = None;
+    ) -> Result<arc::R<BlockBuf>, os::Status> {
+        let mut block_buf_out = None;
         CMBlockBufferCreateWithMemoryBlock(
             structure_allocator,
             memory_block,
@@ -142,16 +142,16 @@ impl BlockBuffer {
             offset_to_data,
             data_length,
             flags,
-            &mut block_buffer_out,
+            &mut block_buf_out,
         )
-        .to_result_unchecked(block_buffer_out)
+        .to_result_unchecked(block_buf_out)
     }
 
-    /// Obtains the total data length reachable via a cm::BlockBuffer.
+    /// Obtains the total data length reachable via a cm::BlockBuf.
     ///
-    /// Obtains the total data length reachable via a cm::BlockBuffer. This total is the sum of the dataLengths
-    /// of the cm::BlockBuffer's memoryBlocks and buffer references. Note that the dataLengths are
-    /// the _portions_ of those constituents that this cm::BlockBuffer subscribes to. This cm::BlockBuffer presents a
+    /// Obtains the total data length reachable via a cm::BlockBuf. This total is the sum of the dataLengths
+    /// of the cm::BlockBuf's memoryBlocks and buffer references. Note that the dataLengths are
+    /// the _portions_ of those constituents that this cm::BlockBuf subscribes to. This cm::BlockBuf presents a
     /// contiguous range of offsets from zero to its totalDataLength as returned by this routine.
     #[inline]
     pub fn data_len(&self) -> usize {
@@ -168,14 +168,14 @@ impl BlockBuffer {
         unsafe { CMBlockBufferIsRangeContiguous(self, offset, length) }
     }
 
-    /// Gains access to the data represented by a cm::BlockBuffer.
+    /// Gains access to the data represented by a cm::BlockBuf.
     ///
-    /// Gains access to the data represented by a cm::BlockBuffer. A pointer into a memory block is returned
-    /// which corresponds to the offset within the cm::BlockBuffer. The number of bytes addressable at the
+    /// Gains access to the data represented by a cm::BlockBuf. A pointer into a memory block is returned
+    /// which corresponds to the offset within the cm::BlockBuf. The number of bytes addressable at the
     /// pointer can also be returned. This length-at-offset may be smaller than the number of bytes actually
-    /// available starting at the offset if the dataLength of the CMBlockBuffer is covered by multiple memory
-    /// blocks (a noncontiguous cm::BlockBuffer). The data pointer returned will remain valid as long as the
-    /// original cm::BlockBuffer is referenced - once the cm::BlockBuffer is released for the last time, any pointers
+    /// available starting at the offset if the dataLength of the cm::BlockBuf is covered by multiple memory
+    /// blocks (a noncontiguous cm::BlockBuf). The data pointer returned will remain valid as long as the
+    /// original cm::BlockBuf is referenced - once the cm::BlockBuf is released for the last time, any pointers
     /// into it will be invalid.
     #[inline]
     pub unsafe fn get_data_ptr(
@@ -257,49 +257,49 @@ impl BlockBuffer {
     }
 
     #[inline]
-    pub fn with_buffer_reference(
-        buffer_reference: &BlockBuffer,
+    pub fn with_buf_reference(
+        buf_reference: &BlockBuf,
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-    ) -> Result<arc::R<BlockBuffer>, os::Status> {
+    ) -> Result<arc::R<BlockBuf>, os::Status> {
         unsafe {
-            let mut block_buffer_out = None;
-            Self::create_with_buffer_reference(
+            let mut block_buf_out = None;
+            Self::create_with_buf_reference(
                 None,
-                buffer_reference,
+                buf_reference,
                 offset_to_data,
                 data_length,
                 flags,
-                &mut block_buffer_out,
+                &mut block_buf_out,
             )
-            .to_result_unchecked(block_buffer_out)
+            .to_result_unchecked(block_buf_out)
         }
     }
 
     #[inline]
-    pub unsafe fn create_with_buffer_reference(
+    pub unsafe fn create_with_buf_reference(
         structure_allocator: Option<&cf::Allocator>,
-        buffer_reference: &BlockBuffer,
+        buf_reference: &BlockBuf,
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
+        block_buf_out: &mut Option<arc::R<BlockBuf>>,
     ) -> os::Status {
         CMBlockBufferCreateWithBufferReference(
             structure_allocator,
-            buffer_reference,
+            buf_reference,
             offset_to_data,
             data_length,
             flags,
-            block_buffer_out,
+            block_buf_out,
         )
     }
 
     /// Assures that the system allocates memory for all memory blocks in a
     /// block buffer.
     ///
-    /// Traverses the possibly complex cm::BlockBuffer, allocating the memory
+    /// Traverses the possibly complex cm::BlockBuf, allocating the memory
     /// for any constituent memory blocks that are not yet allocated.
     #[doc(alias = "CMBlockBufferAssureBlockMemory")]
     #[inline]
@@ -310,13 +310,13 @@ impl BlockBuffer {
 
 extern "C" {
     fn CMBlockBufferGetTypeID() -> cf::TypeId;
-    fn CMBlockBufferIsEmpty(the_buffer: &BlockBuffer) -> bool;
+    fn CMBlockBufferIsEmpty(the_buffer: &BlockBuf) -> bool;
 
     fn CMBlockBufferCreateEmpty(
         structure_allocator: Option<&cf::Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuf>>,
     ) -> os::Status;
 
     fn CMBlockBufferCreateWithMemoryBlock(
@@ -328,19 +328,15 @@ extern "C" {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuf>>,
     ) -> os::Status;
 
-    fn CMBlockBufferGetDataLength(the_buffer: &BlockBuffer) -> usize;
+    fn CMBlockBufferGetDataLength(the_buffer: &BlockBuf) -> usize;
 
-    fn CMBlockBufferIsRangeContiguous(
-        the_buffer: &BlockBuffer,
-        offset: usize,
-        length: usize,
-    ) -> bool;
+    fn CMBlockBufferIsRangeContiguous(the_buffer: &BlockBuf, offset: usize, length: usize) -> bool;
 
     fn CMBlockBufferGetDataPointer(
-        the_buffer: &BlockBuffer,
+        the_buffer: &BlockBuf,
         offset: usize,
         length_at_offset_out: *mut usize,
         total_length_out: *mut usize,
@@ -349,14 +345,14 @@ extern "C" {
 
     fn CMBlockBufferCreateWithBufferReference(
         structure_allocator: Option<&cf::Allocator>,
-        buffer_reference: &BlockBuffer,
+        buffer_reference: &BlockBuf,
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<BlockBuf>>,
     ) -> os::Status;
 
-    fn CMBlockBufferAssureBlockMemory(buffer: &mut BlockBuffer) -> os::Status;
+    fn CMBlockBufferAssureBlockMemory(buffer: &mut BlockBuf) -> os::Status;
 
 }
 

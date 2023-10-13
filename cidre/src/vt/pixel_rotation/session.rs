@@ -73,8 +73,8 @@ impl Session {
     #[inline]
     pub fn rotate_image(
         &self,
-        source_buffer: &cv::PixelBuffer,
-        destination_buffer: &mut cv::PixelBuffer,
+        source_buffer: &cv::PixelBuf,
+        destination_buffer: &mut cv::PixelBuf,
     ) -> Result<(), os::Status> {
         unsafe {
             VTPixelRotationSessionRotateImage(self, source_buffer, destination_buffer).result()
@@ -95,7 +95,7 @@ extern "C" {
 
     fn VTPixelRotationSessionRotateImage(
         session: &Session,
-        source_buffer: &cv::PixelBuffer,
-        destination_buffer: &mut cv::PixelBuffer,
+        source_buffer: &cv::PixelBuf,
+        destination_buffer: &mut cv::PixelBuf,
     ) -> os::Status;
 }

@@ -139,7 +139,7 @@ define_obj_type!(PixelBufferObservation(Observation));
 
 impl PixelBufferObservation {
     #[objc::msg_send(pixelBuffer)]
-    pub fn pixel_buffer(&self) -> &cv::PixelBuffer;
+    pub fn pixel_buffer(&self) -> &cv::PixelBuf;
 
     #[objc::msg_send(featureName)]
     pub fn feature_name(&self) -> Option<&ns::String>;

@@ -70,8 +70,8 @@ impl Session {
     #[inline]
     pub fn transfer_image(
         &self,
-        src_buf: &cv::PixelBuffer,
-        dst_buf: &cv::PixelBuffer,
+        src_buf: &cv::PixelBuf,
+        dst_buf: &cv::PixelBuf,
     ) -> Result<(), os::Status> {
         unsafe { VTPixelTransferSessionTransferImage(self, src_buf, dst_buf).result() }
     }
@@ -85,7 +85,7 @@ extern "C" {
     fn VTPixelTransferSessionInvalidate(session: &mut Session);
     fn VTPixelTransferSessionTransferImage(
         session: &Session,
-        source_buffer: &cv::PixelBuffer,
-        destination_buffer: &cv::PixelBuffer,
+        source_buffer: &cv::PixelBuf,
+        destination_buffer: &cv::PixelBuf,
     ) -> os::Status;
 }

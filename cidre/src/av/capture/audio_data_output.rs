@@ -9,7 +9,7 @@ pub trait AudioDataOutputSampleBufferDelegate: objc::Obj {
     fn capture_output_did_output_sample_buffer_from_connection(
         &mut self,
         output: &av::CaptureOutput,
-        sample_buffer: &cm::SampleBuffer,
+        sample_buffer: &cm::SampleBuf,
         connection: &av::CaptureConnection,
     );
 }

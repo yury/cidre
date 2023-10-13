@@ -2,7 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
     arc, cf,
-    cm::{self, SampleBuffer, VideoCodecType},
+    cm::{self, SampleBuf, VideoCodecType},
     cv, define_cf_type, os, vt,
 };
 
@@ -11,7 +11,7 @@ pub type OutputCallback<O, F> = extern "C" fn(
     source_frame_ref_con: *mut F,
     status: os::Status,
     info_flags: vt::DecodeInfoFlags,
-    image_buffer: Option<&cv::ImageBuffer>,
+    image_buffer: Option<&cv::ImageBuf>,
     pts: cm::Time,
     duration: cm::Time,
 );
@@ -93,7 +93,7 @@ impl Session {
     #[inline]
     pub fn decode(
         &self,
-        sample_buffer: &SampleBuffer,
+        sample_buffer: &SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -113,7 +113,7 @@ impl Session {
     #[inline]
     pub unsafe fn decode_frame<F>(
         &self,
-        sample_buffer: &SampleBuffer,
+        sample_buffer: &SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
         source_frame_ref_con: *mut F,
         info_flags_out: *mut vt::DecodeInfoFlags,
@@ -148,7 +148,7 @@ impl Session {
     ///
     /// The pixel buffer is in the same format that the session is decompressing to.
     #[inline]
-    pub fn copy_black_pixel_buffer(&self) -> Result<arc::R<cv::PixelBuffer>, os::Status> {
+    pub fn copy_black_pixel_buffer(&self) -> Result<arc::R<cv::PixelBuf>, os::Status> {
         let mut pixel_buffer_out = None;
         unsafe {
             VTDecompressionSessionCopyBlackPixelBuffer(self, &mut pixel_buffer_out)
@@ -184,7 +184,7 @@ extern "C" {
 
     fn VTDecompressionSessionDecodeFrame(
         session: &Session,
-        sample_buffer: &SampleBuffer,
+        sample_buffer: &SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
         source_frame_ref_con: *mut c_void,
         info_flags_out: *mut vt::DecodeInfoFlags,
@@ -200,7 +200,7 @@ extern "C" {
 
     fn VTDecompressionSessionCopyBlackPixelBuffer(
         session: &Session,
-        pixel_buffer_out: *mut Option<arc::R<cv::PixelBuffer>>,
+        pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> os::Status;
 
     fn VTIsHardwareDecodeSupported(codec_type: VideoCodecType) -> bool;
@@ -228,7 +228,7 @@ mod tests {
             _source_frame_ref_con: *mut c_void,
             _status: os::Status,
             _info_flags: vt::DecodeInfoFlags,
-            _image_buffer: Option<&cv::ImageBuffer>,
+            _image_buffer: Option<&cv::ImageBuf>,
             _pts: cm::Time,
             _duration: cm::Time,
         ) {

@@ -247,14 +247,14 @@ impl VideoFormatDescription {
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn matches_image_buffer(&self, image_buffer: &cv::ImageBuffer) -> bool {
+    pub fn matches_image_buffer(&self, image_buffer: &cv::ImageBuf) -> bool {
         unsafe { CMVideoFormatDescriptionMatchesImageBuffer(self, image_buffer) }
     }
 
     #[cfg(feature = "cv")]
     #[inline]
     pub fn create_for_image_buffer_in(
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
         let mut result = None;
@@ -267,7 +267,7 @@ impl VideoFormatDescription {
     #[cfg(feature = "cv")]
     #[inline]
     pub fn create_for_image_buffer(
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
         Self::create_for_image_buffer_in(image_buffer, None)
     }
@@ -577,7 +577,7 @@ extern "C" {
     #[cfg(feature = "cv")]
     fn CMVideoFormatDescriptionMatchesImageBuffer(
         video_desc: &VideoFormatDescription,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
     ) -> bool;
 
     fn CMFormatDescriptionGetMediaSubType(desc: &FormatDescription) -> FourCharCode;
@@ -617,7 +617,7 @@ extern "C" {
 
     fn CMVideoFormatDescriptionCreateForImageBuffer(
         allocator: Option<&cf::Allocator>,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         format_description: &mut Option<arc::R<FormatDescription>>,
     ) -> os::Status;
 

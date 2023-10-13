@@ -2,7 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use crate::{
     arc, cf,
-    cm::{self, SampleBuffer, VideoCodecType},
+    cm::{self, SampleBuf, VideoCodecType},
     cv, define_cf_type, os, vt,
 };
 
@@ -16,7 +16,7 @@ pub type OutputCallback<T> = extern "C" fn(
     source_frame_ref_con: *mut c_void,
     status: os::Status,
     info_flags: vt::EncodeInfoFlags,
-    sample_buffer: Option<&SampleBuffer>,
+    sample_buffer: Option<&SampleBuf>,
 );
 
 impl Session {
@@ -106,7 +106,7 @@ impl Session {
     #[inline]
     pub fn encode_frame(
         &mut self,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
@@ -129,7 +129,7 @@ impl Session {
     #[inline]
     pub fn enc_frame(
         &mut self,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
@@ -152,13 +152,13 @@ impl Session {
     #[inline]
     pub fn encode_frame_with_output_handler(
         &mut self,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: &'static mut blocks::BlMut<
-            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuffer>),
+            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>),
         >,
     ) -> os::Status {
         unsafe {
@@ -179,13 +179,13 @@ impl Session {
     #[inline]
     pub fn enc_frame_with_output_handler<'a>(
         &mut self,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: &'static mut blocks::Block<
-            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&'a cm::SampleBuffer>),
+            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&'a cm::SampleBuf>),
         >,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -247,7 +247,7 @@ extern "C" {
     fn VTCompressionSessionPrepareToEncodeFrames(session: &mut Session) -> os::Status;
     fn VTCompressionSessionEncodeFrame(
         session: &Session,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
@@ -256,7 +256,7 @@ extern "C" {
     ) -> os::Status;
     fn VTCompressionSessionEncodeFrameWithOutputHandler(
         session: &Session,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,

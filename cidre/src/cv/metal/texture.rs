@@ -1,6 +1,6 @@
 use crate::{cv, mtl};
 
-pub type Texture = cv::ImageBuffer;
+pub type Texture = cv::ImageBuf;
 
 impl Texture {
     #[inline]

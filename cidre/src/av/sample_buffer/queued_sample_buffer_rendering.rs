@@ -16,7 +16,7 @@ pub trait QueuedSampleBufferRendering: objc::Obj {
     fn timebase(&self) -> &cm::Timebase;
 
     #[objc::msg_send(enqueueSampleBuffer:)]
-    fn enqueue_sample_buf(&mut self, buf: &cm::SampleBuffer);
+    fn enqueue_sample_buf(&mut self, buf: &cm::SampleBuf);
 
     #[objc::msg_send(flush)]
     fn flush(&mut self);

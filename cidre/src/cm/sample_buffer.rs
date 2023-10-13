@@ -16,7 +16,7 @@ impl Flags {
 }
 
 pub type SampleBufferMakeDataReadyCallback =
-    extern "C" fn(sbuf: &SampleBuffer, make_data_ready_refcon: *const c_void);
+    extern "C" fn(sbuf: &SampleBuf, make_data_ready_refcon: *const c_void);
 
 #[derive(Debug, Default, Clone, Copy)]
 #[repr(C)]
@@ -44,18 +44,18 @@ impl SampleTimingInfo {
     }
 }
 
-define_cf_type!(SampleBuffer(cm::AttachmentBearer));
+define_cf_type!(SampleBuf(cm::AttachmentBearer));
 
 /// An object that contains zero or more media samples of a uniform media type
 ///
 /// Sample buffers are Core Foundation objects that the system uses to move media
-/// sample data through the media pipeline. An instance of cm::SampleBuffer contains
+/// sample data through the media pipeline. An instance of cm::SampleBuf contains
 /// zero or more compressed (or uncompressed) samples of a particular media type
 /// and contains one of the following:
 ///
-///   - A cm::BlockBuffer of one or more media samples
-///   - A cm::ImageBuffer, a reference to the format description
-///      for the stream of CMSampleBuffers, size and timing information
+///   - A cm::BlockBuf of one or more media samples
+///   - A cm::ImageBuf, a reference to the format description
+///      for the stream of cm::SampleBuf-s, size and timing information
 ///      for each of the contained media samples, and both buffer-level
 ///      and sample-level attachments
 ///
@@ -75,14 +75,14 @@ define_cf_type!(SampleBuffer(cm::AttachmentBearer));
 /// the next cm::SampleBuffer”).
 ///
 /// [CMSampleBuffer](https://developer.apple.com/documentation/coremedia/cmsamplebuffer?language=objc)
-impl SampleBuffer {
-    /// Returns whether or not a cm::SampleBuffer's data is ready.
+impl SampleBuf {
+    /// Returns whether or not a cm::SampleBuf's data is ready.
     ///
     /// Example:
     /// ```
     /// use cidre::{cf, cm};
     ///
-    /// let res = cm::SampleBuffer::new(
+    /// let res = cm::SampleBuf::new(
     ///     None,
     ///     true,
     ///     None,
@@ -104,7 +104,7 @@ impl SampleBuffer {
     /// ```
     /// use cidre::{cf, cm};
     ///
-    /// let res = cm::SampleBuffer::new(
+    /// let res = cm::SampleBuf::new(
     ///     None,
     ///     true,
     ///     None,
@@ -116,16 +116,16 @@ impl SampleBuffer {
 
     #[inline]
     pub fn new(
-        data_buffer: Option<&cm::BlockBuffer>,
+        data_buf: Option<&cm::BlockBuf>,
         data_ready: bool,
         format_description: Option<&cm::FormatDescription>,
-    ) -> Result<arc::R<SampleBuffer>, os::Status> {
-        let mut sample_buffer_out = None;
+    ) -> Result<arc::R<SampleBuf>, os::Status> {
+        let mut sample_buf_out = None;
 
         unsafe {
             Self::create_in(
                 None,
-                data_buffer,
+                data_buf,
                 data_ready,
                 None,
                 std::ptr::null(),
@@ -135,16 +135,16 @@ impl SampleBuffer {
                 std::ptr::null(),
                 0,
                 std::ptr::null(),
-                &mut sample_buffer_out,
+                &mut sample_buf_out,
             )
-            .to_result_unchecked(sample_buffer_out)
+            .to_result_unchecked(sample_buf_out)
         }
     }
 
     /// [CMSampleBufferCreate](https://developer.apple.com/documentation/coremedia/1489723-cmsamplebuffercreate?language=objc)
     pub unsafe fn create_in(
         allocator: Option<&cf::Allocator>,
-        data_buffer: Option<&cm::BlockBuffer>,
+        data_buffer: Option<&cm::BlockBuf>,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
@@ -154,7 +154,7 @@ impl SampleBuffer {
         sample_timing_array: *const SampleTimingInfo,
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
-        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
     ) -> os::Status {
         CMSampleBufferCreate(
             allocator,
@@ -175,13 +175,13 @@ impl SampleBuffer {
     #[cfg(feature = "cv")]
     pub fn create_for_image_buffer_in(
         allocator: Option<&cf::Allocator>,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDescription,
         sample_timing: &SampleTimingInfo,
-    ) -> Result<arc::R<SampleBuffer>, os::Status> {
+    ) -> Result<arc::R<SampleBuf>, os::Status> {
         let mut result = None;
         unsafe {
             CMSampleBufferCreateForImageBuffer(
@@ -200,13 +200,13 @@ impl SampleBuffer {
 
     #[cfg(feature = "cv")]
     pub fn create_for_image_buffer(
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDescription,
         sample_timing: &SampleTimingInfo,
-    ) -> Result<arc::R<SampleBuffer>, os::Status> {
+    ) -> Result<arc::R<SampleBuf>, os::Status> {
         let mut result = None;
         unsafe {
             CMSampleBufferCreateForImageBuffer(
@@ -225,23 +225,23 @@ impl SampleBuffer {
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn image_buffer(&self) -> Option<&cv::ImageBuffer> {
+    pub fn image_buffer(&self) -> Option<&cv::ImageBuf> {
         unsafe { CMSampleBufferGetImageBuffer(self) }
     }
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn image_buffer_mut(&mut self) -> Option<&mut cv::ImageBuffer> {
+    pub fn image_buffer_mut(&mut self) -> Option<&mut cv::ImageBuf> {
         unsafe { std::mem::transmute(CMSampleBufferGetImageBuffer(self)) }
     }
 
     #[inline]
-    pub fn data_buffer(&self) -> Option<&cm::BlockBuffer> {
+    pub fn data_buffer(&self) -> Option<&cm::BlockBuf> {
         unsafe { CMSampleBufferGetDataBuffer(self) }
     }
 
     #[inline]
-    pub fn set_data_buffer(&mut self, data_buffer: &cm::BlockBuffer) -> Result<(), os::Status> {
+    pub fn set_data_buffer(&mut self, data_buffer: &cm::BlockBuf) -> Result<(), os::Status> {
         unsafe { CMSampleBufferSetDataBuffer(self, data_buffer).result() }
     }
 
@@ -491,7 +491,7 @@ impl SampleBuffer {
 #[derive(Debug)]
 pub struct BlockBufferAudioBufferList<const N: usize> {
     list: cat::audio::BufferList<N>,
-    block: arc::R<cm::BlockBuffer>,
+    block: arc::R<cm::BlockBuf>,
 }
 
 #[cfg(feature = "cat")]
@@ -502,7 +502,7 @@ impl<const N: usize> BlockBufferAudioBufferList<N> {
     }
 
     #[inline]
-    pub fn block(&self) -> &cm::BlockBuffer {
+    pub fn block(&self) -> &cm::BlockBuf {
         &self.block
     }
 }
@@ -512,7 +512,7 @@ extern "C" {
 
     fn CMSampleBufferCreate(
         allocator: Option<&cf::Allocator>,
-        data_buffer: Option<&cm::BlockBuffer>,
+        data_buffer: Option<&cm::BlockBuf>,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
@@ -522,51 +522,48 @@ extern "C" {
         sample_timing_array: *const SampleTimingInfo,
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
-        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
     ) -> crate::os::Status;
 
     #[cfg(feature = "cv")]
     fn CMSampleBufferCreateForImageBuffer(
         allocator: Option<&cf::Allocator>,
-        image_buffer: &cv::ImageBuffer,
+        image_buffer: &cv::ImageBuf,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: &cm::VideoFormatDescription,
         sample_timing: &SampleTimingInfo,
-        sample_buffer_out: &mut Option<arc::R<SampleBuffer>>,
+        sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
     ) -> crate::os::Status;
 
-    fn CMSampleBufferDataIsReady(sbuf: &SampleBuffer) -> bool;
-    fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuffer);
+    fn CMSampleBufferDataIsReady(sbuf: &SampleBuf) -> bool;
+    fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuf);
 
     #[cfg(feature = "cv")]
-    fn CMSampleBufferGetImageBuffer(sbuf: &SampleBuffer) -> Option<&cv::ImageBuffer>;
-    fn CMSampleBufferGetDataBuffer(sbuf: &SampleBuffer) -> Option<&cm::BlockBuffer>;
-    fn CMSampleBufferSetDataBuffer(
-        sbuf: &mut SampleBuffer,
-        data_buffer: &cm::BlockBuffer,
-    ) -> os::Status;
-    fn CMSampleBufferGetDuration(sbuf: &SampleBuffer) -> cm::Time;
-    fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
-    fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
-    fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuffer) -> cm::Time;
-    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuffer, value: cm::Time);
-    fn CMSampleBufferGetSampleSize(sbuf: &SampleBuffer, sample_index: cm::ItemIndex) -> usize;
-    fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuffer) -> usize;
-    fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuffer) -> Option<&cm::FormatDescription>;
+    fn CMSampleBufferGetImageBuffer(sbuf: &SampleBuf) -> Option<&cv::ImageBuf>;
+    fn CMSampleBufferGetDataBuffer(sbuf: &SampleBuf) -> Option<&cm::BlockBuf>;
+    fn CMSampleBufferSetDataBuffer(sbuf: &mut SampleBuf, data_buffer: &cm::BlockBuf) -> os::Status;
+    fn CMSampleBufferGetDuration(sbuf: &SampleBuf) -> cm::Time;
+    fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
+    fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
+    fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
+    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, value: cm::Time);
+    fn CMSampleBufferGetSampleSize(sbuf: &SampleBuf, sample_index: cm::ItemIndex) -> usize;
+    fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuf) -> usize;
+    fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuf) -> Option<&cm::FormatDescription>;
     fn CMSampleBufferGetSampleAttachmentsArray(
-        sbuf: &SampleBuffer,
+        sbuf: &SampleBuf,
         create_if_necessary: bool,
     ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>>;
 
-    fn CMSampleBufferIsValid(sbuf: &SampleBuffer) -> bool;
+    fn CMSampleBufferIsValid(sbuf: &SampleBuf) -> bool;
 
-    fn CMSampleBufferInvalidate(sbuf: &SampleBuffer) -> os::Status;
-    fn CMSampleBufferMakeDataReady(sbuf: &SampleBuffer) -> os::Status;
+    fn CMSampleBufferInvalidate(sbuf: &SampleBuf) -> os::Status;
+    fn CMSampleBufferMakeDataReady(sbuf: &SampleBuf) -> os::Status;
     #[cfg(feature = "cat")]
     fn CMSampleBufferCopyPCMDataIntoAudioBufferList(
-        sbuf: &SampleBuffer,
+        sbuf: &SampleBuf,
         frame_offset: i32,
         num_frames: i32,
         buffer_list: &mut cat::audio::BufferList,
@@ -574,24 +571,24 @@ extern "C" {
 
     #[cfg(feature = "cat")]
     fn CMSampleBufferGetAudioStreamPacketDescriptionsPtr(
-        sbuf: &SampleBuffer,
+        sbuf: &SampleBuf,
         packet_descriptions_pointer_out: *mut cat::audio::StreamPacketDescription,
         packet_descriptions_size_out: *mut usize,
     ) -> os::Status;
 
     #[cfg(feature = "cat")]
     fn CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
-        sbuf: &SampleBuffer,
+        sbuf: &SampleBuf,
         buffer_list_size_needed_out: *mut usize,
         buffer_list_out: *mut cat::audio::BufferList,
         buffer_list_size: usize,
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<cm::BlockBuffer>>,
+        block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
 
-    fn CMSampleBufferGetNumSamples(sbuf: &SampleBuffer) -> cf::Index;
+    fn CMSampleBufferGetNumSamples(sbuf: &SampleBuf) -> cf::Index;
 }
 
 /// Use attachements()

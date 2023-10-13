@@ -45,7 +45,7 @@ impl TextureCache {
     #[inline]
     pub unsafe fn create_texture_in(
         &self,
-        source_image: &cv::ImageBuffer,
+        source_image: &cv::ImageBuf,
         texture_attributes: Option<&cf::Dictionary>,
         pixel_format: mtl::PixelFormat,
         width: usize,
@@ -71,7 +71,7 @@ impl TextureCache {
     #[inline]
     pub fn texture(
         &self,
-        source_image: &cv::ImageBuffer,
+        source_image: &cv::ImageBuf,
         texture_attributes: Option<&cf::Dictionary>,
         pixel_format: mtl::PixelFormat,
         width: usize,
@@ -117,7 +117,7 @@ extern "C" {
     fn CVMetalTextureCacheCreateTextureFromImage(
         allocator: Option<&cf::Allocator>,
         texture_cache: &TextureCache,
-        source_image: &cv::ImageBuffer,
+        source_image: &cv::ImageBuf,
         texture_attributes: Option<&cf::Dictionary>,
         pixel_format: mtl::PixelFormat,
         width: usize,

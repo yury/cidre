@@ -224,7 +224,7 @@ pub trait Output: objc::Obj {
     fn stream_did_output_sample_buffer(
         &mut self,
         stream: &Stream,
-        sample_bufer: &mut cm::SampleBuffer,
+        sample_bufer: &mut cm::SampleBuf,
         kind: OutputType,
     );
 }

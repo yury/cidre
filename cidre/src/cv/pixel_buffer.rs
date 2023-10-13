@@ -3,9 +3,9 @@ use crate::{arc, cf, cv, define_options, os};
 #[cfg(feature = "io")]
 use crate::io;
 
-pub type PixelBuffer = cv::ImageBuffer;
+pub type PixelBuf = cv::ImageBuf;
 
-impl PixelBuffer {
+impl PixelBuf {
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CVPixelBufferGetTypeID() }
@@ -25,7 +25,7 @@ impl PixelBuffer {
         unsafe { CVPixelBufferGetHeight(self) }
     }
 
-    /// Returns the PixelFormat of the PixelBuffer.
+    /// Returns the PixelFormat of the PixelBuf.
     #[doc(alias = "CVPixelBufferGetPixelFormatType")]
     #[inline]
     pub fn pixel_format(&self) -> PixelFormat {
@@ -53,13 +53,13 @@ impl PixelBuffer {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// assert_eq!(200, pixel_buffer.width());
     /// assert_eq!(100, pixel_buffer.height());
     /// assert_eq!(cv::PixelFormat::_32_BGRA, pixel_buffer.pixel_format());
     /// assert_eq!(0, pixel_buffer.plane_count());
-    /// assert_eq!(cv::PixelBuffer::type_id(), pixel_buffer.get_type_id());
+    /// assert_eq!(cv::PixelBuf::type_id(), pixel_buffer.get_type_id());
     ///
     /// ```
     pub fn new(
@@ -67,7 +67,7 @@ impl PixelBuffer {
         height: usize,
         pixel_format_type: cv::PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<PixelBuffer>, cv::Return> {
+    ) -> Result<arc::R<PixelBuf>, cv::Return> {
         let mut pixel_buffer_out = None;
 
         let r = Self::create_in(
@@ -87,7 +87,7 @@ impl PixelBuffer {
         height: usize,
         pixel_format_type: cv::PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<arc::R<PixelBuffer>>,
+        pixel_buffer_out: &mut Option<arc::R<PixelBuf>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         unsafe {
@@ -172,7 +172,7 @@ impl PixelBuffer {
     }
 }
 
-pub struct BaseAddressLockGuard<'a>(&'a PixelBuffer, LockFlags);
+pub struct BaseAddressLockGuard<'a>(&'a PixelBuf, LockFlags);
 
 impl<'a> Drop for BaseAddressLockGuard<'a> {
     #[inline]
@@ -288,34 +288,29 @@ extern "C" {
         height: usize,
         pixel_format_type: PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<arc::R<PixelBuffer>>,
+        pixel_buffer_out: &mut Option<arc::R<PixelBuf>>,
     ) -> cv::Return;
 
-    fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuffer) -> usize;
-    fn CVPixelBufferGetHeight(pixel_buffer: &PixelBuffer) -> usize;
-    fn CVPixelBufferGetPixelFormatType(pixel_buffer: &PixelBuffer) -> PixelFormat;
-    fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuffer) -> usize;
-    fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
-    fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuffer, plane_index: usize) -> usize;
+    fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuf) -> usize;
+    fn CVPixelBufferGetHeight(pixel_buffer: &PixelBuf) -> usize;
+    fn CVPixelBufferGetPixelFormatType(pixel_buffer: &PixelBuf) -> PixelFormat;
+    fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuf) -> usize;
+    fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
+    fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
 
-    fn CVPixelBufferLockBaseAddress(
-        pixel_buffer: &PixelBuffer,
-        lock_flags: LockFlags,
-    ) -> cv::Return;
-    fn CVPixelBufferUnlockBaseAddress(
-        pixel_buffer: &PixelBuffer,
-        lock_flags: LockFlags,
-    ) -> cv::Return;
+    fn CVPixelBufferLockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags) -> cv::Return;
+    fn CVPixelBufferUnlockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags)
+        -> cv::Return;
 
     #[cfg(feature = "io")]
-    fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuffer) -> Option<&io::Surface>;
+    fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuf) -> Option<&io::Surface>;
 
     #[cfg(feature = "io")]
     fn CVPixelBufferCreateWithIOSurface(
         allocator: Option<&cf::Allocator>,
         surface: &io::Surface,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: *mut Option<arc::R<cv::PixelBuffer>>,
+        pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> cv::Return;
 }
 

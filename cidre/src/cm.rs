@@ -34,8 +34,8 @@ pub mod sample_buffer;
 
 #[cfg(feature = "cat")]
 pub use sample_buffer::BlockBufferAudioBufferList;
-pub use sample_buffer::Flags as SampleBufferFlags;
-pub use sample_buffer::SampleBuffer;
+pub use sample_buffer::Flags as SampleBufFlags;
+pub use sample_buffer::SampleBuf;
 pub use sample_buffer::SampleTimingInfo;
 
 pub mod attachment;
@@ -43,8 +43,8 @@ pub use attachment::Bearer as AttachmentBearer;
 pub use attachment::Mode as AttachmentMode;
 
 pub mod block_buffer;
-pub use block_buffer::BlockBuffer;
-pub use block_buffer::Flags as BlockBufferFlags;
+pub use block_buffer::BlockBuf;
+pub use block_buffer::Flags as BlockBufFlags;
 
 pub mod sync;
 pub use sync::Clock;

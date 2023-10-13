@@ -21,16 +21,16 @@ impl arc::A<ImageRequestHandler> {
     ) -> arc::R<ImageRequestHandler>;
 
     #[objc::msg_send(initWithCVPixelBuffer:options:)]
-    pub fn init_with_cv_pixel_buffer_options(
+    pub fn init_with_cv_pixel_buf_options(
         self,
-        pb: &cv::PixelBuffer,
+        pb: &cv::PixelBuf,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<ImageRequestHandler>>;
 
     #[objc::msg_send(initWithCVPixelBuffer:orientation:options:)]
-    pub fn init_with_cv_pixel_buffer_orientaion_options(
+    pub fn init_with_cv_pixel_buf_orientaion_options(
         self,
-        pb: &cv::PixelBuffer,
+        pb: &cv::PixelBuf,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<ImageRequestHandler>>;
@@ -71,27 +71,27 @@ impl ImageRequestHandler {
     /// ```no_run
     /// use cidre::{ns, cv, cg, vn};
     ///
-    /// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
-    /// let handler = vn::ImageRequestHandler::with_cv_pixel_buffer(&pixel_buffer, None).unwrap();
+    /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let handler = vn::ImageRequestHandler::with_cv_pixel_buf(&pixel_buf, None).unwrap();
     /// let requests = ns::Array::new();
     /// handler.perform(&requests).unwrap();
     ///
     /// ````
     #[inline]
-    pub fn with_cv_pixel_buffer(
-        pb: &cv::PixelBuffer,
+    pub fn with_cv_pixel_buf(
+        pb: &cv::PixelBuf,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<Self>> {
-        Self::alloc().init_with_cv_pixel_buffer_options(pb, options)
+        Self::alloc().init_with_cv_pixel_buf_options(pb, options)
     }
 
     #[inline]
-    pub fn with_cv_pixel_buffer_and_orientation(
-        pb: &cv::PixelBuffer,
+    pub fn with_cv_pixel_buf_and_orientation(
+        pb: &cv::PixelBuf,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<Self>> {
-        Self::alloc().init_with_cv_pixel_buffer_orientaion_options(pb, orientation, options)
+        Self::alloc().init_with_cv_pixel_buf_orientaion_options(pb, orientation, options)
     }
 
     #[objc::msg_send(performRequests:error:)]
@@ -124,29 +124,29 @@ define_obj_type!(SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER);
 /// ```no_run
 /// use cidre::{ns, cv, cg, vn};
 ///
-/// let pixel_buffer = cv::PixelBuffer::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+/// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
 /// let handler = vn::SequenceRequestHandler::new();
 /// let requests = ns::Array::new();
-/// handler.perform_on_cv_pixel_buffer(&requests, &pixel_buffer).unwrap();
+/// handler.perform_on_cv_pixel_buf(&requests, &pixel_buf).unwrap();
 ///
 /// ````
 impl SequenceRequestHandler {
     #[objc::msg_send(performRequests:onCVPixelBuffer:error:)]
-    pub fn perform_requests_on_cv_pixel_buffer_err(
+    pub fn perform_requests_on_cv_pixel_buf_err(
         &self,
         requests: &ns::Array<vn::Request>,
-        pixel_buffer: &cv::PixelBuffer,
+        pixel_buf: &cv::PixelBuf,
         error: &mut Option<&ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cv_pixel_buffer<'ar>(
+    pub fn perform_on_cv_pixel_buf<'ar>(
         &self,
         requests: &ns::Array<vn::Request>,
-        pixel_buffer: &cv::PixelBuffer,
+        pixel_buf: &cv::PixelBuf,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        let res = self.perform_requests_on_cv_pixel_buffer_err(requests, pixel_buffer, &mut error);
+        let res = self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, &mut error);
 
         if res {
             Ok(())
@@ -155,23 +155,22 @@ impl SequenceRequestHandler {
         }
     }
     #[objc::msg_send(performRequests:onCMSampleBuffer:error:)]
-    pub fn perform_requests_on_cm_sample_buffer_err(
+    pub fn perform_requests_on_cm_sample_buf_err(
         &self,
         requests: &ns::Array<vn::Request>,
-        sample_buffer: &cm::SampleBuffer,
+        sample_buf: &cm::SampleBuf,
         error: &mut Option<&ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cm_sample_buffer<'ar>(
+    pub fn perform_on_cm_sample_buf<'ar>(
         &self,
         requests: &ns::Array<vn::Request>,
-        sample_buffer: &cm::SampleBuffer,
+        sample_buf: &cm::SampleBuf,
     ) -> Result<(), &'ar ns::Error> {
         unsafe {
             let mut error = None;
-            let res =
-                self.perform_requests_on_cm_sample_buffer_err(requests, sample_buffer, &mut error);
+            let res = self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, &mut error);
 
             if res {
                 Ok(())

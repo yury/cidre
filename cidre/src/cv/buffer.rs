@@ -7,9 +7,9 @@ pub enum AttachmentMode {
     ShouldPropagate = 1,
 }
 
-define_cf_type!(Buffer(cf::Type));
+define_cf_type!(Buf(cf::Type));
 
-impl Buffer {
+impl Buf {
     #[inline]
     pub fn attachment<'a>(
         &'a self,
@@ -49,7 +49,7 @@ impl Buffer {
     }
 
     #[inline]
-    pub fn propagate_attachments(&self, destination_buffer: &mut Buffer) {
+    pub fn propagate_attachments(&self, destination_buffer: &mut Buf) {
         unsafe { CVBufferPropagateAttachments(self, destination_buffer) }
     }
 
@@ -86,31 +86,31 @@ extern "C" {
     // static kCVBufferTimeScaleKey: &'static cf::String;
 
     fn CVBufferSetAttachment(
-        buffer: &mut Buffer,
+        buffer: &mut Buf,
         key: &cf::String,
         value: &cf::Type,
         attachment_mode: AttachmentMode,
     );
-    fn CVBufferRemoveAttachment(buffer: &mut Buffer, key: &cf::String);
-    fn CVBufferRemoveAllAttachments(buffer: &mut Buffer);
+    fn CVBufferRemoveAttachment(buffer: &mut Buf, key: &cf::String);
+    fn CVBufferRemoveAllAttachments(buffer: &mut Buf);
     fn CVBufferSetAttachments(
-        buffer: &mut Buffer,
+        buffer: &mut Buf,
         the_attachments: &cf::Dictionary,
         attachment_mode: AttachmentMode,
     );
-    fn CVBufferPropagateAttachments(source_buffer: &Buffer, destination_buffer: &mut Buffer);
+    fn CVBufferPropagateAttachments(source_buffer: &Buf, destination_buffer: &mut Buf);
     fn CVBufferCopyAttachments(
-        buffer: &Buffer,
+        buffer: &Buf,
         attachment_mode: AttachmentMode,
     ) -> Option<arc::R<cf::Dictionary>>;
     fn CVBufferCopyAttachment(
-        buffer: &Buffer,
+        buffer: &Buf,
         key: &cf::String,
         attachment_mode: AttachmentMode,
     ) -> Option<arc::R<cf::Type>>;
-    fn CVBufferHasAttachment(buffer: &Buffer, key: &cf::String) -> bool;
+    fn CVBufferHasAttachment(buffer: &Buf, key: &cf::String) -> bool;
     fn CVBufferGetAttachment<'a>(
-        buffer: &'a Buffer,
+        buffer: &'a Buf,
         key: &cf::String,
         attachment_mode: AttachmentMode,
     ) -> Option<&'a cf::Type>;

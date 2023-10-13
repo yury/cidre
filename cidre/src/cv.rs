@@ -11,15 +11,15 @@ pub use _return::Return;
 
 pub mod buffer;
 pub use buffer::AttachmentMode;
-pub use buffer::Buffer;
+pub use buffer::Buf;
 
 mod image_buffer;
 pub use image_buffer::attachment;
-pub use image_buffer::ImageBuffer;
+pub use image_buffer::ImageBuf;
 
 pub mod pixel_buffer;
 pub use pixel_buffer::keys as pixel_buffer_keys;
-pub use pixel_buffer::PixelBuffer;
+pub use pixel_buffer::PixelBuf;
 pub use pixel_buffer::PixelFormat;
 
 pub mod pixel_buffer_pool;

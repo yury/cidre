@@ -23,7 +23,7 @@ impl AudioDataOutputSampleBufferDelegateImpl for OutputDelegate {
         &mut self,
         _cmd: Option<&cidre::objc::Sel>,
         _output: &av::CaptureOutput,
-        sample_buffer: &cm::SampleBuffer,
+        sample_buffer: &cm::SampleBuf,
         _connection: &av::CaptureConnection,
     ) {
         println!("sample buffer: {:?}", sample_buffer.num_samples());
