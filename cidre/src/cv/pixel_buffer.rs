@@ -196,8 +196,38 @@ pub struct PixelFormat(pub os::Type);
 // https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput
 
 impl PixelFormat {
+    /// 1 bit indexed
     #[doc(alias = "kCVPixelFormatType_1Monochrome")]
-    pub const _1_MONOCHROME: Self = Self(0x00000001); /* 1 bit indexed */
+    pub const _1_MONOCHROME: Self = Self(0x00000001);
+
+    /// 2 bit indexed
+    #[doc(alias = "kCVPixelFormatType_2Indexed")]
+    pub const _2_INDEXED: Self = Self(0x00000002);
+
+    /// 4 bit indexed
+    #[doc(alias = "kCVPixelFormatType_4Indexed")]
+    pub const _4_INDEXED: Self = Self(0x00000004);
+
+    /// 8 bit indexed
+    #[doc(alias = "kCVPixelFormatType_8Indexed")]
+    pub const _8_INDEXED: Self = Self(0x00000008);
+
+    /// 1 bit indexed gray, white is zero
+    #[doc(alias = "kCVPixelFormatType_1IndexedGray_WhiteIsZero")]
+    pub const _1_INDEXED_GREY_WHITE_IS_ZERO: Self = Self(0x000000021);
+
+    /// 2 bit indexed gray, white is zero
+    #[doc(alias = "kCVPixelFormatType_2IndexedGray_WhiteIsZero")]
+    pub const _2_INDEXED_GREY_WHITE_IS_ZERO: Self = Self(0x000000022);
+
+    /// 4 bit indexed gray, white is zero
+    #[doc(alias = "kCVPixelFormatType_4IndexedGray_WhiteIsZero")]
+    pub const _4_INDEXED_GREY_WHITE_IS_ZERO: Self = Self(0x000000024);
+
+    /// 8 bit indexed gray, white is zero
+    #[doc(alias = "kCMPixelFormat_8IndexedGray_WhiteIsZero")]
+    #[doc(alias = "kCVPixelFormatType_8IndexedGray_WhiteIsZero")]
+    pub const _8_INDEXED_GREY_WHITE_IS_ZERO: Self = Self(0x000000028);
 
     #[doc(alias = "kCMPixelFormat_32BGRA")]
     #[doc(alias = "kCVPixelFormatType_32BGRA")]
@@ -210,10 +240,10 @@ impl PixelFormat {
     pub const LOSSY_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"-GRA"));
 
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
-    pub const _420V: Self = Self(os::Type::from_be_bytes(*b"420v"));
+    pub const _420V: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
     // TODO: how we can optimize that agly long consts?
     pub const _420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
-    pub const _420F: Self = Self(os::Type::from_be_bytes(*b"420f"));
+    pub const _420F: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
     pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-8v0"));
     pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self =

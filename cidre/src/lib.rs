@@ -59,7 +59,7 @@ pub mod io;
 #[cfg(feature = "blocks")]
 pub mod blocks;
 
-/// match
+/// mach
 pub mod mach;
 
 /// Metal
