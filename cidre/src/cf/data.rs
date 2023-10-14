@@ -120,7 +120,7 @@ impl DataMut {
 
     #[inline]
     pub fn as_slice_mut(&mut self) -> &mut [u8] {
-        unsafe { &mut *slice_from_raw_parts_mut(self.bytes_ptr_mut() as *mut u8, self.len()) }
+        unsafe { &mut *slice_from_raw_parts_mut(self.bytes_ptr_mut(), self.len()) }
     }
 
     #[cfg(feature = "ns")]
