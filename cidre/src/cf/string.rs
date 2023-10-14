@@ -137,6 +137,11 @@ impl String {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    #[inline]
     pub fn has_suffix(&self, suffix: &Self) -> bool {
         unsafe { CFStringHasSuffix(self, suffix) }
     }

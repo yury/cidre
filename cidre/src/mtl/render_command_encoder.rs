@@ -234,7 +234,7 @@ impl RenderCmdEncoder {
     pub fn set_vertex_slice_at<T>(&mut self, slice: &[T], at_index: usize) {
         self.set_vertex_bytes_at(
             slice.as_ptr().cast(),
-            slice.len() * std::mem::size_of::<T>(),
+            std::mem::size_of_val(slice),
             at_index,
         )
     }
@@ -304,7 +304,7 @@ impl RenderCmdEncoder {
     pub fn set_fragment_slice_at<T>(&mut self, slice: &[T], at_index: usize) {
         self.set_fragment_bytes_at(
             slice.as_ptr().cast(),
-            slice.len() * std::mem::size_of::<T>(),
+            std::mem::size_of_val(slice),
             at_index,
         )
     }
