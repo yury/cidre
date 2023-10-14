@@ -94,7 +94,7 @@ impl DataMut {
         unsafe { Self::new_in(capacity as _, None).unwrap_unchecked() }
     }
 
-    /// # Unsafety
+    /// # Safety
     ///
     /// use [`.push_bytes()`]
     #[inline]
@@ -107,6 +107,7 @@ impl DataMut {
         unsafe { self.append_bytes(bytes.as_ptr(), bytes.len() as _) }
     }
 
+    /// # Safety
     /// use `as_slice_mut()`
     #[inline]
     pub unsafe fn bytes_ptr_mut(&mut self) -> *mut u8 {
