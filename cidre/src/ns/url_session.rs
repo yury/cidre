@@ -196,6 +196,7 @@ impl arc::A<WebSocketMessage> {
     #[objc::msg_send(initWithString:)]
     pub fn init_with_string(self, string: &ns::String) -> arc::R<WebSocketMessage>;
 }
+
 impl WebSocketMessage {
     define_cls!(NS_URL_SESSION_WEB_SOCKET_MESSAGE);
 

@@ -26,7 +26,7 @@ impl TensorData {
 
     #[inline]
     pub fn with_slice_no_copy_ar<T: Sized>(slice: &[T]) -> arc::Rar<Self> {
-        Self::with_bytes_no_copy_ar(slice.as_ptr() as _, slice.len() * std::mem::size_of::<T>())
+        Self::with_bytes_no_copy_ar(slice.as_ptr() as _, std::mem::size_of_val(slice))
     }
 
     #[objc::cls_rar_retain]

@@ -312,7 +312,7 @@ impl TileRenderPipelineColorAttachmentDescriptorArray {
     pub fn obj_at(&self, index: usize) -> &TileRenderPipelineColorAttachmentDescriptor;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at_mut(&self, index: usize) -> &mut TileRenderPipelineColorAttachmentDescriptor;
+    pub fn obj_at_mut(&mut self, index: usize) -> &mut TileRenderPipelineColorAttachmentDescriptor;
 }
 
 impl std::ops::Index<usize> for TileRenderPipelineColorAttachmentDescriptorArray {

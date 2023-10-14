@@ -30,8 +30,8 @@ impl Session {
         output_callback: Option<OutputCallback<T>>,
         output_callback_ref_con: *mut T,
     ) -> Result<arc::R<Self>, os::Status> {
+        let mut session = None;
         unsafe {
-            let mut session = None;
             Self::create_in(
                 width as _,
                 height as _,

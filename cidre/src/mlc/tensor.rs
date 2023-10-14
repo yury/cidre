@@ -54,7 +54,7 @@ impl Tensor {
     ) -> Result<(), ()> {
         if self.copy_from_device_mem_to_bytes(
             buf.as_mut_ptr() as _,
-            buf.len() * std::mem::size_of::<T>(),
+            std::mem::size_of_val(buf),
             sync_with_device,
         ) {
             Ok(())

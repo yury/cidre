@@ -238,11 +238,7 @@ impl Device {
         slice: &[T],
         options: mtl::ResourceOptions,
     ) -> Option<arc::R<mtl::Buf>> {
-        self.new_buf_with_bytes(
-            slice.as_ptr() as _,
-            std::mem::size_of::<T>() * slice.len(),
-            options,
-        )
+        self.new_buf_with_bytes(slice.as_ptr() as _, std::mem::size_of_val(slice), options)
     }
 
     #[inline]

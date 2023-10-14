@@ -405,8 +405,8 @@ impl<F> Clone for BlMut<F> {
     #[inline]
     fn clone(&self) -> Self {
         unsafe {
-            let ptr = _Block_copy(mem::transmute(self));
-            Self(mem::transmute(ptr))
+            let ptr = _Block_copy(self as *const Self as *const _);
+            Self(&mut *(ptr as *mut Self))
         }
     }
 }

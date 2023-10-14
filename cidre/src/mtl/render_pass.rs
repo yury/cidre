@@ -132,7 +132,7 @@ impl Descriptor {
     pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor;
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attachment_mut(&self) -> &mut StencilAttachmentDescriptor;
+    pub fn stencil_attachment_mut(&mut self) -> &mut StencilAttachmentDescriptor;
 
     #[objc::msg_send(setStencilAttachment:)]
     pub fn set_stencil_attachment_option(&mut self, value: Option<&StencilAttachmentDescriptor>);
