@@ -15,6 +15,13 @@
 - Integrated async blocks
 - Zero cost Apple's C API interfaces
 
+### Platforms
+
+- [x] MacOS
+- [x] iOS/iPadOS
+- [ ] tvOS
+- [ ] watchOS
+
 ### Shortcuts
 
 - length -> len
