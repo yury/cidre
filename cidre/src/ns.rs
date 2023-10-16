@@ -166,6 +166,7 @@ pub use coder::Coder;
 pub use coder::DecodingFailurePolicy;
 
 mod key_value_observing;
+pub use key_value_observing::CidreObserver;
 pub use key_value_observing::KVChange;
 pub use key_value_observing::KVChangeKey;
 pub use key_value_observing::KVOOptions;
