@@ -341,14 +341,6 @@ pub mod attachment {
             unsafe { kCVImageBufferTransferFunction_UseGamma }
         }
 
-        pub fn ebu_3213() -> &'static cf::String {
-            unsafe { kCVImageBufferTransferFunction_EBU_3213 }
-        }
-
-        pub fn smpte_c() -> &'static cf::String {
-            unsafe { kCVImageBufferTransferFunction_SMPTE_C }
-        }
-
         pub fn srgb() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_sRGB }
         }
@@ -377,8 +369,6 @@ pub mod attachment {
             static kCVImageBufferTransferFunction_ITU_R_709_2: &'static cf::String;
             static kCVImageBufferTransferFunction_SMPTE_240M_1995: &'static cf::String;
             static kCVImageBufferTransferFunction_UseGamma: &'static cf::String;
-            static kCVImageBufferTransferFunction_EBU_3213: &'static cf::String;
-            static kCVImageBufferTransferFunction_SMPTE_C: &'static cf::String;
             static kCVImageBufferTransferFunction_sRGB: &'static cf::String;
             static kCVImageBufferTransferFunction_ITU_R_2020: &'static cf::String;
             static kCVImageBufferTransferFunction_SMPTE_ST_428_1: &'static cf::String;
