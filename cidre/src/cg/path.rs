@@ -621,6 +621,7 @@ extern "C" {
     ) -> bool;
 
     fn CGPathApply(path: &Path, info: *mut c_void, function: PathApplierFn<c_void>);
+    #[cfg(feature = "blocks")]
     fn CGPathApplyWithBlock(path: &Path, block: *mut c_void);
     fn CGPathCreateCopyByNormalizing(path: &Path, even_odd_fill_rule: bool) -> arc::R<Path>;
     fn CGPathCreateCopyByUnioningPath(

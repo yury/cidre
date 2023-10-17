@@ -1,4 +1,7 @@
-use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 use super::KVObserverRegistration;
 
@@ -17,11 +20,13 @@ define_obj_type!(BlockOperation(Operation));
 impl BlockOperation {
     define_cls!(NS_BLOCK_OPERATION);
 
+    #[cfg(feature = "blocks")]
     #[objc::cls_msg_send(blockOperationWithBlock:)]
     pub fn with_block_ar<F>(block: &'static mut blocks::Block<F>) -> arc::Rar<Self>
     where
         F: FnOnce();
 
+    #[cfg(feature = "blocks")]
     #[objc::cls_rar_retain]
     pub fn with_block<F>(block: &'static mut blocks::Block<F>) -> arc::R<Self>
     where

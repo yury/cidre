@@ -254,6 +254,8 @@ extern "C" {
         source_frame_ref_con: *mut c_void,
         info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Status;
+
+    #[cfg(feature = "blocks")]
     fn VTCompressionSessionEncodeFrameWithOutputHandler(
         session: &Session,
         image_buffer: &cv::ImageBuf,
