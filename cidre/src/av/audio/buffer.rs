@@ -8,10 +8,10 @@ use crate::{
 
 use super::{Format, FrameCount, PacketCount};
 
-define_obj_type!(Buffer(ns::Id));
+define_obj_type!(Buf(ns::Id));
 
 /// A buffer of audio data, with a format.
-impl Buffer {
+impl Buf {
     #[objc::msg_send(format)]
     pub fn format(&self) -> &Format;
 
@@ -22,20 +22,20 @@ impl Buffer {
     pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList;
 }
 
-define_obj_type!(PCMBuffer(Buffer));
+define_obj_type!(PcmBuf(Buf));
 
-impl arc::A<PCMBuffer> {
+impl arc::A<PcmBuf> {
     #[objc::msg_send(initWithPCMFormat:frameCapacity:)]
     pub fn init_with_pcm_format_frame_capacity(
         self,
         format: &Format,
         frame_capacity: FrameCount,
-    ) -> Option<arc::R<PCMBuffer>>;
+    ) -> Option<arc::R<PcmBuf>>;
 }
 
 /// Provides a number of methods useful for manipulating buffers of
 /// audio in PCM format.
-impl PCMBuffer {
+impl PcmBuf {
     define_cls!(AV_AUDIO_PCM_BUFFER);
 
     pub fn with_format_and_frame_capacity(
@@ -68,15 +68,15 @@ impl PCMBuffer {
     pub fn frame_capacity(&self) -> FrameCount;
 }
 
-define_obj_type!(CompressedBuffer(ns::Id));
+define_obj_type!(CompressedBuf(ns::Id));
 
-impl arc::A<CompressedBuffer> {
+impl arc::A<CompressedBuf> {
     #[objc::msg_send(initWithFormat:packetCapacity:)]
     pub fn init_with_format_and_packet_capacity(
         self,
         format: &Format,
         packet_capacity: PacketCount,
-    ) -> arc::R<CompressedBuffer>;
+    ) -> arc::R<CompressedBuf>;
 
     #[objc::msg_send(initWithFormat:packetCapacity:maximumPacketSize:)]
     pub fn init_with_format_packet_capacity_and_maximum_packet_size(
@@ -84,11 +84,11 @@ impl arc::A<CompressedBuffer> {
         format: &Format,
         packet_capacity: PacketCount,
         maximum_packet_size: isize,
-    ) -> arc::R<CompressedBuffer>;
+    ) -> arc::R<CompressedBuf>;
 }
 
 /// Use with compressed audio formats.
-impl CompressedBuffer {
+impl CompressedBuf {
     define_cls!(AV_AUDIO_COMPRESSED_BUFFER);
 
     /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
@@ -155,6 +155,6 @@ impl CompressedBuffer {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PCMBuffer>;
-    static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuffer>;
+    static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PcmBuf>;
+    static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuf>;
 }

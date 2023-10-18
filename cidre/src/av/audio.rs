@@ -55,9 +55,9 @@ pub mod session;
 pub use session::Session;
 
 mod buffer;
-pub use buffer::Buffer;
-pub use buffer::CompressedBuffer;
-pub use buffer::PCMBuffer;
+pub use buffer::Buf;
+pub use buffer::CompressedBuf;
+pub use buffer::PcmBuf;
 
 mod format;
 pub use format::CommonFormat;

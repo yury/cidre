@@ -52,7 +52,7 @@ impl Node {
         format: Option<&av::AudioFormat>,
         tap_block: &'static Block<B>,
     ) where
-        B: FnMut(&'b av::AudioPCMBuffer, &'b av::AudioTime);
+        B: FnMut(&'b av::AudioPcmBuf, &'b av::AudioTime);
 
     #[objc::msg_send(removeTapOnBus:)]
     pub fn remove_tap_on_bus(&mut self, bus: av::AudioNodeBus);

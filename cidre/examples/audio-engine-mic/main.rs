@@ -13,7 +13,7 @@ fn main() {
         input.set_voice_processing_enabled(true).unwrap();
     }
 
-    let mut tap = blocks::mut2(|buffer: &av::AudioPCMBuffer, when: &av::AudioTime| {
+    let mut tap = blocks::mut2(|buffer: &av::AudioPcmBuf, when: &av::AudioTime| {
         println!("{buffer:?} {when:?} {:?}", buffer.format());
     });
 

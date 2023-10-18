@@ -98,16 +98,16 @@ impl Converter {
     #[objc::msg_send(convertToBuffer:fromBuffer:error:)]
     pub unsafe fn convert_to_buffer_from_buffer_err(
         &self,
-        output_buffer: &mut av::AudioPCMBuffer,
-        from_buffer: &av::AudioPCMBuffer,
+        output_buffer: &mut av::AudioPcmBuf,
+        from_buffer: &av::AudioPcmBuf,
         error: &mut Option<&cf::Error>,
     ) -> bool;
 
     #[inline]
     pub fn convert_to_buffer_from_buffer(
         &self,
-        output_buffer: &mut av::AudioPCMBuffer,
-        from_buffer: &av::AudioPCMBuffer,
+        output_buffer: &mut av::AudioPcmBuf,
+        from_buffer: &av::AudioPcmBuf,
     ) -> Result<(), arc::R<cf::Error>> {
         unsafe {
             let mut error = None;
@@ -126,7 +126,7 @@ impl Converter {
     #[objc::msg_send(convertToBuffer:error:withInputFromBlock:)]
     pub unsafe fn convert_to_buffer_err_with_input_from_block(
         &self,
-        output_buffer: &mut av::AudioBuffer,
+        output_buffer: &mut av::AudioBuf,
         error: &mut Option<&cf::Error>,
         block: *mut c_void,
     ) -> OutputStatus;
@@ -139,11 +139,11 @@ impl Converter {
     #[inline]
     pub fn convert_to_buffer_with_input_from_block<'ar, F>(
         &self,
-        output_buffer: &mut av::AudioBuffer,
+        output_buffer: &mut av::AudioBuf,
         block: &mut blocks::Block<F>,
     ) -> Result<OutputStatus, arc::R<cf::Error>>
     where
-        F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<&'ar av::AudioBuffer>,
+        F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<&'ar av::AudioBuf>,
     {
         unsafe {
             let mut error = None;

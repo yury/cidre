@@ -33,7 +33,7 @@ impl PlayerNode {
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
     pub unsafe fn schedule_buffer_completion_hander(
         &self,
-        buffer: &av::AudioPCMBuffer,
+        buffer: &av::AudioPcmBuf,
         handler: *mut c_void,
     );
 
@@ -41,7 +41,7 @@ impl PlayerNode {
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
     #[inline]
-    pub fn schedule_buffer(&self, buffer: &av::AudioPCMBuffer) {
+    pub fn schedule_buffer(&self, buffer: &av::AudioPcmBuf) {
         unsafe { self.schedule_buffer_completion_hander(buffer, std::ptr::null_mut()) }
     }
 

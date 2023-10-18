@@ -233,7 +233,7 @@ impl Engine {
     pub fn render_offline_err<'ar>(
         &mut self,
         number_of_frames: av::AudioFrameCount,
-        to_buf: &mut av::audio::PCMBuffer,
+        to_buf: &mut av::audio::PcmBuf,
         error: *mut Option<&'ar ns::Error>,
     ) -> av::audio::EngineManualRenderingStatus;
 
@@ -241,7 +241,7 @@ impl Engine {
     pub fn render_offline<'ar>(
         &mut self,
         number_of_frames: av::AudioFrameCount,
-        to_buf: &mut av::audio::PCMBuffer,
+        to_buf: &mut av::audio::PcmBuf,
     ) -> Result<av::audio::EngineManualRenderingStatus, &'ar ns::Error> {
         let mut error = None;
         let status = self.render_offline_err(number_of_frames, to_buf, &mut error);
@@ -319,8 +319,7 @@ mod tests {
             format.channel_count()
         );
 
-        let mut pcm_buf =
-            av::audio::PCMBuffer::with_format_and_frame_capacity(&format, 1024).unwrap();
+        let mut pcm_buf = av::audio::PcmBuf::with_format_and_frame_capacity(&format, 1024).unwrap();
 
         pcm_buf.set_frame_length(1024);
 
