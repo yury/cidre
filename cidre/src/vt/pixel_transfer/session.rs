@@ -16,10 +16,8 @@ impl Session {
 
     #[inline]
     pub fn create_in(allocator: Option<&cf::Allocator>) -> Result<arc::R<Self>, os::Status> {
-        unsafe {
-            let mut result = None;
-            VTPixelTransferSessionCreate(allocator, &mut result).to_result_unchecked(result)
-        }
+        let mut result = None;
+        unsafe { VTPixelTransferSessionCreate(allocator, &mut result).to_result_unchecked(result) }
     }
 
     pub fn set_realtime(&mut self, value: bool) -> Result<(), os::Status> {

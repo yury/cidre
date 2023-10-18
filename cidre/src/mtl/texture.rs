@@ -261,14 +261,14 @@ mod tests {
     #[test]
     fn basics1() {
         let mut td = mtl::TextureDescriptor::new_2d_with_pixel_format(
-            mtl::PixelFormat::A8Unorm,
+            mtl::PixelFormat::A8UNorm,
             100,
             200,
             false,
         );
 
         assert_eq!(td.texture_type(), mtl::TextureType::_2D);
-        assert_eq!(td.pixel_format(), mtl::PixelFormat::A8Unorm);
+        assert_eq!(td.pixel_format(), mtl::PixelFormat::A8UNorm);
         assert_eq!(td.width(), 100);
         assert_eq!(td.height(), 200);
         assert_eq!(td.depth(), 1);
@@ -286,7 +286,7 @@ mod tests {
     #[test]
     fn basics2() {
         let td = mtl::TextureDescriptor::new_cube_with_pixel_format(
-            mtl::PixelFormat::A8Unorm,
+            mtl::PixelFormat::A8UNorm,
             100,
             false,
         );
@@ -299,7 +299,7 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
-            mtl::PixelFormat::A8Unorm,
+            mtl::PixelFormat::A8UNorm,
             100,
             200,
             false,
@@ -317,7 +317,7 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
-            mtl::PixelFormat::A8Unorm,
+            mtl::PixelFormat::A8UNorm,
             100,
             200,
             false,
@@ -332,7 +332,7 @@ mod tests {
         assert_eq!(t.io_surface_plane(), 0);
 
         let tv = t
-            .texture_view_with_pixel_format(mtl::PixelFormat::A8Unorm)
+            .texture_view_with_pixel_format(mtl::PixelFormat::A8UNorm)
             .unwrap();
 
         assert!(tv.parent_texture().is_some());

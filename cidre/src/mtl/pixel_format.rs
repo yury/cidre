@@ -1,132 +1,327 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum PixelFormat {
+    /// The default value of the pixel format for the mtl::RenderPipelineState.
+    /// You cannot create a texture with this value.
+    #[doc(alias = "MTLPixelFormatInvalid")]
     Invalid = 0,
 
     /* Normal 8 bit formats */
-    A8Unorm = 1,
-    R8Unorm = 10,
-    R8UnormSRGB = 11,
-    R8Snorm = 12,
-    R8Uint = 13,
-    R8Sint = 14,
+    /// Ordinary format with one 8-bit normalized unsigned integer component
+    #[doc(alias = "MTLPixelFormatA8Unorm")]
+    A8UNorm = 1,
+
+    /// Ordinary format with one 8-bit normalized unsigned integer component
+    #[doc(alias = "MTLPixelFormatR8Unorm")]
+    R8UNorm = 10,
+
+    /// Ordinary format with one 8-bit normalized unsigned integer component with conversion between sRGB and linear space.
+    #[doc(alias = "MTLPixelFormatR8Unorm_sRGB")]
+    R8UNormSrgb = 11,
+
+    /// Ordinary format with one 8-bit normalized signed integer component.
+    #[doc(alias = "MTLPixelFormatR8Snorm")]
+    R8SNorm = 12,
+
+    /// Ordinary format with one 8-bit unsigned integer component.
+    #[doc(alias = "MTLPixelFormatR8Uint")]
+    R8UInt = 13,
+
+    /// Ordinary format with one 8-bit signed integer component.
+    #[doc(alias = "MTLPixelFormatR8Sint")]
+    R8SInt = 14,
 
     /* Normal 16 bit formats */
-    R16Unorm = 20,
-    R16Snorm = 22,
-    R16Uint = 23,
-    R16Sint = 24,
+    /// Ordinary format with one 16-bit normalized unsigned integer component.
+    #[doc(alias = "MTLPixelFormatR16Unorm")]
+    R16UNorm = 20,
+
+    /// Ordinary format with one 16-bit normalized signed integer component.
+    #[doc(alias = "MTLPixelFormatR16Snorm")]
+    R16SNorm = 22,
+
+    /// Ordinary format with one 16-bit unsigned integer component.
+    #[doc(alias = "MTLPixelFormatR16Uint")]
+    R16UInt = 23,
+
+    /// Ordinary format with one 16-bit signed integer component.
+    #[doc(alias = "MTLPixelFormatR16Sint")]
+    R16SInt = 24,
+
+    /// Ordinary format with one 16-bit floating-point component.
+    #[doc(alias = "MTLPixelFormatR16Float")]
     R16Float = 25,
 
-    RG8Unorm = 30,
-    RG8UnormSRGB = 31,
-    RG8Snorm = 32,
-    RG8Uint = 33,
-    RG8Sint = 34,
+    /// Ordinary format with two 8-bit normalized unsigned integer components.
+    #[doc(alias = "MTLPixelFormatRG8Unorm")]
+    Rg8UNorm = 30,
+
+    /// Ordinary format with two 8-bit normalized unsigned integer components with conversion between sRGB and linear space.
+    #[doc(alias = "MTLPixelFormatRG8Unorm_sRGB")]
+    Rg8UNormSrgb = 31,
+
+    /// Ordinary format with two 8-bit normalized signed integer components.
+    #[doc(alias = "MTLPixelFormatRG8Snorm")]
+    Rg8SNorm = 32,
+
+    /// Ordinary format with two 8-bit unsigned integer components.
+    #[doc(alias = "MTLPixelFormatRG8Uint")]
+    Rg8UInt = 33,
+
+    /// Ordinary format with two 8-bit signed integer components.
+    #[doc(alias = "MTLPixelFormatRG8Sint")]
+    Rg8SInt = 34,
 
     /* Packed 16 bit formats */
-    B5G6R5Unorm = 40,
-    A1BGR5Unorm = 41,
-    ABGR4Unorm = 42,
-    BGR5A1Unorm = 43,
+    /// Packed 16-bit format with normalized unsigned integer color components: 5 bits for blue, 6 bits for green, 5 bits for red, packed into 16 bits.
+    #[doc(alias = "MTLPixelFormatB5G6R5Unorm")]
+    B5G6R5UNorm = 40,
+
+    /// Packed 16-bit format with normalized unsigned integer color components: 5 bits each for BGR and 1 for alpha, packed into 16 bits.
+    #[doc(alias = "MTLPixelFormatA1BGR5Unorm")]
+    A1BGR5UNorm = 41,
+
+    /// Packed 16-bit format with normalized unsigned integer color components: 4 bits each for ABGR, packed into 16 bits.
+    #[doc(alias = "MTLPixelFormatABGR4Unorm")]
+    Abgr4UNorm = 42,
+
+    /// Packed 16-bit format with normalized unsigned integer color components: 5 bits each for BGR and 1 for alpha, packed into 16 bits.
+    #[doc(alias = "MTLPixelFormatBGR5A1Unorm")]
+    Bgr5A1UNorm = 43,
 
     /* Normal 32 bit formats */
-    R32Uint = 53,
-    R32Sint = 54,
+    /// Ordinary format with one 32-bit unsigned integer component.
+    #[doc(alias = "MTLPixelFormatR32Uint")]
+    R32UInt = 53,
+
+    /// Ordinary format with one 32-bit signed integer component.
+    #[doc(alias = "MTLPixelFormatR32Sint")]
+    R32SInt = 54,
+
+    /// Ordinary format with one 32-bit floating-point component.
+    #[doc(alias = "MTLPixelFormatR32Float")]
     R32Float = 55,
 
-    RG16Unorm = 60,
-    RG16Snorm = 62,
-    RG16Uint = 63,
-    RG16Sint = 64,
-    RG16Float = 65,
+    /// Ordinary format with two 16-bit normalized unsigned integer components.
+    #[doc(alias = "MTLPixelFormatRG16Unorm")]
+    Rg16UNorm = 60,
 
-    RGBA8Unorm = 70,
-    RGBA8UnormSRGB = 71,
-    RGBA8Snorm = 72,
-    RGBA8Uint = 73,
-    RGBA8Sint = 74,
+    /// Ordinary format with two 16-bit normalized signed integer components.
+    #[doc(alias = "MTLPixelFormatRG16Snorm")]
+    Rg16SNorm = 62,
 
-    BGRA8Unorm = 80,
-    BGRA8UnormSRGB = 81,
+    /// Ordinary format with two 16-bit unsigned integer components.
+    #[doc(alias = "MTLPixelFormatRG16Uint")]
+    Rg16UInt = 63,
+
+    /// Ordinary format with two 16-bit signed integer components.
+    #[doc(alias = "MTLPixelFormatRG16Sint")]
+    Rg16SInt = 64,
+
+    /// Ordinary format with two 16-bit floating-point components.
+    #[doc(alias = "MTLPixelFormatRG16Float")]
+    Rg16Float = 65,
+
+    /// Ordinary format with four 8-bit normalized unsigned integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA8Unorm")]
+    Rgba8UNorm = 70,
+
+    /// Ordinary format with four 8-bit normalized unsigned integer components in RGBA order with conversion between sRGB and linear space.
+    #[doc(alias = "MTLPixelFormatRGBA8Unorm_sRGB")]
+    Rgba8UNormSrgb = 71,
+
+    /// Ordinary format with four 8-bit normalized signed integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA8Snorm")]
+    Rgba8SNorm = 72,
+
+    /// Ordinary format with four 8-bit unsigned integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA8Sint")]
+    Rgba8UInt = 73,
+
+    /// Ordinary format with four 8-bit signed integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA8Sint")]
+    Rgba8SInt = 74,
+
+    /// Ordinary format with four 8-bit normalized unsigned integer components in BGRA order.
+    #[doc(alias = "MTLPixelFormatBGRA8Unorm")]
+    Bgra8UNorm = 80,
+
+    /// Ordinary format with four 8-bit normalized unsigned integer components in BGRA order with conversion between sRGB and linear space.
+    #[doc(alias = "MTLPixelFormatBGRA8Unorm_sRGB")]
+    Bgra8UNormSrgb = 81,
 
     /* Packed 32 bit formats */
-    RGB10A2Unorm = 90,
-    RGB10A2Uint = 91,
+    /// A 32-bit packed pixel format with four normalized unsigned integer components:
+    /// 10-bit red, 10-bit green, 10-bit blue, and 2-bit alpha.
+    #[doc(alias = "MTLPixelFormatRGB10A2Unorm")]
+    Rgb10A2UNorm = 90,
 
-    RG11B10Float = 92,
-    RGB9E5Float = 93,
+    /// A 32-bit packed pixel format with four unsigned integer components: 10-bit red, 10-bit green, 10-bit blue, and 2-bit alpha.
+    ///
+    /// Pixel data is stored in red, green, blue, and alpha order, from least significant bit to most significant bit.
+    #[doc(alias = "MTLPixelFormatRGB10A2Uint")]
+    Rgb10A2UInt = 91,
 
-    BGR10A2Unorm = 94,
+    /// 32-bit format with floating-point color components, 11 bits each for red and green and 10 bits for blue.
+    #[doc(alias = "MTLPixelFormatRG11B10Float")]
+    Rg11B10Float = 92,
 
-    BGR10XR = 554,
-    BGR10XRSRGB = 555,
+    /// Packed 32-bit format with floating-point color components: 9 bits each for RGB and 5 bits for an exponent shared by RGB, packed into 32 bits.
+    #[doc(alias = "MTLPixelFormatRGB9E5Float")]
+    Rgb9E5Float = 93,
+
+    /// A 32-bit packed pixel format with four normalized unsigned integer components:
+    /// 10-bit blue, 10-bit green, 10-bit red, and 2-bit alpha.
+    #[doc(alias = "MTLPixelFormatBGR10A2Unorm")]
+    Bgr10A2UNorm = 94,
+
+    /// A 32-bit extended range pixel format with three fixed-point components:
+    /// 10-bit blue, 10-bit green, and 10-bit red.
+    #[doc(alias = "MTLPixelFormatBGR10_XR")]
+    Bgr10Xr = 554,
+
+    /// A 32-bit extended range pixel format with sRGB conversion and three fixed-point components:
+    /// 10-bit blue, 10-bit green, and 10-bit red.
+    #[doc(alias = "MTLPixelFormatBGR10_XR_sRGB")]
+    Bgr10XrSrgb = 555,
 
     /* Normal 64 bit formats */
-    RG32Uint = 103,
-    RG32Sint = 104,
-    RG32Float = 105,
+    /// Ordinary format with two 32-bit unsigned integer components.
+    #[doc(alias = "MTLPixelFormatRG32Uint")]
+    Rg32UInt = 103,
 
-    RGBA16Unorm = 110,
-    RGBA16Snorm = 112,
-    RGBA16Uint = 113,
-    RGBA16Sint = 114,
-    RGBA16Float = 115,
+    /// Ordinary format with two 32-bit signed integer components.
+    #[doc(alias = "MTLPixelFormatRG32Sint")]
+    Rg32SInt = 104,
 
-    ASTC4x4sRGB = 186,
-    ASTC5x4sRGB = 187,
-    ASTC5x5sRGB = 188,
-    ASTC6x5sRGB = 189,
-    ASTC6x6sRGB = 190,
-    ASTC8x5sRGB = 192,
-    ASTC8x6sRGB = 193,
-    ASTC8x8sRGB = 194,
-    ASTC10x5sRGB = 195,
-    ASTC10x6sRGB = 196,
-    ASTC10x8sRGB = 197,
-    ASTC10x10sRGB = 198,
-    ASTC12x10sRGB = 199,
-    ASTC12x12sRGB = 200,
+    /// Ordinary format with two 32-bit floating-point components.
+    #[doc(alias = "MTLPixelFormatRG32Float")]
+    Rg32Float = 105,
 
-    ASTC4x4LDR = 204,
-    ASTC5x4LDR = 205,
-    ASTC5x5LDR = 206,
-    ASTC6x5LDR = 207,
-    ASTC6x6LDR = 208,
-    ASTC8x5LDR = 210,
-    ASTC8x6LDR = 211,
-    ASTC8x8LDR = 212,
-    ASTC10x5LDR = 213,
-    ASTC10x6LDR = 214,
-    ASTC10x8LDR = 215,
-    ASTC10x10LDR = 216,
-    ASTC12x10LDR = 217,
-    ASTC12x12LDR = 218,
+    /// Ordinary format with four 16-bit normalized unsigned integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA16Unorm")]
+    Rgba16UNorm = 110,
 
-    ASTC4x4HDR = 222,
-    ASTC5x4HDR = 223,
-    ASTC5x5HDR = 224,
-    ASTC6x5HDR = 225,
-    ASTC6x6HDR = 226,
-    ASTC8x5HDR = 228,
-    ASTC8x6HDR = 229,
-    ASTC8x8HDR = 230,
-    ASTC10x5HDR = 231,
-    ASTC10x6HDR = 232,
-    ASTC10x8HDR = 233,
-    ASTC10x10HDR = 234,
-    ASTC12x10HDR = 235,
-    ASTC12x12HDR = 236,
+    /// Ordinary format with four 16-bit normalized signed integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA16Snorm")]
+    Rgba16Snorm = 112,
 
-    BGRA10XR = 552,
-    BGRA10XRSRGB = 553,
+    /// Ordinary format with four 16-bit unsigned integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA16Uint")]
+    Rgba16UInt = 113,
 
+    /// Ordinary format with four 16-bit signed integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA16Sint")]
+    Rgba16SInt = 114,
+
+    /// Ordinary format with four 16-bit floating-point components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA16Float")]
+    Rgba16Float = 115,
+
+    /// A 64-bit extended range pixel format with four fixed-point components:
+    /// 10-bit blue, 10-bit green, 10-bit red, and 10-bit alpha.
+    #[doc(alias = "MTLPixelFormatBGRA10_XR")]
+    Bgra10Xr = 552,
+
+    /// A 64-bit extended range pixel format with sRGB conversion and four fixed-point components:
+    /// 10-bit blue, 10-bit green, 10-bit red, and 10-bit alpha.
+    #[doc(alias = "MTLPixelFormatBGRA10_XR_sRGB")]
+    Bgra10XrSrgb = 553,
+
+    Astc4x4Srgb = 186,
+    Astc5x4Srgb = 187,
+    Astc5x5Srgb = 188,
+    Astc6x5Srgb = 189,
+    Astc6x6Srgb = 190,
+    Astc8x5Srgb = 192,
+    Astc8x6Srgb = 193,
+    Astc8x8Srgb = 194,
+    Astc10x5Srgb = 195,
+    Astc10x6Srgb = 196,
+    Astc10x8Srgb = 197,
+    Astc10x10Srgb = 198,
+    Astc12x10Srgb = 199,
+    Astc12x12Srgb = 200,
+
+    Astc4x4Ldr = 204,
+    Astc5x4Ldr = 205,
+    Astc5x5Ldr = 206,
+    Astc6x5Ldr = 207,
+    Astc6x6Ldr = 208,
+    Astc8x5Ldr = 210,
+    Astc8x6Ldr = 211,
+    Astc8x8Ldr = 212,
+    Astc10x5Ldr = 213,
+    Astc10x6Ldr = 214,
+    Astc10x8Ldr = 215,
+    Astc10x10Ldr = 216,
+    Astc12x10Ldr = 217,
+    Astc12x12Ldr = 218,
+
+    Astc4x4Hdr = 222,
+    Astc5x4Hdr = 223,
+    Astc5x5Hdr = 224,
+    Astc6x5Hdr = 225,
+    Astc6x6Hdr = 226,
+    Astc8x5Hdr = 228,
+    Astc8x6Hdr = 229,
+    Astc8x8Hdr = 230,
+    Astc10x5Hdr = 231,
+    Astc10x6Hdr = 232,
+    Astc10x8Hdr = 233,
+    Astc10x10Hdr = 234,
+    Astc12x10Hdr = 235,
+    Asrc12x12Hdr = 236,
+
+    /// A pixel format where the red and green channels are subsampled horizontally.
+    /// Two pixels are stored in 32 bits, with shared red and blue values, and unique green values.
+    #[doc(alias = "MTLPixelFormatGBGR422")]
+    Gbgr422 = 240,
+
+    /// A pixel format where the red and green channels are subsampled horizontally.
+    /// Two pixels are stored in 32 bits, with shared red and blue values, and unique green values.
+    #[doc(alias = "MTLPixelFormatBGRG422")]
+    Bgrg422 = 241,
+
+    /// A pixel format with a 16-bit normalized unsigned integer component, used for a depth render target.
+    #[doc(alias = "MTLPixelFormatDepth16Unorm")]
     Depth16Unorm = 250,
+
+    /// A pixel format with one 32-bit floating-point component, used for a depth render target.
+    #[doc(alias = "MTLPixelFormatDepth32Float")]
     Depth32Float = 252,
+
+    /// A pixel format with an 8-bit unsigned integer component, used for a stencil render target.
+    #[doc(alias = "MTLPixelFormatStencil8")]
     Stencil8 = 253,
+
+    /// A 32-bit combined depth and stencil pixel format with a 24-bit normalized unsigned integer for depth and an 8-bit unsigned integer for stencil.
+    #[doc(alias = "MTLPixelFormatDepth24Unorm_Stencil8")]
     Depth24UnormStencil8 = 255,
+
+    /// A 40-bit combined depth and stencil pixel format with a 32-bit floating-point value for depth and an 8-bit unsigned integer for stencil.
+    ///
+    /// When using this format, some Metal device objects allocate 64-bits per pixel.
+    #[doc(alias = "MTLPixelFormatDepth32Float_Stencil8")]
     Depth32FloatStencil8 = 260,
 
+    /// A stencil pixel format used to read the stencil value from a texture with a combined 32-bit
+    /// depth and 8-bit stencil value.
+    ///
+    /// You can't directly read the stencil value of a texture with the `mtl::PixelFormat::Depth32FloatStencil8`
+    /// format. To read stencil values from a texture with the `mtl::PixelFormat::Depth32FloatStencil8` format,
+    /// create a texture view of that texture using the `mtl::PixelFormat::X32Stencil8` format, and sample the
+    /// texture view instead.
+    #[doc(alias = "MTLPixelFormatX32_Stencil8")]
     X32Stencil8 = 261,
+
+    /// A stencil pixel format used to read the stencil value from a texture with a combined 24-bit
+    /// depth and 8-bit stencil value.
+    ///
+    /// You can't directly read the stencil value of a texture with the `mtl::PixelFormat::Depth24UnormStencil8`
+    /// format. To read stencil values from a texture with the `mtl::PixelFormat::Depth24UnormStencil8` format,
+    /// create a texture view of that texture using the `mtl::PixelFormat::X24Stencil8` format,
+    /// and sample the texture view instead.
+    #[doc(alias = "MTLPixelFormatX24_Stencil8")]
     X24Stencil8 = 262,
 }

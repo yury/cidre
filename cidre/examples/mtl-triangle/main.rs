@@ -74,12 +74,12 @@ fn main() {
         let mut desc = mtl::RenderPipelineDescriptor::new().with_fns(&vertex_fn, &fragment_fn);
 
         desc.set_raster_sample_count(4);
-        desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::RGBA8Unorm);
+        desc.color_attachments_mut()[0].set_pixel_format(mtl::PixelFormat::Rgba8UNorm);
 
         let render_ps = device.new_render_ps(&desc).unwrap();
 
         let render_texture_desc = mtl::TextureDescriptor::new_2d_with_pixel_format(
-            mtl::PixelFormat::RGBA8Unorm,
+            mtl::PixelFormat::Rgba8UNorm,
             1920,
             1080,
             false,

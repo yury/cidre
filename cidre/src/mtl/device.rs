@@ -369,7 +369,7 @@ mod tests {
         assert!(device.new_default_lib().is_none());
 
         let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
-            mtl::PixelFormat::A8Unorm,
+            mtl::PixelFormat::A8UNorm,
             100,
             200,
             false,
