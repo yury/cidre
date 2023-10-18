@@ -204,7 +204,7 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionGetPixelBufferPool")]
     #[inline]
-    pub fn pixel_buffer_pool(&self) -> Option<&cv::PixelBufferPool> {
+    pub fn pixel_buffer_pool(&self) -> Option<&cv::PixelBufPool> {
         unsafe { VTCompressionSessionGetPixelBufferPool(self) }
     }
 
@@ -266,7 +266,7 @@ extern "C" {
         output_handler: *mut c_void,
     ) -> os::Status;
 
-    fn VTCompressionSessionGetPixelBufferPool(session: &Session) -> Option<&cv::PixelBufferPool>;
+    fn VTCompressionSessionGetPixelBufferPool(session: &Session) -> Option<&cv::PixelBufPool>;
     fn VTCompressionSessionCompleteFrames(
         session: &Session,
         complete_until_pts: cm::Time,

@@ -15,7 +15,7 @@ impl Flags {
     pub const AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT: Self = Self(1 << 0);
 }
 
-pub type SampleBufferMakeDataReadyCallback =
+pub type SampleBufMakeDataReadyCallback =
     extern "C" fn(sbuf: &SampleBuf, make_data_ready_refcon: *const c_void);
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -146,7 +146,7 @@ impl SampleBuf {
         allocator: Option<&cf::Allocator>,
         data_buffer: Option<&cm::BlockBuf>,
         data_ready: bool,
-        make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
+        make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: Option<&cm::FormatDescription>,
         num_samples: cm::ItemCount,
@@ -177,7 +177,7 @@ impl SampleBuf {
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuf,
         data_ready: bool,
-        make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
+        make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDescription,
         sample_timing: &SampleTimingInfo,
@@ -202,7 +202,7 @@ impl SampleBuf {
     pub fn create_for_image_buffer(
         image_buffer: &cv::ImageBuf,
         data_ready: bool,
-        make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
+        make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDescription,
         sample_timing: &SampleTimingInfo,
@@ -514,7 +514,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         data_buffer: Option<&cm::BlockBuf>,
         data_ready: bool,
-        make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
+        make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: Option<&super::FormatDescription>,
         num_samples: cm::ItemCount,
@@ -530,7 +530,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuf,
         data_ready: bool,
-        make_data_ready_callback: Option<&SampleBufferMakeDataReadyCallback>,
+        make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
         format_description: &cm::VideoFormatDescription,
         sample_timing: &SampleTimingInfo,

@@ -23,8 +23,8 @@ pub use pixel_buffer::PixelBuf;
 pub use pixel_buffer::PixelFormat;
 
 pub mod pixel_buffer_pool;
-pub use pixel_buffer_pool::FlushFlags as PixelBufferPoolFlushFlags;
-pub use pixel_buffer_pool::PixelBufferPool;
+pub use pixel_buffer_pool::FlushFlags as PixelBufPoolFlushFlags;
+pub use pixel_buffer_pool::PixelBufPool;
 
 pub mod pixel_format_description;
 pub use pixel_format_description::all_pixel_formats as pixel_format_description_array_with_all_pixel_format_types;
