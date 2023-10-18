@@ -150,8 +150,8 @@ pub use event::SharedEventHandle;
 
 mod blit_pass;
 pub use blit_pass::Descriptor as BlitPassDescriptor;
-pub use blit_pass::SampleBufferAttachmentDescriptor as BlitPassSampleBufferAttachmentDescriptor;
-pub use blit_pass::SampleBufferAttachmentDescriptorArray as BlitPassSampleBufferAttachmentDescriptorArray;
+pub use blit_pass::SampleBufAttachmentDescriptor as BlitPassSampleBufAttachmentDescriptor;
+pub use blit_pass::SampleBufAttachmentDescriptorArray as BlitPassSampleBufAttachmentDescriptorArray;
 
 mod command_encoder;
 pub use command_encoder::BarrierScope;

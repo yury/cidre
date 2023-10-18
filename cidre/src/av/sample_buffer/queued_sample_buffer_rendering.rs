@@ -11,7 +11,7 @@ pub enum Status {
 }
 
 #[objc::obj_trait]
-pub trait QueuedSampleBufferRendering: objc::Obj {
+pub trait QueuedSampleBufRendering: objc::Obj {
     #[objc::msg_send(timebase)]
     fn timebase(&self) -> &cm::Timebase;
 

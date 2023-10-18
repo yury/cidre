@@ -31,7 +31,7 @@ impl DisplayLayer {
     pub fn output_obscured_due_to_insufficient_external_protection(&self) -> bool;
 
     #[objc::msg_send(sampleBufferRenderer)]
-    pub fn sample_buffer_renderer(&self) -> &av::SampleBufferVideoRenderer;
+    pub fn sample_buf_renderer(&self) -> &av::SampleBufVideoRenderer;
 }
 
 #[link(name = "ca", kind = "static")]

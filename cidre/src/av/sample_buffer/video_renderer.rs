@@ -2,11 +2,11 @@ use crate::{arc, av, define_obj_type, ns, objc};
 
 define_obj_type!(VideoRenderer(ns::Id), AV_SAMPLE_BUFFER_VIDEO_RENDERER);
 
-impl av::QueuedSampleBufferRendering for VideoRenderer {}
+impl av::QueuedSampleBufRendering for VideoRenderer {}
 
 impl VideoRenderer {
     #[objc::msg_send(status)]
-    pub fn status(&self) -> av::QueuedSampleBufferRenderingStatus;
+    pub fn status(&self) -> av::QueuedSampleBufRenderingStatus;
 
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;

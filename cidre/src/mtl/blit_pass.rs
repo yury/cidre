@@ -1,7 +1,7 @@
 use crate::{arc, define_cls_init, define_obj_type, ns, objc};
 
-define_obj_type!(SampleBufferAttachmentDescriptor(ns::Id));
-define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
+define_obj_type!(SampleBufAttachmentDescriptor(ns::Id));
+define_obj_type!(SampleBufAttachmentDescriptorArray(ns::Id));
 
 define_obj_type!(Descriptor(ns::Id));
 
@@ -11,11 +11,11 @@ define_cls_init!(Descriptor, MTL_BLIT_PASS_DESCRIPTOR);
 impl Descriptor {
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray;
+    pub fn sample_buf_attachments(&self) -> &SampleBufAttachmentDescriptorArray;
 
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufferAttachmentDescriptorArray;
+    pub fn sample_buf_attachments_mut(&mut self) -> &mut SampleBufAttachmentDescriptorArray;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -30,6 +30,6 @@ mod tests {
     #[test]
     fn basics() {
         let mut bpd = mtl::BlitPassDescriptor::new();
-        let _attachments = bpd.sample_buffer_attachments_mut();
+        let _attachments = bpd.sample_buf_attachments_mut();
     }
 }
