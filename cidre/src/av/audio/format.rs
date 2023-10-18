@@ -9,13 +9,13 @@ pub enum CommonFormat {
     Other = 0,
 
     /// Native-endian floats (this is the standard format).
-    PCMFloat32 = 1,
+    PcmF32 = 1,
     /// Native-endian doubles.
-    PCMFloat64 = 2,
+    PcmF64 = 2,
     /// Signed 16-bit native-endian integers.
-    PCMInt16 = 3,
+    PcmI16 = 3,
     /// Signed 32-bit native-endian integers.
-    PCMInt32 = 4,
+    PcmI32 = 4,
 }
 
 define_obj_type!(Format(ns::Id));
