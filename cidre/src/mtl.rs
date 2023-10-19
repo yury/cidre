@@ -83,7 +83,7 @@ pub use texture::Type as TextureType;
 pub use texture::Usage as TextureUsage;
 
 mod device;
-pub use device::ArgumentBuffersTier;
+pub use device::ArgumentBufsTier;
 pub use device::Device;
 pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
@@ -222,7 +222,7 @@ pub use compute_pass::SampleBufAttachmentDescriptorArray as ComputePassSampleBuf
 mod counters;
 pub use counters::Counter;
 pub use counters::CounterResultStatistic;
-pub use counters::CounterSampleBuffer;
+pub use counters::CounterSampleBuf;
 pub use counters::CounterSet;
 pub use counters::Descriptor as CounterSampleBufDescriptor;
 

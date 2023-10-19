@@ -3,7 +3,7 @@ use crate::{
     objc::{self, Class},
 };
 
-use super::{CounterSampleBuffer, DispatchType};
+use super::{CounterSampleBuf, DispatchType};
 
 define_obj_type!(Descriptor(ns::Id));
 
@@ -61,10 +61,10 @@ define_obj_type!(SampleBufAttachmentDescriptor(ns::Id));
 
 impl SampleBufAttachmentDescriptor {
     #[objc::msg_send(sampleBuffer)]
-    pub fn sample_buffer(&self) -> Option<&CounterSampleBuffer>;
+    pub fn sample_buffer(&self) -> Option<&CounterSampleBuf>;
 
     #[objc::msg_send(setSampleBuffer:)]
-    pub fn set_sample_bufer(&mut self, value: Option<&CounterSampleBuffer>);
+    pub fn set_sample_bufer(&mut self, value: Option<&CounterSampleBuf>);
 }
 
 #[cfg(test)]

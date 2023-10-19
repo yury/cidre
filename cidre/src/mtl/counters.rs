@@ -1,8 +1,8 @@
 use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
-define_obj_type!(CounterSampleBuffer(ns::Id));
+define_obj_type!(CounterSampleBuf(ns::Id));
 
-impl CounterSampleBuffer {
+impl CounterSampleBuf {
     define_mtl!(device, label);
 }
 
