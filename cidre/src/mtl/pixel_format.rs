@@ -246,12 +246,88 @@ pub enum PixelFormat {
     Rgba32Float = 125,
 
     /* Compressed formats. */
-    // TODO:
+    /// Compressed format with two 16-bit color components and one 32-bit descriptor component.
+    #[doc(alias = "MTLPixelFormatBC1_RGBA")]
+    Bc1Rgba = 130,
+
+    /// Compressed format with two 16-bit color components and one 32-bit descriptor component,
+    /// with conversion between sRGB and linear space.
+    #[doc(alias = "MTLPixelFormatBC1_RGBA_sRGB")]
+    Bc1RgbaSrgb = 131,
+
+    /// Compressed format with two 64-bit chunks.
+    ///
+    /// The first chunk contains two 8-bit alpha components and one 48-bit descriptor component.
+    /// The second chunk contains two 16-bit color components and one 32-bit descriptor component.
+    #[doc(alias = "MTLPixelFormatBC2_RGBA")]
+    Bc2Rgba = 132,
+
+    /// Compressed format with two 64-bit chunks, with conversion between sRGB and linear space.
+    ///
+    /// The first chunk contains two 8-bit alpha components and one 48-bit descriptor component.
+    /// The second chunk contains two 16-bit color components and one 32-bit descriptor component.
+    #[doc(alias = "MTLPixelFormatBC2_RGBA_sRGB")]
+    Bc2RgbaSrgb = 133,
+
+    /// Compressed format with two 64-bit chunks.
+    ///
+    /// The first chunk contains two 8-bit alpha components and one 48-bit descriptor component.
+    /// The second chunk contains two 16-bit color components and one 32-bit descriptor component.
+    #[doc(alias = "MTLPixelFormatBC3_RGBA")]
+    Bc3Rgba = 134,
+
+    /// Compressed format with two 64-bit chunks, with conversion between sRGB and linear space.
+    ///
+    /// The first chunk contains two 8-bit alpha components and one 48-bit descriptor component.
+    /// The second chunk contains two 16-bit color components and one 32-bit descriptor component.
+    #[doc(alias = "MTLPixelFormatBC3_RGBA_sRGB")]
+    Bc3RgbaSrgb = 135,
+
+    /// Compressed format with four floating-point components.
+    #[doc(alias = "MTLPixelFormatBC6H_RGBFloat")]
+    Bc6HRgbFloat = 150,
+
+    /// Compressed format with four unsigned floating-point components.
+    #[doc(alias = "MTLPixelFormatBC6H_RGBUfloat")]
+    Bc6HRgbUFloat = 151,
+
+    /// Compressed format with four normalized unsigned integer components.
+    #[doc(alias = "MTLPixelFormatBC7_RGBAUnorm")]
+    Bc7RgbaUNorm = 152,
+
+    /// Compressed format with four normalized unsigned integer components,
+    /// with conversion between sRGB and linear space.
+    #[doc(alias = "MTLPixelFormatBC7_RGBAUnorm_sRGB")]
+    Bc7RgbaUNormSrgb = 153,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 4, and a block height of 4.
+    #[doc(alias = "MTLPixelFormatASTC_4x4_sRGB")]
     Astc4x4Srgb = 186,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 5, and a block height of 4.
+    #[doc(alias = "MTLPixelFormatASTC_5x4_sRGB")]
     Astc5x4Srgb = 187,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 5, and a block height of 5.
+    #[doc(alias = "MTLPixelFormatASTC_5x5_sRGB")]
     Astc5x5Srgb = 188,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 6, and a block height of 5.
+    #[doc(alias = "MTLPixelFormatASTC_6x5_sRGB")]
     Astc6x5Srgb = 189,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 6, and a block height of 6.
+    #[doc(alias = "MTLPixelFormatASTC_6x6_sRGB")]
     Astc6x6Srgb = 190,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 8, and a block height of 5.
+    #[doc(alias = "MTLPixelFormatASTC_8x5_sRGB")]
     Astc8x5Srgb = 192,
     Astc8x6Srgb = 193,
     Astc8x8Srgb = 194,
