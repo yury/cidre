@@ -27,31 +27,27 @@ impl Descriptor {
     pub fn set_dispatch_type(&mut self, value: DispatchType);
 
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments(&self) -> &SampleBufferAttachmentDescriptorArray;
+    pub fn sample_buffer_attachments(&self) -> &SampleBufAttachmentDescriptorArray;
 
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufferAttachmentDescriptorArray;
+    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufAttachmentDescriptorArray;
 }
 
 extern "C" {
     static MTL_COMPUTE_PASS_DESCRIPTOR: &'static Class<Descriptor>;
 }
 
-define_obj_type!(SampleBufferAttachmentDescriptorArray(ns::Id));
+define_obj_type!(SampleBufAttachmentDescriptorArray(ns::Id));
 
-impl SampleBufferAttachmentDescriptorArray {
+impl SampleBufAttachmentDescriptorArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> Option<&SampleBufferAttachmentDescriptor>;
+    pub fn get_at(&self, index: usize) -> Option<&SampleBufAttachmentDescriptor>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(
-        &mut self,
-        object: Option<&SampleBufferAttachmentDescriptor>,
-        index: usize,
-    );
+    pub fn set_object_at(&mut self, object: Option<&SampleBufAttachmentDescriptor>, index: usize);
 
     #[inline]
-    pub fn set_at(&mut self, index: usize, value: &SampleBufferAttachmentDescriptor) {
+    pub fn set_at(&mut self, index: usize, value: &SampleBufAttachmentDescriptor) {
         self.set_object_at(Some(value), index)
     }
 
@@ -61,9 +57,9 @@ impl SampleBufferAttachmentDescriptorArray {
     }
 }
 
-define_obj_type!(SampleBufferAttachmentDescriptor(ns::Id));
+define_obj_type!(SampleBufAttachmentDescriptor(ns::Id));
 
-impl SampleBufferAttachmentDescriptor {
+impl SampleBufAttachmentDescriptor {
     #[objc::msg_send(sampleBuffer)]
     pub fn sample_buffer(&self) -> Option<&CounterSampleBuffer>;
 

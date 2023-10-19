@@ -66,7 +66,7 @@ struct Context {
 extern "C" fn data_proc(
     _converter: &audio::Converter,
     io_number_data_packets: &mut u32,
-    io_data: &mut audio::BufferList,
+    io_data: &mut audio::BufList,
     out_data_packet_descriptions: *mut *mut audio::StreamPacketDescription,
     in_user_data: *mut Context,
 ) -> os::Status {
@@ -178,9 +178,9 @@ fn encode(args: &EncodeArgs) {
         uses_packet_descriptions: src_uses_packet_descriptions,
         packet_descriptions: Default::default(),
     };
-    let mut list = audio::BufferList {
+    let mut list = audio::BufList {
         number_buffers: 1,
-        buffers: [audio::Buffer {
+        buffers: [audio::Buf {
             number_channels: dst_asbd.channels_per_frame,
             data_bytes_size: packet_buffer_len as _,
             data: packet_buffer.as_mut_ptr(),
@@ -321,9 +321,9 @@ fn decode(args: &DecodeArgs) {
     loop {
         let mut num_packets = packets_per_loop;
 
-        let mut list = audio::BufferList {
+        let mut list = audio::BufList {
             number_buffers: 1,
-            buffers: [audio::Buffer {
+            buffers: [audio::Buf {
                 number_channels: dst_asbd.channels_per_frame,
                 data_bytes_size: packet_buffer.len() as _,
                 data: packet_buffer.as_mut_ptr(),

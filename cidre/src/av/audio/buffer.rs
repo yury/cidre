@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{
     arc,
-    at::{audio::StreamPacketDescription, AudioBufferList},
+    at::{audio::StreamPacketDescription, AudioBufList},
     define_cls, define_obj_type, ns, objc,
 };
 
@@ -16,10 +16,10 @@ impl Buf {
     pub fn format(&self) -> &Format;
 
     #[objc::msg_send(audioBufferList)]
-    pub fn audio_buffer_list(&self) -> &AudioBufferList;
+    pub fn audio_buffer_list(&self) -> &AudioBufList;
 
     #[objc::msg_send(mutableAudioBufferList)]
-    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufferList;
+    pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufList;
 }
 
 define_obj_type!(PcmBuf(Buf));

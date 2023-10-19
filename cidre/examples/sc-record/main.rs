@@ -34,13 +34,13 @@ impl FrameCounterInner {
 
         if self.audio_queue.is_ready() {
             let mut data = [0u8; 2000];
-            let buffer = at::AudioBuffer {
+            let buffer = at::AudioBuf {
                 number_channels: 1,
                 data_bytes_size: data.len() as _,
                 data: data.as_mut_ptr(),
             };
             let buffers = [buffer];
-            let mut buf = at::audio::BufferList {
+            let mut buf = at::audio::BufList {
                 number_buffers: buffers.len() as _,
                 buffers,
             };
@@ -170,7 +170,7 @@ impl AudioQueue {
 
     pub fn fill_audio_buffer(
         &mut self,
-        list: &mut at::audio::BufferList<2>,
+        list: &mut at::audio::BufList<2>,
     ) -> Result<(), os::Status> {
         let mut left = 1024i32;
         let mut offset: i32 = self.last_buffer_offset as i32;
@@ -205,7 +205,7 @@ impl AudioQueue {
 extern "C" fn convert_audio(
     _converter: &at::AudioConverter,
     _io_number_data_packets: &mut u32,
-    io_data: &mut at::audio::BufferList,
+    io_data: &mut at::audio::BufList,
     _out_data_packet_descriptions: *mut *mut at::audio::StreamPacketDescription,
     in_user_data: *mut AudioQueue,
 ) -> os::Status {

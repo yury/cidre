@@ -389,7 +389,7 @@ impl SampleBuf {
         &self,
         frame_offset: i32,
         num_frames: i32,
-        buffer_list: &mut cat::audio::BufferList<N>,
+        buffer_list: &mut cat::audio::BufList<N>,
     ) -> Result<(), os::Status> {
         unsafe {
             CMSampleBufferCopyPCMDataIntoAudioBufferList(
@@ -433,9 +433,7 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
     #[inline]
-    pub fn audio_buffer_list<const N: usize>(
-        &self,
-    ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
+    pub fn audio_buffer_list<const N: usize>(&self) -> Result<BlockBufAudioBufList<N>, os::Status> {
         self.audio_buffer_list_in(
             Flags::AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT,
             None,
@@ -458,15 +456,15 @@ impl SampleBuf {
         flags: Flags,
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,
-    ) -> Result<BlockBufferAudioBufferList<N>, os::Status> {
+    ) -> Result<BlockBufAudioBufList<N>, os::Status> {
         let mut block_buff = None;
-        let mut list = cat::audio::BufferList::<N>::default();
+        let mut list = cat::audio::BufList::<N>::default();
         unsafe {
             CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
                 self,
                 std::ptr::null_mut(),
                 std::mem::transmute(&mut list),
-                std::mem::size_of::<cat::audio::BufferList<N>>(),
+                std::mem::size_of::<cat::audio::BufList<N>>(),
                 block_buffer_structure_allocator,
                 block_buffer_allocator,
                 flags,
@@ -474,7 +472,7 @@ impl SampleBuf {
             )
             .result()?;
 
-            Ok(BlockBufferAudioBufferList {
+            Ok(BlockBufAudioBufList {
                 list,
                 block: block_buff.unwrap_unchecked(),
             })
@@ -489,15 +487,15 @@ impl SampleBuf {
 
 #[cfg(feature = "cat")]
 #[derive(Debug)]
-pub struct BlockBufferAudioBufferList<const N: usize> {
-    list: cat::audio::BufferList<N>,
+pub struct BlockBufAudioBufList<const N: usize> {
+    list: cat::audio::BufList<N>,
     block: arc::R<cm::BlockBuf>,
 }
 
 #[cfg(feature = "cat")]
-impl<const N: usize> BlockBufferAudioBufferList<N> {
+impl<const N: usize> BlockBufAudioBufList<N> {
     #[inline]
-    pub fn list(&self) -> &cat::audio::BufferList<N> {
+    pub fn list(&self) -> &cat::audio::BufList<N> {
         &self.list
     }
 
@@ -566,7 +564,7 @@ extern "C" {
         sbuf: &SampleBuf,
         frame_offset: i32,
         num_frames: i32,
-        buffer_list: &mut cat::audio::BufferList,
+        buffer_list: &mut cat::audio::BufList,
     ) -> os::Status;
 
     #[cfg(feature = "cat")]
@@ -580,7 +578,7 @@ extern "C" {
     fn CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
         sbuf: &SampleBuf,
         buffer_list_size_needed_out: *mut usize,
-        buffer_list_out: *mut cat::audio::BufferList,
+        buffer_list_out: *mut cat::audio::BufList,
         buffer_list_size: usize,
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,

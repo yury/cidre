@@ -197,8 +197,8 @@ mod vertex_descriptor;
 pub use vertex_descriptor::Descriptor as VertexDescriptor;
 pub use vertex_descriptor::VertexAttributeDescriptor;
 pub use vertex_descriptor::VertexAttributeDescriptorArray;
-pub use vertex_descriptor::VertexBufferLayoutDescriptor;
-pub use vertex_descriptor::VertexBufferLayoutDescriptorArray;
+pub use vertex_descriptor::VertexBufLayoutDescriptor;
+pub use vertex_descriptor::VertexBufLayoutDescriptorArray;
 pub use vertex_descriptor::VertexFormat;
 pub use vertex_descriptor::VertexStepFn;
 
@@ -216,15 +216,15 @@ pub use render_pass::StoreActionOptions;
 
 mod compute_pass;
 pub use compute_pass::Descriptor as ComputePassDescriptor;
-pub use compute_pass::SampleBufferAttachmentDescriptor as ComputePassSampleBufferAttachmentDescriptor;
-pub use compute_pass::SampleBufferAttachmentDescriptorArray as ComputePassSampleBufferAttachmentDescriptorArray;
+pub use compute_pass::SampleBufAttachmentDescriptor as ComputePassSampleBufAttachmentDescriptor;
+pub use compute_pass::SampleBufAttachmentDescriptorArray as ComputePassSampleBufAttachmentDescriptorArray;
 
 mod counters;
 pub use counters::Counter;
 pub use counters::CounterResultStatistic;
 pub use counters::CounterSampleBuffer;
 pub use counters::CounterSet;
-pub use counters::Descriptor as CounterSampleBufferDescriptor;
+pub use counters::Descriptor as CounterSampleBufDescriptor;
 
 mod indirect_command_buffer;
 pub use indirect_command_buffer::Descriptor as IndirectCmdBufDescriptor;
@@ -255,8 +255,8 @@ pub use intersection_function_table::IntersectionFnTable;
 
 mod pipeline;
 pub use pipeline::Mutability;
-pub use pipeline::PipelineBufferDescriptor;
-pub use pipeline::PipelineBufferDescriptorArray;
+pub use pipeline::PipelineBufDescriptor;
+pub use pipeline::PipelineBufDescriptorArray;
 
 mod capture_manager;
 pub use capture_manager::CaptureDescriptor;

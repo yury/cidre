@@ -15,7 +15,8 @@ pub enum PixelFormat {
     #[doc(alias = "MTLPixelFormatR8Unorm")]
     R8UNorm = 10,
 
-    /// Ordinary format with one 8-bit normalized unsigned integer component with conversion between sRGB and linear space.
+    /// Ordinary format with one 8-bit normalized unsigned integer component with
+    /// conversion between sRGB and linear space.
     #[doc(alias = "MTLPixelFormatR8Unorm_sRGB")]
     R8UNormSrgb = 11,
 
@@ -56,7 +57,8 @@ pub enum PixelFormat {
     #[doc(alias = "MTLPixelFormatRG8Unorm")]
     Rg8UNorm = 30,
 
-    /// Ordinary format with two 8-bit normalized unsigned integer components with conversion between sRGB and linear space.
+    /// Ordinary format with two 8-bit normalized unsigned integer components
+    /// with conversion between sRGB and linear space.
     #[doc(alias = "MTLPixelFormatRG8Unorm_sRGB")]
     Rg8UNormSrgb = 31,
 
@@ -81,7 +83,7 @@ pub enum PixelFormat {
     /// Packed 16-bit format with normalized unsigned integer color components:
     /// 5 bits each for BGR and 1 for alpha, packed into 16 bits.
     #[doc(alias = "MTLPixelFormatA1BGR5Unorm")]
-    A1BGR5UNorm = 41,
+    A1Bgr5UNorm = 41,
 
     /// Packed 16-bit format with normalized unsigned integer color components:
     /// 4 bits each for ABGR, packed into 16 bits.
@@ -208,7 +210,7 @@ pub enum PixelFormat {
 
     /// Ordinary format with four 16-bit normalized signed integer components in RGBA order.
     #[doc(alias = "MTLPixelFormatRGBA16Snorm")]
-    Rgba16Snorm = 112,
+    Rgba16SNorm = 112,
 
     /// Ordinary format with four 16-bit unsigned integer components in RGBA order.
     #[doc(alias = "MTLPixelFormatRGBA16Uint")]
@@ -329,7 +331,15 @@ pub enum PixelFormat {
     /// conversion between sRGB and linear space, a block width of 8, and a block height of 5.
     #[doc(alias = "MTLPixelFormatASTC_8x5_sRGB")]
     Astc8x5Srgb = 192,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 8, and a block height of 6.
+    #[doc(alias = "MTLPixelFormatASTC_8x6_sRGB")]
     Astc8x6Srgb = 193,
+
+    /// ASTC-compressed format with low-dynamic-range content,
+    /// conversion between sRGB and linear space, a block width of 8, and a block height of 8.
+    #[doc(alias = "MTLPixelFormatASTC_8x8_sRGB")]
     Astc8x8Srgb = 194,
     Astc10x5Srgb = 195,
     Astc10x6Srgb = 196,

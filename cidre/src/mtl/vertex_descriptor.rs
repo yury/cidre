@@ -243,10 +243,10 @@ pub enum VertexStepFn {
 }
 
 define_obj_type!(
-    VertexBufferLayoutDescriptor(ns::Id),
+    VertexBufLayoutDescriptor(ns::Id),
     MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR
 );
-impl VertexBufferLayoutDescriptor {
+impl VertexBufLayoutDescriptor {
     /// The distance, in bytes, between the attribute data
     /// of two vertices in the buffer.
     ///
@@ -274,31 +274,27 @@ impl VertexBufferLayoutDescriptor {
     pub fn set_step_rate(&mut self, value: usize);
 }
 
-define_obj_type!(VertexBufferLayoutDescriptorArray(ns::Id));
-impl VertexBufferLayoutDescriptorArray {
+define_obj_type!(VertexBufLayoutDescriptorArray(ns::Id));
+impl VertexBufLayoutDescriptorArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn object_at(&self, index: usize) -> &VertexBufferLayoutDescriptor;
+    pub fn object_at(&self, index: usize) -> &VertexBufLayoutDescriptor;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn object_at_mut(&mut self, index: usize) -> &mut VertexBufferLayoutDescriptor;
+    pub fn object_at_mut(&mut self, index: usize) -> &mut VertexBufLayoutDescriptor;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(
-        &mut self,
-        buffer_desc: Option<&VertexBufferLayoutDescriptor>,
-        index: usize,
-    );
+    pub fn set_object_at(&mut self, buffer_desc: Option<&VertexBufLayoutDescriptor>, index: usize);
 }
 
-impl std::ops::Index<usize> for VertexBufferLayoutDescriptorArray {
-    type Output = VertexBufferLayoutDescriptor;
+impl std::ops::Index<usize> for VertexBufLayoutDescriptorArray {
+    type Output = VertexBufLayoutDescriptor;
 
     fn index(&self, index: usize) -> &Self::Output {
         self.object_at(index)
     }
 }
 
-impl std::ops::IndexMut<usize> for VertexBufferLayoutDescriptorArray {
+impl std::ops::IndexMut<usize> for VertexBufLayoutDescriptorArray {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.object_at_mut(index)
     }
@@ -358,10 +354,10 @@ impl std::ops::IndexMut<usize> for VertexAttributeDescriptorArray {
 define_obj_type!(Descriptor(ns::Id), MTL_VERTEX_DESCRIPTOR);
 impl Descriptor {
     #[objc::msg_send(layouts)]
-    pub fn layouts(&self) -> &VertexBufferLayoutDescriptorArray;
+    pub fn layouts(&self) -> &VertexBufLayoutDescriptorArray;
 
     #[objc::msg_send(layouts)]
-    pub fn layouts_mut(&mut self) -> &mut VertexBufferLayoutDescriptorArray;
+    pub fn layouts_mut(&mut self) -> &mut VertexBufLayoutDescriptorArray;
 
     #[objc::msg_send(attributes)]
     pub fn attributes(&self) -> &VertexAttributeDescriptorArray;
@@ -373,7 +369,7 @@ impl Descriptor {
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Descriptor>;
-    static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufferLayoutDescriptor>;
+    static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufLayoutDescriptor>;
     static MTL_VERTEX_ATTRIBUTE_DESCRIPTOR: &'static objc::Class<VertexAttributeDescriptor>;
 }
 
@@ -387,7 +383,7 @@ mod tests {
         let attrs = descriptor.attributes_mut();
         attrs[0].set_format(mtl::VertexFormat::U8x2);
         assert_eq!(descriptor.attributes()[0].format(), mtl::VertexFormat::U8x2);
-        let descriptor = mtl::VertexBufferLayoutDescriptor::new();
+        let descriptor = mtl::VertexBufLayoutDescriptor::new();
         assert_eq!(descriptor.stride(), 0);
     }
 }

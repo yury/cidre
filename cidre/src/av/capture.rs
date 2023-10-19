@@ -49,8 +49,8 @@ pub use video_data_output::VideoDataOutputSampleBufferDelegateImpl;
 
 pub mod audio_data_output;
 pub use audio_data_output::AudioDataOutput;
-pub use audio_data_output::AudioDataOutputSampleBufferDelegate;
-pub use audio_data_output::AudioDataOutputSampleBufferDelegateImpl;
+pub use audio_data_output::AudioDataOutputSampleBufDelegate;
+pub use audio_data_output::AudioDataOutputSampleBufDelegateImpl;
 
 #[cfg(not(target_os = "macos"))]
 pub mod system_pressure;

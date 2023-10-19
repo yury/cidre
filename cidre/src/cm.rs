@@ -33,7 +33,7 @@ pub use time::TimeValue;
 pub mod sample_buffer;
 
 #[cfg(feature = "cat")]
-pub use sample_buffer::BlockBufferAudioBufferList;
+pub use sample_buffer::BlockBufAudioBufList;
 pub use sample_buffer::Flags as SampleBufFlags;
 pub use sample_buffer::SampleBuf;
 pub use sample_buffer::SampleTimingInfo;

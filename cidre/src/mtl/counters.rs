@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut desc = mtl::CounterSampleBufferDescriptor::new();
+        let mut desc = mtl::CounterSampleBufDescriptor::new();
         assert_eq!(desc.sample_count(), 0);
         desc.set_sample_count(10);
         assert_eq!(desc.sample_count(), 10);

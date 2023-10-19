@@ -61,7 +61,7 @@ impl Default for ValueRange {
 /// A structure to hold a buffer of audio data.
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct Buffer {
+pub struct Buf {
     /// The number of interleaved channels in the buffer.
     pub number_channels: u32,
     /// The number of bytes in the buffer pointed at by mData.
@@ -73,19 +73,19 @@ pub struct Buffer {
 /// A variable length array of AudioBuffer structures.
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct BufferList<const N: usize = 1> {
+pub struct BufList<const N: usize = 1> {
     pub number_buffers: u32,
     /// this is a variable length array of `number_buffers` elements
-    pub buffers: [Buffer; N],
+    pub buffers: [Buf; N],
 }
 
-unsafe impl<const N: usize> Send for BufferList<N> {}
+unsafe impl<const N: usize> Send for BufList<N> {}
 
-impl<const N: usize> Default for BufferList<N> {
+impl<const N: usize> Default for BufList<N> {
     fn default() -> Self {
         Self {
             number_buffers: N as _,
-            buffers: [Buffer {
+            buffers: [Buf {
                 number_channels: 1,
                 data_bytes_size: 0,
                 data: std::ptr::null_mut(),
@@ -94,13 +94,13 @@ impl<const N: usize> Default for BufferList<N> {
     }
 }
 
-pub struct BufferListCursor<'a, const N: usize> {
-    original_buffers: [Option<Buffer>; N],
-    list: &'a mut BufferList<N>,
+pub struct BufListCursor<'a, const N: usize> {
+    original_buffers: [Option<Buf>; N],
+    list: &'a mut BufList<N>,
 }
 
-impl<'a, const N: usize> BufferListCursor<'a, N> {
-    pub fn new(list: &'a mut BufferList<N>) -> Self {
+impl<'a, const N: usize> BufListCursor<'a, N> {
+    pub fn new(list: &'a mut BufList<N>) -> Self {
         let mut original_buffers = [None; N];
         let slice = list.as_slice();
         for i in 0..N {
@@ -118,7 +118,7 @@ impl<'a, const N: usize> BufferListCursor<'a, N> {
         frame_offset: usize,
         frame_count: usize,
         asbd: &StreamBasicDescription,
-    ) -> &mut BufferList<N> {
+    ) -> &mut BufList<N> {
         for (i, buf) in self.list.as_mut_slice().iter_mut().enumerate().take(N) {
             buf.data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
             buf.data = unsafe {
@@ -132,7 +132,7 @@ impl<'a, const N: usize> BufferListCursor<'a, N> {
     }
 }
 
-impl<const N: usize> Drop for BufferListCursor<'_, N> {
+impl<const N: usize> Drop for BufListCursor<'_, N> {
     fn drop(&mut self) {
         for (i, buf) in self.list.as_mut_slice().iter_mut().enumerate().take(N) {
             *buf = unsafe { self.original_buffers[i].unwrap_unchecked() };
@@ -140,19 +140,19 @@ impl<const N: usize> Drop for BufferListCursor<'_, N> {
     }
 }
 
-impl<const N: usize> BufferList<N> {
-    pub fn as_slice(&self) -> &[Buffer] {
+impl<const N: usize> BufList<N> {
+    pub fn as_slice(&self) -> &[Buf] {
         debug_assert_eq!(N, self.number_buffers as usize);
         unsafe { &*slice_from_raw_parts(self.buffers.as_ptr(), N) }
     }
 
-    pub fn as_mut_slice(&mut self) -> &mut [Buffer] {
+    pub fn as_mut_slice(&mut self) -> &mut [Buf] {
         debug_assert_eq!(N, self.number_buffers as usize);
         unsafe { &mut *slice_from_raw_parts_mut(self.buffers.as_mut_ptr(), N) }
     }
 
-    pub fn cursor(&mut self) -> BufferListCursor<N> {
-        BufferListCursor::new(self)
+    pub fn cursor(&mut self) -> BufListCursor<N> {
+        BufListCursor::new(self)
     }
 }
 

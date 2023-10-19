@@ -374,10 +374,10 @@ impl TileRenderPipelineDescriptor {
     pub fn set_threadgroup_size_matches_tile_size(&mut self, value: bool);
 
     #[objc::msg_send(tileBuffers)]
-    pub fn tile_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+    pub fn tile_bufs(&self) -> &mtl::PipelineBufDescriptorArray;
 
     #[objc::msg_send(tileBuffers)]
-    pub fn tile_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+    pub fn tile_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescriptorArray;
 }
 
 define_obj_type!(MeshRenderPipelineDescriptor(ns::Id));
@@ -453,24 +453,24 @@ impl MeshRenderPipelineDescriptor {
     /// Provide mutability information on the buffers used by obj_fn.
     /// Specifying these values is optional; it may be used to optimize the shader code.
     #[objc::msg_send(objectBuffers)]
-    pub fn obj_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+    pub fn obj_bufs(&self) -> &mtl::PipelineBufDescriptorArray;
 
     #[objc::msg_send(objectBuffers)]
-    pub fn obj_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+    pub fn obj_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescriptorArray;
 
     /// Specifying these values is optional; it may be used to optimize the shader code.
     #[objc::msg_send(meshBuffers)]
-    pub fn mesh_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+    pub fn mesh_bufs(&self) -> &mtl::PipelineBufDescriptorArray;
 
     #[objc::msg_send(meshBuffers)]
-    pub fn mesh_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+    pub fn mesh_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescriptorArray;
 
     /// Specifying these values is optional; it may be used to optimize the shader code.
     #[objc::msg_send(fragmentBuffers)]
-    pub fn fragment_bufs(&self) -> &mtl::PipelineBufferDescriptorArray;
+    pub fn fragment_bufs(&self) -> &mtl::PipelineBufDescriptorArray;
 
     #[objc::msg_send(fragmentBuffers)]
-    pub fn fragment_bufs_mut(&mut self) -> &mut mtl::PipelineBufferDescriptorArray;
+    pub fn fragment_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescriptorArray;
 
     /// The number of samples per fragment of the render pass in which this pipeline will be used.
     #[objc::msg_send(rasterSampleCount)]

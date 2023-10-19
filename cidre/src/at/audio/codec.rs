@@ -639,7 +639,7 @@ impl CodecRef {
     #[inline]
     pub fn append_buffer_list(
         &mut self,
-        in_buffer_list: &audio::BufferList,
+        in_buffer_list: &audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDescription],
     ) -> Result<Consumed, os::Status> {
         let mut bytes_consumed: u32 = 0;
@@ -665,7 +665,7 @@ impl CodecRef {
     #[inline]
     pub fn produce_buffer_list(
         &mut self,
-        buffer_list: &mut audio::BufferList,
+        buffer_list: &mut audio::BufList,
         number_of_packets: &mut u32,
     ) -> Result<os::Status, os::Status> {
         let mut status = os::Status::NO_ERR;
@@ -687,7 +687,7 @@ impl CodecRef {
     #[inline]
     pub fn produce_buffer_list_with_descriptions(
         &mut self,
-        buffer_list: &mut audio::BufferList,
+        buffer_list: &mut audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDescription],
     ) -> Result<(u32, os::Status), os::Status> {
         let mut number_packets: u32 = packet_descriptions.len() as _;
@@ -1132,7 +1132,7 @@ extern "C" {
 
     fn AudioCodecAppendInputBufferList(
         in_codec: &mut Codec,
-        in_buffer_list: *const audio::BufferList,
+        in_buffer_list: *const audio::BufList,
         io_number_packets: &mut u32,
         in_packet_descriptions: *const audio::StreamPacketDescription,
         out_bytes_consumed: &mut u32,
@@ -1140,7 +1140,7 @@ extern "C" {
 
     fn AudioCodecProduceOutputBufferList(
         in_codec: &mut Codec,
-        io_buffer_list: &mut audio::BufferList,
+        io_buffer_list: &mut audio::BufList,
         io_number_packets: &mut u32,
         out_packet_description: *mut audio::StreamPacketDescription,
         out_status: &mut os::Status,

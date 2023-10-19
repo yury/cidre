@@ -1,7 +1,7 @@
 pub mod audio;
 
-pub use audio::Buffer as AudioBuffer;
-pub use audio::BufferList as AudioBufferList;
+pub use audio::Buf as AudioBuf;
+pub use audio::BufList as AudioBufList;
 pub use audio::ChannelBitmap as AudioChannelBitmap;
 pub use audio::ChannelCoordinateIndex;
 pub use audio::ChannelDescription as AudioChannelDescription;

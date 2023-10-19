@@ -10,11 +10,11 @@ pub enum Mutability {
 }
 
 define_obj_type!(
-    PipelineBufferDescriptor(ns::Id),
+    PipelineBufDescriptor(ns::Id),
     MTL_PIPELINE_BUFFER_DESCRIPTOR
 );
 
-impl PipelineBufferDescriptor {
+impl PipelineBufDescriptor {
     #[objc::msg_send(mutability)]
     pub fn mutability(&self) -> Mutability;
 
@@ -22,27 +22,27 @@ impl PipelineBufferDescriptor {
     pub fn set_mutability(&mut self, value: Mutability);
 }
 
-define_obj_type!(PipelineBufferDescriptorArray(ns::Id));
-impl PipelineBufferDescriptorArray {
+define_obj_type!(PipelineBufDescriptorArray(ns::Id));
+impl PipelineBufDescriptorArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at(&self, index: usize) -> &PipelineBufferDescriptor;
+    pub fn obj_at(&self, index: usize) -> &PipelineBufDescriptor;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufferDescriptor;
+    pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufDescriptor;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_obj_at(&mut self, buffer: Option<&PipelineBufferDescriptor>, at_index: usize);
+    pub fn set_obj_at(&mut self, buffer: Option<&PipelineBufDescriptor>, at_index: usize);
 }
 
-impl std::ops::Index<usize> for PipelineBufferDescriptorArray {
-    type Output = PipelineBufferDescriptor;
+impl std::ops::Index<usize> for PipelineBufDescriptorArray {
+    type Output = PipelineBufDescriptor;
 
     fn index(&self, index: usize) -> &Self::Output {
         self.obj_at(index)
     }
 }
 
-impl std::ops::IndexMut<usize> for PipelineBufferDescriptorArray {
+impl std::ops::IndexMut<usize> for PipelineBufDescriptorArray {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.obj_mut_at(index)
     }
@@ -50,5 +50,5 @@ impl std::ops::IndexMut<usize> for PipelineBufferDescriptorArray {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufferDescriptor>;
+    static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufDescriptor>;
 }

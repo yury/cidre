@@ -1,8 +1,8 @@
 use std::time::Duration;
 
 use cidre::{
-    av, av::capture::AudioDataOutputSampleBufferDelegate,
-    av::capture::AudioDataOutputSampleBufferDelegateImpl, av::capture::*, cm, define_obj_type,
+    av, av::capture::AudioDataOutputSampleBufDelegate,
+    av::capture::AudioDataOutputSampleBufDelegateImpl, av::capture::*, cm, define_obj_type,
     dispatch, ns, objc,
 };
 
@@ -10,23 +10,23 @@ use cidre::{
 pub struct OutputDelegateInner {}
 
 define_obj_type!(
-    OutputDelegate + AudioDataOutputSampleBufferDelegateImpl,
+    OutputDelegate + AudioDataOutputSampleBufDelegateImpl,
     OutputDelegateInner,
     OUTPUT_DELEGATE
 );
 
-impl AudioDataOutputSampleBufferDelegate for OutputDelegate {}
+impl AudioDataOutputSampleBufDelegate for OutputDelegate {}
 
 #[objc::add_methods]
-impl AudioDataOutputSampleBufferDelegateImpl for OutputDelegate {
-    extern "C" fn impl_capture_output_did_output_sample_buffer_from_connection(
+impl AudioDataOutputSampleBufDelegateImpl for OutputDelegate {
+    extern "C" fn impl_capture_output_did_output_sample_buf_from_connection(
         &mut self,
         _cmd: Option<&cidre::objc::Sel>,
         _output: &av::CaptureOutput,
-        sample_buffer: &cm::SampleBuf,
+        sample_buf: &cm::SampleBuf,
         _connection: &av::CaptureConnection,
     ) {
-        println!("sample buffer: {:?}", sample_buffer.num_samples());
+        println!("sample buf: {:?}", sample_buf.num_samples());
     }
 }
 
@@ -48,7 +48,7 @@ fn main() {
     let queue = dispatch::Queue::new();
     let delegate = OutputDelegate::with(OutputDelegateInner {});
     let mut output = av::capture::AudioDataOutput::new();
-    output.set_sample_buffer_delegate(Some(delegate.as_ref()), Some(&queue));
+    output.set_sample_buf_delegate(Some(delegate.as_ref()), Some(&queue));
 
     let mut session = Session::new();
 

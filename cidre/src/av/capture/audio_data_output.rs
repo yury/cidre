@@ -3,13 +3,13 @@ use crate::{arc, av, cm, define_obj_type, dispatch, ns, objc};
 use super::Output;
 
 #[objc::obj_trait]
-pub trait AudioDataOutputSampleBufferDelegate: objc::Obj {
+pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(captureOutput:didOutputSampleBuffer:fromConnection:)]
-    fn capture_output_did_output_sample_buffer_from_connection(
+    fn capture_output_did_output_sample_buf_from_connection(
         &mut self,
         output: &av::CaptureOutput,
-        sample_buffer: &cm::SampleBuf,
+        sample_buf: &cm::SampleBuf,
         connection: &av::CaptureConnection,
     );
 }
@@ -17,7 +17,7 @@ pub trait AudioDataOutputSampleBufferDelegate: objc::Obj {
 define_obj_type!(AudioDataOutput(Output), AV_CAPTURE_AUDIO_DATA_OUTPUT);
 impl AudioDataOutput {
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
-    pub fn set_sample_buffer_delegate<D: AudioDataOutputSampleBufferDelegate>(
+    pub fn set_sample_buf_delegate<D: AudioDataOutputSampleBufDelegate>(
         &mut self,
         delegate: Option<&D>,
         queue: Option<&dispatch::Queue>,
@@ -25,7 +25,7 @@ impl AudioDataOutput {
 
     /// The dispatch queue on which all sample buffer delegate methods will be called.
     #[objc::msg_send(sampleBufferCallbackQueue)]
-    pub fn sample_buffer_callback_queue(&self) -> Option<&dispatch::Queue>;
+    pub fn sample_buf_callback_queue(&self) -> Option<&dispatch::Queue>;
 
     #[objc::msg_send(recommendedAudioSettingsForAssetWriterWithOutputFileType:)]
     pub fn recommended_audio_settings_for_asset_writer_with_output_file_type<'a>(
