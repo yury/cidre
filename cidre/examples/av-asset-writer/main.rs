@@ -54,7 +54,7 @@ async fn reader_and_output(
 
     let src = cf::URL::with_path(path.as_path(), false).unwrap();
 
-    let src_asset = av::URLAsset::with_url(src.as_ns(), None).unwrap();
+    let src_asset = av::UrlAsset::with_url(src.as_ns(), None).unwrap();
     let mut asset_reader = av::AssetReader::with_asset(&src_asset).unwrap();
 
     let tracks = src_asset

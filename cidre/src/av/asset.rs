@@ -31,20 +31,20 @@ pub use track::FragmentedTrack;
 pub use track::Track;
 
 define_obj_type!(Asset(ns::Id));
-define_obj_type!(URLAsset(Asset));
-define_obj_type!(FragmentedAsset(URLAsset));
+define_obj_type!(UrlAsset(Asset));
+define_obj_type!(FragmentedAsset(UrlAsset));
 define_obj_type!(FragmentedAssetMinder(ns::Id));
 
-impl arc::A<URLAsset> {
+impl arc::A<UrlAsset> {
     #[objc::msg_send(initWithURL:options:)]
     pub fn init_with_url_options(
         self,
         url: &ns::URL,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> Option<arc::R<URLAsset>>;
+    ) -> Option<arc::R<UrlAsset>>;
 }
 
-impl URLAsset {
+impl UrlAsset {
     define_cls!(AV_URL_ASSET);
 
     #[inline]
@@ -84,5 +84,5 @@ impl URLAsset {
 
 #[link(name = "av", kind = "static")]
 extern "C" {
-    static AV_URL_ASSET: &'static objc::Class<URLAsset>;
+    static AV_URL_ASSET: &'static objc::Class<UrlAsset>;
 }

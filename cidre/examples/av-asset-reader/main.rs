@@ -4,7 +4,7 @@ use tokio;
 #[tokio::main]
 async fn main() {
     let url = ns::URL::with_str("file:/Users/yury/Downloads/0.mov").unwrap();
-    let asset = av::URLAsset::with_url(&url, None).expect("asset");
+    let asset = av::UrlAsset::with_url(&url, None).expect("asset");
 
     let tracks = asset
         .load_tracks_with_media_type(av::MediaType::video())

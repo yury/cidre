@@ -73,7 +73,7 @@ pub use asset::ReaderOutput as AssetReaderOutput;
 pub use asset::ReaderOutput as AssetReaderOuput;
 pub use asset::ReaderStatus as AssetReaderStatus;
 pub use asset::ReaderTrackOutput as AssetReaderTrackOutput;
-pub use asset::URLAsset;
+pub use asset::UrlAsset;
 pub use asset::WriterInput as AssetWriterInput;
 pub use asset::WriterStatus as AssetWriterStatus;
 
