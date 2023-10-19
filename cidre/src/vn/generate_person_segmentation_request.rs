@@ -31,7 +31,7 @@ impl GeneratePersonSegmentationRequest {
     pub fn set_output_pixel_format(&mut self, value: os::Type);
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::PixelBufferObservation>>;
+    pub fn results(&self) -> Option<&ns::Array<vn::PixelBufObservation>>;
 }
 
 #[link(name = "vn", kind = "static")]

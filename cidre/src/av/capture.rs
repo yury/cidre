@@ -44,8 +44,8 @@ pub use metadata_output::MetadataOutputObjectsDelegateImpl;
 
 pub mod video_data_output;
 pub use video_data_output::VideoDataOutput;
-pub use video_data_output::VideoDataOutputSampleBufferDelegate;
-pub use video_data_output::VideoDataOutputSampleBufferDelegateImpl;
+pub use video_data_output::VideoDataOutputSampleBufDelegate;
+pub use video_data_output::VideoDataOutputSampleBufDelegateImpl;
 
 pub mod audio_data_output;
 pub use audio_data_output::AudioDataOutput;

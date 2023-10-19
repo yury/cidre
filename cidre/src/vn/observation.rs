@@ -40,7 +40,7 @@ impl DetectedObjectObservation {
     pub fn bounding_box(&self) -> cg::Rect;
 
     #[objc::msg_send(globalSegmentationMask)]
-    pub fn global_segmentation_mask(&self) -> Option<&vn::PixelBufferObservation>;
+    pub fn global_segmentation_mask(&self) -> Option<&vn::PixelBufObservation>;
 }
 
 define_obj_type!(FaceObservation(DetectedObjectObservation));
@@ -135,9 +135,9 @@ impl RecognizedTextObservation {
     pub fn top_candidates(&self, max: usize) -> &ns::Array<RecognizedText>;
 }
 
-define_obj_type!(PixelBufferObservation(Observation));
+define_obj_type!(PixelBufObservation(Observation));
 
-impl PixelBufferObservation {
+impl PixelBufObservation {
     #[objc::msg_send(pixelBuffer)]
     pub fn pixel_buffer(&self) -> &cv::PixelBuf;
 
@@ -167,7 +167,7 @@ impl HumanObservation {
     pub fn upper_body_only(&self) -> bool;
 }
 
-define_obj_type!(SaliencyImageObservation(PixelBufferObservation));
+define_obj_type!(SaliencyImageObservation(PixelBufObservation));
 
 impl SaliencyImageObservation {
     #[objc::msg_send(salientObjects)]

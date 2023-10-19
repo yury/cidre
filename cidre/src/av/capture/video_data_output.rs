@@ -3,7 +3,7 @@ use crate::{arc, av, cm, define_obj_type, dispatch, ns, objc};
 use super::Output;
 
 #[objc::obj_trait]
-pub trait VideoDataOutputSampleBufferDelegate: objc::Obj {
+pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(captureOutput:didOutputSampleBuffer:fromConnection:)]
     fn capture_output_did_output_sample_buffer_from_connection(
@@ -27,7 +27,7 @@ define_obj_type!(VideoDataOutput(Output), AV_CAPTURE_VIDEO_DATA_OUTPUT);
 
 impl VideoDataOutput {
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
-    pub fn set_sample_buffer_delegate<D: VideoDataOutputSampleBufferDelegate>(
+    pub fn set_sample_buffer_delegate<D: VideoDataOutputSampleBufDelegate>(
         &mut self,
         delegate: Option<&D>,
         queue: Option<&dispatch::Queue>,
