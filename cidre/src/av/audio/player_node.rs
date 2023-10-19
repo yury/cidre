@@ -7,15 +7,16 @@ use crate::{
 };
 
 /// Options controlling buffer scheduling.
+#[doc(alias = "AVAudioPlayerNodeBufferOptions")]
 #[repr(transparent)]
-pub struct BufferOptions(pub usize);
+pub struct BufOptions(pub usize);
 
-impl BufferOptions {
+impl BufOptions {
     /// The buffer loops indefinitely.  
     pub const LOOPS: Self = Self(1usize << 0);
     /// The buffer interrupts any buffer already playing.
     pub const INTERRUPTS: Self = Self(1usize << 1);
-    /// he buffer interrupts any buffer already playing, at its loop point.
+    /// The buffer interrupts any buffer already playing, at its loop point.
     pub const INTERRUPTS_AT_LOOP: Self = Self(1usize << 2);
 }
 

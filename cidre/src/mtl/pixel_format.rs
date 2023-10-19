@@ -73,19 +73,23 @@ pub enum PixelFormat {
     Rg8SInt = 34,
 
     /* Packed 16 bit formats */
-    /// Packed 16-bit format with normalized unsigned integer color components: 5 bits for blue, 6 bits for green, 5 bits for red, packed into 16 bits.
+    /// Packed 16-bit format with normalized unsigned integer color components:
+    /// 5 bits for blue, 6 bits for green, 5 bits for red, packed into 16 bits.
     #[doc(alias = "MTLPixelFormatB5G6R5Unorm")]
     B5G6R5UNorm = 40,
 
-    /// Packed 16-bit format with normalized unsigned integer color components: 5 bits each for BGR and 1 for alpha, packed into 16 bits.
+    /// Packed 16-bit format with normalized unsigned integer color components:
+    /// 5 bits each for BGR and 1 for alpha, packed into 16 bits.
     #[doc(alias = "MTLPixelFormatA1BGR5Unorm")]
     A1BGR5UNorm = 41,
 
-    /// Packed 16-bit format with normalized unsigned integer color components: 4 bits each for ABGR, packed into 16 bits.
+    /// Packed 16-bit format with normalized unsigned integer color components:
+    /// 4 bits each for ABGR, packed into 16 bits.
     #[doc(alias = "MTLPixelFormatABGR4Unorm")]
     Abgr4UNorm = 42,
 
-    /// Packed 16-bit format with normalized unsigned integer color components: 5 bits each for BGR and 1 for alpha, packed into 16 bits.
+    /// Packed 16-bit format with normalized unsigned integer color components:
+    /// 5 bits each for BGR and 1 for alpha, packed into 16 bits.
     #[doc(alias = "MTLPixelFormatBGR5A1Unorm")]
     Bgr5A1UNorm = 43,
 
@@ -228,6 +232,21 @@ pub enum PixelFormat {
     #[doc(alias = "MTLPixelFormatBGRA10_XR_sRGB")]
     Bgra10XrSrgb = 553,
 
+    /* Normal 128 bit formats */
+    /// Ordinary format with four 32-bit unsigned integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA32Uint")]
+    Rgba32UInt = 123,
+
+    /// Ordinary format with four 32-bit signed integer components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA32Sint")]
+    Rgba32SInt = 124,
+
+    /// Ordinary format with four 32-bit floating-point components in RGBA order.
+    #[doc(alias = "MTLPixelFormatRGBA32Float")]
+    Rgba32Float = 125,
+
+    /* Compressed formats. */
+    // TODO:
     Astc4x4Srgb = 186,
     Astc5x4Srgb = 187,
     Astc5x5Srgb = 188,
