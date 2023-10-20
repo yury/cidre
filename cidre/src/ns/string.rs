@@ -203,6 +203,12 @@ extern "C" {
     static NS_MUTABLE_STRING: &'static Class<StringMut>;
 }
 
+impl PartialEq<str> for String {
+    fn eq(&self, other: &str) -> bool {
+        self.as_cf() == other
+    }
+}
+
 impl fmt::Display for String {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         fmt.write_str(&Cow::from(self.as_cf()))

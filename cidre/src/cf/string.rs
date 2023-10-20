@@ -364,6 +364,21 @@ impl StringMut {
     }
 }
 
+impl PartialEq<str> for String {
+    fn eq(&self, other: &str) -> bool {
+        let ptr = unsafe { CFStringGetCStringPtr(self, Encoding::UTF8) };
+        if ptr.is_null() {
+            return false;
+        }
+        let s = unsafe { CStr::from_ptr(ptr) };
+        if let Ok(s) = s.to_str() {
+            return s.eq(other);
+        }
+
+        return false;
+    }
+}
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFStringGetTypeID() -> TypeId;

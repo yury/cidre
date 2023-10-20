@@ -321,13 +321,13 @@ macro_rules! define_obj_type {
             }
         }
 
-        // impl PartialEq<$BaseType> for $NewType {
-        //     fn eq(&self, other: &$BaseType) -> bool {
-        //         self.0.eq(other)
-        //     }
-        // }
+        impl PartialEq<$crate::arc::R<$NewType>> for $NewType {
+            fn eq(&self, other: &$crate::arc::R<$NewType>) -> bool {
+                self.0.is_equal(other)
+            }
+        }
 
-        // impl PartialEq for $NewType where $BaseType: PartialEq {
+        // impl PartialEq for $NewType {
         //     fn eq(&self, other: &$NewType) -> bool {
         //         self.is_equal(other)
         //     }

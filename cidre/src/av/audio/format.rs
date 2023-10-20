@@ -10,10 +10,13 @@ pub enum CommonFormat {
 
     /// Native-endian floats (this is the standard format).
     PcmF32 = 1,
+
     /// Native-endian doubles.
     PcmF64 = 2,
+
     /// Signed 16-bit native-endian integers.
     PcmI16 = 3,
+
     /// Signed 32-bit native-endian integers.
     PcmI32 = 4,
 }
@@ -64,7 +67,7 @@ impl arc::A<Format> {
     ) -> Option<arc::R<Format>>;
 }
 
-/// AVAudioFormat wraps a Core Audio AudioStreamBasicDescription struct, with convenience
+/// av::AudioFormat wraps a Core Audio AudioStreamBasicDescription struct, with convenience
 /// initializers and accessors for common formats, including Core Audio's standard deinterleaved
 /// 32-bit floating point.
 ///

@@ -60,3 +60,6 @@ pub use system_pressure::Factors as SystemPressureFactors;
 pub use system_pressure::Level as SystemPressureLevel;
 #[cfg(not(target_os = "macos"))]
 pub use system_pressure::State as SystemPressureState;
+
+pub mod reactions;
+pub use reactions::ReactionType;

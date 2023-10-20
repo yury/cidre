@@ -1,6 +1,6 @@
-use crate::{cf, define_cf_type};
+use crate::{define_obj_type, ns};
 
-define_cf_type!(SessionPreset(cf::String));
+define_obj_type!(SessionPreset(ns::String));
 
 impl SessionPreset {
     /// preset suitable for high resolution photo quality output.
@@ -15,13 +15,15 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPresetHigh }
     }
 
-    /// Clients may set an av::CaptureSession instance's sessionPreset to AVCaptureSessionPresetMedium to achieve output video and audio bitrates suitable for sharing over WiFi.
+    /// Clients may set an av::CaptureSession instance's sessionPreset to
+    /// `av::CaptureSessionPreset::medium()` to achieve output video and audio
+    /// bitrates suitable for sharing over WiFi.
     #[inline]
     pub fn medium() -> &'static Self {
         unsafe { AVCaptureSessionPresetMedium }
     }
 
-    /// An AVCaptureSession preset suitable for low quality output.
+    /// An `av::CaptureSession` preset suitable for low quality output.
     #[inline]
     pub fn low() -> &'static Self {
         unsafe { AVCaptureSessionPresetLow }
@@ -57,6 +59,7 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPreset1920x1080 }
     }
 
+    /// An 'av::CaptureSession' preset suitable for 3840x2160 (UHD 4K) video output.
     #[inline]
     pub fn _3840x2160() -> &'static Self {
         unsafe { AVCaptureSessionPreset3840x2160 }
@@ -72,6 +75,16 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPresetiFrame1280x720 }
     }
 
+    /// By calling `set_session_preset()`, clients can easily configure an 'av::CaptureSession'
+    /// to produce a desired quality of service level. The session configures its inputs and outputs
+    /// optimally to produce the QoS level indicated. Clients who need to ensure a particular
+    /// input format is chosen can use 'av::CaptureDevice''s 'set_active_format()' method.
+    /// When a client sets the active format on a device, the associated session's 'session_preset'
+    /// property automatically changes to 'av::CaptureSessionPreset::input_priority()'.
+    /// This change indicates that the input format selected by the client now dictates the quality
+    /// of service level provided at the outputs. When a client sets the session preset to anything
+    /// other than 'av::CaptureSessionPreset::input_priority()', the session resumes responsibility
+    /// for configuring inputs and outputs, and is free to change its inputs' 'active_format' as needed.
     #[inline]
     pub fn input_priority() -> &'static Self {
         unsafe { AVCaptureSessionPresetInputPriority }

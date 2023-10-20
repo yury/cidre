@@ -29,6 +29,12 @@ impl<T: Retain + PartialEq> PartialEq for Retained<T> {
     }
 }
 
+impl<T: Retain + PartialEq> PartialEq<T> for Retained<T> {
+    fn eq(&self, other: &T) -> bool {
+        self.0 == other
+    }
+}
+
 impl<T: Retain + PartialOrd> PartialOrd for Retained<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         self.0.partial_cmp(&other.0)
