@@ -277,11 +277,20 @@ pub enum FocusMode {
     ContinuousAutoFocus = 2,
 }
 
+#[doc(alias = "AVCaptureAutoFocusSystem")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum AutoFocusSystem {
+    /// Indicates that autofocus is not available.
     None = 0,
+
+    /// Indicates that autofocus is achieved by contrast detection.
+    /// Contrast detection performs a focus scan to find the optimal position.
     ContrastDetection = 1,
+
+    /// Indicates that autofocus is achieved by phase detection.
+    /// Phase detection has the ability to achieve focus in many cases without a focus scan.
+    /// Phase detection autofocus is typically less visually intrusive than contrast detection autofocus.
     PhaseDetection = 2,
 }
 
@@ -301,6 +310,7 @@ impl FrameRateRange {
     pub fn min_frame_duration(&self) -> cm::Time;
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum CenterStageControlMode {
     User = 0,
@@ -308,6 +318,7 @@ pub enum CenterStageControlMode {
     Cooperative = 2,
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum MicrophoneMode {
     Standard = 0,
@@ -361,11 +372,27 @@ impl Format {
     #[objc::msg_send(isMultiCamSupported)]
     pub fn is_mutli_cam_supported(&self) -> bool;
 
+    #[objc::msg_send(geometricDistortionCorrectedVideoFieldOfView)]
+    pub fn geometric_distortion_corrected_video_field_of_view(&self) -> f32;
+}
+
+/// Center Stage
+impl Format {
     #[objc::msg_send(isCenterStageSupported)]
     pub fn is_center_stage_supported(&self) -> bool;
 
+    #[objc::msg_send(videoMinZoomFactorForCenterStage)]
+    pub fn video_min_zoom_factor_for_center_stage(&self) -> cg::Float;
+
     #[objc::msg_send(videoFrameRateRangeForCenterStage)]
     pub fn video_frame_rate_range_for_center_stage(&self) -> Option<&FrameRateRange>;
+}
+
+/// Portrait Effect
+impl Format {
+    /// Indicates whether the format supports the Portrait Effect feature.
+    #[objc::msg_send(isPortraitEffectSupported)]
+    pub fn is_portrait_effect_supported(&self) -> bool;
 }
 
 pub mod notifications {
@@ -426,7 +453,7 @@ extern "C" {
     static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum VideoStabilizationMode {
     Off = 0,
