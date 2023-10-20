@@ -398,14 +398,17 @@ impl Format {
 pub mod notifications {
     use crate::cf;
 
+    /// Posted when a device becomes available on the system.
     pub fn was_connected() -> &'static cf::NotificationName {
         unsafe { AVCaptureDeviceWasConnectedNotification }
     }
 
+    /// Posted when a device becomes unavailable on the system.
     pub fn was_disconnected() -> &'static cf::NotificationName {
         unsafe { AVCaptureDeviceWasDisconnectedNotification }
     }
 
+    ///  Posted when the instance of av::CaptureDevice has detected a substantial change to the video subject area.
     #[cfg(not(target_os = "macos"))]
     pub fn subject_area_did_change() -> &'static cf::NotificationName {
         unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
@@ -469,6 +472,7 @@ mod tests {
         self,
         capture::device::{self, Device},
     };
+
     #[test]
     fn basics() {
         let device_type = device::Type::built_in_wide_angle_camera();

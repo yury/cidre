@@ -35,9 +35,8 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration};
-
     use crate::mach;
+
     #[test]
     fn basics() {
         let res =
