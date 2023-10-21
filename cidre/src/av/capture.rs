@@ -62,4 +62,5 @@ pub use system_pressure::Level as SystemPressureLevel;
 pub use system_pressure::State as SystemPressureState;
 
 pub mod reactions;
+pub use reactions::EffectState as ReactionEffectState;
 pub use reactions::ReactionType;

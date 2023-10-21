@@ -135,6 +135,7 @@ pub enum Attribution {
     /// the user.
     User = 1,
 }
+
 impl arc::A<URLRequestMut> {
     #[objc::msg_send(initWithURL:)]
     pub fn init_with_url(self, url: &ns::URL) -> arc::R<URLRequestMut>;

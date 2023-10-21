@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{cm, define_obj_type, ns, objc};
 
 define_obj_type!(ReactionType(ns::String));
 
@@ -65,6 +65,23 @@ extern "C" {
     static AVCaptureReactionTypeLasers: &'static ReactionType;
 
     fn AVCaptureReactionSystemImageNameForType(reacton_type: &ReactionType) -> &ns::String;
+}
+
+define_obj_type!(EffectState(ns::Id));
+
+impl EffectState {
+    /// Indicates the reaction which is running.
+    #[objc::msg_send(reactionType)]
+    pub fn reaction_type(&self) -> &ReactionType;
+
+    /// Provides the presentation time of the first frame where the effect is being rendered.
+    #[objc::msg_send(startTime)]
+    pub fn start_time(&self) -> cm::Time;
+
+    /// Provides the presentation time of the frame following
+    /// the last frame where the effect is seen.
+    #[objc::msg_send(endTime)]
+    pub fn end_time(&self) -> cm::Time;
 }
 
 #[cfg(test)]

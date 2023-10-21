@@ -169,10 +169,10 @@ pub enum DataType {
     Bool = Self::ALTERNATE_ENCODING_BIT | 8u32,
 
     /// Unsigned 1-bit normalized value.
-    Unorm1 = Self::NORMALIZED_BIT | 1u32,
+    UNorm1 = Self::NORMALIZED_BIT | 1u32,
 
     /// Unsigned 8-bit normalized value.
-    Unorm8 = Self::NORMALIZED_BIT | 8u32,
+    UNorm8 = Self::NORMALIZED_BIT | 8u32,
 }
 
 impl DataType {

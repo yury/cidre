@@ -90,7 +90,7 @@ static void av_initializer(void)
         
         AV_SAMPLE_BUFFER_DISPLAY_LAYER = [AVSampleBufferDisplayLayer class];
         AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
-        
+
         initialized = 1;
     }
 }

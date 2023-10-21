@@ -31,6 +31,7 @@ pub use capture::MetadataOutput as CaptureMetadataOutput;
 pub use capture::MicrophoneMode as CaptureMicrophoneMode;
 pub use capture::MultiCamSession as CaptureMultiCamSession;
 pub use capture::Output as CaptureOutput;
+pub use capture::ReactionEffectState as CaptureReactionEffectState;
 pub use capture::ReactionType as CaptureReactionType;
 pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
