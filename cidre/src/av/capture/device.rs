@@ -14,7 +14,6 @@ define_obj_type!(Type(ns::String));
 /// use cidre::av;
 ///
 /// let device_type = av::CaptureDeviceType::external();
-/// let device_type = av::CaptureDeviceType::external_unknown();
 /// let device_type = av::CaptureDeviceType::built_in_microphone();
 /// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
 /// let device_type = av::CaptureDeviceType::built_in_telephoto_camera();

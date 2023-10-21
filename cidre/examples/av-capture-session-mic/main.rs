@@ -32,10 +32,8 @@ impl AudioDataOutputSampleBufDelegateImpl for OutputDelegate {
 
 fn main() {
     let mic = {
-        let device_types = ns::Array::from_slice(&[
-            DeviceType::built_in_microphone(),
-            DeviceType::external_unknown(),
-        ]);
+        let device_types =
+            ns::Array::from_slice(&[DeviceType::built_in_microphone(), DeviceType::external()]);
         let discovery_session = DiscoverySession::with_device_types_media_and_position(
             &device_types,
             Some(av::MediaType::audio()),
