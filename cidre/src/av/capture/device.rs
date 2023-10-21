@@ -272,6 +272,111 @@ impl Device {
     pub fn active_mic_mode() -> MicMode;
 }
 
+#[doc(alias = "AVCaptureCenterStageControlMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum CenterStageControlMode {
+    /// Indicates that the application is unaware of the Center Stage feature.
+    /// Its enablement is entirely under user control in Control Center.
+    User = 0,
+
+    /// Indicates that the application controls the Center Stage feature,
+    /// disallowing input from the user in Control Center.
+    App = 1,
+
+    /// Indicates that both the user and application cooperatively share
+    /// control of the Center Stage feature.
+    Cooperative = 2,
+}
+
+impl Device {
+    /// Current mode of Center Stage control (user, app, or cooperative).
+    ///
+    /// This class property determines how the Center Stage feature is controlled.
+    /// When set to the default value of 'av::CaptureCenterStageControlMode::User',
+    /// 'set_center_stage_enabled' may not be set programmatically and throws an
+    /// NSInvalidArgumentException. In User mode, the feature may only be set by
+    /// the user in Control Center. If you wish to take Center Stage control away
+    /// from the user and exclusively enable / disable it programmatically, set this property
+    /// to 'av::CaptureCenterStageControlMode::App'. When under exclusive app control,
+    /// Center Stage user control is disallowed (for instance, the toggle is grayed out
+    /// in Control Center). If you wish to take control of Center Stage, but also cooperate
+    /// with the user by listening for and appropriately reacting to their changes to the
+    /// 'center_stage_enabled' property, set this property to
+    /// 'av::CaptureCenterStageControlMode::Cooperative'. Note that in this mode,
+    /// the onus is on you, the app developer, to honor user intent and conform your
+    /// 'av::CaptureSession' configuration to make Center Stage active (see the 'av::CaptureDevice'
+    /// instance property 'center_stage_active'). In cooperative mode, the 'center_stage_enabled'
+    /// property may change at any time (such as when the user enables / disables the feature
+    /// in Control Center).
+    #[objc::cls_msg_send(centerStageControlMode)]
+    pub fn center_stage_control_mode() -> CenterStageControlMode;
+
+    #[objc::cls_msg_send(setCenterStageControlMode:)]
+    pub fn set_center_stage_control_mode(value: CenterStageControlMode);
+
+    /// Indicates whether Center Stage is currently active on a particular av::CaptureDevice.
+    ///
+    /// This readonly property returns 'true' when Center Stage is currently active on
+    /// the receiver. When active, the camera automatically adjusts to keep people optimally
+    /// framed within the field of view. The field of view may pan, tighten or widen as needed.
+    /// Certain restrictions come into play when Center Stage is active:
+    ///
+    /// - The device's 'min_available_video_zoom_factor' and 'max_available_video_zoom_factor'
+    ///   become restricted (see av::CaptureDeviceFormat's 'video_min_zoom_factor_for_center_stage'
+    ///   and 'video_max_zoom_factor_for_center_stage').
+    /// - The device's 'active_video_min_frame_duration' and 'active_video_max_frame_duration'
+    ///   are limited (see av::CaptureDeviceFormat's 'video_frame_rate_range_for_center_stage').
+    ///
+    /// Center Stage may be enabled via user control or application control, depending on the
+    /// current 'av::CaptureDevice::center_stage_control_mode()'.
+    /// When 'av::CaptureDevice::is_center_stage_enabled()' is 'true', a particular
+    /// 'av::CaptureDevice' instance may return 'true' for this property, depending whether it
+    /// supports the feature in its current configuration. Some device features are mutually
+    /// exclusive to Center Stage:
+    ///
+    /// - If depth data delivery is enabled on any output, such as 'av::CaptureDepthDataOutput',
+    ///   or 'av::CapturePhotoOutput.depth_data_delivery_enabled', Center Stage is deactivated.
+    /// - If 'geometric_distortion_correction_supported' is 'true',
+    ///   'geometric_distortion_correction_enabled' must also be 'true', or Center Stage
+    ///   is deactivated.
+    ///
+    /// This property is key-value observable.
+    #[objc::msg_send(isCenterStageActive)]
+    pub fn is_center_stage_active(&self) -> bool;
+
+    #[objc::msg_send(centerStageRectOfInterest)]
+    pub fn center_stage_rect_of_interest(&self) -> cg::Rect;
+
+    /// Specifies the effective region within the output pixel buffer that will be used
+    /// to perform Center Stage framing.
+    ///
+    /// Applications that wish to apply additional processing (such as cropping) on top of
+    /// Center Stage's output can use this property to guide Center Stage's framing.
+    ///
+    /// The rectangle's origin is top left and is relative to the coordinate space of the
+    /// output pixel buffer. The default value of this property is the value
+    /// 'cg::Rect::new(0.0, 0.0, 1.0, 1.0)', where {0.0,0.0} represents the top left of the
+    /// picture area, and {1.0,1.0} represents the bottom right on an unrotated picture.
+    /// This rectangle of interest is applied prior to rotation, mirroring or scaling.
+    ///
+    /// Pixels outside of this rectangle of interest will be blackened out.
+    ///
+    /// Setting this property has no impact on objects specified in the metadata output.
+    ///
+    /// 'set_center_stage_rect_of_interest_throws': throws an 'ns::ExceptionName::generic()'
+    /// if called without first obtaining exclusive access to the receiver using
+    /// 'lock_for_configuration' 'set_center_stage_rect_of_interest_throws'
+    /// throws an 'ns::ExceptionName::invalid_argument()' if none of the av::CaptureDeviceFormats
+    /// supported by the receiver support CenterStage.
+    /// 'set_center_stage_rect_of_interest_throws' throws an 'ns::ExceptionName::invalid_argument()'
+    /// '::center_stage_enabled' is 'false' on the av::CaptureDevice class.
+    /// 'set_center_stage_rect_of_interest_throws' throws an 'ns::ExceptionName::invalid_argument()'
+    /// if the provided rect of interest goes outside the normalized (0-1) coordinate space.
+    #[objc::msg_send(setCenterStageRectOfInterest:)]
+    pub unsafe fn set_center_stage_rect_of_interest_throws(&mut self, value: cg::Rect);
+}
+
 #[doc(alias = "AVCaptureSystemUserInterface")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
@@ -309,6 +414,13 @@ impl<'a> ConfigurationLockGuard<'a> {
 
     pub fn cancel_video_zoom_ramp(&mut self) {
         unsafe { self.device.cancel_video_zoom_ramp_throws() }
+    }
+
+    pub fn set_center_stage_rect_of_interest<'ar>(
+        &mut self,
+        value: cg::Rect,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(value) })
     }
 }
 
@@ -384,14 +496,6 @@ impl FrameRateRange {
 
     #[objc::msg_send(minFrameDuration)]
     pub fn min_frame_duration(&self) -> cm::Time;
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(isize)]
-pub enum CenterStageControlMode {
-    User = 0,
-    App = 1,
-    Cooperative = 2,
 }
 
 define_obj_type!(Format(ns::Id));

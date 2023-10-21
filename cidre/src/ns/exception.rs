@@ -8,29 +8,34 @@ impl ExceptionName {
     /// A generic name for an exception.
     ///
     /// You should typically use a more specific exception name.
+    #[doc(alias = "NSGenericException")]
     pub fn generic() -> &'static Self {
         unsafe { NSGenericException }
     }
 
     /// Name of an exception that occurs when attempting to access
     /// outside the bounds of some data, such as beyond the end of a string.
+    #[doc(alias = "NSRangeException")]
     pub fn range() -> &'static Self {
         unsafe { NSRangeException }
     }
 
     /// Name of an exception that occurs when you pass an invalid argument
     /// to a method, such as a nil pointer where a non-nil object is required.
+    #[doc(alias = "NSInvalidArgumentException")]
     pub fn invalid_argument() -> &'static Self {
         unsafe { NSInvalidArgumentException }
     }
 
     /// Name of an exception that occurs when an internal assertion fails and
     /// implies an unexpected condition within the called code.
+    #[doc(alias = "NSInternalInconsistencyException")]
     pub fn internal_inconsistency() -> &'static Self {
         unsafe { NSInternalInconsistencyException }
     }
 
     /// Obsolete; not currently used.
+    #[doc(alias = "NSMallocException")]
     pub fn malloc() -> &'static Self {
         unsafe { NSMallocException }
     }
@@ -39,6 +44,7 @@ impl ExceptionName {
     /// from a thread that should not access it.
     ///
     /// See NSConnection’s enableMultipleThreads.
+    #[doc(alias = "NSObjectInaccessibleException")]
     pub fn object_inaccessible() -> &'static Self {
         unsafe { NSObjectInaccessibleException }
     }
@@ -46,6 +52,7 @@ impl ExceptionName {
     /// Name of an exception that occurs when the remote side of the NSConnection
     /// refused to send the message to the object because the object has never been
     /// vended.
+    #[doc(alias = "NSObjectNotAvailableException")]
     pub fn object_not_available() -> &'static Self {
         unsafe { NSObjectNotAvailableException }
     }
@@ -54,6 +61,7 @@ impl ExceptionName {
     /// an unexpected condition within the distributed objects.
     ///
     /// This is a distributed objects–specific exception.
+    #[doc(alias = "NSDestinationInvalidException")]
     pub fn destination_invalid() -> &'static Self {
         unsafe { NSDestinationInvalidException }
     }
@@ -62,6 +70,7 @@ impl ExceptionName {
     /// a send or receive operation.
     ///
     /// This is a distributed objects–specific exception.
+    #[doc(alias = "NSPortTimeoutException")]
     pub fn port_timeout() -> &'static Self {
         unsafe { NSPortTimeoutException }
     }
@@ -70,6 +79,7 @@ impl ExceptionName {
     /// NSConnection has become invalid.
     ///
     /// This is a distributed objects–specific exception.
+    #[doc(alias = "NSInvalidSendPortException")]
     pub fn invalid_send_port() -> &'static Self {
         unsafe { NSInvalidSendPortException }
     }
@@ -78,6 +88,7 @@ impl ExceptionName {
     /// an NSConnection has become invalid.
     ///
     /// This is a distributed objects–specific exception
+    #[doc(alias = "NSInvalidReceivePortException")]
     pub fn invalid_receive_port() -> &'static Self {
         unsafe { NSInvalidReceivePortException }
     }
@@ -85,6 +96,7 @@ impl ExceptionName {
     /// Generic error occurred on send.
     ///
     /// This is an NSPort-specific exception.
+    #[doc(alias = "NSPortSendException")]
     pub fn port_send() -> &'static Self {
         unsafe { NSPortSendException }
     }
@@ -92,17 +104,20 @@ impl ExceptionName {
     /// Generic error occurred on receive.
     ///
     /// This is an NSPort-specific exception.
+    #[doc(alias = "NSPortReceiveException")]
     pub fn port_receive() -> &'static Self {
         unsafe { NSPortReceiveException }
     }
 
     /// No longer used.
+    #[doc(alias = "NSOldStyleException")]
     pub fn old_style() -> &'static Self {
         unsafe { NSOldStyleException }
     }
 
     /// The name of an exception raised by NSArchiver if there are problems
     /// initializing or encoding.
+    #[doc(alias = "NSInconsistentArchiveException")]
     pub fn inconsisten_archive() -> &'static Self {
         unsafe { NSInconsistentArchiveException }
     }
