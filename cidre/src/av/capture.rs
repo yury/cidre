@@ -8,7 +8,7 @@ pub use device::DiscoverySession;
 pub use device::FocusMode;
 pub use device::Format as DeviceFormat;
 pub use device::FrameRateRange;
-pub use device::MicrophoneMode;
+pub use device::MicMode;
 pub use device::Position as DevicePosition;
 pub use device::TorchMode;
 pub use device::Type as DeviceType;

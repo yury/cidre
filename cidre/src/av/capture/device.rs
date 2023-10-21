@@ -210,6 +210,82 @@ impl Device {
     pub unsafe fn cancel_video_zoom_ramp_throws(&mut self);
 }
 
+/// AVCaptureDeviceReactionEffects
+impl Device {
+    #[objc::cls_msg_send(reactionEffectsEnabled)]
+    pub fn reaction_effects_enabled() -> bool;
+
+    #[objc::cls_msg_send(reactionEffectGesturesEnabled)]
+    pub fn reaction_effect_gestures_enabled() -> bool;
+
+    #[objc::msg_send(canPerformReactionEffects)]
+    pub fn can_perform_reaction_effects(&self) -> bool;
+
+    /// Returns a list of reaction types which can be passed to perform_effect_for_reaction.
+    ///
+    /// The list may differ between devices, or be affected by changes to active format,
+    /// and can be key-value observed.
+    #[objc::msg_send(availableReactionTypes)]
+    pub fn available_reaction_types(&self) -> &ns::Set<av::CaptureReactionType>;
+
+    /// Triggers a specified reaction on the video stream.
+    #[objc::msg_send(performEffectForReaction:)]
+    pub fn perform_effect_for_reaction(&mut self, reaction_type: &av::CaptureReactionType);
+
+    #[objc::msg_send(reactionEffectsInProgress)]
+    pub fn reaction_effects_in_progress(&self) -> &ns::Array<av::CaptureReactionEffectState>;
+}
+
+/// AVCaptureDeviceContinuityCamera
+impl Device {
+    /// A property that reports YES if the receiver is a Continuity Camera.
+    ///
+    /// Access this property to discover if the receiver is
+    /// a Continuity Camera (external iPhone webcam).
+    #[objc::msg_send(isContinuityCamera)]
+    pub fn is_continuity_camera(&self) -> bool;
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum MicMode {
+    Standard = 0,
+    WideSpectrum = 1,
+    VoiceIsolation = 2,
+}
+
+/// AVCaptureMicrophoneMode
+impl Device {
+    /// Indicates the microphone mode that has been selected by the user in Control Center.
+    ///
+    /// This readonly property returns the microphone mode selected by the user in Control Center. It is key-value observable.
+    #[objc::cls_msg_send(preferredMicrophoneMode)]
+    pub fn preferred_mic_mode() -> MicMode;
+
+    /// Indicates the currently active microphone mode.
+    ///
+    /// This readonly property returns the currently active microphone mode,
+    /// which may differ from the 'preferred_mic_mode()' if the application's
+    /// active audio route does not support the preferred microphone mode.
+    /// This property is key-value observable.
+    #[objc::cls_msg_send(activeMicrophoneMode)]
+    pub fn active_mic_mode() -> MicMode;
+}
+
+#[doc(alias = "AVCaptureSystemUserInterface")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum SystemUi {
+    VideoEffects = 1,
+    MicModes = 2,
+}
+
+/// AVCaptureSystemUserInterface
+impl Device {
+    #[objc::cls_msg_send(showSystemUserInterface:)]
+    pub fn show_system_ui(system_ui: SystemUi);
+}
+
 pub struct ConfigurationLockGuard<'a> {
     device: &'a mut Device,
 }
@@ -316,14 +392,6 @@ pub enum CenterStageControlMode {
     User = 0,
     App = 1,
     Cooperative = 2,
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(isize)]
-pub enum MicrophoneMode {
-    Standard = 0,
-    WideSpectrum = 1,
-    VoiceIsolation = 2,
 }
 
 define_obj_type!(Format(ns::Id));

@@ -28,7 +28,7 @@ pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
 pub use capture::InterruptionReason as CaptureInterruptionReason;
 pub use capture::MetadataOutput as CaptureMetadataOutput;
-pub use capture::MicrophoneMode as CaptureMicrophoneMode;
+pub use capture::MicMode as CaptureMicMode;
 pub use capture::MultiCamSession as CaptureMultiCamSession;
 pub use capture::Output as CaptureOutput;
 pub use capture::ReactionEffectState as CaptureReactionEffectState;
