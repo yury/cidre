@@ -478,7 +478,8 @@ pub enum AutoFocusSystem {
 
     /// Indicates that autofocus is achieved by phase detection.
     /// Phase detection has the ability to achieve focus in many cases without a focus scan.
-    /// Phase detection autofocus is typically less visually intrusive than contrast detection autofocus.
+    /// Phase detection autofocus is typically less visually intrusive than contrast
+    // detection autofocus.
     PhaseDetection = 2,
 }
 
@@ -580,7 +581,8 @@ pub mod notifications {
         unsafe { AVCaptureDeviceWasDisconnectedNotification }
     }
 
-    ///  Posted when the instance of av::CaptureDevice has detected a substantial change to the video subject area.
+    /// Posted when the instance of av::CaptureDevice has detected a substantial
+    /// change to the video subject area.
     #[cfg(not(target_os = "macos"))]
     pub fn subject_area_did_change() -> &'static cf::NotificationName {
         unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
