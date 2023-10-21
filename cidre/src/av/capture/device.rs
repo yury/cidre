@@ -13,6 +13,7 @@ define_obj_type!(Type(ns::String));
 /// ```
 /// use cidre::av;
 ///
+/// let device_type = av::CaptureDeviceType::external();
 /// let device_type = av::CaptureDeviceType::external_unknown();
 /// let device_type = av::CaptureDeviceType::built_in_microphone();
 /// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
@@ -25,10 +26,21 @@ define_obj_type!(Type(ns::String));
 /// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
 /// ```
 impl Type {
-    #[doc(alias = "AVCaptureDeviceTypeExternalUnknown")]
-    #[cfg(target_os = "macos")]
-    pub fn external_unknown() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeExternalUnknown }
+    /// An external device type. On iPad, external devices are those that conform
+    /// to the UVC (USB Video Class) specification.
+    ///
+    /// Starting in Mac Catalyst 17.0, apps may opt in for using
+    /// 'av::CaptureDeviceType::external()' by adding the following key
+    /// to their Info.plist:
+    /// ```xml
+    ///  <key>NSCameraUseExternalDeviceType</key>
+    ///  <true/>
+    /// ```
+    /// Otherwise, external cameras on Mac Catalyst report that their device type is
+    /// 'av::CaptureDeviceType::built_in_wide_angle_camera()'.
+    #[doc(alias = "AVCaptureDeviceTypeExternal")]
+    pub fn external() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeExternal }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
@@ -89,6 +101,23 @@ impl Type {
         unsafe { AVCaptureDeviceTypeBuiltInLiDARDepthCamera }
     }
 
+    /// A continuity camera device. These devices are suitable for general purpose use.
+    /// Note that devices of this type may only be discovered using an
+    /// av::CaptureDeviceDiscoverySession or
+    ///`av::CaptureDevice::default_device_with_device_type_media_type_position`.
+    ///
+    /// Starting in macOS 14.0 and Mac Catalyst 17.0, apps may opt in for using
+    /// 'av::CaptureDeviceType::continuity_camera()' by adding the following key
+    /// to their Info.plist:
+    /// ```xml
+    /// <key>NSCameraUseContinuityCameraDeviceType</key>
+    /// <true/>
+    /// ```
+    #[doc(alias = "AVCaptureDeviceTypeContinuityCamera")]
+    pub fn continuity_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeContinuityCamera }
+    }
+
     /// A distortion corrected cut out from an ultra wide camera, made to approximate
     /// an overhead camera pointing at a desk.
     /// Supports multicam operation.
@@ -97,13 +126,16 @@ impl Type {
     pub fn desk_view_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeDeskViewCamera }
     }
+    // #[cfg(target_os = "macos")]
+    // #[doc(alias = "AVCaptureDeviceTypeExternalUnknown")]
+    // pub fn external_unknown() -> &'static Self {
+    //     unsafe { AVCaptureDeviceTypeExternalUnknown }
+    // }
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
-
-    #[cfg(target_os = "macos")]
-    static AVCaptureDeviceTypeExternalUnknown: &'static Type;
+    static AVCaptureDeviceTypeExternal: &'static Type;
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
@@ -113,8 +145,11 @@ extern "C" {
     static AVCaptureDeviceTypeBuiltInTripleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTrueDepthCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInLiDARDepthCamera: &'static Type;
+    static AVCaptureDeviceTypeContinuityCamera: &'static Type;
     #[cfg(target_os = "macos")]
     static AVCaptureDeviceTypeDeskViewCamera: &'static Type;
+    // #[cfg(target_os = "macos")]
+    // static AVCaptureDeviceTypeExternalUnknown: &'static Type;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -617,6 +652,19 @@ impl DiscoverySession {
         position: Position,
     ) -> arc::R<Self>;
 
+    /// The list of devices that comply to the search criteria specified
+    /// on the discovery session.
+    ///
+    /// The returned array contains only devices that are available at the time the method
+    /// is called. Applications can key-value observe this property to be notified when
+    /// the list of available devices has changed. For apps linked against iOS 10,
+    /// the devices returned are unsorted. For apps linked against iOS 11 or later,
+    /// the devices are sorted by 'av::CaptureDeviceType', matching the order specified
+    /// in the deviceTypes parameter of 'av::CaptureDeviceDiscoverySession::with_device_types_media_position`.
+    /// If a position of 'av::CaptureDevicePosition::unspecified' is specified,
+    /// the results are further ordered by position in the 'av::CaptureDevicePosition' enum.
+    /// Starting in Mac Catalyst 14.0, clients can key value observe the value of this
+    /// property to be notified when the devices change.
     #[objc::msg_send(devices)]
     pub fn devices(&self) -> &ns::Array<Device>;
 
@@ -630,6 +678,7 @@ extern "C" {
     static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
 }
 
+#[doc(alias = "AVCaptureVideoStabilizationMode")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum VideoStabilizationMode {
@@ -642,9 +691,15 @@ pub enum VideoStabilizationMode {
 
 #[cfg(test)]
 mod tests {
-    use crate::av::{
-        self,
-        capture::device::{self, Device},
+    use std::{thread::sleep, time::Duration};
+
+    use crate::{
+        av::{
+            self, capture,
+            capture::device::{self, Device},
+        },
+        cm::io,
+        ns,
     };
 
     #[test]
@@ -660,5 +715,27 @@ mod tests {
         assert!(device.formats().len() > 0);
         assert!(device.supports_preset(av::CaptureSessionPreset::photo()));
         let mut _lock = device.configuration_lock().expect("locked");
+    }
+
+    #[test]
+    fn session() {
+        io::Object::SYSTEM
+            .set_allow_screen_capture_devices(true)
+            .unwrap();
+        io::Object::SYSTEM
+            .set_allow_wireless_screen_capture_devices(true)
+            .unwrap();
+
+        io::Object::SYSTEM.show();
+
+        let list = ns::Array::from_slice(&[av::CaptureDeviceType::external()]);
+        let session = capture::DiscoverySession::with_device_types_media_and_position(
+            list.as_ref(),
+            Some(av::MediaType::muxed()),
+            capture::DevicePosition::Unspecified,
+        );
+
+        let devices = session.devices();
+        devices.as_type_ref().show();
     }
 }

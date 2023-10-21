@@ -61,3 +61,6 @@ pub use simple_queue::SimpleQueue;
 
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C" {}
+
+#[cfg(all(feature = "cmio", target_os = "macos"))]
+pub mod io;

@@ -20,6 +20,7 @@ full = [
   "ca",
   "ci",
   "cm",
+  "cmio",
   "ct",
   "av",
   "cf",
@@ -41,7 +42,7 @@ full = [
   "ui",
   "io",
   "nw",
-  "core_motion"
+  "core_motion",
 ]
 
 # Turn on private API
@@ -58,6 +59,7 @@ av = ["ns"]
 ca = ["ns"]
 sc = ["ns"]
 cm = ["cf"] # optional cv, cat
+cmio = ["cm"]
 cv = ["cf", "cg"]
 ci = ["cf", "ns"]
 cg = ["cf"] # optional io, dispatch, blocks
