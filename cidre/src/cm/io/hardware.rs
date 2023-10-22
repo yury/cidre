@@ -1,10 +1,10 @@
 pub mod object;
 pub use object::Class;
 pub use object::Object;
-pub use object::PropertyAddress as ObjectPropertyAddress;
-pub use object::PropertyElement as ObjectPropertyElement;
-pub use object::PropertyScope as ObjectPropertyScope;
-pub use object::PropertySelector as ObjectPropertySelector;
+pub use object::PropAddress as ObjectPropAddress;
+pub use object::PropElement as ObjectPropElement;
+pub use object::PropScope as ObjectPropScope;
+pub use object::PropSelector as ObjectPropSelector;
 
 use crate::os;
 

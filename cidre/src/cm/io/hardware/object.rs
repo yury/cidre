@@ -5,9 +5,9 @@ use crate::os;
 #[doc(alias = "CMIOObjectPropertySelector")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
-pub struct PropertySelector(pub u32);
+pub struct PropSelector(pub u32);
 
-impl PropertySelector {
+impl PropSelector {
     #[doc(alias = "kCMIOObjectPropertySelectorWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 
@@ -25,9 +25,9 @@ impl PropertySelector {
 #[doc(alias = "CMIOObjectPropertyScope")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
-pub struct PropertyScope(pub u32);
+pub struct PropScope(pub u32);
 
-impl PropertyScope {
+impl PropScope {
     #[doc(alias = "kCMIOObjectPropertyScopeWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 
@@ -38,9 +38,9 @@ impl PropertyScope {
 #[doc(alias = "CMIOObjectPropertyElement")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
-pub struct PropertyElement(pub u32);
+pub struct PropElement(pub u32);
 
-impl PropertyElement {
+impl PropElement {
     #[doc(alias = "kCMIOObjectPropertyElementWildcard")]
     pub const WILDCARD: Self = Self(u32::MAX);
 
@@ -60,10 +60,10 @@ impl PropertyElement {
 #[doc(alias = "CMIOObjectPropertyAddress")]
 #[derive(Debug)]
 #[repr(C)]
-pub struct PropertyAddress {
-    pub selector: PropertySelector,
-    pub scope: PropertyScope,
-    pub element: PropertyElement,
+pub struct PropAddress {
+    pub selector: PropSelector,
+    pub scope: PropScope,
+    pub element: PropElement,
 }
 
 #[doc(alias = "CMIOClassID")]
@@ -96,7 +96,7 @@ impl Object {
 
     pub unsafe fn set_property_data(
         &self,
-        address: *const PropertyAddress,
+        address: *const PropAddress,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: u32,
@@ -114,11 +114,7 @@ impl Object {
         }
     }
 
-    pub fn set_prop<T: Sized>(
-        &self,
-        address: &PropertyAddress,
-        value: &T,
-    ) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&self, address: &PropAddress, value: &T) -> Result<(), os::Status> {
         unsafe {
             self.set_property_data(
                 address,
@@ -131,22 +127,22 @@ impl Object {
         }
     }
 
-    pub fn set_allow_screen_capture_devices(&self, value: bool) -> Result<(), os::Status> {
+    pub fn allow_screen_capture_devices(&self, value: bool) -> Result<(), os::Status> {
         let value: u32 = if value { 1u32 } else { 0u32 };
-        let address = PropertyAddress {
-            selector: PropertySelector::ALLOW_SCREEN_CAPTURE_DEVICES,
-            scope: PropertyScope::GLOBAL,
-            element: PropertyElement::MAIN,
+        let address = PropAddress {
+            selector: PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES,
+            scope: PropScope::GLOBAL,
+            element: PropElement::MAIN,
         };
         self.set_prop(&address, &value)
     }
 
-    pub fn set_allow_wireless_screen_capture_devices(&self, value: bool) -> Result<(), os::Status> {
+    pub fn allow_wireless_screen_capture_devices(&self, value: bool) -> Result<(), os::Status> {
         let value: u32 = if value { 1u32 } else { 0u32 };
-        let address = PropertyAddress {
-            selector: PropertySelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES,
-            scope: PropertyScope::GLOBAL,
-            element: PropertyElement::MAIN,
+        let address = PropAddress {
+            selector: PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES,
+            scope: PropScope::GLOBAL,
+            element: PropElement::MAIN,
         };
         self.set_prop(&address, &value)
     }
@@ -156,7 +152,7 @@ impl Object {
 extern "C" {
     fn CMIOObjectSetPropertyData(
         object_id: Object,
-        address: *const PropertyAddress,
+        address: *const PropAddress,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: u32,

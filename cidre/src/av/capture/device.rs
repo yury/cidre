@@ -719,10 +719,10 @@ mod tests {
     #[test]
     fn session() {
         io::Object::SYSTEM
-            .set_allow_screen_capture_devices(true)
+            .allow_screen_capture_devices(true)
             .unwrap();
         io::Object::SYSTEM
-            .set_allow_wireless_screen_capture_devices(true)
+            .allow_wireless_screen_capture_devices(true)
             .unwrap();
 
         io::Object::SYSTEM.show();
