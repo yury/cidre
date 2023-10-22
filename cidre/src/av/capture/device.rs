@@ -187,6 +187,36 @@ impl Device {
     #[objc::msg_send(uniqueID)]
     pub fn unique_id(&self) -> &ns::String;
 
+    /// The model ID of the receiver.
+    ///
+    /// The value of this property is an identifier unique to all devices of the same model.
+    /// The value is persistent across device connections and disconnections,
+    /// and across different systems. For example, the model ID of the camera built in
+    /// to two identical iPhone models will be the same even though they are different
+    /// physical devices.
+    #[objc::msg_send(modelID)]
+    pub fn model_id(&self) -> &ns::String;
+
+    /// A localized human-readable name for the receiver.
+    ///
+    /// This property can be used for displaying the name of a capture device in a user interface.
+    #[objc::msg_send(localizedName)]
+    pub fn localized_name(&self) -> &ns::String;
+
+    /// The human-readable manufacturer name for the receiver.
+    ///
+    /// This property can be used to identify capture devices from a particular manufacturer.
+    /// All Apple devices return "Apple Inc.". Devices from third party manufacturers may
+    /// return an empty string.
+    #[objc::msg_send(manufacturer)]
+    pub fn manufacturer(&self) -> &ns::String;
+
+    /// Returns whether the receiver provides media with the given media type.
+    ///
+    /// 'true' if the device outputs the given media type, 'false' otherwise.
+    #[objc::msg_send(hasMediaType:)]
+    pub fn has_media_type(&self, media_type: &av::MediaType) -> bool;
+
     #[objc::msg_send(formats)]
     pub fn formats(&self) -> &ns::Array<Format>;
 
@@ -195,6 +225,17 @@ impl Device {
 
     #[objc::msg_send(activeFormat)]
     pub fn active_format(&self) -> &Format;
+
+    /// Indicates whether the device is connected and available to the system.
+    ///
+    /// The value of this property is a 'bool' indicating whether the device represented
+    /// by the receiver is connected and available for use as a capture device.
+    /// Clients can key value observe the value of this property to be notified when a device
+    /// is no longer available. When the value of this property becomes 'false' for a given
+    /// instance, it will not become 'true' again. If the same physical device again becomes
+    /// available to the system, it will be represented using a new instance of 'av::CaptureDevice'.
+    #[objc::msg_send(isConnected)]
+    pub fn is_connected(&self) -> bool;
 
     #[objc::msg_send(activeVideoMinFrameDuration)]
     pub fn active_video_min_frame_duration(&self) -> cm::Time;
