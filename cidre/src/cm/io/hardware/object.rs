@@ -2,6 +2,7 @@ use std::ffi::c_void;
 
 use crate::os;
 
+#[doc(alias = "CMIOObjectPropertySelector")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropertySelector(pub u32);
@@ -21,6 +22,7 @@ impl PropertySelector {
     pub const ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES: Self = Self(u32::from_be_bytes(*b"wscd"));
 }
 
+#[doc(alias = "CMIOObjectPropertyScope")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropertyScope(pub u32);
@@ -33,6 +35,7 @@ impl PropertyScope {
     pub const GLOBAL: Self = Self(u32::from_be_bytes(*b"glob"));
 }
 
+#[doc(alias = "CMIOObjectPropertyElement")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropertyElement(pub u32);
@@ -54,6 +57,7 @@ impl PropertyElement {
     pub const NUMBER_NAME: Self = Self(u32::from_be_bytes(*b"lcnn"));
 }
 
+#[doc(alias = "CMIOObjectPropertyAddress")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct PropertyAddress {
@@ -62,18 +66,26 @@ pub struct PropertyAddress {
     pub element: PropertyElement,
 }
 
+#[doc(alias = "CMIOClassID")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
-pub struct ClassId(pub u32);
+pub struct Class(pub u32);
 
-impl ClassId {
+impl Class {
+    #[doc(alias = "kCMIOSystemObjectClassID")]
     pub const SYSTEM_OBJECT: Self = Self(u32::from_be_bytes(*b"asys"));
+
+    #[doc(alias = "kCMIOPlugInClassID")]
+    pub const PLUG_IN: Self = Self(u32::from_be_bytes(*b"aplg"));
 }
 
+#[doc(alias = "CMIOObjectID")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Object(pub u32);
 
 impl Object {
+    #[doc(alias = "kCMIOObjectSystemObject")]
     pub const SYSTEM: Self = Self(1);
 
     pub fn show(&self) {

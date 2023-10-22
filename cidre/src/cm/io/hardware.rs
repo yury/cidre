@@ -1,10 +1,12 @@
 pub mod object;
-pub use object::ClassId as ObjectClassId;
+pub use object::Class;
 pub use object::Object;
 pub use object::PropertyAddress as ObjectPropertyAddress;
 pub use object::PropertyElement as ObjectPropertyElement;
 pub use object::PropertyScope as ObjectPropertyScope;
 pub use object::PropertySelector as ObjectPropertySelector;
+
+use crate::os;
 
 /// The error constants unique to the DAL.
 ///
@@ -61,6 +63,12 @@ impl Error {
 
     /// The requested operation can't be completed because the process doesn't have permission.
     pub const PERMISSIONS: Self = Self(i32::from_be_bytes(*b"!hog"));
+}
+
+impl PartialEq<os::Status> for Error {
+    fn eq(&self, other: &os::Status) -> bool {
+        self.0 == other.0
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
