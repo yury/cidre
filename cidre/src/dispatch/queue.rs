@@ -62,6 +62,7 @@ impl Priority {
     pub const BACKGROUND: Self = Self(-1 << 15);
 }
 
+#[doc(alias = "dispatch_autorelease_frequency_t")]
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
 #[repr(usize)]
 pub enum AutoreleaseFrequency {

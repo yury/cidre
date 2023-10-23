@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_cf_type, define_options, sys::_types::MachPort};
 
-pub type Id = u32;
+pub type SurfaceId = u32;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
@@ -112,7 +112,7 @@ impl Surface {
     }
 
     #[inline]
-    pub fn id(&self) -> Id {
+    pub fn id(&self) -> SurfaceId {
         unsafe { IOSurfaceGetID(self) }
     }
 
@@ -149,7 +149,7 @@ impl Surface {
     /// assert!(surf.is_none());
     /// ```
     #[inline]
-    pub fn lookup(csid: Id) -> Option<arc::R<Surface>> {
+    pub fn lookup(csid: SurfaceId) -> Option<arc::R<Surface>> {
         unsafe { IOSurfaceLookup(csid) }
     }
 
@@ -224,8 +224,8 @@ impl Surface {
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
     fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<arc::R<Surface>>;
-    fn IOSurfaceLookup(csid: Id) -> Option<arc::R<Surface>>;
-    fn IOSurfaceGetID(buffer: &Surface) -> Id;
+    fn IOSurfaceLookup(csid: SurfaceId) -> Option<arc::R<Surface>>;
+    fn IOSurfaceGetID(buffer: &Surface) -> SurfaceId;
     fn IOSurfaceGetWidth(buffer: &Surface) -> usize;
     fn IOSurfaceGetHeight(buffer: &Surface) -> usize;
     fn IOSurfaceGetPlaneCount(buffer: &Surface) -> usize;
