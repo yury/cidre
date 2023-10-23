@@ -452,6 +452,7 @@ impl VideoFormatDescription {
         )
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
     #[inline]
     pub fn hevc_parameters_count_and_header_length(&self) -> Result<(usize, i32), os::Status> {
         unsafe {
@@ -470,6 +471,7 @@ impl VideoFormatDescription {
         }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionGetH264ParameterSetAtIndex")]
     #[inline]
     pub fn h264_parameter_set_at(&self, index: usize) -> Result<&[u8], os::Status> {
         unsafe {
@@ -492,6 +494,7 @@ impl VideoFormatDescription {
         }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
     #[inline]
     pub fn hevc_parameter_set_at(&self, index: usize) -> Result<&[u8], os::Status> {
         unsafe {
