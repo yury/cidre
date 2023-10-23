@@ -11,10 +11,10 @@ pub enum RNNActivation {
 }
 
 define_obj_type!(
-    SingleGateRNNDescriptor(ns::Id),
+    SingleGateRNNDesc(ns::Id),
     MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR
 );
-impl SingleGateRNNDescriptor {
+impl SingleGateRNNDesc {
     /// If set then the input sequence is passed in reverse time order to the layer.
     /// Ignored when `bidirectional = true`
     /// Default value `false`
@@ -49,8 +49,8 @@ impl SingleGateRNNDescriptor {
     #[objc::msg_send(setActivation:)]
     pub fn set_activation(&mut self, value: RNNActivation);
 }
-define_obj_type!(LSTMDescriptor(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
-impl LSTMDescriptor {
+define_obj_type!(LSTMDesc(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
+impl LSTMDesc {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;
 
@@ -112,8 +112,8 @@ impl LSTMDescriptor {
     pub fn set_activation(&mut self, value: RNNActivation);
 }
 
-define_obj_type!(GRUDescriptor(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
-impl GRUDescriptor {
+define_obj_type!(GRUDescr(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
+impl GRUDescr {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;
 
@@ -174,7 +174,7 @@ impl graph::Graph {
         bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
+        descriptor: &SingleGateRNNDesc,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
@@ -187,7 +187,7 @@ impl graph::Graph {
         bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
+        descriptor: &SingleGateRNNDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -204,7 +204,7 @@ impl graph::Graph {
         bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
+        descriptor: &SingleGateRNNDesc,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
@@ -220,7 +220,7 @@ impl graph::Graph {
         bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDescriptor,
+        descriptor: &SingleGateRNNDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -236,7 +236,7 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
+        descriptor: &LSTMDesc,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
@@ -251,7 +251,7 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
+        descriptor: &LSTMDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -275,7 +275,7 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
+        descriptor: &LSTMDesc,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
@@ -295,7 +295,7 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDescriptor,
+        descriptor: &LSTMDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -312,7 +312,7 @@ impl graph::Graph {
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescriptor,
+        descriptor: &GRUDescr,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
@@ -326,7 +326,7 @@ impl graph::Graph {
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescriptor,
+        descriptor: &GRUDescr,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -348,7 +348,7 @@ impl graph::Graph {
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescriptor,
+        descriptor: &GRUDescr,
         name: Option<&ns::String>,
     ) -> arc::Rar<ns::Array<graph::Tensor>>;
 
@@ -366,16 +366,16 @@ impl graph::Graph {
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescriptor,
+        descriptor: &GRUDescr,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 }
 
 #[link(name = "mpsg", kind = "static")]
 extern "C" {
-    static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRNNDescriptor>;
-    static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LSTMDescriptor>;
-    static MPS_GRAPH_GRU_DESCRIPTOR: &'static objc::Class<GRUDescriptor>;
+    static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRNNDesc>;
+    static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LSTMDesc>;
+    static MPS_GRAPH_GRU_DESCRIPTOR: &'static objc::Class<GRUDescr>;
 }
 
 #[cfg(test)]
@@ -384,7 +384,7 @@ mod test {
 
     #[test]
     fn basics() {
-        let desc = graph::SingleGateRNNDescriptor::new();
+        let desc = graph::SingleGateRNNDesc::new();
         assert_eq!(desc.activation(), graph::RNNActivation::None);
     }
 }
