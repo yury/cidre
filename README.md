@@ -37,3 +37,6 @@
 - pointer -> ptr
 - throws -> _throws (not shortcut but indicator of exception)
 
+## About
+
+This is personal research project. With this project I learn Apple SDK's and rust.
