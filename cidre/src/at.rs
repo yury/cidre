@@ -12,4 +12,4 @@ pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
 pub use audio::ClassDescription as AudioClassDescription;
 pub use audio::Converter as AudioConverter;
 pub use audio::ConverterRef as AudioConverterRef;
-pub use audio::FormatPropertyID as AudioFormatPropertyID;
+pub use audio::FormatProperty as AudioFormatProperty;

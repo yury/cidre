@@ -10,7 +10,7 @@ pub use format::ExtendedFormatInfo;
 pub use format::FormatInfo;
 pub use format::PanningInfo;
 pub use format::PanningMode;
-pub use format::PropertyID as FormatPropertyID;
+pub use format::Property as FormatProperty;
 
 mod converter;
 pub use converter::errors;
