@@ -200,12 +200,12 @@ impl FormatDescription {
         }
     }
 
-    pub fn create(
-        allocator: Option<&cf::Allocator>,
+    pub fn create_in(
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
         format_description_out: &mut Option<arc::R<FormatDescription>>,
+        allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         unsafe {
             CMFormatDescriptionCreate(
@@ -233,12 +233,12 @@ impl FormatDescription {
         extensions: Option<&cf::Dictionary>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut format_desc = None;
-        let res = Self::create(
-            None,
+        let res = Self::create_in(
             media_type,
             media_sub_type,
             extensions,
             &mut format_desc,
+            None,
         );
         unsafe { res.to_result_unchecked(format_desc) }
     }
@@ -259,24 +259,24 @@ impl VideoFormatDescription {
         extensions: Option<&cf::Dictionary>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut format_desc = None;
-        let res = Self::create_video(
-            None,
+        let res = Self::create_video_in(
             codec_type,
             width,
             height,
             extensions,
             &mut format_desc,
+            None,
         );
         unsafe { res.to_result_unchecked(format_desc) }
     }
 
-    pub fn create_video(
-        allocator: Option<&Allocator>,
+    pub fn create_video_in(
         codec_type: VideoCodecType,
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
         format_description_out: &mut Option<arc::R<VideoFormatDescription>>,
+        allocator: Option<&Allocator>,
     ) -> os::Status {
         unsafe {
             CMVideoFormatDescriptionCreate(
@@ -359,7 +359,7 @@ impl VideoFormatDescription {
 
     #[doc(alias = "CMVideoFormatDescriptionCreateFromHEVCParameterSets")]
     #[inline]
-    pub fn create_from_hevc_parameter_sets(
+    pub fn with_hevc_parameter_sets(
         count: usize,
         pointers: &[*const u8],
         sizes: &[usize],
