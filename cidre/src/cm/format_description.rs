@@ -266,7 +266,7 @@ impl VideoFormatDescription {
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn create_for_image_buffer(
+    pub fn create_for_image_buf(
         image_buffer: &cv::ImageBuf,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
         Self::create_for_image_buffer_in(image_buffer, None)
