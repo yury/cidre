@@ -38,11 +38,11 @@ impl NDArray {
     pub fn device(&self) -> &mtl::Device;
 
     #[objc::msg_send(descriptor)]
-    pub fn descriptor(&self) -> &NDArrayDescriptor;
+    pub fn descriptor(&self) -> &NDArrayDesc;
 }
 
-define_obj_type!(NDArrayDescriptor(ns::Id));
-impl NDArrayDescriptor {
+define_obj_type!(NDArrayDesc(ns::Id));
+impl NDArrayDesc {
     define_cls!(MPS_NDARRAY_DESCRIPTOR);
 
     #[objc::msg_send(dataType)]
@@ -67,5 +67,5 @@ impl NDArrayDescriptor {
 #[link(name = "mps", kind = "static")]
 extern "C" {
     static MPS_NDARRAY: &'static objc::Class<NDArray>;
-    static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NDArrayDescriptor>;
+    static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NDArrayDesc>;
 }

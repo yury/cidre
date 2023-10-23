@@ -37,7 +37,7 @@ pub enum BorderColor {
     OpaqueWhite = 2,
 }
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Desc(ns::Id));
 
 define_obj_type!(State(ns::Id));
 

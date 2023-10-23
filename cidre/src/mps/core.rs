@@ -14,4 +14,4 @@ pub use types::Size;
 mod nd_array;
 pub use nd_array::NDArray;
 pub use nd_array::NDArrayAllocator;
-pub use nd_array::NDArrayDescriptor;
+pub use nd_array::NDArrayDesc;

@@ -1,16 +1,16 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(FnDescriptor(ns::Id), MTL_FUNCTION_DESCRIPTOR);
+define_obj_type!(FnDesc(ns::Id), MTL_FUNCTION_DESCRIPTOR);
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 #[repr(usize)]
-pub enum FnOptions {
+pub enum FnOpts {
     #[default]
     None = 0,
     CompileToBinary = 1 << 0,
 }
 
-impl FnDescriptor {
+impl FnDesc {
     #[objc::msg_send(name)]
     pub fn name(&self) -> Option<&ns::String>;
 
@@ -20,7 +20,7 @@ impl FnDescriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_FUNCTION_DESCRIPTOR: &'static objc::Class<FnDescriptor>;
+    static MTL_FUNCTION_DESCRIPTOR: &'static objc::Class<FnDesc>;
 }
 
 #[cfg(test)]
@@ -30,7 +30,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut fd = mtl::FnDescriptor::new();
+        let mut fd = mtl::FnDesc::new();
 
         assert!(fd.name().is_none());
 

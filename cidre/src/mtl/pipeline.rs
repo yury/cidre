@@ -9,12 +9,9 @@ pub enum Mutability {
     Immutable = 2,
 }
 
-define_obj_type!(
-    PipelineBufDescriptor(ns::Id),
-    MTL_PIPELINE_BUFFER_DESCRIPTOR
-);
+define_obj_type!(PipelineBufDesc(ns::Id), MTL_PIPELINE_BUFFER_DESCRIPTOR);
 
-impl PipelineBufDescriptor {
+impl PipelineBufDesc {
     #[objc::msg_send(mutability)]
     pub fn mutability(&self) -> Mutability;
 
@@ -22,27 +19,27 @@ impl PipelineBufDescriptor {
     pub fn set_mutability(&mut self, value: Mutability);
 }
 
-define_obj_type!(PipelineBufDescriptorArray(ns::Id));
-impl PipelineBufDescriptorArray {
+define_obj_type!(PipelineBufDescArray(ns::Id));
+impl PipelineBufDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at(&self, index: usize) -> &PipelineBufDescriptor;
+    pub fn obj_at(&self, index: usize) -> &PipelineBufDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufDescriptor;
+    pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_obj_at(&mut self, buffer: Option<&PipelineBufDescriptor>, at_index: usize);
+    pub fn set_obj_at(&mut self, buffer: Option<&PipelineBufDesc>, at_index: usize);
 }
 
-impl std::ops::Index<usize> for PipelineBufDescriptorArray {
-    type Output = PipelineBufDescriptor;
+impl std::ops::Index<usize> for PipelineBufDescArray {
+    type Output = PipelineBufDesc;
 
     fn index(&self, index: usize) -> &Self::Output {
         self.obj_at(index)
     }
 }
 
-impl std::ops::IndexMut<usize> for PipelineBufDescriptorArray {
+impl std::ops::IndexMut<usize> for PipelineBufDescArray {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.obj_mut_at(index)
     }
@@ -50,5 +47,5 @@ impl std::ops::IndexMut<usize> for PipelineBufDescriptorArray {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufDescriptor>;
+    static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufDesc>;
 }

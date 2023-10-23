@@ -52,9 +52,9 @@ pub enum StencilOp {
     DecrementWrap = 7,
 }
 
-define_obj_type!(StencilDescriptor(ns::Id), MTL_STENCIL_DESCRIPTOR);
+define_obj_type!(StencilDesc(ns::Id), MTL_STENCIL_DESCRIPTOR);
 
-impl StencilDescriptor {
+impl StencilDesc {
     /// The comparison that is performed between the masked reference value and a
     /// masked value in the stencil attachment.
     #[objc::msg_send(stencilCompareFunction)]
@@ -102,9 +102,9 @@ impl StencilDescriptor {
     pub fn set_write_mask(&mut self, value: u32);
 }
 
-define_obj_type!(DepthStencilDescriptor(ns::Id), MTL_DEPTH_STENCIL_DESCRIPTOR);
+define_obj_type!(DepthStencilDesc(ns::Id), MTL_DEPTH_STENCIL_DESCRIPTOR);
 
-impl DepthStencilDescriptor {
+impl DepthStencilDesc {
     /// Defaults to mtl::CompareFnAlways, which effectively skips the depth test
     #[objc::msg_send(depthCompareFunction)]
     pub fn compare_fn(&self) -> CompareFn;
@@ -120,13 +120,13 @@ impl DepthStencilDescriptor {
     pub fn set_depth_write_enabled(&mut self, value: bool);
 
     #[objc::msg_send(frontFaceStencil)]
-    pub fn front_face_stenil(&self) -> &StencilDescriptor;
+    pub fn front_face_stenil(&self) -> &StencilDesc;
 
     #[objc::msg_send(setFrontFaceStencil:)]
-    fn _set_front_face_stencil(&mut self, value: Option<&StencilDescriptor>);
+    fn _set_front_face_stencil(&mut self, value: Option<&StencilDesc>);
 
     #[inline]
-    pub fn set_front_face_stencil(&mut self, value: &StencilDescriptor) {
+    pub fn set_front_face_stencil(&mut self, value: &StencilDesc) {
         self._set_front_face_stencil(Some(value))
     }
 
@@ -136,13 +136,13 @@ impl DepthStencilDescriptor {
     }
 
     #[objc::msg_send(backFaceStencil)]
-    pub fn back_face_stencil(&self) -> &StencilDescriptor;
+    pub fn back_face_stencil(&self) -> &StencilDesc;
 
     #[objc::msg_send(setBackFaceStencil:)]
-    fn _set_back_face_stencil(&mut self, value: Option<&StencilDescriptor>);
+    fn _set_back_face_stencil(&mut self, value: Option<&StencilDesc>);
 
     #[inline]
-    pub fn set_back_face_stencil(&mut self, value: &StencilDescriptor) {
+    pub fn set_back_face_stencil(&mut self, value: &StencilDesc) {
         self._set_back_face_stencil(Some(value))
     }
 
@@ -164,6 +164,6 @@ impl State {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_STENCIL_DESCRIPTOR: &'static objc::Class<StencilDescriptor>;
-    static MTL_DEPTH_STENCIL_DESCRIPTOR: &'static objc::Class<DepthStencilDescriptor>;
+    static MTL_STENCIL_DESCRIPTOR: &'static objc::Class<StencilDesc>;
+    static MTL_DEPTH_STENCIL_DESCRIPTOR: &'static objc::Class<DepthStencilDesc>;
 }

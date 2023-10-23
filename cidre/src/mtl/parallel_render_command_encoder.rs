@@ -47,7 +47,7 @@ impl ParallelRenderCmdEncoder {
     #[objc::msg_send(setColorStoreActionOptions:atIndex:)]
     pub fn set_color_store_action_options(
         &mut self,
-        store_action_options: mtl::StoreActionOptions,
+        store_action_options: mtl::StoreActionOpts,
         color_attachment_index: usize,
     );
 
@@ -56,15 +56,12 @@ impl ParallelRenderCmdEncoder {
     /// set_depth_store_action_options may be used to finalize the store action options before
     /// end_encoding is called.
     #[objc::msg_send(setDepthStoreActionOptions:)]
-    pub fn set_depth_store_action_options(&mut self, store_action_options: mtl::StoreActionOptions);
+    pub fn set_depth_store_action_options(&mut self, store_action_options: mtl::StoreActionOpts);
 
     /// If the the store action for the stencil attachment was set to mtl::StoreAction::Unknown
     /// when the render command encoder was created,
     /// set_stencil_store_action_options may be used to finalize the store action options before
     /// end_encoding is called.
     #[objc::msg_send(setStencilStoreActionOptions:)]
-    pub fn set_stencil_store_action_options(
-        &mut self,
-        store_action_options: mtl::StoreActionOptions,
-    );
+    pub fn set_stencil_store_action_options(&mut self, store_action_options: mtl::StoreActionOpts);
 }

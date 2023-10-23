@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(Descriptor(ns::Id));
-impl Descriptor {
+define_obj_type!(Desc(ns::Id));
+impl Desc {
     define_cls!(MLC_MATMUL_DESCRIPTOR);
 
     #[objc::msg_send(alpha)]
@@ -43,21 +43,21 @@ impl Layer {
     define_cls!(MLC_MATMUL_LAYER);
 
     #[objc::cls_msg_send(layerWithDescriptor:)]
-    pub fn with_descriptor_ar(desc: &Descriptor) -> Option<arc::Rar<Self>>;
+    pub fn with_descriptor_ar(desc: &Desc) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
-    pub fn with_descriptor(desc: &Descriptor) -> Option<arc::R<Self>>;
+    pub fn with_descriptor(desc: &Desc) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(descriptor)]
-    pub fn descriptor(&self) -> &Descriptor;
+    pub fn descriptor(&self) -> &Desc;
 
     pub fn new() -> arc::R<Self> {
-        Self::with_descriptor(&Descriptor::new()).unwrap()
+        Self::with_descriptor(&Desc::new()).unwrap()
     }
 }
 
 #[link(name = "mlc", kind = "static")]
 extern "C" {
-    static MLC_MATMUL_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MLC_MATMUL_DESCRIPTOR: &'static objc::Class<Desc>;
     static MLC_MATMUL_LAYER: &'static objc::Class<Layer>;
 }

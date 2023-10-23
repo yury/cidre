@@ -64,7 +64,7 @@ pub enum StoreAction {
 
 #[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
-pub enum StoreActionOptions {
+pub enum StoreActionOpts {
     #[default]
     None = 0,
     CustomSamplePositions = 1 << 0,
@@ -109,36 +109,36 @@ impl ClearColor {
     }
 }
 
-define_obj_type!(StencilAttachmentDescriptor(AttachmentDescriptor));
+define_obj_type!(StencilAttachmentDesc(AttachmentDesc));
 
-define_obj_type!(Descriptor(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
-impl Descriptor {
+define_obj_type!(Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
+impl Desc {
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &ColorAttachmentDescriptorArray;
+    pub fn color_attachments(&self) -> &ColorAttachmentDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescriptorArray;
+    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescArray;
 
     #[objc::msg_send(depthAttachment)]
-    pub fn depth_attachment(&self) -> &DepthAttachmentDescriptor;
+    pub fn depth_attachment(&self) -> &DepthAttachmentDesc;
 
     #[objc::msg_send(depthAttachment)]
-    pub fn depth_attachment_mut(&mut self) -> &mut DepthAttachmentDescriptor;
+    pub fn depth_attachment_mut(&mut self) -> &mut DepthAttachmentDesc;
 
     #[objc::msg_send(setDepthAttachment:)]
-    pub fn set_depth_attachment(&mut self, value: Option<&DepthAttachmentDescriptor>);
+    pub fn set_depth_attachment(&mut self, value: Option<&DepthAttachmentDesc>);
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attachment(&self) -> &StencilAttachmentDescriptor;
+    pub fn stencil_attachment(&self) -> &StencilAttachmentDesc;
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attachment_mut(&mut self) -> &mut StencilAttachmentDescriptor;
+    pub fn stencil_attachment_mut(&mut self) -> &mut StencilAttachmentDesc;
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attachment_option(&mut self, value: Option<&StencilAttachmentDescriptor>);
+    pub fn set_stencil_attachment_option(&mut self, value: Option<&StencilAttachmentDesc>);
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attachment(&mut self, value: &StencilAttachmentDescriptor);
+    pub fn set_stencil_attachment(&mut self, value: &StencilAttachmentDesc);
 
     #[objc::msg_send(tileWidth)]
     pub fn tile_width(&self) -> usize;
@@ -177,20 +177,20 @@ impl Descriptor {
     pub fn set_imageblock_sample_length(&self, value: usize);
 }
 
-define_obj_type!(ColorAttachmentDescriptorArray(ns::Id));
-impl ColorAttachmentDescriptorArray {
+define_obj_type!(ColorAttachmentDescArray(ns::Id));
+impl ColorAttachmentDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> &ColorAttachmentDescriptor;
+    pub fn get_at(&self, index: usize) -> &ColorAttachmentDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDescriptor;
+    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_at(&mut self, object: Option<&ColorAttachmentDescriptor>, index: usize);
+    pub fn set_at(&mut self, object: Option<&ColorAttachmentDesc>, index: usize);
 }
 
-impl std::ops::Index<usize> for ColorAttachmentDescriptorArray {
-    type Output = ColorAttachmentDescriptor;
+impl std::ops::Index<usize> for ColorAttachmentDescArray {
+    type Output = ColorAttachmentDesc;
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
@@ -198,15 +198,15 @@ impl std::ops::Index<usize> for ColorAttachmentDescriptorArray {
     }
 }
 
-impl std::ops::IndexMut<usize> for ColorAttachmentDescriptorArray {
+impl std::ops::IndexMut<usize> for ColorAttachmentDescArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.get_mut_at(index)
     }
 }
 
-define_obj_type!(AttachmentDescriptor(ns::Id));
-impl AttachmentDescriptor {
+define_obj_type!(AttachmentDesc(ns::Id));
+impl AttachmentDesc {
     #[objc::msg_send(texture)]
     pub fn texture(&self) -> Option<&mtl::Texture>;
 
@@ -268,19 +268,19 @@ impl AttachmentDescriptor {
     pub fn set_store_action(&mut self, value: StoreAction);
 
     #[objc::msg_send(storeActionOptions)]
-    pub fn store_action_options(&self) -> StoreActionOptions;
+    pub fn store_action_options(&self) -> StoreActionOpts;
 
     #[objc::msg_send(setStoreActionOptions:)]
-    pub fn set_store_action_options(&mut self, value: StoreActionOptions);
+    pub fn set_store_action_options(&mut self, value: StoreActionOpts);
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
-define_obj_type!(ColorAttachmentDescriptor(AttachmentDescriptor));
-impl ColorAttachmentDescriptor {
+define_obj_type!(ColorAttachmentDesc(AttachmentDesc));
+impl ColorAttachmentDesc {
     #[objc::msg_send(clearColor)]
     pub fn clear_color(&self) -> ClearColor;
 
@@ -296,8 +296,8 @@ pub enum MultisampleDepthResolveFilter {
     Max = 2,
 }
 
-define_obj_type!(DepthAttachmentDescriptor(AttachmentDescriptor));
-impl DepthAttachmentDescriptor {
+define_obj_type!(DepthAttachmentDesc(AttachmentDesc));
+impl DepthAttachmentDesc {
     #[objc::msg_send(clearDepth)]
     pub fn clear_depth(&self) -> f64;
 

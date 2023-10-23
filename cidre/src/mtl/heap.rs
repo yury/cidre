@@ -25,14 +25,14 @@ pub enum Type {
     Sparse = 2,
 }
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Desc(ns::Id));
 
-impl arc::A<Descriptor> {
+impl arc::A<Desc> {
     #[objc::msg_send(init)]
-    fn init(self) -> arc::R<Descriptor>;
+    fn init(self) -> arc::R<Desc>;
 }
 
-impl Descriptor {
+impl Desc {
     define_cls!(MTL_HEAP_DESCRIPTOR);
     define_mtl!(
         storage_mode,
@@ -98,7 +98,7 @@ impl Heap {
         -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
+    pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(setPurgeableState:)]
     pub fn set_purgeable_state(&mut self, state: mtl::PurgableState);
@@ -114,14 +114,14 @@ impl Heap {
     #[objc::msg_send(newTextureWithDescriptor:offset:)]
     pub fn new_texture_with_offset(
         &self,
-        descriptor: &mtl::TextureDescriptor,
+        descriptor: &mtl::TextureDesc,
         offset: usize,
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(newTextureWithDescriptor:offset:)]
     pub fn new_texture_with_desc_offset(
         &self,
-        descriptor: &mtl::TextureDescriptor,
+        descriptor: &mtl::TextureDesc,
         offset: usize,
     ) -> Option<arc::R<mtl::Texture>>;
 
@@ -141,13 +141,13 @@ impl Heap {
     #[objc::msg_send(newAccelerationStructureWithDescriptor:)]
     pub fn new_acceleration_structure_with_desc(
         &self,
-        descriptor: &mtl::AccelerationStructureDescriptor,
+        descriptor: &mtl::AccelerationStructureDesc,
     ) -> Option<arc::R<mtl::AccelerationStructure>>;
 
     #[objc::msg_send(newAccelerationStructureWithDescriptor:offset:)]
     pub fn new_acceleration_structure_with_desc_offset(
         &self,
-        descriptor: &mtl::AccelerationStructureDescriptor,
+        descriptor: &mtl::AccelerationStructureDesc,
         offset: usize,
     ) -> Option<arc::R<mtl::AccelerationStructure>>;
 
@@ -157,7 +157,7 @@ impl Heap {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_HEAP_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_HEAP_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 #[cfg(test)]
@@ -166,7 +166,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut desc = mtl::HeapDescriptor::new();
+        let mut desc = mtl::HeapDesc::new();
         assert_eq!(0, desc.size());
         desc.set_size(1024);
         assert_eq!(1024, desc.size());

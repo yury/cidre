@@ -5,14 +5,14 @@ use crate::{
 
 use super::{CounterSampleBuf, DispatchType};
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Desc(ns::Id));
 
-impl arc::A<Descriptor> {
+impl arc::A<Desc> {
     #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<Descriptor>;
+    pub fn init(self) -> arc::R<Desc>;
 }
 
-impl Descriptor {
+impl Desc {
     define_cls!(MTL_COMPUTE_PASS_DESCRIPTOR);
 
     #[inline]
@@ -27,27 +27,27 @@ impl Descriptor {
     pub fn set_dispatch_type(&mut self, value: DispatchType);
 
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments(&self) -> &SampleBufAttachmentDescriptorArray;
+    pub fn sample_buffer_attachments(&self) -> &SampleBufAttachmentDescArray;
 
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufAttachmentDescriptorArray;
+    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufAttachmentDescArray;
 }
 
 extern "C" {
-    static MTL_COMPUTE_PASS_DESCRIPTOR: &'static Class<Descriptor>;
+    static MTL_COMPUTE_PASS_DESCRIPTOR: &'static Class<Desc>;
 }
 
-define_obj_type!(SampleBufAttachmentDescriptorArray(ns::Id));
+define_obj_type!(SampleBufAttachmentDescArray(ns::Id));
 
-impl SampleBufAttachmentDescriptorArray {
+impl SampleBufAttachmentDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> Option<&SampleBufAttachmentDescriptor>;
+    pub fn get_at(&self, index: usize) -> Option<&SampleBufAttachmentDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, object: Option<&SampleBufAttachmentDescriptor>, index: usize);
+    pub fn set_object_at(&mut self, object: Option<&SampleBufAttachmentDesc>, index: usize);
 
     #[inline]
-    pub fn set_at(&mut self, index: usize, value: &SampleBufAttachmentDescriptor) {
+    pub fn set_at(&mut self, index: usize, value: &SampleBufAttachmentDesc) {
         self.set_object_at(Some(value), index)
     }
 
@@ -57,9 +57,9 @@ impl SampleBufAttachmentDescriptorArray {
     }
 }
 
-define_obj_type!(SampleBufAttachmentDescriptor(ns::Id));
+define_obj_type!(SampleBufAttachmentDesc(ns::Id));
 
-impl SampleBufAttachmentDescriptor {
+impl SampleBufAttachmentDesc {
     #[objc::msg_send(sampleBuffer)]
     pub fn sample_buffer(&self) -> Option<&CounterSampleBuf>;
 
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn basics() {
         objc::ar_pool(|| {
-            let cpd = mtl::ComputePassDescriptor::new();
+            let cpd = mtl::ComputePassDesc::new();
 
             assert_eq!(cpd.dispatch_type(), mtl::DispatchType::Serial);
         })

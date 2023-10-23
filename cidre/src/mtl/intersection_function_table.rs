@@ -45,12 +45,9 @@ pub enum IntersectionFnSignature {
     ExtendedLimits = (1 << 5),
 }
 
-define_obj_type!(
-    Descriptor(ns::Id),
-    MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR
-);
+define_obj_type!(Desc(ns::Id), MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR);
 
-impl Descriptor {
+impl Desc {
     /// The number of functions in the table.
     #[objc::msg_send(functionCount)]
     pub fn fn_count(&self) -> usize;
@@ -120,5 +117,5 @@ impl IntersectionFnTable {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR: &'static objc::Class<Desc>;
 }

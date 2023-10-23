@@ -38,9 +38,9 @@ impl CounterSet {
     pub fn counters(&self) -> &ns::Array<Counter>;
 }
 
-define_obj_type!(Descriptor(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR);
+define_obj_type!(Desc(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR);
 
-impl Descriptor {
+impl Desc {
     define_mtl!(label, set_label, storage_mode);
 
     /// The number of instances of a counter set’s data that a counter sample buffer can store.
@@ -52,7 +52,7 @@ impl Descriptor {
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR: &'static objc::Class<Descriptor>;
+    static MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 #[cfg(test)]
@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut desc = mtl::CounterSampleBufDescriptor::new();
+        let mut desc = mtl::CounterSampleBufDesc::new();
         assert_eq!(desc.sample_count(), 0);
         desc.set_sample_count(10);
         assert_eq!(desc.sample_count(), 10);

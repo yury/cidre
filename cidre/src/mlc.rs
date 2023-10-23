@@ -71,5 +71,5 @@ mod training_graph;
 pub use training_graph::TrainingGraph;
 
 mod matmul;
-pub use matmul::Descriptor as MatMulDescriptor;
+pub use matmul::Desc as MatMulDesc;
 pub use matmul::Layer as MatMulLayer;

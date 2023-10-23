@@ -5,14 +5,14 @@ use crate::{
 
 define_obj_type!(Reflection(ns::Id));
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Desc(ns::Id));
 
-impl arc::A<Descriptor> {
+impl arc::A<Desc> {
     #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<Descriptor>;
+    pub fn init(self) -> arc::R<Desc>;
 }
 
-impl Descriptor {
+impl Desc {
     define_mtl!(label, set_label);
 
     #[inline]
@@ -50,7 +50,7 @@ impl Descriptor {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static Class<Descriptor>;
+    static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static Class<Desc>;
 }
 
 define_obj_type!(State(ns::Id));
@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut desc = mtl::ComputePipelineDescriptor::new();
+        let mut desc = mtl::ComputePipelineDesc::new();
 
         assert!(desc.label().is_none());
 

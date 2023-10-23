@@ -21,7 +21,7 @@ pub enum Usage {
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(u32)]
-pub enum InstanceOptions {
+pub enum InstanceOpts {
     /// No options
     None = 0,
 
@@ -38,9 +38,9 @@ pub enum InstanceOptions {
     NonOpaque = (1 << 3),
 }
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Desc(ns::Id));
 
-impl Descriptor {
+impl Desc {
     #[objc::msg_send(usage)]
     pub fn usage(&self) -> Usage;
 
@@ -49,11 +49,11 @@ impl Descriptor {
 }
 
 define_obj_type!(
-    GeometryDescriptor(Descriptor),
+    GeometryDesc(Desc),
     MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR
 );
 
-impl GeometryDescriptor {
+impl GeometryDesc {
     #[objc::msg_send(intersectionFunctionTableOffset)]
     pub fn intersection_fn_table_offset(&self) -> usize;
 
@@ -110,7 +110,7 @@ pub enum MotionBorderMode {
 }
 
 define_obj_type!(
-    TriangleGeometryDescriptor(GeometryDescriptor),
+    TriangleGeometryDescriptor(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR
 );
 
@@ -177,11 +177,11 @@ impl TriangleGeometryDescriptor {
 }
 
 define_obj_type!(
-    MotionBoundingBoxGeometryDescriptor(GeometryDescriptor),
+    MotionBoundingBoxGeometryDesc(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR
 );
 
-impl MotionBoundingBoxGeometryDescriptor {
+impl MotionBoundingBoxGeometryDesc {
     //
 }
 
@@ -195,7 +195,7 @@ impl AccelerationStructure {
 }
 
 extern "C" {
-    static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDescriptor>;
+    static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDesc>;
     static MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR:
         &'static objc::Class<TriangleGeometryDescriptor>;
     static MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR:

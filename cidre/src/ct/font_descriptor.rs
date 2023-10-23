@@ -43,9 +43,9 @@ impl FontPriority {
     pub const PROCESS: Self = Self(60000);
 }
 
-define_cf_type!(Descriptor(cf::Type));
+define_cf_type!(Desc(cf::Type));
 
-impl Descriptor {
+impl Desc {
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CTFontDescriptorGetTypeID() }
@@ -65,14 +65,11 @@ impl Descriptor {
 #[link(name = "CoreText", kind = "framework")]
 extern "C" {
     fn CTFontDescriptorGetTypeID() -> cf::TypeId;
-    fn CTFontDescriptorCreateWithNameAndSize(
-        name: &cf::String,
-        size: cg::Float,
-    ) -> arc::R<Descriptor>;
+    fn CTFontDescriptorCreateWithNameAndSize(name: &cf::String, size: cg::Float) -> arc::R<Desc>;
 
     fn CTFontDescriptorCreateWithAttributes(
         attributes: &cf::DictionaryOf<cf::String, cf::Type>,
-    ) -> arc::R<Descriptor>;
+    ) -> arc::R<Desc>;
 }
 
 #[cfg(test)]
@@ -82,7 +79,7 @@ mod tests {
     #[test]
     fn basics() {
         let name = cf::String::from_str("hello");
-        let desc = ct::FontDescriptor::with_name_size(&name, 10.0);
+        let desc = ct::FontDesc::with_name_size(&name, 10.0);
         desc.show();
     }
 }

@@ -114,31 +114,31 @@ impl CmdBuf {
     #[objc::msg_send(computeCommandEncoderWithDescriptor:)]
     pub fn new_compute_cmd_enc_desc_ar(
         &self,
-        descriptor: &mtl::ComputePassDescriptor,
+        descriptor: &mtl::ComputePassDesc,
     ) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
 
     #[objc::rar_retain()]
     pub fn new_compute_cmd_enc_desc(
         &self,
-        descriptor: &mtl::ComputePassDescriptor,
+        descriptor: &mtl::ComputePassDesc,
     ) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     #[objc::msg_send(renderCommandEncoderWithDescriptor:)]
     pub fn new_render_cmd_enc_ar(
         &self,
-        descriptor: &mtl::RenderPassDescriptor,
+        descriptor: &mtl::RenderPassDesc,
     ) -> Option<arc::Rar<mtl::RenderCmdEncoder>>;
 
     #[objc::rar_retain()]
     pub fn new_render_cmd_enc(
         &self,
-        descriptor: &mtl::RenderPassDescriptor,
+        descriptor: &mtl::RenderPassDesc,
     ) -> Option<arc::R<mtl::RenderCmdEncoder>>;
 
     #[inline]
     pub fn render<F: FnMut(&mut mtl::RenderCmdEncoder)>(
         &mut self,
-        descriptor: &mtl::RenderPassDescriptor,
+        descriptor: &mtl::RenderPassDesc,
         mut commands: F,
     ) {
         let mut encoder = self

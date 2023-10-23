@@ -84,13 +84,13 @@ impl Device {
     ) -> Option<arc::R<CmdQueue>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
-    pub fn new_texture(&self, descriptor: &mtl::TextureDescriptor) -> Option<arc::R<mtl::Texture>>;
+    pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
 
     #[cfg(feature = "io")]
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
     pub fn new_texture_with_surface(
         &self,
-        descriptor: &mtl::TextureDescriptor,
+        descriptor: &mtl::TextureDesc,
         surface: &io::Surf,
         plane: usize,
     ) -> Option<arc::R<mtl::Texture>>;
@@ -102,7 +102,7 @@ impl Device {
     pub unsafe fn new_lib_with_src_err(
         &self,
         source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
+        options: Option<&mtl::CompileOpts>,
         error: *mut Option<&ns::Error>,
     ) -> Option<arc::R<Lib>>;
 
@@ -110,7 +110,7 @@ impl Device {
     pub fn new_lib_with_src<'ear>(
         &self,
         source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
+        options: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<Lib>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
@@ -125,7 +125,7 @@ impl Device {
     pub async fn new_lib_with_src_opts(
         &self,
         source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
+        options: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
         self.new_lib_with_src_completion(source, options, block.escape());
@@ -136,7 +136,7 @@ impl Device {
     pub fn new_lib_with_src_completion<'ar, F>(
         &self,
         source: &ns::String,
-        options: Option<&mtl::CompileOptions>,
+        options: Option<&mtl::CompileOpts>,
         completion: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
@@ -151,14 +151,14 @@ impl Device {
     #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
     pub unsafe fn new_render_ps_err(
         &self,
-        descriptor: &mtl::RenderPipelineDescriptor,
+        descriptor: &mtl::RenderPipelineDesc,
         error: *mut Option<&ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
     pub fn new_render_ps<'a>(
         &self,
-        descriptor: &mtl::RenderPipelineDescriptor,
+        descriptor: &mtl::RenderPipelineDesc,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'a ns::Error> {
         let mut error = None;
         unsafe {
@@ -190,7 +190,7 @@ impl Device {
     #[objc::msg_send(newRenderPipelineStateWithTileDescriptor:options:reflection:error:)]
     pub unsafe fn new_tile_render_ps_err<'ar>(
         &self,
-        desc: &mtl::TileRenderPipelineDescriptor,
+        desc: &mtl::TileRenderPipelineDesc,
         options: mtl::PipelineOption,
         reflection: *mut Option<&'ar mtl::RenderPipelineReflection>,
         error: *mut Option<&'ar ns::Error>,
@@ -198,7 +198,7 @@ impl Device {
 
     pub fn new_tile_render_ps<'ar>(
         &self,
-        desc: &mtl::TileRenderPipelineDescriptor,
+        desc: &mtl::TileRenderPipelineDesc,
         options: mtl::PipelineOption,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'ar ns::Error> {
         let mut error = None;
@@ -253,7 +253,7 @@ impl Device {
     #[objc::msg_send(newDepthStencilStateWithDescriptor:)]
     pub fn new_depth_stencil_state(
         &self,
-        descriptor: &mtl::DepthStencilDescriptor,
+        descriptor: &mtl::DepthStencilDesc,
     ) -> Option<arc::R<mtl::DepthStencilState>>;
 
     #[objc::msg_send(newFence)]
@@ -270,7 +270,7 @@ impl Device {
 
     /// Returns the size and alignment, in bytes, of a texture if you create it from a heap.
     #[objc::msg_send(heapTextureSizeAndAlignWithDescriptor:)]
-    pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDescriptor) -> SizeAlign;
+    pub fn heap_texture_size_and_align(&self, descriptor: &mtl::TextureDesc) -> SizeAlign;
 
     /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
     #[objc::msg_send(heapBufferSizeAndAlignWithLength:options:)]
@@ -281,7 +281,7 @@ impl Device {
     ) -> SizeAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
-    pub fn new_heap_desc(&self, descriptor: &mtl::HeapDescriptor) -> Option<arc::R<mtl::Heap>>;
+    pub fn new_heap_desc(&self, descriptor: &mtl::HeapDesc) -> Option<arc::R<mtl::Heap>>;
 
     /// The maximum threadgroup memory available to a compute kernel, in bytes.
     #[objc::msg_send(maxThreadgroupMemoryLength)]
@@ -368,12 +368,8 @@ mod tests {
 
         assert!(device.new_default_lib().is_none());
 
-        let td = mtl::TextureDescriptor::new_2d_with_pixel_format(
-            mtl::PixelFormat::A8UNorm,
-            100,
-            200,
-            false,
-        );
+        let td =
+            mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
 
         let _t = device.new_texture(&td).unwrap();
 

@@ -29,9 +29,9 @@ impl IndirectCmdType {
     pub const CONCURRENT_DISPATCH_THREADS: Self = Self(1 << 6); /* Dispatch threads with concurrent execution */
 }
 
-define_obj_type!(Descriptor(ns::Id));
+define_obj_type!(Desc(ns::Id));
 
-impl Descriptor {
+impl Desc {
     #[objc::msg_send(commandTypes)]
     pub fn cmd_types(&self) -> IndirectCmdType;
 

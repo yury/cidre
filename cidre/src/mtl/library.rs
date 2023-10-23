@@ -101,19 +101,19 @@ pub enum CompileSymbolVisibility {
     Hidden = 1,
 }
 
-define_obj_type!(CompileOptions(ns::Id));
+define_obj_type!(CompileOpts(ns::Id));
 
-impl arc::A<CompileOptions> {
+impl arc::A<CompileOpts> {
     #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<CompileOptions>;
+    pub fn init(self) -> arc::R<CompileOpts>;
 }
 
-impl CompileOptions {
+impl CompileOpts {
     define_cls!(MTL_COMPILE_OPTIONS);
     /// ```no_run
     /// use cidre::mtl;
     ///
-    /// let mut options = mtl::CompileOptions::new();
+    /// let mut options = mtl::CompileOpts::new();
     ///
     /// assert_eq!(true, options.fast_math_enabled());
     /// options.set_fast_math_enabled(false);
@@ -125,7 +125,7 @@ impl CompileOptions {
     /// assert_eq!(options.language_version(), mtl::LanguageVersion::_2_4);
     ///
     /// ```
-    pub fn new() -> arc::R<CompileOptions> {
+    pub fn new() -> arc::R<CompileOpts> {
         Self::alloc().init()
     }
 
@@ -190,7 +190,7 @@ impl Fn {
     pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attribute>>;
 
     #[objc::msg_send(options)]
-    pub fn options(&self) -> mtl::FnOptions;
+    pub fn options(&self) -> mtl::FnOpts;
 }
 
 define_obj_type!(Lib(ns::Id));
@@ -240,14 +240,14 @@ impl Lib {
     pub unsafe fn new_fn_with_desc_err<'ar>(
         &self,
         name: &ns::String,
-        descriptor: &mtl::FnDescriptor,
+        descriptor: &mtl::FnDesc,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
     pub fn new_fn_with_desc<'ar>(
         &self,
         name: &ns::String,
-        descriptor: &mtl::FnDescriptor,
+        descriptor: &mtl::FnDesc,
     ) -> Result<arc::R<Fn>, &'ar ns::Error> {
         let mut error = None;
 
@@ -317,7 +317,7 @@ extern "C" {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_COMPILE_OPTIONS: &'static objc::Class<CompileOptions>;
+    static MTL_COMPILE_OPTIONS: &'static objc::Class<CompileOpts>;
 }
 
 #[cfg(test)]
@@ -371,7 +371,7 @@ mod tests {
         let func = lib.new_fn(&func_name).unwrap();
         let name = func.name();
         assert!(func_name.is_equal(&name));
-        assert_eq!(func.options(), mtl::FnOptions::None);
+        assert_eq!(func.options(), mtl::FnOpts::None);
     }
 
     #[test]
@@ -392,7 +392,7 @@ mod tests {
 
     #[test]
     fn compile_options() {
-        let mut options = mtl::CompileOptions::new();
+        let mut options = mtl::CompileOpts::new();
 
         assert_eq!(true, options.fast_math_enabled());
         options.set_fast_math_enabled(false);

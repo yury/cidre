@@ -1,15 +1,16 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
+#[doc(alias = "MTLCaptureDestination")]
 #[derive(Eq, PartialEq, Debug, Copy, Clone)]
 #[repr(isize)]
-pub enum CaptureDestination {
+pub enum CaptureDst {
     DeveloperTools = 1,
     GPUTraceDocument,
 }
 
-define_obj_type!(CaptureDescriptor(ns::Id), MTL_CAPTURE_DESCRIPTOR);
+define_obj_type!(CaptureDesc(ns::Id), MTL_CAPTURE_DESCRIPTOR);
 
-impl CaptureDescriptor {
+impl CaptureDesc {
     #[objc::msg_send(captureObject)]
     pub fn capture_object(&self) -> Option<&ns::Id>;
 
@@ -17,10 +18,10 @@ impl CaptureDescriptor {
     pub fn set_capture_object(&mut self, value: &ns::Id);
 
     #[objc::msg_send(destination)]
-    pub fn dst(&self) -> CaptureDestination;
+    pub fn dst(&self) -> CaptureDst;
 
     #[objc::msg_send(setDestination:)]
-    pub fn set_dst(&self, value: CaptureDestination);
+    pub fn set_dst(&self, value: CaptureDst);
 
     #[objc::msg_send(outputURL)]
     pub fn output_url(&self) -> Option<&ns::URL>;
@@ -41,12 +42,12 @@ impl CaptureManager {
     #[objc::msg_send(startCaptureWithDescriptor:error:)]
     pub unsafe fn start_with_descriptor_err<'ar>(
         &mut self,
-        desc: &CaptureDescriptor,
+        desc: &CaptureDesc,
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn start<'ar>(&mut self, desc: &CaptureDescriptor) -> Result<(), &'ar ns::Error> {
+    pub fn start<'ar>(&mut self, desc: &CaptureDesc) -> Result<(), &'ar ns::Error> {
         let mut error = None;
         unsafe {
             if self.start_with_descriptor_err(desc, &mut error) {
@@ -66,6 +67,6 @@ impl CaptureManager {
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_CAPTURE_DESCRIPTOR: &'static objc::Class<CaptureDescriptor>;
+    static MTL_CAPTURE_DESCRIPTOR: &'static objc::Class<CaptureDesc>;
     static MTL_CAPTURE_MANAGER: &'static objc::Class<CaptureManager>;
 }
