@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
-// typedef NS_ENUM(NSUInteger, MTLPatchType) {
+#[doc(alias = "MTLPatchType")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PatchType {
@@ -53,6 +53,7 @@ impl Attribute {
     pub fn is_patch_ctrl_point_data(&self) -> bool;
 }
 
+#[doc(alias = "MTLLanguageVersion")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
 pub enum LanguageVersion {
@@ -65,8 +66,10 @@ pub enum LanguageVersion {
     _2_3 = (2 << 16) + 3,
     _2_4 = (2 << 16) + 4,
     _3_0 = (3 << 16),
+    _3_1 = (3 << 16) + 1,
 }
 
+#[doc(alias = "MTLLibraryType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum Type {
@@ -77,13 +80,19 @@ pub enum Type {
     Dynamic = 1,
 }
 
+#[doc(alias = "MTLLibraryOptimizationLevel")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum OptimizationLevel {
+    /// An optimization option for the Metal compiler that prioritizes runtime performance.
     Default = 0,
+
+    /// An optimization option for the Metal compiler that prioritizes minimizing
+    /// the size of its output binaries, which may also reduce compile time.
     Size = 1,
 }
 
+#[doc(alias = "MTLCompileSymbolVisibility")]
 #[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum CompileSymbolVisibility {

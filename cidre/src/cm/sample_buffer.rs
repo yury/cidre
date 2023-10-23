@@ -252,14 +252,16 @@ impl SampleBuf {
         unsafe { CMSampleBufferGetDuration(self) }
     }
 
-    /// Returns the presentation timestamp that’s the earliest numerically of all the samples in a sample buffer.
+    /// Returns the presentation timestamp that’s the earliest numerically
+    /// of all the samples in a sample buffer.
     #[doc(alias = "CMSampleBufferGetPresentationTimeStamp")]
     #[inline]
     pub fn pts(&self) -> cm::Time {
         unsafe { CMSampleBufferGetPresentationTimeStamp(self) }
     }
 
-    /// Returns the decode timestamp that’s the earliest numerically of all the samples in a sample buffer.
+    /// Returns the decode timestamp that’s the earliest numerically
+    /// of all the samples in a sample buffer.
     #[doc(alias = "CMSampleBufferGetDecodeTimeStamp")]
     #[inline]
     pub fn dts(&self) -> cm::Time {
@@ -279,18 +281,18 @@ impl SampleBuf {
         unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, value) }
     }
 
-    /// Returns the size in bytes of a specified sample in a cm::SampleBuffer.
+    /// Returns the size in bytes of a specified sample in a 'cm::SampleBuf'.
     ///
-    /// Size in bytes of the specified sample in the cm::SampleBuffer.
+    /// Size in bytes of the specified sample in the 'cm::SampleBuf'.
     #[inline]
     pub fn sample_size(&self, sample_index: cm::ItemIndex) -> usize {
         unsafe { CMSampleBufferGetSampleSize(self, sample_index) }
     }
 
-    /// Returns the total size in bytes of sample data in a cm::SampleBuffer.
+    /// Returns the total size in bytes of sample data in a 'cm::SampleBuf'.
     ///
     /// Total size in bytes of sample data in the cm::SampleBuffer.
-    /// If there are no sample sizes in this cm::SampleBuffer, a size of 0 will be returned.  
+    /// If there are no sample sizes in this 'cm::SampleBuf', a size of 0 will be returned.  
     #[inline]
     pub fn total_sample_size(&self) -> usize {
         unsafe { CMSampleBufferGetTotalSampleSize(self) }
@@ -301,8 +303,8 @@ impl SampleBuf {
         unsafe { CMSampleBufferGetFormatDescription(self) }
     }
 
-    /// Returns a reference to a cm::SampleBuffer's immutable array of mutable sample attachments dictionaries (one dictionary
-    /// per sample in the cm::SampleBuffer)
+    /// Returns a reference to a cm::SampleBuf's immutable array of mutable sample attachments dictionaries (one dictionary
+    /// per sample in the 'cm::SampleBuf')
     #[doc(alias = "CMSampleBufferGetSampleAttachmentsArray")]
     #[inline]
     pub fn attachments(
@@ -365,7 +367,7 @@ impl SampleBuf {
         unsafe { CMSampleBufferInvalidate(self) }
     }
 
-    /// Makes a cm::SampleBuffer's data ready, by calling the client's
+    /// Makes a cm::SampleBuf's data ready, by calling the client's
     /// cm::SampleBufferMakeDataReadyCallback.
     #[doc(alias = "CMSampleBufferMakeDataReady")]
     #[inline]
@@ -373,8 +375,8 @@ impl SampleBuf {
         unsafe { CMSampleBufferMakeDataReady(self) }
     }
 
-    /// Copies PCM audio data from the given cm::SampleBuffer into
-    /// a pre-populated audio::BufferList. The audio::BufferList must
+    /// Copies PCM audio data from the given cm::SampleBuf into
+    /// a pre-populated audio::BufList. The audio::BufList must
     /// contain the same number of channels and its data buffers
     /// must be sized to hold the specified number of frames.
     /// This API is	specific to audio format sample buffers, and
@@ -441,11 +443,11 @@ impl SampleBuf {
         )
     }
 
-    /// Creates an audio::BufferList containing the data from the cm::SampleBuffer,
-    /// and a cm::BlockBuffer which references (and manages the lifetime of) the
-    /// data in that audio::BufferList. The data may or may not be copied,
+    /// Creates an audio::BufList containing the data from the cm::SampleBuf,
+    /// and a cm::BlockBuf which references (and manages the lifetime of) the
+    /// data in that audio::BufList. The data may or may not be copied,
     /// depending on the contiguity and 16-byte alignment of the cm::SampleBuffer's
-    /// data. The buffers placed in the audio::BufferList are guaranteed to be contiguous.
+    /// data. The buffers placed in the audio::BufList are guaranteed to be contiguous.
     /// The buffers in the audio::BufferList will be 16-byte-aligned if
     /// kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment is passed in.
     #[cfg(feature = "cat")]
