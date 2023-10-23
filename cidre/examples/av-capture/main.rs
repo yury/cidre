@@ -26,7 +26,7 @@ fn main() {
     assert!(video_output.sample_buffer_callback_queue().is_none());
 
     println!("{:?}", video_output.available_video_cv_pixel_format_types());
-    println!("{:?}", video_output.available_video_codec_types());
+    println!("{:?}", video_output.available_video_codecs());
     println!("{:?}", video_output.video_settings());
     println!(
         "{:?}",
@@ -36,7 +36,7 @@ fn main() {
     println!(
         "{:?}",
         video_output.recommended_video_settings_for_video_codec_type_asset_writer_output_file_type(
-            av::VideoCodecType::h264(),
+            av::VideoCodec::h264(),
             av::FileType::mp4()
         )
     );
@@ -53,7 +53,7 @@ fn main() {
         }
     });
     println!("{:?}", video_output.available_video_cv_pixel_format_types());
-    println!("{:?}", video_output.available_video_codec_types());
+    println!("{:?}", video_output.available_video_codecs());
     println!("{:?}", video_output.video_settings());
     println!(
         "{:?}",
@@ -63,7 +63,7 @@ fn main() {
     println!(
         "{:?}",
         video_output.recommended_video_settings_for_video_codec_type_asset_writer_output_file_type(
-            av::VideoCodecType::h264(),
+            av::VideoCodec::h264(),
             av::FileType::mp4()
         )
     );

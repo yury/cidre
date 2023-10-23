@@ -111,7 +111,7 @@ pub use audio::SpeechUtterance;
 
 pub mod video;
 pub use video::settings_keys as video_settings_keys;
-pub use video::CodecType as VideoCodecType;
+pub use video::Codec as VideoCodec;
 
 pub mod sample_buffer;
 pub use sample_buffer::DisplayLayer as SampleBufDisplayLayer;

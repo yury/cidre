@@ -70,7 +70,7 @@ impl VideoDataOutput {
     /// may change depending on the current session preset. The first codec in the array
     /// is used by default when recording a file.
     #[objc::msg_send(availableVideoCodecTypes)]
-    pub fn available_video_codec_types(&self) -> &ns::Array<av::VideoCodecType>;
+    pub fn available_video_codecs(&self) -> &ns::Array<av::VideoCodec>;
 
     /// The dispatch queue on which all sample buffer delegate methods will be called.
     #[objc::msg_send(sampleBufferCallbackQueue)]
@@ -88,7 +88,7 @@ impl VideoDataOutput {
     #[objc::msg_send(recommendedVideoSettingsForVideoCodecType:assetWriterOutputFileType:)]
     pub fn recommended_video_settings_for_video_codec_type_asset_writer_output_file_type<'a>(
         &'a self,
-        codec_type: &av::VideoCodecType,
+        codec_type: &av::VideoCodec,
         output_file_type: &av::FileType,
     ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
 }

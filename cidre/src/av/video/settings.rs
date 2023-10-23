@@ -69,46 +69,46 @@ pub mod keys {
     }
 }
 
-define_obj_type!(CodecType(ns::String));
+define_obj_type!(Codec(ns::String));
 
-impl CodecType {
+impl Codec {
     /// The HEVC video codec.
-    pub fn hevc() -> &'static CodecType {
+    pub fn hevc() -> &'static Codec {
         unsafe { AVVideoCodecTypeHEVC }
     }
 
     /// The H.264 video codec.
-    pub fn h264() -> &'static CodecType {
+    pub fn h264() -> &'static Codec {
         unsafe { AVVideoCodecTypeH264 }
     }
 
     /// The JPEG video codec.
-    pub fn jpeg() -> &'static CodecType {
+    pub fn jpeg() -> &'static Codec {
         unsafe { AVVideoCodecTypeJPEG }
     }
 
     /// The Apple ProRes 4444 video codec.
-    pub fn apple_pro_res_4444() -> &'static CodecType {
+    pub fn apple_pro_res_4444() -> &'static Codec {
         unsafe { AVVideoCodecTypeAppleProRes4444 }
     }
 
     /// The Apple ProRes 422 video codec.
-    pub fn apple_pro_res_422() -> &'static CodecType {
+    pub fn apple_pro_res_422() -> &'static Codec {
         unsafe { AVVideoCodecTypeAppleProRes422 }
     }
 
     /// The Apple ProRes 422 HQ video codec.
-    pub fn apple_pro_res_422_hq() -> &'static CodecType {
+    pub fn apple_pro_res_422_hq() -> &'static Codec {
         unsafe { AVVideoCodecTypeAppleProRes422HQ }
     }
 
     /// The Apple ProRes 422 LT video codec.
-    pub fn apple_pro_res_422_lt() -> &'static CodecType {
+    pub fn apple_pro_res_422_lt() -> &'static Codec {
         unsafe { AVVideoCodecTypeAppleProRes422LT }
     }
 
     /// The Apple ProRes 422 Proxy video codec.
-    pub fn apple_pro_res_422_proxy() -> &'static CodecType {
+    pub fn apple_pro_res_422_proxy() -> &'static Codec {
         unsafe { AVVideoCodecTypeAppleProRes422Proxy }
     }
 
@@ -117,19 +117,19 @@ impl CodecType {
     /// MPORTANT NOTE: this constant is used to select the appropriate encoder,
     /// but is NOT used on the encoded content, which is backwards compatible
     /// and hence uses 'hvc1' as its codec type.
-    pub fn hevc_with_alpha() -> &'static CodecType {
+    pub fn hevc_with_alpha() -> &'static Codec {
         unsafe { AVVideoCodecTypeHEVCWithAlpha }
     }
 }
 
 extern "C" {
-    static AVVideoCodecTypeHEVC: &'static CodecType;
-    static AVVideoCodecTypeH264: &'static CodecType;
-    static AVVideoCodecTypeJPEG: &'static CodecType;
-    static AVVideoCodecTypeAppleProRes4444: &'static CodecType;
-    static AVVideoCodecTypeAppleProRes422: &'static CodecType;
-    static AVVideoCodecTypeAppleProRes422HQ: &'static CodecType;
-    static AVVideoCodecTypeAppleProRes422LT: &'static CodecType;
-    static AVVideoCodecTypeAppleProRes422Proxy: &'static CodecType;
-    static AVVideoCodecTypeHEVCWithAlpha: &'static CodecType;
+    static AVVideoCodecTypeHEVC: &'static Codec;
+    static AVVideoCodecTypeH264: &'static Codec;
+    static AVVideoCodecTypeJPEG: &'static Codec;
+    static AVVideoCodecTypeAppleProRes4444: &'static Codec;
+    static AVVideoCodecTypeAppleProRes422: &'static Codec;
+    static AVVideoCodecTypeAppleProRes422HQ: &'static Codec;
+    static AVVideoCodecTypeAppleProRes422LT: &'static Codec;
+    static AVVideoCodecTypeAppleProRes422Proxy: &'static Codec;
+    static AVVideoCodecTypeHEVCWithAlpha: &'static Codec;
 }
