@@ -96,7 +96,7 @@ pub mod asbd_props {
     /// Retrieves general information about a format. The specifier is a
     /// magic cookie, or NULL.
     /// On input, the property value is an AudioStreamBasicDescription which
-    /// should have at least the mFormatID filled out. On output it will be filled out
+    /// should have at least the 'format' filled out. On output it will be filled out
     /// as much as possible given the information known about the format
     /// and the contents of the magic cookie (if any is given).
     /// If multiple formats can be described by the AudioStreamBasicDescription and the associated magic cookie,
@@ -120,7 +120,7 @@ pub mod asbd_props {
     pub const DECODE_FORMAT_IDS: PropertyID = PropertyID::from_be_bytes(*b"acif");
 
     /// Returns a list of AudioFormatListItem structs describing the audio formats contained within the compressed bit stream
-    /// as described by the magic cookie. The specifier is an AudioFormatInfo struct. The mFormatID member of the
+    /// as described by the magic cookie. The specifier is an AudioFormatInfo struct. The 'format' member of the
     ///
     /// ASBD struct must filled in. Formats are returned in order from the most to least 'rich', with
     /// channel count taking the highest precedence followed by sample rate. The kAudioFormatProperty_FormatList property
@@ -341,7 +341,7 @@ impl PropertyID {
     /// println!("{:?}", format_ids.len());
     /// assert!(format_ids.len() > 0);
     /// ```
-    pub fn encode_format_ids() -> Result<Vec<audio::FormatID>, os::Status> {
+    pub fn encode_format_ids() -> Result<Vec<audio::Format>, os::Status> {
         unsafe { asbd_props::ENCODE_FORMAT_IDS.get_vec() }
     }
 
@@ -349,7 +349,7 @@ impl PropertyID {
     /// use cidre::at::audio;
     ///
     /// let mut asbd = audio::StreamBasicDescription {
-    ///     format_id: audio::FormatID::LINEAR_PCM,
+    ///     format: audio::Format::LINEAR_PCM,
     ///     ..Default::default()
     /// };
     /// audio::FormatPropertyID::format_info(&mut asbd).unwrap();
@@ -362,46 +362,42 @@ impl PropertyID {
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let encoders = audio::FormatPropertyID::encoders(audio::FormatID::MPEG4_AAC).unwrap();
+    /// let encoders = audio::FormatPropertyID::encoders(audio::Format::MPEG4_AAC).unwrap();
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
-    pub fn encoders(
-        format_id: audio::FormatID,
-    ) -> Result<Vec<audio::ClassDescription>, os::Status> {
-        unsafe { asbd_props::ENCODERS.get_vec_with(&format_id) }
+    pub fn encoders(format: audio::Format) -> Result<Vec<audio::ClassDescription>, os::Status> {
+        unsafe { asbd_props::ENCODERS.get_vec_with(&format) }
     }
 
-    pub fn decoders(
-        format_id: audio::FormatID,
-    ) -> Result<Vec<audio::ClassDescription>, os::Status> {
-        unsafe { asbd_props::DECODERS.get_vec_with(&format_id) }
+    pub fn decoders(format: audio::Format) -> Result<Vec<audio::ClassDescription>, os::Status> {
+        unsafe { asbd_props::DECODERS.get_vec_with(&format) }
     }
 
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let rates = audio::FormatPropertyID::available_encode_bit_rates(audio::FormatID::MPEG4_AAC).unwrap();
+    /// let rates = audio::FormatPropertyID::available_encode_bit_rates(audio::Format::MPEG4_AAC).unwrap();
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_bit_rates(
-        format_id: audio::FormatID,
+        format: audio::Format,
     ) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { asbd_props::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format_id) }
+        unsafe { asbd_props::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format) }
     }
 
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let rates = audio::FormatPropertyID::available_encode_sample_rates(audio::FormatID::MPEG4_AAC).unwrap();
+    /// let rates = audio::FormatPropertyID::available_encode_sample_rates(audio::Format::MPEG4_AAC).unwrap();
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_sample_rates(
-        format_id: audio::FormatID,
+        format: audio::Format,
     ) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { asbd_props::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format_id) }
+        unsafe { asbd_props::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format) }
     }
 }
 

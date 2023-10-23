@@ -729,7 +729,7 @@ mod tests {
         let path = cf::URL::from_str("file:///tmp/m4a.m4a").unwrap();
 
         let asbd = audio::StreamBasicDescription {
-            format_id: audio::FormatID::MPEG4_AAC,
+            format: audio::Format::MPEG4_AAC,
             format_flags: audio::FormatFlags::ALL_CLEAR,
             frames_per_packet: 1024,
             sample_rate: 48_000.0,

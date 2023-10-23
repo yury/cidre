@@ -1180,7 +1180,7 @@ mod tests {
         let src_asbd = audio::StreamBasicDescription {
             sample_rate,
             channels_per_frame,
-            format_id: audio::FormatID::LINEAR_PCM,
+            format: audio::Format::LINEAR_PCM,
             format_flags: audio::FormatFlags::IS_FLOAT | audio::FormatFlags::IS_PACKED,
             bytes_per_packet: 4 * channels_per_frame,
             frames_per_packet: 1,
@@ -1192,7 +1192,7 @@ mod tests {
         let dst_asbd = audio::StreamBasicDescription {
             sample_rate,
             channels_per_frame,
-            format_id: audio::FormatID::MPEG4_AAC,
+            format: audio::Format::MPEG4_AAC,
             format_flags: audio::FormatFlags::ALL_CLEAR,
             frames_per_packet: 1024,
             ..Default::default()
@@ -1243,8 +1243,8 @@ mod tests {
         let channels_per_frame = 2;
         let src_asbd = audio::StreamBasicDescription {
             sample_rate,
-            format_id: audio::FormatID(1819304813),
-            // format_id: audio::FormatID::LINEAR_PCM,
+            format: audio::Format(1819304813),
+            // format: audio::FormatID::LINEAR_PCM,
             format_flags: audio::FormatFlags(41),
             // format_flags: audio::FormatFlags(0),
             bytes_per_packet: 4,
@@ -1258,7 +1258,7 @@ mod tests {
         let src_asbd2 = audio::StreamBasicDescription {
             sample_rate,
             channels_per_frame,
-            format_id: audio::FormatID::LINEAR_PCM,
+            format: audio::Format::LINEAR_PCM,
             format_flags: audio::FormatFlags::NATIVE_FLOAT_PACKED, //audio::FormatFlags::IS_FLOAT | audio::FormatFlags::IS_PACKED,
             bytes_per_packet: 4 * channels_per_frame,
             frames_per_packet: 1,
@@ -1277,7 +1277,7 @@ mod tests {
         let dst_asbd = audio::StreamBasicDescription {
             sample_rate,
             channels_per_frame,
-            format_id: audio::FormatID::MPEG4_AAC,
+            format: audio::Format::MPEG4_AAC,
             format_flags: audio::FormatFlags::ALL_CLEAR,
             frames_per_packet: 1024,
             ..Default::default()

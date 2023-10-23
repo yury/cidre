@@ -160,10 +160,10 @@ impl<const N: usize> BufList<N> {
 #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
 #[doc(alias = "AudioFromatID")]
-pub struct FormatID(pub u32);
+pub struct Format(pub u32);
 
 /// The AudioFormatIDs used to identify individual formats of audio data.
-impl FormatID {
+impl Format {
     /// Linear PCM, uses the standard flags.
     #[doc(alias = "kAudioFormatLinearPCM")]
     pub const LINEAR_PCM: Self = Self(u32::from_be_bytes(*b"lpcm"));
@@ -533,9 +533,9 @@ impl std::fmt::Display for FormatFlags {
 pub struct StreamBasicDescription {
     /// The number of sample frames per second of the data in the stream.
     pub sample_rate: f64,
-    /// The AudioFormatID indicating the general kind of data in the stream.
-    pub format_id: FormatID,
-    /// The AudioFormatFlags for the format indicated by mFormatID.
+    /// The AudioFormat indicating the general kind of data in the stream.
+    pub format: Format,
+    /// The AudioFormatFlags for the format indicated by 'format'.
     pub format_flags: FormatFlags,
     /// The number of bytes in a packet of data.
     pub bytes_per_packet: u32,
@@ -554,7 +554,7 @@ pub struct StreamBasicDescription {
 impl StreamBasicDescription {
     #[inline]
     pub fn is_native_endian(&self) -> bool {
-        self.format_id == FormatID::LINEAR_PCM
+        self.format == Format::LINEAR_PCM
             && (self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0 == FormatFlags::NATIVE_ENDIAN.0)
     }
 }

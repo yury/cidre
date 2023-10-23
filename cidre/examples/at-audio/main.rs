@@ -123,7 +123,7 @@ fn encode(args: &EncodeArgs) {
 
     let src_asbd = src_file.data_format().unwrap();
 
-    if src_asbd.format_id != audio::FormatID::LINEAR_PCM {
+    if src_asbd.format != audio::Format::LINEAR_PCM {
         return eprintln!("The input file data format is not PCM");
     };
 
@@ -135,7 +135,7 @@ fn encode(args: &EncodeArgs) {
     let dst_asbd = audio::StreamBasicDescription {
         sample_rate: src_asbd.sample_rate,
         channels_per_frame: src_asbd.channels_per_frame,
-        format_id: audio::FormatID::MPEG4_AAC,
+        format: audio::Format::MPEG4_AAC,
         format_flags: audio::FormatFlags::ALL_CLEAR,
         frames_per_packet: 1024,
         ..Default::default()
@@ -266,7 +266,7 @@ fn decode(args: &DecodeArgs) {
     let dst_asbd = audio::StreamBasicDescription {
         sample_rate: src_asbd.sample_rate,
         channels_per_frame: src_asbd.channels_per_frame,
-        format_id: audio::FormatID::LINEAR_PCM,
+        format: audio::Format::LINEAR_PCM,
         format_flags: audio::FormatFlags::IS_FLOAT | audio::FormatFlags::IS_PACKED,
         bytes_per_packet: 4 * src_asbd.channels_per_frame,
         frames_per_packet: 1,

@@ -2,7 +2,7 @@ use std::{collections::VecDeque, ffi::c_void, time::Duration};
 
 use cidre::{
     arc, at,
-    cat::{AudioFormatFlags, AudioFormatID},
+    cat::{AudioFormat, AudioFormatFlags},
     cf, cm, define_obj_type, dispatch, ns, objc, os,
     sc::{self, stream::Output, stream::OutputImpl},
     vt::{self, compression_properties::keys, EncodeInfoFlags},
@@ -102,7 +102,7 @@ fn default_converter() -> at::AudioConverterRef {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
-        format_id: AudioFormatID::MPEG4_AAC,
+        format: AudioFormat::MPEG4_AAC,
         format_flags: Default::default(),
         // format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
         bytes_per_packet: 0,
@@ -116,7 +116,7 @@ fn default_converter() -> at::AudioConverterRef {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
-        format_id: AudioFormatID::LINEAR_PCM,
+        format: AudioFormat::LINEAR_PCM,
         //format_flags: AudioFormatFlags(41),
         format_flags: AudioFormatFlags::IS_FLOAT
             | AudioFormatFlags::IS_PACKED
@@ -137,7 +137,7 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
-        format_id: AudioFormatID::MPEG4_AAC_HE,
+        format: AudioFormat::MPEG4_AAC_HE,
         //format_flags: AudioFormatFlags(MPEG4ObjectID::AAC_LC.0 as _),
         format_flags: AudioFormatFlags(0),
         bytes_per_packet: 0,
@@ -354,7 +354,7 @@ async fn main() {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
-        format_id: AudioFormatID::LINEAR_PCM,
+        format: AudioFormat::LINEAR_PCM,
         //format_flags: AudioFormatFlags(41),
         format_flags: AudioFormatFlags::IS_FLOAT
             | AudioFormatFlags::IS_PACKED

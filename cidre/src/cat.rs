@@ -10,8 +10,8 @@ pub use audio::ChannelLabel as AudioChannelLabel;
 pub use audio::ChannelLayout as AudioChannelLayout;
 pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
 pub use audio::ClassDescription as AudioClassDescription;
+pub use audio::Format as AudioFormat;
 pub use audio::FormatFlags as AudioFormatFlags;
-pub use audio::FormatID as AudioFormatID;
 pub use audio::TimeStamp as AudioTimeStamp;
 pub use audio::TimeStampFlags as AudioTimeStampFlags;
 
