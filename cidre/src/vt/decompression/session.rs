@@ -2,7 +2,7 @@ use std::{ffi::c_void, intrinsics::transmute};
 
 use crate::{
     arc, cf,
-    cm::{self, SampleBuf, VideoCodecType},
+    cm::{self, SampleBuf, VideoCodec},
     cv, define_cf_type, os, vt,
 };
 
@@ -164,7 +164,7 @@ impl Session {
 /// favoring alternate encodings when hardware decode is not supported.
 /// This call returning true does not guarantee that hardware decode resources will be
 /// available at all times.
-pub fn is_hardware_decode_supported(codec_type: VideoCodecType) -> bool {
+pub fn is_hardware_decode_supported(codec_type: VideoCodec) -> bool {
     unsafe { VTIsHardwareDecodeSupported(codec_type) }
 }
 
@@ -203,7 +203,7 @@ extern "C" {
         pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> os::Status;
 
-    fn VTIsHardwareDecodeSupported(codec_type: VideoCodecType) -> bool;
+    fn VTIsHardwareDecodeSupported(codec_type: VideoCodec) -> bool;
 
 }
 
@@ -212,14 +212,13 @@ mod tests {
     use std::ffi::c_void;
 
     use crate::{
-        cm::{self, VideoCodecType},
+        cm::{self, VideoCodec},
         cv, os, vt,
     };
 
     #[test]
     fn create_decompression_session() {
-        let _desc =
-            cm::VideoFormatDescription::video(VideoCodecType::HEVC, 1920, 1080, None).unwrap();
+        let _desc = cm::VideoFormatDescription::video(VideoCodec::HEVC, 1920, 1080, None).unwrap();
 
         struct Context {}
 

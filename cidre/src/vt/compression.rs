@@ -11,7 +11,7 @@ pub use properties::profile_level;
 mod tests {
     use std::ffi::c_void;
 
-    use crate::{cf, cm::VideoCodecType, cv};
+    use crate::{cf, cm::VideoCodec, cv};
 
     use super::*;
 
@@ -34,7 +34,7 @@ mod tests {
         let mut session = Session::new::<c_void>(
             1920,
             1080,
-            VideoCodecType::H264,
+            VideoCodec::H264,
             None,
             Some(&image_attrs),
             None,

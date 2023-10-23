@@ -12,15 +12,21 @@ use crate::cv;
 #[cfg(feature = "cat")]
 use crate::cat;
 
+#[doc(alias = "CMPixelFormatType")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
-pub struct PixelFormatType(pub FourCharCode);
+pub struct PixelFormat(pub FourCharCode);
 
-impl PixelFormatType {
+impl PixelFormat {
+    #[doc(alias = "kCMPixelFormat_32ARGB")]
     pub const _32_ARGB: Self = Self(32);
+    #[doc(alias = "kCMPixelFormat_32BGRA")]
     pub const _32_BGRA: Self = Self::from_be_bytes(b"BGRA");
+    #[doc(alias = "kCMPixelFormat_24RGB")]
     pub const _24_RGB: Self = Self(24);
+    #[doc(alias = "kCMPixelFormat_422YpCbCr8")]
     pub const _422_YP_CB_CR_8: Self = Self::from_be_bytes(b"2vuy");
+    #[doc(alias = "kCMPixelFormat_422YpCbCr8_yuvs")]
     pub const _422_YP_CB_CR_8_YUVS: Self = Self::from_be_bytes(b"yuvs");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
@@ -54,13 +60,14 @@ impl MediaType {
     }
 }
 
+#[doc(alias = "CMVideoCodecType")]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
-pub struct VideoCodecType(FourCharCode);
+pub struct VideoCodec(FourCharCode);
 
-impl VideoCodecType {
+impl VideoCodec {
     #[doc(alias = "kCMVideoCodecType_422YpCbCr8")]
-    pub const _422_YP_CB_CR_8: Self = Self(PixelFormatType::_422_YP_CB_CR_8.0);
+    pub const _422_YP_CB_CR_8: Self = Self(PixelFormat::_422_YP_CB_CR_8.0);
 
     #[doc(alias = "kCMVideoCodecType_JPEG")]
     pub const JPEG: Self = Self::from_be_bytes(b"jpeg");
@@ -254,10 +261,10 @@ impl VideoFormatDescription {
     /// ```
     /// use cidre::cm;
     ///
-    /// let desc = cm::VideoFormatDescription::video(cm::VideoCodecType::H264, 1920, 1080, None).unwrap();
+    /// let desc = cm::VideoFormatDescription::video(cm::VideoCodec::H264, 1920, 1080, None).unwrap();
     /// ```
     pub fn video(
-        codec_type: VideoCodecType,
+        codec_type: VideoCodec,
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
@@ -275,7 +282,7 @@ impl VideoFormatDescription {
     }
 
     pub fn create_video_in(
-        codec_type: VideoCodecType,
+        codec_type: VideoCodec,
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
@@ -625,7 +632,7 @@ extern "C" {
 
     fn CMVideoFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
-        codec_type: VideoCodecType,
+        codec_type: VideoCodec,
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,

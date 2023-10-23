@@ -294,7 +294,7 @@ async fn main() {
     let mut session = vt::CompressionSession::new(
         1440 * 2, // display.width() as u32 * 2,
         900 * 2,  // display.height() as u32 * 2,
-        cm::VideoCodecType::HEVC,
+        cm::VideoCodec::HEVC,
         None,
         None,
         Some(memory_pool_allocator),

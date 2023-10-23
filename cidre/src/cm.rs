@@ -7,8 +7,8 @@ pub use format_description::AudioFormatDescription;
 pub use format_description::FormatDescription;
 pub use format_description::FormatDescriptionExtensionKey;
 pub use format_description::MediaType;
-pub use format_description::PixelFormatType;
-pub use format_description::VideoCodecType;
+pub use format_description::PixelFormat;
+pub use format_description::VideoCodec;
 pub use format_description::VideoDimensions;
 pub use format_description::VideoFormatDescription;
 
