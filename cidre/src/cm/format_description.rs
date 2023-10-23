@@ -59,27 +59,58 @@ impl MediaType {
 pub struct VideoCodecType(FourCharCode);
 
 impl VideoCodecType {
+    #[doc(alias = "kCMVideoCodecType_422YpCbCr8")]
     pub const _422_YP_CB_CR_8: Self = Self(PixelFormatType::_422_YP_CB_CR_8.0);
+
+    #[doc(alias = "kCMVideoCodecType_JPEG")]
     pub const JPEG: Self = Self::from_be_bytes(b"jpeg");
+
+    #[doc(alias = "kCMVideoCodecType_H264")]
     pub const H264: Self = Self::from_be_bytes(b"avc1");
+
+    #[doc(alias = "kCMVideoCodecType_HEVC")]
     pub const HEVC: Self = Self::from_be_bytes(b"hvc1");
+
+    #[doc(alias = "kCMVideoCodecType_HEVCWithAlpha")]
     pub const HEVC_WITH_ALPHA: Self = Self::from_be_bytes(b"muxa");
+
+    #[doc(alias = "kCMVideoCodecType_DolbyVisionHEVC")]
     pub const DOLBY_VISION_HEVC: Self = Self::from_be_bytes(b"dvh1");
+
+    #[doc(alias = "kCMVideoCodecType_VP9")]
     pub const VP9: Self = Self::from_be_bytes(b"vp09");
 
+    #[doc(alias = "kCMVideoCodecType_AppleProRes4444XQ")]
     pub const APPLE_PRO_RES4444_XQ: Self = Self::from_be_bytes(b"ap4x");
+
+    #[doc(alias = "kCMVideoCodecType_AppleProRes4444")]
     pub const APPLE_PRO_RES4444: Self = Self::from_be_bytes(b"ap4h");
+
+    #[doc(alias = "kCMVideoCodecType_AppleProRes422HQ")]
     pub const APPLE_PRO_RES422_HQ: Self = Self::from_be_bytes(b"apch");
+
+    #[doc(alias = "kCMVideoCodecType_AppleProRes422")]
     pub const APPLE_PRO_RES422: Self = Self::from_be_bytes(b"apcn");
+
+    #[doc(alias = "kCMVideoCodecType_AppleProRes422LT")]
     pub const APPLE_PRO_RES422_LT: Self = Self::from_be_bytes(b"apcs");
+
+    #[doc(alias = "kCMVideoCodecType_AppleProRes422Proxy")]
     pub const APPLE_PRO_RES422_PROXY: Self = Self::from_be_bytes(b"apco");
 
+    #[doc(alias = "kCMVideoCodecType_AppleProResRAW")]
     pub const APPLE_PRO_RES_RAW: Self = Self::from_be_bytes(b"aprn");
+
+    #[doc(alias = "kCMVideoCodecType_AppleProResRAWHQ")]
     pub const APPLE_PRO_RES_RAWHQ: Self = Self::from_be_bytes(b"aprh");
 
+    #[doc(alias = "kCMVideoCodecType_DisparityHEVC")]
     pub const DISPARITY_HEVC: Self = Self::from_be_bytes(b"dish");
+
+    #[doc(alias = "kCMVideoCodecType_DepthHEVC")]
     pub const DEPTH_HEVC: Self = Self::from_be_bytes(b"deph");
 
+    #[doc(alias = "kCMVideoCodecType_AV1")]
     pub const AV1: Self = Self::from_be_bytes(b"av01");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
