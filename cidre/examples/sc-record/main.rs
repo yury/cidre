@@ -179,7 +179,7 @@ impl AudioQueue {
         while let Some(b) = self.queue.pop_front() {
             let samples = b.num_samples() as i32;
             let count = i32::min(samples - offset, left);
-            b.copy_pcm_data_into_audio_buffer_list(
+            b.copy_pcm_data_into_audio_buf_list(
                 offset,
                 count,
                 cursor.offset(out_offset, count as _, &self.input_asbd),

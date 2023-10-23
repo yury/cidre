@@ -385,7 +385,7 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferCopyPCMDataIntoAudioBufferList")]
     #[inline]
-    pub fn copy_pcm_data_into_audio_buffer_list<const N: usize>(
+    pub fn copy_pcm_data_into_audio_buf_list<const N: usize>(
         &self,
         frame_offset: i32,
         num_frames: i32,
@@ -433,8 +433,8 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
     #[inline]
-    pub fn audio_buffer_list<const N: usize>(&self) -> Result<BlockBufAudioBufList<N>, os::Status> {
-        self.audio_buffer_list_in(
+    pub fn audio_buf_list<const N: usize>(&self) -> Result<BlockBufAudioBufList<N>, os::Status> {
+        self.audio_buf_list_in(
             Flags::AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT,
             None,
             None,
@@ -451,7 +451,7 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
     #[inline]
-    pub fn audio_buffer_list_in<const N: usize>(
+    pub fn audio_buf_list_in<const N: usize>(
         &self,
         flags: Flags,
         block_buffer_structure_allocator: Option<&cf::Allocator>,
