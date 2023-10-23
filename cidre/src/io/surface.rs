@@ -1,6 +1,7 @@
 use crate::{arc, cf, define_cf_type, define_options, sys::_types::MachPort};
 
-pub type SurfaceId = u32;
+#[doc(alias = "SurfaceID")]
+pub type SurfId = u32;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
@@ -63,13 +64,13 @@ impl LockOptions {
     pub const AVOID_SYNC: Self = Self(2);
 }
 
-define_cf_type!(Surface(cf::Type));
+define_cf_type!(Surf(cf::Type));
 
-impl Surface {
+impl Surf {
     /// ```
     /// use cidre::io;
     ///
-    /// let type_id = io::Surface::type_id();
+    /// let type_id = io::Surf::type_id();
     ///
     /// assert_ne!(type_id, 0);
     /// ```
@@ -95,7 +96,7 @@ impl Surface {
     ///   ]
     /// ).unwrap();
     ///
-    /// let surf = io::Surface::create(&properties).unwrap();
+    /// let surf = io::Surf::create(&properties).unwrap();
     ///
     /// assert_eq!(100, surf.width());
     /// assert_eq!(200, surf.height());
@@ -107,12 +108,12 @@ impl Surface {
     /// assert!(props.len() >= 1);
     /// ```
     #[inline]
-    pub fn create(properties: &cf::Dictionary) -> Option<arc::R<Surface>> {
+    pub fn create(properties: &cf::Dictionary) -> Option<arc::R<Surf>> {
         unsafe { IOSurfaceCreate(properties) }
     }
 
     #[inline]
-    pub fn id(&self) -> SurfaceId {
+    pub fn id(&self) -> SurfId {
         unsafe { IOSurfaceGetID(self) }
     }
 
@@ -144,12 +145,12 @@ impl Surface {
     /// ```
     /// use cidre::io;
     ///
-    /// let surf = io::Surface::lookup(0);
+    /// let surf = io::Surf::lookup(0);
     ///
     /// assert!(surf.is_none());
     /// ```
     #[inline]
-    pub fn lookup(csid: SurfaceId) -> Option<arc::R<Surface>> {
+    pub fn lookup(csid: SurfId) -> Option<arc::R<Surf>> {
         unsafe { IOSurfaceLookup(csid) }
     }
 
@@ -172,7 +173,7 @@ impl Surface {
     ///
     /// This call does NOT destroy the port.
     #[inline]
-    pub fn from_mach_port(port: MachPort) -> Option<arc::R<Surface>> {
+    pub fn from_mach_port(port: MachPort) -> Option<arc::R<Surf>> {
         unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
@@ -223,33 +224,33 @@ impl Surface {
 
 extern "C" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
-    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<arc::R<Surface>>;
-    fn IOSurfaceLookup(csid: SurfaceId) -> Option<arc::R<Surface>>;
-    fn IOSurfaceGetID(buffer: &Surface) -> SurfaceId;
-    fn IOSurfaceGetWidth(buffer: &Surface) -> usize;
-    fn IOSurfaceGetHeight(buffer: &Surface) -> usize;
-    fn IOSurfaceGetPlaneCount(buffer: &Surface) -> usize;
-    fn IOSurfaceGetWidthOfPlane(buffer: &Surface, plane_index: usize) -> usize;
-    fn IOSurfaceGetHeightOfPlane(buffer: &Surface, plane_index: usize) -> usize;
+    fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<arc::R<Surf>>;
+    fn IOSurfaceLookup(csid: SurfId) -> Option<arc::R<Surf>>;
+    fn IOSurfaceGetID(buffer: &Surf) -> SurfId;
+    fn IOSurfaceGetWidth(buffer: &Surf) -> usize;
+    fn IOSurfaceGetHeight(buffer: &Surf) -> usize;
+    fn IOSurfaceGetPlaneCount(buffer: &Surf) -> usize;
+    fn IOSurfaceGetWidthOfPlane(buffer: &Surf, plane_index: usize) -> usize;
+    fn IOSurfaceGetHeightOfPlane(buffer: &Surf, plane_index: usize) -> usize;
 
     fn IOSurfaceCopyAllValues(
-        buffer: &Surface,
+        buffer: &Surf,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
 
-    fn IOSurfaceCreateMachPort(buffer: &Surface) -> MachPort;
-    fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<arc::R<Surface>>;
+    fn IOSurfaceCreateMachPort(buffer: &Surf) -> MachPort;
+    fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<arc::R<Surf>>;
 
-    fn IOSurfaceIsInUse(buffer: &Surface) -> bool;
-    fn IOSurfaceGetUseCount(buffer: &Surface) -> i32;
-    fn IOSurfaceIncrementUseCount(buffer: &mut Surface);
-    fn IOSurfaceDecrementUseCount(buffer: &mut Surface);
+    fn IOSurfaceIsInUse(buffer: &Surf) -> bool;
+    fn IOSurfaceGetUseCount(buffer: &Surf) -> i32;
+    fn IOSurfaceIncrementUseCount(buffer: &mut Surf);
+    fn IOSurfaceDecrementUseCount(buffer: &mut Surf);
 
-    fn IOSurfaceAllowsPixelSizeCasting(buffer: &Surface) -> bool;
+    fn IOSurfaceAllowsPixelSizeCasting(buffer: &Surf) -> bool;
 
-    fn IOSurfaceGetSeed(buffer: &Surface) -> u32;
-    fn IOSurfaceGetAllocSize(buffer: &Surface) -> usize;
+    fn IOSurfaceGetSeed(buffer: &Surf) -> u32;
+    fn IOSurfaceGetAllocSize(buffer: &Surf) -> usize;
 
-    fn IOSurfaceRemoveAllValues(buffer: &mut Surface);
+    fn IOSurfaceRemoveAllValues(buffer: &mut Surf);
 
 }
 
@@ -428,9 +429,9 @@ mod test {
         )
         .unwrap();
 
-        let surf = io::Surface::create(&properties).unwrap();
+        let surf = io::Surf::create(&properties).unwrap();
         let port = surf.create_mach_port();
-        let surf2 = io::Surface::from_mach_port(port).unwrap();
+        let surf2 = io::Surf::from_mach_port(port).unwrap();
         port.task_self_deallocate();
         assert!(surf.equal(&surf2));
         assert_eq!(false, surf.is_in_use());

@@ -237,10 +237,10 @@ impl Texture {
 
     #[cfg(feature = "io")]
     #[objc::msg_send(iosurface)]
-    pub fn io_surface(&self) -> Option<&io::Surface>;
+    pub fn io_surf(&self) -> Option<&io::Surf>;
 
     #[objc::msg_send(iosurfacePlane)]
-    pub fn io_surface_plane(&self) -> usize;
+    pub fn io_surf_plane(&self) -> usize;
 
     #[objc::msg_send(textureType)]
     pub fn texture_type(&self) -> Type;
@@ -326,10 +326,10 @@ mod tests {
         let t = device.new_texture(&td).unwrap();
 
         assert!(t.parent_texture().is_none());
-        assert!(t.io_surface().is_none());
+        assert!(t.io_surf().is_none());
         assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
-        assert!(t.io_surface().is_none());
-        assert_eq!(t.io_surface_plane(), 0);
+        assert!(t.io_surf().is_none());
+        assert_eq!(t.io_surf_plane(), 0);
 
         let tv = t
             .texture_view_with_pixel_format(mtl::PixelFormat::A8UNorm)

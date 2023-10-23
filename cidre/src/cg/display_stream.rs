@@ -221,7 +221,7 @@ impl DisplayStream {
         handler: &mut blocks::Block<F>,
     ) -> Option<arc::R<DisplayStream>>
     where
-        F: FnMut(FrameStatus, u64, Option<&'ar io::Surface>, Option<&'ar Update>),
+        F: FnMut(FrameStatus, u64, Option<&'ar io::Surf>, Option<&'ar Update>),
     {
         unsafe {
             Self::create(
@@ -250,7 +250,7 @@ impl DisplayStream {
         handler: &mut blocks::Block<F>,
     ) -> Option<arc::R<DisplayStream>>
     where
-        F: FnMut(FrameStatus, u64, Option<&'ar io::Surface>, Option<&'ar Update>),
+        F: FnMut(FrameStatus, u64, Option<&'ar io::Surf>, Option<&'ar Update>),
     {
         unsafe {
             Self::create_with_queue(

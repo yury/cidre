@@ -24,12 +24,12 @@ mod tests {
             cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE.0,
         );
 
-        image_attrs.insert(cv::pixel_buffer::keys::io_surface_properties(), &empty_dict);
+        image_attrs.insert(cv::pixel_buffer::keys::io_surf_props(), &empty_dict);
         image_attrs.insert(
             cv::pixel_buffer::keys::metal_compatability(),
             &cf::Boolean::value_true(),
         );
-        image_attrs.insert(cv::pixel_buffer::keys::pixel_format_type(), &pixel_format);
+        image_attrs.insert(cv::pixel_buffer::keys::pixel_format(), &pixel_format);
 
         let mut session = Session::new::<c_void>(
             1920,

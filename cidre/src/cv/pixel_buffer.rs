@@ -128,30 +128,30 @@ impl PixelBuf {
 
     #[cfg(feature = "io")]
     #[inline]
-    pub fn get_io_surface(&self) -> Option<&io::Surface> {
+    pub fn get_io_surf(&self) -> Option<&io::Surf> {
         unsafe { CVPixelBufferGetIOSurface(self) }
     }
 
     #[cfg(feature = "io")]
     #[inline]
-    pub fn get_io_surface_mut(&mut self) -> Option<&mut io::Surface> {
+    pub fn get_io_surf_mut(&mut self) -> Option<&mut io::Surf> {
         unsafe { std::mem::transmute(CVPixelBufferGetIOSurface(self)) }
     }
 
     #[cfg(feature = "io")]
     #[inline]
-    pub fn with_io_surface(
-        surface: &io::Surface,
+    pub fn with_io_surf(
+        surface: &io::Surf,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
     ) -> Result<arc::R<Self>, cv::Return> {
-        Self::with_io_surface_in(surface, pixel_buffer_attributes, None)
+        Self::with_io_surf_in(surface, pixel_buffer_attributes, None)
     }
 
-    /// Call to create a single cv::PixelBuffer for a passed-in IOSurface.
+    /// Call to create a single cv::PixelBuffer for a passed-in 'io::Surf'.
     #[cfg(feature = "io")]
     #[inline]
-    pub fn with_io_surface_in(
-        surface: &io::Surface,
+    pub fn with_io_surf_in(
+        surface: &io::Surf,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, cv::Return> {
@@ -289,7 +289,7 @@ impl PixelFormat {
 
     #[doc(alias = "CVIsCompressedPixelFormatAvailable")]
     #[inline]
-    pub fn is_compressed_format_avaliable(&self) -> bool {
+    pub fn is_compressed_avaliable(&self) -> bool {
         unsafe { CVIsCompressedPixelFormatAvailable(*self) }
     }
 }
@@ -317,12 +317,12 @@ extern "C" {
         -> cv::Return;
 
     #[cfg(feature = "io")]
-    fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuf) -> Option<&io::Surface>;
+    fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuf) -> Option<&io::Surf>;
 
     #[cfg(feature = "io")]
     fn CVPixelBufferCreateWithIOSurface(
         allocator: Option<&cf::Allocator>,
-        surface: &io::Surface,
+        surface: &io::Surf,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> cv::Return;
@@ -336,7 +336,7 @@ pub mod keys {
     /// A single cf::Number or a cf::Array of cf::Numbers (os::Types)
     #[doc(alias = "kCVPixelBufferPixelFormatTypeKey")]
     #[inline]
-    pub fn pixel_format_type() -> &'static cf::String {
+    pub fn pixel_format() -> &'static cf::String {
         unsafe { kCVPixelBufferPixelFormatTypeKey }
     }
 
@@ -354,7 +354,7 @@ pub mod keys {
 
     #[doc(alias = "kCVPixelBufferIOSurfacePropertiesKey")]
     #[inline]
-    pub fn io_surface_properties() -> &'static cf::String {
+    pub fn io_surf_props() -> &'static cf::String {
         unsafe { kCVPixelBufferIOSurfacePropertiesKey }
     }
 
@@ -400,8 +400,8 @@ mod tests {
 
     #[test]
     fn compressed() {
-        assert!(PixelFormat::LOSSY_420V.is_compressed_format_avaliable());
-        assert!(PixelFormat::LOSSY_420F.is_compressed_format_avaliable());
-        assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_format_avaliable());
+        assert!(PixelFormat::LOSSY_420V.is_compressed_avaliable());
+        assert!(PixelFormat::LOSSY_420F.is_compressed_avaliable());
+        assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_avaliable());
     }
 }

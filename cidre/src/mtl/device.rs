@@ -91,7 +91,7 @@ impl Device {
     pub fn new_texture_with_surface(
         &self,
         descriptor: &mtl::TextureDescriptor,
-        surface: &io::Surface,
+        surface: &io::Surf,
         plane: usize,
     ) -> Option<arc::R<mtl::Texture>>;
 
