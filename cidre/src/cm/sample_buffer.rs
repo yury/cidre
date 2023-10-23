@@ -173,7 +173,7 @@ impl SampleBuf {
     }
 
     #[cfg(feature = "cv")]
-    pub fn create_for_image_buf_in(
+    pub fn with_image_buf_in(
         allocator: Option<&cf::Allocator>,
         image_buf: &cv::ImageBuf,
         data_ready: bool,
@@ -199,7 +199,7 @@ impl SampleBuf {
     }
 
     #[cfg(feature = "cv")]
-    pub fn create_for_image_buf(
+    pub fn with_image_buf(
         image_buffer: &cv::ImageBuf,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
