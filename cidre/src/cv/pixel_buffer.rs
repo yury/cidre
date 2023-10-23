@@ -128,13 +128,13 @@ impl PixelBuf {
 
     #[cfg(feature = "io")]
     #[inline]
-    pub fn get_io_surf(&self) -> Option<&io::Surf> {
+    pub fn io_surf(&self) -> Option<&io::Surf> {
         unsafe { CVPixelBufferGetIOSurface(self) }
     }
 
     #[cfg(feature = "io")]
     #[inline]
-    pub fn get_io_surf_mut(&mut self) -> Option<&mut io::Surf> {
+    pub fn io_surf_mut(&mut self) -> Option<&mut io::Surf> {
         unsafe { std::mem::transmute(CVPixelBufferGetIOSurface(self)) }
     }
 
