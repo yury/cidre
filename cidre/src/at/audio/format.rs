@@ -184,7 +184,7 @@ pub mod asbd_props {
     /// Returns an array of AudioClassDescriptions for all installed decoders for the given format
     pub const DECODERS: Property = Property::from_be_bytes(*b"avde");
 
-    /// The specifier is a u32 format ID.
+    /// The specifier is a u32 'audio::Format'.
     /// The property value is an array of AudioValueRange describing all available bit rates.
     pub const AVAILABLE_ENCODE_BIT_RATES: Property = Property::from_be_bytes(*b"aebr");
 
