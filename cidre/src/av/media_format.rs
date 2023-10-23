@@ -60,6 +60,13 @@ impl MediaType {
         unsafe { AVMediaTypeMuxed }
     }
 
+    /// The media contains haptic content.
+    #[doc(alias = "AVMediaTypeHaptic")]
+    #[inline]
+    pub fn haptic() -> &'static Self {
+        unsafe { AVMediaTypeHaptic }
+    }
+
     #[inline]
     #[cfg(not(target_os = "macos"))]
     pub fn metadata_object() -> &'static Self {
@@ -274,7 +281,8 @@ impl FileType {
     pub fn avci() -> &'static Self {
         unsafe { AVFileTypeAVCI }
     }
-    /// A UTI for the high efficiency image file format containing images compressed with any codec.
+    /// A UTI for the high efficiency image file format containing images compressed
+    /// with any codec.
     ///
     /// The value of this UTI is @"public.heif".
     /// Files are identified with the .heif extension.
@@ -307,6 +315,15 @@ impl FileType {
     #[doc(alias = "AVFileTypeSCC")]
     pub fn scc() -> &'static Self {
         unsafe { AVFileTypeSCC }
+    }
+
+    /// A UTI for the Apple Haptics Audio Pattern file format.
+    ///
+    /// The value of this UTI is @"public.haptics-content".
+    /// Files are identified with the .ahap extension.
+    #[doc(alias = "AVFileTypeAHAP")]
+    pub fn ahap() -> &'static Self {
+        unsafe { AVFileTypeAHAP }
     }
 }
 
@@ -356,6 +373,7 @@ extern "C" {
     static AVFileTypeTIFF: &'static FileType;
     static AVFileTypeAppleiTT: &'static FileType;
     static AVFileTypeSCC: &'static FileType;
+    static AVFileTypeAHAP: &'static FileType;
 
     static AVMediaTypeVideo: &'static MediaType;
     static AVMediaTypeAudio: &'static MediaType;
@@ -365,6 +383,7 @@ extern "C" {
     static AVMediaTypeTimecode: &'static MediaType;
     static AVMediaTypeMetadata: &'static MediaType;
     static AVMediaTypeMuxed: &'static MediaType;
+    static AVMediaTypeHaptic: &'static MediaType;
 
     #[cfg(not(target_os = "macos"))]
     static AVMediaTypeMetadataObject: &'static MediaType;
