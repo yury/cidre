@@ -258,6 +258,8 @@ impl PixelFormat {
         Self(os::Type::from_be_bytes(*b"x420"));
     pub const LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-xv0"));
+
+    pub const LOSSY_PACKED_10_420V: Self = Self::LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
     pub const LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-xv2"));
 
@@ -400,5 +402,6 @@ mod tests {
     fn compressed() {
         assert!(PixelFormat::LOSSY_420V.is_compressed_format_avaliable());
         assert!(PixelFormat::LOSSY_420F.is_compressed_format_avaliable());
+        assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_format_avaliable());
     }
 }
