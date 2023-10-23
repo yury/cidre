@@ -466,6 +466,37 @@ impl Device {
     pub fn show_system_ui(system_ui: SystemUi);
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub struct ColorSpace(isize);
+
+impl ColorSpace {
+    pub const SRGB: Self = Self(0);
+    pub const P3_D65: Self = Self(1);
+    pub const HLG_BT2020: Self = Self(2);
+    pub const APPLE_LOG: Self = Self(3);
+}
+
+/// AVCaptureDeviceColorSpaceSupport
+impl Device {
+    /// Indicates the receiver's current active color space.
+    #[objc::msg_send(activeColorSpace)]
+    pub fn active_color_space(&self) -> ColorSpace;
+
+    /// By default, an 'av::CaptureDevice' attached to an 'av::CaptureSession' is automatically
+    /// configured for wide color by the 'av::CaptureSession'
+    /// (see AVCaptureSession automaticallyConfiguresCaptureDeviceForWideColor).
+    /// You may also set the active_ColorSpace manually. To prevent the AVCaptureSession from
+    /// undoing your work, remember to set AVCaptureSession's automaticallyConfiguresCaptureDeviceForWideColor
+    /// property to NO. Changing the receiver's activeColorSpace while the session is running
+    /// requires a disruptive reconfiguration of the capture render pipeline. Movie captures
+    /// in progress will be ended immediately; unfulfilled photo requests will be aborted;
+    /// video preview will temporarily freeze. -setActiveColorSpace: throws an NSGenericException
+    /// if called without first obtaining exclusive access to the receiver
+    /// using -lockForConfiguration:.
+    #[objc::msg_send(setActiveColorSpace:)]
+    pub unsafe fn set_active_color_space_throws(&mut self, value: ColorSpace);
+}
+
 pub struct ConfigurationLockGuard<'a> {
     device: &'a mut Device,
 }
@@ -496,6 +527,10 @@ impl<'a> ConfigurationLockGuard<'a> {
         value: cg::Rect,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(value) })
+    }
+
+    pub fn set_active_color_space<'ar>(&mut self, value: ColorSpace) {
+        unsafe { self.device.set_active_color_space_throws(value) }
     }
 }
 
@@ -613,6 +648,18 @@ impl Format {
     #[objc::msg_send(maxExposureDuration)]
     pub fn max_exposure_duration(&self) -> cm::Time;
 
+    /// A 'f32' indicating the minimum supported exposure ISO value.
+    ///
+    /// This read-only property indicates the minimum supported exposure ISO value.
+    #[objc::msg_send(minISO)]
+    pub fn min_iso(&self) -> f32;
+
+    /// An 'f32' indicating the maximum supported exposure ISO value.
+    ///
+    /// This read-only property indicates the maximum supported exposure ISO value.
+    #[objc::msg_send(maxISO)]
+    pub fn max_iso(&self) -> f32;
+
     #[objc::msg_send(autoFocusSystem)]
     pub fn auto_focus_system(&self) -> AutoFocusSystem;
 
@@ -722,17 +769,44 @@ extern "C" {
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum VideoStabilizationMode {
+    /// Indicates that video should not be stabilized.
     Off = 0,
+
+    /// Indicates that video should be stabilized using the standard
+    /// video stabilization algorithm introduced with iOS 5.0. Standard video
+    /// stabilization has a reduced field of view. Enabling video stabilization
+    /// may introduce additional latency into the video capture pipeline.
     Standard = 1,
+
+    /// Indicates that video should be stabilized using the cinematic stabilization
+    /// algorithm for more dramatic results. Cinematic video stabilization has a reduced
+    /// field of view compared to standard video stabilization. Enabling cinematic
+    /// video stabilization introduces much more latency into the video capture pipeline
+    /// than standard video stabilization and consumes significantly more system memory.
+    /// Use narrow or identical min and max frame durations in conjunction with this mode.
     Cinematic = 2,
-    CinematicExtended,
+
+    /// Indicates that the video should be stabilized using the extended cinematic
+    /// stabilization algorithm. Enabling extended cinematic stabilization introduces
+    /// longer latency into the video capture pipeline compared to the
+    /// 'av::CaptureVideoStabilizationMode::Cinematic' and consumes more memory, but yields
+    /// improved stability. It is recommended to use identical or similar min and max frame
+    /// durations in conjunction with this mode.
+    CinematicExtended = 3,
+
+    /// Indicates that video should be stabilized using the preview optimized stabilization
+    /// algorithm. Preview stabilization is a low latency and low power algorithm
+    /// which is supported only on connections which either have an associated preview layer
+    /// or have a preview-sized VideoDataOutput.
+    PreviewOptimized = 4,
+
+    /// Indicates that the most appropriate video stabilization mode for the device and
+    /// format should be chosen.
     Auto = -1,
 }
 
 #[cfg(test)]
 mod tests {
-    use std::{thread::sleep, time::Duration};
-
     use crate::{
         av::{
             self, capture,
