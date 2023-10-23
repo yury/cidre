@@ -121,19 +121,23 @@ impl VideoCodecType {
 define_cf_type!(FormatDescription(cf::Type));
 
 impl FormatDescription {
+    #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CMFormatDescriptionGetTypeID() }
     }
 
+    #[inline]
     pub fn media_type(&self) -> MediaType {
         unsafe { CMFormatDescriptionGetMediaType(self) }
     }
 
+    #[inline]
     pub fn media_sub_type(&self) -> FourCharCode {
         unsafe { CMFormatDescriptionGetMediaSubType(self) }
     }
 
-    pub fn extensions(&self) -> Option<&cf::DictionaryOf<cf::String, cf::Type>> {
+    #[inline]
+    pub fn extensions(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
 
@@ -642,7 +646,7 @@ extern "C" {
 
     fn CMFormatDescriptionGetExtensions(
         desc: &FormatDescription,
-    ) -> Option<&cf::DictionaryOf<cf::String, cf::Type>>;
+    ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>>;
     fn CMFormatDescriptionGetExtension<'a>(
         desc: &'a FormatDescription,
         extension_key: &FormatDescriptionExtensionKey,
