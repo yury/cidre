@@ -1,5 +1,7 @@
-pub type ID = u32;
+#[doc(alias = "AudioSessionID")]
+pub type SessionID = u32;
 
+#[doc(alias = "AVAudioSessionErrorCode")]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ErrorCode(pub i64);
