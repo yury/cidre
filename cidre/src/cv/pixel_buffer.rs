@@ -246,8 +246,14 @@ impl PixelFormat {
     pub const _420F: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
     pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-8v0"));
+
+    pub const LOSSY_420V: Self = Self::LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
+
     pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-8f0"));
+
+    pub const LOSSY_420F: Self = Self::LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
+
     pub const _420_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x420"));
     pub const LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
@@ -277,6 +283,12 @@ impl PixelFormat {
     #[inline]
     pub fn to_cf_number(&self) -> arc::R<cf::Number> {
         cf::Number::from_i32(self.0 as _)
+    }
+
+    #[doc(alias = "CVIsCompressedPixelFormatAvailable")]
+    #[inline]
+    pub fn is_compressed_format_avaliable(&self) -> bool {
+        unsafe { CVIsCompressedPixelFormatAvailable(*self) }
     }
 }
 
@@ -312,6 +324,8 @@ extern "C" {
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> cv::Return;
+
+    fn CVIsCompressedPixelFormatAvailable(pixel_format: PixelFormat) -> bool;
 }
 
 pub mod keys {
@@ -375,5 +389,16 @@ pub mod keys {
         static kCVPixelBufferPlaneAlignmentKey: &'static cf::String;
         static kCVPixelBufferExtendedPixelsBottomKey: &'static cf::String;
         static kCVPixelBufferCGImageCompatibilityKey: &'static cf::String;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cv::PixelFormat;
+
+    #[test]
+    fn compressed() {
+        assert!(PixelFormat::LOSSY_420V.is_compressed_format_avaliable());
+        assert!(PixelFormat::LOSSY_420F.is_compressed_format_avaliable());
     }
 }
