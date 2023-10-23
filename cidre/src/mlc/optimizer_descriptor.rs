@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(OptimizerDescriptor(ns::Id));
-impl OptimizerDescriptor {
+define_obj_type!(OptimizerDesc(ns::Id));
+impl OptimizerDesc {
     define_cls!(MLC_OPTIMIZER_DESCRIPTOR);
 
     #[objc::msg_send(learningRate)]
@@ -110,5 +110,5 @@ impl OptimizerDescriptor {
 
 #[link(name = "mlc", kind = "static")]
 extern "C" {
-    static MLC_OPTIMIZER_DESCRIPTOR: &'static objc::Class<OptimizerDescriptor>;
+    static MLC_OPTIMIZER_DESCRIPTOR: &'static objc::Class<OptimizerDesc>;
 }

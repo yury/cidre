@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(ActivationDescriptor(ns::Id));
-impl ActivationDescriptor {
+define_obj_type!(ActivationDesc(ns::Id));
+impl ActivationDesc {
     define_cls!(MLC_ACTIVATION_DESCRIPTOR);
 
     #[objc::msg_send(activationType)]
@@ -61,7 +61,7 @@ impl ActivationDescriptor {
 
 #[link(name = "mlc", kind = "static")]
 extern "C" {
-    static MLC_ACTIVATION_DESCRIPTOR: &'static objc::Class<ActivationDescriptor>;
+    static MLC_ACTIVATION_DESCRIPTOR: &'static objc::Class<ActivationDesc>;
 }
 
 #[cfg(test)]
@@ -70,7 +70,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let desc = mlc::ActivationDescriptor::with_type(mlc::ActivationType::ReLU).unwrap();
+        let desc = mlc::ActivationDesc::with_type(mlc::ActivationType::ReLU).unwrap();
         assert_eq!(desc.a(), 0.0);
         assert_eq!(desc.b(), 1.0);
         assert_eq!(desc.c(), 1.0);

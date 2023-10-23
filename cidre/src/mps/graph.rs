@@ -14,7 +14,7 @@ pub use device::DeviceType;
 
 mod executable;
 pub use executable::Executable;
-pub use executable::ExecutionDescriptor as ExecutableExecutionDescriptor;
+pub use executable::ExecutionDesc as ExecutableExecutionDesc;
 
 mod tensor_data;
 pub use tensor_data::TensorData;
@@ -29,7 +29,7 @@ mod memory_ops;
 pub use memory_ops::VariableOp;
 
 mod convolution_ops;
-pub use convolution_ops::Convolution2DOpDescriptor;
+pub use convolution_ops::Convolution2DOpDesc;
 
 mod resize_ops;
 pub use resize_ops::ResizeMode;

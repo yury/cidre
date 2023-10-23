@@ -20,7 +20,7 @@ pub use types::SampleMode;
 pub use types::SoftmaxOp;
 
 mod tensor_descriptor;
-pub use tensor_descriptor::TensorDescriptor;
+pub use tensor_descriptor::TensorDesc;
 
 mod tensor_data;
 pub use tensor_data::TensorData;
@@ -32,7 +32,7 @@ mod tensor;
 pub use tensor::Tensor;
 
 mod activation_descriptor;
-pub use activation_descriptor::ActivationDescriptor;
+pub use activation_descriptor::ActivationDesc;
 
 mod layer;
 pub use layer::Layer;
@@ -47,7 +47,7 @@ mod batch_normalization_layer;
 pub use batch_normalization_layer::BatchNormalizationLayer;
 
 mod optimizer_descriptor;
-pub use optimizer_descriptor::OptimizerDescriptor;
+pub use optimizer_descriptor::OptimizerDesc;
 
 mod optimizer;
 pub use optimizer::Optimizer;

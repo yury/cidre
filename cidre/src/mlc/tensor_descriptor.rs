@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(TensorDescriptor(ns::Id));
-impl TensorDescriptor {
+define_obj_type!(TensorDesc(ns::Id));
+impl TensorDesc {
     define_cls!(MLC_TENSOR_DESCRIPTOR);
 
     /// The tensor data type.  The default is mlc::DataType::F32.
@@ -170,7 +170,7 @@ impl TensorDescriptor {
 
 #[link(name = "mlc", kind = "static")]
 extern "C" {
-    static MLC_TENSOR_DESCRIPTOR: &'static objc::Class<TensorDescriptor>;
+    static MLC_TENSOR_DESCRIPTOR: &'static objc::Class<TensorDesc>;
 }
 
 #[cfg(test)]
@@ -179,10 +179,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let desc = mlc::TensorDescriptor::with_shape([-1, 2, 3, 4], mlc::DataType::F16).unwrap();
+        let desc = mlc::TensorDesc::with_shape([-1, 2, 3, 4], mlc::DataType::F16).unwrap();
         assert_eq!(4, desc.ndim());
-        assert_eq!(4, mlc::TensorDescriptor::max_ndim());
+        assert_eq!(4, mlc::TensorDesc::max_ndim());
         println!("shape {:?}", desc.shape());
-        println!("max {}", mlc::TensorDescriptor::max_ndim());
+        println!("max {}", mlc::TensorDesc::max_ndim());
     }
 }

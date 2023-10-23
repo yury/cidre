@@ -2,9 +2,9 @@ use std::ffi::c_void;
 
 use crate::{blocks::Block, cf, define_obj_type, mps::graph, ns, objc};
 
-define_obj_type!(ExecutionDescriptor(ns::Id));
+define_obj_type!(ExecutionDesc(ns::Id));
 
-impl ExecutionDescriptor {
+impl ExecutionDesc {
     /// A notification when graph executable execution: has been scheduled
     #[objc::msg_send(scheduledHandler)]
     pub fn scheduled_handler<F>(&self) -> Option<&Block<F>>

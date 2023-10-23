@@ -56,7 +56,7 @@ fn make_conv(
 
     let p = khw.as_i64() as usize / 2;
 
-    let conv_desc = graph::Convolution2DOpDescriptor::with(
+    let conv_desc = graph::Convolution2DOpDesc::with(
         stride,
         stride,
         1,

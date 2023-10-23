@@ -161,7 +161,7 @@ impl GuardFlags {
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(u8)]
-pub enum DescriptorType {
+pub enum DescType {
     Port,
 
     /// Out of line
@@ -171,52 +171,52 @@ pub enum DescriptorType {
     GuardedPort,
 }
 
-impl DescriptorType {
+impl DescType {
     pub const MAX: Self = Self::GuardedPort;
 }
 
 #[repr(C, align(4))]
-pub struct TypeDescriptor {
+pub struct TypeDesc {
     pub pad1: Natural,
     pub pad2: Size,
     pub pad3: [u8; 3],
-    pub type_: DescriptorType,
+    pub type_: DescType,
 }
 
 #[repr(C, align(4))]
-pub struct PortDescriptor {
+pub struct PortDesc {
     pub name: Port,
     pub pad1: Size,
     pub pad2: u16,
     pub disposition: TypeName,
-    pub type_: DescriptorType,
+    pub type_: DescType,
 }
 
 #[repr(C, align(4))]
-pub struct OOLDescriptor32 {
+pub struct OOLDesc32 {
     pub address: u32,
     pub size: Size,
     pub deallocate: Boolean,
     pub pad1: u32,
-    pub type_: DescriptorType,
+    pub type_: DescType,
 }
 
 #[repr(C, align(4))]
-pub struct OOLDescriptor64 {
+pub struct OOLDesc64 {
     pub address: u64,
     pub size: Size,
     pub deallocate: Boolean,
     pub pad1: u32,
-    pub type_: DescriptorType,
+    pub type_: DescType,
 }
 
 #[repr(C, align(4))]
-pub struct OOLDescriptor {
+pub struct OOLDesc {
     pub address: *mut c_void,
     pub deallocate: u8,
     pub copy: CopyOptions,
     pub pad1: u8,
-    pub type_: DescriptorType,
+    pub type_: DescType,
     pub size: Size,
 }
 

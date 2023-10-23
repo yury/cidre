@@ -227,7 +227,7 @@ pub struct Layout1Mut<'a, F> {
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Descriptor1,
+    descriptor: &'static Desc1,
     closure: &'a mut F,
 }
 
@@ -248,13 +248,13 @@ impl<'a, F> std::ops::DerefMut for Layout1Mut<'a, F> {
 }
 
 impl<'a, F> Layout1Mut<'a, F> {
-    const DESCRIPTOR_1: Descriptor1 = Descriptor1 {
+    const DESCRIPTOR_1: Desc1 = Desc1 {
         reserved: 0,
         size: std::mem::size_of::<&'static Class<ns::Id>>()
             + std::mem::size_of::<Flags>()
             + std::mem::size_of::<i32>()
             + std::mem::size_of::<*const c_void>()
-            + std::mem::size_of::<&'static Descriptor1>()
+            + std::mem::size_of::<&'static Desc1>()
             + std::mem::size_of::<&'static c_void>(), // emulating &mut F
     };
 
@@ -313,14 +313,14 @@ impl<'a, F> Layout1Mut<'a, F> {
 }
 
 #[repr(C)]
-pub struct Descriptor1 {
+pub struct Desc1 {
     reserved: usize,
     size: usize,
 }
 
 #[repr(C)]
-pub struct Descriptor2<T: Sized> {
-    descriptor1: Descriptor1,
+pub struct Desc2<T: Sized> {
+    descriptor1: Desc1,
     copy: extern "C" fn(dest: &mut T, src: &mut T),
     dispose: extern "C" fn(liteal: &mut T),
 }
@@ -332,7 +332,7 @@ struct Layout2Once<F: Sized + 'static> {
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Descriptor2<Self>,
+    descriptor: &'static Desc2<Self>,
     closure: Option<F>,
 }
 
@@ -342,7 +342,7 @@ struct Layout2Mut<F: Sized + 'static> {
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Descriptor2<Self>,
+    descriptor: &'static Desc2<Self>,
     closure: mem::ManuallyDrop<F>,
 }
 
@@ -354,7 +354,7 @@ pub struct bl<F: Sized> {
     flags: Flags,
     reserved: i32,
     invoke: F,
-    descriptor: &'static Descriptor1,
+    descriptor: &'static Desc1,
 }
 
 impl<F: Sized> bl<F> {
@@ -453,8 +453,8 @@ impl<F> ops::DerefMut for bl<F> {
 }
 
 impl<F: Sized> Layout2Once<F> {
-    const DESCRIPTOR_2: Descriptor2<Self> = Descriptor2 {
-        descriptor1: Descriptor1 {
+    const DESCRIPTOR_2: Desc2<Self> = Desc2 {
+        descriptor1: Desc1 {
             reserved: 0,
             size: std::mem::size_of::<Self>(),
         },
@@ -558,8 +558,8 @@ impl<F: Sized> Layout2Once<F> {
 }
 
 impl<F: Sized> Layout2Mut<F> {
-    const DESCRIPTOR_2: Descriptor2<Self> = Descriptor2 {
-        descriptor1: Descriptor1 {
+    const DESCRIPTOR_2: Desc2<Self> = Desc2 {
+        descriptor1: Desc1 {
             reserved: 0,
             size: std::mem::size_of::<Self>(),
         },
@@ -641,7 +641,7 @@ impl<F: Sized> Layout2Mut<F> {
 }
 
 impl<F> bl<F> {
-    const DESCRIPTOR: Descriptor1 = Descriptor1 {
+    const DESCRIPTOR: Desc1 = Desc1 {
         reserved: 0,
         size: std::mem::size_of::<Self>(),
     };

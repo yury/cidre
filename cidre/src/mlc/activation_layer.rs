@@ -6,13 +6,13 @@ impl ActivationLayer {
     define_cls!(MLC_ACTIVATION_LAYER);
 
     #[objc::msg_send(descriptor)]
-    pub fn descriptor(&self) -> &mlc::ActivationDescriptor;
+    pub fn descriptor(&self) -> &mlc::ActivationDesc;
 
     #[objc::cls_msg_send(layerWithDescriptor:)]
-    pub fn with_descriptor_ar(desc: &mlc::ActivationDescriptor) -> arc::Rar<Self>;
+    pub fn with_descriptor_ar(desc: &mlc::ActivationDesc) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
-    pub fn with_descriptor(desc: &mlc::ActivationDescriptor) -> arc::R<Self>;
+    pub fn with_descriptor(desc: &mlc::ActivationDesc) -> arc::R<Self>;
 
     #[objc::cls_msg_send(reluLayer)]
     pub fn relu_ar() -> arc::Rar<Self>;

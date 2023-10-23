@@ -110,11 +110,11 @@ pub enum MotionBorderMode {
 }
 
 define_obj_type!(
-    TriangleGeometryDescriptor(GeometryDesc),
+    TriangleGeometryDesc(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR
 );
 
-impl TriangleGeometryDescriptor {
+impl TriangleGeometryDesc {
     #[objc::msg_send(vertexBuffer)]
     pub fn vertex_buf(&self) -> Option<&mtl::Buf>;
 
@@ -197,8 +197,8 @@ impl AccelerationStructure {
 extern "C" {
     static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDesc>;
     static MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR:
-        &'static objc::Class<TriangleGeometryDescriptor>;
+        &'static objc::Class<TriangleGeometryDesc>;
     static MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR:
-        &'static objc::Class<TriangleGeometryDescriptor>;
+        &'static objc::Class<TriangleGeometryDesc>;
 
 }
