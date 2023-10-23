@@ -247,13 +247,14 @@ impl VideoFormatDescription {
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn matches_image_buffer(&self, image_buffer: &cv::ImageBuf) -> bool {
+    pub fn matches_image_buf(&self, image_buffer: &cv::ImageBuf) -> bool {
         unsafe { CMVideoFormatDescriptionMatchesImageBuffer(self, image_buffer) }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreateForImageBuffer")]
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn create_for_image_buffer_in(
+    pub fn with_image_buf_in(
         image_buffer: &cv::ImageBuf,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
@@ -264,25 +265,28 @@ impl VideoFormatDescription {
         }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreateForImageBuffer")]
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn create_for_image_buf(
+    pub fn with_image_buf(
         image_buffer: &cv::ImageBuf,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
-        Self::create_for_image_buffer_in(image_buffer, None)
+        Self::with_image_buf_in(image_buffer, None)
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreateFromH264ParameterSets")]
     #[inline]
-    pub fn create_from_h264_parameter_sets<const N: usize>(
+    pub fn with_h264_parameter_sets<const N: usize>(
         pointers: &[*const u8; N],
         sizes: &[usize; N],
         nal_unit_header_length: i32,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
-        Self::create_from_h264_parameter_sets_in(pointers, sizes, nal_unit_header_length, None)
+        Self::with_h264_parameter_sets_in(pointers, sizes, nal_unit_header_length, None)
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreateFromH264ParameterSets")]
     #[inline]
-    pub fn create_from_h264_parameter_sets_in<const N: usize>(
+    pub fn with_h264_parameter_sets_in<const N: usize>(
         pointers: &[*const u8; N],
         sizes: &[usize; N],
         nal_unit_header_length: i32,
@@ -303,6 +307,7 @@ impl VideoFormatDescription {
         }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreateFromHEVCParameterSets")]
     #[inline]
     pub fn create_from_hevc_parameter_sets(
         count: usize,
@@ -311,7 +316,7 @@ impl VideoFormatDescription {
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
     ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
-        Self::create_from_hevc_parameter_sets_in(
+        Self::with_hevc_parameter_sets_in(
             count,
             pointers,
             sizes,
@@ -321,8 +326,9 @@ impl VideoFormatDescription {
         )
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreateFromHEVCParameterSets")]
     #[inline]
-    pub fn create_from_hevc_parameter_sets_in(
+    pub fn with_hevc_parameter_sets_in(
         count: usize,
         pointers: &[*const u8],
         sizes: &[usize],
@@ -346,6 +352,7 @@ impl VideoFormatDescription {
         }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionGetH264ParameterSetAtIndex")]
     #[inline]
     pub fn h264_parameters_count_and_header_length(&self) -> Result<(usize, i32), os::Status> {
         unsafe {
@@ -364,6 +371,7 @@ impl VideoFormatDescription {
         }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
     #[inline]
     pub unsafe fn hevc_paramater_set_at_index(
         &self,
