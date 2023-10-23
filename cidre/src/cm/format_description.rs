@@ -60,8 +60,27 @@ pub struct VideoCodecType(FourCharCode);
 
 impl VideoCodecType {
     pub const _422_YP_CB_CR_8: Self = Self(PixelFormatType::_422_YP_CB_CR_8.0);
+    pub const JPEG: Self = Self::from_be_bytes(b"jpeg");
     pub const H264: Self = Self::from_be_bytes(b"avc1");
     pub const HEVC: Self = Self::from_be_bytes(b"hvc1");
+    pub const HEVC_WITH_ALPHA: Self = Self::from_be_bytes(b"muxa");
+    pub const DOLBY_VISION_HEVC: Self = Self::from_be_bytes(b"dvh1");
+    pub const VP9: Self = Self::from_be_bytes(b"vp09");
+
+    pub const APPLE_PRO_RES4444_XQ: Self = Self::from_be_bytes(b"ap4x");
+    pub const APPLE_PRO_RES4444: Self = Self::from_be_bytes(b"ap4h");
+    pub const APPLE_PRO_RES422_HQ: Self = Self::from_be_bytes(b"apch");
+    pub const APPLE_PRO_RES422: Self = Self::from_be_bytes(b"apcn");
+    pub const APPLE_PRO_RES422_LT: Self = Self::from_be_bytes(b"apcs");
+    pub const APPLE_PRO_RES422_PROXY: Self = Self::from_be_bytes(b"apco");
+
+    pub const APPLE_PRO_RES_RAW: Self = Self::from_be_bytes(b"aprn");
+    pub const APPLE_PRO_RES_RAWHQ: Self = Self::from_be_bytes(b"aprh");
+
+    pub const DISPARITY_HEVC: Self = Self::from_be_bytes(b"dish");
+    pub const DEPTH_HEVC: Self = Self::from_be_bytes(b"deph");
+
+    pub const AV1: Self = Self::from_be_bytes(b"av01");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
