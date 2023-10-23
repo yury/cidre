@@ -22,15 +22,15 @@ impl FrameCounterInner {
         self.video_counter
     }
 
-    fn handle_audio(&mut self, sample_buffer: &mut cm::SampleBuf) {
+    fn handle_audio(&mut self, sample_buf: &mut cm::SampleBuf) {
         if self.audio_counter == 0 {
-            let format_desc = sample_buffer.format_description().unwrap();
+            let format_desc = sample_buf.format_description().unwrap();
             let sbd = format_desc.stream_basic_description().unwrap();
             println!("{:?}", sbd);
             self.audio_converter = configured_converter(sbd);
         }
 
-        self.audio_queue.enque(sample_buffer);
+        self.audio_queue.enque(sample_buf);
 
         if self.audio_queue.is_ready() {
             let mut data = [0u8; 2000];
@@ -57,13 +57,13 @@ impl FrameCounterInner {
         self.audio_counter += 1;
     }
 
-    fn handle_video(&mut self, sample_buffer: &mut cm::SampleBuf) {
-        let Some(img) = sample_buffer.image_buffer() else {
+    fn handle_video(&mut self, sample_buf: &mut cm::SampleBuf) {
+        let Some(img) = sample_buf.image_buf() else {
             return;
         };
         self.video_counter += 1;
-        let pts = sample_buffer.pts();
-        let dur = sample_buffer.duration();
+        let pts = sample_buf.pts();
+        let dur = sample_buf.duration();
 
         let mut flags = None;
 

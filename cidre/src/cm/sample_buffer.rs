@@ -173,9 +173,9 @@ impl SampleBuf {
     }
 
     #[cfg(feature = "cv")]
-    pub fn create_for_image_buffer_in(
+    pub fn create_for_image_buf_in(
         allocator: Option<&cf::Allocator>,
-        image_buffer: &cv::ImageBuf,
+        image_buf: &cv::ImageBuf,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
@@ -186,7 +186,7 @@ impl SampleBuf {
         unsafe {
             CMSampleBufferCreateForImageBuffer(
                 allocator,
-                image_buffer,
+                image_buf,
                 data_ready,
                 make_data_ready_callback,
                 make_data_ready_refcon,
@@ -199,7 +199,7 @@ impl SampleBuf {
     }
 
     #[cfg(feature = "cv")]
-    pub fn create_for_image_buffer(
+    pub fn create_for_image_buf(
         image_buffer: &cv::ImageBuf,
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
@@ -225,23 +225,23 @@ impl SampleBuf {
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn image_buffer(&self) -> Option<&cv::ImageBuf> {
+    pub fn image_buf(&self) -> Option<&cv::ImageBuf> {
         unsafe { CMSampleBufferGetImageBuffer(self) }
     }
 
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn image_buffer_mut(&mut self) -> Option<&mut cv::ImageBuf> {
+    pub fn image_buf_mut(&mut self) -> Option<&mut cv::ImageBuf> {
         unsafe { std::mem::transmute(CMSampleBufferGetImageBuffer(self)) }
     }
 
     #[inline]
-    pub fn data_buffer(&self) -> Option<&cm::BlockBuf> {
+    pub fn data_buf(&self) -> Option<&cm::BlockBuf> {
         unsafe { CMSampleBufferGetDataBuffer(self) }
     }
 
     #[inline]
-    pub fn set_data_buffer(&mut self, data_buffer: &cm::BlockBuf) -> Result<(), os::Status> {
+    pub fn set_data_buf(&mut self, data_buffer: &cm::BlockBuf) -> Result<(), os::Status> {
         unsafe { CMSampleBufferSetDataBuffer(self, data_buffer).result() }
     }
 

@@ -50,7 +50,7 @@ async fn main() {
 
     let mut count = 0;
     while let Some(buf) = output.copy_next_sample_buffer_throws() {
-        let Some(image) = buf.image_buffer() else {
+        let Some(image) = buf.image_buf() else {
             continue;
         };
         if count % 30 == 0 {
