@@ -381,7 +381,7 @@ pub mod errors {
 #[repr(transparent)]
 pub struct Converter(c_void);
 
-/// Useful link on formats https://tech.ebu.ch/docs/techreview/trev_305-moser.pdf
+/// Useful link on formats <https://tech.ebu.ch/docs/techreview/trev_305-moser.pdf>
 #[repr(transparent)]
 pub struct ConverterRef(NonNull<Converter>);
 

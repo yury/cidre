@@ -345,7 +345,7 @@ impl Number {
     /// assert_eq!(32, num.to_i32().unwrap());
     /// assert_eq!(false, num.is_float_type());
     /// ```
-    /// Will return tagged: see https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html
+    /// Will return tagged: see <https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html>
     #[inline]
     pub fn from_i32(value: i32) -> arc::R<Self> {
         unsafe {

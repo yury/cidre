@@ -285,7 +285,7 @@ impl FormatID {
     pub const MPEG4_AAC_ELD_V2: Self = Self(u32::from_be_bytes(*b"aacg"));
 
     /// MPEG-4 High Efficiency AAC Version 2 audio object, has no flags.    
-    /// note: https://lists.apple.com/archives/coreaudio-api/2011/Mar/msg00176.html
+    /// note: <https://lists.apple.com/archives/coreaudio-api/2011/Mar/msg00176.html>
     /// frames_per_packet should be 2048
     #[doc(alias = "kAudioFormatMPEG4AAC_HE_V2")]
     pub const MPEG4_AAC_HE_V2: Self = Self(u32::from_be_bytes(*b"aacp"));
