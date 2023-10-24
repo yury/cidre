@@ -374,7 +374,7 @@ impl PixelFormat {
 impl PixelFormat {
     /// Lossy-compressed form of `cv::PixelFormat::_32_BGRA`.
     #[doc(alias = "kCVPixelFormatType_Lossy_32BGRA")]
-    pub const LOSSY_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"-GRA"));
+    pub const LOSSY_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"-BGA"));
 
     /// Lossy-compressed form of `cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE`.
     #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr8BiPlanarVideoRange")]
@@ -523,7 +523,7 @@ mod tests {
 
     #[test]
     fn compressed() {
-        assert!(!PixelFormat::LOSSY_32_BGRA.is_compressed_avaliable());
+        assert!(PixelFormat::LOSSY_32_BGRA.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420V.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420F.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_avaliable());
