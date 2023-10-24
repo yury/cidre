@@ -6,7 +6,7 @@ use super::Output;
 pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(captureOutput:didOutputSampleBuffer:fromConnection:)]
-    fn capture_output_did_output_sample_buffer_from_connection(
+    fn capture_output_did_output_sample_buf_from_connection(
         &mut self,
         output: &av::CaptureOutput,
         sample_buffer: &cm::SampleBuf,
@@ -15,7 +15,7 @@ pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
 
     #[objc::optional]
     #[objc::msg_send(captureOutput:didDropSampleBuffer:fromConnection:)]
-    fn capture_output_did_drop_sample_buffer_from_connection(
+    fn capture_output_did_drop_sample_buf_from_connection(
         &mut self,
         output: &av::CaptureOutput,
         sample_buffer: &cm::SampleBuf,
@@ -27,7 +27,7 @@ define_obj_type!(VideoDataOutput(Output), AV_CAPTURE_VIDEO_DATA_OUTPUT);
 
 impl VideoDataOutput {
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
-    pub fn set_sample_buffer_delegate<D: VideoDataOutputSampleBufDelegate>(
+    pub fn set_sample_buf_delegate<D: VideoDataOutputSampleBufDelegate>(
         &mut self,
         delegate: Option<&D>,
         queue: Option<&dispatch::Queue>,
@@ -59,7 +59,7 @@ impl VideoDataOutput {
     /// The formats are listed in an unspecified order. This list can may change if the
     /// activeFormat of the AVCaptureDevice connected to the receiver changes.
     #[objc::msg_send(availableVideoCVPixelFormatTypes)]
-    pub fn available_video_cv_pixel_format_types(&self) -> &ns::Array<ns::Number>;
+    pub fn available_video_cv_pixel_formats(&self) -> &ns::Array<ns::Number>;
 
     /// Indicates the supported video codec formats that can be specified in
     /// setOutputSettingsForConnection:.
@@ -86,7 +86,7 @@ impl VideoDataOutput {
     ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
 
     #[objc::msg_send(recommendedVideoSettingsForVideoCodecType:assetWriterOutputFileType:)]
-    pub fn recommended_video_settings_for_video_codec_type_asset_writer_output_file_type<'a>(
+    pub fn recommended_video_settings_for_video_codec_asset_writer_output_file_type<'a>(
         &'a self,
         codec_type: &av::VideoCodec,
         output_file_type: &av::FileType,
