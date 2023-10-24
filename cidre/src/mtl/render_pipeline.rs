@@ -90,9 +90,9 @@ pub enum TessellationControlPointIndexType {
     U32 = 2,
 }
 
-define_obj_type!(ColorAttachmentDesc(ns::Id));
+define_obj_type!(ColorAttachDesc(ns::Id));
 
-impl ColorAttachmentDesc {
+impl ColorAttachDesc {
     #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> PixelFormat;
 
@@ -207,10 +207,10 @@ impl Desc {
     pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &ColorAttachmentDescArray;
+    pub fn color_attachments(&self) -> &ColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachmentDescArray;
+    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachDescArray;
 
     #[objc::msg_send(rasterSampleCount)]
     pub fn raster_sample_count(&self) -> usize;
@@ -256,20 +256,20 @@ impl State {
     pub fn support_indirect_cmd_bufs(&self) -> bool;
 }
 
-define_obj_type!(ColorAttachmentDescArray(ns::Id));
+define_obj_type!(ColorAttachDescArray(ns::Id));
 
-impl ColorAttachmentDescArray {
+impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> &ColorAttachmentDesc;
+    pub fn get_at(&self, index: usize) -> &ColorAttachDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachmentDesc;
+    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, object: Option<&ColorAttachmentDesc>, index: usize);
+    pub fn set_object_at(&mut self, object: Option<&ColorAttachDesc>, index: usize);
 
     #[inline]
-    pub fn set_at(&mut self, index: usize, value: &ColorAttachmentDesc) {
+    pub fn set_at(&mut self, index: usize, value: &ColorAttachDesc) {
         self.set_object_at(Some(value), index);
     }
 
@@ -279,8 +279,8 @@ impl ColorAttachmentDescArray {
     }
 }
 
-impl Index<usize> for ColorAttachmentDescArray {
-    type Output = ColorAttachmentDesc;
+impl Index<usize> for ColorAttachDescArray {
+    type Output = ColorAttachDesc;
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
@@ -288,16 +288,16 @@ impl Index<usize> for ColorAttachmentDescArray {
     }
 }
 
-impl IndexMut<usize> for ColorAttachmentDescArray {
+impl IndexMut<usize> for ColorAttachDescArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.get_mut_at(index)
     }
 }
 
-define_obj_type!(TileRenderPipelineColorAttachmentDesc(ns::Id));
+define_obj_type!(TileRenderPipelineColorAttachDesc(ns::Id));
 
-impl TileRenderPipelineColorAttachmentDesc {
+impl TileRenderPipelineColorAttachDesc {
     #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> mtl::PixelFormat;
 
@@ -305,18 +305,18 @@ impl TileRenderPipelineColorAttachmentDesc {
     pub fn set_pixel_format(&mut self, value: mtl::PixelFormat);
 }
 
-define_obj_type!(TileRenderPipelineColorAttachmentDescArray(ns::Id));
+define_obj_type!(TileRenderPipelineColorAttachDescArray(ns::Id));
 
-impl TileRenderPipelineColorAttachmentDescArray {
+impl TileRenderPipelineColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at(&self, index: usize) -> &TileRenderPipelineColorAttachmentDesc;
+    pub fn obj_at(&self, index: usize) -> &TileRenderPipelineColorAttachDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at_mut(&mut self, index: usize) -> &mut TileRenderPipelineColorAttachmentDesc;
+    pub fn obj_at_mut(&mut self, index: usize) -> &mut TileRenderPipelineColorAttachDesc;
 }
 
-impl std::ops::Index<usize> for TileRenderPipelineColorAttachmentDescArray {
-    type Output = TileRenderPipelineColorAttachmentDesc;
+impl std::ops::Index<usize> for TileRenderPipelineColorAttachDescArray {
+    type Output = TileRenderPipelineColorAttachDesc;
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
@@ -324,7 +324,7 @@ impl std::ops::Index<usize> for TileRenderPipelineColorAttachmentDescArray {
     }
 }
 
-impl std::ops::IndexMut<usize> for TileRenderPipelineColorAttachmentDescArray {
+impl std::ops::IndexMut<usize> for TileRenderPipelineColorAttachDescArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.obj_at_mut(index)
@@ -360,10 +360,10 @@ impl TileRenderPipelineDesc {
     pub fn set_raster_sample_count(&mut self, value: usize);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &TileRenderPipelineColorAttachmentDescArray;
+    pub fn color_attachments(&self) -> &TileRenderPipelineColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut TileRenderPipelineColorAttachmentDescArray;
+    pub fn color_attachments_mut(&mut self) -> &mut TileRenderPipelineColorAttachDescArray;
 
     #[objc::msg_send(threadgroupSizeMatchesTileSize)]
     pub fn threadgroup_size_matches_tile_size(&self) -> bool;
@@ -510,10 +510,10 @@ impl MeshRenderPipelineDesc {
     pub fn set_max_vertex_amplification_count(&mut self, value: usize);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &mtl::RenderPipelineColorAttachmentDescArray;
+    pub fn color_attachments(&self) -> &mtl::RenderPipelineColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut mtl::RenderPipelineColorAttachmentDescArray;
+    pub fn color_attachments_mut(&mut self) -> &mut mtl::RenderPipelineColorAttachDescArray;
 
     /// The pixel format of the depth attachment of the render pass in which this pipeline will be used.
     /// The default value is mtl::PixelFormat::Invalid; indicating no depth attachment will be used.

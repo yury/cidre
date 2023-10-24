@@ -24,6 +24,7 @@
 
 ### Shortcuts
 
+- attachment -> attach
 - argument -> arg
 - attribute -> attr
 - attributted -> attr

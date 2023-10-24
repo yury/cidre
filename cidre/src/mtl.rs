@@ -123,8 +123,8 @@ pub use command_buffer::Status as CmdBufStatus;
 mod render_pipeline;
 pub use render_pipeline::BlendFactor;
 pub use render_pipeline::BlendOp;
-pub use render_pipeline::ColorAttachmentDesc as RenderPipelineColorAttachmentDesc;
-pub use render_pipeline::ColorAttachmentDescArray as RenderPipelineColorAttachmentDescArray;
+pub use render_pipeline::ColorAttachDesc as RenderPipelineColorAttachDesc;
+pub use render_pipeline::ColorAttachDescArray as RenderPipelineColorAttachDescArray;
 pub use render_pipeline::ColorWriteMask;
 pub use render_pipeline::Desc as RenderPipelineDesc;
 pub use render_pipeline::FnsDesc as RenderPipelineFnsDesc;
@@ -136,8 +136,8 @@ pub use render_pipeline::TessellationControlPointIndexType;
 pub use render_pipeline::TessellationFactorFormat;
 pub use render_pipeline::TessellationFactorStepFn;
 pub use render_pipeline::TessellationPartitionMode;
-pub use render_pipeline::TileRenderPipelineColorAttachmentDesc;
-pub use render_pipeline::TileRenderPipelineColorAttachmentDescArray;
+pub use render_pipeline::TileRenderPipelineColorAttachDesc;
+pub use render_pipeline::TileRenderPipelineColorAttachDescArray;
 pub use render_pipeline::TileRenderPipelineDesc;
 
 mod fence;
@@ -150,8 +150,8 @@ pub use event::SharedEventHandle;
 
 mod blit_pass;
 pub use blit_pass::Desc as BlitPassDesc;
-pub use blit_pass::SampleBufAttachmentDesc as BlitPassSampleBufAttachmentDesc;
-pub use blit_pass::SampleBufAttachmentDescArray as BlitPassSampleBufAttachmentDescArray;
+pub use blit_pass::SampleBufAttachDesc as BlitPassSampleBufAttachmentDesc;
+pub use blit_pass::SampleBufAttachDescArray as BlitPassSampleBufAttachmentDescArray;
 
 mod command_encoder;
 pub use command_encoder::BarrierScope;
@@ -203,21 +203,21 @@ pub use vertex_descriptor::VertexFormat;
 pub use vertex_descriptor::VertexStepFn;
 
 mod render_pass;
-pub use render_pass::AttachmentDesc as RenderPassAttachmentDesc;
+pub use render_pass::AttachDesc as RenderPassAttachmentDesc;
 pub use render_pass::ClearColor;
-pub use render_pass::ColorAttachmentDesc as RenderPassColorAttachmentDesc;
-pub use render_pass::ColorAttachmentDescArray as RenderPassColorAttachmentDescArray;
-pub use render_pass::DepthAttachmentDesc as RenderPassDepthAttachmentDesc;
+pub use render_pass::ColorAttachDesc as RenderPassColorAttachmentDesc;
+pub use render_pass::ColorAttachDescArray as RenderPassColorAttachDescArray;
+pub use render_pass::DepthAttachDesc as RenderPassDepthAttachmentDesc;
 pub use render_pass::Desc as RenderPassDesc;
 pub use render_pass::LoadAction;
-pub use render_pass::StencilAttachmentDesc as RenderPassStencilAttachmentDesc;
+pub use render_pass::StencilAttachDesc as RenderPassStencilAttachmentDesc;
 pub use render_pass::StoreAction;
 pub use render_pass::StoreActionOpts;
 
 mod compute_pass;
 pub use compute_pass::Desc as ComputePassDesc;
-pub use compute_pass::SampleBufAttachmentDesc as ComputePassSampleBufAttachmentDesc;
-pub use compute_pass::SampleBufAttachmentDescArray as ComputePassSampleBufAttachmentDescArray;
+pub use compute_pass::SampleBufAttachDesc as ComputePassSampleBufAttachDesc;
+pub use compute_pass::SampleBufAttachDescArray as ComputePassSampleBufAttachDescArray;
 
 mod counters;
 pub use counters::Counter;

@@ -1,7 +1,7 @@
 use crate::{arc, define_cls_init, define_obj_type, ns, objc};
 
-define_obj_type!(SampleBufAttachmentDesc(ns::Id));
-define_obj_type!(SampleBufAttachmentDescArray(ns::Id));
+define_obj_type!(SampleBufAttachDesc(ns::Id));
+define_obj_type!(SampleBufAttachDescArray(ns::Id));
 
 define_obj_type!(Desc(ns::Id));
 
@@ -11,11 +11,11 @@ define_cls_init!(Desc, MTL_BLIT_PASS_DESCRIPTOR);
 impl Desc {
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attachments(&self) -> &SampleBufAttachmentDescArray;
+    pub fn sample_buf_attachments(&self) -> &SampleBufAttachDescArray;
 
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attachments_mut(&mut self) -> &mut SampleBufAttachmentDescArray;
+    pub fn sample_buf_attachments_mut(&mut self) -> &mut SampleBufAttachDescArray;
 }
 
 #[link(name = "mtl", kind = "static")]
