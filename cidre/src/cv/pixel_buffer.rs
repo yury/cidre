@@ -516,10 +516,12 @@ mod tests {
 
     #[test]
     fn compressed() {
+        assert!(!PixelFormat::LOSSY_32_BGRA.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420V.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420F.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_avaliable());
 
+        assert!(PixelFormat::LOSSLESS_32_BGRA.is_compressed_avaliable());
         assert!(PixelFormat::LOSSLESS_420V.is_compressed_avaliable());
         assert!(PixelFormat::LOSSLESS_420F.is_compressed_avaliable());
         assert!(PixelFormat::LOSSLESS_PACKED_10_420V.is_compressed_avaliable());

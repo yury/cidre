@@ -66,7 +66,16 @@ impl Dictionary {
 
     #[inline]
     pub fn new_in(allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
-        unsafe { CFDictionaryCreate(allocator, std::ptr::null(), std::ptr::null(), 0, None, None) }
+        unsafe {
+            CFDictionaryCreate(
+                allocator,
+                std::ptr::null(),
+                std::ptr::null(),
+                0,
+                KeyCallBacks::default(),
+                ValueCallBacks::default(),
+            )
+        }
     }
 
     /// ```
