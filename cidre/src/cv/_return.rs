@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct Return(i32);
 
@@ -70,5 +70,15 @@ impl From<Return> for Result<(), Return> {
     #[inline]
     fn from(r: Return) -> Self {
         r.result()
+    }
+}
+
+impl std::fmt::Debug for Return {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let help = format!("https://www.osstatus.com?search={}", self.0);
+        f.debug_struct("os::Status")
+            .field("raw", &self.0)
+            .field("help", &help)
+            .finish()
     }
 }

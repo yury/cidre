@@ -147,7 +147,7 @@ impl PixelBuf {
         Self::with_io_surf_in(surface, pixel_buffer_attributes, None)
     }
 
-    /// Call to create a single cv::PixelBuffer for a passed-in 'io::Surf'.
+    /// Call to create a single cv::PixelBuf for a passed-in 'io::Surf'.
     #[cfg(feature = "io")]
     #[inline]
     pub fn with_io_surf_in(
