@@ -505,8 +505,8 @@ pub struct Produced {
 impl audio::ComponentInstanceRef {
     pub fn into_codec(
         mut self,
-        input_format: *const audio::StreamBasicDescription,
-        output_format: *const audio::StreamBasicDescription,
+        input_format: *const audio::StreamBasicDesc,
+        output_format: *const audio::StreamBasicDesc,
         magic_cookie: Option<&[u8]>,
     ) -> Result<CodecRef, os::Status> {
         unsafe {
@@ -712,9 +712,9 @@ impl CodecRef {
     }
 
     #[inline]
-    pub fn current_output_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
-        let mut value = audio::StreamBasicDescription::default();
-        let mut size = std::mem::size_of::<audio::StreamBasicDescription>() as u32;
+    pub fn current_output_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+        let mut value = audio::StreamBasicDesc::default();
+        let mut size = std::mem::size_of::<audio::StreamBasicDesc>() as u32;
         unsafe {
             AudioCodecGetProperty(
                 &self.0,
@@ -728,9 +728,9 @@ impl CodecRef {
     }
 
     #[inline]
-    pub fn current_input_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
-        let mut value = audio::StreamBasicDescription::default();
-        let mut size = std::mem::size_of::<audio::StreamBasicDescription>() as u32;
+    pub fn current_input_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+        let mut value = audio::StreamBasicDesc::default();
+        let mut size = std::mem::size_of::<audio::StreamBasicDesc>() as u32;
         unsafe {
             AudioCodecGetProperty(
                 &self.0,
@@ -782,8 +782,8 @@ impl CodecRef {
 impl Codec {
     pub unsafe fn init_codec(
         &mut self,
-        input_format: *const audio::StreamBasicDescription,
-        output_format: *const audio::StreamBasicDescription,
+        input_format: *const audio::StreamBasicDesc,
+        output_format: *const audio::StreamBasicDesc,
         magic_cookie: Option<&[u8]>,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -961,7 +961,7 @@ impl Codec {
                 channel_layout_tag: audio::ChannelLayoutTag::MONO,
                 channel_bitmap: audio::ChannelBitmap::CENTER,
                 number_channel_descriptions: N as _,
-                channel_descriptions: [audio::ChannelDescription::default(); N],
+                channel_descriptions: [audio::ChannelDesc::default(); N],
             },
         );
         unsafe {
@@ -994,7 +994,7 @@ impl Codec {
                 channel_layout_tag: audio::ChannelLayoutTag::MONO,
                 channel_bitmap: audio::ChannelBitmap::CENTER,
                 number_channel_descriptions: N as _,
-                channel_descriptions: [audio::ChannelDescription::default(); N],
+                channel_descriptions: [audio::ChannelDesc::default(); N],
             },
         );
         unsafe {
@@ -1030,9 +1030,7 @@ impl Codec {
     }
 
     #[inline]
-    pub fn supported_input_formats(
-        &self,
-    ) -> Result<Vec<audio::StreamBasicDescription>, os::Status> {
+    pub fn supported_input_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
         unsafe { self.prop_vec(GlobalPropertyID::SUPPORTED_INPUT_FORMATS.0) }
     }
 
@@ -1105,8 +1103,8 @@ extern "C" {
 
     fn AudioCodecInitialize(
         in_codec: &mut Codec,
-        in_input_format: *const audio::StreamBasicDescription,
-        in_output_format: *const audio::StreamBasicDescription,
+        in_input_format: *const audio::StreamBasicDesc,
+        in_output_format: *const audio::StreamBasicDesc,
         in_magic_cookie: *const u8,
         in_magic_cookie_size: u32,
     ) -> os::Status;
@@ -1177,7 +1175,7 @@ mod tests {
     fn basics() {
         let channels_per_frame = 2;
         let sample_rate = 44_100.0;
-        let src_asbd = audio::StreamBasicDescription {
+        let src_asbd = audio::StreamBasicDesc {
             sample_rate,
             channels_per_frame,
             format: audio::Format::LINEAR_PCM,
@@ -1189,7 +1187,7 @@ mod tests {
             ..Default::default()
         };
 
-        let dst_asbd = audio::StreamBasicDescription {
+        let dst_asbd = audio::StreamBasicDesc {
             sample_rate,
             channels_per_frame,
             format: audio::Format::MPEG4_AAC,
@@ -1198,7 +1196,7 @@ mod tests {
             ..Default::default()
         };
 
-        let desc = audio::ComponentDescription {
+        let desc = audio::ComponentDesc {
             type_: audio::ENCODER_COMPONENT_TYPE,
             sub_type: u32::from_be_bytes(*b"aac "),
             ..Default::default()
@@ -1241,7 +1239,7 @@ mod tests {
     fn codec_init() {
         let sample_rate = 48000.0;
         let channels_per_frame = 2;
-        let src_asbd = audio::StreamBasicDescription {
+        let src_asbd = audio::StreamBasicDesc {
             sample_rate,
             format: audio::Format(1819304813),
             // format: audio::FormatID::LINEAR_PCM,
@@ -1255,7 +1253,7 @@ mod tests {
             reserved: 0,
         };
 
-        let src_asbd2 = audio::StreamBasicDescription {
+        let src_asbd2 = audio::StreamBasicDesc {
             sample_rate,
             channels_per_frame,
             format: audio::Format::LINEAR_PCM,
@@ -1274,7 +1272,7 @@ mod tests {
             "
         );
 
-        let dst_asbd = audio::StreamBasicDescription {
+        let dst_asbd = audio::StreamBasicDesc {
             sample_rate,
             channels_per_frame,
             format: audio::Format::MPEG4_AAC,
@@ -1283,7 +1281,7 @@ mod tests {
             ..Default::default()
         };
 
-        let desc = audio::ComponentDescription {
+        let desc = audio::ComponentDesc {
             type_: audio::ENCODER_COMPONENT_TYPE,
             sub_type: u32::from_be_bytes(*b"aac "),
             ..Default::default()

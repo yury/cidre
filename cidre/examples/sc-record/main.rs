@@ -25,7 +25,7 @@ impl FrameCounterInner {
     fn handle_audio(&mut self, sample_buf: &mut cm::SampleBuf) {
         if self.audio_counter == 0 {
             let format_desc = sample_buf.format_description().unwrap();
-            let sbd = format_desc.stream_basic_description().unwrap();
+            let sbd = format_desc.stream_basic_desc().unwrap();
             println!("{:?}", sbd);
             self.audio_converter = configured_converter(sbd);
         }
@@ -98,7 +98,7 @@ impl OutputImpl for FrameCounter {
 }
 
 fn default_converter() -> at::AudioConverterRef {
-    let output_asbd = at::audio::StreamBasicDescription {
+    let output_asbd = at::audio::StreamBasicDesc {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
@@ -112,7 +112,7 @@ fn default_converter() -> at::AudioConverterRef {
         bits_per_channel: 0,
         reserved: 0,
     };
-    let input_asbd = at::audio::StreamBasicDescription {
+    let input_asbd = at::audio::StreamBasicDesc {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
@@ -131,9 +131,9 @@ fn default_converter() -> at::AudioConverterRef {
     at::AudioConverterRef::with_formats(&input_asbd, &output_asbd).unwrap()
 }
 
-fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::AudioConverterRef {
+fn configured_converter(input_asbd: &at::audio::StreamBasicDesc) -> at::AudioConverterRef {
     // https://www.youtube.com/watch?v=yArrLvMYng8
-    let output_asbd = at::audio::StreamBasicDescription {
+    let output_asbd = at::audio::StreamBasicDesc {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,
@@ -154,7 +154,7 @@ fn configured_converter(input_asbd: &at::audio::StreamBasicDescription) -> at::A
 struct AudioQueue {
     queue: VecDeque<arc::R<cm::SampleBuf>>,
     last_buffer_offset: i32,
-    input_asbd: at::audio::StreamBasicDescription,
+    input_asbd: at::audio::StreamBasicDesc,
 }
 
 impl AudioQueue {
@@ -222,14 +222,14 @@ extern "C" fn convert_audio(
 
 struct RecordContext {
     frames_count: usize,
-    format_desc: Option<arc::R<cm::VideoFormatDescription>>,
+    format_desc: Option<arc::R<cm::VideoFormatDesc>>,
 }
 
 impl RecordContext {
     pub fn handle_sample_buffer(&mut self, buffer: &cm::SampleBuf) {
         if self.frames_count % 1000 == 0 {
             if self.format_desc.is_none() {
-                let desc = buffer.format_description().unwrap() as &cm::VideoFormatDescription;
+                let desc = buffer.format_description().unwrap() as &cm::VideoFormatDesc;
 
                 // let buf = desc
                 //     .as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family()))
@@ -350,7 +350,7 @@ async fn main() {
     let windows = ns::Array::new();
     let filter = sc::ContentFilter::with_display_excluding_windows(display, &windows);
     let stream = sc::Stream::new(&filter, &cfg);
-    let input_asbd = at::audio::StreamBasicDescription {
+    let input_asbd = at::audio::StreamBasicDesc {
         //sample_rate: 32_000.0,
         // sample_rate: 44_100.0,
         sample_rate: 48_000.0,

@@ -131,8 +131,8 @@ pub use timer::Timer;
 
 mod file_manager;
 pub use file_manager::DirectoryEnumerationOptions;
-pub use file_manager::FileAttributeKey;
-pub use file_manager::FileAttributeType;
+pub use file_manager::FileAttrKey;
+pub use file_manager::FileAttrType;
 pub use file_manager::FileManager;
 pub use file_manager::FileProtectionType;
 pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;

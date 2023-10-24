@@ -22,7 +22,7 @@ impl arc::A<WriterInput> {
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-        source_format_hint: Option<&cm::FormatDescription>,
+        source_format_hint: Option<&cm::FormatDesc>,
     ) -> arc::R<WriterInput>;
 }
 
@@ -48,7 +48,7 @@ impl WriterInput {
     pub fn with_media_type_output_settings_source_format_hint_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-        source_format_hint: Option<&cm::FormatDescription>,
+        source_format_hint: Option<&cm::FormatDesc>,
     ) -> arc::R<WriterInput> {
         Self::alloc().with_media_type_output_settings_source_format_hint_throws(
             media_type,
@@ -60,7 +60,7 @@ impl WriterInput {
     pub fn with_media_type_output_settings_source_format_hint<'ar>(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-        source_format_hint: Option<&cm::FormatDescription>,
+        source_format_hint: Option<&cm::FormatDesc>,
     ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
         ns::try_catch(|| {
             Self::with_media_type_output_settings_source_format_hint_throws(
@@ -73,7 +73,7 @@ impl WriterInput {
 
     pub fn with_media_type_format_hint_throws(
         media_type: &MediaType,
-        source_format_hint: &cm::FormatDescription,
+        source_format_hint: &cm::FormatDesc,
     ) -> arc::R<WriterInput> {
         Self::alloc().with_media_type_output_settings_source_format_hint_throws(
             media_type,

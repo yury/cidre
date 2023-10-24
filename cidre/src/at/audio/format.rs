@@ -75,7 +75,7 @@ pub struct BalanceFade<const N: usize> {
 #[doc(alias = "AudioFormatInfo")]
 #[repr(C)]
 pub struct FormatInfo {
-    pub asbd: audio::StreamBasicDescription,
+    pub asbd: audio::StreamBasicDesc,
     pub magic_cookie: NonNull<c_void>,
     pub magic_cookie_size: u32,
 }
@@ -84,10 +84,10 @@ pub struct FormatInfo {
 #[doc(alias = "ExtendedAudioFormatInfo")]
 #[repr(C)]
 pub struct ExtendedFormatInfo {
-    pub asbd: audio::StreamBasicDescription,
+    pub asbd: audio::StreamBasicDesc,
     pub magic_cookie: *const c_void,
     pub magic_cookie_size: u32,
-    pub class_description: audio::ClassDescription,
+    pub class_description: audio::ClassDesc,
 }
 
 pub mod asbd_props {
@@ -347,14 +347,14 @@ impl Property {
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let mut asbd = audio::StreamBasicDescription {
+    /// let mut asbd = audio::StreamBasicDesc {
     ///     format: audio::Format::LINEAR_PCM,
     ///     ..Default::default()
     /// };
     /// audio::FormatProperty::format_info(&mut asbd).unwrap();
     ///
     /// ```
-    pub fn format_info(asbd: &mut audio::StreamBasicDescription) -> Result<(), os::Status> {
+    pub fn format_info(asbd: &mut audio::StreamBasicDesc) -> Result<(), os::Status> {
         unsafe { asbd_props::FORMAT_INFO.fill(asbd) }
     }
 
@@ -365,11 +365,11 @@ impl Property {
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
-    pub fn encoders(format: audio::Format) -> Result<Vec<audio::ClassDescription>, os::Status> {
+    pub fn encoders(format: audio::Format) -> Result<Vec<audio::ClassDesc>, os::Status> {
         unsafe { asbd_props::ENCODERS.get_vec_with(&format) }
     }
 
-    pub fn decoders(format: audio::Format) -> Result<Vec<audio::ClassDescription>, os::Status> {
+    pub fn decoders(format: audio::Format) -> Result<Vec<audio::ClassDesc>, os::Status> {
         unsafe { asbd_props::DECODERS.get_vec_with(&format) }
     }
 

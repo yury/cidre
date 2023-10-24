@@ -615,7 +615,7 @@ impl Format {
     pub fn media_type(&self) -> &av::MediaType;
 
     #[objc::msg_send(formatDescription)]
-    pub fn format_description(&self) -> &cm::FormatDescription;
+    pub fn format_description(&self) -> &cm::FormatDesc;
 
     #[objc::msg_send(videoSupportedFrameRateRanges)]
     pub fn video_supported_frame_rate_ranges(&self) -> &ns::Array<FrameRateRange>;

@@ -209,7 +209,7 @@ impl FileID {
     pub fn create(
         url: &cf::URL,
         type_id: FileTypeID,
-        format: &audio::StreamBasicDescription,
+        format: &audio::StreamBasicDesc,
         flags: Flags,
     ) -> Result<Self, os::Status> {
         let mut result = None;
@@ -404,15 +404,12 @@ impl FileID {
     }
 
     #[inline]
-    pub fn data_format(&self) -> Result<audio::StreamBasicDescription, os::Status> {
+    pub fn data_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
         self.prop(PropertyID::DATA_FORMAT)
     }
 
     #[inline]
-    pub fn set_data_format(
-        &mut self,
-        asbd: &audio::StreamBasicDescription,
-    ) -> Result<(), os::Status> {
+    pub fn set_data_format(&mut self, asbd: &audio::StreamBasicDesc) -> Result<(), os::Status> {
         self.set_prop(PropertyID::DATA_FORMAT, asbd)
     }
 
@@ -664,7 +661,7 @@ extern "C" {
     fn AudioFileCreateWithURL(
         in_file_url: &cf::URL,
         in_file_type: FileTypeID,
-        in_format: &audio::StreamBasicDescription,
+        in_format: &audio::StreamBasicDesc,
         in_flags: Flags,
         out_audio_file: &mut Option<FileID>,
     ) -> os::Status;
@@ -728,7 +725,7 @@ mod tests {
     fn basics() {
         let path = cf::URL::from_str("file:///tmp/m4a.m4a").unwrap();
 
-        let asbd = audio::StreamBasicDescription {
+        let asbd = audio::StreamBasicDesc {
             format: audio::Format::MPEG4_AAC,
             format_flags: audio::FormatFlags::ALL_CLEAR,
             frames_per_packet: 1024,
@@ -775,10 +772,7 @@ mod tests {
             .property_info(audio::FilePropertyID::DATA_FORMAT)
             .unwrap();
 
-        assert_eq!(
-            size as usize,
-            std::mem::size_of::<audio::StreamBasicDescription>()
-        );
+        assert_eq!(size as usize, std::mem::size_of::<audio::StreamBasicDesc>());
         assert_eq!(writable, true);
 
         let file_asbd = file.data_format().unwrap();

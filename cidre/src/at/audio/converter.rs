@@ -449,16 +449,16 @@ impl ConverterRef {
     /// # Safety
     /// use `with_formats`
     pub unsafe fn new(
-        src_format: &audio::StreamBasicDescription,
-        dst_format: &audio::StreamBasicDescription,
+        src_format: &audio::StreamBasicDesc,
+        dst_format: &audio::StreamBasicDesc,
         out_audio_converer: &mut Option<Self>,
     ) -> os::Status {
         AudioConverterNew(src_format, dst_format, out_audio_converer)
     }
 
     pub fn with_formats(
-        src_fmt: &audio::StreamBasicDescription,
-        dst_fmt: &audio::StreamBasicDescription,
+        src_fmt: &audio::StreamBasicDesc,
+        dst_fmt: &audio::StreamBasicDesc,
     ) -> Result<Self, os::Status> {
         unsafe {
             let mut out_converter = None;
@@ -606,16 +606,12 @@ impl Converter {
     }
 
     #[inline]
-    pub fn current_output_stream_description(
-        &self,
-    ) -> Result<audio::StreamBasicDescription, os::Status> {
+    pub fn current_output_stream_description(&self) -> Result<audio::StreamBasicDesc, os::Status> {
         unsafe { self.prop(PropertyID::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
-    pub fn current_input_stream_description(
-        &self,
-    ) -> Result<audio::StreamBasicDescription, os::Status> {
+    pub fn current_input_stream_description(&self) -> Result<audio::StreamBasicDesc, os::Status> {
         unsafe { self.prop(PropertyID::CURRENT_INPUT_STREAM_DESCRIPTION) }
     }
 
@@ -800,8 +796,8 @@ pub struct PropertyInfo {
 #[link(name = "AudioToolbox", kind = "framework")]
 extern "C" {
     fn AudioConverterNew(
-        in_source_format: &audio::StreamBasicDescription,
-        in_destination_format: &audio::StreamBasicDescription,
+        in_source_format: &audio::StreamBasicDesc,
+        in_destination_format: &audio::StreamBasicDesc,
         out_audio_converer: &mut Option<ConverterRef>,
     ) -> os::Status;
 

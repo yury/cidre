@@ -90,8 +90,8 @@ fn writer_and_input(
     assert!(reader.start_reading());
     let buf = output.copy_next_sample_buffer_throws().unwrap();
     let fd = buf.format_description().unwrap();
-    let src_asbd = fd.stream_basic_description().unwrap();
-    let desc = cm::AudioFormatDescription::with_asbd(&src_asbd).unwrap();
+    let src_asbd = fd.stream_basic_desc().unwrap();
+    let desc = cm::AudioFormatDesc::with_asbd(&src_asbd).unwrap();
 
     let settings = if file_type == av::FileType::m4a() {
         ns::Dictionary::with_keys_values(

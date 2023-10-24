@@ -5,7 +5,7 @@ use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescriptionCallBack = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
+pub type CopyDescCallBack = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
 pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 
 #[repr(C)]
@@ -13,7 +13,7 @@ pub struct Callbacks {
     version: Index,
     retain: RetainCallBack,
     release: ReleaseCallBack,
-    copy_description: CopyDescriptionCallBack,
+    copy_description: CopyDescCallBack,
     equal: EqualCallBack,
 }
 

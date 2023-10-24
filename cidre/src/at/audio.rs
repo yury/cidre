@@ -23,7 +23,7 @@ mod component;
 pub use component::Component;
 pub use component::ComponentInstance;
 pub use component::ComponentInstanceRef;
-pub use component::Description as ComponentDescription;
+pub use component::Desc as ComponentDesc;
 pub use component::Flags as ComponentFlags;
 pub use component::InstantiationOptions as ComponentInstantiationOptions;
 

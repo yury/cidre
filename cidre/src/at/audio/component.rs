@@ -68,7 +68,7 @@ impl InstantiationOptions {
 ///
 #[derive(Default, Debug)]
 #[repr(C, align(4))]
-pub struct Description {
+pub struct Desc {
     /// A 4-char code identifying the generic type of an audio component.
     /// `aenc` for example
     pub type_: os::Type,
@@ -88,14 +88,14 @@ pub struct Description {
     pub flags_mask: u32,
 }
 
-impl Description {
+impl Desc {
     #[doc(alias = "AudioComponentCount")]
     pub fn components_count(&self) -> u32 {
         unsafe { AudioComponentCount(self) }
     }
 }
 
-impl IntoIterator for Description {
+impl IntoIterator for Desc {
     type Item = &'static Component;
 
     type IntoIter = Iter;
@@ -109,7 +109,7 @@ impl IntoIterator for Description {
 }
 
 pub struct Iter {
-    desc: Description,
+    desc: Desc,
     component: Option<&'static Component>,
 }
 
@@ -163,8 +163,8 @@ impl Component {
     }
 
     #[inline]
-    pub fn description(&self) -> Result<Description, os::Status> {
-        let mut desc = Description::default();
+    pub fn description(&self) -> Result<Desc, os::Status> {
+        let mut desc = Desc::default();
         unsafe {
             let res = AudioComponentGetDescription(self, &mut desc);
             if res.is_ok() {
@@ -204,20 +204,17 @@ impl Component {
 extern "C" {
     fn AudioComponentFindNext(
         in_component: Option<&Component>,
-        in_desc: &Description,
+        in_desc: &Desc,
     ) -> Option<&'static Component>;
 
-    fn AudioComponentCount(in_desc: &Description) -> u32;
+    fn AudioComponentCount(in_desc: &Desc) -> u32;
 
     fn AudioComponentCopyName(
         in_component: &Component,
         out_name: &mut Option<arc::R<cf::String>>,
     ) -> os::Status;
 
-    fn AudioComponentGetDescription(
-        component: &Component,
-        out_desc: &mut Description,
-    ) -> os::Status;
+    fn AudioComponentGetDescription(component: &Component, out_desc: &mut Desc) -> os::Status;
 
     fn AudioComponentGetVersion(component: &Component, out_version: &mut u32) -> os::Status;
 
@@ -237,7 +234,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let desc = audio::ComponentDescription {
+        let desc = audio::ComponentDesc {
             // type_: u32::from_be_bytes(*b"aenc"),
             // sub_type: u32::from_be_bytes(*b"aac "),
             ..Default::default()
@@ -257,7 +254,7 @@ mod tests {
 
     #[test]
     fn aac() {
-        let desc = audio::ComponentDescription {
+        let desc = audio::ComponentDesc {
             type_: u32::from_be_bytes(*b"aenc"),
             sub_type: u32::from_be_bytes(*b"aac "),
             ..Default::default()

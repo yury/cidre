@@ -38,7 +38,7 @@ define_cf_type!(Session(vt::Session));
 
 impl Session {
     pub fn new<O, F>(
-        video_format_description: &cm::VideoFormatDescription,
+        video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCallbackRecord<O, F>>,
@@ -61,7 +61,7 @@ impl Session {
     /// Use safe new
     pub unsafe fn create_in(
         allocator: Option<&cf::Allocator>,
-        video_format_description: &cm::VideoFormatDescription,
+        video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCallbackRecord<c_void, c_void>>,
@@ -137,10 +137,7 @@ impl Session {
     }
 
     #[inline]
-    pub fn can_accept_format_description(
-        &self,
-        format_description: &cm::FormatDescription,
-    ) -> bool {
+    pub fn can_accept_format_description(&self, format_description: &cm::FormatDesc) -> bool {
         unsafe { VTDecompressionSessionCanAcceptFormatDescription(self, format_description) }
     }
 
@@ -173,7 +170,7 @@ extern "C" {
 
     fn VTDecompressionSessionCreate(
         allocator: Option<&cf::Allocator>,
-        video_format_description: &cm::VideoFormatDescription,
+        video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCallbackRecord<c_void, c_void>>,
@@ -195,7 +192,7 @@ extern "C" {
 
     fn VTDecompressionSessionCanAcceptFormatDescription(
         session: &Session,
-        new_fromat: &cm::FormatDescription,
+        new_fromat: &cm::FormatDesc,
     ) -> bool;
 
     fn VTDecompressionSessionCopyBlackPixelBuffer(
@@ -218,7 +215,7 @@ mod tests {
 
     #[test]
     fn create_decompression_session() {
-        let _desc = cm::VideoFormatDescription::video(VideoCodec::HEVC, 1920, 1080, None).unwrap();
+        let _desc = cm::VideoFormatDesc::video(VideoCodec::HEVC, 1920, 1080, None).unwrap();
 
         struct Context {}
 

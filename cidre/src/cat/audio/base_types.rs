@@ -117,7 +117,7 @@ impl<'a, const N: usize> BufListCursor<'a, N> {
         &mut self,
         frame_offset: usize,
         frame_count: usize,
-        asbd: &StreamBasicDescription,
+        asbd: &StreamBasicDesc,
     ) -> &mut BufList<N> {
         for (i, buf) in self.list.as_mut_slice().iter_mut().enumerate().take(N) {
             buf.data_bytes_size = (asbd.bytes_per_packet as usize * frame_count) as _;
@@ -530,7 +530,7 @@ impl std::fmt::Display for FormatFlags {
 ///
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
-pub struct StreamBasicDescription {
+pub struct StreamBasicDesc {
     /// The number of sample frames per second of the data in the stream.
     pub sample_rate: f64,
     /// The AudioFormat indicating the general kind of data in the stream.
@@ -551,7 +551,7 @@ pub struct StreamBasicDescription {
     pub reserved: u32,
 }
 
-impl StreamBasicDescription {
+impl StreamBasicDesc {
     #[inline]
     pub fn is_native_endian(&self) -> bool {
         self.format == Format::LINEAR_PCM
@@ -689,7 +689,7 @@ impl TimeStampFlags {
 /// This structure is used to describe codecs installed on the system.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
-pub struct ClassDescription {
+pub struct ClassDesc {
     /// The four char code codec type.
     pub ty: os::Type,
     /// The four char code codec subtype.
@@ -1395,7 +1395,7 @@ impl ChannelLayoutTag {
 /// This structure describes a single channel.
 #[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
-pub struct ChannelDescription {
+pub struct ChannelDesc {
     /// The AudioChannelLabel that describes the channel.
     pub channel_label: ChannelLabel,
 
@@ -1412,13 +1412,13 @@ pub struct ChannelLayout<const N: usize> {
     pub channel_layout_tag: ChannelLayoutTag,
     pub channel_bitmap: ChannelBitmap,
     pub number_channel_descriptions: u32,
-    pub channel_descriptions: [ChannelDescription; N],
+    pub channel_descriptions: [ChannelDesc; N],
 }
 
 #[derive(Debug)]
 #[repr(C)]
 pub struct FormatListItem {
-    pub asbd: StreamBasicDescription,
+    pub asbd: StreamBasicDesc,
     pub channel_layout_tag: ChannelLayoutTag,
 }
 

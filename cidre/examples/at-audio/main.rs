@@ -57,7 +57,7 @@ struct Context {
     packet: isize,
     buffer: Vec<u8>,
     file: audio::FileID,
-    asbd: audio::StreamBasicDescription,
+    asbd: audio::StreamBasicDesc,
     max_packet_size: u32,
     uses_packet_descriptions: bool,
     packet_descriptions: Vec<audio::StreamPacketDescription>,
@@ -132,7 +132,7 @@ fn encode(args: &EncodeArgs) {
 
     // Create the dst file as AAC of the same sampling rate and number of channels as
     // the input.
-    let dst_asbd = audio::StreamBasicDescription {
+    let dst_asbd = audio::StreamBasicDesc {
         sample_rate: src_asbd.sample_rate,
         channels_per_frame: src_asbd.channels_per_frame,
         format: audio::Format::MPEG4_AAC,
@@ -263,7 +263,7 @@ fn decode(args: &DecodeArgs) {
     let src_uses_packet_descriptions =
         src_asbd.bytes_per_packet == 0 || src_asbd.frames_per_packet == 0;
 
-    let dst_asbd = audio::StreamBasicDescription {
+    let dst_asbd = audio::StreamBasicDesc {
         sample_rate: src_asbd.sample_rate,
         channels_per_frame: src_asbd.channels_per_frame,
         format: audio::Format::LINEAR_PCM,

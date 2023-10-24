@@ -3,14 +3,14 @@ pub use base::ItemCount;
 pub use base::ItemIndex;
 
 mod format_description;
-pub use format_description::AudioFormatDescription;
-pub use format_description::FormatDescription;
-pub use format_description::FormatDescriptionExtensionKey;
+pub use format_description::AudioFormatDesc;
+pub use format_description::FormatDesc;
+pub use format_description::FormatDescExtensionKey;
 pub use format_description::MediaType;
 pub use format_description::PixelFormat;
 pub use format_description::VideoCodec;
 pub use format_description::VideoDimensions;
-pub use format_description::VideoFormatDescription;
+pub use format_description::VideoFormatDesc;
 
 mod format_description_bridge;
 pub use format_description_bridge::errors as format_description_bridge_errors;

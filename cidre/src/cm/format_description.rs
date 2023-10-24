@@ -125,9 +125,9 @@ impl VideoCodec {
     }
 }
 
-define_cf_type!(FormatDescription(cf::Type));
+define_cf_type!(FormatDesc(cf::Type));
 
-impl FormatDescription {
+impl FormatDesc {
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CMFormatDescriptionGetTypeID() }
@@ -148,10 +148,7 @@ impl FormatDescription {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
 
-    pub fn extension<'a>(
-        &'a self,
-        key: &FormatDescriptionExtensionKey,
-    ) -> Option<&'a cf::PropertyList> {
+    pub fn extension<'a>(&'a self, key: &FormatDescExtensionKey) -> Option<&'a cf::PropertyList> {
         unsafe { CMFormatDescriptionGetExtension(self, key) }
     }
 
@@ -159,14 +156,14 @@ impl FormatDescription {
         &self,
     ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
-            let key = FormatDescriptionExtensionKey::original_compression_settings();
+            let key = FormatDescExtensionKey::original_compression_settings();
             transmute(self.extension(key))
         }
     }
 
     pub fn extension_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
-            let key = FormatDescriptionExtensionKey::sample_description_extension_atoms();
+            let key = FormatDescExtensionKey::sample_description_extension_atoms();
             transmute(self.extension(key))
         }
     }
@@ -199,14 +196,14 @@ impl FormatDescription {
 
     pub fn verbatim_sample_description(&self) -> Option<&cf::Data> {
         unsafe {
-            let key = FormatDescriptionExtensionKey::verbatim_sample_description();
+            let key = FormatDescExtensionKey::verbatim_sample_desc();
             transmute(self.extension(key))
         }
     }
 
     pub fn verbatim_iso_sample_entry(&self) -> Option<&cf::Data> {
         unsafe {
-            let key = FormatDescriptionExtensionKey::verbatim_iso_sample_entry();
+            let key = FormatDescExtensionKey::verbatim_iso_sample_entry();
             transmute(self.extension(key))
         }
     }
@@ -215,7 +212,7 @@ impl FormatDescription {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<arc::R<FormatDescription>>,
+        format_description_out: &mut Option<arc::R<FormatDesc>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         unsafe {
@@ -232,7 +229,7 @@ impl FormatDescription {
     /// ```
     /// use cidre::{cm, mac_types::FourCharCode};
     ///
-    /// let desc = cm::FormatDescription::new(
+    /// let desc = cm::FormatDesc::new(
     ///     cm::MediaType::VIDEO,
     ///     FourCharCode::from_be_bytes(*b"avc1"),
     ///     None
@@ -255,13 +252,13 @@ impl FormatDescription {
     }
 }
 
-pub type VideoFormatDescription = FormatDescription;
+pub type VideoFormatDesc = FormatDesc;
 
-impl VideoFormatDescription {
+impl VideoFormatDesc {
     /// ```
     /// use cidre::cm;
     ///
-    /// let desc = cm::VideoFormatDescription::video(cm::VideoCodec::H264, 1920, 1080, None).unwrap();
+    /// let desc = cm::VideoFormatDesc::video(cm::VideoCodec::H264, 1920, 1080, None).unwrap();
     /// ```
     pub fn video(
         codec_type: VideoCodec,
@@ -286,7 +283,7 @@ impl VideoFormatDescription {
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<arc::R<VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
         allocator: Option<&Allocator>,
     ) -> os::Status {
         unsafe {
@@ -318,7 +315,7 @@ impl VideoFormatDescription {
     pub fn with_image_buf_in(
         image_buffer: &cv::ImageBuf,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         let mut result = None;
         unsafe {
             CMVideoFormatDescriptionCreateForImageBuffer(allocator, &image_buffer, &mut result)
@@ -331,7 +328,7 @@ impl VideoFormatDescription {
     #[inline]
     pub fn with_image_buf(
         image_buffer: &cv::ImageBuf,
-    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         Self::with_image_buf_in(image_buffer, None)
     }
 
@@ -341,7 +338,7 @@ impl VideoFormatDescription {
         pointers: &[*const u8; N],
         sizes: &[usize; N],
         nal_unit_header_length: i32,
-    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         Self::with_h264_parameter_sets_in(pointers, sizes, nal_unit_header_length, None)
     }
 
@@ -352,7 +349,7 @@ impl VideoFormatDescription {
         sizes: &[usize; N],
         nal_unit_header_length: i32,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         let mut result = None;
 
         unsafe {
@@ -376,7 +373,7 @@ impl VideoFormatDescription {
         sizes: &[usize],
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         Self::with_hevc_parameter_sets_in(
             count,
             pointers,
@@ -396,7 +393,7 @@ impl VideoFormatDescription {
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<VideoFormatDescription>, os::Status> {
+    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         let mut result = None;
 
         unsafe {
@@ -518,13 +515,11 @@ impl VideoFormatDescription {
     }
 }
 
-pub type AudioFormatDescription = FormatDescription;
+pub type AudioFormatDesc = FormatDesc;
 
 #[cfg(feature = "cat")]
-impl AudioFormatDescription {
-    pub fn with_asbd(
-        asbd: &cat::audio::StreamBasicDescription,
-    ) -> Result<arc::R<Self>, os::Status> {
+impl AudioFormatDesc {
+    pub fn with_asbd(asbd: &cat::audio::StreamBasicDesc) -> Result<arc::R<Self>, os::Status> {
         let mut res = None;
         unsafe {
             Self::audio_in(asbd, 0, None, 0, None, None, &mut res, None).to_result_unchecked(res)
@@ -532,7 +527,7 @@ impl AudioFormatDescription {
     }
 
     pub fn audio_in(
-        asbd: &cat::audio::StreamBasicDescription,
+        asbd: &cat::audio::StreamBasicDesc,
         layout_size: usize,
         layout: Option<&cat::AudioChannelLayout<1>>,
         magic_cookie_size: usize,
@@ -558,14 +553,14 @@ impl AudioFormatDescription {
     /// Returns a read-only pointer to the audio stream description in an audio format description.
     ///
     /// This API is specific to audio format descriptions, and returns `None` if used with a non-audio format descriptions.
-    pub fn stream_basic_description(&self) -> Option<&cat::audio::StreamBasicDescription> {
+    pub fn stream_basic_desc(&self) -> Option<&cat::audio::StreamBasicDesc> {
         unsafe { CMAudioFormatDescriptionGetStreamBasicDescription(self) }
     }
 }
 
-define_cf_type!(FormatDescriptionExtensionKey(cf::String));
+define_cf_type!(FormatDescExtensionKey(cf::String));
 
-impl FormatDescriptionExtensionKey {
+impl FormatDescExtensionKey {
     /// This extension contains a media-type-specific dictionary of settings used to produce a compressed media buffer.
     ///
     /// This extension is valid for format descriptions of all media types, but the contents of the dictionary are defined
@@ -601,7 +596,7 @@ impl FormatDescriptionExtensionKey {
     /// delete this extension from the clone, or your modifications could be lost.
     ///
     /// cf::Data
-    pub fn verbatim_sample_description() -> &'static Self {
+    pub fn verbatim_sample_desc() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_VerbatimSampleDescription }
     }
 
@@ -622,16 +617,14 @@ impl FormatDescriptionExtensionKey {
 
 extern "C" {
     static kCMFormatDescriptionExtension_OriginalCompressionSettings:
-        &'static FormatDescriptionExtensionKey;
+        &'static FormatDescExtensionKey;
     static kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms:
-        &'static FormatDescriptionExtensionKey;
-    static kCMFormatDescriptionExtension_VerbatimSampleDescription:
-        &'static FormatDescriptionExtensionKey;
-    static kCMFormatDescriptionExtension_VerbatimISOSampleEntry:
-        &'static FormatDescriptionExtensionKey;
+        &'static FormatDescExtensionKey;
+    static kCMFormatDescriptionExtension_VerbatimSampleDescription: &'static FormatDescExtensionKey;
+    static kCMFormatDescriptionExtension_VerbatimISOSampleEntry: &'static FormatDescExtensionKey;
 
     fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
-    fn CMFormatDescriptionGetMediaType(desc: &FormatDescription) -> MediaType;
+    fn CMFormatDescriptionGetMediaType(desc: &FormatDesc) -> MediaType;
 
     fn CMVideoFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
@@ -639,58 +632,56 @@ extern "C" {
         width: i32,
         height: i32,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<arc::R<VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
     ) -> os::Status;
 
-    fn CMVideoFormatDescriptionGetDimensions(
-        video_desc: &VideoFormatDescription,
-    ) -> VideoDimensions;
+    fn CMVideoFormatDescriptionGetDimensions(video_desc: &VideoFormatDesc) -> VideoDimensions;
 
     #[cfg(feature = "cv")]
     fn CMVideoFormatDescriptionMatchesImageBuffer(
-        video_desc: &VideoFormatDescription,
+        video_desc: &VideoFormatDesc,
         image_buffer: &cv::ImageBuf,
     ) -> bool;
 
-    fn CMFormatDescriptionGetMediaSubType(desc: &FormatDescription) -> FourCharCode;
+    fn CMFormatDescriptionGetMediaSubType(desc: &FormatDesc) -> FourCharCode;
 
     fn CMFormatDescriptionGetExtensions(
-        desc: &FormatDescription,
+        desc: &FormatDesc,
     ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>>;
     fn CMFormatDescriptionGetExtension<'a>(
-        desc: &'a FormatDescription,
-        extension_key: &FormatDescriptionExtensionKey,
+        desc: &'a FormatDesc,
+        extension_key: &FormatDescExtensionKey,
     ) -> Option<&'a cf::PropertyList>;
 
     #[cfg(feature = "cat")]
     fn CMAudioFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
-        asbd: &cat::audio::StreamBasicDescription,
+        asbd: &cat::audio::StreamBasicDesc,
         layout_size: usize,
         layout: Option<&cat::AudioChannelLayout<1>>,
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<arc::R<AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<AudioFormatDesc>>,
     ) -> os::Status;
 
     #[cfg(feature = "cat")]
     fn CMAudioFormatDescriptionGetStreamBasicDescription(
-        desc: &AudioFormatDescription,
-    ) -> Option<&cat::audio::StreamBasicDescription>;
+        desc: &AudioFormatDesc,
+    ) -> Option<&cat::audio::StreamBasicDesc>;
 
     fn CMFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::Dictionary>,
-        format_description_out: &mut Option<arc::R<FormatDescription>>,
+        format_description_out: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateForImageBuffer(
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuf,
-        format_description: &mut Option<arc::R<FormatDescription>>,
+        format_description: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromH264ParameterSets(
@@ -699,7 +690,7 @@ extern "C" {
         parameter_set_pointers: *const *const u8,
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
-        format_description: &mut Option<arc::R<FormatDescription>>,
+        format_description: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromHEVCParameterSets(
@@ -709,11 +700,11 @@ extern "C" {
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
         extensions: Option<&cf::Dictionary>,
-        format_description: &mut Option<arc::R<FormatDescription>>,
+        format_description: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
-        video_desc: &VideoFormatDescription,
+        video_desc: &VideoFormatDesc,
         parameter_set_index: usize,
         parameter_set_pointer_out: *mut *const u8,
         parameter_set_size_out: *mut usize,
@@ -722,7 +713,7 @@ extern "C" {
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
-        video_desc: &VideoFormatDescription,
+        video_desc: &VideoFormatDesc,
         parameter_set_index: usize,
         parameter_set_pointer_out: *mut *const u8,
         parameter_set_size_out: *mut usize,

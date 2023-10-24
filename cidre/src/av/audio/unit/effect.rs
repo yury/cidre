@@ -4,19 +4,17 @@ define_obj_type!(Effect(audio::Unit));
 
 impl arc::A<Effect> {
     #[objc::msg_send(initWithAudioComponentDescription:)]
-    pub fn init_with_audio_component_description(
+    pub fn init_with_audio_component_desc(
         self,
-        description: at::audio::ComponentDescription,
+        description: at::audio::ComponentDesc,
     ) -> arc::R<Effect>;
 }
 
 impl Effect {
     define_cls!(AV_AUDIO_UNIT_EFFECT);
 
-    pub fn with_component_description(
-        description: at::audio::ComponentDescription,
-    ) -> arc::R<Self> {
-        Self::alloc().init_with_audio_component_description(description)
+    pub fn with_component_description(description: at::audio::ComponentDesc) -> arc::R<Self> {
+        Self::alloc().init_with_audio_component_desc(description)
     }
 
     #[objc::msg_send(bypass)]

@@ -118,7 +118,7 @@ impl SampleBuf {
     pub fn new(
         data_buf: Option<&cm::BlockBuf>,
         data_ready: bool,
-        format_description: Option<&cm::FormatDescription>,
+        format_description: Option<&cm::FormatDesc>,
     ) -> Result<arc::R<SampleBuf>, os::Status> {
         let mut sample_buf_out = None;
 
@@ -148,7 +148,7 @@ impl SampleBuf {
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
-        format_description: Option<&cm::FormatDescription>,
+        format_description: Option<&cm::FormatDesc>,
         num_samples: cm::ItemCount,
         num_samples_timing_entries: cm::ItemCount,
         sample_timing_array: *const SampleTimingInfo,
@@ -179,7 +179,7 @@ impl SampleBuf {
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
-        format_description: &cm::FormatDescription,
+        format_description: &cm::FormatDesc,
         sample_timing: &SampleTimingInfo,
     ) -> Result<arc::R<SampleBuf>, os::Status> {
         let mut result = None;
@@ -204,7 +204,7 @@ impl SampleBuf {
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
-        format_description: &cm::FormatDescription,
+        format_description: &cm::FormatDesc,
         sample_timing: &SampleTimingInfo,
     ) -> Result<arc::R<SampleBuf>, os::Status> {
         let mut result = None;
@@ -299,7 +299,7 @@ impl SampleBuf {
     }
 
     #[inline]
-    pub fn format_description(&self) -> Option<&cm::FormatDescription> {
+    pub fn format_description(&self) -> Option<&cm::FormatDesc> {
         unsafe { CMSampleBufferGetFormatDescription(self) }
     }
 
@@ -516,7 +516,7 @@ extern "C" {
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
-        format_description: Option<&super::FormatDescription>,
+        format_description: Option<&super::FormatDesc>,
         num_samples: cm::ItemCount,
         num_samples_timing_entries: cm::ItemCount,
         sample_timing_array: *const SampleTimingInfo,
@@ -532,7 +532,7 @@ extern "C" {
         data_ready: bool,
         make_data_ready_callback: Option<&SampleBufMakeDataReadyCallback>,
         make_data_ready_refcon: *const c_void,
-        format_description: &cm::VideoFormatDescription,
+        format_description: &cm::VideoFormatDesc,
         sample_timing: &SampleTimingInfo,
         sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
     ) -> crate::os::Status;
@@ -551,7 +551,7 @@ extern "C" {
     fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, value: cm::Time);
     fn CMSampleBufferGetSampleSize(sbuf: &SampleBuf, sample_index: cm::ItemIndex) -> usize;
     fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuf) -> usize;
-    fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuf) -> Option<&cm::FormatDescription>;
+    fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuf) -> Option<&cm::FormatDesc>;
     fn CMSampleBufferGetSampleAttachmentsArray(
         sbuf: &SampleBuf,
         create_if_necessary: bool,

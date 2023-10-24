@@ -55,7 +55,7 @@ impl ImageDescriptionFlavor {
     }
 }
 
-impl cm::VideoFormatDescription {
+impl cm::VideoFormatDesc {
     /// Copies the contents of a cm::VideoFormatDescription to a cm::BlockBuffer in big-endian byte ordering.
     pub fn as_be_image_desc_cm_buffer_in(
         &self,
@@ -201,7 +201,7 @@ impl SoundDescriptionFlavor {
     }
 }
 
-impl cm::AudioFormatDescription {
+impl cm::AudioFormatDesc {
     /// Copies the contents of a CMAudioFormatDescription to a CMBlockBuffer in big-endian byte ordering.
     ///
     /// Note that the dataRefIndex field of the SampleDescription is intentionally filled with
@@ -297,7 +297,7 @@ extern "C" {
 
     fn CMVideoFormatDescriptionCopyAsBigEndianImageDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
-        video_format_description: &cm::VideoFormatDescription,
+        video_format_description: &cm::VideoFormatDesc,
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescriptionFlavor>,
         block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
@@ -308,7 +308,7 @@ extern "C" {
         image_description_block_buffer: &cm::BlockBuf,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescriptionFlavor>,
-        format_description_out: &mut Option<arc::R<cm::VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::VideoFormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
@@ -317,7 +317,7 @@ extern "C" {
         size: usize,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescriptionFlavor>,
-        format_description_out: &mut Option<arc::R<cm::VideoFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::VideoFormatDesc>>,
     ) -> os::Status;
 
     fn CMSwapBigEndianImageDescriptionToHost(
@@ -342,7 +342,7 @@ extern "C" {
 
     fn CMAudioFormatDescriptionCopyAsBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
-        audio_format_description: &cm::AudioFormatDescription,
+        audio_format_description: &cm::AudioFormatDesc,
         flavor: Option<&SoundDescriptionFlavor>,
         block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
@@ -352,13 +352,13 @@ extern "C" {
         sound_description_data: *const u8,
         size: usize,
         flavor: Option<&SoundDescriptionFlavor>,
-        format_description_out: &mut Option<arc::R<cm::AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::AudioFormatDesc>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
         block_buffer: &cm::BlockBuf,
         flavor: Option<&SoundDescriptionFlavor>,
-        format_description_out: &mut Option<arc::R<cm::AudioFormatDescription>>,
+        format_description_out: &mut Option<arc::R<cm::AudioFormatDesc>>,
     ) -> os::Status;
 }

@@ -36,7 +36,7 @@ pub use array::ArrayMut;
 pub use array::ArrayOf;
 pub use array::ArrayOfMut;
 pub use array::Callbacks as ArrayCallbacks;
-pub use array::CopyDescriptionCallBack as ArrayCopyDescriptionCallBack;
+pub use array::CopyDescCallBack as ArrayCopyDescCallBack;
 pub use array::EqualCallBack as ArrayEqualCallBack;
 pub use array::ReleaseCallBack as ArrayReleaseCallBack;
 pub use array::RetainCallBack as ArrayRetainCallBack;

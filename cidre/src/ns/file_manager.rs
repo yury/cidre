@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, define_options, ns, objc, os};
 
-define_obj_type!(FileAttributeKey(ns::String));
-define_obj_type!(FileAttributeType(ns::String));
+define_obj_type!(FileAttrKey(ns::String));
+define_obj_type!(FileAttrType(ns::String));
 define_obj_type!(FileProtectionType(ns::String));
 
 define_options!(VolumeEnumerationOptions(usize));
@@ -139,7 +139,7 @@ impl FileManager {
         &self,
         url: &ns::URL,
         create_intermediates: bool,
-        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+        attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
@@ -147,7 +147,7 @@ impl FileManager {
         &self,
         url: &ns::URL,
         create_intermediates: bool,
-        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+        attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
         if self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error) {
@@ -162,7 +162,7 @@ impl FileManager {
         &self,
         path: &ns::String,
         create_intermediates: bool,
-        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+        attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
@@ -171,7 +171,7 @@ impl FileManager {
         &self,
         path: &ns::String,
         create_intermediates: bool,
-        attributes: Option<&ns::Dictionary<ns::FileAttributeKey, ns::Id>>,
+        attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
         if self.create_dir_at_path_err(path, create_intermediates, attributes, &mut error) {
@@ -301,42 +301,42 @@ extern "C" {
     static NSFileProtectionCompleteUnlessOpen: &'static ns::FileProtectionType;
     static NSFileProtectionCompleteUntilFirstUserAuthentication: &'static ns::FileProtectionType;
 
-    static NSFileSystemSize: &'static ns::FileAttributeKey;
-    static NSFileSystemFreeSize: &'static ns::FileAttributeKey;
-    static NSFileSystemNodes: &'static ns::FileAttributeKey;
-    static NSFileSystemFreeNodes: &'static ns::FileAttributeKey;
-    static NSFileType: &'static ns::FileAttributeKey;
-    static NSFileProtectionKey: &'static ns::FileAttributeKey;
+    static NSFileSystemSize: &'static ns::FileAttrKey;
+    static NSFileSystemFreeSize: &'static ns::FileAttrKey;
+    static NSFileSystemNodes: &'static ns::FileAttrKey;
+    static NSFileSystemFreeNodes: &'static ns::FileAttrKey;
+    static NSFileType: &'static ns::FileAttrKey;
+    static NSFileProtectionKey: &'static ns::FileAttrKey;
 
-    static NSFileSize: &'static ns::FileAttributeKey;
-    static NSFileModificationDate: &'static ns::FileAttributeKey;
-    static NSFileReferenceCount: &'static ns::FileAttributeKey;
-    static NSFileDeviceIdentifier: &'static ns::FileAttributeKey;
-    static NSFileOwnerAccountName: &'static ns::FileAttributeKey;
-    static NSFileGroupOwnerAccountName: &'static ns::FileAttributeKey;
-    static NSFilePosixPermissions: &'static ns::FileAttributeKey;
-    static NSFileSystemNumber: &'static ns::FileAttributeKey;
-    static NSFileSystemFileNumber: &'static ns::FileAttributeKey;
-    static NSFileExtensionHidden: &'static ns::FileAttributeKey;
-    static NSFileHFSCreatorCode: &'static ns::FileAttributeKey;
-    static NSFileHFSTypeCode: &'static ns::FileAttributeKey;
-    static NSFileImmutable: &'static ns::FileAttributeKey;
-    static NSFileAppendOnly: &'static ns::FileAttributeKey;
-    static NSFileCreationDate: &'static ns::FileAttributeKey;
-    static NSFileOwnerAccountID: &'static ns::FileAttributeKey;
-    static NSFileGroupOwnerAccountID: &'static ns::FileAttributeKey;
-    static NSFileBusy: &'static ns::FileAttributeKey;
+    static NSFileSize: &'static ns::FileAttrKey;
+    static NSFileModificationDate: &'static ns::FileAttrKey;
+    static NSFileReferenceCount: &'static ns::FileAttrKey;
+    static NSFileDeviceIdentifier: &'static ns::FileAttrKey;
+    static NSFileOwnerAccountName: &'static ns::FileAttrKey;
+    static NSFileGroupOwnerAccountName: &'static ns::FileAttrKey;
+    static NSFilePosixPermissions: &'static ns::FileAttrKey;
+    static NSFileSystemNumber: &'static ns::FileAttrKey;
+    static NSFileSystemFileNumber: &'static ns::FileAttrKey;
+    static NSFileExtensionHidden: &'static ns::FileAttrKey;
+    static NSFileHFSCreatorCode: &'static ns::FileAttrKey;
+    static NSFileHFSTypeCode: &'static ns::FileAttrKey;
+    static NSFileImmutable: &'static ns::FileAttrKey;
+    static NSFileAppendOnly: &'static ns::FileAttrKey;
+    static NSFileCreationDate: &'static ns::FileAttrKey;
+    static NSFileOwnerAccountID: &'static ns::FileAttrKey;
+    static NSFileGroupOwnerAccountID: &'static ns::FileAttrKey;
+    static NSFileBusy: &'static ns::FileAttrKey;
 
-    static NSFileTypeDirectory: &'static ns::FileAttributeType;
-    static NSFileTypeRegular: &'static ns::FileAttributeType;
-    static NSFileTypeSymbolicLink: &'static ns::FileAttributeType;
-    static NSFileTypeSocket: &'static ns::FileAttributeType;
-    static NSFileTypeCharacterSpecial: &'static ns::FileAttributeType;
-    static NSFileTypeBlockSpecial: &'static ns::FileAttributeType;
-    static NSFileTypeUnknown: &'static ns::FileAttributeType;
+    static NSFileTypeDirectory: &'static ns::FileAttrType;
+    static NSFileTypeRegular: &'static ns::FileAttrType;
+    static NSFileTypeSymbolicLink: &'static ns::FileAttrType;
+    static NSFileTypeSocket: &'static ns::FileAttrType;
+    static NSFileTypeCharacterSpecial: &'static ns::FileAttrType;
+    static NSFileTypeBlockSpecial: &'static ns::FileAttrType;
+    static NSFileTypeUnknown: &'static ns::FileAttrType;
 }
 
-impl FileAttributeKey {
+impl FileAttrKey {
     #[inline]
     pub fn file_type() -> &'static Self {
         unsafe { NSFileType }
@@ -456,7 +456,7 @@ impl FileAttributeKey {
     }
 }
 
-impl FileAttributeType {
+impl FileAttrType {
     #[inline]
     pub fn directory() -> &'static Self {
         unsafe { NSFileTypeDirectory }

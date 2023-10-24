@@ -4,9 +4,9 @@ define_obj_type!(TimeEffect(audio::Unit));
 
 impl arc::A<TimeEffect> {
     #[objc::msg_send(initWithAudioComponentDescription:)]
-    pub fn init_with_audio_component_description(
+    pub fn init_with_audio_component_desc(
         self,
-        description: at::audio::ComponentDescription,
+        description: at::audio::ComponentDesc,
     ) -> arc::R<TimeEffect>;
 }
 
@@ -26,10 +26,8 @@ impl TimeEffect {
     #[objc::msg_send(setBypass:)]
     pub fn set_bypass(&mut self, value: bool);
 
-    pub fn with_component_description(
-        description: at::audio::ComponentDescription,
-    ) -> arc::R<Self> {
-        Self::alloc().init_with_audio_component_description(description)
+    pub fn with_component_description(description: at::audio::ComponentDesc) -> arc::R<Self> {
+        Self::alloc().init_with_audio_component_desc(description)
     }
 }
 

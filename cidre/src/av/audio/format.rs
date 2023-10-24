@@ -1,4 +1,4 @@
-use crate::{arc, at::audio::StreamBasicDescription, define_cls, define_obj_type, ns, objc};
+use crate::{arc, at::audio::StreamBasicDesc, define_cls, define_obj_type, ns, objc};
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
@@ -25,15 +25,12 @@ define_obj_type!(Format(ns::Id));
 
 impl arc::A<Format> {
     #[objc::msg_send(initWithStreamDescription:)]
-    pub fn init_with_stream_description(
-        self,
-        asbd: &StreamBasicDescription,
-    ) -> Option<arc::R<Format>>;
+    pub fn init_with_stream_description(self, asbd: &StreamBasicDesc) -> Option<arc::R<Format>>;
 
     #[objc::msg_send(initWithStreamDescription:channelLayout:)]
     pub fn init_with_stream_description_channel_layout(
         self,
-        asbd: &StreamBasicDescription,
+        asbd: &StreamBasicDesc,
         layout: Option<&ChannelLayout>,
     ) -> Option<arc::R<Format>>;
 
@@ -76,13 +73,13 @@ impl Format {
     define_cls!(AV_AUDIO_FORMAT);
 
     /// If the format specifies more than 2 channels, this method fails (returns None).
-    pub fn with_asbd(asbd: &StreamBasicDescription) -> Option<arc::R<Self>> {
+    pub fn with_asbd(asbd: &StreamBasicDesc) -> Option<arc::R<Self>> {
         Self::alloc().init_with_stream_description(asbd)
     }
 
     /// the channel layout. Can be None only if asbd specifies 1 or 2 channels.
     pub fn with_asbd_and_channel_layout(
-        asbd: &StreamBasicDescription,
+        asbd: &StreamBasicDesc,
         layout: Option<&ChannelLayout>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_stream_description_channel_layout(asbd, layout)
@@ -141,7 +138,7 @@ impl Format {
     pub fn channel_count(&self) -> ChannelCount;
 
     #[objc::msg_send(streamDescription)]
-    pub fn absd(&self) -> &StreamBasicDescription;
+    pub fn absd(&self) -> &StreamBasicDesc;
 
     #[objc::msg_send(channelLayout)]
     pub fn channel_layout(&self) -> Option<&ChannelLayout>;
