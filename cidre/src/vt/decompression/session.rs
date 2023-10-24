@@ -137,7 +137,7 @@ impl Session {
     }
 
     #[inline]
-    pub fn can_accept_format_description(&self, format_description: &cm::FormatDesc) -> bool {
+    pub fn can_accept_format_desc(&self, format_description: &cm::FormatDesc) -> bool {
         unsafe { VTDecompressionSessionCanAcceptFormatDescription(self, format_description) }
     }
 
