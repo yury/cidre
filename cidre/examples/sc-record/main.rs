@@ -206,7 +206,7 @@ extern "C" fn convert_audio(
     _converter: &at::AudioConverter,
     _io_number_data_packets: &mut u32,
     io_data: &mut at::audio::BufList,
-    _out_data_packet_descriptions: *mut *mut at::audio::StreamPacketDescription,
+    _out_data_packet_descriptions: *mut *mut at::audio::StreamPacketDesc,
     in_user_data: *mut AudioQueue,
 ) -> os::Status {
     let q: &mut AudioQueue = unsafe { &mut *in_user_data };

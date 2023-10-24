@@ -25,9 +25,9 @@ pub mod errors {
     pub const INVALID_SLICE: Status = Status(-12719);
 }
 
-define_cf_type!(ImageDescriptionFlavor(cf::String));
+define_cf_type!(ImageDescFlavor(cf::String));
 
-impl ImageDescriptionFlavor {
+impl ImageDescFlavor {
     /// Chooses the QuickTime Movie Image Description format.
     ///
     /// Passing None is equivalent to passing this constant.
@@ -60,7 +60,7 @@ impl cm::VideoFormatDesc {
     pub fn as_be_image_desc_cm_buffer_in(
         &self,
         string_encoding: cf::StringEncoding,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
         unsafe {
@@ -78,7 +78,7 @@ impl cm::VideoFormatDesc {
 
     pub fn as_be_image_desc_cm_buffer(
         &self,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
     ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
         Self::as_be_image_desc_cm_buffer_in(
             self,
@@ -91,7 +91,7 @@ impl cm::VideoFormatDesc {
     pub fn from_be_image_desc_buffer_in(
         image_description_block_buffer: &cm::BlockBuf,
         string_encoding: cf::StringEncoding,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
@@ -109,7 +109,7 @@ impl cm::VideoFormatDesc {
 
     pub fn from_be_image_desc_buffer(
         image_description_block_buffer: &cm::BlockBuf,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
     ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_image_desc_buffer_in(
             image_description_block_buffer,
@@ -122,7 +122,7 @@ impl cm::VideoFormatDesc {
     pub fn from_be_image_desc_data_in(
         data: &[u8],
         string_encoding: cf::StringEncoding,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
@@ -142,7 +142,7 @@ impl cm::VideoFormatDesc {
     pub fn from_be_image_desc_data(
         data: &[u8],
         string_encoding: cf::StringEncoding,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
     ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_image_desc_data_in(data, string_encoding, flavor, None)
     }
@@ -172,9 +172,9 @@ pub fn swap_host_sound_desc_to_be(desc: &mut [u8]) -> os::Status {
     unsafe { CMSwapHostEndianSoundDescriptionToBig(desc.as_mut_ptr(), desc.len()) }
 }
 
-define_cf_type!(SoundDescriptionFlavor(cf::String));
+define_cf_type!(SoundDescFlavor(cf::String));
 
-impl SoundDescriptionFlavor {
+impl SoundDescFlavor {
     /// Chooses the most backwards-compatible QuickTime Movie Sound Description format.
     /// A V1 sound description will be written if possible.
     /// If a V1 sound description is written for CBR or PCM audio, the sample tables will need to use the legacy CBR layout.
@@ -209,7 +209,7 @@ impl cm::AudioFormatDesc {
     /// if writing the SampleDescription to a QuickTime/ISO file.
     pub fn as_be_sound_desc_cm_buffer_in(
         &self,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
         unsafe {
@@ -226,14 +226,14 @@ impl cm::AudioFormatDesc {
 
     pub fn as_be_sound_desc_cm_buffer(
         &self,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
     ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
         Self::as_be_sound_desc_cm_buffer_in(self, flavor, None)
     }
 
     pub fn from_be_sound_desc_data_in(
         data: &[u8],
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
@@ -252,14 +252,14 @@ impl cm::AudioFormatDesc {
     #[inline]
     pub fn from_be_sound_desc_data(
         data: &[u8],
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
     ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_sound_desc_data_in(data, flavor, None)
     }
 
     pub fn from_be_sound_desc_buffer_in(
         buffer: &cm::BlockBuf,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
@@ -277,7 +277,7 @@ impl cm::AudioFormatDesc {
     #[inline]
     pub fn from_be_sound_desc_buffer(
         buffer: &cm::BlockBuf,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
     ) -> Result<arc::R<Self>, os::Status> {
         Self::from_be_sound_desc_buffer_in(buffer, flavor, None)
     }
@@ -285,21 +285,21 @@ impl cm::AudioFormatDesc {
 
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C" {
-    static kCMImageDescriptionFlavor_QuickTimeMovie: &'static ImageDescriptionFlavor;
-    static kCMImageDescriptionFlavor_ISOFamily: &'static ImageDescriptionFlavor;
-    static kCMImageDescriptionFlavor_3GPFamily: &'static ImageDescriptionFlavor;
-    static kCMImageDescriptionFlavor_ISOFamilyWithAppleExtensions: &'static ImageDescriptionFlavor;
+    static kCMImageDescriptionFlavor_QuickTimeMovie: &'static ImageDescFlavor;
+    static kCMImageDescriptionFlavor_ISOFamily: &'static ImageDescFlavor;
+    static kCMImageDescriptionFlavor_3GPFamily: &'static ImageDescFlavor;
+    static kCMImageDescriptionFlavor_ISOFamilyWithAppleExtensions: &'static ImageDescFlavor;
 
-    static kCMSoundDescriptionFlavor_QuickTimeMovie: &'static SoundDescriptionFlavor;
-    static kCMSoundDescriptionFlavor_QuickTimeMovieV2: &'static SoundDescriptionFlavor;
-    static kCMSoundDescriptionFlavor_ISOFamily: &'static SoundDescriptionFlavor;
-    static kCMSoundDescriptionFlavor_3GPFamily: &'static SoundDescriptionFlavor;
+    static kCMSoundDescriptionFlavor_QuickTimeMovie: &'static SoundDescFlavor;
+    static kCMSoundDescriptionFlavor_QuickTimeMovieV2: &'static SoundDescFlavor;
+    static kCMSoundDescriptionFlavor_ISOFamily: &'static SoundDescFlavor;
+    static kCMSoundDescriptionFlavor_3GPFamily: &'static SoundDescFlavor;
 
     fn CMVideoFormatDescriptionCopyAsBigEndianImageDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
         video_format_description: &cm::VideoFormatDesc,
         string_encoding: cf::StringEncoding,
-        flavor: Option<&ImageDescriptionFlavor>,
+        flavor: Option<&ImageDescFlavor>,
         block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
 
@@ -307,7 +307,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         image_description_block_buffer: &cm::BlockBuf,
         string_encoding: cf::StringEncoding,
-        flavor: Option<&cm::ImageDescriptionFlavor>,
+        flavor: Option<&cm::ImageDescFlavor>,
         format_description_out: &mut Option<arc::R<cm::VideoFormatDesc>>,
     ) -> os::Status;
 
@@ -316,7 +316,7 @@ extern "C" {
         image_description_data: *const u8,
         size: usize,
         string_encoding: cf::StringEncoding,
-        flavor: Option<&cm::ImageDescriptionFlavor>,
+        flavor: Option<&cm::ImageDescFlavor>,
         format_description_out: &mut Option<arc::R<cm::VideoFormatDesc>>,
     ) -> os::Status;
 
@@ -343,7 +343,7 @@ extern "C" {
     fn CMAudioFormatDescriptionCopyAsBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
         audio_format_description: &cm::AudioFormatDesc,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
         block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
 
@@ -351,14 +351,14 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         sound_description_data: *const u8,
         size: usize,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
         format_description_out: &mut Option<arc::R<cm::AudioFormatDesc>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
         block_buffer: &cm::BlockBuf,
-        flavor: Option<&SoundDescriptionFlavor>,
+        flavor: Option<&SoundDescFlavor>,
         format_description_out: &mut Option<arc::R<cm::AudioFormatDesc>>,
     ) -> os::Status;
 }

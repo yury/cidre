@@ -6,7 +6,7 @@ pub use base::copy_type_id_description;
 pub use base::Allocator;
 pub use base::AllocatorAllocateCallBack;
 pub use base::AllocatorContext;
-pub use base::AllocatorCopyDescriptionCallBack;
+pub use base::AllocatorCopyDescCallBack;
 pub use base::AllocatorDealloacteCallBack;
 pub use base::ComparatorFunction;
 pub use base::ComparisonResult;

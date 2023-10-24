@@ -417,10 +417,10 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioStreamPacketDescriptionsPtr")]
     #[inline]
-    pub fn audio_stream_packet_descriptions(
+    pub fn audio_stream_packet_descs(
         &self,
-    ) -> Result<Option<&[cat::audio::StreamPacketDescription]>, os::Status> {
-        let ptr: *mut cat::audio::StreamPacketDescription = std::ptr::null_mut();
+    ) -> Result<Option<&[cat::audio::StreamPacketDesc]>, os::Status> {
+        let ptr: *mut cat::audio::StreamPacketDesc = std::ptr::null_mut();
         let mut size = 0;
         unsafe {
             CMSampleBufferGetAudioStreamPacketDescriptionsPtr(self, ptr, &mut size).result()?;
@@ -572,7 +572,7 @@ extern "C" {
     #[cfg(feature = "cat")]
     fn CMSampleBufferGetAudioStreamPacketDescriptionsPtr(
         sbuf: &SampleBuf,
-        packet_descriptions_pointer_out: *mut cat::audio::StreamPacketDescription,
+        packet_descriptions_pointer_out: *mut cat::audio::StreamPacketDesc,
         packet_descriptions_size_out: *mut usize,
     ) -> os::Status;
 

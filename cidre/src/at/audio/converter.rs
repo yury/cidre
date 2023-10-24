@@ -441,7 +441,7 @@ pub type ComplexInputDataProc<D> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufList,
-    out_data_packet_descriptions: *mut *mut audio::StreamPacketDescription,
+    out_data_packet_descriptions: *mut *mut audio::StreamPacketDesc,
     in_user_data: *mut D,
 ) -> os::Status;
 
@@ -644,7 +644,7 @@ impl Converter {
         in_input_data_proc_user_data: *mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<N>,
-        out_packet_description: *mut audio::StreamPacketDescription,
+        out_packet_description: *mut audio::StreamPacketDesc,
     ) -> os::Status {
         AudioConverterFillComplexBuffer(
             self,
@@ -744,7 +744,7 @@ impl Converter {
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList,
-        out_packet_description: &mut Vec<audio::StreamPacketDescription>,
+        out_packet_description: &mut Vec<audio::StreamPacketDesc>,
     ) -> Result<(), os::Status> {
         unsafe {
             self.fill_complex_buffer(
@@ -829,7 +829,7 @@ extern "C" {
         in_input_data_proc_user_data: *mut c_void,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList,
-        out_packet_description: *mut audio::StreamPacketDescription,
+        out_packet_description: *mut audio::StreamPacketDesc,
     ) -> os::Status;
 
     fn AudioConverterConvertComplexBuffer(

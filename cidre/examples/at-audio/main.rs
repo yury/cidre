@@ -60,14 +60,14 @@ struct Context {
     asbd: audio::StreamBasicDesc,
     max_packet_size: u32,
     uses_packet_descriptions: bool,
-    packet_descriptions: Vec<audio::StreamPacketDescription>,
+    packet_descriptions: Vec<audio::StreamPacketDesc>,
 }
 
 extern "C" fn data_proc(
     _converter: &audio::Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufList,
-    out_data_packet_descriptions: *mut *mut audio::StreamPacketDescription,
+    out_data_packet_descriptions: *mut *mut audio::StreamPacketDesc,
     in_user_data: *mut Context,
 ) -> os::Status {
     let ctx = unsafe { &mut *in_user_data };
@@ -162,8 +162,7 @@ fn encode(args: &EncodeArgs) {
 
     let packets_per_loop = 100u32;
 
-    let mut packet_descriptions =
-        vec![audio::StreamPacketDescription::default(); packets_per_loop as _];
+    let mut packet_descriptions = vec![audio::StreamPacketDesc::default(); packets_per_loop as _];
 
     let mut packet_buffer = vec![0u8; packets_per_loop as usize * max_dst_packet_size as usize];
     let packet_buffer_len = packet_buffer.len();

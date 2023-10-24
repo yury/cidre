@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{
     arc,
-    at::{audio::StreamPacketDescription, AudioBufList},
+    at::{audio::StreamPacketDesc, AudioBufList},
     define_cls, define_obj_type, ns, objc,
 };
 
@@ -147,7 +147,7 @@ impl CompressedBuf {
     ///
     /// If the format has constant bytes per packet (format.streamDescription->mBytesPerPacket != 0), then this will return nil.
     #[objc::msg_send(packetDescriptions)]
-    pub fn packet_descriptions(&self) -> Option<&StreamPacketDescription>;
+    pub fn packet_descriptions(&self) -> Option<&StreamPacketDesc>;
 
     #[objc::msg_send(data)]
     pub fn data(&self) -> *const c_void;

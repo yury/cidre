@@ -149,7 +149,7 @@ define_cf_type!(Allocator(Type));
 
 pub type AllocatorRetainCallBack<T = c_void> = extern "C" fn(info: *const T) -> *const T;
 pub type AllocatorReleaseCallBack<T = c_void> = extern "C" fn(info: *const T);
-pub type AllocatorCopyDescriptionCallBack<T = c_void> =
+pub type AllocatorCopyDescCallBack<T = c_void> =
     extern "C" fn(info: *const T) -> Option<arc::R<cf::String>>;
 pub type AllocatorAllocateCallBack<T = c_void> =
     extern "C" fn(alloc_size: Index, hint: cf::OptionFlags, info: *mut T) -> *mut c_void;
@@ -190,7 +190,7 @@ pub struct AllocatorContext<T = c_void> {
     /// that describes your allocator, particularly some characteristics of your program-defined data.
     /// You may set this function pointer to None, in which case Core Foundation will provide a rudimentary
     /// description.
-    pub copy_description: Option<AllocatorCopyDescriptionCallBack<T>>,
+    pub copy_description: Option<AllocatorCopyDescCallBack<T>>,
 
     /// A prototype for a function callback that allocates memory of a requested size.
     /// In implementing this function, allocate a block of memory of at least size

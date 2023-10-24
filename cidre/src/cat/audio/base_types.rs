@@ -564,7 +564,7 @@ impl StreamBasicDesc {
 /// packets.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
 #[repr(C)]
-pub struct StreamPacketDescription {
+pub struct StreamPacketDesc {
     /// The number of bytes from the start of the buffer to the beginning of the
     /// packet.
     pub start_offset: i64,

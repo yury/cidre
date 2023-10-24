@@ -18,8 +18,8 @@ pub use format_description_bridge::swap_be_image_desc_to_host;
 pub use format_description_bridge::swap_be_sound_desc_to_host;
 pub use format_description_bridge::swap_host_image_desc_to_be;
 pub use format_description_bridge::swap_host_sound_desc_to_be;
-pub use format_description_bridge::ImageDescriptionFlavor;
-pub use format_description_bridge::SoundDescriptionFlavor;
+pub use format_description_bridge::ImageDescFlavor;
+pub use format_description_bridge::SoundDescFlavor;
 
 mod time;
 pub use time::Time;

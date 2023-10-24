@@ -87,7 +87,7 @@ pub struct ExtendedFormatInfo {
     pub asbd: audio::StreamBasicDesc,
     pub magic_cookie: *const c_void,
     pub magic_cookie_size: u32,
-    pub class_description: audio::ClassDesc,
+    pub class_desc: audio::ClassDesc,
 }
 
 pub mod asbd_props {
