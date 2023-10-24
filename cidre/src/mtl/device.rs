@@ -274,7 +274,7 @@ impl Device {
 
     /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
     #[objc::msg_send(heapBufferSizeAndAlignWithLength:options:)]
-    pub fn heap_buffer_size_and_align(
+    pub fn heap_buf_size_and_align(
         &self,
         length: usize,
         options: mtl::ResourceOptions,
@@ -303,11 +303,11 @@ impl Device {
 
     /// Query device support for using function pointers from compute pipelines.
     #[objc::msg_send(supportsFunctionPointers)]
-    pub fn supports_function_pointers(&self) -> bool;
+    pub fn supports_fn_pointers(&self) -> bool;
 
     /// Query device support for using function pointers from render pipeline stages.
     #[objc::msg_send(supportsFunctionPointersFromRender)]
-    pub fn supports_function_pointers_from_render(&self) -> bool;
+    pub fn supports_fn_pointers_from_render(&self) -> bool;
 
     /// Query device support for using ray tracing from render pipeline stages.
     #[objc::msg_send(supportsRaytracingFromRender)]
@@ -332,8 +332,8 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         assert!(device.supports_raytracing());
-        assert!(device.supports_function_pointers());
-        assert!(device.supports_function_pointers_from_render());
+        assert!(device.supports_fn_pointers());
+        assert!(device.supports_fn_pointers_from_render());
         assert!(device.supports_raytracing_from_render());
         assert!(device.supports_primitive_motion_blur());
 
