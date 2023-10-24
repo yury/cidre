@@ -3,117 +3,165 @@ use crate::{cg, cm, define_obj_type, ns, objc};
 define_obj_type!(Type(ns::String));
 
 impl Type {
+    #[doc(alias = "AVMetadataObjectTypeHumanBody")]
+    #[inline]
     pub fn human_body() -> &'static Type {
         unsafe { AVMetadataObjectTypeHumanBody }
     }
 
+    #[doc(alias = "AVMetadataObjectTypeCatBody")]
+    #[inline]
     pub fn cat_body() -> &'static Type {
         unsafe { AVMetadataObjectTypeCatBody }
     }
 
+    #[doc(alias = "AVMetadataObjectTypeDogBody")]
+    #[inline]
     pub fn dog_body() -> &'static Type {
         unsafe { AVMetadataObjectTypeDogBody }
     }
 
+    #[doc(alias = "AVMetadataObjectTypeSalientObject")]
+    #[inline]
     pub fn salient_object() -> &'static Type {
         unsafe { AVMetadataObjectTypeSalientObject }
     }
 
+    #[doc(alias = "AVMetadataObjectTypeFace")]
+    #[inline]
     pub fn face() -> &'static Type {
         unsafe { AVMetadataObjectTypeFace }
     }
 
     /// objects generated from UPC-E codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeUPCECode")]
+    #[inline]
     pub fn upc_e_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeUPCECode }
     }
 
     /// objects generated from Code 39 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeCode39Code")]
+    #[inline]
     pub fn code_39_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeCode39Code }
     }
 
     /// objects generated from Code 39 mod 43 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeCode39Mod43Code")]
+    #[inline]
     pub fn code_39_mod_43_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeCode39Mod43Code }
     }
 
     /// objects generated from EAN-13 (including UPC-A) codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeEAN13Code")]
+    #[inline]
     pub fn ean_13_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeEAN13Code }
     }
 
     /// objects generated from EAN-8 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeEAN8Code")]
+    #[inline]
     pub fn ean_8_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeEAN8Code }
     }
 
     /// objects generated from Code 93 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeCode93Code")]
+    #[inline]
     pub fn code_93_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeCode93Code }
     }
 
     /// objects generated from Code 128 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeCode128Code")]
+    #[inline]
     pub fn code_128_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeCode128Code }
     }
 
     /// objects generated from PDF417 codes return this constant as their type
+    #[doc(alias = "AVMetadataObjectTypePDF417Code")]
+    #[inline]
     pub fn pdf_417_code() -> &'static Type {
         unsafe { AVMetadataObjectTypePDF417Code }
     }
 
-    ///  objects generated from QR codes return this constant as their type.
+    /// objects generated from QR codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeQRCode")]
+    #[inline]
     pub fn qr_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeQRCode }
     }
 
     /// objects generated from Aztec codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeAztecCode")]
+    #[inline]
     pub fn aztec_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeAztecCode }
     }
 
     /// objects generated from Interleaved 2 of 5 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeInterleaved2of5Code")]
+    #[inline]
     pub fn interleaved_2_to_5_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeInterleaved2of5Code }
     }
 
     /// objects generated from ITF14 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeITF14Code")]
+    #[inline]
     pub fn itf_14_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeITF14Code }
     }
 
     /// objects generated from DataMatrix codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeDataMatrixCode")]
+    #[inline]
     pub fn data_matrix_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeDataMatrixCode }
     }
 
     /// objects generated from Codabar codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeCodabarCode")]
+    #[inline]
     pub fn codebar_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeCodabarCode }
     }
 
     /// objects generated from GS1DataBar codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeGS1DataBarCode")]
+    #[inline]
     pub fn gs_1_data_bar_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeGS1DataBarCode }
     }
 
     /// objects generated from GS1DataBarExpanded codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeGS1DataBarExpandedCode")]
+    #[inline]
     pub fn gs_1_data_bar_expanded_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeGS1DataBarExpandedCode }
     }
 
     /// objects generated from GS1DataBarLimited codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeGS1DataBarLimitedCode")]
+    #[inline]
     pub fn gs_1_data_bar_limited_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeGS1DataBarLimitedCode }
     }
 
     /// objects generated from MicroQR codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeMicroQRCode")]
+    #[inline]
     pub fn micro_qr_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeMicroQRCode }
     }
 
     /// objects generated from MicroPDF417 codes return this constant as their type.
+    #[doc(alias = "AVMetadataObjectTypeMicroPDF417Code")]
+    #[inline]
     pub fn micro_pdf_417_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeMicroPDF417Code }
     }
