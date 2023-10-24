@@ -25,6 +25,8 @@
 ### Shortcuts
 
 - argument -> arg
+- attribute -> attr
+- attributted -> attr
 - buffer -> buf
 - command -> cmd
 - count -> len

@@ -300,9 +300,9 @@ impl std::ops::IndexMut<usize> for VertexBufLayoutDescArray {
     }
 }
 
-define_obj_type!(VertexAttributeDesc(ns::Id), MTL_VERTEX_ATTRIBUTE_DESCRIPTOR);
+define_obj_type!(VertexAttrDesc(ns::Id), MTL_VERTEX_ATTRIBUTE_DESCRIPTOR);
 
-impl VertexAttributeDesc {
+impl VertexAttrDesc {
     #[objc::msg_send(format)]
     pub fn format(&self) -> VertexFormat;
 
@@ -322,27 +322,27 @@ impl VertexAttributeDesc {
     pub fn set_buf_index(&self, value: usize);
 }
 
-define_obj_type!(VertexAttributeDescArray(ns::Id));
-impl VertexAttributeDescArray {
+define_obj_type!(VertexAttrDescArray(ns::Id));
+impl VertexAttrDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn object_at(&self, index: usize) -> &VertexAttributeDesc;
+    pub fn object_at(&self, index: usize) -> &VertexAttrDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn object_at_mut(&mut self, index: usize) -> &mut VertexAttributeDesc;
+    pub fn object_at_mut(&mut self, index: usize) -> &mut VertexAttrDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, buffer_desc: Option<&VertexAttributeDesc>, index: usize);
+    pub fn set_object_at(&mut self, buffer_desc: Option<&VertexAttrDesc>, index: usize);
 }
 
-impl std::ops::Index<usize> for VertexAttributeDescArray {
-    type Output = VertexAttributeDesc;
+impl std::ops::Index<usize> for VertexAttrDescArray {
+    type Output = VertexAttrDesc;
 
     fn index(&self, index: usize) -> &Self::Output {
         self.object_at(index)
     }
 }
 
-impl std::ops::IndexMut<usize> for VertexAttributeDescArray {
+impl std::ops::IndexMut<usize> for VertexAttrDescArray {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.object_at_mut(index)
     }
@@ -357,17 +357,17 @@ impl Desc {
     pub fn layouts_mut(&mut self) -> &mut VertexBufLayoutDescArray;
 
     #[objc::msg_send(attributes)]
-    pub fn attributes(&self) -> &VertexAttributeDescArray;
+    pub fn attributes(&self) -> &VertexAttrDescArray;
 
     #[objc::msg_send(attributes)]
-    pub fn attributes_mut(&mut self) -> &mut VertexAttributeDescArray;
+    pub fn attributes_mut(&mut self) -> &mut VertexAttrDescArray;
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Desc>;
     static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufLayoutDesc>;
-    static MTL_VERTEX_ATTRIBUTE_DESCRIPTOR: &'static objc::Class<VertexAttributeDesc>;
+    static MTL_VERTEX_ATTRIBUTE_DESCRIPTOR: &'static objc::Class<VertexAttrDesc>;
 }
 
 #[cfg(test)]

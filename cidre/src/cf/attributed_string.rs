@@ -1,7 +1,7 @@
 use crate::{arc, cf, define_cf_type};
 
-define_cf_type!(AttributedString(cf::Type));
-impl AttributedString {
+define_cf_type!(AttrString(cf::Type));
+impl AttrString {
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CFAttributedStringGetTypeID() }
@@ -66,28 +66,28 @@ impl AttributedString {
         &self,
         max_len: usize,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<arc::R<AttributedStringMut>> {
+    ) -> Option<arc::R<AttrStringMut>> {
         unsafe { CFAttributedStringCreateMutableCopy(allocator, max_len as _, self) }
     }
 
     #[inline]
-    pub fn copy_mut(&self) -> arc::R<AttributedStringMut> {
+    pub fn copy_mut(&self) -> arc::R<AttrStringMut> {
         unsafe { std::mem::transmute(CFAttributedStringCreateMutableCopy(None, 0, self)) }
     }
 }
 
-define_cf_type!(AttributedStringMut(AttributedString));
-impl AttributedStringMut {
+define_cf_type!(AttrStringMut(AttrString));
+impl AttrStringMut {
     #[inline]
     pub fn with_max_len_in(
         max_len: usize,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<arc::R<AttributedStringMut>> {
+    ) -> Option<arc::R<AttrStringMut>> {
         unsafe { CFAttributedStringCreateMutable(allocator, max_len as _) }
     }
 
     #[inline]
-    pub fn with_max_len(max_len: usize) -> arc::R<AttributedStringMut> {
+    pub fn with_max_len(max_len: usize) -> arc::R<AttrStringMut> {
         unsafe { std::mem::transmute(CFAttributedStringCreateMutable(None, max_len as _)) }
     }
 }
@@ -99,26 +99,26 @@ extern "C" {
         alloc: Option<&cf::Allocator>,
         str: &cf::String,
         attributes: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<AttributedString>>;
+    ) -> Option<arc::R<AttrString>>;
 
-    fn CFAttributedStringGetString(astr: &AttributedString) -> &cf::String;
-    fn CFAttributedStringGetLength(astr: &AttributedString) -> cf::Index;
+    fn CFAttributedStringGetString(astr: &AttrString) -> &cf::String;
+    fn CFAttributedStringGetLength(astr: &AttrString) -> cf::Index;
 
     fn CFAttributedStringCreateCopy(
         alloc: Option<&cf::Allocator>,
-        astr: &AttributedString,
-    ) -> Option<arc::R<AttributedString>>;
+        astr: &AttrString,
+    ) -> Option<arc::R<AttrString>>;
 
     fn CFAttributedStringCreateMutableCopy(
         alloc: Option<&cf::Allocator>,
         max_len: cf::Index,
-        astr: &AttributedString,
-    ) -> Option<arc::R<AttributedStringMut>>;
+        astr: &AttrString,
+    ) -> Option<arc::R<AttrStringMut>>;
 
     fn CFAttributedStringCreateMutable(
         alloc: Option<&cf::Allocator>,
         max_len: cf::Index,
-    ) -> Option<arc::R<AttributedStringMut>>;
+    ) -> Option<arc::R<AttrStringMut>>;
 }
 
 #[cfg(test)]
@@ -128,11 +128,11 @@ mod tests {
     #[test]
     fn basics() {
         let str = cf::String::from_str("test");
-        let astr = cf::AttributedString::new(&str);
+        let astr = cf::AttrString::new(&str);
         assert!(astr.string().equal(&str));
 
         let attrs = cf::Dictionary::new();
-        let astr = cf::AttributedString::with_attrs(&str, &attrs);
+        let astr = cf::AttrString::with_attrs(&str, &attrs);
         assert!(astr.string().equal(&str));
 
         let copy = astr.copy();

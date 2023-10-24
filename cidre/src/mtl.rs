@@ -7,7 +7,7 @@ pub use types::SamplePosition;
 pub use types::Size;
 
 mod stage_input_output_descriptor;
-pub use stage_input_output_descriptor::AttributeFormat;
+pub use stage_input_output_descriptor::AttrFormat;
 pub use stage_input_output_descriptor::IndexType;
 
 mod acceleration_structure;
@@ -55,7 +55,7 @@ pub use heap::Heap;
 pub use heap::Type as HeapType;
 
 mod library;
-pub use library::Attribute;
+pub use library::Attr;
 pub use library::CompileOpts;
 pub use library::CompileSymbolVisibility;
 pub use library::Error as LibError;
@@ -67,7 +67,7 @@ pub use library::Lib;
 pub use library::OptimizationLevel as LibOptimizationLevel;
 pub use library::PatchType;
 pub use library::Type as LibType;
-pub use library::VertexAttribute;
+pub use library::VertexAttr;
 
 mod command_queue;
 pub use command_queue::CmdQueue;
@@ -195,8 +195,8 @@ pub use parallel_render_command_encoder::ParallelRenderCmdEncoder;
 
 mod vertex_descriptor;
 pub use vertex_descriptor::Desc as VertexDesc;
-pub use vertex_descriptor::VertexAttributeDesc;
-pub use vertex_descriptor::VertexAttributeDescArray;
+pub use vertex_descriptor::VertexAttrDesc;
+pub use vertex_descriptor::VertexAttrDescArray;
 pub use vertex_descriptor::VertexBufLayoutDesc;
 pub use vertex_descriptor::VertexBufLayoutDescArray;
 pub use vertex_descriptor::VertexFormat;

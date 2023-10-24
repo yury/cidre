@@ -17,8 +17,8 @@ impl UnderlineStyleModifiers {
     pub const PATTERN_DASH_DOT_DOT: Self = Self(0x0400);
 }
 
-define_cf_type!(AttributeName(cf::String));
-impl AttributeName {
+define_cf_type!(AttrName(cf::String));
+impl AttrName {
     /// Value must be a &ct::Font. Default is Helvetica 12.
     #[inline]
     pub fn font() -> &'static Self {
@@ -216,28 +216,28 @@ impl AttributeName {
 
 #[link(name = "CoreText", kind = "framework")]
 extern "C" {
-    static kCTFontAttributeName: &'static AttributeName;
-    static kCTForegroundColorFromContextAttributeName: &'static AttributeName;
-    static kCTKernAttributeName: &'static AttributeName;
-    static kCTTrackingAttributeName: &'static AttributeName;
-    static kCTLigatureAttributeName: &'static AttributeName;
-    static kCTForegroundColorAttributeName: &'static AttributeName;
-    static kCTBackgroundColorAttributeName: &'static AttributeName;
-    static kCTParagraphStyleAttributeName: &'static AttributeName;
-    static kCTStrokeWidthAttributeName: &'static AttributeName;
-    static kCTStrokeColorAttributeName: &'static AttributeName;
-    static kCTUnderlineStyleAttributeName: &'static AttributeName;
-    static kCTSuperscriptAttributeName: &'static AttributeName;
-    static kCTUnderlineColorAttributeName: &'static AttributeName;
-    static kCTVerticalFormsAttributeName: &'static AttributeName;
-    static kCTHorizontalInVerticalFormsAttributeName: &'static AttributeName;
-    static kCTGlyphInfoAttributeName: &'static AttributeName;
-    static kCTLanguageAttributeName: &'static AttributeName;
-    static kCTRunDelegateAttributeName: &'static AttributeName;
-    static kCTBaselineClassAttributeName: &'static AttributeName;
-    static kCTBaselineInfoAttributeName: &'static AttributeName;
-    static kCTBaselineReferenceInfoAttributeName: &'static AttributeName;
-    static kCTBaselineOffsetAttributeName: &'static AttributeName;
-    static kCTWritingDirectionAttributeName: &'static AttributeName;
-    static kCTRubyAnnotationAttributeName: &'static AttributeName;
+    static kCTFontAttributeName: &'static AttrName;
+    static kCTForegroundColorFromContextAttributeName: &'static AttrName;
+    static kCTKernAttributeName: &'static AttrName;
+    static kCTTrackingAttributeName: &'static AttrName;
+    static kCTLigatureAttributeName: &'static AttrName;
+    static kCTForegroundColorAttributeName: &'static AttrName;
+    static kCTBackgroundColorAttributeName: &'static AttrName;
+    static kCTParagraphStyleAttributeName: &'static AttrName;
+    static kCTStrokeWidthAttributeName: &'static AttrName;
+    static kCTStrokeColorAttributeName: &'static AttrName;
+    static kCTUnderlineStyleAttributeName: &'static AttrName;
+    static kCTSuperscriptAttributeName: &'static AttrName;
+    static kCTUnderlineColorAttributeName: &'static AttrName;
+    static kCTVerticalFormsAttributeName: &'static AttrName;
+    static kCTHorizontalInVerticalFormsAttributeName: &'static AttrName;
+    static kCTGlyphInfoAttributeName: &'static AttrName;
+    static kCTLanguageAttributeName: &'static AttrName;
+    static kCTRunDelegateAttributeName: &'static AttrName;
+    static kCTBaselineClassAttributeName: &'static AttrName;
+    static kCTBaselineInfoAttributeName: &'static AttrName;
+    static kCTBaselineReferenceInfoAttributeName: &'static AttrName;
+    static kCTBaselineOffsetAttributeName: &'static AttrName;
+    static kCTWritingDirectionAttributeName: &'static AttrName;
+    static kCTRubyAnnotationAttributeName: &'static AttrName;
 }

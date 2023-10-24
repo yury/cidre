@@ -128,10 +128,10 @@ impl TriangleGeometryDesc {
     pub fn set_vertex_buf_offset(&self, value: usize);
 
     #[objc::msg_send(vertexFormat)]
-    pub fn vertex_format(&self) -> mtl::AttributeFormat;
+    pub fn vertex_format(&self) -> mtl::AttrFormat;
 
     #[objc::msg_send(setVertexFormat:)]
-    pub fn set_vertex_format(&mut self, value: mtl::AttributeFormat);
+    pub fn set_vertex_format(&mut self, value: mtl::AttrFormat);
 
     #[objc::msg_send(vertexStride)]
     pub fn vertex_stride(&self) -> usize;

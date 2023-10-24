@@ -9,9 +9,9 @@ pub enum PatchType {
     Quad = 2,
 }
 
-define_obj_type!(VertexAttribute(ns::Id));
+define_obj_type!(VertexAttr(ns::Id));
 
-impl VertexAttribute {
+impl VertexAttr {
     #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 
@@ -31,9 +31,9 @@ impl VertexAttribute {
     pub fn is_patch_ctrl_point_data(&self) -> bool;
 }
 
-define_obj_type!(Attribute(ns::Id));
+define_obj_type!(Attr(ns::Id));
 
-impl Attribute {
+impl Attr {
     #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 
@@ -181,10 +181,10 @@ impl Fn {
     pub fn patch_ctrl_point(&self) -> isize;
 
     #[objc::msg_send(vertexAttributes)]
-    pub fn vertext_attributes(&self) -> Option<&ns::Array<mtl::VertexAttribute>>;
+    pub fn vertext_attributes(&self) -> Option<&ns::Array<mtl::VertexAttr>>;
 
     #[objc::msg_send(stageInputAttributes)]
-    pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attribute>>;
+    pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attr>>;
 
     #[objc::msg_send(options)]
     pub fn options(&self) -> mtl::FnOpts;

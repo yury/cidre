@@ -109,8 +109,8 @@ mod mach_port;
 pub use mach_port::MachPort;
 
 mod attributed_string;
-pub use attributed_string::AttributedString;
-pub use attributed_string::AttributedStringMut;
+pub use attributed_string::AttrString;
+pub use attributed_string::AttrStringMut;
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {}

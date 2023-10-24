@@ -7,7 +7,7 @@ pub enum IndexType {
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
-pub enum AttributeFormat {
+pub enum AttrFormat {
     /// An invalid format.
     #[doc(alias = "MTLAttributeFormatInvalid")]
     Invalid = 0,

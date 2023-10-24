@@ -31,7 +31,7 @@ impl Line {
     }
 
     #[inline]
-    pub fn with_attr_string(attr_string: &cf::AttributedString) -> arc::R<Self> {
+    pub fn with_attr_string(attr_string: &cf::AttrString) -> arc::R<Self> {
         unsafe { CTLineCreateWithAttributedString(attr_string) }
     }
 
@@ -100,7 +100,7 @@ impl Line {
 #[link(name = "CoreText", kind = "framework")]
 extern "C" {
     fn CTLineGetTypeID() -> cf::TypeId;
-    fn CTLineCreateWithAttributedString(attr_string: &cf::AttributedString) -> arc::R<Line>;
+    fn CTLineCreateWithAttributedString(attr_string: &cf::AttrString) -> arc::R<Line>;
 
     fn CTLineGetGlyphCount(line: &Line) -> cf::Index;
     fn CTLineGetGlyphRuns(line: &Line) -> &cf::ArrayOf<ct::Run>;
@@ -129,7 +129,7 @@ mod tests {
     #[test]
     fn basics() {
         let str = cf::String::from_str("test");
-        let astr = cf::AttributedString::new(&str);
+        let astr = cf::AttrString::new(&str);
         let line = ct::Line::with_attr_string(&astr);
 
         assert_eq!(line.glyph_count(), 4);
