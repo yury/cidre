@@ -266,7 +266,7 @@ impl Device {
     pub fn new_shared_event(&self) -> Option<arc::R<SharedEvent>>;
 
     #[objc::msg_send(maxBufferLength)]
-    pub fn max_buffer_len(&self) -> usize;
+    pub fn max_buf_len(&self) -> usize;
 
     /// Returns the size and alignment, in bytes, of a texture if you create it from a heap.
     #[objc::msg_send(heapTextureSizeAndAlignWithDescriptor:)]
@@ -347,7 +347,7 @@ mod tests {
 
         let _name = device.name();
 
-        assert!(device.max_buffer_len() > 10);
+        assert!(device.max_buf_len() > 10);
 
         let registry_id = device.registry_id();
 
@@ -373,7 +373,7 @@ mod tests {
 
         let _t = device.new_texture(&td).unwrap();
 
-        assert!(device.max_buffer_len() > 10);
+        assert!(device.max_buf_len() > 10);
 
         let _queue = device.new_cmd_queue().unwrap();
 
