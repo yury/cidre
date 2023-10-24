@@ -6,8 +6,7 @@ use crate::objc;
 use crate::{arc, cf, define_cf_type};
 use cf::{Allocator, HashCode, Index, String, Type, TypeId};
 
-use std::marker::PhantomData;
-use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
+use std::{ffi::c_void, intrinsics::transmute, marker, ptr};
 
 pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -124,12 +123,12 @@ impl Dictionary {
     }
 
     #[inline]
-    pub unsafe fn raw_value(&self, key: *const c_void) -> Option<NonNull<c_void>> {
+    pub unsafe fn raw_value(&self, key: *const c_void) -> Option<ptr::NonNull<c_void>> {
         CFDictionaryGetValue(self, key)
     }
 
     #[inline]
-    pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<NonNull<c_void>> {
+    pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<ptr::NonNull<c_void>> {
         let mut value = None;
 
         if CFDictionaryGetValueIfPresent(self, key, &mut value) {
@@ -324,6 +323,7 @@ impl Default for arc::R<Dictionary> {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: KeyCallBacks;
+
     static kCFCopyStringDictionaryKeyCallBacks: KeyCallBacks;
 
     static kCFTypeDictionaryValueCallBacks: ValueCallBacks;
@@ -331,14 +331,20 @@ extern "C" {
     fn CFDictionaryGetTypeID() -> TypeId;
 
     fn CFDictionaryContainsKey(the_dict: &Dictionary, key: *const c_void) -> bool;
+
     fn CFDictionaryContainsValue(the_dict: &Dictionary, value: *const c_void) -> bool;
 
     fn CFDictionaryGetCount(the_dict: &Dictionary) -> Index;
-    fn CFDictionaryGetValue(the_dict: &Dictionary, key: *const c_void) -> Option<NonNull<c_void>>;
+
+    fn CFDictionaryGetValue(
+        the_dict: &Dictionary,
+        key: *const c_void,
+    ) -> Option<ptr::NonNull<c_void>>;
+
     fn CFDictionaryGetValueIfPresent(
         the_dict: &Dictionary,
         key: *const c_void,
-        value: *mut Option<NonNull<c_void>>,
+        value: *mut Option<ptr::NonNull<c_void>>,
     ) -> bool;
 
     fn CFDictionaryCreate(
@@ -424,7 +430,7 @@ impl DictionaryMut {
 
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct DictionaryOf<K, V>(Dictionary, PhantomData<(K, V)>)
+pub struct DictionaryOf<K, V>(Dictionary, marker::PhantomData<(K, V)>)
 where
     K: arc::Retain,
     V: arc::Retain;
@@ -486,7 +492,7 @@ where
 }
 
 #[repr(transparent)]
-pub struct DictionaryOfMut<K, V>(DictionaryMut, PhantomData<(K, V)>);
+pub struct DictionaryOfMut<K, V>(DictionaryMut, marker::PhantomData<(K, V)>);
 
 impl<K, V> DictionaryOfMut<K, V>
 where
