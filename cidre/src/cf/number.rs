@@ -353,9 +353,42 @@ impl Number {
         }
     }
 
-    pub fn from_four_char_code(value: FourCharCode) -> arc::R<Self> {
-        let val = value as i32;
-        unsafe { Self::create_in(NumberType::I32, &val as *const _ as _, None).unwrap_unchecked() }
+    #[inline]
+    pub fn tagged_i8(value: i8) -> &'static Self {
+        unsafe {
+            std::mem::transmute(Self::create_in(
+                NumberType::I8,
+                &value as *const _ as _,
+                None,
+            ))
+        }
+    }
+
+    #[inline]
+    pub fn tagged_i16(value: i16) -> &'static Self {
+        unsafe {
+            std::mem::transmute(Self::create_in(
+                NumberType::I16,
+                &value as *const _ as _,
+                None,
+            ))
+        }
+    }
+
+    #[inline]
+    pub fn tagged_i32(value: i32) -> &'static Self {
+        unsafe {
+            std::mem::transmute(Self::create_in(
+                NumberType::I32,
+                &value as *const _ as _,
+                None,
+            ))
+        }
+    }
+
+    #[inline]
+    pub fn from_four_char_code(value: FourCharCode) -> &'static Self {
+        Self::tagged_i32(value as _)
     }
 
     /// ```
@@ -485,4 +518,16 @@ extern "C" {
         context: *mut c_void,
     ) -> ComparisonResult;
     fn CFNumberGetValue(number: &Number, the_type: NumberType, value_ptr: *mut c_void) -> bool;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cf;
+
+    #[test]
+    fn tagged() {
+        assert!(cf::Number::tagged_i8(10).is_tagged_ptr());
+        assert!(cf::Number::tagged_i16(10).is_tagged_ptr());
+        assert!(cf::Number::tagged_i32(10).is_tagged_ptr());
+    }
 }

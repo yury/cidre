@@ -270,8 +270,8 @@ impl PixelFormat {
     }
 
     #[inline]
-    pub fn to_cf_number(&self) -> arc::R<cf::Number> {
-        cf::Number::from_i32(self.0 as _)
+    pub fn to_cf_number(&self) -> &'static cf::Number {
+        cf::Number::from_four_char_code(self.0)
     }
 
     #[doc(alias = "CVIsCompressedPixelFormatAvailable")]
@@ -513,6 +513,13 @@ pub mod keys {
 #[cfg(test)]
 mod tests {
     use crate::cv::PixelFormat;
+
+    #[test]
+    fn basics() {
+        let number = PixelFormat::_1_MONOCHROME.to_cf_number();
+        assert!(number.is_tagged_ptr());
+        number.show();
+    }
 
     #[test]
     fn compressed() {

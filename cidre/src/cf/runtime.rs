@@ -33,6 +33,11 @@ impl Type {
     pub fn as_type_ref(&self) -> &Type {
         self
     }
+
+    #[inline]
+    pub fn is_tagged_ptr(&self) -> bool {
+        ((self as *const Self as usize) >> 63) == 1
+    }
 }
 
 impl arc::Retain for Type {
