@@ -606,12 +606,12 @@ impl Converter {
     }
 
     #[inline]
-    pub fn current_output_stream_description(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn current_output_stream_desc(&self) -> Result<audio::StreamBasicDesc, os::Status> {
         unsafe { self.prop(PropertyID::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
-    pub fn current_input_stream_description(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn current_input_stream_desc(&self) -> Result<audio::StreamBasicDesc, os::Status> {
         unsafe { self.prop(PropertyID::CURRENT_INPUT_STREAM_DESCRIPTION) }
     }
 

@@ -194,7 +194,7 @@ mod tests {
         let two = ns::Number::with_i32(10);
         let set: &[&ns::Number] = &[&two, &two, &two];
         let set = ns::Set::from_slice(set);
-        println!("{:?}", set.description());
+        println!("{:?}", set.desc());
         //        assert_eq!(1, set.len());
         let sum = set.iter().map(|v| v.as_i32()).sum();
         assert_eq!(10, sum);

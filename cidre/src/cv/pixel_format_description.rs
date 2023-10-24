@@ -116,7 +116,7 @@ mod tests {
 
         for f in all.iter() {
             let format = cv::PixelFormat::from_cf_number(f);
-            let desc = format.to_description().unwrap();
+            let desc = format.to_desc().unwrap();
             desc.show();
         }
     }

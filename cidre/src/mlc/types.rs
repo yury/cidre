@@ -160,7 +160,7 @@ pub enum ArithmeticOp {
 
 impl ArithmeticOp {
     #[inline]
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCArithmeticOperationDebugDescription(self) }
     }
 }
@@ -200,7 +200,7 @@ pub enum LossType {
 
 impl LossType {
     #[inline]
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCLossTypeDebugDescription(self) }
     }
 }
@@ -376,7 +376,7 @@ pub enum ActivationType {
 
 impl ActivationType {
     /// Returns a textual description of the arithmetic operation, suitable for debugging
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCActivationTypeDebugDescription(self) }
     }
 }
@@ -395,7 +395,7 @@ pub enum ConvolutionType {
 }
 
 impl ConvolutionType {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCConvolutionTypeDebugDescription(self) }
     }
 }
@@ -413,7 +413,7 @@ pub enum PaddingPolicy {
 
 impl PaddingPolicy {
     #[inline]
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCPaddingPolicyDebugDescription(self) }
     }
 }
@@ -432,7 +432,7 @@ pub enum PaddingType {
 }
 
 impl PaddingType {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCPaddingTypeDebugDescription(self) }
     }
 }
@@ -449,7 +449,7 @@ pub enum PoolingType {
 }
 
 impl PoolingType {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCPoolingTypeDebugDescription(self) }
     }
 }
@@ -481,7 +481,7 @@ pub enum ReductionType {
 
 impl ReductionType {
     #[inline]
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCReductionTypeDebugDescription(self) }
     }
 }
@@ -509,7 +509,7 @@ pub enum SampleMode {
 }
 
 impl SampleMode {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCSampleModeDebugDescription(self) }
     }
 }
@@ -525,7 +525,7 @@ pub enum SoftmaxOp {
 
 impl SoftmaxOp {
     #[inline]
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCSoftmaxOperationDebugDescription(self) }
     }
 }
@@ -541,7 +541,7 @@ pub enum LSTMResultMode {
 }
 
 impl LSTMResultMode {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCLSTMResultModeDebugDescription(self) }
     }
 }
@@ -564,7 +564,7 @@ pub enum ComparisonOp {
 }
 
 impl ComparisonOp {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCComparisonOperationDebugDescription(self) }
     }
 }
@@ -580,7 +580,7 @@ pub enum GradientClippingType {
 }
 
 impl GradientClippingType {
-    pub fn debug_description(self) -> &'static ns::String {
+    pub fn debug_desc(self) -> &'static ns::String {
         unsafe { MLCGradientClippingTypeDebugDescription(self) }
     }
 }
@@ -628,7 +628,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let desc = mlc::ActivationType::ReLU.debug_description();
+        let desc = mlc::ActivationType::ReLU.debug_desc();
         assert_eq!(desc.to_string(), "ReLU")
     }
 }

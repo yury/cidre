@@ -163,7 +163,7 @@ impl Component {
     }
 
     #[inline]
-    pub fn description(&self) -> Result<Desc, os::Status> {
+    pub fn desc(&self) -> Result<Desc, os::Status> {
         let mut desc = Desc::default();
         unsafe {
             let res = AudioComponentGetDescription(self, &mut desc);
@@ -245,7 +245,7 @@ mod tests {
         for c in desc.into_iter() {
             let name = c.name().unwrap();
             let version = c.version().unwrap();
-            let desc = c.description().unwrap();
+            let desc = c.desc().unwrap();
             println!("v. {version}: {name:?}\n {desc:?}");
         }
 

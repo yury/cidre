@@ -302,7 +302,7 @@ pub mod tests {
     use crate::cf;
 
     #[test]
-    pub fn description() {
+    pub fn desc() {
         let text = super::Error::TIME_OUT
             .text()
             .expect("description for error");

@@ -25,10 +25,10 @@ define_obj_type!(Format(ns::Id));
 
 impl arc::A<Format> {
     #[objc::msg_send(initWithStreamDescription:)]
-    pub fn init_with_stream_description(self, asbd: &StreamBasicDesc) -> Option<arc::R<Format>>;
+    pub fn init_with_stream_desc(self, asbd: &StreamBasicDesc) -> Option<arc::R<Format>>;
 
     #[objc::msg_send(initWithStreamDescription:channelLayout:)]
-    pub fn init_with_stream_description_channel_layout(
+    pub fn init_with_stream_desc_channel_layout(
         self,
         asbd: &StreamBasicDesc,
         layout: Option<&ChannelLayout>,
@@ -74,7 +74,7 @@ impl Format {
 
     /// If the format specifies more than 2 channels, this method fails (returns None).
     pub fn with_asbd(asbd: &StreamBasicDesc) -> Option<arc::R<Self>> {
-        Self::alloc().init_with_stream_description(asbd)
+        Self::alloc().init_with_stream_desc(asbd)
     }
 
     /// the channel layout. Can be None only if asbd specifies 1 or 2 channels.
@@ -82,7 +82,7 @@ impl Format {
         asbd: &StreamBasicDesc,
         layout: Option<&ChannelLayout>,
     ) -> Option<arc::R<Self>> {
-        Self::alloc().init_with_stream_description_channel_layout(asbd, layout)
+        Self::alloc().init_with_stream_desc_channel_layout(asbd, layout)
     }
 
     pub fn standard_with_sample_rate_and_channels(

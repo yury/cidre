@@ -163,7 +163,7 @@ impl FormatDesc {
 
     pub fn extension_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
-            let key = FormatDescExtensionKey::sample_description_extension_atoms();
+            let key = FormatDescExtensionKey::sample_desc_extension_atoms();
             transmute(self.extension(key))
         }
     }
@@ -194,7 +194,7 @@ impl FormatDesc {
         self.video_configuration("hvcC")
     }
 
-    pub fn verbatim_sample_description(&self) -> Option<&cf::Data> {
+    pub fn verbatim_sample_desc(&self) -> Option<&cf::Data> {
         unsafe {
             let key = FormatDescExtensionKey::verbatim_sample_desc();
             transmute(self.extension(key))
@@ -582,7 +582,7 @@ impl FormatDescExtensionKey {
     /// specific type) to cf::Arrays of cf::Data containing those payloads.
     ///
     /// cf::Dictionary of cf::String (four-char-code, atom type) -> ( cf::Data (atom payload) or cf::Array of cf::Data (atom payload) )
-    pub fn sample_description_extension_atoms() -> &'static Self {
+    pub fn sample_desc_extension_atoms() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms }
     }
 

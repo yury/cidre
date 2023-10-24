@@ -265,8 +265,8 @@ impl PixelFormat {
         Self(number.to_i32().unwrap_or(0) as u32)
     }
 
-    pub fn to_description(&self) -> Option<arc::R<cf::Dictionary>> {
-        cv::pixel_format_description_create(*self)
+    pub fn to_desc(&self) -> Option<arc::R<cf::Dictionary>> {
+        cv::pixel_format_desc_create(*self)
     }
 
     #[inline]

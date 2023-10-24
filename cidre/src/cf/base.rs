@@ -52,11 +52,11 @@ pub enum ComparisonResult {
 /// let s = cf::Number::from_i32(10);//from_static_string("hello").unwrap();
 /// let t = s.get_type_id();
 /// unsafe {
-///     let desc = cf::copy_type_id_description(t).unwrap();
+///     let desc = cf::copy_type_id_desc(t).unwrap();
 ///     assert_eq!("CFNumber", desc.to_string());
 /// }
 /// ```
-pub unsafe fn copy_type_id_description(type_id: TypeId) -> Option<arc::R<String>> {
+pub unsafe fn copy_type_id_desc(type_id: TypeId) -> Option<arc::R<String>> {
     CFCopyTypeIDDescription(type_id)
 }
 
@@ -118,14 +118,14 @@ impl Type {
     }
 
     #[inline]
-    pub fn description(&self) -> arc::R<String> {
+    pub fn desc(&self) -> arc::R<String> {
         unsafe { CFCopyDescription(Some(self)).unwrap_unchecked() }
     }
 }
 
 impl Debug for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let desc = self.description();
+        let desc = self.desc();
         f.debug_tuple("cf::Type")
             .field(&Cow::from(desc.as_ref()))
             .finish()
@@ -466,8 +466,8 @@ mod tests {
             std::mem::drop(retained);
         }
 
-        extern "C" fn copy_description(info: *const cf::Allocator) -> Option<arc::R<cf::String>> {
-            unsafe { info.as_ref().map(|a| a.description()) }
+        extern "C" fn copy_desc(info: *const cf::Allocator) -> Option<arc::R<cf::String>> {
+            unsafe { info.as_ref().map(|a| a.desc()) }
         }
 
         extern "C" fn allocate(
@@ -515,7 +515,7 @@ mod tests {
             info: system as *const _,
             retain: Some(retain),
             release: Some(release),
-            copy_description: Some(copy_description),
+            copy_description: Some(copy_desc),
             allocate,
             reallocate,
             deallocate: Some(deallocate),

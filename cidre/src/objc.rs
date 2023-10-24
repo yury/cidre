@@ -84,16 +84,16 @@ pub trait Obj: Sized + arc::Retain {
     }
 
     #[msg_send(description)]
-    fn description_ar(&self) -> arc::Rar<crate::ns::String>;
+    fn desc_ar(&self) -> arc::Rar<crate::ns::String>;
 
     #[rar_retain]
-    fn description(&self) -> arc::R<crate::ns::String>;
+    fn desc(&self) -> arc::R<crate::ns::String>;
 
     #[msg_send(debugDescription)]
-    fn debug_description_ar(&self) -> arc::Rar<crate::ns::String>;
+    fn debug_desc_ar(&self) -> arc::Rar<crate::ns::String>;
 
     #[rar_retain]
-    fn debug_description(&self) -> arc::R<crate::ns::String>;
+    fn debug_desc(&self) -> arc::R<crate::ns::String>;
 
     #[msg_send(respondsToSelector:)]
     fn responds_to_sel(&self, sel: &Sel) -> bool;
@@ -141,7 +141,7 @@ impl Obj for Id {}
 
 impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let desc = self.description();
+        let desc = self.desc();
         f.debug_tuple("NS").field(&Cow::from(desc.as_cf())).finish()
     }
 }
@@ -474,7 +474,7 @@ mod tests2 {
         {
             let d = Bla::with(D);
             let r = d.retained();
-            let desc = d.description();
+            let desc = d.desc();
             assert!(desc.to_string().starts_with("<BLA_USIZE: "));
         }
         assert!(unsafe { DROP_CALLED });

@@ -52,7 +52,8 @@ impl Port {
 pub mod port_notifications {
     use crate::cf;
 
-    pub fn format_description_did_change() -> &'static cf::NotificationName {
+    #[doc(alias = "AVCaptureInputPortFormatDescriptionDidChangeNotification")]
+    pub fn format_desc_did_change() -> &'static cf::NotificationName {
         unsafe { AVCaptureInputPortFormatDescriptionDidChangeNotification }
     }
 

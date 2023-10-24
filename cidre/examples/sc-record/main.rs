@@ -24,7 +24,7 @@ impl FrameCounterInner {
 
     fn handle_audio(&mut self, sample_buf: &mut cm::SampleBuf) {
         if self.audio_counter == 0 {
-            let format_desc = sample_buf.format_description().unwrap();
+            let format_desc = sample_buf.format_desc().unwrap();
             let sbd = format_desc.stream_basic_desc().unwrap();
             println!("{:?}", sbd);
             self.audio_converter = configured_converter(sbd);
@@ -229,7 +229,7 @@ impl RecordContext {
     pub fn handle_sample_buffer(&mut self, buffer: &cm::SampleBuf) {
         if self.frames_count % 1000 == 0 {
             if self.format_desc.is_none() {
-                let desc = buffer.format_description().unwrap() as &cm::VideoFormatDesc;
+                let desc = buffer.format_desc().unwrap() as &cm::VideoFormatDesc;
 
                 // let buf = desc
                 //     .as_be_image_desc_cm_buffer(Some(cm::ImageDescriptionFlavor::iso_family()))

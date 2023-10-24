@@ -100,12 +100,12 @@ impl Time {
     }
 
     #[inline]
-    pub fn description_in(&self, allocator: Option<&Allocator>) -> Option<arc::R<String>> {
+    pub fn desc_in(&self, allocator: Option<&Allocator>) -> Option<arc::R<String>> {
         unsafe { CMTimeCopyDescription(allocator, *self) }
     }
 
     #[inline]
-    pub fn description(&self) -> Option<arc::R<String>> {
+    pub fn desc(&self) -> Option<arc::R<String>> {
         unsafe { CMTimeCopyDescription(None, *self) }
     }
 

@@ -147,7 +147,7 @@ impl CompressedBuf {
     ///
     /// If the format has constant bytes per packet (format.streamDescription->mBytesPerPacket != 0), then this will return nil.
     #[objc::msg_send(packetDescriptions)]
-    pub fn packet_descriptions(&self) -> Option<&StreamPacketDesc>;
+    pub fn packet_descs(&self) -> Option<&StreamPacketDesc>;
 
     #[objc::msg_send(data)]
     pub fn data(&self) -> *const c_void;

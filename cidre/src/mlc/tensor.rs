@@ -11,7 +11,7 @@ impl Tensor {
     pub fn tensor_id(&self) -> usize;
 
     #[objc::msg_send(descriptor)]
-    pub fn descriptor(&self) -> &mlc::TensorDesc;
+    pub fn desc(&self) -> &mlc::TensorDesc;
 
     #[objc::msg_send(data)]
     pub fn data(&self) -> Option<&ns::Data>;

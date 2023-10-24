@@ -26,7 +26,7 @@ impl TimeEffect {
     #[objc::msg_send(setBypass:)]
     pub fn set_bypass(&mut self, value: bool);
 
-    pub fn with_component_description(description: at::audio::ComponentDesc) -> arc::R<Self> {
+    pub fn with_component_desc(description: at::audio::ComponentDesc) -> arc::R<Self> {
         Self::alloc().init_with_audio_component_desc(description)
     }
 }

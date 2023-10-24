@@ -685,7 +685,7 @@ impl CodecRef {
 
     #[doc(alias = "AudioCodecProduceOutputBufferList")]
     #[inline]
-    pub fn produce_buffer_list_with_descriptions(
+    pub fn produce_buffer_list_with_descs(
         &mut self,
         buffer_list: &mut audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDesc],

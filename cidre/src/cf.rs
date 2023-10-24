@@ -2,7 +2,7 @@ mod runtime;
 pub use runtime::Type;
 
 pub mod base;
-pub use base::copy_type_id_description;
+pub use base::copy_type_id_desc;
 pub use base::Allocator;
 pub use base::AllocatorAllocateCallBack;
 pub use base::AllocatorContext;

@@ -33,7 +33,7 @@ impl ColorSpace {
     /// let type_id = cg::ColorSpace::type_id();
     ///
     /// unsafe {
-    ///     let type_desc = cf::copy_type_id_description(type_id).unwrap();
+    ///     let type_desc = cf::copy_type_id_desc(type_id).unwrap();
     ///     assert_eq!("CGColorSpace", type_desc.to_string());
     /// }
     /// ```

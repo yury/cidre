@@ -28,7 +28,7 @@ fn main() {
     println!("device id: {:?}", device_id);
     let formats = device.formats();
     for f in formats.iter() {
-        let format_description = f.format_description();
+        let format_description = f.format_desc();
         let resolution = format_description.dimensions();
         println!("resolution: {:?}", resolution);
 

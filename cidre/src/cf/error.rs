@@ -42,7 +42,7 @@ impl Error {
     }
 
     #[inline]
-    pub fn description(&self) -> arc::R<cf::String> {
+    pub fn desc(&self) -> arc::R<cf::String> {
         unsafe { CFErrorCopyDescription(self) }
     }
 

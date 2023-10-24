@@ -13,7 +13,7 @@ impl arc::A<Effect> {
 impl Effect {
     define_cls!(AV_AUDIO_UNIT_EFFECT);
 
-    pub fn with_component_description(description: at::audio::ComponentDesc) -> arc::R<Self> {
+    pub fn with_component_desc(description: at::audio::ComponentDesc) -> arc::R<Self> {
         Self::alloc().init_with_audio_component_desc(description)
     }
 
