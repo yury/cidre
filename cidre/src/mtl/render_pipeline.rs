@@ -2,7 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
-use super::{argument::Argument, Fn, PixelFormat};
+use super::{argument::Arg, Fn, PixelFormat};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
@@ -152,13 +152,13 @@ define_obj_type!(Reflection(ns::Id));
 
 impl Reflection {
     #[objc::msg_send(vertexArguments)]
-    pub fn vertex_args(&self) -> Option<&ns::Array<Argument>>;
+    pub fn vertex_args(&self) -> Option<&ns::Array<Arg>>;
 
     #[objc::msg_send(fragmentArguments)]
-    pub fn fragment_args(&self) -> Option<&ns::Array<Argument>>;
+    pub fn fragment_args(&self) -> Option<&ns::Array<Arg>>;
 
     #[objc::msg_send(tileArguments)]
-    pub fn tile_args(&self) -> Option<&ns::Array<Argument>>;
+    pub fn tile_args(&self) -> Option<&ns::Array<Arg>>;
 }
 
 define_obj_type!(Desc(ns::Id), MTL_RENDER_PIPELINE_DESCRIPTOR);

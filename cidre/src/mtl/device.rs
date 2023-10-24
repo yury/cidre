@@ -23,7 +23,7 @@ pub enum ReadWriteTextureTier {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
-pub enum ArgumentBufsTier {
+pub enum ArgBufsTier {
     _1 = 0,
     _2 = 1,
 }
@@ -72,7 +72,7 @@ impl Device {
     pub fn read_write_texture_support(&self) -> ReadWriteTextureTier;
 
     #[objc::msg_send(argumentBuffersSupport)]
-    pub fn argument_bufs_support(&self) -> ArgumentBufsTier;
+    pub fn argument_bufs_support(&self) -> ArgBufsTier;
 
     #[objc::msg_send(newCommandQueue)]
     pub fn new_cmd_queue(&self) -> Option<arc::R<CmdQueue>>;
@@ -364,7 +364,7 @@ mod tests {
         assert_ne!(tier, mtl::ReadWriteTextureTier::None);
 
         let tier = device.argument_bufs_support();
-        assert_ne!(tier, mtl::ArgumentBufsTier::_1);
+        assert_ne!(tier, mtl::ArgBufsTier::_1);
 
         assert!(device.new_default_lib().is_none());
 

@@ -1,8 +1,8 @@
 use crate::{define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(ArgumentEncoder(ns::Id));
+define_obj_type!(ArgEncoder(ns::Id));
 
-impl ArgumentEncoder {
+impl ArgEncoder {
     define_mtl!(device, label, set_label);
 
     #[objc::msg_send(encodedLength)]

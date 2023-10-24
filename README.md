@@ -24,20 +24,21 @@
 
 ### Shortcuts
 
-- length -> len
-- count -> len
-- source -> src
-- destination -> dst
+- argument -> arg
 - buffer -> buf
+- command -> cmd
+- count -> len
+- descriptor -> desc
+- destination -> dst
+- error -> err
+- length -> len
 - mutable -> mut
 - operation -> op
-- error -> err
 - options -> opts
-- command -> cmd
 - pointer -> ptr
-- throws -> _throws (not shortcut but indicator of exception)
-- descriptor -> desc
+- source -> src
 - surface - surf
+- throws -> _throws (not shortcut but indicator of exception)
 
 ## About
 

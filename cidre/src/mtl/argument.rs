@@ -152,9 +152,9 @@ define_obj_type!(ArrayType(BaseType));
 define_obj_type!(PointerType(BaseType));
 define_obj_type!(TextureReferenceType(BaseType));
 
-define_obj_type!(Argument(ns::Id));
+define_obj_type!(Arg(ns::Id));
 
-impl Argument {
+impl Arg {
     #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 }

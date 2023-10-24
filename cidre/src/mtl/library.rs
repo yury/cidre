@@ -169,10 +169,7 @@ impl Fn {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
-    pub fn new_argument_enc_with_buf_index(
-        &self,
-        index: ns::UInteger,
-    ) -> arc::R<mtl::ArgumentEncoder>;
+    pub fn new_argument_enc_with_buf_index(&self, index: ns::UInteger) -> arc::R<mtl::ArgEncoder>;
 
     #[objc::msg_send(functionType)]
     pub fn fn_type(&self) -> mtl::FnType;

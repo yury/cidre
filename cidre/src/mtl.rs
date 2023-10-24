@@ -23,7 +23,7 @@ mod pixel_format;
 pub use pixel_format::PixelFormat;
 
 mod argument;
-pub use argument::Access as ArgumentAccess;
+pub use argument::Access as ArgAccess;
 pub use argument::ArrayType;
 pub use argument::BaseType;
 pub use argument::DataType;
@@ -31,7 +31,7 @@ pub use argument::PointerType;
 pub use argument::StructMember;
 pub use argument::StructType;
 pub use argument::TextureReferenceType;
-pub use argument::Type as ArgumentType;
+pub use argument::Type as ArgType;
 
 mod resource;
 pub use resource::Options as ResourceOptions;
@@ -83,7 +83,7 @@ pub use texture::Type as TextureType;
 pub use texture::Usage as TextureUsage;
 
 mod device;
-pub use device::ArgumentBufsTier;
+pub use device::ArgBufsTier;
 pub use device::Device;
 pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
@@ -100,7 +100,7 @@ mod function_handle;
 pub use function_handle::FnHandle;
 
 mod argument_encoder;
-pub use argument_encoder::ArgumentEncoder;
+pub use argument_encoder::ArgEncoder;
 
 mod buffer;
 pub use buffer::Buf;
@@ -165,9 +165,9 @@ pub use blit_command_encoder::BlitOption;
 mod render_command_encoder;
 pub use render_command_encoder::CullMode;
 pub use render_command_encoder::DepthClipMode;
-pub use render_command_encoder::DrawIndexedPrimitivesIndirectArguments;
-pub use render_command_encoder::DrawPatchIndirectArguments;
-pub use render_command_encoder::DrawPrimitivesIndirectArguments;
+pub use render_command_encoder::DrawIndexedPrimitivesIndirectArgs;
+pub use render_command_encoder::DrawPatchIndirectArgs;
+pub use render_command_encoder::DrawPrimitivesIndirectArgs;
 pub use render_command_encoder::PrimitiveType;
 pub use render_command_encoder::QuadTessellationFactorsHalf;
 pub use render_command_encoder::RenderCmdEncoder;

@@ -103,7 +103,7 @@ pub enum TriangleFillMode {
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
-pub struct DrawPrimitivesIndirectArguments {
+pub struct DrawPrimitivesIndirectArgs {
     pub vertex_count: u32,
     pub instance_count: u32,
     pub vertex_start: u32,
@@ -112,7 +112,7 @@ pub struct DrawPrimitivesIndirectArguments {
 
 #[derive(Debug)]
 #[repr(C)]
-pub struct DrawIndexedPrimitivesIndirectArguments {
+pub struct DrawIndexedPrimitivesIndirectArgs {
     pub index_count: u32,
     pub instance_count: u32,
     pub index_start: u32,
@@ -129,7 +129,7 @@ pub struct VertexAmplificationViewMapping {
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
-pub struct DrawPatchIndirectArguments {
+pub struct DrawPatchIndirectArgs {
     pub patch_count: u32,
     pub instance_count: u32,
     pub patch_start: u32,

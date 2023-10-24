@@ -23,7 +23,7 @@ impl ExceptionName {
     /// Name of an exception that occurs when you pass an invalid argument
     /// to a method, such as a nil pointer where a non-nil object is required.
     #[doc(alias = "NSInvalidArgumentException")]
-    pub fn invalid_argument() -> &'static Self {
+    pub fn invalid_arg() -> &'static Self {
         unsafe { NSInvalidArgumentException }
     }
 
