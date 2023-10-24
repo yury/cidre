@@ -72,7 +72,7 @@ impl Device {
     pub fn read_write_texture_support(&self) -> ReadWriteTextureTier;
 
     #[objc::msg_send(argumentBuffersSupport)]
-    pub fn argument_buffers_support(&self) -> ArgumentBufsTier;
+    pub fn argument_bufs_support(&self) -> ArgumentBufsTier;
 
     #[objc::msg_send(newCommandQueue)]
     pub fn new_cmd_queue(&self) -> Option<arc::R<CmdQueue>>;
@@ -363,7 +363,7 @@ mod tests {
         let tier = device.read_write_texture_support();
         assert_ne!(tier, mtl::ReadWriteTextureTier::None);
 
-        let tier = device.argument_buffers_support();
+        let tier = device.argument_bufs_support();
         assert_ne!(tier, mtl::ArgumentBufsTier::_1);
 
         assert!(device.new_default_lib().is_none());
