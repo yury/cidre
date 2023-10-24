@@ -233,35 +233,22 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_32BGRA")]
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
 
-    #[doc(alias = "kCVPixelFormatType_Lossless_32BGRA")]
-    pub const LOSSLESS_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"&GRA"));
-
-    #[doc(alias = "kCVPixelFormatType_Lossy_32BGRA")]
-    pub const LOSSY_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"-GRA"));
-
+    /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, video-range (luma=[16,235] chroma=[16,240]).
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
     pub const _420V: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
-    // TODO: how we can optimize that agly long consts?
+
+    /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, full-range (luma=[0,255] chroma=[1,255]).  baseAddr points to a big-endian
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarFullRange")]
     pub const _420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarFullRange")]
     pub const _420F: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
-    pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
-        Self(os::Type::from_be_bytes(*b"-8v0"));
 
-    pub const LOSSY_420V: Self = Self::LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
-
-    pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self =
-        Self(os::Type::from_be_bytes(*b"-8f0"));
-
-    pub const LOSSY_420F: Self = Self::LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
-
+    /// 2 plane YCbCr10 4:2:0, each 10 bits in the MSBs of 16bits, video-range (luma=[64,940] chroma=[64,960])
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange")]
     pub const _420_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x420"));
-    pub const LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
-        Self(os::Type::from_be_bytes(*b"-xv0"));
-
-    pub const LOSSY_PACKED_10_420V: Self = Self::LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
-    pub const LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
-        Self(os::Type::from_be_bytes(*b"-xv2"));
 
     pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
 
@@ -292,6 +279,135 @@ impl PixelFormat {
     pub fn is_compressed_avaliable(&self) -> bool {
         unsafe { CVIsCompressedPixelFormatAvailable(*self) }
     }
+}
+
+/// Lossless-Compressed Pixel Formats
+///
+/// The following pixel formats can be used to reduce the memory bandwidth involved
+/// in large-scale pixel data flow, which can have benefits for battery life and
+/// thermal efficiency.
+///
+/// They work by dividing pixel buffers into fixed-width, fixed-height, fixed-byte-size
+/// blocks.  Hardware units (video codecs, GPU, ISP, etc.) attempt to write a compressed
+/// encoding for each block using a lossless algorithm.  If a block of pixels is successfully
+/// encoded using fewer bytes than the uncompressed pixel data, the hardware unit does not need
+/// to write as many bytes for that pixel block.  If the encoding is unsuccessful,
+/// the uncompressed pixel data is written, filling the whole pixel block.  Each compressed
+/// pixel buffer has a separate area of metadata recording the encoding choices for each pixel
+/// block.
+///
+/// Padding bits are eliminated, so for example, 10-bit-per-component lossless-compressed pixel
+/// buffers are slightly smaller than their uncompressed equivalents. For pixel formats with
+/// no padding, the lossless-compressed pixel buffers are slightly larger due to the metadata.
+///
+/// # Important caveats:
+///
+/// Some devices do not support these pixel formats at all.
+/// Before using one of these pixel formats, call `.is_compressed_vailable()` to check that it
+/// is available on the current device.
+///
+/// On different devices, the concrete details of these formats may be different.
+///
+/// On different devices, the degree and details of support by hardware units (video codecs, GPU, ISP, etc.)
+/// may be different.
+///
+/// Do not ship code that reads the contents of lossless-compressed pixel buffers directly
+/// with the CPU, or which saves or transfers it to other devices, as this code will break
+/// with future hardware.
+///
+/// The bandwidth benefits of these formats are generally outweighed by the cost of buffer
+/// copies to convert to uncompressed pixel formats, so if you find that you need to perform
+/// a buffer copy to covert for CPU usage, it's likely that you would have been better served
+/// by using the equivalent uncompressed pixel formats in the first place.
+impl PixelFormat {
+    /// Lossless-compressed form of 'cv::PixelFormat::_32BGRA'
+    #[doc(alias = "kCVPixelFormatType_Lossless_32BGRA")]
+    pub const LOSSLESS_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"&BGA"));
+
+    /// Lossless-compressed form of 'cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE'.
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange")]
+    pub const LOSSLESS_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"&8v0"));
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange")]
+    pub const LOSSLESS_420V: Self = Self::LOSSLESS_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
+
+    /// Lossless-compressed form of 'cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE'
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarFullRange")]
+    pub const LOSSLESS_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"&8f0"));
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarFullRange")]
+    pub const LOSSLESS_420F: Self = Self::LOSSLESS_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
+
+    /// Lossless-compressed-packed form of 'cv::PixelFormat::_420_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE'.
+    /// Format is compressed-packed with no padding bits between pixels.
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSLESS_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"&xv0"));
+
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSLESS_PACKED_10_420V: Self =
+        Self::LOSSLESS_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
+
+    /// Lossless-compressed form of 'cv::PixelFormat::_422_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE'.
+    /// Format is compressed-packed with no padding bits between pixels.
+    #[doc(alias = "kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSLESS_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"&xv2"));
+}
+
+/// Lossy-Compressed Pixel Formats
+///
+/// The following pixel formats can be used to reduce memory bandwidth and memory footprint
+/// involved in large-scale pixel data flow, which can have benefits for battery life
+/// and thermal efficiency.
+///
+/// Similar to lossless pixel formats, they work by dividing pixel buffers into fixed-width,
+/// fixed-height, fixed-byte-size blocks. Pixel buffers allocated using lossy formats have
+/// reduced memory footprint than their lossless equivalents; this reduced footprint may or
+/// may not result in loss of quality depending on the content of the individual block.
+/// Hardware units (video codecs, GPU, ISP, etc.) attempt to write a compressed encoding
+/// for each block using either a lossless or lossy algorithm. If a block of pixels is
+/// successfully encoded within its pre-defined memory footprint, then the lossless alogrithm
+/// is applied; if the encoded block of pixels exceeds the pre-defined memory footprint then
+/// the lossy algorithm is applied. Each compressed pixel buffer has a separate area of
+/// metadata recording the encoding choices for each pixel block.
+impl PixelFormat {
+    /// Lossy-compressed form of `cv::PixelFormat::_32_BGRA`.
+    #[doc(alias = "kCVPixelFormatType_Lossy_32BGRA")]
+    pub const LOSSY_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"-GRA"));
+
+    /// Lossy-compressed form of `cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE`.
+    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr8BiPlanarVideoRange")]
+    pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-8v0"));
+
+    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr8BiPlanarVideoRange")]
+    pub const LOSSY_420V: Self = Self::LOSSY_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
+
+    /// Lossy-compressed form of `cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE`.
+    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr8BiPlanarFullRange")]
+    pub const LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-8f0"));
+
+    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr8BiPlanarFullRange")]
+    pub const LOSSY_420F: Self = Self::LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
+
+    /// Lossy-compressed form of `cv::PixelFormat::_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE`.
+    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-xv0"));
+
+    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSY_PACKED_10_420V: Self = Self::LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
+
+    /// Lossy-compressed form of `cv::PixelFormat::_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE`.
+    /// Format is compressed-packed with no padding bits between pixels.
+    #[doc(alias = "kCVPixelFormatType_Lossy_422YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"-xv2"));
+
+    #[doc(alias = "kCVPixelFormatType_Lossy_422YpCbCr10PackedBiPlanarVideoRange")]
+    pub const LOSSY_PACKED_10_422V: Self = Self::LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
 }
 
 extern "C" {
@@ -403,5 +519,9 @@ mod tests {
         assert!(PixelFormat::LOSSY_420V.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420F.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_avaliable());
+
+        assert!(PixelFormat::LOSSLESS_420V.is_compressed_avaliable());
+        assert!(PixelFormat::LOSSLESS_420F.is_compressed_avaliable());
+        assert!(PixelFormat::LOSSLESS_PACKED_10_420V.is_compressed_avaliable());
     }
 }

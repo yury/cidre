@@ -23,7 +23,7 @@ fn main() {
     let mut video_output = av::capture::VideoDataOutput::new();
     video_output.set_always_discard_late_video_frames(true);
 
-    assert!(video_output.sample_buffer_callback_queue().is_none());
+    assert!(video_output.sample_buf_callback_queue().is_none());
 
     println!("{:?}", video_output.available_video_cv_pixel_formats());
     println!("{:?}", video_output.available_video_codecs());

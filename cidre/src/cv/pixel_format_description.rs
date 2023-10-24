@@ -1,16 +1,5 @@
 use crate::{arc, cf, cv};
 
-/// ```no_run
-/// use cidre::cv;
-///
-/// let format = cv::PixelFormat::LOSSY_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
-/// assert_eq!(false, cv::compressed_pixel_format_available(format));
-///
-/// ```
-pub fn avaiable_compressed(pixel_format: cv::PixelFormat) -> bool {
-    unsafe { CVIsCompressedPixelFormatAvailable(pixel_format) }
-}
-
 /// ```
 /// use cidre::cv;
 ///
@@ -29,7 +18,6 @@ pub fn all_pixel_formats() -> Option<arc::R<cf::ArrayOf<cf::Number>>> {
 }
 
 extern "C" {
-    fn CVIsCompressedPixelFormatAvailable(pixel_format: cv::PixelFormat) -> bool;
     fn CVPixelFormatDescriptionCreateWithPixelFormatType(
         allocator: Option<&cf::Allocator>,
         pixel_format: cv::PixelFormat,
@@ -127,9 +115,9 @@ mod tests {
         all.show();
 
         for f in all.iter() {
-            let num = cv::PixelFormat::from_cf_number(f);
-            let desc = num.to_description();
-            assert!(desc.is_some())
+            let format = cv::PixelFormat::from_cf_number(f);
+            let desc = format.to_description().unwrap();
+            desc.show();
         }
     }
 }

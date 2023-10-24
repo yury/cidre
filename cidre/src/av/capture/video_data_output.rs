@@ -41,16 +41,16 @@ impl VideoDataOutput {
 
     /// Indicates whether the receiver automatically configures the size of output buffers.
     #[objc::msg_send(automaticallyConfiguresOutputBufferDimensions)]
-    pub fn automatically_configures_output_buffer_dimensions(&self) -> bool;
+    pub fn automatically_configures_output_buf_dimensions(&self) -> bool;
 
     #[objc::msg_send(setAutomaticallyConfiguresOutputBufferDimensions:)]
-    pub fn set_automatically_configures_output_buffer_dimensions(&mut self, value: bool);
+    pub fn set_automatically_configures_output_buf_dimensions(&mut self, value: bool);
 
     #[objc::msg_send(deliversPreviewSizedOutputBuffers)]
-    pub fn delivers_preview_sized_output_buffers(&self) -> bool;
+    pub fn delivers_preview_sized_output_bufs(&self) -> bool;
 
     #[objc::msg_send(setDeliversPreviewSizedOutputBuffers:)]
-    pub fn set_delivers_preview_sized_output_buffers(&mut self, value: bool);
+    pub fn set_delivers_preview_sized_output_bufs(&mut self, value: bool);
 
     /// Indicates the supported video pixel formats that can be specified in videoSettings.
     ///
@@ -74,7 +74,7 @@ impl VideoDataOutput {
 
     /// The dispatch queue on which all sample buffer delegate methods will be called.
     #[objc::msg_send(sampleBufferCallbackQueue)]
-    pub fn sample_buffer_callback_queue(&self) -> Option<&dispatch::Queue>;
+    pub fn sample_buf_callback_queue(&self) -> Option<&dispatch::Queue>;
 
     #[objc::msg_send(videoSettings)]
     pub fn video_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;

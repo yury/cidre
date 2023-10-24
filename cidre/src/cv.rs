@@ -28,7 +28,6 @@ pub use pixel_buffer_pool::PixelBufPool;
 
 pub mod pixel_format_description;
 pub use pixel_format_description::all_pixel_formats as pixel_format_description_array_with_all_pixel_format_types;
-pub use pixel_format_description::avaiable_compressed as compressed_pixel_format_available;
 pub use pixel_format_description::create as pixel_format_description_create;
 
 #[cfg(feature = "mtl")]
