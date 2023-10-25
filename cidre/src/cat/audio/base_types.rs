@@ -687,6 +687,7 @@ impl TimeStampFlags {
 }
 
 /// This structure is used to describe codecs installed on the system.
+#[doc(alias = "AudioClassDescription")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
 pub struct ClassDesc {
@@ -699,6 +700,7 @@ pub struct ClassDesc {
 }
 
 /// A tag identifying how the channel is to be used.
+#[doc(alias = "AudioChannelLabel")]
 #[derive(Debug, PartialEq, Eq, Default, Copy, Clone)]
 #[repr(transparent)]
 pub struct ChannelLabel(pub u32);
@@ -852,6 +854,7 @@ impl ChannelLabel {
 
 /// These constants are for use in the mChannelBitmap field of an
 /// AudioChannelLayout structure
+#[doc(alias = "AudioChannelBitmap")]
 #[derive(Debug, PartialEq, Eq, Default)]
 #[repr(transparent)]
 pub struct ChannelBitmap(pub u32);
@@ -908,6 +911,7 @@ impl ChannelFlags {
 
 /// Constants for indexing the mCoordinates array in an AudioChannelDescription
 /// structure.
+#[doc(alias = "AudioChannelCoordinateIndex")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ChannelCoordinateIndex(pub u32);
@@ -963,6 +967,7 @@ impl ChannelCoordinateIndex {
 /// Rtr - right top rear
 /// Lt - left matrix total. for matrix encoded stereo.
 /// Rt - right matrix total. for matrix encoded stereo.
+#[doc(alias = "AudioChannelLayoutTag")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct ChannelLayoutTag(pub u32);
@@ -1393,6 +1398,7 @@ impl ChannelLayoutTag {
 }
 
 /// This structure describes a single channel.
+#[doc(alias = "AudioChannelDescription")]
 #[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
 pub struct ChannelDesc {
@@ -1406,6 +1412,7 @@ pub struct ChannelDesc {
     pub coordinates: [f32; 3],
 }
 
+#[doc(alias = "AudioChannelLayout")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct ChannelLayout<const N: usize> {
@@ -1415,6 +1422,7 @@ pub struct ChannelLayout<const N: usize> {
     pub channel_descriptions: [ChannelDesc; N],
 }
 
+#[doc(alias = "AudioFormatListItem")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct FormatListItem {
@@ -1422,11 +1430,12 @@ pub struct FormatListItem {
     pub channel_layout_tag: ChannelLayoutTag,
 }
 
+#[doc(alias = "MPEG4ObjectID")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct MPEG4ObjectID(pub c_long);
+pub struct Mpeg4Object(pub c_long);
 
-impl MPEG4ObjectID {
+impl Mpeg4Object {
     pub const AAC_MAIN: Self = Self(1);
     pub const AAC_LC: Self = Self(2);
     pub const AAC_SSR: Self = Self(3);

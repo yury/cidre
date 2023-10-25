@@ -86,8 +86,8 @@ impl PixelBuf {
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormat,
-        pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<arc::R<PixelBuf>>,
+        pixel_buf_attrs: Option<&cf::Dictionary>,
+        pixel_buf_out: &mut Option<arc::R<PixelBuf>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         unsafe {
@@ -96,8 +96,8 @@ impl PixelBuf {
                 width,
                 height,
                 pixel_format_type,
-                pixel_buffer_attributes,
-                pixel_buffer_out,
+                pixel_buf_attrs,
+                pixel_buf_out,
             )
         }
     }
@@ -152,17 +152,13 @@ impl PixelBuf {
     #[inline]
     pub fn with_io_surf_in(
         surface: &io::Surf,
-        pixel_buffer_attributes: Option<&cf::Dictionary>,
+        pixel_buf_attrs: Option<&cf::Dictionary>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<Self>, cv::Return> {
         let mut buffer = None;
         unsafe {
-            let res = CVPixelBufferCreateWithIOSurface(
-                allocator,
-                surface,
-                pixel_buffer_attributes,
-                &mut buffer,
-            );
+            let res =
+                CVPixelBufferCreateWithIOSurface(allocator, surface, pixel_buf_attrs, &mut buffer);
             if res.is_ok() {
                 Ok(buffer.unwrap_unchecked())
             } else {
