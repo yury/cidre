@@ -82,7 +82,7 @@ impl Url {
 
     #[cfg(feature = "cf")]
     #[inline]
-    pub fn as_cf(&self) -> &cf::URL {
+    pub fn as_cf(&self) -> &cf::Url {
         unsafe { std::mem::transmute(self) }
     }
 }

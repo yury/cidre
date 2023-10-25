@@ -63,7 +63,7 @@ impl Device {
 
     pub fn secure_install_application(
         &self,
-        url: &cf::URL,
+        url: &cf::Url,
         options: &cf::Dictionary,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -81,7 +81,7 @@ impl Device {
 
     pub fn secure_transfer_path(
         &self,
-        url: &cf::URL,
+        url: &cf::Url,
         options: &cf::Dictionary,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -385,7 +385,7 @@ extern "C" {
     fn AMDeviceSecureInstallApplication(
         zero: i32,
         device: &Device,
-        url: &cf::URL,
+        url: &cf::Url,
         options: &cf::Dictionary,
         callback: *const c_void,
         cbarg: *const c_void,
@@ -394,7 +394,7 @@ extern "C" {
     fn AMDeviceSecureTransferPath(
         zero: i32,
         device: &Device,
-        url: &cf::URL,
+        url: &cf::Url,
         options: &cf::Dictionary,
         callback: *const c_void,
         cbarg: *const c_void,

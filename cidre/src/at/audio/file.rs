@@ -207,7 +207,7 @@ impl FileID {
     /// Upon success, an AudioFileID is returned which can be used for subsequent calls
     /// to the AudioFile APIs.
     pub fn create(
-        url: &cf::URL,
+        url: &cf::Url,
         type_id: FileTypeID,
         format: &audio::StreamBasicDesc,
         flags: Flags,
@@ -232,7 +232,7 @@ impl FileID {
     ///                 In all earlier versions, any attempt to open these files fails
     #[doc(alias = "AudioFileOpenURL")]
     pub fn open(
-        url: &cf::URL,
+        url: &cf::Url,
         permissions: Permissions,
         type_hint: FileTypeID,
     ) -> Result<Self, os::Status> {
@@ -659,7 +659,7 @@ pub enum Permissions {
 #[link(name = "AudioToolbox", kind = "framework")]
 extern "C" {
     fn AudioFileCreateWithURL(
-        in_file_url: &cf::URL,
+        in_file_url: &cf::Url,
         in_file_type: FileTypeID,
         in_format: &audio::StreamBasicDesc,
         in_flags: Flags,
@@ -669,7 +669,7 @@ extern "C" {
     fn AudioFileClose(file: *const OpaqueFileID) -> os::Status;
 
     fn AudioFileOpenURL(
-        file_url: &cf::URL,
+        file_url: &cf::Url,
         permissions: Permissions,
         file_type_hint: FileTypeID,
         out_audio_file: &mut Option<FileID>,
@@ -723,7 +723,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let path = cf::URL::from_str("file:///tmp/m4a.m4a").unwrap();
+        let path = cf::Url::from_str("file:///tmp/m4a.m4a").unwrap();
 
         let asbd = audio::StreamBasicDesc {
             format: audio::Format::MPEG4_AAC,

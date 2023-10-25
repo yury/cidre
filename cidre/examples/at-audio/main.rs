@@ -117,7 +117,7 @@ fn encode(args: &EncodeArgs) {
     let true = args.src.is_file() else {
         return eprintln!("src file doesn't exists `{}`", args.src.to_string_lossy());
     };
-    let src = cf::URL::with_path(args.src.as_path(), false).unwrap();
+    let src = cf::Url::with_path(args.src.as_path(), false).unwrap();
     let src_file =
         audio::FileID::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
@@ -145,7 +145,7 @@ fn encode(args: &EncodeArgs) {
         Some(ref dst) => dst.clone(),
         None => args.src.with_extension("m4a"),
     };
-    let dst = cf::URL::with_path(dst.as_path(), false).unwrap();
+    let dst = cf::Url::with_path(dst.as_path(), false).unwrap();
 
     let mut dst_file = audio::FileID::create(
         &dst,
@@ -253,7 +253,7 @@ fn decode(args: &DecodeArgs) {
     let true = args.src.is_file() else {
         return eprintln!("src file doesn't exists `{}`", args.src.to_string_lossy());
     };
-    let src = cf::URL::with_path(args.src.as_path(), false).unwrap();
+    let src = cf::Url::with_path(args.src.as_path(), false).unwrap();
     let src_file =
         audio::FileID::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
@@ -277,7 +277,7 @@ fn decode(args: &DecodeArgs) {
         Some(ref dst) => dst.clone(),
         None => args.src.with_extension("wav"),
     };
-    let dst = cf::URL::with_path(dst.as_path(), false).unwrap();
+    let dst = cf::Url::with_path(dst.as_path(), false).unwrap();
 
     let mut dst_file = audio::FileID::create(
         &dst,

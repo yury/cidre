@@ -58,7 +58,7 @@ pub use date::TimeInterval;
 
 mod url;
 pub use url::PathStyle;
-pub use url::URL;
+pub use url::Url;
 
 pub mod locale;
 pub use locale::Identifier as LocaleIdentifier;
@@ -81,7 +81,7 @@ pub use set::SetMut;
 pub use set::SetOf;
 
 mod uuid;
-pub use uuid::UUID;
+pub use uuid::Uuid;
 
 mod data;
 pub use data::Data;

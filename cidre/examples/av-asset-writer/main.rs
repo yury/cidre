@@ -52,7 +52,7 @@ async fn reader_and_output(
         panic!("src file doesn't exists `{}`", path.to_string_lossy());
     };
 
-    let src = cf::URL::with_path(path.as_path(), false).unwrap();
+    let src = cf::Url::with_path(path.as_path(), false).unwrap();
 
     let src_asset = av::UrlAsset::with_url(src.as_ns(), None).unwrap();
     let mut asset_reader = av::AssetReader::with_asset(&src_asset).unwrap();
@@ -83,7 +83,7 @@ fn writer_and_input(
         std::fs::remove_file(&path).unwrap();
     }
 
-    let dst = cf::URL::with_path(path.as_path(), false).unwrap();
+    let dst = cf::Url::with_path(path.as_path(), false).unwrap();
 
     let mut writer = av::AssetWriter::with_url_and_file_type(dst.as_ns(), file_type).unwrap();
 

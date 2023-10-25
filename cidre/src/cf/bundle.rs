@@ -10,7 +10,7 @@ impl Bundle {
     ///
     /// let url = bundle.bundle_url().unwrap();
     /// ```
-    pub fn bundle_url(&self) -> Option<arc::R<cf::URL>> {
+    pub fn bundle_url(&self) -> Option<arc::R<cf::Url>> {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
@@ -37,7 +37,7 @@ impl Bundle {
 extern "C" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle() -> Option<&'static Bundle>;
-    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<arc::R<cf::URL>>;
+    fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<arc::R<cf::Url>>;
 
     fn CFBundleGetValueForInfoDictionaryKey<'a>(
         bundle: &'a Bundle,

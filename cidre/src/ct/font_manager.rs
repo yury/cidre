@@ -43,7 +43,7 @@ impl FontManager {
     /// Registered fonts participate in font descriptor matching.
     #[doc(alias = "CTFontManagerRegisterFontsForURL")]
     pub fn register_fonts_for_url(
-        font_url: &cf::URL,
+        font_url: &cf::Url,
         scope: Scope,
     ) -> Result<(), arc::R<cf::Error>> {
         let mut error = None;
@@ -58,7 +58,7 @@ impl FontManager {
 
     #[doc(alias = "CTFontManagerUnregisterFontsForURL")]
     pub fn unregister_fonts_for_url(
-        font_url: &cf::URL,
+        font_url: &cf::Url,
         scope: Scope,
     ) -> Result<(), arc::R<cf::Error>> {
         let mut error = None;
@@ -77,12 +77,12 @@ extern "C" {
     fn CTFontManagerCopyAvailablePostScriptNames() -> arc::R<cf::ArrayOf<cf::String>>;
     fn CTFontManagerCopyAvailableFontFamilyNames() -> arc::R<cf::ArrayOf<cf::String>>;
     fn CTFontManagerRegisterFontsForURL(
-        font_url: &cf::URL,
+        font_url: &cf::Url,
         scope: Scope,
         error: *mut Option<arc::R<cf::Error>>,
     ) -> bool;
     fn CTFontManagerUnregisterFontsForURL(
-        font_url: &cf::URL,
+        font_url: &cf::Url,
         scope: Scope,
         error: *mut Option<arc::R<cf::Error>>,
     ) -> bool;
@@ -108,7 +108,7 @@ mod tests {
     #[test]
     fn register_error() {
         let res = ct::FontManager::register_fonts_for_url(
-            cf::URL::from_str("file:///tmp").unwrap().as_ref(),
+            cf::Url::from_str("file:///tmp").unwrap().as_ref(),
             ct::FontManagerScope::User,
         )
         .expect_err("Should fail");
