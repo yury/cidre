@@ -39,7 +39,7 @@ impl arc::A<UrlAsset> {
     #[objc::msg_send(initWithURL:options:)]
     pub fn init_with_url_options(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Option<arc::R<UrlAsset>>;
 }
@@ -49,7 +49,7 @@ impl UrlAsset {
 
     #[inline]
     pub fn with_url(
-        url: &ns::URL,
+        url: &ns::Url,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_url_options(url, options)

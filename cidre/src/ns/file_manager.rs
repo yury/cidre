@@ -43,7 +43,7 @@ impl ItemReplacementOptions {
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(isize)]
-pub enum URLRelationship {
+pub enum UrlRelationship {
     Contains,
     Same,
     Other,
@@ -63,27 +63,27 @@ impl FileManager {
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]
     pub fn contents_of_dir_at_url_err_ar(
         &self,
-        url: &ns::URL,
-        including_props_for_keys: Option<&ns::Array<ns::URLResourceKey>>,
+        url: &ns::Url,
+        including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
         options: DirectoryEnumerationOptions,
         error: *mut Option<&'ar ns::Error>,
-    ) -> Option<arc::Rar<ns::Array<ns::URL>>>;
+    ) -> Option<arc::Rar<ns::Array<ns::Url>>>;
 
     #[objc::rar_retain]
     pub fn contents_of_dir_at_url_err<'ear>(
         &self,
-        url: &ns::URL,
-        including_props_for_keys: Option<&ns::Array<ns::URLResourceKey>>,
+        url: &ns::Url,
+        including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
         options: DirectoryEnumerationOptions,
         error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::R<ns::Array<ns::URL>>>;
+    ) -> Option<arc::R<ns::Array<ns::Url>>>;
 
     pub fn contents_of_dir_at_url<'ar>(
         &self,
-        url: &ns::URL,
-        including_props_for_keys: Option<&ns::Array<ns::URLResourceKey>>,
+        url: &ns::Url,
+        including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
         options: DirectoryEnumerationOptions,
-    ) -> Result<arc::R<ns::Array<ns::URL>>, &'ar ns::Error> {
+    ) -> Result<arc::R<ns::Array<ns::Url>>, &'ar ns::Error> {
         let mut error = None;
         let res =
             self.contents_of_dir_at_url_err(url, including_props_for_keys, options, &mut error);
@@ -98,28 +98,28 @@ impl FileManager {
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
-        appropriate_for_url: Option<&ns::URL>,
+        appropriate_for_url: Option<&ns::Url>,
         create: bool,
         error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::URL>>;
+    ) -> Option<arc::Rar<ns::Url>>;
 
     #[objc::rar_retain]
     pub fn url_for_dir_err<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
-        appropriate_for_url: Option<&ns::URL>,
+        appropriate_for_url: Option<&ns::Url>,
         create: bool,
         error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::R<ns::URL>>;
+    ) -> Option<arc::R<ns::Url>>;
 
     pub fn url_for_dir<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
-        appropriate_for_url: Option<&ns::URL>,
+        appropriate_for_url: Option<&ns::Url>,
         create: bool,
-    ) -> Result<arc::R<ns::URL>, Option<&'ear ns::Error>> {
+    ) -> Result<arc::R<ns::Url>, Option<&'ear ns::Error>> {
         let mut error = None;
         let url = self.url_for_dir_err(
             directory,
@@ -137,7 +137,7 @@ impl FileManager {
     #[objc::msg_send(createDirectoryAtURL:withIntermediateDirectories:attributes:error:)]
     pub fn create_dir_at_url_err<'ear>(
         &self,
-        url: &ns::URL,
+        url: &ns::Url,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
         error: *mut Option<&'ear ns::Error>,
@@ -145,7 +145,7 @@ impl FileManager {
 
     pub fn create_dir_at_url<'ear>(
         &self,
-        url: &ns::URL,
+        url: &ns::Url,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
@@ -226,8 +226,8 @@ impl FileManager {
     pub fn set_ubiquitous_item_err<'ar>(
         &mut self,
         value: bool,
-        item_at_url: &ns::URL,
-        dest_url: &ns::URL,
+        item_at_url: &ns::Url,
+        dest_url: &ns::Url,
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
@@ -235,8 +235,8 @@ impl FileManager {
     pub fn set_ubiquitous_item<'ar>(
         &mut self,
         value: bool,
-        item_at_url: &ns::URL,
-        dest_url: &ns::URL,
+        item_at_url: &ns::Url,
+        dest_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
         if self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error) {
@@ -247,18 +247,18 @@ impl FileManager {
     }
 
     #[objc::msg_send(isUbiquitousItemAtURL:)]
-    pub fn is_ubiquitous_item(&self, item_at_url: &ns::URL) -> bool;
+    pub fn is_ubiquitous_item(&self, item_at_url: &ns::Url) -> bool;
 
     #[objc::msg_send(startDownloadingUbiquitousItemAtURL:error:)]
     pub fn start_downloading_ubquitous_item_err<'ar>(
         &mut self,
-        item_at_url: &ns::URL,
+        item_at_url: &ns::Url,
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
     pub fn start_downloading_ubquitous_item<'ar>(
         &mut self,
-        item_at_url: &ns::URL,
+        item_at_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
         if self.start_downloading_ubquitous_item_err(item_at_url, &mut error) {
@@ -271,14 +271,14 @@ impl FileManager {
     #[objc::msg_send(evictUbiquitousItemAtURL:error:)]
     pub fn evict_ubiquitous_item_err<'ar>(
         &mut self,
-        item_at_url: &ns::URL,
+        item_at_url: &ns::Url,
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
     #[inline]
     pub fn evict_ubiquitous_item<'ar>(
         &mut self,
-        item_at_url: &ns::URL,
+        item_at_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
         if self.evict_ubiquitous_item_err(item_at_url, &mut error) {
@@ -572,7 +572,7 @@ mod tests {
     fn basics() {
         let fm = ns::FileManager::default();
         println!("{fm:?}");
-        let url = ns::URL::with_fs_path_str("/tmp/", true);
+        let url = ns::Url::with_fs_path_str("/tmp/", true);
         let list = fm
             .contents_of_dir_at_url(&url, None, Default::default())
             .expect("Failed to list {url:?}");

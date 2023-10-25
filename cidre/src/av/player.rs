@@ -48,7 +48,7 @@ define_obj_type!(Player(ns::Id));
 
 impl arc::A<Player> {
     #[objc::msg_send(initWithURL:)]
-    pub fn init_with_url(self, url: &ns::URL) -> arc::R<Player>;
+    pub fn init_with_url(self, url: &ns::Url) -> arc::R<Player>;
     #[objc::msg_send(initWithPlayerItem:)]
     pub fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
 }
@@ -56,7 +56,7 @@ impl arc::A<Player> {
 impl Player {
     define_cls!(AV_PLAYER);
 
-    pub fn with_url(url: &ns::URL) -> arc::R<Self> {
+    pub fn with_url(url: &ns::Url) -> arc::R<Self> {
         Self::alloc().init_with_url(url)
     }
 
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let url = ns::URL::with_str("file:///tmp/file.mp4").expect("Url is not valid");
+        let url = ns::Url::with_str("file:///tmp/file.mp4").expect("Url is not valid");
         let player = av::Player::with_url(&url);
         assert_eq!(player.status(), av::PlayerStatus::Unknown);
     }

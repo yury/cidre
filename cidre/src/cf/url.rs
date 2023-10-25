@@ -168,7 +168,7 @@ impl URL {
 
     #[cfg(feature = "ns")]
     #[inline]
-    pub fn as_ns(&self) -> &ns::URL {
+    pub fn as_ns(&self) -> &ns::Url {
         unsafe { std::mem::transmute(self) }
     }
 }

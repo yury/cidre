@@ -11,20 +11,20 @@ pub enum StoragePolicy {
     NotAllowed,
 }
 
-define_obj_type!(CachedURLResponse(ns::Id));
-define_obj_type!(URLCache(ns::Id));
+define_obj_type!(CachedUrlResponse(ns::Id));
+define_obj_type!(UrlCache(ns::Id));
 
-impl arc::A<URLCache> {
+impl arc::A<UrlCache> {
     #[objc::msg_send(initWithMemoryCapacity:diskCapacity:directoryURL:)]
     pub fn init_with_capacity(
         self,
         mem_capacity: usize,
         disk_capacity: usize,
-        directory_url: Option<&ns::URL>,
-    ) -> arc::R<URLCache>;
+        directory_url: Option<&ns::Url>,
+    ) -> arc::R<UrlCache>;
 }
 
-impl URLCache {
+impl UrlCache {
     define_cls!(NS_URL_CACHE);
     /// ```no_run
     /// use cidre::ns;
@@ -43,7 +43,7 @@ impl URLCache {
     pub fn with_capacity(
         mem_capacity: usize,
         disk_capacity: usize,
-        directory_url: Option<&ns::URL>,
+        directory_url: Option<&ns::Url>,
     ) -> arc::R<Self> {
         Self::alloc().init_with_capacity(mem_capacity, disk_capacity, directory_url)
     }
@@ -69,7 +69,7 @@ impl URLCache {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_URL_CACHE: &'static Class<URLCache>;
+    static NS_URL_CACHE: &'static Class<UrlCache>;
 }
 
 #[cfg(test)]
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let cache = ns::URLCache::shared();
+        let cache = ns::UrlCache::shared();
 
         assert_eq!(512_000, cache.memory_capacity());
         assert_eq!(20_000_000, cache.disk_capacity());

@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(URLRequest(ns::Id));
-define_obj_type!(URLRequestMut(URLRequest));
+define_obj_type!(UrlRequest(ns::Id));
+define_obj_type!(UrlRequestMut(UrlRequest));
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
@@ -46,38 +46,38 @@ pub enum NetworkServiceType {
     CallSignaling = 11,
 }
 
-impl arc::A<URLRequest> {
+impl arc::A<UrlRequest> {
     #[objc::msg_send(initWithURL:)]
-    pub fn init_with_url(self, url: &ns::URL) -> arc::R<URLRequest>;
+    pub fn init_with_url(self, url: &ns::Url) -> arc::R<UrlRequest>;
 
     #[objc::msg_send(initWithURL:cachePolicy:timeoutInterval:)]
     pub fn init_with_url_cache_policy_timeout(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         cache_policy: CachePolicy,
         timeout: ns::TimeInterval,
-    ) -> arc::R<URLRequest>;
+    ) -> arc::R<UrlRequest>;
 }
 
-impl URLRequest {
+impl UrlRequest {
     define_cls!(NS_URL_REQUEST);
 
     #[inline]
-    pub fn with_url(url: &ns::URL) -> arc::R<URLRequest> {
+    pub fn with_url(url: &ns::Url) -> arc::R<UrlRequest> {
         Self::alloc().init_with_url(url)
     }
 
     #[inline]
     pub fn with_url_cache_policy_and_timeout(
-        url: &ns::URL,
+        url: &ns::Url,
         cache_policy: CachePolicy,
         timeout_interval: ns::TimeInterval,
-    ) -> arc::R<URLRequest> {
+    ) -> arc::R<UrlRequest> {
         Self::alloc().init_with_url_cache_policy_timeout(url, cache_policy, timeout_interval)
     }
 
     #[objc::msg_send(URL)]
-    pub fn url(&self) -> Option<&ns::URL>;
+    pub fn url(&self) -> Option<&ns::Url>;
 
     #[objc::msg_send(cachePolicy)]
     pub fn cache_policy(&self) -> CachePolicy;
@@ -119,7 +119,7 @@ impl URLRequest {
     pub fn http_body(&self) -> Option<&ns::Data>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<URLRequestMut>;
+    pub fn copy_mut(&self) -> arc::R<UrlRequestMut>;
 }
 
 /// enum is used to indicate whether the
@@ -136,30 +136,30 @@ pub enum Attribution {
     User = 1,
 }
 
-impl arc::A<URLRequestMut> {
+impl arc::A<UrlRequestMut> {
     #[objc::msg_send(initWithURL:)]
-    pub fn init_with_url(self, url: &ns::URL) -> arc::R<URLRequestMut>;
+    pub fn init_with_url(self, url: &ns::Url) -> arc::R<UrlRequestMut>;
 
     #[objc::msg_send(initWithURL:cachePolicy:timeoutInterval:)]
     pub fn init_with_url_cache_policy_timeout(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         cache_policy: CachePolicy,
         timeout: ns::TimeInterval,
-    ) -> arc::R<URLRequestMut>;
+    ) -> arc::R<UrlRequestMut>;
 }
 
-impl URLRequestMut {
+impl UrlRequestMut {
     define_cls!(NS_MUTABLE_URL_REQUEST);
 
     #[inline]
-    pub fn with_url(url: &ns::URL) -> arc::R<Self> {
+    pub fn with_url(url: &ns::Url) -> arc::R<Self> {
         Self::alloc().init_with_url(url)
     }
 
     #[inline]
     pub fn with_url_cache_policy_and_timeout(
-        url: &ns::URL,
+        url: &ns::Url,
         cache_policy: CachePolicy,
         timeout_interval: ns::TimeInterval,
     ) -> arc::R<Self> {
@@ -167,7 +167,7 @@ impl URLRequestMut {
     }
 
     #[objc::msg_send(setURL:)]
-    pub fn set_url(&mut self, value: Option<&ns::URL>);
+    pub fn set_url(&mut self, value: Option<&ns::Url>);
 
     #[objc::msg_send(setCachePolicy:)]
     pub fn set_cache_policy(&mut self, value: CachePolicy);
@@ -211,8 +211,8 @@ impl URLRequestMut {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_URL_REQUEST: &'static objc::Class<URLRequest>;
-    static NS_MUTABLE_URL_REQUEST: &'static objc::Class<URLRequestMut>;
+    static NS_URL_REQUEST: &'static objc::Class<UrlRequest>;
+    static NS_MUTABLE_URL_REQUEST: &'static objc::Class<UrlRequestMut>;
 }
 
 #[cfg(test)]
@@ -222,26 +222,26 @@ mod tests {
     #[test]
     fn basics() {
         let mut request =
-            ns::URLRequest::with_url(&ns::URL::with_str("https://google.com").unwrap()).copy_mut();
+            ns::UrlRequest::with_url(&ns::Url::with_str("https://google.com").unwrap()).copy_mut();
         request.set_timeout_interval(61f64);
         assert_eq!(request.timeout_interval(), 61f64);
-        request.set_cache_policy(ns::URLRequestCachePolicy::ReloadRevalidatingCacheData);
+        request.set_cache_policy(ns::UrlRequestCachePolicy::ReloadRevalidatingCacheData);
         assert_eq!(
             request.cache_policy(),
-            ns::URLRequestCachePolicy::ReloadRevalidatingCacheData
+            ns::UrlRequestCachePolicy::ReloadRevalidatingCacheData
         );
 
-        request.set_network_service_type(ns::URLRequestNetworkServiceType::AVStreaming);
+        request.set_network_service_type(ns::UrlRequestNetworkServiceType::AVStreaming);
         assert_eq!(
             request.network_service_type(),
-            ns::URLRequestNetworkServiceType::AVStreaming
+            ns::UrlRequestNetworkServiceType::AVStreaming
         );
     }
 
     #[test]
     fn basics1() {
-        let url = ns::URL::with_str("https://google.com").unwrap();
-        let request = ns::URLRequest::with_url(&url);
+        let url = ns::Url::with_str("https://google.com").unwrap();
+        let request = ns::UrlRequest::with_url(&url);
         let request_url = request.url().unwrap();
         assert!(url
             .abs_string()
@@ -249,18 +249,18 @@ mod tests {
             .eq(&request_url.abs_string().unwrap()));
         assert_eq!(
             request.cache_policy(),
-            ns::URLRequestCachePolicy::UseProtocol
+            ns::UrlRequestCachePolicy::UseProtocol
         );
         assert_eq!(request.timeout_interval(), 60f64);
         assert_eq!(
             request.network_service_type(),
-            ns::URLRequestNetworkServiceType::Default
+            ns::UrlRequestNetworkServiceType::Default
         );
         assert!(request.allows_cellular_access());
         assert!(request.allows_expensive_network_access());
         assert!(request.allows_constrained_network_access());
         assert!(!request.assumes_http3_capable());
-        assert_eq!(request.attribution(), ns::URLRequestAttribution::Developer);
+        assert_eq!(request.attribution(), ns::UrlRequestAttribution::Developer);
         assert!(!request.requires_dns_sec_validation());
         assert!(request.http_method().is_some());
         assert!(request.all_http_header_fields().is_none());

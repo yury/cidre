@@ -37,16 +37,16 @@ impl Session {
     }
 
     #[objc::msg_send(dataTaskWithURL:)]
-    pub fn data_task_with_url_ar(&self, url: &ns::URL) -> arc::Rar<DataTask>;
+    pub fn data_task_with_url_ar(&self, url: &ns::Url) -> arc::Rar<DataTask>;
 
     #[objc::rar_retain]
-    pub fn data_task_with_url(&self, url: &ns::URL) -> arc::R<DataTask>;
+    pub fn data_task_with_url(&self, url: &ns::Url) -> arc::R<DataTask>;
 
     #[objc::msg_send(dataTaskWithRequest:)]
-    pub fn data_task_with_request_ar(&self, request: &ns::URLRequest) -> arc::Rar<DataTask>;
+    pub fn data_task_with_request_ar(&self, request: &ns::UrlRequest) -> arc::Rar<DataTask>;
 
     #[objc::rar_retain]
-    pub fn data_task_with_request(&self, request: &ns::URLRequest) -> arc::R<DataTask>;
+    pub fn data_task_with_request(&self, request: &ns::UrlRequest) -> arc::R<DataTask>;
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
@@ -113,13 +113,13 @@ impl Task {
     pub fn task_identifier(&self) -> ns::UInteger;
 
     #[objc::msg_send(originalRequest)]
-    pub fn original_request(&self) -> Option<&ns::URLRequest>;
+    pub fn original_request(&self) -> Option<&ns::UrlRequest>;
 
     #[objc::msg_send(currentRequest)]
-    pub fn current_request(&self) -> Option<&ns::URLRequest>;
+    pub fn current_request(&self) -> Option<&ns::UrlRequest>;
 
     #[objc::msg_send(response)]
-    pub fn response(&self) -> Option<&ns::URLResponse>;
+    pub fn response(&self) -> Option<&ns::UrlResponse>;
 
     #[objc::msg_send(priority)]
     pub fn priority(&self) -> f32;
@@ -232,14 +232,14 @@ mod tests {
 
     #[test]
     fn basics() {
-        let session = ns::URLSession::shared();
+        let session = ns::UrlSession::shared();
         println!("session: {:?}", session);
-        let url = ns::URL::with_str("https://google.com").unwrap();
+        let url = ns::Url::with_str("https://google.com").unwrap();
         let data_task = session.data_task_with_url(&url);
         assert!(data_task.error().is_none());
         assert_eq!(data_task.priority(), 0.5f32);
-        assert_eq!(data_task.state(), ns::URLSessionTaskState::Suspended);
+        assert_eq!(data_task.state(), ns::UrlSessionTaskState::Suspended);
         data_task.resume();
-        assert_eq!(data_task.state(), ns::URLSessionTaskState::Running);
+        assert_eq!(data_task.state(), ns::UrlSessionTaskState::Running);
     }
 }

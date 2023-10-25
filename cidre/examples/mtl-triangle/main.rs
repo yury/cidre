@@ -121,7 +121,7 @@ fn main() {
         let context = ci::Context::new();
 
         let color_space = cg::ColorSpace::device_rgb().unwrap();
-        let url = ns::URL::with_str("file:///tmp/image.png").unwrap();
+        let url = ns::Url::with_str("file:///tmp/image.png").unwrap();
         context
             .write_png_to_url(
                 &image,

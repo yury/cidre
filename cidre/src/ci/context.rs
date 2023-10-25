@@ -22,7 +22,7 @@ impl Context {
     fn write_png_to_url_format_colorspace_options_err<'ar>(
         &self,
         image: &ci::Image,
-        url: &ns::URL,
+        url: &ns::Url,
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &ns::Dictionary<ns::String, ns::Id>,
@@ -33,7 +33,7 @@ impl Context {
     pub fn write_png_to_url<'ear>(
         &self,
         image: &ci::Image,
-        url: &ns::URL,
+        url: &ns::Url,
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &ns::Dictionary<ns::String, ns::Id>,

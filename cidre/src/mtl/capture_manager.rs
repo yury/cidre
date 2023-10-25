@@ -24,10 +24,10 @@ impl CaptureDesc {
     pub fn set_dst(&self, value: CaptureDst);
 
     #[objc::msg_send(outputURL)]
-    pub fn output_url(&self) -> Option<&ns::URL>;
+    pub fn output_url(&self) -> Option<&ns::Url>;
 
     #[objc::msg_send(setOutputURL:)]
-    pub fn set_output_url(&mut self, value: Option<&ns::URL>);
+    pub fn set_output_url(&mut self, value: Option<&ns::Url>);
 }
 
 define_obj_type!(CaptureManager(ns::Id));

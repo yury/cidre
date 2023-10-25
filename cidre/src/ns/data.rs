@@ -51,7 +51,7 @@ impl arc::A<Data> {
     #[objc::msg_send(initWithContentsOfURL:options:error:)]
     pub fn init_with_contents_of_url_options_err(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         options: ReadingOptions,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
@@ -76,7 +76,7 @@ impl Data {
 
     #[inline]
     pub fn with_contents_of_url_options(
-        url: &ns::URL,
+        url: &ns::Url,
         options: ReadingOptions,
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {

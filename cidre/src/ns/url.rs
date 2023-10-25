@@ -7,33 +7,33 @@ use super::Class;
 
 define_obj_type!(ResourceKey(ns::String));
 
-define_obj_type!(URL(ns::Id));
+define_obj_type!(Url(ns::Id));
 
-impl arc::A<URL> {
+impl arc::A<Url> {
     #[objc::msg_send(initFileURLWithPath:isDirectory:relativeToURL:)]
     pub fn init_with_path_is_dir_relative_to_url(
         self,
         path: &ns::String,
         is_dir: bool,
-        relative_to: Option<&ns::URL>,
-    ) -> arc::R<URL>;
+        relative_to: Option<&ns::Url>,
+    ) -> arc::R<Url>;
 
     #[objc::msg_send(initWithString:relativeToURL:)]
     pub fn init_with_string_relative_to(
         self,
         string: &ns::String,
-        relative_to: Option<&ns::URL>,
-    ) -> Option<arc::R<ns::URL>>;
+        relative_to: Option<&ns::Url>,
+    ) -> Option<arc::R<ns::Url>>;
 }
 
-impl URL {
+impl Url {
     define_cls!(NS_URL);
 
     #[inline]
     pub fn file_url_relative_to(
         path: &ns::String,
         is_dir: bool,
-        relative_to: Option<&ns::URL>,
+        relative_to: Option<&ns::Url>,
     ) -> arc::R<Self> {
         Self::alloc().init_with_path_is_dir_relative_to_url(path, is_dir, relative_to)
     }
@@ -52,7 +52,7 @@ impl URL {
     #[inline]
     pub fn with_string_relative_to(
         str: &ns::String,
-        relative_to: Option<&ns::URL>,
+        relative_to: Option<&ns::Url>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_string_relative_to(str, relative_to)
     }
@@ -63,7 +63,7 @@ impl URL {
     }
 
     #[inline]
-    pub fn with_str_relative_to(str: &str, relative_to: Option<&ns::URL>) -> Option<arc::R<Self>> {
+    pub fn with_str_relative_to(str: &str, relative_to: Option<&ns::Url>) -> Option<arc::R<Self>> {
         let string = ns::String::with_str_no_copy(str);
         Self::with_string_relative_to(&string, relative_to)
     }
@@ -89,7 +89,7 @@ impl URL {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_URL: &'static Class<URL>;
+    static NS_URL: &'static Class<Url>;
 }
 
 #[cfg(test)]
@@ -98,10 +98,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let url = ns::URL::with_fs_path_str("/tmp", true);
+        let url = ns::Url::with_fs_path_str("/tmp", true);
         let abs_str = url.abs_string().unwrap();
 
-        let url2 = ns::URL::with_str("file:///tmp/").unwrap();
+        let url2 = ns::Url::with_str("file:///tmp/").unwrap();
         let abs_str2 = url2.abs_string().unwrap();
 
         assert!(abs_str.eq(&abs_str2));

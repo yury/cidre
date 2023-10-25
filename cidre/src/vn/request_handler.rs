@@ -8,14 +8,14 @@ impl arc::A<ImageRequestHandler> {
     #[objc::msg_send(initWithURL:options:)]
     pub fn init_with_url_options(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<ImageRequestHandler>;
 
     #[objc::msg_send(initWithURL:orientation:options:)]
     pub fn init_with_url_orientation_options(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<ImageRequestHandler>;
@@ -51,14 +51,14 @@ impl ImageRequestHandler {
     /// Creates a vn::ImageRequestHandler to be used for performing requests against an image
     /// specified by it's URL
     pub fn with_url(
-        url: &ns::URL,
+        url: &ns::Url,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<Self> {
         Self::alloc().init_with_url_options(url, options)
     }
 
     pub fn with_url_and_orientation(
-        url: &ns::URL,
+        url: &ns::Url,
         orientation: cg::ImagePropertyOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<Self> {
@@ -192,7 +192,7 @@ mod tests {
     use crate::{ns, vn};
     #[test]
     fn basics() {
-        let url = ns::URL::with_str("file:///tmp/some.jpg").unwrap();
+        let url = ns::Url::with_str("file:///tmp/some.jpg").unwrap();
         let request = vn::DetectFaceRectanglesRequest::new();
         let handler = vn::ImageRequestHandler::with_url(&url, None);
 

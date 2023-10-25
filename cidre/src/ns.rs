@@ -29,36 +29,36 @@ pub use port::MachPortDelegateImpl;
 pub use port::Port;
 
 mod url_request;
-pub use url_request::Attribution as URLRequestAttribution;
-pub use url_request::CachePolicy as URLRequestCachePolicy;
-pub use url_request::NetworkServiceType as URLRequestNetworkServiceType;
-pub use url_request::URLRequest;
-pub use url_request::URLRequestMut;
+pub use url_request::Attribution as UrlRequestAttribution;
+pub use url_request::CachePolicy as UrlRequestCachePolicy;
+pub use url_request::NetworkServiceType as UrlRequestNetworkServiceType;
+pub use url_request::UrlRequest;
+pub use url_request::UrlRequestMut;
 
 mod url_response;
 pub use url_response::HTTPURLResponse;
-pub use url_response::URLResponse;
+pub use url_response::UrlResponse;
 
 mod url_session;
-pub use url_session::Configuration as URLSessionConfiguration;
-pub use url_session::DataTask as URLSessionDataTask;
-pub use url_session::DownloadTask as URLSessionDownloadTask;
-pub use url_session::MultipathServiceType as URLSessionMultipathServiceType;
-pub use url_session::Session as URLSession;
-pub use url_session::StreamTask as URLSessionStreamTask;
-pub use url_session::Task as URLSessionTask;
-pub use url_session::TaskPriority as URLSessionTaskPriority;
-pub use url_session::TaskState as URLSessionTaskState;
-pub use url_session::UploadTask as URLSessionUploadTask;
-pub use url_session::WebSocketCloseCode as URLSessionWebSocketCloseCode;
-pub use url_session::WebSocketMessage as URLSessionWebSocketMessage;
-pub use url_session::WebSocketMessageType as URLSessionWebSocketMessageType;
-pub use url_session::WebSocketTask as URLSessionWebSocketTask;
+pub use url_session::Configuration as UrlSessionConfiguration;
+pub use url_session::DataTask as UrlSessionDataTask;
+pub use url_session::DownloadTask as UrlSessionDownloadTask;
+pub use url_session::MultipathServiceType as UrlSessionMultipathServiceType;
+pub use url_session::Session as UrlSession;
+pub use url_session::StreamTask as UrlSessionStreamTask;
+pub use url_session::Task as UrlSessionTask;
+pub use url_session::TaskPriority as UrlSessionTaskPriority;
+pub use url_session::TaskState as UrlSessionTaskState;
+pub use url_session::UploadTask as UrlSessionUploadTask;
+pub use url_session::WebSocketCloseCode as UrlSessionWebSocketCloseCode;
+pub use url_session::WebSocketMessage as UrlSessionWebSocketMessage;
+pub use url_session::WebSocketMessageType as UrlSessionWebSocketMessageType;
+pub use url_session::WebSocketTask as UrlSessionWebSocketTask;
 
 mod url_cache;
-pub use url_cache::CachedURLResponse;
-pub use url_cache::StoragePolicy as URLCacheStoragePolicy;
-pub use url_cache::URLCache;
+pub use url_cache::CachedUrlResponse;
+pub use url_cache::StoragePolicy as UrlCacheStoragePolicy;
+pub use url_cache::UrlCache;
 
 mod value;
 pub use value::Number;
@@ -107,8 +107,8 @@ pub use string::String;
 pub use string::StringMut;
 
 mod url;
-pub use url::ResourceKey as URLResourceKey;
-pub use url::URL;
+pub use url::ResourceKey as UrlResourceKey;
+pub use url::Url;
 
 mod uuid;
 pub use uuid::UUID;
@@ -136,7 +136,7 @@ pub use file_manager::FileAttrType;
 pub use file_manager::FileManager;
 pub use file_manager::FileProtectionType;
 pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
-pub use file_manager::URLRelationship;
+pub use file_manager::UrlRelationship;
 pub use file_manager::VolumeEnumerationOptions;
 
 mod path_utilities;

@@ -3,7 +3,7 @@ use tokio;
 
 #[tokio::main]
 async fn main() {
-    let url = ns::URL::with_str("file:/Users/yury/Downloads/0.mov").unwrap();
+    let url = ns::Url::with_str("file:/Users/yury/Downloads/0.mov").unwrap();
     let asset = av::UrlAsset::with_url(&url, None).expect("asset");
 
     let tracks = asset

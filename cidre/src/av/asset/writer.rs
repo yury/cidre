@@ -25,7 +25,7 @@ impl arc::A<Writer> {
     #[objc::msg_send(initWithURL:fileType:error:)]
     pub fn init_with_url_file_type_err<'ar>(
         self,
-        url: &ns::URL,
+        url: &ns::Url,
         file_type: &av::FileType,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Writer>>;
@@ -73,13 +73,13 @@ impl Writer {
 
     /// ```no_run
     /// use cidre::{av, ns};
-    /// let url = ns::URL::with_str("file://tmp/bla.mp4").unwrap();
+    /// let url = ns::Url::with_str("file://tmp/bla.mp4").unwrap();
     ///
     /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     /// assert_eq!(writer.inputs().len(), 0);
     /// ```
     pub fn with_url_and_file_type<'ar>(
-        url: &ns::URL,
+        url: &ns::Url,
         file_type: &av::FileType,
     ) -> Result<arc::R<Writer>, &'ar ns::Error> {
         let mut error = None;
@@ -103,7 +103,7 @@ mod tests {
     #[test]
     fn basics() {
         use crate::{av, ns};
-        let url = ns::URL::with_str("file://tmp/bla.mp4").unwrap();
+        let url = ns::Url::with_str("file://tmp/bla.mp4").unwrap();
 
         let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
         assert_eq!(writer.inputs().len(), 0);
