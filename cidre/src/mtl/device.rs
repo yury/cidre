@@ -13,6 +13,7 @@ impl PipelineOption {
     pub const FAIL_ON_BINARY_ARCHIVE_MISS: Self = Self(1 << 2);
 }
 
+#[doc(alias = "MTLReadWriteTextureTier")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum ReadWriteTextureTier {
@@ -21,6 +22,7 @@ pub enum ReadWriteTextureTier {
     _2 = 2,
 }
 
+#[doc(alias = "MTLArgumentBuffersTier")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum ArgBufsTier {
@@ -28,6 +30,7 @@ pub enum ArgBufsTier {
     _2 = 1,
 }
 
+#[doc(alias = "MTLSparsePageSize")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(isize)]
 pub enum SparsePageSize {

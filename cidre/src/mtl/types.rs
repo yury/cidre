@@ -71,8 +71,9 @@ impl Region {
 }
 
 /// Identify a sample within a pixel. Origin is top-left with a range [0,1) for both x and y.
+#[doc(alias = "MTLSamplePosition")]
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub struct SamplePosition {
+pub struct SamplePos {
     pub x: f32,
     pub y: f32,
 }
@@ -80,4 +81,4 @@ pub struct SamplePosition {
 /// A floating point coordinate in an abstract 2D space.
 ///
 /// Refer to location of use for concrete information on the space in which the coordinate exists.
-pub type Coordinate2D = SamplePosition;
+pub type Coordinate2D = SamplePos;

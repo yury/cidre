@@ -9,6 +9,7 @@ define_cf_type!(NotificationName(cf::String));
 
 impl NotificationName {
     #[cfg(feature = "ns")]
+    #[inline]
     pub fn as_ns(&self) -> &ns::NotificationName {
         unsafe { std::mem::transmute(self) }
     }
@@ -25,16 +26,25 @@ pub type NotificationCallback = extern "C" fn(
 define_cf_type!(NotificationCenter(cf::Type));
 
 impl NotificationCenter {
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CFNotificationCenterGetTypeID() }
+    }
+
     /// ```
     /// use cidre::cf;
     ///
-    /// let nc = cf::NotificationCenter::local_center();
+    /// let nc = cf::NotificationCenter::local();
     /// nc.show();
     /// ```
-    pub fn local_center<'a>() -> &'a mut NotificationCenter {
+    #[doc(alias = "CFNotificationCenterGetLocalCenter")]
+    #[inline]
+    pub fn local<'a>() -> &'a mut NotificationCenter {
         unsafe { CFNotificationCenterGetLocalCenter() }
     }
 
+    #[doc(alias = "CFNotificationCenterAddObserver")]
+    #[inline]
     pub fn add_observer(
         &mut self,
         observer: *const c_void,
@@ -55,6 +65,8 @@ impl NotificationCenter {
         }
     }
 
+    #[doc(alias = "CFNotificationCenterRemoveObserver")]
+    #[inline]
     pub fn remove_observer(
         &mut self,
         observer: *const c_void,
@@ -64,11 +76,14 @@ impl NotificationCenter {
         unsafe { CFNotificationCenterRemoveObserver(self, observer, name, object) }
     }
 
+    #[doc(alias = "CFNotificationCenterRemoveEveryObserver")]
+    #[inline]
     pub fn remove_every_observer(&mut self, observer: *const c_void) {
         unsafe { CFNotificationCenterRemoveEveryObserver(self, observer) }
     }
 
     #[doc(alias = "CFNotificationCenterPostNotification")]
+    #[inline]
     pub fn post_notification(
         &mut self,
         name: &NotificationName,
@@ -79,11 +94,6 @@ impl NotificationCenter {
         unsafe {
             CFNotificationCenterPostNotification(self, name, object, user_info, deliver_immediately)
         }
-    }
-
-    #[inline]
-    pub fn type_id() -> cf::TypeId {
-        unsafe { CFNotificationCenterGetTypeID() }
     }
 }
 
