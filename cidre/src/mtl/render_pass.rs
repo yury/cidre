@@ -114,31 +114,31 @@ define_obj_type!(StencilAttachDesc(AttachDesc));
 define_obj_type!(Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
 impl Desc {
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &ColorAttachDescArray;
+    pub fn color_attachs(&self) -> &ColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachDescArray;
+    pub fn color_attachs_mut(&mut self) -> &mut ColorAttachDescArray;
 
     #[objc::msg_send(depthAttachment)]
-    pub fn depth_attachment(&self) -> &DepthAttachDesc;
+    pub fn depth_attach(&self) -> &DepthAttachDesc;
 
     #[objc::msg_send(depthAttachment)]
-    pub fn depth_attachment_mut(&mut self) -> &mut DepthAttachDesc;
+    pub fn depth_attach_mut(&mut self) -> &mut DepthAttachDesc;
 
     #[objc::msg_send(setDepthAttachment:)]
-    pub fn set_depth_attachment(&mut self, value: Option<&DepthAttachDesc>);
+    pub fn set_depth_attach(&mut self, value: Option<&DepthAttachDesc>);
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attachment(&self) -> &StencilAttachDesc;
+    pub fn stencil_attach(&self) -> &StencilAttachDesc;
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attachment_mut(&mut self) -> &mut StencilAttachDesc;
+    pub fn stencil_attach_mut(&mut self) -> &mut StencilAttachDesc;
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attachment_option(&mut self, value: Option<&StencilAttachDesc>);
+    pub fn set_stencil_attach_option(&mut self, value: Option<&StencilAttachDesc>);
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attachment(&mut self, value: &StencilAttachDesc);
+    pub fn set_stencil_attach(&mut self, value: &StencilAttachDesc);
 
     #[objc::msg_send(tileWidth)]
     pub fn tile_width(&self) -> usize;

@@ -210,7 +210,7 @@ impl Desc {
     pub fn color_attachments(&self) -> &ColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut ColorAttachDescArray;
+    pub fn color_attachs_mut(&mut self) -> &mut ColorAttachDescArray;
 
     #[objc::msg_send(rasterSampleCount)]
     pub fn raster_sample_count(&self) -> usize;
