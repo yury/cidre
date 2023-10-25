@@ -1,5 +1,6 @@
 use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
+#[doc(alias = "MTLHeapType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Default)]
 #[repr(isize)]
 pub enum Type {

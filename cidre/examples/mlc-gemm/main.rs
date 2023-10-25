@@ -7,13 +7,9 @@ fn main() {
     let t_b = mlc::Tensor::with_shape_dt([1, 2, 2], mlc::DataType::F32);
     let t_c = mlc::Tensor::with_shape_dt([1, 2, 2], mlc::DataType::F32);
 
-    let buf_a = [1f32, 2.0, 3.0, 4.0];
-    let buf_b = [1f32, 2.0, 3.0, 4.0];
-    let buf_c = [1f32, 1.0, 1.0, 1.0];
-
-    let dat_a = mlc::TensorData::with_slice_no_copy(&buf_a);
-    let dat_b = mlc::TensorData::with_slice_no_copy(&buf_b);
-    let dat_c = mlc::TensorData::with_slice_no_copy(&buf_c);
+    let dat_a = mlc::TensorData::with_slice_no_copy(&[1f32, 2.0, 3.0, 4.0]);
+    let dat_b = mlc::TensorData::with_slice_no_copy(&[1f32, 2.0, 3.0, 4.0]);
+    let dat_c = mlc::TensorData::with_slice_no_copy(&[1f32, 1.0, 1.0, 1.0]);
 
     let graph = mlc::Graph::new();
 
@@ -33,15 +29,15 @@ fn main() {
     let b = ns::String::with_str("B");
     let c = ns::String::with_str("C");
 
-    let keys = [a.as_ref(), b.as_ref(), c.as_ref()];
-    let values = [t_a.as_ref(), t_b.as_ref(), t_c.as_ref()];
+    let keys = [a.as_ref(), &b, &c];
+    let values = [t_a.as_ref(), &t_b, &t_c];
     let inputs = ns::Dictionary::with_keys_values(&keys, &values);
     plan.add_inputs(&inputs).unwrap();
 
     plan.compile(Default::default(), &mlc::Device::new())
         .unwrap();
 
-    let values = [dat_a.as_ref(), dat_b.as_ref(), dat_c.as_ref()];
+    let values = [dat_a.as_ref(), &dat_b, &dat_c];
     let handler = blocks::once3(|r: Option<&mlc::Tensor>, _e, time| {
         let r = r.unwrap();
 

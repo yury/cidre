@@ -169,7 +169,7 @@ mod key_value_observing;
 pub use key_value_observing::CidreObserver;
 pub use key_value_observing::KVChange;
 pub use key_value_observing::KVChangeKey;
-pub use key_value_observing::KVOOptions;
+pub use key_value_observing::KVOOpts;
 pub use key_value_observing::KVObserverRegistration;
 pub use key_value_observing::KVObserverRegistrationImpl;
 pub use key_value_observing::KVObserving;

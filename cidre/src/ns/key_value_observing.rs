@@ -2,8 +2,8 @@ use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, define_options, ns, objc};
 
-define_options!(KVOOptions(usize));
-impl KVOOptions {
+define_options!(KVOOpts(usize));
+impl KVOOpts {
     pub const NEW: Self = Self(0x01);
     pub const OLD: Self = Self(0x02);
     pub const INITIAL: Self = Self(0x04);
@@ -86,7 +86,7 @@ where
     pub fn with_obj<O>(
         object: &mut O,
         key_path: &ns::String,
-        options: KVOOptions,
+        options: KVOOpts,
         closure: F,
     ) -> Box<Self>
     where
@@ -131,7 +131,7 @@ pub trait KVObserverRegistration {
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
-        options: KVOOptions,
+        options: KVOOpts,
         context: *mut c_void,
     );
 
@@ -167,7 +167,7 @@ extern "C" {
     fn cidre_create_observer(
         obj: &ns::Id,
         key_path: &ns::String,
-        options: KVOOptions,
+        options: KVOOpts,
         context: *mut c_void,
         fn_ptr: *const c_void,
     ) -> arc::R<CidreObserver>;
@@ -187,7 +187,7 @@ mod tests {
         let _observer = ns::Observer::with_obj(
             q.as_mut(),
             &ns::String::with_str("name"),
-            ns::KVOOptions::NEW,
+            ns::KVOOpts::NEW,
             |key, obj, change| {
                 println!("{:?} {:?} {:?}", key, obj, change);
                 unsafe {
@@ -203,7 +203,7 @@ mod tests {
         let _observer = ns::Observer::with_obj(
             pi,
             &ns::String::with_str("thermalState"),
-            ns::KVOOptions::INITIAL,
+            ns::KVOOpts::INITIAL,
             |key, obj, change| {
                 println!("{:?} {:?} {:?}", key, obj, change);
                 unsafe {
