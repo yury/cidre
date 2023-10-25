@@ -36,7 +36,7 @@ pub use url_request::UrlRequest;
 pub use url_request::UrlRequestMut;
 
 mod url_response;
-pub use url_response::HTTPURLResponse;
+pub use url_response::HttpUrlResponse;
 pub use url_response::UrlResponse;
 
 mod url_session;

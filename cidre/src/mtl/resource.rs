@@ -23,9 +23,10 @@ pub enum PurgableState {
 /// combined memory can have surprising performance pitfalls.  Another approach is to use
 /// non-temporal stores to normally cached memory (STNP on ARMv8, _mm_stream_* on x86_64).
 /// MTLCPUCacheMode
+#[doc(alias = "MTLCPUCacheMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
-pub enum CPUCacheMode {
+pub enum CpuCacheMode {
     /// The default cache mode for the system.
     DefaultCache = 0,
 
@@ -95,10 +96,10 @@ pub const HAZARD_TRACKING_MODE_MASK: usize = 0x3usize << HAZARD_TRACKING_MODE_SH
 /// A set of optional arguments to influence the creation of a mtl::Resource (mtl::Texture or mtl::Buffer)
 impl Options {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
-        Self((CPUCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
+        Self((CpuCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
 
     pub const CPU_CACHE_MODE_WRITE_COMBINED: Self =
-        Self((CPUCacheMode::WriteCombined as usize) << CPU_CACHE_MODE_SHIFT);
+        Self((CpuCacheMode::WriteCombined as usize) << CPU_CACHE_MODE_SHIFT);
 
     pub const STORAGE_MODE_SHARED: Self =
         Self((StorageMode::Shared as usize) << STORAGE_MODE_SHIFT);
@@ -132,7 +133,7 @@ impl Options {
     }
 
     #[inline]
-    pub fn cpu_cache_mode(&self) -> CPUCacheMode {
+    pub fn cpu_cache_mode(&self) -> CpuCacheMode {
         unsafe { transmute(self.0 & CPU_CACHE_MODE_MASK) }
     }
 }
@@ -153,12 +154,12 @@ impl Resource {
 
 #[cfg(test)]
 mod tests {
-    use crate::mtl::{CPUCacheMode, HazardTrackingMode, ResourceOptions, StorageMode};
+    use crate::mtl::{CpuCacheMode, HazardTrackingMode, ResourceOptions, StorageMode};
 
     #[test]
     fn options_default() {
         let opts = ResourceOptions::default();
-        assert_eq!(opts.cpu_cache_mode(), CPUCacheMode::DefaultCache);
+        assert_eq!(opts.cpu_cache_mode(), CpuCacheMode::DefaultCache);
         assert_eq!(opts.storage_mode(), StorageMode::Shared);
         assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Default);
     }
@@ -169,7 +170,7 @@ mod tests {
             | ResourceOptions::STORAGE_MODE_MEMORYLESS
             | ResourceOptions::HAZARD_TRACKING_MODE_UNTRACKED;
 
-        assert_eq!(opts.cpu_cache_mode(), CPUCacheMode::WriteCombined);
+        assert_eq!(opts.cpu_cache_mode(), CpuCacheMode::WriteCombined);
         assert_eq!(opts.storage_mode(), StorageMode::Memoryless);
         assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Untracked);
     }

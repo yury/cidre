@@ -19,7 +19,7 @@ pub struct Origin {
 /// Handle of the GPU resource suitable for storing in an Argument Buffer
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
-pub struct ResourceID {
+pub struct ResourceId {
     _impl: u64,
 }
 

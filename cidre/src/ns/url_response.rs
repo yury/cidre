@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(UrlResponse(ns::Id));
-define_obj_type!(HTTPURLResponse(UrlResponse));
+define_obj_type!(HttpUrlResponse(UrlResponse));
 
 impl arc::A<UrlResponse> {
     #[objc::msg_send(initWithURL:MIMEType:expectedContentLength:textEncodingName:)]

@@ -2,7 +2,7 @@ mod types;
 pub use types::Coordinate2D;
 pub use types::Origin;
 pub use types::Region;
-pub use types::ResourceID;
+pub use types::ResourceId;
 pub use types::SamplePosition;
 pub use types::Size;
 
@@ -37,7 +37,7 @@ mod resource;
 pub use resource::Options as ResourceOptions;
 pub use resource::Resource;
 
-pub use resource::CPUCacheMode;
+pub use resource::CpuCacheMode;
 pub use resource::HazardTrackingMode;
 pub use resource::PurgableState;
 pub use resource::StorageMode;
@@ -312,7 +312,7 @@ macro_rules! define_mtl {
 
     (gpu_resource_id) => {
         #[$crate::objc::msg_send(resourceID)]
-        pub fn gpu_resource_id(&self) -> crate::mtl::ResourceID;
+        pub fn gpu_resource_id(&self) -> crate::mtl::ResourceId;
     };
 
     (update_fence) => {
@@ -367,12 +367,12 @@ macro_rules! define_mtl {
 
     (cpu_cache_mode) => {
         #[$crate::objc::msg_send(cpuCacheMode)]
-        pub fn cpu_cache_mode(&self) -> crate::mtl::CPUCacheMode;
+        pub fn cpu_cache_mode(&self) -> crate::mtl::CpuCacheMode;
     };
 
     (set_cpu_cache_mode) => {
         #[$crate::objc::msg_send(setCpuCacheMode:)]
-        pub fn set_cpu_cache_mode(&mut self, value: crate::mtl::CPUCacheMode);
+        pub fn set_cpu_cache_mode(&mut self, value: crate::mtl::CpuCacheMode);
     };
 
     (hazard_tracking_mode) => {
