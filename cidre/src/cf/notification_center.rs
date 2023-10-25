@@ -84,7 +84,7 @@ impl NotificationCenter {
 
     #[doc(alias = "CFNotificationCenterPostNotification")]
     #[inline]
-    pub fn post_notification(
+    pub fn post(
         &mut self,
         name: &NotificationName,
         object: *const c_void,
