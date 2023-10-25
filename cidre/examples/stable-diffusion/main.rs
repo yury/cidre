@@ -1231,7 +1231,7 @@ fn make_diffusion_step(
     let alphas_comprod = load_const(
         graph,
         "alphas_cumprod",
-        &[&ns::Number::with_i32(1000)],
+        &[ns::Number::tagged_i32(1000)],
         false,
     );
     let alpha_in = graph.gather_along_axis(0, &alphas_comprod, t_in, None);
@@ -1258,10 +1258,6 @@ fn make_diffusion_step(
 }
 
 fn main() {
-    // unsafe {
-    ar_pool(|| {
-        let i64 = ns::Number::with_i64(1).string();
-    })
-    // let desc = cidre::objc::Id::retain_autoreleased(Some(num.debug_description()));
-    // }
+    let g = make_graph(true);
+    g.as_type_ref().show();
 }
