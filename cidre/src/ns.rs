@@ -111,7 +111,7 @@ pub use url::ResourceKey as UrlResourceKey;
 pub use url::Url;
 
 mod uuid;
-pub use uuid::UUID;
+pub use uuid::Uuid;
 
 mod run_loop;
 pub use run_loop::RunLoop;

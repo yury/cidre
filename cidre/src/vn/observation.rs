@@ -16,7 +16,7 @@ impl RecognizedText {
 impl Observation {
     /// The unique identifier assigned to an observation.
     #[objc::msg_send(uuid)]
-    pub fn uuid(&self) -> &ns::UUID;
+    pub fn uuid(&self) -> &ns::Uuid;
 
     /// The level of confidence normalized to [0, 1] where 1 is most confident
     ///
