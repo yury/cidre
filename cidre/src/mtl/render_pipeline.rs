@@ -207,7 +207,7 @@ impl Desc {
     pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &ColorAttachDescArray;
+    pub fn color_attachs(&self) -> &ColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
     pub fn color_attachs_mut(&mut self) -> &mut ColorAttachDescArray;
