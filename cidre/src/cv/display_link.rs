@@ -24,7 +24,7 @@ impl DisplayLink {
     #[cfg(feature = "cg")]
     #[inline]
     pub unsafe fn create_with_cg_display(
-        display_id: cg::DirectDisplayID,
+        display_id: cg::DirectDisplayId,
         display_link_out: &mut Option<arc::R<DisplayLink>>,
     ) -> cv::Return {
         CVDisplayLinkCreateWithCGDisplay(display_id, display_link_out)
@@ -50,7 +50,7 @@ impl DisplayLink {
     /// ```
     #[cfg(feature = "cg")]
     pub fn with_cg_display(
-        display_id: cg::DirectDisplayID,
+        display_id: cg::DirectDisplayId,
     ) -> Result<arc::R<DisplayLink>, cv::Return> {
         unsafe {
             let mut display_link_out = None;
@@ -109,7 +109,7 @@ extern "C" {
 
     #[cfg(feature = "cg")]
     fn CVDisplayLinkCreateWithCGDisplay(
-        display_id: cg::DirectDisplayID,
+        display_id: cg::DirectDisplayId,
         display_link_out: &mut Option<arc::R<DisplayLink>>,
     ) -> cv::Return;
 

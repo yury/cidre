@@ -1,5 +1,10 @@
 use crate::{cf, cg, define_cf_type};
 
+#[cfg(feature = "iio")]
+pub mod source;
+#[cfg(feature = "iio")]
+pub use source::Src as ImageSrc;
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(u32)]
 pub enum AlphaInfo {

@@ -1,17 +1,17 @@
-pub type ID = u32;
+pub type Id = u32;
 
 pub type RefreshRate = f64;
 
-pub const NULL: ID = 0;
+pub const NULL: Id = 0;
 
 #[cfg(target_os = "macos")]
-pub fn main_display_id() -> ID {
+pub fn main_display_id() -> Id {
     unsafe { CGMainDisplayID() }
 }
 
 extern "C" {
     #[cfg(target_os = "macos")]
-    fn CGMainDisplayID() -> ID;
+    fn CGMainDisplayID() -> Id;
 }
 
 // typedef uint32_t CGDirectDisplayID;

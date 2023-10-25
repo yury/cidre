@@ -19,7 +19,7 @@ define_obj_type!(Display(ns::Id));
 
 impl Display {
     #[objc::msg_send(displayID)]
-    pub fn display_id(&self) -> cg::DirectDisplayID;
+    pub fn display_id(&self) -> cg::DirectDisplayId;
 
     #[objc::msg_send(width)]
     pub fn width(&self) -> isize;
@@ -35,7 +35,7 @@ define_obj_type!(Window(ns::Id));
 
 impl Window {
     #[objc::msg_send(windowID)]
-    pub fn id(&self) -> cg::WindowID;
+    pub fn id(&self) -> cg::WindowId;
 
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;

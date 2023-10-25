@@ -168,7 +168,7 @@ impl DisplayStream {
 
     #[inline]
     pub unsafe fn create(
-        display: cg::DirectDisplayID,
+        display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
@@ -190,7 +190,7 @@ impl DisplayStream {
     #[cfg(feature = "dispatch")]
     #[inline]
     pub unsafe fn create_with_queue(
-        display: cg::DirectDisplayID,
+        display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
@@ -213,7 +213,7 @@ impl DisplayStream {
 
     #[cfg(all(feature = "blocks", feature = "io"))]
     pub fn with_runloop<'ar, F>(
-        display: cg::DirectDisplayID,
+        display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
@@ -241,7 +241,7 @@ impl DisplayStream {
     /// '420f' 2-plane "full" range YCbCr 4:2:0
     #[cfg(all(feature = "blocks", feature = "io"))]
     pub fn with_dispatch_queue<'ar, F>(
-        display: cg::DirectDisplayID,
+        display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
@@ -337,7 +337,7 @@ extern "C" {
     fn CGDisplayStreamGetTypeID() -> cf::TypeId;
 
     fn CGDisplayStreamCreate(
-        display: cg::DirectDisplayID,
+        display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
@@ -347,7 +347,7 @@ extern "C" {
 
     #[cfg(feature = "dispatch")]
     fn CGDisplayStreamCreateWithDispatchQueue(
-        display: cg::DirectDisplayID,
+        display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,

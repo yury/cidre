@@ -14,12 +14,12 @@ mod color;
 pub use color::Color;
 
 mod window;
-pub use window::ID as WindowID;
+pub use window::Id as WindowId;
 
 pub mod direct_display;
 #[cfg(target_os = "macos")]
 pub use direct_display::main_display_id;
-pub use direct_display::ID as DirectDisplayID;
+pub use direct_display::Id as DirectDisplayId;
 
 pub mod affine_transform;
 pub use affine_transform::AffineTransform;
@@ -32,6 +32,8 @@ pub use error::Error;
 pub mod image;
 pub use image::AlphaInfo as ImageAlphaInfo;
 pub use image::Image;
+#[cfg(feature = "iio")]
+pub use image::ImageSrc;
 
 pub mod image_properties;
 pub use image_properties::Orientation as ImagePropertyOrientation;

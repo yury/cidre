@@ -25,6 +25,7 @@ full = [
   "av",
   "cf",
   "cg",
+  "iio",
   "ns",
   "vt",
   "sc",
@@ -63,6 +64,7 @@ cmio = ["cm"]
 cv = ["cf", "cg"]
 ci = ["cf", "ns"]
 cg = ["cf"] # optional io, dispatch, blocks
+iio = ["cg"]
 objc = ["dep:cidre-macros"]
 ns = ["objc"]
 vt = ["cf", "cv", "cg", "cm"]
