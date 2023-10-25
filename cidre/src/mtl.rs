@@ -150,8 +150,8 @@ pub use event::SharedEventHandle;
 
 mod blit_pass;
 pub use blit_pass::Desc as BlitPassDesc;
-pub use blit_pass::SampleBufAttachDesc as BlitPassSampleBufAttachmentDesc;
-pub use blit_pass::SampleBufAttachDescArray as BlitPassSampleBufAttachmentDescArray;
+pub use blit_pass::SampleBufAttachDesc as BlitPassSampleBufAttachDesc;
+pub use blit_pass::SampleBufAttachDescArray as BlitPassSampleBufAttachDescArray;
 
 mod command_encoder;
 pub use command_encoder::BarrierScope;
@@ -203,14 +203,14 @@ pub use vertex_descriptor::VertexFormat;
 pub use vertex_descriptor::VertexStepFn;
 
 mod render_pass;
-pub use render_pass::AttachDesc as RenderPassAttachmentDesc;
+pub use render_pass::AttachDesc as RenderPassAttachDesc;
 pub use render_pass::ClearColor;
-pub use render_pass::ColorAttachDesc as RenderPassColorAttachmentDesc;
+pub use render_pass::ColorAttachDesc as RenderPassColorAttachDesc;
 pub use render_pass::ColorAttachDescArray as RenderPassColorAttachDescArray;
-pub use render_pass::DepthAttachDesc as RenderPassDepthAttachmentDesc;
+pub use render_pass::DepthAttachDesc as RenderPassDepthAttachDesc;
 pub use render_pass::Desc as RenderPassDesc;
 pub use render_pass::LoadAction;
-pub use render_pass::StencilAttachDesc as RenderPassStencilAttachmentDesc;
+pub use render_pass::StencilAttachDesc as RenderPassStencilAttachDesc;
 pub use render_pass::StoreAction;
 pub use render_pass::StoreActionOpts;
 

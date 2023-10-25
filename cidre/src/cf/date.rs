@@ -96,8 +96,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let d1 = cf::Date::current().unwrap();
-        let d2 = cf::Date::current().unwrap();
+        let _d1 = cf::Date::current().unwrap();
+        let _d2 = cf::Date::current().unwrap();
 
         // assert_ne!(d1, d2);
         // assert!(d1 < d2);

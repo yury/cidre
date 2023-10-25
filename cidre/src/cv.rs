@@ -10,7 +10,7 @@ mod _return;
 pub use _return::Return;
 
 pub mod buffer;
-pub use buffer::AttachmentMode;
+pub use buffer::AttachMode;
 pub use buffer::Buf;
 
 mod image_buffer;
@@ -27,7 +27,7 @@ pub use pixel_buffer_pool::FlushFlags as PixelBufPoolFlushFlags;
 pub use pixel_buffer_pool::PixelBufPool;
 
 pub mod pixel_format_description;
-pub use pixel_format_description::all_pixel_formats as pixel_format_desc_array_with_all_pixel_format_types;
+pub use pixel_format_description::all_pixel_formats as pixel_format_desc_array_with_all_pixel_formats;
 pub use pixel_format_description::create as pixel_format_desc_create;
 
 #[cfg(feature = "mtl")]

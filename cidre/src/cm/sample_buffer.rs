@@ -44,7 +44,7 @@ impl SampleTimingInfo {
     }
 }
 
-define_cf_type!(SampleBuf(cm::AttachmentBearer));
+define_cf_type!(SampleBuf(cm::AttachBearer));
 
 /// An object that contains zero or more media samples of a uniform media type
 ///

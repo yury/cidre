@@ -39,8 +39,8 @@ pub use sample_buffer::SampleBuf;
 pub use sample_buffer::SampleTimingInfo;
 
 pub mod attachment;
-pub use attachment::Bearer as AttachmentBearer;
-pub use attachment::Mode as AttachmentMode;
+pub use attachment::Bearer as AttachBearer;
+pub use attachment::Mode as AttachMode;
 
 pub mod block_buffer;
 pub use block_buffer::BlockBuf;

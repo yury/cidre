@@ -2,7 +2,7 @@ use crate::{arc, cf, define_cf_type};
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(u32)]
-pub enum AttachmentMode {
+pub enum AttachMode {
     ShouldNotPropagate = 0,
     ShouldPropagate = 1,
 }
@@ -14,7 +14,7 @@ impl Buf {
     pub fn attachment<'a>(
         &'a self,
         key: &cf::String,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) -> Option<&'a cf::Type> {
         unsafe { CVBufferGetAttachment(self, key, attachment_mode) }
     }
@@ -24,7 +24,7 @@ impl Buf {
         &mut self,
         key: &cf::String,
         value: &cf::Type,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) {
         unsafe { CVBufferSetAttachment(self, key, value, attachment_mode) }
     }
@@ -43,7 +43,7 @@ impl Buf {
     pub fn set_attachments(
         &mut self,
         the_attachments: &cf::Dictionary,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) {
         unsafe { CVBufferSetAttachments(self, the_attachments, attachment_mode) }
     }
@@ -54,10 +54,7 @@ impl Buf {
     }
 
     #[inline]
-    pub fn copy_attachments(
-        &self,
-        attachment_mode: AttachmentMode,
-    ) -> Option<arc::R<cf::Dictionary>> {
+    pub fn copy_attachments(&self, attachment_mode: AttachMode) -> Option<arc::R<cf::Dictionary>> {
         unsafe { CVBufferCopyAttachments(self, attachment_mode) }
     }
 
@@ -65,7 +62,7 @@ impl Buf {
     pub fn copy_attachment(
         &self,
         key: &cf::String,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) -> Option<arc::R<cf::Type>> {
         unsafe { CVBufferCopyAttachment(self, key, attachment_mode) }
     }
@@ -89,30 +86,30 @@ extern "C" {
         buffer: &mut Buf,
         key: &cf::String,
         value: &cf::Type,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     );
     fn CVBufferRemoveAttachment(buffer: &mut Buf, key: &cf::String);
     fn CVBufferRemoveAllAttachments(buffer: &mut Buf);
     fn CVBufferSetAttachments(
         buffer: &mut Buf,
         the_attachments: &cf::Dictionary,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     );
     fn CVBufferPropagateAttachments(source_buffer: &Buf, destination_buffer: &mut Buf);
     fn CVBufferCopyAttachments(
         buffer: &Buf,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) -> Option<arc::R<cf::Dictionary>>;
     fn CVBufferCopyAttachment(
         buffer: &Buf,
         key: &cf::String,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) -> Option<arc::R<cf::Type>>;
     fn CVBufferHasAttachment(buffer: &Buf, key: &cf::String) -> bool;
     fn CVBufferGetAttachment<'a>(
         buffer: &'a Buf,
         key: &cf::String,
-        attachment_mode: AttachmentMode,
+        attachment_mode: AttachMode,
     ) -> Option<&'a cf::Type>;
 
 }
