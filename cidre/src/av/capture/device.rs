@@ -152,11 +152,12 @@ extern "C" {
     static AVCaptureDeviceTypeContinuityCamera: &'static Type;
     #[cfg(target_os = "macos")]
     static AVCaptureDeviceTypeDeskViewCamera: &'static Type;
-    // #[cfg(target_os = "macos")]
-    // static AVCaptureDeviceTypeExternalUnknown: &'static Type;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     static AVCaptureLensPositionCurrent: f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    static AVCaptureISOCurrent: f32;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -716,6 +717,28 @@ impl<'a> ConfigurationLockGuard<'a> {
         }
         Ok(future.await)
     }
+
+    pub unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode) {
+        self.device.set_exposure_mode_throws(value)
+    }
+
+    pub fn set_exposure_mode<'ar>(
+        &mut self,
+        value: ExposureMode,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_exposure_mode_throws(value) })
+    }
+
+    pub unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point) {
+        self.device.set_exposure_point_of_interest_throws(value)
+    }
+
+    pub fn set_exposure_point_of_interest<'ar>(
+        &mut self,
+        value: cg::Point,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(value) })
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -890,6 +913,51 @@ impl Device {
         value: f32,
         completion_handler: *mut c_void,
     );
+
+    /// A property indicating the minimum focus distance.
+    ///
+    /// The minimum focus distance is given in millimeters, -1 if unknown.
+    /// For virtual cameras, the value reported is the smallest minimum focus distance of the auto-focus-capable
+    /// cameras that it sources.
+    #[objc::msg_send(minimumFocusDistance)]
+    pub fn minimum_focus_distance(&self) -> ns::Integer;
+}
+
+#[doc(alias = "AVCaptureExposureMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ExposureMode {
+    /// Indicates that the exposure should be locked at its current value.
+    Locked = 0,
+    /// Indicates that the device should automatically adjust exposure once and then change the exposure mode to
+    /// av::CaptureExposureMode::Locked
+    AutoExpose = 1,
+    /// Indicates that the device should automatically adjust exposure when needed.
+    ContinuousAutoExposure = 2,
+    /// Indicates that the device should only adjust exposure according to user provided ISO, exposureDuration values.
+    Custom = 3,
+}
+
+/// AVCaptureExposureMode
+impl Device {
+    /// Returns whether the receiver supports the given exposure mode.
+    #[objc::msg_send(isExposureModeSupported:)]
+    pub fn is_exposure_mode_supported(&self, value: ExposureMode) -> bool;
+
+    #[objc::msg_send(exposureMode)]
+    pub fn exposure_mode(&self) -> ExposureMode;
+
+    #[objc::msg_send(setExposureMode:)]
+    unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode);
+
+    #[objc::msg_send(isExposurePointOfInterestSupported)]
+    pub fn is_exposure_point_of_interest_supported(&self) -> bool;
+
+    #[objc::msg_send(exposurePointOfInterest)]
+    pub fn exposure_point_of_interest(&self) -> cg::Point;
+
+    #[objc::msg_send(setExposurePointOfInterest:)]
+    unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point);
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
@@ -1109,7 +1177,10 @@ pub fn lens_position_current() -> f32 {
     unsafe { AVCaptureLensPositionCurrent }
 }
 
-extern "C" {}
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+pub fn iso_current() -> f32 {
+    unsafe { AVCaptureISOCurrent }
+}
 
 #[cfg(test)]
 mod tests {
