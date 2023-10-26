@@ -739,6 +739,39 @@ impl<'a> ConfigurationLockGuard<'a> {
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(value) })
     }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(
+        &mut self,
+        value: bool,
+    ) {
+        self.device
+            .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
+        })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool) {
+        self.device
+            .set_face_driven_auto_exposure_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_face_driven_auto_exposure_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(value) })
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -958,6 +991,25 @@ impl Device {
 
     #[objc::msg_send(setExposurePointOfInterest:)]
     unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point);
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(automaticallyAdjustsFaceDrivenAutoExposureEnabled)]
+    pub fn automatically_adjusts_face_driven_auto_exposure_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setAutomaticallyAdjustsFaceDrivenAutoExposureEnabled:)]
+    unsafe fn set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(
+        &mut self,
+        value: bool,
+    );
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isFaceDrivenAutoExposureEnabled)]
+    pub fn is_face_driven_auto_exposure_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setFaceDrivenAutoExposureEnabled:)]
+    unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool);
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
