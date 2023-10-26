@@ -48,7 +48,7 @@ full = [
 
 # Turn on private API
 private = []
-async = ["dep:parking_lot"]
+async = ["blocks", "dep:parking_lot"]
 
 blocks = []
 cf = []

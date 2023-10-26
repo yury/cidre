@@ -1,5 +1,12 @@
 use std::ops::{Deref, DerefMut};
 
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+use std::ffi::c_void;
+
+#[cfg(feature = "blocks")]
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+use crate::blocks;
+
 use crate::{
     arc,
     av::{self, MediaType},
@@ -147,6 +154,9 @@ extern "C" {
     static AVCaptureDeviceTypeDeskViewCamera: &'static Type;
     // #[cfg(target_os = "macos")]
     // static AVCaptureDeviceTypeExternalUnknown: &'static Type;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    static AVCaptureLensPositionCurrent: f32;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -611,6 +621,101 @@ impl<'a> ConfigurationLockGuard<'a> {
             self.set_automatically_adjusts_face_driven_auto_focus_enabled_throws(value)
         })
     }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, value: bool) {
+        self.device.set_face_driven_auto_focus_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_face_driven_auto_focus_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_face_driven_auto_focus_enabled_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_focus_mode_locked_with_lens_position_no_completion_handler_throws(
+        &mut self,
+        value: f32,
+    ) {
+        self.device
+            .set_focus_mode_locked_with_lens_position_throws(value, std::ptr::null_mut())
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_focus_mode_locked_with_lens_position_no_completion_handler<'ar>(
+        &mut self,
+        value: f32,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_focus_mode_locked_with_lens_position_no_completion_handler_throws(value)
+        })
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_focus_mode_locked_with_lens_position_with_completion_handler_throws<F>(
+        &mut self,
+        value: f32,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_focus_mode_locked_with_lens_position_throws(value, block.as_ptr())
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_focus_mode_locked_with_lens_position_with_completion_handler<'ar, F>(
+        &mut self,
+        value: f32,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_focus_mode_locked_with_lens_position_throws(value, block.as_ptr())
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_focus_mode_locked_with_lens_position_throws(
+        &mut self,
+        value: f32,
+    ) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_focus_mode_locked_with_lens_position_with_completion_handler_throws(
+            value,
+            block.escape(),
+        );
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_focus_mode_locked_with_lens_position(
+        &mut self,
+        value: f32,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_focus_mode_locked_with_lens_position_with_completion_handler_throws(
+                value,
+                block.escape(),
+            )
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -764,6 +869,26 @@ impl Device {
     unsafe fn set_automatically_adjusts_face_driven_auto_focus_enabled_throws(
         &mut self,
         value: bool,
+    );
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isFaceDrivenAutoFocusEnabled)]
+    pub fn is_face_driven_auto_focus_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setFaceDrivenAutoFocusEnabled:)]
+    unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, value: bool);
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(lensPosition)]
+    pub fn lens_position(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
+    unsafe fn set_focus_mode_locked_with_lens_position_throws(
+        &mut self,
+        value: f32,
+        completion_handler: *mut c_void,
     );
 }
 
@@ -978,6 +1103,13 @@ pub enum VideoStabilizationMode {
     /// format should be chosen.
     Auto = -1,
 }
+
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+pub fn lens_position_current() -> f32 {
+    unsafe { AVCaptureLensPositionCurrent }
+}
+
+extern "C" {}
 
 #[cfg(test)]
 mod tests {
