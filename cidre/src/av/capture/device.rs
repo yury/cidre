@@ -6,8 +6,6 @@ use crate::{
     cf, cg, cm, define_cls, define_obj_type, ns, objc,
 };
 
-use super::SessionPreset;
-
 define_obj_type!(Type(ns::String));
 
 /// ```
@@ -221,7 +219,7 @@ impl Device {
     pub fn formats(&self) -> &ns::Array<Format>;
 
     #[objc::msg_send(supportsAVCaptureSessionPreset:)]
-    pub fn supports_preset(&self, preset: &SessionPreset) -> bool;
+    pub fn supports_preset(&self, preset: &av::CaptureSessionPreset) -> bool;
 
     #[objc::msg_send(activeFormat)]
     pub fn active_format(&self) -> &Format;
@@ -321,6 +319,7 @@ impl Device {
     pub fn is_continuity_camera(&self) -> bool;
 }
 
+#[doc(alias = "AVCaptureMicrophoneMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum MicMode {
@@ -532,6 +531,86 @@ impl<'a> ConfigurationLockGuard<'a> {
     pub fn set_active_color_space<'ar>(&mut self, value: ColorSpace) {
         unsafe { self.device.set_active_color_space_throws(value) }
     }
+
+    #[inline]
+    pub unsafe fn set_focus_mode_throws(&mut self, mode: FocusMode) {
+        self.device.set_focus_mode_throws(mode)
+    }
+
+    pub fn set_focus_mode<'ar>(&mut self, mode: FocusMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_focus_mode_throws(mode) })
+    }
+
+    #[inline]
+    pub unsafe fn set_focus_point_of_interest_throws(&mut self, value: cg::Point) {
+        self.device.set_focus_point_of_interest_throws(value)
+    }
+
+    /// The value of this property is a 'cg::Point' that determines the receiver's focus point of interest,
+    /// if it has one. A value of (0,0) indicates that the camera should focus on the top left corner of the image,
+    /// while a value of (1,1) indicates that it should focus on the bottom right.
+    /// The default value is (0.5,0.5).
+    ///
+    /// Clients can observe automatic changes to the receiver's 'focusPointOfInterest' by key value observing this property.
+    /// Note that setting focusPointOfInterest alone does not initiate a focus operation. After setting
+    /// 'set_focus_point_of_interest', call 'set_focus_mode()' to apply the new point of interest.
+    pub fn set_focus_point_of_interest<'ar>(
+        &mut self,
+        value: cg::Point,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_focus_point_of_interest_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_auto_focus_range_restriction_throws(
+        &mut self,
+        value: AutoFocusRangeRestriction,
+    ) {
+        self.device.set_auto_focus_range_restriction_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_auto_focus_range_restriction<'ar>(
+        &mut self,
+        value: AutoFocusRangeRestriction,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_auto_focus_range_restriction_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, value: bool) {
+        self.device.set_smooth_auto_focus_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_smooth_auto_focus_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_smooth_auto_focus_enabled_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_automatically_adjusts_face_driven_auto_focus_enabled_throws(
+        &mut self,
+        value: bool,
+    ) {
+        self.device
+            .set_automatically_adjusts_face_driven_auto_focus_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_automatically_adjusts_face_driven_auto_focus_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_automatically_adjusts_face_driven_auto_focus_enabled_throws(value)
+        })
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -559,6 +638,7 @@ extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
 }
 
+#[doc(alias = "AVCaptureTorchMode")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum TorchMode {
@@ -567,11 +647,18 @@ pub enum TorchMode {
     Auto = 2,
 }
 
+#[doc(alias = "AVCaptureFocusMode")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
 pub enum FocusMode {
+    /// Indicates that the focus should be locked at the lens' current position
     Locked = 0,
+
+    /// Indicates that the device should autofocus once and then change the focus mode
+    /// to 'av::CaptureFocusMode::Locked'.
     AutoFocus = 1,
+
+    /// Indicates that the device should automatically focus when needed.
     ContinuousAutoFocus = 2,
 }
 
@@ -591,6 +678,93 @@ pub enum AutoFocusSystem {
     /// Phase detection autofocus is typically less visually intrusive than contrast
     // detection autofocus.
     PhaseDetection = 2,
+}
+
+#[doc(alias = "AVCaptureAutoFocusRangeRestriction")]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[repr(isize)]
+pub enum AutoFocusRangeRestriction {
+    /// Indicates that the autofocus system should not restrict the focus range.
+    #[doc(alias = "AVCaptureAutoFocusRangeRestrictionNone")]
+    None = 0,
+
+    /// Indicates that the autofocus system should restrict the focus range
+    /// for subject matter that is near to the camera.
+    #[doc(alias = "AVCaptureAutoFocusRangeRestrictionNear")]
+    Near = 1,
+
+    /// Indicates that the autofocus system should restrict the focus range
+    /// for subject matter that is far from the camera.
+    #[doc(alias = "AVCaptureAutoFocusRangeRestrictionFar")]
+    Far = 2,
+}
+
+/// AVCaptureDeviceFocus
+impl Device {
+    #[objc::msg_send(isFocusModeSupported:)]
+    pub fn is_focus_mode_supported(&self, mode: FocusMode) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isLockingFocusWithCustomLensPositionSupported)]
+    pub fn is_locking_focus_with_custom_lens_position_supported(&self) -> bool;
+
+    #[objc::msg_send(focusMode)]
+    pub fn focus_mode(&self) -> FocusMode;
+
+    #[objc::msg_send(setFocusMode:)]
+    unsafe fn set_focus_mode_throws(&mut self, mode: FocusMode);
+
+    #[objc::msg_send(isFocusPointOfInterestSupported)]
+    pub fn is_focus_point_of_interest_supported(&self) -> bool;
+
+    #[objc::msg_send(focusPointOfInterest)]
+    pub fn focus_point_of_intereset(&self) -> cg::Point;
+
+    #[objc::msg_send(setFocusPointOfInterest:)]
+    unsafe fn set_focus_point_of_interest_throws(&mut self, value: cg::Point);
+
+    /// The value of this property is a bool indicating whether the receiver's camera focus
+    /// is being automatically adjusted by means of a focus scan, because its focus mode is 'av::CaptureFocusModeAutoFocus'
+    /// or 'av::CaptureFocusModeContinuousAutoFocus'. Clients can observe the value of this property to determine whether
+    /// the camera's focus is stable.
+    #[objc::msg_send(isAdjustingFocus)]
+    pub fn is_adjusting_focus(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isAutoFocusRangeRestrictionSupported)]
+    pub fn is_auto_focus_range_restriction_supported(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(autoFocusRangeRestriction)]
+    pub fn auto_focus_range_restriction(&self) -> AutoFocusRangeRestriction;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setAutoFocusRangeRestriction:)]
+    unsafe fn set_auto_focus_range_restriction_throws(&mut self, value: AutoFocusRangeRestriction);
+
+    /// Indicates whether the receiver supports smooth autofocus.
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isSmoothAutoFocusSupported)]
+    pub fn is_smooth_auto_focus_supported(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isSmoothAutoFocusEnabled)]
+    pub fn is_smooth_auto_focus_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setSmoothAutoFocusEnabled:)]
+    unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, value: bool);
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(automaticallyAdjustsFaceDrivenAutoFocusEnabled)]
+    pub fn automatically_adjusts_face_driven_auto_focus_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setAutomaticallyAdjustsFaceDrivenAutoFocusEnabled:)]
+    unsafe fn set_automatically_adjusts_face_driven_auto_focus_enabled_throws(
+        &mut self,
+        value: bool,
+    );
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
