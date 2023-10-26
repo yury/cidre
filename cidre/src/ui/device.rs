@@ -1,5 +1,6 @@
 use crate::{define_cls, define_obj_type, ns, objc};
 
+#[doc(alias = "UIDeviceOrientation")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum Orientation {
