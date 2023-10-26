@@ -16,9 +16,9 @@ pub mod objc_runtime;
 pub use objc_runtime::ExceptionName;
 
 pub mod exception;
-pub use exception::get_uncaought_exception_handler;
 pub use exception::set_uncaught_exception_handler;
 pub use exception::try_catch;
+pub use exception::uncaught_exception_handler;
 pub use exception::Exception;
 pub use exception::UncaughtExceptionHandler;
 
@@ -40,7 +40,7 @@ pub use url_response::HttpUrlResponse;
 pub use url_response::UrlResponse;
 
 mod url_session;
-pub use url_session::Configuration as UrlSessionConfiguration;
+pub use url_session::Cfg as UrlSessionCfg;
 pub use url_session::DataTask as UrlSessionDataTask;
 pub use url_session::DownloadTask as UrlSessionDownloadTask;
 pub use url_session::MultipathServiceType as UrlSessionMultipathServiceType;

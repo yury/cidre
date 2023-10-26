@@ -70,9 +70,9 @@ pub enum OutputType {
     Audio,
 }
 
-define_obj_type!(Configuration(ns::Id), SC_STREAM_CONFIGURATION);
+define_obj_type!(Cfg(ns::Id), SC_STREAM_CONFIGURATION);
 
-impl Configuration {
+impl Cfg {
     /// ```no_run
     /// use cidre::{sc, cm, cv};
     ///
@@ -172,7 +172,7 @@ impl Configuration {
 
 #[link(name = "sc", kind = "static")]
 extern "C" {
-    static SC_STREAM_CONFIGURATION: &'static objc::Class<Configuration>;
+    static SC_STREAM_CONFIGURATION: &'static objc::Class<Cfg>;
     static SC_CONTENT_FILTER: &'static objc::Class<ContentFilter>;
     static SC_STREAM: &'static objc::Class<Stream>;
 
@@ -243,7 +243,7 @@ impl arc::A<Stream> {
     pub fn init_with_filter_configuration_delegate<D: Delegate>(
         self,
         filter: &ContentFilter,
-        configuration: &Configuration,
+        configuration: &Cfg,
         delegate: Option<&D>,
     ) -> arc::R<Stream>;
 }
@@ -253,7 +253,7 @@ impl Stream {
 
     pub fn with_delegate<T, D: Delegate>(
         filter: &ContentFilter,
-        configuration: &Configuration,
+        configuration: &Cfg,
         delegate: &D,
     ) -> arc::R<Self> {
         Self::alloc().init_with_filter_configuration_delegate::<D>(
@@ -263,7 +263,7 @@ impl Stream {
         )
     }
 
-    pub fn new(filter: &ContentFilter, configuration: &Configuration) -> arc::R<Self> {
+    pub fn new(filter: &ContentFilter, configuration: &Cfg) -> arc::R<Self> {
         Self::alloc().init_with_filter_configuration_delegate::<objc::Any>(
             filter,
             configuration,
@@ -350,9 +350,9 @@ mod tests {
     );
 
     impl FrameCounter {
-        fn counter(&self) -> usize {
-            *self.inner()
-        }
+        // fn counter(&self) -> usize {
+        //     *self.inner()
+        // }
     }
 
     impl Output for FrameCounter {}
@@ -362,7 +362,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut cfg = sc::StreamConfiguration::new();
+        let mut cfg = sc::StreamCfg::new();
 
         cfg.set_width(200);
         assert_eq!(200, cfg.width());
@@ -380,7 +380,7 @@ mod tests {
         let q = dispatch::Queue::serial_with_autoreleasepool();
         let content = sc::ShareableContent::current().await.expect("content");
         let ref display = content.displays()[0];
-        let mut cfg = sc::StreamConfiguration::new();
+        let mut cfg = sc::StreamCfg::new();
         cfg.set_width(display.width() as usize * 2);
         cfg.set_height(display.height() as usize * 2);
 

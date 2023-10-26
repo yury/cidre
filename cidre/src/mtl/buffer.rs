@@ -41,6 +41,7 @@ impl Buf {
     #[objc::msg_send(didModifyRange:)]
     pub fn did_modify_range(&self, range: ns::Range);
 
+    #[inline]
     pub fn did_modify<T: Sized>(&self, range: std::ops::Range<usize>) {
         let start = range.start * std::mem::size_of::<T>();
         let end = range.end * std::mem::size_of::<T>();

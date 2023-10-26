@@ -473,7 +473,7 @@ mod tests2 {
         }
         {
             let d = Bla::with(D);
-            let r = d.retained();
+            let _r = d.retained();
             let desc = d.desc();
             assert!(desc.to_string().starts_with("<BLA_USIZE: "));
         }

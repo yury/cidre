@@ -274,7 +274,7 @@ async fn main() {
     let queue = dispatch::Queue::serial_with_autoreleasepool();
     let content = sc::ShareableContent::current().await.expect("content");
     let ref display = content.displays()[0];
-    let mut cfg = sc::StreamConfiguration::new();
+    let mut cfg = sc::StreamCfg::new();
     cfg.set_minimum_frame_interval(cm::Time::new(1, FPS));
     cfg.set_width(display.width() as usize * 2);
     cfg.set_height(display.height() as usize * 2);

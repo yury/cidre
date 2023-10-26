@@ -3,7 +3,7 @@ use crate::{
     objc::{self, Class},
 };
 
-define_obj_type!(Configuration(ns::Id));
+define_obj_type!(Cfg(ns::Id));
 
 define_obj_type!(Task(ns::Id));
 define_obj_type!(DataTask(Task));

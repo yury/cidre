@@ -160,7 +160,7 @@ impl Exception {
 
 pub type UncaughtExceptionHandler = extern "C" fn(exception: &Exception);
 
-pub fn get_uncaought_exception_handler() -> *const UncaughtExceptionHandler {
+pub fn uncaught_exception_handler() -> *const UncaughtExceptionHandler {
     unsafe { NSGetUncaughtExceptionHandler() }
 }
 

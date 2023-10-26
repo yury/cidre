@@ -1,4 +1,4 @@
-use cidre::{arc, mps, mps::graph, ns, objc::ar_pool};
+use cidre::{arc, mps, mps::graph, ns};
 
 fn make_graph(synchonize: bool) -> arc::R<graph::Graph> {
     let mut graph = graph::Graph::new();
@@ -674,7 +674,7 @@ fn make_output_block(
     cond_in: &graph::Tensor,
     in_channels: &ns::Number,
     out_channels: &ns::Number,
-    d_head: &ns::Number,
+    _d_head: &ns::Number,
     name: &str,
     save_mem: bool,
     spatial_transformer: bool,

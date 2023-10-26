@@ -1,6 +1,6 @@
 pub mod stream;
 
-pub use stream::Configuration as StreamConfiguration;
+pub use stream::Cfg as StreamCfg;
 pub use stream::ContentFilter;
 pub use stream::Delegate as StreamDelegate;
 pub use stream::DelegateImpl as StreamDelegateImpl;
