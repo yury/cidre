@@ -17,7 +17,7 @@ define_cf_type!(MemoryPool(cf::Type));
 /// cm::BlockBufferCreateWithMemoryBlock, but not the structureAllocator argument --
 /// use kCFAllocatorDefault instead.
 /// When you no longer need to allocate memory from the pool, call cm::MemoryPoolInvalidate
-/// and CFRelease.  Calling CMMemoryPoolInvalidate tells the pool to stop holding onto
+/// and CFRelease. Calling CMMemoryPoolInvalidate tells the pool to stop holding onto
 /// memory for reuse.  Note that the pool's cf::Allocator can outlive the pool, owing
 /// to the way that CoreFoundation is designed: cf::Allocators are themselves CF objects,
 /// and every object allocated with a cf::Allocator implicitly retains the cf::Allocator
@@ -36,37 +36,42 @@ impl MemoryPool {
     /// let allocator = pool.pool_allocator();
     /// pool.flush();
     ///````
+    #[doc(alias = "CMMemoryPoolCreate")]
     #[inline]
     pub fn new() -> arc::R<Self> {
-        Self::create(None)
+        Self::with_opts(None)
+    }
+
+    #[doc(alias = "CMMemoryPoolCreate")]
+    #[inline]
+    pub fn with_opts(options: Option<&cf::Dictionary>) -> arc::R<MemoryPool> {
+        unsafe { CMMemoryPoolCreate(options) }
     }
 
     #[inline]
     pub fn with_age(duration: Duration) -> arc::R<Self> {
-        let options = cf::Dictionary::with_keys_values(
+        let opts = cf::Dictionary::with_keys_values(
             &[keys::age_out_period()],
             &[&cf::Number::from_f64(duration.as_secs_f64())],
         )
         .unwrap();
 
-        Self::create(Some(&options))
+        Self::with_opts(Some(&opts))
     }
 
-    #[inline]
-    pub fn create(options: Option<&cf::Dictionary>) -> arc::R<MemoryPool> {
-        unsafe { CMMemoryPoolCreate(options) }
-    }
-
+    #[doc(alias = "CMMemoryPoolGetAllocator")]
     #[inline]
     pub fn pool_allocator(&self) -> &cf::Allocator {
         unsafe { CMMemoryPoolGetAllocator(self) }
     }
 
+    #[doc(alias = "CMMemoryPoolFlush")]
     #[inline]
     pub fn flush(&mut self) {
         unsafe { CMMemoryPoolFlush(self) }
     }
 
+    #[doc(alias = "CMMemoryPoolInvalidate")]
     #[inline]
     pub fn invalidate(&mut self) {
         unsafe { CMMemoryPoolInvalidate(self) }

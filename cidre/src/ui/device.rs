@@ -65,34 +65,34 @@ pub enum UserInterfaceIdiom {
 }
 
 pub mod notifications {
-    use crate::cf;
+    use crate::ns;
 
     #[inline]
-    pub fn orientation_did_change() -> &'static cf::NotificationName {
+    pub fn orientation_did_change() -> &'static ns::NotificationName {
         unsafe { UIDeviceOrientationDidChangeNotification }
     }
 
     #[inline]
-    pub fn battery_state_did_change() -> &'static cf::NotificationName {
+    pub fn battery_state_did_change() -> &'static ns::NotificationName {
         unsafe { UIDeviceBatteryStateDidChangeNotification }
     }
 
     #[inline]
-    pub fn battery_level_did_change() -> &'static cf::NotificationName {
+    pub fn battery_level_did_change() -> &'static ns::NotificationName {
         unsafe { UIDeviceBatteryLevelDidChangeNotification }
     }
 
     #[inline]
-    pub fn proximity_state_did_change() -> &'static cf::NotificationName {
+    pub fn proximity_state_did_change() -> &'static ns::NotificationName {
         unsafe { UIDeviceProximityStateDidChangeNotification }
     }
 
     #[link(name = "UIKit", kind = "framework")]
     extern "C" {
-        static UIDeviceOrientationDidChangeNotification: &'static cf::NotificationName;
-        static UIDeviceBatteryStateDidChangeNotification: &'static cf::NotificationName;
-        static UIDeviceBatteryLevelDidChangeNotification: &'static cf::NotificationName;
-        static UIDeviceProximityStateDidChangeNotification: &'static cf::NotificationName;
+        static UIDeviceOrientationDidChangeNotification: &'static ns::NotificationName;
+        static UIDeviceBatteryStateDidChangeNotification: &'static ns::NotificationName;
+        static UIDeviceBatteryLevelDidChangeNotification: &'static ns::NotificationName;
+        static UIDeviceProximityStateDidChangeNotification: &'static ns::NotificationName;
     }
 }
 
