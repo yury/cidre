@@ -41,7 +41,7 @@ impl<T: Obj> arc::A<Set<T>> {
     pub fn init(self) -> arc::R<Set<T>>;
 
     #[objc::msg_send(initWithObjects:count:)]
-    pub fn init_with_objects_count(self, ptr: *const c_void, count: usize) -> arc::R<Set<T>>;
+    pub fn init_with_objs_count(self, ptr: *const c_void, count: usize) -> arc::R<Set<T>>;
 }
 
 impl<T: Obj> Set<T> {
@@ -62,7 +62,7 @@ impl<T: Obj> Set<T> {
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len())
+        Self::alloc().init_with_objs_count(objs.as_ptr() as _, objs.len())
     }
 
     #[objc::msg_send(count)]
