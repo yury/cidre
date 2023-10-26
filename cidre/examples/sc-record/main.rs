@@ -82,7 +82,7 @@ impl Output for FrameCounter {}
 
 #[objc::add_methods]
 impl OutputImpl for FrameCounter {
-    extern "C" fn impl_stream_did_output_sample_buffer(
+    extern "C" fn impl_stream_did_output_sample_buf(
         &mut self,
         _cmd: Option<&cidre::objc::Sel>,
         _stream: &sc::Stream,

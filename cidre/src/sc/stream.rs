@@ -4,7 +4,7 @@ use crate::{arc, blocks, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, 
 
 use super::{Display, Window};
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum FrameStatus {
     Complete,
@@ -63,7 +63,7 @@ impl FrameInfo {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum OutputType {
     Screen,
@@ -221,7 +221,7 @@ define_obj_type!(Stream(ns::Id));
 pub trait Output: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(stream:didOutputSampleBuffer:ofType:)]
-    fn stream_did_output_sample_buffer(
+    fn stream_did_output_sample_buf(
         &mut self,
         stream: &Stream,
         sample_bufer: &mut cm::SampleBuf,
