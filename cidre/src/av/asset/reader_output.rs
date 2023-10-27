@@ -27,9 +27,9 @@ impl ReaderOutput {
 
     /// Indicates whether or not the data in buffers gets copied before being vended to the client.
     ///
-    /// When the value of this property is YES, the AVAssetReaderOutput will always vend a buffer
-    /// with copied data to the client.  Data in such buffers can be freely modified by the client.
-    /// When the value of this property is NO, the buffers vended to the client may not be copied.
+    /// When the value of this property is true, the AVAssetReaderOutput will always vend a buffer
+    /// with copied data to the client. Data in such buffers can be freely modified by the client.
+    /// When the value of this property is false, the buffers vended to the client may not be copied.
     /// Such buffers may still be referenced by other entities. The result of modifying a buffer
     /// whose data hasn't been copied is undefined. Requesting buffers whose data hasn't been copied
     /// when possible can lead to performance improvements.

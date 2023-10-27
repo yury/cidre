@@ -772,6 +772,19 @@ impl<'a> ConfigurationLockGuard<'a> {
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(value) })
     }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time) {
+        self.device.set_active_max_exposure_duration_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_active_max_exposure_duration<'ar>(
+        &mut self,
+        value: cm::Time,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(value) })
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -1010,6 +1023,14 @@ impl Device {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFaceDrivenAutoExposureEnabled:)]
     unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool);
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(activeMaxExposureDuration)]
+    pub fn active_max_exposure_duration(&self) -> cm::Time;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setActiveMaxExposureDuration:)]
+    unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time);
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
