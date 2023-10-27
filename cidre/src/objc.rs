@@ -351,6 +351,7 @@ impl PartialEq for Id {
 
 /// Can throw any object. You may need ns::Exception::raise.
 /// [read more](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Exceptions/Tasks/HandlingExceptions.html)
+#[inline]
 pub fn throw(obj: &Id) -> ! {
     // latest sonoma (4.2 Beta (23C5030f) crash on tagged ptr exception for unknown reason :(
     // TODO: investigate on release
