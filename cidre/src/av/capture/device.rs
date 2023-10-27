@@ -164,6 +164,9 @@ extern "C" {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     static AVCaptureExposureTargetBiasCurrent: f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    static AVCaptureWhiteBalanceGainsCurrent: WhiteBalanceGains;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -986,6 +989,94 @@ impl<'a> ConfigurationLockGuard<'a> {
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.set_white_balance_mode_throws(value) })
     }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws<
+        F,
+    >(
+        &mut self,
+        gains: WhiteBalanceGains,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_white_balance_mode_locked_with_device_white_balance_gains_throws(
+                gains,
+                block.as_ptr(),
+            )
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_no_completion_handler_throws(
+        &mut self,
+        gains: WhiteBalanceGains,
+    ) {
+        self.device
+            .set_white_balance_mode_locked_with_device_white_balance_gains_throws(
+                gains,
+                std::ptr::null_mut(),
+            )
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler<
+        'ar,
+        F,
+    >(
+        &mut self,
+        gains: WhiteBalanceGains,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws(gains, block)
+        })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_white_balance_mode_locked_with_device_white_balance_gains_no_completion_handler<
+        'ar,
+    >(
+        &mut self,
+        gains: WhiteBalanceGains,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self
+                .set_white_balance_mode_locked_with_device_white_balance_gains_no_completion_handler_throws(gains)
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_throws(
+        &mut self,
+        gains: WhiteBalanceGains,
+    ) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws(gains, block.escape());
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_white_balance_mode_locked_with_device_white_balance_gains(
+        &mut self,
+        gains: WhiteBalanceGains,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws(gains, block.escape())
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -1359,6 +1450,14 @@ impl Device {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(maxWhiteBalanceGain)]
     pub fn max_white_balance_gain(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setWhiteBalanceModeLockedWithDeviceWhiteBalanceGains:completionHandler:)]
+    unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_throws(
+        &mut self,
+        gains: WhiteBalanceGains,
+        block: *mut c_void,
+    );
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
@@ -1591,6 +1690,11 @@ pub fn exposure_duration_current() -> cm::Time {
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 pub fn exposure_target_bias_current() -> f32 {
     unsafe { AVCaptureExposureTargetBiasCurrent }
+}
+
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+pub fn white_balance_gains_current() -> WhiteBalanceGains {
+    unsafe { AVCaptureWhiteBalanceGainsCurrent }
 }
 
 #[cfg(test)]
