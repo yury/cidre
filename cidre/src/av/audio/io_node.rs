@@ -1,8 +1,8 @@
 use crate::{av::audio, define_obj_type, ns, objc};
 
 // AVAudioIONode
-define_obj_type!(IONode(audio::Node));
-impl IONode {
+define_obj_type!(IoNode(audio::Node));
+impl IoNode {
     /// The presentation or hardware latency, applicable when the engine is rendering to/from an
     /// audio device.
     ///
@@ -32,7 +32,7 @@ impl IONode {
 }
 
 // AVAudioInputNode
-define_obj_type!(InputNode(IONode));
+define_obj_type!(InputNode(IoNode));
 
 impl InputNode {
     /// Bypass all processing done by the voice processing unit.
@@ -58,4 +58,4 @@ impl InputNode {
 }
 
 // AVAudioOutputNode
-define_obj_type!(OutputNode(IONode));
+define_obj_type!(OutputNode(IoNode));

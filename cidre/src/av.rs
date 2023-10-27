@@ -39,10 +39,10 @@ pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::TorchMode as CaptureTouchMode;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
 pub use capture::VideoStabilizationMode as CaptureVideoStabilizationMode;
-pub use capture::WhiteBalanceChromaticityValues as CaptureWhiteBalanceChromaticityValues;
-pub use capture::WhiteBalanceGains as CaptureWhiteBalanceGains;
-pub use capture::WhiteBalanceMode as CaptureWhiteBalanceMode;
-pub use capture::WhiteBalanceTemperatureAndTintValues as CaptureWhiteBalanceTemperatureAndTintValues;
+pub use capture::WbChromaticityValues as CaptureWbChromaticityValues;
+pub use capture::WbGains as CaptureWbGains;
+pub use capture::WbMode as CaptureWbMode;
+pub use capture::WbTempTintValues as CaptureWbTempTintValues;
 
 #[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;
@@ -94,8 +94,8 @@ pub use audio::Engine as AudioEngine;
 pub use audio::Format as AudioFormat;
 pub use audio::FrameCount as AudioFrameCount;
 pub use audio::FramePosition as AudioFramePosition;
-pub use audio::IONode as AudioIONode;
 pub use audio::InputNode as AudioInputNode;
+pub use audio::IoNode as AudioIoNode;
 pub use audio::MixerNode as AudioMixerNode;
 pub use audio::Node as AudioNode;
 pub use audio::NodeBus as AudioNodeBus;

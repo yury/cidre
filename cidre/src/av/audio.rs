@@ -22,8 +22,8 @@ mod node;
 pub use node::Node;
 
 pub mod io_node;
-pub use io_node::IONode;
 pub use io_node::InputNode;
+pub use io_node::IoNode;
 pub use io_node::OutputNode;
 
 mod mixer_node;

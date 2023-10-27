@@ -216,16 +216,17 @@ where
 
 #[cfg(test)]
 mod tests {
+
     use crate::{cf, ns, objc};
 
     #[test]
-    fn test_catch() {
+    fn catch() {
         let x = ns::try_catch(|| 0).expect("result");
         assert_eq!(0, x);
     }
 
     #[test]
-    fn test_exception_catch() {
+    fn ns_exception_catch() {
         let reason = ns::String::with_str("test");
         let ex = ns::try_catch(|| ns::Exception::raise(&reason)).expect_err("result");
 
@@ -239,7 +240,7 @@ mod tests {
     }
 
     #[test]
-    fn test_throw_catch() {
+    fn objc_throw_catch() {
         let msg = ns::String::with_str("test");
 
         let exc = objc::try_catch(|| objc::throw(&msg)).expect_err("result");

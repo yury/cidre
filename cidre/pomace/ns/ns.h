@@ -7,15 +7,13 @@
 
 #import <Foundation/Foundation.h>
 #include "../macro.h"
+#import "objc/objc.h"
+#import "objc/objc-exception.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 void cidre_raise_exception(NSString *message) {
     [NSException raise:NSGenericException format:@"%@", message];
-}
-
-void cidre_throw(id ex) {
-    @throw ex;
 }
 
 id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {

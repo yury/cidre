@@ -190,6 +190,7 @@ extern "C" {
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
+    fn objc_exception_throw(exception: &Id) -> !;
 }
 
 /// Same as define_cls but with open `init`
@@ -349,13 +350,13 @@ impl PartialEq for Id {
 
 /// Can throw any object. You may need ns::Exception::raise.
 /// [read more](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Exceptions/Tasks/HandlingExceptions.html)
+#[inline]
 pub fn throw(obj: &Id) -> ! {
-    unsafe { cidre_throw(obj) }
+    unsafe { objc_exception_throw(obj) }
 }
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    fn cidre_throw(obj: &Id) -> !;
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
@@ -367,7 +368,9 @@ where
     F: FnOnce() -> R,
 {
     let mut result = None;
-    let mut wrapper = Some(|| result = Some(f()));
+    let mut wrapper = Some(|| {
+        result = Some(f());
+    });
 
     let f = type_helper(&wrapper);
     let ctx = &mut wrapper as *mut _ as *mut c_void;

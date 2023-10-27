@@ -166,7 +166,7 @@ extern "C" {
     static AVCaptureExposureTargetBiasCurrent: f32;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    static AVCaptureWhiteBalanceGainsCurrent: WhiteBalanceGains;
+    static AVCaptureWhiteBalanceGainsCurrent: WbGains;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -979,98 +979,89 @@ impl<'a> ConfigurationLockGuard<'a> {
     }
 
     #[inline]
-    pub unsafe fn set_white_balance_mode_throws(&mut self, value: WhiteBalanceMode) {
-        self.device.set_white_balance_mode_throws(value)
+    pub unsafe fn set_wb_mode_throws(&mut self, value: WbMode) {
+        self.device.set_wb_mode_throws(value)
     }
 
-    pub fn set_white_balance_mode<'ar>(
-        &mut self,
-        value: WhiteBalanceMode,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_white_balance_mode_throws(value) })
+    pub fn set_wb_mode<'ar>(&mut self, value: WbMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_wb_mode_throws(value) })
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws<
-        F,
-    >(
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws<F>(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
         block: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_white_balance_mode_locked_with_device_white_balance_gains_throws(
-                gains,
-                block.as_ptr(),
-            )
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, block.as_ptr())
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_no_completion_handler_throws(
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
     ) {
         self.device
-            .set_white_balance_mode_locked_with_device_white_balance_gains_throws(
-                gains,
-                std::ptr::null_mut(),
-            )
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, std::ptr::null_mut())
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler<
-        'ar,
-        F,
-    >(
+    pub fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler<'ar, F>(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
         block: &'static mut blocks::Block<F>,
     ) -> Result<(), &'ar ns::Exception>
     where
         F: FnOnce(cm::Time),
     {
         ns::try_catch(|| unsafe {
-            self.set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws(gains, block)
+            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
+                gains, block,
+            )
         })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_white_balance_mode_locked_with_device_white_balance_gains_no_completion_handler<
-        'ar,
-    >(
+    pub fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler<'ar>(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self
-                .set_white_balance_mode_locked_with_device_white_balance_gains_no_completion_handler_throws(gains)
+            self.set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(gains)
         })
     }
 
     #[cfg(feature = "async")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_throws(
+    pub async unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
     ) -> cm::Time {
         let (future, block) = blocks::comp1();
-        self.set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws(gains, block.escape());
+        self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
+            gains,
+            block.escape(),
+        );
         future.await
     }
 
     #[cfg(feature = "async")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async fn set_white_balance_mode_locked_with_device_white_balance_gains(
+    pub async fn set_wb_mode_locked_with_device_wb_gains(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_white_balance_mode_locked_with_device_white_balance_gains_with_completion_handler_throws(gains, block.escape())
+            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
+                gains,
+                block.escape(),
+            )
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -1385,20 +1376,20 @@ impl Device {
 #[doc(alias = "AVCaptureWhiteBalanceMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
-pub enum WhiteBalanceMode {
+pub enum WbMode {
     /// Indicates that the white balance should be locked at its current value.
     Locked = 0,
     /// Indicates that the device should automatically adjust white balance
     /// once and then change the white balance mode to 'Locked'
-    AutoWhiteBalance = 1,
+    Auto = 1,
     /// Indicates that the device should automatically adjust white balance when needed.
-    ContinuousAutoWhiteBalance = 2,
+    ContinuousAuto = 2,
 }
 
 #[doc(alias = "AVCaptureWhiteBalanceGains")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
-pub struct WhiteBalanceGains {
+pub struct WbGains {
     pub red: f32,
     pub green: f32,
     pub blue: f32,
@@ -1407,7 +1398,7 @@ pub struct WhiteBalanceGains {
 #[doc(alias = "AVCaptureWhiteBalanceChromaticityValues")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
-pub struct WhiteBalanceChromaticityValues {
+pub struct WbChromaticityValues {
     pub x: f32,
     pub y: f32,
 }
@@ -1415,47 +1406,47 @@ pub struct WhiteBalanceChromaticityValues {
 #[doc(alias = "AVCaptureWhiteBalanceTemperatureAndTintValues")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
-pub struct WhiteBalanceTemperatureAndTintValues {
-    pub temperature: f32,
+pub struct WbTempTintValues {
+    pub temp: f32,
     pub tint: f32,
 }
 
 /// AVCaptureDeviceWhiteBalance
 impl Device {
     #[objc::msg_send(isWhiteBalanceModeSupported:)]
-    pub fn is_white_balance_mode_supported(&self, mode: WhiteBalanceMode) -> bool;
+    pub fn is_wb_mode_supported(&self, mode: WbMode) -> bool;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(isLockingWhiteBalanceWithCustomDeviceGainsSupported)]
-    pub fn is_locking_white_balance_with_custom_device_gains_supported(&self) -> bool;
+    pub fn is_locking_wb_with_custom_device_gains_supported(&self) -> bool;
 
     #[objc::msg_send(whiteBalanceMode)]
-    pub fn white_balance_mode(&self) -> WhiteBalanceMode;
+    pub fn wb_mode(&self) -> WbMode;
 
     #[objc::msg_send(setWhiteBalanceMode:)]
-    unsafe fn set_white_balance_mode_throws(&mut self, value: WhiteBalanceMode);
+    unsafe fn set_wb_mode_throws(&mut self, value: WbMode);
 
     #[objc::msg_send(isAdjustingWhiteBalance)]
-    pub fn is_adjusting_white_balance(&self) -> bool;
+    pub fn is_adjusting_wb(&self) -> bool;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(deviceWhiteBalanceGains)]
-    pub fn device_white_balance_gains(&self) -> WhiteBalanceGains;
+    pub fn device_wb_gains(&self) -> WbGains;
 
     /// Indicates the current device-specific Gray World RGB white balance gain values in use.
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(grayWorldDeviceWhiteBalanceGains)]
-    pub fn gray_world_device_white_balance_gains(&self) -> WhiteBalanceGains;
+    pub fn gray_world_device_wb_gains(&self) -> WbGains;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(maxWhiteBalanceGain)]
-    pub fn max_white_balance_gain(&self) -> f32;
+    pub fn max_wb_gain(&self) -> f32;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setWhiteBalanceModeLockedWithDeviceWhiteBalanceGains:completionHandler:)]
-    unsafe fn set_white_balance_mode_locked_with_device_white_balance_gains_throws(
+    unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
         &mut self,
-        gains: WhiteBalanceGains,
+        gains: WbGains,
         block: *mut c_void,
     );
 }
@@ -1693,7 +1684,7 @@ pub fn exposure_target_bias_current() -> f32 {
 }
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
-pub fn white_balance_gains_current() -> WhiteBalanceGains {
+pub fn wb_gains_current() -> WbGains {
     unsafe { AVCaptureWhiteBalanceGainsCurrent }
 }
 
