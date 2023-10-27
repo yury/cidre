@@ -7,6 +7,7 @@
 
 #import "ns.h"
 
+
 @implementation CidreObserver {
     __weak NSObject * _obj;
     NSString *_keyPath;

@@ -241,7 +241,7 @@ mod tests {
 
     #[test]
     fn objc_throw_catch() {
-        let msg = ns::String::with_str("test");
+        let msg = ns::String::with_str("this is longer string so it is not tagged ptr");
 
         let exc = objc::try_catch(|| objc::throw(&msg)).expect_err("result");
 
