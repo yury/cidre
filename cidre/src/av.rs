@@ -38,6 +38,11 @@ pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::TorchMode as CaptureTouchMode;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
+pub use capture::VideoStabilizationMode as CaptureVideoStabilizationMode;
+pub use capture::WhiteBalanceChromaticityValues as CaptureWhiteBalanceChromaticityValues;
+pub use capture::WhiteBalanceGains as CaptureWhiteBalanceGains;
+pub use capture::WhiteBalanceMode as CaptureWhiteBalanceMode;
+pub use capture::WhiteBalanceTemperatureAndTintValues as CaptureWhiteBalanceTemperatureAndTintValues;
 
 #[cfg(not(target_os = "macos"))]
 pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;

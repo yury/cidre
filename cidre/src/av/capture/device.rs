@@ -161,6 +161,9 @@ extern "C" {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     static AVCaptureExposureDurationCurrent: cm::Time;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    static AVCaptureExposureTargetBiasCurrent: f32;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -887,6 +890,102 @@ impl<'a> ConfigurationLockGuard<'a> {
         }
         Ok(future.await)
     }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_target_bias_with_completion_handler_throws<F>(
+        &mut self,
+        bias: f32,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_exposure_target_bias_throws(bias, block.as_ptr())
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_target_bias_no_completion_handler_throws(&mut self, bias: f32) {
+        self.device
+            .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_target_bias_with_completion_handler<'ar, F>(
+        &mut self,
+        bias: f32,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_exposure_target_bias_throws(bias, block.as_ptr())
+        })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_target_bias_no_completion_handler<'ar>(
+        &mut self,
+        bias: f32,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape());
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_exposure_target_bias(
+        &mut self,
+        bias: f32,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape())
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_global_tone_mapping_enabled_throws(&mut self, value: bool) {
+        self.device.set_global_tone_mapping_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_global_tone_mapping_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(value) })
+    }
+
+    #[inline]
+    pub unsafe fn set_white_balance_mode_throws(&mut self, value: WhiteBalanceMode) {
+        self.device.set_white_balance_mode_throws(value)
+    }
+
+    pub fn set_white_balance_mode<'ar>(
+        &mut self,
+        value: WhiteBalanceMode,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_white_balance_mode_throws(value) })
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -1157,6 +1256,109 @@ impl Device {
         iso: f32,
         handler: *mut c_void,
     );
+
+    /// Indicates the metered exposure level's offset from the target exposure value, in EV units.
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(exposureTargetOffset)]
+    pub fn exposure_target_offset(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(exposureTargetBias)]
+    pub fn exposure_target_bias(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(minExposureTargetBias)]
+    pub fn min_exposure_target_bias(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(maxExposureTargetBias)]
+    pub fn max_exposure_target_bias(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setExposureTargetBias:completionHandler:)]
+    unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32, handler: *mut c_void);
+}
+
+/// AVCaptureDeviceToneMapping
+impl Device {
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isGlobalToneMappingEnabled)]
+    pub fn is_global_tone_mapping_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setGlobalToneMappingEnabled:)]
+    pub fn set_global_tone_mapping_enabled_throws(&mut self, value: bool);
+}
+
+/// AVCaptureWhiteBalanceMode
+#[doc(alias = "AVCaptureWhiteBalanceMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum WhiteBalanceMode {
+    /// Indicates that the white balance should be locked at its current value.
+    Locked = 0,
+    /// Indicates that the device should automatically adjust white balance
+    /// once and then change the white balance mode to 'Locked'
+    AutoWhiteBalance = 1,
+    /// Indicates that the device should automatically adjust white balance when needed.
+    ContinuousAutoWhiteBalance = 2,
+}
+
+#[doc(alias = "AVCaptureWhiteBalanceGains")]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[repr(C)]
+pub struct WhiteBalanceGains {
+    pub red: f32,
+    pub green: f32,
+    pub blue: f32,
+}
+
+#[doc(alias = "AVCaptureWhiteBalanceChromaticityValues")]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[repr(C)]
+pub struct WhiteBalanceChromaticityValues {
+    pub x: f32,
+    pub y: f32,
+}
+
+#[doc(alias = "AVCaptureWhiteBalanceTemperatureAndTintValues")]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[repr(C)]
+pub struct WhiteBalanceTemperatureAndTintValues {
+    pub temperature: f32,
+    pub tint: f32,
+}
+
+/// AVCaptureDeviceWhiteBalance
+impl Device {
+    #[objc::msg_send(isWhiteBalanceModeSupported:)]
+    pub fn is_white_balance_mode_supported(&self, mode: WhiteBalanceMode) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isLockingWhiteBalanceWithCustomDeviceGainsSupported)]
+    pub fn is_locking_white_balance_with_custom_device_gains_supported(&self) -> bool;
+
+    #[objc::msg_send(whiteBalanceMode)]
+    pub fn white_balance_mode(&self) -> WhiteBalanceMode;
+
+    #[objc::msg_send(setWhiteBalanceMode:)]
+    unsafe fn set_white_balance_mode_throws(&mut self, value: WhiteBalanceMode);
+
+    #[objc::msg_send(isAdjustingWhiteBalance)]
+    pub fn is_adjusting_white_balance(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(deviceWhiteBalanceGains)]
+    pub fn device_white_balance_gains(&self) -> WhiteBalanceGains;
+
+    /// Indicates the current device-specific Gray World RGB white balance gain values in use.
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(grayWorldDeviceWhiteBalanceGains)]
+    pub fn gray_world_device_white_balance_gains(&self) -> WhiteBalanceGains;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(maxWhiteBalanceGain)]
+    pub fn max_white_balance_gain(&self) -> f32;
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
@@ -1384,6 +1586,11 @@ pub fn iso_current() -> f32 {
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 pub fn exposure_duration_current() -> cm::Time {
     unsafe { AVCaptureExposureDurationCurrent }
+}
+
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+pub fn exposure_target_bias_current() -> f32 {
+    unsafe { AVCaptureExposureTargetBiasCurrent }
 }
 
 #[cfg(test)]

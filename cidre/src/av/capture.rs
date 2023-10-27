@@ -15,6 +15,10 @@ pub use device::Position as DevicePosition;
 pub use device::TorchMode;
 pub use device::Type as DeviceType;
 pub use device::VideoStabilizationMode;
+pub use device::WhiteBalanceChromaticityValues;
+pub use device::WhiteBalanceGains;
+pub use device::WhiteBalanceMode;
+pub use device::WhiteBalanceTemperatureAndTintValues;
 
 pub use device::notifications as device_notifications;
 
