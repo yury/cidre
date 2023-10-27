@@ -158,6 +158,9 @@ extern "C" {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     static AVCaptureISOCurrent: f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    static AVCaptureExposureDurationCurrent: cm::Time;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -785,6 +788,105 @@ impl<'a> ConfigurationLockGuard<'a> {
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(value) })
     }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) {
+        self.device
+            .set_exposure_mode_custom_with_duration_and_iso_throws(
+                duration,
+                iso,
+                std::ptr::null_mut(),
+            )
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler<'ar>(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
+                duration, iso,
+            )
+        })
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws<F>(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, block.as_ptr())
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler<'ar, F>(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_exposure_mode_custom_with_duration_and_iso_throws(
+                    duration,
+                    iso,
+                    block.as_ptr(),
+                )
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_exposure_mode_custom_with_duration_and_iso_throws(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
+            duration,
+            iso,
+            block.escape(),
+        );
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_exposure_mode_custom_with_duration_and_iso(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
+                duration,
+                iso,
+                block.escape(),
+            )
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -1031,6 +1133,30 @@ impl Device {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setActiveMaxExposureDuration:)]
     unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time);
+
+    #[objc::msg_send(isAdjustingExposure)]
+    pub fn is_adjusting_exposure(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(lensAperture)]
+    pub fn lens_aperture(&self) -> f32;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(exposureDuration)]
+    pub fn exposure_duration(&self) -> cm::Time;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(ISO)]
+    pub fn iso(&self) -> cm::Time;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setExposureModeCustomWithDuration:ISO:completionHandler:)]
+    pub fn set_exposure_mode_custom_with_duration_and_iso_throws(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+        handler: *mut c_void,
+    );
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
@@ -1253,6 +1379,11 @@ pub fn lens_position_current() -> f32 {
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 pub fn iso_current() -> f32 {
     unsafe { AVCaptureISOCurrent }
+}
+
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+pub fn exposure_duration_current() -> cm::Time {
+    unsafe { AVCaptureExposureDurationCurrent }
 }
 
 #[cfg(test)]
