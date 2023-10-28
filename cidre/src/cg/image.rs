@@ -5,6 +5,17 @@ pub mod source;
 #[cfg(feature = "iio")]
 pub use source::Src as ImageSrc;
 
+#[cfg(feature = "iio")]
+pub mod animation;
+#[cfg(feature = "iio")]
+pub use animation::delay_time as animation_delay_time;
+#[cfg(feature = "iio")]
+pub use animation::loop_count as animation_loop_count;
+#[cfg(feature = "iio")]
+pub use animation::start_index as animation_start_index;
+#[cfg(feature = "iio")]
+pub use animation::Status as AnimationStatus;
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(u32)]
 pub enum AlphaInfo {
