@@ -977,97 +977,6 @@ impl<'a> ConfigurationLockGuard<'a> {
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(value) })
     }
-
-    #[inline]
-    pub unsafe fn set_wb_mode_throws(&mut self, value: WbMode) {
-        self.device.set_wb_mode_throws(value)
-    }
-
-    pub fn set_wb_mode<'ar>(&mut self, value: WbMode) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_wb_mode_throws(value) })
-    }
-
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws<F>(
-        &mut self,
-        gains: WbGains,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
-        self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, block.as_ptr())
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(
-        &mut self,
-        gains: WbGains,
-    ) {
-        self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, std::ptr::null_mut())
-    }
-
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler<'ar, F>(
-        &mut self,
-        gains: WbGains,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
-        ns::try_catch(|| unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
-                gains, block,
-            )
-        })
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler<'ar>(
-        &mut self,
-        gains: WbGains,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(gains)
-        })
-    }
-
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
-        &mut self,
-        gains: WbGains,
-    ) -> cm::Time {
-        let (future, block) = blocks::comp1();
-        self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
-            gains,
-            block.escape(),
-        );
-        future.await
-    }
-
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async fn set_wb_mode_locked_with_device_wb_gains(
-        &mut self,
-        gains: WbGains,
-    ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
-        let res = ns::try_catch(move || unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
-                gains,
-                block.escape(),
-            )
-        });
-        if let Err(err) = res {
-            return Err(err.retained());
-        }
-        Ok(future.await)
-    }
 }
 
 impl<'a> Drop for ConfigurationLockGuard<'a> {
@@ -1449,6 +1358,188 @@ impl Device {
         gains: WbGains,
         block: *mut c_void,
     );
+
+    /// Converts device-independent chromaticity values to device-specific white balance RGB gain values.
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(deviceWhiteBalanceGainsForChromaticityValues:)]
+    pub fn device_wb_gains_for_chromaticity_values(&self, values: WbChromaticityValues) -> WbGains;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(temperatureAndTintValuesForDeviceWhiteBalanceGains:)]
+    pub fn temp_tint_values_for_device_wb_gains(&self, gains: WbGains) -> WbTempTintValues;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(deviceWhiteBalanceGainsForTemperatureAndTintValues:)]
+    pub fn device_wb_gains_for_temp_tint_values(&self, values: WbTempTintValues) -> WbGains;
+}
+
+/// AVCaptureDeviceWhiteBalance
+impl<'a> ConfigurationLockGuard<'a> {
+    #[inline]
+    pub unsafe fn set_wb_mode_throws(&mut self, value: WbMode) {
+        self.device.set_wb_mode_throws(value)
+    }
+
+    pub fn set_wb_mode<'ar>(&mut self, value: WbMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_wb_mode_throws(value) })
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws<F>(
+        &mut self,
+        gains: WbGains,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, block.as_ptr())
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(
+        &mut self,
+        gains: WbGains,
+    ) {
+        self.device
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, std::ptr::null_mut())
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler<'ar, F>(
+        &mut self,
+        gains: WbGains,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
+                gains, block,
+            )
+        })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler<'ar>(
+        &mut self,
+        gains: WbGains,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(gains)
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
+        &mut self,
+        gains: WbGains,
+    ) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
+            gains,
+            block.escape(),
+        );
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_wb_mode_locked_with_device_wb_gains(
+        &mut self,
+        gains: WbGains,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
+                gains,
+                block.escape(),
+            )
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
+}
+
+/// AVCaptureDeviceSubjectAreaChangeMonitoring
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+impl Device {
+    #[objc::msg_send(isSubjectAreaChangeMonitoringEnabled)]
+    pub fn is_subject_area_change_monitoring_enabled(&self) -> bool;
+
+    #[objc::msg_send(setSubjectAreaChangeMonitoringEnabled:)]
+    unsafe fn set_subject_area_change_monitoring_enabled_throws(&mut self, value: bool);
+}
+
+/// AVCaptureDeviceSubjectAreaChangeMonitoring
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+impl<'a> ConfigurationLockGuard<'a> {
+    pub fn set_subject_area_change_monitoring_enabled(&mut self, value: bool) {
+        unsafe {
+            self.device
+                .set_subject_area_change_monitoring_enabled_throws(value)
+        }
+    }
+}
+
+/// AVCaptureDeviceLowLightBoost
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+impl Device {
+    #[objc::msg_send(isLowLightBoostSupported)]
+    pub fn is_low_light_boost_supported(&self) -> bool;
+
+    #[objc::msg_send(isLowLightBoostEnabled)]
+    pub fn is_low_light_boost_enabled(&self) -> bool;
+
+    #[objc::msg_send(setLowLightBoostEnabled:)]
+    unsafe fn set_low_light_boost_enabled_throws(&mut self, value: bool);
+
+    #[objc::msg_send(automaticallyEnablesLowLightBoostWhenAvailable)]
+    pub fn automatically_enables_low_light_boost_when_available(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyEnablesLowLightBoostWhenAvailable:)]
+    unsafe fn set_automatically_enables_low_light_boost_when_available_throws(
+        &mut self,
+        value: bool,
+    );
+}
+
+/// AVCaptureDeviceLowLightBoost
+#[cfg(any(target_os = "tvos", target_os = "ios"))]
+impl<'a> ConfigurationLockGuard<'a> {
+    pub unsafe fn set_low_light_boost_enabled_throws(&mut self, value: bool) {
+        self.device.set_low_light_boost_enabled_throws(value)
+    }
+
+    pub fn set_low_light_boost_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_low_light_boost_enabled_throws(value) })
+    }
+
+    pub unsafe fn set_automatically_enables_low_light_boost_when_available_throws(
+        &mut self,
+        value: bool,
+    ) {
+        self.device
+            .set_automatically_enables_low_light_boost_when_available_throws(value)
+    }
+
+    pub fn set_automatically_enables_low_light_boost_when_available<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_automatically_enables_low_light_boost_when_available_throws(value)
+        })
+    }
 }
 
 define_obj_type!(FrameRateRange(ns::Id));
