@@ -1,10 +1,9 @@
-use std::ops::{Deref, DerefMut};
-
-#[cfg(any(target_os = "tvos", target_os = "ios"))]
-use std::ffi::c_void;
+use std::{
+    ffi::c_void,
+    ops::{Deref, DerefMut},
+};
 
 #[cfg(feature = "blocks")]
-#[cfg(any(target_os = "tvos", target_os = "ios"))]
 use crate::blocks;
 
 use crate::{
@@ -1567,6 +1566,59 @@ impl<'a> ConfigurationLockGuard<'a> {
     }
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum AuthorizationStatus {
+    NotDetermined = 0,
+    Restricted = 1,
+    Denied = 2,
+    Authorized = 3,
+}
+
+/// AVCaptureDeviceAuthorization
+impl Device {
+    #[objc::cls_msg_send(authorizationStatusForMediaType:)]
+    pub fn authorization_status_for_media_type(media_type: &av::MediaType) -> AuthorizationStatus;
+
+    #[cfg(feature = "blocks")]
+    #[objc::cls_msg_send(requestAccessForMediaType:completionHandler:)]
+    unsafe fn request_access_for_media_type_throws(media_type: &av::MediaType, block: *mut c_void);
+
+    #[cfg(feature = "blocks")]
+    pub unsafe fn request_access_for_media_type_completion_throws<F>(
+        media_type: &av::MediaType,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(bool),
+    {
+        unsafe { Self::request_access_for_media_type_throws(media_type, block.as_ptr()) }
+    }
+
+    #[cfg(feature = "blocks")]
+    pub fn request_access_for_media_type_completion<'ar, F>(
+        media_type: &av::MediaType,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(bool),
+    {
+        ns::try_catch(|| unsafe {
+            Self::request_access_for_media_type_completion_throws(media_type, block)
+        })
+    }
+
+    #[cfg(feature = "async")]
+    pub async fn request_access_for_media_type<'ar>(
+        media_type: &av::MediaType,
+    ) -> Result<bool, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        match Self::request_access_for_media_type_completion(media_type, block.escape()) {
+            Ok(_) => Ok(future.await),
+            Err(e) => Err(e.retained()),
+        }
+    }
+}
+
 define_obj_type!(FrameRateRange(ns::Id));
 
 impl FrameRateRange {
@@ -1850,5 +1902,15 @@ mod tests {
 
         let devices = session.devices();
         devices.as_type_ref().show();
+    }
+
+    #[tokio::test]
+    async fn access() {
+        let res = av::CaptureDevice::request_access_for_media_type(av::MediaType::video()).await;
+        assert!(matches!(res, Ok(true)));
+        let res = av::CaptureDevice::request_access_for_media_type(av::MediaType::audio()).await;
+        assert!(matches!(res, Ok(true)));
+        let res = av::CaptureDevice::request_access_for_media_type(av::MediaType::text()).await;
+        assert!(res.is_err());
     }
 }
