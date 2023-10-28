@@ -475,14 +475,22 @@ impl Device {
     pub fn show_system_ui(system_ui: SystemUi);
 }
 
-#[derive(Debug, Eq, PartialEq)]
-pub struct ColorSpace(isize);
-
-impl ColorSpace {
-    pub const SRGB: Self = Self(0);
-    pub const P3_D65: Self = Self(1);
-    pub const HLG_BT2020: Self = Self(2);
-    pub const APPLE_LOG: Self = Self(3);
+#[doc(alias = "AVCaptureColorSpace")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ColorSpace {
+    /// The sRGB color space (<https://www.w3.org/Graphics/Color/srgb>)
+    Srgb = 0,
+    /// The P3 D65 wide color space which uses Illuminant D65 as the white point.
+    P3D65 = 1,
+    /// The BT2020 wide color space which uses Illuminant D65 as the white point
+    /// and Hybrid Log-Gamma as the transfer function.
+    HlgBt2020 = 2,
+    /// The Apple Log Color space, which uses BT2020 as the color primaries,
+    /// and an Apple defined Log curve as a transfer function. When this is set as the active color
+    /// space on an 'av::CaptureDevice', any 'av::CapturePhotoOutput' or 'av::CaptureStillImageOutput' connected to
+    /// the same 'av::CaptureDevice' will have its video connection disabled.
+    AppleLog = 3,
 }
 
 /// AVCaptureDeviceColorSpaceSupport
@@ -1570,9 +1578,15 @@ impl<'a> ConfigurationLockGuard<'a> {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum AuthorizationStatus {
+    /// Indicates that the user has not yet made a choice regarding whether the client can access the hardware.
     NotDetermined = 0,
+    /// The client is not authorized to access the hardware for the media type.
+    /// The user cannot change the client's status, possibly due to active restrictions
+    /// such as parental controls being in place.
     Restricted = 1,
+    /// The user explicitly denied access to the hardware supporting a media type for the client.
     Denied = 2,
+    /// The client is authorized to access the hardware supporting a media type.
     Authorized = 3,
 }
 
