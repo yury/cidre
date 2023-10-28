@@ -94,7 +94,7 @@ impl ShareableContent {
     where
         F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar ns::Error>),
     {
-        Self::get_shareable_content_with_completion_handler(b.as_ptr());
+        Self::get_shareable_content_with_completion_handler(b.as_mut_ptr());
     }
 
     #[cfg(all(feature = "blocks", feature = "async"))]

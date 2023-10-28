@@ -305,7 +305,7 @@ impl Stream {
     where
         F: FnOnce(Option<&'static ns::Error>),
     {
-        self._start_with_completion_handler(block.as_ptr());
+        self._start_with_completion_handler(block.as_mut_ptr());
     }
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
     fn _stop_with_completion_handler(&self, rb: *mut c_void);
@@ -314,7 +314,7 @@ impl Stream {
     where
         F: FnOnce(Option<&'static ns::Error>),
     {
-        self._stop_with_completion_handler(block.as_ptr())
+        self._stop_with_completion_handler(block.as_mut_ptr())
     }
 
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {

@@ -62,7 +62,7 @@ impl CmdBuf {
     where
         F: FnOnce(&mut Self) + Send + 'static,
     {
-        self._add_scheduled_handler(block.as_ptr());
+        self._add_scheduled_handler(block.as_mut_ptr());
     }
 
     #[objc::msg_send(addCompletedHandler:)]
@@ -72,7 +72,7 @@ impl CmdBuf {
     where
         F: FnOnce(&mut Self) + Send + 'static,
     {
-        self._add_completed_handler(block.as_ptr());
+        self._add_completed_handler(block.as_mut_ptr());
     }
 
     #[inline]
@@ -80,7 +80,7 @@ impl CmdBuf {
         &mut self,
         block: &mut blocks::Block<extern "C" fn(*const c_void, &'a mut Self)>,
     ) {
-        self._add_completed_handler(block.as_ptr());
+        self._add_completed_handler(block.as_mut_ptr());
     }
 
     #[objc::msg_send(blitCommandEncoder)]

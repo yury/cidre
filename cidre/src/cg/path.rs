@@ -209,7 +209,7 @@ impl Path {
     where
         B: FnMut(&'a mut Element),
     {
-        unsafe { CGPathApplyWithBlock(self, block.as_ptr()) }
+        unsafe { CGPathApplyWithBlock(self, block.as_mut_ptr()) }
     }
 
     #[cfg(feature = "blocks")]
@@ -218,7 +218,7 @@ impl Path {
     where
         B: FnMut(&'a Element),
     {
-        unsafe { CGPathApplyWithBlock(self, block.as_ptr()) }
+        unsafe { CGPathApplyWithBlock(self, block.as_mut_ptr()) }
     }
 
     #[inline]

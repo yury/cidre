@@ -38,7 +38,7 @@ pub trait QueuedSampleBufRendering: objc::Obj {
     ) where
         F: FnOnce() + Send + 'static,
     {
-        self._request_media_data_when_ready_on_queue(queue, block.as_ptr());
+        self._request_media_data_when_ready_on_queue(queue, block.as_mut_ptr());
     }
 
     #[objc::msg_send(stopRequestingMediaData)]

@@ -60,7 +60,7 @@ where
 {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_ptr()
+        self.as_mut_ptr()
     }
 }
 
@@ -71,7 +71,7 @@ where
 {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_ptr()
+        self.as_mut_ptr()
     }
 }
 
@@ -79,7 +79,7 @@ where
 impl Block<extern "C" fn(*const c_void)> for blocks::Block<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_ptr()
+        self.as_mut_ptr()
     }
 }
 
@@ -87,7 +87,7 @@ impl Block<extern "C" fn(*const c_void)> for blocks::Block<extern "C" fn(*const 
 impl Block<extern "C" fn(*const c_void)> for blocks::bl<extern "C" fn(*const c_void)> {
     #[inline]
     unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_ptr()
+        self.as_mut_ptr()
     }
 }
 

@@ -30,7 +30,19 @@ pub use error::Callback as ErrorCallback;
 pub use error::Error;
 
 pub mod image;
+#[cfg(feature = "iio")]
+pub use image::animate_image_at_url;
+#[cfg(feature = "iio")]
+pub use image::animate_image_at_url_with_block;
+#[cfg(feature = "iio")]
+pub use image::animate_image_data;
+#[cfg(feature = "iio")]
+pub use image::animate_image_data_with_block;
 pub use image::AlphaInfo as ImageAlphaInfo;
+#[cfg(feature = "iio")]
+pub use image::AnimationOptKey as ImageAnimationOptKey;
+#[cfg(feature = "iio")]
+pub use image::AnimationStatus as ImageAnimationStatus;
 pub use image::Image;
 #[cfg(feature = "iio")]
 pub use image::ImageSrc;

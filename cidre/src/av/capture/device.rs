@@ -1614,7 +1614,7 @@ impl Device {
     ) where
         F: FnOnce(bool),
     {
-        unsafe { Self::request_access_for_media_type_throws(media_type, block.as_ptr()) }
+        unsafe { Self::request_access_for_media_type_throws(media_type, block.as_mut_ptr()) }
     }
 
     #[cfg(feature = "blocks")]

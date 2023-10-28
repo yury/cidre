@@ -18,7 +18,7 @@ impl ExecutionDesc {
     where
         F: FnOnce(&cf::ArrayOf<graph::TensorData>, Option<&cf::Error>),
     {
-        let ptr = block.map_or(std::ptr::null_mut(), |b| b.as_ptr());
+        let ptr = block.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr());
         self._set_scheduled_handler(ptr)
     }
 
@@ -37,7 +37,7 @@ impl ExecutionDesc {
     where
         F: FnOnce(&cf::ArrayOf<graph::TensorData>, Option<&cf::Error>),
     {
-        let ptr = block.map_or(std::ptr::null_mut(), |b| b.as_ptr());
+        let ptr = block.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr());
         self._set_completion_handler(ptr)
     }
 

@@ -8,13 +8,18 @@ pub use source::Src as ImageSrc;
 #[cfg(feature = "iio")]
 pub mod animation;
 #[cfg(feature = "iio")]
-pub use animation::delay_time as animation_delay_time;
-#[cfg(feature = "iio")]
-pub use animation::loop_count as animation_loop_count;
-#[cfg(feature = "iio")]
-pub use animation::start_index as animation_start_index;
+pub use animation::OptKey as AnimationOptKey;
 #[cfg(feature = "iio")]
 pub use animation::Status as AnimationStatus;
+
+#[cfg(feature = "iio")]
+pub use animation::animate_image_at_url;
+#[cfg(feature = "iio")]
+pub use animation::animate_image_at_url_with_block;
+#[cfg(feature = "iio")]
+pub use animation::animate_image_data;
+#[cfg(feature = "iio")]
+pub use animation::animate_image_data_with_block;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(u32)]

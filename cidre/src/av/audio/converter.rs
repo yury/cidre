@@ -151,7 +151,7 @@ impl Converter {
                 self,
                 output_buffer,
                 &mut error,
-                block.as_ptr(),
+                block.as_mut_ptr(),
             );
             if error.is_some() {
                 debug_assert_eq!(res, OutputStatus::Error);

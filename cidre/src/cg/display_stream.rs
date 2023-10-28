@@ -230,7 +230,7 @@ impl DisplayStream {
                 output_height,
                 pixel_format,
                 properties,
-                handler.as_ptr(),
+                handler.as_mut_ptr(),
             )
         }
     }
@@ -260,7 +260,7 @@ impl DisplayStream {
                 pixel_format,
                 properties,
                 queue,
-                handler.as_ptr(),
+                handler.as_mut_ptr(),
             )
         }
     }

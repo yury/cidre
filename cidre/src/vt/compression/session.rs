@@ -169,7 +169,7 @@ impl Session {
                 duration,
                 frame_properties,
                 info_flags_out,
-                block.as_ptr(),
+                block.as_mut_ptr(),
             )
         }
     }
@@ -196,7 +196,7 @@ impl Session {
                 duration,
                 frame_properties,
                 info_flags_out,
-                block.as_ptr(),
+                block.as_mut_ptr(),
             )
             .result()
         }
