@@ -1,4 +1,5 @@
 pub mod device;
+pub use device::AuthorizationStatus;
 pub use device::AutoFocusRangeRestriction;
 pub use device::AutoFocusSystem;
 pub use device::CaptureAudioChannel;

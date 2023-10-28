@@ -1566,6 +1566,7 @@ impl<'a> ConfigurationLockGuard<'a> {
     }
 }
 
+#[doc(alias = "AVAuthorizationStatus")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum AuthorizationStatus {
@@ -1578,7 +1579,15 @@ pub enum AuthorizationStatus {
 /// AVCaptureDeviceAuthorization
 impl Device {
     #[objc::cls_msg_send(authorizationStatusForMediaType:)]
-    pub fn authorization_status_for_media_type(media_type: &av::MediaType) -> AuthorizationStatus;
+    pub unsafe fn authorization_status_for_media_type_throws(
+        media_type: &av::MediaType,
+    ) -> AuthorizationStatus;
+
+    pub fn authorization_status_for_media_type<'ar>(
+        media_type: &av::MediaType,
+    ) -> Result<AuthorizationStatus, &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { Self::authorization_status_for_media_type_throws(media_type) })
+    }
 
     #[cfg(feature = "blocks")]
     #[objc::cls_msg_send(requestAccessForMediaType:completionHandler:)]
@@ -1911,6 +1920,13 @@ mod tests {
         let res = av::CaptureDevice::request_access_for_media_type(av::MediaType::audio()).await;
         assert!(matches!(res, Ok(true)));
         let res = av::CaptureDevice::request_access_for_media_type(av::MediaType::text()).await;
+        assert!(res.is_err());
+
+        let status = av::CaptureDevice::authorization_status_for_media_type(av::MediaType::video())
+            .expect("Failed on valid media type");
+        assert_eq!(status, av::AuthorizationStatus::Authorized);
+
+        let res = av::CaptureDevice::authorization_status_for_media_type(av::MediaType::text());
         assert!(res.is_err());
     }
 }
