@@ -726,7 +726,7 @@ mod tests {
     }
 
     #[test]
-    fn test_simple_block() {
+    fn simple_block() {
         let foo = Foo;
         let _rc = Rc::new(10);
         let mut b = blocks::mut0(move || println!("nice {foo:?}"));

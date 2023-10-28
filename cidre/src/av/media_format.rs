@@ -402,7 +402,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_media_type() {
+    fn media_type() {
         let _s = MediaType::audio();
     }
 }

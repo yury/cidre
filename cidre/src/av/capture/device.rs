@@ -488,8 +488,8 @@ pub enum ColorSpace {
     HlgBt2020 = 2,
     /// The Apple Log Color space, which uses BT2020 as the color primaries,
     /// and an Apple defined Log curve as a transfer function. When this is set as the active color
-    /// space on an 'av::CaptureDevice', any 'av::CapturePhotoOutput' or 'av::CaptureStillImageOutput' connected to
-    /// the same 'av::CaptureDevice' will have its video connection disabled.
+    /// space on an 'av::CaptureDevice', any 'av::CapturePhotoOutput' or 'av::CaptureStillImageOutput'
+    /// connected to the same 'av::CaptureDevice' will have its video connection disabled.
     AppleLog = 3,
 }
 

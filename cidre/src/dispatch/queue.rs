@@ -377,7 +377,7 @@ mod tests {
     }
 
     #[test]
-    fn test_attrs() {
+    fn attrs() {
         let _attr = dispatch::Attr::make_with_autorelease_frequencey(
             None,
             dispatch::AutoreleaseFrequency::Never,
@@ -385,7 +385,7 @@ mod tests {
     }
 
     #[test]
-    fn test_queue() {
+    fn queue() {
         let q = dispatch::Queue::new();
 
         q.as_type_ref().show();
@@ -405,7 +405,7 @@ mod tests {
     }
 
     #[test]
-    fn test_sync_block() {
+    fn sync_block() {
         let q = dispatch::Queue::new();
 
         let foo = Foo {};
@@ -422,7 +422,7 @@ mod tests {
     }
 
     #[test]
-    fn test_global_queue() {
+    fn global_queue() {
         let q = dispatch::Queue::global_with_qos(dispatch::QOSClass::BACKGROUND).unwrap();
 
         q.as_type_ref().show();

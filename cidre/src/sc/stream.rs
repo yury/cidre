@@ -330,11 +330,6 @@ impl Stream {
     }
 }
 
-// #[link(name = "sc", kind = "static")]
-// extern "C" {
-//     fn test_start(id: &ns::Id);
-// }
-
 #[cfg(test)]
 mod tests {
     use std::time::Duration;
