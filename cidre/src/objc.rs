@@ -1,7 +1,6 @@
 use std::arch::asm;
 use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
-use crate::ns_log;
 use crate::{arc, cf::Type};
 
 #[derive(Debug)]
