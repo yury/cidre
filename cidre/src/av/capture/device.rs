@@ -264,9 +264,6 @@ impl Device {
     #[objc::msg_send(hasTorch)]
     pub fn has_torch(&self) -> bool;
 
-    #[objc::msg_send(isRampingVideoZoom)]
-    pub fn is_ramping_video_zoom(&self) -> bool;
-
     pub fn configuration_lock(&mut self) -> Result<ConfigurationLockGuard, arc::R<cf::Error>> {
         let mut error = None;
         unsafe {
@@ -295,12 +292,6 @@ impl Device {
 
     #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
     pub unsafe fn set_active_video_max_frame_duration(&mut self, value: cm::Time);
-
-    #[objc::msg_send(rampToVideoZoomFactor:withRate:)]
-    pub unsafe fn ramp_to_video_zoom_factor_throws(&mut self, factor: cg::Float, rate: f32);
-
-    #[objc::msg_send(cancelVideoZoomRamp)]
-    pub unsafe fn cancel_video_zoom_ramp_throws(&mut self);
 }
 
 /// AVCaptureDeviceReactionEffects
@@ -533,14 +524,6 @@ impl<'a> ConfigurationLockGuard<'a> {
         unsafe { self.device.set_active_video_max_frame_duration(value) }
     }
 
-    pub fn ramp_to_video_zoom_factor(&mut self, factor: cg::Float, rate: f32) {
-        unsafe { self.device.ramp_to_video_zoom_factor_throws(factor, rate) }
-    }
-
-    pub fn cancel_video_zoom_ramp(&mut self) {
-        unsafe { self.device.cancel_video_zoom_ramp_throws() }
-    }
-
     pub fn set_center_stage_rect_of_interest<'ar>(
         &mut self,
         value: cg::Rect,
@@ -725,257 +708,6 @@ impl<'a> ConfigurationLockGuard<'a> {
             return Err(err.retained());
         }
         Ok(future.await)
-    }
-
-    pub unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode) {
-        self.device.set_exposure_mode_throws(value)
-    }
-
-    pub fn set_exposure_mode<'ar>(
-        &mut self,
-        value: ExposureMode,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_exposure_mode_throws(value) })
-    }
-
-    pub unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point) {
-        self.device.set_exposure_point_of_interest_throws(value)
-    }
-
-    pub fn set_exposure_point_of_interest<'ar>(
-        &mut self,
-        value: cg::Point,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(value) })
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(
-        &mut self,
-        value: bool,
-    ) {
-        self.device
-            .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ar>(
-        &mut self,
-        value: bool,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe {
-            self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
-        })
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool) {
-        self.device
-            .set_face_driven_auto_exposure_enabled_throws(value)
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_face_driven_auto_exposure_enabled<'ar>(
-        &mut self,
-        value: bool,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(value) })
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time) {
-        self.device.set_active_max_exposure_duration_throws(value)
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_active_max_exposure_duration<'ar>(
-        &mut self,
-        value: cm::Time,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(value) })
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
-        &mut self,
-        duration: cm::Time,
-        iso: f32,
-    ) {
-        self.device
-            .set_exposure_mode_custom_with_duration_and_iso_throws(
-                duration,
-                iso,
-                std::ptr::null_mut(),
-            )
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler<'ar>(
-        &mut self,
-        duration: cm::Time,
-        iso: f32,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe {
-            self.set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
-                duration, iso,
-            )
-        })
-    }
-
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws<F>(
-        &mut self,
-        duration: cm::Time,
-        iso: f32,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
-        self.device
-            .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, block.as_ptr())
-    }
-
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler<'ar, F>(
-        &mut self,
-        duration: cm::Time,
-        iso: f32,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
-        ns::try_catch(|| unsafe {
-            self.device
-                .set_exposure_mode_custom_with_duration_and_iso_throws(
-                    duration,
-                    iso,
-                    block.as_ptr(),
-                )
-        })
-    }
-
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async unsafe fn set_exposure_mode_custom_with_duration_and_iso_throws(
-        &mut self,
-        duration: cm::Time,
-        iso: f32,
-    ) -> cm::Time {
-        let (future, block) = blocks::comp1();
-        self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
-            duration,
-            iso,
-            block.escape(),
-        );
-        future.await
-    }
-
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async fn set_exposure_mode_custom_with_duration_and_iso(
-        &mut self,
-        duration: cm::Time,
-        iso: f32,
-    ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
-        let res = ns::try_catch(move || unsafe {
-            self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
-                duration,
-                iso,
-                block.escape(),
-            )
-        });
-        if let Err(err) = res {
-            return Err(err.retained());
-        }
-        Ok(future.await)
-    }
-
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_target_bias_with_completion_handler_throws<F>(
-        &mut self,
-        bias: f32,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
-        self.device
-            .set_exposure_target_bias_throws(bias, block.as_ptr())
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_target_bias_no_completion_handler_throws(&mut self, bias: f32) {
-        self.device
-            .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
-    }
-
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_with_completion_handler<'ar, F>(
-        &mut self,
-        bias: f32,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
-        ns::try_catch(|| unsafe {
-            self.device
-                .set_exposure_target_bias_throws(bias, block.as_ptr())
-        })
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_no_completion_handler<'ar>(
-        &mut self,
-        bias: f32,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe {
-            self.device
-                .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
-        })
-    }
-
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
-        let (future, block) = blocks::comp1();
-        self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape());
-        future.await
-    }
-
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async fn set_exposure_target_bias(
-        &mut self,
-        bias: f32,
-    ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
-        let res = ns::try_catch(move || unsafe {
-            self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape())
-        });
-        if let Err(err) = res {
-            return Err(err.retained());
-        }
-        Ok(future.await)
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    #[inline]
-    pub unsafe fn set_global_tone_mapping_enabled_throws(&mut self, value: bool) {
-        self.device.set_global_tone_mapping_enabled_throws(value)
-    }
-
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_global_tone_mapping_enabled<'ar>(
-        &mut self,
-        value: bool,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(value) })
     }
 }
 
@@ -1270,6 +1002,246 @@ impl Device {
     unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32, handler: *mut c_void);
 }
 
+/// AVCaptureExposureMode
+impl<'a> ConfigurationLockGuard<'a> {
+    pub unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode) {
+        self.device.set_exposure_mode_throws(value)
+    }
+
+    pub fn set_exposure_mode<'ar>(
+        &mut self,
+        value: ExposureMode,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_exposure_mode_throws(value) })
+    }
+
+    pub unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point) {
+        self.device.set_exposure_point_of_interest_throws(value)
+    }
+
+    pub fn set_exposure_point_of_interest<'ar>(
+        &mut self,
+        value: cg::Point,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(
+        &mut self,
+        value: bool,
+    ) {
+        self.device
+            .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
+        })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool) {
+        self.device
+            .set_face_driven_auto_exposure_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_face_driven_auto_exposure_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time) {
+        self.device.set_active_max_exposure_duration_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_active_max_exposure_duration<'ar>(
+        &mut self,
+        value: cm::Time,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(value) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) {
+        self.device
+            .set_exposure_mode_custom_with_duration_and_iso_throws(
+                duration,
+                iso,
+                std::ptr::null_mut(),
+            )
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler<'ar>(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
+                duration, iso,
+            )
+        })
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws<F>(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, block.as_ptr())
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler<'ar, F>(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_exposure_mode_custom_with_duration_and_iso_throws(
+                    duration,
+                    iso,
+                    block.as_ptr(),
+                )
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_exposure_mode_custom_with_duration_and_iso_throws(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
+            duration,
+            iso,
+            block.escape(),
+        );
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_exposure_mode_custom_with_duration_and_iso(
+        &mut self,
+        duration: cm::Time,
+        iso: f32,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
+                duration,
+                iso,
+                block.escape(),
+            )
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_target_bias_with_completion_handler_throws<F>(
+        &mut self,
+        bias: f32,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(cm::Time),
+    {
+        self.device
+            .set_exposure_target_bias_throws(bias, block.as_ptr())
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub unsafe fn set_exposure_target_bias_no_completion_handler_throws(&mut self, bias: f32) {
+        self.device
+            .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
+    }
+
+    #[cfg(feature = "blocks")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_target_bias_with_completion_handler<'ar, F>(
+        &mut self,
+        bias: f32,
+        block: &'static mut blocks::Block<F>,
+    ) -> Result<(), &'ar ns::Exception>
+    where
+        F: FnOnce(cm::Time),
+    {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_exposure_target_bias_throws(bias, block.as_ptr())
+        })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_exposure_target_bias_no_completion_handler<'ar>(
+        &mut self,
+        bias: f32,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
+        })
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
+        let (future, block) = blocks::comp1();
+        self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape());
+        future.await
+    }
+
+    #[cfg(feature = "async")]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub async fn set_exposure_target_bias(
+        &mut self,
+        bias: f32,
+    ) -> Result<cm::Time, arc::R<ns::Exception>> {
+        let (future, block) = blocks::comp1();
+        let res = ns::try_catch(move || unsafe {
+            self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape())
+        });
+        if let Err(err) = res {
+            return Err(err.retained());
+        }
+        Ok(future.await)
+    }
+}
+
 /// AVCaptureDeviceToneMapping
 impl Device {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1279,6 +1251,23 @@ impl Device {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setGlobalToneMappingEnabled:)]
     pub fn set_global_tone_mapping_enabled_throws(&mut self, value: bool);
+}
+
+/// AVCaptureDeviceToneMapping
+impl<'a> ConfigurationLockGuard<'a> {
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_global_tone_mapping_enabled_throws(&mut self, value: bool) {
+        self.device.set_global_tone_mapping_enabled_throws(value)
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_global_tone_mapping_enabled<'ar>(
+        &mut self,
+        value: bool,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(value) })
+    }
 }
 
 /// AVCaptureWhiteBalanceMode
@@ -1539,6 +1528,42 @@ impl<'a> ConfigurationLockGuard<'a> {
         ns::try_catch(|| unsafe {
             self.set_automatically_enables_low_light_boost_when_available_throws(value)
         })
+    }
+}
+
+/// AVCaptureDeviceVideoZoom
+impl Device {
+    #[objc::msg_send(videoZoomFactor)]
+    pub fn video_zoom_factor(&self) -> cg::Float;
+
+    #[objc::msg_send(setVideoZoomFactor:)]
+    unsafe fn set_video_zoom_factor_throws(&mut self, value: cg::Float);
+
+    #[objc::msg_send(isRampingVideoZoom)]
+    pub fn is_ramping_video_zoom(&self) -> bool;
+
+    #[objc::msg_send(rampToVideoZoomFactor:withRate:)]
+    pub unsafe fn ramp_to_video_zoom_factor_throws(&mut self, factor: cg::Float, rate: f32);
+
+    #[objc::msg_send(cancelVideoZoomRamp)]
+    pub unsafe fn cancel_video_zoom_ramp_throws(&mut self);
+
+    #[objc::msg_send(displayVideoZoomFactorMultiplier)]
+    pub fn display_video_zoom_factor_multiplier(&self) -> cg::Float;
+}
+
+/// AVCaptureDeviceVideoZoom
+impl<'a> ConfigurationLockGuard<'a> {
+    pub fn set_video_zoom_factor(&mut self, value: cg::Float) {
+        unsafe { self.device.set_video_zoom_factor_throws(value) }
+    }
+
+    pub fn ramp_to_video_zoom_factor(&mut self, factor: cg::Float, rate: f32) {
+        unsafe { self.device.ramp_to_video_zoom_factor_throws(factor, rate) }
+    }
+
+    pub fn cancel_video_zoom_ramp(&mut self) {
+        unsafe { self.device.cancel_video_zoom_ramp_throws() }
     }
 }
 
