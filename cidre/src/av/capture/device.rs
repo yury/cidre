@@ -262,9 +262,6 @@ impl Device {
     #[objc::msg_send(activeVideoMaxFrameDuration)]
     pub fn active_video_max_frame_duration(&self) -> cm::Time;
 
-    #[objc::msg_send(hasTorch)]
-    pub fn has_torch(&self) -> bool;
-
     pub fn config_lock(&mut self) -> Result<ConfigLockGuard, arc::R<ns::Error>> {
         let mut error = None;
         unsafe {
@@ -293,6 +290,72 @@ impl Device {
 
     #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
     pub unsafe fn set_active_video_max_frame_duration(&mut self, value: cm::Time);
+}
+
+/// AVCaptureDeviceTorch
+impl Device {
+    #[objc::msg_send(hasTorch)]
+    pub fn has_torch(&self) -> bool;
+
+    /// Indicates whether the receiver's torch is currently available for use.
+    #[objc::msg_send(isTorchAvailable)]
+    pub fn is_torch_available(&self) -> bool;
+
+    #[objc::msg_send(isTorchActive)]
+    pub fn is_torch_active(&self) -> bool;
+
+    #[objc::msg_send(torchLevel)]
+    pub fn torch_level(&self) -> f32;
+
+    #[objc::msg_send(isTorchModeSupported:)]
+    pub fn is_torch_mode_supported(&self, value: TorchMode) -> bool;
+
+    #[objc::msg_send(torchMode)]
+    pub fn torch_mode(&self) -> TorchMode;
+
+    #[objc::msg_send(setTorchMode:)]
+    unsafe fn set_torch_mode_throws(&self, value: TorchMode);
+
+    #[objc::msg_send(setTorchModeOnWithLevel:error:)]
+    unsafe fn set_torch_mode_on_with_level_err(
+        &mut self,
+        torch_level: f32,
+        error: *mut Option<arc::R<ns::Error>>,
+    ) -> bool;
+}
+
+/// AVCaptureDeviceTorch
+impl<'a> ConfigLockGuard<'a> {
+    pub unsafe fn set_torch_mode_throws(&mut self, value: TorchMode) {
+        self.device.set_torch_mode_throws(value)
+    }
+
+    pub fn set_torch_mode<'ar>(&mut self, value: TorchMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_torch_mode_throws(value) })
+    }
+
+    pub fn set_torch_mode_on_with_level_err(
+        &mut self,
+        torch_level: f32,
+        error: *mut Option<arc::R<ns::Error>>,
+    ) -> bool {
+        unsafe {
+            self.device
+                .set_torch_mode_on_with_level_err(torch_level, error)
+        }
+    }
+
+    pub fn set_torch_mode_on_with_level(
+        &mut self,
+        torch_level: f32,
+    ) -> Result<(), arc::R<ns::Error>> {
+        let mut error = None;
+        if self.set_torch_mode_on_with_level_err(torch_level, &mut error) {
+            return Ok(());
+        } else {
+            unsafe { Err(error.unwrap_unchecked()) }
+        }
+    }
 }
 
 /// AVCaptureDeviceReactionEffects
