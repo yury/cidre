@@ -21,7 +21,7 @@ impl RunLoop {
     pub fn run(&self);
 
     #[objc::msg_send(runUntilDate:)]
-    pub fn run_until_date(&self, date: ns::Date);
+    pub fn run_until_date(&self, date: &ns::Date);
 }
 
 #[link(name = "ns", kind = "static")]
