@@ -86,12 +86,12 @@ pub enum ImageEdgeMode {
     Constant,
 }
 
-/// Encodes the representation of a single channel within a MPSImage.
+/// Encodes the representation of a single channel within a 'mps::Image'.
 ///
-/// A MPSImage pixel may have many channels in it, sometimes many more than 4, the
-/// limit of what MTLPixelFormats encode. The storage format for a single channel
+/// A 'mps::Image' pixel may have many channels in it, sometimes many more than 4, the
+/// limit of what 'mtl::PixelFormat's encode. The storage format for a single channel
 /// within a pixel can be given by the MPSImageFeatureChannelFormat. The number
-/// of channels is given by the featureChannels parameter of appropriate MPSImage
+/// of channels is given by the featureChannels parameter of appropriate 'mps::Image'
 /// APIs. The size of the pixel is size of the channel format multiplied by the
 /// number of feature channels. No padding is allowed, except to round out to a full
 /// byte.
@@ -105,11 +105,11 @@ pub enum ImageFeatureChannelFormat {
 
     /// u8 with value [0,255] encoding [0,1.0]
     #[doc(alias = "MPSImageFeatureChannelFormatUnorm8")]
-    Unorm8 = 1,
+    UNorm8 = 1,
 
     /// u16 with value [0,65535] encoding [0,1.0]
     #[doc(alias = "MPSImageFeatureChannelFormatUnorm16")]
-    Unorm16 = 2,
+    UNorm16 = 2,
 
     /// IEEE-754 16-bit floating-point value. "half precision" Representable normal range is +-[2**-14, 65504], 0, Infinity, NaN. 11 bits of precision + exponent
     #[doc(alias = "MPSImageFeatureChannelFormatFloat16")]
