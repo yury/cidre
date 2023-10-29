@@ -191,6 +191,12 @@ impl Device {
         position: Position,
     ) -> Option<arc::R<Self>>;
 
+    #[objc::cls_msg_send(devices)]
+    pub fn devices_ar() -> arc::Rar<ns::Array<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn devices() -> arc::R<ns::Array<Self>>;
+
     #[objc::cls_msg_send(deviceWithUniqueID:)]
     pub fn with_unique_id_ar(unique_id: ns::String) -> Option<arc::Rar<Self>>;
 
@@ -259,25 +265,25 @@ impl Device {
     #[objc::msg_send(hasTorch)]
     pub fn has_torch(&self) -> bool;
 
-    pub fn configuration_lock(&mut self) -> Result<ConfigurationLockGuard, arc::R<cf::Error>> {
+    pub fn config_lock(&mut self) -> Result<ConfigLockGuard, arc::R<cf::Error>> {
         let mut error = None;
         unsafe {
-            let result = self.lock_for_configuration(&mut error);
+            let result = self.lock_for_config(&mut error);
             if let Some(error) = error.take() {
                 return Err(error);
             }
 
             debug_assert!(result);
 
-            Ok(ConfigurationLockGuard { device: self })
+            Ok(ConfigLockGuard { device: self })
         }
     }
 
     #[objc::msg_send(lockForConfiguration:)]
-    pub unsafe fn lock_for_configuration(&mut self, error: &mut Option<arc::R<cf::Error>>) -> bool;
+    pub unsafe fn lock_for_config(&mut self, error: &mut Option<arc::R<cf::Error>>) -> bool;
 
     #[objc::msg_send(unlockForConfiguration)]
-    pub unsafe fn unlock_for_configuration(&mut self);
+    pub unsafe fn unlock_for_config(&mut self);
 
     #[objc::msg_send(setActiveFormat:)]
     pub unsafe fn set_active_format(&mut self, value: &Format);
@@ -510,11 +516,11 @@ impl Device {
     pub unsafe fn set_active_color_space_throws(&mut self, value: ColorSpace);
 }
 
-pub struct ConfigurationLockGuard<'a> {
+pub struct ConfigLockGuard<'a> {
     device: &'a mut Device,
 }
 
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     pub fn set_active_format(&mut self, value: &Format) {
         unsafe { self.device.set_active_format(value) }
     }
@@ -714,13 +720,13 @@ impl<'a> ConfigurationLockGuard<'a> {
     }
 }
 
-impl<'a> Drop for ConfigurationLockGuard<'a> {
+impl<'a> Drop for ConfigLockGuard<'a> {
     fn drop(&mut self) {
-        unsafe { self.device.unlock_for_configuration() }
+        unsafe { self.device.unlock_for_config() }
     }
 }
 
-impl<'a> Deref for ConfigurationLockGuard<'a> {
+impl<'a> Deref for ConfigLockGuard<'a> {
     type Target = Device;
 
     fn deref(&self) -> &Self::Target {
@@ -728,7 +734,7 @@ impl<'a> Deref for ConfigurationLockGuard<'a> {
     }
 }
 
-impl<'a> DerefMut for ConfigurationLockGuard<'a> {
+impl<'a> DerefMut for ConfigLockGuard<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.device
     }
@@ -1006,7 +1012,7 @@ impl Device {
 }
 
 /// AVCaptureExposureMode
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode) {
         self.device.set_exposure_mode_throws(value)
     }
@@ -1257,7 +1263,7 @@ impl Device {
 }
 
 /// AVCaptureDeviceToneMapping
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
     pub unsafe fn set_global_tone_mapping_enabled_throws(&mut self, value: bool) {
@@ -1366,7 +1372,7 @@ impl Device {
 }
 
 /// AVCaptureDeviceWhiteBalance
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     #[inline]
     pub unsafe fn set_wb_mode_throws(&mut self, value: WbMode) {
         self.device.set_wb_mode_throws(value)
@@ -1471,7 +1477,7 @@ impl Device {
 
 /// AVCaptureDeviceSubjectAreaChangeMonitoring
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     pub fn set_subject_area_change_monitoring_enabled(&mut self, value: bool) {
         unsafe {
             self.device
@@ -1504,7 +1510,7 @@ impl Device {
 
 /// AVCaptureDeviceLowLightBoost
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_low_light_boost_enabled_throws(&mut self, value: bool) {
         self.device.set_low_light_boost_enabled_throws(value)
     }
@@ -1556,7 +1562,7 @@ impl Device {
 }
 
 /// AVCaptureDeviceVideoZoom
-impl<'a> ConfigurationLockGuard<'a> {
+impl<'a> ConfigLockGuard<'a> {
     pub fn set_video_zoom_factor(&mut self, value: cg::Float) {
         unsafe { self.device.set_video_zoom_factor_throws(value) }
     }
@@ -1900,7 +1906,7 @@ mod tests {
         assert!(!device.has_torch());
         assert!(device.formats().len() > 0);
         assert!(device.supports_preset(av::CaptureSessionPreset::photo()));
-        let mut _lock = device.configuration_lock().expect("locked");
+        let mut _lock = device.config_lock().expect("locked");
     }
 
     #[test]

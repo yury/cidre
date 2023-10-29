@@ -57,7 +57,7 @@ impl OperationQueue {
     pub fn underlying_queue(&self) -> Option<&dispatch::Queue>;
 
     #[objc::cls_msg_send(currentQueue)]
-    pub fn current() -> Option<&'static Self>;
+    pub fn current<'a>() -> Option<&'a Self>;
 
     #[objc::cls_msg_send(mainQueue)]
     pub fn main() -> &'static Self;

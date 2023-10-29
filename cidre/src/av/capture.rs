@@ -4,7 +4,7 @@ pub use device::AutoFocusRangeRestriction;
 pub use device::AutoFocusSystem;
 pub use device::CaptureAudioChannel;
 pub use device::CenterStageControlMode;
-pub use device::ConfigurationLockGuard as DeviceConfigurationLockGuard;
+pub use device::ConfigLockGuard as DeviceConfigurationLockGuard;
 pub use device::Device;
 pub use device::DiscoverySession;
 pub use device::ExposureMode;
