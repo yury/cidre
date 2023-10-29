@@ -8,130 +8,6 @@ use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-define_obj_type!(Type(ns::String));
-
-/// ```
-/// use cidre::av;
-///
-/// let device_type = av::CaptureDeviceType::external();
-/// let device_type = av::CaptureDeviceType::built_in_microphone();
-/// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
-/// let device_type = av::CaptureDeviceType::built_in_telephoto_camera();
-/// let device_type = av::CaptureDeviceType::built_in_ultra_wide_camera();
-/// let device_type = av::CaptureDeviceType::built_in_dual_camera();
-/// let device_type = av::CaptureDeviceType::built_in_dual_wide_camera();
-/// let device_type = av::CaptureDeviceType::built_in_tripple_camera();
-/// let device_type = av::CaptureDeviceType::built_in_true_depth_camera();
-/// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
-/// ```
-impl Type {
-    /// An external device type. On iPad, external devices are those that conform
-    /// to the UVC (USB Video Class) specification.
-    ///
-    /// Starting in Mac Catalyst 17.0, apps may opt in for using
-    /// 'av::CaptureDeviceType::external()' by adding the following key
-    /// to their Info.plist:
-    /// ```xml
-    ///  <key>NSCameraUseExternalDeviceType</key>
-    ///  <true/>
-    /// ```
-    /// Otherwise, external cameras on Mac Catalyst report that their device type is
-    /// 'av::CaptureDeviceType::built_in_wide_angle_camera()'.
-    #[doc(alias = "AVCaptureDeviceTypeExternal")]
-    pub fn external() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeExternal }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
-    pub fn built_in_microphone() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInMicrophone }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInWideAngleCamera")]
-    pub fn built_in_wide_angle_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInWideAngleCamera }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInTelephotoCamera")]
-    pub fn built_in_telephoto_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInTelephotoCamera }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInUltraWideCamera")]
-    pub fn built_in_ultra_wide_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInUltraWideCamera }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInDualCamera")]
-    pub fn built_in_dual_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInDualCamera }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInDualWideCamera")]
-    pub fn built_in_dual_wide_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInDualWideCamera }
-    }
-
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInTripleCamera")]
-    pub fn built_in_tripple_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInTripleCamera }
-    }
-
-    /// A device that consists of two cameras, one YUV and one Infrared.
-    /// The infrared camera provides high quality depth information that is synchronized
-    /// and perspective corrected to frames produced by the YUV camera. While the resolution
-    /// of the depth data and YUV frames may differ, their field of view and aspect ratio
-    /// always match. Note that devices of this type may only be discovered using an
-    /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInTrueDepthCamera")]
-    pub fn built_in_true_depth_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInTrueDepthCamera }
-    }
-    /// A device that consists of two cameras, one YUV and one LiDAR.
-    /// The LiDAR camera provides high quality, high accuracy depth information by measuring
-    /// the round trip of an artificial light signal emitted by a laser. The depth
-    /// is synchronized and perspective corrected to frames produced by the paired YUV camera.
-    /// While the resolution of the depth data and YUV frames may differ, their field of view
-    /// and aspect ratio always match. Note that devices of this type may only be discovered
-    /// using an av::CaptureDeviceDiscoverySession or
-    /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
-    #[doc(alias = "AVCaptureDeviceTypeBuiltInLiDARDepthCamera")]
-    pub fn built_in_lidar_depth_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeBuiltInLiDARDepthCamera }
-    }
-
-    /// A continuity camera device. These devices are suitable for general purpose use.
-    /// Note that devices of this type may only be discovered using an
-    /// av::CaptureDeviceDiscoverySession or
-    ///`av::CaptureDevice::default_device_with_device_type_media_type_position`.
-    ///
-    /// Starting in macOS 14.0 and Mac Catalyst 17.0, apps may opt in for using
-    /// 'av::CaptureDeviceType::continuity_camera()' by adding the following key
-    /// to their Info.plist:
-    /// ```xml
-    /// <key>NSCameraUseContinuityCameraDeviceType</key>
-    /// <true/>
-    /// ```
-    #[doc(alias = "AVCaptureDeviceTypeContinuityCamera")]
-    pub fn continuity_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeContinuityCamera }
-    }
-
-    /// A distortion corrected cut out from an ultra wide camera, made to approximate
-    /// an overhead camera pointing at a desk.
-    /// Supports multicam operation.
-    #[doc(alias = "AVCaptureDeviceTypeDeskViewCamera")]
-    #[cfg(target_os = "macos")]
-    pub fn desk_view_camera() -> &'static Self {
-        unsafe { AVCaptureDeviceTypeDeskViewCamera }
-    }
-    // #[cfg(target_os = "macos")]
-    // #[doc(alias = "AVCaptureDeviceTypeExternalUnknown")]
-    // pub fn external_unknown() -> &'static Self {
-    //     unsafe { AVCaptureDeviceTypeExternalUnknown }
-    // }
-}
-
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
     static AVCaptureDeviceTypeExternal: &'static Type;
@@ -1646,6 +1522,130 @@ impl<'a> ConfigLockGuard<'a> {
     pub fn cancel_video_zoom_ramp(&mut self) {
         unsafe { self.device.cancel_video_zoom_ramp_throws() }
     }
+}
+
+define_obj_type!(Type(ns::String));
+
+/// ```
+/// use cidre::av;
+///
+/// let device_type = av::CaptureDeviceType::external();
+/// let device_type = av::CaptureDeviceType::built_in_microphone();
+/// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
+/// let device_type = av::CaptureDeviceType::built_in_telephoto_camera();
+/// let device_type = av::CaptureDeviceType::built_in_ultra_wide_camera();
+/// let device_type = av::CaptureDeviceType::built_in_dual_camera();
+/// let device_type = av::CaptureDeviceType::built_in_dual_wide_camera();
+/// let device_type = av::CaptureDeviceType::built_in_tripple_camera();
+/// let device_type = av::CaptureDeviceType::built_in_true_depth_camera();
+/// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
+/// ```
+impl Type {
+    /// An external device type. On iPad, external devices are those that conform
+    /// to the UVC (USB Video Class) specification.
+    ///
+    /// Starting in Mac Catalyst 17.0, apps may opt in for using
+    /// 'av::CaptureDeviceType::external()' by adding the following key
+    /// to their Info.plist:
+    /// ```xml
+    ///  <key>NSCameraUseExternalDeviceType</key>
+    ///  <true/>
+    /// ```
+    /// Otherwise, external cameras on Mac Catalyst report that their device type is
+    /// 'av::CaptureDeviceType::built_in_wide_angle_camera()'.
+    #[doc(alias = "AVCaptureDeviceTypeExternal")]
+    pub fn external() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeExternal }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
+    pub fn built_in_microphone() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInMicrophone }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInWideAngleCamera")]
+    pub fn built_in_wide_angle_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInWideAngleCamera }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInTelephotoCamera")]
+    pub fn built_in_telephoto_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInTelephotoCamera }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInUltraWideCamera")]
+    pub fn built_in_ultra_wide_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInUltraWideCamera }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInDualCamera")]
+    pub fn built_in_dual_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInDualCamera }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInDualWideCamera")]
+    pub fn built_in_dual_wide_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInDualWideCamera }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInTripleCamera")]
+    pub fn built_in_tripple_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInTripleCamera }
+    }
+
+    /// A device that consists of two cameras, one YUV and one Infrared.
+    /// The infrared camera provides high quality depth information that is synchronized
+    /// and perspective corrected to frames produced by the YUV camera. While the resolution
+    /// of the depth data and YUV frames may differ, their field of view and aspect ratio
+    /// always match. Note that devices of this type may only be discovered using an
+    /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInTrueDepthCamera")]
+    pub fn built_in_true_depth_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInTrueDepthCamera }
+    }
+    /// A device that consists of two cameras, one YUV and one LiDAR.
+    /// The LiDAR camera provides high quality, high accuracy depth information by measuring
+    /// the round trip of an artificial light signal emitted by a laser. The depth
+    /// is synchronized and perspective corrected to frames produced by the paired YUV camera.
+    /// While the resolution of the depth data and YUV frames may differ, their field of view
+    /// and aspect ratio always match. Note that devices of this type may only be discovered
+    /// using an av::CaptureDeviceDiscoverySession or
+    /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInLiDARDepthCamera")]
+    pub fn built_in_lidar_depth_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInLiDARDepthCamera }
+    }
+
+    /// A continuity camera device. These devices are suitable for general purpose use.
+    /// Note that devices of this type may only be discovered using an
+    /// av::CaptureDeviceDiscoverySession or
+    ///`av::CaptureDevice::default_device_with_device_type_media_type_position`.
+    ///
+    /// Starting in macOS 14.0 and Mac Catalyst 17.0, apps may opt in for using
+    /// 'av::CaptureDeviceType::continuity_camera()' by adding the following key
+    /// to their Info.plist:
+    /// ```xml
+    /// <key>NSCameraUseContinuityCameraDeviceType</key>
+    /// <true/>
+    /// ```
+    #[doc(alias = "AVCaptureDeviceTypeContinuityCamera")]
+    pub fn continuity_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeContinuityCamera }
+    }
+
+    /// A distortion corrected cut out from an ultra wide camera, made to approximate
+    /// an overhead camera pointing at a desk.
+    /// Supports multicam operation.
+    #[doc(alias = "AVCaptureDeviceTypeDeskViewCamera")]
+    #[cfg(target_os = "macos")]
+    pub fn desk_view_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeDeskViewCamera }
+    }
+    // #[cfg(target_os = "macos")]
+    // #[doc(alias = "AVCaptureDeviceTypeExternalUnknown")]
+    // pub fn external_unknown() -> &'static Self {
+    //     unsafe { AVCaptureDeviceTypeExternalUnknown }
+    // }
 }
 
 /// AVCaptureDeviceType
