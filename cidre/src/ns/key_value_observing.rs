@@ -231,11 +231,8 @@ mod tests {
             q.as_mut(),
             &ns::String::with_str("name"),
             ns::KVOOpts::NEW,
-            |key, obj, change| {
-                println!("{:?} {:?} {:?}", key, obj, change);
-                unsafe {
-                    CALLS_COUNT += 1;
-                }
+            |key, obj, change| unsafe {
+                CALLS_COUNT += 1;
             },
         )
         .unwrap();
@@ -248,11 +245,8 @@ mod tests {
             pi,
             &ns::String::with_str("thermalState"),
             ns::KVOOpts::INITIAL,
-            |key, obj, change| {
-                println!("{:?} {:?} {:?}", key, obj, change);
-                unsafe {
-                    CALLS_COUNT += 1;
-                }
+            |key, obj, change| unsafe {
+                CALLS_COUNT += 1;
             },
         )
         .unwrap();
