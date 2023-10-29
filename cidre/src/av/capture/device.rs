@@ -162,6 +162,8 @@ extern "C" {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     static AVCaptureWhiteBalanceGainsCurrent: WbGains;
+
+    static AVCaptureMaxAvailableTorchLevel: f32;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -1942,28 +1944,38 @@ pub enum VideoStabilizationMode {
 }
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
+#[doc(alias = "AVCaptureLensPositionCurrent")]
 pub fn lens_position_current() -> f32 {
     unsafe { AVCaptureLensPositionCurrent }
 }
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
+#[doc(alias = "AVCaptureISOCurrent")]
 pub fn iso_current() -> f32 {
     unsafe { AVCaptureISOCurrent }
 }
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
+#[doc(alias = "AVCaptureExposureDurationCurrent")]
 pub fn exposure_duration_current() -> cm::Time {
     unsafe { AVCaptureExposureDurationCurrent }
 }
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
+#[doc(alias = "AVCaptureExposureTargetBiasCurrent")]
 pub fn exposure_target_bias_current() -> f32 {
     unsafe { AVCaptureExposureTargetBiasCurrent }
 }
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
+#[doc(alias = "AVCaptureWhiteBalanceGainsCurrent")]
 pub fn wb_gains_current() -> WbGains {
     unsafe { AVCaptureWhiteBalanceGainsCurrent }
+}
+
+#[doc(alias = "AVCaptureMaxAvailableTorchLevel")]
+pub fn torch_max_level() -> f32 {
+    unsafe { AVCaptureMaxAvailableTorchLevel }
 }
 
 #[cfg(test)]
