@@ -6,6 +6,11 @@ pub mod source;
 pub use source::Src as ImageSrc;
 
 #[cfg(feature = "iio")]
+pub mod destination;
+#[cfg(feature = "iio")]
+pub use destination::Dst as ImageDst;
+
+#[cfg(feature = "iio")]
 pub mod animation;
 #[cfg(feature = "iio")]
 pub use animation::OptKey as AnimationOptKey;

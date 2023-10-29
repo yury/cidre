@@ -45,6 +45,8 @@ pub use image::AnimationOptKey as ImageAnimationOptKey;
 pub use image::AnimationStatus as ImageAnimationStatus;
 pub use image::Image;
 #[cfg(feature = "iio")]
+pub use image::ImageDst;
+#[cfg(feature = "iio")]
 pub use image::ImageSrc;
 
 pub mod image_properties;
