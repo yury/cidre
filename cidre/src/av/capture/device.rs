@@ -166,14 +166,6 @@ extern "C" {
     static AVCaptureMaxAvailableTorchLevel: f32;
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[repr(isize)]
-pub enum Position {
-    Unspecified = 0,
-    Back = 1,
-    Front = 2,
-}
-
 define_obj_type!(Device(ns::Id));
 
 impl Device {
@@ -792,6 +784,21 @@ impl<'a> ConfigLockGuard<'a> {
         }
         Ok(future.await)
     }
+}
+
+#[doc(alias = "AVCaptureDevicePosition")]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[repr(isize)]
+pub enum Position {
+    Unspecified = 0,
+    Back = 1,
+    Front = 2,
+}
+
+/// AVCaptureDevicePosition
+impl Device {
+    #[objc::msg_send(position)]
+    pub fn position(&self) -> Position;
 }
 
 impl<'a> Drop for ConfigLockGuard<'a> {
