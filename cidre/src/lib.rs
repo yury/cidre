@@ -184,6 +184,12 @@ macro_rules! define_options {
 
 pub trait Dyn {}
 
+impl std::fmt::Debug for dyn Dyn {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("dyn")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::cf;

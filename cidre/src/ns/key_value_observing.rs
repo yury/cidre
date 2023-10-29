@@ -259,4 +259,16 @@ mod tests {
 
         assert_eq!(unsafe { CALLS_COUNT }, 2);
     }
+
+    #[test]
+    fn fail() {
+        let mut q = ns::OperationQueue::new();
+        let observer = ns::Observer::with_obj(
+            q.as_mut(),
+            &ns::String::with_str("wrong. name"),
+            ns::KVOOpts::NEW,
+            |key, obj, change| {},
+        )
+        .expect_err("should fail");
+    }
 }
