@@ -1805,6 +1805,8 @@ impl DiscoverySession {
     pub fn supported_multi_cam_device_sets(&self) -> &ns::Array<ns::Set<Device>>;
 }
 
+impl ns::KVObserverRegistration for DiscoverySession {}
+
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;

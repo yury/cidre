@@ -182,6 +182,8 @@ macro_rules! define_options {
     };
 }
 
+pub trait Dyn {}
+
 #[cfg(test)]
 mod tests {
     use crate::cf;

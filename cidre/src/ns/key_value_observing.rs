@@ -72,7 +72,8 @@ where
 
 impl<F> Observer<F>
 where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>)
+        + 'static,
 {
     extern "C" fn change_handler(
         &mut self,
@@ -83,22 +84,22 @@ where
         (self.closure)(key_path, object, change)
     }
 
-    pub fn with_obj<O>(
+    pub fn with_obj<'ar, O>(
         object: &mut O,
         key_path: &ns::String,
         options: KVOOpts,
         closure: F,
-    ) -> Box<Self>
+    ) -> Result<Box<dyn crate::Dyn>, &'ar ns::Exception>
     where
         O: objc::Obj + KVObserverRegistration,
     {
-        let res = Box::new(Self {
+        let b = Box::new(Self {
             closure,
             cidre_observer: None,
         });
-        let raw = Box::into_raw(res);
+        let raw = Box::into_raw(b);
 
-        let o = unsafe {
+        let res = ns::try_catch(|| unsafe {
             cidre_create_observer(
                 std::mem::transmute(object),
                 key_path,
@@ -106,11 +107,22 @@ where
                 raw as *mut c_void,
                 Self::change_handler as _,
             )
-        };
-        let mut res = unsafe { Box::from_raw(raw) };
-        res.cidre_observer = Some(o);
-        res
+        });
+        let mut b = unsafe { Box::from_raw(raw) };
+
+        match res {
+            Ok(o) => {
+                b.cidre_observer = Some(o);
+                Ok(b)
+            }
+            Err(ex) => Err(ex),
+        }
     }
+}
+
+impl<F> crate::Dyn for Observer<F> where
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>)
+{
 }
 
 impl<F> Drop for Observer<F>
@@ -127,7 +139,7 @@ where
 #[objc::obj_trait]
 pub trait KVObserverRegistration {
     #[objc::msg_send(addObserver:forKeyPath:options:context:)]
-    fn add_observer(
+    unsafe fn add_observer_throws(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
@@ -136,7 +148,7 @@ pub trait KVObserverRegistration {
     );
 
     #[objc::msg_send(removeObserver:forKeyPath:context:)]
-    fn remove_observer_ctx(
+    unsafe fn remove_observer_ctx_throws(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
@@ -144,7 +156,38 @@ pub trait KVObserverRegistration {
     );
 
     #[objc::msg_send(removeObserver:forKeyPath:)]
-    fn remove_observer(&mut self, observer: &ns::Id, for_key_path: &ns::String);
+    unsafe fn remove_observer_throws(&mut self, observer: &ns::Id, for_key_path: &ns::String);
+
+    fn add_observer<'ar>(
+        &mut self,
+        observer: &ns::Id,
+        for_key_path: &ns::String,
+        options: KVOOpts,
+        context: *mut c_void,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.add_observer_throws(observer, for_key_path, options, context)
+        })
+    }
+
+    fn remove_observer_ctx<'ar>(
+        &mut self,
+        observer: &ns::Id,
+        for_key_path: &ns::String,
+        context: *mut c_void,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            self.remove_observer_ctx_throws(observer, for_key_path, context)
+        })
+    }
+
+    fn remove_observer<'ar>(
+        &mut self,
+        observer: &ns::Id,
+        for_key_path: &ns::String,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.remove_observer_throws(observer, for_key_path) })
+    }
 }
 
 define_obj_type!(CidreObserver(ns::Id));
@@ -194,7 +237,8 @@ mod tests {
                     CALLS_COUNT += 1;
                 }
             },
-        );
+        )
+        .unwrap();
 
         q.set_name(Some(&ns::String::with_str("nice")));
 
@@ -210,7 +254,8 @@ mod tests {
                     CALLS_COUNT += 1;
                 }
             },
-        );
+        )
+        .unwrap();
 
         assert_eq!(unsafe { CALLS_COUNT }, 2);
     }
