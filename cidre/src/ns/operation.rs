@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, dispatch, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -46,6 +46,21 @@ impl OperationQueue {
 
     #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, name: Option<&ns::String>);
+
+    #[objc::msg_send(addOperation:)]
+    pub fn add_op(&mut self, op: &Operation);
+
+    #[objc::msg_send(cancelAllOperations)]
+    pub fn cancel_all_ops(&mut self);
+
+    #[objc::msg_send(underlyingQueue)]
+    pub fn underlying_queue(&self) -> Option<&dispatch::Queue>;
+
+    #[objc::cls_msg_send(currentQueue)]
+    pub fn current() -> Option<&'static Self>;
+
+    #[objc::cls_msg_send(mainQueue)]
+    pub fn main() -> &'static Self;
 }
 
 extern "C" {
