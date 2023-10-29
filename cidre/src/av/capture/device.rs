@@ -292,6 +292,15 @@ impl Device {
     pub unsafe fn set_active_video_max_frame_duration(&mut self, value: cm::Time);
 }
 
+#[doc(alias = "AVCaptureTorchMode")]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[repr(isize)]
+pub enum TorchMode {
+    Off = 0,
+    On = 1,
+    Auto = 2,
+}
+
 /// AVCaptureDeviceTorch
 impl Device {
     #[objc::msg_send(hasTorch)]
@@ -806,15 +815,6 @@ impl<'a> DerefMut for ConfigLockGuard<'a> {
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
-}
-
-#[doc(alias = "AVCaptureTorchMode")]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-#[repr(isize)]
-pub enum TorchMode {
-    Off = 0,
-    On = 1,
-    Auto = 2,
 }
 
 #[doc(alias = "AVCaptureFocusMode")]
