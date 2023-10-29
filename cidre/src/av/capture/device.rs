@@ -1736,31 +1736,31 @@ impl Format {
 }
 
 pub mod notifications {
-    use crate::cf;
+    use crate::ns;
 
     /// Posted when a device becomes available on the system.
-    pub fn was_connected() -> &'static cf::NotificationName {
+    pub fn was_connected() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceWasConnectedNotification }
     }
 
     /// Posted when a device becomes unavailable on the system.
-    pub fn was_disconnected() -> &'static cf::NotificationName {
+    pub fn was_disconnected() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceWasDisconnectedNotification }
     }
 
     /// Posted when the instance of av::CaptureDevice has detected a substantial
     /// change to the video subject area.
     #[cfg(not(target_os = "macos"))]
-    pub fn subject_area_did_change() -> &'static cf::NotificationName {
+    pub fn subject_area_did_change() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
     }
 
     #[link(name = "AVFoundation", kind = "framework")]
     extern "C" {
-        static AVCaptureDeviceWasConnectedNotification: &'static cf::NotificationName;
-        static AVCaptureDeviceWasDisconnectedNotification: &'static cf::NotificationName;
+        static AVCaptureDeviceWasConnectedNotification: &'static ns::NotificationName;
+        static AVCaptureDeviceWasDisconnectedNotification: &'static ns::NotificationName;
         #[cfg(not(target_os = "macos"))]
-        static AVCaptureDeviceSubjectAreaDidChangeNotification: &'static cf::NotificationName;
+        static AVCaptureDeviceSubjectAreaDidChangeNotification: &'static ns::NotificationName;
     }
 }
 
