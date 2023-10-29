@@ -1576,6 +1576,26 @@ impl<'a> ConfigLockGuard<'a> {
     }
 }
 
+/// AVCaptureDeviceType
+impl Device {
+    #[objc::msg_send(deviceType)]
+    pub fn device_type(&self) -> &Type;
+}
+
+/// AVCaptureDevicePreferredCamera
+impl Device {
+    /// Settable property that specifies a user preferred camera.
+    #[objc::cls_msg_send(userPreferredCamera)]
+    fn user_preferred_camera<'a>() -> Option<&'a Self>;
+
+    #[objc::cls_msg_send(setUserPreferredCamera:)]
+    fn set_user_preferred_camera(value: Option<&Self>);
+
+    /// Specifies the best camera to use as determined by the system.
+    #[objc::cls_msg_send(systemPreferredCamera)]
+    fn system_preferred_camera<'a>() -> Option<&'a Self>;
+}
+
 #[doc(alias = "AVAuthorizationStatus")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
