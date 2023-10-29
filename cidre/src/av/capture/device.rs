@@ -3,14 +3,10 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
+use crate::{arc, av, cf, cg, cm, define_cls, define_obj_type, ns, objc};
+
 #[cfg(feature = "blocks")]
 use crate::blocks;
-
-use crate::{
-    arc,
-    av::{self, MediaType},
-    cf, cg, cm, define_cls, define_obj_type, ns, objc,
-};
 
 define_obj_type!(Type(ns::String));
 
@@ -184,14 +180,14 @@ impl Device {
     #[objc::cls_msg_send(defaultDeviceWithDeviceType:mediaType:position:)]
     pub fn with_device_type_media_and_position_ar(
         device_type: &Type,
-        media_type: Option<&MediaType>,
+        media_type: Option<&av::MediaType>,
         position: Position,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn with_device_type_media_and_position(
         device_type: &Type,
-        media_type: Option<&MediaType>,
+        media_type: Option<&av::MediaType>,
         position: Position,
     ) -> Option<arc::R<Self>>;
 
@@ -1777,14 +1773,14 @@ impl DiscoverySession {
     #[objc::cls_msg_send(discoverySessionWithDeviceTypes:mediaType:position:)]
     pub fn with_device_types_media_and_position_ar(
         device_types: &ns::Array<Type>,
-        media_type: Option<&MediaType>,
+        media_type: Option<&av::MediaType>,
         position: Position,
     ) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
     pub fn with_device_types_media_and_position(
         device_types: &ns::Array<Type>,
-        media_type: Option<&MediaType>,
+        media_type: Option<&av::MediaType>,
         position: Position,
     ) -> arc::R<Self>;
 
