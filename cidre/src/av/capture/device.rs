@@ -3,7 +3,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use crate::{arc, av, cf, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -265,7 +265,7 @@ impl Device {
     #[objc::msg_send(hasTorch)]
     pub fn has_torch(&self) -> bool;
 
-    pub fn config_lock(&mut self) -> Result<ConfigLockGuard, arc::R<cf::Error>> {
+    pub fn config_lock(&mut self) -> Result<ConfigLockGuard, arc::R<ns::Error>> {
         let mut error = None;
         unsafe {
             let result = self.lock_for_config(&mut error);
@@ -280,7 +280,7 @@ impl Device {
     }
 
     #[objc::msg_send(lockForConfiguration:)]
-    pub unsafe fn lock_for_config(&mut self, error: &mut Option<arc::R<cf::Error>>) -> bool;
+    pub unsafe fn lock_for_config(&mut self, error: &mut Option<arc::R<ns::Error>>) -> bool;
 
     #[objc::msg_send(unlockForConfiguration)]
     pub unsafe fn unlock_for_config(&mut self);
