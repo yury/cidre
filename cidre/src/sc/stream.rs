@@ -371,7 +371,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_start_fails() {
+    async fn start_fails() {
         let q = dispatch::Queue::serial_with_autoreleasepool();
         let content = sc::ShareableContent::current().await.expect("content");
         let ref display = content.displays()[0];
