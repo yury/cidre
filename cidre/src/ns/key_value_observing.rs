@@ -93,11 +93,11 @@ where
     where
         O: objc::Obj + KVObserverRegistration,
     {
-        let b = Box::new(Self {
+        let bx = Box::new(Self {
             closure,
             cidre_observer: None,
         });
-        let raw = Box::into_raw(b);
+        let raw = Box::into_raw(bx);
 
         let res = ns::try_catch(|| unsafe {
             cidre_create_observer(
@@ -108,12 +108,12 @@ where
                 Self::change_handler as _,
             )
         });
-        let mut b = unsafe { Box::from_raw(raw) };
+        let mut bx = unsafe { Box::from_raw(raw) };
 
         match res {
             Ok(o) => {
-                b.cidre_observer = Some(o);
-                Ok(b)
+                bx.cidre_observer = Some(o);
+                Ok(bx)
             }
             Err(ex) => Err(ex),
         }
