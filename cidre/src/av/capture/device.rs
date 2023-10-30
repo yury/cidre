@@ -1641,11 +1641,6 @@ impl Type {
     pub fn desk_view_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeDeskViewCamera }
     }
-    // #[cfg(target_os = "macos")]
-    // #[doc(alias = "AVCaptureDeviceTypeExternalUnknown")]
-    // pub fn external_unknown() -> &'static Self {
-    //     unsafe { AVCaptureDeviceTypeExternalUnknown }
-    // }
 }
 
 /// AVCaptureDeviceType
