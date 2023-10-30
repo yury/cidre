@@ -18,6 +18,12 @@ impl ManualRenderingError {
     pub const NOT_RUNNING: Self = Self(os::Status(-80801));
 }
 
+impl PartialEq<os::Status> for ManualRenderingError {
+    fn eq(&self, other: &os::Status) -> bool {
+        self.0 == *other
+    }
+}
+
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(isize)]
 pub enum ManualRenderingStatus {

@@ -24,8 +24,8 @@
 
 ### Shortcuts
 
-- attachment -> attach
 - argument -> arg
+- attachment -> attach
 - attribute -> attr
 - attributted -> attr
 - buffer -> buf
@@ -34,6 +34,7 @@
 - descriptor -> desc
 - destination -> dst
 - error -> err
+- language -> lang
 - length -> len
 - mutable -> mut
 - operation -> op

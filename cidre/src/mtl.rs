@@ -62,7 +62,7 @@ pub use library::Error as LibError;
 pub use library::ErrorDomain as LibErrorDomain;
 pub use library::Fn;
 pub use library::FnType;
-pub use library::LanguageVersion;
+pub use library::LangVersion;
 pub use library::Lib;
 pub use library::OptimizationLevel as LibOptimizationLevel;
 pub use library::PatchType;

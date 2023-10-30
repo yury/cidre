@@ -16,10 +16,10 @@ impl VertexAttr {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(attributeIndex)]
-    pub fn attribute_index(&self) -> usize;
+    pub fn attr_index(&self) -> usize;
 
     #[objc::msg_send(attributeType)]
-    pub fn attribute_type(&self) -> mtl::DataType;
+    pub fn attr_type(&self) -> mtl::DataType;
 
     #[objc::msg_send(isActive)]
     pub fn is_active(&self) -> bool;
@@ -38,10 +38,10 @@ impl Attr {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(attributeIndex)]
-    pub fn attribute_index(&self) -> usize;
+    pub fn attr_index(&self) -> usize;
 
     #[objc::msg_send(attributeType)]
-    pub fn attribute_type(&self) -> mtl::DataType;
+    pub fn attr_type(&self) -> mtl::DataType;
 
     #[objc::msg_send(isActive)]
     pub fn is_active(&self) -> bool;
@@ -56,7 +56,7 @@ impl Attr {
 #[doc(alias = "MTLLanguageVersion")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
-pub enum LanguageVersion {
+pub enum LangVersion {
     _1_0 = (1 << 16),
     _1_1 = (1 << 16) + 1,
     _1_2 = (1 << 16) + 2,
@@ -119,10 +119,10 @@ impl CompileOpts {
     /// options.set_fast_math_enabled(false);
     /// assert_eq!(false, options.fast_math_enabled());
     ///
-    /// assert_ne!(options.language_version(), mtl::LanguageVersion::_2_0);
+    /// assert_ne!(options.lang_version(), mtl::LangVersion::_2_0);
     ///
-    /// options.set_language_version(mtl::LanguageVersion::_2_4);
-    /// assert_eq!(options.language_version(), mtl::LanguageVersion::_2_4);
+    /// options.set_lang_version(mtl::LangVersion::_2_4);
+    /// assert_eq!(options.lang_version(), mtl::LangVersion::_2_4);
     ///
     /// ```
     pub fn new() -> arc::R<CompileOpts> {
@@ -136,10 +136,10 @@ impl CompileOpts {
     pub fn set_fast_math_enabled(&mut self, value: bool);
 
     #[objc::msg_send(languageVersion)]
-    pub fn language_version(&self) -> LanguageVersion;
+    pub fn lang_version(&self) -> LangVersion;
 
     #[objc::msg_send(setLanguageVersion:)]
-    pub fn set_language_version(&mut self, value: LanguageVersion);
+    pub fn set_lang_version(&mut self, value: LangVersion);
 
     #[objc::msg_send(compileSymbolVisibility)]
     pub fn compile_symbol_visibility(&self) -> CompileSymbolVisibility;
@@ -181,13 +181,13 @@ impl Fn {
     pub fn patch_ctrl_point(&self) -> isize;
 
     #[objc::msg_send(vertexAttributes)]
-    pub fn vertext_attributes(&self) -> Option<&ns::Array<mtl::VertexAttr>>;
+    pub fn vertext_attrs(&self) -> Option<&ns::Array<mtl::VertexAttr>>;
 
     #[objc::msg_send(stageInputAttributes)]
-    pub fn stage_input_attributes(&self) -> Option<ns::Array<mtl::Attr>>;
+    pub fn stage_input_attrs(&self) -> Option<ns::Array<mtl::Attr>>;
 
     #[objc::msg_send(options)]
-    pub fn options(&self) -> mtl::FnOpts;
+    pub fn opts(&self) -> mtl::FnOpts;
 }
 
 define_obj_type!(Lib(ns::Id));
@@ -368,7 +368,7 @@ mod tests {
         let func = lib.new_fn(&func_name).unwrap();
         let name = func.name();
         assert!(func_name.is_equal(&name));
-        assert_eq!(func.options(), mtl::FnOpts::None);
+        assert_eq!(func.opts(), mtl::FnOpts::None);
     }
 
     #[test]
@@ -388,17 +388,17 @@ mod tests {
     }
 
     #[test]
-    fn compile_options() {
+    fn compile_opts() {
         let mut options = mtl::CompileOpts::new();
 
         assert_eq!(true, options.fast_math_enabled());
         options.set_fast_math_enabled(false);
         assert_eq!(false, options.fast_math_enabled());
 
-        assert_ne!(options.language_version(), mtl::LanguageVersion::_2_0);
+        assert_ne!(options.lang_version(), mtl::LangVersion::_2_0);
 
-        options.set_language_version(mtl::LanguageVersion::_2_4);
-        assert_eq!(options.language_version(), mtl::LanguageVersion::_2_4);
+        options.set_lang_version(mtl::LangVersion::_2_4);
+        assert_eq!(options.lang_version(), mtl::LangVersion::_2_4);
     }
 
     #[test]
