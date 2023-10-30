@@ -16,5 +16,5 @@ pub use audio::TimeStamp as AudioTimeStamp;
 pub use audio::TimeStampFlags as AudioTimeStampFlags;
 
 pub use audio::SessionErrorCode as AudioSessionErrorCode;
-pub use audio::SessionID as AudioSessionID;
+pub use audio::SessionId as AudioSessionId;
 pub use audio::StreamBasicDesc as AudioBasicStreamDesc;

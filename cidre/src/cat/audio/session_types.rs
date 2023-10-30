@@ -1,5 +1,5 @@
 #[doc(alias = "AudioSessionID")]
-pub type SessionID = u32;
+pub type SessionId = u32;
 
 #[doc(alias = "AVAudioSessionErrorCode")]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
