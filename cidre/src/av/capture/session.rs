@@ -97,10 +97,10 @@ impl Session {
     pub fn stop_running(&mut self);
 
     #[objc::msg_send(usesApplicationAudioSession)]
-    pub fn uses_application_audio_session(&self) -> bool;
+    pub fn uses_app_audio_session(&self) -> bool;
 
     #[objc::msg_send(setUsesApplicationAudioSession:)]
-    pub fn set_uses_application_audio_session(&mut self, value: bool);
+    pub fn set_uses_app_audio_session(&mut self, value: bool);
 
     #[objc::msg_send(synchronizationClock)]
     pub fn synchronization_clock(&self) -> Option<&cm::Clock>;
