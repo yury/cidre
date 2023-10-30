@@ -103,11 +103,11 @@ impl Session {
     pub fn set_uses_app_audio_session(&mut self, value: bool);
 
     #[objc::msg_send(synchronizationClock)]
-    pub fn synchronization_clock(&self) -> Option<&cm::Clock>;
+    pub fn sync_clock(&self) -> Option<&cm::Clock>;
 
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(hardwareCost)]
-    pub fn hardware_cost(&self) -> f32;
+    pub fn hw_cost(&self) -> f32;
 }
 
 #[link(name = "av", kind = "static")]
@@ -155,7 +155,7 @@ impl MultiCamSession {
     ///       By doing so, you only pay the hardware cost for the max frame rate you intend to use.
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(hardwareCost)]
-    pub fn hardware_cost(&self) -> f32;
+    pub fn hw_cost(&self) -> f32;
 
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(systemPressureCost)]
