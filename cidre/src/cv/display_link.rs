@@ -7,7 +7,7 @@ use crate::cg;
 
 define_cf_type!(DisplayLink(cf::Type));
 
-pub type OutputCallback<T> = extern "C" fn(
+pub type OutputCb<T> = extern "C" fn(
     link: &DisplayLink,
     in_now: &cv::TimeStamp,
     in_output_time: &cv::TimeStamp,
@@ -95,11 +95,7 @@ impl DisplayLink {
         }
     }
 
-    pub unsafe fn set_callback<T>(
-        &self,
-        callback: OutputCallback<T>,
-        user_info: *mut T,
-    ) -> cv::Return {
+    pub unsafe fn set_callback<T>(&self, callback: OutputCb<T>, user_info: *mut T) -> cv::Return {
         CVDisplayLinkSetOutputCallback(self, transmute(callback), user_info as _)
     }
 }
@@ -121,7 +117,7 @@ extern "C" {
     fn CVDisplayLinkGetCurrentTime(link: &DisplayLink, out_time: &mut cv::TimeStamp) -> cv::Return;
     fn CVDisplayLinkSetOutputCallback(
         link: &DisplayLink,
-        callback: OutputCallback<c_void>,
+        callback: OutputCb<c_void>,
         user_info: *mut c_void,
     ) -> cv::Return;
 }

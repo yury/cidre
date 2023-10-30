@@ -1,6 +1,6 @@
 pub mod session;
-pub use session::OutputCallback;
-pub use session::OutputCallbackRecord;
+pub use session::OutputCb;
+pub use session::OutputCbRecord;
 pub use session::Session;
 
 pub mod properties;

@@ -6,7 +6,7 @@ use crate::{
     cv, define_cf_type, os, vt,
 };
 
-pub type OutputCallback<O, F> = extern "C" fn(
+pub type OutputCb<O, F> = extern "C" fn(
     output_ref_con: *mut O,
     source_frame_ref_con: *mut F,
     status: os::Status,
@@ -17,15 +17,15 @@ pub type OutputCallback<O, F> = extern "C" fn(
 );
 
 #[repr(C)]
-pub struct OutputCallbackRecord<O, F> {
-    pub callback: OutputCallback<O, F>,
+pub struct OutputCbRecord<O, F> {
+    pub callback: OutputCb<O, F>,
     pub output_ref_con: *mut O,
 }
 
-unsafe impl<O, F> Send for OutputCallbackRecord<O, F> {}
+unsafe impl<O, F> Send for OutputCbRecord<O, F> {}
 
-impl<O, F> OutputCallbackRecord<O, F> {
-    pub fn new(ref_con: O, callback: OutputCallback<O, F>) -> Self {
+impl<O, F> OutputCbRecord<O, F> {
+    pub fn new(ref_con: O, callback: OutputCb<O, F>) -> Self {
         let b = Box::new(ref_con);
         Self {
             callback,
@@ -41,7 +41,7 @@ impl Session {
         video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCallbackRecord<O, F>>,
+        output_callback: Option<&OutputCbRecord<O, F>>,
     ) -> Result<arc::R<Self>, os::Status> {
         unsafe {
             let mut session = None;
@@ -64,7 +64,7 @@ impl Session {
         video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCallbackRecord<c_void, c_void>>,
+        output_callback: Option<&OutputCbRecord<c_void, c_void>>,
         decompression_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status {
         VTDecompressionSessionCreate(
@@ -173,7 +173,7 @@ extern "C" {
         video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCallbackRecord<c_void, c_void>>,
+        output_callback: Option<&OutputCbRecord<c_void, c_void>>,
         decompression_session_out: &mut Option<arc::R<Session>>,
     ) -> os::Status;
 
@@ -232,7 +232,7 @@ mod tests {
 
         let ctx = Context {};
 
-        let _record = vt::DecompressionOutputCallbackRecord::new(ctx, callback);
+        let _record = vt::DecompressionOutputCbRecord::new(ctx, callback);
 
         //vt::DecompressionSession::new(&desc, None, None, None).unwrap();
     }

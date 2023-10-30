@@ -46,7 +46,7 @@ pub mod display_link;
 #[cfg(target_os = "macos")]
 pub use display_link::DisplayLink;
 #[cfg(target_os = "macos")]
-pub use display_link::OutputCallback as DisplayLinkOutputCallback;
+pub use display_link::OutputCb as DisplayLinkOutputCb;
 
 mod host_time;
 pub use host_time::current_host_time;
