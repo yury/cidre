@@ -47,7 +47,7 @@ impl Window {
     pub fn window_layer(&self) -> ns::Integer;
 
     #[objc::msg_send(owningApplication)]
-    pub fn owning_application(&self) -> Option<&RunningApp>;
+    pub fn owning_app(&self) -> Option<&RunningApp>;
 
     #[objc::msg_send(isOnScreen)]
     pub fn is_on_screen(&self) -> bool;

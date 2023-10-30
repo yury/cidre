@@ -30,7 +30,7 @@ pub enum ActionAtItemEnd {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
-pub enum HDRMode {
+pub enum HdrMode {
     HLG = 0x1,
     HDR10 = 0x2,
     DolbyVision = 0x4,

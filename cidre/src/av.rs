@@ -63,7 +63,7 @@ pub use metadata_object::Type as MetadataObjectType;
 pub mod player;
 pub use player::ActionAtItemEnd as PlayerActionAtItemEnd;
 pub use player::AudiovisualBackgroundPlaybackPolicy as PlayerAudiovisualBackgroundPlaybackPolicy;
-pub use player::HDRMode as PlayerHDRMode;
+pub use player::HdrMode as PlayerHdrMode;
 pub use player::ItemStatus as PlayerItemStatus;
 pub use player::Player;
 pub use player::QueuePlayer;
