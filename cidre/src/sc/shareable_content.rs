@@ -2,14 +2,14 @@ use std::ffi::c_void;
 
 use crate::{arc, blocks, cg, define_cls, define_obj_type, ns, objc, sys};
 
-define_obj_type!(RunningApplication(ns::Id));
+define_obj_type!(RunningApp(ns::Id));
 
-impl RunningApplication {
+impl RunningApp {
     #[objc::msg_send(bundleIdentifier)]
-    pub fn bundle_identifier(&self) -> &ns::String;
+    pub fn bundle_id(&self) -> &ns::String;
 
     #[objc::msg_send(applicationName)]
-    pub fn application_name(&self) -> &ns::String;
+    pub fn app_name(&self) -> &ns::String;
 
     #[objc::msg_send(processID)]
     pub fn process_id(&self) -> sys::Pid;
@@ -47,7 +47,7 @@ impl Window {
     pub fn window_layer(&self) -> ns::Integer;
 
     #[objc::msg_send(owningApplication)]
-    pub fn owning_application(&self) -> Option<&RunningApplication>;
+    pub fn owning_application(&self) -> Option<&RunningApp>;
 
     #[objc::msg_send(isOnScreen)]
     pub fn is_on_screen(&self) -> bool;
@@ -85,7 +85,7 @@ impl ShareableContent {
     pub fn displays(&self) -> &ns::Array<Display>;
 
     #[objc::msg_send(applications)]
-    pub fn applications(&self) -> &ns::Array<RunningApplication>;
+    pub fn apps(&self) -> &ns::Array<RunningApp>;
 
     #[objc::cls_msg_send(getShareableContentWithCompletionHandler:)]
     pub fn get_shareable_content_with_completion_handler(block: *mut c_void);

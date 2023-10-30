@@ -13,7 +13,7 @@ pub use stream::Stream;
 
 pub mod shareable_content;
 pub use shareable_content::Display;
-pub use shareable_content::RunningApplication;
+pub use shareable_content::RunningApp;
 pub use shareable_content::ShareableContent;
 pub use shareable_content::Window;
 
