@@ -307,7 +307,7 @@ impl SampleBuf {
     /// per sample in the 'cm::SampleBuf')
     #[doc(alias = "CMSampleBufferGetSampleAttachmentsArray")]
     #[inline]
-    pub fn attachs(
+    pub fn attaches(
         &self,
         create_if_necessary: bool,
     ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropertyList>>> {
@@ -321,7 +321,7 @@ impl SampleBuf {
 
     #[doc(alias = "CMSampleBufferGetSampleAttachmentsArray")]
     #[inline]
-    pub fn attachs_mut(
+    pub fn attaches_mut(
         &mut self,
         create_if_necessary: bool,
     ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>> {
@@ -330,7 +330,7 @@ impl SampleBuf {
 
     #[inline]
     pub fn is_key_frame(&self) -> bool {
-        match self.attachs(false) {
+        match self.attaches(false) {
             Some(arr) => {
                 if arr.is_empty() {
                     true

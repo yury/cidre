@@ -31,22 +31,22 @@ impl Buf {
     }
 
     #[inline]
-    pub fn remove_all_attachs(&mut self) {
+    pub fn remove_all_attaches(&mut self) {
         unsafe { CVBufferRemoveAllAttachments(self) }
     }
 
     #[inline]
-    pub fn set_attachs(&mut self, the_attachments: &cf::Dictionary, attachment_mode: AttachMode) {
+    pub fn set_attaches(&mut self, the_attachments: &cf::Dictionary, attachment_mode: AttachMode) {
         unsafe { CVBufferSetAttachments(self, the_attachments, attachment_mode) }
     }
 
     #[inline]
-    pub fn propagate_attachs(&self, destination_buffer: &mut Buf) {
+    pub fn propagate_attaches(&self, destination_buffer: &mut Buf) {
         unsafe { CVBufferPropagateAttachments(self, destination_buffer) }
     }
 
     #[inline]
-    pub fn copy_attachs(&self, attachment_mode: AttachMode) -> Option<arc::R<cf::Dictionary>> {
+    pub fn copy_attaches(&self, attachment_mode: AttachMode) -> Option<arc::R<cf::Dictionary>> {
         unsafe { CVBufferCopyAttachments(self, attachment_mode) }
     }
 

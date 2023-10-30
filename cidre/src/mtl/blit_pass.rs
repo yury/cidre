@@ -11,11 +11,11 @@ define_cls_init!(Desc, MTL_BLIT_PASS_DESCRIPTOR);
 impl Desc {
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attachs(&self) -> &SampleBufAttachDescArray;
+    pub fn sample_buf_attaches(&self) -> &SampleBufAttachDescArray;
 
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attachs_mut(&mut self) -> &mut SampleBufAttachDescArray;
+    pub fn sample_buf_attaches_mut(&mut self) -> &mut SampleBufAttachDescArray;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -30,6 +30,6 @@ mod tests {
     #[test]
     fn basics() {
         let mut bpd = mtl::BlitPassDesc::new();
-        let _attachments = bpd.sample_buf_attachs_mut();
+        let _attachments = bpd.sample_buf_attaches_mut();
     }
 }

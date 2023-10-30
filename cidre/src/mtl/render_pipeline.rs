@@ -207,10 +207,10 @@ impl Desc {
     pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachs(&self) -> &ColorAttachDescArray;
+    pub fn color_attaches(&self) -> &ColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachs_mut(&mut self) -> &mut ColorAttachDescArray;
+    pub fn color_attaches_mut(&mut self) -> &mut ColorAttachDescArray;
 
     #[objc::msg_send(rasterSampleCount)]
     pub fn raster_sample_count(&self) -> usize;

@@ -114,10 +114,10 @@ define_obj_type!(StencilAttachDesc(AttachDesc));
 define_obj_type!(Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
 impl Desc {
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachs(&self) -> &ColorAttachDescArray;
+    pub fn color_attaches(&self) -> &ColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachs_mut(&mut self) -> &mut ColorAttachDescArray;
+    pub fn color_attaches_mut(&mut self) -> &mut ColorAttachDescArray;
 
     #[objc::msg_send(depthAttachment)]
     pub fn depth_attach(&self) -> &DepthAttachDesc;

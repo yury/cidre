@@ -5,8 +5,8 @@ define_cf_type!(Bearer(cf::Type));
 #[derive(Debug, Eq, PartialEq)]
 #[repr(u32)]
 pub enum Mode {
-    ShouldNotPropagate = 0,
-    ShouldPropagate = 1,
+    NotPropagate = 0,
+    Propagate = 1,
 }
 
 impl Bearer {
@@ -18,8 +18,8 @@ impl Bearer {
     /// If the key does exist, the existing attachment will be replaced.
     /// In both cases the retain count of the attachment will be incremented.
     /// The value can be any cf::Type but nil has no defined behavior.
-    /// Given a cv::Buffer, set_attachment is equivalent to CVBufferSetAttachment.
-    pub fn set_attachment(&mut self, key: &cf::String, value: &cf::Type, attachment_mode: Mode) {
+    /// Given a cv::Buffer, 'set_attach' is equivalent to CVBufferSetAttachment.
+    pub fn set_attach(&mut self, key: &cf::String, value: &cf::Type, attachment_mode: Mode) {
         unsafe { CMSetAttachment(self, key, value, attachment_mode) }
     }
 
@@ -30,7 +30,7 @@ impl Bearer {
     /// by a key.  Given a CVBufferRef, CMGetAttachment is equivalent to
     /// CVBufferGetAttachment.
     #[inline]
-    pub fn get_attachment<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
+    pub fn get_attach<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
         unsafe { CMGetAttachment(self, key, mode) }
     }
 
@@ -41,18 +41,18 @@ impl Bearer {
     /// Given a CVBufferRef, CMRemoveAttachment is equivalent to
     /// CVBufferRemoveAttachment.
     #[inline]
-    pub fn remove_attachment(&mut self, key: &cf::String) {
+    pub fn remove_attach(&mut self, key: &cf::String) {
         unsafe { CMRemoveAttachment(self, key) }
     }
 
     /// Removes all attachments of a cm::AttachmentBearer
     #[inline]
-    pub fn remove_all_attachments(&mut self) {
+    pub fn remove_all_attaches(&mut self) {
         unsafe { CMRemoveAllAttachments(self) }
     }
 
     #[inline]
-    pub unsafe fn copy_dictionary_of_attachments(
+    pub unsafe fn copy_dictionary_of_attaches(
         &self,
         allocator: Option<&cf::Allocator>,
         attachment_mode: Mode,
@@ -61,11 +61,11 @@ impl Bearer {
     }
 
     #[inline]
-    pub fn dictionary_of_attachments(
+    pub fn dictionary_of_attaches(
         &self,
         attachment_mode: Mode,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
-        unsafe { self.copy_dictionary_of_attachments(None, attachment_mode) }
+        unsafe { self.copy_dictionary_of_attaches(None, attachment_mode) }
     }
 }
 
