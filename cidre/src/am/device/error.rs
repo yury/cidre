@@ -306,7 +306,7 @@ pub mod tests {
         let text = super::Error::TIME_OUT
             .text()
             .expect("description for error");
-        let str = cf::String::from_str_no_copy("The operation timed out.");
+        let str = cf::String::from_str("The operation timed out.");
         assert!(str.equal(&text));
         text.show();
         // let text = super::Error::MAXIMUM_ERROR.text().expect("description for error");

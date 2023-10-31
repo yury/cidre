@@ -71,7 +71,7 @@ impl<'a> Session<'a> {
         .expect("options for mount created");
 
         let path = image_path.to_str().unwrap();
-        let cf_image_path = &cf::String::from_str_no_copy(path);
+        let cf_image_path = &cf::String::from_str(path);
         self.mound_disk(cf_image_path, &options)
     }
 

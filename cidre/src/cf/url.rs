@@ -139,7 +139,7 @@ impl Url {
     /// let url = cf::Url::from_str("https://localhost:3000").unwrap();
     /// let scheme = url.scheme().unwrap();
     ///
-    /// let https = cf::String::from_str_no_copy("https");
+    /// let https = cf::String::from_str("https");
     /// assert!(https.equal(&scheme));
     /// ```
     #[doc(alias = "CFURLCopyScheme")]

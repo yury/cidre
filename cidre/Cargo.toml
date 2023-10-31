@@ -101,6 +101,10 @@ name = "alloc"
 harness = false
 
 [[bench]]
+name = "cf_string"
+harness = false
+
+[[bench]]
 name = "ns_array_from"
 harness = false
 

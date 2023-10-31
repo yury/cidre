@@ -221,42 +221,42 @@ impl<'a> Connected<'a> {
 
     #[inline]
     pub fn name(&self) -> arc::R<cf::String> {
-        let key = cf::String::from_str_no_copy("DeviceName");
+        let key = cf::String::from_str("DeviceName");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
     pub fn cpu_arch(&self) -> arc::R<cf::String> {
-        let key = cf::String::from_str_no_copy("CPUArchitecture");
+        let key = cf::String::from_str("CPUArchitecture");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
     pub fn hardware_model(&self) -> arc::R<cf::String> {
-        let key = cf::String::from_str_no_copy("HardwareModel");
+        let key = cf::String::from_str("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
     pub fn product_name(&self) -> arc::R<cf::String> {
-        let key = cf::String::from_str_no_copy("HardwareModel");
+        let key = cf::String::from_str("HardwareModel");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
     pub fn product_type(&self) -> arc::R<cf::String> {
-        let key = cf::String::from_str_no_copy("ProductType");
+        let key = cf::String::from_str("ProductType");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
 
     #[inline]
     pub fn product_version(&self) -> arc::R<cf::String> {
-        let key = cf::String::from_str_no_copy("ProductVersion");
+        let key = cf::String::from_str("ProductVersion");
         let v = self.value(&key);
         unsafe { transmute(v) }
     }
@@ -341,7 +341,7 @@ impl<'a> Session<'a> {
     }
 
     pub fn start_debug_server(&self) -> Result<arc::R<ServiceConnection>, Error> {
-        let name = cf::String::from_str_no_copy("com.apple.debugserver.DVTSecureSocketProxy");
+        let name = cf::String::from_str("com.apple.debugserver.DVTSecureSocketProxy");
         self.secure_start_service(&name)
     }
 

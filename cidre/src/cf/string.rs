@@ -1,9 +1,9 @@
 use core::fmt;
 use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
 
-use super::{Allocator, Index, OptionFlags, Range, Type, TypeId};
+use super::{Index, OptionFlags, Range, Type, TypeId};
 
-use crate::{arc, define_cf_type, define_options, UniChar};
+use crate::{arc, cf, define_cf_type, define_options, UniChar};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -67,21 +67,22 @@ impl String {
     ///```
     /// use cidre::cf;
     ///
-    /// let s1 = cf::String::from_str_no_copy("nice");
-    /// let s2 = cf::String::from_str_no_copy("nice");
+    /// let s1 = unsafe { cf::String::from_str_no_copy("nice") };
+    /// let s2 = unsafe { cf::String::from_str_no_copy("nice") };
     ///
     /// assert_eq!(4, s1.len());
     /// assert!(s1.equal(&s2));
     ///```
+    /// NOTE: cf_string benchmark reveals that it is actually do copy
     #[inline]
-    pub fn from_str_no_copy(str: &str) -> arc::R<Self> {
+    pub unsafe fn from_str_no_copy(str: &str) -> arc::R<Self> {
         let bytes = str.as_bytes();
         unsafe {
             Self::create_with_bytes_no_copy_in(
                 bytes,
                 Encoding::UTF8,
                 false,
-                Allocator::null(),
+                cf::Allocator::null(),
                 None,
             )
             .unwrap_unchecked()
@@ -114,16 +115,14 @@ impl String {
     }
 
     #[inline]
-    pub fn from_cstr_no_copy(cstr: &CStr) -> arc::R<Self> {
-        unsafe {
-            Self::create_with_cstring_no_copy_in(
-                None,
-                cstr.to_bytes_with_nul(),
-                Encoding::UTF8,
-                Allocator::null(),
-            )
-            .unwrap_unchecked()
-        }
+    pub unsafe fn from_cstr_no_copy(cstr: &CStr) -> arc::R<Self> {
+        Self::create_with_cstring_no_copy_in(
+            cstr.to_bytes_with_nul(),
+            Encoding::UTF8,
+            cf::Allocator::null(),
+            None,
+        )
+        .unwrap_unchecked()
     }
 
     #[inline]
@@ -160,7 +159,7 @@ impl String {
 
     /// CFStringCreateCopy
     #[inline]
-    pub fn copy_in(&self, alloc: Option<&Allocator>) -> Option<arc::R<Self>> {
+    pub fn copy_in(&self, alloc: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateCopy(alloc, self) }
     }
 
@@ -174,8 +173,8 @@ impl String {
         bytes: &[u8],
         encoding: Encoding,
         is_external_representation: bool,
-        contents_deallocator: Option<&Allocator>,
-        alloc: Option<&Allocator>,
+        contents_deallocator: Option<&cf::Allocator>,
+        alloc: Option<&cf::Allocator>,
     ) -> Option<arc::R<Self>> {
         unsafe {
             CFStringCreateWithBytesNoCopy(
@@ -190,11 +189,11 @@ impl String {
     }
 
     #[inline]
-    pub fn create_with_cstring_no_copy_in(
-        alloc: Option<&Allocator>,
+    pub unsafe fn create_with_cstring_no_copy_in(
         bytes_with_null: &[u8],
         encoding: Encoding,
-        contents_deallocator: Option<&Allocator>,
+        contents_deallocator: Option<&cf::Allocator>,
+        alloc: Option<&cf::Allocator>,
     ) -> Option<arc::R<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
@@ -206,7 +205,7 @@ impl String {
     pub fn create_with_cstring_in(
         bytes_with_null: &[u8],
         encoding: Encoding,
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
     ) -> Option<arc::R<Self>> {
         unsafe {
             let c_str = bytes_with_null.as_ptr() as *const i8;
@@ -216,7 +215,7 @@ impl String {
 
     #[inline]
     pub fn create_with_bytes(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         bytes: &[u8],
         encoding: Encoding,
         is_external_representation: bool,
@@ -236,7 +235,7 @@ impl String {
     pub fn copy_mut_in(
         &self,
         max_length: Index,
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
     ) -> Option<arc::R<StringMut>> {
         unsafe { CFStringCreateMutableCopy(alloc, max_length, self) }
     }
@@ -359,7 +358,7 @@ impl StringMut {
     }
 
     #[inline]
-    pub fn create(alloc: Option<&Allocator>, max_length: Index) -> Option<arc::R<Self>> {
+    pub fn create(alloc: Option<&cf::Allocator>, max_length: Index) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
     }
 }
@@ -368,6 +367,7 @@ impl PartialEq<str> for String {
     fn eq(&self, other: &str) -> bool {
         let ptr = unsafe { CFStringGetCStringPtr(self, Encoding::UTF8) };
         if ptr.is_null() {
+            println!("null");
             return false;
         }
         let s = unsafe { CStr::from_ptr(ptr) };
@@ -384,15 +384,17 @@ extern "C" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;
     fn CFStringCreateMutable(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         max_length: Index,
     ) -> Option<arc::R<StringMut>>;
-    fn CFStringCreateCopy(alloc: Option<&Allocator>, the_string: &String)
-        -> Option<arc::R<String>>;
+    fn CFStringCreateCopy(
+        alloc: Option<&cf::Allocator>,
+        the_string: &String,
+    ) -> Option<arc::R<String>>;
     fn CFStringHasPrefix(the_string: &String, prefix: &String) -> bool;
     fn CFStringHasSuffix(the_string: &String, prefix: &String) -> bool;
     fn CFStringCreateMutableCopy(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         max_length: Index,
         the_string: &String,
     ) -> Option<arc::R<StringMut>>;
@@ -403,29 +405,29 @@ extern "C" {
     fn CFStringTrimWhitespace(the_string: &mut StringMut);
 
     fn CFStringCreateWithBytesNoCopy(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         bytes: *const u8,
         num_bytes: Index,
         encoding: Encoding,
         is_external_representation: bool,
-        contents_deallocator: Option<&Allocator>,
+        contents_deallocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<String>>;
 
     fn CFStringCreateWithCStringNoCopy(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         c_str: *const c_char,
         encoding: Encoding,
-        contents_deallocator: Option<&Allocator>,
+        contents_deallocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<String>>;
 
     fn CFStringCreateWithCString(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         c_str: *const c_char,
         encoding: Encoding,
     ) -> Option<arc::R<String>>;
 
     fn CFStringCreateWithBytes(
-        alloc: Option<&Allocator>,
+        alloc: Option<&cf::Allocator>,
         bytes: *const u8,
         num_bytes: Index,
         encoding: Encoding,
@@ -454,7 +456,7 @@ extern "C" {
 impl From<&'static str> for arc::R<String> {
     #[inline]
     fn from(s: &'static str) -> Self {
-        String::from_str_no_copy(s)
+        String::from_str(s)
     }
 }
 
