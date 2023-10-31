@@ -17,6 +17,9 @@ impl Drop for SignalGuard {
 
 define_obj_type!(Semaphore(dispatch::Object));
 
+unsafe impl Send for Semaphore {}
+unsafe impl Sync for Semaphore {}
+
 impl Semaphore {
     #[inline]
     pub fn new(value: isize) -> arc::R<Semaphore> {

@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
 use super::TypeId;
 
@@ -6,7 +6,7 @@ use crate::arc;
 
 // #[derive(Debug)]
 #[repr(transparent)]
-pub struct Type(c_void);
+pub struct Type(NonNull<c_void>);
 
 impl Type {
     #[inline]
