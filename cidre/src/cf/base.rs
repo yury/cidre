@@ -147,20 +147,20 @@ impl Null {
 
 define_cf_type!(Allocator(Type));
 
-pub type AllocatorRetainCallBack<T = c_void> = extern "C" fn(info: *const T) -> *const T;
-pub type AllocatorReleaseCallBack<T = c_void> = extern "C" fn(info: *const T);
-pub type AllocatorCopyDescCallBack<T = c_void> =
+pub type AllocatorRetainCb<T = c_void> = extern "C" fn(info: *const T) -> *const T;
+pub type AllocatorReleaseCb<T = c_void> = extern "C" fn(info: *const T);
+pub type AllocatorCopyDescCb<T = c_void> =
     extern "C" fn(info: *const T) -> Option<arc::R<cf::String>>;
-pub type AllocatorAllocateCallBack<T = c_void> =
+pub type AllocatorAllocateCb<T = c_void> =
     extern "C" fn(alloc_size: Index, hint: cf::OptionFlags, info: *mut T) -> *mut c_void;
-pub type AllocatorRealloacteCallBack<T = c_void> = extern "C" fn(
+pub type AllocatorRealloacteCb<T = c_void> = extern "C" fn(
     ptr: *mut c_void,
     new_size: cf::Index,
     hint: cf::OptionFlags,
     info: *mut T,
 ) -> *mut c_void;
-pub type AllocatorDealloacteCallBack<T = c_void> = extern "C" fn(ptr: *mut c_void, info: *mut T);
-pub type AllocatorPreferredSizeCallBack<T = c_void> =
+pub type AllocatorDealloacteCb<T = c_void> = extern "C" fn(ptr: *mut c_void, info: *mut T);
+pub type AllocatorPreferredSizeCb<T = c_void> =
     extern "C" fn(size: cf::Index, hint: cf::OptionFlags, info: *mut T) -> Index;
 
 /// A structure that defines the context or operating environment for an allocator
@@ -178,19 +178,19 @@ pub struct AllocatorContext<T = c_void> {
     /// In implementing this function, retain the data you have defined for the allocator context
     /// in this field. (This might make sense only if the data is a Core Foundation object.)
     /// You may set this function pointer to None.
-    pub retain: Option<AllocatorRetainCallBack<T>>,
+    pub retain: Option<AllocatorRetainCb<T>>,
 
     /// A prototype for a function callback that releases the data pointed to by the info field.
     /// In implementing this function, release (or free) the data you have defined for the allocator
     /// context. You may set this function pointer to None, but doing so might result in memory leaks.
-    pub release: Option<AllocatorReleaseCallBack<T>>,
+    pub release: Option<AllocatorReleaseCb<T>>,
 
     /// A prototype for a function callback that provides a description of the data pointed to
     /// by the info field. In implementing this function, return a reference to a cf::String object
     /// that describes your allocator, particularly some characteristics of your program-defined data.
     /// You may set this function pointer to None, in which case Core Foundation will provide a rudimentary
     /// description.
-    pub copy_description: Option<AllocatorCopyDescCallBack<T>>,
+    pub copy_description: Option<AllocatorCopyDescCb<T>>,
 
     /// A prototype for a function callback that allocates memory of a requested size.
     /// In implementing this function, allocate a block of memory of at least size
@@ -198,11 +198,11 @@ pub struct AllocatorContext<T = c_void> {
     /// a bitfield that you should currently not use (that is, assign 0). The size parameter
     /// should always be greater than 0. If it is not, or if problems in allocation occur,
     /// return NULL. This function pointer may not be assigned NULL.
-    pub allocate: AllocatorAllocateCallBack<T>,
+    pub allocate: AllocatorAllocateCb<T>,
 
     /// A prototype for a function callback that reallocates memory of a requested size
     /// for an existing block of memory.
-    pub reallocate: AllocatorRealloacteCallBack<T>,
+    pub reallocate: AllocatorRealloacteCb<T>,
 
     /// A prototype for a function callback that deallocates a given block of memory.
     /// In implementing this function, make the block of memory pointed to by ptr available
@@ -211,13 +211,13 @@ pub struct AllocatorContext<T = c_void> {
     /// has been previously allocated by the allocator, the results are undefined; abnormal
     /// program termination can occur. You can set this callback to None, in which case the
     /// CFAllocatorDeallocate function has no effect.
-    pub deallocate: Option<AllocatorDealloacteCallBack<T>>,
+    pub deallocate: Option<AllocatorDealloacteCb<T>>,
 
     /// A prototype for a function callback that determines whether there is enough free memory
     /// to satisfy a request. In implementing this function, return the actual size the allocator
     /// is likely to allocate given a request for a block of memory of size size. The hint argument
     /// is a bitfield that you should currently not use.
-    pub preferred_size: AllocatorPreferredSizeCallBack<T>,
+    pub preferred_size: AllocatorPreferredSizeCb<T>,
 }
 
 /// Most of the time when specifying an allocator to Create functions, the None
