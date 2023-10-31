@@ -3,23 +3,23 @@ use crate::{arc, cf, define_cf_type};
 use super::{Allocator, Index, String, Type, TypeId};
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData};
 
-pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescCallBack = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
-pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
+pub type RetainCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type ReleaseCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type CopyDescCb = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
+pub type EqualCb = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
 
 #[repr(C)]
-pub struct Callbacks {
+pub struct Cbs {
     version: Index,
-    retain: RetainCallBack,
-    release: ReleaseCallBack,
-    copy_description: CopyDescCallBack,
-    equal: EqualCallBack,
+    retain: RetainCb,
+    release: ReleaseCb,
+    copy_description: CopyDescCb,
+    equal: EqualCb,
 }
 
-impl Callbacks {
+impl Cbs {
     #[inline]
-    pub fn default() -> Option<&'static Callbacks> {
+    pub fn default() -> Option<&'static Cbs> {
         unsafe { Some(&kCFTypeArrayCallBacks) }
     }
 }
@@ -79,7 +79,7 @@ impl<T> ArrayOf<T> {
             let arr = Array::create_in(
                 values.as_ptr() as _,
                 values.len() as _,
-                Callbacks::default(),
+                Cbs::default(),
                 None,
             );
             transmute(arr)
@@ -95,7 +95,7 @@ impl<T> ArrayOf<T> {
             let arr = Array::create_in(
                 values.as_ptr() as _,
                 values.len() as _,
-                Callbacks::default(),
+                Cbs::default(),
                 None,
             );
             transmute(arr)
@@ -193,7 +193,7 @@ impl<T> ArrayOfMut<T> {
 
     #[inline]
     pub fn with_capacity_in(capacity: usize, alloc: Option<&Allocator>) -> Option<arc::R<Self>> {
-        let arr = ArrayMut::create_in(capacity as _, Callbacks::default(), alloc);
+        let arr = ArrayMut::create_in(capacity as _, Cbs::default(), alloc);
         unsafe { transmute(arr) }
     }
 
@@ -330,7 +330,7 @@ impl Array {
     pub unsafe fn create_in(
         values: *const c_void,
         num_values: Index,
-        callbacks: Option<&Callbacks>,
+        callbacks: Option<&Cbs>,
         allocator: Option<&Allocator>,
     ) -> Option<arc::R<Self>> {
         CFArrayCreate(allocator, values, num_values, callbacks)
@@ -343,7 +343,7 @@ impl Array {
 
     #[inline]
     pub fn new_in(allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
-        unsafe { Self::create_in(std::ptr::null(), 0, Callbacks::default(), allocator) }
+        unsafe { Self::create_in(std::ptr::null(), 0, Cbs::default(), allocator) }
     }
 
     /// ```
@@ -355,7 +355,7 @@ impl Array {
     /// ```
     #[inline]
     pub fn from_type_refs<const N: usize>(values: &[&Type; N]) -> Option<arc::R<Self>> {
-        unsafe { Array::create_in(values.as_ptr() as _, N as _, Callbacks::default(), None) }
+        unsafe { Array::create_in(values.as_ptr() as _, N as _, Cbs::default(), None) }
     }
 
     #[inline]
@@ -367,7 +367,7 @@ impl Array {
             Array::create_in(
                 values.as_ptr() as _,
                 values.len() as _,
-                Callbacks::default(),
+                Cbs::default(),
                 None,
             )
         }
@@ -458,7 +458,7 @@ impl ArrayMut {
     #[inline]
     pub fn create_in(
         capacity: Index,
-        callbacks: Option<&Callbacks>,
+        callbacks: Option<&Cbs>,
         allocator: Option<&Allocator>,
     ) -> Option<arc::R<ArrayMut>> {
         unsafe { CFArrayCreateMutable(allocator, capacity, callbacks) }
@@ -466,7 +466,7 @@ impl ArrayMut {
 
     #[inline]
     pub fn with_capacity(capacity: Index) -> arc::R<Self> {
-        unsafe { Self::create_in(capacity, Callbacks::default(), None).unwrap_unchecked() }
+        unsafe { Self::create_in(capacity, Cbs::default(), None).unwrap_unchecked() }
     }
 
     /// ```
@@ -492,7 +492,7 @@ impl ArrayMut {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    static kCFTypeArrayCallBacks: Callbacks;
+    static kCFTypeArrayCallBacks: Cbs;
 
     fn CFArrayGetTypeID() -> TypeId;
 
@@ -502,7 +502,7 @@ extern "C" {
         allocator: Option<&Allocator>,
         values: *const c_void,
         num_values: Index,
-        callbacks: Option<&Callbacks>,
+        callbacks: Option<&Cbs>,
     ) -> Option<arc::R<Array>>;
 
     fn CFArrayCreateCopy(allocator: Option<&Allocator>, array: &Array) -> Option<arc::R<Array>>;
@@ -512,7 +512,7 @@ extern "C" {
     fn CFArrayCreateMutable(
         allocator: Option<&Allocator>,
         capacity: Index,
-        callbacks: Option<&Callbacks>,
+        callbacks: Option<&Cbs>,
     ) -> Option<arc::R<ArrayMut>>;
 
     fn CFArrayCreateMutableCopy(

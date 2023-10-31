@@ -35,11 +35,11 @@ pub use array::Array;
 pub use array::ArrayMut;
 pub use array::ArrayOf;
 pub use array::ArrayOfMut;
-pub use array::Chss as ArrayCb;
-pub use array::CopyDescCb as ArrayCopyDescCallBack;
-pub use array::EqualCb as ArrayEqualCallBack;
-pub use array::ReleaseCb as ArrayReleaseCallBack;
-pub use array::RetainCb as ArrayRetainCallBack;
+pub use array::Cbs as ArrayCbs;
+pub use array::CopyDescCb as ArrayCopyDescCb;
+pub use array::EqualCb as ArrayEqualCb;
+pub use array::ReleaseCb as ArrayReleaseCb;
+pub use array::RetainCb as ArrayRetainCb;
 
 pub mod dictionary;
 pub use dictionary::ApplierFunction as DictionaryApplierFunction;
