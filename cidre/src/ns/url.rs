@@ -88,7 +88,6 @@ impl Url {
 }
 
 unsafe impl Send for Url {}
-unsafe impl Sync for Url {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {

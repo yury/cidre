@@ -76,7 +76,6 @@ extern "C" {
 define_obj_type!(ShareableContent(ns::Id));
 
 unsafe impl Send for ShareableContent {}
-unsafe impl Sync for ShareableContent {}
 
 impl ShareableContent {
     define_cls!(SC_SHAREABLE_CONTENT);
