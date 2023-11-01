@@ -121,6 +121,10 @@ pub mod simd;
 #[cfg(feature = "vn")]
 pub mod vn;
 
+/// Web Kit
+#[cfg(feature = "wk")]
+pub mod wk;
+
 pub mod arc;
 
 #[macro_export]

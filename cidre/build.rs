@@ -106,12 +106,14 @@ fn main() {
     xc_feature_build("av", sdk, arch, configuration);
     xc_feature_build("ca", sdk, arch, configuration);
     xc_feature_build("mlc", sdk, arch, configuration);
+    xc_feature_build("wk", sdk, arch, configuration);
 
     if sdk == "iphoneos" || sdk == "maccatalyst" {
         xc_build("ui", sdk, arch, configuration);
     }
     if sdk == "macosx" || sdk == "maccatalyst" {
         xc_feature_build("sc", sdk, arch, configuration);
+        xc_feature_build("app", sdk, arch, configuration);
         if env::var_os("CARGO_FEATURE_PRIVATE").is_some() {
             println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
             println!(

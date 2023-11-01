@@ -98,6 +98,23 @@ pub trait Obj: Sized + arc::Retain {
     #[msg_send(respondsToSelector:)]
     fn responds_to_sel(&self, sel: &Sel) -> bool;
 
+    #[msg_send(class)]
+    fn class(&self) -> &crate::objc::Class<Self>;
+
+    #[msg_send(isKindOfClass:)]
+    fn is_kind_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
+
+    fn try_cast<T: Obj>(&self, cls: &crate::objc::Class<T>) -> Option<&T> {
+        if self.is_kind_of_class(cls) {
+            Some(unsafe { std::mem::transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    #[msg_send(isMemberOfClass:)]
+    fn is_member_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
+
     #[inline]
     fn is_tagged_ptr(&self) -> bool {
         ((self as *const Self as usize) >> 63) == 1

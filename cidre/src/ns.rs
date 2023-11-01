@@ -195,3 +195,10 @@ macro_rules! ns_log {
 extern "C" {
     fn cidre_log(str: &crate::ns::String);
 }
+
+/// App Kit
+#[cfg(all(feature = "app", target_os = "macos"))]
+mod app;
+
+#[cfg(all(feature = "app", target_os = "macos"))]
+pub use app::*;
