@@ -122,6 +122,9 @@ impl UrlRequest {
     pub fn copy_mut(&self) -> arc::R<UrlRequestMut>;
 }
 
+unsafe impl Send for UrlRequest {}
+unsafe impl Sync for UrlRequest {}
+
 /// enum is used to indicate whether the
 /// user or developer specified the URL.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

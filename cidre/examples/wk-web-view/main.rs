@@ -45,7 +45,6 @@ impl NavigationDelegateImpl for NavDelegate {
 
 extern "C" fn in_main(_ctx: *mut c_void) {
     let nav_delegate = unsafe { NAV_DELEGATE.as_ref() };
-    eprintln!("{:?}", nav_delegate);
     let mut view = wk::WebView::new();
     view.set_inpectable(true);
     view.set_nav_delegate(nav_delegate.map(|f| f.as_ref()));
