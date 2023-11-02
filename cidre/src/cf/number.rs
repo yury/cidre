@@ -347,48 +347,40 @@ impl Number {
     /// ```
     /// Will return tagged: see <https://opensource.apple.com/source/CF/CF-635/CFNumber.c.auto.html>
     #[inline]
-    pub fn from_i32(value: i32) -> arc::R<Self> {
-        unsafe {
-            Self::create_in(NumberType::I32, &value as *const _ as _, None).unwrap_unchecked()
-        }
+    pub fn from_i32(val: i32) -> arc::R<Self> {
+        unsafe { Self::create_in(NumberType::I32, &val as *const _ as _, None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn tagged_i8(value: i8) -> &'static Self {
-        unsafe {
-            std::mem::transmute(Self::create_in(
-                NumberType::I8,
-                &value as *const _ as _,
-                None,
-            ))
-        }
+    pub fn tagged_i8(val: i8) -> &'static Self {
+        unsafe { std::mem::transmute(Self::create_in(NumberType::I8, &val as *const _ as _, None)) }
     }
 
     #[inline]
-    pub fn tagged_i16(value: i16) -> &'static Self {
+    pub fn tagged_i16(val: i16) -> &'static Self {
         unsafe {
             std::mem::transmute(Self::create_in(
                 NumberType::I16,
-                &value as *const _ as _,
+                &val as *const _ as _,
                 None,
             ))
         }
     }
 
     #[inline]
-    pub fn tagged_i32(value: i32) -> &'static Self {
+    pub fn tagged_i32(val: i32) -> &'static Self {
         unsafe {
             std::mem::transmute(Self::create_in(
                 NumberType::I32,
-                &value as *const _ as _,
+                &val as *const _ as _,
                 None,
             ))
         }
     }
 
     #[inline]
-    pub fn from_four_char_code(value: FourCharCode) -> &'static Self {
-        Self::tagged_i32(value as _)
+    pub fn from_four_char_code(val: FourCharCode) -> &'static Self {
+        Self::tagged_i32(val as _)
     }
 
     /// ```
@@ -401,17 +393,13 @@ impl Number {
     /// assert_eq!(false, num.is_float_type());
     /// ```
     #[inline]
-    pub fn from_i64(value: i64) -> arc::R<Self> {
-        unsafe {
-            Self::create_in(NumberType::I64, &value as *const _ as _, None).unwrap_unchecked()
-        }
+    pub fn from_i64(val: i64) -> arc::R<Self> {
+        unsafe { Self::create_in(NumberType::I64, &val as *const _ as _, None).unwrap_unchecked() }
     }
 
     #[inline]
-    pub fn from_usize(value: usize) -> arc::R<Self> {
-        unsafe {
-            Self::create_in(NumberType::I64, &value as *const _ as _, None).unwrap_unchecked()
-        }
+    pub fn from_usize(val: usize) -> arc::R<Self> {
+        unsafe { Self::create_in(NumberType::I64, &val as *const _ as _, None).unwrap_unchecked() }
     }
 
     /// ```
@@ -424,10 +412,8 @@ impl Number {
     /// assert_eq!(true, num.is_float_type());
     /// ```
     #[inline]
-    pub fn from_f64(value: f64) -> arc::R<Self> {
-        unsafe {
-            Self::create_in(NumberType::F64, &value as *const _ as _, None).unwrap_unchecked()
-        }
+    pub fn from_f64(val: f64) -> arc::R<Self> {
+        unsafe { Self::create_in(NumberType::F64, &val as *const _ as _, None).unwrap_unchecked() }
     }
 
     /// ```
@@ -440,9 +426,9 @@ impl Number {
     /// assert_eq!(1f64, num.to_f64().unwrap());
     /// ```
     #[inline]
-    pub fn from_duration(value: Duration) -> arc::R<Self> {
+    pub fn from_duration(val: Duration) -> arc::R<Self> {
         unsafe {
-            Self::create_in(NumberType::F64, &value.as_secs_f64() as *const _ as _, None)
+            Self::create_in(NumberType::F64, &val.as_secs_f64() as *const _ as _, None)
                 .unwrap_unchecked()
         }
     }
@@ -456,29 +442,29 @@ impl Number {
 
 impl From<i8> for arc::R<Number> {
     #[inline]
-    fn from(value: i8) -> Self {
-        Number::from_i8(value)
+    fn from(val: i8) -> Self {
+        Number::from_i8(val)
     }
 }
 
 impl From<i16> for arc::R<Number> {
     #[inline]
-    fn from(value: i16) -> Self {
-        Number::from_i16(value)
+    fn from(val: i16) -> Self {
+        Number::from_i16(val)
     }
 }
 
 impl From<i32> for arc::R<Number> {
     #[inline]
-    fn from(value: i32) -> Self {
-        Number::from_i32(value)
+    fn from(val: i32) -> Self {
+        Number::from_i32(val)
     }
 }
 
 impl From<i64> for arc::R<Number> {
     #[inline]
-    fn from(value: i64) -> Self {
-        Number::from_i64(value)
+    fn from(val: i64) -> Self {
+        Number::from_i64(val)
     }
 }
 

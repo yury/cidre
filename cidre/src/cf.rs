@@ -8,7 +8,7 @@ pub use base::AllocatorAllocateCb;
 pub use base::AllocatorContext;
 pub use base::AllocatorCopyDescCb;
 pub use base::AllocatorDealloacteCb;
-pub use base::ComparatorFunction;
+pub use base::ComparatorFn;
 pub use base::ComparisonResult;
 pub use base::HashCode;
 pub use base::Index;
@@ -61,7 +61,7 @@ pub use url::PathStyle;
 pub use url::Url;
 
 pub mod locale;
-pub use locale::Identifier as LocaleIdentifier;
+pub use locale::Id as LocaleId;
 pub use locale::Locale;
 
 mod bundle;

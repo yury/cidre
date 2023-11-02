@@ -30,7 +30,7 @@ impl Bearer {
     /// by a key.  Given a CVBufferRef, CMGetAttachment is equivalent to
     /// CVBufferGetAttachment.
     #[inline]
-    pub fn get_attach<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
+    pub fn attach<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
         unsafe { CMGetAttachment(self, key, mode) }
     }
 

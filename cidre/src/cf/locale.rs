@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_cf_type};
 
-pub type Identifier = cf::String;
+pub type Id = cf::String;
 
 define_cf_type!(Locale(cf::Type));
 
@@ -14,7 +14,7 @@ impl Locale {
     ///
     /// let system_loc = cf::Locale::system();
     ///
-    /// let id = system_loc.get_identifier();
+    /// let id = system_loc.id();
     ///
     ///
     /// ```
@@ -27,13 +27,13 @@ impl Locale {
     ///
     /// let loc = cf::Locale::current();
     ///
-    /// let id = loc.get_identifier();
+    /// let id = loc.id();
     /// ```
     pub fn current() -> arc::R<Locale> {
         unsafe { CFLocaleCopyCurrent() }
     }
 
-    pub fn get_identifier(&self) -> &Identifier {
+    pub fn id(&self) -> &Id {
         unsafe { CFLocaleGetIdentifier(self) }
     }
 }
@@ -41,7 +41,7 @@ impl Locale {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFLocaleGetSystem() -> &'static Locale;
-    fn CFLocaleGetIdentifier(locale: &Locale) -> &Identifier;
+    fn CFLocaleGetIdentifier(locale: &Locale) -> &Id;
     fn CFLocaleCopyCurrent() -> arc::R<Locale>;
     fn CFLocaleGetTypeID() -> cf::TypeId;
 }
