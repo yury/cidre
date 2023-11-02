@@ -238,7 +238,7 @@ impl BlockBuf {
     }
 
     #[inline]
-    pub fn as_slice_mut(&mut self) -> Result<&mut [u8], os::Status> {
+    pub fn as_mut_slice(&mut self) -> Result<&mut [u8], os::Status> {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {

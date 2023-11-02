@@ -26,12 +26,12 @@ impl Buf {
     }
 
     #[inline]
-    pub fn as_slice_mut(&mut self) -> &mut [u8] {
+    pub fn as_mut_slice(&mut self) -> &mut [u8] {
         unsafe { std::slice::from_raw_parts_mut(self.contents(), self.len()) }
     }
 
     #[inline]
-    pub fn as_slice_of_mut<T: Sized>(&mut self) -> &mut [T] {
+    pub fn as_mut_slice_of<T: Sized>(&mut self) -> &mut [T] {
         let len = self.len() / std::mem::size_of::<T>();
         unsafe { std::slice::from_raw_parts_mut(self.contents() as _, len) }
     }
@@ -79,7 +79,7 @@ mod tests {
         let device = mtl::Device::default().unwrap();
 
         let mut buffer = device.new_buf(10, Default::default()).unwrap();
-        buffer.as_slice_mut()[1] = 10;
+        buffer.as_mut_slice()[1] = 10;
 
         assert_eq!(buffer.len(), 10);
     }

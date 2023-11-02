@@ -108,7 +108,7 @@ impl DataMut {
     }
 
     /// # Safety
-    /// use `as_slice_mut()`
+    /// use `as_mut_slice()`
     #[inline]
     pub unsafe fn bytes_ptr_mut(&mut self) -> *mut u8 {
         CFDataGetMutableBytePtr(self)
@@ -120,7 +120,7 @@ impl DataMut {
     }
 
     #[inline]
-    pub fn as_slice_mut(&mut self) -> &mut [u8] {
+    pub fn as_mut_slice(&mut self) -> &mut [u8] {
         unsafe { &mut *slice_from_raw_parts_mut(self.bytes_ptr_mut(), self.len()) }
     }
 
