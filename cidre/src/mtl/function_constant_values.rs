@@ -10,18 +10,23 @@ impl FnConstValues {
     #[objc::msg_send(setConstantValue:type:atIndex:)]
     pub fn set_value_at(
         &mut self,
-        value: *const c_void,
+        val: *const c_void,
         type_: mtl::DataType,
         at_index: ns::UInteger,
     );
 
     #[objc::msg_send(setConstantValues:type:withRange:)]
-    pub fn set_values(&mut self, value: *const c_void, type_: mtl::DataType, with_range: ns::Range);
+    pub fn set_values(
+        &mut self,
+        values: *const c_void,
+        type_: mtl::DataType,
+        with_range: ns::Range,
+    );
 
     #[objc::msg_send(setConstantValue:type:withName:)]
     pub fn set_value_with_name(
         &mut self,
-        value: *const c_void,
+        val: *const c_void,
         type_: mtl::DataType,
         name: &ns::String,
     );

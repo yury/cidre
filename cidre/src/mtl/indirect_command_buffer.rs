@@ -36,43 +36,43 @@ impl Desc {
     pub fn cmd_types(&self) -> IndirectCmdType;
 
     #[objc::msg_send(setCommandTypes:)]
-    pub fn set_cmd_types(&mut self, value: IndirectCmdType);
+    pub fn set_cmd_types(&mut self, val: IndirectCmdType);
 
     #[objc::msg_send(inheritPipelineState)]
     pub fn inherit_ps(&self) -> bool;
 
     #[objc::msg_send(setInheritPipelineState:)]
-    pub fn set_inherit_ps(&self, value: bool) -> bool;
+    pub fn set_inherit_ps(&self, val: bool) -> bool;
 
     #[objc::msg_send(inheritBuffers)]
     pub fn inherit_bufs(&self) -> bool;
 
     #[objc::msg_send(setInheritBuffers:)]
-    pub fn set_inherit_bufs(&self, value: bool);
+    pub fn set_inherit_bufs(&self, val: bool);
 
     #[objc::msg_send(maxVertexBufferBindCount)]
     pub fn max_vertex_buf_bind_count(&self) -> usize;
 
     #[objc::msg_send(maxVertexBufferBindCount:)]
-    pub fn set_max_vertex_buf_bind_count(&mut self, value: usize);
+    pub fn set_max_vertex_buf_bind_count(&mut self, val: usize);
 
     #[objc::msg_send(maxFragmentBufferBindCount)]
     pub fn max_fragment_buf_bind_count(&self) -> usize;
 
     #[objc::msg_send(maxFragmentBufferBindCount:)]
-    pub fn set_max_fragment_buf_bind_count(&mut self, value: usize);
+    pub fn set_max_fragment_buf_bind_count(&mut self, val: usize);
 
     #[objc::msg_send(maxKernelBufferBindCount)]
     pub fn max_kernel_buf_bind_count(&self) -> usize;
 
     #[objc::msg_send(maxKernelBufferBindCount:)]
-    pub fn set_max_kernel_buf_bind_count(&mut self, value: usize);
+    pub fn set_max_kernel_buf_bind_count(&mut self, val: usize);
 
     #[objc::msg_send(supportRayTracing)]
     pub fn support_ray_tracing(&self) -> bool;
 
     #[objc::msg_send(setSupportRayTracing:)]
-    pub fn set_support_ray_tracing(&mut self, value: bool);
+    pub fn set_support_ray_tracing(&mut self, val: bool);
 }
 
 define_obj_type!(IndirectCmdBuf(mtl::Resource));

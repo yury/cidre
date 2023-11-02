@@ -41,17 +41,11 @@ impl<T> ArrayOf<T> {
         unsafe { transmute(Array::new_in(allocator)) }
     }
 
-    pub fn contains(&self, value: &cf::Type) -> bool {
+    pub fn contains(&self, val: &cf::Type) -> bool {
         if self.is_empty() {
             return false;
         }
-        unsafe {
-            CFArrayContainsValue(
-                self,
-                cf::Range::new(0, self.count()),
-                value as *const _ as _,
-            )
-        }
+        unsafe { CFArrayContainsValue(self, cf::Range::new(0, self.count()), val as *const _ as _) }
     }
 
     #[inline]
@@ -208,8 +202,8 @@ impl<T> ArrayOfMut<T> {
     }
 
     #[inline]
-    pub fn push(&mut self, value: &T) {
-        self.0.append(unsafe { transmute(value) });
+    pub fn push(&mut self, val: &T) {
+        self.0.append(unsafe { transmute(val) });
     }
 }
 
@@ -434,13 +428,13 @@ define_cf_type!(ArrayMut(Array));
 
 impl ArrayMut {
     #[inline]
-    pub unsafe fn append_value(&mut self, value: *const c_void) {
-        CFArrayAppendValue(self, value)
+    pub unsafe fn append_value(&mut self, val: *const c_void) {
+        CFArrayAppendValue(self, val)
     }
 
     #[inline]
-    pub fn append(&mut self, value: &Type) {
-        unsafe { self.append_value(value.as_type_ptr()) }
+    pub fn append(&mut self, val: &Type) {
+        unsafe { self.append_value(val.as_type_ptr()) }
     }
 
     #[inline]

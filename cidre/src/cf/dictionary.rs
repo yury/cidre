@@ -118,8 +118,8 @@ impl Dictionary {
     }
 
     #[inline]
-    pub unsafe fn contains_raw_value(&self, value: *const c_void) -> bool {
-        CFDictionaryContainsValue(self, value)
+    pub unsafe fn contains_raw_value(&self, val: *const c_void) -> bool {
+        CFDictionaryContainsValue(self, val)
     }
 
     #[inline]
@@ -399,24 +399,24 @@ impl DictionaryMut {
         CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
     }
 
-    pub fn insert(&mut self, key: &cf::String, value: &cf::Type) {
-        unsafe { CFDictionarySetValue(self, key.as_type_ptr(), value.as_type_ptr()) }
+    pub fn insert(&mut self, key: &cf::String, val: &cf::Type) {
+        unsafe { CFDictionarySetValue(self, key.as_type_ptr(), val.as_type_ptr()) }
     }
 
     pub fn remove(&mut self, key: &cf::String) {
         unsafe { CFDictionaryRemoveValue(self, key.as_type_ptr()) }
     }
 
-    pub unsafe fn add_value(&mut self, key: *const c_void, value: *const c_void) {
-        CFDictionaryAddValue(self, key, value)
+    pub unsafe fn add_value(&mut self, key: *const c_void, val: *const c_void) {
+        CFDictionaryAddValue(self, key, val)
     }
 
-    pub unsafe fn set_value(&mut self, key: *const c_void, value: *const c_void) {
-        CFDictionarySetValue(self, key, value)
+    pub unsafe fn set_value(&mut self, key: *const c_void, val: *const c_void) {
+        CFDictionarySetValue(self, key, val)
     }
 
-    pub unsafe fn replace_value(&mut self, key: *const c_void, value: *const c_void) {
-        CFDictionaryReplaceValue(self, key, value)
+    pub unsafe fn replace_value(&mut self, key: *const c_void, val: *const c_void) {
+        CFDictionaryReplaceValue(self, key, val)
     }
 
     pub unsafe fn remove_value(&mut self, key: *const c_void) {

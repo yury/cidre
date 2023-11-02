@@ -40,43 +40,43 @@ impl Layer {
     pub fn bounds(&self) -> cg::Rect;
 
     #[objc::msg_send(setBounds:)]
-    pub fn set_bounds(&mut self, value: cg::Rect);
+    pub fn set_bounds(&mut self, val: cg::Rect);
 
     #[objc::msg_send(position)]
     pub fn position(&self) -> cg::Point;
 
     #[objc::msg_send(setPosition:)]
-    pub fn set_position(&mut self, value: cg::Point);
+    pub fn set_position(&mut self, val: cg::Point);
 
     #[objc::msg_send(zPosition)]
     pub fn z_position(&self) -> cg::Float;
 
     #[objc::msg_send(setZPosition:)]
-    pub fn set_z_position(&mut self, value: cg::Float);
+    pub fn set_z_position(&mut self, val: cg::Float);
 
     #[objc::msg_send(anchorPoint)]
     pub fn anchor_point(&self) -> cg::Point;
 
     #[objc::msg_send(setAnchorPoint:)]
-    pub fn set_anchor_point(&mut self, value: cg::Point);
+    pub fn set_anchor_point(&mut self, val: cg::Point);
 
     #[objc::msg_send(transform)]
     pub fn transform(&self) -> ca::Transform3D;
 
     #[objc::msg_send(setTransform:)]
-    pub fn set_transform(&mut self, value: ca::Transform3D);
+    pub fn set_transform(&mut self, val: ca::Transform3D);
 
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;
 
     #[objc::msg_send(setFrame:)]
-    pub fn set_frame(&mut self, value: cg::Rect);
+    pub fn set_frame(&mut self, val: cg::Rect);
 
     #[objc::msg_send(isHidden)]
     pub fn is_hidden(&self) -> bool;
 
     #[objc::msg_send(setHidden:)]
-    pub fn set_hidden(&mut self, value: bool);
+    pub fn set_hidden(&mut self, val: bool);
 
     #[objc::msg_send(addSublayer:)]
     pub fn add_sublayer(&mut self, layer: &Self);
@@ -88,7 +88,7 @@ impl Layer {
     pub fn name(&self) -> Option<&ns::String>;
 
     #[objc::msg_send(setName:)]
-    pub fn set_name(&mut self, value: Option<&ns::String>);
+    pub fn set_name(&mut self, val: Option<&ns::String>);
 
     #[objc::msg_send(needsLayout)]
     pub fn needs_layout(&self) -> bool;

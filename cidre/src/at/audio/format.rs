@@ -286,14 +286,14 @@ impl Property {
         res.result()
     }
 
-    pub unsafe fn fill<T: Sized>(&self, value: &mut T) -> Result<(), os::Status> {
+    pub unsafe fn fill<T: Sized>(&self, val: &mut T) -> Result<(), os::Status> {
         let mut size = size_of::<T>() as u32;
-        self.value(0, std::ptr::null(), &mut size, value as *mut _ as *mut _)
+        self.value(0, std::ptr::null(), &mut size, val as *mut _ as *mut _)
     }
 
     pub unsafe fn fill_with<S: Sized, T: Sized>(
         &self,
-        value: &mut T,
+        val: &mut T,
         specifier: &S,
     ) -> Result<(), os::Status> {
         let mut size = size_of::<T>() as u32;
@@ -302,7 +302,7 @@ impl Property {
             spec_size,
             specifier as *const _ as _,
             &mut size,
-            value as *mut _ as *mut _,
+            val as *mut _ as *mut _,
         )
     }
 

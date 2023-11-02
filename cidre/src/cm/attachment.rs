@@ -19,8 +19,8 @@ impl Bearer {
     /// In both cases the retain count of the attachment will be incremented.
     /// The value can be any cf::Type but nil has no defined behavior.
     /// Given a cv::Buffer, 'set_attach' is equivalent to CVBufferSetAttachment.
-    pub fn set_attach(&mut self, key: &cf::String, value: &cf::Type, attachment_mode: Mode) {
-        unsafe { CMSetAttachment(self, key, value, attachment_mode) }
+    pub fn set_attach(&mut self, key: &cf::String, val: &cf::Type, attachment_mode: Mode) {
+        unsafe { CMSetAttachment(self, key, val, attachment_mode) }
     }
 
     /// Returns a specific attachment of a cm::AttachmentBearer

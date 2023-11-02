@@ -114,37 +114,37 @@ impl Object {
         }
     }
 
-    pub fn set_prop<T: Sized>(&self, address: &PropAddress, value: &T) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&self, address: &PropAddress, val: &T) -> Result<(), os::Status> {
         unsafe {
             self.set_property_data(
                 address,
                 0,
                 std::ptr::null(),
                 std::mem::size_of::<T>() as u32,
-                value as *const T as _,
+                val as *const T as _,
             )
             .result()
         }
     }
 
-    pub fn allow_screen_capture_devices(&self, value: bool) -> Result<(), os::Status> {
-        let value: u32 = if value { 1u32 } else { 0u32 };
+    pub fn allow_screen_capture_devices(&self, val: bool) -> Result<(), os::Status> {
+        let val: u32 = if val { 1u32 } else { 0u32 };
         let address = PropAddress {
             selector: PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES,
             scope: PropScope::GLOBAL,
             element: PropElement::MAIN,
         };
-        self.set_prop(&address, &value)
+        self.set_prop(&address, &val)
     }
 
-    pub fn allow_wireless_screen_capture_devices(&self, value: bool) -> Result<(), os::Status> {
-        let value: u32 = if value { 1u32 } else { 0u32 };
+    pub fn allow_wireless_screen_capture_devices(&self, val: bool) -> Result<(), os::Status> {
+        let val: u32 = if val { 1u32 } else { 0u32 };
         let address = PropAddress {
             selector: PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES,
             scope: PropScope::GLOBAL,
             element: PropElement::MAIN,
         };
-        self.set_prop(&address, &value)
+        self.set_prop(&address, &val)
     }
 }
 

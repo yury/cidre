@@ -28,7 +28,7 @@ impl PipelineBufDescArray {
     pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_obj_at(&mut self, buf: Option<&PipelineBufDesc>, at_index: usize);
+    pub fn set_obj_at(&mut self, val: Option<&PipelineBufDesc>, at_index: usize);
 }
 
 impl std::ops::Index<usize> for PipelineBufDescArray {

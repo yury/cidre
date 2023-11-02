@@ -277,8 +277,8 @@ impl SampleBuf {
 
     #[doc(alias = "CMSampleBufferSetOutputPresentationTimeStamp")]
     #[inline]
-    pub fn set_output_pts(&self, value: cm::Time) {
-        unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, value) }
+    pub fn set_output_pts(&self, val: cm::Time) {
+        unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, val) }
     }
 
     /// Returns the size in bytes of a specified sample in a 'cm::SampleBuf'.
@@ -548,7 +548,7 @@ extern "C" {
     fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
-    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, value: cm::Time);
+    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, val: cm::Time);
     fn CMSampleBufferGetSampleSize(sbuf: &SampleBuf, sample_index: cm::ItemIndex) -> usize;
     fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuf) -> usize;
     fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuf) -> Option<&cm::FormatDesc>;

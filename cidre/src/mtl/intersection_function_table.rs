@@ -53,7 +53,7 @@ impl Desc {
     pub fn fn_count(&self) -> usize;
 
     #[objc::msg_send(setFunctionCount:)]
-    pub fn set_fn_count(&mut self, value: usize);
+    pub fn set_fn_count(&mut self, val: usize);
 }
 
 define_obj_type!(IntersectionFnTable(mtl::Resource));

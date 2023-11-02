@@ -255,7 +255,7 @@ impl VertexBufLayoutDesc {
     pub fn stride(&self) -> usize;
 
     #[objc::msg_send(setStride:)]
-    pub fn set_stride(&mut self, value: usize);
+    pub fn set_stride(&mut self, val: usize);
 
     /// The circumstances under which the vertex and its attributes
     /// are presented to the vertex function.
@@ -263,7 +263,7 @@ impl VertexBufLayoutDesc {
     pub fn step_fn(&self) -> VertexStepFn;
 
     #[objc::msg_send(setStepFunction:)]
-    pub fn set_step_fn(&mut self, value: VertexStepFn);
+    pub fn set_step_fn(&mut self, val: VertexStepFn);
 
     /// The interval at which the vertex and its attributes are presented
     /// to the vertex function.
@@ -271,7 +271,7 @@ impl VertexBufLayoutDesc {
     pub fn step_rate(&self) -> usize;
 
     #[objc::msg_send(setStepRate:)]
-    pub fn set_step_rate(&mut self, value: usize);
+    pub fn set_step_rate(&mut self, val: usize);
 }
 
 define_obj_type!(VertexBufLayoutDescArray(ns::Id));
@@ -283,7 +283,7 @@ impl VertexBufLayoutDescArray {
     pub fn object_at_mut(&mut self, index: usize) -> &mut VertexBufLayoutDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, buffer_desc: Option<&VertexBufLayoutDesc>, index: usize);
+    pub fn set_object_at(&mut self, val: Option<&VertexBufLayoutDesc>, index: usize);
 }
 
 impl std::ops::Index<usize> for VertexBufLayoutDescArray {
@@ -307,19 +307,19 @@ impl VertexAttrDesc {
     pub fn format(&self) -> VertexFormat;
 
     #[objc::msg_send(setFormat:)]
-    pub fn set_format(&mut self, value: VertexFormat);
+    pub fn set_format(&mut self, val: VertexFormat);
 
     #[objc::msg_send(offset)]
     pub fn offset(&self) -> usize;
 
     #[objc::msg_send(setOffset:)]
-    pub fn set_offset(&mut self, value: usize);
+    pub fn set_offset(&mut self, val: usize);
 
     #[objc::msg_send(bufferIndex)]
     pub fn buf_index(&self) -> usize;
 
     #[objc::msg_send(setBufferIndex:)]
-    pub fn set_buf_index(&self, value: usize);
+    pub fn set_buf_index(&self, val: usize);
 }
 
 define_obj_type!(VertexAttrDescArray(ns::Id));
@@ -331,7 +331,7 @@ impl VertexAttrDescArray {
     pub fn object_at_mut(&mut self, index: usize) -> &mut VertexAttrDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, buffer_desc: Option<&VertexAttrDesc>, index: usize);
+    pub fn set_object_at(&mut self, val: Option<&VertexAttrDesc>, index: usize);
 }
 
 impl std::ops::Index<usize> for VertexAttrDescArray {
@@ -357,10 +357,10 @@ impl Desc {
     pub fn layouts_mut(&mut self) -> &mut VertexBufLayoutDescArray;
 
     #[objc::msg_send(attributes)]
-    pub fn attributes(&self) -> &VertexAttrDescArray;
+    pub fn attrs(&self) -> &VertexAttrDescArray;
 
     #[objc::msg_send(attributes)]
-    pub fn attributes_mut(&mut self) -> &mut VertexAttrDescArray;
+    pub fn attrs_mut(&mut self) -> &mut VertexAttrDescArray;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -377,9 +377,9 @@ mod tests {
     #[test]
     fn basics() {
         let mut descriptor = mtl::VertexDesc::new();
-        let attrs = descriptor.attributes_mut();
+        let attrs = descriptor.attrs_mut();
         attrs[0].set_format(mtl::VertexFormat::U8x2);
-        assert_eq!(descriptor.attributes()[0].format(), mtl::VertexFormat::U8x2);
+        assert_eq!(descriptor.attrs()[0].format(), mtl::VertexFormat::U8x2);
         let descriptor = mtl::VertexBufLayoutDesc::new();
         assert_eq!(descriptor.stride(), 0);
     }

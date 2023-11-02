@@ -1,56 +1,34 @@
-use crate::{
-    arc, define_mtl, define_obj_type, mtl, ns,
-    objc::{self, Class},
-};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(Reflection(ns::Id));
 
-define_obj_type!(Desc(ns::Id));
-
-impl arc::A<Desc> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<Desc>;
-}
+define_obj_type!(Desc(ns::Id), MTL_COMPUTE_PIPELINE_DESCRIPTOR);
 
 impl Desc {
     define_mtl!(label, set_label);
-
-    #[inline]
-    pub fn cls() -> &'static Class<Self> {
-        unsafe { MTL_COMPUTE_PIPELINE_DESCRIPTOR }
-    }
-
-    #[inline]
-    pub fn alloc() -> arc::A<Self> {
-        Self::cls().alloc()
-    }
-
-    pub fn new() -> arc::R<Self> {
-        Self::alloc().init()
-    }
 
     #[objc::msg_send(threadGroupSizeIsMultipleOfThreadExecutionWidth)]
     pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool;
 
     #[objc::msg_send(setThreadGroupSizeIsMultipleOfThreadExecutionWidth:)]
-    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
+    pub fn set_thread_group_size_is_multiple_of_thread_execution_width(&mut self, val: bool);
 
     #[objc::msg_send(computeFunction)]
     pub fn compute_fn(&self) -> Option<&mtl::Fn>;
 
     #[objc::msg_send(setComputeFunction:)]
-    pub fn set_compute_fn(&mut self, value: Option<&mtl::Fn>);
+    pub fn set_compute_fn(&mut self, val: Option<&mtl::Fn>);
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
 
     #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
-    pub fn set_max_total_threads_per_threadgroup(&mut self, value: usize);
+    pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
 }
 
 #[link(name = "mtl", kind = "static")]
 extern "C" {
-    static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static Class<Desc>;
+    static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 define_obj_type!(State(ns::Id));

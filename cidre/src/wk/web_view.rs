@@ -15,7 +15,7 @@ impl WebView {
     pub fn load_request(&mut self, request: &ns::UrlRequest) -> Option<arc::R<wk::Navigation>>;
 
     #[objc::msg_send(setNavigationDelegate:)]
-    pub fn set_nav_delegate<D: wk::NavigationDelegate>(&mut self, delegate: Option<&D>);
+    pub fn set_nav_delegate<D: wk::NavigationDelegate>(&mut self, val: Option<&D>);
 
     #[objc::msg_send(title)]
     pub fn title(&self) -> &ns::String;
@@ -24,7 +24,7 @@ impl WebView {
     pub fn is_inpectable(&self) -> bool;
 
     #[objc::msg_send(setInspectable:)]
-    pub fn set_inpectable(&self, value: bool);
+    pub fn set_inpectable(&self, val: bool);
 
     #[objc::msg_send(URL)]
     pub fn url(&self) -> Option<&ns::Url>;

@@ -55,19 +55,19 @@ impl Desc {
     pub fn size(&self) -> usize;
 
     #[objc::msg_send(setSize:)]
-    pub fn set_size(&mut self, value: usize);
+    pub fn set_size(&mut self, val: usize);
 
     #[objc::msg_send(type)]
     pub fn type_(&self) -> Type;
 
     #[objc::msg_send(setType:)]
-    pub fn set_type(&self, value: Type);
+    pub fn set_type(&self, val: Type);
 
     #[objc::msg_send(sparsePageSize)]
     pub fn sparse_page_size(&self) -> mtl::SparsePageSize;
 
     #[objc::msg_send(setSparsePageSize:)]
-    pub fn set_sparse_page_size(&mut self, value: mtl::SparsePageSize);
+    pub fn set_sparse_page_size(&mut self, val: mtl::SparsePageSize);
 }
 
 define_obj_type!(Heap(ns::Id));

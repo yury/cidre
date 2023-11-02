@@ -5,7 +5,7 @@ use crate::{arc, define_cls, define_obj_type, ns, objc};
 #[repr(isize)]
 pub enum CaptureDst {
     DeveloperTools = 1,
-    GPUTraceDocument,
+    GpuTraceDocument,
 }
 
 define_obj_type!(CaptureDesc(ns::Id), MTL_CAPTURE_DESCRIPTOR);
@@ -15,19 +15,19 @@ impl CaptureDesc {
     pub fn capture_object(&self) -> Option<&ns::Id>;
 
     #[objc::msg_send(setCaptureObject:)]
-    pub fn set_capture_object(&mut self, value: &ns::Id);
+    pub fn set_capture_object(&mut self, val: &ns::Id);
 
     #[objc::msg_send(destination)]
     pub fn dst(&self) -> CaptureDst;
 
     #[objc::msg_send(setDestination:)]
-    pub fn set_dst(&self, value: CaptureDst);
+    pub fn set_dst(&self, val: CaptureDst);
 
     #[objc::msg_send(outputURL)]
     pub fn output_url(&self) -> Option<&ns::Url>;
 
     #[objc::msg_send(setOutputURL:)]
-    pub fn set_output_url(&mut self, value: Option<&ns::Url>);
+    pub fn set_output_url(&mut self, val: Option<&ns::Url>);
 }
 
 define_obj_type!(CaptureManager(ns::Id));

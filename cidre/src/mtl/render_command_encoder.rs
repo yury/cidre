@@ -167,10 +167,10 @@ impl RenderCmdEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
     #[objc::msg_send(setRenderPipelineState:)]
-    pub fn set_render_ps(&mut self, value: &mtl::RenderPipelineState);
+    pub fn set_render_ps(&mut self, val: &mtl::RenderPipelineState);
 
     #[objc::msg_send(setViewport:)]
-    pub fn set_vp(&mut self, viewport: mtl::ViewPort);
+    pub fn set_vp(&mut self, val: mtl::ViewPort);
 
     #[inline]
     pub fn set_vp_rect<F: Into<f64>>(&mut self, x: F, y: F, width: F, height: F) {
@@ -185,67 +185,59 @@ impl RenderCmdEncoder {
     }
 
     #[objc::msg_send(setTriangleFillMode:)]
-    pub fn set_triangle_fill_mode(&mut self, fill_mode: mtl::TriangleFillMode);
+    pub fn set_triangle_fill_mode(&mut self, val: mtl::TriangleFillMode);
 
     #[objc::msg_send(setFrontFacingWinding:)]
-    pub fn set_front_facing_winding(&mut self, font_facing_winding: mtl::Winding);
+    pub fn set_front_facing_winding(&mut self, val: mtl::Winding);
 
     #[objc::msg_send(setCullMode:)]
-    pub fn set_cull_mode(&mut self, cull_mode: mtl::CullMode);
+    pub fn set_cull_mode(&mut self, val: mtl::CullMode);
 
     #[objc::msg_send(setDepthStencilState:)]
-    pub fn set_depth_stencil_state(&mut self, depth_stencil_state: Option<&mtl::DepthStencilState>);
+    pub fn set_depth_stencil_state(&mut self, val: Option<&mtl::DepthStencilState>);
 
     #[objc::msg_send(setStencilReferenceValue:)]
-    pub fn set_stencil_reference_value(&mut self, reference_value: u32);
+    pub fn set_stencil_reference_value(&mut self, val: u32);
 
     #[objc::msg_send(setStencilFrontReferenceValue:backReferenceValue:)]
     pub fn set_stencil_front_back_reference_values(
         &mut self,
-        front_reference_value: u32,
-        back_reference_value: u32,
+        front_reference_val: u32,
+        back_reference_val: u32,
     );
 
     #[objc::msg_send(setVisibilityResultMode:offset:)]
-    pub fn set_visibility_result_mode(&mut self, mode: mtl::VisibilityResultMode, offset: usize);
+    pub fn set_visibility_result_mode(&mut self, val: mtl::VisibilityResultMode, offset: usize);
 
     #[objc::msg_send(setColorStoreAction:atIndex:)]
-    pub fn set_color_store_action(
-        &mut self,
-        store_action: mtl::StoreAction,
-        color_attachment_index: usize,
-    );
+    pub fn set_color_store_action_at(&mut self, val: mtl::StoreAction, index: usize);
 
     #[objc::msg_send(setDepthStoreAction:)]
-    pub fn set_depth_store_action(&mut self, store_action: mtl::StoreAction);
+    pub fn set_depth_store_action(&mut self, val: mtl::StoreAction);
 
     #[objc::msg_send(setStencilStoreAction:)]
-    pub fn set_stencil_store_action(&mut self, store_action: mtl::StoreAction);
+    pub fn set_stencil_store_action(&mut self, val: mtl::StoreAction);
 
     #[objc::msg_send(setVertexBytes:length:atIndex:)]
     pub fn set_vertex_bytes_at(
         &mut self,
         bytes: *const u8,
         length: ns::UInteger,
-        at_index: ns::UInteger,
+        index: ns::UInteger,
     );
 
     #[inline]
-    pub fn set_vertex_slice_at<T>(&mut self, slice: &[T], at_index: usize) {
-        self.set_vertex_bytes_at(
-            slice.as_ptr().cast(),
-            std::mem::size_of_val(slice),
-            at_index,
-        )
+    pub fn set_vertex_slice_at<T>(&mut self, slice: &[T], index: usize) {
+        self.set_vertex_bytes_at(slice.as_ptr().cast(), std::mem::size_of_val(slice), index)
     }
 
     #[inline]
-    pub fn set_vertex_arg_at<T>(&mut self, arg: &T, at_index: usize) {
-        self.set_vertex_bytes_at(arg as *const T as _, std::mem::size_of::<T>(), at_index)
+    pub fn set_vertex_arg_at<T>(&mut self, val: &T, index: usize) {
+        self.set_vertex_bytes_at(val as *const T as _, std::mem::size_of::<T>(), index)
     }
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
-    pub fn set_vertex_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
+    pub fn set_vertex_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, index: usize);
 
     /// Set the offset within the current global buffer for all vertex shaders at the given bind point index.
     ///
@@ -310,13 +302,13 @@ impl RenderCmdEncoder {
     }
 
     #[inline]
-    pub fn set_fragment_arg_at<T>(&mut self, value: &T, at_index: usize) {
-        self.set_fragment_bytes_at(value as *const T as _, std::mem::size_of::<T>(), at_index)
+    pub fn set_fragment_arg_at<T>(&mut self, val: &T, index: usize) {
+        self.set_fragment_bytes_at(val as *const T as _, std::mem::size_of::<T>(), index)
     }
 
     /// Set a global texture for all fragment shaders at the given bind point index.
     #[objc::msg_send(setFragmentTexture:atIndex:)]
-    pub fn set_fragment_texture_at(&mut self, texture: Option<&mtl::Texture>, at_index: usize);
+    pub fn set_fragment_texture_at(&mut self, val: Option<&mtl::Texture>, index: usize);
 
     #[objc::msg_send(setFragmentTextures:withRange:)]
     pub fn set_fragment_textures_with_range(
@@ -366,14 +358,6 @@ impl RenderCmdEncoder {
         instance_count: usize,
     );
 
-    // - (void)drawIndexedPrimitives:(MTLPrimitiveType)primitiveType
-    // indexCount:(NSUInteger)indexCount
-    // indexType:(MTLIndexType)indexType
-    // indexBuffer:(id <MTLBuffer>)indexBuffer
-    // indexBufferOffset:(NSUInteger)indexBufferOffset
-    // instanceCount:(NSUInteger)instanceCount
-    // baseVertex:(NSInteger)baseVertex
-    // baseInstance:(NSUInteger)baseInstance API_AVAILABLE(macos(10.11), ios(9.0));
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:baseVertex:baseInstance:)]
     pub fn draw_indexed_primitives_index_type_index_count_instance_count(
         &mut self,
@@ -436,7 +420,7 @@ impl RenderCmdEncoder {
     );
 
     #[objc::msg_send(dispatchThreadsPerTile:)]
-    pub fn dispatch_threads_per_tile(&self, threads_per_tile: mtl::Size);
+    pub fn dispatch_threads_per_tile(&self, val: mtl::Size);
 
     #[objc::msg_send(tileWidth)]
     pub fn tile_width(&self) -> usize;

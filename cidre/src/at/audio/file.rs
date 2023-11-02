@@ -339,11 +339,11 @@ impl FileID {
     pub fn set_prop<T: Sized>(
         &mut self,
         property_id: PropertyID,
-        value: &T,
+        val: &T,
     ) -> Result<(), os::Status> {
         let size = std::mem::size_of::<T>() as u32;
         unsafe {
-            self.set_property(property_id, size, value as *const T as _)
+            self.set_property(property_id, size, val as *const T as _)
                 .result()?;
         }
         Ok(())
@@ -387,8 +387,8 @@ impl FileID {
     }
 
     #[inline]
-    pub fn set_defer_size_updates(&mut self, value: bool) -> Result<(), os::Status> {
-        let v: u32 = value as _;
+    pub fn set_defer_size_updates(&mut self, val: bool) -> Result<(), os::Status> {
+        let v: u32 = val as _;
         self.set_prop(PropertyID::DEFER_SIZE_UPDATES, &v)
     }
 
@@ -419,8 +419,8 @@ impl FileID {
     }
 
     #[inline]
-    pub fn set_reserve_duration(&mut self, value: f64) -> Result<(), os::Status> {
-        self.set_prop(PropertyID::RESERVE_DURATION, &value)
+    pub fn set_reserve_duration(&mut self, val: f64) -> Result<(), os::Status> {
+        self.set_prop(PropertyID::RESERVE_DURATION, &val)
     }
 
     #[inline]

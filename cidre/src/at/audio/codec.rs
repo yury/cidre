@@ -830,10 +830,10 @@ impl Codec {
     pub unsafe fn set_prop<T: Sized>(
         &mut self,
         property_id: u32,
-        value: &T,
+        val: &T,
     ) -> Result<(), os::Status> {
         let size = std::mem::size_of::<T>() as u32;
-        unsafe { AudioCodecSetProperty(self, property_id, size, value as *const _ as _).result() }
+        unsafe { AudioCodecSetProperty(self, property_id, size, val as *const _ as _).result() }
     }
 
     #[inline]
@@ -852,8 +852,8 @@ impl Codec {
     }
 
     #[inline]
-    pub fn set_quality(&mut self, value: u32) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::QUALITY_SETTING.0, &value) }
+    pub fn set_quality(&mut self, val: u32) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstanceProperty::QUALITY_SETTING.0, &val) }
     }
 
     #[inline]
@@ -872,16 +872,13 @@ impl Codec {
     }
 
     #[inline]
-    pub fn set_bit_rate_control_mode(
-        &mut self,
-        value: BitRateControlMode,
-    ) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::BIT_RATE_CONTROL_MODE.0, &value) }
+    pub fn set_bit_rate_control_mode(&mut self, val: BitRateControlMode) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstanceProperty::BIT_RATE_CONTROL_MODE.0, &val) }
     }
 
     #[inline]
-    pub fn set_current_target_bit_rate(&mut self, value: u32) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::CURRENT_TARGET_BIT_RATE.0, &value) }
+    pub fn set_current_target_bit_rate(&mut self, val: u32) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstanceProperty::CURRENT_TARGET_BIT_RATE.0, &val) }
     }
 
     #[inline]
@@ -902,28 +899,28 @@ impl Codec {
     /// A f64 containing the current input sample rate in Hz. No Default.
     /// May be writable. If only one sample rate is supported it does not have to be.
     #[inline]
-    pub fn set_current_input_sample_rate(&mut self, value: f64) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::CURRENT_INPUT_SAMPLE_RATE.0, &value) }
+    pub fn set_current_input_sample_rate(&mut self, val: f64) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstanceProperty::CURRENT_INPUT_SAMPLE_RATE.0, &val) }
     }
 
     #[inline]
     pub fn current_input_sample_rate(&self) -> Result<f64, os::Status> {
-        let (mut size, mut value) = (8u32, 0f64);
+        let (mut size, mut val) = (8u32, 0f64);
         unsafe {
             AudioCodecGetProperty(
                 self,
                 InstanceProperty::CURRENT_INPUT_SAMPLE_RATE.0,
                 &mut size,
-                &mut value as *mut _ as _,
+                &mut val as *mut _ as _,
             )
             .result()?;
-            Ok(value)
+            Ok(val)
         }
     }
 
     #[inline]
-    pub fn set_current_output_sample_rate(&mut self, value: f64) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::CURRENT_OUTPUT_SAMPLE_RATE.0, &value) }
+    pub fn set_current_output_sample_rate(&mut self, val: f64) -> Result<(), os::Status> {
+        unsafe { self.set_prop(InstanceProperty::CURRENT_OUTPUT_SAMPLE_RATE.0, &val) }
     }
 
     /// A f64 containing the current output sample rate in Hz. No Default.
@@ -946,9 +943,9 @@ impl Codec {
     #[inline]
     pub fn set_current_input_channel_layout<const N: usize>(
         &mut self,
-        value: &audio::ChannelLayout<N>,
+        val: &audio::ChannelLayout<N>,
     ) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::CURRENT_INPUT_CHANNEL_LAYOUT.0, value) }
+        unsafe { self.set_prop(InstanceProperty::CURRENT_INPUT_CHANNEL_LAYOUT.0, val) }
     }
 
     #[inline]
@@ -979,9 +976,9 @@ impl Codec {
     #[inline]
     pub fn set_current_output_channel_layout<const N: usize>(
         &mut self,
-        value: &audio::ChannelLayout<N>,
+        val: &audio::ChannelLayout<N>,
     ) -> Result<(), os::Status> {
-        unsafe { self.set_prop(InstanceProperty::CURRENT_OUTPUT_CHANNEL_LAYOUT.0, value) }
+        unsafe { self.set_prop(InstanceProperty::CURRENT_OUTPUT_CHANNEL_LAYOUT.0, val) }
     }
 
     #[inline]

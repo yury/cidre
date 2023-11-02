@@ -1,40 +1,23 @@
-use crate::{
-    arc, define_cls, define_obj_type, ns,
-    objc::{self, Class},
-};
+use crate::{arc, define_obj_type, mtl, ns, objc};
 
-use super::{CounterSampleBuf, DispatchType};
-
-define_obj_type!(Desc(ns::Id));
-
-impl arc::A<Desc> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<Desc>;
-}
+define_obj_type!(Desc(ns::Id), MTL_COMPUTE_PASS_DESCRIPTOR);
 
 impl Desc {
-    define_cls!(MTL_COMPUTE_PASS_DESCRIPTOR);
-
-    #[inline]
-    pub fn new() -> arc::R<Self> {
-        Self::alloc().init()
-    }
-
     #[objc::msg_send(dispatchType)]
-    pub fn dispatch_type(&self) -> DispatchType;
+    pub fn dispatch_type(&self) -> mtl::DispatchType;
 
     #[objc::msg_send(setDispatchType:)]
-    pub fn set_dispatch_type(&mut self, value: DispatchType);
+    pub fn set_dispatch_type(&mut self, val: mtl::DispatchType);
 
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments(&self) -> &SampleBufAttachDescArray;
+    pub fn sample_buf_attaches(&self) -> &SampleBufAttachDescArray;
 
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buffer_attachments_mut(&mut self) -> &mut SampleBufAttachDescArray;
+    pub fn sample_buf_attaches_mut(&mut self) -> &mut SampleBufAttachDescArray;
 }
 
 extern "C" {
-    static MTL_COMPUTE_PASS_DESCRIPTOR: &'static Class<Desc>;
+    static MTL_COMPUTE_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 define_obj_type!(SampleBufAttachDescArray(ns::Id));
@@ -44,11 +27,11 @@ impl SampleBufAttachDescArray {
     pub fn get_at(&self, index: usize) -> Option<&SampleBufAttachDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, object: Option<&SampleBufAttachDesc>, index: usize);
+    pub fn set_object_at(&mut self, val: Option<&SampleBufAttachDesc>, index: usize);
 
     #[inline]
-    pub fn set_at(&mut self, index: usize, value: &SampleBufAttachDesc) {
-        self.set_object_at(Some(value), index)
+    pub fn set_at(&mut self, index: usize, val: &SampleBufAttachDesc) {
+        self.set_object_at(Some(val), index)
     }
 
     #[inline]
@@ -61,10 +44,10 @@ define_obj_type!(SampleBufAttachDesc(ns::Id));
 
 impl SampleBufAttachDesc {
     #[objc::msg_send(sampleBuffer)]
-    pub fn sample_buffer(&self) -> Option<&CounterSampleBuf>;
+    pub fn sample_buffer(&self) -> Option<&mtl::CounterSampleBuf>;
 
     #[objc::msg_send(setSampleBuffer:)]
-    pub fn set_sample_bufer(&mut self, value: Option<&CounterSampleBuf>);
+    pub fn set_sample_bufer(&mut self, val: Option<&mtl::CounterSampleBuf>);
 }
 
 #[cfg(test)]

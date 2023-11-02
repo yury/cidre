@@ -6,7 +6,7 @@ impl Animation {
     pub fn timing_fn(&self) -> Option<&ca::MediaTimingFn>;
 
     #[objc::msg_send(setTimingFunction:)]
-    pub fn set_timing_fn(&mut self, value: Option<&ca::MediaTimingFn>);
+    pub fn set_timing_fn(&mut self, val: Option<&ca::MediaTimingFn>);
 }
 
 #[link(name = "ca", kind = "static")]

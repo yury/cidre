@@ -8,8 +8,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_x(&mut self, value: T) {
-            self.0[0] = value;
+        pub fn set_x(&mut self, val: T) {
+            self.0[0] = val;
         }
 
         #[inline]
@@ -18,8 +18,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_r(&mut self, value: T) {
-            self.0[0] = value;
+        pub fn set_r(&mut self, val: T) {
+            self.0[0] = val;
         }
     };
     (y) => {
@@ -29,8 +29,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_y(&mut self, value: T) {
-            self.0[1] = value;
+        pub fn set_y(&mut self, val: T) {
+            self.0[1] = val;
         }
 
         #[inline]
@@ -39,8 +39,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_g(&mut self, value: T) {
-            self.0[1] = value;
+        pub fn set_g(&mut self, val: T) {
+            self.0[1] = val;
         }
     };
     (z) => {
@@ -50,8 +50,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_z(&mut self, value: T) {
-            self.0[2] = value;
+        pub fn set_z(&mut self, val: T) {
+            self.0[2] = val;
         }
 
         #[inline]
@@ -60,8 +60,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_b(&mut self, value: T) {
-            self.0[2] = value;
+        pub fn set_b(&mut self, val: T) {
+            self.0[2] = val;
         }
     };
     (w) => {
@@ -71,8 +71,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_w(&mut self, value: T) {
-            self.0[3] = value;
+        pub fn set_w(&mut self, val: T) {
+            self.0[3] = val;
         }
 
         #[inline]
@@ -81,8 +81,8 @@ macro_rules! accessors {
         }
 
         #[inline]
-        pub fn set_a(&mut self, value: T) {
-            self.0[3] = value;
+        pub fn set_a(&mut self, val: T) {
+            self.0[3] = val;
         }
     };
     (x, y) => {

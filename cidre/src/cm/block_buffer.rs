@@ -33,6 +33,7 @@ impl Flags {
 define_cf_type!(BlockBuf(cf::Type));
 // TODO: termporary...
 unsafe impl Send for BlockBuf {}
+unsafe impl Sync for BlockBuf {}
 
 impl BlockBuf {
     /// # Example

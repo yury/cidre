@@ -511,10 +511,10 @@ impl Converter {
     pub unsafe fn set_prop<T: Sized>(
         &mut self,
         property_id: PropertyID,
-        value: &T,
+        val: &T,
     ) -> Result<(), os::Status> {
         let size = size_of::<T>() as u32;
-        self.set_property(property_id, size, value as *const _ as _)
+        self.set_property(property_id, size, val as *const _ as _)
             .result()
     }
 
@@ -532,12 +532,12 @@ impl Converter {
     pub unsafe fn set_prop_vec<T: Sized>(
         &mut self,
         property_id: PropertyID,
-        value: Vec<T>,
+        val: Vec<T>,
     ) -> Result<(), os::Status> {
         self.set_property(
             property_id,
-            (value.len() * std::mem::size_of::<T>()) as u32,
-            value.as_ptr() as _,
+            (val.len() * std::mem::size_of::<T>()) as u32,
+            val.as_ptr() as _,
         )
         .result()?;
         Ok(())
@@ -601,8 +601,8 @@ impl Converter {
     }
 
     #[inline]
-    pub fn set_decompression_magic_cookie(&mut self, value: Vec<u8>) -> Result<(), os::Status> {
-        unsafe { self.set_prop_vec(PropertyID::DECOMPRESSION_MAGIC_COOKIE, value) }
+    pub fn set_decompression_magic_cookie(&mut self, val: Vec<u8>) -> Result<(), os::Status> {
+        unsafe { self.set_prop_vec(PropertyID::DECOMPRESSION_MAGIC_COOKIE, val) }
     }
 
     #[inline]
@@ -621,16 +621,16 @@ impl Converter {
     }
 
     #[inline]
-    pub fn set_encode_bit_rate(&mut self, value: u32) -> Result<(), os::Status> {
-        unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &value) }
+    pub fn set_encode_bit_rate(&mut self, val: u32) -> Result<(), os::Status> {
+        unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &val) }
     }
 
     pub fn prime_method(&self) -> Result<PrimeMethod, os::Status> {
         unsafe { self.prop(PropertyID::PRIME_METHOD) }
     }
 
-    pub fn set_prime_method(&mut self, value: PrimeMethod) -> Result<(), os::Status> {
-        unsafe { self.set_prop(PropertyID::PRIME_METHOD, &value) }
+    pub fn set_prime_method(&mut self, val: PrimeMethod) -> Result<(), os::Status> {
+        unsafe { self.set_prop(PropertyID::PRIME_METHOD, &val) }
     }
 
     ///
