@@ -23,7 +23,7 @@ impl MetalLayer {
     pub fn preferred_device(&self) -> Option<&mtl::Device>;
 
     #[objc::msg_send(setDevice:)]
-    pub fn set_device(&mut self, value: Option<&mtl::Device>);
+    pub fn set_device(&mut self, val: Option<&mtl::Device>);
 
     #[objc::msg_send(nextDrawable)]
     pub fn next_drawable(&self) -> Option<&AnyMetalDrawable>;

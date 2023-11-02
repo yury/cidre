@@ -46,7 +46,7 @@ impl Port {
     pub fn enabled(&self) -> bool;
 
     #[objc::msg_send(setEnabled:)]
-    pub fn set_enabled(&mut self, value: bool);
+    pub fn set_enabled(&mut self, val: bool);
 }
 
 pub mod port_notifications {

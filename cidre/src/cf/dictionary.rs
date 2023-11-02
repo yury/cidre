@@ -8,52 +8,51 @@ use cf::{Allocator, HashCode, Index, String, Type, TypeId};
 
 use std::{ffi::c_void, intrinsics::transmute, marker, ptr};
 
-pub type RetainCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type ReleaseCallBack = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
-pub type CopyDescCallBack = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
-pub type EqualCallBack = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
-pub type HashCallBack = extern "C" fn(value: *const c_void) -> HashCode;
+pub type RetainCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type ReleaseCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
+pub type CopyDescCb = extern "C" fn(value: *const c_void) -> Option<arc::R<String>>;
+pub type EqualCb = extern "C" fn(value1: *const c_void, value2: *const c_void) -> bool;
+pub type HashCb = extern "C" fn(value: *const c_void) -> HashCode;
 
 #[repr(C)]
-pub struct KeyCallBacks {
+pub struct KeyCbs {
     version: Index,
-    retain: RetainCallBack,
-    release: ReleaseCallBack,
-    copy_description: CopyDescCallBack,
-    equal: EqualCallBack,
-    hash: HashCallBack,
+    retain: RetainCb,
+    release: ReleaseCb,
+    copy_description: CopyDescCb,
+    equal: EqualCb,
+    hash: HashCb,
 }
 
-impl KeyCallBacks {
+impl KeyCbs {
     #[inline]
-    pub fn default() -> Option<&'static KeyCallBacks> {
+    pub fn default() -> Option<&'static KeyCbs> {
         unsafe { Some(&kCFTypeDictionaryKeyCallBacks) }
     }
 
     #[inline]
-    pub fn copy_strings() -> Option<&'static KeyCallBacks> {
+    pub fn copy_strings() -> Option<&'static KeyCbs> {
         unsafe { Some(&kCFCopyStringDictionaryKeyCallBacks) }
     }
 }
 
 #[repr(C)]
-pub struct ValueCallBacks {
+pub struct ValueCbs {
     version: Index,
-    retain: RetainCallBack,
-    release: ReleaseCallBack,
-    copy_descr: CopyDescCallBack,
-    equal: EqualCallBack,
+    retain: RetainCb,
+    release: ReleaseCb,
+    copy_descr: CopyDescCb,
+    equal: EqualCb,
 }
 
-impl ValueCallBacks {
+impl ValueCbs {
     #[inline]
-    pub fn default() -> Option<&'static ValueCallBacks> {
+    pub fn default() -> Option<&'static ValueCbs> {
         unsafe { Some(&kCFTypeDictionaryValueCallBacks) }
     }
 }
 
-pub type ApplierFunction =
-    extern "C" fn(key: *const c_void, value: *const c_void, context: *mut c_void);
+pub type ApplierFn = extern "C" fn(key: *const c_void, value: *const c_void, context: *mut c_void);
 
 define_cf_type!(Dictionary(Type));
 
@@ -71,8 +70,8 @@ impl Dictionary {
                 std::ptr::null(),
                 std::ptr::null(),
                 0,
-                KeyCallBacks::default(),
-                ValueCallBacks::default(),
+                KeyCbs::default(),
+                ValueCbs::default(),
             )
         }
     }
@@ -200,8 +199,8 @@ impl Dictionary {
                 keys.as_ptr() as _,
                 values.as_ptr() as _,
                 N as _,
-                KeyCallBacks::default(),
-                ValueCallBacks::default(),
+                KeyCbs::default(),
+                ValueCbs::default(),
             )
         }
     }
@@ -219,8 +218,8 @@ impl Dictionary {
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
-        key_callbacks: Option<&KeyCallBacks>,
-        value_callbacks: Option<&ValueCallBacks>,
+        key_callbacks: Option<&KeyCbs>,
+        value_callbacks: Option<&ValueCbs>,
     ) -> Option<arc::R<Dictionary>> {
         CFDictionaryCreate(
             allocator,
@@ -322,11 +321,11 @@ impl Default for arc::R<Dictionary> {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    static kCFTypeDictionaryKeyCallBacks: KeyCallBacks;
+    static kCFTypeDictionaryKeyCallBacks: KeyCbs;
 
-    static kCFCopyStringDictionaryKeyCallBacks: KeyCallBacks;
+    static kCFCopyStringDictionaryKeyCallBacks: KeyCbs;
 
-    static kCFTypeDictionaryValueCallBacks: ValueCallBacks;
+    static kCFTypeDictionaryValueCallBacks: ValueCbs;
 
     fn CFDictionaryGetTypeID() -> TypeId;
 
@@ -352,8 +351,8 @@ extern "C" {
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
-        key_callbacks: Option<&KeyCallBacks>,
-        value_callbacks: Option<&ValueCallBacks>,
+        key_callbacks: Option<&KeyCbs>,
+        value_callbacks: Option<&ValueCbs>,
     ) -> Option<arc::R<Dictionary>>;
 
     fn CFDictionaryGetKeysAndValues(
@@ -384,8 +383,8 @@ impl DictionaryMut {
             Self::create(
                 allocator,
                 capacity as _,
-                KeyCallBacks::default(),
-                ValueCallBacks::default(),
+                KeyCbs::default(),
+                ValueCbs::default(),
             )
         }
     }
@@ -393,8 +392,8 @@ impl DictionaryMut {
     pub unsafe fn create(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-        key_callbacks: Option<&KeyCallBacks>,
-        value_callbacks: Option<&ValueCallBacks>,
+        key_callbacks: Option<&KeyCbs>,
+        value_callbacks: Option<&ValueCbs>,
     ) -> Option<arc::R<Self>> {
         CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
     }
@@ -499,8 +498,8 @@ where
     K: arc::Retain,
     V: arc::Retain,
 {
-    pub fn insert(&mut self, key: &K, value: &V) {
-        unsafe { CFDictionarySetValue(&mut self.0, key as *const _ as _, value as *const _ as _) }
+    pub fn insert(&mut self, key: &K, val: &V) {
+        unsafe { CFDictionarySetValue(&mut self.0, key as *const _ as _, val as *const _ as _) }
     }
 
     pub fn remove(&mut self, key: &K) {
@@ -524,8 +523,8 @@ where
                 keys.as_ptr() as _,
                 values.as_ptr() as _,
                 N as _,
-                KeyCallBacks::default(),
-                ValueCallBacks::default(),
+                KeyCbs::default(),
+                ValueCbs::default(),
             );
 
             transmute(dict)
@@ -557,8 +556,8 @@ extern "C" {
     fn CFDictionaryCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,
-        key_callbacks: Option<&KeyCallBacks>,
-        value_callbacks: Option<&ValueCallBacks>,
+        key_callbacks: Option<&KeyCbs>,
+        value_callbacks: Option<&ValueCbs>,
     ) -> Option<arc::R<DictionaryMut>>;
 
     fn CFDictionaryAddValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);

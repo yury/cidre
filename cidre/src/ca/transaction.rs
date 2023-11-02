@@ -21,7 +21,7 @@ impl Transaction {
     pub fn disable_actions() -> bool;
 
     #[objc::cls_msg_send(setDisableActions:)]
-    pub fn set_disable_actions(value: bool);
+    pub fn set_disable_actions(val: bool);
 
     #[inline]
     pub fn perform<R, F: FnMut() -> R>(mut f: F) -> R {

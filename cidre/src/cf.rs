@@ -42,13 +42,13 @@ pub use array::ReleaseCb as ArrayReleaseCb;
 pub use array::RetainCb as ArrayRetainCb;
 
 pub mod dictionary;
-pub use dictionary::ApplierFunction as DictionaryApplierFunction;
+pub use dictionary::ApplierFn as DictionaryApplierFn;
 pub use dictionary::Dictionary;
 pub use dictionary::DictionaryMut;
 pub use dictionary::DictionaryOf;
 pub use dictionary::DictionaryOfMut;
-pub use dictionary::KeyCallBacks as DictionaryKeyCallBacks;
-pub use dictionary::ValueCallBacks as DictionaryValueCallBacks;
+pub use dictionary::KeyCbs as DictionaryKeyCbs;
+pub use dictionary::ValueCbs as DictionaryValueCbs;
 
 pub mod date;
 pub use date::absolute_time_current;

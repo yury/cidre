@@ -34,14 +34,14 @@ impl Renderer {
     pub fn layer(&self) -> Option<&ca::Layer>;
 
     #[objc::msg_send(setLayer:)]
-    pub fn set_layer(&mut self, value: Option<&ca::Layer>);
+    pub fn set_layer(&mut self, val: Option<&ca::Layer>);
 
     /// The bounds rect of the render target.
     #[objc::msg_send(bounds)]
     pub fn bounds(&self) -> cg::Rect;
 
     #[objc::msg_send(setBounds:)]
-    pub fn set_bounds(&mut self, value: cg::Rect);
+    pub fn set_bounds(&mut self, val: cg::Rect);
 
     #[objc::msg_send(beginFrameAtTime:timeStamp:)]
     pub fn begin_frame_at(&mut self, time_stamp: cf::TimeInterval, ts: Option<&cv::TimeStamp>);
@@ -62,7 +62,7 @@ impl Renderer {
     pub fn end_frame(&mut self);
 
     #[objc::msg_send(setDestination:)]
-    pub fn set_destination(&mut self, texture: &mtl::Texture);
+    pub fn set_dst(&mut self, val: &mtl::Texture);
 }
 
 #[link(name = "ca", kind = "static")]

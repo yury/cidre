@@ -61,7 +61,7 @@ impl DisplayLink {
     pub fn preferred_frame_rate_range(&self) -> ca::FrameRateRange;
 
     #[objc::msg_send(setPreferredFrameRateRange:)]
-    pub fn set_preferred_frame_rate_range(&self, value: ca::FrameRateRange);
+    pub fn set_preferred_frame_rate_range(&self, val: ca::FrameRateRange);
 }
 
 #[link(name = "ca", kind = "static")]
