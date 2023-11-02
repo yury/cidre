@@ -9,25 +9,25 @@ define_obj_type!(ShapedType(Type));
 #[doc(alias = "MPSGraphTensorNamedDataLayout")]
 pub enum TensorNamedDataLayout {
     /// LayoutNCHW
-    NCHW = 0,
+    Nchw = 0,
 
     /// LayoutNHWC
-    NHWC = 1,
+    Nhwc = 1,
 
     /// LayoutOIHW
-    OIHW = 2,
+    Oihw = 2,
 
     /// LayoutHWIO
-    HWIO = 3,
+    Hwio = 3,
 
     /// LayoutCHW
-    CHW = 4,
+    Chw = 4,
 
     /// LayoutHWC
-    HWC = 5,
+    Hwc = 5,
 
     /// LayoutHW
-    HW = 6,
+    Hw = 6,
 }
 
 #[doc(alias = "MPSGraphPaddingStyle")]

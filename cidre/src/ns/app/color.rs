@@ -2,6 +2,8 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(Color(ns::Id), NS_COLOR);
 
+impl Color {}
+
 unsafe impl Send for Color {}
 
 #[link(name = "app", kind = "static")]

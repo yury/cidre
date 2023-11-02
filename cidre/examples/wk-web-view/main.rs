@@ -16,13 +16,9 @@ impl ns::ApplicationDelegate for AppDelegate {}
 #[objc::add_methods]
 impl ns::ApplicationDelegateImpl for AppDelegate {}
 
-pub struct Inner {
-    web_view: arc::R<wk::WebView>,
-}
-
 define_obj_type!(
     NavDelegate + wk::NavigationDelegateImpl,
-    Inner,
+    arc::R<wk::WebView>,
     NAV_DELEGATE_CLS
 );
 
@@ -66,16 +62,14 @@ impl NavDelegate {
     fn new() -> arc::R<Self> {
         let mut web_view = wk::WebView::new();
         web_view.set_inpectable(true);
-        let res = Self::with(Inner {
-            web_view: web_view.retained(),
-        });
+        let res = Self::with(web_view.retained());
         web_view.set_nav_delegate(Some(res.as_ref()));
 
         res
     }
 
     fn load(&mut self, request: &ns::UrlRequest) {
-        self.inner_mut().web_view.load_request(request);
+        self.inner_mut().load_request(request);
     }
 
     extern "C" fn start_on_main(_ctx: *mut c_void) {
