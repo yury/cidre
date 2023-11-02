@@ -7,3 +7,6 @@ pub use device::UserInterfaceIdiom;
 
 mod view;
 pub use view::View;
+
+mod color;
+pub use color::Color;

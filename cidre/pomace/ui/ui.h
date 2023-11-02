@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class UI_DEVICE;
 Class UI_VIEW;
+Class UI_COLOR;
 
 __attribute__((constructor))
 static void ui_initializer(void)
@@ -22,6 +23,7 @@ static void ui_initializer(void)
     if (!initialized) {
         UI_DEVICE = [UIDevice class];
         UI_VIEW = [UIView class];
+        UI_COLOR = [UIColor class];
         
         initialized = 1;
     }

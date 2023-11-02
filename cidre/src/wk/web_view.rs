@@ -1,10 +1,10 @@
 use crate::{arc, blocks, define_obj_type, ns, objc, wk};
 
-#[cfg(target_os = "macos")]
-define_obj_type!(WebView(ns::View), WK_WEB_VIEW);
-
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "ios")]
 define_obj_type!(WebView(crate::ui::View), WK_WEB_VIEW);
+
+#[cfg(not(target_os = "ios"))]
+define_obj_type!(WebView(ns::View), WK_WEB_VIEW);
 
 impl WebView {
     #[objc::msg_send(loadRequest:)]
@@ -25,6 +25,18 @@ impl WebView {
 
     #[objc::msg_send(setInspectable:)]
     pub fn set_inpectable(&self, value: bool);
+
+    #[objc::msg_send(URL)]
+    pub fn url(&self) -> Option<&ns::Url>;
+
+    #[objc::msg_send(isLoading)]
+    pub fn is_loading(&self) -> bool;
+
+    #[objc::msg_send(estimatedProgress)]
+    pub fn estimated_progress(&self) -> f64;
+
+    #[objc::msg_send(stopLoading)]
+    pub fn stop_loading(&mut self);
 
     #[objc::msg_send(evaluateJavaScript:completionHandler:)]
     fn _eval_js_completion(&mut self, js: &ns::String, block: *mut std::ffi::c_void);
