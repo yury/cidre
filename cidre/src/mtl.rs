@@ -272,7 +272,7 @@ macro_rules! define_mtl {
 
     (set_label) => {
         #[$crate::objc::msg_send(setLabel:)]
-        pub fn set_label(&mut self, value: Option<&crate::ns::String>);
+        pub fn set_label(&mut self, val: Option<&crate::ns::String>);
     };
 
     (label) => {
@@ -287,7 +287,7 @@ macro_rules! define_mtl {
 
     (set_width) => {
         #[$crate::objc::msg_send(setWidth:)]
-        pub fn set_width(&mut self, value: usize);
+        pub fn set_width(&mut self, val: usize);
     };
 
     (height) => {
@@ -297,7 +297,7 @@ macro_rules! define_mtl {
 
     (set_height) => {
         #[$crate::objc::msg_send(setHeight:)]
-        pub fn set_height(&mut self, value: usize);
+        pub fn set_height(&mut self, val: usize);
     };
 
     (depth) => {
@@ -307,7 +307,7 @@ macro_rules! define_mtl {
 
     (set_depth) => {
         #[$crate::objc::msg_send(setDepth:)]
-        pub fn set_depth(&mut self, value: usize);
+        pub fn set_depth(&mut self, val: usize);
     };
 
     (gpu_resource_id) => {
@@ -362,7 +362,7 @@ macro_rules! define_mtl {
 
     (set_storage_mode) => {
         #[$crate::objc::msg_send(setStorageMode:)]
-        pub fn set_storage_mode(&mut self, value: crate::mtl::StorageMode);
+        pub fn set_storage_mode(&mut self, val: crate::mtl::StorageMode);
     };
 
     (cpu_cache_mode) => {
@@ -372,7 +372,7 @@ macro_rules! define_mtl {
 
     (set_cpu_cache_mode) => {
         #[$crate::objc::msg_send(setCpuCacheMode:)]
-        pub fn set_cpu_cache_mode(&mut self, value: crate::mtl::CpuCacheMode);
+        pub fn set_cpu_cache_mode(&mut self, val: crate::mtl::CpuCacheMode);
     };
 
     (hazard_tracking_mode) => {
@@ -382,7 +382,7 @@ macro_rules! define_mtl {
 
     (set_hazard_tracking_mode) => {
         #[$crate::objc::msg_send(setHazardTrackingMode:)]
-        pub fn set_hazard_tracking_mode(&mut self, value: crate::mtl::HazardTrackingMode);
+        pub fn set_hazard_tracking_mode(&mut self, val: crate::mtl::HazardTrackingMode);
     };
 
     (resource_options) => {
@@ -392,7 +392,7 @@ macro_rules! define_mtl {
 
     (set_resource_options) => {
         #[$crate::objc::msg_send(setResourceOptions:)]
-        pub fn set_resource_options(&mut self, value: crate::mtl::ResourceOptions);
+        pub fn set_resource_options(&mut self, val: crate::mtl::ResourceOptions);
     };
 
     (reset) => {

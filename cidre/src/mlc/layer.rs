@@ -9,13 +9,13 @@ impl Layer {
     pub fn label(&self) -> &ns::String;
 
     #[objc::msg_send(setLabel:)]
-    pub fn set_label(&mut self, value: &ns::String);
+    pub fn set_label(&mut self, val: &ns::String);
 
     #[objc::msg_send(isDebuggingEnabled)]
     pub fn is_debug_enabled(&self) -> bool;
 
     #[objc::msg_send(setIsDebuggingEnabled:)] // TODO: check setter signature
-    pub fn set_debug_enabled(&mut self, value: bool);
+    pub fn set_debug_enabled(&mut self, val: bool);
 
     #[objc::msg_send(deviceType)]
     pub fn device_type(&self) -> mlc::DeviceType;

@@ -3,6 +3,7 @@ use std::time::Duration;
 use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(MemoryPool(cf::Type));
+unsafe impl Send for MemoryPool {}
 
 /// Memory pool for optimizing repeated large block allocation.
 ///

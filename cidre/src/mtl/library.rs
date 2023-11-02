@@ -133,31 +133,31 @@ impl CompileOpts {
     pub fn fast_math_enabled(&self) -> bool;
 
     #[objc::msg_send(setFastMathEnabled:)]
-    pub fn set_fast_math_enabled(&mut self, value: bool);
+    pub fn set_fast_math_enabled(&mut self, val: bool);
 
     #[objc::msg_send(languageVersion)]
     pub fn lang_version(&self) -> LangVersion;
 
     #[objc::msg_send(setLanguageVersion:)]
-    pub fn set_lang_version(&mut self, value: LangVersion);
+    pub fn set_lang_version(&mut self, val: LangVersion);
 
     #[objc::msg_send(compileSymbolVisibility)]
     pub fn compile_symbol_visibility(&self) -> CompileSymbolVisibility;
 
     #[objc::msg_send(setCompileSymbolVisibility:)]
-    pub fn set_compile_symbol_visibility(&mut self, value: CompileSymbolVisibility);
+    pub fn set_compile_symbol_visibility(&mut self, val: CompileSymbolVisibility);
 
     #[objc::msg_send(allowReferencingUndefinedSymbols)]
     pub fn allow_referencing_undefined_symbols(&self) -> bool;
 
     #[objc::msg_send(setAllowReferencingUndefinedSymbols:)]
-    pub fn set_allow_referencing_undefined_symbols(&mut self, value: bool);
+    pub fn set_allow_referencing_undefined_symbols(&mut self, val: bool);
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
 
     #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
-    pub fn set_max_total_threads_per_threadgroup(&mut self, value: usize);
+    pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
 }
 
 define_obj_type!(Fn(ns::Id));

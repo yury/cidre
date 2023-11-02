@@ -21,8 +21,8 @@ impl Buf {
     }
 
     #[inline]
-    pub fn set_attach(&mut self, key: &cf::String, value: &cf::Type, attachment_mode: AttachMode) {
-        unsafe { CVBufferSetAttachment(self, key, value, attachment_mode) }
+    pub fn set_attach(&mut self, key: &cf::String, val: &cf::Type, attachment_mode: AttachMode) {
+        unsafe { CVBufferSetAttachment(self, key, val, attachment_mode) }
     }
 
     #[inline]
@@ -36,8 +36,8 @@ impl Buf {
     }
 
     #[inline]
-    pub fn set_attaches(&mut self, the_attachments: &cf::Dictionary, attachment_mode: AttachMode) {
-        unsafe { CVBufferSetAttachments(self, the_attachments, attachment_mode) }
+    pub fn set_attaches(&mut self, attachments: &cf::Dictionary, attachment_mode: AttachMode) {
+        unsafe { CVBufferSetAttachments(self, attachments, attachment_mode) }
     }
 
     #[inline]

@@ -11,7 +11,7 @@ impl TensorParameter {
     pub fn is_updatable(&self) -> bool;
 
     #[objc::msg_send(setUpdatable:)]
-    pub fn set_updatable(&mut self, value: bool);
+    pub fn set_updatable(&mut self, val: bool);
 
     #[objc::cls_msg_send(parameterWithTensor:)]
     pub fn with_tensor(tensor: &mlc::Tensor) -> arc::Rar<Self>;

@@ -67,8 +67,8 @@ fn make_conv(
         p,
         p,
         graph::PaddingStyle::Explicit,
-        graph::TensorNamedDataLayout::NHWC,
-        graph::TensorNamedDataLayout::OIHW,
+        graph::TensorNamedDataLayout::Nhwc,
+        graph::TensorNamedDataLayout::Oihw,
     )
     .unwrap();
 
@@ -102,7 +102,7 @@ fn make_upsample_nearest(
         graph::ResizeMode::Nearest,
         true,
         false,
-        graph::TensorNamedDataLayout::NHWC,
+        graph::TensorNamedDataLayout::Nhwc,
         None,
     )
 }

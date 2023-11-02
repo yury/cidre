@@ -609,7 +609,7 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_focus_mode_locked_with_lens_position_throws(value, block.as_ptr())
+            .set_focus_mode_locked_with_lens_position_throws(value, block.as_mut_ptr())
     }
 
     #[cfg(feature = "blocks")]
@@ -624,7 +624,7 @@ impl<'a> ConfigLockGuard<'a> {
     {
         ns::try_catch(|| unsafe {
             self.device
-                .set_focus_mode_locked_with_lens_position_throws(value, block.as_ptr())
+                .set_focus_mode_locked_with_lens_position_throws(value, block.as_mut_ptr())
         })
     }
 
@@ -1067,7 +1067,11 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, block.as_ptr())
+            .set_exposure_mode_custom_with_duration_and_iso_throws(
+                duration,
+                iso,
+                block.as_mut_ptr(),
+            )
     }
 
     #[cfg(feature = "blocks")]
@@ -1086,7 +1090,7 @@ impl<'a> ConfigLockGuard<'a> {
                 .set_exposure_mode_custom_with_duration_and_iso_throws(
                     duration,
                     iso,
-                    block.as_ptr(),
+                    block.as_mut_ptr(),
                 )
         })
     }
@@ -1138,7 +1142,7 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_exposure_target_bias_throws(bias, block.as_ptr())
+            .set_exposure_target_bias_throws(bias, block.as_mut_ptr())
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1159,7 +1163,7 @@ impl<'a> ConfigLockGuard<'a> {
     {
         ns::try_catch(|| unsafe {
             self.device
-                .set_exposure_target_bias_throws(bias, block.as_ptr())
+                .set_exposure_target_bias_throws(bias, block.as_mut_ptr())
         })
     }
 
@@ -1340,7 +1344,7 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, block.as_ptr())
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, block.as_mut_ptr())
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]

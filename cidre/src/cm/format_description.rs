@@ -126,6 +126,7 @@ impl VideoCodec {
 }
 
 define_cf_type!(FormatDesc(cf::Type));
+unsafe impl Send for FormatDesc {}
 
 impl FormatDesc {
     #[inline]

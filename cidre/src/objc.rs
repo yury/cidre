@@ -104,6 +104,7 @@ pub trait Obj: Sized + arc::Retain {
     #[msg_send(isKindOfClass:)]
     fn is_kind_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
+    #[inline]
     fn try_cast<T: Obj>(&self, cls: &crate::objc::Class<T>) -> Option<&T> {
         if self.is_kind_of_class(cls) {
             Some(unsafe { std::mem::transmute(self) })

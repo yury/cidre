@@ -9,19 +9,19 @@ impl Optimizer {
     pub fn learning_rate(&self) -> f32;
 
     #[objc::msg_send(setLearningRate:)]
-    pub fn set_learning_rate(&mut self, value: f32);
+    pub fn set_learning_rate(&mut self, val: f32);
 
     #[objc::msg_send(gradientRescale)]
     pub fn grad_rescale(&self) -> f32;
 
     #[objc::msg_send(setGradientRescale:)]
-    pub fn set_grad_rescale(&mut self, value: f32);
+    pub fn set_grad_rescale(&mut self, val: f32);
 
     #[objc::msg_send(appliesGradientClipping)]
     pub fn applies_grad_clipping(&self) -> f32;
 
     #[objc::msg_send(setAppliesGradientClipping:)]
-    pub fn set_applies_grad_clipping(&mut self, value: f32);
+    pub fn set_applies_grad_clipping(&mut self, val: f32);
 
     #[objc::msg_send(gradientClipMax)]
     pub fn grad_clip_max(&self) -> f32;

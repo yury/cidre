@@ -22,7 +22,7 @@ impl SingleGateRNNDesc {
     pub fn reverse(&self) -> bool;
 
     #[objc::msg_send(setReverse:)]
-    pub fn set_reverse(&mut self, value: bool);
+    pub fn set_reverse(&mut self, val: bool);
 
     /// If set then the input sequence is traversed in both directions and the two results
     /// are concatenated together on the channel-axis.
@@ -31,7 +31,7 @@ impl SingleGateRNNDesc {
     pub fn bidirectional(&self) -> bool;
 
     #[objc::msg_send(setBidirectional:)]
-    pub fn set_bidirectional(&mut self, value: bool);
+    pub fn set_bidirectional(&mut self, val: bool);
 
     /// If set then the layer will produce training state tensor as a secondary output.
     /// Default value `false`
@@ -39,7 +39,7 @@ impl SingleGateRNNDesc {
     pub fn training(&self) -> bool;
 
     #[objc::msg_send(setTraining:)]
-    pub fn set_training(&mut self, value: bool);
+    pub fn set_training(&mut self, val: bool);
 
     /// Activation function to use with the RNN op.
     /// Default value `None`
@@ -47,7 +47,7 @@ impl SingleGateRNNDesc {
     pub fn activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setActivation:)]
-    pub fn set_activation(&mut self, value: RNNActivation);
+    pub fn set_activation(&mut self, val: RNNActivation);
 }
 define_obj_type!(LSTMDesc(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
 impl LSTMDesc {
@@ -55,61 +55,61 @@ impl LSTMDesc {
     pub fn reverse(&self) -> bool;
 
     #[objc::msg_send(setReverse:)]
-    pub fn set_reverse(&mut self, value: bool);
+    pub fn set_reverse(&mut self, val: bool);
 
     #[objc::msg_send(bidirectional)]
     pub fn bidirectional(&self) -> bool;
 
     #[objc::msg_send(setBidirectional:)]
-    pub fn set_bidirectional(&mut self, value: bool);
+    pub fn set_bidirectional(&mut self, val: bool);
 
     #[objc::msg_send(produceCell)]
     pub fn produce_cell(&self) -> bool;
 
     #[objc::msg_send(setProduceCell:)]
-    pub fn set_produce_cell(&mut self, value: bool);
+    pub fn set_produce_cell(&mut self, val: bool);
 
     #[objc::msg_send(training)]
     pub fn training(&self) -> bool;
 
     #[objc::msg_send(setTraining:)]
-    pub fn set_training(&mut self, value: bool);
+    pub fn set_training(&mut self, val: bool);
 
     #[objc::msg_send(forgetGateLast)]
     pub fn forget_gate_last(&self) -> bool;
 
     #[objc::msg_send(setForgetGateLast:)]
-    pub fn set_forget_gate_last(&mut self, value: bool);
+    pub fn set_forget_gate_last(&mut self, val: bool);
 
     #[objc::msg_send(inputGateActivation)]
     pub fn input_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setInputGateActivation:)]
-    pub fn set_input_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_input_gate_activation(&mut self, val: RNNActivation);
 
     #[objc::msg_send(forgetGateActivation)]
     pub fn forget_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setForgetGateActivation:)]
-    pub fn set_forget_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_forget_gate_activation(&mut self, val: RNNActivation);
 
     #[objc::msg_send(cellGateActivation)]
     pub fn cell_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setCellGateActivation:)]
-    pub fn set_cell_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_cell_gate_activation(&mut self, val: RNNActivation);
 
     #[objc::msg_send(outputGateActivation)]
     pub fn output_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setOutputGateActivation:)]
-    pub fn set_output_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_output_gate_activation(&mut self, val: RNNActivation);
 
     #[objc::msg_send(activation)]
     pub fn activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setActivation:)]
-    pub fn set_activation(&mut self, value: RNNActivation);
+    pub fn set_activation(&mut self, val: RNNActivation);
 }
 
 define_obj_type!(GRUDescr(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
@@ -118,50 +118,50 @@ impl GRUDescr {
     pub fn reverse(&self) -> bool;
 
     #[objc::msg_send(setReverse:)]
-    pub fn set_reverse(&mut self, value: bool);
+    pub fn set_reverse(&mut self, val: bool);
 
     #[objc::msg_send(bidirectional)]
     pub fn bidirectional(&self) -> bool;
 
     #[objc::msg_send(setBidirectional:)]
-    pub fn set_bidirectional(&mut self, value: bool);
+    pub fn set_bidirectional(&mut self, val: bool);
 
     #[objc::msg_send(training)]
     pub fn training(&self) -> bool;
 
     #[objc::msg_send(setTraining:)]
-    pub fn set_training(&mut self, value: bool);
+    pub fn set_training(&mut self, val: bool);
 
     /// If set then the layer will use the gate-ordering `[ r, z, o ]` instead of default `[ z, r, o ]`.
     #[objc::msg_send(resetGateFirst)]
     pub fn reset_gate_first(&self) -> bool;
 
     #[objc::msg_send(setResetGateFirst:)]
-    pub fn set_reset_gate_first(&mut self, value: bool);
+    pub fn set_reset_gate_first(&mut self, val: bool);
 
     #[objc::msg_send(resetAfter)]
     pub fn reset_after(&self) -> bool;
 
     #[objc::msg_send(setResetAfter:)]
-    pub fn set_reset_after(&mut self, value: bool);
+    pub fn set_reset_after(&mut self, val: bool);
 
     #[objc::msg_send(updateGateActivation)]
     pub fn update_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setUpdateGateActivation:)]
-    pub fn set_update_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_update_gate_activation(&mut self, val: RNNActivation);
 
     #[objc::msg_send(resetGateActivation)]
     pub fn reset_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setResetGateActivation:)]
-    pub fn set_reset_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_reset_gate_activation(&mut self, val: RNNActivation);
 
     #[objc::msg_send(outputGateActivation)]
     pub fn output_gate_activation(&self) -> RNNActivation;
 
     #[objc::msg_send(setOutputGateActivation:)]
-    pub fn set_output_gate_activation(&mut self, value: RNNActivation);
+    pub fn set_output_gate_activation(&mut self, val: RNNActivation);
 }
 
 impl graph::Graph {

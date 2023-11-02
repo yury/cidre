@@ -126,7 +126,7 @@ impl Desc {
     pub fn depth_attach_mut(&mut self) -> &mut DepthAttachDesc;
 
     #[objc::msg_send(setDepthAttachment:)]
-    pub fn set_depth_attach(&mut self, value: Option<&DepthAttachDesc>);
+    pub fn set_depth_attach(&mut self, val: Option<&DepthAttachDesc>);
 
     #[objc::msg_send(stencilAttachment)]
     pub fn stencil_attach(&self) -> &StencilAttachDesc;
@@ -135,46 +135,46 @@ impl Desc {
     pub fn stencil_attach_mut(&mut self) -> &mut StencilAttachDesc;
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attach_option(&mut self, value: Option<&StencilAttachDesc>);
+    pub fn set_stencil_attach_option(&mut self, val: Option<&StencilAttachDesc>);
 
     #[objc::msg_send(setStencilAttachment:)]
-    pub fn set_stencil_attach(&mut self, value: &StencilAttachDesc);
+    pub fn set_stencil_attach(&mut self, val: &StencilAttachDesc);
 
     #[objc::msg_send(tileWidth)]
     pub fn tile_width(&self) -> usize;
 
     #[objc::msg_send(setTileWidth:)]
-    pub fn set_tile_width(&mut self, value: usize);
+    pub fn set_tile_width(&mut self, val: usize);
 
     #[objc::msg_send(tileHeight)]
     pub fn tile_height(&self) -> usize;
 
     #[objc::msg_send(setTileHeight:)]
-    pub fn set_tile_height(&mut self, value: usize);
+    pub fn set_tile_height(&mut self, val: usize);
 
     #[objc::msg_send(renderTargetWidth)]
     pub fn render_target_width(&self) -> usize;
 
     #[objc::msg_send(setRenderTargetWidth:)]
-    pub fn set_render_target_width(&mut self, value: usize);
+    pub fn set_render_target_width(&mut self, val: usize);
 
     #[objc::msg_send(renderTargetHeight)]
     pub fn render_target_height(&self) -> usize;
 
     #[objc::msg_send(setRenderTargetHeight:)]
-    pub fn set_render_target_height(&mut self, value: usize);
+    pub fn set_render_target_height(&mut self, val: usize);
 
     #[objc::msg_send(defaultRasterSampleCount)]
     pub fn default_raster_sample_count(&self) -> usize;
 
     #[objc::msg_send(setDefaultRasterSampleCount:)]
-    pub fn set_default_raster_sample_count(&mut self, value: usize);
+    pub fn set_default_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(imageblockSampleLength)]
     pub fn imageblock_sample_length(&self);
 
     #[objc::msg_send(setImageblockSampleLength:)]
-    pub fn set_imageblock_sample_length(&self, value: usize);
+    pub fn set_imageblock_sample_length(&self, val: usize);
 }
 
 define_obj_type!(ColorAttachDescArray(ns::Id));
@@ -211,67 +211,67 @@ impl AttachDesc {
     pub fn texture(&self) -> Option<&mtl::Texture>;
 
     #[objc::msg_send(setTexture:)]
-    pub fn set_texture(&mut self, value: Option<&mtl::Texture>);
+    pub fn set_texture(&mut self, val: Option<&mtl::Texture>);
 
     #[objc::msg_send(level)]
     pub fn level(&self) -> usize;
 
     #[objc::msg_send(setLevel:)]
-    pub fn set_level(&mut self, value: usize);
+    pub fn set_level(&mut self, val: usize);
 
     #[objc::msg_send(slice)]
     pub fn slice(&self) -> usize;
 
     #[objc::msg_send(setSlice:)]
-    pub fn set_slice(&mut self, value: usize);
+    pub fn set_slice(&mut self, val: usize);
 
     #[objc::msg_send(depthPlane)]
     pub fn depth_plane(&self) -> usize;
 
     #[objc::msg_send(setDepthPlane:)]
-    pub fn set_depth_plane(&mut self, value: usize);
+    pub fn set_depth_plane(&mut self, val: usize);
 
     #[objc::msg_send(resolveTexture)]
     pub fn resolve_texture(&self) -> Option<&mtl::Texture>;
 
     #[objc::msg_send(setResolveTexture:)]
-    pub fn set_resolve_texture(&mut self, value: Option<&mtl::Texture>);
+    pub fn set_resolve_texture(&mut self, val: Option<&mtl::Texture>);
 
     #[objc::msg_send(resolveLevel)]
     pub fn resolve_level(&self) -> usize;
 
     #[objc::msg_send(setResolveLevel:)]
-    pub fn set_resolve_level(&mut self, value: usize);
+    pub fn set_resolve_level(&mut self, val: usize);
 
     #[objc::msg_send(resolveSlice)]
     pub fn resolve_slice(&self) -> usize;
 
     #[objc::msg_send(setResolveSlice:)]
-    pub fn set_resolve_slice(&mut self, value: usize);
+    pub fn set_resolve_slice(&mut self, val: usize);
 
     #[objc::msg_send(resolveDepthPlane)]
     pub fn resolve_depth_plane(&self) -> usize;
 
     #[objc::msg_send(setResolveDepthPlane:)]
-    pub fn set_resolve_depth_plane(&mut self, value: usize);
+    pub fn set_resolve_depth_plane(&mut self, val: usize);
 
     #[objc::msg_send(loadAction)]
     pub fn load_action(&self) -> LoadAction;
 
     #[objc::msg_send(setLoadAction:)]
-    pub fn set_load_action(&mut self, value: LoadAction);
+    pub fn set_load_action(&mut self, val: LoadAction);
 
     #[objc::msg_send(storeAction)]
     pub fn store_action(&self) -> StoreAction;
 
     #[objc::msg_send(setStoreAction:)]
-    pub fn set_store_action(&mut self, value: StoreAction);
+    pub fn set_store_action(&mut self, val: StoreAction);
 
     #[objc::msg_send(storeActionOptions)]
     pub fn store_action_options(&self) -> StoreActionOpts;
 
     #[objc::msg_send(setStoreActionOptions:)]
-    pub fn set_store_action_options(&mut self, value: StoreActionOpts);
+    pub fn set_store_action_options(&mut self, val: StoreActionOpts);
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -285,7 +285,7 @@ impl ColorAttachDesc {
     pub fn clear_color(&self) -> ClearColor;
 
     #[objc::msg_send(setClearColor:)]
-    pub fn set_clear_color(&mut self, value: ClearColor);
+    pub fn set_clear_color(&mut self, val: ClearColor);
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -302,11 +302,11 @@ impl DepthAttachDesc {
     pub fn clear_depth(&self) -> f64;
 
     #[objc::msg_send(setClearDepth:)]
-    pub fn set_clear_depth(&mut self, value: f64);
+    pub fn set_clear_depth(&mut self, val: f64);
 
     #[objc::msg_send(depthResolveFilter)]
     pub fn depth_resolve_filter(&self) -> MultisampleDepthResolveFilter;
 
     #[objc::msg_send(setDepthResolveFilter:)]
-    pub fn set_depth_resolve_filter(&mut self, value: MultisampleDepthResolveFilter);
+    pub fn set_depth_resolve_filter(&mut self, val: MultisampleDepthResolveFilter);
 }

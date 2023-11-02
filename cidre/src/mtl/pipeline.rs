@@ -16,7 +16,7 @@ impl PipelineBufDesc {
     pub fn mutability(&self) -> Mutability;
 
     #[objc::msg_send(setMutability:)]
-    pub fn set_mutability(&mut self, value: Mutability);
+    pub fn set_mutability(&mut self, val: Mutability);
 }
 
 define_obj_type!(PipelineBufDescArray(ns::Id));
@@ -28,7 +28,7 @@ impl PipelineBufDescArray {
     pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_obj_at(&mut self, buffer: Option<&PipelineBufDesc>, at_index: usize);
+    pub fn set_obj_at(&mut self, buf: Option<&PipelineBufDesc>, at_index: usize);
 }
 
 impl std::ops::Index<usize> for PipelineBufDescArray {

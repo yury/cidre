@@ -20,7 +20,7 @@ impl Tensor {
     pub fn label(&self) -> &ns::String;
 
     #[objc::msg_send(setLabel:)]
-    pub fn set_label(&mut self, value: &ns::String);
+    pub fn set_label(&mut self, val: &ns::String);
 
     #[objc::msg_send(device)]
     pub fn device(&self) -> Option<&mlc::Device>;
