@@ -83,12 +83,12 @@ impl ComputeCmdEncoder {
     #[objc::msg_send(setVisibleFunctionTable:atBufferIndex:)]
     pub fn set_visible_fn_table_at(
         &mut self,
-        visible_fn_table: Option<&mtl::VisibleFnTable>,
+        val: Option<&mtl::VisibleFnTable>,
         at_buffer_index: usize,
     );
 
     #[objc::msg_send(setTexture:atIndex:)]
-    pub fn set_texture_at(&mut self, texture: Option<&mtl::Texture>, index: usize);
+    pub fn set_texture_at(&mut self, val: Option<&mtl::Texture>, index: usize);
 
     #[objc::msg_send(setTextures:withRange:)]
     pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range);

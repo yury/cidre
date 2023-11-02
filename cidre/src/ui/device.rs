@@ -117,7 +117,7 @@ impl Device {
     pub fn is_proximity_monitoring_enabled(&self) -> bool;
 
     #[objc::msg_send(setProximityMonitoringEnabled:)]
-    pub fn set_proximity_monitoring_enabled(&self, value: bool);
+    pub fn set_proximity_monitoring_enabled(&self, val: bool);
 
     #[objc::msg_send(batteryLevel)]
     pub fn battery_level(&self) -> f32;
@@ -129,7 +129,7 @@ impl Device {
     pub fn is_battery_monitoring_enabled(&self) -> bool;
 
     #[objc::msg_send(setBatteryMonitoringEnabled:)]
-    pub fn set_battery_monitoring_enabled(&self, value: bool);
+    pub fn set_battery_monitoring_enabled(&self, val: bool);
 
     #[objc::msg_send(identifierForVendor)]
     pub fn identifier_for_vendor(&self) -> Option<&ns::UUID>;

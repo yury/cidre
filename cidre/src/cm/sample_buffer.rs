@@ -241,8 +241,8 @@ impl SampleBuf {
     }
 
     #[inline]
-    pub fn set_data_buf(&mut self, data_buffer: &cm::BlockBuf) -> Result<(), os::Status> {
-        unsafe { CMSampleBufferSetDataBuffer(self, data_buffer).result() }
+    pub fn set_data_buf(&mut self, val: &cm::BlockBuf) -> Result<(), os::Status> {
+        unsafe { CMSampleBufferSetDataBuffer(self, val).result() }
     }
 
     /// Returns the output duration of a sample buffer.
@@ -707,7 +707,7 @@ pub mod buffer_attachment_keys {
         unsafe { kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed }
     }
 
-    /// CFNumber (ResumeTag)
+    /// 'cf::Number' (ResumeTag)
     #[inline]
     pub fn resume_output() -> &'static cf::String {
         unsafe { kCMSampleBufferAttachmentKey_ResumeOutput }
