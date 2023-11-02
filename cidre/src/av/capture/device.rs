@@ -153,13 +153,13 @@ impl Device {
     pub unsafe fn unlock_for_config(&mut self);
 
     #[objc::msg_send(setActiveFormat:)]
-    pub unsafe fn set_active_format(&mut self, value: &Format);
+    pub unsafe fn set_active_format(&mut self, val: &Format);
 
     #[objc::msg_send(setActiveVideoMinFrameDuration:)]
-    pub unsafe fn set_active_video_min_frame_duration(&mut self, value: cm::Time);
+    pub unsafe fn set_active_video_min_frame_duration(&mut self, val: cm::Time);
 
     #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
-    pub unsafe fn set_active_video_max_frame_duration(&mut self, value: cm::Time);
+    pub unsafe fn set_active_video_max_frame_duration(&mut self, val: cm::Time);
 }
 
 #[doc(alias = "AVCaptureTorchMode")]
@@ -187,13 +187,13 @@ impl Device {
     pub fn torch_level(&self) -> f32;
 
     #[objc::msg_send(isTorchModeSupported:)]
-    pub fn is_torch_mode_supported(&self, value: TorchMode) -> bool;
+    pub fn is_torch_mode_supported(&self, val: TorchMode) -> bool;
 
     #[objc::msg_send(torchMode)]
     pub fn torch_mode(&self) -> TorchMode;
 
     #[objc::msg_send(setTorchMode:)]
-    unsafe fn set_torch_mode_throws(&self, value: TorchMode);
+    unsafe fn set_torch_mode_throws(&self, val: TorchMode);
 
     #[objc::msg_send(setTorchModeOnWithLevel:error:)]
     unsafe fn set_torch_mode_on_with_level_err(
@@ -205,12 +205,12 @@ impl Device {
 
 /// AVCaptureDeviceTorch
 impl<'a> ConfigLockGuard<'a> {
-    pub unsafe fn set_torch_mode_throws(&mut self, value: TorchMode) {
-        self.device.set_torch_mode_throws(value)
+    pub unsafe fn set_torch_mode_throws(&mut self, val: TorchMode) {
+        self.device.set_torch_mode_throws(val)
     }
 
-    pub fn set_torch_mode<'ar>(&mut self, value: TorchMode) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_torch_mode_throws(value) })
+    pub fn set_torch_mode<'ar>(&mut self, val: TorchMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_torch_mode_throws(val) })
     }
 
     pub fn set_torch_mode_on_with_level_err(
@@ -341,7 +341,7 @@ impl Device {
     pub fn center_stage_control_mode() -> CenterStageControlMode;
 
     #[objc::cls_msg_send(setCenterStageControlMode:)]
-    pub fn set_center_stage_control_mode(value: CenterStageControlMode);
+    pub fn set_center_stage_control_mode(val: CenterStageControlMode);
 
     /// Indicates whether Center Stage is currently active on a particular av::CaptureDevice.
     ///
@@ -402,7 +402,7 @@ impl Device {
     /// 'set_center_stage_rect_of_interest_throws' throws an 'ns::ExceptionName::invalid_argument()'
     /// if the provided rect of interest goes outside the normalized (0-1) coordinate space.
     #[objc::msg_send(setCenterStageRectOfInterest:)]
-    pub unsafe fn set_center_stage_rect_of_interest_throws(&mut self, value: cg::Rect);
+    pub unsafe fn set_center_stage_rect_of_interest_throws(&mut self, val: cg::Rect);
 }
 
 #[doc(alias = "AVCaptureSystemUserInterface")]
@@ -455,7 +455,7 @@ impl Device {
     /// if called without first obtaining exclusive access to the receiver
     /// using -lockForConfiguration:.
     #[objc::msg_send(setActiveColorSpace:)]
-    pub unsafe fn set_active_color_space_throws(&mut self, value: ColorSpace);
+    pub unsafe fn set_active_color_space_throws(&mut self, val: ColorSpace);
 }
 
 pub struct ConfigLockGuard<'a> {
@@ -463,27 +463,27 @@ pub struct ConfigLockGuard<'a> {
 }
 
 impl<'a> ConfigLockGuard<'a> {
-    pub fn set_active_format(&mut self, value: &Format) {
-        unsafe { self.device.set_active_format(value) }
+    pub fn set_active_format(&mut self, val: &Format) {
+        unsafe { self.device.set_active_format(val) }
     }
 
-    pub fn set_active_video_min_frame_duration(&mut self, value: cm::Time) {
-        unsafe { self.device.set_active_video_min_frame_duration(value) }
+    pub fn set_active_video_min_frame_duration(&mut self, val: cm::Time) {
+        unsafe { self.device.set_active_video_min_frame_duration(val) }
     }
 
-    pub fn set_active_video_max_frame_duration(&mut self, value: cm::Time) {
-        unsafe { self.device.set_active_video_max_frame_duration(value) }
+    pub fn set_active_video_max_frame_duration(&mut self, val: cm::Time) {
+        unsafe { self.device.set_active_video_max_frame_duration(val) }
     }
 
     pub fn set_center_stage_rect_of_interest<'ar>(
         &mut self,
-        value: cg::Rect,
+        val: cg::Rect,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(value) })
+        ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(val) })
     }
 
-    pub fn set_active_color_space<'ar>(&mut self, value: ColorSpace) {
-        unsafe { self.device.set_active_color_space_throws(value) }
+    pub fn set_active_color_space<'ar>(&mut self, val: ColorSpace) {
+        unsafe { self.device.set_active_color_space_throws(val) }
     }
 
     #[inline]
@@ -496,8 +496,8 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[inline]
-    pub unsafe fn set_focus_point_of_interest_throws(&mut self, value: cg::Point) {
-        self.device.set_focus_point_of_interest_throws(value)
+    pub unsafe fn set_focus_point_of_interest_throws(&mut self, val: cg::Point) {
+        self.device.set_focus_point_of_interest_throws(val)
     }
 
     /// The value of this property is a 'cg::Point' that determines the receiver's focus point of interest,
@@ -510,92 +510,92 @@ impl<'a> ConfigLockGuard<'a> {
     /// 'set_focus_point_of_interest', call 'set_focus_mode()' to apply the new point of interest.
     pub fn set_focus_point_of_interest<'ar>(
         &mut self,
-        value: cg::Point,
+        val: cg::Point,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_focus_point_of_interest_throws(value) })
+        ns::try_catch(|| unsafe { self.set_focus_point_of_interest_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
     pub unsafe fn set_auto_focus_range_restriction_throws(
         &mut self,
-        value: AutoFocusRangeRestriction,
+        val: AutoFocusRangeRestriction,
     ) {
-        self.device.set_auto_focus_range_restriction_throws(value)
+        self.device.set_auto_focus_range_restriction_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_auto_focus_range_restriction<'ar>(
         &mut self,
-        value: AutoFocusRangeRestriction,
+        val: AutoFocusRangeRestriction,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_auto_focus_range_restriction_throws(value) })
+        ns::try_catch(|| unsafe { self.set_auto_focus_range_restriction_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
-    pub unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, value: bool) {
-        self.device.set_smooth_auto_focus_enabled_throws(value)
+    pub unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, val: bool) {
+        self.device.set_smooth_auto_focus_enabled_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_smooth_auto_focus_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_smooth_auto_focus_enabled_throws(value) })
+        ns::try_catch(|| unsafe { self.set_smooth_auto_focus_enabled_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
     pub unsafe fn set_automatically_adjusts_face_driven_auto_focus_enabled_throws(
         &mut self,
-        value: bool,
+        val: bool,
     ) {
         self.device
-            .set_automatically_adjusts_face_driven_auto_focus_enabled_throws(value)
+            .set_automatically_adjusts_face_driven_auto_focus_enabled_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_automatically_adjusts_face_driven_auto_focus_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self.set_automatically_adjusts_face_driven_auto_focus_enabled_throws(value)
+            self.set_automatically_adjusts_face_driven_auto_focus_enabled_throws(val)
         })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
-    pub unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, value: bool) {
-        self.device.set_face_driven_auto_focus_enabled_throws(value)
+    pub unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, val: bool) {
+        self.device.set_face_driven_auto_focus_enabled_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_face_driven_auto_focus_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_face_driven_auto_focus_enabled_throws(value) })
+        ns::try_catch(|| unsafe { self.set_face_driven_auto_focus_enabled_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_focus_mode_locked_with_lens_position_no_completion_handler_throws(
         &mut self,
-        value: f32,
+        val: f32,
     ) {
         self.device
-            .set_focus_mode_locked_with_lens_position_throws(value, std::ptr::null_mut())
+            .set_focus_mode_locked_with_lens_position_throws(val, std::ptr::null_mut())
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_focus_mode_locked_with_lens_position_no_completion_handler<'ar>(
         &mut self,
-        value: f32,
+        val: f32,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self.set_focus_mode_locked_with_lens_position_no_completion_handler_throws(value)
+            self.set_focus_mode_locked_with_lens_position_no_completion_handler_throws(val)
         })
     }
 
@@ -603,20 +603,20 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_focus_mode_locked_with_lens_position_with_completion_handler_throws<F>(
         &mut self,
-        value: f32,
+        val: f32,
         block: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_focus_mode_locked_with_lens_position_throws(value, block.as_mut_ptr())
+            .set_focus_mode_locked_with_lens_position_throws(val, block.as_mut_ptr())
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_focus_mode_locked_with_lens_position_with_completion_handler<'ar, F>(
         &mut self,
-        value: f32,
+        val: f32,
         block: &'static mut blocks::Block<F>,
     ) -> Result<(), &'ar ns::Exception>
     where
@@ -624,7 +624,7 @@ impl<'a> ConfigLockGuard<'a> {
     {
         ns::try_catch(|| unsafe {
             self.device
-                .set_focus_mode_locked_with_lens_position_throws(value, block.as_mut_ptr())
+                .set_focus_mode_locked_with_lens_position_throws(val, block.as_mut_ptr())
         })
     }
 
@@ -632,11 +632,11 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub async unsafe fn set_focus_mode_locked_with_lens_position_throws(
         &mut self,
-        value: f32,
+        val: f32,
     ) -> cm::Time {
         let (future, block) = blocks::comp1();
         self.set_focus_mode_locked_with_lens_position_with_completion_handler_throws(
-            value,
+            val,
             block.escape(),
         );
         future.await
@@ -646,12 +646,12 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub async fn set_focus_mode_locked_with_lens_position(
         &mut self,
-        value: f32,
+        val: f32,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
             self.set_focus_mode_locked_with_lens_position_with_completion_handler_throws(
-                value,
+                val,
                 block.escape(),
             )
         });
@@ -776,7 +776,7 @@ impl Device {
     pub fn focus_point_of_intereset(&self) -> cg::Point;
 
     #[objc::msg_send(setFocusPointOfInterest:)]
-    unsafe fn set_focus_point_of_interest_throws(&mut self, value: cg::Point);
+    unsafe fn set_focus_point_of_interest_throws(&mut self, val: cg::Point);
 
     /// The value of this property is a bool indicating whether the receiver's camera focus
     /// is being automatically adjusted by means of a focus scan, because its focus mode is 'av::CaptureFocusModeAutoFocus'
@@ -795,7 +795,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setAutoFocusRangeRestriction:)]
-    unsafe fn set_auto_focus_range_restriction_throws(&mut self, value: AutoFocusRangeRestriction);
+    unsafe fn set_auto_focus_range_restriction_throws(&mut self, val: AutoFocusRangeRestriction);
 
     /// Indicates whether the receiver supports smooth autofocus.
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -808,7 +808,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setSmoothAutoFocusEnabled:)]
-    unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, value: bool);
+    unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, val: bool);
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(automaticallyAdjustsFaceDrivenAutoFocusEnabled)]
@@ -816,10 +816,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setAutomaticallyAdjustsFaceDrivenAutoFocusEnabled:)]
-    unsafe fn set_automatically_adjusts_face_driven_auto_focus_enabled_throws(
-        &mut self,
-        value: bool,
-    );
+    unsafe fn set_automatically_adjusts_face_driven_auto_focus_enabled_throws(&mut self, val: bool);
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(isFaceDrivenAutoFocusEnabled)]
@@ -827,7 +824,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFaceDrivenAutoFocusEnabled:)]
-    unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, value: bool);
+    unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, val: bool);
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(lensPosition)]
@@ -837,7 +834,7 @@ impl Device {
     #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
     unsafe fn set_focus_mode_locked_with_lens_position_throws(
         &mut self,
-        value: f32,
+        val: f32,
         completion_handler: *mut c_void,
     );
 
@@ -869,13 +866,13 @@ pub enum ExposureMode {
 impl Device {
     /// Returns whether the receiver supports the given exposure mode.
     #[objc::msg_send(isExposureModeSupported:)]
-    pub fn is_exposure_mode_supported(&self, value: ExposureMode) -> bool;
+    pub fn is_exposure_mode_supported(&self, val: ExposureMode) -> bool;
 
     #[objc::msg_send(exposureMode)]
     pub fn exposure_mode(&self) -> ExposureMode;
 
     #[objc::msg_send(setExposureMode:)]
-    unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode);
+    unsafe fn set_exposure_mode_throws(&mut self, val: ExposureMode);
 
     #[objc::msg_send(isExposurePointOfInterestSupported)]
     pub fn is_exposure_point_of_interest_supported(&self) -> bool;
@@ -884,7 +881,7 @@ impl Device {
     pub fn exposure_point_of_interest(&self) -> cg::Point;
 
     #[objc::msg_send(setExposurePointOfInterest:)]
-    unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point);
+    unsafe fn set_exposure_point_of_interest_throws(&mut self, val: cg::Point);
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(automaticallyAdjustsFaceDrivenAutoExposureEnabled)]
@@ -894,7 +891,7 @@ impl Device {
     #[objc::msg_send(setAutomaticallyAdjustsFaceDrivenAutoExposureEnabled:)]
     unsafe fn set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(
         &mut self,
-        value: bool,
+        val: bool,
     );
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -903,7 +900,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFaceDrivenAutoExposureEnabled:)]
-    unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool);
+    unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, val: bool);
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(activeMaxExposureDuration)]
@@ -911,7 +908,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setActiveMaxExposureDuration:)]
-    unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time);
+    unsafe fn set_active_max_exposure_duration_throws(&mut self, val: cm::Time);
 
     #[objc::msg_send(isAdjustingExposure)]
     pub fn is_adjusting_exposure(&self) -> bool;
@@ -961,72 +958,69 @@ impl Device {
 
 /// AVCaptureExposureMode
 impl<'a> ConfigLockGuard<'a> {
-    pub unsafe fn set_exposure_mode_throws(&mut self, value: ExposureMode) {
-        self.device.set_exposure_mode_throws(value)
+    pub unsafe fn set_exposure_mode_throws(&mut self, val: ExposureMode) {
+        self.device.set_exposure_mode_throws(val)
     }
 
-    pub fn set_exposure_mode<'ar>(
-        &mut self,
-        value: ExposureMode,
-    ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_exposure_mode_throws(value) })
+    pub fn set_exposure_mode<'ar>(&mut self, val: ExposureMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_exposure_mode_throws(val) })
     }
 
-    pub unsafe fn set_exposure_point_of_interest_throws(&mut self, value: cg::Point) {
-        self.device.set_exposure_point_of_interest_throws(value)
+    pub unsafe fn set_exposure_point_of_interest_throws(&mut self, val: cg::Point) {
+        self.device.set_exposure_point_of_interest_throws(val)
     }
 
     pub fn set_exposure_point_of_interest<'ar>(
         &mut self,
-        value: cg::Point,
+        val: cg::Point,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(value) })
+        ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(
         &mut self,
-        value: bool,
+        val: bool,
     ) {
         self.device
-            .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
+            .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(value)
+            self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(val)
         })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, value: bool) {
+    pub unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, val: bool) {
         self.device
-            .set_face_driven_auto_exposure_enabled_throws(value)
+            .set_face_driven_auto_exposure_enabled_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_face_driven_auto_exposure_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(value) })
+        ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_active_max_exposure_duration_throws(&mut self, value: cm::Time) {
-        self.device.set_active_max_exposure_duration_throws(value)
+    pub unsafe fn set_active_max_exposure_duration_throws(&mut self, val: cm::Time) {
+        self.device.set_active_max_exposure_duration_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_active_max_exposure_duration<'ar>(
         &mut self,
-        value: cm::Time,
+        val: cm::Time,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(value) })
+        ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1211,23 +1205,23 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setGlobalToneMappingEnabled:)]
-    pub fn set_global_tone_mapping_enabled_throws(&mut self, value: bool);
+    pub fn set_global_tone_mapping_enabled_throws(&mut self, val: bool);
 }
 
 /// AVCaptureDeviceToneMapping
 impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
-    pub unsafe fn set_global_tone_mapping_enabled_throws(&mut self, value: bool) {
-        self.device.set_global_tone_mapping_enabled_throws(value)
+    pub unsafe fn set_global_tone_mapping_enabled_throws(&mut self, val: bool) {
+        self.device.set_global_tone_mapping_enabled_throws(val)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_global_tone_mapping_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(value) })
+        ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(val) })
     }
 }
 
@@ -1283,7 +1277,7 @@ impl Device {
     pub fn wb_mode(&self) -> WbMode;
 
     #[objc::msg_send(setWhiteBalanceMode:)]
-    unsafe fn set_wb_mode_throws(&mut self, value: WbMode);
+    unsafe fn set_wb_mode_throws(&mut self, val: WbMode);
 
     #[objc::msg_send(isAdjustingWhiteBalance)]
     pub fn is_adjusting_wb(&self) -> bool;
@@ -1326,12 +1320,12 @@ impl Device {
 /// AVCaptureDeviceWhiteBalance
 impl<'a> ConfigLockGuard<'a> {
     #[inline]
-    pub unsafe fn set_wb_mode_throws(&mut self, value: WbMode) {
-        self.device.set_wb_mode_throws(value)
+    pub unsafe fn set_wb_mode_throws(&mut self, val: WbMode) {
+        self.device.set_wb_mode_throws(val)
     }
 
-    pub fn set_wb_mode<'ar>(&mut self, value: WbMode) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_wb_mode_throws(value) })
+    pub fn set_wb_mode<'ar>(&mut self, val: WbMode) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_wb_mode_throws(val) })
     }
 
     #[cfg(feature = "blocks")]
@@ -1424,16 +1418,16 @@ impl Device {
     pub fn is_subject_area_change_monitoring_enabled(&self) -> bool;
 
     #[objc::msg_send(setSubjectAreaChangeMonitoringEnabled:)]
-    unsafe fn set_subject_area_change_monitoring_enabled_throws(&mut self, value: bool);
+    unsafe fn set_subject_area_change_monitoring_enabled_throws(&mut self, val: bool);
 }
 
 /// AVCaptureDeviceSubjectAreaChangeMonitoring
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 impl<'a> ConfigLockGuard<'a> {
-    pub fn set_subject_area_change_monitoring_enabled(&mut self, value: bool) {
+    pub fn set_subject_area_change_monitoring_enabled(&mut self, val: bool) {
         unsafe {
             self.device
-                .set_subject_area_change_monitoring_enabled_throws(value)
+                .set_subject_area_change_monitoring_enabled_throws(val)
         }
     }
 }
@@ -1448,46 +1442,43 @@ impl Device {
     pub fn is_low_light_boost_enabled(&self) -> bool;
 
     #[objc::msg_send(setLowLightBoostEnabled:)]
-    unsafe fn set_low_light_boost_enabled_throws(&mut self, value: bool);
+    unsafe fn set_low_light_boost_enabled_throws(&mut self, val: bool);
 
     #[objc::msg_send(automaticallyEnablesLowLightBoostWhenAvailable)]
     pub fn automatically_enables_low_light_boost_when_available(&self) -> bool;
 
     #[objc::msg_send(setAutomaticallyEnablesLowLightBoostWhenAvailable:)]
-    unsafe fn set_automatically_enables_low_light_boost_when_available_throws(
-        &mut self,
-        value: bool,
-    );
+    unsafe fn set_automatically_enables_low_light_boost_when_available_throws(&mut self, val: bool);
 }
 
 /// AVCaptureDeviceLowLightBoost
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 impl<'a> ConfigLockGuard<'a> {
-    pub unsafe fn set_low_light_boost_enabled_throws(&mut self, value: bool) {
-        self.device.set_low_light_boost_enabled_throws(value)
+    pub unsafe fn set_low_light_boost_enabled_throws(&mut self, val: bool) {
+        self.device.set_low_light_boost_enabled_throws(val)
     }
 
     pub fn set_low_light_boost_enabled<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_low_light_boost_enabled_throws(value) })
+        ns::try_catch(|| unsafe { self.set_low_light_boost_enabled_throws(val) })
     }
 
     pub unsafe fn set_automatically_enables_low_light_boost_when_available_throws(
         &mut self,
-        value: bool,
+        val: bool,
     ) {
         self.device
-            .set_automatically_enables_low_light_boost_when_available_throws(value)
+            .set_automatically_enables_low_light_boost_when_available_throws(val)
     }
 
     pub fn set_automatically_enables_low_light_boost_when_available<'ar>(
         &mut self,
-        value: bool,
+        val: bool,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self.set_automatically_enables_low_light_boost_when_available_throws(value)
+            self.set_automatically_enables_low_light_boost_when_available_throws(val)
         })
     }
 }
@@ -1498,7 +1489,7 @@ impl Device {
     pub fn video_zoom_factor(&self) -> cg::Float;
 
     #[objc::msg_send(setVideoZoomFactor:)]
-    unsafe fn set_video_zoom_factor_throws(&mut self, value: cg::Float);
+    unsafe fn set_video_zoom_factor_throws(&mut self, val: cg::Float);
 
     #[objc::msg_send(isRampingVideoZoom)]
     pub fn is_ramping_video_zoom(&self) -> bool;
@@ -1515,8 +1506,8 @@ impl Device {
 
 /// AVCaptureDeviceVideoZoom
 impl<'a> ConfigLockGuard<'a> {
-    pub fn set_video_zoom_factor(&mut self, value: cg::Float) {
-        unsafe { self.device.set_video_zoom_factor_throws(value) }
+    pub fn set_video_zoom_factor(&mut self, val: cg::Float) {
+        unsafe { self.device.set_video_zoom_factor_throws(val) }
     }
 
     pub fn ramp_to_video_zoom_factor(&mut self, factor: cg::Float, rate: f32) {
@@ -1660,7 +1651,7 @@ impl Device {
     fn user_preferred_camera<'a>() -> Option<&'a Self>;
 
     #[objc::cls_msg_send(setUserPreferredCamera:)]
-    fn set_user_preferred_camera(value: Option<&Self>);
+    fn set_user_preferred_camera(val: Option<&Self>);
 
     /// Specifies the best camera to use as determined by the system.
     #[objc::cls_msg_send(systemPreferredCamera)]

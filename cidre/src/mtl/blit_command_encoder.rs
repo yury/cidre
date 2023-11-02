@@ -15,7 +15,7 @@ impl BlitCmdEncoder {
     define_mtl!(update_fence, wait_for_fence);
 
     #[objc::msg_send(fillBuffer:range:value:)]
-    pub fn fill_buf(&self, buffer: &mtl::Buf, range: ns::Range, value: u8);
+    pub fn fill_buf(&self, buffer: &mtl::Buf, range: ns::Range, val: u8);
 
     #[objc::msg_send(copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:)]
     pub fn copy_texture(
@@ -32,7 +32,7 @@ impl BlitCmdEncoder {
     );
 
     #[objc::msg_send(copyFromTexture:toTexture:)]
-    pub fn copy_texture_to_texture(&self, src_texture: &mtl::Texture, dest_texture: &mtl::Texture);
+    pub fn copy_texture_to_texture(&self, src_texture: &mtl::Texture, dst_texture: &mtl::Texture);
 
     #[objc::msg_send(generateMipmapsForTexture:)]
     pub fn generate_mipmaps(&self, texture: &mtl::Texture);

@@ -97,55 +97,55 @@ impl ColorAttachDesc {
     pub fn pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setPixelFormat:)]
-    pub fn set_pixel_format(&mut self, value: PixelFormat);
+    pub fn set_pixel_format(&mut self, val: PixelFormat);
 
     #[objc::msg_send(isBlendingEnabled)]
     pub fn blending_enabled(&self) -> bool;
 
     #[objc::msg_send(setBlendingEnabled:)]
-    pub fn set_blending_enabled(&mut self, value: bool);
+    pub fn set_blending_enabled(&mut self, val: bool);
 
     #[objc::msg_send(sourceRGBBlendFactor)]
     pub fn src_rgb_blend_factor(&self) -> BlendFactor;
 
     #[objc::msg_send(setSourceRGBBlendFactor:)]
-    pub fn set_src_rgb_blend_factor(&mut self, value: BlendFactor);
+    pub fn set_src_rgb_blend_factor(&mut self, val: BlendFactor);
 
     #[objc::msg_send(destinationRGBBlendFactor)]
     pub fn dst_rgb_blend_factor(&self) -> BlendFactor;
 
     #[objc::msg_send(setDestinationRGBBlendFactor:)]
-    pub fn set_dst_rgb_blend_factor(&mut self, value: BlendFactor);
+    pub fn set_dst_rgb_blend_factor(&mut self, val: BlendFactor);
 
     #[objc::msg_send(rgbBlendOperation)]
     pub fn rgb_blend_op(&self) -> BlendOp;
 
     #[objc::msg_send(setRgbBlendOperation:)]
-    pub fn set_rgb_blend_op(&mut self, value: BlendOp);
+    pub fn set_rgb_blend_op(&mut self, val: BlendOp);
 
     #[objc::msg_send(sourceAlphaBlendFactor)]
     pub fn src_alpha_blend_factor(&self) -> BlendFactor;
 
     #[objc::msg_send(setSourceAlphaBlendFactor:)]
-    pub fn set_src_alpha_blend_factor(&mut self, value: BlendFactor);
+    pub fn set_src_alpha_blend_factor(&mut self, val: BlendFactor);
 
     #[objc::msg_send(destinationAlphaBlendFactor)]
     pub fn dst_alpha_blend_factor(&self) -> BlendFactor;
 
     #[objc::msg_send(setDestinationAlphaBlendFactor:)]
-    pub fn set_dst_alpha_blend_factor(&mut self, value: BlendFactor);
+    pub fn set_dst_alpha_blend_factor(&mut self, val: BlendFactor);
 
     #[objc::msg_send(alphaBlendOperation)]
     pub fn alpha_blend_op(&self) -> BlendOp;
 
     #[objc::msg_send(setAlphaBlendOperation:)]
-    pub fn set_alpha_blend_op(&mut self, value: BlendOp);
+    pub fn set_alpha_blend_op(&mut self, val: BlendOp);
 
     #[objc::msg_send(writeMask)]
     pub fn write_mask(&self) -> ColorWriteMask;
 
     #[objc::msg_send(setWriteMask:)]
-    pub fn set_write_mask(&mut self, value: ColorWriteMask);
+    pub fn set_write_mask(&mut self, val: ColorWriteMask);
 }
 
 define_obj_type!(Reflection(ns::Id));
@@ -192,19 +192,19 @@ impl Desc {
     pub fn vertex_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setVertexFunction:)]
-    pub fn set_vertex_fn(&mut self, value: Option<&Fn>);
+    pub fn set_vertex_fn(&mut self, val: Option<&Fn>);
 
     #[objc::msg_send(vertexDescriptor)]
     pub fn vertex_desc(&self) -> Option<&mtl::VertexDesc>;
 
     #[objc::msg_send(setVertexDescriptor:)]
-    pub fn set_vertex_desc(&mut self, value: Option<&mtl::VertexDesc>);
+    pub fn set_vertex_desc(&mut self, val: Option<&mtl::VertexDesc>);
 
     #[objc::msg_send(fragmentFunction)]
     pub fn fragment_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setFragmentFunction:)]
-    pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
+    pub fn set_fragment_fn(&mut self, val: Option<&Fn>);
 
     #[objc::msg_send(colorAttachments)]
     pub fn color_attaches(&self) -> &ColorAttachDescArray;
@@ -216,19 +216,19 @@ impl Desc {
     pub fn raster_sample_count(&self) -> usize;
 
     #[objc::msg_send(setRasterSampleCount:)]
-    pub fn set_raster_sample_count(&mut self, value: usize);
+    pub fn set_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(depthAttachmentPixelFormat)]
     pub fn depth_attachment_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setDepthAttachmentPixelFormat:)]
-    pub fn set_depth_attachment_pixel_format(&mut self, value: PixelFormat);
+    pub fn set_depth_attachment_pixel_format(&mut self, val: PixelFormat);
 
     #[objc::msg_send(stencilAttachmentPixelFormat)]
     pub fn stencil_attachment_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
-    pub fn set_stencil_attachment_pixel_format(&mut self, value: PixelFormat);
+    pub fn set_stencil_attachment_pixel_format(&mut self, val: PixelFormat);
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
@@ -269,8 +269,8 @@ impl ColorAttachDescArray {
     pub fn set_object_at(&mut self, object: Option<&ColorAttachDesc>, index: usize);
 
     #[inline]
-    pub fn set_at(&mut self, index: usize, value: &ColorAttachDesc) {
-        self.set_object_at(Some(value), index);
+    pub fn set_at(&mut self, index: usize, val: &ColorAttachDesc) {
+        self.set_object_at(Some(val), index);
     }
 
     #[inline]
@@ -302,7 +302,7 @@ impl TileRenderPipelineColorAttachDesc {
     pub fn pixel_format(&self) -> mtl::PixelFormat;
 
     #[objc::msg_send(setPixelFormat:)]
-    pub fn set_pixel_format(&mut self, value: mtl::PixelFormat);
+    pub fn set_pixel_format(&mut self, val: mtl::PixelFormat);
 }
 
 define_obj_type!(TileRenderPipelineColorAttachDescArray(ns::Id));
@@ -351,13 +351,13 @@ impl TileRenderPipelineDesc {
     pub fn tile_fn(&self) -> &mtl::Fn;
 
     #[objc::msg_send(setTileFunction:)]
-    pub fn set_tile_fn(&mut self, value: &mtl::Fn);
+    pub fn set_tile_fn(&mut self, val: &mtl::Fn);
 
     #[objc::msg_send(rasterSampleCount)]
     pub fn raster_sample_count(&self) -> usize;
 
     #[objc::msg_send(setRasterSampleCount:)]
-    pub fn set_raster_sample_count(&mut self, value: usize);
+    pub fn set_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(colorAttachments)]
     pub fn color_attachments(&self) -> &TileRenderPipelineColorAttachDescArray;
@@ -369,7 +369,7 @@ impl TileRenderPipelineDesc {
     pub fn threadgroup_size_matches_tile_size(&self) -> bool;
 
     #[objc::msg_send(setThreadgroupSizeMatchesTileSize:)]
-    pub fn set_threadgroup_size_matches_tile_size(&mut self, value: bool);
+    pub fn set_threadgroup_size_matches_tile_size(&mut self, val: bool);
 
     #[objc::msg_send(tileBuffers)]
     pub fn tile_bufs(&self) -> &mtl::PipelineBufDescArray;
@@ -392,7 +392,7 @@ impl MeshRenderPipelineDesc {
     pub fn object_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setObjectFunction:)]
-    pub fn set_object_fn(&mut self, value: Option<&Fn>);
+    pub fn set_object_fn(&mut self, val: Option<&Fn>);
 
     /// Shader function responsible for exporting a chunk of geometry per threadgroup for the rasterizer.
     /// The default value is None.
@@ -400,7 +400,7 @@ impl MeshRenderPipelineDesc {
     pub fn mesh_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setMeshFunction:)]
-    pub fn set_mesh_fn(&mut self, value: Option<&Fn>);
+    pub fn set_mesh_fn(&mut self, val: Option<&Fn>);
 
     /// Like a classical render pipeline, this fragments covered by the rasterized geometry are shaded
     /// with this function.
@@ -410,43 +410,43 @@ impl MeshRenderPipelineDesc {
     pub fn fragment_fn(&self) -> Option<&Fn>;
 
     #[objc::msg_send(setFragmentFunction:)]
-    pub fn set_fragment_fn(&mut self, value: Option<&Fn>);
+    pub fn set_fragment_fn(&mut self, val: Option<&Fn>);
 
     #[objc::msg_send(maxTotalThreadsPerObjectThreadgroup)]
     pub fn max_total_threads_per_obj_threadgroup(&self) -> usize;
 
     #[objc::msg_send(setMaxTotalThreadsPerObjectThreadgroup:)]
-    pub fn set_max_total_threads_per_obj_threadgroup(&mut self, value: usize);
+    pub fn set_max_total_threads_per_obj_threadgroup(&mut self, val: usize);
 
     #[objc::msg_send(maxTotalThreadsPerMeshThreadgroup)]
     pub fn max_total_threads_per_mesh_threadgroup(&self) -> usize;
 
     #[objc::msg_send(setMaxTotalThreadsPerMeshThreadgroup:)]
-    pub fn set_max_total_threads_per_mesh_threadgroup(&mut self, value: usize);
+    pub fn set_max_total_threads_per_mesh_threadgroup(&mut self, val: usize);
 
     #[objc::msg_send(objectThreadgroupSizeIsMultipleOfThreadExecutionWidth)]
     pub fn obj_threadgroup_size_is_multiple_of_thread_execution_width(&self) -> bool;
 
     #[objc::msg_send(setObjectThreadgroupSizeIsMultipleOfThreadExecutionWidth:)]
-    pub fn set_obj_threadgroup_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
+    pub fn set_obj_threadgroup_size_is_multiple_of_thread_execution_width(&mut self, val: bool);
 
     #[objc::msg_send(meshThreadgroupSizeIsMultipleOfThreadExecutionWidth)]
     pub fn mesh_threadgroup_size_is_multiple_of_thread_execution_width(&self) -> bool;
 
     #[objc::msg_send(setMeshThreadgroupSizeIsMultipleOfThreadExecutionWidth:)]
-    pub fn set_mesh_threadgroup_size_is_multiple_of_thread_execution_width(&mut self, value: bool);
+    pub fn set_mesh_threadgroup_size_is_multiple_of_thread_execution_width(&mut self, val: bool);
 
     #[objc::msg_send(payloadMemoryLength)]
     pub fn payload_mem_len(&self) -> usize;
 
     #[objc::msg_send(setPayloadMemoryLength:)]
-    pub fn set_payload_mem_len(&mut self, value: usize);
+    pub fn set_payload_mem_len(&mut self, val: usize);
 
     #[objc::msg_send(maxTotalThreadgroupsPerMeshGrid)]
     pub fn max_total_threadgroups_per_mesh_grid(&self) -> usize;
 
     #[objc::msg_send(setMaxTotalThreadgroupsPerMeshGrid:)]
-    pub fn set_max_total_threadgroups_per_mesh_grid(&mut self, value: usize);
+    pub fn set_max_total_threadgroups_per_mesh_grid(&mut self, val: usize);
 
     /// Provide mutability information on the buffers used by obj_fn.
     /// Specifying these values is optional; it may be used to optimize the shader code.
@@ -475,7 +475,7 @@ impl MeshRenderPipelineDesc {
     pub fn raster_sample_count(&self) -> usize;
 
     #[objc::msg_send(setRasterSampleCount:)]
-    pub fn set_raster_sample_count(&mut self, value: usize);
+    pub fn set_raster_sample_count(&mut self, val: usize);
 
     /// Whether the alpha value exported by the fragment shader for the first color attachment
     /// is converted to a sample mask, which is subsequently AND-ed with the fragments' sample mask
@@ -484,13 +484,13 @@ impl MeshRenderPipelineDesc {
     pub fn is_alpha_to_coverage_enabled(&self) -> bool;
 
     #[objc::msg_send(setAlphaToCoverageEnabled:)]
-    pub fn set_alpha_to_coverage_enabled(&self, value: bool);
+    pub fn set_alpha_to_coverage_enabled(&self, val: bool);
 
     #[objc::msg_send(isAlphaToOneEnabled)]
     pub fn is_alpha_to_one_enabled(&self) -> bool;
 
     #[objc::msg_send(setAlphaToOneEnabled:)]
-    pub fn set_alpha_to_one_enabled(&self, value: bool);
+    pub fn set_alpha_to_one_enabled(&self, val: bool);
 
     /// Whether rasterization is disabled, all primitives are dropped prior to rasterization.
     /// Default is true
@@ -498,7 +498,7 @@ impl MeshRenderPipelineDesc {
     pub fn is_rasterization_enabled(&self) -> bool;
 
     #[objc::msg_send(setRasterizationEnabled:)]
-    pub fn set_rasterization_enabled(&self, value: bool);
+    pub fn set_rasterization_enabled(&self, val: bool);
 
     /// The maximum value that can be passed to setVertexAmplificationCount when using this pipeline.
     /// The default value is 1. The value must be supported by the device, which can be checked with
@@ -507,7 +507,7 @@ impl MeshRenderPipelineDesc {
     pub fn max_vertex_amplification_count(&self) -> usize;
 
     #[objc::msg_send(setMaxVertexAmplificationCount:)]
-    pub fn set_max_vertex_amplification_count(&mut self, value: usize);
+    pub fn set_max_vertex_amplification_count(&mut self, val: usize);
 
     #[objc::msg_send(colorAttachments)]
     pub fn color_attachments(&self) -> &mtl::RenderPipelineColorAttachDescArray;
@@ -521,7 +521,7 @@ impl MeshRenderPipelineDesc {
     pub fn depth_attachment_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setDepthAttachmentPixelFormat:)]
-    pub fn set_depth_attachment_pixel_format(&mut self, value: PixelFormat);
+    pub fn set_depth_attachment_pixel_format(&mut self, val: PixelFormat);
 
     /// The pixel format of the stencil attachment of the render pass in which this pipeline will be used.
     /// The default value is mtl::PixelFormat::Invalid; indicating no stencil attachment will be used.
@@ -529,7 +529,7 @@ impl MeshRenderPipelineDesc {
     pub fn stencil_attachment_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
-    pub fn set_stencil_attachment_pixel_format(&mut self, value: PixelFormat);
+    pub fn set_stencil_attachment_pixel_format(&mut self, val: PixelFormat);
 }
 
 #[cfg(test)]

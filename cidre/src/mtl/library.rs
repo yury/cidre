@@ -364,7 +364,7 @@ mod tests {
         let source = ns::String::with_str("kernel void function_a() {}");
         let lib = device.new_lib_with_src(&source, None).unwrap();
 
-        let func_name = ns::String::with_str_no_copy("function_a");
+        let func_name = ns::String::with_str("function_a");
         let func = lib.new_fn(&func_name).unwrap();
         let name = func.name();
         assert!(func_name.is_equal(&name));
