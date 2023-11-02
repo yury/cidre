@@ -43,7 +43,7 @@ impl NavigationDelegateImpl for NavDelegate {
         });
 
         let js = ns::String::with_str("document.body.innerHTML");
-        web_view.eval_js_completion(&js, block.escape());
+        web_view.eval_js_ch(&js, block.escape());
     }
 
     extern "C" fn impl_web_view_did_fail_navigation_err(

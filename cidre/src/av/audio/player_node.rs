@@ -22,7 +22,7 @@ impl BufOptions {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(isize)]
-pub enum CompletionCallbackType {
+pub enum CompletionCbType {
     DataConsumed = 0,
     DataRendered = 1,
     DataPlayedBack = 2,
@@ -32,18 +32,14 @@ define_obj_type!(PlayerNode(audio::Node), AV_AUDIO_PLAYER_NODE);
 
 impl PlayerNode {
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
-    pub unsafe fn schedule_buffer_completion_hander(
-        &self,
-        buffer: &av::AudioPcmBuf,
-        handler: *mut c_void,
-    );
+    pub unsafe fn _schedule_buf_ch(&self, buffer: &av::AudioPcmBuf, handler: *mut c_void);
 
     /// Schedule playing samples from an av::AudioPCMBuffer.
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
     #[inline]
-    pub fn schedule_buffer(&self, buffer: &av::AudioPcmBuf) {
-        unsafe { self.schedule_buffer_completion_hander(buffer, std::ptr::null_mut()) }
+    pub fn schedule_buf_no_ch(&self, buffer: &av::AudioPcmBuf) {
+        unsafe { self._schedule_buf_ch(buffer, std::ptr::null_mut()) }
     }
 
     #[objc::msg_send(play)]
@@ -64,13 +60,13 @@ impl PlayerNode {
     pub fn volume(&self) -> f32;
 
     #[objc::msg_send(setVolume:)]
-    pub fn set_volume(&self, value: f32);
+    pub fn set_volume(&self, val: f32);
 
     #[objc::msg_send(pan)]
     pub fn pan(&self) -> f32;
 
     #[objc::msg_send(setPan:)]
-    pub fn set_pan(&self, value: f32);
+    pub fn set_pan(&self, val: f32);
 }
 
 #[link(name = "av", kind = "static")]

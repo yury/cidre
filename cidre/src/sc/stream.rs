@@ -299,33 +299,33 @@ impl Stream {
     }
 
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
-    fn _start_with_completion_handler(&self, rb: *mut c_void);
+    fn _start_with_ch(&self, rb: *mut c_void);
 
-    pub fn start_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
+    pub fn start_with_ch<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'static ns::Error>),
     {
-        self._start_with_completion_handler(block.as_mut_ptr());
+        self._start_with_ch(block.as_mut_ptr());
     }
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
-    fn _stop_with_completion_handler(&self, rb: *mut c_void);
+    fn _stop_with_ch(&self, rb: *mut c_void);
 
-    pub fn stop_with_completion_handler<F>(&self, block: &'static mut blocks::Block<F>)
+    pub fn stop_with_ch<F>(&self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'static ns::Error>),
     {
-        self._stop_with_completion_handler(block.as_mut_ptr())
+        self._stop_with_ch(block.as_mut_ptr())
     }
 
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, block) = blocks::ok();
-        self.start_with_completion_handler(block.escape());
+        self.start_with_ch(block.escape());
         future.await
     }
 
     pub async fn stop(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, block) = blocks::ok();
-        self.stop_with_completion_handler(block.escape());
+        self.stop_with_ch(block.escape());
         future.await
     }
 }

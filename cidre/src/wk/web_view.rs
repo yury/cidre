@@ -39,20 +39,17 @@ impl WebView {
     pub fn stop_loading(&mut self);
 
     #[objc::msg_send(evaluateJavaScript:completionHandler:)]
-    fn _eval_js_completion(&mut self, js: &ns::String, block: *mut std::ffi::c_void);
+    fn _eval_js_ch(&mut self, js: &ns::String, block: *mut std::ffi::c_void);
 
-    pub fn eval_js_completion<'a, F>(
-        &mut self,
-        js: &ns::String,
-        block: &'static mut blocks::Block<F>,
-    ) where
+    pub fn eval_js_ch<'a, F>(&mut self, js: &ns::String, block: &'static mut blocks::Block<F>)
+    where
         F: FnOnce(Option<&'a ns::Id>, Option<&'a ns::Error>),
     {
-        self._eval_js_completion(js, block.as_mut_ptr());
+        self._eval_js_ch(js, block.as_mut_ptr());
     }
 
     pub fn eval_js<F>(&mut self, js: &ns::String) {
-        self._eval_js_completion(js, std::ptr::null_mut());
+        self._eval_js_ch(js, std::ptr::null_mut());
     }
 }
 

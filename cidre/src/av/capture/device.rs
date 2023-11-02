@@ -581,27 +581,22 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_focus_mode_locked_with_lens_position_no_completion_handler_throws(
-        &mut self,
-        val: f32,
-    ) {
+    pub unsafe fn set_focus_mode_locked_with_lens_position_no_ch_throws(&mut self, val: f32) {
         self.device
-            .set_focus_mode_locked_with_lens_position_throws(val, std::ptr::null_mut())
+            .set_focus_mode_locked_with_lens_position_ch_throws(val, std::ptr::null_mut())
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_position_no_completion_handler<'ar>(
+    pub fn set_focus_mode_locked_with_lens_position_no_ch<'ar>(
         &mut self,
         val: f32,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe {
-            self.set_focus_mode_locked_with_lens_position_no_completion_handler_throws(val)
-        })
+        ns::try_catch(|| unsafe { self.set_focus_mode_locked_with_lens_position_no_ch_throws(val) })
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_focus_mode_locked_with_lens_position_with_completion_handler_throws<F>(
+    pub unsafe fn set_focus_mode_locked_with_lens_position_with_ch_throws<F>(
         &mut self,
         val: f32,
         block: &'static mut blocks::Block<F>,
@@ -614,7 +609,7 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_position_with_completion_handler<'ar, F>(
+    pub fn set_focus_mode_locked_with_lens_position_with_ch<'ar, F>(
         &mut self,
         val: f32,
         block: &'static mut blocks::Block<F>,
@@ -635,10 +630,7 @@ impl<'a> ConfigLockGuard<'a> {
         val: f32,
     ) -> cm::Time {
         let (future, block) = blocks::comp1();
-        self.set_focus_mode_locked_with_lens_position_with_completion_handler_throws(
-            val,
-            block.escape(),
-        );
+        self.set_focus_mode_locked_with_lens_position_with_ch_throws(val, block.escape());
         future.await
     }
 
@@ -650,10 +642,7 @@ impl<'a> ConfigLockGuard<'a> {
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_focus_mode_locked_with_lens_position_with_completion_handler_throws(
-                val,
-                block.escape(),
-            )
+            self.set_focus_mode_locked_with_lens_position_with_ch_throws(val, block.escape())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -832,12 +821,11 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
-    unsafe fn set_focus_mode_locked_with_lens_position_throws(
+    unsafe fn set_focus_mode_locked_with_lens_positionch__ch_throws(
         &mut self,
         val: f32,
-        completion_handler: *mut c_void,
+        ch: *mut c_void,
     );
-
     /// A property indicating the minimum focus distance.
     ///
     /// The minimum focus distance is given in millimeters, -1 if unknown.
@@ -1024,7 +1012,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_no_ch_throws(
         &mut self,
         duration: cm::Time,
         iso: f32,
@@ -1038,21 +1026,19 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_no_completion_handler<'ar>(
+    pub fn set_exposure_mode_custom_with_duration_and_iso_no_ch<'ar>(
         &mut self,
         duration: cm::Time,
         iso: f32,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self.set_exposure_mode_custom_with_duration_and_iso_no_completion_handler_throws(
-                duration, iso,
-            )
+            self.set_exposure_mode_custom_with_duration_and_iso_no_ch_throws(duration, iso)
         })
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws<F>(
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_ch_throws<F>(
         &mut self,
         duration: cm::Time,
         iso: f32,
@@ -1070,7 +1056,7 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_with_completion_handler<'ar, F>(
+    pub fn set_exposure_mode_custom_with_duration_and_iso_with_ch<'ar, F>(
         &mut self,
         duration: cm::Time,
         iso: f32,
@@ -1097,7 +1083,7 @@ impl<'a> ConfigLockGuard<'a> {
         iso: f32,
     ) -> cm::Time {
         let (future, block) = blocks::comp1();
-        self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
+        self.set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
             duration,
             iso,
             block.escape(),
@@ -1114,7 +1100,7 @@ impl<'a> ConfigLockGuard<'a> {
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_exposure_mode_custom_with_duration_and_iso_with_completion_handler_throws(
+            self.set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
                 duration,
                 iso,
                 block.escape(),
@@ -1128,7 +1114,7 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_target_bias_with_completion_handler_throws<F>(
+    pub unsafe fn set_exposure_target_bias_with_ch_throws<F>(
         &mut self,
         bias: f32,
         block: &'static mut blocks::Block<F>,
@@ -1140,14 +1126,14 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_target_bias_no_completion_handler_throws(&mut self, bias: f32) {
+    pub unsafe fn set_exposure_target_bias_no_ch_throws(&mut self, bias: f32) {
         self.device
             .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_with_completion_handler<'ar, F>(
+    pub fn set_exposure_target_bias_with_ch<'ar, F>(
         &mut self,
         bias: f32,
         block: &'static mut blocks::Block<F>,
@@ -1162,7 +1148,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_no_completion_handler<'ar>(
+    pub fn set_exposure_target_bias_no_ch<'ar>(
         &mut self,
         bias: f32,
     ) -> Result<(), &'ar ns::Exception> {
@@ -1176,7 +1162,7 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
         let (future, block) = blocks::comp1();
-        self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape());
+        self.set_exposure_target_bias_with_ch_throws(bias, block.escape());
         future.await
     }
 
@@ -1188,7 +1174,7 @@ impl<'a> ConfigLockGuard<'a> {
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_exposure_target_bias_with_completion_handler_throws(bias, block.escape())
+            self.set_exposure_target_bias_with_ch_throws(bias, block.escape())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -1330,7 +1316,7 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws<F>(
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_ch_throws<F>(
         &mut self,
         gains: WbGains,
         block: &'static mut blocks::Block<F>,
@@ -1342,17 +1328,14 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(
-        &mut self,
-        gains: WbGains,
-    ) {
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_ch_throws(&mut self, gains: WbGains) {
         self.device
             .set_wb_mode_locked_with_device_wb_gains_throws(gains, std::ptr::null_mut())
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_with_completion_handler<'ar, F>(
+    pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ar, F>(
         &mut self,
         gains: WbGains,
         block: &'static mut blocks::Block<F>,
@@ -1361,19 +1344,17 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         ns::try_catch(|| unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
-                gains, block,
-            )
+            self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block)
         })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_no_completion_handler<'ar>(
+    pub fn set_wb_mode_locked_with_device_wb_gains_no_ch<'ar>(
         &mut self,
         gains: WbGains,
     ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_no_completion_handler_throws(gains)
+            self.set_wb_mode_locked_with_device_wb_gains_no_ch_throws(gains)
         })
     }
 
@@ -1384,10 +1365,7 @@ impl<'a> ConfigLockGuard<'a> {
         gains: WbGains,
     ) -> cm::Time {
         let (future, block) = blocks::comp1();
-        self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
-            gains,
-            block.escape(),
-        );
+        self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.escape());
         future.await
     }
 
@@ -1399,10 +1377,7 @@ impl<'a> ConfigLockGuard<'a> {
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_with_completion_handler_throws(
-                gains,
-                block.escape(),
-            )
+            self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.escape())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -1689,20 +1664,23 @@ impl Device {
 
     #[cfg(feature = "blocks")]
     #[objc::cls_msg_send(requestAccessForMediaType:completionHandler:)]
-    unsafe fn request_access_for_media_type_throws(media_type: &av::MediaType, block: *mut c_void);
+    unsafe fn _request_access_for_media_type_ch_throws(
+        media_type: &av::MediaType,
+        block: *mut c_void,
+    );
 
     #[cfg(feature = "blocks")]
-    pub unsafe fn request_access_for_media_type_completion_throws<F>(
+    pub unsafe fn request_access_for_media_type_ch_throws<F>(
         media_type: &av::MediaType,
         block: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(bool),
     {
-        unsafe { Self::request_access_for_media_type_throws(media_type, block.as_mut_ptr()) }
+        unsafe { Self::_request_access_for_media_type_ch_throws(media_type, block.as_mut_ptr()) }
     }
 
     #[cfg(feature = "blocks")]
-    pub fn request_access_for_media_type_completion<'ar, F>(
+    pub fn request_access_for_media_type_ch<'ar, F>(
         media_type: &av::MediaType,
         block: &'static mut blocks::Block<F>,
     ) -> Result<(), &'ar ns::Exception>
@@ -1710,7 +1688,7 @@ impl Device {
         F: FnOnce(bool),
     {
         ns::try_catch(|| unsafe {
-            Self::request_access_for_media_type_completion_throws(media_type, block)
+            Self::request_access_for_media_type_ch_throws(media_type, block)
         })
     }
 
@@ -1719,7 +1697,7 @@ impl Device {
         media_type: &av::MediaType,
     ) -> Result<bool, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
-        match Self::request_access_for_media_type_completion(media_type, block.escape()) {
+        match Self::request_access_for_media_type_ch(media_type, block.escape()) {
             Ok(_) => Ok(future.await),
             Err(e) => Err(e.retained()),
         }

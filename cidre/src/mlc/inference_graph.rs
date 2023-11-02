@@ -56,12 +56,12 @@ impl InferenceGraph {
     }
 
     #[objc::msg_send(executeWithInputsData:batchSize:options:completionHandler:)]
-    pub fn execute<'ar, F>(
+    pub fn execute_ch<'ar, F>(
         &self,
         input_data: &ns::Dictionary<ns::String, mlc::TensorData>,
         batch_size: usize,
         options: mlc::ExecutionOptions,
-        completion_handler: Option<&'static Block<F>>,
+        ch: Option<&'static Block<F>>,
     ) -> bool
     where
         F: FnOnce(Option<&'ar mlc::Tensor>, Option<&'ar ns::Error>, ns::TimeInterval);

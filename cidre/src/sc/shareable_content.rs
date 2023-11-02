@@ -90,20 +90,20 @@ impl ShareableContent {
     pub fn apps(&self) -> &ns::Array<RunningApp>;
 
     #[objc::cls_msg_send(getShareableContentWithCompletionHandler:)]
-    pub fn get_shareable_content_with_completion_handler(block: *mut c_void);
+    pub fn get_shareable_content_with_ch(block: *mut c_void);
 
-    pub fn current_with_completion<'ar, F>(b: &'static mut blocks::Block<F>)
+    pub fn current_with_ch<'ar, F>(b: &'static mut blocks::Block<F>)
     where
         F: FnOnce(Option<&'ar ShareableContent>, Option<&'ar ns::Error>),
     {
-        Self::get_shareable_content_with_completion_handler(b.as_mut_ptr());
+        Self::get_shareable_content_with_ch(b.as_mut_ptr());
     }
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn current() -> Result<arc::R<Self>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
 
-        Self::current_with_completion(block.escape());
+        Self::current_with_ch(block.escape());
 
         future.await
     }
@@ -159,7 +159,7 @@ mod tests {
     }
 
     #[test]
-    pub fn current_with_completion() {
+    pub fn current_ch() {
         let sema = dispatch::Semaphore::new(0);
 
         let signal_guard = sema.signal_guard();
@@ -169,7 +169,7 @@ mod tests {
         });
 
         dispatch::Queue::global(0).unwrap().async_once(move || {
-            ShareableContent::current_with_completion(bl.escape());
+            ShareableContent::current_with_ch(bl.escape());
         });
 
         sema.wait_forever();

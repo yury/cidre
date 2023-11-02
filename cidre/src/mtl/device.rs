@@ -131,16 +131,16 @@ impl Device {
         options: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
-        self.new_lib_with_src_completion(source, options, block.escape());
+        self.new_lib_with_src_ch(source, options, block.escape());
         future.await
     }
 
     #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
-    pub fn new_lib_with_src_completion<'ar, F>(
+    pub fn new_lib_with_src_ch<'ar, F>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOpts>,
-        completion: &'static mut blocks::Block<F>,
+        ch: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
 

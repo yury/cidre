@@ -48,7 +48,7 @@ pub use player::Player;
 
 mod player_node;
 pub use player_node::BufOptions as PlayerNodeBufOptions;
-pub use player_node::CompletionCallbackType as PlayerNodeCompletionCallbackType;
+pub use player_node::CompletionCbType as PlayerNodeCompletionCbType;
 pub use player_node::PlayerNode;
 
 pub mod session;

@@ -56,7 +56,7 @@ impl UrlAsset {
     }
 
     #[objc::msg_send(loadTracksWithMediaType:completionHandler:)]
-    pub fn load_tracks_with_media_type_completion(
+    pub fn load_tracks_with_media_type_ch(
         &self,
         media_type: &av::MediaType,
         completion: *mut c_void,
@@ -69,7 +69,7 @@ impl UrlAsset {
             + Sync,
     {
         let block = blocks::once2(block);
-        self.load_tracks_with_media_type_completion(media_type, block.escape().as_mut_ptr())
+        self.load_tracks_with_media_type_ch(media_type, block.escape().as_mut_ptr())
     }
 
     pub async fn load_tracks_with_media_type(
@@ -77,7 +77,7 @@ impl UrlAsset {
         media_type: &av::MediaType,
     ) -> Result<arc::R<ns::Array<av::asset::Track>>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
-        self.load_tracks_with_media_type_completion(media_type, block.escape().as_mut_ptr());
+        self.load_tracks_with_media_type_ch(media_type, block.escape().as_mut_ptr());
         future.await
     }
 }

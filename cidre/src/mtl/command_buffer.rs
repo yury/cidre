@@ -66,21 +66,21 @@ impl CmdBuf {
     }
 
     #[objc::msg_send(addCompletedHandler:)]
-    fn _add_completed_handler(&mut self, block: *mut c_void);
+    fn _add_ch(&mut self, block: *mut c_void);
 
-    pub fn add_completed_handler<F>(&mut self, block: &'static mut blocks::Block<F>)
+    pub fn add_ch<F>(&mut self, block: &'static mut blocks::Block<F>)
     where
         F: FnOnce(&mut Self) + Send + 'static,
     {
-        self._add_completed_handler(block.as_mut_ptr());
+        self._add_ch(block.as_mut_ptr());
     }
 
     #[inline]
-    pub fn add_completed_handler_fn<'a>(
+    pub fn add_ch_fn<'a>(
         &mut self,
         block: &mut blocks::Block<extern "C" fn(*const c_void, &'a mut Self)>,
     ) {
-        self._add_completed_handler(block.as_mut_ptr());
+        self._add_ch(block.as_mut_ptr());
     }
 
     #[objc::msg_send(blitCommandEncoder)]

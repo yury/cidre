@@ -26,26 +26,26 @@ impl ExecutionDesc {
     /// If no error, the results produced by the graph operation.
     /// If Graph has not yet allocated the results this will be NSNull
     #[objc::msg_send(completionHandler)]
-    pub fn completion_handler<F>(&self) -> Option<&Block<F>>
+    pub fn ch<F>(&self) -> Option<&Block<F>>
     where
         F: FnOnce(&cf::ArrayOf<graph::TensorData>, Option<&cf::Error>);
 
     #[objc::msg_send(setCompletionHandler:)]
-    fn _set_completion_handler(&self, block: *mut c_void);
+    fn _set_ch(&self, block: *mut c_void);
 
-    pub fn set_completion_handler<F>(&self, block: Option<&'static mut Block<F>>)
+    pub fn set_ch<F>(&self, block: Option<&'static mut Block<F>>)
     where
         F: FnOnce(&cf::ArrayOf<graph::TensorData>, Option<&cf::Error>),
     {
         let ptr = block.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr());
-        self._set_completion_handler(ptr)
+        self._set_ch(ptr)
     }
 
     #[objc::msg_send(waitUntilCompleted)]
     pub fn wait_until_completed(&self) -> bool;
 
     #[objc::msg_send(setWaitUntilCompleted:)]
-    pub fn set_wait_until_completed(&self, value: bool);
+    pub fn set_wait_until_completed(&self, val: bool);
 }
 
 define_obj_type!(Executable(ns::Id));

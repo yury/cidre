@@ -231,7 +231,7 @@ mod tests {
             q.as_mut(),
             &ns::String::with_str("name"),
             ns::KVOOpts::NEW,
-            |key, obj, change| unsafe {
+            |_key, _obj, _change| unsafe {
                 CALLS_COUNT += 1;
             },
         )
@@ -245,7 +245,7 @@ mod tests {
             pi,
             &ns::String::with_str("thermalState"),
             ns::KVOOpts::INITIAL,
-            |key, obj, change| unsafe {
+            |_key, _obj, _change| unsafe {
                 CALLS_COUNT += 1;
             },
         )
@@ -257,11 +257,11 @@ mod tests {
     #[test]
     fn fail() {
         let mut q = ns::OperationQueue::new();
-        let observer = ns::Observer::with_obj(
+        let _observer = ns::Observer::with_obj(
             q.as_mut(),
             &ns::String::with_str("wrong. name"),
             ns::KVOOpts::NEW,
-            |key, obj, change| {},
+            |_key, _obj, _change| {},
         )
         .expect_err("should fail");
     }

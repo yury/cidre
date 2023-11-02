@@ -48,5 +48,5 @@ fn main() {
     });
 
     let input_data = ns::Dictionary::with_keys_values(&keys, &values);
-    plan.execute(&input_data, 0, Default::default(), Some(handler.escape()));
+    plan.execute_ch(&input_data, 0, Default::default(), Some(handler.escape()));
 }
