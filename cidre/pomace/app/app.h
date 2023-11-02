@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class NS_APPLICATION;
+Class NS_VIEW;
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -19,6 +20,8 @@ static void mtl_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         NS_APPLICATION = [NSApplication class];
+        NS_VIEW = [NSView class];
+        initialized = 1;
     }
 }
 

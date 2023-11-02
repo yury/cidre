@@ -4,3 +4,6 @@ pub use device::BatteryState as DeviceBatteryState;
 pub use device::Device;
 pub use device::Orientation as DeviceOrientation;
 pub use device::UserInterfaceIdiom;
+
+mod view;
+pub use view::View;
