@@ -81,7 +81,7 @@ impl IndirectRenderCmd {
     #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:instanceCount:baseInstance:usize)]
     pub fn draw_primitives(
         &self,
-        primitive_type: mtl::PrimitiveType,
+        primitive_type: mtl::Primitive,
         vertex_start: usize,
         vertex_count: usize,
         instance_count: usize,
@@ -93,7 +93,7 @@ impl IndirectRenderCmd {
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:baseVertex:baseInstance:)]
     pub fn draw_indexed_primitives(
         &self,
-        primitive_type: mtl::PrimitiveType,
+        primitive_type: mtl::Primitive,
         index_count: usize,
         index_type: mtl::IndexType,
         index_buf: &mtl::Buf,

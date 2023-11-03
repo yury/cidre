@@ -604,7 +604,7 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_focus_mode_locked_with_lens_position_throws(val, block.as_mut_ptr())
+            .set_focus_mode_locked_with_lens_position_ch_throws(val, block.as_mut_ptr())
     }
 
     #[cfg(feature = "blocks")]
@@ -619,7 +619,7 @@ impl<'a> ConfigLockGuard<'a> {
     {
         ns::try_catch(|| unsafe {
             self.device
-                .set_focus_mode_locked_with_lens_position_throws(val, block.as_mut_ptr())
+                .set_focus_mode_locked_with_lens_position_ch_throws(val, block.as_mut_ptr())
         })
     }
 
@@ -819,9 +819,9 @@ impl Device {
     #[objc::msg_send(lensPosition)]
     pub fn lens_position(&self) -> f32;
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    // #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
-    unsafe fn set_focus_mode_locked_with_lens_positionch__ch_throws(
+    unsafe fn set_focus_mode_locked_with_lens_position_ch_throws(
         &mut self,
         val: f32,
         ch: *mut c_void,

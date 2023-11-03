@@ -72,7 +72,7 @@ impl Usage {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
-pub enum CompressionType {
+pub enum Compression {
     Lossless = 0,
     Lossy = 1,
 }
@@ -209,10 +209,10 @@ impl Desc {
     pub fn set_allow_gpu_optimized_contents(&mut self, val: bool);
 
     #[objc::msg_send(compressionType)]
-    pub fn compression_type(&self) -> CompressionType;
+    pub fn compression_type(&self) -> Compression;
 
     #[objc::msg_send(setCompressionType:)]
-    pub fn set_compression_type(&mut self, val: CompressionType);
+    pub fn set_compression_type(&mut self, val: Compression);
 
     #[objc::msg_send(swizzle)]
     pub fn swizzle(&self) -> SwizzleChannels;

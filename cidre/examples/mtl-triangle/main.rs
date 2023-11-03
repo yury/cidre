@@ -111,7 +111,7 @@ fn main() {
             enc.set_render_ps(&render_ps);
             enc.set_vp_rect(0, 0, 1920, 1080);
             enc.set_vertex_buf_at(Some(&vertex_buffer), 0, 0);
-            enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, triangle.len());
+            enc.draw_primitives(mtl::Primitive::Triangle, 0, triangle.len());
         });
 
         cmd_buf.commit();

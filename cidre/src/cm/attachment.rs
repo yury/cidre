@@ -18,16 +18,16 @@ impl Bearer {
     /// If the key does exist, the existing attachment will be replaced.
     /// In both cases the retain count of the attachment will be incremented.
     /// The value can be any cf::Type but nil has no defined behavior.
-    /// Given a cv::Buffer, 'set_attach' is equivalent to CVBufferSetAttachment.
-    pub fn set_attach(&mut self, key: &cf::String, val: &cf::Type, attachment_mode: Mode) {
-        unsafe { CMSetAttachment(self, key, val, attachment_mode) }
+    /// Given a cv::Buf, 'set_attach' is equivalent to CVBufferSetAttachment.
+    pub fn set_attach(&mut self, key: &cf::String, val: &cf::Type, mode: Mode) {
+        unsafe { CMSetAttachment(self, key, val, mode) }
     }
 
     /// Returns a specific attachment of a cm::AttachmentBearer
     ///
     /// You can attach any cf object to a cm::AttachmentBearer to store
     /// additional information. get_attachment retrieves an attachment identified
-    /// by a key.  Given a CVBufferRef, CMGetAttachment is equivalent to
+    /// by a key. Given a cv::Buf, CMGetAttachment is equivalent to
     /// CVBufferGetAttachment.
     #[inline]
     pub fn attach<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
@@ -38,34 +38,34 @@ impl Bearer {
     ///
     /// Removes an attachment identified by a key. If found the attachment
     /// is removed and the retain count decremented.
-    /// Given a CVBufferRef, CMRemoveAttachment is equivalent to
+    /// Given a cv::Buff, CMRemoveAttachment is equivalent to
     /// CVBufferRemoveAttachment.
     #[inline]
     pub fn remove_attach(&mut self, key: &cf::String) {
         unsafe { CMRemoveAttachment(self, key) }
     }
 
-    /// Removes all attachments of a cm::AttachmentBearer
+    /// Removes all attachments of a cm::AttachBearer
     #[inline]
     pub fn remove_all_attaches(&mut self) {
         unsafe { CMRemoveAllAttachments(self) }
     }
 
     #[inline]
-    pub unsafe fn copy_dictionary_of_attaches(
+    pub unsafe fn copy_dictionary_of_attaches_in(
         &self,
+        mode: Mode,
         allocator: Option<&cf::Allocator>,
-        attachment_mode: Mode,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
-        CMCopyDictionaryOfAttachments(allocator, self, attachment_mode)
+        CMCopyDictionaryOfAttachments(allocator, self, mode)
     }
 
     #[inline]
     pub fn dictionary_of_attaches(
         &self,
-        attachment_mode: Mode,
+        mode: Mode,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
-        unsafe { self.copy_dictionary_of_attaches(None, attachment_mode) }
+        unsafe { self.copy_dictionary_of_attaches_in(mode, None) }
     }
 }
 

@@ -356,7 +356,7 @@ fn main() {
                 );
                 enc.set_fragment_arg_at(&color, 0);
             }
-            enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
+            enc.draw_primitives(mtl::Primitive::Triangle, 0, nverticies[0]);
         }
     });
 

@@ -2,7 +2,7 @@ use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
-pub enum PrimitiveType {
+pub enum Primitive {
     /// Rasterize a point at each vertex. The vertex shader must provide [[point_size]],
     /// or the point size is undefined.
     Point = 0,
@@ -333,7 +333,7 @@ impl RenderCmdEncoder {
     #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:instanceCount:)]
     pub fn draw_primitives_instance_count(
         &mut self,
-        primitive_type: PrimitiveType,
+        primitive_type: Primitive,
         vertex_start: usize,
         vertex_count: usize,
         instance_count: usize,
@@ -342,7 +342,7 @@ impl RenderCmdEncoder {
     #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:)]
     pub fn draw_primitives(
         &mut self,
-        primitive_type: PrimitiveType,
+        primitive_type: Primitive,
         vertex_start: usize,
         vertex_count: usize,
     );
@@ -350,7 +350,7 @@ impl RenderCmdEncoder {
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:)]
     pub fn draw_indexed_primitives_instance_count(
         &mut self,
-        primitive_type: mtl::PrimitiveType,
+        primitive_type: mtl::Primitive,
         index_count: usize,
         index_type: mtl::IndexType,
         index_buffer: &mtl::Buf,
@@ -361,7 +361,7 @@ impl RenderCmdEncoder {
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:baseVertex:baseInstance:)]
     pub fn draw_indexed_primitives_index_type_index_count_instance_count(
         &mut self,
-        primitive_type: mtl::PrimitiveType,
+        primitive_type: mtl::Primitive,
         index_count: usize,
         index_type: mtl::IndexType,
         index_buffer: &mtl::Buf,
@@ -379,7 +379,7 @@ impl RenderCmdEncoder {
         instance_range: &std::ops::Range<usize>,
     ) {
         self.draw_indexed_primitives_index_type_index_count_instance_count(
-            mtl::PrimitiveType::Triangle,
+            mtl::Primitive::Triangle,
             index_range.len(),
             mtl::IndexType::U16,
             index_buffer,
@@ -398,7 +398,7 @@ impl RenderCmdEncoder {
         instance_range: &std::ops::Range<usize>,
     ) {
         self.draw_indexed_primitives_index_type_index_count_instance_count(
-            mtl::PrimitiveType::Triangle,
+            mtl::Primitive::Triangle,
             index_range.len(),
             mtl::IndexType::U32,
             index_buffer,
@@ -412,7 +412,7 @@ impl RenderCmdEncoder {
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:)]
     pub fn draw_indexed_primitives(
         &mut self,
-        primitive_type: mtl::PrimitiveType,
+        primitive_type: mtl::Primitive,
         index_count: usize,
         index_type: mtl::IndexType,
         index_buffer: &mtl::Buf,
