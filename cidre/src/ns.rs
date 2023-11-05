@@ -176,6 +176,8 @@ pub use key_value_observing::KVObserving;
 pub use key_value_observing::KVSetMutationKind;
 pub use key_value_observing::Observer;
 
+mod key_value_coding;
+
 pub fn log(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);

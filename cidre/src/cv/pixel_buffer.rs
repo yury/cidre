@@ -367,6 +367,10 @@ impl PixelFormat {
 /// is applied; if the encoded block of pixels exceeds the pre-defined memory footprint then
 /// the lossy algorithm is applied. Each compressed pixel buffer has a separate area of
 /// metadata recording the encoding choices for each pixel block.
+///
+/// Usefull links:
+///   - https://developer.apple.com/documentation/technotes/tn3104-recording-video-in-apple-prores
+///   - https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput
 impl PixelFormat {
     /// Lossy-compressed form of `cv::PixelFormat::_32_BGRA`.
     #[doc(alias = "kCVPixelFormatType_Lossy_32BGRA")]
