@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cls, define_mtl, define_obj_type, define_options, mtl, ns, objc};
+use crate::{arc, cf, define_mtl, define_obj_type, define_options, mtl, ns, objc};
 
 #[cfg(feature = "io")]
 use crate::io;
@@ -77,11 +77,9 @@ pub enum Compression {
     Lossy = 1,
 }
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(Desc(ns::Id), MTL_TEXTURE_DESCRIPTOR);
 
 impl Desc {
-    define_cls!(MTL_TEXTURE_DESCRIPTOR);
-
     #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
     pub fn new_2d_with_pixel_format_ar(
         pixel_format: mtl::PixelFormat,
