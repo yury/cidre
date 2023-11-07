@@ -245,6 +245,14 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_16LE565")]
     pub const _16_LE_565: Self = Self(os::Type::from_be_bytes(*b"L565"));
 
+    /// 24 bit RGB
+    #[doc(alias = "kCVPixelFormatType_24RGB")]
+    pub const _24_RGB: Self = Self(0x00000018);
+
+    /// 24 bit BGR
+    #[doc(alias = "kCVPixelFormatType_24BGR")]
+    pub const _24_BGR: Self = Self(os::Type::from_be_bytes(*b"24BG"));
+
     #[doc(alias = "kCMPixelFormat_32BGRA")]
     #[doc(alias = "kCVPixelFormatType_32BGRA")]
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
