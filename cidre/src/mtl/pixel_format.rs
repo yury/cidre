@@ -172,7 +172,8 @@ pub enum PixelFormat {
     #[doc(alias = "MTLPixelFormatRG11B10Float")]
     Rg11B10Float = 92,
 
-    /// Packed 32-bit format with floating-point color components: 9 bits each for RGB and 5 bits for an exponent shared by RGB, packed into 32 bits.
+    /// Packed 32-bit format with floating-point color components: 9 bits each for RGB and 5 bits for an exponent
+    /// shared by RGB, packed into 32 bits.
     #[doc(alias = "MTLPixelFormatRGB9E5Float")]
     Rgb9E5Float = 93,
 

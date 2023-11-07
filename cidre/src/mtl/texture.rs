@@ -118,16 +118,16 @@ impl Desc {
         mipmapped: bool,
     ) -> arc::R<Desc>;
 
-    #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:resourceOptions:usage:)]
-    pub fn new_2d_with_resource_options_ar(
+    #[objc::cls_msg_send(textureBufferDescriptorWithPixelFormat:width:resourceOptions:usage:)]
+    pub fn new_buff_with_pixel_format_ar(
         pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: mtl::resource::Options,
         usage: Usage,
     ) -> arc::Rar<Desc>;
 
-    #[objc::cls_rar_retain()]
-    pub fn new_2d_with_resource_options(
+    #[objc::cls_rar_retain]
+    pub fn new_buff_with_pixel_format(
         pixel_format: mtl::PixelFormat,
         width: usize,
         resource_options: mtl::resource::Options,
@@ -233,6 +233,19 @@ impl Texture {
         pixel_format: mtl::PixelFormat,
     ) -> Option<arc::R<Texture>>;
 
+    /// The buffer this texture view was created from, or nil if this is not a texture
+    /// view or it was not created from a buffer.
+    #[objc::msg_send(buffer)]
+    pub fn buf(&self) -> Option<&mtl::Buf>;
+
+    /// The offset of the buffer this texture view was created from, or 0 if this is not a texture view.
+    #[objc::msg_send(bufferOffset)]
+    pub fn buf_offset(&self) -> usize;
+
+    /// The 'bytes_per_row' of the buffer this texture view was created from, or 0 if this is not a texture view.
+    #[objc::msg_send(bufferBytesPerRow)]
+    pub fn buf_bytes_per_row(&self) -> usize;
+
     #[cfg(feature = "io")]
     #[objc::msg_send(iosurface)]
     pub fn io_surf(&self) -> Option<&io::Surf>;
@@ -245,6 +258,15 @@ impl Texture {
 
     #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> mtl::PixelFormat;
+
+    #[objc::msg_send(mipmapLevelCount)]
+    pub fn mipmap_level_count(&self) -> usize;
+
+    #[objc::msg_send(sampleCount)]
+    pub fn sample_count(&self) -> usize;
+
+    #[objc::msg_send(arrayLength)]
+    pub fn array_len(&self) -> usize;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -311,6 +333,7 @@ mod tests {
         assert!(t.parent_texture().is_none());
         assert!(t.io_surf().is_none());
         assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
+        assert_eq!(t.pixel_format(), mtl::PixelFormat::A8UNorm);
         assert!(t.io_surf().is_none());
         assert_eq!(t.io_surf_plane(), 0);
 
