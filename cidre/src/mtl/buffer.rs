@@ -52,7 +52,7 @@ impl Buf {
     }
 
     #[objc::msg_send(newTextureWithDescriptor:offset:bytesPerRow:)]
-    pub fn new_texture_with_descriptor(
+    pub fn new_texture(
         &self,
         descritptor: &mtl::TextureDesc,
         offset: usize,
