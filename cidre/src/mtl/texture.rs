@@ -6,15 +6,15 @@ use crate::io;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum Type {
-    D1 = 0,
-    D1Array = 1,
-    D2 = 2,
-    D2Array = 3,
-    D2Multisample = 4,
+    _1D = 0,
+    _1DArray = 1,
+    _2D = 2,
+    _2DArray = 3,
+    _2DMultisample = 4,
     Cube = 5,
     CubeArray = 6,
-    D3 = 7,
-    D2MultisampleArray = 8,
+    _3D = 7,
+    _2DMultisampleArray = 8,
     TextureBuffer = 9,
 }
 
@@ -261,7 +261,7 @@ mod tests {
         let mut td =
             mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
 
-        assert_eq!(td.texture_type(), mtl::TextureType::D2);
+        assert_eq!(td.texture_type(), mtl::TextureType::_2D);
         assert_eq!(td.pixel_format(), mtl::PixelFormat::A8UNorm);
         assert_eq!(td.width(), 100);
         assert_eq!(td.height(), 200);
@@ -310,7 +310,7 @@ mod tests {
 
         assert!(t.parent_texture().is_none());
         assert!(t.io_surf().is_none());
-        assert_eq!(t.texture_type(), mtl::texture::Type::D2);
+        assert_eq!(t.texture_type(), mtl::texture::Type::_2D);
         assert!(t.io_surf().is_none());
         assert_eq!(t.io_surf_plane(), 0);
 
