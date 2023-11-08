@@ -438,6 +438,7 @@ pub enum ColorSpace {
 }
 
 /// AVCaptureDeviceColorSpaceSupport
+/// <https://developer.apple.com/videos/play/wwdc2016/501/?time=2972>
 impl Device {
     /// Indicates the receiver's current active color space.
     #[objc::msg_send(activeColorSpace)]
