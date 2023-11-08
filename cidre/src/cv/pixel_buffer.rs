@@ -253,9 +253,30 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_24BGR")]
     pub const _24_BGR: Self = Self(os::Type::from_be_bytes(*b"24BG"));
 
+    /// 32 bit ARGB
+    #[doc(alias = "kCVPixelFormatType_32ARGB")]
+    pub const _32_ARGB: Self = Self(0x00000020);
+
+    /// 32 bit BGRA
     #[doc(alias = "kCMPixelFormat_32BGRA")]
     #[doc(alias = "kCVPixelFormatType_32BGRA")]
     pub const _32_BGRA: Self = Self(os::Type::from_be_bytes(*b"BGRA"));
+
+    /// 32 bit ABGR
+    #[doc(alias = "kCVPixelFormatType_32ABGR")]
+    pub const _32_ABGR: Self = Self(os::Type::from_be_bytes(*b"ABGR"));
+
+    /// 32 bit RGBA
+    #[doc(alias = "kCVPixelFormatType_32RGBA")]
+    pub const _32_RGBA: Self = Self(os::Type::from_be_bytes(*b"RGBA"));
+
+    /// 64 bit ARGB, 16-bit big-endian samples
+    #[doc(alias = "kCVPixelFormatType_64ARGB")]
+    pub const _64_ARGB: Self = Self(os::Type::from_be_bytes(*b"b64a"));
+
+    /// 64 bit RGBA, 16-bit little-endian full-range (0-65535) samples
+    #[doc(alias = "kCVPixelFormatType_64RGBALE")]
+    pub const _64_RGBALE: Self = Self(os::Type::from_be_bytes(*b"l64r"));
 
     /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, video-range (luma=[16,235] chroma=[16,240]).
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
