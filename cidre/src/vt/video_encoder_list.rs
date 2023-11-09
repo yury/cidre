@@ -11,9 +11,9 @@ pub fn copy(
 }
 
 extern "C" {
-    fn VTCopyVideoEncoderList<'a>(
+    fn VTCopyVideoEncoderList(
         options: Option<&cf::Dictionary>,
-        list_of_video_encoders_out: &mut Option<arc::R<cf::ArrayOf<cf::Dictionary>>>,
+        list_of_video_encoders_out: *mut Option<arc::R<cf::ArrayOf<cf::Dictionary>>>,
     ) -> os::Status;
 }
 
