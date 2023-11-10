@@ -47,6 +47,28 @@ pub struct SizeAlign {
     pub align: usize,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(isize)]
+pub enum GpuFamily {
+    Apple1 = 1001,
+    Apple2 = 1002,
+    Apple3 = 1003,
+    Apple4 = 1004,
+    Apple5 = 1005,
+    Apple6 = 1006,
+    Apple7 = 1007,
+    Apple8 = 1008,
+    Apple9 = 1009,
+
+    Mac2 = 2002,
+
+    Common1 = 3001,
+    Common2 = 3002,
+    Common3 = 3003,
+
+    Metal3 = 5001,
+}
+
 define_obj_type!(Device(ns::Id));
 impl Device {
     /// ```
@@ -289,6 +311,9 @@ impl Device {
     /// The maximum threadgroup memory available to a compute kernel, in bytes.
     #[objc::msg_send(maxThreadgroupMemoryLength)]
     pub fn max_threadgroup_memory_len(&self) -> usize;
+
+    #[objc::msg_send(supportsFamily:)]
+    pub fn supports_family(&self, val: GpuFamily) -> bool;
 
     /// The maximum number of unique argument buffer samplers per app.
     ///

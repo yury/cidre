@@ -85,6 +85,7 @@ pub use texture::Usage as TextureUsage;
 mod device;
 pub use device::ArgBufsTier;
 pub use device::Device;
+pub use device::GpuFamily;
 pub use device::PipelineOption;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAlign;
