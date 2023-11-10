@@ -312,9 +312,6 @@ impl Device {
     #[objc::msg_send(maxThreadgroupMemoryLength)]
     pub fn max_threadgroup_memory_len(&self) -> usize;
 
-    #[objc::msg_send(supportsFamily:)]
-    pub fn supports_family(&self, val: GpuFamily) -> bool;
-
     /// The maximum number of unique argument buffer samplers per app.
     ///
     /// This limit is only applicable to samplers that have their supportArgumentBuffers
@@ -344,6 +341,27 @@ impl Device {
     /// Query device support for using ray tracing primitive motion blur.
     #[objc::msg_send(supportsPrimitiveMotionBlur)]
     pub fn supports_primitive_motion_blur(&self) -> bool;
+
+    #[objc::msg_send(supportsFamily:)]
+    pub fn supports_family(&self, val: GpuFamily) -> bool;
+
+    /// Returns the minimum alignment required for offset and rowBytes when creating a linear texture.
+    /// An error is thrown for queries with invalid pixel formats (depth, stencil, or compressed formats).
+    #[objc::msg_send(minimumLinearTextureAlignmentForPixelFormat:)]
+    pub fn min_linear_texture_alignment_for_pixel_format_throws(
+        &self,
+        format: mtl::PixelFormat,
+    ) -> usize;
+
+    pub fn min_linear_texture_alignment_for_pixel_format<'ar>(
+        &self,
+        format: mtl::PixelFormat,
+    ) -> Result<usize, &'ar ns::Exception> {
+        ns::try_catch(|| self.min_linear_texture_alignment_for_pixel_format_throws(format))
+    }
+
+    #[objc::msg_send(minimumTextureBufferAlignmentForPixelFormat:)]
+    pub fn min_texture_buffer_alignment_for_pixel_format(&self, format: mtl::PixelFormat) -> usize;
 }
 
 #[link(name = "Metal", kind = "framework")]
