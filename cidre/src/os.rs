@@ -74,3 +74,7 @@ impl From<Status> for Result<(), Status> {
         v.result()
     }
 }
+
+pub mod proc;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use proc::available_memory as proc_available_memory;
