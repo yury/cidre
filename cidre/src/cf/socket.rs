@@ -25,9 +25,9 @@ pub struct Signature {
     pub address: arc::R<cf::Data>,
 }
 
-define_options!(CallBackType(usize));
+define_options!(CbType(usize));
 
-impl CallBackType {
+impl CbType {
     pub const NO: Self = Self(0);
     pub const READ: Self = Self(1);
     pub const ACCEPT: Self = Self(2);
@@ -47,13 +47,8 @@ impl Flags {
     pub const CLOSE_ON_INVALIDATE: Self = Self(128);
 }
 
-pub type CallBack<T> = extern "C" fn(
-    s: &Socket,
-    cb_type: CallBackType,
-    address: &cf::Data,
-    data: *const u8,
-    info: *mut T,
-);
+pub type Cb<T> =
+    extern "C" fn(s: &Socket, cb_type: CbType, address: &cf::Data, data: *const u8, info: *mut T);
 
 #[repr(C)]
 pub struct Context<T> {
@@ -71,8 +66,8 @@ impl Socket {
         protocol_family: i32,
         socket_type: i32,
         protocol: i32,
-        cb_types: CallBackType,
-        callout: CallBack<T>,
+        cb_types: CbType,
+        callout: Cb<T>,
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<Socket>> {
@@ -88,8 +83,8 @@ impl Socket {
     }
     pub unsafe fn create_with_native_in<T>(
         sock: NativeHandle,
-        cb_types: CallBackType,
-        callout: CallBack<T>,
+        cb_types: CbType,
+        callout: Cb<T>,
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<Socket>> {
@@ -98,8 +93,8 @@ impl Socket {
 
     pub unsafe fn create_with_native<T>(
         sock: NativeHandle,
-        cb_types: CallBackType,
-        callout: CallBack<T>,
+        cb_types: CbType,
+        callout: Cb<T>,
         context: Option<NonNull<Context<c_void>>>,
     ) -> Option<arc::R<Socket>> {
         Self::create_with_native_in(sock, cb_types, callout, context, None)
@@ -143,12 +138,12 @@ impl Socket {
     }
 
     #[inline]
-    pub fn enable_callbacks(&self, cb_types: CallBackType) {
+    pub fn enable_callbacks(&self, cb_types: CbType) {
         unsafe { CFSocketEnableCallBacks(self, cb_types) }
     }
 
     #[inline]
-    pub fn disable_callbacks(&self, cb_types: CallBackType) {
+    pub fn disable_callbacks(&self, cb_types: CbType) {
         unsafe { CFSocketDisableCallBacks(self, cb_types) }
     }
 
@@ -170,16 +165,16 @@ extern "C" {
         protocol_family: i32,
         socket_type: i32,
         protocol: i32,
-        cb_types: CallBackType,
-        callout: CallBack<c_void>,
+        cb_types: CbType,
+        callout: Cb<c_void>,
         context: Option<NonNull<Context<c_void>>>,
     ) -> Option<arc::R<Socket>>;
 
     fn CFSocketCreateWithNative(
         allocator: Option<&cf::Allocator>,
         sock: NativeHandle,
-        cb_types: CallBackType,
-        callout: CallBack<c_void>,
+        cb_types: CbType,
+        callout: Cb<c_void>,
         context: Option<NonNull<Context<c_void>>>,
     ) -> Option<arc::R<Socket>>;
 
@@ -198,8 +193,8 @@ extern "C" {
     fn CFSocketGetSocketFlags(s: &Socket) -> Flags;
     fn CFSocketSetSocketFlags(s: &Socket, flags: Flags);
 
-    fn CFSocketDisableCallBacks(s: &Socket, cb_types: CallBackType);
-    fn CFSocketEnableCallBacks(s: &Socket, cb_types: CallBackType);
+    fn CFSocketDisableCallBacks(s: &Socket, cb_types: CbType);
+    fn CFSocketEnableCallBacks(s: &Socket, cb_types: CbType);
 
     fn CFSocketSendData(
         s: &Socket,

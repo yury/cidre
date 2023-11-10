@@ -96,8 +96,8 @@ pub use run_loop::Source as RunLoopSource;
 pub use run_loop::Timer as RunLoopTimer;
 
 pub mod socket;
-pub use socket::CallBack as SocketCallBack;
-pub use socket::CallBackType as SocketCallBackType;
+pub use socket::Cb as SocketCb;
+pub use socket::CbType as SocketCbType;
 pub use socket::Context as SocketContext;
 pub use socket::Error as SocketError;
 pub use socket::Flags as SocketFlags;

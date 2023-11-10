@@ -57,7 +57,7 @@ async fn main() {
     unsafe {
         extern "C" fn cb(
             _s: &cf::Socket,
-            _cb_type: cf::SocketCallBackType,
+            _cb_type: cf::SocketCbType,
             _address: &cf::Data,
             _data: *const u8,
             _info: *mut c_void,
@@ -66,7 +66,7 @@ async fn main() {
         }
         let sock = cf::Socket::create_with_native(
             connection.socket().unwrap(),
-            cf::SocketCallBackType::READ,
+            cf::SocketCbType::READ,
             cb,
             None,
         )
