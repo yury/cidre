@@ -827,6 +827,7 @@ impl Device {
         val: f32,
         ch: *mut c_void,
     );
+
     /// A property indicating the minimum focus distance.
     ///
     /// The minimum focus distance is given in millimeters, -1 if unknown.
