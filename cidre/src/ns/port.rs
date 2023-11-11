@@ -51,10 +51,7 @@ mod tests {
 
     #[test]
     fn create() {
-        // use ns::MachPortDelegate;
-
         let mach = ns::MachPort::new();
-        // mach.delegate().unwrap().handle_mach_message()
         let port = mach.mach_port();
         assert_ne!(port.0, 0);
         assert!(mach.is_valid());

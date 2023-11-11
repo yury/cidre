@@ -57,7 +57,7 @@ pub enum UserInterfaceIdiom {
     /// iPad style UI
     Pad,
     /// Apple TV style UI
-    TV,
+    Tv,
     /// CarPlay style UI
     CarPlay,
     /// Optimized for Mac UI
@@ -132,7 +132,7 @@ impl Device {
     pub fn set_battery_monitoring_enabled(&self, val: bool);
 
     #[objc::msg_send(identifierForVendor)]
-    pub fn identifier_for_vendor(&self) -> Option<&ns::UUID>;
+    pub fn identifier_for_vendor(&self) -> Option<&ns::Uuid>;
 
     #[objc::msg_send(model)]
     pub fn model(&self) -> &ns::String;

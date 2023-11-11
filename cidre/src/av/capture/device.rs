@@ -1067,7 +1067,7 @@ impl<'a> ConfigLockGuard<'a> {
     where
         F: FnOnce(cm::Time),
     {
-        ns::try_catch(|| unsafe {
+        ns::try_catch(|| {
             self.device
                 .set_exposure_mode_custom_with_duration_and_iso_throws(
                     duration,

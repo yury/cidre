@@ -7,6 +7,12 @@ use crate::{arc, cf::Type};
 #[repr(transparent)]
 pub struct Class<T: Obj>(Type, PhantomData<T>);
 
+impl<T: Obj> Class<T> {
+    pub unsafe fn method_impl(&self, name: &Sel) -> *const c_void {
+        class_getMethodImplementation(std::mem::transmute(self), name)
+    }
+}
+
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ClassInstExtra<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
@@ -187,6 +193,7 @@ extern "C" {
     // fn objc_release(obj: &mut Id);
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
+    fn class_getMethodImplementation(cls: &Class<Id>, name: &Sel) -> *const c_void;
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
     pub fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<arc::R<Id>>;
     pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;

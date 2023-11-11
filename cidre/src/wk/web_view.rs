@@ -3,7 +3,7 @@ use crate::{arc, blocks, define_obj_type, ns, objc, wk};
 #[cfg(target_os = "ios")]
 define_obj_type!(WebView(crate::ui::View), WK_WEB_VIEW);
 
-#[cfg(not(target_os = "ios"))]
+#[cfg(target_os = "macos")]
 define_obj_type!(WebView(ns::View), WK_WEB_VIEW);
 
 impl WebView {
