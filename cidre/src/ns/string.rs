@@ -1,11 +1,20 @@
 use std::{borrow::Cow, fmt};
 
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{
+    arc, define_obj_type, ns,
+    objc::{self, Obj},
+};
 
 #[cfg(feature = "cf")]
 use crate::cf;
 
-use super::Class;
+use super::{
+    objc_runtime::{
+        ns_class_from_ns_string, ns_selector_from_ns_string, ns_string_from_class,
+        ns_string_from_selector,
+    },
+    Class,
+};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -131,6 +140,26 @@ impl String {
 
     #[objc::msg_send(isEqualToString:)]
     pub fn eq_ns_string(&self, other: &Self) -> bool;
+
+    #[inline]
+    pub fn to_selector(&self) -> Option<&'static objc::Sel> {
+        ns_selector_from_ns_string(self)
+    }
+
+    #[inline]
+    pub fn to_class(&self) -> Option<&'static objc::Class<ns::Id>> {
+        ns_class_from_ns_string(self)
+    }
+
+    #[inline]
+    pub fn from_class<T: Obj>(cls: &objc::Class<T>) -> arc::R<Self> {
+        ns_string_from_class(cls)
+    }
+
+    #[inline]
+    pub fn from_selector(sel: &objc::Sel) -> arc::R<Self> {
+        ns_string_from_selector(sel)
+    }
 }
 
 // impl std::ops::Index<std::ops::Range<usize>> for String {
