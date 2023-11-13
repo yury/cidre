@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, ns};
+use crate::{define_mtl, define_obj_type, ns, objc};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
@@ -38,6 +38,34 @@ pub enum BorderColor {
 }
 
 define_obj_type!(Desc(ns::Id));
+
+impl Desc {
+    define_mtl!(label, set_label);
+
+    #[objc::msg_send(minFilter)]
+    pub fn min_filter(&self) -> MinMagFilter;
+
+    #[objc::msg_send(setMinFilter:)]
+    pub fn set_min_filter(&mut self, val: MinMagFilter);
+
+    #[objc::msg_send(magFilter)]
+    pub fn mag_filter(&self) -> MinMagFilter;
+
+    #[objc::msg_send(setMagFilter:)]
+    pub fn set_mag_filter(&mut self, val: MinMagFilter);
+
+    #[objc::msg_send(borderColor)]
+    pub fn border_color(&self) -> BorderColor;
+
+    #[objc::msg_send(setBorderColor:)]
+    pub fn set_border_color(&mut self, val: BorderColor);
+
+    #[objc::msg_send(normalizedCoordinates)]
+    pub fn normalized_coordinates(&self) -> bool;
+
+    #[objc::msg_send(setNormalizedCoordinates:)]
+    pub fn set_normalized_coordinates(&mut self, val: bool);
+}
 
 define_obj_type!(State(ns::Id));
 
