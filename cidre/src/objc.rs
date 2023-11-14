@@ -267,16 +267,18 @@ macro_rules! define_obj_type {
             #[inline]
             pub fn inner(&self) -> &$InnerType {
                 unsafe {
-                    let ptr: *const u8 = std::mem::transmute(self);
-                    std::mem::transmute(ptr.offset(objc::NS_OBJECT_SIZE as _))
+                    let ptr =  self as *const Self as *const u8;
+                    let ptr = ptr.add($crate::objc::NS_OBJECT_SIZE);
+                    &*(ptr as *const $InnerType)
                 }
             }
 
             #[inline]
             pub fn inner_mut(&mut self) -> &mut $InnerType {
                 unsafe {
-                    let ptr: *mut u8 = std::mem::transmute(self);
-                    std::mem::transmute(ptr.offset($crate::objc::NS_OBJECT_SIZE as _))
+                    let ptr: *mut u8 = self as *mut Self as *mut u8;
+                    let ptr = ptr.add($crate::objc::NS_OBJECT_SIZE);
+                    &mut *(ptr as *mut $InnerType)
                 }
             }
 
