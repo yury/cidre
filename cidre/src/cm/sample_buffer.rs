@@ -379,7 +379,7 @@ impl SampleBuf {
     /// a pre-populated audio::BufList. The audio::BufList must
     /// contain the same number of channels and its data buffers
     /// must be sized to hold the specified number of frames.
-    /// This API is	specific to audio format sample buffers, and
+    /// This API is specific to audio format sample buffers, and
     /// will return kCMSampleBufferError_InvalidMediaTypeForOperation
     /// if called with a non-audio sample buffer. It will return an
     /// error if the cm::SampleBuffer does not contain PCM audio data
@@ -838,9 +838,9 @@ pub mod buffer_attachment_keys {
     /// Indicates the 3x3 camera intrinsic matrix applied to the current sample buffer.
     ///
     /// Camera intrinsic matrix is a CFData containing a matrix_float3x3, which is column-major. It has the following contents:
-    /// fx	0	ox
-    /// 0	fy	oy
-    /// 0	0	1
+    /// fx   0    ox
+    /// 0    fy   oy
+    /// 0    0    1
     /// fx and fy are the focal length in pixels. For square pixels, they will have the same value.
     /// ox and oy are the coordinates of the principal point. The origin is the upper left of the frame.
     #[inline]

@@ -50,8 +50,8 @@ use super::ComponentInstanceRef;
 /// 3. Configure it (AudioCodecGetPropertyInfo, AudioCodecGetProperty, AudioCodecSetProperty)
 /// 4. AudioCodecInitialize
 /// 5. Loop
-/// 	a. append_data (EOF is signaled by passing a 0-sized buffer)
-/// 	b. produce_packets
+///     a. append_data (EOF is signaled by passing a 0-sized buffer)
+///     b. produce_packets
 /// 6. Close the codec component
 pub type Codec = audio::ComponentInstance;
 

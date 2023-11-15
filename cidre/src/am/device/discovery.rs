@@ -191,7 +191,7 @@ impl QueryBuilder {
         self
     }
 
-    pub fn matching_list<'a>(
+    pub fn matching_list(
         &self,
         note: Option<&Notification>,
     ) -> Result<arc::R<cf::ArrayOf<Device>>, Error> {
@@ -231,7 +231,7 @@ impl Notification {
         )
     }
 
-    pub fn with<'a, T>(
+    pub fn with<T>(
         callback: NotificationCallback<T>,
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,

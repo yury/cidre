@@ -77,14 +77,14 @@ macro_rules! define_cf_type {
             }
         }
 
-        impl crate::arc::Release for $NewType {
+        impl $crate::arc::Release for $NewType {
             #[inline]
             unsafe fn release(&mut self) {
                 self.0.release()
             }
         }
 
-        impl crate::arc::Retain for $NewType {
+        impl $crate::arc::Retain for $NewType {
             #[inline]
             fn retained(&self) -> crate::arc::R<Self> {
                 $NewType::retained(self)

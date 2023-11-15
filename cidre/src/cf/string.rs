@@ -300,7 +300,7 @@ macro_rules! cfstr {
             extern "C" {
                 fn __CFStringMakeConstantString(
                     str: *const std::os::raw::c_char,
-                ) -> &'static crate::cf::String;
+                ) -> &'static $crate::cf::String;
             }
 
             __CFStringMakeConstantString(

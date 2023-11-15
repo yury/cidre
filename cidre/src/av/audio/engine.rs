@@ -54,7 +54,7 @@ pub enum ManualRenderingMode {
     /// The engine operates in an offline mode without any realtime constraints.
     Offline = 0,
     /// The engine operates under realtime constraints, i.e. it will not make any blocking call
-    ///	(e.g. calling libdispatch, blocking on a mutex, allocating memory etc.) while rendering.
+    /// (e.g. calling libdispatch, blocking on a mutex, allocating memory etc.) while rendering.
     /// Note that only the block based render mechanism can be used in this mode
     /// (see `AVAudioEngine(manualRenderingBlock)`.
     Realtime = 1,
@@ -153,7 +153,7 @@ impl Engine {
     pub fn input_node(&self) -> &InputNode;
 
     #[objc::msg_send(inputNode)]
-    pub fn input_node_mut(&self) -> &mut InputNode;
+    pub fn input_node_mut(&mut self) -> &mut InputNode;
 
     /// ```no_run
     /// use cidre::av;
