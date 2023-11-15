@@ -1,28 +1,3 @@
-// typedef CF_ENUM (int32_t, CGWindowLevelKey) {
-//     kCGBaseWindowLevelKey = 0,
-//     kCGMinimumWindowLevelKey,
-//     kCGDesktopWindowLevelKey,
-//     kCGBackstopMenuLevelKey,
-//     kCGNormalWindowLevelKey,
-//     kCGFloatingWindowLevelKey,
-//     kCGTornOffMenuWindowLevelKey,
-//     kCGDockWindowLevelKey,
-//     kCGMainMenuWindowLevelKey,
-//     kCGStatusWindowLevelKey,
-//     kCGModalPanelWindowLevelKey,
-//     kCGPopUpMenuWindowLevelKey,
-//     kCGDraggingWindowLevelKey,
-//     kCGScreenSaverWindowLevelKey,
-//     kCGMaximumWindowLevelKey,
-//     kCGOverlayWindowLevelKey,
-//     kCGHelpWindowLevelKey,
-//     kCGUtilityWindowLevelKey,
-//     kCGDesktopIconWindowLevelKey,
-//     kCGCursorWindowLevelKey,
-//     kCGAssistiveTechHighWindowLevelKey,
-//     kCGNumberOfWindowLevelKeys	/* Must be last. */
-// };
-
 #[doc(alias = "CGWindowLevel")]
 #[repr(transparent)]
 pub struct WindowLevel(pub i32);
