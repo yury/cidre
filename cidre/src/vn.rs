@@ -53,9 +53,9 @@ pub use observation::TrajectoryObservation;
 
 mod face_landmarks;
 pub use face_landmarks::FaceLandmarks;
-pub use face_landmarks::FaceLandmarks2D;
+pub use face_landmarks::FaceLandmarks2d;
 pub use face_landmarks::Region as FaceLandmarkRegion;
-pub use face_landmarks::Region2D as FaceLandmarkRegion2D;
+pub use face_landmarks::Region2d as FaceLandmarkRegion2d;
 
 mod generate_person_segmentation_request;
 pub use generate_person_segmentation_request::GeneratePersonSegmentationRequest;

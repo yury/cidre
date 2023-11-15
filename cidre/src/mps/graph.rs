@@ -29,7 +29,7 @@ mod memory_ops;
 pub use memory_ops::VariableOp;
 
 mod convolution_ops;
-pub use convolution_ops::Convolution2DOpDesc;
+pub use convolution_ops::Convolution2dOpDesc;
 
 mod resize_ops;
 pub use resize_ops::ResizeMode;

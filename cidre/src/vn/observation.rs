@@ -49,7 +49,7 @@ impl FaceObservation {
     /// The face landmarks populated by the vn::DetectFaceLandmarksRequest.
     /// This is set to nil if only a vn::DetectFaceRectanglesRequest was performed.
     #[objc::msg_send(landmarks)]
-    pub fn landmarks(&self) -> Option<&vn::FaceLandmarks2D>;
+    pub fn landmarks(&self) -> Option<&vn::FaceLandmarks2d>;
 
     /// The capture quality of the face as a normalized value between 0.0 and 1.0
     /// that can be used to compare the quality of the face in terms of it capture

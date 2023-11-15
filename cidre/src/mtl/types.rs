@@ -81,4 +81,4 @@ pub struct SamplePos {
 /// A floating point coordinate in an abstract 2D space.
 ///
 /// Refer to location of use for concrete information on the space in which the coordinate exists.
-pub type Coordinate2D = SamplePos;
+pub type Coordinate2d = SamplePos;

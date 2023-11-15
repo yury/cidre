@@ -17,7 +17,7 @@ pub use media_timing_function::MediaTimingFn;
 pub use media_timing_function::Name as MediaTimingFnName;
 
 mod transform3d;
-pub use transform3d::Transform3D;
+pub use transform3d::Transform3d;
 
 mod layer;
 pub use layer::AutoresizingMask;

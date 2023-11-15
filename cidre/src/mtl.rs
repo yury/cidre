@@ -1,5 +1,5 @@
 mod types;
-pub use types::Coordinate2D;
+pub use types::Coordinate2d;
 pub use types::Origin;
 pub use types::Region;
 pub use types::ResourceId;

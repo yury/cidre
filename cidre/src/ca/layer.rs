@@ -61,10 +61,10 @@ impl Layer {
     pub fn set_anchor_point(&mut self, val: cg::Point);
 
     #[objc::msg_send(transform)]
-    pub fn transform(&self) -> ca::Transform3D;
+    pub fn transform(&self) -> ca::Transform3d;
 
     #[objc::msg_send(setTransform:)]
-    pub fn set_transform(&mut self, val: ca::Transform3D);
+    pub fn set_transform(&mut self, val: ca::Transform3d);
 
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;

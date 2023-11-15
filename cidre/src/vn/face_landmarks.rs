@@ -8,10 +8,10 @@ impl Region {
     pub fn point_count(&self) -> usize;
 }
 
-define_obj_type!(Region2D(Region));
+define_obj_type!(Region2d(Region));
 
 define_obj_type!(FaceLandmarks(ns::Id));
-define_obj_type!(FaceLandmarks2D(FaceLandmarks));
+define_obj_type!(FaceLandmarks2d(FaceLandmarks));
 
 impl FaceLandmarks {
     #[objc::msg_send(confidence)]

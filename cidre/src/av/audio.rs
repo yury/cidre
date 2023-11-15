@@ -8,15 +8,15 @@ pub use unit::UnitEq;
 pub use unit::UnitTimeEffect;
 
 pub mod types;
-pub use types::Angular3DOrientation;
+pub use types::Angular3dOrientation;
 pub use types::ChannelCount;
 pub use types::FrameCount;
 pub use types::FramePosition;
 pub use types::NodeBus;
 pub use types::PacketCount;
-pub use types::Point3D;
-pub use types::Vector3D;
-pub use types::Vector3DOrientation;
+pub use types::Point3d;
+pub use types::Vector3d;
+pub use types::Vector3dOrientation;
 
 mod node;
 pub use node::Node;

@@ -3,13 +3,13 @@ use crate::cg;
 /// ```
 /// use cidre::ca;
 ///
-/// let t = ca::Transform3D::identity();
+/// let t = ca::Transform3d::identity();
 ///
 /// assert!(t.is_identity());
 /// ```
 #[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
-pub struct Transform3D {
+pub struct Transform3d {
     pub m11: f64,
     pub m12: f64,
     pub m13: f64,
@@ -28,7 +28,7 @@ pub struct Transform3D {
     pub m44: f64,
 }
 
-impl Transform3D {
+impl Transform3d {
     /// The identity transform: [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1].
     #[inline]
     pub fn identity() -> Self {
@@ -84,7 +84,7 @@ impl Transform3D {
     }
 
     #[inline]
-    pub fn concat(&self, other: &Transform3D) -> Self {
+    pub fn concat(&self, other: &Transform3d) -> Self {
         unsafe { CATransform3DConcat(*self, *other) }
     }
 
@@ -101,16 +101,16 @@ impl Transform3D {
 
 #[link(name = "QuartzCore", kind = "framework")]
 extern "C" {
-    static CATransform3DIdentity: Transform3D;
-    fn CATransform3DIsIdentity(t: Transform3D) -> bool;
-    fn CATransform3DMakeTranslation(tx: f64, ty: f64, tz: f64) -> Transform3D;
-    fn CATransform3DMakeScale(sx: f64, sy: f64, sz: f64) -> Transform3D;
-    fn CATransform3DMakeRotation(angle: f64, x: f64, y: f64, z: f64) -> Transform3D;
-    fn CATransform3DTranslate(t: Transform3D, tx: f64, ty: f64, tz: f64) -> Transform3D;
-    fn CATransform3DScale(t: Transform3D, sx: f64, sy: f64, sz: f64) -> Transform3D;
-    fn CATransform3DRotate(t: Transform3D, angle: f64, x: f64, y: f64, z: f64) -> Transform3D;
-    fn CATransform3DConcat(a: Transform3D, b: Transform3D) -> Transform3D;
-    fn CATransform3DMakeAffineTransform(m: cg::AffineTransform) -> Transform3D;
-    fn CATransform3DIsAffine(t: Transform3D) -> bool;
-    fn CATransform3DGetAffineTransform(t: Transform3D) -> cg::AffineTransform;
+    static CATransform3DIdentity: Transform3d;
+    fn CATransform3DIsIdentity(t: Transform3d) -> bool;
+    fn CATransform3DMakeTranslation(tx: f64, ty: f64, tz: f64) -> Transform3d;
+    fn CATransform3DMakeScale(sx: f64, sy: f64, sz: f64) -> Transform3d;
+    fn CATransform3DMakeRotation(angle: f64, x: f64, y: f64, z: f64) -> Transform3d;
+    fn CATransform3DTranslate(t: Transform3d, tx: f64, ty: f64, tz: f64) -> Transform3d;
+    fn CATransform3DScale(t: Transform3d, sx: f64, sy: f64, sz: f64) -> Transform3d;
+    fn CATransform3DRotate(t: Transform3d, angle: f64, x: f64, y: f64, z: f64) -> Transform3d;
+    fn CATransform3DConcat(a: Transform3d, b: Transform3d) -> Transform3d;
+    fn CATransform3DMakeAffineTransform(m: cg::AffineTransform) -> Transform3d;
+    fn CATransform3DIsAffine(t: Transform3d) -> bool;
+    fn CATransform3DGetAffineTransform(t: Transform3d) -> cg::AffineTransform;
 }
