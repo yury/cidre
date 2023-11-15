@@ -1,6 +1,16 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, cg, define_cls, define_obj_type, ns, objc, sys};
+use crate::{arc, blocks, cg, define_cls, define_obj_type, ns, objc, sc, sys};
+
+#[doc(alias = "SCShareableContentStyle")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum Style {
+    None,
+    Window,
+    Display,
+    Application,
+}
 
 define_obj_type!(RunningApp(ns::Id));
 
@@ -107,6 +117,25 @@ impl ShareableContent {
 
         future.await
     }
+
+    #[objc::cls_msg_send(infoForFilter:)]
+    pub fn info_for_filter_ar(filter: &sc::ContentFilter) -> arc::Rar<Info>;
+
+    #[objc::cls_rar_retain]
+    pub fn info_for_filter(filter: &sc::ContentFilter) -> arc::R<Info>;
+}
+
+define_obj_type!(Info(ns::Id));
+
+impl Info {
+    #[objc::msg_send(style)]
+    pub fn style(&self) -> Style;
+
+    #[objc::msg_send(pointPixelScale)]
+    pub fn point_pixel_scale(&self) -> f32;
+
+    #[objc::msg_send(contentRect)]
+    pub fn content_rect(&self) -> cg::Rect;
 }
 
 #[cfg(test)]

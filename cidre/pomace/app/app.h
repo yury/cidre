@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 Class NS_APPLICATION;
 Class NS_VIEW;
 Class NS_COLOR;
+Class NS_WINDOW;
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -23,6 +24,7 @@ static void mtl_initializer(void)
         NS_APPLICATION = [NSApplication class];
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];
+        NS_WINDOW = [NSWindow class];
         initialized = 1;
     }
 }

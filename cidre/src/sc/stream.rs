@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc};
+use crate::{arc, blocks, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc, sc};
 
 use super::{Display, Window};
 
@@ -70,6 +70,30 @@ pub enum OutputType {
     Audio,
 }
 
+/// Denotes the setting that can be set to determine when to show the presenter overlay
+/// alert for any stream
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum PresenterOverlayAlertSetting {
+    /// Allow the system to determine when to show the presenter overlay privacy alert.
+    System,
+
+    /// Never show the presenter overlay privacy alert.
+    Never,
+
+    /// Always show the presenter overlay privacy alert.
+    Always,
+}
+
+#[doc(alias = "SCCaptureResolutionType")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum CaptureResolution {
+    Automatic,
+    Best,
+    Nominal,
+}
+
 define_obj_type!(Cfg(ns::Id), SC_STREAM_CONFIGURATION);
 
 impl Cfg {
@@ -127,47 +151,144 @@ impl Cfg {
     pub fn shows_cursor(&self) -> bool;
 
     #[objc::msg_send(setShowsCursor:)]
-    pub fn set_shows_cursor(&mut self, value: bool);
+    pub fn set_shows_cursor(&mut self, val: bool);
 
     #[objc::msg_send(backgroundColor)]
     pub fn background_color(&self) -> cg::Color;
 
     #[objc::msg_send(setBackgroundColor:)]
-    pub fn set_background_color(&mut self, value: cg::Color);
+    pub fn set_background_color(&mut self, val: cg::Color);
 
     #[objc::msg_send(sourceRect)]
-    pub fn source_rect(&self) -> cg::Rect;
+    pub fn src_rect(&self) -> cg::Rect;
 
     #[objc::msg_send(setSourceRect:)]
-    pub fn set_source_rect(&mut self, value: cg::Rect);
+    pub fn set_src_rect(&mut self, val: cg::Rect);
+
+    #[objc::msg_send(destinationRect)]
+    pub fn dst_rect(&self) -> cg::Rect;
+
+    #[objc::msg_send(setDestinationRect:)]
+    pub fn set_dst_rect(&self, val: cg::Rect);
+
+    #[objc::msg_send(queueDepth)]
+    pub fn queue_depth(&self) -> isize;
+
+    #[objc::msg_send(setQueueDepth:)]
+    pub fn set_queue_depth(&mut self, val: isize);
+
+    /// Specifies the YCbCr matrix applied to the output surface.
+    /// The value must be one of the strings specified
+    /// [in](https://developer.apple.com/documentation/coregraphics/quartz_display_services/display_stream_ycbcr_to_rgb_conversion_matrix_options)
+    /// Should only be used if your pixel format is 420v or 420f.
+    #[objc::msg_send(colorMatrix)]
+    pub fn color_matrix(&self) -> &cf::String;
+
+    #[objc::msg_send(setColorMatrix:)]
+    pub fn set_color_matrix(&self, val: &cf::String);
+
+    /// The color space of the output buffer.  If not set the output buffer uses the same color
+    /// space as the display. The value must be one of the strings specified
+    /// [in](https://developer.apple.com/documentation/coregraphics/cgcolorspace/color_space_names)
+    #[objc::msg_send(colorSpaceName)]
+    pub fn color_space_name(&self) -> &cf::String;
+
+    #[objc::msg_send(setColorSpaceName:)]
+    pub fn set_color_space_name(&mut self, val: &cf::String);
 
     /// Specifies whether the audio will be captured.  By default audio is not captured.
     #[objc::msg_send(capturesAudio)]
     pub fn captures_audio(&self) -> bool;
 
     #[objc::msg_send(setCapturesAudio:)]
-    pub fn set_captures_audio(&mut self, value: bool);
+    pub fn set_captures_audio(&mut self, val: bool);
 
     /// The sample rate for audio. Default is set to 48000.
     #[objc::msg_send(sampleRate)]
     pub fn sample_rate(&self) -> i64;
 
     #[objc::msg_send(setSampleRate:)]
-    pub fn set_sample_rate(&mut self, value: i64);
+    pub fn set_sample_rate(&mut self, val: i64);
 
     /// Channel count. Default is set to two.
     #[objc::msg_send(channelCount)]
     pub fn channel_count(&self) -> i64;
 
     #[objc::msg_send(setChannelCount:)]
-    pub fn set_channel_count(&mut self, value: i64);
+    pub fn set_channel_count(&mut self, val: i64);
 
     /// Whether to exclude audio from current process. Default is set to false.
     #[objc::msg_send(excludesCurrentProcessAudio)]
     pub fn excludes_current_process_audio(&self) -> bool;
 
     #[objc::msg_send(setExcludesCurrentProcessAudio:)]
-    pub fn set_excludes_current_process_audio(&mut self, value: bool);
+    pub fn set_excludes_current_process_audio(&mut self, val: bool);
+
+    /// Ignore framing on windows in the display sharing case (will ignore shadows).
+    #[objc::msg_send(ignoreShadowsDisplay)]
+    pub fn ignore_shadows_display(&self) -> bool;
+
+    #[objc::msg_send(setIgnoreShadowsDisplay:)]
+    pub fn set_ignore_shadows_display(&mut self, val: bool);
+
+    /// Ignore framing on windows in the single window sharing case (will ignore shadows).
+    #[objc::msg_send(ignoreShadowsSingleWindow)]
+    pub fn ignore_shadows_single_window(&self) -> bool;
+
+    #[objc::msg_send(setIgnoreShadowsSingleWindow:)]
+    pub fn set_ignore_shadows_single_window(&mut self, val: bool);
+
+    #[objc::msg_send(captureResolution)]
+    pub fn capture_resolution(&self) -> sc::CaptureResolution;
+
+    #[objc::msg_send(setCaptureResolution:)]
+    pub fn set_capture_resolution(&mut self, val: sc::CaptureResolution);
+
+    #[objc::msg_send(capturesShadowsOnly)]
+    pub fn captures_shadows_only(&self) -> bool;
+
+    #[objc::msg_send(setCapturesShadowsOnly:)]
+    pub fn set_captures_shadows_only(&mut self, val: bool);
+
+    /// Ensure partially transparent areas on windows are backed by
+    /// a solid white color so that the resulting image is fully opaque.
+    #[objc::msg_send(shouldBeOpaque)]
+    pub fn should_be_opaque(&self) -> bool;
+
+    #[objc::msg_send(setShouldBeOpaque:)]
+    pub fn set_should_be_opaque(&mut self, val: bool);
+
+    #[objc::msg_send(ignoreGlobalClipDisplay)]
+    pub fn ignore_global_clip_display(&self) -> bool;
+
+    #[objc::msg_send(setIgnoreGlobalClipDisplay:)]
+    pub fn set_ignore_global_clip_display(&mut self, val: bool);
+
+    /// Ignore framing on windows in the single window sharing case (will ignore shadows).
+    #[objc::msg_send(ignoreGlobalClipSingleWindow)]
+    pub fn ignore_global_clip_single_window(&self) -> bool;
+
+    #[objc::msg_send(setIgnoreGlobalClipSingleWindow:)]
+    pub fn set_ignore_global_clip_single_window(&mut self, val: bool);
+
+    /// Informs the system if a privacy alert should be shown when using presenter overlay
+    /// for a stream. Defaults to 'sc::PresenterOverlayAlertSetting::System';
+    #[objc::msg_send(presenterOverlayPrivacyAlertSetting)]
+    pub fn presenter_overlay_privacy_alert_setting(&self) -> PresenterOverlayAlertSetting;
+
+    #[objc::msg_send(setPresenterOverlayPrivacyAlertSetting:)]
+    pub fn set_presenter_overlay_privacy_alert_setting(
+        &mut self,
+        val: PresenterOverlayAlertSetting,
+    );
+
+    /// Show the child windows in display bound windows and applications sharing.
+    /// Child windows are included by default.
+    #[objc::msg_send(includeChildWindows)]
+    pub fn include_child_windows(&self) -> bool;
+
+    #[objc::msg_send(setIncludeChildWindows:)]
+    pub fn set_include_child_windows(&mut self, val: bool);
 }
 
 #[link(name = "sc", kind = "static")]
@@ -213,6 +334,26 @@ impl ContentFilter {
     ) -> arc::R<Self> {
         Self::alloc().init_with_display_excluding_windows(display, windows)
     }
+
+    #[objc::msg_send(style)]
+    pub fn style(&self) -> sc::ShareableContentStyle;
+
+    #[objc::msg_send(pointPixelScale)]
+    pub fn point_pixel_scale(&self) -> f32;
+
+    #[objc::msg_send(contentRect)]
+    pub fn content_rect(&self) -> cg::Rect;
+
+    #[objc::msg_send(includeMenuBar)]
+    pub fn include_menu_bar(&self) -> bool;
+
+    /// To include menu bar as part of the capture. This property has no effect for the
+    /// desktop independent window filter. For content filters created with initWithDisplay:excluding,
+    /// the default value is 'true'. Display excluding content filters contains the desktop
+    /// and dock. For content filters created with initWithDisplay:including, the default
+    /// value is 'false'. Display including content filters do not contain the desktop and dock
+    #[objc::msg_send(setIncludeMenuBar:)]
+    pub fn set_include_menu_bar(&mut self, val: bool);
 }
 
 define_obj_type!(Stream(ns::Id));

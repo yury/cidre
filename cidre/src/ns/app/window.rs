@@ -1,4 +1,4 @@
-use crate::define_options;
+use crate::{arc, define_obj_type, define_options, ns, objc};
 
 define_options!(StyleMask(usize));
 
@@ -57,4 +57,31 @@ impl CollectionBehavior {
     pub const PRIMARY: Self = Self(1 << 16);
     pub const AUXILIARY: Self = Self(1 << 17);
     pub const CAN_JOIN_ALL_APPLICATIONS: Self = Self(1 << 18);
+}
+
+#[doc(alias = "NSWindowTitleVisibility")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum TitleVisibility {
+    Visible,
+    Hidden,
+}
+
+#[doc(alias = "NSWindowToolbarStyle")]
+#[repr(isize)]
+pub enum ToolbarStyle {
+    Automatic,
+    Expanded,
+    Preference,
+    Unified,
+    UnifiedCompact,
+}
+
+define_obj_type!(Window(ns::Id), NS_WINDOW);
+
+impl Window {}
+
+#[link(name = "app", kind = "static")]
+extern "C" {
+    static NS_WINDOW: &'static objc::Class<Window>;
 }
