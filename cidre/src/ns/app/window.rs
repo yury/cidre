@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, define_options, ns, objc};
+use crate::{arc, cg, define_obj_type, define_options, ns, objc};
 
 define_options!(StyleMask(usize));
 
@@ -75,6 +75,26 @@ pub enum ToolbarStyle {
     Preference,
     Unified,
     UnifiedCompact,
+}
+
+#[doc(alias = "NSWindowLevel")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(transparent)]
+pub struct WindowLevel(pub isize);
+
+impl WindowLevel {
+    pub const fn with_cg(level: cg::WindowLevel) -> Self {
+        Self(level.0 as _)
+    }
+    pub const NORMAL: Self = Self::with_cg(cg::WindowLevel::NORMAL);
+    pub const FLOATING: Self = Self::with_cg(cg::WindowLevel::FLOATING);
+    pub const SUBMENU: Self = Self::with_cg(cg::WindowLevel::TORN_OFF_MENU);
+    pub const TORN_OFF_MENU: Self = Self::with_cg(cg::WindowLevel::TORN_OFF_MENU);
+    pub const MAIN_MENU: Self = Self::with_cg(cg::WindowLevel::MAIN_MENU);
+    pub const STATUS: Self = Self::with_cg(cg::WindowLevel::STATUS);
+    pub const MODAL_PANEL: Self = Self::with_cg(cg::WindowLevel::MODAL_PANEL);
+    pub const POP_UP_MENU: Self = Self::with_cg(cg::WindowLevel::POP_UP_MENU);
+    pub const SCREEN_SAVER: Self = Self::with_cg(cg::WindowLevel::SCREEN_SAVER);
 }
 
 define_obj_type!(Window(ns::Id), NS_WINDOW);

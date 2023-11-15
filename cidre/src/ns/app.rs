@@ -12,6 +12,7 @@ pub use window::StyleMask as WindowStyleMask;
 pub use window::TitleVisibility as WindowTitleVisibility;
 pub use window::ToolbarStyle as WindowToolbarStyle;
 pub use window::Window;
+pub use window::WindowLevel;
 
 pub mod color;
 pub use color::Color;

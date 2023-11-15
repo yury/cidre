@@ -14,6 +14,7 @@ Class NS_APPLICATION;
 Class NS_VIEW;
 Class NS_COLOR;
 Class NS_WINDOW;
+Class NS_COLOR_SPACE;
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -25,6 +26,7 @@ static void mtl_initializer(void)
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];
         NS_WINDOW = [NSWindow class];
+        NS_COLOR_SPACE = [NSColorSpace class];
         initialized = 1;
     }
 }

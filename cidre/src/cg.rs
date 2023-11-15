@@ -16,6 +16,9 @@ pub use color::Color;
 mod window;
 pub use window::Id as WindowId;
 
+mod window_level;
+pub use window_level::WindowLevel;
+
 pub mod direct_display;
 #[cfg(target_os = "macos")]
 pub use direct_display::main_display_id;
