@@ -201,7 +201,8 @@ pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
     unsafe {
         // latest runtimes don't need this marker anymore.
         // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24
-        // but mechmarks show that on macos it is not a case yet. Need to check on iOS.
+        // but mechmarks show that on macos it is not a case yet (see alloc_with_ar_retain bench).
+        // Need to check on iOS.
         asm!("mov x29, x29");
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
