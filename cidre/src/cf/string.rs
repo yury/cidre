@@ -367,7 +367,6 @@ impl PartialEq<str> for String {
     fn eq(&self, other: &str) -> bool {
         let ptr = unsafe { CFStringGetCStringPtr(self, Encoding::UTF8) };
         if ptr.is_null() {
-            println!("null");
             return false;
         }
         let s = unsafe { CStr::from_ptr(ptr) };
@@ -375,7 +374,7 @@ impl PartialEq<str> for String {
             return s.eq(other);
         }
 
-        return false;
+        false
     }
 }
 

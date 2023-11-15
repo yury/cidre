@@ -47,7 +47,7 @@ impl Reader {
     pub fn add_output<'ar>(
         &mut self,
         output: &av::AssetReaderOutput,
-    ) -> Result<(), &ns::Exception> {
+    ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| self.add_output_throws(output))
     }
 

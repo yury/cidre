@@ -319,7 +319,7 @@ impl VideoFormatDesc {
     ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         let mut result = None;
         unsafe {
-            CMVideoFormatDescriptionCreateForImageBuffer(allocator, &image_buffer, &mut result)
+            CMVideoFormatDescriptionCreateForImageBuffer(allocator, image_buffer, &mut result)
                 .to_result_unchecked(result)
         }
     }

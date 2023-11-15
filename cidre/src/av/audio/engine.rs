@@ -166,7 +166,7 @@ impl Engine {
     pub fn output_node(&self) -> &OutputNode;
 
     #[objc::msg_send(outputNode)]
-    pub fn output_node_mut(&self) -> &mut OutputNode;
+    pub fn output_node_mut(&mut self) -> &mut OutputNode;
 
     #[objc::msg_send(mainMixerNode)]
     pub fn main_mixer_node(&self) -> &MixerNode;

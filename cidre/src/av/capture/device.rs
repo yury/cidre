@@ -230,7 +230,7 @@ impl<'a> ConfigLockGuard<'a> {
     ) -> Result<(), arc::R<ns::Error>> {
         let mut error = None;
         if self.set_torch_mode_on_with_level_err(torch_level, &mut error) {
-            return Ok(());
+            Ok(())
         } else {
             unsafe { Err(error.unwrap_unchecked()) }
         }
@@ -483,7 +483,7 @@ impl<'a> ConfigLockGuard<'a> {
         ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(val) })
     }
 
-    pub fn set_active_color_space<'ar>(&mut self, val: ColorSpace) {
+    pub fn set_active_color_space(&mut self, val: ColorSpace) {
         unsafe { self.device.set_active_color_space_throws(val) }
     }
 

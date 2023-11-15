@@ -803,11 +803,11 @@ pub fn comp0() -> (Completion<()>, BlOnce<impl FnOnce()>) {
 }
 
 #[cfg(feature = "async")]
-pub fn comp1<R: Copy + Send + 'static>() -> (Completion<R>, BlOnce<impl FnOnce(R)>) {
+pub fn comp1<R: Send + 'static>() -> (Completion<R>, BlOnce<impl FnOnce(R)>) {
     let shared = Shared::new();
     (
         Completion(shared.clone()),
-        once1(move |v: R| shared.lock().ready(v.clone())),
+        once1(move |v: R| shared.lock().ready(v)),
     )
 }
 
