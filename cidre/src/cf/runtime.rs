@@ -56,7 +56,11 @@ impl arc::Release for Type {
 
 #[macro_export]
 macro_rules! define_cf_type {
-    ($NewType:ident($BaseType:path)) => {
+    (
+        $(#[$outer:meta])*
+        $NewType:ident($BaseType:path)
+    ) => {
+        $(#[$outer])*
         #[derive(Debug)]
         #[repr(transparent)]
         pub struct $NewType($BaseType);

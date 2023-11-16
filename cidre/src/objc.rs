@@ -259,7 +259,11 @@ macro_rules! define_cls {
 
 #[macro_export]
 macro_rules! define_obj_type {
-    ($NewType:ident $(+ $TraitImpl:path)*, $InnerType:path, $CLS:ident) => {
+    (
+        $(#[$outer:meta])*
+        $NewType:ident $(+ $TraitImpl:path)*, $InnerType:path, $CLS:ident) => {
+
+        $(#[$outer])*
         $crate::define_obj_type!($NewType(objc::Id));
 
         impl $NewType {
@@ -319,7 +323,11 @@ macro_rules! define_obj_type {
 
     };
 
-    ($NewType:ident($BaseType:path)) => {
+    (
+        $(#[$outer:meta])*
+        $NewType:ident($BaseType:path)
+    ) => {
+        $(#[$outer])*
         #[derive(Debug, PartialEq)]
         #[repr(transparent)]
         pub struct $NewType($BaseType);
@@ -362,7 +370,11 @@ macro_rules! define_obj_type {
         // }
 
     };
-    ($NewType:ident($BaseType:path), $CLS:ident) => {
+    (
+        $(#[$outer:meta])*
+        $NewType:ident($BaseType:path), $CLS:ident
+    ) => {
+        $(#[$outer])*
         $crate::define_obj_type!($NewType($BaseType));
         $crate::define_cls_init!($NewType, $CLS);
     };

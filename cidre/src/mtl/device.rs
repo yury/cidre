@@ -69,7 +69,11 @@ pub enum GpuFamily {
     Metal3 = 5001,
 }
 
-define_obj_type!(Device(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLDevice")]
+    Device(ns::Id)
+);
+
 impl Device {
     /// ```
     /// use cidre::mtl;

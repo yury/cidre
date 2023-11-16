@@ -13,7 +13,10 @@ pub enum PathStyle {
     Windows = 2,
 }
 
-define_cf_type!(Url(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFURL")]
+    Url(cf::Type)
+);
 
 impl Url {
     #[doc(alias = "CFURLGetTypeID")]

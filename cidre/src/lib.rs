@@ -129,7 +129,11 @@ pub mod arc;
 
 #[macro_export]
 macro_rules! define_options {
-    ($NewType:ident($BaseType:path)) => {
+    (
+        $(#[$outer:meta])*
+        $NewType:ident($BaseType:path)
+    ) => {
+        $(#[$outer])*
         #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Default)]
         #[repr(transparent)]
         pub struct $NewType(pub $BaseType);
