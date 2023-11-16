@@ -31,7 +31,13 @@ pub enum InterruptionReason {
     VideoDeviceNotAvailableDueToSystemPressure = 5,
 }
 
-define_obj_type!(Session(ns::Id), AV_CAPTURE_SESSION);
+define_obj_type!(
+    /// An object that configures capture behavior and coordinates the flow of data
+    /// from input devices to capture outputs.
+    #[doc(alias = "AVCaptureSession")]
+    Session(ns::Id),
+    AV_CAPTURE_SESSION
+);
 
 impl Session {
     #[objc::msg_send(canSetSessionPreset:)]
@@ -170,7 +176,11 @@ impl MultiCamSession {
     pub fn system_pressure_cost(&self) -> f32;
 }
 
-define_obj_type!(Connection(ns::Id));
+define_obj_type!(
+    /// An object that represents a connection from a capture input to a capture output.
+    #[doc(alias = "AVCaptureConnection")]
+    Connection(ns::Id)
+);
 
 pub mod notifications {
     use crate::ns;

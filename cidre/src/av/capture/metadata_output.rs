@@ -2,6 +2,7 @@ use crate::{arc, av, cg, define_obj_type, dispatch, ns, objc};
 
 use super::Output;
 
+// #[doc(alias = "AVCaptureMetadataOutputObjectsDelegate")]
 #[objc::obj_trait]
 pub trait MetadataOutputObjectsDelegate {
     #[objc::optional]
@@ -14,7 +15,19 @@ pub trait MetadataOutputObjectsDelegate {
     );
 }
 
-define_obj_type!(MetadataOutput(Output), AV_CAPTURE_METADATA_OUTPUT);
+define_obj_type!(
+    /// A capture output for processing timed metadata produced by a capture session.
+    ///
+    /// An [`av::CaptureMetadataOutput`] object intercepts metadata objects emitted by
+    /// its associated capture connection and forwards them to a delegate object for processing.
+    /// You can use instances of this class to process specific types of metadata included with
+    /// the input data. You use this class the way you do other output objects, typically by
+    /// adding it as an output to an [`av::CaptureSession`] object.
+    #[doc(alias = "AVCaptureMetadataOutput")]
+    MetadataOutput(Output),
+    AV_CAPTURE_METADATA_OUTPUT
+);
+
 impl MetadataOutput {
     #[objc::msg_send(setMetadataObjectsDelegate:queue:)]
     pub fn set_meta_data_objects_delegate<D: MetadataOutputObjectsDelegate>(
