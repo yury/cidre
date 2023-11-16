@@ -26,7 +26,7 @@ impl arc::A<UrlCache> {
 
 impl UrlCache {
     define_cls!(NS_URL_CACHE);
-    /// ```no_run
+    /// ```
     /// use cidre::ns;
     ///
     /// let cache = ns::UrlCache::shared();

@@ -16,7 +16,7 @@ impl arc::A<UrlResponse> {
 
 impl UrlResponse {
     define_cls!(NS_URL_RESPONSE);
-    /// ```no_run
+    /// ```
     /// use cidre::ns;
     /// let url = ns::Url::with_str("https://google.com").unwrap();
     /// let response = ns::UrlResponse::with_url(&url);

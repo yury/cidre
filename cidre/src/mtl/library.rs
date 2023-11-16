@@ -110,7 +110,7 @@ impl arc::A<CompileOpts> {
 
 impl CompileOpts {
     define_cls!(MTL_COMPILE_OPTIONS);
-    /// ```no_run
+    /// ```
     /// use cidre::mtl;
     ///
     /// let mut options = mtl::CompileOpts::new();

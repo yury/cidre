@@ -142,7 +142,7 @@ impl Engine {
         }
     }
 
-    /// ```no_run
+    /// ```
     /// use cidre::av;
     ///
     /// let engine = av::audio::Engine::new();
@@ -155,7 +155,7 @@ impl Engine {
     #[objc::msg_send(inputNode)]
     pub fn input_node_mut(&mut self) -> &mut InputNode;
 
-    /// ```no_run
+    /// ```
     /// use cidre::av;
     ///
     /// let engine = av::audio::Engine::new();

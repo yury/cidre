@@ -15,7 +15,7 @@ define_obj_type!(WebSocketTask(Task));
 define_obj_type!(Session(ns::Id));
 
 impl Session {
-    /// ```no_run
+    /// ```
     /// use cidre::ns;
     ///
     /// let session = ns::UrlSession::shared();

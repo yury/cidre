@@ -96,7 +96,7 @@ impl Desc {
         mipmapped: bool,
     ) -> arc::R<Desc>;
 
-    /// ```no_run
+    /// ```
     /// use cidre::mtl;
     ///
     /// let td = mtl::TextureDesc::new_cube_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, false);

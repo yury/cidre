@@ -97,7 +97,7 @@ pub enum CaptureResolution {
 define_obj_type!(Cfg(ns::Id), SC_STREAM_CONFIGURATION);
 
 impl Cfg {
-    /// ```no_run
+    /// ```
     /// use cidre::{sc, cm, cv};
     ///
     /// let mut cfg = sc::StreamCfg::new();

@@ -243,19 +243,19 @@ impl Queue {
         unsafe { dispatch_group_async_f(group, self, context as _, transmute(work)) }
     }
 
-    pub const TARGET_QUEUE_DEFAULT: Option<&Self> = None;
+    pub const TARGET_QUEUE_DEFAULT: Option<&'static Self> = None;
 }
 
 impl Main {
     #[inline]
-    fn default<'a>() -> &'a Main {
+    fn default() -> &'static Main {
         unsafe { &_dispatch_main_q }
     }
 }
 
 impl Attr {
     #[inline]
-    pub fn serial<'a>() -> Option<&'a Attr> {
+    pub fn serial() -> Option<&'static Attr> {
         None
     }
 

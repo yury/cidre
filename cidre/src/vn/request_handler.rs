@@ -68,7 +68,8 @@ impl ImageRequestHandler {
     /// Creates a vn::ImageRequestHandler to be used for performing requests against the image passed in as buffer.
     ///
     /// # Example
-    /// ```no_run
+    ///
+    /// ```
     /// use cidre::{ns, cv, cg, vn};
     ///
     /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();

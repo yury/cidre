@@ -28,7 +28,7 @@ impl ns::KVObserverRegistration for ProcessInfo {}
 
 impl ProcessInfo {
     define_cls!(NS_PROCESS_INFO);
-    /// ```no_run
+    /// ```
     /// use cidre::ns;
     ///
     /// let pi = ns::ProcessInfo::current();

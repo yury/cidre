@@ -71,7 +71,7 @@ impl Writer {
     #[objc::msg_send(inputs)]
     pub fn inputs(&self) -> &ns::Array<WriterInput>;
 
-    /// ```no_run
+    /// ```
     /// use cidre::{av, ns};
     /// let url = ns::Url::with_str("file://tmp/bla.mp4").unwrap();
     ///
