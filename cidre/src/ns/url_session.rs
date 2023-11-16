@@ -18,15 +18,15 @@ impl Session {
     /// ```no_run
     /// use cidre::ns;
     ///
-    /// let session = ns::URLSession::shared();
+    /// let session = ns::UrlSession::shared();
     /// println!("session: {:?}", session);
-    /// let url = ns::URL::with_str("https://google.com").unwrap();
+    /// let url = ns::Url::with_str("https://google.com").unwrap();
     /// let data_task = session.data_task_with_url(&url);
     /// assert!(data_task.error().is_none());
     /// assert_eq!(data_task.priority(), 0.5f32);
-    /// assert_eq!(data_task.state(), ns::URLSessionTaskState::Suspended);
+    /// assert_eq!(data_task.state(), ns::UrlSessionTaskState::Suspended);
     /// data_task.resume();
-    /// assert_eq!(data_task.state(), ns::URLSessionTaskState::Running);
+    /// assert_eq!(data_task.state(), ns::UrlSessionTaskState::Running);
     /// ```
     #[objc::cls_msg_send(sharedSession)]
     pub fn shared() -> &'static Session;

@@ -1727,7 +1727,15 @@ impl FrameRateRange {
     pub fn min_frame_duration(&self) -> cm::Time;
 }
 
-define_obj_type!(Format(ns::Id));
+define_obj_type!(
+    /// An AVCaptureDeviceFormat wraps a [`cm::FormatDesc`]
+    /// and other format-related information, such as min and max framerate.
+    ///
+    /// [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturedeviceformat)
+    #[doc(alias = "AVCaptureDeviceFormat")]
+    Format(ns::Id)
+);
+
 impl Format {
     #[objc::msg_send(mediaType)]
     pub fn media_type(&self) -> &av::MediaType;
@@ -1806,6 +1814,26 @@ impl Format {
     /// Indicates whether the format supports the Portrait Effect feature.
     #[objc::msg_send(isPortraitEffectSupported)]
     pub fn is_portrait_effect_supported(&self) -> bool;
+}
+
+/// Determining Color Support
+impl Format {
+    /// The list of color spaces the format supports for image and video capture.
+    ///
+    /// The [`ns::Number`] objects in this array contain [`av::CaptureColorSpace`] values.
+    /// The ordering of the array is such that spaces with a narrower color gamut appear
+    /// before those with wider color gamuts.
+    ///
+    /// All devices and formats support capture in the sRGB color space.
+    /// Some devices and formats can also capture in the P3 color space,
+    /// which includes a much wider gamut of colors than the sRGB color space.
+    /// (Content captured in the P3 color space is viewable on all devices.
+    /// Devices without wide-color displays render P3 content as accurately as possible
+    /// in the sRGB color gamut). By default, a capture session automatically enables wide-gamut
+    /// capture for supported devices and capture workflows (for details, see the [`av::CaptureSession`]
+    /// property automaticallyConfiguresCaptureDeviceForWideColor).
+    #[objc::msg_send(supportedColorSpaces)]
+    pub fn supported_color_spaces(&self) -> &ns::Array<ns::Number>;
 }
 
 pub mod notifications {

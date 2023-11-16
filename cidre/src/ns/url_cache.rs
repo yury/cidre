@@ -29,7 +29,7 @@ impl UrlCache {
     /// ```no_run
     /// use cidre::ns;
     ///
-    /// let cache = ns::URLCache::shared();
+    /// let cache = ns::UrlCache::shared();
     ///
     /// assert_eq!(512_000, cache.memory_capacity());
     /// assert_eq!(20_000_000, cache.disk_capacity());

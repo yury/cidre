@@ -100,7 +100,7 @@ impl Cfg {
     /// ```no_run
     /// use cidre::{sc, cm, cv};
     ///
-    /// let mut cfg = sc::StreamConfiguration::new();
+    /// let mut cfg = sc::StreamCfg::new();
     ///
     /// cfg.set_width(200);
     /// assert_eq!(200, cfg.width());
@@ -108,7 +108,7 @@ impl Cfg {
     /// assert_eq!(300, cfg.height());
     ///
     /// cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
-    /// cfg.set_pixel_format(cv::PixelFormatType::_32_BGRA);
+    /// cfg.set_pixel_format(cv::PixelFormat::_32_BGRA);
     /// cfg.set_scales_to_fit(false);
     /// cfg.set_shows_cursor(false);
     ///

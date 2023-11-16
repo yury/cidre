@@ -471,17 +471,12 @@ fn gen_msg_send(
     let mut pre: Vec<String> = Vec::with_capacity(3);
 
     for t in iter.by_ref() {
-        match t {
-            TokenTree::Ident(v) => {
-                let s = v.to_string();
-                if s == "fn" {
-                    pre.push(s);
-                    break;
-                } else {
-                    pre.push(s);
-                }
+        let s = t.to_string();
+        pre.push(s);
+        if let TokenTree::Ident(v) = t {
+            if v.to_string() == "fn" {
+                break;
             }
-            _ => continue,
         }
     }
     let Some(TokenTree::Ident(fn_name)) = iter.next() else {

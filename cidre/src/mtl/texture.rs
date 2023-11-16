@@ -99,7 +99,7 @@ impl Desc {
     /// ```no_run
     /// use cidre::mtl;
     ///
-    /// let td = mtl::TextureDescriptor::new_cube_with_pixel_format(mtl::PixelFormat::A8Unorm, 100, false);
+    /// let td = mtl::TextureDesc::new_cube_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, false);
     ///
     /// assert_eq!(td.texture_type(), mtl::TextureType::Cube);
     ///
