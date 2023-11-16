@@ -152,7 +152,8 @@ pub enum PixelFormat {
     #[doc(alias = "MTLPixelFormatBGRA8Unorm")]
     Bgra8UNorm = 80,
 
-    /// Ordinary format with four 8-bit normalized unsigned integer components in BGRA order with conversion between sRGB and linear space.
+    /// Ordinary format with four 8-bit normalized unsigned integer components in BGRA order
+    /// with conversion between sRGB and linear space.
     #[doc(alias = "MTLPixelFormatBGRA8Unorm_sRGB")]
     Bgra8UNormSrgb = 81,
 
@@ -184,11 +185,31 @@ pub enum PixelFormat {
 
     /// A 32-bit extended range pixel format with three fixed-point components:
     /// 10-bit blue, 10-bit green, and 10-bit red.
+    ///
+    /// Pixel data is stored in blue, green, and red order, from least significant bit
+    /// to most significant bit. Bits 30 and 31 are used as padding, and their value is 0.
+    ///
+    /// The blue, green, and red components are linearly encoded, and their values range
+    /// from -0.752941 to 1.25098.
+    ///
+    /// To display wide color values on devices with wide color displays, you can set this
+    /// pixel format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat
+    /// property of a 'ca::MetalLayer'.
     #[doc(alias = "MTLPixelFormatBGR10_XR")]
     Bgr10Xr = 554,
 
     /// A 32-bit extended range pixel format with sRGB conversion and three fixed-point components:
     /// 10-bit blue, 10-bit green, and 10-bit red.
+    ///
+    /// Pixel data is stored in blue, green, and red order, from least significant bit to most
+    /// significant bit. Bits 30 and 31 are used as padding, and their value is 0.
+    ///
+    /// The blue, green, and red components are gamma encoded, and their values range from -0.5271 to 1.66894,
+    /// before gamma expansion.
+    ///
+    /// To display wide color values on devices with wide color displays, you can set this pixel
+    /// format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property of
+    /// a 'ca::MetalLayer'. You must also use specify an extended sRGB color space.
     #[doc(alias = "MTLPixelFormatBGR10_XR_sRGB")]
     Bgr10XrSrgb = 555,
 
@@ -227,11 +248,41 @@ pub enum PixelFormat {
 
     /// A 64-bit extended range pixel format with four fixed-point components:
     /// 10-bit blue, 10-bit green, 10-bit red, and 10-bit alpha.
+    ///
+    /// Pixel data is stored in blue, green, red, and alpha order, from least significant
+    /// bit to most significant bit. Each component is stored in a 16-bit chunk that's arranged
+    /// as follows:
+    ///
+    /// - The 10 left-most bits store the component's data.
+    /// - The 6 right-most bits are used as padding, and their value is 0.
+    ///
+    /// The blue, green, and red components are linearly encoded, and their values range
+    /// from -0.752941 to 1.25098. The alpha component is always clamped to a [0.0, 1.0] range
+    /// in sampling, rendering, and writing operations, despite supporting values outside this range.
+    ///
+    /// To display wide color values on devices with wide color displays, you can set this pixel
+    /// format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property of
+    /// a 'ca::MetalLayer'.
     #[doc(alias = "MTLPixelFormatBGRA10_XR")]
     Bgra10Xr = 552,
 
     /// A 64-bit extended range pixel format with sRGB conversion and four fixed-point components:
     /// 10-bit blue, 10-bit green, 10-bit red, and 10-bit alpha.
+    ///
+    /// Pixel data is stored in blue, green, red, and alpha order, from least significant bit to most
+    /// significant bit. Each component is stored in a 16-bit chunk that's arranged as follows:
+    ///
+    /// - The 10 left-most bits store the component's data.
+    /// - The 6 right-most bits are used as padding, and their value is 0.
+    ///
+    /// The blue, green, and red components are gamma encoded, and their values range from
+    /// -0.5271 to 1.66894, before gamma expansion. The alpha component is always clamped
+    /// to a [0.0, 1.0] range in sampling, rendering, and writing operations, despite supporting
+    /// values outside this range.
+    ///
+    /// To display wide color values on devices with wide color displays, you can set this
+    /// pixel format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property
+    /// of a 'ca::MetalLayer'. You must also use specify an extended sRGB color space.
     #[doc(alias = "MTLPixelFormatBGRA10_XR_sRGB")]
     Bgra10XrSrgb = 553,
 

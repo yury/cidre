@@ -392,6 +392,8 @@ impl Device {
     ///
     /// Setting this property has no impact on objects specified in the metadata output.
     ///
+    /// # Safety
+    ///
     /// 'set_center_stage_rect_of_interest_throws': throws an 'ns::ExceptionName::generic()'
     /// if called without first obtaining exclusive access to the receiver using
     /// 'lock_for_configuration' 'set_center_stage_rect_of_interest_throws'
@@ -425,11 +427,14 @@ impl Device {
 pub enum ColorSpace {
     /// The sRGB color space (<https://www.w3.org/Graphics/Color/srgb>)
     Srgb = 0,
+
     /// The P3 D65 wide color space which uses Illuminant D65 as the white point.
     P3D65 = 1,
+
     /// The BT2020 wide color space which uses Illuminant D65 as the white point
     /// and Hybrid Log-Gamma as the transfer function.
     HlgBt2020 = 2,
+
     /// The Apple Log Color space, which uses BT2020 as the color primaries,
     /// and an Apple defined Log curve as a transfer function. When this is set as the active color
     /// space on an 'av::CaptureDevice', any 'av::CapturePhotoOutput' or 'av::CaptureStillImageOutput'

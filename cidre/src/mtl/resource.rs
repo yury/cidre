@@ -48,9 +48,10 @@ pub enum StorageMode {
     Shared = 0,
     /// This mode relaxes the coherency requirements and requires that the developer make explicit requests to maintain
     /// coherency between a CPU and GPU version of the texture resource.  In order for CPU to access up to date GPU results,
-    /// first, a blit synchronizations must be completed (see synchronize methods of mtl::BlitCommandEncoder).
+    /// first, a blit synchronizations must be completed (see synchronize methods of [`mtl::BlitCmdEncoder`][crate::mtl::BlitCmdEncoder]).
     /// Blit overhead is only incurred if GPU has modified the resource.
     /// This is the default storage mode for OS X Textures.
+    ///
     Managed = 1,
     /// This mode allows the texture resource data to be kept entirely to GPU (or driver) private memory
     /// that will never be accessed by the CPU directly, so no
