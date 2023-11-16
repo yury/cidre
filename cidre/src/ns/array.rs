@@ -10,12 +10,14 @@ use crate::{
     objc::{self, Class, Obj},
 };
 
+#[doc(alias = "NSArray")]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Array<T: Obj>(ns::Id, PhantomData<T>);
 
 impl<T: Obj> Obj for Array<T> where T: Obj {}
 
+#[doc(alias = "NSMutableArray")]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ArrayMut<T: Obj>(ns::Array<T>);

@@ -437,7 +437,7 @@ pub enum ColorSpace {
 
     /// The Apple Log Color space, which uses BT2020 as the color primaries,
     /// and an Apple defined Log curve as a transfer function. When this is set as the active color
-    /// space on an 'av::CaptureDevice', any 'av::CapturePhotoOutput' or 'av::CaptureStillImageOutput'
+    /// space on an [`av::CaptureDevice`], any [`av::CapturePhotoOutput`] or [`av::CaptureStillImageOutput`]
     /// connected to the same 'av::CaptureDevice' will have its video connection disabled.
     AppleLog = 3,
 }
@@ -1728,7 +1728,7 @@ impl FrameRateRange {
 }
 
 define_obj_type!(
-    /// An AVCaptureDeviceFormat wraps a [`cm::FormatDesc`]
+    /// An [`av::CaptureDeviceFormat`] wraps a [`cm::FormatDesc`]
     /// and other format-related information, such as min and max framerate.
     ///
     /// [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturedeviceformat)
@@ -1774,18 +1774,15 @@ impl Format {
     #[objc::msg_send(maxExposureDuration)]
     pub fn max_exposure_duration(&self) -> cm::Time;
 
-    /// A 'f32' indicating the minimum supported exposure ISO value.
-    ///
-    /// This read-only property indicates the minimum supported exposure ISO value.
+    /// An [`f32`] indicating the minimum supported exposure ISO value.
     #[objc::msg_send(minISO)]
     pub fn min_iso(&self) -> f32;
 
-    /// An 'f32' indicating the maximum supported exposure ISO value.
-    ///
-    /// This read-only property indicates the maximum supported exposure ISO value.
+    /// An [`f32`] indicating the maximum supported exposure ISO value.
     #[objc::msg_send(maxISO)]
     pub fn max_iso(&self) -> f32;
 
+    /// Indicating the autofocus system.
     #[objc::msg_send(autoFocusSystem)]
     pub fn auto_focus_system(&self) -> AutoFocusSystem;
 
