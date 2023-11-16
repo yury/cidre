@@ -1,15 +1,22 @@
 use crate::{arc, av, cm, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
+///
+/// [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideoorientation?language=objc)
+#[doc(alias = "AVCaptureVideoOrientation")]
+#[deprecated(since = "0.1.0", note = "See videoRotationAngle instead.")]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum VideoOrienation {
     /// Indicates that video should be oriented vertically, home button on the bottom.
     Portrait = 1,
+
     /// Indicates that video should be oriented vertically, home button on the top.
     PortraitUpsideDown = 2,
+
     /// Indicates that video should be oriented horizontally, home button on the right.
     LandscapeRight = 3,
+
     /// Indicates that video should be oriented horizontally, home button on the left.
     LandscapeLeft = 4,
 }
@@ -136,23 +143,24 @@ impl MultiCamSession {
     /// hardware constraints, so you receive an AVCaptureSessionRuntimeErrorNotification
     /// when attempting to start it running. Default value is 0.
     /// Contributors to hardwareCost include:
-    ///     - Whether the source devices' active formats use the full
-    ///       sensor (4:3) or a crop (16:9). Cropped formats require lower
-    ///       hardware bandwidth, and therefore lower the cost.
-    ///     - The max frame rate supported by the source devices' active formats.
-    ///       The higher the max frame rate, the higher the cost.
-    ///     - Whether the source devices' active formats are binned or not.
-    ///       Binned formats require substantially less hardware bandwidth,
-    ///       and therefore result in a lower cost.
-    ///     - The number of sources configured to deliver streaming
-    ///       disparity / depth via AVCaptureDepthDataOutput. The higher the number
-    ///       of cameras configured to produce depth, the higher the cost.
-    ///       In order to reduce hardwareCost, consider picking a sensor-cropped
-    ///       activeFormat, or a binned format.
-    ///       You may also use AVCaptureDeviceInput's videoMinFrameDurationOverride
-    ///       property to artificially limit the max frame rate (which is the
-    ///       reciprocal of the min frame duration) of a source device to a lower value.
-    ///       By doing so, you only pay the hardware cost for the max frame rate you intend to use.
+    ///
+    /// - Whether the source devices' active formats use the full
+    ///   sensor (4:3) or a crop (16:9). Cropped formats require lower
+    ///   hardware bandwidth, and therefore lower the cost.
+    /// - The max frame rate supported by the source devices' active formats.
+    ///   The higher the max frame rate, the higher the cost.
+    /// - Whether the source devices' active formats are binned or not.
+    ///   Binned formats require substantially less hardware bandwidth,
+    ///   and therefore result in a lower cost.
+    /// - The number of sources configured to deliver streaming
+    ///   disparity / depth via AVCaptureDepthDataOutput. The higher the number
+    ///   of cameras configured to produce depth, the higher the cost.
+    ///   In order to reduce hardwareCost, consider picking a sensor-cropped
+    ///   activeFormat, or a binned format.
+    ///   You may also use AVCaptureDeviceInput's videoMinFrameDurationOverride
+    ///   property to artificially limit the max frame rate (which is the
+    ///   reciprocal of the min frame duration) of a source device to a lower value.
+    ///   By doing so, you only pay the hardware cost for the max frame rate you intend to use.
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(hardwareCost)]
     pub fn hw_cost(&self) -> f32;

@@ -1736,36 +1736,68 @@ define_obj_type!(
     Format(ns::Id)
 );
 
+/// # Determining Reaction Effects Support
+impl Format {
+    /// Indicates whether the device supports reaction effects.
+    #[objc::msg_send(reactionEffectsSupported)]
+    pub fn reaction_effects_supported(&self) -> bool;
+
+    /// The minimum and maximum frame rates available when a reaction effect runs.
+    ///
+    /// Unlike other video effects, enabling reaction effects doesn’t limit the stream’s frame
+    /// rate because most of the time the system isn’t rendering the effect. The frame rate
+    /// only ramps down when the system renders a reaction on the stream.
+    #[objc::msg_send(videoFrameRateRangeForReactionEffectsInProgress)]
+    pub fn video_frame_rate_range_for_reaction_effects_in_progress(
+        &self,
+    ) -> Option<&av::FrameRateRange>;
+}
+
+/// # Determining Supported Media Formats
 impl Format {
     #[objc::msg_send(mediaType)]
     pub fn media_type(&self) -> &av::MediaType;
 
     #[objc::msg_send(formatDescription)]
     pub fn format_desc(&self) -> &cm::FormatDesc;
+}
 
-    #[objc::msg_send(videoSupportedFrameRateRanges)]
-    pub fn video_supported_frame_rate_ranges(&self) -> &ns::Array<FrameRateRange>;
+/// # Determining Output Support
+impl Format {
+    /// The list of capture output subclasses not allowed for capture with this format, if any.
+    #[objc::msg_send(unsupportedCaptureOutputClasses)]
+    pub fn unsupported_capture_output_classes(&self) -> &ns::Array<objc::Class<ns::Id>>;
+}
 
-    #[cfg(not(target_os = "macos"))]
-    #[objc::msg_send(videoFieldOfView)]
-    pub fn video_fov(&self) -> f32;
-
+/// # Determining Video Capture Support
+impl Format {
+    /// Indicates whether the format produces video data in a binned format.
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(isVideoBinned)]
     pub fn is_video_binned(&self) -> bool;
 
+    /// Indicates whether the format supports high dynamic range streaming.
     #[cfg(not(target_os = "macos"))]
-    #[objc::msg_send(isVideoStabilizationModeSupported:)]
-    pub fn is_video_stabilization_mode_supported(&self, mode: VideoStabilizationMode) -> bool;
+    #[objc::msg_send(isVideoHDRSupported)]
+    pub fn is_video_hdr_supported(&self) -> bool;
 
+    #[objc::msg_send(videoSupportedFrameRateRanges)]
+    pub fn video_supported_frame_rate_ranges(&self) -> &ns::Array<FrameRateRange>;
+}
+
+/// # Determining Field of View
+impl Format {
+    /// Format’s horizontal field of view in degrees.
     #[cfg(not(target_os = "macos"))]
-    #[objc::msg_send(videoMaxZoomFactor)]
-    pub fn video_max_zoom_factor(&self) -> cg::Float;
+    #[objc::msg_send(videoFieldOfView)]
+    pub fn video_fov(&self) -> f32;
 
-    #[cfg(not(target_os = "macos"))]
-    #[objc::msg_send(videoZoomFactorUpscaleThreshold)]
-    pub fn video_zoom_factor_upscale_threshold(&self) -> cg::Float;
+    #[objc::msg_send(geometricDistortionCorrectedVideoFieldOfView)]
+    pub fn geometric_distortion_corrected_video_field_of_view(&self) -> f32;
+}
 
+/// # Determining Exposure
+impl Format {
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(minExposureDuration)]
     pub fn min_exposure_duration(&self) -> cm::Time;
@@ -1781,6 +1813,20 @@ impl Format {
     /// An [`f32`] indicating the maximum supported exposure ISO value.
     #[objc::msg_send(maxISO)]
     pub fn max_iso(&self) -> f32;
+}
+
+impl Format {
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(isVideoStabilizationModeSupported:)]
+    pub fn is_video_stabilization_mode_supported(&self, mode: VideoStabilizationMode) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(videoMaxZoomFactor)]
+    pub fn video_max_zoom_factor(&self) -> cg::Float;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(videoZoomFactorUpscaleThreshold)]
+    pub fn video_zoom_factor_upscale_threshold(&self) -> cg::Float;
 
     /// Indicating the autofocus system.
     #[objc::msg_send(autoFocusSystem)]
@@ -1789,12 +1835,9 @@ impl Format {
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(isMultiCamSupported)]
     pub fn is_mutli_cam_supported(&self) -> bool;
-
-    #[objc::msg_send(geometricDistortionCorrectedVideoFieldOfView)]
-    pub fn geometric_distortion_corrected_video_field_of_view(&self) -> f32;
 }
 
-/// Center Stage
+/// # Center Stage
 impl Format {
     #[objc::msg_send(isCenterStageSupported)]
     pub fn is_center_stage_supported(&self) -> bool;
@@ -1806,14 +1849,14 @@ impl Format {
     pub fn video_frame_rate_range_for_center_stage(&self) -> Option<&FrameRateRange>;
 }
 
-/// Portrait Effect
+/// # Portrait Effect
 impl Format {
     /// Indicates whether the format supports the Portrait Effect feature.
     #[objc::msg_send(isPortraitEffectSupported)]
     pub fn is_portrait_effect_supported(&self) -> bool;
 }
 
-/// Determining Color Support
+/// # Determining Color Support
 impl Format {
     /// The list of color spaces the format supports for image and video capture.
     ///
@@ -1826,11 +1869,15 @@ impl Format {
     /// which includes a much wider gamut of colors than the sRGB color space.
     /// (Content captured in the P3 color space is viewable on all devices.
     /// Devices without wide-color displays render P3 content as accurately as possible
-    /// in the sRGB color gamut). By default, a capture session automatically enables wide-gamut
-    /// capture for supported devices and capture workflows (for details, see the [`av::CaptureSession`]
-    /// property automaticallyConfiguresCaptureDeviceForWideColor).
+    /// in the sRGB color gamut). By default, a capture session automatically enables
+    /// wide-gamut capture for supported devices and capture workflows (for details,
+    /// see the [`av::CaptureSession`] property automaticallyConfiguresCaptureDeviceForWideColor).
     #[objc::msg_send(supportedColorSpaces)]
     pub fn supported_color_spaces(&self) -> &ns::Array<ns::Number>;
+
+    /// Whether the format supports global tone mapping.
+    #[objc::msg_send(globalToneMappingSupported)]
+    pub fn global_tone_mapping_supported(&self) -> bool;
 }
 
 pub mod notifications {
