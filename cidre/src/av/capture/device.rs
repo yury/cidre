@@ -273,6 +273,33 @@ impl Device {
     pub fn is_continuity_camera(&self) -> bool;
 }
 
+/// Configuring HDR Settings
+impl Device {
+    #[objc::msg_send(isVideoHDREnabled)]
+    pub fn is_video_hdr_enabled(&self) -> bool;
+
+    /// The value of this property is a [`bool`] indicating whether the receiver is currently streaming
+    /// high dynamic range video buffers, also known as Extended Dynamic Range (EDR). The value of this
+    /// property is ignored when device.activeColorSpace is HLG BT2020 color space since HDR is effectively
+    /// always on and can't be disabled. The property may only be set if you first set automaticallyAdjustsVideoHDREnabled
+    /// to [`bool`], otherwise an [`ns::GenericException`] is thrown. videoHDREnabled may only be set to YES
+    /// if the receiver's activeFormat.isVideoHDRSupported property returns YES, otherwise an [`ns::GenericException`]
+    /// is thrown. This property may be key-value observed.
+    ///
+    /// Note that setting this property may cause a lengthy reconfiguration of the receiver, similar to setting
+    /// a new active format or [`av::CaptureSession`] sessionPreset. If you are setting either the active
+    /// format or the [`av::CaptureSession`]'s sessionPreset AND this property, you should bracket these operations
+    /// with [session beginConfiguration] and [session commitConfiguration] to minimize reconfiguration time.
+    #[objc::msg_send(setVideoHDREnabled:)]
+    pub unsafe fn set_video_hdr_enabled_throws(&mut self, val: bool);
+}
+
+impl<'a> ConfigLockGuard<'a> {
+    pub fn set_video_hdr_enabled<'ar>(&mut self, val: bool) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.device.set_video_hdr_enabled_throws(val) })
+    }
+}
+
 #[doc(alias = "AVCaptureMicrophoneMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
@@ -1777,6 +1804,17 @@ impl Format {
     pub fn is_video_binned(&self) -> bool;
 
     /// Indicates whether the format supports high dynamic range streaming.
+    ///
+    /// Whether the format supports high dynamic range streaming, also known as Extended Dynamic Range (EDR).
+    /// When enabled, the device streams at twice the published frame rate, capturing an under-exposed frame
+    /// and correctly exposed frame for each frame time at the published rate. Portions of the under-exposed frame
+    /// are combined with the correctly exposed frame to recover detail in darker areas of the scene.
+    /// EDR is a separate and distinct feature from 10-bit HDR video (first seen in 2020 iPhones).
+    /// 10-bit formats with HLG BT2020 color space have greater dynamic range by virtue of their expanded bit depth
+    /// and HLG transfer function, and when captured in movies, contain Dolby Vision metadata. They are, in effect,
+    /// "always on" HDR. And thus the videoHDRSupported property is always NO for 10-bit formats only supporting
+    /// HLG BT2020 colorspace, since HDR cannot be enabled or disabled. To enable videoHDR (EDR),
+    /// set the AVCaptureDevice.videoHDREnabled property.
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(isVideoHDRSupported)]
     pub fn is_video_hdr_supported(&self) -> bool;

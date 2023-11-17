@@ -185,6 +185,10 @@ impl LockFlags {
     pub const READ_ONLY: Self = Self(1);
 }
 
+/// CoreVideo pixel format type constants.
+///
+/// CoreVideo does not provide support for all of these formats; this list just defines their names.
+#[doc(alias = "CVPixelFormatType")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct PixelFormat(pub os::Type);
@@ -295,7 +299,31 @@ impl PixelFormat {
     pub const _420_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x420"));
 
-    pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r")); /* little-endian ARGB2101010 full-range ARGB */
+    /// 2 plane YCbCr10 4:2:2, each 10 bits in the MSBs of 16bits, video-range (luma=[64,940] chroma=[64,960])
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange")]
+    pub const _422_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"x422"));
+
+    /// 2 plane YCbCr10 4:4:4, each 10 bits in the MSBs of 16bits, video-range (luma=[64,940] chroma=[64,960])
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange")]
+    pub const _444_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"x444"));
+
+    /// 2 plane YCbCr10 4:2:0, each 10 bits in the MSBs of 16bits, full-range (Y range 0-1023)
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr10BiPlanarFullRange")]
+    pub const _420_YP_CB_CR_10_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"xf20"));
+
+    /// 2 plane YCbCr10 4:2:2, each 10 bits in the MSBs of 16bits, full-range (Y range 0-1023)
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr10BiPlanarFullRange")]
+    pub const _422_YP_CB_CR_10_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"xf22"));
+
+    /// 2 plane YCbCr10 4:4:4, each 10 bits in the MSBs of 16bits, full-range (Y range 0-1023)
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr10BiPlanarFullRange")]
+    pub const _444_YP_CB_CR_10_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"xf44"));
+
+    /// little-endian ARGB2101010 full-range ARGB
+    #[doc(alias = "kCVPixelFormatType_ARGB2101010LEPacked")]
+    pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r"));
 
     #[doc(alias = "kCVPixelFormatType_OneComponent8")]
     pub const ONE_COMPONENT_8: Self = Self(os::Type::from_be_bytes(*b"L008"));
