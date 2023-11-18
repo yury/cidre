@@ -7,7 +7,10 @@ pub struct ExecutionRange {
     pub length: u32,
 }
 
-define_options!(IndirectCmdType(usize));
+define_options!(
+    #[doc(alias = "MTLIndirectCommandType")]
+    IndirectCmdType(usize)
+);
 
 impl IndirectCmdType {
     ///A draw call command.
@@ -27,9 +30,16 @@ impl IndirectCmdType {
 
     /// A compute command using an arbitrarily sized grid.
     pub const CONCURRENT_DISPATCH_THREADS: Self = Self(1 << 6); /* Dispatch threads with concurrent execution */
+
+    pub const DRAW_MESH_THREADGROUPS: Self = Self(1 << 7);
+    pub const DRAW_MESH_THREADS: Self = Self(1 << 8);
 }
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(
+    /// Describes the limits and features that can be used in an indirect command
+    #[doc(alias = "MTLIndirectCommandBufferDescriptor")]
+    Desc(ns::Id)
+);
 
 impl Desc {
     #[objc::msg_send(commandTypes)]
@@ -75,7 +85,11 @@ impl Desc {
     pub fn set_support_ray_tracing(&mut self, val: bool);
 }
 
-define_obj_type!(IndirectCmdBuf(mtl::Resource));
+define_obj_type!(
+    /// A command buffer containing reusable commands, encoded either on the CPU or GPU.
+    #[doc(alias = "MTLIndirectCommandBuffer")]
+    IndirectCmdBuf(mtl::Resource)
+);
 
 impl IndirectCmdBuf {
     define_mtl!(gpu_resource_id);
