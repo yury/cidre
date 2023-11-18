@@ -3,8 +3,8 @@ use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
 pub struct ExecutionRange {
-    pub location: u32,
-    pub length: u32,
+    pub loc: u32,
+    pub len: u32,
 }
 
 define_options!(

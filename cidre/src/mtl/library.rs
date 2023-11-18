@@ -101,7 +101,11 @@ pub enum CompileSymbolVisibility {
     Hidden = 1,
 }
 
-define_obj_type!(CompileOpts(ns::Id));
+define_obj_type!(
+    /// Compilation settings for a Metal shader library.
+    #[doc(alias = "MTLCompileOptions")]
+    CompileOpts(ns::Id)
+);
 
 impl arc::A<CompileOpts> {
     #[objc::msg_send(init)]
@@ -160,7 +164,11 @@ impl CompileOpts {
     pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
 }
 
-define_obj_type!(Fn(ns::Id));
+define_obj_type!(
+    /// An object that represents a public shader function in a Metal library.
+    #[doc(alias = "MTLFunction")]
+    Fn(ns::Id)
+);
 
 impl Fn {
     define_mtl!(device, label, set_label);
