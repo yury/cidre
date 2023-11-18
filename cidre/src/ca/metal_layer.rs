@@ -75,6 +75,18 @@ impl MetalLayer {
     /// The default value is 3.
     #[objc::msg_send(setMaximumDrawableCount:)]
     pub fn set_maximum_drawable_count(&self, val: usize);
+
+    #[objc::msg_send(colorspace)]
+    pub fn colorspace(&self) -> Option<&cg::ColorSpace>;
+
+    #[objc::msg_send(setColorspace:)]
+    pub fn set_colorspace(&mut self, val: Option<&cg::ColorSpace>);
+
+    #[objc::msg_send(wantsExtendedDynamicRangeContent)]
+    pub fn wants_extended_dynamic_range_content(&self) -> bool;
+
+    #[objc::msg_send(setWantsExtendedDynamicRangeContent:)]
+    pub fn set_wants_extended_dynamic_range_content(&mut self, val: bool);
 }
 
 #[link(name = "ca", kind = "static")]
@@ -96,6 +108,11 @@ mod tests {
         let drawable = metal_layer.next_drawable().unwrap();
         let texture = drawable.texture();
         println!("{drawable:?} {texture:?}");
+        println!("colorspace: {:?}", metal_layer.colorspace());
+        assert_eq!(3, metal_layer.maximum_drawable_count());
+        assert_eq!(false, metal_layer.wants_extended_dynamic_range_content());
+        assert_eq!(true, metal_layer.framebuffer_only());
+        assert_eq!(cg::Size::new(100.0, 100.0), metal_layer.drawable_size());
 
         let animation_keys = metal_layer.animation_keys();
         assert!(animation_keys.is_none());

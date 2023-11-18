@@ -1,4 +1,4 @@
-use crate::{arc, av, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
 ///
@@ -127,6 +127,7 @@ impl Session {
 extern "C" {
     static AV_CAPTURE_SESSION: &'static objc::Class<Session>;
     static AV_CAPTURE_MULTI_CAM_SESSION: &'static objc::Class<MultiCamSession>;
+    static AV_CAPTURE_CONNECTION: &'static objc::Class<Connection>;
 }
 
 define_obj_type!(MultiCamSession(Session), AV_CAPTURE_MULTI_CAM_SESSION);
@@ -181,6 +182,60 @@ define_obj_type!(
     #[doc(alias = "AVCaptureConnection")]
     Connection(ns::Id)
 );
+
+impl Connection {
+    define_cls!(AV_CAPTURE_CONNECTION);
+
+    /// An array of audio channels that the connection provides.
+    #[objc::msg_send(audioChannels)]
+    pub fn audio_channels(&self) -> &ns::Array<AudioChannel>;
+}
+
+define_obj_type!(
+    /// Represents a single channel of audio flowing through an [`av::CaptureSession`]
+    ///
+    /// An [`av::CaptureConnection`] from an input producing audio to an output receiving
+    /// audio exposes an array of [`av::CaptureAudioChannel`] objects, one for each channel of audio available.
+    /// Iterating through these audio channel objects, a client may poll for audio levels.
+    /// Instances of [`av::CaptureAudioChannel`] cannot be created directly.
+    #[doc(alias = "AVCaptureAudioChannel")]
+    AudioChannel(ns::Id)
+);
+
+impl AudioChannel {
+    /// A measurement of the instantaneous average power level of the audio flowing through the receiver.
+    ///
+    /// A client may poll an [`av::CaptureAudioChannel`] object for its current averagePowerLevel
+    /// to get its instantaneous average power level in decibels.
+    /// This property is not key-value observable.
+    #[objc::msg_send(averagePowerLevel)]
+    pub fn average_power_level(&self) -> f32;
+
+    /// A measurement of the peak/hold level of the audio flowing through the receiver.
+    ///
+    /// A client may poll an [`av::CaptureAudioChannel`] object for its current peakHoldLevel to get its most
+    /// recent peak hold level in decibels.
+    /// This property is not key-value observable.
+    #[objc::msg_send(peakHoldLevel)]
+    pub fn peak_hold_level(&self) -> f32;
+
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(volume)]
+    pub fn volume(&self) -> f32;
+
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(setVolume:)]
+    pub fn set_volume(&mut self, val: f32);
+
+    /// A property indicating whether the receiver is currently enabled for data capture.
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(isEnabled)]
+    pub fn is_enabled(&self) -> bool;
+
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(setEnabled:)]
+    pub fn set_enabled(&self, val: bool);
+}
 
 pub mod notifications {
     use crate::ns;

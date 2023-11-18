@@ -39,6 +39,7 @@ pub use session_preset::SessionPreset;
 
 pub mod session;
 pub use session::notifications as session_notifications;
+pub use session::AudioChannel;
 pub use session::Connection;
 pub use session::InterruptionReason;
 pub use session::MultiCamSession;

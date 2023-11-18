@@ -20,6 +20,7 @@ Class AV_CAPTURE_DEVICE_DISCOVERY_SESSION;
 Class AV_CAPTURE_VIDEO_DATA_OUTPUT;
 Class AV_CAPTURE_AUDIO_DATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_INPUT;
+Class AV_CAPTURE_CONNECTION;
 
 Class AV_AUDIO_PLAYER_NODE;
 
@@ -60,6 +61,7 @@ static void av_initializer(void)
         AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
         AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
         AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
+        AV_CAPTURE_CONNECTION = [AVCaptureConnection class];
 #if TARGET_OS_OSX
 #else
         AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
