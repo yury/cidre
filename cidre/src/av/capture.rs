@@ -13,7 +13,7 @@ pub use device::FocusMode;
 pub use device::Format as DeviceFormat;
 pub use device::FrameRateRange;
 pub use device::MicMode;
-pub use device::Position as DevicePosition;
+pub use device::Pos as DevicePos;
 pub use device::TorchMode;
 pub use device::Type as DeviceType;
 pub use device::VideoStabilizationMode;

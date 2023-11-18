@@ -51,19 +51,19 @@ impl DeviceInput {
     pub fn set_unified_auto_exposure_defaults_enabled(&mut self, val: bool);
 
     #[objc::msg_send(portsWithMediaType:sourceDeviceType:sourceDevicePosition:)]
-    pub fn ports_with_media_type_ar(
+    pub fn ports_with_ar(
         &self,
         media_type: Option<&av::MediaType>,
         src_device_type: Option<&av::CaptureDeviceType>,
-        src_device_position: av::CaptureDevicePosition,
+        src_device_pos: av::CaptureDevicePos,
     ) -> arc::Rar<ns::Array<Port>>;
 
     #[objc::rar_retain]
-    pub fn ports_with_media_type(
+    pub fn ports_with(
         &self,
         media_type: Option<&av::MediaType>,
         src_device_type: Option<&av::CaptureDeviceType>,
-        src_device_position: av::CaptureDevicePosition,
+        src_device_pos: av::CaptureDevicePos,
     ) -> arc::R<ns::Array<Port>>;
 
     /// A property that acts as a modifier to the [`av::CaptureDevice`]'s activeVideoMinFrameDuration property.
@@ -117,7 +117,7 @@ impl Port {
 
     /// Position of the source device providing input through this port.
     #[objc::msg_send(sourceDevicePosition)]
-    pub fn src_device_position(&self) -> av::CaptureDevicePosition;
+    pub fn src_device_pos(&self) -> av::CaptureDevicePos;
 }
 
 pub mod port_notifications {

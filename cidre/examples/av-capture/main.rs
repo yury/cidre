@@ -1,5 +1,5 @@
 use cidre::{
-    av::{self, CaptureDevicePosition, MediaType},
+    av::{self, CaptureDevicePos, MediaType},
     ns,
 };
 
@@ -16,7 +16,7 @@ fn main() {
     let device = av::capture::Device::with_device_type_media_and_position(
         av::CaptureDeviceType::built_in_wide_angle_camera(),
         Some(MediaType::video()),
-        CaptureDevicePosition::Front,
+        CaptureDevicePos::Front,
     )
     .expect("front wide angle camera");
 

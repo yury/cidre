@@ -51,14 +51,14 @@ impl Device {
     pub fn with_device_type_media_and_position_ar(
         device_type: &Type,
         media_type: Option<&av::MediaType>,
-        position: Position,
+        position: Pos,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn with_device_type_media_and_position(
         device_type: &Type,
         media_type: Option<&av::MediaType>,
-        position: Position,
+        position: Pos,
     ) -> Option<arc::R<Self>>;
 
     #[objc::cls_msg_send(devices)]
@@ -687,7 +687,7 @@ impl<'a> ConfigLockGuard<'a> {
 #[doc(alias = "AVCaptureDevicePosition")]
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(isize)]
-pub enum Position {
+pub enum Pos {
     Unspecified = 0,
     Back = 1,
     Front = 2,
@@ -696,7 +696,7 @@ pub enum Position {
 /// AVCaptureDevicePosition
 impl Device {
     #[objc::msg_send(position)]
-    pub fn position(&self) -> Position;
+    pub fn pos(&self) -> Pos;
 }
 
 impl<'a> Drop for ConfigLockGuard<'a> {
@@ -1957,14 +1957,14 @@ impl DiscoverySession {
     pub fn with_device_types_media_and_position_ar(
         device_types: &ns::Array<Type>,
         media_type: Option<&av::MediaType>,
-        position: Position,
+        position: Pos,
     ) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
     pub fn with_device_types_media_and_position(
         device_types: &ns::Array<Type>,
         media_type: Option<&av::MediaType>,
-        position: Position,
+        position: Pos,
     ) -> arc::R<Self>;
 
     /// The list of devices that comply to the search criteria specified
@@ -2085,7 +2085,7 @@ mod tests {
     fn basics() {
         let device_type = device::Type::built_in_wide_angle_camera();
         let media_type = av::MediaType::video();
-        let position = device::Position::Front;
+        let position = device::Pos::Front;
         let mut device =
             Device::with_device_type_media_and_position(device_type, Some(media_type), position)
                 .expect("device");
@@ -2111,7 +2111,7 @@ mod tests {
         let session = capture::DiscoverySession::with_device_types_media_and_position(
             list.as_ref(),
             Some(av::MediaType::muxed()),
-            capture::DevicePosition::Unspecified,
+            capture::DevicePos::Unspecified,
         );
 
         let devices = session.devices();

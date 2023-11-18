@@ -37,7 +37,7 @@ fn main() {
         let discovery_session = DiscoverySession::with_device_types_media_and_position(
             &device_types,
             Some(av::MediaType::audio()),
-            DevicePosition::Unspecified,
+            DevicePos::Unspecified,
         );
         discovery_session.devices().last().unwrap().retained()
     };

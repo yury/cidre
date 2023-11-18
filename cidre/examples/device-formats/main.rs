@@ -6,7 +6,7 @@ use cidre::{
 fn main() {
     let device_type = device::Type::built_in_wide_angle_camera();
     let media_type = av::MediaType::video();
-    let position = device::Position::Front;
+    let position = device::Pos::Front;
     let device = device::Device::with_device_type_media_and_position(
         device_type,
         Some(media_type),
@@ -19,7 +19,7 @@ fn main() {
     let discrover_session = device::DiscoverySession::with_device_types_media_and_position(
         &types,
         Some(av::MediaType::video()),
-        device::Position::Front,
+        device::Pos::Front,
     );
 
     println!("devices {:?}", discrover_session.devices());
