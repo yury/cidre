@@ -13,9 +13,11 @@ impl ResourceUsage {
     /// An option that enables writing to the resource.
     pub const WRITE: Self = Self(1 << 1);
 
+    /*
     /// An option that enables sampling from the resource.
-    #[deprecated(since = "0.1.0", note = "use mtl::ResourceUsage::READ instead")]
-    pub const SAMPLE: Self = Self(1 << 2);
+    // #[deprecated(since = "0.1.0", note = "use mtl::ResourceUsage::READ instead")]
+    // pub const SAMPLE: Self = Self(1 << 2);
+     */
 }
 
 define_options!(
