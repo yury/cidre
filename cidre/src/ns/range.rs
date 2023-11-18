@@ -1,6 +1,8 @@
-use crate::{arc, ns, objc};
-
-use super::UInteger;
+use crate::{
+    arc,
+    ns::{self, UInteger},
+    objc,
+};
 
 #[doc(alias = "NSRange")]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

@@ -4,6 +4,7 @@ use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 use super::{argument::Arg, Fn, PixelFormat};
 
+#[doc(alias = "MTLBlendFactor")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BlendFactor {
@@ -28,6 +29,7 @@ pub enum BlendFactor {
     OneMinusSrc1Alpha = 18,
 }
 
+#[doc(alias = "MTLBlendOperation")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BlendOp {
@@ -38,6 +40,7 @@ pub enum BlendOp {
     Max = 4,
 }
 
+#[doc(alias = "MTLColorWriteMask")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum ColorWriteMask {
@@ -49,6 +52,7 @@ pub enum ColorWriteMask {
     All = 0xf,
 }
 
+#[doc(alias = "MTLPrimitiveTopologyClass")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PrimitiveTopologyClass {
@@ -58,6 +62,7 @@ pub enum PrimitiveTopologyClass {
     Triangle = 3,
 }
 
+#[doc(alias = "MTLTessellationPartitionMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TessellationPartitionMode {
@@ -67,6 +72,7 @@ pub enum TessellationPartitionMode {
     FractionalEven = 3,
 }
 
+#[doc(alias = "MTLTessellationFactorStepFunction")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TessellationFactorStepFn {
