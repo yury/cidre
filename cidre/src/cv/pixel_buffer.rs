@@ -304,7 +304,7 @@ impl PixelFormat {
     pub const _422_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x422"));
 
-    /// 2 plane YCbCr10 4:4:4, each 10 bits in the MSBs of 16bits, video-range (luma=[64,940] chroma=[64,960])
+    /// 2 plane YCbCr10 4:4:4, each 10 bits in the MSBs of 16bits, video-range (luma=\[64,940\] chroma=\[64,960\])
     #[doc(alias = "kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange")]
     pub const _444_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x444"));
@@ -347,6 +347,7 @@ impl PixelFormat {
         cf::Number::from_four_char_code(self.0)
     }
 
+    /// Checks if a compressed pixel format is supported on the current platform.
     #[doc(alias = "CVIsCompressedPixelFormatAvailable")]
     #[inline]
     pub fn is_compressed_avaliable(&self) -> bool {
@@ -376,7 +377,7 @@ impl PixelFormat {
 /// # Important caveats:
 ///
 /// Some devices do not support these pixel formats at all.
-/// Before using one of these pixel formats, call `.is_compressed_vailable()` to check that it
+/// Before using one of these pixel formats, call [`Self::is_compressed_avaliable()`] to check that it
 /// is available on the current device.
 ///
 /// On different devices, the concrete details of these formats may be different.
@@ -446,8 +447,8 @@ impl PixelFormat {
 /// metadata recording the encoding choices for each pixel block.
 ///
 /// Usefull links:
-///   - https://developer.apple.com/documentation/technotes/tn3104-recording-video-in-apple-prores
-///   - https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput
+/// - <https://developer.apple.com/documentation/technotes/tn3104-recording-video-in-apple-prores>
+/// - <https://developer.apple.com/documentation/technotes/tn3121-selecting-a-pixel-format-for-an-avcapturevideodataoutput>
 impl PixelFormat {
     /// Lossy-compressed form of `cv::PixelFormat::_32_BGRA`.
     #[doc(alias = "kCVPixelFormatType_Lossy_32BGRA")]

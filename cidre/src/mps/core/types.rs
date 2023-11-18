@@ -103,11 +103,11 @@ pub enum ImageFeatureChannelFormat {
     #[doc(alias = "MPSImageFeatureChannelFormatNone")]
     None = 0,
 
-    /// u8 with value [0,255] encoding [0,1.0]
+    /// u8 with value `[0,255]` encoding `[0,1.0]`
     #[doc(alias = "MPSImageFeatureChannelFormatUnorm8")]
     UNorm8 = 1,
 
-    /// u16 with value [0,65535] encoding [0,1.0]
+    /// u16 with value `[0,65535]` encoding `[0,1.0]`
     #[doc(alias = "MPSImageFeatureChannelFormatUnorm16")]
     UNorm16 = 2,
 
