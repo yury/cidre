@@ -86,8 +86,8 @@ impl BlitCmdEncoder {
         self.optimize_indirect_cmd_buffer_with_range(
             buf,
             ns::Range {
-                location: range.start,
-                length: range.end,
+                loc: range.start,
+                len: range.end,
             },
         )
     }

@@ -30,7 +30,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
 
     assert_eq!(p.as_char(), ':');
 
-    while let Some(tt) = iter.next() {
+    if let Some(tt) = iter.next() {
         match tt {
             TokenTree::Group(v) => panic!("didnt expect group {v}"),
             TokenTree::Ident(v) => {

@@ -46,8 +46,8 @@ impl Buf {
         let start = range.start * std::mem::size_of::<T>();
         let end = range.end * std::mem::size_of::<T>();
         self.did_modify_range(ns::Range {
-            location: start,
-            length: end - start,
+            loc: start,
+            len: end - start,
         })
     }
 

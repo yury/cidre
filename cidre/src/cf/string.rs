@@ -255,8 +255,8 @@ impl String {
     pub fn to_string(&self) -> std::string::String {
         unsafe {
             let range = crate::cf::Range {
-                location: 0,
-                length: self.len(),
+                loc: 0,
+                len: self.len(),
             };
             let mut bytes_required: Index = 0;
             CFStringGetBytes(

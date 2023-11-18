@@ -24,17 +24,18 @@ pub type ComparatorFn = extern "C" fn(
 
 pub const NOT_FOUND: Index = -1;
 
+#[doc(alias = "CFRange")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Range {
-    pub location: Index,
-    pub length: Index,
+    pub loc: Index,
+    pub len: Index,
 }
 
 impl Range {
     #[inline]
-    pub fn new(location: Index, length: Index) -> Self {
-        Self { location, length }
+    pub fn new(loc: Index, len: Index) -> Self {
+        Self { loc, len }
     }
 }
 
