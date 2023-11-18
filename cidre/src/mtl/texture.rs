@@ -70,6 +70,7 @@ impl Usage {
     }
 }
 
+#[doc(alias = "MTLTextureCompressionType")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum Compression {
@@ -77,7 +78,12 @@ pub enum Compression {
     Lossy = 1,
 }
 
-define_obj_type!(Desc(ns::Id), MTL_TEXTURE_DESCRIPTOR);
+define_obj_type!(
+    /// An object that you use to configure new Metal texture objects.
+    #[doc(alias = "MTLTextureDescriptor")]
+    Desc(ns::Id),
+    MTL_TEXTURE_DESCRIPTOR
+);
 
 impl Desc {
     #[objc::cls_msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
@@ -219,21 +225,27 @@ impl Desc {
     pub fn set_swizzle(&mut self, val: SwizzleChannels);
 }
 
-define_obj_type!(Texture(mtl::Resource));
+define_obj_type!(
+    /// A resource that holds formatted image data.
+    #[doc(alias = "MTLTexture")]
+    Texture(mtl::Resource)
+);
 
 impl Texture {
     define_mtl!(width, height, depth, gpu_resource_id);
 
+    /// The texture this texture view was created from, or [`None`] if this is not
+    /// a texture view or it was not created from a texture.
     #[objc::msg_send(parentTexture)]
     pub fn parent_texture(&self) -> Option<&Texture>;
 
     #[objc::msg_send(newTextureViewWithPixelFormat:)]
-    pub fn texture_view_with_pixel_format(
+    pub fn new_texture_view_with_pixel_format(
         &self,
         pixel_format: mtl::PixelFormat,
     ) -> Option<arc::R<Texture>>;
 
-    /// The buffer this texture view was created from, or nil if this is not a texture
+    /// The buffer this texture view was created from, or [`None`] if this is not a texture
     /// view or it was not created from a buffer.
     #[objc::msg_send(buffer)]
     pub fn buf(&self) -> Option<&mtl::Buf>;
@@ -338,7 +350,7 @@ mod tests {
         assert_eq!(t.io_surf_plane(), 0);
 
         let tv = t
-            .texture_view_with_pixel_format(mtl::PixelFormat::A8UNorm)
+            .new_texture_view_with_pixel_format(mtl::PixelFormat::A8UNorm)
             .unwrap();
 
         assert!(tv.parent_texture().is_some());

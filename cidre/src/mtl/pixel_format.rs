@@ -194,7 +194,7 @@ pub enum PixelFormat {
     ///
     /// To display wide color values on devices with wide color displays, you can set this
     /// pixel format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat
-    /// property of a 'ca::MetalLayer'.
+    /// property of a [`crate::ca::MetalLayer`].
     #[doc(alias = "MTLPixelFormatBGR10_XR")]
     Bgr10Xr = 554,
 
@@ -209,7 +209,7 @@ pub enum PixelFormat {
     ///
     /// To display wide color values on devices with wide color displays, you can set this pixel
     /// format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property of
-    /// a [`ca::MetalLayer`]. You must also use specify an extended sRGB color space.
+    /// a [`crate::ca::MetalLayer`]. You must also use specify an extended sRGB color space.
     #[doc(alias = "MTLPixelFormatBGR10_XR_sRGB")]
     Bgr10XrSrgb = 555,
 
@@ -262,7 +262,7 @@ pub enum PixelFormat {
     ///
     /// To display wide color values on devices with wide color displays, you can set this pixel
     /// format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property of
-    /// a [`ca::MetalLayer`].
+    /// a [`crate::ca::MetalLayer`].
     #[doc(alias = "MTLPixelFormatBGRA10_XR")]
     Bgra10Xr = 552,
 
@@ -282,7 +282,7 @@ pub enum PixelFormat {
     ///
     /// To display wide color values on devices with wide color displays, you can set this
     /// pixel format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property
-    /// of a [`ca::MetalLayer`]. You must also use specify an extended sRGB color space.
+    /// of a [`crate::ca::MetalLayer`]. You must also use specify an extended sRGB color space.
     #[doc(alias = "MTLPixelFormatBGRA10_XR_sRGB")]
     Bgra10XrSrgb = 553,
 

@@ -35,7 +35,11 @@ pub enum DispatchType {
     Concurrent,
 }
 
-define_obj_type!(CmdBuf(ns::Id));
+define_obj_type!(
+    /// A serial list of commands for the device to execute.
+    #[doc(alias = "MTLCommandBuffer")]
+    CmdBuf(ns::Id)
+);
 
 impl CmdBuf {
     define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
@@ -94,7 +98,7 @@ impl CmdBuf {
             .new_blit_cmd_enc()
             .expect("Can't create blit command encoder");
         commands(&mut encoder);
-        encoder.end_encoding();
+        encoder.end();
     }
 
     #[objc::msg_send(computeCommandEncoder)]
@@ -108,7 +112,7 @@ impl CmdBuf {
             .new_compute_cmd_enc()
             .expect("Can't create compute command encoder");
         commands(&mut encoder);
-        encoder.end_encoding();
+        encoder.end();
     }
 
     #[objc::msg_send(computeCommandEncoderWithDescriptor:)]
@@ -146,7 +150,7 @@ impl CmdBuf {
             .expect("Can't create render command encoder");
         commands(&mut encoder);
         // TODO: think. may be it should be guard?
-        encoder.end_encoding();
+        encoder.end();
     }
 
     /// Add a drawable present that will be invoked when this command buffer has
@@ -174,15 +178,22 @@ impl CmdBuf {
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;
 
+    /// The host time in seconds that GPU starts executing this command buffer.
+    /// Returns zero if it has not started. This usually can be called in command buffer completion handler.
     #[objc::msg_send(GPUStartTime)]
     pub fn gpu_start_time(&self) -> cf::TimeInterval;
 
+    /// The host time in seconds that GPU finishes executing this command buffer.
+    /// Returns zero if CPU has not received completion notification. This usually can
+    /// be called in command buffer completion handler.
     #[objc::msg_send(GPUEndTime)]
     pub fn gpu_end_time(&self) -> cf::TimeInterval;
 
+    /// The host time, in seconds, when the CPU begins to schedule the command buffer.
     #[objc::msg_send(kernelStartTime)]
     pub fn kernel_start_time(&self) -> cf::TimeInterval;
 
+    /// The host time, in seconds, when the CPU finishes scheduling the command buffer.
     #[objc::msg_send(kernelEndTime)]
     pub fn kernel_end_time(&self) -> cf::TimeInterval;
 }

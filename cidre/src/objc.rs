@@ -219,7 +219,7 @@ extern "C" {
     fn objc_exception_throw(exception: &Id) -> !;
 }
 
-/// Same as define_cls but with open `init`
+/// Same as `define_cls!` but with open `init`
 #[macro_export]
 macro_rules! define_cls_init {
     ($NewType:ident, $CLS:ident) => {
@@ -240,6 +240,8 @@ macro_rules! define_cls_init {
     };
 }
 
+/// Defines class
+///
 /// Use when:
 /// + (instancetype)new NS_UNAVAILABLE;
 /// - (instancetype)init NS_UNAVAILABLE;

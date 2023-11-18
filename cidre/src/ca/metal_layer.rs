@@ -1,6 +1,10 @@
-use crate::{arc, ca, define_obj_type, mtl, ns, objc};
+use crate::{arc, ca, cg, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(MetalLayer(ca::Layer), CA_METAL_LAYER);
+define_obj_type!(
+    #[doc(alias = "CAMetalLayer")]
+    MetalLayer(ca::Layer),
+    CA_METAL_LAYER
+);
 
 pub trait MetalDrawable<T: objc::Obj>: mtl::Drawable<T> {
     #[objc::msg_send(texture)]
@@ -27,6 +31,50 @@ impl MetalLayer {
 
     #[objc::msg_send(nextDrawable)]
     pub fn next_drawable(&self) -> Option<&AnyMetalDrawable>;
+
+    /// This property controls the pixel format of the [`mtl::Texture`] objects.
+    #[objc::msg_send(pixelFormat)]
+    pub fn pixel_format(&self) -> mtl::PixelFormat;
+
+    /// The default value is MTLPixelFormatBGRA8Unorm.
+    ///
+    /// You must use one of the following formats:
+    /// MTLPixelFormatBGRA8Unorm
+    /// MTLPixelFormatBGRA8Unorm_sRGB
+    /// MTLPixelFormatRGBA16Float
+    /// MTLPixelFormatRGB10A2Unorm (macOS only)
+    /// MTLPixelFormatBGR10A2Unorm (macOS only)
+    /// MTLPixelFormatBGRA10_XR
+    /// MTLPixelFormatBGRA10_XR_sRGB
+    /// MTLPixelFormatBGR10_XR
+    /// MTLPixelFormatBGR10_XR_sRGB
+    #[objc::msg_send(setPixelFormat:)]
+    pub fn set_pixel_format(&mut self, val: mtl::PixelFormat);
+
+    #[objc::msg_send(framebufferOnly)]
+    pub fn framebuffer_only(&self) -> bool;
+
+    #[objc::msg_send(setFramebufferOnly:)]
+    pub fn set_framebuffer_only(&self, val: bool);
+
+    #[objc::msg_send(drawableSize)]
+    pub fn drawable_size(&self) -> cg::Size;
+
+    #[objc::msg_send(setDrawableSize:)]
+    pub fn set_drawable_size(&mut self, val: cg::Size);
+
+    /// The number of Metal drawables in the resource pool managed by Core Animation.
+    #[objc::msg_send(maximumDrawableCount)]
+    pub fn maximum_drawable_count(&self) -> usize;
+
+    /// The number of Metal drawables in the resource pool managed by Core Animation.
+    ///
+    /// You can set this value to 2 or 3 only; if you pass a different value, Core Animation
+    /// ignores the value and throws an exception.
+    ///
+    /// The default value is 3.
+    #[objc::msg_send(setMaximumDrawableCount:)]
+    pub fn set_maximum_drawable_count(&self, val: usize);
 }
 
 #[link(name = "ca", kind = "static")]

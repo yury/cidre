@@ -20,7 +20,7 @@ pub mod av;
 #[cfg(feature = "ca")]
 pub mod ca;
 
-// Core Image
+/// Core Image
 #[cfg(feature = "ci")]
 pub mod ci;
 
@@ -28,6 +28,7 @@ pub mod ci;
 #[cfg(feature = "cf")]
 pub mod cf;
 
+/// Core Text
 #[cfg(feature = "ct")]
 pub mod ct;
 
