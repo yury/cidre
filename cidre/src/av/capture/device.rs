@@ -48,14 +48,14 @@ impl Device {
     define_cls!(AV_CAPTURE_DEVICE);
 
     #[objc::cls_msg_send(defaultDeviceWithDeviceType:mediaType:position:)]
-    pub fn with_device_type_media_and_position_ar(
+    pub fn with_type_media_and_pos_ar(
         device_type: &Type,
         media_type: Option<&av::MediaType>,
         position: Pos,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
-    pub fn with_device_type_media_and_position(
+    pub fn with_type_media_and_pos(
         device_type: &Type,
         media_type: Option<&av::MediaType>,
         position: Pos,
@@ -2085,10 +2085,9 @@ mod tests {
     fn basics() {
         let device_type = device::Type::built_in_wide_angle_camera();
         let media_type = av::MediaType::video();
-        let position = device::Pos::Front;
+        let pos = device::Pos::Front;
         let mut device =
-            Device::with_device_type_media_and_position(device_type, Some(media_type), position)
-                .expect("device");
+            Device::with_type_media_and_pos(device_type, Some(media_type), pos).expect("device");
         //device.unique_id().show();
         assert!(!device.has_torch());
         assert!(device.formats().len() > 0);

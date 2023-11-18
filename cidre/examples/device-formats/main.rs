@@ -6,13 +6,9 @@ use cidre::{
 fn main() {
     let device_type = device::Type::built_in_wide_angle_camera();
     let media_type = av::MediaType::video();
-    let position = device::Pos::Front;
-    let device = device::Device::with_device_type_media_and_position(
-        device_type,
-        Some(media_type),
-        position,
-    )
-    .expect("device");
+    let pos = device::Pos::Front;
+    let device = device::Device::with_type_media_and_pos(device_type, Some(media_type), pos)
+        .expect("device");
 
     let mut types = ns::ArrayMut::with_capacity(1);
     types.push(device::Type::built_in_wide_angle_camera());

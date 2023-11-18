@@ -13,7 +13,7 @@ fn main() {
     // ns::Exception::raise(&cf::String::from_str("str"));
 
     let mut session = av::capture::Session::new();
-    let device = av::capture::Device::with_device_type_media_and_position(
+    let device = av::capture::Device::with_type_media_and_pos(
         av::CaptureDeviceType::built_in_wide_angle_camera(),
         Some(MediaType::video()),
         CaptureDevicePos::Front,
