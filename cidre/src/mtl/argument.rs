@@ -1,24 +1,46 @@
 use crate::{define_obj_type, ns, objc};
 
+#[doc(alias = "MTLDataType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum DataType {
+    /// A placeholder that represents a GPU function parameter that doesn’t have a valid data type.
     None = 0,
 
+    /// A structure instance.
     Struct = 1,
+
+    /// An array instance.
     Array = 2,
 
+    /// A 32-bit floating-point value.
     F32 = 3,
+
+    /// A two-component vector with 32-bit floating-point values.
     F32x2 = 4,
+
+    /// A three-component vector with 32-bit floating-point values.
     F32x3 = 5,
+
+    /// A four-component vector with 32-bit floating-point values.
     F32x4 = 6,
 
+    /// A 2x2 component matrix with 32-bit floating-point values.
     F32x2x2 = 7,
+
+    /// A 2x3 component matrix with 32-bit floating-point values.
     F32x2x3 = 8,
+
+    /// A 2x4 component matrix with 32-bit floating-point values.
     F32x2x4 = 9,
 
+    /// A 3x2 component matrix with 32-bit floating-point values.
     F32x3x2 = 10,
+
+    /// A 3x3 component matrix with 32-bit floating-point values.
     F32x3x3 = 11,
+
+    /// A 3x4 component matrix with 32-bit floating-point values.
     F32x3x4 = 12,
 
     F32x4x2 = 13,
@@ -85,18 +107,18 @@ pub enum DataType {
     R8Snorm = 63,
     R16Unorm = 64,
     R16Snorm = 65,
-    RG8Unorm = 66,
-    RG8Snorm = 67,
-    RG16Unorm = 68,
-    RG16Snorm = 69,
-    RGBA8Unorm = 70,
-    RGBA8UnormSRGB = 71,
-    RGBA8Snorm = 72,
-    RGBA16Unorm = 73,
-    RGBA16Snorm = 74,
-    RGB10A2Unorm = 75,
-    RG11B10Float = 76,
-    RGB9E5Float = 77,
+    Rg8Unorm = 66,
+    Rg8Snorm = 67,
+    Rg16Unorm = 68,
+    Rg16Snorm = 69,
+    Rgba8Unorm = 70,
+    Rgba8UnormSrgb = 71,
+    Rgba8Snorm = 72,
+    Rgba16Unorm = 73,
+    Rgba16Snorm = 74,
+    Rgb10A2Unorm = 75,
+    Rg11B10Float = 76,
+    Rgb9E5Float = 77,
     RenderPipeline = 78,
     ComputePipeline = 79,
     IndirectCmdBuf = 80,

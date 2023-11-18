@@ -215,6 +215,7 @@ impl Lib {
     }
 
     /// # Safety
+    ///
     /// Use new_fn_const_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
     pub unsafe fn new_fn_with_consts_err<'ar>(
@@ -298,6 +299,7 @@ pub enum FnType {
     Object = 8,
 }
 
+#[doc(alias = "MTLLibraryError")]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(usize)]
 pub enum Error {
