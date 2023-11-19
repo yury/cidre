@@ -125,7 +125,11 @@ pub enum CaptureResolution {
     Nominal,
 }
 
-define_obj_type!(Cfg(ns::Id), SC_STREAM_CONFIGURATION);
+define_obj_type!(
+    #[doc(alias = "SCStreamConfiguration")]
+    Cfg(ns::Id),
+    SC_STREAM_CONFIGURATION
+);
 
 impl Cfg {
     /// ```
