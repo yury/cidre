@@ -630,7 +630,7 @@ pub mod errors {
     pub const FILE_NOT_FOUND: Status = Status(-43);
 }
 
-define_options!(Flags(u32));
+define_options!(pub Flags(u32));
 
 /// These are flags that can be used with the create call
 impl Flags {

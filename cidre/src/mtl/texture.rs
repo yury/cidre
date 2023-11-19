@@ -56,7 +56,7 @@ impl SharedTextureHandle {
     define_mtl!(device, label);
 }
 
-define_options!(Usage(usize));
+define_options!(pub Usage(usize));
 
 impl Usage {
     pub const UNKNOWN: Self = Self(0x0000);

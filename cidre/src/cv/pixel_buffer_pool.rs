@@ -164,7 +164,7 @@ pub mod notifications {
     }
 }
 
-define_options!(FlushFlags(u64));
+define_options!(pub FlushFlags(u64));
 
 impl FlushFlags {
     pub const NONE: Self = Self(0);

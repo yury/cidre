@@ -4,7 +4,7 @@ define_obj_type!(pub FileAttrKey(ns::String));
 define_obj_type!(pub FileAttrType(ns::String));
 define_obj_type!(pub FileProtectionType(ns::String));
 
-define_options!(VolumeEnumerationOptions(usize));
+define_options!(pub VolumeEnumerationOptions(usize));
 
 impl VolumeEnumerationOptions {
     ///  The mounted volume enumeration will skip hidden volumes.
@@ -14,7 +14,7 @@ impl VolumeEnumerationOptions {
     pub const PRODUCE_FILE_REFERENCE_URLS: Self = Self(1 << 2);
 }
 
-define_options!(DirectoryEnumerationOptions(usize));
+define_options!(pub DirectoryEnumerationOptions(usize));
 impl DirectoryEnumerationOptions {
     /// Causes the to perform a shallow enumeration and not descend into directories it encounters.
     pub const SKIPS_SUBDIRECTORY_DESCENDANTS: Self = Self(1 << 0);
@@ -33,7 +33,7 @@ impl DirectoryEnumerationOptions {
     pub const PRODUCES_RELATIVE_PATH_URLS: Self = Self(1 << 4);
 }
 
-define_options!(ItemReplacementOptions(usize));
+define_options!(pub ItemReplacementOptions(usize));
 
 impl ItemReplacementOptions {
     pub const USING_NEW_METADATA_ONLY: Self = Self(1 << 0);

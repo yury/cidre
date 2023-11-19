@@ -45,7 +45,7 @@ pub enum Subsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-define_options!(LockOptions(u32));
+define_options!(pub LockOptions(u32));
 
 impl LockOptions {
     /// If you are not going to modify the data while you hold the lock,

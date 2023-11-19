@@ -275,7 +275,7 @@ impl Font {
     }
 }
 
-define_options!(Options(usize));
+define_options!(pub Options(usize));
 impl Options {
     pub const DEFAULT: Self = Self(0);
     pub const PREVENT_AUTO_ACTIVATION: Self = Self(1 << 0);

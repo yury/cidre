@@ -33,7 +33,7 @@ impl Encoding {
     }
 }
 
-define_options!(CompareFlags(OptionFlags));
+define_options!(pub CompareFlags(OptionFlags));
 
 impl CompareFlags {
     pub const NONE: Self = Self(OptionFlags(0));

@@ -56,7 +56,7 @@ impl Right {
     pub const NUMBER: Self = Self(6);
 }
 
-define_options!(Type(u32));
+define_options!(pub Type(u32));
 
 impl Type {
     pub const NONE: Self = Self(0);

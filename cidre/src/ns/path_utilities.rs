@@ -155,7 +155,7 @@ pub enum SearchPathDirectory {
     Trash = 102,
 }
 
-define_options!(SearchPathDomainMask(usize));
+define_options!(pub SearchPathDomainMask(usize));
 
 impl SearchPathDomainMask {
     /// User's home directory --- place to install user's personal items (~)

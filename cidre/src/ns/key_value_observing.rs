@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, define_options, ns, objc};
 
-define_options!(KVOOpts(usize));
+define_options!(pub KVOOpts(usize));
 impl KVOOpts {
     pub const NEW: Self = Self(0x01);
     pub const OLD: Self = Self(0x02);

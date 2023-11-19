@@ -14,7 +14,7 @@ pub type TimeValue = i64;
 pub type TimeScale = i32;
 pub type TimeEpoch = i64;
 
-define_options!(TimeFlags(u32));
+define_options!(pub TimeFlags(u32));
 
 impl TimeFlags {
     pub const VALID: Self = Self(1 << 0);

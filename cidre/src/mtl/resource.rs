@@ -83,7 +83,7 @@ impl Default for HazardTrackingMode {
     }
 }
 
-define_options!(Options(usize));
+define_options!(pub Options(usize));
 
 pub const CPU_CACHE_MODE_SHIFT: usize = 0;
 pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;

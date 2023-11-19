@@ -9,7 +9,7 @@ pub struct ExecutionRange {
 
 define_options!(
     #[doc(alias = "MTLIndirectCommandType")]
-    IndirectCmdType(usize)
+    pub IndirectCmdType(usize)
 );
 
 impl IndirectCmdType {

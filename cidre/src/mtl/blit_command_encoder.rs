@@ -1,6 +1,6 @@
 use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
 
-define_options!(BlitOption(usize));
+define_options!(pub BlitOption(usize));
 
 impl BlitOption {
     pub const NONE: Self = Self(0);

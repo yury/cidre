@@ -5,7 +5,7 @@ use crate::io;
 
 use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
-define_options!(PipelineOption(usize));
+define_options!(pub PipelineOption(usize));
 impl PipelineOption {
     pub const NONE: Self = Self(0);
     pub const ARGUMENT_INFO: Self = Self(1 << 0);

@@ -7,7 +7,10 @@ define_obj_type!(pub ContentsFormat(ns::String));
 define_obj_type!(pub ContentsFilter(ns::String));
 define_obj_type!(pub CornerCurve(ns::String));
 
-define_options!(AutoresizingMask(u32));
+define_options!(
+    #[doc(alias = "CAAutoresizingMask")]
+    pub AutoresizingMask(u32)
+);
 impl AutoresizingMask {
     pub const NOT_SIZABLE: Self = Self(0);
     pub const MIN_X_MARGIN: Self = Self(1 << 0);
@@ -18,15 +21,25 @@ impl AutoresizingMask {
     pub const MAX_Y_MARGIN: Self = Self(1 << 5);
 }
 
-define_options!(EdgeAntialiasingMask(u32));
+define_options!(
+    #[doc(alias = "CAEdgeAntialiasingMask")]
+    pub EdgeAntialiasingMask(u32)
+);
 impl EdgeAntialiasingMask {
-    pub const LEFT: Self = Self(1 << 0); /* Minimum X edge. */
-    pub const RIGHT: Self = Self(1 << 1); /* Maximum X edge. */
-    pub const BOTTOM: Self = Self(1 << 2); /* Minimum Y edge. */
-    pub const TOP: Self = Self(1 << 3); /* Maximum Y edge. */
+    /// Minimum X edge.
+    pub const LEFT: Self = Self(1 << 0);
+
+    /// Maximum X edge.
+    pub const RIGHT: Self = Self(1 << 1);
+
+    /// Minimum Y edge.
+    pub const BOTTOM: Self = Self(1 << 2);
+
+    /// Maximum Y edge.
+    pub const TOP: Self = Self(1 << 3);
 }
 
-define_options!(CornerMask(usize));
+define_options!(pub CornerMask(usize));
 impl CornerMask {
     pub const MIN_X_MIN_Y: Self = Self(1 << 0);
     pub const MAX_X_MIN_Y: Self = Self(1 << 1);

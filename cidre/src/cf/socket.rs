@@ -25,7 +25,7 @@ pub struct Signature {
     pub address: arc::R<cf::Data>,
 }
 
-define_options!(CbType(usize));
+define_options!(pub CbType(usize));
 
 impl CbType {
     pub const NO: Self = Self(0);
@@ -36,7 +36,7 @@ impl CbType {
     pub const WRITE: Self = Self(8);
 }
 
-define_options!(Flags(usize));
+define_options!(pub Flags(usize));
 
 impl Flags {
     pub const AUTOMATICALLY_REENABLE_READ_CALL_BACK: Self = Self(1);

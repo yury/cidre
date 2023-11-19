@@ -132,12 +132,13 @@ pub mod arc;
 macro_rules! define_options {
     (
         $(#[$outer:meta])*
+        $vis:vis
         $NewType:ident($BaseType:path)
     ) => {
         $(#[$outer])*
         #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Default)]
         #[repr(transparent)]
-        pub struct $NewType(pub $BaseType);
+        $vis struct $NewType(pub $BaseType);
 
         impl $NewType {
             #[inline]

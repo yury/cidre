@@ -4,7 +4,7 @@ use crate::{
     cf, cg, ct, define_cf_type, define_options,
 };
 
-define_options!(LineBoundsOptions(usize));
+define_options!(pub LineBoundsOptions(usize));
 
 impl LineBoundsOptions {
     pub const EXCLUDE_TYPOGRAPHIC_LEADING: Self = Self(1 << 0);

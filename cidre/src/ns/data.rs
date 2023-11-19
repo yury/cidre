@@ -2,7 +2,7 @@ use std::{mem::transmute, ptr::slice_from_raw_parts};
 
 use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
-define_options!(ReadingOptions(usize));
+define_options!(pub ReadingOptions(usize));
 
 impl ReadingOptions {
     /// Hint to map the file in if possible and safe
@@ -18,7 +18,7 @@ impl ReadingOptions {
     pub const MAPPED_ALWAYS: Self = Self(1 << 3);
 }
 
-define_options!(WritingOptions(usize));
+define_options!(pub WritingOptions(usize));
 
 impl WritingOptions {
     pub const ATOMIC: Self = Self(1 << 0);
@@ -29,7 +29,7 @@ impl WritingOptions {
     pub const FILE_PROTECTION_MASK: Self = Self(0xf0000000);
 }
 
-define_options!(SearchOptions(usize));
+define_options!(pub SearchOptions(usize));
 
 impl SearchOptions {
     pub const BACKWARDS: Self = Self(1 << 0);

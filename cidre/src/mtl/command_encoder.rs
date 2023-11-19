@@ -5,7 +5,7 @@ use crate::{arc, define_mtl, define_obj_type, define_options, ns, objc};
 define_options!(
     /// Describes how a resource will be used by a shader through an argument buffer
     #[doc(alias = "MTLResourceUsage")]
-    ResourceUsage(usize)
+    pub ResourceUsage(usize)
 );
 
 impl ResourceUsage {
@@ -25,7 +25,7 @@ impl ResourceUsage {
 define_options!(
     /// Describes the types of resources that the a barrier operates on
     #[doc(alias = "MTLBarrierScope")]
-    BarrierScope(usize)
+    pub BarrierScope(usize)
 );
 
 impl BarrierScope {

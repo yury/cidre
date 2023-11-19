@@ -5,7 +5,7 @@ use std::{
 
 use crate::{arc, cf, define_cf_type, define_options, os};
 
-define_options!(Flags(u32));
+define_options!(pub Flags(u32));
 
 impl Flags {
     pub const NONE: Self = Self(0);

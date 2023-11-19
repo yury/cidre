@@ -1,6 +1,6 @@
 use crate::define_options;
 
-define_options!(FontSymbolicTraits(u32));
+define_options!(pub FontSymbolicTraits(u32));
 impl FontSymbolicTraits {
     pub const ITALIC: Self = Self(1 << 0); // Additional detail available via kCTFontSlantTrait
     pub const BOLD: Self = Self(1 << 1); // Additional detail available via kCTFontWeightTrait
@@ -15,7 +15,7 @@ impl FontSymbolicTraits {
     pub const CLASS_MASK: Self = Self(15u32 << CLASS_MASK_SHIFT);
 }
 
-define_options!(FontStylisticClass(u32));
+define_options!(pub FontStylisticClass(u32));
 impl FontStylisticClass {
     pub const UNKNOWN: Self = Self(0 << CLASS_MASK_SHIFT);
     pub const OLD_STYLE_SERIFS: Self = Self(1 << CLASS_MASK_SHIFT);

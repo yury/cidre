@@ -10,7 +10,7 @@ pub type Index = isize;
 pub type TypeId = usize;
 pub type HashCode = usize;
 
-define_options!(OptionFlags(usize));
+define_options!(pub OptionFlags(usize));
 
 impl OptionFlags {
     pub const NONE: Self = Self(0);

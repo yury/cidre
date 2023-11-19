@@ -178,7 +178,7 @@ impl<'a> Drop for BaseAddressLockGuard<'a> {
     }
 }
 
-define_options!(LockFlags(cv::OptionFlags));
+define_options!(pub LockFlags(cv::OptionFlags));
 
 impl LockFlags {
     pub const DEFAULT: Self = Self(0);

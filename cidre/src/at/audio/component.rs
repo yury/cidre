@@ -5,7 +5,7 @@ use std::{
 
 use crate::{arc, cf, define_options, os};
 
-define_options!(Flags(u32));
+define_options!(pub Flags(u32));
 
 /// AudioComponentFlags
 impl Flags {
@@ -33,7 +33,7 @@ impl Flags {
     pub const CAN_LOAD_IN_PROCESS: Self = Self(0x10);
 }
 
-define_options!(InstantiationOptions(u32));
+define_options!(pub InstantiationOptions(u32));
 
 /// AudioComponentInstantiationOptions
 ///

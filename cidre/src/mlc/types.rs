@@ -585,7 +585,7 @@ impl GradientClippingType {
     }
 }
 
-define_options!(GraphCompilationOptions(u64));
+define_options!(pub GraphCompilationOptions(u64));
 
 impl GraphCompilationOptions {
     pub const DEBUG_LAYERS: Self = Self(0x01);
@@ -593,7 +593,7 @@ impl GraphCompilationOptions {
     pub const LINK_GRAPHS: Self = Self(0x04);
     pub const COMPUTE_ALL_GRADIENTS: Self = Self(0x08);
 }
-define_options!(ExecutionOptions(u64));
+define_options!(pub ExecutionOptions(u64));
 impl ExecutionOptions {
     pub const SKIP_WRITING_INPUT_DATA_TO_DEVICE: Self = Self(0x01);
     pub const SYNCHRONOUS: Self = Self(0x02);

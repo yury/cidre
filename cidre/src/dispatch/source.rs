@@ -97,16 +97,16 @@ pub type TypeTimer = Type;
 pub type TypeVNode = Type;
 pub type TypeWrite = Type;
 
-define_options!(MachSendFlags(c_ulong));
+define_options!(pub MachSendFlags(c_ulong));
 
 impl MachSendFlags {
     pub const NONE: Self = Self(0);
     pub const SEND_DEAD: Self = Self(0x1);
 }
 
-define_options!(MachRecvFlags(c_ulong));
+define_options!(pub MachRecvFlags(c_ulong));
 
-define_options!(MemoryPressureFlags(c_ulong));
+define_options!(pub MemoryPressureFlags(c_ulong));
 
 impl MemoryPressureFlags {
     pub const NORMAL: Self = Self(0x01);
@@ -114,7 +114,7 @@ impl MemoryPressureFlags {
     pub const CRITICAL: Self = Self(0x04);
 }
 
-define_options!(ProcFlags(c_ulong));
+define_options!(pub ProcFlags(c_ulong));
 
 impl ProcFlags {
     pub const EXIT: Self = Self(0x80000000);
@@ -123,7 +123,7 @@ impl ProcFlags {
     pub const SIGNAL: Self = Self(0x08000000);
 }
 
-define_options!(VNodeFlags(c_ulong));
+define_options!(pub VNodeFlags(c_ulong));
 
 impl VNodeFlags {
     pub const DELETE: Self = Self(0x1);
@@ -136,7 +136,7 @@ impl VNodeFlags {
     pub const FUNLOCK: Self = Self(0x100);
 }
 
-define_options!(TimerFlags(c_ulong));
+define_options!(pub TimerFlags(c_ulong));
 
 impl TimerFlags {
     pub const STRICT: Self = Self(0x1);

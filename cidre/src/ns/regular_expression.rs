@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, define_options, ns, objc};
 
-define_options!(Options(usize));
+define_options!(pub Options(usize));
 
 impl Options {
     /// Match letters in the pattern independent of case.
@@ -33,7 +33,7 @@ impl Options {
     pub const USE_UNICODE_WORD_BOUNDARIES: Self = Self(1 << 6);
 }
 
-define_options!(MatchingOptions(usize));
+define_options!(pub MatchingOptions(usize));
 
 impl MatchingOptions {
     /// Call the block periodically during long-running match operations.
@@ -57,7 +57,7 @@ impl MatchingOptions {
     pub const ANCHORING_BOUNDS: Self = Self(1 << 4);
 }
 
-define_options!(MatchingFlags(usize));
+define_options!(pub MatchingFlags(usize));
 
 impl MatchingFlags {
     /// Set when the block is called to report progress during a long-running match operation.

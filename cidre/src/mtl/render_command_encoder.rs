@@ -152,7 +152,7 @@ pub struct TriangleTessellationFactorsHalf {
     pub inside_tessellation_factor: u16,
 }
 
-define_options!(RenderStages(usize));
+define_options!(pub RenderStages(usize));
 
 impl RenderStages {
     pub const VERTEX: Self = Self(1usize << 0);

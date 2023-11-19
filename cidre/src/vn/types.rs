@@ -150,7 +150,7 @@ extern "C" {
     static VNBarcodeSymbologyMicroQR: &'static BarcodeSymbology;
 }
 
-define_options!(ImageCropAndScaleOption(usize));
+define_options!(pub ImageCropAndScaleOption(usize));
 
 impl ImageCropAndScaleOption {
     /// scale image maintaining aspect ratio to fit on the short side and crop centered on the long side
