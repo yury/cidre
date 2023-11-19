@@ -43,11 +43,19 @@ pub enum DataType {
     /// A 3x4 component matrix with 32-bit floating-point values.
     F32x3x4 = 12,
 
+    /// A 4x2 component matrix with 32-bit floating-point values.
     F32x4x2 = 13,
+
+    /// A 4x3 component matrix with 32-bit floating-point values.
     F32x4x3 = 14,
+
+    /// A 4x4 component matrix with 32-bit floating-point values.
     F32x4x4 = 15,
 
+    /// A 16-bit floating-point value.
     F16 = 16,
+
+    /// A two-component vector with 16-bit floating-point values.
     F16x2 = 17,
     F16x3 = 18,
     F16x4 = 19,

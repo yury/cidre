@@ -30,6 +30,6 @@ mod tests {
     #[test]
     fn basics() {
         let mut bpd = mtl::BlitPassDesc::new();
-        let _attachments = bpd.sample_buf_attaches_mut();
+        let _attaches = bpd.sample_buf_attaches_mut();
     }
 }

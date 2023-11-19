@@ -115,6 +115,10 @@ impl ComputeCmdEncoder {
         threads_per_threadgroup: mtl::Size,
     );
 
+    /// Sets the size, in pixels, of the imageblock.
+    ///
+    /// You use tile memory for both imageblocks and threadgroups.
+    /// The sum of these allocations can't exceed the maximum total tile memory limit.
     #[objc::msg_send(setImageblockWidth:height:)]
     pub fn set_image_block_size(&mut self, width: usize, height: usize);
 }
