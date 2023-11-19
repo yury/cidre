@@ -2,15 +2,15 @@ use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVCaptureInput")]
-    Input(ns::Id)
+    pub Input(ns::Id)
 );
 define_obj_type!(
     #[doc(alias = "AVCaptureDeviceInput")]
-    DeviceInput(Input)
+    pub DeviceInput(Input)
 );
 define_obj_type!(
     #[doc(alias = "AVCaptureInputPort")]
-    Port(ns::Id)
+    pub Port(ns::Id)
 );
 
 impl Input {
@@ -78,7 +78,7 @@ impl DeviceInput {
 #[cfg(not(target_os = "macos"))]
 define_obj_type!(
     #[doc(alias = "AVCaptureMetadataInput")]
-    MetadataInput(Input)
+    pub MetadataInput(Input)
 );
 
 #[link(name = "av", kind = "static")]

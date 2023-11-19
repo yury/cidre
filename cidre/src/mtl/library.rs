@@ -9,7 +9,7 @@ pub enum PatchType {
     Quad = 2,
 }
 
-define_obj_type!(VertexAttr(ns::Id));
+define_obj_type!(pub VertexAttr(ns::Id));
 
 impl VertexAttr {
     #[objc::msg_send(name)]
@@ -31,7 +31,7 @@ impl VertexAttr {
     pub fn is_patch_ctrl_point_data(&self) -> bool;
 }
 
-define_obj_type!(Attr(ns::Id));
+define_obj_type!(pub Attr(ns::Id));
 
 impl Attr {
     #[objc::msg_send(name)]
@@ -104,7 +104,7 @@ pub enum CompileSymbolVisibility {
 define_obj_type!(
     /// Compilation settings for a Metal shader library.
     #[doc(alias = "MTLCompileOptions")]
-    CompileOpts(ns::Id)
+    pub CompileOpts(ns::Id)
 );
 
 impl arc::A<CompileOpts> {
@@ -167,7 +167,7 @@ impl CompileOpts {
 define_obj_type!(
     /// An object that represents a public shader function in a Metal library.
     #[doc(alias = "MTLFunction")]
-    Fn(ns::Id)
+    pub Fn(ns::Id)
 );
 
 impl Fn {
@@ -198,7 +198,7 @@ impl Fn {
     pub fn opts(&self) -> mtl::FnOpts;
 }
 
-define_obj_type!(Lib(ns::Id));
+define_obj_type!(pub Lib(ns::Id));
 
 impl Lib {
     define_mtl!(device, label, set_label);

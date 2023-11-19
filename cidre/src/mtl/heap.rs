@@ -26,7 +26,7 @@ pub enum Type {
     Sparse = 2,
 }
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(pub Desc(ns::Id));
 
 impl arc::A<Desc> {
     #[objc::msg_send(init)]
@@ -70,7 +70,7 @@ impl Desc {
     pub fn set_sparse_page_size(&mut self, val: mtl::SparsePageSize);
 }
 
-define_obj_type!(Heap(ns::Id));
+define_obj_type!(pub Heap(ns::Id));
 
 impl Heap {
     define_mtl!(

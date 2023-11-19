@@ -1,6 +1,6 @@
 use crate::{define_obj_type, mps::graph, ns, objc};
 
-define_obj_type!(Operation(ns::Id));
+define_obj_type!(pub Operation(ns::Id));
 
 impl Operation {
     #[objc::msg_send(inputTensors)]

@@ -141,7 +141,7 @@ extern "C" {
     static NSInconsistentArchiveException: &'static ExceptionName;
 }
 
-define_obj_type!(Exception(ns::Id));
+define_obj_type!(pub Exception(ns::Id));
 
 impl Exception {
     pub fn raise(message: &ns::String) -> ! {

@@ -9,7 +9,7 @@ pub enum Mutability {
     Immutable = 2,
 }
 
-define_obj_type!(PipelineBufDesc(ns::Id), MTL_PIPELINE_BUFFER_DESCRIPTOR);
+define_obj_type!(pub PipelineBufDesc(ns::Id), MTL_PIPELINE_BUFFER_DESCRIPTOR);
 
 impl PipelineBufDesc {
     #[objc::msg_send(mutability)]
@@ -19,7 +19,7 @@ impl PipelineBufDesc {
     pub fn set_mutability(&mut self, val: Mutability);
 }
 
-define_obj_type!(PipelineBufDescArray(ns::Id));
+define_obj_type!(pub PipelineBufDescArray(ns::Id));
 impl PipelineBufDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn obj_at(&self, index: usize) -> &PipelineBufDesc;

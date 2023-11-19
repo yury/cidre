@@ -5,9 +5,9 @@ use crate::cf;
 
 use super::Class;
 
-define_obj_type!(ResourceKey(ns::String));
+define_obj_type!(pub ResourceKey(ns::String));
 
-define_obj_type!(Url(ns::Id));
+define_obj_type!(pub Url(ns::Id));
 
 impl arc::A<Url> {
     #[objc::msg_send(initFileURLWithPath:isDirectory:relativeToURL:)]

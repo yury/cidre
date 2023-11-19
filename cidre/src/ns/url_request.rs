@@ -1,7 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(UrlRequest(ns::Id));
-define_obj_type!(UrlRequestMut(UrlRequest));
+define_obj_type!(pub UrlRequest(ns::Id));
+define_obj_type!(pub UrlRequestMut(UrlRequest));
 
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]

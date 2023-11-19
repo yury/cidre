@@ -9,7 +9,7 @@ pub trait StereoMixing {
     fn set_pan(&mut self, value: f32);
 }
 
-define_obj_type!(MixingDestination(ns::Id));
+define_obj_type!(pub MixingDestination(ns::Id));
 
 impl MixingDestination {
     #[objc::msg_send(connectionPoint)]

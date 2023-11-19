@@ -1,8 +1,8 @@
 use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(Reflection(ns::Id));
+define_obj_type!(pub Reflection(ns::Id));
 
-define_obj_type!(Desc(ns::Id), MTL_COMPUTE_PIPELINE_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_COMPUTE_PIPELINE_DESCRIPTOR);
 
 impl Desc {
     define_mtl!(label, set_label);
@@ -31,7 +31,7 @@ extern "C" {
     static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
-define_obj_type!(State(ns::Id));
+define_obj_type!(pub State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resource_id);

@@ -69,7 +69,7 @@ pub mod keys {
     }
 }
 
-define_obj_type!(Codec(ns::String));
+define_obj_type!(pub Codec(ns::String));
 
 impl Codec {
     /// The HEVC video codec.

@@ -50,7 +50,7 @@ impl Default for SwizzleChannels {
     }
 }
 
-define_obj_type!(SharedTextureHandle(ns::Id));
+define_obj_type!(pub SharedTextureHandle(ns::Id));
 
 impl SharedTextureHandle {
     define_mtl!(device, label);
@@ -81,7 +81,7 @@ pub enum Compression {
 define_obj_type!(
     /// An object that you use to configure new Metal texture objects.
     #[doc(alias = "MTLTextureDescriptor")]
-    Desc(ns::Id),
+    pub Desc(ns::Id),
     MTL_TEXTURE_DESCRIPTOR
 );
 
@@ -228,7 +228,7 @@ impl Desc {
 define_obj_type!(
     /// A resource that holds formatted image data.
     #[doc(alias = "MTLTexture")]
-    Texture(mtl::Resource)
+    pub Texture(mtl::Resource)
 );
 
 impl Texture {

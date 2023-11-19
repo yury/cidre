@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    DetectBarcodesRequest(vn::ImageBasedRequest),
+    pub DetectBarcodesRequest(vn::ImageBasedRequest),
     VN_DETECT_BARCODES_REQUEST
 );
 

@@ -3,7 +3,7 @@ use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 define_obj_type!(
     /// A specification of how to create a visible function table.
     #[doc(alias = "MTLVisibleFunctionTableDescriptor")]
-    Desc(ns::Id),
+    pub Desc(ns::Id),
     MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR
 );
 
@@ -20,7 +20,7 @@ define_obj_type!(
     /// A table of shader functions visible to your app that you can pass into
     /// compute commands to customize the behavior of a shader.
     #[doc(alias = "MTLVisibleFunctionTable")]
-    VisibleFnTable(mtl::Resource)
+    pub VisibleFnTable(mtl::Resource)
 );
 
 impl VisibleFnTable {

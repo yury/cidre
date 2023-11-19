@@ -10,13 +10,13 @@ use crate::{
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-define_obj_type!(Queue(dispatch::Object));
-define_obj_type!(Global(Queue));
-define_obj_type!(Serial(Queue));
-define_obj_type!(Main(Serial));
-define_obj_type!(Concurent(Queue));
+define_obj_type!(pub Queue(dispatch::Object));
+define_obj_type!(pub Global(Queue));
+define_obj_type!(pub Serial(Queue));
+define_obj_type!(pub Main(Serial));
+define_obj_type!(pub Concurent(Queue));
 
-define_obj_type!(Attr(dispatch::Object));
+define_obj_type!(pub Attr(dispatch::Object));
 
 #[doc(alias = "DispatchQoS")]
 #[repr(transparent)]

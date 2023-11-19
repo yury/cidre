@@ -12,7 +12,7 @@ pub enum Style {
     Application,
 }
 
-define_obj_type!(RunningApp(ns::Id));
+define_obj_type!(pub RunningApp(ns::Id));
 
 impl RunningApp {
     #[objc::msg_send(bundleIdentifier)]
@@ -25,7 +25,7 @@ impl RunningApp {
     pub fn process_id(&self) -> sys::Pid;
 }
 
-define_obj_type!(Display(ns::Id));
+define_obj_type!(pub Display(ns::Id));
 
 impl Display {
     #[objc::msg_send(displayID)]
@@ -41,7 +41,7 @@ impl Display {
     pub fn frame(&self) -> cg::Rect;
 }
 
-define_obj_type!(Window(ns::Id));
+define_obj_type!(pub Window(ns::Id));
 
 impl Window {
     #[objc::msg_send(windowID)]
@@ -83,7 +83,7 @@ extern "C" {
     static SC_SHAREABLE_CONTENT: &'static objc::Class<ShareableContent>;
 }
 
-define_obj_type!(ShareableContent(ns::Id));
+define_obj_type!(pub ShareableContent(ns::Id));
 
 unsafe impl Send for ShareableContent {}
 
@@ -125,7 +125,7 @@ impl ShareableContent {
     pub fn info_for_filter(filter: &sc::ContentFilter) -> arc::R<Info>;
 }
 
-define_obj_type!(Info(ns::Id));
+define_obj_type!(pub Info(ns::Id));
 
 impl Info {
     #[objc::msg_send(style)]

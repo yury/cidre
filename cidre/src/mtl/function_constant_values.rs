@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(FnConstValues(ns::Id), MTL_FUNCTION_CONSTANT_VALUES);
+define_obj_type!(pub FnConstValues(ns::Id), MTL_FUNCTION_CONSTANT_VALUES);
 
 impl FnConstValues {
     define_mtl!(reset);

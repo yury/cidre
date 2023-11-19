@@ -2,7 +2,7 @@ use crate::{arc, cat, define_cls, define_obj_type, ns, objc};
 
 use super::FramePosition;
 
-define_obj_type!(Time(ns::Id));
+define_obj_type!(pub Time(ns::Id));
 
 impl arc::A<Time> {
     #[objc::msg_send(initWithAudioTimeStamp:sampleRate:)]

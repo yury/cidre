@@ -46,9 +46,9 @@ pub enum MarkerMark {
     Paragraph,
 }
 
-define_obj_type!(Voice(ns::Id));
+define_obj_type!(pub Voice(ns::Id));
 
-define_obj_type!(Utterance(ns::Id));
+define_obj_type!(pub Utterance(ns::Id));
 
 impl Utterance {
     pub fn min_speech_rate() -> f32 {
@@ -64,9 +64,9 @@ impl Utterance {
     }
 }
 
-define_obj_type!(Synthesizer(ns::Id));
+define_obj_type!(pub Synthesizer(ns::Id));
 
-define_obj_type!(Marker(ns::Id));
+define_obj_type!(pub Marker(ns::Id));
 
 #[link(name = "AVFAudio", kind = "framework")]
 extern "C" {

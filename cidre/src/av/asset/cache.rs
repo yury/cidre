@@ -1,3 +1,3 @@
 use crate::{define_obj_type, ns};
 
-define_obj_type!(Cache(ns::Id));
+define_obj_type!(pub Cache(ns::Id));

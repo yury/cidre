@@ -2,8 +2,8 @@ use std::ffi::c_void;
 
 use crate::{arc, cf, define_obj_type, mach, ns, objc};
 
-define_obj_type!(Port(ns::Id), NS_PORT);
-define_obj_type!(MachPort(Port), NS_MACH_PORT);
+define_obj_type!(pub Port(ns::Id), NS_PORT);
+define_obj_type!(pub MachPort(Port), NS_MACH_PORT);
 
 impl Port {
     #[objc::msg_send(invalidate)]

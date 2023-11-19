@@ -1,6 +1,6 @@
 use crate::{define_obj_type, mlc, ns, objc};
 
-define_obj_type!(Optimizer(ns::Id));
+define_obj_type!(pub Optimizer(ns::Id));
 
 impl Optimizer {
     /// The learning rate.

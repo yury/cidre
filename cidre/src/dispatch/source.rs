@@ -6,8 +6,8 @@ use std::{
 
 use crate::{arc, define_obj_type, define_options, dispatch, mach};
 
-define_obj_type!(Source(dispatch::Object));
-define_obj_type!(TimerSource(Source));
+define_obj_type!(pub Source(dispatch::Object));
+define_obj_type!(pub TimerSource(Source));
 
 /// The dispatch framework provides a suite of interfaces for monitoring low-
 /// level system objects (file descriptors, Mach ports, signals, VFS nodes, etc.)

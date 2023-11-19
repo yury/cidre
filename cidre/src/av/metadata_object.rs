@@ -1,6 +1,6 @@
 use crate::{cg, cm, define_obj_type, ns, objc};
 
-define_obj_type!(Type(ns::String));
+define_obj_type!(pub Type(ns::String));
 
 impl Type {
     #[doc(alias = "AVMetadataObjectTypeHumanBody")]
@@ -195,7 +195,7 @@ extern "C" {
 
 }
 
-define_obj_type!(Object(ns::Id));
+define_obj_type!(pub Object(ns::Id));
 
 impl Object {
     /// The value of this property is a cg::Rect representing the bounding rectangle
@@ -229,20 +229,20 @@ impl Object {
     pub fn object_type(&self) -> &Type;
 }
 
-define_obj_type!(BodyObject(Object));
+define_obj_type!(pub BodyObject(Object));
 
 impl BodyObject {
     #[objc::msg_send(bodyID)]
     pub fn body_id(&self) -> isize;
 }
 
-define_obj_type!(CatBodyObject(BodyObject));
-define_obj_type!(DogBodyObject(BodyObject));
-define_obj_type!(HumanBodyObject(BodyObject));
+define_obj_type!(pub CatBodyObject(BodyObject));
+define_obj_type!(pub DogBodyObject(BodyObject));
+define_obj_type!(pub HumanBodyObject(BodyObject));
 
-define_obj_type!(FaceObject(Object));
-define_obj_type!(MachineReadableCodeObject(Object));
-define_obj_type!(SalientObject(Object));
+define_obj_type!(pub FaceObject(Object));
+define_obj_type!(pub MachineReadableCodeObject(Object));
+define_obj_type!(pub SalientObject(Object));
 
 impl SalientObject {
     #[objc::msg_send(objectID)]

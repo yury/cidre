@@ -2,7 +2,7 @@ use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
 use super::CmdBuf;
 
-define_obj_type!(CmdQueue(ns::Id));
+define_obj_type!(pub CmdQueue(ns::Id));
 
 impl CmdQueue {
     define_mtl!(device, label, set_label);

@@ -1,6 +1,6 @@
 use crate::{define_obj_type, mtl, ns, objc};
 
-define_obj_type!(IndirectRenderCmd(ns::Id));
+define_obj_type!(pub IndirectRenderCmd(ns::Id));
 
 impl IndirectRenderCmd {
     /// Sets the render pipeline state object used by the command.
@@ -111,7 +111,7 @@ impl IndirectRenderCmd {
     pub fn reset(&mut self);
 }
 
-define_obj_type!(IndirectComputeCmd(ns::Id));
+define_obj_type!(pub IndirectComputeCmd(ns::Id));
 
 impl IndirectComputeCmd {
     #[objc::msg_send(setComputePipelineState:)]

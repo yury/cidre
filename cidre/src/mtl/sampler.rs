@@ -37,7 +37,7 @@ pub enum BorderColor {
     OpaqueWhite = 2,
 }
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(pub Desc(ns::Id));
 
 impl Desc {
     define_mtl!(label, set_label);
@@ -67,7 +67,7 @@ impl Desc {
     pub fn set_normalized_coordinates(&mut self, val: bool);
 }
 
-define_obj_type!(State(ns::Id));
+define_obj_type!(pub State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resource_id);

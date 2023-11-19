@@ -1,8 +1,8 @@
 use crate::{arc, cf, define_obj_type, ns, objc};
 
-define_obj_type!(RunLoopMode(ns::String));
+define_obj_type!(pub RunLoopMode(ns::String));
 
-define_obj_type!(RunLoop(ns::Id), NS_RUN_LOOP);
+define_obj_type!(pub RunLoop(ns::Id), NS_RUN_LOOP);
 
 impl RunLoop {
     #[objc::cls_msg_send(currentRunLoop)]

@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    GenerateImageFeaturePrintRequest(vn::ImageBasedRequest),
+    pub GenerateImageFeaturePrintRequest(vn::ImageBasedRequest),
     VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST
 );
 

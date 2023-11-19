@@ -81,7 +81,7 @@ impl MatchingFlags {
     pub const INTERNAL_ERROR: Self = Self(1 << 4);
 }
 
-define_obj_type!(RegularExpression(ns::Id));
+define_obj_type!(pub RegularExpression(ns::Id));
 
 impl arc::A<RegularExpression> {
     #[objc::msg_send(initWithPattern:options:error:)]

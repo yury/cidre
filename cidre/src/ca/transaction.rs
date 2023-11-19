@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(Transaction(ns::Id), CA_TRANSACTION);
+define_obj_type!(pub Transaction(ns::Id), CA_TRANSACTION);
 impl Transaction {
     #[objc::cls_msg_send(begin)]
     pub fn begin();

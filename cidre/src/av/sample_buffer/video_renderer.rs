@@ -1,6 +1,6 @@
 use crate::{arc, av, define_obj_type, ns, objc};
 
-define_obj_type!(VideoRenderer(ns::Id), AV_SAMPLE_BUFFER_VIDEO_RENDERER);
+define_obj_type!(pub VideoRenderer(ns::Id), AV_SAMPLE_BUFFER_VIDEO_RENDERER);
 
 impl av::QueuedSampleBufRendering for VideoRenderer {}
 

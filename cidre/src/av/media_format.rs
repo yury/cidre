@@ -1,6 +1,6 @@
 use crate::{define_obj_type, ns};
 
-define_obj_type!(MediaType(ns::String));
+define_obj_type!(pub MediaType(ns::String));
 
 /// Media types
 impl MediaType {
@@ -81,7 +81,7 @@ impl MediaType {
     }
 }
 
-define_obj_type!(VideoRange(ns::String));
+define_obj_type!(pub VideoRange(ns::String));
 
 /// Constants that describe a video variant’s dynamic range.
 impl VideoRange {
@@ -107,7 +107,7 @@ impl VideoRange {
     }
 }
 
-define_obj_type!(FileType(ns::String));
+define_obj_type!(pub FileType(ns::String));
 
 impl FileType {
     /// A UTI for the QuickTime movie file format.
@@ -327,7 +327,7 @@ impl FileType {
     }
 }
 
-define_obj_type!(FileTypeProfile(ns::String));
+define_obj_type!(pub FileTypeProfile(ns::String));
 
 /// File type profiles
 impl FileTypeProfile {

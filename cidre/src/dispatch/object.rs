@@ -6,7 +6,7 @@ use crate::{
     ns,
 };
 
-define_obj_type!(Object(ns::Id));
+define_obj_type!(pub Object(ns::Id));
 
 impl Object {
     #[inline]

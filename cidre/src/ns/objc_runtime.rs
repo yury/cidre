@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, ns, objc::Obj};
 
-define_obj_type!(ExceptionName(ns::String));
+define_obj_type!(pub ExceptionName(ns::String));
 
 #[inline]
 pub fn ns_string_from_selector(sel: &ns::objc::Sel) -> arc::R<ns::String> {

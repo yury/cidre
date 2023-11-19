@@ -1,8 +1,8 @@
 use crate::{arc, define_obj_type, define_options, ns, objc, os};
 
-define_obj_type!(FileAttrKey(ns::String));
-define_obj_type!(FileAttrType(ns::String));
-define_obj_type!(FileProtectionType(ns::String));
+define_obj_type!(pub FileAttrKey(ns::String));
+define_obj_type!(pub FileAttrType(ns::String));
+define_obj_type!(pub FileProtectionType(ns::String));
 
 define_options!(VolumeEnumerationOptions(usize));
 
@@ -49,7 +49,7 @@ pub enum UrlRelationship {
     Other,
 }
 
-define_obj_type!(FileManager(ns::Id));
+define_obj_type!(pub FileManager(ns::Id));
 
 impl FileManager {
     #[inline]

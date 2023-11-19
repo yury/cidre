@@ -1,10 +1,10 @@
 use crate::{arc, blocks, define_obj_type, ns, objc, wk};
 
 #[cfg(target_os = "ios")]
-define_obj_type!(WebView(crate::ui::View), WK_WEB_VIEW);
+define_obj_type!(pub WebView(crate::ui::View), WK_WEB_VIEW);
 
 #[cfg(target_os = "macos")]
-define_obj_type!(WebView(ns::View), WK_WEB_VIEW);
+define_obj_type!(pub WebView(ns::View), WK_WEB_VIEW);
 
 impl WebView {
     #[objc::msg_send(loadRequest:)]

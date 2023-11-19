@@ -162,7 +162,7 @@ impl RenderStages {
     pub const MESH: Self = Self(1usize << 4);
 }
 
-define_obj_type!(RenderCmdEncoder(mtl::CmdEncoder));
+define_obj_type!(pub RenderCmdEncoder(mtl::CmdEncoder));
 impl RenderCmdEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 

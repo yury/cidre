@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_obj_type, mps, mps::graph, ns, objc};
 
-define_obj_type!(VariableOp(graph::Operation));
+define_obj_type!(pub VariableOp(graph::Operation));
 
 impl VariableOp {
     #[objc::msg_send(shape)]

@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(ActivationDesc(ns::Id));
+define_obj_type!(pub ActivationDesc(ns::Id));
 impl ActivationDesc {
     define_cls!(MLC_ACTIVATION_DESCRIPTOR);
 

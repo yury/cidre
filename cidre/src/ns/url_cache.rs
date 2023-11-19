@@ -11,8 +11,8 @@ pub enum StoragePolicy {
     NotAllowed,
 }
 
-define_obj_type!(CachedUrlResponse(ns::Id));
-define_obj_type!(UrlCache(ns::Id));
+define_obj_type!(pub CachedUrlResponse(ns::Id));
+define_obj_type!(pub UrlCache(ns::Id));
 
 impl arc::A<UrlCache> {
     #[objc::msg_send(initWithMemoryCapacity:diskCapacity:directoryURL:)]

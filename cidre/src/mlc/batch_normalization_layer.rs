@@ -1,6 +1,6 @@
 use crate::{define_cls, define_obj_type, mlc, objc};
 
-define_obj_type!(BatchNormalizationLayer(mlc::Layer));
+define_obj_type!(pub BatchNormalizationLayer(mlc::Layer));
 
 impl BatchNormalizationLayer {
     define_cls!(MLC_BATCH_NORMALIZATION_LAYER);

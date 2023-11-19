@@ -96,7 +96,7 @@ pub mod notifications {
     }
 }
 
-define_obj_type!(Device(ns::Id));
+define_obj_type!(pub Device(ns::Id));
 
 impl Device {
     define_cls!(UI_DEVICE);

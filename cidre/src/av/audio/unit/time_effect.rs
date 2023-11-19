@@ -1,6 +1,6 @@
 use crate::{arc, at, av::audio, define_cls, define_obj_type, objc};
 
-define_obj_type!(TimeEffect(audio::Unit));
+define_obj_type!(pub TimeEffect(audio::Unit));
 
 impl arc::A<TimeEffect> {
     #[objc::msg_send(initWithAudioComponentDescription:)]

@@ -1,6 +1,6 @@
 use crate::{define_obj_type, mps, ns, objc};
 
-define_obj_type!(TensorData(ns::Id));
+define_obj_type!(pub TensorData(ns::Id));
 
 impl TensorData {
     #[objc::msg_send(shape)]

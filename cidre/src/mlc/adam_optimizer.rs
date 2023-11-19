@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, objc};
 
-define_obj_type!(AdamOptimizer(mlc::Optimizer));
+define_obj_type!(pub AdamOptimizer(mlc::Optimizer));
 impl AdamOptimizer {
     define_cls!(MLC_ADAM_OPTIMIZER);
 

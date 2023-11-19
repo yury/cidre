@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(Name(ns::String));
+define_obj_type!(pub Name(ns::String));
 impl Name {
     pub fn linear() -> &'static Self {
         unsafe { kCAMediaTimingFunctionLinear }
@@ -34,7 +34,7 @@ impl arc::A<MediaTimingFn> {
     ) -> arc::R<MediaTimingFn>;
 }
 
-define_obj_type!(MediaTimingFn(ns::Id));
+define_obj_type!(pub MediaTimingFn(ns::Id));
 impl MediaTimingFn {
     define_cls!(CA_MEDIA_TIMING_FUNCTION);
 

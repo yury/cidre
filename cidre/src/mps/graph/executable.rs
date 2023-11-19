@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{blocks::Block, cf, define_obj_type, mps::graph, ns, objc};
 
-define_obj_type!(ExecutionDesc(ns::Id));
+define_obj_type!(pub ExecutionDesc(ns::Id));
 
 impl ExecutionDesc {
     /// A notification when graph executable execution: has been scheduled
@@ -48,7 +48,7 @@ impl ExecutionDesc {
     pub fn set_wait_until_completed(&self, val: bool);
 }
 
-define_obj_type!(Executable(ns::Id));
+define_obj_type!(pub Executable(ns::Id));
 
 impl Executable {
     #[objc::msg_send(options)]

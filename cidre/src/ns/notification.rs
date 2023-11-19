@@ -3,7 +3,7 @@ use crate::{arc, cf, define_cls, define_obj_type, ns, objc};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-define_obj_type!(NotificationName(ns::String));
+define_obj_type!(pub NotificationName(ns::String));
 
 impl NotificationName {
     pub fn with_raw(raw: arc::R<ns::String>) -> arc::R<Self> {
@@ -20,7 +20,7 @@ impl NotificationName {
     }
 }
 
-define_obj_type!(Notification(ns::Id));
+define_obj_type!(pub Notification(ns::Id));
 
 impl arc::A<Notification> {
     #[objc::msg_send(initWithName:object:userInfo:)]
@@ -60,7 +60,7 @@ impl Notification {
     }
 }
 
-define_obj_type!(NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER);
+define_obj_type!(pub NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER);
 impl NotificationCenter {
     #[objc::cls_msg_send(defaultCenter)]
     pub fn default() -> &'static mut Self;

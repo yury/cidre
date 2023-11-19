@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(Desc(ns::Id), MTL_COMPUTE_PASS_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_COMPUTE_PASS_DESCRIPTOR);
 
 impl Desc {
     #[objc::msg_send(dispatchType)]
@@ -20,7 +20,7 @@ extern "C" {
     static MTL_COMPUTE_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
-define_obj_type!(SampleBufAttachDescArray(ns::Id));
+define_obj_type!(pub SampleBufAttachDescArray(ns::Id));
 
 impl SampleBufAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
@@ -40,7 +40,7 @@ impl SampleBufAttachDescArray {
     }
 }
 
-define_obj_type!(SampleBufAttachDesc(ns::Id));
+define_obj_type!(pub SampleBufAttachDesc(ns::Id));
 
 impl SampleBufAttachDesc {
     #[objc::msg_send(sampleBuffer)]

@@ -15,7 +15,7 @@ pub enum Status {
     Cancelled = 4,
 }
 
-define_obj_type!(Reader(ns::Id));
+define_obj_type!(pub Reader(ns::Id));
 
 impl arc::A<Reader> {
     #[objc::msg_send(initWithAsset:error:)]

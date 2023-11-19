@@ -2,7 +2,7 @@ use std::mem::transmute;
 
 use crate::{arc, cg, cm, cv, define_cls, define_obj_type, ns, objc, vn};
 
-define_obj_type!(ImageRequestHandler(ns::Id));
+define_obj_type!(pub ImageRequestHandler(ns::Id));
 
 impl arc::A<ImageRequestHandler> {
     #[objc::msg_send(initWithURL:options:)]
@@ -117,7 +117,7 @@ impl ImageRequestHandler {
     }
 }
 
-define_obj_type!(SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER);
+define_obj_type!(pub SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER);
 
 /// Performs requests on a sequence of images.
 ///

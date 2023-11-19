@@ -1,6 +1,6 @@
 use crate::{av, blocks::Block, define_obj_type, ns, objc};
 
-define_obj_type!(Node(ns::Id));
+define_obj_type!(pub Node(ns::Id));
 
 impl Node {
     #[objc::msg_send(reset)]

@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, objc};
 
-define_obj_type!(ArithmeticLayer(mlc::Layer));
+define_obj_type!(pub ArithmeticLayer(mlc::Layer));
 
 impl ArithmeticLayer {
     define_cls!(MLC_ARITHMETIC_LAYER);

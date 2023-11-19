@@ -1,8 +1,8 @@
 use crate::{define_obj_type, objc};
 
-define_obj_type!(Type(objc::Id));
+define_obj_type!(pub Type(objc::Id));
 
-define_obj_type!(ShapedType(Type));
+define_obj_type!(pub ShapedType(Type));
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]

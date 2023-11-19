@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_cf_type, define_cls, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(Image(ns::Id));
+define_obj_type!(pub Image(ns::Id));
 
 impl arc::A<Image> {
     #[objc::msg_send(initWithMTLTexture:options:)]

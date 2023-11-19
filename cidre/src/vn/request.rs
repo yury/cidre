@@ -1,6 +1,6 @@
 use crate::{arc, cg, define_obj_type, ns, objc, vn};
 
-define_obj_type!(Request(ns::Id));
+define_obj_type!(pub Request(ns::Id));
 
 impl Request {
     /// The specific algorithm or implementation revision that is to be used to perform the request.
@@ -22,7 +22,7 @@ impl Request {
     pub const REVISION_UNSPECIFIED: usize = 0;
 }
 
-define_obj_type!(ImageBasedRequest(Request));
+define_obj_type!(pub ImageBasedRequest(Request));
 
 impl ImageBasedRequest {
     /// The region of the image in which the request will be performed.
@@ -40,7 +40,7 @@ impl ImageBasedRequest {
 }
 
 define_obj_type!(
-    DetectHorizonRequest(ImageBasedRequest),
+    pub DetectHorizonRequest(ImageBasedRequest),
     VN_DETECT_HORIZON_REQUEST
 );
 

@@ -36,8 +36,8 @@ impl SearchOptions {
     pub const ANCHORED: Self = Self(1 << 1);
 }
 
-define_obj_type!(Data(ns::Id), NS_DATA);
-define_obj_type!(DataMut(Data), NS_MUTABLE_DATA);
+define_obj_type!(pub Data(ns::Id), NS_DATA);
+define_obj_type!(pub DataMut(Data), NS_MUTABLE_DATA);
 
 impl arc::A<Data> {
     #[objc::msg_send(initWithContentsOfFile:options:error:)]

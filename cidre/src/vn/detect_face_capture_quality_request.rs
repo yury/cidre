@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    DetectFaceCaptureQualityRequest(vn::ImageBasedRequest),
+    pub DetectFaceCaptureQualityRequest(vn::ImageBasedRequest),
     VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST
 );
 

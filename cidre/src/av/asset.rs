@@ -30,10 +30,10 @@ pub mod track;
 pub use track::FragmentedTrack;
 pub use track::Track;
 
-define_obj_type!(Asset(ns::Id));
-define_obj_type!(UrlAsset(Asset));
-define_obj_type!(FragmentedAsset(UrlAsset));
-define_obj_type!(FragmentedAssetMinder(ns::Id));
+define_obj_type!(pub Asset(ns::Id));
+define_obj_type!(pub UrlAsset(Asset));
+define_obj_type!(pub FragmentedAsset(UrlAsset));
+define_obj_type!(pub FragmentedAssetMinder(ns::Id));
 
 impl arc::A<UrlAsset> {
     #[objc::msg_send(initWithURL:options:)]

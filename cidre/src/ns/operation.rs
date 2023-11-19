@@ -5,7 +5,7 @@ use crate::blocks;
 
 use super::KVObserverRegistration;
 
-define_obj_type!(Operation(ns::Id));
+define_obj_type!(pub Operation(ns::Id));
 impl Operation {
     define_cls!(NS_OPERATION);
 
@@ -16,7 +16,7 @@ impl Operation {
     pub fn cancel(&mut self);
 }
 
-define_obj_type!(BlockOperation(Operation));
+define_obj_type!(pub BlockOperation(Operation));
 impl BlockOperation {
     define_cls!(NS_BLOCK_OPERATION);
 
@@ -36,7 +36,7 @@ impl BlockOperation {
 impl KVObserverRegistration for Operation {}
 impl KVObserverRegistration for BlockOperation {}
 
-define_obj_type!(OperationQueue(ns::Id), NS_OPERATION_QUEUE);
+define_obj_type!(pub OperationQueue(ns::Id), NS_OPERATION_QUEUE);
 
 impl KVObserverRegistration for OperationQueue {}
 

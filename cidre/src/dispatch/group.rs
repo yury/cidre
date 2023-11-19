@@ -4,7 +4,7 @@ use crate::{arc, define_obj_type, dispatch};
 
 use super::{Queue, Time};
 
-define_obj_type!(Group(dispatch::Object));
+define_obj_type!(pub Group(dispatch::Object));
 
 impl Group {
     #[inline]

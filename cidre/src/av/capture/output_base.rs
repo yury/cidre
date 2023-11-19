@@ -1,6 +1,6 @@
 use crate::{av, define_obj_type, ns, objc};
 
-define_obj_type!(Output(ns::Id));
+define_obj_type!(pub Output(ns::Id));
 
 impl Output {
     #[objc::msg_send(connections)]

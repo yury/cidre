@@ -7,7 +7,7 @@ pub enum RecognitionLevel {
 }
 
 define_obj_type!(
-    RecognizeTextRequest(vn::ImageBasedRequest),
+    pub RecognizeTextRequest(vn::ImageBasedRequest),
     VN_RECOGNIZE_TEXT_REQUEST
 );
 

@@ -60,7 +60,7 @@ pub enum ManualRenderingMode {
     Realtime = 1,
 }
 
-define_obj_type!(Engine(ns::Id), AV_AUDIO_ENGINE);
+define_obj_type!(pub Engine(ns::Id), AV_AUDIO_ENGINE);
 
 /// An AVAudioEngine contains a group of connected AVAudioNodes ("nodes"), each of which performs
 /// an audio signal generation, processing, or input/output task.

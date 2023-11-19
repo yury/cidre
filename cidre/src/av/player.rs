@@ -44,7 +44,7 @@ pub enum AudiovisualBackgroundPlaybackPolicy {
     ContinuesIfPossible = 3,
 }
 
-define_obj_type!(Player(ns::Id));
+define_obj_type!(pub Player(ns::Id));
 
 impl arc::A<Player> {
     #[objc::msg_send(initWithURL:)]
@@ -82,7 +82,7 @@ impl Player {
     pub fn error(&self) -> Option<&ns::Error>;
 }
 
-define_obj_type!(QueuePlayer(Player));
+define_obj_type!(pub QueuePlayer(Player));
 
 #[link(name = "av", kind = "static")]
 extern "C" {

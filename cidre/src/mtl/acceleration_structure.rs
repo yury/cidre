@@ -38,7 +38,7 @@ pub enum InstanceOpts {
     NonOpaque = (1 << 3),
 }
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(pub Desc(ns::Id));
 
 impl Desc {
     #[objc::msg_send(usage)]
@@ -49,7 +49,7 @@ impl Desc {
 }
 
 define_obj_type!(
-    GeometryDesc(Desc),
+    pub GeometryDesc(Desc),
     MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR
 );
 
@@ -110,7 +110,7 @@ pub enum MotionBorderMode {
 }
 
 define_obj_type!(
-    TriangleGeometryDesc(GeometryDesc),
+    pub TriangleGeometryDesc(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR
 );
 
@@ -177,7 +177,7 @@ impl TriangleGeometryDesc {
 }
 
 define_obj_type!(
-    MotionBoundingBoxGeometryDesc(GeometryDesc),
+    pub MotionBoundingBoxGeometryDesc(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR
 );
 
@@ -185,7 +185,7 @@ impl MotionBoundingBoxGeometryDesc {
     //
 }
 
-define_obj_type!(AccelerationStructure(mtl::Resource));
+define_obj_type!(pub AccelerationStructure(mtl::Resource));
 
 impl AccelerationStructure {
     #[objc::msg_send(size)]

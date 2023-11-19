@@ -1,6 +1,6 @@
 use crate::{arc, cg, ci, define_obj_type, ns, objc};
 
-define_obj_type!(Context(ns::Id), CI_CONTEXT);
+define_obj_type!(pub Context(ns::Id), CI_CONTEXT);
 
 impl arc::A<Context> {
     #[objc::msg_send(initWithOptions:)]

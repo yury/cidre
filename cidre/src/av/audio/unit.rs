@@ -12,4 +12,4 @@ pub use eq::UnitEq;
 mod time_effect;
 pub use time_effect::TimeEffect as UnitTimeEffect;
 
-define_obj_type!(Unit(audio::Node));
+define_obj_type!(pub Unit(audio::Node));

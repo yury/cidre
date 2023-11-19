@@ -19,6 +19,6 @@ pub use types::SetActiveOptions;
 pub use types::SilenceSecondaryAudioHintType;
 pub use types::StereoOrientation;
 
-define_obj_type!(Session(ns::Id));
+define_obj_type!(pub Session(ns::Id));
 
 impl Session {}

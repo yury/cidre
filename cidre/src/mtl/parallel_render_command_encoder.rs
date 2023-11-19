@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mtl, objc};
 
-define_obj_type!(ParallelRenderCmdEncoder(mtl::RenderCmdEncoder));
+define_obj_type!(pub ParallelRenderCmdEncoder(mtl::RenderCmdEncoder));
 
 impl ParallelRenderCmdEncoder {
     #[objc::msg_send(renderCommandEncoder)]

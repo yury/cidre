@@ -28,7 +28,7 @@ pub enum CompletionCbType {
     DataPlayedBack = 2,
 }
 
-define_obj_type!(PlayerNode(audio::Node), AV_AUDIO_PLAYER_NODE);
+define_obj_type!(pub PlayerNode(audio::Node), AV_AUDIO_PLAYER_NODE);
 
 impl PlayerNode {
     #[objc::msg_send(scheduleBuffer:completionHandler:)]

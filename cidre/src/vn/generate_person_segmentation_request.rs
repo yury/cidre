@@ -11,7 +11,7 @@ pub enum QualityLevel {
 }
 
 define_obj_type!(
-    GeneratePersonSegmentationRequest(vn::StatefulRequest),
+    pub GeneratePersonSegmentationRequest(vn::StatefulRequest),
     VN_GENERATE_PERSON_SEGMENTAION_REQUEST
 );
 

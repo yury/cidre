@@ -1,6 +1,6 @@
 use crate::{cm, define_obj_type, ns, objc};
 
-define_obj_type!(ReactionType(ns::String));
+define_obj_type!(pub ReactionType(ns::String));
 
 impl ReactionType {
     /// Indicates a reaction which features a thumbs-up symbol.
@@ -67,7 +67,7 @@ extern "C" {
     fn AVCaptureReactionSystemImageNameForType(reacton_type: &ReactionType) -> &ns::String;
 }
 
-define_obj_type!(EffectState(ns::Id));
+define_obj_type!(pub EffectState(ns::Id));
 
 impl EffectState {
     /// Indicates the reaction which is running.

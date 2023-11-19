@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 pub type Shape = ns::Array<ns::Number>;
 
-define_obj_type!(Tensor(ns::Id));
+define_obj_type!(pub Tensor(ns::Id));
 impl Tensor {
     define_cls!(MLC_TENSOR);
 

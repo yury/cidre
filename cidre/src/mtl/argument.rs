@@ -169,20 +169,20 @@ pub enum Access {
     WriteOnly = 2,
 }
 
-define_obj_type!(BaseType(ns::Id));
+define_obj_type!(pub BaseType(ns::Id));
 
 impl BaseType {}
 
-define_obj_type!(StructMember(ns::Id));
+define_obj_type!(pub StructMember(ns::Id));
 
 impl StructMember {}
 
-define_obj_type!(StructType(BaseType));
-define_obj_type!(ArrayType(BaseType));
-define_obj_type!(PointerType(BaseType));
-define_obj_type!(TextureReferenceType(BaseType));
+define_obj_type!(pub StructType(BaseType));
+define_obj_type!(pub ArrayType(BaseType));
+define_obj_type!(pub PointerType(BaseType));
+define_obj_type!(pub TextureReferenceType(BaseType));
 
-define_obj_type!(Arg(ns::Id));
+define_obj_type!(pub Arg(ns::Id));
 
 impl Arg {
     #[objc::msg_send(name)]

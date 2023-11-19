@@ -3,7 +3,7 @@ use crate::{
     objc::{self, Class},
 };
 
-define_obj_type!(Value(ns::Id));
+define_obj_type!(pub Value(ns::Id));
 
 impl Value {
     define_cls!(NS_VALUE);
@@ -12,7 +12,7 @@ impl Value {
     pub fn eq_to_value(&self, other: &Self) -> bool;
 }
 
-define_obj_type!(Number(Value));
+define_obj_type!(pub Number(Value));
 
 // initializers
 impl arc::A<Number> {

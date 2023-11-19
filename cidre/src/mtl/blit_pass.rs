@@ -1,9 +1,9 @@
 use crate::{arc, define_cls_init, define_obj_type, ns, objc};
 
-define_obj_type!(SampleBufAttachDesc(ns::Id));
-define_obj_type!(SampleBufAttachDescArray(ns::Id));
+define_obj_type!(pub SampleBufAttachDesc(ns::Id));
+define_obj_type!(pub SampleBufAttachDescArray(ns::Id));
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(pub Desc(ns::Id));
 
 define_cls_init!(Desc, MTL_BLIT_PASS_DESCRIPTOR);
 

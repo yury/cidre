@@ -1,11 +1,11 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    RecognizeAnimalsRequest(vn::ImageBasedRequest),
+    pub RecognizeAnimalsRequest(vn::ImageBasedRequest),
     VN_RECOGNIZE_ANIMALS_REQUEST
 );
 
-define_obj_type!(AnimalIdentifier(ns::String));
+define_obj_type!(pub AnimalIdentifier(ns::String));
 
 impl AnimalIdentifier {
     #[inline]

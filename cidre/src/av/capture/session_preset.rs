@@ -1,6 +1,6 @@
 use crate::{define_obj_type, ns};
 
-define_obj_type!(SessionPreset(ns::String));
+define_obj_type!(pub SessionPreset(ns::String));
 
 impl SessionPreset {
     /// preset suitable for high resolution photo quality output.

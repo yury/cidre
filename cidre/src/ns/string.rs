@@ -24,8 +24,8 @@ pub enum Encoding {
     MacOSRoman = 30,
 }
 
-define_obj_type!(String(ns::Id), NS_STRING);
-define_obj_type!(StringMut(String), NS_MUTABLE_STRING);
+define_obj_type!(pub String(ns::Id), NS_STRING);
+define_obj_type!(pub StringMut(String), NS_MUTABLE_STRING);
 
 impl arc::A<String> {
     #[objc::msg_send(initWithBytes:length:encoding:)]

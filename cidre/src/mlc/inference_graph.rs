@@ -1,6 +1,6 @@
 use crate::{arc, blocks::Block, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(InferenceGraph(mlc::Graph));
+define_obj_type!(pub InferenceGraph(mlc::Graph));
 impl InferenceGraph {
     define_cls!(MLC_INFERENCE_GRAPH);
 

@@ -52,7 +52,7 @@ pub enum StencilOp {
     DecrementWrap = 7,
 }
 
-define_obj_type!(StencilDesc(ns::Id), MTL_STENCIL_DESCRIPTOR);
+define_obj_type!(pub StencilDesc(ns::Id), MTL_STENCIL_DESCRIPTOR);
 
 impl StencilDesc {
     /// The comparison that is performed between the masked reference value and a
@@ -102,7 +102,7 @@ impl StencilDesc {
     pub fn set_write_mask(&mut self, val: u32);
 }
 
-define_obj_type!(DepthStencilDesc(ns::Id), MTL_DEPTH_STENCIL_DESCRIPTOR);
+define_obj_type!(pub DepthStencilDesc(ns::Id), MTL_DEPTH_STENCIL_DESCRIPTOR);
 
 impl DepthStencilDesc {
     /// Defaults to mtl::CompareFnAlways, which effectively skips the depth test
@@ -154,7 +154,7 @@ impl DepthStencilDesc {
     define_mtl!(label, set_label);
 }
 
-define_obj_type!(State(ns::Id));
+define_obj_type!(pub State(ns::Id));
 
 /// A depth and stencil state object that specifies the depth and stencil
 /// configuration and operations used in a render pass.

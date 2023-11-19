@@ -1,6 +1,6 @@
 use crate::{define_obj_type, ns};
 
-define_obj_type!(LayerVideoGravity(ns::String));
+define_obj_type!(pub LayerVideoGravity(ns::String));
 
 impl LayerVideoGravity {
     #[inline]

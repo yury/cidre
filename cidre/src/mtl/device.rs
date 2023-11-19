@@ -71,7 +71,7 @@ pub enum GpuFamily {
 
 define_obj_type!(
     #[doc(alias = "MTLDevice")]
-    Device(ns::Id)
+    pub Device(ns::Id)
 );
 
 impl Device {

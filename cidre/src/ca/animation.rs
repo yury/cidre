@@ -1,6 +1,6 @@
 use crate::{arc, ca, define_obj_type, ns, objc};
 
-define_obj_type!(Animation(ns::Id), CA_ANIMATION);
+define_obj_type!(pub Animation(ns::Id), CA_ANIMATION);
 impl Animation {
     #[objc::msg_send(timingFunction)]
     pub fn timing_fn(&self) -> Option<&ca::MediaTimingFn>;

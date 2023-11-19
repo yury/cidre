@@ -1,6 +1,6 @@
 use crate::{arc, ca, cf, cg, cv, define_cls, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(OptionKey(ns::String));
+define_obj_type!(pub OptionKey(ns::String));
 
 impl OptionKey {
     #[inline]
@@ -14,7 +14,7 @@ impl OptionKey {
     }
 }
 
-define_obj_type!(Renderer(ns::Id));
+define_obj_type!(pub Renderer(ns::Id));
 impl Renderer {
     define_cls!(CA_RENDERER);
 

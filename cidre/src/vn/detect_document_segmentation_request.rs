@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    DetectDocumentSegmentationRequest(vn::ImageBasedRequest),
+    pub DetectDocumentSegmentationRequest(vn::ImageBasedRequest),
     VN_DETECT_DOCUMENT_SEGMENTATION_REQUEST
 );
 

@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(Desc(ns::Id));
+define_obj_type!(pub Desc(ns::Id));
 impl Desc {
     define_cls!(MLC_MATMUL_DESCRIPTOR);
 
@@ -38,7 +38,7 @@ impl Desc {
     }
 }
 
-define_obj_type!(Layer(mlc::Layer));
+define_obj_type!(pub Layer(mlc::Layer));
 impl Layer {
     define_cls!(MLC_MATMUL_LAYER);
 

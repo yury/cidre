@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(TensorParameter(ns::Id));
+define_obj_type!(pub TensorParameter(ns::Id));
 impl TensorParameter {
     define_cls!(MLC_TENSOR_PARAMETER);
 

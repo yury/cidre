@@ -11,7 +11,7 @@ pub enum RNNActivation {
 }
 
 define_obj_type!(
-    SingleGateRNNDesc(ns::Id),
+    pub SingleGateRNNDesc(ns::Id),
     MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR
 );
 impl SingleGateRNNDesc {
@@ -49,7 +49,7 @@ impl SingleGateRNNDesc {
     #[objc::msg_send(setActivation:)]
     pub fn set_activation(&mut self, val: RNNActivation);
 }
-define_obj_type!(LSTMDesc(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
+define_obj_type!(pub LSTMDesc(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
 impl LSTMDesc {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;
@@ -112,7 +112,7 @@ impl LSTMDesc {
     pub fn set_activation(&mut self, val: RNNActivation);
 }
 
-define_obj_type!(GRUDescr(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
+define_obj_type!(pub GRUDescr(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
 impl GRUDescr {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;

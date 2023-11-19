@@ -52,7 +52,7 @@ pub enum OutputStatus {
     Error = 3,
 }
 
-define_obj_type!(Converter(ns::Id));
+define_obj_type!(pub Converter(ns::Id));
 
 impl Converter {
     /*! @property bitRateStrategy

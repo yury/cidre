@@ -15,7 +15,7 @@ impl Drop for SignalGuard {
     }
 }
 
-define_obj_type!(Semaphore(dispatch::Object));
+define_obj_type!(pub Semaphore(dispatch::Object));
 
 unsafe impl Send for Semaphore {}
 unsafe impl Sync for Semaphore {}

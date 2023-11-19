@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(Buf(mtl::Resource));
+define_obj_type!(pub Buf(mtl::Resource));
 
 impl Buf {
     #[objc::msg_send(length)]

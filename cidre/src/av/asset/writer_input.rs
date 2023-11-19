@@ -7,7 +7,7 @@ use crate::{
     objc,
 };
 
-define_obj_type!(WriterInput(ns::Id));
+define_obj_type!(pub WriterInput(ns::Id));
 
 impl arc::A<WriterInput> {
     #[objc::msg_send(initWithMediaType:outputSettings:)]

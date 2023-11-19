@@ -38,7 +38,7 @@ impl IndirectCmdType {
 define_obj_type!(
     /// Describes the limits and features that can be used in an indirect command
     #[doc(alias = "MTLIndirectCommandBufferDescriptor")]
-    Desc(ns::Id)
+    pub Desc(ns::Id)
 );
 
 impl Desc {
@@ -88,7 +88,7 @@ impl Desc {
 define_obj_type!(
     /// A command buffer containing reusable commands, encoded either on the CPU or GPU.
     #[doc(alias = "MTLIndirectCommandBuffer")]
-    IndirectCmdBuf(mtl::Resource)
+    pub IndirectCmdBuf(mtl::Resource)
 );
 
 impl IndirectCmdBuf {

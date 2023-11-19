@@ -1,8 +1,8 @@
 use crate::{define_cls, define_obj_type, mps, mtl, ns, objc};
 
-define_obj_type!(NDArrayAllocator(ns::Id));
+define_obj_type!(pub NDArrayAllocator(ns::Id));
 
-define_obj_type!(NDArray(ns::Id));
+define_obj_type!(pub NDArray(ns::Id));
 impl NDArray {
     define_cls!(MPS_NDARRAY);
 
@@ -41,7 +41,7 @@ impl NDArray {
     pub fn descriptor(&self) -> &NDArrayDesc;
 }
 
-define_obj_type!(NDArrayDesc(ns::Id));
+define_obj_type!(pub NDArrayDesc(ns::Id));
 impl NDArrayDesc {
     define_cls!(MPS_NDARRAY_DESCRIPTOR);
 

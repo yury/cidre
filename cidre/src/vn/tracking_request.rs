@@ -6,7 +6,7 @@ pub enum Level {
     Fast,
 }
 
-define_obj_type!(TrackingRequest(vn::ImageBasedRequest));
+define_obj_type!(pub TrackingRequest(vn::ImageBasedRequest));
 
 impl TrackingRequest {
     /// Tracking level allows tuning tracking algorithm to prefer speed (vn::RequestTrackingLevel::Fast)

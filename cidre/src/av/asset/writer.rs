@@ -19,7 +19,7 @@ pub enum Status {
     Cancelled = 4,
 }
 
-define_obj_type!(Writer(ns::Id));
+define_obj_type!(pub Writer(ns::Id));
 
 impl arc::A<Writer> {
     #[objc::msg_send(initWithURL:fileType:error:)]

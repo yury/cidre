@@ -19,7 +19,7 @@ pub enum DecodingFailurePolicy {
     SetErrorAndReturn,
 }
 
-define_obj_type!(Coder(ns::Id), NS_CODER);
+define_obj_type!(pub Coder(ns::Id), NS_CODER);
 impl Coder {}
 
 #[link(name = "ns", kind = "static")]

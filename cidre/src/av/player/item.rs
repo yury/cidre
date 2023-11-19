@@ -8,7 +8,7 @@ pub enum Status {
     Failed = 2,
 }
 
-define_obj_type!(Item(ns::Id));
+define_obj_type!(pub Item(ns::Id));
 
 impl ns::NotificationName {
     /// A notification the system posts when a player item’s time changes discontinuously.

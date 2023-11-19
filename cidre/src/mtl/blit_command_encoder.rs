@@ -9,7 +9,7 @@ impl BlitOption {
     pub const ROW_LINEAR_PVRTC: Self = Self(1 << 2);
 }
 
-define_obj_type!(BlitCmdEncoder(mtl::CmdEncoder));
+define_obj_type!(pub BlitCmdEncoder(mtl::CmdEncoder));
 
 impl BlitCmdEncoder {
     define_mtl!(update_fence, wait_for_fence);

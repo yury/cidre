@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(TensorDesc(ns::Id));
+define_obj_type!(pub TensorDesc(ns::Id));
 impl TensorDesc {
     define_cls!(MLC_TENSOR_DESCRIPTOR);
 

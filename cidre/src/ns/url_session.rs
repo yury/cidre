@@ -3,16 +3,16 @@ use crate::{
     objc::{self, Class},
 };
 
-define_obj_type!(Cfg(ns::Id));
+define_obj_type!(pub Cfg(ns::Id));
 
-define_obj_type!(Task(ns::Id));
-define_obj_type!(DataTask(Task));
-define_obj_type!(UploadTask(DataTask));
-define_obj_type!(DownloadTask(Task));
-define_obj_type!(StreamTask(Task));
-define_obj_type!(WebSocketTask(Task));
+define_obj_type!(pub Task(ns::Id));
+define_obj_type!(pub DataTask(Task));
+define_obj_type!(pub UploadTask(DataTask));
+define_obj_type!(pub DownloadTask(Task));
+define_obj_type!(pub StreamTask(Task));
+define_obj_type!(pub WebSocketTask(Task));
 
-define_obj_type!(Session(ns::Id));
+define_obj_type!(pub Session(ns::Id));
 
 impl Session {
     /// ```
@@ -187,7 +187,7 @@ pub enum WebSocketMessageType {
     String = 1,
 }
 
-define_obj_type!(WebSocketMessage(ns::Id));
+define_obj_type!(pub WebSocketMessage(ns::Id));
 
 impl arc::A<WebSocketMessage> {
     #[objc::msg_send(initWithData:)]

@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    GenerateAttentionBasedSaliencyImageRequest(vn::ImageBasedRequest),
+    pub GenerateAttentionBasedSaliencyImageRequest(vn::ImageBasedRequest),
     VN_GENERATE_ATTENTION_BAED_SALIENCY_IMAGE_REQUEST
 );
 

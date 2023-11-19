@@ -7,7 +7,7 @@ pub enum DeviceType {
     Metal = 0,
 }
 
-define_obj_type!(Device(ns::Id));
+define_obj_type!(pub Device(ns::Id));
 
 impl Device {
     define_cls!(MPS_GRAPH_DEVICE);

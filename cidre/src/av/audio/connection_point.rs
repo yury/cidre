@@ -1,6 +1,6 @@
 use crate::{arc, av::audio, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(ConnectionPoint(ns::Id));
+define_obj_type!(pub ConnectionPoint(ns::Id));
 
 impl arc::A<ConnectionPoint> {
     #[objc::msg_send(initWithNode:bus:)]

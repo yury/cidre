@@ -28,7 +28,7 @@ pub enum KVSetMutationKind {
     Set = 4,
 }
 
-define_obj_type!(KVChangeKey(ns::String));
+define_obj_type!(pub KVChangeKey(ns::String));
 impl KVChangeKey {
     pub fn kind() -> &'static Self {
         unsafe { NSKeyValueChangeKindKey }
@@ -190,7 +190,7 @@ pub trait KVObserverRegistration {
     }
 }
 
-define_obj_type!(CidreObserver(ns::Id));
+define_obj_type!(pub CidreObserver(ns::Id));
 impl CidreObserver {
     #[objc::msg_send(invalidate)]
     pub fn invalide(&self);

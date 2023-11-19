@@ -120,7 +120,7 @@ pub type TensorDataDictionary = ns::Dictionary<Tensor, TensorData>;
 #[doc(alias = "MPSGraphTensorShapedTypeDictionary")]
 pub type TensorShapedTypeDictionary = ns::Dictionary<Tensor, ShapedType>;
 
-define_obj_type!(Graph(ns::Id), MPS_GRAPH);
+define_obj_type!(pub Graph(ns::Id), MPS_GRAPH);
 
 impl Graph {
     #[objc::msg_send(options)]

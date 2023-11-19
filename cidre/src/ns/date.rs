@@ -4,7 +4,7 @@ pub type TimeInterval = f64;
 
 pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;
 
-define_obj_type!(Date(ns::Id), NS_DATE);
+define_obj_type!(pub Date(ns::Id), NS_DATE);
 
 impl arc::A<Date> {
     #[objc::msg_send(initWithTimeIntervalSinceNow:)]

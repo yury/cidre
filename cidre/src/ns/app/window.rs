@@ -97,7 +97,7 @@ impl WindowLevel {
     pub const SCREEN_SAVER: Self = Self::with_cg(cg::WindowLevel::SCREEN_SAVER);
 }
 
-define_obj_type!(Window(ns::Id), NS_WINDOW);
+define_obj_type!(pub Window(ns::Id), NS_WINDOW);
 
 impl Window {}
 

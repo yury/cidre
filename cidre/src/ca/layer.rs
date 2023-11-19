@@ -2,10 +2,10 @@ use ns::Id;
 
 use crate::{arc, ca, cf, cg, define_obj_type, define_options, ns, objc};
 
-define_obj_type!(ContentsGravity(ns::String));
-define_obj_type!(ContentsFormat(ns::String));
-define_obj_type!(ContentsFilter(ns::String));
-define_obj_type!(CornerCurve(ns::String));
+define_obj_type!(pub ContentsGravity(ns::String));
+define_obj_type!(pub ContentsFormat(ns::String));
+define_obj_type!(pub ContentsFilter(ns::String));
+define_obj_type!(pub CornerCurve(ns::String));
 
 define_options!(AutoresizingMask(u32));
 impl AutoresizingMask {
@@ -34,7 +34,7 @@ impl CornerMask {
     pub const MAX_X_MAX_Y: Self = Self(1 << 3);
 }
 
-define_obj_type!(Layer(ns::Id), CA_LAYER);
+define_obj_type!(pub Layer(ns::Id), CA_LAYER);
 impl Layer {
     #[objc::msg_send(bounds)]
     pub fn bounds(&self) -> cg::Rect;

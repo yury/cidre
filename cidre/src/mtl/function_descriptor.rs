@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(FnDesc(ns::Id), MTL_FUNCTION_DESCRIPTOR);
+define_obj_type!(pub FnDesc(ns::Id), MTL_FUNCTION_DESCRIPTOR);
 
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq)]
 #[repr(usize)]

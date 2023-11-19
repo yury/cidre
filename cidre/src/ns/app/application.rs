@@ -1,6 +1,6 @@
 use crate::{define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(Application(ns::Id));
+define_obj_type!(pub Application(ns::Id));
 
 #[objc::obj_trait]
 pub trait Delegate {}

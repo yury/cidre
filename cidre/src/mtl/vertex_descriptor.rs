@@ -243,7 +243,7 @@ pub enum VertexStepFn {
 }
 
 define_obj_type!(
-    VertexBufLayoutDesc(ns::Id),
+    pub VertexBufLayoutDesc(ns::Id),
     MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR
 );
 impl VertexBufLayoutDesc {
@@ -274,7 +274,7 @@ impl VertexBufLayoutDesc {
     pub fn set_step_rate(&mut self, val: usize);
 }
 
-define_obj_type!(VertexBufLayoutDescArray(ns::Id));
+define_obj_type!(pub VertexBufLayoutDescArray(ns::Id));
 impl VertexBufLayoutDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn object_at(&self, index: usize) -> &VertexBufLayoutDesc;
@@ -300,7 +300,7 @@ impl std::ops::IndexMut<usize> for VertexBufLayoutDescArray {
     }
 }
 
-define_obj_type!(VertexAttrDesc(ns::Id), MTL_VERTEX_ATTRIBUTE_DESCRIPTOR);
+define_obj_type!(pub VertexAttrDesc(ns::Id), MTL_VERTEX_ATTRIBUTE_DESCRIPTOR);
 
 impl VertexAttrDesc {
     #[objc::msg_send(format)]
@@ -322,7 +322,7 @@ impl VertexAttrDesc {
     pub fn set_buf_index(&self, val: usize);
 }
 
-define_obj_type!(VertexAttrDescArray(ns::Id));
+define_obj_type!(pub VertexAttrDescArray(ns::Id));
 impl VertexAttrDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn object_at(&self, index: usize) -> &VertexAttrDesc;
@@ -348,7 +348,7 @@ impl std::ops::IndexMut<usize> for VertexAttrDescArray {
     }
 }
 
-define_obj_type!(Desc(ns::Id), MTL_VERTEX_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_VERTEX_DESCRIPTOR);
 impl Desc {
     #[objc::msg_send(layouts)]
     pub fn layouts(&self) -> &VertexBufLayoutDescArray;

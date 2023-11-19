@@ -4,14 +4,14 @@ use crate::{
     cm, define_cls, define_obj_type, ns, objc,
 };
 
-define_obj_type!(ReaderOutput(ns::Id));
-define_obj_type!(ReaderTrackOutput(ReaderOutput));
-define_obj_type!(ReaderAudioMixOutput(ReaderOutput));
-define_obj_type!(ReaderVideoCompositionOutput(ReaderOutput));
-define_obj_type!(ReaderSampleReferenceOutput(ReaderOutput));
+define_obj_type!(pub ReaderOutput(ns::Id));
+define_obj_type!(pub ReaderTrackOutput(ReaderOutput));
+define_obj_type!(pub ReaderAudioMixOutput(ReaderOutput));
+define_obj_type!(pub ReaderVideoCompositionOutput(ReaderOutput));
+define_obj_type!(pub ReaderSampleReferenceOutput(ReaderOutput));
 
-define_obj_type!(ReaderOutputMetadataAdaptor(ns::Id));
-define_obj_type!(ReaderOutputCaptionAdaptor(ns::Id));
+define_obj_type!(pub ReaderOutputMetadataAdaptor(ns::Id));
+define_obj_type!(pub ReaderOutputCaptionAdaptor(ns::Id));
 
 /// Is an abstract class that defines an interface for reading a single collection
 /// of samples of a common media type from an av::AssetReader.

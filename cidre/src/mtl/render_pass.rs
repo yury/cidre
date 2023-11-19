@@ -109,9 +109,9 @@ impl ClearColor {
     }
 }
 
-define_obj_type!(StencilAttachDesc(AttachDesc));
+define_obj_type!(pub StencilAttachDesc(AttachDesc));
 
-define_obj_type!(Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
 impl Desc {
     #[objc::msg_send(colorAttachments)]
     pub fn color_attaches(&self) -> &ColorAttachDescArray;
@@ -177,7 +177,7 @@ impl Desc {
     pub fn set_imageblock_sample_length(&self, val: usize);
 }
 
-define_obj_type!(ColorAttachDescArray(ns::Id));
+define_obj_type!(pub ColorAttachDescArray(ns::Id));
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn get_at(&self, index: usize) -> &ColorAttachDesc;
@@ -205,7 +205,7 @@ impl std::ops::IndexMut<usize> for ColorAttachDescArray {
     }
 }
 
-define_obj_type!(AttachDesc(ns::Id));
+define_obj_type!(pub AttachDesc(ns::Id));
 impl AttachDesc {
     #[objc::msg_send(texture)]
     pub fn texture(&self) -> Option<&mtl::Texture>;
@@ -279,7 +279,7 @@ extern "C" {
     static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
-define_obj_type!(ColorAttachDesc(AttachDesc));
+define_obj_type!(pub ColorAttachDesc(AttachDesc));
 impl ColorAttachDesc {
     #[objc::msg_send(clearColor)]
     pub fn clear_color(&self) -> ClearColor;
@@ -296,7 +296,7 @@ pub enum MultisampleDepthResolveFilter {
     Max = 2,
 }
 
-define_obj_type!(DepthAttachDesc(AttachDesc));
+define_obj_type!(pub DepthAttachDesc(AttachDesc));
 impl DepthAttachDesc {
     #[objc::msg_send(clearDepth)]
     pub fn clear_depth(&self) -> f64;

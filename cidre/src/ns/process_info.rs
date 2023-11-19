@@ -22,7 +22,7 @@ pub enum ThermalState {
     Critical,
 }
 
-define_obj_type!(ProcessInfo(ns::Id));
+define_obj_type!(pub ProcessInfo(ns::Id));
 
 impl ns::KVObserverRegistration for ProcessInfo {}
 

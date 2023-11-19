@@ -35,7 +35,7 @@ define_obj_type!(
     /// An object that configures capture behavior and coordinates the flow of data
     /// from input devices to capture outputs.
     #[doc(alias = "AVCaptureSession")]
-    Session(ns::Id),
+    pub Session(ns::Id),
     AV_CAPTURE_SESSION
 );
 
@@ -130,7 +130,7 @@ extern "C" {
     static AV_CAPTURE_CONNECTION: &'static objc::Class<Connection>;
 }
 
-define_obj_type!(MultiCamSession(Session), AV_CAPTURE_MULTI_CAM_SESSION);
+define_obj_type!(pub MultiCamSession(Session), AV_CAPTURE_MULTI_CAM_SESSION);
 
 impl MultiCamSession {
     /// ```no_run
@@ -180,7 +180,7 @@ impl MultiCamSession {
 define_obj_type!(
     /// An object that represents a connection from a capture input to a capture output.
     #[doc(alias = "AVCaptureConnection")]
-    Connection(ns::Id)
+    pub Connection(ns::Id)
 );
 
 impl Connection {
@@ -199,7 +199,7 @@ define_obj_type!(
     /// Iterating through these audio channel objects, a client may poll for audio levels.
     /// Instances of [`av::CaptureAudioChannel`] cannot be created directly.
     #[doc(alias = "AVCaptureAudioChannel")]
-    AudioChannel(ns::Id)
+    pub AudioChannel(ns::Id)
 );
 
 impl AudioChannel {

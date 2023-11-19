@@ -21,7 +21,7 @@ pub enum CommonFormat {
     PcmI32 = 4,
 }
 
-define_obj_type!(Format(ns::Id));
+define_obj_type!(pub Format(ns::Id));
 
 impl arc::A<Format> {
     #[objc::msg_send(initWithStreamDescription:)]

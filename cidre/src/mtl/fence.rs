@@ -8,7 +8,7 @@ define_obj_type!(
     /// - [Objective-C](https://developer.apple.com/documentation/metal/mtlfence?language=objc)
     /// - [Swift](https://developer.apple.com/documentation/metal/mtlfence?language=swift)
     #[doc(alias = "MTLFence")]
-    Fence(ns::Id)
+    pub Fence(ns::Id)
 );
 
 impl Fence {

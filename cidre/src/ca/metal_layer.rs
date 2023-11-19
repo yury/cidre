@@ -2,7 +2,7 @@ use crate::{arc, ca, cg, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "CAMetalLayer")]
-    MetalLayer(ca::Layer),
+    pub MetalLayer(ca::Layer),
     CA_METAL_LAYER
 );
 
@@ -14,7 +14,7 @@ pub trait MetalDrawable<T: objc::Obj>: mtl::Drawable<T> {
     fn layer(&self) -> &MetalLayer;
 }
 
-define_obj_type!(AnyMetalDrawable(ns::Id));
+define_obj_type!(pub AnyMetalDrawable(ns::Id));
 
 impl mtl::Drawable<ns::Id> for AnyMetalDrawable {}
 impl MetalDrawable<ns::Id> for AnyMetalDrawable {}

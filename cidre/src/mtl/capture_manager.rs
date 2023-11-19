@@ -8,7 +8,7 @@ pub enum CaptureDst {
     GpuTraceDocument,
 }
 
-define_obj_type!(CaptureDesc(ns::Id), MTL_CAPTURE_DESCRIPTOR);
+define_obj_type!(pub CaptureDesc(ns::Id), MTL_CAPTURE_DESCRIPTOR);
 
 impl CaptureDesc {
     #[objc::msg_send(captureObject)]
@@ -30,7 +30,7 @@ impl CaptureDesc {
     pub fn set_output_url(&mut self, val: Option<&ns::Url>);
 }
 
-define_obj_type!(CaptureManager(ns::Id));
+define_obj_type!(pub CaptureManager(ns::Id));
 
 impl CaptureManager {
     define_cls!(MTL_CAPTURE_MANAGER);

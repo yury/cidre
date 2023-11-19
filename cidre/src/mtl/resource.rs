@@ -139,7 +139,7 @@ impl Options {
     }
 }
 
-define_obj_type!(Resource(ns::Id));
+define_obj_type!(pub Resource(ns::Id));
 
 impl Resource {
     define_mtl!(

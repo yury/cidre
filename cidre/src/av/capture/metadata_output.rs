@@ -24,7 +24,7 @@ define_obj_type!(
     /// the input data. You use this class the way you do other output objects, typically by
     /// adding it as an output to an [`av::CaptureSession`] object.
     #[doc(alias = "AVCaptureMetadataOutput")]
-    MetadataOutput(Output),
+    pub MetadataOutput(Output),
     AV_CAPTURE_METADATA_OUTPUT
 );
 

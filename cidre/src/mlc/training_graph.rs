@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mlc, objc};
 
-define_obj_type!(TrainingGraph(mlc::Graph), MLC_TRAINING_GRAPH);
+define_obj_type!(pub TrainingGraph(mlc::Graph), MLC_TRAINING_GRAPH);
 impl TrainingGraph {
     /// The optimizer to be used with the training graph
     #[objc::msg_send(optimizer)]

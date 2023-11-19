@@ -1,6 +1,6 @@
 use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
-define_obj_type!(CounterSampleBuf(ns::Id));
+define_obj_type!(pub CounterSampleBuf(ns::Id));
 
 impl CounterSampleBuf {
     define_mtl!(device, label);
@@ -19,7 +19,7 @@ pub struct CounterResultStatistic {
     pub compute_kernel_invocations: u64,
 }
 
-define_obj_type!(Counter(ns::Id));
+define_obj_type!(pub Counter(ns::Id));
 
 impl Counter {
     /// The name of a GPU’s counter instance.
@@ -27,7 +27,7 @@ impl Counter {
     pub fn name(&self) -> &ns::String;
 }
 
-define_obj_type!(CounterSet(ns::Id));
+define_obj_type!(pub CounterSet(ns::Id));
 
 impl CounterSet {
     /// The name of the GPU’s counter set instance.
@@ -38,7 +38,7 @@ impl CounterSet {
     pub fn counters(&self) -> &ns::Array<Counter>;
 }
 
-define_obj_type!(Desc(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR);
 
 impl Desc {
     define_mtl!(label, set_label, storage_mode);

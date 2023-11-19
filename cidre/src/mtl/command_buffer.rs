@@ -38,7 +38,7 @@ pub enum DispatchType {
 define_obj_type!(
     /// A serial list of commands for the device to execute.
     #[doc(alias = "MTLCommandBuffer")]
-    CmdBuf(ns::Id)
+    pub CmdBuf(ns::Id)
 );
 
 impl CmdBuf {

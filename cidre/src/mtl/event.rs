@@ -1,15 +1,15 @@
 use crate::{define_mtl, define_obj_type, ns};
 
-define_obj_type!(Event(ns::Id));
+define_obj_type!(pub Event(ns::Id));
 
 impl Event {
     define_mtl!(device, label, set_label);
 }
 
-define_obj_type!(SharedEventHandle(ns::Id));
+define_obj_type!(pub SharedEventHandle(ns::Id));
 impl SharedEventHandle {
     define_mtl!(label);
 }
 
-define_obj_type!(SharedEvent(Event));
+define_obj_type!(pub SharedEvent(Event));
 impl SharedEvent {}

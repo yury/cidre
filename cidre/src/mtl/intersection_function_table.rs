@@ -45,7 +45,7 @@ pub enum IntersectionFnSignature {
     ExtendedLimits = (1 << 5),
 }
 
-define_obj_type!(Desc(ns::Id), MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR);
 
 impl Desc {
     /// The number of functions in the table.
@@ -56,7 +56,7 @@ impl Desc {
     pub fn set_fn_count(&mut self, val: usize);
 }
 
-define_obj_type!(IntersectionFnTable(mtl::Resource));
+define_obj_type!(pub IntersectionFnTable(mtl::Resource));
 
 impl IntersectionFnTable {
     define_mtl!(gpu_resource_id);

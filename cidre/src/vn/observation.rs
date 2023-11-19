@@ -5,8 +5,8 @@ use crate::{
     vn::{self, ElementType},
 };
 
-define_obj_type!(Observation(ns::Id));
-define_obj_type!(RecognizedText(ns::Id));
+define_obj_type!(pub Observation(ns::Id));
+define_obj_type!(pub RecognizedText(ns::Id));
 
 impl RecognizedText {
     #[objc::msg_send(string)]
@@ -33,7 +33,7 @@ impl Observation {
     pub fn time_range(&self) -> cm::TimeRange;
 }
 
-define_obj_type!(DetectedObjectObservation(Observation));
+define_obj_type!(pub DetectedObjectObservation(Observation));
 
 impl DetectedObjectObservation {
     #[objc::msg_send(boundingBox)]
@@ -43,7 +43,7 @@ impl DetectedObjectObservation {
     pub fn global_segmentation_mask(&self) -> Option<&vn::PixelBufObservation>;
 }
 
-define_obj_type!(FaceObservation(DetectedObjectObservation));
+define_obj_type!(pub FaceObservation(DetectedObjectObservation));
 
 impl FaceObservation {
     /// The face landmarks populated by the vn::DetectFaceLandmarksRequest.
@@ -82,7 +82,7 @@ impl FaceObservation {
     pub fn pitch(&self) -> Option<&ns::Number>;
 }
 
-define_obj_type!(ClassificationObservation(Observation));
+define_obj_type!(pub ClassificationObservation(Observation));
 
 impl ClassificationObservation {
     #[objc::msg_send(identifier)]
@@ -98,25 +98,25 @@ impl ClassificationObservation {
     pub fn has_minimum_precision_for_recall(&self, minimum_precistion: f32, recall: f32) -> bool;
 }
 
-define_obj_type!(RecognizedObjectObservation(DetectedObjectObservation));
+define_obj_type!(pub RecognizedObjectObservation(DetectedObjectObservation));
 
 impl RecognizedObjectObservation {
     #[objc::msg_send(lables)]
     pub fn labels(&self) -> &ns::Array<vn::ClassificationObservation>;
 }
 
-define_obj_type!(CoreMLFeatureValueObservation(Observation));
+define_obj_type!(pub CoreMLFeatureValueObservation(Observation));
 
 impl CoreMLFeatureValueObservation {
     #[objc::msg_send(featureName)]
     pub fn feature_name(&self) -> &ns::String;
 }
 
-define_obj_type!(RectangleObservation(DetectedObjectObservation));
+define_obj_type!(pub RectangleObservation(DetectedObjectObservation));
 
-define_obj_type!(TrajectoryObservation(Observation));
+define_obj_type!(pub TrajectoryObservation(Observation));
 
-define_obj_type!(TextObservation(RectangleObservation));
+define_obj_type!(pub TextObservation(RectangleObservation));
 
 impl TextObservation {
     /// Array of individual character bounding boxes found within the observation's boundingBox.
@@ -128,14 +128,14 @@ impl TextObservation {
     pub fn character_boxes(&self) -> Option<&ns::Array<RectangleObservation>>;
 }
 
-define_obj_type!(RecognizedTextObservation(RectangleObservation));
+define_obj_type!(pub RecognizedTextObservation(RectangleObservation));
 
 impl RecognizedTextObservation {
     #[objc::msg_send(topCandidates:)]
     pub fn top_candidates(&self, max: usize) -> &ns::Array<RecognizedText>;
 }
 
-define_obj_type!(PixelBufObservation(Observation));
+define_obj_type!(pub PixelBufObservation(Observation));
 
 impl PixelBufObservation {
     #[objc::msg_send(pixelBuffer)]
@@ -145,9 +145,9 @@ impl PixelBufObservation {
     pub fn feature_name(&self) -> Option<&ns::String>;
 }
 
-define_obj_type!(BarcodeObservation(RectangleObservation));
+define_obj_type!(pub BarcodeObservation(RectangleObservation));
 
-define_obj_type!(HorizonObservation(Observation));
+define_obj_type!(pub HorizonObservation(Observation));
 
 impl HorizonObservation {
     #[objc::msg_send(angle)]
@@ -160,21 +160,21 @@ impl HorizonObservation {
     pub fn tranform_for_image(&self, width: usize, height: usize) -> cg::AffineTransform;
 }
 
-define_obj_type!(HumanObservation(DetectedObjectObservation));
+define_obj_type!(pub HumanObservation(DetectedObjectObservation));
 
 impl HumanObservation {
     #[objc::msg_send(upperBodyOnly)]
     pub fn upper_body_only(&self) -> bool;
 }
 
-define_obj_type!(SaliencyImageObservation(PixelBufObservation));
+define_obj_type!(pub SaliencyImageObservation(PixelBufObservation));
 
 impl SaliencyImageObservation {
     #[objc::msg_send(salientObjects)]
     pub fn salient_objects(&self) -> Option<&ns::Array<RectangleObservation>>;
 }
 
-define_obj_type!(FeaturePrintObservation(Observation));
+define_obj_type!(pub FeaturePrintObservation(Observation));
 
 impl FeaturePrintObservation {
     #[objc::msg_send(elementType)]

@@ -132,7 +132,7 @@ pub trait Obj: Sized + arc::Retain {
 #[repr(transparent)]
 pub struct Id(Type);
 
-crate::define_obj_type!(Any(Id));
+crate::define_obj_type!(pub Any(Id));
 
 pub const NONE: Option<&'static Any> = None;
 
@@ -264,11 +264,15 @@ macro_rules! define_cls {
 macro_rules! define_obj_type {
     (
         $(#[$outer:meta])*
+        $vis:vis
         $NewType:ident $(+ $TraitImpl:path)*, $InnerType:path, $CLS:ident) => {
-        $crate::define_obj_type!($(#[$outer])*$NewType(objc::Id));
+        $crate::define_obj_type!(
+            $(#[$outer])*
+            $vis
+            $NewType(objc::Id)
+        );
 
         impl $NewType {
-
             #[inline]
             pub fn inner(&self) -> &$InnerType {
                 unsafe {
@@ -326,12 +330,13 @@ macro_rules! define_obj_type {
 
     (
         $(#[$outer:meta])*
+        $vis:vis
         $NewType:ident($BaseType:path)
     ) => {
         $(#[$outer])*
         #[derive(Debug, PartialEq)]
         #[repr(transparent)]
-        pub struct $NewType($BaseType);
+        $vis struct $NewType($BaseType);
 
         impl $crate::objc::Obj for $NewType {}
 
@@ -373,9 +378,14 @@ macro_rules! define_obj_type {
     };
     (
         $(#[$outer:meta])*
+        $vis:vis
         $NewType:ident($BaseType:path), $CLS:ident
     ) => {
-        $crate::define_obj_type!($(#[$outer])*$NewType($BaseType));
+        $crate::define_obj_type!(
+            $(#[$outer])*
+            $vis$
+            NewType($BaseType)
+        );
         $crate::define_cls_init!($NewType, $CLS);
     };
 }

@@ -1,6 +1,6 @@
 use crate::{define_mtl, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(ComputeCmdEncoder(mtl::CmdEncoder));
+define_obj_type!(pub ComputeCmdEncoder(mtl::CmdEncoder));
 
 impl ComputeCmdEncoder {
     define_mtl!(

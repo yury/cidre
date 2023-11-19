@@ -1,6 +1,6 @@
 use crate::{arc, ca, cf, define_obj_type, ns, objc};
 
-define_obj_type!(DisplayLink(ns::Id), CA_DISPLAY_LINK);
+define_obj_type!(pub DisplayLink(ns::Id), CA_DISPLAY_LINK);
 
 #[objc::obj_trait]
 pub trait Target: objc::Obj {

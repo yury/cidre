@@ -1,7 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
-    ClassifyImageRequest(vn::ImageBasedRequest),
+    pub ClassifyImageRequest(vn::ImageBasedRequest),
     VN_CLASSIFY_IMAGE_REQUEST
 );
 

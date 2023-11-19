@@ -96,7 +96,7 @@ pub enum TessellationControlPointIndexType {
     U32 = 2,
 }
 
-define_obj_type!(ColorAttachDesc(ns::Id));
+define_obj_type!(pub ColorAttachDesc(ns::Id));
 
 impl ColorAttachDesc {
     #[objc::msg_send(pixelFormat)]
@@ -154,7 +154,7 @@ impl ColorAttachDesc {
     pub fn set_write_mask(&mut self, val: ColorWriteMask);
 }
 
-define_obj_type!(Reflection(ns::Id));
+define_obj_type!(pub Reflection(ns::Id));
 
 impl Reflection {
     #[objc::msg_send(vertexArguments)]
@@ -167,7 +167,7 @@ impl Reflection {
     pub fn tile_args(&self) -> Option<&ns::Array<Arg>>;
 }
 
-define_obj_type!(Desc(ns::Id), MTL_RENDER_PIPELINE_DESCRIPTOR);
+define_obj_type!(pub Desc(ns::Id), MTL_RENDER_PIPELINE_DESCRIPTOR);
 
 impl arc::R<Desc> {
     #[inline]
@@ -242,9 +242,9 @@ extern "C" {
     static MTL_TILE_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<TileRenderPipelineDesc>;
 }
 
-define_obj_type!(FnsDesc(ns::Id));
+define_obj_type!(pub FnsDesc(ns::Id));
 
-define_obj_type!(State(ns::Id));
+define_obj_type!(pub State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resource_id);
@@ -262,7 +262,7 @@ impl State {
     pub fn support_indirect_cmd_bufs(&self) -> bool;
 }
 
-define_obj_type!(ColorAttachDescArray(ns::Id));
+define_obj_type!(pub ColorAttachDescArray(ns::Id));
 
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
@@ -301,7 +301,7 @@ impl IndexMut<usize> for ColorAttachDescArray {
     }
 }
 
-define_obj_type!(TileRenderPipelineColorAttachDesc(ns::Id));
+define_obj_type!(pub TileRenderPipelineColorAttachDesc(ns::Id));
 
 impl TileRenderPipelineColorAttachDesc {
     #[objc::msg_send(pixelFormat)]
@@ -311,7 +311,7 @@ impl TileRenderPipelineColorAttachDesc {
     pub fn set_pixel_format(&mut self, val: mtl::PixelFormat);
 }
 
-define_obj_type!(TileRenderPipelineColorAttachDescArray(ns::Id));
+define_obj_type!(pub TileRenderPipelineColorAttachDescArray(ns::Id));
 
 impl TileRenderPipelineColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
@@ -346,7 +346,7 @@ impl arc::R<TileRenderPipelineDesc> {
 }
 
 define_obj_type!(
-    TileRenderPipelineDesc(ns::Id),
+    pub TileRenderPipelineDesc(ns::Id),
     MTL_TILE_RENDER_PIPELINE_DESCRIPTOR
 );
 
@@ -384,7 +384,7 @@ impl TileRenderPipelineDesc {
     pub fn tile_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescArray;
 }
 
-define_obj_type!(MeshRenderPipelineDesc(ns::Id));
+define_obj_type!(pub MeshRenderPipelineDesc(ns::Id));
 
 impl MeshRenderPipelineDesc {
     define_mtl!(reset, label, set_label);

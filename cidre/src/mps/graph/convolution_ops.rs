@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mps::graph, ns, objc};
 
-define_obj_type!(Convolution2dOpDesc(ns::Id));
+define_obj_type!(pub Convolution2dOpDesc(ns::Id));
 
 impl Convolution2dOpDesc {
     define_cls!(MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR);

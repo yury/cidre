@@ -1,6 +1,6 @@
 use crate::{arc, at, av::audio, define_cls, define_obj_type, objc};
 
-define_obj_type!(Effect(audio::Unit));
+define_obj_type!(pub Effect(audio::Unit));
 
 impl arc::A<Effect> {
     #[objc::msg_send(initWithAudioComponentDescription:)]

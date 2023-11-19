@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(Error(ns::Id));
+define_obj_type!(pub Error(ns::Id));
 
 impl arc::A<Error> {
     #[objc::msg_send(initWithDomain:code:userInfo:)]
@@ -37,7 +37,7 @@ impl Error {
     }
 }
 
-define_obj_type!(Domain(ns::String));
+define_obj_type!(pub Domain(ns::String));
 
 impl Domain {
     #[inline]

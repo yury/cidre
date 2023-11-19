@@ -56,7 +56,7 @@ impl Type {
     pub const TRANSIT_INFORMATION: Self = Self(1 << 12);
 }
 
-define_obj_type!(TextCheckingResult(ns::Id));
+define_obj_type!(pub TextCheckingResult(ns::Id));
 
 impl TextCheckingResult {
     #[objc::msg_send(resultType)]

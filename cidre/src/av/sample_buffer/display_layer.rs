@@ -1,6 +1,6 @@
 use crate::{arc, av, ca, cm, define_obj_type, objc};
 
-define_obj_type!(DisplayLayer(ca::Layer), AV_DISPLAY_LAYER);
+define_obj_type!(pub DisplayLayer(ca::Layer), AV_DISPLAY_LAYER);
 impl DisplayLayer {
     #[objc::msg_send(controlTimebase)]
     pub fn control_timebase(&self) -> Option<&cm::Timebase>;

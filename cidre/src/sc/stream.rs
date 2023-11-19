@@ -19,7 +19,7 @@ pub enum FrameStatus {
 define_obj_type!(
     /// Keys you use to retrieve metadata from a frame the system captures.
     #[doc(alias = "SCStreamFrameInfo")]
-    FrameInfo(ns::String)
+    pub FrameInfo(ns::String)
 );
 
 impl FrameInfo {
@@ -137,7 +137,7 @@ pub enum CaptureResolution {
 
 define_obj_type!(
     #[doc(alias = "SCStreamConfiguration")]
-    Cfg(ns::Id),
+    pub Cfg(ns::Id),
     SC_STREAM_CONFIGURATION
 );
 
@@ -353,7 +353,7 @@ extern "C" {
     static SCStreamFrameInfoPresenterOverlayContentRect: &'static FrameInfo;
 }
 
-define_obj_type!(ContentFilter(ns::Id));
+define_obj_type!(pub ContentFilter(ns::Id));
 
 impl arc::A<ContentFilter> {
     #[objc::msg_send(initWithDesktopIndependentWindow:)]
@@ -406,7 +406,7 @@ impl ContentFilter {
 define_obj_type!(
     /// An object that represents a stream of shareable content.
     #[doc(alias = "SCStream")]
-    Stream(ns::Id)
+    pub Stream(ns::Id)
 );
 
 #[objc::obj_trait]

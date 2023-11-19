@@ -4,7 +4,7 @@ pub type Confidence = f32;
 pub type AspectRatio = f32;
 pub type Degrees = f32;
 
-define_obj_type!(BarcodeSymbology(ns::String));
+define_obj_type!(pub BarcodeSymbology(ns::String));
 
 impl BarcodeSymbology {
     #[doc(alias = "VNBarcodeSymbologyAztec")]

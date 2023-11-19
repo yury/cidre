@@ -1,7 +1,7 @@
 use crate::{av::audio, define_obj_type, objc};
 
 // AVAudioMixerNode
-define_obj_type!(MixerNode(audio::Node));
+define_obj_type!(pub MixerNode(audio::Node));
 impl MixerNode {
     /// The mixer's output volume.
     ///

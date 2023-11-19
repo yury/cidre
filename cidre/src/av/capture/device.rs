@@ -42,7 +42,7 @@ extern "C" {
     static AVCaptureMaxAvailableTorchLevel: f32;
 }
 
-define_obj_type!(Device(ns::Id));
+define_obj_type!(pub Device(ns::Id));
 
 impl Device {
     define_cls!(AV_CAPTURE_DEVICE);
@@ -1528,7 +1528,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 }
 
-define_obj_type!(Type(ns::String));
+define_obj_type!(pub Type(ns::String));
 
 /// ```
 /// use cidre::av;
@@ -1738,7 +1738,7 @@ impl Device {
     }
 }
 
-define_obj_type!(FrameRateRange(ns::Id));
+define_obj_type!(pub FrameRateRange(ns::Id));
 
 impl FrameRateRange {
     #[objc::msg_send(minFrameRate)]
@@ -1760,7 +1760,7 @@ define_obj_type!(
     ///
     /// [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturedeviceformat)
     #[doc(alias = "AVCaptureDeviceFormat")]
-    Format(ns::Id)
+    pub Format(ns::Id)
 );
 
 /// # Determining Reaction Effects Support
@@ -1947,9 +1947,9 @@ pub mod notifications {
     }
 }
 
-define_obj_type!(CaptureAudioChannel(ns::Id));
+define_obj_type!(pub CaptureAudioChannel(ns::Id));
 
-define_obj_type!(DiscoverySession(ns::Id));
+define_obj_type!(pub DiscoverySession(ns::Id));
 impl DiscoverySession {
     define_cls!(AV_CAPTURE_DEVICE_DISCOVERY_SESSION);
 

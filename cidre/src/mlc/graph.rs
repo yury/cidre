@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(Graph(ns::Id), MLC_GRAPH);
+define_obj_type!(pub Graph(ns::Id), MLC_GRAPH);
 impl Graph {
     #[objc::msg_send(nodeWithLayer:sources:)]
     pub fn node_with_layer_sources_array_ar(

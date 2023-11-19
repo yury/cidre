@@ -1,6 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mlc, objc};
 
-define_obj_type!(ActivationLayer(mlc::Layer));
+define_obj_type!(pub ActivationLayer(mlc::Layer));
 
 impl ActivationLayer {
     define_cls!(MLC_ACTIVATION_LAYER);

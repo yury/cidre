@@ -1,6 +1,6 @@
 use crate::{arc, av::audio, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(Eq(audio::UnitEffect));
+define_obj_type!(pub Eq(audio::UnitEffect));
 
 /// Filter types available to use with EQ.
 #[repr(isize)]
@@ -50,7 +50,7 @@ pub enum FilterType {
     ResonantHighShelf = 10,
 }
 
-define_obj_type!(FilterParameters(ns::Id));
+define_obj_type!(pub FilterParameters(ns::Id));
 
 impl FilterParameters {
     #[objc::msg_send(filterType)]
@@ -78,7 +78,7 @@ impl FilterParameters {
     pub fn set_gain(&mut self, value: f32);
 }
 
-define_obj_type!(UnitEq(audio::UnitEffect));
+define_obj_type!(pub UnitEq(audio::UnitEffect));
 
 impl arc::A<UnitEq> {
     #[objc::msg_send(initWithNumberOfBands:)]

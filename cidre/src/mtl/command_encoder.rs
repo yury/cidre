@@ -42,7 +42,7 @@ impl BarrierScope {
 define_obj_type!(
     /// An encoder that writes GPU commands into a command buffer.
     #[doc(alias = "MTLCommandEncoder")]
-    CmdEncoder(ns::Id)
+    pub CmdEncoder(ns::Id)
 );
 
 impl CmdEncoder {
