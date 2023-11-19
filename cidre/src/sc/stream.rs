@@ -4,6 +4,7 @@ use crate::{arc, blocks, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, 
 
 use super::{Display, Window};
 
+/// Denotes the status of frame sample buffer.
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum FrameStatus {
@@ -24,6 +25,7 @@ define_obj_type!(
 impl FrameInfo {
     /// The key for the [`cf::Dictionary`] attached to the [`cm::SampleBuf`] that denotes the frames [`sc::FrameStatus`]
     #[doc(alias = "SCStreamFrameInfoStatus")]
+    #[inline]
     pub fn status() -> &'static Self {
         unsafe { SCStreamFrameInfoStatus }
     }
@@ -31,6 +33,7 @@ impl FrameInfo {
     /// The key for the [`cf::Dictionary`] attached to the [`cm::SampleBuf`] for the mach absolute
     /// time when the event occurred. For a frame event, this is when the frame was displayed by the window server.
     #[doc(alias = "SCStreamFrameInfoDisplayTime")]
+    #[inline]
     pub fn display_time() -> &'static Self {
         unsafe { SCStreamFrameInfoDisplayTime }
     }
@@ -39,6 +42,7 @@ impl FrameInfo {
     /// associated with the frame. Display resolution is the pixel to point scaling factor.
     /// It should be in the range of \[1, 4\].
     #[doc(alias = "SCStreamFrameInfoScaleFactor")]
+    #[inline]
     pub fn scale_factor() -> &'static Self {
         unsafe { SCStreamFrameInfoScaleFactor }
     }
@@ -47,6 +51,7 @@ impl FrameInfo {
     /// associated with the frame. Content scale is the scaling factor from original content
     /// size to its size in surface.
     #[doc(alias = "SCStreamFrameInfoContentScale")]
+    #[inline]
     pub fn content_scale() -> &'static Self {
         unsafe { SCStreamFrameInfoContentScale }
     }
@@ -54,6 +59,7 @@ impl FrameInfo {
     /// The key for the [`cf::Dictionary`] attached to the [`cm::SampleBuf`] for the content rect
     /// associated with the frame. Content rect is the size and location of content in points in surface.
     #[doc(alias = "SCStreamFrameInfoContentRect")]
+    #[inline]
     pub fn content_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoContentRect }
     }
@@ -62,6 +68,7 @@ impl FrameInfo {
     /// that is the union of both rectangles that were redrawn and rectangles that were moved.
     /// This is an array of [`cg::Rect`] in [`ns::Value`]. The [`cg::Rect`]s elements are specified in pixels.
     #[doc(alias = "SCStreamFrameInfoDirtyRects")]
+    #[inline]
     pub fn dirty_rects() -> &'static Self {
         unsafe { SCStreamFrameInfoDirtyRects }
     }
@@ -69,6 +76,7 @@ impl FrameInfo {
     /// The key for the [`cf::Dictionary`] attached to the [`cm::SampleBuf`] for the onscreen location
     /// of the captured content
     #[doc(alias = "SCStreamFrameInfoScreenRect")]
+    #[inline]
     pub fn screen_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoScreenRect }
     }
@@ -77,6 +85,7 @@ impl FrameInfo {
     /// associated with the frame. Bounding rect is the size and location of smallest bounding box
     /// containing all captured windows in points and in surface coordinates.
     #[doc(alias = "SCStreamFrameInfoBoundingRect")]
+    #[inline]
     pub fn bounding_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoBoundingRect }
     }
@@ -87,6 +96,7 @@ impl FrameInfo {
     /// in points and in surface coordinates. If presenter overlay large, this content rect is the size and
     /// location of shared content in points and in surface coordinates.
     #[doc(alias = "SCStreamFrameInfoPresenterOverlayContentRect")]
+    #[inline]
     pub fn presenter_overlay_content_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoPresenterOverlayContentRect }
     }
@@ -393,7 +403,11 @@ impl ContentFilter {
     pub fn set_include_menu_bar(&mut self, val: bool);
 }
 
-define_obj_type!(Stream(ns::Id));
+define_obj_type!(
+    /// An object that represents a stream of shareable content.
+    #[doc(alias = "SCStream")]
+    Stream(ns::Id)
+);
 
 #[objc::obj_trait]
 pub trait Output: objc::Obj {
