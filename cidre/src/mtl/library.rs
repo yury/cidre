@@ -9,7 +9,11 @@ pub enum PatchType {
     Quad = 2,
 }
 
-define_obj_type!(pub VertexAttr(ns::Id));
+define_obj_type!(
+    /// An object that represents an attribute of a vertex function.
+    #[doc(alias = "MTLVertexAttribute")]
+    pub VertexAttr(ns::Id)
+);
 
 impl VertexAttr {
     #[objc::msg_send(name)]
@@ -31,7 +35,11 @@ impl VertexAttr {
     pub fn is_patch_ctrl_point_data(&self) -> bool;
 }
 
-define_obj_type!(pub Attr(ns::Id));
+define_obj_type!(
+    /// An object that describes an attribute defined in the stage-in argument for a shader.
+    #[doc(alias = "MTLAttribute")]
+    pub Attr(ns::Id)
+);
 
 impl Attr {
     #[objc::msg_send(name)]

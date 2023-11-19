@@ -28,6 +28,7 @@ impl SimpleQueue {
         unsafe { CMSimpleQueueGetTypeID() }
     }
 
+    #[doc(alias = "CMSimpleQueueCreate")]
     #[inline]
     pub unsafe fn create_in(
         capacity: i32,

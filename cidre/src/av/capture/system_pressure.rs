@@ -1,6 +1,6 @@
 use crate::{define_obj_type, ns, objc};
 
-define_obj_type!(Level(ns::String));
+define_obj_type!(pub Level(ns::String));
 
 impl Level {
     #[inline]
@@ -38,7 +38,7 @@ pub enum Factors {
     DepthModuleTemperature = 1 << 2,
 }
 
-define_obj_type!(State(ns::Id));
+define_obj_type!(pub State(ns::Id));
 
 impl State {
     #[objc::msg_send(level)]

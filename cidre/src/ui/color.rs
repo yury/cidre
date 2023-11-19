@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(Color(ns::Id), UI_COLOR);
+define_obj_type!(pub Color(ns::Id), UI_COLOR);
 
 unsafe impl Send for Color {}
 
