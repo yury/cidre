@@ -273,6 +273,14 @@ impl Device {
     pub fn is_continuity_camera(&self) -> bool;
 }
 
+/// AVCaptureDeviceDeskViewCamera
+impl Device {
+    /// A reference to the Desk View Camera that is associated with and derived from
+    /// this camera.
+    #[objc::msg_send(companionDeskViewCamera)]
+    pub fn companion_desk_view_camera(&self) -> Option<&Device>;
+}
+
 /// Configuring HDR Settings
 impl Device {
     #[objc::msg_send(isVideoHDREnabled)]
@@ -1764,6 +1772,8 @@ define_obj_type!(
 );
 
 /// # Determining Reaction Effects Support
+///
+/// AVCaptureDeviceReactionEffects
 impl Format {
     /// Indicates whether the device supports reaction effects.
     #[objc::msg_send(reactionEffectsSupported)]
@@ -1876,6 +1886,8 @@ impl Format {
 }
 
 /// # Center Stage
+///
+/// AVCaptureDeviceFormatCenterStage
 impl Format {
     #[objc::msg_send(isCenterStageSupported)]
     pub fn is_center_stage_supported(&self) -> bool;
@@ -1888,6 +1900,8 @@ impl Format {
 }
 
 /// # Portrait Effect
+///
+/// AVCaptureDeviceFormatPortraitEffect
 impl Format {
     /// Indicates whether the format supports the Portrait Effect feature.
     #[objc::msg_send(isPortraitEffectSupported)]
