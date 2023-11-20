@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, define_cls, define_obj_type, mtl, ns, objc};
+use crate::{arc, cf, cg, define_cls, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     /// A representation of an image to be processed or produced by Core Image filters.
@@ -23,6 +23,42 @@ impl Image {
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_mlt_texture_options(texture, options)
     }
+
+    #[objc::cls_msg_send(blackImage)]
+    pub fn black() -> &'static Self;
+
+    #[objc::cls_msg_send(whiteImage)]
+    pub fn white() -> &'static Self;
+
+    #[objc::cls_msg_send(grayImage)]
+    pub fn gray() -> &'static Self;
+
+    #[objc::cls_msg_send(redImage)]
+    pub fn red() -> &'static Self;
+
+    #[objc::cls_msg_send(greenImage)]
+    pub fn green() -> &'static Self;
+
+    #[objc::cls_msg_send(blueImage)]
+    pub fn blue() -> &'static Self;
+
+    #[objc::cls_msg_send(cyanImage)]
+    pub fn cyan() -> &'static Self;
+
+    #[objc::cls_msg_send(mangentaImage)]
+    pub fn mangenta() -> &'static Self;
+
+    #[objc::cls_msg_send(yellowImage)]
+    pub fn yellow() -> &'static Self;
+
+    #[objc::cls_msg_send(clearImage)]
+    pub fn clear() -> &'static Self;
+
+    #[objc::cls_msg_send(emptyImage)]
+    pub fn empty() -> &'static Self;
+
+    #[objc::msg_send(colorSpace)]
+    pub fn color_space(&self) -> Option<&cg::ColorSpace>;
 }
 
 /// Pixel data formats for image input, output, and processing.
@@ -232,7 +268,7 @@ extern "C" {
     static kCIFormatLAf: Format;
 }
 
-define_cf_type!(ImageOption(cf::String));
+define_obj_type!(pub ImageOption(ns::String));
 
 impl ImageOption {
     /// A &cg::ColorSpace defining the color space of the image. This value
@@ -321,4 +357,28 @@ extern "C" {
     static kCIImageAuxiliarySemanticSegmentationTeethMatte: &'static ImageOption;
     static kCIImageAuxiliarySemanticSegmentationGlassesMatte: &'static ImageOption;
     static kCIImageAuxiliarySemanticSegmentationSkyMatte: &'static ImageOption;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ci;
+
+    #[test]
+    fn basics() {
+        {
+            let black = ci::Image::black();
+            let rc = black.as_type_ref().retain_count();
+            assert_eq!(rc, 1);
+        }
+        {
+            let black = ci::Image::black();
+            let rc = black.as_type_ref().retain_count();
+            assert_eq!(rc, 1);
+        }
+        {
+            let empty = ci::Image::empty();
+            let rc = empty.as_type_ref().retain_count();
+            assert_eq!(rc, 1);
+        }
+    }
 }
