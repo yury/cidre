@@ -4,7 +4,10 @@ use crate::{arc, ca, cf, cg, define_obj_type, define_options, ns, objc};
 
 define_obj_type!(pub ContentsGravity(ns::String));
 define_obj_type!(pub ContentsFormat(ns::String));
-define_obj_type!(pub ContentsFilter(ns::String));
+define_obj_type!(
+    #[doc(alias = "CALayerContentsFilter")]
+    pub ContentsFilter(ns::String)
+);
 define_obj_type!(pub CornerCurve(ns::String));
 
 define_options!(
@@ -25,6 +28,7 @@ define_options!(
     #[doc(alias = "CAEdgeAntialiasingMask")]
     pub EdgeAntialiasingMask(u32)
 );
+
 impl EdgeAntialiasingMask {
     /// Minimum X edge.
     pub const LEFT: Self = Self(1 << 0);
@@ -138,6 +142,12 @@ impl Layer {
 
     #[objc::msg_send(setContents:)]
     pub fn set_cf_contents(&mut self, contents: Option<&cf::Type>);
+
+    #[objc::msg_send(wantsExtendedDynamicRangeContent)]
+    pub fn wants_extended_dynamic_range_content(&self) -> bool;
+
+    #[objc::msg_send(setWantsExtendedDynamicRangeContent:)]
+    pub fn set_wants_extended_dynamic_range_content(&mut self, val: bool);
 }
 
 #[link(name = "ca", kind = "static")]

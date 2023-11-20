@@ -1949,19 +1949,23 @@ pub mod notifications {
 
 define_obj_type!(pub CaptureAudioChannel(ns::Id));
 
-define_obj_type!(pub DiscoverySession(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVCaptureDeviceDiscoverySession")]
+    pub DiscoverySession(ns::Id)
+);
+
 impl DiscoverySession {
     define_cls!(AV_CAPTURE_DEVICE_DISCOVERY_SESSION);
 
     #[objc::cls_msg_send(discoverySessionWithDeviceTypes:mediaType:position:)]
-    pub fn with_device_types_media_and_position_ar(
+    pub fn with_device_types_media_and_pos_ar(
         device_types: &ns::Array<Type>,
         media_type: Option<&av::MediaType>,
         position: Pos,
     ) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
-    pub fn with_device_types_media_and_position(
+    pub fn with_device_types_media_and_pos(
         device_types: &ns::Array<Type>,
         media_type: Option<&av::MediaType>,
         position: Pos,
@@ -2107,7 +2111,7 @@ mod tests {
         io::Object::SYSTEM.show();
 
         let list = ns::Array::from_slice(&[av::CaptureDeviceType::external()]);
-        let session = capture::DiscoverySession::with_device_types_media_and_position(
+        let session = capture::DiscoverySession::with_device_types_media_and_pos(
             list.as_ref(),
             Some(av::MediaType::muxed()),
             capture::DevicePos::Unspecified,
