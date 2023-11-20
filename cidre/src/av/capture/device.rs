@@ -1950,6 +1950,7 @@ pub mod notifications {
 define_obj_type!(pub CaptureAudioChannel(ns::Id));
 
 define_obj_type!(
+    #[doc(alias = "AVCaptureDevice.DiscoverySession")]
     #[doc(alias = "AVCaptureDeviceDiscoverySession")]
     pub DiscoverySession(ns::Id)
 );

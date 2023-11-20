@@ -103,17 +103,65 @@ impl Session {
         self.commit_configuration();
     }
 
+    /// Indicates whether the session is currently running.
+    ///
+    /// The value of this property is a BOOL indicating whether the receiver is running.
+    /// Clients can key value observe the value of this property to be notified when
+    /// the session automatically starts or stops running.
+    #[objc::msg_send(isRunning)]
+    pub fn is_running(&self) -> bool;
+
+    /// Indicates whether the session is being interrupted.
+    ///
+    /// The value of this property is a BOOL indicating whether the receiver is currently
+    /// being interrupted, such as by a phone call or alarm. Clients can key value observe
+    /// the value of this property to be notified when the session ceases to be interrupted
+    /// and again has access to needed hardware resources.
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(isInterrupted)]
+    pub fn is_interrupted(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(isMultitaskingCameraAccessSupported)]
+    pub fn is_multitasking_camera_access_supported(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(isMultitaskingCameraAccessEnabled)]
+    pub fn is_multitasking_camera_access_enabled(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(setMultitaskingCameraAccessEnabled:)]
+    pub fn set_multitasking_camera_access_enabled(&mut self, val: bool);
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(usesApplicationAudioSession)]
+    pub fn uses_app_audio_session(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(setUsesApplicationAudioSession:)]
+    pub fn set_uses_app_audio_session(&mut self, value: bool);
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(automaticallyConfiguresApplicationAudioSession)]
+    pub fn automatically_configures_application_audio_session(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(setAutomaticallyConfiguresApplicationAudioSession:)]
+    pub fn set_automatically_configures_application_audio_session(&mut self, val: bool);
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(automaticallyConfiguresCaptureDeviceForWideColor)]
+    pub fn automatically_configures_capture_device_for_wide_color(&self) -> bool;
+
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(setAutomaticallyConfiguresCaptureDeviceForWideColor:)]
+    pub fn set_automatically_configures_capture_device_for_wide_color(&mut self, val: bool);
+
     #[objc::msg_send(startRunning)]
     pub fn start_running(&mut self);
 
     #[objc::msg_send(stopRunning)]
     pub fn stop_running(&mut self);
-
-    #[objc::msg_send(usesApplicationAudioSession)]
-    pub fn uses_app_audio_session(&self) -> bool;
-
-    #[objc::msg_send(setUsesApplicationAudioSession:)]
-    pub fn set_uses_app_audio_session(&mut self, value: bool);
 
     #[objc::msg_send(synchronizationClock)]
     pub fn sync_clock(&self) -> Option<&cm::Clock>;
