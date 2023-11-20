@@ -47,9 +47,9 @@ pub enum ServiceAAAAPolicyName {
     Fallback = 1,
 }
 
-define_options!(ServiceFlags(u32));
+define_options!(pub ServiceFlags(u32));
 
-define_options!(ServiceProtocol(u32));
+define_options!(pub ServiceProtocol(u32));
 
 #[derive(Eq, PartialEq, Debug)]
 #[repr(transparent)]

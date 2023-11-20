@@ -186,7 +186,7 @@ where
     Layout2Mut::new(Layout2Mut::<F>::invoke5 as _, f)
 }
 
-define_options!(Flags(i32));
+define_options!(pub Flags(i32));
 
 impl Flags {
     pub const NONE: Self = Self(0);

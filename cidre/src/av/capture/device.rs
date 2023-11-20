@@ -1997,6 +1997,8 @@ impl DiscoverySession {
     pub fn supported_multi_cam_device_sets(&self) -> &ns::Array<ns::Set<Device>>;
 }
 
+impl ns::KVObserverRegistration for DiscoverySession {}
+
 define_obj_type!(
     /// Allows clients to monitor rotations of a given [`av::CaptureDevice`] instance
     /// and be provided the video rotation angle that should be applied for
@@ -2042,7 +2044,27 @@ impl RotationCoordinator {
     pub fn video_rotation_angle_for_horizon_level_capture(&self) -> cg::Float;
 }
 
-impl ns::KVObserverRegistration for DiscoverySession {}
+define_obj_type!(
+    /// Expresses an inclusive range of supported zoom factors.
+    #[doc(alias = "AVZoomRange")]
+    pub ZoomRange(ns::Id)
+);
+
+impl ZoomRange {
+    /// The minimum zoom factor supported by this range.
+    #[objc::msg_send(minZoomFactor)]
+    pub fn min_zoom_factor(&self) -> cg::Float;
+
+    /// The maximum zoom factor supported by this range.
+    #[objc::msg_send(maxZoomFactor)]
+    pub fn max_zoom_factor(&self) -> cg::Float;
+
+    /// Tests if a given zoom factor is within the zoom range.
+    ///
+    /// Note that the zoom ranges are inclusive.
+    #[objc::msg_send(containsZoomFactor:)]
+    pub fn contains_zoom_factor(&self, zoom_factor: cg::Float) -> bool;
+}
 
 #[link(name = "av", kind = "static")]
 extern "C" {
