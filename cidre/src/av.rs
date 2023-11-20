@@ -23,6 +23,7 @@ pub use capture::DeviceConfigurationLockGuard as CaptureDeviceConfigurationLockG
 pub use capture::DeviceFormat as CaptureDeviceFormat;
 pub use capture::DeviceInput as CaptureDeviceInput;
 pub use capture::DevicePos as CaptureDevicePos;
+pub use capture::DeviceRotationCoordinator as CaptureDeviceRotationCoordinator;
 pub use capture::DeviceType as CaptureDeviceType;
 pub use capture::DiscoverySession as CaptureDeviceDiscoverySession;
 pub use capture::ExposureMode as CaptureExposureMode;

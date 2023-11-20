@@ -3,7 +3,7 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -1947,9 +1947,13 @@ pub mod notifications {
     }
 }
 
-define_obj_type!(pub CaptureAudioChannel(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVCaptureAudioChannel")]
+    pub CaptureAudioChannel(ns::Id)
+);
 
 define_obj_type!(
+    /// Allows clients to search for devices by certain criteria.
     #[doc(alias = "AVCaptureDevice.DiscoverySession")]
     #[doc(alias = "AVCaptureDeviceDiscoverySession")]
     pub DiscoverySession(ns::Id)
@@ -1993,11 +1997,57 @@ impl DiscoverySession {
     pub fn supported_multi_cam_device_sets(&self) -> &ns::Array<ns::Set<Device>>;
 }
 
+define_obj_type!(
+    /// Allows clients to monitor rotations of a given [`av::CaptureDevice`] instance
+    /// and be provided the video rotation angle that should be applied for
+    /// horizon-level preview and capture relative to gravity.
+    ///
+    /// Each instance of [`av::CaptureDeviceRotationCoordinator`] allows a client to coordinate
+    /// with changes to the rotation of an [`av::CaptureDevice`] to ensure the camera's video
+    /// preview and captured output are horizon-level. The coordinator delivers key-value
+    /// updates on the main queue.
+    #[doc(alias = "AVCaptureDeviceRotationCoordinator")]
+    pub RotationCoordinator(ns::Id)
+);
+
+impl arc::A<RotationCoordinator> {
+    #[objc::msg_send(initWithDevice:previewLayer:)]
+    pub fn init_with_device_preview_layer(
+        &self,
+        device: &Device,
+        preview_layer: Option<&ca::Layer>,
+    ) -> arc::R<RotationCoordinator>;
+}
+
+impl RotationCoordinator {
+    define_cls!(AV_CAPTURE_DEVICE_ROTATION_COORDINATOR);
+
+    pub fn with_device_preview_layer(
+        device: &Device,
+        preview_layer: Option<&ca::Layer>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_device_preview_layer(device, preview_layer)
+    }
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> Option<&Device>;
+
+    #[objc::msg_send(previewLayer)]
+    pub fn preview_layer(&self) -> Option<&ca::Layer>;
+
+    #[objc::msg_send(videoRotationAngleForHorizonLevelPreview)]
+    pub fn video_rotation_angle_for_horizon_level_preview(&self) -> cg::Float;
+
+    #[objc::msg_send(videoRotationAngleForHorizonLevelCapture)]
+    pub fn video_rotation_angle_for_horizon_level_capture(&self) -> cg::Float;
+}
+
 impl ns::KVObserverRegistration for DiscoverySession {}
 
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
+    static AV_CAPTURE_DEVICE_ROTATION_COORDINATOR: &'static objc::Class<RotationCoordinator>;
 }
 
 #[doc(alias = "AVCaptureVideoStabilizationMode")]

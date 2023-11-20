@@ -14,6 +14,7 @@ pub use device::Format as DeviceFormat;
 pub use device::FrameRateRange;
 pub use device::MicMode;
 pub use device::Pos as DevicePos;
+pub use device::RotationCoordinator as DeviceRotationCoordinator;
 pub use device::TorchMode;
 pub use device::Type as DeviceType;
 pub use device::VideoStabilizationMode;
