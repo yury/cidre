@@ -190,6 +190,11 @@ impl MultiCamSession {
     #[objc::cls_msg_send(isMultiCamSupported)]
     pub fn is_multicam_supported() -> bool;
 
+    #[cfg(target_os = "macos")]
+    pub fn is_multicam_supported() -> bool {
+        false
+    }
+
     /// The value of this property is a float from 0.0 => 1.0 indicating
     /// how much of the session's available hardware is in use as a percentage,
     /// given the currently connected inputs and outputs and the features for
