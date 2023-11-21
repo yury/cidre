@@ -34,7 +34,7 @@ fn main() {
     let mic = {
         let device_types =
             ns::Array::from_slice(&[DeviceType::built_in_microphone(), DeviceType::external()]);
-        let discovery_session = DiscoverySession::with_device_types_media_and_position(
+        let discovery_session = DiscoverySession::with_device_types_media_and_pos(
             &device_types,
             Some(av::MediaType::audio()),
             DevicePos::Unspecified,

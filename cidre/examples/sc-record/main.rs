@@ -9,7 +9,7 @@ use cidre::{
 };
 
 #[repr(C)]
-pub struct FrameCounterInner {
+struct FrameCounterInner {
     video_counter: usize,
     audio_counter: usize,
     audio_queue: AudioQueue,

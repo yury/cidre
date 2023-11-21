@@ -12,7 +12,7 @@ fn main() {
 
     let mut types = ns::ArrayMut::with_capacity(1);
     types.push(device::Type::built_in_wide_angle_camera());
-    let discrover_session = device::DiscoverySession::with_device_types_media_and_position(
+    let discrover_session = device::DiscoverySession::with_device_types_media_and_pos(
         &types,
         Some(av::MediaType::video()),
         device::Pos::Front,
