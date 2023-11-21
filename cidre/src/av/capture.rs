@@ -57,6 +57,9 @@ pub use video_data_output::VideoDataOutput;
 pub use video_data_output::VideoDataOutputSampleBufDelegate;
 pub use video_data_output::VideoDataOutputSampleBufDelegateImpl;
 
+pub mod photo_output;
+pub use photo_output::PhotoOutput;
+
 pub mod audio_data_output;
 pub use audio_data_output::AudioDataOutput;
 pub use audio_data_output::AudioDataOutputSampleBufDelegate;

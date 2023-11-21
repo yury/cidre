@@ -3,7 +3,7 @@ use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum Primitive {
-    /// Rasterize a point at each vertex. The vertex shader must provide [[point_size]],
+    /// Rasterize a point at each vertex. The vertex shader must provide \[\[point_size\]\],
     /// or the point size is undefined.
     Point = 0,
 

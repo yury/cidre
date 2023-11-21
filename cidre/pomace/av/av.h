@@ -23,6 +23,7 @@ Class AV_CAPTURE_DEVICE_INPUT;
 Class AV_CAPTURE_CONNECTION;
 Class AV_CAPTURE_METADATA_INPUT;
 Class AV_CAPTURE_DEVICE_ROTATION_COORDINATOR;
+Class AV_CAPTURE_PHOTO_OUTPUT;
 
 Class AV_AUDIO_PLAYER_NODE;
 
@@ -64,6 +65,7 @@ static void av_initializer(void)
         AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
         AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
         AV_CAPTURE_CONNECTION = [AVCaptureConnection class];
+        AV_CAPTURE_PHOTO_OUTPUT = [AVCapturePhotoOutput class];
         if (@available(iOS 17.0, *)) {
             AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
         } else {

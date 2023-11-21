@@ -1997,10 +1997,10 @@ impl DiscoverySession {
     /// is called. Applications can key-value observe this property to be notified when
     /// the list of available devices has changed. For apps linked against iOS 10,
     /// the devices returned are unsorted. For apps linked against iOS 11 or later,
-    /// the devices are sorted by 'av::CaptureDeviceType', matching the order specified
-    /// in the deviceTypes parameter of 'av::CaptureDeviceDiscoverySession::with_device_types_media_position`.
-    /// If a position of 'av::CaptureDevicePosition::unspecified' is specified,
-    /// the results are further ordered by position in the 'av::CaptureDevicePosition' enum.
+    /// the devices are sorted by [`av::CaptureDeviceType`], matching the order specified
+    /// in the deviceTypes parameter of [`Self::with_device_types_media_and_pos()`].
+    /// If a position of [`av::CaptureDevicePos::Unspecified`] is specified,
+    /// the results are further ordered by position in the [`av::CaptureDevicePos`] enum.
     /// Starting in Mac Catalyst 14.0, clients can key value observe the value of this
     /// property to be notified when the devices change.
     #[objc::msg_send(devices)]

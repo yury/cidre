@@ -282,24 +282,24 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_64RGBALE")]
     pub const _64_RGBALE: Self = Self(os::Type::from_be_bytes(*b"l64r"));
 
-    /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, video-range (luma=[16,235] chroma=[16,240]).
+    /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, video-range (luma=\[16,235\] chroma=\[16,240\]).
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
     pub const _420V: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE;
 
-    /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, full-range (luma=[0,255] chroma=[1,255]).  baseAddr points to a big-endian
+    /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, full-range (luma=\[0,255\] chroma=\[1,255\]).  baseAddr points to a big-endian
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarFullRange")]
     pub const _420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"420f"));
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarFullRange")]
     pub const _420F: Self = Self::_420_YP_CB_CR_8_BI_PLANAR_FULL_RANGE;
 
-    /// 2 plane YCbCr10 4:2:0, each 10 bits in the MSBs of 16bits, video-range (luma=[64,940] chroma=[64,960])
+    /// 2 plane YCbCr10 4:2:0, each 10 bits in the MSBs of 16bits, video-range (luma=\[64,940\] chroma=\[64,960\])
     #[doc(alias = "kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange")]
     pub const _420_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x420"));
 
-    /// 2 plane YCbCr10 4:2:2, each 10 bits in the MSBs of 16bits, video-range (luma=[64,940] chroma=[64,960])
+    /// 2 plane YCbCr10 4:2:2, each 10 bits in the MSBs of 16bits, video-range (luma=\[64,940\] chroma=\[64,960\])
     #[doc(alias = "kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange")]
     pub const _422_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"x422"));
