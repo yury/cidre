@@ -1,6 +1,10 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(pub Timer(ns::Id), NS_TIMER);
+define_obj_type!(
+    #[doc(alias = "NSTimer")]
+    pub Timer(ns::Id),
+    NS_TIMER
+);
 
 impl Timer {
     #[objc::msg_send(timeInterval)]

@@ -7,7 +7,7 @@ use cidre::{
 };
 
 #[repr(C)]
-pub struct OutputDelegateInner {}
+struct OutputDelegateInner {}
 
 define_obj_type!(
     OutputDelegate + AudioDataOutputSampleBufDelegateImpl,

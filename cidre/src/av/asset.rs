@@ -80,9 +80,40 @@ impl UrlAsset {
         self.load_tracks_with_media_type_ch(media_type, block.escape().as_mut_ptr());
         future.await
     }
+
+    /// A session identifier that the asset sends in HTTP requests that it makes.
+    ///
+    /// The asset uses this value to set as the X-Playback-Session-Id header of HTTP requests that it creates.
+    #[objc::msg_send(httpSessionIdentifier)]
+    pub fn http_session_identifier(&self) -> ns::Uuid;
+
+    #[objc::cls_msg_send(audiovisualTypes)]
+    pub fn audiovisual_types_ar() -> arc::Rar<ns::Array<av::FileType>>;
+
+    #[objc::cls_rar_retain]
+    pub fn audiovisual_types() -> arc::R<ns::Array<av::FileType>>;
+
+    #[objc::cls_msg_send(audiovisualMIMETypes)]
+    pub fn audiovisual_mime_types_ar() -> arc::Rar<ns::Array<ns::String>>;
+
+    #[objc::cls_rar_retain]
+    pub fn audiovisual_mime_types() -> arc::R<ns::Array<ns::String>>;
 }
 
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_URL_ASSET: &'static objc::Class<UrlAsset>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::av;
+
+    #[test]
+    fn basics() {
+        let types = av::UrlAsset::audiovisual_types();
+        assert!(!types.is_empty());
+        let types = av::UrlAsset::audiovisual_mime_types();
+        assert!(!types.is_empty());
+    }
 }

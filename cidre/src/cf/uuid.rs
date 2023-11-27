@@ -23,6 +23,7 @@ impl Uuid {
     /// let uuid2 = cf::Uuid::new();
     /// assert!(!uuid.equal(&uuid2));
     /// ```
+    #[doc(alias = "CFUUIDCreate")]
     #[inline]
     pub fn new() -> arc::R<Uuid> {
         unsafe { Self::new_in(None).unwrap_unchecked() }
