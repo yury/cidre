@@ -37,7 +37,10 @@ pub const VIDEO_ENCODER_NEEDS_ROSETTA: Status = Status(-17693);
 pub const VIDEO_DECODER_REFERENCE_MISSING: Status = Status(-17694);
 pub const VIDEO_DECODER_CALLBACK_MESSAGING: Status = Status(-17695);
 
-define_options!(pub DecodeFrameFlags(u32));
+define_options!(
+    #[doc(alias = "VTDecodeFrameFlags")]
+    pub DecodeFrameFlags(u32)
+);
 
 impl DecodeFrameFlags {
     pub const ENABLE_ASYNCHRONOUS_DECOMPRESSION: Self = Self(1 << 0);
@@ -46,7 +49,10 @@ impl DecodeFrameFlags {
     pub const ENABLE_TEMPORAL_PROCESSING: Self = Self(1 << 3);
 }
 
-define_options!(pub DecodeInfoFlags(u32));
+define_options!(
+    #[doc(alias = "VTDecodeInfoFlags")]
+    pub DecodeInfoFlags(u32)
+);
 
 impl DecodeInfoFlags {
     pub const ASYNCHRONOUS: Self = Self(1u32 << 0);
@@ -55,7 +61,10 @@ impl DecodeInfoFlags {
     pub const SKIPPED_LEADING_FRAME_DROPPED: Self = Self(1u32 << 3);
 }
 
-define_options!(pub EncodeInfoFlags(u32));
+define_options!(
+    #[doc(alias = "VTEncodeInfoFlags")]
+    pub EncodeInfoFlags(u32)
+);
 
 /// Flags that indicate encoder state.
 impl EncodeInfoFlags {

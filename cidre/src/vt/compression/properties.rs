@@ -926,3 +926,23 @@ pub mod profile_level {
         }
     }
 }
+
+/// Per-Frame Configuration
+pub mod frame_keys {
+    use crate::cf;
+
+    /// [`cf::Boolean`] value indicating whether the current frame is forced to be a key frame.
+    pub fn force_key_frame() -> &'static cf::String {
+        unsafe { kVTEncodeFrameOptionKey_ForceKeyFrame }
+    }
+
+    pub fn base_frame_qp() -> &'static cf::String {
+        unsafe { kVTEncodeFrameOptionKey_BaseFrameQP }
+    }
+
+    #[link(name = "VideoToolbox", kind = "framework")]
+    extern "C" {
+        static kVTEncodeFrameOptionKey_ForceKeyFrame: &'static cf::String;
+        static kVTEncodeFrameOptionKey_BaseFrameQP: &'static cf::String;
+    }
+}
