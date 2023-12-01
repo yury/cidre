@@ -59,14 +59,21 @@ impl<T: Obj> Obj for Class<T> {}
 impl<T: Obj> arc::Release for T {
     #[inline]
     unsafe fn release(&mut self) {
-        asm!(
-            "bl _objc_release_{x}",
-            x = in(reg) self,
-            clobber_abi("C")
-            // system also works
-            // clobber_abi("system")
-        );
-        // objc_release(transmute(self))
+       #[cfg(target_arch = "aarch64")] 
+       {
+            asm!(
+                "bl _objc_release_{x}",
+                x = in(reg) self,
+                clobber_abi("C")
+                // system also works
+                // clobber_abi("system")
+            );
+        }
+
+        #[cfg(target_arch = "x86_64")]
+        {
+            objc_release(transmute(self));
+        }
     }
 }
 
@@ -79,14 +86,22 @@ impl<T: Obj> arc::Retain for T {
 pub trait Obj: Sized + arc::Retain {
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
-        let result: *mut Self;
-        core::arch::asm!(
-            "bl _objc_retain_{obj:x}",
-            obj = in(reg) id,
-            lateout("x0") result,
-            clobber_abi("C"),
-        );
-        transmute(result)
+        #[cfg(target_arch = "aarch64")]
+        {
+            let result: *mut Self;
+            core::arch::asm!(
+                "bl _objc_retain_{obj:x}",
+                obj = in(reg) id,
+                lateout("x0") result,
+                clobber_abi("C"),
+            );
+            transmute(result)
+        }
+
+        #[cfg(target_arch = "x86_64")]
+        {
+            transmute(objc_retain(transmute(id)))
+        }
     }
 
     #[msg_send(description)]
@@ -190,8 +205,10 @@ where
 
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
-    // fn objc_retain<'a>(obj: &Id) -> &'a Id;
-    // fn objc_release(obj: &mut Id);
+    #[cfg(target_arch = "x86_64")]
+    fn objc_retain<'a>(obj: &Id) -> &'a Id;
+    #[cfg(target_arch = "x86_64")]
+    fn objc_release(obj: &mut Id);
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     fn class_getMethodImplementation(cls: &Class<Id>, name: &Sel) -> *const c_void;
