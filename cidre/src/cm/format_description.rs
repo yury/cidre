@@ -13,7 +13,7 @@ use crate::cv;
 use crate::cat;
 
 #[doc(alias = "CMPixelFormatType")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct PixelFormat(pub FourCharCode);
 
@@ -149,7 +149,7 @@ impl FormatDesc {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
 
-    pub fn extension<'a>(&'a self, key: &FormatDescExtensionKey) -> Option<&'a cf::PropertyList> {
+    pub fn extension<'a>(&'a self, key: &FormatDescExtKey) -> Option<&'a cf::PropertyList> {
         unsafe { CMFormatDescriptionGetExtension(self, key) }
     }
 
@@ -157,20 +157,20 @@ impl FormatDesc {
         &self,
     ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
-            let key = FormatDescExtensionKey::original_compression_settings();
+            let key = FormatDescExtKey::original_compression_settings();
             transmute(self.extension(key))
         }
     }
 
-    pub fn extension_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+    pub fn ext_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
-            let key = FormatDescExtensionKey::sample_desc_extension_atoms();
+            let key = FormatDescExtKey::sample_desc_ext_atoms();
             transmute(self.extension(key))
         }
     }
 
-    fn video_configuration(&self, key: &str) -> Option<Vec<u8>> {
-        let Some(dict) = self.extension_atoms() else {
+    fn video_cfg(&self, key: &str) -> Option<Vec<u8>> {
+        let Some(dict) = self.ext_atoms() else {
             return None;
         };
         let key = cf::String::from_str(key);
@@ -188,23 +188,23 @@ impl FormatDesc {
     }
 
     pub fn avcc(&self) -> Option<Vec<u8>> {
-        self.video_configuration("avcC")
+        self.video_cfg("avcC")
     }
 
     pub fn hvcc(&self) -> Option<Vec<u8>> {
-        self.video_configuration("hvcC")
+        self.video_cfg("hvcC")
     }
 
     pub fn verbatim_sample_desc(&self) -> Option<&cf::Data> {
         unsafe {
-            let key = FormatDescExtensionKey::verbatim_sample_desc();
+            let key = FormatDescExtKey::verbatim_sample_desc();
             transmute(self.extension(key))
         }
     }
 
     pub fn verbatim_iso_sample_entry(&self) -> Option<&cf::Data> {
         unsafe {
-            let key = FormatDescExtensionKey::verbatim_iso_sample_entry();
+            let key = FormatDescExtKey::verbatim_iso_sample_entry();
             transmute(self.extension(key))
         }
     }
@@ -212,7 +212,7 @@ impl FormatDesc {
     pub fn create_in(
         media_type: MediaType,
         media_sub_type: FourCharCode,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: &mut Option<arc::R<FormatDesc>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
@@ -239,7 +239,7 @@ impl FormatDesc {
     pub fn new(
         media_type: MediaType,
         media_sub_type: FourCharCode,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut format_desc = None;
         let res = Self::create_in(
@@ -279,6 +279,7 @@ impl VideoFormatDesc {
         unsafe { res.to_result_unchecked(format_desc) }
     }
 
+    #[doc(alias = "CMVideoFormatDescriptionCreate")]
     pub fn create_video_in(
         codec_type: VideoCodec,
         width: i32,
@@ -514,6 +515,13 @@ impl VideoFormatDesc {
             }
         }
     }
+
+    /// Returns an array of the keys that are used both as [`cm::VideoFormatDesc`] extensions
+    /// and [`cv::ImageBuf`] attachments and attributes.
+    #[doc(alias = "CMVideoFormatDescriptionGetExtensionKeysCommonWithImageBuffers")]
+    pub fn common_image_buf_ext_keys() -> &'static cf::ArrayOf<FormatDescExtKey> {
+        unsafe { CMVideoFormatDescriptionGetExtensionKeysCommonWithImageBuffers() }
+    }
 }
 
 pub type AudioFormatDesc = FormatDesc;
@@ -559,17 +567,22 @@ impl AudioFormatDesc {
     }
 }
 
-define_cf_type!(FormatDescExtensionKey(cf::String));
+define_cf_type!(
+    #[doc(alias = "CMFormatDescription.Extensions.Key")]
+    #[doc(alias = "CMFormatDescriptionExtension")]
+    FormatDescExtKey(cf::String)
+);
 
-impl FormatDescExtensionKey {
+impl FormatDescExtKey {
     /// This extension contains a media-type-specific dictionary of settings used to produce a compressed media buffer.
     ///
     /// This extension is valid for format descriptions of all media types, but the contents of the dictionary are defined
     /// in a media-specific way.  The dictionary and its contents are valid property list objects. This means that
-    /// dictionary keys are all cf::Strings, and the values are all either cf::Number, cf::String, cf::Boolean, cf::Array,
-    /// cf::Dictionary, cf::Date, or cf::Data.
+    /// dictionary keys are all [`cf::String`]s, and the values are all either [`cf::Number`], [`cf::String`], [`cf::Boolean`],
+    /// [`cf::Array`], [`cf::Dictionary`], [`cf::Date`], or [`cf::Data`].
     ///
     /// cf::Dictionary
+    #[doc(alias = "kCMFormatDescriptionExtension_OriginalCompressionSettings")]
     pub fn original_compression_settings() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_OriginalCompressionSettings }
     }
@@ -579,11 +592,12 @@ impl FormatDescExtensionKey {
     /// This key is used by sample description bridges to hold sample description
     /// extension atoms that they do not recognize.
     /// The extension is a cf::Dictionary mapping cf::Strings of the four-char-code atom types
-    /// to either cf::Datas containing the atom payload or (to represent multiple atoms of a
-    /// specific type) to cf::Arrays of cf::Data containing those payloads.
+    /// to either [`cf::Data`]s containing the atom payload or (to represent multiple atoms of a
+    /// specific type) to [`cf::Array`]s of [`cf::Data`] containing those payloads.
     ///
     /// cf::Dictionary of cf::String (four-char-code, atom type) -> ( cf::Data (atom payload) or cf::Array of cf::Data (atom payload) )
-    pub fn sample_desc_extension_atoms() -> &'static Self {
+    #[doc(alias = "kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms")]
+    pub fn sample_desc_ext_atoms() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms }
     }
 
@@ -597,6 +611,7 @@ impl FormatDescExtensionKey {
     /// delete this extension from the clone, or your modifications could be lost.
     ///
     /// cf::Data
+    #[doc(alias = "kCMFormatDescriptionExtension_VerbatimSampleDescription")]
     pub fn verbatim_sample_desc() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_VerbatimSampleDescription }
     }
@@ -611,18 +626,17 @@ impl FormatDescExtensionKey {
     /// delete this extension from the clone, or your modifications could be lost.
     ///
     /// cf::Data
+    #[doc(alias = "kCMFormatDescriptionExtension_VerbatimISOSampleEntry")]
     pub fn verbatim_iso_sample_entry() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_VerbatimISOSampleEntry }
     }
 }
 
 extern "C" {
-    static kCMFormatDescriptionExtension_OriginalCompressionSettings:
-        &'static FormatDescExtensionKey;
-    static kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms:
-        &'static FormatDescExtensionKey;
-    static kCMFormatDescriptionExtension_VerbatimSampleDescription: &'static FormatDescExtensionKey;
-    static kCMFormatDescriptionExtension_VerbatimISOSampleEntry: &'static FormatDescExtensionKey;
+    static kCMFormatDescriptionExtension_OriginalCompressionSettings: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_VerbatimSampleDescription: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_VerbatimISOSampleEntry: &'static FormatDescExtKey;
 
     fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
     fn CMFormatDescriptionGetMediaType(desc: &FormatDesc) -> MediaType;
@@ -649,9 +663,10 @@ extern "C" {
     fn CMFormatDescriptionGetExtensions(
         desc: &FormatDesc,
     ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>>;
+
     fn CMFormatDescriptionGetExtension<'a>(
         desc: &'a FormatDesc,
-        extension_key: &FormatDescExtensionKey,
+        extension_key: &FormatDescExtKey,
     ) -> Option<&'a cf::PropertyList>;
 
     #[cfg(feature = "cat")]
@@ -675,7 +690,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         media_type: MediaType,
         media_sub_type: FourCharCode,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
@@ -721,4 +736,19 @@ extern "C" {
         parameter_set_count_out: *mut usize,
         nal_unit_header_length_out: *mut i32,
     ) -> os::Status;
+
+    fn CMVideoFormatDescriptionGetExtensionKeysCommonWithImageBuffers(
+    ) -> &'static cf::ArrayOf<FormatDescExtKey>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cm;
+
+    #[test]
+    fn basics() {
+        let keys = cm::VideoFormatDesc::common_image_buf_ext_keys();
+        eprintln!("{keys:?}");
+        assert!(!keys.is_empty());
+    }
 }

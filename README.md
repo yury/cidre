@@ -34,6 +34,7 @@
 - descriptor -> desc
 - destination -> dst
 - error -> err
+- extension -> ext
 - language -> lang
 - length -> len
 - mutable -> mut

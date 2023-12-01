@@ -5,7 +5,7 @@ pub use base::ItemIndex;
 mod format_description;
 pub use format_description::AudioFormatDesc;
 pub use format_description::FormatDesc;
-pub use format_description::FormatDescExtensionKey;
+pub use format_description::FormatDescExtKey;
 pub use format_description::MediaType;
 pub use format_description::PixelFormat;
 pub use format_description::VideoCodec;
