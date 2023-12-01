@@ -304,6 +304,14 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_ExpectedFrameRate }
     }
 
+    /// An estimate of the expected size in bytes of a single encoded frame based
+    /// on the current configuration.
+    #[doc(alias = "kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame")]
+    #[inline]
+    pub fn estimated_average_bytes_per_frame() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame }
+    }
+
     #[doc(alias = "kVTCompressionPropertyKey_BaseLayerFrameRateFraction")]
     #[inline]
     pub fn base_layer_frame_rate_fraction() -> &'static cf::String {
@@ -519,6 +527,7 @@ pub mod keys {
         static kVTCompressionPropertyKey_MaximizePowerEfficiency: &'static cf::String;
         static kVTCompressionPropertyKey_SourceFrameCount: &'static cf::String;
         static kVTCompressionPropertyKey_ExpectedFrameRate: &'static cf::String;
+        static kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame: &'static cf::String;
         static kVTCompressionPropertyKey_ConstantBitRate: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerFrameRateFraction: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerBitRateFraction: &'static cf::String;
