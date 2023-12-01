@@ -145,11 +145,11 @@ impl FormatDesc {
     }
 
     #[inline]
-    pub fn extensions(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+    pub fn exts(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
 
-    pub fn extension<'a>(&'a self, key: &FormatDescExtKey) -> Option<&'a cf::PropertyList> {
+    pub fn ext<'a>(&'a self, key: &FormatDescExtKey) -> Option<&'a cf::PropertyList> {
         unsafe { CMFormatDescriptionGetExtension(self, key) }
     }
 
@@ -158,14 +158,14 @@ impl FormatDesc {
     ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
             let key = FormatDescExtKey::original_compression_settings();
-            transmute(self.extension(key))
+            transmute(self.ext(key))
         }
     }
 
     pub fn ext_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
         unsafe {
             let key = FormatDescExtKey::sample_desc_ext_atoms();
-            transmute(self.extension(key))
+            transmute(self.ext(key))
         }
     }
 
@@ -198,14 +198,14 @@ impl FormatDesc {
     pub fn verbatim_sample_desc(&self) -> Option<&cf::Data> {
         unsafe {
             let key = FormatDescExtKey::verbatim_sample_desc();
-            transmute(self.extension(key))
+            transmute(self.ext(key))
         }
     }
 
     pub fn verbatim_iso_sample_entry(&self) -> Option<&cf::Data> {
         unsafe {
             let key = FormatDescExtKey::verbatim_iso_sample_entry();
-            transmute(self.extension(key))
+            transmute(self.ext(key))
         }
     }
 

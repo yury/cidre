@@ -50,7 +50,7 @@ impl ImageDescFlavor {
     /// Chooses the ISO family sample description format with use of Apple extensions where appropriate for M4V and M4A.
     ///
     /// This implies kCMImageDescriptionFlavor_ISOFamily and adds additional rules specific to the .m4a, .m4b, and .m4v file formats.
-    pub fn iso_family_with_apple_extensions() -> &'static Self {
+    pub fn iso_family_with_apple_exts() -> &'static Self {
         unsafe { kCMImageDescriptionFlavor_ISOFamilyWithAppleExtensions }
     }
 }
