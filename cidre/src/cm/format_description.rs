@@ -265,7 +265,7 @@ impl VideoFormatDesc {
         codec_type: VideoCodec,
         width: i32,
         height: i32,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
     ) -> Result<arc::R<Self>, os::Status> {
         let mut format_desc = None;
         let res = Self::create_video_in(
@@ -284,7 +284,7 @@ impl VideoFormatDesc {
         codec_type: VideoCodec,
         width: i32,
         height: i32,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
         allocator: Option<&Allocator>,
     ) -> os::Status {
@@ -374,7 +374,7 @@ impl VideoFormatDesc {
         pointers: &[*const u8],
         sizes: &[usize],
         nal_unit_header_length: i32,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
     ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         Self::with_hevc_param_sets_in(
             count,
@@ -393,7 +393,7 @@ impl VideoFormatDesc {
         pointers: &[*const u8],
         sizes: &[usize],
         nal_unit_header_length: i32,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
         let mut result = None;
@@ -541,7 +541,7 @@ impl AudioFormatDesc {
         layout: Option<&cat::AudioChannelLayout<1>>,
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: &mut Option<arc::R<Self>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
@@ -646,7 +646,7 @@ extern "C" {
         codec_type: VideoCodec,
         width: i32,
         height: i32,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
     ) -> os::Status;
 
@@ -677,7 +677,7 @@ extern "C" {
         layout: Option<&cat::AudioChannelLayout<1>>,
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: &mut Option<arc::R<AudioFormatDesc>>,
     ) -> os::Status;
 
@@ -715,7 +715,7 @@ extern "C" {
         parameter_set_pointers: *const *const u8,
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
-        extensions: Option<&cf::Dictionary>,
+        extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
