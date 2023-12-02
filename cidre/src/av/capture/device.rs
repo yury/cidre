@@ -10,7 +10,7 @@ use crate::blocks;
 
 #[link(name = "AVFoundation", kind = "framework")]
 extern "C" {
-    // static AVCaptureDeviceTypeExternal: &'static Type;
+    static AVCaptureDeviceTypeExternal: &'static Type;
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
@@ -1567,8 +1567,7 @@ impl Type {
     /// 'av::CaptureDeviceType::built_in_wide_angle_camera()'.
     #[doc(alias = "AVCaptureDeviceTypeExternal")]
     pub fn external() -> &'static Self {
-        todo!();
-        // unsafe { AVCaptureDeviceTypeExternal }
+        unsafe { AVCaptureDeviceTypeExternal }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
