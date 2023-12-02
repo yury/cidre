@@ -186,7 +186,12 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
 
     unsafe {
         // see comments in rar_retain
+        #[cfg(target_arch = "aarch64")]
         asm!("mov x29, x29");
+
+        #[cfg(target_arch = "x86_64")]
+        asm!("mov rax, rdi");
+
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
         ))
@@ -204,7 +209,12 @@ pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
         // but benchmarks show that on macos it is not a case yet
         // (see alloc_with_ar_retain bench).
         // Need to check on iOS.
+        #[cfg(target_arch = "aarch64")]
         asm!("mov x29, x29");
+        
+        #[cfg(target_arch = "x86_64")]
+        asm!("mov rax, rdi");
+
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
         ))
