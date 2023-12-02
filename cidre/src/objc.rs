@@ -1,3 +1,4 @@
+#[cfg(target_arch = "aarch64")]
 use std::arch::asm;
 use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
@@ -59,8 +60,8 @@ impl<T: Obj> Obj for Class<T> {}
 impl<T: Obj> arc::Release for T {
     #[inline]
     unsafe fn release(&mut self) {
-       #[cfg(target_arch = "aarch64")] 
-       {
+        #[cfg(target_arch = "aarch64")]
+        {
             asm!(
                 "bl _objc_release_{x}",
                 x = in(reg) self,
