@@ -149,7 +149,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
     /// `@selector({extern_name})` but dynamic
     /// use this function to check if object responds to selector
     fn sel_{fn_name}() -> Option<&'static objc::Sel> {{
-        unsafe {{ Some(objc::sel_registerName(b\"{extern_name}\\0\".as_ptr())) }}
+        unsafe {{ Some(objc::sel_reg_name(b\"{extern_name}\\0\".as_ptr())) }}
     }}
         "
     )
@@ -246,7 +246,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                         "(&mut self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
-                                    Cow::Owned(format!("Some(unsafe {{ objc::sel_registerName(b\"{sel}\\0\".as_ptr()) }})"))
+                                    Cow::Owned(format!("Some(unsafe {{ objc::sel_reg_name(b\"{sel}\\0\".as_ptr()) }})"))
                                 };
 
                                 if is_optional && !sel.is_empty() && fn_body.is_empty() {
@@ -541,6 +541,19 @@ fn gen_msg_send(
         Cow::Owned(vars.join(", "))
     };
 
+    #[cfg(target_arch = "x86_64")]
+    let reg_name_call = format!("sel_registerName(b\"{extern_name}\0\".as_ptr())");
+
+    #[cfg(target_arch = "x86_64")]
+    let (mut fn_args, mut call_args) = {
+        let fn_args = fn_args.replacen('(', "(id:", 1).replacen(
+            "self",
+            "Self, imp: *const std::ffi::c_void",
+            1,
+        );
+        (fn_args, format!("sig(self, {reg_name_call}, {vars})"))
+    };
+    #[cfg(target_arch = "aarch64")]
     let (mut fn_args, mut call_args) = if fn_args_count == 0 {
         let fn_args = fn_args
             .replacen("( &", "(id: &", 1)
@@ -553,6 +566,20 @@ fn gen_msg_send(
         (fn_args, format!("sig(self, std::ptr::null(), {vars})"))
     };
 
+    #[cfg(target_arch = "x86_64")]
+    if class {
+        fn_args = fn_args.replacen(
+            "(id:",
+            "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
+            1,
+        );
+        call_args = call_args.replacen(
+            "sig(self",
+            "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+            1,
+        );
+    }
+    #[cfg(target_arch = "aarch64")]
     if class {
         if fn_args_count == 0 {
             fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
@@ -564,7 +591,7 @@ fn gen_msg_send(
         } else {
             fn_args = fn_args.replacen(
                 "(id:",
-                "(cls: *const std::ffi::c_void, id: *const std::ffi::c_void,",
+                "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
                 1,
             );
             call_args = call_args.replacen(
@@ -597,8 +624,33 @@ fn gen_msg_send(
             )
         }
     } else {
-        format!(
+        #[cfg(target_arch = "x86_64")]
+        {
+            format!(
+                "
+    #[inline]
+    {pre} {fn_name}{gen}{args}{ret_full} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSend\"]
+            fn msg_send();
+
+            fn sel_registerName(str: *const u8) -> *const std::ffi::c_void;
+        }}
+
+        unsafe {{
+            let fn_ptr = msg_send as *const std::ffi::c_void;
+            let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
+
+            {call_args}
+        }}
+    }}
             "
+            )
+        }
+        #[cfg(target_arch = "aarch64")]
+        {
+            format!(
+                "
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
         extern \"C\" {{
@@ -614,7 +666,8 @@ fn gen_msg_send(
         }}
     }}
             "
-        )
+            )
+        }
     };
     if debug {
         println!("{flow}");

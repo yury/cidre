@@ -204,12 +204,18 @@ where
     f()
 }
 
+pub unsafe fn sel_reg_name(str: *const u8) -> &'static Sel {
+    std::mem::transmute(sel_registerName(str))
+}
+
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     #[cfg(target_arch = "x86_64")]
     fn objc_retain<'a>(obj: &Id) -> &'a Id;
     #[cfg(target_arch = "x86_64")]
     fn objc_release(obj: &mut Id);
+
+    // fn objc_msgSend();
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     fn class_getMethodImplementation(cls: &Class<Id>, name: &Sel) -> *const c_void;
@@ -218,7 +224,7 @@ extern "C" {
     pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
 
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
-    pub fn sel_registerName(str: *const u8) -> &'static Sel;
+    pub fn sel_registerName(str: *const u8) -> *const std::ffi::c_void;
     pub fn class_addMethod(
         cls: &Class<Id>,
         name: &Sel,
@@ -321,7 +327,7 @@ macro_rules! define_obj_type {
                         unsafe { std::ptr::drop_in_place(ptr); }
                     }
                     unsafe {
-                        let sel = $crate::objc::sel_registerName(b"dealloc\0".as_ptr());
+                        let sel = $crate::objc::sel_reg_name(b"dealloc\0".as_ptr());
                         let imp: extern "C" fn() = std::mem::transmute(impl_dealloc as *const u8);
                         $crate::objc::class_addMethod(cls, sel, imp, std::ptr::null());
                     }
