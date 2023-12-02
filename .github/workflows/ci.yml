@@ -10,13 +10,10 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  strategy:
-      matrix:
-        os: [macos-13-arm64, macos-13]
-
   build:
-
-    runs-on: 
+    strategy:
+        matrix:
+          os: [macos-13-arm64, macos-13]
 
     steps:
     - uses: actions/checkout@v3
