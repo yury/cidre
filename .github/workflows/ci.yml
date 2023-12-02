@@ -17,6 +17,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: dtolnay/rust-toolchain@stable
+    - name: ls apps
+      run: ls -la /Applications
+    - name: os ver
+      run: sw_vers
     - name: switch xcode
       run: sudo xcode-select -s '/Applications/Xcode_15.0.1.app'
     
