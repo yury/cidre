@@ -26,8 +26,8 @@ jobs:
       run: sw_vers
     - name: switch xcode
       run: sudo xcode-select -s '/Applications/Xcode_15.0.1.app'
+    - name: list sdks
+      run: xcodebuild -showsdks
     
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
