@@ -32,6 +32,7 @@ extern "C" {
     fn NSClassFromString(name: &ns::String) -> *const c_void;
 }
 
+#[cfg(target_arch = "aarch64")]
 #[cfg(test)]
 mod tests {
     use crate::{ns, wk};

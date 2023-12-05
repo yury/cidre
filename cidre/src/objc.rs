@@ -211,7 +211,7 @@ pub unsafe fn sel_reg_name(str: *const u8) -> &'static Sel {
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     #[cfg(target_arch = "x86_64")]
-    fn objc_retain<'a>(obj: &Id) -> &'a Id;
+    pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
     #[cfg(target_arch = "x86_64")]
     fn objc_release(obj: &mut Id);
 
@@ -220,6 +220,7 @@ extern "C" {
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     fn class_getMethodImplementation(cls: &Class<Id>, name: &Sel) -> *const c_void;
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
+
     pub fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<arc::R<Id>>;
     pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
 
@@ -473,6 +474,7 @@ where
     during
 }
 
+#[cfg(target_arch = "aarch64")]
 #[cfg(test)]
 mod tests {
 
@@ -496,16 +498,32 @@ mod tests {
         let _ptr: &cf::Type = unsafe { std::mem::transmute(ptr) };
     }
 }
-
 pub use cidre_macros::add_methods;
-pub use cidre_macros::cls_msg_send;
-pub use cidre_macros::cls_msg_send_debug;
-pub use cidre_macros::cls_rar_retain;
-pub use cidre_macros::msg_send;
-pub use cidre_macros::msg_send_debug;
 pub use cidre_macros::obj_trait;
 pub use cidre_macros::optional;
+
+#[cfg(target_arch = "aarch64")]
+pub use cidre_macros::cls_msg_send;
+#[cfg(target_arch = "aarch64")]
+pub use cidre_macros::cls_msg_send_debug;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::cls_msg_send_debug_x86_64 as cls_msg_send_debug;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::cls_msg_send_x86_64 as cls_msg_send;
+#[cfg(target_arch = "aarch64")]
+pub use cidre_macros::cls_rar_retain;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::cls_rar_retain_x86_64 as cls_rar_retain;
+#[cfg(target_arch = "aarch64")]
+pub use cidre_macros::msg_send;
+#[cfg(target_arch = "aarch64")]
+pub use cidre_macros::msg_send_debug;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::msg_send_x86_64 as msg_send;
+#[cfg(target_arch = "aarch64")]
 pub use cidre_macros::rar_retain;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::rar_retain_x86_64 as rar_retain;
 
 #[cfg(test)]
 mod tests2 {

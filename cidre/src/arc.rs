@@ -179,6 +179,7 @@ pub type R<T> = Retained<T>;
 #[cfg(feature = "objc")]
 pub type Rar<T> = ReturnedAutoReleased<T>;
 
+#[cfg(target_arch = "aarch64")]
 #[cfg(feature = "objc")]
 #[inline]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
@@ -186,11 +187,7 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
 
     unsafe {
         // see comments in rar_retain
-        #[cfg(target_arch = "aarch64")]
         asm!("mov x29, x29");
-
-        #[cfg(target_arch = "x86_64")]
-        asm!("mov rax, rdi");
 
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
@@ -198,7 +195,16 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
     }
 }
 
+#[cfg(target_arch = "x86_64")]
 #[cfg(feature = "objc")]
+#[inline]
+pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
+    // since we can't insert marker right before actual `objc_msgSend` we fallback to retain
+    unsafe { std::mem::transmute(objc::objc_retain(std::mem::transmute(id))) }
+}
+
+#[cfg(feature = "objc")]
+#[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
     use std::arch::asm;
@@ -209,14 +215,19 @@ pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
         // but benchmarks show that on macos it is not a case yet
         // (see alloc_with_ar_retain bench).
         // Need to check on iOS.
-        #[cfg(target_arch = "aarch64")]
         asm!("mov x29, x29");
-        
-        #[cfg(target_arch = "x86_64")]
-        asm!("mov rax, rdi");
 
         std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
             std::mem::transmute(id),
         ))
     }
+}
+
+#[cfg(feature = "objc")]
+#[cfg(target_arch = "x86_64")]
+#[inline]
+pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
+    // asm!("mov rax, rdi");
+    // since we can't insert marker right before actual `objc_msgSend` we fallback to retain
+    unsafe { std::mem::transmute(objc::objc_retain(std::mem::transmute(id))) }
 }

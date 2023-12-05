@@ -32,7 +32,7 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
 
     if let Some(tt) = iter.next() {
         match tt {
-            TokenTree::Group(v) => panic!("didnt expect group {v}"),
+            TokenTree::Group(v) => panic!("didn't expect group {v}"),
             TokenTree::Ident(v) => {
                 if v.to_string().eq("optional") {
                     return Some(ObjcAttr::Optional);
@@ -45,8 +45,8 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
                 }
                 return None;
             }
-            TokenTree::Punct(v) => panic!("did't expect punct {v}"),
-            TokenTree::Literal(v) => panic!("did't expect literal {v}"),
+            TokenTree::Punct(v) => panic!("didn't expect punct {v}"),
+            TokenTree::Literal(v) => panic!("didn't expect literal {v}"),
         }
     }
 
@@ -93,17 +93,38 @@ fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
 
 #[proc_macro_attribute]
 pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, true, false, false)
+    let x86_64 = false;
+    gen_msg_send(sel, func, true, false, false, x86_64)
+}
+
+#[proc_macro_attribute]
+pub fn rar_retain_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send(sel, func, true, false, false, x86_64)
 }
 
 #[proc_macro_attribute]
 pub fn cls_rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, true, true, false)
+    let x86_64 = false;
+    gen_msg_send(sel, func, true, true, false, x86_64)
+}
+
+#[proc_macro_attribute]
+pub fn cls_rar_retain_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send(sel, func, true, true, false, x86_64)
 }
 
 #[proc_macro_attribute]
 pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false, false, false)
+    let x86_64 = false;
+    gen_msg_send(sel, func, false, false, false, x86_64)
+}
+
+#[proc_macro_attribute]
+pub fn msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send(sel, func, false, false, false, x86_64)
 }
 
 /// Should generate static fn sel_xxx function that gets selector.
@@ -440,18 +461,41 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
+pub fn msg_send_debug_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send(sel, func, false, false, true, x86_64)
+}
+
+#[proc_macro_attribute]
 pub fn msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false, false, true)
+    let x86_64 = false;
+    gen_msg_send(sel, func, false, false, true, x86_64)
 }
 
 #[proc_macro_attribute]
 pub fn cls_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false, true, false)
+    let x86_64 = false;
+    gen_msg_send(sel, func, false, true, false, x86_64)
+}
+
+#[proc_macro_attribute]
+pub fn cls_msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send(sel, func, false, true, false, x86_64)
 }
 
 #[proc_macro_attribute]
 pub fn cls_msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
-    gen_msg_send(sel, func, false, true, true)
+    let x86_64 = false;
+    let debug = true;
+    gen_msg_send(sel, func, false, true, debug, x86_64)
+}
+
+#[proc_macro_attribute]
+pub fn cls_msg_send_debug_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    let debug = true;
+    gen_msg_send(sel, func, false, true, debug, x86_64)
 }
 
 fn gen_msg_send(
@@ -460,6 +504,7 @@ fn gen_msg_send(
     retain: bool,
     class: bool,
     debug: bool,
+    x86_64: bool,
 ) -> TokenStream {
     let extern_name = sel.to_string().replace([' ', '\n'], "");
     // let args_count = sel_args_count(sel);
@@ -541,20 +586,14 @@ fn gen_msg_send(
         Cow::Owned(vars.join(", "))
     };
 
-    #[cfg(target_arch = "x86_64")]
-    let reg_name_call = format!("sel_registerName(b\"{extern_name}\0\".as_ptr())");
-
-    #[cfg(target_arch = "x86_64")]
-    let (mut fn_args, mut call_args) = {
+    let (mut fn_args, mut call_args) = if x86_64 {
         let fn_args = fn_args.replacen('(', "(id:", 1).replacen(
             "self",
             "Self, imp: *const std::ffi::c_void",
             1,
         );
-        (fn_args, format!("sig(self, {reg_name_call}, {vars})"))
-    };
-    #[cfg(target_arch = "aarch64")]
-    let (mut fn_args, mut call_args) = if fn_args_count == 0 {
+        (fn_args, format!("sig(self, x86_64_sel, {vars})"))
+    } else if fn_args_count == 0 {
         let fn_args = fn_args
             .replacen("( &", "(id: &", 1)
             .replacen("self", "Self", 1);
@@ -566,29 +605,8 @@ fn gen_msg_send(
         (fn_args, format!("sig(self, std::ptr::null(), {vars})"))
     };
 
-    #[cfg(target_arch = "x86_64")]
     if class {
-        fn_args = fn_args.replacen(
-            "(id:",
-            "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
-            1,
-        );
-        call_args = call_args.replacen(
-            "sig(self",
-            "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-            1,
-        );
-    }
-    #[cfg(target_arch = "aarch64")]
-    if class {
-        if fn_args_count == 0 {
-            fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
-            call_args = call_args.replacen(
-                "sig(self",
-                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-                1,
-            );
-        } else {
+        if x86_64 {
             fn_args = fn_args.replacen(
                 "(id:",
                 "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
@@ -599,6 +617,26 @@ fn gen_msg_send(
                 "sig(Self::cls() as *const _ as *const std::ffi::c_void",
                 1,
             );
+        } else {
+            if fn_args_count == 0 {
+                fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
+                call_args = call_args.replacen(
+                    "sig(self",
+                    "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                    1,
+                );
+            } else {
+                fn_args = fn_args.replacen(
+                    "(id:",
+                    "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
+                    1,
+                );
+                call_args = call_args.replacen(
+                    "sig(self",
+                    "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                    1,
+                );
+            }
         }
     }
 
@@ -624,20 +662,21 @@ fn gen_msg_send(
             )
         }
     } else {
-        #[cfg(target_arch = "x86_64")]
-        {
+        if x86_64 {
             format!(
                 "
+
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
         extern \"C\" {{
             #[link_name = \"objc_msgSend\"]
             fn msg_send();
 
-            fn sel_registerName(str: *const u8) -> *const std::ffi::c_void;
+            fn sel_registerName(name: *const u8) -> *const std::ffi::c_void;
         }}
 
         unsafe {{
+            let x86_64_sel = sel_registerName(b\"{extern_name}\0\".as_ptr());
             let fn_ptr = msg_send as *const std::ffi::c_void;
             let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
 
@@ -646,9 +685,7 @@ fn gen_msg_send(
     }}
             "
             )
-        }
-        #[cfg(target_arch = "aarch64")]
-        {
+        } else {
             format!(
                 "
     #[inline]
