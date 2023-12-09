@@ -252,6 +252,13 @@ impl SampleBuf {
         unsafe { CMSampleBufferGetDuration(self) }
     }
 
+    /// Returns the output duration of a sample buffer.
+    #[doc(alias = "CMSampleBufferGetOutputDuration")]
+    #[inline]
+    pub fn output_duration(&self) -> cm::Time {
+        unsafe { CMSampleBufferGetOutputDuration(self) }
+    }
+
     /// Returns the presentation timestamp that’s the earliest numerically
     /// of all the samples in a sample buffer.
     #[doc(alias = "CMSampleBufferGetPresentationTimeStamp")]
@@ -363,16 +370,16 @@ impl SampleBuf {
     /// Example of use: the invalidation callback could cancel pending I/O.
     #[doc(alias = "CMSampleBufferInvalidate")]
     #[inline]
-    pub fn invalidate(&self) -> os::Status {
-        unsafe { CMSampleBufferInvalidate(self) }
+    pub fn invalidate(&self) -> Result<(), os::Status> {
+        unsafe { CMSampleBufferInvalidate(self).result() }
     }
 
     /// Makes a cm::SampleBuf's data ready, by calling the client's
     /// cm::SampleBufferMakeDataReadyCallback.
     #[doc(alias = "CMSampleBufferMakeDataReady")]
     #[inline]
-    pub fn make_data_ready(&self) -> os::Status {
-        unsafe { CMSampleBufferMakeDataReady(self) }
+    pub fn make_data_ready(&self) -> Result<(), os::Status> {
+        unsafe { CMSampleBufferMakeDataReady(self).result() }
     }
 
     /// Copies PCM audio data from the given cm::SampleBuf into
@@ -545,6 +552,7 @@ extern "C" {
     fn CMSampleBufferGetDataBuffer(sbuf: &SampleBuf) -> Option<&cm::BlockBuf>;
     fn CMSampleBufferSetDataBuffer(sbuf: &mut SampleBuf, data_buffer: &cm::BlockBuf) -> os::Status;
     fn CMSampleBufferGetDuration(sbuf: &SampleBuf) -> cm::Time;
+    fn CMSampleBufferGetOutputDuration(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;

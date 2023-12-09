@@ -4,7 +4,7 @@ use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 ///
 /// [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideoorientation?language=objc)
 #[doc(alias = "AVCaptureVideoOrientation")]
-#[deprecated(since = "0.1.0", note = "See videoRotationAngle instead.")]
+// #[deprecated(since = "0.1.0", note = "See videoRotationAngle instead.")]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum VideoOrienation {

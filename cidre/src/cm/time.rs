@@ -181,6 +181,12 @@ impl Time {
         (self.flags.0 & TimeFlags::VALID.0) != 0
     }
 
+    #[doc(alias = "is_valid")]
+    #[inline]
+    pub const fn is_ok(&self) -> bool {
+        self.is_valid()
+    }
+
     /// ```
     /// use cidre::cm;
     ///
