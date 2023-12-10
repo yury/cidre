@@ -346,14 +346,23 @@ impl SampleBuf {
                     match dict.get(&attachment_keys::not_sync()) {
                         None => true,
                         Some(not_sync) => unsafe {
+                            // in theory we don't need check actual value here.
+                            // there is unsafe [`contains_not_sync()`] for faster
+                            // check
                             not_sync.as_type_ptr() == cf::Boolean::value_false().as_type_ptr()
                         },
-                        // Some(v) => cf::Boolean::value_false().equal(v),
                     }
                 }
             }
             None => true,
         }
+    }
+
+    #[inline]
+    pub unsafe fn contains_not_sync(&self) -> bool {
+        let arr = self.attaches(true).unwrap_unchecked();
+        let dict = &arr[0];
+        dict.contains_key(&attachment_keys::not_sync())
     }
 
     /// Returns a value that indicates whether a sample buffer is valid.
