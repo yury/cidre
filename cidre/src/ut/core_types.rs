@@ -5,6 +5,8 @@ impl ut::Type {
     /// A generic base type for most things (files, directories.)
     ///
     /// UTI: public.item
+    #[doc(alias = "UTTypeItem")]
+    #[inline]
     pub fn item() -> &'static Self {
         unsafe { UTTypeItem }
     }
@@ -13,6 +15,8 @@ impl ut::Type {
     /// (documents, pasteboard data, and document packages.)
     ///
     /// UTI: public.content
+    #[doc(alias = "UTTypeContent")]
+    #[inline]
     pub fn content() -> &'static Self {
         unsafe { UTTypeContent }
     }
@@ -22,6 +26,8 @@ impl ut::Type {
     ///
     /// UTI: public.composite-content
     /// conforms to: public.content
+    #[doc(alias = "UTTypeCompositeContent")]
+    #[inline]
     pub fn composite_content() -> &'static Self {
         unsafe { UTTypeCompositeContent }
     }
@@ -29,6 +35,8 @@ impl ut::Type {
     /// A data item mountable as a volume
     ///
     /// UTI: public.disk-image
+    #[doc(alias = "UTTypeDiskImage")]
+    #[inline]
     pub fn disk_image() -> &'static Self {
         unsafe { UTTypeDiskImage }
     }
@@ -48,6 +56,8 @@ impl ut::Type {
     ///
     /// UTI: public.data
     /// conforms to: public.item
+    #[doc(alias = "UTTypeData")]
+    #[inline]
     pub fn data() -> &'static Self {
         unsafe { UTTypeData }
     }
@@ -56,6 +66,8 @@ impl ut::Type {
     ///
     /// UTI: public.directory
     /// conforms to: public.item
+    #[doc(alias = "UTTypeDirectory")]
+    #[inline]
     pub fn directory() -> &'static Self {
         unsafe { UTTypeDirectory }
     }
@@ -63,6 +75,8 @@ impl ut::Type {
     /// Symbolic link and alias file types conform to this type.
     ///
     /// UTI: com.apple.resolvable
+    #[doc(alias = "UTTypeResolvable")]
+    #[inline]
     pub fn resolvable() -> &'static Self {
         unsafe { UTTypeResolvable }
     }
@@ -71,6 +85,8 @@ impl ut::Type {
     ///
     /// UTI: public.symlink
     /// conforms to: public.item, com.apple.resolvable
+    #[doc(alias = "UTTypeSymbolicLink")]
+    #[inline]
     pub fn symbolic_link() -> &'static Self {
         unsafe { UTTypeSymbolicLink }
     }
@@ -79,6 +95,8 @@ impl ut::Type {
     ///
     /// UTI: public.executable
     /// conforms to: public.item
+    #[doc(alias = "UTTypeExecutable")]
+    #[inline]
     pub fn executable() -> &'static Self {
         unsafe { UTTypeExecutable }
     }
@@ -88,6 +106,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.mount-point
     /// conforms to: public.item, com.apple.resolvable
+    #[doc(alias = "UTTypeMountPoint")]
+    #[inline]
     pub fn mount_point() -> &'static Self {
         unsafe { UTTypeMountPoint }
     }
@@ -96,6 +116,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.alias-file
     /// conforms to: public.data, com.apple.resolvable
+    #[doc(alias = "UTTypeAliasFile")]
+    #[inline]
     pub fn alias_file() -> &'static Self {
         unsafe { UTTypeAliasFile }
     }
@@ -118,6 +140,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.bookmark
     /// conforms to: public.data, com.apple.resolvable
+    #[doc(alias = "UTTypeURLBookmarkData")]
+    #[inline]
     pub fn url_bookmark_data() -> &'static Self {
         unsafe { UTTypeURLBookmarkData }
     }
@@ -126,6 +150,8 @@ impl ut::Type {
     ///
     /// UTI: public.url
     /// conforms to: public.data
+    #[doc(alias = "UTTypeURL")]
+    #[inline]
     pub fn url() -> &'static Self {
         unsafe { UTTypeURL }
     }
@@ -134,6 +160,8 @@ impl ut::Type {
     ///
     /// UTI: public.file-url
     /// conforms to: public.url
+    #[doc(alias = "UTTypeFileURL")]
+    #[inline]
     pub fn file_url() -> &'static Self {
         unsafe { UTTypeFileURL }
     }
@@ -152,6 +180,8 @@ impl ut::Type {
     ///
     /// UTI: public.text
     /// conforms to: public.data, public.content
+    #[doc(alias = "UTTypeText")]
+    #[inline]
     pub fn text() -> &'static Self {
         unsafe { UTTypeText }
     }
@@ -160,6 +190,8 @@ impl ut::Type {
     ///
     /// UTI: public.plain-text
     /// conforms to: public.text
+    #[doc(alias = "UTTypePlainText")]
+    #[inline]
     pub fn plain_text() -> &'static Self {
         unsafe { UTTypePlainText }
     }
@@ -168,6 +200,8 @@ impl ut::Type {
     ///
     /// UTI: public.utf8-plain-text
     /// conforms to: public.plain-text
+    #[doc(alias = "UTTypeUTF8PlainText")]
+    #[inline]
     pub fn utf8_plain_text() -> &'static Self {
         unsafe { UTTypeUTF8PlainText }
     }
@@ -177,6 +211,8 @@ impl ut::Type {
     ///
     /// UTI: public.utf16-external-plain-text
     /// conforms to: public.plain-text
+    #[doc(alias = "UTTypeUTF16ExternalPlainText")]
+    #[inline]
     pub fn utf16_external_plain_text() -> &'static Self {
         unsafe { UTTypeUTF16ExternalPlainText }
     }
@@ -186,6 +222,8 @@ impl ut::Type {
     ///
     /// UTI: public.utf16-plain-text
     /// conforms to: public.plain-text
+    #[doc(alias = "UTTypeUTF16PlainText")]
+    #[inline]
     pub fn utf16_plain_text() -> &'static Self {
         unsafe { UTTypeUTF16PlainText }
     }
@@ -194,6 +232,8 @@ impl ut::Type {
     ///
     /// UTI: public.delimited-values-text
     /// conforms to: public.text
+    #[doc(alias = "UTTypeDelimitedText")]
+    #[inline]
     pub fn delimited_text() -> &'static Self {
         unsafe { UTTypeDelimitedText }
     }
@@ -202,6 +242,8 @@ impl ut::Type {
     ///
     /// UTI: public.comma-separated-values-text
     /// conforms to: public.delimited-values-text
+    #[doc(alias = "UTTypeCommaSeparatedText")]
+    #[inline]
     pub fn comma_separated_text() -> &'static Self {
         unsafe { UTTypeCommaSeparatedText }
     }
@@ -210,6 +252,8 @@ impl ut::Type {
     ///
     /// UTI: public.tab-separated-values-text
     /// conforms to: public.delimited-values-text
+    #[doc(alias = "UTTypeTabSeparatedText")]
+    #[inline]
     pub fn tab_separated_text() -> &'static Self {
         unsafe { UTTypeTabSeparatedText }
     }
@@ -218,6 +262,8 @@ impl ut::Type {
     ///
     /// UTI: public.utf8-tab-separated-values-text
     /// conforms to: public.tab-separated-values-text, public.utf8-plain-text
+    #[doc(alias = "UTTypeUTF8TabSeparatedText")]
+    #[inline]
     pub fn utf8_tab_separated_text() -> &'static Self {
         unsafe { UTTypeUTF8TabSeparatedText }
     }
@@ -226,6 +272,8 @@ impl ut::Type {
     ///
     /// UTI: public.rtf
     /// conforms to: public.text
+    #[doc(alias = "UTTypeRTF")]
+    #[inline]
     pub fn rtf() -> &'static Self {
         unsafe { UTTypeRTF }
     }
@@ -251,6 +299,8 @@ impl ut::Type {
     ///
     /// UTI: public.html
     /// conforms to: public.text
+    #[doc(alias = "UTTypeHTML")]
+    #[inline]
     pub fn html() -> &'static Self {
         unsafe { UTTypeHTML }
     }
@@ -259,6 +309,8 @@ impl ut::Type {
     ///
     /// UTI: public.xml
     /// conforms to: public.text
+    #[doc(alias = "UTTypeXML")]
+    #[inline]
     pub fn xml() -> &'static Self {
         unsafe { UTTypeXML }
     }
@@ -267,6 +319,8 @@ impl ut::Type {
     ///
     /// UTI: public.yaml
     /// conforms to: public.text
+    #[doc(alias = "UTTypeYAML")]
+    #[inline]
     pub fn yaml() -> &'static Self {
         unsafe { UTTypeYAML }
     }
@@ -285,6 +339,8 @@ impl ut::Type {
     ///
     /// UTI: public.source-code
     /// conforms to: public.plain-text
+    #[doc(alias = "UTTypeSourceCode")]
+    #[inline]
     pub fn src_code() -> &'static Self {
         unsafe { UTTypeSourceCode }
     }
@@ -293,6 +349,8 @@ impl ut::Type {
     ///
     /// UTI: public.assembly-source
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeAssemblyLanguageSource")]
+    #[inline]
     pub fn asm_src() -> &'static Self {
         unsafe { UTTypeAssemblyLanguageSource }
     }
@@ -301,6 +359,8 @@ impl ut::Type {
     ///
     /// UTI: public.c-source
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeCSource")]
+    #[inline]
     pub fn c_src() -> &'static Self {
         unsafe { UTTypeCSource }
     }
@@ -309,6 +369,8 @@ impl ut::Type {
     ///
     /// UTI: public.objective-c-source
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeObjectiveCSource")]
+    #[inline]
     pub fn obj_c_src() -> &'static Self {
         unsafe { UTTypeObjectiveCSource }
     }
@@ -317,6 +379,8 @@ impl ut::Type {
     ///
     /// UTI: public.swift-source
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeSwiftSource")]
+    #[inline]
     pub fn swift_src() -> &'static Self {
         unsafe { UTTypeSwiftSource }
     }
@@ -325,6 +389,8 @@ impl ut::Type {
     ///
     /// UTI: public.c-plus-plus-source
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeCPlusPlusSource")]
+    #[inline]
     pub fn cpp_src() -> &'static Self {
         unsafe { UTTypeCPlusPlusSource }
     }
@@ -332,6 +398,8 @@ impl ut::Type {
     ///
     /// UTI: public.objective-c-plus-plus-source
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeObjectiveCPlusPlusSource")]
+    #[inline]
     pub fn obj_cpp_src() -> &'static Self {
         unsafe { UTTypeObjectiveCPlusPlusSource }
     }
@@ -340,6 +408,8 @@ impl ut::Type {
     ///
     /// UTI: public.c-header
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeCHeader")]
+    #[inline]
     pub fn c_header() -> &'static Self {
         unsafe { UTTypeCHeader }
     }
@@ -348,6 +418,8 @@ impl ut::Type {
     ///
     /// UTI: public.c-plus-plus-header
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeCPlusPlusHeader")]
+    #[inline]
     pub fn cpp_header() -> &'static Self {
         unsafe { UTTypeCPlusPlusHeader }
     }
@@ -372,6 +444,8 @@ impl ut::Type {
     ///
     /// UTI: public.script
     /// conforms to: public.source-code
+    #[doc(alias = "UTTypeScript")]
+    #[inline]
     pub fn script() -> &'static Self {
         unsafe { UTTypeScript }
     }
@@ -380,6 +454,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.applescript.text
     /// conforms to: public.script
+    #[doc(alias = "UTTypeAppleScript")]
+    #[inline]
     pub fn apple_script() -> &'static Self {
         unsafe { UTTypeAppleScript }
     }
@@ -388,6 +464,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.applescript.script
     /// conforms to: public.data, public.script
+    #[doc(alias = "UTTypeOSAScript")]
+    #[inline]
     pub fn osa_script() -> &'static Self {
         unsafe { UTTypeOSAScript }
     }
@@ -396,6 +474,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.applescript.script-bundle
     /// conforms to: com.apple.bundle, com.apple.package, public.script
+    #[doc(alias = "UTTypeOSAScriptBundle")]
+    #[inline]
     pub fn osa_script_bundle() -> &'static Self {
         unsafe { UTTypeOSAScriptBundle }
     }
@@ -404,6 +484,8 @@ impl ut::Type {
     ///
     /// UTI: com.netscape.javascript-source
     /// conforms to: public.source-code, public.executable
+    #[doc(alias = "UTTypeJavaScript")]
+    #[inline]
     pub fn java_script() -> &'static Self {
         unsafe { UTTypeJavaScript }
     }
@@ -412,6 +494,8 @@ impl ut::Type {
     ///
     /// UTI: public.shell-script
     /// conforms to: public.script
+    #[doc(alias = "UTTypeShellScript")]
+    #[inline]
     pub fn shell_script() -> &'static Self {
         unsafe { UTTypeShellScript }
     }
@@ -420,6 +504,8 @@ impl ut::Type {
     ///
     /// UTI: public.perl-script
     /// conforms to: public.shell-script
+    #[doc(alias = "UTTypePerlScript")]
+    #[inline]
     pub fn perl_script() -> &'static Self {
         unsafe { UTTypePerlScript }
     }
@@ -428,6 +514,8 @@ impl ut::Type {
     ///
     /// UTI: public.python-script
     /// conforms to: public.shell-script
+    #[doc(alias = "UTTypePythonScript")]
+    #[inline]
     pub fn python_script() -> &'static Self {
         unsafe { UTTypePythonScript }
     }
@@ -436,6 +524,8 @@ impl ut::Type {
     ///
     /// UTI: public.ruby-script
     /// conforms to: public.shell-script
+    #[doc(alias = "UTTypeRubyScript")]
+    #[inline]
     pub fn ruby_script() -> &'static Self {
         unsafe { UTTypeRubyScript }
     }
@@ -444,6 +534,8 @@ impl ut::Type {
     ///
     /// UTI: public.php-script
     /// conforms to: public.shell-script
+    #[doc(alias = "UTTypePHPScript")]
+    #[inline]
     pub fn php_script() -> &'static Self {
         unsafe { UTTypePHPScript }
     }
@@ -452,6 +544,8 @@ impl ut::Type {
     ///
     /// UTI: public.make-source
     /// conforms to: public.script
+    #[doc(alias = "UTTypeMakefile")]
+    #[inline]
     pub fn makefile() -> &'static Self {
         unsafe { UTTypeMakefile }
     }
@@ -480,6 +574,8 @@ impl ut::Type {
     /// conforms to: public.text
     /// JSON almost (but doesn't quite) conforms to
     /// com.netscape.javascript-source.
+    #[doc(alias = "UTTypeJSON")]
+    #[inline]
     pub fn json() -> &'static Self {
         unsafe { UTTypeJSON }
     }
@@ -488,6 +584,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.property-list
     /// conforms to: public.data
+    #[doc(alias = "UTTypePropertyList")]
+    #[inline]
     pub fn prop_list() -> &'static Self {
         unsafe { UTTypePropertyList }
     }
@@ -496,6 +594,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.xml-property-list
     /// conforms to: public.xml, com.apple.property-list
+    #[doc(alias = "UTTypeXMLPropertyList")]
+    #[inline]
     pub fn xml_prop_list() -> &'static Self {
         unsafe { UTTypeXMLPropertyList }
     }
@@ -504,6 +604,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.binary-property-list
     /// conforms to: com.apple.property-list
+    #[doc(alias = "UTTypeBinaryPropertyList")]
+    #[inline]
     pub fn binary_prop_list() -> &'static Self {
         unsafe { UTTypeBinaryPropertyList }
     }
@@ -522,6 +624,8 @@ impl ut::Type {
     ///
     /// UTI: com.adobe.pdf
     /// conforms to: public.data, public.composite-content
+    #[doc(alias = "UTTypePDF")]
+    #[inline]
     pub fn pdf() -> &'static Self {
         unsafe { UTTypePDF }
     }
@@ -531,6 +635,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.rtfd
     /// conforms to: com.apple.package, public.composite-content
+    #[doc(alias = "UTTypeRTFD")]
+    #[inline]
     pub fn rtfd() -> &'static Self {
         unsafe { UTTypeRTFD }
     }
@@ -539,6 +645,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.flat-rtfd
     /// conforms to: public.data, public.composite-content
+    #[doc(alias = "UTTypeFlatRTFD")]
+    #[inline]
     pub fn flat_rtfd() -> &'static Self {
         unsafe { UTTypeFlatRTFD }
     }
@@ -547,6 +655,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.webarchive
     /// conforms to: public.data, public.composite-content
+    #[doc(alias = "UTTypeWebArchive")]
+    #[inline]
     pub fn web_archive() -> &'static Self {
         unsafe { UTTypeWebArchive }
     }
@@ -566,6 +676,8 @@ impl ut::Type {
     ///
     /// UTI: public.image
     /// conforms to: public.data, public.content
+    #[doc(alias = "UTTypeImage")]
+    #[inline]
     pub fn image() -> &'static Self {
         unsafe { UTTypeImage }
     }
@@ -574,6 +686,8 @@ impl ut::Type {
     ///
     /// UTI: public.jpeg
     /// conforms to: public.image
+    #[doc(alias = "UTTypeJPEG")]
+    #[inline]
     pub fn jpeg() -> &'static Self {
         unsafe { UTTypeJPEG }
     }
@@ -582,6 +696,8 @@ impl ut::Type {
     ///
     /// UTI: public.tiff
     /// conforms to: public.image
+    #[doc(alias = "UTTypeTIFF")]
+    #[inline]
     pub fn tiff() -> &'static Self {
         unsafe { UTTypeTIFF }
     }
@@ -590,6 +706,8 @@ impl ut::Type {
     ///
     /// UTI: com.compuserve.gif
     /// conforms to: public.image
+    #[doc(alias = "UTTypeGIF")]
+    #[inline]
     pub fn gif() -> &'static Self {
         unsafe { UTTypeGIF }
     }
@@ -598,6 +716,8 @@ impl ut::Type {
     ///
     /// UTI: public.png
     /// conforms to: public.image
+    #[doc(alias = "UTTypePNG")]
+    #[inline]
     pub fn png() -> &'static Self {
         unsafe { UTTypePNG }
     }
@@ -606,6 +726,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.icns
     /// conforms to: public.image
+    #[doc(alias = "UTTypeICNS")]
+    #[inline]
     pub fn icns() -> &'static Self {
         unsafe { UTTypeICNS }
     }
@@ -614,6 +736,8 @@ impl ut::Type {
     ///
     /// UTI: com.microsoft.bmp
     /// conforms to: public.image
+    #[doc(alias = "UTTypeBMP")]
+    #[inline]
     pub fn bmp() -> &'static Self {
         unsafe { UTTypeBMP }
     }
@@ -622,6 +746,8 @@ impl ut::Type {
     ///
     /// UTI: com.microsoft.ico
     /// conforms to: public.image
+    #[doc(alias = "UTTypeICO")]
+    #[inline]
     pub fn ico() -> &'static Self {
         unsafe { UTTypeICO }
     }
@@ -630,6 +756,8 @@ impl ut::Type {
     ///
     /// UTI: public.camera-raw-image
     /// conforms to: public.image
+    #[doc(alias = "UTTypeRAWImage")]
+    #[inline]
     pub fn raw_image() -> &'static Self {
         unsafe { UTTypeRAWImage }
     }
@@ -638,6 +766,8 @@ impl ut::Type {
     ///
     /// UTI: public.svg-image
     /// conforms to: public.image
+    #[doc(alias = "UTTypeSVG")]
+    #[inline]
     pub fn svg() -> &'static Self {
         unsafe { UTTypeSVG }
     }
@@ -645,6 +775,8 @@ impl ut::Type {
     /// A Live Photo.
     ///
     /// UTI: com.apple.live-photo
+    #[doc(alias = "UTTypeLivePhoto")]
+    #[inline]
     pub fn live_photo() -> &'static Self {
         unsafe { UTTypeLivePhoto }
     }
@@ -653,6 +785,8 @@ impl ut::Type {
     ///
     /// UTI: public.heif
     /// conforms to: public.heif-standard
+    #[doc(alias = "UTTypeHEIF")]
+    #[inline]
     pub fn heif() -> &'static Self {
         unsafe { UTTypeHEIF }
     }
@@ -661,6 +795,8 @@ impl ut::Type {
     ///
     /// UTI: public.heic
     /// conforms to: public.heif-standard
+    #[doc(alias = "UTTypeHEIC")]
+    #[inline]
     pub fn heic() -> &'static Self {
         unsafe { UTTypeHEIC }
     }
@@ -669,6 +805,8 @@ impl ut::Type {
     ///
     /// UTI: org.webmproject.webp
     /// conforms to: public.image
+    #[doc(alias = "UTTypeWebP")]
+    #[inline]
     pub fn webp() -> &'static Self {
         unsafe { UTTypeWebP }
     }
@@ -698,6 +836,8 @@ impl ut::Type {
     ///
     /// UTI: public.3d-content
     /// conforms to: public.content
+    #[doc(alias = "UTType3DContent")]
+    #[inline]
     pub fn _3d_content() -> &'static Self {
         unsafe { UTType3DContent }
     }
@@ -706,6 +846,8 @@ impl ut::Type {
     ///
     /// UTI: com.pixar.universal-scene-description
     /// conforms to: public.3d-content, public.data
+    #[doc(alias = "UTTypeUSD")]
+    #[inline]
     pub fn usd() -> &'static Self {
         unsafe { UTTypeUSD }
     }
@@ -714,6 +856,8 @@ impl ut::Type {
     ///
     /// UTI: com.pixar.universal-scene-description-mobile
     /// conforms to: public.3d-content, public.data
+    #[doc(alias = "UTTypeUSDZ")]
+    #[inline]
     pub fn usdz() -> &'static Self {
         unsafe { UTTypeUSDZ }
     }
@@ -722,6 +866,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.reality
     /// conforms to: public.data
+    #[doc(alias = "UTTypeRealityFile")]
+    #[inline]
     pub fn reality_file() -> &'static Self {
         unsafe { UTTypeRealityFile }
     }
@@ -730,6 +876,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.scenekit.scene
     /// conforms to: public.3d-content, public.data
+    #[doc(alias = "UTTypeSceneKitScene")]
+    #[inline]
     pub fn sk_scene() -> &'static Self {
         unsafe { UTTypeSceneKitScene }
     }
@@ -738,6 +886,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.arobject
     /// conforms to: public.data
+    #[doc(alias = "UTTypeARReferenceObject")]
+    #[inline]
     pub fn ar_reference_obj() -> &'static Self {
         unsafe { UTTypeARReferenceObject }
     }
@@ -746,6 +896,8 @@ impl ut::Type {
     ///
     /// UTI: public.audiovisual-content
     /// conforms to: public.data, public.content
+    #[doc(alias = "UTTypeAudiovisualContent")]
+    #[inline]
     pub fn av_content() -> &'static Self {
         unsafe { UTTypeAudiovisualContent }
     }
@@ -756,6 +908,8 @@ impl ut::Type {
     ///
     /// UTI: public.movie
     /// conforms to: public.audiovisual-content
+    #[doc(alias = "UTTypeMovie")]
+    #[inline]
     pub fn movie() -> &'static Self {
         unsafe { UTTypeMovie }
     }
@@ -764,6 +918,8 @@ impl ut::Type {
     ///
     /// UTI: public.video
     /// conforms to: public.movie
+    #[doc(alias = "UTTypeVideo")]
+    #[inline]
     pub fn video() -> &'static Self {
         unsafe { UTTypeVideo }
     }
@@ -772,6 +928,8 @@ impl ut::Type {
     ///
     /// UTI: public.audio
     /// conforms to: public.audiovisual-content
+    #[doc(alias = "UTTypeAudio")]
+    #[inline]
     pub fn audio() -> &'static Self {
         unsafe { UTTypeAudio }
     }
@@ -780,6 +938,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.quicktime-movie
     /// conforms to: public.movie
+    #[doc(alias = "UTTypeQuickTimeMovie")]
+    #[inline]
     pub fn quick_time_movie() -> &'static Self {
         unsafe { UTTypeQuickTimeMovie }
     }
@@ -788,6 +948,8 @@ impl ut::Type {
     ///
     /// UTI: public.mpeg
     /// conforms to: public.movie
+    #[doc(alias = "UTTypeMPEG")]
+    #[inline]
     pub fn mpeg() -> &'static Self {
         unsafe { UTTypeMPEG }
     }
@@ -796,6 +958,8 @@ impl ut::Type {
     ///
     /// UTI: public.mpeg-2-video
     /// conforms to: public.video
+    #[doc(alias = "UTTypeMPEG2Video")]
+    #[inline]
     pub fn mpeg2video() -> &'static Self {
         unsafe { UTTypeMPEG2Video }
     }
@@ -804,6 +968,8 @@ impl ut::Type {
     ///
     /// UTI: public.mpeg-2-transport-stream
     /// conforms to: public.movie
+    #[doc(alias = "UTTypeMPEG2TransportStream")]
+    #[inline]
     pub fn mpeg2ts() -> &'static Self {
         unsafe { UTTypeMPEG2TransportStream }
     }
@@ -812,6 +978,8 @@ impl ut::Type {
     ///
     /// UTI: public.mp3
     /// conforms to: public.audio
+    #[doc(alias = "UTTypeMP3")]
+    #[inline]
     pub fn mp3() -> &'static Self {
         unsafe { UTTypeMP3 }
     }
@@ -820,6 +988,8 @@ impl ut::Type {
     ///
     /// UTI: public.mpeg-4
     /// conforms to: public.movie
+    #[doc(alias = "UTTypeMPEG4Movie")]
+    #[inline]
     pub fn mpeg4video() -> &'static Self {
         unsafe { UTTypeMPEG4Movie }
     }
@@ -828,6 +998,8 @@ impl ut::Type {
     ///
     /// UTI: public.mpeg-4-audio
     /// conforms to: public.mpeg-4, public.audio
+    #[doc(alias = "UTTypeMPEG4Audio")]
+    #[inline]
     pub fn mpeg4audio() -> &'static Self {
         unsafe { UTTypeMPEG4Audio }
     }
@@ -836,6 +1008,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.protected-mpeg-4-audio
     /// conforms to: public.audio
+    #[doc(alias = "UTTypeAppleProtectedMPEG4Audio")]
+    #[inline]
     pub fn apple_protected_mpeg4audio() -> &'static Self {
         unsafe { UTTypeAppleProtectedMPEG4Audio }
     }
@@ -844,6 +1018,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.protected-mpeg-4-video
     /// conforms to: com.apple.m4v-video
+    #[doc(alias = "UTTypeAppleProtectedMPEG4Video")]
+    #[inline]
     pub fn apple_protected_mpeg4video() -> &'static Self {
         unsafe { UTTypeAppleProtectedMPEG4Video }
     }
@@ -852,6 +1028,8 @@ impl ut::Type {
     ///
     /// UTI: public.avi
     /// conforms to: public.movie
+    #[doc(alias = "UTTypeAVI")]
+    #[inline]
     pub fn avi() -> &'static Self {
         unsafe { UTTypeAVI }
     }
@@ -860,6 +1038,8 @@ impl ut::Type {
     ///
     /// UTI: public.aiff-audio
     /// conforms to: public.aifc-audio
+    #[doc(alias = "UTTypeAIFF")]
+    #[inline]
     pub fn aiff() -> &'static Self {
         unsafe { UTTypeAIFF }
     }
@@ -868,6 +1048,8 @@ impl ut::Type {
     ///
     /// UTI: com.microsoft.waveform-audio
     /// conforms to: public.audio
+    #[doc(alias = "UTTypeWAV")]
+    #[inline]
     pub fn wav() -> &'static Self {
         unsafe { UTTypeWAV }
     }
@@ -876,6 +1058,8 @@ impl ut::Type {
     ///
     /// UTI: public.midi-audio
     /// conforms to: public.audio
+    #[doc(alias = "UTTypeMIDI")]
+    #[inline]
     pub fn midi() -> &'static Self {
         unsafe { UTTypeMIDI }
     }
@@ -883,6 +1067,8 @@ impl ut::Type {
     /// The base type for playlists.
     ///
     /// UTI: public.playlist
+    #[doc(alias = "UTTypePlaylist")]
+    #[inline]
     pub fn playlist() -> &'static Self {
         unsafe { UTTypePlaylist }
     }
@@ -891,6 +1077,8 @@ impl ut::Type {
     ///
     /// UTI: public.m3u-playlist
     /// conforms to: public.text, public.playlist
+    #[doc(alias = "UTTypeM3UPlaylist")]
+    #[inline]
     pub fn m3u_playlist() -> &'static Self {
         unsafe { UTTypeM3UPlaylist }
     }
@@ -931,6 +1119,8 @@ impl ut::Type {
     ///
     /// UTI: public.folder
     /// conforms to: public.directory
+    #[doc(alias = "UTTypeFolder")]
+    #[inline]
     pub fn folder() -> &'static Self {
         unsafe { UTTypeFolder }
     }
@@ -939,6 +1129,8 @@ impl ut::Type {
     ///
     /// UTI: public.volume
     /// conforms to: public.folder
+    #[doc(alias = "UTTypeVolume")]
+    #[inline]
     pub fn volume() -> &'static Self {
         unsafe { UTTypeVolume }
     }
@@ -947,6 +1139,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.package
     /// conforms to: public.directory
+    #[doc(alias = "UTTypePackage")]
+    #[inline]
     pub fn package() -> &'static Self {
         unsafe { UTTypePackage }
     }
@@ -955,6 +1149,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.bundle
     /// conforms to: public.directory
+    #[doc(alias = "UTTypeBundle")]
+    #[inline]
     pub fn bundle() -> &'static Self {
         unsafe { UTTypeBundle }
     }
@@ -963,6 +1159,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.plugin
     /// conforms to: com.apple.bundle, com.apple.package
+    #[doc(alias = "UTTypePluginBundle")]
+    #[inline]
     pub fn plugin_bundle() -> &'static Self {
         unsafe { UTTypePluginBundle }
     }
@@ -971,6 +1169,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.metadata-importer
     /// conforms to: com.apple.plugin
+    #[doc(alias = "UTTypeSpotlightImporter")]
+    #[inline]
     pub fn spotlight_importer() -> &'static Self {
         unsafe { UTTypeSpotlightImporter }
     }
@@ -979,6 +1179,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.quicklook-generator
     /// conforms to: com.apple.plugin
+    #[doc(alias = "UTTypeQuickLookGenerator")]
+    #[inline]
     pub fn quick_look_generator() -> &'static Self {
         unsafe { UTTypeQuickLookGenerator }
     }
@@ -987,6 +1189,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.xpc-service
     /// conforms to: com.apple.bundle, com.apple.package
+    #[doc(alias = "UTTypeXPCService")]
+    #[inline]
     pub fn xpc_service() -> &'static Self {
         unsafe { UTTypeXPCService }
     }
@@ -995,6 +1199,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.framework
     /// conforms to: com.apple.bundle
+    #[doc(alias = "UTTypeFramework")]
+    #[inline]
     pub fn framework() -> &'static Self {
         unsafe { UTTypeFramework }
     }
@@ -1003,6 +1209,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.application
     /// conforms to: public.executable
+    #[doc(alias = "UTTypeApplication")]
+    #[inline]
     pub fn app() -> &'static Self {
         unsafe { UTTypeApplication }
     }
@@ -1011,6 +1219,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.application-bundle
     /// conforms to: com.apple.application, com.apple.bundle, com.apple.package
+    #[doc(alias = "UTTypeApplicationBundle")]
+    #[inline]
     pub fn app_bundle() -> &'static Self {
         unsafe { UTTypeApplicationBundle }
     }
@@ -1019,6 +1229,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.application-and-system-extension
     /// conforms to: com.apple.xpc-service
+    #[doc(alias = "UTTypeApplicationExtension")]
+    #[inline]
     pub fn appex() -> &'static Self {
         unsafe { UTTypeApplicationExtension }
     }
@@ -1027,6 +1239,8 @@ impl ut::Type {
     ///
     /// UTI: public.unix-executable
     /// conforms to: public.data, public.executable
+    #[doc(alias = "UTTypeUnixExecutable")]
+    #[inline]
     pub fn unix_executable() -> &'static Self {
         unsafe { UTTypeUnixExecutable }
     }
@@ -1035,6 +1249,8 @@ impl ut::Type {
     ///
     /// UTI: com.microsoft.windows-executable
     /// conforms to: public.data, public.executable
+    #[doc(alias = "UTTypeEXE")]
+    #[inline]
     pub fn exe() -> &'static Self {
         unsafe { UTTypeEXE }
     }
@@ -1043,6 +1259,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.systempreference.prefpane
     /// conforms to: com.apple.package, com.apple.bundle
+    #[doc(alias = "UTTypeSystemPreferencesPane")]
+    #[inline]
     pub fn sys_pref_pane() -> &'static Self {
         unsafe { UTTypeSystemPreferencesPane }
     }
@@ -1072,6 +1290,8 @@ impl ut::Type {
     /// An archive of files and directories
     ///
     /// UTI: public.archive
+    #[doc(alias = "UTTypeArchive")]
+    #[inline]
     pub fn archive() -> &'static Self {
         unsafe { UTTypeArchive }
     }
@@ -1080,6 +1300,8 @@ impl ut::Type {
     ///
     /// UTI: org.gnu.gnu-zip-archive
     /// conforms to: public.data, public.archive
+    #[doc(alias = "UTTypeGZIP")]
+    #[inline]
     pub fn gzip() -> &'static Self {
         unsafe { UTTypeGZIP }
     }
@@ -1088,6 +1310,8 @@ impl ut::Type {
     ///
     /// UTI: public.bzip2-archive
     /// conforms to: public.data, public.archive
+    #[doc(alias = "UTTypeBZ2")]
+    #[inline]
     pub fn bz2() -> &'static Self {
         unsafe { UTTypeBZ2 }
     }
@@ -1096,6 +1320,8 @@ impl ut::Type {
     ///
     /// UTI: public.zip-archive
     /// conforms to: com.pkware.zip-archive
+    #[doc(alias = "UTTypeZIP")]
+    #[inline]
     pub fn zip() -> &'static Self {
         unsafe { UTTypeZIP }
     }
@@ -1104,6 +1330,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.archive
     /// conforms to: public.data, public.archive
+    #[doc(alias = "UTTypeAppleArchive")]
+    #[inline]
     pub fn apple_archive() -> &'static Self {
         unsafe { UTTypeAppleArchive }
     }
@@ -1124,6 +1352,8 @@ impl ut::Type {
     ///
     /// UTI: public.spreadsheet
     /// conforms to: public.content
+    #[doc(alias = "UTTypeSpreadsheet")]
+    #[inline]
     pub fn spreadsheet() -> &'static Self {
         unsafe { UTTypeSpreadsheet }
     }
@@ -1132,6 +1362,8 @@ impl ut::Type {
     ///
     /// UTI: public.presentation
     /// conforms to: public.composite-content
+    #[doc(alias = "UTTypePresentation")]
+    #[inline]
     pub fn presentation() -> &'static Self {
         unsafe { UTTypePresentation }
     }
@@ -1139,6 +1371,8 @@ impl ut::Type {
     /// A database store.
     ///
     /// UTI: public.database
+    #[doc(alias = "UTTypeDatabase")]
+    #[inline]
     pub fn database() -> &'static Self {
         unsafe { UTTypeDatabase }
     }
@@ -1156,6 +1390,8 @@ impl ut::Type {
     /// A base type for messages (email, IM, etc.)
     ///
     /// UTI: public.message
+    #[doc(alias = "UTTypeMessage")]
+    #[inline]
     pub fn message() -> &'static Self {
         unsafe { UTTypeMessage }
     }
@@ -1163,6 +1399,8 @@ impl ut::Type {
     /// Contact information, e.g. for a person, group, organization
     ///
     /// UTI: public.contact
+    #[doc(alias = "UTTypeContact")]
+    #[inline]
     pub fn contact() -> &'static Self {
         unsafe { UTTypeContact }
     }
@@ -1171,6 +1409,8 @@ impl ut::Type {
     ///
     /// UTI: public.vcard
     /// conforms to: public.text, public.contact
+    #[doc(alias = "UTTypeVCard")]
+    #[inline]
     pub fn v_card() -> &'static Self {
         unsafe { UTTypeVCard }
     }
@@ -1178,6 +1418,8 @@ impl ut::Type {
     /// A to-do item.
     ///
     /// UTI: public.to-do-item
+    #[doc(alias = "UTTypeToDoItem")]
+    #[inline]
     pub fn todo_item() -> &'static Self {
         unsafe { UTTypeToDoItem }
     }
@@ -1185,6 +1427,8 @@ impl ut::Type {
     /// A calendar event.
     ///
     /// UTI: public.calendar-event
+    #[doc(alias = "UTTypeCalendarEvent")]
+    #[inline]
     pub fn calendar_event() -> &'static Self {
         unsafe { UTTypeCalendarEvent }
     }
@@ -1193,6 +1437,8 @@ impl ut::Type {
     ///
     /// UTI: public.email-message
     /// conforms to: public.message
+    #[doc(alias = "UTTypeEmailMessage")]
+    #[inline]
     pub fn email_message() -> &'static Self {
         unsafe { UTTypeEmailMessage }
     }
@@ -1214,6 +1460,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.internet-location
     /// conforms to: public.data
+    #[doc(alias = "UTTypeInternetLocation")]
+    #[inline]
     pub fn internet_location() -> &'static Self {
         unsafe { UTTypeInternetLocation }
     }
@@ -1222,6 +1470,8 @@ impl ut::Type {
     ///
     /// UTI: com.apple.internet-location
     /// conforms to: public.data
+    #[doc(alias = "UTTypeInternetShortcut")]
+    #[inline]
     pub fn internet_shortcut() -> &'static Self {
         unsafe { UTTypeInternetShortcut }
     }
@@ -1238,6 +1488,8 @@ impl ut::Type {
     /// A base type for fonts.
     ///
     /// UTI: public.font
+    #[doc(alias = "UTTypeFont")]
+    #[inline]
     pub fn font() -> &'static Self {
         unsafe { UTTypeFont }
     }
@@ -1245,6 +1497,8 @@ impl ut::Type {
     /// A bookmark.
     ///
     /// UTI: public.bookmark
+    #[doc(alias = "UTTypeBookmark")]
+    #[inline]
     pub fn bookmark() -> &'static Self {
         unsafe { UTTypeBookmark }
     }
@@ -1253,6 +1507,8 @@ impl ut::Type {
     ///
     /// UTI: com.rsa.pkcs-12
     /// conforms to: public.data
+    #[doc(alias = "UTTypePKCS12")]
+    #[inline]
     pub fn pkcs12() -> &'static Self {
         unsafe { UTTypePKCS12 }
     }
@@ -1261,6 +1517,8 @@ impl ut::Type {
     ///
     /// UTI: public.x509-certificate
     /// conforms to: public.data
+    #[doc(alias = "UTTypeX509Certificate")]
+    #[inline]
     pub fn x509cert() -> &'static Self {
         unsafe { UTTypeX509Certificate }
     }
@@ -1269,6 +1527,8 @@ impl ut::Type {
     ///
     /// UTI: org.idpf.epub-container
     /// conforms to: public.data, public.composite-content
+    #[doc(alias = "UTTypeEPUB")]
+    #[inline]
     pub fn epub() -> &'static Self {
         unsafe { UTTypeEPUB }
     }
@@ -1276,6 +1536,8 @@ impl ut::Type {
     /// A base type for console logs.
     ///
     /// UTI: public.log
+    #[doc(alias = "UTTypeLog")]
+    #[inline]
     pub fn log() -> &'static Self {
         unsafe { UTTypeLog }
     }
@@ -1283,6 +1545,8 @@ impl ut::Type {
     /// An Apple Haptics Audio Pattern file.
     ///
     /// UTI: com.apple.haptics.ahap
+    #[doc(alias = "UTTypeAHAP")]
+    #[inline]
     pub fn ahap() -> &'static Self {
         unsafe { UTTypeAHAP }
     }
