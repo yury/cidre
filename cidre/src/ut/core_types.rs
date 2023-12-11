@@ -375,9 +375,143 @@ impl ut::Type {
     pub fn script() -> &'static Self {
         unsafe { UTTypeScript }
     }
+
+    /// An AppleScript text-based script (.applescript).
+    ///
+    /// UTI: com.apple.applescript.text
+    /// conforms to: public.script
+    pub fn apple_script() -> &'static Self {
+        unsafe { UTTypeAppleScript }
+    }
+
+    /// An Open Scripting Architecture binary script (.scpt).
+    ///
+    /// UTI: com.apple.applescript.script
+    /// conforms to: public.data, public.script
+    pub fn osa_script() -> &'static Self {
+        unsafe { UTTypeOSAScript }
+    }
+
+    /// An Open Scripting Architecture script bundle (.scptd).
+    ///
+    /// UTI: com.apple.applescript.script-bundle
+    /// conforms to: com.apple.bundle, com.apple.package, public.script
+    pub fn osa_script_bundle() -> &'static Self {
+        unsafe { UTTypeOSAScriptBundle }
+    }
+
+    /// JavaScript source code
+    ///
+    /// UTI: com.netscape.javascript-source
+    /// conforms to: public.source-code, public.executable
+    pub fn java_script() -> &'static Self {
+        unsafe { UTTypeJavaScript }
+    }
+
+    /// The base type for shell scripts.
+    ///
+    /// UTI: public.shell-script
+    /// conforms to: public.script
+    pub fn shell_script() -> &'static Self {
+        unsafe { UTTypeShellScript }
+    }
+
+    /// A Perl script.
+    ///
+    /// UTI: public.perl-script
+    /// conforms to: public.shell-script
+    pub fn perl_script() -> &'static Self {
+        unsafe { UTTypePerlScript }
+    }
+
+    /// A Python script.
+    ///
+    /// UTI: public.python-script
+    /// conforms to: public.shell-script
+    pub fn python_script() -> &'static Self {
+        unsafe { UTTypePythonScript }
+    }
+
+    /// A Ruby script.
+    ///
+    /// UTI: public.ruby-script
+    /// conforms to: public.shell-script
+    pub fn ruby_script() -> &'static Self {
+        unsafe { UTTypeRubyScript }
+    }
+
+    /// A PHP script.
+    ///
+    /// UTI: public.php-script
+    /// conforms to: public.shell-script
+    pub fn php_script() -> &'static Self {
+        unsafe { UTTypePHPScript }
+    }
+
+    /// A makefile.
+    ///
+    /// UTI: public.make-source
+    /// conforms to: public.script
+    pub fn makefile() -> &'static Self {
+        unsafe { UTTypeMakefile }
+    }
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
 extern "C" {
     static UTTypeScript: &'static ut::Type;
+    static UTTypeAppleScript: &'static ut::Type;
+    static UTTypeOSAScript: &'static ut::Type;
+    static UTTypeOSAScriptBundle: &'static ut::Type;
+    static UTTypeJavaScript: &'static ut::Type;
+    static UTTypeShellScript: &'static ut::Type;
+    static UTTypePerlScript: &'static ut::Type;
+    static UTTypePythonScript: &'static ut::Type;
+    static UTTypeRubyScript: &'static ut::Type;
+    static UTTypePHPScript: &'static ut::Type;
+    static UTTypeMakefile: &'static ut::Type;
+}
+
+/// Serialized data types
+impl ut::Type {
+    /// JavaScript object notation (JSON) data
+    ///
+    /// UTI: public.json
+    /// conforms to: public.text
+    /// JSON almost (but doesn't quite) conforms to
+    /// com.netscape.javascript-source.
+    pub fn json() -> &'static Self {
+        unsafe { UTTypeJSON }
+    }
+
+    /// A base type for property lists.
+    ///
+    /// UTI: com.apple.property-list
+    /// conforms to: public.data
+    pub fn prop_list() -> &'static Self {
+        unsafe { UTTypePropertyList }
+    }
+
+    /// An XML property list.
+    ///
+    /// UTI: com.apple.xml-property-list
+    /// conforms to: public.xml, com.apple.property-list
+    pub fn xml_prop_list() -> &'static Self {
+        unsafe { UTTypeXMLPropertyList }
+    }
+
+    /// A binary property list.
+    ///
+    /// UTI: com.apple.binary-property-list
+    /// conforms to: com.apple.property-list
+    pub fn binary_prop_list() -> &'static Self {
+        unsafe { UTTypeBinaryPropertyList }
+    }
+}
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeJSON: &'static ut::Type;
+    static UTTypePropertyList: &'static ut::Type;
+    static UTTypeXMLPropertyList: &'static ut::Type;
+    static UTTypeBinaryPropertyList: &'static ut::Type;
 }
