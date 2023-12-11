@@ -515,3 +515,786 @@ extern "C" {
     static UTTypeXMLPropertyList: &'static ut::Type;
     static UTTypeBinaryPropertyList: &'static ut::Type;
 }
+
+/// Composite content types
+impl ut::Type {
+    /// An Adobe PDF document.
+    ///
+    /// UTI: com.adobe.pdf
+    /// conforms to: public.data, public.composite-content
+    pub fn pdf() -> &'static Self {
+        unsafe { UTTypePDF }
+    }
+
+    /// A Rich Text Format Directory document (RTF with content embedding
+    /// in its on-disk format.)
+    ///
+    /// UTI: com.apple.rtfd
+    /// conforms to: com.apple.package, public.composite-content
+    pub fn rtfd() -> &'static Self {
+        unsafe { UTTypeRTFD }
+    }
+
+    /// A flattened RTFD document (formatted for the pasteboard.)
+    ///
+    /// UTI: com.apple.flat-rtfd
+    /// conforms to: public.data, public.composite-content
+    pub fn flat_rtfd() -> &'static Self {
+        unsafe { UTTypeFlatRTFD }
+    }
+
+    /// The WebKit webarchive format.
+    ///
+    /// UTI: com.apple.webarchive
+    /// conforms to: public.data, public.composite-content
+    pub fn web_archive() -> &'static Self {
+        unsafe { UTTypeWebArchive }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypePDF: &'static ut::Type;
+    static UTTypeRTFD: &'static ut::Type;
+    static UTTypeFlatRTFD: &'static ut::Type;
+    static UTTypeWebArchive: &'static ut::Type;
+}
+
+/// Image content types
+impl ut::Type {
+    /// A base type for abstract image data.
+    ///
+    /// UTI: public.image
+    /// conforms to: public.data, public.content
+    pub fn image() -> &'static Self {
+        unsafe { UTTypeImage }
+    }
+
+    /// A JPEG image.
+    ///
+    /// UTI: public.jpeg
+    /// conforms to: public.image
+    pub fn jpeg() -> &'static Self {
+        unsafe { UTTypeJPEG }
+    }
+
+    /// A TIFF image.
+    ///
+    /// UTI: public.tiff
+    /// conforms to: public.image
+    pub fn tiff() -> &'static Self {
+        unsafe { UTTypeTIFF }
+    }
+
+    /// A GIF image.
+    ///
+    /// UTI: com.compuserve.gif
+    /// conforms to: public.image
+    pub fn gif() -> &'static Self {
+        unsafe { UTTypeGIF }
+    }
+
+    /// A PNG image.
+    ///
+    /// UTI: public.png
+    /// conforms to: public.image
+    pub fn png() -> &'static Self {
+        unsafe { UTTypePNG }
+    }
+
+    /// Apple icon data
+    ///
+    /// UTI: com.apple.icns
+    /// conforms to: public.image
+    pub fn icns() -> &'static Self {
+        unsafe { UTTypeICNS }
+    }
+
+    /// A Windows bitmap.
+    ///
+    /// UTI: com.microsoft.bmp
+    /// conforms to: public.image
+    pub fn bmp() -> &'static Self {
+        unsafe { UTTypeBMP }
+    }
+
+    /// Windows icon data
+    ///
+    /// UTI: com.microsoft.ico
+    /// conforms to: public.image
+    pub fn ico() -> &'static Self {
+        unsafe { UTTypeICO }
+    }
+
+    /// A base type for raw image data (.raw).
+    ///
+    /// UTI: public.camera-raw-image
+    /// conforms to: public.image
+    pub fn raw_image() -> &'static Self {
+        unsafe { UTTypeRAWImage }
+    }
+
+    /// A Scalable Vector Graphics image.
+    ///
+    /// UTI: public.svg-image
+    /// conforms to: public.image
+    pub fn svg() -> &'static Self {
+        unsafe { UTTypeSVG }
+    }
+
+    /// A Live Photo.
+    ///
+    /// UTI: com.apple.live-photo
+    pub fn live_photo() -> &'static Self {
+        unsafe { UTTypeLivePhoto }
+    }
+
+    /// A High Efficiency Image File Format image.
+    ///
+    /// UTI: public.heif
+    /// conforms to: public.heif-standard
+    pub fn heif() -> &'static Self {
+        unsafe { UTTypeHEIF }
+    }
+
+    /// A High Efficiency Image Coding image.
+    ///
+    /// UTI: public.heic
+    /// conforms to: public.heif-standard
+    pub fn heic() -> &'static Self {
+        unsafe { UTTypeHEIC }
+    }
+
+    /// The WebP image format.
+    ///
+    /// UTI: org.webmproject.webp
+    /// conforms to: public.image
+    pub fn webp() -> &'static Self {
+        unsafe { UTTypeWebP }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeImage: &'static ut::Type;
+    static UTTypeJPEG: &'static ut::Type;
+    static UTTypeTIFF: &'static ut::Type;
+    static UTTypeGIF: &'static ut::Type;
+    static UTTypePNG: &'static ut::Type;
+    static UTTypeICNS: &'static ut::Type;
+    static UTTypeBMP: &'static ut::Type;
+    static UTTypeICO: &'static ut::Type;
+    static UTTypeRAWImage: &'static ut::Type;
+    static UTTypeSVG: &'static ut::Type;
+    static UTTypeLivePhoto: &'static ut::Type;
+    static UTTypeHEIF: &'static ut::Type;
+    static UTTypeHEIC: &'static ut::Type;
+    static UTTypeWebP: &'static ut::Type;
+}
+
+/// 3D Content
+impl ut::Type {
+    /// A base type for 3D content.
+    ///
+    /// UTI: public.3d-content
+    /// conforms to: public.content
+    pub fn _3d_content() -> &'static Self {
+        unsafe { UTType3DContent }
+    }
+
+    /// Universal Scene Description content.
+    ///
+    /// UTI: com.pixar.universal-scene-description
+    /// conforms to: public.3d-content, public.data
+    pub fn usd() -> &'static Self {
+        unsafe { UTTypeUSD }
+    }
+
+    /// Universal Scene Description Package content.
+    ///
+    /// UTI: com.pixar.universal-scene-description-mobile
+    /// conforms to: public.3d-content, public.data
+    pub fn usdz() -> &'static Self {
+        unsafe { UTTypeUSDZ }
+    }
+
+    /// A Reality File.
+    ///
+    /// UTI: com.apple.reality
+    /// conforms to: public.data
+    pub fn reality_file() -> &'static Self {
+        unsafe { UTTypeRealityFile }
+    }
+
+    /// A SceneKit serialized scene.
+    ///
+    /// UTI: com.apple.scenekit.scene
+    /// conforms to: public.3d-content, public.data
+    pub fn sk_scene() -> &'static Self {
+        unsafe { UTTypeSceneKitScene }
+    }
+
+    /// An AR reference object.
+    ///
+    /// UTI: com.apple.arobject
+    /// conforms to: public.data
+    pub fn ar_reference_obj() -> &'static Self {
+        unsafe { UTTypeARReferenceObject }
+    }
+
+    /// Any audio and/or video content.
+    ///
+    /// UTI: public.audiovisual-content
+    /// conforms to: public.data, public.content
+    pub fn av_content() -> &'static Self {
+        unsafe { UTTypeAudiovisualContent }
+    }
+
+    /// A media format which may contain both video and audio.
+    ///
+    /// This type corresponds to what users would label a "movie".
+    ///
+    /// UTI: public.movie
+    /// conforms to: public.audiovisual-content
+    pub fn movie() -> &'static Self {
+        unsafe { UTTypeMovie }
+    }
+
+    /// Pure video data with no audio data.
+    ///
+    /// UTI: public.video
+    /// conforms to: public.movie
+    pub fn video() -> &'static Self {
+        unsafe { UTTypeVideo }
+    }
+
+    /// Pure audio data with no video data.
+    ///
+    /// UTI: public.audio
+    /// conforms to: public.audiovisual-content
+    pub fn audio() -> &'static Self {
+        unsafe { UTTypeAudio }
+    }
+
+    /// A QuickTime movie.
+    ///
+    /// UTI: com.apple.quicktime-movie
+    /// conforms to: public.movie
+    pub fn quick_time_movie() -> &'static Self {
+        unsafe { UTTypeQuickTimeMovie }
+    }
+
+    /// An MPEG-1 or MPEG-2 movie.
+    ///
+    /// UTI: public.mpeg
+    /// conforms to: public.movie
+    pub fn mpeg() -> &'static Self {
+        unsafe { UTTypeMPEG }
+    }
+
+    /// An MPEG-2 video.
+    ///
+    /// UTI: public.mpeg-2-video
+    /// conforms to: public.video
+    pub fn mpeg2video() -> &'static Self {
+        unsafe { UTTypeMPEG2Video }
+    }
+
+    /// The MPEG-2 Transport Stream movie format.
+    ///
+    /// UTI: public.mpeg-2-transport-stream
+    /// conforms to: public.movie
+    pub fn mpeg2ts() -> &'static Self {
+        unsafe { UTTypeMPEG2TransportStream }
+    }
+
+    /// MP3 audio.
+    ///
+    /// UTI: public.mp3
+    /// conforms to: public.audio
+    pub fn mp3() -> &'static Self {
+        unsafe { UTTypeMP3 }
+    }
+
+    /// MPEG-4 movie
+    ///
+    /// UTI: public.mpeg-4
+    /// conforms to: public.movie
+    pub fn mpeg4video() -> &'static Self {
+        unsafe { UTTypeMPEG4Movie }
+    }
+
+    /// An MPEG-4 audio layer file.
+    ///
+    /// UTI: public.mpeg-4-audio
+    /// conforms to: public.mpeg-4, public.audio
+    pub fn mpeg4audio() -> &'static Self {
+        unsafe { UTTypeMPEG4Audio }
+    }
+
+    /// The Apple protected MPEG4 format (.m4p, iTunes music store format.)
+    ///
+    /// UTI: com.apple.protected-mpeg-4-audio
+    /// conforms to: public.audio
+    pub fn apple_protected_mpeg4audio() -> &'static Self {
+        unsafe { UTTypeAppleProtectedMPEG4Audio }
+    }
+
+    /// An Apple protected MPEG-4 movie.
+    ///
+    /// UTI: com.apple.protected-mpeg-4-video
+    /// conforms to: com.apple.m4v-video
+    pub fn apple_protected_mpeg4video() -> &'static Self {
+        unsafe { UTTypeAppleProtectedMPEG4Video }
+    }
+
+    /// The AVI movie format.
+    ///
+    /// UTI: public.avi
+    /// conforms to: public.movie
+    pub fn avi() -> &'static Self {
+        unsafe { UTTypeAVI }
+    }
+
+    /// The AIFF audio format
+    ///
+    /// UTI: public.aiff-audio
+    /// conforms to: public.aifc-audio
+    pub fn aiff() -> &'static Self {
+        unsafe { UTTypeAIFF }
+    }
+
+    /// The Microsoft waveform audio format (.wav).
+    ///
+    /// UTI: com.microsoft.waveform-audio
+    /// conforms to: public.audio
+    pub fn wav() -> &'static Self {
+        unsafe { UTTypeWAV }
+    }
+
+    /// The MIDI audio format.
+    ///
+    /// UTI: public.midi-audio
+    /// conforms to: public.audio
+    pub fn midi() -> &'static Self {
+        unsafe { UTTypeMIDI }
+    }
+
+    /// The base type for playlists.
+    ///
+    /// UTI: public.playlist
+    pub fn playlist() -> &'static Self {
+        unsafe { UTTypePlaylist }
+    }
+
+    /// An M3U or M3U8 playlist
+    ///
+    /// UTI: public.m3u-playlist
+    /// conforms to: public.text, public.playlist
+    pub fn m3u_playlist() -> &'static Self {
+        unsafe { UTTypeM3UPlaylist }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTType3DContent: &'static ut::Type;
+    static UTTypeUSD: &'static ut::Type;
+    static UTTypeUSDZ: &'static ut::Type;
+    static UTTypeRealityFile: &'static ut::Type;
+    static UTTypeSceneKitScene: &'static ut::Type;
+    static UTTypeARReferenceObject: &'static ut::Type;
+    static UTTypeAudiovisualContent: &'static ut::Type;
+    static UTTypeMovie: &'static ut::Type;
+    static UTTypeVideo: &'static ut::Type;
+    static UTTypeAudio: &'static ut::Type;
+    static UTTypeQuickTimeMovie: &'static ut::Type;
+    static UTTypeMPEG: &'static ut::Type;
+    static UTTypeMPEG2Video: &'static ut::Type;
+    static UTTypeMPEG2TransportStream: &'static ut::Type;
+    static UTTypeMP3: &'static ut::Type;
+    static UTTypeMPEG4Movie: &'static ut::Type;
+    static UTTypeMPEG4Audio: &'static ut::Type;
+    static UTTypeAppleProtectedMPEG4Audio: &'static ut::Type;
+    static UTTypeAppleProtectedMPEG4Video: &'static ut::Type;
+    static UTTypeAVI: &'static ut::Type;
+    static UTTypeAIFF: &'static ut::Type;
+    static UTTypeWAV: &'static ut::Type;
+    static UTTypeMIDI: &'static ut::Type;
+    static UTTypePlaylist: &'static ut::Type;
+    static UTTypeM3UPlaylist: &'static ut::Type;
+}
+
+/// Directory types
+impl ut::Type {
+    /// A user-browsable directory (i.e. not a package.)
+    ///
+    /// UTI: public.folder
+    /// conforms to: public.directory
+    pub fn folder() -> &'static Self {
+        unsafe { UTTypeFolder }
+    }
+
+    /// The root folder of a volume or mount point.
+    ///
+    /// UTI: public.volume
+    /// conforms to: public.folder
+    pub fn volume() -> &'static Self {
+        unsafe { UTTypeVolume }
+    }
+
+    /// A packaged directory.
+    ///
+    /// UTI: com.apple.package
+    /// conforms to: public.directory
+    pub fn package() -> &'static Self {
+        unsafe { UTTypePackage }
+    }
+
+    /// A directory conforming to one of the \c CFBundle layouts.
+    ///
+    /// UTI: com.apple.bundle
+    /// conforms to: public.directory
+    pub fn bundle() -> &'static Self {
+        unsafe { UTTypeBundle }
+    }
+
+    /// The base type for bundle-based plugins.
+    ///
+    /// UTI: com.apple.plugin
+    /// conforms to: com.apple.bundle, com.apple.package
+    pub fn plugin_bundle() -> &'static Self {
+        unsafe { UTTypePluginBundle }
+    }
+
+    /// A Spotlight metadata importer bundle.
+    ///
+    /// UTI: com.apple.metadata-importer
+    /// conforms to: com.apple.plugin
+    pub fn spotlight_importer() -> &'static Self {
+        unsafe { UTTypeSpotlightImporter }
+    }
+
+    /// A QuickLook preview generator bundle.
+    ///
+    /// UTI: com.apple.quicklook-generator
+    /// conforms to: com.apple.plugin
+    pub fn quick_look_generator() -> &'static Self {
+        unsafe { UTTypeQuickLookGenerator }
+    }
+
+    /// An XPC service bundle.
+    ///
+    /// UTI: com.apple.xpc-service
+    /// conforms to: com.apple.bundle, com.apple.package
+    pub fn xpc_service() -> &'static Self {
+        unsafe { UTTypeXPCService }
+    }
+
+    /// A macOS or iOS framework bundle.
+    ///
+    /// UTI: com.apple.framework
+    /// conforms to: com.apple.bundle
+    pub fn framework() -> &'static Self {
+        unsafe { UTTypeFramework }
+    }
+
+    /// The base type for macOS and iOS applications.
+    ///
+    /// UTI: com.apple.application
+    /// conforms to: public.executable
+    pub fn app() -> &'static Self {
+        unsafe { UTTypeApplication }
+    }
+
+    /// A bundled application.
+    ///
+    /// UTI: com.apple.application-bundle
+    /// conforms to: com.apple.application, com.apple.bundle, com.apple.package
+    pub fn app_bundle() -> &'static Self {
+        unsafe { UTTypeApplicationBundle }
+    }
+
+    /// An application extension (.appex).
+    ///
+    /// UTI: com.apple.application-and-system-extension
+    /// conforms to: com.apple.xpc-service
+    pub fn appex() -> &'static Self {
+        unsafe { UTTypeApplicationExtension }
+    }
+
+    /// A UNIX executable (flat file.)
+    ///
+    /// UTI: public.unix-executable
+    /// conforms to: public.data, public.executable
+    pub fn unix_executable() -> &'static Self {
+        unsafe { UTTypeUnixExecutable }
+    }
+
+    /// A Windows executable (.exe).
+    ///
+    /// UTI: com.microsoft.windows-executable
+    /// conforms to: public.data, public.executable
+    pub fn exe() -> &'static Self {
+        unsafe { UTTypeEXE }
+    }
+
+    /// A System Preferences pane.
+    ///
+    /// UTI: com.apple.systempreference.prefpane
+    /// conforms to: com.apple.package, com.apple.bundle
+    pub fn sys_pref_pane() -> &'static Self {
+        unsafe { UTTypeSystemPreferencesPane }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeFolder: &'static ut::Type;
+    static UTTypeVolume: &'static ut::Type;
+    static UTTypePackage: &'static ut::Type;
+    static UTTypeBundle: &'static ut::Type;
+    static UTTypePluginBundle: &'static ut::Type;
+    static UTTypeSpotlightImporter: &'static ut::Type;
+    static UTTypeQuickLookGenerator: &'static ut::Type;
+    static UTTypeXPCService: &'static ut::Type;
+    static UTTypeFramework: &'static ut::Type;
+    static UTTypeApplication: &'static ut::Type;
+    static UTTypeApplicationBundle: &'static ut::Type;
+    static UTTypeApplicationExtension: &'static ut::Type;
+    static UTTypeUnixExecutable: &'static ut::Type;
+    static UTTypeEXE: &'static ut::Type;
+    static UTTypeSystemPreferencesPane: &'static ut::Type;
+}
+
+/// Archival and compression types
+impl ut::Type {
+    /// An archive of files and directories
+    ///
+    /// UTI: public.archive
+    pub fn archive() -> &'static Self {
+        unsafe { UTTypeArchive }
+    }
+
+    /// A GNU zip archive.
+    ///
+    /// UTI: org.gnu.gnu-zip-archive
+    /// conforms to: public.data, public.archive
+    pub fn gzip() -> &'static Self {
+        unsafe { UTTypeGZIP }
+    }
+
+    /// A bzip2 archive.
+    ///
+    /// UTI: public.bzip2-archive
+    /// conforms to: public.data, public.archive
+    pub fn bz2() -> &'static Self {
+        unsafe { UTTypeBZ2 }
+    }
+
+    /// A zip archive.
+    ///
+    /// UTI: public.zip-archive
+    /// conforms to: com.pkware.zip-archive
+    pub fn zip() -> &'static Self {
+        unsafe { UTTypeZIP }
+    }
+
+    /// An Apple Archive.
+    ///
+    /// UTI: com.apple.archive
+    /// conforms to: public.data, public.archive
+    pub fn apple_archive() -> &'static Self {
+        unsafe { UTTypeAppleArchive }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeArchive: &'static ut::Type;
+    static UTTypeGZIP: &'static ut::Type;
+    static UTTypeBZ2: &'static ut::Type;
+    static UTTypeZIP: &'static ut::Type;
+    static UTTypeAppleArchive: &'static ut::Type;
+}
+
+/// Document types
+impl ut::Type {
+    /// A base type for spreadsheet documents.
+    ///
+    /// UTI: public.spreadsheet
+    /// conforms to: public.content
+    pub fn spreadsheet() -> &'static Self {
+        unsafe { UTTypeSpreadsheet }
+    }
+
+    /// A base type for presentation documents.
+    ///
+    /// UTI: public.presentation
+    /// conforms to: public.composite-content
+    pub fn presentation() -> &'static Self {
+        unsafe { UTTypePresentation }
+    }
+
+    /// A database store.
+    ///
+    /// UTI: public.database
+    pub fn database() -> &'static Self {
+        unsafe { UTTypeDatabase }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeSpreadsheet: &'static ut::Type;
+    static UTTypePresentation: &'static ut::Type;
+    static UTTypeDatabase: &'static ut::Type;
+}
+
+/// Messages, contacts, and calendar types
+impl ut::Type {
+    /// A base type for messages (email, IM, etc.)
+    ///
+    /// UTI: public.message
+    pub fn message() -> &'static Self {
+        unsafe { UTTypeMessage }
+    }
+
+    /// Contact information, e.g. for a person, group, organization
+    ///
+    /// UTI: public.contact
+    pub fn contact() -> &'static Self {
+        unsafe { UTTypeContact }
+    }
+
+    /// A vCard file.
+    ///
+    /// UTI: public.vcard
+    /// conforms to: public.text, public.contact
+    pub fn v_card() -> &'static Self {
+        unsafe { UTTypeVCard }
+    }
+
+    /// A to-do item.
+    ///
+    /// UTI: public.to-do-item
+    pub fn todo_item() -> &'static Self {
+        unsafe { UTTypeToDoItem }
+    }
+
+    /// A calendar event.
+    ///
+    /// UTI: public.calendar-event
+    pub fn calendar_event() -> &'static Self {
+        unsafe { UTTypeCalendarEvent }
+    }
+
+    /// An e-mail message.
+    ///
+    /// UTI: public.email-message
+    /// conforms to: public.message
+    pub fn email_message() -> &'static Self {
+        unsafe { UTTypeEmailMessage }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeMessage: &'static ut::Type;
+    static UTTypeContact: &'static ut::Type;
+    static UTTypeVCard: &'static ut::Type;
+    static UTTypeToDoItem: &'static ut::Type;
+    static UTTypeCalendarEvent: &'static ut::Type;
+    static UTTypeEmailMessage: &'static ut::Type;
+}
+
+/// Internet locations
+impl ut::Type {
+    /// A base type for Apple Internet location files.
+    ///
+    /// UTI: com.apple.internet-location
+    /// conforms to: public.data
+    pub fn internet_location() -> &'static Self {
+        unsafe { UTTypeInternetLocation }
+    }
+
+    /// Microsoft Internet shortcut files (.url).
+    ///
+    /// UTI: com.apple.internet-location
+    /// conforms to: public.data
+    pub fn internet_shortcut() -> &'static Self {
+        unsafe { UTTypeInternetShortcut }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeInternetLocation: &'static ut::Type;
+    static UTTypeInternetShortcut: &'static ut::Type;
+}
+
+/// Miscellaneous types
+impl ut::Type {
+    /// A base type for fonts.
+    ///
+    /// UTI: public.font
+    pub fn font() -> &'static Self {
+        unsafe { UTTypeFont }
+    }
+
+    /// A bookmark.
+    ///
+    /// UTI: public.bookmark
+    pub fn bookmark() -> &'static Self {
+        unsafe { UTTypeBookmark }
+    }
+
+    /// PKCS#12 data.
+    ///
+    /// UTI: com.rsa.pkcs-12
+    /// conforms to: public.data
+    pub fn pkcs12() -> &'static Self {
+        unsafe { UTTypePKCS12 }
+    }
+
+    /// An X.509 certificate.
+    ///
+    /// UTI: public.x509-certificate
+    /// conforms to: public.data
+    pub fn x509cert() -> &'static Self {
+        unsafe { UTTypeX509Certificate }
+    }
+
+    /// The EPUB format.
+    ///
+    /// UTI: org.idpf.epub-container
+    /// conforms to: public.data, public.composite-content
+    pub fn epub() -> &'static Self {
+        unsafe { UTTypeEPUB }
+    }
+
+    /// A base type for console logs.
+    ///
+    /// UTI: public.log
+    pub fn log() -> &'static Self {
+        unsafe { UTTypeLog }
+    }
+
+    /// An Apple Haptics Audio Pattern file.
+    ///
+    /// UTI: com.apple.haptics.ahap
+    pub fn ahap() -> &'static Self {
+        unsafe { UTTypeAHAP }
+    }
+}
+
+#[link(name = "UniformTypeIdentifiers", kind = "framework")]
+extern "C" {
+    static UTTypeFont: &'static ut::Type;
+    static UTTypeBookmark: &'static ut::Type;
+    static UTTypePKCS12: &'static ut::Type;
+    static UTTypeX509Certificate: &'static ut::Type;
+    static UTTypeEPUB: &'static ut::Type;
+    static UTTypeLog: &'static ut::Type;
+    static UTTypeAHAP: &'static ut::Type;
+}
