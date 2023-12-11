@@ -42,6 +42,7 @@ full = [
   "vn",
   "sn",
   "ui",
+  "ut",
   "io",
   "nw",
   "core_motion",
@@ -59,7 +60,7 @@ simd = []
 app = ["ns"]
 am = ["private", "cf", "dep:tokio"]
 at = ["cf", "cat"]
-av = ["ns"]
+av = ["ns", "ut"]
 ca = ["ns"]
 sc = ["ns"]
 cm = ["cf"] # optional cv, cat
@@ -76,6 +77,7 @@ sn = ["ns"]
 vn = ["ns"]
 nw = ["ns", "dispatch"]
 ui = ["ns"]
+ut = ["ns"]
 ct = ["cf", "cg"]
 mtl = ["ns"]
 mlc = ["mtl"]

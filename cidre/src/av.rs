@@ -90,6 +90,11 @@ pub use asset::UrlAsset;
 pub use asset::WriterInput as AssetWriterInput;
 pub use asset::WriterStatus as AssetWriterStatus;
 
+pub use asset::SegmentReport as AssetSegmentReport;
+pub use asset::SegmentReportSampleInfo as AssetSegmentReportSampleInfo;
+pub use asset::SegmentTrackReport as AssetSegmentTrackReport;
+pub use asset::SegmentType as AssetSegmentType;
+
 pub mod audio;
 pub use audio::Buf as AudioBuf;
 pub use audio::CommonFormat as AudioCommonFormat;

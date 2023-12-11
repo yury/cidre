@@ -1,6 +1,6 @@
 use std::intrinsics::transmute;
 
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc, ut};
 
 use super::WriterInput;
 
@@ -29,6 +29,9 @@ impl arc::A<Writer> {
         file_type: &av::FileType,
         error: &mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Writer>>;
+
+    #[objc::msg_send(initWithContentType:)]
+    pub fn init_with_content_type(self, output_content_type: &ut::Type) -> arc::R<Writer>;
 }
 
 impl Writer {
@@ -50,8 +53,9 @@ impl Writer {
         ns::try_catch(|| self.add_input_throws(input))
     }
 
+    /// Prepares the receiver for accepting input and for writing its output to its output file.
     #[objc::msg_send(startWriting)]
-    pub fn start_writing(&mut self);
+    pub fn start_writing(&mut self) -> bool;
 
     #[objc::msg_send(startSessionAtSourceTime:)]
     pub fn start_session_at_source_time(&mut self, start_time: cm::Time);
@@ -91,6 +95,75 @@ impl Writer {
             }
         }
     }
+}
+
+/// AVAssetWriterSegmentation
+impl Writer {
+    #[objc::msg_send(preferredOutputSegmentInterval)]
+    pub fn preferred_output_segment_interval(&self) -> cm::Time;
+
+    /// Specifies preferred segment interval.
+    #[objc::msg_send(setPreferredOutputSegmentInterval:)]
+    pub fn set_preferred_output_segment_interval(&mut self, val: cm::Time);
+
+    #[objc::msg_send(initialSegmentStartTime)]
+    pub fn initial_segment_start_time(&self) -> cm::Time;
+
+    /// Specifies start time of initial segment.
+    ///
+    /// A numeric time must be set if the value of preferredOutputSegmentInterval property
+    /// is positive numeric. If not, this property is irrelevant.
+    ///
+    /// This property cannot be set after writing has started.
+    /// TODO: check throws
+    #[objc::msg_send(setInitialSegmentStartTime:)]
+    pub fn set_initial_segment_start_time(&mut self, val: cm::Time);
+
+    #[objc::msg_send(outputFileTypeProfile)]
+    pub fn output_file_type_profile(&self) -> Option<&av::FileTypeProfile>;
+
+    /// TODO: check throws
+    #[objc::msg_send(setOutputFileTypeProfile:)]
+    pub fn set_output_file_type_profile(&mut self, val: Option<&av::FileTypeProfile>);
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<&ns::Id>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
+
+    /// This method throws an exception if the delegate method to output segment data is not implemented,
+    /// or if the value of the preferredOutputSegmentInterval property is not kCMTimeIndefinite.
+    #[objc::msg_send(flushSegment)]
+    pub unsafe fn flush_segment_throws(&mut self);
+
+    /// Closes the current segment and outputs it to the -assetWriter:didOutputSegmentData:segmentType:segmentReport:
+    /// or -assetWriter:didOutputSegmentData:segmentType: delegate method.
+    pub fn flush_segment<'ar>(&mut self) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.flush_segment_throws() })
+    }
+}
+
+#[objc::obj_trait]
+pub trait Delegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(assetWriter:didOutputSegmentData:segmentType:segmentReport:)]
+    fn asset_writer_did_output_segment_data_with_report(
+        &mut self,
+        writer: &av::AssetWriter,
+        segment_data: &ns::Data,
+        segment_type: av::AssetSegmentType,
+        segment_report: Option<&av::AssetSegmentReport>,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(assetWriter:didOutputSegmentData:segmentType:)]
+    fn asset_writer_did_output_segment_data(
+        &mut self,
+        writer: &av::AssetWriter,
+        segment_data: &ns::Data,
+        segment_type: av::AssetSegmentType,
+    );
 }
 
 #[link(name = "av", kind = "static")]

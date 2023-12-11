@@ -20,6 +20,8 @@ pub use reader_output::ReaderTrackOutput;
 pub use reader_output::ReaderVideoCompositionOutput;
 
 pub mod writer;
+pub use writer::Delegate as AssetWriterDelegate;
+pub use writer::DelegateImpl as AssetWriterDelegateImpl;
 pub use writer::Status as WriterStatus;
 pub use writer::Writer as AssetWriter;
 
@@ -29,6 +31,12 @@ pub use writer_input::WriterInput;
 pub mod track;
 pub use track::FragmentedTrack;
 pub use track::Track;
+
+pub mod segment_report;
+pub use segment_report::SampleInfo as SegmentReportSampleInfo;
+pub use segment_report::SegmentReport;
+pub use segment_report::SegmentType;
+pub use segment_report::TrackReport as SegmentTrackReport;
 
 define_obj_type!(pub Asset(ns::Id));
 define_obj_type!(pub UrlAsset(Asset));

@@ -97,6 +97,7 @@ fn main() {
     };
 
     xc_feature_build("vn", sdk, arch, configuration);
+    xc_feature_build("ut", sdk, arch, configuration);
     xc_feature_build("sn", sdk, arch, configuration);
     xc_feature_build("mps", sdk, arch, configuration);
     xc_feature_build("mpsg", sdk, arch, configuration);

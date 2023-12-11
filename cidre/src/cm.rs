@@ -1,6 +1,7 @@
 mod base;
 pub use base::ItemCount;
 pub use base::ItemIndex;
+pub use base::PersistentTrackId;
 
 mod format_description;
 pub use format_description::AudioFormatDesc;

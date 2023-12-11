@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-#include "../macro.h"
+//#include "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

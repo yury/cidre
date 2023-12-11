@@ -111,6 +111,8 @@ pub mod cat;
 ))]
 pub mod ui;
 
+pub mod ut;
+
 pub mod time;
 
 pub mod dns_sd;
