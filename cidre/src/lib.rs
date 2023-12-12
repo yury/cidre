@@ -111,6 +111,8 @@ pub mod cat;
 ))]
 pub mod ui;
 
+/// UniformTypeIdentifiers
+#[cfg(feature = "ut")]
 pub mod ut;
 
 pub mod time;

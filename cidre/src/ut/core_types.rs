@@ -990,7 +990,7 @@ impl ut::Type {
     /// conforms to: public.movie
     #[doc(alias = "UTTypeMPEG4Movie")]
     #[inline]
-    pub fn mpeg4video() -> &'static Self {
+    pub fn mpeg4movie() -> &'static Self {
         unsafe { UTTypeMPEG4Movie }
     }
 

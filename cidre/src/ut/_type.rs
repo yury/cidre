@@ -32,7 +32,7 @@ impl Type {
     pub fn preferred_mime_type(&self) -> Option<&ns::String>;
 
     #[objc::msg_send(localizedDescription)]
-    pub fn localized_description(&self) -> Option<&ns::String>;
+    pub fn localized_desc(&self) -> Option<&ns::String>;
 
     #[objc::msg_send(version)]
     pub fn version(&self) -> Option<&ns::String>;

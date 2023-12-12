@@ -122,13 +122,6 @@ required-features = ["am"]
 name = "am-device-mount-dev-image"
 required-features = ["am"]
 
-[[example]]
-name = "at-audio"
-
-[[example]]
-name = "wk-web-view"
-required-features = ["wk"]
-
 [lib]
 # proc-macro = true
 #crate-type = ["staticlib", "rlib"]

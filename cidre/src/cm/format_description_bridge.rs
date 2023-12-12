@@ -57,7 +57,7 @@ impl ImageDescFlavor {
 
 impl cm::VideoFormatDesc {
     /// Copies the contents of a cm::VideoFormatDescription to a cm::BlockBuffer in big-endian byte ordering.
-    pub fn as_be_image_desc_cm_buffer_in(
+    pub fn as_be_image_desc_cm_buf_in(
         &self,
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
@@ -76,19 +76,14 @@ impl cm::VideoFormatDesc {
         }
     }
 
-    pub fn as_be_image_desc_cm_buffer(
+    pub fn as_be_image_desc_cm_buf(
         &self,
         flavor: Option<&ImageDescFlavor>,
     ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
-        Self::as_be_image_desc_cm_buffer_in(
-            self,
-            cf::StringEncoding::system_encoding(),
-            flavor,
-            None,
-        )
+        Self::as_be_image_desc_cm_buf_in(self, cf::StringEncoding::system_encoding(), flavor, None)
     }
 
-    pub fn from_be_image_desc_buffer_in(
+    pub fn from_be_image_desc_buf_in(
         image_description_block_buffer: &cm::BlockBuf,
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
@@ -107,11 +102,11 @@ impl cm::VideoFormatDesc {
         }
     }
 
-    pub fn from_be_image_desc_buffer(
+    pub fn from_be_image_desc_buf(
         image_description_block_buffer: &cm::BlockBuf,
         flavor: Option<&ImageDescFlavor>,
     ) -> Result<arc::R<Self>, os::Status> {
-        Self::from_be_image_desc_buffer_in(
+        Self::from_be_image_desc_buf_in(
             image_description_block_buffer,
             cf::StringEncoding::system_encoding(),
             flavor,
@@ -207,7 +202,7 @@ impl cm::AudioFormatDesc {
     /// Note that the dataRefIndex field of the SampleDescription is intentionally filled with
     /// garbage values (0xFFFF).  The caller must overwrite these values with a valid dataRefIndex
     /// if writing the SampleDescription to a QuickTime/ISO file.
-    pub fn as_be_sound_desc_cm_buffer_in(
+    pub fn as_be_sound_desc_cm_buf_in(
         &self,
         flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
@@ -224,11 +219,11 @@ impl cm::AudioFormatDesc {
         }
     }
 
-    pub fn as_be_sound_desc_cm_buffer(
+    pub fn as_be_sound_desc_cm_buf(
         &self,
         flavor: Option<&SoundDescFlavor>,
     ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
-        Self::as_be_sound_desc_cm_buffer_in(self, flavor, None)
+        Self::as_be_sound_desc_cm_buf_in(self, flavor, None)
     }
 
     pub fn from_be_sound_desc_data_in(
@@ -257,7 +252,7 @@ impl cm::AudioFormatDesc {
         Self::from_be_sound_desc_data_in(data, flavor, None)
     }
 
-    pub fn from_be_sound_desc_buffer_in(
+    pub fn from_be_sound_desc_buf_in(
         buffer: &cm::BlockBuf,
         flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
@@ -275,11 +270,11 @@ impl cm::AudioFormatDesc {
     }
 
     #[inline]
-    pub fn from_be_sound_desc_buffer(
+    pub fn from_be_sound_desc_buf(
         buffer: &cm::BlockBuf,
         flavor: Option<&SoundDescFlavor>,
     ) -> Result<arc::R<Self>, os::Status> {
-        Self::from_be_sound_desc_buffer_in(buffer, flavor, None)
+        Self::from_be_sound_desc_buf_in(buffer, flavor, None)
     }
 }
 

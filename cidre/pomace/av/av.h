@@ -37,6 +37,8 @@ Class AV_ASSET_READER;
 Class AV_ASSET_WRITER_INPUT;
 Class AV_ASSET_READER_TRACK_OUTPUT;
 
+Class AV_OUTPUT_SETTINGS_ASSISTANT;
+
 Class AV_AUDIO_TIME;
 
 Class AV_AUDIO_UNIT_EQ;
@@ -77,6 +79,9 @@ static void av_initializer(void)
         AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
         AV_CAPTURE_METADATA_INPUT = [AVCaptureMetadataInput class];
 #endif
+        
+        AV_OUTPUT_SETTINGS_ASSISTANT = [AVOutputSettingsAssistant class];
+        
         AV_AUDIO_PLAYER_NODE = [AVAudioPlayerNode class];
         
         AV_AUDIO_ENGINE = [AVAudioEngine class];

@@ -119,13 +119,13 @@ impl WriterInput {
     ///
     /// This method throws an exception if the sample buffer's media type does not match the asset writer input's media type.
     #[objc::msg_send(appendSampleBuffer:)]
-    pub fn append_sample_buffer_throws(&mut self, buffer: &cm::SampleBuf) -> bool;
+    pub unsafe fn append_sample_buf_throws(&mut self, buffer: &cm::SampleBuf) -> bool;
 
-    pub fn append_sample_buffer<'ar>(
+    pub fn append_sample_buf<'ar>(
         &mut self,
         buffer: &cm::SampleBuf,
     ) -> Result<bool, &'ar ns::Exception> {
-        try_catch(|| self.append_sample_buffer_throws(buffer))
+        try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
     }
 
     #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]

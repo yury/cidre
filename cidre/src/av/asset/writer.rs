@@ -31,7 +31,10 @@ impl arc::A<Writer> {
     ) -> Option<arc::R<Writer>>;
 
     #[objc::msg_send(initWithContentType:)]
-    pub fn init_with_content_type(self, output_content_type: &ut::Type) -> arc::R<Writer>;
+    pub unsafe fn init_with_content_type_throws(
+        self,
+        output_content_type: &ut::Type,
+    ) -> arc::R<Writer>;
 }
 
 impl Writer {
@@ -69,6 +72,9 @@ impl Writer {
     #[objc::msg_send(cancelWriting)]
     pub fn cancel_writing(&mut self);
 
+    #[objc::msg_send(status)]
+    pub fn status(&self) -> Status;
+
     #[objc::msg_send(error)]
     pub fn error(&self) -> Option<&ns::Error>;
 
@@ -85,7 +91,7 @@ impl Writer {
     pub fn with_url_and_file_type<'ar>(
         url: &ns::Url,
         file_type: &av::FileType,
-    ) -> Result<arc::R<Writer>, &'ar ns::Error> {
+    ) -> Result<arc::R<Self>, &'ar ns::Error> {
         let mut error = None;
         unsafe {
             let res = Self::alloc().init_with_url_file_type_err(url, file_type, &mut error);
@@ -94,6 +100,14 @@ impl Writer {
                 Some(e) => Err(e),
             }
         }
+    }
+
+    pub fn with_content_type<'ar>(
+        output_content_type: &ut::Type,
+    ) -> Result<arc::R<Self>, &'ar ns::Exception> {
+        ns::try_catch(|| unsafe {
+            Self::alloc().init_with_content_type_throws(output_content_type)
+        })
     }
 }
 
@@ -173,6 +187,8 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use crate::ut;
+
     #[test]
     fn basics() {
         use crate::{av, ns};
@@ -180,5 +196,9 @@ mod tests {
 
         let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
         assert_eq!(writer.inputs().len(), 0);
+
+        av::AssetWriter::with_content_type(&ut::Type::pdf())
+            .expect_err("Can't create writer for pdf");
+        av::AssetWriter::with_content_type(&ut::Type::mpeg4movie()).expect("Can't create viedeo");
     }
 }

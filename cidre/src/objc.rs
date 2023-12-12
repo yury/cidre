@@ -298,6 +298,7 @@ macro_rules! define_obj_type {
         );
 
         impl $NewType {
+            #[allow(dead_code)]
             #[inline]
             pub fn inner(&self) -> &$InnerType {
                 unsafe {
@@ -307,6 +308,7 @@ macro_rules! define_obj_type {
                 }
             }
 
+            #[allow(dead_code)]
             #[inline]
             pub fn inner_mut(&mut self) -> &mut $InnerType {
                 unsafe {
@@ -316,6 +318,7 @@ macro_rules! define_obj_type {
                 }
             }
 
+            #[allow(dead_code)]
             pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
                 let name = concat!(stringify!($CLS), "\0");
                 let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
@@ -337,6 +340,7 @@ macro_rules! define_obj_type {
                 unsafe { std::mem::transmute(cls) }
             }
 
+            #[allow(dead_code)]
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
                 let name = concat!(stringify!($CLS), "\0");
                 let cls = unsafe { $crate::objc::objc_getClass(name.as_ptr()) };
@@ -346,6 +350,7 @@ macro_rules! define_obj_type {
                 }
             }
 
+            #[allow(dead_code)]
             pub fn with(inner: $InnerType) -> $crate::arc::R<Self> {
                 unsafe { Self::cls().alloc_init(inner).unwrap_unchecked() }
             }
@@ -382,6 +387,7 @@ macro_rules! define_obj_type {
         }
 
         impl $NewType {
+            #[allow(dead_code)]
             #[inline]
             pub fn retained(&self) -> $crate::arc::R<Self> {
                 unsafe { $crate::objc::Obj::retain(self) }

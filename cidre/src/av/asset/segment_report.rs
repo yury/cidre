@@ -1,5 +1,6 @@
 use crate::{av, cm, define_obj_type, ns, objc};
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[doc(alias = "AVAssetSegmentType")]
 #[repr(isize)]
 pub enum SegmentType {
@@ -24,7 +25,7 @@ impl SegmentReport {
     pub fn segment_type(&self) -> SegmentType;
 
     #[objc::msg_send(trackReports)]
-    pub fn track_reports(&self) -> ns::Array<TrackReport>;
+    pub fn track_reports(&self) -> &ns::Array<TrackReport>;
 }
 
 define_obj_type!(

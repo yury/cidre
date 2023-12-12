@@ -78,6 +78,8 @@ pub mod asset;
 pub use asset::Asset;
 pub use asset::AssetCache;
 pub use asset::AssetWriter;
+pub use asset::AssetWriterDelegate;
+pub use asset::AssetWriterDelegateImpl;
 pub use asset::FragmentedAsset;
 pub use asset::FragmentedAssetMinder;
 pub use asset::FragmentedTrack as FragmentedAssetTrack;
@@ -134,5 +136,9 @@ pub use sample_buffer::DisplayLayer as SampleBufDisplayLayer;
 pub use sample_buffer::QueuedSampleBufRendering;
 pub use sample_buffer::QueuedSampleBufRenderingStatus;
 pub use sample_buffer::VideoRenderer as SampleBufVideoRenderer;
+
+pub mod output_settings_assistant;
+pub use output_settings_assistant::OutputSettingsAssistant;
+pub use output_settings_assistant::OutputSettingsPreset;
 
 mod time;
