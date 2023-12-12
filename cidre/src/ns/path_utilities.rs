@@ -175,7 +175,7 @@ impl SearchPathDomainMask {
 }
 
 #[inline]
-pub fn search_path_for_dirs_in_domains_ar<'ar>(
+pub fn search_path_for_dirs_in_domains_ar(
     directory: SearchPathDirectory,
     domain_mask: SearchPathDomainMask,
     expand_tilde: bool,

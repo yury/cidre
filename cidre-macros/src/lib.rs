@@ -617,26 +617,24 @@ fn gen_msg_send(
                 "sig(Self::cls() as *const _ as *const std::ffi::c_void",
                 1,
             );
+        } else if fn_args_count == 0 {
+            fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
         } else {
-            if fn_args_count == 0 {
-                fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
-                call_args = call_args.replacen(
-                    "sig(self",
-                    "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-                    1,
-                );
-            } else {
-                fn_args = fn_args.replacen(
-                    "(id:",
-                    "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
-                    1,
-                );
-                call_args = call_args.replacen(
-                    "sig(self",
-                    "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-                    1,
-                );
-            }
+            fn_args = fn_args.replacen(
+                "(id:",
+                "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
+                1,
+            );
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
         }
     }
 
@@ -661,10 +659,9 @@ fn gen_msg_send(
                 "
             )
         }
-    } else {
-        if x86_64 {
-            format!(
-                "
+    } else if x86_64 {
+        format!(
+            "
 
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
@@ -684,10 +681,10 @@ fn gen_msg_send(
         }}
     }}
             "
-            )
-        } else {
-            format!(
-                "
+        )
+    } else {
+        format!(
+            "
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
         extern \"C\" {{
@@ -703,8 +700,7 @@ fn gen_msg_send(
         }}
     }}
             "
-            )
-        }
+        )
     };
     if debug {
         println!("{flow}");
