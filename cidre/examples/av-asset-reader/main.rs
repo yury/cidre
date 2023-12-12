@@ -24,7 +24,7 @@ async fn main() {
     output.set_always_copies_sample_data(false);
 
     let mut reader = av::AssetReader::with_asset(&asset).unwrap();
-    reader.add_output_throws(&output);
+    reader.add_output(&output).unwrap();
     let true = reader.start_reading() else {
         println!("error: {:?}", reader.error());
         println!("status: {:?}", reader.status());

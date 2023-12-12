@@ -154,7 +154,7 @@ fn write(
 
     let mut block = blocks::mut0(move || {
         while inp.is_ready_for_more_media_data() {
-            inp.append_sample_buffer_throws(&buf);
+            unsafe { inp.append_sample_buf_throws(&buf) };
             let Some(b) = out.copy_next_sample_buffer_throws() else {
                 inp.mark_as_finished();
                 sem.signal();

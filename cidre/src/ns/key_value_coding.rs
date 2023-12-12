@@ -2,27 +2,27 @@ use crate::{arc, ns, objc};
 
 impl ns::Id {
     #[objc::msg_send(valueForKey:)]
-    pub fn value_for_key_throws_ar(&self, key: &ns::String) -> Option<arc::Rar<Self>>;
+    pub unsafe fn value_for_key_throws_ar(&self, key: &ns::String) -> Option<arc::Rar<Self>>;
 
     #[objc::rar_retain]
-    pub fn value_for_key_throws(&self, key: &ns::String) -> Option<arc::R<Self>>;
+    pub unsafe fn value_for_key_throws(&self, key: &ns::String) -> Option<arc::R<Self>>;
 
     pub fn value_for_key<'ar>(
         &self,
         key: &ns::String,
     ) -> Result<Option<arc::R<Self>>, &'ar ns::Exception> {
-        ns::try_catch(|| self.value_for_key_throws(key))
+        ns::try_catch(|| unsafe { self.value_for_key_throws(key) })
     }
 
     #[objc::msg_send(setValue:forKey:)]
-    pub fn set_value_for_key_throws(&mut self, val: Option<&Self>, key: &ns::String);
+    pub unsafe fn set_value_for_key_throws(&mut self, val: Option<&Self>, key: &ns::String);
 
     pub fn set_value_for_key<'ar>(
         &mut self,
         val: Option<&Self>,
         key: &ns::String,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| self.set_value_for_key_throws(val, key))
+        ns::try_catch(|| unsafe { self.set_value_for_key_throws(val, key) })
     }
 
     #[objc::msg_send(valueForKeyPath:)]
@@ -39,14 +39,18 @@ impl ns::Id {
     }
 
     #[objc::msg_send(setValue:forKeyPath:)]
-    pub fn set_value_for_key_path_throws(&mut self, val: Option<&Self>, key_path: &ns::String);
+    pub unsafe fn set_value_for_key_path_throws(
+        &mut self,
+        val: Option<&Self>,
+        key_path: &ns::String,
+    );
 
     pub fn set_value_for_key_path<'ar>(
         &mut self,
         val: Option<&Self>,
         key_path: &ns::String,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| self.set_value_for_key_path_throws(val, key_path))
+        ns::try_catch(|| unsafe { self.set_value_for_key_path_throws(val, key_path) })
     }
 }
 

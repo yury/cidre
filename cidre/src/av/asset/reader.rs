@@ -41,14 +41,14 @@ impl Reader {
     }
 
     #[objc::msg_send(addOutput:)]
-    pub fn add_output_throws(&mut self, output: &av::AssetReaderOutput);
+    pub unsafe fn add_output_throws(&mut self, output: &av::AssetReaderOutput);
 
     #[inline]
     pub fn add_output<'ar>(
         &mut self,
         output: &av::AssetReaderOutput,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| self.add_output_throws(output))
+        ns::try_catch(|| unsafe { self.add_output_throws(output) })
     }
 
     /// Prepares the receiver for reading sample buffers from the asset.

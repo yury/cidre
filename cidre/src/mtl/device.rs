@@ -352,7 +352,7 @@ impl Device {
     /// Returns the minimum alignment required for offset and rowBytes when creating a linear texture.
     /// An error is thrown for queries with invalid pixel formats (depth, stencil, or compressed formats).
     #[objc::msg_send(minimumLinearTextureAlignmentForPixelFormat:)]
-    pub fn min_linear_texture_alignment_for_pixel_format_throws(
+    pub unsafe fn min_linear_texture_alignment_for_pixel_format_throws(
         &self,
         format: mtl::PixelFormat,
     ) -> usize;
@@ -361,7 +361,9 @@ impl Device {
         &self,
         format: mtl::PixelFormat,
     ) -> Result<usize, &'ar ns::Exception> {
-        ns::try_catch(|| self.min_linear_texture_alignment_for_pixel_format_throws(format))
+        ns::try_catch(|| unsafe {
+            self.min_linear_texture_alignment_for_pixel_format_throws(format)
+        })
     }
 
     #[objc::msg_send(minimumTextureBufferAlignmentForPixelFormat:)]

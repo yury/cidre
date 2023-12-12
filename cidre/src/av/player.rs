@@ -50,7 +50,7 @@ impl arc::A<Player> {
     #[objc::msg_send(initWithURL:)]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<Player>;
     #[objc::msg_send(initWithPlayerItem:)]
-    pub fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
+    pub unsafe fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
 }
 
 impl Player {
@@ -60,14 +60,14 @@ impl Player {
         Self::alloc().init_with_url(url)
     }
 
-    pub fn with_player_item_throws(item: Option<&PlayerItem>) -> arc::R<Self> {
+    pub unsafe fn with_player_item_throws(item: Option<&PlayerItem>) -> arc::R<Self> {
         Self::alloc().init_with_player_item_throws(item)
     }
 
     pub fn with_player_item<'ar>(
         item: Option<&PlayerItem>,
     ) -> Result<arc::R<Self>, &'ar ns::Exception> {
-        ns::try_catch(|| Self::with_player_item_throws(item))
+        ns::try_catch(|| unsafe { Self::with_player_item_throws(item) })
     }
 
     #[objc::msg_send(status)]

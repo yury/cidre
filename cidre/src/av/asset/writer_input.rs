@@ -11,7 +11,7 @@ define_obj_type!(pub WriterInput(ns::Id));
 
 impl arc::A<WriterInput> {
     #[objc::msg_send(initWithMediaType:outputSettings:)]
-    pub fn init_media_type_output_settings_throws(
+    pub unsafe fn init_media_type_output_settings_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -29,7 +29,7 @@ impl arc::A<WriterInput> {
 impl WriterInput {
     define_cls!(AV_ASSET_WRITER_INPUT);
 
-    pub fn with_media_type_output_settings_throws(
+    pub unsafe fn with_media_type_output_settings_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput> {
@@ -40,7 +40,7 @@ impl WriterInput {
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
-        try_catch(|| {
+        try_catch(|| unsafe {
             Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
         })
     }
@@ -82,8 +82,14 @@ impl WriterInput {
         )
     }
 
-    pub fn with_media_type(media_type: &MediaType) -> arc::R<WriterInput> {
+    pub unsafe fn with_media_type_throws(media_type: &MediaType) -> arc::R<WriterInput> {
         Self::with_media_type_output_settings_throws(media_type, None)
+    }
+
+    pub fn with_media_type<'ar>(
+        media_type: &MediaType,
+    ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { Self::with_media_type_throws(media_type) })
     }
 
     #[objc::msg_send(mediaType)]
@@ -148,15 +154,16 @@ mod tests {
 
     #[test]
     fn basics() {
-        let input = av::asset::WriterInput::with_media_type(av::MediaType::video());
+        let input = av::asset::WriterInput::with_media_type(av::MediaType::video())
+            .expect("failed to create writer");
         assert_eq!(input.media_type(), av::MediaType::video());
-        av::asset::WriterInput::with_media_type(av::MediaType::muxed());
-        av::asset::WriterInput::with_media_type(av::MediaType::audio());
-        av::asset::WriterInput::with_media_type(av::MediaType::text());
-        av::asset::WriterInput::with_media_type(av::MediaType::closed_caption());
-        av::asset::WriterInput::with_media_type(av::MediaType::subtitle());
-        av::asset::WriterInput::with_media_type(av::MediaType::depth_data());
-        let input = av::asset::WriterInput::with_media_type(av::MediaType::timecode());
+        av::asset::WriterInput::with_media_type(av::MediaType::muxed()).unwrap();
+        av::asset::WriterInput::with_media_type(av::MediaType::audio()).unwrap();
+        av::asset::WriterInput::with_media_type(av::MediaType::text()).unwrap();
+        av::asset::WriterInput::with_media_type(av::MediaType::closed_caption()).unwrap();
+        av::asset::WriterInput::with_media_type(av::MediaType::subtitle()).unwrap();
+        av::asset::WriterInput::with_media_type(av::MediaType::depth_data()).unwrap();
+        let input = av::asset::WriterInput::with_media_type(av::MediaType::timecode()).unwrap();
         println!("{:?}", input);
     }
 }
