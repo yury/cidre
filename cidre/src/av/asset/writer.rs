@@ -50,10 +50,10 @@ impl Writer {
     pub fn can_add_input(&self, input: &WriterInput) -> bool;
 
     #[objc::msg_send(addInput:)]
-    pub fn add_input_throws(&mut self, input: &WriterInput);
+    pub unsafe fn add_input_throws(&mut self, input: &WriterInput);
 
     pub fn add_input<'ar>(&mut self, input: &WriterInput) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| self.add_input_throws(input))
+        ns::try_catch(|| unsafe { self.add_input_throws(input) })
     }
 
     /// Prepares the receiver for accepting input and for writing its output to its output file.

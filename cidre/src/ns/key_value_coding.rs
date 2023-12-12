@@ -26,16 +26,19 @@ impl ns::Id {
     }
 
     #[objc::msg_send(valueForKeyPath:)]
-    pub fn value_for_key_path_throws_ar(&self, key_path: &ns::String) -> Option<arc::Rar<Self>>;
+    pub unsafe fn value_for_key_path_throws_ar(
+        &self,
+        key_path: &ns::String,
+    ) -> Option<arc::Rar<Self>>;
 
     #[objc::rar_retain]
-    pub fn value_for_key_path_throws(&self, key_path: &ns::String) -> Option<arc::R<Self>>;
+    pub unsafe fn value_for_key_path_throws(&self, key_path: &ns::String) -> Option<arc::R<Self>>;
 
     pub fn value_for_key_path<'ar>(
         &self,
         key_path: &ns::String,
     ) -> Result<Option<arc::R<Self>>, &'ar ns::Exception> {
-        ns::try_catch(|| self.value_for_key_path_throws(key_path))
+        ns::try_catch(|| unsafe { self.value_for_key_path_throws(key_path) })
     }
 
     #[objc::msg_send(setValue:forKeyPath:)]
