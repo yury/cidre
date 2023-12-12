@@ -6,13 +6,13 @@
 pub struct State(pub u32);
 
 impl State {
-    ///	The state of the connection is not valid. This state
-    ///	will never be delivered in the connection's state update handler, and can be treated as
-    ///	an unexpected value.
+    /// The state of the connection is not valid. This state
+    /// will never be delivered in the connection's state update handler, and can be treated as
+    /// an unexpected value.
     #[doc(alias = "nw_connection_state_invalid")]
     pub const INVALID: Self = Self(0);
 
-    ///  The connection is waiting for a usable network before re-attempting
+    /// The connection is waiting for a usable network before re-attempting
     #[doc(alias = "nw_connection_state_waiting")]
     pub const WAITING: Self = Self(1);
 
