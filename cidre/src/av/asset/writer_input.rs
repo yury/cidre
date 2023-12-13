@@ -1,10 +1,5 @@
 use crate::{
-    arc,
-    av::MediaType,
-    blocks::Block,
-    cm, define_cls, define_obj_type, dispatch,
-    ns::{self, try_catch},
-    objc,
+    arc, av::MediaType, blocks::Block, cm, define_cls, define_obj_type, dispatch, ns, objc,
 };
 
 define_obj_type!(pub WriterInput(ns::Id));
@@ -18,7 +13,7 @@ impl arc::A<WriterInput> {
     ) -> arc::R<WriterInput>;
 
     #[objc::msg_send(initWithMediaType:outputSettings:sourceFormatHint:)]
-    pub fn with_media_type_output_settings_source_format_hint_throws(
+    pub unsafe fn with_media_type_output_settings_source_format_hint_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -40,12 +35,12 @@ impl WriterInput {
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
-        try_catch(|| unsafe {
+        ns::try_catch(|| unsafe {
             Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
         })
     }
 
-    pub fn with_media_type_output_settings_source_format_hint_throws(
+    pub unsafe fn with_media_type_output_settings_source_format_hint_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDesc>,
@@ -62,7 +57,7 @@ impl WriterInput {
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDesc>,
     ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
-        ns::try_catch(|| {
+        ns::try_catch(|| unsafe {
             Self::with_media_type_output_settings_source_format_hint_throws(
                 media_type,
                 output_settings,
@@ -71,7 +66,7 @@ impl WriterInput {
         })
     }
 
-    pub fn with_media_type_format_hint_throws(
+    pub unsafe fn with_media_type_format_hint_throws(
         media_type: &MediaType,
         source_format_hint: &cm::FormatDesc,
     ) -> arc::R<WriterInput> {
@@ -131,7 +126,7 @@ impl WriterInput {
         &mut self,
         buffer: &cm::SampleBuf,
     ) -> Result<bool, &'ar ns::Exception> {
-        try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
+        ns::try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
     }
 
     #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]

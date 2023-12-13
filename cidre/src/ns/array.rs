@@ -90,6 +90,18 @@ impl<T: Obj> Array<T> {
     #[objc::msg_send(lastObject)]
     pub fn last(&self) -> Option<&T>;
 
+    #[objc::msg_send(copy)]
+    pub fn copy_ar(&self) -> arc::Rar<Self>;
+
+    #[objc::rar_retain]
+    pub fn copy(&self) -> arc::R<Self>;
+
+    #[objc::msg_send(mutableCopy)]
+    pub fn copy_mut_ar(&self) -> arc::Rar<ArrayMut<T>>;
+
+    #[objc::rar_retain]
+    pub fn copy_mut(&self) -> arc::R<ArrayMut<T>>;
+
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
@@ -150,11 +162,11 @@ impl<T: Obj> ArrayMut<T> {
     pub fn remove(&mut self, index: usize);
 
     #[objc::msg_send(insertObject:atIndex:)]
-    pub fn insert_obj(&mut self, obj: &T, at_index: usize);
+    pub unsafe fn insert_obj_throws(&mut self, obj: &T, at_index: usize);
 
     #[inline]
-    pub fn insert(&mut self, index: usize, element: &T) {
-        self.insert_obj(element, index)
+    pub fn insert<'ar>(&mut self, index: usize, element: &T) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.insert_obj_throws(element, index) })
     }
 }
 
@@ -385,5 +397,16 @@ mod tests {
         }
 
         assert_eq!(1, k);
+    }
+
+    #[test]
+    fn copy() {
+        let arr = ns::Array::<ns::Number>::new();
+        let mut mut_copy = arr.copy_mut();
+        assert!(mut_copy.is_empty());
+        mut_copy.insert(0, &ns::Number::tagged_i8(1)).unwrap();
+        assert_eq!(1, mut_copy.len());
+        assert!(arr.is_empty());
+        assert!(!mut_copy.is_empty());
     }
 }

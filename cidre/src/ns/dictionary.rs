@@ -41,6 +41,21 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
         self.len() == 0
     }
 
+    #[objc::msg_send(objectForKey:)]
+    pub fn obj_for_key<'a>(&'a self, key: &K) -> Option<&'a V>;
+
+    #[objc::msg_send(copy)]
+    pub fn copy_ar(&self) -> arc::Rar<Self>;
+
+    #[objc::rar_retain]
+    pub fn copy(&self) -> arc::R<Self>;
+
+    #[objc::msg_send(mutableCopy)]
+    pub fn copy_mut_ar(&self) -> arc::Rar<DictionaryMut<K, V>>;
+
+    #[objc::rar_retain]
+    pub fn copy_mut(&self) -> arc::R<DictionaryMut<K, V>>;
+
     pub fn with_keys_values<const N: usize>(keys: &[&K; N], objects: &[&V; N]) -> arc::R<Self> {
         unsafe {
             Self::alloc().init_with_objects_for_keys_count_throws(
@@ -49,6 +64,14 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
                 N,
             )
         }
+    }
+}
+
+impl<K: Obj, V: Obj> std::ops::Index<&K> for Dictionary<K, V> {
+    type Output = V;
+
+    fn index(&self, index: &K) -> &Self::Output {
+        self.obj_for_key(index).expect("no entry found for key")
     }
 }
 
@@ -94,6 +117,21 @@ impl<K: Obj, V: Obj> DictionaryMut<K, V> {
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
         Self::alloc().init_with_capacity(capacity)
     }
+
+    #[objc::msg_send(removeObjectForKey:)]
+    pub fn remove_obj_for_key(&mut self, key: &K);
+
+    #[objc::msg_send(setObject:forKey:)]
+    pub fn set_obj_for_key(&mut self, obj: &V, key: &K);
+
+    #[objc::msg_send(removeAllObjects)]
+    pub fn remove_all_objs(&mut self);
+
+    #[objc::msg_send(removeObjectsForKeys:)]
+    pub fn remove_objs_for_keys(&mut self, keys: &ns::Array<K>);
+
+    #[objc::msg_send(setDictionary:)]
+    pub fn set_dictionary(&mut self, other: &Self);
 }
 
 #[link(name = "ns", kind = "static")]
