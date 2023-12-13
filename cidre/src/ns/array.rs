@@ -159,7 +159,15 @@ impl<T: Obj> ArrayMut<T> {
     pub fn remove_last(&mut self);
 
     #[objc::msg_send(removeObjectAtIndex:)]
-    pub fn remove(&mut self, index: usize);
+    pub unsafe fn remove_throws(&mut self, index: usize);
+
+    #[inline]
+    pub fn remove<'ar>(&mut self, index: usize) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.remove_throws(index) })
+    }
+
+    #[objc::msg_send(removeAllObjects)]
+    pub fn clear(&mut self);
 
     #[objc::msg_send(insertObject:atIndex:)]
     pub unsafe fn insert_obj_throws(&mut self, obj: &T, at_index: usize);
@@ -408,5 +416,9 @@ mod tests {
         assert_eq!(1, mut_copy.len());
         assert!(arr.is_empty());
         assert!(!mut_copy.is_empty());
+
+        mut_copy.remove(10).expect_err("should be exception");
+        mut_copy.clear();
+        assert!(mut_copy.is_empty());
     }
 }

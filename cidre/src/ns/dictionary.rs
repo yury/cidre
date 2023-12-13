@@ -119,13 +119,18 @@ impl<K: Obj, V: Obj> DictionaryMut<K, V> {
     }
 
     #[objc::msg_send(removeObjectForKey:)]
-    pub fn remove_obj_for_key(&mut self, key: &K);
+    pub fn remove(&mut self, key: &K);
 
     #[objc::msg_send(setObject:forKey:)]
     pub fn set_obj_for_key(&mut self, obj: &V, key: &K);
 
+    #[inline]
+    pub fn insert(&mut self, key: &K, val: &V) {
+        self.set_obj_for_key(val, key)
+    }
+
     #[objc::msg_send(removeAllObjects)]
-    pub fn remove_all_objs(&mut self);
+    pub fn clear(&mut self);
 
     #[objc::msg_send(removeObjectsForKeys:)]
     pub fn remove_objs_for_keys(&mut self, keys: &ns::Array<K>);

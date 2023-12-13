@@ -212,16 +212,16 @@ async fn main() {
     stream
         .add_stream_output(output.as_ref(), sc::OutputType::Screen, Some(&queue))
         .expect("failed to add output");
+
     if writer.start_writing() {
         writer.start_session_at_source_time(start_time);
         stream.start().await.unwrap();
+        tokio::signal::ctrl_c().await.unwrap();
+        stream.stop().await.unwrap();
+
+        writer.finish_writing();
+        delegate.inner_mut().write_end();
     } else {
         eprintln!("failed? {:?}", writer.error());
     }
-
-    tokio::signal::ctrl_c().await.unwrap();
-    stream.stop().await.unwrap();
-
-    writer.finish_writing();
-    delegate.inner_mut().write_end();
 }

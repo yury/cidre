@@ -101,7 +101,7 @@ criterion = "0.5"
 # linfa-clustering = "0.6.1"
 # linfa-reduction = "0.6.1"
 clap = { version = "4.3", features = ["default", "derive"] }
-tokio = {features = ["signal"]}
+tokio = { version = "1", features = ["signal"] }
 
 [[bench]]
 name = "alloc"
