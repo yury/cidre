@@ -42,7 +42,7 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
     }
 
     #[objc::msg_send(objectForKey:)]
-    pub fn obj_for_key<'a>(&'a self, key: &K) -> Option<&'a V>;
+    pub fn get<'a>(&'a self, key: &K) -> Option<&'a V>;
 
     #[objc::msg_send(copy)]
     pub fn copy_ar(&self) -> arc::Rar<Self>;
@@ -71,7 +71,7 @@ impl<K: Obj, V: Obj> std::ops::Index<&K> for Dictionary<K, V> {
     type Output = V;
 
     fn index(&self, index: &K) -> &Self::Output {
-        self.obj_for_key(index).expect("no entry found for key")
+        self.get(index).expect("no entry found for key")
     }
 }
 
