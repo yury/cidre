@@ -24,10 +24,33 @@ impl PixelFormat {
     pub const _32_BGRA: Self = Self::from_be_bytes(b"BGRA");
     #[doc(alias = "kCMPixelFormat_24RGB")]
     pub const _24_RGB: Self = Self(24);
+
+    /// Y'CbCr 8-bit 4:2:2 ordered Cb Y'0 Cr Y'1
     #[doc(alias = "kCMPixelFormat_422YpCbCr8")]
     pub const _422_YP_CB_CR_8: Self = Self::from_be_bytes(b"2vuy");
+
+    /// Y'CbCr 8-bit 4:2:2 ordered Y'0 Cb Y'1 Cr
     #[doc(alias = "kCMPixelFormat_422YpCbCr8_yuvs")]
     pub const _422_YP_CB_CR_8_YUVS: Self = Self::from_be_bytes(b"yuvs");
+
+    /// Component Y'CbCr 8-bit 4:4:4
+    #[doc(alias = "kCMPixelFormat_444YpCbCr8")]
+    pub const _444_YP_CB_CR_8: Self = Self::from_be_bytes(b"v308");
+
+    /// Component Y'CbCrA 8-bit 4:4:4:4
+    #[doc(alias = "kCMPixelFormat_4444YpCbCrA8")]
+    pub const _4444_YP_CB_CR_A_8: Self = Self::from_be_bytes(b"v408");
+
+    /// Component Y'CbCr 10,12,14,16-bit 4:2:2
+    #[doc(alias = "kCMPixelFormat_422YpCbCr16")]
+    pub const _422_YP_CB_CR_16: Self = Self::from_be_bytes(b"v216");
+
+    /// Y'CbCr 10-bit 4:2:2
+    #[doc(alias = "kCMPixelFormat_422YpCbCr10")]
+    pub const _422_YP_CB_CR_10: Self = Self::from_be_bytes(b"v210");
+    /// Y'CbCr 10-bit 4:4:4
+    #[doc(alias = "kCMPixelFormat_444YpCbCr10")]
+    pub const _444_YP_CB_CR_10: Self = Self::from_be_bytes(b"v410");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
@@ -574,6 +597,42 @@ define_cf_type!(
 );
 
 impl FormatDescExtKey {
+    /// [`cf::String`]
+    #[doc(alias = "kCMFormatDescriptionExtension_FormatName")]
+    #[inline]
+    pub fn format_name() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_FormatName }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_Depth")]
+    #[inline]
+    pub fn depth() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_Depth }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_CleanAperture")]
+    #[inline]
+    pub fn clean_aperture() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_CleanAperture }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_FieldCount")]
+    #[inline]
+    pub fn field_count() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_FieldCount }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_FieldDetail")]
+    #[inline]
+    pub fn field_detail() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_FieldDetail }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_PixelAspectRatio")]
+    #[inline]
+    pub fn pixel_aspect_ratio() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_PixelAspectRatio }
+    }
     /// This extension contains a media-type-specific dictionary of settings used to produce a compressed media buffer.
     ///
     /// This extension is valid for format descriptions of all media types, but the contents of the dictionary are defined
@@ -583,6 +642,7 @@ impl FormatDescExtKey {
     ///
     /// cf::Dictionary
     #[doc(alias = "kCMFormatDescriptionExtension_OriginalCompressionSettings")]
+    #[inline]
     pub fn original_compression_settings() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_OriginalCompressionSettings }
     }
@@ -591,12 +651,13 @@ impl FormatDescExtKey {
     ///
     /// This key is used by sample description bridges to hold sample description
     /// extension atoms that they do not recognize.
-    /// The extension is a cf::Dictionary mapping cf::Strings of the four-char-code atom types
+    /// The extension is a [`cf::Dictionary`] mapping [`cf::Strings`] of the four-char-code atom types
     /// to either [`cf::Data`]s containing the atom payload or (to represent multiple atoms of a
     /// specific type) to [`cf::Array`]s of [`cf::Data`] containing those payloads.
     ///
     /// cf::Dictionary of cf::String (four-char-code, atom type) -> ( cf::Data (atom payload) or cf::Array of cf::Data (atom payload) )
     #[doc(alias = "kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms")]
+    #[inline]
     pub fn sample_desc_ext_atoms() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms }
     }
@@ -612,6 +673,7 @@ impl FormatDescExtKey {
     ///
     /// cf::Data
     #[doc(alias = "kCMFormatDescriptionExtension_VerbatimSampleDescription")]
+    #[inline]
     pub fn verbatim_sample_desc() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_VerbatimSampleDescription }
     }
@@ -622,21 +684,217 @@ impl FormatDescExtKey {
     /// to cm::FormatDescriptions back to ISO Sample Entry preserve the exact original
     /// sample descriptions.
     ///
-    /// IMPORTANT: If you make a modified clone of a CMFormatDescription, you must
+    /// IMPORTANT: If you make a modified clone of a [`cm::FormatDesc`], you must
     /// delete this extension from the clone, or your modifications could be lost.
     ///
     /// cf::Data
     #[doc(alias = "kCMFormatDescriptionExtension_VerbatimISOSampleEntry")]
+    #[inline]
     pub fn verbatim_iso_sample_entry() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_VerbatimISOSampleEntry }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_ColorPrimaries")]
+    #[inline]
+    pub fn color_primaries() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ColorPrimaries }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_TransferFunction")]
+    #[inline]
+    pub fn transfer_fn() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_TransferFunction }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_GammaLevel")]
+    #[inline]
+    pub fn gamma_level() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_GammaLevel }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_YCbCrMatrix")]
+    #[inline]
+    pub fn ycbcr_matrix() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_YCbCrMatrix }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_FullRangeVideo")]
+    #[inline]
+    pub fn full_range_video() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_FullRangeVideo }
+    }
+
+    /// cf::Data
+    #[doc(alias = "kCMFormatDescriptionExtension_ICCProfile")]
+    #[inline]
+    pub fn icc_profile() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ICCProfile }
+    }
+
+    /// cf::Number
+    #[doc(alias = "kCMFormatDescriptionExtension_BytesPerRow")]
+    #[inline]
+    pub fn bytes_per_row() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_BytesPerRow }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_ChromaLocationTopField")]
+    #[inline]
+    pub fn chroma_location_top_field() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ChromaLocationTopField }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_ProtectedContentOriginalFormat")]
+    #[inline]
+    pub fn protected_content_oridinal_format() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ProtectedContentOriginalFormat }
+    }
+
+    /// cf::Number
+    #[doc(alias = "kCMFormatDescriptionExtension_TemporalQuality")]
+    #[inline]
+    pub fn temporal_quality() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_TemporalQuality }
+    }
+
+    /// cf::Number
+    #[doc(alias = "kCMFormatDescriptionExtension_SpatialQuality")]
+    #[inline]
+    pub fn spatial_quality() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_SpatialQuality }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_VerbatimImageDescription")]
+    #[inline]
+    pub fn verbatim_image_desc() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_VerbatimImageDescription }
+    }
+
+    /// [`cf::Number`]
+    #[doc(alias = "kCMFormatDescriptionExtension_Version")]
+    #[inline]
+    pub fn version() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_Version }
+    }
+
+    /// [`cf::Number`]
+    #[doc(alias = "kCMFormatDescriptionExtension_RevisionLevel")]
+    #[inline]
+    pub fn revision_level() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_RevisionLevel }
+    }
+
+    /// [`cf::String`] of fourCC
+    #[doc(alias = "kCMFormatDescriptionExtension_Vendor")]
+    #[inline]
+    pub fn vendor() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_Vendor }
+    }
+
+    /// [`cf::Data`] (24 bytes); big-endian structure; same as kCVImageBufferMasteringDisplayColorVolumeKey;
+    /// matches payload of ISO/IEC 23008-2:2015(E), D.2.28 Mastering display colour volume SEI message
+    #[doc(alias = "kCMFormatDescriptionExtension_MasteringDisplayColorVolume")]
+    #[inline]
+    pub fn mastering_display_color_volume() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_MasteringDisplayColorVolume }
+    }
+
+    /// [`cf::Data`] (4 bytes); big-endian structure; same as kCVImageBufferContentLightLevelInfoKey
+    #[doc(alias = "kCMFormatDescriptionExtension_ContentLightLevelInfo")]
+    #[inline]
+    pub fn content_light_level_info() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ContentLightLevelInfo }
+    }
+
+    /// [`cf::Data`]; big-endian structure; same as kCVImageBufferContentColorVolumeKey
+    /// (to be added); matches payload of ITU-T-H.265:11/2019, D.2.40 Content Colour
+    /// Volume SEI message
+    #[doc(alias = "kCMFormatDescriptionExtension_ContentColorVolume")]
+    #[inline]
+    pub fn content_color_volume() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ContentColorVolume }
+    }
+
+    /// kCMFormatDescriptionTransferFunction_ITU_R_2100_HLG when used); corresponds to D.2.38 Alternative Transfer Characteristics SEI message
+    #[doc(alias = "kCMFormatDescriptionExtension_AlternativeTransferCharacteristics")]
+    #[inline]
+    pub fn alternate_transfer_characterisitcs() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_AlternativeTransferCharacteristics }
+    }
+
+    /// [`cf::String`] (Auxiliary type URN)
+    #[doc(alias = "kCMFormatDescriptionExtension_AuxiliaryTypeInfo")]
+    #[inline]
+    pub fn auxiliary_type_info() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_AuxiliaryTypeInfo }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_AlphaChannelMode")]
+    #[inline]
+    pub fn alpha_channel_mode() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_AlphaChannelMode }
+    }
+
+    #[doc(alias = "kCMFormatDescriptionExtension_ContainsAlphaChannel")]
+    #[inline]
+    pub fn contains_alpha_channel() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_ContainsAlphaChannel }
+    }
+
+    /// [`cf::Number`] (such as 8, 10, 12, 16, etc). Bit-depth per component
+    /// if there are components with different bit depths this should be the deepest.
+    /// Do not rely on this extension always being present, as it often isn't.
+    #[doc(alias = "kCMFormatDescriptionExtension_BitsPerComponent")]
+    #[inline]
+    pub fn bits_per_component() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_BitsPerComponent }
+    }
+
+    /// [`cf::Number`]; horizontal field of view in thousandths of a degree
+    /// (i.e., 123456 is 123.456 degrees).
+    #[doc(alias = "kCMFormatDescriptionExtension_HorizontalFieldOfView")]
+    #[inline]
+    pub fn horizontal_field_of_view() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_HorizontalFieldOfView }
     }
 }
 
 extern "C" {
+    static kCMFormatDescriptionExtension_FormatName: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_Depth: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_CleanAperture: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_FieldCount: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_FieldDetail: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_PixelAspectRatio: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_OriginalCompressionSettings: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_VerbatimSampleDescription: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_VerbatimISOSampleEntry: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ColorPrimaries: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_TransferFunction: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_GammaLevel: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_YCbCrMatrix: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_FullRangeVideo: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ICCProfile: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_BytesPerRow: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ChromaLocationTopField: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ProtectedContentOriginalFormat: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_TemporalQuality: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_SpatialQuality: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_VerbatimImageDescription: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_Version: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_RevisionLevel: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_Vendor: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_MasteringDisplayColorVolume: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ContentLightLevelInfo: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ContentColorVolume: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_AlternativeTransferCharacteristics:
+        &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_AuxiliaryTypeInfo: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_AlphaChannelMode: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_ContainsAlphaChannel: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_BitsPerComponent: &'static FormatDescExtKey;
+    static kCMFormatDescriptionExtension_HorizontalFieldOfView: &'static FormatDescExtKey;
 
     fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
     fn CMFormatDescriptionGetMediaType(desc: &FormatDesc) -> MediaType;
