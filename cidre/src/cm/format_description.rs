@@ -687,7 +687,7 @@ impl FormatDescExtKey {
     /// IMPORTANT: If you make a modified clone of a [`cm::FormatDesc`], you must
     /// delete this extension from the clone, or your modifications could be lost.
     ///
-    /// cf::Data
+    /// [`cf::Data`]
     #[doc(alias = "kCMFormatDescriptionExtension_VerbatimISOSampleEntry")]
     #[inline]
     pub fn verbatim_iso_sample_entry() -> &'static Self {
