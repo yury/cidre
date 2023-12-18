@@ -3,20 +3,28 @@ use crate::{arc, cf, define_options};
 pub mod range;
 pub use range::Range as TimeRange;
 
+#[doc(alias = "CMTimeValue")]
 pub type TimeValue = i64;
+
+#[doc(alias = "CMTimeScale")]
 pub type TimeScale = i32;
+
+#[doc(alias = "CMTimeEpoch")]
 pub type TimeEpoch = i64;
 
-define_options!(pub TimeFlags(u32));
+define_options!(
+    #[doc(alias = "CMTimeFlags")]
+    pub TimeFlags(u32)
+);
 
 impl TimeFlags {
     pub const VALID: Self = Self(1 << 0);
     pub const HAS_BEEN_ROUNDED: Self = Self(1 << 1);
-    pub const POSITIVE_INFINITY: Self = Self(1 << 2);
-    pub const NEGATIVE_INFINITY: Self = Self(1 << 3);
+    pub const POS_INFINITY: Self = Self(1 << 2);
+    pub const NEG_INFINITY: Self = Self(1 << 3);
     pub const INDEFINITE: Self = Self(1 << 4);
     pub const IMPLIED_VALUE_FLAGS_MASK: Self =
-        Self(Self::POSITIVE_INFINITY.0 | Self::NEGATIVE_INFINITY.0 | Self::INDEFINITE.0);
+        Self(Self::POS_INFINITY.0 | Self::NEG_INFINITY.0 | Self::INDEFINITE.0);
 }
 
 #[doc(alias = "CMTime")]
@@ -53,13 +61,14 @@ impl Time {
     /// use cidre::cm;
     ///
     /// let t1 = cm::Time::with_secs(-5.0, 10);
-    /// let t2 = t1.absolute_value();
+    /// let t2 = t1.abs();
     /// assert_eq!(t2.scale, 10);
     /// assert_eq!(t2.as_secs(), 5.0);
     /// ```
+    #[doc(alias = "CMTimeAbsoluteValue")]
     #[inline]
-    pub fn absolute_value(&self) -> Time {
-        unsafe { CMTimeAbsoluteValue(*self) }
+    pub fn abs(self) -> Time {
+        unsafe { CMTimeAbsoluteValue(self) }
     }
 
     /// ```
@@ -67,14 +76,14 @@ impl Time {
     ///
     /// let t1 = cm::Time::with_secs(100.0, 10);
     /// let t2 = cm::Time::with_secs(200.0, 10);
-    /// let t3 = t1.add(&t2);
+    /// let t3 = t1.add(t2);
     /// assert!(t3.is_valid());
     /// assert_eq!(t3.scale, 10);
     /// assert_eq!(t3.as_secs(), 300.0);
     /// ```
     #[inline]
-    pub fn add(&self, rhs: &Time) -> Time {
-        unsafe { CMTimeAdd(*self, *rhs) }
+    pub fn add(self, rhs: Time) -> Time {
+        unsafe { CMTimeAdd(self, rhs) }
     }
 
     /// ```
@@ -86,27 +95,27 @@ impl Time {
     /// ```
     #[inline]
     pub fn convert_scale(
-        &self,
+        self,
         new_time_scale: TimeScale,
         rounding_method: TimeRoundingMethod,
     ) -> Time {
-        unsafe { CMTimeConvertScale(*self, new_time_scale, rounding_method) }
+        unsafe { CMTimeConvertScale(self, new_time_scale, rounding_method) }
     }
 
     #[inline]
-    pub fn desc_in(&self, allocator: Option<&cf::Allocator>) -> Option<arc::R<cf::String>> {
-        unsafe { CMTimeCopyDescription(allocator, *self) }
+    pub fn desc_in(self, allocator: Option<&cf::Allocator>) -> Option<arc::R<cf::String>> {
+        unsafe { CMTimeCopyDescription(allocator, self) }
     }
 
     #[inline]
-    pub fn desc(&self) -> Option<arc::R<cf::String>> {
-        unsafe { CMTimeCopyDescription(None, *self) }
+    pub fn desc(self) -> Option<arc::R<cf::String>> {
+        unsafe { CMTimeCopyDescription(None, self) }
     }
 
     /// Converts a Time to seconds.
     #[inline]
-    pub fn as_secs(&self) -> f64 {
-        unsafe { CMTimeGetSeconds(*self) }
+    pub fn as_secs(self) -> f64 {
+        unsafe { CMTimeGetSeconds(self) }
     }
 
     #[inline]
@@ -143,7 +152,7 @@ impl Time {
     /// ```
     #[inline]
     pub const fn is_neg_infinity(&self) -> bool {
-        self.is_valid() && (self.flags.0 & TimeFlags::NEGATIVE_INFINITY.0) != 0
+        self.is_valid() && (self.flags.0 & TimeFlags::NEG_INFINITY.0) != 0
     }
 
     /// ```
@@ -153,7 +162,7 @@ impl Time {
     /// ```
     #[inline]
     pub const fn is_pos_infinity(&self) -> bool {
-        self.is_valid() && (self.flags.0 & TimeFlags::POSITIVE_INFINITY.0) != 0
+        self.is_valid() && (self.flags.0 & TimeFlags::POS_INFINITY.0) != 0
     }
 
     #[inline]
@@ -192,14 +201,14 @@ impl Time {
     /// ```
     #[doc(alias = "CMTimeMultiply")]
     #[inline]
-    pub fn mul_i32(&self, multiplier: i32) -> Time {
-        unsafe { CMTimeMultiply(*self, multiplier) }
+    pub fn mul_i32(self, multiplier: i32) -> Time {
+        unsafe { CMTimeMultiply(self, multiplier) }
     }
 
     #[doc(alias = "CMTimeMultiplyByFloat64")]
     #[inline]
-    pub fn mul_f64(&self, multiplier: f64) -> Time {
-        unsafe { CMTimeMultiplyByFloat64(*self, multiplier) }
+    pub fn mul_f64(self, multiplier: f64) -> Time {
+        unsafe { CMTimeMultiplyByFloat64(self, multiplier) }
     }
 
     /// Returns valid Time with value and timescale. Epoch is implied to be 0.
@@ -230,8 +239,8 @@ impl Time {
     }
 
     #[inline]
-    pub fn show(&self) {
-        unsafe { CMTimeShow(*self) }
+    pub fn show(self) {
+        unsafe { CMTimeShow(self) }
     }
 
     /// ```
@@ -239,14 +248,14 @@ impl Time {
     ///
     /// let t1 = cm::Time::with_secs(100.0, 10);
     /// let t2 = cm::Time::with_secs(100.0, 10);
-    /// let t3 = t1.sub(&t2);
+    /// let t3 = t1.sub(t2);
     /// assert!(t3.is_valid());
     /// assert_eq!(t3.scale, 10);
     /// assert_eq!(t3.as_secs(), 0.0);
     /// ```
     #[inline]
-    pub fn sub(&self, rhs: &Time) -> Time {
-        unsafe { CMTimeSubtract(*self, *rhs) }
+    pub fn sub(self, rhs: Time) -> Time {
+        unsafe { CMTimeSubtract(self, rhs) }
     }
 
     /// ```
