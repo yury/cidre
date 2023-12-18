@@ -154,6 +154,7 @@ where
 {
     type Item = &'a T;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.index < self.len {
             let res = unsafe { transmute::<&Type, &'a T>(&self.array[self.index]) };
@@ -169,6 +170,7 @@ impl<'a, T> ExactSizeIterator for ArrayOfIterator<'a, T>
 where
     T: arc::Retain,
 {
+    #[inline]
     fn len(&self) -> usize {
         self.array.len() - self.index
     }

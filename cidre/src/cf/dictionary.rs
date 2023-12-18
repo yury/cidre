@@ -201,13 +201,13 @@ impl Dictionary {
         values: &[&Type; N],
     ) -> Option<arc::R<Dictionary>> {
         unsafe {
-            Self::create(
-                None,
+            Self::create_in(
                 keys.as_ptr() as _,
                 values.as_ptr() as _,
                 N as _,
                 KeyCbs::default(),
                 ValueCbs::default(),
+                None,
             )
         }
     }
@@ -215,18 +215,18 @@ impl Dictionary {
     /// ```
     /// use cidre::cf;
     ///
-    /// let dict = unsafe { cf::Dictionary::create(None, std::ptr::null(), std::ptr::null(), 0, None, None).unwrap() };
+    /// let dict = unsafe { cf::Dictionary::create_in(std::ptr::null(), std::ptr::null(), 0, None, None, None).unwrap() };
     ///
     /// dict.show();
     /// ```
     #[inline]
-    pub unsafe fn create(
-        allocator: Option<&Allocator>,
+    pub unsafe fn create_in(
         keys: *const *const c_void,
         values: *const *const c_void,
         num_values: Index,
         key_callbacks: Option<&KeyCbs>,
         value_callbacks: Option<&ValueCbs>,
+        allocator: Option<&Allocator>,
     ) -> Option<arc::R<Dictionary>> {
         CFDictionaryCreate(
             allocator,
@@ -406,30 +406,44 @@ impl DictionaryMut {
         CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
     }
 
+    #[doc(alias = "CFDictionarySetValue")]
+    #[inline]
     pub fn insert(&mut self, key: &cf::String, val: &cf::Type) {
         unsafe { CFDictionarySetValue(self, key.as_type_ptr(), val.as_type_ptr()) }
     }
 
+    #[doc(alias = "CFDictionaryRemoveValue")]
+    #[inline]
     pub fn remove(&mut self, key: &cf::String) {
         unsafe { CFDictionaryRemoveValue(self, key.as_type_ptr()) }
     }
 
+    #[doc(alias = "CFDictionaryAddValue")]
+    #[inline]
     pub unsafe fn add_value(&mut self, key: *const c_void, val: *const c_void) {
         CFDictionaryAddValue(self, key, val)
     }
 
+    #[doc(alias = "CFDictionarySetValue")]
+    #[inline]
     pub unsafe fn set_value(&mut self, key: *const c_void, val: *const c_void) {
         CFDictionarySetValue(self, key, val)
     }
 
+    #[doc(alias = "CFDictionaryReplaceValue")]
+    #[inline]
     pub unsafe fn replace_value(&mut self, key: *const c_void, val: *const c_void) {
         CFDictionaryReplaceValue(self, key, val)
     }
 
+    #[doc(alias = "CFDictionaryRemoveValue")]
+    #[inline]
     pub unsafe fn remove_value(&mut self, key: *const c_void) {
         CFDictionaryRemoveValue(self, key)
     }
 
+    #[doc(alias = "CFDictionaryRemoveAllValues")]
+    #[inline]
     pub fn remove_all_values(&mut self) {
         unsafe { CFDictionaryRemoveAllValues(self) }
     }
@@ -483,6 +497,7 @@ where
     K: arc::Retain,
     V: arc::Retain,
 {
+    #[inline]
     unsafe fn release(&mut self) {
         self.0.release()
     }
@@ -493,6 +508,7 @@ where
     K: arc::Retain,
     V: arc::Retain,
 {
+    #[inline]
     fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
@@ -506,10 +522,14 @@ where
     K: arc::Retain,
     V: arc::Retain,
 {
+    #[doc(alias = "CFDictionarySetValue")]
+    #[inline]
     pub fn insert(&mut self, key: &K, val: &V) {
         unsafe { CFDictionarySetValue(&mut self.0, key as *const _ as _, val as *const _ as _) }
     }
 
+    #[doc(alias = "CFDictionaryRemoveValue")]
+    #[inline]
     pub fn remove(&mut self, key: &K) {
         unsafe { CFDictionaryRemoveValue(&mut self.0, key as *const _ as _) }
     }
@@ -526,13 +546,13 @@ where
         values: &[&V; N],
     ) -> arc::R<DictionaryOf<K, V>> {
         unsafe {
-            let dict = Dictionary::create(
-                None,
+            let dict = Dictionary::create_in(
                 keys.as_ptr() as _,
                 values.as_ptr() as _,
                 N as _,
                 KeyCbs::default(),
                 ValueCbs::default(),
+                None,
             );
 
             transmute(dict)
@@ -545,6 +565,7 @@ where
     K: arc::Release,
     V: arc::Release,
 {
+    #[inline]
     unsafe fn release(&mut self) {
         self.0.release()
     }
@@ -555,6 +576,7 @@ where
     K: arc::Retain,
     V: arc::Retain,
 {
+    #[inline]
     fn retained(&self) -> arc::Retained<Self> {
         unsafe { std::mem::transmute(self.0.retained()) }
     }
