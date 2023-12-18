@@ -66,7 +66,7 @@ mod tests {
         let pool = session.pixel_buffer_pool().expect("pool");
         pool.show();
 
-        session.supported_properties().expect("props").show();
+        session.supported_props().expect("props").show();
 
         session.show();
     }

@@ -39,6 +39,7 @@ pub struct SampleTimingInfo {
 }
 
 impl SampleTimingInfo {
+    #[doc(alias = "kCMTimingInfoInvalid")]
     #[inline]
     pub fn invalid() -> Self {
         unsafe { kCMTimingInfoInvalid }
@@ -302,18 +303,15 @@ impl SampleBuf {
     ) -> Result<cm::SampleTimingInfo, os::Status> {
         let mut info = MaybeUninit::<cm::SampleTimingInfo>::uninit();
         unsafe {
-            let res = CMSampleBufferGetSampleTimingInfo(self, sample_index, info.as_mut_ptr());
-            if res.is_ok() {
-                Ok(info.assume_init())
-            } else {
-                Err(res)
-            }
+            CMSampleBufferGetSampleTimingInfo(self, sample_index, info.as_mut_ptr())
+                .to_result_init(info)
         }
     }
 
     /// Returns the size in bytes of a specified sample in a 'cm::SampleBuf'.
     ///
     /// Size in bytes of the specified sample in the 'cm::SampleBuf'.
+    #[doc(alias = "CMSampleBufferGetSampleSize")]
     #[inline]
     pub fn sample_size(&self, sample_index: cm::ItemIndex) -> usize {
         unsafe { CMSampleBufferGetSampleSize(self, sample_index) }
@@ -323,11 +321,13 @@ impl SampleBuf {
     ///
     /// Total size in bytes of sample data in the cm::SampleBuffer.
     /// If there are no sample sizes in this 'cm::SampleBuf', a size of 0 will be returned.  
+    #[doc(alias = "CMSampleBufferGetTotalSampleSize")]
     #[inline]
     pub fn total_sample_size(&self) -> usize {
         unsafe { CMSampleBufferGetTotalSampleSize(self) }
     }
 
+    #[doc(alias = "CMSampleBufferGetFormatDescription")]
     #[inline]
     pub fn format_desc(&self) -> Option<&cm::FormatDesc> {
         unsafe { CMSampleBufferGetFormatDescription(self) }

@@ -59,10 +59,10 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let t1 = cm::Time::with_seconds(-5.0, 10);
+    /// let t1 = cm::Time::with_secs(-5.0, 10);
     /// let t2 = t1.absolute_value();
     /// assert_eq!(t2.scale, 10);
-    /// assert_eq!(t2.seconds(), 5.0);
+    /// assert_eq!(t2.as_secs(), 5.0);
     /// ```
     #[inline]
     pub fn absolute_value(&self) -> Time {
@@ -72,12 +72,12 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let t1 = cm::Time::with_seconds(100.0, 10);
-    /// let t2 = cm::Time::with_seconds(200.0, 10);
+    /// let t1 = cm::Time::with_secs(100.0, 10);
+    /// let t2 = cm::Time::with_secs(200.0, 10);
     /// let t3 = t1.add(&t2);
     /// assert!(t3.is_valid());
     /// assert_eq!(t3.scale, 10);
-    /// assert_eq!(t3.seconds(), 300.0);
+    /// assert_eq!(t3.as_secs(), 300.0);
     /// ```
     #[inline]
     pub fn add(&self, rhs: &Time) -> Time {
@@ -112,7 +112,7 @@ impl Time {
 
     /// Converts a Time to seconds.
     #[inline]
-    pub fn seconds(&self) -> f64 {
+    pub fn as_secs(&self) -> f64 {
         unsafe { CMTimeGetSeconds(*self) }
     }
 
@@ -174,7 +174,7 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let time = cm::Time::with_seconds(100.0, 40_000);
+    /// let time = cm::Time::with_secs(100.0, 40_000);
     /// assert!(time.is_valid());
     /// ```
     #[inline]
@@ -191,11 +191,11 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let t1 = cm::Time::with_seconds(5.0, 10);
+    /// let t1 = cm::Time::with_secs(5.0, 10);
     /// let t2 = t1.multiply(2);
     /// assert!(t2.is_valid());
     /// assert_eq!(t2.scale, 10);
-    /// assert_eq!(t2.seconds(), 10.0);
+    /// assert_eq!(t2.as_secs(), 10.0);
     /// ```
     #[inline]
     pub fn multiply(&self, multiplier: i32) -> Time {
@@ -239,12 +239,12 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let t1 = cm::Time::with_seconds(100.0, 10);
-    /// let t2 = cm::Time::with_seconds(100.0, 10);
+    /// let t1 = cm::Time::with_secs(100.0, 10);
+    /// let t2 = cm::Time::with_secs(100.0, 10);
     /// let t3 = t1.subtract(&t2);
     /// assert!(t3.is_valid());
     /// assert_eq!(t3.scale, 10);
-    /// assert_eq!(t3.seconds(), 0.0);
+    /// assert_eq!(t3.as_secs(), 0.0);
     /// ```
     #[inline]
     pub fn subtract(&self, rhs: &Time) -> Time {
@@ -268,13 +268,13 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let time = cm::Time::with_seconds(100.0, 10);
+    /// let time = cm::Time::with_secs(100.0, 10);
     /// assert!(time.is_valid());
     /// assert_eq!(time.scale, 10);
-    /// assert_eq!(time.seconds(), 100.0);
+    /// assert_eq!(time.as_secs(), 100.0);
     /// ```
     #[inline]
-    pub fn with_seconds(seconds: f64, preferred_timescale: TimeScale) -> Time {
+    pub fn with_secs(seconds: f64, preferred_timescale: TimeScale) -> Time {
         unsafe { CMTimeMakeWithSeconds(seconds, preferred_timescale) }
     }
 
@@ -298,9 +298,9 @@ impl PartialEq for Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let t1 = cm::Time::with_seconds(5.0, 10);
+    /// let t1 = cm::Time::with_secs(5.0, 10);
     /// let t2 = t1.multiply(2);
-    /// let t3 = cm::Time::with_seconds(5.0, 100);
+    /// let t3 = cm::Time::with_secs(5.0, 100);
     /// assert!(t1 != t2);
     /// assert!(t1 == t1);
     /// assert!(t1 == t3);
@@ -317,8 +317,8 @@ impl PartialOrd for Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// let t1 = cm::Time::with_seconds(5.0, 10);
-    /// let t2 = cm::Time::with_seconds(5.5, 10);
+    /// let t1 = cm::Time::with_secs(5.0, 10);
+    /// let t2 = cm::Time::with_secs(5.5, 10);
     /// assert!(t1 < t2);
     /// assert!(cm::Time::negative_infinity() < cm::Time::zero());
     /// assert!(cm::Time::negative_infinity() < cm::Time::positive_infinity());

@@ -1,3 +1,5 @@
+use std::mem::MaybeUninit;
+
 use crate::mac_types::FourCharCode;
 
 pub type Err = i16;
@@ -53,6 +55,15 @@ impl Status {
     pub fn to_result_option<T>(self, option: Option<T>) -> Result<Option<T>, Self> {
         if self.is_ok() {
             Ok(option)
+        } else {
+            Err(self)
+        }
+    }
+
+    #[inline]
+    pub unsafe fn to_result_init<T>(self, value: MaybeUninit<T>) -> Result<T, Self> {
+        if self.is_ok() {
+            Ok(value.assume_init())
         } else {
             Err(self)
         }

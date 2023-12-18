@@ -51,6 +51,7 @@ impl Session {
         unsafe { self.set_property(key, value).result() }
     }
 
+    #[doc(alias = "VTSessionCopySupportedPropertyDictionary")]
     pub unsafe fn copy_supported_property_dictionary(
         &self,
         supported_property_dictionary_out: &mut Option<arc::R<cf::Dictionary>>,
@@ -58,7 +59,8 @@ impl Session {
         VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
     }
 
-    pub fn supported_properties(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
+    #[doc(alias = "VTSessionCopySupportedPropertyDictionary")]
+    pub fn supported_props(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
         unsafe {
             let mut supported_property_dictionary_out = None;
             self.copy_supported_property_dictionary(&mut supported_property_dictionary_out)
