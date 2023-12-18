@@ -14,6 +14,7 @@ impl ImageBuf {
     /// let size = pixel_buf.encoded_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0 }, size);
     /// ```
+    #[doc(alias = "CVImageBufferGetEncodedSize")]
     #[inline]
     pub fn encoded_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetEncodedSize(self) }
@@ -28,6 +29,7 @@ impl ImageBuf {
     /// let display_size = pixel_buf.display_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
     /// ```
+    #[doc(alias = "CVImageBufferGetDisplaySize")]
     #[inline]
     pub fn display_size(&self) -> cg::Size {
         unsafe { CVImageBufferGetDisplaySize(self) }
@@ -43,6 +45,7 @@ impl ImageBuf {
     /// let rect = pixel_buf.clean_rect();
     /// assert_eq!(cg::Rect { origin: cg::Point::zero(), size: cg::Size { width: 200.0, height: 100.0 }}, rect);
     /// ```
+    #[doc(alias = "CVImageBufferGetCleanRect")]
     #[inline]
     pub fn clean_rect(&self) -> cg::Rect {
         unsafe { CVImageBufferGetCleanRect(self) }
@@ -57,6 +60,7 @@ impl ImageBuf {
     ///
     /// assert_eq!(true, pixel_buf.is_flipped());
     /// ```
+    #[doc(alias = "CVImageBufferIsFlipped")]
     #[inline]
     pub fn is_flipped(&self) -> bool {
         unsafe { CVImageBufferIsFlipped(self) }
@@ -225,21 +229,25 @@ pub mod attachment {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferFieldDetailTemporalTopFirst")]
+        #[inline]
         pub fn termporal_top_first() -> &'static cf::String {
             unsafe { kCVImageBufferFieldDetailTemporalTopFirst }
         }
 
         #[doc(alias = "kCVImageBufferFieldDetailTemporalBottomFirst")]
+        #[inline]
         pub fn termporal_bottom_first() -> &'static cf::String {
             unsafe { kCVImageBufferFieldDetailTemporalBottomFirst }
         }
 
         #[doc(alias = "kCVImageBufferFieldDetailSpatialFirstLineEarly")]
+        #[inline]
         pub fn spatial_first_line_early() -> &'static cf::String {
             unsafe { kCVImageBufferFieldDetailSpatialFirstLineEarly }
         }
 
         #[doc(alias = "kCVImageBufferFieldDetailSpatialFirstLineLate")]
+        #[inline]
         pub fn spatial_first_line_late() -> &'static cf::String {
             unsafe { kCVImageBufferFieldDetailSpatialFirstLineLate }
         }
@@ -256,11 +264,13 @@ pub mod attachment {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferPixelAspectRatioHorizontalSpacingKey")]
+        #[inline]
         pub fn horizontal_spacing() -> &'static cf::String {
             unsafe { kCVImageBufferPixelAspectRatioHorizontalSpacingKey }
         }
 
         #[doc(alias = "kCVImageBufferPixelAspectRatioVerticalSpacingKey")]
+        #[inline]
         pub fn vertical_spacing() -> &'static cf::String {
             unsafe { kCVImageBufferPixelAspectRatioVerticalSpacingKey }
         }
@@ -275,11 +285,13 @@ pub mod attachment {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferDisplayWidthKey")]
+        #[inline]
         pub fn width() -> &'static cf::String {
             unsafe { kCVImageBufferDisplayWidthKey }
         }
 
         #[doc(alias = "kCVImageBufferDisplayHeightKey")]
+        #[inline]
         pub fn height() -> &'static cf::String {
             unsafe { kCVImageBufferDisplayHeightKey }
         }
@@ -294,21 +306,25 @@ pub mod attachment {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferYCbCrMatrix_ITU_R_709_2")]
+        #[inline]
         pub fn itu_r_709_2() -> &'static cf::String {
             unsafe { kCVImageBufferYCbCrMatrix_ITU_R_709_2 }
         }
 
         #[doc(alias = "kCVImageBufferYCbCrMatrix_ITU_R_601_4")]
+        #[inline]
         pub fn itu_r_601_4() -> &'static cf::String {
             unsafe { kCVImageBufferYCbCrMatrix_ITU_R_601_4 }
         }
 
         #[doc(alias = "kCVImageBufferYCbCrMatrix_SMPTE_240M_1995")]
+        #[inline]
         pub fn smpte_240m_1995() -> &'static cf::String {
             unsafe { kCVImageBufferYCbCrMatrix_SMPTE_240M_1995 }
         }
 
         #[doc(alias = "kCVImageBufferYCbCrMatrix_ITU_R_2020")]
+        #[inline]
         pub fn itu_r_2020() -> &'static cf::String {
             unsafe { kCVImageBufferYCbCrMatrix_ITU_R_2020 }
         }
@@ -325,36 +341,43 @@ pub mod attachment {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferColorPrimaries_ITU_R_709_2")]
+        #[inline]
         pub fn itu_r_709_2() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_ITU_R_709_2 }
         }
 
         #[doc(alias = "kCVImageBufferColorPrimaries_EBU_3213")]
+        #[inline]
         pub fn ebu_3213() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_EBU_3213 }
         }
 
         #[doc(alias = "kCVImageBufferColorPrimaries_SMPTE_C")]
+        #[inline]
         pub fn smpte_c() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_SMPTE_C }
         }
 
         #[doc(alias = "kCVImageBufferColorPrimaries_P22")]
+        #[inline]
         pub fn p22() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_P22 }
         }
 
         #[doc(alias = "kCVImageBufferColorPrimaries_DCI_P3")]
+        #[inline]
         pub fn dci_p3() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_DCI_P3 }
         }
 
         #[doc(alias = "kCVImageBufferColorPrimaries_P3_D65")]
+        #[inline]
         pub fn p3_d65() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_P3_D65 }
         }
 
         #[doc(alias = "kCVImageBufferColorPrimaries_ITU_R_2020")]
+        #[inline]
         pub fn itu_r_2020() -> &'static cf::String {
             unsafe { kCVImageBufferColorPrimaries_ITU_R_2020 }
         }
@@ -374,46 +397,55 @@ pub mod attachment {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferTransferFunction_ITU_R_709_2")]
+        #[inline]
         pub fn itu_r_709_2() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_ITU_R_709_2 }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_SMPTE_240M_1995")]
+        #[inline]
         pub fn smpte_240m_1995() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_240M_1995 }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_UseGamma")]
+        #[inline]
         pub fn use_gamma() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_UseGamma }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_sRGB")]
+        #[inline]
         pub fn srgb() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_sRGB }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_ITU_R_2020")]
+        #[inline]
         pub fn itu_r_2020() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_ITU_R_2020 }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_SMPTE_ST_428_1")]
+        #[inline]
         pub fn smpte_st_428_1() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_ST_428_1 }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ")]
+        #[inline]
         pub fn smpte_st_2084_pq() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_ITU_R_2100_HLG")]
+        #[inline]
         pub fn itu_r_2100_hlg() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_ITU_R_2100_HLG }
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_Linear")]
+        #[inline]
         pub fn linear() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_Linear }
         }
