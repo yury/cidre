@@ -139,20 +139,20 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// assert!(cm::Time::negative_infinity().is_negative_infinity())
+    /// assert!(cm::Time::neg_infinity().is_neg_infinity())
     /// ```
     #[inline]
-    pub const fn is_negative_infinity(&self) -> bool {
+    pub const fn is_neg_infinity(&self) -> bool {
         self.is_valid() && (self.flags.0 & TimeFlags::NEGATIVE_INFINITY.0) != 0
     }
 
     /// ```
     /// use cidre::cm;
     ///
-    /// assert!(cm::Time::positive_infinity().is_positive_infinity())
+    /// assert!(cm::Time::infinity().is_pos_infinity())
     /// ```
     #[inline]
-    pub const fn is_positive_infinity(&self) -> bool {
+    pub const fn is_pos_infinity(&self) -> bool {
         self.is_valid() && (self.flags.0 & TimeFlags::POSITIVE_INFINITY.0) != 0
     }
 
@@ -202,8 +202,9 @@ impl Time {
         unsafe { CMTimeMultiplyByFloat64(*self, multiplier) }
     }
 
+    #[doc(alias = "kCMTimeNegativeInfinity")]
     #[inline]
-    pub fn negative_infinity() -> Time {
+    pub fn neg_infinity() -> Time {
         unsafe { kCMTimeNegativeInfinity }
     }
 
@@ -216,13 +217,15 @@ impl Time {
     /// assert!(time.is_valid());
     /// assert_eq!(time.epoch, 0);
     /// ```
+    #[doc(alias = "CMTimeMake")]
     #[inline]
     pub fn new(value: TimeValue, timescale: i32) -> Time {
         unsafe { CMTimeMake(value, timescale) }
     }
 
+    #[doc(alias = "kCMTimePositiveInfinity")]
     #[inline]
-    pub fn positive_infinity() -> Time {
+    pub fn infinity() -> Time {
         unsafe { kCMTimePositiveInfinity }
     }
 
@@ -236,13 +239,13 @@ impl Time {
     ///
     /// let t1 = cm::Time::with_secs(100.0, 10);
     /// let t2 = cm::Time::with_secs(100.0, 10);
-    /// let t3 = t1.subtract(&t2);
+    /// let t3 = t1.sub(&t2);
     /// assert!(t3.is_valid());
     /// assert_eq!(t3.scale, 10);
     /// assert_eq!(t3.as_secs(), 0.0);
     /// ```
     #[inline]
-    pub fn subtract(&self, rhs: &Time) -> Time {
+    pub fn sub(&self, rhs: &Time) -> Time {
         unsafe { CMTimeSubtract(*self, *rhs) }
     }
 
@@ -315,9 +318,9 @@ impl PartialOrd for Time {
     /// let t1 = cm::Time::with_secs(5.0, 10);
     /// let t2 = cm::Time::with_secs(5.5, 10);
     /// assert!(t1 < t2);
-    /// assert!(cm::Time::negative_infinity() < cm::Time::zero());
-    /// assert!(cm::Time::negative_infinity() < cm::Time::positive_infinity());
-    /// assert!(cm::Time::zero() < cm::Time::positive_infinity());
+    /// assert!(cm::Time::neg_infinity() < cm::Time::zero());
+    /// assert!(cm::Time::neg_infinity() < cm::Time::infinity());
+    /// assert!(cm::Time::zero() < cm::Time::infinity());
     /// ```
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
