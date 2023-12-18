@@ -106,7 +106,7 @@ impl Url {
         Self::with_cf_string_in(str, None, None)
     }
 
-    /// Returns the URL's string. Percent-escape sequences are not removed
+    /// Returns the Url's string. Percent-escape sequences are not removed
     ///
     /// # Examples
     /// ```

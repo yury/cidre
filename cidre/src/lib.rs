@@ -230,12 +230,7 @@ mod tests {
             let _f = num;
 
             arr.show();
-            // s.show();
-
-            // println!("len {:?}", f.get_length());
-            // f.show();
             arr
-            // s.retained()
         };
 
         f.show()
