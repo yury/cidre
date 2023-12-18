@@ -2,7 +2,7 @@ use crate::{arc, cf, define_cf_type};
 use std::ffi::{c_double, c_void};
 
 pub type TimeInterval = c_double;
-pub type AbsoluteTime = TimeInterval;
+pub type AbsTime = TimeInterval;
 
 /// The current absolute time.
 ///
@@ -14,7 +14,7 @@ pub type AbsoluteTime = TimeInterval;
 /// monotonically increasing results. The system time may decrease due to synchronization
 /// with external time references or due to an explicit user change of the clock.
 #[inline]
-pub fn absolute_time_current() -> AbsoluteTime {
+pub fn abs_time_current() -> AbsTime {
     unsafe { CFAbsoluteTimeGetCurrent() }
 }
 
@@ -29,24 +29,24 @@ impl Date {
 
     #[doc(alias = "CFDateCreate")]
     #[inline]
-    pub fn new_at_in(at: AbsoluteTime, allocator: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
+    pub fn new_at_in(at: AbsTime, allocator: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFDateCreate(allocator, at) }
     }
 
     #[doc(alias = "CFDateCreate")]
     #[inline]
-    pub fn new_at(at: AbsoluteTime) -> Option<arc::R<Self>> {
+    pub fn new_at(at: AbsTime) -> Option<arc::R<Self>> {
         Self::new_at_in(at, None)
     }
 
     #[inline]
     pub fn current() -> Option<arc::R<Self>> {
-        Self::new_at(absolute_time_current())
+        Self::new_at(abs_time_current())
     }
 
     #[doc(alias = "CFDateGetAbsoluteTime")]
     #[inline]
-    pub fn absolute_time(&self) -> AbsoluteTime {
+    pub fn abs_time(&self) -> AbsTime {
         unsafe { CFDateGetAbsoluteTime(self) }
     }
 
@@ -82,10 +82,10 @@ impl PartialOrd for Date {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    fn CFAbsoluteTimeGetCurrent() -> AbsoluteTime;
+    fn CFAbsoluteTimeGetCurrent() -> AbsTime;
     fn CFDateGetTypeID() -> cf::TypeId;
-    fn CFDateCreate(allocator: Option<&cf::Allocator>, at: AbsoluteTime) -> Option<arc::R<Date>>;
-    fn CFDateGetAbsoluteTime(the_date: &Date) -> AbsoluteTime;
+    fn CFDateCreate(allocator: Option<&cf::Allocator>, at: AbsTime) -> Option<arc::R<Date>>;
+    fn CFDateGetAbsoluteTime(the_date: &Date) -> AbsTime;
     fn CFDateGetTimeIntervalSinceDate(the_date: &Date, other_date: &Date) -> TimeInterval;
     fn CFDateCompare(date: &Date, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult;
 }

@@ -51,8 +51,8 @@ pub use dictionary::KeyCbs as DictionaryKeyCbs;
 pub use dictionary::ValueCbs as DictionaryValueCbs;
 
 pub mod date;
-pub use date::absolute_time_current;
-pub use date::AbsoluteTime;
+pub use date::abs_time_current;
+pub use date::AbsTime;
 pub use date::Date;
 pub use date::TimeInterval;
 

@@ -17,7 +17,7 @@ impl ns::String {
     pub fn path_components(&self) -> arc::R<ns::Array<ns::String>>;
 
     #[objc::msg_send(isAbsolutePath)]
-    pub fn is_absolute_path(&self) -> bool;
+    pub fn is_abs_path(&self) -> bool;
 
     #[objc::msg_send(lastPathComponent)]
     pub fn last_path_component_ar(&self) -> arc::Rar<ns::String>;

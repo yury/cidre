@@ -2,7 +2,7 @@ pub mod boolean;
 pub use boolean::Boolean;
 
 pub mod time;
-pub use time::absolute_time;
+pub use time::abs_time;
 pub use time::approximate_time;
 pub use time::continuous_approximate_time;
 pub use time::continuous_time;

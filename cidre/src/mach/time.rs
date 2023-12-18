@@ -37,8 +37,9 @@ impl TimeBaseInfo {
 /// Returns current value of a clock that increments monotonically in tick units
 /// (starting at an arbitrary point), this clock does not increment while
 /// the system is asleep.
+#[doc(alias = "mach_absolute_time")]
 #[inline]
-pub fn absolute_time() -> u64 {
+pub fn abs_time() -> u64 {
     unsafe { mach_absolute_time() }
 }
 
