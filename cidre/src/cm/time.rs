@@ -1,13 +1,6 @@
-use std::{cmp::Ordering, intrinsics::transmute};
-
-use crate::{
-    arc,
-    cf::{Allocator, String},
-    define_options,
-};
+use crate::{arc, cf, define_options};
 
 pub mod range;
-
 pub use range::Range as TimeRange;
 
 pub type TimeValue = i64;
@@ -101,12 +94,12 @@ impl Time {
     }
 
     #[inline]
-    pub fn desc_in(&self, allocator: Option<&Allocator>) -> Option<arc::R<String>> {
+    pub fn desc_in(&self, allocator: Option<&cf::Allocator>) -> Option<arc::R<cf::String>> {
         unsafe { CMTimeCopyDescription(allocator, *self) }
     }
 
     #[inline]
-    pub fn desc(&self) -> Option<arc::R<String>> {
+    pub fn desc(&self) -> Option<arc::R<cf::String>> {
         unsafe { CMTimeCopyDescription(None, *self) }
     }
 
@@ -192,18 +185,20 @@ impl Time {
     /// use cidre::cm;
     ///
     /// let t1 = cm::Time::with_secs(5.0, 10);
-    /// let t2 = t1.multiply(2);
+    /// let t2 = t1.mul_i32(2);
     /// assert!(t2.is_valid());
     /// assert_eq!(t2.scale, 10);
     /// assert_eq!(t2.as_secs(), 10.0);
     /// ```
+    #[doc(alias = "CMTimeMultiply")]
     #[inline]
-    pub fn multiply(&self, multiplier: i32) -> Time {
+    pub fn mul_i32(&self, multiplier: i32) -> Time {
         unsafe { CMTimeMultiply(*self, multiplier) }
     }
 
+    #[doc(alias = "CMTimeMultiplyByFloat64")]
     #[inline]
-    pub fn multiply_by_f64(&self, multiplier: f64) -> Time {
+    pub fn mul_f64(&self, multiplier: f64) -> Time {
         unsafe { CMTimeMultiplyByFloat64(*self, multiplier) }
     }
 
@@ -299,7 +294,7 @@ impl PartialEq for Time {
     /// use cidre::cm;
     ///
     /// let t1 = cm::Time::with_secs(5.0, 10);
-    /// let t2 = t1.multiply(2);
+    /// let t2 = t1.mul_i32(2);
     /// let t3 = cm::Time::with_secs(5.0, 100);
     /// assert!(t1 != t2);
     /// assert!(t1 == t1);
@@ -325,8 +320,8 @@ impl PartialOrd for Time {
     /// assert!(cm::Time::zero() < cm::Time::positive_infinity());
     /// ```
     #[inline]
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        unsafe { transmute(CMTimeCompare(*self, *other) as i8) }
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        unsafe { std::mem::transmute(CMTimeCompare(*self, *other) as i8) }
     }
 }
 
@@ -385,5 +380,8 @@ extern "C" {
     fn CMTimeMaximum(time1: Time, time2: Time) -> Time;
     fn CMTimeMinimum(time1: Time, time2: Time) -> Time;
 
-    fn CMTimeCopyDescription(allocator: Option<&Allocator>, time: Time) -> Option<arc::R<String>>;
+    fn CMTimeCopyDescription(
+        allocator: Option<&cf::Allocator>,
+        time: Time,
+    ) -> Option<arc::R<cf::String>>;
 }
