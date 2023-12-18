@@ -9,9 +9,9 @@ impl ImageBuf {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
-    /// let size = pixel_buffer.encoded_size();
+    /// let size = pixel_buf.encoded_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0 }, size);
     /// ```
     #[inline]
@@ -23,9 +23,9 @@ impl ImageBuf {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
-    /// let display_size = pixel_buffer.display_size();
+    /// let display_size = pixel_buf.display_size();
     /// assert_eq!(cg::Size { width: 200.0, height: 100.0}, display_size);
     /// ```
     #[inline]
@@ -38,9 +38,9 @@ impl ImageBuf {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
-    /// let rect = pixel_buffer.clean_rect();
+    /// let rect = pixel_buf.clean_rect();
     /// assert_eq!(cg::Rect { origin: cg::Point::zero(), size: cg::Size { width: 200.0, height: 100.0 }}, rect);
     /// ```
     #[inline]
@@ -53,9 +53,9 @@ impl ImageBuf {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
-    /// assert_eq!(true, pixel_buffer.is_flipped());
+    /// assert_eq!(true, pixel_buf.is_flipped());
     /// ```
     #[inline]
     pub fn is_flipped(&self) -> bool {
@@ -65,17 +65,16 @@ impl ImageBuf {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
     /// ```
-
     #[inline]
     pub fn color_space(&self) -> Option<&cg::ColorSpace> {
         unsafe { CVImageBufferGetColorSpace(self) }
     }
 
     #[inline]
-    pub fn create_color_space_form_attachments(
+    pub fn color_space_from_attaches(
         attachments: &cf::Dictionary,
     ) -> Option<arc::R<cg::ColorSpace>> {
         unsafe { CVImageBufferCreateColorSpaceFromAttachments(attachments) }
