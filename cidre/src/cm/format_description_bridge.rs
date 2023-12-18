@@ -220,7 +220,7 @@ impl SoundDescFlavor {
 }
 
 impl cm::AudioFormatDesc {
-    /// Copies the contents of a CMAudioFormatDescription to a CMBlockBuffer in big-endian byte ordering.
+    /// Copies the contents of a CMAudioFormatDescription to a [`cm::BlockBuf`] in big-endian byte ordering.
     ///
     /// Note that the dataRefIndex field of the SampleDescription is intentionally filled with
     /// garbage values (0xFFFF).  The caller must overwrite these values with a valid dataRefIndex
@@ -304,6 +304,13 @@ impl cm::AudioFormatDesc {
         Self::from_be_sound_desc_buf_in(buffer, flavor, None)
     }
 }
+
+define_cf_type!(
+    #[doc(alias = "CMTextDescriptionFlavor")]
+    TextDescFlavor(cf::String)
+);
+
+impl TextDescFlavor {}
 
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C" {

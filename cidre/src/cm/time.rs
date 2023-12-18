@@ -26,6 +26,7 @@ impl TimeFlags {
         Self(Self::POSITIVE_INFINITY.0 | Self::NEGATIVE_INFINITY.0 | Self::INDEFINITE.0);
 }
 
+#[doc(alias = "CMTime")]
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct Time {

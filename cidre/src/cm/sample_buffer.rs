@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr::slice_from_raw_parts};
+use std::{ffi::c_void, mem::MaybeUninit, ptr::slice_from_raw_parts};
 
 use crate::{arc, cf, cm, define_cf_type, define_options, os};
 
@@ -18,6 +18,7 @@ impl Flags {
 pub type SampleBufMakeDataReadyCb =
     extern "C" fn(sbuf: &SampleBuf, make_data_ready_refcon: *const c_void);
 
+#[doc(alias = "CMSampleTimingInfo")]
 #[derive(Debug, Default, Clone, Copy)]
 #[repr(C)]
 pub struct SampleTimingInfo {
@@ -282,10 +283,32 @@ impl SampleBuf {
         unsafe { CMSampleBufferGetOutputPresentationTimeStamp(self) }
     }
 
+    #[doc(alias = "CMSampleBufferGetOutputDecodeTimeStamp")]
+    pub fn output_dts(&self) -> cm::Time {
+        unsafe { CMSampleBufferGetOutputDecodeTimeStamp(self) }
+    }
+
     #[doc(alias = "CMSampleBufferSetOutputPresentationTimeStamp")]
     #[inline]
     pub fn set_output_pts(&self, val: cm::Time) {
         unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, val) }
+    }
+
+    #[doc(alias = "CMSampleBufferGetSampleTimingInfo")]
+    #[inline]
+    pub fn timing_info(
+        &self,
+        sample_index: cm::ItemIndex,
+    ) -> Result<cm::SampleTimingInfo, os::Status> {
+        let mut info = MaybeUninit::<cm::SampleTimingInfo>::uninit();
+        unsafe {
+            let res = CMSampleBufferGetSampleTimingInfo(self, sample_index, info.as_mut_ptr());
+            if res.is_ok() {
+                Ok(info.assume_init())
+            } else {
+                Err(res)
+            }
+        }
     }
 
     /// Returns the size in bytes of a specified sample in a 'cm::SampleBuf'.
@@ -565,6 +588,7 @@ extern "C" {
     fn CMSampleBufferGetPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
+    fn CMSampleBufferGetOutputDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, val: cm::Time);
     fn CMSampleBufferGetSampleSize(sbuf: &SampleBuf, sample_index: cm::ItemIndex) -> usize;
     fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuf) -> usize;
@@ -575,6 +599,12 @@ extern "C" {
     ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>>;
 
     fn CMSampleBufferIsValid(sbuf: &SampleBuf) -> bool;
+
+    fn CMSampleBufferGetSampleTimingInfo(
+        sbuf: &SampleBuf,
+        sample_index: cm::ItemIndex,
+        info: *mut cm::SampleTimingInfo,
+    ) -> os::Status;
 
     fn CMSampleBufferInvalidate(sbuf: &SampleBuf) -> os::Status;
     fn CMSampleBufferMakeDataReady(sbuf: &SampleBuf) -> os::Status;
