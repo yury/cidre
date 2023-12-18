@@ -166,7 +166,7 @@ pub mod attachment {
 
         #[doc(alias = "kCVImageBufferTransferFunctionKey")]
         #[inline]
-        pub fn transfer_function() -> &'static cf::String {
+        pub fn transfer_fn() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunctionKey }
         }
 
@@ -371,7 +371,7 @@ pub mod attachment {
         }
     }
 
-    pub mod transfer_function {
+    pub mod transfer_fn {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferTransferFunction_ITU_R_709_2")]
