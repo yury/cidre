@@ -44,9 +44,6 @@ impl<T> ArrayOf<T> {
     #[doc(alias = "CFArrayContainsValue")]
     #[inline]
     pub fn contains(&self, val: &cf::Type) -> bool {
-        if self.is_empty() {
-            return false;
-        }
         unsafe { CFArrayContainsValue(self, cf::Range::new(0, self.count()), val as *const _ as _) }
     }
 
@@ -114,6 +111,7 @@ where
 {
     type Output = T;
 
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         unsafe { transmute::<&Type, &T>(&self.0[index]) }
     }
@@ -123,18 +121,21 @@ impl<T> std::ops::IndexMut<usize> for ArrayOf<T>
 where
     T: arc::Retain,
 {
+    #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
 impl<T> arc::Release for ArrayOf<T> {
+    #[inline]
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
 impl<T> arc::Retain for ArrayOf<T> {
+    #[inline]
     fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
@@ -224,6 +225,7 @@ where
 {
     type Output = T;
 
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         unsafe { transmute::<&Type, &T>(&self.0[index]) }
     }
@@ -233,18 +235,21 @@ impl<T> std::ops::IndexMut<usize> for ArrayOfMut<T>
 where
     T: arc::Retain,
 {
+    #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
 impl<T> arc::Release for ArrayOfMut<T> {
+    #[inline]
     unsafe fn release(&mut self) {
         self.0.release()
     }
 }
 
 impl<T> arc::Retain for ArrayOfMut<T> {
+    #[inline]
     fn retained(&self) -> arc::R<Self> {
         unsafe { transmute(self.0.retained()) }
     }
@@ -440,11 +445,13 @@ impl ArrayMut {
         CFArrayAppendValue(self, val)
     }
 
+    #[doc(alias = "CFArrayAppendValue")]
     #[inline]
     pub fn push(&mut self, val: &Type) {
         unsafe { self.append_value(val.as_type_ptr()) }
     }
 
+    #[doc(alias = "CFArrayRemoveAllValues")]
     #[inline]
     pub fn remove_all_values(&mut self) {
         unsafe {
@@ -457,6 +464,7 @@ impl ArrayMut {
         self.remove_all_values();
     }
 
+    #[doc(alias = "CFArrayCreateMutable")]
     #[inline]
     pub fn create_in(
         capacity: Index,
