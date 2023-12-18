@@ -149,7 +149,7 @@ impl Time {
     /// ```
     /// use cidre::cm;
     ///
-    /// assert!(cm::Time::infinity().is_pos_infinity())
+    /// assert!(cm::Time::infinity().is_pos_infinity());
     /// ```
     #[inline]
     pub const fn is_pos_infinity(&self) -> bool {
@@ -202,12 +202,6 @@ impl Time {
         unsafe { CMTimeMultiplyByFloat64(*self, multiplier) }
     }
 
-    #[doc(alias = "kCMTimeNegativeInfinity")]
-    #[inline]
-    pub fn neg_infinity() -> Time {
-        unsafe { kCMTimeNegativeInfinity }
-    }
-
     /// Returns valid Time with value and timescale. Epoch is implied to be 0.
     ///
     /// ```
@@ -227,6 +221,12 @@ impl Time {
     #[inline]
     pub fn infinity() -> Time {
         unsafe { kCMTimePositiveInfinity }
+    }
+
+    #[doc(alias = "kCMTimeNegativeInfinity")]
+    #[inline]
+    pub fn neg_infinity() -> Time {
+        unsafe { kCMTimeNegativeInfinity }
     }
 
     #[inline]
