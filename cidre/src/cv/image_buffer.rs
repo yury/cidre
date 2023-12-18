@@ -3,7 +3,7 @@ use crate::{arc, cf, cg, cv};
 pub type ImageBuf = cv::Buf;
 
 impl ImageBuf {
-    /// Returns the full encoded dimensions of a cv::ImageBuf.  For example, for an NTSC DV frame this would be 720x480
+    /// Returns the full encoded dimensions of a ['cv::ImageBuf'].  For example, for an NTSC DV frame this would be 720x480
     ///
     /// Example:
     /// ```
@@ -445,7 +445,6 @@ pub mod attachment {
         }
 
         #[doc(alias = "kCVImageBufferTransferFunction_Linear")]
-        #[inline]
         pub fn linear() -> &'static cf::String {
             unsafe { kCVImageBufferTransferFunction_Linear }
         }

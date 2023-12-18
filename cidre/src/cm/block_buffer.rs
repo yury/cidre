@@ -78,8 +78,8 @@ impl BlockBuf {
         flags: Flags,
         structure_allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<BlockBuf>, os::Status> {
+        let mut block_buf_out = None;
         unsafe {
-            let mut block_buf_out = None;
             CMBlockBufferCreateEmpty(
                 structure_allocator,
                 sub_block_capacity,
@@ -99,7 +99,7 @@ impl BlockBuf {
     /// ```
     /// use cidre::cm;
     ///
-    /// let b = cm::BlockBuf::with_memory_block(10, None)
+    /// let b = cm::BlockBuf::with_mem_block(10, None)
     ///     .expect("empty block buffer");
     ///
     /// assert_eq!(false, b.is_empty());
@@ -107,12 +107,12 @@ impl BlockBuf {
     ///
     /// ```
     #[inline]
-    pub fn with_memory_block(
+    pub fn with_mem_block(
         len: usize,
         block_allocator: Option<&cf::Allocator>,
     ) -> Result<arc::R<BlockBuf>, os::Status> {
         unsafe {
-            Self::create_with_memory_block_in(
+            Self::create_with_mem_block_in(
                 std::ptr::null_mut(),
                 len,
                 block_allocator,
@@ -124,8 +124,9 @@ impl BlockBuf {
         }
     }
 
+    #[doc(alias = "CMBlockBufferCreateWithMemoryBlock")]
     #[inline]
-    pub unsafe fn create_with_memory_block_in(
+    pub unsafe fn create_with_mem_block_in(
         memory_block: *mut c_void,
         block_length: usize,
         block_allocator: Option<&cf::Allocator>,
@@ -180,6 +181,7 @@ impl BlockBuf {
     /// blocks (a noncontiguous cm::BlockBuf). The data pointer returned will remain valid as long as the
     /// original cm::BlockBuf is referenced - once the cm::BlockBuf is released for the last time, any pointers
     /// into it will be invalid.
+    #[doc(alias = "CMBlockBufferGetDataPointer")]
     #[inline]
     pub unsafe fn get_data_ptr(
         &self,
@@ -260,7 +262,7 @@ impl BlockBuf {
     }
 
     #[inline]
-    pub fn with_buf_reference(
+    pub fn with_buf_ref(
         buf_reference: &BlockBuf,
         offset_to_data: usize,
         data_length: usize,
@@ -268,7 +270,7 @@ impl BlockBuf {
     ) -> Result<arc::R<BlockBuf>, os::Status> {
         unsafe {
             let mut block_buf_out = None;
-            Self::create_with_buf_reference(
+            Self::create_with_buf_ref(
                 None,
                 buf_reference,
                 offset_to_data,
@@ -281,7 +283,7 @@ impl BlockBuf {
     }
 
     #[inline]
-    pub unsafe fn create_with_buf_reference(
+    pub unsafe fn create_with_buf_ref(
         structure_allocator: Option<&cf::Allocator>,
         buf_reference: &BlockBuf,
         offset_to_data: usize,
@@ -306,7 +308,7 @@ impl BlockBuf {
     /// for any constituent memory blocks that are not yet allocated.
     #[doc(alias = "CMBlockBufferAssureBlockMemory")]
     #[inline]
-    pub fn assure_block_memory(&mut self) -> Result<(), os::Status> {
+    pub fn assure_block_mem(&mut self) -> Result<(), os::Status> {
         unsafe { CMBlockBufferAssureBlockMemory(self).result() }
     }
 }
