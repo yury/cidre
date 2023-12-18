@@ -5,6 +5,7 @@ use crate::{arc, cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
+#[doc(alias = "CFURLPathStyle")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
 pub enum PathStyle {
@@ -80,7 +81,6 @@ impl Url {
     /// let url = cf::Url::from_str("http://google.com").unwrap();
     ///
     /// let scheme = url.scheme().unwrap();
-    ///
     /// ```
     #[inline]
     pub fn from_str(str: &str) -> Option<arc::R<Url>> {
@@ -100,7 +100,6 @@ impl Url {
     /// let url = cf::Url::from_cf_string(&s1).unwrap();
     ///
     /// assert!(url.can_be_decomposed());
-    ///
     /// ```
     #[inline]
     pub fn from_cf_string(str: &cf::String) -> Option<arc::R<Url>> {
@@ -121,16 +120,19 @@ impl Url {
     /// assert!(s1.equal(s2));
     ///
     /// ```
+    #[doc(alias = "CFURLGetString")]
     #[inline]
     pub fn cf_string(&self) -> &cf::String {
         unsafe { CFURLGetString(self) }
     }
 
+    #[doc(alias = "CFURLGetBaseURL")]
     #[inline]
     pub fn base_url(&self) -> Option<&Url> {
         unsafe { CFURLGetBaseURL(self) }
     }
 
+    #[doc(alias = "CFURLCanBeDecomposed")]
     #[inline]
     pub fn can_be_decomposed(&self) -> bool {
         unsafe { CFURLCanBeDecomposed(self) }
@@ -157,7 +159,6 @@ impl Url {
     /// let url1 = cf::Url::from_str("https://localhost:3000").unwrap();
     ///
     /// assert_eq!(3000, url1.port());
-
     /// let url2 = cf::Url::from_str("https://localhost").unwrap();
     ///
     /// assert_eq!(-1, url2.port());
@@ -174,11 +175,18 @@ impl Url {
     pub fn as_ns(&self) -> &ns::Url {
         unsafe { std::mem::transmute(self) }
     }
+
+    #[doc(alias = "CFURLCopyAbsoluteURL")]
+    #[inline]
+    pub fn abs_url(&self) -> Option<arc::R<Self>> {
+        unsafe { CFURLCopyAbsoluteURL(self) }
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFURLGetTypeID() -> cf::TypeId;
+
     fn CFURLCreateWithBytes(
         allocator: Option<&cf::Allocator>,
         url_bytes: *const u8,
@@ -186,6 +194,7 @@ extern "C" {
         encoding: cf::StringEncoding,
         base_url: Option<&Url>,
     ) -> Option<arc::R<Url>>;
+
     fn CFURLCreateWithString(
         allocator: Option<&cf::Allocator>,
         url_string: &cf::String,
@@ -201,9 +210,8 @@ extern "C" {
 
     fn CFURLGetString(anURL: &Url) -> &cf::String;
     fn CFURLGetBaseURL(anURL: &Url) -> Option<&Url>;
-
     fn CFURLCanBeDecomposed(anURL: &Url) -> bool;
     fn CFURLCopyScheme(anURL: &Url) -> Option<arc::R<cf::String>>;
-
     fn CFURLGetPortNumber(anURL: &Url) -> i32;
+    fn CFURLCopyAbsoluteURL(relativeURL: &Url) -> Option<arc::R<cf::Url>>;
 }

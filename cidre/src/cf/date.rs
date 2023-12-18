@@ -1,7 +1,7 @@
 use crate::{arc, cf, define_cf_type};
-use std::ffi::{c_double, c_void};
+use std::ffi::c_void;
 
-pub type TimeInterval = c_double;
+pub type TimeInterval = std::ffi::c_double;
 pub type AbsTime = TimeInterval;
 
 /// The current absolute time.
