@@ -168,7 +168,7 @@ impl QueryBuilder {
         let mut array = cf::ArrayMut::with_capacity(udids.len() as _);
         for u in udids {
             let s = cf::String::from_str(u);
-            array.append(&s);
+            array.push(&s);
         }
         self.query.insert(&matching::criteria::udid_key(), &array);
         self

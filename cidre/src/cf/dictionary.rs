@@ -87,12 +87,14 @@ impl Dictionary {
     ///     assert_eq!("CFDictionary", type_desc.to_string());
     /// }
     /// ```
+    #[doc(alias = "CFDictionaryGetTypeID")]
     #[inline]
     pub fn type_id() -> TypeId {
         unsafe { CFDictionaryGetTypeID() }
     }
 
     /// try use contains_key first
+    #[doc(alias = "CFDictionaryContainsKey")]
     #[inline]
     pub unsafe fn contains_raw_key(&self, key: *const c_void) -> bool {
         CFDictionaryContainsKey(self, key)
@@ -111,21 +113,25 @@ impl Dictionary {
     /// let key2 = cf::Number::from_i8(12);
     /// assert!(!d.contains_key(&key2));
     /// ```
+    #[doc(alias = "CFDictionaryContainsKey")]
     #[inline]
     pub fn contains_key(&self, key: &Type) -> bool {
         unsafe { CFDictionaryContainsKey(self, key.as_type_ptr()) }
     }
 
+    #[doc(alias = "CFDictionaryContainsValue")]
     #[inline]
     pub unsafe fn contains_raw_value(&self, val: *const c_void) -> bool {
         CFDictionaryContainsValue(self, val)
     }
 
+    #[doc(alias = "CFDictionaryGetValue")]
     #[inline]
     pub unsafe fn raw_value(&self, key: *const c_void) -> Option<ptr::NonNull<c_void>> {
         CFDictionaryGetValue(self, key)
     }
 
+    #[doc(alias = "CFDictionaryGetValueIfPresent")]
     #[inline]
     pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<ptr::NonNull<c_void>> {
         let mut value = None;
@@ -152,8 +158,8 @@ impl Dictionary {
     /// }
     /// ```
     pub fn value<'a>(&'a self, key: &Type) -> Option<&'a Type> {
+        let mut value = Option::None;
         unsafe {
-            let mut value = Option::None;
             if CFDictionaryGetValueIfPresent(self, key.as_type_ptr(), &mut value) {
                 Some(transmute(value))
             } else {
@@ -162,6 +168,7 @@ impl Dictionary {
         }
     }
 
+    #[doc(alias = "CFDictionaryGetCount")]
     #[inline]
     pub fn count(&self) -> Index {
         unsafe { CFDictionaryGetCount(self) }
@@ -297,6 +304,7 @@ impl Dictionary {
         (keys, values)
     }
 
+    #[doc(alias = "CFDictionaryGetKeysAndValues")]
     #[inline]
     pub unsafe fn keys_and_values(&self, keys: *mut *const c_void, values: *mut *const c_void) {
         CFDictionaryGetKeysAndValues(self, keys, values)

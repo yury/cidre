@@ -41,6 +41,8 @@ impl<T> ArrayOf<T> {
         unsafe { transmute(Array::new_in(allocator)) }
     }
 
+    #[doc(alias = "CFArrayContainsValue")]
+    #[inline]
     pub fn contains(&self, val: &cf::Type) -> bool {
         if self.is_empty() {
             return false;
@@ -203,7 +205,7 @@ impl<T> ArrayOfMut<T> {
 
     #[inline]
     pub fn push(&mut self, val: &T) {
-        self.0.append(unsafe { transmute(val) });
+        self.0.push(unsafe { transmute(val) });
     }
 }
 
@@ -260,6 +262,7 @@ impl Array {
     ///     assert_eq!("CFArray", type_desc.to_string());
     /// }
     /// ```
+    #[doc(alias = "CFArrayGetTypeID")]
     #[inline]
     pub fn type_id() -> TypeId {
         unsafe { CFArrayGetTypeID() }
@@ -270,6 +273,7 @@ impl Array {
     /// let arr = cf::Array::new();
     /// assert_eq!(arr.count(), 0);
     /// ```
+    #[doc(alias = "CFArrayGetCount")]
     #[inline]
     pub fn count(&self) -> Index {
         unsafe { CFArrayGetCount(self) }
@@ -281,6 +285,7 @@ impl Array {
     /// let arr = unsafe { cf::Array::create_in(std::ptr::null(), 0, None, None).expect("arr") };
     /// assert_eq!(arr.len(), 0);
     /// ```
+    #[doc(alias = "CFArrayGetCount")]
     #[inline]
     pub fn len(&self) -> usize {
         self.count() as _
@@ -384,7 +389,7 @@ impl Array {
     /// let mut mut_arr = empty_arr.copy_mut_in(0, None).unwrap();
     ///
     ///
-    /// mut_arr.append(&num);
+    /// mut_arr.push(&num);
     ///
     /// assert_eq!(1, mut_arr.len());
     /// assert_eq!(0, empty_arr.len());
@@ -413,12 +418,14 @@ impl Array {
 impl std::ops::Index<usize> for Array {
     type Output = Type;
 
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         unsafe { CFArrayGetValueAtIndex(self, index as _) }
     }
 }
 
 impl std::ops::IndexMut<usize> for Array {
+    #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { CFArrayGetValueAtIndex(self, index as _) }
     }
@@ -427,13 +434,14 @@ impl std::ops::IndexMut<usize> for Array {
 define_cf_type!(ArrayMut(Array));
 
 impl ArrayMut {
+    #[doc(alias = "CFArrayAppendValue")]
     #[inline]
     pub unsafe fn append_value(&mut self, val: *const c_void) {
         CFArrayAppendValue(self, val)
     }
 
     #[inline]
-    pub fn append(&mut self, val: &Type) {
+    pub fn push(&mut self, val: &Type) {
         unsafe { self.append_value(val.as_type_ptr()) }
     }
 
@@ -471,8 +479,8 @@ impl ArrayMut {
     ///
     /// let num = cf::Number::from_i32(0);
     ///
-    /// arr.append(&num);
-    /// arr.append(&num);
+    /// arr.push(&num);
+    /// arr.push(&num);
     /// assert_eq!(2, arr.len());
     ///
     /// arr.remove_all_values();
