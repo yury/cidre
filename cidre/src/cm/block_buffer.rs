@@ -56,6 +56,7 @@ impl BlockBuf {
     ///
     /// assert!(b.is_empty());
     /// ```
+    #[doc(alias = "CMBlockBufferIsEmpty")]
     #[inline]
     pub fn is_empty(&self) -> bool {
         unsafe { CMBlockBufferIsEmpty(self) }

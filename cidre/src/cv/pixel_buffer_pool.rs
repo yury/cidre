@@ -26,12 +26,12 @@ impl PixelBufPool {
     }
 
     #[inline]
-    pub fn attributes(&self) -> Option<&cf::Dictionary> {
+    pub fn attrs(&self) -> Option<&cf::Dictionary> {
         unsafe { CVPixelBufferPoolGetAttributes(self) }
     }
 
     #[inline]
-    pub fn pixel_buf_attributes(&self) -> Option<&cf::Dictionary> {
+    pub fn pixel_buf_attrs(&self) -> Option<&cf::Dictionary> {
         unsafe { CVPixelBufferPoolGetPixelBufferAttributes(self) }
     }
 
@@ -70,7 +70,7 @@ impl PixelBufPool {
     }
 
     #[inline]
-    pub fn pixel_buf_with_aux_attributes(
+    pub fn pixel_buf_with_aux_attrs(
         &self,
         aux_attributes: Option<&cf::Dictionary>,
     ) -> Result<arc::R<cv::PixelBuf>, cv::Return> {
@@ -122,11 +122,13 @@ extern "C" {
 pub mod keys {
     use crate::cf;
 
+    #[doc(alias = "kCVPixelBufferPoolMinimumBufferCountKey")]
     #[inline]
     pub fn minimum_buffer_count() -> &'static cf::String {
         unsafe { kCVPixelBufferPoolMinimumBufferCountKey }
     }
 
+    #[doc(alias = "kCVPixelBufferPoolMaximumBufferAgeKey")]
     #[inline]
     pub fn maximum_buffer_age() -> &'static cf::String {
         unsafe { kCVPixelBufferPoolMaximumBufferAgeKey }
@@ -141,6 +143,7 @@ pub mod keys {
 pub mod aux_attribute_keys {
     use crate::cf;
 
+    #[doc(alias = "kCVPixelBufferPoolAllocationThresholdKey")]
     #[inline]
     pub fn allocation_threashold() -> &'static cf::String {
         unsafe { kCVPixelBufferPoolAllocationThresholdKey }
@@ -154,8 +157,9 @@ pub mod aux_attribute_keys {
 pub mod notifications {
     use crate::cf;
 
+    #[doc(alias = "kCVPixelBufferPoolFreeBufferNotification")]
     #[inline]
-    pub fn free_buffer() -> &'static cf::NotificationName {
+    pub fn free_buf() -> &'static cf::NotificationName {
         unsafe { kCVPixelBufferPoolFreeBufferNotification }
     }
 

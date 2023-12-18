@@ -45,9 +45,9 @@ pub enum Subsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-define_options!(pub LockOptions(u32));
+define_options!(pub LockOpts(u32));
 
-impl LockOptions {
+impl LockOpts {
     /// If you are not going to modify the data while you hold the lock,
     /// you should set this flag to avoid invalidating
     /// any existing caches of the buffer contents.
@@ -112,31 +112,37 @@ impl Surf {
         unsafe { IOSurfaceCreate(properties) }
     }
 
+    #[doc(alias = "IOSurfaceGetID")]
     #[inline]
     pub fn id(&self) -> SurfId {
         unsafe { IOSurfaceGetID(self) }
     }
 
+    #[doc(alias = "IOSurfaceGetWidth")]
     #[inline]
     pub fn width(&self) -> usize {
         unsafe { IOSurfaceGetWidth(self) }
     }
 
+    #[doc(alias = "IOSurfaceGetHeight")]
     #[inline]
     pub fn height(&self) -> usize {
         unsafe { IOSurfaceGetHeight(self) }
     }
 
+    #[doc(alias = "IOSurfaceGetPlaneCount")]
     #[inline]
     pub fn plane_count(&self) -> usize {
         unsafe { IOSurfaceGetPlaneCount(self) }
     }
 
+    #[doc(alias = "IOSurfaceGetWidthOfPlane")]
     #[inline]
     pub fn plane_width(&self, plane_index: usize) -> usize {
         unsafe { IOSurfaceGetWidthOfPlane(self, plane_index) }
     }
 
+    #[doc(alias = "IOSurfaceGetHeightOfPlane")]
     #[inline]
     pub fn plane_height(&self, plane_index: usize) -> usize {
         unsafe { IOSurfaceGetHeightOfPlane(self, plane_index) }
@@ -149,21 +155,25 @@ impl Surf {
     ///
     /// assert!(surf.is_none());
     /// ```
+    #[doc(alias = "IOSurfaceLookup")]
     #[inline]
     pub fn lookup(csid: SurfId) -> Option<arc::R<Surf>> {
         unsafe { IOSurfaceLookup(csid) }
     }
 
+    #[doc(alias = "IOSurfaceCopyAllValues")]
     #[inline]
     pub fn all_values(&self) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
         unsafe { IOSurfaceCopyAllValues(self) }
     }
 
+    #[doc(alias = "IOSurfaceRemoveAllValues")]
     #[inline]
     pub fn remove_all_values(&mut self) {
         unsafe { IOSurfaceRemoveAllValues(self) }
     }
 
+    #[doc(alias = "IOSurfaceCreateMachPort")]
     #[inline]
     pub fn create_mach_port(&self) -> MachPort {
         unsafe { IOSurfaceCreateMachPort(self) }
@@ -172,32 +182,38 @@ impl Surf {
     /// This call takes a mach_port_t created via io::Surface::create_mach_port() and recreates an io::Surface from it.
     ///
     /// This call does NOT destroy the port.
+    #[doc(alias = "IOSurfaceLookupFromMachPort")]
     #[inline]
     pub fn from_mach_port(port: MachPort) -> Option<arc::R<Surf>> {
         unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
     /// Returns true of an io::Surface is in use by any process in the system, otherwise false.
+    #[doc(alias = "IOSurfaceIsInUse")]
     #[inline]
     pub fn is_in_use(&self) -> bool {
         unsafe { IOSurfaceIsInUse(self) }
     }
 
+    #[doc(alias = "IOSurfaceGetUseCount")]
     #[inline]
     pub fn use_count(&self) -> i32 {
         unsafe { IOSurfaceGetUseCount(self) }
     }
 
+    #[doc(alias = "IOSurfaceIncrementUseCount")]
     #[inline]
     pub fn increment_use_count(&mut self) {
         unsafe { IOSurfaceIncrementUseCount(self) }
     }
 
+    #[doc(alias = "IOSurfaceDecrementUseCount")]
     #[inline]
     pub fn decrement_use_count(&mut self) {
         unsafe { IOSurfaceDecrementUseCount(self) }
     }
 
+    #[doc(alias = "IOSurfaceAllowsPixelSizeCasting")]
     #[inline]
     pub fn allows_pixel_size_casting(&self) -> bool {
         unsafe { IOSurfaceAllowsPixelSizeCasting(self) }
@@ -205,12 +221,14 @@ impl Surf {
 
     /// This will return the current seed value of the buffer and is a cheap call to make to see
     /// if the contents of the buffer have changed since the last lock/unlock.
+    #[doc(alias = "IOSurfaceGetSeed")]
     #[inline]
     pub fn seed(&self) -> u32 {
         unsafe { IOSurfaceGetSeed(self) }
     }
 
     /// Returns the total allocation size of the buffer including all planes.
+    #[doc(alias = "IOSurfaceGetAllocSize")]
     #[inline]
     pub fn alloc_size(&self) -> usize {
         unsafe { IOSurfaceGetAllocSize(self) }
@@ -261,126 +279,150 @@ pub mod keys {
     /// cf::Number of the total allocation size of the buffer including all planes.    
     /// Defaults to BufferHeight * BytesPerRow if not specified. Must be specified for
     /// dimensionless buffers.
+    #[doc(alias = "kIOSurfaceAllocSize")]
     #[inline]
     pub fn alloc_size() -> &'static String {
         unsafe { kIOSurfaceAllocSize }
     }
 
     /// cf::Number for the width of the io::Surface buffer in pixels. Required for planar io::Surfaces
+    #[doc(alias = "kIOSurfaceWidth")]
     #[inline]
     pub fn width() -> &'static String {
         unsafe { kIOSurfaceWidth }
     }
 
     /// cf::Number for the height of the io::Surface buffer in pixels. Required for planar io::Surfaces
+    #[doc(alias = "kIOSurfaceHeight")]
     #[inline]
     pub fn height() -> &'static String {
         unsafe { kIOSurfaceHeight }
     }
 
+    #[doc(alias = "kIOSurfaceBytesPerRow")]
     #[inline]
     pub fn bytes_per_row() -> &'static String {
         unsafe { kIOSurfaceBytesPerRow }
     }
 
     /// cf::Number for the total number of bytes in an element.
+    #[doc(alias = "kIOSurfaceBytesPerElement")]
     #[inline]
     pub fn bytes_per_element() -> &'static String {
         unsafe { kIOSurfaceBytesPerElement }
     }
 
     /// cf::Number for how many pixels wide each element is.
+    #[doc(alias = "kIOSurfaceElementWidth")]
     #[inline]
     pub fn element_width() -> &'static String {
         unsafe { kIOSurfaceElementWidth }
     }
 
     /// cf::Number for how many pixels high each element is.
+    #[doc(alias = "kIOSurfaceElementHeight")]
     #[inline]
     pub fn element_height() -> &'static String {
         unsafe { kIOSurfaceElementHeight }
     }
 
+    #[doc(alias = "kIOSurfaceOffset")]
     #[inline]
     pub fn offset() -> &'static String {
         unsafe { kIOSurfaceOffset }
     }
 
+    #[doc(alias = "kIOSurfacePlaneInfo")]
     #[inline]
     pub fn plane_info() -> &'static String {
         unsafe { kIOSurfacePlaneInfo }
     }
 
+    #[doc(alias = "kIOSurfacePlaneWidth")]
     #[inline]
     pub fn plane_width() -> &'static String {
         unsafe { kIOSurfacePlaneWidth }
     }
 
+    #[doc(alias = "kIOSurfacePlaneHeight")]
     #[inline]
     pub fn plane_height() -> &'static String {
         unsafe { kIOSurfacePlaneHeight }
     }
 
+    #[doc(alias = "kIOSurfacePlaneBytesPerRow")]
     #[inline]
     pub fn plane_bytes_per_row() -> &'static String {
         unsafe { kIOSurfacePlaneBytesPerRow }
     }
 
+    #[doc(alias = "kIOSurfacePlaneOffset")]
     #[inline]
     pub fn plane_offset() -> &'static String {
         unsafe { kIOSurfacePlaneOffset }
     }
 
+    #[doc(alias = "kIOSurfacePlaneSize")]
     #[inline]
     pub fn plane_size() -> &'static String {
         unsafe { kIOSurfacePlaneSize }
     }
 
+    #[doc(alias = "kIOSurfacePlaneBase")]
     #[inline]
     pub fn plane_base() -> &'static String {
         unsafe { kIOSurfacePlaneBase }
     }
 
+    #[doc(alias = "kIOSurfacePlaneBitsPerElement")]
     #[inline]
     pub fn plane_bits_per_element() -> &'static String {
         unsafe { kIOSurfacePlaneBitsPerElement }
     }
 
+    #[doc(alias = "kIOSurfacePlaneBytesPerElement")]
     #[inline]
     pub fn plane_bytes_per_element() -> &'static String {
         unsafe { kIOSurfacePlaneBytesPerElement }
     }
 
+    #[doc(alias = "kIOSurfacePlaneElementWidth")]
     #[inline]
     pub fn plane_element_width() -> &'static String {
         unsafe { kIOSurfacePlaneElementWidth }
     }
 
+    #[doc(alias = "kIOSurfacePlaneElementHeight")]
     #[inline]
     pub fn plane_element_height() -> &'static String {
         unsafe { kIOSurfacePlaneElementHeight }
     }
 
+    #[doc(alias = "kIOSurfaceCacheMode")]
     #[inline]
     pub fn cache_mode() -> &'static String {
         unsafe { kIOSurfaceCacheMode }
     }
 
+    #[doc(alias = "kIOSurfacePixelFormat")]
     #[inline]
     pub fn pixel_format() -> &'static String {
         unsafe { kIOSurfacePixelFormat }
     }
 
+    #[doc(alias = "kIOSurfacePixelSizeCastingAllowed")]
     #[inline]
     pub fn pixel_size_casting_allowed() -> &'static String {
         unsafe { kIOSurfacePixelSizeCastingAllowed }
     }
 
+    #[doc(alias = "kIOSurfacePlaneComponentBitDepths")]
     #[inline]
     pub fn plane_component_bit_depths() -> &'static String {
         unsafe { kIOSurfacePlaneComponentBitDepths }
     }
 
+    #[doc(alias = "kIOSurfacePlaneComponentBitOffsets")]
     #[inline]
     pub fn plane_component_bit_offsets() -> &'static String {
         unsafe { kIOSurfacePlaneComponentBitOffsets }
