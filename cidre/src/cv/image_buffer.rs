@@ -302,7 +302,7 @@ pub mod attachment {
         }
     }
 
-    pub mod y_cb_cr_matrix {
+    pub mod ycbcr_matrix {
         use crate::cf;
 
         #[doc(alias = "kCVImageBufferYCbCrMatrix_ITU_R_709_2")]

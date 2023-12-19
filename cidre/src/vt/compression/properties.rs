@@ -386,7 +386,7 @@ pub mod keys {
 
     #[doc(alias = "kVTCompressionPropertyKey_TransferFunction")]
     #[inline]
-    pub fn transfer_function() -> &'static cf::String {
+    pub fn transfer_fn() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_TransferFunction }
     }
 
