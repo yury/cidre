@@ -38,10 +38,25 @@ pub use segment_report::SegmentReport;
 pub use segment_report::SegmentType;
 pub use segment_report::TrackReport as SegmentTrackReport;
 
-define_obj_type!(pub Asset(ns::Id));
-define_obj_type!(pub UrlAsset(Asset));
-define_obj_type!(pub FragmentedAsset(UrlAsset));
-define_obj_type!(pub FragmentedAssetMinder(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAsset")]
+    pub Asset(ns::Id)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVURLAsset")]
+    pub UrlAsset(Asset)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVFragmentedAsset")]
+    pub FragmentedAsset(UrlAsset)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVFragmentedAssetMinder")]
+    pub FragmentedAssetMinder(ns::Id)
+);
 
 impl arc::A<UrlAsset> {
     #[objc::msg_send(initWithURL:options:)]

@@ -5,19 +5,17 @@ impl InferenceGraph {
     define_cls!(MLC_INFERENCE_GRAPH);
 
     #[objc::cls_msg_send(graphWithGraphObjects:)]
-    pub fn with_graph_objects_ar(graph_objects: &ns::Array<mlc::Graph>) -> arc::Rar<Self>;
+    pub fn with_graph_objs_ar(graph_objects: &ns::Array<mlc::Graph>) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
-    pub fn with_graph_objects(graph_objects: &ns::Array<mlc::Graph>) -> arc::R<Self>;
+    pub fn with_graph_objs(graph_objects: &ns::Array<mlc::Graph>) -> arc::R<Self>;
 
     #[inline]
     pub fn with_graphs_slice(graph_objects: &[&mlc::Graph]) -> arc::R<Self> {
         let graph_objects = ns::Array::from_slice(graph_objects);
-        Self::with_graph_objects(&graph_objects)
+        Self::with_graph_objs(&graph_objects)
     }
 
-    // #[objc::add]
-    // - (BOOL)addInputs:(NSDictionary<NSString *, MLCTensor *> *)inputs;
     #[objc::msg_send(addInputs:)]
     fn add_inputs_(&mut self, inputs: &ns::Dictionary<ns::String, mlc::Tensor>) -> bool;
 
@@ -33,8 +31,6 @@ impl InferenceGraph {
         }
     }
 
-    // - (BOOL)compileWithOptions:(MLCGraphCompilationOptions)options
-    //                 device:(MLCDevice *)device;
     #[objc::msg_send(compileWithOptions:device:)]
     pub fn compile_with_options_(
         &mut self,
