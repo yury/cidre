@@ -191,8 +191,8 @@ async fn main() {
     writer.set_output_file_type_profile(Some(av::FileTypeProfile::mpeg4_apple_hls()));
     writer.set_preferred_output_segment_interval(cm::Time::with_secs(TARGET_DUR as _, 1));
 
-    let start_time = cm::Time::with_secs(ca::current_media_time(), 1000000000);
-    // let start_time = cm::Time::zero();
+    // let start_time = cm::Time::with_secs(ca::current_media_time(), 1000000000);
+    let start_time = cm::Time::zero();
     writer.set_initial_segment_start_time(start_time);
     let queue = dispatch::Queue::serial_with_autoreleasepool();
 
