@@ -225,7 +225,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut q = ns::OperationQueue::new();
+        let mut q = ns::OpQueue::new();
 
         let _observer = ns::Observer::with_obj(
             q.as_mut(),
@@ -256,7 +256,7 @@ mod tests {
 
     #[test]
     fn fail() {
-        let mut q = ns::OperationQueue::new();
+        let mut q = ns::OpQueue::new();
         let _observer = ns::Observer::with_obj(
             q.as_mut(),
             &ns::String::with_str("wrong. name"),

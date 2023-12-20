@@ -94,7 +94,7 @@ pub use data::WriteOpts as DataWriteOpts;
 mod regular_expression;
 pub use regular_expression::MatchFlags;
 pub use regular_expression::MatchOpts;
-pub use regular_expression::Options as RegexOpts;
+pub use regular_expression::Opts as RegexOpts;
 pub use regular_expression::Regex;
 
 mod text_checking_result;
@@ -157,9 +157,9 @@ pub use notification::NotificationCenter;
 pub use notification::NotificationName;
 
 mod operation;
-pub use operation::BlockOperation;
-pub use operation::Operation;
-pub use operation::OperationQueue;
+pub use operation::BlockOp;
+pub use operation::Op;
+pub use operation::OpQueue;
 
 mod coder;
 pub use coder::Coder;

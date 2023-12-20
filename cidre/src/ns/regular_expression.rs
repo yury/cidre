@@ -1,8 +1,8 @@
 use crate::{arc, define_cls, define_obj_type, define_options, ns, objc};
 
-define_options!(pub Options(usize));
+define_options!(pub Opts(usize));
 
-impl Options {
+impl Opts {
     /// Match letters in the pattern independent of case.
     #[doc(alias = "NSRegularExpressionCaseInsensitive")]
     pub const CASE_INSESITIVE: Self = Self(1 << 0);
@@ -97,7 +97,7 @@ impl arc::A<Regex> {
     pub fn init_with_pattern_options_err(
         self,
         pattern: &ns::String,
-        options: Options,
+        options: Opts,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Regex>>;
 }
@@ -106,10 +106,7 @@ impl Regex {
     define_cls!(NS_REGULAR_EXPRESSION);
 
     #[inline]
-    pub fn with_pattern(
-        pattern: &ns::String,
-        options: Options,
-    ) -> Result<arc::R<Self>, &ns::Error> {
+    pub fn with_pattern(pattern: &ns::String, options: Opts) -> Result<arc::R<Self>, &ns::Error> {
         let mut error = None;
         unsafe {
             let res = Self::alloc().init_with_pattern_options_err(pattern, options, &mut error);

@@ -5,8 +5,8 @@ use crate::blocks;
 
 use super::KVObserverRegistration;
 
-define_obj_type!(pub Operation(ns::Id));
-impl Operation {
+define_obj_type!(pub Op(ns::Id));
+impl Op {
     define_cls!(NS_OPERATION);
 
     #[objc::msg_send(isCancelled)]
@@ -16,8 +16,8 @@ impl Operation {
     pub fn cancel(&mut self);
 }
 
-define_obj_type!(pub BlockOperation(Operation));
-impl BlockOperation {
+define_obj_type!(pub BlockOp(Op));
+impl BlockOp {
     define_cls!(NS_BLOCK_OPERATION);
 
     #[cfg(feature = "blocks")]
@@ -33,14 +33,14 @@ impl BlockOperation {
         F: FnOnce();
 }
 
-impl KVObserverRegistration for Operation {}
-impl KVObserverRegistration for BlockOperation {}
+impl KVObserverRegistration for Op {}
+impl KVObserverRegistration for BlockOp {}
 
-define_obj_type!(pub OperationQueue(ns::Id), NS_OPERATION_QUEUE);
+define_obj_type!(pub OpQueue(ns::Id), NS_OPERATION_QUEUE);
 
-impl KVObserverRegistration for OperationQueue {}
+impl KVObserverRegistration for OpQueue {}
 
-impl OperationQueue {
+impl OpQueue {
     #[objc::msg_send(name)]
     pub fn name(&self) -> Option<&ns::String>;
 
@@ -48,7 +48,7 @@ impl OperationQueue {
     pub fn set_name(&mut self, name: Option<&ns::String>);
 
     #[objc::msg_send(addOperation:)]
-    pub fn add_op(&mut self, op: &Operation);
+    pub fn add_op(&mut self, op: &Op);
 
     #[objc::msg_send(cancelAllOperations)]
     pub fn cancel_all_ops(&mut self);
@@ -64,7 +64,7 @@ impl OperationQueue {
 }
 
 extern "C" {
-    static NS_OPERATION: &'static objc::Class<Operation>;
-    static NS_BLOCK_OPERATION: &'static objc::Class<BlockOperation>;
-    static NS_OPERATION_QUEUE: &'static objc::Class<OperationQueue>;
+    static NS_OPERATION: &'static objc::Class<Op>;
+    static NS_BLOCK_OPERATION: &'static objc::Class<BlockOp>;
+    static NS_OPERATION_QUEUE: &'static objc::Class<OpQueue>;
 }

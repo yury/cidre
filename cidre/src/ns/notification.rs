@@ -88,7 +88,7 @@ impl NotificationCenter {
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
-        queue: Option<&ns::OperationQueue>,
+        queue: Option<&ns::OpQueue>,
         using_block: &'static mut blocks::Block<B>,
     ) -> arc::Rar<ns::Id>
     where
@@ -100,7 +100,7 @@ impl NotificationCenter {
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
-        queue: Option<&ns::OperationQueue>,
+        queue: Option<&ns::OpQueue>,
         using_block: &'static mut blocks::Block<B>,
     ) -> arc::R<ns::Id>
     where
