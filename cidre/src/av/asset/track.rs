@@ -1,4 +1,4 @@
-use crate::{av, cm, define_obj_type, ns, objc};
+use crate::{av, cg, cm, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVAssetTrack")]
@@ -42,4 +42,34 @@ impl Track {
 
     #[objc::msg_send(hasMediaCharacteristic:)]
     pub fn has_media_characterisitc(&self, val: av::MediaCharacteristic) -> bool;
+}
+
+/// AVAssetTrackPropertiesForVisualCharacteristic
+impl Track {
+    #[objc::msg_send(naturalSize)]
+    pub fn natural_size(&self) -> cg::Size;
+
+    #[objc::msg_send(preferredTransform)]
+    pub fn preferred_transform(&self) -> cg::AffineTransform;
+}
+
+/// AVAssetTrackPropertiesForAudibleCharacteristic
+impl Track {
+    #[objc::msg_send(preferredVolume)]
+    pub fn preferred_volume(&self) -> f32;
+
+    #[objc::msg_send(hasAudioSampleDependencies)]
+    pub fn has_audio_sample_dependencies(&self) -> bool;
+}
+
+/// AVAssetTrackPropertiesForFrameBasedCharacteristic
+impl Track {
+    #[objc::msg_send(nominalFrameRate)]
+    pub fn nominal_frame_rate(&self) -> f32;
+
+    #[objc::msg_send(minFrameDuration)]
+    pub fn min_frame_duration(&self) -> cm::Time;
+
+    #[objc::msg_send(requiresFrameReordering)]
+    pub fn requires_frame_reordering(&self) -> bool;
 }
