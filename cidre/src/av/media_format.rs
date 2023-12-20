@@ -1,6 +1,9 @@
 use crate::{define_obj_type, ns};
 
-define_obj_type!(pub MediaType(ns::String));
+define_obj_type!(
+    #[doc(alias = "AVMediaType")]
+    pub MediaType(ns::String)
+);
 
 /// Media types
 impl MediaType {
@@ -81,7 +84,10 @@ impl MediaType {
     }
 }
 
-define_obj_type!(pub VideoRange(ns::String));
+define_obj_type!(
+    #[doc(alias = "AVVideoRange")]
+    pub VideoRange(ns::String)
+);
 
 /// Constants that describe a video variant’s dynamic range.
 impl VideoRange {
@@ -106,8 +112,210 @@ impl VideoRange {
         unsafe { AVVideoRangePQ }
     }
 }
+define_obj_type!(
+    #[doc(alias = "AVMediaCharacteristic")]
+    pub MediaCharacteristic(ns::String)
+);
 
-define_obj_type!(pub FileType(ns::String));
+impl MediaCharacteristic {
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes visual content.
+    #[doc(alias = "AVMediaCharacteristicVisual")]
+    #[inline]
+    pub fn visial() -> &'static Self {
+        unsafe { AVMediaCharacteristicVisual }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes audible content.
+    #[doc(alias = "AVMediaCharacteristicAudible")]
+    #[inline]
+    pub fn audible() -> &'static Self {
+        unsafe { AVMediaCharacteristicAudible }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes legible content.
+    #[doc(alias = "AVMediaCharacteristicLegible")]
+    #[inline]
+    pub fn legible() -> &'static Self {
+        unsafe { AVMediaCharacteristicLegible }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes content that's frame-based
+    #[doc(alias = "AVMediaCharacteristicFrameBased")]
+    #[inline]
+    pub fn frame_based() -> &'static Self {
+        unsafe { AVMediaCharacteristicFrameBased }
+    }
+
+    /// A media characteristic that indicates that a track uses a wide gamut color space
+    /// and therefore may make use of colors that cannot be accurately represented otherwise.
+    #[doc(alias = "AVMediaCharacteristicUsesWideGamutColorSpace")]
+    #[inline]
+    pub fn uses_wide_gamut_color_space() -> &'static Self {
+        unsafe { AVMediaCharacteristicUsesWideGamutColorSpace }
+    }
+
+    /// A media characteristic that indicates that a track contains HDR video.
+    #[doc(alias = "AVMediaCharacteristicContainsHDRVideo")]
+    #[inline]
+    pub fn contains_hdr_video() -> &'static Self {
+        unsafe { AVMediaCharacteristicContainsHDRVideo }
+    }
+
+    /// A media characteristic that indicates that a track contains an alpha channel.
+    #[doc(alias = "AVMediaCharacteristicContainsAlphaChannel")]
+    #[inline]
+    pub fn contains_alpha_channel() -> &'static Self {
+        unsafe { AVMediaCharacteristicContainsAlphaChannel }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes content that's marked by the content author as intrinsic to the presentation of the asset
+    #[doc(alias = "AVMediaCharacteristicIsMainProgramContent")]
+    #[inline]
+    pub fn is_main_program_content() -> &'static Self {
+        unsafe { AVMediaCharacteristicIsMainProgramContent }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes content that's marked by the content author as auxiliary to the presentation of the asset.
+    #[doc(alias = "AVMediaCharacteristicIsAuxiliaryContent")]
+    #[inline]
+    pub fn is_auxiliary() -> &'static Self {
+        unsafe { AVMediaCharacteristicIsAuxiliaryContent }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// includes content that's marked by the content author as original to the principal
+    /// production of the media, as opposed to supplementary or derivative content created by
+    /// means of language translation or by other means.
+    #[doc(alias = "AVMediaCharacteristicIsOriginalContent")]
+    #[inline]
+    pub fn is_original_content() -> &'static Self {
+        unsafe { AVMediaCharacteristicIsOriginalContent }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option presents only
+    /// forced subtitles.
+    #[doc(alias = "AVMediaCharacteristicContainsOnlyForcedSubtitles")]
+    #[inline]
+    pub fn contains_only_forces_subtitles() -> &'static Self {
+        unsafe { AVMediaCharacteristicContainsOnlyForcedSubtitles }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicTranscribesSpokenDialogForAccessibility")]
+    #[inline]
+    pub fn transcribes_spoken_dialog_for_accessibility() -> &'static Self {
+        unsafe { AVMediaCharacteristicTranscribesSpokenDialogForAccessibility }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicDescribesMusicAndSoundForAccessibility")]
+    #[inline]
+    pub fn transcribes_music_and_sound_for_accessibility() -> &'static Self {
+        unsafe { AVMediaCharacteristicDescribesMusicAndSoundForAccessibility }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicEnhancesSpeechIntelligibility")]
+    #[inline]
+    pub fn enhances_speech_intelligibility() -> &'static Self {
+        unsafe { AVMediaCharacteristicEnhancesSpeechIntelligibility }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicEasyToRead")]
+    #[inline]
+    pub fn easy_to_read() -> &'static Self {
+        unsafe { AVMediaCharacteristicEasyToRead }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicDescribesVideoForAccessibility")]
+    #[inline]
+    pub fn describes_video_for_accessibility() -> &'static Self {
+        unsafe { AVMediaCharacteristicDescribesVideoForAccessibility }
+    }
+
+    /// A media characteristic that indicates that a track or media selection option
+    /// contains a language or dialect translation of originally or previously produced
+    /// content, intended to be used as a substitute for that content by users who prefer
+    /// its designated language.
+    #[doc(alias = "AVMediaCharacteristicLanguageTranslation")]
+    #[inline]
+    pub fn language_translation() -> &'static Self {
+        unsafe { AVMediaCharacteristicLanguageTranslation }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicDubbedTranslation")]
+    #[inline]
+    pub fn dubbed_translation() -> &'static Self {
+        unsafe { AVMediaCharacteristicDubbedTranslation }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicVoiceOverTranslation")]
+    #[inline]
+    pub fn voice_over_translation() -> &'static Self {
+        unsafe { AVMediaCharacteristicVoiceOverTranslation }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicTactileMinimal")]
+    #[inline]
+    pub fn tactile_minimal() -> &'static Self {
+        unsafe { AVMediaCharacteristicTactileMinimal }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicContainsStereoMultiviewVideo")]
+    #[inline]
+    pub fn contains_stereo_multiview_video() -> &'static Self {
+        unsafe { AVMediaCharacteristicContainsStereoMultiviewVideo }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicCarriesVideoStereoMetadata")]
+    #[inline]
+    pub fn carries_video_stereo_metadata() -> &'static Self {
+        unsafe { AVMediaCharacteristicCarriesVideoStereoMetadata }
+    }
+
+    #[doc(alias = "AVMediaCharacteristicIndicatesHorizontalFieldOfView")]
+    #[inline]
+    pub fn indicates_horizontal_field_of_view() -> &'static Self {
+        unsafe { AVMediaCharacteristicIndicatesHorizontalFieldOfView }
+    }
+}
+
+#[link(name = "AVFoundation", kind = "framework")]
+extern "C" {
+    static AVMediaCharacteristicVisual: &'static MediaCharacteristic;
+    static AVMediaCharacteristicAudible: &'static MediaCharacteristic;
+    static AVMediaCharacteristicLegible: &'static MediaCharacteristic;
+    static AVMediaCharacteristicFrameBased: &'static MediaCharacteristic;
+    static AVMediaCharacteristicUsesWideGamutColorSpace: &'static MediaCharacteristic;
+    static AVMediaCharacteristicContainsHDRVideo: &'static MediaCharacteristic;
+    static AVMediaCharacteristicContainsAlphaChannel: &'static MediaCharacteristic;
+    static AVMediaCharacteristicIsMainProgramContent: &'static MediaCharacteristic;
+    static AVMediaCharacteristicIsAuxiliaryContent: &'static MediaCharacteristic;
+    static AVMediaCharacteristicIsOriginalContent: &'static MediaCharacteristic;
+    static AVMediaCharacteristicContainsOnlyForcedSubtitles: &'static MediaCharacteristic;
+    static AVMediaCharacteristicTranscribesSpokenDialogForAccessibility:
+        &'static MediaCharacteristic;
+    static AVMediaCharacteristicDescribesMusicAndSoundForAccessibility:
+        &'static MediaCharacteristic;
+    static AVMediaCharacteristicEnhancesSpeechIntelligibility: &'static MediaCharacteristic;
+    static AVMediaCharacteristicEasyToRead: &'static MediaCharacteristic;
+    static AVMediaCharacteristicDescribesVideoForAccessibility: &'static MediaCharacteristic;
+    static AVMediaCharacteristicLanguageTranslation: &'static MediaCharacteristic;
+    static AVMediaCharacteristicDubbedTranslation: &'static MediaCharacteristic;
+    static AVMediaCharacteristicVoiceOverTranslation: &'static MediaCharacteristic;
+    static AVMediaCharacteristicTactileMinimal: &'static MediaCharacteristic;
+    static AVMediaCharacteristicContainsStereoMultiviewVideo: &'static MediaCharacteristic;
+    static AVMediaCharacteristicCarriesVideoStereoMetadata: &'static MediaCharacteristic;
+    static AVMediaCharacteristicIndicatesHorizontalFieldOfView: &'static MediaCharacteristic;
+}
+
+define_obj_type!(
+    #[doc(alias = "AVFileType")]
+    pub FileType(ns::String)
+);
 
 impl FileType {
     /// A UTI for the QuickTime movie file format.
