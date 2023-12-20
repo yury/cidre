@@ -48,9 +48,12 @@ impl ExecutionDesc {
     pub fn set_wait_until_completed(&self, val: bool);
 }
 
-define_obj_type!(pub Executable(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MPSGraphExecutable")]
+    pub Executable(ns::Id)
+);
 
 impl Executable {
     #[objc::msg_send(options)]
-    pub fn options(&self) -> graph::Options;
+    pub fn opts(&self) -> graph::Opts;
 }

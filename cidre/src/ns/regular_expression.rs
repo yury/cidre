@@ -33,9 +33,12 @@ impl Options {
     pub const USE_UNICODE_WORD_BOUNDARIES: Self = Self(1 << 6);
 }
 
-define_options!(pub MatchingOptions(usize));
+define_options!(
+    #[doc(alias = "NSMatchingOptions")]
+    pub MatchOpts(usize)
+);
 
-impl MatchingOptions {
+impl MatchOpts {
     /// Call the block periodically during long-running match operations.
     #[doc(alias = "NSMatchingReportProgress")]
     pub const REPORT_PROGRESS: Self = Self(1 << 0);
@@ -57,9 +60,12 @@ impl MatchingOptions {
     pub const ANCHORING_BOUNDS: Self = Self(1 << 4);
 }
 
-define_options!(pub MatchingFlags(usize));
+define_options!(
+    #[doc(alias = "NSMatchingFlags")]
+    pub MatchFlags(usize)
+);
 
-impl MatchingFlags {
+impl MatchFlags {
     /// Set when the block is called to report progress during a long-running match operation.
     #[doc(alias = "NSMatchingProgress")]
     pub const PROGRESS: Self = Self(1 << 0);
@@ -81,19 +87,22 @@ impl MatchingFlags {
     pub const INTERNAL_ERROR: Self = Self(1 << 4);
 }
 
-define_obj_type!(pub RegularExpression(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSRegularExpression")]
+    pub Regex(ns::Id)
+);
 
-impl arc::A<RegularExpression> {
+impl arc::A<Regex> {
     #[objc::msg_send(initWithPattern:options:error:)]
     pub fn init_with_pattern_options_err(
         self,
         pattern: &ns::String,
         options: Options,
         error: &mut Option<&ns::Error>,
-    ) -> Option<arc::R<RegularExpression>>;
+    ) -> Option<arc::R<Regex>>;
 }
 
-impl RegularExpression {
+impl Regex {
     define_cls!(NS_REGULAR_EXPRESSION);
 
     #[inline]
@@ -114,7 +123,7 @@ impl RegularExpression {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_REGULAR_EXPRESSION: &'static objc::Class<RegularExpression>;
+    static NS_REGULAR_EXPRESSION: &'static objc::Class<Regex>;
 }
 
 #[cfg(test)]
@@ -122,9 +131,7 @@ mod tests {
     pub use crate::{cf, ns};
     #[test]
     fn basics() {
-        let pat =
-            ns::RegularExpression::with_pattern(&ns::String::with_str(".*"), Default::default())
-                .unwrap();
+        let pat = ns::Regex::with_pattern(&ns::String::with_str(".*"), Default::default()).unwrap();
         println!("pat {:?}", pat);
     }
 }

@@ -50,7 +50,7 @@ pub use rnn_ops::SingleGateRNNDesc;
 #[doc(alias = "MPSGraphOptions")]
 #[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(u64)]
-pub enum Options {
+pub enum Opts {
     None = 0,
 
     /// Synchronize results using a blit encoder if on a GPU
@@ -124,10 +124,10 @@ define_obj_type!(pub Graph(ns::Id), MPS_GRAPH);
 
 impl Graph {
     #[objc::msg_send(options)]
-    pub fn options(&self) -> Options;
+    pub fn options(&self) -> Opts;
 
     #[objc::msg_send(setOptions:)]
-    pub fn set_options(&mut self, value: Options);
+    pub fn set_options(&mut self, value: Opts);
 }
 
 #[link(name = "mpsg", kind = "static")]

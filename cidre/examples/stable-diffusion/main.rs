@@ -4,9 +4,9 @@ fn make_graph(synchonize: bool) -> arc::R<graph::Graph> {
     let mut graph = graph::Graph::new();
 
     let options = if synchonize {
-        graph::Options::SynchronizeResults
+        graph::Opts::SynchronizeResults
     } else {
-        graph::Options::None
+        graph::Opts::None
     };
 
     graph.set_options(options);
@@ -27,7 +27,7 @@ fn load_const(
 
     let data = ns::Data::with_contents_of_file(
         &ns::String::with_str(&format!("bins/{name}{prefix}.bin")),
-        ns::DataReadingOpts::MAPPED_ALWAYS,
+        ns::DataReadOpts::MAPPED_ALWAYS,
     )
     .unwrap();
 

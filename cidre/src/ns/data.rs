@@ -2,9 +2,12 @@ use std::{mem::transmute, ptr::slice_from_raw_parts};
 
 use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
-define_options!(pub ReadingOpts(usize));
+define_options!(
+    #[doc(alias = "NSDataReadingOptions")]
+    pub ReadOpts(usize)
+);
 
-impl ReadingOpts {
+impl ReadOpts {
     /// Hint to map the file in if possible and safe
     #[doc(alias = "NSDataReadingMappedIfSafe")]
     pub const MAPPED_IF_SAFE: Self = Self(1 << 0);
@@ -20,10 +23,10 @@ impl ReadingOpts {
 
 define_options!(
     #[doc(alias = "NSDataWritingOptions")]
-    pub WritingOpts(usize)
+    pub WriteOpts(usize)
 );
 
-impl WritingOpts {
+impl WriteOpts {
     pub const ATOMIC: Self = Self(1 << 0);
     pub const FILE_PROTECTION_NONE: Self = Self(0x10000000);
     pub const FILE_PROTECTION_COMPLETE: Self = Self(0x20000000);
@@ -57,7 +60,7 @@ impl arc::A<Data> {
     pub fn init_with_contents_of_file_options_err(
         self,
         path: &ns::String,
-        options: ReadingOpts,
+        options: ReadOpts,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
 
@@ -65,7 +68,7 @@ impl arc::A<Data> {
     pub fn init_with_contents_of_url_options_err(
         self,
         url: &ns::Url,
-        options: ReadingOpts,
+        options: ReadOpts,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
 }
@@ -74,7 +77,7 @@ impl Data {
     #[inline]
     pub fn with_contents_of_file(
         path: &ns::String,
-        options: ReadingOpts,
+        options: ReadOpts,
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
@@ -90,7 +93,7 @@ impl Data {
     #[inline]
     pub fn with_contents_of_url(
         url: &ns::Url,
-        options: ReadingOpts,
+        options: ReadOpts,
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;

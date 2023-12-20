@@ -87,15 +87,15 @@ pub use set::SetMut;
 mod data;
 pub use data::Data;
 pub use data::DataMut;
-pub use data::ReadingOpts as DataReadingOpts;
+pub use data::ReadOpts as DataReadOpts;
 pub use data::SearchOpts as DataSearchOpts;
-pub use data::WritingOpts as DataWritingOpts;
+pub use data::WriteOpts as DataWriteOpts;
 
 mod regular_expression;
-pub use regular_expression::MatchingFlags;
-pub use regular_expression::MatchingOptions;
-pub use regular_expression::Options as RegularExpressionOptions;
-pub use regular_expression::RegularExpression;
+pub use regular_expression::MatchFlags;
+pub use regular_expression::MatchOpts;
+pub use regular_expression::Options as RegexOpts;
+pub use regular_expression::Regex;
 
 mod text_checking_result;
 pub use text_checking_result::TextCheckingResult;
