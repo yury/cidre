@@ -2,9 +2,9 @@ use std::{mem::transmute, ptr::slice_from_raw_parts};
 
 use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
-define_options!(pub ReadingOptions(usize));
+define_options!(pub ReadingOpts(usize));
 
-impl ReadingOptions {
+impl ReadingOpts {
     /// Hint to map the file in if possible and safe
     #[doc(alias = "NSDataReadingMappedIfSafe")]
     pub const MAPPED_IF_SAFE: Self = Self(1 << 0);
@@ -18,9 +18,12 @@ impl ReadingOptions {
     pub const MAPPED_ALWAYS: Self = Self(1 << 3);
 }
 
-define_options!(pub WritingOptions(usize));
+define_options!(
+    #[doc(alias = "NSDataWritingOptions")]
+    pub WritingOpts(usize)
+);
 
-impl WritingOptions {
+impl WritingOpts {
     pub const ATOMIC: Self = Self(1 << 0);
     pub const FILE_PROTECTION_NONE: Self = Self(0x10000000);
     pub const FILE_PROTECTION_COMPLETE: Self = Self(0x20000000);
@@ -29,22 +32,32 @@ impl WritingOptions {
     pub const FILE_PROTECTION_MASK: Self = Self(0xf0000000);
 }
 
-define_options!(pub SearchOptions(usize));
+define_options!(
+    #[doc(alias = "NSDataSearchOptions")]
+    pub SearchOpts(usize)
+);
 
-impl SearchOptions {
+impl SearchOpts {
     pub const BACKWARDS: Self = Self(1 << 0);
     pub const ANCHORED: Self = Self(1 << 1);
 }
 
-define_obj_type!(pub Data(ns::Id), NS_DATA);
-define_obj_type!(pub DataMut(Data), NS_MUTABLE_DATA);
+define_obj_type!(
+    #[doc(alias = "NSData")]
+    pub Data(ns::Id), NS_DATA
+);
+
+define_obj_type!(
+    #[doc(alias = "NSMutableData")]
+    pub DataMut(Data), NS_MUTABLE_DATA
+);
 
 impl arc::A<Data> {
     #[objc::msg_send(initWithContentsOfFile:options:error:)]
     pub fn init_with_contents_of_file_options_err(
         self,
         path: &ns::String,
-        options: ReadingOptions,
+        options: ReadingOpts,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
 
@@ -52,16 +65,16 @@ impl arc::A<Data> {
     pub fn init_with_contents_of_url_options_err(
         self,
         url: &ns::Url,
-        options: ReadingOptions,
+        options: ReadingOpts,
         error: &mut Option<&ns::Error>,
     ) -> Option<arc::R<Data>>;
 }
 
 impl Data {
     #[inline]
-    pub fn with_contents_of_file_options(
+    pub fn with_contents_of_file(
         path: &ns::String,
-        options: ReadingOptions,
+        options: ReadingOpts,
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
@@ -75,9 +88,9 @@ impl Data {
     }
 
     #[inline]
-    pub fn with_contents_of_url_options(
+    pub fn with_contents_of_url(
         url: &ns::Url,
-        options: ReadingOptions,
+        options: ReadingOpts,
     ) -> Result<arc::R<Self>, &ns::Error> {
         unsafe {
             let mut error = None;
@@ -95,6 +108,7 @@ impl Data {
     #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }

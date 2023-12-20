@@ -25,9 +25,9 @@ fn load_const(
         ("", mps::DataType::F16, 2)
     };
 
-    let data = ns::Data::with_contents_of_file_options(
+    let data = ns::Data::with_contents_of_file(
         &ns::String::with_str(&format!("bins/{name}{prefix}.bin")),
-        ns::DataReadingOptions::MAPPED_ALWAYS,
+        ns::DataReadingOpts::MAPPED_ALWAYS,
     )
     .unwrap();
 

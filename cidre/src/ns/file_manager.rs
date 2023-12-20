@@ -4,9 +4,9 @@ define_obj_type!(pub FileAttrKey(ns::String));
 define_obj_type!(pub FileAttrType(ns::String));
 define_obj_type!(pub FileProtectionType(ns::String));
 
-define_options!(pub VolumeEnumerationOptions(usize));
+define_options!(pub VolumeEnumOpts(usize));
 
-impl VolumeEnumerationOptions {
+impl VolumeEnumOpts {
     ///  The mounted volume enumeration will skip hidden volumes.
     pub const SKIP_HIDDEN_VOLUMES: Self = Self(1 << 1);
 
@@ -14,8 +14,8 @@ impl VolumeEnumerationOptions {
     pub const PRODUCE_FILE_REFERENCE_URLS: Self = Self(1 << 2);
 }
 
-define_options!(pub DirectoryEnumerationOptions(usize));
-impl DirectoryEnumerationOptions {
+define_options!(pub DirEnumOpts(usize));
+impl DirEnumOpts {
     /// Causes the to perform a shallow enumeration and not descend into directories it encounters.
     pub const SKIPS_SUBDIRECTORY_DESCENDANTS: Self = Self(1 << 0);
 
@@ -65,7 +65,7 @@ impl FileManager {
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
-        options: DirectoryEnumerationOptions,
+        options: DirEnumOpts,
         error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::Rar<ns::Array<ns::Url>>>;
 
@@ -74,7 +74,7 @@ impl FileManager {
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
-        options: DirectoryEnumerationOptions,
+        options: DirEnumOpts,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::Url>>>;
 
@@ -82,7 +82,7 @@ impl FileManager {
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
-        options: DirectoryEnumerationOptions,
+        options: DirEnumOpts,
     ) -> Result<arc::R<ns::Array<ns::Url>>, &'ar ns::Error> {
         let mut error = None;
         let res =

@@ -87,9 +87,9 @@ pub use set::SetMut;
 mod data;
 pub use data::Data;
 pub use data::DataMut;
-pub use data::ReadingOptions as DataReadingOptions;
-pub use data::SearchOptions as DataSearchOptions;
-pub use data::WritingOptions as DataWritingOptions;
+pub use data::ReadingOpts as DataReadingOpts;
+pub use data::SearchOpts as DataSearchOpts;
+pub use data::WritingOpts as DataWritingOpts;
 
 mod regular_expression;
 pub use regular_expression::MatchingFlags;
@@ -130,14 +130,14 @@ mod timer;
 pub use timer::Timer;
 
 mod file_manager;
-pub use file_manager::DirectoryEnumerationOptions;
+pub use file_manager::DirEnumOpts;
 pub use file_manager::FileAttrKey;
 pub use file_manager::FileAttrType;
 pub use file_manager::FileManager;
 pub use file_manager::FileProtectionType;
 pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
 pub use file_manager::UrlRelationship;
-pub use file_manager::VolumeEnumerationOptions;
+pub use file_manager::VolumeEnumOpts;
 
 mod path_utilities;
 pub use path_utilities::full_user_name;
