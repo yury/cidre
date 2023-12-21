@@ -55,7 +55,8 @@ impl Range {
     }
 
     /// ```
-    /// use cidre::{ns};
+    /// use cidre::ns;
+    ///
     /// let a = ns::Range::new(0, 10);
     /// assert!(a.contains(5));
     /// assert!(!a.contains(10));
