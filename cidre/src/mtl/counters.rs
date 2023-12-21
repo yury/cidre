@@ -1,6 +1,10 @@
 use crate::{arc, define_mtl, define_obj_type, ns, objc};
 
-define_obj_type!(pub CounterSampleBuf(ns::Id));
+define_obj_type!(
+    /// A specialized memory buffer that stores a GPU’s counter set data.
+    #[doc(alias = "MTLCounterSampleBuffer")]
+    pub CounterSampleBuf(ns::Id)
+);
 
 impl CounterSampleBuf {
     define_mtl!(device, label);
@@ -38,7 +42,11 @@ impl CounterSet {
     pub fn counters(&self) -> &ns::Array<Counter>;
 }
 
-define_obj_type!(pub Desc(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR);
+define_obj_type!(
+    /// A group of properties that configures the counter sample buffers you create with it.
+    #[doc(alias = "MTLCounterSampleBufferDescriptor")]
+    pub Desc(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR
+);
 
 impl Desc {
     define_mtl!(label, set_label, storage_mode);
@@ -50,6 +58,7 @@ impl Desc {
     #[objc::msg_send(setSampleCount:)]
     pub fn set_sample_count(&mut self, value: usize);
 }
+
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
