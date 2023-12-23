@@ -152,8 +152,9 @@ mod tests {
         assert!(voice.name().is_empty());
         assert!(voice.lang().is_none());
         assert_eq!(voice.quality(), av::SpeechSynthesisVoiceQuality::Unknown);
-        assert!(av::SpeechSynthesisVoice::speech_voices().len() > 0);
         let settings = voice.audio_file_settings();
         assert!(settings.is_none());
+
+        assert!(av::SpeechSynthesisVoice::speech_voices().len() > 0);
     }
 }

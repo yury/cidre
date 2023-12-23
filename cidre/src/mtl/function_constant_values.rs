@@ -8,28 +8,13 @@ impl FnConstValues {
     define_mtl!(reset);
 
     #[objc::msg_send(setConstantValue:type:atIndex:)]
-    pub fn set_value_at(
-        &mut self,
-        val: *const c_void,
-        type_: mtl::DataType,
-        at_index: ns::UInteger,
-    );
+    pub fn set_value_at(&mut self, val: *const c_void, type_: mtl::DType, at_index: ns::UInteger);
 
     #[objc::msg_send(setConstantValues:type:withRange:)]
-    pub fn set_values(
-        &mut self,
-        values: *const c_void,
-        type_: mtl::DataType,
-        with_range: ns::Range,
-    );
+    pub fn set_values(&mut self, values: *const c_void, type_: mtl::DType, with_range: ns::Range);
 
     #[objc::msg_send(setConstantValue:type:withName:)]
-    pub fn set_value_with_name(
-        &mut self,
-        val: *const c_void,
-        type_: mtl::DataType,
-        name: &ns::String,
-    );
+    pub fn set_value_with_name(&mut self, val: *const c_void, type_: mtl::DType, name: &ns::String);
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -45,9 +30,9 @@ mod tests {
     fn basics() {
         let mut fcv = mtl::FnConstValues::new();
         let v = false;
-        fcv.set_value_at(&v as *const bool as _, mtl::DataType::Bool, 0);
+        fcv.set_value_at(&v as *const bool as _, mtl::DType::Bool, 0);
         fcv.reset();
         let name = ns::String::with_str("name");
-        fcv.set_value_with_name(&v as *const bool as _, mtl::DataType::Bool, &name);
+        fcv.set_value_with_name(&v as *const bool as _, mtl::DType::Bool, &name);
     }
 }

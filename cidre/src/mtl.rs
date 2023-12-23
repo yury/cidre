@@ -26,7 +26,7 @@ mod argument;
 pub use argument::Access as ArgAccess;
 pub use argument::ArrayType;
 pub use argument::BaseType;
-pub use argument::DataType;
+pub use argument::DType;
 pub use argument::PointerType;
 pub use argument::StructMember;
 pub use argument::StructType;

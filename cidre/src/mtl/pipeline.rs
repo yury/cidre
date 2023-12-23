@@ -1,5 +1,6 @@
 use crate::{arc, define_obj_type, ns, objc};
 
+#[doc(alias = "MTLMutability")]
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum Mutability {
@@ -9,7 +10,10 @@ pub enum Mutability {
     Immutable = 2,
 }
 
-define_obj_type!(pub PipelineBufDesc(ns::Id), MTL_PIPELINE_BUFFER_DESCRIPTOR);
+define_obj_type!(
+    #[doc(alias = "MTLPipelineBufferDescriptor")]
+    pub PipelineBufDesc(ns::Id), MTL_PIPELINE_BUFFER_DESCRIPTOR
+);
 
 impl PipelineBufDesc {
     #[objc::msg_send(mutability)]
@@ -19,7 +23,11 @@ impl PipelineBufDesc {
     pub fn set_mutability(&mut self, val: Mutability);
 }
 
-define_obj_type!(pub PipelineBufDescArray(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLPipelineBufferDescriptorArray")]
+    pub PipelineBufDescArray(ns::Id)
+);
+
 impl PipelineBufDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn obj_at(&self, index: usize) -> &PipelineBufDesc;

@@ -3,7 +3,7 @@ use crate::{define_obj_type, ns, objc};
 #[doc(alias = "MTLDataType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
-pub enum DataType {
+pub enum DType {
     /// A placeholder that represents a GPU function parameter that doesn’t have a valid data type.
     None = 0,
 

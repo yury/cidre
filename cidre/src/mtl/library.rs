@@ -23,7 +23,7 @@ impl VertexAttr {
     pub fn attr_index(&self) -> usize;
 
     #[objc::msg_send(attributeType)]
-    pub fn attr_type(&self) -> mtl::DataType;
+    pub fn attr_type(&self) -> mtl::DType;
 
     #[objc::msg_send(isActive)]
     pub fn is_active(&self) -> bool;
@@ -49,7 +49,7 @@ impl Attr {
     pub fn attr_index(&self) -> usize;
 
     #[objc::msg_send(attributeType)]
-    pub fn attr_type(&self) -> mtl::DataType;
+    pub fn attr_type(&self) -> mtl::DType;
 
     #[objc::msg_send(isActive)]
     pub fn is_active(&self) -> bool;
