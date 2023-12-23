@@ -311,7 +311,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::av;
+    use crate::{av, objc::Obj};
 
     #[test]
     fn basics() {
@@ -321,10 +321,28 @@ mod tests {
         assert_eq!(engine.manual_rendering_format().channel_count(), 0);
         assert_eq!(engine.is_auto_shutdown_enabled(), false);
         assert_eq!(engine.attached_nodes().len(), 0);
+        let s1 = engine.attached_nodes();
+        let s2 = engine.attached_nodes();
+
+        unsafe {
+            assert_eq!(
+                s1.as_type_ref().as_type_ptr(),
+                s2.as_type_ref().as_type_ptr()
+            );
+        }
+
         let _output_node = engine.output_node();
         let input_node = engine.input_node();
         let _en = input_node.engine().expect("engine");
         assert_eq!(engine.attached_nodes().len(), 2);
+
+        let s3 = engine.attached_nodes();
+        unsafe {
+            assert_ne!(
+                s1.as_type_ref().as_type_ptr(),
+                s3.as_type_ref().as_type_ptr()
+            );
+        }
     }
 
     #[test]
