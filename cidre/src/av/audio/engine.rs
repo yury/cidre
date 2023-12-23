@@ -60,7 +60,10 @@ pub enum ManualRenderingMode {
     Realtime = 1,
 }
 
-define_obj_type!(pub Engine(ns::Id), AV_AUDIO_ENGINE);
+define_obj_type!(
+    #[doc(alias = "AVAudioEngine")]
+    pub Engine(ns::Id), AV_AUDIO_ENGINE
+);
 
 /// An AVAudioEngine contains a group of connected AVAudioNodes ("nodes"), each of which performs
 /// an audio signal generation, processing, or input/output task.
@@ -186,6 +189,21 @@ impl Engine {
     #[objc::msg_send(isRunning)]
     pub fn is_running(&self) -> bool;
 
+    #[objc::msg_send(isAutoShutdownEnabled)]
+    pub fn is_auto_shutdown_enabled(&self) -> bool;
+
+    #[objc::msg_send(setAutoShutdownEnabled:)]
+    pub fn set_auto_shutdown_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(attachedNodes)]
+    pub fn attached_nodes_ar(&self) -> arc::Rar<ns::Set<av::AudioNode>>;
+
+    #[objc::rar_retain]
+    pub fn attached_nodes(&self) -> arc::R<ns::Set<av::AudioNode>>;
+}
+
+/// Manual Rendering Mode
+impl Engine {
     /// Set the engine to operate in a manual rendering mode with the specified render format and
     /// maximum frame count.
     ///
@@ -301,9 +319,12 @@ mod tests {
         assert!(!engine.is_running());
         assert!(!engine.is_in_manual_rendering_mode());
         assert_eq!(engine.manual_rendering_format().channel_count(), 0);
+        assert_eq!(engine.is_auto_shutdown_enabled(), false);
+        assert_eq!(engine.attached_nodes().len(), 0);
         let _output_node = engine.output_node();
         let input_node = engine.input_node();
         let _en = input_node.engine().expect("engine");
+        assert_eq!(engine.attached_nodes().len(), 2);
     }
 
     #[test]
