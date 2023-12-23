@@ -49,7 +49,7 @@ async fn main() {
     let _prev_frame_featurs: Option<arc::R<vn::FeaturePrintObservation>> = None;
 
     let mut count = 0;
-    while let Some(buf) = output.copy_next_sample_buffer_throws() {
+    while let Some(buf) = output.copy_next_sample_buf_throws() {
         let Some(image) = buf.image_buf() else {
             continue;
         };

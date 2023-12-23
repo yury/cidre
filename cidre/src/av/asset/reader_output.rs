@@ -57,13 +57,13 @@ impl ReaderOutput {
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
     /// (using -addOutput:) and -startReading is not called on that asset reader.
     #[objc::msg_send(copyNextSampleBuffer)]
-    pub fn copy_next_sample_buffer_throws(&mut self) -> Option<arc::R<cm::SampleBuf>>;
+    pub fn copy_next_sample_buf_throws(&mut self) -> Option<arc::R<cm::SampleBuf>>;
 
     #[inline]
-    pub fn copy_next_sample_buffer<'ar>(
+    pub fn copy_next_sample_buf<'ar>(
         &mut self,
     ) -> Result<Option<arc::R<cm::SampleBuf>>, &'ar ns::Exception> {
-        ns::try_catch(|| self.copy_next_sample_buffer_throws())
+        ns::try_catch(|| self.copy_next_sample_buf_throws())
     }
 }
 

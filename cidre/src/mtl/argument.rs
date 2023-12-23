@@ -141,8 +141,8 @@ pub enum DType {
     U64x4 = 88,
     VisibleFnTable = 115,
     IntersectionFnTable = 116,
-    PrimitiveAccelerationStructure = 117,
-    InstanceAccelerationStructure = 118,
+    PrimitiveAccStruct = 117,
+    InstanceAccStruct = 118,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -155,10 +155,10 @@ pub enum Type {
 
     ImageblockData = 16,
     Imageblock = 17,
-    VisibleFunctionTable = 24,
-    PrimitiveAccelerationStructure = 25,
-    InstanceAccelerationStructure = 26,
-    IntersectionFunctionTable = 27,
+    VisibleFnTable = 24,
+    PrimitiveAccStruct = 25,
+    InstanceAccStruct = 26,
+    IntersectionFnTable = 27,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -180,7 +180,7 @@ impl StructMember {}
 define_obj_type!(pub StructType(BaseType));
 define_obj_type!(pub ArrayType(BaseType));
 define_obj_type!(pub PointerType(BaseType));
-define_obj_type!(pub TextureReferenceType(BaseType));
+define_obj_type!(pub TextureRefType(BaseType));
 
 define_obj_type!(pub Arg(ns::Id));
 

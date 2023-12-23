@@ -30,7 +30,7 @@ pub use argument::DType;
 pub use argument::PointerType;
 pub use argument::StructMember;
 pub use argument::StructType;
-pub use argument::TextureReferenceType;
+pub use argument::TextureRefType;
 pub use argument::Type as ArgType;
 
 mod resource;
