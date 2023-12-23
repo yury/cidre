@@ -92,3 +92,4 @@ pub use speech_synthesis::Utterance as SpeechUtterance;
 pub use speech_synthesis::Voice as SpeechSynthesisVoice;
 pub use speech_synthesis::VoiceGender as SpeechSynthesisVoiceGender;
 pub use speech_synthesis::VoiceQuality as SpeechSynthesisVoiceQuality;
+pub use speech_synthesis::VoiceTraits as SpeechSynthesisVoiceTraits;

@@ -311,7 +311,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{av, objc::Obj};
+    use crate::av;
 
     #[test]
     fn basics() {

@@ -1,5 +1,6 @@
-use crate::{define_obj_type, ns};
+use crate::{arc, define_obj_type, define_options, ns, objc};
 
+#[doc(alias = "AVSpeechBoundary")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum SpeechBoundery {
@@ -10,17 +11,21 @@ pub enum SpeechBoundery {
     Word,
 }
 
+#[doc(alias = "AVSpeechSynthesisVoiceQuality")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum VoiceQuality {
+    /// New voice return 0 as voice quality (see tests)
+    Unknown = 0,
     /// The basic quality version of a voice that’s on the device by default.
     Default = 1,
     /// The enhanced quality version of a voice that the user must download.
     Enhanced,
-    ///
+    /// The enhanced quality version of a voice that the user must download.
     Premium,
 }
 
+#[doc(alias = "AVSpeechSynthesisVoiceGender")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum VoiceGender {
@@ -33,6 +38,7 @@ pub enum VoiceGender {
 }
 
 /// Markers used in the output event callback. Used for providing metadata on synthesized audio.
+#[doc(alias = "AVSpeechSynthesisMarkerMark")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum MarkerMark {
@@ -46,7 +52,57 @@ pub enum MarkerMark {
     Paragraph,
 }
 
-define_obj_type!(pub Voice(ns::Id));
+define_options!(
+    #[doc(alias = "AVSpeechSynthesisVoiceTraits")]
+    pub VoiceTraits(usize)
+);
+
+impl VoiceTraits {
+    pub const NONE: Self = Self(0);
+
+    /// The voice is generally for novelty purposes, for example a character's voice in a game.
+    pub const IS_NOVELTY_VOICE: Self = Self(1 << 0);
+
+    pub const IS_PERSONAL_VOICE: Self = Self(1 << 1);
+}
+
+define_obj_type!(
+    #[doc(alias = "AVSpeechSynthesisVoice")]
+    pub Voice(ns::Id),
+    AV_SPEECH_SYNTHESIS_VOICE
+);
+
+impl Voice {
+    #[objc::cls_msg_send(speechVoices)]
+    pub fn speech_voices_ar() -> arc::Rar<ns::Array<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn speech_voices() -> arc::R<ns::Array<Self>>;
+
+    #[objc::cls_msg_send(currentLanguageCode)]
+    pub fn current_lang_code_ar() -> arc::Rar<ns::String>;
+
+    #[objc::cls_rar_retain]
+    pub fn current_lang_code() -> arc::R<ns::String>;
+
+    #[objc::msg_send(language)]
+    pub fn lang(&self) -> Option<&ns::String>;
+
+    #[objc::msg_send(identifier)]
+    pub fn id(&self) -> &ns::String;
+
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> &ns::String;
+
+    #[objc::msg_send(quality)]
+    pub fn quality(&self) -> VoiceQuality;
+
+    #[objc::msg_send(gender)]
+    pub fn gender(&self) -> VoiceGender;
+
+    #[objc::msg_send(audioFileSettings)]
+    pub fn audio_file_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
+}
 
 define_obj_type!(pub Utterance(ns::Id));
 
@@ -73,6 +129,8 @@ extern "C" {
     static AVSpeechUtteranceMinimumSpeechRate: f32;
     static AVSpeechUtteranceMaximumSpeechRate: f32;
     static AVSpeechUtteranceDefaultSpeechRate: f32;
+
+    static AV_SPEECH_SYNTHESIS_VOICE: &'static objc::Class<Voice>;
 }
 
 #[cfg(test)]
@@ -87,5 +145,15 @@ mod tests {
         assert!(
             av::SpeechUtterance::default_speech_rate() < av::SpeechUtterance::max_speech_rate()
         );
+
+        let voice = av::SpeechSynthesisVoice::new();
+        voice.as_type_ref().show();
+        assert!(voice.id().is_empty());
+        assert!(voice.name().is_empty());
+        assert!(voice.lang().is_none());
+        assert_eq!(voice.quality(), av::SpeechSynthesisVoiceQuality::Unknown);
+        assert!(av::SpeechSynthesisVoice::speech_voices().len() > 0);
+        let settings = voice.audio_file_settings();
+        assert!(settings.is_none());
     }
 }
