@@ -111,16 +111,16 @@ impl UrlAsset {
     pub fn http_session_identifier(&self) -> ns::Uuid;
 
     #[objc::cls_msg_send(audiovisualTypes)]
-    pub fn audiovisual_types_ar() -> arc::Rar<ns::Array<av::FileType>>;
+    pub fn av_types_ar() -> arc::Rar<ns::Array<av::FileType>>;
 
     #[objc::cls_rar_retain]
-    pub fn audiovisual_types() -> arc::R<ns::Array<av::FileType>>;
+    pub fn av_types() -> arc::R<ns::Array<av::FileType>>;
 
     #[objc::cls_msg_send(audiovisualMIMETypes)]
-    pub fn audiovisual_mime_types_ar() -> arc::Rar<ns::Array<ns::String>>;
+    pub fn av_mime_types_ar() -> arc::Rar<ns::Array<ns::String>>;
 
     #[objc::cls_rar_retain]
-    pub fn audiovisual_mime_types() -> arc::R<ns::Array<ns::String>>;
+    pub fn av_mime_types() -> arc::R<ns::Array<ns::String>>;
 }
 
 #[link(name = "av", kind = "static")]
@@ -134,9 +134,9 @@ mod tests {
 
     #[test]
     fn basics() {
-        let types = av::UrlAsset::audiovisual_types();
+        let types = av::UrlAsset::av_types();
         assert!(!types.is_empty());
-        let types = av::UrlAsset::audiovisual_mime_types();
+        let types = av::UrlAsset::av_mime_types();
         assert!(!types.is_empty());
     }
 }
