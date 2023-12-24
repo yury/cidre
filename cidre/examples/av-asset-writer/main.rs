@@ -147,7 +147,7 @@ fn write(
     writer.start_session_at_src_time(cm::Time::zero());
 
     let sema = Arc::new(dispatch::Semaphore::new(0));
-    let queue = dispatch::Queue::serial_with_autoreleasepool();
+    let queue = dispatch::Queue::serial_with_ar_pool();
     let sem = sema.clone();
     let mut inp = input.retained();
     let mut out = output.retained();

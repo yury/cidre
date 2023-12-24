@@ -85,8 +85,8 @@ impl Queue {
     }
 
     #[inline]
-    pub fn serial_with_autoreleasepool() -> arc::R<Self> {
-        let attr = Attr::serial_with_autoreleasepool();
+    pub fn serial_with_ar_pool() -> arc::R<Self> {
+        let attr = Attr::serial_with_ar_pool();
         Self::with_label_and_attrs(None, Some(&attr))
     }
 
@@ -275,17 +275,17 @@ impl Attr {
     }
 
     #[inline]
-    pub fn serial_with_autoreleasepool() -> arc::R<Attr> {
-        Self::make_with_autorelease_frequencey(Self::serial(), AutoreleaseFrequency::WorkItem)
+    pub fn serial_with_ar_pool() -> arc::R<Attr> {
+        Self::make_with_ar_frequencey(Self::serial(), AutoreleaseFrequency::WorkItem)
     }
 
     #[inline]
-    pub fn concurrent_with_autoreleasepool() -> arc::R<Attr> {
-        Self::make_with_autorelease_frequencey(Self::concurrent(), AutoreleaseFrequency::WorkItem)
+    pub fn concurrent_with_ar_pool() -> arc::R<Attr> {
+        Self::make_with_ar_frequencey(Self::concurrent(), AutoreleaseFrequency::WorkItem)
     }
 
     #[inline]
-    pub fn make_with_autorelease_frequencey(
+    pub fn make_with_ar_frequencey(
         attr: Option<&Attr>,
         frequency: AutoreleaseFrequency,
     ) -> arc::R<Self> {
@@ -378,10 +378,8 @@ mod tests {
 
     #[test]
     fn attrs() {
-        let _attr = dispatch::Attr::make_with_autorelease_frequencey(
-            None,
-            dispatch::AutoreleaseFrequency::Never,
-        );
+        let _attr =
+            dispatch::Attr::make_with_ar_frequencey(None, dispatch::AutoreleaseFrequency::Never);
     }
 
     #[test]

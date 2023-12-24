@@ -194,7 +194,7 @@ async fn main() {
     // let start_time = cm::Time::with_secs(ca::current_media_time(), 1000000000);
     let start_time = cm::Time::zero();
     writer.set_initial_segment_start_time(start_time);
-    let queue = dispatch::Queue::serial_with_autoreleasepool();
+    let queue = dispatch::Queue::serial_with_ar_pool();
 
     let content = sc::ShareableContent::current().await.expect("content");
     let ref display = content.displays()[0];

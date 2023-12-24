@@ -271,7 +271,7 @@ extern "C" fn callback(
 async fn main() {
     const FPS: i32 = 60;
 
-    let queue = dispatch::Queue::serial_with_autoreleasepool();
+    let queue = dispatch::Queue::serial_with_ar_pool();
     let content = sc::ShareableContent::current().await.expect("content");
     let ref display = content.displays()[0];
     let mut cfg = sc::StreamCfg::new();
