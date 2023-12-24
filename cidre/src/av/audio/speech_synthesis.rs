@@ -1,4 +1,8 @@
-use crate::{arc, define_obj_type, define_options, ns, objc};
+use std::ffi::c_void;
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
+use crate::{arc, av::AuthorizationStatus, define_obj_type, define_options, ns, objc};
 
 #[doc(alias = "AVSpeechBoundary")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -74,10 +78,10 @@ define_obj_type!(
 
 impl Voice {
     #[objc::cls_msg_send(speechVoices)]
-    pub fn speech_voices_ar() -> arc::Rar<ns::Array<Self>>;
+    pub fn voices_ar() -> arc::Rar<ns::Array<Self>>;
 
     #[objc::cls_rar_retain]
-    pub fn speech_voices() -> arc::R<ns::Array<Self>>;
+    pub fn voices() -> arc::R<ns::Array<Self>>;
 
     #[objc::cls_msg_send(currentLanguageCode)]
     pub fn current_lang_code_ar() -> arc::Rar<ns::String>;
@@ -137,7 +141,8 @@ impl Utterance {
 
 define_obj_type!(
     #[doc(alias = "AVSpeechSynthesizer")]
-    pub Synthesizer(ns::Id)
+    pub Synthesizer(ns::Id),
+    AV_SPEECH_SYNTHESIZER
 );
 
 impl Synthesizer {
@@ -191,6 +196,43 @@ impl Synthesizer {
             Err(())
         }
     }
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(usesApplicationAudioSession)]
+    pub fn uses_app_audio_session(&self) -> bool;
+
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(setUsesApplicationAudioSession:)]
+    pub fn set_uses_app_audio_session(&mut self, val: bool);
+
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(mixToTelephonyUplink)]
+    pub fn mix_to_telephony_uplink(&self) -> bool;
+
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(setMixToTelephonyUplink:)]
+    pub fn set_mix_to_telephony_uplink(&mut self, val: bool);
+
+    #[objc::cls_msg_send(personalVoiceAuthorizationStatus)]
+    pub fn personal_voice_authorization_status() -> AuthorizationStatus;
+
+    #[cfg(feature = "blocks")]
+    #[objc::cls_msg_send(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
+    fn _request_personal_voice_authorization_ch(block: *mut c_void);
+
+    #[cfg(feature = "blocks")]
+    pub fn request_personal_voice_authorization_ch<F>(block: &'static mut blocks::Block<F>)
+    where
+        F: FnOnce(AuthorizationStatus) + Send + 'static,
+    {
+        Self::_request_personal_voice_authorization_ch(block.as_mut_ptr());
+    }
+
+    #[cfg(all(feature = "async", feature = "blocks"))]
+    pub async fn request_personal_voice_authorization() -> AuthorizationStatus {
+        let (future, block) = blocks::comp1();
+        Self::request_personal_voice_authorization_ch(block.escape());
+        future.await
+    }
 }
 
 define_obj_type!(pub Marker(ns::Id));
@@ -202,6 +244,7 @@ extern "C" {
     static AVSpeechUtteranceDefaultSpeechRate: f32;
 
     static AV_SPEECH_SYNTHESIS_VOICE: &'static objc::Class<Voice>;
+    static AV_SPEECH_SYNTHESIZER: &'static objc::Class<Synthesizer>;
 }
 
 #[cfg(test)]
@@ -226,11 +269,21 @@ mod tests {
         let settings = voice.audio_file_settings();
         assert!(settings.is_none());
 
-        assert!(av::SpeechSynthesisVoice::speech_voices().len() > 0);
+        assert!(av::SpeechSynthesisVoice::voices().len() > 0);
 
-        let v1 = &av::SpeechSynthesisVoice::speech_voices()[0];
+        let v1 = &av::SpeechSynthesisVoice::voices()[0];
 
         let _v = av::SpeechSynthesisVoice::with_id(v1.id()).unwrap();
         let _v = av::SpeechSynthesisVoice::with_lang(v1.lang()).unwrap();
+    }
+
+    #[tokio::test]
+    async fn authorization() {
+        let res = av::SpeechSynthesizer::request_personal_voice_authorization().await;
+        assert_eq!(res, av::AuthorizationStatus::Restricted);
+        assert_eq!(
+            res,
+            av::SpeechSynthesizer::personal_voice_authorization_status()
+        );
     }
 }
