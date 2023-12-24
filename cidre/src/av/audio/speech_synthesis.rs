@@ -102,9 +102,24 @@ impl Voice {
 
     #[objc::msg_send(audioFileSettings)]
     pub fn audio_file_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
+
+    #[objc::cls_msg_send(voiceWithLanguage:)]
+    pub fn with_lang_ar(lang_code: Option<&ns::String>) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_lang(lang_code: Option<&ns::String>) -> Option<arc::R<Self>>;
+
+    #[objc::cls_msg_send(voiceWithIdentifier:)]
+    pub fn with_id_ar(identifier: &ns::String) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_id(identifier: &ns::String) -> Option<arc::R<Self>>;
 }
 
-define_obj_type!(pub Utterance(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVSpeechUtterance")]
+    pub Utterance(ns::Id)
+);
 
 impl Utterance {
     pub fn min_speech_rate() -> f32 {
@@ -120,7 +135,63 @@ impl Utterance {
     }
 }
 
-define_obj_type!(pub Synthesizer(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVSpeechSynthesizer")]
+    pub Synthesizer(ns::Id)
+);
+
+impl Synthesizer {
+    #[objc::msg_send(isSpeaking)]
+    pub fn is_speaking(&self) -> bool;
+
+    #[objc::msg_send(isPaused)]
+    pub fn is_paused(&self) -> bool;
+
+    /// Enqueing the same [`av::SpeechUtterance`] that is already enqueued or is speaking will
+    /// raise an exception
+    #[objc::msg_send(speakUtterance:)]
+    pub unsafe fn speak_utterance_throws(&mut self, utterance: &Utterance);
+
+    pub fn speak_utterance<'ar>(
+        &mut self,
+        utterance: &Utterance,
+    ) -> Result<(), &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.speak_utterance_throws(utterance) })
+    }
+
+    #[objc::msg_send(stopSpeakingAtBoundary:)]
+    pub fn _stop_speaking_at_boundary(&mut self, boundery: SpeechBoundery) -> bool;
+
+    pub fn stop_speaking_at_boundary(&mut self, boundery: SpeechBoundery) -> Result<(), ()> {
+        if self._stop_speaking_at_boundary(boundery) {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+
+    #[objc::msg_send(pauseSpeakingAtBoundary:)]
+    pub fn _pause_speaking_at_boundary(&mut self, boundery: SpeechBoundery) -> bool;
+
+    pub fn pause_speaking_at_boundary(&mut self, boundery: SpeechBoundery) -> Result<(), ()> {
+        if self._pause_speaking_at_boundary(boundery) {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+
+    #[objc::msg_send(continueSpeaking)]
+    pub fn _continue_speaking(&mut self) -> bool;
+
+    pub fn continue_speaking(&mut self) -> Result<(), ()> {
+        if self._continue_speaking() {
+            Ok(())
+        } else {
+            Err(())
+        }
+    }
+}
 
 define_obj_type!(pub Marker(ns::Id));
 
@@ -156,5 +227,10 @@ mod tests {
         assert!(settings.is_none());
 
         assert!(av::SpeechSynthesisVoice::speech_voices().len() > 0);
+
+        let v1 = &av::SpeechSynthesisVoice::speech_voices()[0];
+
+        let _v = av::SpeechSynthesisVoice::with_id(v1.id()).unwrap();
+        let _v = av::SpeechSynthesisVoice::with_lang(v1.lang()).unwrap();
     }
 }
