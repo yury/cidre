@@ -60,7 +60,7 @@ define_obj_type!(
 
 impl arc::A<UrlAsset> {
     #[objc::msg_send(initWithURL:options:)]
-    pub fn init_with_url_options(
+    pub fn init_with_url_opts(
         self,
         url: &ns::Url,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -75,7 +75,7 @@ impl UrlAsset {
         url: &ns::Url,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Option<arc::R<Self>> {
-        Self::alloc().init_with_url_options(url, options)
+        Self::alloc().init_with_url_opts(url, options)
     }
 
     #[objc::msg_send(loadTracksWithMediaType:completionHandler:)]
@@ -108,7 +108,7 @@ impl UrlAsset {
     ///
     /// The asset uses this value to set as the X-Playback-Session-Id header of HTTP requests that it creates.
     #[objc::msg_send(httpSessionIdentifier)]
-    pub fn http_session_identifier(&self) -> ns::Uuid;
+    pub fn http_session_id(&self) -> ns::Uuid;
 
     #[objc::cls_msg_send(audiovisualTypes)]
     pub fn av_types_ar() -> arc::Rar<ns::Array<av::FileType>>;
