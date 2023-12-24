@@ -51,6 +51,7 @@ Class NS_RUN_LOOP;
 Class NS_SET;
 Class NS_STRING;
 Class NS_ATTRIBUTED_STRING;
+Class NS_MUTABLE_ATTRIBUTED_STRING;
 Class NS_TIMER;
 Class NS_URL;
 Class NS_URL_CACHE;
@@ -130,6 +131,7 @@ static void common_initializer(void)
         NS_SET = [NSSet class];
         NS_STRING = [NSString class];
         NS_ATTRIBUTED_STRING = [NSAttributedString class];
+        NS_MUTABLE_ATTRIBUTED_STRING = [NSMutableAttributedString class];
         NS_TIMER = [NSTimer class];
         NS_URL = [NSURL class];
         NS_URL_CACHE = [NSURLCache class];

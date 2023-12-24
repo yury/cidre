@@ -3,7 +3,11 @@ use crate::{arc, cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
-define_cf_type!(AttrString(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFAttributedString")]
+    AttrString(cf::Type)
+);
+
 impl AttrString {
     #[inline]
     pub fn type_id() -> cf::TypeId {
@@ -85,7 +89,11 @@ impl AttrString {
     }
 }
 
-define_cf_type!(AttrStringMut(AttrString));
+define_cf_type!(
+    #[doc(alias = "CFMutableAttributedString")]
+    AttrStringMut(AttrString)
+);
+
 impl AttrStringMut {
     #[inline]
     pub fn with_max_len_in(
