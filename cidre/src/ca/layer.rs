@@ -8,12 +8,16 @@ define_obj_type!(
     #[doc(alias = "CALayerContentsFilter")]
     pub ContentsFilter(ns::String)
 );
-define_obj_type!(pub CornerCurve(ns::String));
+define_obj_type!(
+    #[doc(alias = "CALayerCornerCurve")]
+    pub CornerCurve(ns::String)
+);
 
 define_options!(
     #[doc(alias = "CAAutoresizingMask")]
     pub AutoresizingMask(u32)
 );
+
 impl AutoresizingMask {
     pub const NOT_SIZABLE: Self = Self(0);
     pub const MIN_X_MARGIN: Self = Self(1 << 0);
@@ -43,7 +47,10 @@ impl EdgeAntialiasingMask {
     pub const TOP: Self = Self(1 << 3);
 }
 
-define_options!(pub CornerMask(usize));
+define_options!(
+    #[doc(alias = "CACornerMask")]
+    pub CornerMask(usize)
+);
 impl CornerMask {
     pub const MIN_X_MIN_Y: Self = Self(1 << 0);
     pub const MAX_X_MIN_Y: Self = Self(1 << 1);
@@ -60,16 +67,16 @@ impl Layer {
     pub fn set_bounds(&mut self, val: cg::Rect);
 
     #[objc::msg_send(position)]
-    pub fn position(&self) -> cg::Point;
+    pub fn pos(&self) -> cg::Point;
 
     #[objc::msg_send(setPosition:)]
-    pub fn set_position(&mut self, val: cg::Point);
+    pub fn set_pos(&mut self, val: cg::Point);
 
     #[objc::msg_send(zPosition)]
-    pub fn z_position(&self) -> cg::Float;
+    pub fn z_pos(&self) -> cg::Float;
 
     #[objc::msg_send(setZPosition:)]
-    pub fn set_z_position(&mut self, val: cg::Float);
+    pub fn set_z_pos(&mut self, val: cg::Float);
 
     #[objc::msg_send(anchorPoint)]
     pub fn anchor_point(&self) -> cg::Point;
