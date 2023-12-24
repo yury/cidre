@@ -54,7 +54,7 @@ pub use sync::Timebase;
 
 pub mod memory_pool;
 pub use memory_pool::keys as memory_pool_options;
-pub use memory_pool::MemoryPool;
+pub use memory_pool::MemPool;
 
 pub mod simple_queue;
 pub use simple_queue::Error as SimpleQueueError;

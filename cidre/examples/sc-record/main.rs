@@ -288,7 +288,7 @@ async fn main() {
         format_desc: None,
     });
 
-    let memory_pool = cm::MemoryPool::new();
+    let memory_pool = cm::MemPool::new();
     let memory_pool_allocator = memory_pool.pool_allocator();
 
     let mut session = vt::CompressionSession::new(

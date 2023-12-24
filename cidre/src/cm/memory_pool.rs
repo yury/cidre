@@ -2,8 +2,8 @@ use std::time::Duration;
 
 use crate::{arc, cf, define_cf_type};
 
-define_cf_type!(MemoryPool(cf::Type));
-unsafe impl Send for MemoryPool {}
+define_cf_type!(MemPool(cf::Type));
+unsafe impl Send for MemPool {}
 
 /// Memory pool for optimizing repeated large block allocation.
 ///
@@ -30,10 +30,10 @@ unsafe impl Send for MemoryPool {}
 /// (This period may be overridden by specifying kCMMemoryPoolOption_AgeOutPeriod.)
 /// Such "aging out" is done during the pool's cf::Allocator::allocate and
 /// cf::Allocator::deallocate methods.
-impl MemoryPool {
+impl MemPool {
     ///```
     /// use cidre::cm;
-    /// let mut pool = cm::MemoryPool::new();
+    /// let mut pool = cm::MemPool::new();
     /// let allocator = pool.pool_allocator();
     /// pool.flush();
     ///````
@@ -45,7 +45,7 @@ impl MemoryPool {
 
     #[doc(alias = "CMMemoryPoolCreate")]
     #[inline]
-    pub fn with_opts(options: Option<&cf::Dictionary>) -> arc::R<MemoryPool> {
+    pub fn with_opts(options: Option<&cf::Dictionary>) -> arc::R<MemPool> {
         unsafe { CMMemoryPoolCreate(options) }
     }
 
@@ -93,8 +93,8 @@ pub mod keys {
 }
 
 extern "C" {
-    fn CMMemoryPoolCreate(options: Option<&cf::Dictionary>) -> arc::R<MemoryPool>;
-    fn CMMemoryPoolGetAllocator(pool: &MemoryPool) -> &cf::Allocator;
-    fn CMMemoryPoolFlush(pool: &MemoryPool);
-    fn CMMemoryPoolInvalidate(pool: &MemoryPool);
+    fn CMMemoryPoolCreate(options: Option<&cf::Dictionary>) -> arc::R<MemPool>;
+    fn CMMemoryPoolGetAllocator(pool: &MemPool) -> &cf::Allocator;
+    fn CMMemoryPoolFlush(pool: &MemPool);
+    fn CMMemoryPoolInvalidate(pool: &MemPool);
 }
