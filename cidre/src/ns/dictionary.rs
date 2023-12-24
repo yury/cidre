@@ -18,7 +18,7 @@ impl<K: Obj, V: Obj> arc::A<Dictionary<K, V>> {
     pub fn init(self) -> arc::R<Dictionary<K, V>>;
 
     #[objc::msg_send(initWithObjects:forKeys:count:)]
-    pub unsafe fn init_with_objects_for_keys_count_throws(
+    pub unsafe fn init_with_objs_for_keys_count_throws(
         self,
         objects: *const V,
         keys: *const K,
@@ -58,7 +58,7 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
 
     pub fn with_keys_values<const N: usize>(keys: &[&K; N], objects: &[&V; N]) -> arc::R<Self> {
         unsafe {
-            Self::alloc().init_with_objects_for_keys_count_throws(
+            Self::alloc().init_with_objs_for_keys_count_throws(
                 std::mem::transmute(objects.as_ptr()),
                 std::mem::transmute(keys.as_ptr()),
                 N,
