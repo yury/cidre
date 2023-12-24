@@ -3,7 +3,7 @@ pub use types::ActivationType;
 pub use types::ArithmeticOp;
 pub use types::ComparisonOp;
 pub use types::ConvolutionType;
-pub use types::DataType;
+pub use types::DType;
 pub use types::DeviceType;
 pub use types::ExecutionOptions;
 pub use types::GradientClippingType;

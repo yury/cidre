@@ -26,16 +26,13 @@ impl Tensor {
     pub fn device(&self) -> Option<&mlc::Device>;
 
     #[objc::cls_msg_send(tensorWithShape:dataType:)]
-    pub fn with_shape_data_type_ar(shape: &Shape, data_type: mlc::DataType) -> arc::Rar<Self>;
+    pub fn with_shape_dtype_ar(shape: &Shape, data_type: mlc::DType) -> arc::Rar<Self>;
 
     #[objc::cls_rar_retain]
-    pub fn with_shape_data_type(shape: &Shape, data_type: mlc::DataType) -> arc::R<Self>;
+    pub fn with_shape_dtype(shape: &Shape, data_type: mlc::DType) -> arc::R<Self>;
 
-    pub fn with_shape_dt<S: Into<arc::R<Shape>>>(
-        shape: S,
-        data_type: mlc::DataType,
-    ) -> arc::R<Self> {
-        Self::with_shape_data_type(&shape.into(), data_type)
+    pub fn with_shape_dt<S: Into<arc::R<Shape>>>(shape: S, data_type: mlc::DType) -> arc::R<Self> {
+        Self::with_shape_dtype(&shape.into(), data_type)
     }
 
     #[objc::msg_send(copyDataFromDeviceMemoryToBytes:length:synchronizeWithDevice:)]

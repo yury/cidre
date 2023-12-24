@@ -2,7 +2,7 @@ use crate::{define_options, ns};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
-pub enum DataType {
+pub enum DType {
     Invalid = 0,
 
     /// The 32-bit floating-point data type.

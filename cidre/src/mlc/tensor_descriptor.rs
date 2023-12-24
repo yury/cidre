@@ -6,7 +6,7 @@ impl TensorDesc {
 
     /// The tensor data type.  The default is mlc::DataType::F32.
     #[objc::msg_send(dataType)]
-    pub fn data_type(&self) -> mlc::DataType;
+    pub fn data_type(&self) -> mlc::DType;
 
     /// The number of dimensions in the tensor
     #[objc::msg_send(dimensionCount)]
@@ -39,18 +39,18 @@ impl TensorDesc {
     #[objc::cls_msg_send(descriptorWithShape:dataType:)]
     pub fn with_shape_dt_ar(
         shape: &ns::Array<ns::Number>,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn with_shape_dt(
         shape: &ns::Array<ns::Number>,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
     pub fn with_shape<const N: usize>(
         shape: [i32; N],
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>> {
         let mut sh: [*const ns::Number; N] = [std::ptr::null(); N];
         for (i, v) in shape.iter().enumerate() {
@@ -70,7 +70,7 @@ impl TensorDesc {
         shape: &ns::Array<ns::Number>,
         sequence_lens: &ns::Array<ns::Number>,
         sequence_sorted: bool,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
@@ -78,7 +78,7 @@ impl TensorDesc {
         shape: &ns::Array<ns::Number>,
         sequence_lens: &ns::Array<ns::Number>,
         sequence_sorted: bool,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
     #[objc::cls_msg_send(descriptorWithWidth:height:featureChannelCount:batchSize:)]
@@ -103,7 +103,7 @@ impl TensorDesc {
         height: usize,
         feature_channel_count: usize,
         batch_size: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
@@ -112,7 +112,7 @@ impl TensorDesc {
         height: usize,
         feature_channel_count: usize,
         batch_size: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
     /// This method is provided as an easy to use API to create a weight tensor.
@@ -126,7 +126,7 @@ impl TensorDesc {
         height: usize,
         input_feature_channel_count: usize,
         output_feature_channel_count: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
@@ -135,7 +135,7 @@ impl TensorDesc {
         height: usize,
         input_feature_channel_count: usize,
         output_feature_channel_count: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
     #[objc::cls_msg_send(
@@ -145,26 +145,26 @@ impl TensorDesc {
     pub fn conv_weights_with_features_dt_ar(
         input_feature_channel_count: usize,
         output_feature_channel_count: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn conv_weights_with_features_dt(
         input_feature_channel_count: usize,
         output_feature_channel_count: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
     #[objc::cls_msg_send(convolutionBiasesDescriptorWithFeatureChannelCount:dataType:)]
     pub fn conv_biases_with_feature_channel_count_dt_ar(
         feature_channle_count: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
     pub fn conv_biases_with_feature_channel_count_dt(
         feature_channle_count: usize,
-        data_type: mlc::DataType,
+        data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 }
 
@@ -179,7 +179,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let desc = mlc::TensorDesc::with_shape([-1, 2, 3, 4], mlc::DataType::F16).unwrap();
+        let desc = mlc::TensorDesc::with_shape([-1, 2, 3, 4], mlc::DType::F16).unwrap();
         assert_eq!(4, desc.ndim());
         assert_eq!(4, mlc::TensorDesc::max_ndim());
         println!("shape {:?}", desc.shape());
