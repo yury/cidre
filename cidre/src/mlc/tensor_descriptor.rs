@@ -6,7 +6,7 @@ impl TensorDesc {
 
     /// The tensor data type.  The default is mlc::DataType::F32.
     #[objc::msg_send(dataType)]
-    pub fn data_type(&self) -> mlc::DType;
+    pub fn dtype(&self) -> mlc::DType;
 
     /// The number of dimensions in the tensor
     #[objc::msg_send(dimensionCount)]

@@ -29,7 +29,7 @@ fn main() {
         println!("resolution: {:?}", resolution);
 
         let ranges = f.video_supported_frame_rate_ranges();
-        println!("autofocus {:?}", f.auto_focus_system());
+        println!("autofocus {:?}", f.auto_focus_sys());
         for r in ranges.iter() {
             println!(
                 "  frame_rate {:?}-{:?}",
