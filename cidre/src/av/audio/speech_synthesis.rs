@@ -122,8 +122,20 @@ impl Voice {
 
 define_obj_type!(
     #[doc(alias = "AVSpeechUtterance")]
-    pub Utterance(ns::Id)
+    pub Utterance(ns::Id),
+    AV_SPEECH_UTTERANCE
 );
+
+impl arc::A<Utterance> {
+    #[objc::msg_send(initWithString:)]
+    pub fn init_with_string(self, val: &ns::String) -> arc::R<Utterance>;
+
+    #[objc::msg_send(initWithAttributedString:)]
+    pub fn init_with_attr_string(self, val: &ns::AttrString) -> arc::R<Utterance>;
+
+    #[objc::msg_send(initWithSSMLRepresentation:)]
+    pub fn init_with_ssml(self, val: &ns::String) -> arc::R<Utterance>;
+}
 
 impl Utterance {
     pub fn min_speech_rate() -> f32 {
@@ -137,6 +149,69 @@ impl Utterance {
     pub fn default_speech_rate() -> f32 {
         unsafe { AVSpeechUtteranceDefaultSpeechRate }
     }
+
+    #[inline]
+    pub fn with_string(val: &ns::String) -> arc::R<Self> {
+        Self::alloc().init_with_string(val)
+    }
+
+    #[inline]
+    pub fn with_attr_string(val: &ns::AttrString) -> arc::R<Self> {
+        Self::alloc().init_with_attr_string(val)
+    }
+
+    #[inline]
+    pub fn with_ssml(val: &ns::String) -> arc::R<Self> {
+        Self::alloc().init_with_ssml(val)
+    }
+
+    #[objc::msg_send(voice)]
+    pub fn voice(&self) -> Option<&Voice>;
+
+    #[objc::msg_send(setVoice:)]
+    pub fn set_voice(&mut self, val: Option<&Voice>);
+
+    #[objc::msg_send(speechString)]
+    pub fn speech_string(&self) -> &ns::String;
+
+    #[objc::msg_send(attributedSpeechString)]
+    pub fn speech_attr_string(&self) -> Option<&ns::AttrString>;
+
+    #[objc::msg_send(rate)]
+    pub fn rate(&self) -> f32;
+
+    #[objc::msg_send(setRate:)]
+    pub fn set_rate(&mut self, val: f32);
+
+    #[objc::msg_send(pitchMultiplier)]
+    pub fn pitch_multiplier(&self) -> f32;
+
+    #[objc::msg_send(setPitchMultiplier:)]
+    pub fn set_pitch_multiplier(&mut self, val: f32);
+
+    #[objc::msg_send(volume)]
+    pub fn volume(&self) -> f32;
+
+    #[objc::msg_send(setVolume:)]
+    pub fn set_volume(&mut self, val: f32);
+
+    #[objc::msg_send(prefersAssistiveTechnologySettings)]
+    pub fn prefers_assistive_technology_settings(&self) -> bool;
+
+    #[objc::msg_send(setPrefersAssistiveTechnologySettings:)]
+    pub fn set_prefers_assistive_technology_settings(&mut self, val: bool);
+
+    #[objc::msg_send(preUtteranceDelay)]
+    pub fn pre_utterance_delay(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(setPreUtteranceDelay:)]
+    pub fn set_pre_utterance_delay(&self, val: ns::TimeInterval);
+
+    #[objc::msg_send(postUtteranceDelay)]
+    pub fn post_utterance_delay(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(setPostUtteranceDelay:)]
+    pub fn set_post_utterance_delay(&self, val: ns::TimeInterval);
 }
 
 define_obj_type!(
@@ -245,11 +320,12 @@ extern "C" {
 
     static AV_SPEECH_SYNTHESIS_VOICE: &'static objc::Class<Voice>;
     static AV_SPEECH_SYNTHESIZER: &'static objc::Class<Synthesizer>;
+    static AV_SPEECH_UTTERANCE: &'static objc::Class<Utterance>;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::av;
+    use crate::{av, ns};
 
     #[test]
     fn basics() {
@@ -285,5 +361,19 @@ mod tests {
             res,
             av::SpeechSynthesizer::personal_voice_authorization_status()
         );
+    }
+
+    #[test]
+    fn utterance() {
+        let str = ns::String::with_str("Hello");
+
+        let ut = av::SpeechUtterance::with_string(&str);
+        assert_eq!(ut.speech_string(), str.as_ref());
+        assert!(ut.speech_attr_string().is_none());
+
+        let attr_str = ns::AttrString::with_string(&str);
+        let ut = av::SpeechUtterance::with_attr_string(&attr_str);
+        assert_eq!(ut.speech_string(), str.as_ref());
+        assert_eq!(ut.speech_attr_string().unwrap().string(), str.as_ref());
     }
 }

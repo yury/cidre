@@ -106,6 +106,10 @@ pub use string::Encoding as StringEncoding;
 pub use string::String;
 pub use string::StringMut;
 
+mod attributed_string;
+pub use attributed_string::AttrString;
+pub use attributed_string::AttrStringMut;
+
 mod url;
 pub use url::ResourceKey as UrlResourceKey;
 pub use url::Url;

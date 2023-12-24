@@ -56,6 +56,7 @@ Class AV_SAMPLE_BUFFER_VIDEO_RENDERER;
 
 Class AV_SPEECH_SYNTHESIS_VOICE;
 Class AV_SPEECH_SYNTHESIZER;
+Class AV_SPEECH_UTTERANCE;
 
 __attribute__((constructor))
 static void av_initializer(void)
@@ -114,6 +115,7 @@ static void av_initializer(void)
 
         AV_SPEECH_SYNTHESIS_VOICE = [AVSpeechSynthesisVoice class];
         AV_SPEECH_SYNTHESIZER = [AVSpeechSynthesizer class];
+        AV_SPEECH_UTTERANCE = [AVSpeechUtterance class];
 
         initialized = 1;
     }

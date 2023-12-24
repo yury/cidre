@@ -1,5 +1,8 @@
 use crate::{arc, cf, define_cf_type};
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
 define_cf_type!(AttrString(cf::Type));
 impl AttrString {
     #[inline]
@@ -73,6 +76,12 @@ impl AttrString {
     #[inline]
     pub fn copy_mut(&self) -> arc::R<AttrStringMut> {
         unsafe { std::mem::transmute(CFAttributedStringCreateMutableCopy(None, 0, self)) }
+    }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns(&self) -> &ns::AttrString {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
