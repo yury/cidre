@@ -445,7 +445,7 @@ impl Device {
 #[doc(alias = "AVCaptureSystemUserInterface")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
-pub enum SystemUi {
+pub enum SysUi {
     VideoEffects = 1,
     MicModes = 2,
 }
@@ -453,7 +453,7 @@ pub enum SystemUi {
 /// AVCaptureSystemUserInterface
 impl Device {
     #[objc::cls_msg_send(showSystemUserInterface:)]
-    pub fn show_system_ui(system_ui: SystemUi);
+    pub fn show_sys_ui(system_ui: SysUi);
 }
 
 #[doc(alias = "AVCaptureColorSpace")]
@@ -750,7 +750,7 @@ pub enum FocusMode {
 #[doc(alias = "AVCaptureAutoFocusSystem")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(isize)]
-pub enum AutoFocusSystem {
+pub enum AutoFocusSys {
     /// Indicates that autofocus is not available.
     None = 0,
 
@@ -1672,7 +1672,7 @@ impl Device {
 
     /// Specifies the best camera to use as determined by the system.
     #[objc::cls_msg_send(systemPreferredCamera)]
-    fn system_preferred_camera<'a>() -> Option<&'a Self>;
+    fn sys_preferred_camera<'a>() -> Option<&'a Self>;
 }
 
 #[doc(alias = "AVAuthorizationStatus")]
@@ -1878,7 +1878,7 @@ impl Format {
 
     /// Indicating the autofocus system.
     #[objc::msg_send(autoFocusSystem)]
-    pub fn auto_focus_system(&self) -> AutoFocusSystem;
+    pub fn auto_focus_sys(&self) -> AutoFocusSys;
 
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(isMultiCamSupported)]
@@ -2188,14 +2188,12 @@ mod tests {
 
     #[test]
     fn session() {
-        io::Object::SYSTEM
-            .allow_screen_capture_devices(true)
-            .unwrap();
-        io::Object::SYSTEM
+        io::Object::SYS.allow_screen_capture_devices(true).unwrap();
+        io::Object::SYS
             .allow_wireless_screen_capture_devices(true)
             .unwrap();
 
-        io::Object::SYSTEM.show();
+        io::Object::SYS.show();
 
         let list = ns::Array::from_slice(&[av::CaptureDeviceType::external()]);
         let session = capture::DiscoverySession::with_device_types_media_and_pos(

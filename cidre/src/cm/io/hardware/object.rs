@@ -73,7 +73,7 @@ pub struct Class(pub u32);
 
 impl Class {
     #[doc(alias = "kCMIOSystemObjectClassID")]
-    pub const SYSTEM_OBJECT: Self = Self(u32::from_be_bytes(*b"asys"));
+    pub const SYS_OBJECT: Self = Self(u32::from_be_bytes(*b"asys"));
 
     #[doc(alias = "kCMIOPlugInClassID")]
     pub const PLUG_IN: Self = Self(u32::from_be_bytes(*b"aplg"));
@@ -86,7 +86,7 @@ pub struct Object(pub u32);
 
 impl Object {
     #[doc(alias = "kCMIOObjectSystemObject")]
-    pub const SYSTEM: Self = Self(1);
+    pub const SYS: Self = Self(1);
 
     pub fn show(&self) {
         unsafe {

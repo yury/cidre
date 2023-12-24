@@ -14,7 +14,7 @@ pub use capture::input_port_notifications as capture_input_port_notifications;
 pub use capture::session_notifications as capture_session_notifications;
 pub use capture::AudioChannel as CaptureAudioChannel;
 pub use capture::AuthorizationStatus;
-pub use capture::AutoFocusSystem as CaptureAutoFocusSystem;
+pub use capture::AutoFocusSys as CaptureAutoFocusSys;
 pub use capture::CenterStageControlMode as CaptureCenterStageControlMode;
 pub use capture::ColorSpace as CaptureColorSpace;
 pub use capture::Connection as CaptureConnection;

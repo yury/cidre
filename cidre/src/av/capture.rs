@@ -1,7 +1,7 @@
 pub mod device;
 pub use device::AuthorizationStatus;
 pub use device::AutoFocusRangeRestriction;
-pub use device::AutoFocusSystem;
+pub use device::AutoFocusSys;
 pub use device::CaptureAudioChannel;
 pub use device::CenterStageControlMode;
 pub use device::ColorSpace;
@@ -68,11 +68,11 @@ pub use audio_data_output::AudioDataOutputSampleBufDelegateImpl;
 #[cfg(not(target_os = "macos"))]
 pub mod system_pressure;
 #[cfg(not(target_os = "macos"))]
-pub use system_pressure::Factors as SystemPressureFactors;
+pub use system_pressure::Factors as SysPressureFactors;
 #[cfg(not(target_os = "macos"))]
-pub use system_pressure::Level as SystemPressureLevel;
+pub use system_pressure::Level as SysPressureLevel;
 #[cfg(not(target_os = "macos"))]
-pub use system_pressure::State as SystemPressureState;
+pub use system_pressure::State as SysPressureState;
 
 pub mod reactions;
 pub use reactions::EffectState as ReactionEffectState;

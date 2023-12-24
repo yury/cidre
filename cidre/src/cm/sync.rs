@@ -52,13 +52,13 @@ impl Clock {
     /// have a non-integer timescale.
     /// On Mac OS X, this function converts to the units of mach_absolute_time.
     #[inline]
-    pub fn convert_host_time_to_system_units(host_time: cm::Time) -> u64 {
+    pub fn convert_host_time_to_sys_units(host_time: cm::Time) -> u64 {
         unsafe { CMClockConvertHostTimeToSystemUnits(host_time) }
     }
 
     /// Converts a host time from native units to cm::Time.
     #[inline]
-    pub fn make_host_time_from_system_units(host_time: u64) -> cm::Time {
+    pub fn make_host_time_from_sys_units(host_time: u64) -> cm::Time {
         unsafe { CMClockMakeHostTimeFromSystemUnits(host_time) }
     }
 }
