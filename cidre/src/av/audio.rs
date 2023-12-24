@@ -11,7 +11,7 @@ pub mod types;
 pub use types::Angular3dOrientation;
 pub use types::ChannelCount;
 pub use types::FrameCount;
-pub use types::FramePosition;
+pub use types::FramePos;
 pub use types::NodeBus;
 pub use types::PacketCount;
 pub use types::Point3d;

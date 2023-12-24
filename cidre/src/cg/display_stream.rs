@@ -370,8 +370,9 @@ mod tests {
     fn basics() {
         use crate::{blocks, cg, dispatch};
 
-        let mut block = blocks::mut4(|frame_status, timestamp, surface, _update| {
-            println!("got! {timestamp:?} {frame_status:?} {surface:?}")
+        let mut block = blocks::mut4(|_frame_status, _timestamp, _surf, _update| {
+            // println!("got! {timestamp:?} {frame_status:?} {surface:?}")
+            eprint!(".");
         });
 
         let queue = dispatch::Queue::global(0).unwrap();

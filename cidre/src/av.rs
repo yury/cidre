@@ -106,7 +106,7 @@ pub use audio::Converter as AudioConverter;
 pub use audio::Engine as AudioEngine;
 pub use audio::Format as AudioFormat;
 pub use audio::FrameCount as AudioFrameCount;
-pub use audio::FramePosition as AudioFramePosition;
+pub use audio::FramePos as AudioFramePosition;
 pub use audio::InputNode as AudioInputNode;
 pub use audio::IoNode as AudioIoNode;
 pub use audio::MixerNode as AudioMixerNode;

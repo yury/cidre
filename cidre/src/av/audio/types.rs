@@ -1,4 +1,4 @@
-pub type FramePosition = i64;
+pub type FramePos = i64;
 pub type FrameCount = u32;
 pub type PacketCount = u32;
 pub type ChannelCount = u32;

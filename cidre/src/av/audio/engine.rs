@@ -301,7 +301,7 @@ impl Engine {
     /// of the render format's sample rate. Resetting the engine (see `reset`) will reset the
     /// timeline back to zero.
     #[objc::msg_send(manualRenderingSampleTime)]
-    pub fn manual_rendering_sample_time(&self) -> av::audio::FramePosition;
+    pub fn manual_rendering_sample_time(&self) -> av::audio::FramePos;
 }
 
 #[link(name = "av", kind = "static")]

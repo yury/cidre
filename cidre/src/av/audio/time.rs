@@ -1,12 +1,12 @@
 use crate::{arc, cat, define_cls, define_obj_type, ns, objc};
 
-use super::FramePosition;
+use super::FramePos;
 
 define_obj_type!(pub Time(ns::Id));
 
 impl arc::A<Time> {
     #[objc::msg_send(initWithAudioTimeStamp:sampleRate:)]
-    pub fn init_with_audio_timestamp_sample_rate(
+    pub fn init_with_audio_ts_sample_rate(
         self,
         ts: &cat::AudioTimeStamp,
         sample_rate: f64,
@@ -19,12 +19,12 @@ impl arc::A<Time> {
     pub fn init_with_host_time_sample_rate_at_rate(
         self,
         host_time: u64,
-        sample_time: FramePosition,
+        sample_time: FramePos,
         at_rate: f64,
     ) -> arc::R<Time>;
 
     #[objc::msg_send(initWithSampleTime:atRate:)]
-    pub fn init_with_sample_time_at_rate(self, time: FramePosition, at_rate: f64) -> arc::R<Time>;
+    pub fn init_with_sample_time_at_rate(self, time: FramePos, at_rate: f64) -> arc::R<Time>;
 }
 
 /// Represent a moment in time.
@@ -46,8 +46,8 @@ impl arc::A<Time> {
 /// least not be cluttered by ugly multiplications and divisions by the host clock frequency.
 impl Time {
     define_cls!(AV_AUDIO_TIME);
-    pub fn with_timestamp(ts: &cat::AudioTimeStamp, sample_rate: f64) -> arc::R<Time> {
-        Self::alloc().init_with_audio_timestamp_sample_rate(ts, sample_rate)
+    pub fn with_ts(ts: &cat::AudioTimeStamp, sample_rate: f64) -> arc::R<Time> {
+        Self::alloc().init_with_audio_ts_sample_rate(ts, sample_rate)
     }
 
     pub fn with_host_time(host_time: u64) -> arc::R<Time> {
@@ -56,13 +56,13 @@ impl Time {
 
     pub fn with_host_time_sample_rate_at_rate(
         host_time: u64,
-        sample_time: FramePosition,
+        sample_time: FramePos,
         at_rate: f64,
     ) -> arc::R<Time> {
         Self::alloc().init_with_host_time_sample_rate_at_rate(host_time, sample_time, at_rate)
     }
 
-    pub fn with_sample_time(time: FramePosition, at_rate: f64) -> arc::R<Time> {
+    pub fn with_sample_time(time: FramePos, at_rate: f64) -> arc::R<Time> {
         Self::alloc().init_with_sample_time_at_rate(time, at_rate)
     }
 
@@ -73,7 +73,7 @@ impl Time {
     pub fn sample_rate(&self) -> f64;
 
     #[objc::msg_send(sampleTime)]
-    pub fn sample_time(&self) -> FramePosition;
+    pub fn sample_time(&self) -> FramePos;
 
     #[objc::msg_send(isSampleTimeValid)]
     pub fn is_sample_time_valid(&self) -> bool;
