@@ -108,7 +108,10 @@ pub use string::StringMut;
 
 mod attributed_string;
 pub use attributed_string::AttrString;
+pub use attributed_string::AttrStringFormatCtxKey;
+pub use attributed_string::AttrStringKey;
 pub use attributed_string::AttrStringMut;
+pub use attributed_string::InlinePresentationIntent;
 
 mod url;
 pub use url::ResourceKey as UrlResourceKey;

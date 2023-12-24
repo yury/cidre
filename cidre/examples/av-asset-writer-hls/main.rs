@@ -1,7 +1,7 @@
 use std::{fs, io::Write, path::PathBuf};
 
 use cidre::{
-    arc, av, av::AssetWriterDelegate, ca, cm, define_obj_type, dispatch, ns, objc, objc::Obj, sc,
+    arc, av, av::AssetWriterDelegate, cm, define_obj_type, dispatch, ns, objc, objc::Obj, sc,
     sc::StreamOutput, ut,
 };
 

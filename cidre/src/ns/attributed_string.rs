@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, ns, objc};
+use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSAttributedStringKey")]
@@ -89,6 +89,27 @@ define_obj_type!(
     NS_MUTABLE_ATTRIBUTED_STRING
 );
 
+impl AttrStringMut {
+    #[objc::msg_send(mutableString)]
+    pub fn string_mut(&mut self) -> &ns::StringMut;
+}
+
+define_options!(
+    #[doc(alias = "NSInlinePresentationIntent")]
+    pub InlinePresentationIntent(usize)
+);
+
+impl InlinePresentationIntent {
+    pub const EMPHASIZED: Self = Self(1 << 0);
+    pub const STRONGLY_EMPHASIZED: Self = Self(1 << 1);
+    pub const CODE: Self = Self(1 << 2);
+    pub const STRIKETHROUGH: Self = Self(1 << 5);
+    pub const SOFT_BREAK: Self = Self(1 << 6);
+    pub const LINE_BREAK: Self = Self(1 << 7);
+    pub const INLINE_HTML: Self = Self(1 << 8);
+    pub const BLOCK_HTML: Self = Self(1 << 9);
+}
+
 extern "C" {
     static NS_ATTRIBUTED_STRING: &'static objc::Class<AttrString>;
     static NS_MUTABLE_ATTRIBUTED_STRING: &'static objc::Class<AttrStringMut>;
@@ -112,6 +133,10 @@ mod tests {
         let copy = ns::AttrString::with_attr_string(&copy);
 
         assert_eq!(copy.len(), 5);
+
+        let mut mcopy = copy.copy_mut();
+
+        let mut _mstr = mcopy.string_mut();
 
         // TODO: investigate
         // astr.attrs_at(1000, Some(&ns::Range::new(1000, 1000)))
