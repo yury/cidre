@@ -340,7 +340,7 @@ impl SampleBuf {
     pub fn attaches(
         &self,
         create_if_necessary: bool,
-    ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropertyList>>> {
+    ) -> Option<&cf::ArrayOf<cf::DictionaryOf<cf::String, cf::PropList>>> {
         unsafe {
             std::mem::transmute(CMSampleBufferGetSampleAttachmentsArray(
                 self,
@@ -354,7 +354,7 @@ impl SampleBuf {
     pub fn attaches_mut(
         &mut self,
         create_if_necessary: bool,
-    ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>> {
+    ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropList>>> {
         unsafe { CMSampleBufferGetSampleAttachmentsArray(self, create_if_necessary) }
     }
 
@@ -596,7 +596,7 @@ extern "C" {
     fn CMSampleBufferGetSampleAttachmentsArray(
         sbuf: &SampleBuf,
         create_if_necessary: bool,
-    ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropertyList>>>;
+    ) -> Option<&mut cf::ArrayOf<cf::DictionaryOfMut<cf::String, cf::PropList>>>;
 
     fn CMSampleBufferIsValid(sbuf: &SampleBuf) -> bool;
 

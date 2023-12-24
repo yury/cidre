@@ -345,12 +345,12 @@ extern "C" {
     ) -> Index;
 }
 
-define_cf_type!(PropertyList(Type));
+define_cf_type!(PropList(Type));
 
 /// Type to mean any instance of a property list type;
 /// currently, cf::String, cf::Data, cf::Number, cf::Boolean, cf::Date,
 /// cf::Array, and cf::Dictionary.
-impl PropertyList {
+impl PropList {
     pub fn try_as_string(&self) -> Option<&crate::cf::String> {
         if self.get_type_id() == crate::cf::String::type_id() {
             Some(unsafe { transmute(self) })

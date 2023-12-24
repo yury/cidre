@@ -14,7 +14,7 @@ pub use base::HashCode;
 pub use base::Index;
 pub use base::Null;
 pub use base::OptionFlags;
-pub use base::PropertyList;
+pub use base::PropList;
 pub use base::Range;
 pub use base::TypeId;
 pub use base::NOT_FOUND;

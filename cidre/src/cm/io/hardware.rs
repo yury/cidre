@@ -82,9 +82,9 @@ impl PlugIn {
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(transparent)]
-pub struct PlugInProperty(pub i32);
+pub struct PlugInProp(pub i32);
 
-impl PlugInProperty {
+impl PlugInProp {
     /// A 'cf::String' that contains the bundle identifier for the 'cm::io::PlugIn'.
     /// The caller is responsible for releasing the returned cf::Object.
     pub const BUNDLE_ID: Self = Self(i32::from_be_bytes(*b"piid"));

@@ -77,9 +77,9 @@ impl Update {
     }
 }
 
-define_cf_type!(PropertyKey(cf::String));
+define_cf_type!(PropKey(cf::String));
 
-impl PropertyKey {
+impl PropKey {
     /// This may be used to request a subregion of the display to be provided as the source of the display stream.  Use
     /// CGRectCreateDictionaryRepresentation to convert from a cg::Rect to the value used here.   Note: The coordinate system for the
     /// source rectangle is specified in display logical coordinates and not in pixels, in order to match the normal convention on
@@ -172,7 +172,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>> {
         unsafe {
@@ -194,7 +194,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>> {
@@ -217,7 +217,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
         handler: &mut blocks::Block<F>,
     ) -> Option<arc::R<DisplayStream>>
     where
@@ -245,7 +245,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
         queue: &dispatch::Queue,
         handler: &mut blocks::Block<F>,
     ) -> Option<arc::R<DisplayStream>>
@@ -321,14 +321,14 @@ extern "C" {
     );
     fn CGDisplayStreamUpdateGetDropCount(update_ref: &Update) -> usize;
 
-    static kCGDisplayStreamSourceRect: &'static PropertyKey;
-    static kCGDisplayStreamDestinationRect: &'static PropertyKey;
-    static kCGDisplayStreamPreserveAspectRatio: &'static PropertyKey;
-    static kCGDisplayStreamColorSpace: &'static PropertyKey;
-    static kCGDisplayStreamMinimumFrameTime: &'static PropertyKey;
-    static kCGDisplayStreamShowCursor: &'static PropertyKey;
-    static kCGDisplayStreamQueueDepth: &'static PropertyKey;
-    static kCGDisplayStreamYCbCrMatrix: &'static PropertyKey;
+    static kCGDisplayStreamSourceRect: &'static PropKey;
+    static kCGDisplayStreamDestinationRect: &'static PropKey;
+    static kCGDisplayStreamPreserveAspectRatio: &'static PropKey;
+    static kCGDisplayStreamColorSpace: &'static PropKey;
+    static kCGDisplayStreamMinimumFrameTime: &'static PropKey;
+    static kCGDisplayStreamShowCursor: &'static PropKey;
+    static kCGDisplayStreamQueueDepth: &'static PropKey;
+    static kCGDisplayStreamYCbCrMatrix: &'static PropKey;
 
     static kCGDisplayStreamYCbCrMatrix_ITU_R_709_2: &'static YCbCrMatrix;
     static kCGDisplayStreamYCbCrMatrix_ITU_R_601_4: &'static YCbCrMatrix;
@@ -341,7 +341,7 @@ extern "C" {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>>;
 
@@ -351,7 +351,7 @@ extern "C" {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropertyKey, cf::PropertyList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>>;

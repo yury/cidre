@@ -77,7 +77,7 @@ pub use display_stream::DisplayStream;
 #[cfg(target_os = "macos")]
 pub use display_stream::FrameStatus as DisplayStreamFrameStatus;
 #[cfg(target_os = "macos")]
-pub use display_stream::PropertyKey as DisplayStreamPropertyKey;
+pub use display_stream::PropKey as DisplayStreamPropertyKey;
 #[cfg(target_os = "macos")]
 pub use display_stream::Update as DisplayStreamUpdate;
 #[cfg(target_os = "macos")]

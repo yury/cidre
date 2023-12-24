@@ -168,24 +168,24 @@ impl FormatDesc {
     }
 
     #[inline]
-    pub fn exts(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+    pub fn exts(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropList>> {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
 
-    pub fn ext<'a>(&'a self, key: &FormatDescExtKey) -> Option<&'a cf::PropertyList> {
+    pub fn ext<'a>(&'a self, key: &FormatDescExtKey) -> Option<&'a cf::PropList> {
         unsafe { CMFormatDescriptionGetExtension(self, key) }
     }
 
     pub fn original_compression_session_settings(
         &self,
-    ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+    ) -> Option<&cf::DictionaryOf<cf::String, cf::PropList>> {
         unsafe {
             let key = FormatDescExtKey::original_compression_settings();
             transmute(self.ext(key))
         }
     }
 
-    pub fn ext_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>> {
+    pub fn ext_atoms(&self) -> Option<&cf::DictionaryOf<cf::String, cf::PropList>> {
         unsafe {
             let key = FormatDescExtKey::sample_desc_ext_atoms();
             transmute(self.ext(key))
@@ -920,12 +920,12 @@ extern "C" {
 
     fn CMFormatDescriptionGetExtensions(
         desc: &FormatDesc,
-    ) -> Option<&cf::DictionaryOf<cf::String, cf::PropertyList>>;
+    ) -> Option<&cf::DictionaryOf<cf::String, cf::PropList>>;
 
     fn CMFormatDescriptionGetExtension<'a>(
         desc: &'a FormatDesc,
         extension_key: &FormatDescExtKey,
-    ) -> Option<&'a cf::PropertyList>;
+    ) -> Option<&'a cf::PropList>;
 
     #[cfg(feature = "cat")]
     fn CMAudioFormatDescriptionCreate(

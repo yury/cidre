@@ -8,16 +8,13 @@ impl Session {
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<Option<arc::R<cf::PropertyList>>, os::Status> {
+    ) -> Result<Option<arc::R<cf::PropList>>, os::Status> {
         let mut value = None;
         unsafe { VTSessionCopyProperty(self, key, allocator, &mut value).to_result_option(value) }
     }
 
     #[inline]
-    pub fn property(
-        &self,
-        key: &cf::String,
-    ) -> Result<Option<arc::R<cf::PropertyList>>, os::Status> {
+    pub fn property(&self, key: &cf::String) -> Result<Option<arc::R<cf::PropList>>, os::Status> {
         self.property_in(key, None)
     }
 
@@ -108,7 +105,7 @@ extern "C" {
         session: &Session,
         property_key: &cf::String,
         allocator: Option<&cf::Allocator>,
-        property_value_out: *mut Option<arc::R<cf::PropertyList>>,
+        property_value_out: *mut Option<arc::R<cf::PropList>>,
     ) -> os::Status;
 
     fn VTSessionSetProperties(
