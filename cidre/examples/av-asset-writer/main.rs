@@ -144,7 +144,7 @@ fn write(
 ) {
     let mut buf = first_buf.retained();
     writer.start_writing();
-    writer.start_session_at_source_time(cm::Time::zero());
+    writer.start_session_at_src_time(cm::Time::zero());
 
     let sema = Arc::new(dispatch::Semaphore::new(0));
     let queue = dispatch::Queue::serial_with_autoreleasepool();

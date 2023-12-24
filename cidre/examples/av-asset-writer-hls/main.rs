@@ -214,7 +214,7 @@ async fn main() {
         .expect("failed to add output");
 
     if writer.start_writing() {
-        writer.start_session_at_source_time(start_time);
+        writer.start_session_at_src_time(start_time);
         stream.start().await.unwrap();
         tokio::signal::ctrl_c().await.unwrap();
         stream.stop().await.unwrap();

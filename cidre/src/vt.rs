@@ -27,7 +27,7 @@ pub use pixel_rotation::Session as PixelRotationSession;
 pub mod video_encoder_list;
 
 pub mod utilities;
-pub use utilities::create_cg_image_from_cv_pixel_buffer;
+pub use utilities::cg_image_from_cv_pixel_buf;
 
 #[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {}

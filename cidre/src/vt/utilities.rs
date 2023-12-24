@@ -1,6 +1,6 @@
 use crate::{arc, cf, cg, cv, os};
 
-pub fn create_cg_image_from_cv_pixel_buffer(
+pub fn cg_image_from_cv_pixel_buf(
     pixel_buffer: &cv::PixelBuf,
     options: Option<&cf::Dictionary>,
 ) -> Result<arc::R<cg::Image>, os::Status> {
