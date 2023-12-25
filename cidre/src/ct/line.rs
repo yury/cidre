@@ -75,7 +75,7 @@ impl Line {
         unsafe { CTLineGetTrailingWhitespaceWidth(self) }
     }
     #[inline]
-    pub fn index_for_position(&self, position: cg::Point) -> cf::Index {
+    pub fn index_for_pos(&self, position: cg::Point) -> cf::Index {
         unsafe { CTLineGetStringIndexForPosition(self, position) }
     }
 

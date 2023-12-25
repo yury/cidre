@@ -232,7 +232,7 @@ impl Font {
 
     #[doc(alias = "CTFontGetUnderlinePosition")]
     #[inline]
-    pub fn underline_position(&self) -> cg::Float {
+    pub fn underline_pos(&self) -> cg::Float {
         unsafe { CTFontGetUnderlinePosition(self) }
     }
 

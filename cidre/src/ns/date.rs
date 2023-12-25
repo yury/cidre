@@ -21,6 +21,18 @@ impl Date {
 
     #[objc::msg_send(timeIntervalSince1970)]
     pub fn time_interval_since_1970(&self) -> ns::TimeInterval;
+
+    #[objc::cls_msg_send(distantFuture)]
+    pub fn distant_future_ar() -> arc::Rar<Self>;
+
+    #[objc::cls_rar_retain]
+    pub fn distant_future() -> arc::R<Self>;
+
+    #[objc::cls_msg_send(distantPast)]
+    pub fn distant_past_ar() -> arc::Rar<Self>;
+
+    #[objc::cls_rar_retain]
+    pub fn distant_past() -> arc::R<Self>;
 }
 
 #[link(name = "ns", kind = "static")]

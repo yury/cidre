@@ -622,22 +622,22 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_focus_mode_locked_with_lens_position_no_ch_throws(&mut self, val: f32) {
+    pub unsafe fn set_focus_mode_locked_with_lens_pos_no_ch_throws(&mut self, val: f32) {
         self.device
-            .set_focus_mode_locked_with_lens_position_ch_throws(val, std::ptr::null_mut())
+            .set_focus_mode_locked_with_lens_pos_ch_throws(val, std::ptr::null_mut())
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_position_no_ch<'ar>(
+    pub fn set_focus_mode_locked_with_lens_pos_no_ch<'ar>(
         &mut self,
         val: f32,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_focus_mode_locked_with_lens_position_no_ch_throws(val) })
+        ns::try_catch(|| unsafe { self.set_focus_mode_locked_with_lens_pos_no_ch_throws(val) })
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_focus_mode_locked_with_lens_position_with_ch_throws<F>(
+    pub unsafe fn set_focus_mode_locked_with_lens_pos_with_ch_throws<F>(
         &mut self,
         val: f32,
         block: &'static mut blocks::Block<F>,
@@ -645,12 +645,12 @@ impl<'a> ConfigLockGuard<'a> {
         F: FnOnce(cm::Time),
     {
         self.device
-            .set_focus_mode_locked_with_lens_position_ch_throws(val, block.as_mut_ptr())
+            .set_focus_mode_locked_with_lens_pos_ch_throws(val, block.as_mut_ptr())
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_position_with_ch<'ar, F>(
+    pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ar, F>(
         &mut self,
         val: f32,
         block: &'static mut blocks::Block<F>,
@@ -660,30 +660,30 @@ impl<'a> ConfigLockGuard<'a> {
     {
         ns::try_catch(|| unsafe {
             self.device
-                .set_focus_mode_locked_with_lens_position_ch_throws(val, block.as_mut_ptr())
+                .set_focus_mode_locked_with_lens_pos_ch_throws(val, block.as_mut_ptr())
         })
     }
 
     #[cfg(feature = "async")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async unsafe fn set_focus_mode_locked_with_lens_position_throws(
+    pub async unsafe fn set_focus_mode_locked_with_lens_pos_throws(
         &mut self,
         val: f32,
     ) -> cm::Time {
         let (future, block) = blocks::comp1();
-        self.set_focus_mode_locked_with_lens_position_with_ch_throws(val, block.escape());
+        self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.escape());
         future.await
     }
 
     #[cfg(feature = "async")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub async fn set_focus_mode_locked_with_lens_position(
+    pub async fn set_focus_mode_locked_with_lens_pos(
         &mut self,
         val: f32,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
         let (future, block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_focus_mode_locked_with_lens_position_with_ch_throws(val, block.escape())
+            self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.escape())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -791,7 +791,7 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(isLockingFocusWithCustomLensPositionSupported)]
-    pub fn is_locking_focus_with_custom_lens_position_supported(&self) -> bool;
+    pub fn is_locking_focus_with_custom_lens_pos_supported(&self) -> bool;
 
     #[objc::msg_send(focusMode)]
     pub fn focus_mode(&self) -> FocusMode;
@@ -858,15 +858,11 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(lensPosition)]
-    pub fn lens_position(&self) -> f32;
+    pub fn lens_pos(&self) -> f32;
 
     // #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
-    unsafe fn set_focus_mode_locked_with_lens_position_ch_throws(
-        &mut self,
-        val: f32,
-        ch: *mut c_void,
-    );
+    unsafe fn set_focus_mode_locked_with_lens_pos_ch_throws(&mut self, val: f32, ch: *mut c_void);
 
     /// A property indicating the minimum focus distance.
     ///
@@ -2128,7 +2124,7 @@ pub enum VideoStabilizationMode {
 
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 #[doc(alias = "AVCaptureLensPositionCurrent")]
-pub fn lens_position_current() -> f32 {
+pub fn lens_pos_current() -> f32 {
     unsafe { AVCaptureLensPositionCurrent }
 }
 

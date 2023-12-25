@@ -623,7 +623,7 @@ pub mod errors {
 
     /// Invalid file position.
     #[doc(alias = "kAudioFilePositionError")]
-    pub const POSITION: Status = Status(-40);
+    pub const POS: Status = Status(-40);
 
     /// File not found.
     #[doc(alias = "kAudioFileFileNotFoundError")]

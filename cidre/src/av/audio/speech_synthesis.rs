@@ -2,7 +2,12 @@ use std::ffi::c_void;
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
-use crate::{arc, av::AuthorizationStatus, define_obj_type, define_options, ns, objc};
+use crate::{
+    arc,
+    av::AuthorizationStatus,
+    define_obj_type, define_options, ns,
+    objc::{self, Obj},
+};
 
 #[doc(alias = "AVSpeechBoundary")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -214,6 +219,67 @@ impl Utterance {
     pub fn set_post_utterance_delay(&self, val: ns::TimeInterval);
 }
 
+#[objc::obj_trait]
+pub trait Delegate: Obj {
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:didStartSpeechUtterance:)]
+    fn speech_synthesizer_did_start_speech_utterance(
+        &mut self,
+        synthesizer: &Synthesizer,
+        utterance: &Utterance,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:didFinishSpeechUtterance:)]
+    fn speech_synthesizer_did_finish_speech_utterance(
+        &mut self,
+        synthesizer: &Synthesizer,
+        utterance: &Utterance,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:didFinishSpeechUtterance:)]
+    fn speech_synthesizer_did_pause_speech_utterance(
+        &mut self,
+        synthesizer: &Synthesizer,
+        utterance: &Utterance,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:didContinueSpeechUtterance:)]
+    fn speech_synthesizer_did_continue_speech_utterance(
+        &mut self,
+        synthesizer: &Synthesizer,
+        utterance: &Utterance,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:didCancelSpeechUtterance:)]
+    fn speech_synthesizer_did_cancel_speech_utterance(
+        &mut self,
+        synthesizer: &Synthesizer,
+        utterance: &Utterance,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:willSpeakRangeOfSpeechString:utterance:)]
+    fn speech_synthesizer_will_speak_range_of_speech_string(
+        &mut self,
+        synthesizer: &Synthesizer,
+        characters_range: ns::Range,
+        utterance: &Utterance,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(speechSynthesizer:willSpeakMarker:utterance:)]
+    fn speech_synthesizer_will_speak_marker(
+        &mut self,
+        synthesizer: &Synthesizer,
+        marker: &Marker,
+        utterance: &Utterance,
+    );
+}
+
 define_obj_type!(
     #[doc(alias = "AVSpeechSynthesizer")]
     pub Synthesizer(ns::Id),
@@ -221,6 +287,9 @@ define_obj_type!(
 );
 
 impl Synthesizer {
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
+
     #[objc::msg_send(isSpeaking)]
     pub fn is_speaking(&self) -> bool;
 
@@ -310,7 +379,10 @@ impl Synthesizer {
     }
 }
 
-define_obj_type!(pub Marker(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVSpeechSynthesisMarker")]
+    pub Marker(ns::Id)
+);
 
 #[link(name = "AVFAudio", kind = "framework")]
 extern "C" {

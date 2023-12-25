@@ -16,6 +16,9 @@ impl Application {
 
     #[objc::msg_send(run)]
     pub fn run(&mut self);
+
+    #[objc::msg_send(terminate:)]
+    pub fn terminate(&mut self, sender: Option<&ns::Id>);
 }
 
 #[link(name = "app", kind = "static")]

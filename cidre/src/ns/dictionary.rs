@@ -37,6 +37,7 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
@@ -166,5 +167,6 @@ mod tests {
 
         assert!(!dict.is_empty());
         assert_eq!(dict.len(), 1);
+        assert!(!dict.is_empty());
     }
 }

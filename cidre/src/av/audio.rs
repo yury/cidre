@@ -84,6 +84,8 @@ pub use settings::linear_pcm_keys;
 pub use settings::Quality;
 
 pub mod speech_synthesis;
+pub use speech_synthesis::Delegate as SpeechSynthesizerDelegate;
+pub use speech_synthesis::DelegateImpl as SpeechSynthesizerDelegateImpl;
 pub use speech_synthesis::Marker as SpeechSynthesisMarker;
 pub use speech_synthesis::MarkerMark as SpeechSynthesisMarkerMark;
 pub use speech_synthesis::SpeechBoundery;
