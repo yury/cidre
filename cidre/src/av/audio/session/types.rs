@@ -1,6 +1,9 @@
-use crate::{cf, define_cf_type};
+use crate::{define_obj_type, define_options, ns};
 
-define_cf_type!(Port(cf::String));
+define_obj_type!(
+    #[doc(alias = "AVAudioSessionPort")]
+    pub Port(ns::String)
+);
 
 impl Port {
     /* input port types */
@@ -165,7 +168,10 @@ extern "C" {
 
 }
 
-define_cf_type!(Category(cf::String));
+define_obj_type!(
+    #[doc(alias = "AVAudioSessionCategory")]
+    pub Category(ns::String)
+);
 
 impl Category {
     /// Use this category for background sounds such as rain, car engine noise, etc.
@@ -228,7 +234,10 @@ extern "C" {
     static AVAudioSessionCategoryMultiRoute: &'static Category;
 }
 
-define_cf_type!(Mode(cf::String));
+define_obj_type!(
+    #[doc(alias = "AVAudioSessionMode")]
+    pub Mode(ns::String)
+);
 
 /// Modes modify the audio category in order to introduce behavior that is tailored to the specific
 /// use of audio within an application. Available in iOS 5.0 and greater.
@@ -238,7 +247,7 @@ impl Mode {
         unsafe { AVAudioSessionModeDefault }
     }
 
-    /// Only valid with AVAudioSessionCategoryPlayAndRecord.  Appropriate for Voice over IP
+    /// Only valid with AVAudioSessionCategoryPlayAndRecord. Appropriate for Voice over IP
     /// (VoIP) applications.  Reduces the number of allowable audio routes to be only those
     /// that are appropriate for VoIP applications and may engage appropriate system-supplied
     /// signal processing.  Has the side effect of setting AVAudioSessionCategoryOptionAllowBluetooth
@@ -318,25 +327,28 @@ extern "C" {
 
 }
 
+#[doc(alias = "AVAudioSessionActivationOptions")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
-pub enum ActivationOptions {
+pub enum ActivationOpts {
     None = 0,
 }
 
 /// For use with overrideOutputAudioPort:error:
+#[doc(alias = "AVAudioSessionPortOverride")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PortOverride {
-    /// No override.  Return audio routing to the default state for the current audio category.
+    /// No override. Return audio routing to the default state for the current audio category.
     None = 0,
-    /// Route audio output to speaker.  Use this override with AVAudioSessionCategoryPlayAndRecord,
+    /// Route audio output to speaker. Use this override with av::AudioSessionCategory::PlayAndRecord,
     /// which by default routes the output to the receiver.
     Speaker = u32::from_be_bytes(*b"spkr") as _,
 }
 
 /// Values for AVAudioSessionRouteChangeReasonKey in AVAudioSessionRouteChangeNotification's
 /// userInfo dictionary
+#[doc(alias = "AVAudioSessionRouteChangeReason")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RouteChangeReason {
@@ -370,14 +382,16 @@ pub enum RouteChangeReason {
     RouteConfigurationChange = 8,
 }
 
-#[repr(transparent)]
-pub struct CategoryOptions(pub usize);
+define_options!(
+    #[doc(alias = "AVAudioSessionCategoryOptions")]
+    pub CategoryOpts(usize)
+);
 
 /// Applications must be prepared for changing category options to fail as behavior may change
 /// in future releases. If an application changes its category, it should reassert the options,
 /// since they are not sticky across category changes. Introduced in iOS 6.0 / watchOS 2.0 /
 /// tvOS 9.0.
-impl CategoryOptions {
+impl CategoryOpts {
     /// Controls whether other active audio apps will be interrupted or mixed with when your app's
     /// audio session goes active. Details depend on the category.
     ///
@@ -516,6 +530,7 @@ impl CategoryOptions {
 
 /// Values for AVAudioSessionInterruptionTypeKey in AVAudioSessionInterruptionNotification's
 /// userInfo dictionary.
+#[doc(alias = "AVAudioSessionInterruptionType")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum InterruptionType {
@@ -527,15 +542,17 @@ pub enum InterruptionType {
 
 /// Values for AVAudioSessionInterruptionOptionKey in AVAudioSessionInterruptionNotification's
 /// userInfo dictionary.
+#[doc(alias = "AVAudioSessionInterruptionOptions")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
-pub enum InterruptionOptions {
+pub enum InterruptionOpts {
     None = 0,
     /// Indicates that you should resume playback now that the interruption has ended.
     ShouldResume = 1,
 }
 
 /// Values for AVAudioSessionInterruptionReasonKey in AVAudioSessionInterruptionNotification's userInfo dictionary.
+#[doc(alias = "AVAudioSessionInterruptionReason")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum InterruptionReason {
@@ -554,10 +571,11 @@ pub enum InterruptionReason {
     BuiltInMicMuted = 2,
 }
 
-///  options for use when calling setActive:withOptions:error:
+/// options for use when calling setActive:withOptions:error:
+#[doc(alias = "AVAudioSessionSetActiveOptions")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
-pub enum SetActiveOptions {
+pub enum SetActiveOpts {
     None = 0,
     /// Notify an interrupted app that the interruption has ended and it may resume playback. Only
     /// valid on session deactivation.
@@ -567,6 +585,7 @@ pub enum SetActiveOptions {
 /// Values for AVAudioSessionSilenceSecondaryAudioHintTypeKey in
 /// AVAudioSessionSilenceSecondaryAudioHintNotification's userInfo dictionary, to indicate whether
 /// optional secondary audio muting should begin or end.
+#[doc(alias = "AVAudioSessionSilenceSecondaryAudioHintType")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum SilenceSecondaryAudioHintType {
@@ -590,11 +609,12 @@ pub enum SilenceSecondaryAudioHintType {
 /// duration, or if your app requires the ability to set a preferred sample rate or IO buffer duration
 /// for audio input, set the AVAudioSessionIOType to Aggregated.
 ///  
-/// Apps that don't use AVCaptureSession and use AVAudioSessionCategoryPlayAndRecord will continue
+/// Apps that don't use AVCaptureSession and use [`av::AudioSessionCategory::play_and_record()`] will continue
 /// to have aggregated audio I/O, as in previous versions of iOS.
+#[doc(alias = "AVAudioSessionIOType")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
-pub enum IOType {
+pub enum IoType {
     /// The default value.  If your app does not use AVCaptureSession or does not have any specific
     /// requirement for aggregating input and output audio in the same realtime I/O callback, use this
     /// value. Note that if your app does not use AVCaptureSession, it will get aggregated I/O when using
@@ -617,6 +637,7 @@ pub enum IOType {
 /// Starting in iOS 11, tvOS 11, and watchOS 5, the route sharing policy allows a session
 /// to specify that its output audio should be routed somewhere other than the default system output,
 /// when appropriate alternative routes are available.
+#[doc(alias = "AVAudioSessionRouteSharingPolicy")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RouteSharingPolicy {
@@ -654,6 +675,7 @@ pub enum RouteSharingPolicy {
 /// Sessions that issue voice prompts are encouraged to pay attention to changes in the prompt style and
 /// modify their prompts in response. Apple encourages the use of non-verbal prompts when the Short
 /// style is requested.
+#[doc(alias = "AVAudioSessionPromptStyle")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PromptStyle {
@@ -672,6 +694,7 @@ pub enum PromptStyle {
 /// Constants indicating stereo input audio orientation,
 /// for use with built-in mic input data sources with
 /// a stereo polar pattern selected.
+#[doc(alias = "AVAudioStereoOrientation")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(isize)]
 pub enum StereoOrientation {
@@ -687,6 +710,7 @@ pub enum StereoOrientation {
     LandscapeLeft = 4,
 }
 
+#[doc(alias = "AVAudioSessionRecordPermission")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RecordPermission {

@@ -13,3 +13,5 @@ pub use audio::ClassDesc as AudioClassDesc;
 pub use audio::Converter as AudioConverter;
 pub use audio::ConverterRef as AudioConverterRef;
 pub use audio::FormatProp as AudioFormatProp;
+
+pub mod au;

@@ -47,12 +47,48 @@ mod player;
 pub use player::Player;
 
 mod player_node;
-pub use player_node::BufOptions as PlayerNodeBufOptions;
+pub use player_node::BufOpts as PlayerNodeBufOpts;
 pub use player_node::CompletionCbType as PlayerNodeCompletionCbType;
 pub use player_node::PlayerNode;
 
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub mod session;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::ActivationOpts as SessionActivationOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::Category as SessionCategory;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::CategoryOpts as SessionCategoryOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::InterruptionOpts as SessionInterruptionOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::InterruptionReason as SessionInterruptionReason;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::InterruptionType as SessionInterruptionType;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::IoType as SessionIoType;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::Mode as SessionMode;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::Port as SessionPort;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::PortOverride as SessionPortOverride;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::PromptStyle as SessionPromptStyle;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::RecordPermission as SessionRecordPermission;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::RouteChangeReason as SessionRouteChangeReason;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::RouteSharingPolicy as SessionRouteSharingPolicy;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::Session;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::SetActiveOpts as SessionSetActiveOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::SilenceSecondaryAudioHintType as SessionSilenceSecondaryAudioHintType;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::StereoOrientation;
 
 mod buffer;
 pub use buffer::Buf;

@@ -28,6 +28,7 @@ Class AV_CAPTURE_PHOTO_OUTPUT;
 Class AV_AUDIO_PLAYER_NODE;
 
 Class AV_AUDIO_ENGINE;
+Class AV_AUDIO_SESSION;
 
 Class AV_AUDIO_CONNECTION_POINT;
 
@@ -82,6 +83,7 @@ static void av_initializer(void)
 #else
         AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
         AV_CAPTURE_METADATA_INPUT = [AVCaptureMetadataInput class];
+        AV_AUDIO_SESSION = [AVAudioSession class];
 #endif
         
         AV_OUTPUT_SETTINGS_ASSISTANT = [AVOutputSettingsAssistant class];

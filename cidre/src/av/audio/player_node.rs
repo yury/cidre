@@ -9,9 +9,9 @@ use crate::{
 /// Options controlling buffer scheduling.
 #[doc(alias = "AVAudioPlayerNodeBufferOptions")]
 #[repr(transparent)]
-pub struct BufOptions(pub usize);
+pub struct BufOpts(pub usize);
 
-impl BufOptions {
+impl BufOpts {
     /// The buffer loops indefinitely.  
     pub const LOOPS: Self = Self(1usize << 0);
     /// The buffer interrupts any buffer already playing.

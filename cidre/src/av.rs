@@ -116,8 +116,42 @@ pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PcmBuf as AudioPcmBuf;
 pub use audio::Player as AudioPlayer;
 pub use audio::PlayerNode as AudioPlayerNode;
-pub use audio::Session as AudioSession;
 pub use audio::Time as AudioTime;
+
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::Session as AudioSession;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionActivationOpts as AudioSessionActivationOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionCategory as AudioSessionCategory;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionCategoryOpts as AudioSessionCategoryOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionInterruptionOpts as AudioSessionInterruptionOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionInterruptionReason as AudioSessionInterruptionReason;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionInterruptionType as AudioSessionInterruptionType;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionIoType as AudioSessionIoType;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionMode as AudioSessionMode;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionPort as AudioSessionPort;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionPortOverride as AudioSessionPortOverride;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionPromptStyle as AudioSessionPromptStyle;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionRecordPermission as AudioSessionRecordPermission;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionRouteChangeReason as AudioSessionRouteChangeReason;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionRouteSharingPolicy as AudioSessionRouteSharingPolicy;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionSetActiveOpts as AudioSessionSetActiveOpts;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionSilenceSecondaryAudioHintType as AudioSessionSilenceSecondaryAudioHintType;
 
 pub use audio::SpeechBoundery;
 pub use audio::SpeechSynthesisMarker;

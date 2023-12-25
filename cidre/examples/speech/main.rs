@@ -54,12 +54,12 @@ fn main() {
     let synth_delegate = SynthDelegate::with(sema.retained());
 
     // Create a speech synthesizer.
-    let mut synthesizer = av::SpeechSynthesizer::new();
+    let mut synth = av::SpeechSynthesizer::new();
 
-    synthesizer.set_delegate(Some(synth_delegate.as_ref()));
+    synth.set_delegate(Some(synth_delegate.as_ref()));
 
     // Tell the synthesizer to speak the utterance.
-    synthesizer.speak_utterance(&utterance).unwrap();
+    synth.speak_utterance(&utterance).unwrap();
 
     ns::Application::shared().run();
 }
