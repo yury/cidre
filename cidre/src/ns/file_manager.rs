@@ -393,7 +393,7 @@ impl FileAttrKey {
     }
 
     #[inline]
-    pub fn device_identifier() -> &'static Self {
+    pub fn device_id() -> &'static Self {
         unsafe { NSFileDeviceIdentifier }
     }
 

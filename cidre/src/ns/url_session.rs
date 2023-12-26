@@ -110,7 +110,7 @@ impl Task {
     pub fn error(&self) -> Option<&ns::Error>;
 
     #[objc::msg_send(taskIdentifier)]
-    pub fn task_identifier(&self) -> ns::UInteger;
+    pub fn task_id(&self) -> ns::UInteger;
 
     #[objc::msg_send(originalRequest)]
     pub fn original_request(&self) -> Option<&ns::UrlRequest>;

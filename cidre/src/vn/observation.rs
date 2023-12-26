@@ -86,7 +86,7 @@ define_obj_type!(pub ClassificationObservation(Observation));
 
 impl ClassificationObservation {
     #[objc::msg_send(identifier)]
-    pub fn identifier(&self) -> &ns::String;
+    pub fn id(&self) -> &ns::String;
 
     #[objc::msg_send(hasPrecisionRecallCurve)]
     pub fn has_precision_recall_curve(&self) -> bool;

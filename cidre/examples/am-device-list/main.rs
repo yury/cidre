@@ -6,7 +6,7 @@ fn main() {
         let f = d.connected().expect("Failed to connect to device");
         println!(
             "uuid: {:?}, if: {:?} {:?}",
-            f.identifier().to_string(),
+            f.id().to_string(),
             f.interface_type(),
             f.name().to_string()
         );

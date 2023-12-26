@@ -29,7 +29,7 @@ impl Locale {
     ///
     /// let id = loc.id();
     /// ```
-    pub fn current() -> arc::R<Locale> {
+    pub fn current() -> arc::R<Self> {
         unsafe { CFLocaleCopyCurrent() }
     }
 

@@ -11,10 +11,10 @@ impl Type {
     define_cls!(UT_TYPE);
 
     #[objc::cls_msg_send(typeWithIdentifier:)]
-    pub fn with_identifier_ar(identifier: &ns::String) -> Option<arc::Rar<Self>>;
+    pub fn with_id_ar(identifier: &ns::String) -> Option<arc::Rar<Self>>;
 
     #[objc::cls_rar_retain]
-    pub fn with_identifier(identifier: &ns::String) -> Option<arc::R<Self>>;
+    pub fn with_id(identifier: &ns::String) -> Option<arc::R<Self>>;
 
     #[objc::cls_msg_send(typeWithFilenameExtension:)]
     pub fn with_file_ext_ar(file_name_extension: &ns::String) -> Option<arc::Rar<Self>>;
@@ -23,7 +23,7 @@ impl Type {
     pub fn with_file_ext(file_name_extension: &ns::String) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(identifier)]
-    pub fn identifier(&self) -> &ns::String;
+    pub fn id(&self) -> &ns::String;
 
     #[objc::msg_send(preferredFilenameExtension)]
     pub fn preferred_file_ext(&self) -> Option<&ns::String>;
@@ -76,7 +76,7 @@ mod tests {
     #[test]
     fn basics() {
         let t = ut::Type::with_file_ext(&ns::String::with_str("png")).unwrap();
-        assert_eq!(t.identifier(), "public.png");
+        assert_eq!(t.id(), "public.png");
 
         let sup = t.supertypes();
         assert!(sup.len() >= 4);

@@ -18,7 +18,7 @@ impl Device {
         unsafe { AMDeviceGetConnectionID(self) }
     }
 
-    pub fn identifier(&self) -> arc::R<cf::String> {
+    pub fn id(&self) -> arc::R<cf::String> {
         unsafe { AMDeviceCopyDeviceIdentifier(self) }
     }
 

@@ -1,13 +1,14 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
+    #[doc(alias = "VNRecognizeAnimalsRequest")]
     pub RecognizeAnimalsRequest(vn::ImageBasedRequest),
     VN_RECOGNIZE_ANIMALS_REQUEST
 );
 
-define_obj_type!(pub AnimalIdentifier(ns::String));
+define_obj_type!(pub AnimalId(ns::String));
 
-impl AnimalIdentifier {
+impl AnimalId {
     #[inline]
     pub fn dog() -> &'static Self {
         unsafe { VNAnimalIdentifierDog }
@@ -26,7 +27,7 @@ impl RecognizeAnimalsRequest {
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::RecognizedObjectObservation>>;
 
-    pub fn supported_ids(&self) -> Result<arc::R<ns::Array<AnimalIdentifier>>, &ns::Error> {
+    pub fn supported_ids(&self) -> Result<arc::R<ns::Array<AnimalId>>, &ns::Error> {
         unsafe {
             let mut err = None;
             let res = self.supported_ids_err(&mut err);
@@ -46,19 +47,19 @@ impl RecognizeAnimalsRequest {
     pub unsafe fn supported_ids_err_ar<'ear>(
         &self,
         error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::Array<AnimalIdentifier>>>;
+    ) -> Option<arc::Rar<ns::Array<AnimalId>>>;
 
     #[objc::rar_retain]
     pub unsafe fn supported_ids_err<'ear>(
         &self,
         error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::R<ns::Array<AnimalIdentifier>>>;
+    ) -> Option<arc::R<ns::Array<AnimalId>>>;
 }
 
 #[link(name = "Vision", kind = "framework")]
 extern "C" {
-    static VNAnimalIdentifierDog: &'static AnimalIdentifier;
-    static VNAnimalIdentifierCat: &'static AnimalIdentifier;
+    static VNAnimalIdentifierDog: &'static AnimalId;
+    static VNAnimalIdentifierCat: &'static AnimalId;
 }
 
 #[link(name = "vn", kind = "static")]
@@ -79,9 +80,9 @@ mod test {
 
         assert_eq!(2, supported_ids.len());
         println!("3");
-        assert!(supported_ids.contains(vn::AnimalIdentifier::cat()));
+        assert!(supported_ids.contains(vn::AnimalId::cat()));
         println!("4");
-        assert!(supported_ids.contains(vn::AnimalIdentifier::dog()));
+        assert!(supported_ids.contains(vn::AnimalId::dog()));
 
         println!("5");
         assert!(request.results().is_none());

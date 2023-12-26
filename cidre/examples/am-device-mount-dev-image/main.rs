@@ -8,7 +8,7 @@ use cidre::{
 pub extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
     match info.safe() {
         am::device::discovery::SafeInfo::Attached(device) => {
-            let id = device.identifier().to_string();
+            let id = device.id().to_string();
             if id.eq("00008103-001505940231001E") {
                 println!("identifier {:?}", id);
                 device.show();
