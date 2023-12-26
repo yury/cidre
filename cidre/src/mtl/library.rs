@@ -342,20 +342,20 @@ mod tests {
     #[test]
     fn foo() {
         let device = mtl::Device::default().unwrap();
-        let source = ns::String::with_str("kernel void function_a() {}");
+        let src = ns::String::with_str("kernel void function_a() {}");
 
-        let handler = blocks::once2(move |lib, error| {
+        let ch = blocks::once2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
-        device.new_lib_with_src_ch(&source, None, handler.escape());
+        device.new_lib_with_src_ch(&src, None, ch.escape());
     }
 
     #[test]
     fn function_names() {
         let device = mtl::Device::default().unwrap();
 
-        let source = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
-        let lib = device.new_lib_with_src(&source, None).unwrap();
+        let src = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
+        let lib = device.new_lib_with_src(&src, None).unwrap();
         let names = lib.fn_names();
         assert_eq!(1, names.len());
         let n = &names[0];
@@ -369,8 +369,8 @@ mod tests {
     fn error_basics() {
         let device = mtl::Device::default().unwrap();
 
-        let source = ns::String::with_str("vid function_a() {}");
-        let err = device.new_lib_with_src(&source, None).unwrap_err();
+        let src = ns::String::with_str("vid function_a() {}");
+        let err = device.new_lib_with_src(&src, None).unwrap_err();
 
         assert_eq!(mtl::LibError::CompileFailure, err.code());
     }
@@ -379,13 +379,13 @@ mod tests {
     fn new_function_with_name() {
         let device = mtl::Device::default().unwrap();
 
-        let source = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src(&source, None).unwrap();
+        let src = ns::String::with_str("kernel void function_a() {}");
+        let lib = device.new_lib_with_src(&src, None).unwrap();
 
-        let func_name = ns::String::with_str("function_a");
-        let func = lib.new_fn(&func_name).unwrap();
+        let fn_name = ns::String::with_str("function_a");
+        let func = lib.new_fn(&fn_name).unwrap();
         let name = func.name();
-        assert!(func_name.is_equal(&name));
+        assert!(fn_name.is_equal(&name));
         assert_eq!(func.opts(), mtl::FnOpts::None);
     }
 
@@ -393,37 +393,35 @@ mod tests {
     fn new_function_with_name_constant_values() {
         let device = mtl::Device::default().unwrap();
 
-        let source = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src(&source, None).unwrap();
+        let src = ns::String::with_str("kernel void function_a() {}");
+        let lib = device.new_lib_with_src(&src, None).unwrap();
 
-        let func_name = ns::String::with_str_no_copy("function_a");
-        let constant_values = mtl::FnConstValues::new();
-        let func = lib
-            .new_fn_with_consts(&func_name, &constant_values)
-            .unwrap();
+        let fn_name = ns::String::with_str_no_copy("function_a");
+        let const_values = mtl::FnConstValues::new();
+        let func = lib.new_fn_with_consts(&fn_name, &const_values).unwrap();
         let name = func.name();
-        assert!(func_name.is_equal(name));
+        assert!(fn_name.is_equal(name));
     }
 
     #[test]
     fn compile_opts() {
-        let mut options = mtl::CompileOpts::new();
+        let mut opts = mtl::CompileOpts::new();
 
-        assert_eq!(true, options.fast_math_enabled());
-        options.set_fast_math_enabled(false);
-        assert_eq!(false, options.fast_math_enabled());
+        assert_eq!(true, opts.fast_math_enabled());
+        opts.set_fast_math_enabled(false);
+        assert_eq!(false, opts.fast_math_enabled());
 
-        assert_ne!(options.lang_version(), mtl::LangVersion::_2_0);
+        assert_ne!(opts.lang_version(), mtl::LangVersion::_2_0);
 
-        options.set_lang_version(mtl::LangVersion::_2_4);
-        assert_eq!(options.lang_version(), mtl::LangVersion::_2_4);
+        opts.set_lang_version(mtl::LangVersion::_2_4);
+        assert_eq!(opts.lang_version(), mtl::LangVersion::_2_4);
     }
 
     #[test]
     fn install_name() {
         let device = mtl::Device::default().unwrap();
-        let source = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src(&source, None).unwrap();
+        let src = ns::String::with_str("kernel void function_a() {}");
+        let lib = device.new_lib_with_src(&src, None).unwrap();
 
         assert!(lib.install_name().is_none());
         assert_eq!(mtl::LibType::Executable, lib.type_());
