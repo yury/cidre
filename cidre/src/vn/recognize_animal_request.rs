@@ -26,10 +26,10 @@ impl RecognizeAnimalsRequest {
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::RecognizedObjectObservation>>;
 
-    pub fn supported_identifiers(&self) -> Result<arc::R<ns::Array<AnimalIdentifier>>, &ns::Error> {
+    pub fn supported_ids(&self) -> Result<arc::R<ns::Array<AnimalIdentifier>>, &ns::Error> {
         unsafe {
             let mut err = None;
-            let res = self.supported_identifiers_err(&mut err);
+            let res = self.supported_ids_err(&mut err);
             if res.is_some() {
                 println!("some");
                 Ok(res.unwrap_unchecked())
@@ -41,17 +41,17 @@ impl RecognizeAnimalsRequest {
     }
 
     /// # Safety
-    /// use `supported_identifiers()`
+    /// use `supported_ids()`
     #[objc::msg_send(supportedIdentifiersAndReturnError:)]
-    pub unsafe fn supported_identifiers_err_ar(
+    pub unsafe fn supported_ids_err_ar<'ear>(
         &self,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::Rar<ns::Array<AnimalIdentifier>>>;
 
     #[objc::rar_retain]
-    pub unsafe fn supported_identifiers_err(
+    pub unsafe fn supported_ids_err<'ear>(
         &self,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<AnimalIdentifier>>>;
 }
 
@@ -74,7 +74,7 @@ mod test {
     fn basics() {
         let mut request = vn::RecognizeAnimalsRequest::new();
         println!("1");
-        let supported_ids = request.supported_identifiers().unwrap();
+        let supported_ids = request.supported_ids().unwrap();
         println!("2");
 
         assert_eq!(2, supported_ids.len());
@@ -90,9 +90,7 @@ mod test {
         request.set_revision(10);
         println!("7");
 
-        let _error = request
-            .supported_identifiers()
-            .expect_err("should be error");
+        let _error = request.supported_ids().expect_err("should be error");
         println!("8");
     }
 }

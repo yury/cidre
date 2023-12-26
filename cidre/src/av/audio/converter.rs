@@ -96,19 +96,19 @@ impl Converter {
     pub fn available_encode_channel_layout_tags(&self) -> Option<&ns::Array<ns::Number>>;
 
     #[objc::msg_send(convertToBuffer:fromBuffer:error:)]
-    pub unsafe fn convert_to_buffer_from_buffer_err(
+    pub unsafe fn convert_to_buffer_from_buffer_err<'ear>(
         &self,
         output_buffer: &mut av::AudioPcmBuf,
         from_buffer: &av::AudioPcmBuf,
-        error: &mut Option<&cf::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn convert_to_buffer_from_buffer(
+    pub fn convert_to_buffer_from_buffer<'ear>(
         &self,
         output_buffer: &mut av::AudioPcmBuf,
         from_buffer: &av::AudioPcmBuf,
-    ) -> Result<(), arc::R<cf::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         unsafe {
             let mut error = None;
             let res =

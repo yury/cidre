@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, at, av, blocks, define_obj_type, ns, objc};
+use crate::{at, av, blocks, define_obj_type, ns, objc};
 
 #[doc(alias = "AVAudioVoiceProcessingSpeechActivityEvent")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -49,13 +49,13 @@ impl IoNode {
     pub fn is_vp_enabled(&self) -> bool;
 
     #[objc::msg_send(setVoiceProcessingEnabled:error:)]
-    pub unsafe fn set_vp_enabled_err(
+    pub unsafe fn set_vp_enabled_err<'ear>(
         &mut self,
         val: bool,
-        err: *mut Option<arc::R<ns::Error>>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_vp_enabled(&mut self, val: bool) -> Result<(), arc::R<ns::Error>> {
+    pub fn set_vp_enabled<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         if unsafe { self.set_vp_enabled_err(val, &mut err) } {
             Ok(())

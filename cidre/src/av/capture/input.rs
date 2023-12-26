@@ -20,17 +20,17 @@ impl Input {
 
 impl arc::A<DeviceInput> {
     #[objc::msg_send(initWithDevice:error:)]
-    pub fn init_with_device_err(
+    pub fn init_with_device_err<'ear>(
         self,
         device: &av::CaptureDevice,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<DeviceInput>>;
 }
 
 impl DeviceInput {
     define_cls!(AV_CAPTURE_DEVICE_INPUT);
 
-    pub fn with_device<'a>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'a ns::Error> {
+    pub fn with_device<'ear>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
             let res = Self::alloc().init_with_device_err(device, &mut error);

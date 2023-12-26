@@ -161,10 +161,10 @@ impl DataSrcDesc {
     // - (BOOL)setPreferredPolarPattern:(nullable AVAudioSessionPolarPattern)pattern error:(NSError **)outError
 
     #[objc::msg_send(setPreferredPolarPattern:error:)]
-    pub unsafe fn set_preferred_polar_pattern_err(
+    pub unsafe fn set_preferred_polar_pattern_err<'ear>(
         &mut self,
         val: Option<&PolarPattern>,
-        err: *mut Option<arc::R<ns::Error>>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
     /// Select the desired polar pattern from the set of available patterns. Setting a nil value
@@ -177,10 +177,10 @@ impl DataSrcDesc {
     /// setPreferredDataSource:error: to active the data source on the port.
     /// You must call setPreferredInputOrientation:error: on the AVAudioSession if you chose the
     /// AVAudioSessionPolarPatternStereo polar pattern.
-    pub fn set_preferred_polar_pattern(
+    pub fn set_preferred_polar_pattern<'ear>(
         &mut self,
         val: Option<&PolarPattern>,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_preferred_polar_pattern_err(val, &mut err) {
@@ -228,16 +228,16 @@ impl PortDesc {
     pub fn preferred_data_src(&self) -> Option<&DataSrcDesc>;
 
     #[objc::msg_send(setPreferredDataSource:error:)]
-    pub fn set_preferred_data_src_err(
+    pub unsafe fn set_preferred_data_src_err<'ear>(
         &mut self,
         val: Option<&DataSrcDesc>,
-        err: *mut Option<arc::R<ns::Error>>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_preferred_data_src(
+    pub fn set_preferred_data_src<'ear>(
         &mut self,
         val: Option<&DataSrcDesc>,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_preferred_data_src_err(val, &mut err) {

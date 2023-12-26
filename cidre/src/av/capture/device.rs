@@ -196,10 +196,10 @@ impl Device {
     unsafe fn set_torch_mode_throws(&self, val: TorchMode);
 
     #[objc::msg_send(setTorchModeOnWithLevel:error:)]
-    unsafe fn set_torch_mode_on_with_level_err(
+    unsafe fn set_torch_mode_on_with_level_err<'ear>(
         &mut self,
         torch_level: f32,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 }
 
@@ -213,10 +213,10 @@ impl<'a> ConfigLockGuard<'a> {
         ns::try_catch(|| unsafe { self.set_torch_mode_throws(val) })
     }
 
-    pub fn set_torch_mode_on_with_level_err(
+    pub unsafe fn set_torch_mode_on_with_level_err<'ear>(
         &mut self,
         torch_level: f32,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool {
         unsafe {
             self.device
@@ -224,15 +224,17 @@ impl<'a> ConfigLockGuard<'a> {
         }
     }
 
-    pub fn set_torch_mode_on_with_level(
+    pub fn set_torch_mode_on_with_level<'ear>(
         &mut self,
         torch_level: f32,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        if self.set_torch_mode_on_with_level_err(torch_level, &mut error) {
-            Ok(())
-        } else {
-            unsafe { Err(error.unwrap_unchecked()) }
+        unsafe {
+            if self.set_torch_mode_on_with_level_err(torch_level, &mut error) {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 }

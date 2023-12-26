@@ -20,26 +20,28 @@ impl DetectBarcodesRequest {
     pub fn set_symbologies(&mut self, value: &ns::Array<vn::BarcodeSymbology>);
 
     #[objc::msg_send(supportedSymbologiesAndReturnError:)]
-    fn supported_symbologies_and_return_err_ar(
+    unsafe fn supported_symbologies_and_return_err_ar<'ear>(
         &self,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::Rar<ns::Array<vn::BarcodeSymbology>>>;
 
     #[objc::rar_retain]
-    fn supported_symbologies_and_return_err(
+    unsafe fn supported_symbologies_and_return_err<'ear>(
         &self,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<vn::BarcodeSymbology>>>;
 
     pub fn supported_symbologies<'ar>(
         &self,
     ) -> Result<arc::R<ns::Array<vn::BarcodeSymbology>>, &'ar ns::Error> {
         let mut error = None;
-        let res = self.supported_symbologies_and_return_err(&mut error);
-        if let Some(r) = res {
-            Ok(r)
-        } else {
-            Err(error.unwrap())
+        unsafe {
+            let res = self.supported_symbologies_and_return_err(&mut error);
+            if let Some(r) = res {
+                Ok(r)
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 }

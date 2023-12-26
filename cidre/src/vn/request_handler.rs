@@ -96,19 +96,18 @@ impl ImageRequestHandler {
     }
 
     #[objc::msg_send(performRequests:error:)]
-    pub fn perform_request_err(
+    pub unsafe fn perform_request_err<'ear>(
         &self,
         requests: &ns::Array<vn::Request>,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn perform<'ar>(&self, requests: &ns::Array<vn::Request>) -> Result<(), &'ar ns::Error> {
+    pub fn perform<'ear>(&self, requests: &ns::Array<vn::Request>) -> Result<(), &'ear ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.perform_request_err(requests, &mut error);
 
-            if res {
+            if self.perform_request_err(requests, &mut error) {
                 Ok(())
             } else {
                 Err(transmute(error))
@@ -133,42 +132,44 @@ define_obj_type!(pub SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER
 /// ````
 impl SequenceRequestHandler {
     #[objc::msg_send(performRequests:onCVPixelBuffer:error:)]
-    pub fn perform_requests_on_cv_pixel_buf_err(
+    pub unsafe fn perform_requests_on_cv_pixel_buf_err<'ear>(
         &self,
         requests: &ns::Array<vn::Request>,
         pixel_buf: &cv::PixelBuf,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cv_pixel_buf<'ar>(
+    pub fn perform_on_cv_pixel_buf<'ear>(
         &self,
         requests: &ns::Array<vn::Request>,
         pixel_buf: &cv::PixelBuf,
-    ) -> Result<(), &'ar ns::Error> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        let res = self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, &mut error);
+        unsafe {
+            let res = self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, &mut error);
 
-        if res {
-            Ok(())
-        } else {
-            unsafe { Err(transmute(error)) }
+            if res {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
     #[objc::msg_send(performRequests:onCMSampleBuffer:error:)]
-    pub fn perform_requests_on_cm_sample_buf_err(
+    pub unsafe fn perform_requests_on_cm_sample_buf_err<'ear>(
         &self,
         requests: &ns::Array<vn::Request>,
         sample_buf: &cm::SampleBuf,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cm_sample_buf<'ar>(
+    pub fn perform_on_cm_sample_buf<'ear>(
         &self,
         requests: &ns::Array<vn::Request>,
         sample_buf: &cm::SampleBuf,
-    ) -> Result<(), &'ar ns::Error> {
+    ) -> Result<(), &'ear ns::Error> {
         unsafe {
             let mut error = None;
             let res = self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, &mut error);
