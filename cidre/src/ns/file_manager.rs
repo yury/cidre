@@ -33,11 +33,10 @@ impl DirEnumOpts {
     pub const PRODUCES_RELATIVE_PATH_URLS: Self = Self(1 << 4);
 }
 
-define_options!(pub ItemReplacementOptions(usize));
+define_options!(pub ItemReplacementOpts(usize));
 
-impl ItemReplacementOptions {
+impl ItemReplacementOpts {
     pub const USING_NEW_METADATA_ONLY: Self = Self(1 << 0);
-
     pub const WITHOUT_DELETING_BACKUP_ITEM: Self = Self(1 << 1);
 }
 
@@ -61,7 +60,7 @@ impl FileManager {
     pub fn default() -> &'static mut FileManager;
 
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]
-    pub fn contents_of_dir_at_url_err_ar(
+    pub unsafe fn contents_of_dir_at_url_err_ar(
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
@@ -70,7 +69,7 @@ impl FileManager {
     ) -> Option<arc::Rar<ns::Array<ns::Url>>>;
 
     #[objc::rar_retain]
-    pub fn contents_of_dir_at_url_err<'ear>(
+    pub unsafe fn contents_of_dir_at_url_err<'ear>(
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
@@ -78,23 +77,25 @@ impl FileManager {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::Url>>>;
 
-    pub fn contents_of_dir_at_url<'ar>(
+    pub fn contents_of_dir_at_url<'ear>(
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
         options: DirEnumOpts,
-    ) -> Result<arc::R<ns::Array<ns::Url>>, &'ar ns::Error> {
+    ) -> Result<arc::R<ns::Array<ns::Url>>, &'ear ns::Error> {
         let mut error = None;
-        let res =
-            self.contents_of_dir_at_url_err(url, including_props_for_keys, options, &mut error);
-        if res.is_none() {
-            return Err(unsafe { error.unwrap_unchecked() });
+        unsafe {
+            let res =
+                self.contents_of_dir_at_url_err(url, including_props_for_keys, options, &mut error);
+            if res.is_none() {
+                return Err(error.unwrap_unchecked());
+            }
+            Ok(res.unwrap_unchecked())
         }
-        unsafe { Ok(res.unwrap_unchecked()) }
     }
 
     #[objc::msg_send(URLForDirectory:inDomain:appropriateForURL:create:error:)]
-    pub fn url_for_dir_err_ar<'ear>(
+    pub unsafe fn url_for_dir_err_ar<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
@@ -104,7 +105,7 @@ impl FileManager {
     ) -> Option<arc::Rar<ns::Url>>;
 
     #[objc::rar_retain]
-    pub fn url_for_dir_err<'ear>(
+    pub unsafe fn url_for_dir_err<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
@@ -121,21 +122,23 @@ impl FileManager {
         create: bool,
     ) -> Result<arc::R<ns::Url>, Option<&'ear ns::Error>> {
         let mut error = None;
-        let url = self.url_for_dir_err(
-            directory,
-            in_domain,
-            appropriate_for_url,
-            create,
-            &mut error,
-        );
-        if let Some(url) = url {
-            return Ok(url);
+        if let Some(res) = unsafe {
+            self.url_for_dir_err(
+                directory,
+                in_domain,
+                appropriate_for_url,
+                create,
+                &mut error,
+            )
+        } {
+            Ok(res)
+        } else {
+            Err(error)
         }
-        Err(error)
     }
 
     #[objc::msg_send(createDirectoryAtURL:withIntermediateDirectories:attributes:error:)]
-    pub fn create_dir_at_url_err<'ear>(
+    pub unsafe fn create_dir_at_url_err<'ear>(
         &self,
         url: &ns::Url,
         create_intermediates: bool,
@@ -150,15 +153,17 @@ impl FileManager {
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        if self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error) {
-            Ok(())
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
+        unsafe {
+            if self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error) {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 
     #[objc::msg_send(createDirectoryAtPath:withIntermediateDirectories:attributes:error:)]
-    pub fn create_dir_at_path_err<'ear>(
+    pub unsafe fn create_dir_at_path_err<'ear>(
         &self,
         path: &ns::String,
         create_intermediates: bool,
@@ -174,15 +179,17 @@ impl FileManager {
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        if self.create_dir_at_path_err(path, create_intermediates, attributes, &mut error) {
-            Ok(())
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
+        unsafe {
+            if self.create_dir_at_path_err(path, create_intermediates, attributes, &mut error) {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 
     #[objc::msg_send(removeItemAtPath:error:)]
-    pub fn remove_item_at_path_err<'ear>(
+    pub unsafe fn remove_item_at_path_err<'ear>(
         &self,
         path: &ns::String,
         error: *mut Option<&'ear ns::Error>,
@@ -191,10 +198,12 @@ impl FileManager {
     #[inline]
     pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> Result<(), &'ear ns::Error> {
         let mut error = None;
-        if self.remove_item_at_path_err(path, &mut error) {
-            Ok(())
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
+        unsafe {
+            if self.remove_item_at_path_err(path, &mut error) {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 
@@ -223,7 +232,7 @@ impl FileManager {
     pub fn is_deletable_file_at_path(&self, path: &ns::String) -> bool;
 
     #[objc::msg_send(setUbiquitous:itemAtURL:destinationURL:error:)]
-    pub fn set_ubiquitous_item_err<'ar>(
+    pub unsafe fn set_ubiquitous_item_err<'ar>(
         &mut self,
         value: bool,
         item_at_url: &ns::Url,
@@ -239,10 +248,12 @@ impl FileManager {
         dest_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        if self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error) {
-            Ok(())
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
+        unsafe {
+            if self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error) {
+                Ok(())
+            } else {
+                Err(error.unwrap_unchecked())
+            }
         }
     }
 

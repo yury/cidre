@@ -142,7 +142,7 @@ pub use file_manager::FileAttrKey;
 pub use file_manager::FileAttrType;
 pub use file_manager::FileManager;
 pub use file_manager::FileProtectionType;
-pub use file_manager::ItemReplacementOptions as FileManagerItemReplacementOptions;
+pub use file_manager::ItemReplacementOpts as FileManagerItemReplacementOptions;
 pub use file_manager::UrlRelationship;
 pub use file_manager::VolumeEnumOpts;
 

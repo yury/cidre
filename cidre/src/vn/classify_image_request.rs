@@ -12,23 +12,21 @@ impl ClassifyImageRequest {
     pub fn results(&self) -> Option<&ns::Array<vn::ClassificationObservation>>;
 
     #[objc::msg_send(supportedIdentifiersAndReturnError:)]
-    pub fn supported_identifiers_and_return_err_ar(
+    pub unsafe fn supported_ids_and_return_err_ar<'ear>(
         &self,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::Rar<ns::Array<ns::String>>>;
 
     #[objc::rar_retain()]
-    pub fn supported_identifiers_and_return_err(
+    pub unsafe fn supported_ids_and_return_err<'ear>(
         &self,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::String>>>;
 
-    pub fn supported_identifiers<'ar>(
-        &self,
-    ) -> Result<arc::R<ns::Array<ns::String>>, &'ar ns::Error> {
+    pub fn supported_ids<'ear>(&self) -> Result<arc::R<ns::Array<ns::String>>, &'ear ns::Error> {
         unsafe {
             let mut error = None;
-            let res = self.supported_identifiers_and_return_err(&mut error);
+            let res = self.supported_ids_and_return_err(&mut error);
             if res.is_some() {
                 Ok(res.unwrap_unchecked())
             } else {
@@ -45,20 +43,20 @@ extern "C" {
 
 #[cfg(test)]
 mod test {
-    use crate::vn;
+    use crate::{objc::ar_pool, vn};
 
     #[test]
     fn basics() {
-        let mut request = vn::ClassifyImageRequest::new();
-        let supported_ids = request.supported_identifiers().unwrap();
+        ar_pool(|| {
+            let mut request = vn::ClassifyImageRequest::new();
+            let supported_ids = request.supported_ids().unwrap();
 
-        assert!(!supported_ids.is_empty());
-        assert!(request.results().is_none());
+            assert!(!supported_ids.is_empty());
+            assert!(request.results().is_none());
 
-        request.set_revision(10);
+            request.set_revision(10);
 
-        request
-            .supported_identifiers()
-            .expect_err("should be error");
+            let _err = request.supported_ids().expect_err("should be error");
+        })
     }
 }

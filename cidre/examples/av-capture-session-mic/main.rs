@@ -32,8 +32,11 @@ fn main() {
             DevicePos::Unspecified,
         );
         let devices = discovery_session.devices();
-        eprintln!("found {:?}", devices);
-        devices.last().unwrap().retained()
+        for d in devices.iter() {
+            eprintln!("device: {:?}", d);
+            eprintln!("formats {:?}", d.formats());
+        }
+        devices.first().unwrap().retained()
     };
 
     let input = DeviceInput::with_device(&mic).unwrap();

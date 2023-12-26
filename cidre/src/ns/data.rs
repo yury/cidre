@@ -1,4 +1,4 @@
-use std::{mem::transmute, ptr::slice_from_raw_parts};
+use std::ptr::slice_from_raw_parts;
 
 use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
@@ -57,50 +57,49 @@ define_obj_type!(
 
 impl arc::A<Data> {
     #[objc::msg_send(initWithContentsOfFile:options:error:)]
-    pub fn init_with_contents_of_file_options_err(
+    pub fn init_with_contents_of_file_opts_err<'ear>(
         self,
         path: &ns::String,
         options: ReadOpts,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Data>>;
 
     #[objc::msg_send(initWithContentsOfURL:options:error:)]
-    pub fn init_with_contents_of_url_options_err(
+    pub fn init_with_contents_of_url_opts_err<'ear>(
         self,
         url: &ns::Url,
         options: ReadOpts,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Data>>;
 }
 
 impl Data {
     #[inline]
-    pub fn with_contents_of_file(
+    pub fn with_contents_of_file<'ear>(
         path: &ns::String,
         options: ReadOpts,
-    ) -> Result<arc::R<Self>, &ns::Error> {
+    ) -> Result<arc::R<Self>, &'ear ns::Error> {
         unsafe {
             let mut error = None;
-            let res =
-                Self::alloc().init_with_contents_of_file_options_err(path, options, &mut error);
+            let res = Self::alloc().init_with_contents_of_file_opts_err(path, options, &mut error);
             match res {
                 Some(r) => Ok(r),
-                None => Err(transmute(error)),
+                None => Err(error.unwrap_unchecked()),
             }
         }
     }
 
     #[inline]
-    pub fn with_contents_of_url(
+    pub fn with_contents_of_url<'ear>(
         url: &ns::Url,
         options: ReadOpts,
-    ) -> Result<arc::R<Self>, &ns::Error> {
+    ) -> Result<arc::R<Self>, &'ear ns::Error> {
         unsafe {
             let mut error = None;
-            let res = Self::alloc().init_with_contents_of_url_options_err(url, options, &mut error);
+            let res = Self::alloc().init_with_contents_of_url_opts_err(url, options, &mut error);
             match res {
                 Some(r) => Ok(r),
-                None => Err(transmute(error)),
+                None => Err(error.unwrap_unchecked()),
             }
         }
     }
