@@ -337,7 +337,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{blocks, mtl, ns};
+    use crate::{blocks, mtl, ns, objc::ar_pool};
 
     #[test]
     fn foo() {
@@ -367,12 +367,14 @@ mod tests {
 
     #[test]
     fn error_basics() {
-        let device = mtl::Device::default().unwrap();
+        ar_pool(|| {
+            let device = mtl::Device::default().unwrap();
 
-        let src = ns::String::with_str("vid function_a() {}");
-        let err = device.new_lib_with_src(&src, None).unwrap_err();
+            let src = ns::String::with_str("vid function_a() {}");
+            let err = device.new_lib_with_src(&src, None).unwrap_err();
 
-        assert_eq!(mtl::LibError::CompileFailure, err.code());
+            assert_eq!(mtl::LibError::CompileFailure, err.code());
+        })
     }
 
     #[test]
