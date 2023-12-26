@@ -171,29 +171,28 @@ impl Device {
         F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
-    pub unsafe fn new_compute_ps_with_fn_err<'a>(
+    pub unsafe fn new_compute_ps_with_fn_err<'ear>(
         &self,
         function: &mtl::Fn,
-        error: *mut Option<&'a ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
-    pub unsafe fn new_render_ps_err(
+    pub unsafe fn new_render_ps_err<'ear>(
         &self,
         descriptor: &mtl::RenderPipelineDesc,
-        error: *mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
-    pub fn new_render_ps<'a>(
+    pub fn new_render_ps<'ear>(
         &self,
         descriptor: &mtl::RenderPipelineDesc,
-    ) -> Result<arc::R<mtl::RenderPipelineState>, &'a ns::Error> {
+    ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
-            let res = Self::new_render_ps_err(self, descriptor, &mut error);
-            if res.is_some() {
-                Ok(res.unwrap_unchecked())
+            if let Some(res) = Self::new_render_ps_err(self, descriptor, &mut error) {
+                Ok(res)
             } else {
                 Err(error.unwrap_unchecked())
             }
@@ -201,10 +200,10 @@ impl Device {
     }
 
     #[inline]
-    pub fn new_compute_ps_with_fn<'ar>(
+    pub fn new_compute_ps_with_fn<'ear>(
         &self,
         function: &mtl::Fn,
-    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ar ns::Error> {
+    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
             let res = self.new_compute_ps_with_fn_err(function, &mut error);
@@ -217,24 +216,25 @@ impl Device {
     }
 
     #[objc::msg_send(newRenderPipelineStateWithTileDescriptor:options:reflection:error:)]
-    pub unsafe fn new_tile_render_ps_err<'ar>(
+    pub unsafe fn new_tile_render_ps_err<'ear, 'rar>(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
         options: mtl::PipelineOption,
-        reflection: *mut Option<&'ar mtl::RenderPipelineReflection>,
-        error: *mut Option<&'ar ns::Error>,
+        reflection: *mut Option<&'rar mtl::RenderPipelineReflection>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
-    pub fn new_tile_render_ps<'ar>(
+    pub fn new_tile_render_ps<'ear>(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
         options: mtl::PipelineOption,
-    ) -> Result<arc::R<mtl::RenderPipelineState>, &'ar ns::Error> {
+    ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
-            let res = self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), &mut error);
-            if res.is_some() {
-                Ok(res.unwrap_unchecked())
+            if let Some(res) =
+                self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), &mut error)
+            {
+                Ok(res)
             } else {
                 Err(error.unwrap_unchecked())
             }
