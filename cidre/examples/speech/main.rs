@@ -1,11 +1,10 @@
 use cidre::{
-    arc, av, av::SpeechSynthesizerDelegate, av::SpeechSynthesizerDelegateImpl, define_obj_type,
-    dispatch, ns, objc,
+    av, av::SpeechSynthesizerDelegate, av::SpeechSynthesizerDelegateImpl, define_obj_type, ns, objc,
 };
 
 define_obj_type!(
     SynthDelegate + av::SpeechSynthesizerDelegateImpl,
-    arc::R<dispatch::Semaphore>,
+    (),
     SYNH_DELEGATE
 );
 
@@ -50,8 +49,7 @@ fn main() {
     // Assign the voice to the utterance.
     utterance.set_voice(Some(&voice));
 
-    let sema = dispatch::Semaphore::new(0);
-    let synth_delegate = SynthDelegate::with(sema.retained());
+    let synth_delegate = SynthDelegate::new();
 
     // Create a speech synthesizer.
     let mut synth = av::SpeechSynthesizer::new();

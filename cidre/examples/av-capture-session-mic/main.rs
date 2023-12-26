@@ -6,12 +6,9 @@ use cidre::{
     dispatch, ns, objc,
 };
 
-#[repr(C)]
-struct OutputDelegateInner {}
-
 define_obj_type!(
     OutputDelegate + AudioDataOutputSampleBufDelegateImpl,
-    OutputDelegateInner,
+    (), // InnerType
     OUTPUT_DELEGATE
 );
 
@@ -26,7 +23,8 @@ impl AudioDataOutputSampleBufDelegateImpl for OutputDelegate {
         sample_buf: &cm::SampleBuf,
         _connection: &av::CaptureConnection,
     ) {
-        println!("sample buf: {:?}", sample_buf.num_samples());
+        // println!("sample buf: {:?}", sample_buf.num_samples());
+        println!("sample buf: {:?}", sample_buf);
     }
 }
 
@@ -44,9 +42,9 @@ fn main() {
         devices.last().unwrap().retained()
     };
 
-    let input = DeviceInput::with_device(mic.as_ref()).unwrap();
+    let input = DeviceInput::with_device(&mic).unwrap();
     let queue = dispatch::Queue::new();
-    let delegate = OutputDelegate::with(OutputDelegateInner {});
+    let delegate = OutputDelegate::new();
     let mut output = av::capture::AudioDataOutput::new();
     output.set_sample_buf_delegate(Some(delegate.as_ref()), Some(&queue));
 

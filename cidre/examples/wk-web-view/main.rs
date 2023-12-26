@@ -7,7 +7,7 @@ use cidre::{
 
 define_obj_type!(
     AppDelegate + ns::ApplicationDelegateImpl,
-    usize,
+    (),
     APP_DELEGATE_CLS
 );
 
@@ -87,7 +87,7 @@ static mut NAV_DELEGATE: Option<arc::R<NavDelegate>> = None;
 
 impl AppDelegate {
     fn run() {
-        let appd = Self::with(0);
+        let appd = Self::new();
         let app = ns::Application::shared();
         app.set_delegate(Some(appd.as_ref()));
         app.run();

@@ -355,7 +355,45 @@ macro_rules! define_obj_type {
                 unsafe { Self::cls().alloc_init(inner).unwrap_unchecked() }
             }
         }
+    };
+    (
+        $(#[$outer:meta])*
+        $vis:vis
+        $NewType:ident $(+ $TraitImpl:path)*, (), $CLS:ident) => {
+        $crate::define_obj_type!(
+            $(#[$outer])*
+            $vis
+            $NewType(objc::Id)
+        );
 
+        impl $NewType {
+
+            #[allow(dead_code)]
+            pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, ()> {
+                let name = concat!(stringify!($CLS), "\0");
+                let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
+                let cls = cls.unwrap();
+                $(<Self as $TraitImpl>::cls_add_methods(cls);)*
+
+                unsafe { $crate::objc::objc_registerClassPair(cls) };
+                unsafe { std::mem::transmute(cls) }
+            }
+
+            #[allow(dead_code)]
+            pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, ()> {
+                let name = concat!(stringify!($CLS), "\0");
+                let cls = unsafe { $crate::objc::objc_getClass(name.as_ptr()) };
+                match cls {
+                    Some(c) => unsafe { std::mem::transmute(c) }
+                    None => Self::register_cls()
+                }
+            }
+
+            #[allow(dead_code)]
+            pub fn new() -> $crate::arc::R<Self> {
+                unsafe { Self::cls().alloc_init(()).unwrap_unchecked() }
+            }
+        }
     };
 
     (
