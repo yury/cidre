@@ -46,13 +46,13 @@ impl Session {
     pub fn available_categories(self) -> arc::R<ns::Array<Category>>;
 
     #[objc::msg_send(setCategory:error:)]
-    pub unsafe fn set_category_err(
+    pub unsafe fn set_category_err<'ear>(
         &mut self,
         val: &Category,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category<'ar>(&mut self, val: &Category) -> Result<(), arc::R<ns::Error>> {
+    pub fn set_category<'ear>(&mut self, val: &Category) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_category_err(val, &mut err) {
@@ -64,18 +64,17 @@ impl Session {
     }
 
     #[objc::msg_send(setCategory:withOptions:error:)]
-    pub unsafe fn set_category_with_opts_err(
+    pub unsafe fn set_category_with_opts_err<'ear>(
         &mut self,
         val: &Category,
         options: CategoryOpts,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_with_opts(
+    pub fn set_category_with_opts<'ear>(
         &mut self,
         val: &Category,
         options: CategoryOpts,
-        error: *mut Option<arc::R<ns::Error>>,
     ) -> Result<(), arc::R<ns::Error>> {
         let mut err = None;
         unsafe {
@@ -88,20 +87,20 @@ impl Session {
     }
 
     #[objc::msg_send(setCategory:mode:options:error:)]
-    pub unsafe fn set_category_mode_opts_err(
+    pub unsafe fn set_category_mode_opts_err<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,
         options: CategoryOpts,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_mod_opts(
+    pub fn set_category_mod_opts<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,
         options: CategoryOpts,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_category_mode_opts_err(val, mode, options, &mut err) {
@@ -113,22 +112,22 @@ impl Session {
     }
 
     #[objc::msg_send(setCategory:mode:routeSharingPolicy:options:error:)]
-    pub unsafe fn set_category_mode_policy_opts_err(
+    pub unsafe fn set_category_mode_policy_opts_err<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,
         route_sharing_policy: RouteSharingPolicy,
         options: CategoryOpts,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_mode_policy_opts(
+    pub fn set_category_mode_policy_opts<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,
         route_sharing_policy: RouteSharingPolicy,
         options: CategoryOpts,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_category_mode_policy_opts_err(
@@ -161,13 +160,13 @@ impl Session {
     pub fn available_modes(&self) -> arc::R<ns::Array<Mode>>;
 
     #[objc::msg_send(setMode:error:)]
-    pub unsafe fn set_mode_err(
+    pub unsafe fn set_mode_err<'ear>(
         &mut self,
         val: &Mode,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_mode(&mut self, val: &Mode) -> Result<(), arc::R<ns::Error>> {
+    pub fn set_mode<'ear>(&mut self, val: &Mode) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_mode_err(val, &mut err) {
@@ -182,16 +181,16 @@ impl Session {
     pub fn mode(&self) -> &Mode;
 
     #[objc::msg_send(setAllowHapticsAndSystemSoundsDuringRecording:error:)]
-    pub unsafe fn set_allow_haptics_and_sys_sounds_during_record_err(
+    pub unsafe fn set_allow_haptics_and_sys_sounds_during_record_err<'ear>(
         &mut self,
         val: bool,
-        error: *mut Option<arc::R<ns::Error>>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_allow_haptics_and_sys_sounds_during_record(
+    pub fn set_allow_haptics_and_sys_sounds_during_record<'ear>(
         &mut self,
         val: bool,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_allow_haptics_and_sys_sounds_during_record_err(val, &mut err) {
@@ -206,17 +205,17 @@ impl Session {
     pub fn allow_haptics_and_sys_sounds_during_record(&self) -> bool;
 
     #[objc::msg_send(overrideOutputAudioPort:error:)]
-    pub unsafe fn override_output_audio_port_err(
+    pub unsafe fn override_output_audio_port_err<'ear>(
         &mut self,
         val: PortOverride,
-        err: *mut Option<arc::R<ns::Error>>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
     /// Use this method to temporarily override the output to built-in speaker.
-    pub fn override_output_audio_port(
+    pub fn override_output_audio_port<'ear>(
         &mut self,
         val: PortOverride,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.override_output_audio_port_err(val, &mut err) {

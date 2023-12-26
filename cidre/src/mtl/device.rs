@@ -128,11 +128,11 @@ impl Device {
     pub fn new_default_lib(&self) -> Option<arc::R<Lib>>;
 
     #[objc::msg_send(newLibraryWithSource:options:error:)]
-    pub unsafe fn new_lib_with_src_err(
+    pub unsafe fn new_lib_with_src_err<'ear>(
         &self,
         source: &ns::String,
         options: Option<&mtl::CompileOpts>,
-        error: *mut Option<&ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Lib>>;
 
     #[inline]
