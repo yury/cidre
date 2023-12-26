@@ -1,10 +1,4 @@
-use std::time::Duration;
-
-use cidre::{
-    av, av::capture::AudioDataOutputSampleBufDelegate,
-    av::capture::AudioDataOutputSampleBufDelegateImpl, av::capture::*, cm, define_obj_type,
-    dispatch, ns, objc,
-};
+use cidre::{av, av::capture::*, cm, define_obj_type, dispatch, ns, objc};
 
 define_obj_type!(
     OutputDelegate + AudioDataOutputSampleBufDelegateImpl,
@@ -62,7 +56,7 @@ fn main() {
 
     session.start_running();
 
-    std::thread::sleep(Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(5));
 
     session.stop_running();
 }

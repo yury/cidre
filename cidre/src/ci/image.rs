@@ -2,6 +2,7 @@ use crate::{arc, cf, cg, define_cls, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     /// A representation of an image to be processed or produced by Core Image filters.
+    #[doc(alias = "CIImage")]
     pub Image(ns::Id)
 );
 

@@ -94,11 +94,11 @@ define_obj_type!(
 
 impl arc::A<Regex> {
     #[objc::msg_send(initWithPattern:options:error:)]
-    pub fn init_with_pattern_options_err(
+    pub fn init_with_pattern_opts_err<'ear>(
         self,
         pattern: &ns::String,
         options: Opts,
-        error: &mut Option<&ns::Error>,
+        error: &mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Regex>>;
 }
 
@@ -106,10 +106,13 @@ impl Regex {
     define_cls!(NS_REGULAR_EXPRESSION);
 
     #[inline]
-    pub fn with_pattern(pattern: &ns::String, options: Opts) -> Result<arc::R<Self>, &ns::Error> {
+    pub fn with_pattern<'ear>(
+        pattern: &ns::String,
+        options: Opts,
+    ) -> Result<arc::R<Self>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
-            let res = Self::alloc().init_with_pattern_options_err(pattern, options, &mut error);
+            let res = Self::alloc().init_with_pattern_opts_err(pattern, options, &mut error);
             match res {
                 Some(res) => Ok(res),
                 None => Err(error.unwrap_unchecked()),
@@ -125,10 +128,21 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use crate::objc::ar_pool;
     pub use crate::{cf, ns};
+
     #[test]
     fn basics() {
         let pat = ns::Regex::with_pattern(&ns::String::with_str(".*"), Default::default()).unwrap();
         println!("pat {:?}", pat);
+    }
+    #[test]
+    fn error_autorelease() {
+        ar_pool(|| {
+            let err = ns::Regex::with_pattern(&ns::String::with_str("\\"), Default::default())
+                .expect_err("should be err");
+            assert_eq!(err.code(), 2048);
+            println!("err {:?}", err);
+        });
     }
 }
