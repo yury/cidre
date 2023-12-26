@@ -39,7 +39,9 @@ fn main() {
             Some(av::MediaType::audio()),
             DevicePos::Unspecified,
         );
-        discovery_session.devices().last().unwrap().retained()
+        let devices = discovery_session.devices();
+        eprintln!("found {:?}", devices);
+        devices.last().unwrap().retained()
     };
 
     let input = DeviceInput::with_device(mic.as_ref()).unwrap();

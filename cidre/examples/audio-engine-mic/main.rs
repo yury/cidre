@@ -4,13 +4,14 @@ use std::{thread::sleep, time::Duration};
 fn main() {
     let mut engine = av::AudioEngine::new();
     let input = engine.input_node_mut();
-    println!(
-        "voice processing enabled? {}",
-        input.is_voice_processing_enabled()
-    );
+    println!("voice processing enabled? {}", input.is_vp_enabled());
 
-    if !input.is_voice_processing_enabled() {
-        input.set_voice_processing_enabled(true).unwrap();
+    if !input.is_vp_enabled() {
+        input.set_vp_enabled(true).unwrap();
+        input.set_vp_other_audio_ducking_cfg(av::AudioVPOtherAudioDuckingCfg {
+            enable_advanced_ducking: true,
+            ducking_level: av::AudioVPOtherAudioDuckingLevel::Min,
+        });
     }
 
     let mut tap = blocks::mut2(|buffer: &av::AudioPcmBuf, when: &av::AudioTime| {

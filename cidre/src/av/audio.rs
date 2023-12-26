@@ -25,6 +25,9 @@ pub mod io_node;
 pub use io_node::InputNode;
 pub use io_node::IoNode;
 pub use io_node::OutputNode;
+pub use io_node::VPOtherAudioDuckingCfg;
+pub use io_node::VPOtherAudioDuckingLevel;
+pub use io_node::VPSpeechActivityEvent;
 
 mod mixer_node;
 pub use mixer_node::MixerNode;

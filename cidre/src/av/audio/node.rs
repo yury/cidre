@@ -44,6 +44,7 @@ impl Node {
     #[objc::msg_send(outputPresentationLatency)]
     pub fn output_presentation_latency(&self) -> ns::TimeInterval;
 
+    /// NOTE: `remove_tap_on_bus` if you have already installed tap
     #[objc::msg_send(installTapOnBus:bufferSize:format:block:)]
     pub fn install_tap_on_bus<'b, B>(
         &mut self,

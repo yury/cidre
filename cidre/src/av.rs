@@ -117,6 +117,9 @@ pub use audio::PcmBuf as AudioPcmBuf;
 pub use audio::Player as AudioPlayer;
 pub use audio::PlayerNode as AudioPlayerNode;
 pub use audio::Time as AudioTime;
+pub use audio::VPOtherAudioDuckingCfg as AudioVPOtherAudioDuckingCfg;
+pub use audio::VPOtherAudioDuckingLevel as AudioVPOtherAudioDuckingLevel;
+pub use audio::VPSpeechActivityEvent as AudioVPSpeechActivityEvent;
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::Session as AudioSession;
