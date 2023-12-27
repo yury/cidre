@@ -1,4 +1,4 @@
-use crate::{arc, at::AudioChannelDesc, av, define_obj_type, ns, objc};
+use crate::{av, define_obj_type, ns, objc};
 
 define_obj_type!(
     /// The location of a data source on an iOS device.
@@ -50,7 +50,7 @@ impl Orientation {
     }
 
     pub fn right() -> &'static Self {
-        unsafe { AVAudioSessionOrientationLeft }
+        unsafe { AVAudioSessionOrientationRight }
     }
 }
 

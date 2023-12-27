@@ -75,16 +75,18 @@ impl DeviceInput {
     pub fn set_video_min_frame_duration_override(&self, val: cm::Time);
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(any(target_os = "ios", target_os = "tvos"))]
 define_obj_type!(
     #[doc(alias = "AVCaptureMetadataInput")]
-    pub MetadataInput(Input)
+    pub MetadataInput(Input),
+    AV_CAPTURE_METADATA_INPUT
 );
 
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_CAPTURE_DEVICE_INPUT: &'static objc::Class<DeviceInput>;
-    #[cfg(not(target_os = "macos"))]
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
     static AV_CAPTURE_METADATA_INPUT: &'static objc::Class<MetadataInput>;
 }
 

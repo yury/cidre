@@ -75,7 +75,7 @@ impl Session {
         &mut self,
         val: &Category,
         options: CategoryOpts,
-    ) -> Result<(), arc::R<ns::Error>> {
+    ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
             if self.set_category_with_opts_err(val, options, &mut err) {

@@ -51,11 +51,14 @@ pub use capture::WbMode as CaptureWbMode;
 pub use capture::WbTempTintValues as CaptureWbTempTintValues;
 
 #[cfg(not(target_os = "macos"))]
-pub use capture::SystemPressureFactors as CaptureSystemPressureFactors;
+pub use capture::SysPressureFactors as CaptureSysPressureFactors;
 #[cfg(not(target_os = "macos"))]
-pub use capture::SystemPressureLevel as CaptureSystemPressureLevel;
+pub use capture::SysPressureLevel as CaptureSysPressureLevel;
 #[cfg(not(target_os = "macos"))]
-pub use capture::SystemPressureState as CaptureSystemPressureState;
+pub use capture::SysPressureState as CaptureSysPressureState;
+
+#[cfg(any(target_os = "ios", target_os = "tvos"))]
+pub use capture::MetadataInput as CaptureMetadataInput;
 
 pub mod metadata_object;
 pub use metadata_object::CatBodyObject as MetadataCatBodyObject;

@@ -1,6 +1,10 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(pub TensorData(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MLCTensorData")]
+    pub TensorData(ns::Id)
+);
+
 impl TensorData {
     define_cls!(MLC_TENSOR_DATA);
 
