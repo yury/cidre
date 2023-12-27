@@ -176,30 +176,52 @@ define_obj_type!(
 impl Category {
     /// Use this category for background sounds such as rain, car engine noise, etc.
     /// Mixes with other music
+    #[doc(alias = "AVAudioSessionCategoryAmbient")]
     #[inline]
     pub fn ambient() -> &'static Self {
         unsafe { AVAudioSessionCategoryAmbient }
     }
 
     /// Use this category for background sounds.  Other music will stop playing.
+    #[doc(alias = "AVAudioSessionCategorySoloAmbient")]
     #[inline]
     pub fn solo_ambient() -> &'static Self {
         unsafe { AVAudioSessionCategorySoloAmbient }
     }
 
     /// Use this category for background sounds.  Other music will stop playing.
+    #[doc(alias = "AVAudioSessionCategoryPlayback")]
     #[inline]
     pub fn playback() -> &'static Self {
         unsafe { AVAudioSessionCategoryPlayback }
     }
 
     /// Use this category when recording audio.
+    #[doc(alias = "AVAudioSessionCategoryRecord")]
     #[inline]
     pub fn record() -> &'static Self {
         unsafe { AVAudioSessionCategoryRecord }
     }
 
     /// Use this category when recording and playing back audio.
+    ///
+    /// The category for recording (input) and playback (output) of audio, such as for a Voice over Internet Protocol (VoIP) app.
+    /// Your audio continues with the Silent switch set to silent and with the screen locked. (The switch is called the
+    /// Ring/Silent switch on iPhone.) To continue playing audio when your app transitions to the background (for example,
+    /// when the screen locks), add the audio value to the UIBackgroundModes key in your information property list file.
+    ///
+    /// This category is appropriate for simultaneous recording and playback, and also for apps that record and play back,
+    /// but not simultaneously.
+    ///
+    /// By default, using this category implies that your app’s audio is nonmixable—activating your session will interrupt
+    /// any other audio sessions which are also nonmixable. To allow mixing for this category, use the
+    /// AVAudioSessionCategoryOptionMixWithOthers option.
+    ///
+    /// The user must grant permission for audio recording.
+    ///
+    /// This category supports the mirrored version of Airplay. However, AirPlay mirroring will be disabled if the
+    /// AVAudioSessionModeVoiceChat mode is used with this category.
+    #[doc(alias = "AVAudioSessionCategoryPlayAndRecord")]
     #[inline]
     pub fn play_and_record() -> &'static Self {
         unsafe { AVAudioSessionCategoryPlayAndRecord }
@@ -218,6 +240,7 @@ impl Category {
     /// and AVAudioSessionPortBuiltInSpeaker.
     /// Note that AVAudioSessionPortBuiltInSpeaker is only allowed to be used when there are no other eligible
     /// outputs connected.
+    #[doc(alias = "AVAudioSessionCategoryMultiRoute")]
     #[inline]
     pub fn multi_route() -> &'static Self {
         unsafe { AVAudioSessionCategoryMultiRoute }
@@ -242,6 +265,7 @@ define_obj_type!(
 /// Modes modify the audio category in order to introduce behavior that is tailored to the specific
 /// use of audio within an application. Available in iOS 5.0 and greater.
 impl Mode {
+    #[doc(alias = "AVAudioSessionModeDefault")]
     #[inline]
     pub fn default() -> &'static Self {
         unsafe { AVAudioSessionModeDefault }
@@ -251,6 +275,7 @@ impl Mode {
     /// (VoIP) applications.  Reduces the number of allowable audio routes to be only those
     /// that are appropriate for VoIP applications and may engage appropriate system-supplied
     /// signal processing.  Has the side effect of setting AVAudioSessionCategoryOptionAllowBluetooth
+    #[doc(alias = "AVAudioSessionModeVoiceChat")]
     #[inline]
     pub fn voice_chat() -> &'static Self {
         unsafe { AVAudioSessionModeVoiceChat }
@@ -260,6 +285,7 @@ impl Mode {
     /// only with the AVAudioSessionCategoryPlayAndRecord category.
     /// Do not set this mode directly. If you need similar behavior and are not using
     /// a GKVoiceChat object, use AVAudioSessionModeVoiceChat instead.
+    #[doc(alias = "AVAudioSessionModeGameChat")]
     #[inline]
     pub fn game_chat() -> &'static Self {
         unsafe { AVAudioSessionModeGameChat }
@@ -267,6 +293,7 @@ impl Mode {
 
     /// Only valid with AVAudioSessionCategoryPlayAndRecord or AVAudioSessionCategoryRecord.
     /// Modifies the audio routing options and may engage appropriate system-supplied signal processing.
+    #[doc(alias = "AVAudioSessionModeVideoRecording")]
     #[inline]
     pub fn video_recording() -> &'static Self {
         unsafe { AVAudioSessionModeVideoRecording }
@@ -274,6 +301,7 @@ impl Mode {
 
     /// Appropriate for applications that wish to minimize the effect of system-supplied signal
     /// processing for input and/or output audio signals.
+    #[doc(alias = "AVAudioSessionModeMeasurement")]
     #[inline]
     pub fn measurement() -> &'static Self {
         unsafe { AVAudioSessionModeMeasurement }
@@ -283,6 +311,7 @@ impl Mode {
     /// routes to be only those that are appropriate for video chat applications. May engage appropriate
     /// system-supplied signal processing.  Has the side effect of setting
     /// AVAudioSessionCategoryOptionAllowBluetooth and AVAudioSessionCategoryOptionDefaultToSpeaker
+    #[doc(alias = "AVAudioSessionModeVideoChat")]
     #[inline]
     pub fn video_chat() -> &'static Self {
         unsafe { AVAudioSessionModeVideoChat }
@@ -290,6 +319,7 @@ impl Mode {
 
     /// Engages appropriate output signal processing for movie playback scenarios.
     /// Currently only applied during playback over built-in speaker.
+    #[doc(alias = "AVAudioSessionModeMoviePlayback")]
     #[inline]
     pub fn movie_playback() -> &'static Self {
         unsafe { AVAudioSessionModeMoviePlayback }
@@ -298,6 +328,7 @@ impl Mode {
     /// Appropriate for applications which play spoken audio and wish to be paused (via audio session interruption) rather than ducked
     /// if another app (such as a navigation app) plays a spoken audio prompt.  Examples of apps that would use this are podcast players and
     /// audio books.  For more information, see the related category option AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers
+    #[doc(alias = "AVAudioSessionModeSpokenAudio")]
     #[inline]
     pub fn spoken_audio() -> &'static Self {
         unsafe { AVAudioSessionModeSpokenAudio }
@@ -307,6 +338,7 @@ impl Mode {
     /// connected to certain audio devices such as CarPlay. An example of an app that would use this mode is a turn by turn navigation app that
     /// plays short prompts to the user. Typically, these same types of applications would also configure their session to use
     /// AVAudioSessionCategoryOptionDuckOthers and AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers
+    #[doc(alias = "AVAudioSessionModeVoicePrompt")]
     #[inline]
     pub fn voice_prompt() -> &'static Self {
         unsafe { AVAudioSessionModeVoicePrompt }
@@ -409,6 +441,7 @@ impl CategoryOpts {
     ///
     /// MixWithOthers is only valid with AVAudioSessionCategoryPlayAndRecord,
     /// AVAudioSessionCategoryPlayback, and AVAudioSessionCategoryMultiRoute.
+    #[doc(alias = "AVAudioSessionCategoryOptionMixWithOthers")]
     pub const MIX_WITH_OTHERS: Self = Self(0x1);
 
     /// Controls whether or not other active audio apps will be ducked when when your app's audio
@@ -426,6 +459,7 @@ impl CategoryOpts {
     /// DuckOthers is only valid with AVAudioSessionCategoryAmbient,
     /// AVAudioSessionCategoryPlayAndRecord, AVAudioSessionCategoryPlayback, and
     /// AVAudioSessionCategoryMultiRoute.
+    #[doc(alias = "AVAudioSessionCategoryOptionDuckOthers")]
     pub const DUCK_OTHERS: Self = Self(0x2);
 
     /// Allows an application to change the default behavior of some audio session categories with
@@ -444,6 +478,7 @@ impl CategoryOpts {
     /// Other categories:
     ///     AllowBluetooth defaults to false and cannot be changed. Enabling Bluetooth for input in
     ///     these categories is not allowed.
+    #[doc(alias = "AVAudioSessionCategoryOptionAllowBluetooth")]
     pub const ALLOW_BLUETOOTH: Self = Self(0x4);
 
     /// Allows an application to change the default behavior of some audio session categories with
@@ -455,6 +490,7 @@ impl CategoryOpts {
     ///
     /// Other categories:
     ///     DefaultToSpeaker is always false and cannot be changed.
+    #[doc(alias = "AVAudioSessionCategoryOptionDefaultToSpeaker")]
     pub const DEFAULT_TO_SPEAKER: Self = Self(0x8);
 
     /// When a session with InterruptSpokenAudioAndMixWithOthers set goes active, then if there is
@@ -472,6 +508,7 @@ impl CategoryOpts {
     ///
     /// Only valid with AVAudioSessionCategoryPlayAndRecord, AVAudioSessionCategoryPlayback, and
     /// AVAudioSessionCategoryMultiRoute. Introduced in iOS 9.0 / watchOS 2.0 / tvOS 9.0.    
+    #[doc(alias = "AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers")]
     pub const INTERRUPT_SPOKEN_AUDIO_AND_MIX_WITH_OTHERS: Self = Self(0x11);
 
     /// Allows an application to change the default behavior of some audio session categories with
@@ -497,6 +534,7 @@ impl CategoryOpts {
     ///      applies.
     ///
     /// Introduced in iOS 10.0 / watchOS 3.0 / tvOS 10.0.
+    #[doc(alias = "AVAudioSessionCategoryOptionAllowBluetoothA2DP")]
     pub const ALLOW_BLUETOOTH_A2_DP: Self = Self(0x20);
 
     /// Allows an application to change the default behavior of some audio session categories with
@@ -506,6 +544,7 @@ impl CategoryOpts {
     ///
     /// Only valid with AVAudioSessionCategoryPlayAndRecord. Introduced in iOS 10.0 / tvOS 10.0.
     ///
+    #[doc(alias = "AVAudioSessionCategoryOptionAllowAirPlay")]
     pub const ALLOW_AIR_PLAY: Self = Self(0x40);
     /// Some devices include a privacy feature that mutes the built-in microphone at a hardware level
     /// under certain conditions e.g. when the Smart Folio of an iPad is closed. The default behavior is
@@ -525,6 +564,7 @@ impl CategoryOpts {
     /// muted will fail.
     /// Note that this option has no relation to the recordPermission property, which indicates whether or
     /// not the user has granted permission to use microphone input.
+    #[doc(alias = "AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption")]
     pub const OVERRIDE_MUTED_MICROPHONE_INTERRUPTION: Self = Self(0x80);
 }
 

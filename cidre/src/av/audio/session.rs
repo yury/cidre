@@ -40,10 +40,10 @@ impl Session {
     pub fn shared() -> &'static mut Self;
 
     #[objc::msg_send(availableCategories)]
-    pub fn available_categories_ar(self) -> arc::Rar<ns::Array<Category>>;
+    pub fn available_categories_ar(&self) -> arc::Rar<ns::Array<Category>>;
 
     #[objc::rar_retain]
-    pub fn available_categories(self) -> arc::R<ns::Array<Category>>;
+    pub fn available_categories(&self) -> arc::R<ns::Array<Category>>;
 
     #[objc::msg_send(setCategory:error:)]
     pub unsafe fn set_category_err<'ear>(
@@ -201,6 +201,9 @@ impl Session {
         }
     }
 
+    #[objc::msg_send(preferredInput)]
+    pub fn preferred_input(&self) -> Option<&PortDesc>;
+
     #[objc::msg_send(allowHapticsAndSystemSoundsDuringRecording)]
     pub fn allow_haptics_and_sys_sounds_during_record(&self) -> bool;
 
@@ -225,6 +228,103 @@ impl Session {
             }
         }
     }
+}
+
+/// Activation
+impl Session {
+    #[objc::msg_send(setActive:error:)]
+    pub unsafe fn set_active_err<'ear>(
+        &mut self,
+        val: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_active<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Error> {
+        let mut err = None;
+        unsafe {
+            if self.set_active_err(val, &mut err) {
+                Ok(())
+            } else {
+                Err(err.unwrap_unchecked())
+            }
+        }
+    }
+
+    #[objc::msg_send(setActive:withOptions:error:)]
+    pub unsafe fn set_active_with_opts_err<'ear>(
+        &mut self,
+        val: bool,
+        options: SetActiveOpts,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_active_with_opts<'ear>(
+        &mut self,
+        val: bool,
+        options: SetActiveOpts,
+    ) -> Result<(), &'ear ns::Error> {
+        let mut err = None;
+        unsafe {
+            if self.set_active_with_opts_err(val, options, &mut err) {
+                Ok(())
+            } else {
+                Err(err.unwrap_unchecked())
+            }
+        }
+    }
+}
+
+/// AVAudioSessionHardwareConfiguration
+impl Session {
+    #[objc::msg_send(setPreferredSampleRate:error:)]
+    pub unsafe fn set_preferred_sample_rate_err<'ear>(
+        &mut self,
+        val: f64,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    /// The preferred hardware sample rate for the session. The actual sample rate may be different.
+    pub fn set_preferred_sample_rate<'ear>(&mut self, val: f64) -> Result<(), &'ear ns::Error> {
+        let mut err = None;
+        unsafe {
+            if self.set_preferred_sample_rate_err(val, &mut err) {
+                Ok(())
+            } else {
+                Err(err.unwrap_unchecked())
+            }
+        }
+    }
+
+    #[objc::msg_send(preferredSampleRate)]
+    pub fn preferred_sample_rate(&self) -> f64;
+
+    #[objc::msg_send(setPreferredIOBufferDuration:error:)]
+    pub fn set_preferred_io_buff_duration_err<'ear>(
+        &mut self,
+        val: ns::TimeInterval,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_preferred_io_buff_duration<'ear>(
+        &mut self,
+        val: ns::TimeInterval,
+    ) -> Result<(), &'ear ns::Error> {
+        let mut err = None;
+        unsafe {
+            if self.set_preferred_io_buff_duration_err(val, &mut err) {
+                Ok(())
+            } else {
+                Err(err.unwrap_unchecked())
+            }
+        }
+    }
+
+    //...
+    #[objc::msg_send(inputDataSources)]
+    pub fn input_data_sources_ar(&self) -> Option<arc::Rar<ns::Array<DataSrcDesc>>>;
+
+    #[objc::rar_retain]
+    pub fn input_data_sources(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
 }
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
