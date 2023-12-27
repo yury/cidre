@@ -122,10 +122,12 @@ impl Iterator for Iter {
     }
 }
 
+#[doc(alias = "AudioComponent")]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Component(c_void);
 
+#[doc(alias = "AudioComponentInstance")]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ComponentInstance(c_void);
