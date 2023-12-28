@@ -214,6 +214,19 @@ where
     }
 }
 
+impl<'ear> From<&'ear ns::Exception> for ns::ExErr<'ear> {
+    fn from(value: &'ear ns::Exception) -> Self {
+        Self::Ex(value)
+    }
+}
+
+pub fn try_catch_err<'ar, F, R>(f: F) -> Result<R, ns::ExErr<'ar>>
+where
+    F: FnOnce() -> Result<R, &'ar ns::Error>,
+{
+    Ok(try_catch(f)??)
+}
+
 #[cfg(test)]
 mod tests {
 

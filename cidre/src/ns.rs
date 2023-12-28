@@ -18,6 +18,7 @@ pub use objc_runtime::ExceptionName;
 pub mod exception;
 pub use exception::set_uncaught_exception_handler;
 pub use exception::try_catch;
+pub use exception::try_catch_err;
 pub use exception::uncaught_exception_handler;
 pub use exception::Exception;
 pub use exception::UncaughtExceptionHandler;
@@ -142,7 +143,7 @@ pub use file_manager::FileAttrKey;
 pub use file_manager::FileAttrType;
 pub use file_manager::FileManager;
 pub use file_manager::FileProtectionType;
-pub use file_manager::ItemReplacementOpts as FileManagerItemReplacementOptions;
+pub use file_manager::ItemReplacementOpts as FileManagerItemReplacementOpts;
 pub use file_manager::UrlRelationship;
 pub use file_manager::VolumeEnumOpts;
 
@@ -211,3 +212,14 @@ mod app;
 
 #[cfg(all(feature = "app", target_os = "macos"))]
 pub use app::*;
+
+/// Special Exception or Error type
+/// some API can still throw exception even if they
+/// return Error
+///
+/// See av::AudioSession API
+#[derive(Debug)]
+pub enum ExErr<'ar> {
+    Ex(&'ar Exception),
+    Err(&'ar Error),
+}

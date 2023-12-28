@@ -12,6 +12,7 @@ use crate::blocks;
 extern "C" {
     static AVCaptureDeviceTypeExternal: &'static Type;
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
+    static AVCaptureDeviceTypeMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInUltraWideCamera: &'static Type;
@@ -1571,6 +1572,11 @@ impl Type {
     #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
     pub fn built_in_microphone() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInMicrophone }
+    }
+
+    #[doc(alias = "AVCaptureDeviceTypeMicrophone")]
+    pub fn microphone() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeMicrophone }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInWideAngleCamera")]

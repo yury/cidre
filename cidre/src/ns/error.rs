@@ -1,6 +1,15 @@
 use crate::{arc, cf, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(pub Error(ns::Id));
+impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
+    fn from(value: &'ear ns::Error) -> Self {
+        Self::Err(value)
+    }
+}
+
+define_obj_type!(
+    #[doc(alias = "NSError")]
+    pub Error(ns::Id)
+);
 
 impl arc::A<Error> {
     #[objc::msg_send(initWithDomain:code:userInfo:)]

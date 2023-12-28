@@ -34,7 +34,7 @@ impl PlayerNode {
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
     pub unsafe fn _schedule_buf_ch(&self, buffer: &av::AudioPcmBuf, handler: *mut c_void);
 
-    /// Schedule playing samples from an av::AudioPCMBuffer.
+    /// Schedule playing samples from an [`av::AudioPCMBuf`].
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
     #[inline]

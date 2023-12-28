@@ -647,7 +647,7 @@ pub enum SilenceSecondaryAudioHintType {
 /// durations. If your app requires input and output audio to be presented in the same realtime
 /// I/O callback, or requires that input and output audio have the same sample rate or IO buffer
 /// duration, or if your app requires the ability to set a preferred sample rate or IO buffer duration
-/// for audio input, set the AVAudioSessionIOType to Aggregated.
+/// for audio input, set the [`av::AudioSessionIoType`] to Aggregated.
 ///  
 /// Apps that don't use AVCaptureSession and use [`av::AudioSessionCategory::play_and_record()`] will continue
 /// to have aggregated audio I/O, as in previous versions of iOS.
@@ -655,16 +655,16 @@ pub enum SilenceSecondaryAudioHintType {
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum IoType {
-    /// The default value.  If your app does not use AVCaptureSession or does not have any specific
+    /// The default value. If your app does not use [`av::CaptureSession`] or does not have any specific
     /// requirement for aggregating input and output audio in the same realtime I/O callback, use this
-    /// value. Note that if your app does not use AVCaptureSession, it will get aggregated I/O when using
-    /// AVAudioSessionCategoryPlayAndRecord.
+    /// value. Note that if your app does not use [`av::CaptureSession`], it will get aggregated I/O when using
+    /// [`av::AudioSessionCategory::play_and_record()`].
     ///
-    /// If your app does utilize AVCaptureSession, use of this value will allow AVCaptureSession to
+    /// If your app does utilize [`av::CaptureSession`], use of this value will allow [`av::CaptureSession`] to
     /// start recording without glitching already running output audio and will allow the system to
     /// utilize power-saving optimizations.
     NotSpecified = 0,
-    /// Use this value if your session uses AVAudioSessionCategoryPlayAndRecord and requires input and
+    /// Use this value if your session uses [`av::AudioSessionCategory::play_and_record()`] and requires input and
     /// output audio to be presented in the same realtime I/O callback. For example, if your app will be using
     /// a RemoteIO with both input and output enabled.
     ///
@@ -751,7 +751,7 @@ pub enum StereoOrientation {
 }
 
 #[doc(alias = "AVAudioSessionRecordPermission")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum RecordPermission {
     /// The user has not yet been asked for permission.
@@ -760,4 +760,27 @@ pub enum RecordPermission {
     Denied = u32::from_be_bytes(*b"deny") as _,
     /// The user has been asked and has granted permission.
     Granted = u32::from_be_bytes(*b"grnt") as _,
+}
+
+#[doc(alias = "AVAudioSessionRenderingMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum RenderingMode {
+    /// Default Mode when no asset is loaded or playing
+    NotApplicable = 0,
+
+    /// Default mode for non multi-channel cases
+    MonoStereo = 1,
+
+    /// Default mode for multi-channel cases that do not fall into the modes below
+    Surround = 2,
+
+    /// Fallback mode if provided content is Dolby variant but hardware capabilities don't support it
+    SpatialAudio = 3,
+
+    /// Dolby Audio mode
+    DolbyAudio = 4,
+
+    /// Dolby Atmos mode
+    DolbyAtmos = 5,
 }

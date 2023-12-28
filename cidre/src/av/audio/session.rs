@@ -14,6 +14,7 @@ pub use types::Port;
 pub use types::PortOverride;
 pub use types::PromptStyle;
 pub use types::RecordPermission;
+pub use types::RenderingMode;
 pub use types::RouteChangeReason;
 pub use types::RouteSharingPolicy;
 pub use types::SetActiveOpts;
@@ -112,7 +113,7 @@ impl Session {
     }
 
     #[objc::msg_send(setCategory:mode:routeSharingPolicy:options:error:)]
-    pub unsafe fn set_category_mode_policy_opts_err<'ear>(
+    pub unsafe fn set_category_mode_policy_opts_err_throws<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,
@@ -121,7 +122,7 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_mode_policy_opts<'ear>(
+    pub unsafe fn set_category_mode_policy_opts_throws<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,
@@ -130,7 +131,7 @@ impl Session {
     ) -> Result<(), &'ear ns::Error> {
         let mut err = None;
         unsafe {
-            if self.set_category_mode_policy_opts_err(
+            if self.set_category_mode_policy_opts_err_throws(
                 val,
                 mode,
                 route_sharing_policy,
@@ -142,6 +143,18 @@ impl Session {
                 Err(err.unwrap_unchecked())
             }
         }
+    }
+
+    pub fn set_category_mode_policy_opts<'ear>(
+        &mut self,
+        val: &Category,
+        mode: &Mode,
+        route_sharing_policy: RouteSharingPolicy,
+        options: CategoryOpts,
+    ) -> Result<(), ns::ExErr<'ear>> {
+        ns::try_catch_err(|| unsafe {
+            self.set_category_mode_policy_opts_throws(val, mode, route_sharing_policy, options)
+        })
     }
 
     #[objc::msg_send(policy)]
@@ -331,4 +344,66 @@ impl Session {
 #[link(name = "AVFAudio", kind = "framework")]
 extern "C" {
     static AV_AUDIO_SESSION: &'static objc::Class<Session>;
+}
+
+/// Notifications
+impl Session {
+    #[doc(alias = "AVAudioSessionInterruptionNotification")]
+    #[inline]
+    pub fn interruption_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionInterruptionNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionRouteChangeNotification")]
+    #[inline]
+    pub fn route_change_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionRouteChangeNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionMediaServicesWereLostNotification")]
+    #[inline]
+    pub fn media_services_where_lost_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionMediaServicesWereLostNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionMediaServicesWereResetNotification")]
+    #[inline]
+    pub fn media_services_where_reset_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionMediaServicesWereResetNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionSilenceSecondaryAudioHintNotification")]
+    #[inline]
+    pub fn silence_secondary_audio_hint_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionSilenceSecondaryAudioHintNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionSpatialPlaybackCapabilitiesChangedNotification")]
+    #[inline]
+    pub fn spatial_playback_capabilities_changed_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionSpatialPlaybackCapabilitiesChangedNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionRenderingModeChangeNotification")]
+    #[inline]
+    pub fn rendering_mode_change_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionRenderingModeChangeNotification }
+    }
+    #[doc(alias = "AVAudioSessionRenderingCapabilitiesChangeNotification")]
+    #[inline]
+    pub fn rendering_capabilities_change_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionRenderingCapabilitiesChangeNotification }
+    }
+}
+
+extern "C" {
+    static AVAudioSessionInterruptionNotification: &'static ns::NotificationName;
+    static AVAudioSessionRouteChangeNotification: &'static ns::NotificationName;
+    static AVAudioSessionMediaServicesWereLostNotification: &'static ns::NotificationName;
+    static AVAudioSessionMediaServicesWereResetNotification: &'static ns::NotificationName;
+    static AVAudioSessionSilenceSecondaryAudioHintNotification: &'static ns::NotificationName;
+    static AVAudioSessionSpatialPlaybackCapabilitiesChangedNotification:
+        &'static ns::NotificationName;
+    static AVAudioSessionRenderingModeChangeNotification: &'static ns::NotificationName;
+    static AVAudioSessionRenderingCapabilitiesChangeNotification: &'static ns::NotificationName;
 }
