@@ -131,6 +131,7 @@ pub use date::TimeInterval;
 pub use date::TIME_INTERVAL_SINCE_1970;
 
 mod error;
+pub use error::if_false;
 pub use error::Domain as ErrorDomain;
 pub use error::Error;
 

@@ -340,19 +340,19 @@ impl Synthesizer {
             Err(())
         }
     }
-    #[cfg(target_os = "ios")]
+    #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
     #[objc::msg_send(usesApplicationAudioSession)]
     pub fn uses_app_audio_session(&self) -> bool;
 
-    #[cfg(target_os = "ios")]
+    #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
     #[objc::msg_send(setUsesApplicationAudioSession:)]
     pub fn set_uses_app_audio_session(&mut self, val: bool);
 
-    #[cfg(target_os = "ios")]
+    #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
     #[objc::msg_send(mixToTelephonyUplink)]
     pub fn mix_to_telephony_uplink(&self) -> bool;
 
-    #[cfg(target_os = "ios")]
+    #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
     #[objc::msg_send(setMixToTelephonyUplink:)]
     pub fn set_mix_to_telephony_uplink(&mut self, val: bool);
 

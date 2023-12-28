@@ -6,6 +6,18 @@ impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
     }
 }
 
+pub fn if_false<'ear, F>(f: F) -> Result<(), &'ear ns::Error>
+where
+    F: FnOnce(*mut Option<&'ear ns::Error>) -> bool,
+{
+    let mut err = None;
+    if f(&mut err) {
+        Ok(())
+    } else {
+        unsafe { Err(err.unwrap_unchecked()) }
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "NSError")]
     pub Error(ns::Id)

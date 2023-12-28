@@ -1,5 +1,4 @@
-use crate::{arc, define_cls, objc};
-use crate::{define_obj_type, ns};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 mod types;
 pub use types::ActivationOpts;
@@ -54,14 +53,7 @@ impl Session {
     ) -> bool;
 
     pub fn set_category<'ear>(&mut self, val: &Category) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_category_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_category_err(val, err) })
     }
 
     #[objc::msg_send(setCategory:withOptions:error:)]
@@ -77,14 +69,7 @@ impl Session {
         val: &Category,
         options: CategoryOpts,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_category_with_opts_err(val, options, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_category_with_opts_err(val, options, err) })
     }
 
     #[objc::msg_send(setCategory:mode:options:error:)]
@@ -102,14 +87,7 @@ impl Session {
         mode: &Mode,
         options: CategoryOpts,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_category_mode_opts_err(val, mode, options, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_category_mode_opts_err(val, mode, options, err) })
     }
 
     #[objc::msg_send(setCategory:mode:routeSharingPolicy:options:error:)]
@@ -129,20 +107,15 @@ impl Session {
         route_sharing_policy: RouteSharingPolicy,
         options: CategoryOpts,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_category_mode_policy_opts_err_throws(
+        ns::if_false(|err| unsafe {
+            self.set_category_mode_policy_opts_err_throws(
                 val,
                 mode,
                 route_sharing_policy,
                 options,
-                &mut err,
-            ) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+                err,
+            )
+        })
     }
 
     pub fn set_category_mode_policy_opts<'ear>(
@@ -180,14 +153,7 @@ impl Session {
     ) -> bool;
 
     pub fn set_mode<'ear>(&mut self, val: &Mode) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_mode_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_mode_err(val, err) })
     }
 
     #[objc::msg_send(mode)]
@@ -204,14 +170,9 @@ impl Session {
         &mut self,
         val: bool,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_allow_haptics_and_sys_sounds_during_record_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe {
+            self.set_allow_haptics_and_sys_sounds_during_record_err(val, err)
+        })
     }
 
     #[objc::msg_send(preferredInput)]
@@ -232,14 +193,7 @@ impl Session {
         &mut self,
         val: PortOverride,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.override_output_audio_port_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.override_output_audio_port_err(val, err) })
     }
 }
 
@@ -253,14 +207,7 @@ impl Session {
     ) -> bool;
 
     pub fn set_active<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_active_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_active_err(val, err) })
     }
 
     #[objc::msg_send(setActive:withOptions:error:)]
@@ -276,14 +223,7 @@ impl Session {
         val: bool,
         options: SetActiveOpts,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_active_with_opts_err(val, options, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_active_with_opts_err(val, options, err) })
     }
 }
 
@@ -298,21 +238,14 @@ impl Session {
 
     /// The preferred hardware sample rate for the session. The actual sample rate may be different.
     pub fn set_preferred_sample_rate<'ear>(&mut self, val: f64) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_preferred_sample_rate_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_preferred_sample_rate_err(val, err) })
     }
 
     #[objc::msg_send(preferredSampleRate)]
     pub fn preferred_sample_rate(&self) -> f64;
 
     #[objc::msg_send(setPreferredIOBufferDuration:error:)]
-    pub fn set_preferred_io_buff_duration_err<'ear>(
+    pub unsafe fn set_preferred_io_buff_duration_err<'ear>(
         &mut self,
         val: ns::TimeInterval,
         err: *mut Option<&'ear ns::Error>,
@@ -322,14 +255,7 @@ impl Session {
         &mut self,
         val: ns::TimeInterval,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_preferred_io_buff_duration_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_preferred_io_buff_duration_err(val, err) })
     }
 
     //...

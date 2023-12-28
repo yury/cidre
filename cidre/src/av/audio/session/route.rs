@@ -181,14 +181,7 @@ impl DataSrcDesc {
         &mut self,
         val: Option<&PolarPattern>,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_preferred_polar_pattern_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_preferred_polar_pattern_err(val, err) })
     }
 }
 
@@ -238,14 +231,7 @@ impl PortDesc {
         &mut self,
         val: Option<&DataSrcDesc>,
     ) -> Result<(), &'ear ns::Error> {
-        let mut err = None;
-        unsafe {
-            if self.set_preferred_data_src_err(val, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_preferred_data_src_err(val, err) })
     }
 }
 
