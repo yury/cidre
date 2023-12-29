@@ -1,15 +1,17 @@
 pub mod graph;
 
 mod core;
-pub use self::core::AliasingStrategy;
-pub use self::core::DataType;
-pub use self::core::DimensionSlice;
-pub use self::core::ImageEdgeMode;
-pub use self::core::ImageFeatureChannelFormat;
-pub use self::core::KernelOptions;
-pub use self::core::Offset;
-pub use self::core::Origin;
-pub use self::core::Shape;
-pub use self::core::Size;
+pub use core::AliasingStrategy;
+pub use core::DataType;
+pub use core::DimensionSlice;
+pub use core::ImageEdgeMode;
+pub use core::ImageFeatureChannelFormat;
+pub use core::KernelOptions;
+pub use core::Offset;
+pub use core::Origin;
+pub use core::Shape;
+pub use core::Size;
 
-pub use self::core::NDArray;
+pub use core::NDArray;
+pub use core::NDArrayAllocator;
+pub use core::NDArrayDesc;

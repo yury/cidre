@@ -271,10 +271,10 @@ impl Mode {
         unsafe { AVAudioSessionModeDefault }
     }
 
-    /// Only valid with AVAudioSessionCategoryPlayAndRecord. Appropriate for Voice over IP
-    /// (VoIP) applications.  Reduces the number of allowable audio routes to be only those
+    /// Only valid with [`av::AudioSessionCategory::play_and_record`]. Appropriate for Voice over IP
+    /// (VoIP) applications. Reduces the number of allowable audio routes to be only those
     /// that are appropriate for VoIP applications and may engage appropriate system-supplied
-    /// signal processing.  Has the side effect of setting AVAudioSessionCategoryOptionAllowBluetooth
+    /// signal processing.  Has the side effect of setting [`av::AudioSessionCategoryOpts::allow_bluetooth`]
     #[doc(alias = "AVAudioSessionModeVoiceChat")]
     #[inline]
     pub fn voice_chat() -> &'static Self {
@@ -282,9 +282,9 @@ impl Mode {
     }
 
     /// Set by Game Kit on behalf of an application that uses a GKVoiceChat object; valid
-    /// only with the AVAudioSessionCategoryPlayAndRecord category.
+    /// only with the [`av::AudioSessionCategory::play_and_record()`] category.
     /// Do not set this mode directly. If you need similar behavior and are not using
-    /// a GKVoiceChat object, use AVAudioSessionModeVoiceChat instead.
+    /// a GKVoiceChat object, use [`av::AudioSessionMode::voice_chat()`] instead.
     #[doc(alias = "AVAudioSessionModeGameChat")]
     #[inline]
     pub fn game_chat() -> &'static Self {
@@ -309,7 +309,7 @@ impl Mode {
 
     /// Only valid with kAudioSessionCategory_PlayAndRecord. Reduces the number of allowable audio
     /// routes to be only those that are appropriate for video chat applications. May engage appropriate
-    /// system-supplied signal processing.  Has the side effect of setting
+    /// system-supplied signal processing. Has the side effect of setting
     /// AVAudioSessionCategoryOptionAllowBluetooth and AVAudioSessionCategoryOptionDefaultToSpeaker
     #[doc(alias = "AVAudioSessionModeVideoChat")]
     #[inline]
@@ -327,7 +327,7 @@ impl Mode {
 
     /// Appropriate for applications which play spoken audio and wish to be paused (via audio session interruption) rather than ducked
     /// if another app (such as a navigation app) plays a spoken audio prompt.  Examples of apps that would use this are podcast players and
-    /// audio books.  For more information, see the related category option AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers
+    /// audio books. For more information, see the related category option AVAudioSessionCategoryOptionInterruptSpokenAudioAndMixWithOthers
     #[doc(alias = "AVAudioSessionModeSpokenAudio")]
     #[inline]
     pub fn spoken_audio() -> &'static Self {

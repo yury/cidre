@@ -266,6 +266,84 @@ impl Session {
     pub fn input_data_sources(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
 }
 
+/// RoutingConfiguration
+impl Session {
+    /// Note that this property only applies to the session's current category and mode. For
+    /// example, if the session's current category is AVAudioSessionCategoryPlayback, there will be
+    /// no available inputs.
+    #[objc::msg_send(availableInputs)]
+    pub fn available_inputs(&self) -> Option<&ns::Array<PortDesc>>;
+
+    /// A description of the current route, consisting of zero or more input ports and zero or more
+    /// output ports
+    #[objc::msg_send(currentRoute)]
+    pub fn current_route(&self) -> &RouteDesc;
+
+    /// Controls whether audio input and output are aggregated. Only valid in combination with
+    /// AVAudioSessionCategoryPlayAndRecord or AVAudioSessionCategoryMultiRoute.
+    ///
+    /// See the AVAudioSessionIOType documentation for a more detailed explanation of why a client may
+    /// want to change the IO type.
+    #[objc::msg_send(setAggregatedIOPreference:error:)]
+    pub unsafe fn set_aggregated_io_preference_err<'ear>(
+        &mut self,
+        val: IoType,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_aggregated_io_preference<'ear>(
+        &mut self,
+        val: IoType,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_aggregated_io_preference_err(val, err) })
+    }
+
+    #[objc::msg_send(setSupportsMultichannelContent:error:)]
+    pub unsafe fn set_supports_multichannel_content_err<'ear>(
+        &mut self,
+        val: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_supports_multichannel_content<'ear>(
+        &mut self,
+        val: bool,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_supports_multichannel_content_err(val, err) })
+    }
+
+    #[objc::msg_send(supportsMultichannelContent)]
+    pub fn supports_multichannel_content(&self) -> bool;
+
+    #[objc::msg_send(setPrefersInterruptionOnRouteDisconnect:error:)]
+    pub unsafe fn set_prefers_interruption_on_route_disconnect_err<'ear>(
+        &mut self,
+        val: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    /// Use this method to opt in or opt out of interruption on route disconnect policy.
+    ///
+    /// As described in the Audio Session Programming Guide, most media playback apps are expected
+    /// to pause playback if the route change reason is AVAudioSessionRouteChangeReasonOldDeviceUnavailable.
+    ///
+    /// Starting in iOS 17, by default Now Playing sessions will be interrupted if they are active
+    /// when a route change occurs because of a disconnect event. All other sessions will not be
+    /// interrupted due to a disconnect event.
+    pub fn set_prefers_interruption_on_route_disconnect<'ear>(
+        &mut self,
+        val: bool,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe {
+            self.set_prefers_interruption_on_route_disconnect_err(val, err)
+        })
+    }
+
+    /// Indicates if session will be interrupted on route disconnect.
+    #[objc::msg_send(prefersInterruptionOnRouteDisconnect)]
+    pub fn prefers_interruption_on_route_disconnect(&self) -> bool;
+}
+
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 #[link(name = "AVFAudio", kind = "framework")]
 extern "C" {
