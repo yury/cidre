@@ -228,6 +228,10 @@ impl Session {
 }
 
 /// AVAudioSessionHardwareConfiguration
+///
+/// This category deals with the set of properties that reflect the current state of
+/// audio hardware in the current route. Applications whose functionality depends on these
+/// properties should reevaluate them any time the route changes.
 impl Session {
     #[objc::msg_send(setPreferredSampleRate:error:)]
     pub unsafe fn set_preferred_sample_rate_err<'ear>(
@@ -258,12 +262,125 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_preferred_io_buff_duration_err(val, err) })
     }
 
-    //...
+    #[objc::msg_send(setPreferredInputNumberOfChannels:error:)]
+    pub unsafe fn set_preferred_input_channels_num_err<'ear>(
+        &mut self,
+        val: isize,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    /// Sets the number of input channels that the app would prefer for the current route
+    pub fn set_preferred_input_channels_num<'ear>(
+        &mut self,
+        val: isize,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_preferred_input_channels_num_err(val, err) })
+    }
+
+    #[objc::msg_send(preferredOutputNumberOfChannels)]
+    pub fn preferred_output_channels_num(&self) -> isize;
+
+    #[objc::msg_send(setPreferredInputOrientation:error:)]
+    pub unsafe fn set_preferred_input_orientation_err<'ear>(
+        &mut self,
+        val: &Orientation,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_preferred_input_orientation<'ear>(
+        &mut self,
+        val: &Orientation,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_preferred_input_orientation_err(val, err) })
+    }
+
+    #[objc::msg_send(preferredInputOrientation)]
+    pub fn preferred_input_orientation(&self) -> &Orientation;
+
+    #[objc::msg_send(maximumInputNumberOfChannels)]
+    pub fn max_input_channels_num(&self) -> isize;
+
+    #[objc::msg_send(maximumOutputNumberOfChannels)]
+    pub fn max_output_channels_num(&self) -> isize;
+
+    #[objc::msg_send(setInputGain:error:)]
+    pub unsafe fn set_input_gain_err<'ear>(
+        &mut self,
+        val: f32,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_input_gain<'ear>(&mut self, val: f32) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_input_gain_err(val, err) })
+    }
+
+    #[objc::msg_send(isInputGainSettable)]
+    pub fn is_input_gain_settable(&self) -> bool;
+
+    #[objc::msg_send(isInputAvailable)]
+    pub fn is_input_available(&self) -> bool;
+
     #[objc::msg_send(inputDataSources)]
-    pub fn input_data_sources_ar(&self) -> Option<arc::Rar<ns::Array<DataSrcDesc>>>;
+    pub fn input_data_srcs_ar(&self) -> Option<arc::Rar<ns::Array<DataSrcDesc>>>;
 
     #[objc::rar_retain]
-    pub fn input_data_sources(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
+    pub fn input_data_srcs(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
+
+    #[objc::msg_send(setInputDataSource:error:)]
+    pub unsafe fn set_input_data_src_err<'ear>(
+        &mut self,
+        val: Option<&DataSrcDesc>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_input_data_src<'ear>(
+        &mut self,
+        val: Option<&DataSrcDesc>,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_input_data_src_err(val, err) })
+    }
+
+    #[objc::msg_send(outputDataSources)]
+    pub fn output_data_srcs_ar(&self) -> Option<arc::Rar<ns::Array<DataSrcDesc>>>;
+
+    #[objc::rar_retain]
+    pub fn output_data_srcs(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
+
+    #[objc::msg_send(outputDataSource)]
+    pub fn output_data_src(&self) -> Option<&DataSrcDesc>;
+
+    #[objc::msg_send(setOutputDataSource:error:)]
+    pub unsafe fn set_output_data_src_err<'ear>(
+        &mut self,
+        val: Option<&DataSrcDesc>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_output_data_src<'ear>(
+        &mut self,
+        val: Option<&DataSrcDesc>,
+    ) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.set_output_data_src_err(val, err) })
+    }
+
+    /// The current hardware sample rate
+    #[objc::msg_send(sampleRate)]
+    pub fn sample_rate(&self) -> f64;
+
+    #[objc::msg_send(inputNumberOfChannels)]
+    pub fn input_channels_num(&self) -> isize;
+
+    #[objc::msg_send(outputNumberOfChannels)]
+    pub fn output_channels_num(&self) -> isize;
+
+    #[objc::msg_send(inputLatency)]
+    pub fn input_latency(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(outputLatency)]
+    pub fn output_latency(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(IOBufferDuration)]
+    pub fn io_buf_duration(&self) -> ns::TimeInterval;
 }
 
 /// Observation
@@ -301,13 +418,11 @@ impl Session {
     /// A description of the current route, consisting of zero or more input ports and zero or more
     /// output ports
     #[objc::msg_send(currentRoute)]
-    pub fn current_route(&self) -> &RouteDesc;
+    pub fn current_route_ar(&self) -> arc::Rar<RouteDesc>;
 
-    /// Controls whether audio input and output are aggregated. Only valid in combination with
-    /// AVAudioSessionCategoryPlayAndRecord or AVAudioSessionCategoryMultiRoute.
-    ///
-    /// See the AVAudioSessionIOType documentation for a more detailed explanation of why a client may
-    /// want to change the IO type.
+    #[objc::rar_retain]
+    pub fn current_route(&self) -> arc::R<RouteDesc>;
+
     #[objc::msg_send(setAggregatedIOPreference:error:)]
     pub unsafe fn set_aggregated_io_preference_err<'ear>(
         &mut self,
@@ -315,6 +430,11 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
+    /// Controls whether audio input and output are aggregated. Only valid in combination with
+    /// AVAudioSessionCategoryPlayAndRecord or AVAudioSessionCategoryMultiRoute.
+    ///
+    /// See the AVAudioSessionIOType documentation for a more detailed explanation of why a client may
+    /// want to change the IO type.
     pub fn set_aggregated_io_preference<'ear>(
         &mut self,
         val: IoType,

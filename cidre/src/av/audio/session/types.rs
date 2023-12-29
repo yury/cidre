@@ -232,7 +232,7 @@ impl Category {
     /// and headphone output simultaneously for separate, distinct streams of audio data. Use of
     /// this category by an application requires a more detailed knowledge of, and interaction with,
     /// the capabilities of the available audio routes.  May be used for input, output, or both.
-    /// Note that not all output types and output combinations are eligible for multi-route.  Input is limited
+    /// Note that not all output types and output combinations are eligible for multi-route. Input is limited
     /// to the last-in input port. Eligible inputs consist of the following:
     /// AVAudioSessionPortUSBAudio, AVAudioSessionPortHeadsetMic, and AVAudioSessionPortBuiltInMic.
     /// Eligible outputs consist of the following:
