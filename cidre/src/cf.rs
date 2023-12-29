@@ -70,6 +70,7 @@ pub use bundle::Bundle;
 pub mod error;
 pub use error::Domain as ErrorDomain;
 pub use error::Error;
+pub use error::if_false;
 
 pub mod notification_center;
 pub use notification_center::NotificationCenter;

@@ -154,14 +154,7 @@ impl Dst {
         isrc: &cg::ImageSrc,
         options: Option<&cf::DictionaryOf<CopyOptKey, cf::Type>>,
     ) -> Result<(), arc::R<cf::Error>> {
-        let mut err = None;
-        unsafe {
-            if self.copy_image_source(isrc, options, &mut err) {
-                Ok(())
-            } else {
-                Err(err.unwrap_unchecked())
-            }
-        }
+        cf::if_false(|err| unsafe { self.copy_image_source(isrc, options, err) })
     }
 
     #[doc(alias = "CGImageDestinationSetProperties")]

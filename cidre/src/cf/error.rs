@@ -5,6 +5,18 @@ use crate::{arc, cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
+pub fn if_false<'ear, F>(f: F) -> Result<(), arc::R<Error>>
+where
+    F: FnOnce(*mut Option<arc::R<Error>>) -> bool,
+{
+    let mut err = None;
+    if f(&mut err) {
+        Ok(())
+    } else {
+        unsafe { Err(err.unwrap_unchecked()) }
+    }
+}
+
 define_cf_type!(Error(cf::Type));
 pub type Domain = cf::String;
 
