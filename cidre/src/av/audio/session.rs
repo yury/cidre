@@ -266,6 +266,30 @@ impl Session {
     pub fn input_data_sources(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
 }
 
+/// Observation
+impl Session {
+    /// True when another application is playing audio.
+    ///
+    /// As of iOS 8.0, Apple recommends that most applications use
+    /// secondaryAudioShouldBeSilencedHint instead of this property. The otherAudioPlaying property
+    /// will be true if any other audio (including audio from an app using
+    /// AVAudioSessionCategoryAmbient) is playing, whereas the secondaryAudioShouldBeSilencedHint
+    /// property is more restrictive in its consideration of whether primary audio from another
+    /// application is playing.
+    #[objc::msg_send(isOtherAudioPlaying)]
+    pub fn is_other_audio_playing(&self) -> bool;
+
+    #[objc::msg_send(secondaryAudioShouldBeSilencedHint)]
+    pub fn secondary_audio_should_be_silenced_hint(&self) -> bool;
+
+    /// The current output volume. Value in range \[0.0, 1.0\]. Is key-value observable.
+    #[objc::msg_send(outputVolume)]
+    pub fn output_volume(&self) -> f32;
+
+    #[objc::msg_send(promptStyle)]
+    pub fn prompt_style(&self) -> PromptStyle;
+}
+
 /// RoutingConfiguration
 impl Session {
     /// Note that this property only applies to the session's current category and mode. For
