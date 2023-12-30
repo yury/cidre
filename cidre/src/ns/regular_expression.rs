@@ -128,8 +128,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::objc::ar_pool;
-    pub use crate::{cf, ns};
+    use crate::{ns, objc::ar_pool};
 
     #[test]
     fn basics() {

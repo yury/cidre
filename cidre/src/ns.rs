@@ -163,6 +163,7 @@ pub use path_utilities::SearchPathDomainMask;
 mod notification;
 pub use notification::Notification;
 pub use notification::NotificationCenter;
+pub use notification::NotificationGuard;
 pub use notification::NotificationName;
 
 mod operation;

@@ -60,7 +60,11 @@ impl Notification {
     }
 }
 
-define_obj_type!(pub NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER);
+define_obj_type!(
+    #[doc(alias = "NSNotificationCenter")]
+    pub NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER
+);
+
 impl NotificationCenter {
     #[objc::cls_msg_send(defaultCenter)]
     pub fn default() -> &'static mut Self;
@@ -84,7 +88,7 @@ impl NotificationCenter {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(addObserverForName:object:queue:usingBlock:)]
-    pub fn add_observer_for_ar<'bar, B>(
+    pub fn add_observer_ar<'bar, B>(
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
@@ -96,7 +100,7 @@ impl NotificationCenter {
 
     #[cfg(feature = "blocks")]
     #[objc::rar_retain]
-    pub fn add_observer_for<'bar, B>(
+    pub fn add_observer<'bar, B>(
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
@@ -105,6 +109,51 @@ impl NotificationCenter {
     ) -> arc::R<ns::Id>
     where
         B: FnMut(&'bar ns::Notification);
+
+    #[cfg(feature = "blocks")]
+    pub fn add_observer_mut<'bar, B>(
+        &mut self,
+        name: &ns::NotificationName,
+        object: Option<&ns::Id>,
+        queue: Option<&ns::OpQueue>,
+        block: B,
+    ) -> arc::R<ns::Id>
+    where
+        B: FnMut(&'bar ns::Notification) + 'static,
+    {
+        let mut block = blocks::mut1(block);
+        self.add_observer(name, object, queue, block.escape())
+    }
+
+    #[cfg(feature = "blocks")]
+    pub fn add_observer_guard<'bar, B>(
+        &mut self,
+        name: &ns::NotificationName,
+        object: Option<&ns::Id>,
+        queue: Option<&ns::OpQueue>,
+        block: B,
+    ) -> NotificationGuard
+    where
+        B: FnMut(&'bar ns::Notification) + 'static,
+    {
+        let mut block = blocks::mut1(block);
+        let token = self.add_observer(name, object, queue, block.escape());
+        NotificationGuard {
+            token,
+            center: self.retained(),
+        }
+    }
+}
+
+pub struct NotificationGuard {
+    token: arc::R<ns::Id>,
+    center: arc::R<ns::NotificationCenter>,
+}
+
+impl Drop for NotificationGuard {
+    fn drop(&mut self) {
+        self.center.remove_observer(&self.token);
+    }
 }
 
 #[link(name = "ns", kind = "static")]
@@ -132,7 +181,7 @@ mod tests {
             *guard += 1;
         });
         let name = ns::NotificationName::with_str("test");
-        let token = nc.add_observer_for(&name, None, None, block.escape());
+        let token = nc.add_observer(&name, None, None, block.escape());
         nc.post_with_name_object(&name, None);
         nc.post_with_name_object(&name, None);
 
@@ -146,6 +195,30 @@ mod tests {
         {
             let guard = counter.lock().unwrap();
             assert_eq!(2, *guard);
+        }
+    }
+
+    #[test]
+    fn guard() {
+        let nc = ns::NotificationCenter::default();
+        let counter = Arc::new(Mutex::new(0));
+        let block_counter = counter.clone();
+        let name = ns::NotificationName::with_str("test");
+        {
+            let _g = nc.add_observer_guard(&name, None, None, move |_note| {
+                let mut guard = block_counter.lock().unwrap();
+                *guard += 1;
+            });
+            nc.post_with_name_object(&name, None);
+            {
+                let guard = counter.lock().unwrap();
+                assert_eq!(1, *guard);
+            }
+        }
+        nc.post_with_name_object(&name, None);
+        {
+            let guard = counter.lock().unwrap();
+            assert_eq!(1, *guard);
         }
     }
 }
