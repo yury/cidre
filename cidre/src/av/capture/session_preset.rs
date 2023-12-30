@@ -1,75 +1,91 @@
 use crate::{define_obj_type, ns};
 
-define_obj_type!(pub SessionPreset(ns::String));
+define_obj_type!(
+    #[doc(alias = "AVCaptureSessionPreset")]
+    pub SessionPreset(ns::String)
+);
 
 impl SessionPreset {
     /// preset suitable for high resolution photo quality output.
+    #[doc(alias = "AVCaptureSessionPresetPhoto")]
     #[inline]
     pub fn photo() -> &'static Self {
         unsafe { AVCaptureSessionPresetPhoto }
     }
 
     /// preset suitable for high quality video and audio output.
+    #[doc(alias = "AVCaptureSessionPresetHigh")]
     #[inline]
     pub fn high() -> &'static Self {
         unsafe { AVCaptureSessionPresetHigh }
     }
 
-    /// Clients may set an av::CaptureSession instance's sessionPreset to
-    /// `av::CaptureSessionPreset::medium()` to achieve output video and audio
+    /// Clients may set an ['av::CaptureSession'] instance's sessionPreset to
+    /// [`av::CaptureSessionPreset::medium()`] to achieve output video and audio
     /// bitrates suitable for sharing over WiFi.
+    #[doc(alias = "AVCaptureSessionPresetMedium")]
     #[inline]
     pub fn medium() -> &'static Self {
         unsafe { AVCaptureSessionPresetMedium }
     }
 
-    /// An `av::CaptureSession` preset suitable for low quality output.
+    /// An [`av::CaptureSession`] preset suitable for low quality output.
+    #[doc(alias = "AVCaptureSessionPresetLow")]
     #[inline]
     pub fn low() -> &'static Self {
         unsafe { AVCaptureSessionPresetLow }
     }
 
+    #[doc(alias = "AVCaptureSessionPreset320x240")]
     #[inline]
     pub fn _320_240() -> &'static Self {
         unsafe { AVCaptureSessionPreset320x240 }
     }
 
+    #[doc(alias = "AVCaptureSessionPreset352x288")]
     #[inline]
     pub fn _352x288() -> &'static Self {
         unsafe { AVCaptureSessionPreset352x288 }
     }
 
+    #[doc(alias = "AVCaptureSessionPreset640x480")]
     #[inline]
     pub fn _640x480() -> &'static Self {
         unsafe { AVCaptureSessionPreset640x480 }
     }
 
+    #[doc(alias = "AVCaptureSessionPreset960x540")]
     #[inline]
     pub fn _960x540() -> &'static Self {
         unsafe { AVCaptureSessionPreset960x540 }
     }
 
+    #[doc(alias = "AVCaptureSessionPreset1280x720")]
     #[inline]
     pub fn _1280x720() -> &'static Self {
         unsafe { AVCaptureSessionPreset1280x720 }
     }
 
+    #[doc(alias = "AVCaptureSessionPreset1920x1080")]
     #[inline]
     pub fn _1920x1080() -> &'static Self {
         unsafe { AVCaptureSessionPreset1920x1080 }
     }
 
     /// An 'av::CaptureSession' preset suitable for 3840x2160 (UHD 4K) video output.
+    #[doc(alias = "AVCaptureSessionPreset3840x2160")]
     #[inline]
     pub fn _3840x2160() -> &'static Self {
         unsafe { AVCaptureSessionPreset3840x2160 }
     }
 
+    #[doc(alias = "AVCaptureSessionPresetiFrame960x540")]
     #[inline]
     pub fn iframe_960x540() -> &'static Self {
         unsafe { AVCaptureSessionPresetiFrame960x540 }
     }
 
+    #[doc(alias = "AVCaptureSessionPresetiFrame1280x720")]
     #[inline]
     pub fn iframe_1280x720() -> &'static Self {
         unsafe { AVCaptureSessionPresetiFrame1280x720 }
@@ -85,6 +101,7 @@ impl SessionPreset {
     /// of service level provided at the outputs. When a client sets the session preset to anything
     /// other than 'av::CaptureSessionPreset::input_priority()', the session resumes responsibility
     /// for configuring inputs and outputs, and is free to change its inputs' 'active_format' as needed.
+    #[doc(alias = "AVCaptureSessionPresetInputPriority")]
     #[inline]
     pub fn input_priority() -> &'static Self {
         unsafe { AVCaptureSessionPresetInputPriority }
