@@ -65,6 +65,8 @@ define_obj_type!(
     pub NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER
 );
 
+unsafe impl Send for NotificationCenter {}
+
 impl NotificationCenter {
     #[objc::cls_msg_send(defaultCenter)]
     pub fn default() -> &'static mut Self;

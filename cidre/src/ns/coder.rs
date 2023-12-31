@@ -6,12 +6,12 @@ use crate::{arc, define_obj_type, ns, objc};
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum DecodingFailurePolicy {
-    /// On decode failure, the ns::Coder will raise an exception internally
+    /// On decode failure, the [`ns::Coder`] will raise an exception internally
     /// to propagate failure messages (and unwind the stack). This exception can be transformed
     /// into an ns::Error via any of the TopLevel decode APIs.
     RaiseException,
 
-    /// On decode failure, the NSCoder will capture the failure as an ns::Error,
+    /// On decode failure, the [`ns::Coder`] will capture the failure as an [`ns::Error`],
     /// and prevent further decodes (by returning 0 / None equivalent as appropriate).
     /// Clients should consider using this policy if they know that all encoded objects behave correctly
     /// in the presence of decode failures (e.g. they use fail_with_error to communicate decode failures
@@ -19,7 +19,11 @@ pub enum DecodingFailurePolicy {
     SetErrorAndReturn,
 }
 
-define_obj_type!(pub Coder(ns::Id), NS_CODER);
+define_obj_type!(
+    #[doc(alias = "NSCoder")]
+    pub Coder(ns::Id), NS_CODER
+);
+
 impl Coder {}
 
 #[link(name = "ns", kind = "static")]
