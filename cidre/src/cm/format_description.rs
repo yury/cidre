@@ -651,7 +651,7 @@ impl FormatDescExtKey {
     ///
     /// This key is used by sample description bridges to hold sample description
     /// extension atoms that they do not recognize.
-    /// The extension is a [`cf::Dictionary`] mapping [`cf::Strings`] of the four-char-code atom types
+    /// The extension is a [`cf::Dictionary`] mapping [`cf::String`]s of the four-char-code atom types
     /// to either [`cf::Data`]s containing the atom payload or (to represent multiple atoms of a
     /// specific type) to [`cf::Array`]s of [`cf::Data`] containing those payloads.
     ///

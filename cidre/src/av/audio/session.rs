@@ -30,7 +30,10 @@ pub use route::PortDesc;
 pub use route::RouteDesc;
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-define_obj_type!(pub Session(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAudioSession")]
+    pub Session(ns::Id)
+);
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 impl Session {
