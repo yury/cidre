@@ -65,7 +65,7 @@ impl Session {
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCbRecord<c_void, c_void>>,
-        decompression_session_out: &mut Option<arc::R<Session>>,
+        decompression_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status {
         VTDecompressionSessionCreate(
             allocator,
@@ -174,7 +174,7 @@ extern "C" {
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCbRecord<c_void, c_void>>,
-        decompression_session_out: &mut Option<arc::R<Session>>,
+        decompression_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status;
 
     fn VTDecompressionSessionInvalidate(session: &Session);

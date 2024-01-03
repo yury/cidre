@@ -663,7 +663,7 @@ extern "C" {
         in_file_type: FileTypeID,
         in_format: &audio::StreamBasicDesc,
         in_flags: Flags,
-        out_audio_file: &mut Option<FileID>,
+        out_audio_file: *mut Option<FileID>,
     ) -> os::Status;
 
     fn AudioFileClose(file: *const OpaqueFileID) -> os::Status;
@@ -672,7 +672,7 @@ extern "C" {
         file_url: &cf::Url,
         permissions: Permissions,
         file_type_hint: FileTypeID,
-        out_audio_file: &mut Option<FileID>,
+        out_audio_file: *mut Option<FileID>,
     ) -> os::Status;
 
     fn AudioFileGetPropertyInfo(

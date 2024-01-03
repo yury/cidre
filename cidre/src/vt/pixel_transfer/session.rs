@@ -78,7 +78,7 @@ impl Session {
 extern "C" {
     fn VTPixelTransferSessionCreate(
         allocator: Option<&cf::Allocator>,
-        pixel_transfer_session_out: &mut Option<arc::R<Session>>,
+        pixel_transfer_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status;
     fn VTPixelTransferSessionInvalidate(session: &mut Session);
     fn VTPixelTransferSessionTransferImage(

@@ -104,6 +104,6 @@ extern "C" {
     fn AMDeviceLookupApplications(
         device: &Device,
         options: &cf::Dictionary,
-        info: &mut Option<arc::R<cf::Dictionary>>,
+        info: *mut Option<arc::R<cf::Dictionary>>,
     ) -> Error;
 }

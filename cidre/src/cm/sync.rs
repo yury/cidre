@@ -19,7 +19,7 @@ impl Clock {
     #[inline]
     pub unsafe fn audio_clock_create_in(
         allocator: Option<&cf::Allocator>,
-        clock_out: &mut Option<arc::R<Clock>>,
+        clock_out: *mut Option<arc::R<Clock>>,
     ) -> os::Status {
         CMAudioClockCreate(allocator, clock_out)
     }
@@ -68,7 +68,7 @@ extern "C" {
     fn CMClockGetHostTimeClock() -> &'static Clock;
     fn CMAudioClockCreate(
         allocator: Option<&cf::Allocator>,
-        clock_out: &mut Option<arc::R<Clock>>,
+        clock_out: *mut Option<arc::R<Clock>>,
     ) -> os::Status;
 
     fn CMClockGetTime(clock: &Clock) -> cm::Time;

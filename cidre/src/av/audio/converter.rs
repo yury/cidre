@@ -127,7 +127,7 @@ impl Converter {
     pub unsafe fn convert_to_buffer_err_with_input_from_block(
         &self,
         output_buffer: &mut av::AudioBuf,
-        error: &mut Option<&cf::Error>,
+        error: *mut Option<&cf::Error>,
         block: *mut c_void,
     ) -> OutputStatus;
 

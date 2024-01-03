@@ -131,7 +131,7 @@ impl Engine {
     pub fn prepare(&mut self);
 
     #[objc::msg_send(startAndReturnError:)]
-    pub fn start_and_return_err<'ar>(&self, error: &mut Option<&'ar ns::Error>) -> bool;
+    pub unsafe fn start_and_return_err<'ar>(&self, error: *mut Option<&'ar ns::Error>) -> bool;
 
     #[inline]
     pub fn start<'ar>(&mut self) -> Result<(), &'ar ns::Error> {
@@ -227,12 +227,12 @@ impl Engine {
     /// 2. Removes any taps previously installed on the input and output nodes.
     /// 3. Maintains all the engine connections as is.
     #[objc::msg_send(enableManualRenderingMode:format:maximumFrameCount:error:)]
-    pub fn enable_manual_rendering_mode_err<'ar>(
+    pub unsafe fn enable_manual_rendering_mode_err<'ar>(
         &mut self,
         mode: ManualRenderingMode,
         format: &av::AudioFormat,
         max_frame_count: av::AudioFrameCount,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     );
 
     #[inline]
@@ -243,11 +243,12 @@ impl Engine {
         max_frame_count: av::AudioFrameCount,
     ) -> Result<(), &'ar ns::Error> {
         let mut error = None;
-        self.enable_manual_rendering_mode_err(mode, format, max_frame_count, &mut error);
+        unsafe { self.enable_manual_rendering_mode_err(mode, format, max_frame_count, &mut error) };
         if let Some(err) = error {
-            return Err(err);
+            Err(err)
+        } else {
+            Ok(())
         }
-        Ok(())
     }
 
     #[objc::msg_send(disableManualRenderingMode)]

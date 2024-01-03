@@ -87,7 +87,7 @@ impl PixelBuf {
         height: usize,
         pixel_format_type: cv::PixelFormat,
         pixel_buf_attrs: Option<&cf::Dictionary>,
-        pixel_buf_out: &mut Option<arc::R<PixelBuf>>,
+        pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         unsafe {
@@ -496,7 +496,7 @@ extern "C" {
         height: usize,
         pixel_format_type: PixelFormat,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: &mut Option<arc::R<PixelBuf>>,
+        pixel_buffer_out: *mut Option<arc::R<PixelBuf>>,
     ) -> cv::Return;
 
     fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuf) -> usize;

@@ -329,7 +329,7 @@ extern "C" {
         video_format_description: &cm::VideoFormatDesc,
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
-        block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
+        block_buffer_out: *mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionBlockBuffer(
@@ -337,7 +337,7 @@ extern "C" {
         image_description_block_buffer: &cm::BlockBuf,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescFlavor>,
-        format_description_out: &mut Option<arc::R<cm::VideoFormatDesc>>,
+        format_description_out: *mut Option<arc::R<cm::VideoFormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
@@ -346,7 +346,7 @@ extern "C" {
         size: usize,
         string_encoding: cf::StringEncoding,
         flavor: Option<&cm::ImageDescFlavor>,
-        format_description_out: &mut Option<arc::R<cm::VideoFormatDesc>>,
+        format_description_out: *mut Option<arc::R<cm::VideoFormatDesc>>,
     ) -> os::Status;
 
     fn CMSwapBigEndianImageDescriptionToHost(
@@ -373,7 +373,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         audio_format_description: &cm::AudioFormatDesc,
         flavor: Option<&SoundDescFlavor>,
-        block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
+        block_buffer_out: *mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
@@ -381,13 +381,13 @@ extern "C" {
         sound_description_data: *const u8,
         size: usize,
         flavor: Option<&SoundDescFlavor>,
-        format_description_out: &mut Option<arc::R<cm::AudioFormatDesc>>,
+        format_description_out: *mut Option<arc::R<cm::AudioFormatDesc>>,
     ) -> os::Status;
 
     fn CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
         allocator: Option<&cf::Allocator>,
         block_buffer: &cm::BlockBuf,
         flavor: Option<&SoundDescFlavor>,
-        format_description_out: &mut Option<arc::R<cm::AudioFormatDesc>>,
+        format_description_out: *mut Option<arc::R<cm::AudioFormatDesc>>,
     ) -> os::Status;
 }

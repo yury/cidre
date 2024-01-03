@@ -220,7 +220,7 @@ impl Notification {
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut T,
-        ref_out: &mut Option<arc::R<Notification>>,
+        ref_out: *mut Option<arc::R<Notification>>,
     ) -> Error {
         AMDeviceNotificationSubscribe(
             transmute(callback),
@@ -292,7 +292,7 @@ extern "C" {
         minimum_interface_speed: Speed,
         connection_type: InterfaceConnectionType,
         context: *mut c_void,
-        ref_out: &mut Option<arc::R<Notification>>,
+        ref_out: *mut Option<arc::R<Notification>>,
     ) -> Error;
 
     fn AMDeviceNotificationUnsubscribe(notification: &Notification) -> Error;

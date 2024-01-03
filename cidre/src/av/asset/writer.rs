@@ -27,7 +27,7 @@ impl arc::A<Writer> {
         self,
         url: &ns::Url,
         file_type: &av::FileType,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Writer>>;
 
     #[objc::msg_send(initWithContentType:)]

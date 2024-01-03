@@ -469,7 +469,7 @@ impl Stream {
         output: &D,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
-        error: &mut Option<&ns::Error>,
+        error: *mut Option<&ns::Error>,
     ) -> bool;
 
     pub fn add_stream_output<'ar, D: Output>(

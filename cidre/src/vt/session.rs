@@ -51,7 +51,7 @@ impl Session {
     #[doc(alias = "VTSessionCopySupportedPropertyDictionary")]
     pub unsafe fn copy_supported_property_dictionary(
         &self,
-        supported_property_dictionary_out: &mut Option<arc::R<cf::Dictionary>>,
+        supported_property_dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
     ) -> os::Status {
         VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
     }

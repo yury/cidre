@@ -236,7 +236,7 @@ impl FormatDesc {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: &mut Option<arc::R<FormatDesc>>,
+        format_description_out: *mut Option<arc::R<FormatDesc>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         unsafe {
@@ -308,7 +308,7 @@ impl VideoFormatDesc {
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
+        format_description_out: *mut Option<arc::R<VideoFormatDesc>>,
         allocator: Option<&Allocator>,
     ) -> os::Status {
         unsafe {
@@ -565,7 +565,7 @@ impl AudioFormatDesc {
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: &mut Option<arc::R<Self>>,
+        format_description_out: *mut Option<arc::R<Self>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         unsafe {
@@ -905,7 +905,7 @@ extern "C" {
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
+        format_description_out: *mut Option<arc::R<VideoFormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetDimensions(video_desc: &VideoFormatDesc) -> VideoDimensions;
@@ -936,7 +936,7 @@ extern "C" {
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: &mut Option<arc::R<AudioFormatDesc>>,
+        format_description_out: *mut Option<arc::R<AudioFormatDesc>>,
     ) -> os::Status;
 
     #[cfg(feature = "cat")]
@@ -949,13 +949,13 @@ extern "C" {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: &mut Option<arc::R<FormatDesc>>,
+        format_description_out: *mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateForImageBuffer(
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuf,
-        format_description: &mut Option<arc::R<FormatDesc>>,
+        format_description: *mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromH264ParameterSets(
@@ -964,7 +964,7 @@ extern "C" {
         parameter_set_pointers: *const *const u8,
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
-        format_description: &mut Option<arc::R<FormatDesc>>,
+        format_description: *mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionCreateFromHEVCParameterSets(
@@ -974,7 +974,7 @@ extern "C" {
         parameter_set_sizes: *const usize,
         nal_unit_header_length: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description: &mut Option<arc::R<FormatDesc>>,
+        format_description: *mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetH264ParameterSetAtIndex(

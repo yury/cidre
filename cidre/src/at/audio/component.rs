@@ -213,7 +213,7 @@ extern "C" {
 
     fn AudioComponentCopyName(
         in_component: &Component,
-        out_name: &mut Option<arc::R<cf::String>>,
+        out_name: *mut Option<arc::R<cf::String>>,
     ) -> os::Status;
 
     fn AudioComponentGetDescription(component: &Component, out_desc: &mut Desc) -> os::Status;
@@ -222,7 +222,7 @@ extern "C" {
 
     fn AudioComponentInstanceNew(
         component: &Component,
-        out_instance: &mut Option<&'static mut ComponentInstance>,
+        out_instance: *mut Option<&'static mut ComponentInstance>,
     ) -> os::Status;
 
     fn AudioComponentInstanceDispose(instance: &mut ComponentInstance) -> os::Status;

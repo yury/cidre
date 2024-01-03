@@ -290,7 +290,7 @@ impl BlockBuf {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buf_out: &mut Option<arc::R<BlockBuf>>,
+        block_buf_out: *mut Option<arc::R<BlockBuf>>,
     ) -> os::Status {
         CMBlockBufferCreateWithBufferReference(
             structure_allocator,
@@ -322,7 +322,7 @@ extern "C" {
         structure_allocator: Option<&cf::Allocator>,
         sub_block_capacity: u32,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuf>>,
+        block_buffer_out: *mut Option<arc::R<BlockBuf>>,
     ) -> os::Status;
 
     fn CMBlockBufferCreateWithMemoryBlock(
@@ -334,7 +334,7 @@ extern "C" {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuf>>,
+        block_buffer_out: *mut Option<arc::R<BlockBuf>>,
     ) -> os::Status;
 
     fn CMBlockBufferGetDataLength(the_buffer: &BlockBuf) -> usize;
@@ -355,7 +355,7 @@ extern "C" {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<BlockBuf>>,
+        block_buffer_out: *mut Option<arc::R<BlockBuf>>,
     ) -> os::Status;
 
     fn CMBlockBufferAssureBlockMemory(buffer: &mut BlockBuf) -> os::Status;

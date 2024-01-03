@@ -88,7 +88,7 @@ extern "C" {
 
     fn VTPixelRotationSessionCreate(
         allocator: Option<&cf::Allocator>,
-        pixel_rotation_session_out: &mut Option<arc::R<Session>>,
+        pixel_rotation_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status;
 
     fn VTPixelRotationSessionInvalidate(session: &mut Session);

@@ -22,7 +22,7 @@ impl arc::A<Reader> {
     pub fn init_with_assert_err<'ar>(
         self,
         asset: &av::Asset,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Reader>>;
 }
 

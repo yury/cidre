@@ -156,7 +156,7 @@ impl SampleBuf {
         sample_timing_array: *const SampleTimingInfo,
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
-        sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
+        sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
     ) -> os::Status {
         CMSampleBufferCreate(
             allocator,
@@ -561,7 +561,7 @@ extern "C" {
         sample_timing_array: *const SampleTimingInfo,
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
-        sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
+        sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
     ) -> crate::os::Status;
 
     #[cfg(feature = "cv")]
@@ -573,7 +573,7 @@ extern "C" {
         make_data_ready_refcon: *const c_void,
         format_description: &cm::VideoFormatDesc,
         sample_timing: &SampleTimingInfo,
-        sample_buffer_out: &mut Option<arc::R<SampleBuf>>,
+        sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
     ) -> crate::os::Status;
 
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuf) -> bool;
@@ -632,7 +632,7 @@ extern "C" {
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,
         flags: Flags,
-        block_buffer_out: &mut Option<arc::R<cm::BlockBuf>>,
+        block_buffer_out: *mut Option<arc::R<cm::BlockBuf>>,
     ) -> os::Status;
 
     fn CMSampleBufferGetNumSamples(sbuf: &SampleBuf) -> cf::Index;

@@ -406,7 +406,7 @@ extern "C" {
         device: &Device,
         service_name: &cf::String,
         ssl: *mut c_void,
-        service: &mut Option<arc::R<ServiceConnection>>,
+        service: *mut Option<arc::R<ServiceConnection>>,
     ) -> Error;
 
     fn AMDeviceCopyValueWithError(

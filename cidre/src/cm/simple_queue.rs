@@ -105,7 +105,7 @@ extern "C" {
     fn CMSimpleQueueCreate(
         allocator: Option<&cf::Allocator>,
         capacity: i32,
-        queue_out: &mut Option<arc::R<SimpleQueue>>,
+        queue_out: *mut Option<arc::R<SimpleQueue>>,
     ) -> os::Status;
 
     fn CMSimpleQueueGetCount(queue: &SimpleQueue) -> i32;

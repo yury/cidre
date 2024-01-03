@@ -9,7 +9,7 @@ impl TextureCache {
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-        cache_out: &mut Option<arc::R<TextureCache>>,
+        cache_out: *mut Option<arc::R<TextureCache>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVMetalTextureCacheCreate(
@@ -51,7 +51,7 @@ impl TextureCache {
         width: usize,
         height: usize,
         plane_index: usize,
-        texture_out: &mut Option<arc::R<cv::MetalTexture>>,
+        texture_out: *mut Option<arc::R<cv::MetalTexture>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVMetalTextureCacheCreateTextureFromImage(
@@ -111,7 +111,7 @@ extern "C" {
         cache_attributes: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
         texture_attributes: Option<&cf::Dictionary>,
-        cache_out: &mut Option<arc::R<TextureCache>>,
+        cache_out: *mut Option<arc::R<TextureCache>>,
     ) -> cv::Return;
 
     fn CVMetalTextureCacheCreateTextureFromImage(
@@ -123,7 +123,7 @@ extern "C" {
         width: usize,
         height: usize,
         plane_index: usize,
-        texture_out: &mut Option<arc::R<cv::MetalTexture>>,
+        texture_out: *mut Option<arc::R<cv::MetalTexture>>,
     ) -> cv::Return;
 
     fn CVMetalTextureCacheFlush(texture_cache: &TextureCache, options: usize);

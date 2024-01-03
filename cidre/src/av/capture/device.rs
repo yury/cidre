@@ -148,7 +148,7 @@ impl Device {
     }
 
     #[objc::msg_send(lockForConfiguration:)]
-    pub unsafe fn lock_for_config(&mut self, error: &mut Option<arc::R<ns::Error>>) -> bool;
+    pub unsafe fn lock_for_config(&mut self, error: *mut Option<arc::R<ns::Error>>) -> bool;
 
     #[objc::msg_send(unlockForConfiguration)]
     pub unsafe fn unlock_for_config(&mut self);

@@ -217,7 +217,7 @@ impl FeaturePrintObservation {
         &self,
         distance: &mut f32,
         to: &FeaturePrintObservation,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
     /// Computes the distance between two feature print observations.

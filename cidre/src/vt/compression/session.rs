@@ -59,7 +59,7 @@ impl Session {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: &mut Option<arc::R<Session>>,
+        compression_session_out: *mut Option<arc::R<Session>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Status {
         VTCompressionSessionCreate(
@@ -111,7 +111,7 @@ impl Session {
         duration: cm::Time,
         frame_properties: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
         source_frame_ref_con: *mut c_void,
-        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Status {
         unsafe {
             VTCompressionSessionEncodeFrame(
@@ -132,7 +132,7 @@ impl Session {
         image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
-        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> Result<(), os::Status> {
         unsafe {
             self.encode_frame(
@@ -156,7 +156,7 @@ impl Session {
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
-        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: &'static mut blocks::BlMut<
             impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>),
         >,
@@ -183,7 +183,7 @@ impl Session {
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
-        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: &'static mut blocks::Block<
             impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&'a cm::SampleBuf>),
         >,
@@ -240,7 +240,7 @@ extern "C" {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: &mut Option<arc::R<Session>>,
+        compression_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status;
 
     fn VTCompressionSessionInvalidate(session: &mut Session);
@@ -252,7 +252,7 @@ extern "C" {
         duration: cm::Time,
         frame_properties: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
         source_frame_ref_con: *mut c_void,
-        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Status;
 
     #[cfg(feature = "blocks")]
@@ -262,7 +262,7 @@ extern "C" {
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
-        info_flags_out: &mut Option<NonNull<vt::EncodeInfoFlags>>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
         output_handler: *mut c_void,
     ) -> os::Status;
 

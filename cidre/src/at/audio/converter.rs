@@ -451,7 +451,7 @@ impl ConverterRef {
     pub unsafe fn new(
         src_format: &audio::StreamBasicDesc,
         dst_format: &audio::StreamBasicDesc,
-        out_audio_converer: &mut Option<Self>,
+        out_audio_converer: *mut Option<Self>,
     ) -> os::Status {
         AudioConverterNew(src_format, dst_format, out_audio_converer)
     }
@@ -798,7 +798,7 @@ extern "C" {
     fn AudioConverterNew(
         in_source_format: &audio::StreamBasicDesc,
         in_destination_format: &audio::StreamBasicDesc,
-        out_audio_converer: &mut Option<ConverterRef>,
+        out_audio_converer: *mut Option<ConverterRef>,
     ) -> os::Status;
 
     fn AudioConverterReset(converter: &Converter) -> os::Status;
