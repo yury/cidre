@@ -1,5 +1,4 @@
 use std::{
-    ffi::c_void,
     marker::PhantomData,
     mem::{transmute, MaybeUninit},
     ops::{Deref, Index, IndexMut},
@@ -51,11 +50,7 @@ impl<T: Obj> arc::A<Array<T>> {
     pub fn init(self) -> arc::R<Array<T>>;
 
     #[objc::msg_send(initWithObjects:count:)]
-    pub unsafe fn init_with_objects_count(
-        self,
-        ptr: *const c_void,
-        count: usize,
-    ) -> arc::R<Array<T>>;
+    pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<Array<T>>;
 }
 
 impl<T: Obj> Array<T> {
@@ -75,7 +70,12 @@ impl<T: Obj> Array<T> {
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        unsafe { Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len()) }
+        unsafe { Self::alloc().init_with_objs(objs.as_ptr(), objs.len()) }
+    }
+
+    #[inline]
+    pub fn from_slice_retained(objs: &[arc::R<T>]) -> arc::R<Self> {
+        unsafe { Self::alloc().init_with_objs(objs.as_ptr() as _, objs.len()) }
     }
 
     #[objc::msg_send(containsObject:)]
@@ -133,11 +133,7 @@ impl<T: Obj> arc::A<ArrayMut<T>> {
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<ArrayMut<T>>;
 
     #[objc::msg_send(initWithObjects:count:)]
-    pub unsafe fn init_with_objects_count(
-        &self,
-        ptr: *const c_void,
-        count: usize,
-    ) -> arc::R<ArrayMut<T>>;
+    pub unsafe fn init_with_objs(&self, ptr: *const &T, count: usize) -> arc::R<ArrayMut<T>>;
 }
 
 impl<T: Obj> ArrayMut<T> {
@@ -150,8 +146,14 @@ impl<T: Obj> ArrayMut<T> {
 
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
-        unsafe { Self::alloc().init_with_objects_count(objs.as_ptr() as _, objs.len()) }
+        unsafe { Self::alloc().init_with_objs(objs.as_ptr(), objs.len()) }
     }
+
+    #[inline]
+    pub fn from_slice_retained(objs: &[arc::R<T>]) -> arc::R<Self> {
+        unsafe { Self::alloc().init_with_objs(objs.as_ptr() as _, objs.len()) }
+    }
+
     #[objc::msg_send(addObject:)]
     pub fn push(&mut self, obj: &T);
 
@@ -193,13 +195,19 @@ impl<T: Obj> From<&[&T]> for arc::R<Array<T>> {
     }
 }
 
+impl<T: Obj> From<&[arc::R<T>]> for arc::R<Array<T>> {
+    fn from(value: &[arc::R<T>]) -> Self {
+        Array::from_slice_retained(value)
+    }
+}
+
 impl From<&[&str]> for arc::R<Array<ns::String>> {
     fn from(value: &[&str]) -> Self {
         let mut values = Vec::with_capacity(value.len());
         for v in value.iter() {
             values.push(ns::String::with_str(v));
         }
-        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+        ns::Array::from_slice_retained(&values[..])
     }
 }
 
@@ -269,7 +277,7 @@ impl From<&[i64]> for arc::R<ns::Array<ns::Number>> {
         for v in value.iter() {
             values.push(ns::Number::with_i64(*v));
         }
-        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+        ns::Array::from_slice_retained(&values[..])
     }
 }
 
@@ -279,7 +287,7 @@ impl From<&[u64]> for arc::R<ns::Array<ns::Number>> {
         for v in value.iter() {
             values.push(ns::Number::with_u64(*v));
         }
-        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+        ns::Array::from_slice_retained(&values[..])
     }
 }
 
@@ -289,7 +297,7 @@ impl From<&[f32]> for arc::R<ns::Array<ns::Number>> {
         for v in value.iter() {
             values.push(ns::Number::with_f32(*v));
         }
-        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+        ns::Array::from_slice_retained(&values[..])
     }
 }
 
@@ -299,7 +307,7 @@ impl From<&[f64]> for arc::R<ns::Array<ns::Number>> {
         for v in value.iter() {
             values.push(ns::Number::with_f64(*v));
         }
-        ns::Array::from_slice(unsafe { std::mem::transmute(&values[..]) })
+        ns::Array::from_slice_retained(&values[..])
     }
 }
 
