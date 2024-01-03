@@ -23,7 +23,7 @@ mod tensor;
 pub use tensor::Tensor;
 
 mod operation;
-pub use operation::Operation;
+pub use operation::Op;
 
 mod memory_ops;
 pub use memory_ops::VariableOp;

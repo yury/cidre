@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_obj_type, mps, mps::graph, ns, objc};
 
-define_obj_type!(pub VariableOp(graph::Operation));
+define_obj_type!(pub VariableOp(graph::Op));
 
 impl VariableOp {
     #[objc::msg_send(shape)]
@@ -80,13 +80,13 @@ mod tests {
         assert_eq!(1, tensor.as_type_ref().retain_count());
         // this will crash, since we released graph. Same crash will be in Swift too.
         // We may add lifetime to tensor
-        // assert_eq!("mps_placeholder", tensor.operation().name().to_string());
+        // assert_eq!("mps_placeholder", tensor.op().name().to_string());
     }
     #[test]
     pub fn basics() {
         let gr = graph::Graph::new();
         let tensor = gr.placeholder_with_shape(None, mps::DataType::F32, None);
-        assert_eq!("mps_placeholder", tensor.operation().name().to_string());
+        assert_eq!("mps_placeholder", tensor.op().name().to_string());
         assert!(tensor.shape().is_none());
     }
 }

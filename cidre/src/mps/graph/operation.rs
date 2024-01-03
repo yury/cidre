@@ -1,8 +1,11 @@
 use crate::{define_obj_type, mps::graph, ns, objc};
 
-define_obj_type!(pub Operation(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MPSGraphOperation")]
+    pub Op(ns::Id)
+);
 
-impl Operation {
+impl Op {
     #[objc::msg_send(inputTensors)]
     pub fn input_tensors(&self) -> &ns::Array<graph::Tensor>;
 

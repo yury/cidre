@@ -9,5 +9,5 @@ impl Tensor {
     pub fn data_type(&self) -> mps::DataType;
 
     #[objc::msg_send(operation)]
-    pub fn operation(&self) -> &graph::Operation;
+    pub fn op(&self) -> &graph::Op;
 }
