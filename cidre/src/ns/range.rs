@@ -1,26 +1,22 @@
-use crate::{
-    arc,
-    ns::{self, UInteger},
-    objc,
-};
+use crate::{arc, ns, objc};
 
 #[doc(alias = "NSRange")]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
 pub struct Range {
-    pub loc: UInteger,
-    pub len: UInteger,
+    pub loc: ns::UInteger,
+    pub len: ns::UInteger,
 }
 
 impl Range {
     #[inline]
-    pub fn new(loc: UInteger, len: UInteger) -> Self {
+    pub fn new(loc: ns::UInteger, len: ns::UInteger) -> Self {
         Self { loc, len }
     }
 
     #[doc(alias = "NSMaxRange")]
     #[inline]
-    pub fn max(&self) -> UInteger {
+    pub fn max(&self) -> ns::UInteger {
         self.loc + self.len
     }
 
@@ -45,12 +41,12 @@ impl Range {
     /// ```
     /// use cidre::{ns};
     /// let a = ns::Range::new(0, 10);
-    /// assert!(ns::Range::location_in_range(1, &a));
-    /// assert!(!ns::Range::location_in_range(10, &a));
+    /// assert!(ns::Range::loc_in_range(1, &a));
+    /// assert!(!ns::Range::loc_in_range(10, &a));
     /// ```
     #[doc(alias = "NSLocationInRange")]
     #[inline]
-    pub fn location_in_range(location: UInteger, range: &Self) -> bool {
+    pub fn loc_in_range(location: ns::UInteger, range: &Self) -> bool {
         location >= range.loc && (location - range.loc) < range.len
     }
 
@@ -62,8 +58,8 @@ impl Range {
     /// assert!(!a.contains(10));
     /// ```
     #[inline]
-    pub fn contains(&self, location: UInteger) -> bool {
-        Range::location_in_range(location, self)
+    pub fn contains(&self, location: ns::UInteger) -> bool {
+        Range::loc_in_range(location, self)
     }
 }
 
