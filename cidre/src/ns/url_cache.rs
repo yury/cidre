@@ -1,18 +1,22 @@
-use crate::{
-    arc, define_cls, define_obj_type, ns,
-    objc::{self, Class},
-};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(usize)]
 pub enum StoragePolicy {
     Allowed,
-    InMemoryOnly,
+    InMemOnly,
     NotAllowed,
 }
 
-define_obj_type!(pub CachedUrlResponse(ns::Id));
-define_obj_type!(pub UrlCache(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSCachedURLResponse")]
+    pub CachedUrlResponse(ns::Id)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSURLCache")]
+    pub UrlCache(ns::Id)
+);
 
 impl arc::A<UrlCache> {
     #[objc::msg_send(initWithMemoryCapacity:diskCapacity:directoryURL:)]
@@ -31,10 +35,10 @@ impl UrlCache {
     ///
     /// let cache = ns::UrlCache::shared();
     ///
-    /// assert_eq!(512_000, cache.memory_capacity());
+    /// assert_eq!(512_000, cache.mem_capacity());
     /// assert_eq!(20_000_000, cache.disk_capacity());
     ///
-    /// assert_eq!(0, cache.current_memory_usage());
+    /// assert_eq!(0, cache.current_mem_usage());
     ///
     /// ```
     #[objc::cls_msg_send(sharedURLCache)]
@@ -49,10 +53,10 @@ impl UrlCache {
     }
 
     #[objc::msg_send(memoryCapacity)]
-    pub fn memory_capacity(&self) -> usize;
+    pub fn mem_capacity(&self) -> usize;
 
     #[objc::msg_send(setMemoryCapacity:)]
-    pub fn set_memory_capacity(&self, value: usize);
+    pub fn set_mem_capacity(&self, value: usize);
 
     #[objc::msg_send(diskCapacity)]
     pub fn disk_capacity(&self) -> usize;
@@ -61,7 +65,7 @@ impl UrlCache {
     pub fn set_disk_capacity(&self, value: usize);
 
     #[objc::msg_send(currentMemoryUsage)]
-    pub fn current_memory_usage(&self) -> usize;
+    pub fn current_mem_usage(&self) -> usize;
 
     #[objc::msg_send(currentDiskUsage)]
     pub fn current_disk_usage(&self) -> usize;
@@ -69,7 +73,7 @@ impl UrlCache {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_URL_CACHE: &'static Class<UrlCache>;
+    static NS_URL_CACHE: &'static objc::Class<UrlCache>;
 }
 
 #[cfg(test)]
@@ -80,9 +84,9 @@ mod tests {
     fn basics() {
         let cache = ns::UrlCache::shared();
 
-        assert_eq!(512_000, cache.memory_capacity());
+        assert_eq!(512_000, cache.mem_capacity());
         assert_eq!(20_000_000, cache.disk_capacity());
 
-        assert_eq!(0, cache.current_memory_usage());
+        assert_eq!(0, cache.current_mem_usage());
     }
 }
