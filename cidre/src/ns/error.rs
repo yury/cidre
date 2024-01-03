@@ -18,6 +18,18 @@ where
     }
 }
 
+pub fn if_none<'ear, F, R>(f: F) -> Result<R, &'ear ns::Error>
+where
+    F: FnOnce(*mut Option<&'ear ns::Error>) -> Option<R>,
+{
+    let mut err = None;
+    if let Some(r) = f(&mut err) {
+        Ok(r)
+    } else {
+        unsafe { Err(err.unwrap_unchecked()) }
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "NSError")]
     pub Error(ns::Id)
@@ -51,14 +63,17 @@ impl Error {
         Self::alloc().init_with_domain(domain, code, user_info)
     }
 
-    // Toll-Free Bridged
+    /// Toll-Free Bridged
     #[inline]
     pub fn as_cf(&self) -> &cf::Error {
         unsafe { std::mem::transmute(self) }
     }
 }
 
-define_obj_type!(pub Domain(ns::String));
+define_obj_type!(
+    #[doc(alias = "NSErrorDomain")]
+    pub Domain(ns::String)
+);
 
 impl Domain {
     #[inline]

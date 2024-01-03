@@ -98,7 +98,7 @@ impl arc::A<Regex> {
         self,
         pattern: &ns::String,
         options: Opts,
-        error: &mut Option<&'ear ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Regex>>;
 }
 
@@ -110,14 +110,7 @@ impl Regex {
         pattern: &ns::String,
         options: Opts,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res = Self::alloc().init_with_pattern_opts_err(pattern, options, &mut error);
-            match res {
-                Some(res) => Ok(res),
-                None => Err(error.unwrap_unchecked()),
-            }
-        }
+        ns::if_none(|err| Self::alloc().init_with_pattern_opts_err(pattern, options, err))
     }
 }
 

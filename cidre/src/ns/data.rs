@@ -79,14 +79,7 @@ impl Data {
         path: &ns::String,
         options: ReadOpts,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        unsafe {
-            let mut error = None;
-            let res = Self::alloc().init_with_contents_of_file_opts_err(path, options, &mut error);
-            match res {
-                Some(r) => Ok(r),
-                None => Err(error.unwrap_unchecked()),
-            }
-        }
+        ns::if_none(|err| Self::alloc().init_with_contents_of_file_opts_err(path, options, err))
     }
 
     #[inline]
@@ -94,14 +87,7 @@ impl Data {
         url: &ns::Url,
         options: ReadOpts,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        unsafe {
-            let mut error = None;
-            let res = Self::alloc().init_with_contents_of_url_opts_err(url, options, &mut error);
-            match res {
-                Some(r) => Ok(r),
-                None => Err(error.unwrap_unchecked()),
-            }
-        }
+        ns::if_none(|err| Self::alloc().init_with_contents_of_url_opts_err(url, options, err))
     }
 
     #[objc::msg_send(bytes)]
