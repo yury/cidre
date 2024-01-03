@@ -3,9 +3,11 @@ use crate::{arc, define_cls, define_obj_type, dispatch, ns, objc};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-use super::KVObserverRegistration;
+define_obj_type!(
+    #[doc(alias = "NSOperation")]
+    pub Op(ns::Id)
+);
 
-define_obj_type!(pub Op(ns::Id));
 impl Op {
     define_cls!(NS_OPERATION);
 
@@ -16,7 +18,11 @@ impl Op {
     pub fn cancel(&mut self);
 }
 
-define_obj_type!(pub BlockOp(Op));
+define_obj_type!(
+    #[doc(alias = "NSBlockOperation")]
+    pub BlockOp(Op)
+);
+
 impl BlockOp {
     define_cls!(NS_BLOCK_OPERATION);
 
@@ -33,12 +39,15 @@ impl BlockOp {
         F: FnOnce();
 }
 
-impl KVObserverRegistration for Op {}
-impl KVObserverRegistration for BlockOp {}
+impl ns::KVObserverRegistration for Op {}
+impl ns::KVObserverRegistration for BlockOp {}
 
-define_obj_type!(pub OpQueue(ns::Id), NS_OPERATION_QUEUE);
+define_obj_type!(
+    #[doc(alias = "NSOperationQueue")]
+    pub OpQueue(ns::Id), NS_OPERATION_QUEUE
+);
 
-impl KVObserverRegistration for OpQueue {}
+impl ns::KVObserverRegistration for OpQueue {}
 
 impl OpQueue {
     #[objc::msg_send(name)]

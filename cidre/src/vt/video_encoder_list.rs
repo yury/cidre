@@ -1,11 +1,8 @@
 use crate::{arc, cf, os};
 
 pub fn copy() -> Result<arc::R<cf::ArrayOf<cf::Dictionary>>, os::Status> {
-    unsafe {
-        let mut list_of_video_encoders_out = None;
-        VTCopyVideoEncoderList(None, &mut list_of_video_encoders_out)
-            .to_result_unchecked(list_of_video_encoders_out)
-    }
+    let mut list_out = None;
+    unsafe { VTCopyVideoEncoderList(None, &mut list_out).to_result_unchecked(list_out) }
 }
 
 extern "C" {
@@ -21,6 +18,8 @@ mod tests {
 
     #[test]
     fn copy() {
-        super::copy().expect("list").show()
+        super::copy()
+            .expect("failed to copy list of encoders")
+            .show()
     }
 }

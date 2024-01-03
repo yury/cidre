@@ -45,7 +45,7 @@ impl ServiceConnection {
             if res >= 0 {
                 Ok(res as _)
             } else {
-                println!("recv: {0}", res);
+                eprintln!("recv: {0}", res);
                 Err(RecvError)
             }
         }
