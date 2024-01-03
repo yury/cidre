@@ -204,7 +204,7 @@ impl<T: Obj> From<&[arc::R<T>]> for arc::R<Array<T>> {
 impl From<&[&str]> for arc::R<Array<ns::String>> {
     fn from(value: &[&str]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::String::with_str(v));
         }
         ns::Array::from_slice_retained(&values[..])
@@ -214,7 +214,7 @@ impl From<&[&str]> for arc::R<Array<ns::String>> {
 impl From<&[i8]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[i8]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::tagged_i8(*v));
         }
         ns::Array::from_slice(&values)
@@ -224,7 +224,7 @@ impl From<&[i8]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[u8]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[u8]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::tagged_u8(*v));
         }
         ns::Array::from_slice(&values)
@@ -234,7 +234,7 @@ impl From<&[u8]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[i16]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[i16]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::tagged_i16(*v));
         }
         ns::Array::from_slice(&values)
@@ -244,7 +244,7 @@ impl From<&[i16]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[u16]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[u16]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::tagged_u16(*v));
         }
         ns::Array::from_slice(&values)
@@ -254,7 +254,7 @@ impl From<&[u16]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[i32]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[i32]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::tagged_i32(*v));
         }
         ns::Array::from_slice(&values)
@@ -264,7 +264,7 @@ impl From<&[i32]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[u32]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[u32]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::tagged_u32(*v));
         }
         ns::Array::from_slice(&values)
@@ -274,7 +274,7 @@ impl From<&[u32]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[i64]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[i64]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::with_i64(*v));
         }
         ns::Array::from_slice_retained(&values[..])
@@ -284,7 +284,7 @@ impl From<&[i64]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[u64]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[u64]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::with_u64(*v));
         }
         ns::Array::from_slice_retained(&values[..])
@@ -294,7 +294,7 @@ impl From<&[u64]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[f32]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[f32]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::with_f32(*v));
         }
         ns::Array::from_slice_retained(&values[..])
@@ -304,7 +304,7 @@ impl From<&[f32]> for arc::R<ns::Array<ns::Number>> {
 impl From<&[f64]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[f64]) -> Self {
         let mut values = Vec::with_capacity(value.len());
-        for v in value.iter() {
+        for v in value {
             values.push(ns::Number::with_f64(*v));
         }
         ns::Array::from_slice_retained(&values[..])
