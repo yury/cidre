@@ -24,8 +24,15 @@ pub enum Encoding {
     MacOSRoman = 30,
 }
 
-define_obj_type!(pub String(ns::Id), NS_STRING);
-define_obj_type!(pub StringMut(String), NS_MUTABLE_STRING);
+define_obj_type!(
+    #[doc(alias = "NSString")]
+    pub String(ns::Id), NS_STRING
+);
+
+define_obj_type!(
+    #[doc(alias = "NSMutableString")]
+    pub StringMut(String), NS_MUTABLE_STRING
+);
 
 impl arc::A<String> {
     #[objc::msg_send(initWithBytes:length:encoding:)]
@@ -250,10 +257,7 @@ impl fmt::Display for String {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        ns::{self, try_catch},
-        objc::ar_pool,
-    };
+    use crate::{ns, objc::ar_pool};
 
     #[test]
     fn basics() {
@@ -282,7 +286,7 @@ mod tests {
             // let sub = &s[3..4];
             // assert_eq!(sub.to_i32(), 5);
 
-            let r = try_catch(|| s.substring(1..10));
+            let r = ns::try_catch(|| s.substring(1..10));
             assert!(r.is_err());
 
             let _l = s.lowercased();

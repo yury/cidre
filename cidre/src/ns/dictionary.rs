@@ -1,11 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::{
-    arc, define_cls, ns,
-    objc::{self, Obj},
-};
-
-use super::Class;
+use crate::{arc, define_cls, ns, objc, objc::Obj};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -142,8 +137,8 @@ impl<K: Obj, V: Obj> DictionaryMut<K, V> {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_DICTIONARY: &'static Class<Dictionary<ns::Id, ns::Id>>;
-    static NS_MUTABLE_DICTIONARY: &'static Class<DictionaryMut<ns::Id, ns::Id>>;
+    static NS_DICTIONARY: &'static ns::Class<Dictionary<ns::Id, ns::Id>>;
+    static NS_MUTABLE_DICTIONARY: &'static ns::Class<DictionaryMut<ns::Id, ns::Id>>;
 }
 
 #[cfg(test)]
