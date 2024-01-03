@@ -7,6 +7,14 @@ define_obj_type!(
 
 unsafe impl Send for Uuid {}
 
+impl Uuid {
+    #[objc::msg_send(UUIDString)]
+    fn string_ar(&self) -> arc::Rar<ns::String>;
+
+    #[objc::rar_retain]
+    fn string(&self) -> arc::R<ns::String>;
+}
+
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_UUID: &'static objc::Class<Uuid>;
@@ -18,6 +26,9 @@ mod tests {
 
     #[test]
     fn basics() {
-        let _uuid = ns::Uuid::new();
+        let uuid = ns::Uuid::new();
+
+        let string = uuid.string();
+        assert!(!string.is_empty());
     }
 }
