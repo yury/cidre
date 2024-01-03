@@ -1,13 +1,18 @@
-use std::ffi::c_void;
-
 use crate::{arc, cf, define_obj_type, mach, ns, objc};
 
-define_obj_type!(pub Port(ns::Id), NS_PORT);
-define_obj_type!(pub MachPort(Port), NS_MACH_PORT);
+define_obj_type!(
+    #[doc(alias = "NSPort")]
+    pub Port(ns::Id), NS_PORT
+);
+
+define_obj_type!(
+    #[doc(alias = "NSMachPort")]
+    pub MachPort(Port), NS_MACH_PORT
+);
 
 impl Port {
     #[objc::msg_send(invalidate)]
-    pub fn invalidate(&self);
+    pub fn invalidate(&mut self);
 
     #[objc::msg_send(isValid)]
     pub fn is_valid(&self) -> bool;
@@ -24,7 +29,7 @@ impl MachPort {
     pub fn remove_from_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
 
     #[objc::msg_send(setDelegate:)]
-    fn set_delegate<D: MachPortDelegate>(&self, delegate: Option<&D>);
+    fn set_delegate<D: MachPortDelegate>(&mut self, delegate: Option<&D>);
 
     #[objc::msg_send(delegate)]
     fn delegate(&self) -> Option<&objc::Any>;
@@ -34,7 +39,7 @@ impl MachPort {
 pub trait MachPortDelegate {
     #[objc::optional]
     #[objc::msg_send(handleMachMessage:)]
-    fn handle_mach_message(&mut self, msg: *mut c_void);
+    fn handle_mach_message(&mut self, msg: *mut std::ffi::c_void);
 }
 
 impl MachPortDelegate for objc::Any {}
@@ -51,7 +56,7 @@ mod tests {
 
     #[test]
     fn create() {
-        let mach = ns::MachPort::new();
+        let mut mach = ns::MachPort::new();
         let port = mach.mach_port();
         assert_ne!(port.0, 0);
         assert!(mach.is_valid());
