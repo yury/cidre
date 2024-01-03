@@ -239,15 +239,7 @@ impl Lib {
         name: &ns::String,
         constant_values: &mtl::FnConstValues,
     ) -> Result<arc::R<Fn>, &'ar ns::Error> {
-        let mut error = None;
-
-        if let Some(func) =
-            unsafe { Self::new_fn_with_consts_err(self, name, constant_values, &mut error) }
-        {
-            Ok(func)
-        } else {
-            Err(error.unwrap())
-        }
+        ns::if_none(|err| unsafe { Self::new_fn_with_consts_err(self, name, constant_values, err) })
     }
 
     #[objc::msg_send(newFunctionWithName:descriptor:error:)]
@@ -255,7 +247,7 @@ impl Lib {
         &self,
         name: &ns::String,
         descriptor: &mtl::FnDesc,
-        error: &mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
     pub fn new_fn_with_desc<'ar>(
@@ -263,15 +255,7 @@ impl Lib {
         name: &ns::String,
         descriptor: &mtl::FnDesc,
     ) -> Result<arc::R<Fn>, &'ar ns::Error> {
-        let mut error = None;
-
-        if let Some(func) =
-            unsafe { Self::new_fn_with_desc_err(self, name, descriptor, &mut error) }
-        {
-            Ok(func)
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
-        }
+        ns::if_none(|err| unsafe { Self::new_fn_with_desc_err(self, name, descriptor, err) })
     }
 
     #[objc::msg_send(type)]

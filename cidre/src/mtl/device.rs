@@ -141,14 +141,7 @@ impl Device {
         source: &ns::String,
         options: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<Lib>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if let Some(lib) = Self::new_lib_with_src_err(self, source, options, &mut error) {
-                Ok(lib)
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_none(|err| unsafe { Self::new_lib_with_src_err(self, source, options, err) })
     }
 
     pub async fn new_lib_with_src_opts(
@@ -189,14 +182,7 @@ impl Device {
         &self,
         descriptor: &mtl::RenderPipelineDesc,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if let Some(res) = Self::new_render_ps_err(self, descriptor, &mut error) {
-                Ok(res)
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_none(|err| unsafe { Self::new_render_ps_err(self, descriptor, err) })
     }
 
     #[inline]
@@ -204,15 +190,7 @@ impl Device {
         &self,
         function: &mtl::Fn,
     ) -> Result<arc::R<mtl::ComputePipelineState>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res = self.new_compute_ps_with_fn_err(function, &mut error);
-            if res.is_some() {
-                Ok(res.unwrap_unchecked())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_none(|err| unsafe { self.new_compute_ps_with_fn_err(function, err) })
     }
 
     #[objc::msg_send(newRenderPipelineStateWithTileDescriptor:options:reflection:error:)]
@@ -229,16 +207,9 @@ impl Device {
         desc: &mtl::TileRenderPipelineDesc,
         options: mtl::PipelineOption,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if let Some(res) =
-                self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), &mut error)
-            {
-                Ok(res)
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_none(|err| unsafe {
+            self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), err)
+        })
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
