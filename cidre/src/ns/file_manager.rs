@@ -83,15 +83,9 @@ impl FileManager {
         including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
         options: DirEnumOpts,
     ) -> Result<arc::R<ns::Array<ns::Url>>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res =
-                self.contents_of_dir_at_url_err(url, including_props_for_keys, options, &mut error);
-            if res.is_none() {
-                return Err(error.unwrap_unchecked());
-            }
-            Ok(res.unwrap_unchecked())
-        }
+        ns::if_none(|err| unsafe {
+            self.contents_of_dir_at_url_err(url, including_props_for_keys, options, err)
+        })
     }
 
     #[objc::msg_send(URLForDirectory:inDomain:appropriateForURL:create:error:)]
@@ -178,14 +172,9 @@ impl FileManager {
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.create_dir_at_path_err(path, create_intermediates, attributes, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe {
+            self.create_dir_at_path_err(path, create_intermediates, attributes, err)
+        })
     }
 
     #[objc::msg_send(removeItemAtPath:error:)]
@@ -197,14 +186,7 @@ impl FileManager {
 
     #[inline]
     pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> Result<(), &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.remove_item_at_path_err(path, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.remove_item_at_path_err(path, err) })
     }
 
     #[objc::msg_send(currentDirectoryPath)]
@@ -247,14 +229,9 @@ impl FileManager {
         item_at_url: &ns::Url,
         dest_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.set_ubiquitous_item_err(value, item_at_url, dest_url, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe {
+            self.set_ubiquitous_item_err(value, item_at_url, dest_url, err)
+        })
     }
 
     #[objc::msg_send(isUbiquitousItemAtURL:)]
@@ -271,12 +248,7 @@ impl FileManager {
         &mut self,
         item_at_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
-        let mut error = None;
-        if self.start_downloading_ubquitous_item_err(item_at_url, &mut error) {
-            Ok(())
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
-        }
+        ns::if_false(|err| self.start_downloading_ubquitous_item_err(item_at_url, err))
     }
 
     #[objc::msg_send(evictUbiquitousItemAtURL:error:)]
@@ -291,12 +263,7 @@ impl FileManager {
         &mut self,
         item_at_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
-        let mut error = None;
-        if self.evict_ubiquitous_item_err(item_at_url, &mut error) {
-            Ok(())
-        } else {
-            Err(unsafe { error.unwrap_unchecked() })
-        }
+        ns::if_false(|err| self.evict_ubiquitous_item_err(item_at_url, err))
     }
 }
 

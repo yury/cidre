@@ -82,6 +82,7 @@ mod tests {
         // We may add lifetime to tensor
         // assert_eq!("mps_placeholder", tensor.op().name().to_string());
     }
+
     #[test]
     pub fn basics() {
         let gr = graph::Graph::new();
