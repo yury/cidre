@@ -19,15 +19,18 @@ pub enum Status {
     Cancelled = 4,
 }
 
-define_obj_type!(pub Writer(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAssetWriter")]
+    pub Writer(ns::Id)
+);
 
 impl arc::A<Writer> {
     #[objc::msg_send(initWithURL:fileType:error:)]
-    pub fn init_with_url_file_type_err<'ar>(
+    pub fn init_with_url_file_type_err<'ear>(
         self,
         url: &ns::Url,
         file_type: &av::FileType,
-        error: *mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Writer>>;
 
     #[objc::msg_send(initWithContentType:)]
@@ -153,7 +156,7 @@ impl Writer {
 
     /// Closes the current segment and outputs it to the -assetWriter:didOutputSegmentData:segmentType:segmentReport:
     /// or -assetWriter:didOutputSegmentData:segmentType: delegate method.
-    pub fn flush_segment<'ar>(&mut self) -> Result<(), &'ar ns::Exception> {
+    pub fn flush_segment<'ear>(&mut self) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.flush_segment_throws() })
     }
 }

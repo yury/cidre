@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::sys::_types::TimeSpec;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -19,12 +17,12 @@ impl Time {
     }
 
     #[inline]
-    pub fn when(when: Time, delta: Duration) -> Time {
+    pub fn when(when: Time, delta: std::time::Duration) -> Time {
         unsafe { dispatch_time(when, delta.as_nanos() as _) }
     }
 
     #[inline]
-    pub fn with_delta(delta: Duration) -> Time {
+    pub fn with_delta(delta: std::time::Duration) -> Time {
         unsafe { dispatch_time(Time::NOW, delta.as_nanos() as _) }
     }
 }
@@ -49,7 +47,7 @@ impl WallTime {
     }
 
     #[inline]
-    pub fn with_delta(delta: Duration) -> WallTime {
+    pub fn with_delta(delta: std::time::Duration) -> WallTime {
         unsafe { dispatch_walltime(std::ptr::null(), delta.as_nanos() as _) }
     }
 

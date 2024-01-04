@@ -15,28 +15,36 @@ impl Drop for SignalGuard {
     }
 }
 
-define_obj_type!(pub Semaphore(dispatch::Object));
+define_obj_type!(
+    #[doc(alias = "dispatch_semaphore_t")]
+    #[doc(alias = "DispatchSemaphore")]
+    pub Semaphore(dispatch::Object)
+);
 
 unsafe impl Send for Semaphore {}
 unsafe impl Sync for Semaphore {}
 
 impl Semaphore {
+    #[doc(alias = "dispatch_semaphore_create")]
     #[inline]
-    pub fn new(value: isize) -> arc::R<Semaphore> {
+    pub fn new(value: isize) -> arc::R<Self> {
         debug_assert!(value >= 0);
         unsafe { dispatch_semaphore_create(value) }
     }
 
+    #[doc(alias = "dispatch_semaphore_wait")]
     #[inline]
-    pub fn wait(&self, timeout: super::Time) -> isize {
+    pub fn wait(&self, timeout: dispatch::Time) -> isize {
         unsafe { dispatch_semaphore_wait(self, timeout) }
     }
 
+    #[doc(alias = "dispatch_semaphore_wait")]
     #[inline]
     pub fn wait_forever(&self) -> isize {
-        unsafe { dispatch_semaphore_wait(self, super::Time::DISTANT_FUTURE) }
+        unsafe { dispatch_semaphore_wait(self, dispatch::Time::DISTANT_FUTURE) }
     }
 
+    #[doc(alias = "dispatch_semaphore_signal")]
     #[inline]
     pub fn signal(&self) -> isize {
         unsafe { dispatch_semaphore_signal(self) }
@@ -53,6 +61,6 @@ impl Semaphore {
 #[link(name = "System", kind = "dylib")]
 extern "C" {
     fn dispatch_semaphore_create(value: isize) -> arc::R<Semaphore>;
-    fn dispatch_semaphore_wait(sema: &Semaphore, timeout: super::Time) -> isize;
+    fn dispatch_semaphore_wait(sema: &Semaphore, timeout: dispatch::Time) -> isize;
     fn dispatch_semaphore_signal(sema: &Semaphore) -> isize;
 }
