@@ -4,13 +4,13 @@ use super::Output;
 
 // #[doc(alias = "AVCaptureMetadataOutputObjectsDelegate")]
 #[objc::obj_trait]
-pub trait MetadataOutputObjectsDelegate {
+pub trait MetadataOutputObjsDelegate {
     #[objc::optional]
     #[objc::msg_send(captureOutput:didOutputMetadataObjects:fromConnection:)]
     fn capture_output_did_output_metadata_objs_from_connections(
         &mut self,
         output: &mut Output,
-        objects: &ns::Array<av::MetadataObject>,
+        objects: &ns::Array<av::MetadataObj>,
         connection: &mut av::capture::Connection,
     );
 }
@@ -30,14 +30,14 @@ define_obj_type!(
 
 impl MetadataOutput {
     #[objc::msg_send(setMetadataObjectsDelegate:queue:)]
-    pub fn set_meta_data_objects_delegate<D: MetadataOutputObjectsDelegate>(
+    pub fn set_meta_data_objs_delegate<D: MetadataOutputObjsDelegate>(
         &mut self,
         delegate: Option<&D>,
         queue: Option<&dispatch::Queue>,
     );
 
     #[objc::msg_send(availableMetadataObjectTypes)]
-    pub fn available_metadata_object_types(&self) -> &ns::Array<av::MetadataObjectType>;
+    pub fn available_metadata_obj_types(&self) -> &ns::Array<av::MetadataObjType>;
 
     #[objc::msg_send(rectOfInterest)]
     pub fn rect_of_interest(&self) -> cg::Rect;

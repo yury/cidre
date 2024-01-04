@@ -195,9 +195,12 @@ extern "C" {
 
 }
 
-define_obj_type!(pub Object(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVMetadataObject")]
+    pub Obj(ns::Id)
+);
 
-impl Object {
+impl Obj {
     /// The value of this property is a cg::Rect representing the bounding rectangle
     /// of the object with respect to the picture in which it resides. The rectangle's
     /// origin is top left. If the metadata originates from video, bounds may be
@@ -226,30 +229,32 @@ impl Object {
     pub fn duration(&self) -> cm::Time;
 
     #[objc::msg_send(type)]
-    pub fn object_type(&self) -> &Type;
+    pub fn obj_type(&self) -> &Type;
 }
 
-define_obj_type!(pub BodyObject(Object));
+define_obj_type!(
+    #[doc(alias = "AVMetadataBodyObject")]
+    pub BodyObj(Obj));
 
-impl BodyObject {
+impl BodyObj {
     #[objc::msg_send(bodyID)]
     pub fn body_id(&self) -> isize;
 }
 
-define_obj_type!(pub CatBodyObject(BodyObject));
-define_obj_type!(pub DogBodyObject(BodyObject));
-define_obj_type!(pub HumanBodyObject(BodyObject));
+define_obj_type!(pub CatBodyObj(BodyObj));
+define_obj_type!(pub DogBodyObj(BodyObj));
+define_obj_type!(pub HumanBodyObj(BodyObj));
 
-define_obj_type!(pub FaceObject(Object));
-define_obj_type!(pub MachineReadableCodeObject(Object));
-define_obj_type!(pub SalientObject(Object));
+define_obj_type!(pub FaceObj(Obj));
+define_obj_type!(pub MachineReadableCodeObj(Obj));
+define_obj_type!(pub SalientObj(Obj));
 
-impl SalientObject {
+impl SalientObj {
     #[objc::msg_send(objectID)]
     pub fn object_id(&self) -> isize;
 }
 
-impl FaceObject {
+impl FaceObj {
     #[objc::msg_send(faceID)]
     pub fn face_id(&self) -> isize;
 

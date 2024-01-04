@@ -51,8 +51,8 @@ pub use session::VideoOrienation;
 
 pub mod metadata_output;
 pub use metadata_output::MetadataOutput;
-pub use metadata_output::MetadataOutputObjectsDelegate;
-pub use metadata_output::MetadataOutputObjectsDelegateImpl;
+pub use metadata_output::MetadataOutputObjsDelegate;
+pub use metadata_output::MetadataOutputObjsDelegateImpl;
 
 pub mod video_data_output;
 pub use video_data_output::VideoDataOutput;
