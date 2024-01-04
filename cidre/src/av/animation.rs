@@ -6,16 +6,19 @@ define_obj_type!(
 );
 
 impl LayerVideoGravity {
+    #[doc(alias = "AVLayerVideoGravityResizeAspect")]
     #[inline]
     pub fn resize_aspect() -> &'static Self {
         unsafe { AVLayerVideoGravityResizeAspect }
     }
 
+    #[doc(alias = "AVLayerVideoGravityResizeAspectFill")]
     #[inline]
     pub fn resize_aspect_fill() -> &'static Self {
         unsafe { AVLayerVideoGravityResizeAspectFill }
     }
 
+    #[doc(alias = "AVLayerVideoGravityResize")]
     #[inline]
     pub fn resize() -> &'static Self {
         unsafe { AVLayerVideoGravityResize }

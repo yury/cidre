@@ -4,6 +4,7 @@ pub mod item;
 pub use item::Item as PlayerItem;
 pub use item::Status as ItemStatus;
 
+#[doc(alias = "AVPlayerStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum Status {
@@ -12,6 +13,7 @@ pub enum Status {
     Failed = 2,
 }
 
+#[doc(alias = "AVPlayerTimeControlStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum TimeControlStatus {
@@ -20,6 +22,7 @@ pub enum TimeControlStatus {
     Playing = 2,
 }
 
+#[doc(alias = "AVPlayerActionAtItemEnd")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum ActionAtItemEnd {
@@ -28,6 +31,7 @@ pub enum ActionAtItemEnd {
     None = 2,
 }
 
+#[doc(alias = "AVPlayerHDRMode")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum HdrMode {
@@ -36,6 +40,7 @@ pub enum HdrMode {
     DolbyVision = 0x4,
 }
 
+#[doc(alias = "AVPlayerAudiovisualBackgroundPlaybackPolicy")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum AudiovisualBackgroundPlaybackPolicy {
@@ -44,7 +49,10 @@ pub enum AudiovisualBackgroundPlaybackPolicy {
     ContinuesIfPossible = 3,
 }
 
-define_obj_type!(pub Player(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVPlayer")]
+    pub Player(ns::Id)
+);
 
 impl arc::A<Player> {
     #[objc::msg_send(initWithURL:)]
@@ -64,9 +72,9 @@ impl Player {
         Self::alloc().init_with_player_item_throws(item)
     }
 
-    pub fn with_player_item<'ar>(
+    pub fn with_player_item<'ear>(
         item: Option<&PlayerItem>,
-    ) -> Result<arc::R<Self>, &'ar ns::Exception> {
+    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
         ns::try_catch(|| unsafe { Self::with_player_item_throws(item) })
     }
 
@@ -82,7 +90,10 @@ impl Player {
     pub fn error(&self) -> Option<&ns::Error>;
 }
 
-define_obj_type!(pub QueuePlayer(Player));
+define_obj_type!(
+    #[doc(alias = "AVQueuePlayer")]
+    pub QueuePlayer(Player)
+);
 
 #[link(name = "av", kind = "static")]
 extern "C" {
@@ -90,6 +101,8 @@ extern "C" {
 }
 
 impl ns::NotificationName {
+    #[doc(alias = "AVPlayerRateDidChangeNotification")]
+    #[inline]
     pub fn av_player_rate_did_change() -> &'static ns::NotificationName {
         unsafe { AVPlayerRateDidChangeNotification }
     }
