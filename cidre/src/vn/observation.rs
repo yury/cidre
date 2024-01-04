@@ -135,7 +135,10 @@ impl RecognizedTextObservation {
     pub fn top_candidates(&self, max: usize) -> &ns::Array<RecognizedText>;
 }
 
-define_obj_type!(pub PixelBufObservation(Observation));
+define_obj_type!(
+    #[doc(alias = "VNPixelBufferObservation")]
+    pub PixelBufObservation(Observation)
+);
 
 impl PixelBufObservation {
     #[objc::msg_send(pixelBuffer)]
@@ -145,9 +148,15 @@ impl PixelBufObservation {
     pub fn feature_name(&self) -> Option<&ns::String>;
 }
 
-define_obj_type!(pub BarcodeObservation(RectangleObservation));
+define_obj_type!(
+    #[doc(alias = "VNBarcodeObservation")]
+    pub BarcodeObservation(RectangleObservation)
+);
 
-define_obj_type!(pub HorizonObservation(Observation));
+define_obj_type!(
+    #[doc(alias = "VNHorizonObservation")]
+    pub HorizonObservation(Observation)
+);
 
 impl HorizonObservation {
     #[objc::msg_send(angle)]
@@ -160,21 +169,30 @@ impl HorizonObservation {
     pub fn tranform_for_image(&self, width: usize, height: usize) -> cg::AffineTransform;
 }
 
-define_obj_type!(pub HumanObservation(DetectedObjectObservation));
+define_obj_type!(
+    #[doc(alias = "VNHumanObservation")]
+    pub HumanObservation(DetectedObjectObservation)
+);
 
 impl HumanObservation {
     #[objc::msg_send(upperBodyOnly)]
     pub fn upper_body_only(&self) -> bool;
 }
 
-define_obj_type!(pub SaliencyImageObservation(PixelBufObservation));
+define_obj_type!(
+    #[doc(alias = "VNSaliencyImageObservation")]
+    pub SaliencyImageObservation(PixelBufObservation)
+);
 
 impl SaliencyImageObservation {
     #[objc::msg_send(salientObjects)]
-    pub fn salient_objects(&self) -> Option<&ns::Array<RectangleObservation>>;
+    pub fn salient_objs(&self) -> Option<&ns::Array<RectangleObservation>>;
 }
 
-define_obj_type!(pub FeaturePrintObservation(Observation));
+define_obj_type!(
+    #[doc(alias = "VNFeaturePrintObservation")]
+    pub FeaturePrintObservation(Observation)
+);
 
 impl FeaturePrintObservation {
     #[objc::msg_send(elementType)]
