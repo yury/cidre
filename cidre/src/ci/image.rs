@@ -319,70 +319,103 @@ extern "C" {
     static kCIFormatLAf: Format;
 }
 
-define_obj_type!(pub ImageOption(ns::String));
+define_obj_type!(
+    #[doc(alias = "CIImageOption")]
+    pub ImageOption(ns::String)
+);
 
 impl ImageOption {
     /// A &cg::ColorSpace defining the color space of the image. This value
     /// overrides the image's implicit color space.
     /// If cf::Null::null() then dont color manage the image.
+    #[doc(alias = "kCIImageColorSpace")]
+    #[inline]
     pub fn color_space() -> &'static Self {
         unsafe { kCIImageColorSpace }
     }
 
+    #[doc(alias = "kCIImageToneMapHDRtoSDR")]
+    #[inline]
     pub fn tone_map_hdr_to_sdr() -> &'static Self {
         unsafe { kCIImageToneMapHDRtoSDR }
     }
 
     /// A boolean value specifying whether the image should sampled using "nearest neighbor"
     /// behavior.  If not specified, the image will be sampled using "linear sampling"
+    #[doc(alias = "kCIImageNearestSampling")]
+    #[inline]
     pub fn nearest_sampling() -> &'static Self {
         unsafe { kCIImageNearestSampling }
     }
 
-    pub fn properties() -> &'static Self {
+    #[doc(alias = "kCIImageProperties")]
+    #[inline]
+    pub fn props() -> &'static Self {
         unsafe { kCIImageProperties }
     }
 
-    pub fn apply_orientation_property() -> &'static Self {
+    #[doc(alias = "kCIImageApplyOrientationProperty")]
+    #[inline]
+    pub fn apply_orientation_prop() -> &'static Self {
         unsafe { kCIImageApplyOrientationProperty }
     }
 
+    #[doc(alias = "kCIImageTextureTarget")]
+    #[inline]
     pub fn texture_target() -> &'static Self {
         unsafe { kCIImageTextureTarget }
     }
 
+    #[doc(alias = "kCIImageTextureFormat")]
+    #[inline]
     pub fn texture_format() -> &'static Self {
         unsafe { kCIImageTextureFormat }
     }
 
+    #[doc(alias = "kCIImageAuxiliaryDepth")]
+    #[inline]
     pub fn auxiliary_depth() -> &'static Self {
         unsafe { kCIImageAuxiliaryDepth }
     }
 
+    #[doc(alias = "kCIImageAuxiliaryDisparity")]
+    #[inline]
     pub fn auxiliary_disparity() -> &'static Self {
         unsafe { kCIImageAuxiliaryDisparity }
     }
 
+    #[doc(alias = "kCIImageAuxiliaryPortraitEffectsMatte")]
+    #[inline]
     pub fn auxiliary_portrait_effects_matte() -> &'static Self {
         unsafe { kCIImageAuxiliaryPortraitEffectsMatte }
     }
 
+    #[doc(alias = "kCIImageAuxiliarySemanticSegmentationSkinMatte")]
+    #[inline]
     pub fn auxiliary_semantic_segmentation_skin_matte() -> &'static Self {
         unsafe { kCIImageAuxiliarySemanticSegmentationSkinMatte }
     }
 
+    #[doc(alias = "kCIImageAuxiliarySemanticSegmentationHairMatte")]
+    #[inline]
     pub fn auxiliary_semantic_segmentation_hair_matte() -> &'static Self {
         unsafe { kCIImageAuxiliarySemanticSegmentationHairMatte }
     }
 
+    #[doc(alias = "kCIImageAuxiliarySemanticSegmentationTeethMatte")]
+    #[inline]
     pub fn auxiliary_semantic_segmentation_teeth_matte() -> &'static Self {
         unsafe { kCIImageAuxiliarySemanticSegmentationTeethMatte }
     }
 
+    #[doc(alias = "kCIImageAuxiliarySemanticSegmentationGlassesMatte")]
+    #[inline]
     pub fn auxiliary_semantic_segmentation_glasses_matte() -> &'static Self {
         unsafe { kCIImageAuxiliarySemanticSegmentationGlassesMatte }
     }
 
+    #[doc(alias = "kCIImageAuxiliarySemanticSegmentationSkyMatte")]
+    #[inline]
     pub fn auxiliary_semantic_segmentation_sky_matte() -> &'static Self {
         unsafe { kCIImageAuxiliarySemanticSegmentationSkyMatte }
     }
