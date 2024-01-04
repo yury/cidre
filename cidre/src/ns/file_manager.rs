@@ -146,14 +146,9 @@ impl FileManager {
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
     ) -> Result<(), &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.create_dir_at_url_err(url, create_intermediates, attributes, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe {
+            self.create_dir_at_url_err(url, create_intermediates, attributes, err)
+        })
     }
 
     #[objc::msg_send(createDirectoryAtPath:withIntermediateDirectories:attributes:error:)]

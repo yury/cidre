@@ -19,7 +19,7 @@ define_obj_type!(pub Reader(ns::Id));
 
 impl arc::A<Reader> {
     #[objc::msg_send(initWithAsset:error:)]
-    pub fn init_with_assert_err<'ar>(
+    pub unsafe fn init_with_assert_err<'ar>(
         self,
         asset: &av::Asset,
         error: *mut Option<&'ar ns::Error>,
@@ -30,14 +30,7 @@ impl Reader {
     define_cls!(AV_ASSET_READER);
 
     pub fn with_asset<'ar>(asset: &av::Asset) -> Result<arc::R<Reader>, &'ar ns::Error> {
-        let mut error = None;
-        unsafe {
-            if let Some(reader) = Self::alloc().init_with_assert_err(asset, &mut error) {
-                Ok(reader)
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_none(|err| unsafe { Self::alloc().init_with_assert_err(asset, err) })
     }
 
     #[objc::msg_send(addOutput:)]

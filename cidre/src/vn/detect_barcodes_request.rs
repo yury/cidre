@@ -34,15 +34,7 @@ impl DetectBarcodesRequest {
     pub fn supported_symbologies<'ar>(
         &self,
     ) -> Result<arc::R<ns::Array<vn::BarcodeSymbology>>, &'ar ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res = self.supported_symbologies_and_return_err(&mut error);
-            if let Some(r) = res {
-                Ok(r)
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_none(|err| unsafe { self.supported_symbologies_and_return_err(err) })
     }
 }
 
