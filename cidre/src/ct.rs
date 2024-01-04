@@ -24,7 +24,7 @@ pub use run::Status as RunStatus;
 
 mod line;
 pub use line::Line;
-pub use line::LineBoundsOptions;
+pub use line::LineBoundsOpts;
 pub use line::LineTruncationType;
 
 mod paragraph_style;

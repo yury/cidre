@@ -1,12 +1,11 @@
-use crate::{
-    arc,
-    blocks::{self, Block},
-    cf, cg, ct, define_cf_type, define_options,
-};
+use crate::{arc, blocks, cf, cg, ct, define_cf_type, define_options};
 
-define_options!(pub LineBoundsOptions(usize));
+define_options!(
+    #[doc(alias = "CTLineBoundsOptions")]
+    pub LineBoundsOpts(usize)
+);
 
-impl LineBoundsOptions {
+impl LineBoundsOpts {
     pub const EXCLUDE_TYPOGRAPHIC_LEADING: Self = Self(1 << 0);
     pub const EXCLUDE_TYPOGRAPHIC_SHIFTS: Self = Self(1 << 1);
     pub const USE_HANGING_PUNCTUATION: Self = Self(1 << 2);
@@ -24,6 +23,7 @@ pub enum LineTruncationType {
 }
 
 define_cf_type!(Line(cf::Type));
+
 impl Line {
     #[inline]
     pub fn type_id() -> cf::TypeId {
@@ -66,12 +66,12 @@ impl Line {
     }
 
     #[inline]
-    pub fn bounds(&self, options: LineBoundsOptions) -> cg::Rect {
+    pub fn bounds(&self, options: LineBoundsOpts) -> cg::Rect {
         unsafe { CTLineGetBoundsWithOptions(self, options) }
     }
 
     #[inline]
-    pub fn trainling_whitspace(&self) -> f64 {
+    pub fn trailing_whitspace(&self) -> f64 {
         unsafe { CTLineGetTrailingWhitespaceWidth(self) }
     }
     #[inline]
@@ -80,7 +80,7 @@ impl Line {
     }
 
     #[inline]
-    pub fn enumerate_caret_offsets_block<F>(&self, block: &mut Block<F>)
+    pub fn enumerate_caret_offsets_block<F>(&self, block: &mut blocks::Block<F>)
     where
         F: FnMut(f64, cf::Index, bool, *mut bool),
     {
@@ -115,7 +115,7 @@ extern "C" {
         leading: *mut cg::Float,
     ) -> f64;
 
-    fn CTLineGetBoundsWithOptions(line: &Line, options: LineBoundsOptions) -> cg::Rect;
+    fn CTLineGetBoundsWithOptions(line: &Line, options: LineBoundsOpts) -> cg::Rect;
     fn CTLineGetTrailingWhitespaceWidth(line: &Line) -> f64;
     fn CTLineGetStringIndexForPosition(line: &Line, position: cg::Point) -> cf::Index;
     fn CTLineEnumerateCaretOffsets(line: &Line, block: *mut std::ffi::c_void);
@@ -152,7 +152,7 @@ mod tests {
         let bounds = line.bounds(Default::default());
 
         assert_eq!(bounds.size.width, width);
-        assert_eq!(line.trainling_whitspace(), 0.0);
+        assert_eq!(line.trailing_whitspace(), 0.0);
 
         let mut offsets = Vec::new();
 
