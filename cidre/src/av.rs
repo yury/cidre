@@ -118,6 +118,7 @@ pub use audio::NodeBus as AudioNodeBus;
 pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PcmBuf as AudioPcmBuf;
 pub use audio::Player as AudioPlayer;
+pub use audio::PlayerDelegate as AudioPlayerDelegate;
 pub use audio::PlayerNode as AudioPlayerNode;
 pub use audio::Time as AudioTime;
 pub use audio::VPOtherAudioDuckingCfg as AudioVPOtherAudioDuckingCfg;

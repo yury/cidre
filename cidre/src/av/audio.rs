@@ -47,6 +47,7 @@ pub use engine::ManualRenderingMode as EngineManualRenderingMode;
 pub use engine::ManualRenderingStatus as EngineManualRenderingStatus;
 
 mod player;
+pub use player::Delegate as PlayerDelegate;
 pub use player::Player;
 
 mod player_node;

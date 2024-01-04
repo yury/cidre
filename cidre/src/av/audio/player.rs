@@ -7,7 +7,7 @@ define_obj_type!(
 
 impl arc::A<Player> {
     #[objc::msg_send(initWithContentsOfURL:error:)]
-    pub unsafe fn init_with_contents_of_url_err<'ear>(
+    pub unsafe fn init_with_url_err<'ear>(
         self,
         url: &ns::Url,
         err: *mut Option<&'ear ns::Error>,
@@ -24,8 +24,8 @@ impl arc::A<Player> {
 impl Player {
     define_cls!(AV_AUDIO_PLAYER);
 
-    pub fn with_contents_of_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
-        ns::if_none(|err| unsafe { Self::alloc().init_with_contents_of_url_err(url, err) })
+    pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
     }
 
     pub fn with_data<'ear>(data: &ns::Data) -> Result<arc::R<Self>, &'ear ns::Error> {
@@ -52,6 +52,12 @@ impl Player {
 
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<&AnyDelegate>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: Delegate>(&mut self, val: D);
 
     #[objc::msg_send(url)]
     pub fn url(&self) -> Option<&ns::Url>;
@@ -129,6 +135,21 @@ impl Player {
     pub fn average_power_for_channel(&self, channel_number: usize) -> f32;
 }
 
+// #[doc(alias = "AVAudioPlayerDelegate")]
+#[objc::obj_trait]
+pub trait Delegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(audioPlayerDidFinishPlaying:successfully:)]
+    fn audio_player_did_finish_playing(&mut self, player: &mut Player, successfully: bool);
+
+    #[objc::optional]
+    #[objc::msg_send(audioPlayerDecodeErrorDidOccur:error:)]
+    fn audio_player_decode_error_did_occur(&mut self, player: &mut Player, err: Option<&ns::Error>);
+}
+
+define_obj_type!(pub AnyDelegate(ns::Id));
+impl Delegate for AnyDelegate {}
+
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_AUDIO_PLAYER: &'static objc::Class<Player>;
@@ -136,10 +157,14 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{av, ns};
+    use crate::{av, ns, objc::ar_pool};
 
     #[test]
     fn basics() {
-        let _ = av::AudioPlayer::with_data(&ns::Data::new()).expect_err("What?");
+        ar_pool(|| {
+            let _ = av::AudioPlayer::with_data(&ns::Data::new()).expect_err("What?");
+            let _ =
+                av::AudioPlayer::with_url(&ns::Url::with_str("foo").unwrap()).expect_err("What?");
+        });
     }
 }
