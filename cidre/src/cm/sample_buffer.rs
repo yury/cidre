@@ -46,7 +46,10 @@ impl SampleTimingInfo {
     }
 }
 
-define_cf_type!(SampleBuf(cm::AttachBearer));
+define_cf_type!(
+    #[doc(alias = "CMSampleBuffer")]
+    SampleBuf(cm::AttachBearer)
+);
 
 /// An object that contains zero or more media samples of a uniform media type
 ///
@@ -225,23 +228,27 @@ impl SampleBuf {
         }
     }
 
+    #[doc(alias = "CMSampleBufferGetImageBuffer")]
     #[cfg(feature = "cv")]
     #[inline]
     pub fn image_buf(&self) -> Option<&cv::ImageBuf> {
         unsafe { CMSampleBufferGetImageBuffer(self) }
     }
 
+    #[doc(alias = "CMSampleBufferGetImageBuffer")]
     #[cfg(feature = "cv")]
     #[inline]
     pub fn image_buf_mut(&mut self) -> Option<&mut cv::ImageBuf> {
         unsafe { std::mem::transmute(CMSampleBufferGetImageBuffer(self)) }
     }
 
+    #[doc(alias = "CMSampleBufferGetDataBuffer")]
     #[inline]
     pub fn data_buf(&self) -> Option<&cm::BlockBuf> {
         unsafe { CMSampleBufferGetDataBuffer(self) }
     }
 
+    #[doc(alias = "CMSampleBufferSetDataBuffer")]
     #[inline]
     pub fn set_data_buf(&mut self, val: &cm::BlockBuf) -> Result<(), os::Status> {
         unsafe { CMSampleBufferSetDataBuffer(self, val).result() }
@@ -366,7 +373,7 @@ impl SampleBuf {
                     true
                 } else {
                     let dict = &arr[0];
-                    match dict.get(&attachment_keys::not_sync()) {
+                    match dict.get(attachment_keys::not_sync()) {
                         None => true,
                         Some(not_sync) => unsafe {
                             // in theory we don't need check actual value here.
@@ -384,8 +391,7 @@ impl SampleBuf {
     #[inline]
     pub unsafe fn contains_not_sync(&self) -> bool {
         let arr = self.attaches(true).unwrap_unchecked();
-        let dict = &arr[0];
-        dict.contains_key(&attachment_keys::not_sync())
+        arr[0].contains_key(attachment_keys::not_sync())
     }
 
     /// Returns a value that indicates whether a sample buffer is valid.
