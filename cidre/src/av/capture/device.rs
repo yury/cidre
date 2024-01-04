@@ -210,7 +210,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_torch_mode_throws(val)
     }
 
-    pub fn set_torch_mode<'ar>(&mut self, val: TorchMode) -> Result<(), &'ar ns::Exception> {
+    pub fn set_torch_mode<'ear>(&mut self, val: TorchMode) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.set_torch_mode_throws(val) })
     }
 
@@ -219,10 +219,8 @@ impl<'a> ConfigLockGuard<'a> {
         torch_level: f32,
         error: *mut Option<&'ear ns::Error>,
     ) -> bool {
-        unsafe {
-            self.device
-                .set_torch_mode_on_with_level_err(torch_level, error)
-        }
+        self.device
+            .set_torch_mode_on_with_level_err(torch_level, error)
     }
 
     pub fn set_torch_mode_on_with_level<'ear>(
@@ -306,7 +304,7 @@ impl Device {
 }
 
 impl<'a> ConfigLockGuard<'a> {
-    pub fn set_video_hdr_enabled<'ar>(&mut self, val: bool) -> Result<(), &'ar ns::Exception> {
+    pub fn set_video_hdr_enabled<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.device.set_video_hdr_enabled_throws(val) })
     }
 }
@@ -443,6 +441,13 @@ impl Device {
     /// if the provided rect of interest goes outside the normalized (0-1) coordinate space.
     #[objc::msg_send(setCenterStageRectOfInterest:)]
     pub unsafe fn set_center_stage_rect_of_interest_throws(&mut self, val: cg::Rect);
+
+    pub fn set_center_stage_rect_of_interest<'ear>(
+        &mut self,
+        val: cg::Rect,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_center_stage_rect_of_interest_throws(val) })
+    }
 }
 
 #[doc(alias = "AVCaptureSystemUserInterface")]
