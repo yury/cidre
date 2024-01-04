@@ -134,15 +134,8 @@ impl Engine {
     pub unsafe fn start_and_return_err<'ar>(&self, error: *mut Option<&'ar ns::Error>) -> bool;
 
     #[inline]
-    pub fn start<'ar>(&mut self) -> Result<(), &'ar ns::Error> {
-        unsafe {
-            let mut error = None;
-            if self.start_and_return_err(&mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+    pub fn start<'ear>(&mut self) -> Result<(), &'ear ns::Error> {
+        ns::if_false(|err| unsafe { self.start_and_return_err(err) })
     }
 
     /// ```
