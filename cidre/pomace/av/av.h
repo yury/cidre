@@ -26,6 +26,7 @@ Class AV_CAPTURE_DEVICE_ROTATION_COORDINATOR;
 Class AV_CAPTURE_PHOTO_OUTPUT;
 
 Class AV_AUDIO_PLAYER_NODE;
+Class AV_AUDIO_PLAYER;
 
 Class AV_AUDIO_ENGINE;
 Class AV_AUDIO_SESSION;
@@ -89,6 +90,7 @@ static void av_initializer(void)
         AV_OUTPUT_SETTINGS_ASSISTANT = [AVOutputSettingsAssistant class];
         
         AV_AUDIO_PLAYER_NODE = [AVAudioPlayerNode class];
+        AV_AUDIO_PLAYER = [AVAudioPlayer class];
         
         AV_AUDIO_ENGINE = [AVAudioEngine class];
         AV_AUDIO_TIME = [AVAudioTime class];

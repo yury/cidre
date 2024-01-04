@@ -12,7 +12,7 @@ impl Flags {
     /// When passed to routines that accept block allocators, causes the memory block
     /// to be allocated immediately.
     #[doc(alias = "kCMBlockBufferAssureMemoryNowFlag")]
-    pub const ASSURE_MEMORY_NOW: Self = Self(1u32 << 0);
+    pub const ASSURE_MEM_NOW: Self = Self(1u32 << 0);
     /// Used with CMBlockBufferCreateContiguous() to cause it to always produce an allocated
     /// copy of the desired data.
     #[doc(alias = "kCMBlockBufferAlwaysCopyDataFlag")]
@@ -119,7 +119,7 @@ impl BlockBuf {
                 block_allocator,
                 0,
                 len,
-                Flags::ASSURE_MEMORY_NOW,
+                Flags::ASSURE_MEM_NOW,
                 None,
             )
         }

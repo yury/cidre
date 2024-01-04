@@ -14,7 +14,7 @@ impl TrainingGraph {
     /// the buffers needed get allocated when the corresponding pass such as gradient,
     /// optimizer update is executed.
     #[objc::msg_send(deviceMemorySize)]
-    pub fn device_memory_size(&self) -> usize;
+    pub fn device_mem_size(&self) -> usize;
 }
 
 #[link(name = "mlc", kind = "static")]
@@ -30,6 +30,6 @@ mod tests {
     fn basics() {
         let graph = mlc::TrainingGraph::new();
         assert!(graph.optimizer().is_none());
-        assert_eq!(graph.device_memory_size(), 0);
+        assert_eq!(graph.device_mem_size(), 0);
     }
 }
