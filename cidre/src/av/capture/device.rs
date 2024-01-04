@@ -441,13 +441,6 @@ impl Device {
     /// if the provided rect of interest goes outside the normalized (0-1) coordinate space.
     #[objc::msg_send(setCenterStageRectOfInterest:)]
     pub unsafe fn set_center_stage_rect_of_interest_throws(&mut self, val: cg::Rect);
-
-    pub fn set_center_stage_rect_of_interest<'ear>(
-        &mut self,
-        val: cg::Rect,
-    ) -> Result<(), &'ear ns::Exception> {
-        ns::try_catch(|| unsafe { self.set_center_stage_rect_of_interest_throws(val) })
-    }
 }
 
 #[doc(alias = "AVCaptureSystemUserInterface")]
