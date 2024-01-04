@@ -4,49 +4,58 @@ define_obj_type!(pub ReactionType(ns::String));
 
 impl ReactionType {
     /// Indicates a reaction which features a thumbs-up symbol.
+    #[doc(alias = "AVCaptureReactionTypeThumbsUp")]
     #[inline]
     pub fn thumbs_up() -> &'static Self {
         unsafe { AVCaptureReactionTypeThumbsUp }
     }
 
     /// Indicates a reaction which features a thumbs-down symbol.
+    #[doc(alias = "AVCaptureReactionTypeThumbsDown")]
     #[inline]
     pub fn thumbs_down() -> &'static Self {
         unsafe { AVCaptureReactionTypeThumbsDown }
     }
 
     /// Indicates a reaction which features balloons rising through the scene.
+    #[doc(alias = "AVCaptureReactionTypeBalloons")]
     #[inline]
     pub fn ballons() -> &'static Self {
         unsafe { AVCaptureReactionTypeBalloons }
     }
 
     /// Indicates a reaction which features one or more heart symbols.
+    #[doc(alias = "AVCaptureReactionTypeHeart")]
     #[inline]
     pub fn heart() -> &'static Self {
         unsafe { AVCaptureReactionTypeHeart }
     }
 
+    #[doc(alias = "AVCaptureReactionTypeFireworks")]
     #[inline]
     pub fn fireworks() -> &'static Self {
         unsafe { AVCaptureReactionTypeFireworks }
     }
 
+    #[doc(alias = "AVCaptureReactionTypeRain")]
     #[inline]
     pub fn rain() -> &'static Self {
         unsafe { AVCaptureReactionTypeRain }
     }
 
+    #[doc(alias = "AVCaptureReactionTypeConfetti")]
     #[inline]
     pub fn confetti() -> &'static Self {
         unsafe { AVCaptureReactionTypeConfetti }
     }
 
+    #[doc(alias = "AVCaptureReactionTypeLasers")]
     #[inline]
     pub fn lasers() -> &'static Self {
         unsafe { AVCaptureReactionTypeLasers }
     }
 
+    #[doc(alias = "AVCaptureReactionSystemImageNameForType")]
     #[inline]
     pub fn system_image_name(&self) -> &ns::String {
         unsafe { AVCaptureReactionSystemImageNameForType(self) }
