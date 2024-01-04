@@ -19,6 +19,22 @@ impl arc::A<Player> {
         data: &ns::Data,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Player>>;
+
+    #[objc::msg_send(initWithContentsOfURL:fileTypeHint:error:)]
+    pub unsafe fn init_with_url_hint_err<'ear>(
+        self,
+        url: &ns::Url,
+        hint: Option<&ns::String>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<Player>>;
+
+    #[objc::msg_send(initWithData:fileTypeHint:error:)]
+    pub unsafe fn init_with_data_hint_err<'ear>(
+        self,
+        data: &ns::Data,
+        hint: Option<&ns::String>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<Player>>;
 }
 
 impl Player {
@@ -30,6 +46,20 @@ impl Player {
 
     pub fn with_data<'ear>(data: &ns::Data) -> Result<arc::R<Self>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_data_err(data, err) })
+    }
+
+    pub fn with_url_hint<'ear>(
+        url: &ns::Url,
+        hint: Option<&ns::String>,
+    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { Self::alloc().init_with_url_hint_err(url, hint, err) })
+    }
+
+    pub fn with_data_hint<'ear>(
+        data: &ns::Data,
+        hint: Option<&ns::String>,
+    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { Self::alloc().init_with_data_hint_err(data, hint, err) })
     }
 
     #[objc::msg_send(prepareToPlay)]
