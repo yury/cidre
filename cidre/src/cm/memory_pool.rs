@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(MemPool(cf::Type));
@@ -50,14 +48,13 @@ impl MemPool {
     }
 
     #[inline]
-    pub fn with_age(duration: Duration) -> arc::R<Self> {
+    pub fn with_age(duration: std::time::Duration) -> arc::R<Self> {
         let opts = cf::Dictionary::with_keys_values(
             &[keys::age_out_period()],
             &[&cf::Number::from_f64(duration.as_secs_f64())],
-        )
-        .unwrap();
+        );
 
-        Self::with_opts(Some(&opts))
+        Self::with_opts(opts.as_deref())
     }
 
     #[doc(alias = "CMMemoryPoolGetAllocator")]
@@ -66,12 +63,14 @@ impl MemPool {
         unsafe { CMMemoryPoolGetAllocator(self) }
     }
 
+    /// Deallocates all memory the pool was holding for recycling.
     #[doc(alias = "CMMemoryPoolFlush")]
     #[inline]
     pub fn flush(&mut self) {
         unsafe { CMMemoryPoolFlush(self) }
     }
 
+    /// Stops the pool from recycling.
     #[doc(alias = "CMMemoryPoolInvalidate")]
     #[inline]
     pub fn invalidate(&mut self) {
