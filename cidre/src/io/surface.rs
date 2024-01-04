@@ -45,7 +45,10 @@ pub enum Subsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-define_options!(pub LockOpts(u32));
+define_options!(
+    #[doc(alias = "IOSurfaceLockOptions")]
+    pub LockOpts(u32)
+);
 
 impl LockOpts {
     /// If you are not going to modify the data while you hold the lock,
@@ -64,7 +67,10 @@ impl LockOpts {
     pub const AVOID_SYNC: Self = Self(2);
 }
 
-define_cf_type!(Surf(cf::Type));
+define_cf_type!(
+    #[doc(alias = "IOSurfaceRef")]
+    Surf(cf::Type)
+);
 
 impl Surf {
     /// ```
@@ -203,13 +209,13 @@ impl Surf {
 
     #[doc(alias = "IOSurfaceIncrementUseCount")]
     #[inline]
-    pub fn increment_use_count(&mut self) {
+    pub fn inc_use_count(&mut self) {
         unsafe { IOSurfaceIncrementUseCount(self) }
     }
 
     #[doc(alias = "IOSurfaceDecrementUseCount")]
     #[inline]
-    pub fn decrement_use_count(&mut self) {
+    pub fn dec_use_count(&mut self) {
         unsafe { IOSurfaceDecrementUseCount(self) }
     }
 
