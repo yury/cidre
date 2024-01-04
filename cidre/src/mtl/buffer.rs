@@ -1,8 +1,20 @@
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(pub Buf(mtl::Resource));
+define_obj_type!(
+    /// A typeless allocation accessible by both the CPU and the GPU (MTLDevice) or by only the GPU
+    /// when the storage mode is MTLResourceStorageModePrivate.
+    ///
+    /// Unlike in OpenGL and OpenCL, access to buffers is not synchronized. The caller may use the CPU
+    /// to modify the data at any time but is also responsible for ensuring synchronization and coherency.
+    ///
+    /// The contents become undefined if both the CPU and GPU write to the same buffer without
+    /// a synchronizing action between those writes. This is true even when the regions written do not overlap.
+    #[doc(alias = "MTLBuffer")]
+    pub Buf(mtl::Resource)
+);
 
 impl Buf {
+    /// The length of the buffer in bytes.
     #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
 
@@ -11,6 +23,7 @@ impl Buf {
         self.len() == 0
     }
 
+    /// Returns the data pointer of this buffer's shared copy.
     #[objc::msg_send(contents)]
     pub unsafe fn contents(&self) -> *mut u8;
 
@@ -38,9 +51,11 @@ impl Buf {
 
     /// Inform the device of the range of a buffer that the CPU has modified,
     /// allowing the implementation to invalidate  its caches of the buffer's content.
+    #[cfg(target_os = "macos")]
     #[objc::msg_send(didModifyRange:)]
     pub fn did_modify_range(&self, range: ns::Range);
 
+    #[cfg(target_os = "macos")]
     #[inline]
     pub fn did_modify<T: Sized>(&self, range: std::ops::Range<usize>) {
         let start = range.start * std::mem::size_of::<T>();
@@ -51,6 +66,7 @@ impl Buf {
         })
     }
 
+    /// Create a 2D texture or texture buffer that shares storage with this buffer.
     #[objc::msg_send(newTextureWithDescriptor:offset:bytesPerRow:)]
     pub fn new_texture(
         &self,
@@ -62,6 +78,7 @@ impl Buf {
     #[objc::msg_send(addDebugMarker:range:)]
     pub fn add_debug_marker(&mut self, marker: &ns::String, range: ns::Range);
 
+    /// Removes all debug markers from a buffer.
     #[objc::msg_send(removeAllDebugMarkers)]
     pub fn remove_all_debug_markers(&mut self);
 
