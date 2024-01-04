@@ -90,7 +90,7 @@ impl Player {
     pub fn delegate(&self) -> Option<&AnyDelegate>;
 
     #[objc::msg_send(setDelegate:)]
-    pub fn set_delegate<D: Delegate>(&mut self, val: D);
+    pub fn set_delegate<D: Delegate>(&mut self, val: &D);
 
     #[objc::msg_send(url)]
     pub fn url(&self) -> Option<&ns::Url>;
