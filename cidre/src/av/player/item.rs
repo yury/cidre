@@ -1,5 +1,6 @@
 use crate::{define_obj_type, ns};
 
+#[doc(alias = "AVPlayerItemStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum Status {
@@ -8,7 +9,10 @@ pub enum Status {
     Failed = 2,
 }
 
-define_obj_type!(pub Item(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVPlayerItem")]
+    pub Item(ns::Id)
+);
 
 impl ns::NotificationName {
     /// A notification the system posts when a player item’s time changes discontinuously.
@@ -16,6 +20,8 @@ impl ns::NotificationName {
     /// The notification’s object is the player item.
     ///
     /// The system may post this notification on a thread other than the one you use to register the observer.
+    #[doc(alias = "AVPlayerItemTimeJumpedNotification")]
+    #[inline]
     pub fn av_player_item_time_jumped() -> &'static Self {
         unsafe { AVPlayerItemTimeJumpedNotification }
     }
@@ -25,6 +31,8 @@ impl ns::NotificationName {
     /// The notification’s object is the item that finished playing.
     ///
     /// The system may post this notification on a thread other than the one you use to register the observer.
+    #[doc(alias = "AVPlayerItemDidPlayToEndTimeNotification")]
+    #[inline]
     pub fn av_player_item_did_play_to_end_time() -> &'static Self {
         unsafe { AVPlayerItemDidPlayToEndTimeNotification }
     }
@@ -34,6 +42,8 @@ impl ns::NotificationName {
     /// The notification’s object is the player item that finished playing.
     ///
     /// The system may post this notification on a thread other than the one you use to register the observer.
+    #[doc(alias = "AVPlayerItemFailedToPlayToEndTimeNotification")]
+    #[inline]
     pub fn av_player_item_failed_play_to_end_time() -> &'static Self {
         unsafe { AVPlayerItemFailedToPlayToEndTimeNotification }
     }
@@ -46,6 +56,8 @@ impl ns::NotificationName {
     ///
     /// # Important
     /// The system may post this notification on a thread other than the one you use to register the observer.
+    #[doc(alias = "AVPlayerItemPlaybackStalledNotification")]
+    #[inline]
     pub fn av_player_item_playback_stalled() -> &'static Self {
         unsafe { AVPlayerItemPlaybackStalledNotification }
     }
@@ -56,6 +68,8 @@ impl ns::NotificationName {
     ///
     /// # Important
     /// The system may post this notification on a thread other than the one you use to register the observer.
+    #[doc(alias = "AVPlayerItemNewAccessLogEntryNotification")]
+    #[inline]
     pub fn av_player_item_new_access_log_entry() -> &'static Self {
         unsafe { AVPlayerItemNewAccessLogEntryNotification }
     }
@@ -65,6 +79,8 @@ impl ns::NotificationName {
     /// The notification’s object is the player item
     ///
     /// The system may post this notification on a thread other than the one you use to register the observer.
+    #[doc(alias = "AVPlayerItemNewErrorLogEntryNotification")]
+    #[inline]
     pub fn av_player_item_error_access_log_entry() -> &'static Self {
         unsafe { AVPlayerItemNewErrorLogEntryNotification }
     }
@@ -72,11 +88,15 @@ impl ns::NotificationName {
     /// A notification the player item posts when its offset from the live time changes.
     ///
     /// Register to observe notifications of this type to observe changes to the value of the recommended_time_offset_from_live property
+    #[doc(alias = "AVPlayerItemRecommendedTimeOffsetFromLiveDidChangeNotification")]
+    #[inline]
     pub fn av_player_item_recommended_time_offset_from_live_did_change() -> &'static Self {
         unsafe { AVPlayerItemRecommendedTimeOffsetFromLiveDidChangeNotification }
     }
 
     /// A notification the player item posts when its media selection changes.
+    #[doc(alias = "AVPlayerItemMediaSelectionDidChangeNotification")]
+    #[inline]
     pub fn av_player_item_media_selection_did_change() -> &'static Self {
         unsafe { AVPlayerItemMediaSelectionDidChangeNotification }
     }
