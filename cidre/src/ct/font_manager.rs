@@ -46,14 +46,7 @@ impl FontManager {
         font_url: &cf::Url,
         scope: Scope,
     ) -> Result<(), arc::R<cf::Error>> {
-        let mut error = None;
-        unsafe {
-            if CTFontManagerRegisterFontsForURL(font_url, scope, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        cf::if_false(|err| unsafe { CTFontManagerRegisterFontsForURL(font_url, scope, err) })
     }
 
     #[doc(alias = "CTFontManagerUnregisterFontsForURL")]
@@ -61,14 +54,7 @@ impl FontManager {
         font_url: &cf::Url,
         scope: Scope,
     ) -> Result<(), arc::R<cf::Error>> {
-        let mut error = None;
-        unsafe {
-            if CTFontManagerUnregisterFontsForURL(font_url, scope, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        cf::if_false(|err| unsafe { CTFontManagerUnregisterFontsForURL(font_url, scope, err) })
     }
 }
 

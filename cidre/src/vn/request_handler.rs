@@ -145,17 +145,11 @@ impl SequenceRequestHandler {
         requests: &ns::Array<vn::Request>,
         pixel_buf: &cv::PixelBuf,
     ) -> Result<(), &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res = self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, &mut error);
-
-            if res {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe {
+            self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, err)
+        })
     }
+
     #[objc::msg_send(performRequests:onCMSampleBuffer:error:)]
     pub unsafe fn perform_requests_on_cm_sample_buf_err<'ear>(
         &self,
@@ -170,16 +164,9 @@ impl SequenceRequestHandler {
         requests: &ns::Array<vn::Request>,
         sample_buf: &cm::SampleBuf,
     ) -> Result<(), &'ear ns::Error> {
-        unsafe {
-            let mut error = None;
-            let res = self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, &mut error);
-
-            if res {
-                Ok(())
-            } else {
-                Err(transmute(error))
-            }
-        }
+        ns::if_false(|err| unsafe {
+            self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, err)
+        })
     }
 }
 

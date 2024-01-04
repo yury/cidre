@@ -48,14 +48,7 @@ impl CaptureManager {
 
     #[inline]
     pub fn start<'ar>(&mut self, desc: &CaptureDesc) -> Result<(), &'ar ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.start_with_descriptor_err(desc, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.start_with_descriptor_err(desc, err) })
     }
 
     #[objc::msg_send(stopCapture)]

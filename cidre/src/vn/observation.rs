@@ -225,15 +225,14 @@ impl FeaturePrintObservation {
     /// Shorter distances indicate greater similarity between feature prints.
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[inline]
-    pub fn compute_distance<'ar>(
+    pub fn compute_distance<'ear>(
         &self,
         to: &FeaturePrintObservation,
-    ) -> Result<f32, &'ar ns::Error> {
+    ) -> Result<f32, &'ear ns::Error> {
         let mut distance = 0f32;
         let mut error = None;
         unsafe {
-            let res = self.compute_distance_err(&mut distance, to, &mut error);
-            if res {
+            if self.compute_distance_err(&mut distance, to, &mut error) {
                 Ok(distance)
             } else {
                 Err(error.unwrap_unchecked())

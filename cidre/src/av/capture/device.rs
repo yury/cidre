@@ -227,14 +227,7 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         torch_level: f32,
     ) -> Result<(), &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.set_torch_mode_on_with_level_err(torch_level, &mut error) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|err| unsafe { self.set_torch_mode_on_with_level_err(torch_level, err) })
     }
 }
 
