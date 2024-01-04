@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, mach, ns, objc};
+use crate::{arc, define_obj_type, mach, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSPort")]
@@ -23,16 +23,16 @@ impl MachPort {
     pub fn mach_port(&self) -> mach::Port;
 
     #[objc::msg_send(scheduleInRunLoop:forMode:)]
-    pub fn schedule_in_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
+    pub fn schedule_in_runloop(&self, run_loop: &ns::RunLoop, mode: &ns::RunLoopMode);
 
     #[objc::msg_send(scheduleInRunLoop:forMode:)]
-    pub fn remove_from_runloop(&self, run_loop: &cf::RunLoop, mode: &cf::RunLoopMode);
+    pub fn remove_from_runloop(&self, run_loop: &ns::RunLoop, mode: &ns::RunLoopMode);
 
     #[objc::msg_send(setDelegate:)]
     fn set_delegate<D: MachPortDelegate>(&mut self, delegate: Option<&D>);
 
     #[objc::msg_send(delegate)]
-    fn delegate(&self) -> Option<&objc::Any>;
+    fn delegate(&self) -> Option<&AnyMachPortDelegate>;
 }
 
 #[objc::obj_trait]
@@ -42,7 +42,8 @@ pub trait MachPortDelegate {
     fn handle_mach_message(&mut self, msg: *mut std::ffi::c_void);
 }
 
-impl MachPortDelegate for objc::Any {}
+define_obj_type!(pub AnyMachPortDelegate(ns::Id));
+impl MachPortDelegate for AnyMachPortDelegate {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
