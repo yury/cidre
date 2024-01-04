@@ -36,7 +36,7 @@ impl MachPort {
 }
 
 #[objc::obj_trait]
-pub trait MachPortDelegate {
+pub trait MachPortDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(handleMachMessage:)]
     fn handle_mach_message(&mut self, msg: *mut std::ffi::c_void);

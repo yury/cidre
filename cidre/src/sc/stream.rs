@@ -1,10 +1,7 @@
-use std::ffi::c_void;
-
 use crate::{arc, blocks, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc, sc};
 
-use super::{Display, Window};
-
 /// Denotes the status of frame sample buffer.
+#[doc(alias = "SCFrameStatus")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum FrameStatus {
@@ -357,13 +354,14 @@ define_obj_type!(pub ContentFilter(ns::Id));
 
 impl arc::A<ContentFilter> {
     #[objc::msg_send(initWithDesktopIndependentWindow:)]
-    pub fn init_with_desktop_independent_window(self, window: &Window) -> arc::R<ContentFilter>;
+    pub fn init_with_desktop_independent_window(self, window: &sc::Window)
+        -> arc::R<ContentFilter>;
 
     #[objc::msg_send(initWithDisplay:excludingWindows:)]
     pub fn init_with_display_excluding_windows(
         self,
-        display: &Display,
-        windows: &ns::Array<Window>,
+        display: &sc::Display,
+        windows: &ns::Array<sc::Window>,
     ) -> arc::R<ContentFilter>;
 }
 
@@ -371,13 +369,13 @@ impl ContentFilter {
     define_cls!(SC_CONTENT_FILTER);
 
     /// Will create a sc::ContentFilter that captures just the independent window passed in.
-    pub fn with_desktop_independent_window(window: &Window) -> arc::R<ContentFilter> {
+    pub fn with_desktop_independent_window(window: &sc::Window) -> arc::R<ContentFilter> {
         Self::alloc().init_with_desktop_independent_window(window)
     }
 
     pub fn with_display_excluding_windows(
-        display: &Display,
-        windows: &ns::Array<Window>,
+        display: &sc::Display,
+        windows: &ns::Array<sc::Window>,
     ) -> arc::R<Self> {
         Self::alloc().init_with_display_excluding_windows(display, windows)
     }
@@ -428,7 +426,8 @@ pub trait Delegate: objc::Obj {
     fn stream_did_stop_with_err(&mut self, stream: &Stream, error: &ns::Error);
 }
 
-impl Delegate for objc::Any {}
+define_obj_type!(pub AnyDelegate(ns::Id));
+impl Delegate for AnyDelegate {}
 
 impl arc::A<Stream> {
     #[objc::msg_send(initWithFilter:configuration:delegate:)]
@@ -456,10 +455,10 @@ impl Stream {
     }
 
     pub fn new(filter: &ContentFilter, configuration: &Cfg) -> arc::R<Self> {
-        Self::alloc().init_with_filter_configuration_delegate::<objc::Any>(
+        Self::alloc().init_with_filter_configuration_delegate::<AnyDelegate>(
             filter,
             configuration,
-            objc::NONE,
+            None,
         )
     }
 
@@ -491,7 +490,7 @@ impl Stream {
     }
 
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
-    fn _start_with_ch(&self, rb: *mut c_void);
+    fn _start_with_ch(&self, rb: *mut std::ffi::c_void);
 
     pub fn start_with_ch<F>(&self, block: &'static mut blocks::Block<F>)
     where
@@ -500,7 +499,7 @@ impl Stream {
         self._start_with_ch(block.as_mut_ptr());
     }
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
-    fn _stop_with_ch(&self, rb: *mut c_void);
+    fn _stop_with_ch(&self, rb: *mut std::ffi::c_void);
 
     pub fn stop_with_ch<F>(&self, block: &'static mut blocks::Block<F>)
     where
