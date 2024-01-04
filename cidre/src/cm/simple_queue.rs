@@ -2,7 +2,10 @@ use std::{ffi::c_void, num::NonZeroU16};
 
 use crate::{arc, cf, define_cf_type, os};
 
-define_cf_type!(SimpleQueue(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CMSimpleQueue")]
+    SimpleQueue(cf::Type)
+);
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
@@ -52,6 +55,7 @@ impl SimpleQueue {
         Self::with_capacity_in(capacity, None)
     }
 
+    #[doc(alias = "CMSimpleQueueGetCount")]
     #[inline]
     pub fn len(&self) -> usize {
         unsafe { CMSimpleQueueGetCount(self) as _ }
@@ -62,26 +66,31 @@ impl SimpleQueue {
         self.len() == 0
     }
 
+    #[doc(alias = "CMSimpleQueueEnqueue")]
     #[inline]
     pub fn enqueue(&mut self, element: *const c_void) -> Result<(), Error> {
         unsafe { std::mem::transmute(CMSimpleQueueEnqueue(self, element).result()) }
     }
 
+    #[doc(alias = "CMSimpleQueueDequeue")]
     #[inline]
     pub fn dequeue(&mut self) -> *const c_void {
         unsafe { CMSimpleQueueDequeue(self) }
     }
 
+    #[doc(alias = "CMSimpleQueueGetHead")]
     #[inline]
     pub fn head(&self) -> *const c_void {
         unsafe { CMSimpleQueueGetHead(self) }
     }
 
+    #[doc(alias = "CMSimpleQueueReset")]
     #[inline]
     pub fn reset(&mut self) -> Result<(), Error> {
         unsafe { std::mem::transmute(CMSimpleQueueReset(self).result()) }
     }
 
+    #[doc(alias = "CMSimpleQueueGetCapacity")]
     #[inline]
     pub fn capacity(&self) -> usize {
         unsafe { CMSimpleQueueGetCapacity(self) as _ }

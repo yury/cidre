@@ -81,6 +81,7 @@ impl MemPool {
 pub mod keys {
     use crate::cf;
 
+    #[doc(alias = "kCMMemoryPoolOption_AgeOutPeriod")]
     #[inline]
     pub fn age_out_period() -> &'static cf::String {
         unsafe { kCMMemoryPoolOption_AgeOutPeriod }

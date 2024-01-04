@@ -184,7 +184,7 @@ impl BlockBuf {
     /// into it will be invalid.
     #[doc(alias = "CMBlockBufferGetDataPointer")]
     #[inline]
-    pub unsafe fn get_data_ptr(
+    pub unsafe fn data_ptr(
         &self,
         offset: usize,
         length_at_offset_out: *mut usize,
@@ -206,7 +206,7 @@ impl BlockBuf {
         let mut total_length_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.get_data_ptr(
+            let res = self.data_ptr(
                 offset,
                 &mut length_at_offset_out,
                 &mut total_length_out,
@@ -225,7 +225,7 @@ impl BlockBuf {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.get_data_ptr(
+            let res = self.data_ptr(
                 0,
                 &mut length_at_offset_out,
                 std::ptr::null_mut(),
@@ -246,7 +246,7 @@ impl BlockBuf {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.get_data_ptr(
+            let res = self.data_ptr(
                 0,
                 &mut length_at_offset_out,
                 std::ptr::null_mut(),
