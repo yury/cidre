@@ -14,7 +14,11 @@ impl VolumeEnumOpts {
     pub const PRODUCE_FILE_REFERENCE_URLS: Self = Self(1 << 2);
 }
 
-define_options!(pub DirEnumOpts(usize));
+define_options!(
+    #[doc(alias = "NSDirectoryEnumerationOptions")]
+    pub DirEnumOpts(usize)
+);
+
 impl DirEnumOpts {
     /// Causes the to perform a shallow enumeration and not descend into directories it encounters.
     pub const SKIPS_SUBDIRECTORY_DESCENDANTS: Self = Self(1 << 0);
@@ -33,13 +37,17 @@ impl DirEnumOpts {
     pub const PRODUCES_RELATIVE_PATH_URLS: Self = Self(1 << 4);
 }
 
-define_options!(pub ItemReplacementOpts(usize));
+define_options!(
+    #[doc(alias = "NSFileManagerItemReplacementOptions")]
+    pub ItemReplacementOpts(usize)
+);
 
 impl ItemReplacementOpts {
     pub const USING_NEW_METADATA_ONLY: Self = Self(1 << 0);
     pub const WITHOUT_DELETING_BACKUP_ITEM: Self = Self(1 << 1);
 }
 
+#[doc(alias = "NSURLRelationship")]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(isize)]
 pub enum UrlRelationship {
@@ -48,7 +56,10 @@ pub enum UrlRelationship {
     Other,
 }
 
-define_obj_type!(pub FileManager(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSFileManager")]
+    pub FileManager(ns::Id)
+);
 
 impl FileManager {
     #[inline]
