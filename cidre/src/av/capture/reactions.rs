@@ -1,6 +1,9 @@
 use crate::{cm, define_obj_type, ns, objc};
 
-define_obj_type!(pub ReactionType(ns::String));
+define_obj_type!(
+    #[doc(alias = "AVCaptureReactionType")]
+    pub ReactionType(ns::String)
+);
 
 impl ReactionType {
     /// Indicates a reaction which features a thumbs-up symbol.
@@ -57,7 +60,7 @@ impl ReactionType {
 
     #[doc(alias = "AVCaptureReactionSystemImageNameForType")]
     #[inline]
-    pub fn system_image_name(&self) -> &ns::String {
+    pub fn sys_image_name(&self) -> &ns::String {
         unsafe { AVCaptureReactionSystemImageNameForType(self) }
     }
 }
@@ -76,7 +79,10 @@ extern "C" {
     fn AVCaptureReactionSystemImageNameForType(reacton_type: &ReactionType) -> &ns::String;
 }
 
-define_obj_type!(pub EffectState(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVCaptureReactionEffectState")]
+    pub EffectState(ns::Id)
+);
 
 impl EffectState {
     /// Indicates the reaction which is running.
@@ -99,10 +105,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let name = av::CaptureReactionType::thumbs_up().system_image_name();
+        let name = av::CaptureReactionType::thumbs_up().sys_image_name();
         assert_eq!(name, "hand.thumbsup.fill");
 
-        let name = av::CaptureReactionType::thumbs_down().system_image_name();
+        let name = av::CaptureReactionType::thumbs_down().sys_image_name();
         assert_eq!(name, "hand.thumbsdown.fill");
     }
 }
