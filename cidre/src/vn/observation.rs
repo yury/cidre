@@ -1,16 +1,44 @@
-use std::mem::MaybeUninit;
+use crate::{arc, cg, cm, cv, define_obj_type, ns, objc, vn};
 
-use crate::{
-    cg, cm, cv, define_obj_type, ns, objc,
-    vn::{self, ElementType},
-};
+define_obj_type!(
+    #[doc(alias = "VNObservation")]
+    pub Observation(ns::Id)
+);
 
-define_obj_type!(pub Observation(ns::Id));
-define_obj_type!(pub RecognizedText(ns::Id));
+define_obj_type!(
+    #[doc(alias = "VNRecognizedText")]
+    pub RecognizedText(ns::Id)
+);
 
 impl RecognizedText {
+    /// The top candidate for recognized text.
     #[objc::msg_send(string)]
     pub fn string(&self) -> &ns::String;
+
+    /// A normalized confidence score for the text recognition result.
+    #[objc::msg_send(confidence)]
+    pub fn confidence(&self) -> vn::Confidence;
+
+    #[objc::msg_send(boundingBoxForRange:error:)]
+    pub unsafe fn bounding_box_for_range_err_ar<'ear>(
+        &self,
+        range: ns::Range,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::Rar<vn::RectangleObservation>>;
+
+    #[objc::rar_retain]
+    pub unsafe fn bounding_box_for_range_err<'ear>(
+        &self,
+        range: ns::Range,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<vn::RectangleObservation>>;
+
+    pub fn bounding_box_for_range<'ear>(
+        &self,
+        range: ns::Range,
+    ) -> Result<arc::R<vn::RectangleObservation>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { self.bounding_box_for_range_err(range, err) })
+    }
 }
 
 impl Observation {
@@ -128,7 +156,10 @@ impl TextObservation {
     pub fn character_boxes(&self) -> Option<&ns::Array<RectangleObservation>>;
 }
 
-define_obj_type!(pub RecognizedTextObservation(RectangleObservation));
+define_obj_type!(
+    #[doc(alias = "VNRecognizedTextObservation")]
+    pub RecognizedTextObservation(RectangleObservation)
+);
 
 impl RecognizedTextObservation {
     #[objc::msg_send(topCandidates:)]
@@ -206,7 +237,7 @@ impl FeaturePrintObservation {
 
     pub fn vec_of<T: Sized>(&self) -> Vec<T> {
         let count = self.element_count();
-        let mut vec: Vec<MaybeUninit<T>> = Vec::with_capacity(count);
+        let mut vec: Vec<std::mem::MaybeUninit<T>> = Vec::with_capacity(count);
         unsafe {
             let ptr = vec.as_mut_ptr() as *mut u8;
             self.data().get_bytes(ptr, count * std::mem::size_of::<T>());
@@ -217,13 +248,13 @@ impl FeaturePrintObservation {
 
     #[inline]
     pub fn vec_f32(&self) -> Vec<f32> {
-        debug_assert!(self.element_type() == ElementType::F32);
+        debug_assert!(self.element_type() == vn::ElementType::F32);
         self.vec_of::<f32>()
     }
 
     #[inline]
     pub fn vec_f64(&self) -> Vec<f64> {
-        debug_assert!(self.element_type() == ElementType::F64);
+        debug_assert!(self.element_type() == vn::ElementType::F64);
         self.vec_of::<f64>()
     }
 

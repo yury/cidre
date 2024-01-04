@@ -11,6 +11,7 @@ impl Region {
 define_obj_type!(pub Region2d(Region));
 
 define_obj_type!(pub FaceLandmarks(ns::Id));
+
 define_obj_type!(pub FaceLandmarks2d(FaceLandmarks));
 
 impl FaceLandmarks {
