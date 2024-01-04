@@ -70,6 +70,7 @@ pub struct Format(pub i32);
 impl Format {
     /// A 32-bit-per-pixel, fixed-point pixel format in which
     /// the alpha value precedes the red, green, and blue color components.
+    #[doc(alias = "kCIFormatARGB8")]
     #[inline]
     pub fn argb8() -> Self {
         unsafe { kCIFormatARGB8 }
@@ -77,6 +78,7 @@ impl Format {
 
     /// A 32-bit-per-pixel, fixed-point pixel format in which
     /// the blue, green, and red color components precede the alpha value.
+    #[doc(alias = "kCIFormatBGRA8")]
     #[inline]
     pub fn bgra8() -> Self {
         unsafe { kCIFormatBGRA8 }
@@ -84,6 +86,7 @@ impl Format {
 
     /// A 32-bit-per-pixel, fixed-point pixel format in which
     /// the red, green, and blue color components precede the alpha value.
+    #[doc(alias = "kCIFormatRGBA8")]
     #[inline]
     pub fn rgba8() -> Self {
         unsafe { kCIFormatRGBA8 }
@@ -91,142 +94,189 @@ impl Format {
 
     /// A 32-bit-per-pixel, fixed-point pixel format in which
     /// the red, green, and blue color components precede the alpha value.
+    #[doc(alias = "kCIFormatABGR8")]
     #[inline]
     pub fn abgr8() -> Self {
         unsafe { kCIFormatABGR8 }
     }
 
     /// A 64-bit-per-pixel, floating-point pixel format.
+    #[doc(alias = "kCIFormatRGBAh")]
+    #[inline]
     pub fn rgbah() -> Self {
         unsafe { kCIFormatRGBAh }
     }
 
     /// A 64-bit-per-pixel, fixed-point pixel format.
+    #[doc(alias = "kCIFormatRGBA16")]
+    #[inline]
     pub fn rgba16() -> Self {
         unsafe { kCIFormatRGBA16 }
     }
 
     /// A 128-bit-per-pixel, floating-point pixel format.
+    #[doc(alias = "kCIFormatRGBAf")]
+    #[inline]
     pub fn rgbaf() -> Self {
         unsafe { kCIFormatRGBAf }
     }
 
     /// An 8-bit-per-pixel, fixed-point pixel format in which
     /// the sole component is alpha.
+    #[doc(alias = "kCIFormatA8")]
+    #[inline]
     pub fn a8() -> Self {
         unsafe { kCIFormatA8 }
     }
 
     /// A 16-bit-per-pixel, fixed-point pixel format in which
     /// the sole component is alpha.
+    #[doc(alias = "kCIFormatA16")]
+    #[inline]
     pub fn a16() -> Self {
         unsafe { kCIFormatA16 }
     }
 
     /// A 16-bit-per-pixel, half-width floating-point pixel format in which
     /// the sole component is alpha.
+    #[doc(alias = "kCIFormatAh")]
+    #[inline]
     pub fn ah() -> Self {
         unsafe { kCIFormatAh }
     }
 
     /// A 32-bit-per-pixel, full-width floating-point pixel format in which
     /// the sole component is alpha.
+    #[doc(alias = "kCIFormatAf")]
+    #[inline]
     pub fn af() -> Self {
         unsafe { kCIFormatAf }
     }
 
     /// An 8-bit-per-pixel, fixed-point pixel format in which
     /// the sole component is a red color value.
+    #[doc(alias = "kCIFormatR8")]
+    #[inline]
     pub fn r8() -> Self {
         unsafe { kCIFormatR8 }
     }
 
     /// A 16-bit-per-pixel, fixed-point pixel format in which
     /// the sole component is a red color value.
+    #[doc(alias = "kCIFormatR16")]
+    #[inline]
     pub fn r16() -> Self {
         unsafe { kCIFormatR16 }
     }
 
     /// A 16-bit-per-pixel, floating-point pixel format in which
     /// the sole component is a red color value.
+    #[doc(alias = "kCIFormatRh")]
+    #[inline]
     pub fn rh() -> Self {
         unsafe { kCIFormatRh }
     }
 
     /// A 32-bit-per-pixel, floating-point pixel format in which
     /// the sole component is a red color value.
+    #[inline]
+    #[doc(alias = "kCIFormatRf")]
     pub fn rf() -> Self {
         unsafe { kCIFormatRf }
     }
 
     /// A 16-bit-per-pixel, fixed-point pixel format
     /// with only red and green color components.
+    #[doc(alias = "kCIFormatRG8")]
+    #[inline]
     pub fn rg8() -> Self {
         unsafe { kCIFormatRG8 }
     }
 
     /// A 32-bit-per-pixel, fixed-point pixel format
     /// with only red and green color components.
+    #[doc(alias = "kCIFormatRG16")]
+    #[inline]
     pub fn rg16() -> Self {
         unsafe { kCIFormatRG16 }
     }
 
     /// A 32-bit-per-pixel, floating-point pixel format
     /// with only red and green color components.
+    #[doc(alias = "kCIFormatRGh")]
+    #[inline]
     pub fn rgh() -> Self {
         unsafe { kCIFormatRGh }
     }
 
     /// A 64-bit-per-pixel, floating-point pixel format
     /// with only red and green color components.
+    #[doc(alias = "kCIFormatRGf")]
+    #[inline]
     pub fn rgf() -> Self {
         unsafe { kCIFormatRGf }
     }
 
     /// An 8-bit-per-pixel, fixed-point pixel format in which
     /// the sole component is luminance.
+    #[doc(alias = "kCIFormatL8")]
+    #[inline]
     pub fn l8() -> Self {
         unsafe { kCIFormatL8 }
     }
 
     /// A 16-bit-per-pixel, fixed-point pixel format in which
     /// the sole component is luminance.
+    #[doc(alias = "kCIFormatL16")]
+    #[inline]
     pub fn l16() -> Self {
         unsafe { kCIFormatL16 }
     }
 
     /// A 16-bit-per-pixel, floating-point pixel format in which
     /// the sole component is luminance.
+    #[doc(alias = "kCIFormatLh")]
+    #[inline]
     pub fn lh() -> Self {
         unsafe { kCIFormatLh }
     }
 
     /// A 32-bit-per-pixel, floating-point pixel format in which
     /// the sole component is luminance.
+    #[doc(alias = "kCIFormatLf")]
+    #[inline]
     pub fn lf() -> Self {
         unsafe { kCIFormatLf }
     }
 
     /// A 16-bit-per-pixel, fixed-point pixel format
     /// with only 8-bit luminance and alpha components.
+    #[doc(alias = "kCIFormatLA8")]
+    #[inline]
     pub fn la8() -> Self {
         unsafe { kCIFormatLA8 }
     }
 
     /// A 32-bit-per-pixel, fixed-point pixel format with
     /// only 16-bit luminance and alpha components.
+    #[doc(alias = "kCIFormatLA16")]
+    #[inline]
     pub fn la16() -> Self {
         unsafe { kCIFormatLA16 }
     }
 
     /// A 32-bit-per-pixel, half-width floating-point pixel format
     /// with 16-bit luminance and alpha components.
+    #[doc(alias = "kCIFormatLAh")]
+    #[inline]
     pub fn lah() -> Self {
         unsafe { kCIFormatLAh }
     }
 
     /// A 64-bit-per-pixel, full-width floating-point pixel format
     /// with 32-bit luminance and alpha components.
+    #[doc(alias = "kCIFormatLAf")]
+    #[inline]
     pub fn laf() -> Self {
         unsafe { kCIFormatLAf }
     }
