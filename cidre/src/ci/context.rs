@@ -41,21 +41,16 @@ impl Context {
         color_space: &cg::ColorSpace,
         options: &ns::Dictionary<ns::String, ns::Id>,
     ) -> Result<(), &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            if self.write_png_to_url_format_colorspace_opts_err(
+        ns::if_false(|err| unsafe {
+            self.write_png_to_url_format_colorspace_opts_err(
                 image,
                 url,
                 format,
                 color_space,
                 options,
-                &mut error,
-            ) {
-                Ok(())
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+                err,
+            )
+        })
     }
 }
 
