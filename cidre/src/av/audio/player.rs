@@ -68,6 +68,9 @@ impl Player {
     #[objc::msg_send(play)]
     pub fn play(&mut self) -> bool;
 
+    #[objc::msg_send(playAtTime:)]
+    pub fn play_at_time(&mut self, time: ns::TimeInterval) -> bool;
+
     #[objc::msg_send(pause)]
     pub fn pause(&mut self);
 
