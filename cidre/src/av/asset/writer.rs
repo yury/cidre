@@ -52,7 +52,7 @@ impl Writer {
     #[objc::msg_send(addInput:)]
     pub unsafe fn add_input_throws(&mut self, input: &WriterInput);
 
-    pub fn add_input<'ar>(&mut self, input: &WriterInput) -> Result<(), &'ar ns::Exception> {
+    pub fn add_input<'ear>(&mut self, input: &WriterInput) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.add_input_throws(input) })
     }
 
@@ -88,10 +88,10 @@ impl Writer {
     /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     /// assert_eq!(writer.inputs().len(), 0);
     /// ```
-    pub fn with_url_and_file_type<'ar>(
+    pub fn with_url_and_file_type<'ear>(
         url: &ns::Url,
         file_type: &av::FileType,
-    ) -> Result<arc::R<Self>, &'ar ns::Error> {
+    ) -> Result<arc::R<Self>, &'ear ns::Error> {
         let mut error = None;
         unsafe {
             let res = Self::alloc().init_with_url_file_type_err(url, file_type, &mut error);
@@ -102,9 +102,9 @@ impl Writer {
         }
     }
 
-    pub fn with_content_type<'ar>(
+    pub fn with_content_type<'ear>(
         output_content_type: &ut::Type,
-    ) -> Result<arc::R<Self>, &'ar ns::Exception> {
+    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_content_type_throws(output_content_type)
         })
@@ -141,7 +141,7 @@ impl Writer {
     pub fn set_output_file_type_profile(&mut self, val: Option<&av::FileTypeProfile>);
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&ns::Id>;
+    pub fn delegate(&self) -> Option<&AnyDelegate>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
@@ -179,6 +179,9 @@ pub trait Delegate: objc::Obj {
         segment_type: av::AssetSegmentType,
     );
 }
+
+define_obj_type!(pub AnyDelegate(ns::Id));
+impl Delegate for AnyDelegate {}
 
 #[link(name = "av", kind = "static")]
 extern "C" {

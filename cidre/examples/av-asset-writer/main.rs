@@ -7,11 +7,11 @@ use cidre::{arc, av, blocks, cat, cf, cm, dispatch, ns};
 #[command(author, version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    command: Command,
 }
 
 #[derive(clap::Subcommand)]
-enum Commands {
+enum Command {
     /// Encode wav file to aac file
     #[clap(alias = "e", alias = "enc")]
     Encode(EncodeArgs),
@@ -21,7 +21,7 @@ enum Commands {
     Decode(DecodeArgs),
 }
 
-impl Commands {
+impl Command {
     async fn run(&self) {
         match self {
             Self::Encode(args) => encode(args).await,
@@ -32,8 +32,7 @@ impl Commands {
 
 #[tokio::main]
 async fn main() {
-    let cli = Cli::parse();
-    cli.command.run().await;
+    Cli::parse().command.run().await;
 }
 
 #[derive(clap::Args, Debug)]
@@ -164,7 +163,9 @@ fn write(
         }
     });
 
-    input.request_media_data_when_ready_on_queue_throws(&queue, block.escape());
+    input
+        .request_media_data_when_ready_on_queue(&queue, block.escape())
+        .unwrap();
 
     sema.wait_forever();
 
