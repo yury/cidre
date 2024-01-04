@@ -148,10 +148,6 @@ pub trait Obj: Sized + arc::Retain {
 #[repr(transparent)]
 pub struct Id(Type);
 
-crate::define_obj_type!(pub Any(Id));
-
-pub const NONE: Option<&'static Any> = None;
-
 impl Id {
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &'ar mut Id {
