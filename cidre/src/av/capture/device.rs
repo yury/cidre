@@ -1750,7 +1750,10 @@ impl Device {
     }
 }
 
-define_obj_type!(pub FrameRateRange(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVFrameRateRange")]
+    pub FrameRateRange(ns::Id)
+);
 
 impl FrameRateRange {
     #[objc::msg_send(minFrameRate)]
@@ -1940,17 +1943,20 @@ pub mod notifications {
     use crate::ns;
 
     /// Posted when a device becomes available on the system.
+    #[doc(alias = "AVCaptureDeviceWasConnectedNotification")]
     pub fn was_connected() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceWasConnectedNotification }
     }
 
     /// Posted when a device becomes unavailable on the system.
+    #[doc(alias = "AVCaptureDeviceWasDisconnectedNotification")]
     pub fn was_disconnected() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceWasDisconnectedNotification }
     }
 
     /// Posted when the instance of av::CaptureDevice has detected a substantial
     /// change to the video subject area.
+    #[doc(alias = "AVCaptureDeviceSubjectAreaDidChangeNotification")]
     #[cfg(not(target_os = "macos"))]
     pub fn subject_area_did_change() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
