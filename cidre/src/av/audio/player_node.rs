@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     arc,
     av::{self, audio},
-    define_obj_type, objc,
+    blocks, define_obj_type, ns, objc,
 };
 
 /// Options controlling buffer scheduling.
@@ -20,26 +20,53 @@ impl BufOpts {
     pub const INTERRUPTS_AT_LOOP: Self = Self(1usize << 2);
 }
 
+#[doc(alias = "AVAudioPlayerNodeCompletionCallbackType")]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(isize)]
 pub enum CompletionCbType {
+    #[doc(alias = "AVAudioPlayerNodeCompletionDataConsumed")]
     DataConsumed = 0,
+    #[doc(alias = "AVAudioPlayerNodeCompletionDataRendered")]
     DataRendered = 1,
+    #[doc(alias = "AVAudioPlayerNodeCompletionDataPlayedBack")]
     DataPlayedBack = 2,
 }
 
-define_obj_type!(pub PlayerNode(audio::Node), AV_AUDIO_PLAYER_NODE);
+define_obj_type!(
+    #[doc(alias = "AVAudioPlayerNode")]
+    pub PlayerNode(audio::Node),
+    AV_AUDIO_PLAYER_NODE
+);
 
 impl PlayerNode {
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
-    pub unsafe fn _schedule_buf_ch(&self, buffer: &av::AudioPcmBuf, handler: *mut c_void);
+    pub unsafe fn _schedule_buf_ch(&mut self, buffer: &av::AudioPcmBuf, handler: *mut c_void);
 
     /// Schedule playing samples from an [`av::AudioPCMBuf`].
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
     #[inline]
-    pub fn schedule_buf_no_ch(&self, buffer: &av::AudioPcmBuf) {
+    pub fn schedule_buf_no_ch(&mut self, buffer: &av::AudioPcmBuf) {
         unsafe { self._schedule_buf_ch(buffer, std::ptr::null_mut()) }
+    }
+
+    pub fn schedule_buf_block<F>(
+        &mut self,
+        buffer: &av::AudioPcmBuf,
+        block: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce() + 'static + Send,
+    {
+        unsafe { self._schedule_buf_ch(buffer, block.as_mut_ptr()) }
+    }
+
+    pub async fn schedule_buf<F>(&mut self, buffer: &av::AudioPcmBuf)
+    where
+        F: FnOnce() + 'static + Send,
+    {
+        let (future, block) = blocks::comp0();
+        self.schedule_buf_block(buffer, block.escape());
+        future.await
     }
 
     #[objc::msg_send(play)]
@@ -53,9 +80,10 @@ impl PlayerNode {
 
     #[objc::msg_send(isPlaying)]
     pub fn is_playing(&self) -> bool;
+}
 
-    // - Mixing
-
+/// Mixing
+impl PlayerNode {
     #[objc::msg_send(volume)]
     pub fn volume(&self) -> f32;
 
