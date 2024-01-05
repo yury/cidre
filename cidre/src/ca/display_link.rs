@@ -1,11 +1,15 @@
 use crate::{arc, ca, cf, define_obj_type, ns, objc};
 
-define_obj_type!(pub DisplayLink(ns::Id), CA_DISPLAY_LINK);
+define_obj_type!(
+    #[doc(alias = "CADisplayLink")]
+    pub DisplayLink(ns::Id),
+    CA_DISPLAY_LINK
+);
 
 #[objc::obj_trait]
 pub trait Target: objc::Obj {
     #[objc::msg_send(onDisplayLink:)]
-    fn on_display_link(&mut self, link: &DisplayLink);
+    fn on_display_link(&mut self, link: &mut DisplayLink);
 }
 
 impl DisplayLink {
@@ -18,7 +22,7 @@ impl DisplayLink {
     pub fn with<D: TargetImpl>(target: &D) -> arc::R<Self> {
         unsafe {
             Self::with_target_selector(
-                std::mem::transmute(target),
+                target.as_id_ref(),
                 D::sel_on_display_link().unwrap_unchecked(),
             )
         }
@@ -40,7 +44,7 @@ impl DisplayLink {
     /// Removes the object from all runloop modes (releasing the receiver if
     /// it has been implicitly retained) and releases the 'target' object
     #[objc::msg_send(invalidate)]
-    pub fn invalidate(&self);
+    pub fn invalidate(&mut self);
 
     #[objc::msg_send(timestamp)]
     pub fn timestamp(&self) -> cf::TimeInterval;
@@ -61,7 +65,7 @@ impl DisplayLink {
     pub fn preferred_frame_rate_range(&self) -> ca::FrameRateRange;
 
     #[objc::msg_send(setPreferredFrameRateRange:)]
-    pub fn set_preferred_frame_rate_range(&self, val: ca::FrameRateRange);
+    pub fn set_preferred_frame_rate_range(&mut self, val: ca::FrameRateRange);
 }
 
 #[link(name = "ca", kind = "static")]

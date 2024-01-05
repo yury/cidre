@@ -84,7 +84,7 @@ where
         (self.closure)(key_path, object, change)
     }
 
-    pub fn with_obj<'ar, O>(
+    pub fn with_obj<'ar, O: objc::Obj>(
         object: &mut O,
         key_path: &ns::String,
         options: KVOOpts,
@@ -101,7 +101,7 @@ where
 
         let res = ns::try_catch(|| unsafe {
             cidre_create_observer(
-                std::mem::transmute(object),
+                object.as_id_ref(),
                 key_path,
                 options,
                 raw as *mut c_void,

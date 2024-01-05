@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     arc,
     av::{self, audio},
-    blocks, define_obj_type, ns, objc,
+    blocks, define_obj_type, objc,
 };
 
 /// Options controlling buffer scheduling.

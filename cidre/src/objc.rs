@@ -142,6 +142,11 @@ pub trait Obj: Sized + arc::Retain {
     fn is_tagged_ptr(&self) -> bool {
         ((self as *const Self as usize) >> 63) == 1
     }
+
+    #[inline]
+    fn as_id_ref(&self) -> &Id {
+        unsafe { std::mem::transmute(self) }
+    }
 }
 
 /// Use it as NSObject or id

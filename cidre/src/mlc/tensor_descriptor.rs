@@ -52,11 +52,7 @@ impl TensorDesc {
         shape: [i32; N],
         data_type: mlc::DType,
     ) -> Option<arc::R<Self>> {
-        let mut sh: [*const ns::Number; N] = [std::ptr::null(); N];
-        for (i, v) in shape.iter().enumerate() {
-            sh[i] = ns::Number::tagged_i32(*v);
-        }
-        let shape = ns::Array::from_slice(unsafe { std::mem::transmute(&sh[..]) });
+        let shape: arc::R<ns::Array<ns::Number>> = shape.into();
 
         Self::with_shape_dt(&shape, data_type)
     }
