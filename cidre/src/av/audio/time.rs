@@ -2,7 +2,10 @@ use crate::{arc, cat, define_cls, define_obj_type, ns, objc};
 
 use super::FramePos;
 
-define_obj_type!(pub Time(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAudioTime")]
+    pub Time(ns::Id)
+);
 
 impl arc::A<Time> {
     #[objc::msg_send(initWithAudioTimeStamp:sampleRate:)]
@@ -46,6 +49,7 @@ impl arc::A<Time> {
 /// least not be cluttered by ugly multiplications and divisions by the host clock frequency.
 impl Time {
     define_cls!(AV_AUDIO_TIME);
+
     pub fn with_ts(ts: &cat::AudioTimeStamp, sample_rate: f64) -> arc::R<Time> {
         Self::alloc().init_with_audio_ts_sample_rate(ts, sample_rate)
     }

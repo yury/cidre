@@ -1,4 +1,4 @@
-use std::ptr::slice_from_raw_parts;
+use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
 use crate::{arc, cf, define_obj_type, define_options, ns, objc};
 
@@ -143,6 +143,20 @@ impl Data {
 }
 
 impl DataMut {
+    #[objc::msg_send(mutableBytes)]
+    pub unsafe fn bytes_mut(&mut self) -> *mut u8;
+
+    #[inline]
+    pub fn as_mut_slice(&mut self) -> &mut [u8] {
+        unsafe { &mut *slice_from_raw_parts_mut(self.bytes_mut(), self.len()) }
+    }
+
+    #[objc::msg_send(appendData:)]
+    pub fn append_data(&mut self, data: &ns::Data);
+
+    #[objc::msg_send(increaseLengthBy:)]
+    pub fn increase_len_by(&mut self, extra_len: usize);
+
     pub fn as_cf_mut(&mut self) -> &mut cf::DataMut {
         unsafe { std::mem::transmute(self) }
     }
@@ -163,7 +177,14 @@ mod tests {
         let data = ns::Data::new();
         assert!(data.is_empty());
 
-        let data = ns::DataMut::new();
+        let mut data = ns::DataMut::new();
         assert!(data.is_empty());
+
+        let slice = data.as_mut_slice();
+        assert!(slice.is_empty());
+
+        data.increase_len_by(10);
+
+        assert_eq!(10, data.len());
     }
 }
