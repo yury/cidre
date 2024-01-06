@@ -1,4 +1,4 @@
-use crate::{cm, define_obj_type, ns, objc};
+use crate::{cm, define_obj_type, ns, objc, sn};
 
 define_obj_type!(pub Classification(ns::Id));
 
@@ -20,5 +20,5 @@ impl ClassificationResult {
     pub fn time_range(&self) -> cm::TimeRange;
 
     #[objc::msg_send(classificationForIdentifier:)]
-    pub fn classification_for_id(&self, id: &ns::String) -> Option<&Classification>;
+    pub fn classification_for_id<'a>(&'a self, id: &ns::String) -> Option<&'a Classification>;
 }
