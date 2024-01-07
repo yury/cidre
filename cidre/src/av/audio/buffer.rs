@@ -24,6 +24,9 @@ impl Buf {
 
 define_obj_type!(pub PcmBuf(Buf));
 
+unsafe impl Send for PcmBuf {}
+unsafe impl Sync for PcmBuf {}
+
 impl arc::A<PcmBuf> {
     #[objc::msg_send(initWithPCMFormat:frameCapacity:)]
     pub fn init_with_pcm_format_frame_capacity(

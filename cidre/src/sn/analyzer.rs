@@ -5,6 +5,9 @@ define_obj_type!(
     SN_AUDIO_STREAM_ANALYZER
 );
 
+unsafe impl Send for AudioStreamAnalyzer {}
+unsafe impl Sync for AudioStreamAnalyzer {}
+
 impl arc::A<AudioStreamAnalyzer> {
     #[objc::msg_send(initWithFormat:)]
     pub fn init_with_format(self, format: &av::AudioFormat) -> arc::R<AudioStreamAnalyzer>;

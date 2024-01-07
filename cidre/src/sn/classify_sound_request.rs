@@ -1,7 +1,7 @@
 use crate::{arc, cm, define_cls, define_obj_type, ns, objc, sn};
 
 define_obj_type!(
-    pub ClassifySoundRequest(ns::Id)
+    pub ClassifySoundRequest(sn::Request)
 );
 
 impl arc::A<ClassifySoundRequest> {
@@ -18,6 +18,10 @@ impl ClassifySoundRequest {
 
     pub fn with_classifier_id<'ear>(id: &sn::Id) -> Result<arc::R<Self>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_classifier_id_err(id, err) })
+    }
+
+    pub fn v1<'ear>() -> Result<arc::R<Self>, &'ear ns::Error> {
+        Self::with_classifier_id(sn::Id::v1())
     }
 
     #[objc::msg_send(overlapFactor)]

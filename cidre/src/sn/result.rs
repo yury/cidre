@@ -5,7 +5,7 @@ define_obj_type!(pub Result(ns::Id));
 #[objc::obj_trait]
 pub trait ResultsObserving: objc::Obj {
     #[objc::msg_send(request:didProduceResult:)]
-    fn request_did_produce_result(&mut self, request: &sn::Request, result: &Result);
+    fn request_did_produce_result(&mut self, request: &sn::Request, result: &sn::Result);
 
     #[objc::optional]
     #[objc::msg_send(request:didFailWithError:)]

@@ -1,4 +1,4 @@
-use crate::{cm, define_obj_type, ns, objc, sn};
+use crate::{arc, cm, define_obj_type, ns, objc, sn};
 
 define_obj_type!(pub Classification(ns::Id));
 
@@ -10,7 +10,10 @@ impl Classification {
     pub fn confidence(&self) -> f64;
 }
 
-define_obj_type!(pub ClassificationResult(sn::Result));
+define_obj_type!(
+    pub ClassificationResult(sn::Result),
+    SN_CLASSIFICATION_RESULT
+);
 
 impl ClassificationResult {
     #[objc::msg_send(classifications)]
@@ -21,4 +24,8 @@ impl ClassificationResult {
 
     #[objc::msg_send(classificationForIdentifier:)]
     pub fn classification_for_id<'a>(&'a self, id: &ns::String) -> Option<&'a Classification>;
+}
+
+extern "C" {
+    static SN_CLASSIFICATION_RESULT: &'static objc::Class<ClassificationResult>;
 }
