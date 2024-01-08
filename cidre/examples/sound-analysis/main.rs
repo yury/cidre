@@ -60,10 +60,12 @@ async fn main() {
 
     let queue = dispatch::Queue::new();
 
+    let sa = analysis.retained();
+
     let mut tap = blocks::mut2(move |buf: &av::AudioPcmBuf, when: &av::AudioTime| {
         let ts = when.sample_time();
         let buf = buf.retained();
-        let mut sa = analysis.clone();
+        let mut sa = sa.clone();
         queue.async_mut(move || {
             sa.analyze_audio_buf_at_pos(buf.as_ref(), ts);
         });
@@ -78,6 +80,8 @@ async fn main() {
     eprintln!("stopping");
 
     engine.stop();
+
+    analysis.complete_analysis();
 
     eprintln!("done");
 }
