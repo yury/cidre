@@ -47,6 +47,7 @@ full = [
   "nw",
   "core_motion",
   "wk",
+  "gc"
 ]
 
 # Turn on private API
@@ -86,6 +87,7 @@ mpsg = ["mps"]
 dispatch = ["cf", "ns"]
 core_motion = ["ns"]
 wk = ["ns"]
+gc = ["ns"]
 
 [dependencies]
 

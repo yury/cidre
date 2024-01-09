@@ -86,6 +86,10 @@ pub mod nw;
 #[cfg(feature = "ns")]
 pub mod objc;
 
+/// Game Controller
+#[cfg(feature = "gc")]
+pub mod gc;
+
 pub mod os;
 pub mod sys;
 
