@@ -354,6 +354,18 @@ impl Connection {
     #[cfg(any(target_os = "ios", target_os = "tvos"))]
     #[objc::msg_send(setActiveVideoStabilizationMode:)]
     pub fn set_active_video_stabilization_mode(&mut self, val: av::CaptureVideoStabilizationMode);
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
+    #[objc::msg_send(isCameraIntrinsicMatrixDeliverySupported)]
+    pub fn is_camera_intrinsic_matrix_delivery_supported(&self) -> bool;
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
+    #[objc::msg_send(isCameraIntrinsicMatrixDeliveryEnabled)]
+    pub fn is_camera_intrinsic_matrix_delivery_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
+    #[objc::msg_send(setCameraIntrinsicMatrixDeliveryEnabled:)]
+    pub fn set_camera_intrinsic_matrix_delivery_enabled(&mut self, val: bool);
 }
 
 define_obj_type!(
