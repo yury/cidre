@@ -157,7 +157,7 @@ pub use blit_pass::SampleBufAttachDescArray as BlitPassSampleBufAttachDescArray;
 mod command_encoder;
 pub use command_encoder::BarrierScope;
 pub use command_encoder::CmdEncoder;
-pub use command_encoder::ResourceUsage;
+pub use command_encoder::ResUsage;
 
 mod blit_command_encoder;
 pub use blit_command_encoder::BlitCmdEncoder;
@@ -328,15 +328,15 @@ macro_rules! define_mtl {
 
     (use_resource) => {
         #[$crate::objc::msg_send(useResource:usage:)]
-        pub fn use_resource(&mut self, resource: &crate::mtl::Res, usage: crate::mtl::ResourceUsage);
+        pub fn use_resource(&mut self, resource: &crate::mtl::Res, usage: crate::mtl::ResUsage);
     };
 
     (use_resources) => {
         #[$crate::objc::msg_send(useResources:count:usage:)]
-        pub fn use_resources_count(&mut self, resources: *const &crate::mtl::Res, count: usize, usage: crate::mtl::ResourceUsage);
+        pub fn use_resources_count(&mut self, resources: *const &crate::mtl::Res, count: usize, usage: crate::mtl::ResUsage);
 
         #[inline]
-        pub fn use_resources(&mut self, resources: &[&crate::mtl::Res], usage: crate::mtl::ResourceUsage) {
+        pub fn use_resources(&mut self, resources: &[&crate::mtl::Res], usage: crate::mtl::ResUsage) {
             self.use_resources_count(resources.as_ptr(), resources.len(), usage);
         }
     };

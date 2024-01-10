@@ -5,10 +5,10 @@ use crate::{arc, define_mtl, define_obj_type, define_options, ns, objc};
 define_options!(
     /// Describes how a resource will be used by a shader through an argument buffer
     #[doc(alias = "MTLResourceUsage")]
-    pub ResourceUsage(usize)
+    pub ResUsage(usize)
 );
 
-impl ResourceUsage {
+impl ResUsage {
     /// An option that enables reading from the resource.
     pub const READ: Self = Self(1 << 0);
 
