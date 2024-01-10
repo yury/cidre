@@ -44,6 +44,7 @@ pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::TorchMode as CaptureTouchMode;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
+pub use capture::VideoPreviewLayer as CaptureVideoPreviewLayer;
 pub use capture::VideoStabilizationMode as CaptureVideoStabilizationMode;
 pub use capture::WbChromaticityValues as CaptureWbChromaticityValues;
 pub use capture::WbGains as CaptureWbGains;

@@ -58,6 +58,9 @@ pub use video_data_output::VideoDataOutput;
 pub use video_data_output::VideoDataOutputSampleBufDelegate;
 pub use video_data_output::VideoDataOutputSampleBufDelegateImpl;
 
+pub mod video_preview_layer;
+pub use video_preview_layer::VideoPreviewLayer;
+
 pub mod photo_output;
 pub use photo_output::PhotoOutput;
 

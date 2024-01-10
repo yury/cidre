@@ -1,4 +1,4 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
 ///
@@ -236,12 +236,124 @@ define_obj_type!(
     pub Connection(ns::Id)
 );
 
+impl arc::A<Connection> {
+    #[objc::msg_send(initWithInputPorts:output:)]
+    pub fn init_with_ports(
+        self,
+        input: &ns::Array<av::CaptureInputPort>,
+        output: &av::CaptureOutput,
+    ) -> arc::R<Connection>;
+
+    #[objc::msg_send(initWithInputPort:videoPreviewLayer:)]
+    pub fn init_with_port_preview_layer(
+        self,
+        input: &av::CaptureInputPort,
+        layer: &av::CaptureVideoPreviewLayer,
+    ) -> arc::R<Connection>;
+}
+
 impl Connection {
     define_cls!(AV_CAPTURE_CONNECTION);
+
+    pub fn with_ports(
+        input: &ns::Array<av::CaptureInputPort>,
+        output: &av::CaptureOutput,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_ports(input, output)
+    }
+
+    pub fn with_port_preview_layer(
+        input: &av::CaptureInputPort,
+        layer: &av::CaptureVideoPreviewLayer,
+    ) -> arc::R<Connection> {
+        Self::alloc().init_with_port_preview_layer(input, layer)
+    }
+
+    #[objc::msg_send(inputPorts)]
+    pub fn input_ports(&self) -> &ns::Array<av::CaptureInputPort>;
+
+    #[objc::msg_send(output)]
+    pub fn output(&self) -> Option<&av::CaptureOutput>;
+
+    #[objc::msg_send(videoPreviewLayer)]
+    pub fn video_preview_layer(&self) -> Option<&av::CaptureVideoPreviewLayer>;
 
     /// An array of audio channels that the connection provides.
     #[objc::msg_send(audioChannels)]
     pub fn audio_channels(&self) -> &ns::Array<AudioChannel>;
+
+    #[objc::msg_send(isEnabled)]
+    pub fn is_enabled(&self) -> bool;
+
+    #[objc::msg_send(setEnabled:)]
+    pub fn set_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(isActive)]
+    pub fn is_active(&self) -> bool;
+
+    #[objc::msg_send(isVideoMirroringSupported)]
+    pub fn is_video_mirroring_supported(&self) -> bool;
+
+    #[objc::msg_send(isVideoMirrored)]
+    pub fn is_video_mirrored(&self) -> bool;
+
+    #[objc::msg_send(setVideoMirrored:)]
+    pub fn set_video_mirrored(&mut self, val: bool);
+
+    #[objc::msg_send(automaticallyAdjustsVideoMirroring)]
+    pub fn automatically_adjusts_video_mirroring(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyAdjustsVideoMirroring:)]
+    pub fn set_automatically_adjusts_video_mirroring(&mut self, val: bool);
+
+    #[objc::msg_send(isVideoRotationAngleSupported:)]
+    pub fn is_video_rotation_angle_supported(&self, angle: cg::Float) -> bool;
+
+    #[objc::msg_send(videoRotationAngle)]
+    pub fn video_rotation_angle(&self) -> cg::Float;
+
+    #[objc::msg_send(setVideoRotationAngle:)]
+    pub unsafe fn set_video_rotation_angle_throws(&mut self, val: cg::Float);
+
+    pub fn set_video_rotation_angle<'ear>(
+        &mut self,
+        val: cg::Float,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_video_rotation_angle_throws(val) })
+    }
+
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(isVideoFieldModeSupported)]
+    pub fn is_video_field_mode_supported(&self) -> bool;
+
+    //...
+
+    #[objc::msg_send(videoMaxScaleAndCropFactor)]
+    pub fn video_max_scale_and_crop_factor(&self) -> cg::Float;
+
+    #[objc::msg_send(videoScaleAndCropFactor)]
+    pub fn video_scale_and_crop_factor(&self) -> cg::Float;
+
+    #[objc::msg_send(setVideoScaleAndCropFactor:)]
+    pub fn set_video_scale_and_crop_factor(&mut self, val: cg::Float);
+
+    #[objc::msg_send(preferredVideoStabilizationMode)]
+    pub fn preferred_video_stabilization_mode(&self) -> av::CaptureVideoStabilizationMode;
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
+    #[objc::msg_send(setPreferredVideoStabilizationMode:)]
+    pub fn set_preferred_video_stabilization_mode(
+        &mut self,
+        val: av::CaptureVideoStabilizationMode,
+    );
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
+    #[objc::msg_send(activeVideoStabilizationMode)]
+    pub fn active_video_stabilization_mode(&self) -> av::CaptureVideoStabilizationMode;
+
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
+    #[objc::msg_send(setActiveVideoStabilizationMode:)]
+    pub fn set_active_video_stabilization_mode(&mut self, val: av::CaptureVideoStabilizationMode);
 }
 
 define_obj_type!(
