@@ -1,6 +1,6 @@
-use crate::{cf, define_cf_type, define_options};
+use crate::{cf, define_cf_type, define_opts};
 
-define_options!(pub UnderlineStyle(i32));
+define_opts!(pub UnderlineStyle(i32));
 impl UnderlineStyle {
     pub const NONE: Self = Self(0x00);
     pub const SINGLE: Self = Self(0x01);
@@ -8,7 +8,7 @@ impl UnderlineStyle {
     pub const DOUBLE: Self = Self(0x09);
 }
 
-define_options!(pub UnderlineStyleModifiers(i32));
+define_opts!(pub UnderlineStyleModifiers(i32));
 impl UnderlineStyleModifiers {
     pub const PATTERN_SOLID: Self = Self(0x0000);
     pub const PATTERN_DOT: Self = Self(0x0100);

@@ -1,6 +1,6 @@
 use std::ffi::{c_uint, c_void};
 
-use crate::define_options;
+use crate::define_opts;
 
 use super::{Boolean, Integer, KernReturn, Natural, Port, PortName};
 
@@ -8,7 +8,7 @@ pub type Number = Natural;
 
 // https://web.mit.edu/darwin/src/modules/xnu/osfmk/man/mach_msg.html
 
-define_options!(pub HeaderBits(u32));
+define_opts!(pub HeaderBits(u32));
 impl HeaderBits {
     pub const ZERO: Self = Self(0);
 
@@ -403,7 +403,7 @@ impl Return {
     }
 }
 
-define_options!(pub MsgOption(Integer));
+define_opts!(pub MsgOption(Integer));
 
 impl MsgOption {
     pub const NONE: Self = Self(0x00000000);

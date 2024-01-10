@@ -3,7 +3,7 @@ use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
 
 use super::{Index, OptionFlags, Range, Type, TypeId};
 
-use crate::{arc, cf, define_cf_type, define_options, UniChar};
+use crate::{arc, cf, define_cf_type, define_opts, UniChar};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -33,7 +33,7 @@ impl Encoding {
     }
 }
 
-define_options!(pub CompareFlags(OptionFlags));
+define_opts!(pub CompareFlags(OptionFlags));
 
 impl CompareFlags {
     pub const NONE: Self = Self(OptionFlags(0));

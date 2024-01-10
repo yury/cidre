@@ -1,9 +1,9 @@
-use crate::{define_options, ns};
+use crate::{define_opts, ns};
 
-define_options!(pub KernelOptions(usize));
+define_opts!(pub KernelOpts(usize));
 
 /// Options used when creating mps::Kernel objects
-impl KernelOptions {
+impl KernelOpts {
     /// Use default options
     #[doc(alias = "MPSKernelOptionsNone")]
     pub const NONE: Self = Self(0usize);
@@ -199,7 +199,7 @@ impl DataType {
     }
 }
 
-define_options!(pub AliasingStrategy(usize));
+define_opts!(pub AliasingStrategy(usize));
 
 /// A description of whether slices,transposes and other views should alias their underlying content or be copied into new storage.
 impl AliasingStrategy {

@@ -14,7 +14,7 @@ use std::{
     ops,
 };
 
-use crate::{arc, define_options, ns, objc::Class};
+use crate::{arc, define_opts, ns, objc::Class};
 
 #[repr(transparent)]
 pub struct Block<F>(c_void, std::marker::PhantomData<F>);
@@ -186,7 +186,7 @@ where
     Layout2Mut::new(Layout2Mut::<F>::invoke5 as _, f)
 }
 
-define_options!(pub Flags(i32));
+define_opts!(pub Flags(i32));
 
 impl Flags {
     pub const NONE: Self = Self(0);

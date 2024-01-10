@@ -6,7 +6,7 @@ pub use core::DataType;
 pub use core::DimensionSlice;
 pub use core::ImageEdgeMode;
 pub use core::ImageFeatureChannelFormat;
-pub use core::KernelOptions;
+pub use core::KernelOpts;
 pub use core::Offset;
 pub use core::Origin;
 pub use core::Shape;

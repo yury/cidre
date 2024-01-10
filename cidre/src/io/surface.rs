@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, define_options, sys::_types::MachPort};
+use crate::{arc, cf, define_cf_type, define_opts, sys::_types::MachPort};
 
 #[doc(alias = "SurfaceID")]
 pub type SurfId = u32;
@@ -45,7 +45,7 @@ pub enum Subsampling {
     _411 = 4, // Chroma downsampled by 4x1
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "IOSurfaceLockOptions")]
     pub LockOpts(u32)
 );

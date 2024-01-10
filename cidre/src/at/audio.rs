@@ -25,7 +25,7 @@ pub use component::ComponentInstance;
 pub use component::ComponentInstanceRef;
 pub use component::Desc as ComponentDesc;
 pub use component::Flags as ComponentFlags;
-pub use component::InstantiationOptions as ComponentInstantiationOptions;
+pub use component::InstantiationOpts as ComponentInstantiationOpts;
 
 mod unit;
 

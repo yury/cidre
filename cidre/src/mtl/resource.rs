@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{define_mtl, define_obj_type, define_options, ns};
+use crate::{define_mtl, define_obj_type, define_opts, ns};
 
 /// Options for setPurgeable call.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -83,7 +83,7 @@ impl Default for HazardTrackingMode {
     }
 }
 
-define_options!(pub Opts(usize));
+define_opts!(pub Opts(usize));
 
 pub const CPU_CACHE_MODE_SHIFT: usize = 0;
 pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;

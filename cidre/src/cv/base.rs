@@ -1,4 +1,4 @@
-use crate::define_options;
+use crate::define_opts;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
@@ -25,7 +25,7 @@ impl Time {
     }
 }
 
-define_options!(pub Flags(i32));
+define_opts!(pub Flags(i32));
 
 impl Flags {
     pub const NONE: Self = Self(0);
@@ -78,7 +78,7 @@ pub struct TimeStamp {
 
 pub type OptionFlags = u64;
 
-define_options!(pub TimeStampFlags(u64));
+define_opts!(pub TimeStampFlags(u64));
 
 impl TimeStampFlags {
     pub const VIDEO_TIME_VALID: Self = Self(1 << 0);

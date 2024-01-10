@@ -1,10 +1,10 @@
-use crate::{arc, define_obj_type, define_options, ns, objc, os};
+use crate::{arc, define_obj_type, define_opts, ns, objc, os};
 
 define_obj_type!(pub FileAttrKey(ns::String));
 define_obj_type!(pub FileAttrType(ns::String));
 define_obj_type!(pub FileProtectionType(ns::String));
 
-define_options!(pub VolumeEnumOpts(usize));
+define_opts!(pub VolumeEnumOpts(usize));
 
 impl VolumeEnumOpts {
     ///  The mounted volume enumeration will skip hidden volumes.
@@ -14,7 +14,7 @@ impl VolumeEnumOpts {
     pub const PRODUCE_FILE_REFERENCE_URLS: Self = Self(1 << 2);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSDirectoryEnumerationOptions")]
     pub DirEnumOpts(usize)
 );
@@ -37,7 +37,7 @@ impl DirEnumOpts {
     pub const PRODUCES_RELATIVE_PATH_URLS: Self = Self(1 << 4);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSFileManagerItemReplacementOptions")]
     pub ItemReplacementOpts(usize)
 );

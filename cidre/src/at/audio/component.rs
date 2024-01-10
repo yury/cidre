@@ -3,9 +3,9 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
-use crate::{arc, cf, define_options, os};
+use crate::{arc, cf, define_opts, os};
 
-define_options!(pub Flags(u32));
+define_opts!(pub Flags(u32));
 
 /// AudioComponentFlags
 impl Flags {
@@ -33,7 +33,7 @@ impl Flags {
     pub const CAN_LOAD_IN_PROCESS: Self = Self(0x10);
 }
 
-define_options!(pub InstantiationOptions(u32));
+define_opts!(pub InstantiationOpts(u32));
 
 /// AudioComponentInstantiationOptions
 ///
@@ -53,7 +53,7 @@ define_options!(pub InstantiationOptions(u32));
 ///
 /// These options are just requests to the implementation. It may fail and fall back to the
 /// default.
-impl InstantiationOptions {
+impl InstantiationOpts {
     /// Attempt to load the component into a separate extension process.
     pub const LOAD_OUT_OF_PROCESS: Self = Self(1);
 

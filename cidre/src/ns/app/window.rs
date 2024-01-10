@@ -1,6 +1,6 @@
-use crate::{arc, cg, define_obj_type, define_options, ns, objc};
+use crate::{arc, cg, define_obj_type, define_opts, ns, objc};
 
-define_options!(pub StyleMask(usize));
+define_opts!(pub StyleMask(usize));
 
 impl StyleMask {
     pub const BORDERLESS: Self = Self(0);
@@ -38,7 +38,7 @@ impl StyleMask {
     pub const HUD_WINDOW: Self = Self(1 << 13);
 }
 
-define_options!(pub CollectionBehavior(usize));
+define_opts!(pub CollectionBehavior(usize));
 
 impl CollectionBehavior {
     pub const DEFAULT: Self = Self(0);

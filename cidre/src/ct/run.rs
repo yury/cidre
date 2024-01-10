@@ -1,6 +1,6 @@
-use crate::{cf, cg, define_cf_type, define_options};
+use crate::{cf, cg, define_cf_type, define_opts};
 
-define_options!(pub Status(u32));
+define_opts!(pub Status(u32));
 
 impl Status {
     /// The run has no special attributes.

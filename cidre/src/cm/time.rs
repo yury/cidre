@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_options};
+use crate::{arc, cf, define_opts};
 
 pub mod range;
 pub use range::Range as TimeRange;
@@ -12,7 +12,7 @@ pub type TimeScale = i32;
 #[doc(alias = "CMTimeEpoch")]
 pub type TimeEpoch = i64;
 
-define_options!(
+define_opts!(
     #[doc(alias = "CMTimeFlags")]
     pub TimeFlags(u32)
 );

@@ -1,6 +1,6 @@
-use crate::{arc, define_cls, define_obj_type, define_options, ns, objc};
+use crate::{arc, define_cls, define_obj_type, define_opts, ns, objc};
 
-define_options!(pub Opts(usize));
+define_opts!(pub Opts(usize));
 
 impl Opts {
     /// Match letters in the pattern independent of case.
@@ -33,7 +33,7 @@ impl Opts {
     pub const USE_UNICODE_WORD_BOUNDARIES: Self = Self(1 << 6);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSMatchingOptions")]
     pub MatchOpts(usize)
 );
@@ -60,7 +60,7 @@ impl MatchOpts {
     pub const ANCHORING_BOUNDS: Self = Self(1 << 4);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSMatchingFlags")]
     pub MatchFlags(usize)
 );
@@ -97,7 +97,7 @@ impl arc::A<Regex> {
     pub fn init_with_pattern_opts_err<'ear>(
         self,
         pattern: &ns::String,
-        options: Opts,
+        opts: Opts,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Regex>>;
 }
@@ -108,9 +108,9 @@ impl Regex {
     #[inline]
     pub fn with_pattern<'ear>(
         pattern: &ns::String,
-        options: Opts,
+        opts: Opts,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        ns::if_none(|err| Self::alloc().init_with_pattern_opts_err(pattern, options, err))
+        ns::if_none(|err| Self::alloc().init_with_pattern_opts_err(pattern, opts, err))
     }
 }
 

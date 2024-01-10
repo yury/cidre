@@ -1,4 +1,4 @@
-use crate::{define_obj_type, define_options, ns};
+use crate::{define_obj_type, define_opts, ns};
 
 pub type Confidence = f32;
 pub type AspectRatio = f32;
@@ -150,9 +150,9 @@ extern "C" {
     static VNBarcodeSymbologyMicroQR: &'static BarcodeSymbology;
 }
 
-define_options!(pub ImageCropAndScaleOption(usize));
+define_opts!(pub ImageCropAndScaleOpt(usize));
 
-impl ImageCropAndScaleOption {
+impl ImageCropAndScaleOpt {
     /// scale image maintaining aspect ratio to fit on the short side and crop centered on the long side
     pub const CENTER_CROP: Self = Self(0);
 

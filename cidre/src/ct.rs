@@ -1,6 +1,6 @@
 mod font;
 pub use font::Font;
-pub use font::Options as FontOptions;
+pub use font::Opts as FontOpts;
 pub use font::UIFontType as FontUIFontType;
 
 mod font_descriptor;

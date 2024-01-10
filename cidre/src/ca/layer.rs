@@ -1,6 +1,8 @@
-use ns::Id;
-
-use crate::{arc, ca, cf, cg, define_obj_type, define_options, ns, objc};
+use crate::{
+    arc, ca, cf, cg, define_obj_type, define_opts,
+    ns::{self, Id},
+    objc,
+};
 
 define_obj_type!(pub ContentsGravity(ns::String));
 define_obj_type!(pub ContentsFormat(ns::String));
@@ -13,7 +15,7 @@ define_obj_type!(
     pub CornerCurve(ns::String)
 );
 
-define_options!(
+define_opts!(
     #[doc(alias = "CAAutoresizingMask")]
     pub AutoresizingMask(u32)
 );
@@ -28,7 +30,7 @@ impl AutoresizingMask {
     pub const MAX_Y_MARGIN: Self = Self(1 << 5);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "CAEdgeAntialiasingMask")]
     pub EdgeAntialiasingMask(u32)
 );
@@ -47,7 +49,7 @@ impl EdgeAntialiasingMask {
     pub const TOP: Self = Self(1 << 3);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "CACornerMask")]
     pub CornerMask(usize)
 );

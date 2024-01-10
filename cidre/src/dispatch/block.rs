@@ -1,7 +1,7 @@
-use crate::define_options;
+use crate::define_opts;
 use std::ffi::c_ulong;
 
-define_options!(pub Flags(c_ulong));
+define_opts!(pub Flags(c_ulong));
 
 /// #[doc(alias = "dispatch_block_flags")]
 

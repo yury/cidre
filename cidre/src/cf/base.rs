@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, define_options};
+use crate::{arc, cf, define_cf_type, define_opts};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -10,7 +10,7 @@ pub type Index = isize;
 pub type TypeId = usize;
 pub type HashCode = usize;
 
-define_options!(pub OptionFlags(usize));
+define_opts!(pub OptionFlags(usize));
 
 impl OptionFlags {
     pub const NONE: Self = Self(0);

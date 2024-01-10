@@ -5,7 +5,7 @@ use crate::blocks;
 use crate::{
     arc,
     av::AuthorizationStatus,
-    define_obj_type, define_options, ns,
+    define_obj_type, define_opts, ns,
     objc::{self, Obj},
 };
 
@@ -61,7 +61,7 @@ pub enum MarkerMark {
     Paragraph,
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "AVSpeechSynthesisVoiceTraits")]
     pub VoiceTraits(usize)
 );

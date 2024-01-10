@@ -1,4 +1,4 @@
-use crate::{define_options, os::Status};
+use crate::{define_opts, os::Status};
 
 pub const PROPERTY_NOT_SUPPORTED: Status = Status(-12900);
 pub const PROPERTY_READ_ONLY: Status = Status(-12901);
@@ -37,7 +37,7 @@ pub const VIDEO_ENCODER_NEEDS_ROSETTA: Status = Status(-17693);
 pub const VIDEO_DECODER_REFERENCE_MISSING: Status = Status(-17694);
 pub const VIDEO_DECODER_CALLBACK_MESSAGING: Status = Status(-17695);
 
-define_options!(
+define_opts!(
     #[doc(alias = "VTDecodeFrameFlags")]
     pub DecodeFrameFlags(u32)
 );
@@ -49,7 +49,7 @@ impl DecodeFrameFlags {
     pub const ENABLE_TEMPORAL_PROCESSING: Self = Self(1 << 3);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "VTDecodeInfoFlags")]
     pub DecodeInfoFlags(u32)
 );
@@ -61,7 +61,7 @@ impl DecodeInfoFlags {
     pub const SKIPPED_LEADING_FRAME_DROPPED: Self = Self(1u32 << 3);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "VTEncodeInfoFlags")]
     pub EncodeInfoFlags(u32)
 );

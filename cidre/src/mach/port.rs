@@ -1,6 +1,6 @@
 use std::os::raw::c_int;
 
-use crate::define_options;
+use crate::define_opts;
 
 use super::vm_map::{vm_allocate, vm_deallocate};
 use super::{KernReturn, VMAddress, VMAllocationFlags, VMSize};
@@ -56,7 +56,7 @@ impl Right {
     pub const NUMBER: Self = Self(6);
 }
 
-define_options!(pub Type(u32));
+define_opts!(pub Type(u32));
 
 impl Type {
     pub const NONE: Self = Self(0);

@@ -1,4 +1,4 @@
-use crate::{arc, cf, cg, ct, define_cf_type, define_options, UniChar};
+use crate::{arc, cf, cg, ct, define_cf_type, define_opts, UniChar};
 
 define_cf_type!(Font(cf::Type));
 impl Font {
@@ -275,8 +275,8 @@ impl Font {
     }
 }
 
-define_options!(pub Options(usize));
-impl Options {
+define_opts!(pub Opts(usize));
+impl Opts {
     pub const DEFAULT: Self = Self(0);
     pub const PREVENT_AUTO_ACTIVATION: Self = Self(1 << 0);
     pub const PREVENT_AUTO_DOWNLOAD: Self = Self(1 << 1);

@@ -3,7 +3,7 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{define_options, os};
+use crate::{define_opts, os};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -351,7 +351,7 @@ impl Format {
 // #[repr(transparent)]
 // pub struct FormatFlags(pub u32);
 
-define_options!(pub FormatFlags(u32));
+define_opts!(pub FormatFlags(u32));
 
 /// ios app audio - IS_BIG_ENDIAN | IS_SIGNED_INTEGER | IS_PACKED
 /// mic - IS_SIGNED_INTEGER | IS_PACKED
@@ -889,7 +889,7 @@ impl ChannelBitmap {
     pub const RIGHT_TOP_REAR: Self = Self(1u32 << 26);
 }
 
-define_options!(pub ChannelFlags(u32));
+define_opts!(pub ChannelFlags(u32));
 
 /// These constants are used in the mChannelFlags field of an
 /// AudioChannelDescription structure.

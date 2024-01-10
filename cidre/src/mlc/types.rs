@@ -1,4 +1,4 @@
-use crate::{define_options, ns};
+use crate::{define_opts, ns};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
@@ -585,16 +585,16 @@ impl GradientClippingType {
     }
 }
 
-define_options!(pub GraphCompilationOptions(u64));
+define_opts!(pub GraphCompilationOpts(u64));
 
-impl GraphCompilationOptions {
+impl GraphCompilationOpts {
     pub const DEBUG_LAYERS: Self = Self(0x01);
     pub const DISABLE_LAYER_FUSION: Self = Self(0x02);
     pub const LINK_GRAPHS: Self = Self(0x04);
     pub const COMPUTE_ALL_GRADIENTS: Self = Self(0x08);
 }
-define_options!(pub ExecutionOptions(u64));
-impl ExecutionOptions {
+define_opts!(pub ExecutionOpts(u64));
+impl ExecutionOpts {
     pub const SKIP_WRITING_INPUT_DATA_TO_DEVICE: Self = Self(0x01);
     pub const SYNCHRONOUS: Self = Self(0x02);
     pub const PROFILING: Self = Self(0x04);

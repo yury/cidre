@@ -1,4 +1,4 @@
-use crate::{define_obj_type, define_options, ns};
+use crate::{define_obj_type, define_opts, ns};
 
 define_obj_type!(
     #[doc(alias = "AVAudioSessionPort")]
@@ -414,7 +414,7 @@ pub enum RouteChangeReason {
     RouteConfigurationChange = 8,
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "AVAudioSessionCategoryOptions")]
     pub CategoryOpts(usize)
 );

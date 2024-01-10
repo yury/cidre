@@ -34,14 +34,14 @@ impl InferenceGraph {
     #[objc::msg_send(compileWithOptions:device:)]
     pub fn compile_with_options_(
         &mut self,
-        options: mlc::GraphCompilationOptions,
+        options: mlc::GraphCompilationOpts,
         device: &mlc::Device,
     ) -> bool;
 
     #[inline]
     pub fn compile(
         &mut self,
-        options: mlc::GraphCompilationOptions,
+        options: mlc::GraphCompilationOpts,
         device: &mlc::Device,
     ) -> Result<(), ()> {
         if self.compile_with_options_(options, device) {
@@ -56,7 +56,7 @@ impl InferenceGraph {
         &self,
         input_data: &ns::Dictionary<ns::String, mlc::TensorData>,
         batch_size: usize,
-        options: mlc::ExecutionOptions,
+        options: mlc::ExecutionOpts,
         ch: Option<&'static Block<F>>,
     ) -> bool
     where

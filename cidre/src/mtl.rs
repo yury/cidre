@@ -86,7 +86,7 @@ mod device;
 pub use device::ArgBufsTier;
 pub use device::Device;
 pub use device::GpuFamily;
-pub use device::PipelineOption;
+pub use device::PipelineOpt;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAlign;
 pub use device::SparsePageSize;
@@ -161,7 +161,7 @@ pub use command_encoder::ResUsage;
 
 mod blit_command_encoder;
 pub use blit_command_encoder::BlitCmdEncoder;
-pub use blit_command_encoder::BlitOption;
+pub use blit_command_encoder::BlitOpt;
 
 mod render_command_encoder;
 pub use render_command_encoder::CullMode;

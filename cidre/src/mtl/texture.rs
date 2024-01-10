@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_mtl, define_obj_type, define_options, mtl, ns, objc};
+use crate::{arc, cf, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 #[cfg(feature = "io")]
 use crate::io;
@@ -56,7 +56,7 @@ impl SharedTextureHandle {
     define_mtl!(device, label);
 }
 
-define_options!(pub Usage(usize));
+define_opts!(pub Usage(usize));
 
 impl Usage {
     pub const UNKNOWN: Self = Self(0x0000);

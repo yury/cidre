@@ -5,7 +5,7 @@ pub use types::Chirality;
 pub use types::Confidence;
 pub use types::Degrees;
 pub use types::ElementType;
-pub use types::ImageCropAndScaleOption;
+pub use types::ImageCropAndScaleOpt;
 pub use types::PointsClassification;
 
 mod request;

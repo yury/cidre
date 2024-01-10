@@ -1,8 +1,8 @@
 use std::ops::DerefMut;
 
-use crate::{arc, define_mtl, define_obj_type, define_options, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, define_opts, ns, objc};
 
-define_options!(
+define_opts!(
     /// Describes how a resource will be used by a shader through an argument buffer
     #[doc(alias = "MTLResourceUsage")]
     pub ResUsage(usize)
@@ -22,7 +22,7 @@ impl ResUsage {
      */
 }
 
-define_options!(
+define_opts!(
     /// Describes the types of resources that the a barrier operates on
     #[doc(alias = "MTLBarrierScope")]
     pub BarrierScope(usize)

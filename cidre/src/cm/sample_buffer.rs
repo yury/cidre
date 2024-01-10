@@ -1,6 +1,6 @@
 use std::{ffi::c_void, mem::MaybeUninit, ptr::slice_from_raw_parts};
 
-use crate::{arc, cf, cm, define_cf_type, define_options, os};
+use crate::{arc, cf, cm, define_cf_type, define_opts, os};
 
 #[cfg(feature = "cv")]
 use crate::cv;
@@ -8,7 +8,7 @@ use crate::cv;
 #[cfg(feature = "cat")]
 use crate::cat;
 
-define_options!(pub Flags(u32));
+define_opts!(pub Flags(u32));
 
 impl Flags {
     /// Make sure memory involved in audio buffer lists is 16-byte aligned

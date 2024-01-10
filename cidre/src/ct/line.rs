@@ -1,6 +1,6 @@
-use crate::{arc, blocks, cf, cg, ct, define_cf_type, define_options};
+use crate::{arc, blocks, cf, cg, ct, define_cf_type, define_opts};
 
-define_options!(
+define_opts!(
     #[doc(alias = "CTLineBoundsOptions")]
     pub LineBoundsOpts(usize)
 );

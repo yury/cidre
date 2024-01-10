@@ -1,6 +1,6 @@
-use crate::define_options;
+use crate::define_opts;
 
-define_options!(pub VMAllocationFlags(i32));
+define_opts!(pub VMAllocationFlags(i32));
 
 impl VMAllocationFlags {
     /// Allocate new VM region at the specified virtual address, if possible.

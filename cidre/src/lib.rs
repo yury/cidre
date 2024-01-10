@@ -137,7 +137,7 @@ pub mod wk;
 pub mod arc;
 
 #[macro_export]
-macro_rules! define_options {
+macro_rules! define_opts {
     (
         $(#[$outer:meta])*
         $vis:vis

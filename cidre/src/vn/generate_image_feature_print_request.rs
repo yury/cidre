@@ -12,10 +12,10 @@ impl GenerateImageFeaturePrintRequest {
     pub fn results(&self) -> Option<&ns::Array<vn::FeaturePrintObservation>>;
 
     #[objc::msg_send(imageCropAndScaleOption)]
-    pub fn image_crop_and_scale_option(&self) -> vn::ImageCropAndScaleOption;
+    pub fn image_crop_and_scale_option(&self) -> vn::ImageCropAndScaleOpt;
 
     #[objc::msg_send(setImageCropAndScaleOption:)]
-    pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOption);
+    pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOpt);
 }
 
 #[link(name = "vn", kind = "static")]

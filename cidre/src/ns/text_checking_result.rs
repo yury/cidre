@@ -1,6 +1,6 @@
-use crate::{define_obj_type, define_options, ns, objc};
+use crate::{define_obj_type, define_opts, ns, objc};
 
-define_options!(pub Type(usize));
+define_opts!(pub Type(usize));
 
 impl Type {
     /// language identification

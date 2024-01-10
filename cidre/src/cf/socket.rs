@@ -2,7 +2,7 @@ use std::ffi::c_void;
 use std::intrinsics::transmute;
 use std::ptr::NonNull;
 
-use crate::{arc, cf, define_cf_type, define_options};
+use crate::{arc, cf, define_cf_type, define_opts};
 
 define_cf_type!(Socket(cf::Type));
 
@@ -25,7 +25,7 @@ pub struct Signature {
     pub address: arc::R<cf::Data>,
 }
 
-define_options!(pub CbType(usize));
+define_opts!(pub CbType(usize));
 
 impl CbType {
     pub const NO: Self = Self(0);
@@ -36,7 +36,7 @@ impl CbType {
     pub const WRITE: Self = Self(8);
 }
 
-define_options!(pub Flags(usize));
+define_opts!(pub Flags(usize));
 
 impl Flags {
     pub const AUTOMATICALLY_REENABLE_READ_CALL_BACK: Self = Self(1);

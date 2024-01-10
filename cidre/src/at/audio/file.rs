@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, cat::audio, cf, define_options, os};
+use crate::{arc, cat::audio, cf, define_opts, os};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[doc(alias = "AudioFilePropertyID")]
@@ -630,7 +630,7 @@ pub mod errors {
     pub const FILE_NOT_FOUND: Status = Status(-43);
 }
 
-define_options!(pub Flags(u32));
+define_opts!(pub Flags(u32));
 
 /// These are flags that can be used with the create call
 impl Flags {

@@ -1,8 +1,8 @@
 use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
-use crate::{arc, cf, define_obj_type, define_options, ns, objc};
+use crate::{arc, cf, define_obj_type, define_opts, ns, objc};
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSDataReadingOptions")]
     pub ReadOpts(usize)
 );
@@ -21,7 +21,7 @@ impl ReadOpts {
     pub const MAPPED_ALWAYS: Self = Self(1 << 3);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSDataWritingOptions")]
     pub WriteOpts(usize)
 );
@@ -35,7 +35,7 @@ impl WriteOpts {
     pub const FILE_PROTECTION_MASK: Self = Self(0xf0000000);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSDataSearchOptions")]
     pub SearchOpts(usize)
 );

@@ -1,4 +1,4 @@
-use crate::{arc, cf, cv, define_cf_type, define_options};
+use crate::{arc, cf, cv, define_cf_type, define_opts};
 
 define_cf_type!(PixelBufPool(cf::Type));
 
@@ -168,7 +168,7 @@ pub mod notifications {
     }
 }
 
-define_options!(pub FlushFlags(u64));
+define_opts!(pub FlushFlags(u64));
 
 impl FlushFlags {
     pub const NONE: Self = Self(0);

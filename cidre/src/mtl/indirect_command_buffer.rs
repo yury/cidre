@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
+use crate::{define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
@@ -7,7 +7,7 @@ pub struct ExecutionRange {
     pub len: u32,
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "MTLIndirectCommandType")]
     pub IndirectCmdType(usize)
 );

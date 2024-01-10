@@ -1,6 +1,6 @@
-use crate::define_options;
+use crate::define_opts;
 
-define_options!(
+define_opts!(
     #[doc(alias = "CTFontSymbolicTraits")]
     pub FontSymbolicTraits(u32)
 );
@@ -29,7 +29,7 @@ impl FontSymbolicTraits {
     pub const CLASS_MASK: Self = Self(15u32 << CLASS_MASK_SHIFT);
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "CTFontStylisticClass")]
     pub FontStylisticClass(u32)
 );

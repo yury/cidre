@@ -1,12 +1,12 @@
-use crate::{arc, blocks, define_obj_type, define_options, mtl, ns, objc};
+use crate::{arc, blocks, define_obj_type, define_opts, mtl, ns, objc};
 
 #[cfg(feature = "io")]
 use crate::io;
 
 use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
-define_options!(pub PipelineOption(usize));
-impl PipelineOption {
+define_opts!(pub PipelineOpt(usize));
+impl PipelineOpt {
     pub const NONE: Self = Self(0);
     pub const ARGUMENT_INFO: Self = Self(1 << 0);
     pub const BUFFER_TYPE_INFO: Self = Self(1 << 1);
@@ -197,7 +197,7 @@ impl Device {
     pub unsafe fn new_tile_render_ps_err<'ear, 'rar>(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
-        opts: mtl::PipelineOption,
+        opts: mtl::PipelineOpt,
         reflection: *mut Option<&'rar mtl::RenderPipelineReflection>,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
@@ -205,7 +205,7 @@ impl Device {
     pub fn new_tile_render_ps<'ear>(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
-        opts: mtl::PipelineOption,
+        opts: mtl::PipelineOpt,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
         ns::if_none(|err| unsafe {
             self.new_tile_render_ps_err(desc, opts, std::ptr::null_mut(), err)

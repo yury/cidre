@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, define_options, ns, objc};
+use crate::{arc, cf, define_obj_type, define_opts, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSAttributedStringKey")]
@@ -94,7 +94,7 @@ impl AttrStringMut {
     pub fn string_mut(&mut self) -> &ns::StringMut;
 }
 
-define_options!(
+define_opts!(
     #[doc(alias = "NSInlinePresentationIntent")]
     pub InlinePresentationIntent(usize)
 );

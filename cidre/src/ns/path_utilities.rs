@@ -1,5 +1,5 @@
 use crate::{
-    arc, define_options, ns,
+    arc, define_opts, ns,
     objc::{self, Obj},
 };
 
@@ -155,7 +155,7 @@ pub enum SearchPathDirectory {
     Trash = 102,
 }
 
-define_options!(pub SearchPathDomainMask(usize));
+define_opts!(pub SearchPathDomainMask(usize));
 
 impl SearchPathDomainMask {
     /// User's home directory --- place to install user's personal items (~)

@@ -1,4 +1,4 @@
-use crate::{arc, cf, cv, define_options, os};
+use crate::{arc, cf, cv, define_opts, os};
 
 #[cfg(feature = "io")]
 use crate::io;
@@ -178,7 +178,7 @@ impl<'a> Drop for BaseAddressLockGuard<'a> {
     }
 }
 
-define_options!(pub LockFlags(cv::OptionFlags));
+define_opts!(pub LockFlags(cv::OptionFlags));
 
 impl LockFlags {
     pub const DEFAULT: Self = Self(0);

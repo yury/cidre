@@ -1,8 +1,8 @@
-use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
+use crate::{define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
-define_options!(pub BlitOption(usize));
+define_opts!(pub BlitOpt(usize));
 
-impl BlitOption {
+impl BlitOpt {
     pub const NONE: Self = Self(0);
     pub const DEPTH_FROM_DEPTH_STENCIL: Self = Self(1 << 0);
     pub const STENCIL_FROM_DEPTH_STENCIL: Self = Self(1 << 1);

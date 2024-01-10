@@ -3,9 +3,9 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{arc, cf, define_cf_type, define_options, os};
+use crate::{arc, cf, define_cf_type, define_opts, os};
 
-define_options!(pub Flags(u32));
+define_opts!(pub Flags(u32));
 
 impl Flags {
     pub const NONE: Self = Self(0);

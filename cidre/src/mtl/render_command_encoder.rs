@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, define_options, mtl, ns, objc};
+use crate::{define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -152,7 +152,7 @@ pub struct TriangleTessellationFactorsHalf {
     pub inside_tessellation_factor: u16,
 }
 
-define_options!(pub RenderStages(usize));
+define_opts!(pub RenderStages(usize));
 
 impl RenderStages {
     pub const VERTEX: Self = Self(1usize << 0);
