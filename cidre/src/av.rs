@@ -11,6 +11,7 @@ pub use media_format::VideoRange;
 pub mod capture;
 pub use capture::device_notifications as capture_device_notifications;
 pub use capture::input_port_notifications as capture_input_port_notifications;
+pub use capture::session_err_key as capture_session_err_key;
 pub use capture::session_notifications as capture_session_notifications;
 pub use capture::AudioChannel as CaptureAudioChannel;
 pub use capture::AuthorizationStatus;
@@ -32,6 +33,7 @@ pub use capture::FocusMode as CaptureFocusMode;
 pub use capture::FrameRateRange;
 pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
+#[cfg(not(any(target_os = "macos", target_os = "watchos")))]
 pub use capture::InterruptionReason as CaptureInterruptionReason;
 pub use capture::MetadataOutput as CaptureMetadataOutput;
 pub use capture::MicMode as CaptureMicMode;

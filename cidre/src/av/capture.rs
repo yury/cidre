@@ -40,9 +40,11 @@ pub mod session_preset;
 pub use session_preset::SessionPreset;
 
 pub mod session;
+pub use session::err_key as session_err_key;
 pub use session::notifications as session_notifications;
 pub use session::AudioChannel;
 pub use session::Connection;
+#[cfg(not(target_os = "macos"))]
 pub use session::InterruptionReason;
 pub use session::MultiCamSession;
 pub use session::Session;

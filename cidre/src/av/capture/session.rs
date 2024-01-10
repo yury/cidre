@@ -21,6 +21,10 @@ pub enum VideoOrienation {
     LandscapeLeft = 4,
 }
 
+/// Constants indicating interruption reason. One of these is returned with the
+/// AVCaptureSessionWasInterruptedNotification (see [`InterruptionResason::key()`]).
+#[cfg(not(any(target_os = "macos", target_os = "watchos")))]
+#[doc(alias = "AVCaptureSessionInterruptionReason")]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 #[repr(isize)]
 pub enum InterruptionReason {
@@ -29,6 +33,19 @@ pub enum InterruptionReason {
     VideoDeviceInUseByAnotherClient = 3,
     VideoDeviceNotAvailableWithMultipleForegroundApps = 4,
     VideoDeviceNotAvailableDueToSystemPressure = 5,
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "watchos")))]
+impl InterruptionReason {
+    #[doc(alias = "AVCaptureSessionInterruptionReasonKey")]
+    pub fn key() -> &'static ns::String {
+        #[link(name = "AVFoundation", kind = "framework")]
+        extern "C" {
+            static AVCaptureSessionInterruptionReasonKey: &'static ns::String;
+        }
+
+        unsafe { AVCaptureSessionInterruptionReasonKey }
+    }
 }
 
 define_obj_type!(
@@ -217,7 +234,7 @@ impl MultiCamSession {
     ///   of cameras configured to produce depth, the higher the cost.
     ///   In order to reduce hardwareCost, consider picking a sensor-cropped
     ///   activeFormat, or a binned format.
-    ///   You may also use AVCaptureDeviceInput's videoMinFrameDurationOverride
+    ///   You may also use [`av::CaptureDeviceInput`]'s videoMinFrameDurationOverride
     ///   property to artificially limit the max frame rate (which is the
     ///   reciprocal of the min frame duration) of a source device to a lower value.
     ///   By doing so, you only pay the hardware cost for the max frame rate you intend to use.
@@ -380,7 +397,8 @@ define_obj_type!(
 );
 
 impl AudioChannel {
-    /// A measurement of the instantaneous average power level of the audio flowing through the receiver.
+    /// A measurement of the instantaneous average power level of the audio flowing through
+    /// the receiver.
     ///
     /// A client may poll an [`av::CaptureAudioChannel`] object for its current averagePowerLevel
     /// to get its instantaneous average power level in decibels.
@@ -390,7 +408,7 @@ impl AudioChannel {
 
     /// A measurement of the peak/hold level of the audio flowing through the receiver.
     ///
-    /// A client may poll an [`av::CaptureAudioChannel`] object for its current peakHoldLevel to get its most
+    /// A client may poll an [`av::CaptureAudioChannel`] object for its current [`peak_hold_level`] to get its most
     /// recent peak hold level in decibels.
     /// This property is not key-value observable.
     #[objc::msg_send(peakHoldLevel)]
@@ -414,25 +432,45 @@ impl AudioChannel {
     pub fn set_enabled(&self, val: bool);
 }
 
+#[doc(alias = "AVCaptureSessionErrorKey")]
+pub fn err_key() -> &'static ns::String {
+    #[link(name = "AVFoundation", kind = "framework")]
+    extern "C" {
+        static AVCaptureSessionErrorKey: &'static ns::String;
+    }
+    unsafe { AVCaptureSessionErrorKey }
+}
+
 pub mod notifications {
     use crate::ns;
 
+    /// Posted when an unexpected error occurs while an [`av::CaptureSession`] instance is running.
+    #[doc(alias = "AVCaptureSessionRuntimeErrorNotification")]
+    #[inline]
     pub fn runtime_error() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionRuntimeErrorNotification }
     }
 
+    #[doc(alias = "AVCaptureSessionDidStartRunningNotification")]
+    #[inline]
     pub fn did_start_running() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionDidStartRunningNotification }
     }
 
+    #[doc(alias = "AVCaptureSessionDidStopRunningNotification")]
+    #[inline]
     pub fn did_stop_running() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionDidStopRunningNotification }
     }
 
+    #[doc(alias = "AVCaptureSessionWasInterruptedNotification")]
+    #[inline]
     pub fn was_interrupted() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionWasInterruptedNotification }
     }
 
+    #[doc(alias = "AVCaptureSessionInterruptionEndedNotification")]
+    #[inline]
     pub fn interruption_ended() -> &'static ns::NotificationName {
         unsafe { AVCaptureSessionInterruptionEndedNotification }
     }
