@@ -286,7 +286,7 @@ fn main() {
 
     let device = mtl::Device::sys_default().unwrap();
     let buf = device
-        .new_buf_from_vec(verticies, mtl::ResourceOptions::default())
+        .new_buf_from_vec(verticies, mtl::ResourceOpts::default())
         .unwrap();
 
     let source = ns::String::with_str(LIB_SRC);

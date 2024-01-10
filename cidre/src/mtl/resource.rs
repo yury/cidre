@@ -83,7 +83,7 @@ impl Default for HazardTrackingMode {
     }
 }
 
-define_options!(pub Options(usize));
+define_options!(pub Opts(usize));
 
 pub const CPU_CACHE_MODE_SHIFT: usize = 0;
 pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;
@@ -95,7 +95,7 @@ pub const HAZARD_TRACKING_MODE_SHIFT: usize = 8;
 pub const HAZARD_TRACKING_MODE_MASK: usize = 0x3usize << HAZARD_TRACKING_MODE_SHIFT;
 
 /// A set of optional arguments to influence the creation of a mtl::Resource (mtl::Texture or mtl::Buffer)
-impl Options {
+impl Opts {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
         Self((CpuCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
 
@@ -155,11 +155,11 @@ impl Resource {
 
 #[cfg(test)]
 mod tests {
-    use crate::mtl::{CpuCacheMode, HazardTrackingMode, ResourceOptions, StorageMode};
+    use crate::mtl::{CpuCacheMode, HazardTrackingMode, ResourceOpts, StorageMode};
 
     #[test]
     fn options_default() {
-        let opts = ResourceOptions::default();
+        let opts = ResourceOpts::default();
         assert_eq!(opts.cpu_cache_mode(), CpuCacheMode::DefaultCache);
         assert_eq!(opts.storage_mode(), StorageMode::Shared);
         assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Default);
@@ -167,9 +167,9 @@ mod tests {
 
     #[test]
     fn options_non_default() {
-        let opts = ResourceOptions::CPU_CACHE_MODE_WRITE_COMBINED
-            | ResourceOptions::STORAGE_MODE_MEMORYLESS
-            | ResourceOptions::HAZARD_TRACKING_MODE_UNTRACKED;
+        let opts = ResourceOpts::CPU_CACHE_MODE_WRITE_COMBINED
+            | ResourceOpts::STORAGE_MODE_MEMORYLESS
+            | ResourceOpts::HAZARD_TRACKING_MODE_UNTRACKED;
 
         assert_eq!(opts.cpu_cache_mode(), CpuCacheMode::WriteCombined);
         assert_eq!(opts.storage_mode(), StorageMode::Memoryless);

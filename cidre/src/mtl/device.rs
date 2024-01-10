@@ -130,35 +130,35 @@ impl Device {
     #[objc::msg_send(newLibraryWithSource:options:error:)]
     pub unsafe fn new_lib_with_src_err<'ear>(
         &self,
-        source: &ns::String,
-        options: Option<&mtl::CompileOpts>,
-        error: *mut Option<&'ear ns::Error>,
+        src: &ns::String,
+        opts: Option<&mtl::CompileOpts>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Lib>>;
 
     #[inline]
     pub fn new_lib_with_src<'ear>(
         &self,
-        source: &ns::String,
-        options: Option<&mtl::CompileOpts>,
+        src: &ns::String,
+        opts: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<Lib>, &'ear ns::Error> {
-        ns::if_none(|err| unsafe { Self::new_lib_with_src_err(self, source, options, err) })
+        ns::if_none(|err| unsafe { Self::new_lib_with_src_err(self, src, opts, err) })
     }
 
     pub async fn new_lib_with_src_opts(
         &self,
-        source: &ns::String,
-        options: Option<&mtl::CompileOpts>,
+        src: &ns::String,
+        opts: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
         let (future, block) = blocks::result();
-        self.new_lib_with_src_ch(source, options, block.escape());
+        self.new_lib_with_src_ch(src, opts, block.escape());
         future.await
     }
 
     #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
     pub fn new_lib_with_src_ch<'ar, F>(
         &self,
-        source: &ns::String,
-        options: Option<&mtl::CompileOpts>,
+        src: &ns::String,
+        ops: Option<&mtl::CompileOpts>,
         ch: &'static mut blocks::Block<F>,
     ) where
         F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
@@ -167,22 +167,22 @@ impl Device {
     pub unsafe fn new_compute_ps_with_fn_err<'ear>(
         &self,
         function: &mtl::Fn,
-        error: *mut Option<&'ear ns::Error>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     #[objc::msg_send(newRenderPipelineStateWithDescriptor:error:)]
     pub unsafe fn new_render_ps_err<'ear>(
         &self,
-        descriptor: &mtl::RenderPipelineDesc,
-        error: *mut Option<&'ear ns::Error>,
+        desc: &mtl::RenderPipelineDesc,
+        err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
     pub fn new_render_ps<'ear>(
         &self,
-        descriptor: &mtl::RenderPipelineDesc,
+        desc: &mtl::RenderPipelineDesc,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
-        ns::if_none(|err| unsafe { Self::new_render_ps_err(self, descriptor, err) })
+        ns::if_none(|err| unsafe { Self::new_render_ps_err(self, desc, err) })
     }
 
     #[inline]
@@ -197,63 +197,62 @@ impl Device {
     pub unsafe fn new_tile_render_ps_err<'ear, 'rar>(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
-        options: mtl::PipelineOption,
+        opts: mtl::PipelineOption,
         reflection: *mut Option<&'rar mtl::RenderPipelineReflection>,
-        error: *mut Option<&'ear ns::Error>,
+        err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     pub fn new_tile_render_ps<'ear>(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
-        options: mtl::PipelineOption,
+        opts: mtl::PipelineOption,
     ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
         ns::if_none(|err| unsafe {
-            self.new_tile_render_ps_err(desc, options, std::ptr::null_mut(), err)
+            self.new_tile_render_ps_err(desc, opts, std::ptr::null_mut(), err)
         })
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf(&self, length: usize, options: mtl::ResourceOptions)
-        -> Option<arc::R<mtl::Buf>>;
+    pub fn new_buf(&self, length: usize, options: mtl::ResourceOpts) -> Option<arc::R<mtl::Buf>>;
 
     pub fn new_buf_of<T: Sized>(
         &self,
         len: usize,
-        options: mtl::ResourceOptions,
+        opts: mtl::ResourceOpts,
     ) -> Option<arc::R<mtl::Buf>> {
-        self.new_buf(std::mem::size_of::<T>() * len, options)
+        self.new_buf(std::mem::size_of::<T>() * len, opts)
     }
 
     #[objc::msg_send(newBufferWithBytes:length:options:)]
     pub fn new_buf_with_bytes(
         &self,
         bytes: *const u8,
-        length: usize,
-        options: mtl::ResourceOptions,
+        len: usize,
+        opts: mtl::ResourceOpts,
     ) -> Option<arc::R<Buf>>;
 
     #[inline]
     pub fn new_buf_with_slice<T: Sized>(
         &self,
         slice: &[T],
-        options: mtl::ResourceOptions,
+        opts: mtl::ResourceOpts,
     ) -> Option<arc::R<mtl::Buf>> {
-        self.new_buf_with_bytes(slice.as_ptr() as _, std::mem::size_of_val(slice), options)
+        self.new_buf_with_bytes(slice.as_ptr() as _, std::mem::size_of_val(slice), opts)
     }
 
     #[inline]
     pub fn new_buf_from_vec<T: Sized>(
         &self,
         vec: Vec<T>,
-        options: mtl::ResourceOptions,
+        opts: mtl::ResourceOpts,
     ) -> Option<arc::R<mtl::Buf>> {
-        self.new_buf_with_slice(&vec, options)
+        self.new_buf_with_slice(&vec, opts)
     }
 
     #[objc::msg_send(newDepthStencilStateWithDescriptor:)]
     pub fn new_depth_stencil_state(
         &self,
-        descriptor: &mtl::DepthStencilDesc,
+        descr: &mtl::DepthStencilDesc,
     ) -> Option<arc::R<mtl::DepthStencilState>>;
 
     #[objc::msg_send(newFence)]
@@ -274,11 +273,7 @@ impl Device {
 
     /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
     #[objc::msg_send(heapBufferSizeAndAlignWithLength:options:)]
-    pub fn heap_buf_size_and_align(
-        &self,
-        length: usize,
-        options: mtl::ResourceOptions,
-    ) -> SizeAlign;
+    pub fn heap_buf_size_and_align(&self, len: usize, opts: mtl::ResourceOpts) -> SizeAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDesc) -> Option<arc::R<mtl::Heap>>;

@@ -34,7 +34,7 @@ pub use argument::TextureRefType;
 pub use argument::Type as ArgType;
 
 mod resource;
-pub use resource::Options as ResourceOptions;
+pub use resource::Opts as ResourceOpts;
 pub use resource::Resource;
 
 pub use resource::CpuCacheMode;
@@ -388,12 +388,12 @@ macro_rules! define_mtl {
 
     (resource_options) => {
         #[$crate::objc::msg_send(resourceOptions)]
-        pub fn resource_options(&self) -> crate::mtl::ResourceOptions;
+        pub fn resource_options(&self) -> crate::mtl::ResourceOpts;
     };
 
     (set_resource_options) => {
         #[$crate::objc::msg_send(setResourceOptions:)]
-        pub fn set_resource_options(&mut self, val: crate::mtl::ResourceOptions);
+        pub fn set_resource_options(&mut self, val: crate::mtl::ResourceOpts);
     };
 
     (reset) => {

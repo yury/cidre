@@ -128,7 +128,7 @@ impl Desc {
     pub fn new_buff_with_pixel_format_ar(
         pixel_format: mtl::PixelFormat,
         width: usize,
-        resource_options: mtl::resource::Options,
+        res_opts: mtl::resource::Opts,
         usage: Usage,
     ) -> arc::Rar<Desc>;
 
@@ -136,7 +136,7 @@ impl Desc {
     pub fn new_buff_with_pixel_format(
         pixel_format: mtl::PixelFormat,
         width: usize,
-        resource_options: mtl::resource::Options,
+        res_opts: mtl::resource::Opts,
         usage: Usage,
     ) -> arc::R<Desc>;
 
