@@ -102,7 +102,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let cmd_queue = device.new_cmd_queue().unwrap();
         let cmd_buf = cmd_queue.new_cmd_buf().unwrap();

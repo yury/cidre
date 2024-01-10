@@ -325,7 +325,7 @@ mod tests {
 
     #[test]
     fn foo() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
         let src = ns::String::with_str("kernel void function_a() {}");
 
         let ch = blocks::once2(move |lib, error| {
@@ -336,7 +336,7 @@ mod tests {
 
     #[test]
     fn function_names() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let src = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
         let lib = device.new_lib_with_src(&src, None).unwrap();
@@ -352,7 +352,7 @@ mod tests {
     #[test]
     fn error_basics() {
         ar_pool(|| {
-            let device = mtl::Device::default().unwrap();
+            let device = mtl::Device::sys_default().unwrap();
 
             let src = ns::String::with_str("vid function_a() {}");
             let err = device.new_lib_with_src(&src, None).unwrap_err();
@@ -363,7 +363,7 @@ mod tests {
 
     #[test]
     fn new_function_with_name() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let src = ns::String::with_str("kernel void function_a() {}");
         let lib = device.new_lib_with_src(&src, None).unwrap();
@@ -377,7 +377,7 @@ mod tests {
 
     #[test]
     fn new_function_with_name_constant_values() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let src = ns::String::with_str("kernel void function_a() {}");
         let lib = device.new_lib_with_src(&src, None).unwrap();
@@ -405,7 +405,7 @@ mod tests {
 
     #[test]
     fn install_name() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
         let src = ns::String::with_str("kernel void function_a() {}");
         let lib = device.new_lib_with_src(&src, None).unwrap();
 

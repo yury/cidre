@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
         let queue = device.new_cmd_queue().unwrap();
         let buf = queue.new_cmd_buf().unwrap();
         let enc = buf.new_blit_cmd_enc().unwrap();

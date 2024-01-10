@@ -321,7 +321,7 @@ mod tests {
 
     #[test]
     fn basics3() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let td =
             mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
@@ -335,7 +335,7 @@ mod tests {
 
     #[test]
     fn basics4() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let td =
             mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);

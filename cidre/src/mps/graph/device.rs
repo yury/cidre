@@ -36,7 +36,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let device = graph::Device::with_mtl_device(&mtl::Device::default().unwrap());
+        let device = graph::Device::with_mtl_device(&mtl::Device::sys_default().unwrap());
 
         assert_eq!(device.device_type(), graph::DeviceType::Metal);
     }

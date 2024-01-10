@@ -78,10 +78,10 @@ impl Device {
     /// ```
     /// use cidre::mtl;
     ///
-    /// let device = mtl::Device::default().unwrap();
+    /// let device = mtl::Device::sys_default().unwrap();
     /// ```
     #[inline]
-    pub fn default() -> Option<arc::R<Device>> {
+    pub fn sys_default() -> Option<arc::R<Device>> {
         unsafe { MTLCreateSystemDefaultDevice() }
     }
 
@@ -352,7 +352,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         assert!(device.supports_raytracing());
         assert!(device.supports_fn_pointers());

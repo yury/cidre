@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let mut buffer = device.new_buf(10, Default::default()).unwrap();
         buffer.as_mut_slice()[1] = 10;

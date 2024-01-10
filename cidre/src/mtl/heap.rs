@@ -172,7 +172,7 @@ mod tests {
         desc.set_size(1024);
         assert_eq!(1024, desc.size());
 
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
         let heap = device.new_heap_desc(&desc).unwrap();
         assert!(heap.size() >= 1024);
     }

@@ -60,7 +60,7 @@ fragment float4 pass_color(
 
 fn main() {
     ar_pool(|| {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let source = ns::String::with_str(LIB_SRC);
         let lib = device.new_lib_with_src(&source, None).unwrap();

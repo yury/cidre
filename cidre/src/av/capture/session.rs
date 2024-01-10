@@ -196,7 +196,13 @@ extern "C" {
     static AV_CAPTURE_CONNECTION: &'static objc::Class<Connection>;
 }
 
-define_obj_type!(pub MultiCamSession(Session), AV_CAPTURE_MULTI_CAM_SESSION);
+define_obj_type!(
+    /// A subclass of [`av::CaptureSession`] which supports simultaneous capture from
+    /// multiple inputs of the same media type.
+    #[doc(alias = "AVCaptureMultiCamSession")]
+    pub MultiCamSession(Session),
+    AV_CAPTURE_MULTI_CAM_SESSION
+);
 
 impl MultiCamSession {
     /// ```no_run
@@ -221,7 +227,6 @@ impl MultiCamSession {
     /// hardware constraints, so you receive an AVCaptureSessionRuntimeErrorNotification
     /// when attempting to start it running. Default value is 0.
     /// Contributors to hardwareCost include:
-    ///
     /// - Whether the source devices' active formats use the full
     ///   sensor (4:3) or a crop (16:9). Cropped formats require lower
     ///   hardware bandwidth, and therefore lower the cost.
@@ -245,7 +250,7 @@ impl MultiCamSession {
 
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(systemPressureCost)]
-    pub fn system_pressure_cost(&self) -> f32;
+    pub fn sys_pressure_cost(&self) -> f32;
 }
 
 define_obj_type!(
@@ -280,7 +285,7 @@ impl Connection {
         Self::alloc().init_with_ports(input, output)
     }
 
-    pub fn with_port_preview_layer(
+    pub fn with_preview_layer(
         input: &av::CaptureInputPort,
         layer: &av::CaptureVideoPreviewLayer,
     ) -> arc::R<Connection> {

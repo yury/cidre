@@ -2,7 +2,7 @@ use cidre::{mtl, objc::ar_pool};
 
 fn main() {
     ar_pool(|| {
-        let device = mtl::Device::default().unwrap();
+        let device = mtl::Device::sys_default().unwrap();
 
         let cmd_queue = device.new_cmd_queue().unwrap();
         let mut cmd_buf = cmd_queue.new_cmd_buf().unwrap();

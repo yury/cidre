@@ -284,7 +284,7 @@ fn main() {
         }
     }
 
-    let device = mtl::Device::default().unwrap();
+    let device = mtl::Device::sys_default().unwrap();
     let buf = device
         .new_buf_from_vec(verticies, mtl::ResourceOptions::default())
         .unwrap();
