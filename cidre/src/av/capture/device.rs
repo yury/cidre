@@ -1963,11 +1963,6 @@ pub mod notifications {
 }
 
 define_obj_type!(
-    #[doc(alias = "AVCaptureAudioChannel")]
-    pub CaptureAudioChannel(ns::Id)
-);
-
-define_obj_type!(
     /// Allows clients to search for devices by certain criteria.
     #[doc(alias = "AVCaptureDevice.DiscoverySession")]
     #[doc(alias = "AVCaptureDeviceDiscoverySession")]

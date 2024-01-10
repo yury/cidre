@@ -2,7 +2,6 @@ pub mod device;
 pub use device::AuthorizationStatus;
 pub use device::AutoFocusRangeRestriction;
 pub use device::AutoFocusSys;
-pub use device::CaptureAudioChannel;
 pub use device::CenterStageControlMode;
 pub use device::ColorSpace;
 pub use device::ConfigLockGuard as DeviceConfigurationLockGuard;
