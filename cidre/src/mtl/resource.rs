@@ -139,9 +139,9 @@ impl Opts {
     }
 }
 
-define_obj_type!(pub Resource(ns::Id));
+define_obj_type!(pub Res(ns::Id));
 
-impl Resource {
+impl Res {
     define_mtl!(
         device,
         label,
@@ -149,17 +149,17 @@ impl Resource {
         cpu_cache_mode,
         storage_mode,
         hazard_tracking_mode,
-        resource_options
+        res_opts
     );
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::mtl::{CpuCacheMode, HazardTrackingMode, ResourceOpts, StorageMode};
+    use crate::mtl::{CpuCacheMode, HazardTrackingMode, ResOpts, StorageMode};
 
     #[test]
     fn options_default() {
-        let opts = ResourceOpts::default();
+        let opts = ResOpts::default();
         assert_eq!(opts.cpu_cache_mode(), CpuCacheMode::DefaultCache);
         assert_eq!(opts.storage_mode(), StorageMode::Shared);
         assert_eq!(opts.hazard_tracking_mode(), HazardTrackingMode::Default);
@@ -167,9 +167,9 @@ mod tests {
 
     #[test]
     fn options_non_default() {
-        let opts = ResourceOpts::CPU_CACHE_MODE_WRITE_COMBINED
-            | ResourceOpts::STORAGE_MODE_MEMORYLESS
-            | ResourceOpts::HAZARD_TRACKING_MODE_UNTRACKED;
+        let opts = ResOpts::CPU_CACHE_MODE_WRITE_COMBINED
+            | ResOpts::STORAGE_MODE_MEMORYLESS
+            | ResOpts::HAZARD_TRACKING_MODE_UNTRACKED;
 
         assert_eq!(opts.cpu_cache_mode(), CpuCacheMode::WriteCombined);
         assert_eq!(opts.storage_mode(), StorageMode::Memoryless);

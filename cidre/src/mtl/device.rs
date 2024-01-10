@@ -213,13 +213,9 @@ impl Device {
     }
 
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf(&self, length: usize, options: mtl::ResourceOpts) -> Option<arc::R<mtl::Buf>>;
+    pub fn new_buf(&self, len: usize, options: mtl::ResOpts) -> Option<arc::R<mtl::Buf>>;
 
-    pub fn new_buf_of<T: Sized>(
-        &self,
-        len: usize,
-        opts: mtl::ResourceOpts,
-    ) -> Option<arc::R<mtl::Buf>> {
+    pub fn new_buf_of<T: Sized>(&self, len: usize, opts: mtl::ResOpts) -> Option<arc::R<mtl::Buf>> {
         self.new_buf(std::mem::size_of::<T>() * len, opts)
     }
 
@@ -228,14 +224,14 @@ impl Device {
         &self,
         bytes: *const u8,
         len: usize,
-        opts: mtl::ResourceOpts,
+        opts: mtl::ResOpts,
     ) -> Option<arc::R<Buf>>;
 
     #[inline]
     pub fn new_buf_with_slice<T: Sized>(
         &self,
         slice: &[T],
-        opts: mtl::ResourceOpts,
+        opts: mtl::ResOpts,
     ) -> Option<arc::R<mtl::Buf>> {
         self.new_buf_with_bytes(slice.as_ptr() as _, std::mem::size_of_val(slice), opts)
     }
@@ -244,7 +240,7 @@ impl Device {
     pub fn new_buf_from_vec<T: Sized>(
         &self,
         vec: Vec<T>,
-        opts: mtl::ResourceOpts,
+        opts: mtl::ResOpts,
     ) -> Option<arc::R<mtl::Buf>> {
         self.new_buf_with_slice(&vec, opts)
     }
@@ -273,7 +269,7 @@ impl Device {
 
     /// Returns the size and alignment, in bytes, of a buffer if you create it from a heap.
     #[objc::msg_send(heapBufferSizeAndAlignWithLength:options:)]
-    pub fn heap_buf_size_and_align(&self, len: usize, opts: mtl::ResourceOpts) -> SizeAlign;
+    pub fn heap_buf_size_and_align(&self, len: usize, opts: mtl::ResOpts) -> SizeAlign;
 
     #[objc::msg_send(newHeapWithDescriptor:)]
     pub fn new_heap_desc(&self, descriptor: &mtl::HeapDesc) -> Option<arc::R<mtl::Heap>>;

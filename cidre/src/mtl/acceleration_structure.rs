@@ -185,7 +185,7 @@ impl MotionBoundingBoxGeometryDesc {
     //
 }
 
-define_obj_type!(pub AccelerationStructure(mtl::Resource));
+define_obj_type!(pub AccelerationStructure(mtl::Res));
 
 impl AccelerationStructure {
     #[objc::msg_send(size)]

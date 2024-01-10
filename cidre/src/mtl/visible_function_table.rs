@@ -20,7 +20,7 @@ define_obj_type!(
     /// A table of shader functions visible to your app that you can pass into
     /// compute commands to customize the behavior of a shader.
     #[doc(alias = "MTLVisibleFunctionTable")]
-    pub VisibleFnTable(mtl::Resource)
+    pub VisibleFnTable(mtl::Res)
 );
 
 impl VisibleFnTable {

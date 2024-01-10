@@ -88,7 +88,7 @@ impl Desc {
 define_obj_type!(
     /// A command buffer containing reusable commands, encoded either on the CPU or GPU.
     #[doc(alias = "MTLIndirectCommandBuffer")]
-    pub IndirectCmdBuf(mtl::Resource)
+    pub IndirectCmdBuf(mtl::Res)
 );
 
 impl IndirectCmdBuf {

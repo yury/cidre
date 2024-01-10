@@ -10,7 +10,7 @@ define_obj_type!(
     /// The contents become undefined if both the CPU and GPU write to the same buffer without
     /// a synchronizing action between those writes. This is true even when the regions written do not overlap.
     #[doc(alias = "MTLBuffer")]
-    pub Buf(mtl::Resource)
+    pub Buf(mtl::Res)
 );
 
 impl Buf {

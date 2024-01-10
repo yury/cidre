@@ -56,7 +56,7 @@ impl Desc {
     pub fn set_fn_count(&mut self, val: usize);
 }
 
-define_obj_type!(pub IntersectionFnTable(mtl::Resource));
+define_obj_type!(pub IntersectionFnTable(mtl::Res));
 
 impl IntersectionFnTable {
     define_mtl!(gpu_resource_id);

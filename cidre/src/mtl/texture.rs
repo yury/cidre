@@ -171,8 +171,8 @@ impl Desc {
         set_height,
         depth,
         set_depth,
-        resource_options,
-        set_resource_options,
+        res_opts,
+        set_res_opts,
         cpu_cache_mode,
         set_cpu_cache_mode,
         storage_mode,
@@ -228,7 +228,7 @@ impl Desc {
 define_obj_type!(
     /// A resource that holds formatted image data.
     #[doc(alias = "MTLTexture")]
-    pub Texture(mtl::Resource)
+    pub Texture(mtl::Res)
 );
 
 impl Texture {

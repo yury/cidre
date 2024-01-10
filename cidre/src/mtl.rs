@@ -34,8 +34,8 @@ pub use argument::TextureRefType;
 pub use argument::Type as ArgType;
 
 mod resource;
-pub use resource::Opts as ResourceOpts;
-pub use resource::Resource;
+pub use resource::Opts as ResOpts;
+pub use resource::Res;
 
 pub use resource::CpuCacheMode;
 pub use resource::HazardTrackingMode;
@@ -328,15 +328,15 @@ macro_rules! define_mtl {
 
     (use_resource) => {
         #[$crate::objc::msg_send(useResource:usage:)]
-        pub fn use_resource(&mut self, resource: &crate::mtl::Resource, usage: crate::mtl::ResourceUsage);
+        pub fn use_resource(&mut self, resource: &crate::mtl::Res, usage: crate::mtl::ResourceUsage);
     };
 
     (use_resources) => {
         #[$crate::objc::msg_send(useResources:count:usage:)]
-        pub fn use_resources_count(&mut self, resources: *const &crate::mtl::Resource, count: usize, usage: crate::mtl::ResourceUsage);
+        pub fn use_resources_count(&mut self, resources: *const &crate::mtl::Res, count: usize, usage: crate::mtl::ResourceUsage);
 
         #[inline]
-        pub fn use_resources(&mut self, resources: &[&crate::mtl::Resource], usage: crate::mtl::ResourceUsage) {
+        pub fn use_resources(&mut self, resources: &[&crate::mtl::Res], usage: crate::mtl::ResourceUsage) {
             self.use_resources_count(resources.as_ptr(), resources.len(), usage);
         }
     };
@@ -386,14 +386,14 @@ macro_rules! define_mtl {
         pub fn set_hazard_tracking_mode(&mut self, val: crate::mtl::HazardTrackingMode);
     };
 
-    (resource_options) => {
+    (res_opts) => {
         #[$crate::objc::msg_send(resourceOptions)]
-        pub fn resource_options(&self) -> crate::mtl::ResourceOpts;
+        pub fn res_opts(&self) -> crate::mtl::ResOpts;
     };
 
-    (set_resource_options) => {
+    (set_res_opts) => {
         #[$crate::objc::msg_send(setResourceOptions:)]
-        pub fn set_resource_options(&mut self, val: crate::mtl::ResourceOpts);
+        pub fn set_res_opts(&mut self, val: crate::mtl::ResOpts);
     };
 
     (reset) => {

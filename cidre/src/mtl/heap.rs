@@ -42,8 +42,8 @@ impl Desc {
         set_cpu_cache_mode,
         hazard_tracking_mode,
         set_hazard_tracking_mode,
-        resource_options,
-        set_resource_options
+        res_opts,
+        set_res_opts
     );
 
     #[inline]
@@ -73,13 +73,7 @@ impl Desc {
 define_obj_type!(pub Heap(ns::Id));
 
 impl Heap {
-    define_mtl!(
-        device,
-        label,
-        set_label,
-        hazard_tracking_mode,
-        resource_options
-    );
+    define_mtl!(device, label, set_label, hazard_tracking_mode, res_opts);
 
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;
@@ -95,7 +89,7 @@ impl Heap {
 
     /// Create a new buffer backed by heap memory.
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf(&self, length: usize, options: mtl::ResourceOpts) -> Option<arc::R<mtl::Buf>>;
+    pub fn new_buf(&self, length: usize, options: mtl::ResOpts) -> Option<arc::R<mtl::Buf>>;
 
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
@@ -107,7 +101,7 @@ impl Heap {
     pub fn new_buf_with_offset(
         &self,
         length: usize,
-        options: mtl::ResourceOpts,
+        options: mtl::ResOpts,
         offset: usize,
     ) -> Option<arc::R<mtl::Buf>>;
 
