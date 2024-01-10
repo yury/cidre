@@ -9,18 +9,21 @@ impl Port {
     /* input port types */
 
     /// A Continuity Microphone is an iOS device that a user trusts to use for audio input on Apple TV.
+    #[doc(alias = "AVAudioSessionPortContinuityMicrophone")]
     #[inline]
     pub fn continuity_microphone() -> &'static Self {
         unsafe { AVAudioSessionPortContinuityMicrophone }
     }
 
     /// Line level input on a dock connector
+    #[doc(alias = "AVAudioSessionPortLineIn")]
     #[inline]
     pub fn line_in() -> &'static Self {
         unsafe { AVAudioSessionPortLineIn }
     }
 
     /// Built-in microphone on an iOS device
+    #[doc(alias = "AVAudioSessionPortBuiltInMic")]
     #[inline]
     pub fn built_in_mic() -> &'static Self {
         unsafe { AVAudioSessionPortBuiltInMic }
@@ -28,6 +31,7 @@ impl Port {
 
     /// Microphone on a wired headset.  Headset refers to an accessory that has headphone outputs paired with a
     /// microphone.
+    #[doc(alias = "AVAudioSessionPortHeadsetMic")]
     #[inline]
     pub fn headset_mic() -> &'static Self {
         unsafe { AVAudioSessionPortHeadsetMic }
@@ -36,18 +40,21 @@ impl Port {
     /* output port types */
 
     /// Line level output on a dock connector
+    #[doc(alias = "AVAudioSessionPortLineOut")]
     #[inline]
     pub fn line_out() -> &'static Self {
         unsafe { AVAudioSessionPortLineOut }
     }
 
     /// Headphone or headset output
+    #[doc(alias = "AVAudioSessionPortHeadphones")]
     #[inline]
     pub fn headphones() -> &'static Self {
         unsafe { AVAudioSessionPortHeadphones }
     }
 
     /// Output on a Bluetooth A2DP device
+    #[doc(alias = "AVAudioSessionPortBluetoothA2DP")]
     #[inline]
     pub fn bluetooth_a2dp() -> &'static Self {
         unsafe { AVAudioSessionPortBluetoothA2DP }
@@ -55,29 +62,34 @@ impl Port {
 
     /// The speaker you hold to your ear when on a phone call
     #[inline]
+    #[doc(alias = "AVAudioSessionPortBuiltInReceiver")]
     pub fn built_in_receiver() -> &'static Self {
         unsafe { AVAudioSessionPortBuiltInReceiver }
     }
 
     /// Built-in speaker on an iOS device
+    #[doc(alias = "AVAudioSessionPortBuiltInSpeaker")]
     #[inline]
     pub fn built_in_speaker() -> &'static Self {
         unsafe { AVAudioSessionPortBuiltInSpeaker }
     }
 
     /// Output via High-Definition Multimedia Interface
+    #[doc(alias = "AVAudioSessionPortHDMI")]
     #[inline]
     pub fn hdmi() -> &'static Self {
         unsafe { AVAudioSessionPortHDMI }
     }
 
     /// Output on a remote Air Play device
+    #[doc(alias = "AVAudioSessionPortAirPlay")]
     #[inline]
     pub fn air_play() -> &'static Self {
         unsafe { AVAudioSessionPortAirPlay }
     }
 
     /// Output on a Bluetooth Low Energy device
+    #[doc(alias = "AVAudioSessionPortBluetoothLE")]
     #[inline]
     pub fn bluetooth_le() -> &'static Self {
         unsafe { AVAudioSessionPortBluetoothLE }
@@ -86,54 +98,63 @@ impl Port {
     /* port types that refer to either input or output */
 
     /// Input or output on a Bluetooth Hands-Free Profile device
+    #[doc(alias = "AVAudioSessionPortBluetoothHFP")]
     #[inline]
     pub fn bluetooth_hfp() -> &'static Self {
         unsafe { AVAudioSessionPortBluetoothHFP }
     }
 
     /// Input or output on a Universal Serial Bus device
+    #[doc(alias = "AVAudioSessionPortUSBAudio")]
     #[inline]
     pub fn usb_audio() -> &'static Self {
         unsafe { AVAudioSessionPortUSBAudio }
     }
 
     /// Input or output via Car Audio
+    #[doc(alias = "AVAudioSessionPortCarAudio")]
     #[inline]
     pub fn car_audio() -> &'static Self {
         unsafe { AVAudioSessionPortCarAudio }
     }
 
     /// Input or output that does not correspond to real audio hardware
+    #[doc(alias = "AVAudioSessionPortVirtual")]
     #[inline]
     pub fn virtual() -> &'static Self {
         unsafe { AVAudioSessionPortVirtual }
     }
 
     /// Input or output connected via the PCI (Peripheral Component Interconnect) bus
+    #[doc(alias = "AVAudioSessionPortPCI")]
     #[inline]
     pub fn pci() -> &'static Self {
         unsafe { AVAudioSessionPortPCI }
     }
 
     /// Input or output connected via FireWire
+    #[doc(alias = "AVAudioSessionPortFireWire")]
     #[inline]
     pub fn fire_wire() -> &'static Self {
         unsafe { AVAudioSessionPortFireWire }
     }
 
     /// Input or output connected via DisplayPort
+    #[doc(alias = "AVAudioSessionPortDisplayPort")]
     #[inline]
     pub fn display_port() -> &'static Self {
         unsafe { AVAudioSessionPortDisplayPort }
     }
 
     /// Input or output connected via AVB (Audio Video Bridging)
+    #[doc(alias = "AVAudioSessionPortAVB")]
     #[inline]
     pub fn avb() -> &'static Self {
         unsafe { AVAudioSessionPortAVB }
     }
 
     /// Input or output connected via Thunderbolt
+    #[doc(alias = "AVAudioSessionPortThunderbolt")]
     #[inline]
     pub fn thunderbolt() -> &'static Self {
         unsafe { AVAudioSessionPortThunderbolt }
