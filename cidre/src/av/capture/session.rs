@@ -1,6 +1,7 @@
 use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
 
-/// Constants indicating video orientation, for use with av::CaptureVideoPreviewLayer and av::CaptureConnection.
+/// Constants indicating video orientation, for use with
+/// [`av::CaptureVideoPreviewLayer`] and [`av::CaptureConnection`].
 ///
 /// [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideoorientation?language=objc)
 #[doc(alias = "AVCaptureVideoOrientation")]
@@ -109,15 +110,15 @@ impl Session {
     pub fn remove_connection(&mut self, connection: &av::CaptureConnection);
 
     #[objc::msg_send(beginConfiguration)]
-    pub fn begin_configuration(&mut self);
+    pub fn begin_cfg(&mut self);
 
     #[objc::msg_send(commitConfiguration)]
-    pub fn commit_configuration(&mut self);
+    pub fn commit_cfg(&mut self);
 
     pub fn configure<F: FnMut(&mut Self)>(&mut self, mut config: F) {
-        self.begin_configuration();
+        self.begin_cfg();
         config(self);
-        self.commit_configuration();
+        self.commit_cfg();
     }
 
     /// Indicates whether the session is currently running.
