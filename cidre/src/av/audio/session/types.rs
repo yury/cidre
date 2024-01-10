@@ -105,7 +105,7 @@ impl Port {
 
     /// Input or output that does not correspond to real audio hardware
     #[inline]
-    pub fn r#virtual() -> &'static Self {
+    pub fn virtual() -> &'static Self {
         unsafe { AVAudioSessionPortVirtual }
     }
 
