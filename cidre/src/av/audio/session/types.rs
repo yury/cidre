@@ -121,7 +121,7 @@ impl Port {
     /// Input or output that does not correspond to real audio hardware
     #[doc(alias = "AVAudioSessionPortVirtual")]
     #[inline]
-    pub fn virtual() -> &'static Self {
+    pub fn virtual_() -> &'static Self {
         unsafe { AVAudioSessionPortVirtual }
     }
 
