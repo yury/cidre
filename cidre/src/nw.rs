@@ -21,6 +21,10 @@ mod endpoint;
 pub use endpoint::Endpoint;
 pub use endpoint::EndpointType;
 
+mod error;
+pub use error::Error;
+pub use error::ErrorDomain;
+
 mod interface;
 pub use interface::Iface;
 pub use interface::IfaceRadioType;

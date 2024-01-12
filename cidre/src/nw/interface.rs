@@ -8,6 +8,7 @@ define_obj_type!(
     pub Iface(ns::Id)
 );
 
+#[doc(alias = "nw_interface_radio_type_t")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum IfaceType {
