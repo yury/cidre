@@ -1,8 +1,8 @@
 use crate::define_opts;
 
-define_opts!(pub VMAllocationFlags(i32));
+define_opts!(pub VmAllocationFlags(i32));
 
-impl VMAllocationFlags {
+impl VmAllocationFlags {
     /// Allocate new VM region at the specified virtual address, if possible.
     pub const FIXED: Self = Self(0x00000000);
 

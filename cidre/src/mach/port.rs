@@ -3,7 +3,7 @@ use std::os::raw::c_int;
 use crate::define_opts;
 
 use super::vm_map::{vm_allocate, vm_deallocate};
-use super::{KernReturn, VMAddr, VMAllocationFlags, VMSize};
+use super::{KernReturn, VmAddr, VmAllocationFlags, VmSize};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -29,15 +29,15 @@ impl Port {
     #[inline]
     pub fn allocate(
         self,
-        address: *mut VMAddr,
-        size: VMSize,
-        flags: VMAllocationFlags,
+        address: *mut VmAddr,
+        size: VmSize,
+        flags: VmAllocationFlags,
     ) -> KernReturn {
         unsafe { vm_allocate(self, address, size, flags) }
     }
 
     #[inline]
-    pub fn deallocate(self, address: VMAddr, size: VMSize) -> KernReturn {
+    pub fn deallocate(self, address: VmAddr, size: VmSize) -> KernReturn {
         unsafe { vm_deallocate(self, address, size) }
     }
 }

@@ -1,12 +1,12 @@
-use super::{KernReturn, VMAddr, VMAllocationFlags, VMSize};
+use super::{KernReturn, VmAddr, VmAllocationFlags, VmSize};
 
 extern "C" {
     pub fn vm_allocate(
-        target_task: super::VMMap,
-        address: *mut VMAddr,
-        size: VMSize,
-        flags: VMAllocationFlags,
+        target_task: super::VmMap,
+        address: *mut VmAddr,
+        size: VmSize,
+        flags: VmAllocationFlags,
     ) -> KernReturn;
 
-    pub fn vm_deallocate(target_task: super::VMMap, address: VMAddr, size: VMSize) -> KernReturn;
+    pub fn vm_deallocate(target_task: super::VmMap, address: VmAddr, size: VmSize) -> KernReturn;
 }

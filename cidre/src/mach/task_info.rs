@@ -5,13 +5,13 @@ use crate::mach;
 #[repr(C)]
 pub struct TaskBasicInfo {
     /// Virtual memory size (bytes)
-    pub virtual_size: mach::VMSize,
+    pub virtual_size: mach::VmSize,
 
     /// Resident memory size (bytes)
-    pub resident_size: mach::VMSize,
+    pub resident_size: mach::VmSize,
 
     /// Maximum resident memory size (bytes)
-    pub resident_size_max: mach::VMSize,
+    pub resident_size_max: mach::VmSize,
 
     /// Total user run time for terminated threads
     pub user_time: mach::TimeValue,

@@ -41,19 +41,19 @@ pub use message::TypeDesc as MsgTypeDesc;
 pub use message::TypeName as MsgTypeName;
 
 pub mod vm_types;
-pub use vm_types::Addr as VMAddr;
+pub use vm_types::Addr as VmAddr;
 pub use vm_types::Integer;
-pub use vm_types::Map as VMMap;
-pub use vm_types::MapInspect as VMMapInspect;
-pub use vm_types::MapRead as VMMapRead;
+pub use vm_types::Map as VmMap;
+pub use vm_types::MapInspect as VmMapInspect;
+pub use vm_types::MapRead as VmMapRead;
 pub use vm_types::Natural;
-pub use vm_types::Offset as VMOffset;
-pub use vm_types::Size as VMSize;
+pub use vm_types::Offset as VmOffset;
+pub use vm_types::Size as VmSize;
 
 pub mod vm_map;
 
 pub mod vm_statistics;
-pub use vm_statistics::VMAllocationFlags;
+pub use vm_statistics::VmAllocationFlags;
 
 pub mod task;
 
