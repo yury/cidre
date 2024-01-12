@@ -4,7 +4,7 @@ pub mod hardware;
 pub use hardware::Class;
 pub use hardware::Error;
 pub use hardware::Object;
-pub use hardware::ObjectPropAddress;
+pub use hardware::ObjectPropAddr;
 pub use hardware::ObjectPropElement;
 pub use hardware::ObjectPropScope;
 pub use hardware::ObjectPropSelector;

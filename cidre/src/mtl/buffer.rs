@@ -84,7 +84,7 @@ impl Buf {
 
     /// Represents the GPU virtual address of a buffer resource
     #[objc::msg_send(gpuAddress)]
-    pub fn gpu_address(&self) -> u64;
+    pub fn gpu_addr(&self) -> u64;
 }
 
 #[cfg(test)]

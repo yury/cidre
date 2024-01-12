@@ -60,7 +60,7 @@ impl PropElement {
 #[doc(alias = "CMIOObjectPropertyAddress")]
 #[derive(Debug)]
 #[repr(C)]
-pub struct PropAddress {
+pub struct PropAddr {
     pub selector: PropSelector,
     pub scope: PropScope,
     pub element: PropElement,
@@ -96,7 +96,7 @@ impl Object {
 
     pub unsafe fn set_property_data(
         &self,
-        address: *const PropAddress,
+        address: *const PropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: u32,
@@ -114,7 +114,7 @@ impl Object {
         }
     }
 
-    pub fn set_prop<T: Sized>(&self, address: &PropAddress, val: &T) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&self, address: &PropAddr, val: &T) -> Result<(), os::Status> {
         unsafe {
             self.set_property_data(
                 address,
@@ -129,7 +129,7 @@ impl Object {
 
     pub fn allow_screen_capture_devices(&self, val: bool) -> Result<(), os::Status> {
         let val: u32 = if val { 1u32 } else { 0u32 };
-        let address = PropAddress {
+        let address = PropAddr {
             selector: PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES,
             scope: PropScope::GLOBAL,
             element: PropElement::MAIN,
@@ -139,7 +139,7 @@ impl Object {
 
     pub fn allow_wireless_screen_capture_devices(&self, val: bool) -> Result<(), os::Status> {
         let val: u32 = if val { 1u32 } else { 0u32 };
-        let address = PropAddress {
+        let address = PropAddr {
             selector: PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES,
             scope: PropScope::GLOBAL,
             element: PropElement::MAIN,
@@ -152,7 +152,7 @@ impl Object {
 extern "C" {
     fn CMIOObjectSetPropertyData(
         object_id: Object,
-        address: *const PropAddress,
+        address: *const PropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: u32,

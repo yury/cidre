@@ -1,7 +1,7 @@
 pub mod object;
 pub use object::Class;
 pub use object::Object;
-pub use object::PropAddress as ObjectPropAddress;
+pub use object::PropAddr as ObjectPropAddr;
 pub use object::PropElement as ObjectPropElement;
 pub use object::PropScope as ObjectPropScope;
 pub use object::PropSelector as ObjectPropSelector;

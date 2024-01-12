@@ -21,7 +21,7 @@ impl Type {
 
     /// address detection
     #[doc(alias = "NSTextCheckingTypeAddress")]
-    pub const ADDRESS: Self = Self(1 << 4);
+    pub const ADDR: Self = Self(1 << 4);
 
     /// link detection
     #[doc(alias = "NSTextCheckingTypeLink")]

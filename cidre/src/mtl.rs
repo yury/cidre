@@ -238,7 +238,7 @@ pub use indirect_command_encoder::IndirectComputeCmd;
 pub use indirect_command_encoder::IndirectRenderCmd;
 
 mod sampler;
-pub use sampler::AddressMode as SamplerAddressMode;
+pub use sampler::AddrMode as SamplerAddrMode;
 pub use sampler::BorderColor as SamplerBorderColor;
 pub use sampler::Desc as SamplerDesc;
 pub use sampler::MinMagFilter as SamplerMinMagFilter;

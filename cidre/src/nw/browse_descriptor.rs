@@ -15,7 +15,7 @@ impl BrowseDesc {
         unsafe {
             nw_browse_descriptor_create_bonjour_service(
                 type_.as_ptr(),
-                domain.map_or(std::ptr::null(), |s| s.as_ptr()),
+                domain.map_or(std::ptr::null(), CStr::as_ptr),
             )
         }
     }

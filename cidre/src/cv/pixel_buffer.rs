@@ -104,22 +104,22 @@ impl PixelBuf {
 
     #[doc(alias = "CVPixelBufferLockBaseAddress")]
     #[inline]
-    pub unsafe fn lock_base_address(&self, flags: LockFlags) -> cv::Return {
+    pub unsafe fn lock_base_addr(&self, flags: LockFlags) -> cv::Return {
         CVPixelBufferLockBaseAddress(self, flags)
     }
 
     #[doc(alias = "CVPixelBufferUnlockBaseAddress")]
     #[inline]
-    pub unsafe fn unlock_lock_base_address(&self, flags: LockFlags) -> cv::Return {
+    pub unsafe fn unlock_lock_base_addr(&self, flags: LockFlags) -> cv::Return {
         CVPixelBufferUnlockBaseAddress(self, flags)
     }
 
     #[inline]
-    pub fn base_address_lock(&self, flags: LockFlags) -> Result<BaseAddressLockGuard, cv::Return> {
+    pub fn base_address_lock(&self, flags: LockFlags) -> Result<BaseAddrLockGuard, cv::Return> {
         unsafe {
-            let res = self.lock_base_address(flags);
+            let res = self.lock_base_addr(flags);
             if res.is_ok() {
-                Ok(BaseAddressLockGuard(self, flags))
+                Ok(BaseAddrLockGuard(self, flags))
             } else {
                 Err(res)
             }
@@ -168,12 +168,12 @@ impl PixelBuf {
     }
 }
 
-pub struct BaseAddressLockGuard<'a>(&'a PixelBuf, LockFlags);
+pub struct BaseAddrLockGuard<'a>(&'a PixelBuf, LockFlags);
 
-impl<'a> Drop for BaseAddressLockGuard<'a> {
+impl<'a> Drop for BaseAddrLockGuard<'a> {
     #[inline]
     fn drop(&mut self) {
-        let res = unsafe { self.0.unlock_lock_base_address(self.1) };
+        let res = unsafe { self.0.unlock_lock_base_addr(self.1) };
         debug_assert!(res.is_ok());
     }
 }

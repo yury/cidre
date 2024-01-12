@@ -7,7 +7,7 @@ pub type Natural = c_uint;
 
 pub type Size = usize;
 pub type Offset = usize;
-pub type Address = usize;
+pub type Addr = usize;
 
 pub type Map = Port;
 pub type MapRead = Port;

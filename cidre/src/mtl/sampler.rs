@@ -17,7 +17,7 @@ pub enum MipFilter {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
-pub enum AddressMode {
+pub enum AddrMode {
     ClampToEdge = 0,
     MirrorClampToEdge = 1,
     Repeat = 2,

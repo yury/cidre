@@ -41,7 +41,7 @@ pub use message::TypeDesc as MsgTypeDesc;
 pub use message::TypeName as MsgTypeName;
 
 pub mod vm_types;
-pub use vm_types::Address as VMAddress;
+pub use vm_types::Addr as VMAddr;
 pub use vm_types::Integer;
 pub use vm_types::Map as VMMap;
 pub use vm_types::MapInspect as VMMapInspect;

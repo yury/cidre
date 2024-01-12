@@ -34,3 +34,7 @@ pub use resolver_config::ResolverCfg;
 
 mod proxy_config;
 pub use proxy_config::ProxyCfg;
+
+mod endpoint;
+pub use endpoint::Endpoint;
+pub use endpoint::EndpointType;
