@@ -158,13 +158,73 @@ extern "C" {
     fn nw_endpoint_get_bonjour_service_domain(endpoint: &Endpoint) -> *const c_char;
 }
 
+/// Url Endpoints
+impl Endpoint {
+    #[doc(alias = "nw_endpoint_create_url")]
+    #[inline]
+    pub fn create_url(url: &CStr) -> Option<arc::R<Self>> {
+        unsafe { nw_endpoint_create_url(url.as_ptr()) }
+    }
+
+    #[doc(alias = "nw_endpoint_get_url")]
+    #[inline]
+    pub fn url(&self) -> Option<&CStr> {
+        unsafe {
+            let ptr = nw_endpoint_get_url(self);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr))
+            }
+        }
+    }
+
+    #[doc(alias = "nw_endpoint_copy_txt_record")]
+    #[inline]
+    pub fn txt_record(&self) -> Option<CString> {
+        unsafe {
+            let ptr = nw_endpoint_copy_txt_record(self);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CString::from_raw(ptr))
+            }
+        }
+    }
+
+    #[doc(alias = "nw_endpoint_get_signature")]
+    #[inline]
+    pub fn signature(&self) -> Option<&[u8]> {
+        unsafe {
+            let mut size = 0;
+            let ptr = nw_endpoint_get_signature(self, &mut size);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(&*std::ptr::slice_from_raw_parts(ptr, size))
+            }
+        }
+    }
+}
+
+#[link(name = "Network", kind = "framework")]
+extern "C" {
+    fn nw_endpoint_create_url(url: *const c_char) -> Option<arc::R<Endpoint>>;
+    fn nw_endpoint_get_url(endpoint: &Endpoint) -> *const c_char;
+    fn nw_endpoint_copy_txt_record(endpoint: &Endpoint) -> *mut c_char;
+    fn nw_endpoint_get_signature(
+        endpoint: &Endpoint,
+        out_signature_length: &mut usize,
+    ) -> *const u8;
+}
+
 #[cfg(test)]
 mod tests {
     use crate::nw;
     use std::ffi::CString;
 
     #[test]
-    fn basics_host() {
+    fn host() {
         let host = CString::new("localhost").unwrap();
         let port = CString::new("8000").unwrap();
         let endpoint = nw::Endpoint::create_host(&host, &port).unwrap();
@@ -176,7 +236,7 @@ mod tests {
     }
 
     #[test]
-    fn basics_bonjour() {
+    fn bonjour() {
         let name = CString::new("example").unwrap();
         let type_ = CString::new("_what._udp").unwrap();
         let domain = CString::new("local").unwrap();
@@ -191,5 +251,15 @@ mod tests {
             endpoint.bonjour_service_domain().unwrap(),
             domain.as_c_str()
         );
+    }
+
+    #[test]
+    fn url() {
+        let url = CString::new("https:://ya.ru").unwrap();
+        let endpoint = nw::Endpoint::create_url(&url).unwrap();
+        assert_eq!(endpoint.url().unwrap(), url.as_c_str());
+
+        assert!(endpoint.txt_record().is_none());
+        assert!(endpoint.signature().is_none());
     }
 }
