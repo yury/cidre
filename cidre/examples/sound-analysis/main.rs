@@ -81,7 +81,7 @@ async fn main() {
 
     engine.stop();
 
-    analysis.complete_analysis();
+    analysis.complete();
 
     eprintln!("done");
 }

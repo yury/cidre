@@ -45,10 +45,11 @@ impl AudioStreamAnalyzer {
     pub fn analyze_audio_buf_at_pos(&mut self, audio_buf: &av::AudioBuf, pos: av::AudioFramePos);
 
     #[objc::msg_send(completeAnalysis)]
-    pub fn complete_analysis(&mut self);
+    pub fn complete(&mut self);
 }
 
 define_obj_type!(
+    #[doc(alias = "SNAudioFileAnalyzer")]
     pub AudioFileAnalyzer(ns::Id),
     SN_AUDIO_FILE_ANALYZER
 );

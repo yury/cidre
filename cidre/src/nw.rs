@@ -47,3 +47,4 @@ pub use resolver_config::ResolverCfg;
 
 mod proxy_config;
 pub use proxy_config::ProxyCfg;
+pub use proxy_config::RelayHop;
