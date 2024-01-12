@@ -1,4 +1,4 @@
-use std::ffi::{c_char, c_void, CStr, CString};
+use std::ffi::{c_char, CStr, CString};
 
 use crate::{arc, define_obj_type, ns};
 
@@ -93,21 +93,78 @@ extern "C" {
     fn nw_endpoint_get_port(endpoint: &Endpoint) -> u16;
 }
 
-/// Address Endpoints
-impl Endpoint {}
+/// Bonjour Endpoints
+impl Endpoint {
+    pub fn create_bonjour_service(
+        name: &CStr,
+        type_: &CStr,
+        domain: &CStr,
+    ) -> Option<arc::R<Self>> {
+        unsafe {
+            nw_endpoint_create_bonjour_service(name.as_ptr(), type_.as_ptr(), domain.as_ptr())
+        }
+    }
+
+    #[doc(alias = "nw_endpoint_get_bonjour_service_name")]
+    #[inline]
+    pub fn bonjour_service_name(&self) -> Option<&CStr> {
+        unsafe {
+            let ptr = nw_endpoint_get_bonjour_service_name(self);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr))
+            }
+        }
+    }
+
+    #[doc(alias = "nw_endpoint_get_bonjour_service_type")]
+    #[inline]
+    pub fn bonjour_service_type(&self) -> Option<&CStr> {
+        unsafe {
+            let ptr = nw_endpoint_get_bonjour_service_type(self);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr))
+            }
+        }
+    }
+
+    #[doc(alias = "nw_endpoint_get_bonjour_service_domain")]
+    #[inline]
+    pub fn bonjour_service_domain(&self) -> Option<&CStr> {
+        unsafe {
+            let ptr = nw_endpoint_get_bonjour_service_domain(self);
+            if ptr.is_null() {
+                None
+            } else {
+                Some(CStr::from_ptr(ptr))
+            }
+        }
+    }
+}
 
 #[link(name = "Network", kind = "framework")]
 extern "C" {
-    fn nw_endpoint_create_address(address: *const c_void);
+    fn nw_endpoint_create_bonjour_service(
+        name: *const c_char,
+        type_: *const c_char,
+        domain: *const c_char,
+    ) -> Option<arc::R<Endpoint>>;
+
+    fn nw_endpoint_get_bonjour_service_name(endpoint: &Endpoint) -> *const c_char;
+    fn nw_endpoint_get_bonjour_service_type(endpoint: &Endpoint) -> *const c_char;
+    fn nw_endpoint_get_bonjour_service_domain(endpoint: &Endpoint) -> *const c_char;
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::nw;
     use std::ffi::CString;
 
-    use crate::nw;
     #[test]
-    fn basics() {
+    fn basics_host() {
         let host = CString::new("localhost").unwrap();
         let port = CString::new("8000").unwrap();
         let endpoint = nw::Endpoint::create_host(&host, &port).unwrap();
@@ -116,5 +173,23 @@ mod tests {
         assert_eq!(endpoint.hostname().unwrap(), host.as_c_str());
         assert_eq!(endpoint.port(), 8000);
         assert_eq!(endpoint.port_c_string().unwrap(), port);
+    }
+
+    #[test]
+    fn basics_bonjour() {
+        let name = CString::new("example").unwrap();
+        let type_ = CString::new("_what._udp").unwrap();
+        let domain = CString::new("local").unwrap();
+        let endpoint = nw::Endpoint::create_bonjour_service(&name, &type_, &domain).unwrap();
+
+        assert_eq!(endpoint.type_(), nw::EndpointType::BonjourService);
+        assert_eq!(endpoint.hostname(), None);
+        assert_eq!(endpoint.port(), 0);
+        assert_eq!(endpoint.bonjour_service_name().unwrap(), name.as_c_str());
+        assert_eq!(endpoint.bonjour_service_type().unwrap(), type_.as_c_str());
+        assert_eq!(
+            endpoint.bonjour_service_domain().unwrap(),
+            domain.as_c_str()
+        );
     }
 }
