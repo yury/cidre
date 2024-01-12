@@ -257,6 +257,7 @@ mod tests {
     fn url() {
         let url = CString::new("https:://ya.ru").unwrap();
         let endpoint = nw::Endpoint::create_url(&url).unwrap();
+        assert_eq!(endpoint.type_(), nw::EndpointType::Url);
         assert_eq!(endpoint.url().unwrap(), url.as_c_str());
 
         assert!(endpoint.txt_record().is_none());

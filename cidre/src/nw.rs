@@ -17,6 +17,15 @@ pub use txt_record::TxtRecord;
 mod connection;
 pub use connection::State as ConnectionState;
 
+mod endpoint;
+pub use endpoint::Endpoint;
+pub use endpoint::EndpointType;
+
+mod interface;
+pub use interface::Iface;
+pub use interface::IfaceRadioType;
+pub use interface::IfaceType;
+
 mod parameters;
 pub use parameters::Params;
 pub use parameters::ProtocolStack;
@@ -34,7 +43,3 @@ pub use resolver_config::ResolverCfg;
 
 mod proxy_config;
 pub use proxy_config::ProxyCfg;
-
-mod endpoint;
-pub use endpoint::Endpoint;
-pub use endpoint::EndpointType;
