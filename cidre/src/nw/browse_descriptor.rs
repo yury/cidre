@@ -63,9 +63,9 @@ impl BrowseDesc {
         unsafe {
             let ptr = nw_browse_descriptor_get_application_service_name(self);
             if ptr.is_null() {
-                return None;
+                None
             } else {
-                return Some(CStr::from_ptr(ptr));
+                Some(CStr::from_ptr(ptr))
             }
         }
     }
