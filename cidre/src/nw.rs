@@ -25,3 +25,12 @@ mod protocol_options;
 pub use protocol_options::ProtocolDefinition;
 pub use protocol_options::ProtocolMetadata;
 pub use protocol_options::ProtocolOpts;
+
+mod privacy_context;
+pub use privacy_context::PrivacyContext;
+
+mod resolver_config;
+pub use resolver_config::ResolverCfg;
+
+mod proxy_config;
+pub use proxy_config::ProxyCfg;
