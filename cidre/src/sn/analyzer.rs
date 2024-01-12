@@ -122,7 +122,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{av, sn};
+    // use crate::{av, sn};
 
     #[test]
     fn basics() {
