@@ -1,4 +1,6 @@
-use crate::{arc, define_obj_type, dispatch, ns, nw};
+use std::ffi::c_void;
+
+use crate::{arc, blocks, define_obj_type, dispatch, ns, nw};
 
 #[doc(alias = "nw_browser_state_t")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -46,6 +48,12 @@ define_obj_type!(
 );
 
 impl Browser {
+    #[doc(alias = "nw_browser_create")]
+    #[inline]
+    pub fn with_desc(desc: &nw::BrowseDesc, params: Option<&nw::Params>) -> arc::R<Self> {
+        unsafe { nw_browser_create(desc, params) }
+    }
+
     #[doc(alias = "nw_browser_set_queue")]
     #[inline]
     pub fn set_queue(&mut self, val: &dispatch::Queue) {
@@ -75,13 +83,84 @@ impl Browser {
     pub fn desc(&self) -> arc::R<nw::BrowseDesc> {
         unsafe { nw_browser_copy_browse_descriptor(self) }
     }
+
+    #[doc(alias = "nw_browser_set_state_changed_handler")]
+    #[inline]
+    pub fn set_state_changed_handler<'a, F>(
+        &mut self,
+        handler: Option<&'static mut blocks::Block<F>>,
+    ) where
+        F: FnMut(nw::BrowserState, Option<&'a nw::Error>),
+    {
+        unsafe {
+            match handler {
+                Some(block) => {
+                    nw_browser_set_state_changed_handler(self, block.as_mut_ptr());
+                }
+                None => {
+                    nw_browser_set_state_changed_handler(self, std::ptr::null());
+                }
+            }
+        }
+    }
+
+    #[doc(alias = "nw_browser_set_browse_results_changed_handler")]
+    #[inline]
+    pub fn set_results_changed_handler<'a, F>(
+        &mut self,
+        handler: Option<&'static mut blocks::Block<F>>,
+    ) where
+        F: FnMut(&'a nw::BrowseResult, &'a nw::BrowseResult, bool),
+    {
+        unsafe {
+            match handler {
+                Some(block) => {
+                    nw_browser_set_browse_results_changed_handler(self, block.as_mut_ptr());
+                }
+                None => {
+                    nw_browser_set_browse_results_changed_handler(self, std::ptr::null());
+                }
+            }
+        }
+    }
 }
 
 #[link(name = "Network", kind = "framework")]
 extern "C" {
+    fn nw_browser_create(
+        descriptor: &nw::BrowseDesc,
+        params: Option<&nw::Params>,
+    ) -> arc::R<Browser>;
     fn nw_browser_set_queue(browser: &mut Browser, val: &dispatch::Queue);
     fn nw_browser_start(browser: &mut Browser);
     fn nw_browser_cancel(browser: &mut Browser);
     fn nw_browser_copy_parameters(browser: &Browser) -> arc::R<nw::Params>;
     fn nw_browser_copy_browse_descriptor(browser: &Browser) -> arc::R<nw::BrowseDesc>;
+    fn nw_browser_set_browse_results_changed_handler(browser: &mut Browser, handler: *const c_void);
+    fn nw_browser_set_state_changed_handler(browser: &mut Browser, handler: *const c_void);
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::CString;
+
+    use crate::{blocks, nw};
+
+    #[test]
+    fn basics() {
+        let type_ = CString::new("_service._udp").unwrap();
+        let desc = nw::BrowseDesc::create_bonjour_service(&type_, None);
+        let mut browser = nw::Browser::with_desc(&desc, None);
+        let mut state_handler = blocks::mut2(|state, error| {
+            eprintln!("------ {:?} {:?}", state, error);
+        });
+        browser.set_state_changed_handler(Some(state_handler.escape()));
+        let mut changes_handler = blocks::mut3(|old, new, _complete| {
+            eprintln!("------ {:?} {:?}", old, new);
+        });
+        browser.set_results_changed_handler(Some(changes_handler.escape()));
+
+        browser.start();
+        eprintln!("browser {:?}", browser);
+    }
 }

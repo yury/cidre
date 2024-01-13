@@ -8,6 +8,10 @@ mod browser;
 pub use browser::Browser;
 pub use browser::State as BrowserState;
 
+mod browse_result;
+pub use browse_result::BrowseResult;
+pub use browse_result::Change as BrowseResultChange;
+
 mod advertise_descriptor;
 pub use advertise_descriptor::AdvertiseDesc;
 
