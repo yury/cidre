@@ -46,10 +46,11 @@ impl PrivacyContext {
 
     #[doc(alias = "nw_privacy_context_add_proxy")]
     #[inline]
-    pub fn add_proxy(&mut self, proxy_cfg: &nw::ProxyCfg) {
-        unsafe { nw_privacy_context_add_proxy(self, proxy_cfg) }
+    pub fn add_proxy(&mut self, val: &nw::ProxyCfg) {
+        unsafe { nw_privacy_context_add_proxy(self, val) }
     }
 
+    /// Clears out any proxies added using [`Self::add_proxy()`]
     #[doc(alias = "nw_privacy_context_clear_proxies")]
     #[inline]
     pub fn clear_proxies(&mut self) {
