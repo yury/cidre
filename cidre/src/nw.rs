@@ -46,6 +46,9 @@ mod parameters;
 pub use parameters::Params;
 pub use parameters::ProtocolStack;
 
+mod path;
+pub use path::Path;
+
 mod protocol_options;
 pub use protocol_options::ProtocolDefinition;
 pub use protocol_options::ProtocolMetadata;

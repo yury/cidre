@@ -50,6 +50,9 @@ define_obj_type!(
     pub Browser(ns::Id)
 );
 
+unsafe impl Send for Browser {}
+unsafe impl Sync for Browser {}
+
 impl Browser {
     #[doc(alias = "nw_browser_create")]
     #[inline]

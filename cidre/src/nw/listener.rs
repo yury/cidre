@@ -10,6 +10,9 @@ define_obj_type!(
     pub Listener(ns::Id)
 );
 
+unsafe impl Send for Listener {}
+unsafe impl Sync for Listener {}
+
 #[doc(alias = "nw_listener_state_t")]
 #[repr(i32)]
 pub enum State {
