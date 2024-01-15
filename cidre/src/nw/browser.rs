@@ -56,13 +56,13 @@ impl Browser {
 
     #[doc(alias = "nw_browser_set_queue")]
     #[inline]
-    pub fn set_queue(&mut self, val: &dispatch::Queue) {
+    fn set_queue(&mut self, val: &dispatch::Queue) {
         unsafe { nw_browser_set_queue(self, val) }
     }
 
-    #[doc(alias = "nw_browser_start")]
     #[inline]
-    pub fn start(&mut self) {
+    pub fn start(&mut self, queue: &dispatch::Queue) {
+        self.set_queue(queue);
         unsafe { nw_browser_start(self) }
     }
 
@@ -144,10 +144,11 @@ extern "C" {
 mod tests {
     use std::ffi::CString;
 
-    use crate::{blocks, nw};
+    use crate::{blocks, dispatch, nw};
 
     #[test]
     fn basics() {
+        let queue = dispatch::Queue::new();
         let type_ = CString::new("_service._udp").unwrap();
         let desc = nw::BrowseDesc::create_bonjour_service(&type_, None);
         let mut browser = nw::Browser::with_desc(&desc, None);
@@ -160,7 +161,7 @@ mod tests {
         });
         browser.set_results_changed_handler(Some(changes_handler.escape()));
 
-        browser.start();
+        browser.start(&queue);
         eprintln!("browser {:?}", browser);
     }
 }

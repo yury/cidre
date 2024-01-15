@@ -1,3 +1,5 @@
+use crate::{define_obj_type, ns};
+
 /// Connection states sent by nw_connection_set_state_changed_handler.
 /// States generally progress forward and do not move backwards, with the
 /// exception of preparing and waiting, which may alternate before the connection
@@ -32,3 +34,8 @@ impl State {
     #[doc(alias = "nw_connection_state_cancelled")]
     pub const CANCELLED: Self = Self(5);
 }
+
+define_obj_type!(
+    #[doc(alias = "nw_connection")]
+    pub Connection(ns::Id)
+);
