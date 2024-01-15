@@ -23,6 +23,9 @@ pub use queue::Priority as QueuePriority;
 pub use queue::QOSClass;
 pub use queue::Queue;
 
+pub mod data;
+pub use data::Data;
+
 mod semaphore;
 pub use semaphore::Semaphore;
 
