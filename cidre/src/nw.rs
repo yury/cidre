@@ -19,6 +19,9 @@ pub mod connection;
 pub use connection::Connection;
 pub use connection::State as ConnectionState;
 
+pub mod connection_group;
+pub use connection_group::ConnectionGroup;
+
 mod txt_record;
 pub use txt_record::TxtRecord;
 

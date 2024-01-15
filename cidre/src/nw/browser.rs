@@ -1,6 +1,9 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, define_obj_type, dispatch, ns, nw};
+use crate::{arc, define_obj_type, dispatch, ns, nw};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "nw_browser_state_t")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -85,6 +88,7 @@ impl Browser {
     }
 
     #[doc(alias = "nw_browser_set_state_changed_handler")]
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn set_state_changed_handler<'a, F>(
         &mut self,
@@ -93,18 +97,15 @@ impl Browser {
         F: FnMut(nw::BrowserState, Option<&'a nw::Error>),
     {
         unsafe {
-            match handler {
-                Some(block) => {
-                    nw_browser_set_state_changed_handler(self, block.as_mut_ptr());
-                }
-                None => {
-                    nw_browser_set_state_changed_handler(self, std::ptr::null());
-                }
-            }
+            nw_browser_set_state_changed_handler(
+                self,
+                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
+            );
         }
     }
 
     #[doc(alias = "nw_browser_set_browse_results_changed_handler")]
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn set_results_changed_handler<'a, F>(
         &mut self,
@@ -113,14 +114,10 @@ impl Browser {
         F: FnMut(&'a nw::BrowseResult, &'a nw::BrowseResult, bool),
     {
         unsafe {
-            match handler {
-                Some(block) => {
-                    nw_browser_set_browse_results_changed_handler(self, block.as_mut_ptr());
-                }
-                None => {
-                    nw_browser_set_browse_results_changed_handler(self, std::ptr::null());
-                }
-            }
+            nw_browser_set_browse_results_changed_handler(
+                self,
+                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
+            );
         }
     }
 }
@@ -136,8 +133,10 @@ extern "C" {
     fn nw_browser_cancel(browser: &mut Browser);
     fn nw_browser_copy_parameters(browser: &Browser) -> arc::R<nw::Params>;
     fn nw_browser_copy_browse_descriptor(browser: &Browser) -> arc::R<nw::BrowseDesc>;
-    fn nw_browser_set_browse_results_changed_handler(browser: &mut Browser, handler: *const c_void);
-    fn nw_browser_set_state_changed_handler(browser: &mut Browser, handler: *const c_void);
+    #[cfg(feature = "blocks")]
+    fn nw_browser_set_browse_results_changed_handler(browser: &mut Browser, handler: *mut c_void);
+    #[cfg(feature = "blocks")]
+    fn nw_browser_set_state_changed_handler(browser: &mut Browser, handler: *mut c_void);
 }
 
 #[cfg(test)]
