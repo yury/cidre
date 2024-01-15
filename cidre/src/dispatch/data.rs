@@ -19,7 +19,7 @@ impl Data {
         unsafe { &_dispatch_data_empty }
     }
 
-    #[doc(alias = "dispatch_data_create_concat")]
+    #[doc(alias = "dispatch_data_get_size")]
     #[inline]
     pub fn len(&self) -> usize {
         unsafe { dispatch_data_get_size(self) }
@@ -31,6 +31,7 @@ impl Data {
     }
 
     #[cfg(feature = "blocks")]
+    #[doc(alias = "dispatch_data_apply")]
     #[inline]
     pub fn apply<'a, F>(&self, applier: &mut blocks::Block<F>) -> bool
     where
