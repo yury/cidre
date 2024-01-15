@@ -161,6 +161,61 @@ impl Writer {
     }
 }
 
+/// AVAssetWriterFileTypeSpecificProperties
+impl Writer {
+    /// The interval at which to write movie fragments.
+    ///
+    /// Some container formats, such as QuickTime movies, support writing movies
+    /// in fragments. Using this feature enables you to open and play a partially
+    /// written movie in the event that an unexpected error or interruption occurs.
+    #[objc::msg_send(movieFragmentInterval)]
+    pub fn movie_fragment_interval(&self) -> cm::Time;
+
+    /// This property cannot be set after writing has started.
+    #[objc::msg_send(setMovieFragmentInterval:)]
+    pub fn set_movie_fragment_interval(&mut self, val: cm::Time);
+
+    /// For file types that support movie fragments, specifies the interval at which initial movie
+    /// fragment should be written.
+    ///
+    /// This property is irrelevant if the movieFragmentInterval property is not set.
+    /// The default value is kCMTimeInvalid, which indicates that the interval for
+    /// initial movie fragment is same as the one specified by movie_fragment_interval
+    /// property.
+    #[objc::msg_send(initialMovieFragmentInterval)]
+    pub fn initial_movie_fragment_interval(&self) -> cm::Time;
+
+    /// This property cannot be set after writing has started.
+    #[objc::msg_send(setInitialMovieFragmentInterval:)]
+    pub fn set_initial_movie_fragment_interval(&mut self, val: cm::Time);
+
+    #[objc::msg_send(initialMovieFragmentSequenceNumber)]
+    pub fn initial_movie_fragment_sequence_num(&self) -> isize;
+
+    /// This property cannot be set after writing has started.
+    #[objc::msg_send(setInitialMovieFragmentSequenceNumber:)]
+    pub fn set_initial_movie_fragment_sequence_num(&mut self, val: isize);
+
+    #[objc::msg_send(producesCombinableFragments)]
+    pub fn produces_combinable_fragments(&self) -> bool;
+
+    /// This property cannot be set after writing has started.
+    #[objc::msg_send(setProducesCombinableFragments:)]
+    pub fn set_produces_combinable_fragments(&mut self, val: bool);
+
+    #[objc::msg_send(overallDurationHint)]
+    pub fn overall_duration_hint(&self) -> cm::Time;
+
+    #[objc::msg_send(setOverallDurationHint:)]
+    pub fn set_overall_duration_hint(&mut self, val: cm::Time);
+
+    #[objc::msg_send(movieTimeScale)]
+    pub fn movie_time_scale(&self) -> cm::TimeScale;
+
+    #[objc::msg_send(setMovieTimeScale:)]
+    pub fn set_movie_time_scale(&self, val: cm::TimeScale);
+}
+
 #[objc::obj_trait]
 pub trait Delegate: objc::Obj {
     #[objc::optional]

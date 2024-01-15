@@ -48,6 +48,8 @@ pub use parameters::ProtocolStack;
 
 mod path;
 pub use path::Path;
+pub use path::Status as PathStatus;
+pub use path::UnsatisfiedReason as PathUnsatisfiedReason;
 
 mod protocol_options;
 pub use protocol_options::ProtocolDefinition;
