@@ -2,10 +2,7 @@ use std::ffi::{c_char, c_long, c_void, CStr};
 use std::mem::transmute;
 use std::ptr::NonNull;
 
-use crate::{
-    arc, define_obj_type,
-    dispatch::{self, Function},
-};
+use crate::{arc, define_obj_type, dispatch};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -197,49 +194,49 @@ impl Queue {
 
     #[doc(alias = "dispatch_async_f")]
     #[inline]
-    pub fn async_f<T>(&self, context: *mut T, work: Function<T>) {
+    pub fn async_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_async_f(self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_sync_f")]
     #[inline]
-    pub fn sync_f<T>(&self, context: *mut T, work: Function<T>) {
+    pub fn sync_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_sync_f(self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_async_and_wait_f")]
     #[inline]
-    pub fn async_and_wait_f<T>(&self, context: *mut T, work: Function<T>) {
+    pub fn async_and_wait_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_async_and_wait_f(self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_after_f")]
     #[inline]
-    pub fn after_f<T>(&self, when: super::Time, context: *mut T, work: Function<T>) {
+    pub fn after_f<T>(&self, when: super::Time, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_after_f(when, self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_barrier_async_f")]
     #[inline]
-    pub fn barrier_async_f<T>(&self, context: *mut T, work: Function<T>) {
+    pub fn barrier_async_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_barrier_async_f(self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_barrier_sync_f")]
     #[inline]
-    pub fn barrier_sync_f<T>(&self, context: *mut T, work: Function<T>) {
+    pub fn barrier_sync_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_barrier_sync_f(self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_barrier_async_and_wait_f")]
     #[inline]
-    pub fn barrier_async_and_wait_f<T>(&self, context: *mut T, work: Function<T>) {
+    pub fn barrier_async_and_wait_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_barrier_async_and_wait_f(self, context as _, transmute(work)) }
     }
 
     #[doc(alias = "dispatch_group_async_f")]
     #[inline]
-    pub fn group_async_f<T>(&self, group: &super::Group, context: *mut T, work: Function<T>) {
+    pub fn group_async_f<T>(&self, group: &super::Group, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_group_async_f(group, self, context as _, transmute(work)) }
     }
 
@@ -325,11 +322,11 @@ extern "C" {
     fn dispatch_sync(queue: &Queue, block: *mut c_void);
     fn dispatch_async(queue: &Queue, block: *mut c_void);
 
-    fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
-    fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
+    fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
+    fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_queue_create(label: Option<NonNull<c_char>>, attr: Option<&Attr>) -> arc::R<Queue>;
 
-    fn dispatch_async_and_wait_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
+    fn dispatch_async_and_wait_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
 
     fn dispatch_queue_attr_make_initially_inactive(attr: Option<&Attr>) -> arc::R<Attr>;
     fn dispatch_queue_attr_make_with_qos_class(
@@ -346,21 +343,21 @@ extern "C" {
         when: crate::dispatch::Time,
         queue: &Queue,
         context: *mut c_void,
-        work: Function<c_void>,
+        work: dispatch::Fn<c_void>,
     );
-    fn dispatch_barrier_async_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
-    fn dispatch_barrier_sync_f(queue: &Queue, context: *mut c_void, work: Function<c_void>);
+    fn dispatch_barrier_async_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
+    fn dispatch_barrier_sync_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_barrier_async_and_wait_f(
         queue: &Queue,
         context: *mut c_void,
-        work: Function<c_void>,
+        work: dispatch::Fn<c_void>,
     );
 
     fn dispatch_group_async_f(
         group: &super::Group,
         queue: &Queue,
         context: *mut c_void,
-        work: Function<c_void>,
+        work: dispatch::Fn<c_void>,
     );
     fn dispatch_get_global_queue<'a>(identifier: isize, flags: usize) -> Option<&'a Global>;
 }

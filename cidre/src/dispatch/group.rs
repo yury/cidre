@@ -18,7 +18,7 @@ impl Group {
     }
 
     #[inline]
-    pub fn notify_f<T>(&self, queue: &Queue, context: *mut T, work: dispatch::Function<T>) {
+    pub fn notify_f<T>(&self, queue: &Queue, context: *mut T, work: dispatch::Fn<T>) {
         unsafe { dispatch_group_notify_f(self, queue, context as _, transmute(work)) }
     }
 
@@ -42,7 +42,7 @@ extern "C" {
         group: &Group,
         queue: &Queue,
         context: *mut c_void,
-        work: dispatch::Function<c_void>,
+        work: dispatch::Fn<c_void>,
     );
     fn dispatch_group_enter(group: &Group);
     fn dispatch_group_leave(group: &Group);

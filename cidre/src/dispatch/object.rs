@@ -2,7 +2,7 @@ use std::{ffi::c_void, mem::transmute};
 
 use crate::{
     define_obj_type,
-    dispatch::{Function, QOSClass},
+    dispatch::{self, QOSClass},
     ns,
 };
 
@@ -33,7 +33,7 @@ impl Object {
         unsafe { dispatch_get_context(self) }
     }
 
-    pub fn set_finalizer_f<T>(&mut self, finalizer: Option<&Function<T>>) {
+    pub fn set_finalizer_f<T>(&mut self, finalizer: Option<&dispatch::Fn<T>>) {
         unsafe { dispatch_set_finalizer_f(self, transmute(finalizer)) }
     }
 
@@ -49,7 +49,7 @@ extern "C" {
     fn dispatch_resume(object: &Object);
     fn dispatch_set_context(object: &mut Object, context: *mut c_void);
     fn dispatch_get_context(object: &Object) -> *mut c_void;
-    fn dispatch_set_finalizer_f(object: &mut Object, finalizer: Option<&Function<c_void>>);
+    fn dispatch_set_finalizer_f(object: &mut Object, finalizer: Option<&dispatch::Fn<c_void>>);
     fn dispatch_set_qos_class_floor(
         object: &mut Object,
         qos_class: QOSClass,

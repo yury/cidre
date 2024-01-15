@@ -233,12 +233,12 @@ impl Source {
     }
 
     #[inline]
-    pub fn set_event_handler_f<T>(&mut self, handler: Option<&dispatch::Function<T>>) {
+    pub fn set_event_handler_f<T>(&mut self, handler: Option<&dispatch::Fn<T>>) {
         unsafe { dispatch_source_set_event_handler_f(self, transmute(handler)) }
     }
 
     #[inline]
-    pub fn set_cancel_handler_f<T>(&mut self, handler: Option<&dispatch::Function<T>>) {
+    pub fn set_cancel_handler_f<T>(&mut self, handler: Option<&dispatch::Fn<T>>) {
         unsafe { dispatch_source_set_cancel_handler_f(self, transmute(handler)) }
     }
 
@@ -290,11 +290,11 @@ extern "C" {
     fn dispatch_source_merge_data(source: &Source, value: c_ulong) -> c_ulong;
     fn dispatch_source_set_event_handler_f(
         source: &mut Source,
-        handler: Option<&dispatch::Function<c_void>>,
+        handler: Option<&dispatch::Fn<c_void>>,
     );
     fn dispatch_source_set_cancel_handler_f(
         source: &mut Source,
-        handler: Option<&dispatch::Function<c_void>>,
+        handler: Option<&dispatch::Fn<c_void>>,
     );
 
     fn dispatch_source_set_timer(

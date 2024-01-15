@@ -1,7 +1,7 @@
 mod base;
 use std::ffi::c_void;
 
-pub use base::Function;
+pub use base::Fn;
 
 mod object;
 pub use object::Object;
