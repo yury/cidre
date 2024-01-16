@@ -292,6 +292,13 @@ impl<'a, F> ops::Deref for BlOnce<'a, F> {
     }
 }
 
+impl<'a, F> ops::DerefMut for BlOnce<'a, F> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
+
 impl<'a, F> ops::Deref for BlMut<'a, F> {
     type Target = Block<F>;
 
@@ -565,14 +572,7 @@ impl<A, B, C, D, E, R> bl<extern "C" fn(b: *const c_void, a: A, b: B, c: C, d: D
     }
 }
 
-#[cfg_attr(
-    any(target_os = "macos", target_os = "ios"),
-    link(name = "System", kind = "dylib")
-)]
-#[cfg_attr(
-    not(any(target_os = "macos", target_os = "ios")),
-    link(name = "BlocksRuntime", kind = "dylib")
-)]
+#[link(name = "System", kind = "dylib")]
 extern "C" {
     static _NSConcreteGlobalBlock: Class<ns::Id>;
     static _NSConcreteStackBlock: Class<ns::Id>;

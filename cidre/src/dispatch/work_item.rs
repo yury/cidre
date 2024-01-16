@@ -10,13 +10,13 @@ use crate::dispatch;
 /// a work item as a dispatch::Source event, registration, or
 /// cancellation handler.
 #[repr(transparent)]
-pub struct WorkItem<F, T>(&'static mut T, PhantomData<F>)
+pub struct WorkItem<'a, F, T>(&'a mut T, PhantomData<F>)
 where
-    T: dispatch::Block<F> + 'static;
+    T: dispatch::Block<'a, F> + 'a;
 
-impl<F, B> WorkItem<F, B>
+impl<'a, F, B> WorkItem<'a, F, B>
 where
-    B: dispatch::Block<F> + 'static,
+    B: dispatch::Block<'a, F>,
 {
     #[inline]
     pub fn with_flags(flags: dispatch::BlockFlags, block: &'static mut B) -> Self {
@@ -87,27 +87,27 @@ where
     }
 }
 
-impl<B, F> dispatch::Block<F> for WorkItem<F, B>
+impl<'a, B, F> dispatch::Block<'a, F> for WorkItem<'a, F, B>
 where
-    B: dispatch::Block<F>,
+    B: dispatch::Block<'a, F>,
 {
     unsafe fn ptr(&mut self) -> *mut c_void {
         self.0 as *mut B as _
     }
 }
 
-impl<F, B> Drop for WorkItem<F, B>
+impl<'a, F, B> Drop for WorkItem<'a, F, B>
 where
-    B: dispatch::Block<F>,
+    B: dispatch::Block<'a, F>,
 {
     fn drop(&mut self) {
         unsafe { _Block_release(self.0 as *mut B as _) }
     }
 }
 
-impl<F, B> Clone for WorkItem<F, B>
+impl<F, B> Clone for WorkItem<'static, F, B>
 where
-    B: dispatch::Block<F>,
+    B: dispatch::Block<'static, F>,
     F: FnMut(),
 {
     fn clone(&self) -> Self {

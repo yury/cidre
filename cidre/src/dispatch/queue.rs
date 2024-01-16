@@ -136,9 +136,9 @@ impl Queue {
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_sync")]
     #[inline]
-    pub fn sync_b<F, B>(&self, block: &mut B)
+    pub fn sync_b<'a, F, B>(&self, block: &mut B)
     where
-        B: dispatch::Block<F>,
+        B: dispatch::Block<'a, F>,
     {
         unsafe {
             dispatch_sync(self, block.ptr());
@@ -148,7 +148,7 @@ impl Queue {
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_async")]
     #[inline]
-    pub fn async_b<F, B: dispatch::Block<F> + Sync>(&self, block: &'static mut B) {
+    pub fn async_b<F, B: dispatch::Block<'static, F> + Sync>(&self, block: &'static mut B) {
         unsafe {
             dispatch_async(self, block.ptr());
         }
@@ -156,8 +156,8 @@ impl Queue {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn sync_once<F: FnOnce() + 'static>(&self, f: F) {
-        self.sync_b(blocks::once0(f).escape());
+    pub fn sync_once<'a, F: FnOnce() + 'a>(&self, f: F) {
+        self.sync_b(&mut blocks::once0(f));
     }
 
     #[cfg(feature = "blocks")]
