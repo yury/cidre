@@ -1,9 +1,10 @@
 use crate::define_opts;
 use std::ffi::c_ulong;
 
-define_opts!(pub Flags(c_ulong));
-
-/// #[doc(alias = "dispatch_block_flags")]
+define_opts!(
+    #[doc(alias = "dispatch_block_flags")]
+    pub Flags(c_ulong)
+);
 
 /// Flags to pass to the dispatch_block_create* functions.
 impl Flags {

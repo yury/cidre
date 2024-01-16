@@ -231,7 +231,7 @@ pub struct bl<F: Sized> {
 
 impl<F: Sized> bl<F> {
     #[inline]
-    pub fn escape<'a>(&mut self) -> &'a mut Block<F> {
+    pub fn escape(&mut self) -> &'static mut Block<F> {
         unsafe { mem::transmute(self) }
     }
 }
@@ -241,7 +241,7 @@ pub struct BlOnce<'a, F: 'a>(&'a mut Block<F>);
 
 impl<F> BlOnce<'static, F> {
     #[inline]
-    pub fn escape<'a>(self) -> &'a mut Block<F> {
+    pub fn escape(self) -> &'static mut Block<F> {
         unsafe { transmute(self) }
     }
 }
