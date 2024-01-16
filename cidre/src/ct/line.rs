@@ -92,7 +92,7 @@ impl Line {
     where
         F: FnMut(f64, cf::Index, bool, *mut bool),
     {
-        let mut block = blocks::no_esc4(block);
+        let mut block = blocks::mut4(block);
         unsafe { CTLineEnumerateCaretOffsets(self, block.as_mut_ptr()) }
     }
 }

@@ -68,7 +68,7 @@ where
 }
 
 #[cfg(feature = "blocks")]
-impl<F> Block<F> for blocks::BlMut<F>
+impl<F> Block<F> for blocks::BlMut<'_, F>
 where
     F: FnOnce() + 'static,
 {

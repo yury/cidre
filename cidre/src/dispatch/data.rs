@@ -174,6 +174,19 @@ mod tests {
         let data3 = dispatch::Data::concat(&data1, &data2);
         assert_eq!(data3.len(), 10);
         assert_eq!(data3.as_ns().len(), 10);
+        let mut ranges = vec![];
+        data3.as_ns().enum_ranges(|ptr, range, _done| {
+            assert!(!ptr.is_null());
+            ranges.push(range);
+        });
+        assert_eq!(ranges.len(), 2);
+        ranges.clear();
+        data3.as_ns().enum_ranges(|ptr, range, done| {
+            assert!(!ptr.is_null());
+            ranges.push(range);
+            *done = true;
+        });
+        assert_eq!(ranges.len(), 1);
     }
 
     #[test]

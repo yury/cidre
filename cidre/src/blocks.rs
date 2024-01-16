@@ -65,126 +65,84 @@ pub fn fn5<A, B, C, D, E, R>(
     bl::with(f)
 }
 
-pub fn once0<R, F: 'static>(f: F) -> BlOnce<F>
+pub fn once0<'a, R, F: 'a>(f: F) -> BlOnce<'a, F>
 where
     F: FnOnce() -> R,
 {
     Layout2Once::new(Layout2Once::<F>::invoke0 as _, f)
 }
 
-pub fn once1<A, R, F: 'static>(f: F) -> BlOnce<F>
+pub fn once1<'a, A, R, F: 'a>(f: F) -> BlOnce<'a, F>
 where
     F: FnOnce(A) -> R,
 {
     Layout2Once::new(Layout2Once::<F>::invoke1 as _, f)
 }
 
-pub fn once2<A, B, R, F: 'static>(f: F) -> BlOnce<F>
+pub fn once2<'a, A, B, R, F: 'a>(f: F) -> BlOnce<'a, F>
 where
     F: FnOnce(A, B) -> R,
 {
     Layout2Once::new(Layout2Once::<F>::invoke2 as _, f)
 }
 
-pub fn once3<A, B, C, R, F: 'static>(f: F) -> BlOnce<F>
+pub fn once3<'a, A, B, C, R, F: 'a>(f: F) -> BlOnce<'a, F>
 where
     F: FnOnce(A, B, C) -> R,
 {
     Layout2Once::new(Layout2Once::<F>::invoke3 as _, f)
 }
 
-pub fn once4<A, B, C, D, R, F: 'static>(f: F) -> BlOnce<F>
+pub fn once4<'a, A, B, C, D, R, F: 'a>(f: F) -> BlOnce<'a, F>
 where
     F: FnOnce(A, B, C, D) -> R,
 {
     Layout2Once::new(Layout2Once::<F>::invoke4 as _, f)
 }
 
-pub fn once5<A, B, C, D, E, R, F: 'static>(f: F) -> BlOnce<F>
+pub fn once5<'a, A, B, C, D, E, R, F: 'a>(f: F) -> BlOnce<'a, F>
 where
     F: FnOnce(A, B, C, D, E) -> R,
 {
     Layout2Once::new(Layout2Once::<F>::invoke5 as _, f)
 }
 
-pub fn no_esc0<R, F>(f: &mut F) -> NoEscBlMut<F>
-where
-    F: FnMut() -> R,
-{
-    Layout1Mut::new(Layout1Mut::<F>::invoke0 as _, f)
-}
-
-pub fn no_esc1<A, R, F>(f: &mut F) -> NoEscBlMut<F>
-where
-    F: FnMut(A) -> R,
-{
-    Layout1Mut::new(Layout1Mut::<F>::invoke1 as _, f)
-}
-
-pub fn no_esc2<A, B, R, F>(f: &mut F) -> NoEscBlMut<F>
-where
-    F: FnMut(A, B) -> R,
-{
-    Layout1Mut::new(Layout1Mut::<F>::invoke2 as _, f)
-}
-
-pub fn no_esc3<A, B, C, R, F>(f: &mut F) -> NoEscBlMut<F>
-where
-    F: FnMut(A, B, C) -> R,
-{
-    Layout1Mut::new(Layout1Mut::<F>::invoke3 as _, f)
-}
-
-pub fn no_esc4<A, B, C, D, R, F>(f: &mut F) -> NoEscBlMut<F>
-where
-    F: FnMut(A, B, C, D) -> R,
-{
-    Layout1Mut::new(Layout1Mut::<F>::invoke4 as _, f)
-}
-
-pub fn no_esc5<A, B, C, D, E, R, F>(f: &mut F) -> NoEscBlMut<F>
-where
-    F: FnMut(A, B, C, D, E) -> R,
-{
-    Layout1Mut::new(Layout1Mut::<F>::invoke5 as _, f)
-}
-
-pub fn mut0<R, F: 'static>(f: F) -> BlMut<F>
+pub fn mut0<'a, R, F: 'a>(f: F) -> BlMut<'a, F>
 where
     F: FnMut() -> R,
 {
     Layout2Mut::new(Layout2Mut::<F>::invoke0 as _, f)
 }
 
-pub fn mut1<A, R, F: 'static>(f: F) -> BlMut<F>
+pub fn mut1<'a, A, R, F: 'a>(f: F) -> BlMut<'a, F>
 where
     F: FnMut(A) -> R,
 {
     Layout2Mut::new(Layout2Mut::<F>::invoke1 as _, f)
 }
 
-pub fn mut2<A, B, R, F: 'static>(f: F) -> BlMut<F>
+pub fn mut2<'a, A, B, R, F: 'a>(f: F) -> BlMut<'a, F>
 where
     F: FnMut(A, B) -> R,
 {
     Layout2Mut::new(Layout2Mut::<F>::invoke2 as _, f)
 }
 
-pub fn mut3<A, B, C, R, F: 'static>(f: F) -> BlMut<F>
+pub fn mut3<'a, A, B, C, R, F: 'a>(f: F) -> BlMut<'a, F>
 where
     F: FnMut(A, B, C) -> R,
 {
     Layout2Mut::new(Layout2Mut::<F>::invoke3 as _, f)
 }
 
-pub fn mut4<A, B, C, D, R, F>(f: F) -> BlMut<F>
+pub fn mut4<'a, A, B, C, D, R, F>(f: F) -> BlMut<'a, F>
 where
     F: FnMut(A, B, C, D) -> R,
 {
     Layout2Mut::new(Layout2Mut::<F>::invoke4 as _, f)
 }
 
-pub fn mut5<A, B, C, D, E, R, F: 'static>(f: F) -> BlMut<F>
+pub fn mut5<'a, A, B, C, D, E, R, F: 'a>(f: F) -> BlMut<'a, F>
 where
     F: FnMut(A, B, C, D, E) -> R,
 {
@@ -227,97 +185,6 @@ impl Flags {
 }
 
 #[repr(C)]
-pub struct Layout1Mut<'a, F> {
-    isa: &'static Class<ns::Id>,
-    flags: Flags,
-    reserved: i32,
-    invoke: *const c_void,
-    descriptor: &'static Desc1,
-    closure: &'a mut F,
-}
-
-pub type NoEscBlMut<'a, F> = Layout1Mut<'a, F>;
-
-impl<'a, F> std::ops::Deref for Layout1Mut<'a, F> {
-    type Target = Block<F>;
-
-    fn deref(&self) -> &Self::Target {
-        unsafe { std::mem::transmute(self) }
-    }
-}
-
-impl<'a, F> std::ops::DerefMut for Layout1Mut<'a, F> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { std::mem::transmute(self) }
-    }
-}
-
-impl<'a, F> Layout1Mut<'a, F> {
-    const DESCRIPTOR_1: Desc1 = Desc1 {
-        reserved: 0,
-        size: std::mem::size_of::<&'static Class<ns::Id>>()
-            + std::mem::size_of::<Flags>()
-            + std::mem::size_of::<i32>()
-            + std::mem::size_of::<*const c_void>()
-            + std::mem::size_of::<&'static Desc1>()
-            + std::mem::size_of::<&'static c_void>(), // emulating &mut F
-    };
-
-    extern "C" fn invoke0<R>(&mut self) -> R
-    where
-        F: FnMut() -> R,
-    {
-        (self.closure)()
-    }
-
-    extern "C" fn invoke1<A, R>(&mut self, a: A) -> R
-    where
-        F: FnMut(A) -> R,
-    {
-        (self.closure)(a)
-    }
-
-    extern "C" fn invoke2<A, B, R>(&mut self, a: A, b: B) -> R
-    where
-        F: FnMut(A, B) -> R,
-    {
-        (self.closure)(a, b)
-    }
-
-    extern "C" fn invoke3<A, B, C, R>(&mut self, a: A, b: B, c: C) -> R
-    where
-        F: FnMut(A, B, C) -> R,
-    {
-        (self.closure)(a, b, c)
-    }
-
-    extern "C" fn invoke4<A, B, C, D, R>(&mut self, a: A, b: B, c: C, d: D) -> R
-    where
-        F: FnMut(A, B, C, D) -> R,
-    {
-        (self.closure)(a, b, c, d)
-    }
-
-    extern "C" fn invoke5<A, B, C, D, E, R>(&mut self, a: A, b: B, c: C, d: D, e: E) -> R
-    where
-        F: FnMut(A, B, C, D, E) -> R,
-    {
-        (self.closure)(a, b, c, d, e)
-    }
-
-    fn new(invoke: *const c_void, f: &'a mut F) -> Layout1Mut<'a, F> {
-        Self {
-            isa: unsafe { &_NSConcreteStackBlock },
-            flags: Default::default(),
-            reserved: 0,
-            invoke,
-            descriptor: &Self::DESCRIPTOR_1,
-            closure: f,
-        }
-    }
-}
-
-#[repr(C)]
 pub struct Desc1 {
     reserved: usize,
     size: usize,
@@ -332,22 +199,22 @@ pub struct Desc2<T: Sized> {
 
 // for completion handlers
 #[repr(C)]
-struct Layout2Once<F: Sized + 'static> {
+struct Layout2Once<'a, F: Sized + 'a> {
     isa: &'static Class<ns::Id>,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Desc2<Self>,
+    descriptor: &'a Desc2<Self>,
     closure: Option<F>,
 }
 
 #[repr(C)]
-struct Layout2Mut<F: Sized + 'static> {
+struct Layout2Mut<'a, F: 'a + Sized> {
     isa: &'static Class<ns::Id>,
     flags: Flags,
     reserved: i32,
     invoke: *const c_void,
-    descriptor: &'static Desc2<Self>,
+    descriptor: &'a Desc2<Self>,
     closure: mem::ManuallyDrop<F>,
 }
 
@@ -370,9 +237,9 @@ impl<F: Sized> bl<F> {
 }
 
 #[repr(transparent)]
-pub struct BlOnce<F: 'static>(&'static mut Block<F>);
+pub struct BlOnce<'a, F: 'a>(&'a mut Block<F>);
 
-impl<F> BlOnce<F> {
+impl<F> BlOnce<'static, F> {
     #[inline]
     pub fn escape<'a>(self) -> &'a mut Block<F> {
         unsafe { transmute(self) }
@@ -380,9 +247,9 @@ impl<F> BlOnce<F> {
 }
 
 #[repr(transparent)]
-pub struct BlMut<F: 'static>(&'static mut Block<F>);
+pub struct BlMut<'a, F: 'a>(&'a mut Block<F>);
 
-impl<F> BlMut<F> {
+impl<F> BlMut<'static, F> {
     #[inline]
     pub fn escape(&mut self) -> &'static mut Block<F> {
         let ptr = self.0 as *mut Block<F>;
@@ -390,7 +257,7 @@ impl<F> BlMut<F> {
     }
 }
 
-impl<F> Drop for BlOnce<F> {
+impl<'a, F> Drop for BlOnce<'a, F> {
     #[inline]
     fn drop(&mut self) {
         unsafe {
@@ -399,14 +266,14 @@ impl<F> Drop for BlOnce<F> {
     }
 }
 
-impl<F> Drop for BlMut<F> {
+impl<'a, F> Drop for BlMut<'a, F> {
     #[inline]
     fn drop(&mut self) {
         unsafe { _Block_release(self.0 as *mut _ as *const _) };
     }
 }
 
-impl<F> Clone for BlMut<F> {
+impl<F> Clone for BlMut<'static, F> {
     #[inline]
     fn clone(&self) -> Self {
         unsafe {
@@ -416,7 +283,7 @@ impl<F> Clone for BlMut<F> {
     }
 }
 
-impl<F> ops::Deref for BlOnce<F> {
+impl<'a, F> ops::Deref for BlOnce<'a, F> {
     type Target = Block<F>;
 
     #[inline]
@@ -425,7 +292,7 @@ impl<F> ops::Deref for BlOnce<F> {
     }
 }
 
-impl<F> ops::Deref for BlMut<F> {
+impl<'a, F> ops::Deref for BlMut<'a, F> {
     type Target = Block<F>;
 
     #[inline]
@@ -434,7 +301,7 @@ impl<F> ops::Deref for BlMut<F> {
     }
 }
 
-impl<F> ops::DerefMut for BlMut<F> {
+impl<'a, F> ops::DerefMut for BlMut<'a, F> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0
@@ -457,7 +324,7 @@ impl<F> ops::DerefMut for bl<F> {
     }
 }
 
-impl<F: Sized> Layout2Once<F> {
+impl<'a, F: 'a + Sized> Layout2Once<'a, F> {
     const DESCRIPTOR_2: Desc2<Self> = Desc2 {
         descriptor1: Desc1 {
             reserved: 0,
@@ -542,7 +409,7 @@ impl<F: Sized> Layout2Once<F> {
         }
     }
 
-    fn new(invoke: *const c_void, f: F) -> BlOnce<F> {
+    fn new(invoke: *const c_void, f: F) -> BlOnce<'a, F> {
         let flags = if mem::needs_drop::<F>() {
             Flags::RETAINED_NEEDS_DROP
         } else {
@@ -562,7 +429,7 @@ impl<F: Sized> Layout2Once<F> {
     }
 }
 
-impl<F: Sized> Layout2Mut<F> {
+impl<'a, F: 'a + Sized> Layout2Mut<'a, F> {
     const DESCRIPTOR_2: Desc2<Self> = Desc2 {
         descriptor1: Desc1 {
             reserved: 0,
@@ -625,7 +492,7 @@ impl<F: Sized> Layout2Mut<F> {
         (self.closure)(a, b, c, d, e)
     }
 
-    fn new(invoke: *const c_void, f: F) -> BlMut<F> {
+    fn new(invoke: *const c_void, f: F) -> BlMut<'a, F> {
         let flags = if mem::needs_drop::<F>() {
             Flags::RETAINED_NEEDS_DROP
         } else {
@@ -799,7 +666,7 @@ impl<T> std::future::Future for Completion<T> {
 }
 
 #[cfg(feature = "async")]
-pub fn comp0() -> (Completion<()>, BlOnce<impl FnOnce()>) {
+pub fn comp0() -> (Completion<()>, BlOnce<'static, impl FnOnce()>) {
     let shared = Shared::new();
     (
         Completion(shared.clone()),
@@ -808,7 +675,7 @@ pub fn comp0() -> (Completion<()>, BlOnce<impl FnOnce()>) {
 }
 
 #[cfg(feature = "async")]
-pub fn comp1<R: Send + 'static>() -> (Completion<R>, BlOnce<impl FnOnce(R)>) {
+pub fn comp1<R: Send + 'static>() -> (Completion<R>, BlOnce<'static, impl FnOnce(R)>) {
     let shared = Shared::new();
     (
         Completion(shared.clone()),
@@ -819,7 +686,7 @@ pub fn comp1<R: Send + 'static>() -> (Completion<R>, BlOnce<impl FnOnce(R)>) {
 #[cfg(feature = "async")]
 pub fn ok() -> (
     Completion<Result<(), arc::R<ns::Error>>>,
-    BlOnce<impl FnOnce(Option<&'static ns::Error>)>,
+    BlOnce<'static, impl FnOnce(Option<&'static ns::Error>)>,
 ) {
     let shared = Shared::new();
     (
@@ -836,7 +703,7 @@ pub fn ok() -> (
 #[cfg(feature = "async")]
 pub fn result<T: arc::Retain>() -> (
     Completion<Result<arc::R<T>, arc::R<ns::Error>>>,
-    BlOnce<impl FnOnce(Option<&'static T>, Option<&'static ns::Error>)>,
+    BlOnce<'static, impl FnOnce(Option<&'static T>, Option<&'static ns::Error>)>,
 ) {
     let shared = Shared::new();
     (

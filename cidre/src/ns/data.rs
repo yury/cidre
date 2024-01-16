@@ -1,6 +1,6 @@
 use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
-use crate::{arc, cf, define_obj_type, define_opts, ns, objc};
+use crate::{arc, blocks, cf, define_obj_type, define_opts, ns, objc};
 
 define_opts!(
     #[doc(alias = "NSDataReadingOptions")]
@@ -139,6 +139,20 @@ impl Data {
     #[inline]
     pub fn as_cf(&self) -> &cf::Data {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+/// NSExtendedData
+impl Data {
+    #[objc::msg_send(enumerateByteRangesUsingBlock:)]
+    pub fn _enumerate_byte_ranges_using_block(&self, block: *mut std::ffi::c_void);
+
+    pub fn enum_ranges<B>(&self, block: B)
+    where
+        B: FnMut(*const u8, ns::Range, &mut bool),
+    {
+        let mut block = blocks::mut3(block);
+        self._enumerate_byte_ranges_using_block(block.as_mut_ptr())
     }
 }
 
