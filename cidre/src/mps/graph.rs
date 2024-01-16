@@ -124,10 +124,10 @@ define_obj_type!(pub Graph(ns::Id), MPS_GRAPH);
 
 impl Graph {
     #[objc::msg_send(options)]
-    pub fn options(&self) -> Opts;
+    pub fn opts(&self) -> Opts;
 
     #[objc::msg_send(setOptions:)]
-    pub fn set_options(&mut self, value: Opts);
+    pub fn set_opts(&mut self, value: Opts);
 }
 
 #[link(name = "mpsg", kind = "static")]
