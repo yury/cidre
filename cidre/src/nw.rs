@@ -22,6 +22,9 @@ pub use connection::State as ConnectionState;
 pub mod connection_group;
 pub use connection_group::ConnectionGroup;
 
+pub mod content_context;
+pub use content_context::ContentCtx;
+
 mod txt_record;
 pub use txt_record::TxtRecord;
 

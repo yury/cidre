@@ -182,6 +182,72 @@ impl Connection {
         }
     }
 
+    #[doc(alias = "nw_connection_receive")]
+    #[inline]
+    pub fn recieve_ch<'a, F>(
+        &mut self,
+        min_incomplete_len: u32,
+        max_len: u32,
+        completion: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(
+            /* content */ Option<&'a dispatch::Data>,
+            /* context */ Option<&'a nw::ContentCtx>,
+            /* is_complete */ bool,
+            /* error */ Option<&'a nw::Error>,
+        ),
+    {
+        unsafe {
+            nw_connection_receive(self, min_incomplete_len, max_len, completion.as_mut_ptr())
+        };
+    }
+
+    #[doc(alias = "nw_connection_receive_message")]
+    #[inline]
+    pub fn recieve_msg_ch<'a, F>(&mut self, completion: &'static mut blocks::Block<F>)
+    where
+        F: FnOnce(
+            /* content */ Option<&'a dispatch::Data>,
+            /* context */ Option<&'a nw::ContentCtx>,
+            /* is_complete */ bool,
+            /* error */ Option<&'a nw::Error>,
+        ),
+    {
+        unsafe { nw_connection_receive_message(self, completion.as_mut_ptr()) };
+    }
+
+    #[doc(alias = "nw_connection_send")]
+    #[inline]
+    pub fn send_ch<'a, F>(
+        &mut self,
+        content: Option<&dispatch::Data>,
+        context: &nw::ContentCtx,
+        is_complete: bool,
+        completion: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(Option<&'a nw::Error>),
+    {
+        unsafe { nw_connection_send(self, content, context, is_complete, completion.as_mut_ptr()) }
+    }
+
+    #[doc(alias = "nw_connection_batch")]
+    #[inline]
+    pub fn batch<'a, F, B: dispatch::Block<'a, F>>(&mut self, batch_block: &mut B) {
+        unsafe { nw_connection_batch(self, batch_block.ptr()) };
+    }
+
+    #[doc(alias = "nw_connection_copy_current_path")]
+    #[inline]
+    pub fn current_path(&self) -> Option<arc::R<nw::Endpoint>> {
+        unsafe { nw_connection_copy_current_path(self) }
+    }
+
+    #[doc(alias = "nw_connection_copy_protocol_metadata")]
+    #[inline]
+    pub fn protocol_metadata(&self) -> Option<arc::R<nw::ProtocolMetadata>> {
+        unsafe { nw_connection_copy_protocol_metadata(self) }
+    }
+
     #[doc(alias = "nw_connection_get_maximum_datagram_size")]
     #[inline]
     pub fn maximum_datagram_size(&self) -> u32 {
@@ -224,5 +290,29 @@ extern "C" {
     fn nw_connection_force_cancel(connection: &mut Connection);
     fn nw_connection_cancel_current_endpoint(connection: &mut Connection);
 
+    fn nw_connection_receive(
+        connection: &mut Connection,
+        min_incomplete_length: u32,
+        max_length: u32,
+        completion: *mut c_void,
+    );
+    fn nw_connection_receive_message(connection: &mut Connection, completion: *mut c_void);
+
+    fn nw_connection_send(
+        connection: &mut Connection,
+        content: Option<&dispatch::Data>,
+        context: &nw::ContentCtx,
+        is_complete: bool,
+        completion: *mut c_void,
+    );
+
+    fn nw_connection_batch(connection: &mut Connection, batch_block: *mut c_void);
+
+    fn nw_connection_copy_current_path(connection: &Connection) -> Option<arc::R<nw::Endpoint>>;
+    fn nw_connection_copy_protocol_metadata(
+        connection: &Connection,
+    ) -> Option<arc::R<nw::ProtocolMetadata>>;
+
     fn nw_connection_get_maximum_datagram_size(connection: &Connection) -> u32;
+
 }
