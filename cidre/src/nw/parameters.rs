@@ -41,9 +41,8 @@ impl Params {
 
     #[inline]
     pub fn default_tcp() -> arc::R<Self> {
-        unsafe {
-            Self::create_secure_tcp(&Self::default_cfg(), &Self::default_cfg()).unwrap_unchecked()
-        }
+        let cfg = &Self::default_cfg();
+        unsafe { Self::create_secure_tcp(cfg, cfg).unwrap_unchecked() }
     }
 
     #[doc(alias = "nw_parameters_create_secure_udp")]
