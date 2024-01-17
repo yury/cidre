@@ -51,12 +51,12 @@ fn recv_loop(conn: &mut nw::Connection) {
 }
 
 fn send_request(conn: &mut nw::Connection) {
-    let body = "GET / HTTP/1.1
+    let body = b"GET / HTTP/1.1
 Host: example.com
 
 
 ";
-    let data = dispatch::Data::from_static(body.as_bytes());
+    let data = dispatch::Data::from_static(body);
     let ctx = nw::ContentCtx::default_message();
     let is_complete = false;
 
