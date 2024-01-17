@@ -1,4 +1,4 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, ptr::slice_from_raw_parts};
 
 use crate::{arc, define_obj_type, dispatch, ns};
 
@@ -92,6 +92,16 @@ impl Data {
     ) -> arc::R<Self> {
         unsafe { dispatch_data_create(bytes, len, queue, destructor.as_mut_ptr()) }
     }
+
+    #[inline]
+    pub fn map(&self) -> Map {
+        unsafe {
+            let mut data = std::ptr::null();
+            let mut len = 0;
+            let map = dispatch_data_create_map(self, &mut data, &mut len);
+            Map { map, data, len }
+        }
+    }
 }
 extern "C" fn destructor_noop(_ctx: *const c_void) {}
 
@@ -154,7 +164,46 @@ extern "C" {
     fn dispatch_data_create_subrange(data: &Data, offset: usize, length: usize) -> arc::R<Data>;
     fn dispatch_data_create_concat(data1: &Data, data2: &Data) -> arc::R<Data>;
     #[cfg(feature = "blocks")]
-    fn dispatch_data_apply(data: &Data, appier: *mut c_void) -> bool;
+    fn dispatch_data_apply(data: &Data, applier: *mut c_void) -> bool;
+
+    fn dispatch_data_create_map(
+        data: &Data,
+        buffer_ptr: *mut *const u8,
+        size: *mut usize,
+    ) -> arc::R<Data>;
+}
+
+#[derive(Debug)]
+pub struct Map {
+    map: arc::R<Data>,
+    data: *const u8,
+    len: usize,
+}
+
+impl Map {
+    #[inline]
+    pub fn as_slice(&self) -> &[u8] {
+        unsafe { &*slice_from_raw_parts(self.data, self.len) }
+    }
+}
+
+impl Clone for Map {
+    fn clone(&self) -> Self {
+        Self {
+            map: self.map.retained(),
+            data: self.data,
+            len: self.len,
+        }
+    }
+}
+
+impl std::ops::Deref for Map {
+    type Target = [u8];
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        self.as_slice()
+    }
 }
 
 #[cfg(test)]
@@ -216,5 +265,22 @@ mod tests {
             let data = arc::R::<dispatch::Data>::from("hello!");
             assert_eq!(data.len(), 6);
         }
+    }
+
+    #[test]
+    fn map() {
+        let data1 = dispatch::Data::from_static(b"data1");
+        let data2 = dispatch::Data::from_static(b"data2");
+        let data3 = dispatch::Data::concat(&data1, &data2);
+
+        let map = data3.map();
+        let slice = map.as_slice();
+        assert_eq!(data3.len(), slice.len());
+        assert_eq!(slice[0], b"d"[0]);
+        assert_eq!(slice[5], b"d"[0]);
+
+        let slice = &map[..];
+        assert_eq!(slice[1], b"a"[0]);
+        assert_eq!(slice[6], b"a"[0]);
     }
 }
