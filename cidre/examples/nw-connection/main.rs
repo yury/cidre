@@ -35,14 +35,17 @@ fn recv_loop(conn: &mut nw::Connection) {
     let mut block_conn = conn.retained();
     conn.recieve(1, u32::MAX, move |content, _ctx, _is_complete, err| {
         if let Some(err) = err {
+            // breaking the "loop" on error
             eprintln!("{err:?}");
             return;
         }
 
+        // map content data regions if any
         if let Some(map) = content.map(dispatch::Data::map) {
             let res = std::str::from_utf8(&map).unwrap();
             eprintln!("{res}");
         }
+        // "looping"
         recv_loop(&mut block_conn)
     });
 }
@@ -53,10 +56,11 @@ Host: example.com
 
 
 ";
-    let request = dispatch::Data::from_static(body.as_bytes());
+    let data = dispatch::Data::from_static(body.as_bytes());
     let ctx = nw::ContentCtx::default_message();
+    let is_complete = false;
 
-    conn.send(Some(&request), ctx, false, |err| {
-        eprintln!("request done {err:?}");
+    conn.send(Some(&data), ctx, is_complete, |err| {
+        eprintln!("request accepted {err:?}");
     });
 }
