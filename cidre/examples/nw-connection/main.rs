@@ -3,7 +3,7 @@ use std::ffi::CString;
 use cidre::{dispatch, ns, nw};
 
 fn main() {
-    let url = CString::new("https://www.google.com").unwrap();
+    let url = CString::new("https://example.com").unwrap();
     let endpoint = nw::Endpoint::with_url(&url).unwrap();
 
     let mut conn = nw::Connection::with_endpoint(&endpoint, &nw::Params::default_tcp()).unwrap();
@@ -49,7 +49,7 @@ fn recv_loop(conn: &mut nw::Connection) {
 
 fn send_request(conn: &mut nw::Connection) {
     let body = "GET / HTTP/1.1
-Host: www.google.com
+Host: example.com
 
 
 ";
