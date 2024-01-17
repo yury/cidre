@@ -28,7 +28,7 @@ impl SpeechSynthesizerDelegateImpl for SynthDelegate {
         _utterance: &av::SpeechUtterance,
     ) {
         println!("did finish");
-        ns::Application::shared().terminate(None);
+        ns::App::shared().terminate(None);
     }
 }
 
@@ -59,5 +59,5 @@ fn main() {
     // Tell the synthesizer to speak the utterance.
     synth.speak_utterance(&utterance).unwrap();
 
-    ns::Application::shared().run();
+    ns::App::shared().run();
 }

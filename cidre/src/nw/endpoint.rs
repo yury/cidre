@@ -44,7 +44,7 @@ impl Endpoint {
 impl Endpoint {
     #[doc(alias = "nw_endpoint_create_host")]
     #[inline]
-    pub fn create_host(hostname: &CStr, port: &CStr) -> Option<arc::R<Self>> {
+    pub fn with_host(hostname: &CStr, port: &CStr) -> Option<arc::R<Self>> {
         unsafe { nw_endpoint_create_host(hostname.as_ptr(), port.as_ptr()) }
     }
 
@@ -95,11 +95,7 @@ extern "C" {
 
 /// Bonjour Endpoints
 impl Endpoint {
-    pub fn create_bonjour_service(
-        name: &CStr,
-        type_: &CStr,
-        domain: &CStr,
-    ) -> Option<arc::R<Self>> {
+    pub fn with_bonjour_service(name: &CStr, type_: &CStr, domain: &CStr) -> Option<arc::R<Self>> {
         unsafe {
             nw_endpoint_create_bonjour_service(name.as_ptr(), type_.as_ptr(), domain.as_ptr())
         }
@@ -162,7 +158,7 @@ extern "C" {
 impl Endpoint {
     #[doc(alias = "nw_endpoint_create_url")]
     #[inline]
-    pub fn create_url(url: &CStr) -> Option<arc::R<Self>> {
+    pub fn with_url(url: &CStr) -> Option<arc::R<Self>> {
         unsafe { nw_endpoint_create_url(url.as_ptr()) }
     }
 
@@ -227,7 +223,7 @@ mod tests {
     fn host() {
         let host = CString::new("localhost").unwrap();
         let port = CString::new("8000").unwrap();
-        let endpoint = nw::Endpoint::create_host(&host, &port).unwrap();
+        let endpoint = nw::Endpoint::with_host(&host, &port).unwrap();
 
         assert_eq!(endpoint.type_(), nw::EndpointType::Host);
         assert_eq!(endpoint.hostname().unwrap(), host.as_c_str());
@@ -240,7 +236,7 @@ mod tests {
         let name = CString::new("example").unwrap();
         let type_ = CString::new("_what._udp").unwrap();
         let domain = CString::new("local").unwrap();
-        let endpoint = nw::Endpoint::create_bonjour_service(&name, &type_, &domain).unwrap();
+        let endpoint = nw::Endpoint::with_bonjour_service(&name, &type_, &domain).unwrap();
 
         assert_eq!(endpoint.type_(), nw::EndpointType::BonjourService);
         assert_eq!(endpoint.hostname(), None);
@@ -256,7 +252,7 @@ mod tests {
     #[test]
     fn url() {
         let url = CString::new("https:://ya.ru").unwrap();
-        let endpoint = nw::Endpoint::create_url(&url).unwrap();
+        let endpoint = nw::Endpoint::with_url(&url).unwrap();
         assert_eq!(endpoint.type_(), nw::EndpointType::Url);
         assert_eq!(endpoint.url().unwrap(), url.as_c_str());
 

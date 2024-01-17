@@ -1,11 +1,14 @@
 use crate::{define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(pub Application(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSApplication")]
+    pub App(ns::Id)
+);
 
 #[objc::obj_trait]
 pub trait Delegate {}
 
-impl Application {
+impl App {
     define_cls!(NS_APPLICATION);
 
     #[objc::cls_msg_send(sharedApplication)]
@@ -23,5 +26,5 @@ impl Application {
 
 #[link(name = "app", kind = "static")]
 extern "C" {
-    static NS_APPLICATION: &'static objc::Class<Application>;
+    static NS_APPLICATION: &'static objc::Class<App>;
 }
