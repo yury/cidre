@@ -57,7 +57,7 @@ Host: example.com
 
 ";
     let data = dispatch::Data::from_static(body);
-    let ctx = nw::ContentCtx::default_message();
+    let ctx = nw::ContentCtx::default_msg();
     let is_complete = false;
 
     conn.send(Some(&data), ctx, is_complete, |err| {

@@ -26,13 +26,13 @@ impl ContentCtx {
 
     #[doc(alias = "NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT")]
     #[inline]
-    pub fn default_message() -> &'static Self {
+    pub fn default_msg() -> &'static Self {
         unsafe { _nw_content_context_default_message }
     }
 
     #[doc(alias = "NW_CONNECTION_FINAL_MESSAGE_CONTEXT")]
     #[inline]
-    pub fn final_send() -> &'static Self {
+    pub fn final_msg_send() -> &'static Self {
         unsafe { _nw_content_context_final_send }
     }
 
