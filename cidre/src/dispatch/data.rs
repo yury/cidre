@@ -182,8 +182,13 @@ pub struct Map {
 
 impl Map {
     #[inline]
+    pub fn data(&self) -> &Data {
+        &self.map
+    }
+
+    #[inline]
     pub fn as_slice(&self) -> &[u8] {
-        unsafe { &*slice_from_raw_parts(self.data, self.len) }
+        self
     }
 }
 
@@ -202,7 +207,7 @@ impl std::ops::Deref for Map {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        self.as_slice()
+        unsafe { &*slice_from_raw_parts(self.data, self.len) }
     }
 }
 
@@ -276,11 +281,16 @@ mod tests {
         let map = data3.map();
         let slice = map.as_slice();
         assert_eq!(data3.len(), slice.len());
+
         assert_eq!(slice[0], b"d"[0]);
         assert_eq!(slice[5], b"d"[0]);
 
         let slice = &map[..];
         assert_eq!(slice[1], b"a"[0]);
         assert_eq!(slice[6], b"a"[0]);
+
+        let empty_map = dispatch::Data::empty().map();
+        let slice = &empty_map[..];
+        assert!(slice.is_empty());
     }
 }
