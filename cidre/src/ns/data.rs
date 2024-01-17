@@ -147,11 +147,20 @@ impl Data {
     #[objc::msg_send(enumerateByteRangesUsingBlock:)]
     pub fn _enumerate_byte_ranges_using_block(&self, block: *mut std::ffi::c_void);
 
-    pub fn enum_ranges<B>(&self, block: B)
+    #[inline]
+    pub fn enum_ranges_block<'a, F>(&self, block: &mut blocks::Block<F>)
+    where
+        F: FnMut(*const u8, ns::Range, &'a mut bool),
+    {
+        self._enumerate_byte_ranges_using_block(block.as_mut_ptr())
+    }
+
+    #[inline]
+    pub fn enum_ranges<B>(&self, mut block: B)
     where
         B: FnMut(*const u8, ns::Range, &mut bool),
     {
-        let mut block = blocks::mut3(block);
+        let mut block = blocks::no_esc3(&mut block);
         self._enumerate_byte_ranges_using_block(block.as_mut_ptr())
     }
 }

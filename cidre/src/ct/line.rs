@@ -79,20 +79,22 @@ impl Line {
         unsafe { CTLineGetStringIndexForPosition(self, position) }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enumerate_caret_offsets_block<F>(&self, block: &mut blocks::Block<F>)
+    pub fn enum_caret_offsets_block<F>(&self, block: &mut blocks::Block<F>)
     where
         F: FnMut(f64, cf::Index, bool, *mut bool),
     {
         unsafe { CTLineEnumerateCaretOffsets(self, block.as_mut_ptr()) }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enumerate_caret_offsets<F>(&self, block: &mut F)
+    pub fn enum_caret_offsets<F>(&self, mut block: F)
     where
         F: FnMut(f64, cf::Index, bool, *mut bool),
     {
-        let mut block = blocks::mut4(block);
+        let mut block = blocks::no_esc4(&mut block);
         unsafe { CTLineEnumerateCaretOffsets(self, block.as_mut_ptr()) }
     }
 }
@@ -155,13 +157,9 @@ mod tests {
         assert_eq!(line.trailing_whitspace(), 0.0);
 
         let mut offsets = Vec::new();
-
-        let mut block =
-            |offset: f64, _char_index: cf::Index, _leading_edge: bool, _stop: *mut bool| {
-                offsets.push(offset);
-            };
-
-        line.enumerate_caret_offsets(&mut block);
+        line.enum_caret_offsets(|offset, _char_index, _leading_edge, _stop| {
+            offsets.push(offset);
+        });
         assert_eq!(offsets.len(), 8);
 
         line.show();

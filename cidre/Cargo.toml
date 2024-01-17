@@ -110,6 +110,10 @@ name = "alloc"
 harness = false
 
 [[bench]]
+name = "blocks"
+harness = false
+
+[[bench]]
 name = "cf_string"
 harness = false
 

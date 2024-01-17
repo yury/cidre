@@ -36,11 +36,22 @@ impl Data {
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_data_apply")]
     #[inline]
-    pub fn apply<'a, F>(&self, applier: &mut blocks::Block<F>) -> bool
+    pub fn apply_block<'a, F>(&self, applier: &mut blocks::Block<F>) -> bool
     where
         F: FnMut(&'a dispatch::Data, usize, *const u8, usize) -> bool,
     {
         unsafe { dispatch_data_apply(self, applier.as_mut_ptr()) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "dispatch_data_apply")]
+    #[inline]
+    pub fn apply<'a, F>(&self, mut applier: F) -> bool
+    where
+        F: FnMut(&'a dispatch::Data, usize, *const u8, usize) -> bool,
+    {
+        let mut block = blocks::no_esc4(&mut applier);
+        unsafe { dispatch_data_apply(self, block.as_mut_ptr()) }
     }
 
     #[inline]
