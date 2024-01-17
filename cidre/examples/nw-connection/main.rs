@@ -33,7 +33,7 @@ fn main() {
 
 fn recv_loop(conn: &mut nw::Connection) {
     let mut block_conn = conn.retained();
-    conn.recieve(1, u32::MAX, move |content, _ctx, _is_complete, err| {
+    conn.recv(1, u32::MAX, move |content, _ctx, _is_complete, err| {
         if let Some(err) = err {
             // breaking the "loop" on error
             eprintln!("{err:?}");

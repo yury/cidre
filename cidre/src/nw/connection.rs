@@ -192,7 +192,7 @@ impl Connection {
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_receive")]
     #[inline]
-    pub fn recieve_ch<'a, F>(
+    pub fn recv_ch<'a, F>(
         &mut self,
         min_incomplete_len: u32,
         max_len: u32,
@@ -211,7 +211,7 @@ impl Connection {
     }
 
     #[cfg(feature = "blocks")]
-    pub fn recieve<F>(&mut self, min_incomplete_len: u32, max_len: u32, block: F)
+    pub fn recv<F>(&mut self, min_incomplete_len: u32, max_len: u32, block: F)
     where
         F: FnOnce(
                 /* content */ Option<&dispatch::Data>,
@@ -221,13 +221,13 @@ impl Connection {
             ) + 'static,
     {
         let block = blocks::once4(block);
-        self.recieve_ch(min_incomplete_len, max_len, block.escape());
+        self.recv_ch(min_incomplete_len, max_len, block.escape());
     }
 
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_receive_message")]
     #[inline]
-    pub fn recieve_msg_ch<'a, F>(&mut self, completion: &'static mut blocks::Block<F>)
+    pub fn recv_msg_ch<'a, F>(&mut self, completion: &'static mut blocks::Block<F>)
     where
         F: FnOnce(
             /* content */ Option<&'a dispatch::Data>,
@@ -237,6 +237,22 @@ impl Connection {
         ),
     {
         unsafe { nw_connection_receive_message(self, completion.as_mut_ptr()) };
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "nw_connection_receive_message")]
+    #[inline]
+    pub fn recv_msg<F>(&mut self, block: F)
+    where
+        F: FnOnce(
+                /* content */ Option<&dispatch::Data>,
+                /* context */ Option<&nw::ContentCtx>,
+                /* is_complete */ bool,
+                /* error */ Option<&nw::Error>,
+            ) + 'static,
+    {
+        let block = blocks::once4(block);
+        self.recv_msg_ch(block.escape());
     }
 
     #[cfg(feature = "blocks")]
