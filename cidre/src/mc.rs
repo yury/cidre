@@ -12,3 +12,8 @@ pub use session::EncryptionPreference;
 pub use session::SendDataMode as SessionSendDataMode;
 pub use session::Session;
 pub use session::State as SessionState;
+
+mod advertiser_assistant;
+pub use advertiser_assistant::AdvertiserAssistant;
+pub use advertiser_assistant::Delegate as AdvertiserAssistantDelegate;
+pub use advertiser_assistant::DelegateImpl as AdvertiserAssistantDelegateImpl;
