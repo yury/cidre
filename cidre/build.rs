@@ -102,6 +102,7 @@ fn main() {
     xc_feature_build("mps", sdk, arch, configuration);
     xc_feature_build("mpsg", sdk, arch, configuration);
     xc_feature_build("ns", sdk, arch, configuration);
+    xc_feature_build("mc", sdk, arch, configuration);
     xc_feature_build("mtl", sdk, arch, configuration);
     xc_feature_build("ci", sdk, arch, configuration);
     xc_feature_build("av", sdk, arch, configuration);

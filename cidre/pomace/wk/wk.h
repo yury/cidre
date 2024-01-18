@@ -13,13 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 Class WK_WEB_VIEW;
 
 __attribute__((constructor))
-static void mtl_initializer(void)
+static void wk_initializer(void)
 {
-    
-//    [[WKWebView alloc] init];
     static int initialized = 0;
     if (!initialized) {
         WK_WEB_VIEW = [WKWebView class];
+        
+        initialized = 1;
     }
 }
 

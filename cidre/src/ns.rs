@@ -12,6 +12,9 @@ mod process_info;
 pub use process_info::ProcessInfo;
 pub use process_info::ThermalState as ProcessInfoThermalState;
 
+mod progress;
+pub use progress::Progress;
+
 pub mod objc_runtime;
 pub use objc_runtime::ExceptionName;
 
@@ -188,6 +191,11 @@ pub use key_value_observing::KVSetMutationKind;
 pub use key_value_observing::Observer;
 
 mod key_value_coding;
+
+mod stream;
+pub use stream::InputStream;
+pub use stream::OutputStream;
+pub use stream::Status as StreamStatus;
 
 pub fn log(str: &crate::ns::String) {
     unsafe {

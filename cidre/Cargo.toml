@@ -30,6 +30,7 @@ full = [
   "ns",
   "vt",
   "sc",
+  "mc",
   "mtl",
   "mlc",
   "cv",
@@ -80,6 +81,7 @@ nw = ["ns", "dispatch"]
 ui = ["ns"]
 ut = ["ns"]
 ct = ["cf", "cg"]
+mc = ["ns"]
 mtl = ["ns"]
 mlc = ["mtl"]
 mps = ["mtl"]

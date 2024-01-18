@@ -1,7 +1,7 @@
 mod application;
 pub use application::App;
-pub use application::Delegate as ApplicationDelegate;
-pub use application::DelegateImpl as ApplicationDelegateImpl;
+pub use application::Delegate as AppDelegate;
+pub use application::DelegateImpl as AppDelegateImpl;
 
 pub mod view;
 pub use view::View;

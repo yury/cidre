@@ -10,6 +10,7 @@
 
 use std::{
     ffi::c_void,
+    marker::PhantomData,
     mem::{self, transmute},
     ops,
 };
@@ -236,7 +237,7 @@ pub struct Desc1 {
 pub struct Desc2<T: Sized> {
     descriptor1: Desc1,
     copy: extern "C" fn(dest: &mut T, src: &mut T),
-    dispose: extern "C" fn(liteal: &mut T),
+    dispose: extern "C" fn(literal: &mut T),
 }
 
 // for completion handlers
@@ -268,6 +269,41 @@ pub struct Layout1Mut<'a, F> {
     invoke: *const c_void,
     descriptor: &'a Desc1,
     closure: &'a mut F,
+}
+
+#[repr(C)]
+pub struct LayoutArg {
+    isa: &'static Class<ns::Id>,
+    flags: Flags,
+    reserved: i32,
+    invoke: *const c_void,
+}
+
+#[repr(transparent)]
+pub struct Arg<F>(LayoutArg, PhantomData<F>);
+
+impl<R> Arg<fn() -> R> {
+    pub fn call(&mut self) -> R {
+        let f: extern "C" fn(literal: &mut Self) -> R =
+            unsafe { std::mem::transmute(self.0.invoke) };
+        f(self)
+    }
+}
+
+impl<A, R> Arg<fn(a: A) -> R> {
+    pub fn call(&mut self, a: A) -> R {
+        let f: extern "C" fn(literal: &mut Self, a: A) -> R =
+            unsafe { std::mem::transmute(self.0.invoke) };
+        f(self, a)
+    }
+}
+
+impl<A, B, R> Arg<fn(a: A, b: B) -> R> {
+    pub fn call(&mut self, a: A, b: B) -> R {
+        let f: extern "C" fn(literal: &mut Self, a: A, b: B) -> R =
+            unsafe { std::mem::transmute(self.0.invoke) };
+        f(self, a, b)
+    }
 }
 
 pub type NoEscBlMut<'a, F> = Layout1Mut<'a, F>;

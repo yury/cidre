@@ -1,31 +1,27 @@
 use std::ffi::c_void;
 
 use cidre::{
-    arc, blocks, define_obj_type, dispatch, ns, objc, objc::Obj, wk, wk::NavigationDelegate,
+    arc, define_obj_type, dispatch, ns, objc, objc::Obj, wk, wk::NavigationDelegate,
     wk::NavigationDelegateImpl,
 };
 
-define_obj_type!(
-    AppDelegate + ns::ApplicationDelegateImpl,
-    (),
-    APP_DELEGATE_CLS
-);
+define_obj_type!(AppD + ns::AppDelegateImpl, (), APP_DELEGATE_CLS);
 
-impl ns::ApplicationDelegate for AppDelegate {}
+impl ns::AppDelegate for AppD {}
 
 #[objc::add_methods]
-impl ns::ApplicationDelegateImpl for AppDelegate {}
+impl ns::AppDelegateImpl for AppD {}
 
 define_obj_type!(
-    NavDelegate + wk::NavigationDelegateImpl,
+    NavD + wk::NavigationDelegateImpl,
     arc::R<wk::WebView>,
     NAV_DELEGATE_CLS
 );
 
-impl NavigationDelegate for NavDelegate {}
+impl NavigationDelegate for NavD {}
 
 #[objc::add_methods]
-impl NavigationDelegateImpl for NavDelegate {
+impl NavigationDelegateImpl for NavD {
     extern "C" fn impl_web_view_did_finish_navigation(
         &mut self,
         _cmd: Option<&objc::Sel>,
@@ -33,7 +29,9 @@ impl NavigationDelegateImpl for NavDelegate {
         navigation: Option<&wk::Navigation>,
     ) {
         let nav = navigation.map(wk::Navigation::retained);
-        let mut block = blocks::mut2(move |res: Option<&ns::Id>, _error| {
+
+        let js = ns::String::with_str("document.body.innerHTML");
+        web_view.eval_js(&js, move |res, _err| {
             eprintln!("{:?}", nav);
             res.map(|id| {
                 if let Some(str) = id.try_cast(ns::String::cls()) {
@@ -41,9 +39,6 @@ impl NavigationDelegateImpl for NavDelegate {
                 }
             });
         });
-
-        let js = ns::String::with_str("document.body.innerHTML");
-        web_view.eval_js_ch(&js, block.escape());
     }
 
     extern "C" fn impl_web_view_did_fail_navigation_err(
@@ -58,7 +53,7 @@ impl NavigationDelegateImpl for NavDelegate {
     }
 }
 
-impl NavDelegate {
+impl NavD {
     fn new() -> arc::R<Self> {
         let mut web_view = wk::WebView::new();
         web_view.set_inpectable(true);
@@ -73,7 +68,7 @@ impl NavDelegate {
     }
 
     extern "C" fn start_on_main(_ctx: *mut c_void) {
-        let mut navd = NavDelegate::new();
+        let mut navd = NavD::new();
         let url = ns::Url::with_str("https://twitch.com").unwrap();
         let request = ns::UrlRequest::with_url(&url);
         navd.load(&request);
@@ -83,9 +78,9 @@ impl NavDelegate {
     }
 }
 
-static mut NAV_DELEGATE: Option<arc::R<NavDelegate>> = None;
+static mut NAV_DELEGATE: Option<arc::R<NavD>> = None;
 
-impl AppDelegate {
+impl AppD {
     fn run() {
         let appd = Self::new();
         let app = ns::App::shared();
@@ -95,6 +90,6 @@ impl AppDelegate {
 }
 
 fn main() {
-    dispatch::Queue::main().async_f(std::ptr::null_mut(), NavDelegate::start_on_main);
-    AppDelegate::run()
+    dispatch::Queue::main().async_f(std::ptr::null_mut(), NavD::start_on_main);
+    AppD::run()
 }

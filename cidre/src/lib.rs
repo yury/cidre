@@ -63,6 +63,10 @@ pub mod blocks;
 /// mach
 pub mod mach;
 
+/// MultipeerConnectivity
+#[cfg(feature = "mc")]
+pub mod mc;
+
 /// Metal
 #[cfg(feature = "mtl")]
 pub mod mtl;
