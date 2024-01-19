@@ -2,7 +2,7 @@
 use crate::ca;
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(pub View(ns::Id), NS_VIEW);
+define_obj_type!(pub View(ns::Responder), NS_VIEW);
 
 impl View {
     #[cfg(feature = "ca")]

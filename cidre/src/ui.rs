@@ -8,5 +8,11 @@ pub use device::UserInterfaceIdiom;
 mod view;
 pub use view::View;
 
+mod responder;
+pub use responder::Responder;
+
+mod view_controller;
+pub use view_controller::ViewController;
+
 mod color;
 pub use color::Color;

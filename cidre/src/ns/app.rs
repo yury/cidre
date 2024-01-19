@@ -14,5 +14,11 @@ pub use window::ToolbarStyle as WindowToolbarStyle;
 pub use window::Window;
 pub use window::WindowLevel;
 
+mod responder;
+pub use responder::Responder;
+
+mod view_controller;
+pub use view_controller::ViewController;
+
 pub mod color;
 pub use color::Color;
