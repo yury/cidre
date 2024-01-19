@@ -6,6 +6,10 @@ pub use error::Domain as ErrorDomain;
 mod browser_view_controller;
 #[cfg(any(feature = "ui", feature = "app"))]
 pub use browser_view_controller::BrowserViewController;
+#[cfg(any(feature = "ui", feature = "app"))]
+pub use browser_view_controller::Delegate as BrowserViewControllerDelegate;
+#[cfg(any(feature = "ui", feature = "app"))]
+pub use browser_view_controller::DelegateImpl as BrowserViewControllerDelegateImpl;
 
 mod peer_id;
 pub use peer_id::PeerId;

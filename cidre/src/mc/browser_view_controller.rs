@@ -122,5 +122,6 @@ mod tests {
         assert_eq!(bvc.max_number_of_peers(), 8);
         bvc.set_max_number_of_peers(10);
         assert_eq!(bvc.max_number_of_peers(), 8);
+        assert!(bvc.delegate().is_none());
     }
 }

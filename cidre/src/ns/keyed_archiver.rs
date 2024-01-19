@@ -1,0 +1,47 @@
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+define_obj_type!(
+    pub KeyedArchiver(ns::Coder)
+);
+
+impl KeyedArchiver {
+    define_cls!(NS_KEYED_ARCHIVER);
+
+    #[objc::cls_msg_send(archivedDataWithRootObject:requiringSecureCoding:error:)]
+    pub unsafe fn archived_data_with_root_obj_err_ar<'ear>(
+        obj: &ns::Id,
+        secure_coding: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::Rar<ns::Data>>;
+
+    #[objc::cls_rar_retain]
+    pub unsafe fn archived_data_with_root_obj_err<'ear>(
+        obj: &ns::Id,
+        secure_coding: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<ns::Data>>;
+
+    pub fn archived_data_with_root_obj<'ear>(
+        obj: &ns::Id,
+        secure_coding: bool,
+    ) -> Result<arc::R<ns::Data>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { Self::archived_data_with_root_obj_err(obj, secure_coding, err) })
+    }
+}
+
+#[link(name = "ns", kind = "static")]
+extern "C" {
+    static NS_KEYED_ARCHIVER: &'static objc::Class<KeyedArchiver>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let s = ns::String::with_str("value");
+        let data = ns::KeyedArchiver::archived_data_with_root_obj(&s, false).unwrap();
+        assert!(!data.is_empty());
+    }
+}

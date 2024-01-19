@@ -197,6 +197,12 @@ pub use stream::InputStream;
 pub use stream::OutputStream;
 pub use stream::Status as StreamStatus;
 
+mod keyed_archiver;
+pub use keyed_archiver::KeyedArchiver;
+
+mod keyed_unarchiver;
+pub use keyed_unarchiver::KeyedUnarchiver;
+
 pub fn log(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);

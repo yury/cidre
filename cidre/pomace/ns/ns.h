@@ -73,6 +73,9 @@ Class NS_OPERATION;
 Class NS_BLOCK_OPERATION;
 Class NS_OPERATION_QUEUE;
 
+Class NS_KEYED_ARCHIVER;
+Class NS_KEYED_UNARCHIVER;
+
 typedef void cidre_change(
                           void * _Nullable,
                           NSString * _Nullable,
@@ -152,6 +155,9 @@ static void common_initializer(void)
         NS_OPERATION = [NSOperation class];
         NS_BLOCK_OPERATION = [NSBlockOperation class];
         NS_OPERATION_QUEUE = [NSOperationQueue class];
+
+        NS_KEYED_ARCHIVER = [NSKeyedArchiver class];
+        NS_KEYED_UNARCHIVER = [NSKeyedUnarchiver class];
         
         
         initialized = 1;
