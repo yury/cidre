@@ -1,6 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
+    #[doc(alias = "NSKeyedUnarchiver")]
     pub KeyedUnarchiver(ns::Coder)
 );
 
@@ -21,6 +22,7 @@ impl KeyedUnarchiver {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<T>>;
 
+    #[inline]
     pub fn unarchived_obj_of_cls<'a, 'ear, T: objc::Obj>(
         cls: &'a objc::Class<T>,
         data: &'a ns::Data,
@@ -40,9 +42,9 @@ mod tests {
 
     #[test]
     fn basics() {
-        let s = ns::String::with_str("data");
-        let data = ns::KeyedArchiver::archived_data_with_root_obj(&s, true).unwrap();
-        let ss = ns::KeyedUnarchiver::unarchived_obj_of_cls(ns::String::cls(), &data).unwrap();
-        assert_eq!(&s, &ss);
+        let a = ns::String::with_str("data");
+        let data = ns::KeyedArchiver::archived_data_with_root_obj(&a, true).unwrap();
+        let b = ns::KeyedUnarchiver::unarchived_obj_of_cls(ns::String::cls(), &data).unwrap();
+        assert_eq!(&a, &b);
     }
 }

@@ -1,6 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
+    #[doc(alias = "NSKeyedArchiver")]
     pub KeyedArchiver(ns::Coder)
 );
 
@@ -21,6 +22,7 @@ impl KeyedArchiver {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Data>>;
 
+    #[inline]
     pub fn archived_data_with_root_obj<'ear>(
         obj: &ns::Id,
         secure_coding: bool,
