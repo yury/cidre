@@ -15,6 +15,7 @@ pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
 }
 
 define_obj_type!(pub AudioDataOutput(Output), AV_CAPTURE_AUDIO_DATA_OUTPUT);
+
 impl AudioDataOutput {
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
     pub fn set_sample_buf_delegate<D: AudioDataOutputSampleBufDelegate>(

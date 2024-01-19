@@ -110,6 +110,7 @@ fn main() {
     xc_feature_build("mlc", sdk, arch, configuration);
     xc_feature_build("wk", sdk, arch, configuration);
     xc_feature_build("gc", sdk, arch, configuration);
+    xc_feature_build("core_motion", sdk, arch, configuration);
 
     if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
         xc_build("ui", sdk, arch, configuration);
