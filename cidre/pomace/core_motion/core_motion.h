@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+Class CM_ALTIMETER;
 Class CM_PEDOMETER;
 
 __attribute__((constructor))
@@ -19,6 +20,10 @@ static void core_motion_initializer(void)
     if (!initialized) {
         initialized = 1;
 
+#if TARGET_OS_OSX
+#else
+        CM_ALTIMETER = [CMAltimeter class];
+#endif
         CM_PEDOMETER = [CMPedometer class];
     }
 }
