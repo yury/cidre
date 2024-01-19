@@ -17,3 +17,8 @@ mod advertiser_assistant;
 pub use advertiser_assistant::AdvertiserAssistant;
 pub use advertiser_assistant::Delegate as AdvertiserAssistantDelegate;
 pub use advertiser_assistant::DelegateImpl as AdvertiserAssistantDelegateImpl;
+
+mod nearby_service_browser;
+pub use nearby_service_browser::Delegate as NearbyServiceBrowserDelegate;
+pub use nearby_service_browser::DelegateImpl as NearbyServiceBrowserDelegateImpl;
+pub use nearby_service_browser::NearbyServiceBrowser;

@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, mc, ns, nw::AdvertiseDesc, objc};
+use crate::{arc, define_cls, define_obj_type, mc, ns, objc};
 
 define_obj_type!(
     pub AdvertiserAssistant(ns::Id)
@@ -60,7 +60,7 @@ define_obj_type!(
 
 impl Delegate for AnyDelegate {}
 
-#[link(name = "mc", kind = "framework")]
+#[link(name = "mc", kind = "static")]
 extern "C" {
     static MC_ADVERTISER_ASSISTANT: &'static objc::Class<AdvertiserAssistant>;
 }
