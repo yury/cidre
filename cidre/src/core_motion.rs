@@ -17,6 +17,17 @@ mod absolute_altitude;
 #[cfg(any(target_os = "ios", target_os = "watchos"))]
 pub use absolute_altitude::AbsAltitudeData;
 
+#[cfg(target_os = "ios")]
+mod attitude;
+#[cfg(target_os = "ios")]
+pub use attitude::Attitude;
+#[cfg(target_os = "ios")]
+pub use attitude::AttitudeRefFrame;
+#[cfg(target_os = "ios")]
+pub use attitude::Quaternion;
+#[cfg(target_os = "ios")]
+pub use attitude::RotationMatrix;
+
 mod authorization;
 #[cfg(any(target_os = "ios", target_os = "watchos"))]
 pub use authorization::AuthorizationStatus;
