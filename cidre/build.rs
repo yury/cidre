@@ -1,6 +1,4 @@
-use std::env;
-use std::path::PathBuf;
-use std::process::Command;
+use std::{env, path::PathBuf, process::Command};
 
 fn xc_feature_build(pomace: &str, sdk: &str, arch: &str, configuration: &str) {
     let env_var = format!("CARGO_FEATURE_{}", pomace.to_uppercase());
@@ -76,7 +74,8 @@ fn main() {
         "aarch64-apple-ios" => "iphoneos",
         "x86_64-apple-ios" | "aarch64-apple-ios-sim" => "iphonesimulator",
         "aarch64-apple-ios-macabi" => "maccatalyst",
-        "aarch64-apple-tvos" => "tvos",
+        "aarch64-apple-tvos" => "appletvos",
+        "aarch64-apple-tvos-sim" => "appletvsimulator",
         x => panic!("unknown tripple: {x}"),
     };
 
@@ -85,6 +84,7 @@ fn main() {
         | "aarch64-apple-darwin"
         | "aarch64-apple-ios"
         | "aarch64-apple-tvos"
+        | "aarch64-apple-tvos-sim"
         | "aarch64-apple-ios-sim" => "arm64",
         "x86_64-apple-ios" | "x86_64-apple-darwin" => "x86_64",
         x => panic!("unknown tripple: {x}"),
@@ -108,11 +108,18 @@ fn main() {
     xc_feature_build("av", sdk, arch, configuration);
     xc_feature_build("ca", sdk, arch, configuration);
     xc_feature_build("mlc", sdk, arch, configuration);
-    xc_feature_build("wk", sdk, arch, configuration);
+    if sdk != "appletvos" && sdk != "appletvsimulator" {
+        xc_feature_build("wk", sdk, arch, configuration);
+        xc_feature_build("core_motion", sdk, arch, configuration);
+    }
     xc_feature_build("gc", sdk, arch, configuration);
-    xc_feature_build("core_motion", sdk, arch, configuration);
 
-    if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
+    if sdk == "iphoneos"
+        || sdk == "iphonesimulator"
+        || sdk == "maccatalyst"
+        || sdk == "appletvos"
+        || sdk == "appletvsimulator"
+    {
         xc_build("ui", sdk, arch, configuration);
     }
     if sdk == "macosx" || sdk == "maccatalyst" {

@@ -6,7 +6,12 @@
 //
 
 #import <Foundation/Foundation.h>
+
+// MLC is not supported on simulators
+#if TARGET_OS_SIMULATOR
+#else
 #import <MLCompute/MLCompute.h>
+#endif
 
 #import "../macro.h"
 
@@ -26,7 +31,6 @@ Class MLC_TENSOR_DESCRIPTOR;
 Class MLC_TENSOR_PARAMETER;
 Class MLC_TENSOR_DATA;
 Class MLC_TENSOR;
-Class MLC_GRAPH;
 Class MLC_MATMUL_DESCRIPTOR;
 Class MLC_MATMUL_LAYER;
 Class MLC_INFERENCE_GRAPH;
@@ -37,7 +41,8 @@ static void mlc_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
-        
+#if TARGET_OS_SIMULATOR
+#else
         MLC_DEVICE = [MLCDevice class];
         MLC_GRAPH = [MLCGraph class];
         MLC_ACTIVATION_DESCRIPTOR = [MLCActivationDescriptor class];
@@ -57,7 +62,7 @@ static void mlc_initializer(void)
         MLC_MATMUL_LAYER = [MLCMatMulLayer class];
         MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
         MLC_TRAINING_GRAPH = [MLCTrainingGraph class];
-        
+#endif
         initialized = 1;
     }
 }

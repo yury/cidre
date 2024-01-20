@@ -41,6 +41,7 @@ pub mod cg;
 pub mod cm;
 
 /// Core Motion
+#[cfg(not(target_os = "tvos"))]
 #[cfg(feature = "core_motion")]
 pub mod core_motion;
 
@@ -114,7 +115,11 @@ pub mod sn;
 pub mod cat;
 
 #[cfg(all(
-    any(target_os = "ios", target = "aarch64-apple-ios-macabi"),
+    any(
+        target_os = "ios",
+        target = "aarch64-apple-ios-macabi",
+        target_os = "tvos"
+    ),
     feature = "ui"
 ))]
 pub mod ui;
@@ -135,6 +140,7 @@ pub mod simd;
 pub mod vn;
 
 /// Web Kit
+#[cfg(not(target_os = "tvos"))]
 #[cfg(feature = "wk")]
 pub mod wk;
 

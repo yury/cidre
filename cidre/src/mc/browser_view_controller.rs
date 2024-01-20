@@ -1,6 +1,10 @@
 use crate::{arc, define_cls, define_obj_type, mc, ns, objc};
 
-#[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
+#[cfg(any(
+    target_os = "ios",
+    target = "aarch64-apple-ios-macabi",
+    target_os = "tvos"
+))]
 use crate::ui;
 
 #[cfg(target_os = "macos")]
@@ -8,7 +12,11 @@ define_obj_type!(
      pub BrowserViewController(ns::ViewController)
 );
 
-#[cfg(any(target_os = "ios", target = "aarch64-apple-ios-macabi"))]
+#[cfg(any(
+    target_os = "ios",
+    target = "aarch64-apple-ios-macabi",
+    target_os = "tvos"
+))]
 define_obj_type!(
      pub BrowserViewController(ui::ViewController)
 );
