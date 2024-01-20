@@ -30,6 +30,8 @@ jobs:
       run: xcodebuild -showsdks
     - name: macosx sdk version
       run: xcodebuild -version -sdk macosx
+    - name: add targets
+      run: rustup target add aarch64-apple-ios
     
     - name: Build
       run: ./build.sh
