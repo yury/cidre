@@ -80,3 +80,17 @@ impl Delegate for AnyDelegate {}
 extern "C" {
     static CM_HEADPHONE_MOTION_MANAGER: &'static objc::Class<HeadphoneMotionManager>;
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::core_motion as cm;
+
+    #[test]
+    fn basics() {
+        let manager = cm::HeadphoneMotionManager::new();
+        // assert_eq!(true, manager.is_device_motion_available());
+        assert_eq!(false, manager.is_device_motion_active());
+        let status = cm::HeadphoneMotionManager::authorization_status();
+        assert_eq!(cm::AuthorizationStatus::NotDetermined, status);
+    }
+}
