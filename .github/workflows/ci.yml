@@ -32,4 +32,4 @@ jobs:
       run: xcodebuild -version -sdk macosx
     
     - name: Build
-      run: run: cargo build --verbose
+      run: cargo build --verbose
