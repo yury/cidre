@@ -31,7 +31,7 @@ jobs:
     - name: macosx sdk version
       run: xcodebuild -version -sdk macosx
     - name: add targets
-      run: rustup target add aarch64-apple-ios && rustup add aarch64-apple-ios-sim && rustup add aarch64-apple-tvos && rustup add aarch64-apple-tvos-sim && rustup add aarch64-apple-darwin
+      run: rustup target add aarch64-apple-ios && rustup target add aarch64-apple-ios-sim && rustup target add aarch64-apple-tvos && rustup target add aarch64-apple-tvos-sim && rustup target add aarch64-apple-darwin
     
     - name: Build
       run: ./build.sh
