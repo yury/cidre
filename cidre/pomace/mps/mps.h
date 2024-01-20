@@ -6,7 +6,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_SIMULATOR
+#else
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
+#endif
 #import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,9 +22,12 @@ static void mps_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
-        
+
+#if TARGET_OS_SIMULATOR
+#else
         MPS_NDARRAY_DESCRIPTOR = [MPSNDArrayDescriptor class];
         MPS_NDARRAY = [MPSNDArray class];
+#endif
         
         initialized = 1;
     }

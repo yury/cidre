@@ -76,6 +76,8 @@ fn main() {
         "aarch64-apple-ios-macabi" => "maccatalyst",
         "aarch64-apple-tvos" => "appletvos",
         "aarch64-apple-tvos-sim" => "appletvsimulator",
+        "arm64_32-apple-watchos" => "watchos",
+        "aarch64-apple-watchos-sim" => "watchsimulator",
         x => panic!("unknown tripple: {x}"),
     };
 
@@ -85,8 +87,10 @@ fn main() {
         | "aarch64-apple-ios"
         | "aarch64-apple-tvos"
         | "aarch64-apple-tvos-sim"
-        | "aarch64-apple-ios-sim" => "arm64",
+        | "aarch64-apple-ios-sim"
+        | "aarch64-apple-watchos-sim" => "arm64",
         "x86_64-apple-ios" | "x86_64-apple-darwin" => "x86_64",
+        "arm64_32-apple-watchos" => "arm64_32",
         x => panic!("unknown tripple: {x}"),
     };
 
@@ -96,23 +100,31 @@ fn main() {
         x => panic!("unknown profile: {x}"),
     };
 
-    xc_feature_build("vn", sdk, arch, configuration);
     xc_feature_build("ut", sdk, arch, configuration);
     xc_feature_build("sn", sdk, arch, configuration);
-    xc_feature_build("mps", sdk, arch, configuration);
-    xc_feature_build("mpsg", sdk, arch, configuration);
     xc_feature_build("ns", sdk, arch, configuration);
-    xc_feature_build("mc", sdk, arch, configuration);
-    xc_feature_build("mtl", sdk, arch, configuration);
-    xc_feature_build("ci", sdk, arch, configuration);
     xc_feature_build("av", sdk, arch, configuration);
-    xc_feature_build("ca", sdk, arch, configuration);
-    xc_feature_build("mlc", sdk, arch, configuration);
-    if sdk != "appletvos" && sdk != "appletvsimulator" {
+    if sdk != "watchos" && sdk != "watchsimulator" {
+        xc_feature_build("ca", sdk, arch, configuration);
+        xc_feature_build("vn", sdk, arch, configuration);
+        xc_feature_build("mps", sdk, arch, configuration);
+        xc_feature_build("mpsg", sdk, arch, configuration);
+        xc_feature_build("mc", sdk, arch, configuration);
+        xc_feature_build("mtl", sdk, arch, configuration);
+        xc_feature_build("ci", sdk, arch, configuration);
+        xc_feature_build("mlc", sdk, arch, configuration);
+    }
+    if sdk != "appletvos"
+        && sdk != "appletvsimulator"
+        && sdk != "watchos"
+        && sdk != "watchsimulator"
+    {
         xc_feature_build("wk", sdk, arch, configuration);
         xc_feature_build("core_motion", sdk, arch, configuration);
     }
-    xc_feature_build("gc", sdk, arch, configuration);
+    if sdk != "watchos" && sdk != "watchsimulator" {
+        xc_feature_build("gc", sdk, arch, configuration);
+    }
 
     if sdk == "iphoneos"
         || sdk == "iphonesimulator"
