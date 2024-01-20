@@ -1,9 +1,9 @@
 use crate::{arc, cf};
 
-#[cfg(target_os = "watchos")]
-pub type Float = f32;
+// #[cfg(target_os = "watchos")]
+// pub type Float = f32;
 
-#[cfg(not(target_os = "watchos"))]
+// #[cfg(not(target_os = "watchos"))]
 pub type Float = f64;
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]

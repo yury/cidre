@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 cargo b --target aarch64-apple-ios
 cargo b --target aarch64-apple-ios-sim
 cargo +nightly b -Zbuild-std --target aarch64-apple-tvos

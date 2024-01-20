@@ -44,7 +44,7 @@ pub use session::err_key as session_err_key;
 pub use session::notifications as session_notifications;
 pub use session::AudioChannel;
 pub use session::Connection;
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "macos", target_os = "watchos")))]
 pub use session::InterruptionReason;
 pub use session::MultiCamSession;
 pub use session::Session;

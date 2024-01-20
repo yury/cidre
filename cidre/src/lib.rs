@@ -17,6 +17,7 @@ pub mod at;
 pub mod av;
 
 /// Core Animation
+#[cfg(not(target_os = "watchos"))]
 #[cfg(feature = "ca")]
 pub mod ca;
 
@@ -65,6 +66,7 @@ pub mod blocks;
 pub mod mach;
 
 /// MultipeerConnectivity
+#[cfg(not(target_os = "watchos"))]
 #[cfg(feature = "mc")]
 pub mod mc;
 
@@ -140,7 +142,7 @@ pub mod simd;
 pub mod vn;
 
 /// Web Kit
-#[cfg(not(target_os = "tvos"))]
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 #[cfg(feature = "wk")]
 pub mod wk;
 

@@ -34,6 +34,7 @@ impl Type {
         self
     }
 
+    #[cfg(not(target_os = "watchos"))]
     #[inline]
     pub fn is_tagged_ptr(&self) -> bool {
         ((self as *const Self as usize) >> 63) == 1

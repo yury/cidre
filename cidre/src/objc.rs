@@ -138,6 +138,7 @@ pub trait Obj: Sized + arc::Retain {
     #[msg_send(isMemberOfClass:)]
     fn is_member_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
+    #[cfg(not(target_os = "watchos"))]
     #[inline]
     fn is_tagged_ptr(&self) -> bool {
         ((self as *const Self as usize) >> 63) == 1
@@ -473,6 +474,7 @@ impl PartialEq for Id {
 pub fn throw(obj: &Id) -> ! {
     // latest sonoma (4.2 Beta (23C5030f) crash on tagged ptr exception for unknown reason :(
     // TODO: investigate on release
+    #[cfg(not(target_os = "watchos"))]
     debug_assert!(!obj.is_tagged_ptr());
     unsafe { objc_exception_throw(obj) }
 }
