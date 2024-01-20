@@ -9,6 +9,7 @@ pub struct Acceleration {
 }
 
 define_obj_type!(
+    #[doc(alias = "CMAccelerometerData")]
     pub AccelerometerData(cm::LogItem)
 );
 

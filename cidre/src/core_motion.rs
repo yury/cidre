@@ -17,20 +17,37 @@ mod absolute_altitude;
 #[cfg(any(target_os = "ios", target_os = "watchos"))]
 pub use absolute_altitude::AbsAltitudeData;
 
-#[cfg(target_os = "ios")]
 mod attitude;
-#[cfg(target_os = "ios")]
 pub use attitude::Attitude;
-#[cfg(target_os = "ios")]
 pub use attitude::AttitudeRefFrame;
-#[cfg(target_os = "ios")]
 pub use attitude::Quaternion;
-#[cfg(target_os = "ios")]
 pub use attitude::RotationMatrix;
 
 mod authorization;
-#[cfg(any(target_os = "ios", target_os = "watchos"))]
 pub use authorization::AuthorizationStatus;
+
+mod device_motion;
+pub use device_motion::CalibratedMagneticField;
+pub use device_motion::DeviceMotion;
+pub use device_motion::MagneticFieldCalibrationAccuracy;
+pub use device_motion::SensorLocation as DeviceMotionSensorLocation;
+
+mod rotation_rate_data;
+pub use rotation_rate_data::RecordedRotationRateData;
+pub use rotation_rate_data::RotationRateData;
+
+mod gyro;
+pub use gyro::GyroData;
+pub use gyro::RotationRate;
+
+mod headphone_motion_manager;
+pub use headphone_motion_manager::Delegate as HeadphoneMotionManagerDelegate;
+pub use headphone_motion_manager::DelegateImpl as HeadphoneMotionManagerDelegateImpl;
+pub use headphone_motion_manager::HeadphoneMotionManager;
+
+mod magnetometer;
+pub use magnetometer::MagneticField;
+pub use magnetometer::MagnetometerData;
 
 mod pedometer;
 pub use pedometer::Pedometer;
