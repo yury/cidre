@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{define_obj_type, ns, objc};
 
 pub type Degrees = std::ffi::c_double;
 pub type Accuracy = std::ffi::c_double;
@@ -99,9 +99,33 @@ pub mod accuracy {
     }
 }
 
+define_obj_type!(
+    #[doc(alias = "CLFloor")]
+    pub Floor(ns::Id)
+);
+
+impl Floor {
+    #[objc::msg_send(level)]
+    pub fn level(&self) -> isize;
+}
+
+define_obj_type!(
+    #[doc(alias = "CLLocationSourceInformation")]
+    pub SrcInfo(ns::Id)
+);
+
+impl SrcInfo {
+    #[objc::msg_send(isSimulatedBySoftware)]
+    pub fn is_simulated_by_software(&self) -> bool;
+
+    #[objc::msg_send(isProducedByAccessory)]
+    pub fn is_produced_by_accessory(&self) -> bool;
+}
+
 #[cfg(test)]
 mod tests {
     use crate::cl;
+
     #[test]
     fn basics() {
         let loc = cl::LocationCoordinate2d::invalid();

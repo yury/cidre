@@ -17,5 +17,7 @@ pub use location::Coordinate2d as LocationCoordinate2d;
 pub use location::Direction as LocationDirection;
 pub use location::DirectionAccuracy as LocationDirectionAccuracy;
 pub use location::Distance as LocationDistance;
+pub use location::Floor;
 pub use location::Speed as LocationSpeed;
 pub use location::SpeedAccuracy as LocationSpeedAccuracy;
+pub use location::SrcInfo as LocationSrcInfo;
