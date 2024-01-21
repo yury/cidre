@@ -101,9 +101,11 @@ fn main() {
     };
 
     xc_feature_build("ut", sdk, arch, configuration);
+    xc_feature_build("un", sdk, arch, configuration);
     xc_feature_build("sn", sdk, arch, configuration);
     xc_feature_build("ns", sdk, arch, configuration);
     xc_feature_build("av", sdk, arch, configuration);
+    xc_feature_build("cl", sdk, arch, configuration);
     if sdk != "watchos" && sdk != "watchsimulator" {
         xc_feature_build("ca", sdk, arch, configuration);
         xc_feature_build("vn", sdk, arch, configuration);

@@ -10,7 +10,7 @@
 #else
 #import <MetalPerformanceShadersGraph/MetalPerformanceShadersGraph.h>
 #endif
-#import "../macro.h"
+//#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

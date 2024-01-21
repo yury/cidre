@@ -20,6 +20,7 @@ full = [
   "at",
   "ca",
   "ci",
+  "cl",
   "cm",
   "cmio",
   "ct",
@@ -44,6 +45,7 @@ full = [
   "sn",
   "ui",
   "ut",
+  "un",
   "io",
   "nw",
   "core_motion",
@@ -65,6 +67,7 @@ at = ["cf", "cat"]
 av = ["ns", "ut"]
 ca = ["ns"]
 sc = ["ns"]
+cl = ["ns"]
 cm = ["cf"] # optional cv, cat
 cmio = ["cm"]
 cv = ["cf", "cg"]
@@ -80,6 +83,7 @@ vn = ["ns"]
 nw = ["ns", "dispatch"]
 ui = ["ns"]
 ut = ["ns"]
+un = ["ns"]
 ct = ["cf", "cg"]
 mc = ["ns"]
 mtl = ["ns"]

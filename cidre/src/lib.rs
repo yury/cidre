@@ -50,6 +50,9 @@ pub mod core_motion;
 #[cfg(feature = "cv")]
 pub mod cv;
 
+#[cfg(feature = "cl")]
+pub mod cl;
+
 /// Grand Central Dispatch
 #[cfg(feature = "dispatch")]
 pub mod dispatch;
@@ -129,6 +132,9 @@ pub mod ui;
 /// UniformTypeIdentifiers
 #[cfg(feature = "ut")]
 pub mod ut;
+
+#[cfg(feature = "un")]
+pub mod un;
 
 pub mod time;
 
