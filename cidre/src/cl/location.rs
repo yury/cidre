@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc};
+use crate::{arc, cl, define_obj_type, ns, objc};
 
 pub type Degrees = std::ffi::c_double;
 pub type Accuracy = std::ffi::c_double;
@@ -30,11 +30,72 @@ impl Coordinate2d {
 
 define_obj_type!(
     #[doc(alias = "CLLocation")]
-    pub Location(ns::Id)
+    pub Location(ns::Id),
+    CL_LOCATION
 );
 
 unsafe impl Send for Location {}
 unsafe impl Sync for Location {}
+
+impl arc::A<Location> {
+    #[objc::msg_send(initWithLatitude:longitude:)]
+    pub fn init_with_lat_lon(
+        self,
+        lat: cl::LocationDegrees,
+        lon: cl::LocationDegrees,
+    ) -> arc::R<Location>;
+}
+
+impl Location {
+    #[inline]
+    pub fn with_lat_lon(lat: cl::LocationDegrees, lon: cl::LocationDegrees) -> arc::R<Self> {
+        Self::alloc().init_with_lat_lon(lat, lon)
+    }
+
+    #[objc::msg_send(coordinate)]
+    pub fn coordinate(&self) -> cl::LocationCoordinate2d;
+
+    #[objc::msg_send(altitude)]
+    pub fn altitude(&self) -> cl::LocationDistance;
+
+    #[objc::msg_send(ellipsoidalAltitude)]
+    pub fn ellipsoidal_altitude(&self) -> cl::LocationDistance;
+
+    #[objc::msg_send(horizontalAccuracy)]
+    pub fn horizontal_accuracy(&self) -> cl::LocationAccuracy;
+
+    #[objc::msg_send(verticalAccuracy)]
+    pub fn vertical_accuracy(&self) -> cl::LocationAccuracy;
+
+    #[objc::msg_send(course)]
+    pub fn course(&self) -> cl::LocationDirection;
+
+    #[objc::msg_send(courseAccuracy)]
+    pub fn course_accuracy(&self) -> cl::LocationDirectionAccuracy;
+
+    #[objc::msg_send(speed)]
+    pub fn speed(&self) -> cl::LocationSpeed;
+
+    #[objc::msg_send(speedAccuracy)]
+    pub fn speed_accuracy(&self) -> cl::LocationSpeedAccuracy;
+
+    #[objc::msg_send(timestamp)]
+    pub fn timestamp(&self) -> &ns::Date;
+
+    #[objc::msg_send(floor)]
+    pub fn floor(&self) -> Option<&cl::Floor>;
+
+    #[objc::msg_send(sourceInformation)]
+    pub fn src_info(&self) -> Option<&cl::LocationSrcInfo>;
+
+    #[objc::msg_send(distanceFromLocation:)]
+    pub fn distance_from_location(&self, location: &cl::Location) -> cl::LocationDistance;
+}
+
+#[link(name = "cl", kind = "static")]
+extern "C" {
+    static CL_LOCATION: &'static objc::Class<Location>;
+}
 
 #[link(name = "CoreLocation", kind = "framework")]
 extern "C" {

@@ -49,6 +49,9 @@ mod magnetometer;
 pub use magnetometer::MagneticField;
 pub use magnetometer::MagnetometerData;
 
+mod motion_manager;
+pub use motion_manager::MotionManager;
+
 mod pedometer;
 pub use pedometer::Pedometer;
 pub use pedometer::PedometerData;
