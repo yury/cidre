@@ -58,6 +58,7 @@ pub mod cl;
 pub mod dispatch;
 
 /// Disk Arbitration
+#[cfg(target_os = "macos")]
 #[cfg(feature = "da")]
 pub mod da;
 
