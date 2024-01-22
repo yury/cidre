@@ -7,7 +7,7 @@ pub mod installation;
 pub mod log;
 
 pub use base::{Device, Error, Notification};
-pub use discovery::{Action, InterfaceConnectionType, QueryBuilder, Speed};
+pub use discovery::{Action, IfaceConnectionType, QueryBuilder, Speed};
 
 use crate::{arc, cf, os};
 
@@ -61,7 +61,7 @@ impl Device {
         unsafe { AMDeviceValidatePairing(self).result() }
     }
 
-    pub fn secure_install_application(
+    pub fn secure_install_app(
         &self,
         url: &cf::Url,
         options: &cf::Dictionary,
@@ -79,6 +79,7 @@ impl Device {
         }
     }
 
+    #[inline]
     pub fn secure_transfer_path(
         &self,
         url: &cf::Url,
@@ -90,7 +91,8 @@ impl Device {
         }
     }
 
-    pub fn interface_type(&self) -> InterfaceConnectionType {
+    #[inline]
+    pub fn iface_type(&self) -> IfaceConnectionType {
         unsafe { AMDeviceGetInterfaceType(self) }
     }
 }
@@ -283,7 +285,7 @@ impl<'a> Connected<'a> {
 
 impl<'a> Drop for Connected<'a> {
     fn drop(&mut self) {
-        println!("disconnect");
+        eprintln!("disconnect");
         unsafe { AMDeviceDisconnect(self.0) };
     }
 }
@@ -335,8 +337,8 @@ impl<'a> Session<'a> {
     ) -> Result<arc::R<ServiceConnection>, Error> {
         unsafe {
             let mut service = None;
-            let foo: *mut c_void = std::ptr::null_mut();
-            AMDeviceSecureStartService(self, name, foo, &mut service).to_result(service)
+            AMDeviceSecureStartService(self, name, std::ptr::null_mut(), &mut service)
+                .to_result(service)
         }
     }
 
@@ -400,7 +402,7 @@ extern "C" {
         cbarg: *const c_void,
     ) -> os::Status;
 
-    fn AMDeviceGetInterfaceType(device: &Device) -> InterfaceConnectionType;
+    fn AMDeviceGetInterfaceType(device: &Device) -> IfaceConnectionType;
 
     fn AMDeviceSecureStartService(
         device: &Device,
@@ -415,6 +417,7 @@ extern "C" {
         key: Option<&cf::String>,
         error_out: &mut Error,
     ) -> Option<arc::R<cf::PropList>>;
+
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }

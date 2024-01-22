@@ -7,7 +7,7 @@ fn main() {
         println!(
             "uuid: {:?}, if: {:?} {:?}",
             f.id().to_string(),
-            f.interface_type(),
+            f.iface_type(),
             f.name().to_string()
         );
 

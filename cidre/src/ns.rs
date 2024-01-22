@@ -149,6 +149,7 @@ pub use file_manager::FileAttrType;
 pub use file_manager::FileManager;
 pub use file_manager::FileProtectionType;
 pub use file_manager::ItemReplacementOpts as FileManagerItemReplacementOpts;
+pub use file_manager::UnmountOpts as FileManagerUnmountOpts;
 pub use file_manager::UrlRelationship;
 pub use file_manager::VolumeEnumOpts;
 

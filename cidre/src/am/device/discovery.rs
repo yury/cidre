@@ -10,7 +10,7 @@ use super::base::{Device, Error, Notification};
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[non_exhaustive]
 #[repr(i32)]
-pub enum InterfaceConnectionType {
+pub enum IfaceConnectionType {
     Invalid = -1,
     Any = 0,
     /// e.g. USB, Firewire, Bluetooth pairing
@@ -174,16 +174,16 @@ impl QueryBuilder {
         self
     }
 
-    pub fn connection(&mut self, connection_type: InterfaceConnectionType) -> &mut Self {
+    pub fn connection(&mut self, connection_type: IfaceConnectionType) -> &mut Self {
         let value = match connection_type {
-            InterfaceConnectionType::Invalid | InterfaceConnectionType::Any => {
+            IfaceConnectionType::Invalid | IfaceConnectionType::Any => {
                 self.query
                     .remove(&matching::criteria::connection_type_key());
                 return self;
             }
-            InterfaceConnectionType::Direct => matching::criteria::usb_value(),
-            InterfaceConnectionType::Inderect => matching::criteria::network_value(),
-            InterfaceConnectionType::Proxied => matching::criteria::paired_device_value(),
+            IfaceConnectionType::Direct => matching::criteria::usb_value(),
+            IfaceConnectionType::Inderect => matching::criteria::network_value(),
+            IfaceConnectionType::Proxied => matching::criteria::paired_device_value(),
         };
 
         self.query
@@ -218,7 +218,7 @@ impl Notification {
     pub unsafe fn subscribe<T>(
         callback: NotificationCallback<T>,
         minimum_interface_speed: Speed,
-        connection_type: InterfaceConnectionType,
+        connection_type: IfaceConnectionType,
         context: *mut T,
         ref_out: *mut Option<arc::R<Notification>>,
     ) -> Error {
@@ -234,7 +234,7 @@ impl Notification {
     pub fn with<T>(
         callback: NotificationCallback<T>,
         minimum_interface_speed: Speed,
-        connection_type: InterfaceConnectionType,
+        connection_type: IfaceConnectionType,
         context: *mut T,
     ) -> Result<SubscriptionGuard, Error> {
         let mut notification = None;
@@ -290,7 +290,7 @@ extern "C" {
     fn AMDeviceNotificationSubscribe(
         callback: NotificationCallback<c_void>,
         minimum_interface_speed: Speed,
-        connection_type: InterfaceConnectionType,
+        connection_type: IfaceConnectionType,
         context: *mut c_void,
         ref_out: *mut Option<arc::R<Notification>>,
     ) -> Error;
@@ -399,7 +399,7 @@ mod tests {
         let _subscription = am::DeviceNotification::with(
             callback,
             am::DeviceSpeed::ANY,
-            am::DeviceInterfaceConnectionType::Inderect,
+            am::DeviceIfaceConnectionType::Inderect,
             std::ptr::null_mut(),
         )
         .unwrap();

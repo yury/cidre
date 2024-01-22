@@ -2157,6 +2157,7 @@ pub fn torch_max_level() -> f32 {
     unsafe { AVCaptureMaxAvailableTorchLevel }
 }
 
+#[cfg(target_os = "macos")]
 #[cfg(test)]
 mod tests {
     use crate::{

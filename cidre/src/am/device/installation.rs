@@ -28,14 +28,10 @@ impl<'a> Session<'a> {
     /// keys you would like returned. If you do not specify this attribute, MobileDevice will log every time you make
     /// an offending call and performance will be poor. When specifying this key, you MUST include at least
     /// kCFBundleIdentifierKey in the array of keys to be returned or the call will not work properly.
-    pub fn lookup_applications(
-        &self,
-        options: &cf::Dictionary,
-    ) -> Result<arc::R<cf::Dictionary>, Error> {
+    pub fn lookup_apps(&self, options: &cf::Dictionary) -> Result<arc::R<cf::Dictionary>, Error> {
         unsafe {
             let mut info = None;
-            let res = AMDeviceLookupApplications(self, options, &mut info);
-            res.to_result(info)
+            AMDeviceLookupApplications(self, options, &mut info).to_result(info)
         }
     }
 
@@ -95,7 +91,7 @@ impl<'a> AppsLookupBuilder<'a> {
             options.insert(cfstr!("Attribute"), attribute)
         }
 
-        self.session.lookup_applications(&options)
+        self.session.lookup_apps(&options)
     }
 }
 

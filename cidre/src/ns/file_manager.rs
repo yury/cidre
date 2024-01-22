@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, define_opts, ns, objc, os};
+use crate::{arc, blocks, define_obj_type, define_opts, ns, objc, os};
 
 define_obj_type!(pub FileAttrKey(ns::String));
 define_obj_type!(pub FileAttrType(ns::String));
@@ -54,6 +54,19 @@ pub enum UrlRelationship {
     Contains,
     Same,
     Other,
+}
+
+define_opts!(
+    #[doc(alias = "NSFileManagerUnmountOptions")]
+    pub UnmountOpts(usize)
+);
+
+impl UnmountOpts {
+    #[doc(alias = "NSFileManagerUnmountAllPartitionsAndEjectDisk")]
+    pub const ALL_PARTITIONS_AND_EJECT_DISK: Self = Self(1 << 0);
+
+    #[doc(alias = "NSFileManagerUnmountWithoutUI")]
+    pub const WITHOUT_UI: Self = Self(1 << 1);
 }
 
 define_obj_type!(
@@ -270,6 +283,59 @@ impl FileManager {
         item_at_url: &ns::Url,
     ) -> Result<(), &'ar ns::Error> {
         ns::if_false(|err| self.evict_ubiquitous_item_err(item_at_url, err))
+    }
+
+    #[objc::msg_send(mountedVolumeURLsIncludingResourceValuesForKeys:options:)]
+    pub fn mounted_volume_urls_including_resource_values_for_keys(
+        &self,
+        keys: Option<&ns::Array<ns::UrlResourceKey>>,
+        options: ns::VolumeEnumOpts,
+    );
+
+    #[objc::msg_send(unmountVolumeAtURL:options:completionHandler:)]
+    pub unsafe fn _unmount_volume_at_url_ch(
+        &self,
+        url: &ns::Url,
+        options: ns::FileManagerUnmountOpts,
+        ch: *mut std::ffi::c_void,
+    );
+
+    #[inline]
+    pub fn unmount_volume_at_url_ch_block<'a, F>(
+        &self,
+        url: &ns::Url,
+        options: ns::FileManagerUnmountOpts,
+        ch: &'static mut blocks::Block<F>,
+    ) where
+        F: FnOnce(Option<&'a ns::Error>),
+    {
+        unsafe { self._unmount_volume_at_url_ch(url, options, ch.as_mut_ptr()) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn unmount_volume_at_url_ch<F>(
+        &self,
+        url: &ns::Url,
+        options: ns::FileManagerUnmountOpts,
+        ch: F,
+    ) where
+        F: FnOnce(Option<&ns::Error>) + 'static,
+    {
+        let ch = blocks::once1(ch);
+        self.unmount_volume_at_url_ch_block(url, options, ch.escape())
+    }
+
+    #[cfg(all(feature = "blocks", feature = "async"))]
+    #[inline]
+    pub async fn unmount_volume_at_url<F>(
+        &self,
+        url: &ns::Url,
+        options: ns::FileManagerUnmountOpts,
+    ) -> Result<(), arc::R<ns::Error>> {
+        let (future, ch) = blocks::ok();
+        self.unmount_volume_at_url_ch_block(url, options, ch.escape());
+        future.await
     }
 }
 
@@ -604,5 +670,15 @@ mod tests {
 
         fm.remove_item_at_path(&parent).unwrap();
         assert!(!fm.file_exists_at_path(&parent));
+    }
+
+    #[test]
+    pub fn list_mounts() {
+        let fm = ns::FileManager::default();
+        let list = fm.mounted_volume_urls_including_resource_values_for_keys(
+            None,
+            ns::VolumeEnumOpts::PRODUCE_FILE_REFERENCE_URLS,
+        );
+        eprintln!("{list:?}");
     }
 }

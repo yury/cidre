@@ -5,11 +5,13 @@ use cidre::{
     cf,
 };
 
+const DEVICE_ID: &str = "00008120-000168A20210C01E";
+
 pub extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
     match info.safe() {
         am::device::discovery::SafeInfo::Attached(device) => {
             let id = device.id().to_string();
-            if id.eq("00008103-001505940231001E") {
+            if id.eq(DEVICE_ID) {
                 println!("identifier {:?}", id);
                 device.show();
                 let connected = device.connected().expect("connected");
@@ -35,7 +37,7 @@ pub extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
 #[tokio::main]
 async fn main() {
     let devices = am::device::QueryBuilder::new_match_all()
-        .udids(&["00008103-001505940231001E"])
+        .udids(&[DEVICE_ID])
         // .udids(&["00008120-000168A20210C01E"])
         .matching_list(None)
         .unwrap();

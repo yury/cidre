@@ -17,6 +17,7 @@ Class NS_WINDOW;
 Class NS_COLOR_SPACE;
 Class NS_RESPONDER;
 Class NS_VIEW_CONTROLLER;
+Class NS_WORKSPACE;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -31,6 +32,7 @@ static void app_initializer(void)
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_RESPONDER = [NSResponder class];
         NS_VIEW_CONTROLLER = [NSViewController class];
+        NS_WORKSPACE = [NSWorkspace class];
         initialized = 1;
     }
 }

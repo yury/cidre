@@ -5,7 +5,7 @@ use crate::{arc, cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
-pub fn if_false<'ear, F>(f: F) -> Result<(), arc::R<Error>>
+pub fn if_false<F>(f: F) -> Result<(), arc::R<Error>>
 where
     F: FnOnce(*mut Option<arc::R<Error>>) -> bool,
 {
