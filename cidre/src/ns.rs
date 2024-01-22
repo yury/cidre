@@ -118,7 +118,7 @@ pub use attributed_string::AttrStringMut;
 pub use attributed_string::InlinePresentationIntent;
 
 mod url;
-pub use url::ResourceKey as UrlResourceKey;
+pub use url::ResKey as UrlResKey;
 pub use url::Url;
 
 mod uuid;

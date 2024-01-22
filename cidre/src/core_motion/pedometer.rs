@@ -174,7 +174,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{core_motion as cm, ns};
+    use crate::core_motion as cm;
 
     #[test]
     fn basics() {

@@ -87,7 +87,7 @@ impl FileManager {
     pub unsafe fn contents_of_dir_at_url_err_ar(
         &self,
         url: &ns::Url,
-        including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
+        including_props_for_keys: Option<&ns::Array<ns::UrlResKey>>,
         options: DirEnumOpts,
         error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::Rar<ns::Array<ns::Url>>>;
@@ -96,7 +96,7 @@ impl FileManager {
     pub unsafe fn contents_of_dir_at_url_err<'ear>(
         &self,
         url: &ns::Url,
-        including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
+        including_props_for_keys: Option<&ns::Array<ns::UrlResKey>>,
         options: DirEnumOpts,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::Url>>>;
@@ -104,7 +104,7 @@ impl FileManager {
     pub fn contents_of_dir_at_url<'ear>(
         &self,
         url: &ns::Url,
-        including_props_for_keys: Option<&ns::Array<ns::UrlResourceKey>>,
+        including_props_for_keys: Option<&ns::Array<ns::UrlResKey>>,
         options: DirEnumOpts,
     ) -> Result<arc::R<ns::Array<ns::Url>>, &'ear ns::Error> {
         ns::if_none(|err| unsafe {
@@ -285,12 +285,21 @@ impl FileManager {
         ns::if_false(|err| self.evict_ubiquitous_item_err(item_at_url, err))
     }
 
+    #[cfg(target_os = "macos")]
     #[objc::msg_send(mountedVolumeURLsIncludingResourceValuesForKeys:options:)]
-    pub fn mounted_volume_urls_including_resource_values_for_keys(
+    pub fn mounted_volume_urls_ar(
         &self,
-        keys: Option<&ns::Array<ns::UrlResourceKey>>,
+        keys: Option<&ns::Array<ns::UrlResKey>>,
         options: ns::VolumeEnumOpts,
-    );
+    ) -> arc::Rar<ns::Array<ns::Url>>;
+
+    #[cfg(target_os = "macos")]
+    #[objc::rar_retain]
+    pub fn mounted_volume_urls(
+        &self,
+        keys: Option<&ns::Array<ns::UrlResKey>>,
+        options: ns::VolumeEnumOpts,
+    ) -> arc::R<ns::Array<ns::Url>>;
 
     #[objc::msg_send(unmountVolumeAtURL:options:completionHandler:)]
     pub unsafe fn _unmount_volume_at_url_ch(
@@ -674,11 +683,28 @@ mod tests {
 
     #[test]
     pub fn list_mounts() {
+        let keys = ns::Array::from_slice(&[
+            ns::UrlResKey::name(),
+            ns::UrlResKey::is_volume(),
+            ns::UrlResKey::path(),
+            ns::UrlResKey::volume_url(),
+            ns::UrlResKey::volume_id(),
+            ns::UrlResKey::volume_localized_format_desc(),
+            ns::UrlResKey::volume_total_capacity(),
+            ns::UrlResKey::volume_url_for_remounting(),
+            ns::UrlResKey::volume_mount_from_location(),
+            ns::UrlResKey::volume_type_name(),
+            ns::UrlResKey::volume_sub_type_name(),
+        ]);
+
         let fm = ns::FileManager::default();
-        let list = fm.mounted_volume_urls_including_resource_values_for_keys(
-            None,
-            ns::VolumeEnumOpts::PRODUCE_FILE_REFERENCE_URLS,
-        );
+        let list = fm.mounted_volume_urls(Some(&keys), Default::default());
+
+        for url in list.iter() {
+            let values = url.res_values_for_keys(&keys);
+            eprintln!("{values:?}");
+        }
+        // list.first().unwrap().att
         eprintln!("{list:?}");
     }
 }

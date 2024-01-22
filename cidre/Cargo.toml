@@ -39,6 +39,7 @@ full = [
   "mps",
   "mpsg",
   "dispatch",
+  "da",
   "simd",
   "cat",
   "vn",
@@ -91,6 +92,7 @@ mlc = ["mtl"]
 mps = ["mtl"]
 mpsg = ["mps"]
 dispatch = ["cf", "ns"]
+da = ["cf"]
 core_motion = ["ns"]
 wk = ["ns"]
 gc = ["ns"]

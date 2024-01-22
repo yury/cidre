@@ -57,6 +57,10 @@ pub mod cl;
 #[cfg(feature = "dispatch")]
 pub mod dispatch;
 
+/// Disk Arbitration
+#[cfg(feature = "da")]
+pub mod da;
+
 /// IOSurface
 #[cfg(feature = "io")]
 pub mod io;

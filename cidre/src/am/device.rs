@@ -418,6 +418,8 @@ extern "C" {
         error_out: &mut Error,
     ) -> Option<arc::R<cf::PropList>>;
 
+    fn AMDeviceCopyDeveloperModeStatus(device: &Device, err: &mut Error) -> bool;
+
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }

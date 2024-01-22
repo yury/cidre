@@ -81,22 +81,3 @@ impl ns::FileManager {
 extern "C" {
     static NS_WORKSPACE: &'static objc::Class<Workspace>;
 }
-
-#[cfg(test)]
-mod tests {
-    // use crate::ns;
-
-    // #[tokio::test]
-    // async fn basics() {
-    // let ws = ns::Workspace::shared();
-    // let auth = ws
-    //     .request_authorization_of_type(ns::WorkspaceAuthorizationType::ReplaceFile)
-    //     .await
-    //     .expect("granted");
-
-    // let fs = ns::FileManager::with_authorization(&auth);
-    // let mounts =
-    //     fs.mounted_volume_urls_including_resource_values_for_keys(None, Default::default());
-    // eprintln!("{mounts:?}");
-    // }
-}
