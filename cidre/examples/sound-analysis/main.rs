@@ -1,4 +1,4 @@
-use cidre::{av, blocks, define_obj_type, dispatch, objc, objc::Obj, sn, sn::ResultsObserving};
+use cidre::{av, define_obj_type, dispatch, objc, objc::Obj, sn, sn::ResultsObserving};
 
 define_obj_type!(
     ResultsObs + sn::ResultsObservingImpl,
@@ -62,16 +62,16 @@ async fn main() {
 
     let sa = analysis.retained();
 
-    let mut tap = blocks::mut2(move |buf: &av::AudioPcmBuf, when: &av::AudioTime| {
+    let tap = move |buf: &av::AudioPcmBuf, when: &av::AudioTime| {
         let ts = when.sample_time();
         let buf = buf.retained();
         let mut sa = sa.clone();
         queue.async_mut(move || {
             sa.analyze_audio_buf_at_pos(buf.as_ref(), ts);
         });
-    });
+    };
 
-    input.install_tap_on_bus(0, 8192, None, tap.escape());
+    input.install_tap_on_bus(0, 8192, None, tap);
 
     engine.start().unwrap();
 
