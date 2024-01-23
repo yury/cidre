@@ -99,7 +99,22 @@ impl WindowLevel {
 
 define_obj_type!(pub Window(ns::Id), NS_WINDOW);
 
-impl Window {}
+impl Window {
+    #[objc::msg_send(frame)]
+    pub fn frame(&self) -> ns::Rect;
+
+    #[objc::msg_send(display)]
+    pub fn display(&mut self);
+
+    #[objc::msg_send(displayIfNeeded)]
+    pub fn display_if_needed(&mut self);
+
+    #[objc::msg_send(addChildWindow:ordered:)]
+    pub fn add_child_window(&mut self, window: &ns::Window, ordered: ns::WindowOrderingMode);
+
+    #[objc::msg_send(removeChildWindow:)]
+    pub fn remove_child_window(&mut self, window: &ns::Window);
+}
 
 #[link(name = "app", kind = "static")]
 extern "C" {

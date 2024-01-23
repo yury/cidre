@@ -28,6 +28,18 @@ impl App {
 
     #[objc::msg_send(dockTile)]
     pub fn dock_tile_mut(&mut self) -> &mut ns::DockTitle;
+
+    #[objc::msg_send(mainWindow)]
+    pub fn main_window(&self) -> Option<&ns::Window>;
+
+    #[objc::msg_send(mainWindow)]
+    pub fn main_window_mut(&mut self) -> Option<&mut ns::Window>;
+
+    #[objc::msg_send(keyWindow)]
+    pub fn key_window(&self) -> Option<&ns::Window>;
+
+    #[objc::msg_send(keyWindow)]
+    pub fn key_window_mut(&mut self) -> Option<&mut ns::Window>;
 }
 
 #[link(name = "app", kind = "static")]
