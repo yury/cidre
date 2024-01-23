@@ -1,10 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-use crate::{
-    arc, cf,
-    cm::{self, SampleBuf, VideoCodec},
-    cv, define_cf_type, os, vt,
-};
+use crate::{arc, cf, cm, cv, define_cf_type, os, vt};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -16,14 +12,14 @@ pub type OutputCallback<T> = extern "C" fn(
     source_frame_ref_con: *mut c_void,
     status: os::Status,
     info_flags: vt::EncodeInfoFlags,
-    sample_buffer: Option<&SampleBuf>,
+    sample_buffer: Option<&cm::SampleBuf>,
 );
 
 impl Session {
     pub fn new<T>(
         width: u32,
         height: u32,
-        codec: VideoCodec,
+        codec: cm::VideoCodec,
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
@@ -53,7 +49,7 @@ impl Session {
     pub unsafe fn create_in(
         width: i32,
         height: i32,
-        codec_type: VideoCodec,
+        codec_type: cm::VideoCodec,
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
@@ -234,7 +230,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         width: i32,
         height: i32,
-        codec_type: VideoCodec,
+        codec_type: cm::VideoCodec,
         encoder_specification: Option<&cf::Dictionary>,
         source_image_buffer_attributes: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
