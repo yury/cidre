@@ -231,6 +231,12 @@ mod app;
 #[cfg(all(feature = "app", target_os = "macos"))]
 pub use app::*;
 
+#[cfg(target_os = "macos")]
+mod geometry;
+
+#[cfg(target_os = "macos")]
+pub use geometry::*;
+
 /// Special Exception or Error type
 /// some API can still throw exception even if they
 /// return Error

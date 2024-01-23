@@ -19,6 +19,9 @@ pub use workspace::Authorization as WorkspaceAuthorization;
 pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
 pub use workspace::Workspace;
 
+mod dock_title;
+pub use dock_title::DockTitle;
+
 mod responder;
 pub use responder::Responder;
 

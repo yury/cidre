@@ -22,6 +22,12 @@ impl App {
 
     #[objc::msg_send(terminate:)]
     pub fn terminate(&mut self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(dockTile)]
+    pub fn dock_tile(&self) -> &ns::DockTitle;
+
+    #[objc::msg_send(dockTile)]
+    pub fn dock_tile_mut(&mut self) -> &mut ns::DockTitle;
 }
 
 #[link(name = "app", kind = "static")]
