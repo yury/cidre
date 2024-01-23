@@ -193,7 +193,7 @@ impl<'a> Connected<'a> {
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
         error_out: &mut Error,
-    ) -> Option<arc::R<cf::PropList>> {
+    ) -> Option<arc::R<cf::Plist>> {
         AMDeviceCopyValueWithError(self, domain, key, error_out)
     }
 
@@ -201,7 +201,7 @@ impl<'a> Connected<'a> {
         &self,
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
-    ) -> Result<arc::R<cf::PropList>, Error> {
+    ) -> Result<arc::R<cf::Plist>, Error> {
         let mut error_out = Error::SUCCESS;
         unsafe {
             let value = self.copy_value_with_err(domain, key, &mut error_out);
@@ -416,10 +416,9 @@ extern "C" {
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
         error_out: &mut Error,
-    ) -> Option<arc::R<cf::PropList>>;
+    ) -> Option<arc::R<cf::Plist>>;
 
-    fn AMDeviceCopyDeveloperModeStatus(device: &Device, err: &mut Error) -> bool;
-
+    // fn AMDeviceCopyDeveloperModeStatus(device: &Device, err: &mut Error) -> bool;
     // fn AMDServiceConnectionGetSocket(service: &Service) -> os::Status;
 
 }

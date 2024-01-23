@@ -1,4 +1,4 @@
-use crate::{cf, define_opts};
+use crate::define_opts;
 
 mod session;
 pub use session::Session;

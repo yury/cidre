@@ -172,7 +172,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>> {
         unsafe {
@@ -194,7 +194,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>> {
@@ -217,7 +217,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         handler: &mut blocks::Block<F>,
     ) -> Option<arc::R<DisplayStream>>
     where
@@ -245,7 +245,7 @@ impl DisplayStream {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         queue: &dispatch::Queue,
         handler: &mut blocks::Block<F>,
     ) -> Option<arc::R<DisplayStream>>
@@ -341,7 +341,7 @@ extern "C" {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>>;
 
@@ -351,7 +351,7 @@ extern "C" {
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::PropList>>,
+        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         queue: &dispatch::Queue,
         handler: *mut c_void,
     ) -> Option<arc::R<DisplayStream>>;

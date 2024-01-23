@@ -54,7 +54,7 @@ impl Boolean {
     }
 
     #[inline]
-    pub fn as_prop_list(&self) -> &cf::PropList {
+    pub fn as_prop_list(&self) -> &cf::Plist {
         unsafe { std::mem::transmute(self) }
     }
 }

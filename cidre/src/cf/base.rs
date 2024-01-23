@@ -347,7 +347,7 @@ extern "C" {
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
-pub enum PropListFormat {
+pub enum PlistFormat {
     #[doc(alias = "kCFPropertyListOpenStepFormat")]
     OpenStep = 1,
 
@@ -360,16 +360,19 @@ pub enum PropListFormat {
 
 define_opts!(
     #[doc(alias = "CFPropertyListMutabilityOptions")]
-    pub PropListMutabilityOpts(cf::OptionFlags)
+    pub PlistMutabilityOpts(cf::OptionFlags)
 );
 
-impl PropListMutabilityOpts {
+impl PlistMutabilityOpts {
     pub const IMMUTABLE: Self = Self(cf::OptionFlags(0));
     pub const MUTABLE_CONTAINERS: Self = Self(cf::OptionFlags(1 << 0));
     pub const MUTABLE_CONTAINERS_AND_LEAVES: Self = Self(cf::OptionFlags(1 << 1));
 }
 
-define_cf_type!(PropList(Type));
+define_cf_type!(
+    #[doc(alias = "CFProperyListRef")]
+    Plist(Type)
+);
 
 #[cfg(test)]
 mod tests {
