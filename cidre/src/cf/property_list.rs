@@ -282,12 +282,15 @@ mod tests {
         let data = prop_list_val
             .to_cf_data(cf::PropListFormat::XmlV1_0)
             .unwrap();
-        data.show();
+
         assert!(!data.is_empty());
+
         let list = cf::PropList::from_data(&data, Default::default()).unwrap();
         assert_eq!(list.as_number().to_i32().unwrap(), 10);
+
         let (list, format) =
             cf::PropList::from_data_with_format(&data, Default::default()).unwrap();
+
         assert_eq!(list.as_number().to_i32().unwrap(), 10);
         assert_eq!(format, cf::PropListFormat::XmlV1_0);
 
@@ -299,5 +302,10 @@ mod tests {
         let prop_list: &cf::PropList = dict.as_ref().into();
         let data = prop_list.to_cf_data(cf::PropListFormat::XmlV1_0).unwrap();
         assert!(!data.is_empty());
+
+        let new_prop_list = cf::PropList::from_data(&data, Default::default()).unwrap();
+        assert!(prop_list.equal(&new_prop_list));
+        let dict = new_prop_list.as_dictionary();
+        assert_eq!(dict.len(), 1);
     }
 }

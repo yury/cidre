@@ -45,13 +45,13 @@ define_opts!(
     pub DiskOpts(u32)
 );
 
-#[link(name = "DiskArbitration", kind = "framework")]
-extern "C" {
-    static kDADiskDescriptionMatchMediaUnformatted: &'static cf::DictionaryOf<cf::String, cf::Type>;
-    static kDADiskDescriptionMatchMediaWhole: &'static cf::DictionaryOf<cf::String, cf::Type>;
-    static kDADiskDescriptionMatchVolumeMountable: &'static cf::DictionaryOf<cf::String, cf::Type>;
-    static kDADiskDescriptionMatchVolumeUnrecognized:
-        &'static cf::DictionaryOf<cf::String, cf::Type>;
-    static kDADiskDescriptionWatchVolumeName: &'static cf::ArrayOf<cf::String>;
-    static kDADiskDescriptionWatchVolumePath: &'static cf::ArrayOf<cf::String>;
-}
+// #[link(name = "DiskArbitration", kind = "framework")]
+// extern "C" {
+//     static kDADiskDescriptionMatchMediaUnformatted: &'static cf::DictionaryOf<cf::String, cf::Type>;
+//     static kDADiskDescriptionMatchMediaWhole: &'static cf::DictionaryOf<cf::String, cf::Type>;
+//     static kDADiskDescriptionMatchVolumeMountable: &'static cf::DictionaryOf<cf::String, cf::Type>;
+//     static kDADiskDescriptionMatchVolumeUnrecognized:
+//         &'static cf::DictionaryOf<cf::String, cf::Type>;
+//     static kDADiskDescriptionWatchVolumeName: &'static cf::ArrayOf<cf::String>;
+//     static kDADiskDescriptionWatchVolumePath: &'static cf::ArrayOf<cf::String>;
+// }
