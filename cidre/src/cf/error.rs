@@ -24,11 +24,16 @@ where
     F: FnOnce(*mut Option<arc::R<Error>>) -> Option<R>,
 {
     let mut err = None;
-    if let Some(res) = f(&mut err) {
-        Ok(res)
-    } else {
-        unsafe { Err(err.unwrap_unchecked()) }
-    }
+    f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
+}
+
+#[inline]
+pub fn if_none_maybe<R, F>(f: F) -> Result<R, Option<arc::R<Error>>>
+where
+    F: FnOnce(*mut Option<arc::R<Error>>) -> Option<R>,
+{
+    let mut err = None;
+    f(&mut err).ok_or_else(|| err)
 }
 
 define_cf_type!(Error(cf::Type));

@@ -17,9 +17,9 @@
 
 ### Platforms
 
-- [x] MacOS
+- [x] macOS
 - [x] iOS/iPadOS
-- [ ] tvOS
+- [x] tvOS
 - [ ] watchOS
 
 ### Shortcuts

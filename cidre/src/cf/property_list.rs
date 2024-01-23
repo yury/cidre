@@ -58,8 +58,8 @@ impl cf::PropList {
     pub fn to_cf_data(
         &self,
         format: cf::PropListFormat,
-    ) -> Result<arc::R<cf::Data>, arc::R<cf::Error>> {
-        cf::if_none(|err| unsafe {
+    ) -> Result<arc::R<cf::Data>, Option<arc::R<cf::Error>>> {
+        cf::if_none_maybe(|err| unsafe {
             CFPropertyListCreateData(None, self, format, Default::default(), err)
         })
     }
@@ -185,6 +185,25 @@ impl cf::PropList {
         assert!(self.get_type_id() == crate::cf::Dictionary::type_id());
         unsafe { transmute(self) }
     }
+
+    #[inline]
+    pub fn is_valid_for_format(&self, format: cf::PropListFormat) -> bool {
+        unsafe { CFPropertyListIsValid(self, format) }
+    }
+
+    #[inline]
+    pub fn deep_copy_in(
+        &self,
+        options: cf::PropListMutabilityOpts,
+        alloc: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe { CFPropertyListCreateDeepCopy(alloc, self, options) }
+    }
+
+    #[inline]
+    pub fn deep_copy(&self, options: cf::PropListMutabilityOpts) -> Option<arc::R<Self>> {
+        unsafe { CFPropertyListCreateDeepCopy(None, self, options) }
+    }
 }
 
 impl From<&cf::String> for &cf::PropList {
@@ -270,6 +289,14 @@ extern "C" {
         options: cf::OptionFlags,
         err: *mut Option<arc::R<cf::Error>>,
     ) -> Option<arc::R<cf::Data>>;
+
+    fn CFPropertyListIsValid(plist: &cf::PropList, format: cf::PropListFormat) -> bool;
+
+    fn CFPropertyListCreateDeepCopy(
+        allocator: Option<&cf::Allocator>,
+        plist: &cf::PropList,
+        options: cf::PropListMutabilityOpts,
+    ) -> Option<arc::R<cf::PropList>>;
 }
 
 #[cfg(test)]
@@ -300,6 +327,15 @@ mod tests {
         );
 
         let prop_list: &cf::PropList = dict.as_ref().into();
+
+        assert!(prop_list.is_valid_for_format(cf::PropListFormat::BinaryV1_0));
+        assert!(prop_list.is_valid_for_format(cf::PropListFormat::XmlV1_0));
+        assert!(!prop_list.is_valid_for_format(cf::PropListFormat::OpenStep));
+
+        let _err = prop_list
+            .to_cf_data(cf::PropListFormat::OpenStep)
+            .expect_err("can't write in OpenStep format");
+
         let data = prop_list.to_cf_data(cf::PropListFormat::XmlV1_0).unwrap();
         assert!(!data.is_empty());
 
@@ -307,5 +343,7 @@ mod tests {
         assert!(prop_list.equal(&new_prop_list));
         let dict = new_prop_list.as_dictionary();
         assert_eq!(dict.len(), 1);
+
+        let _deep_copy = new_prop_list.deep_copy(Default::default()).unwrap();
     }
 }

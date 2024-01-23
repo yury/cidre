@@ -23,11 +23,7 @@ where
     F: FnOnce(*mut Option<&'ear ns::Error>) -> Option<R>,
 {
     let mut err = None;
-    if let Some(r) = f(&mut err) {
-        Ok(r)
-    } else {
-        unsafe { Err(err.unwrap_unchecked()) }
-    }
+    f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
 }
 
 define_obj_type!(
