@@ -1,6 +1,4 @@
-use crate::{
-    arc, av::MediaType, blocks::Block, cm, define_cls, define_obj_type, dispatch, ns, objc,
-};
+use crate::{arc, av::MediaType, blocks, cm, define_cls, define_obj_type, dispatch, ns, objc};
 
 define_obj_type!(pub WriterInput(ns::Id));
 
@@ -133,14 +131,14 @@ impl WriterInput {
     pub unsafe fn request_media_data_when_ready_on_queue_throws<F>(
         &self,
         queue: &dispatch::Queue,
-        block: &'static Block<F>,
+        block: &'static blocks::Block<F>,
     ) where
         F: FnMut();
 
     pub fn request_media_data_when_ready_on_queue<'ear, F>(
         &self,
         queue: &dispatch::Queue,
-        block: &'static Block<F>,
+        block: &'static blocks::Block<F>,
     ) -> Result<(), &'ear ns::Exception>
     where
         F: FnMut(),

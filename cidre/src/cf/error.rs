@@ -33,7 +33,7 @@ where
     F: FnOnce(*mut Option<arc::R<Error>>) -> Option<R>,
 {
     let mut err = None;
-    f(&mut err).ok_or_else(|| err)
+    f(&mut err).ok_or(err)
 }
 
 define_cf_type!(Error(cf::Type));
