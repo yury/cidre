@@ -2,7 +2,7 @@ use cidre::{cg, ci, mtl, ns, objc::ar_pool, simd};
 
 #[repr(C)]
 struct Vertex {
-    position: simd::packed::f32x2,
+    pos: simd::packed::f32x2,
     color: simd::packed::f32x4,
 }
 
@@ -10,7 +10,7 @@ impl Vertex {
     #[inline]
     pub fn with(xy: (f32, f32), rgb: (f32, f32, f32)) -> Self {
         Self {
-            position: simd::packed::f32x2::with_xy(xy.0, xy.1),
+            pos: simd::packed::f32x2::with_xy(xy.0, xy.1),
             color: simd::packed::f32x4::with_xyzw(rgb.0, rgb.1, rgb.2, 1.0),
         }
     }

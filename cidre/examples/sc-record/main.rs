@@ -86,13 +86,12 @@ impl OutputImpl for FrameCounter {
         &mut self,
         _cmd: Option<&cidre::objc::Sel>,
         _stream: &sc::Stream,
-        sample_buffer: &mut cm::SampleBuf,
+        sample_buf: &mut cm::SampleBuf,
         kind: sc::OutputType,
     ) {
-        if kind == sc::OutputType::Screen {
-            self.inner_mut().handle_video(sample_buffer)
-        } else if kind == sc::OutputType::Audio {
-            self.inner_mut().handle_audio(sample_buffer);
+        match kind {
+            sc::OutputType::Screen => self.inner_mut().handle_video(sample_buf),
+            sc::OutputType::Audio => self.inner_mut().handle_audio(sample_buf),
         }
     }
 }
