@@ -12,6 +12,9 @@ impl DockTile {
     #[objc::msg_send(contentView)]
     pub fn content_view(&self) -> Option<&ns::View>;
 
+    #[objc::msg_send(contentView)]
+    pub fn content_view_mut(&mut self) -> Option<&mut ns::View>;
+
     #[objc::msg_send(setContentView:)]
     pub fn set_content_view(&mut self, val: Option<&ns::View>);
 
