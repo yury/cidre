@@ -20,7 +20,7 @@ pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
 pub use workspace::Workspace;
 
 mod dock_title;
-pub use dock_title::DockTitle;
+pub use dock_title::DockTile;
 
 mod responder;
 pub use responder::Responder;

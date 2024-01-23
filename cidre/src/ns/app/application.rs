@@ -24,10 +24,10 @@ impl App {
     pub fn terminate(&mut self, sender: Option<&ns::Id>);
 
     #[objc::msg_send(dockTile)]
-    pub fn dock_tile(&self) -> &ns::DockTitle;
+    pub fn dock_tile(&self) -> &ns::DockTile;
 
     #[objc::msg_send(dockTile)]
-    pub fn dock_tile_mut(&mut self) -> &mut ns::DockTitle;
+    pub fn dock_tile_mut(&mut self) -> &mut ns::DockTile;
 
     #[objc::msg_send(mainWindow)]
     pub fn main_window(&self) -> Option<&ns::Window>;

@@ -1,11 +1,11 @@
 use crate::{define_obj_type, ns, objc};
 
 define_obj_type!(
-    #[doc(alias = "NSDockTitle")]
-    pub DockTitle(ns::Id)
+    #[doc(alias = "NSDockTile")]
+    pub DockTile(ns::Id)
 );
 
-impl DockTitle {
+impl DockTile {
     #[objc::msg_send(size)]
     pub fn size(&self) -> ns::Size;
 
