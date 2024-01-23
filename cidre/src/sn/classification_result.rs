@@ -1,6 +1,9 @@
 use crate::{arc, cm, define_obj_type, ns, objc, sn};
 
-define_obj_type!(pub Classification(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SNClassification")]
+    pub Classification(ns::Id)
+);
 
 impl Classification {
     #[objc::msg_send(identifier)]
@@ -11,6 +14,7 @@ impl Classification {
 }
 
 define_obj_type!(
+    #[doc(alias = "SNClassificationResult")]
     pub ClassificationResult(sn::Result),
     SN_CLASSIFICATION_RESULT
 );

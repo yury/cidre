@@ -8,7 +8,10 @@ mod error;
 pub use error::Code as ErrorCode;
 pub use error::Domain as ErrorDomain;
 
-define_obj_type!(pub Request(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SNRequest")]
+    pub Request(ns::Id)
+);
 
 mod result;
 pub use result::Result;

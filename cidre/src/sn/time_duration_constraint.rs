@@ -12,6 +12,7 @@ pub enum Type {
 }
 
 define_obj_type!(
+    #[doc(alias = "SNTimeDurationConstraint")]
     pub Constraint(ns::Id)
 );
 

@@ -1,6 +1,7 @@
 use crate::{arc, av, blocks, define_obj_type, ns, objc, sn};
 
 define_obj_type!(
+    #[doc(alias = "SNAudioStreamAnalyzer")]
     pub AudioStreamAnalyzer(ns::Id),
     SN_AUDIO_STREAM_ANALYZER
 );
@@ -119,15 +120,4 @@ impl AudioFileAnalyzer {
 extern "C" {
     static SN_AUDIO_STREAM_ANALYZER: &'static objc::Class<AudioStreamAnalyzer>;
     static SN_AUDIO_FILE_ANALYZER: &'static objc::Class<AudioFileAnalyzer>;
-}
-
-#[cfg(test)]
-mod tests {
-    // use crate::{av, sn};
-
-    #[test]
-    fn basics() {
-        // av::AudioFormat::standard_with_sample_rate_and_channel_layout(, )
-        // sn::AudioStreamAnalyzer::with_format()
-    }
 }

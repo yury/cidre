@@ -1,6 +1,7 @@
 use crate::{arc, cm, define_cls, define_obj_type, ns, objc, sn};
 
 define_obj_type!(
+    #[doc(alias = "SNClassifySoundRequest")]
     pub ClassifySoundRequest(sn::Request)
 );
 
