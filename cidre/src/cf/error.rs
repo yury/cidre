@@ -5,6 +5,7 @@ use crate::{arc, cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
+#[inline]
 pub fn if_false<F>(f: F) -> Result<(), arc::R<Error>>
 where
     F: FnOnce(*mut Option<arc::R<Error>>) -> bool,
@@ -12,6 +13,19 @@ where
     let mut err = None;
     if f(&mut err) {
         Ok(())
+    } else {
+        unsafe { Err(err.unwrap_unchecked()) }
+    }
+}
+
+#[inline]
+pub fn if_none<R, F>(f: F) -> Result<R, arc::R<Error>>
+where
+    F: FnOnce(*mut Option<arc::R<Error>>) -> Option<R>,
+{
+    let mut err = None;
+    if let Some(res) = f(&mut err) {
+        Ok(res)
     } else {
         unsafe { Err(err.unwrap_unchecked()) }
     }

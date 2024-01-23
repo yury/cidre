@@ -15,9 +15,13 @@ pub use base::Index;
 pub use base::Null;
 pub use base::OptionFlags;
 pub use base::PropList;
+pub use base::PropListFormat;
+pub use base::PropListMutabilityOpts;
 pub use base::Range;
 pub use base::TypeId;
 pub use base::NOT_FOUND;
+
+mod property_list;
 
 mod number;
 pub use number::Boolean;
@@ -69,6 +73,7 @@ pub use bundle::Bundle;
 
 pub mod error;
 pub use error::if_false;
+pub use error::if_none;
 pub use error::Domain as ErrorDomain;
 pub use error::Error;
 

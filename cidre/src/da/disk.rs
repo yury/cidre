@@ -40,11 +40,13 @@ impl Disk {
         unsafe { DADiskCreateFromVolumePath(alloc, session, path) }
     }
 
+    #[doc(alias = "DADiskCreateFromBSDName")]
     #[inline]
     pub fn from_bsd_name(session: &da::Session, name: &std::ffi::CStr) -> Option<arc::R<Self>> {
         unsafe { DADiskCreateFromBSDName(None, session, name.as_ptr()) }
     }
 
+    #[doc(alias = "DADiskCreateFromVolumePath")]
     #[inline]
     pub fn from_volume_path(session: &da::Session, path: &cf::Url) -> Option<arc::R<Self>> {
         unsafe { DADiskCreateFromVolumePath(None, session, path) }
