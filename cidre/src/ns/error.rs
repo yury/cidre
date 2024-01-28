@@ -31,6 +31,8 @@ define_obj_type!(
     pub Error(ns::Id)
 );
 
+unsafe impl Send for Error {}
+
 impl arc::A<Error> {
     #[objc::msg_send(initWithDomain:code:userInfo:)]
     pub fn init_with_domain(

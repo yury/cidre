@@ -37,6 +37,9 @@ where
 }
 
 define_cf_type!(Error(cf::Type));
+
+unsafe impl Send for Error {}
+
 pub type Domain = cf::String;
 
 impl Domain {
