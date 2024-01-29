@@ -157,6 +157,9 @@ pub mod vn;
 #[cfg(feature = "wk")]
 pub mod wk;
 
+#[cfg(feature = "xpc")]
+pub mod xpc;
+
 pub mod arc;
 
 #[macro_export]

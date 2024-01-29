@@ -51,7 +51,8 @@ full = [
   "nw",
   "core_motion",
   "wk",
-  "gc"
+  "gc",
+  "xpc",
 ]
 
 # Turn on private API
@@ -96,6 +97,7 @@ da = ["cf"]
 core_motion = ["ns"]
 wk = ["ns"]
 gc = ["ns"]
+xpc = ["ns", "blocks"]
 
 [dependencies]
 
