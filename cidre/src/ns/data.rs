@@ -152,9 +152,10 @@ impl Data {
 
     #[inline]
     pub fn enum_ranges(&self, mut block: impl FnMut(*const u8, ns::Range, &mut bool)) {
-        let mut block =
-            blocks::NoEscBlock::<fn(*const u8, ns::Range, &mut bool)>::stack3(&mut block);
-        self.enumerate_byte_ranges_using_block(&mut block)
+        unsafe {
+            let mut block = blocks::NoEscBlock::stack3(&mut block);
+            self.enumerate_byte_ranges_using_block(&mut block)
+        }
     }
 }
 

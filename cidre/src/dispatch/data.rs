@@ -50,8 +50,10 @@ impl Data {
         &self,
         mut applier: impl FnMut(&dispatch::Data, usize, *const u8, usize) -> bool,
     ) -> bool {
-        let mut block = dispatch::DataApplier::<blocks::NoEsc>::stack4(&mut applier);
-        unsafe { dispatch_data_apply(self, &mut block) }
+        unsafe {
+            let mut block = dispatch::DataApplier::<blocks::NoEsc>::stack4(&mut applier);
+            dispatch_data_apply(self, &mut block)
+        }
     }
 
     #[inline]
