@@ -29,7 +29,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     let mut closure = |_ptr, range, _done| {
                         ranges.push(range);
                     };
-                    let mut block = blocks::NoEscBlock::stack3(&mut closure);
+                    let mut block = unsafe { blocks::NoEscBlock::stack3(&mut closure) };
                     data.as_ns().enumerate_byte_ranges_using_block(&mut block);
                 }
                 assert_eq!(ranges.len(), n);
