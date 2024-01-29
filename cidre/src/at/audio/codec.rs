@@ -432,6 +432,69 @@ impl InstanceProperty {
     /// standard ISO/IEC 14496-3. The default is kProgramTargetLevel_None.
     #[doc(alias = "kAudioCodecPropertyProgramTargetLevelConstant")]
     pub const PROGRAM_TARGET_LEVEL_CONSTANT: Self = Self(u32::from_be_bytes(*b"ptlc"));
+
+    /// A u32 specifying the dynamic range compression profile to be applied in the decoder. Profiles are
+    /// based on the DRC Effect Types in ISO/IEC 23003-4. Supported profiles are defined as DynamicRangeCompressionProfile
+    /// enum (see below). The default profile is DynamicRangeCompressionProfile::None.
+    /// This property can also be set on an initialized decoder object. It will be applied immediately, if supported.
+    #[doc(alias = "kAudioCodecPropertyAdjustCompressionProfile")]
+    pub const ADJUST_COMPRESSION_PROFILE: Self = Self(u32::from_be_bytes(*b"^pro"));
+
+    /// A f32 specifying the program target loudness in LKFS for decoders. It has the same effect
+    /// as kAudioCodecPropertyProgramTargetLevel, but this property can also be set on an initialized decoder
+    /// object. It will be applied immediately, if supported.
+    #[doc(alias = "kAudioCodecPropertyAdjustTargetLevel")]
+    pub const ADJUST_TARGET_LEVEL: Self = Self(u32::from_be_bytes(*b"^ptl"));
+
+    /// A u32 specifying the program target loudness in LKFS for decoders. It has the same effect
+    /// as kAudioCodecPropertyProgramTargetLevelConstant, but this property can also be set on an
+    /// initialized decoder object. It will be applied immediately, if supported.
+    /// A value of kProgramTargetLevel_None removes a prior target level setting.
+    #[doc(alias = "kAudioCodecPropertyAdjustTargetLevelConstant")]
+    pub const ADJUST_TARGET_LEVEL_CONSTANT: Self = Self(u32::from_be_bytes(*b"^tlc"));
+}
+
+/// Constants to be used with kAudioCodecPropertyProgramTargetLevelConstant to set the target loudness
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(u32)]
+pub enum ProgramTargetLevel {
+    #[doc(alias = "kProgramTargetLevel_None")]
+    None = 0,
+
+    #[doc(alias = "kProgramTargetLevel_Minus31dB")]
+    Minus31dB = 1,
+
+    #[doc(alias = "kProgramTargetLevel_Minus23dB")]
+    Minus23dB = 2,
+
+    #[doc(alias = "kProgramTargetLevel_Minus20dB")]
+    Minus20dB = 3,
+}
+
+/// Constants to be used with kAudioCodecPropertyAdjustCompressionProfile to control
+/// the DRC Effect Type based on ISO/IEC 23003-4
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(u32)]
+pub enum DynamicRangeCompressionProfile {
+    /// No compression
+    #[doc(alias = "kDynamicRangeCompressionProfile_None")]
+    None = 0,
+
+    /// Compression to avoid disturbing others and listening at lower volume
+    #[doc(alias = "kDynamicRangeCompressionProfile_LateNight")]
+    LateNight = 1,
+
+    /// Compression suitable for listening in noisy environments
+    #[doc(alias = "kDynamicRangeCompressionProfile_NoisyEnvironment")]
+    NoisyEnvironment = 2,
+
+    /// Compression for transducers with limited dynamic range
+    #[doc(alias = "kDynamicRangeCompressionProfile_LimitedPlaybackRange")]
+    LimitedPlaybackRange = 3,
+
+    /// General purpose compression
+    #[doc(alias = "kDynamicRangeCompressionProfile_GeneralCompression")]
+    GeneralCompression = 6,
 }
 
 /// Constants defining various bit rate control modes
