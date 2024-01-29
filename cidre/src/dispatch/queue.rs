@@ -158,6 +158,18 @@ impl Queue {
 
     #[cfg(feature = "blocks")]
     #[inline]
+    pub fn sync<R>(&self, mut f: impl FnMut() -> R + Sync) -> R {
+        let mut result = None;
+        let mut closure = || {
+            result.replace(f());
+        };
+        let mut block = unsafe { dispatch::Block::<blocks::NoEsc>::stack0(&mut closure) };
+        self.sync_b(&mut block);
+        unsafe { result.unwrap_unchecked() }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
     pub fn sync_fn(&self, block: extern "C" fn(*const c_void)) {
         let mut block = blocks::StaticBlock::new0(block);
         self.sync_b(block.as_noesc_mut());
@@ -415,5 +427,12 @@ mod tests {
         q.as_type_ref().show();
         q.sync_f(std::ptr::null_mut(), foo);
         q.async_and_wait_f(std::ptr::null_mut(), foo);
+    }
+    #[test]
+    fn sync() {
+        let q = dispatch::Queue::new();
+        let res = q.sync(|| 10);
+
+        assert_eq!(res, 10);
     }
 }
