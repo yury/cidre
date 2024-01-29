@@ -302,24 +302,12 @@ impl FileManager {
     ) -> arc::R<ns::Array<ns::Url>>;
 
     #[objc::msg_send(unmountVolumeAtURL:options:completionHandler:)]
-    pub unsafe fn _unmount_volume_at_url_ch(
+    pub fn unmount_volume_at_url_ch_block(
         &self,
         url: &ns::Url,
         options: ns::FileManagerUnmountOpts,
-        ch: *mut std::ffi::c_void,
+        ch: &mut blocks::ErrCompletionHandler,
     );
-
-    #[inline]
-    pub fn unmount_volume_at_url_ch_block<'a, F>(
-        &self,
-        url: &ns::Url,
-        options: ns::FileManagerUnmountOpts,
-        ch: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'a ns::Error>),
-    {
-        unsafe { self._unmount_volume_at_url_ch(url, options, ch.as_mut_ptr()) }
-    }
 
     #[cfg(feature = "blocks")]
     #[inline]
@@ -327,23 +315,21 @@ impl FileManager {
         &self,
         url: &ns::Url,
         options: ns::FileManagerUnmountOpts,
-        ch: F,
-    ) where
-        F: FnOnce(Option<&ns::Error>) + 'static,
-    {
-        let ch = blocks::once1(ch);
-        self.unmount_volume_at_url_ch_block(url, options, ch.escape())
+        ch: impl FnMut(Option<&ns::Error>) + 'static,
+    ) {
+        let mut ch = blocks::ErrCompletionHandler::new1(ch);
+        self.unmount_volume_at_url_ch_block(url, options, &mut ch)
     }
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     #[inline]
-    pub async fn unmount_volume_at_url<F>(
+    pub async fn unmount_volume_at_url(
         &self,
         url: &ns::Url,
         options: ns::FileManagerUnmountOpts,
     ) -> Result<(), arc::R<ns::Error>> {
-        let (future, ch) = blocks::ok();
-        self.unmount_volume_at_url_ch_block(url, options, ch.escape());
+        let (future, mut ch) = blocks::ok();
+        self.unmount_volume_at_url_ch_block(url, options, &mut ch);
         future.await
     }
 }

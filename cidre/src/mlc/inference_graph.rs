@@ -1,4 +1,4 @@
-use crate::{arc, blocks::Block, define_cls, define_obj_type, mlc, ns, objc};
+use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(pub InferenceGraph(mlc::Graph));
 impl InferenceGraph {
@@ -52,15 +52,13 @@ impl InferenceGraph {
     }
 
     #[objc::msg_send(executeWithInputsData:batchSize:options:completionHandler:)]
-    pub fn execute_ch<'ar, F>(
+    pub fn execute_ch(
         &self,
         input_data: &ns::Dictionary<ns::String, mlc::TensorData>,
         batch_size: usize,
         options: mlc::ExecutionOpts,
-        ch: Option<&'static Block<F>>,
-    ) -> bool
-    where
-        F: FnOnce(Option<&'ar mlc::Tensor>, Option<&'ar ns::Error>, ns::TimeInterval);
+        ch: Option<&mut mlc::GraphCompletionHandler>,
+    ) -> bool;
 }
 
 #[link(name = "mlc", kind = "static")]

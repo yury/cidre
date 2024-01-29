@@ -1,7 +1,4 @@
-use std::{
-    ffi::c_void,
-    ops::{Deref, DerefMut},
-};
+use std::ops::{Deref, DerefMut};
 
 use crate::{arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
 
@@ -618,7 +615,7 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_focus_mode_locked_with_lens_pos_no_ch_throws(&mut self, val: f32) {
         self.device
-            .set_focus_mode_locked_with_lens_pos_ch_throws(val, std::ptr::null_mut())
+            .set_focus_mode_locked_with_lens_pos_ch_throws(val, None)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -631,30 +628,25 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_focus_mode_locked_with_lens_pos_with_ch_throws<F>(
+    pub unsafe fn set_focus_mode_locked_with_lens_pos_with_ch_throws(
         &mut self,
         val: f32,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) {
         self.device
-            .set_focus_mode_locked_with_lens_pos_ch_throws(val, block.as_mut_ptr())
+            .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ar, F>(
+    pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ar>(
         &mut self,
         val: f32,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
             self.device
-                .set_focus_mode_locked_with_lens_pos_ch_throws(val, block.as_mut_ptr())
+                .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
         })
     }
 
@@ -664,8 +656,8 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: f32,
     ) -> cm::Time {
-        let (future, block) = blocks::comp1();
-        self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.escape());
+        let (future, mut block) = blocks::comp1();
+        self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.as_esc_mut());
         future.await
     }
 
@@ -675,9 +667,9 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: f32,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
+        let (future, mut block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.escape())
+            self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.as_esc_mut())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -856,7 +848,11 @@ impl Device {
 
     // #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
-    unsafe fn set_focus_mode_locked_with_lens_pos_ch_throws(&mut self, val: f32, ch: *mut c_void);
+    unsafe fn set_focus_mode_locked_with_lens_pos_ch_throws(
+        &mut self,
+        val: f32,
+        ch: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
+    );
 
     /// A property indicating the minimum focus distance.
     ///
@@ -951,7 +947,7 @@ impl Device {
         &mut self,
         duration: cm::Time,
         iso: f32,
-        handler: *mut c_void,
+        handler: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
     );
 
     /// Indicates the metered exposure level's offset from the target exposure value, in EV units.
@@ -973,7 +969,11 @@ impl Device {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setExposureTargetBias:completionHandler:)]
-    unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32, handler: *mut c_void);
+    unsafe fn set_exposure_target_bias_throws(
+        &mut self,
+        bias: f32,
+        handler: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
+    );
 }
 
 /// AVCaptureExposureMode
@@ -1050,11 +1050,7 @@ impl<'a> ConfigLockGuard<'a> {
         iso: f32,
     ) {
         self.device
-            .set_exposure_mode_custom_with_duration_and_iso_throws(
-                duration,
-                iso,
-                std::ptr::null_mut(),
-            )
+            .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, None)
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1070,40 +1066,27 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_ch_throws<F>(
+    pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
         &mut self,
         duration: cm::Time,
         iso: f32,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) {
         self.device
-            .set_exposure_mode_custom_with_duration_and_iso_throws(
-                duration,
-                iso,
-                block.as_mut_ptr(),
-            )
+            .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, Some(block))
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_with_ch<'ar, F>(
+    pub fn set_exposure_mode_custom_with_duration_and_iso_with_ch<'ar>(
         &mut self,
         duration: cm::Time,
         iso: f32,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| {
             self.device
-                .set_exposure_mode_custom_with_duration_and_iso_throws(
-                    duration,
-                    iso,
-                    block.as_mut_ptr(),
-                )
+                .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, Some(block))
         })
     }
 
@@ -1114,11 +1097,11 @@ impl<'a> ConfigLockGuard<'a> {
         duration: cm::Time,
         iso: f32,
     ) -> cm::Time {
-        let (future, block) = blocks::comp1();
+        let (future, mut block) = blocks::comp1();
         self.set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
             duration,
             iso,
-            block.escape(),
+            block.as_esc_mut(),
         );
         future.await
     }
@@ -1130,12 +1113,12 @@ impl<'a> ConfigLockGuard<'a> {
         duration: cm::Time,
         iso: f32,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
+        let (future, mut block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
             self.set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
                 duration,
                 iso,
-                block.escape(),
+                block.as_esc_mut(),
             )
         });
         if let Err(err) = res {
@@ -1146,36 +1129,30 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_exposure_target_bias_with_ch_throws<F>(
+    pub unsafe fn set_exposure_target_bias_with_ch_throws(
         &mut self,
         bias: f32,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) {
         self.device
-            .set_exposure_target_bias_throws(bias, block.as_mut_ptr())
+            .set_exposure_target_bias_throws(bias, Some(block))
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_exposure_target_bias_no_ch_throws(&mut self, bias: f32) {
-        self.device
-            .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
+        self.device.set_exposure_target_bias_throws(bias, None)
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_with_ch<'ar, F>(
+    pub fn set_exposure_target_bias_with_ch<'ar>(
         &mut self,
         bias: f32,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
             self.device
-                .set_exposure_target_bias_throws(bias, block.as_mut_ptr())
+                .set_exposure_target_bias_throws(bias, Some(block))
         })
     }
 
@@ -1184,17 +1161,14 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         bias: f32,
     ) -> Result<(), &'ar ns::Exception> {
-        ns::try_catch(|| unsafe {
-            self.device
-                .set_exposure_target_bias_throws(bias, std::ptr::null_mut())
-        })
+        ns::try_catch(|| unsafe { self.device.set_exposure_target_bias_throws(bias, None) })
     }
 
     #[cfg(feature = "async")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
-        let (future, block) = blocks::comp1();
-        self.set_exposure_target_bias_with_ch_throws(bias, block.escape());
+        let (future, mut block) = blocks::comp1();
+        self.set_exposure_target_bias_with_ch_throws(bias, block.as_esc_mut());
         future.await
     }
 
@@ -1204,9 +1178,9 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         bias: f32,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
+        let (future, mut block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_exposure_target_bias_with_ch_throws(bias, block.escape())
+            self.set_exposure_target_bias_with_ch_throws(bias, block.as_esc_mut())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -1318,7 +1292,7 @@ impl Device {
     unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
         &mut self,
         gains: WbGains,
-        block: *mut c_void,
+        block: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
     );
 
     /// Converts device-independent chromaticity values to device-specific white balance RGB gain values.
@@ -1348,33 +1322,28 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_ch_throws<F>(
+    pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_ch_throws(
         &mut self,
         gains: WbGains,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) {
         self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, block.as_mut_ptr())
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, Some(block))
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_ch_throws(&mut self, gains: WbGains) {
         self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, std::ptr::null_mut())
+            .set_wb_mode_locked_with_device_wb_gains_throws(gains, None)
     }
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ar, F>(
+    pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ar>(
         &mut self,
         gains: WbGains,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(cm::Time),
-    {
+        block: &mut blocks::EscBlock<fn(cm::Time)>,
+    ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
             self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block)
         })
@@ -1396,8 +1365,8 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         gains: WbGains,
     ) -> cm::Time {
-        let (future, block) = blocks::comp1();
-        self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.escape());
+        let (future, mut block) = blocks::comp1();
+        self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.as_esc_mut());
         future.await
     }
 
@@ -1407,9 +1376,9 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         gains: WbGains,
     ) -> Result<cm::Time, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
+        let (future, mut block) = blocks::comp1();
         let res = ns::try_catch(move || unsafe {
-            self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.escape())
+            self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.as_esc_mut())
         });
         if let Err(err) = res {
             return Err(err.retained());
@@ -1703,27 +1672,22 @@ impl Device {
     #[objc::cls_msg_send(requestAccessForMediaType:completionHandler:)]
     unsafe fn _request_access_for_media_type_ch_throws(
         media_type: &av::MediaType,
-        block: *mut c_void,
+        block: &mut blocks::SendBlock<fn(bool)>,
     );
 
     #[cfg(feature = "blocks")]
-    pub unsafe fn request_access_for_media_type_ch_throws<F>(
+    pub unsafe fn request_access_for_media_type_ch_throws(
         media_type: &av::MediaType,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(bool),
-    {
-        unsafe { Self::_request_access_for_media_type_ch_throws(media_type, block.as_mut_ptr()) }
+        block: &mut blocks::SendBlock<fn(bool)>,
+    ) {
+        unsafe { Self::_request_access_for_media_type_ch_throws(media_type, block) }
     }
 
     #[cfg(feature = "blocks")]
-    pub fn request_access_for_media_type_ch<'ar, F>(
+    pub fn request_access_for_media_type_ch<'ar>(
         media_type: &av::MediaType,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), &'ar ns::Exception>
-    where
-        F: FnOnce(bool),
-    {
+        block: &mut blocks::SendBlock<fn(bool)>,
+    ) -> Result<(), &'ar ns::Exception> {
         ns::try_catch(|| unsafe {
             Self::request_access_for_media_type_ch_throws(media_type, block)
         })
@@ -1733,8 +1697,8 @@ impl Device {
     pub async fn request_access_for_media_type<'ar>(
         media_type: &av::MediaType,
     ) -> Result<bool, arc::R<ns::Exception>> {
-        let (future, block) = blocks::comp1();
-        match Self::request_access_for_media_type_ch(media_type, block.escape()) {
+        let (future, mut block) = blocks::comp1();
+        match Self::request_access_for_media_type_ch(media_type, &mut block) {
             Ok(_) => Ok(future.await),
             Err(e) => Err(e.retained()),
         }

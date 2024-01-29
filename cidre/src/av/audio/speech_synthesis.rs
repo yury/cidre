@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 #[cfg(feature = "blocks")]
 use crate::blocks;
 use crate::{
@@ -361,20 +359,14 @@ impl Synthesizer {
 
     #[cfg(feature = "blocks")]
     #[objc::cls_msg_send(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
-    fn _request_personal_voice_authorization_ch(block: *mut c_void);
-
-    #[cfg(feature = "blocks")]
-    pub fn request_personal_voice_authorization_ch<F>(block: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(AuthorizationStatus) + Send + 'static,
-    {
-        Self::_request_personal_voice_authorization_ch(block.as_mut_ptr());
-    }
+    fn request_personal_voice_authorization_ch(
+        block: &mut blocks::SendBlock<fn(AuthorizationStatus)>,
+    );
 
     #[cfg(all(feature = "async", feature = "blocks"))]
     pub async fn request_personal_voice_authorization() -> AuthorizationStatus {
-        let (future, block) = blocks::comp1();
-        Self::request_personal_voice_authorization_ch(block.escape());
+        let (future, mut block) = blocks::comp1();
+        Self::request_personal_voice_authorization_ch(&mut block);
         future.await
     }
 }

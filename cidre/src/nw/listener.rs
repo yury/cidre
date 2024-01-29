@@ -1,9 +1,21 @@
-use std::ffi::{c_char, c_void, CStr};
+use std::ffi::{c_char, CStr};
 
 use crate::{arc, define_obj_type, dispatch, ns, nw};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
+
+#[doc(alias = "nw_listener_state_changed_handler_t")]
+pub type StateChangedHandler = blocks::SyncBlock<fn(nw::ListenerState, Option<&nw::Error>)>;
+
+#[doc(alias = "nw_listener_new_connection_handler_t")]
+pub type NewConnectionHandler = blocks::SyncBlock<fn(&nw::Connection)>;
+
+#[doc(alias = "nw_listener_new_connection_group_handler_t")]
+pub type NewConnectionGroupHandler = blocks::SyncBlock<fn(&nw::ConnectionGroup)>;
+
+#[doc(alias = "nw_listener_advertised_endpoint_changed_handler_t")]
+pub type AdvertisedEndpointChangedHandler<'a> = blocks::SyncBlock<fn(&nw::Endpoint, bool)>;
 
 define_obj_type!(
     #[doc(alias = "nw_listener")]
@@ -92,69 +104,41 @@ impl Listener {
     #[doc(alias = "nw_listener_set_advertised_endpoint_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_advertised_endpoint_changed_handler<'a, F>(
+    pub fn set_advertised_endpoint_changed_handler(
         &mut self,
-        handler: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(&'a nw::Endpoint, bool),
-    {
-        unsafe {
-            nw_listener_set_advertised_endpoint_changed_handler(
-                self,
-                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+        handler: Option<&mut nw::ListenerAdvertisedEndpointChangedHandler>,
+    ) {
+        unsafe { nw_listener_set_advertised_endpoint_changed_handler(self, handler) }
     }
 
     #[doc(alias = "nw_listener_set_new_connection_group_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_new_connection_group_handler<'a, F>(
+    pub fn set_new_connection_group_handler(
         &mut self,
-        handler: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(&'a nw::ConnectionGroup),
-    {
-        unsafe {
-            nw_listener_set_new_connection_group_handler(
-                self,
-                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+        handler: Option<&mut nw::ListenerNewConnectionGroupHandler>,
+    ) {
+        unsafe { nw_listener_set_new_connection_group_handler(self, handler) }
     }
 
     #[doc(alias = "nw_listener_set_new_connection_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_new_connection_handler<'a, F>(
+    pub fn set_new_connection_handler(
         &mut self,
-        handler: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(&'a nw::Connection),
-    {
-        unsafe {
-            nw_listener_set_new_connection_handler(
-                self,
-                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+        handler: Option<&mut nw::ListenerNewConnectionHandler>,
+    ) {
+        unsafe { nw_listener_set_new_connection_handler(self, handler) }
     }
 
     #[doc(alias = "nw_listener_set_state_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_state_changed_handler<'a, F>(
+    pub fn set_state_changed_handler(
         &mut self,
-        handler: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(&'a nw::ListenerState, Option<&'a nw::Error>),
-    {
-        unsafe {
-            nw_listener_set_state_changed_handler(
-                self,
-                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+        handler: Option<&mut nw::ListenerStateChangedHandler>,
+    ) {
+        unsafe { nw_listener_set_state_changed_handler(self, handler) }
     }
 }
 
@@ -189,12 +173,21 @@ extern "C" {
     #[cfg(feature = "blocks")]
     fn nw_listener_set_advertised_endpoint_changed_handler(
         listener: &mut Listener,
-        handler: *mut c_void,
+        handler: Option<&mut nw::ListenerAdvertisedEndpointChangedHandler>,
     );
     #[cfg(feature = "blocks")]
-    fn nw_listener_set_new_connection_group_handler(listener: &mut Listener, handler: *mut c_void);
+    fn nw_listener_set_new_connection_group_handler(
+        listener: &mut Listener,
+        handler: Option<&mut nw::ListenerNewConnectionGroupHandler>,
+    );
     #[cfg(feature = "blocks")]
-    fn nw_listener_set_new_connection_handler(listener: &mut Listener, handler: *mut c_void);
+    fn nw_listener_set_new_connection_handler(
+        listener: &mut Listener,
+        handler: Option<&mut nw::ListenerNewConnectionHandler>,
+    );
     #[cfg(feature = "blocks")]
-    fn nw_listener_set_state_changed_handler(listener: &mut Listener, handler: *mut c_void);
+    fn nw_listener_set_state_changed_handler(
+        listener: &mut Listener,
+        handler: Option<&mut nw::ListenerStateChangedHandler>,
+    );
 }

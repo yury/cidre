@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::define_cls;
 use crate::{arc, av, blocks, define_obj_type, ns, objc};
 
@@ -82,25 +80,23 @@ impl UrlAsset {
     pub fn load_tracks_with_media_type_ch(
         &self,
         media_type: &av::MediaType,
-        completion: *mut c_void,
+        completion: &mut blocks::ResultCompletionHandler<ns::Array<av::asset::Track>>,
     );
 
-    pub fn load_tracks_with_media_type_once<'ar, F>(&self, media_type: &av::MediaType, block: F)
+    pub fn load_tracks_with_media_type_block<F>(&self, media_type: &av::MediaType, block: F)
     where
-        F: FnOnce(Option<&'ar ns::Array<av::asset::Track>>, Option<&'ar ns::Error>)
-            + 'static
-            + Sync,
+        F: FnMut(Option<&ns::Array<av::asset::Track>>, Option<&ns::Error>) + 'static,
     {
-        let block = blocks::once2(block);
-        self.load_tracks_with_media_type_ch(media_type, block.escape().as_mut_ptr())
+        let mut block = blocks::ResultCompletionHandler::new2(block);
+        self.load_tracks_with_media_type_ch(media_type, &mut block)
     }
 
     pub async fn load_tracks_with_media_type(
         &self,
         media_type: &av::MediaType,
     ) -> Result<arc::R<ns::Array<av::asset::Track>>, arc::R<ns::Error>> {
-        let (future, block) = blocks::result();
-        self.load_tracks_with_media_type_ch(media_type, block.escape().as_mut_ptr());
+        let (future, mut block) = blocks::result();
+        self.load_tracks_with_media_type_ch(media_type, &mut block);
         future.await
     }
 

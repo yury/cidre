@@ -5,6 +5,8 @@ define_obj_type!(
     pub PedometerData(ns::Id)
 );
 
+unsafe impl Send for PedometerData {}
+
 impl PedometerData {
     #[objc::msg_send(startDate)]
     pub fn start_date(&self) -> &ns::Date;
@@ -97,32 +99,20 @@ impl Pedometer {
     pub fn authorization_status() -> cm::AuthorizationStatus;
 
     #[objc::msg_send(queryPedometerDataFromDate:toDate:withHandler:)]
-    pub unsafe fn _query_pedometer_data_ch(
+    pub fn query_pedometer_data_ch_block(
         &self,
         start: &ns::Date,
         end: &ns::Date,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::PedometerData>,
     );
-
-    #[inline]
-    pub fn query_pedometer_data_ch_block<'a, F>(
-        &self,
-        start: &ns::Date,
-        end: &ns::Date,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'a cm::PedometerData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._query_pedometer_data_ch(start, end, handler.as_mut_ptr()) }
-    }
 
     #[inline]
     pub fn query_pedometer_data_ch<F>(&self, start: &ns::Date, end: &ns::Date, handler: F)
     where
-        F: FnOnce(Option<&cm::PedometerData>, Option<&ns::Error>) + 'static,
+        F: FnMut(Option<&cm::PedometerData>, Option<&ns::Error>) + 'static + std::marker::Sync,
     {
-        let handler = blocks::once2(handler);
-        self.query_pedometer_data_ch_block(start, end, handler.escape())
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.query_pedometer_data_ch_block(start, end, &mut handler)
     }
 
     #[cfg(feature = "async")]
@@ -131,36 +121,28 @@ impl Pedometer {
         start: &ns::Date,
         end: &ns::Date,
     ) -> Result<arc::R<cm::PedometerData>, arc::R<ns::Error>> {
-        let (future, block) = blocks::result();
-        self.query_pedometer_data_ch_block(start, end, block.escape());
+        let (future, mut block) = blocks::result();
+        self.query_pedometer_data_ch_block(start, end, &mut block);
         future.await
     }
 
     #[objc::msg_send(startPedometerUpdatesFromDate:withHandler:)]
-    pub unsafe fn _start_pedometer_updates_from_date_handler(
+    pub fn start_pedometer_updates_from_date_handler(
         &mut self,
         start: &ns::Date,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::PedometerData>,
     );
 
     #[inline]
-    pub fn start_pedometer_updates_from_date_handler<'a, F>(
+    pub fn start_pedometer_updates_from_date(
         &mut self,
         start: &ns::Date,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::PedometerData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_pedometer_updates_from_date_handler(start, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_pedometer_updates_from_date<F>(&mut self, start: &ns::Date, handler: F)
-    where
-        F: FnMut(Option<&cm::PedometerData>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_pedometer_updates_from_date_handler(start, handler.escape())
+        handler: impl FnMut(Option<&cm::PedometerData>, Option<&ns::Error>)
+            + 'static
+            + std::marker::Sync,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_pedometer_updates_from_date_handler(start, &mut handler)
     }
 
     #[objc::msg_send(stopPedometerUpdates)]

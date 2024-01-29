@@ -1,10 +1,15 @@
-use std::{ffi::c_void, mem::transmute};
+use std::mem::transmute;
 
 use crate::{
     arc,
     av::{self, audio},
     blocks, cf, define_obj_type, ns, objc,
 };
+#[doc(alias = "AVAudioConverterInputBlock")]
+pub type InputBlock<Attr> = blocks::Block<
+    fn(av::AudioPacketCount, &mut av::AudioConverterInputStatus) -> Option<arc::Rar<av::AudioBuf>>,
+    Attr,
+>;
 
 #[derive(Debug, PartialEq, Eq)]
 #[repr(isize)]
@@ -128,7 +133,7 @@ impl Converter {
         &self,
         output_buffer: &mut av::AudioBuf,
         error: *mut Option<&cf::Error>,
-        block: *mut c_void,
+        block: &mut av::AudioConverterInputBlock<blocks::Esc>,
     ) -> OutputStatus;
 
     /// Perform any supported conversion
@@ -137,22 +142,15 @@ impl Converter {
     /// sample frames successfully converted.
     #[doc(alias = "convertToBuffer:error:withInputFromBlock:")]
     #[inline]
-    pub fn convert_to_buffer_with_input_from_block<'ar, F>(
+    pub fn convert_to_buffer_with_input_from_block<'ar>(
         &self,
         output_buffer: &mut av::AudioBuf,
-        block: &mut blocks::Block<F>,
-    ) -> Result<OutputStatus, arc::R<cf::Error>>
-    where
-        F: FnMut(av::audio::PacketCount, *mut InputStatus) -> Option<&'ar av::AudioBuf>,
-    {
+        block: &mut av::AudioConverterInputBlock<blocks::Esc>,
+    ) -> Result<OutputStatus, arc::R<cf::Error>> {
         unsafe {
             let mut error = None;
-            let res = Self::convert_to_buffer_err_with_input_from_block(
-                self,
-                output_buffer,
-                &mut error,
-                block.as_mut_ptr(),
-            );
+            let res =
+                self.convert_to_buffer_err_with_input_from_block(output_buffer, &mut error, block);
             if error.is_some() {
                 debug_assert_eq!(res, OutputStatus::Error);
                 Err(transmute(error))

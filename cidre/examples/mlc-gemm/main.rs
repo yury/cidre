@@ -38,7 +38,7 @@ fn main() {
         .unwrap();
 
     let values = [dat_a.as_ref(), &dat_b, &dat_c];
-    let handler = blocks::once3(|r: Option<&mlc::Tensor>, _e, time| {
+    let mut handler = blocks::SyncBlock::new3(|r: Option<&mlc::Tensor>, _e, time| {
         let r = r.unwrap();
 
         let mut buf_o = vec![0.0f32; 4];
@@ -48,5 +48,5 @@ fn main() {
     });
 
     let input_data = ns::Dictionary::with_keys_values(&keys, &values);
-    plan.execute_ch(&input_data, 0, Default::default(), Some(handler.escape()));
+    plan.execute_ch(&input_data, 0, Default::default(), Some(&mut handler));
 }

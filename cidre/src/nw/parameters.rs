@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{arc, blocks, define_obj_type, ns, nw};
 
 define_obj_type!(
@@ -7,6 +5,9 @@ define_obj_type!(
     #[doc(alias = "nw_parameters_t")]
     pub Params(ns::Id)
 );
+
+#[doc(alias = "nw_parameters_configure_protocol_block_t")]
+pub type ParamsCfgProtocolBlock = blocks::SyncBlock<fn(&mut nw::ProtocolOpts)>;
 
 impl Params {
     #[doc(alias = "nw_parameters_create")]
@@ -23,67 +24,42 @@ impl Params {
 
     #[doc(alias = "nw_parameters_create_secure_tcp")]
     #[inline]
-    pub fn create_secure_tcp<TlsB, TcpB>(
-        configure_tls: &TlsB,
-        configure_tcp: &TcpB,
-    ) -> Option<arc::R<Self>>
-    where
-        TlsB: ConfigureProtocolBlock,
-        TcpB: ConfigureProtocolBlock,
-    {
-        unsafe {
-            nw_parameters_create_secure_tcp(
-                configure_tls.as_block_ptr(),
-                configure_tcp.as_block_ptr(),
-            )
-        }
+    pub fn create_secure_tcp(
+        configure_tls: &mut ParamsCfgProtocolBlock,
+        configure_tcp: &mut ParamsCfgProtocolBlock,
+    ) -> Option<arc::R<Self>> {
+        unsafe { nw_parameters_create_secure_tcp(configure_tls, configure_tcp) }
     }
 
     #[inline]
     pub fn default_tcp() -> arc::R<Self> {
-        let cfg = &Self::default_cfg();
-        unsafe { Self::create_secure_tcp(cfg, cfg).unwrap_unchecked() }
+        let cfg1 = Self::default_cfg();
+        let cfg2 = Self::default_cfg();
+        unsafe { Self::create_secure_tcp(cfg1, cfg2).unwrap_unchecked() }
     }
 
     #[doc(alias = "nw_parameters_create_secure_udp")]
     #[inline]
-    pub fn create_secure_udp<DtlsB, UdpB>(
-        configure_dtls: &DtlsB,
-        configure_udp: &UdpB,
-    ) -> Option<arc::R<Self>>
-    where
-        DtlsB: ConfigureProtocolBlock,
-        UdpB: ConfigureProtocolBlock,
-    {
-        unsafe {
-            nw_parameters_create_secure_udp(
-                configure_dtls.as_block_ptr(),
-                configure_udp.as_block_ptr(),
-            )
-        }
+    pub fn create_secure_udp(
+        configure_dtls: &mut ParamsCfgProtocolBlock,
+        configure_udp: &mut ParamsCfgProtocolBlock,
+    ) -> Option<arc::R<Self>> {
+        unsafe { nw_parameters_create_secure_udp(configure_dtls, configure_udp) }
     }
 
     #[doc(alias = "nw_parameters_create_custom_ip")]
     #[inline]
-    pub fn create_secure_custom_ip<IpB>(
+    pub fn create_secure_custom_ip(
         custom_ip_protocol_number: u32,
-        configure_ip: &IpB,
-    ) -> Option<arc::R<Self>>
-    where
-        IpB: ConfigureProtocolBlock,
-    {
-        unsafe {
-            nw_parameters_create_custom_ip(custom_ip_protocol_number, configure_ip.as_block_ptr())
-        }
+        configure_ip: &mut ParamsCfgProtocolBlock,
+    ) -> Option<arc::R<Self>> {
+        unsafe { nw_parameters_create_custom_ip(custom_ip_protocol_number, configure_ip) }
     }
 
     #[doc(alias = "nw_parameters_create_quic")]
     #[inline]
-    pub fn create_quic<B>(configure_quic: &B) -> Option<arc::R<Self>>
-    where
-        B: ConfigureProtocolBlock,
-    {
-        unsafe { nw_parameters_create_quic(configure_quic.as_block_ptr()) }
+    pub fn create_quic(configure_quic: &mut ParamsCfgProtocolBlock) -> Option<arc::R<Self>> {
+        unsafe { nw_parameters_create_quic(configure_quic) }
     }
 
     #[doc(alias = "nw_parameters_create_application_service")]
@@ -94,44 +70,14 @@ impl Params {
 
     #[doc(alias = "NW_PARAMETERS_DEFAULT_CONFIGURATION")]
     #[inline]
-    pub fn default_cfg() -> ConfigureProtocol {
-        ConfigureProtocol(unsafe { _nw_parameters_configure_protocol_default_configuration })
+    pub fn default_cfg() -> &'static mut ParamsCfgProtocolBlock {
+        unsafe { _nw_parameters_configure_protocol_default_configuration }
     }
 
     #[doc(alias = "NW_PARAMETERS_DISABLE_PROTOCOL")]
     #[inline]
-    pub fn disable_protocol() -> ConfigureProtocol {
-        ConfigureProtocol(unsafe { _nw_parameters_configure_protocol_disable })
-    }
-}
-
-pub trait ConfigureProtocolBlock {
-    fn as_block_ptr(&self) -> *const c_void;
-}
-
-pub struct ConfigureProtocol(*const c_void);
-
-impl ConfigureProtocolBlock for ConfigureProtocol {
-    #[inline]
-    fn as_block_ptr(&self) -> *const c_void {
-        self.0
-    }
-}
-
-impl<'a, F> ConfigureProtocolBlock for blocks::Block<F>
-where
-    F: FnOnce(&'a mut nw::ProtocolOpts),
-{
-    #[inline]
-    fn as_block_ptr(&self) -> *const c_void {
-        self.as_ptr()
-    }
-}
-
-impl ConfigureProtocolBlock for blocks::Block<extern "C" fn(&mut nw::ProtocolOpts)> {
-    #[inline]
-    fn as_block_ptr(&self) -> *const c_void {
-        self.as_ptr()
+    pub fn disable_protocol() -> &'static mut ParamsCfgProtocolBlock {
+        unsafe { _nw_parameters_configure_protocol_disable }
     }
 }
 
@@ -147,43 +93,60 @@ extern "C" {
     fn nw_parameters_copy(parameters: &Params) -> Option<arc::R<Params>>;
 
     fn nw_parameters_create_secure_tcp(
-        configure_tls: *const c_void,
-        configure_tcp: *const c_void,
+        configure_tls: &mut ParamsCfgProtocolBlock,
+        configure_tcp: &mut ParamsCfgProtocolBlock,
     ) -> Option<arc::R<Params>>;
 
     fn nw_parameters_create_secure_udp(
-        configure_dtls: *const c_void,
-        configure_udp: *const c_void,
+        configure_dtls: &mut ParamsCfgProtocolBlock,
+        configure_udp: &mut ParamsCfgProtocolBlock,
     ) -> Option<arc::R<Params>>;
 
     fn nw_parameters_create_custom_ip(
         custom_ip_protocol_number: u32,
-        configure_ip: *const c_void,
+        configure_ip: &mut ParamsCfgProtocolBlock,
     ) -> Option<arc::R<Params>>;
 
-    fn nw_parameters_create_quic(configure_quic: *const c_void) -> Option<arc::R<Params>>;
+    fn nw_parameters_create_quic(
+        configure_quic: &mut ParamsCfgProtocolBlock,
+    ) -> Option<arc::R<Params>>;
 
     fn nw_parameters_create_application_service() -> arc::R<Params>;
 
-    static _nw_parameters_configure_protocol_default_configuration: *const c_void;
-    static _nw_parameters_configure_protocol_disable: *const c_void;
+    static mut _nw_parameters_configure_protocol_default_configuration:
+        &'static mut ParamsCfgProtocolBlock;
+    static mut _nw_parameters_configure_protocol_disable: &'static mut ParamsCfgProtocolBlock;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{blocks, nw, objc::Obj};
+    use crate::{nw, objc::Obj};
+
+    struct Dr(Vec<u8>);
+
+    impl Drop for Dr {
+        fn drop(&mut self) {
+            eprintln!("Dropping");
+        }
+    }
 
     #[test]
     fn basics() {
         let params =
-            nw::Params::create_secure_tcp(&nw::Params::default_cfg(), &nw::Params::default_cfg())
+            nw::Params::create_secure_tcp(nw::Params::default_cfg(), nw::Params::default_cfg())
                 .unwrap();
         eprintln!("{:?}", params.debug_desc());
 
-        let b = blocks::once1(|opts| {
-            eprintln!("{:?}", opts);
-        });
-        let params = nw::Params::create_quic(b.escape()).unwrap();
-        eprintln!("{:?}", params.debug_desc());
+        let mut x = Dr(vec![]);
+        {
+            let mut b = nw::ParamsCfgProtocolBlock::new1(move |opts| {
+                x.0.push(1);
+                eprintln!("{:?}----------> {:?}", x.0, opts);
+            });
+            let params = nw::Params::create_quic(&mut b).unwrap();
+            eprintln!("{:?}", params.debug_desc());
+        }
+        eprintln!("{:?}", nw::Params::default_cfg().debug_desc());
+        eprintln!("{:?}", nw::Params::disable_protocol().debug_desc());
     }
 }

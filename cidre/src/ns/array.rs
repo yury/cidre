@@ -14,6 +14,8 @@ use crate::{
 #[repr(transparent)]
 pub struct Array<T: Obj>(ns::Id, PhantomData<T>);
 
+unsafe impl<T: Obj> Send for Array<T> where T: Send {}
+
 impl<T: Obj> Obj for Array<T> where T: Obj {}
 
 #[doc(alias = "NSMutableArray")]

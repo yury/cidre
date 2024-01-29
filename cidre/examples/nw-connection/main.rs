@@ -9,7 +9,7 @@ fn main() {
     let mut conn = nw::Connection::with_endpoint(&endpoint, &nw::Params::default_tcp()).unwrap();
 
     let mut block_conn = conn.retained();
-    conn.set_state_changed_handler(move |state, _err| match state {
+    conn.set_state_changed_handler(move |state, err| match state {
         nw::ConnectionState::Invalid => todo!(),
         nw::ConnectionState::Waiting => {
             eprintln!("waiting");
@@ -18,10 +18,11 @@ fn main() {
             eprintln!("preparing");
         }
         nw::ConnectionState::Ready => {
+            eprintln!("ready");
             recv_loop(&mut block_conn);
             send_request(&mut block_conn);
         }
-        nw::ConnectionState::Failed => todo!(),
+        nw::ConnectionState::Failed => eprintln!("error: {err:?}"),
         nw::ConnectionState::Cancelled => todo!(),
     });
 

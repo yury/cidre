@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{arc, blocks, define_cls, define_obj_type, mc, ns, objc};
 
 #[doc(alias = "MCSessionSendDataMode")]
@@ -126,55 +124,32 @@ impl Session {
     pub fn disconnect(&mut self);
 
     #[objc::msg_send(sendResourceAtURL:withName:toPeer:withCompletionHandler:)]
-    pub unsafe fn _send_resource_at_url_ch_ar(
+    pub fn send_resource_at_url_ch_block_ar(
         &mut self,
         resource_url: &ns::Url,
         resource_name: &ns::String,
         to_peer: &mc::PeerId,
-        completion: *mut c_void,
+        completion: &blocks::ErrCompletionHandler,
     ) -> Option<arc::Rar<ns::Progress>>;
 
     #[objc::rar_retain]
-    pub unsafe fn _send_resource_at_url_ch(
+    pub fn send_resource_at_url_ch_block(
         &mut self,
         resource_url: &ns::Url,
         resource_name: &ns::String,
         to_peer: &mc::PeerId,
-        completion: *mut c_void,
+        completion: &blocks::ErrCompletionHandler,
     ) -> Option<arc::R<ns::Progress>>;
 
-    pub fn send_resource_at_url_ch<'a, F>(
+    pub fn send_resource_at_url_ch<F>(
         &mut self,
         resource_url: &ns::Url,
         resource_name: &ns::String,
         to_peer: &mc::PeerId,
-        completion: &'static mut blocks::Block<F>,
-    ) -> Option<arc::R<ns::Progress>>
-    where
-        F: FnOnce(Option<&'a ns::Error>),
-    {
-        unsafe {
-            self._send_resource_at_url_ch(
-                resource_url,
-                resource_name,
-                to_peer,
-                completion.as_mut_ptr(),
-            )
-        }
-    }
-
-    pub fn send_resource_at_url<F>(
-        &mut self,
-        resource_url: &ns::Url,
-        resource_name: &ns::String,
-        to_peer: &mc::PeerId,
-        completion: F,
-    ) -> Option<arc::R<ns::Progress>>
-    where
-        F: FnOnce(Option<&ns::Error>) + 'static,
-    {
-        let completion = blocks::once1(completion);
-        self.send_resource_at_url_ch(resource_url, resource_name, to_peer, completion.escape())
+        completion: impl FnMut(Option<&ns::Error>) + 'static,
+    ) -> Option<arc::R<ns::Progress>> {
+        let mut completion = blocks::ErrCompletionHandler::new1(completion);
+        self.send_resource_at_url_ch_block(resource_url, resource_name, to_peer, &mut completion)
     }
 
     #[objc::msg_send(startStreamWithName:toPeer:error:)]
@@ -269,37 +244,31 @@ pub trait Delegate: objc::Obj {
 
     #[objc::optional]
     #[objc::msg_send(session:didReceiveCertificate:fromPeer:certificateHandler:)]
-    fn session_did_receive_cert(
+    fn session_did_receive_cert<'a>(
         &mut self,
         session: &mc::Session,
         cert: Option<&ns::Array<ns::Id>>,
         from_peer: &mc::PeerId,
-        handler: &mut blocks::Arg<fn(bool)>,
+        handler: &mut blocks::Block<fn(bool)>,
     );
 }
 
 /// MCSessionCustomDiscovery
 impl Session {
-    #[objc::msg_send(nearbyConnectionDataForPeer:withCompletionHandler:)]
-    unsafe fn _nearby_data_for_peer_ch(&self, peer: &mc::PeerId, handler: *mut c_void);
-
     /// Gets the connection data for a remote peer.
-    pub fn nearby_data_for_peer_ch<'a, F>(
+    #[objc::msg_send(nearbyConnectionDataForPeer:withCompletionHandler:)]
+    pub fn nearby_data_for_peer_ch_block(
         &self,
         peer: &mc::PeerId,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'a ns::Data>, Option<&'a ns::Error>),
-    {
-        unsafe { self._nearby_data_for_peer_ch(peer, handler.as_mut_ptr()) }
-    }
+        handler: &blocks::ResultCompletionHandler<ns::Data>,
+    );
 
-    pub fn nearby_data_for_peer<F>(&self, peer: &mc::PeerId, handler: F)
+    pub fn nearby_data_for_peer_ch<F>(&self, peer: &mc::PeerId, handler: F)
     where
-        F: FnOnce(Option<&ns::Data>, Option<&ns::Error>) + 'static,
+        F: FnMut(Option<&ns::Data>, Option<&ns::Error>) + 'static,
     {
-        let handler = blocks::once2(handler);
-        self.nearby_data_for_peer_ch(peer, handler.escape());
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.nearby_data_for_peer_ch_block(peer, &mut handler);
     }
 
     /// Connect a peer to the session once connection data is received.

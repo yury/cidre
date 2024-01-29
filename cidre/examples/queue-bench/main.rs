@@ -13,17 +13,15 @@ fn main() {
 
     let cc = c.clone();
 
-    let mut block = blocks::mut0(move || {
+    let mut block = dispatch::Block::<blocks::Send>::new0(move || {
         let mut v = cc.lock().unwrap();
         *v += 1;
     });
 
-    // let esc = block.escape();
     for _ in 0..1_000_000_000 {
-        // q.async_b(block.escape());
-        q.async_b(block.escape());
+        q.async_b(&mut block);
         q.async_fn(block_fn);
-        // q.sync_b(&mut block);
+        q.sync_b(&mut block.as_noesc_mut());
     }
 
     println!("{:?}", c)

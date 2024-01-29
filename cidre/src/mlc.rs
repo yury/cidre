@@ -8,6 +8,7 @@ pub use types::DeviceType;
 pub use types::ExecutionOpts;
 pub use types::GradientClippingType;
 pub use types::GraphCompilationOpts;
+pub use types::GraphCompletionHandler;
 pub use types::LSTMResultMode;
 pub use types::LossType;
 pub use types::PaddingPolicy;

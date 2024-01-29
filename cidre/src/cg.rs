@@ -41,16 +41,19 @@ pub use image::animate_image_at_url_with_block;
 pub use image::animate_image_data;
 #[cfg(feature = "iio")]
 pub use image::animate_image_data_with_block;
-pub use image::AlphaInfo as ImageAlphaInfo;
+#[cfg(feature = "iio")]
+pub use image::AnimationBlock as ImageAnimationBlock;
 #[cfg(feature = "iio")]
 pub use image::AnimationOptKey as ImageAnimationOptKey;
 #[cfg(feature = "iio")]
 pub use image::AnimationStatus as ImageAnimationStatus;
-pub use image::Image;
 #[cfg(feature = "iio")]
 pub use image::ImageDst;
 #[cfg(feature = "iio")]
 pub use image::ImageSrc;
+
+pub use image::AlphaInfo as ImageAlphaInfo;
+pub use image::Image;
 
 pub mod image_properties;
 pub use image_properties::Orientation as ImagePropertyOrientation;
@@ -62,6 +65,7 @@ pub use font::Glyph;
 pub use font::Index as FontIndex;
 
 mod path;
+pub use path::ApplyBlock as PathApplyBlock;
 pub use path::Element as PathElement;
 pub use path::ElementType as PathElementType;
 pub use path::LineCap;
@@ -74,6 +78,8 @@ pub use path::PathMut;
 mod display_stream;
 #[cfg(target_os = "macos")]
 pub use display_stream::DisplayStream;
+#[cfg(target_os = "macos")]
+pub use display_stream::FrameAvailableHandler as DisplayStreamFrameAvailableHandler;
 #[cfg(target_os = "macos")]
 pub use display_stream::FrameStatus as DisplayStreamFrameStatus;
 #[cfg(target_os = "macos")]

@@ -26,30 +26,22 @@ impl MotionManager {
     pub fn start_accelerometer_updates(&mut self);
 
     #[objc::msg_send(startAccelerometerUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_accelerometer_updates_to_queue(
+    pub fn start_accelerometer_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::AccelerometerData>,
     );
 
     #[inline]
-    pub fn start_accelerometer_updates_to_queue_block<'a, F>(
+    pub fn start_accelerometer_updates_to_queue(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::AccelerometerData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_accelerometer_updates_to_queue(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_accelerometer_updates_to_queue<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::AccelerometerData>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_accelerometer_updates_to_queue_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::AccelerometerData>, Option<&ns::Error>)
+            + 'static
+            + std::marker::Sync,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_accelerometer_updates_to_queue_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopAccelerometerUpdates)]
@@ -74,30 +66,20 @@ impl MotionManager {
     pub fn start_gyro_updates(&mut self);
 
     #[objc::msg_send(startGyroUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_gyro_updates_to_queue(
+    pub fn start_gyro_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::GyroData>,
     );
 
     #[inline]
-    pub fn start_gyro_updates_to_queue_block<'a, F>(
+    pub fn start_gyro_updates_to_queue(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::GyroData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_gyro_updates_to_queue(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_gyro_updates_to_queue<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::GyroData>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_gyro_updates_to_queue_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::GyroData>, Option<&ns::Error>) + 'static + std::marker::Sync,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_gyro_updates_to_queue_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopGyroUpdates)]
@@ -122,30 +104,22 @@ impl MotionManager {
     pub fn start_magnetometer_updates(&mut self);
 
     #[objc::msg_send(startMagnetometerUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_magnetometer_updates_to_queue(
+    pub fn start_magnetometer_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::MagnetometerData>,
     );
 
     #[inline]
-    pub fn start_magnetometer_updates_to_queue_block<'a, F>(
+    pub fn start_magnetometer_updates_to_queue(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::MagnetometerData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_magnetometer_updates_to_queue(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_magnetometer_updates_to_queue<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::MagnetometerData>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_magnetometer_updates_to_queue_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::MagnetometerData>, Option<&ns::Error>)
+            + 'static
+            + std::marker::Sync,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_magnetometer_updates_to_queue_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopMagnetometerUpdates)]
@@ -176,30 +150,20 @@ impl MotionManager {
     pub fn start_device_motion_updates(&mut self);
 
     #[objc::msg_send(startDeviceMotionUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_device_motion_updates_to_queue(
+    pub fn start_device_motion_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &blocks::ResultCompletionHandler<cm::DeviceMotion>,
     );
 
     #[inline]
-    pub fn start_device_motion_updates_to_queue_block<'a, F>(
+    pub fn start_device_motion_updates_to_queue(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::DeviceMotion>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_device_motion_updates_to_queue(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_device_motion_updates_to_queue<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_device_motion_updates_to_queue_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_device_motion_updates_to_queue_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopDeviceMotionUpdates)]
@@ -209,43 +173,24 @@ impl MotionManager {
     pub fn start_device_motion_updates_using_ref_frame(&mut self, ref_frame: &cm::AttitudeRefFrame);
 
     #[objc::msg_send(startDeviceMotionUpdatesUsingReferenceFrame:toQueue:withHandler:)]
-    pub unsafe fn _start_device_motion_updates_using_ref_frame_to_queue(
+    pub fn start_device_motion_updates_using_ref_frame_to_queue_handler(
         &mut self,
         ref_frame: &cm::AttitudeRefFrame,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::DeviceMotion>,
     );
-
-    pub fn start_device_motion_updates_using_ref_frame_to_queue_block<'a, F>(
-        &mut self,
-        ref_frame: &cm::AttitudeRefFrame,
-        queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::DeviceMotion>, Option<&'a ns::Error>),
-    {
-        unsafe {
-            self._start_device_motion_updates_using_ref_frame_to_queue(
-                ref_frame,
-                queue,
-                handler.as_mut_ptr(),
-            )
-        }
-    }
 
     pub fn start_device_motion_updates_using_ref_frame_to_queue<F>(
         &mut self,
         ref_frame: &cm::AttitudeRefFrame,
         queue: &ns::OpQueue,
-        handler: F,
-    ) where
-        F: FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_device_motion_updates_using_ref_frame_to_queue_block(
+        handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static + std::marker::Sync,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_device_motion_updates_using_ref_frame_to_queue_handler(
             ref_frame,
             queue,
-            handler.escape(),
+            &mut handler,
         )
     }
 }

@@ -1,6 +1,6 @@
-use std::{ffi::c_void, marker::PhantomData, mem::transmute};
+use std::{ffi::c_void, mem::transmute};
 
-use crate::dispatch;
+use crate::{arc, blocks, dispatch, objc};
 
 /// The work you want to perform, encapsulated in a way that lets
 /// you attach a completion handle or execution dependencies.
@@ -10,24 +10,31 @@ use crate::dispatch;
 /// a work item as a dispatch::Source event, registration, or
 /// cancellation handler.
 #[repr(transparent)]
-pub struct WorkItem<'a, F, T>(&'a mut T, PhantomData<F>)
-where
-    T: dispatch::Block<'a, F> + 'a;
+pub struct WorkItem(dispatch::Block<blocks::Sync>);
 
-impl<'a, F, B> WorkItem<'a, F, B>
-where
-    B: dispatch::Block<'a, F>,
-{
+impl objc::Obj for WorkItem {
     #[inline]
-    pub fn with_flags(flags: dispatch::BlockFlags, block: &'static mut B) -> Self {
-        unsafe { transmute(dispatch_block_create(flags, block.ptr())) }
+    unsafe fn retain(id: &Self) -> arc::R<Self> {
+        std::mem::transmute(_Block_copy(std::mem::transmute(id)))
+    }
+
+    #[inline]
+    unsafe fn release(id: &mut Self) {
+        _Block_release(std::mem::transmute(id))
+    }
+}
+
+impl WorkItem {
+    #[inline]
+    pub fn with_flags(flags: dispatch::BlockFlags, block: &mut dispatch::Block) -> arc::R<Self> {
+        unsafe { dispatch_block_create(flags, block) }
     }
 
     #[inline]
     pub fn with_qos(
         flags: dispatch::BlockFlags,
         qos_class: dispatch::QOSClass,
-        block: &'static mut B,
+        block: &dispatch::Block,
     ) -> Self {
         Self::with_qos_priority(flags, qos_class, 0, block)
     }
@@ -37,14 +44,14 @@ where
         flags: dispatch::BlockFlags,
         qos_class: dispatch::QOSClass,
         relative_priority: i32,
-        block: &'static mut B,
+        block: &dispatch::Block,
     ) -> Self {
         unsafe {
             transmute(dispatch_block_create_with_qos_class(
                 flags,
                 qos_class,
                 relative_priority,
-                block.ptr(),
+                block,
             ))
         }
     }
@@ -52,14 +59,14 @@ where
     #[inline]
     pub fn wait(&self) {
         unsafe {
-            dispatch_block_wait(self.0 as *const B as _, dispatch::Time::DISTANT_FUTURE);
+            dispatch_block_wait(self, dispatch::Time::DISTANT_FUTURE);
         }
     }
 
     #[inline]
     pub fn wait_timeout(&self, timeout: dispatch::Time) -> Result<(), ()> {
         unsafe {
-            if dispatch_block_wait(self.0 as *const B as _, timeout) == 0 {
+            if dispatch_block_wait(self, timeout) == 0 {
                 Ok(())
             } else {
                 Err(())
@@ -75,7 +82,7 @@ where
     #[inline]
     #[doc(alias = "dispatch_block_cancel")]
     pub fn cancel(&mut self) {
-        unsafe { dispatch_block_cancel(self.0 as *mut B as _) }
+        unsafe { dispatch_block_cancel(self) }
     }
 
     /// Tests whether the given dispatch block object has been canceled.
@@ -83,52 +90,27 @@ where
     #[doc(alias = "dispatch_block_testcancel")]
     #[must_use]
     pub fn is_canceled(&self) -> bool {
-        unsafe { dispatch_block_testcancel(self.0 as *const B as _) != 0 }
-    }
-}
-
-impl<'a, B, F> dispatch::Block<'a, F> for WorkItem<'a, F, B>
-where
-    B: dispatch::Block<'a, F>,
-{
-    unsafe fn ptr(&mut self) -> *mut c_void {
-        self.0 as *mut B as _
-    }
-}
-
-impl<'a, F, B> Drop for WorkItem<'a, F, B>
-where
-    B: dispatch::Block<'a, F>,
-{
-    fn drop(&mut self) {
-        unsafe { _Block_release(self.0 as *mut B as _) }
-    }
-}
-
-impl<F, B> Clone for WorkItem<'static, F, B>
-where
-    B: dispatch::Block<'static, F>,
-    F: FnMut(),
-{
-    fn clone(&self) -> Self {
-        unsafe { transmute(_Block_copy(self.0 as *const B as _)) }
+        unsafe { dispatch_block_testcancel(self) != 0 }
     }
 }
 
 #[link(name = "System", kind = "dylib")]
 extern "C" {
-    fn dispatch_block_create(flags: dispatch::BlockFlags, block: *mut c_void) -> *mut c_void;
+    fn dispatch_block_create<'a>(
+        flags: dispatch::BlockFlags,
+        block: &dispatch::Block,
+    ) -> arc::R<WorkItem>;
     fn dispatch_block_create_with_qos_class(
         flags: dispatch::BlockFlags,
         qos_class: dispatch::QOSClass,
         relative_priority: i32,
-        block: *mut c_void,
+        block: &dispatch::Block,
     ) -> *mut c_void;
     fn _Block_copy(block: *const c_void) -> *const c_void;
     fn _Block_release(block: *const c_void);
-    fn dispatch_block_cancel(block: *mut c_void);
-    fn dispatch_block_testcancel(block: *const c_void) -> isize;
-    fn dispatch_block_wait(block: *const c_void, timeout: dispatch::Time) -> isize;
+    fn dispatch_block_cancel(block: &WorkItem);
+    fn dispatch_block_testcancel(block: &WorkItem) -> isize;
+    fn dispatch_block_wait(block: &WorkItem, timeout: dispatch::Time) -> isize;
 }
 
 #[cfg(test)]
@@ -137,8 +119,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let b = blocks::once0(|| println!("nice"));
-        let mut item = dispatch::WorkItem::with_flags(Default::default(), b.escape());
+        let mut b = dispatch::Block::<blocks::Send>::new0(|| println!("nice"));
+        let mut item = dispatch::WorkItem::with_flags(Default::default(), &mut b);
         assert!(!item.is_canceled());
         item.cancel();
         assert!(item.is_canceled());

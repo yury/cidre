@@ -1,6 +1,7 @@
-use std::ffi::c_void;
-
 use crate::{blocks, cf, cg, define_cf_type, os};
+
+#[doc(alias = "CGImageSourceAnimationBlock")]
+pub type AnimationBlock<Attr> = blocks::Block<fn(usize, &cg::Image, &mut bool), Attr>;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
@@ -51,15 +52,12 @@ impl OptKey {
 #[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageAtURLWithBlock")]
 #[inline]
-pub fn animate_image_at_url_with_block<F>(
+pub fn animate_image_at_url_with_block(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &'static mut blocks::Block<F>,
-) -> os::Status
-where
-    F: FnMut(usize, &cg::Image, *mut bool) -> os::Status,
-{
-    unsafe { CGAnimateImageAtURLWithBlock(url, options, block.as_mut_ptr()) }
+    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+) -> os::Status {
+    unsafe { CGAnimateImageAtURLWithBlock(url, options, block) }
 }
 
 #[cfg(feature = "blocks")]
@@ -68,12 +66,9 @@ where
 pub fn animate_image_at_url<F>(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &'static mut blocks::Block<F>,
-) -> Result<(), os::Status>
-where
-    F: FnMut(usize, &cg::Image, *mut bool) -> os::Status,
-{
-    unsafe { CGAnimateImageAtURLWithBlock(url, options, block.as_mut_ptr()).result() }
+    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+) -> Result<(), os::Status> {
+    unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }
 }
 
 #[cfg(feature = "blocks")]
@@ -82,26 +77,20 @@ where
 pub fn animate_image_data_with_block<F>(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &'static mut blocks::Block<F>,
-) -> os::Status
-where
-    F: FnMut(usize, &cg::Image, *mut bool) -> os::Status,
-{
-    unsafe { CGAnimateImageDataWithBlock(data, options, block.as_mut_ptr()) }
+    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+) -> os::Status {
+    unsafe { CGAnimateImageDataWithBlock(data, options, block) }
 }
 
 #[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageDataWithBlock")]
 #[inline]
-pub fn animate_image_data<F>(
+pub fn animate_image_data(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &'static mut blocks::Block<F>,
-) -> Result<(), os::Status>
-where
-    F: FnMut(usize, &cg::Image, *mut bool) -> os::Status,
-{
-    unsafe { CGAnimateImageDataWithBlock(data, options, block.as_mut_ptr()).result() }
+    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+) -> Result<(), os::Status> {
+    unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
 }
 
 #[link(name = "ImageIO", kind = "framework")]
@@ -113,13 +102,13 @@ extern "C" {
     fn CGAnimateImageAtURLWithBlock(
         url: &cf::Url,
         options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-        block: *mut c_void,
+        block: &mut cg::ImageAnimationBlock<blocks::Esc>,
     ) -> os::Status;
 
     fn CGAnimateImageDataWithBlock(
         data: &cf::Data,
         options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-        block: *mut c_void,
+        block: &mut cg::ImageAnimationBlock<blocks::Esc>,
     ) -> os::Status;
 
 }

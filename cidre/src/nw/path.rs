@@ -3,6 +3,9 @@ use crate::{arc, define_obj_type, ns, nw};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
+#[doc(alias = "nw_path_enumerate_interfaces_block_t")]
+pub type EnumerateIfaces = blocks::NoEscBlock<fn(&nw::Iface) -> bool>;
+
 define_obj_type!(
     #[doc(alias = "nw_path")]
     #[doc(alias = "nw_path_t")]
@@ -69,11 +72,8 @@ impl Path {
     }
 
     #[cfg(feature = "blocks")]
-    pub fn enumerate_ifaces<'a, F>(&self, block: &mut blocks::Block<F>)
-    where
-        F: FnMut(&'a nw::Iface) -> bool,
-    {
-        unsafe { nw_path_enumerate_interfaces(self, block.as_mut_ptr()) }
+    pub fn enumerate_ifaces(&self, block: &mut nw::PathEnumerateIfaces) {
+        unsafe { nw_path_enumerate_interfaces(self, block) }
     }
 
     #[doc(alias = "nw_path_is_expensive")]
@@ -126,11 +126,8 @@ impl Path {
 
     #[doc(alias = "nw_path_enumerate_gateways")]
     #[inline]
-    pub fn enumerate_gateways<'a, F>(&self, block: &mut blocks::Block<F>)
-    where
-        F: FnMut(&'a nw::Endpoint) -> bool,
-    {
-        unsafe { nw_path_enumerate_gateways(self, block.as_mut_ptr()) }
+    pub fn enumerate_gateways(&self, block: &mut blocks::NoEscBlock<fn(&nw::Endpoint) -> bool>) {
+        unsafe { nw_path_enumerate_gateways(self, block) }
     }
 }
 
@@ -140,7 +137,7 @@ extern "C" {
     fn nw_path_get_unsatisfied_reason(path: &Path) -> UnsatisfiedReason;
 
     #[cfg(feature = "blocks")]
-    fn nw_path_enumerate_interfaces(path: &Path, block: *mut std::ffi::c_void);
+    fn nw_path_enumerate_interfaces(path: &Path, block: &mut nw::PathEnumerateIfaces);
 
     fn nw_path_is_expensive(path: &Path) -> bool;
     fn nw_path_is_constrained(path: &Path) -> bool;
@@ -153,5 +150,8 @@ extern "C" {
     fn nw_path_copy_effective_remote_endpoint(path: &Path) -> Option<arc::R<nw::Endpoint>>;
 
     #[cfg(feature = "blocks")]
-    fn nw_path_enumerate_gateways(path: &Path, block: *mut std::ffi::c_void);
+    fn nw_path_enumerate_gateways(
+        path: &Path,
+        block: &mut blocks::NoEscBlock<fn(&nw::Endpoint) -> bool>,
+    );
 }

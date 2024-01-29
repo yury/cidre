@@ -1,5 +1,4 @@
 mod base;
-use std::ffi::c_void;
 
 pub use base::Fn;
 
@@ -24,6 +23,7 @@ pub use queue::QOSClass;
 pub use queue::Queue;
 
 pub mod data;
+pub use data::Applier as DataApplier;
 pub use data::Data;
 
 mod semaphore;
@@ -52,58 +52,7 @@ pub use block::Flags as BlockFlags;
 use crate::blocks;
 
 #[cfg(feature = "blocks")]
-pub trait Block<'a, F> {
-    unsafe fn ptr(&mut self) -> *mut c_void;
-}
-
-#[cfg(feature = "blocks")]
-impl<'a, F: 'a> Block<'a, F> for blocks::Block<F>
-where
-    F: FnOnce() + 'a,
-{
-    #[inline]
-    unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_mut_ptr()
-    }
-}
-
-#[cfg(feature = "blocks")]
-impl<'a, F: 'a> Block<'a, F> for blocks::BlOnce<'a, F>
-where
-    F: FnOnce(),
-{
-    #[inline]
-    unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_mut_ptr()
-    }
-}
-
-#[cfg(feature = "blocks")]
-impl<'a, F: 'a> Block<'a, F> for blocks::BlMut<'a, F>
-where
-    F: FnMut(),
-{
-    #[inline]
-    unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_mut_ptr()
-    }
-}
-
-#[cfg(feature = "blocks")]
-impl Block<'static, extern "C" fn(*const c_void)> for blocks::Block<extern "C" fn(*const c_void)> {
-    #[inline]
-    unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_mut_ptr()
-    }
-}
-
-#[cfg(feature = "blocks")]
-impl Block<'static, extern "C" fn(*const c_void)> for blocks::bl<extern "C" fn(*const c_void)> {
-    #[inline]
-    unsafe fn ptr(&mut self) -> *mut c_void {
-        self.as_mut_ptr()
-    }
-}
+pub type Block<Attr = blocks::Send> = blocks::WorkBlock<Attr>;
 
 /// This function "parks" the main thread and waits for blocks to be submitted to the main queue.
 /// Applications that call UIApplicationMain (iOS), NSApplicationMain (macOS), or CFRunLoopRun

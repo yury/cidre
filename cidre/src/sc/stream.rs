@@ -490,33 +490,20 @@ impl Stream {
     }
 
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
-    fn _start_with_ch(&self, rb: *mut std::ffi::c_void);
+    fn start_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
-    pub fn start_with_ch<F>(&self, block: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(Option<&'static ns::Error>),
-    {
-        self._start_with_ch(block.as_mut_ptr());
-    }
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
-    fn _stop_with_ch(&self, rb: *mut std::ffi::c_void);
-
-    pub fn stop_with_ch<F>(&self, block: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(Option<&'static ns::Error>),
-    {
-        self._stop_with_ch(block.as_mut_ptr())
-    }
+    fn stop_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
-        let (future, block) = blocks::ok();
-        self.start_with_ch(block.escape());
+        let (future, mut block) = blocks::ok();
+        self.start_with_ch(Some(&mut block));
         future.await
     }
 
     pub async fn stop(&self) -> Result<(), arc::R<ns::Error>> {
-        let (future, block) = blocks::ok();
-        self.stop_with_ch(block.escape());
+        let (future, mut block) = blocks::ok();
+        self.stop_with_ch(Some(&mut block));
         future.await
     }
 }

@@ -1,9 +1,14 @@
-use std::ffi::c_void;
-
 use crate::{arc, define_obj_type, dispatch, ns, nw};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
+
+#[doc(alias = "nw_browser_state_changed_handler_t")]
+pub type StateChangedHandler = blocks::SyncBlock<fn(State, Option<&ns::Error>)>;
+
+#[doc(alias = "nw_browser_browse_results_changed_handler_t")]
+pub type BrowseResultsChandedHandler =
+    blocks::SyncBlock<fn(&nw::BrowseResult, &nw::BrowseResult, bool)>;
 
 #[doc(alias = "nw_browser_state_t")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -93,34 +98,21 @@ impl Browser {
     #[doc(alias = "nw_browser_set_state_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_state_changed_handler<'a, F>(
-        &mut self,
-        handler: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(nw::BrowserState, Option<&'a nw::Error>),
-    {
+    pub fn set_state_changed_handler(&mut self, handler: Option<&mut StateChangedHandler>) {
         unsafe {
-            nw_browser_set_state_changed_handler(
-                self,
-                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            );
+            nw_browser_set_state_changed_handler(self, handler);
         }
     }
 
     #[doc(alias = "nw_browser_set_browse_results_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_results_changed_handler<'a, F>(
+    pub fn set_results_changed_handler(
         &mut self,
-        handler: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(&'a nw::BrowseResult, &'a nw::BrowseResult, bool),
-    {
+        handler: Option<&mut BrowseResultsChandedHandler>,
+    ) {
         unsafe {
-            nw_browser_set_browse_results_changed_handler(
-                self,
-                handler.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            );
+            nw_browser_set_browse_results_changed_handler(self, handler);
         }
     }
 }
@@ -137,16 +129,22 @@ extern "C" {
     fn nw_browser_copy_parameters(browser: &Browser) -> arc::R<nw::Params>;
     fn nw_browser_copy_browse_descriptor(browser: &Browser) -> arc::R<nw::BrowseDesc>;
     #[cfg(feature = "blocks")]
-    fn nw_browser_set_browse_results_changed_handler(browser: &mut Browser, handler: *mut c_void);
+    fn nw_browser_set_browse_results_changed_handler(
+        browser: &mut Browser,
+        handler: Option<&mut BrowseResultsChandedHandler>,
+    );
     #[cfg(feature = "blocks")]
-    fn nw_browser_set_state_changed_handler(browser: &mut Browser, handler: *mut c_void);
+    fn nw_browser_set_state_changed_handler(
+        browser: &mut Browser,
+        handler: Option<&mut StateChangedHandler>,
+    );
 }
 
 #[cfg(test)]
 mod tests {
     use std::ffi::CString;
 
-    use crate::{blocks, dispatch, nw};
+    use crate::{dispatch, nw};
 
     #[test]
     fn basics() {
@@ -154,14 +152,15 @@ mod tests {
         let type_ = CString::new("_service._udp").unwrap();
         let desc = nw::BrowseDesc::create_bonjour_service(&type_, None);
         let mut browser = nw::Browser::with_desc(&desc, None);
-        let mut state_handler = blocks::mut2(|state, error| {
+        let mut state_handler = nw::BrowserChangedHandler::new2(|state, error| {
             eprintln!("------ {:?} {:?}", state, error);
         });
-        browser.set_state_changed_handler(Some(state_handler.escape()));
-        let mut changes_handler = blocks::mut3(|old, new, _complete| {
-            eprintln!("------ {:?} {:?}", old, new);
-        });
-        browser.set_results_changed_handler(Some(changes_handler.escape()));
+        browser.set_state_changed_handler(Some(&mut state_handler));
+        let mut changes_handler =
+            nw::BrowserBrowseResultsChandedHandler::new3(|old, new, _complete| {
+                eprintln!("------ {:?} {:?}", old, new);
+            });
+        browser.set_results_changed_handler(Some(&mut changes_handler));
 
         browser.start(&queue);
         eprintln!("browser {:?}", browser);

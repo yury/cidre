@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{
     arc,
     av::{self, audio},
@@ -39,33 +37,19 @@ define_obj_type!(
 );
 
 impl PlayerNode {
-    #[objc::msg_send(scheduleBuffer:completionHandler:)]
-    pub unsafe fn _schedule_buf_ch(&mut self, buffer: &av::AudioPcmBuf, handler: *mut c_void);
-
     /// Schedule playing samples from an [`av::AudioPCMBuf`].
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
-    #[inline]
-    pub fn schedule_buf_no_ch(&mut self, buffer: &av::AudioPcmBuf) {
-        unsafe { self._schedule_buf_ch(buffer, std::ptr::null_mut()) }
-    }
-
-    pub fn schedule_buf_block<F>(
+    #[objc::msg_send(scheduleBuffer:completionHandler:)]
+    pub fn schedule_buf_ch_block(
         &mut self,
         buffer: &av::AudioPcmBuf,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce() + 'static + Send,
-    {
-        unsafe { self._schedule_buf_ch(buffer, block.as_mut_ptr()) }
-    }
+        handler: Option<&mut audio::NodeCompletionHandler<blocks::Esc>>,
+    );
 
-    pub async fn schedule_buf<F>(&mut self, buffer: &av::AudioPcmBuf)
-    where
-        F: FnOnce() + 'static + Send,
-    {
-        let (future, block) = blocks::comp0();
-        self.schedule_buf_block(buffer, block.escape());
+    pub async fn schedule_buf(&mut self, buffer: &av::AudioPcmBuf) {
+        let (future, mut block) = blocks::comp0();
+        self.schedule_buf_ch_block(buffer, Some(&mut block));
         future.await
     }
 

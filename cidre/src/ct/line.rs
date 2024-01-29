@@ -81,21 +81,19 @@ impl Line {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enum_caret_offsets_block<F>(&self, block: &mut blocks::Block<F>)
-    where
-        F: FnMut(f64, cf::Index, bool, *mut bool),
-    {
-        unsafe { CTLineEnumerateCaretOffsets(self, block.as_mut_ptr()) }
+    pub fn enum_caret_offsets_block(
+        &self,
+        block: &mut blocks::Block<fn(f64, cf::Index, bool, &mut bool), blocks::NoEsc>,
+    ) {
+        unsafe { CTLineEnumerateCaretOffsets(self, block) }
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enum_caret_offsets<F>(&self, mut block: F)
-    where
-        F: FnMut(f64, cf::Index, bool, *mut bool),
-    {
-        let mut block = blocks::no_esc4(&mut block);
-        unsafe { CTLineEnumerateCaretOffsets(self, block.as_mut_ptr()) }
+    pub fn enum_caret_offsets(&self, block: impl FnMut(f64, cf::Index, bool, &mut bool)) {
+        let mut block =
+            blocks::Block::<fn(f64, cf::Index, bool, &mut bool), blocks::NoEsc>::new4(block);
+        unsafe { CTLineEnumerateCaretOffsets(self, &mut block) }
     }
 }
 
@@ -120,7 +118,10 @@ extern "C" {
     fn CTLineGetBoundsWithOptions(line: &Line, options: LineBoundsOpts) -> cg::Rect;
     fn CTLineGetTrailingWhitespaceWidth(line: &Line) -> f64;
     fn CTLineGetStringIndexForPosition(line: &Line, position: cg::Point) -> cf::Index;
-    fn CTLineEnumerateCaretOffsets(line: &Line, block: *mut std::ffi::c_void);
+    fn CTLineEnumerateCaretOffsets(
+        line: &Line,
+        block: &mut blocks::Block<fn(f64, cf::Index, bool, &mut bool), blocks::NoEsc>,
+    );
 
 }
 

@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{arc, cf, cg, define_cf_type};
 
 #[cfg(feature = "io")]
@@ -45,6 +43,10 @@ pub enum FrameStatus {
     /// he display stream has stopped and no more calls will be made to the handler until the stream is started.
     StatusStopped,
 }
+
+#[doc(alias = "CGDisplayStreamFrameAvailableHandler")]
+pub type FrameAvailableHandler<Attr> =
+    blocks::Block<fn(FrameStatus, u64, Option<&io::Surf>, Option<&Update>), Attr>;
 
 impl Update {
     #[inline]
@@ -166,14 +168,14 @@ impl DisplayStream {
         unsafe { CGDisplayStreamGetTypeID() }
     }
 
-    #[inline]
-    pub unsafe fn create(
+    #[cfg(all(feature = "blocks", feature = "io"))]
+    pub fn with_runloop(
         display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
-        handler: *mut c_void,
+        handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>> {
         unsafe {
             CGDisplayStreamCreate(
@@ -187,16 +189,19 @@ impl DisplayStream {
         }
     }
 
-    #[cfg(feature = "dispatch")]
-    #[inline]
-    pub unsafe fn create_with_queue(
+    /// 'BGRA' Packed Little Endian ARGB8888
+    /// 'l10r' Packed Little Endian ARGB2101010
+    /// '420v' 2-plane "video" range YCbCr 4:2:0
+    /// '420f' 2-plane "full" range YCbCr 4:2:0
+    #[cfg(all(feature = "blocks", feature = "io"))]
+    pub fn with_dispatch_queue(
         display: cg::DirectDisplayId,
         output_width: usize,
         output_height: usize,
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         queue: &dispatch::Queue,
-        handler: *mut c_void,
+        handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>> {
         unsafe {
             CGDisplayStreamCreateWithDispatchQueue(
@@ -207,60 +212,6 @@ impl DisplayStream {
                 properties,
                 queue,
                 handler,
-            )
-        }
-    }
-
-    #[cfg(all(feature = "blocks", feature = "io"))]
-    pub fn with_runloop<'ar, F>(
-        display: cg::DirectDisplayId,
-        output_width: usize,
-        output_height: usize,
-        pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
-        handler: &mut blocks::Block<F>,
-    ) -> Option<arc::R<DisplayStream>>
-    where
-        F: FnMut(FrameStatus, u64, Option<&'ar io::Surf>, Option<&'ar Update>),
-    {
-        unsafe {
-            Self::create(
-                display,
-                output_width,
-                output_height,
-                pixel_format,
-                properties,
-                handler.as_mut_ptr(),
-            )
-        }
-    }
-
-    /// 'BGRA' Packed Little Endian ARGB8888
-    /// 'l10r' Packed Little Endian ARGB2101010
-    /// '420v' 2-plane "video" range YCbCr 4:2:0
-    /// '420f' 2-plane "full" range YCbCr 4:2:0
-    #[cfg(all(feature = "blocks", feature = "io"))]
-    pub fn with_dispatch_queue<'ar, F>(
-        display: cg::DirectDisplayId,
-        output_width: usize,
-        output_height: usize,
-        pixel_format: i32,
-        properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
-        queue: &dispatch::Queue,
-        handler: &mut blocks::Block<F>,
-    ) -> Option<arc::R<DisplayStream>>
-    where
-        F: FnMut(FrameStatus, u64, Option<&'ar io::Surf>, Option<&'ar Update>),
-    {
-        unsafe {
-            Self::create_with_queue(
-                display,
-                output_width,
-                output_height,
-                pixel_format,
-                properties,
-                queue,
-                handler.as_mut_ptr(),
             )
         }
     }
@@ -342,7 +293,7 @@ extern "C" {
         output_height: usize,
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
-        handler: *mut c_void,
+        handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>>;
 
     #[cfg(feature = "dispatch")]
@@ -353,7 +304,7 @@ extern "C" {
         pixel_format: i32,
         properties: Option<&cf::DictionaryOf<PropKey, cf::Plist>>,
         queue: &dispatch::Queue,
-        handler: *mut c_void,
+        handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>>;
 
     fn CGDisplayStreamStart(stream: &DisplayStream) -> cg::Error;
@@ -366,14 +317,18 @@ extern "C" {
 mod tests {
     use std::{thread::sleep, time::Duration};
 
+    use crate::blocks;
+
     #[test]
     fn basics() {
-        use crate::{blocks, cg, dispatch};
+        use crate::{cg, dispatch};
 
-        let mut block = blocks::mut4(|_frame_status, _timestamp, _surf, _update| {
-            // println!("got! {timestamp:?} {frame_status:?} {surface:?}")
-            eprint!(".");
-        });
+        let mut block = cg::DisplayStreamFrameAvailableHandler::<blocks::Esc>::new4(
+            |_frame_status, _timestamp, _surf, _update| {
+                // println!("got! {timestamp:?} {frame_status:?} {surface:?}")
+                eprint!(".");
+            },
+        );
 
         let queue = dispatch::Queue::global(0).unwrap();
 
@@ -384,7 +339,7 @@ mod tests {
             i32::from_be_bytes(*b"420f"),
             None,
             queue,
-            block.escape(),
+            Some(&mut block),
         )
         .unwrap();
 

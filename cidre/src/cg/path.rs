@@ -3,7 +3,13 @@ use std::ffi::c_void;
 use crate::{arc, cf, cg, define_cf_type};
 
 #[cfg(feature = "blocks")]
-use crate::blocks::Block;
+use crate::blocks;
+
+#[cfg(feature = "blocks")]
+#[doc(alias = "CGPathApplyBlock")]
+pub type ApplyBlock<Attr> = blocks::Block<fn(&cg::PathElement), Attr>;
+
+pub type PathApplierFn<T> = extern "C" fn(info: *mut T, element: *mut Element);
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
@@ -63,8 +69,6 @@ impl Element {
         unsafe { std::slice::from_raw_parts_mut(self.points, len) }
     }
 }
-
-pub type PathApplierFn<T> = extern "C" fn(info: *mut T, element: *mut Element);
 
 define_cf_type!(Path(cf::Type));
 impl Path {
@@ -205,20 +209,8 @@ impl Path {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn apply_block_mut<'a, B>(&self, block: &mut Block<B>)
-    where
-        B: FnMut(&'a mut Element),
-    {
-        unsafe { CGPathApplyWithBlock(self, block.as_mut_ptr()) }
-    }
-
-    #[cfg(feature = "blocks")]
-    #[inline]
-    pub fn apply_block<'a, B>(&self, block: &mut Block<B>)
-    where
-        B: FnMut(&'a Element),
-    {
-        unsafe { CGPathApplyWithBlock(self, block.as_mut_ptr()) }
+    pub fn apply_block(&self, block: &mut ApplyBlock<blocks::NoEsc>) {
+        unsafe { CGPathApplyWithBlock(self, block) }
     }
 
     #[inline]
@@ -622,7 +614,7 @@ extern "C" {
 
     fn CGPathApply(path: &Path, info: *mut c_void, function: PathApplierFn<c_void>);
     #[cfg(feature = "blocks")]
-    fn CGPathApplyWithBlock(path: &Path, block: *mut c_void);
+    fn CGPathApplyWithBlock(path: &Path, block: &mut cg::PathApplyBlock<blocks::NoEsc>);
     fn CGPathCreateCopyByNormalizing(path: &Path, even_odd_fill_rule: bool) -> arc::R<Path>;
     fn CGPathCreateCopyByUnioningPath(
         path: &Path,
@@ -683,10 +675,14 @@ mod tests {
         );
         path.show();
 
-        let mut block = blocks::mut1(|element: &mut cg::PathElement| {
+        let mut elements = vec![];
+        let mut block = cg::PathApplyBlock::<blocks::NoEsc>::new1(|element: &cg::PathElement| {
+            elements.push(element.type_);
             println!("{:?} {:?}", element, element.points());
         });
-        path.apply_block_mut(&mut block);
+        path.apply_block(&mut block);
+
+        assert!(!elements.is_empty());
 
         let mut path = cg::PathMut::new();
         path.move_to(10, 10);

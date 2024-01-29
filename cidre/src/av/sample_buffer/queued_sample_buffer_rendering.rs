@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{blocks, cm, dispatch, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -25,21 +23,11 @@ pub trait QueuedSampleBufRendering: objc::Obj {
     fn ready_for_more_media_data(&mut self);
 
     #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]
-    fn _request_media_data_when_ready_on_queue(
+    fn request_media_data_when_ready_on_queue_block(
         &mut self,
         queue: &dispatch::Queue,
-        block: *mut c_void,
+        block: &blocks::WorkBlock,
     );
-
-    fn request_media_data_when_ready_on_queue<F>(
-        &mut self,
-        queue: &dispatch::Queue,
-        block: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce() + Send + 'static,
-    {
-        self._request_media_data_when_ready_on_queue(queue, block.as_mut_ptr());
-    }
 
     #[objc::msg_send(stopRequestingMediaData)]
     fn stop_requesting_media_data(&mut self);

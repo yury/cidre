@@ -17,30 +17,20 @@ impl Altimeter {
     pub fn authorization_status() -> cm::AuthorizationStatus;
 
     #[objc::msg_send(startRelativeAltitudeUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_relative_altitude_updates_with_handler(
+    pub fn start_relative_altitude_updates_with_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::AltitudeData>,
     );
 
     #[inline]
-    pub fn start_relative_altitude_updates_with_block<'a, F>(
+    pub fn start_relative_altitude_updates(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::AltitudeData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_relative_altitude_updates_with_handler(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_relative_altitude_updates<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::AltitudeData>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_relative_altitude_updates_with_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::AltitudeData>, Option<&ns::Error>) + 'static,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_relative_altitude_updates_with_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopRelativeAltitudeUpdates)]
@@ -50,30 +40,20 @@ impl Altimeter {
     pub fn is_abs_altitude_available() -> bool;
 
     #[objc::msg_send(startAbsoluteAltitudeUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_abs_altitude_updates_to_queue_handler(
+    pub fn start_abs_altitude_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &mut blocks::ResultCompletionHandler<cm::AbsAltitudeData>,
     );
 
     #[inline]
-    pub fn start_abs_altitude_updates_to_queue_block<'a, F>(
+    pub fn start_abs_altitude_updates_to_queue(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &'static mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::AbsAltitudeData>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_abs_altitude_updates_to_queue_handler(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_abs_altitude_updates_to_queue<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::AbsAltitudeData>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_abs_altitude_updates_to_queue_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::AbsAltitudeData>, Option<&ns::Error>) + 'static,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_abs_altitude_updates_to_queue_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopAbsoluteAltitudeUpdates)]

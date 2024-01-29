@@ -5,6 +5,9 @@ use crate::{arc, define_obj_type, dispatch, ns};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
+#[doc(alias = "dispatch_data_applier_t")]
+pub type Applier<Attr> = blocks::Block<fn(&dispatch::Data, usize, *const u8, usize) -> bool, Attr>;
+
 define_obj_type!(
     #[doc(alias = "dispatch_data_t")]
     pub Data(dispatch::Object)
@@ -36,22 +39,19 @@ impl Data {
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_data_apply")]
     #[inline]
-    pub fn apply_block<'a, F>(&self, applier: &mut blocks::Block<F>) -> bool
-    where
-        F: FnMut(&'a dispatch::Data, usize, *const u8, usize) -> bool,
-    {
-        unsafe { dispatch_data_apply(self, applier.as_mut_ptr()) }
+    pub fn apply_block(&self, applier: &mut dispatch::DataApplier<blocks::NoEsc>) -> bool {
+        unsafe { dispatch_data_apply(self, applier) }
     }
 
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_data_apply")]
     #[inline]
-    pub fn apply<'a, F>(&self, mut applier: F) -> bool
-    where
-        F: FnMut(&'a dispatch::Data, usize, *const u8, usize) -> bool,
-    {
-        let mut block = blocks::no_esc4(&mut applier);
-        unsafe { dispatch_data_apply(self, block.as_mut_ptr()) }
+    pub fn apply(
+        &self,
+        mut applier: impl FnMut(&dispatch::Data, usize, *const u8, usize) -> bool,
+    ) -> bool {
+        let mut block = dispatch::DataApplier::<blocks::NoEsc>::stack4(&mut applier);
+        unsafe { dispatch_data_apply(self, &mut block) }
     }
 
     #[inline]
@@ -74,23 +74,23 @@ impl Data {
     #[doc(alias = "dispatch_data_create")]
     #[inline]
     pub fn copy_from_slice(data: &[u8]) -> arc::R<Self> {
-        unsafe { dispatch_data_create(data.as_ptr(), data.len(), None, std::ptr::null_mut()) }
+        unsafe { dispatch_data_create(data.as_ptr(), data.len(), None, None) }
     }
 
     #[inline]
     pub fn from_static(bytes: &'static [u8]) -> arc::R<Self> {
-        let mut b = blocks::fn0(destructor_noop);
-        unsafe { dispatch_data_create(bytes.as_ptr(), bytes.len(), None, b.as_mut_ptr()) }
+        let mut b = blocks::StaticBlock::new0(destructor_noop);
+        unsafe { dispatch_data_create(bytes.as_ptr(), bytes.len(), None, Some(b.as_esc_mut())) }
     }
 
     #[inline]
-    pub fn with_bytes_no_copy<F: FnOnce()>(
+    pub fn with_bytes_no_copy(
         bytes: *const u8,
         len: usize,
         queue: Option<&dispatch::Queue>,
-        destructor: &'static mut blocks::Block<F>,
+        destructor: &mut dispatch::Block<blocks::Esc>,
     ) -> arc::R<Self> {
-        unsafe { dispatch_data_create(bytes, len, queue, destructor.as_mut_ptr()) }
+        unsafe { dispatch_data_create(bytes, len, queue, Some(destructor)) }
     }
 
     #[inline]
@@ -125,11 +125,11 @@ impl From<Vec<u8>> for arc::R<Data> {
             return Data::empty().retained();
         }
 
-        let destruct = blocks::once0(move || {
-            std::mem::drop(val);
+        let mut destruct = dispatch::Block::<blocks::Esc>::new0(move || {
+            let _f = &val;
         });
 
-        Data::with_bytes_no_copy(ptr, len, None, destruct.escape())
+        Data::with_bytes_no_copy(ptr, len, None, &mut destruct)
     }
 }
 
@@ -141,11 +141,11 @@ impl From<Box<[u8]>> for arc::R<Data> {
             return Data::empty().retained();
         }
 
-        let destruct = blocks::once0(move || {
-            std::mem::drop(val);
+        let mut destruct = dispatch::Block::<blocks::Esc>::new0(move || {
+            let _f = &val;
         });
 
-        Data::with_bytes_no_copy(ptr, len, None, destruct.escape())
+        Data::with_bytes_no_copy(ptr, len, None, &mut destruct)
     }
 }
 
@@ -157,14 +157,15 @@ extern "C" {
         buffer: *const u8,
         size: usize,
         queue: Option<&dispatch::Queue>,
-        destructor: *mut c_void,
+        destructor: Option<&mut dispatch::Block<blocks::Esc>>,
     ) -> arc::R<Data>;
 
     fn dispatch_data_get_size(data: &Data) -> usize;
     fn dispatch_data_create_subrange(data: &Data, offset: usize, length: usize) -> arc::R<Data>;
     fn dispatch_data_create_concat(data1: &Data, data2: &Data) -> arc::R<Data>;
     #[cfg(feature = "blocks")]
-    fn dispatch_data_apply(data: &Data, applier: *mut c_void) -> bool;
+    fn dispatch_data_apply(data: &Data, applier: &mut dispatch::DataApplier<blocks::NoEsc>)
+        -> bool;
 
     fn dispatch_data_create_map(
         data: &Data,
@@ -277,6 +278,14 @@ mod tests {
         let data1 = dispatch::Data::from_static(b"data1");
         let data2 = dispatch::Data::from_static(b"data2");
         let data3 = dispatch::Data::concat(&data1, &data2);
+
+        let mut regions_offsets = vec![];
+        data3.apply(|_data, offset, _ptr, _size| {
+            regions_offsets.push(offset);
+            true
+        });
+
+        assert_eq!(regions_offsets.len(), 2);
 
         let map = data3.map();
         let slice = map.as_slice();

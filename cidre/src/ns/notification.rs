@@ -90,56 +90,46 @@ impl NotificationCenter {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(addObserverForName:object:queue:usingBlock:)]
-    pub fn add_observer_ar<'bar, B>(
+    pub fn add_observer_block_ar(
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
         queue: Option<&ns::OpQueue>,
-        using_block: &'static mut blocks::Block<B>,
-    ) -> arc::Rar<ns::Id>
-    where
-        B: FnMut(&'bar ns::Notification);
+        using_block: &mut blocks::SyncBlock<fn(&ns::Notification)>,
+    ) -> arc::Rar<ns::Id>;
 
     #[cfg(feature = "blocks")]
     #[objc::rar_retain]
-    pub fn add_observer<'bar, B>(
+    pub fn add_observer_block(
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
         queue: Option<&ns::OpQueue>,
-        using_block: &'static mut blocks::Block<B>,
-    ) -> arc::R<ns::Id>
-    where
-        B: FnMut(&'bar ns::Notification);
+        using_block: &mut blocks::SyncBlock<fn(&ns::Notification)>,
+    ) -> arc::R<ns::Id>;
 
     #[cfg(feature = "blocks")]
-    pub fn add_observer_mut<'bar, B>(
+    pub fn add_observer(
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
         queue: Option<&ns::OpQueue>,
-        block: B,
-    ) -> arc::R<ns::Id>
-    where
-        B: FnMut(&'bar ns::Notification) + 'static,
-    {
-        let mut block = blocks::mut1(block);
-        self.add_observer(name, object, queue, block.escape())
+        block: impl FnMut(&ns::Notification) + 'static + std::marker::Sync,
+    ) -> arc::R<ns::Id> {
+        let mut block = blocks::SyncBlock::new1(block);
+        self.add_observer_block(name, object, queue, &mut block)
     }
 
     #[cfg(feature = "blocks")]
-    pub fn add_observer_guard<'bar, B>(
+    pub fn add_observer_guard(
         &mut self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
         queue: Option<&ns::OpQueue>,
-        block: B,
-    ) -> NotificationGuard
-    where
-        B: FnMut(&'bar ns::Notification) + 'static,
-    {
-        let mut block = blocks::mut1(block);
-        let token = self.add_observer(name, object, queue, block.escape());
+        block: impl FnMut(&ns::Notification) + 'static + std::marker::Sync,
+    ) -> NotificationGuard {
+        let mut block = blocks::SyncBlock::new1(block);
+        let token = self.add_observer_block(name, object, queue, &mut block);
         NotificationGuard {
             token,
             center: self.retained(),
@@ -175,7 +165,7 @@ mod tests {
         let nc = ns::NotificationCenter::default();
         let counter = Arc::new(Mutex::new(0));
         let block_counter = counter.clone();
-        let mut block = blocks::mut1(move |note: &ns::Notification| {
+        let mut block = blocks::SyncBlock::new1(move |note: &ns::Notification| {
             println!("{note:?}");
             let expected_name = ns::String::with_str("test");
             assert!(expected_name.is_equal(note.name()));
@@ -183,7 +173,7 @@ mod tests {
             *guard += 1;
         });
         let name = ns::NotificationName::with_str("test");
-        let token = nc.add_observer(&name, None, None, block.escape());
+        let token = nc.add_observer_block(&name, None, None, &mut block);
         nc.post_with_name_object(&name, None);
         nc.post_with_name_object(&name, None);
 

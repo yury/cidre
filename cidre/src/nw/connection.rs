@@ -1,9 +1,22 @@
-use std::ffi::c_void;
-
 use crate::{arc, define_obj_type, dispatch, ns, nw};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
+
+// nw_connection_receive_completion_t
+#[doc(alias = "nw_connection_receive_completion_t")]
+pub type RecvCompletion = blocks::SyncBlock<
+    fn(Option<&dispatch::Data>, Option<&nw::ContentCtx>, bool, Option<&nw::Error>),
+>;
+
+#[doc(alias = "nw_connection_state_changed_handler_t")]
+pub type StateChangedHandler = blocks::SyncBlock<fn(nw::ConnectionState, Option<&nw::Error>)>;
+
+#[doc(alias = "nw_connection_boolean_event_handler_t")]
+pub type BoolEventHandler = blocks::SyncBlock<fn(bool)>;
+
+#[doc(alias = "nw_connection_path_event_handler_t")]
+pub type PathEventHandler = blocks::SyncBlock<fn(&nw::Path)>;
 
 /// Connection states sent by nw_connection_set_state_changed_handler.
 /// States generally progress forward and do not move backwards, with the
@@ -70,75 +83,39 @@ impl Connection {
     #[doc(alias = "nw_connection_set_state_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_state_changed_handler_block<'a, F>(
-        &mut self,
-        val: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(nw::ConnectionState, Option<&'a nw::Error>),
-    {
-        unsafe {
-            nw_connection_set_state_changed_handler(
-                self,
-                val.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+    pub fn set_state_changed_handler_block(&mut self, val: Option<&mut StateChangedHandler>) {
+        unsafe { nw_connection_set_state_changed_handler(self, val) }
     }
 
     #[doc(alias = "nw_connection_set_state_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_state_changed_handler<F>(&mut self, val: F)
-    where
-        F: FnMut(nw::ConnectionState, Option<&nw::Error>) + 'static,
-    {
-        let mut block = blocks::mut2(val);
-        self.set_state_changed_handler_block(Some(block.escape()));
+    pub fn set_state_changed_handler(
+        &mut self,
+        val: impl FnMut(nw::ConnectionState, Option<&nw::Error>) + 'static + std::marker::Sync,
+    ) {
+        let mut block = StateChangedHandler::new2(val);
+        self.set_state_changed_handler_block(Some(&mut block));
     }
 
     #[doc(alias = "nw_connection_set_viability_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_viability_changed_handler<F>(&mut self, val: Option<&'static mut blocks::Block<F>>)
-    where
-        F: FnMut(bool),
-    {
-        unsafe {
-            nw_connection_set_viability_changed_handler(
-                self,
-                val.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+    pub fn set_viability_changed_handler(&mut self, val: Option<&mut BoolEventHandler>) {
+        unsafe { nw_connection_set_viability_changed_handler(self, val) }
     }
 
     #[doc(alias = "nw_connection_set_better_path_available_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_better_path_available_handler<F>(
-        &mut self,
-        val: Option<&'static mut blocks::Block<F>>,
-    ) where
-        F: FnMut(bool),
-    {
-        unsafe {
-            nw_connection_set_better_path_available_handler(
-                self,
-                val.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+    pub fn set_better_path_available_handler(&mut self, val: Option<&mut BoolEventHandler>) {
+        unsafe { nw_connection_set_better_path_available_handler(self, val) }
     }
     #[doc(alias = "nw_connection_set_path_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_path_changed_handler<'a, F>(&mut self, val: Option<&'static mut blocks::Block<F>>)
-    where
-        F: FnMut(&'a nw::Path),
-    {
-        unsafe {
-            nw_connection_set_path_changed_handler(
-                self,
-                val.map_or(std::ptr::null_mut(), |b| b.as_mut_ptr()),
-            )
-        }
+    pub fn set_path_changed_handler(&mut self, val: Option<&mut PathEventHandler>) {
+        unsafe { nw_connection_set_path_changed_handler(self, val) }
     }
 
     #[doc(alias = "nw_connection_set_queue")]
@@ -192,51 +169,33 @@ impl Connection {
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_receive")]
     #[inline]
-    pub fn recv_ch<'a, F>(
-        &mut self,
-        min_incomplete_len: u32,
-        max_len: u32,
-        completion: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(
-            /* content */ Option<&'a dispatch::Data>,
-            /* context */ Option<&'a nw::ContentCtx>,
-            /* is_complete */ bool,
-            /* error */ Option<&'a nw::Error>,
-        ),
-    {
-        unsafe {
-            nw_connection_receive(self, min_incomplete_len, max_len, completion.as_mut_ptr())
-        };
+    pub fn recv_ch(&self, min_incomplete_len: u32, max_len: u32, completion: &mut RecvCompletion) {
+        unsafe { nw_connection_receive(self, min_incomplete_len, max_len, completion) };
     }
 
     #[cfg(feature = "blocks")]
-    pub fn recv<F>(&mut self, min_incomplete_len: u32, max_len: u32, block: F)
-    where
-        F: FnOnce(
+    pub fn recv(
+        &self,
+        min_incomplete_len: u32,
+        max_len: u32,
+        block: impl FnMut(
                 /* content */ Option<&dispatch::Data>,
                 /* context */ Option<&nw::ContentCtx>,
                 /* is_complete */ bool,
                 /* error */ Option<&nw::Error>,
-            ) + 'static,
-    {
-        let block = blocks::once4(block);
-        self.recv_ch(min_incomplete_len, max_len, block.escape());
+            )
+            + 'static
+            + std::marker::Sync,
+    ) {
+        let mut block = RecvCompletion::new4(block);
+        self.recv_ch(min_incomplete_len, max_len, &mut block);
     }
 
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_receive_message")]
     #[inline]
-    pub fn recv_msg_ch<'a, F>(&mut self, completion: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(
-            /* content */ Option<&'a dispatch::Data>,
-            /* context */ Option<&'a nw::ContentCtx>,
-            /* is_complete */ bool,
-            /* error */ Option<&'a nw::Error>,
-        ),
-    {
-        unsafe { nw_connection_receive_message(self, completion.as_mut_ptr()) };
+    pub fn recv_msg_ch(&self, completion: &mut RecvCompletion) {
+        unsafe { nw_connection_receive_message(self, completion) };
     }
 
     #[cfg(feature = "blocks")]
@@ -244,52 +203,50 @@ impl Connection {
     #[inline]
     pub fn recv_msg<F>(&mut self, block: F)
     where
-        F: FnOnce(
+        F: FnMut(
                 /* content */ Option<&dispatch::Data>,
                 /* context */ Option<&nw::ContentCtx>,
                 /* is_complete */ bool,
                 /* error */ Option<&nw::Error>,
-            ) + 'static,
+            )
+            + 'static
+            + std::marker::Sync,
     {
-        let block = blocks::once4(block);
-        self.recv_msg_ch(block.escape());
+        let mut block = RecvCompletion::new4(block);
+        self.recv_msg_ch(&mut block);
     }
 
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_send")]
     #[inline]
-    pub fn send_ch<'a, F>(
-        &mut self,
+    pub fn send_ch_block(
+        &self,
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'a nw::Error>),
-    {
-        unsafe { nw_connection_send(self, content, context, is_complete, completion.as_mut_ptr()) }
+        completion: &mut blocks::ErrCompletionHandler<nw::Error>,
+    ) {
+        unsafe { nw_connection_send(self, content, context, is_complete, completion) }
     }
 
     #[doc(alias = "nw_connection_send")]
     #[inline]
-    pub fn send<F>(
-        &mut self,
+    pub fn send(
+        &self,
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: F,
-    ) where
-        F: FnOnce(Option<&nw::Error>) + 'static,
-    {
-        let block = blocks::once1(completion);
-        self.send_ch(content, context, is_complete, block.escape());
+        completion: impl FnMut(Option<&nw::Error>) + 'static + std::marker::Sync,
+    ) {
+        let mut completion = blocks::ErrCompletionHandler::new1(completion);
+        self.send_ch_block(content, context, is_complete, &mut completion);
     }
 
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_batch")]
     #[inline]
-    pub fn batch<'a, F, B: dispatch::Block<'a, F>>(&mut self, batch_block: &mut B) {
-        unsafe { nw_connection_batch(self, batch_block.ptr()) };
+    pub fn batch_block(&mut self, batch_block: &mut dispatch::Block<blocks::NoEsc>) {
+        unsafe { nw_connection_batch(self, batch_block) };
     }
 
     #[doc(alias = "nw_connection_copy_current_path")]
@@ -322,22 +279,28 @@ extern "C" {
     fn nw_connection_copy_parameters(connection: &Connection) -> Option<arc::R<nw::Params>>;
 
     #[cfg(feature = "blocks")]
-    fn nw_connection_set_state_changed_handler(connection: &mut Connection, handler: *mut c_void);
+    fn nw_connection_set_state_changed_handler(
+        connection: &mut Connection,
+        handler: Option<&mut StateChangedHandler>,
+    );
 
     #[cfg(feature = "blocks")]
     fn nw_connection_set_viability_changed_handler(
         connection: &mut Connection,
-        handler: *mut c_void,
+        handler: Option<&mut BoolEventHandler>,
     );
 
     #[cfg(feature = "blocks")]
     fn nw_connection_set_better_path_available_handler(
         connection: &mut Connection,
-        handler: *mut c_void,
+        handler: Option<&mut BoolEventHandler>,
     );
 
     #[cfg(feature = "blocks")]
-    fn nw_connection_set_path_changed_handler(connection: &mut Connection, handler: *mut c_void);
+    fn nw_connection_set_path_changed_handler(
+        connection: &mut Connection,
+        handler: Option<&mut PathEventHandler>,
+    );
 
     fn nw_connection_set_queue(connection: &mut Connection, queue: &dispatch::Queue);
     fn nw_connection_start(connection: &mut Connection);
@@ -348,26 +311,29 @@ extern "C" {
 
     #[cfg(feature = "blocks")]
     fn nw_connection_receive(
-        connection: &mut Connection,
+        connection: &Connection,
         min_incomplete_length: u32,
         max_length: u32,
-        completion: *mut c_void,
+        completion: &mut RecvCompletion,
     );
 
     #[cfg(feature = "blocks")]
-    fn nw_connection_receive_message(connection: &mut Connection, completion: *mut c_void);
+    fn nw_connection_receive_message(connection: &Connection, completion: &mut RecvCompletion);
 
     #[cfg(feature = "blocks")]
-    fn nw_connection_send(
-        connection: &mut Connection,
+    fn nw_connection_send<'a>(
+        connection: &Connection,
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: *mut c_void,
+        completion: &mut blocks::ErrCompletionHandler<nw::Error>,
     );
 
     #[cfg(feature = "blocks")]
-    fn nw_connection_batch(connection: &mut Connection, batch_block: *mut c_void);
+    fn nw_connection_batch(
+        connection: &mut Connection,
+        batch_block: &dispatch::Block<blocks::NoEsc>,
+    );
 
     fn nw_connection_copy_current_path(connection: &Connection) -> Option<arc::R<nw::Endpoint>>;
     fn nw_connection_copy_protocol_metadata(

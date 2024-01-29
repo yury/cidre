@@ -60,7 +60,7 @@ pub trait Delegate: objc::Obj {
         advertiser: &NearbyServiceAdvertiser,
         peer: &mc::PeerId,
         context: Option<&ns::Data>,
-        invitation_handler: &mut blocks::Arg<fn(bool, Option<&mc::Session>)>,
+        invitation_handler: &mut blocks::Block<fn(bool, Option<&mc::Session>)>,
     );
 
     #[objc::optional]

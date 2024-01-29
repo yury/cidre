@@ -1,8 +1,12 @@
+use crate::blocks;
+
 pub type FramePos = i64;
 pub type FrameCount = u32;
 pub type PacketCount = u32;
 pub type ChannelCount = u32;
 pub type NodeBus = usize;
+
+pub type NodeCompletionHandler<Attr> = blocks::Block<fn(), Attr>;
 
 #[derive(Copy, Clone, Debug)]
 #[repr(C)]

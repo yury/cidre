@@ -39,27 +39,24 @@ impl WebView {
     pub fn stop_loading(&mut self);
 
     #[objc::msg_send(evaluateJavaScript:completionHandler:)]
-    fn _eval_js_ch(&mut self, js: &ns::String, block: *mut std::ffi::c_void);
+    fn eval_js_ch_block(
+        &mut self,
+        js: &ns::String,
+        block: Option<&mut blocks::ResultCompletionHandler<ns::Id>>,
+    );
 
     #[inline]
-    pub fn eval_js_ch<'a, F>(&mut self, js: &ns::String, block: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(Option<&'a ns::Id>, Option<&'a ns::Error>),
-    {
-        self._eval_js_ch(js, block.as_mut_ptr());
+    pub fn eval_js_ch(
+        &mut self,
+        js: &ns::String,
+        block: impl FnMut(Option<&ns::Id>, Option<&ns::Error>) + 'static + std::marker::Send,
+    ) {
+        let mut block = blocks::ResultCompletionHandler::new2(block);
+        self.eval_js_ch_block(js, Some(&mut block));
     }
 
-    #[inline]
-    pub fn eval_js<F>(&mut self, js: &ns::String, block: F)
-    where
-        F: FnOnce(Option<&ns::Id>, Option<&ns::Error>) + 'static,
-    {
-        let block = blocks::once2(block);
-        self.eval_js_ch(js, block.escape());
-    }
-
-    pub fn eval_js_no_ch<F>(&mut self, js: &ns::String) {
-        self._eval_js_ch(js, std::ptr::null_mut());
+    pub fn eval_js_no_ch(&mut self, js: &ns::String) {
+        self.eval_js_ch_block(js, None);
     }
 }
 

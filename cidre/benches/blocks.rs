@@ -26,10 +26,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             ar_pool(|| {
                 let mut ranges = Vec::with_capacity(n);
                 {
-                    let mut block = blocks::mut3(|_ptr, range, _done| {
+                    let mut closure = |_ptr, range, _done| {
                         ranges.push(range);
-                    });
-                    data.as_ns().enum_ranges_block(&mut block);
+                    };
+                    let mut block = blocks::NoEscBlock::stack3(&mut closure);
+                    data.as_ns().enumerate_byte_ranges_using_block(&mut block);
                 }
                 assert_eq!(ranges.len(), n);
             })
@@ -50,10 +51,10 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
 
     c.bench_function("block_enum_ranges_block_empty", |b| {
-        let mut block = blocks::mut3(|_ptr, _range, _done| {});
+        let mut block = blocks::NoEscBlock::new3(|_ptr, _range, _done| {});
         b.iter(|| {
             ar_pool(|| {
-                data.as_ns().enum_ranges_block(&mut block);
+                data.as_ns().enumerate_byte_ranges_using_block(&mut block);
             })
         })
     });

@@ -136,60 +136,45 @@ impl Queue {
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_sync")]
     #[inline]
-    pub fn sync_b<'a, F, B>(&self, block: &mut B)
-    where
-        B: dispatch::Block<'a, F>,
-    {
+    pub fn sync_b(&self, block: &mut dispatch::Block<blocks::NoEsc>) {
         unsafe {
-            dispatch_sync(self, block.ptr());
+            dispatch_sync(self, block);
         }
     }
 
     #[cfg(feature = "blocks")]
     #[doc(alias = "dispatch_async")]
     #[inline]
-    pub fn async_b<F, B: dispatch::Block<'static, F> + Sync>(&self, block: &'static mut B) {
-        unsafe {
-            dispatch_async(self, block.ptr());
-        }
+    pub fn async_b(&self, block: &mut dispatch::Block) {
+        unsafe { dispatch_async(self, block) };
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn sync_once<'a, F: FnOnce() + 'a>(&self, f: F) {
-        self.sync_b(&mut blocks::once0(f));
-    }
-
-    #[cfg(feature = "blocks")]
-    #[inline]
-    pub fn sync_mut<F: FnMut() + 'static>(&self, f: F) {
-        self.sync_b(&mut blocks::mut0(f));
-    }
-
-    #[cfg(feature = "blocks")]
-    #[inline]
-    pub fn sync_fn(&self, block: extern "C" fn(*const c_void)) {
-        let mut block = blocks::fn0(block);
+    pub fn sync_mut(&self, f: impl FnMut() + Sync) {
+        let mut block = dispatch::Block::<blocks::NoEsc>::new0(f);
         self.sync_b(&mut block);
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn async_once<F: FnOnce() + Sync + 'static>(&self, block: F) {
-        self.async_b(blocks::once0(block).escape());
+    pub fn sync_fn(&self, block: extern "C" fn(*const c_void)) {
+        let mut block = blocks::StaticBlock::new0(block);
+        self.sync_b(block.as_noesc_mut());
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn async_mut<F: FnMut() + Sync + 'static>(&self, block: F) {
-        self.async_b(blocks::mut0(block).escape());
+    pub fn async_mut(&self, block: impl FnMut() + Send + 'static) {
+        let mut block = dispatch::Block::<blocks::Send>::new0(block);
+        self.async_b(&mut block);
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
     pub fn async_fn(&self, block: extern "C" fn(*const c_void)) {
-        let mut block = blocks::fn0(block);
-        self.async_b(block.escape());
+        let mut block = blocks::StaticBlock::new0(block);
+        self.async_b(block.as_send_mut());
     }
 
     #[doc(alias = "dispatch_async_f")]
@@ -319,8 +304,9 @@ extern "C" {
     static _dispatch_main_q: Main;
     static _dispatch_queue_attr_concurrent: Attr;
 
-    fn dispatch_sync(queue: &Queue, block: *mut c_void);
-    fn dispatch_async(queue: &Queue, block: *mut c_void);
+    #[cfg(feature = "blocks")]
+    fn dispatch_sync(queue: &Queue, block: &mut dispatch::Block<blocks::NoEsc>);
+    fn dispatch_async(queue: &Queue, block: &mut dispatch::Block);
 
     fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
@@ -408,7 +394,7 @@ mod tests {
         let b = move || {
             println!("nice! {:?}", foo);
         };
-        q.async_once(b);
+        q.async_mut(b);
 
         let foo2 = Foo {};
         q.sync_mut(move || {

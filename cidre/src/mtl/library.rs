@@ -206,7 +206,12 @@ impl Fn {
     pub fn opts(&self) -> mtl::FnOpts;
 }
 
-define_obj_type!(pub Lib(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLLibrary")]
+    pub Lib(ns::Id)
+);
+
+unsafe impl Send for Lib {}
 
 impl Lib {
     define_mtl!(device, label, set_label);
@@ -328,10 +333,10 @@ mod tests {
         let device = mtl::Device::sys_default().unwrap();
         let src = ns::String::with_str("kernel void function_a() {}");
 
-        let ch = blocks::once2(move |lib, error| {
+        let mut ch = blocks::ResultCompletionHandler::new2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
-        device.new_lib_with_src_ch(&src, None, ch.escape());
+        device.new_lib_with_src_ch(&src, None, &mut ch);
     }
 
     #[test]

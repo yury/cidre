@@ -151,7 +151,7 @@ fn write(
     let mut inp = input.retained();
     let mut out = output.retained();
 
-    let mut block = blocks::mut0(move || {
+    let mut block = blocks::EscBlock::new0(move || {
         while inp.is_ready_for_more_media_data() {
             unsafe { inp.append_sample_buf_throws(&buf) };
             let Some(b) = out.copy_next_sample_buf_throws() else {
@@ -164,7 +164,7 @@ fn write(
     });
 
     input
-        .request_media_data_when_ready_on_queue(&queue, block.escape())
+        .request_media_data_when_ready_on_queue(&queue, &mut block)
         .unwrap();
 
     sema.wait_forever();

@@ -29,30 +29,20 @@ impl HeadphoneMotionManager {
     pub fn start_device_motion_updates(&mut self);
 
     #[objc::msg_send(startDeviceMotionUpdatesToQueue:withHandler:)]
-    pub unsafe fn _start_device_motion_updates_to_queue(
+    pub fn start_device_motion_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: *mut std::ffi::c_void,
+        handler: &blocks::ResultCompletionHandler<cm::DeviceMotion>,
     );
 
     #[inline]
-    pub fn start_device_motion_updates_to_queue_block<'a, F>(
+    pub fn start_device_motion_updates_to_queue(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &mut blocks::Block<F>,
-    ) where
-        F: FnMut(Option<&'a cm::DeviceMotion>, Option<&'a ns::Error>),
-    {
-        unsafe { self._start_device_motion_updates_to_queue(queue, handler.as_mut_ptr()) }
-    }
-
-    #[inline]
-    pub fn start_device_motion_updates_to_queue<F>(&mut self, queue: &ns::OpQueue, handler: F)
-    where
-        F: FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
-    {
-        let mut handler = blocks::mut2(handler);
-        self.start_device_motion_updates_to_queue_block(queue, handler.escape())
+        handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
+    ) {
+        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        self.start_device_motion_updates_to_queue_handler(queue, &mut handler)
     }
 
     #[objc::msg_send(stopDeviceMotionUpdates)]

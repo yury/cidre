@@ -128,21 +128,17 @@ impl WriterInput {
     }
 
     #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]
-    pub unsafe fn request_media_data_when_ready_on_queue_throws<F>(
+    pub unsafe fn request_media_data_when_ready_on_queue_throws(
         &self,
         queue: &dispatch::Queue,
-        block: &'static blocks::Block<F>,
-    ) where
-        F: FnMut();
+        block: &mut blocks::CompletionBlock,
+    );
 
-    pub fn request_media_data_when_ready_on_queue<'ear, F>(
+    pub fn request_media_data_when_ready_on_queue<'ear>(
         &self,
         queue: &dispatch::Queue,
-        block: &'static blocks::Block<F>,
-    ) -> Result<(), &'ear ns::Exception>
-    where
-        F: FnMut(),
-    {
+        block: &mut blocks::CompletionBlock,
+    ) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe {
             self.request_media_data_when_ready_on_queue_throws(queue, block)
         })

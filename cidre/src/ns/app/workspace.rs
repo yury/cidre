@@ -33,39 +33,33 @@ define_obj_type!(
     pub Authorization(ns::Id)
 );
 
+unsafe impl Send for Authorization {}
+
 /// NSWorkspaceAuthorization
 impl Workspace {
     #[objc::msg_send(requestAuthorizationOfType:completionHandler:)]
-    pub unsafe fn _request_authorization_of_type_ch(
+    pub fn request_authorization_of_type_ch_block(
         &self,
         type_: ns::WorkspaceAuthorizationType,
-        ch: *mut std::ffi::c_void,
+        ch: &mut blocks::ResultCompletionHandler<ns::WorkspaceAuthorization>,
     );
-
-    pub fn request_authorization_of_type_ch_block<'a, F>(
-        &self,
-        type_: ns::WorkspaceAuthorizationType,
-        ch: &mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'a ns::WorkspaceAuthorization>, Option<&'a ns::Error>),
-    {
-        unsafe { self._request_authorization_of_type_ch(type_, ch.as_mut_ptr()) }
-    }
 
     pub fn request_authorization_of_type_ch<F>(&self, type_: ns::WorkspaceAuthorizationType, ch: F)
     where
-        F: FnOnce(Option<&ns::WorkspaceAuthorization>, Option<&ns::Error>) + 'static,
+        F: FnMut(Option<&ns::WorkspaceAuthorization>, Option<&ns::Error>)
+            + 'static
+            + std::marker::Sync,
     {
-        let ch = blocks::once2(ch);
-        self.request_authorization_of_type_ch_block(type_, ch.escape())
+        let mut ch = blocks::ResultCompletionHandler::new2(ch);
+        self.request_authorization_of_type_ch_block(type_, &mut ch)
     }
 
     pub async fn request_authorization_of_type(
         &self,
         type_: ns::WorkspaceAuthorizationType,
     ) -> Result<arc::R<ns::WorkspaceAuthorization>, arc::R<ns::Error>> {
-        let (future, ch) = blocks::result();
-        self.request_authorization_of_type_ch_block(type_, ch.escape());
+        let (future, mut ch) = blocks::result();
+        self.request_authorization_of_type_ch_block(type_, &mut ch);
         future.await
     }
 }

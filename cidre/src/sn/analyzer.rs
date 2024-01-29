@@ -64,6 +64,8 @@ impl arc::A<AudioFileAnalyzer> {
     ) -> Option<arc::R<AudioFileAnalyzer>>;
 }
 
+pub type FileCompletionHandler = blocks::Block<fn(bool), blocks::Send>;
+
 impl AudioFileAnalyzer {
     pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
@@ -96,19 +98,12 @@ impl AudioFileAnalyzer {
 
     /// Analyzes the audio file asynchronously
     #[objc::msg_send(analyzeWithCompletionHandler:)]
-    pub unsafe fn _analyze_with_ch(&mut self, handler: *mut std::ffi::c_void);
-
-    pub fn analyze_with_ch<F>(&mut self, handler: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(bool),
-    {
-        unsafe { self._analyze_with_ch(handler.as_mut_ptr()) }
-    }
+    pub fn analyze_with_ch(&mut self, handler: &mut FileCompletionHandler);
 
     /// Analyzes the audio file asynchronously
     pub async fn analyze_with(&mut self) -> bool {
-        let (future, block) = blocks::comp1();
-        self.analyze_with_ch(block.escape());
+        let (future, mut block) = blocks::comp1();
+        self.analyze_with_ch(&mut block);
         future.await
     }
 

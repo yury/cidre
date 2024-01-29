@@ -5,10 +5,14 @@ define_obj_type!(
     pub Track(ns::Id)
 );
 
+unsafe impl Send for Track {}
+
 define_obj_type!(
     #[doc(alias = "AVFragmentedTrack")]
     pub FragmentedTrack(Track)
 );
+
+unsafe impl Send for FragmentedTrack {}
 
 impl Track {
     /// A reference to the [`av::Asset`] of which the [`av::AssetTrack`] is a part.

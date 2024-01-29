@@ -28,15 +28,11 @@ impl BlockOp {
 
     #[cfg(feature = "blocks")]
     #[objc::cls_msg_send(blockOperationWithBlock:)]
-    pub fn with_block_ar<F>(block: &'static mut blocks::Block<F>) -> arc::Rar<Self>
-    where
-        F: FnOnce();
+    pub fn with_block_ar(block: &mut blocks::WorkBlock) -> arc::Rar<Self>;
 
     #[cfg(feature = "blocks")]
     #[objc::cls_rar_retain]
-    pub fn with_block<F>(block: &'static mut blocks::Block<F>) -> arc::R<Self>
-    where
-        F: FnOnce();
+    pub fn with_block(block: &mut blocks::WorkBlock) -> arc::R<Self>;
 }
 
 impl ns::KVObserverRegistration for Op {}

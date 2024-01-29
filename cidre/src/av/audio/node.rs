@@ -2,6 +2,8 @@ use crate::{av, blocks, define_obj_type, ns, objc};
 
 define_obj_type!(pub Node(ns::Id));
 
+pub type AudioNodeTapBlock<Attr> = blocks::Block<fn(&av::AudioPcmBuf, &av::AudioTime), Attr>;
+
 impl Node {
     #[objc::msg_send(reset)]
     pub fn reset(&self);
@@ -46,14 +48,13 @@ impl Node {
 
     /// NOTE: `remove_tap_on_bus` if you have already installed tap
     #[objc::msg_send(installTapOnBus:bufferSize:format:block:)]
-    pub fn install_tap_on_bus_block<'b, F>(
+    pub fn install_tap_on_bus_block(
         &mut self,
         bus: av::AudioNodeBus,
         buffer_size: av::AudioFrameCount,
         format: Option<&av::AudioFormat>,
-        tap_block: &'static blocks::Block<F>,
-    ) where
-        F: FnMut(&'b av::AudioPcmBuf, &'b av::AudioTime);
+        tap_block: &mut AudioNodeTapBlock<blocks::Esc>,
+    );
 
     #[inline]
     pub fn install_tap_on_bus<F>(
@@ -65,8 +66,8 @@ impl Node {
     ) where
         F: FnMut(&av::AudioPcmBuf, &av::AudioTime) + 'static,
     {
-        let mut tap_block = blocks::mut2(tap_block);
-        self.install_tap_on_bus_block(bus, buffer_size, format, tap_block.escape())
+        let mut tap_block = AudioNodeTapBlock::<blocks::Esc>::new2(tap_block);
+        self.install_tap_on_bus_block(bus, buffer_size, format, &mut tap_block)
     }
 
     #[objc::msg_send(removeTapOnBus:)]

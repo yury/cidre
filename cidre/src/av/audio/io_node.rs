@@ -1,6 +1,7 @@
-use std::ffi::c_void;
-
 use crate::{at, av, blocks, define_obj_type, ns, objc};
+
+#[doc(alias = "AVAudioIONodeInputBlock")]
+pub type InputBlock<Attr> = blocks::Block<fn(av::AudioFrameCount) -> *const at::AudioBufList, Attr>;
 
 #[doc(alias = "AVAudioVoiceProcessingSpeechActivityEvent")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -72,26 +73,21 @@ define_obj_type!(
 
 impl InputNode {
     #[objc::msg_send(setManualRenderingInputPCMFormat:inputBlock:)]
-    pub unsafe fn _set_manual_rendering_input_pcm_format(
+    pub fn _set_manual_rendering_input_pcm_format(
         &mut self,
         format: &av::AudioFormat,
-        input_block: *mut c_void,
+        input_block: &mut av::AudioIoNodeInputBlock<blocks::Esc>,
     ) -> bool;
 
-    pub fn set_manual_rendering_input_pcm_format<F>(
+    pub fn set_manual_rendering_input_pcm_format(
         &mut self,
         format: &av::AudioFormat,
-        input_block: &'static mut blocks::Block<F>,
-    ) -> Result<(), ()>
-    where
-        F: FnMut(av::AudioFrameCount) -> *const at::AudioBufList,
-    {
-        unsafe {
-            if self._set_manual_rendering_input_pcm_format(format, input_block.as_mut_ptr()) {
-                Ok(())
-            } else {
-                Err(())
-            }
+        input_block: &mut av::AudioIoNodeInputBlock<blocks::Esc>,
+    ) -> Result<(), ()> {
+        if self._set_manual_rendering_input_pcm_format(format, input_block) {
+            Ok(())
+        } else {
+            Err(())
         }
     }
 
@@ -117,21 +113,19 @@ impl InputNode {
     pub fn set_vp_input_muted(&mut self, val: bool);
 
     #[objc::msg_send(setMutedSpeechActivityEventListener:)]
-    pub unsafe fn _set_muted_speech_activity_event_listener(&mut self, block: *mut c_void) -> bool;
-
-    pub fn set_muted_speech_activity_event_listener<F>(
+    pub fn _set_muted_speech_activity_event_listener(
         &mut self,
-        block: &'static mut blocks::Block<F>,
-    ) -> Result<(), ()>
-    where
-        F: FnMut(VPSpeechActivityEvent),
-    {
-        unsafe {
-            if self._set_muted_speech_activity_event_listener(block.as_mut_ptr()) {
-                Ok(())
-            } else {
-                Err(())
-            }
+        block: Option<&mut blocks::EscBlock<fn(VPSpeechActivityEvent)>>,
+    ) -> bool;
+
+    pub fn set_muted_speech_activity_event_listener(
+        &mut self,
+        block: Option<&mut blocks::EscBlock<fn(VPSpeechActivityEvent)>>,
+    ) -> Result<(), ()> {
+        if self._set_muted_speech_activity_event_listener(block) {
+            Ok(())
+        } else {
+            Err(())
         }
     }
 

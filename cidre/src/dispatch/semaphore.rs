@@ -5,7 +5,7 @@ pub struct SignalGuard {
 }
 
 impl SignalGuard {
-    pub fn consume(self) {}
+    pub fn consume(&mut self) {}
 }
 
 impl Drop for SignalGuard {

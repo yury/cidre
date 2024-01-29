@@ -18,6 +18,9 @@ pub use animation::OptKey as AnimationOptKey;
 pub use animation::Status as AnimationStatus;
 
 #[cfg(feature = "iio")]
+pub use animation::AnimationBlock;
+
+#[cfg(feature = "iio")]
 pub use animation::animate_image_at_url;
 #[cfg(feature = "iio")]
 pub use animation::animate_image_at_url_with_block;

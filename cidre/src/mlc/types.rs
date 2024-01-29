@@ -1,4 +1,7 @@
-use crate::{define_opts, ns};
+use crate::{blocks, define_opts, mlc, ns};
+
+pub type GraphCompletionHandler =
+    blocks::SyncBlock<fn(Option<&mlc::Tensor>, Option<&ns::Error>, ns::TimeInterval)>;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]

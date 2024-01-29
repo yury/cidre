@@ -1,5 +1,3 @@
-use std::ffi::c_void;
-
 use crate::{arc, blocks, cf, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -35,6 +33,9 @@ pub enum DispatchType {
     Concurrent,
 }
 
+#[doc(alias = "MTLCommandBufferHandler")]
+pub type CmdBufHandler = blocks::SyncBlock<fn(&mtl::CmdBuf)>;
+
 define_obj_type!(
     /// A serial list of commands for the device to execute.
     #[doc(alias = "MTLCommandBuffer")]
@@ -60,32 +61,10 @@ impl CmdBuf {
     pub fn wait_until_completed(&self);
 
     #[objc::msg_send(addScheduledHandler:)]
-    fn _add_scheduled_handler(&self, block: *mut c_void);
-
-    pub fn add_scheduled_handler<F>(&self, block: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(&mut Self) + Send + 'static,
-    {
-        self._add_scheduled_handler(block.as_mut_ptr());
-    }
+    pub fn add_scheduled_handler(&mut self, block: &mut CmdBufHandler);
 
     #[objc::msg_send(addCompletedHandler:)]
-    fn _add_ch(&mut self, block: *mut c_void);
-
-    pub fn add_ch<F>(&mut self, block: &'static mut blocks::Block<F>)
-    where
-        F: FnOnce(&mut Self) + Send + 'static,
-    {
-        self._add_ch(block.as_mut_ptr());
-    }
-
-    #[inline]
-    pub fn add_ch_fn<'a>(
-        &mut self,
-        block: &mut blocks::Block<extern "C" fn(*const c_void, &'a mut Self)>,
-    ) {
-        self._add_ch(block.as_mut_ptr());
-    }
+    pub fn add_completed_handler(&mut self, block: &mut CmdBufHandler);
 
     #[objc::msg_send(blitCommandEncoder)]
     pub fn new_blit_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::BlitCmdEncoder>>;

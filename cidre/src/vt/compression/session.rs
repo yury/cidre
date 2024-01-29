@@ -5,6 +5,9 @@ use crate::{arc, cf, cm, cv, define_cf_type, os, vt};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
+pub type OutputHandler =
+    blocks::Block<fn(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>), blocks::Sync>;
+
 define_cf_type!(Session(vt::Session));
 
 pub type OutputCallback<T> = extern "C" fn(
@@ -153,9 +156,7 @@ impl Session {
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
-        block: &'static mut blocks::BlMut<
-            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>),
-        >,
+        block: &'static mut OutputHandler,
     ) -> os::Status {
         unsafe {
             VTCompressionSessionEncodeFrameWithOutputHandler(
@@ -165,7 +166,7 @@ impl Session {
                 duration,
                 frame_properties,
                 info_flags_out,
-                block.as_mut_ptr(),
+                block,
             )
         }
     }
@@ -180,9 +181,7 @@ impl Session {
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
-        block: &'static mut blocks::Block<
-            impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&'a cm::SampleBuf>),
-        >,
+        block: &'static mut OutputHandler,
     ) -> Result<(), os::Status> {
         unsafe {
             VTCompressionSessionEncodeFrameWithOutputHandler(
@@ -192,7 +191,7 @@ impl Session {
                 duration,
                 frame_properties,
                 info_flags_out,
-                block.as_mut_ptr(),
+                block,
             )
             .result()
         }
@@ -259,7 +258,7 @@ extern "C" {
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
-        output_handler: *mut c_void,
+        output_handler: &mut OutputHandler,
     ) -> os::Status;
 
     fn VTCompressionSessionGetPixelBufferPool(session: &Session) -> Option<&cv::PixelBufPool>;

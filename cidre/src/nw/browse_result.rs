@@ -1,6 +1,7 @@
-use std::ffi::c_void;
-
 use crate::{arc, blocks, define_obj_type, define_opts, ns, nw};
+
+#[doc(alias = "nw_browse_result_enumerate_interface_t")]
+pub type EnumerateIface<Attr> = blocks::Block<fn(&nw::Iface) -> bool, Attr>;
 
 define_obj_type!(
     #[doc(alias = "nw_browse_result")]
@@ -70,11 +71,8 @@ impl BrowseResult {
 
     #[doc(alias = "nw_browse_result_copy_txt_record_object")]
     #[inline]
-    pub fn enumerate_ifaces<'a, F>(&self, enumerator: &mut blocks::Block<F>)
-    where
-        F: FnMut(&'a nw::Iface) -> bool,
-    {
-        unsafe { nw_browse_result_enumerate_interfaces(self, enumerator.as_mut_ptr()) }
+    pub fn enumerate_ifaces<'a>(&self, enumerator: &mut EnumerateIface<blocks::NoEsc>) {
+        unsafe { nw_browse_result_enumerate_interfaces(self, enumerator) }
     }
 }
 
@@ -90,5 +88,8 @@ extern "C" {
     fn nw_browse_result_copy_txt_record_object(res: &BrowseResult)
         -> Option<arc::R<nw::TxtRecord>>;
 
-    fn nw_browse_result_enumerate_interfaces(res: &BrowseResult, enumerator: *mut c_void);
+    fn nw_browse_result_enumerate_interfaces(
+        res: &BrowseResult,
+        enumerator: &mut EnumerateIface<blocks::NoEsc>,
+    );
 }

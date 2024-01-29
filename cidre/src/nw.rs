@@ -10,10 +10,13 @@ pub use browse_descriptor::BrowseDesc;
 mod browse_result;
 pub use browse_result::BrowseResult;
 pub use browse_result::Change as BrowseResultChange;
+pub use browse_result::EnumerateIface as BrowserResultEnumerateIface;
 
 mod browser;
+pub use browser::BrowseResultsChandedHandler as BrowserBrowseResultsChandedHandler;
 pub use browser::Browser;
 pub use browser::State as BrowserState;
+pub use browser::StateChangedHandler as BrowserChangedHandler;
 
 pub mod connection;
 pub use connection::Connection;
@@ -42,14 +45,20 @@ pub use interface::IfaceRadioType;
 pub use interface::IfaceType;
 
 mod listener;
+pub use listener::AdvertisedEndpointChangedHandler as ListenerAdvertisedEndpointChangedHandler;
 pub use listener::Listener;
+pub use listener::NewConnectionGroupHandler as ListenerNewConnectionGroupHandler;
+pub use listener::NewConnectionHandler as ListenerNewConnectionHandler;
 pub use listener::State as ListenerState;
+pub use listener::StateChangedHandler as ListenerStateChangedHandler;
 
 mod parameters;
 pub use parameters::Params;
+pub use parameters::ParamsCfgProtocolBlock;
 pub use parameters::ProtocolStack;
 
 mod path;
+pub use path::EnumerateIfaces as PathEnumerateIfaces;
 pub use path::Path;
 pub use path::Status as PathStatus;
 pub use path::UnsatisfiedReason as PathUnsatisfiedReason;

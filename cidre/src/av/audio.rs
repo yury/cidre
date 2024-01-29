@@ -13,6 +13,7 @@ pub use types::ChannelCount;
 pub use types::FrameCount;
 pub use types::FramePos;
 pub use types::NodeBus;
+pub use types::NodeCompletionHandler;
 pub use types::PacketCount;
 pub use types::Point3d;
 pub use types::Vector3d;
@@ -22,6 +23,7 @@ mod node;
 pub use node::Node;
 
 pub mod io_node;
+pub use io_node::InputBlock as IoNodeInputBlock;
 pub use io_node::InputNode;
 pub use io_node::IoNode;
 pub use io_node::OutputNode;
@@ -111,6 +113,7 @@ pub use connection_point::ConnectionPoint;
 
 pub mod converter;
 pub use converter::Converter;
+pub use converter::InputBlock as ConverterInputBlock;
 pub use converter::InputStatus as ConverterInputStatus;
 pub use converter::OutputStatus as ConverterOutputStatus;
 pub use converter::PrimeInfo as ConverterPrimeInfo;

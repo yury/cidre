@@ -33,7 +33,7 @@ impl sn::ResultsObservingImpl for ResultsObs {
     }
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
     let mut engine = av::AudioEngine::new();
 

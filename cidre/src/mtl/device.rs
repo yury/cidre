@@ -149,19 +149,18 @@ impl Device {
         src: &ns::String,
         opts: Option<&mtl::CompileOpts>,
     ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
-        let (future, block) = blocks::result();
-        self.new_lib_with_src_ch(src, opts, block.escape());
+        let (future, mut block) = blocks::result();
+        self.new_lib_with_src_ch(src, opts, &mut block);
         future.await
     }
 
     #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
-    pub fn new_lib_with_src_ch<'ar, F>(
+    pub fn new_lib_with_src_ch<'a>(
         &self,
         src: &ns::String,
         ops: Option<&mtl::CompileOpts>,
-        ch: &'static mut blocks::Block<F>,
-    ) where
-        F: FnOnce(Option<&'ar mtl::library::Lib>, Option<&'ar ns::Error>) + 'static;
+        ch: &mut blocks::ResultCompletionHandler<mtl::Lib>,
+    );
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
     pub unsafe fn new_compute_ps_with_fn_err<'ear>(

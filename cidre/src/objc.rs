@@ -60,21 +60,7 @@ impl<T: Obj> Obj for Class<T> {}
 impl<T: Obj> arc::Release for T {
     #[inline]
     unsafe fn release(&mut self) {
-        #[cfg(target_arch = "aarch64")]
-        {
-            asm!(
-                "bl _objc_release_{x}",
-                x = in(reg) self,
-                clobber_abi("C")
-                // system also works
-                // clobber_abi("system")
-            );
-        }
-
-        #[cfg(target_arch = "x86_64")]
-        {
-            objc_release(transmute(self));
-        }
+        <T as Obj>::release(self)
     }
 }
 
@@ -102,6 +88,25 @@ pub trait Obj: Sized + arc::Retain {
         #[cfg(target_arch = "x86_64")]
         {
             transmute(objc_retain(transmute(id)))
+        }
+    }
+
+    #[inline]
+    unsafe fn release(id: &mut Self) {
+        #[cfg(target_arch = "aarch64")]
+        {
+            asm!(
+                "bl _objc_release_{x}",
+                x = in(reg) id,
+                clobber_abi("C")
+                // system also works
+                // clobber_abi("system")
+            );
+        }
+
+        #[cfg(target_arch = "x86_64")]
+        {
+            objc_release(transmute(id));
         }
     }
 
@@ -153,6 +158,8 @@ pub trait Obj: Sized + arc::Retain {
 /// Use it as NSObject or id
 #[repr(transparent)]
 pub struct Id(Type);
+
+unsafe impl Send for Id {}
 
 impl Id {
     #[inline]
@@ -397,7 +404,6 @@ macro_rules! define_obj_type {
             }
         }
     };
-
     (
         $(#[$outer:meta])*
         $vis:vis

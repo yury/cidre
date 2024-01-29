@@ -13,8 +13,10 @@ pub use device::Device;
 pub use device::DeviceType;
 
 mod executable;
+pub use executable::CompletionHandler as ExecutableCompletionHandler;
 pub use executable::Executable;
 pub use executable::ExecutionDesc as ExecutableExecutionDesc;
+pub use executable::ScheduledHandler as ExecutableScheduledHandler;
 
 mod tensor_data;
 pub use tensor_data::TensorData;
