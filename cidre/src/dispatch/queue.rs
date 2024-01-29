@@ -151,20 +151,19 @@ impl Queue {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn sync_mut(&self, f: impl FnMut() + Sync) {
-        let mut block = dispatch::Block::<blocks::NoEsc>::new0(f);
+    pub fn sync_mut(&self, mut f: impl FnMut() + Sync) {
+        let mut block = unsafe { dispatch::Block::<blocks::NoEsc>::stack0(&mut f) };
         self.sync_b(&mut block);
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn sync<R>(&self, mut f: impl FnMut() -> R + Sync) -> R {
+    pub fn sync<R: std::marker::Sync>(&self, mut f: impl FnMut() -> R + Sync) -> R {
         let mut result = None;
-        let mut closure = || {
+        let closure = || {
             result.replace(f());
         };
-        let mut block = unsafe { dispatch::Block::<blocks::NoEsc>::stack0(&mut closure) };
-        self.sync_b(&mut block);
+        self.sync_mut(closure);
         unsafe { result.unwrap_unchecked() }
     }
 
