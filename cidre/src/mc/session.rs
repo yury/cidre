@@ -141,7 +141,7 @@ impl Session {
         completion: &blocks::ErrCompletionHandler,
     ) -> Option<arc::R<ns::Progress>>;
 
-    pub fn send_resource_at_url_ch<F>(
+    pub fn send_resource_at_url_ch(
         &mut self,
         resource_url: &ns::Url,
         resource_name: &ns::String,
@@ -263,10 +263,11 @@ impl Session {
         handler: &blocks::ResultCompletionHandler<ns::Data>,
     );
 
-    pub fn nearby_data_for_peer_ch<F>(&self, peer: &mc::PeerId, handler: F)
-    where
-        F: FnMut(Option<&ns::Data>, Option<&ns::Error>) + 'static,
-    {
+    pub fn nearby_data_for_peer_ch(
+        &self,
+        peer: &mc::PeerId,
+        handler: impl FnMut(Option<&ns::Data>, Option<&ns::Error>) + 'static,
+    ) {
         let mut handler = blocks::ResultCompletionHandler::new2(handler);
         self.nearby_data_for_peer_ch_block(peer, &mut handler);
     }

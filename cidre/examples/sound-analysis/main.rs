@@ -63,11 +63,11 @@ async fn main() {
     let sa = analysis.retained();
 
     let tap = move |buf: &av::AudioPcmBuf, when: &av::AudioTime| {
-        let pos = when.sample_time();
-        let buf = buf.retained();
-        let mut sa = sa.retained();
-        queue.async_mut(move || {
-            sa.analyze_audio_buf_at_pos(&buf, pos);
+        queue.async_mut({
+            let pos = when.sample_time();
+            let buf = buf.retained();
+            let mut sa = sa.retained();
+            move || sa.analyze_audio_buf_at_pos(&buf, pos)
         });
     };
 

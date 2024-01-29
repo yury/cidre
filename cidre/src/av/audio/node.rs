@@ -57,15 +57,13 @@ impl Node {
     );
 
     #[inline]
-    pub fn install_tap_on_bus<F>(
+    pub fn install_tap_on_bus(
         &mut self,
         bus: av::AudioNodeBus,
         buffer_size: av::AudioFrameCount,
         format: Option<&av::AudioFormat>,
-        tap_block: F,
-    ) where
-        F: FnMut(&av::AudioPcmBuf, &av::AudioTime) + 'static,
-    {
+        tap_block: impl FnMut(&av::AudioPcmBuf, &av::AudioTime) + 'static,
+    ) {
         let mut tap_block = AudioNodeTapBlock::<blocks::Esc>::new2(tap_block);
         self.install_tap_on_bus_block(bus, buffer_size, format, &mut tap_block)
     }

@@ -311,7 +311,7 @@ impl FileManager {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn unmount_volume_at_url_ch<F>(
+    pub fn unmount_volume_at_url_ch(
         &self,
         url: &ns::Url,
         options: ns::FileManagerUnmountOpts,

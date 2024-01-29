@@ -201,9 +201,9 @@ impl Connection {
     #[cfg(feature = "blocks")]
     #[doc(alias = "nw_connection_receive_message")]
     #[inline]
-    pub fn recv_msg<F>(&mut self, block: F)
-    where
-        F: FnMut(
+    pub fn recv_msg(
+        &mut self,
+        block: impl FnMut(
                 /* content */ Option<&dispatch::Data>,
                 /* context */ Option<&nw::ContentCtx>,
                 /* is_complete */ bool,
@@ -211,7 +211,7 @@ impl Connection {
             )
             + 'static
             + std::marker::Sync,
-    {
+    ) {
         let mut block = RecvCompletion::new4(block);
         self.recv_msg_ch(&mut block);
     }
@@ -321,7 +321,7 @@ extern "C" {
     fn nw_connection_receive_message(connection: &Connection, completion: &mut RecvCompletion);
 
     #[cfg(feature = "blocks")]
-    fn nw_connection_send<'a>(
+    fn nw_connection_send(
         connection: &Connection,
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
@@ -332,7 +332,7 @@ extern "C" {
     #[cfg(feature = "blocks")]
     fn nw_connection_batch(
         connection: &mut Connection,
-        batch_block: &dispatch::Block<blocks::NoEsc>,
+        batch_block: &mut dispatch::Block<blocks::NoEsc>,
     );
 
     fn nw_connection_copy_current_path(connection: &Connection) -> Option<arc::R<nw::Endpoint>>;

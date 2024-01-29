@@ -63,7 +63,7 @@ pub fn animate_image_at_url_with_block(
 #[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageAtURLWithBlock")]
 #[inline]
-pub fn animate_image_at_url<F>(
+pub fn animate_image_at_url(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
     block: &mut cg::ImageAnimationBlock<blocks::Esc>,
@@ -74,7 +74,7 @@ pub fn animate_image_at_url<F>(
 #[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageDataWithBlock")]
 #[inline]
-pub fn animate_image_data_with_block<F>(
+pub fn animate_image_data_with_block(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
     block: &mut cg::ImageAnimationBlock<blocks::Esc>,

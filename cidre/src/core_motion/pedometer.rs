@@ -107,10 +107,14 @@ impl Pedometer {
     );
 
     #[inline]
-    pub fn query_pedometer_data_ch<F>(&self, start: &ns::Date, end: &ns::Date, handler: F)
-    where
-        F: FnMut(Option<&cm::PedometerData>, Option<&ns::Error>) + 'static + std::marker::Sync,
-    {
+    pub fn query_pedometer_data_ch(
+        &self,
+        start: &ns::Date,
+        end: &ns::Date,
+        handler: impl FnMut(Option<&cm::PedometerData>, Option<&ns::Error>)
+            + 'static
+            + std::marker::Sync,
+    ) {
         let mut handler = blocks::ResultCompletionHandler::new2(handler);
         self.query_pedometer_data_ch_block(start, end, &mut handler)
     }

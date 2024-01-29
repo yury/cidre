@@ -180,7 +180,7 @@ impl MotionManager {
         handler: &mut blocks::ResultCompletionHandler<cm::DeviceMotion>,
     );
 
-    pub fn start_device_motion_updates_using_ref_frame_to_queue<F>(
+    pub fn start_device_motion_updates_using_ref_frame_to_queue(
         &mut self,
         ref_frame: &cm::AttitudeRefFrame,
         queue: &ns::OpQueue,
