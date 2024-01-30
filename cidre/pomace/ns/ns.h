@@ -76,6 +76,11 @@ Class NS_OPERATION_QUEUE;
 Class NS_KEYED_ARCHIVER;
 Class NS_KEYED_UNARCHIVER;
 
+
+Class NS_XPC_CONNECTION;
+Class NS_XPC_LISTENER;
+Class NS_XPC_INTERFACE;
+
 typedef void cidre_change(
                           void * _Nullable,
                           NSString * _Nullable,
@@ -158,7 +163,10 @@ static void common_initializer(void)
 
         NS_KEYED_ARCHIVER = [NSKeyedArchiver class];
         NS_KEYED_UNARCHIVER = [NSKeyedUnarchiver class];
-        
+     
+        NS_XPC_CONNECTION = [NSXPCConnection class];
+        NS_XPC_LISTENER = [NSXPCListener class];
+        NS_XPC_INTERFACE = [NSXPCInterface class];
         
         initialized = 1;
     }

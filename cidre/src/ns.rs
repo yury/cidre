@@ -237,6 +237,9 @@ mod geometry;
 #[cfg(target_os = "macos")]
 pub use geometry::*;
 
+#[cfg(feature = "xpc")]
+pub mod xpc;
+
 /// Special Exception or Error type
 /// some API can still throw exception even if they
 /// return Error
