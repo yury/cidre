@@ -44,4 +44,4 @@ jobs:
       run: ./build.sh
 
     - name: Test ns
-      run: cargo t ns::
+      run: 'cargo t ns::'
