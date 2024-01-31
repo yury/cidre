@@ -69,6 +69,7 @@ impl App {
         Self::request_record_permission_ch_block(&mut handler)
     }
 
+    #[cfg(feature = "async")]
     pub async fn request_record_permission() -> bool {
         let (future, mut block) = blocks::comp1();
         Self::request_record_permission_ch_block(&mut block);
