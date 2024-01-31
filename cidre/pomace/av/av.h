@@ -61,6 +61,8 @@ Class AV_SPEECH_SYNTHESIS_VOICE;
 Class AV_SPEECH_SYNTHESIZER;
 Class AV_SPEECH_UTTERANCE;
 
+Class AV_AUDIO_APPLICATION;
+
 __attribute__((constructor))
 static void av_initializer(void)
 {
@@ -143,6 +145,8 @@ static void av_initializer(void)
         AV_SPEECH_SYNTHESIS_VOICE = [AVSpeechSynthesisVoice class];
         AV_SPEECH_SYNTHESIZER = [AVSpeechSynthesizer class];
         AV_SPEECH_UTTERANCE = [AVSpeechUtterance class];
+        
+        AV_AUDIO_APPLICATION = [AVAudioApplication class];
 
         initialized = 1;
     }

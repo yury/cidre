@@ -2,7 +2,8 @@ use crate::{arc, at::audio::StreamBasicDesc, define_cls, define_obj_type, ns, ob
 
 use super::{channel_layout::ChannelLayout, ChannelCount};
 
-#[derive(Debug, Eq, PartialEq)]
+#[doc(alias = "AVAudioCommonFormat")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum CommonFormat {
     /// A format other than one of the common ones below.
@@ -21,7 +22,10 @@ pub enum CommonFormat {
     PcmI32 = 4,
 }
 
-define_obj_type!(pub Format(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAudioFormat")]
+    pub Format(ns::Id)
+);
 
 impl arc::A<Format> {
     #[objc::msg_send(initWithStreamDescription:)]

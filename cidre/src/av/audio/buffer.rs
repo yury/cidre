@@ -8,7 +8,10 @@ use crate::{
 
 use super::{Format, FrameCount, PacketCount};
 
-define_obj_type!(pub Buf(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAudioBuffer")]
+    pub Buf(ns::Id)
+);
 
 /// A buffer of audio data, with a format.
 impl Buf {
@@ -71,7 +74,10 @@ impl PcmBuf {
     pub fn frame_capacity(&self) -> FrameCount;
 }
 
-define_obj_type!(pub CompressedBuf(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAudioCompressedBuffer")]
+    pub CompressedBuf(ns::Id)
+);
 
 impl arc::A<CompressedBuf> {
     #[objc::msg_send(initWithFormat:packetCapacity:)]

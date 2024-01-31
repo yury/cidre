@@ -168,6 +168,8 @@ pub use audio::SessionSetActiveOpts as AudioSessionSetActiveOpts;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionSilenceSecondaryAudioHintType as AudioSessionSilenceSecondaryAudioHintType;
 
+pub use audio::App as AudioApp;
+pub use audio::AppRecordPermission as AudioAppRecordPermission;
 pub use audio::SpeechBoundery;
 pub use audio::SpeechSynthesisMarker;
 pub use audio::SpeechSynthesisMarkerMark;
