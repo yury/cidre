@@ -35,8 +35,8 @@ jobs:
       run: >
           rustup target add aarch64-apple-ios &&
           rustup target add aarch64-apple-ios-sim &&
-          rustup target add aarch64-apple-tvos &&
-          rustup target add aarch64-apple-tvos-sim &&
+          rustup +nightly target add aarch64-apple-tvos &&
+          rustup +nightly target add aarch64-apple-tvos-sim &&
           rustup target add x86_64-apple-darwin
     
     - name: Build
