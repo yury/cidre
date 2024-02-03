@@ -197,6 +197,15 @@ impl Engine {
 
 /// Manual Rendering Mode
 impl Engine {
+    #[objc::msg_send(enableManualRenderingMode:format:maximumFrameCount:error:)]
+    pub unsafe fn enable_manual_rendering_mode_err<'ar>(
+        &mut self,
+        mode: ManualRenderingMode,
+        format: &av::AudioFormat,
+        max_frame_count: av::AudioFrameCount,
+        error: *mut Option<&'ar ns::Error>,
+    );
+
     /// Set the engine to operate in a manual rendering mode with the specified render format and
     /// maximum frame count.
     ///
@@ -219,15 +228,6 @@ impl Engine {
     ///     formats may change.
     /// 2. Removes any taps previously installed on the input and output nodes.
     /// 3. Maintains all the engine connections as is.
-    #[objc::msg_send(enableManualRenderingMode:format:maximumFrameCount:error:)]
-    pub unsafe fn enable_manual_rendering_mode_err<'ar>(
-        &mut self,
-        mode: ManualRenderingMode,
-        format: &av::AudioFormat,
-        max_frame_count: av::AudioFrameCount,
-        error: *mut Option<&'ar ns::Error>,
-    );
-
     #[inline]
     pub fn enable_manual_rendering_mode<'ar>(
         &mut self,

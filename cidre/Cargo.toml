@@ -50,6 +50,7 @@ full = [
   "io",
   "nw",
   "core_motion",
+  "core_audio",
   "wk",
   "gc",
   "xpc",
@@ -95,6 +96,7 @@ mpsg = ["mps"]
 dispatch = ["cf", "ns"]
 da = ["cf"]
 core_motion = ["ns"]
+core_audio = []
 wk = ["ns"]
 gc = ["ns"]
 xpc = ["ns", "blocks"]
@@ -140,7 +142,7 @@ name = "am-device-mount-dev-image"
 required-features = ["am"]
 
 [lib]
-# proc-macro = true
+#proc-macro = true
 #crate-type = ["staticlib", "rlib"]
 #crate-type = ["staticlib", "rlib"]
 

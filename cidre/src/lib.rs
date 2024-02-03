@@ -46,6 +46,9 @@ pub mod cm;
 #[cfg(feature = "core_motion")]
 pub mod core_motion;
 
+#[cfg(target_os = "macos")]
+pub mod core_audio;
+
 /// Core Video
 #[cfg(feature = "cv")]
 pub mod cv;

@@ -28,6 +28,7 @@ impl App {
         ns::NotificationName::audio_app_input_mute_state_change()
     }
 
+    #[doc(alias = "AVAudioApplicationMuteStateKey")]
     #[inline]
     pub fn mute_state_key() -> &'static ns::String {
         unsafe { AVAudioApplicationMuteStateKey }
