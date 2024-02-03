@@ -26,6 +26,19 @@ where
     f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
 }
 
+pub fn if_err<'ear, F>(f: F) -> Result<(), &'ear ns::Error>
+where
+    F: FnOnce(*mut Option<&'ear ns::Error>),
+{
+    let mut err = None;
+    f(&mut err);
+    if let Some(err) = err {
+        Err(err)
+    } else {
+        Ok(())
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "NSError")]
     pub Error(ns::Id)

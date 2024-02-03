@@ -235,13 +235,9 @@ impl Engine {
         format: &av::AudioFormat,
         max_frame_count: av::AudioFrameCount,
     ) -> Result<(), &'ar ns::Error> {
-        let mut error = None;
-        unsafe { self.enable_manual_rendering_mode_err(mode, format, max_frame_count, &mut error) };
-        if let Some(err) = error {
-            Err(err)
-        } else {
-            Ok(())
-        }
+        ns::if_err(|err| unsafe {
+            self.enable_manual_rendering_mode_err(mode, format, max_frame_count, err)
+        })
     }
 
     #[objc::msg_send(disableManualRenderingMode)]
