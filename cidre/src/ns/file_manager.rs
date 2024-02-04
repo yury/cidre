@@ -75,8 +75,13 @@ impl ItemReplacementOpts {
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(isize)]
 pub enum UrlRelationship {
+    #[doc(alias = "NSURLRelationshipContains")]
     Contains,
+
+    #[doc(alias = "NSURLRelationshipSame")]
     Same,
+
+    #[doc(alias = "NSURLRelationshipOther")]
     Other,
 }
 
