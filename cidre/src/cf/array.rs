@@ -13,7 +13,7 @@ pub struct Cbs {
     version: Index,
     retain: RetainCb,
     release: ReleaseCb,
-    copy_description: CopyDescCb,
+    copy_desc: CopyDescCb,
     equal: EqualCb,
 }
 
@@ -24,7 +24,10 @@ impl Cbs {
     }
 }
 
-define_cf_type!(Array(Type));
+define_cf_type!(
+    #[doc(alias = "CFArray")]
+    Array(Type)
+);
 
 #[derive(Debug)]
 #[repr(transparent)]

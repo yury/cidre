@@ -5,8 +5,15 @@ use crate::{arc, cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
-define_cf_type!(Data(cf::Type));
-define_cf_type!(DataMut(Data));
+define_cf_type!(
+    #[doc(alias = "CFData")]
+    Data(cf::Type)
+);
+
+define_cf_type!(
+    #[doc(alias = "CFMutableData")]
+    DataMut(Data)
+);
 
 impl Data {
     #[inline]
