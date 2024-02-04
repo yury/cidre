@@ -33,6 +33,7 @@
 - command -> cmd
 - count -> len
 - descriptor -> desc
+- description -> desc
 - destination -> dst
 - error -> err
 - extension -> ext

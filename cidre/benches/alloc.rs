@@ -11,6 +11,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
     c.bench_function("array_new_with_new", |b| {
         b.iter(|| {
             ar_pool(|| {
@@ -26,6 +27,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
     c.bench_function("alloc_init_tagged", |b| {
         b.iter(|| {
             ar_pool(|| {
@@ -33,6 +35,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
     c.bench_function("alloc_tagged", |b| {
         b.iter(|| {
             ar_pool(|| {
@@ -54,6 +57,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
     c.bench_function("alloc_tagged_ar_retain", |b| {
         b.iter(|| {
             ar_pool(|| {
@@ -61,6 +65,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
     c.bench_function("alloc_with_ar", |b| {
         b.iter(|| {
             ar_pool(|| {
@@ -68,6 +73,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
     c.bench_function("alloc_with_fn_call", |b| {
         b.iter(|| {
             ar_pool(|| {
