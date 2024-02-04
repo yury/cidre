@@ -104,23 +104,27 @@ impl DataMut {
     /// # Safety
     ///
     /// use [`.push_bytes()`]
+    #[doc(alias = "CFDataAppendBytes")]
     #[inline]
     pub unsafe fn append_bytes(&mut self, bytes: *const u8, length: cf::Index) {
         CFDataAppendBytes(self, bytes, length)
     }
 
     #[inline]
+    #[doc(alias = "CFDataAppendBytes")]
     pub fn push_bytes(&mut self, bytes: &[u8]) {
         unsafe { self.append_bytes(bytes.as_ptr(), bytes.len() as _) }
     }
 
     /// # Safety
     /// use `as_mut_slice()`
+    #[doc(alias = "CFDataGetMutableBytePtr")]
     #[inline]
     pub unsafe fn bytes_ptr_mut(&mut self) -> *mut u8 {
         CFDataGetMutableBytePtr(self)
     }
 
+    #[doc(alias = "CFDataSetLength")]
     #[inline]
     pub fn set_len(&mut self, len: cf::Index) {
         unsafe { CFDataSetLength(self, len) }
