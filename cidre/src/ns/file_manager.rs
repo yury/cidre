@@ -1,16 +1,32 @@
 use crate::{arc, blocks, define_obj_type, define_opts, ns, objc, os};
 
-define_obj_type!(pub FileAttrKey(ns::String));
-define_obj_type!(pub FileAttrType(ns::String));
-define_obj_type!(pub FileProtectionType(ns::String));
+define_obj_type!(
+    #[doc(alias = "NSFileAttributeKey")]
+    pub FileAttrKey(ns::String)
+);
 
-define_opts!(pub VolumeEnumOpts(usize));
+define_obj_type!(
+    #[doc(alias = "NSFileAttributeType")]
+    pub FileAttrType(ns::String)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSFileProtectionType")]
+    pub FileProtectionType(ns::String)
+);
+
+define_opts!(
+    #[doc(alias = "NSVolumeEnumerationOptions")]
+    pub VolumeEnumOpts(usize)
+);
 
 impl VolumeEnumOpts {
     ///  The mounted volume enumeration will skip hidden volumes.
+    #[doc(alias = "NSVolumeEnumerationSkipHiddenVolumes")]
     pub const SKIP_HIDDEN_VOLUMES: Self = Self(1 << 1);
 
     /// The mounted volume enumeration will produce file reference URLs rather than path-based URLs.
+    #[doc(alias = "NSVolumeEnumerationProduceFileReferenceURLs")]
     pub const PRODUCE_FILE_REFERENCE_URLS: Self = Self(1 << 2);
 }
 
@@ -21,19 +37,24 @@ define_opts!(
 
 impl DirEnumOpts {
     /// Causes the to perform a shallow enumeration and not descend into directories it encounters.
+    #[doc(alias = "NSDirectoryEnumerationSkipsSubdirectoryDescendants")]
     pub const SKIPS_SUBDIRECTORY_DESCENDANTS: Self = Self(1 << 0);
 
     /// Will cause the to not descend into packages.
+    #[doc(alias = "NSDirectoryEnumerationSkipsPackageDescendants")]
     pub const SKIPS_PACKAGE_DESCENDANTS: Self = Self(1 << 1);
 
     /// Causes the to not enumerate hidden files.
+    #[doc(alias = "NSDirectoryEnumerationSkipsHiddenFiles")]
     pub const SKIPS_HIDDEN_FILES: Self = Self(1 << 2);
 
     /// Causes the to enumerate each directory a second time after all of its contained files have been enumerated.
     /// Use isEnumeratingDirectoryPostOrder to differentiate a post-order enumerated directory from a pre-order one.
+    #[doc(alias = "NSDirectoryEnumerationIncludesDirectoriesPostOrder")]
     pub const INCLUDES_DIRECTORIES_POST_ORDER: Self = Self(1 << 3);
 
     /// Causes the to always produce file path URLs relative to the directoryURL. This can reduce the size of each URL object returned during enumeration.
+    #[doc(alias = "NSDirectoryEnumerationProducesRelativePathURLs")]
     pub const PRODUCES_RELATIVE_PATH_URLS: Self = Self(1 << 4);
 }
 
@@ -43,7 +64,10 @@ define_opts!(
 );
 
 impl ItemReplacementOpts {
+    #[doc(alias = "NSFileManagerItemReplacementUsingNewMetadataOnly")]
     pub const USING_NEW_METADATA_ONLY: Self = Self(1 << 0);
+
+    #[doc(alias = "NSFileManagerItemReplacementWithoutDeletingBackupItem")]
     pub const WITHOUT_DELETING_BACKUP_ITEM: Self = Self(1 << 1);
 }
 
