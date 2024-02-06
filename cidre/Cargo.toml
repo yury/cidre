@@ -100,6 +100,7 @@ core_audio = []
 wk = ["ns"]
 gc = ["ns"]
 xpc = ["ns", "blocks"]
+custom-allocator = []
 
 [dependencies]
 
@@ -116,6 +117,7 @@ criterion = "0.5"
 # linfa-reduction = "0.6.1"
 clap = { version = "4.3", features = ["default", "derive"] }
 tokio = { version = "1", features = ["signal"] }
+mimalloc = { version = "0.1" }
 
 [[bench]]
 name = "alloc"
@@ -141,9 +143,12 @@ required-features = ["am"]
 name = "am-device-mount-dev-image"
 required-features = ["am"]
 
+[[example]]
+name = "sc-record"
+required-features = ["custom-allocator"]
+
 [lib]
 #proc-macro = true
-#crate-type = ["staticlib", "rlib"]
 #crate-type = ["staticlib", "rlib"]
 
 

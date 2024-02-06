@@ -278,7 +278,13 @@ impl Allocator {
     #[doc(alias = "CFAllocatorAllocate")]
     #[inline]
     pub unsafe fn allocate(&self, size: Index, hint: OptionFlags) -> *mut c_void {
-        CFAllocatorAllocate(self, size, hint)
+        CFAllocatorAllocate(Some(self), size, hint)
+    }
+
+    #[doc(alias = "CFAllocatorAllocate")]
+    #[inline]
+    pub unsafe fn allocate_size(size: usize) -> *mut c_void {
+        CFAllocatorAllocate(None, size as isize, OptionFlags::default())
     }
 
     #[doc(alias = "CFAllocatorReallocate")]
@@ -325,7 +331,11 @@ extern "C" {
     fn CFEqual(cf1: &Type, cf2: &Type) -> bool;
     fn CFCopyDescription(cf: Option<&Type>) -> Option<arc::R<String>>;
 
-    fn CFAllocatorAllocate(allocator: &Allocator, size: Index, hint: OptionFlags) -> *mut c_void;
+    fn CFAllocatorAllocate(
+        allocator: Option<&Allocator>,
+        size: Index,
+        hint: OptionFlags,
+    ) -> *mut c_void;
     fn CFAllocatorReallocate(
         allocator: &Allocator,
         ptr: *mut c_void,

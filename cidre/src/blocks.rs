@@ -9,6 +9,9 @@ use std::{
 
 use crate::{arc, define_opts, ns, objc};
 
+#[cfg(feature = "custom-allocator")]
+use crate::cf;
+
 // block attributes
 
 pub struct NoEsc;
@@ -418,15 +421,46 @@ impl<'a, Closure: 'a + Sized> Layout2Mut<'a, Closure> {
             Flags::RETAINED_NEEDS_FREE
         };
 
-        let block = Box::new(Self {
-            isa: unsafe { &_NSConcreteMallocBlock },
-            flags,
-            reserved: 0,
-            invoke,
-            descriptor: &Self::DESCRIPTOR_2,
-            closure: mem::ManuallyDrop::new(closure),
-        });
-        Box::leak(block)
+        #[cfg(not(feature = "custom-allocator"))]
+        {
+            // we assume allocator is malloc. So it is safe
+            // to allocate with Box::new and leak
+            // so _Block_release will be able to free mem
+            let block = Box::new(Self {
+                isa: unsafe { &_NSConcreteMallocBlock },
+                flags,
+                reserved: 0,
+                invoke,
+                descriptor: &Self::DESCRIPTOR_2,
+                closure: mem::ManuallyDrop::new(closure),
+            });
+            Box::leak(block)
+        }
+        #[cfg(feature = "custom-allocator")]
+        {
+            // We can't use Box::new since global allocator could be changed.
+            // We use cf::Allocator to allocate block
+            // so _Block_release will be able to free mem
+            //
+            // Another option is to use _Block_copy from stacked block but
+            // it is another few function calls
+            let block = Self {
+                isa: unsafe { &_NSConcreteMallocBlock },
+                flags,
+                reserved: 0,
+                invoke,
+                descriptor: &Self::DESCRIPTOR_2,
+                closure: mem::ManuallyDrop::new(closure),
+            };
+
+            let layout = std::alloc::Layout::new::<Self>();
+
+            unsafe {
+                let ptr = cf::Allocator::allocate_size(layout.size());
+                *(ptr as *mut Self) = block;
+                std::mem::transmute(ptr)
+            }
+        }
     }
 }
 
