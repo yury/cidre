@@ -7,7 +7,16 @@ use crate::{arc, define_obj_type, dispatch};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-define_obj_type!(pub Queue(dispatch::Object));
+define_obj_type!(
+    #[doc(alias = "dispatch_queue")]
+    #[doc(alias = "dispatch_queue_t")]
+    #[doc(alias = "DispatchQueue")]
+    pub Queue(dispatch::Object)
+);
+
+unsafe impl Send for Queue {}
+unsafe impl Sync for Queue {}
+
 define_obj_type!(pub Global(Queue));
 define_obj_type!(pub Serial(Queue));
 define_obj_type!(pub Main(Serial));
