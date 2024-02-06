@@ -25,6 +25,12 @@ impl Date {
     #[objc::msg_send(timeIntervalSince1970)]
     pub fn time_interval_since_1970(&self) -> ns::TimeInterval;
 
+    #[objc::cls_msg_send(dateWithTimeIntervalSince1970:)]
+    pub fn with_time_interval_since_1970_ar(secs: ns::TimeInterval) -> arc::Rar<Self>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_time_interval_since_1970(secs: ns::TimeInterval) -> arc::R<Self>;
+
     #[objc::cls_msg_send(distantFuture)]
     pub fn distant_future_ar() -> arc::Rar<Self>;
 
@@ -57,5 +63,7 @@ mod tests {
         let d = ns::Date::new();
         sleep(Duration::from_millis(10));
         assert_ne!(d.time_interval_since_now(), 0.0);
+
+        let d = ns::Date::with_time_interval_since_1970(0.0);
     }
 }
