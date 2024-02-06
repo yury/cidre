@@ -8,6 +8,9 @@ use crate::{
 
 define_obj_type!(pub Object(ns::Id));
 
+unsafe impl Send for Object {}
+unsafe impl Sync for Object {}
+
 impl Object {
     #[inline]
     pub fn activate(&self) {

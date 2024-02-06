@@ -14,9 +14,6 @@ define_obj_type!(
     pub Queue(dispatch::Object)
 );
 
-unsafe impl Send for Queue {}
-unsafe impl Sync for Queue {}
-
 define_obj_type!(pub Global(Queue));
 define_obj_type!(pub Serial(Queue));
 define_obj_type!(pub Main(Serial));
