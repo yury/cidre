@@ -5,10 +5,151 @@ define_obj_type!(
     pub AttrStringKey(ns::String)
 );
 
+#[cfg(any(feature = "app", feature = "ui"))]
 impl AttrStringKey {
-    pub fn from_ns_string(string: &ns::String) -> arc::R<Self> {
-        unsafe { std::mem::transmute(string.retained()) }
+    #[inline]
+    pub fn font_name() -> &'static Self {
+        unsafe { NSFontAttributeName }
     }
+
+    #[inline]
+    pub fn paragraph_style() -> &'static Self {
+        unsafe { NSParagraphStyleAttributeName }
+    }
+
+    #[inline]
+    pub fn foreground_color() -> &'static Self {
+        unsafe { NSForegroundColorAttributeName }
+    }
+
+    #[inline]
+    pub fn background_color() -> &'static Self {
+        unsafe { NSBackgroundColorAttributeName }
+    }
+
+    #[inline]
+    pub fn ligature() -> &'static Self {
+        unsafe { NSLigatureAttributeName }
+    }
+
+    #[inline]
+    pub fn kern() -> &'static Self {
+        unsafe { NSKernAttributeName }
+    }
+
+    #[inline]
+    pub fn tracking() -> &'static Self {
+        unsafe { NSTrackingAttributeName }
+    }
+
+    #[inline]
+    pub fn strikethrough_style() -> &'static Self {
+        unsafe { NSStrikethroughStyleAttributeName }
+    }
+
+    #[inline]
+    pub fn underline_style() -> &'static Self {
+        unsafe { NSUnderlineStyleAttributeName }
+    }
+
+    #[inline]
+    pub fn stroke_color() -> &'static Self {
+        unsafe { NSStrokeColorAttributeName }
+    }
+
+    #[inline]
+    pub fn stroke_width() -> &'static Self {
+        unsafe { NSStrokeWidthAttributeName }
+    }
+
+    #[inline]
+    pub fn shadow() -> &'static Self {
+        unsafe { NSShadowAttributeName }
+    }
+
+    #[inline]
+    pub fn text_effect() -> &'static Self {
+        unsafe { NSTextEffectAttributeName }
+    }
+
+    #[inline]
+    pub fn attachment() -> &'static Self {
+        unsafe { NSAttachmentAttributeName }
+    }
+
+    #[inline]
+    pub fn link() -> &'static Self {
+        unsafe { NSLinkAttributeName }
+    }
+
+    #[inline]
+    pub fn baseline_offset() -> &'static Self {
+        unsafe { NSBaselineOffsetAttributeName }
+    }
+
+    #[inline]
+    pub fn underline_color() -> &'static Self {
+        unsafe { NSUnderlineColorAttributeName }
+    }
+
+    #[inline]
+    pub fn strikethrough_color() -> &'static Self {
+        unsafe { NSStrikethroughColorAttributeName }
+    }
+
+    #[inline]
+    pub fn writing_direction() -> &'static Self {
+        unsafe { NSWritingDirectionAttributeName }
+    }
+}
+
+#[cfg(feature = "app")]
+#[cfg(target_os = "macos")]
+#[link(name = "AppKit", kind = "framework")]
+extern "C" {
+    static NSFontAttributeName: &'static AttrStringKey;
+    static NSParagraphStyleAttributeName: &'static AttrStringKey;
+    static NSForegroundColorAttributeName: &'static AttrStringKey;
+    static NSBackgroundColorAttributeName: &'static AttrStringKey;
+    static NSLigatureAttributeName: &'static AttrStringKey;
+    static NSKernAttributeName: &'static AttrStringKey;
+    static NSTrackingAttributeName: &'static AttrStringKey;
+    static NSStrikethroughStyleAttributeName: &'static AttrStringKey;
+    static NSUnderlineStyleAttributeName: &'static AttrStringKey;
+    static NSStrokeColorAttributeName: &'static AttrStringKey;
+    static NSStrokeWidthAttributeName: &'static AttrStringKey;
+    static NSShadowAttributeName: &'static AttrStringKey;
+    static NSTextEffectAttributeName: &'static AttrStringKey;
+    static NSAttachmentAttributeName: &'static AttrStringKey;
+    static NSLinkAttributeName: &'static AttrStringKey;
+    static NSBaselineOffsetAttributeName: &'static AttrStringKey;
+    static NSUnderlineColorAttributeName: &'static AttrStringKey;
+    static NSStrikethroughColorAttributeName: &'static AttrStringKey;
+    static NSWritingDirectionAttributeName: &'static AttrStringKey;
+}
+
+#[cfg(any(target_os = "ios", target_os = "tvos"))]
+#[link(name = "UIKit", kind = "framework")]
+extern "C" {
+    static NSFontAttributeName: &'static AttrStringKey;
+    static NSParagraphStyleAttributeName: &'static AttrStringKey;
+    static NSForegroundColorAttributeName: &'static AttrStringKey;
+    static NSBackgroundColorAttributeName: &'static AttrStringKey;
+    static NSLigatureAttributeName: &'static AttrStringKey;
+    static NSKernAttributeName: &'static AttrStringKey;
+    static NSTrackingAttributeName: &'static AttrStringKey;
+    static NSStrikethroughStyleAttributeName: &'static AttrStringKey;
+    static NSUnderlineStyleAttributeName: &'static AttrStringKey;
+    static NSStrokeColorAttributeName: &'static AttrStringKey;
+    static NSStrokeWidthAttributeName: &'static AttrStringKey;
+    static NSShadowAttributeName: &'static AttrStringKey;
+    static NSTextEffectAttributeName: &'static AttrStringKey;
+    static NSAttachmentAttributeName: &'static AttrStringKey;
+    static NSLinkAttributeName: &'static AttrStringKey;
+    static NSBaselineOffsetAttributeName: &'static AttrStringKey;
+    static NSUnderlineColorAttributeName: &'static AttrStringKey;
+    static NSStrikethroughColorAttributeName: &'static AttrStringKey;
+    static NSWritingDirectionAttributeName: &'static AttrStringKey;
 }
 
 define_obj_type!(
@@ -190,7 +331,7 @@ mod tests {
 
         // let mut mstr = mcopy.string_mut();
 
-        let color_key = ct::StringAttrName::foreground_color().as_ns_attr_string_key();
+        let color_key = ns::AttrStringKey::foreground_color();
         let color_val = ns::Color::with_rgba(0.5, 0.5, 1.0, 1.0);
 
         let attrs = ns::Dictionary::with_keys_values(&[color_key], &[color_val.as_id_ref()]);
