@@ -5,6 +5,12 @@ define_obj_type!(
     pub AttrStringKey(ns::String)
 );
 
+impl AttrStringKey {
+    pub fn from_ns_string(string: &ns::String) -> arc::R<Self> {
+        unsafe { std::mem::transmute(string.retained()) }
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "NSAttributedStringFormattingContextKey")]
     pub AttrStringFormatCtxKey(ns::String)

@@ -7,12 +7,16 @@ define_obj_type!(
 
 unsafe impl Send for Color {}
 
-impl Color {
-    #[objc::cls_msg_send(colorWithWhite:alpha:)]
-    pub fn with_white_alpha_ar(white: cg::Float, alpha: cg::Float) -> arc::Rar<Self>;
+impl arc::A<Color> {
+    #[objc::cls_msg_send(initWithWhite:alpha:)]
+    pub fn init_with_white_alpha(self, white: cg::Float, alpha: cg::Float) -> arc::R<Self>;
+}
 
-    #[objc::cls_rar_retain]
-    pub fn with_white_alpha(white: cg::Float, alpha: cg::Float) -> arc::R<Self>;
+impl Color {
+    #[inline]
+    pub fn with_white_alpha(white: cg::Float, alpha: cg::Float) -> arc::R<Self> {
+        Self::alloc().init_with_white_alpha(white, alpha)
+    }
 
     #[objc::cls_msg_send(colorWithRed:green:blue:alpha:)]
     pub fn with_rgba_ar(r: cg::Float, g: cg::Float, b: cg::Float, a: cg::Float) -> arc::Rar<Self>;

@@ -212,11 +212,6 @@ impl AttrName {
     pub fn ruby_annotation() -> &'static Self {
         unsafe { kCTRubyAnnotationAttributeName }
     }
-
-    #[inline]
-    pub fn as_ns_attr_string_key(&self) -> &'static ns::AttrStringKey {
-        unsafe { std::mem::transmute(self) }
-    }
 }
 
 #[link(name = "CoreText", kind = "framework")]
