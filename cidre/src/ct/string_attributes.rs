@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type, define_opts, ns};
+use crate::{cf, define_cf_type, define_opts};
 
 define_opts!(pub UnderlineStyle(i32));
 impl UnderlineStyle {

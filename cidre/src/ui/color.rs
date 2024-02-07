@@ -8,8 +8,8 @@ define_obj_type!(
 unsafe impl Send for Color {}
 
 impl arc::A<Color> {
-    #[objc::cls_msg_send(initWithWhite:alpha:)]
-    pub fn init_with_white_alpha(self, white: cg::Float, alpha: cg::Float) -> arc::R<Self>;
+    #[objc::msg_send(initWithWhite:alpha:)]
+    pub fn init_with_white_alpha(self, white: cg::Float, alpha: cg::Float) -> arc::R<Color>;
 }
 
 impl Color {
