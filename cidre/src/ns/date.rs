@@ -12,11 +12,20 @@ define_obj_type!(
 impl arc::A<Date> {
     #[objc::msg_send(initWithTimeIntervalSinceNow:)]
     pub fn init_with_time_interval_since_now(self, secs: ns::TimeInterval) -> arc::R<Date>;
+
+    #[objc::msg_send(initWithTimeIntervalSince1970:)]
+    pub fn init_with_time_interval_since_1970(self, secs: ns::TimeInterval) -> arc::R<Date>;
 }
 
 impl Date {
+    #[inline]
     pub fn with_time_interval_since_now(secs: ns::TimeInterval) -> arc::R<Self> {
         Self::alloc().init_with_time_interval_since_now(secs)
+    }
+
+    #[inline]
+    pub fn with_time_interval_since_1970(secs: ns::TimeInterval) -> arc::R<Self> {
+        Self::alloc().init_with_time_interval_since_1970(secs)
     }
 
     #[objc::msg_send(timeIntervalSinceNow)]
@@ -24,12 +33,6 @@ impl Date {
 
     #[objc::msg_send(timeIntervalSince1970)]
     pub fn time_interval_since_1970(&self) -> ns::TimeInterval;
-
-    #[objc::cls_msg_send(dateWithTimeIntervalSince1970:)]
-    pub fn with_time_interval_since_1970_ar(secs: ns::TimeInterval) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
-    pub fn with_time_interval_since_1970(secs: ns::TimeInterval) -> arc::R<Self>;
 
     #[objc::cls_msg_send(distantFuture)]
     pub fn distant_future_ar() -> arc::Rar<Self>;
