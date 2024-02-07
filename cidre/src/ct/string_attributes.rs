@@ -214,7 +214,7 @@ impl AttrName {
     }
 
     #[inline]
-    pub fn as_ns(&self) -> &'static ns::AttrStringKey {
+    pub fn as_ns_attr_string_key(&self) -> &'static ns::AttrStringKey {
         unsafe { std::mem::transmute(self) }
     }
 }
