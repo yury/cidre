@@ -92,6 +92,52 @@ define_obj_type!(
 impl AttrStringMut {
     #[objc::msg_send(mutableString)]
     pub fn string_mut(&mut self) -> &ns::StringMut;
+
+    #[objc::msg_send(addAttribute:value:range:)]
+    pub unsafe fn add_attr_throws(
+        &mut self,
+        name: &ns::AttrStringKey,
+        val: &ns::Id,
+        range: ns::Range,
+    );
+
+    pub fn add_attr<'ear>(
+        &mut self,
+        name: &ns::AttrStringKey,
+        val: &ns::Id,
+        range: ns::Range,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.add_attr_throws(name, val, range) })
+    }
+
+    #[objc::msg_send(addAttributes:range:)]
+    pub unsafe fn add_attrs_throws(
+        &mut self,
+        attrs: &ns::Dictionary<ns::AttrStringKey, ns::Id>,
+        range: ns::Range,
+    );
+
+    pub fn add_attrs<'ear>(
+        &mut self,
+        attrs: &ns::Dictionary<ns::AttrStringKey, ns::Id>,
+        range: ns::Range,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.add_attrs_throws(attrs, range) })
+    }
+
+    #[objc::msg_send(removeAttribute:range:)]
+    pub unsafe fn remove_attr_throws(&mut self, name: &ns::AttrStringKey, range: ns::Range);
+
+    pub fn remove_attr<'ear>(
+        &mut self,
+        name: &ns::AttrStringKey,
+        range: ns::Range,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.remove_attr_throws(name, range) })
+    }
+
+    #[objc::msg_send(appendAttributedString:)]
+    pub fn append_attr_string(&mut self, val: &ns::AttrString);
 }
 
 define_opts!(
@@ -117,7 +163,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::ns;
+    use crate::{ct, ns, objc::Obj};
 
     #[test]
     fn basics() {
@@ -136,8 +182,28 @@ mod tests {
 
         let mut mcopy = copy.copy_mut();
 
-        let mut _mstr = mcopy.string_mut();
+        // let mut mstr = mcopy.string_mut();
 
+        let color_key = ct::StringAttrName::foreground_color().as_ns_attr_string_key();
+        let color_val = ns::Color::with_rgba(0.5, 0.5, 1.0, 1.0);
+
+        let attrs = ns::Dictionary::with_keys_values(&[color_key], &[color_val.as_id_ref()]);
+
+        mcopy.add_attrs(&attrs, ns::Range::new(0, 5)).expect("ok");
+        mcopy
+            .add_attr(color_key, &color_val, ns::Range::new(1000, 10))
+            .expect_err("ok");
+        mcopy
+            .add_attr(color_key, &color_val, ns::Range::new(0, 3))
+            .expect("ok");
+
+        mcopy
+            .remove_attr(color_key, ns::Range::new(100, 200))
+            .expect_err("should be out of bounds");
+
+        mcopy
+            .remove_attr(color_key, ns::Range::new(0, 5))
+            .expect("failed to remove valid range");
         // TODO: investigate
         // astr.attrs_at(1000, Some(&ns::Range::new(1000, 1000)))
         // .expect_err("Should be Exception");
