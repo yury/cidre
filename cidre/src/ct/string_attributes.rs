@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type, define_opts};
+use crate::{cf, define_cf_type, define_opts, ns};
 
 define_opts!(pub UnderlineStyle(i32));
 impl UnderlineStyle {
@@ -211,6 +211,11 @@ impl AttrName {
     #[inline]
     pub fn ruby_annotation() -> &'static Self {
         unsafe { kCTRubyAnnotationAttributeName }
+    }
+
+    #[inline]
+    pub fn as_ns(&self) -> &'static ns::AttrStringKey {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
