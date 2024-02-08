@@ -3,6 +3,10 @@ pub use application::App;
 pub use application::Delegate as AppDelegate;
 pub use application::DelegateImpl as AppDelegateImpl;
 
+mod cell;
+pub use cell::Cell;
+pub use cell::CellType;
+
 mod view;
 pub use view::View;
 

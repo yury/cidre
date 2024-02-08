@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class NS_APPLICATION;
+Class NS_CELL;
 Class NS_VIEW;
 Class NS_COLOR;
 Class NS_WINDOW;
@@ -28,6 +29,7 @@ static void app_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         NS_APPLICATION = [NSApplication class];
+        NS_CELL = [NSCell class];
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];
         NS_WINDOW = [NSWindow class];
