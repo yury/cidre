@@ -251,3 +251,6 @@ pub enum ExErr<'ar> {
     Ex(&'ar Exception),
     Err(&'ar Error),
 }
+
+#[cfg(any(feature = "app", feature = "ui"))]
+mod text_attachment;

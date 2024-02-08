@@ -16,3 +16,6 @@ pub use view_controller::ViewController;
 
 mod color;
 pub use color::Color;
+
+mod image;
+pub use image::Image;

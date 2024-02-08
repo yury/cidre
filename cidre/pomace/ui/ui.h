@@ -17,6 +17,9 @@ Class UI_VIEW;
 Class UI_COLOR;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
+Class UI_IMAGE;
+Class NS_TEXT_ATTACHMENT;
+
 
 __attribute__((constructor))
 static void ui_initializer(void)
@@ -28,6 +31,10 @@ static void ui_initializer(void)
         UI_COLOR = [UIColor class];
         UI_RESPONDER = [UIResponder class];
         UI_VIEW_CONTROLLER = [UIViewController class];
+        UI_IMAGE = [UIImage class];
+        
+        NS_TEXT_ATTACHMENT = [NSTextAttachment class];
+        
         
         initialized = 1;
     }

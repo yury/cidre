@@ -28,6 +28,9 @@ pub use responder::Responder;
 mod view_controller;
 pub use view_controller::ViewController;
 
+mod image;
+pub use image::Image;
+
 pub mod color;
 pub use color::Color;
 
