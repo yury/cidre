@@ -25,6 +25,18 @@ impl Image {
         Self::alloc().init_with_mlt_texture_options(texture, options)
     }
 
+    #[objc::msg_send(imageByClampingToRect:)]
+    pub fn clamped_to_ar(&self, rect: cg::Rect) -> arc::Rar<Self>;
+
+    #[objc::rar_retain]
+    pub fn clamped_to(&self, rect: cg::Rect) -> arc::R<Self>;
+
+    #[objc::msg_send(imageByCroppingToRect:)]
+    pub fn cropped_to_ar(&self, rect: cg::Rect) -> arc::Rar<Self>;
+
+    #[objc::rar_retain]
+    pub fn cropped_to(&self, rect: cg::Rect) -> arc::R<Self>;
+
     #[objc::cls_msg_send(blackImage)]
     pub fn black() -> &'static Self;
 

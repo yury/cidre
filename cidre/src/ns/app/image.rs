@@ -32,9 +32,46 @@ impl Image {
     pub fn with_data(data: &ns::Data) -> Option<arc::R<Self>> {
         Self::alloc().init_with_data(data)
     }
+
+    #[objc::msg_send(size)]
+    pub fn size(&self) -> ns::Size;
+
+    #[objc::msg_send(setSize:)]
+    pub fn set_size(&mut self, val: ns::Size);
 }
 
 #[link(name = "app", kind = "static")]
 extern "C" {
     static NS_IMAGE: &'static objc::Class<Image>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cg, ci, ns};
+
+    #[test]
+    fn basics() {
+        let img = ci::Image::yellow().cropped_to(cg::Rect::new(0.0, 0.0, 100.0, 100.0));
+        let ctx = ci::Context::new();
+        let tmp_path = ns::Url::with_fs_path_str("/tmp/cidre-test-image.png", false);
+        let opts = ns::Dictionary::new();
+        ctx.write_png_to_url(
+            &img,
+            &tmp_path,
+            ci::Format::rgba8(),
+            &cg::ColorSpace::device_rgb().unwrap(),
+            &opts,
+        )
+        .expect("Written");
+
+        let mut img = ns::Image::with_contents_of_url(&tmp_path).unwrap();
+        let size = img.size();
+        assert_eq!(size.width, 100.0);
+        assert_eq!(size.height, 100.0);
+
+        img.set_size(cg::Size::new(200.0, 200.0));
+        let size = img.size();
+        assert_eq!(size.width, 200.0);
+        assert_eq!(size.height, 200.0);
+    }
 }
