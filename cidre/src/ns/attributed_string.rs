@@ -209,6 +209,12 @@ impl AttrString {
     }
 
     #[inline]
+    pub fn with_str(str: &str) -> arc::R<Self> {
+        let str = ns::String::with_str(str);
+        Self::alloc().init_with_string(&str)
+    }
+
+    #[inline]
     pub fn with_string(str: &ns::String) -> arc::R<Self> {
         Self::alloc().init_with_string(str)
     }
@@ -236,9 +242,33 @@ define_obj_type!(
     NS_MUTABLE_ATTRIBUTED_STRING
 );
 
+impl arc::A<AttrStringMut> {
+    #[objc::msg_send(initWithString:)]
+    pub fn init_with_string(self, str: &ns::String) -> arc::R<AttrStringMut>;
+
+    #[objc::msg_send(initWithAttributedString:)]
+    pub fn init_with_attr_string(self, str: &ns::AttrString) -> arc::R<AttrStringMut>;
+}
+
 impl AttrStringMut {
+    #[inline]
+    pub fn with_str(str: &str) -> arc::R<Self> {
+        let str = ns::String::with_str(str);
+        Self::alloc().init_with_string(&str)
+    }
+
+    #[inline]
+    pub fn with_string(str: &ns::String) -> arc::R<Self> {
+        Self::alloc().init_with_string(str)
+    }
+
+    #[inline]
+    pub fn with_attr_string(str: &ns::AttrString) -> arc::R<Self> {
+        Self::alloc().init_with_attr_string(str)
+    }
+
     #[objc::msg_send(mutableString)]
-    pub fn string_mut(&mut self) -> &ns::StringMut;
+    pub fn string_mut(&mut self) -> &mut ns::StringMut;
 
     #[objc::msg_send(addAttribute:value:range:)]
     pub unsafe fn add_attr_throws(
@@ -310,7 +340,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ct, ns, objc::Obj};
+    use crate::{ns, objc::Obj};
 
     #[test]
     fn basics() {
@@ -351,6 +381,9 @@ mod tests {
         mcopy
             .remove_attr(color_key, ns::Range::new(0, 5))
             .expect("failed to remove valid range");
+
+        let mstr = ns::AttrStringMut::with_str("nice");
+        assert_eq!(mstr.len(), 4);
         // TODO: investigate
         // astr.attrs_at(1000, Some(&ns::Range::new(1000, 1000)))
         // .expect_err("Should be Exception");
