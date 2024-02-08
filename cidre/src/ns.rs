@@ -156,12 +156,12 @@ pub use file_manager::VolumeEnumOpts;
 
 mod path_utilities;
 pub use path_utilities::full_user_name;
-pub use path_utilities::home_directory;
-pub use path_utilities::home_directory_for_user;
-pub use path_utilities::home_directory_for_user_ar;
+pub use path_utilities::home_dir;
+pub use path_utilities::home_dir_for_user;
+pub use path_utilities::home_dir_for_user_ar;
 pub use path_utilities::search_path_for_dirs_in_domains;
 pub use path_utilities::search_path_for_dirs_in_domains_ar;
-pub use path_utilities::temporary_directory;
+pub use path_utilities::tmp_dir;
 pub use path_utilities::user_name;
 pub use path_utilities::SearchPathDirectory;
 pub use path_utilities::SearchPathDomainMask;

@@ -225,26 +225,26 @@ pub fn full_user_name() -> &'static ns::String {
 
 #[doc(alias = "NSHomeDirectory")]
 #[inline]
-pub fn home_directory() -> &'static ns::String {
+pub fn home_dir() -> &'static ns::String {
     unsafe { NSHomeDirectory() }
 }
 
 #[doc(alias = "NSTemporaryDirectory")]
 #[inline]
-pub fn temporary_directory() -> &'static ns::String {
+pub fn tmp_dir() -> &'static ns::String {
     unsafe { NSTemporaryDirectory() }
 }
 
 #[doc(alias = "NSHomeDirectoryForUser")]
 #[inline]
-pub fn home_directory_for_user_ar(user_name: Option<&ns::String>) -> Option<arc::Rar<ns::String>> {
+pub fn home_dir_for_user_ar(user_name: Option<&ns::String>) -> Option<arc::Rar<ns::String>> {
     unsafe { NSHomeDirectoryForUser(user_name) }
 }
 
 #[doc(alias = "NSHomeDirectoryForUser")]
 #[inline]
-pub fn home_directory_for_user(user_name: Option<&ns::String>) -> Option<arc::R<ns::String>> {
-    arc::rar_retain_option(home_directory_for_user_ar(user_name))
+pub fn home_dir_for_user(user_name: Option<&ns::String>) -> Option<arc::R<ns::String>> {
+    arc::rar_retain_option(home_dir_for_user_ar(user_name))
 }
 
 impl<T: Obj> ns::Array<T> {
@@ -282,11 +282,11 @@ mod tests {
 
         let _fun = ns::full_user_name();
 
-        let home = ns::home_directory();
+        let home = ns::home_dir();
         let parent = home.string_by_deleting_last_path_component();
         assert_eq!(parent.to_string(), "/Users");
 
-        let home2 = ns::home_directory_for_user(Some(ns::user_name()))
+        let home2 = ns::home_dir_for_user(Some(ns::user_name()))
             .expect("Failed to get current user home folder");
 
         assert!(home.is_equal(home2.as_ref()));
