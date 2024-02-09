@@ -77,10 +77,13 @@ mod tests {
         assert_ne!(d.time_interval_since_now(), 0.0);
 
         let _d = ns::Date::with_time_interval_since_1970(0.0);
+    }
 
+    #[test]
+    fn try_from() {
         let now = std::time::SystemTime::now();
-        let ns_d: arc::R<ns::Date> = now.try_into().unwrap();
-        let cf_d: arc::R<cf::Date> = now.try_into().unwrap();
-        ns_d.is_equal(&cf_d.as_ns());
+        let ns_date: arc::R<ns::Date> = now.try_into().unwrap();
+        let cf_date: arc::R<cf::Date> = now.try_into().unwrap();
+        ns_date.is_equal(&cf_date.as_ns());
     }
 }
