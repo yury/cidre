@@ -52,11 +52,20 @@ extern "C" {
     static NS_DATE: &'static objc::Class<ns::Date>;
 }
 
+impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {
+    type Error = std::time::SystemTimeError;
+
+    fn try_from(value: std::time::SystemTime) -> Result<Self, Self::Error> {
+        let secs = value.duration_since(std::time::UNIX_EPOCH)?.as_secs_f64();
+        Ok(ns::Date::with_time_interval_since_1970(secs))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::{thread::sleep, time::Duration};
 
-    use crate::ns;
+    use crate::{arc, ns};
 
     #[test]
     fn basics() {
@@ -68,5 +77,7 @@ mod tests {
         assert_ne!(d.time_interval_since_now(), 0.0);
 
         let _d = ns::Date::with_time_interval_since_1970(0.0);
+
+        let _d: arc::R<ns::Date> = std::time::SystemTime::now().try_into().unwrap();
     }
 }

@@ -92,6 +92,16 @@ impl PartialOrd for Date {
     }
 }
 
+impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {
+    type Error = std::time::SystemTimeError;
+
+    fn try_from(value: std::time::SystemTime) -> Result<Self, Self::Error> {
+        let secs = value.duration_since(std::time::UNIX_EPOCH)?.as_secs_f64()
+            - ABS_TIME_INTERVAL_SINCE_1970;
+        Ok(cf::Date::new_at(secs))
+    }
+}
+
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     fn CFAbsoluteTimeGetCurrent() -> AbsTime;
@@ -104,12 +114,14 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::cf;
+    use crate::{arc, cf};
 
     #[test]
     fn basics() {
         let _d1 = cf::Date::current();
         let _d2 = cf::Date::current();
+
+        let _d3: arc::R<cf::Date> = std::time::SystemTime::now().try_into().unwrap();
 
         // assert_ne!(d1, d2);
         // assert!(d1 < d2);
