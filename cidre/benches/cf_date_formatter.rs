@@ -1,6 +1,8 @@
 use cidre::{cf, ns, objc::ar_pool};
 use criterion::{criterion_group, criterion_main, Criterion};
 
+// TODO: investigate why ns::Iso8601DateFormatter is faster...
+
 pub fn criterion_benchmark(c: &mut Criterion) {
     let date = cf::Date::current();
     let cf_formatter = cf::DateFormatter::new_iso_8601();
