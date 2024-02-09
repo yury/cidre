@@ -85,6 +85,8 @@ define_cf_type!(
     DateFormatter(cf::Type)
 );
 
+unsafe impl Send for DateFormatter {}
+
 impl DateFormatter {
     #[inline]
     pub fn type_id() -> cf::TypeId {
