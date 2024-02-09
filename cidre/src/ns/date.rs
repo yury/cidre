@@ -65,7 +65,7 @@ impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {
 mod tests {
     use std::{thread::sleep, time::Duration};
 
-    use crate::{arc, ns};
+    use crate::{arc, cf, ns};
 
     #[test]
     fn basics() {
@@ -78,6 +78,9 @@ mod tests {
 
         let _d = ns::Date::with_time_interval_since_1970(0.0);
 
-        let _d: arc::R<ns::Date> = std::time::SystemTime::now().try_into().unwrap();
+        let now = std::time::SystemTime::now();
+        let ns_d: arc::R<ns::Date> = now.try_into().unwrap();
+        let cf_d: arc::R<cf::Date> = now.try_into().unwrap();
+        ns_d.is_equal(&cf_d.as_ns());
     }
 }
