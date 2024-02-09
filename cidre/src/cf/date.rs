@@ -4,6 +4,9 @@ use std::ffi::c_void;
 pub type TimeInterval = std::ffi::c_double;
 pub type AbsTime = TimeInterval;
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
 /// The current absolute time.
 ///
 /// Absolute time is measured in seconds relative to the absolute reference date of
@@ -35,12 +38,12 @@ impl Date {
 
     #[doc(alias = "CFDateCreate")]
     #[inline]
-    pub fn new_at(at: AbsTime) -> Option<arc::R<Self>> {
-        Self::new_at_in(at, None)
+    pub fn new_at(at: AbsTime) -> arc::R<Self> {
+        unsafe { std::mem::transmute(CFDateCreate(None, at)) }
     }
 
     #[inline]
-    pub fn current() -> Option<arc::R<Self>> {
+    pub fn current() -> arc::R<Self> {
         Self::new_at(abs_time_current())
     }
 
@@ -60,6 +63,12 @@ impl Date {
     #[inline]
     pub unsafe fn compare(&self, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult {
         CFDateCompare(self, other_date, context)
+    }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns(&self) -> &ns::Date {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
@@ -96,8 +105,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let _d1 = cf::Date::current().unwrap();
-        let _d2 = cf::Date::current().unwrap();
+        let _d1 = cf::Date::current();
+        let _d2 = cf::Date::current();
 
         // assert_ne!(d1, d2);
         // assert!(d1 < d2);

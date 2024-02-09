@@ -135,6 +135,10 @@ harness = false
 name = "ns_array_from"
 harness = false
 
+[[bench]]
+name = "cf_date_formatter"
+harness = false
+
 [[example]]
 name = "am-device-list"
 required-features = ["am"]

@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, cf, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSImage")]
@@ -31,6 +31,23 @@ impl Image {
     #[inline]
     pub fn with_data(data: &ns::Data) -> Option<arc::R<Self>> {
         Self::alloc().init_with_data(data)
+    }
+
+    #[objc::cls_msg_send(imageWithSystemSymbolName:accessibilityDescription:)]
+    pub fn with_sys_symbol_name_ar(
+        name: &ns::String,
+        accessibility_description: Option<&ns::String>,
+    ) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_sys_symbol_name(
+        name: &ns::String,
+        accessibility_description: Option<&ns::String>,
+    ) -> Option<arc::R<Self>>;
+
+    pub fn with_sys_symbol_str(name: &str) -> Option<arc::R<Self>> {
+        let str = unsafe { cf::String::from_str_no_copy(name) };
+        Self::with_sys_symbol_name(str.as_ns(), None)
     }
 
     #[objc::msg_send(size)]
@@ -73,5 +90,12 @@ mod tests {
         let size = img.size();
         assert_eq!(size.width, 200.0);
         assert_eq!(size.height, 200.0);
+    }
+
+    #[test]
+    fn sys_symbols() {
+        let name = ns::String::with_str("rectangle");
+        let _img = ns::Image::with_sys_symbol_name(&name, None).unwrap();
+        let _img = ns::Image::with_sys_symbol_str("rectangle").unwrap();
     }
 }

@@ -60,6 +60,11 @@ pub use date::AbsTime;
 pub use date::Date;
 pub use date::TimeInterval;
 
+mod date_formatter;
+pub use date_formatter::DateFormatter;
+pub use date_formatter::DateFormatterStyle;
+pub use date_formatter::Iso8601DateFormatOpts;
+
 mod url;
 pub use url::PathStyle;
 pub use url::Url;

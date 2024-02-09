@@ -34,6 +34,8 @@ csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 Class NS_ARRAY;
 Class NS_DATA;
 Class NS_DATE;
+Class NS_DATE_FORMATTER;
+Class NS_ISO_8601_DATE_FORMATTER;
 Class NS_DICTIONARY;
 Class NS_MACH_PORT;
 Class NS_MUTABLE_ARRAY;
@@ -122,6 +124,8 @@ static void common_initializer(void)
         NS_ARRAY = [NSArray class];
         NS_DATA = [NSData class];
         NS_DATE = [NSDate class];
+        NS_DATE_FORMATTER = [NSDateFormatter class];
+        NS_ISO_8601_DATE_FORMATTER = [NSISO8601DateFormatter class];
         NS_DICTIONARY = [NSDictionary class];
         NS_MACH_PORT = [NSMachPort class];
         NS_MUTABLE_ARRAY = [NSMutableArray class];
