@@ -19,8 +19,10 @@ pub enum DateFormatterStyle {
     Full = 4,
 }
 
-// CFISO8601DateFormatOptions
-define_opts!(pub Iso8601DateFormatOpts(usize));
+define_opts!(
+    #[doc(alias = "CFISO8601DateFormatOptions")]
+    pub Iso8601DateFormatOpts(usize)
+);
 
 impl Iso8601DateFormatOpts {
     #[doc(alias = "kCFISO8601DateFormatWithYear")]

@@ -19,6 +19,7 @@ mod date_formatter;
 pub use date_formatter::DateFormatter;
 
 mod iso_8601_date_formatter;
+pub use iso_8601_date_formatter::Iso8601DateFormatOpts;
 pub use iso_8601_date_formatter::Iso8601DateFormatter;
 
 mod progress;
