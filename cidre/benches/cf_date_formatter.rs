@@ -3,12 +3,10 @@ use criterion::{criterion_group, criterion_main, Criterion};
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     let date = cf::Date::current();
-    let cf_formatter =
-        cf::DateFormatter::new_iso_8601(cf::Iso8601DateFormatOpts::WITH_INTERNET_DATE_TIME);
-
+    let cf_formatter = cf::DateFormatter::new_iso_8601();
     let ns_formatter = ns::Iso8601DateFormatter::new();
 
-    let n = 100;
+    let n = criterion::black_box(100);
 
     c.bench_function("cf_date_formatter_with_date", |b| {
         b.iter(|| {

@@ -48,10 +48,10 @@ impl Iso8601DateFormatOpts {
     pub const WITH_DASH_SEPARATOR_IN_DATE: Self = Self(1 << 8);
 
     #[doc(alias = "kCFISO8601DateFormatWithColonSeparatorInTime")]
-    pub const WITH_COLOR_SEPARATOR_IN_TIME: Self = Self(1 << 9);
+    pub const WITH_COLON_SEPARATOR_IN_TIME: Self = Self(1 << 9);
 
     #[doc(alias = "kCFISO8601DateFormatWithColonSeparatorInTimeZone")]
-    pub const WITH_COLOR_SEPARATOR_IN_TIME_ZONE: Self = Self(1 << 10);
+    pub const WITH_COLON_SEPARATOR_IN_TIME_ZONE: Self = Self(1 << 10);
 
     #[doc(alias = "kCFISO8601DateFormatWithFractionalSeconds")]
     pub const WITH_FRACTIONAL_SECONDS: Self = Self(1 << 11);
@@ -67,9 +67,9 @@ impl Iso8601DateFormatOpts {
     #[doc(alias = "kCFISO8601DateFormatWithFullTime")]
     pub const WITH_FULL_TIME: Self = Self(
         Self::WITH_TIME.0
-            | Self::WITH_COLOR_SEPARATOR_IN_TIME.0
+            | Self::WITH_COLON_SEPARATOR_IN_TIME.0
             | Self::WITH_TIME_ZONE.0
-            | Self::WITH_COLOR_SEPARATOR_IN_TIME_ZONE.0,
+            | Self::WITH_COLON_SEPARATOR_IN_TIME_ZONE.0,
     );
 
     #[doc(alias = "kCFISO8601DateFormatWithInternetDateTime")]
@@ -88,8 +88,18 @@ impl DateFormatter {
     }
 
     #[inline]
-    pub fn new_iso_8601(format_options: Iso8601DateFormatOpts) -> arc::R<Self> {
+    pub fn new_iso_8601_with_opts(format_options: Iso8601DateFormatOpts) -> arc::R<Self> {
         unsafe { std::mem::transmute(CFDateFormatterCreateISO8601Formatter(None, format_options)) }
+    }
+
+    #[inline]
+    pub fn new_iso_8601() -> arc::R<Self> {
+        unsafe {
+            std::mem::transmute(CFDateFormatterCreateISO8601Formatter(
+                None,
+                Iso8601DateFormatOpts::WITH_INTERNET_DATE_TIME,
+            ))
+        }
     }
 
     #[inline]
@@ -185,7 +195,7 @@ mod test {
 
     #[test]
     fn basics() {
-        let formatter = cf::DateFormatter::new_iso_8601(Default::default());
+        let formatter = cf::DateFormatter::new_iso_8601_with_opts(Default::default());
         let _locale = formatter.locale();
         let date_style = formatter.date_style();
         assert_eq!(cf::DateFormatterStyle::No, date_style);
@@ -198,8 +208,7 @@ mod test {
         let string = formatter.string_from_date(&date);
         assert!(string.is_empty());
 
-        let formatter =
-            cf::DateFormatter::new_iso_8601(cf::Iso8601DateFormatOpts::WITH_INTERNET_DATE_TIME);
+        let formatter = cf::DateFormatter::new_iso_8601();
 
         let _locale = formatter.locale();
         let date_style = formatter.date_style();

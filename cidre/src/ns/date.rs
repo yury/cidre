@@ -67,6 +67,6 @@ mod tests {
         sleep(Duration::from_millis(10));
         assert_ne!(d.time_interval_since_now(), 0.0);
 
-        let d = ns::Date::with_time_interval_since_1970(0.0);
+        let _d = ns::Date::with_time_interval_since_1970(0.0);
     }
 }
