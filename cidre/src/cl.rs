@@ -13,6 +13,8 @@ mod location_manager;
 pub use location_manager::AccuracyAuthorization;
 pub use location_manager::ActivityType;
 pub use location_manager::AuthorizationStatus;
+pub use location_manager::Delegate as LocationManagerDelegate;
+pub use location_manager::DelegateImpl as LocationManagerDelegateImpl;
 pub use location_manager::LocationManager;
 
 mod location;
