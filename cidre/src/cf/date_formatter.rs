@@ -1,3 +1,5 @@
+use std::time;
+
 use crate::{arc, cf, define_cf_type, define_opts};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -113,6 +115,25 @@ impl DateFormatter {
     }
 
     #[inline]
+    pub fn with_styles_in(
+        date_style: DateFormatterStyle,
+        time_style: DateFormatterStyle,
+        locale: Option<&cf::Locale>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe { CFDateFormatterCreate(allocator, locale, date_style, time_style) }
+    }
+
+    #[inline]
+    pub fn with_styles(
+        date_style: DateFormatterStyle,
+        time_style: DateFormatterStyle,
+        locale: Option<&cf::Locale>,
+    ) -> arc::R<Self> {
+        unsafe { std::mem::transmute(CFDateFormatterCreate(None, locale, date_style, time_style)) }
+    }
+
+    #[inline]
     pub fn locale(&self) -> &cf::Locale {
         unsafe { CFDateFormatterGetLocale(self) }
     }
@@ -164,6 +185,17 @@ impl DateFormatter {
     pub fn string_from_abs_time(&self, at: cf::AbsTime) -> arc::R<cf::String> {
         unsafe { std::mem::transmute(CFDateFormatterCreateStringWithAbsoluteTime(None, self, at)) }
     }
+
+    pub fn string_from_system_time(
+        &self,
+        at: &time::SystemTime,
+    ) -> Result<arc::R<cf::String>, time::SystemTimeError> {
+        let at =
+            at.duration_since(time::UNIX_EPOCH)?.as_secs_f64() - cf::ABS_TIME_INTERVAL_SINCE_1970;
+        Ok(unsafe {
+            std::mem::transmute(CFDateFormatterCreateStringWithAbsoluteTime(None, self, at))
+        })
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
@@ -172,6 +204,13 @@ extern "C" {
     fn CFDateFormatterCreateISO8601Formatter(
         allocator: Option<&cf::Allocator>,
         format_options: Iso8601DateFormatOpts,
+    ) -> Option<arc::R<DateFormatter>>;
+
+    fn CFDateFormatterCreate(
+        allocator: Option<&cf::Allocator>,
+        locale: Option<&cf::Locale>,
+        date_style: DateFormatterStyle,
+        time_style: DateFormatterStyle,
     ) -> Option<arc::R<DateFormatter>>;
 
     fn CFDateFormatterGetLocale(formatter: &cf::DateFormatter) -> &cf::Locale;

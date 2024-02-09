@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, cf, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSDateFormatter")]
@@ -8,6 +8,24 @@ define_obj_type!(
 
 unsafe impl Send for DateFormatter {}
 unsafe impl Sync for DateFormatter {}
+
+// typedef NS_ENUM(NSUInteger, NSDateFormatterStyle) {    // date and time format styles
+//     NSDateFormatterNoStyle = kCFDateFormatterNoStyle,
+//     NSDateFormatterShortStyle = kCFDateFormatterShortStyle,
+//     NSDateFormatterMediumStyle = kCFDateFormatterMediumStyle,
+//     NSDateFormatterLongStyle = kCFDateFormatterLongStyle,
+//     NSDateFormatterFullStyle = kCFDateFormatterFullStyle
+// };
+
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(usize)]
+pub enum DateFormatterStyle {
+    No = cf::DateFormatterStyle::No as usize,
+    Short = cf::DateFormatterStyle::Short as usize,
+    Medium = cf::DateFormatterStyle::Medium as usize,
+    Long = cf::DateFormatterStyle::Long as usize,
+    Full = cf::DateFormatterStyle::Full as usize,
+}
 
 impl DateFormatter {
     #[objc::msg_send(stringFromDate:)]
@@ -21,6 +39,18 @@ impl DateFormatter {
 
     #[objc::msg_send(setDateFormat:)]
     pub fn set_date_format(&mut self, val: Option<&ns::String>);
+
+    #[objc::msg_send(dateStyle)]
+    pub fn date_style(&self) -> ns::DateFormatterStyle;
+
+    #[objc::msg_send(setDateStyle:)]
+    pub fn set_date_style(&mut self, val: ns::DateFormatterStyle);
+
+    #[objc::msg_send(timeStyle)]
+    pub fn time_style(&self) -> ns::DateFormatterStyle;
+
+    #[objc::msg_send(setTimeStyle:)]
+    pub fn set_time_style(&mut self, val: ns::DateFormatterStyle);
 }
 
 #[link(name = "ns", kind = "static")]

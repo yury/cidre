@@ -4,6 +4,9 @@ use std::ffi::c_void;
 pub type TimeInterval = std::ffi::c_double;
 pub type AbsTime = TimeInterval;
 
+pub const ABS_TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0;
+pub const ABS_TIME_INTERVAL_SINCE_1904: TimeInterval = 3061152000.0;
+
 #[cfg(feature = "ns")]
 use crate::ns;
 

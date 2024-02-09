@@ -59,6 +59,8 @@ pub use date::abs_time_current;
 pub use date::AbsTime;
 pub use date::Date;
 pub use date::TimeInterval;
+pub use date::ABS_TIME_INTERVAL_SINCE_1904;
+pub use date::ABS_TIME_INTERVAL_SINCE_1970;
 
 mod date_formatter;
 pub use date_formatter::DateFormatter;

@@ -17,6 +17,7 @@ pub use formatter::Formatter;
 
 mod date_formatter;
 pub use date_formatter::DateFormatter;
+pub use date_formatter::DateFormatterStyle;
 
 mod iso_8601_date_formatter;
 pub use iso_8601_date_formatter::Iso8601DateFormatOpts;
