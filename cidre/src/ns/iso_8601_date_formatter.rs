@@ -12,12 +12,6 @@ impl Iso8601DateFormatter {
 
     #[objc::rar_retain]
     pub fn string_from_date(&self, date: &ns::Date) -> arc::R<ns::String>;
-
-    #[objc::msg_send(dateFormat)]
-    pub fn date_format(&self) -> &ns::String;
-
-    #[objc::msg_send(setDateFormat:)]
-    pub fn set_date_format(&mut self, val: Option<&ns::String>);
 }
 
 #[link(name = "ns", kind = "static")]
@@ -32,11 +26,9 @@ mod tests {
     #[test]
     fn basics() {
         let date = ns::Date::new();
-        let formatter = ns::DateFormatter::new();
+        let formatter = ns::Iso8601DateFormatter::new();
+        formatter.as_type_ref().show();
         let str = formatter.string_from_date(&date);
-        assert!(str.is_empty());
-
-        let format = formatter.date_format();
-        assert!(format.is_empty());
+        assert!(!str.is_empty());
     }
 }
