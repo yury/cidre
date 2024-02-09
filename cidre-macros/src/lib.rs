@@ -256,14 +256,17 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                     Cow::Borrowed("None")
                                 } else {
                                     ext = "extern \"C\" ";
+                                    fn_args_str = fn_args_str.replacen("(& self", "(&self", 1);
                                     fn_args_str = fn_args_str.replacen(
-                                        "(& self",
+                                        "(&self",
                                         "(&self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
 
+                                    fn_args_str =
+                                        fn_args_str.replacen("(& mut self", "(&mut self", 1);
                                     fn_args_str = fn_args_str.replacen(
-                                        "(& mut self",
+                                        "(&mut self",
                                         "(&mut self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
