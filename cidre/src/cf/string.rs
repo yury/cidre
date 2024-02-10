@@ -51,7 +51,10 @@ impl CompareFlags {
 
 // https://github.com/apportable/Foundation/blob/master/System/CoreFoundation/src/CFString.c
 
-define_cf_type!(String(Type));
+define_cf_type!(
+    #[doc(alias = "CFStringRef")]
+    String(Type)
+);
 
 impl String {
     ///```
@@ -125,6 +128,7 @@ impl String {
         .unwrap_unchecked()
     }
 
+    #[doc(alias = "CFShowStr")]
     #[inline]
     pub fn show_str(&self) {
         unsafe { CFShowStr(self) }
@@ -140,29 +144,31 @@ impl String {
         self.len() == 0
     }
 
+    #[doc(alias = "CFStringHasSuffix")]
     #[inline]
     pub fn has_suffix(&self, suffix: &Self) -> bool {
         unsafe { CFStringHasSuffix(self, suffix) }
     }
 
-    /// CFStringHasPrefix
+    #[doc(alias = "CFStringHasPrefix")]
     #[inline]
     pub fn has_prefix(&self, prefix: &Self) -> bool {
         unsafe { CFStringHasPrefix(self, prefix) }
     }
 
-    /// CFStringGetCharacterAtIndex
+    #[doc(alias = "CFStringGetCharacterAtIndex")]
     #[inline]
     pub fn character_at_index(&self, idx: Index) -> UniChar {
         unsafe { CFStringGetCharacterAtIndex(self, idx) }
     }
 
-    /// CFStringCreateCopy
+    #[doc(alias = "CFStringCreateCopy")]
     #[inline]
     pub fn copy_in(&self, alloc: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateCopy(alloc, self) }
     }
 
+    #[doc(alias = "CFStringCreateCopy")]
     #[inline]
     pub fn copy(&self) -> arc::R<Self> {
         unsafe { std::mem::transmute(self.copy_in(None)) }
