@@ -67,6 +67,10 @@ pub use date_formatter::DateFormatter;
 pub use date_formatter::DateFormatterStyle;
 pub use date_formatter::Iso8601DateFormatOpts;
 
+mod number_formatter;
+pub use number_formatter::FormatterStyle as NumberFormatterStyle;
+pub use number_formatter::NumberFormatter;
+
 mod url;
 pub use url::PathStyle;
 pub use url::Url;
