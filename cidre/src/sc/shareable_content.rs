@@ -107,6 +107,16 @@ impl ShareableContent {
         future.await
     }
 
+    #[objc::cls_msg_send(getCurrentProcessShareableContentWithCompletionHandler:)]
+    pub fn current_process_with_ch(block: &mut blocks::ResultCompletionHandler<Self>);
+
+    #[cfg(all(feature = "blocks", feature = "async"))]
+    pub async fn current_process() -> Result<arc::R<Self>, arc::R<ns::Error>> {
+        let (future, mut block) = blocks::result();
+        Self::current_process_with_ch(&mut block);
+        future.await
+    }
+
     #[objc::cls_msg_send(infoForFilter:)]
     pub fn info_for_filter_ar(filter: &sc::ContentFilter) -> arc::Rar<Info>;
 
