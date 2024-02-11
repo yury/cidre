@@ -75,6 +75,14 @@ impl TextAttachment {
     pub fn uses_text_attachment_view(&self) -> bool;
 }
 
+impl ns::AttrString {
+    #[objc::cls_msg_send(attributedStringWithAttachment:)]
+    pub fn with_attachment_ar(attachment: &ns::TextAttachment) -> arc::Rar<Self>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_attachment(attachment: &ns::TextAttachment) -> arc::R<Self>;
+}
+
 #[cfg(target_os = "macos")]
 #[cfg(feature = "app")]
 extern "C" {

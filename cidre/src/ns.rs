@@ -265,3 +265,5 @@ pub enum ExErr<'ar> {
 
 #[cfg(any(feature = "app", feature = "ui"))]
 mod text_attachment;
+#[cfg(any(feature = "app", feature = "ui"))]
+pub use text_attachment::TextAttachment;

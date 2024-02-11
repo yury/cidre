@@ -313,8 +313,26 @@ impl AttrStringMut {
         ns::try_catch(|| unsafe { self.remove_attr_throws(name, range) })
     }
 
+    #[objc::msg_send(insertAttributedString:atIndex:)]
+    pub fn insert_attr_string(&mut self, val: &ns::AttrString, at: usize);
+
     #[objc::msg_send(appendAttributedString:)]
     pub fn append_attr_string(&mut self, val: &ns::AttrString);
+
+    #[objc::msg_send(replaceCharactersInRange:withAttributedString:)]
+    pub unsafe fn replace_with_attr_string_throws(
+        &mut self,
+        range: ns::Range,
+        attr_str: &ns::AttrString,
+    );
+
+    pub fn replace_with_attr_string<'ear>(
+        &mut self,
+        range: ns::Range,
+        attr_str: &ns::AttrString,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.replace_with_attr_string_throws(range, attr_str) })
+    }
 }
 
 define_opts!(
