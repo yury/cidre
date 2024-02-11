@@ -51,6 +51,7 @@ full = [
   "nw",
   "core_motion",
   "core_audio",
+  "wc",
   "wk",
   "gc",
   "xpc",
@@ -97,6 +98,7 @@ dispatch = ["cf", "ns"]
 da = ["cf"]
 core_motion = ["ns"]
 core_audio = []
+wc = ["ns"]
 wk = ["ns"]
 gc = ["ns"]
 xpc = ["ns", "blocks"]

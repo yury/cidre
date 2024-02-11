@@ -155,6 +155,11 @@ pub mod simd;
 #[cfg(feature = "vn")]
 pub mod vn;
 
+/// WatchConnectivity
+#[cfg(target_os = "ios")]
+#[cfg(feature = "wc")]
+pub mod wc;
+
 /// Web Kit
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 #[cfg(feature = "wk")]

@@ -136,6 +136,9 @@ fn main() {
     {
         xc_build("ui", sdk, arch, configuration);
     }
+    if sdk == "iphoneos" || sdk == "iphonesimulator" {
+        xc_build("wc", sdk, arch, configuration);
+    }
     if sdk == "macosx" || sdk == "maccatalyst" {
         xc_feature_build("sc", sdk, arch, configuration);
         xc_feature_build("app", sdk, arch, configuration);

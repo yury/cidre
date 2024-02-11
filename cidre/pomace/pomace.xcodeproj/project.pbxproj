@@ -23,6 +23,8 @@
 		D22946A72AF217A0004FAA52 /* wk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D22946A42AF217A0004FAA52 /* wk.h */; };
 		D22946B32AF22516004FAA52 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = D22946B22AF22516004FAA52 /* app.m */; };
 		D22946B42AF22516004FAA52 /* app.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D22946B12AF22516004FAA52 /* app.h */; };
+		D22A55102B78E27300114BDE /* wc.m in Sources */ = {isa = PBXBuildFile; fileRef = D22A550F2B78E27300114BDE /* wc.m */; };
+		D22A55112B78E27300114BDE /* wc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D22A550E2B78E27300114BDE /* wc.h */; };
 		D23E3BA82B4D3605006B1B9C /* gc.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E3BA72B4D3605006B1B9C /* gc.m */; };
 		D23E3BA92B4D3605006B1B9C /* gc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D23E3BA62B4D3605006B1B9C /* gc.h */; };
 		D2520D00280BFC4A00FD6562 /* sc.m in Sources */ = {isa = PBXBuildFile; fileRef = D2520CFF280BFC4A00FD6562 /* sc.m */; };
@@ -128,6 +130,16 @@
 			dstSubfolderSpec = 16;
 			files = (
 				D22946B42AF22516004FAA52 /* app.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22A550A2B78E27300114BDE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D22A55112B78E27300114BDE /* wc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +290,9 @@
 		D22946AF2AF22515004FAA52 /* libapp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libapp.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D22946B12AF22516004FAA52 /* app.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = app.h; sourceTree = "<group>"; };
 		D22946B22AF22516004FAA52 /* app.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = app.m; sourceTree = "<group>"; };
+		D22A550C2B78E27300114BDE /* libwc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwc.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D22A550E2B78E27300114BDE /* wc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wc.h; sourceTree = "<group>"; };
+		D22A550F2B78E27300114BDE /* wc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wc.m; sourceTree = "<group>"; };
 		D237F0AD293274B2005B7880 /* libSystem.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libSystem.tbd; path = usr/lib/libSystem.tbd; sourceTree = SDKROOT; };
 		D237F0AF293274C3005B7880 /* libSystem.B.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libSystem.B.tbd; path = usr/lib/libSystem.B.tbd; sourceTree = SDKROOT; };
 		D237F0B1293274EF005B7880 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -374,6 +389,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D22946AC2AF22515004FAA52 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22A55092B78E27300114BDE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -540,6 +562,15 @@
 			path = app;
 			sourceTree = "<group>";
 		};
+		D22A550D2B78E27300114BDE /* wc */ = {
+			isa = PBXGroup;
+			children = (
+				D22A550E2B78E27300114BDE /* wc.h */,
+				D22A550F2B78E27300114BDE /* wc.m */,
+			);
+			path = wc;
+			sourceTree = "<group>";
+		};
 		D23E3BA52B4D3605006B1B9C /* gc */ = {
 			isa = PBXGroup;
 			children = (
@@ -676,6 +707,7 @@
 				D21EFF092B5A96FD00C86B08 /* core_motion */,
 				D21EFF162B5CDEB000C86B08 /* un */,
 				D21EFF232B5D1ECC00C86B08 /* cl */,
+				D22A550D2B78E27300114BDE /* wc */,
 				D2FBEBF827CB653200FD974A /* Products */,
 				D2A5294F283A26B800E7B4C6 /* Frameworks */,
 			);
@@ -704,6 +736,7 @@
 				D21EFF082B5A96FD00C86B08 /* libcore_motion.a */,
 				D21EFF152B5CDEB000C86B08 /* libun.a */,
 				D21EFF222B5D1ECB00C86B08 /* libcl.a */,
+				D22A550C2B78E27300114BDE /* libwc.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -854,6 +887,23 @@
 			name = app;
 			productName = app;
 			productReference = D22946AF2AF22515004FAA52 /* libapp.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		D22A550B2B78E27300114BDE /* wc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D22A55142B78E27300114BDE /* Build configuration list for PBXNativeTarget "wc" */;
+			buildPhases = (
+				D22A55082B78E27300114BDE /* Sources */,
+				D22A55092B78E27300114BDE /* Frameworks */,
+				D22A550A2B78E27300114BDE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = wc;
+			productName = wc;
+			productReference = D22A550C2B78E27300114BDE /* libwc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D23E3BA32B4D3605006B1B9C /* gc */ = {
@@ -1093,6 +1143,9 @@
 					D22946AE2AF22515004FAA52 = {
 						CreatedOnToolsVersion = 15.1;
 					};
+					D22A550B2B78E27300114BDE = {
+						CreatedOnToolsVersion = 15.3;
+					};
 					D23E3BA32B4D3605006B1B9C = {
 						CreatedOnToolsVersion = 15.2;
 					};
@@ -1164,6 +1217,7 @@
 				D21EFF072B5A96FD00C86B08 /* core_motion */,
 				D21EFF142B5CDEAF00C86B08 /* un */,
 				D21EFF212B5D1ECB00C86B08 /* cl */,
+				D22A550B2B78E27300114BDE /* wc */,
 			);
 		};
 /* End PBXProject section */
@@ -1230,6 +1284,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D22946B32AF22516004FAA52 /* app.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D22A55082B78E27300114BDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D22A55102B78E27300114BDE /* wc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1605,6 +1667,44 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D22A55122B78E27300114BDE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D22A55132B78E27300114BDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2161,6 +2261,15 @@
 			buildConfigurations = (
 				D22946B62AF22516004FAA52 /* Debug */,
 				D22946B72AF22516004FAA52 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D22A55142B78E27300114BDE /* Build configuration list for PBXNativeTarget "wc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D22A55122B78E27300114BDE /* Debug */,
+				D22A55132B78E27300114BDE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
