@@ -8,6 +8,8 @@ pub struct Dictionary<K: Obj, V: Obj>(ns::Id, PhantomData<(K, V)>);
 
 impl<K: Obj, V: Obj> Obj for Dictionary<K, V> {}
 
+unsafe impl<K: Obj, V: Obj> Send for Dictionary<K, V> {}
+
 impl<K: Obj, V: Obj> arc::A<Dictionary<K, V>> {
     #[objc::msg_send(init)]
     pub fn init(self) -> arc::R<Dictionary<K, V>>;

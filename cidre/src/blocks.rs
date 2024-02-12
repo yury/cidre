@@ -576,6 +576,16 @@ pub fn comp1<R: std::marker::Send>() -> (Completion<R>, arc::R<Block<fn(R), Send
 }
 
 #[cfg(feature = "async")]
+pub fn retained1<R: arc::Retain + std::marker::Send>(
+) -> (Completion<arc::R<R>>, arc::R<Block<fn(&R), Send>>) {
+    let shared = Shared::new();
+    (
+        Completion(shared.clone()),
+        SendBlock::new1(move |v: &R| shared.lock().ready(v.retained())),
+    )
+}
+
+#[cfg(feature = "async")]
 pub fn ok<'a>() -> (
     Completion<Result<(), arc::R<ns::Error>>>,
     arc::R<ErrCompletionHandler>,

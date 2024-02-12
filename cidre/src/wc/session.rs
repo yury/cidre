@@ -1,4 +1,4 @@
-use crate::{define_cls, define_obj_type, ns, objc};
+use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
@@ -48,6 +48,50 @@ impl Session {
 
     #[objc::msg_send(isReachable)]
     pub fn is_reachable(&self) -> bool;
+
+    #[objc::msg_send(sendMessage:replyHandler:errorHandler:)]
+    pub fn send_msg_with_handlers(
+        &self,
+        msg: &ns::Dictionary<ns::String, ns::Id>,
+        reply_handler: Option<&mut blocks::SendBlock<fn(&ns::Dictionary<ns::String, ns::Id>)>>,
+        error_handler: Option<&mut blocks::SendBlock<fn(&ns::Error)>>,
+    );
+
+    #[cfg(feature = "async")]
+    pub async fn send_msg(
+        &self,
+        msg: &ns::Dictionary<ns::String, ns::Id>,
+    ) -> (
+        blocks::Completion<arc::R<ns::Dictionary<ns::String, ns::Id>>>,
+        blocks::Completion<arc::R<ns::Error>>,
+    ) {
+        let (reply_future, mut reply_block) = blocks::retained1();
+        let (error_future, mut error_block) = blocks::retained1();
+        self.send_msg_with_handlers(msg, Some(&mut reply_block), Some(&mut error_block));
+        (reply_future, error_future)
+    }
+
+    #[objc::msg_send(sendMessageData:replyHandler:errorHandler:)]
+    pub fn send_msg_data_with_handlers(
+        &self,
+        msg: &ns::Data,
+        reply_handler: Option<&mut blocks::SendBlock<fn(&ns::Data)>>,
+        error_handler: Option<&mut blocks::SendBlock<fn(&ns::Error)>>,
+    );
+
+    #[cfg(feature = "async")]
+    pub async fn send_msg_data(
+        &self,
+        msg: &ns::Data,
+    ) -> (
+        blocks::Completion<arc::R<ns::Data>>,
+        blocks::Completion<arc::R<ns::Error>>,
+    ) {
+        let (reply_future, mut reply_block) = blocks::retained1();
+        let (error_future, mut error_block) = blocks::retained1();
+        self.send_msg_data_with_handlers(msg, Some(&mut reply_block), Some(&mut error_block));
+        (reply_future, error_future)
+    }
 }
 
 #[link(name = "wc", kind = "static")]

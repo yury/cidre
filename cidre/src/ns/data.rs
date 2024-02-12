@@ -50,6 +50,8 @@ define_obj_type!(
     pub Data(ns::Id), NS_DATA
 );
 
+unsafe impl Send for Data {}
+
 define_obj_type!(
     #[doc(alias = "NSMutableData")]
     pub DataMut(Data), NS_MUTABLE_DATA
