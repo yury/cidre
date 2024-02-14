@@ -1,6 +1,9 @@
 use crate::{arc, cf, define_cf_type};
 
-define_cf_type!(Uuid(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFUUID")]
+    Uuid(cf::Type)
+);
 
 impl Uuid {
     #[doc(alias = "CFUUIDGetTypeID")]
@@ -47,7 +50,7 @@ impl Uuid {
     #[doc(alias = "CFUUIDCreateString")]
     #[inline]
     pub fn to_cf_string(&self) -> arc::R<cf::String> {
-        unsafe { std::mem::transmute(CFUUIDCreateString(None, self)) }
+        unsafe { self.to_cf_string_in(None).unwrap_unchecked() }
     }
 }
 
