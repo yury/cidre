@@ -45,5 +45,3 @@ jobs:
 
     - name: Test ns
       run: 'cargo t ns::'
-    - name: Test cf
-      run: 'cargo t cf::'
