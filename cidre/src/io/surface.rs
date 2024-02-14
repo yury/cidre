@@ -434,6 +434,18 @@ pub mod keys {
         unsafe { kIOSurfacePlaneComponentBitOffsets }
     }
 
+    #[doc(alias = "kIOSurfaceColorSpace")]
+    #[inline]
+    pub fn color_space() -> &'static String {
+        unsafe { kIOSurfaceColorSpace }
+    }
+
+    #[doc(alias = "kIOSurfaceICCProfile")]
+    #[inline]
+    pub fn icc_profile() -> &'static String {
+        unsafe { kIOSurfaceICCProfile }
+    }
+
     extern "C" {
         static kIOSurfaceAllocSize: &'static String;
         static kIOSurfaceWidth: &'static String;
@@ -459,6 +471,8 @@ pub mod keys {
         static kIOSurfacePixelSizeCastingAllowed: &'static String;
         static kIOSurfacePlaneComponentBitDepths: &'static String;
         static kIOSurfacePlaneComponentBitOffsets: &'static String;
+        static kIOSurfaceColorSpace: &'static String;
+        static kIOSurfaceICCProfile: &'static String;
     }
 }
 
