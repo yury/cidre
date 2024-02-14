@@ -62,3 +62,19 @@ extern "C" {
     fn CFUUIDCreateString(alloc: Option<&cf::Allocator>, uuid: &Uuid)
         -> Option<arc::R<cf::String>>;
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::cf;
+
+    #[test]
+    fn basics() {
+        let str1 = cf::Uuid::new().to_cf_string();
+        assert!(!str1.is_empty());
+
+        let str2 = cf::Uuid::new().to_cf_string();
+        assert!(!str2.is_empty());
+
+        assert!(!str1.equal(&str2));
+    }
+}
