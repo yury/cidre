@@ -43,6 +43,12 @@ impl Uuid {
     pub fn to_cf_string_in(&self, alloc: Option<&cf::Allocator>) -> Option<arc::R<cf::String>> {
         unsafe { CFUUIDCreateString(alloc, self) }
     }
+
+    #[doc(alias = "CFUUIDCreateString")]
+    #[inline]
+    pub fn to_cf_string(&self) -> arc::R<cf::String> {
+        unsafe { std::mem::transmute(CFUUIDCreateString(None, self)) }
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
