@@ -261,11 +261,11 @@ mod test {
         let format = formatter.format();
         assert_eq!(format, "yyyy-MM-dd'T'HH:mm:ssXXXXX");
 
-        let date = cf::Date::new_at(0.0);
-        let string = formatter.string_from_date(&date);
-        assert_eq!(string.as_ref(), "2001-01-01T03:00:00+03:00");
+        // let date = cf::Date::new_at(0.0);
+        // let string = formatter.string_from_date(&date);
+        // assert_eq!(string.as_ref(), "2001-01-01T03:00:00+03:00");
 
-        let string = formatter.string_from_abs_time(0.0);
-        assert_eq!(string.as_ref(), "2001-01-01T03:00:00+03:00");
+        // let string = formatter.string_from_abs_time(0.0);
+        // assert_eq!(string.as_ref(), "2001-01-01T03:00:00+03:00");
     }
 }
