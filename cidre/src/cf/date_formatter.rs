@@ -247,7 +247,7 @@ mod test {
         let format = formatter.format();
         assert!(format.is_empty());
 
-        let date = cf::Date::current();
+        let date = cf::Date::new();
         let string = formatter.string_from_date(&date);
         assert!(string.is_empty());
 

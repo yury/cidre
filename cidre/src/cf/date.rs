@@ -46,7 +46,7 @@ impl Date {
     }
 
     #[inline]
-    pub fn current() -> arc::R<Self> {
+    pub fn new() -> arc::R<Self> {
         Self::new_at(abs_time_current())
     }
 
@@ -118,8 +118,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let _d1 = cf::Date::current();
-        let _d2 = cf::Date::current();
+        let _d1 = cf::Date::new();
+        let _d2 = cf::Date::new();
 
         let _d3: arc::R<cf::Date> = std::time::SystemTime::now().try_into().unwrap();
 
