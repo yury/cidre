@@ -290,7 +290,7 @@ fn main() {
         .unwrap();
 
     let source = ns::String::with_str(LIB_SRC);
-    let lib = device.new_lib_with_src(&source, None).unwrap();
+    let lib = device.new_lib_with_src_blocking(&source, None).unwrap();
 
     let vertex_fn_name = ns::String::with_str("glyph_vertex");
     let vertex_fn = lib.new_fn(&vertex_fn_name).unwrap();

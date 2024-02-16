@@ -344,7 +344,7 @@ mod tests {
         let device = mtl::Device::sys_default().unwrap();
 
         let src = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
-        let lib = device.new_lib_with_src(&src, None).unwrap();
+        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
         let names = lib.fn_names();
         assert_eq!(1, names.len());
         let n = &names[0];
@@ -360,7 +360,7 @@ mod tests {
             let device = mtl::Device::sys_default().unwrap();
 
             let src = ns::String::with_str("vid function_a() {}");
-            let err = device.new_lib_with_src(&src, None).unwrap_err();
+            let err = device.new_lib_with_src_blocking(&src, None).unwrap_err();
 
             assert_eq!(mtl::LibError::CompileFailure, err.code());
         })
@@ -371,7 +371,7 @@ mod tests {
         let device = mtl::Device::sys_default().unwrap();
 
         let src = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src(&src, None).unwrap();
+        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
 
         let fn_name = ns::String::with_str("function_a");
         let func = lib.new_fn(&fn_name).unwrap();
@@ -385,7 +385,7 @@ mod tests {
         let device = mtl::Device::sys_default().unwrap();
 
         let src = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src(&src, None).unwrap();
+        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
 
         let fn_name = ns::String::with_str_no_copy("function_a");
         let const_values = mtl::FnConstValues::new();
@@ -412,7 +412,7 @@ mod tests {
     fn install_name() {
         let device = mtl::Device::sys_default().unwrap();
         let src = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src(&src, None).unwrap();
+        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
 
         assert!(lib.install_name().is_none());
         assert_eq!(mtl::LibType::Executable, lib.type_());

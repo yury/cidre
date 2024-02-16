@@ -136,7 +136,7 @@ impl Device {
     ) -> Option<arc::R<Lib>>;
 
     #[inline]
-    pub fn new_lib_with_src<'ear>(
+    pub fn new_lib_with_src_blocking<'ear>(
         &self,
         src: &ns::String,
         opts: Option<&mtl::CompileOpts>,
@@ -144,6 +144,7 @@ impl Device {
         ns::if_none(|err| unsafe { Self::new_lib_with_src_err(self, src, opts, err) })
     }
 
+    #[cfg(feature = "async")]
     pub async fn new_lib_with_src_opts(
         &self,
         src: &ns::String,
@@ -155,12 +156,43 @@ impl Device {
     }
 
     #[objc::msg_send(newLibraryWithSource:options:completionHandler:)]
-    pub fn new_lib_with_src_ch<'a>(
+    pub fn new_lib_with_src_ch(
         &self,
         src: &ns::String,
         ops: Option<&mtl::CompileOpts>,
         ch: &mut blocks::ResultCompletionHandler<mtl::Lib>,
     );
+
+    #[objc::msg_send(newLibraryWithStitchedDescriptor:error:)]
+    pub unsafe fn new_lib_with_stitched_desc_err<'ear>(
+        &self,
+        desc: mtl::FnStitchedLibDesc,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::Lib>>;
+
+    pub fn new_lib_with_stitched_desc_blocking<'ear>(
+        &self,
+        desc: mtl::FnStitchedLibDesc,
+    ) -> Result<arc::R<mtl::Lib>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { self.new_lib_with_stitched_desc_err(desc, err) })
+    }
+
+    #[objc::msg_send(newLibraryWithStitchedDescriptor:completionHandler:)]
+    pub fn new_lib_with_stitched_desc_ch(
+        &self,
+        desc: mtl::FnStitchedLibDesc,
+        ch: &mut blocks::ResultCompletionHandler<mtl::Lib>,
+    );
+
+    #[cfg(feature = "async")]
+    pub async fn new_lib_with_stitched_desc(
+        &self,
+        desc: mtl::FnStitchedLibDesc,
+    ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
+        let (future, mut block) = blocks::result();
+        self.new_lib_with_stitched_desc_ch(desc, &mut block);
+        future.await
+    }
 
     #[objc::msg_send(newComputePipelineStateWithFunction:error:)]
     pub unsafe fn new_compute_ps_with_fn_err<'ear>(
@@ -392,6 +424,6 @@ mod tests {
 
         let source = ns::String::with_str("void function_a() {}");
         let options = None;
-        let _lib = device.new_lib_with_src(&source, options).unwrap();
+        let _lib = device.new_lib_with_src_blocking(&source, options).unwrap();
     }
 }
