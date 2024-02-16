@@ -100,6 +100,15 @@ pub use function_constant_values::FnConstValues;
 mod function_handle;
 pub use function_handle::FnHandle;
 
+mod function_stitching;
+pub use function_stitching::FnStitchedLibDesc;
+pub use function_stitching::FnStitchingAttr;
+pub use function_stitching::FnStitchingAttrAlwaysInline;
+pub use function_stitching::FnStitchingFnNode;
+pub use function_stitching::FnStitchingGraph;
+pub use function_stitching::FnStitchingInputNode;
+pub use function_stitching::FnStitchingNode;
+
 mod argument_encoder;
 pub use argument_encoder::ArgEncoder;
 

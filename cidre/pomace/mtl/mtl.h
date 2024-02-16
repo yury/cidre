@@ -45,12 +45,20 @@ Class MTL_TILE_RENDER_PIPELINE_DESCRIPTOR;
 Class MTL_CAPTURE_DESCRIPTOR;
 Class MTL_CAPTURE_MANAGER;
 
+Class MTL_FUNCTION_STITCHING_GRAPH;
+Class MTL_FUNCTION_STITCHING_INPUT_NODE;
+Class MTL_FUNCTION_STITCHING_FUNCTION_NODE;
+Class MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR;
+Class MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+
         MTL_HEAP_DESCRIPTOR = [MTLHeapDescriptor class];
         MTL_COMPILE_OPTIONS = [MTLCompileOptions class];
         
@@ -85,7 +93,11 @@ static void mtl_initializer(void)
         MTL_CAPTURE_DESCRIPTOR = [MTLCaptureDescriptor class];
         MTL_CAPTURE_MANAGER = [MTLCaptureManager class];
         
-        initialized = 1;
+        MTL_FUNCTION_STITCHING_GRAPH = [MTLFunctionStitchingGraph class];
+        MTL_FUNCTION_STITCHING_INPUT_NODE = [MTLFunctionStitchingInputNode class];
+        MTL_FUNCTION_STITCHING_FUNCTION_NODE = [MTLFunctionStitchingFunctionNode class];
+        MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR = [MTLStitchedLibraryDescriptor class];
+        MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE = [MTLFunctionStitchingAttributeAlwaysInline class];
     }
     
 }
