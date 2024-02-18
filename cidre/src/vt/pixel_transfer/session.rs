@@ -6,14 +6,24 @@ use crate::{
     },
 };
 
-define_cf_type!(Session(vt::Session));
+define_cf_type!(
+    #[doc(alias = "VTPixelTransferSessionRef")]
+    Session(vt::Session)
+);
 
 impl Session {
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { VTPixelTransferSessionGetTypeID() }
+    }
+
+    #[doc(alias = "VTPixelTransferSessionCreate")]
     #[inline]
     pub fn create() -> Result<arc::R<Self>, os::Status> {
         Self::create_in(None)
     }
 
+    #[doc(alias = "VTPixelTransferSessionCreate")]
     #[inline]
     pub fn create_in(allocator: Option<&cf::Allocator>) -> Result<arc::R<Self>, os::Status> {
         let mut result = None;
@@ -22,60 +32,47 @@ impl Session {
 
     pub fn set_realtime(&mut self, value: bool) -> Result<(), os::Status> {
         let value: &'static cf::Boolean = value.into();
-        unsafe { self.set_property(keys::real_time(), Some(value)).result() }
+        self.set_prop(keys::real_time(), Some(value))
     }
 
     #[inline]
     pub fn set_scaling_normal(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::scaling_mode(), Some(scaling_mode::normal()))
-                .result()
-        }
+        self.set_prop(keys::scaling_mode(), Some(scaling_mode::normal()))
     }
 
     #[inline]
     pub fn set_scaling_crop_src_to_clean_aperture(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(
-                keys::scaling_mode(),
-                Some(scaling_mode::crop_src_to_clean_aperture()),
-            )
-            .result()
-        }
+        self.set_prop(
+            keys::scaling_mode(),
+            Some(scaling_mode::crop_src_to_clean_aperture()),
+        )
     }
 
     #[inline]
     pub fn set_scaling_letter_box(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::scaling_mode(), Some(scaling_mode::letter_box()))
-                .result()
-        }
+        self.set_prop(keys::scaling_mode(), Some(scaling_mode::letter_box()))
     }
 
     #[inline]
     pub fn set_scaling_trim(&mut self) -> Result<(), os::Status> {
-        unsafe {
-            self.set_property(keys::scaling_mode(), Some(scaling_mode::trim()))
-                .result()
-        }
+        self.set_prop(keys::scaling_mode(), Some(scaling_mode::trim()))
     }
 
+    #[doc(alias = "VTPixelTransferSessionInvalidate")]
     #[inline]
     pub fn invalidate(&mut self) {
         unsafe { VTPixelTransferSessionInvalidate(self) }
     }
 
+    #[doc(alias = "VTPixelTransferSessionTransferImage")]
     #[inline]
-    pub fn transfer_image(
-        &self,
-        src_buf: &cv::PixelBuf,
-        dst_buf: &cv::PixelBuf,
-    ) -> Result<(), os::Status> {
-        unsafe { VTPixelTransferSessionTransferImage(self, src_buf, dst_buf).result() }
+    pub fn transfer_image(&self, src: &cv::PixelBuf, dst: &cv::PixelBuf) -> Result<(), os::Status> {
+        unsafe { VTPixelTransferSessionTransferImage(self, src, dst).result() }
     }
 }
 
 extern "C" {
+    fn VTPixelTransferSessionGetTypeID() -> cf::TypeId;
     fn VTPixelTransferSessionCreate(
         allocator: Option<&cf::Allocator>,
         pixel_transfer_session_out: *mut Option<arc::R<Session>>,
