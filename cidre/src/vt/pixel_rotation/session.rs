@@ -1,12 +1,12 @@
 use crate::{
-    arc, cf, cv, define_cf_type, os,
-    vt::{
-        self,
-        pixel_rotation_properties::{keys, rotation},
-    },
+    arc, cf, cv, define_cf_type, os, vt,
+    vt::pixel_rotation_properties::{keys, rotation},
 };
 
-define_cf_type!(Session(vt::Session));
+define_cf_type!(
+    #[doc(alias = "VTPixelRotationSessionRef")]
+    Session(vt::Session)
+);
 
 impl Session {
     #[inline]
@@ -57,6 +57,7 @@ impl Session {
         self.set_prop(keys::flip_horizontal_orientation(), Some(value))
     }
 
+    #[doc(alias = "VTPixelRotationSessionInvalidate")]
     #[inline]
     pub fn invalidate(&mut self) {
         unsafe { VTPixelRotationSessionInvalidate(self) }
@@ -70,29 +71,20 @@ impl Session {
     /// are set describing the transferred image.  Unrecognised attachments on sourceBuffer will
     /// be propagated to destinationBuffer.
     /// Some properties may modify this behaviour; see VTPixelRotationProperties.h for more details.
+    #[doc(alias = "VTPixelRotationSessionRotateImage")]
     #[inline]
-    pub fn rotate_image(
-        &self,
-        source_buffer: &cv::PixelBuf,
-        destination_buffer: &mut cv::PixelBuf,
-    ) -> Result<(), os::Status> {
-        unsafe {
-            VTPixelRotationSessionRotateImage(self, source_buffer, destination_buffer).result()
-        }
+    pub fn rotate(&self, src: &cv::PixelBuf, dst: &mut cv::PixelBuf) -> Result<(), os::Status> {
+        unsafe { VTPixelRotationSessionRotateImage(self, src, dst).result() }
     }
 }
 
 extern "C" {
-
     fn VTPixelRotationSessionGetTypeID() -> cf::TypeId;
-
     fn VTPixelRotationSessionCreate(
         allocator: Option<&cf::Allocator>,
         pixel_rotation_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status;
-
     fn VTPixelRotationSessionInvalidate(session: &mut Session);
-
     fn VTPixelRotationSessionRotateImage(
         session: &Session,
         source_buffer: &cv::PixelBuf,
