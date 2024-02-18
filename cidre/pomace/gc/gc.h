@@ -18,10 +18,10 @@ static void gc_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+
         GC_COLOR = [GCColor class];
         GC_CONTROLLER = [GCController class];
-        
-        initialized = 1;
     }
 }
 

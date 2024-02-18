@@ -171,10 +171,10 @@ impl Desc {
     pub fn set_default_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(imageblockSampleLength)]
-    pub fn imageblock_sample_length(&self);
+    pub fn imageblock_sample_len(&self);
 
     #[objc::msg_send(setImageblockSampleLength:)]
-    pub fn set_imageblock_sample_length(&self, val: usize);
+    pub fn set_imageblock_sample_len(&self, val: usize);
 }
 
 define_obj_type!(pub ColorAttachDescArray(ns::Id));
