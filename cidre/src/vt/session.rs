@@ -39,6 +39,7 @@ impl Session {
         unsafe { self.set_properties(props).result() }
     }
 
+    #[doc(alias = "VTSessionSetProperty")]
     #[inline]
     pub fn set_prop(
         &mut self,

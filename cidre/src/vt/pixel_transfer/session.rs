@@ -1,9 +1,6 @@
 use crate::{
-    arc, cf, cv, define_cf_type, os,
-    vt::{
-        self,
-        pixel_transfer_properties::{keys, scaling_mode},
-    },
+    arc, cf, cv, define_cf_type, os, vt,
+    vt::pixel_transfer_properties::{keys, scaling_mode},
 };
 
 define_cf_type!(
@@ -12,6 +9,7 @@ define_cf_type!(
 );
 
 impl Session {
+    #[doc(alias = "VTPixelTransferSessionGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { VTPixelTransferSessionGetTypeID() }
@@ -66,7 +64,7 @@ impl Session {
 
     #[doc(alias = "VTPixelTransferSessionTransferImage")]
     #[inline]
-    pub fn transfer_image(&self, src: &cv::PixelBuf, dst: &cv::PixelBuf) -> Result<(), os::Status> {
+    pub fn transfer(&self, src: &cv::PixelBuf, dst: &cv::PixelBuf) -> Result<(), os::Status> {
         unsafe { VTPixelTransferSessionTransferImage(self, src, dst).result() }
     }
 }
