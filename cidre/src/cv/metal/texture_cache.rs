@@ -1,6 +1,9 @@
 use crate::{arc, cf, cv, define_cf_type, mtl};
 
-define_cf_type!(TextureCache(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CVMetalTextureCacheRef")]
+    TextureCache(cf::Type)
+);
 
 impl TextureCache {
     #[doc(alias = "CVMetalTextureCacheCreate")]

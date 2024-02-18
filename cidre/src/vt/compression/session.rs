@@ -125,6 +125,7 @@ impl Session {
         }
     }
 
+    #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn enc_frame(
         &mut self,
@@ -174,7 +175,7 @@ impl Session {
     #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enc_frame_with_output_handler<'a>(
+    pub fn enc_frame_with_output_handler(
         &mut self,
         image_buffer: &cv::ImageBuf,
         pts: cm::Time,
@@ -199,7 +200,7 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionGetPixelBufferPool")]
     #[inline]
-    pub fn pixel_buffer_pool(&self) -> Option<&cv::PixelBufPool> {
+    pub fn pixel_buf_pool(&self) -> Option<&cv::PixelBufPool> {
         unsafe { VTCompressionSessionGetPixelBufferPool(self) }
     }
 
