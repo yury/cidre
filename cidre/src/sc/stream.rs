@@ -424,6 +424,18 @@ pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(stream:didStopWithError:)]
     fn stream_did_stop_with_err(&mut self, stream: &Stream, error: &ns::Error);
+
+    #[objc::optional]
+    #[objc::msg_send(userDidStopStream:)]
+    fn user_did_stop_stream(&mut self, stream: &Stream);
+
+    #[objc::optional]
+    #[objc::msg_send(outputVideoEffectDidStartForStream:)]
+    fn output_video_effect_did_start_for_stream(&mut self, stream: &Stream);
+
+    #[objc::optional]
+    #[objc::msg_send(outputVideoEffectDidStopForStream:)]
+    fn output_video_effect_did_stop_for_stream(&mut self, stream: &Stream);
 }
 
 define_obj_type!(pub AnyDelegate(ns::Id));
