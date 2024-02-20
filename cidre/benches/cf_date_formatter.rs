@@ -4,7 +4,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 // TODO: investigate why ns::Iso8601DateFormatter is faster...
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    let date = cf::Date::current();
+    let date = cf::Date::new();
     let cf_iso_formatter = cf::DateFormatter::new_iso_8601();
     let ns_iso_formatter = ns::Iso8601DateFormatter::new();
     let cf_formatter = cf::DateFormatter::with_styles(
