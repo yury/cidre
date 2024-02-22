@@ -14,7 +14,7 @@ pub use buffer::AttachMode;
 pub use buffer::Buf;
 
 mod image_buffer;
-pub use image_buffer::attachment;
+pub use image_buffer::attachment as image_buf_attachment;
 pub use image_buffer::ImageBuf;
 
 pub mod pixel_buffer;

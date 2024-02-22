@@ -157,7 +157,7 @@ pub mod attachment {
 
         #[doc(alias = "kCVImageBufferYCbCrMatrixKey")]
         #[inline]
-        pub fn y_cb_cr_matrix() -> &'static cf::String {
+        pub fn ycbcr_matrix() -> &'static cf::String {
             unsafe { kCVImageBufferYCbCrMatrixKey }
         }
 
