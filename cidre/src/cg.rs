@@ -56,7 +56,7 @@ pub use image::AlphaInfo as ImageAlphaInfo;
 pub use image::Image;
 
 pub mod image_properties;
-pub use image_properties::Orientation as ImagePropertyOrientation;
+pub use image_properties::Orientation as ImagePropOrientation;
 
 mod font;
 pub use font::Font;

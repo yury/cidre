@@ -16,7 +16,7 @@ impl arc::A<ImageRequestHandler> {
     pub fn init_with_url_orientation_options(
         self,
         url: &ns::Url,
-        orientation: cg::ImagePropertyOrientation,
+        orientation: cg::ImagePropOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<ImageRequestHandler>;
 
@@ -31,7 +31,7 @@ impl arc::A<ImageRequestHandler> {
     pub fn init_with_cv_pixel_buf_orientaion_options(
         self,
         pb: &cv::PixelBuf,
-        orientation: cg::ImagePropertyOrientation,
+        orientation: cg::ImagePropOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<ImageRequestHandler>>;
 }
@@ -59,7 +59,7 @@ impl ImageRequestHandler {
 
     pub fn with_url_and_orientation(
         url: &ns::Url,
-        orientation: cg::ImagePropertyOrientation,
+        orientation: cg::ImagePropOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<Self> {
         Self::alloc().init_with_url_orientation_options(url, orientation, options)
@@ -89,7 +89,7 @@ impl ImageRequestHandler {
     #[inline]
     pub fn with_cv_pixel_buf_and_orientation(
         pb: &cv::PixelBuf,
-        orientation: cg::ImagePropertyOrientation,
+        orientation: cg::ImagePropOrientation,
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_cv_pixel_buf_orientaion_options(pb, orientation, options)
