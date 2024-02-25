@@ -22,6 +22,12 @@ impl Session {
     #[objc::cls_msg_send(defaultSession)]
     pub fn default() -> &'static mut Self;
 
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<&AnyDelegate>;
+
+    #[objc::msg_send(set_delegate:)]
+    pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
+
     #[objc::msg_send(activationState)]
     pub fn activation_state(&self) -> ActivationState;
 
@@ -93,6 +99,33 @@ impl Session {
         (reply_future, error_future)
     }
 }
+
+#[objc::obj_trait]
+pub trait Delegate: objc::Obj {
+    #[objc::msg_send(session:activationDidCompleteWithState:error:)]
+    fn session_activation_did_complete_with_state(
+        &mut self,
+        session: &Session,
+        state: ActivationState,
+        error: Option<&ns::Error>,
+    );
+
+    #[objc::msg_send(sessionDidBecomeInactive:)]
+    fn session_did_become_inactive(&mut self, session: &Session);
+
+    #[objc::msg_send(sessionDidDeactivate:)]
+    fn session_did_deactivate(&mut self, session: &Session);
+
+    #[objc::optional]
+    #[objc::msg_send(sessionWatchStateDidChange:)]
+    fn session_watch_state_did_change(&mut self, session: &Session);
+}
+
+define_obj_type!(
+    pub AnyDelegate(ns::Id)
+);
+
+impl Delegate for AnyDelegate {}
 
 #[link(name = "wc", kind = "static")]
 extern "C" {
