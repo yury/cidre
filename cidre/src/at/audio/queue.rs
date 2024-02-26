@@ -3,9 +3,11 @@ use std::{ffi::c_void, ptr::NonNull};
 use crate::{at::audio, blocks, define_opts};
 
 #[doc(alias = "AudioQueuePropertyID")]
+#[repr(transparent)]
 pub struct QueueProp(pub u32);
 
 #[doc(alias = "AudioQueueParameterID")]
+#[repr(transparent)]
 pub struct QueueParam(pub u32);
 
 #[doc(alias = "AudioQueueParameterValue")]
@@ -146,9 +148,9 @@ impl QueueProp {
 }
 
 #[repr(transparent)]
-pub struct TimePitchAlgorithm(pub u32);
+pub struct QueueTimePitchAlgorithm(pub u32);
 
-impl TimePitchAlgorithm {
+impl QueueTimePitchAlgorithm {
     /// Highest quality, most computationally expensive. Suitable for music.
     /// Default algorithm on macOS.
     #[doc(alias = "kAudioQueueTimePitchAlgorithm_Spectral")]
@@ -283,3 +285,5 @@ pub type QueueInputCb = extern "C" fn(
     u32,
     *const audio::StreamPacketDesc,
 );
+
+pub type QueuePropListenerProc = extern "C" fn(*mut c_void, &mut Queue, QueueProp);

@@ -66,5 +66,6 @@ pub use queue::QueueParamEvent;
 pub use queue::QueueParamValue;
 pub use queue::QueueProcessingTapFlags;
 pub use queue::QueueProp;
+pub use queue::QueuePropListenerProc;
+pub use queue::QueueTimePitchAlgorithm;
 pub use queue::QueueTimeline;
-pub use queue::TimePitchAlgorithm;
