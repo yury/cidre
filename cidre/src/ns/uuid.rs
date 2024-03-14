@@ -9,10 +9,10 @@ unsafe impl Send for Uuid {}
 
 impl Uuid {
     #[objc::msg_send(UUIDString)]
-    fn string_ar(&self) -> arc::Rar<ns::String>;
+    pub fn string_ar(&self) -> arc::Rar<ns::String>;
 
     #[objc::rar_retain]
-    fn string(&self) -> arc::R<ns::String>;
+    pub fn string(&self) -> arc::R<ns::String>;
 }
 
 #[link(name = "ns", kind = "static")]

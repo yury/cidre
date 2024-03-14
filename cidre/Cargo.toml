@@ -120,6 +120,8 @@ criterion = "0.5"
 clap = { version = "4.3", features = ["default", "derive"] }
 tokio = { version = "1", features = ["signal"] }
 mimalloc = { version = "0.1" }
+uuid = { version = "1.7", features = ["v4", "fast-rng", "serde"] }
+
 
 [[bench]]
 name = "alloc"
@@ -139,6 +141,10 @@ harness = false
 
 [[bench]]
 name = "cf_date_formatter"
+harness = false
+
+[[bench]]
+name = "uuid"
 harness = false
 
 [[example]]
