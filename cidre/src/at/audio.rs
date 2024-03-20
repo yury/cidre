@@ -27,8 +27,6 @@ pub use component::Desc as ComponentDesc;
 pub use component::Flags as ComponentFlags;
 pub use component::InstantiationOpts as ComponentInstantiationOpts;
 
-mod unit;
-
 mod file;
 pub use file::errors as file_errors;
 pub use file::FileID;

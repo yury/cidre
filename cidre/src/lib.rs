@@ -12,6 +12,9 @@ pub mod am;
 #[cfg(feature = "at")]
 pub mod at;
 
+#[cfg(feature = "at")]
+pub use at::au;
+
 /// AudioVisual Foundation (AVFoundation)
 #[cfg(feature = "av")]
 pub mod av;

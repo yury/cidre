@@ -5,7 +5,7 @@ use crate::ns;
 
 use super::{Allocator, ComparisonResult, Index, Type, TypeId};
 
-use std::{convert::From, ffi::c_void, time::Duration};
+use std::{ffi::c_void, time::Duration};
 
 define_cf_type!(Boolean(Type));
 
