@@ -1,4 +1,8 @@
-use crate::define_opts;
+use std::ffi::c_void;
+
+use crate::{at, define_opts, os};
+
+pub type UnitRef = crate::at::audio::ComponentInstanceRef;
 
 /// Different types of audio units
 ///
@@ -589,4 +593,176 @@ pub mod component_err {
     /// inter-app AU element formats must have sample rates matching the hardware.
     #[doc(alias = "kAudioComponentErr_InvalidFormat")]
     pub const INVALID_FORMAT: Status = Status(-66746);
+}
+
+/// Type used for audio unit properties.
+///
+/// Properties are used to describe the state of an audio unit (for instance,
+/// the input or output audio format)
+#[doc(alias = "AudioUnitPropertyID")]
+#[repr(transparent)]
+pub struct PropId(pub u32);
+
+/// Type used for audio unit scopes.
+///
+/// Apple reserves the 0 < 1024 range for
+/// audio unit scope identifiers.  
+/// Scopes are used to delineate a major attribute of an audio unit
+/// (for instance, global, input, output)
+#[doc(alias = "AudioUnitScope")]
+#[repr(transparent)]
+pub struct Scope(pub u32);
+
+/// Type used for audio unit elements.
+///
+/// Scopes can have one or more member, and a member of a scope is
+/// addressed / described by its element
+/// For instance, input bus 1 is input scope, element 1
+#[doc(alias = "AudioUnitElement")]
+#[repr(transparent)]
+pub struct Element(pub u32);
+
+/// Type used for audio unit parameters.
+///
+/// Parameters are typically used to control and set render state
+/// (for instance, filter cut-off frequency)
+#[doc(alias = "AudioUnitParameterID")]
+#[repr(transparent)]
+pub struct ParamId(pub u32);
+
+/// Type used for audio unit parameter values.
+/// The value of a given parameter is specified using this type
+#[doc(alias = "AudioUnitParameterValue")]
+pub type ParamValue = f32;
+
+/// The type of a parameter event (see AudioUnitScheduleParameter)
+#[doc(alias = "AUParameterEventType")]
+#[repr(u32)]
+pub enum ParamEventType {
+    /// The parameter event describes an immediate change to the parameter value to
+    /// the new value
+    Immediate = 1,
+
+    /// The parameter event describes a change to the parameter value that should
+    /// be applied over the specified period of time
+    Ramped = 2,
+}
+
+#[repr(C, u32)]
+pub enum ParamEventValue {
+    Immediate {
+        buf_offset: i32,
+        value: ParamValue,
+    } = ParamEventType::Immediate as u32,
+    Ramped {
+        start_buf_offset: i32,
+        duration_in_frames: u32,
+        start_value: ParamValue,
+        end_value: ParamValue,
+    } = ParamEventType::Ramped as u32,
+}
+
+impl ParamEventValue {
+    pub fn type_(&self) -> ParamEventType {
+        match self {
+            Self::Ramped { .. } => ParamEventType::Ramped,
+            Self::Immediate { .. } => ParamEventType::Immediate,
+        }
+    }
+}
+
+#[doc(alias = "AudioUnitParameterEvent")]
+#[repr(C)]
+pub struct ParamEvent {
+    /// The scope for the parameter
+    pub scope: Scope,
+
+    /// The element for the parameter
+    pub element: Element,
+
+    /// The ParamID for the parameter
+    pub param_id: ParamId,
+
+    pub value: ParamEventValue,
+}
+
+#[doc(alias = "AudioUnitParameter")]
+pub struct Param {
+    pub unit_ref: UnitRef,
+    pub param_id: ParamId,
+    pub scope: Scope,
+    pub element: Element,
+}
+
+#[doc(alias = "AudioUnitProperty")]
+pub struct Prop {
+    pub unit_ref: UnitRef,
+    pub prop_id: PropId,
+    pub scope: Scope,
+    pub element: Element,
+}
+
+#[doc(alias = "AURenderCallback")]
+pub type RenderCb = extern "C" fn(
+    in_ref_con: *mut c_void,
+    io_action_flags: &mut RenderActionFlags,
+    in_timestamp: &at::AudioTimeStamp,
+    in_bus_num: u32,
+    in_number_frames: u32,
+    io_data: *mut at::AudioBufList,
+) -> os::Status;
+
+#[doc(alias = "AudioUnitPropertyListenerProc")]
+pub type PropListenerProc = extern "C" fn(
+    in_ref_con: *mut c_void,
+    in_unit: UnitRef,
+    in_id: PropId,
+    in_scope: Scope,
+    in_element: Element,
+);
+
+#[doc(alias = "AUInputSamplesInOutputCallback")]
+pub type InputSamplesInOutputCb = extern "C" fn(
+    in_ref_con: *mut c_void,
+    in_output_ts: &at::AudioTimeStamp,
+    in_input_sample: f64,
+    in_number_input_samples: f64,
+);
+
+impl UnitRef {
+    // pub fn initialize(&mut self) -> os::Status {
+    //     unsafe { AudioUnitInitialize(self) }
+    // }
+
+    // pub fn uninitialize(&mut self) -> os::Status {
+    //     unsafe { AudioUnitUninitialize(self) }
+    // }
+}
+
+#[link(name = "AudioToolbox", kind = "framework")]
+extern "C" {
+    fn AudioUnitInitialize(in_unit: &mut UnitRef) -> os::Status;
+    fn AudioUnitUninitialize(in_unit: &mut UnitRef) -> os::Status;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{at::au, at::audio};
+    #[test]
+    fn basics() {
+        let desc = audio::ComponentDesc {
+            type_: au::Type::MIXER.0,
+            sub_type: au::SubType::SPATIAL_MIXER.0,
+            manufacturer: au::Manufacturer::APPLE.0,
+            ..Default::default()
+        };
+
+        for d in desc {
+            eprintln!(
+                "name: {} desc {:?}",
+                d.name().unwrap().as_ns(),
+                d.desc().unwrap()
+            );
+        }
+    }
 }
