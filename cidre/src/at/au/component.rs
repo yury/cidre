@@ -1,3 +1,5 @@
+use crate::define_opts;
+
 /// Different types of audio units
 ///
 /// Audio units are classified into different types, where those types perform different roles and
@@ -201,4 +203,390 @@ impl SubType {
 
     #[doc(alias = "kAudioUnitSubType_RoundTripAAC")]
     pub const ROUND_TRIP_AAC: Self = Self(u32::from_be_bytes(*b"raac"));
+}
+
+/// Apple effect audio unit sub types
+impl SubType {
+    /// A peak limiter
+    #[doc(alias = "kAudioUnitSubType_PeakLimiter")]
+    pub const PEAK_LIMITER: Self = Self(u32::from_be_bytes(*b"lmtr"));
+
+    /// A dynamics compressor/expander
+    #[doc(alias = "kAudioUnitSubType_DynamicsProcessor")]
+    pub const DYNAMICS_PROCESSOR: Self = Self(u32::from_be_bytes(*b"dcmp"));
+
+    /// A filter that passes frequencies below a specified cut-off frequency
+    #[doc(alias = "kAudioUnitSubType_LowPassFilter")]
+    pub const LOW_PASS_FILTER: Self = Self(u32::from_be_bytes(*b"lpas"));
+
+    /// A filter that passes frequencies above a specified cut-off frequency
+    #[doc(alias = "kAudioUnitSubType_HighPassFilter")]
+    pub const HIGH_PASS_FILTER: Self = Self(u32::from_be_bytes(*b"hpas"));
+
+    /// A filter that passes frequencies between a low and high cut-off frequency.
+    #[doc(alias = "kAudioUnitSubType_BandPassFilter")]
+    pub const BAND_PASS_FILTER: Self = Self(u32::from_be_bytes(*b"bpas"));
+
+    /// A filter that can be used to implement a "treble" control
+    #[doc(alias = "kAudioUnitSubType_HighShelfFilter")]
+    pub const HIGH_SHELF_FILTER: Self = Self(u32::from_be_bytes(*b"hshf"));
+
+    /// A filter that can be used to implement a "bass" control
+    #[doc(alias = "kAudioUnitSubType_LowShelfFilter")]
+    pub const LOW_SHELF_FILTER: Self = Self(u32::from_be_bytes(*b"lshf"));
+
+    /// A parametric EQ filter
+    #[doc(alias = "kAudioUnitSubType_ParametricEQ")]
+    pub const PARAMETRIC_EQ: Self = Self(u32::from_be_bytes(*b"pmeq"));
+
+    /// A distortion audio unit
+    #[doc(alias = "kAudioUnitSubType_Distortion")]
+    pub const DISTORTION: Self = Self(u32::from_be_bytes(*b"dist"));
+
+    /// A delay audio unit
+    #[doc(alias = "kAudioUnitSubType_Delay")]
+    pub const DELAY: Self = Self(u32::from_be_bytes(*b"dely"));
+
+    /// A delay that is used to delay the input a specified number of samples until
+    /// the output
+    #[doc(alias = "kAudioUnitSubType_SampleDelay")]
+    pub const SAMPLE_DELAY: Self = Self(u32::from_be_bytes(*b"sdly"));
+
+    /// A generalized N-band graphic EQ with specifiable filter types per-band
+    #[doc(alias = "kAudioUnitSubType_NBandEQ")]
+    pub const N_BAND_EQ: Self = Self(u32::from_be_bytes(*b"nbeq"));
+
+    /// A lite reverb that can be used to simulate various and different spaces
+    #[doc(alias = "kAudioUnitSubType_Reverb2")]
+    pub const REVERB2: Self = Self(u32::from_be_bytes(*b"rvb2"));
+
+    /// An audio unit that can be used to isolate a specified sound type
+    #[doc(alias = "kAudioUnitSubType_AUSoundIsolation")]
+    pub const SOUND_ISOLATION: Self = Self(u32::from_be_bytes(*b"vois"));
+}
+
+/// Apple effect audio unit sub types (macOS only)
+#[cfg(target_os = "macos")]
+impl SubType {
+    /// A 10 or 31 band Graphic EQ
+    #[doc(alias = "kAudioUnitSubType_GraphicEQ")]
+    pub const GRAPHIC_EQ: Self = Self(u32::from_be_bytes(*b"greq"));
+
+    /// A 4 band compressor/expander
+    #[doc(alias = "kAudioUnitSubType_MultiBandCompressor")]
+    pub const MULTI_BAND_COMPRESSOR: Self = Self(u32::from_be_bytes(*b"mcmp"));
+
+    /// A reverb that can be used to simulate various and different spaces
+    #[doc(alias = "kAudioUnitSubType_MatrixReverb")]
+    pub const MATRIX_REVERB: Self = Self(u32::from_be_bytes(*b"mrev"));
+
+    /// An audio unit used to change the pitch
+    #[doc(alias = "kAudioUnitSubType_Pitch")]
+    pub const PITCH: Self = Self(u32::from_be_bytes(*b"tmpt"));
+
+    /// A filter unit that combines 5 different filters (low, 3 mids, high)
+    #[doc(alias = "kAudioUnitSubType_AUFilter")]
+    pub const FILTER: Self = Self(u32::from_be_bytes(*b"filt"));
+
+    /// An audio unit that is used in conjunction with _NetReceive to send audio
+    /// across the network (or between different applications)
+    #[doc(alias = "kAudioUnitSubType_NetSend")]
+    pub const NET_SEND: Self = Self(u32::from_be_bytes(*b"nsnd"));
+
+    /// An audio unit that can be used to emit a short tone in gaps between speech
+    /// similar to the tones used in a walkie-talkie
+    #[doc(alias = "kAudioUnitSubType_RogerBeep")]
+    pub const ROGER_BEEP: Self = Self(u32::from_be_bytes(*b"rogr"));
+}
+
+/// Apple mixer audio unit sub types
+///
+/// These are the subtypes for the various mixer units that apple ships
+impl SubType {
+    /// Can have any number of inputs, with any number of channels on any input to one
+    /// output bus with any number of channels.
+    #[doc(alias = "kAudioUnitSubType_MultiChannelMixer")]
+    pub const MULTI_CHANNEL_MIXER: Self = Self(u32::from_be_bytes(*b"mcmx"));
+
+    /// Any number of input and output buses with any number of channels on any bus.
+    /// The mix is presented as a matrix of channels that can be controlled through
+    /// input volume per channel, "cross-point" volume (a given input channel to a
+    /// given output channel), output volume per channel and a global volume across
+    /// the whole matrix
+    #[doc(alias = "kAudioUnitSubType_MatrixMixer")]
+    pub const MATRIX_MIXER: Self = Self(u32::from_be_bytes(*b"mxmx"));
+
+    /// Inputs that are mono will be panned around using 3D coordinates and parameters.
+    /// Stereo inputs are passed directly through to the output.
+    /// A single output is presented with 2, 4, 5, 6, 7 or 8 channels.
+    /// There is also a built in reverb.
+    #[doc(alias = "kAudioUnitSubType_SpatialMixer")]
+    pub const SPATIAL_MIXER: Self = Self(u32::from_be_bytes(*b"3dem"));
+}
+
+/// Apple mixer audio unit sub types (macOS only)
+#[cfg(target_os = "macos")]
+impl SubType {
+    /// Inputs can be mono or stereo. Single stereo output
+    #[doc(alias = "kAudioUnitSubType_StereoMixer")]
+    pub const STEREO_MIXER: Self = Self(u32::from_be_bytes(*b"smxr"));
+}
+
+/// Apple generator audio unit sub types
+impl SubType {
+    /// A generator unit that is paired with _NetSend to receive the audio that unit
+    /// sends. It presents a custom UI so can be used in a UI context as well
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitSubType_NetReceive")]
+    pub const NET_RECEIVE: Self = Self(u32::from_be_bytes(*b"nrcv"));
+
+    /// A generator unit that can be used to schedule slices of audio to be played at
+    /// a specified time. The audio is scheduled using the time stamps for the render
+    /// operation, and can be scheduled from any thread.
+    #[doc(alias = "kAudioUnitSubType_ScheduledSoundPlayer")]
+    pub const SCHEDULED_SOUND_PLAYER: Self = Self(u32::from_be_bytes(*b"sspl"));
+
+    /// A generator unit that is used to play a file. It presents a custom UI so can
+    /// be used in a UI context as well
+    #[doc(alias = "kAudioUnitSubType_AudioFilePlayer")]
+    pub const AUDIO_FILE_PLAYER: Self = Self(u32::from_be_bytes(*b"afpl"));
+}
+
+define_opts!(
+    #[doc(alias = "AudioUnitRenderActionFlags")]
+    pub RenderActionFlags(u32)
+);
+
+/// These flags can be set in a callback from an audio unit during an audio unit
+/// render operation from either the RenderNotify Proc or the render input
+/// callback.
+impl RenderActionFlags {
+    /// Called on a render notification Proc - which is called either before or after
+    /// the render operation of the audio unit. If this flag is set, the proc is being
+    /// called before the render operation is performed.
+    #[doc(alias = "kAudioUnitRenderAction_PreRender")]
+    pub const PRE_RENDER: Self = Self(1u32 << 2);
+
+    /// Called on a render notification Proc - which is called either before or after
+    /// the render operation of the audio unit. If this flag is set, the proc is being
+    /// called after the render operation is completed.
+    #[doc(alias = "kAudioUnitRenderAction_PostRender")]
+    pub const POST_RENDER: Self = Self(1u32 << 3);
+
+    /// The originator of a buffer, in a render input callback, or in an audio unit's
+    /// render operation, may use this flag to indicate that the buffer contains
+    /// only silence.
+    ///
+    /// The receiver of the buffer can then use the flag as a hint as to whether the
+    /// buffer needs to be processed or not.
+    ///
+    /// Note that because the flag is only a hint, when setting the silence flag,
+    /// the originator of a buffer must also ensure that it contains silence (zeroes).
+    #[doc(alias = "kAudioUnitRenderAction_OutputIsSilence")]
+    pub const OUTPUT_IS_SILENCE: Self = Self(1u32 << 4);
+
+    /// This is used with offline audio units (of type 'auol'). It is used when an
+    /// offline unit is being preflighted, which is performed prior to the actual
+    /// offline rendering actions are performed. It is used for those cases where the
+    /// offline process needs it (for example, with an offline unit that normalises an
+    /// audio file, it needs to see all of the audio data first before it can perform
+    /// its normalization)
+    #[doc(alias = "kAudioOfflineUnitRenderAction_Preflight")]
+    pub const PREFLIGHT: Self = Self(1u32 << 5);
+
+    /// Once an offline unit has been successfully preflighted, it is then put into
+    /// its render mode. So this flag is set to indicate to the audio unit that it is
+    /// now in that state and that it should perform its processing on the input data.
+    #[doc(alias = "kAudioOfflineUnitRenderAction_Render")]
+    pub const RENDER: Self = Self(1u32 << 6);
+
+    /// This flag is set when an offline unit has completed either its preflight or
+    /// performed render operations
+    #[doc(alias = "kAudioOfflineUnitRenderAction_Complete")]
+    pub const COMPLETE: Self = Self(1u32 << 7);
+
+    /// If this flag is set on the post-render call an error was returned by the
+    /// AUs render operation. In this case, the error can be retrieved through the
+    /// lastRenderError property and the audio data in ioData handed to the post-render
+    /// notification will be invalid.
+    #[doc(alias = "kAudioUnitRenderAction_PostRenderError")]
+    pub const POST_RENDER_ERROR: Self = Self(1u32 << 8);
+
+    /// If this flag is set, then checks that are done on the arguments provided to render
+    /// are not performed. This can be useful to use to save computation time in
+    /// situations where you are sure you are providing the correct arguments
+    /// and structures to the various render calls
+    #[doc(alias = "kAudioUnitRenderAction_DoNotCheckRenderArgs")]
+    pub const DO_NOT_CHECK_RENDER_ARGS: Self = Self(1u32 << 9);
+}
+
+/// Audio unit errors
+///
+/// These are the various errors that can be returned by AudioUnit API calls
+pub mod err {
+    use crate::os::Status;
+
+    /// The property is not supported
+    #[doc(alias = "kAudioUnitErr_InvalidProperty")]
+    pub const INVALID_PROPERTY: Status = Status(-10879);
+
+    /// The parameter is not supported
+    #[doc(alias = "kAudioUnitErr_InvalidParameter")]
+    pub const INVALID_PARAMETER: Status = Status(-10878);
+
+    /// The specified element is not valid
+    #[doc(alias = "kAudioUnitErr_InvalidElement")]
+    pub const INVALID_ELEMENT: Status = Status(-10877);
+
+    /// There is no connection (generally an audio unit is asked to render but it has
+    /// not input from which to gather data)
+    #[doc(alias = "kAudioUnitErr_NoConnection")]
+    pub const NO_CONNECTION: Status = Status(-10876);
+
+    /// The audio unit is unable to be initialized
+    #[doc(alias = "kAudioUnitErr_FailedInitialization")]
+    pub const FAILED_INITIALIZATION: Status = Status(-10875);
+
+    /// When an audio unit is initialized it has a value which specifies the max
+    /// number of frames it will be asked to render at any given time. If an audio
+    /// unit is asked to render more than this, this error is returned.
+    #[doc(alias = "kAudioUnitErr_TooManyFramesToProcess")]
+    pub const TOO_MANY_FRAMES_TO_PROCESS: Status = Status(-10874);
+
+    /// If an audio unit uses external files as a data source, this error is returned
+    /// if a file is invalid (Apple's DLS synth returns this error)
+    #[doc(alias = "kAudioUnitErr_InvalidFile")]
+    pub const INVALID_FILE: Status = Status(-10871);
+
+    /// If an audio unit uses external files as a data source, this error is returned
+    /// if a file is invalid (Apple's DLS synth returns this error)
+    #[doc(alias = "kAudioUnitErr_UnknownFileType")]
+    pub const UNKNOWN_FILE_TYPE: Status = Status(-10870);
+
+    /// If an audio unit uses external files as a data source, this error is returned
+    /// if a file hasn't been set on it
+    /// (Apple's DLS synth returns this error)
+    #[doc(alias = "kAudioUnitErr_FileNotSpecified")]
+    pub const FILE_NOT_SPECIFIED: Status = Status(-10869);
+
+    /// Returned if an input or output format is not supported
+    #[doc(alias = "kAudioUnitErr_FormatNotSupported")]
+    pub const FORMAT_NOT_SUPPORTED: Status = Status(-10868);
+
+    /// Returned if an operation requires an audio unit to be initialized and it is
+    /// not.
+    #[doc(alias = "kAudioUnitErr_Uninitialized")]
+    pub const UNINITIALIZED: Status = Status(-10867);
+
+    /// The specified scope is invalid
+    #[doc(alias = "kAudioUnitErr_InvalidScope")]
+    pub const INVALID_SCOPE: Status = Status(-10866);
+
+    /// The property cannot be written
+    #[doc(alias = "kAudioUnitErr_PropertyNotWritable")]
+    pub const PROPERTY_NOT_WRITABLE: Status = Status(-10865);
+
+    /// Returned when an audio unit is in a state where it can't perform the requested
+    /// action now - but it could later. Its usually used to guard a render operation
+    /// when a reconfiguration of its internal state is being performed.
+    #[doc(alias = "kAudioUnitErr_CannotDoInCurrentContext")]
+    pub const CANNOT_DO_IN_CURRENT_CONTEXT: Status = Status(-10863);
+
+    /// The property is valid, but the value of the property being provided is not
+    #[doc(alias = "kAudioUnitErr_InvalidPropertyValue")]
+    pub const INVALID_PROPERTY_VALUE: Status = Status(-10851);
+
+    /// Returned when a property is valid, but it hasn't been set to a valid value at
+    /// this time.
+    #[doc(alias = "kAudioUnitErr_PropertyNotInUse")]
+    pub const PROPERTY_NOT_IN_USE: Status = Status(-10850);
+
+    /// Indicates the operation cannot be performed because the audio unit is
+    /// initialized.
+    #[doc(alias = "kAudioUnitErr_Initialized")]
+    pub const INITIALIZED: Status = Status(-10849);
+
+    /// Used to indicate that the offline render operation is invalid. For instance,
+    /// when the audio unit needs to be pre-flighted,
+    /// but it hasn't been.
+    #[doc(alias = "kAudioUnitErr_InvalidOfflineRender")]
+    pub const INVALID_OFFLINE_RENDER: Status = Status(-10848);
+
+    /// Returned by either Open or Initialize, this error is used to indicate that the
+    /// audio unit is not authorised, that it cannot be used. A host can then present
+    /// a UI to notify the user the audio unit is not able to be used in its current
+    /// state.
+    #[doc(alias = "kAudioUnitErr_Unauthorized")]
+    pub const UNAUTHORIZED: Status = Status(-10847);
+
+    /// Returned during the render call, if the audio unit produces more MIDI output,
+    /// than the default allocated buffer. The audio unit can provide a size hint, in
+    /// case it needs a larger buffer. See the documentation for AUAudioUnit's
+    /// MIDIOutputBufferSizeHint property.
+    #[doc(alias = "kAudioUnitErr_MIDIOutputBufferFull")]
+    pub const MIDI_OUTPUT_BUFFER_FULL: Status = Status(-66753);
+
+    /// The audio unit did not satisfy the render request in time.
+    #[doc(alias = "kAudioUnitErr_RenderTimeout")]
+    pub const RENDER_TIMEOUT: Status = Status(-66745);
+
+    /// The specified identifier did not match any Audio Unit Extensions.
+    #[doc(alias = "kAudioUnitErr_ExtensionNotFound")]
+    pub const EXTENSION_NOT_FOUND: Status = Status(-66744);
+
+    /// The parameter value is not supported, e.g. the value specified is NaN or
+    /// infinite.
+    #[doc(alias = "kAudioUnitErr_InvalidParameterValue")]
+    pub const INVALID_PARAMETER_VALUE: Status = Status(-66743);
+
+    /// The file path that was passed is not supported. It is either too long or contains
+    /// invalid characters.
+    #[doc(alias = "kAudioUnitErr_InvalidFilePath")]
+    pub const INVALID_FILE_PATH: Status = Status(-66742);
+
+    /// A required key is missing from a dictionary object.
+    #[doc(alias = "kAudioUnitErr_MissingKey")]
+    pub const MISSING_KEY: Status = Status(-66741);
+
+    /// The operation can not be performed for a component instance instantiated using the
+    /// deprecated Component Manager. A host application should use the API functions
+    /// AudioComponentInstantiate or AudioComponentInstanceNew when rebuilding
+    /// against the macOS 11 or later SDK.
+    #[doc(alias = "kAudioUnitErr_ComponentManagerNotSupported")]
+    pub const COMPONENT_MANAGER_NOT_SUPPORTED: Status = Status(-66749);
+}
+
+pub mod component_err {
+    use crate::os::Status;
+
+    #[doc(alias = "kAudioComponentErr_InstanceTimedOut")]
+    pub const INSTANCE_TIMED_OUT: Status = Status(-66754);
+
+    #[doc(alias = "kAudioComponentErr_InstanceInvalidated")]
+    pub const INSTANCE_INVALIDATED: Status = Status(-66749);
+
+    /// a non-unique component description was provided to AudioOutputUnitPublish
+    #[doc(alias = "kAudioComponentErr_DuplicateDescription")]
+    pub const DUPLICATE_DESCRIPTION: Status = Status(-66752);
+
+    /// an unsupported component type was provided to AudioOutputUnitPublish
+    #[doc(alias = "kAudioComponentErr_UnsupportedType")]
+    pub const UNSUPPORTED_TYPE: Status = Status(-66751);
+
+    /// components published via AudioOutputUnitPublish may only have one instance
+    #[doc(alias = "kAudioComponentErr_TooManyInstances")]
+    pub const TOO_MANY_INSTANCES: Status = Status(-66750);
+
+    /// app needs "inter-app-audio" entitlement or host app needs "audio" in its UIBackgroundModes.
+    /// Or app is trying to register a component not declared in its Info.plist.
+    #[doc(alias = "kAudioComponentErr_NotPermitted")]
+    pub const NOT_PERMITTED: Status = Status(-66748);
+
+    /// host did not render in a timely manner; must uninitialize and reinitialize.
+    #[doc(alias = "kAudioComponentErr_InitializationTimedOut")]
+    pub const INITIALIZATION_TIMED_OUT: Status = Status(-66747);
+
+    /// inter-app AU element formats must have sample rates matching the hardware.
+    #[doc(alias = "kAudioComponentErr_InvalidFormat")]
+    pub const INVALID_FORMAT: Status = Status(-66746);
 }
