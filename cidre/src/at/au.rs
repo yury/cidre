@@ -2,6 +2,7 @@ mod component;
 pub use component::component_err;
 pub use component::err;
 pub use component::Element;
+pub use component::InputSamplesInOutputCb;
 pub use component::Manufacturer;
 pub use component::Param;
 pub use component::ParamEvent;

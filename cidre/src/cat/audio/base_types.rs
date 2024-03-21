@@ -45,15 +45,15 @@ pub mod errors {
 #[derive(Debug, PartialEq, Clone, Copy)]
 #[repr(C)]
 pub struct ValueRange {
-    pub minimum: f64,
-    pub maximum: f64,
+    pub min: f64,
+    pub max: f64,
 }
 
 impl Default for ValueRange {
     fn default() -> Self {
         Self {
-            minimum: 0.0f64,
-            maximum: 0.0f64,
+            min: 0.0f64,
+            max: 0.0f64,
         }
     }
 }

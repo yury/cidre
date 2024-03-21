@@ -703,8 +703,8 @@ pub struct Prop {
 }
 
 #[doc(alias = "AURenderCallback")]
-pub type RenderCb = extern "C" fn(
-    in_ref_con: *mut c_void,
+pub type RenderCb<T = c_void> = extern "C" fn(
+    in_ref_con: *mut T,
     io_action_flags: &mut RenderActionFlags,
     in_timestamp: &at::AudioTimeStamp,
     in_bus_num: u32,
@@ -713,8 +713,8 @@ pub type RenderCb = extern "C" fn(
 ) -> os::Status;
 
 #[doc(alias = "AudioUnitPropertyListenerProc")]
-pub type PropListenerProc = extern "C" fn(
-    in_ref_con: *mut c_void,
+pub type PropListenerProc<T = c_void> = extern "C" fn(
+    in_ref_con: *mut T,
     in_unit: UnitRef,
     in_id: PropId,
     in_scope: Scope,
@@ -722,8 +722,8 @@ pub type PropListenerProc = extern "C" fn(
 );
 
 #[doc(alias = "AUInputSamplesInOutputCallback")]
-pub type InputSamplesInOutputCb = extern "C" fn(
-    in_ref_con: *mut c_void,
+pub type InputSamplesInOutputCb<T = c_void> = extern "C" fn(
+    in_ref_con: *mut T,
     in_output_ts: &at::AudioTimeStamp,
     in_input_sample: f64,
     in_number_input_samples: f64,
