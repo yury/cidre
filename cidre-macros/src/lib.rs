@@ -170,7 +170,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
     /// `@selector({extern_name})` but dynamic
     /// use this function to check if object responds to selector
     fn sel_{fn_name}() -> Option<&'static objc::Sel> {{
-        unsafe {{ Some(objc::sel_reg_name(b\"{extern_name}\\0\".as_ptr())) }}
+        unsafe {{ Some(objc::sel_reg_name(c\"{extern_name}\".as_ptr())) }}
     }}
         "
     )
@@ -270,7 +270,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                         "(&mut self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
-                                    Cow::Owned(format!("Some(unsafe {{ objc::sel_reg_name(b\"{sel}\\0\".as_ptr()) }})"))
+                                    Cow::Owned(format!("Some(unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }})"))
                                 };
 
                                 if is_optional && !sel.is_empty() && fn_body.is_empty() {
@@ -672,11 +672,11 @@ fn gen_msg_send(
             #[link_name = \"objc_msgSend\"]
             fn msg_send();
 
-            fn sel_registerName(name: *const u8) -> *const std::ffi::c_void;
+            fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
         }}
 
         unsafe {{
-            let x86_64_sel = sel_registerName(b\"{extern_name}\0\".as_ptr());
+            let x86_64_sel = sel_registerName(c\"{extern_name}\".as_ptr());
             let fn_ptr = msg_send as *const std::ffi::c_void;
             let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
 
