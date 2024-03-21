@@ -349,19 +349,19 @@ impl FileId {
     #[inline]
     pub unsafe fn set_property(
         &mut self,
-        property_id: PropId,
+        prop_id: PropId,
         data_size: u32,
-        property_data: *const c_void,
+        prop_data: *const c_void,
     ) -> os::Status {
-        AudioFileSetProperty(self.0, property_id, data_size, property_data)
+        AudioFileSetProperty(self.0, prop_id, data_size, prop_data)
     }
 
     #[inline]
-    pub unsafe fn prop_vec<T: Sized>(&self, property_id: PropId) -> Result<Vec<T>, os::Status> {
-        let (size, _writable) = self.property_info(property_id)?;
+    pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> Result<Vec<T>, os::Status> {
+        let (size, _writable) = self.property_info(prop_id)?;
         let mut sz: u32 = size as _;
         let mut vec = Vec::with_capacity(size / std::mem::size_of::<T>());
-        self.get_property(property_id, &mut sz, vec.as_mut_ptr() as _)
+        self.get_property(prop_id, &mut sz, vec.as_mut_ptr() as _)
             .result()?;
         vec.set_len(sz as usize / std::mem::size_of::<T>());
         Ok(vec)
@@ -540,7 +540,7 @@ impl FileTypeId {
     pub const LATM_IN_LOAS: Self = Self(u32::from_be_bytes(*b"loas"));
 }
 
-pub mod errors {
+pub mod err {
     use crate::os::Status;
     /// 0x7768743F, 2003334207
     /// An unspecified error has occurred.

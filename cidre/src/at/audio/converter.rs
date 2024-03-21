@@ -340,7 +340,7 @@ pub struct PrimeInfo {
     pub trailing_frames: u32,
 }
 
-pub mod errors {
+pub mod err {
     use crate::os::Status;
 
     /// 0x666D743F, 1718449215

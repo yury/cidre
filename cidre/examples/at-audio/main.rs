@@ -295,7 +295,7 @@ fn decode(args: &DecodeArgs) {
         Ok(cookie) => {
             conv.set_decompression_magic_cookie(cookie).unwrap();
         }
-        Err(audio::file_errors::UNSUPPORTED_PROPERTY) => {}
+        Err(audio::file_err::UNSUPPORTED_PROPERTY) => {}
         Err(e) => {
             return eprintln!("Error {e:?}");
         }

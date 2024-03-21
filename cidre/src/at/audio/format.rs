@@ -5,9 +5,9 @@ use crate::{cat::audio, os};
 #[doc(alias = "AudioFormatPropertyID")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct Prop(pub u32);
+pub struct PropId(pub u32);
 
-impl Prop {
+impl PropId {
     pub const fn from_be_bytes(bytes: [u8; 4]) -> Self {
         Self(u32::from_be_bytes(bytes))
     }
@@ -90,8 +90,8 @@ pub struct ExtendedFormatInfo {
     pub class_desc: audio::ClassDesc,
 }
 
-pub mod asbd_props {
-    use super::Prop;
+pub mod asbd_prop {
+    use super::PropId;
 
     /// Retrieves general information about a format. The specifier is a
     /// magic cookie, or NULL.
@@ -101,23 +101,23 @@ pub mod asbd_props {
     /// and the contents of the magic cookie (if any is given).
     /// If multiple formats can be described by the AudioStreamBasicDescription and the associated magic cookie,
     /// this property will return the base level format.
-    pub const FORMAT_INFO: Prop = Prop::from_be_bytes(*b"fmti");
+    pub const FORMAT_INFO: PropId = PropId::from_be_bytes(*b"fmti");
 
     /// Returns a name for a given format. The specifier is an
     /// AudioStreamBasicDescription describing the format to ask about.
     /// The value is a cf::String. The caller is responsible for releasing the
     /// returned string. For some formats (eg, Linear PCM) you will get back a
     /// descriptive string (e.g. 16-bit, interleaved, etc...)
-    pub const FORMAT_NAME: Prop = Prop::from_be_bytes(*b"fnam");
+    pub const FORMAT_NAME: PropId = PropId::from_be_bytes(*b"fnam");
 
     /// No specifier needed. Must be set to NULL.
     /// Returns an array of u32 format IDs for formats that are valid output formats
     /// for a converter.
-    pub const ENCODE_FORMAT_IDS: Prop = Prop::from_be_bytes(*b"acof");
+    pub const ENCODE_FORMAT_IDS: PropId = PropId::from_be_bytes(*b"acof");
 
     /// No specifier needed. Must be set to NULL.
     /// Returns an array of UInt32 format IDs for formats that are valid input formats
-    pub const DECODE_FORMAT_IDS: Prop = Prop::from_be_bytes(*b"acif");
+    pub const DECODE_FORMAT_IDS: PropId = PropId::from_be_bytes(*b"acif");
 
     /// Returns a list of AudioFormatListItem structs describing the audio formats contained within the compressed bit stream
     /// as described by the magic cookie. The specifier is an AudioFormatInfo struct. The 'format' member of the
@@ -128,33 +128,33 @@ pub mod asbd_props {
     /// by a single AudioFormatListItem, this property would be equivalent to using the kAudioFormatProperty_FormatInfo property,
     /// which should be used by the application as a fallback case, to ensure backward compatibility with existing systems
     /// when kAudioFormatProperty_FormatList is not present on the running system.
-    pub const FORMAT_LIST: Prop = Prop::from_be_bytes(*b"flst");
+    pub const FORMAT_LIST: PropId = PropId::from_be_bytes(*b"flst");
 
     /// Returns an audio stream description for a given ESDS. The specifier is an ESDS.
     /// The value is a AudioStreamBasicDescription. If multiple formats can be described
     /// by the ESDS this property will return the base level format.
-    pub const ASBD_FROM_ESDS: Prop = Prop::from_be_bytes(*b"essd");
+    pub const ASBD_FROM_ESDS: PropId = PropId::from_be_bytes(*b"essd");
 
     /// Returns an audio channel layout for a given ESDS. The specifier is an
     /// ESDS. The value is a AudioChannelLayout.
-    pub const CHANNEL_LAYOUT_FROM_ESDS: Prop = Prop::from_be_bytes(*b"escl");
+    pub const CHANNEL_LAYOUT_FROM_ESDS: PropId = PropId::from_be_bytes(*b"escl");
 
     /// Returns a list of AudioFormatListItem structs describing the audio formats which may be obtained by decoding the format
     /// described by the specifier.
     ///
     /// The specifier is an AudioFormatInfo struct. At a minimum formatID member of the ASBD struct must filled in. Other fields
     /// may be filled in. If there is no magic cookie, then the number of channels and sample rate should be filled in.
-    pub const OUTPUT_FORMAT_LIST: Prop = Prop::from_be_bytes(*b"ofls");
+    pub const OUTPUT_FORMAT_LIST: PropId = PropId::from_be_bytes(*b"ofls");
 
     /// The specifier is a list of 1 or more AudioFormatListItem. Generally it is the list of these items returned from kAudioFormatProperty_FormatList. The property value retrieved is an UInt32 that specifies an index into that list. The list that the caller provides is generally sorted with the first item as the best format (most number of channels, highest sample rate), and the returned index represents the first item in that list that can be played by the system.
     /// Thus, the property is typically used to determine the best playable format for a given (layered) audio stream
-    pub const FIRST_PLAYABLE_FORMAT_FROM_LIST: Prop = Prop::from_be_bytes(*b"fpfl");
+    pub const FIRST_PLAYABLE_FORMAT_FROM_LIST: PropId = PropId::from_be_bytes(*b"fpfl");
 
     /// Returns whether or not a format has a variable number of bytes per
     /// packet. The specifier is an AudioStreamBasicDescription describing
     /// the format to ask about. The value is a u32 where non-zero means
     /// the format is variable bytes per packet.
-    pub const FORMAT_IS_VBR: Prop = Prop::from_be_bytes(*b"fvbr");
+    pub const FORMAT_IS_VBR: PropId = PropId::from_be_bytes(*b"fvbr");
 
     /// Returns whether or not a format requires external framing information,
     /// i.e. AudioStreamPacketDescriptions.
@@ -162,7 +162,7 @@ pub mod asbd_props {
     /// the format to ask about. The value is a UInt32 where non-zero means
     /// the format is externally framed. Any format which has variable byte sized packets
     /// requires AudioStreamPacketDescriptions.
-    pub const FORMAT_IS_EXTERNALLY_FRAMED: Prop = Prop::from_be_bytes(*b"fexf");
+    pub const FORMAT_IS_EXTERNALLY_FRAMED: PropId = PropId::from_be_bytes(*b"fexf");
 
     /// Returns whether or not a format is capable of combining independently
     /// decodable packets with dependent packets. The specifier is an
@@ -170,51 +170,51 @@ pub mod asbd_props {
     /// The value is a UInt32 where zero means that all packets in streams
     /// of the specified format are independently decodable and non-zero means
     /// that streams of the specified format may include dependent packets.
-    pub const FORMAT_EMPLOYS_DEPENDENT_PACKETS: Prop = Prop::from_be_bytes(*b"fdep");
+    pub const FORMAT_EMPLOYS_DEPENDENT_PACKETS: PropId = PropId::from_be_bytes(*b"fdep");
 
     /// Returns whether or not a format is encrypted. The specifier is a u32 format ID.
     /// The value is a u32 where non-zero means the format is encrypted.
-    pub const FORMAT_IS_ENCRYPTED: Prop = Prop::from_be_bytes(*b"cryp");
+    pub const FORMAT_IS_ENCRYPTED: PropId = PropId::from_be_bytes(*b"cryp");
 
     /// The specifier is the format that you are interested in, e.g. 'aac '
     /// Returns an array of AudioClassDescriptions for all installed encoders for the given format
-    pub const ENCODERS: Prop = Prop::from_be_bytes(*b"aven");
+    pub const ENCODERS: PropId = PropId::from_be_bytes(*b"aven");
 
     /// The specifier is the format that you are interested in, e.g. 'aac '
     /// Returns an array of AudioClassDescriptions for all installed decoders for the given format
-    pub const DECODERS: Prop = Prop::from_be_bytes(*b"avde");
+    pub const DECODERS: PropId = PropId::from_be_bytes(*b"avde");
 
     /// The specifier is a u32 'audio::Format'.
     /// The property value is an array of AudioValueRange describing all available bit rates.
-    pub const AVAILABLE_ENCODE_BIT_RATES: Prop = Prop::from_be_bytes(*b"aebr");
+    pub const AVAILABLE_ENCODE_BIT_RATES: PropId = PropId::from_be_bytes(*b"aebr");
 
     /// The specifier is a u32 format ID.
     /// The property value is an array of AudioValueRange describing all available sample rates.
-    pub const AVAILABLE_ENCODE_SAMPLE_RATES: Prop = Prop::from_be_bytes(*b"aesr");
+    pub const AVAILABLE_ENCODE_SAMPLE_RATES: PropId = PropId::from_be_bytes(*b"aesr");
 
     /// The specifier is an AudioStreamBasicDescription with at least the format_id
     /// and channels_per_frame fields set.
     /// The property value is an array of AudioChannelLayoutTags for the format and number of
     /// channels specified. If mChannelsPerFrame is zero, then all layouts supported by
     /// the format are returned.
-    pub const AVAILABLE_ENCODE_CHANNEL_LAYOUT_TAGS: Prop = Prop::from_be_bytes(*b"aecl");
+    pub const AVAILABLE_ENCODE_CHANNEL_LAYOUT_TAGS: PropId = PropId::from_be_bytes(*b"aecl");
 
     /// The specifier is an AudioStreamBasicDescription with at least the format_id field set.
     /// The property value is an array of UInt32 indicating the number of channels that can be encoded.
     /// A value of 0xFFFFFFFF indicates that any number of channels may be encoded.
-    pub const AVAILABLE_ENCODE_NUMBER_CHANNELS: Prop = Prop::from_be_bytes(*b"avnc");
+    pub const AVAILABLE_ENCODE_NUMBER_CHANNELS: PropId = PropId::from_be_bytes(*b"avnc");
 
     /// The specifier is an AudioStreamBasicDescription with at least the format_id field set.
     /// The property value is an array of UInt32 indicating the number of channels that can be decoded.
-    pub const AVAILABLE_DECODE_NUMBER_CHANNELS: Prop = Prop::from_be_bytes(*b"adnc");
+    pub const AVAILABLE_DECODE_NUMBER_CHANNELS: PropId = PropId::from_be_bytes(*b"adnc");
 
     /// Returns an audio stream description for a given MPEG Packet. The specifier is an MPEG Packet.
     /// The value is a AudioStreamBasicDescription.
-    pub const ASBD_FROM_MPEG_PACKET: Prop = Prop::from_be_bytes(*b"admp");
+    pub const ASBD_FROM_MPEG_PACKET: PropId = PropId::from_be_bytes(*b"admp");
 }
 
-pub mod channel_layout_props {
-    use super::Prop;
+pub mod channel_layout_prop {
+    use super::PropId;
 
     /// Returns a bitmap for an AudioChannelLayoutTag, if there is one.
     /// The specifier is a AudioChannelLayoutTag  containing the layout tag.
@@ -222,34 +222,34 @@ pub mod channel_layout_props {
     /// To go in the other direction, i.e. get a layout tag for a bitmap,
     /// use kAudioFormatProperty_TagForChannelLayout where your layout tag
     /// is kAudioChannelLayoutTag_UseChannelBitmap and the bitmap is filled in.
-    pub const BITMAP_FOR_LAYOUT_TAG: Prop = Prop::from_be_bytes(*b"bmtg");
-    pub const MATRIX_MIX_MAP: Prop = Prop::from_be_bytes(*b"mmap");
-    pub const CHANNEL_MAP: Prop = Prop::from_be_bytes(*b"chmp");
-    pub const NUMBER_OF_CHANNELS_FOR_LAYOUT: Prop = Prop::from_be_bytes(*b"nchm");
-    pub const ARE_CHANNEL_LAYOUTS_EQUIVALENT: Prop = Prop::from_be_bytes(*b"cheq");
-    pub const CHANNEL_LAYOUT_HASH: Prop = Prop::from_be_bytes(*b"chha");
+    pub const BITMAP_FOR_LAYOUT_TAG: PropId = PropId::from_be_bytes(*b"bmtg");
+    pub const MATRIX_MIX_MAP: PropId = PropId::from_be_bytes(*b"mmap");
+    pub const CHANNEL_MAP: PropId = PropId::from_be_bytes(*b"chmp");
+    pub const NUMBER_OF_CHANNELS_FOR_LAYOUT: PropId = PropId::from_be_bytes(*b"nchm");
+    pub const ARE_CHANNEL_LAYOUTS_EQUIVALENT: PropId = PropId::from_be_bytes(*b"cheq");
+    pub const CHANNEL_LAYOUT_HASH: PropId = PropId::from_be_bytes(*b"chha");
 
-    pub const VALIDATE_CHANNEL_LAYOUT: Prop = Prop::from_be_bytes(*b"vacl");
-    pub const CHANNEL_LAYOUT_FOR_TAG: Prop = Prop::from_be_bytes(*b"cmpl");
-    pub const TAG_FOR_CHANNEL_LAYOUT: Prop = Prop::from_be_bytes(*b"cmpt");
-    pub const CHANNEL_LAYOUT_NAME: Prop = Prop::from_be_bytes(*b"lonm");
-    pub const CHANNEL_LAYOUT_SIMPLE_NAME: Prop = Prop::from_be_bytes(*b"lsnm");
-    pub const CHANNEL_LAYOUT_FOR_BITMAP: Prop = Prop::from_be_bytes(*b"cmpb");
-    pub const CHANNEL_NAME: Prop = Prop::from_be_bytes(*b"cnam");
-    pub const CHANNEL_SHORT_NAME: Prop = Prop::from_be_bytes(*b"csnm");
+    pub const VALIDATE_CHANNEL_LAYOUT: PropId = PropId::from_be_bytes(*b"vacl");
+    pub const CHANNEL_LAYOUT_FOR_TAG: PropId = PropId::from_be_bytes(*b"cmpl");
+    pub const TAG_FOR_CHANNEL_LAYOUT: PropId = PropId::from_be_bytes(*b"cmpt");
+    pub const CHANNEL_LAYOUT_NAME: PropId = PropId::from_be_bytes(*b"lonm");
+    pub const CHANNEL_LAYOUT_SIMPLE_NAME: PropId = PropId::from_be_bytes(*b"lsnm");
+    pub const CHANNEL_LAYOUT_FOR_BITMAP: PropId = PropId::from_be_bytes(*b"cmpb");
+    pub const CHANNEL_NAME: PropId = PropId::from_be_bytes(*b"cnam");
+    pub const CHANNEL_SHORT_NAME: PropId = PropId::from_be_bytes(*b"csnm");
 
-    pub const TAGS_FOR_NUMBER_OF_CHANNELS: Prop = Prop::from_be_bytes(*b"tagc");
-    pub const PANNING_MATRIX: Prop = Prop::from_be_bytes(*b"panm");
-    pub const BALANCE_FADE: Prop = Prop::from_be_bytes(*b"balf");
+    pub const TAGS_FOR_NUMBER_OF_CHANNELS: PropId = PropId::from_be_bytes(*b"tagc");
+    pub const PANNING_MATRIX: PropId = PropId::from_be_bytes(*b"panm");
+    pub const BALANCE_FADE: PropId = PropId::from_be_bytes(*b"balf");
 }
 
-pub mod id3_props {
-    use super::Prop;
-    pub const ID3_TAG_SIZE: Prop = Prop::from_be_bytes(*b"id3s");
-    pub const D3_TAG_TO_DICTIONARY: Prop = Prop::from_be_bytes(*b"id3d");
+pub mod id3_prop {
+    use super::PropId;
+    pub const ID3_TAG_SIZE: PropId = PropId::from_be_bytes(*b"id3s");
+    pub const D3_TAG_TO_DICTIONARY: PropId = PropId::from_be_bytes(*b"id3d");
 }
 
-impl Prop {
+impl PropId {
     pub unsafe fn info(
         &self,
         in_specifier_size: u32,
@@ -336,12 +336,12 @@ impl Prop {
     /// ```
     /// use cidre::at;
     ///
-    /// let formats = at::AudioFormatProp::encode_formats().unwrap();
+    /// let formats = at::AudioFormatPropId::encode_formats().unwrap();
     /// println!("{:?}", formats.len());
     /// assert!(formats.len() > 0);
     /// ```
     pub fn encode_formats() -> Result<Vec<audio::Format>, os::Status> {
-        unsafe { asbd_props::ENCODE_FORMAT_IDS.get_vec() }
+        unsafe { asbd_prop::ENCODE_FORMAT_IDS.get_vec() }
     }
 
     /// ```
@@ -351,66 +351,66 @@ impl Prop {
     ///     format: audio::Format::LINEAR_PCM,
     ///     ..Default::default()
     /// };
-    /// audio::FormatProp::format_info(&mut asbd).unwrap();
+    /// audio::FormatPropId::format_info(&mut asbd).unwrap();
     ///
     /// ```
     pub fn format_info(asbd: &mut audio::StreamBasicDesc) -> Result<(), os::Status> {
-        unsafe { asbd_props::FORMAT_INFO.fill(asbd) }
+        unsafe { asbd_prop::FORMAT_INFO.fill(asbd) }
     }
 
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let encoders = audio::FormatProp::encoders(audio::Format::MPEG4_AAC).unwrap();
+    /// let encoders = audio::FormatPropId::encoders(audio::Format::MPEG4_AAC).unwrap();
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
     pub fn encoders(format: audio::Format) -> Result<Vec<audio::ClassDesc>, os::Status> {
-        unsafe { asbd_props::ENCODERS.get_vec_with(&format) }
+        unsafe { asbd_prop::ENCODERS.get_vec_with(&format) }
     }
 
     pub fn decoders(format: audio::Format) -> Result<Vec<audio::ClassDesc>, os::Status> {
-        unsafe { asbd_props::DECODERS.get_vec_with(&format) }
+        unsafe { asbd_prop::DECODERS.get_vec_with(&format) }
     }
 
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let rates = audio::FormatProp::available_encode_bit_rates(audio::Format::MPEG4_AAC).unwrap();
+    /// let rates = audio::FormatPropId::available_encode_bit_rates(audio::Format::MPEG4_AAC).unwrap();
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_bit_rates(
         format: audio::Format,
     ) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { asbd_props::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format) }
+        unsafe { asbd_prop::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format) }
     }
 
     /// ```
     /// use cidre::at::audio;
     ///
-    /// let rates = audio::FormatProp::available_encode_sample_rates(audio::Format::MPEG4_AAC).unwrap();
+    /// let rates = audio::FormatPropId::available_encode_sample_rates(audio::Format::MPEG4_AAC).unwrap();
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
     pub fn available_encode_sample_rates(
         format: audio::Format,
     ) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { asbd_props::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format) }
+        unsafe { asbd_prop::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format) }
     }
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
 extern "C" {
     fn AudioFormatGetPropertyInfo(
-        property_id: Prop,
+        property_id: PropId,
         in_specifier_size: u32,
         in_specifier: *const c_void,
         out_property_data_size: *mut u32,
     ) -> os::Status;
 
     fn AudioFormatGetProperty(
-        property_id: Prop,
+        property_id: PropId,
         in_specifier_size: u32,
         in_specifier: *const c_void,
         io_property_data_size: *mut u32,
