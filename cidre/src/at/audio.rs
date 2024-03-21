@@ -35,6 +35,13 @@ pub use file::Flags as FileFlags;
 pub use file::Permissions as FilePermissions;
 pub use file::PropId as FilePropId;
 
+pub mod unit;
+pub use unit::Element as UnitElement;
+pub use unit::Manufacturer as UnitManufacturer;
+pub use unit::Param as UnitParam;
+pub use unit::ParamId as UnitParamId;
+pub use unit::ParamValue as UnitParamValue;
+
 mod codec;
 pub use codec::quality as codec_quality;
 pub use codec::BitRateControlMode as CodecBitRateControlMode;

@@ -15,4 +15,10 @@ pub use audio::ConverterRef as AudioConverterRef;
 pub use audio::FormatPropId as AudioFormatPropId;
 pub use audio::TimeStamp as AudioTimeStamp;
 
-pub mod au;
+pub use audio::unit as au;
+
+pub use audio::UnitElement as AudioUnitElement;
+pub use audio::UnitManufacturer as AudioUnitManufacturer;
+pub use audio::UnitParam as AudioUnitParam;
+pub use audio::UnitParamId as AudioUnitParamId;
+pub use audio::UnitParamValue as AudioUnitParamValue;
