@@ -62,10 +62,8 @@ impl InstantiationOpts {
     pub const LOADED_REMOTELY: Self = Self(1 << 31);
 }
 
-/// AudioComponentDescription
-///
 /// A structure describing the unique and identifying IDs of an audio component
-///
+#[doc(alias = "AudioComponentDescription")]
 #[derive(Default, Debug)]
 #[repr(C, align(4))]
 pub struct Desc {
@@ -167,26 +165,22 @@ impl Component {
     #[inline]
     pub fn desc(&self) -> Result<Desc, os::Status> {
         let mut desc = Desc::default();
-        unsafe {
-            let res = AudioComponentGetDescription(self, &mut desc);
-            if res.is_ok() {
-                Ok(desc)
-            } else {
-                Err(res)
-            }
+        let res = unsafe { AudioComponentGetDescription(self, &mut desc) };
+        if res.is_ok() {
+            Ok(desc)
+        } else {
+            Err(res)
         }
     }
 
     #[inline]
     pub fn version(&self) -> Result<u32, os::Status> {
-        unsafe {
-            let mut version = 0;
-            let res = AudioComponentGetVersion(self, &mut version);
-            if res.is_ok() {
-                Ok(version)
-            } else {
-                Err(res)
-            }
+        let mut version = 0;
+        let res = unsafe { AudioComponentGetVersion(self, &mut version) };
+        if res.is_ok() {
+            Ok(version)
+        } else {
+            Err(res)
         }
     }
 
@@ -262,6 +256,6 @@ mod tests {
             ..Default::default()
         };
 
-        let _inst = desc.into_iter().last().unwrap().new_instance().unwrap();
+        let _inst = desc.into_iter().next().unwrap().new_instance().unwrap();
     }
 }
