@@ -29,11 +29,11 @@ pub use component::InstantiationOpts as ComponentInstantiationOpts;
 
 mod file;
 pub use file::errors as file_errors;
-pub use file::FileID;
-pub use file::FileTypeID;
+pub use file::FileId;
+pub use file::FileTypeId;
 pub use file::Flags as FileFlags;
 pub use file::Permissions as FilePermissions;
-pub use file::PropertyID as FilePropertyID;
+pub use file::PropId as FilePropId;
 
 mod codec;
 pub use codec::quality as codec_quality;

@@ -10,9 +10,9 @@ use crate::{cat::audio, os};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct PropertyID(pub u32);
+pub struct PropId(pub u32);
 
-impl PropertyID {
+impl PropId {
     /// A u32 that indicates the size in bytes of the smallest buffer of input
     /// data that can be supplied via the AudioConverterInputProc or as the input to
     /// AudioConverterConvertBuffer
@@ -474,7 +474,7 @@ impl Converter {
     }
 
     #[inline]
-    pub fn property_info(&self, property_id: PropertyID) -> Result<PropertyInfo, os::Status> {
+    pub fn property_info(&self, property_id: PropId) -> Result<PropertyInfo, os::Status> {
         unsafe {
             let mut size = 0;
             let mut writable = false;
@@ -491,7 +491,7 @@ impl Converter {
     #[inline]
     pub unsafe fn get_property(
         &self,
-        property_id: PropertyID,
+        property_id: PropId,
         io_property_data_size: *mut u32,
         out_property_data: *mut c_void,
     ) -> os::Status {
@@ -501,7 +501,7 @@ impl Converter {
     #[inline]
     pub unsafe fn set_property(
         &mut self,
-        property_id: PropertyID,
+        property_id: PropId,
         in_property_data_size: u32,
         in_property_data: *const c_void,
     ) -> os::Status {
@@ -510,7 +510,7 @@ impl Converter {
 
     pub unsafe fn set_prop<T: Sized>(
         &mut self,
-        property_id: PropertyID,
+        property_id: PropId,
         val: &T,
     ) -> Result<(), os::Status> {
         let size = size_of::<T>() as u32;
@@ -519,7 +519,7 @@ impl Converter {
     }
 
     #[inline]
-    pub unsafe fn prop_vec<T: Sized>(&self, property_id: PropertyID) -> Result<Vec<T>, os::Status> {
+    pub unsafe fn prop_vec<T: Sized>(&self, property_id: PropId) -> Result<Vec<T>, os::Status> {
         let mut info = self.property_info(property_id)?;
         let mut vec = Vec::with_capacity(info.size as usize / size_of::<T>());
         self.get_property(property_id, &mut info.size, vec.as_mut_ptr() as _)
@@ -531,7 +531,7 @@ impl Converter {
     #[inline]
     pub unsafe fn set_prop_vec<T: Sized>(
         &mut self,
-        property_id: PropertyID,
+        property_id: PropId,
         val: Vec<T>,
     ) -> Result<(), os::Status> {
         self.set_property(
@@ -544,10 +544,7 @@ impl Converter {
     }
 
     #[inline]
-    pub unsafe fn prop<T: Sized + Default>(
-        &self,
-        property_id: PropertyID,
-    ) -> Result<T, os::Status> {
+    pub unsafe fn prop<T: Sized + Default>(&self, property_id: PropId) -> Result<T, os::Status> {
         let mut size = size_of::<T>() as u32;
         let mut value = Default::default();
         let res = self.get_property(property_id, &mut size, &mut value as *mut _ as _);
@@ -559,78 +556,78 @@ impl Converter {
     }
 
     #[inline]
-    pub fn maximum_output_packet_size(&self) -> Result<u32, os::Status> {
-        unsafe { self.prop(PropertyID::MAXIMUM_OUTPUT_PACKET_SIZE) }
+    pub fn max_output_packet_size(&self) -> Result<u32, os::Status> {
+        unsafe { self.prop(PropId::MAXIMUM_OUTPUT_PACKET_SIZE) }
     }
 
     #[inline]
     pub fn sample_rate_converter_quality(&self) -> Result<Quality, os::Status> {
-        unsafe { self.prop(PropertyID::SAMPLE_RATE_CONVERTER_QUALITY) }
+        unsafe { self.prop(PropId::SAMPLE_RATE_CONVERTER_QUALITY) }
     }
 
     #[inline]
     pub fn sample_rate_converter_complexity(
         &self,
     ) -> Result<SampleRateConverterComplexity, os::Status> {
-        unsafe { self.prop(PropertyID::SAMPLE_RATE_CONVERTER_COMPLEXITY) }
+        unsafe { self.prop(PropId::SAMPLE_RATE_CONVERTER_COMPLEXITY) }
     }
 
     #[inline]
     pub fn codec_quality(&self) -> Result<Quality, os::Status> {
-        unsafe { self.prop(PropertyID::CODEC_QUALITY) }
+        unsafe { self.prop(PropId::CODEC_QUALITY) }
     }
 
     #[inline]
     pub fn applicable_encode_bit_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { self.prop_vec(PropertyID::APPLICABLE_ENCODE_BIT_RATES) }
+        unsafe { self.prop_vec(PropId::APPLICABLE_ENCODE_BIT_RATES) }
     }
 
     #[inline]
     pub fn applicable_encode_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
-        unsafe { self.prop_vec(PropertyID::APPLICABLE_ENCODE_SAMPLE_RATES) }
+        unsafe { self.prop_vec(PropId::APPLICABLE_ENCODE_SAMPLE_RATES) }
     }
 
     #[inline]
     pub fn compression_magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
-        unsafe { self.prop_vec(PropertyID::COMPRESSION_MAGIC_COOKIE) }
+        unsafe { self.prop_vec(PropId::COMPRESSION_MAGIC_COOKIE) }
     }
 
     #[inline]
     pub fn decompression_magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
-        unsafe { self.prop_vec(PropertyID::DECOMPRESSION_MAGIC_COOKIE) }
+        unsafe { self.prop_vec(PropId::DECOMPRESSION_MAGIC_COOKIE) }
     }
 
     #[inline]
     pub fn set_decompression_magic_cookie(&mut self, val: Vec<u8>) -> Result<(), os::Status> {
-        unsafe { self.set_prop_vec(PropertyID::DECOMPRESSION_MAGIC_COOKIE, val) }
+        unsafe { self.set_prop_vec(PropId::DECOMPRESSION_MAGIC_COOKIE, val) }
     }
 
     #[inline]
     pub fn current_output_stream_desc(&self) -> Result<audio::StreamBasicDesc, os::Status> {
-        unsafe { self.prop(PropertyID::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
+        unsafe { self.prop(PropId::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
     pub fn current_input_stream_desc(&self) -> Result<audio::StreamBasicDesc, os::Status> {
-        unsafe { self.prop(PropertyID::CURRENT_INPUT_STREAM_DESCRIPTION) }
+        unsafe { self.prop(PropId::CURRENT_INPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
     pub fn encode_bit_rate(&self) -> Result<u32, os::Status> {
-        unsafe { self.prop(PropertyID::ENCODE_BIT_RATE) }
+        unsafe { self.prop(PropId::ENCODE_BIT_RATE) }
     }
 
     #[inline]
     pub fn set_encode_bit_rate(&mut self, val: u32) -> Result<(), os::Status> {
-        unsafe { self.set_prop(PropertyID::ENCODE_BIT_RATE, &val) }
+        unsafe { self.set_prop(PropId::ENCODE_BIT_RATE, &val) }
     }
 
     pub fn prime_method(&self) -> Result<PrimeMethod, os::Status> {
-        unsafe { self.prop(PropertyID::PRIME_METHOD) }
+        unsafe { self.prop(PropId::PRIME_METHOD) }
     }
 
     pub fn set_prime_method(&mut self, val: PrimeMethod) -> Result<(), os::Status> {
-        unsafe { self.set_prop(PropertyID::PRIME_METHOD, &val) }
+        unsafe { self.set_prop(PropId::PRIME_METHOD, &val) }
     }
 
     ///
@@ -804,21 +801,21 @@ extern "C" {
     fn AudioConverterReset(converter: &Converter) -> os::Status;
     fn AudioConverterGetPropertyInfo(
         converter: &Converter,
-        property_id: PropertyID,
+        property_id: PropId,
         out_size: *mut u32,
         out_writable: *mut bool,
     ) -> os::Status;
 
     fn AudioConverterGetProperty(
         converter: &Converter,
-        property_id: PropertyID,
+        property_id: PropId,
         io_property_data_size: *mut u32,
         out_property_data: *mut c_void,
     ) -> os::Status;
 
     fn AudioConverterSetProperty(
         converter: &Converter,
-        property_id: PropertyID,
+        property_id: PropId,
         in_property_data_size: u32,
         in_property_data: *const c_void,
     ) -> os::Status;

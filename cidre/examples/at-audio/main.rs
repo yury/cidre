@@ -56,7 +56,7 @@ struct EncodeArgs {
 struct Context {
     packet: isize,
     buffer: Vec<u8>,
-    file: audio::FileID,
+    file: audio::FileId,
     asbd: audio::StreamBasicDesc,
     max_packet_size: u32,
     uses_packet_descriptions: bool,
@@ -119,7 +119,7 @@ fn encode(args: &EncodeArgs) {
     };
     let src = cf::Url::with_path(args.src.as_path(), false).unwrap();
     let src_file =
-        audio::FileID::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
+        audio::FileId::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
     let src_asbd = src_file.data_format().unwrap();
 
@@ -147,9 +147,9 @@ fn encode(args: &EncodeArgs) {
     };
     let dst = cf::Url::with_path(dst.as_path(), false).unwrap();
 
-    let mut dst_file = audio::FileID::create(
+    let mut dst_file = audio::FileId::create(
         &dst,
-        audio::FileTypeID::M4A,
+        audio::FileTypeId::M4A,
         &dst_asbd,
         audio::FileFlags::ERASE_FILE,
     )
@@ -158,7 +158,7 @@ fn encode(args: &EncodeArgs) {
     let conv = audio::ConverterRef::with_formats(&src_asbd, &dst_asbd).unwrap();
 
     let max_src_packet_size = src_asbd.bytes_per_packet;
-    let max_dst_packet_size = conv.maximum_output_packet_size().unwrap();
+    let max_dst_packet_size = conv.max_output_packet_size().unwrap();
 
     let packets_per_loop = 100u32;
 
@@ -230,7 +230,7 @@ fn encode(args: &EncodeArgs) {
         if !args.skip_write {
             dst_file
                 .set_property(
-                    audio::FilePropertyID::MAGIC_COOKIE_DATA,
+                    audio::FilePropId::MAGIC_COOKIE_DATA,
                     cookie.len() as _,
                     cookie.as_ptr() as _,
                 )
@@ -255,7 +255,7 @@ fn decode(args: &DecodeArgs) {
     };
     let src = cf::Url::with_path(args.src.as_path(), false).unwrap();
     let src_file =
-        audio::FileID::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
+        audio::FileId::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
     let src_asbd = src_file.data_format().unwrap();
 
@@ -279,9 +279,9 @@ fn decode(args: &DecodeArgs) {
     };
     let dst = cf::Url::with_path(dst.as_path(), false).unwrap();
 
-    let mut dst_file = audio::FileID::create(
+    let mut dst_file = audio::FileId::create(
         &dst,
-        audio::FileTypeID::WAVE,
+        audio::FileTypeId::WAVE,
         &dst_asbd,
         audio::FileFlags::ERASE_FILE,
     )
