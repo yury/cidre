@@ -68,7 +68,7 @@ mod tests {
         ar_pool(|| {
             let black = ci::Image::black();
             let ctx = ci::Context::with_opts(None).unwrap();
-            let url = ns::Url::with_str("url").unwrap();
+            let url = ns::Url::with_string(ns::str!(c"url")).unwrap();
             let opts = ns::Dictionary::new();
             let _err = ctx
                 .write_png_to_url(

@@ -125,13 +125,14 @@ mod tests {
 
     #[test]
     fn basics() {
-        let pat = ns::Regex::with_pattern(&ns::String::with_str(".*"), Default::default()).unwrap();
+        let pat = ns::Regex::with_pattern(ns::str!(c".*"), Default::default()).unwrap();
         println!("pat {:?}", pat);
     }
+
     #[test]
     fn error_autorelease() {
         ar_pool(|| {
-            let err = ns::Regex::with_pattern(&ns::String::with_str("\\"), Default::default())
+            let err = ns::Regex::with_pattern(ns::str!(c"\\"), Default::default())
                 .expect_err("should be err");
             assert_eq!(err.code(), 2048);
             println!("err {:?}", err);

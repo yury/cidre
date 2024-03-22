@@ -143,9 +143,9 @@ mod tests {
 
     #[test]
     fn basics2() {
-        let one = ns::String::with_str("1");
+        let one = ns::str!(c"1");
 
-        let arr: &[&ns::String] = &[&one];
+        let arr: &[&ns::String] = &[one];
         let arr = ns::Array::from_slice(arr);
         assert_eq!(1, arr.len());
 
@@ -160,9 +160,9 @@ mod tests {
 
     #[test]
     fn basics3() {
-        let one = ns::String::with_str("1");
+        let one = ns::str!(c"1");
 
-        let arr: &[&ns::String] = &[&one, &one];
+        let arr: &[&ns::String] = &[one, one];
         let arr = ns::Array::from_slice(arr);
         assert_eq!(2, arr.len());
 

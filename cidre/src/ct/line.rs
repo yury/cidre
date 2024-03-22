@@ -131,8 +131,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let str = cf::String::from_str("test");
-        let astr = cf::AttrString::new(&str);
+        let astr = cf::AttrString::new(cf::str!(c"test"));
         let line = ct::Line::with_attr_string(&astr);
 
         assert_eq!(line.glyph_count(), 4);

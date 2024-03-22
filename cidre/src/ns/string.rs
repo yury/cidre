@@ -255,6 +255,15 @@ impl fmt::Display for String {
     }
 }
 
+#[macro_export]
+macro_rules! nsstr {
+    ($f:literal) => {{
+        $crate::cfstr!($f).as_ns()
+    }};
+}
+
+pub use nsstr as str;
+
 #[cfg(test)]
 mod tests {
     use crate::{ns, objc::ar_pool};
@@ -264,7 +273,7 @@ mod tests {
         ar_pool(|| {
             let m = ns::StringMut::new();
             assert!(m.is_empty());
-            let s = ns::String::with_str("10.5");
+            let s = ns::str!(c"10.5");
 
             assert_eq!(s.len(), 4);
             assert!(!s.is_empty());
@@ -279,8 +288,8 @@ mod tests {
             assert_eq!(sub.to_i32(), 0);
             assert_eq!(sub.to_bool(), false);
 
-            let zero = ns::String::with_str("0");
-            assert_eq!(&zero, &sub);
+            let zero = ns::str!(c"0");
+            assert_eq!(zero, &sub);
 
             // TODO:
             // let sub = &s[3..4];
@@ -295,11 +304,17 @@ mod tests {
 
     #[test]
     fn mut_throws() {
-        let one = ns::String::with_str("1");
-        let mut zero = ns::String::with_str("0").copy_mut();
+        let one = ns::str!(c"1");
+        let mut zero = ns::str!(c"0").copy_mut();
         zero.replace_characters_in(ns::Range::new(0, 1), &one)
             .unwrap();
         zero.replace_characters_in(ns::Range::new(0, 10), &one)
             .expect_err("Should be exceptions");
+    }
+
+    #[test]
+    fn macro_str() {
+        let s = ns::str!(c"привет");
+        assert_eq!(12, s.len());
     }
 }

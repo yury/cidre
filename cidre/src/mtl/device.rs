@@ -383,12 +383,10 @@ mod tests {
         assert!(device.supports_primitive_motion_blur());
 
         let mut fence = device.new_fence().unwrap();
-        let label = ns::String::with_str("nice");
-        fence.set_label(Some(&label));
+        fence.set_label(Some(ns::str!(c"nice")));
 
         let mut event = device.new_shared_event().unwrap();
-        let label = ns::String::with_str("nice");
-        event.set_label(Some(&label));
+        event.set_label(Some(ns::str!(c"nice")));
 
         let _name = device.name();
 
@@ -422,8 +420,8 @@ mod tests {
 
         let _queue = device.new_cmd_queue().unwrap();
 
-        let source = ns::String::with_str("void function_a() {}");
+        let source = ns::str!(c"void function_a() {}");
         let options = None;
-        let _lib = device.new_lib_with_src_blocking(&source, options).unwrap();
+        let _lib = device.new_lib_with_src_blocking(source, options).unwrap();
     }
 }

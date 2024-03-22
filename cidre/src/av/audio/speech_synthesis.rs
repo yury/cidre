@@ -429,15 +429,15 @@ mod tests {
 
     #[test]
     fn utterance() {
-        let str = ns::String::with_str("Hello");
+        let str = ns::str!(c"Hello");
 
-        let ut = av::SpeechUtterance::with_string(&str);
-        assert_eq!(ut.speech_string(), str.as_ref());
+        let ut = av::SpeechUtterance::with_string(str);
+        assert_eq!(ut.speech_string(), str);
         assert!(ut.speech_attr_string().is_none());
 
         let attr_str = ns::AttrString::with_string(&str);
         let ut = av::SpeechUtterance::with_attr_string(&attr_str);
-        assert_eq!(ut.speech_string(), str.as_ref());
-        assert_eq!(ut.speech_attr_string().unwrap().string(), str.as_ref());
+        assert_eq!(ut.speech_string(), str);
+        assert_eq!(ut.speech_attr_string().unwrap().string(), str);
     }
 }

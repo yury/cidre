@@ -223,10 +223,6 @@ impl Lib {
     #[objc::msg_send(newFunctionWithName:)]
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
 
-    pub fn new_fn_str(&self, name: &str) -> Option<arc::R<Fn>> {
-        self.new_fn(ns::String::with_str_no_copy(name).as_ref())
-    }
-
     /// # Safety
     ///
     /// Use new_fn_const_values
@@ -331,27 +327,27 @@ mod tests {
     #[test]
     fn foo() {
         let device = mtl::Device::sys_default().unwrap();
-        let src = ns::String::with_str("kernel void function_a() {}");
+        let src = ns::str!(c"kernel void function_a() {}");
 
         let mut ch = blocks::ResultCompletionHandler::new2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
-        device.new_lib_with_src_ch(&src, None, &mut ch);
+        device.new_lib_with_src_ch(src, None, &mut ch);
     }
 
     #[test]
     fn function_names() {
         let device = mtl::Device::sys_default().unwrap();
 
-        let src = ns::String::with_str("kernel void function_a() {}; void function_b() {}");
-        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
+        let src = ns::str!(c"kernel void function_a() {}; void function_b() {}");
+        let lib = device.new_lib_with_src_blocking(src, None).unwrap();
         let names = lib.fn_names();
         assert_eq!(1, names.len());
         let n = &names[0];
 
-        let expected_name = ns::String::with_str("function_a");
+        let expected_name = ns::str!(c"function_a");
 
-        assert!(n.eq(&expected_name));
+        assert!(n.eq(expected_name));
     }
 
     #[test]
@@ -359,8 +355,8 @@ mod tests {
         ar_pool(|| {
             let device = mtl::Device::sys_default().unwrap();
 
-            let src = ns::String::with_str("vid function_a() {}");
-            let err = device.new_lib_with_src_blocking(&src, None).unwrap_err();
+            let src = ns::str!(c"vid function_a() {}");
+            let err = device.new_lib_with_src_blocking(src, None).unwrap_err();
 
             assert_eq!(mtl::LibError::CompileFailure, err.code());
         })
@@ -370,13 +366,13 @@ mod tests {
     fn new_function_with_name() {
         let device = mtl::Device::sys_default().unwrap();
 
-        let src = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
+        let src = ns::str!(c"kernel void function_a() {}");
+        let lib = device.new_lib_with_src_blocking(src, None).unwrap();
 
-        let fn_name = ns::String::with_str("function_a");
-        let func = lib.new_fn(&fn_name).unwrap();
+        let fn_name = ns::str!(c"function_a");
+        let func = lib.new_fn(fn_name).unwrap();
         let name = func.name();
-        assert!(fn_name.is_equal(&name));
+        assert!(fn_name.is_equal(name));
         assert_eq!(func.opts(), mtl::FnOpts::None);
     }
 
@@ -384,12 +380,12 @@ mod tests {
     fn new_function_with_name_constant_values() {
         let device = mtl::Device::sys_default().unwrap();
 
-        let src = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
+        let src = ns::str!(c"kernel void function_a() {}");
+        let lib = device.new_lib_with_src_blocking(src, None).unwrap();
 
-        let fn_name = ns::String::with_str_no_copy("function_a");
+        let fn_name = ns::str!(c"function_a");
         let const_values = mtl::FnConstValues::new();
-        let func = lib.new_fn_with_consts(&fn_name, &const_values).unwrap();
+        let func = lib.new_fn_with_consts(fn_name, &const_values).unwrap();
         let name = func.name();
         assert!(fn_name.is_equal(name));
     }
@@ -411,8 +407,8 @@ mod tests {
     #[test]
     fn install_name() {
         let device = mtl::Device::sys_default().unwrap();
-        let src = ns::String::with_str("kernel void function_a() {}");
-        let lib = device.new_lib_with_src_blocking(&src, None).unwrap();
+        let src = ns::str!(c"kernel void function_a() {}");
+        let lib = device.new_lib_with_src_blocking(src, None).unwrap();
 
         assert!(lib.install_name().is_none());
         assert_eq!(mtl::LibType::Executable, lib.type_());

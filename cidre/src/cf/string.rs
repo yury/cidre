@@ -299,23 +299,32 @@ impl String {
 
 #[macro_export]
 macro_rules! cfstr {
-    ($f:literal) => {
-        unsafe {
-            // TODO: becnhamrk and mem usage
-            // https://opensource.apple.com/source/CF/CF-855.17/CFString.c
-            extern "C" {
-                fn __CFStringMakeConstantString(
-                    str: *const std::os::raw::c_char,
-                ) -> &'static $crate::cf::String;
-            }
+    ($f:literal) => {{
+        #[link(name = "CoreFoundation", kind = "framework")]
+        extern "C" {
+            static __CFConstantStringClassReference: $crate::objc::Class<$crate::ns::Id>;
+        }
+        // #[link_section = "__TEXT,__cstring,cstring_literals"]
+        const VALUE: &std::ffi::CStr = $f;
 
-            __CFStringMakeConstantString(
-                std::ffi::CStr::from_bytes_with_nul_unchecked(concat!($f, "\0").as_bytes())
-                    .as_ptr(),
+        // #[link_section = "__DATA,__cfstring"]
+        static STR: $crate::cf::string::ConstStr = unsafe {
+            $crate::cf::string::ConstStr {
+                isa: &__CFConstantStringClassReference,
+                info: 0x7c8,
+                ptr: VALUE.as_ptr(),
+                len: VALUE.to_bytes().len(),
+            }
+        };
+        unsafe {
+            std::mem::transmute::<&'static $crate::cf::string::ConstStr, &'static $crate::cf::String>(
+                &STR,
             )
         }
-    };
+    }};
 }
+
+pub use cfstr as str;
 
 impl<'a> From<&'a String> for Cow<'a, str> {
     fn from(cfstr: &'a String) -> Self {
@@ -455,8 +464,23 @@ extern "C" {
 
     fn CFStringGetSystemEncoding() -> Encoding;
 
+    // pub static __CFConstantStringClassReference: crate::objc::Class<ns::Id>;
+
+    // fn _builtin___CFStringMakeConstantString(str: *const i8) -> &'static String;
+
     // fn __CFStringMakeConstantString(str: *const c_char) -> &'static String;
 }
+
+#[repr(C)]
+pub struct ConstStr {
+    pub isa: &'static crate::objc::Class<ns::Id>,
+    pub info: u32,
+    pub ptr: *const i8,
+    pub len: usize,
+}
+
+unsafe impl Send for ConstStr {}
+unsafe impl Sync for ConstStr {}
 
 impl From<&'static str> for arc::R<String> {
     #[inline]
@@ -479,7 +503,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let s = cf::String::from_str("hello");
+        let s = cf::str!(c"hello");
         assert_eq!(s.len(), 5);
         let std_str = s.to_string();
         assert_eq!(std_str.chars().count(), 5);
@@ -490,7 +514,7 @@ mod tests {
 
     #[test]
     fn macro_cfstr() {
-        let s = cfstr!("nice");
+        let s = cf::str!(c"nice");
         println!("rt {}", s.retain_count());
         s.show();
         s.show_str();

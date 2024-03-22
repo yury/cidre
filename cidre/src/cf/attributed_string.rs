@@ -144,18 +144,18 @@ mod tests {
 
     #[test]
     fn basics() {
-        let str = cf::String::from_str("test");
-        let astr = cf::AttrString::new(&str);
-        assert!(astr.string().equal(&str));
+        let str = cf::str!(c"test");
+        let astr = cf::AttrString::new(str);
+        assert!(astr.string().equal(str));
 
         let attrs = cf::Dictionary::new();
-        let astr = cf::AttrString::with_attrs(&str, &attrs);
-        assert!(astr.string().equal(&str));
+        let astr = cf::AttrString::with_attrs(str, &attrs);
+        assert!(astr.string().equal(str));
 
         let copy = astr.copy();
-        assert!(copy.string().equal(&str));
+        assert!(copy.string().equal(str));
 
         let mcopy = copy.copy_mut();
-        assert!(mcopy.string().equal(&str));
+        assert!(mcopy.string().equal(str));
     }
 }

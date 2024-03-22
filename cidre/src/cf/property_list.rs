@@ -318,10 +318,7 @@ mod tests {
         assert_eq!(list.as_number().to_i32().unwrap(), 10);
         assert_eq!(format, cf::PlistFormat::XmlV1_0);
 
-        let dict = cf::DictionaryOf::with_keys_values(
-            &[cf::String::from_str("key").as_ref()],
-            &[num.as_ref()],
-        );
+        let dict = cf::DictionaryOf::with_keys_values(&[cf::str!(c"key")], &[num.as_ref()]);
 
         let prop_list: &cf::Plist = dict.as_ref().into();
 

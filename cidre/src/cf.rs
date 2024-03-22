@@ -29,6 +29,7 @@ pub use number::Number;
 pub use number::NumberType;
 
 pub mod string;
+pub use string::str;
 pub use string::CompareFlags as StringCompareFlags;
 pub use string::Encoding as StringEncoding;
 pub use string::String;

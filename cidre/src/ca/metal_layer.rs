@@ -96,12 +96,15 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ca, ca::MetalDrawable, cg, ns};
+    use crate::{
+        ca::{self, MetalDrawable},
+        cg, ns,
+    };
 
     #[test]
     fn basics() {
         let mut metal_layer = ca::MetalLayer::new();
-        metal_layer.set_name(Some(&ns::String::with_str("mtl_layer")));
+        metal_layer.set_name(Some(ns::str!(c"mtl_layer")));
         metal_layer.set_bounds(cg::Rect::with_size(100.0, 100.0));
         let device = metal_layer.preferred_device().unwrap().retained();
         metal_layer.set_device(Some(&device));

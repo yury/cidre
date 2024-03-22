@@ -343,8 +343,8 @@ impl<'a> Session<'a> {
     }
 
     pub fn start_debug_server(&self) -> Result<arc::R<ServiceConnection>, Error> {
-        let name = cf::String::from_str("com.apple.debugserver.DVTSecureSocketProxy");
-        self.secure_start_service(&name)
+        let name = cf::str!(c"com.apple.debugserver.DVTSecureSocketProxy");
+        self.secure_start_service(name)
     }
 
     pub fn battery_level(&self) -> Option<arc::R<cf::Number>> {

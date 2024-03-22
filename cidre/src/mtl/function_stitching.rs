@@ -173,10 +173,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let name = ns::String::with_str("a");
+        let name = ns::str!(c"a");
         let args = ns::Array::new();
         let deps = ns::Array::new();
-        let fn_node = mtl::FnStitchingFnNode::with_name(&name, &args, &deps);
+        let fn_node = mtl::FnStitchingFnNode::with_name(name, &args, &deps);
         let name = fn_node.name();
         eprintln!("name {:?}", name);
         let args = fn_node.args();

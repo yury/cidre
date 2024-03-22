@@ -56,13 +56,13 @@ mod tests {
 
         assert!(desc.label().is_none());
 
-        let label = ns::String::with_str("label");
+        let label = ns::str!(c"label");
 
-        desc.set_label(Some(&label));
+        desc.set_label(Some(label));
 
         let lb = desc.label().unwrap();
 
-        assert!(lb.eq(label.as_ref()));
+        assert!(lb.eq(label));
 
         assert_eq!(
             false,

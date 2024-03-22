@@ -157,8 +157,8 @@ fn video_settings() -> arc::R<ns::DictionaryMut<ns::String, ns::Id>> {
         // we need to turn off frame reordering for hls
         if let Some(cfg) = v.try_cast(ns::Dictionary::<ns::String, ns::Id>::cls()) {
             let mut cfg = cfg.copy_mut();
-            let key = ns::String::with_str("AllowFrameReordering");
-            cfg.set_obj_for_key(ns::Number::with_i8(0).as_ref(), &key);
+            let key = ns::str!(c"AllowFrameReordering");
+            cfg.set_obj_for_key(ns::Number::with_i8(0).as_ref(), key);
             settings.set_obj_for_key(&cfg, props_key);
         }
         settings

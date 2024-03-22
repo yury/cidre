@@ -78,8 +78,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let name = cf::String::from_str("hello");
-        let desc = ct::FontDesc::with_name_size(&name, 10.0);
+        let name = cf::str!(c"hello");
+        let desc = ct::FontDesc::with_name_size(name, 10.0);
         desc.show();
     }
 }

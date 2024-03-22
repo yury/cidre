@@ -291,8 +291,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let name = ns::String::with_str("Peer1");
-        let peer = mc::PeerId::with_display_name(&name).unwrap();
+        let name = ns::str!(c"Peer1");
+        let peer = mc::PeerId::with_display_name(name).unwrap();
         eprintln!("{peer:?}");
         let session = mc::Session::with_peer(&peer).unwrap();
 

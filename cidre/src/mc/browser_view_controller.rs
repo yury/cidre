@@ -120,12 +120,11 @@ mod tests {
 
     #[test]
     fn basics() {
-        let peer_name = ns::String::with_str("Peer1");
-        let peer = mc::PeerId::with_display_name(&peer_name).unwrap();
+        let peer_name = ns::str!(c"Peer1");
+        let peer = mc::PeerId::with_display_name(peer_name).unwrap();
         let session = mc::Session::with_peer(&peer).unwrap();
-        let service_type = ns::String::with_str("cidre-test");
-        let mut bvc =
-            mc::BrowserViewController::with_service_type(&service_type, &session).unwrap();
+        let service_type = ns::str!(c"cidre-test");
+        let mut bvc = mc::BrowserViewController::with_service_type(service_type, &session).unwrap();
         assert_eq!(bvc.min_number_of_peers(), 2);
         assert_eq!(bvc.max_number_of_peers(), 8);
         bvc.set_max_number_of_peers(10);

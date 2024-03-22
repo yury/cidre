@@ -1,4 +1,4 @@
-use crate::{arc, cf, cfstr};
+use crate::{arc, cf};
 
 use super::{Device, Error, Session};
 
@@ -52,43 +52,43 @@ pub struct AppsLookupBuilder<'a> {
 
 impl<'a> AppsLookupBuilder<'a> {
     pub fn app_type_any(&mut self) -> &mut Self {
-        self.application_type = Some(cfstr!("Any").retained());
+        self.application_type = Some(cf::str!(c"Any").retained());
         self
     }
 
     pub fn app_type_system(&mut self) -> &mut Self {
-        self.application_type = Some(cfstr!("System").retained());
+        self.application_type = Some(cf::str!(c"System").retained());
         self
     }
 
     pub fn app_type_user(&mut self) -> &mut Self {
-        self.application_type = Some(cfstr!("User").retained());
+        self.application_type = Some(cf::str!(c"User").retained());
         self
     }
 
     pub fn app_type_internal(&mut self) -> &mut Self {
-        self.application_type = Some(cfstr!("Internal").retained());
+        self.application_type = Some(cf::str!(c"Internal").retained());
         self
     }
 
     pub fn has_settings_bundle(&mut self) -> &mut Self {
-        self.attribute = Some(cfstr!("HasSettingsBundle").retained());
+        self.attribute = Some(cf::str!(c"HasSettingsBundle").retained());
         self
     }
 
     pub fn has_settings_bundle_icon(&mut self) -> &mut Self {
-        self.attribute = Some(cfstr!("HasSettingsBundleIcon").retained());
+        self.attribute = Some(cf::str!(c"HasSettingsBundleIcon").retained());
         self
     }
 
     pub fn lookup(&self) -> Result<arc::R<cf::Dictionary>, Error> {
         let mut options = cf::DictionaryMut::with_capacity(3);
         if let Some(ref app_type) = self.application_type {
-            options.insert(cfstr!("ApplicationType"), app_type);
+            options.insert(cf::str!(c"ApplicationType"), app_type);
         }
 
         if let Some(ref attribute) = self.attribute {
-            options.insert(cfstr!("Attribute"), attribute)
+            options.insert(cf::str!(c"Attribute"), attribute)
         }
 
         self.session.lookup_apps(&options)

@@ -63,16 +63,14 @@ mod tests {
 
     #[test]
     fn basics() {
-        let s = ns::String::with_str("nice");
-        let v = s
-            .value_for_key(ns::String::with_str("length").as_ref())
-            .expect("should be ok");
+        let s = ns::str!(c"nice");
+        let v = s.value_for_key(ns::str!(c"length")).expect("should be ok");
         let v = v.expect("number");
         let num = v.try_cast(ns::Number::cls()).unwrap();
         assert_eq!(num.as_i8(), 4);
 
         let _ = s
-            .value_for_key(ns::String::with_str("invalid_key").as_ref())
+            .value_for_key(ns::str!(c"invalid_key"))
             .expect_err("should be ns::Exception");
     }
 }

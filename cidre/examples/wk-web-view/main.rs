@@ -30,7 +30,7 @@ impl NavigationDelegateImpl for NavD {
     ) {
         let nav = navigation.map(wk::Navigation::retained);
 
-        let js = ns::String::with_str("document.body.innerHTML");
+        let js = ns::str!(c"document.body.innerHTML");
         web_view.eval_js_ch(&js, move |res, _err| {
             eprintln!("{:?}", nav);
             res.map(|id| {

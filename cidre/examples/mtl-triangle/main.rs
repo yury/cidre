@@ -65,11 +65,8 @@ fn main() {
         let source = ns::String::with_str(LIB_SRC);
         let lib = device.new_lib_with_src_blocking(&source, None).unwrap();
 
-        let vertex_fn_name = ns::String::with_str("passthrough");
-        let vertex_fn = lib.new_fn(&vertex_fn_name).unwrap();
-
-        let fragment_fn_name = ns::String::with_str("pass_color");
-        let fragment_fn = lib.new_fn(&fragment_fn_name).unwrap();
+        let vertex_fn = lib.new_fn(ns::str!(c"passthrough")).unwrap();
+        let fragment_fn = lib.new_fn(ns::str!(c"pass_color")).unwrap();
 
         let mut desc = mtl::RenderPipelineDesc::new().with_fns(&vertex_fn, &fragment_fn);
 

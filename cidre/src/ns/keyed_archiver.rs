@@ -42,8 +42,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let s = ns::String::with_str("value");
-        let data = ns::KeyedArchiver::archived_data_with_root_obj(&s, false).unwrap();
+        let s = ns::str!(c"value");
+        let data = ns::KeyedArchiver::archived_data_with_root_obj(s, false).unwrap();
         assert!(!data.is_empty());
     }
 }

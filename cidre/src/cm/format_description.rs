@@ -192,12 +192,11 @@ impl FormatDesc {
         }
     }
 
-    fn video_cfg(&self, key: &str) -> Option<Vec<u8>> {
+    fn video_cfg(&self, key: &cf::String) -> Option<Vec<u8>> {
         let Some(dict) = self.ext_atoms() else {
             return None;
         };
-        let key = cf::String::from_str(key);
-        let Some(value) = dict.get(&key) else {
+        let Some(value) = dict.get(key) else {
             return None;
         };
 
@@ -211,11 +210,11 @@ impl FormatDesc {
     }
 
     pub fn avcc(&self) -> Option<Vec<u8>> {
-        self.video_cfg("avcC")
+        self.video_cfg(cf::str!(c"avcC"))
     }
 
     pub fn hvcc(&self) -> Option<Vec<u8>> {
-        self.video_cfg("hvcC")
+        self.video_cfg(cf::str!(c"hvcC"))
     }
 
     pub fn verbatim_sample_desc(&self) -> Option<&cf::Data> {

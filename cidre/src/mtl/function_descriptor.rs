@@ -34,12 +34,12 @@ mod tests {
 
         assert!(fd.name().is_none());
 
-        let name = ns::String::with_str("hello");
+        let name = ns::str!(c"hello");
 
-        fd.set_name(Some(&name));
+        fd.set_name(Some(name));
 
         let actual_name = fd.name().unwrap();
 
-        assert_eq!(name.as_ref(), actual_name);
+        assert_eq!(name, actual_name);
     }
 }

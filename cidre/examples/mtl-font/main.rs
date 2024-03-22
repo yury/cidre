@@ -264,7 +264,7 @@ fn main() {
     let mut verticies = Vec::<f32>::new();
     let mut nverticies = Vec::<usize>::new();
     let mut byte_offsets = Vec::<usize>::new();
-    let font = ct::Font::with_name_size(cf::String::from_str("Verdana").as_ref(), 28.0);
+    let font = ct::Font::with_name_size(cf::str!(c"Verdana"), 28.0);
     let utf16 = "1234567890-=~!@#$%^&*()_qwertyuiop[]QWERTYUIOP{}|\\sasdfghjkl;`'ASDFGHJKL:\"zxcvbnm,./ZXCVBNM<>?".encode_utf16().collect::<Vec<u16>>();
     let mut glyphs = vec![cg::Glyph::new(0); utf16.len()];
     font.glyphs_for_characters(&utf16, &mut glyphs).unwrap();

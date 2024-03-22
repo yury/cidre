@@ -32,7 +32,7 @@ mod tests {
         let v = false;
         fcv.set_value_at(&v as *const bool as _, mtl::DType::Bool, 0);
         fcv.reset();
-        let name = ns::String::with_str("name");
-        fcv.set_value_with_name(&v as *const bool as _, mtl::DType::Bool, &name);
+        let name = ns::str!(c"name");
+        fcv.set_value_with_name(&v as *const bool as _, mtl::DType::Bool, name);
     }
 }

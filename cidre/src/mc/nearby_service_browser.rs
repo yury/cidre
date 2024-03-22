@@ -91,11 +91,11 @@ mod tests {
 
     #[test]
     fn basics() {
-        let name = ns::String::with_str("test");
-        let peer = mc::PeerId::with_display_name(&name).unwrap();
-        let service = ns::String::with_str("cidre-txtchat");
+        let name = ns::str!(c"test");
+        let peer = mc::PeerId::with_display_name(name).unwrap();
+        let service = ns::str!(c"cidre-txtchat");
         let browser = mc::NearbyServiceBrowser::with_peer(&peer, &service).unwrap();
-        assert_eq!(browser.service_type(), &service);
+        assert_eq!(browser.service_type(), service);
         assert_eq!(browser.my_peer_id(), &peer);
 
         assert!(browser.delegate().is_none());

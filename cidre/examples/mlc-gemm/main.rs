@@ -25,11 +25,11 @@ fn main() {
 
     let mut plan = mlc::InferenceGraph::with_graphs_slice(&[graph.as_ref()]);
 
-    let a = ns::String::with_str("A");
-    let b = ns::String::with_str("B");
-    let c = ns::String::with_str("C");
+    let a = ns::str!(c"A");
+    let b = ns::str!(c"B");
+    let c = ns::str!(c"C");
 
-    let keys = [a.as_ref(), &b, &c];
+    let keys = [a, b, c];
     let values = [t_a.as_ref(), &t_b, &t_c];
     let inputs = ns::Dictionary::with_keys_values(&keys, &values);
     plan.add_inputs(&inputs).unwrap();

@@ -33,8 +33,8 @@ impl SpeechSynthesizerDelegateImpl for SynthDelegate {
 }
 
 fn main() {
-    let text = ns::String::with_str("The quick brown fox jumped over the lazy dog.");
-    let mut utterance = av::SpeechUtterance::with_string(&text);
+    let text = ns::str!(c"The quick brown fox jumped over the lazy dog.");
+    let mut utterance = av::SpeechUtterance::with_string(text);
 
     // Configure the utterance.
     utterance.set_rate(0.57);
@@ -43,8 +43,8 @@ fn main() {
     utterance.set_volume(0.8);
 
     // Retrieve the British English voice.
-    let lang_code = ns::String::with_str("en-GB");
-    let voice = av::SpeechSynthesisVoice::with_lang(Some(&lang_code)).unwrap();
+    let lang_code = ns::str!(c"en-GB");
+    let voice = av::SpeechSynthesisVoice::with_lang(Some(lang_code)).unwrap();
 
     // Assign the voice to the utterance.
     utterance.set_voice(Some(&voice));

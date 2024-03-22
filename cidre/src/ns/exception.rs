@@ -240,12 +240,12 @@ mod tests {
 
     #[test]
     fn ns_exception_catch() {
-        let reason = ns::String::with_str("test");
-        let ex = ns::try_catch(|| ns::Exception::raise(&reason)).expect_err("result");
+        let reason = ns::str!(c"test");
+        let ex = ns::try_catch(|| ns::Exception::raise(reason)).expect_err("result");
 
         assert!(ex.user_info().is_none());
         assert!(ex.name().eq(ns::ExceptionName::generic()));
-        assert!(ex.reason().unwrap().eq(&reason));
+        assert!(ex.reason().unwrap().eq(reason));
 
         assert_ne!(cf::String::type_id(), ex.as_type_ref().get_type_id());
 
@@ -254,9 +254,9 @@ mod tests {
 
     #[test]
     fn objc_throw_catch() {
-        let msg = ns::String::with_str("this is longer string so it is not tagged ptr");
+        let msg = ns::str!(c"this is longer string so it is not tagged ptr");
 
-        let exc = objc::try_catch(|| objc::throw(&msg)).expect_err("result");
+        let exc = objc::try_catch(|| objc::throw(msg)).expect_err("result");
 
         assert_eq!(cf::String::type_id(), exc.as_type_ref().get_type_id());
         assert!(msg.is_equal(&exc));

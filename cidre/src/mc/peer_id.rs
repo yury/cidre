@@ -33,11 +33,11 @@ mod tests {
 
     #[test]
     fn basics() {
-        let name = ns::String::with_str("test");
-        let peer = mc::PeerId::with_display_name(&name).unwrap();
-        assert_eq!(peer.display_name(), &name);
+        let name = ns::str!(c"test");
+        let peer = mc::PeerId::with_display_name(name).unwrap();
+        assert_eq!(peer.display_name(), name);
 
-        let name = ns::String::with_str("");
-        let _err = mc::PeerId::with_display_name(&name).expect_err("should be err");
+        let name = ns::str!(c"");
+        let _err = mc::PeerId::with_display_name(name).expect_err("should be err");
     }
 }
