@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{at, define_opts, os};
+use crate::{at, cf, define_opts, os};
 
 pub type UnitRef = crate::at::audio::ComponentInstanceRef;
 
@@ -729,6 +729,20 @@ pub type InputSamplesInOutputCb<T = c_void> = extern "C" fn(
     in_number_input_samples: f64,
 );
 
+impl cf::NotificationName {
+    #[doc(alias = "kAudioComponentRegistrationsChangedNotification")]
+    #[inline]
+    pub fn audio_component_registrations_changed() -> &'static Self {
+        unsafe { kAudioComponentRegistrationsChangedNotification }
+    }
+
+    #[doc(alias = "kAudioComponentInstanceInvalidationNotification")]
+    #[inline]
+    pub fn audio_component_instance_invalidation() -> &'static Self {
+        unsafe { kAudioComponentInstanceInvalidationNotification }
+    }
+}
+
 impl UnitRef {
     // pub fn initialize(&mut self) -> os::Status {
     //     unsafe { AudioUnitInitialize(self) }
@@ -741,8 +755,38 @@ impl UnitRef {
 
 #[link(name = "AudioToolbox", kind = "framework")]
 extern "C" {
+    static kAudioComponentRegistrationsChangedNotification: &'static cf::NotificationName;
+    static kAudioComponentInstanceInvalidationNotification: &'static cf::NotificationName;
+
     fn AudioUnitInitialize(in_unit: &mut UnitRef) -> os::Status;
     fn AudioUnitUninitialize(in_unit: &mut UnitRef) -> os::Status;
+
+    fn AudioUnitGetPropertyInfo(
+        in_unit: &UnitRef,
+        in_id: PropId,
+        in_scope: Scope,
+        in_element: Element,
+        out_data_size: *mut u32,
+        out_writable: *mut bool,
+    ) -> os::Status;
+
+    fn AudioUnitGetProperty(
+        in_unit: &UnitRef,
+        in_id: PropId,
+        in_scope: Scope,
+        in_element: Element,
+        out_data: *mut c_void,
+        io_data_size: *mut u32,
+    ) -> os::Status;
+
+    fn AudioUnitSetProperty(
+        in_unit: &mut UnitRef,
+        in_id: PropId,
+        in_scope: Scope,
+        in_element: Element,
+        in_data: *const c_void,
+        in_data_size: u32,
+    ) -> os::Status;
 }
 
 #[cfg(test)]
