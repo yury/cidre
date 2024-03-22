@@ -686,14 +686,14 @@ mod tests {
 
         let _r = fm.remove_item_at_path(parent); // don't care about result for now
 
-        fm.create_dir_at_path(&path, false, None)
+        fm.create_dir_at_path(path, false, None)
             .expect_err("should fail");
 
-        fm.create_dir_at_path(&path, true, None).unwrap();
+        fm.create_dir_at_path(path, true, None).unwrap();
         assert!(fm.file_exists_at_path(&path));
 
-        fm.remove_item_at_path(&parent).unwrap();
-        assert!(!fm.file_exists_at_path(&parent));
+        fm.remove_item_at_path(parent).unwrap();
+        assert!(!fm.file_exists_at_path(parent));
     }
 
     #[test]
