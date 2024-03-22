@@ -14,6 +14,7 @@
 - Zero cost selectors calls (XCode 14.3) [WWDC video 3:10](https://developer.apple.com/videos/play/wwdc2022/110363/)
 - Integrated async blocks
 - Zero cost Apple's C API interfaces
+- Static 'cf::String' as 'ns::String' refs ('ns::str!(c"hello")') 
 
 ### Platforms
 
