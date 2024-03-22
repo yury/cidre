@@ -679,12 +679,12 @@ mod tests {
 
     #[test]
     pub fn create_dir() {
-        let parent = ns::String::with_str("/tmp/foo");
+        let parent = ns::str!(c"/tmp/foo");
 
-        let path = ns::String::with_str("/tmp/foo/nest");
+        let path = ns::str!(c"/tmp/foo/nest");
         let fm = ns::FileManager::default();
 
-        let _r = fm.remove_item_at_path(&parent); // don't care about result for now
+        let _r = fm.remove_item_at_path(parent); // don't care about result for now
 
         fm.create_dir_at_path(&path, false, None)
             .expect_err("should fail");

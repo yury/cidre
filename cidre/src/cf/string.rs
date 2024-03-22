@@ -519,6 +519,6 @@ mod tests {
         s.show();
         s.show_str();
 
-        assert_eq!(s.to_string(), "nice".to_string());
+        assert_eq!(s, "nice");
     }
 }
