@@ -454,4 +454,291 @@ impl au::PropId {
     /// The value defaults to false, as the common usage of audio units is for real-time processing
     #[doc(alias = "kAudioUnitProperty_OfflineRender")]
     pub const OFFLINE_RENDER: Self = Self(37);
+
+    /// Scope:      any
+    /// Value Type: AudioUnitParameterIDName
+    /// Access:     read
+    ///
+    /// An audio unit returns the full parameter name in the GetParameterInfo struct/property.
+    /// In some display situations however, there may only be room for a few characters, and
+    /// truncating this full name may give a less than optimal name for the user. Thus,
+    /// this property can be used to ask the audio unit whether it can supply a truncated name, with
+    /// the host suggesting a length (number of characters). If the unit returns a longer
+    /// name than the host requests, that name may be truncated to the requested characters in display.
+    /// The unit could return a shorter name than requested as well. The unit returns a CFString
+    /// that should be released by the host. When using this property, the host asks for
+    /// the name in the same scope and element as the unit publishes the parameter.
+    #[doc(alias = "kAudioUnitProperty_ParameterIDName")]
+    pub const PARAM_ID_NAME: Self = Self(34);
+
+    /// Scope:      any
+    /// Value Type: AudioUnitParameterStringFromValue
+    /// Access:     read
+    ///
+    /// This property is used with parameters that are marked with the
+    /// kAudioUnitParameterFlag_HasName parameter info flag. This indicates that some
+    /// (or all) of the values represented by the parameter can and should be
+    /// represented by a special display string.
+    ///
+    /// This is NOT to be confused with kAudioUnitProperty_ParameterValueStrings. That property
+    /// is used with parameters that are indexed and is typically used for instance to build
+    /// a menu item of choices for one of several parameter values.
+    ///
+    /// kAudioUnitProperty_ParameterStringFromValue can have a continuous range, and merely states
+    /// to the host that if it is displaying those parameter's values, they should request
+    /// a name any time any value of the parameter is set when displaying that parameter.
+    ///
+    /// For instance (a trivial example), a unit may present a gain parameter in a dB scale,
+    /// and wish to display its minimum value as "negative infinity". In this case, the audio unit
+    /// will not return names for any parameter value greater than its minimum value - so the host
+    /// will then just display the parameter value as is. For values less than or equal to the
+    /// minimum value, the audio unit will return a string for "negative infinity" which the host can
+    /// use to display appropriately.
+    ///
+    /// A less trivial example might be a parameter that presents its values as seconds. However,
+    /// in some situations this value should be better displayed in a SMPTE style of display:
+    /// HH:MM:SS:FF
+    /// In this case, the audio unit would return a name for any value of the parameter.
+    ///
+    /// The GetProperty call is used in the same scope and element as the inParamID
+    /// that is declared in the struct passed in to this property.
+    ///
+    /// If the *inValue member is NULL, then the audio unit should take the current value
+    /// of the specified parameter. If the *inValue member is NOT NULL, then the audio unit should
+    /// return the name used for the specified value.
+    ///
+    /// On exit, the outName may point to a CFStringRef (which if so must be released by the caller).
+    /// If the parameter has no special name that should be applied to that parameter value,
+    /// then outName will be NULL, and the host should display the parameter value as
+    /// appropriate.
+    #[doc(alias = "kAudioUnitProperty_ParameterStringFromValue")]
+    pub const PARAM_STRING_FROM_VALUE: Self = Self(33);
+
+    /// Scope:      any
+    /// Value Type: AudioUnitParameterIDName
+    /// Access:     read
+    ///
+    /// This works in a similar manner to the ParameterIDName property, except that the inID
+    /// value is one of the clumpID's that are returned with the audio unit's ParameterInfo
+    /// structure.
+    #[doc(alias = "kAudioUnitProperty_ParameterClumpName")]
+    pub const PARAM_CLUMP_NAME: Self = Self(35);
+
+    /// Scope:      any
+    /// Value Type: AudioUnitParameterValueFromString
+    /// Access:     read
+    ///
+    /// This property returns the value of a parameter from its string representation.
+    /// See kAudioUnitProperty_ParameterStringFromValue.
+    #[doc(alias = "kAudioUnitProperty_ParameterValueFromString")]
+    pub const PARAM_VALUE_FROM_STRING: Self = Self(38);
+
+    /// Scope:      Global
+    /// Value Type: cf::String
+    /// Access:     Read / Write
+    ///
+    /// The host can set this as information to the audio unit to describe something about the context
+    /// within which the audio unit is instantiated. For instance, "track 3" could
+    /// be set as the context, so that the audio unit's view could then display "My audio unit on track 3"
+    /// as information to the user of the particular context for any audio unit.
+    #[doc(alias = "kAudioUnitProperty_ContextName")]
+    pub const CONTEXT_NAME: Self = Self(25);
+
+    /// Scope:      Input/Output
+    /// Value Type: f64
+    /// Access:     write
+    ///
+    /// This property is set by a host to describe to the audio unit the presentation latency of both
+    /// any of its input and/or output audio data.
+    /// It describes this latency in seconds. A value of zero means either no latency
+    /// or an unknown latency.
+    ///
+    /// This is a write only property because the host is telling the audio unit the latency of both the
+    /// data it provides it for input and the latency from getting the data from the unit until it is
+    /// presented.
+    ///
+    /// The property is should be set on each active input and output bus (Scope/Element pair).
+    /// For example, an audio unit with multiple outputs will have the output data it produces processed
+    /// by different audio units, etc before it is mixed and presented. Thus, in this case, each output
+    /// element could have a different presentation latency.
+    ///
+    /// This should not be confused with the Latency property, where the audio unit describes to the host
+    /// any processing latency it introduces between its input and its output.
+    ///
+    /// For input:
+    /// Describes how long ago the audio given to an audio unit was acquired. For instance, when
+    /// reading from a file to the first audio unit, then its input presentation latency will be zero.
+    /// When processing audio input from a  device, then this initial input latency will be the
+    /// presentation latency of the device itself, the device's safety offset and latency.
+    ///
+    /// The next audio unit's (connected to that first unit) input presentation latency will be the
+    /// input presentation latency of the first unit, plus the processing latency (as expressed by
+    /// kAudioUnitProperty_Latency) of the first unit.
+    ///
+    /// For output:
+    /// Describes how long before the output audio of an audio unit is to be presented. For instance,
+    /// when writing to a file, then the last audio unit's output presentation latency will be zero.
+    /// When the audio from that audio unit is to be played to an AudioDevice, then that initial
+    /// presentation latency will be the latency of the device itself - which is the I/O buffer size,
+    /// and the device's safety offset and latency
+    ///
+    /// The previous audio unit's (connected to this last unit) output presentation latency will be that
+    /// initial presentation latency plus the processing latency (as expressed by
+    /// kAudioUnitProperty_Latency) of the last unit.
+    ///
+    /// So, for a given audio unit anywhere within a mixing graph, the input and output presentation
+    /// latencies describe to that unit how long from the moment of generation it will take for its
+    /// input to arrive, and how long it will take for its output to be presented.
+    ///
+    /// You can use this property, for example, to provide metering for an audio unit that
+    /// is generating output to be presented to the user at a future time.
+    #[doc(alias = "kAudioUnitProperty_PresentationLatency")]
+    pub const PRESENTATION_LATENCY: Self = Self(40);
+
+    /// Scope:      Global
+    /// Value Type: cf::Dictionary
+    /// Access:     read/write
+    ///
+    /// If the audio unit implements this property then it is going to do different actions establishing
+    /// its state from a document rather than from a user preset. Thus, a host app should use this property
+    /// first (instead of kAudioUnitProperty_ClassInfo) when restoring the state of an audio unit when
+    /// opening a document. If the audio unit returns an error (or doesn't implement this property) then
+    /// the host should use the same preset with the kAudioUnitProperty_ClassInfo.
+    #[doc(alias = "kAudioUnitProperty_ClassInfoFromDocument")]
+    pub const CLASS_INFO_FROM_DOCUMENT: Self = Self(50);
+
+    /// Scope:			Global
+    /// Value Type:		block: void (^)(AUViewControllerBase *)
+    /// Access:			write
+    ///
+    /// If the audio unit is implemented using the version 3 API, it may provide a
+    /// view controller, returned via this property. As with any other CoreFoundation
+    /// or Foundation object returned by AudioUnitGetProperty, the caller must
+    /// release the returned reference (i.e. the Copy rule is used).
+    #[doc(alias = "kAudioUnitProperty_RequestViewController")]
+    pub const REQUEST_VIEW_CONTROLLER: Self = Self(56);
+
+    /// Scope:      Global
+    /// Value Type: variably-sized array of struct AudioUnitParameter
+    /// Access:     read
+    ///
+    /// A host may query an audio unit for a list of its N most important
+    /// parameters, via this property. The size of the array passed to
+    /// AudioUnitGetProperty controls the number of AudioUnitParameter values
+    /// returned.
+    #[doc(alias = "kAudioUnitProperty_ParametersForOverview")]
+    pub const PARAMS_FOR_OVERVIEW: Self = Self(57);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read
+    ///
+    /// Indicates whether an audio unit supports Multi-dimensional Polyphonic Expression.
+    #[doc(alias = "kAudioUnitProperty_SupportsMPE")]
+    pub const SUPPORTS_MPE: Self = Self(58);
+
+    /// Scope:      Global
+    /// Value Type: AURenderContextObserver
+    /// Access:     read-only
+    ///
+    /// Audio Units which create auxiliary realtime rendering threads should
+    /// implement this property to return a block which will be called by the OS
+    /// when the render context changes. Audio Unit hosts must not attempt to
+    /// interact with the AudioUnit through this block; it is for the exclusive use
+    /// of the OS.
+    #[doc(alias = "kAudioUnitProperty_RenderContextObserver")]
+    pub const RENDER_CONTEXT_OBSERVER: Self = Self(60);
+
+    /// Scope:      Global
+    /// Value Type: f64
+    /// Access:     read-only
+    ///
+    /// The absolute sample frame time of the most recent render timestamp.
+    #[doc(alias = "kAudioUnitProperty_LastRenderSampleTime")]
+    pub const LAST_RENDER_SAMPLE_TIME: Self = Self(61);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read-only
+    ///
+    /// Indicates whether an Audio Unit is loaded out-of-process, which might happen
+    /// at the request of the host or when loading in-process is not possible.
+    #[doc(alias = "kAudioUnitProperty_LoadedOutOfProcess")]
+    pub const LOADED_OUT_OF_PROCESS: Self = Self(62);
+
+    /// Scope:			Global
+    /// Value Type:		void* (function pointer)
+    /// Access:			Read
+    ///
+    /// The caller provides the selector for a given audio unit API, and retrieves a function pointer for that selector. For instance,
+    /// this enables the caller to retrieve the function pointer for the AudioUnitRender call, so that call can be made directly
+    /// through to the audio unit to avoid the overhead of the ComponentMgr's dispatch.
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_FastDispatch")]
+    pub const FAST_DISPATCH: Self = Self(5);
+
+    /// Scope:      Global
+    /// Value Type: AudioUnitExternalBuffer
+    /// Access:     Write
+    ///
+    /// This is used to provide to an audio unit a buffer that it can use with its input render callback's audio buffer list
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_SetExternalBuffer")]
+    pub const SET_EXTERNAL_BUF: Self = Self(15);
+
+    /// Scope:      Any
+    /// Value Type: AudioComponentDescription array
+    /// Access:     Read
+    ///
+    /// Presents an array of AudioComponentDescription that are of type 'auvw' (AudioUnitCarbonView).
+    /// These are the carbon based custom views for that audio unit.
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_GetUIComponentList")]
+    pub const GET_UI_COMPONENT_LIST: Self = Self(18);
+
+    /// Scope:				Global
+    /// Value Type:			struct AudioUnitCocoaViewInfo
+    /// Access:				read
+    ///
+    /// Publishes the audio unit's custom Cocoa NSViews. The Host can determine how big this structure is by
+    /// querying the size of the property (i.e., How many alternate UI classes there are for the unit)
+    /// Typically, most audio units will provide 1 UI class per unit
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_CocoaUI")]
+    pub const COCOA_UI: Self = Self(31);
+
+    /// Scope:      Global
+    /// Value Type: &cf::Url
+    /// Access:     Read
+    ///
+    /// A URL that will specify the location of an icon file that can be used when presenting
+    /// UI for this audio unit.
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_IconLocation")]
+    pub const ICON_LOCATION: Self = Self(39);
+
+    /// Scope:      Global
+    /// Value Type: AUHostVersionIdentifier
+    /// Access:     write
+    ///
+    /// Determine which application (and which version) an audio unit is being hosted by.
+    /// This is made more complex through the intervention of audio units such as Kore, that are hosting
+    /// other audio units (in this case of course, the real host of the audio unit is the hosting unit,
+    /// not the host application, so the previous mechanism of getting the main bundle ID is no longer
+    /// correct).
+    ///
+    /// There are also inconsistencies in the way that bundle identifiers are applied (with apps changing
+    /// these from version to version), and we'd prefer to see a more consistent identifier used with
+    /// this property. This is in spirit similar to the string returned by CFBundle API, except that we
+    /// require this host string be consistent and reliable through different revisions of the host.
+    ///
+    /// The audio unit is responsible for retaining the hostName string if it needs to use it past the
+    /// duration of the actual call. The host should set this property as early as possible within the
+    /// lifetime of the unit in a session.
+    ///
+    /// This API used to take a NumVersion struct. It is redefined to take an AUHostVersionIdentifier struct
+    /// which is binary compatible with the existing usage, but not source compatible.
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_AUHostIdentifier")]
+    pub const AU_HOST_IDENTIFIER: Self = Self(46);
 }
