@@ -21,3 +21,4 @@ pub use component::Type;
 pub use component::UnitRef;
 
 mod properties;
+pub use properties::preset_key;

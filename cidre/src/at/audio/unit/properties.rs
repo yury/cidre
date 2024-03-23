@@ -888,3 +888,125 @@ impl au::PropId {
     #[doc(alias = "kAudioUnitProperty_MIDIOutputBufferSizeHint")]
     pub const MIDI_OUTPUT_BUF_SIZE_HINT: Self = Self(66);
 }
+
+/// Inter-App Audio Property IDs
+///
+/// Properties used in inter-app audio.
+impl au::PropId {
+    /// Scope:      Global
+    /// Value Type: AudioUnitRemoteControlEventListener
+    /// Access:     read/write
+    ///
+    /// Provides a way for a host to receive AudioUnitRemoteControlEvents from a remote "node"
+    /// audio unit. The supplied listener block is called when the audio unit sends a remote
+    /// control event.
+    #[doc(alias = "kAudioUnitProperty_RemoteControlEventListener")]
+    pub const REMOTE_CONTROL_EVENT_LISTENER: Self = Self(100);
+
+    /// Scope: Global
+    /// Value Type: UInt32 (0-1)
+    /// Access: read-only
+    ///
+    /// Both host and node apps can query and listen to this property to determine when
+    /// the audio unit has been connected to another app.
+    #[doc(alias = "kAudioUnitProperty_IsInterAppConnected")]
+    pub const IS_INTER_APP_CONNECTED: Self = Self(101);
+
+    /// Scope:      Global
+    /// Value Type: &cf::Url
+    /// Access:     read-only
+    ///
+    /// Both host and node apps can query this property to obtain a URL which, when
+    /// opened, will activate the other app.
+    ///
+    /// N.B. This URL is only valid while the host has an open connection to the node
+    #[doc(alias = "kAudioUnitProperty_PeerURL")]
+    pub const PEER_URL: Self = Self(102);
+}
+
+/// Keys contains in an audio unit preset (ClassInfo) dictionary
+/// These strings are used as keys in the AUPreset-"classInfo" dictionary
+pub mod preset_key {
+    use crate::cf;
+
+    #[doc(alias = "kAUPresetVersionKey")]
+    pub fn version() -> &'static cf::String {
+        cf::str!(c"version")
+    }
+
+    #[doc(alias = "kAUPresetTypeKey")]
+    pub fn type_() -> &'static cf::String {
+        cf::str!(c"type")
+    }
+
+    #[doc(alias = "kAUPresetSubtypeKey")]
+    pub fn subtype() -> &'static cf::String {
+        cf::str!(c"subtype")
+    }
+
+    #[doc(alias = "kAUPresetManufacturerKey")]
+    pub fn manufacturer() -> &'static cf::String {
+        cf::str!(c"manufacturer")
+    }
+
+    #[doc(alias = "kAUPresetDataKey")]
+    pub fn data() -> &'static cf::String {
+        cf::str!(c"data")
+    }
+
+    #[doc(alias = "kAUPresetNameKey")]
+    pub fn name() -> &'static cf::String {
+        cf::str!(c"name")
+    }
+
+    #[doc(alias = "kAUPresetNumberKey")]
+    pub fn preset_number() -> &'static cf::String {
+        cf::str!(c"preset-number")
+    }
+
+    #[doc(alias = "kAUPresetRenderQualityKey")]
+    pub fn render_quality() -> &'static cf::String {
+        cf::str!(c"render-quality")
+    }
+
+    #[doc(alias = "kAUPresetCPULoadKey")]
+    pub fn cpu_load() -> &'static cf::String {
+        cf::str!(c"cpu-load")
+    }
+
+    #[doc(alias = "kAUPresetElementNameKey")]
+    pub fn element_name() -> &'static cf::String {
+        cf::str!(c"element-name")
+    }
+
+    #[doc(alias = "kAUPresetExternalFileRefs")]
+    pub fn file_refs() -> &'static cf::String {
+        cf::str!(c"file-references")
+    }
+
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAUPresetVSTDataKey")]
+    pub fn vst_data() -> &'static cf::String {
+        cf::str!(c"vstdata")
+    }
+
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAUPresetVSTPresetKey")]
+    pub fn vst_preset() -> &'static cf::String {
+        cf::str!(c"vstpreset")
+    }
+
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAUPresetMASDataKey")]
+    pub fn mas_data() -> &'static cf::String {
+        cf::str!(c"masdata")
+    }
+
+    /// This key if present, distinguishes a global preset that is set
+    /// on the global scope with a part-based preset that is set on the part scope.
+    /// The value of this key is audio unit defined
+    #[doc(alias = "kAUPresetPartKey")]
+    pub fn part() -> &'static cf::String {
+        cf::str!(c"part")
+    }
+}
