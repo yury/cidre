@@ -299,4 +299,159 @@ impl au::PropId {
     /// (as with all other CF properties), and should release the string retrieved or used when setting.
     #[doc(alias = "kAudioUnitProperty_ElementName")]
     pub const ELEMENT_NAME: Self = Self(30);
+
+    /// Scope:      Input/Output
+    /// Value Type: AudioChannelLayoutTags[ variable number of elements ]
+    /// Access:     read only
+    ///
+    /// Used with GetProperty to ascertain what an audio unit understands about
+    /// laying out of channel orders. This will normally return one or more of the specified layout tags.
+    ///
+    /// When a specific set of layouts are returned, the client then uses the
+    /// kAudioUnitProperty_AudioChannelLayout property (with one of those layout tags specified) to set
+    /// the unit to use that layout. In this case the client (and the audio unit when reporting its
+    /// AudioChannelLayout) is only expected to have set an AudioChannelLayout which only sets the
+    /// layout tag as the valid field.
+    ///
+    /// Custom Channel Maps:
+    /// Some audio units may return the tag: kAudioChannelLayoutTag_UseChannelDescriptions
+    ///
+    /// In this case, the host then can look at supported number of channels on that scope
+    /// (using the kAudioUnitProperty_SupportedNumChannels), and supply an AudioChannelLayout with the
+    /// kAudioUnitProperty_AudioChannelLayout property to specify the layout, number of channels
+    /// and location of each of those channels. This custom channel map MUST have a channel valence
+    /// that is supported by the Audio Unit.
+    ///
+    /// The UseChannelBitmap field is NOT used within the context of the AudioUnit
+    #[doc(alias = "kAudioUnitProperty_SupportedChannelLayoutTags")]
+    pub const SUPPORTED_CHANNEL_LAYOUT_TAGS: Self = Self(32);
+
+    /// Scope:      Global/Part
+    /// Value Type: Preset
+    /// Access:     read/write
+    ///
+    /// This property replaces the deprecated CurrentPreset property, due to the ambiguity of
+    /// ownership of the cf::String of the preset name in the older CurrentPreset property.
+    /// With PresentPreset the client of the audio unit owns the CFString when it retrieves the
+    /// preset with PresentPreset and is expected to release this (as with ALL properties
+    /// that retrieve a CF object from an audio unit).
+    #[doc(alias = "kAudioUnitProperty_PresentPreset")]
+    pub const PRESENT_PRESET: Self = Self(36);
+
+    /// Scope:      any
+    /// Value Type: array of AUDependentParameter
+    /// Access:     read
+    ///
+    /// This property is used for parameters with the kAudioUnitParameterFlag_IsGlobalMeta
+    /// or kAudioUnitParameterFlag_IsElementMeta flags set. Hosts applications (and the
+    /// AudioUnitParameterListener mechanism) can interrogate this property to determine which parameters
+    /// are dependent on a meta-parameter.
+    ///
+    /// For parameters marked with kAudioUnitParameterFlag_IsGlobalMeta, any non-global
+    /// dependent parameters are assumed to be dependent in every element of their scope.
+    ///
+    /// For parameters marked with kAudioUnitParameterFlag_IsElementMeta, then its dependent
+    /// parameters must all be the same scope, and are assumed to apply only within a single element,
+    /// not to other instances of the same parameter in other elements.
+    #[doc(alias = "kAudioUnitProperty_DependentParameters")]
+    pub const DEPENDENT_PARAMS: Self = Self(45);
+
+    /// Scope:      Global
+    /// Value Type: struct AUInputSamplesInOutputCallbackStruct
+    /// Access:     read/write
+    ///
+    /// An audio unit calls this callback at the end of its render call. The audio unit supplies the
+    /// following information:
+    ///
+    ///    outputTime - The timestamp passed in to the audio unit's render call. This timestamp
+    ///                 represents the time of the first output sample.
+    ///    inputSample - The sample number of the first input sample that is present in the output
+    ///                  audio.
+    ///    numInputSamples - The number of input samples that were used and are present in the output
+    ///                      audio.
+    ///
+    /// This property allows a host application to determine which input samples correspond to a sample
+    /// in the output buffer. It is useful only for audio units that do time-stretching, such as the
+    /// AUVarispeed and AUTimePitch units, where the relationship between input and output samples is
+    /// non-trivial. For these units, the range of input samples that correspond to an output buffer
+    /// typically differs from the range of input samples that were pulled for that render call.
+    /// This difference arises because of internal buffering, processing latency, and other factors.
+    #[doc(alias = "kAudioUnitProperty_InputSamplesInOutput")]
+    pub const INPUT_SAMPLES_IN_OUTPUT: Self = Self(49);
+
+    /// Scope:      input/output elements (settable per element)
+    /// Value Type: u32
+    /// Access:     read/write
+    ///
+    /// By default this value is true. This affects the allocations of the buffers for I/O (the mData field
+    /// of the AudioBufferList used with AudioUnitRender, callbacks and connections)
+    ///
+    /// If true, the element will create a buffer for rendering into.
+    ///
+    /// If false, the element will not create a buffer for rendering.
+    ///
+    /// For example, if the audio unit is only ever going to have a connection as its input and never a callback,
+    /// then it should not need to create a buffer (the API contract expects an audio unit to provide a buffer for
+    /// callbacks, but no buffer for connections).
+    ///
+    /// If the audio unit is always going to be pulled for audio with the client providing audio data buffers to
+    /// the AudioUnitRender call, then it will never need to create an audio buffer on the output side.
+    ///
+    /// So, this property can be used to control the default allocation strategy of an audio unit. If the audio unit
+    /// needs a buffer, but one hasn't been allocated, then an error will be thrown from that call to AudioUnitRender.
+    ///
+    /// This property cannot be set on Initialised audio units as it may end up reallocating memory.
+    #[doc(alias = "kAudioUnitProperty_ShouldAllocateBuffer")]
+    pub const SHOULD_ALLOCATE_BUF: Self = Self(51);
+
+    /// Scope:      input/output elements (settable per element)
+    /// Value Type: AudioUnitFrequencyResponseBin
+    /// Access:     read
+    ///
+    /// The property provides a way for a user interface view to get points for drawing a graph of the frequency
+    /// response of the AU.
+    ///
+    /// An array of AudioUnitFrequencyResponseBin are passed in to kAudioUnitProperty_FrequencyResponse
+    /// with the mFrequency field filled in. The array is returned with the mMagnitude fields filled in.
+    /// If fewer than kNumberOfResponseFrequencies are needed, then the first unused bin should be marked with
+    /// a negative frequency.
+    #[doc(alias = "kAudioUnitProperty_FrequencyResponse")]
+    pub const FREQUENCY_RESPONSE: Self = Self(51);
+
+    /// Scope:      Global
+    /// Value Type: AudioUnitParameterHistoryInfo
+    /// Access:     read
+    ///
+    /// For parameters which have kAudioUnitParameterFlag_PlotHistory set, getting this property fills out the
+    /// AudioUnitParameterHistoryInfo struct containing the recommended update rate and history duration.
+    #[doc(alias = "kAudioUnitProperty_ParameterHistoryInfo")]
+    pub const PARAM_HISTORY_INFO: Self = Self(53);
+
+    /// Scope:      Global
+    /// Value Type: Option<arc::R<cf::String>>
+    /// Access:     read/write
+    ///
+    /// Provides a way for a host to set a custom name on an AU.
+    ///
+    /// An example of when this is useful is when a host is managing a processing chain that contains multiple AU
+    /// instances of the same subtype (and type and manufacturer). The host uses this property to assign a
+    /// unique name to each AU instance indicating what that particular instance's function is in the processing
+    /// chain and can later query the property to distinguish between AU instances with the same type/subtype/manu
+    /// tuple. It is the host's responsibility to keep the names unique if uniqueness is required.
+    ///
+    /// When getting this property, ownership follows Core Foundation's 'Copy Rule'. This property may return NULL
+    /// which indicates that no name has been set on the AU.
+    #[doc(alias = "kAudioUnitProperty_NickName")]
+    pub const NICK_NAME: Self = Self(54);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// This is used by the host to indicate when an audio unit (that normally operates within a general real-time
+    /// calling model) is rendering in an offline context. A typical usage of this is to set this to true when
+    /// the rendering operation an audio unit is being used within is going to write out the results to a file.
+    /// The value defaults to false, as the common usage of audio units is for real-time processing
+    #[doc(alias = "kAudioUnitProperty_OfflineRender")]
+    pub const OFFLINE_RENDER: Self = Self(37);
 }
