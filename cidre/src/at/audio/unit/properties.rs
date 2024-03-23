@@ -741,4 +741,150 @@ impl au::PropId {
     #[cfg(target_os = "macos")]
     #[doc(alias = "kAudioUnitProperty_AUHostIdentifier")]
     pub const AU_HOST_IDENTIFIER: Self = Self(46);
+
+    /// Scope:      Global
+    /// Value Type: &cf::Array
+    /// Access:     read
+    ///
+    /// Used to determine how many MIDI output streams the audio unit can generate  (and the name for
+    /// each of these outputs). Each MIDI output is a complete MIDI or MIDIEventList data stream, such as embodied
+    /// by a  MIDIEndpointRef in CoreMIDI.
+    ///
+    /// The host can retrieve an array of CFStringRefs published by the audio unit, where :
+    ///    - the size of the array is the number of MIDI Outputs the Audio Unit supports
+    ///    - each item in the array is the name for that output at that index
+    ///
+    /// The host owns this array and its elements and should release them when it is finished.
+    ///
+    /// Once the host has determined that the Audio Unit supports this feature, it can then provide a
+    /// callback, through which the audio unit can send the MIDI data.
+    /// See the documentation for the kAudioUnitProperty_MIDIOutputCallback property.
+    #[doc(alias = "kAudioUnitProperty_MIDIOutputCallbackInfo")]
+    pub const MIDI_OUTPUT_CB_INFO: Self = Self(47);
+
+    /// Scope:      Global
+    /// Value Type: AUMIDIOutputCallbackStruct
+    /// Access:     write
+    ///
+    /// The host sets this property on the audio unit with the callback (and its user data) set
+    /// appropriately.
+    ///
+    /// Operational Parameters:
+    /// In the render call, just as is the expected usage of the AUHostCallbacks, the audio unit can
+    /// call the provided callback to provide MIDI data to the host that it will associate with the
+    /// current AudioUnitRender call in process.
+    ///
+    /// The audio unit in the callback provides:
+    ///     - the user data provided by the host when the callback was established
+    ///     - the AudioTimeStamp that was provided to the audio unit for this particular call of
+    ///       AudioUnitRender
+    ///     - the output number to associate this MIDI data with
+    ///     - a MIDI Packet List containing MIDI data. The time stamp values contained within the
+    ///       MIDIPackets in this list are **sample offsets*** from the AudioTimeStamp provided.
+    ///       This allows MIDI data to be time-stamped with a sample offset that is directly associated
+    ///       with the audio data it is generating in the current call to the AudioUnitRender function
+    ///
+    /// There is no implied or expected association between the number (or position) of an audio unit's
+    /// audio or MIDI outputs.
+    #[doc(alias = "kAudioUnitProperty_MIDIOutputCallback")]
+    pub const MIDI_OUTPUT_CB: Self = Self(48);
+
+    /// Scope:      Global
+    /// Value Type: AUMIDIEventListBlock
+    /// Access:     write
+    ///
+    /// The host sets this property on the Audio Unit with the callback set appropriately.
+    ///
+    /// Operational Parameters:
+    /// In the render call, just as is the expected usage of the AUHostCallbacks, the audio unit can
+    /// call the provided callback to provide MIDIEventList data to the host that it will associate with the
+    /// current AudioUnitRender.
+    ///
+    /// The Audio Unit in the callback provides:
+    ///  - the AUEventSampleTime that was provided to the audio unit for this particular call of
+    ///    AudioUnitRender
+    ///  - the output number to associate this MIDI data with
+    ///  - a MIDIEventList containing MIDI data. The time stamp values contained within the
+    ///    MIDIEventPacket in this list are **sample offsets*** from the AudioTimeStamp provided.
+    ///    This allows MIDI data to be time-stamped with a sample offset that is directly associated
+    ///    with the audio data it is generating in the current call to the AudioUnitRender function
+    ///
+    /// Host should setup in the following order:
+    ///  - Set desired host MIDI protocol using kAudioUnitProperty_HostMIDIProtocol
+    ///  - Set kAudioUnitProperty_MIDIOutputEventListCallback
+    ///  - Initialize the Audio Unit
+    ///
+    /// Notes:
+    ///  - kAudioUnitProperty_HostMIDIProtocol cannot be changed while the Audio Unit is initialized.
+    ///  - The Audio Unit takes ownership of the provided block.
+    ///  - kAudioUnitProperty_HostMIDIProtocol should be set before attempting to query
+    ///    kAudioUnitProperty_AudioUnitMIDIProtocol or calling AudioUnitInitialize to allow Audio Units to
+    ///    optionally match their input MIDI protocol to the desired host protocol and prevent protocol conversion.
+    ///
+    /// There is no implied or expected association between the number (or position) of an audio unit's
+    /// audio or MIDI outputs.
+    ///
+    /// Compare to property kAudioUnitProperty_MIDIOutputCallback.
+    #[doc(alias = "kAudioUnitProperty_MIDIOutputEventListCallback")]
+    pub const MIDI_OUTPUT_EVENT_LIST_CB: Self = Self(63);
+
+    /// Scope:      Global
+    /// Value Type: i32
+    /// Access:     read
+    ///
+    /// A signed 32-bit integer representing the audio unit's MIDI protocol. This should be one of the
+    /// values in the MIDIProtocolID enum (see <CoreMIDI/MIDIServices.h>)..
+    ///
+    /// The framework will convert all incoming MIDI data to the protocol set in this property, the host can query
+    /// this property to detect the audio unit's current MIDI protocol.
+    ///
+    /// Note: This property should not be changed after the audio has been initialized.
+    #[doc(alias = "kAudioUnitProperty_AudioUnitMIDIProtocol")]
+    pub const AUDIO_UNIT_MIDI_PROTOCOL: Self = Self(64);
+
+    /// Scope:      Global
+    /// Value Type: i32
+    /// Access:     write
+    ///
+    /// A signed 32-bit integer representing the hosts MIDI protocol. This should be set to one of the values
+    /// in the MIDIProtocolID enum (see <CoreMIDI/MIDIServices.h>).
+    ///
+    /// Hosts should set this property to the protocol that MIDI data is desired to be delivered in. The framework will
+    /// convert all MIDI data sent to the host to the protocol value set in this property, an audio unit can query
+    /// this property to detect the hosts MIDI protocol.
+    ///
+    /// Host should setup in the following order:
+    /// - Set desired host MIDI protocol using kAudioUnitProperty_HostMIDIProtocol
+    /// - Set kAudioUnitProperty_MIDIOutputEventListCallback
+    /// - Initialize the Audio Unit
+    ///
+    /// Notes:
+    /// - kAudioUnitProperty_HostMIDIProtocol cannot be changed after the audio unit has been initialized.
+    /// - kAudioUnitProperty_HostMIDIProtocol should be set before attempting to query
+    /// kAudioUnitProperty_AudioUnitMIDIProtocol or calling AudioUnitInitialize to allow Audio Units to
+    /// optionally match their input MIDI protocol to the desired host protocol and prevent protocol conversion.
+    #[doc(alias = "kAudioUnitProperty_HostMIDIProtocol")]
+    pub const HOST_MIDI_PROTOCOL: Self = Self(65);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read/write
+    ///
+    /// This property allows the plug-in to provide a hint to the framework regarding the size of
+    /// its outgoing MIDI data buffer.
+    ///
+    /// If the plug-in produces more MIDI output data than the default size of the allocated buffer,
+    /// then the plug-in can provide this property to increase the size of this buffer.
+    ///
+    /// The value represents the number of 3-byte Legacy MIDI messages that fit into the buffer or
+    /// a single MIDIEventList containing 1 MIDIEventPacket of 2 words when using MIDI 2.0 (MIDIEventList based API's).
+    ///
+    /// This property is set to the default value by the framework.
+    ///
+    /// In case of kAudioUnitErr_MIDIOutputBufferFull errors caused by producing too much MIDI
+    /// output in one render call, set this property to increase the buffer.
+    ///
+    /// This only provides a recommendation to the framework.
+    #[doc(alias = "kAudioUnitProperty_MIDIOutputBufferSizeHint")]
+    pub const MIDI_OUTPUT_BUF_SIZE_HINT: Self = Self(66);
 }
