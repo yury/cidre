@@ -22,3 +22,11 @@ pub use component::UnitRef;
 
 mod properties;
 pub use properties::preset_key;
+pub use properties::sample_rate_converter_complexity;
+pub use properties::ChannelInfo;
+pub use properties::Connection;
+pub use properties::ExternalBuf;
+pub use properties::FrequenceyResponseBin;
+pub use properties::OfflinePreflight;
+pub use properties::Preset;
+pub use properties::RenderCbStruct;

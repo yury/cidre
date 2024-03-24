@@ -1,4 +1,6 @@
-use crate::at::au;
+use std::ffi::c_void;
+
+use crate::{arc, at::au, cf};
 
 impl au::Scope {
     /// The context for audio unit characteristics that apply to the audio unit as a
@@ -924,6 +926,103 @@ impl au::PropId {
     pub const PEER_URL: Self = Self(102);
 }
 
+/// The collection of properties for offline units
+impl au::PropId {
+    /// Scope:      Global
+    /// Value Type: u64
+    /// Access:     read/write
+    ///
+    /// Once this property is set, an audio unit will assume that its input samples
+    /// have been reset to a new region. Setting this property will also cause the
+    /// audio unit's internal DSP state to be reset. That is, the audio unit calls
+    /// the AudioUnitReset function on itself.
+    ///
+    /// This property tells the offline unit how many samples to process. Once it
+    /// knows this number it will then request from 0 to (nSamples-1) in its input
+    /// callback. The host of the audio unit is then required to provide the samples
+    /// specified in the sample count field of that Input's callback.
+    #[doc(alias = "kAudioUnitOfflineProperty_InputSize")]
+    pub const OFFLINE_INPUT_SIZE: Self = Self(3020);
+
+    /// Scope:      Global
+    /// Value Type: u64
+    /// Access:     read
+    ///
+    /// The host can use this property to estimate how many output samples an audio
+    /// unit will produce for the specified input samples. The property value
+    /// is invalid if InputSize is not set.
+    ///
+    /// The host cannot assume that the value returned is exact.
+    /// It is a guide only, so is suitable for use in a progress bar, for instance.
+    ///
+    /// Termination of processing is solely determined by the setting of the
+    /// kAudioUnitStatus_OfflineRenderComplete property in the
+    /// ioRenderActionFlags from the AudioUnitRender function.
+    #[doc(alias = "kAudioUnitOfflineProperty_OutputSize")]
+    pub const OFFLINE_OUTPUT_SIZE: Self = Self(3021);
+
+    /// Scope:      Global
+    /// Value Type: u64
+    /// Access:     read/write
+    ///
+    /// The host sets this property to tell an audio unit that the start offset of
+    /// the data it is processing has been changed. This should be set along with
+    /// the InputSize property, so that the unit knows its input data has been set
+    /// or changed.
+    #[doc(alias = "kAudioUnitOfflineProperty_StartOffset")]
+    pub const OFFLINE_START_OFFSET: Self = Self(3022);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read
+    ///
+    /// Returns one of the kOfflinePreflight_ results (see the Offline Preflight
+    /// enumeration).
+    #[doc(alias = "kAudioUnitOfflineProperty_PreflightRequirements")]
+    pub const OFFLINE_PREFLIGHT_REQUIREMENTS: Self = Self(3023);
+
+    /// Scope:      Global
+    /// Value Type: &cf::String
+    /// Access:     read
+    ///
+    /// For an audio unit that allows or requires preflighting, this property lets
+    /// the unit give its host application a name to describe the preflight
+    /// operations.
+    #[doc(alias = "kAudioUnitOfflineProperty_PreflightName")]
+    pub const OFFLINE_PREFLIGHT_NAME: Self = Self(3024);
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(u32)]
+pub enum OfflinePreflight {
+    NotRequired = 0,
+    Optional = 1,
+    Required = 2,
+}
+
+/// Apple AUConverter Property IDs
+///
+/// The collection of property IDs for Apple AUConverter
+impl au::PropId {
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read/write
+    #[doc(alias = "kAudioUnitProperty_SampleRateConverterComplexity")]
+    pub const SAMPLE_RATE_CONVERTER_COMPLEXITY: Self = Self(3014);
+}
+
+pub mod sample_rate_converter_complexity {
+    /// Linear interpolation
+    pub const LINEAR: u32 = u32::from_be_bytes(*b"line");
+
+    /// Normal quality sample rate conversion.
+    /// The default
+    pub const NORMAL: u32 = u32::from_be_bytes(*b"norm");
+
+    /// Mastering quality sample rate conversion. More expensive.
+    pub const MASTERING: u32 = u32::from_be_bytes(*b"bats");
+}
+
 /// Keys contains in an audio unit preset (ClassInfo) dictionary
 /// These strings are used as keys in the AUPreset-"classInfo" dictionary
 pub mod preset_key {
@@ -1009,4 +1108,59 @@ pub mod preset_key {
     pub fn part() -> &'static cf::String {
         cf::str!(c"part")
     }
+}
+
+/// This structure contains the information needed to make a connection between a source
+/// and destination audio unit.
+#[repr(C)]
+#[doc(alias = "AudioUnitConnection")]
+pub struct Connection {
+    /// The audio unit that is the source for the connection
+    pub src_au: Option<au::UnitRef>,
+
+    /// The source audio unit's output element to be used in the connection
+    pub src_output_num: u32,
+
+    /// The destination audio unit's input element to be used in the connection
+    pub dst_input_num: u32,
+}
+
+/// Define an audio unit's channel handling capabilities
+#[repr(C)]
+#[doc(alias = "AUChannelInfo")]
+pub struct ChannelInfo {
+    pub in_channels: i16,
+    pub out_channels: i16,
+}
+
+/// Allow a host to tell an audio unit to use the provided memory for its input callback
+#[repr(C)]
+#[doc(alias = "AudioUnitExternalBuffer")]
+pub struct ExternalBuf {
+    pub buf: *mut u8,
+    pub size: u32,
+}
+
+/// Used by a host when registering a callback with the audio unit to provide input
+#[repr(C)]
+#[doc(alias = "AURenderCallbackStruct")]
+pub struct RenderCbStruct {
+    pub input_proc: *const au::RenderCb,
+    pub input_proc_ref_con: *const c_void,
+}
+
+#[repr(C)]
+#[doc(alias = "AUPreset")]
+pub struct Preset {
+    pub preset_number: i32,
+    pub preset_name: Option<arc::R<cf::String>>,
+}
+
+/// Structure used to get the magnitude of the frequency response
+/// at a particular frequency via kAudioUnitProperty_FrequencyResponse.
+#[repr(C)]
+#[doc(alias = "AudioUnitFrequencyResponseBin")]
+pub struct FrequenceyResponseBin {
+    pub frequency: f64,
+    pub magniture: f64,
 }
