@@ -32,6 +32,8 @@ pub use properties::MeterClipping;
 pub use properties::OfflinePreflight;
 pub use properties::Preset;
 pub use properties::RenderCbStruct;
+pub use properties::ScheduledFileRegion;
+pub use properties::ScheduledFileRegionCompProc;
 pub use properties::ScheduledSlice;
 pub use properties::ScheduledSliceCompProc;
 pub use properties::ScheduledSliceFlags;

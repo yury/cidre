@@ -1,6 +1,10 @@
 use std::ffi::c_void;
 
-use crate::{arc, at, at::au, cf, define_opts};
+use crate::{
+    arc,
+    at::{self, au},
+    cf, define_opts, os,
+};
 
 impl au::Scope {
     /// The context for audio unit characteristics that apply to the audio unit as a
@@ -1776,8 +1780,23 @@ impl au::PropId {
     pub const SCHEDULED_FILE_PRIME: Self = Self(3312);
 
     #[doc(alias = "kAudioUnitProperty_ScheduledFileBufferSizeFrames")]
-    pub const SCHEDULED_FILE_BUFFER_SIZE_FRAMES: Self = Self(3313);
+    pub const SCHEDULED_FILE_BUF_SIZE_FRAMES: Self = Self(3313);
 
     #[doc(alias = "kAudioUnitProperty_ScheduledFileNumberBuffers")]
-    pub const SCHEDULED_FILE_NUMBER_BUFFERS: Self = Self(3314);
+    pub const SCHEDULED_FILE_NUMBER_BUFS: Self = Self(3314);
+}
+
+#[doc(alias = "ScheduledAudioFileRegionCompletionProc")]
+pub type ScheduledFileRegionCompProc<T = c_void> =
+    extern "C" fn(*mut T, &mut ScheduledFileRegion<T>, os::Status);
+
+#[doc(alias = "ScheduledAudioFileRegion")]
+pub struct ScheduledFileRegion<T = c_void> {
+    pub ts: at::AudioTimeStamp,
+    pub comp_proc: Option<ScheduledFileRegionCompProc<T>>,
+    pub comp_proc_user_data: *mut T,
+    pub audio_file: *const at::AudioFileId,
+    pub loop_count: u32,
+    pub start_time: i64,
+    pub frames_to_play: u32,
 }
