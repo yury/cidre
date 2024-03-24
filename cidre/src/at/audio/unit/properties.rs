@@ -1577,3 +1577,207 @@ pub struct ScheduledSlice<T = c_void> {
     /// Must contain deinterleaved f32
     pub buf_list: *const at::AudioBufList,
 }
+
+/// Apple AUScheduledSoundPlayer Property IDs
+///
+/// The AUScheduledSoundPlayer audio unit lets a client schedule audio buffers for
+/// future playback, with sample-accurate timing.
+///
+/// Elements and Formats
+///
+/// This unit has one output element and no input elements. The output's format
+/// should be a canonical audio unit stream format (native Float32, deinterleaved).
+///
+/// Scheduling
+///
+/// To schedule slices of audio for future playback, set the
+/// kAudioUnitProperty_ScheduleAudioSlice property, with a ScheduledAudioSlice
+/// structure as the property value. The slice's mTimeStamp.mSampleTime field
+/// determines when the slice will be played. This sample number is relative to
+/// the unit's start time, which you must set using the
+/// kAudioUnitProperty_ScheduleStartTimeStamp property before playback will
+/// begin.
+///
+/// You must retain, unmodified, the ScheduledAudioSlice structure, including
+/// its mBufferList and the buffers to which it points, until the slice has been
+/// completely played, or until you stop playback by uninitializing or resetting
+/// the unit. The format of the slice's buffer list must match the unit's output
+/// stream format.
+///
+/// As of OS X 10.10 and iOS 8.0, you can use an invalid time stamp (no flags set
+/// in mFlags) to indicate that the slice should be played immediately following the
+/// previous slice (or immediately, if there are no slices playing).
+///
+/// (The fields other than mSampleTime and mFlags in the mTimestamp structure are
+/// currently ignored.)
+///
+/// Completion
+///
+/// To receive a callback when the slice has been played, store a pointer to a
+/// callback function in the mCompletionProc field. This function will be called
+/// (from the audio unit's rendering thread) when the slice has been completely
+/// played -- or when the slice is determined to be unplayable due to an error.
+/// As an alternative, you may also poll the slice's
+/// (mFlags & kScheduledAudioSliceFlag_Complete).
+///
+/// Upon completion, you can test (mFlags & kScheduledAudioSliceFlag_BeganToRenderLate)
+/// to determine whether some portion of the slice was not played due to its having
+/// been scheduled too late relative to the current playback time.
+///                    
+/// Start Time
+///
+/// The audio unit will not play any slices following initialization or reset, until
+/// its start time has been set. The start time establishes the beginning of a
+/// timeline: the timestamps of all slices in the schedule are relative to the
+/// start time.
+///
+/// Set a start time by setting the kAudioUnitProperty_ScheduleStartTimeStamp
+/// property with an AudioTimeStamp structure. If the timestamp contains a valid
+/// sample time (timestamp.mFlags & kAudioTimeStampSampleTimeValid), then playback
+/// begins when the timestamp passed to the AudioUnitRender function reaches the
+/// specified sample time. If the specified sample time is -1, playback begins on
+/// the next render cycle.
+///
+/// If the start timestamp does not contain a valid sample time, but does contain a
+/// valid host time (timestamp.mFlags & kAudioTimeStampHostTimeValid), then the
+/// specified host time is translated to the sample time at which playback will
+/// begin. A host time of 0 means "start on the next render cycle."
+///
+/// The kAudioUnitProperty_ScheduleStartTimeStamp property may be queried to obtain
+/// the time at which playback began. If the start time has not yet been reached,
+/// the timestamp returned will be whatever the host application last set.
+///
+/// Current play time
+///
+/// The kAudioUnitProperty_CurrentPlayTime property may be queried to determine the
+/// audio unit's current time offset from its start time. This is useful, for
+/// example, to monitor playback progress.
+///                    
+/// Unscheduling events
+///
+/// To clear an audio unit's play schedule, call the AudioUnitReset function. The
+/// completion proc (if any) for each slice in the schedule will called. Playback
+/// will not resume until a new start time has been set. This also happens when
+/// the audio unit is uninitialized.
+impl au::PropId {
+    /// Scope:
+    /// Value Type: ScheduledSlice
+    /// Access:
+    #[doc(alias = "kAudioUnitProperty_ScheduleAudioSlice")]
+    pub const SCHEDULE_SLICE: Self = Self(3300);
+
+    /// Value Type: AudioTimeStamp
+    /// Access:
+    ///   Sample time or host time valid. Sample time takes precedence,
+    ///   -1 means "now". Host time of 0 means "now."
+    #[doc(alias = "kAudioUnitProperty_ScheduleStartTimeStamp")]
+    pub const SCHEDULE_START_TS: Self = Self(3301);
+
+    /// Scope:
+    /// Value Type: AudioTimeStamp
+    /// Access:
+    ///    AudioTimeStamp, relative to start time, sample time of -1 if not yet started.
+    #[doc(alias = "kAudioUnitProperty_ScheduleStartTimeStamp")]
+    pub const CURRENT_PLAY_TIME: Self = Self(3302);
+}
+
+/// Apple AUAudioFilePlayer Property IDs
+///
+/// This audio unit lets you schedule regions of audio files for future playback,
+/// with sample-accurate timing.
+///
+/// The unit is a subclass of AUScheduledSoundPlayer and inherits all of its
+/// behavior. In particular, this unit implements the kAudioUnitProperty_ScheduleStartTimeStamp
+/// and kAudioUnitProperty_CurrentPlayTime properties. Instead of scheduling
+/// slices (buffers) of audio to be played (via kAudioUnitProperty_ScheduleAudioSlice),
+/// however, you schedule regions of audio files to be played. The unit reads and
+/// converts audio file data into its own internal buffers. It performs disk I/O
+/// on a high-priority thread shared among all instances of this unit within a
+/// process. Upon completion of a disk read, the unit internally schedules
+/// buffers for playback.
+///
+/// Elements and Formats
+///
+/// This unit has one output element and no input elements. The output's format
+/// should be a canonical audio unit stream format (native Float32,
+/// deinterleaved). This format should have at least as many channels are in the
+/// audio file(s) to be played (otherwise channels will be dropped). During
+/// playback, all audio file data is converted to the unit's output format.
+///
+/// Audio Files
+///
+/// Before starting playback, you must first open all audio files to be played
+/// using the AudioFile API's (see AudioToolbox/AudioFile.h), and pass their
+/// AudioFileIDs to the unit by setting the kAudioUnitProperty_ScheduledFileIDs
+/// property. This property must not be set during playback. The audio files must
+/// be kept open for the duration of playback.
+///
+/// Scheduling Regions
+///
+/// To schedule the playback of a region of an audio file, set the
+/// kAudioUnitProperty_ScheduledFileRegion property. This is a
+/// ScheduledAudioFileRegion structure. mTimeStamp.mSampleTime must be valid and
+/// is interpreted relative to the unit's start time -- the start time semantics
+/// (using kAudioUnitProperty_ScheduleStartTimeStamp) are identical to those of
+/// AUScheduledSoundPlayer. Unlike the ScheduledAudioSlice structures, the unit
+/// makes copies of ScheduledAudioFileRegions, so you may create them on the
+/// stack or otherwise reuse/dispose of them immediately after scheduling them.
+///
+/// Priming
+///
+/// You should set kAudioUnitProperty_ScheduledFilePrime after scheduling
+/// initial file regions to be played and before starting playback. This SetProperty call
+/// will begin reading the audio files and not return until the number of frames
+/// specified by the property value have been read.
+///
+/// Completion Callbacks
+///
+/// A region's completion callback (mCompletionProc) is called when it has been
+/// completely scheduled for reading from disk. This callback is issued on the disk
+/// read thread. If the region is not read from disk in time to play at its
+/// scheduled time, mCompletionProc is called a second time with an error code,
+/// also from the read thread. Note that the region passed to the callback will not
+/// be the same memory object as was passed by the client (since the unit copies the region).
+///
+/// Start Time and Current Time
+///
+/// These properties work identically as in AUScheduledSoundPlayer.
+///
+/// Unscheduling regions
+///
+/// To clear the unit's play schedule, call the AudioUnitReset function. The completion proc
+/// (if any) for each file region in the schedule will be called. Playback will
+/// not resume until a new start time has been set. This also happens when the
+/// unit is uninitialized.
+///
+/// Customization
+///
+/// The size and number of the player's disk read buffers default to "sensible"
+/// values, but may be configured with the properties:
+///   kAudioUnitProperty_ScheduledFileBufferSizeFrames
+///   kAudioUnitProperty_ScheduledFileNumberBuffers
+///
+/// Bugs
+///
+/// kAudioUnitProperty_ScheduledFileBufferSizeFrames
+/// kAudioUnitProperty_ScheduledFileNumberBuffers
+///   are currently unimplemented
+///
+/// An option to make the unit not perform conversion from the audio file sample
+/// rate to the unit's output rate may be desirable.
+impl au::PropId {
+    #[doc(alias = "kAudioUnitProperty_ScheduledFileIDs")]
+    pub const SCHEDULED_FILE_IDS: Self = Self(3310);
+
+    #[doc(alias = "kAudioUnitProperty_ScheduledFileRegion")]
+    pub const SCHEDULED_FILE_REGION: Self = Self(3311);
+
+    #[doc(alias = "kAudioUnitProperty_ScheduledFilePrime")]
+    pub const SCHEDULED_FILE_PRIME: Self = Self(3312);
+
+    #[doc(alias = "kAudioUnitProperty_ScheduledFileBufferSizeFrames")]
+    pub const SCHEDULED_FILE_BUFFER_SIZE_FRAMES: Self = Self(3313);
+
+    #[doc(alias = "kAudioUnitProperty_ScheduledFileNumberBuffers")]
+    pub const SCHEDULED_FILE_NUMBER_BUFFERS: Self = Self(3314);
+}
