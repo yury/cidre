@@ -32,6 +32,7 @@ pub use properties::MeterClipping;
 pub use properties::OfflinePreflight;
 pub use properties::Preset;
 pub use properties::RenderCbStruct;
+pub use properties::SpatializationAlgorithm;
 pub use properties::VoiceIoMutedSpeechActivityEventListener;
 pub use properties::VoiceIoOtherAudioDuckingCfg;
 pub use properties::VoiceIoSpeechActivityEvent;

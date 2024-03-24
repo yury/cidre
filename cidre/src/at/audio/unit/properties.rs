@@ -1124,6 +1124,7 @@ pub mod voice_io_other_audio_ducking_level {
 }
 
 #[doc(alias = "AUVoiceIOOtherAudioDuckingConfiguration")]
+#[repr(C)]
 pub struct VoiceIoOtherAudioDuckingCfg {
     pub enable_advanced_ducking: bool,
     pub ducking_level: u32,
@@ -1353,6 +1354,35 @@ impl au::PropId {
     pub const SPATIAL_MIXER_ANY_INPUT_IS_USING_PERSONALIZED_HRTF: Self = Self(3116);
 }
 
+#[doc(alias = "AUSpatializationAlgorithm")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(u32)]
+pub enum SpatializationAlgorithm {
+    #[doc(alias = "kSpatializationAlgorithm_EqualPowerPanning")]
+    EqualPowerPanning = 0,
+
+    #[doc(alias = "kSpatializationAlgorithm_SphericalHead")]
+    SphericalHead = 1,
+
+    #[doc(alias = "kSpatializationAlgorithm_HRTF")]
+    Hrtf = 2,
+
+    #[doc(alias = "kSpatializationAlgorithm_SoundField")]
+    SoundField = 3,
+
+    #[doc(alias = "kSpatializationAlgorithm_VectorBasedPanning")]
+    VectorBasedPanning = 4,
+
+    #[doc(alias = "kSpatializationAlgorithm_StereoPassThrough")]
+    StereoPassThrough = 5,
+
+    #[doc(alias = "kSpatializationAlgorithm_HRTFHQ")]
+    HrtfHq = 6,
+
+    #[doc(alias = "kSpatializationAlgorithm_UseOutputType")]
+    UseOutputType = 7,
+}
+
 /// Keys contains in an audio unit preset (ClassInfo) dictionary
 /// These strings are used as keys in the AUPreset-"classInfo" dictionary
 pub mod preset_key {
@@ -1442,8 +1472,8 @@ pub mod preset_key {
 
 /// This structure contains the information needed to make a connection between a source
 /// and destination audio unit.
-#[repr(C)]
 #[doc(alias = "AudioUnitConnection")]
+#[repr(C)]
 pub struct Connection {
     /// The audio unit that is the source for the connection
     pub src_au: Option<au::UnitRef>,
@@ -1456,31 +1486,31 @@ pub struct Connection {
 }
 
 /// Define an audio unit's channel handling capabilities
-#[repr(C)]
 #[doc(alias = "AUChannelInfo")]
+#[repr(C)]
 pub struct ChannelInfo {
     pub in_channels: i16,
     pub out_channels: i16,
 }
 
 /// Allow a host to tell an audio unit to use the provided memory for its input callback
-#[repr(C)]
 #[doc(alias = "AudioUnitExternalBuffer")]
+#[repr(C)]
 pub struct ExternalBuf {
     pub buf: *mut u8,
     pub size: u32,
 }
 
 /// Used by a host when registering a callback with the audio unit to provide input
-#[repr(C)]
 #[doc(alias = "AURenderCallbackStruct")]
+#[repr(C)]
 pub struct RenderCbStruct {
     pub proc: *const au::RenderCb,
     pub proc_ref_con: *const c_void,
 }
 
-#[repr(C)]
 #[doc(alias = "AUPreset")]
+#[repr(C)]
 pub struct Preset {
     pub number: i32,
     pub name: Option<arc::R<cf::String>>,
@@ -1488,8 +1518,8 @@ pub struct Preset {
 
 /// Structure used to get the magnitude of the frequency response
 /// at a particular frequency via kAudioUnitProperty_FrequencyResponse.
-#[repr(C)]
 #[doc(alias = "AudioUnitFrequencyResponseBin")]
+#[repr(C)]
 pub struct FrequenceyResponseBin {
     pub frequency: f64,
     pub magniture: f64,
