@@ -1011,16 +1011,242 @@ impl au::PropId {
     pub const SAMPLE_RATE_CONVERTER_COMPLEXITY: Self = Self(3014);
 }
 
+#[doc(alias = "kAudioUnitSampleRateConverterComplexity")]
 pub mod sample_rate_converter_complexity {
     /// Linear interpolation
+    #[doc(alias = "kAudioUnitSampleRateConverterComplexity_Linear")]
     pub const LINEAR: u32 = u32::from_be_bytes(*b"line");
 
     /// Normal quality sample rate conversion.
     /// The default
+    #[doc(alias = "kAudioUnitSampleRateConverterComplexity_Normal")]
     pub const NORMAL: u32 = u32::from_be_bytes(*b"norm");
 
+    #[doc(alias = "kAudioUnitSampleRateConverterComplexity_Mastering")]
     /// Mastering quality sample rate conversion. More expensive.
     pub const MASTERING: u32 = u32::from_be_bytes(*b"bats");
+}
+
+/// The collection of property IDs for Apple input/output units.
+impl au::PropId {
+    #[doc(alias = "kAudioOutputUnitProperty_CurrentDevice")]
+    pub const OUTPUT_CURRENT_DEVICE: Self = Self(2000);
+
+    #[doc(alias = "kAudioOutputUnitProperty_IsRunning")]
+    pub const OUTPUT_IS_RUNNING: Self = Self(2001);
+
+    #[doc(alias = "kAudioOutputUnitProperty_ChannelMap")]
+    pub const CHANNEL_MAP: Self = Self(2002);
+
+    #[doc(alias = "kAudioOutputUnitProperty_EnableIO")]
+    pub const OUTPUT_ENABLE_IO: Self = Self(2003);
+
+    #[doc(alias = "kAudioOutputUnitProperty_StartTime")]
+    pub const OUTPUT_START_TIME: Self = Self(2004);
+
+    #[doc(alias = "kAudioOutputUnitProperty_SetInputCallback")]
+    pub const OUTPUT_SET_INPUT_CB: Self = Self(2005);
+
+    #[doc(alias = "kAudioOutputUnitProperty_HasIO")]
+    pub const OUTPUT_HAS_IO: Self = Self(2006);
+
+    #[doc(alias = "kAudioOutputUnitProperty_StartTimestampsAtZero")]
+    pub const OUTPUT_START_TS_AT_ZERO: Self = Self(2007);
+
+    #[doc(alias = "kAudioOutputUnitProperty_OSWorkgroup")]
+    pub const OUTPUT_OS_WORKGROUP: Self = Self(2015);
+
+    #[doc(alias = "kAudioOutputUnitProperty_MIDICallbacks")]
+    pub const OUTPUT_MIDI_CBS: Self = Self(2010);
+
+    #[doc(alias = "kAudioOutputUnitProperty_HostReceivesRemoteControlEvents")]
+    pub const OUTPUT_HOST_RECEIVES_REMOVE_CONTROL_EVENTS: Self = Self(2011);
+
+    #[doc(alias = "kAudioOutputUnitProperty_RemoteControlToHost")]
+    pub const OUTPUT_REMOTE_CONTROL_HOST: Self = Self(2012);
+
+    #[doc(alias = "kAudioOutputUnitProperty_HostTransportState")]
+    pub const OUTPUT_HOST_TRANSPORT_STATE: Self = Self(2013);
+
+    #[doc(alias = "kAudioOutputUnitProperty_NodeComponentDescription")]
+    pub const OUTPUT_NODE_COMPONENT_DESC: Self = Self(2013);
+}
+/// The collection of property IDs for Apple voice processing units.
+impl au::PropId {
+    #[doc(alias = "kAUVoiceIOProperty_BypassVoiceProcessing")]
+    pub const VOICE_IO_BYPASS_VOICE_PROCESSING: Self = Self(2100);
+
+    #[doc(alias = "kAUVoiceIOProperty_VoiceProcessingEnableAGC")]
+    pub const VOICE_IO_ENABLE_AGC: Self = Self(2101);
+
+    #[doc(alias = "kAUVoiceIOProperty_MuteOutput")]
+    pub const VOICE_IO_MUTE_OUTPUT: Self = Self(2104);
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(u32)]
+pub enum VoiceIoSpeechActivityEvent {
+    #[doc(alias = "kAUVoiceIOSpeechActivityHasStarted")]
+    Started = 0,
+    #[doc(alias = "kAUVoiceIOSpeechActivityHasEnded")]
+    Ended = 1,
+}
+
+pub type VoiceIoMutedSpeechActivityEventListener =
+    crate::blocks::EscBlock<fn(VoiceIoSpeechActivityEvent)>;
+
+impl au::PropId {
+    /// Scope: Global
+    /// Value Type: au::VoiceIOMutedSpeechActivityEventListener
+    /// Access: write only
+    ///
+    /// Register a listener to be notified when speech activity event occurs while the client is muted.
+    /// Continuous presence of or lack of speech activity during mute will not cause redundant notification.
+    /// In order to use this API, it's expected to implement the mute via the kAUVoiceIOProperty_MuteOutput.
+    #[doc(alias = "kAUVoiceIOProperty_MutedSpeechActivityEventListener")]
+    pub const VOICE_IO_MUTED_SPEECH_ACTIVITY_EVENT_LISTENER: Self = Self(2106);
+}
+
+/// Ducking level applied to other (i.e. non-voice) audio by AUVoiceIO.
+pub mod voice_io_other_audio_ducking_level {
+
+    #[doc(alias = "kAUVoiceIOOtherAudioDuckingLevelDefault")]
+    pub const DEFAULT: u32 = 0;
+
+    #[doc(alias = "kAUVoiceIOOtherAudioDuckingLevelMin")]
+    pub const MIN: u32 = 10;
+
+    #[doc(alias = "kAUVoiceIOOtherAudioDuckingLevelMid")]
+    pub const MID: u32 = 20;
+
+    #[doc(alias = "kAUVoiceIOOtherAudioDuckingLevelMax")]
+    pub const MAX: u32 = 30;
+}
+
+#[doc(alias = "AUVoiceIOOtherAudioDuckingConfiguration")]
+pub struct VoiceIoOtherAudioDuckingCfg {
+    pub enable_advanced_ducking: bool,
+    pub ducking_level: u32,
+}
+
+impl au::PropId {
+    /// Scope: Global
+    /// Value Type: au::VoiceIoOtherAudioDuckingCfg
+    /// Access: read/write
+    ///
+    /// Configures the ducking of other (i.e. non-voice) audio, including advanced ducking enablement and ducking level.
+    /// In general, when other audio is played during voice chat, applying a higher level of ducking could increase the intelligibility of the voice chat.
+    /// If not set, the default ducking configuration is to disable advanced ducking, with a ducking level set to kAUVoiceIOOtherAudioDuckingLevelDefault.
+    #[doc(alias = "kAUVoiceIOProperty_OtherAudioDuckingConfiguration")]
+    pub const VOICE_IO_OTHER_AUDIO_DUCKING_CFG: Self = Self(2108);
+}
+
+/// The collection of property IDs for the Apple N-Band EQ Audio Unit.
+impl au::PropId {
+    /// Scope: Global
+    /// Value Type: u32
+    /// Access: read/write
+    ///
+    /// Specifies the number of equalizer bands. If more than kAUNBandEQProperty_MaxNumberOfBands
+    /// are specified, an error is returned.
+    /// Can only be set if the unit is uninitialized.
+    #[doc(alias = "kAUNBandEQProperty_NumberOfBands")]
+    pub const BAND_EQ_NUMBER_OF_BANDS: Self = Self(2200);
+
+    /// Scope: Global
+    /// Value Type: u32
+    /// Access: read-only
+    ///
+    /// Returns the maximum number of equalizer bands.
+    #[doc(alias = "kAUNBandEQProperty_MaxNumberOfBands")]
+    pub const BAND_EQ_MAX_NUMBER_OF_BANDS: Self = Self(2201);
+
+    /// Scope: Global
+    /// Value Type: array of f64
+    /// Access: read-only
+    ///
+    /// Returns an array of f64 values, 5 per band.
+    #[doc(alias = "kAUNBandEQProperty_BiquadCoefficients")]
+    pub const BAND_EQ_BIQUAD_COEFFICIENTS: Self = Self(2203);
+}
+
+/// The collection of property IDs for Apple mixers
+impl au::PropId {
+    /// Scope: { scope / element }
+    /// Value Type: u32
+    /// Access: read/write
+    ///
+    /// Enable or disable metering on a particular scope/element
+    #[doc(alias = "kAudioUnitProperty_MeteringMode")]
+    pub const METERING_MODE: Self = Self(3007);
+
+    /// This property can be used for both the AUMatrixMixer and AUMultiChannelMixer.
+    ///
+    /// AUMatrixMixer
+    /// Scope:      Global
+    /// Value Type: f32 array
+    /// Access:     read/write
+    ///
+    /// This property is used to retrieve the entire state of a matrix mixer. The size required is
+    /// the number of (input  channels + 1) * (output channels + 1) - see _MatrixDimensions
+    ///
+    /// So a matrix mixer that has 2 input channels and 2 output channels, will need a 3 x 3 array of Float32
+    ///
+    /// Global volume is stored at volumes[2][2]
+    /// Input volumes are stored in the last column (volumes[0][2] for the first input channel,  volumes[1][2] for the second)
+    /// Output volumes are stored in the last row (volumes [2][0] and [2][1])
+    /// Cross point volumes are stored at their expected locations ([0][1], etc)
+    ///
+    /// AUMultiChannelMixer
+    /// Scope:      Input
+    /// Value Type: f32 array
+    /// Access:     read/write
+    ///
+    /// Gets/sets the matrix levels for one input element. This allows arbitrary mixing configurations
+    /// from all input channels to all output channels.
+    /// The size required is the number of (input channels) * (output channels).
+    /// The matrix stores only the crosspoint gains, there are no overall input or output channel gains.
+    #[doc(alias = "kAudioUnitProperty_MatrixLevels")]
+    pub const MATRIX_LEVELS: Self = Self(3006);
+
+    /// Scope:      Global
+    /// Value Type: 2 x u32
+    /// Access:     Read only
+    ///
+    /// Returns the total number of channels for input and output of a given matrix mixer
+    #[doc(alias = "kAudioUnitProperty_MatrixDimensions")]
+    pub const MATRIX_DIMENSIONS: Self = Self(3009);
+
+    /// Scope:      Global
+    /// Value Type: AudioUnitMeterClipping
+    /// Access:     Read
+    ///
+    /// A mixer returns an au::MeterClipping structure.
+    #[doc(alias = "kAudioUnitProperty_MeterClipping")]
+    pub const METER_CLIPPING: Self = Self(3011);
+
+    /// Multichannel Mixer
+    /// Scope:			Input
+    /// Value Type:		AudioTimeStamp
+    /// Access:			Read / Write
+    ///
+    /// There are situations, for example moving an input between mixers, where the
+    /// input's sample time timeline needs to be made continuous. This facilitates
+    /// the operation: after disconnecting the input, fetch its anchor time stamp,
+    /// then before reconnecting it, set the same anchor time stamp. The input's
+    /// sequence of sample times will be maintained.
+    ///
+    /// This property cannot be accessed while the input is rendering.
+    #[doc(alias = "kAudioUnitProperty_InputAnchorTimeStamp")]
+    pub const INPUT_ANCHOR_TS: Self = Self(3011);
+}
+
+#[doc(alias = "AudioUnitMeterClipping")]
+#[repr(C)]
+pub struct MeterClipping {
+    pub peak_value_since_last_call: f32,
+    pub saw_infinity: bool,
+    pub saw_nan: bool,
 }
 
 /// Keys contains in an audio unit preset (ClassInfo) dictionary
