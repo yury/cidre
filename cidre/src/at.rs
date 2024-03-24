@@ -12,9 +12,9 @@ pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
 pub use audio::ClassDesc as AudioClassDesc;
 pub use audio::Converter as AudioConverter;
 pub use audio::ConverterRef as AudioConverterRef;
+pub use audio::FileId as AudioFileId;
 pub use audio::FormatPropId as AudioFormatPropId;
 pub use audio::TimeStamp as AudioTimeStamp;
-pub use audio::FileId as AudioFileId,
 
 pub use audio::unit as au;
 
