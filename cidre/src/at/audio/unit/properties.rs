@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, at::au, cf};
+use crate::{arc, at, at::au, cf, define_opts};
 
 impl au::Scope {
     /// The context for audio unit characteristics that apply to the audio unit as a
@@ -1523,4 +1523,57 @@ pub struct Preset {
 pub struct FrequenceyResponseBin {
     pub frequency: f64,
     pub magniture: f64,
+}
+
+define_opts!(
+    #[doc(alias = "AUScheduledAudioSliceFlags")]
+    pub ScheduledSliceFlags(u32)
+);
+
+impl ScheduledSliceFlags {
+    /// Set if the unit is done with this slice
+    #[doc(alias = "kScheduledAudioSliceFlag_Complete")]
+    pub const COMPLETE: Self = Self(0x01);
+
+    /// Set if any portion of the buffer has been played
+    #[doc(alias = "kScheduledAudioSliceFlag_BeganToRender")]
+    pub const BEGAN_TO_RENDER: Self = Self(0x02);
+
+    /// Set if any portion of the buffer was not played because it was scheduled late
+    #[doc(alias = "kScheduledAudioSliceFlag_BeganToRenderLate")]
+    pub const BEGAN_TO_RENDER_LATE: Self = Self(0x04);
+
+    /// Specifies that the buffer should loop indefinitely
+    #[doc(alias = "kScheduledAudioSliceFlag_Loop")]
+    pub const LOOP: Self = Self(0x08);
+
+    /// Specifies that the buffer should interrupt any previously scheduled buffer
+    /// (by default, buffers following a playing buffer are not played until the
+    /// playing buffer has completed).
+    #[doc(alias = "kScheduledAudioSliceFlag_Interrupt")]
+    pub const INTERRUPT: Self = Self(0x10);
+
+    /// Specifies that the buffer should interrupt any previously scheduled buffer,
+    /// but only at a loop point in that buffer.
+    #[doc(alias = "kScheduledAudioSliceFlag_InterruptAtLoop")]
+    pub const INTERRUPT_AT_LOOP: Self = Self(0x20);
+}
+
+#[doc(alias = "ScheduledAudioSliceCompletionProc")]
+pub type ScheduledSliceCompProc<T = c_void> = extern "C" fn(*mut T, &mut ScheduledSlice);
+
+#[doc(alias = "ScheduledAudioSlice")]
+#[repr(C)]
+pub struct ScheduledSlice<T = c_void> {
+    pub ts: at::AudioTimeStamp,
+    pub comp_proc: Option<ScheduledSliceCompProc<T>>,
+    pub comp_proc_user_data: *mut T,
+    pub flags: ScheduledSliceFlags,
+    /// Must be 0
+    pub reserved: u32,
+    pub reserved2: *mut c_void,
+    /// Must be consistent with byte count of buf_list
+    pub number_frames: u32,
+    /// Must contain deinterleaved f32
+    pub buf_list: *const at::AudioBufList,
 }
