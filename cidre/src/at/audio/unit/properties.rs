@@ -1249,6 +1249,110 @@ pub struct MeterClipping {
     pub saw_nan: bool,
 }
 
+/// SpatialMixer
+impl au::PropId {
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read / Write
+    #[doc(alias = "kAudioUnitProperty_ReverbRoomType")]
+    pub const REVERB_ROOM_TYPE: Self = Self(10);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read / Write
+    #[doc(alias = "kAudioUnitProperty_UsesInternalReverb")]
+    pub const USES_INTERNAL_REVERB: Self = Self(1005);
+
+    /// Scope:      Input
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// Used to set the spatialisation algorithm used by an input of AUSpatialMixer.
+    /// See kSpatializationAlgorithm_
+    #[doc(alias = "kAudioUnitProperty_SpatializationAlgorithm")]
+    pub const SPATIALIZATION_ALGORITHM: Self = Self(3000);
+
+    /// Scope:			Input
+    /// Value Type:		UInt32
+    /// Access:			Read / Write
+    ///
+    /// Used to enable various rendering operations on a given input for the 3DMixer.
+    /// See k3DMixerRenderingFlags_
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerRenderingFlags")]
+    pub const SPATIAL_MIXER_RENDERING_FLAGS: Self = Self(3003);
+
+    /// Scope:      Input
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// Sets how individual channels of an input bus are rendered. See kSpatialMixerSourceMode_
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerSourceMode")]
+    pub const SPATIAL_MIXER_SRC_MODE: Self = Self(3005);
+
+    /// Scope:      Input
+    /// Value Type: MixerDistanceParams
+    /// Access:     Read / Write
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerDistanceParams")]
+    pub const SPATIAL_MIXER_DISTANCE_PARAMS: Self = Self(3010);
+
+    /// Scope:      Input
+    /// Value Type: u32
+    /// Access:     Read / Write
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerAttenuationCurve")]
+    pub const SPATIAL_MIXER_ATTENUATION_CURVE: Self = Self(3013);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// Sets the type of output hardware used with kSpatializationAlgorithm_UseOutputType.
+    /// See kSpatialMixerOutputType_
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerOutputType")]
+    pub const SPATIAL_MIXER_OUTPUT_TYPE: Self = Self(3100);
+
+    /// Scope:      Input
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// Sets in-head rendering mode when using kSpatializationAlgorithm_UseOutputType and
+    /// kSpatialMixerSourceMode_PointSource. See kSpatialMixerPointSourceInHeadMode_
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerPointSourceInHeadMode")]
+    pub const SPATIAL_MIXER_POINT_SRC_IN_HEAD_MODE: Self = Self(3103);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// Enables or disables head-tracking using AirPods motion sensors. This tracking will
+    /// apply a second rotation on top of head yaw, pitch, and roll parameters.
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerEnableHeadTracking")]
+    pub const SPATIAL_MIXER_ENABLE_HEAD_TRACKING: Self = Self(3111);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read / Write
+    ///
+    /// Sets personalized head-related transfer function (HRTF) mode for spatial audio rendering
+    /// with kSpatializationAlgorithm_UseOutputType and kSpatialMixerOutputType_Headphones.
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerPersonalizedHRTFMode")]
+    pub const SPATIAL_MIXER_PERSONALIZED_HRTF_MODE: Self = Self(3113);
+
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     Read
+    ///
+    /// Returns a Boolean value that indicates whether AUSpatialMixer is currently using personalized
+    /// HRTF or not. The property should be queried after AU is initialized for a reliable outcome.
+    ///
+    /// Personalization of spatial audio rendering is subject to various factors such as data availability or
+    /// whether AUSpatialMixer is rendering for headphones with kSpatializationAlgorithm_UseOutputType.
+    /// Hence, the value of kAudioUnitProperty_SpatialMixerPersonalizedHRTFMode alone does not
+    /// guarantee that personalized HRTF is being used for spatial audio rendering.
+    #[doc(alias = "kAudioUnitProperty_SpatialMixerAnyInputIsUsingPersonalizedHRTF")]
+    pub const SPATIAL_MIXER_ANY_INPUT_IS_USING_PERSONALIZED_HRTF: Self = Self(3116);
+}
+
 /// Keys contains in an audio unit preset (ClassInfo) dictionary
 /// These strings are used as keys in the AUPreset-"classInfo" dictionary
 pub mod preset_key {
@@ -1371,15 +1475,15 @@ pub struct ExternalBuf {
 #[repr(C)]
 #[doc(alias = "AURenderCallbackStruct")]
 pub struct RenderCbStruct {
-    pub input_proc: *const au::RenderCb,
-    pub input_proc_ref_con: *const c_void,
+    pub proc: *const au::RenderCb,
+    pub proc_ref_con: *const c_void,
 }
 
 #[repr(C)]
 #[doc(alias = "AUPreset")]
 pub struct Preset {
-    pub preset_number: i32,
-    pub preset_name: Option<arc::R<cf::String>>,
+    pub number: i32,
+    pub name: Option<arc::R<cf::String>>,
 }
 
 /// Structure used to get the magnitude of the frequency response
