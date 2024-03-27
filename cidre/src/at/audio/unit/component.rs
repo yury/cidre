@@ -746,12 +746,46 @@ impl cf::NotificationName {
     }
 }
 
+impl _Unit {
+    fn prop_info(
+        &self,
+        prop_id: PropId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<(u32, bool), os::Status> {
+        let mut size = 0u32;
+        let mut writable = false;
+        unsafe {
+            AudioUnitGetPropertyInfo(&self, prop_id, scope, element, &mut size, &mut writable)
+                .result()?;
+        }
+        Ok((size, writable))
+    }
+
+    fn render_offline(&self) -> bool {
+        todo!()
+    }
+
+    fn set_render_offline(&mut self, val: bool) {
+        todo!()
+    }
+}
+
 impl Unit {
     pub fn initialize(mut self) -> Result<UnitRef, os::Status> {
         unsafe {
             AudioUnitInitialize(&mut self.0).result()?;
             Ok(std::mem::transmute(self))
         }
+    }
+
+    pub fn prop_info(
+        &self,
+        prop_id: PropId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<(u32, bool), os::Status> {
+        self.0.prop_info(prop_id, scope, element)
     }
 }
 
@@ -763,6 +797,15 @@ impl UnitRef {
     pub fn unintialize(mut self) -> Result<Unit, os::Status> {
         self._uninitialize().result()?;
         Ok(unsafe { std::mem::transmute(self) })
+    }
+
+    pub fn prop_info(
+        &self,
+        prop_id: PropId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<(u32, bool), os::Status> {
+        self.0.prop_info(prop_id, scope, element)
     }
 }
 
@@ -829,14 +872,27 @@ mod tests {
 
         let comp = desc.into_iter().next().unwrap();
         let mixer = comp.new_unit().unwrap();
+        let (size, writable) = mixer
+            .prop_info(
+                au::PropId::OFFLINE_RENDER,
+                au::Scope::GLOBAL,
+                au::Element::OUTPUT,
+            )
+            .unwrap();
+
+        assert!(writable);
+        assert_eq!(4, size);
+        println!("size: {size}, writable: {writable}");
+
         let mixer = mixer.initialize().unwrap();
-        // eprintln!("{:?}", mixer);
-        // for d in desc {
-        //     eprintln!(
-        //         "name: {} desc {:?}",
-        //         d.name().unwrap().as_ns(),
-        //         d.desc().unwrap()
-        //     );
-        // }
+        let (size, writable) = mixer
+            .prop_info(
+                au::PropId::OFFLINE_RENDER,
+                au::Scope::GLOBAL,
+                au::Element::OUTPUT,
+            )
+            .unwrap();
+        assert!(!writable);
+        assert_eq!(4, size);
     }
 }
