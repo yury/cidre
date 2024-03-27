@@ -1,10 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{
-    arc,
-    at::{self, au},
-    cf, define_opts, os,
-};
+use crate::{arc, at, at::au, cf, define_opts, os};
 
 impl au::Scope {
     /// The context for audio unit characteristics that apply to the audio unit as a
@@ -48,6 +44,11 @@ impl au::Scope {
     /// a synth are examples of this.
     #[doc(alias = "kAudioUnitScope_LayerItem")]
     pub const LAYER_ITEM: Self = Self(7);
+}
+
+impl au::Element {
+    pub const OUTPUT: Self = Self(0);
+    pub const INPUT: Self = Self(1);
 }
 
 impl au::PropId {

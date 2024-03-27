@@ -21,10 +21,10 @@ pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 mod component;
 pub use component::Component;
-pub use component::ComponentInstance;
-pub use component::ComponentInstanceRef;
 pub use component::Desc as ComponentDesc;
 pub use component::Flags as ComponentFlags;
+pub use component::Instance as ComponentInstance;
+pub use component::InstanceRef as ComponentInstanceRef;
 pub use component::InstantiationOpts as ComponentInstantiationOpts;
 
 mod file;
@@ -49,8 +49,8 @@ pub use codec::BitRateControlMode as CodecBitRateControlMode;
 pub use codec::Codec;
 pub use codec::CodecRef;
 pub use codec::DynamicRangeCompressionProfile;
-pub use codec::GlobalProp as CodecGlobalProp;
-pub use codec::InstanceProp as CodecInstanceProp;
+pub use codec::GlobalPropId as CodecGlobalPropId;
+pub use codec::InstancePropId as CodecInstancePropId;
 pub use codec::MagicCookieInfo as CodecMagicCookieInfo;
 pub use codec::ProduceOutputPacketStatus as CodecProduceOutputPacketStatus;
 pub use codec::ProgramTargetLevel;

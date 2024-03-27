@@ -1,8 +1,11 @@
 use std::ffi::c_void;
 
-use crate::{at, cf, define_opts, os};
+use crate::{at, at::audio, cf, define_opts, os};
 
-pub type UnitRef = crate::at::audio::ComponentInstanceRef;
+pub type _Unit = audio::ComponentInstance;
+
+pub struct Unit(audio::ComponentInstanceRef);
+pub struct UnitRef(audio::ComponentInstanceRef);
 
 /// Different types of audio units
 ///
@@ -688,7 +691,7 @@ pub struct ParamEvent {
 
 #[doc(alias = "AudioUnitParameter")]
 pub struct Param {
-    pub unit_ref: UnitRef,
+    pub unit: *const Unit,
     pub param_id: ParamId,
     pub scope: Scope,
     pub element: Element,
@@ -696,7 +699,7 @@ pub struct Param {
 
 #[doc(alias = "AudioUnitProperty")]
 pub struct Prop {
-    pub unit_ref: UnitRef,
+    pub unit: *const _Unit,
     pub prop_id: PropId,
     pub scope: Scope,
     pub element: Element,
@@ -715,7 +718,7 @@ pub type RenderCb<T = c_void> = extern "C" fn(
 #[doc(alias = "AudioUnitPropertyListenerProc")]
 pub type PropListenerProc<T = c_void> = extern "C" fn(
     in_ref_con: *mut T,
-    in_unit: UnitRef,
+    in_unit: *const Unit,
     in_id: PropId,
     in_scope: Scope,
     in_element: Element,
@@ -743,14 +746,37 @@ impl cf::NotificationName {
     }
 }
 
-impl UnitRef {
-    // pub fn initialize(&mut self) -> os::Status {
-    //     unsafe { AudioUnitInitialize(self) }
-    // }
+impl Unit {
+    pub fn initialize(mut self) -> Result<UnitRef, os::Status> {
+        unsafe {
+            AudioUnitInitialize(&mut self.0).result()?;
+            Ok(std::mem::transmute(self))
+        }
+    }
+}
 
-    // pub fn uninitialize(&mut self) -> os::Status {
-    //     unsafe { AudioUnitUninitialize(self) }
-    // }
+impl UnitRef {
+    fn _uninitialize(&mut self) -> os::Status {
+        unsafe { AudioUnitUninitialize(&mut self.0) }
+    }
+
+    pub fn unintialize(mut self) -> Result<Unit, os::Status> {
+        self._uninitialize().result()?;
+        Ok(unsafe { std::mem::transmute(self) })
+    }
+}
+
+impl Drop for UnitRef {
+    fn drop(&mut self) {
+        let res = self._uninitialize();
+        debug_assert!(res.is_ok());
+    }
+}
+
+impl audio::Component {
+    pub fn new_unit(&self) -> Result<Unit, os::Status> {
+        Ok(Unit(self.new_instance()?))
+    }
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
@@ -758,11 +784,11 @@ extern "C" {
     static kAudioComponentRegistrationsChangedNotification: &'static cf::NotificationName;
     static kAudioComponentInstanceInvalidationNotification: &'static cf::NotificationName;
 
-    fn AudioUnitInitialize(in_unit: &mut UnitRef) -> os::Status;
-    fn AudioUnitUninitialize(in_unit: &mut UnitRef) -> os::Status;
+    fn AudioUnitInitialize(in_unit: &mut _Unit) -> os::Status;
+    fn AudioUnitUninitialize(in_unit: &mut _Unit) -> os::Status;
 
     fn AudioUnitGetPropertyInfo(
-        in_unit: &UnitRef,
+        in_unit: &_Unit,
         in_id: PropId,
         in_scope: Scope,
         in_element: Element,
@@ -771,7 +797,7 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioUnitGetProperty(
-        in_unit: &UnitRef,
+        in_unit: &_Unit,
         in_id: PropId,
         in_scope: Scope,
         in_element: Element,
@@ -780,7 +806,7 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioUnitSetProperty(
-        in_unit: &mut UnitRef,
+        in_unit: &mut _Unit,
         in_id: PropId,
         in_scope: Scope,
         in_element: Element,
@@ -801,12 +827,16 @@ mod tests {
             ..Default::default()
         };
 
-        for d in desc {
-            eprintln!(
-                "name: {} desc {:?}",
-                d.name().unwrap().as_ns(),
-                d.desc().unwrap()
-            );
-        }
+        let comp = desc.into_iter().next().unwrap();
+        let mixer = comp.new_unit().unwrap();
+        let mixer = mixer.initialize().unwrap();
+        // eprintln!("{:?}", mixer);
+        // for d in desc {
+        //     eprintln!(
+        //         "name: {} desc {:?}",
+        //         d.name().unwrap().as_ns(),
+        //         d.desc().unwrap()
+        //     );
+        // }
     }
 }
