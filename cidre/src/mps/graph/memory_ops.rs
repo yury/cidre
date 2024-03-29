@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     pub fn lifetimes() {
-        let tensor = {
+        let _tensor = {
             let gr = graph::Graph::new();
             let t = gr.placeholder_with_shape(None, mps::DataType::F32, None);
             t

@@ -1,4 +1,4 @@
-use std::{ffi::c_void, marker::PhantomData};
+use std::{ffi::c_void, marker::PhantomData, mem::MaybeUninit};
 
 use crate::{
     at::{
@@ -99,7 +99,7 @@ impl Type {
     pub const MUSIC_EFFECT: Self = Self(u32::from_be_bytes(*b"aumf"));
 
     /// An audio unit that takes some number of inputs, mixing them to provide 1 or more audio
-    /// outputs. A stere mixer (mono and stereo inputs to produce one stereo output) is an example
+    /// outputs. A stereo mixer (mono and stereo inputs to produce one stereo output) is an example
     /// of this.
     #[doc(alias = "kAudioUnitType_Mixer")]
     pub const MIXER: Self = Self(u32::from_be_bytes(*b"aumx"));
@@ -653,6 +653,12 @@ pub struct Scope(pub u32);
 #[repr(transparent)]
 pub struct Element(pub u32);
 
+impl Default for Element {
+    fn default() -> Self {
+        Element::OUTPUT
+    }
+}
+
 /// Type used for audio unit parameters.
 ///
 /// Parameters are typically used to control and set render state
@@ -775,7 +781,27 @@ impl cf::NotificationName {
 }
 
 impl Unit {
-    fn prop_info(
+    pub fn render<const N: usize>(
+        &mut self,
+        timestamp: &audio::TimeStamp,
+        output_bus_num: u32,
+        frames_num: u32,
+        buf_list: &mut audio::BufList<N>,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            AudioUnitRender(
+                self,
+                std::ptr::null_mut(),
+                timestamp,
+                output_bus_num,
+                frames_num,
+                buf_list as *mut audio::BufList<N> as *mut audio::BufList<1>,
+            )
+            .result()
+        }
+    }
+
+    pub fn prop_info(
         &self,
         prop_id: PropId,
         scope: Scope,
@@ -790,12 +816,85 @@ impl Unit {
         Ok((size, writable))
     }
 
-    pub fn render_offline(&self) -> bool {
-        todo!()
+    #[doc(alias = "AudioCodecGetProperty")]
+    pub fn prop<T: Sized>(
+        &self,
+        prop_id: PropId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<T, os::Status> {
+        let mut size = std::mem::size_of::<T>() as u32;
+        unsafe {
+            let mut value = MaybeUninit::<T>::uninit();
+            AudioUnitGetProperty(
+                self,
+                prop_id,
+                scope,
+                element,
+                value.as_mut_ptr() as _,
+                &mut size,
+            )
+            .result()?;
+            Ok(value.assume_init())
+        }
     }
 
-    pub fn set_render_offline(&mut self, val: bool) {
-        todo!()
+    pub fn set_prop<T: Sized>(
+        &mut self,
+        prop_id: PropId,
+        scope: Scope,
+        element: Element,
+        val: &T,
+    ) -> Result<(), os::Status> {
+        let size = std::mem::size_of::<T>() as u32;
+        unsafe {
+            AudioUnitSetProperty(self, prop_id, scope, element, val as *const _ as _, size).result()
+        }
+    }
+
+    pub fn offline_render(&self) -> Result<bool, os::Status> {
+        let res: Result<u32, os::Status> =
+            self.prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT);
+        res.map(|v| v == 1)
+    }
+
+    pub fn set_offline_render(&mut self, val: bool) -> Result<(), os::Status> {
+        let val = if val { 1u32 } else { 0u32 };
+
+        self.set_prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT, &val)
+    }
+
+    pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
+        self.prop(
+            PropId::LAST_RENDER_SAMPLE_TIME,
+            Scope::GLOBAL,
+            Element::OUTPUT,
+        )
+    }
+
+    pub fn render_quality(&self) -> Result<u32, os::Status> {
+        self.prop(PropId::RENDER_QUALITY, Scope::GLOBAL, Element::OUTPUT)
+    }
+
+    pub fn set_render_quality(&mut self, val: u32) -> Result<(), os::Status> {
+        self.set_prop(
+            PropId::RENDER_QUALITY,
+            Scope::GLOBAL,
+            Default::default(),
+            &val,
+        )
+    }
+
+    pub fn should_allocate_input_buf(&self) -> Result<bool, os::Status> {
+        let res: Result<u32, os::Status> =
+            self.prop(PropId::SHOULD_ALLOCATE_BUF, Scope::INPUT, Element::INPUT);
+        res.map(|v| v == 1)
+    }
+
+    pub fn should_allocate_output_buf(&self) -> Result<bool, os::Status> {
+        let res: Result<u32, os::Status> =
+            self.prop(PropId::SHOULD_ALLOCATE_BUF, Scope::OUTPUT, Element::OUTPUT);
+        res.map(|v| v == 1)
     }
 }
 
@@ -805,6 +904,13 @@ impl UnitRef<UninitializedState> {
             AudioUnitInitialize(&mut self.0).result()?;
             Ok(std::mem::transmute(self))
         }
+    }
+    pub fn set_offline_render(&mut self, val: bool) -> Result<(), os::Status> {
+        self.0.set_offline_render(val)
+    }
+
+    pub fn set_render_quality(&mut self, val: u32) -> Result<(), os::Status> {
+        self.0.set_render_quality(val)
     }
 }
 
@@ -817,6 +923,26 @@ impl<S: State<Unit>> UnitRef<S> {
     ) -> Result<(u32, bool), os::Status> {
         self.0.prop_info(prop_id, scope, element)
     }
+
+    pub fn offline_render(&self) -> Result<bool, os::Status> {
+        self.0.offline_render()
+    }
+
+    pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
+        self.0.last_render_sample_time()
+    }
+
+    pub fn render_quality(&self) -> Result<u32, os::Status> {
+        self.0.render_quality()
+    }
+
+    pub fn should_allocate_input_buf(&self) -> Result<bool, os::Status> {
+        self.0.should_allocate_input_buf()
+    }
+
+    pub fn should_allocate_output_buf(&self) -> Result<bool, os::Status> {
+        self.0.should_allocate_output_buf()
+    }
 }
 
 impl UnitRef<InitializedState> {
@@ -825,6 +951,17 @@ impl UnitRef<InitializedState> {
             AudioUnitUninitialize(&mut self.0).result()?;
             std::mem::transmute(self)
         })
+    }
+
+    pub fn render<const N: usize>(
+        &mut self,
+        timestamp: &audio::TimeStamp,
+        output_bus_num: u32,
+        frames_num: u32,
+        buf_list: &mut audio::BufList<N>,
+    ) -> Result<(), os::Status> {
+        self.0
+            .render(timestamp, output_bus_num, frames_num, buf_list)
     }
 }
 
@@ -868,11 +1005,21 @@ extern "C" {
         in_data: *const c_void,
         in_data_size: u32,
     ) -> os::Status;
+
+    fn AudioUnitRender(
+        in_unit: &mut Unit,
+        io_action_flags: *mut RenderActionFlags,
+        in_timestamp: *const audio::TimeStamp,
+        in_output_bus_num: u32,
+        in_number_frames: u32,
+        io_data: *mut audio::BufList,
+    ) -> os::Status;
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{at::au, at::audio};
+
     #[test]
     fn basics() {
         let desc = audio::ComponentDesc {
@@ -883,7 +1030,7 @@ mod tests {
         };
 
         let comp = desc.into_iter().next().unwrap();
-        let mixer = comp.open_unit().unwrap();
+        let mut mixer = comp.open_unit().unwrap();
         let (size, writable) = mixer
             .prop_info(
                 au::PropId::OFFLINE_RENDER,
@@ -895,6 +1042,9 @@ mod tests {
         assert!(writable);
         assert_eq!(4, size);
         println!("size: {size}, writable: {writable}");
+        assert_eq!(false, mixer.offline_render().unwrap());
+        mixer.set_offline_render(true).unwrap();
+        mixer.set_render_quality(200).unwrap();
 
         let mixer = mixer.initialize().unwrap();
         let (size, writable) = mixer
@@ -906,5 +1056,12 @@ mod tests {
             .unwrap();
         assert!(!writable);
         assert_eq!(4, size);
+        assert_eq!(true, mixer.offline_render().unwrap());
+
+        assert_eq!(f64::MIN, mixer.last_render_sample_time().unwrap());
+        assert_eq!(200, mixer.render_quality().unwrap());
+
+        assert_eq!(true, mixer.should_allocate_input_buf().unwrap());
+        assert_eq!(true, mixer.should_allocate_output_buf().unwrap());
     }
 }
