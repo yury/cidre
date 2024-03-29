@@ -45,4 +45,6 @@ pub use properties::VoiceIoSpeechActivityEvent;
 
 mod parameters;
 pub use parameters::NBandEQFilterType;
+#[cfg(target_os = "macos")]
+pub use parameters::NetStatus;
 pub use parameters::SoundIsolationSoundType;

@@ -714,3 +714,386 @@ pub enum SoundIsolationSoundType {
     /// Isolate voice signal from the input signal.
     Voice = 1,
 }
+
+/// Some parameters for the AUGraphicEQ unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, Indexed, currently either 10 or 31
+    #[doc(alias = "kGraphicEQParam_NumberOfBands")]
+    pub const GRAPHIC_EQ_NUMBER_OF_BANDS: Self = Self(10000);
+}
+
+/// Parameters for the AUMatrixReverb unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, EqPow CrossFade, 0->100, 100
+    #[doc(alias = "kReverbParam_DryWetMix")]
+    pub const REVERB_DRY_WET_MIX: Self = Self(0);
+
+    /// Global, EqPow CrossFade, 0->100, 50
+    #[doc(alias = "kReverbParam_SmallLargeMix")]
+    pub const REVERB_SMALL_LARGE_MIX: Self = Self(1);
+
+    /// Global, Secs, 0.005->0.020, 0.06
+    #[doc(alias = "kReverbParam_SmallSize")]
+    pub const REVERB_SMALL_SIZE: Self = Self(2);
+
+    /// Global, Secs, 0.4->10.0, 3.07
+    #[doc(alias = "kReverbParam_LargeSize")]
+    pub const REVERB_LARGE_SIZE: Self = Self(3);
+
+    /// Global, Secs, 0.001->0.03, 0.025
+    #[doc(alias = "kReverbParam_PreDelay")]
+    pub const REVERB_PRE_DELAY: Self = Self(4);
+
+    /// Global, Secs, 0.001->0.1, 0.035
+    #[doc(alias = "kReverbParam_LargeDelay")]
+    pub const REVERB_LARGE_DELAY: Self = Self(5);
+
+    /// Global, Genr, 0->1, 0.28
+    #[doc(alias = "kReverbParam_SmallDensity")]
+    pub const REVERB_SMALL_DENSITY: Self = Self(6);
+
+    /// Global, Genr, 0->1, 0.82
+    #[doc(alias = "kReverbParam_LargeDensity")]
+    pub const REVERB_LARGE_DENSITY: Self = Self(7);
+
+    /// Global, Genr, 0->1, 0.3
+    #[doc(alias = "kReverbParam_LargeDelayRange")]
+    pub const REVERB_LARGE_DELAY_RANGE: Self = Self(8);
+
+    /// Global, Genr, 0.1->1, 0.96
+    #[doc(alias = "kReverbParam_SmallBrightness")]
+    pub const REVERB_SMALL_BRIGHTNESS: Self = Self(9);
+
+    /// Global, Genr, 0.1->1, 0.49
+    #[doc(alias = "kReverbParam_LargeBrightness")]
+    pub const REVERB_LARGE_BRIGHTNESS: Self = Self(10);
+
+    /// Global, Genr, 0->1 0.5
+    #[doc(alias = "kReverbParam_SmallDelayRange")]
+    pub const REVERB_SMALL_DELAY_RANGE: Self = Self(11);
+
+    /// Global, Hz, 0.001->2.0, 1.0
+    #[doc(alias = "kReverbParam_ModulationRate")]
+    pub const REVERB_MODULATION_RATE: Self = Self(12);
+
+    /// Global, Genr, 0.0 -> 1.0, 0.2
+    #[doc(alias = "kReverbParam_ModulationDepth")]
+    pub const REVERB_MODULATION_DEPTH: Self = Self(13);
+}
+
+// Parameters for the AUMultibandCompressor unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, dB, -40 -> 40, 0
+    #[doc(alias = "kMultibandCompressorParam_Pregain")]
+    pub const MULTIBAND_COMPRESSOR_PREGAIN: Self = Self(0);
+
+    /// Global, dB, -40 -> 40, 0
+    #[doc(alias = "kMultibandCompressorParam_Postgain")]
+    pub const MULTIBAND_COMPRESSOR_POSTGAIN: Self = Self(1);
+
+    /// Global, Hertz, 20 -> (SampleRate/2), 120.0
+    #[doc(alias = "kMultibandCompressorParam_Crossover1")]
+    pub const MULTIBAND_COMPRESSOR_CROSSOVER1: Self = Self(2);
+
+    /// Global, Hertz, 20 -> (SampleRate/2), 700.0
+    #[doc(alias = "kMultibandCompressorParam_Crossover2")]
+    pub const MULTIBAND_COMPRESSOR_CROSSOVER2: Self = Self(3);
+
+    /// Global, Hertz, 20 -> (SampleRate/2), 3000.0
+    #[doc(alias = "kMultibandCompressorParam_Crossover3")]
+    pub const MULTIBAND_COMPRESSOR_CROSSOVER3: Self = Self(4);
+
+    /// Global, dB, -100.0 -> 0.0, -22.0
+    #[doc(alias = "kMultibandCompressorParam_Threshold1")]
+    pub const MULTIBAND_COMPRESSOR_THRESHOLD1: Self = Self(5);
+
+    /// Global, dB, -100.0 -> 0.0, -32.0
+    #[doc(alias = "kMultibandCompressorParam_Threshold2")]
+    pub const MULTIBAND_COMPRESSOR_THRESHOLD2: Self = Self(6);
+
+    /// Global, dB, -100.0 -> 0.0, -33.0
+    #[doc(alias = "kMultibandCompressorParam_Threshold3")]
+    pub const MULTIBAND_COMPRESSOR_THRESHOLD3: Self = Self(7);
+
+    /// Global, dB, -100.0 -> 0.0, -36.0
+    #[doc(alias = "kMultibandCompressorParam_Threshold4")]
+    pub const MULTIBAND_COMPRESSOR_THRESHOLD4: Self = Self(8);
+
+    /// Global, dB, 0.1 -> 40.0, 5.0
+    #[doc(alias = "kMultibandCompressorParam_Headroom1")]
+    pub const MULTIBAND_COMPRESSOR_HEADROOM1: Self = Self(9);
+
+    /// Global, dB, 0.1 -> 40.0, 12.0
+    #[doc(alias = "kMultibandCompressorParam_Headroom2")]
+    pub const MULTIBAND_COMPRESSOR_HEADROOM2: Self = Self(10);
+
+    /// Global, dB, 0.1 -> 40.0, 5.0
+    #[doc(alias = "kMultibandCompressorParam_Headroom3")]
+    pub const MULTIBAND_COMPRESSOR_HEADROOM3: Self = Self(11);
+
+    /// Global, dB, 0.1 -> 40.0, 7.5
+    #[doc(alias = "kMultibandCompressorParam_Headroom4")]
+    pub const MULTIBAND_COMPRESSOR_HEADROOM4: Self = Self(12);
+
+    /// Global, Secs, 0.001 -> 0.200, 0.080
+    #[doc(alias = "kMultibandCompressorParam_AttackTime")]
+    pub const MULTIBAND_COMPRESSOR_ATTACK_TIME: Self = Self(13);
+
+    /// Global, Secs, 0.010 -> 3.0, 0.120
+    #[doc(alias = "kMultibandCompressorParam_ReleaseTime")]
+    pub const MULTIBAND_COMPRESSOR_RELEASE_TIME: Self = Self(14);
+
+    /// Global, dB, -20 -> 20, 0
+    #[doc(alias = "kMultibandCompressorParam_EQ1")]
+    pub const MULTIBAND_COMPRESSOR_EQ1: Self = Self(15);
+
+    /// Global, dB, -20 -> 20, 0
+    #[doc(alias = "kMultibandCompressorParam_EQ2")]
+    pub const MULTIBAND_COMPRESSOR_EQ2: Self = Self(16);
+
+    /// Global, dB, -20 -> 20, 0
+    #[doc(alias = "kMultibandCompressorParam_EQ3")]
+    pub const MULTIBAND_COMPRESSOR_EQ3: Self = Self(17);
+
+    /// Global, dB, -20 -> 20, 0
+    #[doc(alias = "kMultibandCompressorParam_EQ4")]
+    pub const MULTIBAND_COMPRESSOR_EQ4: Self = Self(18);
+
+    /// read-only parameters
+
+    /// Global, dB, 0 -> 20
+    #[doc(alias = "kMultibandCompressorParam_CompressionAmount1")]
+    pub const MULTIBAND_COMPRESSOR_COMPRESSION_AMOUNT1: Self = Self(1000);
+
+    /// Global, dB, 0 -> 20
+    #[doc(alias = "kMultibandCompressorParam_CompressionAmount2")]
+    pub const MULTIBAND_COMPRESSOR_COMPRESSION_AMOUNT2: Self = Self(2000);
+
+    /// Global, dB, 0 -> 20
+    #[doc(alias = "kMultibandCompressorParam_CompressionAmount3")]
+    pub const MULTIBAND_COMPRESSOR_COMPRESSION_AMOUNT3: Self = Self(3000);
+
+    /// Global, dB, 0 -> 20
+    #[doc(alias = "kMultibandCompressorParam_CompressionAmount4")]
+    pub const MULTIBAND_COMPRESSOR_COMPRESSION_AMOUNT4: Self = Self(4000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_InputAmplitude1")]
+    pub const MULTIBAND_COMPRESSOR_INPUT_AMPLITUDE1: Self = Self(5000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_InputAmplitude2")]
+    pub const MULTIBAND_COMPRESSOR_INPUT_AMPLITUDE2: Self = Self(6000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_InputAmplitude3")]
+    pub const MULTIBAND_COMPRESSOR_INPUT_AMPLITUDE3: Self = Self(7000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_InputAmplitude4")]
+    pub const MULTIBAND_COMPRESSOR_INPUT_AMPLITUDE4: Self = Self(8000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_OutputAmplitude1")]
+    pub const MULTIBAND_COMPRESSOR_OUTPUT_AMPLITUDE1: Self = Self(9000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_OutputAmplitude2")]
+    pub const MULTIBAND_COMPRESSOR_OUTPUT_AMPLITUDE2: Self = Self(10000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_OutputAmplitude3")]
+    pub const MULTIBAND_COMPRESSOR_OUTPUT_AMPLITUDE3: Self = Self(11000);
+
+    /// Global, dB, -120 -> 20
+    #[doc(alias = "kMultibandCompressorParam_OutputAmplitude4")]
+    pub const MULTIBAND_COMPRESSOR_OUTPUT_AMPLITUDE4: Self = Self(12000);
+}
+
+/// Parameters for the AUFilter unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, indexed, 0 -> 1, 0
+    #[doc(alias = "kMultibandFilter_LowFilterType")]
+    pub const MULTIBAND_FILTER_LOW_FILTER_TYPE: Self = Self(0);
+
+    /// Global, Hertz, 10 -> (SampleRate/2), 100
+    #[doc(alias = "kMultibandFilter_LowFrequency")]
+    pub const MULTIBAND_FILTER_LOW_FREQUENCY: Self = Self(1);
+
+    /// Global, dB, -18 -> +18, 0
+    #[doc(alias = "kMultibandFilter_LowGain")]
+    pub const MULTIBAND_FILTER_LOW_GAIN: Self = Self(2);
+
+    /// Global, Hertz, 10 -> (SampleRate/2), 100
+    #[doc(alias = "kMultibandFilter_CenterFreq1")]
+    pub const MULTIBAND_FILTER_CENTER_FREQ1: Self = Self(3);
+
+    /// Global, dB, -18 -> +18, 0
+    #[doc(alias = "kMultibandFilter_CenterGain1")]
+    pub const MULTIBAND_FILTER_CENTER_GAIN1: Self = Self(4);
+
+    /// Global, Octaves, 0.05 -> 3.0, 2.0
+    #[doc(alias = "kMultibandFilter_Bandwidth1")]
+    pub const MULTIBAND_FILTER_BANDWIDTH1: Self = Self(5);
+
+    /// Global, Hertz, 10 -> (SampleRate/2), 100
+    #[doc(alias = "kMultibandFilter_CenterFreq2")]
+    pub const MULTIBAND_FILTER_CENTER_FREQ2: Self = Self(6);
+
+    /// Global, dB, -18 -> +18, 0
+    #[doc(alias = "kMultibandFilter_CenterGain2")]
+    pub const MULTIBAND_FILTER_CENTER_GAIN2: Self = Self(7);
+
+    /// Global, Octaves, 0.05 -> 3.0, 2.0
+    #[doc(alias = "kMultibandFilter_Bandwidth2")]
+    pub const MULTIBAND_FILTER_BANDWIDTH2: Self = Self(8);
+
+    /// Global, Hertz, 10 -> (SampleRate/2), 100
+    #[doc(alias = "kMultibandFilter_CenterFreq3")]
+    pub const MULTIBAND_FILTER_CENTER_FREQ3: Self = Self(9);
+
+    /// Global, dB, -18 -> +18, 0
+    #[doc(alias = "kMultibandFilter_CenterGain3")]
+    pub const MULTIBAND_FILTER_CENTER_GAIN3: Self = Self(10);
+
+    /// Global, Octaves, 0.05 -> 3.0, 2.0
+    #[doc(alias = "kMultibandFilter_Bandwidth3")]
+    pub const MULTIBAND_FILTER_BANDWIDTH3: Self = Self(11);
+
+    /// Global, indexed, 0 -> 1, 0
+    #[doc(alias = "kMultibandFilter_HighFilterType")]
+    pub const MULTIBAND_FILTER_HIGH_FILTER_TYPE: Self = Self(12);
+
+    /// Global, Hertz, 10 -> (SampleRate/2), 100
+    #[doc(alias = "kMultibandFilter_HighFrequency")]
+    pub const MULTIBAND_FILTER_HIGH_FREQUENCY: Self = Self(13);
+
+    /// Global, dB, -18 -> +18, 0
+    #[doc(alias = "kMultibandFilter_HighGain")]
+    pub const MULTIBAND_FILTER_HIGH_GAIN: Self = Self(14);
+}
+
+/// Parameters for AURogerBeep
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, dB, -80 -> 0, -6
+    #[doc(alias = "kRogerBeepParam_InGateThreshold")]
+    pub const ROGER_BEEP_IN_GATE_THRESHOLD: Self = Self(0);
+
+    /// Global, Milliseconds, 0 -> 1000, 1000
+    #[doc(alias = "kRogerBeepParam_InGateThresholdTime")]
+    pub const ROGER_BEEP_IN_GATE_THRESHOLD_TIME: Self = Self(1);
+
+    /// Global, dB, -80 -> 0, -6
+    #[doc(alias = "kRogerBeepParam_OutGateThreshold")]
+    pub const ROGER_BEEP_OUT_GATE_THRESHOLD: Self = Self(2);
+
+    /// Global, Milliseconds, 0 -> 1000, 1000
+    #[doc(alias = "kRogerBeepParam_OutGateThresholdTime")]
+    pub const ROGER_BEEP_OUT_GATE_THRESHOLD_TIME: Self = Self(3);
+
+    /// Global, indexed, 0 -> 2, 2
+    #[doc(alias = "kRogerBeepParam_Sensitivity")]
+    pub const ROGER_BEEP_SENSITIVITY: Self = Self(4);
+
+    /// Global, indexed, 0 -> 2, 0
+    #[doc(alias = "kRogerBeepParam_RogerType")]
+    pub const ROGER_BEEP_ROGER_TYPE: Self = Self(5);
+
+    /// Global, dB, -80 -> 20, -6
+    #[doc(alias = "kRogerBeepParam_RogerGain")]
+    pub const ROGER_BEEP_ROGER_GAIN: Self = Self(6);
+}
+
+/// Parameters for the Stereo Mixer unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Input/Output, Mixer Fader Curve, 0->1, 1
+    #[doc(alias = "kStereoMixerParam_Volume")]
+    pub const STEREO_MIXER_VOLUME: Self = Self(0);
+
+    /// Input, Pan, 0->1, 0.5
+    #[doc(alias = "kStereoMixerParam_Pan")]
+    pub const STEREO_MIXER_PAN: Self = Self(1);
+
+    // read-only
+    //
+    // For each of the following, use the parameter ID for the left channel
+    // and the parameter ID plus one for the right channel.
+    // For example, kStereoMixerParam_PostAveragePower indicates the left channel
+    // while kStereiMixerParam_PostAveragePower + 1 indicates the right channel.
+    #[doc(alias = "kStereoMixerParam_PreAveragePower")]
+    pub const STEREO_MIXER_PRE_AVERAGE_POWER: Self = Self(1000);
+
+    #[doc(alias = "kStereoMixerParam_PrePeakHoldLevel")]
+    pub const STEREO_MIXER_PRE_PEAK_HOLD_LEVEL: Self = Self(2000);
+
+    #[doc(alias = "kStereoMixerParam_PostAveragePower")]
+    pub const STEREO_MIXER_POST_AVERAGE_POWER: Self = Self(3000);
+
+    #[doc(alias = "kStereoMixerParam_PostPeakHoldLevel")]
+    pub const STEREO_MIXER_POST_PEAK_HOLD_LEVEL: Self = Self(4000);
+}
+
+/// Parameters for the AUNetReceive unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, indexed, 0 -> 5, read only
+    #[doc(alias = "kAUNetReceiveParam_Status")]
+    pub const NET_RECEIVE_STATUS: Self = Self(0);
+
+    #[doc(alias = "kAUNetReceiveParam_NumParameters")]
+    pub const NET_RECEIVE_NUM_PARAMETERS: Self = Self(1);
+}
+
+/// Parameters for the AUNetSend unit
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, indexed, 0 -> 5, read only
+    pub const NET_SEND_STATUS: Self = Self(0);
+    pub const NET_SEND_NUM_PARAMETERS: Self = Self(1);
+}
+
+#[cfg(target_os = "macos")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(i32)]
+pub enum NetStatus {
+    #[doc(alias = "kAUNetStatus_NotConnected")]
+    NotConnected = 0,
+
+    #[doc(alias = "kAUNetStatus_Connected")]
+    Connected = 1,
+
+    #[doc(alias = "kAUNetStatus_Overflow")]
+    Overflow = 2,
+
+    #[doc(alias = "kAUNetStatus_Underflow")]
+    Underflow = 3,
+
+    #[doc(alias = "kAUNetStatus_Connecting")]
+    Connecting = 4,
+
+    #[doc(alias = "kAUNetStatus_Listening")]
+    Listening = 5,
+}
+
+/// Music Device
+/// Parameters for the DLSMusicDevice unit - defined and reported in the global scope
+#[cfg(target_os = "macos")]
+impl au::ParamId {
+    /// Global, Cents, -1200, 1200, 0
+    #[doc(alias = "kMusicDeviceParam_Tuning")]
+    pub const MUSIC_DEVICE_TUNING: Self = Self(0);
+
+    /// Global, dB, -120->40, 0
+    #[doc(alias = "kMusicDeviceParam_Volume")]
+    pub const MUSIC_DEVICE_VOLUME: Self = Self(1);
+
+    /// Global, dB, -120->40, 0
+    #[doc(alias = "kMusicDeviceParam_ReverbVolume")]
+    pub const MUSIC_DEVICE_REVERB_VOLUME: Self = Self(2);
+}
