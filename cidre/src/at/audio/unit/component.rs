@@ -1,11 +1,39 @@
-use std::ffi::c_void;
+use std::{ffi::c_void, marker::PhantomData};
 
-use crate::{at, at::audio, cf, define_opts, os};
+use crate::{
+    at::{
+        self,
+        audio::{
+            self,
+            component::{InitializedState, State, UninitializedState},
+        },
+    },
+    cf, define_opts, os,
+};
 
-pub type _Unit = audio::ComponentInstance;
+#[repr(transparent)]
+pub struct Unit(audio::component::Instance);
 
-pub struct Unit(audio::ComponentInstanceRef);
-pub struct UnitRef(audio::ComponentInstanceRef);
+impl State<Unit> for UninitializedState {}
+
+impl State<Unit> for InitializedState {
+    fn release_resources(unit: &mut Unit) -> Result<(), os::Status> {
+        unsafe { AudioUnitUninitialize(unit).result() }
+    }
+}
+
+pub struct UnitRef<S>(&'static mut Unit, PhantomData<S>)
+where
+    S: State<Unit>;
+
+impl<S: State<Unit>> Drop for UnitRef<S> {
+    fn drop(&mut self) {
+        let res = S::release_resources(self.0);
+        debug_assert!(res.is_ok());
+        let res = unsafe { self.0 .0.dispose() };
+        debug_assert!(res.is_ok());
+    }
+}
 
 /// Different types of audio units
 ///
@@ -691,7 +719,7 @@ pub struct ParamEvent {
 
 #[doc(alias = "AudioUnitParameter")]
 pub struct Param {
-    pub unit: *const Unit,
+    pub unit: *mut Unit,
     pub param_id: ParamId,
     pub scope: Scope,
     pub element: Element,
@@ -699,7 +727,7 @@ pub struct Param {
 
 #[doc(alias = "AudioUnitProperty")]
 pub struct Prop {
-    pub unit: *const _Unit,
+    pub unit: *const Unit,
     pub prop_id: PropId,
     pub scope: Scope,
     pub element: Element,
@@ -746,7 +774,7 @@ impl cf::NotificationName {
     }
 }
 
-impl _Unit {
+impl Unit {
     fn prop_info(
         &self,
         prop_id: PropId,
@@ -762,23 +790,25 @@ impl _Unit {
         Ok((size, writable))
     }
 
-    fn render_offline(&self) -> bool {
+    pub fn render_offline(&self) -> bool {
         todo!()
     }
 
-    fn set_render_offline(&mut self, val: bool) {
+    pub fn set_render_offline(&mut self, val: bool) {
         todo!()
     }
 }
 
-impl Unit {
-    pub fn initialize(mut self) -> Result<UnitRef, os::Status> {
+impl UnitRef<UninitializedState> {
+    pub fn initialize(mut self) -> Result<UnitRef<InitializedState>, os::Status> {
         unsafe {
             AudioUnitInitialize(&mut self.0).result()?;
             Ok(std::mem::transmute(self))
         }
     }
+}
 
+impl<S: State<Unit>> UnitRef<S> {
     pub fn prop_info(
         &self,
         prop_id: PropId,
@@ -789,36 +819,18 @@ impl Unit {
     }
 }
 
-impl UnitRef {
-    fn _uninitialize(&mut self) -> os::Status {
-        unsafe { AudioUnitUninitialize(&mut self.0) }
-    }
-
-    pub fn unintialize(mut self) -> Result<Unit, os::Status> {
-        self._uninitialize().result()?;
-        Ok(unsafe { std::mem::transmute(self) })
-    }
-
-    pub fn prop_info(
-        &self,
-        prop_id: PropId,
-        scope: Scope,
-        element: Element,
-    ) -> Result<(u32, bool), os::Status> {
-        self.0.prop_info(prop_id, scope, element)
-    }
-}
-
-impl Drop for UnitRef {
-    fn drop(&mut self) {
-        let res = self._uninitialize();
-        debug_assert!(res.is_ok());
+impl UnitRef<InitializedState> {
+    pub fn unintialize(mut self) -> Result<UnitRef<UninitializedState>, os::Status> {
+        Ok(unsafe {
+            AudioUnitUninitialize(&mut self.0).result()?;
+            std::mem::transmute(self)
+        })
     }
 }
 
 impl audio::Component {
-    pub fn new_unit(&self) -> Result<Unit, os::Status> {
-        Ok(Unit(self.new_instance()?))
+    pub fn open_unit(&self) -> Result<UnitRef<UninitializedState>, os::Status> {
+        Ok(unsafe { std::mem::transmute(self.open()?) })
     }
 }
 
@@ -827,11 +839,11 @@ extern "C" {
     static kAudioComponentRegistrationsChangedNotification: &'static cf::NotificationName;
     static kAudioComponentInstanceInvalidationNotification: &'static cf::NotificationName;
 
-    fn AudioUnitInitialize(in_unit: &mut _Unit) -> os::Status;
-    fn AudioUnitUninitialize(in_unit: &mut _Unit) -> os::Status;
+    fn AudioUnitInitialize(in_unit: &mut Unit) -> os::Status;
+    fn AudioUnitUninitialize(in_unit: &mut Unit) -> os::Status;
 
     fn AudioUnitGetPropertyInfo(
-        in_unit: &_Unit,
+        in_unit: &Unit,
         in_id: PropId,
         in_scope: Scope,
         in_element: Element,
@@ -840,7 +852,7 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioUnitGetProperty(
-        in_unit: &_Unit,
+        in_unit: &Unit,
         in_id: PropId,
         in_scope: Scope,
         in_element: Element,
@@ -849,7 +861,7 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioUnitSetProperty(
-        in_unit: &mut _Unit,
+        in_unit: &mut Unit,
         in_id: PropId,
         in_scope: Scope,
         in_element: Element,
@@ -871,7 +883,7 @@ mod tests {
         };
 
         let comp = desc.into_iter().next().unwrap();
-        let mixer = comp.new_unit().unwrap();
+        let mixer = comp.open_unit().unwrap();
         let (size, writable) = mixer
             .prop_info(
                 au::PropId::OFFLINE_RENDER,

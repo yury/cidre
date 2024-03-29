@@ -125,35 +125,25 @@ impl Iterator for Iter {
 #[repr(transparent)]
 pub struct Component(c_void);
 
-#[doc(alias = "AudioComponentInstance")]
+/// OpaqueInstance
+#[doc(alias = "OpaqueAudioComponentInstance")]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Instance(c_void);
 
+#[doc(alias = "AudioComponentInstance")]
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct InstanceRef(&'static mut Instance);
 
-impl Drop for InstanceRef {
-    fn drop(&mut self) {
-        let res = unsafe { AudioComponentInstanceDispose(self.0) };
-        debug_assert!(res.is_ok());
+pub trait State<T> {
+    fn release_resources(_instance: &mut T) -> Result<(), os::Status> {
+        Ok(())
     }
 }
 
-impl Deref for InstanceRef {
-    type Target = Instance;
-
-    fn deref(&self) -> &Self::Target {
-        self.0
-    }
-}
-
-impl DerefMut for InstanceRef {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
-    }
-}
+pub struct UninitializedState;
+pub struct InitializedState;
 
 impl Component {
     #[inline]
@@ -184,7 +174,8 @@ impl Component {
         }
     }
 
-    pub fn new_instance(&self) -> Result<InstanceRef, os::Status> {
+    #[doc(alias = "AudioComponentInstanceNew")]
+    pub fn open(&self) -> Result<InstanceRef, os::Status> {
         let mut instance = None;
         unsafe {
             let res = AudioComponentInstanceNew(self, &mut instance);
@@ -194,6 +185,37 @@ impl Component {
                 Err(res)
             }
         }
+    }
+}
+
+impl Instance {
+    pub fn component(&self) -> Option<&Component> {
+        unsafe { AudioComponentInstanceGetComponent(self) }
+    }
+
+    pub unsafe fn dispose(&mut self) -> Result<(), os::Status> {
+        unsafe { AudioComponentInstanceDispose(self).result() }
+    }
+}
+
+impl Drop for InstanceRef {
+    fn drop(&mut self) {
+        let res = unsafe { self.0.dispose() };
+        debug_assert!(res.is_ok());
+    }
+}
+
+impl Deref for InstanceRef {
+    type Target = Instance;
+
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl DerefMut for InstanceRef {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
     }
 }
 
@@ -221,7 +243,7 @@ extern "C" {
 
     fn AudioComponentInstanceDispose(instance: &mut Instance) -> os::Status;
 
-    //fn CAShow(in_object: *const c_void);
+    fn AudioComponentInstanceGetComponent(instance: &Instance) -> Option<&Component>;
 }
 
 #[cfg(test)]
@@ -256,6 +278,6 @@ mod tests {
             ..Default::default()
         };
 
-        let _inst = desc.into_iter().next().unwrap().new_instance().unwrap();
+        let _inst = desc.into_iter().next().unwrap().open().unwrap();
     }
 }

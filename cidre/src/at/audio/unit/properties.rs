@@ -1481,7 +1481,7 @@ pub mod preset_key {
 #[repr(C)]
 pub struct Connection {
     /// The audio unit that is the source for the connection
-    pub src_au: Option<au::UnitRef>,
+    pub src_au: *const au::Unit,
 
     /// The source audio unit's output element to be used in the connection
     pub src_output_num: u32,
