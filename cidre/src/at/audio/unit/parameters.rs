@@ -591,3 +591,126 @@ impl au::ParamId {
     #[doc(alias = "kAUNBandEQParam_Bandwidth")]
     pub const NBAND_EQ_BANDWIDTH: Self = Self(5000);
 }
+
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(u64)]
+pub enum NBandEQFilterType {
+    /// Parametric filter based on Butterworth analog prototype. Uses parameterization where
+    /// the bandwidth is specifed as the relationship of the upper bandedge frequency to the
+    /// lower bandedge frequency in octaves, where the upper and lower bandedge frequencies are
+    /// the respective frequencies above and below the center frequency at which the gain is
+    /// equal to half the peak gain.
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Gain (peak gain)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_Parametric")]
+    Parametric = 0,
+
+    /// Simple Butterworth 2nd order low pass filter
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (-3 dB cutoff frequency)
+    #[doc(alias = "kAUNBandEQFilterType_2ndOrderButterworthLowPass")]
+    _2ndOrderButterworthLowPass = 1,
+
+    /// Simple Butterworth 2nd order high pass filter
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (-3 dB cutoff frequency)
+    #[doc(alias = "kAUNBandEQFilterType_2ndOrderButterworthHighPass")]
+    _2ndOrderButterworthHighPass = 2,
+
+    /// Low pass filter with resonance support (via bandwidth parameter)
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (-3 dB cutoff frequency)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_ResonantLowPass")]
+    ResonantLowPass = 3,
+
+    /// High pass filter with resonance support (via bandwidth parameter)
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (-3 dB cutoff frequency)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_ResonantHighPass")]
+    ResonantHighPass = 4,
+
+    /// Band pass filter
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_BandPass")]
+    BandPass = 5,
+
+    /// Band stop filter (aka "notch filter")
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_BandStop")]
+    BandStop = 6,
+
+    /// Low shelf filter
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Gain (shelf gain)
+    #[doc(alias = "kAUNBandEQFilterType_LowShelf")]
+    LowShelf = 7,
+
+    /// High shelf filter
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Gain (shelf gain)
+    #[doc(alias = "kAUNBandEQFilterType_HighShelf")]
+    HighShelf = 8,
+
+    /// Low shelf filter with resonance support (via bandwidth parameter)
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Gain (shelf gain)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_ResonantLowShelf")]
+    ResonantLowShelf = 9,
+
+    /// High shelf filter with resonance support (via bandwidth parameter)
+    /// Applicable parameters:
+    /// - kAUNBandEQParam_Frequency (center frequency)
+    /// - kAUNBandEQParam_Gain (shelf gain)
+    /// - kAUNBandEQParam_Bandwidth
+    #[doc(alias = "kAUNBandEQFilterType_ResonantLowShelf")]
+    ResonantHighShelf = 10,
+
+    #[doc(alias = "kNumAUNBandEQFilterTypes")]
+    NumTypes = 11,
+}
+
+/// Parameters for the AURoundTripAACParam unit
+impl au::ParamId {
+    /// Global, indexed : AAC, HE-AAC, HE-AACv2
+    #[doc(alias = "kRoundTripAACParam_Format")]
+    pub const ROUND_TRIP_AAC_FORMAT: Self = Self(0);
+
+    /// Global, indexed
+    #[doc(alias = "kRoundTripAACParam_EncodingStrategy")]
+    pub const ROUND_TRIP_AAC_ENCODING_STRATEGY: Self = Self(1);
+
+    /// Global, indexed
+    #[doc(alias = "kRoundTripAACParam_RateOrQuality")]
+    pub const ROUND_TRIP_AAC_RATE_OR_QUALITY: Self = Self(2);
+}
+
+/// Parameters for the AUSoundIsolation unit
+impl au::ParamId {
+    // Global, Percent, 0->100, 100
+    #[doc(alias = "kAUSoundIsolationParam_WetDryMixPercent")]
+    pub const SOUND_ISOLATION_WET_DRY_MIX_PERCENT: Self = Self(0);
+
+    // Global, Indexed, 1->1, 1
+    #[doc(alias = "kAUSoundIsolationParam_SoundToIsolate")]
+    pub const SOUND_ISOLATION_SOUND_TO_ISOLATE: Self = Self(1);
+}
+
+/// Constants available as values for parameter kAUSoundIsolation_SoundToIsolate.
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(u64)]
+pub enum SoundIsolationSoundType {
+    /// Isolate voice signal from the input signal.
+    Voice = 1,
+}

@@ -44,3 +44,5 @@ pub use properties::VoiceIoOtherAudioDuckingCfg;
 pub use properties::VoiceIoSpeechActivityEvent;
 
 mod parameters;
+pub use parameters::NBandEQFilterType;
+pub use parameters::SoundIsolationSoundType;
