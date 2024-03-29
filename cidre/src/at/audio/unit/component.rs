@@ -641,6 +641,7 @@ pub struct PropId(pub u32);
 /// Scopes are used to delineate a major attribute of an audio unit
 /// (for instance, global, input, output)
 #[doc(alias = "AudioUnitScope")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct Scope(pub u32);
 
@@ -896,6 +897,15 @@ impl Unit {
             self.prop(PropId::SHOULD_ALLOCATE_BUF, Scope::OUTPUT, Element::OUTPUT);
         res.map(|v| v == 1)
     }
+
+    pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
+        let element = if scope == Scope::INPUT {
+            Element::INPUT
+        } else {
+            Element::OUTPUT
+        };
+        self.prop(PropId::ELEMENT_COUNT, scope, element)
+    }
 }
 
 impl UnitRef<UninitializedState> {
@@ -922,6 +932,10 @@ impl<S: State<Unit>> UnitRef<S> {
         element: Element,
     ) -> Result<(u32, bool), os::Status> {
         self.0.prop_info(prop_id, scope, element)
+    }
+
+    pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
+        self.0.element_count(scope)
     }
 
     pub fn offline_render(&self) -> Result<bool, os::Status> {
@@ -1063,5 +1077,7 @@ mod tests {
 
         assert_eq!(true, mixer.should_allocate_input_buf().unwrap());
         assert_eq!(true, mixer.should_allocate_output_buf().unwrap());
+        assert_eq!(1, mixer.element_count(au::Scope::OUTPUT).unwrap());
+        assert_eq!(32, mixer.element_count(au::Scope::INPUT).unwrap());
     }
 }

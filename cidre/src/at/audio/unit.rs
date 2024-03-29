@@ -42,3 +42,5 @@ pub use properties::SpatializationAlgorithm;
 pub use properties::VoiceIoMutedSpeechActivityEventListener;
 pub use properties::VoiceIoOtherAudioDuckingCfg;
 pub use properties::VoiceIoSpeechActivityEvent;
+
+mod parameters;
