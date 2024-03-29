@@ -336,3 +336,258 @@ impl au::ParamId {
     #[doc(alias = "kAUSamplerParam_Pan")]
     pub const AU_SAMPLER_PAN: Self = Self(903);
 }
+
+/// Parameters for the AUBandpass unit
+impl au::ParamId {
+    /// Global, Hz, 20->(SampleRate/2), 5000
+    #[doc(alias = "kBandpassParam_CenterFrequency")]
+    pub const BANDPASS_CENTER_FREQUENCY: Self = Self(0);
+
+    /// Global, Cents, 100->12000, 600
+    #[doc(alias = "kBandpassParam_Bandwidth")]
+    pub const BANDPASS_BANDWIDTH: Self = Self(1);
+}
+
+/// Parameters for the AUHipass unit
+impl au::ParamId {
+    /// Global, Hz, 10->(SampleRate/2), 6900
+    #[doc(alias = "kHipassParam_CutoffFrequency")]
+    pub const HI_PASS_CUTOFF_FREQUENCY: Self = Self(0);
+
+    /// Global, dB, -20->40, 0
+    #[doc(alias = "kHipassParam_Resonance")]
+    pub const HI_PASS_RESONANCE: Self = Self(1);
+}
+
+/// Parameters for the AULowpass unit
+impl au::ParamId {
+    // Global, Hz, 10->(SampleRate/2), 6900
+    #[doc(alias = "kLowPassParam_CutoffFrequency")]
+    pub const LOW_PASS_CUTOFF_FREQUENCY: Self = Self(0);
+
+    // Global, dB, -20->40, 0
+    #[doc(alias = "kLowPassParam_Resonance")]
+    pub const LOW_PASS_RESONANCE: Self = Self(1);
+}
+
+/// Parameters for the AUHighShelfFilter unit
+impl au::ParamId {
+    /// Global, Hz, 10000->(SampleRate/2), 10000
+    pub const HIGH_SHELF_CUT_OFF_FREQUENCY: Self = Self(0);
+
+    /// Global, dB, -40->40, 0
+    pub const HIGH_SHELF_GAIN: Self = Self(1);
+}
+
+/// Parameters for the AULowShelfFilter unit
+impl au::ParamId {
+    // Global, Hz, 10->200, 80
+    pub const LOW_SHELF_CUTOFF_FREQUENCY: Self = Self(0);
+
+    // Global, dB, -40->40, 0
+    pub const LOW_SHELF_GAIN: Self = Self(1);
+}
+
+/// Parameters for the AUParametricEQ unit
+impl au::ParamId {
+    /// Global, Hz, 20->(SampleRate/2), 2000
+    pub const PARAMETRIC_EQ_CENTER_FREQ: Self = Self(0);
+
+    /// Global, Hz, 0.1->20, 1.0
+    pub const PARAMETRIC_EQ_Q: Self = Self(1);
+
+    /// Global, dB, -20->20, 0
+    pub const PARAMETRIC_EQ_GAIN: Self = Self(2);
+}
+
+/// Parameters for the AUPeakLimiter unit
+impl au::ParamId {
+    /// Global, Secs, 0.001->0.03, 0.012
+    pub const LIMITER_ATTACK_TIME: Self = Self(0);
+
+    /// Global, Secs, 0.001->0.06, 0.024
+    pub const LIMITER_DECAY_TIME: Self = Self(1);
+
+    /// Global, dB, -40->40, 0
+    pub const LIMITER_PRE_GAIN: Self = Self(2);
+}
+
+/// Parameters for the AUDynamicsProcessor unit
+/// Note that the dynamics processor does not have fixed compression ratios.
+/// Instead, kDynamicsProcessorParam_HeadRoom adjusts the amount of compression.
+/// Lower kDynamicsProcessorParam_HeadRoom values results in higher compression.
+/// The compression ratio is automatically adjusted to not exceed kDynamicsProcessorParam_Threshold + kDynamicsProcessorParam_HeadRoom values.  
+impl au::ParamId {
+    /// Global, dB, -40->20, -20
+    #[doc(alias = "kDynamicsProcessorParam_Threshold")]
+    pub const DYNAMICS_PROCESSOR_THRESHOLD: Self = Self(0);
+
+    /// Global, dB, 0.1->40.0, 5
+    #[doc(alias = "kDynamicsProcessorParam_HeadRoom")]
+    pub const DYNAMICS_PROCESSOR_HEAD_ROOM: Self = Self(1);
+
+    /// Global, rate, 1->50.0, 2
+    #[doc(alias = "kDynamicsProcessorParam_ExpansionRatio")]
+    pub const DYNAMICS_PROCESSOR_EXPANSION_RATIO: Self = Self(2);
+
+    /// Global, dB
+    #[doc(alias = "kDynamicsProcessorParam_ExpansionThreshold")]
+    pub const DYNAMICS_PROCESSOR_EXPANSION_THRESHOLD: Self = Self(3);
+
+    /// Global, secs, 0.0001->0.2, 0.001
+    #[doc(alias = "kDynamicsProcessorParam_AttackTime")]
+    pub const DYNAMICS_PROCESSOR_ATTACK_TIME: Self = Self(4);
+
+    /// Global, secs, 0.01->3, 0.05
+    #[doc(alias = "kDynamicsProcessorParam_ReleaseTime")]
+    pub const DYNAMICS_PROCESSOR_RELEASE_TIME: Self = Self(5);
+
+    /// Global, dB, -40->40, 0
+    #[doc(alias = "kDynamicsProcessorParam_OverallGain")]
+    #[doc(alias = "kDynamicsProcessorParam_MasterGain")]
+    pub const DYNAMICS_PROCESSOR_OVERALL_GAIN: Self = Self(6);
+
+    /// Global, dB, read-only parameter
+    #[doc(alias = "kDynamicsProcessorParam_CompressionAmount")]
+    pub const DYNAMICS_PROCESSOR_COMPRESSION_AMOUNT: Self = Self(1000);
+
+    #[doc(alias = "kDynamicsProcessorParam_InputAmplitude")]
+    pub const DYNAMICS_PROCESSOR_INPUT_AMPLITUDE: Self = Self(2000);
+
+    #[doc(alias = "kDynamicsProcessorParam_OutputAmplitude")]
+    pub const DYNAMICS_PROCESSOR_OUTPUT_AMPLITUDE: Self = Self(3000);
+}
+
+/// Parameters for the AUVarispeed unit
+impl au::ParamId {
+    /// Global, Rate, 0.25 -> 4.0, 1.0
+    #[doc(alias = "kVarispeedParam_PlaybackRate")]
+    pub const VARISPEED_PLAYBACK_RATE: Self = Self(0);
+
+    /// Global, Cents, -2400 -> 2400, 0.0
+    #[doc(alias = "kVarispeedParam_PlaybackCents")]
+    pub const VARISPEED_PLAYBACK_CENTS: Self = Self(1);
+}
+
+/// Parameters for the Distortion unit
+impl au::ParamId {
+    /// Global, Milliseconds, 0.1 -> 500, 0.1
+    #[doc(alias = "kDistortionParam_Delay")]
+    pub const DISTORTION_DELAY: Self = Self(0);
+
+    /// Global, Rate, 0.1 -> 50, 1.0
+    #[doc(alias = "kDistortionParam_Decay")]
+    pub const DISTORTION_DECAY: Self = Self(1);
+
+    /// Global, Percent, 0 -> 100, 50
+    #[doc(alias = "kDistortionParam_DelayMix")]
+    pub const DISTORTION_DELAY_MIX: Self = Self(2);
+
+    /// Global, Percent, 0 -> 100
+    #[doc(alias = "kDistortionParam_Decimation")]
+    pub const DISTORTION_DECIMATION: Self = Self(3);
+
+    /// Global, Percent, 0 -> 100, 0
+    #[doc(alias = "kDistortionParam_Rounding")]
+    pub const DISTORTION_ROUNDING: Self = Self(4);
+
+    /// Global, Percent, 0 -> 100, 50
+    #[doc(alias = "kDistortionParam_DecimationMix")]
+    pub const DISTORTION_DECIMATION_MIX: Self = Self(5);
+
+    /// Global, Linear Gain, 0 -> 1, 1
+    #[doc(alias = "kDistortionParam_LinearTerm")]
+    pub const DISTORTION_LINEAR_TERM: Self = Self(6);
+
+    /// Global, Linear Gain, 0 -> 20, 0
+    #[doc(alias = "kDistortionParam_SquaredTerm")]
+    pub const DISTORTION_SQUARED_TERM: Self = Self(7);
+
+    /// Global, Linear Gain, 0 -> 20, 0
+    #[doc(alias = "kDistortionParam_CubicTerm")]
+    pub const DISTORTION_CUBIC_TERM: Self = Self(8);
+
+    /// Global, Percent, 0 -> 100, 50
+    #[doc(alias = "kDistortionParam_PolynomialMix")]
+    pub const DISTORTION_POLYNOMIAL_MIX: Self = Self(9);
+
+    /// Global, Hertz, 0.5 -> 8000, 100
+    #[doc(alias = "kDistortionParam_RingModFreq1")]
+    pub const DISTORTION_RING_MOD_FREQ1: Self = Self(10);
+
+    /// Global, Hertz, 0.5 -> 8000, 100
+    #[doc(alias = "kDistortionParam_RingModFreq2")]
+    pub const DISTORTION_RING_MOD_FREQ2: Self = Self(11);
+
+    /// Global, Percent, 0 -> 100, 50
+    #[doc(alias = "kDistortionParam_RingModBalance")]
+    pub const DISTORTION_RING_MOD_BALANCE: Self = Self(12);
+
+    /// Global, Percent, 0 -> 100, 0
+    #[doc(alias = "kDistortionParam_RingModMix")]
+    pub const DISTORTION_RING_MOD_MIX: Self = Self(13);
+
+    /// Global, dB, -80 -> 20, -6
+    #[doc(alias = "kDistortionParam_SoftClipGain")]
+    pub const DISTORTION_SOFT_CLIP_GAIN: Self = Self(14);
+
+    /// Global, Percent, 0 -> 100, 50
+    #[doc(alias = "kDistortionParam_FinalMix")]
+    pub const DISTORTION_FINAL_MIX: Self = Self(15);
+}
+
+/// Parameters for the AUDelay unit
+impl au::ParamId {
+    /// Global, EqPow Crossfade, 0->100, 50
+    pub const DELAY_WET_DRY_MIX: Self = Self(0);
+
+    /// Global, Secs, 0->2, 1
+    pub const DELAY_DELAY_TIME: Self = Self(1);
+
+    /// Global, Percent, -100->100, 50
+    pub const DELAY_FEEDBACK: Self = Self(2);
+
+    /// Global, Hz, 10->(SampleRate/2), 15000
+    pub const DELAY_LOPASS_CUTOFF: Self = Self(3);
+}
+
+/// Parameters for the AUSampleDelay unit
+impl au::ParamId {
+    /// Global, Samples, 0->(SampleRate), 0
+    #[doc(alias = "kSampleDelayParam_DelayFrames")]
+    pub const SAMPLE_DELAY_FRAMES: Self = Self(0);
+}
+
+/// Parameters for the AUNBandEQ unit
+///
+/// Note that the parameter IDs listed correspond to band 0 (zero) of the unit. The parameter IDs for
+/// higher bands can be obtained by adding the zero-indexed band number to the corresponding band 0
+/// parameter ID up to the number of bands minus one, where the number of bands is described by the
+/// AUNBandEQ property kAUNBandEQProperty_NumberOfBands. For example, the parameter ID corresponding
+/// to the filter type of band 4 would be kAUNBandEQParam_FilterType + 3.
+/// kAUNBandEQParam_GlobalsGain is an overall gain and does not have a band.
+impl au::ParamId {
+    // Global, dB, -96->24, 0
+    #[doc(alias = "kAUNBandEQParam_GlobalGain")]
+    pub const NBAND_EQ_GLOBAL_GAIN: Self = Self(0);
+
+    // Global, Boolean, 0 or 1, 1
+    #[doc(alias = "kAUNBandEQParam_BypassBand")]
+    pub const NBAND_EQ_BYPASS_BAND: Self = Self(1000);
+
+    // Global, Indexed, 0->kNumAUNBandEQFilterTypes-1, 0
+    #[doc(alias = "kAUNBandEQParam_FilterType")]
+    pub const NBAND_EQ_FILTER_TYPE: Self = Self(2000);
+
+    // Global, Hz, 20->(SampleRate/2), 1000
+    #[doc(alias = "kAUNBandEQParam_Frequency")]
+    pub const NBAND_EQ_FREQUENCY: Self = Self(3000);
+
+    // Global, dB, -96->24, 0
+    #[doc(alias = "kAUNBandEQParam_Gain")]
+    pub const NBAND_EQ_GAIN: Self = Self(4000);
+
+    // Global, octaves, 0.05->5.0, 0.5
+    #[doc(alias = "kAUNBandEQParam_Bandwidth")]
+    pub const NBAND_EQ_BANDWIDTH: Self = Self(5000);
+}
