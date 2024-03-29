@@ -280,3 +280,59 @@ impl au::ParamId {
     #[doc(alias = "kTimePitchParam_EffectBlend")]
     pub const TIME_PITCH_EFFECT_BLEND: Self = Self(2);
 }
+
+/// Parameters for AUNewTimePitch
+impl au::ParamId {
+    /// rate control.
+    /// Global, rate, 1/32 -> 32.0, 1.0
+    #[doc(alias = "kNewTimePitchParam_Rate")]
+    pub const NEW_TIME_PITCH_RATE: Self = Self(0);
+
+    /// pitch shift in cents.
+    /// Global, Cents, -2400 -> 2400, 1.0
+    #[doc(alias = "kNewTimePitchParam_Pitch")]
+    pub const NEW_TIME_PITCH_PITCH: Self = Self(1);
+
+    /// The generated output can be made to sound smoother by increasing
+    /// the density of the processing time frames. The value is directly proportional
+    /// to the CPU cost. When slowing down percussive audio, lower values may be better.
+    /// Global, generic, 3.0 -> 32.0, 8.0
+    #[doc(alias = "kNewTimePitchParam_Smoothness")]
+    #[doc(alias = "kNewTimePitchParam_Overlap")]
+    pub const NEW_TIME_PITCH_SMOOTHNESS: Self = Self(4);
+
+    /// Spectral phase coherence is enabled through peak locking.
+    /// This adds some computation cost but results in a less "phasey"
+    /// or reverberant sound.
+    /// Global, Boolean, 0->1, 1
+    #[doc(alias = "kNewTimePitchParam_EnableSpectralCoherence")]
+    #[doc(alias = "kNewTimePitchParam_EnablePeakLocking")]
+    pub const NEW_TIME_PITCH_ENABLE_SPECTRAL_COHERENCE: Self = Self(6);
+
+    /// Transient preservation uses group delay to identify transients.
+    /// It resets the phase at points of transients to preserve the original
+    /// spectral phase relationships. It also sets the stretch factor to 1 at
+    /// those points.
+    /// Global, Boolean, 0->1, 1
+    #[doc(alias = "kNewTimePitchParam_EnableTransientPreservation")]
+    pub const NEW_TIME_PITCH_ENABLE_TRANSIENT_PRESERVATION: Self = Self(7);
+}
+
+/// Parameters for the AUSampler unit
+impl au::ParamId {
+    /// Global, dB, -90->12, 0
+    #[doc(alias = "kAUSamplerParam_Gain")]
+    pub const AU_SAMPLER_GAIN: Self = Self(900);
+
+    /// Global, Semitones, -24->24, 0
+    #[doc(alias = "kAUSamplerParam_CoarseTuning")]
+    pub const AU_SAMPLER_COARSE_TUNING: Self = Self(901);
+
+    /// Global, Cents, -99->99, 0
+    #[doc(alias = "kAUSamplerParam_FineTuning")]
+    pub const AU_SAMPLER_FINE_TUNING: Self = Self(902);
+
+    /// Global, -1.0->1.0, 0
+    #[doc(alias = "kAUSamplerParam_Pan")]
+    pub const AU_SAMPLER_PAN: Self = Self(903);
+}
