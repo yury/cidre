@@ -1097,3 +1097,46 @@ impl au::ParamId {
     #[doc(alias = "kMusicDeviceParam_ReverbVolume")]
     pub const MUSIC_DEVICE_REVERB_VOLUME: Self = Self(2);
 }
+
+/// Parameters for the AURandom unit
+impl au::ParamId {
+    #[doc(alias = "kRandomParam_BoundA")]
+    pub const RANDOM_BOUND_A: Self = Self(0);
+
+    #[doc(alias = "kRandomParam_BoundB")]
+    pub const RANDOM_BOUND_B: Self = Self(1);
+
+    #[doc(alias = "kRandomParam_Curve")]
+    pub const RANDOM_CURVE: Self = Self(2);
+}
+
+/// Parameters for the iOS reverb unit
+impl au::ParamId {
+    /// Global, CrossFade, 0->100, 100
+    #[doc(alias = "kReverb2Param_DryWetMix")]
+    pub const REVERB2_DRY_WET_MIX: Self = Self(0);
+
+    /// Global, Decibels, -20->20, 0
+    #[doc(alias = "kReverb2Param_Gain")]
+    pub const REVERB2_GAIN: Self = Self(1);
+
+    /// Global, Secs, 0.0001->1.0, 0.008
+    #[doc(alias = "kReverb2Param_MinDelayTime")]
+    pub const REVERB2_MIN_DELAY_TIME: Self = Self(2);
+
+    /// Global, Secs, 0.0001->1.0, 0.050
+    #[doc(alias = "kReverb2Param_MaxDelayTime")]
+    pub const REVERB2_MAX_DELAY_TIME: Self = Self(3);
+
+    /// Global, Secs, 0.001->20.0, 1.0
+    #[doc(alias = "kReverb2Param_DecayTimeAt0Hz")]
+    pub const REVERB2_DECAY_TIME_AT0_HZ: Self = Self(4);
+
+    /// Global, Secs, 0.001->20.0, 0.5
+    #[doc(alias = "kReverb2Param_DecayTimeAtNyquist")]
+    pub const REVERB2_DECAY_TIME_AT_NYQUIST: Self = Self(5);
+
+    /// Global, Integer, 1->1000
+    #[doc(alias = "kReverb2Param_RandomizeReflections")]
+    pub const REVERB2_RANDOMIZE_REFLECTIONS: Self = Self(6);
+}
