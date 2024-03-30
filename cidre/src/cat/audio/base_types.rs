@@ -665,7 +665,51 @@ pub struct TimeStamp {
     pub reserved: u32,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+impl TimeStamp {
+    #[inline]
+    #[doc(alias = "FillOutAudioTimeStampWithSampleTime")]
+    pub fn with_sample_time(sample_time: f64) -> Self {
+        Self {
+            sample_time,
+            host_time: 0,
+            rate_scalar: 0.0,
+            work_clock_time: 0,
+            smpte_time: Default::default(),
+            flags: TimeStampFlags::SAMPLE_TIME_VALID,
+            reserved: 0,
+        }
+    }
+
+    #[inline]
+    #[doc(alias = "FillOutAudioTimeStampWithHostTime")]
+    pub fn with_host_time(host_time: u64) -> Self {
+        Self {
+            sample_time: 0.0,
+            host_time,
+            rate_scalar: 0.0,
+            work_clock_time: 0,
+            smpte_time: Default::default(),
+            flags: TimeStampFlags::HOST_TIME_VALID,
+            reserved: 0,
+        }
+    }
+
+    #[inline]
+    #[doc(alias = "FillOutAudioTimeStampWithSampleAndHostTime")]
+    pub fn with_sample_and_host_time(sample_time: f64, host_time: u64) -> Self {
+        Self {
+            sample_time,
+            host_time,
+            rate_scalar: 0.0,
+            work_clock_time: 0,
+            smpte_time: Default::default(),
+            flags: TimeStampFlags::SAMPLE_HOST_TIME_VALID,
+            reserved: 0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[repr(transparent)]
 pub struct TimeStampFlags(pub u32);
 
