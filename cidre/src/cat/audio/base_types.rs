@@ -557,6 +557,58 @@ impl StreamBasicDesc {
         self.format == Format::LINEAR_PCM
             && (self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0 == FormatFlags::NATIVE_ENDIAN.0)
     }
+
+    #[inline]
+    pub fn is_interleaved(&self) -> bool {
+        (self.format_flags.0 & FormatFlags::IS_NON_INTERLEAVED.0) == 0
+    }
+
+    pub fn interleaved_channels_num(&self) -> u32 {
+        if self.is_interleaved() {
+            self.channels_per_frame
+        } else {
+            1
+        }
+    }
+
+    #[inline]
+    pub fn is_common_f32(&self) -> bool {
+        self.format == Format::LINEAR_PCM
+            && self.frames_per_packet == 1
+            && self.bytes_per_packet == self.bytes_per_frame
+            && self.format_flags.contains(FormatFlags::IS_FLOAT)
+            && (self.channels_per_frame == 1
+                || (self.format_flags.0 & FormatFlags::IS_NON_INTERLEAVED.0) != 0)
+            && ((self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0)
+                == FormatFlags::NATIVE_ENDIAN.0)
+            && self.bits_per_channel == 32
+            && self.bytes_per_frame
+                == self.interleaved_channels_num() * (std::mem::size_of::<f32>() as u32)
+    }
+
+    #[inline]
+    pub fn common_f32(sample_rate: f64, num_channels: u32, interleaved: bool) -> Self {
+        let sample_size = std::mem::size_of::<f32>() as u32;
+        let mut asbd = Self {
+            format: Format::LINEAR_PCM,
+            format_flags: FormatFlags::NATIVE_FLOAT_PACKED,
+            bits_per_channel: 8 * sample_size,
+            channels_per_frame: num_channels,
+            frames_per_packet: 1,
+            sample_rate,
+            ..Default::default()
+        };
+
+        if interleaved {
+            asbd.bytes_per_frame = num_channels * sample_size;
+        } else {
+            asbd.bytes_per_frame = sample_size;
+            asbd.format_flags |= FormatFlags::IS_NON_INTERLEAVED;
+        }
+        asbd.bytes_per_packet = asbd.bytes_per_frame;
+
+        asbd
+    }
 }
 
 /// This structure describes the packet layout of a buffer of data where the size of
@@ -1489,4 +1541,17 @@ impl Mpeg4Object {
     pub const TWIN_VQ: Self = Self(7);
     pub const CELP: Self = Self(8);
     pub const HVXC: Self = Self(9);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::at;
+
+    #[test]
+    fn basics() {
+        let asbd = at::audio::StreamBasicDesc::common_f32(44100.0, 2, false);
+        assert_eq!(asbd.interleaved_channels_num(), 1);
+        assert!(!asbd.is_interleaved());
+        assert!(asbd.is_common_f32());
+    }
 }

@@ -1326,7 +1326,10 @@ mod tests {
         println!("{:?}", buf.buffers[0].data_bytes_size);
         println!("{:?}", player.last_render_sample_time());
         println!("{:?}", player.sample_rate(au::Scope::OUTPUT));
+    }
 
+    #[test]
+    fn mixer() {
         let desc = audio::ComponentDesc {
             type_: au::Type::MUSIC_DEVICE.0,
             // sub_type: au::SubType::MULTI_CHANNEL_MIXER.0,
@@ -1341,6 +1344,7 @@ mod tests {
             sub_type: au::SubType::MULTI_CHANNEL_MIXER.0,
             ..Default::default()
         };
+        let ts = TimeStamp::with_sample_time(0.0);
         let mut buf: BufList<2> = audio::BufList::default();
         let mut mixer = desc.into_iter().next().unwrap().open_unit().unwrap();
         // mixer.set_offline_render(true).unwrap();
