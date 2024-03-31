@@ -65,7 +65,7 @@ impl InstantiationOpts {
 /// A structure describing the unique and identifying IDs of an audio component
 #[doc(alias = "AudioComponentDescription")]
 #[derive(Default, Debug)]
-#[repr(C, align(4))]
+#[repr(C)]
 pub struct Desc {
     /// A 4-char code identifying the generic type of an audio component.
     /// `aenc` for example
@@ -76,7 +76,7 @@ pub struct Desc {
     /// `aac ` for example
     pub sub_type: os::Type,
 
-    ///  Vendor identification.
+    /// Vendor identification.
     pub manufacturer: os::Type,
 
     /// Must be set to zero unless a known specific value is requested.

@@ -11,6 +11,9 @@ use crate::{
     cf, define_opts, os,
 };
 
+use super::ScheduledSlice;
+
+/// https://developer.apple.com/library/archive/documentation/MusicAudio/Conceptual/AudioUnitHostingGuide_iOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009492-CH1-SW1
 #[repr(transparent)]
 pub struct Unit(audio::component::Instance);
 
@@ -631,6 +634,7 @@ pub mod component_err {
 /// Properties are used to describe the state of an audio unit (for instance,
 /// the input or output audio format)
 #[doc(alias = "AudioUnitPropertyID")]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropId(pub u32);
 
@@ -651,6 +655,7 @@ pub struct Scope(pub u32);
 /// addressed / described by its element
 /// For instance, input bus 1 is input scope, element 1
 #[doc(alias = "AudioUnitElement")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct Element(pub u32);
 
@@ -802,6 +807,24 @@ impl Unit {
         }
     }
 
+    pub fn process<const N: usize>(
+        &mut self,
+        timestamp: &audio::TimeStamp,
+        frames_num: u32,
+        buf_list: &mut audio::BufList<N>,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            AudioUnitProcess(
+                self,
+                std::ptr::null_mut(),
+                timestamp,
+                frames_num,
+                buf_list as *mut audio::BufList<N> as *mut audio::BufList<1>,
+            )
+            .result()
+        }
+    }
+
     pub fn prop_info(
         &self,
         prop_id: PropId,
@@ -815,6 +838,31 @@ impl Unit {
                 .result()?;
         }
         Ok((size, writable))
+    }
+
+    pub fn prop_vec<T: Sized + Default + Clone>(
+        &self,
+        prop_id: PropId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<Vec<T>, os::Status> {
+        let (mut size, _) = self.prop_info(prop_id, scope, element)?;
+        if size == 0 {
+            return Ok(vec![]);
+        }
+        let mut vec = vec![T::default(); size as usize / std::mem::size_of::<T>()];
+        unsafe {
+            AudioUnitGetProperty(
+                self,
+                prop_id,
+                scope,
+                element,
+                vec.as_mut_ptr() as _,
+                &mut size,
+            )
+            .result()?;
+        }
+        Ok(vec)
     }
 
     #[doc(alias = "AudioCodecGetProperty")]
@@ -853,6 +901,10 @@ impl Unit {
         }
     }
 
+    pub fn params_list(&self, scope: Scope) -> Result<Vec<PropId>, os::Status> {
+        self.prop_vec(PropId::PARAM_LIST, scope, Element::OUTPUT)
+    }
+
     pub fn offline_render(&self) -> Result<bool, os::Status> {
         let res: Result<u32, os::Status> =
             self.prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT);
@@ -871,6 +923,10 @@ impl Unit {
             Scope::GLOBAL,
             Element::OUTPUT,
         )
+    }
+
+    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+        self.prop(PropId::LAST_RENDER_ERROR, Scope::GLOBAL, Element::OUTPUT)
     }
 
     pub fn render_quality(&self) -> Result<u32, os::Status> {
@@ -898,6 +954,16 @@ impl Unit {
         res.map(|v| v == 1)
     }
 
+    pub fn set_should_allocate_output_buf(&mut self, val: bool) -> Result<(), os::Status> {
+        let val = if val { 1u32 } else { 0u32 };
+        self.set_prop(
+            PropId::SHOULD_ALLOCATE_BUF,
+            Scope::OUTPUT,
+            Element::OUTPUT,
+            &val,
+        )
+    }
+
     pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
         let element = if scope == Scope::INPUT {
             Element::INPUT
@@ -905,6 +971,35 @@ impl Unit {
             Element::OUTPUT
         };
         self.prop(PropId::ELEMENT_COUNT, scope, element)
+    }
+
+    pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
+        let element = if scope == Scope::INPUT {
+            Element::INPUT
+        } else {
+            Element::OUTPUT
+        };
+        self.set_prop(PropId::ELEMENT_COUNT, scope, element, &val)
+    }
+
+    pub fn sample_rate(&self, scope: Scope) -> Result<f64, os::Status> {
+        let element = if scope == Scope::INPUT {
+            Element::INPUT
+        } else {
+            Element::OUTPUT
+        };
+
+        self.prop(PropId::SAMPLE_RATE, scope, element)
+    }
+
+    pub fn stream_format(&self, scope: Scope) -> Result<audio::StreamBasicDesc, os::Status> {
+        let element = if scope == Scope::INPUT {
+            Element::INPUT
+        } else {
+            Element::OUTPUT
+        };
+
+        self.prop(PropId::STREAM_FORMAT, scope, element)
     }
 }
 
@@ -922,6 +1017,10 @@ impl UnitRef<UninitializedState> {
     pub fn set_render_quality(&mut self, val: u32) -> Result<(), os::Status> {
         self.0.set_render_quality(val)
     }
+
+    pub fn set_should_allocate_output_buf(&mut self, val: bool) -> Result<(), os::Status> {
+        self.0.set_should_allocate_output_buf(val)
+    }
 }
 
 impl<S: State<Unit>> UnitRef<S> {
@@ -932,6 +1031,9 @@ impl<S: State<Unit>> UnitRef<S> {
         element: Element,
     ) -> Result<(u32, bool), os::Status> {
         self.0.prop_info(prop_id, scope, element)
+    }
+    pub fn params_list(&self, scope: Scope) -> Result<Vec<PropId>, os::Status> {
+        self.0.params_list(scope)
     }
 
     pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
@@ -946,6 +1048,10 @@ impl<S: State<Unit>> UnitRef<S> {
         self.0.last_render_sample_time()
     }
 
+    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+        self.0.last_render_err()
+    }
+
     pub fn render_quality(&self) -> Result<u32, os::Status> {
         self.0.render_quality()
     }
@@ -956,6 +1062,17 @@ impl<S: State<Unit>> UnitRef<S> {
 
     pub fn should_allocate_output_buf(&self) -> Result<bool, os::Status> {
         self.0.should_allocate_output_buf()
+    }
+
+    pub fn sample_rate(&self, scope: Scope) -> Result<f64, os::Status> {
+        self.0.sample_rate(scope)
+    }
+
+    pub fn stream_format(&self, scope: Scope) -> Result<audio::StreamBasicDesc, os::Status> {
+        self.0.stream_format(scope)
+    }
+    pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
+        self.0.set_element_count(scope, val)
     }
 }
 
@@ -976,6 +1093,24 @@ impl UnitRef<InitializedState> {
     ) -> Result<(), os::Status> {
         self.0
             .render(timestamp, output_bus_num, frames_num, buf_list)
+    }
+
+    pub fn process<const N: usize>(
+        &mut self,
+        timestamp: &audio::TimeStamp,
+        frames_num: u32,
+        buf_list: &mut audio::BufList<N>,
+    ) -> Result<(), os::Status> {
+        self.0.process(timestamp, frames_num, buf_list)
+    }
+
+    pub fn schedule_slice(&mut self, slice: &ScheduledSlice) -> Result<(), os::Status> {
+        self.0.set_prop(
+            PropId::SCHEDULE_SLICE,
+            Scope::GLOBAL,
+            Default::default(),
+            slice,
+        )
     }
 }
 
@@ -1028,11 +1163,24 @@ extern "C" {
         in_number_frames: u32,
         io_data: *mut audio::BufList,
     ) -> os::Status;
+
+    fn AudioUnitProcess(
+        in_unit: &mut Unit,
+        io_action_flags: *mut RenderActionFlags,
+        in_timestamp: *const audio::TimeStamp,
+        in_number_frames: u32,
+        io_data: *mut audio::BufList,
+    ) -> os::Status;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{at::au, at::audio};
+    use audio::{BufList, TimeStamp};
+
+    use crate::{
+        at::{au, audio},
+        os,
+    };
 
     #[test]
     fn basics() {
@@ -1079,5 +1227,63 @@ mod tests {
         assert_eq!(true, mixer.should_allocate_output_buf().unwrap());
         assert_eq!(1, mixer.element_count(au::Scope::OUTPUT).unwrap());
         assert_eq!(32, mixer.element_count(au::Scope::INPUT).unwrap());
+    }
+
+    #[test]
+    fn generator() {
+        let desc = audio::ComponentDesc {
+            type_: au::Type::GENERATOR.0,
+            sub_type: au::SubType::SCHEDULED_SOUND_PLAYER.0,
+            ..Default::default()
+        };
+
+        let player = desc.into_iter().next().unwrap().open_unit().unwrap();
+        println!(
+            "params {:?}",
+            player.params_list(au::Scope::OUTPUT).unwrap()
+        );
+        let mut player = player.initialize().unwrap();
+        let mut ts = TimeStamp::with_sample_time(0.0);
+        let mut buf: BufList<2> = audio::BufList::default();
+        player.render(&ts, 0, 1024, &mut buf).unwrap();
+        println!("{:?}", buf.buffers[0].data_bytes_size);
+        ts.sample_time += 1024.0;
+        player.render(&ts, 0, 200, &mut buf).unwrap();
+        println!("{:?}", buf.buffers[0].data_bytes_size);
+        println!("{:?}", player.last_render_sample_time());
+        println!("{:?}", player.sample_rate(au::Scope::OUTPUT));
+
+        let desc = audio::ComponentDesc {
+            type_: au::Type::MUSIC_DEVICE.0,
+            // sub_type: au::SubType::MULTI_CHANNEL_MIXER.0,
+            ..Default::default()
+        };
+        for d in desc.into_iter() {
+            println!("{:?}", d.name());
+        }
+        // println!("desc count {}", desc.into_iter().count());
+        let desc = audio::ComponentDesc {
+            type_: au::Type::MIXER.0,
+            sub_type: au::SubType::MULTI_CHANNEL_MIXER.0,
+            ..Default::default()
+        };
+        let mut buf: BufList<2> = audio::BufList::default();
+        let mut mixer = desc.into_iter().next().unwrap().open_unit().unwrap();
+        // mixer.set_offline_render(true).unwrap();
+        mixer.set_should_allocate_output_buf(true).unwrap();
+        mixer.set_element_count(au::Scope::INPUT, 1).unwrap();
+        println!("input {:?}", mixer.params_list(au::Scope::INPUT).unwrap());
+        println!("output {:?}", mixer.params_list(au::Scope::OUTPUT).unwrap());
+        println!("global {:?}", mixer.params_list(au::Scope::GLOBAL).unwrap());
+        let mut mixer = mixer.initialize().unwrap();
+        mixer.set_element_count(au::Scope::INPUT, 2).unwrap();
+        println!("count {:?}", mixer.element_count(au::Scope::INPUT).unwrap());
+        println!("{:?}", mixer.sample_rate(au::Scope::OUTPUT));
+        mixer.render(&ts, 0, 1024, &mut buf).unwrap();
+        let asbd = mixer.stream_format(au::Scope::OUTPUT).unwrap();
+        println!("mixer {:?}", asbd);
+        println!("mixer {:?}", mixer.last_render_sample_time());
+        println!("{:?}", buf.buffers[0].data_bytes_size);
+        assert_eq!(mixer.last_render_err().unwrap(), os::Status::NO_ERR);
     }
 }

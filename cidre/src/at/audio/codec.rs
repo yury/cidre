@@ -823,11 +823,9 @@ impl Codec {
 
     #[doc(alias = "AudioCodecGetPropertyInfo")]
     #[inline]
-    pub fn prop_info(&self, property_id: u32) -> Result<(u32, bool), os::Status> {
+    pub fn prop_info(&self, prop_id: u32) -> Result<(u32, bool), os::Status> {
         let (mut size, mut writable) = (0u32, false);
-        unsafe {
-            AudioCodecGetPropertyInfo(&self, property_id, &mut size, &mut writable).result()?
-        };
+        unsafe { AudioCodecGetPropertyInfo(&self, prop_id, &mut size, &mut writable).result()? };
         Ok((size, writable))
     }
 
@@ -835,12 +833,15 @@ impl Codec {
     #[inline]
     pub unsafe fn prop_vec<T: Sized + Default + Clone>(
         &self,
-        property_id: u32,
+        prop_id: u32,
     ) -> Result<Vec<T>, os::Status> {
-        let (mut size, _) = self.prop_info(property_id)?;
+        let (mut size, _) = self.prop_info(prop_id)?;
+        if size == 0 {
+            return Ok(vec![]);
+        }
         let mut vec = vec![T::default(); size as usize / std::mem::size_of::<T>()];
         unsafe {
-            AudioCodecGetProperty(self, property_id, &mut size, vec.as_mut_ptr() as _).result()?;
+            AudioCodecGetProperty(self, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
         }
         Ok(vec)
     }

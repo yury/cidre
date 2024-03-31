@@ -72,7 +72,7 @@ impl au::PropId {
     pub const MAKE_CONNECTION: Self = Self(1);
 
     /// Scope:      Input / Output
-    /// Value Type: Float64
+    /// Value Type: f64
     /// Access:     Read / Write
     #[doc(alias = "kAudioUnitProperty_SampleRate")]
     pub const SAMPLE_RATE: Self = Self(2);
@@ -423,7 +423,7 @@ impl au::PropId {
     /// If fewer than kNumberOfResponseFrequencies are needed, then the first unused bin should be marked with
     /// a negative frequency.
     #[doc(alias = "kAudioUnitProperty_FrequencyResponse")]
-    pub const FREQUENCY_RESPONSE: Self = Self(51);
+    pub const FREQUENCY_RESPONSE: Self = Self(52);
 
     /// Scope:      Global
     /// Value Type: AudioUnitParameterHistoryInfo
@@ -1682,7 +1682,7 @@ impl au::PropId {
     /// Value Type: AudioTimeStamp
     /// Access:
     ///    AudioTimeStamp, relative to start time, sample time of -1 if not yet started.
-    #[doc(alias = "kAudioUnitProperty_ScheduleStartTimeStamp")]
+    #[doc(alias = "kAudioUnitProperty_CurrentPlayTime")]
     pub const CURRENT_PLAY_TIME: Self = Self(3302);
 }
 
