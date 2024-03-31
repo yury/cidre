@@ -78,7 +78,7 @@ impl au::PropId {
     pub const SAMPLE_RATE: Self = Self(2);
 
     /// Scope:      Any
-    /// Value Type: AudioUnitParamId
+    /// Value Type: au::ParamId
     /// Access:     Read
     #[doc(alias = "kAudioUnitProperty_ParameterList")]
     pub const PARAM_LIST: Self = Self(3);

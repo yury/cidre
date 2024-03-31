@@ -1,6 +1,7 @@
 use std::{ffi::c_void, marker::PhantomData, mem::MaybeUninit};
 
 use crate::{
+    arc,
     at::{
         self,
         audio::{
@@ -670,6 +671,7 @@ impl Default for Element {
 /// Parameters are typically used to control and set render state
 /// (for instance, filter cut-off frequency)
 #[doc(alias = "AudioUnitParameterID")]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct ParamId(pub u32);
 
@@ -901,8 +903,21 @@ impl Unit {
         }
     }
 
-    pub fn params_list(&self, scope: Scope) -> Result<Vec<PropId>, os::Status> {
+    pub fn params_list(&self, scope: Scope) -> Result<Vec<ParamId>, os::Status> {
         self.prop_vec(PropId::PARAM_LIST, scope, Element::OUTPUT)
+    }
+
+    pub fn param(
+        &self,
+        param_id: ParamId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<ParamValue, os::Status> {
+        let mut val = Default::default();
+        unsafe {
+            AudioUnitGetParameter(self, param_id, scope, element, &mut val).result()?;
+        }
+        Ok(val)
     }
 
     pub fn offline_render(&self) -> Result<bool, os::Status> {
@@ -1001,6 +1016,30 @@ impl Unit {
 
         self.prop(PropId::STREAM_FORMAT, scope, element)
     }
+
+    pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
+        self.prop(PropId::NICK_NAME, Scope::GLOBAL, Default::default())
+    }
+
+    pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> Result<(), os::Status> {
+        self.set_prop(PropId::NICK_NAME, Scope::GLOBAL, Default::default(), &val)
+    }
+
+    pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
+        self.prop(
+            PropId::MAX_FRAMES_PER_SLICE,
+            Scope::GLOBAL,
+            Default::default(),
+        )
+    }
+    pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
+        self.set_prop(
+            PropId::MAX_FRAMES_PER_SLICE,
+            Scope::GLOBAL,
+            Default::default(),
+            &val,
+        )
+    }
 }
 
 impl UnitRef<UninitializedState> {
@@ -1021,6 +1060,10 @@ impl UnitRef<UninitializedState> {
     pub fn set_should_allocate_output_buf(&mut self, val: bool) -> Result<(), os::Status> {
         self.0.set_should_allocate_output_buf(val)
     }
+
+    pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
+        self.0.set_max_frames_per_slice(val)
+    }
 }
 
 impl<S: State<Unit>> UnitRef<S> {
@@ -1032,8 +1075,18 @@ impl<S: State<Unit>> UnitRef<S> {
     ) -> Result<(u32, bool), os::Status> {
         self.0.prop_info(prop_id, scope, element)
     }
-    pub fn params_list(&self, scope: Scope) -> Result<Vec<PropId>, os::Status> {
+
+    pub fn params_list(&self, scope: Scope) -> Result<Vec<ParamId>, os::Status> {
         self.0.params_list(scope)
+    }
+
+    pub fn param(
+        &self,
+        param_id: ParamId,
+        scope: Scope,
+        element: Element,
+    ) -> Result<ParamValue, os::Status> {
+        self.0.param(param_id, scope, element)
     }
 
     pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
@@ -1073,6 +1126,18 @@ impl<S: State<Unit>> UnitRef<S> {
     }
     pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
         self.0.set_element_count(scope, val)
+    }
+
+    pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
+        self.0.nick_name()
+    }
+
+    pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> Result<(), os::Status> {
+        self.0.set_nick_name(val)
+    }
+
+    pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
+        self.0.max_frames_per_slice()
     }
 }
 
@@ -1171,15 +1236,24 @@ extern "C" {
         in_number_frames: u32,
         io_data: *mut audio::BufList,
     ) -> os::Status;
+
+    fn AudioUnitGetParameter(
+        in_unit: &Unit,
+        param_id: ParamId,
+        in_scope: Scope,
+        in_element: Element,
+        out_value: &mut ParamValue,
+    ) -> os::Status;
 }
 
 #[cfg(test)]
 mod tests {
+    use au::Element;
     use audio::{BufList, TimeStamp};
 
     use crate::{
         at::{au, audio},
-        os,
+        cf, os,
     };
 
     #[test]
@@ -1285,5 +1359,22 @@ mod tests {
         println!("mixer {:?}", mixer.last_render_sample_time());
         println!("{:?}", buf.buffers[0].data_bytes_size);
         assert_eq!(mixer.last_render_err().unwrap(), os::Status::NO_ERR);
+
+        assert!(mixer.nick_name().unwrap().is_none());
+        mixer.set_nick_name(Some(cf::str!(c"mixer"))).unwrap();
+
+        let nick_name = mixer.nick_name().unwrap().unwrap();
+        assert_eq!(nick_name.to_string(), "mixer");
+        assert_eq!(1156, mixer.max_frames_per_slice().unwrap());
+        // assert_eq!(4096, mixer.max_frames_per_slice().unwrap());
+
+        let level = mixer
+            .param(
+                au::ParamId::MULTI_CHANNEL_MIXER_POST_AVERAGE_POWER,
+                au::Scope::GLOBAL,
+                Element::OUTPUT,
+            )
+            .unwrap();
+        println!("level {level}");
     }
 }
