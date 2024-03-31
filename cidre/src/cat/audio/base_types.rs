@@ -563,6 +563,7 @@ impl StreamBasicDesc {
         (self.format_flags.0 & FormatFlags::IS_NON_INTERLEAVED.0) == 0
     }
 
+    #[inline]
     pub fn interleaved_channels_num(&self) -> u32 {
         if self.is_interleaved() {
             self.channels_per_frame
@@ -578,7 +579,7 @@ impl StreamBasicDesc {
             && self.bytes_per_packet == self.bytes_per_frame
             && self.format_flags.contains(FormatFlags::IS_FLOAT)
             && (self.channels_per_frame == 1
-                || (self.format_flags.0 & FormatFlags::IS_NON_INTERLEAVED.0) != 0)
+                || self.format_flags.contains(FormatFlags::IS_NON_INTERLEAVED))
             && ((self.format_flags.0 & FormatFlags::IS_BIG_ENDIAN.0)
                 == FormatFlags::NATIVE_ENDIAN.0)
             && self.bits_per_channel == 32
