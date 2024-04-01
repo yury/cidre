@@ -1013,6 +1013,11 @@ where
     }
 
     #[inline]
+    pub fn applicable_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+        self.0.applicable_bit_rate_range()
+    }
+
+    #[inline]
     pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
         unsafe { self.0.prop_vec(InstancePropId::MAGIC_COOKIE.0) }
     }
