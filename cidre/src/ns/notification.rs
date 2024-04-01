@@ -75,10 +75,10 @@ impl NotificationCenter {
     pub fn post(&self, notification: &ns::Notification);
 
     #[objc::msg_send(postNotificationName:object:)]
-    pub fn post_with_name_object(&self, name: &ns::NotificationName, object: Option<&ns::Id>);
+    pub fn post_with_name_obj(&self, name: &ns::NotificationName, object: Option<&ns::Id>);
 
     #[objc::msg_send(postNotificationName:object:userInfo:)]
-    pub fn post_with_name_object_info(
+    pub fn post_with_name_obj_info(
         &self,
         name: &ns::NotificationName,
         object: Option<&ns::Id>,
@@ -172,17 +172,17 @@ mod tests {
             let mut guard = block_counter.lock().unwrap();
             *guard += 1;
         });
-        let name = ns::NotificationName::with_str("test");
-        let token = nc.add_observer_block(&name, None, None, &mut block);
-        nc.post_with_name_object(&name, None);
-        nc.post_with_name_object(&name, None);
+        let name = ns::NotificationName::with_raw(ns::str!(c"test"));
+        let token = nc.add_observer_block(name, None, None, &mut block);
+        nc.post_with_name_obj(name, None);
+        nc.post_with_name_obj(name, None);
 
         {
             let guard = counter.lock().unwrap();
             assert_eq!(2, *guard);
         }
         nc.remove_observer(&token);
-        nc.post_with_name_object(&name, None);
+        nc.post_with_name_obj(name, None);
 
         {
             let guard = counter.lock().unwrap();
@@ -201,13 +201,13 @@ mod tests {
                 let mut guard = block_counter.lock().unwrap();
                 *guard += 1;
             });
-            nc.post_with_name_object(name, None);
+            nc.post_with_name_obj(name, None);
             {
                 let guard = counter.lock().unwrap();
                 assert_eq!(1, *guard);
             }
         }
-        nc.post_with_name_object(name, None);
+        nc.post_with_name_obj(name, None);
         {
             let guard = counter.lock().unwrap();
             assert_eq!(1, *guard);
