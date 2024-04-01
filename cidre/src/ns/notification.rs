@@ -10,6 +10,10 @@ impl NotificationName {
         unsafe { std::mem::transmute(raw) }
     }
 
+    pub fn with_string(string: &ns::String) -> &Self {
+        unsafe { std::mem::transmute(string) }
+    }
+
     pub fn with_str(str: &str) -> arc::R<Self> {
         let raw = ns::String::with_str(str);
         unsafe { std::mem::transmute(raw) }
@@ -195,19 +199,19 @@ mod tests {
         let nc = ns::NotificationCenter::default();
         let counter = Arc::new(Mutex::new(0));
         let block_counter = counter.clone();
-        let name = ns::NotificationName::with_str("test");
+        let name = ns::NotificationName::with_string(ns::str!(c"test"));
         {
-            let _g = nc.add_observer_guard(&name, None, None, move |_note| {
+            let _g = nc.add_observer_guard(name, None, None, move |_note| {
                 let mut guard = block_counter.lock().unwrap();
                 *guard += 1;
             });
-            nc.post_with_name_object(&name, None);
+            nc.post_with_name_object(name, None);
             {
                 let guard = counter.lock().unwrap();
                 assert_eq!(1, *guard);
             }
         }
-        nc.post_with_name_object(&name, None);
+        nc.post_with_name_object(name, None);
         {
             let guard = counter.lock().unwrap();
             assert_eq!(1, *guard);

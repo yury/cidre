@@ -8,6 +8,10 @@ use crate::ns;
 define_cf_type!(NotificationName(cf::String));
 
 impl NotificationName {
+    pub fn with_string(string: &cf::String) -> &Self {
+        unsafe { std::mem::transmute(string) }
+    }
+
     #[cfg(feature = "ns")]
     #[inline]
     pub fn as_ns(&self) -> &ns::NotificationName {
