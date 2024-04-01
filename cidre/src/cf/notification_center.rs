@@ -8,7 +8,7 @@ use crate::ns;
 define_cf_type!(NotificationName(cf::String));
 
 impl NotificationName {
-    pub fn with_string(string: &cf::String) -> &Self {
+    pub fn with_raw(string: &cf::String) -> &Self {
         unsafe { std::mem::transmute(string) }
     }
 

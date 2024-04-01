@@ -6,11 +6,7 @@ use crate::blocks;
 define_obj_type!(pub NotificationName(ns::String));
 
 impl NotificationName {
-    pub fn with_raw(raw: arc::R<ns::String>) -> arc::R<Self> {
-        unsafe { std::mem::transmute(raw) }
-    }
-
-    pub fn with_string(string: &ns::String) -> &Self {
+    pub fn with_raw(string: &ns::String) -> &Self {
         unsafe { std::mem::transmute(string) }
     }
 
@@ -199,7 +195,7 @@ mod tests {
         let nc = ns::NotificationCenter::default();
         let counter = Arc::new(Mutex::new(0));
         let block_counter = counter.clone();
-        let name = ns::NotificationName::with_string(ns::str!(c"test"));
+        let name = ns::NotificationName::with_raw(ns::str!(c"test"));
         {
             let _g = nc.add_observer_guard(name, None, None, move |_note| {
                 let mut guard = block_counter.lock().unwrap();
