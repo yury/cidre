@@ -1,11 +1,15 @@
 use std::{ffi::c_void, marker::PhantomData, mem::MaybeUninit};
 
 use crate::{
-    arc, at,
-    at::audio,
-    at::audio::{
-        component::{InitializedState, State, UninitializedState},
-        unit::ScheduledSlice,
+    arc,
+    at::{
+        self,
+        audio::{
+            self,
+            component::{InitializedState, State, UninitializedState},
+            unit::ScheduledSlice,
+            StreamBasicDesc,
+        },
     },
     cf, define_opts, os,
 };
@@ -1016,6 +1020,20 @@ impl Unit {
         self.prop(PropId::STREAM_FORMAT, scope, element)
     }
 
+    pub fn set_stream_format(
+        &mut self,
+        scope: Scope,
+        val: &StreamBasicDesc,
+    ) -> Result<(), os::Status> {
+        let element = if scope == Scope::INPUT {
+            Element::INPUT
+        } else {
+            Element::OUTPUT
+        };
+
+        self.set_prop(PropId::STREAM_FORMAT, scope, element, val)
+    }
+
     pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
         self.prop(PropId::NICK_NAME, Scope::GLOBAL, Default::default())
     }
@@ -1062,6 +1080,14 @@ impl UnitRef<UninitializedState> {
 
     pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
         self.0.set_max_frames_per_slice(val)
+    }
+
+    pub fn set_stream_format(
+        &mut self,
+        scope: Scope,
+        val: &audio::StreamBasicDesc,
+    ) -> Result<(), os::Status> {
+        self.0.set_stream_format(scope, val)
     }
 }
 
@@ -1123,6 +1149,7 @@ impl<S: State<Unit>> UnitRef<S> {
     pub fn stream_format(&self, scope: Scope) -> Result<audio::StreamBasicDesc, os::Status> {
         self.0.stream_format(scope)
     }
+
     pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
         self.0.set_element_count(scope, val)
     }
@@ -1243,6 +1270,20 @@ extern "C" {
         in_element: Element,
         out_value: &mut ParamValue,
     ) -> os::Status;
+}
+
+impl audio::Component {
+    pub fn apple_multi_channel_mixer() -> Option<&'static Self> {
+        audio::ComponentDesc {
+            type_: Type::MIXER.0,
+            sub_type: SubType::MULTI_CHANNEL_MIXER.0,
+            manufacturer: Manufacturer::APPLE.0,
+            flags: 0,
+            flags_mask: 0,
+        }
+        .into_iter()
+        .next()
+    }
 }
 
 #[cfg(test)]

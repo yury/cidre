@@ -588,27 +588,33 @@ impl StreamBasicDesc {
     }
 
     #[inline]
-    pub fn common_f32(sample_rate: f64, num_channels: u32, interleaved: bool) -> Self {
+    pub const fn common_f32(sample_rate: f64, num_channels: u32, interleaved: bool) -> Self {
         let sample_size = std::mem::size_of::<f32>() as u32;
-        let mut asbd = Self {
-            format: Format::LINEAR_PCM,
-            format_flags: FormatFlags::NATIVE_FLOAT_PACKED,
-            bits_per_channel: 8 * sample_size,
-            channels_per_frame: num_channels,
-            frames_per_packet: 1,
-            sample_rate,
-            ..Default::default()
-        };
-
-        if interleaved {
-            asbd.bytes_per_frame = num_channels * sample_size;
+        let bits_per_channel = 8 * sample_size;
+        let format = Format::LINEAR_PCM;
+        let frames_per_packet = 1;
+        let reserved = 0;
+        let channels_per_frame = num_channels;
+        let (bytes_per_frame, format_flags) = if interleaved {
+            (num_channels * sample_size, FormatFlags::NATIVE_FLOAT_PACKED)
         } else {
-            asbd.bytes_per_frame = sample_size;
-            asbd.format_flags |= FormatFlags::IS_NON_INTERLEAVED;
+            (
+                sample_size,
+                FormatFlags(FormatFlags::NATIVE_FLOAT_PACKED.0 | FormatFlags::IS_NON_INTERLEAVED.0),
+            )
+        };
+        let bytes_per_packet = bytes_per_frame;
+        Self {
+            sample_rate,
+            format,
+            format_flags,
+            bits_per_channel,
+            channels_per_frame,
+            frames_per_packet,
+            bytes_per_packet,
+            bytes_per_frame,
+            reserved,
         }
-        asbd.bytes_per_packet = asbd.bytes_per_frame;
-
-        asbd
     }
 }
 

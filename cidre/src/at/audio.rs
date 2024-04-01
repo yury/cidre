@@ -41,6 +41,8 @@ pub use unit::Manufacturer as UnitManufacturer;
 pub use unit::Param as UnitParam;
 pub use unit::ParamId as UnitParamId;
 pub use unit::ParamValue as UnitParamValue;
+pub use unit::SubType as UnitSubType;
+pub use unit::Type as UnitType;
 pub use unit::UnitRef;
 
 mod codec;
