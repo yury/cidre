@@ -1,6 +1,6 @@
 use std::mem::MaybeUninit;
 
-use crate::mac_types::FourCharCode;
+use crate::{four_cc_to_string, mac_types::FourCharCode};
 
 pub type Err = i16;
 
@@ -11,10 +11,11 @@ pub struct Status(pub i32);
 
 impl std::fmt::Debug for Status {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let help = format!("https://www.osstatus.com?search={}", self.0);
+        let val = self.0;
         f.debug_struct("os::Status")
-            .field("raw", &self.0)
-            .field("help", &help)
+            .field("raw", &val)
+            .field("fcc", &four_cc_to_string(val.to_be_bytes()))
+            .field("help", &format!("https://www.osstatus.com?search={}", val))
             .finish()
     }
 }

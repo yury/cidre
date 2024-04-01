@@ -1,8 +1,10 @@
 use std::{marker::PhantomData, mem::MaybeUninit};
 
-use crate::{at::audio, os};
-
-use super::component::{InitializedState, State, UninitializedState};
+use crate::{
+    at::audio,
+    at::audio::component::{InitializedState, State, UninitializedState},
+    os,
+};
 
 /// AudioCodec components translate audio data from one format to another. There
 /// are three kinds of AudioCodec components. Decoder components ('adec')

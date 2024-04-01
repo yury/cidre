@@ -1,20 +1,19 @@
 use std::{ffi::c_void, marker::PhantomData, mem::MaybeUninit};
 
 use crate::{
-    arc,
-    at::{
-        self,
-        audio::{
-            self,
-            component::{InitializedState, State, UninitializedState},
-        },
+    arc, at,
+    at::audio,
+    at::audio::{
+        component::{InitializedState, State, UninitializedState},
+        unit::ScheduledSlice,
     },
     cf, define_opts, os,
 };
 
-use super::ScheduledSlice;
-
-/// https://developer.apple.com/library/archive/documentation/MusicAudio/Conceptual/AudioUnitHostingGuide_iOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009492-CH1-SW1
+///
+/// Useful links
+/// <https://github.com/apple/AudioUnitSDK/tree/main/>
+/// <https://developer.apple.com/library/archive/documentation/MusicAudio/Conceptual/AudioUnitHostingGuide_iOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009492-CH1-SW1>
 #[repr(transparent)]
 pub struct Unit(audio::component::Instance);
 
