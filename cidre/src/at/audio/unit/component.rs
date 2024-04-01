@@ -14,6 +14,8 @@ use crate::{
     cf, define_opts, os,
 };
 
+use super::RenderCbStruct;
+
 ///
 /// Useful links
 /// <https://github.com/apple/AudioUnitSDK/tree/main/>
@@ -751,13 +753,13 @@ pub struct Prop {
 }
 
 #[doc(alias = "AURenderCallback")]
-pub type RenderCb<T = c_void> = extern "C" fn(
+pub type RenderCb<const N: usize = 1, T = c_void> = extern "C" fn(
     in_ref_con: *mut T,
     io_action_flags: &mut RenderActionFlags,
     in_timestamp: &at::AudioTimeStamp,
     in_bus_num: u32,
     in_number_frames: u32,
-    io_data: *mut at::AudioBufList,
+    io_data: *mut at::AudioBufList<N>,
 ) -> os::Status;
 
 #[doc(alias = "AudioUnitPropertyListenerProc")]
@@ -923,6 +925,19 @@ impl Unit {
         Ok(val)
     }
 
+    pub fn set_param(
+        &mut self,
+        param_id: ParamId,
+        scope: Scope,
+        element: Element,
+        val: ParamValue,
+        frames_offset: u32,
+    ) -> Result<(), os::Status> {
+        unsafe {
+            AudioUnitSetParameter(self, param_id, scope, element, val, frames_offset).result()
+        }
+    }
+
     pub fn offline_render(&self) -> Result<bool, os::Status> {
         let res: Result<u32, os::Status> =
             self.prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT);
@@ -930,7 +945,7 @@ impl Unit {
     }
 
     pub fn set_offline_render(&mut self, val: bool) -> Result<(), os::Status> {
-        let val = if val { 1u32 } else { 0u32 };
+        let val = val as u32;
 
         self.set_prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT, &val)
     }
@@ -973,7 +988,7 @@ impl Unit {
     }
 
     pub fn set_should_allocate_output_buf(&mut self, val: bool) -> Result<(), os::Status> {
-        let val = if val { 1u32 } else { 0u32 };
+        let val = val as u32;
         self.set_prop(
             PropId::SHOULD_ALLOCATE_BUF,
             Scope::OUTPUT,
@@ -1023,15 +1038,10 @@ impl Unit {
     pub fn set_stream_format(
         &mut self,
         scope: Scope,
+        bus: u32,
         val: &StreamBasicDesc,
     ) -> Result<(), os::Status> {
-        let element = if scope == Scope::INPUT {
-            Element::INPUT
-        } else {
-            Element::OUTPUT
-        };
-
-        self.set_prop(PropId::STREAM_FORMAT, scope, element, val)
+        self.set_prop(PropId::STREAM_FORMAT, scope, Element(bus), val)
     }
 
     pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
@@ -1055,6 +1065,42 @@ impl Unit {
             Scope::GLOBAL,
             Default::default(),
             &val,
+        )
+    }
+
+    pub fn set_input_cb<const N: usize, T>(
+        &mut self,
+        bus: u32,
+        cb: RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> Result<(), os::Status> {
+        let val: RenderCbStruct<N, T> = RenderCbStruct {
+            proc: cb as _,
+            proc_ref_con: ref_con,
+        };
+        self.set_prop(PropId::SET_RENDER_CB, Scope::INPUT, Element(bus), &val)
+    }
+
+    pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+        let val: RenderCbStruct<1, c_void> = RenderCbStruct {
+            proc: std::ptr::null(),
+            proc_ref_con: std::ptr::null(),
+        };
+        self.set_prop(PropId::SET_RENDER_CB, Scope::INPUT, Element(bus), &val)
+    }
+
+    pub fn multi_channel_mixer_enable(
+        &mut self,
+        scope: Scope,
+        element: Element,
+        val: bool,
+    ) -> Result<(), os::Status> {
+        self.set_param(
+            ParamId::MULTI_CHANNEL_MIXER_ENABLE,
+            scope,
+            element,
+            val as u32 as _,
+            0,
         )
     }
 }
@@ -1085,13 +1131,27 @@ impl UnitRef<UninitializedState> {
     pub fn set_stream_format(
         &mut self,
         scope: Scope,
+        bus: u32,
         val: &audio::StreamBasicDesc,
     ) -> Result<(), os::Status> {
-        self.0.set_stream_format(scope, val)
+        self.0.set_stream_format(scope, bus, val)
     }
 }
 
 impl<S: State<Unit>> UnitRef<S> {
+    pub fn set_input_cb<const N: usize, T>(
+        &mut self,
+        bus: u32,
+        cb: RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> Result<(), os::Status> {
+        self.0.set_input_cb(bus, cb, ref_con)
+    }
+
+    pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+        self.0.remove_input_cb(bus)
+    }
+
     pub fn prop_info(
         &self,
         prop_id: PropId,
@@ -1165,6 +1225,15 @@ impl<S: State<Unit>> UnitRef<S> {
     pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
         self.0.max_frames_per_slice()
     }
+
+    pub fn multi_channel_mixer_enable(
+        &mut self,
+        scope: Scope,
+        element: Element,
+        val: bool,
+    ) -> Result<(), os::Status> {
+        self.0.multi_channel_mixer_enable(scope, element, val)
+    }
 }
 
 impl UnitRef<InitializedState> {
@@ -1195,6 +1264,7 @@ impl UnitRef<InitializedState> {
         self.0.process(timestamp, frames_num, buf_list)
     }
 
+    // TODO: may be restrict with subtype?
     pub fn schedule_slice(&mut self, slice: &ScheduledSlice) -> Result<(), os::Status> {
         self.0.set_prop(
             PropId::SCHEDULE_SLICE,
@@ -1270,6 +1340,15 @@ extern "C" {
         in_element: Element,
         out_value: &mut ParamValue,
     ) -> os::Status;
+
+    fn AudioUnitSetParameter(
+        in_unit: &mut Unit,
+        param_id: ParamId,
+        in_scope: Scope,
+        in_element: Element,
+        in_value: ParamValue,
+        in_buf_offset_in_frames: u32,
+    ) -> os::Status;
 }
 
 impl audio::Component {
@@ -1277,6 +1356,18 @@ impl audio::Component {
         audio::ComponentDesc {
             type_: Type::MIXER.0,
             sub_type: SubType::MULTI_CHANNEL_MIXER.0,
+            manufacturer: Manufacturer::APPLE.0,
+            flags: 0,
+            flags_mask: 0,
+        }
+        .into_iter()
+        .next()
+    }
+
+    pub fn apple_scheduled_sound_player() -> Option<&'static Self> {
+        audio::ComponentDesc {
+            type_: Type::GENERATOR.0,
+            sub_type: SubType::SCHEDULED_SOUND_PLAYER.0,
             manufacturer: Manufacturer::APPLE.0,
             flags: 0,
             flags_mask: 0,

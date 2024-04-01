@@ -1509,9 +1509,9 @@ pub struct ExternalBuf {
 /// Used by a host when registering a callback with the audio unit to provide input
 #[doc(alias = "AURenderCallbackStruct")]
 #[repr(C)]
-pub struct RenderCbStruct {
-    pub proc: *const au::RenderCb,
-    pub proc_ref_con: *const c_void,
+pub struct RenderCbStruct<const N: usize, T = c_void> {
+    pub proc: *const au::RenderCb<N, T>,
+    pub proc_ref_con: *const T,
 }
 
 #[doc(alias = "AUPreset")]

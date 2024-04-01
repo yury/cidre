@@ -593,8 +593,8 @@ impl StreamBasicDesc {
         let bits_per_channel = 8 * sample_size;
         let format = Format::LINEAR_PCM;
         let frames_per_packet = 1;
-        let reserved = 0;
         let channels_per_frame = num_channels;
+
         let (bytes_per_frame, format_flags) = if interleaved {
             (num_channels * sample_size, FormatFlags::NATIVE_FLOAT_PACKED)
         } else {
@@ -608,12 +608,12 @@ impl StreamBasicDesc {
             sample_rate,
             format,
             format_flags,
-            bits_per_channel,
-            channels_per_frame,
-            frames_per_packet,
             bytes_per_packet,
+            frames_per_packet,
             bytes_per_frame,
-            reserved,
+            channels_per_frame,
+            bits_per_channel,
+            reserved: 0,
         }
     }
 }
@@ -725,6 +725,18 @@ pub struct TimeStamp {
 }
 
 impl TimeStamp {
+    pub fn invalid() -> Self {
+        Self {
+            sample_time: 0.0,
+            host_time: 0,
+            rate_scalar: 0.0,
+            work_clock_time: 0,
+            smpte_time: Default::default(),
+            flags: TimeStampFlags::NOTHING_VALID,
+            reserved: 0,
+        }
+    }
+
     #[inline]
     #[doc(alias = "FillOutAudioTimeStampWithSampleTime")]
     pub fn with_sample_time(sample_time: f64) -> Self {
