@@ -212,16 +212,16 @@ impl au::ParamId {
     // read-only, Input or Output scope.
     // these report level in dB, as do the other mixers
     #[doc(alias = "kMultiChannelMixerParam_PreAveragePower")]
-    pub const MULTI_CHANNEL_MIXER_PRE_AVERAGE_POWER: Self = Self(100);
+    pub const MULTI_CHANNEL_MIXER_PRE_AVERAGE_POWER: Self = Self(1000);
 
     #[doc(alias = "kMultiChannelMixerParam_PrePeakHoldLevel")]
-    pub const MULTI_CHANNEL_MIXER_PRE_PEAK_HOLD_LEVEL: Self = Self(200);
+    pub const MULTI_CHANNEL_MIXER_PRE_PEAK_HOLD_LEVEL: Self = Self(2000);
 
     #[doc(alias = "kMultiChannelMixerParam_PostAveragePower")]
-    pub const MULTI_CHANNEL_MIXER_POST_AVERAGE_POWER: Self = Self(300);
+    pub const MULTI_CHANNEL_MIXER_POST_AVERAGE_POWER: Self = Self(3000);
 
     #[doc(alias = "kMultiChannelMixerParam_PostPeakHoldLevel")]
-    pub const MULTI_CHANNEL_MIXER_POST_PEAK_HOLD_LEVEL: Self = Self(400);
+    pub const MULTI_CHANNEL_MIXER_POST_PEAK_HOLD_LEVEL: Self = Self(4000);
 }
 
 /// Parameters for the AUMatrixMixer unit

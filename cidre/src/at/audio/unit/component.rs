@@ -997,6 +997,16 @@ impl Unit {
         )
     }
 
+    pub fn set_should_allocate_input_buf(&mut self, val: bool) -> Result<(), os::Status> {
+        let val = val as u32;
+        self.set_prop(
+            PropId::SHOULD_ALLOCATE_BUF,
+            Scope::INPUT,
+            Element::OUTPUT,
+            &val,
+        )
+    }
+
     pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
         let element = if scope == Scope::INPUT {
             Element::INPUT
@@ -1070,6 +1080,7 @@ impl Unit {
 
     pub fn set_input_cb<const N: usize, T>(
         &mut self,
+        scope: Scope,
         bus: u32,
         cb: RenderCb<N, T>,
         ref_con: *const T,
@@ -1078,15 +1089,40 @@ impl Unit {
             proc: cb as _,
             proc_ref_con: ref_con,
         };
-        self.set_prop(PropId::SET_RENDER_CB, Scope::INPUT, Element(bus), &val)
+        self.set_prop(PropId::SET_RENDER_CB, scope, Element(bus), &val)
     }
 
-    pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+    pub fn remove_input_cb(&mut self, scope: Scope, bus: u32) -> Result<(), os::Status> {
         let val: RenderCbStruct<1, c_void> = RenderCbStruct {
             proc: std::ptr::null(),
             proc_ref_con: std::ptr::null(),
         };
-        self.set_prop(PropId::SET_RENDER_CB, Scope::INPUT, Element(bus), &val)
+        self.set_prop(PropId::SET_RENDER_CB, scope, Element(bus), &val)
+    }
+
+    pub fn mixer_metering_enable(
+        &mut self,
+        scope: Scope,
+        bus: u32,
+        val: bool,
+    ) -> Result<(), os::Status> {
+        let val = val as u32;
+        self.set_prop(PropId::METERING_MODE, scope, Element(bus), &val)
+    }
+
+    pub fn multi_channel_mixer_set_volume(
+        &mut self,
+        scope: Scope,
+        bus: u32,
+        val: f32,
+    ) -> Result<(), os::Status> {
+        self.set_param(
+            ParamId::MULTI_CHANNEL_MIXER_VOLUME,
+            scope,
+            Element(bus),
+            val,
+            0,
+        )
     }
 
     pub fn multi_channel_mixer_enable(
@@ -1124,6 +1160,10 @@ impl UnitRef<UninitializedState> {
         self.0.set_should_allocate_output_buf(val)
     }
 
+    pub fn set_should_allocate_input_buf(&mut self, val: bool) -> Result<(), os::Status> {
+        self.0.set_should_allocate_input_buf(val)
+    }
+
     pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
         self.0.set_max_frames_per_slice(val)
     }
@@ -1139,17 +1179,47 @@ impl UnitRef<UninitializedState> {
 }
 
 impl<S: State<Unit>> UnitRef<S> {
+    pub fn mixer_metering_enable(
+        &mut self,
+        scope: Scope,
+        bus: u32,
+        val: bool,
+    ) -> Result<(), os::Status> {
+        self.0.mixer_metering_enable(scope, bus, val)
+    }
+
+    pub fn multi_channel_mixer_set_volume(
+        &mut self,
+        scope: Scope,
+        bus: u32,
+        val: f32,
+    ) -> Result<(), os::Status> {
+        self.0.multi_channel_mixer_set_volume(scope, bus, val)
+    }
+
     pub fn set_input_cb<const N: usize, T>(
         &mut self,
         bus: u32,
         cb: RenderCb<N, T>,
         ref_con: *const T,
     ) -> Result<(), os::Status> {
-        self.0.set_input_cb(bus, cb, ref_con)
+        self.0.set_input_cb(Scope::INPUT, bus, cb, ref_con)
+    }
+
+    pub fn set_global_input_cb<const N: usize, T>(
+        &mut self,
+        cb: RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> Result<(), os::Status> {
+        self.0.set_input_cb(Scope::GLOBAL, 0, cb, ref_con)
     }
 
     pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
-        self.0.remove_input_cb(bus)
+        self.0.remove_input_cb(Scope::INPUT, bus)
+    }
+
+    pub fn remove_global_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+        self.0.remove_input_cb(Scope::GLOBAL, bus)
     }
 
     pub fn prop_info(
