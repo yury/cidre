@@ -1099,16 +1099,6 @@ impl Unit {
         };
         self.set_prop(PropId::SET_RENDER_CB, scope, Element(bus), &val)
     }
-
-    pub fn mixer_metering_enable(
-        &mut self,
-        scope: Scope,
-        bus: u32,
-        val: bool,
-    ) -> Result<(), os::Status> {
-        let val = val as u32;
-        self.set_prop(PropId::METERING_MODE, scope, Element(bus), &val)
-    }
 }
 
 impl UnitRef<UninitializedState> {
@@ -1155,15 +1145,6 @@ impl<S: State<Unit>> UnitRef<S> {
 
     pub fn unit_mut(&mut self) -> &mut Unit {
         self.0
-    }
-
-    pub fn mixer_metering_enable(
-        &mut self,
-        scope: Scope,
-        bus: u32,
-        val: bool,
-    ) -> Result<(), os::Status> {
-        self.0.mixer_metering_enable(scope, bus, val)
     }
 
     pub fn set_input_cb<const N: usize, T>(

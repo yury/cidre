@@ -87,6 +87,7 @@ where
             frames_offset,
         )
     }
+
     #[inline]
     pub fn set_output_volume_at(&mut self, val: f32, frame_offset: u32) -> Result<(), os::Status> {
         self.set_volume_at(Scope::OUTPUT, 0, val, frame_offset)
@@ -256,12 +257,29 @@ where
         self.unit().max_frames_per_slice()
     }
 
+    #[inline]
     pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
         self.unit().last_render_sample_time()
     }
 
+    #[inline]
     pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
         self.unit().last_render_err()
+    }
+
+    #[inline]
+    pub fn set_input_cb<const N: usize, T>(
+        &mut self,
+        bus: u32,
+        cb: au::RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> Result<(), os::Status> {
+        self.0.set_input_cb(bus, cb, ref_con)
+    }
+
+    #[inline]
+    pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+        self.0.remove_input_cb(bus)
     }
 }
 
@@ -282,6 +300,7 @@ impl MultiChannelMixer<UninitializedState> {
         let unit = comp.open_unit()?;
         Ok(Self(unit))
     }
+
     pub fn allocate_resources(self) -> Result<MultiChannelMixer<InitializedState>, os::Status> {
         Ok(MultiChannelMixer(self.0.initialize()?))
     }
