@@ -671,7 +671,7 @@ pub struct PropId(pub u32);
 /// Scopes are used to delineate a major attribute of an audio unit
 /// (for instance, global, input, output)
 #[doc(alias = "AudioUnitScope")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct Scope(pub u32);
 
@@ -681,15 +681,9 @@ pub struct Scope(pub u32);
 /// addressed / described by its element
 /// For instance, input bus 1 is input scope, element 1
 #[doc(alias = "AudioUnitElement")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct Element(pub u32);
-
-impl Default for Element {
-    fn default() -> Self {
-        Element::OUTPUT
-    }
-}
 
 /// Type used for audio unit parameters.
 ///
@@ -756,12 +750,24 @@ pub struct ParamEvent {
     pub value: ParamEventValue,
 }
 
+#[derive(Debug, Clone)]
 #[doc(alias = "AudioUnitParameter")]
 pub struct Param {
     pub unit: *mut Unit,
     pub param_id: ParamId,
     pub scope: Scope,
     pub element: Element,
+}
+
+impl Default for Param {
+    fn default() -> Self {
+        Self {
+            unit: std::ptr::null_mut(),
+            param_id: Default::default(),
+            scope: Default::default(),
+            element: Default::default(),
+        }
+    }
 }
 
 #[doc(alias = "AudioUnitProperty")]
@@ -1521,7 +1527,7 @@ mod tests {
             .prop_info(
                 au::PropId::FREQUENCY_RESPONSE,
                 au::Scope::GLOBAL,
-                au::Element::INPUT,
+                au::Element(0),
             )
             .unwrap();
         assert!(!writable);
@@ -1530,65 +1536,40 @@ mod tests {
         assert_eq!(expected_size as u32, size);
 
         let mut bins = vec![FrequencyResponseBin::default(); FrequencyResponseBin::MAX_LEN];
+        bins[0].frequency = 500.0;
+        bins[1].frequency = 1000.0;
+        bins[2].frequency = 2000.0;
+        bins[3].frequency = -1.0;
 
         extern "C" fn render(
             _in_ref_con: *mut c_void,
             _io_action_flags: &mut au::RenderActionFlags,
             _in_timestamp: &audio::TimeStamp,
-            in_bus_num: u32,
+            _in_bus_num: u32,
             in_number_frames: u32,
             io_data: *mut audio::BufList<2>,
         ) -> os::Status {
             let buf = unsafe { io_data.as_mut().unwrap() };
             let len = in_number_frames as usize;
-            let slice =
-                unsafe { std::slice::from_raw_parts_mut(buf.buffers[0].data as *mut f32, len) };
+            let a = unsafe { std::slice::from_raw_parts_mut(buf.buffers[0].data as *mut f32, len) };
+            let b = unsafe { std::slice::from_raw_parts_mut(buf.buffers[1].data as *mut f32, len) };
             for i in 0..len {
                 let t = i as f32 / 44_100.0f32;
-                slice[i] = f32::sin(2.0 * PI * t * 44_100.0f32) * 1000.0
-                //         let t = self.index_inc() / self.inner.sample_rate;
-
-                // Some(
-                //     self.inner.amplitude
-                //         * self.func(2.0 * PI * t * self.inner.frequency + self.inner.phase),
-                // )
-                // slice[i] = f32::sin((i as f32) / len as f32)
+                let v = f32::sin(2.0 * PI * 1_000.0 * t);
+                a[i] = v;
+                b[i] = v;
             }
-            let slice =
-                unsafe { std::slice::from_raw_parts_mut(buf.buffers[1].data as *mut f32, len) };
-            for i in 0..len {
-                let t = i as f32 / 44_100.0f32;
-                slice[i] = f32::sin(2.0 * PI * t * 44_100.0f32) * 1000.0
-            }
-            println!("{:?}", slice);
-            println!("hello {in_bus_num} {buf:?}");
+            eprintln!("{:?}", a);
             os::Status::NO_ERR
         }
 
         unit.set_input_cb(0, render, std::ptr::null()).unwrap();
         let mut unit = unit.initialize().unwrap();
 
-        let mut ts = audio::TimeStamp::with_sample_time(0.0);
+        let ts = audio::TimeStamp::with_sample_time(0.0);
         let mut buf: audio::BufList<2> = Default::default();
 
-        let val: u32 = unit
-            .0
-            .prop(au::PropId::BYPASS_EFFECT, au::Scope::GLOBAL, au::Element(0))
-            .unwrap();
-        println!("bypass {}", val);
-        // unit.process(&ts, 1024, &mut buf).unwrap();
-
         unit.render(&ts, 0, 1024, &mut buf).unwrap();
-        ts.sample_time += 1024.0;
-        unit.render(&ts, 0, 1024, &mut buf).unwrap();
-        ts.sample_time += 1024.0;
-        unit.render(&ts, 0, 1024, &mut buf).unwrap();
-
-        let glob_params = unit.0.params_list(au::Scope::GLOBAL).unwrap();
-        for p in glob_params {
-            let info = unit.0.param_info(p).unwrap();
-            println!("{:?}", info);
-        }
 
         unit.0
             .prop_fill(
@@ -1599,12 +1580,7 @@ mod tests {
             )
             .unwrap();
 
-        println!(
-            "{:?}",
-            bins.iter()
-                .filter(|f| f.frequency != 0.0)
-                .collect::<Vec<_>>()
-        );
+        println!("{:?}", &bins[..3]);
     }
 
     #[test]
