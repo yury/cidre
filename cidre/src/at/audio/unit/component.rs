@@ -107,6 +107,26 @@ impl Type {
     #[doc(alias = "kAudioUnitType_MusicEffect")]
     pub const MUSIC_EFFECT: Self = Self(u32::from_be_bytes(*b"aumf"));
 
+    /// A format converter is a general category for audio units that can change the format (for
+    /// instance, sample rate conversion) from an input to an output, as well as other, non-I/O type
+    /// manipulations (like a deferred render or varispeed type of operation). As such, a format
+    /// converter can ask for as much or as little audio input to produce a given output. They are
+    /// still expected to complete their rendering within the time represented by the output buffer.
+    /// For format converters that have some utility as an "audio effect or processor", it is quite
+    /// common to provide an offline version of this audio unit as well. For instance, Apple ships a
+    /// format converter (for use in a "real-time" like situation) and an offline version (for
+    /// processing audio files) of the Time Pitch and Varispeed audio units.
+    #[doc(alias = "kAudioUnitType_FormatConverter")]
+    pub const FORMAT_CONVERTER: Self = Self(u32::from_be_bytes(*b"aufc"));
+
+    /// An audio unit that will process some x number of audio input samples to produce x number of
+    /// audio output samples. The common case for an effect is to have a single input to a single
+    /// output, though some effects take side-chain inputs as well. Effects can be run in "offline"
+    /// contexts (such as processing a file), but they are expected to run in real-time. A delay
+    /// unit or reverb is a good example of this.
+    #[doc(alias = "kAudioUnitType_Effect")]
+    pub const EFFECT: Self = Self(u32::from_be_bytes(*b"aufx"));
+
     /// An audio unit that takes some number of inputs, mixing them to provide 1 or more audio
     /// outputs. A stereo mixer (mono and stereo inputs to produce one stereo output) is an example
     /// of this.
