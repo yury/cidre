@@ -103,6 +103,7 @@ wk = ["ns"]
 gc = ["ns"]
 xpc = ["ns", "blocks"]
 custom-allocator = []
+classic-objc-retain-release = []
 
 [dependencies]
 
