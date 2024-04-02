@@ -220,7 +220,7 @@ pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
 #[link(name = "objc", kind = "dylib")]
 extern "C" {
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
-    fn objc_retain<'a>(obj: &Id) -> &'a Id;
+    pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
     fn objc_release(obj: &mut Id);
 
