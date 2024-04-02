@@ -51,6 +51,217 @@ impl au::Element {
     pub const INPUT: Self = Self(1);
 }
 
+define_opts!(
+    #[doc(alias = "AudioUnitParameterOptions")]
+    pub ParamFlags(u32)
+);
+
+impl ParamFlags {
+    #[doc(alias = "kAudioUnitParameterFlag_CFNameRelease")]
+    pub const CF_NAME_RELEASE: Self = Self(1 << 4);
+
+    #[doc(alias = "kAudioUnitParameterFlag_OmitFromPresets")]
+    pub const OMIT_FROM_PRESETS: Self = Self(1 << 13);
+
+    #[doc(alias = "kAudioUnitParameterFlag_PlotHistory")]
+    pub const PLOT_HISTORY: Self = Self(1 << 14);
+
+    #[doc(alias = "kAudioUnitParameterFlag_MeterReadOnly")]
+    pub const METER_READ_ONLY: Self = Self(1 << 15);
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplayMask")]
+    pub const DISPLAY_MASK: Self = Self((7 << 16) | (1 << 22));
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplaySquareRoot")]
+    pub const DISPLAY_SQUARE_ROOT: Self = Self(1 << 16);
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplaySquared")]
+    pub const DISPLAY_SQUARED: Self = Self(2 << 16);
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplayCubed")]
+    pub const DISPLAY_CUBED: Self = Self(3 << 16);
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplayCubeRoot")]
+    pub const DISPLAY_CUBE_ROOT: Self = Self(4 << 16);
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplayExponential")]
+    pub const DISPLAY_EXPONENTIAL: Self = Self(4 << 16);
+
+    #[doc(alias = "kAudioUnitParameterFlag_HasClump")]
+    pub const HAS_CLUMP: Self = Self(1 << 20);
+
+    #[doc(alias = "kAudioUnitParameterFlag_ValuesHaveStrings")]
+    pub const VALUES_HAVE_STRINGS: Self = Self(1 << 21);
+
+    #[doc(alias = "kAudioUnitParameterFlag_DisplayLogarithmic")]
+    pub const DISPLAY_LOGARITHMIC: Self = Self(1 << 22);
+
+    /// This flag provides a hint to a host that this parameter should be controlled through the
+    /// highest resolution if the host has limitations on the control resolution of parameter
+    /// values. Generally this means that controlling this parameter with a single MIDI Control
+    /// message (i.e. 128 values) is too course a grain for that parameter, and a finer control
+    /// resolution should be used if possible. If this flag is not set, then a host can assume that
+    /// a 7-bit control quantization is acceptable. Ideally, parameters should be controlled in the
+    /// fullest resolution that they are published with.
+    #[doc(alias = "kAudioUnitParameterFlag_IsHighResolution")]
+    pub const IS_HIGH_RESOLUTION: Self = Self(1 << 23);
+
+    /// Changing the parameter in real-time will cause a glitch or otherwise undesirable effect.
+    #[doc(alias = "kAudioUnitParameterFlag_NonRealTime")]
+    pub const NON_REAL_TIME: Self = Self(1 << 24);
+
+    /// If set, the parameter can be ramped.
+    #[doc(alias = "kAudioUnitParameterFlag_CanRamp")]
+    pub const CAN_RAMP: Self = Self(1 << 25);
+
+    /// If set, the parameter is obscure (hint to UI to only display in expert mode).
+    #[doc(alias = "kAudioUnitParameterFlag_ExpertMode")]
+    pub const EXPERT_MODE: Self = Self(1 << 26);
+
+    /// In the original ParameterInfo a C string only was specified. With MacOS 10.2 and later, the
+    /// last four bytes of this string are reserved for a CFStringRef, which gives the ability to
+    /// used Unicode encoding, necessary for providing a name in languages using non-ASCII
+    /// characters. If this flag bit is set, the CFStringRef is valid.
+    #[doc(alias = "kAudioUnitParameterFlag_HasCFNameString")]
+    pub const HAS_CF_NAME_STRING: Self = Self(1 << 27);
+
+    /// If set, changing this parameter may change any number of others in the AudioUnit.
+    #[doc(alias = "kAudioUnitParameterFlag_IsGlobalMeta")]
+    pub const IS_GLOBAL_META: Self = Self(1 << 28);
+
+    /// If set, changing this parameter may change others in the same element as the current
+    /// parameter.
+    #[doc(alias = "kAudioUnitParameterFlag_IsElementMeta")]
+    pub const IS_ELEMENT_META: Self = Self(1 << 29);
+
+    #[doc(alias = "kAudioUnitParameterFlag_IsReadable")]
+    pub const IS_READABLE: Self = Self(1 << 30);
+
+    #[doc(alias = "kAudioUnitParameterFlag_IsWritable")]
+    pub const IS_WRITABLE: Self = Self(1 << 30);
+}
+
+#[doc(alias = "AudioUnitParameterUnit")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(u32)]
+pub enum ParamUnit {
+    /// untyped value generally between 0.0 and 1.0
+    Generic = 0,
+
+    /// takes an integer value (good for menu selections)
+    Indexed = 1,
+
+    /// 0.0 means false, non-zero means true
+    Boolean = 2,
+
+    /// usually from 0 -> 100, sometimes -50 -> +50
+    Percent = 3,
+
+    /// absolute or relative time
+    Seconds = 4,
+
+    /// one sample frame equals (1.0/sampleRate) seconds
+    SampleFrames = 5,
+
+    /// -180 to 180 degrees
+    Phase = 6,
+
+    /// rate multiplier, for playback speed, etc. (e.g. 2.0 == twice as fast)
+    Rate = 7,
+
+    /// absolute frequency/pitch in cycles/second
+    Hertz = 8,
+
+    /// unit of relative pitch
+    Cents = 9,
+
+    /// useful for coarse detuning
+    RelativeSemiTones = 10,
+
+    /// absolute pitch as defined in the MIDI spec (exact freq may depend on tuning table)
+    MidiNoteNumber = 11,
+
+    /// a generic MIDI controller value from 0 -> 127
+    MidiController = 12,
+
+    /// logarithmic relative gain
+    Decibels = 13,
+
+    /// linear relative gain
+    LinearGain = 14,
+
+    /// -180 to 180 degrees, similar to phase but more general (good for 3D coord system)
+    Degrees = 15,
+
+    /// 0 -> 100, crossfade mix two sources according to sqrt(x) and sqrt(1.0 - x)
+    EqualPowerCrossfade = 16,
+
+    /// 0.0 -> 1.0, pow(x, 3.0) -> linear gain to simulate a reasonable mixer channel fader response
+    MixerFaderCurve1 = 17,
+
+    /// standard left to right mixer pan
+    Pan = 18,
+
+    /// distance measured in meters
+    Meters = 19,
+
+    /// absolute frequency measurement :
+    ///if f is freq in hertz then absoluteCents = 1200 * log2(f / 440) + 6900
+    AbsoluteCents = 20,
+
+    /// octaves in relative pitch where a value of 1 is equal to 1200 cents
+    Octaves = 21,
+
+    /// beats per minute, ie tempo
+    Bpm = 22,
+
+    /// time relative to tempo, i.e., 1.0 at 120 BPM would equal 1/2 a second
+    Beats = 23,
+
+    /// parameter is expressed in milliseconds
+    Milliseconds = 24,
+
+    /// for compression, expansion ratio, etc.
+    Ratio = 25,
+
+    /// this is the parameter unit type for parameters that present a custom unit name
+    CustomUnit = 26,
+
+    /// a generic MIDI 2.0 controller value with 32-bit range
+    Midi2Controller = 27,
+}
+
+#[doc(alias = "AudioUnitParameterInfo")]
+#[derive(Debug)]
+#[repr(C)]
+pub struct ParamInfo {
+    name: [std::ffi::c_char; 52],
+    pub unit_name: Option<arc::R<cf::String>>,
+    pub clump_id: u32,
+    pub name_string: Option<arc::R<cf::String>>,
+    pub unit: au::ParamUnit,
+    pub min_value: au::ParamValue,
+    pub max_value: au::ParamValue,
+    pub default_value: au::ParamValue,
+    pub flags: ParamFlags,
+}
+
+impl Default for ParamInfo {
+    fn default() -> Self {
+        Self {
+            name: [0; 52],
+            unit_name: None,
+            clump_id: 0,
+            name_string: None,
+            unit: ParamUnit::Generic,
+            min_value: 0.0,
+            max_value: 0.0,
+            default_value: 0.0,
+            flags: ParamFlags::default(),
+        }
+    }
+}
+
 impl au::PropId {
     /// Scope:      Global (or Part for a part scope preset)
     /// Value Type: CFDictionaryRef
@@ -78,14 +289,14 @@ impl au::PropId {
     pub const SAMPLE_RATE: Self = Self(2);
 
     /// Scope:      Any
-    /// Value Type: au::ParamId
+    /// Value Type: array of au::ParamId
     /// Access:     Read
     #[doc(alias = "kAudioUnitProperty_ParameterList")]
     pub const PARAM_LIST: Self = Self(3);
 
     /// Scope:      Any
-    /// Element:    AudioUnitParamId of the parameter being queried
-    /// Value Type: AudioUnitParamInfo
+    /// Element:    au::ParamId of the parameter being queried
+    /// Value Type: au::ParamInfo
     /// Access:     Read
     ///
     /// The info struct describes the general characteristics of an individual parameter_id
@@ -162,7 +373,7 @@ impl au::PropId {
     pub const MAX_FRAMES_PER_SLICE: Self = Self(14);
 
     /// Scope:      Any
-    /// Element:    AudioUnitParameterID of the parameter being queried
+    /// Element:    au::ParamId of the parameter being queried
     /// Value Type:	cf::ArrayOf<cf::String>
     /// Access:	    Read
     ///
@@ -299,7 +510,7 @@ impl au::PropId {
     pub const IN_PLACE_PROCESSING: Self = Self(29);
 
     /// Scope:      any
-    /// Value Type:	&cf::String
+    /// Value Type:	arc::R<cf::String>
     /// Access:	    read/write
     ///
     /// The name of the specified element. The Host owns a reference to this property value
@@ -911,7 +1122,7 @@ impl au::PropId {
     pub const REMOTE_CONTROL_EVENT_LISTENER: Self = Self(100);
 
     /// Scope: Global
-    /// Value Type: UInt32 (0-1)
+    /// Value Type: u32 (0-1)
     /// Access: read-only
     ///
     /// Both host and node apps can query and listen to this property to determine when
@@ -1078,12 +1289,28 @@ impl au::PropId {
 }
 /// The collection of property IDs for Apple voice processing units.
 impl au::PropId {
+    /// Scope: Global
+    /// Value Type: u32
+    /// Access: read/write
+    /// Bypass all processing for microphone uplink done by the voice processing unit. When set to 0
+    /// (default), the processing is activated otherwise it is disabled. Voice Isolation
+    /// and Wide Spectrum take priority over Bypass.
     #[doc(alias = "kAUVoiceIOProperty_BypassVoiceProcessing")]
     pub const VOICE_IO_BYPASS_VOICE_PROCESSING: Self = Self(2100);
 
+    /// Scope: Global
+    /// Value Type: u32
+    /// Access: read/write
+    /// Enable automatic gain control on the processed microphone uplink
+    /// signal. On by default.
     #[doc(alias = "kAUVoiceIOProperty_VoiceProcessingEnableAGC")]
     pub const VOICE_IO_ENABLE_AGC: Self = Self(2101);
 
+    /// Scope: Global
+    /// Value Type: u32
+    /// Access: read/write
+    /// Mutes the output of the processed microphone uplink
+    /// 0 (default) = muting off. 1 = muting on.
     #[doc(alias = "kAUVoiceIOProperty_MuteOutput")]
     pub const VOICE_IO_MUTE_OUTPUT: Self = Self(2104);
 }
@@ -1279,7 +1506,7 @@ impl au::PropId {
     pub const SPATIALIZATION_ALGORITHM: Self = Self(3000);
 
     /// Scope:			Input
-    /// Value Type:		UInt32
+    /// Value Type:		u32
     /// Access:			Read / Write
     ///
     /// Used to enable various rendering operations on a given input for the 3DMixer.
@@ -1524,10 +1751,22 @@ pub struct Preset {
 /// Structure used to get the magnitude of the frequency response
 /// at a particular frequency via kAudioUnitProperty_FrequencyResponse.
 #[doc(alias = "AudioUnitFrequencyResponseBin")]
+#[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
-pub struct FrequenceyResponseBin {
+pub struct FrequencyResponseBin {
     pub frequency: f64,
-    pub magniture: f64,
+    pub magnitude: f64,
+}
+
+impl FrequencyResponseBin {
+    /// The maximum number of frequency response bins for kAudioUnitProperty_FrequencyResponse.
+    ///
+    /// An array of AudioUnitFrequencyResponseBin are passed in to kAudioUnitProperty_FrequencyResponse
+    /// with the mFrequency field filled in. The array is returned with the mMagnitude fields filled in.
+    /// If fewer than kNumberOfResponseFrequencies are needed, then the first unused bin should be marked with
+    /// a negative frequency.
+    #[doc(alias = "kNumberOfResponseFrequencies")]
+    pub const MAX_LEN: usize = 1024;
 }
 
 define_opts!(

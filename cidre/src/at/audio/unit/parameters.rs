@@ -141,7 +141,7 @@ impl au::ParamId {
     #[doc(alias = "kSpatialMixerParam_Gain")]
     pub const SPATIAL_MIXER_GAIN: Self = Self(3);
 
-    /// Input, rate scaler	0.5 -> 2.0, 1.0
+    /// Input, rate scaler 0.5 -> 2.0, 1.0
     #[doc(alias = "kSpatialMixerParam_PlaybackRate")]
     pub const SPATIAL_MIXER_PLAYBACK_RATE: Self = Self(4);
 
@@ -157,7 +157,7 @@ impl au::ParamId {
     #[doc(alias = "kSpatialMixerParam_MaxGain")]
     pub const SPATIAL_MIXER_MAX_GAIN: Self = Self(7);
 
-    /// Input, Dry/Wet equal-power blend, %	  0.0 -> 100.0, 30.0
+    /// Input, Dry/Wet equal-power blend, % 0.0 -> 100.0, 30.0
     #[doc(alias = "kSpatialMixerParam_ReverbBlend")]
     pub const SPATIAL_MIXER_REVERB_BLEND: Self = Self(8);
 
@@ -165,13 +165,13 @@ impl au::ParamId {
     #[doc(alias = "kSpatialMixerParam_GlobalReverbGain")]
     pub const SPATIAL_MIXER_GLOBAL_REVERB_GAIN: Self = Self(9);
 
-    /// Input, Lowpass filter attenuation at 5KHz :		decibels -100.0dB -> 0.0dB, 0.0dB
+    /// Input, Lowpass filter attenuation at 5KHz : decibels -100.0dB -> 0.0dB, 0.0dB
     /// smaller values make both direct and reverb sound more muffled; a value of 0.0 indicates no filtering
     /// Occlusion is a filter applied to the sound prior to the reverb send
     #[doc(alias = "kSpatialMixerParam_OcclusionAttenuation")]
     pub const SPATIAL_MIXER_OCCLUSION_ATTENUATION: Self = Self(10);
 
-    /// Input, Lowpass filter attenuation at 5KHz :		decibels -100.0dB -> 0.0dB, 0.0dB
+    /// Input, Lowpass filter attenuation at 5KHz : decibels -100.0dB -> 0.0dB, 0.0dB
     /// smaller values make direct sound more muffled; a value of 0.0 indicates no filtering
     /// Obstruction is a filter applied to the "direct" part of the sound (so is post reverb send)
     #[doc(alias = "kSpatialMixerParam_ObstructionAttenuation")]
