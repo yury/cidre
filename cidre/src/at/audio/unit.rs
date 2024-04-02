@@ -21,6 +21,9 @@ pub use component::Type;
 pub use component::Unit;
 pub use component::UnitRef;
 
+mod multi_channel_mixer;
+pub use multi_channel_mixer::MultiChannelMixer;
+
 mod properties;
 pub use properties::preset_key;
 pub use properties::sample_rate_converter_complexity;

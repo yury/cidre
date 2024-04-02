@@ -1109,36 +1109,6 @@ impl Unit {
         let val = val as u32;
         self.set_prop(PropId::METERING_MODE, scope, Element(bus), &val)
     }
-
-    pub fn multi_channel_mixer_set_volume(
-        &mut self,
-        scope: Scope,
-        bus: u32,
-        val: f32,
-    ) -> Result<(), os::Status> {
-        self.set_param(
-            ParamId::MULTI_CHANNEL_MIXER_VOLUME,
-            scope,
-            Element(bus),
-            val,
-            0,
-        )
-    }
-
-    pub fn multi_channel_mixer_enable(
-        &mut self,
-        scope: Scope,
-        element: Element,
-        val: bool,
-    ) -> Result<(), os::Status> {
-        self.set_param(
-            ParamId::MULTI_CHANNEL_MIXER_ENABLE,
-            scope,
-            element,
-            val as u32 as _,
-            0,
-        )
-    }
 }
 
 impl UnitRef<UninitializedState> {
@@ -1179,6 +1149,14 @@ impl UnitRef<UninitializedState> {
 }
 
 impl<S: State<Unit>> UnitRef<S> {
+    pub fn unit(&self) -> &Unit {
+        self.0
+    }
+
+    pub fn unit_mut(&mut self) -> &mut Unit {
+        self.0
+    }
+
     pub fn mixer_metering_enable(
         &mut self,
         scope: Scope,
@@ -1186,15 +1164,6 @@ impl<S: State<Unit>> UnitRef<S> {
         val: bool,
     ) -> Result<(), os::Status> {
         self.0.mixer_metering_enable(scope, bus, val)
-    }
-
-    pub fn multi_channel_mixer_set_volume(
-        &mut self,
-        scope: Scope,
-        bus: u32,
-        val: f32,
-    ) -> Result<(), os::Status> {
-        self.0.multi_channel_mixer_set_volume(scope, bus, val)
     }
 
     pub fn set_input_cb<const N: usize, T>(
@@ -1244,65 +1213,69 @@ impl<S: State<Unit>> UnitRef<S> {
         self.0.param(param_id, scope, element)
     }
 
+    #[inline]
     pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
         self.0.element_count(scope)
     }
 
+    #[inline]
     pub fn offline_render(&self) -> Result<bool, os::Status> {
         self.0.offline_render()
     }
 
+    #[inline]
     pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
         self.0.last_render_sample_time()
     }
 
+    #[inline]
     pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
         self.0.last_render_err()
     }
 
+    #[inline]
     pub fn render_quality(&self) -> Result<u32, os::Status> {
         self.0.render_quality()
     }
 
+    #[inline]
     pub fn should_allocate_input_buf(&self) -> Result<bool, os::Status> {
         self.0.should_allocate_input_buf()
     }
 
+    #[inline]
     pub fn should_allocate_output_buf(&self) -> Result<bool, os::Status> {
         self.0.should_allocate_output_buf()
     }
 
+    #[inline]
     pub fn sample_rate(&self, scope: Scope) -> Result<f64, os::Status> {
         self.0.sample_rate(scope)
     }
 
+    #[inline]
     pub fn stream_format(&self, scope: Scope) -> Result<audio::StreamBasicDesc, os::Status> {
         self.0.stream_format(scope)
     }
 
+    #[inline]
     pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
         self.0.set_element_count(scope, val)
     }
 
+    #[inline]
     pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
         self.0.nick_name()
     }
 
+    #[inline]
     pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> Result<(), os::Status> {
         self.0.set_nick_name(val)
     }
 
+    #[inline]
     pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
         self.0.max_frames_per_slice()
-    }
-
-    pub fn multi_channel_mixer_enable(
-        &mut self,
-        scope: Scope,
-        element: Element,
-        val: bool,
-    ) -> Result<(), os::Status> {
-        self.0.multi_channel_mixer_enable(scope, element, val)
     }
 }
 
@@ -1422,18 +1395,6 @@ extern "C" {
 }
 
 impl audio::Component {
-    pub fn apple_multi_channel_mixer() -> Option<&'static Self> {
-        audio::ComponentDesc {
-            type_: Type::MIXER.0,
-            sub_type: SubType::MULTI_CHANNEL_MIXER.0,
-            manufacturer: Manufacturer::APPLE.0,
-            flags: 0,
-            flags_mask: 0,
-        }
-        .into_iter()
-        .next()
-    }
-
     pub fn apple_scheduled_sound_player() -> Option<&'static Self> {
         audio::ComponentDesc {
             type_: Type::GENERATOR.0,
@@ -1533,7 +1494,6 @@ mod tests {
     fn mixer() {
         let desc = audio::ComponentDesc {
             type_: au::Type::MUSIC_DEVICE.0,
-            // sub_type: au::SubType::MULTI_CHANNEL_MIXER.0,
             ..Default::default()
         };
         for d in desc.into_iter() {
