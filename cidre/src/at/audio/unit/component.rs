@@ -1532,9 +1532,9 @@ mod tests {
         let mut bins = vec![FrequencyResponseBin::default(); FrequencyResponseBin::MAX_LEN];
 
         extern "C" fn render(
-            in_ref_con: *mut c_void,
-            io_action_flags: &mut au::RenderActionFlags,
-            in_timestamp: &audio::TimeStamp,
+            _in_ref_con: *mut c_void,
+            _io_action_flags: &mut au::RenderActionFlags,
+            _in_timestamp: &audio::TimeStamp,
             in_bus_num: u32,
             in_number_frames: u32,
             io_data: *mut audio::BufList<2>,

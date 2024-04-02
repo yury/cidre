@@ -374,8 +374,8 @@ impl au::PropId {
 
     /// Scope:      Any
     /// Element:    au::ParamId of the parameter being queried
-    /// Value Type:	cf::ArrayOf<cf::String>
-    /// Access:	    Read
+    /// Value Type: cf::ArrayOf<cf::String>
+    /// Access:     Read
     ///
     /// Some audio unit parameters that are of an index type, can also provide names for each value of the parameter.
     /// This property returns an array containing cf::Strings, where each element in the array is the name that should be used
@@ -387,7 +387,7 @@ impl au::PropId {
     pub const PARAM_VALUE_STRINGS: Self = Self(16);
 
     /// Scope:      Input/Output
-    /// Value Type:	struct AudioChannelLayout
+    /// Value Type: struct AudioChannelLayout
     /// Access:     read/write
     ///
     /// Describes for a given scope/element the order of channels within a given stream.
@@ -420,7 +420,7 @@ impl au::PropId {
     pub const AUDIO_CHANNEL_LAYOUT: Self = Self(19);
 
     /// Scope:      Global
-    /// Value Type:	f64
+    /// Value Type: f64
     /// Access:     Read
     ///
     /// The time in seconds that will remain after the last valid input of any audio unit has been processed
@@ -430,7 +430,7 @@ impl au::PropId {
     pub const TAIL_TIME: Self = Self(20);
 
     /// Scope:      Global
-    /// Value Type:	u32
+    /// Value Type: u32
     /// Access:     Read / Write
     ///
     /// A boolean value that can be used to bypass the processing in an effect unit, so that the input
@@ -439,7 +439,7 @@ impl au::PropId {
     pub const BYPASS_EFFECT: Self = Self(21);
 
     /// Scope:      Global
-    /// Value Type:	os::Status
+    /// Value Type: os::Status
     /// Access:     Read
     ///
     /// This property is set if there is an error in AudioUnitRender. The AU will then fire a property
@@ -449,8 +449,8 @@ impl au::PropId {
     pub const LAST_RENDER_ERROR: Self = Self(22);
 
     /// Scope:      Input
-    /// Value Type:	AURenderCallbackStruct
-    /// Access:	    Write
+    /// Value Type: au::RenderCbStruct
+    /// Access:     Write
     ///
     /// This is used to provide the audio unit with input on the specified element (input bus) with audio
     /// data from the provided callback. The callback is delivered a buffer list which it must fill in
@@ -461,8 +461,8 @@ impl au::PropId {
     pub const SET_RENDER_CB: Self = Self(23);
 
     /// Scope:      Global
-    /// Value Type:	cf::Array of AUPreset structures
-    /// Access:	    Read
+    /// Value Type: cf::Array of AUPreset structures
+    /// Access:     Read
     ///
     /// An array of preset structures that provide a name and number for each preset.
     /// A factory preset is then chosen using the PresentPreset property.
@@ -470,8 +470,8 @@ impl au::PropId {
     pub const FACTORY_PRESETS: Self = Self(24);
 
     /// Scope:      Global
-    /// Value Type:	u32
-    /// Access:	    Read / Write
+    /// Value Type: u32
+    /// Access:     Read / Write
     ///
     /// A value (0 - 127) that can be used to control the quality (complexity) of the rendering operation.
     /// A typical usage is to set render quality to maximum for best quality, but
@@ -480,7 +480,7 @@ impl au::PropId {
     pub const RENDER_QUALITY: Self = Self(26);
 
     /// Scope:      Global
-    /// Value Type:	HostCbInfo
+    /// Value Type: HostCbInfo
     /// Access:     Write
     ///
     /// The audio unit should only call the host callbacks while it is in its render function.
@@ -500,7 +500,7 @@ impl au::PropId {
     pub const HOST_CBS: Self = Self(27);
 
     /// Scope:      Global
-    /// Value Type:	u32
+    /// Value Type: u32
     /// Access:     Read / Write
     ///
     /// A property that can be used to determine if the audio unit can process input data on the same
@@ -510,8 +510,8 @@ impl au::PropId {
     pub const IN_PLACE_PROCESSING: Self = Self(29);
 
     /// Scope:      any
-    /// Value Type:	arc::R<cf::String>
-    /// Access:	    read/write
+    /// Value Type: arc::R<cf::String>
+    /// Access:     read/write
     ///
     /// The name of the specified element. The Host owns a reference to this property value
     /// (as with all other CF properties), and should release the string retrieved or used when setting.
@@ -825,9 +825,9 @@ impl au::PropId {
     #[doc(alias = "kAudioUnitProperty_ClassInfoFromDocument")]
     pub const CLASS_INFO_FROM_DOCUMENT: Self = Self(50);
 
-    /// Scope:			Global
-    /// Value Type:		block: void (^)(AUViewControllerBase *)
-    /// Access:			write
+    /// Scope:      Global
+    /// Value Type: block: void (^)(AUViewControllerBase *)
+    /// Access:     write
     ///
     /// If the audio unit is implemented using the version 3 API, it may provide a
     /// view controller, returned via this property. As with any other CoreFoundation
@@ -884,9 +884,9 @@ impl au::PropId {
     #[doc(alias = "kAudioUnitProperty_LoadedOutOfProcess")]
     pub const LOADED_OUT_OF_PROCESS: Self = Self(62);
 
-    /// Scope:			Global
-    /// Value Type:		void* (function pointer)
-    /// Access:			Read
+    /// Scope:      Global
+    /// Value Type: void* (function pointer)
+    /// Access:     Read
     ///
     /// The caller provides the selector for a given audio unit API, and retrieves a function pointer for that selector. For instance,
     /// this enables the caller to retrieve the function pointer for the AudioUnitRender call, so that call can be made directly
@@ -914,9 +914,9 @@ impl au::PropId {
     #[doc(alias = "kAudioUnitProperty_GetUIComponentList")]
     pub const GET_UI_COMPONENT_LIST: Self = Self(18);
 
-    /// Scope:				Global
-    /// Value Type:			struct AudioUnitCocoaViewInfo
-    /// Access:				read
+    /// Scope:      Global
+    /// Value Type: struct AudioUnitCocoaViewInfo
+    /// Access:     read
     ///
     /// Publishes the audio unit's custom Cocoa NSViews. The Host can determine how big this structure is by
     /// querying the size of the property (i.e., How many alternate UI classes there are for the unit)
@@ -1405,9 +1405,9 @@ impl au::PropId {
 
 /// The collection of property IDs for Apple mixers
 impl au::PropId {
-    /// Scope: { scope / element }
+    /// Scope:      { scope / element }
     /// Value Type: u32
-    /// Access: read/write
+    /// Access:     read/write
     ///
     /// Enable or disable metering on a particular scope/element
     #[doc(alias = "kAudioUnitProperty_MeteringMode")]
@@ -1443,7 +1443,7 @@ impl au::PropId {
     pub const MATRIX_LEVELS: Self = Self(3006);
 
     /// Scope:      Global
-    /// Value Type: 2 x u32
+    /// Value Type: [u32; 2]
     /// Access:     Read only
     ///
     /// Returns the total number of channels for input and output of a given matrix mixer
@@ -1451,7 +1451,7 @@ impl au::PropId {
     pub const MATRIX_DIMENSIONS: Self = Self(3009);
 
     /// Scope:      Global
-    /// Value Type: AudioUnitMeterClipping
+    /// Value Type: au::MeterClipping
     /// Access:     Read
     ///
     /// A mixer returns an au::MeterClipping structure.
@@ -1459,9 +1459,10 @@ impl au::PropId {
     pub const METER_CLIPPING: Self = Self(3011);
 
     /// Multichannel Mixer
-    /// Scope:			Input
-    /// Value Type:		AudioTimeStamp
-    /// Access:			Read / Write
+    ///
+    /// Scope:      Input
+    /// Value Type: audio::TimeStamp
+    /// Access:     Read / Write
     ///
     /// There are situations, for example moving an input between mixers, where the
     /// input's sample time timeline needs to be made continuous. This facilitates
@@ -1505,9 +1506,9 @@ impl au::PropId {
     #[doc(alias = "kAudioUnitProperty_SpatializationAlgorithm")]
     pub const SPATIALIZATION_ALGORITHM: Self = Self(3000);
 
-    /// Scope:			Input
-    /// Value Type:		u32
-    /// Access:			Read / Write
+    /// Scope:      Input
+    /// Value Type: u32
+    /// Access:     Read / Write
     ///
     /// Used to enable various rendering operations on a given input for the 3DMixer.
     /// See k3DMixerRenderingFlags_
