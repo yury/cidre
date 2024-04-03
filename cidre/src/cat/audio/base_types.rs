@@ -157,9 +157,9 @@ impl<const N: usize> BufList<N> {
 }
 
 /// A four char code indicating the general kind of data in the stream.
+#[doc(alias = "AudioFromatID")]
 #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
 #[repr(transparent)]
-#[doc(alias = "AudioFromatID")]
 pub struct Format(pub u32);
 
 /// The AudioFormatIDs used to identify individual formats of audio data.
@@ -528,6 +528,7 @@ impl std::fmt::Display for FormatFlags {
 /// indivisible chunk of compressed data, for example an AAC packet will contain
 /// 1024 sample frames.
 ///
+#[doc(alias = "AudioStreamBasicDescription")]
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct StreamBasicDesc {
@@ -621,6 +622,7 @@ impl StreamBasicDesc {
 /// This structure describes the packet layout of a buffer of data where the size of
 /// each packet may not be the same or where there is extraneous data between
 /// packets.
+#[doc(alias = "AudioStreamPacketDescription")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
 #[repr(C)]
 pub struct StreamPacketDesc {
@@ -636,6 +638,7 @@ pub struct StreamPacketDesc {
 
 /// The format can use any sample rate. Note that this constant can only appear
 /// in listings of supported formats. It will never appear in a current format.
+#[doc(alias = "kAudioStreamAnyRate")]
 pub const STREAM_ANY_RATE: f64 = 0.0;
 
 #[derive(Debug, Copy, Clone, Default)]

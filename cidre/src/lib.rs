@@ -116,6 +116,10 @@ pub mod sys;
 #[cfg(feature = "vt")]
 pub mod vt;
 
+/// Accelerate vecLib vDSP
+#[cfg(feature = "vdsp")]
+pub mod vdsp;
+
 /// Screen Capture
 #[cfg(all(target_os = "macos", feature = "sc"))]
 pub mod sc;

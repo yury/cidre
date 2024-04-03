@@ -1,0 +1,841 @@
+#[doc(alias = "vDSP_Length")]
+pub type Len = usize;
+
+#[doc(alias = "vDSP_Stride")]
+pub type Stride = isize;
+
+#[derive(Debug, Copy, Clone)]
+#[repr(C)]
+pub struct Complex<T> {
+    pub real: T,
+    pub imag: T,
+}
+
+#[doc(alias = "DSPComplex")]
+pub type ComplexF32 = Complex<f32>;
+
+#[doc(alias = "DSPDoubleComplex")]
+pub type ComplexF64 = Complex<f64>;
+
+#[derive(Debug, Copy, Clone)]
+#[repr(C)]
+pub struct SplitComplex<T> {
+    pub real: *mut T,
+    pub imag: *mut T,
+}
+
+#[doc(alias = "DSPSplitComplex")]
+pub type SplitComplexF32 = SplitComplex<f32>;
+
+#[doc(alias = "DSPDoubleSplitComplex")]
+pub type SplitComplexF64 = SplitComplex<f64>;
+
+/// Vector add
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] + B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_add_f32`]
+#[doc(alias = "vDSP_vadd")]
+#[inline]
+pub fn add_f32(a: &[f32], b: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _add_f32(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector add
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] + B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_add_f64`]
+#[doc(alias = "vDSP_vaddD")]
+#[inline]
+pub fn add_f64(a: &[f64], b: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _add_f64(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector add
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] + B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_add_i32`]
+#[doc(alias = "vDSP_vaddi")]
+#[inline]
+pub fn add_i32(a: &[i32], b: &[i32], c: &mut [i32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _add_i32(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector subtract
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] - B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_sub_f32`]
+#[doc(alias = "vDSP_vsub")]
+#[inline]
+pub fn sub_f32(a: &[f32], b: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _sub_f32(b.as_ptr(), 1, a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector subtract
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] - B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_sub_f64`]
+#[doc(alias = "vDSP_vsubD")]
+#[inline]
+pub fn sub_f64(a: &[f64], b: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _sub_f64(b.as_ptr(), 1, a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector subtract
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] - B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_sub_i32`]
+#[doc(alias = "vDSP_vsubi")]
+#[inline]
+pub fn sub_i32(a: &[i32], b: &[i32], c: &mut [i32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _sub_i32(b.as_ptr(), 1, a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector multiply
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] * B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_mul_f32`]
+#[doc(alias = "vDSP_vmul")]
+#[inline]
+pub fn mul_f32(a: &[f32], b: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _mul_f32(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector multiply
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = A[n] * B[n];
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_mul_f64`]
+#[doc(alias = "vDSP_vmulD")]
+#[inline]
+pub fn mul_f64(a: &[f64], b: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _mul_f64(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector divide
+#[doc(alias = "vDSP_vsub")]
+#[inline]
+pub fn div_f32(a: &[f32], b: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _div_f32(b.as_ptr(), 1, a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector divide
+#[doc(alias = "vDSP_vsubD")]
+#[inline]
+pub fn div_f64(a: &[f64], b: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _div_f64(b.as_ptr(), 1, a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector divide
+#[doc(alias = "vDSP_vsubi")]
+#[inline]
+pub fn div_i32(a: &[i32], b: &[i32], c: &mut [i32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _div_i32(b.as_ptr(), 1, a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector-scalar multiply
+#[doc(alias = "vDSP_vsmul")]
+#[inline]
+pub fn smul_f32(a: &[f32], b: &f32, c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _smul_f32(a.as_ptr(), 1, b, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector-scalar multiply
+#[doc(alias = "vDSP_vsmulD")]
+#[inline]
+pub fn smul_f64(a: &[f64], b: &f64, c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _smul_f64(a.as_ptr(), 1, b, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector square
+#[doc(alias = "vDSP_vsq")]
+#[inline]
+pub fn sq_f32(a: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _sq_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector square
+#[doc(alias = "vDSP_vsqD")]
+#[inline]
+pub fn sq_f64(a: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _sq_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector signed square
+#[doc(alias = "vDSP_vssq")]
+#[inline]
+pub fn ssq_f32(a: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _ssq_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector signed square
+#[doc(alias = "vDSP_vssqD")]
+#[inline]
+pub fn ssq_f64(a: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _ssq_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Euclidean distance, squared
+#[doc(alias = "vDSP_distancesq")]
+pub fn distance_sq_f32(a: &[f32], b: &[f32]) -> f32 {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    let mut res = 0.0;
+    unsafe { _distance_sq_f32(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
+    res
+}
+
+/// Euclidean distance, squared
+#[doc(alias = "vDSP_distancesqD")]
+pub fn distance_sq_f64(a: &[f64], b: &[f64]) -> f64 {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    let mut res = 0.0;
+    unsafe { _distance_sq_f64(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
+    res
+}
+
+/// Dot product
+#[doc(alias = "vDSP_dotpr")]
+#[inline]
+pub fn dotpr_f32(a: &[f32], b: &[f32]) -> f32 {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    let mut res = 0.0;
+    unsafe { _dotpr_f32(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
+    res
+}
+
+/// Dot product
+#[doc(alias = "vDSP_dotprD")]
+#[inline]
+pub fn dotpr_f64(a: &[f64], b: &[f64]) -> f64 {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    let mut res = 0.0;
+    unsafe { _dotpr_f64(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
+    res
+}
+
+/// Vector add and multiply
+#[doc(alias = "vDSP_vam")]
+#[inline]
+pub fn am_f32(a: &[f32], b: &[f32], c: &[f32], d: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    assert_eq!(n, d.len());
+    unsafe {
+        _am_f32(
+            a.as_ptr(),
+            1,
+            b.as_ptr(),
+            1,
+            c.as_ptr(),
+            1,
+            d.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Vector add and multiply
+#[doc(alias = "vDSP_vamD")]
+#[inline]
+pub fn am_f64(a: &[f64], b: &[f64], c: &[f64], d: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    assert_eq!(n, d.len());
+    unsafe {
+        _am_f64(
+            a.as_ptr(),
+            1,
+            b.as_ptr(),
+            1,
+            c.as_ptr(),
+            1,
+            d.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Vector multiply and add
+#[doc(alias = "vDSP_vma")]
+#[inline]
+pub fn ma_f32(a: &[f32], b: &[f32], c: &[f32], d: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    assert_eq!(n, d.len());
+    unsafe {
+        _ma_f32(
+            a.as_ptr(),
+            1,
+            b.as_ptr(),
+            1,
+            c.as_ptr(),
+            1,
+            d.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Vector multiply and add
+#[doc(alias = "vDSP_vmaD")]
+#[inline]
+pub fn ma_f64(a: &[f64], b: &[f64], c: &[f64], d: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    assert_eq!(n, d.len());
+    unsafe {
+        _ma_f64(
+            a.as_ptr(),
+            1,
+            b.as_ptr(),
+            1,
+            c.as_ptr(),
+            1,
+            d.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Vector convert between double precision and single precision
+#[doc(alias = "vDSP_vdpsp")]
+#[inline]
+pub fn f64_f32(a: &[f64], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _f64_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector convert between single precision and double precision
+#[doc(alias = "vDSP_vspdp")]
+#[inline]
+pub fn f32_f64(a: &[f32], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _f32_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector absolute value
+#[doc(alias = "vDSP_vabs")]
+#[inline]
+pub fn abs_f32(a: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _abs_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector absolute value
+#[doc(alias = "vDSP_vabsD")]
+#[inline]
+pub fn abs_f64(a: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _abs_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector absolute value
+#[doc(alias = "vDSP_vabsi")]
+#[inline]
+pub fn abs_i32(a: &[i32], c: &mut [i32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _abs_i32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector bit-wise equivalence, NOT (A XOR B)
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = ~(A[n] ^ B[n]);
+/// ```
+#[doc(alias = "vDSP_veqvi")]
+#[inline]
+pub fn eqv_i32(a: &[i32], b: &[i32], c: &mut [i32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _eqv_i32(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+#[doc(alias = "vDSP_vfill")]
+#[inline]
+pub fn fill_f32(a: &f32, c: &mut [f32]) {
+    let n = c.len();
+    unsafe { _fill_f32(a, c.as_mut_ptr(), 1, n) }
+}
+
+#[doc(alias = "vDSP_vfillD")]
+#[inline]
+pub fn fill_f64(a: &f64, c: &mut [f64]) {
+    let n = c.len();
+    unsafe { _fill_f64(a, c.as_mut_ptr(), 1, n) }
+}
+
+#[doc(alias = "vDSP_vfilli")]
+#[inline]
+pub fn fill_i32(a: &i32, c: &mut [i32]) {
+    let n = c.len();
+    unsafe { _fill_i32(a, c.as_mut_ptr(), 1, n) }
+}
+
+#[link(name = "Accelerate", kind = "framework")]
+extern "C" {
+    #[link_name = "vDSP_vadd"]
+    pub fn _add_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[link_name = "vDSP_vaddD"]
+    pub fn _add_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vaddi")]
+    #[link_name = "vDSP_vaddi"]
+    pub fn _add_i32(
+        __A: *const i32,
+        __IA: Stride,
+        __B: *const i32,
+        __IB: Stride,
+        __C: *mut i32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vsub")]
+    #[link_name = "vDSP_vsub"]
+    pub fn _sub_f32(
+        __B: *const f32,
+        __IB: Stride,
+        __A: *const f32,
+        __IA: Stride,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vsubD")]
+    #[link_name = "vDSP_vsubD"]
+    pub fn _sub_f64(
+        __B: *const f64,
+        __IB: Stride,
+        __A: *const f64,
+        __IA: Stride,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vsubi")]
+    #[link_name = "vDSP_vsubi"]
+    pub fn _sub_i32(
+        __B: *const i32,
+        __IB: Stride,
+        __A: *const i32,
+        __IA: Stride,
+        __C: *mut i32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vmul")]
+    #[link_name = "vDSP_vmul"]
+    pub fn _mul_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vmulD")]
+    #[link_name = "vDSP_vmulD"]
+    pub fn _mul_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
+    #[doc(alias = "vDSP_vdiv")]
+    #[link_name = "vDSP_vdiv"]
+    pub fn _div_f32(
+        __B: *const f32,
+        __IB: Stride,
+        __A: *const f32,
+        __IA: Stride,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vdivD")]
+    #[link_name = "vDSP_vdivD"]
+    pub fn _div_f64(
+        __B: *const f64,
+        __IB: Stride,
+        __A: *const f64,
+        __IA: Stride,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vdivi")]
+    #[link_name = "vDSP_vdivi"]
+    pub fn _div_i32(
+        __B: *const i32,
+        __IB: Stride,
+        __A: *const i32,
+        __IA: Stride,
+        __C: *mut i32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vsmul")]
+    #[link_name = "vDSP_vsmul"]
+    pub fn _smul_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: &f32,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+    #[doc(alias = "vDSP_vsmulD")]
+    #[link_name = "vDSP_vsmulD"]
+    pub fn _smul_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: &f64,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vsq")]
+    #[link_name = "vDSP_vsq"]
+    pub fn _sq_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vsqD")]
+    #[link_name = "vDSP_vsqD"]
+    pub fn _sq_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vssq")]
+    #[link_name = "vDSP_vssq"]
+    pub fn _ssq_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vssqD")]
+    #[link_name = "vDSP_vssqD"]
+    pub fn _ssq_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_distancesq")]
+    #[link_name = "vDSP_distancesq"]
+    pub fn _distance_sq_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: &mut f32,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_distancesqD")]
+    #[link_name = "vDSP_distancesqD"]
+    pub fn _distance_sq_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: &mut f64,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_dotpr")]
+    #[link_name = "vDSP_dotpr"]
+    pub fn _dotpr_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: &mut f32,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_dotprD")]
+    #[link_name = "vDSP_dotprD"]
+    pub fn _dotpr_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: &mut f64,
+        __N: Len,
+    );
+
+    /// Vector add and multiply.
+    #[doc(alias = "vDSP_vam")]
+    #[link_name = "vDSP_vam"]
+    pub fn _am_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: *const f32,
+        __IC: Stride,
+        __D: *mut f32,
+        __ID: Stride,
+        __N: Len,
+    );
+
+    /// Vector add and multiply.
+    #[doc(alias = "vDSP_vamD")]
+    #[link_name = "vDSP_vamD"]
+    pub fn _am_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: *const f64,
+        __IC: Stride,
+        __D: *mut f64,
+        __ID: Stride,
+        __N: Len,
+    );
+
+    /// Vector multiply and add.
+    #[doc(alias = "vDSP_vma")]
+    #[link_name = "vDSP_vma"]
+    pub fn _ma_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: *const f32,
+        __IC: Stride,
+        __D: *mut f32,
+        __ID: Stride,
+        __N: Len,
+    );
+
+    /// Vector multiply and add.
+    #[doc(alias = "vDSP_vmaD")]
+    #[link_name = "vDSP_vmaD"]
+    pub fn _ma_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: *const f64,
+        __IC: Stride,
+        __D: *mut f64,
+        __ID: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vdpsp")]
+    #[link_name = "vDSP_vdpsp"]
+    pub fn _f64_f32(__A: *const f64, __IA: Stride, __C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vspdp")]
+    #[link_name = "vDSP_vspdp"]
+    pub fn _f32_f64(__A: *const f32, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vabs")]
+    #[link_name = "vDSP_vabs"]
+    pub fn _abs_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vabsD")]
+    #[link_name = "vDSP_vabsD"]
+    pub fn _abs_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vabsi")]
+    #[link_name = "vDSP_vabsi"]
+    pub fn _abs_i32(__A: *const i32, __IA: Stride, __C: *mut i32, __IC: Stride, __N: Len);
+
+    /// Vector bit-wise equivalence, NOT (A XOR B)
+    #[doc(alias = "vDSP_veqvi")]
+    #[link_name = "vDSP_veqvi"]
+    pub fn _eqv_i32(
+        __A: *const i32,
+        __IA: Stride,
+        __B: *const i32,
+        __IB: Stride,
+        __C: *mut i32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vfill")]
+    #[link_name = "vDSP_vfill"]
+    pub fn _fill_f32(__A: &f32, __C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vfillD")]
+    #[link_name = "vDSP_vfillD"]
+    pub fn _fill_f64(__A: &f64, __C: *mut f64, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vfilli")]
+    #[link_name = "vDSP_vfilli"]
+    pub fn _fill_i32(__A: &i32, __C: *mut i32, __IC: Stride, __N: Len);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::vdsp;
+
+    #[test]
+    fn add_sub() {
+        const N: usize = 1_000;
+
+        let a = vec![1f32; N];
+        let b = vec![2f32; N];
+        let mut c = vec![0f32; N];
+        let mut r = vec![3f32; N];
+
+        vdsp::add_f32(&a, &b, &mut c);
+        assert_eq!(c, r);
+
+        vdsp::sub_f32(&c, &b, &mut r);
+        assert_eq!(r, a);
+    }
+
+    #[test]
+    fn mul_div() {
+        const N: usize = 1_000;
+
+        let a = vec![1f32; N];
+        let b = vec![2f32; N];
+        let mut c = vec![0f32; N];
+        let mut d = vec![0f32; N];
+
+        vdsp::mul_f32(&a, &b, &mut c);
+        assert_eq!(b, c);
+
+        vdsp::div_f32(&c, &b, &mut d);
+        assert_eq!(d, a);
+
+        vdsp::smul_f32(&a, &-0.5, &mut c);
+        assert_eq!(vec![-0.5f32; N], c);
+
+        vdsp::ssq_f32(&c, &mut d);
+        assert_eq!(vec![-0.25f32; N], d);
+
+        vdsp::sq_f32(&c, &mut d);
+        assert_eq!(vec![0.25f32; N], d);
+
+        let dist_sq = vdsp::distance_sq_f32(&a, &b);
+        assert_eq!(1000.0, dist_sq);
+        let dot_pr = vdsp::dotpr_f32(&a, &b);
+        assert_eq!(2000.0, dot_pr);
+
+        vdsp::am_f32(&a, &b, &c, &mut d);
+        assert_eq!(vec![-1.5f32; N], d);
+
+        vdsp::abs_f32(&d, &mut c);
+        assert_eq!(vec![1.5f32; N], c);
+    }
+}

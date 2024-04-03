@@ -55,6 +55,7 @@ full = [
   "wk",
   "gc",
   "xpc",
+  "vdsp",
 ]
 
 # Turn on private API
@@ -84,6 +85,7 @@ vt = ["cf", "cv", "cg", "cm"]
 io = ["cf"]
 sn = ["ns"]
 vn = ["ns"]
+vdsp = []
 nw = ["ns", "dispatch"]
 ui = ["ns"]
 ut = ["ns"]
