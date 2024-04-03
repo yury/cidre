@@ -465,6 +465,146 @@ pub fn fill_i32(a: &i32, c: &mut [i32]) {
     unsafe { _fill_i32(a, c.as_mut_ptr(), 1, n) }
 }
 
+/// Vector clear
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = 0;
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_clr_f32`]
+#[doc(alias = "vDSP_vclr")]
+#[inline]
+pub fn clr_f32(c: &mut [f32]) {
+    unsafe { _clr_f32(c.as_mut_ptr(), 1, c.len()) }
+}
+
+/// Vector clear
+///
+/// ```pseudo C
+/// for (n = 0; n < N; ++n)
+///     C[n] = 0;
+/// ```
+/// Note:
+/// In order to use strides use unsafe [`_clr_f64`]
+#[doc(alias = "vDSP_vclrD")]
+#[inline]
+pub fn clr_f64(c: &mut [f64]) {
+    unsafe { _clr_f64(c.as_mut_ptr(), 1, c.len()) }
+}
+
+/// Vector-scalar add
+#[doc(alias = "vDSP_vsadd")]
+#[inline]
+pub fn sadd_f32(a: &[f32], b: &f32, c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _sadd_f32(a.as_ptr(), 1, b, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector-scalar add
+#[doc(alias = "vDSP_vsaddD")]
+#[inline]
+pub fn sadd_f64(a: &[f64], b: &f64, c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _sadd_f64(a.as_ptr(), 1, b, c.as_mut_ptr(), 1, n) }
+}
+
+/// Vector-scalar add
+#[doc(alias = "vDSP_vsaddD")]
+#[inline]
+pub fn sadd_i32(a: &[i32], b: &i32, c: &mut [i32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _sadd_i32(a.as_ptr(), 1, b, c.as_mut_ptr(), 1, n) }
+}
+
+/// Sum of vector elements
+#[doc(alias = "vDSP_sve")]
+#[inline]
+pub fn se_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _se_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Sum of vector elements
+#[doc(alias = "vDSP_sveD")]
+#[inline]
+pub fn se_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _se_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Sum of vector elements magnitudes
+#[doc(alias = "vDSP_svemg")]
+#[inline]
+pub fn semg_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _semg_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Sum of vector elements magnitudes
+#[doc(alias = "vDSP_svemgD")]
+#[inline]
+pub fn semg_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _semg_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+/// Sum of vector elements' squares
+#[doc(alias = "vDSP_svesq")]
+#[inline]
+pub fn sesq_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _sesq_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Sum of vector elements' squares
+#[doc(alias = "vDSP_svesqD")]
+#[inline]
+pub fn sesq_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _sesq_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Sum of vector elements' signed squares
+#[doc(alias = "vDSP_svs")]
+#[inline]
+pub fn svs_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _svs_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Sum of vector elements' signed squares
+#[doc(alias = "vDSP_svsD")]
+#[inline]
+pub fn svs_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _svs_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Vector generate tapered ramp
+#[doc(alias = "vDSP_vgen")]
+#[inline]
+pub fn gen_f32(a: &f32, b: &f32, c: &mut [f32]) {
+    unsafe { _gen_f32(a, b, c.as_mut_ptr(), 1, c.len()) }
+}
+
+/// Vector generate tapered ramp
+#[doc(alias = "vDSP_vgenD")]
+#[inline]
+pub fn gen_f64(a: &f64, b: &f64, c: &mut [f64]) {
+    unsafe { _gen_f64(a, b, c.as_mut_ptr(), 1, c.len()) }
+}
+
 #[link(name = "Accelerate", kind = "framework")]
 extern "C" {
     #[link_name = "vDSP_vadd"]
@@ -781,6 +921,100 @@ extern "C" {
     #[doc(alias = "vDSP_vfilli")]
     #[link_name = "vDSP_vfilli"]
     pub fn _fill_i32(__A: &i32, __C: *mut i32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vclr")]
+    #[link_name = "vDSP_vclr"]
+    pub fn _clr_f32(__C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vclrD")]
+    #[link_name = "vDSP_vclrD"]
+    pub fn _clr_f64(__C: *mut f64, __IC: Stride, __N: Len);
+
+    /// Vector-scalar add
+    #[doc(alias = "vDSP_vsadd")]
+    #[link_name = "vDSP_vsadd"]
+    pub fn _sadd_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: &f32,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    /// Vector-scalar add
+    #[doc(alias = "vDSP_vsaddD")]
+    #[link_name = "vDSP_vsaddD"]
+    pub fn _sadd_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: &f64,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    /// Vector-scalar add
+    #[doc(alias = "vDSP_vsaddi")]
+    #[link_name = "vDSP_vsaddi"]
+    pub fn _sadd_i32(
+        __A: *const i32,
+        __IA: Stride,
+        __B: &i32,
+        __C: *mut i32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    /// Sum of vector elements
+    #[doc(alias = "vDSP_sve")]
+    #[link_name = "vDSP_sve"]
+    pub fn _se_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Sum of vector elements
+    #[doc(alias = "vDSP_sveD")]
+    #[link_name = "vDSP_sveD"]
+    pub fn _se_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Sum of vector elements magnitudes
+    #[doc(alias = "vDSP_svemg")]
+    #[link_name = "vDSP_svemg"]
+    pub fn _semg_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Sum of vector elements magnitudes
+    #[doc(alias = "vDSP_svemgD")]
+    #[link_name = "vDSP_svemgD"]
+    pub fn _semg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Sum of vector elements' squares
+    #[doc(alias = "vDSP_svesq")]
+    #[link_name = "vDSP_svesq"]
+    pub fn _sesq_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Sum of vector elements' squares
+    #[doc(alias = "vDSP_svesqD")]
+    #[link_name = "vDSP_svesqD"]
+    pub fn _sesq_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Sum of vector elements' signed squares
+    #[doc(alias = "vDSP_svs")]
+    #[link_name = "vDSP_svs"]
+    pub fn _svs_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Sum of vector elements' signed squares
+    #[doc(alias = "vDSP_svsD")]
+    #[link_name = "vDSP_svsD"]
+    pub fn _svs_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Vector generate tapered ramp
+    #[doc(alias = "vDSP_vgen")]
+    #[link_name = "vDSP_vgen"]
+    pub fn _gen_f32(__A: &f32, __B: &f32, __C: *mut f32, __IC: Stride, __N: Len);
+
+    /// Vector generate tapered ramp
+    #[doc(alias = "vDSP_vgenD")]
+    #[link_name = "vDSP_vgenD"]
+    pub fn _gen_f64(__A: &f64, __B: &f64, __C: *mut f64, __IC: Stride, __N: Len);
 }
 
 #[cfg(test)]
@@ -804,7 +1038,7 @@ mod tests {
     }
 
     #[test]
-    fn mul_div() {
+    fn basics() {
         const N: usize = 1_000;
 
         let a = vec![1f32; N];
@@ -837,5 +1071,20 @@ mod tests {
 
         vdsp::abs_f32(&d, &mut c);
         assert_eq!(vec![1.5f32; N], c);
+
+        vdsp::fill_f32(&1.0, &mut c);
+        assert_eq!(a, c);
+
+        vdsp::clr_f32(&mut c);
+        assert_eq!(0.0, vdsp::se_f32(&c));
+        assert_eq!(0.0, vdsp::semg_f32(&c));
+        assert_eq!(0.0, vdsp::sesq_f32(&c));
+        assert_eq!(4.0 * N as f32, vdsp::sesq_f32(&b));
+
+        vdsp::sadd_f32(&c, &2.0, &mut d);
+        assert_eq!(b, d);
+
+        vdsp::gen_f32(&0.0, &1.0, &mut c[..3]);
+        assert_eq!(&[0.0, 0.5, 1.0], &c[..3]);
     }
 }
