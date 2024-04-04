@@ -282,6 +282,42 @@ pub fn ssq_io_f64(io: &mut [f64]) {
     unsafe { _ssq_f64(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
 }
 
+/// Mean of vector
+#[doc(alias = "vDSP_meanv")]
+#[inline]
+pub fn mean_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0;
+    unsafe { _mean_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Mean of vector
+#[doc(alias = "vDSP_meanvD")]
+#[inline]
+pub fn mean_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0;
+    unsafe { _mean_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Mean square of vector
+#[doc(alias = "vDSP_measqv")]
+#[inline]
+pub fn meansq_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0;
+    unsafe { _meansq_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Mean square of vector
+#[doc(alias = "vDSP_measqvD")]
+#[inline]
+pub fn meansq_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0;
+    unsafe { _meansq_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
 /// Euclidean distance, squared
 #[doc(alias = "vDSP_distancesq")]
 pub fn distance_sq_f32(a: &[f32], b: &[f32]) -> f32 {
@@ -711,6 +747,38 @@ pub fn ramp_f64(a: &f64, b: &f64, c: &mut [f64]) {
     unsafe { _ramp_f64(a, b, c.as_mut_ptr(), 1, c.len()) }
 }
 
+/// Vector single-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmul")]
+#[inline]
+pub fn rampmul_f32(i: &[f32], start: &mut f32, step: &f32, o: &mut [f32]) {
+    let n = i.len();
+    assert_eq!(n, o.len());
+    unsafe { _rampmul_f32(i.as_ptr(), 1, start, step, o.as_mut_ptr(), 1, n) };
+}
+
+/// Vector double-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmulD")]
+#[inline]
+pub fn rampmul_f64(i: &[f64], start: &mut f64, step: &f64, o: &mut [f64]) {
+    let n = i.len();
+    assert_eq!(n, o.len());
+    unsafe { _rampmul_f64(i.as_ptr(), 1, start, step, o.as_mut_ptr(), 1, n) };
+}
+
+/// Inplace vector single-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmul")]
+#[inline]
+pub fn rampmul_io_f32(io: &mut [f32], start: &mut f32, step: &f32) {
+    unsafe { _rampmul_f32(io.as_ptr(), 1, start, step, io.as_mut_ptr(), 1, io.len()) };
+}
+
+/// Inplace vector double-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmulD")]
+#[inline]
+pub fn rampmul_io_f64(io: &mut [f64], start: &mut f64, step: &f64) {
+    unsafe { _rampmul_f64(io.as_ptr(), 1, start, step, io.as_mut_ptr(), 1, io.len()) };
+}
+
 /// Stereo vector single-precision vramp and multiply.
 #[doc(alias = "vDSP_vrampmul2")]
 #[inline]
@@ -841,6 +909,26 @@ pub fn neg_f64(a: &[f64], c: &mut [f64]) {
 pub fn neg_io_f64(io: &mut [f64]) {
     let n = io.len();
     unsafe { _neg_f64(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) };
+}
+
+/// Vector tapered merge.
+#[doc(alias = "vDSP_vtmerg")]
+#[inline]
+pub fn tmerg_f32(a: &[f32], b: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _tmerg_f32(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
+}
+
+/// Vector tapered merge.
+#[doc(alias = "vDSP_vtmerg")]
+#[inline]
+pub fn tmerg_f64(a: &[f64], b: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, b.len());
+    assert_eq!(n, c.len());
+    unsafe { _tmerg_f64(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
 }
 
 #[link(name = "Accelerate", kind = "framework")]
@@ -1010,6 +1098,26 @@ extern "C" {
     #[doc(alias = "vDSP_vssqD")]
     #[link_name = "vDSP_vssqD"]
     pub fn _ssq_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
+
+    /// Mean of vector
+    #[doc(alias = "vDSP_meanv")]
+    #[link_name = "vDSP_meanv"]
+    pub fn _mean_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Mean of vector
+    #[doc(alias = "vDSP_meanvD")]
+    #[link_name = "vDSP_meanvD"]
+    pub fn _mean_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Mean square of vector
+    #[doc(alias = "vDSP_measqv")]
+    #[link_name = "vDSP_measqv"]
+    pub fn _meansq_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Mean square of vector
+    #[doc(alias = "vDSP_measqvD")]
+    #[link_name = "vDSP_measqvD"]
+    pub fn _meansq_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
 
     #[doc(alias = "vDSP_distancesq")]
     #[link_name = "vDSP_distancesq"]
@@ -1284,6 +1392,32 @@ extern "C" {
     #[link_name = "vDSP_vrampD"]
     pub fn _ramp_f64(__A: &f64, __B: &f64, __C: *mut f64, __IC: Stride, __N: Len);
 
+    /// Vector single-precision vramp and multiply.
+    #[doc(alias = "vDSP_vrampmul")]
+    #[link_name = "vDSP_vrampmul"]
+    pub fn _rampmul_f32(
+        __I: *const f32,
+        __IS: Stride,
+        __Start: &mut f32,
+        __Step: &f32,
+        __O: *mut f32,
+        __OS: Stride,
+        __N: Len,
+    );
+
+    /// Vector single-precision vramp and multiply.
+    #[doc(alias = "vDSP_vrampmulD")]
+    #[link_name = "vDSP_vrampmulD"]
+    pub fn _rampmul_f64(
+        __I: *const f64,
+        __IS: Stride,
+        __Start: &mut f64,
+        __Step: &f64,
+        __O: *mut f64,
+        __OS: Stride,
+        __N: Len,
+    );
+
     /// Stereo vector single-precision vramp and multiply.
     #[doc(alias = "vDSP_vrampmul2")]
     #[link_name = "vDSP_vrampmul2"]
@@ -1295,7 +1429,7 @@ extern "C" {
         __Step: &f32,
         __O0: *mut f32,
         __O1: *mut f32,
-        __IS: Stride,
+        __OS: Stride,
         __N: Len,
     );
 
@@ -1310,7 +1444,7 @@ extern "C" {
         __Step: &f64,
         __O0: *mut f64,
         __O1: *mut f64,
-        __IS: Stride,
+        __OS: Stride,
         __N: Len,
     );
 
@@ -1321,6 +1455,32 @@ extern "C" {
     #[doc(alias = "vDSP_vnegD")]
     #[link_name = "vDSP_vnegD"]
     pub fn _neg_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
+
+    /// Vector tapered merge.
+    #[doc(alias = "vDSP_vtmerg")]
+    #[link_name = "vDSP_vtmerg"]
+    pub fn _tmerg_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __IB: Stride,
+        __C: *mut f32,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    /// Vector tapered merge.
+    #[doc(alias = "vDSP_vtmergD")]
+    #[link_name = "vDSP_vtmergD"]
+    pub fn _tmerg_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __IB: Stride,
+        __C: *mut f64,
+        __IC: Stride,
+        __N: Len,
+    );
 }
 
 #[cfg(test)]
