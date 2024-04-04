@@ -232,6 +232,22 @@ pub fn sq_f64(a: &[f64], c: &mut [f64]) {
     unsafe { _sq_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
 }
 
+/// Inplace vector square
+#[doc(alias = "vDSP_vsq")]
+#[inline]
+pub fn sq_io_f32(io: &mut [f32]) {
+    let n = io.len();
+    unsafe { _sq_f32(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
+}
+
+/// Inplace vector square
+#[doc(alias = "vDSP_vsqD")]
+#[inline]
+pub fn sq_io_f64(io: &mut [f64]) {
+    let n = io.len();
+    unsafe { _sq_f64(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
+}
+
 /// Vector signed square
 #[doc(alias = "vDSP_vssq")]
 #[inline]
@@ -248,6 +264,22 @@ pub fn ssq_f64(a: &[f64], c: &mut [f64]) {
     let n = a.len();
     assert_eq!(n, c.len());
     unsafe { _ssq_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Inplace vector signed square
+#[doc(alias = "vDSP_vssq")]
+#[inline]
+pub fn ssq_io_f32(io: &mut [f32]) {
+    let n = io.len();
+    unsafe { _ssq_f32(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
+}
+
+/// Inplace vector signed square
+#[doc(alias = "vDSP_vssqD")]
+#[inline]
+pub fn ssq_io_f64(io: &mut [f64]) {
+    let n = io.len();
+    unsafe { _ssq_f64(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
 }
 
 /// Euclidean distance, squared
@@ -411,6 +443,14 @@ pub fn abs_f32(a: &[f32], c: &mut [f32]) {
     unsafe { _abs_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
 }
 
+/// Inplace vector absolute value
+#[doc(alias = "vDSP_vabs")]
+#[inline]
+pub fn abs_io_f32(io: &mut [f32]) {
+    let n = io.len();
+    unsafe { _abs_f32(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
+}
+
 /// Vector absolute value
 #[doc(alias = "vDSP_vabsD")]
 #[inline]
@@ -420,6 +460,14 @@ pub fn abs_f64(a: &[f64], c: &mut [f64]) {
     unsafe { _abs_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
 }
 
+/// Inplace vector absolute value
+#[doc(alias = "vDSP_vabsD")]
+#[inline]
+pub fn abs_io_f64(io: &mut [f64]) {
+    let n = io.len();
+    unsafe { _abs_f64(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
+}
+
 /// Vector absolute value
 #[doc(alias = "vDSP_vabsi")]
 #[inline]
@@ -427,6 +475,14 @@ pub fn abs_i32(a: &[i32], c: &mut [i32]) {
     let n = a.len();
     assert_eq!(n, c.len());
     unsafe { _abs_i32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) }
+}
+
+/// Inplace vector absolute value
+#[doc(alias = "vDSP_vabsi")]
+#[inline]
+pub fn abs_io_i32(io: &mut [i32]) {
+    let n = io.len();
+    unsafe { _abs_i32(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) }
 }
 
 /// Vector bit-wise equivalence, NOT (A XOR B)
@@ -591,6 +647,42 @@ pub fn svs_f64(a: &[f64]) -> f64 {
     res
 }
 
+/// Maximum magnitude of vector
+#[doc(alias = "vDSP_maxmgv")]
+#[inline]
+pub fn maxmg_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _maxmg_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Maximum magnitude of vector
+#[doc(alias = "vDSP_maxmgvD")]
+#[inline]
+pub fn maxmg_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _maxmg_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Minimum magnitude of vector
+#[doc(alias = "vDSP_minmgv")]
+#[inline]
+pub fn minmg_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _minmg_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Minimum magnitude of vector
+#[doc(alias = "vDSP_minmgvD")]
+#[inline]
+pub fn minmg_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _minmg_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
 /// Vector generate tapered ramp
 #[doc(alias = "vDSP_vgen")]
 #[inline]
@@ -603,6 +695,152 @@ pub fn gen_f32(a: &f32, b: &f32, c: &mut [f32]) {
 #[inline]
 pub fn gen_f64(a: &f64, b: &f64, c: &mut [f64]) {
     unsafe { _gen_f64(a, b, c.as_mut_ptr(), 1, c.len()) }
+}
+
+/// Vector build ramp
+#[doc(alias = "vDSP_vramp")]
+#[inline]
+pub fn ramp_f32(a: &f32, b: &f32, c: &mut [f32]) {
+    unsafe { _ramp_f32(a, b, c.as_mut_ptr(), 1, c.len()) }
+}
+
+/// Vector build ramp
+#[doc(alias = "vDSP_vrampD")]
+#[inline]
+pub fn ramp_f64(a: &f64, b: &f64, c: &mut [f64]) {
+    unsafe { _ramp_f64(a, b, c.as_mut_ptr(), 1, c.len()) }
+}
+
+/// Stereo vector single-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmul2")]
+#[inline]
+pub fn rampmul2_f32(
+    i0: &[f32],
+    i1: &[f32],
+    start: &mut f32,
+    step: &f32,
+    o0: &mut [f32],
+    o1: &mut [f32],
+) {
+    let n = i0.len();
+    assert_eq!(n, i1.len());
+    assert_eq!(n, o0.len());
+    assert_eq!(n, o1.len());
+    unsafe {
+        _rampmul2_f32(
+            i0.as_ptr(),
+            i1.as_ptr(),
+            1,
+            start,
+            step,
+            o0.as_mut_ptr(),
+            o1.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Inplace stereo vector single-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmul2")]
+#[inline]
+pub fn rampmul2_io_f32(io0: &mut [f32], io1: &mut [f32], start: &mut f32, step: &f32) {
+    let n = io0.len();
+    assert_eq!(n, io1.len());
+    unsafe {
+        _rampmul2_f32(
+            io0.as_ptr(),
+            io1.as_ptr(),
+            1,
+            start,
+            step,
+            io0.as_mut_ptr(),
+            io1.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Stereo vector double-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmul2D")]
+#[inline]
+pub fn rampmul2_f64(
+    i0: &[f64],
+    i1: &[f64],
+    start: &mut f64,
+    step: &f64,
+    o0: &mut [f64],
+    o1: &mut [f64],
+) {
+    let n = i0.len();
+    assert_eq!(n, i1.len());
+    assert_eq!(n, o0.len());
+    assert_eq!(n, o1.len());
+    unsafe {
+        _rampmul2_f64(
+            i0.as_ptr(),
+            i1.as_ptr(),
+            1,
+            start,
+            step,
+            o0.as_mut_ptr(),
+            o1.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+/// Inplace stereo vector double-precision vramp and multiply.
+#[doc(alias = "vDSP_vrampmul2D")]
+#[inline]
+pub fn rampmul2_io_f64(io0: &mut [f64], io1: &mut [f64], start: &mut f64, step: &f64) {
+    let n = io0.len();
+    assert_eq!(n, io1.len());
+    unsafe {
+        _rampmul2_f64(
+            io0.as_ptr(),
+            io1.as_ptr(),
+            1,
+            start,
+            step,
+            io0.as_mut_ptr(),
+            io1.as_mut_ptr(),
+            1,
+            n,
+        )
+    }
+}
+
+#[doc(alias = "vDSP_vneg")]
+#[inline]
+pub fn neg_f32(a: &[f32], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _neg_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
+}
+
+#[doc(alias = "vDSP_vneg")]
+#[inline]
+pub fn neg_io_f32(io: &mut [f32]) {
+    let n = io.len();
+    unsafe { _neg_f32(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) };
+}
+
+#[doc(alias = "vDSP_vnegD")]
+#[inline]
+pub fn neg_f64(a: &[f64], c: &mut [f64]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _neg_f64(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
+}
+
+#[doc(alias = "vDSP_vnegD")]
+#[inline]
+pub fn neg_io_f64(io: &mut [f64]) {
+    let n = io.len();
+    unsafe { _neg_f64(io.as_ptr(), 1, io.as_mut_ptr(), 1, n) };
 }
 
 #[link(name = "Accelerate", kind = "framework")]
@@ -1006,6 +1244,26 @@ extern "C" {
     #[link_name = "vDSP_svsD"]
     pub fn _svs_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
 
+    /// Maximum magnitude of vector
+    #[doc(alias = "vDSP_maxmgv")]
+    #[link_name = "vDSP_maxmgv"]
+    pub fn _maxmg_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Maximum magnitude of vector
+    #[doc(alias = "vDSP_maxmgvD")]
+    #[link_name = "vDSP_maxmgvD"]
+    pub fn _maxmg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Minimum magnitude of vector
+    #[doc(alias = "vDSP_minmgv")]
+    #[link_name = "vDSP_minmgv"]
+    pub fn _minmg_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Mimimum magnitude of vector
+    #[doc(alias = "vDSP_minmgvD")]
+    #[link_name = "vDSP_minmgvD"]
+    pub fn _minmg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
     /// Vector generate tapered ramp
     #[doc(alias = "vDSP_vgen")]
     #[link_name = "vDSP_vgen"]
@@ -1015,6 +1273,54 @@ extern "C" {
     #[doc(alias = "vDSP_vgenD")]
     #[link_name = "vDSP_vgenD"]
     pub fn _gen_f64(__A: &f64, __B: &f64, __C: *mut f64, __IC: Stride, __N: Len);
+
+    /// Vector build ramp
+    #[doc(alias = "vDSP_vramp")]
+    #[link_name = "vDSP_vramp"]
+    pub fn _ramp_f32(__A: &f32, __B: &f32, __C: *mut f32, __IC: Stride, __N: Len);
+
+    /// Vector build ramp
+    #[doc(alias = "vDSP_vrampD")]
+    #[link_name = "vDSP_vrampD"]
+    pub fn _ramp_f64(__A: &f64, __B: &f64, __C: *mut f64, __IC: Stride, __N: Len);
+
+    /// Stereo vector single-precision vramp and multiply.
+    #[doc(alias = "vDSP_vrampmul2")]
+    #[link_name = "vDSP_vrampmul2"]
+    pub fn _rampmul2_f32(
+        __I0: *const f32,
+        __I1: *const f32,
+        __IS: Stride,
+        __Start: &mut f32,
+        __Step: &f32,
+        __O0: *mut f32,
+        __O1: *mut f32,
+        __IS: Stride,
+        __N: Len,
+    );
+
+    /// Stereo vector double-precision vramp and multiply.
+    #[doc(alias = "vDSP_vrampmul2D")]
+    #[link_name = "vDSP_vrampmul2D"]
+    pub fn _rampmul2_f64(
+        __I0: *const f64,
+        __I1: *const f64,
+        __IS: Stride,
+        __Start: &mut f64,
+        __Step: &f64,
+        __O0: *mut f64,
+        __O1: *mut f64,
+        __IS: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vneg")]
+    #[link_name = "vDSP_vneg"]
+    pub fn _neg_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __IC: Stride, __N: Len);
+
+    #[doc(alias = "vDSP_vnegD")]
+    #[link_name = "vDSP_vnegD"]
+    pub fn _neg_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __IC: Stride, __N: Len);
 }
 
 #[cfg(test)]
@@ -1086,5 +1392,25 @@ mod tests {
 
         vdsp::gen_f32(&0.0, &1.0, &mut c[..3]);
         assert_eq!(&[0.0, 0.5, 1.0], &c[..3]);
+    }
+
+    #[test]
+    fn stereo() {
+        let mut l = vec![10.0f32, 100.0, 10.0, 100.0, 10.0, 100.0, 10.0, 100.0];
+        let mut r = vec![10.0f32, 100.0, 10.0, 100.0, 10.0, 100.0, 10.0, 100.0];
+
+        vdsp::neg_io_f32(&mut r);
+
+        let mut start = 0.0f32;
+        let step = 1.0f32;
+        vdsp::rampmul2_io_f32(&mut l, &mut r, &mut start, &step);
+
+        assert_eq!(start, step * l.len() as f32);
+
+        assert_eq!(vdsp::maxmg_f32(&l), 700.0);
+        assert_eq!(vdsp::maxmg_f32(&r), 700.0);
+
+        assert_eq!(vdsp::minmg_f32(&l), 0.0);
+        assert_eq!(vdsp::minmg_f32(&r), 0.0);
     }
 }
