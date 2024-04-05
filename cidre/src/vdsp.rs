@@ -1,34 +1,195 @@
+use std::ptr::NonNull;
+
 #[doc(alias = "vDSP_Length")]
 pub type Len = usize;
 
 #[doc(alias = "vDSP_Stride")]
 pub type Stride = isize;
 
-#[derive(Debug, Copy, Clone)]
-#[repr(C)]
-pub struct Complex<T> {
-    pub real: T,
-    pub imag: T,
+#[doc(alias = "FFTDirection")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(i32)]
+pub enum FftDirection {
+    Forward = 1,
+    Inverse = -1,
+}
+
+#[doc(alias = "FFTRadix")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(i32)]
+pub enum FftRadix {
+    _2 = 0,
+    _3 = 1,
+    _5 = 2,
 }
 
 #[doc(alias = "DSPComplex")]
-pub type ComplexF32 = Complex<f32>;
-
 #[doc(alias = "DSPDoubleComplex")]
-pub type ComplexF64 = Complex<f64>;
-
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
-pub struct SplitComplex<T> {
-    pub real: *mut T,
-    pub imag: *mut T,
+pub struct Complex<T> {
+    pub re: T,
+    pub im: T,
 }
 
 #[doc(alias = "DSPSplitComplex")]
-pub type SplitComplexF32 = SplitComplex<f32>;
-
 #[doc(alias = "DSPDoubleSplitComplex")]
-pub type SplitComplexF64 = SplitComplex<f64>;
+#[derive(Debug)]
+#[repr(C)]
+pub struct SplitComplex<'r, 'i, T> {
+    re: *mut T,
+    im: *mut T,
+    life_times: std::marker::PhantomData<(&'r T, &'i T)>,
+}
+
+impl<'r, 'i, T> SplitComplex<'r, 'i, T> {
+    pub fn new(re: &'r [T], im: &'i [T]) -> Self {
+        assert_eq!(re.len(), im.len());
+        Self {
+            re: re.as_ptr() as _,
+            im: im.as_ptr() as _,
+            life_times: std::marker::PhantomData,
+        }
+    }
+
+    pub fn new_mut(re: &'r mut [T], im: &'i mut [T]) -> Self {
+        assert_eq!(re.len(), im.len());
+        Self {
+            re: re.as_mut_ptr(),
+            im: im.as_mut_ptr(),
+            life_times: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<'r, 'i> SplitComplex<'r, 'i, f32> {
+    pub fn new_f32(re: &'r mut [f32], im: &'i mut [f32]) -> Self {
+        assert_eq!(re.len(), im.len());
+        Self {
+            re: re.as_ptr() as _,
+            im: im.as_ptr() as _,
+            life_times: std::marker::PhantomData,
+        }
+    }
+}
+
+pub type SplitComplexF32<'r, 'i> = SplitComplex<'r, 'i, f32>;
+
+pub type SplitComplexF64<'r, 'i> = SplitComplex<'r, 'i, f64>;
+
+#[doc(alias = "OpaqueFFTSetup")]
+#[doc(alias = "OpaqueFFTSetupD")]
+#[repr(transparent)]
+pub struct FftSetup<T>(std::ffi::c_void, std::marker::PhantomData<T>);
+
+struct FftVt<T> {
+    transform_io: unsafe extern "C" fn(
+        __Setup: *mut FftSetup<T>,
+        __C: *mut SplitComplex<T>,
+        __IC: Stride,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    ),
+    transform: unsafe extern "C" fn(
+        __Setup: *mut FftSetup<T>,
+        __C: *const SplitComplex<T>,
+        __IC: Stride,
+        __Buffer: *mut SplitComplex<T>,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    ),
+    destroy: unsafe extern "C" fn(*mut FftSetup<T>),
+}
+
+impl FftVt<f32> {
+    pub fn new_f32() -> Self {
+        Self {
+            transform_io: _fft_zip_f32,
+            transform: _fft_zipt_f32,
+            destroy: _destroy_fftsetup_f32,
+        }
+    }
+}
+
+impl FftVt<f64> {
+    pub fn new_f64() -> Self {
+        Self {
+            transform_io: _fft_zip_f64,
+            transform: _fft_zipt_f64,
+            destroy: _destroy_fftsetup_f64,
+        }
+    }
+}
+
+pub struct Fft<T>(NonNull<FftSetup<T>>, FftVt<T>);
+
+impl<T> Fft<T> {
+    #[inline]
+    pub fn transform_io(&mut self, re_io: &mut [T], im_io: &mut [T], direction: FftDirection) {
+        unsafe {
+            let log2n = (re_io.len() as f64).log2().ceil();
+            let mut split = SplitComplex::new_mut(re_io, im_io);
+            (self.1.transform_io)(self.0.as_mut(), &mut split, 1, log2n as _, direction)
+        }
+    }
+
+    #[inline]
+    pub fn forward_io(&mut self, re_io: &mut [T], im_io: &mut [T]) {
+        self.transform_io(re_io, im_io, FftDirection::Forward)
+    }
+
+    #[inline]
+    pub fn inverse_io(&mut self, re_io: &mut [T], im_io: &mut [T]) {
+        self.transform_io(re_io, im_io, FftDirection::Inverse)
+    }
+
+    #[inline]
+    pub fn transform(
+        &mut self,
+        re: &[T],
+        im: &[T],
+        buf_re: &mut [T],
+        buf_im: &mut [T],
+        direction: FftDirection,
+    ) {
+        let n = re.len();
+        let log2n = (n as f64).log2().ceil();
+        let c = SplitComplex::new(re, im);
+        let mut buf = SplitComplex::new_mut(buf_re, buf_im);
+        unsafe { (self.1.transform)(self.0.as_mut(), &c, 1, &mut buf, log2n as _, direction) }
+    }
+
+    #[inline]
+    pub fn forward(&mut self, re: &[T], im: &[T], buf_re: &mut [T], buf_im: &mut [T]) {
+        self.transform(re, im, buf_re, buf_im, FftDirection::Forward)
+    }
+
+    #[inline]
+    pub fn inverse(&mut self, re: &[T], im: &[T], buf_re: &mut [T], buf_im: &mut [T]) {
+        self.transform(re, im, buf_re, buf_im, FftDirection::Inverse)
+    }
+}
+
+impl Fft<f32> {
+    #[inline]
+    pub fn new_f32(log2n: Len, radix: FftRadix) -> Option<Self> {
+        let setup = unsafe { _create_fftsetup_f32(log2n, radix) };
+        setup.map(|v| Self(v, FftVt::new_f32()))
+    }
+}
+
+impl Fft<f64> {
+    pub fn new_f64(log2n: Len, radix: FftRadix) -> Option<Self> {
+        let setup = unsafe { _create_fftsetup_f64(log2n, radix) };
+        setup.map(|v| Self(v, FftVt::new_f64()))
+    }
+}
+
+impl<T> Drop for Fft<T> {
+    fn drop(&mut self) {
+        unsafe { (self.1.destroy)(self.0.as_ptr()) };
+    }
+}
 
 /// Vector add
 ///
@@ -719,6 +880,24 @@ pub fn minmg_f64(a: &[f64]) -> f64 {
     res
 }
 
+/// Minimum value of vector
+#[doc(alias = "vDSP_minv")]
+#[inline]
+pub fn min_f32(a: &[f32]) -> f32 {
+    let mut res = 0.0f32;
+    unsafe { _min_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Minimum value of vector
+#[doc(alias = "vDSP_minvD")]
+#[inline]
+pub fn min_f64(a: &[f64]) -> f64 {
+    let mut res = 0.0f64;
+    unsafe { _min_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
 /// Vector generate tapered ramp
 #[doc(alias = "vDSP_vgen")]
 #[inline]
@@ -929,6 +1108,13 @@ pub fn tmerg_f64(a: &[f64], b: &[f64], c: &mut [f64]) {
     assert_eq!(n, b.len());
     assert_eq!(n, c.len());
     unsafe { _tmerg_f64(a.as_ptr(), 1, b.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
+}
+
+/// Complex-split accumulating autospectrum
+#[doc(alias = "vDSP_zaspec")]
+#[inline]
+pub fn zaspec_f32(a: &SplitComplex<f32>, c: &mut [f32]) {
+    unsafe { _zaspec_f32(a, c.as_mut_ptr(), c.len()) }
 }
 
 #[link(name = "Accelerate", kind = "framework")]
@@ -1372,6 +1558,16 @@ extern "C" {
     #[link_name = "vDSP_minmgvD"]
     pub fn _minmg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
 
+    /// Minimum value of vector
+    #[doc(alias = "vDSP_minv")]
+    #[link_name = "vDSP_minv"]
+    pub fn _min_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Minimum value of vector
+    #[doc(alias = "vDSP_minvD")]
+    #[link_name = "vDSP_minvD"]
+    pub fn _min_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
     /// Vector generate tapered ramp
     #[doc(alias = "vDSP_vgen")]
     #[link_name = "vDSP_vgen"]
@@ -1481,6 +1677,118 @@ extern "C" {
         __IC: Stride,
         __N: Len,
     );
+
+    /// Convert a complex array to a complex-split array
+    #[doc(alias = "vDSP_ctoz")]
+    #[link_name = "vDSP_ctoz"]
+    pub fn _ctoz_f32(
+        __C: *const Complex<f32>,
+        __IC: Stride,
+        __Z: *const SplitComplex<f32>,
+        __IZ: Stride,
+        __N: Len,
+    );
+
+    /// Convert a complex array to a complex-split array
+    #[doc(alias = "vDSP_ctozD")]
+    #[link_name = "vDSP_ctozD"]
+    pub fn _ctoz_f64(
+        __C: *const Complex<f64>,
+        __IC: Stride,
+        __Z: *const SplitComplex<f64>,
+        __IZ: Stride,
+        __N: Len,
+    );
+
+    /// Convert a complex-split array to a complex array
+    #[doc(alias = "vDSP_ztoc")]
+    #[link_name = "vDSP_ztoc"]
+    pub fn _ztoc_f32(
+        __Z: *const SplitComplex<f32>,
+        __IZ: Stride,
+        __C: *mut Complex<f32>,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    /// Convert a complex-split array to a complex array
+    #[doc(alias = "vDSP_ztocD")]
+    #[link_name = "vDSP_ztocD"]
+    pub fn _ztoc_f64(
+        __Z: *const SplitComplex<f64>,
+        __IZ: Stride,
+        __C: *mut Complex<f64>,
+        __IC: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_create_fftsetup")]
+    #[link_name = "vDSP_create_fftsetup"]
+    pub fn _create_fftsetup_f32(__Log2n: Len, __Radix: FftRadix) -> Option<NonNull<FftSetup<f32>>>;
+
+    #[doc(alias = "vDSP_create_fftsetupD")]
+    #[link_name = "vDSP_create_fftsetupD"]
+    pub fn _create_fftsetup_f64(__Log2n: Len, __Radix: FftRadix) -> Option<NonNull<FftSetup<f64>>>;
+
+    #[doc(alias = "vDSP_destroy_fftsetup")]
+    #[link_name = "vDSP_destroy_fftsetup"]
+    pub fn _destroy_fftsetup_f32(setup: *mut FftSetup<f32>);
+
+    #[doc(alias = "vDSP_destroy_fftsetupD")]
+    #[link_name = "vDSP_destroy_fftsetupD"]
+    pub fn _destroy_fftsetup_f64(setup: *mut FftSetup<f64>);
+
+    #[doc(alias = "vDSP_fft_zip")]
+    #[link_name = "vDSP_fft_zip"]
+    pub fn _fft_zip_f32(
+        __Setup: *mut FftSetup<f32>,
+        __C: *mut SplitComplex<f32>,
+        __IC: Stride,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    );
+
+    #[doc(alias = "vDSP_fft_zipD")]
+    #[link_name = "vDSP_fft_zipD"]
+    pub fn _fft_zip_f64(
+        __Setup: *mut FftSetup<f64>,
+        __C: *mut SplitComplex<f64>,
+        __IC: Stride,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    );
+    #[doc(alias = "vDSP_fft_zipt")]
+    #[link_name = "vDSP_fft_zipt"]
+    pub fn _fft_zipt_f32(
+        __Setup: *mut FftSetup<f32>,
+        __C: *const SplitComplex<f32>,
+        __IC: Stride,
+        __Buffer: *mut SplitComplex<f32>,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    );
+
+    #[doc(alias = "vDSP_fft_ziptD")]
+    #[link_name = "vDSP_fft_ziptD"]
+    pub fn _fft_zipt_f64(
+        __Setup: *mut FftSetup<f64>,
+        __C: *const SplitComplex<f64>,
+        __IC: Stride,
+        __Buffer: *mut SplitComplex<f64>,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    );
+
+    /// Complex-split accumulating autospectrum
+    #[doc(alias = "vDSP_zaspec")]
+    #[link_name = "vDSP_zaspec"]
+    pub fn _zaspec_f32(__A: *const SplitComplex<f32>, __C: *mut f32, __N: Len);
+
+    /// Complex-split accumulating autospectrum
+    #[doc(alias = "vDSP_zaspecD")]
+    #[link_name = "vDSP_zaspecD"]
+    pub fn _zaspec_f64(__A: *const SplitComplex<f64>, __C: *mut f64, __N: Len);
+
 }
 
 #[cfg(test)]
@@ -1572,5 +1880,13 @@ mod tests {
 
         assert_eq!(vdsp::minmg_f32(&l), 0.0);
         assert_eq!(vdsp::minmg_f32(&r), 0.0);
+
+        assert_eq!(vdsp::min_f32(&l), 0.0);
+        assert_eq!(vdsp::min_f32(&r), -700.0);
+    }
+
+    #[test]
+    fn fft() {
+        let ffi = vdsp::Fft::new_f32(10, vdsp::FftRadix::_2).unwrap();
     }
 }
