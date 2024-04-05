@@ -901,7 +901,7 @@ impl Unit {
                 prop_id,
                 scope,
                 element,
-                vec.as_mut_ptr() as _,
+                vec.as_mut_ptr().cast(),
                 &mut size,
             )
             .result()?;
@@ -924,7 +924,7 @@ impl Unit {
                 prop_id,
                 scope,
                 element,
-                value.as_mut_ptr() as _,
+                value.as_mut_ptr().cast(),
                 &mut size,
             )
             .result()?;
