@@ -460,8 +460,8 @@ impl ConverterRef {
         src_fmt: &audio::StreamBasicDesc,
         dst_fmt: &audio::StreamBasicDesc,
     ) -> Result<Self, os::Status> {
+        let mut out_converter = None;
         unsafe {
-            let mut out_converter = None;
             Self::new(src_fmt, dst_fmt, &mut out_converter).to_result_unchecked(out_converter)
         }
     }
@@ -474,14 +474,14 @@ impl Converter {
     }
 
     #[inline]
-    pub fn property_info(&self, prop_id: PropId) -> Result<PropertyInfo, os::Status> {
+    pub fn property_info(&self, prop_id: PropId) -> Result<PropInfo, os::Status> {
+        let mut size = 0;
+        let mut writable = false;
         unsafe {
-            let mut size = 0;
-            let mut writable = false;
             let r = AudioConverterGetPropertyInfo(self, prop_id, &mut size, &mut writable);
 
             if r.is_ok() {
-                Ok(PropertyInfo { size, writable })
+                Ok(PropInfo { size, writable })
             } else {
                 Err(r)
             }
@@ -622,10 +622,12 @@ impl Converter {
         unsafe { self.set_prop(PropId::ENCODE_BIT_RATE, &val) }
     }
 
+    #[inline]
     pub fn prime_method(&self) -> Result<PrimeMethod, os::Status> {
         unsafe { self.prop(PropId::PRIME_METHOD) }
     }
 
+    #[inline]
     pub fn set_prime_method(&mut self, val: PrimeMethod) -> Result<(), os::Status> {
         unsafe { self.set_prop(PropId::PRIME_METHOD, &val) }
     }
@@ -646,7 +648,7 @@ impl Converter {
         AudioConverterFillComplexBuffer(
             self,
             transmute(in_input_data_proc),
-            transmute(in_input_data_proc_user_data),
+            in_input_data_proc_user_data as _,
             io_output_data_packet_size,
             transmute(out_output_data),
             out_packet_description,
@@ -673,8 +675,8 @@ impl Converter {
         AudioConverterConvertComplexBuffer(
             self,
             in_number_pcm_frames,
-            std::mem::transmute(in_input_data),
-            std::mem::transmute(out_output_data),
+            in_input_data as _,
+            out_output_data as _,
         )
     }
 
@@ -699,19 +701,19 @@ impl Converter {
     #[doc(alias = "AudioConverterConvertBuffer")]
     #[inline]
     pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> Result<usize, os::Status> {
-        unsafe {
-            let mut n = output.len() as u32;
-            let res = self.convert_buffer(
+        let mut n = output.len() as u32;
+        let res = unsafe {
+            self.convert_buffer(
                 input.len() as _,
                 input.as_ptr() as _,
                 &mut n,
                 output.as_mut_ptr() as _,
-            );
-            if res.is_ok() {
-                Ok(n as _)
-            } else {
-                Err(res)
-            }
+            )
+        };
+        if res.is_ok() {
+            Ok(n as _)
+        } else {
+            Err(res)
         }
     }
 
@@ -787,7 +789,7 @@ impl Drop for ConverterRef {
 
 #[derive(Clone, Copy, Debug)]
 #[repr(C)]
-pub struct PropertyInfo {
+pub struct PropInfo {
     pub size: u32,
     pub writable: bool,
 }
