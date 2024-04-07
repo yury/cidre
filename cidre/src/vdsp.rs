@@ -98,6 +98,14 @@ struct FftVt<T> {
         __Log2N: Len,
         __Direction: FftDirection,
     ),
+    zrip: unsafe extern "C" fn(
+        __Setup: *mut FftSetup<T>,
+        __C: *const SplitComplex<T>,
+        __IC: Stride,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    ),
+
     destroy: unsafe extern "C" fn(*mut FftSetup<T>),
 }
 
@@ -106,6 +114,7 @@ impl FftVt<f32> {
         Self {
             transform_io: _fft_zip_f32,
             transform: _fft_zipt_f32,
+            zrip: _fft_zrip_f32,
             destroy: _destroy_fftsetup_f32,
         }
     }
@@ -116,6 +125,7 @@ impl FftVt<f64> {
         Self {
             transform_io: _fft_zip_f64,
             transform: _fft_zipt_f64,
+            zrip: _fft_zrip_f64,
             destroy: _destroy_fftsetup_f64,
         }
     }
@@ -125,12 +135,17 @@ pub struct Fft<T>(NonNull<FftSetup<T>>, FftVt<T>);
 
 impl<T> Fft<T> {
     #[inline]
+    pub fn zr_io(&mut self, re_io: &mut [T], im_io: &mut [T], direction: FftDirection) {
+        let log2n = (re_io.len() as f64).log2().ceil();
+        let mut split = SplitComplex::new_mut(re_io, im_io);
+        unsafe { (self.1.zrip)(self.0.as_mut(), &mut split, 1, log2n as _, direction) }
+    }
+
+    #[inline]
     pub fn transform_io(&mut self, re_io: &mut [T], im_io: &mut [T], direction: FftDirection) {
-        unsafe {
-            let log2n = (re_io.len() as f64).log2().ceil();
-            let mut split = SplitComplex::new_mut(re_io, im_io);
-            (self.1.transform_io)(self.0.as_mut(), &mut split, 1, log2n as _, direction)
-        }
+        let log2n = (re_io.len() as f64).log2().ceil();
+        let mut split = SplitComplex::new_mut(re_io, im_io);
+        unsafe { (self.1.transform_io)(self.0.as_mut(), &mut split, 1, log2n as _, direction) }
     }
 
     #[inline]
@@ -146,26 +161,26 @@ impl<T> Fft<T> {
     #[inline]
     pub fn transform(
         &mut self,
-        re: &[T],
-        im: &[T],
-        buf_re: &mut [T],
-        buf_im: &mut [T],
+        re: &mut [T],
+        im: &mut [T],
+        tmp_re: &mut [T],
+        tmp_im: &mut [T],
         direction: FftDirection,
     ) {
         let n = re.len();
         let log2n = (n as f64).log2().ceil();
-        let c = SplitComplex::new(re, im);
-        let mut buf = SplitComplex::new_mut(buf_re, buf_im);
+        let c = SplitComplex::new_mut(re, im);
+        let mut buf = SplitComplex::new_mut(tmp_re, tmp_im);
         unsafe { (self.1.transform)(self.0.as_mut(), &c, 1, &mut buf, log2n as _, direction) }
     }
 
     #[inline]
-    pub fn forward(&mut self, re: &[T], im: &[T], buf_re: &mut [T], buf_im: &mut [T]) {
-        self.transform(re, im, buf_re, buf_im, FftDirection::Forward)
+    pub fn forward(&mut self, re: &mut [T], im: &mut [T], tmp_re: &mut [T], tmp_im: &mut [T]) {
+        self.transform(re, im, tmp_re, tmp_im, FftDirection::Forward)
     }
 
     #[inline]
-    pub fn inverse(&mut self, re: &[T], im: &[T], buf_re: &mut [T], buf_im: &mut [T]) {
+    pub fn inverse(&mut self, re: &mut [T], im: &mut [T], buf_re: &mut [T], buf_im: &mut [T]) {
         self.transform(re, im, buf_re, buf_im, FftDirection::Inverse)
     }
 }
@@ -1117,6 +1132,49 @@ pub fn zaspec_f32(a: &SplitComplex<f32>, c: &mut [f32]) {
     unsafe { _zaspec_f32(a, c.as_mut_ptr(), c.len()) }
 }
 
+/// Complex-split accumulating autospectrum
+#[doc(alias = "vDSP_zaspecD")]
+#[inline]
+pub fn zaspec_f64(a: &SplitComplex<f64>, c: &mut [f64]) {
+    unsafe { _zaspec_f64(a, c.as_mut_ptr(), c.len()) }
+}
+
+/// Convert a complex array to a complex-split array
+#[doc(alias = "vDSP_ctoz")]
+#[inline]
+pub fn ctoz_f32(c: &[Complex<f32>], z_re: &mut [f32], z_im: &mut [f32]) {
+    let n = c.len();
+    assert_eq!(n, z_re.len());
+    assert_eq!(n, z_im.len());
+    unsafe {
+        let split = SplitComplex::new_mut(z_re, z_im);
+        _ctoz_f32(c.as_ptr(), 2, &split, 1, n)
+    }
+}
+
+#[doc(alias = "vDSP_ctoz")]
+#[inline]
+pub fn actoz_f32(a: &[f32], z_re: &mut [f32], z_im: &mut [f32]) {
+    let n = a.len() / 2;
+    assert_eq!(n, z_re.len());
+    assert_eq!(n, z_im.len());
+    let c = a.as_ptr() as *const f32 as *const Complex<f32>;
+    let split = SplitComplex::new_mut(z_re, z_im);
+    unsafe { _ctoz_f32(c, 2, &split, 1, n) }
+}
+
+#[doc(alias = "vDSP_ctozD")]
+#[inline]
+pub fn ctoz_f64(c: &[Complex<f64>], z_re: &mut [f64], z_im: &mut [f64]) {
+    let n = c.len();
+    assert_eq!(n, z_re.len());
+    assert_eq!(n, z_im.len());
+    unsafe {
+        let split = SplitComplex::new_mut(z_re, z_im);
+        _ctoz_f64(c.as_ptr(), 2, &split, 1, n)
+    }
+}
+
 #[link(name = "Accelerate", kind = "framework")]
 extern "C" {
     #[link_name = "vDSP_vadd"]
@@ -1779,6 +1837,26 @@ extern "C" {
         __Direction: FftDirection,
     );
 
+    #[doc(alias = "vDSP_fft_zrip")]
+    #[link_name = "vDSP_fft_zrip"]
+    pub fn _fft_zrip_f32(
+        __Setup: *mut FftSetup<f32>,
+        __C: *const SplitComplex<f32>,
+        __IC: Stride,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    );
+
+    #[doc(alias = "vDSP_fft_zripD")]
+    #[link_name = "vDSP_fft_zripD"]
+    pub fn _fft_zrip_f64(
+        __Setup: *mut FftSetup<f64>,
+        __C: *const SplitComplex<f64>,
+        __IC: Stride,
+        __Log2N: Len,
+        __Direction: FftDirection,
+    );
+
     /// Complex-split accumulating autospectrum
     #[doc(alias = "vDSP_zaspec")]
     #[link_name = "vDSP_zaspec"]
@@ -1793,7 +1871,9 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::vdsp;
+    use std::f32::consts::{PI, TAU};
+
+    use crate::vdsp::{self, SplitComplex};
 
     #[test]
     fn add_sub() {
@@ -1885,8 +1965,49 @@ mod tests {
         assert_eq!(vdsp::min_f32(&r), -700.0);
     }
 
+    fn synth_signal(freq_amp_pairs: &[(f32, f32)], len: usize) -> Vec<f32> {
+        let mut res = vec![0.0f32; len];
+
+        for i in 0..len {
+            let n_index = (i as f32) / ((len - 1) as f32);
+            res[i] = freq_amp_pairs.iter().fold(0.0f32, |acc, pair| {
+                println!("{pair:?}");
+                let r = acc + (n_index + pair.0 * TAU).sin() * pair.1;
+                println!("{r:?}");
+                r
+            });
+        }
+        res
+    }
+
+    // https://developer.apple.com/library/archive/documentation/Performance/Conceptual/vDSP_Programming_Guide/UsingFourierTransforms/UsingFourierTransforms.html
     #[test]
     fn fft() {
-        let ffi = vdsp::Fft::new_f32(10, vdsp::FftRadix::_2).unwrap();
+        // let n = 2048usize;
+        let n = 32usize;
+        // let signal = synth_signal(&[(2.0, 0.8), (7.0, 1.2), (24.0, 0.7), (50.0, 1.0)], n);
+        let signal = synth_signal(&[(2.0, 1.0)], n);
+        println!("{signal:?}");
+        let log2n: usize = n.ilog2() as _;
+        let mut ffi = vdsp::Fft::new_f32(log2n, vdsp::FftRadix::_5).unwrap();
+
+        let half_n: usize = n / 2;
+
+        let mut i_re = vec![0.0f32; half_n];
+        let mut i_im = vec![0.0f32; half_n];
+
+        vdsp::actoz_f32(&signal, &mut i_re, &mut i_im);
+        // println!("{i_im:?}");
+
+        println!("{signal:?}");
+        ffi.zr_io(&mut i_re, &mut i_im, vdsp::FftDirection::Forward);
+        println!("{i_re:?}");
+        println!("{i_im:?}");
+
+        let mut spec = vec![0.0f32; half_n];
+
+        let split = SplitComplex::new(&i_re, &i_im);
+
+        vdsp::zaspec_f32(&split, &mut spec);
     }
 }
