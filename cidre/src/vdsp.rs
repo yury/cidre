@@ -1871,7 +1871,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::f32::consts::{PI, TAU};
+    use std::f32::consts::TAU;
 
     use crate::vdsp::{self, SplitComplex};
 

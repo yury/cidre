@@ -437,7 +437,7 @@ impl DerefMut for ConverterRef {
 /// mechanism can be used when an input proc has temporarily run out of data, but
 /// has not yet reached end of stream.
 #[doc(alias = "AudioConverterComplexInputDataProc")]
-pub type ComplexInputDataProc<D> = extern "C" fn(
+pub type ComplexInputDataProc<D = c_void> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufList,
@@ -474,11 +474,11 @@ impl Converter {
     }
 
     #[inline]
-    pub fn property_info(&self, property_id: PropId) -> Result<PropertyInfo, os::Status> {
+    pub fn property_info(&self, prop_id: PropId) -> Result<PropertyInfo, os::Status> {
         unsafe {
             let mut size = 0;
             let mut writable = false;
-            let r = AudioConverterGetPropertyInfo(self, property_id, &mut size, &mut writable);
+            let r = AudioConverterGetPropertyInfo(self, prop_id, &mut size, &mut writable);
 
             if r.is_ok() {
                 Ok(PropertyInfo { size, writable })
@@ -491,38 +491,38 @@ impl Converter {
     #[inline]
     pub unsafe fn get_property(
         &self,
-        property_id: PropId,
-        io_property_data_size: *mut u32,
-        out_property_data: *mut c_void,
+        prop_id: PropId,
+        io_prop_data_size: *mut u32,
+        out_prop_data: *mut c_void,
     ) -> os::Status {
-        AudioConverterGetProperty(self, property_id, io_property_data_size, out_property_data)
+        AudioConverterGetProperty(self, prop_id, io_prop_data_size, out_prop_data)
     }
 
     #[inline]
     pub unsafe fn set_property(
         &mut self,
-        property_id: PropId,
-        in_property_data_size: u32,
-        in_property_data: *const c_void,
+        prop_id: PropId,
+        in_prop_data_size: u32,
+        in_prop_data: *const c_void,
     ) -> os::Status {
-        AudioConverterSetProperty(self, property_id, in_property_data_size, in_property_data)
+        AudioConverterSetProperty(self, prop_id, in_prop_data_size, in_prop_data)
     }
 
     pub unsafe fn set_prop<T: Sized>(
         &mut self,
-        property_id: PropId,
+        prop_id: PropId,
         val: &T,
     ) -> Result<(), os::Status> {
         let size = size_of::<T>() as u32;
-        self.set_property(property_id, size, val as *const _ as _)
+        self.set_property(prop_id, size, val as *const _ as _)
             .result()
     }
 
     #[inline]
-    pub unsafe fn prop_vec<T: Sized>(&self, property_id: PropId) -> Result<Vec<T>, os::Status> {
-        let mut info = self.property_info(property_id)?;
+    pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> Result<Vec<T>, os::Status> {
+        let mut info = self.property_info(prop_id)?;
         let mut vec = Vec::with_capacity(info.size as usize / size_of::<T>());
-        self.get_property(property_id, &mut info.size, vec.as_mut_ptr() as _)
+        self.get_property(prop_id, &mut info.size, vec.as_mut_ptr() as _)
             .result()?;
         vec.set_len(info.size as usize / size_of::<T>());
         Ok(vec)
@@ -531,11 +531,11 @@ impl Converter {
     #[inline]
     pub unsafe fn set_prop_vec<T: Sized>(
         &mut self,
-        property_id: PropId,
+        prop_id: PropId,
         val: Vec<T>,
     ) -> Result<(), os::Status> {
         self.set_property(
-            property_id,
+            prop_id,
             (val.len() * std::mem::size_of::<T>()) as u32,
             val.as_ptr() as _,
         )
@@ -544,10 +544,10 @@ impl Converter {
     }
 
     #[inline]
-    pub unsafe fn prop<T: Sized + Default>(&self, property_id: PropId) -> Result<T, os::Status> {
+    pub unsafe fn prop<T: Sized + Default>(&self, prop_id: PropId) -> Result<T, os::Status> {
         let mut size = size_of::<T>() as u32;
         let mut value = Default::default();
-        let res = self.get_property(property_id, &mut size, &mut value as *mut _ as _);
+        let res = self.get_property(prop_id, &mut size, &mut value as *mut _ as _);
         if res.is_ok() {
             Ok(value)
         } else {
@@ -696,6 +696,7 @@ impl Converter {
         unsafe { self.convert_complex_buffer(frames, input as *const _, output as *mut _) }.result()
     }
 
+    #[doc(alias = "AudioConverterConvertBuffer")]
     #[inline]
     pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> Result<usize, os::Status> {
         unsafe {
@@ -717,6 +718,7 @@ impl Converter {
     /// # Safety
     ///
     /// use `self.convert_buf()`
+    #[doc(alias = "AudioConverterConvertBuffer")]
     #[inline]
     pub unsafe fn convert_buffer(
         &self,
@@ -801,28 +803,28 @@ extern "C" {
     fn AudioConverterReset(converter: &Converter) -> os::Status;
     fn AudioConverterGetPropertyInfo(
         converter: &Converter,
-        property_id: PropId,
+        prop_id: PropId,
         out_size: *mut u32,
         out_writable: *mut bool,
     ) -> os::Status;
 
     fn AudioConverterGetProperty(
         converter: &Converter,
-        property_id: PropId,
-        io_property_data_size: *mut u32,
-        out_property_data: *mut c_void,
+        prop_id: PropId,
+        io_prop_data_size: *mut u32,
+        out_prop_data: *mut c_void,
     ) -> os::Status;
 
     fn AudioConverterSetProperty(
         converter: &Converter,
-        property_id: PropId,
-        in_property_data_size: u32,
-        in_property_data: *const c_void,
+        prop_id: PropId,
+        in_prop_data_size: u32,
+        in_prop_data: *const c_void,
     ) -> os::Status;
 
     fn AudioConverterFillComplexBuffer(
         converter: &Converter,
-        in_input_data_proc: ComplexInputDataProc<c_void>,
+        in_input_data_proc: ComplexInputDataProc,
         in_input_data_proc_user_data: *mut c_void,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList,
