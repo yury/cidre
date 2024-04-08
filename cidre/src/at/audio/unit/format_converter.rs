@@ -115,11 +115,11 @@ impl FormatConverter<InitializedState> {
     #[inline]
     pub fn render<const N: usize>(
         &mut self,
-        nframes: u32,
+        n_frames: u32,
         buf_list: &mut audio::BufList<N>,
     ) -> Result<(), os::Status> {
         let ts = audio::TimeStamp::invalid();
-        self.0.render(&ts, 0, nframes, buf_list)
+        self.0.render(&ts, 0, n_frames, buf_list)
     }
 }
 

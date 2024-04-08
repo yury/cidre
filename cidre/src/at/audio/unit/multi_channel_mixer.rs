@@ -354,10 +354,10 @@ impl MultiChannelMixer<InitializedState> {
     pub fn render<const N: usize>(
         &mut self,
         ts: &audio::TimeStamp,
-        nframes: u32,
+        n_frames: u32,
         buf_list: &mut audio::BufList<N>,
     ) -> Result<(), os::Status> {
-        self.0.render(ts, 0, nframes, buf_list)
+        self.0.render(ts, 0, n_frames, buf_list)
     }
 }
 
