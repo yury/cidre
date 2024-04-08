@@ -1134,7 +1134,7 @@ pub enum ProduceOutputPacketStatus {
     /// produced. Check the value returned in ioNumberPackets for the
     /// actual number produced. Note that not all formats have EOF
     /// markers in them.    
-    AtEOF = 5,
+    AtEof = 5,
 
     /// No input packets were provided, but the decoder supports packet
     /// loss concealment, so output packets were still created.
