@@ -50,6 +50,16 @@ where
     pub fn remove_input_cb(&mut self) -> Result<(), os::Status> {
         self.0.remove_input_cb(0)
     }
+
+    #[inline]
+    pub fn output_stream_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+        self.unit().stream_format(Scope::OUTPUT, 0)
+    }
+
+    #[inline]
+    pub fn input_stream_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+        self.unit().stream_format(Scope::INPUT, 0)
+    }
 }
 
 impl FormatConverter<UninitializedState> {
@@ -103,11 +113,11 @@ impl FormatConverter<InitializedState> {
 
     pub fn render<const N: usize>(
         &mut self,
-        ts: &audio::TimeStamp,
         nframes: u32,
         buf_list: &mut audio::BufList<N>,
     ) -> Result<(), os::Status> {
-        self.0.render(ts, 0, nframes, buf_list)
+        let ts = audio::TimeStamp::with_sample_time(0.0);
+        self.0.render(&ts, 0, nframes, buf_list)
     }
 }
 
@@ -149,15 +159,13 @@ mod tests {
         let mut conv = conv.allocate_resources().unwrap();
         let mut buf_list: audio::BufList<2> = Default::default();
 
-        let ts = audio::TimeStamp::with_sample_time(0.0);
-
-        conv.render(&ts, 1024, &mut buf_list).unwrap();
-        conv.render(&ts, 1024, &mut buf_list).unwrap();
+        conv.render(1024, &mut buf_list).unwrap();
+        conv.render(1024, &mut buf_list).unwrap();
         assert_eq!(os::Status::NO_ERR, conv.last_render_err().unwrap());
 
         conv.remove_input_cb().unwrap();
         let err = conv
-            .render(&ts, 1024, &mut buf_list)
+            .render(1024, &mut buf_list)
             .expect_err("no connection err");
 
         assert_eq!(err, conv.last_render_err().unwrap());

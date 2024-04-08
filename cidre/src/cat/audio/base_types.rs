@@ -707,6 +707,22 @@ pub struct SMPTETime {
     pub frames: i16,
 }
 
+impl SMPTETime {
+    pub const fn invalid() -> Self {
+        Self {
+            subframes: 0,
+            subframes_divisor: 0,
+            counter: 0,
+            r#type: SMPTETimeType(0),
+            flags: SMPTETimeFlags(0),
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            frames: 0,
+        }
+    }
+}
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct TimeStamp {
@@ -742,13 +758,13 @@ impl TimeStamp {
 
     #[inline]
     #[doc(alias = "FillOutAudioTimeStampWithSampleTime")]
-    pub fn with_sample_time(sample_time: f64) -> Self {
+    pub const fn with_sample_time(sample_time: f64) -> Self {
         Self {
             sample_time,
             host_time: 0,
             rate_scalar: 0.0,
             work_clock_time: 0,
-            smpte_time: Default::default(),
+            smpte_time: SMPTETime::invalid(),
             flags: TimeStampFlags::SAMPLE_TIME_VALID,
             reserved: 0,
         }

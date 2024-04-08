@@ -1076,14 +1076,12 @@ impl Unit {
         self.prop(PropId::SAMPLE_RATE, scope, element)
     }
 
-    pub fn stream_format(&self, scope: Scope) -> Result<audio::StreamBasicDesc, os::Status> {
-        let element = if scope == Scope::INPUT {
-            Element::INPUT
-        } else {
-            Element::OUTPUT
-        };
-
-        self.prop(PropId::STREAM_FORMAT, scope, element)
+    pub fn stream_format(
+        &self,
+        scope: Scope,
+        bus: u32,
+    ) -> Result<audio::StreamBasicDesc, os::Status> {
+        self.prop(PropId::STREAM_FORMAT, scope, Element(bus))
     }
 
     pub fn set_stream_format(
@@ -1276,8 +1274,12 @@ impl<S: State<Unit>> UnitRef<S> {
     }
 
     #[inline]
-    pub fn stream_format(&self, scope: Scope) -> Result<audio::StreamBasicDesc, os::Status> {
-        self.0.stream_format(scope)
+    pub fn stream_format(
+        &self,
+        scope: Scope,
+        bus: u32,
+    ) -> Result<audio::StreamBasicDesc, os::Status> {
+        self.0.stream_format(scope, bus)
     }
 
     #[inline]
@@ -1612,7 +1614,7 @@ mod tests {
         println!("count {:?}", mixer.element_count(au::Scope::INPUT).unwrap());
         println!("{:?}", mixer.sample_rate(au::Scope::OUTPUT));
         mixer.render(&ts, 0, 1024, &mut buf).unwrap();
-        let asbd = mixer.stream_format(au::Scope::OUTPUT).unwrap();
+        let asbd = mixer.stream_format(au::Scope::OUTPUT, 0).unwrap();
         println!("mixer {:?}", asbd);
         println!("mixer {:?}", mixer.last_render_sample_time());
         println!("{:?}", buf.buffers[0].data_bytes_size);
