@@ -168,6 +168,7 @@ mod tests {
             .render(1024, &mut buf_list)
             .expect_err("no connection err");
 
+        assert_eq!(err, au::err::NO_CONNECTION);
         assert_eq!(err, conv.last_render_err().unwrap());
     }
 }
