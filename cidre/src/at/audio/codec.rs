@@ -976,6 +976,11 @@ impl Codec {
         unsafe { self.prop_vec(GlobalPropId::SUPPORTED_INPUT_FORMATS.0) }
     }
 
+    #[inline]
+    pub fn supported_output_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
+        unsafe { self.prop_vec(GlobalPropId::SUPPORTED_OUTPUT_FORMATS.0) }
+    }
+
     /// Flushes all the data in the codec and clears the input buffer. Note that
     /// the formats, and magic cookie will be retained so they won't need to be
     /// set up again to decode the same data.
@@ -992,6 +997,11 @@ where
     #[inline]
     pub fn supported_input_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
         self.0.supported_input_formats()
+    }
+
+    #[inline]
+    pub fn supported_output_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
+        self.0.supported_output_formats()
     }
 
     #[inline]
