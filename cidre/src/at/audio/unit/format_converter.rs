@@ -107,16 +107,18 @@ impl FormatConverter<UninitializedState> {
 }
 
 impl FormatConverter<InitializedState> {
+    #[inline]
     pub fn deallocate_resources(self) -> Result<FormatConverter<UninitializedState>, os::Status> {
         Ok(FormatConverter(self.0.unintialize()?))
     }
 
+    #[inline]
     pub fn render<const N: usize>(
         &mut self,
         nframes: u32,
         buf_list: &mut audio::BufList<N>,
     ) -> Result<(), os::Status> {
-        let ts = audio::TimeStamp::with_sample_time(0.0);
+        let ts = audio::TimeStamp::invalid();
         self.0.render(&ts, 0, nframes, buf_list)
     }
 }

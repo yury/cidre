@@ -744,13 +744,13 @@ pub struct TimeStamp {
 }
 
 impl TimeStamp {
-    pub fn invalid() -> Self {
+    pub const fn invalid() -> Self {
         Self {
             sample_time: 0.0,
             host_time: 0,
             rate_scalar: 0.0,
             work_clock_time: 0,
-            smpte_time: Default::default(),
+            smpte_time: SMPTETime::invalid(),
             flags: TimeStampFlags::NOTHING_VALID,
             reserved: 0,
         }
