@@ -47,8 +47,8 @@ where
     }
 
     #[inline]
-    pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
-        self.0.remove_input_cb(bus)
+    pub fn remove_input_cb(&mut self) -> Result<(), os::Status> {
+        self.0.remove_input_cb(0)
     }
 }
 
@@ -153,7 +153,13 @@ mod tests {
 
         conv.render(&ts, 1024, &mut buf_list).unwrap();
         conv.render(&ts, 1024, &mut buf_list).unwrap();
-
         assert_eq!(os::Status::NO_ERR, conv.last_render_err().unwrap());
+
+        conv.remove_input_cb().unwrap();
+        let err = conv
+            .render(&ts, 1024, &mut buf_list)
+            .expect_err("no connection err");
+
+        assert_eq!(err, conv.last_render_err().unwrap());
     }
 }
