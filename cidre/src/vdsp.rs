@@ -1175,6 +1175,28 @@ pub fn ctoz_f64(c: &[Complex<f64>], z_re: &mut [f64], z_im: &mut [f64]) {
     }
 }
 
+/// Convert a complex-split array to a complex array
+#[doc(alias = "vDSP_ztoc")]
+#[inline]
+pub fn ztoc_f32(re: &[f32], im: &[f32], c: &mut [Complex<f32>]) {
+    let n = re.len();
+    assert_eq!(n, im.len());
+    assert_eq!(n, c.len());
+    let split = SplitComplex::new(re, im);
+    unsafe { _ztoc_f32(&split, 1, c.as_mut_ptr(), 2, n) };
+}
+
+/// Convert a complex-split array to a complex array
+#[doc(alias = "vDSP_ztocD")]
+#[inline]
+pub fn ztoc_f64(re: &[f64], im: &[f64], c: &mut [Complex<f64>]) {
+    let n = re.len();
+    assert_eq!(n, im.len());
+    assert_eq!(n, c.len());
+    let split = SplitComplex::new(re, im);
+    unsafe { _ztoc_f64(&split, 1, c.as_mut_ptr(), 2, n) };
+}
+
 #[link(name = "Accelerate", kind = "framework")]
 extern "C" {
     #[link_name = "vDSP_vadd"]
@@ -2009,5 +2031,23 @@ mod tests {
         let split = SplitComplex::new(&i_re, &i_im);
 
         vdsp::zaspec_f32(&split, &mut spec);
+    }
+
+    #[test]
+    fn ztoc() {
+        let re = [1.0, 2.0, 3.0];
+        let im = [4.0, 5.0, 6.0];
+        let mut c = vec![vdsp::Complex::<f32>::default(); 3];
+        vdsp::ztoc_f32(&re, &im, &mut c);
+        println!("{c:?}");
+
+        assert_eq!(c[0].re, 1.0);
+        assert_eq!(c[0].im, 4.0);
+
+        assert_eq!(c[1].re, 2.0);
+        assert_eq!(c[1].im, 5.0);
+
+        assert_eq!(c[2].re, 3.0);
+        assert_eq!(c[2].im, 6.0);
     }
 }
