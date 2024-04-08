@@ -145,13 +145,17 @@ mod tests {
         assert_eq!(1024, max_frames_per_slice);
 
         extern "C" fn render(
-            _in_ref_con: *mut c_void,
+            in_ref_con: *mut c_void,
             _io_action_flags: &mut au::RenderActionFlags,
             _in_timestamp: &at::AudioTimeStamp,
-            _in_bus_num: u32,
-            _in_number_frames: u32,
-            _io_data: *mut at::AudioBufList<2>,
+            in_bus_num: u32,
+            in_number_frames: u32,
+            io_data: *mut at::AudioBufList<2>,
         ) -> os::Status {
+            assert_eq!(in_bus_num, 0);
+            assert_eq!(in_number_frames, 1024);
+            assert!(!io_data.is_null());
+            assert!(in_ref_con.is_null());
             os::Status::NO_ERR
         }
 
