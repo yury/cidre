@@ -33,11 +33,6 @@ where
     }
 
     #[inline]
-    pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
-        self.unit().last_render_sample_time()
-    }
-
-    #[inline]
     pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
         self.unit().last_render_err()
     }
@@ -45,11 +40,10 @@ where
     #[inline]
     pub fn set_input_cb<const N: usize, T>(
         &mut self,
-        bus: u32,
         cb: au::RenderCb<N, T>,
         ref_con: *const T,
     ) -> Result<(), os::Status> {
-        self.0.set_input_cb(bus, cb, ref_con)
+        self.0.set_input_cb(0, cb, ref_con)
     }
 
     #[inline]
@@ -86,20 +80,11 @@ impl FormatConverter<UninitializedState> {
     }
 
     #[inline]
-    pub fn set_stream_format(
-        &mut self,
-        scope: Scope,
-        val: &audio::StreamBasicDesc,
-    ) -> Result<(), os::Status> {
-        self.unit_mut().set_stream_format(scope, 0, val)
-    }
-
-    #[inline]
     pub fn set_output_stream_format(
         &mut self,
         val: &audio::StreamBasicDesc,
     ) -> Result<(), os::Status> {
-        self.set_stream_format(Scope::OUTPUT, val)
+        self.unit_mut().set_stream_format(Scope::OUTPUT, 0, val)
     }
 
     #[inline]
@@ -107,7 +92,7 @@ impl FormatConverter<UninitializedState> {
         &mut self,
         val: &audio::StreamBasicDesc,
     ) -> Result<(), os::Status> {
-        self.set_stream_format(Scope::INPUT, val)
+        self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
     }
 }
 
@@ -128,8 +113,12 @@ impl FormatConverter<InitializedState> {
 
 #[cfg(test)]
 mod tests {
+    use std::ffi::c_void;
+
+    use audio::unit::RenderActionFlags;
+
     use crate::{
-        at::{au, audio},
+        at::{self, au, audio},
         os,
     };
 
@@ -144,16 +133,26 @@ mod tests {
         let max_frames_per_slice = conv.max_frames_per_slice().unwrap();
         assert_eq!(1024, max_frames_per_slice);
 
+        extern "C" fn render(
+            _in_ref_con: *mut c_void,
+            _io_action_flags: &mut RenderActionFlags,
+            _in_timestamp: &at::AudioTimeStamp,
+            _in_bus_num: u32,
+            _in_number_frames: u32,
+            _io_data: *mut at::AudioBufList<2>,
+        ) -> os::Status {
+            os::Status::NO_ERR
+        }
+
+        conv.set_input_cb(render, std::ptr::null_mut()).unwrap();
+
         let mut conv = conv.allocate_resources().unwrap();
-
         let mut buf_list: audio::BufList<2> = Default::default();
-        let mut ts = audio::TimeStamp::with_sample_time(0.0);
 
-        // conv.render(&ts, 1024, &mut buf_list).unwrap();
-        // assert_eq!(0.0, conv.last_render_sample_time().unwrap());
-        // ts.sample_time += 1024.0;
-        // conv.render(&ts, 1024, &mut buf_list).unwrap();
-        // assert_eq!(1024.0, conv.last_render_sample_time().unwrap());
+        let ts = audio::TimeStamp::with_sample_time(0.0);
+
+        conv.render(&ts, 1024, &mut buf_list).unwrap();
+        conv.render(&ts, 1024, &mut buf_list).unwrap();
 
         assert_eq!(os::Status::NO_ERR, conv.last_render_err().unwrap());
     }
