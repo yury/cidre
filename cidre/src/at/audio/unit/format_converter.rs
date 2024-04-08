@@ -125,10 +125,9 @@ impl FormatConverter<InitializedState> {
 mod tests {
     use std::ffi::c_void;
 
-    use audio::unit::RenderActionFlags;
-
     use crate::{
-        at::{self, au, audio},
+        at,
+        at::{au, audio},
         os,
     };
 
@@ -145,7 +144,7 @@ mod tests {
 
         extern "C" fn render(
             _in_ref_con: *mut c_void,
-            _io_action_flags: &mut RenderActionFlags,
+            _io_action_flags: &mut au::RenderActionFlags,
             _in_timestamp: &at::AudioTimeStamp,
             _in_bus_num: u32,
             _in_number_frames: u32,
