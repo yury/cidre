@@ -23,9 +23,11 @@ mod component;
 pub use component::Component;
 pub use component::Desc as ComponentDesc;
 pub use component::Flags as ComponentFlags;
+pub use component::InitializedState as ComponentInitializedState;
 pub use component::Instance as ComponentInstance;
 pub use component::InstanceRef as ComponentInstanceRef;
 pub use component::InstantiationOpts as ComponentInstantiationOpts;
+pub use component::UninitializedState as ComponentUnitializedState;
 
 mod file;
 pub use file::err as file_err;
