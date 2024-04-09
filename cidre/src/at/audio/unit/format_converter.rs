@@ -8,6 +8,7 @@ use crate::{
     os,
 };
 
+/// It is better to use AudioConverterRef directly
 #[repr(transparent)]
 pub struct FormatConverter<S>(UnitRef<S>)
 where

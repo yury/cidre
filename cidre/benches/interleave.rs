@@ -1,12 +1,8 @@
 use std::{ffi::c_void, hint::black_box};
 
 use cidre::{
-    at::{
-        self,
-        au::{self, RenderActionFlags},
-        audio,
-    },
-    cf, ns, os, vdsp,
+    at::{self, au, audio},
+    os, vdsp,
 };
 use criterion::{criterion_group, criterion_main, Criterion};
 
@@ -57,12 +53,12 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     converter.set_output_stream_format(&dst_asbd).unwrap();
 
     extern "C" fn render(
-        in_ref_con: *mut c_void,
-        io_action_flags: &mut RenderActionFlags,
-        in_timestamp: &at::AudioTimeStamp,
-        in_bus_num: u32,
-        in_number_frames: u32,
-        io_data: *mut at::AudioBufList<N>,
+        _in_ref_con: *mut c_void,
+        _io_action_flags: &mut au::RenderActionFlags,
+        _in_timestamp: &at::AudioTimeStamp,
+        _in_bus_num: u32,
+        _in_number_frames: u32,
+        _io_data: *mut at::AudioBufList<N>,
     ) -> os::Status {
         os::Status::NO_ERR
     }
