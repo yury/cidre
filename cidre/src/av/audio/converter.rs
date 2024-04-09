@@ -3,7 +3,7 @@ use std::mem::transmute;
 use crate::{
     arc,
     av::{self, audio},
-    blocks, cf, define_obj_type, ns, objc,
+    blocks, cf, define_cls, define_obj_type, ns, objc,
 };
 #[doc(alias = "AVAudioConverterInputBlock")]
 pub type InputBlock<Attr> = blocks::Block<
@@ -57,13 +57,27 @@ pub enum OutputStatus {
     Error = 3,
 }
 
-define_obj_type!(pub Converter(ns::Id));
+define_obj_type!(
+    pub Converter(ns::Id)
+);
+
+impl arc::A<Converter> {
+    #[objc::msg_send(initFromFormat:toFormat:)]
+    pub fn init_from_format_to_format(
+        self,
+        from: &av::AudioFormat,
+        to: &av::AudioFormat,
+    ) -> Option<arc::R<Converter>>;
+}
 
 impl Converter {
-    /*! @property bitRateStrategy
-        @abstract When encoding, an AVEncoderBitRateStrategyKey value constant as defined in AVAudioSettings.h. Returns nil if not encoding.
-    */
-    // @property (nonatomic, retain, nullable) NSString *bitRateStrategy;
+    define_cls!(AV_AUDIO_CONVERTER);
+
+    pub fn with_formats(from: &av::AudioFormat, to: &av::AudioFormat) -> Option<arc::R<Self>> {
+        Self::alloc().init_from_format_to_format(from, to)
+    }
+
+    /// When encoding, an AVEncoderBitRateStrategyKey value constant as defined in AVAudioSettings.h. Returns nil if not encoding.
     #[objc::msg_send(bitRateStrategy)]
     pub fn bit_rate_strategy(&self) -> Option<&ns::String>;
 
@@ -101,7 +115,7 @@ impl Converter {
     pub fn available_encode_channel_layout_tags(&self) -> Option<&ns::Array<ns::Number>>;
 
     #[objc::msg_send(convertToBuffer:fromBuffer:error:)]
-    pub unsafe fn convert_to_buffer_from_buffer_err<'ear>(
+    pub unsafe fn convert_to_buf_from_buf_err<'ear>(
         &self,
         output_buffer: &mut av::AudioPcmBuf,
         from_buffer: &av::AudioPcmBuf,
@@ -109,15 +123,14 @@ impl Converter {
     ) -> bool;
 
     #[inline]
-    pub fn convert_to_buffer_from_buffer<'ear>(
+    pub fn convert_to_buf_from_buf<'ear>(
         &self,
         output_buffer: &mut av::AudioPcmBuf,
         from_buffer: &av::AudioPcmBuf,
     ) -> Result<(), &'ear ns::Error> {
         unsafe {
             let mut error = None;
-            let res =
-                self.convert_to_buffer_from_buffer_err(output_buffer, from_buffer, &mut error);
+            let res = self.convert_to_buf_from_buf_err(output_buffer, from_buffer, &mut error);
             if error.is_some() {
                 debug_assert!(!res);
                 Err(transmute(error))
@@ -129,7 +142,7 @@ impl Converter {
     }
 
     #[objc::msg_send(convertToBuffer:error:withInputFromBlock:)]
-    pub unsafe fn convert_to_buffer_err_with_input_from_block(
+    pub unsafe fn convert_to_buf_err_with_input_from_block(
         &self,
         output_buffer: &mut av::AudioBuf,
         error: *mut Option<&cf::Error>,
@@ -142,7 +155,7 @@ impl Converter {
     /// sample frames successfully converted.
     #[doc(alias = "convertToBuffer:error:withInputFromBlock:")]
     #[inline]
-    pub fn convert_to_buffer_with_input_from_block<'ar>(
+    pub fn convert_to_buf_with_input_from_block<'ar>(
         &self,
         output_buffer: &mut av::AudioBuf,
         block: &mut av::AudioConverterInputBlock<blocks::Esc>,
@@ -150,7 +163,7 @@ impl Converter {
         unsafe {
             let mut error = None;
             let res =
-                self.convert_to_buffer_err_with_input_from_block(output_buffer, &mut error, block);
+                self.convert_to_buf_err_with_input_from_block(output_buffer, &mut error, block);
             if error.is_some() {
                 debug_assert_eq!(res, OutputStatus::Error);
                 Err(transmute(error))
@@ -159,4 +172,9 @@ impl Converter {
             }
         }
     }
+}
+
+#[link(name = "av", kind = "static")]
+extern "C" {
+    static AV_AUDIO_CONVERTER: &'static objc::Class<Converter>;
 }

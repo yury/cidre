@@ -51,6 +51,7 @@ Class AV_AUDIO_UNIT_TIME_EFFECT;
 Class AV_AUDIO_PCM_BUFFER;
 Class AV_AUDIO_COMPRESSED_BUFFER;
 Class AV_AUDIO_FORMAT;
+Class AV_AUDIO_CONVERTER;
 
 Class AV_PLAYER;
 
@@ -139,6 +140,7 @@ static void av_initializer(void)
         
         AV_AUDIO_PCM_BUFFER = [AVAudioPCMBuffer class];
         AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
+        AV_AUDIO_CONVERTER = [AVAudioConverter class];
         
         AV_PLAYER = [AVPlayer class];
 

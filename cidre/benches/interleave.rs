@@ -2,7 +2,7 @@ use std::{ffi::c_void, hint::black_box};
 
 use cidre::{
     at::{self, au, audio},
-    os, vdsp,
+    av, os, vdsp,
 };
 use criterion::{criterion_group, criterion_main, Criterion};
 
@@ -47,6 +47,27 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
 
     assert_eq!(lr, res);
+
+    let from_fmt = av::AudioFormat::with_asbd(&src_asbd).unwrap();
+    let to_fmt = av::AudioFormat::with_asbd(&dst_asbd).unwrap();
+
+    let mut pcm_a = av::AudioPcmBuf::with_format_and_frame_capacity(&from_fmt, N as u32).unwrap();
+    let mut pcm_b = av::AudioPcmBuf::with_format_and_frame_capacity(&to_fmt, N as u32).unwrap();
+
+    pcm_a.set_frame_length(N as u32);
+    pcm_b.set_frame_length(N as u32);
+
+    let converter = av::AudioConverter::with_formats(&from_fmt, &to_fmt).unwrap();
+    c.bench_function("interleave with av::AudioConverter", |b| {
+        b.iter(|| {
+            // converter.convert_to_buf_from_buf(, )
+            converter
+                .convert_to_buf_from_buf(&mut pcm_b, &pcm_a)
+                .unwrap();
+        })
+    });
+
+    // assert_eq!(lr, res);
 
     let mut converter = au::FormatConverter::new_apple().unwrap();
     converter.set_input_stream_format(&src_asbd).unwrap();
