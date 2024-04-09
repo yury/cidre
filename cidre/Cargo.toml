@@ -150,6 +150,10 @@ harness = false
 name = "uuid"
 harness = false
 
+[[bench]]
+name = "interleave"
+harness = false
+
 [[example]]
 name = "am-device-list"
 required-features = ["am"]
