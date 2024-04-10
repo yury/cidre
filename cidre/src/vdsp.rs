@@ -1197,6 +1197,22 @@ pub fn ztoc_f64(re: &[f64], im: &[f64], c: &mut [Complex<f64>]) {
     unsafe { _ztoc_f64(&split, 1, c.as_mut_ptr(), 2, n) };
 }
 
+#[doc(alias = "vDSP_vflt16")]
+#[inline]
+pub fn i16_f32(a: &[i16], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _i16_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
+}
+
+#[doc(alias = "vDSP_vfltu16")]
+#[inline]
+pub fn u16_f32(a: &[u16], c: &mut [f32]) {
+    let n = a.len();
+    assert_eq!(n, c.len());
+    unsafe { _u16_f32(a.as_ptr(), 1, c.as_mut_ptr(), 1, n) };
+}
+
 #[link(name = "Accelerate", kind = "framework")]
 extern "C" {
     #[link_name = "vDSP_vadd"]
@@ -1888,6 +1904,16 @@ extern "C" {
     #[doc(alias = "vDSP_zaspecD")]
     #[link_name = "vDSP_zaspecD"]
     pub fn _zaspec_f64(__A: *const SplitComplex<f64>, __C: *mut f64, __N: Len);
+
+    /// Converts a vector of signed 16-bit integers to single-precision floating-point values.
+    #[doc(alias = "vDSP_vflt16")]
+    #[link_name = "vDSP_vflt16"]
+    pub fn _i16_f32(__A: *const i16, __IA: Stride, __C: *mut f32, __CI: Stride, __N: Len);
+
+    /// Converts an array of unsigned 16-bit integers to single-precision floating-point values.
+    #[doc(alias = "vDSP_vfltu16")]
+    #[link_name = "vDSP_vfltu16"]
+    pub fn _u16_f32(__A: *const u16, __IA: Stride, __C: *mut f32, __CI: Stride, __N: Len);
 
 }
 
