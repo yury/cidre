@@ -346,11 +346,6 @@ impl Format {
     }
 }
 
-// Flags that are specific to each format.
-// #[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
-// #[repr(transparent)]
-// pub struct FormatFlags(pub u32);
-
 define_opts!(pub FormatFlags(u32));
 
 /// ios app audio - IS_BIG_ENDIAN | IS_SIGNED_INTEGER | IS_PACKED
