@@ -67,11 +67,13 @@ pub use time_value::TimeValue;
 pub mod policy;
 pub use policy::Policy;
 
+#[doc(alias = "mach_msg_receive")]
 #[inline]
 pub fn msg_receive(header: &mut MsgHeader) -> MsgReturn {
     unsafe { mach_msg_receive(header) }
 }
 
+#[doc(alias = "mach_msg_send")]
 #[inline]
 pub fn msg_send(header: &mut MsgHeader) -> MsgReturn {
     unsafe { mach_msg_send(header) }

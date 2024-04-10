@@ -409,6 +409,7 @@ impl MsgOption {
     pub const NONE: Self = Self(0x00000000);
 
     pub const SEND_MSG: Self = Self(0x00000001);
+    #[doc(alias = "MACH_RCV_MSG")]
     pub const RCV_MSG: Self = Self(0x00000002);
 
     /// report large message sizes
@@ -498,6 +499,7 @@ impl Timeout {
     pub const NONE: Self = Self(0);
 }
 
+#[doc(alias = "mach_msg")]
 #[inline]
 pub fn msg(
     msg: &mut Header,

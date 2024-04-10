@@ -60,14 +60,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     let converter = av::AudioConverter::with_formats(&from_fmt, &to_fmt).unwrap();
     c.bench_function("interleave with av::AudioConverter", |b| {
         b.iter(|| {
-            // converter.convert_to_buf_from_buf(, )
             converter
                 .convert_to_buf_from_buf(&mut pcm_b, &pcm_a)
                 .unwrap();
         })
     });
-
-    // assert_eq!(lr, res);
 
     let mut converter = au::FormatConverter::new_apple().unwrap();
     converter.set_input_stream_format(&src_asbd).unwrap();
