@@ -513,14 +513,46 @@ pub fn msg(
     unsafe { mach_msg(msg, option, send_size, rcv_size, rcv_name, timeout, notify) }
 }
 
+#[doc(alias = "mach_msg_overwrite")]
+#[inline]
+pub fn msg_overwrite(
+    msg: *mut Header,
+    option: MsgOption,
+    send_size: Size,
+    rcv_size: Size,
+    rcv_name: PortName,
+    timeout: Timeout,
+    notify: PortName,
+    rcv_msg: *mut Header,
+    rcv_limit: Size,
+) -> Return {
+    unsafe {
+        mach_msg_overwrite(
+            msg, option, send_size, rcv_size, rcv_name, timeout, notify, rcv_msg, rcv_limit,
+        )
+    }
+}
+
 extern "C" {
     fn mach_msg(
-        msg: &mut Header,
+        msg: *mut Header,
         option: MsgOption,
         send_size: Size,
         rcv_size: Size,
         rcv_name: PortName,
         timeout: Timeout,
         notify: PortName,
+    ) -> Return;
+
+    fn mach_msg_overwrite(
+        msg: *mut Header,
+        option: MsgOption,
+        send_size: Size,
+        rcv_size: Size,
+        rcv_name: PortName,
+        timeout: Timeout,
+        notify: PortName,
+        rcv_msg: *mut Header,
+        rcv_limit: Size,
     ) -> Return;
 }

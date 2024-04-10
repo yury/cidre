@@ -19,6 +19,7 @@ pub use port::Type as PortType;
 
 pub mod message;
 pub use message::msg;
+pub use message::msg_overwrite;
 pub use message::Base as MsgBase;
 pub use message::Body as MsgBody;
 pub use message::CopyOptions as MsgCopyOptions;
