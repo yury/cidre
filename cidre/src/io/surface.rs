@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, define_opts, sys::_types::MachPort};
+use crate::{arc, cf, define_cf_type, define_opts, os, sys::_types::MachPort};
 
 #[doc(alias = "SurfaceID")]
 pub type SurfId = u32;
@@ -244,6 +244,18 @@ impl Surf {
     pub unsafe fn from_raw(ptr: *mut u8) -> arc::R<Self> {
         std::mem::transmute(ptr)
     }
+
+    #[doc(alias = "IOSurfaceGetBytesPerRow")]
+    #[inline]
+    pub fn bytes_per_row(&self) -> usize {
+        unsafe { IOSurfaceGetBytesPerRow(self) }
+    }
+
+    #[doc(alias = "IOSurfaceGetPixelFormat")]
+    #[inline]
+    pub fn pixel_format(&self) -> os::Type {
+        unsafe { IOSurfaceGetPixelFormat(self) }
+    }
 }
 
 extern "C" {
@@ -275,6 +287,9 @@ extern "C" {
     fn IOSurfaceGetAllocSize(buffer: &Surf) -> usize;
 
     fn IOSurfaceRemoveAllValues(buffer: &mut Surf);
+
+    fn IOSurfaceGetBytesPerRow(buffer: &Surf) -> usize;
+    fn IOSurfaceGetPixelFormat(buffer: &Surf) -> os::Type;
 
 }
 
