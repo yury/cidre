@@ -419,8 +419,8 @@ impl DerefMut for ConverterRef {
 /// The callback is given an audio buffer list pointed to by ioData.  This buffer list may refer to
 /// existing buffers owned and allocated by the audio converter, in which case the callback may
 /// use them and copy input audio data into them.  However, the buffer list may also be empty
-/// (mDataByteSize == 0 and/or mData == NULL), in which case the callback must provide its own
-/// buffers.  The callback manipulates the members of ioData to point to one or more buffers
+/// (data_byte_size == 0 and/or data == NULL), in which case the callback must provide its own
+/// buffers.  The callback manipulates the members of io_data to point to one or more buffers
 /// of audio data (multiple buffers are used with non-interleaved PCM data). The
 /// callback is responsible for not freeing or altering this buffer until it is called again.
 ///
@@ -437,10 +437,10 @@ impl DerefMut for ConverterRef {
 /// mechanism can be used when an input proc has temporarily run out of data, but
 /// has not yet reached end of stream.
 #[doc(alias = "AudioConverterComplexInputDataProc")]
-pub type ComplexInputDataProc<D = c_void> = extern "C" fn(
+pub type ComplexInputDataProc<const N: usize = 1, D = c_void> = extern "C" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
-    io_data: &mut audio::BufList,
+    io_data: &mut audio::BufList<N>,
     out_data_packet_descriptions: *mut *mut audio::StreamPacketDesc,
     in_user_data: *mut D,
 ) -> os::Status;
@@ -637,12 +637,12 @@ impl Converter {
     /// use fill_complex_buf
     ///
     #[inline]
-    pub unsafe fn fill_complex_buffer<const N: usize, D>(
+    pub unsafe fn fill_complex_buffer<const NI: usize, const NO: usize, D>(
         &self,
-        in_input_data_proc: ComplexInputDataProc<D>,
+        in_input_data_proc: ComplexInputDataProc<NI, D>,
         in_input_data_proc_user_data: *mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufList<N>,
+        out_output_data: &mut audio::BufList<NO>,
         out_packet_description: *mut audio::StreamPacketDesc,
     ) -> os::Status {
         AudioConverterFillComplexBuffer(
@@ -739,12 +739,12 @@ impl Converter {
     }
 
     #[inline]
-    pub fn fill_complex_buf_desc<D>(
+    pub fn fill_complex_buf_desc<const NI: usize, const NO: usize, D>(
         &self,
-        proc: ComplexInputDataProc<D>,
+        proc: ComplexInputDataProc<NI, D>,
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufList,
+        out_output_data: &mut audio::BufList<NO>,
         out_packet_description: &mut Vec<audio::StreamPacketDesc>,
     ) -> Result<(), os::Status> {
         unsafe {
@@ -760,12 +760,12 @@ impl Converter {
     }
 
     #[inline]
-    pub fn fill_complex_buf<const N: usize, D>(
+    pub fn fill_complex_buf<const NI: usize, const NO: usize, D>(
         &self,
-        proc: ComplexInputDataProc<D>,
+        proc: ComplexInputDataProc<NI, D>,
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
-        out_output_data: &mut audio::BufList<N>,
+        out_output_data: &mut audio::BufList<NO>,
     ) -> Result<(), os::Status> {
         unsafe {
             self.fill_complex_buffer(
