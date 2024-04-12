@@ -1154,7 +1154,7 @@ pub fn actoz_f32(a: &[f32], z_re: &mut [f32], z_im: &mut [f32]) {
     let n = a.len() / 2;
     assert_eq!(n, z_re.len());
     assert_eq!(n, z_im.len());
-    let c = a.as_ptr() as *const f32 as *const Complex<f32>;
+    let c = a.as_ptr() as *const Complex<f32>;
     let split = SplitComplex::new_mut(z_re, z_im);
     unsafe { _ctoz_f32(c, 2, &split, 1, n) }
 }
