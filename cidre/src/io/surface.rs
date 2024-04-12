@@ -93,8 +93,8 @@ impl Surf {
     ///
     /// let properties = cf::Dictionary::with_keys_values(
     ///   &[
-    ///     io::surface::keys::width(),
-    ///     io::surface::keys::height()
+    ///     io::surface::key::width(),
+    ///     io::surface::key::height()
     ///   ],
     ///   &[
     ///     &width,
@@ -294,7 +294,7 @@ extern "C" {
 }
 
 /// The following list of properties are used with the cf::Dictionary passed to io::Surface::create
-pub mod keys {
+pub mod key {
     use crate::cf::String;
 
     /// cf::Number of the total allocation size of the buffer including all planes.    
@@ -501,7 +501,7 @@ mod test {
         let height = cf::Number::from_i32(200);
 
         let properties = cf::Dictionary::with_keys_values(
-            &[io::surface::keys::width(), io::surface::keys::height()],
+            &[io::surface::key::width(), io::surface::key::height()],
             &[&width, &height],
         )
         .unwrap();
