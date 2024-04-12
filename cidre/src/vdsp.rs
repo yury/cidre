@@ -73,10 +73,6 @@ impl<'r, 'i> SplitComplex<'r, 'i, f32> {
     }
 }
 
-pub type SplitComplexF32<'r, 'i> = SplitComplex<'r, 'i, f32>;
-
-pub type SplitComplexF64<'r, 'i> = SplitComplex<'r, 'i, f64>;
-
 #[doc(alias = "OpaqueFFTSetup")]
 #[doc(alias = "OpaqueFFTSetupD")]
 #[repr(transparent)]
