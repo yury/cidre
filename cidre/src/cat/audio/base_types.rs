@@ -83,6 +83,12 @@ unsafe impl<const N: usize> Send for BufList<N> {}
 
 impl<const N: usize> Default for BufList<N> {
     fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<const N: usize> BufList<N> {
+    pub const fn new() -> Self {
         Self {
             number_buffers: N as _,
             buffers: [Buf {

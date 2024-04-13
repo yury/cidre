@@ -18,6 +18,7 @@ pub use converter::Converter;
 pub use converter::ConverterRef;
 pub use converter::DitherAlgorithm;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
+pub use converter::Quality as ConverterQuality;
 
 mod component;
 pub use component::Component;

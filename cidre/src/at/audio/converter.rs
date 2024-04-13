@@ -16,64 +16,78 @@ impl PropId {
     /// A u32 that indicates the size in bytes of the smallest buffer of input
     /// data that can be supplied via the AudioConverterInputProc or as the input to
     /// AudioConverterConvertBuffer
+    #[doc(alias = "kAudioConverterPropertyMinimumInputBufferSize")]
     pub const MINIMUM_INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"mibs"));
 
     /// A UInt32 that indicates the size in bytes of the smallest buffer of output
     /// data that can be supplied to AudioConverterFillComplexBuffer or as the output to
     /// AudioConverterConvertBuffer
+    #[doc(alias = "kAudioConverterPropertyMinimumOutputBufferSize")]
     pub const MINIMUM_OUTPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"mobs"));
 
     /// a u32 that indicates the size in bytes of the largest single packet of
     /// data in the input format. This is mostly useful for variable bit rate
     /// compressed data (decoders).
+    #[doc(alias = "kAudioConverterPropertyMaximumInputPacketSize")]
     pub const MAXIMUM_INPUT_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"xips"));
 
     /// a u32 that indicates the size in bytes of the largest single packet of
     /// data in the output format. This is mostly useful for variable bit rate
     /// compressed data (encoders).
+    #[doc(alias = "kAudioConverterPropertyMaximumOutputPacketSize")]
     pub const MAXIMUM_OUTPUT_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"xops"));
 
     /// a u32 that on input holds a size in bytes that is desired for the output
     /// data. On output, it will hold the size in bytes of the input buffer required
     /// to generate that much output data. Note that some converters cannot do this
     /// calculation.
+    #[doc(alias = "kAudioConverterPropertyCalculateInputBufferSize")]
     pub const CALCULATE_INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"cibs"));
 
     /// a u32 that on input holds a size in bytes that is desired for the input
     /// data. On output, it will hold the size in bytes of the output buffer
     /// required to hold the output data that will be generated. Note that some
     /// converters cannot do this calculation.
+    #[doc(alias = "kAudioConverterPropertyCalculateOutputBufferSize")]
     pub const CALCULATE_OUTPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"cobs"));
 
     /// The value of this property varies from format to format and is considered
     /// private to the format. It is treated as a buffer of untyped data.
+    #[doc(alias = "kAudioConverterPropertyInputCodecParameters")]
     pub const INPUT_CODEC_PARAMETERS: Self = Self(u32::from_be_bytes(*b"icdp"));
 
     /// The value of this property varies from format to format and is considered
     /// private to the format. It is treated as a buffer of untyped data.
+    #[doc(alias = "kAudioConverterPropertyOutputCodecParameters")]
     pub const OUTPUT_CODEC_PARAMETERS: Self = Self(u32::from_be_bytes(*b"ocdp"));
 
     /// An os::Type that specifies the sample rate converter algorithm to use (as defined in
     /// AudioToolbox/AudioUnitProperties.h)
+    #[doc(alias = "kAudioConverterSampleRateConverterComplexity")]
     pub const SAMPLE_RATE_CONVERTER_COMPLEXITY: Self = Self(u32::from_be_bytes(*b"srca"));
     /// A u32 that specifies rendering quality of the sample rate converter (see
     /// enum constants below)
+    #[doc(alias = "kAudioConverterSampleRateConverterQuality")]
     pub const SAMPLE_RATE_CONVERTER_QUALITY: Self = Self(u32::from_be_bytes(*b"srcq"));
     /// A f64 with value 0.0 <= x < 1.0 giving the initial subsample position of the
     /// sample rate converter.
+    #[doc(alias = "kAudioConverterSampleRateConverterInitialPhase")]
     pub const SAMPLE_RATE_CONVERTER_INITIAL_PHASE: Self = Self(u32::from_be_bytes(*b"srcp"));
 
     /// A u32 that specifies rendering quality of a codec (see enum constants
     /// below)
+    #[doc(alias = "kAudioConverterCodecQuality")]
     pub const CODEC_QUALITY: Self = Self(u32::from_be_bytes(*b"cdqu"));
 
     /// a u32 specifying priming method (usually for sample-rate converter) see
     /// explanation for struct AudioConverterPrimeInfo below along with enum
     /// constants
+    #[doc(alias = "kAudioConverterPrimeMethod")]
     pub const PRIME_METHOD: Self = Self(u32::from_be_bytes(*b"prmm"));
 
     /// A pointer to AudioConverterPrimeInfo (see explanation for struct
     /// AudioConverterPrimeInfo below)
+    #[doc(alias = "kAudioConverterPrimeInfo")]
     pub const PRIME_INFO: Self = Self(u32::from_be_bytes(*b"prim"));
 
     /// An array of i32's.  The size of the array is the number of output
@@ -94,30 +108,37 @@ impl PropId {
     /// AudioConverterSetProperty(theConverter, kAudioConverterChannelMap,
     /// sizeof(channelMap), channelMap);
     /// ```
+    #[doc(alias = "kAudioConverterChannelMap")]
     pub const CHANNEL_MAP: Self = Self(u32::from_be_bytes(*b"chmp"));
 
     /// A *mut c_void pointing to memory set up by the caller. Required by some formats
     /// in order to decompress the input data.
+    #[doc(alias = "kAudioConverterDecompressionMagicCookie")]
     pub const DECOMPRESSION_MAGIC_COOKIE: Self = Self(u32::from_be_bytes(*b"dmgc"));
 
     /// A *mut c_void pointing to memory set up by the caller. Returned by the converter
     /// so that it may be stored along with the output data. It can then be passed
     /// back to the converter for decompression at a later time.
+    #[doc(alias = "kAudioConverterCompressionMagicCookie")]
     pub const COMPRESSION_MAGIC_COOKIE: Self = Self(u32::from_be_bytes(*b"cmgc"));
 
     /// A u32 containing the number of bits per second to aim for when encoding
     /// data. Some decoders will also allow you to get this property to discover the bit rate.
+    #[doc(alias = "kAudioConverterEncodeBitRate")]
     pub const ENCODE_BIT_RATE: Self = Self(u32::from_be_bytes(*b"brat"));
 
     /// For encoders where the AudioConverter was created with an output sample rate
     /// of zero, and the codec can do rate conversion on its input, this provides a
     /// way to set the output sample rate. The property value is a f64.
+    #[doc(alias = "kAudioConverterEncodeAdjustableSampleRate")]
     pub const ENCODE_ADJUSTABLE_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"ajsr"));
 
     /// The property value is an AudioChannelLayout.
+    #[doc(alias = "kAudioConverterInputChannelLayout")]
     pub const INPUT_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"icl "));
 
     /// The property value is an AudioChannelLayout.
+    #[doc(alias = "kAudioConverterOutputChannelLayout")]
     pub const OUTPUT_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"ocl "));
 
     /// The property value is an array of AudioValueRange describing applicable bit
@@ -128,30 +149,37 @@ impl PropId {
     /// The property value is an array of AudioValueRange describing available bit
     /// rates based on the input format. You can get all available bit rates from
     /// the AudioFormat API.
+    #[doc(alias = "kAudioConverterAvailableEncodeBitRates")]
     pub const AVAILABLE_ENCODE_BIT_RATES: Self = Self(u32::from_be_bytes(*b"vebr"));
 
     /// The property value is an array of AudioValueRange describing applicable
     /// sample rates based on current settings.
+    #[doc(alias = "kAudioConverterApplicableEncodeSampleRates")]
     pub const APPLICABLE_ENCODE_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"aesr"));
 
     /// The property value is an array of AudioValueRange describing available
     /// sample rates based on the input format. You can get all available sample
     /// rates from the AudioFormat API.
+    #[doc(alias = "kAudioConverterAvailableEncodeSampleRates")]
     pub const AVAILABLE_ENCODE_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"vesr"));
 
     /// The property value is an array of AudioChannelLayoutTags for the format and
     /// number of channels specified in the input format going to the encoder.
+    #[doc(alias = "kAudioConverterAvailableEncodeChannelLayoutTags")]
     pub const AVAILABLE_ENCODE_CHANNEL_LAYOUT_TAGS: Self = Self(u32::from_be_bytes(*b"aecl"));
 
     /// Returns the current completely specified output AudioStreamBasicDescription.
     /// For example when encoding to AAC, your original output stream description
     /// will not have been completely filled out.
+    #[doc(alias = "kAudioConverterCurrentOutputStreamDescription")]
     pub const CURRENT_OUTPUT_STREAM_DESCRIPTION: Self = Self(u32::from_be_bytes(*b"acod"));
 
     /// Returns the current completely specified input AudioStreamBasicDescription.
+    #[doc(alias = "kAudioConverterCurrentInputStreamDescription")]
     pub const CURRENT_INPUT_STREAM_DESCRIPTION: Self = Self(u32::from_be_bytes(*b"acid"));
 
     /// Returns the a CFArray of property settings for converters.
+    #[doc(alias = "kAudioConverterPropertySettings")]
     pub const SETTINGS: Self = Self(u32::from_be_bytes(*b"acps"));
 
     /// An i32 of the source bit depth to preserve. This is a hint to some
@@ -160,6 +188,7 @@ impl PropId {
     /// encoder will do poorly if more bits are supplied than are desired in the
     /// output. The bit depth is expressed as a negative number if the source was floating point,
     /// e.g. -32 for float, -64 for double.
+    #[doc(alias = "kAudioConverterPropertyBitDepthHint")]
     pub const BIT_DEPTH_HINT: Self = Self(u32::from_be_bytes(*b"acbd"));
 
     /// An array of AudioFormatListItem structs describing all the data formats produced by the
@@ -167,13 +196,18 @@ impl PropId {
     /// outPropertyData is sizeof(AudioFormatListItem), then only the best format is returned.
     /// This property may be used for example to discover all the data formats produced by the AAC_HE2
     /// (AAC High Efficiency vers. 2) encoder.
+    #[doc(alias = "kAudioConverterPropertyFormatList")]
     pub const FORMAT_LIST: Self = Self(u32::from_be_bytes(*b"flst"));
 
     /// A u32. Set to a value from the enum of dithering algorithms below.
     /// Zero means no dithering and is the default. (macOS only.)
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioConverterPropertyDithering")]
     pub const DITHERING: Self = Self(u32::from_be_bytes(*b"dith"));
 
     /// A u32. Dither is applied at this bit depth.  (macOS only.)
+    #[cfg(target_os = "macos")]
+    #[doc(alias = "kAudioConverterPropertyDitherBitDepth")]
     pub const DITHER_BIT_DEPTH: Self = Self(u32::from_be_bytes(*b"dbit"));
 }
 
@@ -575,6 +609,11 @@ impl Converter {
     #[inline]
     pub fn codec_quality(&self) -> Result<Quality, os::Status> {
         unsafe { self.prop(PropId::CODEC_QUALITY) }
+    }
+
+    #[inline]
+    pub fn set_codec_quality(&mut self, val: Quality) -> Result<(), os::Status> {
+        unsafe { self.set_prop(PropId::CODEC_QUALITY, &val) }
     }
 
     #[inline]
