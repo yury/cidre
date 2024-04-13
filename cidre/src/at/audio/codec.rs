@@ -192,7 +192,7 @@ impl InstancePropId {
     /// Not writable, but can vary on some codecs depending on the bit stream
     /// format being handled.
     #[doc(alias = "kAudioCodecPropertyInputBufferSize")]
-    pub const INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"tbuf"));
+    pub const INPUT_BUF_SIZE: Self = Self(u32::from_be_bytes(*b"tbuf"));
 
     /// A u32 indicating the number of frames of audio data encapsulated in each
     /// packet of data in the codec's format. For encoders, this is the
@@ -269,7 +269,7 @@ impl InstancePropId {
     /// from this property.
     /// Not writable.
     #[doc(alias = "kAudioCodecPropertyUsedInputBufferSize")]
-    pub const USED_INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"ubuf"));
+    pub const USED_INPUT_BUF_SIZE: Self = Self(u32::from_be_bytes(*b"ubuf"));
 
     /// A u32 where 0 means the codec is uninitialized and anything
     /// else means the codec is initialized. This should never be settable directly.
@@ -731,7 +731,7 @@ impl CodecRef<InitializedState> {
     #[inline]
     pub fn append_buf_list(
         &mut self,
-        in_buffer_list: &audio::BufList,
+        in_buf_list: &audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDesc],
     ) -> Result<Consumed, os::Status> {
         let mut bytes_consumed: u32 = 0;
@@ -739,7 +739,7 @@ impl CodecRef<InitializedState> {
         unsafe {
             AudioCodecAppendInputBufferList(
                 &mut self.0,
-                in_buffer_list,
+                in_buf_list,
                 &mut packets_len,
                 packet_descriptions.as_ptr(),
                 &mut bytes_consumed,
@@ -757,14 +757,14 @@ impl CodecRef<InitializedState> {
     #[inline]
     pub fn produce_buf_list(
         &mut self,
-        buffer_list: &mut audio::BufList,
+        buf_list: &mut audio::BufList,
         number_of_packets: &mut u32,
     ) -> Result<os::Status, os::Status> {
         let mut status = os::Status::NO_ERR;
         unsafe {
             AudioCodecProduceOutputBufferList(
                 &mut self.0,
-                buffer_list,
+                buf_list,
                 number_of_packets,
                 std::ptr::null_mut(),
                 &mut status,
@@ -779,7 +779,7 @@ impl CodecRef<InitializedState> {
     #[inline]
     pub fn produce_buf_list_with_descs(
         &mut self,
-        buffer_list: &mut audio::BufList,
+        buf_list: &mut audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDesc],
     ) -> Result<(u32, os::Status), os::Status> {
         let mut number_packets: u32 = packet_descriptions.len() as _;
@@ -787,7 +787,7 @@ impl CodecRef<InitializedState> {
         unsafe {
             AudioCodecProduceOutputBufferList(
                 &mut self.0,
-                buffer_list,
+                buf_list,
                 &mut number_packets,
                 packet_descriptions.as_mut_ptr(),
                 &mut status,
@@ -1082,12 +1082,12 @@ where
     }
 
     #[inline]
-    pub fn input_buffer_size(&self) -> Result<usize, os::Status> {
+    pub fn input_buf_size(&self) -> Result<usize, os::Status> {
         let (mut value, mut size) = (0u32, 4u32);
         unsafe {
             AudioCodecGetProperty(
                 &self.0,
-                InstancePropId::INPUT_BUFFER_SIZE.0,
+                InstancePropId::INPUT_BUF_SIZE.0,
                 &mut size,
                 &mut value as *mut u32 as *mut u8,
             )

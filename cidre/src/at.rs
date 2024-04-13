@@ -14,6 +14,7 @@ pub use audio::Converter as AudioConverter;
 pub use audio::ConverterRef as AudioConverterRef;
 pub use audio::FileId as AudioFileId;
 pub use audio::FormatPropId as AudioFormatPropId;
+
 pub use audio::TimeStamp as AudioTimeStamp;
 
 pub use audio::unit as au;
@@ -23,3 +24,7 @@ pub use audio::UnitManufacturer as AudioUnitManufacturer;
 pub use audio::UnitParam as AudioUnitParam;
 pub use audio::UnitParamId as AudioUnitParamId;
 pub use audio::UnitParamValue as AudioUnitParamValue;
+
+pub use audio::Codec as AudioCodec;
+pub use audio::CodecGlobalPropId as AudioCodecGlobalPropId;
+pub use audio::CodecRef as AudioCodecRef;
