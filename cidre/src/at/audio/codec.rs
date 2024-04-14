@@ -584,6 +584,21 @@ pub struct Produced {
 }
 
 impl CodecRef<UninitializedState> {
+    pub fn new_apple_aac_encoder() -> Result<Self, os::Status> {
+        let desc = audio::ComponentDesc {
+            type_: audio::ENCODER_COMPONENT_TYPE,
+            sub_type: u32::from_be_bytes(*b"aac "),
+            manufacturer: audio::unit::Manufacturer::APPLE.0,
+            ..Default::default()
+        };
+
+        let comp = desc
+            .into_iter()
+            .next()
+            .ok_or(audio::unit::component_err::UNSUPPORTED_TYPE)?;
+        comp.open_codec()
+    }
+
     pub fn initialize(
         self,
         input_format: *const audio::StreamBasicDesc,
@@ -1220,6 +1235,8 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use audio::CodecRef;
+
     use crate::at::audio;
 
     #[test]
@@ -1332,15 +1349,7 @@ mod tests {
             ..Default::default()
         };
 
-        let desc = audio::ComponentDesc {
-            type_: audio::ENCODER_COMPONENT_TYPE,
-            sub_type: u32::from_be_bytes(*b"aac "),
-            ..Default::default()
-        };
-
-        let inst = desc.into_iter().next().unwrap();
-
-        let codec = inst.open_codec().unwrap();
-        let _codec = codec.initialize(&src_asbd2, &dst_asbd, None).unwrap();
+        let encoder = CodecRef::new_apple_aac_encoder().unwrap();
+        let _encoder = encoder.initialize(&src_asbd2, &dst_asbd, None).unwrap();
     }
 }
