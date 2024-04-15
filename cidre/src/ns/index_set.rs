@@ -72,6 +72,12 @@ impl IndexSet {
 
     #[objc::rar_retain]
     pub fn copy_mut(&self) -> arc::R<IndexSetMut>;
+
+    #[objc::msg_send(copy)]
+    pub fn copy_ar(&self) -> arc::Rar<IndexSet>;
+
+    #[objc::rar_retain]
+    pub fn copy(&self) -> arc::R<IndexSet>;
 }
 
 impl IndexSetMut {
@@ -145,5 +151,7 @@ mod tests {
 
         copy.remove_range(ns::Range::new(0, 100));
         assert!(copy.is_empty());
+
+        let _copy = copy.copy();
     }
 }
