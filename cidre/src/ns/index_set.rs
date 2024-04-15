@@ -43,14 +43,17 @@ impl IndexSet {
         self.len() == 0
     }
 
+    #[inline]
     pub fn with_index(val: usize) -> arc::R<Self> {
         Self::alloc().init_with_index(val)
     }
 
+    #[inline]
     pub fn with_index_set(val: &ns::IndexSet) -> arc::R<Self> {
         Self::alloc().init_with_index_set(val)
     }
 
+    #[inline]
     pub fn with_range(val: ns::Range) -> arc::R<Self> {
         Self::alloc().init_with_range(val)
     }
@@ -72,14 +75,17 @@ impl IndexSet {
 }
 
 impl IndexSetMut {
+    #[inline]
     pub fn with_index(val: usize) -> arc::R<Self> {
         Self::alloc().init_with_index(val)
     }
 
+    #[inline]
     pub fn with_index_set(val: &ns::IndexSet) -> arc::R<Self> {
         Self::alloc().init_with_index_set(val)
     }
 
+    #[inline]
     pub fn with_range(val: ns::Range) -> arc::R<Self> {
         Self::alloc().init_with_range(val)
     }
