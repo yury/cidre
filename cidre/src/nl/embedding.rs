@@ -2,6 +2,13 @@ use crate::{arc, define_obj_type, nl, ns, objc};
 
 pub type Distance = f64;
 
+#[repr(isize)]
+pub enum DistanceType {
+    /// A cosine distance in embedding space, i.e. 1 - cosine similarity,
+    /// in the range \[0.0, 2.0\].
+    Cosine,
+}
+
 define_obj_type!(
     #[doc(alias = "NLEmbedding")]
     pub Embedding(ns::Id),
@@ -33,8 +40,38 @@ impl Embedding {
     #[objc::cls_rar_retain]
     pub fn sentence_with_rev(lang: &nl::Lang, revision: usize) -> Option<arc::R<Self>>;
 
+    #[objc::cls_msg_send(embeddingWithContentsOfURL:error:)]
+    pub fn with_url_err_ar<'ear>(
+        url: &ns::Url,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_url_err<'ear>(
+        url: &ns::Url,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<Self>>;
+
+    pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
+        ns::if_none(|err| Self::with_url_err(url, err))
+    }
+
     #[objc::msg_send(containsString:)]
     pub fn contains_string(&self, str: &ns::String) -> bool;
+
+    #[objc::msg_send(distanceBetweenString:andString:distanceType:)]
+    pub fn distance_between_with_type(
+        &self,
+        a: &ns::String,
+        b: &ns::String,
+        distance_type: DistanceType,
+    ) -> Distance;
+
+    /// Calculates the distance between two strings in the vocabulary space.
+    #[inline]
+    pub fn distance_between(&self, a: &ns::String, b: &ns::String) -> Distance {
+        self.distance_between_with_type(a, b, DistanceType::Cosine)
+    }
 
     #[objc::msg_send(dimension)]
     pub fn dimension(&self) -> usize;
@@ -70,5 +107,8 @@ mod tests {
 
         assert!(word_emb.contains_string(ns::str!(c"hello")));
         assert!(!word_emb.contains_string(ns::str!(c"cidre")));
+
+        nl::Embedding::with_url(&ns::Url::with_str("https:://google.com").unwrap())
+            .expect_err("invalid url");
     }
 }
