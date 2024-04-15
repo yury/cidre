@@ -641,7 +641,7 @@ impl CodecRef<InitializedState> {
 
     #[doc(alias = "AudioCodecAppendInputData")]
     #[inline]
-    pub fn append(&mut self, data: &[u8]) -> Result<Consumed, os::Status> {
+    pub fn append(&mut self, data: &[u8]) -> Result<u32, os::Status> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = 0;
         unsafe {
@@ -654,10 +654,7 @@ impl CodecRef<InitializedState> {
             )
             .result()?;
         }
-        Ok(Consumed {
-            bytes: data_len,
-            packets: packets_len,
-        })
+        Ok(data_len)
     }
 
     /// Append as much of the given data to the codec's input buffer as possible
@@ -1082,7 +1079,7 @@ where
     }
 
     #[inline]
-    pub fn maximum_packet_byte_size(&self) -> Result<usize, os::Status> {
+    pub fn max_packet_byte_size(&self) -> Result<u32, os::Status> {
         let (mut value, mut size) = (0u32, 4u32);
         unsafe {
             AudioCodecGetProperty(
@@ -1093,11 +1090,11 @@ where
             )
             .result()?;
         }
-        Ok(value as _)
+        Ok(value)
     }
 
     #[inline]
-    pub fn input_buf_size(&self) -> Result<usize, os::Status> {
+    pub fn input_buf_size(&self) -> Result<u32, os::Status> {
         let (mut value, mut size) = (0u32, 4u32);
         unsafe {
             AudioCodecGetProperty(
@@ -1108,7 +1105,7 @@ where
             )
             .result()?;
         }
-        Ok(value as _)
+        Ok(value)
     }
 
     #[inline]
