@@ -98,6 +98,10 @@ pub mod mps;
 #[cfg(feature = "ns")]
 pub mod ns;
 
+/// Natural Language
+#[cfg(feature = "nl")]
+pub mod nl;
+
 /// Network
 #[cfg(feature = "nw")]
 pub mod nw;

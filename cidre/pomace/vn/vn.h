@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <Vision/Vision.h>
-#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,6 +31,7 @@ static void vn_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
         
         VN_DETECT_HORIZON_REQUEST = [ VNDetectHorizonRequest class];
         VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST = [VNDetectFaceCaptureQualityRequest class];
@@ -47,8 +47,6 @@ static void vn_initializer(void)
         VN_DETECT_FACE_RECTANGLES_REQUEST = [VNDetectFaceRectanglesRequest class];
         VN_IMAGE_REQUEST_HANDLER = [VNImageRequestHandler class];
         VN_SEQUENCE_REQUEST_HANDLER = [VNSequenceRequestHandler class];
-        
-        initialized = 1;
     }
 }
 
