@@ -1293,7 +1293,7 @@ mod tests {
         let codec = codec.initialize(&src_asbd, &dst_asbd, None).unwrap();
         let cookie_info = codec.magic_cookie().unwrap();
         assert!(!cookie_info.is_empty());
-        let max_packet_size = codec.maximum_packet_byte_size().unwrap();
+        let max_packet_size = codec.max_packet_byte_size().unwrap();
         assert_eq!(max_packet_size, 1536);
 
         let quality = codec.quality().unwrap();
