@@ -29,7 +29,7 @@ pub type SyncBlock<F> = Block<F, Sync>;
 pub type CompletionBlock = EscBlock<fn()>;
 pub type WorkBlock<Attr = Sync> = Block<fn(), Attr>;
 
-pub type ErrCompletionHandler<E = ns::Error> = EscBlock<fn(Option<&E>)>;
+pub type ErrCompletionHandler<E = ns::Error> = EscBlock<fn(error: Option<&E>)>;
 pub type ResultCompletionHandler<T> = EscBlock<fn(Option<&T>, Option<&ns::Error>)>;
 
 #[repr(transparent)]

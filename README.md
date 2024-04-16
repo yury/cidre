@@ -46,7 +46,7 @@
 - pointer -> ptr
 - source -> src
 - surface - surf
-- throws -> _throws (not shortcut but indicator of exception)
+- throws -> _throws (not shortcut but indicator of possible exception)
 
 ## About
 

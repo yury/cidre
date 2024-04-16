@@ -14,9 +14,15 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
-    c.bench_function("rust::uuid", |b| {
+    c.bench_function("rust::uuid_v4", |b| {
         b.iter(|| {
             uuid::Uuid::new_v4();
+        })
+    });
+
+    c.bench_function("rust::uuid_v7", |b| {
+        b.iter(|| {
+            uuid::Uuid::now_v7();
         })
     });
 

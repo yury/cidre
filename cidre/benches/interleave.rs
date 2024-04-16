@@ -43,10 +43,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             converter
                 .convert_complex_buf(N as u32, &list_a, &mut list_b)
                 .unwrap();
-        })
+        });
+        assert_eq!(lr, res);
     });
-
-    assert_eq!(lr, res);
 
     let from_fmt = av::AudioFormat::with_asbd(&src_asbd).unwrap();
     let to_fmt = av::AudioFormat::with_asbd(&dst_asbd).unwrap();
@@ -109,9 +108,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                 lr[j + 1] = r[i];
                 j += 2;
             }
-        })
+        });
+        assert_eq!(lr, res);
     });
-    assert_eq!(lr, res);
 
     lr.fill(0.0f32);
 
@@ -120,9 +119,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("interleave vDSP", |b| {
         b.iter(|| {
             vdsp::ztoc_f32(&l, &r, &mut comp);
-        })
+        });
+        assert_eq!(lr, res);
     });
-    assert_eq!(lr, res);
 }
 
 criterion_group!(benches, criterion_benchmark);
