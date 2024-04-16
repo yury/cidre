@@ -87,6 +87,24 @@ impl Embedding {
 
     #[objc::msg_send(revision)]
     pub fn revision(&self) -> usize;
+
+    #[objc::cls_msg_send(supportedRevisionsForLanguage:)]
+    pub fn supported_revisions_ar(lang: &nl::Lang) -> arc::Rar<ns::IndexSet>;
+
+    #[objc::cls_rar_retain]
+    pub fn supported_revisions(lang: &nl::Lang) -> arc::R<ns::IndexSet>;
+
+    #[objc::cls_msg_send(currentRevisionForLanguage:)]
+    pub fn current_revision(lang: &nl::Lang) -> usize;
+
+    #[objc::cls_msg_send(supportedSentenceEmbeddingRevisionsForLanguage:)]
+    pub fn supported_sentence_revisions_ar(lang: &nl::Lang) -> arc::Rar<ns::IndexSet>;
+
+    #[objc::cls_rar_retain]
+    pub fn supported_sentence_revisions(lang: &nl::Lang) -> arc::R<ns::IndexSet>;
+
+    #[objc::cls_msg_send(currentSentenceEmbeddingRevisionForLanguage:)]
+    pub fn current_sentence_revision(lang: &nl::Lang) -> usize;
 }
 
 #[link(name = "nl", kind = "static")]
@@ -110,5 +128,11 @@ mod tests {
 
         nl::Embedding::with_url(&ns::Url::with_str("https:://google.com").unwrap())
             .expect_err("invalid url");
+
+        let set = nl::Embedding::supported_revisions(nl::Lang::english());
+        assert!(set.len() >= 1);
+
+        let rev = nl::Embedding::current_revision(nl::Lang::english());
+        assert!(set.contains_index(rev));
     }
 }
