@@ -1,11 +1,13 @@
-use crate::{arc, define_obj_type, nl, ns, objc};
+use crate::{arc, blocks, define_obj_type, nl, ns, objc};
 
 pub type Distance = f64;
 
+#[derive(Default, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum DistanceType {
     /// A cosine distance in embedding space, i.e. 1 - cosine similarity,
     /// in the range \[0.0, 2.0\].
+    #[default]
     Cosine,
 }
 
@@ -105,6 +107,94 @@ impl Embedding {
 
     #[objc::cls_msg_send(currentSentenceEmbeddingRevisionForLanguage:)]
     pub fn current_sentence_revision(lang: &nl::Lang) -> usize;
+
+    #[objc::msg_send(enumerateNeighborsForString:maximumCount:distanceType:usingBlock:)]
+    pub fn enumerate_neighbors_for_string_block(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        distance_type: DistanceType,
+        block: &mut blocks::NoEscBlock<
+            fn(neighbor: &ns::String, distance: nl::Distance, stop: &mut bool),
+        >,
+    );
+
+    #[objc::msg_send(enumerateNeighborsForString:maximumCount:maximumDistance:distanceType:usingBlock:)]
+    pub fn enumerate_neighbors_within_distance_for_string_block(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+        block: &mut blocks::NoEscBlock<
+            fn(neighbor: &ns::String, distance: nl::Distance, stop: &mut bool),
+        >,
+    );
+
+    #[inline]
+    pub fn enumerate_neighbors_for_string(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        distance_type: DistanceType,
+        mut block: impl FnMut(&ns::String, nl::Distance, &mut bool),
+    ) {
+        let mut block = unsafe { blocks::NoEscBlock::stack3(&mut block) };
+        self.enumerate_neighbors_for_string_block(str, max_count, distance_type, &mut block);
+    }
+
+    #[inline]
+    pub fn enumerate_neighbors_within_distance_for_string(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+        mut block: impl FnMut(&ns::String, nl::Distance, &mut bool),
+    ) {
+        let mut block = unsafe { blocks::NoEscBlock::stack3(&mut block) };
+        self.enumerate_neighbors_within_distance_for_string_block(
+            str,
+            max_count,
+            max_distance,
+            distance_type,
+            &mut block,
+        );
+    }
+
+    #[objc::msg_send(neighborsForString:maximumCount:distanceType:)]
+    pub fn neighbors_for_string_ar(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        distance_type: DistanceType,
+    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
+
+    #[objc::rar_retain]
+    pub fn neighbors_for_string(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        distance_type: DistanceType,
+    ) -> Option<arc::R<ns::Array<ns::String>>>;
+
+    #[objc::msg_send(neighborsForString:maximumCount:maximumDistance:distanceType:)]
+    pub fn neighbors_for_string_within_distance_ar(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
+
+    #[objc::rar_retain]
+    pub fn neighbors_for_string_within_distance(
+        &self,
+        str: &ns::String,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+    ) -> Option<arc::R<ns::Array<ns::String>>>;
 }
 
 #[link(name = "nl", kind = "static")]
@@ -134,5 +224,25 @@ mod tests {
 
         let rev = nl::Embedding::current_revision(nl::Lang::english());
         assert!(set.contains_index(rev));
+
+        let mut neighbors = Vec::new();
+        word_emb.enumerate_neighbors_for_string(
+            ns::str!(c"hello"),
+            20,
+            nl::DistanceType::Cosine,
+            |neighbor, _distance, stop| {
+                neighbors.push(neighbor.retained());
+                if neighbors.len() == 10 {
+                    *stop = true;
+                }
+            },
+        );
+
+        assert_eq!(10, neighbors.len());
+
+        let neighbors = word_emb
+            .neighbors_for_string(ns::str!(c"world"), 10, Default::default())
+            .unwrap();
+        assert_eq!(10, neighbors.len());
     }
 }
