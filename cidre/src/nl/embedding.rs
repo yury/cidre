@@ -216,6 +216,93 @@ impl Embedding {
             }
         }
     }
+    #[objc::msg_send(enumerateNeighborsForVector:maximumCount:distanceType:usingBlock:)]
+    pub fn enumerate_neighbors_for_vector_block(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        distance_type: DistanceType,
+        block: &mut blocks::NoEscBlock<
+            fn(neighbor: &ns::String, distance: nl::Distance, stop: &mut bool),
+        >,
+    );
+
+    #[objc::msg_send(enumerateNeighborsForVector:maximumCount:maximumDistance:distanceType:usingBlock:)]
+    pub fn enumerate_neighbors_within_distance_for_vector_block(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+        block: &mut blocks::NoEscBlock<
+            fn(neighbor: &ns::String, distance: nl::Distance, stop: &mut bool),
+        >,
+    );
+
+    #[inline]
+    pub fn enumerate_neighbors_for_vector(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        distance_type: DistanceType,
+        mut block: impl FnMut(&ns::String, nl::Distance, &mut bool),
+    ) {
+        let mut block = unsafe { blocks::NoEscBlock::stack3(&mut block) };
+        self.enumerate_neighbors_for_vector_block(vec, max_count, distance_type, &mut block);
+    }
+
+    #[inline]
+    pub fn enumerate_neighbors_within_distance_for_vector(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+        mut block: impl FnMut(&ns::String, nl::Distance, &mut bool),
+    ) {
+        let mut block = unsafe { blocks::NoEscBlock::stack3(&mut block) };
+        self.enumerate_neighbors_within_distance_for_vector_block(
+            vec,
+            max_count,
+            max_distance,
+            distance_type,
+            &mut block,
+        );
+    }
+
+    #[objc::msg_send(neighborsForVector:maximumCount:distanceType:)]
+    pub fn neighbors_for_vector_ar(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        distance_type: DistanceType,
+    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
+
+    #[objc::rar_retain]
+    pub fn neighbors_for_vector(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        distance_type: DistanceType,
+    ) -> Option<arc::R<ns::Array<ns::String>>>;
+
+    #[objc::msg_send(neighborsForVector:maximumCount:maximumDistance:distanceType:)]
+    pub fn neighbors_for_vector_within_distance_ar(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
+
+    #[objc::rar_retain]
+    pub fn neighbors_for_vector_within_distance(
+        &self,
+        vec: &ns::Array<ns::Number>,
+        max_count: usize,
+        max_distance: nl::Distance,
+        distance_type: DistanceType,
+    ) -> Option<arc::R<ns::Array<ns::String>>>;
 }
 
 #[link(name = "nl", kind = "static")]
