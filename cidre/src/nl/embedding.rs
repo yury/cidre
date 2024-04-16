@@ -356,6 +356,12 @@ mod tests {
         let vec = word_emb.vector_for_string(ns::str!(c"nice")).unwrap();
         assert_eq!(vec.len(), word_emb.dimension());
 
+        let neigbors = word_emb
+            .neighbors_for_vector(&vec, 10, Default::default())
+            .unwrap();
+
+        assert_eq!(neigbors.len(), 10);
+
         let mut vec = vec![0.0f32; word_emb.dimension()];
         word_emb
             .fill_vector_for_string(ns::str!(c"world"), &mut vec)
