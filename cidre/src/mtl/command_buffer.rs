@@ -34,7 +34,7 @@ pub enum DispatchType {
 }
 
 #[doc(alias = "MTLCommandBufferHandler")]
-pub type CmdBufHandler = blocks::SyncBlock<fn(&mtl::CmdBuf)>;
+pub type CmdBufHandler = blocks::SyncBlock<fn(buf: &mtl::CmdBuf)>;
 
 define_obj_type!(
     /// A serial list of commands for the device to execute.
