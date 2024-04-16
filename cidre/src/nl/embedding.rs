@@ -195,6 +195,27 @@ impl Embedding {
         max_distance: nl::Distance,
         distance_type: DistanceType,
     ) -> Option<arc::R<ns::Array<ns::String>>>;
+
+    #[objc::msg_send(vectorForString:)]
+    pub fn vector_for_string_ar(&self, str: &ns::String)
+        -> Option<arc::Rar<ns::Array<ns::Number>>>;
+
+    #[objc::rar_retain]
+    pub fn vector_for_string(&self, str: &ns::String) -> Option<arc::R<ns::Array<ns::Number>>>;
+
+    #[objc::msg_send(getVector:forString:)]
+    pub unsafe fn get_vector_for_string(&self, vec: *mut f32, str: &ns::String) -> bool;
+
+    pub fn fill_vector_for_string(&self, str: &ns::String, vec: &mut [f32]) -> Result<(), ()> {
+        assert_eq!(vec.len(), self.dimension());
+        unsafe {
+            if self.get_vector_for_string(vec.as_mut_ptr(), str) {
+                Ok(())
+            } else {
+                Err(())
+            }
+        }
+    }
 }
 
 #[link(name = "nl", kind = "static")]
@@ -229,7 +250,7 @@ mod tests {
         word_emb.enumerate_neighbors_for_string(
             ns::str!(c"hello"),
             20,
-            nl::DistanceType::Cosine,
+            Default::default(),
             |neighbor, _distance, stop| {
                 neighbors.push(neighbor.retained());
                 if neighbors.len() == 10 {
@@ -244,5 +265,13 @@ mod tests {
             .neighbors_for_string(ns::str!(c"world"), 10, Default::default())
             .unwrap();
         assert_eq!(10, neighbors.len());
+
+        let vec = word_emb.vector_for_string(ns::str!(c"nice")).unwrap();
+        assert_eq!(vec.len(), word_emb.dimension());
+
+        let mut vec = vec![0.0f32; word_emb.dimension()];
+        word_emb
+            .fill_vector_for_string(ns::str!(c"world"), &mut vec)
+            .unwrap();
     }
 }
