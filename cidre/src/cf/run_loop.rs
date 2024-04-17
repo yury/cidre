@@ -2,6 +2,7 @@ use std::intrinsics::transmute;
 
 use crate::{arc, cf, define_cf_type};
 
+#[doc(alias = "CFRunLoopRunResult")]
 #[derive(Debug, PartialEq, Eq)]
 #[repr(i32)]
 pub enum RunResult {
@@ -18,68 +19,113 @@ pub enum RunResult {
     HandledSource = 4,
 }
 
-define_cf_type!(RunLoop(cf::Type));
-define_cf_type!(Source(cf::Type));
-define_cf_type!(Observer(cf::Type));
-define_cf_type!(Timer(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFRunLoop")]
+    RunLoop(cf::Type)
+);
+
+define_cf_type!(
+    #[doc(alias = "CFRunLoopSource")]
+    Source(cf::Type)
+);
+
+define_cf_type!(
+    #[doc(alias = "CFRunLoopObserverRef")]
+    Observer(cf::Type)
+);
+
+define_cf_type!(
+    #[doc(alias = "CFRunLoopTimerRef")]
+    Timer(cf::Type)
+);
 
 impl RunLoop {
+    #[doc(alias = "CFRunLoopRun")]
+    #[inline]
     pub fn run() {
         unsafe { CFRunLoopRun() }
     }
 
+    #[doc(alias = "CFRunLoopGetCurrent")]
+    #[inline]
     pub fn current() -> &'static RunLoop {
         unsafe { CFRunLoopGetCurrent() }
     }
 
+    #[doc(alias = "CFRunLoopGetMain")]
+    #[inline]
     pub fn main() -> &'static RunLoop {
         unsafe { CFRunLoopGetMain() }
     }
 
+    #[doc(alias = "CFRunLoopStop")]
+    #[inline]
     pub fn stop(&self) {
         unsafe { CFRunLoopStop(self) }
     }
 
+    #[doc(alias = "CFRunLoopCopyCurrentMode")]
+    #[inline]
     pub fn current_mode(&self) -> Option<arc::R<Mode>> {
         unsafe { CFRunLoopCopyCurrentMode(self) }
     }
 
+    #[doc(alias = "CFRunLoopCopyAllModes")]
+    #[inline]
     pub fn all_modes(&self) -> arc::R<cf::ArrayOf<Mode>> {
         unsafe { CFRunLoopCopyAllModes(self) }
     }
 
+    #[doc(alias = "CFRunLoopContainsSource")]
+    #[inline]
     pub fn contains_source(&self, source: &Source, mode: &Mode) -> bool {
         unsafe { CFRunLoopContainsSource(self, source, mode) }
     }
 
+    #[doc(alias = "CFRunLoopAddSource")]
+    #[inline]
     pub fn add_source(&self, source: &Source, mode: &Mode) {
         unsafe { CFRunLoopAddSource(self, source, mode) }
     }
 
+    #[doc(alias = "CFRunLoopRemoveSource")]
+    #[inline]
     pub fn remove_source(&self, source: &Source, mode: &Mode) {
         unsafe { CFRunLoopRemoveSource(self, source, mode) }
     }
 
+    #[doc(alias = "CFRunLoopContainsObserver")]
+    #[inline]
     pub fn contains_observer(&self, observer: &Observer, mode: &Mode) -> bool {
         unsafe { CFRunLoopContainsObserver(self, observer, mode) }
     }
 
+    #[doc(alias = "CFRunLoopAddObserver")]
+    #[inline]
     pub fn add_observer(&self, observer: &Observer, mode: &Mode) {
         unsafe { CFRunLoopAddObserver(self, observer, mode) }
     }
 
+    #[doc(alias = "CFRunLoopRemoveObserver")]
+    #[inline]
     pub fn remove_observer(&self, observer: &Observer, mode: &Mode) {
         unsafe { CFRunLoopRemoveObserver(self, observer, mode) }
     }
 
+    #[doc(alias = "CFRunLoopContainsTimer")]
+    #[inline]
     pub fn contains_timer(&self, timer: &Timer, mode: &Mode) -> bool {
         unsafe { CFRunLoopContainsTimer(self, timer, mode) }
     }
 
+    #[doc(alias = "CFRunLoopAddTimer")]
+    #[inline]
     pub fn add_timer(&self, timer: &Timer, mode: &Mode) {
         unsafe { CFRunLoopAddTimer(self, timer, mode) }
     }
 
+    #[doc(alias = "CFRunLoopRemoveTimer")]
+    #[inline]
     pub fn remove_timer(&self, timer: &Timer, mode: &Mode) {
         unsafe { CFRunLoopRemoveTimer(self, timer, mode) }
     }
@@ -101,6 +147,7 @@ impl RunLoop {
     /// Run loops always run in a specific mode. You specify the common modes only when
     /// configuring a run-loop observer and only in situations where you want that
     /// observer to run in more than one mode.
+    #[doc(alias = "CFRunLoopRunInMode")]
     #[inline]
     pub fn run_in_mode(
         mode: &Mode,
@@ -110,10 +157,14 @@ impl RunLoop {
         unsafe { CFRunLoopRunInMode(mode, seconds, return_after_source_handled) }
     }
 
+    #[doc(alias = "CFRunLoopIsWaiting")]
+    #[inline]
     pub fn is_waiting(&self) -> bool {
         unsafe { CFRunLoopIsWaiting(self) }
     }
 
+    #[doc(alias = "CFRunLoopWakeUp")]
+    #[inline]
     pub fn wakeup(&self) {
         unsafe { CFRunLoopWakeUp(self) }
     }
@@ -146,18 +197,23 @@ extern "C" {
     ) -> RunResult;
 }
 
-define_cf_type!(Mode(cf::String));
+define_cf_type!(
+    #[doc(alias = "CFRunLoopMode")]
+    Mode(cf::String)
+);
 
 impl Mode {
-    pub fn new(name: &cf::String) -> &Self {
+    pub fn with_string(name: &cf::String) -> &Self {
         unsafe { transmute(name) }
     }
 
+    #[doc(alias = "kCFRunLoopDefaultMode")]
     #[inline]
     pub fn default() -> &'static Mode {
         unsafe { kCFRunLoopDefaultMode }
     }
 
+    #[doc(alias = "kCFRunLoopCommonModes")]
     #[inline]
     pub fn common() -> &'static Mode {
         unsafe { kCFRunLoopCommonModes }
@@ -170,21 +226,25 @@ extern "C" {
 }
 
 impl Source {
+    #[doc(alias = "CFRunLoopSourceInvalidate")]
     #[inline]
     pub fn invalidate(&self) {
         unsafe { CFRunLoopSourceInvalidate(self) }
     }
 
+    #[doc(alias = "CFRunLoopSourceIsValid")]
     #[inline]
     pub fn is_valid(&self) -> bool {
         unsafe { CFRunLoopSourceIsValid(self) }
     }
 
+    #[doc(alias = "CFRunLoopSourceGetOrder")]
     #[inline]
     pub fn order(&self) -> cf::Index {
         unsafe { CFRunLoopSourceGetOrder(self) }
     }
 
+    #[doc(alias = "CFRunLoopSourceSignal")]
     #[inline]
     pub fn signal(&self) {
         unsafe { CFRunLoopSourceSignal(self) }
