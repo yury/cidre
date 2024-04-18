@@ -68,7 +68,7 @@ impl Output<UninitializedState> {
             type_: au::Type::OUTPUT.0,
             #[cfg(target_os = "macos")]
             sub_type: au::SubType::HAL_OUTPUT.0,
-            #[cfg(target_os = "ios")]
+            #[cfg(not(target_os = "macos"))]
             sub_type: au::SubType::REMOTE_IO.0,
             manufacturer: au::Manufacturer::APPLE.0,
             flags: 0,
