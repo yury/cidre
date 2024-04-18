@@ -65,6 +65,12 @@ impl Device {
     #[objc::cls_rar_retain]
     pub fn devices() -> arc::R<ns::Array<Self>>;
 
+    #[objc::cls_msg_send(defaultDeviceWithMediaType:)]
+    pub fn default_with_media_ar(media_type: &av::MediaType) -> Option<arc::Rar<Self>>;
+
+    #[objc::cls_rar_retain]
+    pub fn default_with_media(media_type: &av::MediaType) -> Option<arc::R<Self>>;
+
     #[objc::cls_msg_send(deviceWithUniqueID:)]
     pub fn with_unique_id_ar(unique_id: ns::String) -> Option<arc::Rar<Self>>;
 
@@ -96,7 +102,7 @@ impl Device {
     /// All Apple devices return "Apple Inc.". Devices from third party manufacturers may
     /// return an empty string.
     #[objc::msg_send(manufacturer)]
-    pub fn manufacturer(&self) -> &ns::String;
+    pub fn manufacturer(&self) -> Option<&ns::String>;
 
     /// Returns whether the receiver provides media with the given media type.
     ///
@@ -680,9 +686,10 @@ impl<'a> ConfigLockGuard<'a> {
 }
 
 #[doc(alias = "AVCaptureDevicePosition")]
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(isize)]
 pub enum Pos {
+    #[default]
     Unspecified = 0,
     Back = 1,
     Front = 2,
