@@ -110,8 +110,9 @@ impl Device {
     #[objc::msg_send(supportsAVCaptureSessionPreset:)]
     pub fn supports_preset(&self, preset: &av::CaptureSessionPreset) -> bool;
 
+    /// NOTE: On audio devices active format is None
     #[objc::msg_send(activeFormat)]
-    pub fn active_format(&self) -> &Format;
+    pub fn active_format(&self) -> Option<&Format>;
 
     /// Indicates whether the device is connected and available to the system.
     ///
