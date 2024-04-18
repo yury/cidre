@@ -27,6 +27,9 @@ pub use multi_channel_mixer::MultiChannelMixer;
 mod format_converter;
 pub use format_converter::FormatConverter;
 
+mod output;
+pub use output::Output;
+
 mod properties;
 pub use properties::preset_key;
 pub use properties::sample_rate_converter_complexity;
@@ -48,6 +51,7 @@ pub use properties::ScheduledSlice;
 pub use properties::ScheduledSliceCompProc;
 pub use properties::ScheduledSliceFlags;
 pub use properties::SpatializationAlgorithm;
+pub use properties::StartAtTimeParams as OutputStartAtTimeParams;
 pub use properties::VoiceIoMutedSpeechActivityEventListener;
 pub use properties::VoiceIoOtherAudioDuckingCfg;
 pub use properties::VoiceIoSpeechActivityEvent;

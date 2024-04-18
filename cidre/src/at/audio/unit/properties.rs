@@ -1245,30 +1245,99 @@ pub mod sample_rate_converter_complexity {
 
 /// The collection of property IDs for Apple input/output units.
 impl au::PropId {
+    /// Scope:      Global
+    /// Value Type: AudioObjectID
+    /// Access:     read/write
+    ///
+    /// The audio device being used (or to be used) by and output device unit
     #[doc(alias = "kAudioOutputUnitProperty_CurrentDevice")]
     pub const OUTPUT_CURRENT_DEVICE: Self = Self(2000);
 
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read-only
     #[doc(alias = "kAudioOutputUnitProperty_IsRunning")]
     pub const OUTPUT_IS_RUNNING: Self = Self(2001);
 
+    /// Scope:      Input/Output
+    /// Value Type: Array of i32
+    /// Access:     Read / Write
+    ///
+    /// This will also work with AUConverter. This property is used to map input channels from an input (source) to a destination.
+    /// The number of channels represented in the channel map is the number of channels of the destination. The channel map entries
+    /// contain a channel number of the source that should be mapped to that destination channel. If -1 is specified, then that
+    /// destination channel will not contain any channel from the source (so it will be silent)
     #[doc(alias = "kAudioOutputUnitProperty_ChannelMap")]
     pub const CHANNEL_MAP: Self = Self(2002);
 
+    /// Scope: { scope output, element 0 = output } { scope input, element 1 = input }
+    /// Value Type: u32
+    /// Access: read/write
+    ///
+    /// Output units default to output-only operation. Host applications may disable
+    /// output or enable input operation using this property, if the output unit
+    /// supports it. 0=disabled, 1=enabled using I/O proc.
     #[doc(alias = "kAudioOutputUnitProperty_EnableIO")]
     pub const OUTPUT_ENABLE_IO: Self = Self(2003);
 
+    /// Scope: Global
+    /// Value Type: AudioOutputUnitStartAtTimeParams
+    /// Access: write only
+    ///
+    /// When this property is set on an output unit, it will cause the next Start request
+    /// (but no subsequent Starts) to use AudioDeviceStartAtTime, using the specified
+    /// timestamp, passing false for inRequestedStartTimeIsInput.
     #[doc(alias = "kAudioOutputUnitProperty_StartTime")]
     pub const OUTPUT_START_TIME: Self = Self(2004);
 
+    /// Scope: Global
+    /// Value Type: AURenderCallbackStruct
+    /// Access: read/write
+    ///
+    /// When an output unit has been enabled for input operation, this callback can be
+    /// used to provide a single callback to the host application from the input
+    /// I/O proc, in order to notify the host that input is available and may be
+    /// obtained by calling the AudioUnitRender function.
+    ///
+    /// Note that the inputProc will always receive a NULL AudioBufferList in ioData.
+    /// You must call AudioUnitRender in order to obtain the audio.
     #[doc(alias = "kAudioOutputUnitProperty_SetInputCallback")]
     pub const OUTPUT_SET_INPUT_CB: Self = Self(2005);
 
+    /// Scope: { scope output, element 0 = output } { scope input, element 1 = input }
+    /// Value Type: u32
+    /// Access:
+    /// See kAudioOutputUnitProperty_EnableIO
+    /// Property value is 1 if there are any valid hardware streams on the specified element.
     #[doc(alias = "kAudioOutputUnitProperty_HasIO")]
     pub const OUTPUT_HAS_IO: Self = Self(2006);
 
+    /// Scope: Global
+    /// Value Type:  u32
+    /// Access: read/write
+    ///
+    /// Apple output units typically begin their stream of timestamps presented to their
+    /// inputs at sample time 0. Some applications may wish to receive the HAL's timestamps
+    /// directly instead. When this property is set to false, the output unit's sample times
+    /// will be direct reflections of the HAL's -- except when a sample rate conversion
+    /// makes this impossible.
+    ///
+    /// This property also applies to AUConverter. Its value defaults to 1 for AUHAL;
+    /// 1 for other AUs.
     #[doc(alias = "kAudioOutputUnitProperty_StartTimestampsAtZero")]
     pub const OUTPUT_START_TS_AT_ZERO: Self = Self(2007);
 
+    /// Scope:      Global
+    /// Value Type: os_workgroup_t
+    /// Access:     read-only
+    ///
+    /// Only applicable to input/output units.
+    ///
+    /// For background, see <AudioToolbox/AudioWorkInterval.h>.
+    ///
+    /// Note that as an os_object subclass, workgroup objects are reference-counted,
+    /// and that AudioUnitGetProperty returns a +1 reference, which the client
+    /// is responsible for releasing when it is finished with it.
     #[doc(alias = "kAudioOutputUnitProperty_OSWorkgroup")]
     pub const OUTPUT_OS_WORKGROUP: Self = Self(2015);
 
@@ -1287,6 +1356,15 @@ impl au::PropId {
     #[doc(alias = "kAudioOutputUnitProperty_NodeComponentDescription")]
     pub const OUTPUT_NODE_COMPONENT_DESC: Self = Self(2013);
 }
+
+#[doc(alias = "AudioOutputUnitStartAtTimeParams")]
+#[derive(Debug)]
+#[repr(C)]
+pub struct StartAtTimeParams {
+    pub timestamp: at::audio::TimeStamp,
+    pub flags: u32,
+}
+
 /// The collection of property IDs for Apple voice processing units.
 impl au::PropId {
     /// Scope: Global
