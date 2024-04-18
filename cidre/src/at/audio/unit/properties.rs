@@ -1312,9 +1312,9 @@ impl au::PropId {
     #[doc(alias = "kAudioOutputUnitProperty_HasIO")]
     pub const OUTPUT_HAS_IO: Self = Self(2006);
 
-    /// Scope: Global
-    /// Value Type:  u32
-    /// Access: read/write
+    /// Scope:      Global
+    /// Value Type: u32
+    /// Access:     read/write
     ///
     /// Apple output units typically begin their stream of timestamps presented to their
     /// inputs at sample time 0. Some applications may wish to receive the HAL's timestamps
@@ -1367,26 +1367,29 @@ pub struct StartAtTimeParams {
 
 /// The collection of property IDs for Apple voice processing units.
 impl au::PropId {
-    /// Scope: Global
+    /// Scope:      Global
     /// Value Type: u32
-    /// Access: read/write
+    /// Access:     read/write
+    ///
     /// Bypass all processing for microphone uplink done by the voice processing unit. When set to 0
     /// (default), the processing is activated otherwise it is disabled. Voice Isolation
     /// and Wide Spectrum take priority over Bypass.
     #[doc(alias = "kAUVoiceIOProperty_BypassVoiceProcessing")]
     pub const VOICE_IO_BYPASS_VOICE_PROCESSING: Self = Self(2100);
 
-    /// Scope: Global
+    /// Scope:      Global
     /// Value Type: u32
-    /// Access: read/write
+    /// Access:     read/write
+    ///
     /// Enable automatic gain control on the processed microphone uplink
     /// signal. On by default.
     #[doc(alias = "kAUVoiceIOProperty_VoiceProcessingEnableAGC")]
     pub const VOICE_IO_ENABLE_AGC: Self = Self(2101);
 
-    /// Scope: Global
+    /// Scope:      Global
     /// Value Type: u32
-    /// Access: read/write
+    /// Access:     read/write
+    ///
     /// Mutes the output of the processed microphone uplink
     /// 0 (default) = muting off. 1 = muting on.
     #[doc(alias = "kAUVoiceIOProperty_MuteOutput")]
@@ -1406,9 +1409,9 @@ pub type VoiceIoMutedSpeechActivityEventListener =
     crate::blocks::EscBlock<fn(VoiceIoSpeechActivityEvent)>;
 
 impl au::PropId {
-    /// Scope: Global
+    /// Scope:      Global
     /// Value Type: au::VoiceIOMutedSpeechActivityEventListener
-    /// Access: write only
+    /// Access:     write only
     ///
     /// Register a listener to be notified when speech activity event occurs while the client is muted.
     /// Continuous presence of or lack of speech activity during mute will not cause redundant notification.

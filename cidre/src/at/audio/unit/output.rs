@@ -181,13 +181,8 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::ffi::c_void;
 
-    use crate::{
-        at,
-        at::{au, audio},
-        os,
-    };
+    use crate::{at::au, os};
 
     #[test]
     fn basics() {
@@ -204,6 +199,12 @@ mod tests {
         assert!(!output.is_running().unwrap());
         assert!(output.start_ts_at_zero().unwrap());
         let mut output = output.allocate_resources().unwrap();
+
+        assert_eq!(output.is_io_enabled(au::Scope::INPUT, 1).unwrap(), false);
+        // An I/O unit’s bus 1 connects to input hardware, such as for recording from a microphone.
+        // Input is disabled by default. To enable input, the bus 1 input scope must be enabled,
+        // as follows:
+        output.set_io_enabled(au::Scope::INPUT, 1, true).unwrap();
         output.start().unwrap();
         assert!(output.is_running().unwrap());
         output.stop().unwrap();
