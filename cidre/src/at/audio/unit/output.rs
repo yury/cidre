@@ -8,7 +8,6 @@ use crate::{
     os,
 };
 
-#[repr(transparent)]
 pub struct Output<S>(UnitRef<S>)
 where
     S: State<Unit>;
@@ -27,15 +26,10 @@ where
         self.0.unit_mut()
     }
 
-    // #[inline]
-    // pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
-    //     self.unit().max_frames_per_slice()
-    // }
-
-    // #[inline]
-    // pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
-    //     self.unit().last_render_err()
-    // }
+    #[inline]
+    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+        self.unit().last_render_err()
+    }
 
     #[inline]
     pub fn set_input_cb<const N: usize, T>(
@@ -59,6 +53,33 @@ where
     #[inline]
     pub fn input_stream_format(&self, bus: u32) -> Result<audio::StreamBasicDesc, os::Status> {
         self.unit().stream_format(Scope::INPUT, bus)
+    }
+
+    pub fn is_running(&self) -> Result<bool, os::Status> {
+        let res: u32 = self.unit().prop(
+            au::PropId::OUTPUT_IS_RUNNING,
+            au::Scope::GLOBAL,
+            au::Element(0),
+        )?;
+        Ok(res != 0)
+    }
+
+    pub fn is_io_enabled(&self, scope: au::Scope, bus: u32) -> Result<bool, os::Status> {
+        let res: u32 = self
+            .unit()
+            .prop(au::PropId::OUTPUT_ENABLE_IO, scope, au::Element(bus))?;
+        Ok(res != 0)
+    }
+
+    pub fn set_io_enabled(
+        &mut self,
+        scope: au::Scope,
+        bus: u32,
+        val: bool,
+    ) -> Result<(), os::Status> {
+        let val = val as u32;
+        self.unit_mut()
+            .set_prop(au::PropId::OUTPUT_ENABLE_IO, scope, au::Element(bus), &val)
     }
 }
 
@@ -87,10 +108,24 @@ impl Output<UninitializedState> {
         Ok(Output(self.0.initialize()?))
     }
 
-    // #[inline]
-    // pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
-    //     self.unit_mut().set_max_frames_per_slice(val)
-    // }
+    pub fn start_ts_at_zero(&self) -> Result<bool, os::Status> {
+        let res: u32 = self.unit().prop(
+            au::PropId::OUTPUT_START_TS_AT_ZERO,
+            au::Scope::GLOBAL,
+            au::Element(0),
+        )?;
+        Ok(res != 0)
+    }
+
+    pub fn set_start_ts_at_zero(&mut self, val: bool) -> Result<(), os::Status> {
+        let val = val as u32;
+        self.unit_mut().set_prop(
+            au::PropId::OUTPUT_START_TS_AT_ZERO,
+            au::Scope::GLOBAL,
+            au::Element(0),
+            &val,
+        )
+    }
 
     #[inline]
     pub fn set_output_stream_format(
@@ -165,5 +200,14 @@ mod tests {
         eprintln!("{format:?}");
         let format = output.output_stream_format(1).unwrap();
         eprintln!("{format:?}");
+
+        assert!(!output.is_running().unwrap());
+        assert!(output.start_ts_at_zero().unwrap());
+        let mut output = output.allocate_resources().unwrap();
+        output.start().unwrap();
+        assert!(output.is_running().unwrap());
+        output.stop().unwrap();
+
+        assert_eq!(output.last_render_err().unwrap(), os::Status::NO_ERR);
     }
 }
