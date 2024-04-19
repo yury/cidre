@@ -6,9 +6,11 @@ use crate::{
             component::{InitializedState, State, UninitializedState},
         },
     },
-    core_audio::AudioObjectId,
     os,
 };
+
+#[cfg(target_os = "macos")]
+use crate::core_audio::AudioObjectId;
 
 pub struct Output<S>(UnitRef<S>)
 where
@@ -159,6 +161,7 @@ impl Output<UninitializedState> {
         self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
     }
 
+    #[cfg(target_os = "macos")]
     #[inline]
     pub fn current_device(&self) -> Result<AudioObjectId, os::Status> {
         self.unit().prop(
@@ -168,6 +171,7 @@ impl Output<UninitializedState> {
         )
     }
 
+    #[cfg(target_os = "macos")]
     #[inline]
     pub fn set_current_device(&mut self, val: AudioObjectId) -> Result<(), os::Status> {
         self.unit_mut().set_prop(
