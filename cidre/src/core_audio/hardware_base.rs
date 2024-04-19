@@ -1,7 +1,9 @@
+#[doc(alias = "AudioDeviceID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct AudioObjectId(pub u32);
 
+#[doc(alias = "AudioClassID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct AudioClassId(pub u32);
@@ -59,6 +61,7 @@ impl AudioObjectPropertyScope {
 impl AudioObjectPropertyElement {
     /// The AudioObjectPropertyElement value for properties that apply to the main
     /// element or to the entire scope.
+    #[doc(alias = "kAudioObjectPropertyElementMaster")]
     #[doc(alias = "kAudioObjectPropertyElementMain")]
     pub const MAIN: Self = Self(0);
 

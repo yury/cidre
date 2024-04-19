@@ -27,19 +27,54 @@ impl core_audio::AudioObjectId {
             .result()
         }
     }
+    #[doc(alias = "AudioObjectGetPropertyData")]
+    pub fn prop<T: Sized>(&self, address: &AudioObjectPropertyAddress) -> Result<T, os::Status> {
+        let mut data_size = std::mem::size_of::<T>() as u32;
+        let mut val = std::mem::MaybeUninit::<T>::uninit();
+        unsafe {
+            AudioObjectGetPropertyData(
+                *self,
+                address,
+                0,
+                std::ptr::null(),
+                &mut data_size,
+                val.as_mut_ptr() as _,
+            )
+            .result()?;
+            Ok(val.assume_init())
+        }
+    }
+
+    pub fn show(&self) {
+        unsafe { AudioObjectShow(*self) }
+    }
 }
 
 impl core_audio::AudioObjectPropertySelector {
     #[doc(alias = "kAudioHardwarePropertyProcessInputMute")]
     pub const HARDWARE_PROCESS_INPUT_MUTE: Self = Self(u32::from_be_bytes(*b"pmin"));
+
+    /// An array of the AudioObjectIds that represent all the devices currently
+    /// available to the system.
+    #[doc(alias = "kAudioHardwarePropertyDevices")]
+    pub const HARDWARE_DEVICES: Self = Self(u32::from_be_bytes(*b"dev#"));
+
+    /// The AudioObjectId of the default input AudioDevice.
+    #[doc(alias = "kAudioHardwarePropertyDefaultInputDevice")]
+    pub const HARDWARE_DEFAULT_INPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"dIn "));
+
+    /// The AudioObjectId of the default output AudioDevice.
+    #[doc(alias = "kAudioHardwarePropertyDefaultOutputDevice")]
+    pub const HARDWARE_DEFAULT_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"dOut"));
+
+    /// The AudioObjectId of the output AudioDevice to use for system related sound
+    /// from the alert sound to digital call progress.
+    #[doc(alias = "kAudioHardwarePropertyDefaultSystemOutputDevice")]
+    pub const HARDWARE_DEFAULT_SYS_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"sOut"));
 }
 
 // CF_ENUM(AudioObjectPropertySelector)
 // {
-//     kAudioHardwarePropertyDevices                               = 'dev#',
-//     kAudioHardwarePropertyDefaultInputDevice                    = 'dIn ',
-//     kAudioHardwarePropertyDefaultOutputDevice                   = 'dOut',
-//     kAudioHardwarePropertyDefaultSystemOutputDevice             = 'sOut',
 //     kAudioHardwarePropertyTranslateUIDToDevice                  = 'uidd',
 //     kAudioHardwarePropertyMixStereoToMono                       = 'stmo',
 //     kAudioHardwarePropertyPlugInList                            = 'plg#',
@@ -68,8 +103,20 @@ impl core_audio::AudioObjectPropertySelector {
 
 #[link(name = "CoreAudio", kind = "framework")]
 extern "C" {
+
+    fn AudioObjectShow(objectId: AudioObjectId);
+
+    fn AudioObjectGetPropertyData(
+        objectId: AudioObjectId,
+        address: *const AudioObjectPropertyAddress,
+        qualifier_data_size: u32,
+        qualifier_data: *const c_void,
+        data_size: *mut u32,
+        data: *mut c_void,
+    ) -> os::Status;
+
     fn AudioObjectSetPropertyData(
-        objectID: AudioObjectId,
+        objectId: AudioObjectId,
         address: &AudioObjectPropertyAddress,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,

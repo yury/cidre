@@ -45,6 +45,12 @@ impl Date {
 
     #[objc::cls_rar_retain]
     pub fn distant_past() -> arc::R<Self>;
+
+    #[objc::msg_send(dateByAddingTimeInterval:)]
+    pub fn add_time_interval_ar(&self, val: TimeInterval) -> arc::Rar<Self>;
+
+    #[objc::rar_retain]
+    pub fn add_time_interval(&self, val: TimeInterval) -> arc::R<Self>;
 }
 
 #[link(name = "ns", kind = "static")]

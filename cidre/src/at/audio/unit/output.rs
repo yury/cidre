@@ -1,10 +1,12 @@
 use crate::{
     at::{
-        au,
-        au::{Scope, Unit, UnitRef},
-        audio,
-        audio::component::{InitializedState, State, UninitializedState},
+        au::{self, Scope, Unit, UnitRef},
+        audio::{
+            self,
+            component::{InitializedState, State, UninitializedState},
+        },
     },
+    core_audio::AudioObjectId,
     os,
 };
 
@@ -81,6 +83,20 @@ where
         self.unit_mut()
             .set_prop(au::PropId::OUTPUT_ENABLE_IO, scope, au::Element(bus), &val)
     }
+
+    pub fn has_output_io(&self) -> Result<bool, os::Status> {
+        let res: u32 =
+            self.unit()
+                .prop(au::PropId::OUTPUT_HAS_IO, au::Scope::OUTPUT, au::Element(0))?;
+        Ok(res != 0)
+    }
+
+    pub fn has_input_io(&self) -> Result<bool, os::Status> {
+        let res: u32 =
+            self.unit()
+                .prop(au::PropId::OUTPUT_HAS_IO, au::Scope::INPUT, au::Element(1))?;
+        Ok(res != 0)
+    }
 }
 
 impl Output<UninitializedState> {
@@ -142,6 +158,25 @@ impl Output<UninitializedState> {
     ) -> Result<(), os::Status> {
         self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
     }
+
+    #[inline]
+    pub fn current_device(&self) -> Result<AudioObjectId, os::Status> {
+        self.unit().prop(
+            au::PropId::OUTPUT_CURRENT_DEVICE,
+            Scope::GLOBAL,
+            au::Element(0),
+        )
+    }
+
+    #[inline]
+    pub fn set_current_device(&mut self, val: AudioObjectId) -> Result<(), os::Status> {
+        self.unit_mut().set_prop(
+            au::PropId::OUTPUT_CURRENT_DEVICE,
+            Scope::GLOBAL,
+            au::Element(0),
+            &val,
+        )
+    }
 }
 
 impl Output<InitializedState> {
@@ -182,11 +217,20 @@ extern "C" {
 #[cfg(test)]
 mod tests {
 
-    use crate::{at::au, os};
+    use std::ffi::c_void;
+
+    use crate::{
+        at::{self, au},
+        core_audio::{
+            AudioObjectId, AudioObjectPropertyAddress, AudioObjectPropertyElement,
+            AudioObjectPropertyScope, AudioObjectPropertySelector,
+        },
+        os,
+    };
 
     #[test]
     fn basics() {
-        let output = au::Output::new_apple().unwrap();
+        let mut output = au::Output::new_apple().unwrap();
         let count = output.unit().element_count(au::Scope::INPUT);
         println!("input count {count:?}");
         let count = output.unit().element_count(au::Scope::OUTPUT);
@@ -198,13 +242,38 @@ mod tests {
 
         assert!(!output.is_running().unwrap());
         assert!(output.start_ts_at_zero().unwrap());
-        let mut output = output.allocate_resources().unwrap();
 
         assert_eq!(output.is_io_enabled(au::Scope::INPUT, 1).unwrap(), false);
         // An I/O unit’s bus 1 connects to input hardware, such as for recording from a microphone.
         // Input is disabled by default. To enable input, the bus 1 input scope must be enabled,
         // as follows:
         output.set_io_enabled(au::Scope::INPUT, 1, true).unwrap();
+        output.set_io_enabled(au::Scope::OUTPUT, 0, false).unwrap();
+
+        extern "C" fn input_cb(
+            _in_ref_con: *mut c_void,
+            _io_action_flags: &mut au::RenderActionFlags,
+            _in_timestamp: &at::AudioTimeStamp,
+            _in_bus_num: u32,
+            _in_number_frames: u32,
+            _io_data: *mut at::AudioBufList<1>,
+        ) -> os::Status {
+            os::Status::NO_ERR
+        }
+
+        output.set_input_cb(input_cb, std::ptr::null_mut()).unwrap();
+
+        let addr = AudioObjectPropertyAddress {
+            selector: AudioObjectPropertySelector::HARDWARE_DEFAULT_INPUT_DEVICE,
+            scope: AudioObjectPropertyScope::GLOBAL,
+            element: AudioObjectPropertyElement::MAIN,
+        };
+        let device_id: AudioObjectId = AudioObjectId::SYSTEM_OBJECT.prop(&addr).unwrap();
+        device_id.show();
+
+        output.set_current_device(device_id).unwrap();
+        let mut output = output.allocate_resources().unwrap();
+
         output.start().unwrap();
         assert!(output.is_running().unwrap());
         output.stop().unwrap();
