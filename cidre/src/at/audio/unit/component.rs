@@ -1200,7 +1200,7 @@ impl<S: State<Unit>> UnitRef<S> {
         cb: RenderCb<N, T>,
         ref_con: *const T,
     ) -> Result<(), os::Status> {
-        self.0.set_input_cb(Scope::GLOBAL, 0, cb, ref_con)
+        self.0.set_input_cb(Scope::GLOBAL, 1, cb, ref_con)
     }
 
     pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {

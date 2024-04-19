@@ -59,7 +59,7 @@ impl App {
     #[objc::msg_send(setInputMuteStateChangeHandler:)]
     pub fn set_input_mute_state_change_handler(
         &mut self,
-        handler: Option<&mut blocks::EscBlock<fn(bool) -> bool>>,
+        handler: Option<&mut blocks::EscBlock<fn(input_should_be_muted: bool) -> bool>>,
     );
 
     #[objc::cls_msg_send(requestRecordPermissionWithCompletionHandler:)]

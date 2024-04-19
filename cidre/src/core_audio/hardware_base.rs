@@ -20,6 +20,7 @@ pub struct AudioObjectPropertyScope(pub u32);
 #[repr(transparent)]
 pub struct AudioObjectPropertyElement(pub u32);
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct AudioObjectPropertyAddress {
     pub selector: AudioObjectPropertySelector,
@@ -53,8 +54,9 @@ impl AudioObjectPropertyScope {
     /// The AudioObjectPropertyScope for properties that apply to the play through
     /// side of an object.
     #[doc(alias = "kAudioObjectPropertyScopePlayThrough")]
-    pub const PLAY_THROUGH: Self = Self(u32::from_be_bytes(*b"outp"));
+    pub const PLAY_THROUGH: Self = Self(u32::from_be_bytes(*b"ptru"));
 
+    #[doc(alias = "kAudioObjectPropertyScopeWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 }
 
@@ -65,10 +67,12 @@ impl AudioObjectPropertyElement {
     #[doc(alias = "kAudioObjectPropertyElementMain")]
     pub const MAIN: Self = Self(0);
 
+    #[doc(alias = "kAudioObjectPropertyElementWildcard")]
     pub const WILDCARD: Self = Self(0xFFFFFFFF);
 }
 
 impl AudioObjectPropertySelector {
+    #[doc(alias = "kAudioObjectPropertySelectorWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 }
 

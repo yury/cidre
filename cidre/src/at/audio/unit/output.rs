@@ -41,13 +41,15 @@ where
         cb: au::RenderCb<N, T>,
         ref_con: *const T,
     ) -> Result<(), os::Status> {
-        self.0.set_input_cb(0, cb, ref_con)
+        self.0
+            .unit_mut()
+            .set_input_cb(au::Scope::GLOBAL, 1, cb, ref_con)
     }
 
-    #[inline]
-    pub fn remove_input_cb(&mut self) -> Result<(), os::Status> {
-        self.0.remove_input_cb(0)
-    }
+    // #[inline]
+    // pub fn remove_input_cb(&mut self) -> Result<(), os::Status> {
+    //     self.0.remove_input_cb(0)
+    // }
 
     #[inline]
     pub fn output_stream_format(&self, bus: u32) -> Result<audio::StreamBasicDesc, os::Status> {

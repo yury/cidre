@@ -1246,7 +1246,7 @@ pub mod sample_rate_converter_complexity {
 /// The collection of property IDs for Apple input/output units.
 impl au::PropId {
     /// Scope:      Global
-    /// Value Type: AudioObjectID
+    /// Value Type: AudioObjectId
     /// Access:     read/write
     ///
     /// The audio device being used (or to be used) by and output device unit
