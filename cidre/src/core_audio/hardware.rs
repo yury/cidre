@@ -2,18 +2,14 @@ use std::{ffi::c_void, mem::MaybeUninit};
 
 use crate::{arc, core_audio, os};
 
-use super::{AudioObjectId, AudioObjectPropertyAddress};
+use super::{AudioObjId, AudioObjPropAddr};
 
-impl core_audio::AudioObjectId {
+impl core_audio::AudioObjId {
     #[doc(alias = "kAudioObjectSystemObject")]
-    pub const SYSTEM_OBJECT: Self = Self(1);
+    pub const SYS_OBJECT: Self = Self(1);
 
     #[doc(alias = "AudioObjectSetPropertyData")]
-    pub fn set_prop<T: Sized>(
-        &self,
-        address: &AudioObjectPropertyAddress,
-        val: T,
-    ) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&self, address: &AudioObjPropAddr, val: T) -> Result<(), os::Status> {
         let data_size = std::mem::size_of_val(&val) as u32;
         unsafe {
             AudioObjectSetPropertyData(
@@ -29,7 +25,7 @@ impl core_audio::AudioObjectId {
     }
 
     #[doc(alias = "AudioObjectGetPropertyData")]
-    pub fn prop<T: Sized>(&self, address: &AudioObjectPropertyAddress) -> Result<T, os::Status> {
+    pub fn prop<T: Sized>(&self, address: &AudioObjPropAddr) -> Result<T, os::Status> {
         let mut data_size = std::mem::size_of::<T>() as u32;
         let mut val = std::mem::MaybeUninit::<T>::uninit();
         unsafe {
@@ -48,7 +44,7 @@ impl core_audio::AudioObjectId {
 
     pub fn cf_prop<T: arc::Release>(
         &self,
-        address: &AudioObjectPropertyAddress,
+        address: &AudioObjPropAddr,
     ) -> Result<arc::R<T>, os::Status> {
         let mut data_size = std::mem::size_of::<arc::R<T>>() as u32;
         let mut val = MaybeUninit::<arc::R<T>>::uninit();
@@ -67,10 +63,7 @@ impl core_audio::AudioObjectId {
     }
 
     #[doc(alias = "AudioObjectGetPropertyData")]
-    pub fn prop_vec<T: Sized>(
-        &self,
-        address: &AudioObjectPropertyAddress,
-    ) -> Result<Vec<T>, os::Status> {
+    pub fn prop_vec<T: Sized>(&self, address: &AudioObjPropAddr) -> Result<Vec<T>, os::Status> {
         let mut data_size = 0;
         unsafe {
             AudioObjectGetPropertyDataSize(*self, address, 0, std::ptr::null(), &mut data_size)
@@ -99,7 +92,7 @@ impl core_audio::AudioObjectId {
     }
 }
 
-impl core_audio::AudioObjectPropertySelector {
+impl core_audio::AudioObjPropSelector {
     #[doc(alias = "kAudioHardwarePropertyProcessInputMute")]
     pub const HARDWARE_PROCESS_INPUT_MUTE: Self = Self(u32::from_be_bytes(*b"pmin"));
 
@@ -153,11 +146,11 @@ impl core_audio::AudioObjectPropertySelector {
 #[link(name = "CoreAudio", kind = "framework")]
 extern "C" {
 
-    fn AudioObjectShow(objectId: AudioObjectId);
+    fn AudioObjectShow(objectId: AudioObjId);
 
     fn AudioObjectGetPropertyData(
-        objectId: AudioObjectId,
-        address: *const AudioObjectPropertyAddress,
+        objectId: AudioObjId,
+        address: *const AudioObjPropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: *mut u32,
@@ -165,8 +158,8 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioObjectSetPropertyData(
-        objectId: AudioObjectId,
-        address: &AudioObjectPropertyAddress,
+        objectId: AudioObjId,
+        address: &AudioObjPropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: u32,
@@ -174,11 +167,56 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioObjectGetPropertyDataSize(
-        objectId: AudioObjectId,
-        address: &AudioObjectPropertyAddress,
+        objectId: AudioObjId,
+        address: &AudioObjPropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: *mut u32,
     ) -> os::Status;
 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        arc, cf,
+        core_audio::{
+            AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope,
+            AudioObjPropSelector,
+        },
+    };
+
+    #[test]
+    fn list_devices() {
+        let addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        };
+        let _device_id: AudioObjId = AudioObjId::SYS_OBJECT.prop(&addr).unwrap();
+
+        let addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_DEVICES,
+            scope: AudioObjPropScope::INPUT,
+            element: AudioObjPropElement::MAIN,
+        };
+        let devices: Vec<AudioObjId> = AudioObjId::SYS_OBJECT.prop_vec(&addr).unwrap();
+
+        assert!(!devices.is_empty());
+
+        let name_addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::NAME,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        };
+        let man_addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::MANUFACTURER,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        };
+        for d in devices {
+            let _val: arc::R<cf::String> = d.cf_prop(&name_addr).unwrap();
+            let _val: arc::R<cf::String> = d.cf_prop(&man_addr).unwrap();
+        }
+    }
 }

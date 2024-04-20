@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[cfg(target_os = "macos")]
-use crate::core_audio::AudioObjectId;
+use crate::core_audio::AudioObjId;
 
 pub struct Output<S>(UnitRef<S>)
 where
@@ -165,7 +165,7 @@ impl Output<UninitializedState> {
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn current_device(&self) -> Result<AudioObjectId, os::Status> {
+    pub fn current_device(&self) -> Result<AudioObjId, os::Status> {
         self.unit().prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -175,7 +175,7 @@ impl Output<UninitializedState> {
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn set_current_device(&mut self, val: AudioObjectId) -> Result<(), os::Status> {
+    pub fn set_current_device(&mut self, val: AudioObjId) -> Result<(), os::Status> {
         self.unit_mut().set_prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -228,8 +228,8 @@ mod tests {
     use crate::{
         at::{self, au},
         core_audio::{
-            AudioObjectId, AudioObjectPropertyAddress, AudioObjectPropertyElement,
-            AudioObjectPropertyScope, AudioObjectPropertySelector,
+            AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope,
+            AudioObjPropSelector,
         },
         os,
     };
@@ -269,12 +269,12 @@ mod tests {
 
         output.set_input_cb(input_cb, std::ptr::null_mut()).unwrap();
 
-        let addr = AudioObjectPropertyAddress {
-            selector: AudioObjectPropertySelector::HARDWARE_DEFAULT_INPUT_DEVICE,
-            scope: AudioObjectPropertyScope::GLOBAL,
-            element: AudioObjectPropertyElement::MAIN,
+        let addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
         };
-        let device_id: AudioObjectId = AudioObjectId::SYSTEM_OBJECT.prop(&addr).unwrap();
+        let device_id: AudioObjId = AudioObjId::SYS_OBJECT.prop(&addr).unwrap();
         device_id.show();
 
         output.set_current_device(device_id).unwrap();

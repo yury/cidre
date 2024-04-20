@@ -1,41 +1,44 @@
 #[doc(alias = "AudioDeviceID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjectId(pub u32);
+pub struct AudioObjId(pub u32);
 
 #[doc(alias = "AudioClassID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioClassId(pub u32);
+pub struct AudioObjClassId(pub u32);
 
+#[doc(alias = "AudioObjectPropertySelector")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjectPropertySelector(pub u32);
+pub struct AudioObjPropSelector(pub u32);
 
+#[doc(alias = "AudioObjectPropertyScope")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjectPropertyScope(pub u32);
+pub struct AudioObjPropScope(pub u32);
 
+#[doc(alias = "AudioObjectPropertyElement")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjectPropertyElement(pub u32);
+pub struct AudioObjPropElement(pub u32);
 
+#[doc(alias = "AudioObjectPropertyAddress")]
 #[derive(Debug)]
 #[repr(C)]
-pub struct AudioObjectPropertyAddress {
-    pub selector: AudioObjectPropertySelector,
-    pub scope: AudioObjectPropertyScope,
-    pub element: AudioObjectPropertyElement,
+pub struct AudioObjPropAddr {
+    pub selector: AudioObjPropSelector,
+    pub scope: AudioObjPropScope,
+    pub element: AudioObjPropElement,
 }
 
-impl AudioObjectId {
+impl AudioObjId {
     /// This is the sentinel value. No object will have an ID whose value is 0.
+    #[doc(alias = "kAudioObjectUnknown")]
     pub const UNKNOWN: Self = Self(0);
-
-    pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 }
 
-impl AudioObjectPropertyScope {
+impl AudioObjPropScope {
     /// The AudioObjectPropertyScope for properties that apply to the object as a
     /// whole. All objects have a global scope and for most it is their only scope.
     #[doc(alias = "kAudioObjectPropertyScopeGlobal")]
@@ -60,10 +63,10 @@ impl AudioObjectPropertyScope {
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 }
 
-impl AudioObjectPropertyElement {
+impl AudioObjPropElement {
     /// The AudioObjectPropertyElement value for properties that apply to the main
     /// element or to the entire scope.
-    #[doc(alias = "kAudioObjectPropertyElementMaster")]
+    #[doc(alias = "kAudioObjectPropertyElementMaster")] // replaced with main
     #[doc(alias = "kAudioObjectPropertyElementMain")]
     pub const MAIN: Self = Self(0);
 
@@ -71,12 +74,10 @@ impl AudioObjectPropertyElement {
     pub const WILDCARD: Self = Self(0xFFFFFFFF);
 }
 
-impl AudioObjectPropertySelector {
-    #[doc(alias = "kAudioObjectPropertySelectorWildcard")]
+impl AudioObjClassId {
+    #[doc(alias = "kAudioObjectClassIDWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
-}
 
-impl AudioClassId {
     #[doc(alias = "kAudioObjectClassID")]
     pub const OBJECT: Self = Self(u32::from_be_bytes(*b"aobj"));
 
@@ -95,7 +96,10 @@ impl AudioClassId {
     pub const DEVICE: Self = Self(u32::from_be_bytes(*b"adev"));
 }
 
-impl AudioObjectPropertySelector {
+impl AudioObjPropSelector {
+    #[doc(alias = "kAudioObjectPropertySelectorWildcard")]
+    pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
+
     /// An AudioClassId that identifies the class from which the class of the
     /// AudioObject is derived. This value must always be one of the standard
     /// classes.
@@ -183,7 +187,7 @@ impl AudioObjectPropertySelector {
 }
 
 /// AudioPlugIn Properties
-impl AudioObjectPropertySelector {
+impl AudioObjPropSelector {
     #[doc(alias = "kAudioPlugInPropertyBundleID")]
     pub const PLUG_IN_BUNDLE_ID: Self = Self(u32::from_be_bytes(*b"piid"));
 
@@ -207,7 +211,7 @@ impl AudioObjectPropertySelector {
 }
 
 /// AudioTransportManager Properties
-impl AudioObjectPropertySelector {
+impl AudioObjPropSelector {
     #[doc(alias = "kAudioTransportManagerPropertyEndPointList")]
     pub const TRANSPORT_MANAGER_END_POINT_LIST: Self = Self(u32::from_be_bytes(*b"end#"));
 
@@ -220,7 +224,7 @@ impl AudioObjectPropertySelector {
 }
 
 /// AudioObjectPropertySelector values provided by the AudioBox class.
-impl AudioObjectPropertySelector {
+impl AudioObjPropSelector {
     #[doc(alias = "kAudioBoxPropertyBoxUID")]
     pub const BOX_UID: Self = Self(u32::from_be_bytes(*b"buid"));
 
