@@ -47,9 +47,9 @@ impl PixelBufPool {
     #[inline]
     pub fn pixel_buf(&self) -> Result<arc::R<cv::PixelBuf>, cv::Return> {
         unsafe {
-            let mut pixel_buffer_out = None;
-            self.create_pixel_buffer_in(&mut pixel_buffer_out, None)
-                .to_result_unchecked(pixel_buffer_out)
+            let mut pixel_buf = None;
+            self.create_pixel_buffer_in(&mut pixel_buf, None)
+                .to_result_unchecked(pixel_buf)
         }
     }
 
