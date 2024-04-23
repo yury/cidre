@@ -117,10 +117,10 @@ impl Device {
 
     #[cfg(feature = "io")]
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
-    pub fn new_texture_with_surface(
+    pub fn new_texture_with_surf(
         &self,
         descriptor: &mtl::TextureDesc,
-        surface: &io::Surf,
+        surf: &io::Surf,
         plane: usize,
     ) -> Option<arc::R<mtl::Texture>>;
 
