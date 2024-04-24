@@ -1,13 +1,25 @@
 use crate::{arc, blocks, cf, define_mtl, define_obj_type, mtl, ns, objc};
 
+/// Reports the current stage in the lifetime of MTLCommandBuffer, as it proceeds to enqueued, committed, scheduled, and completed.
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(usize)]
 pub enum Status {
+    /// The command buffer has not been enqueued yet.
     NotEnqueued = 0,
+
+    /// This command buffer is enqueued, but not committed.
     Enqueued = 1,
+
+    /// Commited to its command queue, but not yet scheduled for execution.
     Committed = 2,
+
+    /// All dependencies have been resolved and the command buffer has been scheduled for execution.
     Scheduled = 3,
+
+    /// The command buffer has finished executing successfully: any blocks set with -addCompletedHandler: may now be called.
     Completed = 4,
+
+    /// Execution of the command buffer was aborted due to an error during execution.  Check -error for more information.
     Error = 5,
 }
 
@@ -151,6 +163,11 @@ impl CmdBuf {
         drawable: &D,
         at_time: cf::TimeInterval,
     );
+
+    /// Reports the current stage in the lifetime of MTLCommandBuffer, as it proceeds
+    /// to enqueued, committed, scheduled, and completed.
+    #[objc::msg_send(status)]
+    pub fn status(&self) -> Status;
 
     /// If an error occurred during execution, the ns::Error may contain more details
     /// about the problem.
