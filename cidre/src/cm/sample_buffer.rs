@@ -8,10 +8,14 @@ use crate::cv;
 #[cfg(feature = "cat")]
 use crate::cat;
 
-define_opts!(pub Flags(u32));
+define_opts!(
+    #[doc(alias = "CMSampleBufferFlag")]
+    pub Flags(u32)
+);
 
 impl Flags {
     /// Make sure memory involved in audio buffer lists is 16-byte aligned
+    #[doc(alias = "kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment")]
     pub const AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT: Self = Self(1 << 0);
 }
 
