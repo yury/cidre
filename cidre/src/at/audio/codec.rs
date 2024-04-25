@@ -587,7 +587,22 @@ impl CodecRef<UninitializedState> {
     pub fn new_apple_aac_encoder() -> Result<Self, os::Status> {
         let desc = audio::ComponentDesc {
             type_: audio::ENCODER_COMPONENT_TYPE,
-            sub_type: u32::from_be_bytes(*b"aac "),
+            sub_type: audio::Format::MPEG4_AAC.0,
+            manufacturer: audio::unit::Manufacturer::APPLE.0,
+            ..Default::default()
+        };
+
+        let comp = desc
+            .into_iter()
+            .next()
+            .ok_or(audio::unit::component_err::UNSUPPORTED_TYPE)?;
+        comp.open_codec()
+    }
+
+    pub fn new_apple_opus_encoder() -> Result<Self, os::Status> {
+        let desc = audio::ComponentDesc {
+            type_: audio::ENCODER_COMPONENT_TYPE,
+            sub_type: audio::Format::OPUS.0,
             manufacturer: audio::unit::Manufacturer::APPLE.0,
             ..Default::default()
         };
