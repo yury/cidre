@@ -10,7 +10,10 @@ define_obj_type!(
     pub ResKey(ns::String)
 );
 
-define_obj_type!(pub Url(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSURL")]
+    pub Url(ns::Id)
+);
 
 impl arc::A<Url> {
     #[objc::msg_send(initFileURLWithPath:isDirectory:relativeToURL:)]

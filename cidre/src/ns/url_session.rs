@@ -3,16 +3,45 @@ use crate::{
     objc::{self, Class},
 };
 
-define_obj_type!(pub Cfg(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSURLSessionConfiguration")]
+    pub Cfg(ns::Id)
+);
 
-define_obj_type!(pub Task(ns::Id));
-define_obj_type!(pub DataTask(Task));
-define_obj_type!(pub UploadTask(DataTask));
-define_obj_type!(pub DownloadTask(Task));
-define_obj_type!(pub StreamTask(Task));
-define_obj_type!(pub WebSocketTask(Task));
+define_obj_type!(
+    #[doc(alias = "NSURLSessionTask")]
+    pub Task(ns::Id)
+);
 
-define_obj_type!(pub Session(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSURLSessionDataTask")]
+    pub DataTask(Task)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSURLSessionUploadTask")]
+    pub UploadTask(DataTask)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSURLSessionDownloadTask")]
+    pub DownloadTask(Task)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSURLSessionStreamTask")]
+    pub StreamTask(Task)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSURLSessionWebSocketTask")]
+    pub WebSocketTask(Task)
+);
+
+define_obj_type!(
+    #[doc(alias = "NSURLSession")]
+    pub Session(ns::Id)
+);
 
 impl Session {
     /// ```
@@ -131,19 +160,44 @@ impl Task {
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(isize)]
 pub enum WebSocketCloseCode {
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeInvalid")]
     Invalid = 0,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeNormalClosure")]
     NormalClosure = 1000,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeGoingAway")]
     GoingAway = 1001,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeProtocolError")]
     ProtocolError = 1002,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeUnsupportedData")]
     UnsupportedData = 1003,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeNoStatusReceived")]
     NoStatusReceived = 1005,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeAbnormalClosure")]
     AbnormalClosure = 1006,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeInvalidFramePayloadData")]
     InvalidFramePayloadData = 1007,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodePolicyViolation")]
     PolicyViolation = 1008,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeMessageTooBig")]
     MessageTooBig = 1009,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeMandatoryExtensionMissing")]
     MandatoryExtensionMissing = 1010,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeInternalServerError")]
     InternalServerError = 1011,
-    TLSHandshakeFailure = 1015,
+
+    #[doc(alias = "NSURLSessionWebSocketCloseCodeTLSHandshakeFailure")]
+    TlsHandshakeFailure = 1015,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
@@ -151,16 +205,19 @@ pub enum WebSocketCloseCode {
 pub struct TaskPriority(pub f32);
 
 impl TaskPriority {
+    #[doc(alias = "NSURLSessionTaskPriorityDefault")]
     #[inline]
     pub fn default_priority() -> Self {
         unsafe { NSURLSessionTaskPriorityDefault }
     }
 
+    #[doc(alias = "NSURLSessionTaskPriorityLow")]
     #[inline]
     pub fn low() -> Self {
         unsafe { NSURLSessionTaskPriorityLow }
     }
 
+    #[doc(alias = "NSURLSessionTaskPriorityHigh")]
     #[inline]
     pub fn high() -> Self {
         unsafe { NSURLSessionTaskPriorityHigh }
@@ -180,6 +237,7 @@ extern "C" {
     static NSURLSessionTaskPriorityHigh: TaskPriority;
 }
 
+#[doc(alias = "NSURLSessionWebSocketMessageType")]
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(isize)]
 pub enum WebSocketMessageType {
@@ -187,7 +245,10 @@ pub enum WebSocketMessageType {
     String = 1,
 }
 
-define_obj_type!(pub WebSocketMessage(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSURLSessionWebSocketMessage")]
+    pub WebSocketMessage(ns::Id)
+);
 
 impl arc::A<WebSocketMessage> {
     #[objc::msg_send(initWithData:)]
