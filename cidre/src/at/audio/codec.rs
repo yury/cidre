@@ -1232,9 +1232,11 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Borrow;
+
     use audio::CodecRef;
 
-    use crate::at::audio;
+    use crate::{at::audio, four_cc_to_string};
 
     #[test]
     fn basics() {
@@ -1298,6 +1300,24 @@ mod tests {
 
         let quality = codec.quality().unwrap();
         assert_eq!(quality, audio::codec_quality::MEDIUM);
+    }
+
+    #[test]
+    fn encoder_list() {
+        let desc = audio::ComponentDesc {
+            type_: audio::ENCODER_COMPONENT_TYPE,
+            manufacturer: audio::UnitManufacturer::APPLE.0,
+            ..Default::default()
+        };
+
+        for comp in desc.into_iter() {
+            println!(
+                "desc {:?} {:?} {}",
+                comp.name(),
+                comp.desc(),
+                four_cc_to_string(comp.desc().unwrap().sub_type.to_be_bytes())
+            );
+        }
     }
 
     #[test]
