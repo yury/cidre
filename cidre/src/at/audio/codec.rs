@@ -1135,44 +1135,61 @@ impl audio::Component {
     }
 }
 
+#[doc(alias = "AudioCodecProduceOutputPacketStatus")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(u32)]
 pub enum ProduceOutputPacketStatus {
     /// Couldn't complete the request due to an error. It is possible
     /// that some output data was produced. This is reflected in the value
     /// returned in ioNumberPackets.
+    #[doc(alias = "kAudioCodecProduceOutputPacketFailure")]
     Failure = 1,
 
     /// The number of requested output packets was produced without incident
     /// and there isn't any more input data to process
+    #[doc(alias = "kAudioCodecProduceOutputPacketSuccess")]
     Success = 2,
 
     /// The number of requested output packets was produced and there is
     /// enough input data to produce at least one more packet of output data
+    #[doc(alias = "kAudioCodecProduceOutputPacketSuccessHasMore")]
     SuccessHasMore = 3,
 
     /// There was insufficient input data to produce the requested
     /// number of output packets, The value returned in ioNumberPackets
     /// holds the number of output packets produced.
+    #[doc(alias = "kAudioCodecProduceOutputPacketNeedsMoreInputData")]
     NeedsMoreInputData = 4,
 
-    /// The end-of-fle marker was hit during the processing. Fewer
+    /// The end-of-file marker was hit during the processing. Fewer
     /// than the requested number of output packets may have been
     /// produced. Check the value returned in ioNumberPackets for the
     /// actual number produced. Note that not all formats have EOF
     /// markers in them.    
+    #[doc(alias = "kAudioCodecProduceOutputPacketAtEOF")]
     AtEof = 5,
 
     /// No input packets were provided, but the decoder supports packet
     /// loss concealment, so output packets were still created.
+    #[doc(alias = "kAudioCodecProduceOutputPacketSuccessConcealed")]
     SuccessConcealed = 6,
 }
 
+/// Constants to be used with kAudioCodecPropertyQualitySetting
 pub mod quality {
+    #[doc(alias = "kAudioCodecQuality_Max")]
     pub const MAX: u32 = 0x7F;
+
+    #[doc(alias = "kAudioCodecQuality_High")]
     pub const HIGH: u32 = 0x60;
+
+    #[doc(alias = "kAudioCodecQuality_Medium")]
     pub const MEDIUM: u32 = 0x40;
+
+    #[doc(alias = "kAudioCodecQuality_Low")]
     pub const LOW: u32 = 0x20;
+
+    #[doc(alias = "kAudioCodecQuality_Min")]
     pub const MIN: u32 = 0x00;
 }
 
@@ -1247,8 +1264,6 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::borrow::Borrow;
-
     use audio::CodecRef;
 
     use crate::{at::audio, four_cc_to_string};
