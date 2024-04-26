@@ -3,6 +3,7 @@ use crate::{arc, cf, define_cf_type, define_opts, os, sys::_types::MachPort};
 #[doc(alias = "SurfaceID")]
 pub type SurfId = u32;
 
+#[doc(alias = "IOSurfaceComponentName")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum ComponentName {
@@ -16,6 +17,7 @@ pub enum ComponentName {
     ChromeBlue = 7,
 }
 
+#[doc(alias = "IOSurfaceComponentType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum ComponentType {
@@ -26,6 +28,7 @@ pub enum ComponentType {
     SignedNormalized = 4,
 }
 
+#[doc(alias = "IOSurfaceComponentRange")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum ComponentRange {
@@ -35,6 +38,7 @@ pub enum ComponentRange {
     Wide = 3,
 }
 
+#[doc(alias = "IOSurfaceSubsampling")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum Subsampling {
