@@ -30,6 +30,7 @@ pub use layer::EdgeAntialiasingMask;
 pub use layer::Layer;
 
 mod metal_layer;
+pub use metal_layer::AnyMetalDrawable;
 pub use metal_layer::MetalDrawable;
 pub use metal_layer::MetalLayer;
 

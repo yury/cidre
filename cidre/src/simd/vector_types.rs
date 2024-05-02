@@ -144,7 +144,7 @@ impl<T: Copy> Simd<T, 1, 1> {
 
 impl<T: Copy> Simd<T, 2, 2> {
     #[inline]
-    pub fn with_xy(x: T, y: T) -> Self {
+    pub const fn with_xy(x: T, y: T) -> Self {
         Self([x, y])
     }
 
