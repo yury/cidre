@@ -34,12 +34,6 @@ impl DateFormatter {
     #[objc::rar_retain]
     pub fn string_from_date(&self, date: &ns::Date) -> arc::R<ns::String>;
 
-    #[objc::msg_send(dateFormat)]
-    pub fn date_format(&self) -> &ns::String;
-
-    #[objc::msg_send(setDateFormat:)]
-    pub fn set_date_format(&mut self, val: Option<&ns::String>);
-
     #[objc::msg_send(dateStyle)]
     pub fn date_style(&self) -> ns::DateFormatterStyle;
 
@@ -51,6 +45,24 @@ impl DateFormatter {
 
     #[objc::msg_send(setTimeStyle:)]
     pub fn set_time_style(&mut self, val: ns::DateFormatterStyle);
+
+    #[objc::msg_send(locale)]
+    pub fn locale_ar(&self) -> arc::Rar<ns::Locale>;
+
+    #[objc::rar_retain]
+    pub fn locale(&self) -> arc::R<ns::Locale>;
+
+    #[objc::msg_send(setLocale:)]
+    pub fn set_locale(&mut self, val: Option<&ns::Locale>);
+
+    #[objc::msg_send(dateFormat)]
+    pub fn date_format_ar(&self) -> arc::Rar<ns::String>;
+
+    #[objc::rar_retain]
+    pub fn date_format(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(setDateFormat:)]
+    pub fn set_date_format(&mut self, val: Option<&ns::String>);
 }
 
 #[link(name = "ns", kind = "static")]
@@ -65,11 +77,18 @@ mod tests {
     #[test]
     fn basics() {
         let date = ns::Date::new();
-        let formatter = ns::DateFormatter::new();
+        let mut formatter = ns::DateFormatter::new();
         let str = formatter.string_from_date(&date);
         assert!(str.is_empty());
 
         let format = formatter.date_format();
         assert!(format.is_empty());
+
+        let locale = ns::Locale::with_locale_id(ns::str!(c"en_GB"));
+        formatter.set_locale(Some(&locale));
+        formatter.set_time_style(ns::DateFormatterStyle::Short);
+
+        let format_str = formatter.date_format();
+        assert_eq!(format_str.to_string(), "HH:mm");
     }
 }

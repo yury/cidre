@@ -72,6 +72,7 @@ Class NS_FILE_MANAGER;
 Class NS_NOTIFICATION;
 Class NS_NOTIFICATION_CENTER;
 Class NS_CODER;
+Class NS_LOCALE;
 
 Class NS_OPERATION;
 Class NS_BLOCK_OPERATION;
@@ -164,6 +165,7 @@ static void common_initializer(void)
         NS_NOTIFICATION = [NSNotification class];
         NS_NOTIFICATION_CENTER = [NSNotificationCenter class];
         NS_CODER = [NSCoder class];
+        NS_LOCALE = [NSLocale class];
         
         NS_OPERATION = [NSOperation class];
         NS_BLOCK_OPERATION = [NSBlockOperation class];
