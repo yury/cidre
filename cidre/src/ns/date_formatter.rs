@@ -9,14 +9,6 @@ define_obj_type!(
 unsafe impl Send for DateFormatter {}
 unsafe impl Sync for DateFormatter {}
 
-// typedef NS_ENUM(NSUInteger, NSDateFormatterStyle) {    // date and time format styles
-//     NSDateFormatterNoStyle = kCFDateFormatterNoStyle,
-//     NSDateFormatterShortStyle = kCFDateFormatterShortStyle,
-//     NSDateFormatterMediumStyle = kCFDateFormatterMediumStyle,
-//     NSDateFormatterLongStyle = kCFDateFormatterLongStyle,
-//     NSDateFormatterFullStyle = kCFDateFormatterFullStyle
-// };
-
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum DateFormatterStyle {
