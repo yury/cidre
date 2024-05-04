@@ -30,7 +30,10 @@ impl MetalLayer {
     pub fn set_device(&mut self, val: Option<&mtl::Device>);
 
     #[objc::msg_send(nextDrawable)]
-    pub fn next_drawable(&self) -> Option<&AnyMetalDrawable>;
+    pub fn next_drawable_ar(&self) -> Option<arc::Rar<AnyMetalDrawable>>;
+
+    #[objc::rar_retain]
+    pub fn next_drawable(&self) -> Option<arc::R<AnyMetalDrawable>>;
 
     /// This property controls the pixel format of the [`mtl::Texture`] objects.
     #[objc::msg_send(pixelFormat)]

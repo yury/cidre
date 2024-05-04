@@ -1,6 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
+    #[doc(alias = "NSLocale")]
     pub Locale(ns::Id)
 );
 
