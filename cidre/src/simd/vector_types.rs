@@ -184,12 +184,12 @@ impl Simd<f32, 4, 3> {
 
 impl<T: Copy> Simd<T, 4, 4> {
     #[inline]
-    pub fn with_xyzw(x: T, y: T, z: T, w: T) -> Self {
+    pub const fn with_xyzw(x: T, y: T, z: T, w: T) -> Self {
         Self([x, y, z, w])
     }
 
     #[inline]
-    pub fn with_rgba(r: T, g: T, b: T, a: T) -> Self {
+    pub const fn with_rgba(r: T, g: T, b: T, a: T) -> Self {
         Self([r, g, b, a])
     }
 

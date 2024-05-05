@@ -1,5 +1,6 @@
 #[cfg(feature = "ns")]
 use crate::ns;
+
 #[cfg(feature = "objc")]
 use crate::objc;
 
@@ -54,7 +55,10 @@ impl ValueCbs {
 
 pub type ApplierFn = extern "C" fn(key: *const c_void, value: *const c_void, context: *mut c_void);
 
-define_cf_type!(Dictionary(Type));
+define_cf_type!(
+    #[doc(alias = "CFDictionary")]
+    Dictionary(Type)
+);
 
 impl Dictionary {
     #[inline]
@@ -174,6 +178,7 @@ impl Dictionary {
         unsafe { CFDictionaryGetCount(self) }
     }
 
+    #[doc(alias = "CFDictionaryGetCount")]
     #[inline]
     pub fn len(&self) -> usize {
         self.count() as _
@@ -330,9 +335,7 @@ impl Default for arc::R<Dictionary> {
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
     static kCFTypeDictionaryKeyCallBacks: KeyCbs;
-
     static kCFCopyStringDictionaryKeyCallBacks: KeyCbs;
-
     static kCFTypeDictionaryValueCallBacks: ValueCbs;
 
     fn CFDictionaryGetTypeID() -> TypeId;
