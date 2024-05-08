@@ -81,6 +81,11 @@ pub use player::QueuePlayer;
 pub use player::Status as PlayerStatus;
 pub use player::TimeControlStatus as PlayerTimeControlStatus;
 
+#[cfg(feature = "ca")]
+mod player_layer;
+#[cfg(feature = "ca")]
+pub use player_layer::PlayerLayer;
+
 pub mod asset;
 pub use asset::Asset;
 pub use asset::AssetCache;
