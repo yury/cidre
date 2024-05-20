@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mc, ns, objc};
 
 #[cfg(any(
     target_os = "ios",
-    target = "aarch64-apple-ios-macabi",
+    all(target_os = "ios", target_abi = "macabi",),
     target_os = "tvos"
 ))]
 use crate::ui;
@@ -14,7 +14,7 @@ define_obj_type!(
 
 #[cfg(any(
     target_os = "ios",
-    target = "aarch64-apple-ios-macabi",
+    all(target_os = "ios", target_abi = "macabi",),
     target_os = "tvos"
 ))]
 define_obj_type!(

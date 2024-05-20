@@ -139,7 +139,7 @@ pub mod cat;
 #[cfg(all(
     any(
         target_os = "ios",
-        target = "aarch64-apple-ios-macabi",
+        all(target_os = "ios", target_abi = "macabi",),
         target_os = "tvos"
     ),
     feature = "ui"
