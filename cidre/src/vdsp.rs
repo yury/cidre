@@ -1911,6 +1911,53 @@ extern "C" {
     #[link_name = "vDSP_vfltu16"]
     pub fn _u16_f32(__A: *const u16, __IA: Stride, __C: *mut f32, __CI: Stride, __N: Len);
 
+    #[doc(alias = "vDSP_vdbcon")]
+    #[link_name = "vDSP_vdbcon"]
+    pub fn _dbcon_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __C: *mut f32,
+        __CI: Stride,
+        __N: Len,
+        __F: u32,
+    );
+
+    #[doc(alias = "vDSP_vdbconD")]
+    #[link_name = "vDSP_vdbconD"]
+    pub fn _dbcon_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __C: *mut f64,
+        __CI: Stride,
+        __N: Len,
+        __F: u32,
+    );
+
+    #[doc(alias = "vDSP_vclip")]
+    #[link_name = "vDSP_vclip"]
+    pub fn _clip_f32(
+        __A: *const f32,
+        __IA: Stride,
+        __B: *const f32,
+        __C: *const f32,
+        __D: *mut f32,
+        __ID: Stride,
+        __N: Len,
+    );
+
+    #[doc(alias = "vDSP_vclipD")]
+    #[link_name = "vDSP_vclipD"]
+    pub fn _clip_f64(
+        __A: *const f64,
+        __IA: Stride,
+        __B: *const f64,
+        __C: *const f64,
+        __D: *mut f64,
+        __ID: Stride,
+        __N: Len,
+    );
 }
 
 #[cfg(test)]
