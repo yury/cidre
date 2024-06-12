@@ -176,6 +176,8 @@ pub mod wk;
 
 pub mod arc;
 
+pub mod api;
+
 #[macro_export]
 macro_rules! define_opts {
     (
