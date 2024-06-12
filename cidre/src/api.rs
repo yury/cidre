@@ -23,7 +23,6 @@ impl<T> DlSym<T> {
     pub fn get(&self) -> Option<&T> {
         unsafe {
             match self.ptr.load(Ordering::Relaxed) {
-                0 => None,
                 1 => self.initialize(),
                 ptr => {
                     let val = std::mem::transmute(ptr);
@@ -62,7 +61,7 @@ mod tests {
         DlSym::new(c"NSInvocationOperationVoidResultException");
 
     #[test]
-    fn not_found() {
+    fn basics() {
         assert!(NOT_FOUND.get().is_none());
         assert!(NOT_FOUND.get().is_none());
         assert!(SHOULD_BE_FOUND.get().unwrap().len() > 0);
