@@ -1,7 +1,7 @@
 use std::{
     ffi::{c_char, c_void, CStr},
     marker::PhantomData,
-    sync::atomic::{self, AtomicUsize, Ordering},
+    sync::atomic::{fence, AtomicUsize, Ordering},
 };
 
 pub struct DlSym<T> {
@@ -25,9 +25,8 @@ impl<T> DlSym<T> {
             match self.ptr.load(Ordering::Relaxed) {
                 1 => self.initialize(),
                 ptr => {
-                    let val = std::mem::transmute(ptr);
-                    atomic::fence(Ordering::Acquire);
-                    val
+                    fence(Ordering::Acquire);
+                    std::mem::transmute(ptr)
                 }
             }
         }
