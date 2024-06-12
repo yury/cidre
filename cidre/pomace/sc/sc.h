@@ -6,7 +6,6 @@
 //
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
-#include "../macro.h"
 #include "Block.h"
 
 NS_ASSUME_NONNULL_BEGIN

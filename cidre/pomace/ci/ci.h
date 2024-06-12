@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreImage/CoreImage.h>
-#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -9,6 +9,7 @@
 #include "../macro.h"
 #import "objc/objc.h"
 #import "objc/objc-exception.h"
+#import <dlfcn.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

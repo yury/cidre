@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "../macro.h"
 #include "TargetConditionals.h"
 
 #import <QuartzCore/QuartzCore.h>
