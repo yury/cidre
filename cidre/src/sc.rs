@@ -20,4 +20,10 @@ pub use shareable_content::ShareableContent;
 pub use shareable_content::Style as ShareableContentStyle;
 pub use shareable_content::Window;
 
+pub mod recording_output;
+pub use recording_output::Delegate as RecordingOutputDelegate;
+pub use recording_output::DelegateImpl as RecordingOutputDelegateImpl;
+pub use recording_output::RecordingOutput;
+pub use recording_output::RecordingOutputCfg;
+
 pub mod error;

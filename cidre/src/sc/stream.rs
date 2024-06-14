@@ -103,8 +103,12 @@ impl FrameInfo {
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum OutputType {
+    #[doc(alias = "SCStreamOutputTypeScreen")]
     Screen,
+    #[doc(alias = "SCStreamOutputTypeAudio")]
     Audio,
+    #[doc(alias = "SCStreamOutputTypeMicrophone")]
+    Mic,
 }
 
 /// Denotes the setting that can be set to determine when to show the presenter overlay
@@ -137,6 +141,16 @@ define_obj_type!(
     pub Cfg(ns::Id),
     SC_STREAM_CONFIGURATION
 );
+
+/// Client can use sc::StreamCfgPreset to create sc::StreamCfg with suggested values of properties for various use cases
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum CfgPreset {
+    CaptureHdrStreamLocalDisplay,
+    CaptureHdrStreamCanoncalDisplay,
+    CaptureHdrScreenshotLocalDisplay,
+    CaptureHdrScreenshotCanoncalDisplay,
+}
 
 impl Cfg {
     /// ```
@@ -194,6 +208,12 @@ impl Cfg {
 
     #[objc::msg_send(setShowsCursor:)]
     pub fn set_shows_cursor(&mut self, val: bool);
+
+    #[objc::msg_send(showMouseClicks)]
+    pub fn show_mouse_clicks(&self) -> bool;
+
+    #[objc::msg_send(setShowMouseClicks:)]
+    pub fn set_show_mouse_clicks(&mut self, val: bool);
 
     #[objc::msg_send(backgroundColor)]
     pub fn background_color(&self) -> cg::Color;
@@ -331,6 +351,33 @@ impl Cfg {
 
     #[objc::msg_send(setIncludeChildWindows:)]
     pub fn set_include_child_windows(&mut self, val: bool);
+
+    #[objc::msg_send(captureMicrophone)]
+    pub fn capture_mic(&self) -> bool;
+
+    #[objc::msg_send(setCaptureMicrophone:)]
+    pub fn set_capture_mic(&mut self, val: bool);
+
+    #[objc::msg_send(microphoneCaptureDeviceID)]
+    pub fn mic_capture_device_id_ar(&self) -> Option<arc::Rar<ns::String>>;
+
+    #[objc::rar_retain]
+    pub fn mic_capture_device_id(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setMicrophoneCaptureDeviceID:)]
+    pub fn set_mic_capture_device_id_ar(&mut self, val: Option<&ns::String>);
+
+    #[objc::msg_send(captureDynamicRange)]
+    pub fn capture_dynamic_range(&self) -> CaptureDynamicRange;
+
+    #[objc::msg_send(setCaptureDynamicRange:)]
+    pub fn set_capture_dynamic_range(&mut self, val: CaptureDynamicRange);
+
+    #[objc::cls_msg_send(streamConfigurationWithPreset:)]
+    pub fn with_preset_ar(preset: CfgPreset) -> arc::Rar<Self>;
+
+    #[objc::cls_rar_retain]
+    pub fn with_preset(preset: CfgPreset) -> arc::R<Self>;
 }
 
 #[link(name = "sc", kind = "static")]
@@ -348,6 +395,14 @@ extern "C" {
     static SCStreamFrameInfoScreenRect: &'static FrameInfo;
     static SCStreamFrameInfoBoundingRect: &'static FrameInfo;
     static SCStreamFrameInfoPresenterOverlayContentRect: &'static FrameInfo;
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum CaptureDynamicRange {
+    Sdr,
+    HdrLocalDisplay,
+    HdrCanonicalDisplay,
 }
 
 define_obj_type!(pub ContentFilter(ns::Id));
@@ -502,10 +557,10 @@ impl Stream {
     }
 
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
-    fn start_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
+    pub fn start_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
-    fn stop_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
+    pub fn stop_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, mut block) = blocks::ok();
@@ -517,6 +572,34 @@ impl Stream {
         let (future, mut block) = blocks::ok();
         self.stop_with_ch(Some(&mut block));
         future.await
+    }
+
+    #[objc::msg_send(addRecordingOutput:error:)]
+    pub unsafe fn add_recording_output_err<'ar>(
+        &mut self,
+        val: &sc::RecordingOutput,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> bool;
+
+    pub fn add_recording_output<'ar>(
+        &mut self,
+        val: &sc::RecordingOutput,
+    ) -> Result<(), &'ar ns::Error> {
+        ns::if_false(|err| unsafe { self.add_recording_output_err(val, err) })
+    }
+
+    #[objc::msg_send(removeRecordingOutput:error:)]
+    pub unsafe fn remove_recording_output_err<'ar>(
+        &mut self,
+        val: &sc::RecordingOutput,
+        error: *mut Option<&'ar ns::Error>,
+    ) -> bool;
+
+    pub fn remove_recording_output<'ar>(
+        &mut self,
+        val: &sc::RecordingOutput,
+    ) -> Result<(), &'ar ns::Error> {
+        ns::if_false(|err| unsafe { self.remove_recording_output_err(val, err) })
     }
 }
 
