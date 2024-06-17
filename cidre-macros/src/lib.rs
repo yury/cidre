@@ -8,6 +8,12 @@ enum ObjcAttr {
     MsgSend(String),
 }
 
+fn to_underscore_string(val: f32) -> String {
+    let major = val as u32;
+    let minor = val.fract() as u32;
+    format!("{major}_{minor}")
+}
+
 fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
     let mut iter = group.stream().into_iter();
     let Some(TokenTree::Ident(ident)) = iter.next() else {
@@ -710,4 +716,52 @@ fn gen_msg_send(
     }
 
     flow.parse().unwrap()
+}
+
+#[proc_macro_attribute]
+pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
+    println!("{versions:?}");
+    let mut iter = versions.into_iter();
+    let mut available = Vec::new();
+    while let Some(t) = iter.next() {
+        let platform = match t {
+            TokenTree::Ident(ident) => match ident.to_string().as_str() {
+                "macos" => "macos",
+                "ios" => "ios",
+                "watchos" => "watchos",
+                "visionos" => "visionos",
+                "maccatalyst" => "maccatalyst",
+                t => panic!("Unsupported platform. Platform should be macos, ios, watchos, visionos or maccatalyst. Found {t:?}"),
+            },
+            _ => panic!("Unexpected token {t:?}"),
+        };
+        let Some(TokenTree::Punct(ident)) = iter.next() else {
+            panic!("Expecting = ");
+        };
+
+        assert!(&ident.to_string() == "=", "expecting =");
+
+        let Some(TokenTree::Literal(val)) = iter.next() else {
+            panic!("expecting version");
+        };
+
+        let v: f32 = str::parse(&val.to_string()).unwrap();
+
+        available.push(format!(
+            "#[cfg(feature = \"{}_{})\")]\r\n",
+            platform,
+            to_underscore_string(v)
+        ));
+
+        if let Some(TokenTree::Punct(p)) = iter.next() {
+            assert_eq!(p.to_string(), ",", "expect ,");
+        };
+    }
+
+    let available = available.join("");
+
+    let mut ts: TokenStream = available.parse().unwrap();
+
+    ts.extend(body);
+    ts
 }

@@ -49,6 +49,9 @@ impl<T> DlSym<T> {
 
 unsafe impl<T> Sync for DlSym<T> {}
 
+pub use cidre_macros::api_available as available;
+
+#[crate::api::available(ios = 17.0, macos = 10.10)]
 #[cfg(test)]
 mod tests {
     use crate::ns;

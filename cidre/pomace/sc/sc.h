@@ -20,7 +20,7 @@ Class SC_RECORDING_OUTPUT_CONFIGURATION = nil;
 Class SC_RECORDING_OUTPUT = nil;
 
 API_AVAILABLE(macos(15.0))
-void load_recording_classes(void) {
+void load_macos_15(void) {
     SC_RECORDING_OUTPUT_CONFIGURATION = [SCRecordingOutputConfiguration class];
     SC_RECORDING_OUTPUT = [SCRecordingOutput class];
 }
@@ -30,18 +30,16 @@ static void sc_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
         
         SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
         SC_CONTENT_FILTER = [SCContentFilter class];
         SC_STREAM = [SCStream class];
         SC_SHAREABLE_CONTENT = [SCShareableContent class];
         
-        if (load_recording_classes != nil) {
-            load_recording_classes();
+        if (load_macos_15 != nil) {
+            load_macos_15();
         }
-        
-        
-        initialized = 1;
     }
 }
 

@@ -63,6 +63,14 @@ Class AV_SPEECH_UTTERANCE;
 
 Class AV_AUDIO_APPLICATION;
 
+API_AVAILABLE(ios(17.0))
+void load_ios_17(void) {
+#if TARGET_OS_WATCH
+#else
+    AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
+#endif
+}
+
 __attribute__((constructor))
 static void av_initializer(void)
 {
@@ -81,15 +89,9 @@ static void av_initializer(void)
         AV_CAPTURE_PHOTO_OUTPUT = [AVCapturePhotoOutput class];
         AV_CAPTURE_VIDEO_PREVIEW_LAYER = [AVCaptureVideoPreviewLayer class];
 #endif
-        if (@available(iOS 17.0, *)) {
-#if TARGET_OS_WATCH
-#else
-            AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
-#endif
-        } else {
-            // Fallback on earlier versions
+        if (load_ios_17 != nil) {
+            load_ios_17();
         }
-        
 #if TARGET_OS_OSX
 #else
         
