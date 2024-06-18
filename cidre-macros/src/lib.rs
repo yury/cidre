@@ -728,6 +728,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
             TokenTree::Ident(ident) => match ident.to_string().as_str() {
                 "macos" => "macos",
                 "ios" => "ios",
+                "tvos" => "tvos",
                 "watchos" => "watchos",
                 "visionos" => "visionos",
                 "maccatalyst" => "maccatalyst",
@@ -748,7 +749,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
         let v: f32 = str::parse(&val.to_string()).unwrap();
 
         available.push(format!(
-            "#[cfg(feature = \"{}_{})\")]\r\n",
+            "feature = \"{}_{}\"",
             platform,
             to_underscore_string(v)
         ));
@@ -758,7 +759,8 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
         };
     }
 
-    let available = available.join("");
+    let available = available.join(", ");
+    let available = format!("#[cfg(any({available}))]");
 
     let mut ts: TokenStream = available.parse().unwrap();
 
