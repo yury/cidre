@@ -1,13 +1,6 @@
 use crate::{api, arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[doc(alias = "MTLHeapType")]
-#[api::available(
-    ios = 13.0,
-    macos = 10.15,
-    tvos = 13.0,
-    visionos = 1.0,
-    maccatalyst = 13.1
-)]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Default)]
 #[repr(isize)]
 pub enum Type {
@@ -33,13 +26,6 @@ pub enum Type {
     Sparse = 2,
 }
 
-#[api::available(
-    ios = 10.0,
-    macos = 10.13,
-    maccatalyst = 13.1,
-    tvos = 10.0,
-    visionos = 1.0
-)]
 define_obj_type!(pub Desc(ns::Id));
 
 impl arc::A<Desc> {

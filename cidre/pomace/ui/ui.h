@@ -5,9 +5,6 @@
 //  Created by Yury Korolev on 25.05.2022.
 //
 
-#import <Foundation/Foundation.h>
-#include "../macro.h"
-
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -26,6 +23,8 @@ static void ui_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+        
         UI_DEVICE = [UIDevice class];
         UI_VIEW = [UIView class];
         UI_COLOR = [UIColor class];
@@ -34,9 +33,6 @@ static void ui_initializer(void)
         UI_IMAGE = [UIImage class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
-        
-        
-        initialized = 1;
     }
 }
 

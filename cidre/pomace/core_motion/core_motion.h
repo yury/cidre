@@ -5,7 +5,6 @@
 //  Created by Yury Korolev on 1/19/24.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
 
 NS_ASSUME_NONNULL_BEGIN

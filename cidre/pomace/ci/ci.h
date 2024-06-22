@@ -5,7 +5,6 @@
 //  Created by Yury Korolev on 22.05.2022.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreImage/CoreImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,10 +17,10 @@ static void ci_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+        
         CI_IMAGE = [CIImage class];
         CI_CONTEXT = [CIContext class];
-        
-        initialized = 1;
     }
 }
 

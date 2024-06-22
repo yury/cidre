@@ -5,9 +5,7 @@
 //  Created by Yury Korolev on 27.02.2022.
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

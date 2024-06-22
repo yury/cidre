@@ -6,11 +6,11 @@
 //
 
 #import <Foundation/Foundation.h>
+
 #if TARGET_OS_SIMULATOR
 #else
 #import <MetalPerformanceShadersGraph/MetalPerformanceShadersGraph.h>
 #endif
-//#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +26,7 @@ static void mpsg_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
         
 #if TARGET_OS_SIMULATOR
 #else
@@ -38,7 +39,7 @@ static void mpsg_initializer(void)
         MPS_GRAPH_LSTM_DESCRIPTOR = [MPSGraphLSTMDescriptor class];
 #endif
         
-        initialized = 1;
+        
     }
 }
 

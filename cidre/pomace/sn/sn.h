@@ -6,7 +6,6 @@
 //
 
 #import <SoundAnalysis/SoundAnalysis.h>
-#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,14 +20,13 @@ static void sn_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
         
         SN_AUDIO_STREAM_ANALYZER = [SNAudioStreamAnalyzer class];
         SN_AUDIO_FILE_ANALYZER = [SNAudioFileAnalyzer class];
         SN_TIME_DURATION_CONSTRAINT = [SNTimeDurationConstraint class];
         SN_CLASSIFY_SOUND_REQUEST = [SNClassifySoundRequest class];
         SN_CLASSIFICATION_RESULT = [SNClassificationResult class];
-        
-        initialized = 1;
     }
 }
 

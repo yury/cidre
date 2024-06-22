@@ -6,8 +6,6 @@
 //
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
-//#import <Availability.h>
-#include "Block.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,12 +16,6 @@ Class SC_SHAREABLE_CONTENT;
 
 Class SC_RECORDING_OUTPUT_CONFIGURATION = nil;
 Class SC_RECORDING_OUTPUT = nil;
-
-API_AVAILABLE(macos(15.0))
-void load_macos_15(void) {
-    SC_RECORDING_OUTPUT_CONFIGURATION = [SCRecordingOutputConfiguration class];
-    SC_RECORDING_OUTPUT = [SCRecordingOutput class];
-}
 
 __attribute__((constructor))
 static void sc_initializer(void)
@@ -37,8 +29,12 @@ static void sc_initializer(void)
         SC_STREAM = [SCStream class];
         SC_SHAREABLE_CONTENT = [SCShareableContent class];
         
-        if (load_macos_15 != nil) {
-            load_macos_15();
+        if (@available(macOS 15.0, *)) {
+            SC_RECORDING_OUTPUT_CONFIGURATION = [SCRecordingOutputConfiguration class];
+            SC_RECORDING_OUTPUT = [SCRecordingOutput class];
+        } else {
+            SC_RECORDING_OUTPUT_CONFIGURATION = nil;
+            SC_RECORDING_OUTPUT = nil;
         }
     }
 }

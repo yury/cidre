@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#include "../macro.h"
 #import "objc/objc.h"
 #import "objc/objc-exception.h"
 #import <dlfcn.h>
@@ -25,12 +24,6 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
         return e;
     }
 }
-
-
-#pragma mark - NSNumber
-
-NS_RETURNS_RETAINED
-csel1(, NSNumber, numberWithInteger, NSInteger, NSNumber *)
 
 Class NS_ARRAY;
 Class NS_DATA;

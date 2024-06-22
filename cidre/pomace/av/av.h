@@ -5,7 +5,6 @@
 //  Created by Yury Korolev on 02.05.2022.
 //
 
-#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,7 +19,7 @@ Class AV_CAPTURE_AUDIO_DATA_OUTPUT;
 Class AV_CAPTURE_DEVICE_INPUT;
 Class AV_CAPTURE_CONNECTION;
 Class AV_CAPTURE_METADATA_INPUT;
-Class AV_CAPTURE_DEVICE_ROTATION_COORDINATOR;
+Class AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = nil;
 Class AV_CAPTURE_PHOTO_OUTPUT;
 Class AV_CAPTURE_VIDEO_PREVIEW_LAYER;
 
@@ -63,19 +62,13 @@ Class AV_SPEECH_UTTERANCE;
 
 Class AV_AUDIO_APPLICATION;
 
-API_AVAILABLE(ios(17.0))
-void load_ios_17(void) {
-#if TARGET_OS_WATCH
-#else
-    AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
-#endif
-}
-
 __attribute__((constructor))
 static void av_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+        
 #if TARGET_OS_WATCH
 #else
         AV_CAPTURE_DEVICE = [AVCaptureDevice class];
@@ -89,8 +82,23 @@ static void av_initializer(void)
         AV_CAPTURE_PHOTO_OUTPUT = [AVCapturePhotoOutput class];
         AV_CAPTURE_VIDEO_PREVIEW_LAYER = [AVCaptureVideoPreviewLayer class];
 #endif
-        if (load_ios_17 != nil) {
-            load_ios_17();
+        if (@available(iOS 17.0, *)) {
+#if TARGET_OS_WATCH
+#else
+    AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
+    
+    AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
+    AV_AUDIO_APPLICATION = [AVAudioApplication class];
+#endif
+        } else {
+#if TARGET_OS_WATCH
+#else
+    AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = nil;
+    
+    AV_SAMPLE_BUFFER_VIDEO_RENDERER = nil;
+    AV_AUDIO_APPLICATION = nil;
+#endif
+
         }
 #if TARGET_OS_OSX
 #else
@@ -134,7 +142,7 @@ static void av_initializer(void)
         AV_ASSET_READER = [AVAssetReader class];
         
         AV_SAMPLE_BUFFER_DISPLAY_LAYER = [AVSampleBufferDisplayLayer class];
-        AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
+        
         AV_PLAYER_LAYER = [AVPlayerLayer class];
 #endif
         
@@ -149,10 +157,7 @@ static void av_initializer(void)
         AV_SPEECH_SYNTHESIS_VOICE = [AVSpeechSynthesisVoice class];
         AV_SPEECH_SYNTHESIZER = [AVSpeechSynthesizer class];
         AV_SPEECH_UTTERANCE = [AVSpeechUtterance class];
-        
-        AV_AUDIO_APPLICATION = [AVAudioApplication class];
 
-        initialized = 1;
     }
 }
 

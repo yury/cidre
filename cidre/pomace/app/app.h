@@ -6,7 +6,6 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +27,8 @@ static void app_initializer(void)
     
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+        
         NS_APPLICATION = [NSApplication class];
         NS_CELL = [NSCell class];
         NS_VIEW = [NSView class];
@@ -40,8 +41,6 @@ static void app_initializer(void)
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         NS_IMAGE = [NSImage class];
-        
-        initialized = 1;
     }
 }
 

@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, fmt::Debug};
 
 /// This is all dirty hacks. We need to reimplement it with syn and quote
 use proc_macro::{Delimiter, Group, TokenStream, TokenTree};
@@ -58,12 +58,6 @@ fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
 
     panic!("Unexpected attribute")
 }
-
-// fn sel_args_count(sel: TokenStream) -> usize {
-//     sel.into_iter()
-//         .filter(|t| matches!(t, TokenTree::Punct(v) if v.as_char() == ':'))
-//         .count()
-// }
 
 fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
     let mut prev = None;
@@ -176,7 +170,7 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
     /// `@selector({extern_name})` but dynamic
     /// use this function to check if object responds to selector
     fn sel_{fn_name}() -> Option<&'static objc::Sel> {{
-        unsafe {{ Some(objc::sel_reg_name(c\"{extern_name}\".as_ptr())) }}
+        Some(unsafe {{ objc::sel_reg_name(c\"{extern_name}\".as_ptr()) }})
     }}
         "
     )
@@ -719,10 +713,68 @@ fn gen_msg_send(
 }
 
 #[proc_macro_attribute]
-pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
-    println!("{versions:?}");
+pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
+    let original_body = body.clone();
+    let mut iter = body.into_iter();
+    let mut features = None;
+    while let Some(t) = iter.next() {
+        match t {
+            // extern "C" {
+            TokenTree::Group(ref p) if p.delimiter() == Delimiter::Brace => {
+                let mut group = p.stream().into_iter();
+                while let Some(t) = group.next() {
+                    match t {
+                        TokenTree::Group(ref p) if p.delimiter() == Delimiter::Bracket => {
+                            let mut attr = p.stream().into_iter();
+                            while let Some(ref ident) = attr.next() {
+                                match ident {
+                                    // TokenTree::Group(_) => todo!(),
+                                    TokenTree::Ident(i) => {
+                                        let st = i.to_string();
+                                        match st.as_str() {
+                                            // api::available
+                                            "api" => {
+                                                attr.next();
+                                                attr.next();
+                                                continue;
+                                            }
+                                            // direct available
+                                            "available" => {
+                                                if let Some(TokenTree::Group(g)) = attr.next() {
+                                                    features =
+                                                        Some(versions_to_features(g.stream()));
+                                                    println!("features {features:?}");
+                                                } else {
+                                                    break;
+                                                }
+                                                break;
+                                            }
+                                            _ => break,
+                                        }
+                                    }
+                                    _ => break, // TokenTree::Punct(_) => todo!(),
+                                                // TokenTree::Literal(_) => todo!(),
+                                }
+                            }
+
+                            // println!("found {p:?}")
+                        }
+                        _ => {}
+                    }
+                    // println!("t: {t:?}")
+                }
+            }
+            x => {
+                // println!("x: {x:?}")
+            }
+        }
+    }
+    original_body
+}
+
+fn versions_to_features(versions: TokenStream) -> Vec<String> {
     let mut iter = versions.into_iter();
-    let mut available = Vec::new();
+    let mut features = Vec::new();
     while let Some(t) = iter.next() {
         let platform = match t {
             TokenTree::Ident(ident) => match ident.to_string().as_str() {
@@ -748,7 +800,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
 
         let v: f32 = str::parse(&val.to_string()).unwrap();
 
-        available.push(format!(
+        features.push(format!(
             "feature = \"{}_{}\"",
             platform,
             to_underscore_string(v)
@@ -758,12 +810,103 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
             assert_eq!(p.to_string(), ",", "expect ,");
         };
     }
-
-    let available = available.join(", ");
-    let available = format!("#[cfg(any({available}))]");
+    features
+}
+// 1. extern static vars
+// 2. extern (pub) fns
+// 3. (pub) fn
+// 4. pub selector
+#[proc_macro_attribute]
+pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
+    let features = versions_to_features(versions);
+    let features = features.join(", ");
+    let available = format!("#[cfg(any({features}))]");
+    let unavailable = format!("#[cfg(not(all({features})))]");
 
     let mut ts: TokenStream = available.parse().unwrap();
 
-    ts.extend(body);
+    println!("{body:?}");
+    let mut body_iter = body.into_iter();
+    let mut tokens = Vec::new();
+
+    while let Some(t) = body_iter.next() {
+        tokens.push(t.clone());
+        match t {
+            TokenTree::Ident(ref i) => {
+                let str = i.to_string();
+                match str.as_str() {
+                    "static" => {
+                        println!("static")
+                    }
+                    "fn" => {
+                        println!("fn")
+                    }
+                    "pub" => continue,
+                    _ => break,
+                }
+            }
+            _ => {}
+        }
+    }
+
+    // let Some(token) = body_iter.next() else {
+    //     panic!("expect static or fn")
+    // };
+    // tokens.push(token.clone());
+    // println!("tokens {tokens:?}");
+    // let TokenTree::Ident(ident) = token else {
+    //     panic!("expect static or fn")
+    // };
+
+    // let ident = ident.to_string();
+
+    // let mut var_code = None;
+
+    // match ident.as_str() {
+    //     "static" => {
+    //         // vars
+    //         let Some(token) = body_iter.next() else {
+    //             panic!("expect static or fn")
+    //         };
+    //         tokens.push(token.clone());
+    //         let TokenTree::Ident(ident) = token else {
+    //             panic!("expect variable name")
+    //         };
+
+    //         let var_name = ident.to_string();
+    //         let Some(token) = body_iter.next() else {
+    //             panic!("expect :")
+    //         };
+    //         tokens.push(token.clone());
+    //         let TokenTree::Punct(p) = token else {
+    //             panic!("expect :")
+    //         };
+
+    //         let mut ty = String::new();
+
+    //         while let Some(token) = body_iter.next() {
+    //             let str = token.to_string();
+    //             if str != ";" {
+    //                 ty.push_str(&str);
+    //                 if str.len() > 1 {
+    //                     ty.push_str(" ")
+    //                 }
+    //             }
+    //             tokens.push(token);
+    //         }
+
+    //         let code =
+    //             format!("{unavailable}\nstatic {var_name}: api::DlSym<{ty}> = api::DlSym::new(c\"{var_name}\");");
+    //         println!("{}", code);
+    //         var_code = Some(code);
+    //     }
+    //     "fn" => {}
+    //     x => panic!("expect static or fn. Got {x}"),
+    // };
+    ts.extend(tokens);
+    // if let Some(var_code) = var_code {
+    //     let code = TokenStream::from_str(&var_code).unwrap_or_default();
+    //     ts.extend(code);
+    // }
     ts
 }

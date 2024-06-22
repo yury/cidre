@@ -13,7 +13,6 @@
 #import <MLCompute/MLCompute.h>
 #endif
 
-#import "../macro.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,6 +40,8 @@ static void mlc_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+        
 #if TARGET_OS_SIMULATOR
 #else
         MLC_DEVICE = [MLCDevice class];
@@ -63,7 +64,6 @@ static void mlc_initializer(void)
         MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
         MLC_TRAINING_GRAPH = [MLCTrainingGraph class];
 #endif
-        initialized = 1;
     }
 }
 

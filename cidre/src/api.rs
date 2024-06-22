@@ -50,16 +50,16 @@ impl<T> DlSym<T> {
 unsafe impl<T> Sync for DlSym<T> {}
 
 pub use cidre_macros::api_available as available;
+pub use cidre_macros::api_weak as weak;
 
-#[crate::api::available(ios = 17.0, macos = 10.10)]
 #[cfg(test)]
 mod tests {
     use crate::ns;
 
     use super::DlSym;
 
-    static NOT_FOUND: DlSym<&ns::String> = DlSym::new(c"not_a_symbol");
-    static SHOULD_BE_FOUND: DlSym<&ns::String> =
+    static NOT_FOUND: DlSym<&'static ns::String> = DlSym::new(c"not_a_symbol");
+    static SHOULD_BE_FOUND: DlSym<&'static ns::String> =
         DlSym::new(c"NSInvocationOperationVoidResultException");
 
     #[test]

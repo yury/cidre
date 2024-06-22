@@ -1,14 +1,17 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
 #[link(name = "AVFoundation", kind = "framework")]
+// #[api::weak]
 extern "C" {
     static AVCaptureDeviceTypeExternal: &'static Type;
+    // #[api::available(ios = 19.0)]
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
+    // static AVCaptureDeviceTypeBuiltInMicrophone: api::DlSym<&'static Type>;
     static AVCaptureDeviceTypeMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
@@ -1538,6 +1541,7 @@ impl Type {
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
+    // #[api::available(macos = 15.0, ios = 17.0)]
     pub fn built_in_microphone() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInMicrophone }
     }

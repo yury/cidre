@@ -1,4 +1,6 @@
-use std::{env, fs::read_to_string, path::PathBuf, process::Command, str::FromStr};
+use std::{
+    env, fs::read_to_string, path::PathBuf, process::Command, str::FromStr, time::SystemTime,
+};
 
 #[derive(Debug, Clone, Copy)]
 struct Version {
@@ -48,28 +50,28 @@ impl Version {
     }
 }
 
-fn xc_feature_build(
-    pomace: &str,
-    sdk: &str,
-    arch: &str,
-    configuration: &str,
-    deployment_targets: &DeploymentTargets,
-) {
-    let env_var = format!("CARGO_FEATURE_{}", pomace.to_uppercase());
-    if env::var_os(env_var).is_some() {
-        xc_build(pomace, sdk, arch, configuration, deployment_targets)
+fn add_features_to_xc_target_args(features: &[&'static str], target_args: &mut Vec<&'static str>) {
+    for feature in features {
+        let env_var = format!("CARGO_FEATURE_{}", feature.to_uppercase());
+        if env::var_os(env_var).is_some() {
+            target_args.push("-target");
+            target_args.push(feature);
+        }
     }
 }
 
 fn xc_build(
-    pomace: &str,
+    targets: &[&'static str],
     sdk: &str,
     arch: &str,
     configuration: &str,
     deployment_targets: &DeploymentTargets,
 ) {
+    let start = SystemTime::now();
     let mut out_lib_dir = PathBuf::from(&env::var("OUT_DIR").unwrap());
-    out_lib_dir.push(pomace);
+    let build_products_dir = format!("SYMROOT={}", out_lib_dir.to_str().unwrap());
+    // panic!("{}", build_products_dir);
+    // out_lib_dir.push(pomace);
 
     let status = if sdk == "maccatalyst" {
         let c = Command::new("xcrun")
@@ -83,17 +85,18 @@ fn xc_build(
         println!(
             "cargo:rustc-link-search=framework={line}/System/iOSSupport/System/Library/Frameworks"
         );
+
         // -isystem $(MACOSX_SDK_DIR)/System/iOSSupport/usr/include \
         // -iframework $(MACOSX_SDK_DIR)/System/iOSSupport/System/Library/Frameworks
         Command::new("xcodebuild")
             .args(["-project", "./pomace/pomace.xcodeproj"])
-            .args(["-scheme", pomace])
+            .args(targets)
             .args(["-sdk", "macosx"])
             .args(["-arch", arch])
             .args(["-configuration", configuration])
-            .args(["-derivedDataPath", out_lib_dir.to_str().unwrap()])
+            // .args(["-derivedDataPath", out_lib_dir.to_str().unwrap()])
             .args([
-                "-destination 'platform=macOS,variant=Mac Catalyst'",
+                "-destination 'generic/platform=macOS,variant=Mac Catalyst'",
                 "SUPPORTS_MACCATALYST=YES",
             ])
             .arg("build")
@@ -102,28 +105,30 @@ fn xc_build(
             .arg(&deployment_targets.tvos)
             .arg(&deployment_targets.watchos)
             .arg(&deployment_targets.visionos)
+            .arg(&build_products_dir)
             .status()
             .unwrap()
     } else {
         Command::new("xcodebuild")
             .args(["-project", "./pomace/pomace.xcodeproj"])
-            .args(["-scheme", pomace])
+            .args(targets)
             .args(["-sdk", sdk])
             .args(["-arch", arch])
             .args(["-configuration", configuration])
-            .args(["-derivedDataPath", out_lib_dir.to_str().unwrap()])
+            // .args(["-derivedDataPath", out_lib_dir.to_str().unwrap()])
             .arg("build")
             .arg(&deployment_targets.macos)
             .arg(&deployment_targets.ios)
             .arg(&deployment_targets.tvos)
             .arg(&deployment_targets.watchos)
             .arg(&deployment_targets.visionos)
+            .arg(&build_products_dir)
             .status()
             .unwrap()
     };
 
-    out_lib_dir.push("Build");
-    out_lib_dir.push("Products");
+    // out_lib_dir.push("Build");
+    // out_lib_dir.push("Products");
     out_lib_dir.push(configuration);
 
     let mut s = out_lib_dir.to_str().unwrap().to_string();
@@ -136,6 +141,9 @@ fn xc_build(
     println!("cargo:rustc-link-search=native={s}");
 
     assert!(status.success());
+
+    let dur = SystemTime::now().duration_since(start);
+    eprintln!("time spend on pomace {:?}", dur);
 }
 
 fn parse_deployment_targets() -> DeploymentTargets {
@@ -257,33 +265,28 @@ fn main() {
         x => panic!("unknown profile: {x}"),
     };
 
-    xc_feature_build("ut", sdk, arch, configuration, &versions);
-    xc_feature_build("un", sdk, arch, configuration, &versions);
-    xc_feature_build("sn", sdk, arch, configuration, &versions);
-    xc_feature_build("ns", sdk, arch, configuration, &versions);
-    xc_feature_build("av", sdk, arch, configuration, &versions);
-    xc_feature_build("cl", sdk, arch, configuration, &versions);
-    xc_feature_build("nl", sdk, arch, configuration, &versions);
+    let mut target_args = Vec::new();
+
+    add_features_to_xc_target_args(
+        &["ut", "un", "sn", "ns", "av", "cl", "nl"],
+        &mut target_args,
+    );
+
     if sdk != "watchos" && sdk != "watchsimulator" {
-        xc_feature_build("ca", sdk, arch, configuration, &versions);
-        xc_feature_build("vn", sdk, arch, configuration, &versions);
-        xc_feature_build("mps", sdk, arch, configuration, &versions);
-        xc_feature_build("mpsg", sdk, arch, configuration, &versions);
-        xc_feature_build("mc", sdk, arch, configuration, &versions);
-        xc_feature_build("mtl", sdk, arch, configuration, &versions);
-        xc_feature_build("ci", sdk, arch, configuration, &versions);
-        xc_feature_build("mlc", sdk, arch, configuration, &versions);
+        add_features_to_xc_target_args(
+            &["ca", "vn", "mps", "mpsg", "mc", "mtl", "ci", "mlc"],
+            &mut target_args,
+        );
     }
     if sdk != "appletvos"
         && sdk != "appletvsimulator"
         && sdk != "watchos"
         && sdk != "watchsimulator"
     {
-        xc_feature_build("wk", sdk, arch, configuration, &versions);
-        xc_feature_build("core_motion", sdk, arch, configuration, &versions);
+        add_features_to_xc_target_args(&["wk", "core_motion"], &mut target_args);
     }
     if sdk != "watchos" && sdk != "watchsimulator" {
-        xc_feature_build("gc", sdk, arch, configuration, &versions);
+        add_features_to_xc_target_args(&["gc"], &mut target_args);
     }
 
     if sdk == "iphoneos"
@@ -292,14 +295,13 @@ fn main() {
         || sdk == "appletvos"
         || sdk == "appletvsimulator"
     {
-        xc_build("ui", sdk, arch, configuration, &versions);
+        add_features_to_xc_target_args(&["ui"], &mut target_args);
     }
     if sdk == "iphoneos" || sdk == "iphonesimulator" {
-        xc_build("wc", sdk, arch, configuration, &versions);
+        add_features_to_xc_target_args(&["wc"], &mut target_args);
     }
     if sdk == "macosx" || sdk == "maccatalyst" {
-        xc_feature_build("sc", sdk, arch, configuration, &versions);
-        xc_feature_build("app", sdk, arch, configuration, &versions);
+        add_features_to_xc_target_args(&["sc", "app"], &mut target_args);
         if env::var_os("CARGO_FEATURE_PRIVATE").is_some() {
             println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
             println!(
@@ -307,6 +309,8 @@ fn main() {
             );
         }
     }
+
+    xc_build(&target_args, sdk, arch, configuration, &versions);
 
     println!("cargo:rerun-if-changed=./pomace/");
 }

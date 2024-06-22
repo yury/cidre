@@ -5,8 +5,6 @@
 //  Created by Yury Korolev on 13.10.2022.
 //
 
-
-#import <Foundation/Foundation.h>
 #import <Vision/Vision.h>
 
 NS_ASSUME_NONNULL_BEGIN
