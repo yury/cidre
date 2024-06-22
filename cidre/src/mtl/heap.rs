@@ -1,4 +1,4 @@
-use crate::{api, arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[doc(alias = "MTLHeapType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Default)]

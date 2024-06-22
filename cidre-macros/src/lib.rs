@@ -1,4 +1,4 @@
-use std::{borrow::Cow, fmt::Debug};
+use std::borrow::Cow;
 
 /// This is all dirty hacks. We need to reimplement it with syn and quote
 use proc_macro::{Delimiter, Group, TokenStream, TokenTree};
@@ -169,8 +169,8 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
         "
     /// `@selector({extern_name})` but dynamic
     /// use this function to check if object responds to selector
-    fn sel_{fn_name}() -> Option<&'static objc::Sel> {{
-        Some(unsafe {{ objc::sel_reg_name(c\"{extern_name}\".as_ptr()) }})
+    fn sel_{fn_name}() -> &'static objc::Sel {{
+        unsafe {{ objc::sel_reg_name(c\"{extern_name}\".as_ptr()) }}
     }}
         "
     )
@@ -270,7 +270,9 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                         "(&mut self, _cmd: Option<&objc::Sel>",
                                         1,
                                     );
-                                    Cow::Owned(format!("Some(unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }})"))
+                                    Cow::Owned(format!(
+                                        "unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }}"
+                                    ))
                                 };
 
                                 if is_optional && !sel.is_empty() && fn_body.is_empty() {
@@ -322,7 +324,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 if !is_optional && !skip {
                                     let impl_sel = format!(
                                         "
-    fn sel_{fn_name}() -> Option<&'static objc::Sel> {{ {register_sel} }}
+    fn sel_{fn_name}() -> &'static objc::Sel {{ {register_sel} }}
         "
                                     );
                                     impl_trait_functions.push(impl_sel);
@@ -412,12 +414,11 @@ fn add_methods_fn(fns: &[String]) -> String {
     for f in fns {
         let add = format!(
             "
-    if let Some(sel) = Self::sel_{f}() {{
+        let sel = Self::sel_{f}();
         unsafe {{
             let imp: extern \"C\" fn() = std::mem::transmute(Self::impl_{f} as *const u8);
             objc::class_addMethod(cls, sel, imp, std::ptr::null());
         }}
-    }}
             "
         );
         res.push_str(&add);

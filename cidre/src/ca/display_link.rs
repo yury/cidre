@@ -20,12 +20,7 @@ impl DisplayLink {
     pub fn with_target_selector(target: &ns::Id, selector: &objc::Sel) -> arc::R<Self>;
 
     pub fn with<D: TargetImpl>(target: &D) -> arc::R<Self> {
-        unsafe {
-            Self::with_target_selector(
-                target.as_id_ref(),
-                D::sel_on_display_link().unwrap_unchecked(),
-            )
-        }
+        Self::with_target_selector(target.as_id_ref(), D::sel_on_display_link())
     }
 
     /// Adds the receiver to the given run-loop and mode. Unless paused, it
