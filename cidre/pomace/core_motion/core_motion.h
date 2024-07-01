@@ -28,10 +28,18 @@ static void core_motion_initializer(void)
 #endif
 
 #if TARGET_OS_OSX
+        CM_ALTIMETER = nil;
+#elif TARGET_OS_VISION
+        CM_ALTIMETER = nil;
 #else
         CM_ALTIMETER = [CMAltimeter class];
 #endif
+
+#if TARGET_OS_VISION
+        CM_PEDOMETER = nil;
+#else
         CM_PEDOMETER = [CMPedometer class];
+#endif
     }
 }
 

@@ -72,20 +72,30 @@ static void av_initializer(void)
 #if TARGET_OS_WATCH
 #else
         AV_CAPTURE_DEVICE = [AVCaptureDevice class];
-        AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
+        
         AV_CAPTURE_SESSION = [AVCaptureSession class];
         AV_CAPTURE_CONNECTION = [AVCaptureConnection class];
-        AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
+        
         AV_CAPTURE_VIDEO_DATA_OUTPUT = [AVCaptureVideoDataOutput class];
-        AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
+        
         AV_CAPTURE_DEVICE_INPUT = [AVCaptureDeviceInput class];
-        AV_CAPTURE_PHOTO_OUTPUT = [AVCapturePhotoOutput class];
+        
+#if TARGET_OS_VISION
+#else
+        AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
+        AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
+        AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
         AV_CAPTURE_VIDEO_PREVIEW_LAYER = [AVCaptureVideoPreviewLayer class];
+        AV_CAPTURE_PHOTO_OUTPUT = [AVCapturePhotoOutput class];
+#endif
 #endif
         if (@available(iOS 17.0, *)) {
 #if TARGET_OS_WATCH
 #else
-    AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
+#if TARGET_OS_VISION
+#else
+                AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
+#endif
     
     AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
     AV_AUDIO_APPLICATION = [AVAudioApplication class];
@@ -104,6 +114,8 @@ static void av_initializer(void)
 #else
         
 #if TARGET_OS_WATCH
+#elif TARGET_OS_VISION
+        AV_CAPTURE_METADATA_INPUT = nil;
 #else
         AV_CAPTURE_MULTI_CAM_SESSION = [AVCaptureMultiCamSession class];
         AV_CAPTURE_METADATA_INPUT = [AVCaptureMetadataInput class];

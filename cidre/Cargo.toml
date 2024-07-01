@@ -58,19 +58,22 @@ full = [
   "xpc",
   "vdsp",
 
-  "macos_15_0",
-  "ios_18_0",
-  "tvos_18_0",
-  "maccatalyst_18_0",
-  "watchos_11_0",
-  "visionos_2_0",
+  "macos_14_0",
+  "ios_17_0",
+  "tvos_17_0",
+  "maccatalyst_17_0",
+  "watchos_10_0",
+  "visionos_1_0",
 ]
 
 # Turn on private API
 private = []
 async = ["blocks", "dep:parking_lot"]
 
+### blocks runtime
 blocks = []
+
+### Core Foundation framework
 cf = []
 cat = []
 simd = []
@@ -196,18 +199,6 @@ visionos_2_0 = ["visionos_1_2"]
 
 # end of deployment targets
 
-# api::available(macos = 10.0, ios = 17.0);
-
-# min required macos version
-# required-macos-10_15 = ["macos-10_15"]
-
-# max allowed macos version
-# allowed-macos-15_0 = []
-
-# required-ios-17_0 = ["ios-17_0"]
-# allowed-ios-18_0 = []
-
-
 [dependencies]
 
 tokio = { version = "1", optional = true, default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
@@ -224,7 +215,7 @@ criterion = "0.5"
 clap = { version = "4.3", features = ["default", "derive"] }
 tokio = { version = "1", features = ["signal"] }
 mimalloc = { version = "0.1" }
-uuid = { version = "1.7", features = ["v4", "v7", "fast-rng", "serde"] }
+uuid = { version = "1.9", features = ["v4", "v7", "fast-rng", "serde"] }
 
 
 [[bench]]

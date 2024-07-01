@@ -1,62 +1,81 @@
-use std::borrow::Cow;
-
 /// This is all dirty hacks. We need to reimplement it with syn and quote
-use proc_macro::{Delimiter, Group, TokenStream, TokenTree};
+///
+use std::{borrow::Cow, str::FromStr};
 
-enum ObjcAttr {
+use proc_macro::{Delimiter, Group, Punct, TokenStream, TokenTree};
+
+enum Attr {
     Optional,
     MsgSend(String),
+    ApiAvailable(Versions),
+    DocAvailable,
 }
 
-fn to_underscore_string(val: f32) -> String {
-    let major = val as u32;
-    let minor = val.fract() as u32;
-    format!("{major}_{minor}")
-}
+impl Attr {
+    fn from_stream(stream: TokenStream) -> Option<Attr> {
+        let mut iter = stream.into_iter();
+        let Some(TokenTree::Ident(ident)) = iter.next() else {
+            return None;
+        };
 
-fn read_objc_attr(group: Group) -> Option<ObjcAttr> {
-    let mut iter = group.stream().into_iter();
-    let Some(TokenTree::Ident(ident)) = iter.next() else {
-        return None;
-    };
-
-    if ident.to_string() != "objc" {
-        return None;
-    }
-
-    let Some(TokenTree::Punct(p)) = iter.next() else {
-        return None;
-    };
-
-    assert_eq!(p.as_char(), ':');
-
-    let Some(TokenTree::Punct(p)) = iter.next() else {
-        return None;
-    };
-
-    assert_eq!(p.as_char(), ':');
-
-    if let Some(tt) = iter.next() {
-        match tt {
-            TokenTree::Group(v) => panic!("didn't expect group {v}"),
-            TokenTree::Ident(v) => {
-                if v.to_string().eq("optional") {
-                    return Some(ObjcAttr::Optional);
-                } else if v.to_string().eq("msg_send") {
-                    let Some(TokenTree::Group(a)) = iter.next() else {
-                        return None;
-                    };
-                    let sel = a.stream().to_string().replace([' ', '\n'], "");
-                    return Some(ObjcAttr::MsgSend(sel));
-                }
+        let str = ident.to_string();
+        if str == "doc" {
+            let Some(TokenTree::Punct(p)) = iter.next() else {
                 return None;
+            };
+            assert_eq!(p, '=');
+            let Some(TokenTree::Literal(s)) = iter.next() else {
+                return None;
+            };
+            if s.to_string() == "\" # Availability\"" {
+                return Some(Attr::DocAvailable);
             }
-            TokenTree::Punct(v) => panic!("didn't expect punct {v}"),
-            TokenTree::Literal(v) => panic!("didn't expect literal {v}"),
+        } else if str != "objc" && str != "api" {
+            return None;
         }
-    }
 
-    panic!("Unexpected attribute")
+        let Some(TokenTree::Punct(p)) = iter.next() else {
+            return None;
+        };
+
+        assert_eq!(p, ':');
+
+        let Some(TokenTree::Punct(p)) = iter.next() else {
+            return None;
+        };
+
+        assert_eq!(p, ':');
+
+        if let Some(tt) = iter.next() {
+            match tt {
+                TokenTree::Group(v) => panic!("didn't expect group {v}"),
+                TokenTree::Ident(v) => {
+                    let v = v.to_string();
+                    return match v.as_str() {
+                        "optional" => Some(Attr::Optional),
+                        "msg_send" => {
+                            let Some(TokenTree::Group(a)) = iter.next() else {
+                                return None;
+                            };
+                            let sel = a.stream().to_string().replace([' ', '\n'], "");
+                            Some(Attr::MsgSend(sel))
+                        }
+                        "available" => {
+                            let Some(TokenTree::Group(a)) = iter.next() else {
+                                return None;
+                            };
+                            Some(Attr::ApiAvailable(Versions::from_stream(a.stream())))
+                        }
+                        _ => None,
+                    };
+                }
+                TokenTree::Punct(v) => panic!("didn't expect punct {v}"),
+                TokenTree::Literal(v) => panic!("didn't expect literal {v}"),
+            }
+        }
+
+        panic!("Unexpected attribute")
+    }
 }
 
 fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
@@ -136,14 +155,14 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
         panic!("expect #[objc::msg_send(...)]")
     };
 
-    if p.as_char() != '#' {
+    if p != '#' {
         panic!("expect #[objc::msg_send(...)]")
     }
     let Some(TokenTree::Group(g)) = iter.next() else {
         panic!("expect #[objc::msg_send(...)]")
     };
 
-    let Some(ObjcAttr::MsgSend(extern_name)) = read_objc_attr(g) else {
+    let Some(Attr::MsgSend(extern_name)) = Attr::from_stream(g.stream()) else {
         panic!("expect #[objc::msg_send(...)]")
     };
 
@@ -193,7 +212,7 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let mut expect_trait_name = false;
     let mut is_optional = false;
     let mut skip = false;
-    let mut sel = "".to_string();
+    let mut sel = String::new();
     let mut fn_name; // = "".to_string();
     let mut generics = Vec::new();
     //let mut fn_args = Vec::new();
@@ -346,12 +365,13 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
                                 let TokenTree::Group(g) = iter.next().unwrap() else {
                                     panic!("not a group");
                                 };
-                                match read_objc_attr(g) {
-                                    Some(ObjcAttr::Optional) => {
+                                match Attr::from_stream(g.stream()) {
+                                    Some(Attr::Optional) => {
                                         has_optionals = true;
                                         is_optional = true;
                                     }
-                                    Some(ObjcAttr::MsgSend(s)) => sel = s,
+                                    Some(Attr::MsgSend(s)) => sel = s,
+                                    Some(_) => continue,
                                     None => continue,
                                 }
                             }
@@ -384,7 +404,6 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
 
     let add_methods = if has_optionals {
         Cow::Borrowed("fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>);")
-    //" { panic!(\"use #[objc::cls_builder]\") }".to_string()
     } else {
         Cow::Owned(add_methods_fn(&fn_names))
     };
@@ -502,6 +521,379 @@ pub fn cls_msg_send_debug_x86_64(sel: TokenStream, func: TokenStream) -> TokenSt
     gen_msg_send(sel, func, false, true, debug, x86_64)
 }
 
+#[proc_macro_attribute]
+pub fn msg_send2(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = false;
+    gen_msg_send2(sel, func, x86_64)
+}
+
+fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStream {
+    let sel = sel.to_string().replace([' ', '\n'], "");
+    let sel_args_count = sel.matches(':').count();
+
+    let mut iter = func.into_iter();
+    let mut meta: Vec<TokenTree> = Vec::new();
+    let mut unsafe_already = false;
+    let mut optional_already = false;
+    let mut versions = Versions::default();
+
+    while let Some(tt) = iter.next() {
+        match tt {
+            TokenTree::Group(ref g) => {
+                if g.delimiter() == Delimiter::Bracket {
+                    match Attr::from_stream(g.stream()) {
+                        Some(Attr::Optional) => optional_already = true,
+                        Some(Attr::ApiAvailable(v)) => {
+                            versions = v;
+                            meta.pop();
+                            continue;
+                        }
+                        Some(Attr::DocAvailable) => {
+                            iter.next(); // Punct('#')
+                            let Some(TokenTree::Group(g)) = iter.next() else {
+                                panic!("Expect doc with versions");
+                            };
+                            let mut doc_iter = g.stream().into_iter();
+                            doc_iter.next(); // Ident("doc")
+                            doc_iter.next(); // Punct('=')
+                            let Some(TokenTree::Literal(s)) = doc_iter.next() else {
+                                panic!("Expect doc with versions");
+                            };
+                            let str = s.to_string();
+                            versions = Versions::from_doc_str(&str[1..str.len() - 1]);
+                            meta.push(tt.clone());
+                            meta.push(TokenTree::Punct(Punct::new(
+                                '#',
+                                proc_macro::Spacing::Joint,
+                            )));
+                            meta.push(TokenTree::Group(g));
+                            continue;
+                        }
+                        Some(Attr::MsgSend(_)) => panic!("only one msg_send is allowed"),
+                        None => {}
+                    }
+                }
+            }
+            TokenTree::Ident(ref i) => {
+                let i = i.to_string();
+                match i.as_str() {
+                    "fn" => break,
+                    "unsafe" => unsafe_already = true,
+                    _ => {}
+                }
+            }
+            TokenTree::Punct(_) => {}
+            TokenTree::Literal(_) => {}
+        }
+        meta.push(tt);
+    }
+
+    let Some(TokenTree::Ident(fn_name)) = iter.next() else {
+        panic!("expected function name");
+    };
+
+    let fn_name = fn_name.to_string();
+    let mut generics = Vec::new();
+    let doc_alias = if fn_name != sel {
+        format!("#[doc(alias = \"{sel}\")]")
+    } else {
+        String::new()
+    };
+
+    let args = loop {
+        let Some(tt) = iter.next() else {
+            panic!("need more tokens");
+        };
+        match tt {
+            TokenTree::Group(args) => break args,
+            _ => generics.push(tt),
+        }
+    };
+
+    let gen = TokenStream::from_iter(generics).to_string();
+
+    let mut ret = TokenStream::from_iter(iter).to_string();
+    assert_eq!(ret.pop().expect(";"), ';');
+    let ret_full = ret.to_string();
+    if let Some((a, _)) = ret.split_once("where") {
+        ret = a.to_string();
+    }
+    let option = ret_full.contains("-> Option <");
+    // println!("{option}: {ret_full}");
+    let gen_rar_version = !sel.starts_with("new") && ret.contains("arc :: R <");
+
+    let fn_args = args.to_string();
+
+    let (class, vars) = fn_args_from_stream(args.stream());
+    let fn_args_count = vars.len();
+
+    assert_eq!(
+        sel_args_count, fn_args_count,
+        "selector and function args don't match"
+    );
+
+    let (mut fn_args, mut call_args) = if x86_64 {
+        let fn_args = fn_args.replacen('(', "(id:", 1).replacen(
+            "self",
+            "Self, imp: *const std::ffi::c_void",
+            1,
+        );
+        (
+            fn_args,
+            format!("sig(self, x86_64_sel, {})", vars.join(", ")),
+        )
+    } else if fn_args_count == 0 {
+        let fn_args = fn_args
+            .replacen("( &", "(id: &", 1)
+            .replacen("self", "Self", 1);
+        (fn_args, "sig(self)".to_string())
+    } else {
+        let fn_args = fn_args
+            .replacen('(', "(id:", 1)
+            .replace("self", "Self, imp: *const std::ffi::c_void");
+        (
+            fn_args,
+            format!("sig(self, std::ptr::null(), {})", vars.join(", ")),
+        )
+    };
+
+    if class {
+        if x86_64 {
+            fn_args = fn_args.replacen(
+                "(id:",
+                "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void, ",
+                1,
+            );
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
+        } else if fn_args_count == 0 {
+            fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
+        } else {
+            fn_args = fn_args.replacen(
+                "(id:",
+                "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void, ",
+                1,
+            );
+            call_args = call_args.replacen(
+                "sig(self",
+                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
+                1,
+            );
+        }
+    }
+
+    let available = versions.available_cfg();
+    let unavailable = versions.unavailable_cfg();
+
+    let mut flow = String::new();
+    let pre = TokenStream::from_iter(meta).to_string();
+    let self_ = if class { "Self::" } else { "self." };
+    let vars = vars.join(", ");
+    let mut impl_fn_name = fn_name.clone();
+    let impl_ret_full = ret_full.replacen("arc :: R <", "arc :: Rar <", 1);
+    let impl_ret = ret.replacen("arc :: R <", "arc :: Rar <", 1);
+
+    if gen_rar_version {
+        impl_fn_name.push_str("_ar");
+        // println!("gen_rar_version!!!!");
+    }
+    if x86_64 {
+        flow.push_str(&format!(
+            "
+
+    {doc_alias}
+    #[inline]
+    {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSend\"]
+            fn msg_send();
+
+            fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
+        }}
+
+        unsafe {{
+            let x86_64_sel = sel_registerName(c\"{sel}\".as_ptr());
+            let fn_ptr = msg_send as *const std::ffi::c_void;
+            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+
+            {call_args}
+        }}
+    }}
+            "
+        ))
+    } else {
+        flow.push_str(&format!(
+            "
+    {available}
+    {doc_alias}
+    #[inline]
+    {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSend${sel}\"]
+            fn msg_send();
+        }}
+
+        unsafe {{
+            let fn_ptr = msg_send as *const std::ffi::c_void;
+            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+
+            {call_args}
+        }}
+    }}
+            "
+        ));
+        if versions.any() {
+            let unsafe_str = if unsafe_already { "" } else { "unsafe" };
+            let optional = if optional_already {
+                String::new()
+            } else {
+                format!(
+                    "
+    /// `@selector({sel})` but dynamic
+    /// use this function to check if object responds to selector
+    #[inline]
+    pub fn sel_{fn_name}() -> &'static objc::Sel {{
+        unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }}
+    }}
+        "
+                )
+            };
+
+            flow.push_str(&format!(
+                "
+    {optional}
+    
+    {unavailable}
+    {doc_alias}
+    #[inline]
+    {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSend${sel}\"]
+            fn msg_send();
+        }}
+
+        let fn_ptr = msg_send as *const std::ffi::c_void;
+        let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+
+        {call_args}
+    }}
+                "
+            ));
+        }
+    };
+
+    if gen_rar_version {
+        if option {
+            flow.push_str(&format!(
+                "
+
+    {available}
+    {doc_alias}
+    #[inline]
+    {pre} fn {fn_name}{gen}{args}{ret_full} {{
+        arc::rar_retain_option({self_}{fn_name}_ar({vars}) )
+    }}
+                "
+            ));
+            if versions.any() {
+                let unsafe_str = if unsafe_already { "" } else { "unsafe" };
+                flow.push_str(&format!(
+                    "
+
+    {unavailable}
+    {doc_alias}
+    #[inline]
+    /// Check availability with selector1 `Self::sel_{fn_name}()`
+    {pre} {unsafe_str} fn {fn_name}{gen}{args}{ret_full} {{
+        arc::rar_retain_option({self_}{fn_name}_ar({vars}) )
+    }}
+                      ",
+                ));
+            }
+        } else {
+            // not option
+            flow.push_str(&format!(
+                "
+
+    {available}
+    {doc_alias}
+    #[inline]
+    {pre} fn {fn_name}{gen}{args}{ret_full} {{
+        arc::rar_retain({self_}{fn_name}_ar({vars}))
+    }}
+                ",
+            ));
+            if versions.any() {
+                let unsafe_str = if unsafe_already { "" } else { "unsafe" };
+                flow.push_str(&format!(
+                    "
+
+    {unavailable}
+    {doc_alias}
+    /// Check availability with selector `Self::sel_{fn_name}()`
+    #[inline]
+    {pre} {unsafe_str} fn {fn_name}{gen}{args}{ret_full} {{
+        arc::rar_retain({self_}{fn_name}_ar({vars}))
+    }}
+                "
+                ));
+            }
+        }
+    }
+    // if debug {
+    // println!("{flow}");
+    // }
+
+    flow.parse().unwrap()
+}
+
+fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
+    if stream.is_empty() {
+        return (true, Vec::new());
+    }
+    let mut res = Vec::new();
+    let mut pos = 0;
+    let mut self_arg = false;
+    let mut skip_ident = false;
+    for s in stream.into_iter() {
+        match s {
+            TokenTree::Group(_) => {}
+            TokenTree::Ident(ref i) => {
+                if !skip_ident {
+                    let str = i.to_string();
+                    if str == "mut" {
+                        continue;
+                    }
+                    if pos == 0 && str == "self" {
+                        self_arg = true;
+                        continue;
+                    }
+                    res.push(str);
+                    skip_ident = true;
+                }
+            }
+            TokenTree::Punct(p) if p == ',' => {
+                pos += 1;
+                skip_ident = false;
+            }
+            TokenTree::Punct(p) if p == ':' => {
+                skip_ident = true;
+            }
+            TokenTree::Punct(ref p) => {}
+            TokenTree::Literal(ref l) => {}
+        }
+    }
+    (!self_arg, res)
+}
+
 fn gen_msg_send(
     sel: TokenStream,
     func: TokenStream,
@@ -511,10 +903,7 @@ fn gen_msg_send(
     x86_64: bool,
 ) -> TokenStream {
     let extern_name = sel.to_string().replace([' ', '\n'], "");
-    // let args_count = sel_args_count(sel);
-    // reduce allocations and just search for ':'
     let args_count = extern_name.matches(':').count();
-    // let _is_init = extern_name.starts_with("init");
 
     let mut iter = func.into_iter();
     let mut pre: Vec<String> = Vec::with_capacity(3);
@@ -558,8 +947,7 @@ fn gen_msg_send(
         Cow::Owned(TokenStream::from_iter(generics).to_string())
     };
 
-    let ts = TokenStream::from_iter(iter);
-    let mut ret = ts.to_string();
+    let mut ret = TokenStream::from_iter(iter).to_string();
     assert_eq!(ret.pop().expect(";"), ';');
     let ret_full = ret.to_string();
     if let Some((a, _)) = ret.split_once("where") {
@@ -647,6 +1035,7 @@ fn gen_msg_send(
         if option {
             format!(
                 "
+
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
         arc::rar_retain_option({self_}{fn_name}_ar({vars}) )
@@ -656,6 +1045,7 @@ fn gen_msg_send(
         } else {
             format!(
                 "
+
     #[inline]
     {pre} {fn_name}{gen}{args}{ret_full} {{
         arc::rar_retain({self_}{fn_name}_ar({vars}))
@@ -743,7 +1133,7 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                                             "available" => {
                                                 if let Some(TokenTree::Group(g)) = attr.next() {
                                                     features =
-                                                        Some(versions_to_features(g.stream()));
+                                                        Some(Versions::from_stream(g.stream()));
                                                     println!("features {features:?}");
                                                 } else {
                                                     break;
@@ -773,141 +1163,292 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
     original_body
 }
 
-fn versions_to_features(versions: TokenStream) -> Vec<String> {
-    let mut iter = versions.into_iter();
-    let mut features = Vec::new();
-    while let Some(t) = iter.next() {
-        let platform = match t {
-            TokenTree::Ident(ident) => match ident.to_string().as_str() {
-                "macos" => "macos",
-                "ios" => "ios",
-                "tvos" => "tvos",
-                "watchos" => "watchos",
-                "visionos" => "visionos",
-                "maccatalyst" => "maccatalyst",
-                t => panic!("Unsupported platform. Platform should be macos, ios, watchos, visionos or maccatalyst. Found {t:?}"),
-            },
-            _ => panic!("Unexpected token {t:?}"),
-        };
-        let Some(TokenTree::Punct(ident)) = iter.next() else {
-            panic!("Expecting = ");
-        };
+#[derive(Default, Debug, Copy, Clone)]
+struct Version(u32, u32);
 
-        assert!(&ident.to_string() == "=", "expecting =");
-
-        let Some(TokenTree::Literal(val)) = iter.next() else {
-            panic!("expecting version");
-        };
-
-        let v: f32 = str::parse(&val.to_string()).unwrap();
-
-        features.push(format!(
-            "feature = \"{}_{}\"",
-            platform,
-            to_underscore_string(v)
-        ));
-
-        if let Some(TokenTree::Punct(p)) = iter.next() {
-            assert_eq!(p.to_string(), ",", "expect ,");
-        };
+impl Version {
+    fn from_str(str: &str) -> Option<Self> {
+        if let Some((major, minor)) = str.split_once('.') {
+            Some(Self(str::parse(major).unwrap(), str::parse(minor).unwrap()))
+        } else if let Some((major, minor)) = str.split_once('_') {
+            Some(Self(str::parse(major).unwrap(), str::parse(minor).unwrap()))
+        } else {
+            None
+        }
     }
-    features
 }
-// 1. extern static vars
-// 2. extern (pub) fns
-// 3. (pub) fn
-// 4. pub selector
-#[proc_macro_attribute]
-pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
-    let features = versions_to_features(versions);
-    let features = features.join(", ");
-    let available = format!("#[cfg(any({features}))]");
-    let unavailable = format!("#[cfg(not(all({features})))]");
 
-    let mut ts: TokenStream = available.parse().unwrap();
+#[derive(Default, Debug)]
+struct Versions {
+    macos: Option<Version>,
+    ios: Option<Version>,
+    tvos: Option<Version>,
+    watchos: Option<Version>,
+    visionos: Option<Version>,
+    maccatalyst: Option<Version>,
+}
 
-    println!("{body:?}");
-    let mut body_iter = body.into_iter();
-    let mut tokens = Vec::new();
+impl Versions {
+    fn any(&self) -> bool {
+        self.macos.is_some()
+            || self.ios.is_some()
+            || self.tvos.is_some()
+            || self.watchos.is_some()
+            || self.visionos.is_some()
+            || self.maccatalyst.is_some()
+    }
+    fn available_cfg_ts(&self) -> TokenStream {
+        TokenStream::from_str(&self.available_cfg()).unwrap()
+    }
 
-    while let Some(t) = body_iter.next() {
-        tokens.push(t.clone());
-        match t {
-            TokenTree::Ident(ref i) => {
-                let str = i.to_string();
-                match str.as_str() {
-                    "static" => {
-                        println!("static")
-                    }
-                    "fn" => {
-                        println!("fn")
-                    }
-                    "pub" => continue,
-                    _ => break,
-                }
-            }
-            _ => {}
+    fn available_cfg(&self) -> String {
+        let mut vec = Vec::new();
+        if let Some(v) = self.macos {
+            vec.push(format!(
+                "all(target_os=\"macos\", feature=\"macos_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.ios {
+            vec.push(format!(
+                "all(target_os=\"ios\", feature=\"ios_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.tvos {
+            vec.push(format!(
+                "all(target_os=\"tvos\", feature=\"tvos_{}_{}\")",
+                v.0, v.1,
+            ));
+        }
+        if let Some(v) = self.watchos {
+            vec.push(format!(
+                "all(target_os=\"watchos\", feature=\"watchos_{}_{}\")",
+                v.0, v.1,
+            ));
+        }
+        if let Some(v) = self.visionos {
+            vec.push(format!(
+                "all(target_os=\"visionos\", feature=\"vision_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.maccatalyst {
+            vec.push(format!(
+                "all(target_os=\"ios\", target_abi=\"macabi\" feature=\"maccatalyst_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+
+        match vec.len() {
+            0 => String::new(),
+            1 => format!("#[cfg({})]\n", vec[0]),
+            _ => format!("#[cfg(any({}))]\n", vec.join(", ")),
+        }
+    }
+    fn unavailable_cfg_ts(&self) -> TokenStream {
+        TokenStream::from_str(&self.unavailable_cfg()).unwrap()
+    }
+
+    fn unavailable_cfg(&self) -> String {
+        let mut vec = Vec::new();
+        if let Some(v) = self.macos {
+            vec.push(format!(
+                "all(target_os=\"macos\", not(feature=\"macos_{}_{}\"))",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.ios {
+            vec.push(format!(
+                "all(target_os=\"ios\", not(feature=\"ios_{}_{}\"))",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.tvos {
+            vec.push(format!(
+                "all(target_os=\"tvos\", not(feature=\"tvos_{}_{}\"))",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.watchos {
+            vec.push(format!(
+                "all(target_os=\"watchos\", not(feature=\"watchos_{}_{}\"))",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.visionos {
+            vec.push(format!(
+                "all(target_os=\"visionos\", not(feature=\"vision_{}_{}\"))",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.maccatalyst {
+            vec.push(format!(
+                "all(target_os=\"ios\", target_abi=\"macabi\" not(feature=\"maccatalyst_{}_{}\"))",
+                v.0, v.1
+            ));
+        }
+
+        match vec.len() {
+            0 => String::new(),
+            1 => format!("#[cfg({})]\n", vec[0]),
+            _ => format!("#[cfg(any({}))]\n", vec.join(", ")),
+        }
+    }
+    fn available_doc_ts(&self) -> TokenStream {
+        TokenStream::from_str(&self.available_doc()).unwrap()
+    }
+
+    fn available_doc(&self) -> String {
+        let mut vec = Vec::new();
+        if let Some(v) = self.macos {
+            vec.push(format!("macos_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.ios {
+            vec.push(format!("ios_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.tvos {
+            vec.push(format!("tvos_{}_{}", v.0, v.1,));
+        }
+        if let Some(v) = self.watchos {
+            vec.push(format!("watchos_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.visionos {
+            vec.push(format!("vision_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.maccatalyst {
+            vec.push(format!("maccatalyst_{}_{}", v.0, v.1));
+        }
+
+        match vec.len() {
+            0 => String::new(),
+            1 => format!("/// # Availability\n/// {0}", vec[0]),
+            _ => format!("/// # Availability\n/// {0}", vec.join(", ")),
+        }
+    }
+    fn unavailable_doc_ts(&self) -> TokenStream {
+        TokenStream::from_str(&self.unavailable_doc()).unwrap()
+    }
+
+    fn unavailable_doc(&self) -> String {
+        let mut vec = Vec::new();
+        if let Some(v) = self.macos {
+            vec.push(format!("macos_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.ios {
+            vec.push(format!("ios_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.tvos {
+            vec.push(format!("tvos_{}_{}", v.0, v.1,));
+        }
+        if let Some(v) = self.watchos {
+            vec.push(format!("watchos_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.visionos {
+            vec.push(format!("vision_{}_{}", v.0, v.1));
+        }
+        if let Some(v) = self.maccatalyst {
+            vec.push(format!("maccatalyst_{}_{}", v.0, v.1));
+        }
+
+        match vec.len() {
+            0 => String::new(),
+            1 => format!("/// # Availability\n/// Not {0}", vec[0]),
+            _ => format!("/// # Availability\n/// Not {0}", vec.join(", ")),
         }
     }
 
-    // let Some(token) = body_iter.next() else {
-    //     panic!("expect static or fn")
-    // };
-    // tokens.push(token.clone());
-    // println!("tokens {tokens:?}");
-    // let TokenTree::Ident(ident) = token else {
-    //     panic!("expect static or fn")
-    // };
+    fn from_stream(versions: TokenStream) -> Self {
+        let mut iter = versions.into_iter();
+        let mut versions = Self::default();
+        while let Some(t) = iter.next() {
+            let target_os = match t {
+                TokenTree::Ident(ident) => ident.to_string(),
+                _ => panic!("Unexpected token {t:?}"),
+            };
+            let Some(TokenTree::Punct(ident)) = iter.next() else {
+                panic!("Expecting = ");
+            };
 
-    // let ident = ident.to_string();
+            assert_eq!(ident, '=', "expecting =");
 
-    // let mut var_code = None;
+            let Some(TokenTree::Literal(val)) = iter.next() else {
+                panic!("expecting version");
+            };
 
-    // match ident.as_str() {
-    //     "static" => {
-    //         // vars
-    //         let Some(token) = body_iter.next() else {
-    //             panic!("expect static or fn")
-    //         };
-    //         tokens.push(token.clone());
-    //         let TokenTree::Ident(ident) = token else {
-    //             panic!("expect variable name")
-    //         };
+            let v = Version::from_str(&val.to_string());
+            match target_os.as_str() {
+            "macos" => versions.macos = v,
+            "ios" => versions.ios = v,
+            "tvos" => versions.tvos = v,
+            "watchos" => versions.watchos = v,
+            "visionos" => versions.visionos = v,
+            "maccatalyst" => versions.maccatalyst = v,
+            t => panic!("Unsupported platform. Platform should be macos, ios, watchos, visionos or maccatalyst. Found {t:?}"),
+        };
 
-    //         let var_name = ident.to_string();
-    //         let Some(token) = body_iter.next() else {
-    //             panic!("expect :")
-    //         };
-    //         tokens.push(token.clone());
-    //         let TokenTree::Punct(p) = token else {
-    //             panic!("expect :")
-    //         };
+            if let Some(TokenTree::Punct(p)) = iter.next() {
+                assert_eq!(p, ',', "expect ,");
+            };
+        }
 
-    //         let mut ty = String::new();
+        versions
+    }
 
-    //         while let Some(token) = body_iter.next() {
-    //             let str = token.to_string();
-    //             if str != ";" {
-    //                 ty.push_str(&str);
-    //                 if str.len() > 1 {
-    //                     ty.push_str(" ")
-    //                 }
-    //             }
-    //             tokens.push(token);
-    //         }
+    fn from_doc_str(str: &str) -> Self {
+        let mut res = Self::default();
+        for str in str.split_whitespace() {
+            for str in str.split_terminator(',') {
+                if str.starts_with("macos_") {
+                    res.macos = Version::from_str(&str[6..]);
+                } else if str.starts_with("ios_") {
+                    res.ios = Version::from_str(&str[4..]);
+                } else if str.starts_with("tvos_") {
+                    res.tvos = Version::from_str(&str[5..]);
+                } else if str.starts_with("watchos_") {
+                    res.watchos = Version::from_str(&str[8..]);
+                } else if str.starts_with("visionos_") {
+                    res.visionos = Version::from_str(&str[8..]);
+                } else if str.starts_with("maccatalyst_") {
+                    res.maccatalyst = Version::from_str(&str[12..]);
+                }
+            }
+        }
+        res
+    }
+}
 
-    //         let code =
-    //             format!("{unavailable}\nstatic {var_name}: api::DlSym<{ty}> = api::DlSym::new(c\"{var_name}\");");
-    //         println!("{}", code);
-    //         var_code = Some(code);
-    //     }
-    //     "fn" => {}
-    //     x => panic!("expect static or fn. Got {x}"),
-    // };
-    ts.extend(tokens);
-    // if let Some(var_code) = var_code {
-    //     let code = TokenStream::from_str(&var_code).unwrap_or_default();
-    //     ts.extend(code);
-    // }
-    ts
+// 1. extern static vars
+// 2. extern (pub) fns (no body)
+// 3. (pub) fn with body mark as unsafe if api may be available
+// 4. pub selector mark as optional and unsafe if api may be available
+#[proc_macro_attribute]
+pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
+    let versions = Versions::from_stream(versions);
+    let available = versions.available_cfg_ts();
+    let available_doc = versions.available_doc_ts();
+    if available.is_empty() {
+        return body;
+    }
+
+    let mut available = Some(available);
+    let mut available_doc = Some(available_doc);
+    let mut res = Vec::new();
+    for t in body.into_iter() {
+        if available.is_some() {
+            res.extend(available.take().unwrap().into_iter());
+        }
+        if available_doc.is_some() {
+            match t {
+                TokenTree::Ident(ref _i) => {
+                    let doc = available_doc.take().unwrap();
+                    res.extend(doc);
+                }
+                _ => {}
+            }
+        }
+        res.push(t);
+    }
+
+    TokenStream::from_iter(res)
 }

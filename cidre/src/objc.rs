@@ -2,7 +2,7 @@
 use std::arch::asm;
 use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
-use crate::{arc, cf::Type};
+use crate::{arc, cf::Type, objc};
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -47,11 +47,11 @@ impl<T: Obj> Class<T> {
     }
 
     #[must_use]
-    #[msg_send(alloc)]
+    #[objc::msg_send(alloc)]
     pub fn alloc(&self) -> arc::A<T>;
 
     // in general alloc_init is faster
-    #[msg_send(new)]
+    #[objc::msg_send(new)]
     pub unsafe fn new(&self) -> arc::R<T>;
 }
 
@@ -110,25 +110,25 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
-    #[msg_send(description)]
+    #[objc::msg_send(description)]
     fn desc_ar(&self) -> arc::Rar<crate::ns::String>;
 
-    #[rar_retain]
+    #[objc::rar_retain]
     fn desc(&self) -> arc::R<crate::ns::String>;
 
-    #[msg_send(debugDescription)]
+    #[objc::msg_send(debugDescription)]
     fn debug_desc_ar(&self) -> arc::Rar<crate::ns::String>;
 
-    #[rar_retain]
+    #[objc::rar_retain]
     fn debug_desc(&self) -> arc::R<crate::ns::String>;
 
-    #[msg_send(respondsToSelector:)]
+    #[objc::msg_send(respondsToSelector:)]
     fn responds_to_sel(&self, sel: &Sel) -> bool;
 
-    #[msg_send(class)]
+    #[objc::msg_send(class)]
     fn class(&self) -> &crate::objc::Class<Self>;
 
-    #[msg_send(isKindOfClass:)]
+    #[objc::msg_send(isKindOfClass:)]
     fn is_kind_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
     #[inline]
@@ -140,7 +140,7 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
-    #[msg_send(isMemberOfClass:)]
+    #[objc::msg_send(isMemberOfClass:)]
     fn is_member_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
     #[cfg(not(target_os = "watchos"))]
@@ -182,7 +182,7 @@ impl Id {
         self
     }
 
-    #[msg_send(isEqual:)]
+    #[objc::msg_send(isEqual:)]
     pub fn is_equal(&self, other: &Self) -> bool;
 }
 
@@ -569,6 +569,7 @@ pub use cidre_macros::cls_rar_retain;
 pub use cidre_macros::cls_rar_retain_x86_64 as cls_rar_retain;
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send;
+pub use cidre_macros::msg_send2;
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send_debug;
 #[cfg(target_arch = "x86_64")]
@@ -581,7 +582,21 @@ pub use cidre_macros::rar_retain_x86_64 as rar_retain;
 #[cfg(test)]
 mod tests2 {
 
-    use crate::{objc, objc::Obj};
+    use std::borrow::BorrowMut;
+
+    use crate::{
+        api, arc, ns,
+        objc::{self, Obj},
+    };
+
+    struct Fooo {}
+
+    impl Fooo {
+        /// Hello
+        #[objc::msg_send2(foo:nice:)]
+        #[api::available(macos = 15.0, ios = 17.0)]
+        pub fn foo(&self, nice: &[&str; 10], foo: String) -> Option<arc::R<ns::String>>;
+    }
 
     #[objc::obj_trait]
     trait Foo: objc::Obj {

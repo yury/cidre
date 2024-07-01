@@ -169,176 +169,216 @@ impl Cfg {
     /// cfg.set_shows_cursor(false);
     ///
     /// ```
-    #[objc::msg_send(width)]
+    #[objc::msg_send2(width)]
     pub fn width(&self) -> usize;
 
-    #[objc::msg_send(setWidth:)]
-    pub fn set_width(&mut self, value: usize);
+    #[objc::msg_send2(setWidth:)]
+    pub fn set_width(&mut self, val: usize);
 
-    #[objc::msg_send(height)]
+    #[objc::msg_send2(height)]
     pub fn height(&self) -> usize;
 
-    #[objc::msg_send(setHeight:)]
-    pub fn set_height(&mut self, value: usize);
+    #[objc::msg_send2(setHeight:)]
+    pub fn set_height(&mut self, val: usize);
 
-    #[objc::msg_send(minimumFrameInterval)]
+    #[objc::msg_send2(minimumFrameInterval)]
     pub fn minimum_frame_interval(&self) -> cm::Time;
 
-    #[objc::msg_send(setMinimumFrameInterval:)]
-    pub fn set_minimum_frame_interval(&mut self, value: cm::Time);
+    #[objc::msg_send2(setMinimumFrameInterval:)]
+    pub fn set_minimum_frame_interval(&mut self, val: cm::Time);
 
     /// 'BGRA': Packed Little Endian ARGB8888
     /// 'l10r': Packed Little Endian ARGB2101010
     /// '420v': 2-plane "video" range YCbCr 4:2:0
     /// '420f': 2-plane "full" range YCbCr 4:2:0
-    #[objc::msg_send(pixelFormat)]
+    #[objc::msg_send2(pixelFormat)]
     pub fn pixel_format(&self) -> cv::PixelFormat;
 
-    #[objc::msg_send(setPixelFormat:)]
-    pub fn set_pixel_format(&mut self, value: cv::PixelFormat);
+    #[objc::msg_send2(setPixelFormat:)]
+    pub fn set_pixel_format(&mut self, val: cv::PixelFormat);
 
-    #[objc::msg_send(scalesToFit)]
+    #[objc::msg_send2(scalesToFit)]
     pub fn scales_to_fit(&self) -> bool;
 
-    #[objc::msg_send(setScalesToFit:)]
-    pub fn set_scales_to_fit(&mut self, value: bool);
+    #[objc::msg_send2(setScalesToFit:)]
+    pub fn set_scales_to_fit(&mut self, val: bool);
 
-    #[objc::msg_send(showsCursor)]
+    #[objc::msg_send2(preservesAspectRatio)]
+    #[api::available(macos = 14.0)]
+    pub fn preserves_aspect_ratio(&self) -> bool;
+
+    #[objc::msg_send2(setPreservesAspectRatio:)]
+    #[api::available(macos = 14.0)]
+    pub fn set_preserves_aspect_ratio(&self, val: bool) -> bool;
+
+    #[objc::msg_send2(showsCursor)]
     pub fn shows_cursor(&self) -> bool;
 
-    #[objc::msg_send(setShowsCursor:)]
+    #[objc::msg_send2(setShowsCursor:)]
     pub fn set_shows_cursor(&mut self, val: bool);
 
-    #[objc::msg_send(showMouseClicks)]
+    /// SCStreamProperty that specifies whether to draw a circle around the cursor
+    /// click, default is false. This property will not be affected by shows_cursor.
+    /// This property currently applies when pixelFormat is set to BGRA.
+    #[objc::msg_send2(showMouseClicks)]
+    #[api::available(macos = 15.0)]
     pub fn show_mouse_clicks(&self) -> bool;
 
-    #[objc::msg_send(setShowMouseClicks:)]
+    /// SCStreamProperty that specifies whether to draw a circle around the cursor
+    /// click, default is false. This property will not be affected by shows_cursor.
+    /// This property currently applies when pixelFormat is set to BGRA.
+    #[objc::msg_send2(setShowMouseClicks:)]
+    #[api::available(macos = 15.0)]
     pub fn set_show_mouse_clicks(&mut self, val: bool);
 
-    #[objc::msg_send(backgroundColor)]
+    #[objc::msg_send2(backgroundColor)]
     pub fn background_color(&self) -> cg::Color;
 
-    #[objc::msg_send(setBackgroundColor:)]
+    #[objc::msg_send2(setBackgroundColor:)]
     pub fn set_background_color(&mut self, val: cg::Color);
 
-    #[objc::msg_send(sourceRect)]
+    #[objc::msg_send2(sourceRect)]
     pub fn src_rect(&self) -> cg::Rect;
 
-    #[objc::msg_send(setSourceRect:)]
+    #[objc::msg_send2(setSourceRect:)]
     pub fn set_src_rect(&mut self, val: cg::Rect);
 
-    #[objc::msg_send(destinationRect)]
+    #[objc::msg_send2(destinationRect)]
     pub fn dst_rect(&self) -> cg::Rect;
 
-    #[objc::msg_send(setDestinationRect:)]
+    #[objc::msg_send2(setDestinationRect:)]
     pub fn set_dst_rect(&self, val: cg::Rect);
 
-    #[objc::msg_send(queueDepth)]
+    #[objc::msg_send2(queueDepth)]
     pub fn queue_depth(&self) -> isize;
 
-    #[objc::msg_send(setQueueDepth:)]
+    #[objc::msg_send2(setQueueDepth:)]
     pub fn set_queue_depth(&mut self, val: isize);
 
     /// Specifies the YCbCr matrix applied to the output surface.
     /// The value must be one of the strings specified
     /// [in](https://developer.apple.com/documentation/coregraphics/quartz_display_services/display_stream_ycbcr_to_rgb_conversion_matrix_options)
     /// Should only be used if your pixel format is 420v or 420f.
-    #[objc::msg_send(colorMatrix)]
+    #[objc::msg_send2(colorMatrix)]
     pub fn color_matrix(&self) -> &cf::String;
 
-    #[objc::msg_send(setColorMatrix:)]
+    #[objc::msg_send2(setColorMatrix:)]
     pub fn set_color_matrix(&self, val: &cf::String);
 
     /// The color space of the output buffer.  If not set the output buffer uses the same color
     /// space as the display. The value must be one of the strings specified
     /// [in](https://developer.apple.com/documentation/coregraphics/cgcolorspace/color_space_names)
-    #[objc::msg_send(colorSpaceName)]
+    #[objc::msg_send2(colorSpaceName)]
     pub fn color_space_name(&self) -> &cf::String;
 
-    #[objc::msg_send(setColorSpaceName:)]
+    #[objc::msg_send2(setColorSpaceName:)]
     pub fn set_color_space_name(&mut self, val: &cf::String);
 
     /// Specifies whether the audio will be captured.  By default audio is not captured.
-    #[objc::msg_send(capturesAudio)]
+    #[objc::msg_send2(capturesAudio)]
+    #[api::available(macos = 13.0)]
     pub fn captures_audio(&self) -> bool;
 
-    #[objc::msg_send(setCapturesAudio:)]
+    #[objc::msg_send2(setCapturesAudio:)]
+    #[api::available(macos = 13.0)]
     pub fn set_captures_audio(&mut self, val: bool);
 
     /// The sample rate for audio. Default is set to 48000.
-    #[objc::msg_send(sampleRate)]
+    #[objc::msg_send2(sampleRate)]
+    #[api::available(macos = 13.0)]
     pub fn sample_rate(&self) -> i64;
 
-    #[objc::msg_send(setSampleRate:)]
+    #[objc::msg_send2(setSampleRate:)]
+    #[api::available(macos = 13.0)]
     pub fn set_sample_rate(&mut self, val: i64);
 
     /// Channel count. Default is set to two.
-    #[objc::msg_send(channelCount)]
+    #[objc::msg_send2(channelCount)]
+    #[api::available(macos = 13.0)]
     pub fn channel_count(&self) -> i64;
 
-    #[objc::msg_send(setChannelCount:)]
+    #[objc::msg_send2(setChannelCount:)]
+    #[api::available(macos = 13.0)]
     pub fn set_channel_count(&mut self, val: i64);
 
     /// Whether to exclude audio from current process. Default is set to false.
-    #[objc::msg_send(excludesCurrentProcessAudio)]
+    #[objc::msg_send2(excludesCurrentProcessAudio)]
+    #[api::available(macos = 13.0)]
     pub fn excludes_current_process_audio(&self) -> bool;
 
-    #[objc::msg_send(setExcludesCurrentProcessAudio:)]
+    #[objc::msg_send2(setExcludesCurrentProcessAudio:)]
+    #[api::available(macos = 13.0)]
     pub fn set_excludes_current_process_audio(&mut self, val: bool);
 
     /// Ignore framing on windows in the display sharing case (will ignore shadows).
-    #[objc::msg_send(ignoreShadowsDisplay)]
+    #[objc::msg_send2(ignoreShadowsDisplay)]
+    #[api::available(macos = 14.0)]
     pub fn ignore_shadows_display(&self) -> bool;
 
-    #[objc::msg_send(setIgnoreShadowsDisplay:)]
+    #[objc::msg_send2(setIgnoreShadowsDisplay:)]
+    #[api::available(macos = 14.0)]
     pub fn set_ignore_shadows_display(&mut self, val: bool);
 
     /// Ignore framing on windows in the single window sharing case (will ignore shadows).
-    #[objc::msg_send(ignoreShadowsSingleWindow)]
+    #[objc::msg_send2(ignoreShadowsSingleWindow)]
+    #[api::available(macos = 14.0)]
     pub fn ignore_shadows_single_window(&self) -> bool;
 
-    #[objc::msg_send(setIgnoreShadowsSingleWindow:)]
+    #[objc::msg_send2(setIgnoreShadowsSingleWindow:)]
+    #[api::available(macos = 14.0)]
     pub fn set_ignore_shadows_single_window(&mut self, val: bool);
 
-    #[objc::msg_send(captureResolution)]
+    #[objc::msg_send2(captureResolution)]
+    #[api::available(macos = 14.0)]
     pub fn capture_resolution(&self) -> sc::CaptureResolution;
 
-    #[objc::msg_send(setCaptureResolution:)]
+    #[objc::msg_send2(setCaptureResolution:)]
+    #[api::available(macos = 14.0)]
     pub fn set_capture_resolution(&mut self, val: sc::CaptureResolution);
 
-    #[objc::msg_send(capturesShadowsOnly)]
+    #[objc::msg_send2(capturesShadowsOnly)]
+    #[api::available(macos = 14.0)]
     pub fn captures_shadows_only(&self) -> bool;
 
-    #[objc::msg_send(setCapturesShadowsOnly:)]
+    #[objc::msg_send2(setCapturesShadowsOnly:)]
+    #[api::available(macos = 14.0)]
     pub fn set_captures_shadows_only(&mut self, val: bool);
 
     /// Ensure partially transparent areas on windows are backed by
     /// a solid white color so that the resulting image is fully opaque.
-    #[objc::msg_send(shouldBeOpaque)]
+    #[objc::msg_send2(shouldBeOpaque)]
+    #[api::available(macos = 14.0)]
     pub fn should_be_opaque(&self) -> bool;
 
-    #[objc::msg_send(setShouldBeOpaque:)]
+    #[objc::msg_send2(setShouldBeOpaque:)]
+    #[api::available(macos = 14.0)]
     pub fn set_should_be_opaque(&mut self, val: bool);
 
-    #[objc::msg_send(ignoreGlobalClipDisplay)]
+    #[objc::msg_send2(ignoreGlobalClipDisplay)]
+    #[api::available(macos = 14.0)]
     pub fn ignore_global_clip_display(&self) -> bool;
 
-    #[objc::msg_send(setIgnoreGlobalClipDisplay:)]
+    #[objc::msg_send2(setIgnoreGlobalClipDisplay:)]
+    #[api::available(macos = 14.0)]
     pub fn set_ignore_global_clip_display(&mut self, val: bool);
 
     /// Ignore framing on windows in the single window sharing case (will ignore shadows).
-    #[objc::msg_send(ignoreGlobalClipSingleWindow)]
+    #[objc::msg_send2(ignoreGlobalClipSingleWindow)]
+    #[api::available(macos = 14.0)]
     pub fn ignore_global_clip_single_window(&self) -> bool;
 
-    #[objc::msg_send(setIgnoreGlobalClipSingleWindow:)]
+    #[objc::msg_send2(setIgnoreGlobalClipSingleWindow:)]
+    #[api::available(macos = 14.0)]
     pub fn set_ignore_global_clip_single_window(&mut self, val: bool);
 
     /// Informs the system if a privacy alert should be shown when using presenter overlay
     /// for a stream. Defaults to 'sc::PresenterOverlayAlertSetting::System';
-    #[objc::msg_send(presenterOverlayPrivacyAlertSetting)]
+    #[objc::msg_send2(presenterOverlayPrivacyAlertSetting)]
+    #[api::available(macos = 14.0)]
     pub fn presenter_overlay_privacy_alert_setting(&self) -> PresenterOverlayAlertSetting;
 
-    #[objc::msg_send(setPresenterOverlayPrivacyAlertSetting:)]
+    #[objc::msg_send2(setPresenterOverlayPrivacyAlertSetting:)]
+    #[api::available(macos = 14.0)]
     pub fn set_presenter_overlay_privacy_alert_setting(
         &mut self,
         val: PresenterOverlayAlertSetting,
@@ -346,37 +386,40 @@ impl Cfg {
 
     /// Show the child windows in display bound windows and applications sharing.
     /// Child windows are included by default.
-    #[objc::msg_send(includeChildWindows)]
+    #[objc::msg_send2(includeChildWindows)]
+    #[api::available(macos = 14.2)]
     pub fn include_child_windows(&self) -> bool;
 
-    #[objc::msg_send(setIncludeChildWindows:)]
+    #[objc::msg_send2(setIncludeChildWindows:)]
+    #[api::available(macos = 14.2)]
     pub fn set_include_child_windows(&mut self, val: bool);
 
-    #[objc::msg_send(captureMicrophone)]
+    #[objc::msg_send2(captureMicrophone)]
+    #[api::available(macos = 15.0)]
     pub fn capture_mic(&self) -> bool;
 
-    #[objc::msg_send(setCaptureMicrophone:)]
+    #[objc::msg_send2(setCaptureMicrophone:)]
+    #[api::available(macos = 15.0)]
     pub fn set_capture_mic(&mut self, val: bool);
 
-    #[objc::msg_send(microphoneCaptureDeviceID)]
-    pub fn mic_capture_device_id_ar(&self) -> Option<arc::Rar<ns::String>>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(microphoneCaptureDeviceID)]
+    #[api::available(macos = 15.0)]
     pub fn mic_capture_device_id(&self) -> Option<arc::R<ns::String>>;
 
-    #[objc::msg_send(setMicrophoneCaptureDeviceID:)]
-    pub fn set_mic_capture_device_id_ar(&mut self, val: Option<&ns::String>);
+    #[objc::msg_send2(setMicrophoneCaptureDeviceID:)]
+    #[api::available(macos = 15.0)]
+    pub fn set_mic_capture_device_id(&mut self, val: Option<&ns::String>);
 
-    #[objc::msg_send(captureDynamicRange)]
+    #[objc::msg_send2(captureDynamicRange)]
+    #[api::available(macos = 15.0)]
     pub fn capture_dynamic_range(&self) -> CaptureDynamicRange;
 
-    #[objc::msg_send(setCaptureDynamicRange:)]
+    #[objc::msg_send2(setCaptureDynamicRange:)]
+    #[api::available(macos = 15.0)]
     pub fn set_capture_dynamic_range(&mut self, val: CaptureDynamicRange);
 
-    #[objc::cls_msg_send(streamConfigurationWithPreset:)]
-    pub fn with_preset_ar(preset: CfgPreset) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(streamConfigurationWithPreset:)]
+    #[api::available(macos = 15.0)]
     pub fn with_preset(preset: CfgPreset) -> arc::R<Self>;
 }
 
@@ -640,7 +683,7 @@ mod tests {
         cfg.set_minimum_frame_interval(cm::Time::new(1, 60));
         cfg.set_pixel_format(cv::PixelFormat::_32_BGRA);
         cfg.set_scales_to_fit(false);
-        cfg.set_shows_cursor(false);
+        cfg.set_shows_cursor(true);
     }
 
     #[tokio::test]

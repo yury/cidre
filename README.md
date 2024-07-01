@@ -7,6 +7,7 @@
 - No legacy platforms support
 - ML friendly
 - Rusty API (ObjC and C) 
+- API Availability checks
 
 ### Performance 
 
@@ -21,7 +22,14 @@
 - [x] macOS
 - [x] iOS/iPadOS
 - [x] tvOS
-- [ ] watchOS
+- [x] watchOS
+- [ ] visionOS
+
+### Versioning (API Availability)
+
+Deployment targets are controlled via features `macos_x_x`, `ios_x_x`, `tvos_x_x`, `watchos_x_x`, `visionos_x_x`.
+If selector is not defined in deployment target it becomes unsafe. So developer
+should check if object responses to that selector before call it.
 
 ### Shortcuts
 

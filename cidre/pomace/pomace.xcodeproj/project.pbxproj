@@ -284,6 +284,8 @@
 		D21A0FF1287738ED00AB7EF8 /* libns.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libns.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21A0FF3287738ED00AB7EF8 /* ns.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ns.h; sourceTree = "<group>"; };
 		D21A0FF4287738ED00AB7EF8 /* ns.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ns.m; sourceTree = "<group>"; };
+		D21E28702C308CD700CF9092 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D21E28722C313C5100CF9092 /* libcompiler_rt.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompiler_rt.tbd; path = usr/lib/system/libcompiler_rt.tbd; sourceTree = SDKROOT; };
 		D21EFEFB2B5911F500C86B08 /* libmc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D21EFEFD2B5911F500C86B08 /* mc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mc.h; sourceTree = "<group>"; };
 		D21EFEFE2B5911F500C86B08 /* mc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mc.m; sourceTree = "<group>"; };
@@ -667,6 +669,8 @@
 		D2A5294F283A26B800E7B4C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D21E28722C313C5100CF9092 /* libcompiler_rt.tbd */,
+				D21E28702C308CD700CF9092 /* Foundation.framework */,
 				D27864EB2A0A2A8600E64871 /* MLCompute.framework */,
 				D237F0B329327506005B7880 /* libsystem_blocks.tbd */,
 				D237F0B1293274EF005B7880 /* CoreFoundation.framework */,
