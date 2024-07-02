@@ -34,7 +34,7 @@ impl Flags {
 
 #[derive(Debug, Default)]
 #[repr(C)]
-pub struct SMPTETime {
+pub struct SmpteTime {
     pub subframes: i16,
     pub subframes_divisor: i16,
     pub counter: u32,
@@ -68,7 +68,7 @@ pub struct TimeStamp {
     pub video_refresh_period: i64,
 
     /// SMPTE time representation of the time stamp.
-    pub smpte_time: SMPTETime,
+    pub smpte_time: SmpteTime,
 
     pub flags: TimeStampFlags,
 
