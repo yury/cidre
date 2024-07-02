@@ -4,6 +4,8 @@ use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, 
 
 use crate::{arc, cf::Type, objc};
 
+pub use cidre_macros::api_available as available;
+
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Class<T: Obj>(Type, PhantomData<T>);
@@ -582,29 +584,15 @@ pub use cidre_macros::rar_retain_x86_64 as rar_retain;
 #[cfg(test)]
 mod tests2 {
 
-    use std::borrow::BorrowMut;
-
-    use crate::{
-        api, arc, ns,
-        objc::{self, Obj},
-    };
-
-    struct Fooo {}
-
-    impl Fooo {
-        /// Hello
-        #[objc::msg_send2(foo:nice:)]
-        #[api::available(macos = 15.0, ios = 17.0)]
-        pub fn foo(&self, nice: &[&str; 10], foo: String) -> Option<arc::R<ns::String>>;
-    }
+    use crate::objc::{self, Obj};
 
     #[objc::obj_trait]
     trait Foo: objc::Obj {
-        #[objc::msg_send(count)]
+        #[objc::msg_send2(count)]
         fn count(&self) -> usize;
 
         #[objc::optional]
-        #[objc::msg_send(count2)]
+        #[objc::msg_send2(count2)]
         fn count2(&self) -> usize;
     }
 

@@ -68,7 +68,6 @@ mod tests {
     static NOT_FOUND: DlSym<ns::String> = DlSym::new(c"not_a_symbol");
     static SHOULD_BE_FOUND: DlSym<ns::String> =
         DlSym::new(c"NSInvocationOperationVoidResultException");
-    static NOT_FOUND2: DlSym<extern "C" fn(u32)> = DlSym::new(c"not_a_symbol");
 
     #[test]
     fn basics() {

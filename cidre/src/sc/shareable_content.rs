@@ -1,4 +1,7 @@
-use crate::{arc, blocks, cg, define_cls, define_obj_type, ns, objc, sc, sys};
+use crate::{arc, cg, define_cls, define_obj_type, ns, objc, sc, sys};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "SCShareableContentStyle")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -10,57 +13,67 @@ pub enum Style {
     Application,
 }
 
-define_obj_type!(pub RunningApp(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SCRunningApplication")]
+    pub RunningApp(ns::Id)
+);
 
 impl RunningApp {
-    #[objc::msg_send(bundleIdentifier)]
-    pub fn bundle_id(&self) -> &ns::String;
+    #[objc::msg_send2(bundleIdentifier)]
+    pub fn bundle_id(&self) -> arc::R<ns::String>;
 
-    #[objc::msg_send(applicationName)]
-    pub fn app_name(&self) -> &ns::String;
+    #[objc::msg_send2(applicationName)]
+    pub fn app_name(&self) -> arc::R<ns::String>;
 
-    #[objc::msg_send(processID)]
+    #[objc::msg_send2(processID)]
     pub fn process_id(&self) -> sys::Pid;
 }
 
-define_obj_type!(pub Display(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SCDisplay")]
+    pub Display(ns::Id)
+);
 
 impl Display {
-    #[objc::msg_send(displayID)]
+    #[objc::msg_send2(displayID)]
     pub fn display_id(&self) -> cg::DirectDisplayId;
 
-    #[objc::msg_send(width)]
+    #[objc::msg_send2(width)]
     pub fn width(&self) -> isize;
 
-    #[objc::msg_send(height)]
+    #[objc::msg_send2(height)]
     pub fn height(&self) -> isize;
 
-    #[objc::msg_send(frame)]
+    #[objc::msg_send2(frame)]
     pub fn frame(&self) -> cg::Rect;
 }
 
-define_obj_type!(pub Window(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SCWindow")]
+    pub Window(ns::Id)
+);
 
 impl Window {
-    #[objc::msg_send(windowID)]
+    #[objc::msg_send2(windowID)]
     pub fn id(&self) -> cg::WindowId;
 
-    #[objc::msg_send(frame)]
+    #[objc::msg_send2(frame)]
     pub fn frame(&self) -> cg::Rect;
 
-    #[objc::msg_send(title)]
-    pub fn title(&self) -> Option<&ns::String>;
+    #[objc::msg_send2(title)]
+    pub fn title(&self) -> Option<arc::R<ns::String>>;
 
-    #[objc::msg_send(windowLayer)]
+    #[objc::msg_send2(windowLayer)]
     pub fn window_layer(&self) -> ns::Integer;
 
-    #[objc::msg_send(owningApplication)]
-    pub fn owning_app(&self) -> Option<&RunningApp>;
+    #[objc::msg_send2(owningApplication)]
+    pub fn owning_app(&self) -> Option<arc::R<RunningApp>>;
 
-    #[objc::msg_send(isOnScreen)]
+    #[objc::msg_send2(isOnScreen)]
     pub fn is_on_screen(&self) -> bool;
 
-    #[objc::msg_send(isActive)]
+    #[objc::msg_send2(isActive)]
+    #[objc::available(macos = 13.1)]
     pub fn is_active(&self) -> bool;
 }
 
@@ -81,23 +94,27 @@ extern "C" {
     static SC_SHAREABLE_CONTENT: &'static objc::Class<ShareableContent>;
 }
 
-define_obj_type!(pub ShareableContent(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SCShareableContent")]
+    pub ShareableContent(ns::Id)
+);
 
 unsafe impl Send for ShareableContent {}
 
 impl ShareableContent {
     define_cls!(SC_SHAREABLE_CONTENT);
 
-    #[objc::msg_send(windows)]
-    pub fn windows(&self) -> &ns::Array<Window>;
+    #[objc::msg_send2(windows)]
+    pub fn windows(&self) -> arc::R<ns::Array<Window>>;
 
-    #[objc::msg_send(displays)]
-    pub fn displays(&self) -> &ns::Array<Display>;
+    #[objc::msg_send2(displays)]
+    pub fn displays(&self) -> arc::R<ns::Array<Display>>;
 
-    #[objc::msg_send(applications)]
-    pub fn apps(&self) -> &ns::Array<RunningApp>;
+    #[objc::msg_send2(applications)]
+    pub fn apps(&self) -> arc::R<ns::Array<RunningApp>>;
 
-    #[objc::cls_msg_send(getShareableContentWithCompletionHandler:)]
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send2(getShareableContentWithCompletionHandler:)]
     pub fn current_with_ch(block: &mut blocks::ResultCompletionHandler<Self>);
 
     #[cfg(all(feature = "blocks", feature = "async"))]
@@ -107,7 +124,8 @@ impl ShareableContent {
         future.await
     }
 
-    #[objc::cls_msg_send(getCurrentProcessShareableContentWithCompletionHandler:)]
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send2(getCurrentProcessShareableContentWithCompletionHandler:)]
     pub fn current_process_with_ch(block: &mut blocks::ResultCompletionHandler<Self>);
 
     #[cfg(all(feature = "blocks", feature = "async"))]
@@ -117,23 +135,23 @@ impl ShareableContent {
         future.await
     }
 
-    #[objc::cls_msg_send(infoForFilter:)]
-    pub fn info_for_filter_ar(filter: &sc::ContentFilter) -> arc::Rar<Info>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(infoForFilter:)]
     pub fn info_for_filter(filter: &sc::ContentFilter) -> arc::R<Info>;
 }
 
-define_obj_type!(pub Info(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SCShareableContentInfo")]
+    pub Info(ns::Id)
+);
 
 impl Info {
-    #[objc::msg_send(style)]
+    #[objc::msg_send2(style)]
     pub fn style(&self) -> Style;
 
-    #[objc::msg_send(pointPixelScale)]
+    #[objc::msg_send2(pointPixelScale)]
     pub fn point_pixel_scale(&self) -> f32;
 
-    #[objc::msg_send(contentRect)]
+    #[objc::msg_send2(contentRect)]
     pub fn content_rect(&self) -> cg::Rect;
 }
 

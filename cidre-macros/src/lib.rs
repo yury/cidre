@@ -53,7 +53,7 @@ impl Attr {
                     let v = v.to_string();
                     return match v.as_str() {
                         "optional" => Some(Attr::Optional),
-                        "msg_send" => {
+                        "msg_send" | "msg_send2" => {
                             let Some(TokenTree::Group(a)) = iter.next() else {
                                 return None;
                             };
@@ -887,8 +887,8 @@ fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
             TokenTree::Punct(p) if p == ':' => {
                 skip_ident = true;
             }
-            TokenTree::Punct(ref p) => {}
-            TokenTree::Literal(ref l) => {}
+            TokenTree::Punct(ref _p) => {}
+            TokenTree::Literal(ref _l) => {}
         }
     }
     (!self_arg, res)
@@ -1108,7 +1108,7 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
     let mut original_body = body.clone();
     let mut iter = body.into_iter();
     let mut versions = None;
-    let mut is_fn = false;
+    let mut _is_fn = false;
     let mut tokens: Vec<TokenTree> = Vec::new();
     let mut vars: Vec<(Versions, String, String)> = Vec::new(); // Version, Name, Type
     while let Some(t) = iter.next() {
@@ -1139,10 +1139,10 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                             // println!("{is_fn};");
                             tokens.clear();
                             versions = None;
-                            is_fn = false;
+                            _is_fn = false;
                         }
                         TokenTree::Group(ref p) if p.delimiter() == Delimiter::Parenthesis => {
-                            is_fn = true;
+                            _is_fn = true;
                         }
                         TokenTree::Group(ref p) if p.delimiter() == Delimiter::Bracket => {
                             let mut attr = p.stream().into_iter();
@@ -1185,7 +1185,7 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                     // println!("t: {t:?}")
                 }
             }
-            x => {
+            _x => {
                 // println!("x: {x:?}")
             }
         }
@@ -1241,12 +1241,13 @@ impl Versions {
             || self.visionos.is_some()
             || self.maccatalyst.is_some()
     }
+
     fn available_cfg_ts(&self) -> TokenStream {
         TokenStream::from_str(&self.available_cfg()).unwrap()
     }
 
     fn available_cfg(&self) -> String {
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(6);
         if let Some(v) = self.macos {
             vec.push(format!(
                 "all(target_os=\"macos\", feature=\"macos_{}_{}\")",
@@ -1295,7 +1296,7 @@ impl Versions {
     }
 
     fn unavailable_cfg(&self) -> String {
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(6);
         if let Some(v) = self.macos {
             vec.push(format!(
                 "all(target_os=\"macos\", not(feature=\"macos_{}_{}\"))",
@@ -1344,7 +1345,7 @@ impl Versions {
     }
 
     fn available_doc(&self) -> String {
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(6);
         if let Some(v) = self.macos {
             vec.push(format!("macos_{}_{}", v.0, v.1));
         }
@@ -1375,7 +1376,7 @@ impl Versions {
     }
 
     fn unavailable_doc(&self) -> String {
-        let mut vec = Vec::new();
+        let mut vec = Vec::with_capacity(6);
         if let Some(v) = self.macos {
             vec.push(format!("macos_{}_{}", v.0, v.1));
         }

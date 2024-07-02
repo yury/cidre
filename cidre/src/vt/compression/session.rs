@@ -225,6 +225,7 @@ impl Session {
     // TODO: multipass
 }
 
+#[link(name = "VideoToolbox", kind = "framework")]
 extern "C" {
     fn VTCompressionSessionCreate(
         allocator: Option<&cf::Allocator>,
@@ -236,7 +237,7 @@ extern "C" {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<c_void>>,
         output_callback_ref_con: *mut c_void,
-        compression_session_out: *mut Option<arc::R<Session>>,
+        compression_session_out: *mut Option<arc::Retained<Session>>,
     ) -> os::Status;
 
     fn VTCompressionSessionInvalidate(session: &mut Session);

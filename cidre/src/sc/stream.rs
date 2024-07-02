@@ -1,6 +1,7 @@
-use crate::{
-    api, arc, blocks, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc, sc,
-};
+use crate::{api, arc, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc, sc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 /// Denotes the status of frame sample buffer.
 #[doc(alias = "SCFrameStatus")]
@@ -525,7 +526,7 @@ impl ContentFilter {
     /// the default value is 'true'. Display excluding content filters contains the desktop
     /// and dock. For content filters created with initWithDisplay:including, the default
     /// value is 'false'. Display including content filters do not contain the desktop and dock
-    #[objc::msg_send(setIncludeMenuBar:)]
+    #[objc::msg_send2(setIncludeMenuBar:)]
     #[api::available(macos = 14.2)]
     pub fn set_include_menu_bar(&mut self, val: bool);
 }
@@ -539,7 +540,7 @@ define_obj_type!(
 #[objc::obj_trait]
 pub trait Output: objc::Obj {
     #[objc::optional]
-    #[objc::msg_send(stream:didOutputSampleBuffer:ofType:)]
+    #[objc::msg_send2(stream:didOutputSampleBuffer:ofType:)]
     fn stream_did_output_sample_buf(
         &mut self,
         stream: &Stream,
@@ -551,33 +552,34 @@ pub trait Output: objc::Obj {
 #[objc::obj_trait]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
-    #[objc::msg_send(stream:didStopWithError:)]
+    #[objc::msg_send2(stream:didStopWithError:)]
     fn stream_did_stop_with_err(&mut self, stream: &Stream, error: &ns::Error);
 
     #[objc::optional]
-    #[objc::msg_send(userDidStopStream:)]
+    #[objc::msg_send2(userDidStopStream:)]
     fn user_did_stop_stream(&mut self, stream: &Stream);
 
     #[objc::optional]
-    #[objc::msg_send(outputVideoEffectDidStartForStream:)]
+    #[objc::msg_send2(outputVideoEffectDidStartForStream:)]
     fn output_video_effect_did_start_for_stream(&mut self, stream: &Stream);
 
     #[objc::optional]
-    #[objc::msg_send(outputVideoEffectDidStopForStream:)]
+    #[objc::msg_send2(outputVideoEffectDidStopForStream:)]
     fn output_video_effect_did_stop_for_stream(&mut self, stream: &Stream);
 }
 
 define_obj_type!(pub AnyDelegate(ns::Id));
+
 impl Delegate for AnyDelegate {}
 
 impl arc::A<Stream> {
-    #[objc::msg_send(initWithFilter:configuration:delegate:)]
+    #[objc::msg_send2(initWithFilter:configuration:delegate:)]
     pub fn init_with_filter_configuration_delegate<D: Delegate>(
         self,
         filter: &ContentFilter,
         configuration: &Cfg,
         delegate: Option<&D>,
-    ) -> arc::R<Stream>;
+    ) -> arc::Retained<Stream>;
 }
 
 impl Stream {
@@ -603,7 +605,7 @@ impl Stream {
         )
     }
 
-    #[objc::msg_send(addStreamOutput:type:sampleHandlerQueue:error:)]
+    #[objc::msg_send2(addStreamOutput:type:sampleHandlerQueue:error:)]
     fn add_stream_output_type_sample_handler_queue_err<D: Output>(
         &self,
         output: &D,
@@ -636,12 +638,14 @@ impl Stream {
     #[objc::msg_send2(stopCaptureWithCompletionHandler:)]
     pub fn stop_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
+    #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, mut block) = blocks::ok();
         self.start_with_ch(Some(&mut block));
         future.await
     }
 
+    #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn stop(&self) -> Result<(), arc::R<ns::Error>> {
         let (future, mut block) = blocks::ok();
         self.stop_with_ch(Some(&mut block));
