@@ -1,7 +1,7 @@
 pub mod base;
 pub use base::Flags as TimeFlags;
 pub use base::OptionFlags;
-pub use base::SMPTETime;
+pub use base::SmpteTime;
 pub use base::Time;
 pub use base::TimeStamp;
 pub use base::TimeStampFlags;
