@@ -770,7 +770,7 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
             flow.push_str(&format!(
                 "
     {optional}
-    
+
     {unavailable}
     {doc_alias}
     #[inline]
@@ -1105,9 +1105,12 @@ fn gen_msg_send(
 
 #[proc_macro_attribute]
 pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
-    let original_body = body.clone();
+    let mut original_body = body.clone();
     let mut iter = body.into_iter();
-    let mut features = None;
+    let mut versions = None;
+    let mut is_fn = false;
+    let mut tokens: Vec<TokenTree> = Vec::new();
+    let mut vars: Vec<(Versions, String, String)> = Vec::new(); // Version, Name, Type
     while let Some(t) = iter.next() {
         match t {
             // extern "C" {
@@ -1115,6 +1118,32 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                 let mut group = p.stream().into_iter();
                 while let Some(t) = group.next() {
                     match t {
+                        TokenTree::Punct(ref p) if p.as_char() == ':' => {
+                            if let Some(version) = versions.take() {
+                                let var_name = tokens.last().unwrap().to_string();
+                                let _t = group.next().unwrap(); // &
+                                let _t = group.next().unwrap(); // '
+                                if let TokenTree::Ident(ident) = group.next().unwrap() {
+                                    assert_eq!(ident.to_string(), "static");
+                                    if let TokenTree::Ident(ident) = group.next().unwrap() {
+                                        vars.push((version, var_name, ident.to_string()));
+                                    }
+                                }
+                                let TokenTree::Punct(p) = group.next().unwrap() else {
+                                    panic!("expect ;")
+                                };
+                                assert_eq!(';', p.as_char());
+                            }
+                        }
+                        TokenTree::Punct(ref p) if p.as_char() == ';' => {
+                            // println!("{is_fn};");
+                            tokens.clear();
+                            versions = None;
+                            is_fn = false;
+                        }
+                        TokenTree::Group(ref p) if p.delimiter() == Delimiter::Parenthesis => {
+                            is_fn = true;
+                        }
                         TokenTree::Group(ref p) if p.delimiter() == Delimiter::Bracket => {
                             let mut attr = p.stream().into_iter();
                             while let Some(ref ident) = attr.next() {
@@ -1132,9 +1161,9 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                                             // direct available
                                             "available" => {
                                                 if let Some(TokenTree::Group(g)) = attr.next() {
-                                                    features =
+                                                    versions =
                                                         Some(Versions::from_stream(g.stream()));
-                                                    println!("features {features:?}");
+                                                    // println!("features {features:?}");
                                                 } else {
                                                     break;
                                                 }
@@ -1152,6 +1181,7 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                         }
                         _ => {}
                     }
+                    tokens.push(t);
                     // println!("t: {t:?}")
                 }
             }
@@ -1160,6 +1190,20 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
             }
         }
     }
+    // println!("{vars:?}");
+    let vars = vars
+        .iter()
+        .map(|(version, name, ty)| {
+            let upper_name = upper_case(name);
+            let availability = version.unavailable_cfg();
+            format!(
+            "{availability}\nstatic {upper_name}: api::DlSym<{ty}> = api::DlSym::new(c\"{name}\");"
+        )
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+    let stream = TokenStream::from_str(&vars).unwrap();
+    original_body.extend(stream);
     original_body
 }
 
@@ -1418,25 +1462,32 @@ impl Versions {
     }
 }
 
-// 1. extern static vars
-// 2. extern (pub) fns (no body)
-// 3. (pub) fn with body mark as unsafe if api may be available
-// 4. pub selector mark as optional and unsafe if api may be available
 #[proc_macro_attribute]
 pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     let versions = Versions::from_stream(versions);
     let available = versions.available_cfg_ts();
     let available_doc = versions.available_doc_ts();
+    let unavailable = versions.unavailable_cfg_ts();
+    let unavailable_doc = versions.unavailable_doc_ts();
     if available.is_empty() {
         return body;
     }
 
+    let mut no_args = false;
+    let mut no_body = false;
+
     let mut available = Some(available);
     let mut available_doc = Some(available_doc);
+    let mut unavailable = Some(unavailable);
+    let mut unavailable_doc = Some(unavailable_doc);
     let mut res = Vec::new();
+    let mut maybe_res: Vec<TokenTree> = Vec::new();
     for t in body.into_iter() {
         if available.is_some() {
-            res.extend(available.take().unwrap().into_iter());
+            res.extend(available.take().unwrap());
+        }
+        if unavailable.is_some() {
+            maybe_res.extend(unavailable.take().unwrap());
         }
         if available_doc.is_some() {
             match t {
@@ -1447,8 +1498,85 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
                 _ => {}
             }
         }
+        if unavailable_doc.is_some() {
+            match t {
+                TokenTree::Ident(ref _i) => {
+                    let doc = unavailable_doc.take().unwrap();
+                    maybe_res.extend(doc);
+                }
+                _ => {}
+            }
+        }
+        if let TokenTree::Punct(ref p) = t {
+            if p.as_char() == ';' {
+                no_body = true;
+            }
+        }
+        maybe_res.push(t.clone());
+
+        if let TokenTree::Group(ref g) = t {
+            // function without args ()
+            if g.delimiter() == Delimiter::Parenthesis {
+                no_args = g.stream().is_empty();
+            }
+            // function body {}
+            if no_args && g.delimiter() == Delimiter::Brace {
+                let len = maybe_res.len();
+                if &maybe_res[len - 3].to_string() == "static"
+                    && &maybe_res[len - 4].to_string() == "'"
+                    && &maybe_res[len - 5].to_string() == "&"
+                {
+                    maybe_res.pop(); // {}
+                    let ty = maybe_res.pop().unwrap(); // Type
+                    maybe_res.pop(); // static
+                    maybe_res.pop(); // '
+                    maybe_res.pop(); // &
+
+                    let stream = TokenStream::from_str(&format!("Option<&'static {ty}>")).unwrap();
+                    maybe_res.extend(stream);
+
+                    let mut iter = g.stream().into_iter();
+                    let ident = iter.next().unwrap().to_string();
+                    assert_eq!(ident, "unsafe");
+                    match iter.next().expect("token") {
+                        TokenTree::Group(g) => {
+                            let TokenTree::Ident(var) = g.stream().into_iter().next().unwrap()
+                            else {
+                                panic!("expecting variable");
+                            };
+                            let var = upper_case(&var.to_string());
+                            let stream =
+                                TokenStream::from_str(&format!("{{ unsafe {{ {var}.get() }} }}"))
+                                    .unwrap();
+                            maybe_res.extend(stream);
+                        }
+                        _ => panic!("expecting unsafe block"),
+                    }
+                }
+            }
+        }
+
         res.push(t);
     }
-
+    if !no_body {
+        res.extend(maybe_res);
+    }
     TokenStream::from_iter(res)
+}
+
+fn upper_case(str: &str) -> String {
+    let len = str.len();
+    let mut res = Vec::<u8>::with_capacity(len + 10);
+    let bytes = str.as_bytes();
+    let mut was_lowercase = false;
+    for ch in bytes {
+        let is_upper = ch.is_ascii_uppercase();
+        if was_lowercase && is_upper {
+            res.push(b'_');
+        }
+        res.push(ch.to_ascii_uppercase());
+        was_lowercase = !is_upper;
+    }
+
+    String::from_utf8(res).unwrap()
 }

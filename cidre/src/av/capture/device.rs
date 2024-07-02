@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{api, arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;

@@ -1,4 +1,6 @@
-use crate::{arc, blocks, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc, sc};
+use crate::{
+    api, arc, blocks, cf, cg, cm, cv, define_cls, define_obj_type, dispatch, ns, objc, sc,
+};
 
 /// Denotes the status of frame sample buffer.
 #[doc(alias = "SCFrameStatus")]
@@ -23,6 +25,7 @@ impl FrameInfo {
     /// The key for the [`cf::Dictionary`] attached to the [`cm::SampleBuf`] that denotes the frames [`sc::FrameStatus`]
     #[doc(alias = "SCStreamFrameInfoStatus")]
     #[inline]
+    #[api::available(macos = 12.3)]
     pub fn status() -> &'static Self {
         unsafe { SCStreamFrameInfoStatus }
     }
@@ -31,6 +34,7 @@ impl FrameInfo {
     /// time when the event occurred. For a frame event, this is when the frame was displayed by the window server.
     #[doc(alias = "SCStreamFrameInfoDisplayTime")]
     #[inline]
+    #[api::available(macos = 12.3)]
     pub fn display_time() -> &'static Self {
         unsafe { SCStreamFrameInfoDisplayTime }
     }
@@ -40,6 +44,7 @@ impl FrameInfo {
     /// It should be in the range of \[1, 4\].
     #[doc(alias = "SCStreamFrameInfoScaleFactor")]
     #[inline]
+    #[api::available(macos = 12.3)]
     pub fn scale_factor() -> &'static Self {
         unsafe { SCStreamFrameInfoScaleFactor }
     }
@@ -49,6 +54,7 @@ impl FrameInfo {
     /// size to its size in surface.
     #[doc(alias = "SCStreamFrameInfoContentScale")]
     #[inline]
+    #[api::available(macos = 12.3)]
     pub fn content_scale() -> &'static Self {
         unsafe { SCStreamFrameInfoContentScale }
     }
@@ -57,6 +63,7 @@ impl FrameInfo {
     /// associated with the frame. Content rect is the size and location of content in points in surface.
     #[doc(alias = "SCStreamFrameInfoContentRect")]
     #[inline]
+    #[api::available(macos = 12.3)]
     pub fn content_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoContentRect }
     }
@@ -66,6 +73,7 @@ impl FrameInfo {
     /// This is an array of [`cg::Rect`] in [`ns::Value`]. The [`cg::Rect`]s elements are specified in pixels.
     #[doc(alias = "SCStreamFrameInfoDirtyRects")]
     #[inline]
+    #[api::available(macos = 12.3)]
     pub fn dirty_rects() -> &'static Self {
         unsafe { SCStreamFrameInfoDirtyRects }
     }
@@ -74,6 +82,7 @@ impl FrameInfo {
     /// of the captured content
     #[doc(alias = "SCStreamFrameInfoScreenRect")]
     #[inline]
+    #[api::available(macos = 13.1)]
     pub fn screen_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoScreenRect }
     }
@@ -83,6 +92,7 @@ impl FrameInfo {
     /// containing all captured windows in points and in surface coordinates.
     #[doc(alias = "SCStreamFrameInfoBoundingRect")]
     #[inline]
+    #[api::available(macos = 14.0)]
     pub fn bounding_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoBoundingRect }
     }
@@ -94,6 +104,7 @@ impl FrameInfo {
     /// location of shared content in points and in surface coordinates.
     #[doc(alias = "SCStreamFrameInfoPresenterOverlayContentRect")]
     #[inline]
+    #[api::available(macos = 14.2)]
     pub fn presenter_overlay_content_rect() -> &'static Self {
         unsafe { SCStreamFrameInfoPresenterOverlayContentRect }
     }
@@ -428,15 +439,28 @@ extern "C" {
     static SC_STREAM_CONFIGURATION: &'static objc::Class<Cfg>;
     static SC_CONTENT_FILTER: &'static objc::Class<ContentFilter>;
     static SC_STREAM: &'static objc::Class<Stream>;
+}
 
+#[link(name = "ScreenCaptureKit", kind = "framework")]
+#[api::weak]
+extern "C" {
+    #[api::available(macos = 12.3)]
     static SCStreamFrameInfoStatus: &'static FrameInfo;
+    #[api::available(macos = 12.3)]
     static SCStreamFrameInfoDisplayTime: &'static FrameInfo;
+    #[api::available(macos = 12.3)]
     static SCStreamFrameInfoScaleFactor: &'static FrameInfo;
+    #[api::available(macos = 12.3)]
     static SCStreamFrameInfoContentScale: &'static FrameInfo;
+    #[api::available(macos = 12.3)]
     static SCStreamFrameInfoContentRect: &'static FrameInfo;
+    #[api::available(macos = 12.3)]
     static SCStreamFrameInfoDirtyRects: &'static FrameInfo;
+    #[api::available(macos = 13.1)]
     static SCStreamFrameInfoScreenRect: &'static FrameInfo;
+    #[api::available(macos = 14.0)]
     static SCStreamFrameInfoBoundingRect: &'static FrameInfo;
+    #[api::available(macos = 14.2)]
     static SCStreamFrameInfoPresenterOverlayContentRect: &'static FrameInfo;
 }
 
@@ -451,16 +475,18 @@ pub enum CaptureDynamicRange {
 define_obj_type!(pub ContentFilter(ns::Id));
 
 impl arc::A<ContentFilter> {
-    #[objc::msg_send(initWithDesktopIndependentWindow:)]
-    pub fn init_with_desktop_independent_window(self, window: &sc::Window)
-        -> arc::R<ContentFilter>;
+    #[objc::msg_send2(initWithDesktopIndependentWindow:)]
+    pub fn init_with_desktop_independent_window(
+        self,
+        window: &sc::Window,
+    ) -> arc::Retained<ContentFilter>;
 
-    #[objc::msg_send(initWithDisplay:excludingWindows:)]
+    #[objc::msg_send2(initWithDisplay:excludingWindows:)]
     pub fn init_with_display_excluding_windows(
         self,
         display: &sc::Display,
         windows: &ns::Array<sc::Window>,
-    ) -> arc::R<ContentFilter>;
+    ) -> arc::Retained<ContentFilter>;
 }
 
 impl ContentFilter {
@@ -478,16 +504,20 @@ impl ContentFilter {
         Self::alloc().init_with_display_excluding_windows(display, windows)
     }
 
-    #[objc::msg_send(style)]
+    #[objc::msg_send2(style)]
+    #[api::available(macos = 14.0)]
     pub fn style(&self) -> sc::ShareableContentStyle;
 
-    #[objc::msg_send(pointPixelScale)]
+    #[objc::msg_send2(pointPixelScale)]
+    #[api::available(macos = 14.0)]
     pub fn point_pixel_scale(&self) -> f32;
 
-    #[objc::msg_send(contentRect)]
+    #[objc::msg_send2(contentRect)]
+    #[api::available(macos = 14.0)]
     pub fn content_rect(&self) -> cg::Rect;
 
-    #[objc::msg_send(includeMenuBar)]
+    #[objc::msg_send2(includeMenuBar)]
+    #[api::available(macos = 14.2)]
     pub fn include_menu_bar(&self) -> bool;
 
     /// To include menu bar as part of the capture. This property has no effect for the
@@ -496,6 +526,7 @@ impl ContentFilter {
     /// and dock. For content filters created with initWithDisplay:including, the default
     /// value is 'false'. Display including content filters do not contain the desktop and dock
     #[objc::msg_send(setIncludeMenuBar:)]
+    #[api::available(macos = 14.2)]
     pub fn set_include_menu_bar(&mut self, val: bool);
 }
 
@@ -599,10 +630,10 @@ impl Stream {
         Err(error.unwrap())
     }
 
-    #[objc::msg_send(startCaptureWithCompletionHandler:)]
+    #[objc::msg_send2(startCaptureWithCompletionHandler:)]
     pub fn start_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
-    #[objc::msg_send(stopCaptureWithCompletionHandler:)]
+    #[objc::msg_send2(stopCaptureWithCompletionHandler:)]
     pub fn stop_with_ch(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
 
     pub async fn start(&self) -> Result<(), arc::R<ns::Error>> {
@@ -617,13 +648,15 @@ impl Stream {
         future.await
     }
 
-    #[objc::msg_send(addRecordingOutput:error:)]
+    #[objc::msg_send2(addRecordingOutput:error:)]
+    #[api::available(macos = 15.0)]
     pub unsafe fn add_recording_output_err<'ar>(
         &mut self,
         val: &sc::RecordingOutput,
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
+    #[api::available(macos = 15.0)]
     pub fn add_recording_output<'ar>(
         &mut self,
         val: &sc::RecordingOutput,
@@ -631,13 +664,15 @@ impl Stream {
         ns::if_false(|err| unsafe { self.add_recording_output_err(val, err) })
     }
 
-    #[objc::msg_send(removeRecordingOutput:error:)]
+    #[objc::msg_send2(removeRecordingOutput:error:)]
+    #[api::available(macos = 15.0)]
     pub unsafe fn remove_recording_output_err<'ar>(
         &mut self,
         val: &sc::RecordingOutput,
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
+    #[api::available(macos = 15.0)]
     pub fn remove_recording_output<'ar>(
         &mut self,
         val: &sc::RecordingOutput,
