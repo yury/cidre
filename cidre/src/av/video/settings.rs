@@ -1,7 +1,7 @@
-use crate::{define_obj_type, ns};
+use crate::{api, define_obj_type, ns};
 
 pub mod keys {
-    use crate::ns;
+    use crate::{api, ns};
 
     #[doc(alias = "AVVideoCodecKey")]
     pub fn codec() -> &'static ns::String {
@@ -52,6 +52,7 @@ pub mod keys {
     /// AVVideoHeightKey when encoding to AVVideoCodecTypeH264 or any other
     /// format that uses 4:2:0 downsampling
     #[doc(alias = "AVVideoWidthKey")]
+    #[api::available(macos = 10.7, ios = 4.0, tvos = 9.0, visionos = 1.0)]
     pub fn width() -> &'static ns::String {
         unsafe { AVVideoWidthKey }
     }
@@ -60,12 +61,17 @@ pub mod keys {
     /// AVVideoHeightKey when encoding to AVVideoCodecTypeH264 or any other
     /// format that uses 4:2:0 downsampling
     #[doc(alias = "AVVideoHeightKey")]
+    #[api::available(macos = 10.7, ios = 4.0, tvos = 9.0, visionos = 1.0)]
     pub fn height() -> &'static ns::String {
         unsafe { AVVideoHeightKey }
     }
 
+    #[link(name = "AVFoundation", kind = "framework")]
+    #[api::weak]
     extern "C" {
+        #[api::available(macos = 10.7, ios = 4.0, tvos = 9.0, visionos = 1.0)]
         static AVVideoWidthKey: &'static ns::String;
+        #[api::available(macos = 10.7, ios = 4.0, tvos = 9.0, visionos = 1.0)]
         static AVVideoHeightKey: &'static ns::String;
 
         static AVVideoCodecKey: &'static ns::String;
@@ -88,49 +94,70 @@ define_obj_type!(
 impl Codec {
     /// The HEVC video codec.
     #[doc(alias = "AVVideoCodecTypeHEVC")]
-    pub fn hevc() -> &'static Codec {
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
+    pub fn hevc() -> &'static Self {
         unsafe { AVVideoCodecTypeHEVC }
     }
 
     /// The H.264 video codec.
     #[doc(alias = "AVVideoCodecTypeH264")]
-    pub fn h264() -> &'static Codec {
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
+    pub fn h264() -> &'static Self {
         unsafe { AVVideoCodecTypeH264 }
     }
 
     /// The JPEG video codec.
     #[doc(alias = "AVVideoCodecTypeJPEG")]
-    pub fn jpeg() -> &'static Codec {
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
+    pub fn jpeg() -> &'static Self {
         unsafe { AVVideoCodecTypeJPEG }
     }
 
     /// The Apple ProRes 4444 video codec.
+    /// 'ap4h'
     #[doc(alias = "AVVideoCodecTypeAppleProRes4444")]
-    pub fn apple_pro_res_4444() -> &'static Codec {
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
+    pub fn apple_pro_res_4444() -> &'static Self {
         unsafe { AVVideoCodecTypeAppleProRes4444 }
     }
 
+    /// The Apple ProRes 4444 XQ video codec.
+    /// 'ap4x'
+    #[doc(alias = "AVVideoCodecTypeAppleProRes4444XQ")]
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0)]
+    pub fn apple_pro_res_4444xq() -> &'static Self {
+        unsafe { AVVideoCodecTypeAppleProRes4444XQ }
+    }
+
     /// The Apple ProRes 422 video codec.
+    /// 'apcn'
     #[doc(alias = "AVVideoCodecTypeAppleProRes422")]
-    pub fn apple_pro_res_422() -> &'static Codec {
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
+    pub fn apple_pro_res_422() -> &'static Self {
         unsafe { AVVideoCodecTypeAppleProRes422 }
     }
 
     /// The Apple ProRes 422 HQ video codec.
+    /// 'apch'
     #[doc(alias = "AVVideoCodecTypeAppleProRes422HQ")]
-    pub fn apple_pro_res_422_hq() -> &'static Codec {
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
+    pub fn apple_pro_res_422_hq() -> &'static Self {
         unsafe { AVVideoCodecTypeAppleProRes422HQ }
     }
 
     /// The Apple ProRes 422 LT video codec.
+    /// 'apcs'
     #[doc(alias = "AVVideoCodecTypeAppleProRes422LT")]
-    pub fn apple_pro_res_422_lt() -> &'static Codec {
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
+    pub fn apple_pro_res_422_lt() -> &'static Self {
         unsafe { AVVideoCodecTypeAppleProRes422LT }
     }
 
     /// The Apple ProRes 422 Proxy video codec.
+    /// 'apco'
     #[doc(alias = "AVVideoCodecTypeAppleProRes422Proxy")]
-    pub fn apple_pro_res_422_proxy() -> &'static Codec {
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
+    pub fn apple_pro_res_422_proxy() -> &'static Self {
         unsafe { AVVideoCodecTypeAppleProRes422Proxy }
     }
 
@@ -139,20 +166,35 @@ impl Codec {
     /// MPORTANT NOTE: this constant is used to select the appropriate encoder,
     /// but is NOT used on the encoded content, which is backwards compatible
     /// and hence uses 'hvc1' as its codec type.
+    /// 'muxa'
     #[doc(alias = "AVVideoCodecTypeHEVCWithAlpha")]
-    pub fn hevc_with_alpha() -> &'static Codec {
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
+    pub fn hevc_with_alpha() -> &'static Self {
         unsafe { AVVideoCodecTypeHEVCWithAlpha }
     }
 }
 
+#[link(name = "AVFoundation", kind = "framework")]
+#[api::weak]
 extern "C" {
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
     static AVVideoCodecTypeHEVC: &'static Codec;
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
     static AVVideoCodecTypeH264: &'static Codec;
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
     static AVVideoCodecTypeJPEG: &'static Codec;
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
     static AVVideoCodecTypeAppleProRes4444: &'static Codec;
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0)]
+    static AVVideoCodecTypeAppleProRes4444XQ: &'static Codec;
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
     static AVVideoCodecTypeAppleProRes422: &'static Codec;
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
     static AVVideoCodecTypeAppleProRes422HQ: &'static Codec;
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
     static AVVideoCodecTypeAppleProRes422LT: &'static Codec;
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
     static AVVideoCodecTypeAppleProRes422Proxy: &'static Codec;
+    #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
     static AVVideoCodecTypeHEVCWithAlpha: &'static Codec;
 }

@@ -6,10 +6,12 @@ pub type Sock = i32;
 
 #[repr(transparent)]
 pub struct Service(c_void);
+
 #[repr(transparent)]
 pub struct Record(c_void);
+
 #[repr(transparent)]
-pub struct ServiceAttribtute(c_void);
+pub struct ServiceAttribute(c_void);
 
 impl Service {
     /// Maximum length, in bytes, of a service name represented as a

@@ -1128,14 +1128,20 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                                 let _t = group.next().unwrap(); // '
                                 if let TokenTree::Ident(ident) = group.next().unwrap() {
                                     assert_eq!(ident.to_string(), "static");
-                                    if let TokenTree::Ident(ident) = group.next().unwrap() {
-                                        vars.push((version, var_name, ident.to_string()));
+                                    let mut ty = Vec::new();
+                                    while let Some(t) = group.next() {
+                                        match t {
+                                            TokenTree::Punct(ref p) if p.as_char() == ';' => break,
+                                            t => ty.push(t),
+                                        }
                                     }
+                                    let ty = if ty.len() == 1 {
+                                        ty[0].to_string()
+                                    } else {
+                                        TokenStream::from_iter(ty).to_string()
+                                    };
+                                    vars.push((version, var_name, ty));
                                 }
-                                let TokenTree::Punct(p) = group.next().unwrap() else {
-                                    panic!("expect ;")
-                                };
-                                assert_eq!(';', p.as_char());
                             }
                         }
                         TokenTree::Punct(ref p) if p.as_char() == ';' => {
@@ -1525,20 +1531,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
             }
             // function body {}
             if no_args && g.delimiter() == Delimiter::Brace {
-                let len = maybe_res.len();
-                if &maybe_res[len - 3].to_string() == "static"
-                    && &maybe_res[len - 4].to_string() == "'"
-                    && &maybe_res[len - 5].to_string() == "&"
-                {
-                    maybe_res.pop(); // {}
-                    let ty = maybe_res.pop().unwrap(); // Type
-                    maybe_res.pop(); // static
-                    maybe_res.pop(); // '
-                    maybe_res.pop(); // &
-
-                    let stream = TokenStream::from_str(&format!("Option<&'static {ty}>")).unwrap();
-                    maybe_res.extend(stream);
-
+                if replace_return(&mut maybe_res) {
                     let mut iter = g.stream().into_iter();
                     let ident = iter.next().unwrap().to_string();
                     assert_eq!(ident, "unsafe");
@@ -1566,6 +1559,33 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
         res.extend(maybe_res);
     }
     TokenStream::from_iter(res)
+}
+
+fn replace_return(tokens: &mut Vec<TokenTree>) -> bool {
+    let mut idx = tokens.len() - 1;
+    let mut has_static = false;
+    // going reverse till `&'static` or ()
+    while idx > 0 {
+        match &tokens[idx] {
+            TokenTree::Group(g) if g.delimiter() == Delimiter::Parenthesis => return false,
+            TokenTree::Ident(i) if i.to_string() == "static" => has_static = true,
+            TokenTree::Punct(p) if p.as_char() == '\'' => break,
+            // TokenTree::Literal(_) => todo!(),
+            _ => {}
+        }
+        idx -= 1;
+    }
+
+    if !has_static {
+        return false;
+    }
+    idx -= 1; // &
+    tokens.pop(); // {}
+    let stream = TokenStream::from_iter(tokens.drain(idx..));
+    let ty = stream.to_string();
+    let stream = TokenStream::from_str(&format!("Option<{ty}>")).unwrap();
+    tokens.extend(stream);
+    return true;
 }
 
 fn upper_case(str: &str) -> String {
