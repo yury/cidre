@@ -29,13 +29,9 @@ static void sc_initializer(void)
         SC_STREAM = [SCStream class];
         SC_SHAREABLE_CONTENT = [SCShareableContent class];
         
-        if (@available(macOS 15.0, *)) {
-            SC_RECORDING_OUTPUT_CONFIGURATION = [SCRecordingOutputConfiguration class];
-            SC_RECORDING_OUTPUT = [SCRecordingOutput class];
-        } else {
-            SC_RECORDING_OUTPUT_CONFIGURATION = nil;
-            SC_RECORDING_OUTPUT = nil;
-        }
+        SC_RECORDING_OUTPUT_CONFIGURATION = NSClassFromString(@"SCRecordingOutputConfiguration");
+        SC_RECORDING_OUTPUT = NSClassFromString(@"SCRecordingOutput");
+        
     }
 }
 
