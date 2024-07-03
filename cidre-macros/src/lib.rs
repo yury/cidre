@@ -629,7 +629,7 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
 
     assert_eq!(
         sel_args_count, fn_args_count,
-        "selector and function args don't match"
+        "selector and function args don't match {vars:?}"
     );
 
     let (mut fn_args, mut call_args) = if x86_64 {
@@ -863,6 +863,7 @@ fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
     let mut pos = 0;
     let mut self_arg = false;
     let mut skip_ident = false;
+    let mut nesting = 0;
     for s in stream.into_iter() {
         match s {
             TokenTree::Group(_) => {}
@@ -880,14 +881,16 @@ fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
                     skip_ident = true;
                 }
             }
-            TokenTree::Punct(p) if p == ',' => {
-                pos += 1;
-                skip_ident = false;
-            }
-            TokenTree::Punct(p) if p == ':' => {
-                skip_ident = true;
-            }
-            TokenTree::Punct(ref _p) => {}
+            TokenTree::Punct(p) => match p.as_char() {
+                '<' => nesting += 1,
+                '>' => nesting -= 1,
+                ',' if nesting == 0 => {
+                    pos += 1;
+                    skip_ident = false;
+                }
+                ':' => skip_ident = true,
+                _ => {}
+            },
             TokenTree::Literal(ref _l) => {}
         }
     }

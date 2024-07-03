@@ -101,54 +101,54 @@ define_obj_type!(pub Device(ns::Id));
 impl Device {
     define_cls!(UI_DEVICE);
 
-    #[objc::cls_msg_send(currentDevice)]
+    #[objc::msg_send2(currentDevice)]
     pub fn current() -> &'static Device;
 
-    #[objc::msg_send(userInterfaceIdiom)]
+    #[objc::msg_send2(userInterfaceIdiom)]
     pub fn user_interface_idiom(&self) -> UserInterfaceIdiom;
 
-    #[objc::msg_send(isMultitaskingSupported)]
+    #[objc::msg_send2(isMultitaskingSupported)]
     pub fn is_multitasking_supported(&self) -> bool;
 
-    #[objc::msg_send(proximityState)]
+    #[objc::msg_send2(proximityState)]
     pub fn proximity_state(&self) -> bool;
 
-    #[objc::msg_send(isProximityMonitoringEnabled)]
+    #[objc::msg_send2(isProximityMonitoringEnabled)]
     pub fn is_proximity_monitoring_enabled(&self) -> bool;
 
-    #[objc::msg_send(setProximityMonitoringEnabled:)]
+    #[objc::msg_send2(setProximityMonitoringEnabled:)]
     pub fn set_proximity_monitoring_enabled(&self, val: bool);
 
-    #[objc::msg_send(batteryLevel)]
+    #[objc::msg_send2(batteryLevel)]
     pub fn battery_level(&self) -> f32;
 
-    #[objc::msg_send(batteryState)]
+    #[objc::msg_send2(batteryState)]
     pub fn battery_state(&self) -> BatteryState;
 
-    #[objc::msg_send(isBatteryMonitoringEnabled)]
+    #[objc::msg_send2(isBatteryMonitoringEnabled)]
     pub fn is_battery_monitoring_enabled(&self) -> bool;
 
-    #[objc::msg_send(setBatteryMonitoringEnabled:)]
+    #[objc::msg_send2(setBatteryMonitoringEnabled:)]
     pub fn set_battery_monitoring_enabled(&self, val: bool);
 
-    #[objc::msg_send(identifierForVendor)]
+    #[objc::msg_send2(identifierForVendor)]
     pub fn id_for_vendor(&self) -> Option<&ns::Uuid>;
 
-    #[objc::msg_send(model)]
+    #[objc::msg_send2(model)]
     pub fn model(&self) -> &ns::String;
 
-    #[objc::msg_send(systemName)]
+    #[objc::msg_send2(systemName)]
     pub fn system_name(&self) -> &ns::String;
 
-    #[objc::msg_send(name)]
+    #[objc::msg_send2(name)]
     pub fn name(&self) -> &ns::String;
 
-    #[objc::msg_send(systemVersion)]
+    #[objc::msg_send2(systemVersion)]
     pub fn system_version(&self) -> &ns::String;
 
     /// Returns current device orientation. This will return Orientation::Unknown
     /// unless device orientation notifications are being generated.
-    #[objc::msg_send(orientation)]
+    #[objc::msg_send2(orientation)]
     pub fn orientation(&self) -> Orientation;
 }
 

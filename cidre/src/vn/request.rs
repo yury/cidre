@@ -4,19 +4,19 @@ define_obj_type!(pub Request(ns::Id));
 
 impl Request {
     /// The specific algorithm or implementation revision that is to be used to perform the request.
-    #[objc::msg_send(revision)]
+    #[objc::msg_send2(revision)]
     pub fn revision(&self) -> usize;
 
-    #[objc::msg_send(setRevision:)]
+    #[objc::msg_send2(setRevision:)]
     pub fn set_revision(&mut self, value: usize);
 
-    #[objc::msg_send(usesCPUOnly)]
+    #[objc::msg_send2(usesCPUOnly)]
     pub fn uses_cpu_only(&self) -> bool;
 
-    #[objc::msg_send(setUsesCPUOnly:)]
+    #[objc::msg_send2(setUsesCPUOnly:)]
     pub fn set_uses_cpu_only(&mut self, value: bool);
 
-    #[objc::msg_send(results)]
+    #[objc::msg_send2(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::Observation>>;
 
     pub const REVISION_UNSPECIFIED: usize = 0;
@@ -32,10 +32,10 @@ impl ImageBasedRequest {
     /// The default value for this property is { { 0, 0 }, { 1, 1 } }.  Setting this
     /// property to a rectangle that is outside of the normalized coordinate space will
     /// be accepted but result in the request failing to be performed.
-    #[objc::msg_send(regionOfInterest)]
+    #[objc::msg_send2(regionOfInterest)]
     pub fn region_of_interest(&self) -> cg::Rect;
 
-    #[objc::msg_send(setRegionOfInterest:)]
+    #[objc::msg_send2(setRegionOfInterest:)]
     pub fn set_region_of_interest(&mut self, value: cg::Rect);
 }
 
@@ -47,7 +47,7 @@ define_obj_type!(
 impl DetectHorizonRequest {
     pub const REVISION_1: usize = 1;
 
-    #[objc::msg_send(results)]
+    #[objc::msg_send2(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::HorizonObservation>>;
 }
 

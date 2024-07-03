@@ -49,12 +49,12 @@ impl<T: Obj> Class<T> {
     }
 
     #[must_use]
-    #[objc::msg_send(alloc)]
+    #[objc::msg_send2(alloc)]
     pub fn alloc(&self) -> arc::A<T>;
 
     // in general alloc_init is faster
-    #[objc::msg_send(new)]
-    pub unsafe fn new(&self) -> arc::R<T>;
+    #[objc::msg_send2(new)]
+    pub unsafe fn new(&self) -> arc::Retained<T>;
 }
 
 impl<T: Obj> Obj for Class<T> {}
@@ -112,25 +112,19 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
-    #[objc::msg_send(description)]
-    fn desc_ar(&self) -> arc::Rar<crate::ns::String>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(description)]
     fn desc(&self) -> arc::R<crate::ns::String>;
 
-    #[objc::msg_send(debugDescription)]
-    fn debug_desc_ar(&self) -> arc::Rar<crate::ns::String>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(debugDescription)]
     fn debug_desc(&self) -> arc::R<crate::ns::String>;
 
-    #[objc::msg_send(respondsToSelector:)]
+    #[objc::msg_send2(respondsToSelector:)]
     fn responds_to_sel(&self, sel: &Sel) -> bool;
 
-    #[objc::msg_send(class)]
+    #[objc::msg_send2(class)]
     fn class(&self) -> &crate::objc::Class<Self>;
 
-    #[objc::msg_send(isKindOfClass:)]
+    #[objc::msg_send2(isKindOfClass:)]
     fn is_kind_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
     #[inline]
@@ -142,7 +136,7 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
-    #[objc::msg_send(isMemberOfClass:)]
+    #[objc::msg_send2(isMemberOfClass:)]
     fn is_member_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
     #[cfg(not(target_os = "watchos"))]
@@ -184,7 +178,7 @@ impl Id {
         self
     }
 
-    #[objc::msg_send(isEqual:)]
+    #[objc::msg_send2(isEqual:)]
     pub fn is_equal(&self, other: &Self) -> bool;
 }
 
@@ -260,8 +254,8 @@ extern "C" {
 macro_rules! define_cls_init {
     ($NewType:ident, $CLS:ident) => {
         impl $crate::arc::A<$NewType> {
-            #[$crate::objc::msg_send(init)]
-            pub fn init(self) -> arc::R<$NewType>;
+            #[$crate::objc::msg_send2(init)]
+            pub fn init(self) -> arc::Retained<$NewType>;
         }
 
         impl $NewType {

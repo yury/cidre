@@ -6,38 +6,37 @@ define_obj_type!(pub NDArray(ns::Id));
 impl NDArray {
     define_cls!(MPS_NDARRAY);
 
-    #[objc::cls_msg_send(defaultAllocator)]
+    #[objc::msg_send2(defaultAllocator)]
     pub fn default_allocator() -> &'static NDArrayAllocator;
 
-    #[objc::msg_send(label)]
+    #[objc::msg_send2(label)]
     pub fn label(&self) -> Option<&ns::String>;
 
-    #[objc::msg_send(setLabel:)]
+    #[objc::msg_send2(setLabel:)]
     pub fn set_label(&mut self, value: Option<&ns::String>);
 
-    #[objc::msg_send(dataType)]
+    #[objc::msg_send2(dataType)]
     pub fn data_type(&self) -> mps::DataType;
 
     /// Copy bytes from NDArray into buffer
     /// The dimensionality and size of the copy region is given by the size of the NDArray
     /// For subregions, use a NDArray view.
-    #[doc(alias = "readBytes:strideBytes:")]
-    #[objc::msg_send(readBytes:strideBytes:)]
+    #[objc::msg_send2(readBytes:strideBytes:)]
     pub fn read_bytes(&self, bytes: *mut u8, stride_bytes: *mut isize);
 
-    #[objc::msg_send(dataTypeSize)]
+    #[objc::msg_send2(dataTypeSize)]
     pub fn data_type_size(&self) -> usize;
 
-    #[objc::msg_send(numberOfDimensions)]
+    #[objc::msg_send2(numberOfDimensions)]
     pub fn ndim(&self) -> usize;
 
-    #[objc::msg_send(lengthOfDimension:)]
+    #[objc::msg_send2(lengthOfDimension:)]
     pub fn dim_len(&self, dimension_index: usize) -> usize;
 
-    #[objc::msg_send(device)]
+    #[objc::msg_send2(device)]
     pub fn device(&self) -> &mtl::Device;
 
-    #[objc::msg_send(descriptor)]
+    #[objc::msg_send2(descriptor)]
     pub fn descriptor(&self) -> &NDArrayDesc;
 }
 
@@ -45,22 +44,22 @@ define_obj_type!(pub NDArrayDesc(ns::Id));
 impl NDArrayDesc {
     define_cls!(MPS_NDARRAY_DESCRIPTOR);
 
-    #[objc::msg_send(dataType)]
+    #[objc::msg_send2(dataType)]
     pub fn data_type(&self) -> mps::DataType;
 
-    #[objc::msg_send(setDataType:)]
+    #[objc::msg_send2(setDataType:)]
     pub fn set_data_type(&mut self, value: mps::DataType);
 
-    #[objc::msg_send(numberOfDimensions)]
+    #[objc::msg_send2(numberOfDimensions)]
     pub fn ndim(&self) -> usize;
 
-    #[objc::msg_send(setNumberOfDimensions:)]
+    #[objc::msg_send2(setNumberOfDimensions:)]
     pub fn set_ndim(&mut self, value: usize);
 
-    #[objc::msg_send(lengthOfDimension:)]
+    #[objc::msg_send2(lengthOfDimension:)]
     pub fn dim_len(&self, dim_index: usize) -> usize;
 
-    #[objc::msg_send(sliceRangeForDimension:)]
+    #[objc::msg_send2(sliceRangeForDimension:)]
     pub fn dim_slice_range(&self, dim_index: usize) -> mps::DimensionSlice;
 }
 

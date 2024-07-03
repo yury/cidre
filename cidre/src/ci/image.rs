@@ -7,12 +7,12 @@ define_obj_type!(
 );
 
 impl arc::A<Image> {
-    #[objc::msg_send(initWithMTLTexture:options:)]
+    #[objc::msg_send2(initWithMTLTexture:options:)]
     pub fn init_with_mlt_texture_options(
         self,
         texture: &mtl::Texture,
         options: Option<&cf::DictionaryOf<ImageOption, cf::Type>>,
-    ) -> Option<arc::R<Image>>;
+    ) -> Option<arc::Retained<Image>>;
 }
 
 impl Image {
@@ -25,52 +25,46 @@ impl Image {
         Self::alloc().init_with_mlt_texture_options(texture, options)
     }
 
-    #[objc::msg_send(imageByClampingToRect:)]
-    pub fn clamped_to_ar(&self, rect: cg::Rect) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(imageByClampingToRect:)]
     pub fn clamped_to(&self, rect: cg::Rect) -> arc::R<Self>;
 
-    #[objc::msg_send(imageByCroppingToRect:)]
-    pub fn cropped_to_ar(&self, rect: cg::Rect) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(imageByCroppingToRect:)]
     pub fn cropped_to(&self, rect: cg::Rect) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(blackImage)]
+    #[objc::msg_send2(blackImage)]
     pub fn black() -> &'static Self;
 
-    #[objc::cls_msg_send(whiteImage)]
+    #[objc::msg_send2(whiteImage)]
     pub fn white() -> &'static Self;
 
-    #[objc::cls_msg_send(grayImage)]
+    #[objc::msg_send2(grayImage)]
     pub fn gray() -> &'static Self;
 
-    #[objc::cls_msg_send(redImage)]
+    #[objc::msg_send2(redImage)]
     pub fn red() -> &'static Self;
 
-    #[objc::cls_msg_send(greenImage)]
+    #[objc::msg_send2(greenImage)]
     pub fn green() -> &'static Self;
 
-    #[objc::cls_msg_send(blueImage)]
+    #[objc::msg_send2(blueImage)]
     pub fn blue() -> &'static Self;
 
-    #[objc::cls_msg_send(cyanImage)]
+    #[objc::msg_send2(cyanImage)]
     pub fn cyan() -> &'static Self;
 
-    #[objc::cls_msg_send(mangentaImage)]
+    #[objc::msg_send2(mangentaImage)]
     pub fn mangenta() -> &'static Self;
 
-    #[objc::cls_msg_send(yellowImage)]
+    #[objc::msg_send2(yellowImage)]
     pub fn yellow() -> &'static Self;
 
-    #[objc::cls_msg_send(clearImage)]
+    #[objc::msg_send2(clearImage)]
     pub fn clear() -> &'static Self;
 
-    #[objc::cls_msg_send(emptyImage)]
+    #[objc::msg_send2(emptyImage)]
     pub fn empty() -> &'static Self;
 
-    #[objc::msg_send(colorSpace)]
+    #[objc::msg_send2(colorSpace)]
     pub fn color_space(&self) -> Option<&cg::ColorSpace>;
 }
 

@@ -30,66 +30,60 @@ define_obj_type!(
 
 impl NotificationContent {
     #[objc::msg_send(copy)]
-    pub fn copy(&self) -> arc::R<Self>;
+    pub fn copy(&self) -> arc::Retained<Self>;
 
-    #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<NotificationContentMut>;
+    #[objc::msg_send2(mutableCopy)]
+    pub fn copy_mut(&self) -> arc::Retained<NotificationContentMut>;
 
-    #[objc::msg_send(badge)]
+    #[objc::msg_send2(badge)]
     pub fn badge(&self) -> Option<&ns::Number>;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(body)]
+    #[objc::msg_send2(body)]
     pub fn body(&self) -> &ns::String;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(categoryIdentifier)]
+    #[objc::msg_send2(categoryIdentifier)]
     pub fn category_id(&self) -> &ns::String;
 
     #[cfg(not(any(target_os = "tvos", target_os = "macos")))]
-    #[objc::msg_send(launchImageName)]
+    #[objc::msg_send2(launchImageName)]
     pub fn launch_image_name(&self) -> &ns::String;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(sound)]
+    #[objc::msg_send2(sound)]
     pub fn sound(&self) -> Option<&un::NotificationSound>;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(subtitle)]
+    #[objc::msg_send2(subtitle)]
     pub fn subtitle(&self) -> &ns::String;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(threadIdentifier)]
+    #[objc::msg_send2(threadIdentifier)]
     pub fn thread_id(&self) -> &ns::String;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(title)]
+    #[objc::msg_send2(title)]
     pub fn title(&self) -> &ns::String;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(userInfo)]
+    #[objc::msg_send2(userInfo)]
     pub fn user_info(&self) -> &ns::Dictionary<ns::Id, ns::Id>;
 
-    #[objc::msg_send(targetContentIdentifier)]
+    #[objc::msg_send2(targetContentIdentifier)]
     pub fn target_content_id(&self) -> Option<&ns::String>;
 
-    #[objc::msg_send(interruptionLevel)]
+    #[objc::msg_send2(interruptionLevel)]
     pub fn interruption_level(&self) -> un::NotificationInterruptionLevel;
 
-    #[objc::msg_send(relevanceScore)]
+    #[objc::msg_send2(relevanceScore)]
     pub fn relevance_score(&self) -> f64;
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(filterCriteria)]
+    #[objc::msg_send2(filterCriteria)]
     pub fn filter_criteria(&self) -> Option<&ns::String>;
 
-    #[objc::cls_msg_send(contentByUpdatingWithProvider:error:)]
-    pub unsafe fn with_updating_with_provider_err_ar<'ear, P: NotificationContentProviding>(
-        provider: &P,
-        err: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(contentByUpdatingWithProvider:error:)]
     pub unsafe fn with_updating_with_provider_err<'ear, P: NotificationContentProviding>(
         provider: &P,
         err: *mut Option<&'ear ns::Error>,
@@ -110,58 +104,58 @@ define_obj_type!(
 );
 
 impl NotificationContentMut {
-    #[objc::msg_send(copy)]
+    #[objc::msg_send2(copy)]
     pub fn copy(&self) -> arc::R<Self>;
 
-    #[objc::msg_send(mutableCopy)]
+    #[objc::msg_send2(mutableCopy)]
     pub fn copy_mut(&self) -> arc::R<Self>;
 
-    #[objc::msg_send(setBadge:)]
+    #[objc::msg_send2(setBadge:)]
     pub fn set_badge(&mut self, val: Option<&ns::Number>);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setBody:)]
+    #[objc::msg_send2(setBody:)]
     pub fn set_body(&mut self, val: &ns::String);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setCategoryIdentifier:)]
+    #[objc::msg_send2(setCategoryIdentifier:)]
     pub fn set_category_id(&mut self, val: &ns::String);
 
     #[cfg(not(any(target_os = "tvos", target_os = "macos")))]
-    #[objc::msg_send(setLaunchImageName:)]
+    #[objc::msg_send2(setLaunchImageName:)]
     pub fn set_launch_image_name(&mut self, val: &ns::String);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setSound:)]
+    #[objc::msg_send2(setSound:)]
     pub fn set_sound(&mut self, val: Option<&un::NotificationSound>);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setSubtitle:)]
+    #[objc::msg_send2(setSubtitle:)]
     pub fn set_subtitle(&mut self, val: &ns::String);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setThreadIdentifier:)]
+    #[objc::msg_send2(setThreadIdentifier:)]
     pub fn set_thread_id(&mut self, val: &ns::String);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setTitle:)]
+    #[objc::msg_send2(setTitle:)]
     pub fn set_title(&mut self, val: &ns::String);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setUserInfo:)]
+    #[objc::msg_send2(setUserInfo:)]
     pub fn set_user_info(&mut self, val: &ns::Dictionary<ns::Id, ns::Id>);
 
-    #[objc::msg_send(setTargetContentIdentifier:)]
+    #[objc::msg_send2(setTargetContentIdentifier:)]
     pub fn set_target_content_id(&mut self, val: Option<&ns::String>);
 
-    #[objc::msg_send(setInterruptionLevel:)]
+    #[objc::msg_send2(setInterruptionLevel:)]
     pub fn set_interruption_level(&mut self, val: un::NotificationInterruptionLevel);
 
-    #[objc::msg_send(setRelevanceScore:)]
+    #[objc::msg_send2(setRelevanceScore:)]
     pub fn set_relevance_score(&mut self, val: f64);
 
     #[cfg(not(target_os = "tvos"))]
-    #[objc::msg_send(setFilterCriteria:)]
+    #[objc::msg_send2(setFilterCriteria:)]
     pub fn set_filter_criteria(&mut self, val: Option<&ns::String>);
 }
 
