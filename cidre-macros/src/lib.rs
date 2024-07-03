@@ -1289,7 +1289,7 @@ impl Versions {
         }
         if let Some(v) = self.maccatalyst {
             vec.push(format!(
-                "all(target_os=\"ios\", target_abi=\"macabi\" feature=\"maccatalyst_{}_{}\")",
+                "all(target_os=\"ios\", target_abi=\"macabi\", feature=\"maccatalyst_{}_{}\")",
                 v.0, v.1
             ));
         }
@@ -1338,7 +1338,7 @@ impl Versions {
         }
         if let Some(v) = self.maccatalyst {
             vec.push(format!(
-                "all(target_os=\"ios\", target_abi=\"macabi\" not(feature=\"maccatalyst_{}_{}\"))",
+                "all(target_os=\"ios\", target_abi=\"macabi\", not(feature=\"maccatalyst_{}_{}\"))",
                 v.0, v.1
             ));
         }

@@ -334,6 +334,22 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_OneComponent32Float")]
     pub const ONE_COMPONENT_32_FLOAT: Self = Self(os::Type::from_be_bytes(*b"L00f"));
 
+    /// 16 bit two component IEEE half-precision float, 16-bit little-endian samples
+    #[doc(alias = "kCVPixelFormatType_TwoComponent16Half")]
+    pub const TWO_COMPONENT_16_HALF: Self = Self(os::Type::from_be_bytes(*b"2C0h"));
+
+    /// 32 bit two component IEEE float, 32-bit little-endian samples
+    #[doc(alias = "kCVPixelFormatType_TwoComponent32Float")]
+    pub const TWO_COMPONENT_32_FLOAT: Self = Self(os::Type::from_be_bytes(*b"2C0f"));
+
+    /// 64 bit RGBA IEEE half-precision float, 16-bit little-endian samples
+    #[doc(alias = "kCVPixelFormatType_64RGBAHalf")]
+    pub const _64_RGBA_HALF: Self = Self(os::Type::from_be_bytes(*b"RGhA"));
+
+    /// 128 bit RGBA IEEE float, 32-bit little-endian samples
+    #[doc(alias = "kCVPixelFormatType_128RGBAFloat")]
+    pub const _128_RGBA_FLOAT: Self = Self(os::Type::from_be_bytes(*b"RGfA"));
+
     pub fn from_cf_number(number: &cf::Number) -> Self {
         Self(number.to_i32().unwrap_or(0) as u32)
     }
@@ -397,6 +413,10 @@ impl PixelFormat {
     /// Lossless-compressed form of 'cv::PixelFormat::_32BGRA'
     #[doc(alias = "kCVPixelFormatType_Lossless_32BGRA")]
     pub const LOSSLESS_32_BGRA: Self = Self(os::Type::from_be_bytes(*b"&BGA"));
+
+    /// Lossless-compressed form of 'cv::PixelFormat::_64_RGBA_HALF'. No CVPlanarPixelBufferInfo struct.
+    #[doc(alias = "kCVPixelFormatType_Lossless_64RGBAHalf")]
+    pub const LOSSLESS_64_RGBA_HALF: Self = Self(os::Type::from_be_bytes(*b"&RhA"));
 
     /// Lossless-compressed form of 'cv::PixelFormat::_420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE'.
     #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr8BiPlanarVideoRange")]

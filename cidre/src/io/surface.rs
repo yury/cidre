@@ -299,7 +299,7 @@ extern "C" {
 
 /// The following list of properties are used with the cf::Dictionary passed to io::Surface::create
 pub mod key {
-    use crate::cf::String;
+    use crate::{api, cf::String};
 
     /// cf::Number of the total allocation size of the buffer including all planes.    
     /// Defaults to BufferHeight * BytesPerRow if not specified. Must be specified for
@@ -465,6 +465,23 @@ pub mod key {
         unsafe { kIOSurfaceICCProfile }
     }
 
+    /// cf::Number representation of the content headroom, which is defined as the ratio of nominal peak luminance
+    /// ("peak white") to nominal diffuse luminance ("reference white" or "diffuse white").
+    #[doc(alias = "kIOSurfaceContentHeadroom")]
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        watchos = 11.0,
+        tvos = 18.0
+    )]
+    #[inline]
+    pub fn content_headroom() -> &'static String {
+        unsafe { kIOSurfaceContentHeadroom }
+    }
+
+    #[link(name = "IOSurface", kind = "framework")]
+    #[api::weak]
     extern "C" {
         static kIOSurfaceAllocSize: &'static String;
         static kIOSurfaceWidth: &'static String;
@@ -492,6 +509,14 @@ pub mod key {
         static kIOSurfacePlaneComponentBitOffsets: &'static String;
         static kIOSurfaceColorSpace: &'static String;
         static kIOSurfaceICCProfile: &'static String;
+        #[api::available(
+            macos = 15.0,
+            maccatalyst = 18.0,
+            ios = 18.0,
+            watchos = 11.0,
+            tvos = 18.0
+        )]
+        static kIOSurfaceContentHeadroom: &'static String;
     }
 }
 
