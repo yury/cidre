@@ -527,6 +527,12 @@ pub fn msg_send2(sel: TokenStream, func: TokenStream) -> TokenStream {
     gen_msg_send2(sel, func, x86_64)
 }
 
+#[proc_macro_attribute]
+pub fn msg_send2_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send2(sel, func, x86_64)
+}
+
 fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStream {
     let sel = sel.to_string().replace([' ', '\n'], "");
     let sel_args_count = sel.matches(':').count();
@@ -708,7 +714,7 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
     if x86_64 {
         flow.push_str(&format!(
             "
-
+    {available}
     {doc_alias}
     #[inline]
     {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
@@ -728,7 +734,50 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
         }}
     }}
             "
-        ))
+        ));
+        if versions.any() {
+            let unsafe_str = if unsafe_already { "" } else { "unsafe" };
+            let optional = if optional_already {
+                String::new()
+            } else {
+                format!(
+                    "
+    /// `@selector({sel})` but dynamic
+    /// use this function to check if object responds to selector
+    #[inline]
+    pub fn sel_{fn_name}() -> &'static objc::Sel {{
+        unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }}
+    }}
+        "
+                )
+            };
+
+            flow.push_str(&format!(
+                "
+    {optional}
+
+    {unavailable}
+    {doc_alias}
+    #[inline]
+    {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSend\"]
+            fn msg_send();
+
+            fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
+        }}
+
+        unsafe {{
+            let x86_64_sel = sel_registerName(c\"{sel}\".as_ptr());
+            let fn_ptr = msg_send as *const std::ffi::c_void;
+            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+
+            {call_args}
+        }}
+    }}
+                "
+            ));
+        }
     } else {
         flow.push_str(&format!(
             "

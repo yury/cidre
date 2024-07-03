@@ -2,25 +2,25 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(pub Transaction(ns::Id), CA_TRANSACTION);
 impl Transaction {
-    #[objc::cls_msg_send(begin)]
+    #[objc::msg_send2(begin)]
     pub fn begin();
 
-    #[objc::cls_msg_send(commit)]
+    #[objc::msg_send2(commit)]
     pub fn commit();
 
-    #[objc::cls_msg_send(flush)]
+    #[objc::msg_send2(flush)]
     pub fn flush();
 
-    #[objc::cls_msg_send(lock)]
+    #[objc::msg_send2(lock)]
     pub fn lock();
 
-    #[objc::cls_msg_send(unlock)]
+    #[objc::msg_send2(unlock)]
     pub fn unlock();
 
-    #[objc::cls_msg_send(disableActions)]
+    #[objc::msg_send2(disableActions)]
     pub fn disable_actions() -> bool;
 
-    #[objc::cls_msg_send(setDisableActions:)]
+    #[objc::msg_send2(setDisableActions:)]
     pub fn set_disable_actions(val: bool);
 
     #[inline]

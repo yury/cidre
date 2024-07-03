@@ -16,38 +16,23 @@ impl arc::A<Locale> {
 impl Locale {
     define_cls!(NS_LOCALE);
 
-    #[objc::cls_msg_send(availableLocaleIdentifiers)]
-    pub fn available_locale_ids_ar() -> arc::Rar<ns::Array<ns::String>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(availableLocaleIdentifiers)]
     pub fn available_locale_ids() -> arc::R<ns::Array<ns::String>>;
 
     pub fn with_locale_id(id: &ns::String) -> arc::R<Self> {
         Self::alloc().init_with_locale_id(id)
     }
 
-    #[objc::cls_msg_send(autoupdatingCurrentLocale)]
-    pub fn autoupdating_current_locale_ar() -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(autoupdatingCurrentLocale)]
     pub fn autoupdating_current_locale() -> arc::R<Self>;
 
-    #[objc::cls_msg_send(currentLocale)]
-    pub fn current_locale_ar() -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(currentLocale)]
     pub fn current_locale() -> arc::R<Self>;
 
-    #[objc::cls_msg_send(systemLocale)]
-    pub fn sys_locale_ar() -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(systemLocale)]
     pub fn sys_locale() -> arc::R<Self>;
 
-    #[objc::msg_send(languageCode)]
-    pub fn lang_code_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(languageCode)]
     pub fn lang_code(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(languageIdentifier)]

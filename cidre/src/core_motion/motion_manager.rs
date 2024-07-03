@@ -131,7 +131,7 @@ impl MotionManager {
     #[objc::msg_send(setDeviceMotionUpdateInterval:)]
     pub fn set_device_motion_update_interval(&mut self, val: ns::TimeInterval);
 
-    #[objc::cls_msg_send(availableAttitudeReferenceFrames)]
+    #[objc::msg_send2(availableAttitudeReferenceFrames)]
     pub fn available_attitude_ref_frames() -> cm::AttitudeRefFrame;
 
     #[objc::msg_send(attitudeReferenceFrame)]

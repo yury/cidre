@@ -33,13 +33,7 @@ impl Image {
         Self::alloc().init_with_data(data)
     }
 
-    #[objc::cls_msg_send(imageWithSystemSymbolName:accessibilityDescription:)]
-    pub fn with_sys_symbol_name_ar(
-        name: &ns::String,
-        accessibility_description: Option<&ns::String>,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(imageWithSystemSymbolName:accessibilityDescription:)]
     pub fn with_sys_symbol_name(
         name: &ns::String,
         accessibility_description: Option<&ns::String>,

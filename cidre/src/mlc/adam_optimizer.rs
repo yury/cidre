@@ -19,22 +19,10 @@ impl AdamOptimizer {
     #[objc::msg_send(timeStep)]
     pub fn time_step(&self) -> usize;
 
-    #[objc::cls_msg_send(optimizerWithDescriptor:)]
-    pub fn with_desc_ar(desc: &mlc::OptimizerDesc) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(optimizerWithDescriptor:)]
     pub fn with_desc(desc: &mlc::OptimizerDesc) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(optimizerWithDescriptor:beta1:beta2:epsilon:timeStep:)]
-    pub fn with_desc_betas_epsilon_time_step_ar(
-        desc: &mlc::OptimizerDesc,
-        beta1: f32,
-        beta2: f32,
-        epsilon: f32,
-        time_step: usize,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(optimizerWithDescriptor:beta1:beta2:epsilon:timeStep:)]
     pub fn with_desc_betas_epsilon_time_step(
         desc: &mlc::OptimizerDesc,
         beta1: f32,
@@ -43,17 +31,7 @@ impl AdamOptimizer {
         time_step: usize,
     ) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(optimizerWithDescriptor:beta1:beta2:epsilon:usesAMSGrad:timeStep:)]
-    pub fn with_desc_betas_epsilon_uses_ams_grad_time_step_ar(
-        desc: &mlc::OptimizerDesc,
-        beta1: f32,
-        beta2: f32,
-        epsilon: f32,
-        uses_ams_grad: bool,
-        time_step: usize,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(optimizerWithDescriptor:beta1:beta2:epsilon:usesAMSGrad:timeStep:)]
     pub fn with_desc_betas_epsilon_uses_ams_grad_time_step(
         desc: &mlc::OptimizerDesc,
         beta1: f32,

@@ -80,46 +80,34 @@ define_obj_type!(
 );
 
 impl Voice {
-    #[objc::cls_msg_send(speechVoices)]
-    pub fn voices_ar() -> arc::Rar<ns::Array<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(speechVoices)]
     pub fn voices() -> arc::R<ns::Array<Self>>;
 
-    #[objc::cls_msg_send(currentLanguageCode)]
-    pub fn current_lang_code_ar() -> arc::Rar<ns::String>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(currentLanguageCode)]
     pub fn current_lang_code() -> arc::R<ns::String>;
 
-    #[objc::msg_send(language)]
+    #[objc::msg_send2(language)]
     pub fn lang(&self) -> Option<&ns::String>;
 
-    #[objc::msg_send(identifier)]
+    #[objc::msg_send2(identifier)]
     pub fn id(&self) -> &ns::String;
 
-    #[objc::msg_send(name)]
+    #[objc::msg_send2(name)]
     pub fn name(&self) -> &ns::String;
 
-    #[objc::msg_send(quality)]
+    #[objc::msg_send2(quality)]
     pub fn quality(&self) -> VoiceQuality;
 
-    #[objc::msg_send(gender)]
+    #[objc::msg_send2(gender)]
     pub fn gender(&self) -> VoiceGender;
 
-    #[objc::msg_send(audioFileSettings)]
+    #[objc::msg_send2(audioFileSettings)]
     pub fn audio_file_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
 
-    #[objc::cls_msg_send(voiceWithLanguage:)]
-    pub fn with_lang_ar(lang_code: Option<&ns::String>) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(voiceWithLanguage:)]
     pub fn with_lang(lang_code: Option<&ns::String>) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(voiceWithIdentifier:)]
-    pub fn with_id_ar(identifier: &ns::String) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(voiceWithIdentifier:)]
     pub fn with_id(identifier: &ns::String) -> Option<arc::R<Self>>;
 }
 
@@ -354,11 +342,11 @@ impl Synthesizer {
     #[objc::msg_send(setMixToTelephonyUplink:)]
     pub fn set_mix_to_telephony_uplink(&mut self, val: bool);
 
-    #[objc::cls_msg_send(personalVoiceAuthorizationStatus)]
+    #[objc::msg_send2(personalVoiceAuthorizationStatus)]
     pub fn personal_voice_authorization_status() -> AuthorizationStatus;
 
     #[cfg(feature = "blocks")]
-    #[objc::cls_msg_send(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
+    #[objc::msg_send2(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
     fn request_personal_voice_authorization_ch(
         block: &mut blocks::SendBlock<fn(AuthorizationStatus)>,
     );

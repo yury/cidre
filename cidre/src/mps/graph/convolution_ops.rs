@@ -5,23 +5,7 @@ define_obj_type!(pub Convolution2dOpDesc(ns::Id));
 impl Convolution2dOpDesc {
     define_cls!(MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR);
 
-    #[objc::cls_msg_send(descriptorWithStrideInX:strideInY:dilationRateInX:dilationRateInY:groups:paddingLeft:paddingRight:paddingTop:paddingBottom:paddingStyle:dataLayout:weightsLayout:)]
-    pub fn with_ar(
-        stride_in_x: usize,
-        stride_in_y: usize,
-        dilation_rate_in_x: usize,
-        dilation_rate_in_y: usize,
-        groups: usize,
-        padding_left: usize,
-        padding_right: usize,
-        padding_top: usize,
-        padding_bottom: usize,
-        padding_style: graph::PaddingStyle,
-        data_layout: graph::TensorNamedDataLayout,
-        weight_layout: graph::TensorNamedDataLayout,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(descriptorWithStrideInX:strideInY:dilationRateInX:dilationRateInY:groups:paddingLeft:paddingRight:paddingTop:paddingBottom:paddingStyle:dataLayout:weightsLayout:)]
     pub fn with(
         stride_in_x: usize,
         stride_in_y: usize,

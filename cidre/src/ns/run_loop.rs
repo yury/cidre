@@ -24,10 +24,10 @@ extern "C" {
 define_obj_type!(pub RunLoop(ns::Id), NS_RUN_LOOP);
 
 impl RunLoop {
-    #[objc::cls_msg_send(currentRunLoop)]
+    #[objc::msg_send2(currentRunLoop)]
     pub fn current() -> &'static Self;
 
-    #[objc::cls_msg_send(mainRunLoop)]
+    #[objc::msg_send2(mainRunLoop)]
     pub fn main() -> &'static Self;
 
     #[objc::msg_send(getCFRunLoop)]

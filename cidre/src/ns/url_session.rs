@@ -57,7 +57,7 @@ impl Session {
     /// data_task.resume();
     /// assert_eq!(data_task.state(), ns::UrlSessionTaskState::Running);
     /// ```
-    #[objc::cls_msg_send(sharedSession)]
+    #[objc::msg_send2(sharedSession)]
     pub fn shared() -> &'static Session;
 
     #[inline]

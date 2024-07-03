@@ -18,13 +18,7 @@ define_obj_type!(pub Renderer(ns::Id));
 impl Renderer {
     define_cls!(CA_RENDERER);
 
-    #[objc::cls_msg_send(rendererWithMTLTexture:options:)]
-    pub fn with_mtl_texture_ar(
-        texture: &mtl::Texture,
-        options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(rendererWithMTLTexture:options:)]
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
         options: Option<&ns::Dictionary<OptionKey, ns::Id>>,

@@ -68,7 +68,7 @@ define_obj_type!(
 unsafe impl Send for NotificationCenter {}
 
 impl NotificationCenter {
-    #[objc::cls_msg_send(defaultCenter)]
+    #[objc::msg_send2(defaultCenter)]
     pub fn default() -> &'static mut Self;
 
     #[objc::msg_send(postNotification:)]

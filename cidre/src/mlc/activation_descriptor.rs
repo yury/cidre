@@ -16,41 +16,20 @@ impl ActivationDesc {
     #[objc::msg_send(c)]
     pub fn c(&self) -> f32;
 
-    #[objc::cls_msg_send(descriptorWithType:)]
-    pub fn with_type_ar(activation_type: mlc::ActivationType) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(descriptorWithType:)]
     pub fn with_type(activation_type: mlc::ActivationType) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(descriptorWithType:a:)]
-    pub fn with_type_a_ar(activation_type: mlc::ActivationType, a: f32) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(descriptorWithType:a:)]
     pub fn with_type_a(activation_type: mlc::ActivationType, a: f32) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(descriptorWithType:a:b:)]
-    pub fn with_type_ab_ar(
-        activation_type: mlc::ActivationType,
-        a: f32,
-        b: f32,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(descriptorWithType:a:b:)]
     pub fn with_type_ab(
         activation_type: mlc::ActivationType,
         a: f32,
         b: f32,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(descriptorWithType:a:b:c:)]
-    pub fn with_type_abc_ar(
-        activation_type: mlc::ActivationType,
-        a: f32,
-        b: f32,
-        c: f32,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(descriptorWithType:a:b:c:)]
     pub fn with_type_abc(
         activation_type: mlc::ActivationType,
         a: f32,

@@ -68,34 +68,34 @@ define_obj_type!(
 
 impl Pedometer {
     /// Determines whether the device supports step counting functionality.
-    #[objc::cls_msg_send(isStepCountingAvailable)]
+    #[objc::msg_send2(isStepCountingAvailable)]
     pub fn is_step_counting_available() -> bool;
 
     /// Determines whether the device supports distance estimation
     /// in addition to step counting.
-    #[objc::cls_msg_send(isDistanceAvailable)]
+    #[objc::msg_send2(isDistanceAvailable)]
     pub fn is_distance_available() -> bool;
 
     /// Determines whether the device supports counting flights of stairs
     /// in addition to step counting.
-    #[objc::cls_msg_send(isFloorCountingAvailable)]
+    #[objc::msg_send2(isFloorCountingAvailable)]
     pub fn is_floor_counting_available() -> bool;
 
     /// Determines whether the device supports pace estimation
     /// in addition to step counting.
-    #[objc::cls_msg_send(isPaceAvailable)]
+    #[objc::msg_send2(isPaceAvailable)]
     pub fn is_pace_available() -> bool;
 
     #[cfg(not(target_os = "macos"))]
-    #[objc::cls_msg_send(isCadenceAvailable)]
+    #[objc::msg_send2(isCadenceAvailable)]
     pub fn is_cadence_available() -> bool;
 
     #[cfg(not(target_os = "macos"))]
-    #[objc::cls_msg_send(isPedometerEventTrackingAvailable)]
+    #[objc::msg_send2(isPedometerEventTrackingAvailable)]
     pub fn is_pedometer_event_tracking_available() -> bool;
 
     #[cfg(any(target_os = "ios", target_os = "watchos"))]
-    #[objc::cls_msg_send(authorizationStatus)]
+    #[objc::msg_send2(authorizationStatus)]
     pub fn authorization_status() -> cm::AuthorizationStatus;
 
     #[objc::msg_send(queryPedometerDataFromDate:toDate:withHandler:)]

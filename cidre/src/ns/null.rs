@@ -11,7 +11,7 @@ impl Null {
     define_cls!(NS_NULL);
 
     /// The singleton instance of [`ns::Null`]. Equal to [`cf::Null::value()`].
-    #[objc::cls_msg_send(null)]
+    #[objc::msg_send2(null)]
     pub fn value() -> &'static Self;
 
     #[inline]

@@ -105,34 +105,19 @@ define_obj_type!(
 impl OutputSettingsAssistant {
     define_cls!(AV_OUTPUT_SETTINGS_ASSISTANT);
 
-    #[objc::cls_msg_send(availableOutputSettingsPresets)]
-    pub fn available_presets_ar() -> arc::Rar<ns::Array<OutputSettingsPreset>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(availableOutputSettingsPresets)]
     pub fn available_presets() -> arc::R<ns::Array<OutputSettingsPreset>>;
 
-    #[objc::cls_msg_send(outputSettingsAssistantWithPreset:)]
-    pub fn with_preset_ar(preset: &OutputSettingsPreset) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(outputSettingsAssistantWithPreset:)]
     pub fn with_preset(preset: &OutputSettingsPreset) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send(audioSettings)]
-    pub fn audio_settings_ar(&self) -> Option<arc::Rar<ns::Dictionary<ns::String, ns::Id>>>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(audioSettings)]
     pub fn audio_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
-    #[objc::msg_send(videoSettings)]
-    pub fn video_settings_ar(&self) -> Option<arc::Rar<ns::Dictionary<ns::String, ns::Id>>>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(videoSettings)]
     pub fn video_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
-    #[objc::msg_send(outputFileType)]
-    pub fn output_file_type_ar(&self) -> arc::Rar<av::FileType>;
-
-    #[objc::rar_retain]
+    #[objc::msg_send2(outputFileType)]
     pub fn output_file_type(&self) -> arc::R<av::FileType>;
 }
 

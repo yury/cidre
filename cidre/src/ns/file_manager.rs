@@ -109,7 +109,7 @@ impl FileManager {
         unsafe { NS_FILE_MANAGER }
     }
 
-    #[objc::cls_msg_send(defaultManager)]
+    #[objc::msg_send2(defaultManager)]
     pub fn default() -> &'static mut FileManager;
 
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]

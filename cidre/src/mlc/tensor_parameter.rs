@@ -13,16 +13,10 @@ impl TensorParameter {
     #[objc::msg_send(setUpdatable:)]
     pub fn set_updatable(&mut self, val: bool);
 
-    #[objc::cls_msg_send(parameterWithTensor:)]
-    pub fn with_tensor(tensor: &mlc::Tensor) -> arc::Rar<Self>;
+    #[objc::msg_send2(parameterWithTensor:)]
+    pub fn with_tensor(tensor: &mlc::Tensor) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(parameterWithTensor:optimizerData:)]
-    pub fn with_tensor_optimizer_data_ar(
-        tensor: &mlc::Tensor,
-        optimizer_data: Option<ns::Array<mlc::TensorData>>,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(parameterWithTensor:optimizerData:)]
     pub fn with_tensor_optimizer_data(
         tensor: &mlc::Tensor,
         optimizer_data: Option<ns::Array<mlc::TensorData>>,

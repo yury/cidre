@@ -57,12 +57,12 @@ impl TextAttachment {
     #[objc::msg_send(setImage:)]
     pub fn set_image(&mut self, val: Option<&Image>);
 
-    #[objc::cls_msg_send(textAttachmentViewProviderClassForFileType:)]
+    #[objc::msg_send2(textAttachmentViewProviderClassForFileType:)]
     pub fn text_attachment_view_provider_class<'a>(
         file_type: &ns::String,
     ) -> Option<&'a objc::Class<ns::Id>>;
 
-    #[objc::cls_msg_send(registerTextAttachmentViewProviderClass:forFileType:)]
+    #[objc::msg_send2(registerTextAttachmentViewProviderClass:forFileType:)]
     pub fn register_view_provider_class(cls: &objc::Class<ns::Id>, file_type: &ns::String);
 
     #[objc::msg_send(allowsTextAttachmentView)]
@@ -76,10 +76,7 @@ impl TextAttachment {
 }
 
 impl ns::AttrString {
-    #[objc::cls_msg_send(attributedStringWithAttachment:)]
-    pub fn with_attachment_ar(attachment: &ns::TextAttachment) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(attributedStringWithAttachment:)]
     pub fn with_attachment(attachment: &ns::TextAttachment) -> arc::R<Self>;
 }
 

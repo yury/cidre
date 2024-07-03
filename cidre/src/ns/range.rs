@@ -75,11 +75,8 @@ impl From<std::ops::Range<usize>> for Range {
 
 /// NSValueRangeExtensions
 impl ns::Value {
-    #[objc::cls_msg_send(valueWithRange:)]
-    pub fn with_range_ar(range: ns::Range) -> arc::Rar<Self>;
-
     /// Creates a new value object containing the specified Foundation range structure.
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(valueWithRange:)]
     pub fn with_range(range: ns::Range) -> arc::R<Self>;
 }
 

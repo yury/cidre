@@ -34,15 +34,7 @@ impl OptimizerDesc {
     #[objc::msg_send(customGlobalNorm)]
     pub fn custom_global_norm(&self) -> f32;
 
-    #[objc::cls_msg_send(descriptorWithLearningRate:gradientRescale:regularizationType:regularizationScale:)]
-    pub fn with_learning_rate_grad_rescale_regularization_ar(
-        learning_rate: f32,
-        gradient_rescale: f32,
-        regularization_type: mlc::RegularizationType,
-        regularization_scale: f32,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(descriptorWithLearningRate:gradientRescale:regularizationType:regularizationScale:)]
     pub fn with_learning_rate_grad_rescale_regularization(
         learning_rate: f32,
         gradient_rescale: f32,
@@ -50,22 +42,11 @@ impl OptimizerDesc {
         regularization_scale: f32,
     ) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(
+    #[objc::msg_send2(
         descriptorWithLearningRate:gradientRescale:
         appliesGradientClipping:gradientClipMax:gradientClipMin:
         regularizationType:regularizationScale:
     )]
-    pub fn with_learning_rate_grad_rescale_clip_regularization_ar(
-        learning_rate: f32,
-        gradient_rescale: f32,
-        applies_grad_clipping: bool,
-        grad_clip_max: f32,
-        grad_clip_min: f32,
-        regularization_type: mlc::RegularizationType,
-        regularization_scale: f32,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
     pub fn with_learning_rate_grad_rescale_clip_regularization(
         learning_rate: f32,
         gradient_rescale: f32,
@@ -76,25 +57,12 @@ impl OptimizerDesc {
         regularization_scale: f32,
     ) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(
+    #[objc::msg_send2(
         descriptorWithLearningRate:gradientRescale:
         appliesGradientClipping:gradientClipMax:gradientClipMin:
         maximumClippingNorm:customGlobalNorm:
         regularizationType:regularizationScale:
     )]
-    pub fn with_learning_rate_grad_rescale_clip_norm_regularization_ar(
-        learning_rate: f32,
-        gradient_rescale: f32,
-        applies_grad_clipping: bool,
-        grad_clip_max: f32,
-        grad_clip_min: f32,
-        max_clip_norm: f32,
-        custom_global_norm: f32,
-        regularization_type: mlc::RegularizationType,
-        regularization_scale: f32,
-    ) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
     pub fn with_learning_rate_grad_rescale_clip_norm_regularization(
         learning_rate: f32,
         gradient_rescale: f32,

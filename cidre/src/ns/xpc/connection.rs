@@ -181,10 +181,7 @@ define_obj_type!(
 impl Iface {
     define_cls!(NS_XPC_INTERFACE);
 
-    #[objc::cls_msg_send(interfaceWithProtocol:)]
-    pub fn interface_with_protocol_ar(protocol: &ns::Id) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(interfaceWithProtocol:)]
     pub fn interface_with_protocol(protocol: &ns::Id) -> arc::R<Self>;
 
     #[objc::msg_send(protocol)]
@@ -207,16 +204,10 @@ impl arc::A<Listener> {
 impl Listener {
     define_cls!(NS_XPC_LISTENER);
 
-    #[objc::cls_msg_send(serviceListener)]
-    pub fn service_ar() -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(serviceListener)]
     pub fn service() -> arc::R<Self>;
 
-    #[objc::cls_msg_send(anonymousListener)]
-    pub fn anonymous_ar() -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(anonymousListener)]
     pub fn anonymous() -> arc::R<Self>;
 
     pub fn with_mach_service_name(name: &ns::String) -> arc::R<Self> {

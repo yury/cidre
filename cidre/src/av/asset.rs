@@ -107,16 +107,10 @@ impl UrlAsset {
     #[objc::msg_send(httpSessionIdentifier)]
     pub fn http_session_id(&self) -> ns::Uuid;
 
-    #[objc::cls_msg_send(audiovisualTypes)]
-    pub fn av_types_ar() -> arc::Rar<ns::Array<av::FileType>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(audiovisualTypes)]
     pub fn av_types() -> arc::R<ns::Array<av::FileType>>;
 
-    #[objc::cls_msg_send(audiovisualMIMETypes)]
-    pub fn av_mime_types_ar() -> arc::Rar<ns::Array<ns::String>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(audiovisualMIMETypes)]
     pub fn av_mime_types() -> arc::R<ns::Array<ns::String>>;
 }
 

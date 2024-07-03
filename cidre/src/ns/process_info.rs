@@ -38,7 +38,7 @@ impl ProcessInfo {
     /// assert!(pi.processor_count() > 1);
     /// assert!(pi.active_processor_count() > 1);
     /// ```
-    #[objc::cls_msg_send(processInfo)]
+    #[objc::msg_send2(processInfo)]
     pub fn current() -> &'static mut ProcessInfo;
 
     #[objc::msg_send(thermalState)]

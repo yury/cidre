@@ -25,10 +25,7 @@ impl Tensor {
     #[objc::msg_send(device)]
     pub fn device(&self) -> Option<&mlc::Device>;
 
-    #[objc::cls_msg_send(tensorWithShape:dataType:)]
-    pub fn with_shape_dtype_ar(shape: &Shape, data_type: mlc::DType) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(tensorWithShape:dataType:)]
     pub fn with_shape_dtype(shape: &Shape, data_type: mlc::DType) -> arc::R<Self>;
 
     pub fn with_shape_dt<S: Into<arc::R<Shape>>>(shape: S, data_type: mlc::DType) -> arc::R<Self> {

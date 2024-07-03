@@ -41,7 +41,7 @@ impl UrlCache {
     /// assert_eq!(0, cache.current_mem_usage());
     ///
     /// ```
-    #[objc::cls_msg_send(sharedURLCache)]
+    #[objc::msg_send2(sharedURLCache)]
     pub fn shared() -> &'static Self;
 
     pub fn with_capacity(

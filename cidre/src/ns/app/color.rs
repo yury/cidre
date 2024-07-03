@@ -6,22 +6,13 @@ define_obj_type!(
 );
 
 impl Color {
-    #[objc::cls_msg_send(colorWithWhite:alpha:)]
-    pub fn with_white_alpha_ar(white: cg::Float, alpha: cg::Float) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(colorWithWhite:alpha:)]
     pub fn with_white_alpha(white: cg::Float, alpha: cg::Float) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(colorWithRed:green:blue:alpha:)]
-    pub fn with_rgba_ar(r: cg::Float, g: cg::Float, b: cg::Float, a: cg::Float) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(colorWithRed:green:blue:alpha:)]
     pub fn with_rgba(r: cg::Float, g: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
 
-    #[objc::cls_msg_send(colorWithHue:saturation:brightness:alpha:)]
-    pub fn with_hsba_ar(h: cg::Float, s: cg::Float, b: cg::Float, a: cg::Float) -> arc::Rar<Self>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(colorWithHue:saturation:brightness:alpha:)]
     pub fn with_hsba(h: cg::Float, s: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
 
     #[objc::msg_send(whiteComponent)]

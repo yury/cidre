@@ -565,7 +565,10 @@ pub use cidre_macros::cls_rar_retain;
 pub use cidre_macros::cls_rar_retain_x86_64 as cls_rar_retain;
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send;
+#[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send2;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::msg_send2_x86_64;
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send_debug;
 #[cfg(target_arch = "x86_64")]

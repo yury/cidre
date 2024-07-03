@@ -2,46 +2,25 @@ use crate::{arc, define_obj_type, mlc, mtl, ns, objc};
 
 define_obj_type!(pub Device(ns::Id), MLC_DEVICE);
 impl Device {
-    #[objc::cls_msg_send(aneDevice)]
-    pub fn ane_ar() -> Option<arc::Rar<Device>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(aneDevice)]
     pub fn ane() -> Option<arc::R<Device>>;
 
-    #[objc::cls_msg_send(gpuDevice)]
-    pub fn gpu_ar() -> Option<arc::Rar<Device>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(gpuDevice)]
     pub fn gpu() -> Option<arc::R<Device>>;
 
-    #[objc::cls_msg_send(cpuDevice)]
-    pub fn cpu_ar() -> arc::Rar<Device>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(cpuDevice)]
     pub fn cpu() -> arc::R<Device>;
 
-    #[objc::cls_msg_send(deviceWithType:)]
-    pub fn with_type_ar(type_: mlc::DeviceType) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(deviceWithType:)]
     pub fn with_type(type_: mlc::DeviceType) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(deviceWithType:selectsMultipleComputeDevices:)]
-    pub fn with_type_multiple_devices_ar(
-        type_: mlc::DeviceType,
-        selects_mutliple_devices: bool,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(deviceWithType:selectsMultipleComputeDevices:)]
     pub fn with_type_multiple_devices(
         type_: mlc::DeviceType,
         selects_mutliple_devices: bool,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(deviceWithGPUDevices:)]
-    pub fn with_gpus_ar(gpus: &ns::Array<mtl::Device>) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(deviceWithGPUDevices:)]
     pub fn with_gpus(gpus: &ns::Array<mtl::Device>) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(gpuDevices)]

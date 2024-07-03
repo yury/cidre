@@ -8,14 +8,7 @@ define_obj_type!(
 impl KeyedArchiver {
     define_cls!(NS_KEYED_ARCHIVER);
 
-    #[objc::cls_msg_send(archivedDataWithRootObject:requiringSecureCoding:error:)]
-    pub unsafe fn archived_data_with_root_obj_err_ar<'ear>(
-        obj: &ns::Id,
-        secure_coding: bool,
-        err: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::Data>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send2(archivedDataWithRootObject:requiringSecureCoding:error:)]
     pub unsafe fn archived_data_with_root_obj_err<'ear>(
         obj: &ns::Id,
         secure_coding: bool,
