@@ -235,6 +235,12 @@ impl Desc {
 
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
     pub fn set_stencil_attachment_pixel_format(&mut self, val: PixelFormat);
+
+    #[objc::msg_send(supportIndirectCommandBuffers)]
+    pub fn support_indirect_cmd_bufs(&self) -> bool;
+
+    #[objc::msg_send(setSupportIndirectCommandBuffers:)]
+    pub fn set_support_indirect_cmd_bufs(&self, val: bool);
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {

@@ -64,19 +64,19 @@ impl Desc {
     #[objc::msg_send(maxVertexBufferBindCount)]
     pub fn max_vertex_buf_bind_count(&self) -> usize;
 
-    #[objc::msg_send(maxVertexBufferBindCount:)]
+    #[objc::msg_send(setMaxVertexBufferBindCount:)]
     pub fn set_max_vertex_buf_bind_count(&mut self, val: usize);
 
     #[objc::msg_send(maxFragmentBufferBindCount)]
     pub fn max_fragment_buf_bind_count(&self) -> usize;
 
-    #[objc::msg_send(maxFragmentBufferBindCount:)]
+    #[objc::msg_send(setMaxFragmentBufferBindCount:)]
     pub fn set_max_fragment_buf_bind_count(&mut self, val: usize);
 
     #[objc::msg_send(maxKernelBufferBindCount)]
     pub fn max_kernel_buf_bind_count(&self) -> usize;
 
-    #[objc::msg_send(maxKernelBufferBindCount:)]
+    #[objc::msg_send(setMaxKernelBufferBindCount:)]
     pub fn set_max_kernel_buf_bind_count(&mut self, val: usize);
 
     #[objc::msg_send(supportRayTracing)]
