@@ -14,24 +14,33 @@ define_opts!(
 
 impl IndirectCmdType {
     ///A draw call command.
+    #[doc(alias = "MTLIndirectCommandTypeDraw")]
     pub const DRAW: Self = Self(1 << 0);
 
     /// An indexed draw call command.
+    #[doc(alias = "MTLIndirectCommandTypeDrawIndexed")]
     pub const DRAW_INDEXED: Self = Self(1 << 1);
 
     /// A draw call command for tessellated patches.
+    #[doc(alias = "MTLIndirectCommandTypeDrawPatches")]
     pub const DRAW_PATCHES: Self = Self(1 << 2);
 
     /// An indexed draw call command for tessellated patches.
+    #[doc(alias = "MTLIndirectCommandTypeDrawIndexedPatches")]
     pub const DRAW_INDEXED_PATCHES: Self = Self(1 << 3);
 
     /// A compute command using a grid aligned to threadgroup boundaries.
+    #[doc(alias = "MTLIndirectCommandTypeConcurrentDispatch")]
     pub const CONCURRENT_DISPATCH: Self = Self(1 << 5); /* Dispatch threadgroups with concurrent execution */
 
     /// A compute command using an arbitrarily sized grid.
+    #[doc(alias = "MTLIndirectCommandTypeConcurrentDispatchThreads")]
     pub const CONCURRENT_DISPATCH_THREADS: Self = Self(1 << 6); /* Dispatch threads with concurrent execution */
 
+    #[doc(alias = "MTLIndirectCommandTypeDrawMeshThreadgroups")]
     pub const DRAW_MESH_THREADGROUPS: Self = Self(1 << 7);
+
+    #[doc(alias = "MTLIndirectCommandTypeDrawMeshThreads")]
     pub const DRAW_MESH_THREADS: Self = Self(1 << 8);
 }
 
@@ -100,6 +109,11 @@ impl IndirectCmdBuf {
 
     #[objc::msg_send(resetWithRange:)]
     pub fn reset_with_range(&mut self, range: ns::Range);
+
+    #[inline]
+    pub fn reset(&mut self, range: std::ops::Range<usize>) {
+        self.reset_with_range(ns::Range::new(range.start, range.len()))
+    }
 
     #[objc::msg_send(indirectRenderCommandAtIndex:)]
     pub unsafe fn indirect_render_cmd_at_throws(
