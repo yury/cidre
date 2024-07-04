@@ -295,9 +295,11 @@ impl Device {
         options: mtl::ResOpts,
     ) -> Option<arc::R<mtl::IndirectCmdBuf>>;
 
+    /// New single-device non-shareable Metal event object.
     #[objc::msg_send(newEvent)]
     pub fn new_event(&self) -> Option<arc::R<Event>>;
 
+    /// New shareable multi-device event.
     #[objc::msg_send(newSharedEvent)]
     pub fn new_shared_event(&self) -> Option<arc::R<SharedEvent>>;
 
@@ -335,6 +337,7 @@ impl Device {
 
     /// Query device support for using function pointers from compute pipelines.
     #[objc::msg_send(supportsFunctionPointers)]
+    #[api::available(macos = 11.0, ios = 14.0)]
     pub fn supports_fn_pointers(&self) -> bool;
 
     /// Query device support for using function pointers from render pipeline stages.
@@ -347,9 +350,11 @@ impl Device {
 
     /// Query device support for using ray tracing primitive motion blur.
     #[objc::msg_send(supportsPrimitiveMotionBlur)]
+    #[api::available(macos = 11.0, ios = 14.0)]
     pub fn supports_primitive_motion_blur(&self) -> bool;
 
     #[objc::msg_send(supportsFamily:)]
+    #[api::available(macos = 10.15, ios = 13.0)]
     pub fn supports_family(&self, val: GpuFamily) -> bool;
 
     /// Returns the minimum alignment required for offset and rowBytes when creating a linear texture.
