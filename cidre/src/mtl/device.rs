@@ -287,7 +287,7 @@ impl Device {
 
     /// Creates a new indirect command buffer with the given descriptor and count.
     #[objc::msg_send(newIndirectCommandBufferWithDescriptor:maxCommandCount:options:)]
-    #[api::available(macos = 10.4, ios = 12.0)]
+    #[api::available(macos = 10.14, ios = 12.0)]
     pub fn new_indirect_cmd_buf(
         &self,
         desc: &mtl::IndirectCmdBufDesc,
