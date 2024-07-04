@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, define_opts, mtl, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
@@ -38,7 +38,8 @@ impl IndirectCmdType {
 define_obj_type!(
     /// Describes the limits and features that can be used in an indirect command
     #[doc(alias = "MTLIndirectCommandBufferDescriptor")]
-    pub Desc(ns::Id)
+    pub Desc(ns::Id),
+    MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR
 );
 
 impl Desc {
@@ -121,4 +122,9 @@ impl IndirectCmdBuf {
     ) -> Result<&mtl::IndirectComputeCmd, &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.indirect_compute_cmd_at_throws(index) })
     }
+}
+
+#[link(name = "mtl", kind = "static")]
+extern "C" {
+    static MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }

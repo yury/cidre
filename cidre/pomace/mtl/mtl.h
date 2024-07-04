@@ -22,6 +22,7 @@ Class MTL_FUNCTION_CONSTANT_VALUES;
 Class MTL_TEXTURE_DESCRIPTOR;
 Class MTL_STENCIL_DESCRIPTOR;
 Class MTL_DEPTH_STENCIL_DESCRIPTOR;
+Class MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR;
 
 
 Class MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR;
@@ -70,6 +71,7 @@ static void mtl_initializer(void)
         MTL_TEXTURE_DESCRIPTOR = [MTLTextureDescriptor class];
         MTL_STENCIL_DESCRIPTOR = [MTLStencilDescriptor class];
         MTL_DEPTH_STENCIL_DESCRIPTOR = [MTLDepthStencilDescriptor class];
+        MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR = [MTLIndirectCommandBufferDescriptor class];
         
         MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR = [MTLVisibleFunctionTableDescriptor class];
         MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR = [MTLIntersectionFunctionTableDescriptor class];

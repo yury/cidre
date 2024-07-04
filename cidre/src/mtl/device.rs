@@ -285,6 +285,16 @@ impl Device {
     #[objc::msg_send(newFence)]
     pub fn new_fence(&self) -> Option<arc::R<Fence>>;
 
+    /// Creates a new indirect command buffer with the given descriptor and count.
+    #[objc::msg_send(newIndirectCommandBufferWithDescriptor:maxCommandCount:options:)]
+    #[api::available(macos = 10.4, ios = 12.0)]
+    pub fn new_indirect_cmd_buf(
+        &self,
+        desc: &mtl::IndirectCmdBufDesc,
+        max_command_count: usize,
+        options: mtl::ResOpts,
+    ) -> Option<arc::R<mtl::IndirectCmdBuf>>;
+
     #[objc::msg_send(newEvent)]
     pub fn new_event(&self) -> Option<arc::R<Event>>;
 
