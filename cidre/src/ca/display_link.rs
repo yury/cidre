@@ -13,7 +13,7 @@ pub trait Target: objc::Obj {
 }
 
 impl DisplayLink {
-    #[objc::msg_send2(displayLinkWithTarget:selector:)]
+    #[objc::msg_send(displayLinkWithTarget:selector:)]
     pub fn with_target_selector(target: &ns::Id, selector: &objc::Sel) -> arc::R<Self>;
 
     pub fn with<D: TargetImpl>(target: &D) -> arc::R<Self> {

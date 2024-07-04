@@ -1,4 +1,10 @@
-use crate::{arc, ca, cf, cg, cv, define_cls, define_obj_type, mtl, ns, objc};
+#[cfg(feature = "cv")]
+use crate::cv;
+
+#[cfg(feature = "mtl")]
+use crate::mtl;
+
+use crate::{arc, ca, cf, cg, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(pub OptionKey(ns::String));
 
@@ -15,10 +21,12 @@ impl OptionKey {
 }
 
 define_obj_type!(pub Renderer(ns::Id));
+
 impl Renderer {
     define_cls!(CA_RENDERER);
 
-    #[objc::msg_send2(rendererWithMTLTexture:options:)]
+    #[cfg(feature = "mtl")]
+    #[objc::msg_send(rendererWithMTLTexture:options:)]
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
         options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
@@ -37,6 +45,7 @@ impl Renderer {
     #[objc::msg_send(setBounds:)]
     pub fn set_bounds(&mut self, val: cg::Rect);
 
+    #[cfg(feature = "cv")]
     #[objc::msg_send(beginFrameAtTime:timeStamp:)]
     pub fn begin_frame_at(&mut self, time_stamp: cf::TimeInterval, ts: Option<&cv::TimeStamp>);
 
@@ -55,6 +64,7 @@ impl Renderer {
     #[objc::msg_send(endFrame)]
     pub fn end_frame(&mut self);
 
+    #[cfg(feature = "mtl")]
     #[objc::msg_send(setDestination:)]
     pub fn set_dst(&mut self, val: &mtl::Texture);
 }

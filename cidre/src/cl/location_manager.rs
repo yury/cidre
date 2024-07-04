@@ -38,20 +38,20 @@ define_obj_type!(
 );
 
 impl LocationManager {
-    #[objc::msg_send2(locationServicesEnabled)]
+    #[objc::msg_send(locationServicesEnabled)]
     pub fn location_services_enabled() -> bool;
 
-    #[objc::msg_send2(significantLocationChangeMonitoringAvailable)]
+    #[objc::msg_send(significantLocationChangeMonitoringAvailable)]
     pub fn significant_location_change_monitoring_available() -> bool;
 
-    #[objc::msg_send2(headingAvailable)]
+    #[objc::msg_send(headingAvailable)]
     pub fn heading_available() -> bool;
 
-    #[objc::msg_send2(isMonitoringAvailableForClass:)]
+    #[objc::msg_send(isMonitoringAvailableForClass:)]
     pub fn is_monitoring_available_for_class<T: objc::Obj>(cls: &objc::Class<T>) -> bool;
 
     #[cfg(not(any(target_os = "watchos", target_os = "tvos")))]
-    #[objc::msg_send2(isRangingAvailable)]
+    #[objc::msg_send(isRangingAvailable)]
     pub fn is_ranging_available() -> bool;
 
     #[objc::msg_send(authorizationStatus)]

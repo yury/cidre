@@ -13,10 +13,10 @@ impl Desc {
     #[objc::msg_send(transposesY)]
     pub fn transposes_y(&self) -> bool;
 
-    #[objc::msg_send2(descriptor)]
+    #[objc::msg_send(descriptor)]
     pub fn desc() -> arc::R<Self>;
 
-    #[objc::msg_send2(descriptorWithAlpha:transposesX:transposesY:)]
+    #[objc::msg_send(descriptorWithAlpha:transposesX:transposesY:)]
     pub fn with_alpha(alpha: f32, transposes_x: bool, transposes_y: bool) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(descriptor)]
@@ -32,7 +32,7 @@ define_obj_type!(pub Layer(mlc::Layer));
 impl Layer {
     define_cls!(MLC_MATMUL_LAYER);
 
-    #[objc::msg_send2(layerWithDescriptor:)]
+    #[objc::msg_send(layerWithDescriptor:)]
     pub fn with_desc(desc: &Desc) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(descriptor)]

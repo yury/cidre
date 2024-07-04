@@ -12,12 +12,6 @@ impl ClassifyImageRequest {
     pub fn results(&self) -> Option<&ns::Array<vn::ClassificationObservation>>;
 
     #[objc::msg_send(supportedIdentifiersAndReturnError:)]
-    pub unsafe fn supported_ids_and_return_err_ar<'ear>(
-        &self,
-        error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
-
-    #[objc::rar_retain()]
     pub unsafe fn supported_ids_and_return_err<'ear>(
         &self,
         error: *mut Option<&'ear ns::Error>,

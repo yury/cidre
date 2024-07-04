@@ -38,7 +38,7 @@ impl CaptureManager {
 
 // #[api::available(macos = 10.15, ios = 13.0)]
 impl CaptureManager {
-    #[objc::msg_send2(sharedCaptureManager)]
+    #[objc::msg_send(sharedCaptureManager)]
     pub fn shared() -> &'static mut Self;
 
     //- (BOOL)startCaptureWithDescriptor:(MTLCaptureDescriptor *)descriptor error:(__autoreleasing NSError **)error API_AVAILABLE(macos(10.15), ios(13.0));

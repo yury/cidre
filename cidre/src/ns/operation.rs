@@ -27,7 +27,7 @@ impl BlockOp {
     define_cls!(NS_BLOCK_OPERATION);
 
     #[cfg(feature = "blocks")]
-    #[objc::msg_send2(blockOperationWithBlock:)]
+    #[objc::msg_send(blockOperationWithBlock:)]
     pub fn with_block(block: &mut blocks::WorkBlock) -> arc::R<Self>;
 }
 
@@ -57,10 +57,10 @@ impl OpQueue {
     #[objc::msg_send(underlyingQueue)]
     pub fn underlying_queue(&self) -> Option<&dispatch::Queue>;
 
-    #[objc::msg_send2(currentQueue)]
+    #[objc::msg_send(currentQueue)]
     pub fn current<'a>() -> Option<&'a Self>;
 
-    #[objc::msg_send2(mainQueue)]
+    #[objc::msg_send(mainQueue)]
     pub fn main() -> &'static Self;
 }
 

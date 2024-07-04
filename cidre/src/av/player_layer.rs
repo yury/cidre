@@ -8,18 +8,18 @@ define_obj_type!(
 
 impl PlayerLayer {
     /// Creates a layer object to present the visual contents of a player’s current item.
-    #[objc::msg_send2(playerLayerWithPlayer:)]
+    #[objc::msg_send(playerLayerWithPlayer:)]
     pub fn with_player(player: Option<&av::Player>) -> arc::R<Self>;
 
     /// The player whose visual content the layer displays.
-    #[objc::msg_send2(player)]
+    #[objc::msg_send(player)]
     pub fn player(&self) -> Option<arc::R<av::Player>>;
 
     #[objc::msg_send(setPlayer:)]
     pub fn set_player(&mut self, val: Option<&av::Player>);
 
     /// A value that specifies how the layer displays the player’s visual content within the layer’s bounds.
-    #[objc::msg_send2(videoGravity)]
+    #[objc::msg_send(videoGravity)]
     pub fn video_gravity(&self) -> arc::R<av::LayerVideoGravity>;
 
     #[objc::msg_send(setVideoGravity:)]
@@ -34,12 +34,12 @@ impl PlayerLayer {
     pub fn video_rect(&self) -> cg::Rect;
 
     /// The attributes of the visual output that displays in the player layer during playback.
-    #[objc::msg_send2(pixelBufferAttributes)]
+    #[objc::msg_send(pixelBufferAttributes)]
     pub fn pixel_buf_attrs(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
     /// Returns the pixel buffer that the player layer currently displays.
     #[objc::msg_send(copyDisplayedPixelBuffer)]
-    pub fn displayed_pixel_buf(&self) -> Option<arc::R<cv::PixelBuf>>;
+    pub fn displayed_pixel_buf(&self) -> Option<arc::Retained<cv::PixelBuf>>;
 }
 
 #[link(name = "av", kind = "static")]

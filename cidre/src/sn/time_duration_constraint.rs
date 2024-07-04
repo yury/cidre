@@ -42,9 +42,6 @@ impl Constraint {
     pub fn type_(&self) -> Type;
 
     #[objc::msg_send(enumeratedDurations)]
-    pub fn enumerated_durations_ar(&self) -> arc::Rar<ns::Array<ns::Value>>;
-
-    #[objc::rar_retain]
     pub fn enumerated_durations(&self) -> arc::R<ns::Array<ns::Value>>;
 
     #[objc::msg_send(durationRange)]

@@ -34,10 +34,10 @@ impl App {
         unsafe { AVAudioApplicationMuteStateKey }
     }
 
-    #[objc::msg_send2(sharedInstance)]
+    #[objc::msg_send(sharedInstance)]
     pub fn shared() -> &'static mut Self;
 
-    #[objc::msg_send2(isInputMuted)]
+    #[objc::msg_send(isInputMuted)]
     pub fn is_input_mutted(&self) -> bool;
 
     #[objc::msg_send(setInputMuted:error:)]
@@ -62,7 +62,7 @@ impl App {
         handler: Option<&mut blocks::EscBlock<fn(input_should_be_muted: bool) -> bool>>,
     );
 
-    #[objc::msg_send2(requestRecordPermissionWithCompletionHandler:)]
+    #[objc::msg_send(requestRecordPermissionWithCompletionHandler:)]
     pub fn request_record_permission_ch_block(handler: &mut blocks::SendBlock<fn(bool)>);
 
     pub fn request_record_permission_ch(handler: impl FnMut(bool) + 'static + std::marker::Send) {

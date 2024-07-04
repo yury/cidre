@@ -187,13 +187,6 @@ impl AttrString {
     }
 
     #[objc::msg_send(attributesAtIndex:effectiveRange:)]
-    pub unsafe fn attrs_at_throws_ar(
-        &self,
-        index: usize,
-        effective_range: Option<&ns::Range>,
-    ) -> arc::Rar<ns::Dictionary<AttrStringKey, ns::Id>>;
-
-    #[objc::rar_retain]
     pub unsafe fn attrs_at_throws(
         &self,
         index: usize,

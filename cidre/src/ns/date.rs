@@ -34,16 +34,13 @@ impl Date {
     #[objc::msg_send(timeIntervalSince1970)]
     pub fn time_interval_since_1970(&self) -> ns::TimeInterval;
 
-    #[objc::msg_send2(distantFuture)]
+    #[objc::msg_send(distantFuture)]
     pub fn distant_future() -> arc::R<Self>;
 
-    #[objc::msg_send2(distantPast)]
+    #[objc::msg_send(distantPast)]
     pub fn distant_past() -> arc::R<Self>;
 
     #[objc::msg_send(dateByAddingTimeInterval:)]
-    pub fn add_time_interval_ar(&self, val: TimeInterval) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
     pub fn add_time_interval(&self, val: TimeInterval) -> arc::R<Self>;
 }
 

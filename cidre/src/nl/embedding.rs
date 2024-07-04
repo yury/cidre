@@ -18,37 +18,19 @@ define_obj_type!(
 );
 
 impl Embedding {
-    #[objc::cls_msg_send(wordEmbeddingForLanguage:)]
-    pub fn word_ar(lang: &nl::Lang) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(wordEmbeddingForLanguage:)]
     pub fn word(lang: &nl::Lang) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(wordEmbeddingForLanguage:revision:)]
-    pub fn word_with_rev_ar(lang: &nl::Lang, revision: usize) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(wordEmbeddingForLanguage:revision:)]
     pub fn word_with_rev(lang: &nl::Lang, revision: usize) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(sentenceEmbeddingForLanguage:)]
-    pub fn sentence_ar(lang: &nl::Lang) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(sentenceEmbeddingForLanguage:)]
     pub fn sentence(lang: &nl::Lang) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(sentenceEmbeddingForLanguage:revision:)]
-    pub fn sentence_with_rev_ar(lang: &nl::Lang, revision: usize) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(sentenceEmbeddingForLanguage:revision:)]
     pub fn sentence_with_rev(lang: &nl::Lang, revision: usize) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(embeddingWithContentsOfURL:error:)]
-    pub fn with_url_err_ar<'ear>(
-        url: &ns::Url,
-        err: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(embeddingWithContentsOfURL:error:)]
     pub fn with_url_err<'ear>(
         url: &ns::Url,
         err: *mut Option<&'ear ns::Error>,
@@ -82,30 +64,21 @@ impl Embedding {
     pub fn vocabulary_size(&self) -> usize;
 
     #[objc::msg_send(language)]
-    pub fn language_ar(&self) -> Option<arc::Rar<nl::Lang>>;
-
-    #[objc::rar_retain]
     pub fn language(&self) -> Option<arc::R<nl::Lang>>;
 
     #[objc::msg_send(revision)]
     pub fn revision(&self) -> usize;
 
-    #[objc::cls_msg_send(supportedRevisionsForLanguage:)]
-    pub fn supported_revisions_ar(lang: &nl::Lang) -> arc::Rar<ns::IndexSet>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(supportedRevisionsForLanguage:)]
     pub fn supported_revisions(lang: &nl::Lang) -> arc::R<ns::IndexSet>;
 
-    #[objc::cls_msg_send(currentRevisionForLanguage:)]
+    #[objc::msg_send(currentRevisionForLanguage:)]
     pub fn current_revision(lang: &nl::Lang) -> usize;
 
-    #[objc::cls_msg_send(supportedSentenceEmbeddingRevisionsForLanguage:)]
-    pub fn supported_sentence_revisions_ar(lang: &nl::Lang) -> arc::Rar<ns::IndexSet>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(supportedSentenceEmbeddingRevisionsForLanguage:)]
     pub fn supported_sentence_revisions(lang: &nl::Lang) -> arc::R<ns::IndexSet>;
 
-    #[objc::cls_msg_send(currentSentenceEmbeddingRevisionForLanguage:)]
+    #[objc::msg_send(currentSentenceEmbeddingRevisionForLanguage:)]
     pub fn current_sentence_revision(lang: &nl::Lang) -> usize;
 
     #[objc::msg_send(enumerateNeighborsForString:maximumCount:distanceType:usingBlock:)]
@@ -163,14 +136,6 @@ impl Embedding {
     }
 
     #[objc::msg_send(neighborsForString:maximumCount:distanceType:)]
-    pub fn neighbors_for_string_ar(
-        &self,
-        str: &ns::String,
-        max_count: usize,
-        distance_type: DistanceType,
-    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
-
-    #[objc::rar_retain]
     pub fn neighbors_for_string(
         &self,
         str: &ns::String,
@@ -179,15 +144,6 @@ impl Embedding {
     ) -> Option<arc::R<ns::Array<ns::String>>>;
 
     #[objc::msg_send(neighborsForString:maximumCount:maximumDistance:distanceType:)]
-    pub fn neighbors_for_string_within_distance_ar(
-        &self,
-        str: &ns::String,
-        max_count: usize,
-        max_distance: nl::Distance,
-        distance_type: DistanceType,
-    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
-
-    #[objc::rar_retain]
     pub fn neighbors_for_string_within_distance(
         &self,
         str: &ns::String,
@@ -197,10 +153,6 @@ impl Embedding {
     ) -> Option<arc::R<ns::Array<ns::String>>>;
 
     #[objc::msg_send(vectorForString:)]
-    pub fn vector_for_string_ar(&self, str: &ns::String)
-        -> Option<arc::Rar<ns::Array<ns::Number>>>;
-
-    #[objc::rar_retain]
     pub fn vector_for_string(&self, str: &ns::String) -> Option<arc::R<ns::Array<ns::Number>>>;
 
     #[objc::msg_send(getVector:forString:)]
@@ -271,14 +223,6 @@ impl Embedding {
     }
 
     #[objc::msg_send(neighborsForVector:maximumCount:distanceType:)]
-    pub fn neighbors_for_vector_ar(
-        &self,
-        vec: &ns::Array<ns::Number>,
-        max_count: usize,
-        distance_type: DistanceType,
-    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
-
-    #[objc::rar_retain]
     pub fn neighbors_for_vector(
         &self,
         vec: &ns::Array<ns::Number>,
@@ -287,15 +231,6 @@ impl Embedding {
     ) -> Option<arc::R<ns::Array<ns::String>>>;
 
     #[objc::msg_send(neighborsForVector:maximumCount:maximumDistance:distanceType:)]
-    pub fn neighbors_for_vector_within_distance_ar(
-        &self,
-        vec: &ns::Array<ns::Number>,
-        max_count: usize,
-        max_distance: nl::Distance,
-        distance_type: DistanceType,
-    ) -> Option<arc::Rar<ns::Array<ns::String>>>;
-
-    #[objc::rar_retain]
     pub fn neighbors_for_vector_within_distance(
         &self,
         vec: &ns::Array<ns::Number>,

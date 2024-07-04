@@ -34,7 +34,7 @@ impl OptimizerDesc {
     #[objc::msg_send(customGlobalNorm)]
     pub fn custom_global_norm(&self) -> f32;
 
-    #[objc::msg_send2(descriptorWithLearningRate:gradientRescale:regularizationType:regularizationScale:)]
+    #[objc::msg_send(descriptorWithLearningRate:gradientRescale:regularizationType:regularizationScale:)]
     pub fn with_learning_rate_grad_rescale_regularization(
         learning_rate: f32,
         gradient_rescale: f32,
@@ -42,7 +42,7 @@ impl OptimizerDesc {
         regularization_scale: f32,
     ) -> arc::R<Self>;
 
-    #[objc::msg_send2(
+    #[objc::msg_send(
         descriptorWithLearningRate:gradientRescale:
         appliesGradientClipping:gradientClipMax:gradientClipMin:
         regularizationType:regularizationScale:
@@ -57,7 +57,7 @@ impl OptimizerDesc {
         regularization_scale: f32,
     ) -> arc::R<Self>;
 
-    #[objc::msg_send2(
+    #[objc::msg_send(
         descriptorWithLearningRate:gradientRescale:
         appliesGradientClipping:gradientClipMax:gradientClipMin:
         maximumClippingNorm:customGlobalNorm:

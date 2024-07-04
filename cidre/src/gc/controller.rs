@@ -15,16 +15,10 @@ define_obj_type!(pub Controller(gc::Device));
 impl Controller {
     define_cls!(GC_CONTROLLER);
 
-    #[objc::cls_msg_send(current)]
-    pub fn current_ar() -> Option<arc::Rar<Controller>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(current)]
     pub fn current() -> Option<arc::R<Controller>>;
 
-    #[objc::cls_msg_send(controllers)]
-    pub fn controllers_ar() -> arc::Rar<ns::Array<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(controllers)]
     pub fn controllers() -> arc::R<ns::Array<Self>>;
 
     #[objc::msg_send(playerIndex)]
@@ -37,9 +31,6 @@ impl Controller {
     pub fn light(&self) -> Option<&gc::DeviceLight>;
 
     #[objc::msg_send(capture)]
-    pub fn capture_ar(&self) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
     pub fn capture(&self) -> arc::R<Self>;
 }
 

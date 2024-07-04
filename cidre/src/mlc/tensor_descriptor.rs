@@ -33,10 +33,10 @@ impl TensorDesc {
     #[objc::msg_send(batchSizePerSequenceStep)]
     pub fn batch_size_per_seq_step(&self) -> Option<&ns::Array<ns::Number>>;
 
-    #[objc::msg_send2(maxTensorDimensions)]
+    #[objc::msg_send(maxTensorDimensions)]
     pub fn max_ndim() -> usize;
 
-    #[objc::msg_send2(descriptorWithShape:dataType:)]
+    #[objc::msg_send(descriptorWithShape:dataType:)]
     pub fn with_shape_dt(
         shape: &ns::Array<ns::Number>,
         data_type: mlc::DType,
@@ -51,7 +51,7 @@ impl TensorDesc {
         Self::with_shape_dt(&shape, data_type)
     }
 
-    #[objc::msg_send2(
+    #[objc::msg_send(
         descriptorWithShape:
         sequenceLengths:sortedSequences:
         dataType:
@@ -63,7 +63,7 @@ impl TensorDesc {
         data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(descriptorWithWidth:height:featureChannelCount:batchSize:)]
+    #[objc::msg_send(descriptorWithWidth:height:featureChannelCount:batchSize:)]
     pub fn with_size_feature_channels_batch_size(
         width: usize,
         height: usize,
@@ -71,7 +71,7 @@ impl TensorDesc {
         batch_size: usize,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(descriptorWithWidth:height:featureChannelCount:batchSize:dataType:)]
+    #[objc::msg_send(descriptorWithWidth:height:featureChannelCount:batchSize:dataType:)]
     pub fn with_size_feature_channels_batch_size_dt(
         width: usize,
         height: usize,
@@ -81,7 +81,7 @@ impl TensorDesc {
     ) -> Option<arc::R<Self>>;
 
     /// This method is provided as an easy to use API to create a weight tensor.
-    #[objc::msg_send2(
+    #[objc::msg_send(
         convolutionWeightsDescriptorWithWidth:height:
         inputFeatureChannelCount:outputFeatureChannelCount:
         dataType:
@@ -94,7 +94,7 @@ impl TensorDesc {
         data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(
+    #[objc::msg_send(
         convolutionWeightsDescriptorWithInputFeatureChannelCount:outputFeatureChannelCount:
         dataType:
     )]
@@ -104,7 +104,7 @@ impl TensorDesc {
         data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(convolutionBiasesDescriptorWithFeatureChannelCount:dataType:)]
+    #[objc::msg_send(convolutionBiasesDescriptorWithFeatureChannelCount:dataType:)]
     pub fn conv_biases_with_feature_channel_count_dt(
         feature_channle_count: usize,
         data_type: mlc::DType,

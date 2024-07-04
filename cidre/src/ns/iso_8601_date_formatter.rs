@@ -41,9 +41,6 @@ define_obj_type!(
 
 impl Iso8601DateFormatter {
     #[objc::msg_send(stringFromDate:)]
-    pub fn string_from_date_ar(&self, date: &ns::Date) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_from_date(&self, date: &ns::Date) -> arc::R<ns::String>;
 
     #[objc::msg_send(formatOptions)]

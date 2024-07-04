@@ -49,11 +49,11 @@ impl<T: Obj> Class<T> {
     }
 
     #[must_use]
-    #[objc::msg_send2(alloc)]
+    #[objc::msg_send(alloc)]
     pub fn alloc(&self) -> arc::A<T>;
 
     // in general alloc_init is faster
-    #[objc::msg_send2(new)]
+    #[objc::msg_send(new)]
     pub unsafe fn new(&self) -> arc::Retained<T>;
 }
 
@@ -112,19 +112,19 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
-    #[objc::msg_send2(description)]
+    #[objc::msg_send(description)]
     fn desc(&self) -> arc::R<crate::ns::String>;
 
-    #[objc::msg_send2(debugDescription)]
+    #[objc::msg_send(debugDescription)]
     fn debug_desc(&self) -> arc::R<crate::ns::String>;
 
-    #[objc::msg_send2(respondsToSelector:)]
+    #[objc::msg_send(respondsToSelector:)]
     fn responds_to_sel(&self, sel: &Sel) -> bool;
 
-    #[objc::msg_send2(class)]
+    #[objc::msg_send(class)]
     fn class(&self) -> &crate::objc::Class<Self>;
 
-    #[objc::msg_send2(isKindOfClass:)]
+    #[objc::msg_send(isKindOfClass:)]
     fn is_kind_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
     #[inline]
@@ -136,7 +136,7 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
-    #[objc::msg_send2(isMemberOfClass:)]
+    #[objc::msg_send(isMemberOfClass:)]
     fn is_member_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
     #[cfg(not(target_os = "watchos"))]
@@ -178,7 +178,7 @@ impl Id {
         self
     }
 
-    #[objc::msg_send2(isEqual:)]
+    #[objc::msg_send(isEqual:)]
     pub fn is_equal(&self, other: &Self) -> bool;
 }
 
@@ -254,7 +254,7 @@ extern "C" {
 macro_rules! define_cls_init {
     ($NewType:ident, $CLS:ident) => {
         impl $crate::arc::A<$NewType> {
-            #[$crate::objc::msg_send2(init)]
+            #[$crate::objc::msg_send(init)]
             pub fn init(self) -> arc::Retained<$NewType>;
         }
 
@@ -552,31 +552,11 @@ pub use cidre_macros::obj_trait;
 pub use cidre_macros::optional;
 
 #[cfg(target_arch = "aarch64")]
-pub use cidre_macros::cls_msg_send;
-#[cfg(target_arch = "aarch64")]
-pub use cidre_macros::cls_msg_send_debug;
-#[cfg(target_arch = "x86_64")]
-pub use cidre_macros::cls_msg_send_debug_x86_64 as cls_msg_send_debug;
-#[cfg(target_arch = "x86_64")]
-pub use cidre_macros::cls_msg_send_x86_64 as cls_msg_send;
-#[cfg(target_arch = "aarch64")]
-pub use cidre_macros::cls_rar_retain;
-#[cfg(target_arch = "x86_64")]
-pub use cidre_macros::cls_rar_retain_x86_64 as cls_rar_retain;
-#[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send;
-#[cfg(target_arch = "aarch64")]
-pub use cidre_macros::msg_send2;
-#[cfg(target_arch = "x86_64")]
-pub use cidre_macros::msg_send2_x86_64;
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send_debug;
 #[cfg(target_arch = "x86_64")]
 pub use cidre_macros::msg_send_x86_64 as msg_send;
-#[cfg(target_arch = "aarch64")]
-pub use cidre_macros::rar_retain;
-#[cfg(target_arch = "x86_64")]
-pub use cidre_macros::rar_retain_x86_64 as rar_retain;
 
 #[cfg(test)]
 mod tests2 {
@@ -585,11 +565,11 @@ mod tests2 {
 
     #[objc::obj_trait]
     trait Foo: objc::Obj {
-        #[objc::msg_send2(count)]
+        #[objc::msg_send(count)]
         fn count(&self) -> usize;
 
         #[objc::optional]
-        #[objc::msg_send2(count2)]
+        #[objc::msg_send(count2)]
         fn count2(&self) -> usize;
     }
 

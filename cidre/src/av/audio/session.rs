@@ -39,13 +39,13 @@ define_obj_type!(
 impl Session {
     define_cls!(AV_AUDIO_SESSION);
 
-    #[objc::msg_send2(sharedInstance)]
+    #[objc::msg_send(sharedInstance)]
     pub fn shared() -> &'static mut Self;
 
-    #[objc::msg_send2(availableCategories)]
+    #[objc::msg_send(availableCategories)]
     pub fn available_categories(&self) -> arc::R<ns::Array<Category>>;
 
-    #[objc::msg_send2(setCategory:error:)]
+    #[objc::msg_send(setCategory:error:)]
     pub unsafe fn set_category_err<'ear>(
         &mut self,
         val: &Category,
@@ -56,7 +56,7 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_category_err(val, err) })
     }
 
-    #[objc::msg_send2(setCategory:withOptions:error:)]
+    #[objc::msg_send(setCategory:withOptions:error:)]
     pub unsafe fn set_category_with_opts_err<'ear>(
         &mut self,
         val: &Category,
@@ -72,7 +72,7 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_category_with_opts_err(val, options, err) })
     }
 
-    #[objc::msg_send2(setCategory:mode:options:error:)]
+    #[objc::msg_send(setCategory:mode:options:error:)]
     pub unsafe fn set_category_mode_opts_err<'ear>(
         &mut self,
         val: &Category,
@@ -90,7 +90,7 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_category_mode_opts_err(val, mode, options, err) })
     }
 
-    #[objc::msg_send2(setCategory:mode:routeSharingPolicy:options:error:)]
+    #[objc::msg_send(setCategory:mode:routeSharingPolicy:options:error:)]
     pub unsafe fn set_category_mode_policy_opts_err_throws<'ear>(
         &mut self,
         val: &Category,
@@ -130,16 +130,16 @@ impl Session {
         })
     }
 
-    #[objc::msg_send2(policy)]
+    #[objc::msg_send(policy)]
     pub fn category(&self) -> &Category;
 
-    #[objc::msg_send2(categoryOptions)]
+    #[objc::msg_send(categoryOptions)]
     pub fn category_opts(&self) -> CategoryOpts;
 
-    #[objc::msg_send2(routeSharingPolicy)]
+    #[objc::msg_send(routeSharingPolicy)]
     pub fn route_sharing_policy(&self) -> RouteSharingPolicy;
 
-    #[objc::msg_send2(availableModes)]
+    #[objc::msg_send(availableModes)]
     pub fn available_modes(&self) -> arc::R<ns::Array<Mode>>;
 
     #[objc::msg_send(setMode:error:)]
@@ -153,10 +153,10 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_mode_err(val, err) })
     }
 
-    #[objc::msg_send2(mode)]
+    #[objc::msg_send(mode)]
     pub fn mode(&self) -> &Mode;
 
-    #[objc::msg_send2(setAllowHapticsAndSystemSoundsDuringRecording:error:)]
+    #[objc::msg_send(setAllowHapticsAndSystemSoundsDuringRecording:error:)]
     pub unsafe fn set_allow_haptics_and_sys_sounds_during_record_err<'ear>(
         &mut self,
         val: bool,
@@ -172,13 +172,13 @@ impl Session {
         })
     }
 
-    #[objc::msg_send2(preferredInput)]
+    #[objc::msg_send(preferredInput)]
     pub fn preferred_input(&self) -> Option<&PortDesc>;
 
-    #[objc::msg_send2(allowHapticsAndSystemSoundsDuringRecording)]
+    #[objc::msg_send(allowHapticsAndSystemSoundsDuringRecording)]
     pub fn allow_haptics_and_sys_sounds_during_record(&self) -> bool;
 
-    #[objc::msg_send2(overrideOutputAudioPort:error:)]
+    #[objc::msg_send(overrideOutputAudioPort:error:)]
     pub unsafe fn override_output_audio_port_err<'ear>(
         &mut self,
         val: PortOverride,
@@ -196,7 +196,7 @@ impl Session {
 
 /// Activation
 impl Session {
-    #[objc::msg_send2(setActive:error:)]
+    #[objc::msg_send(setActive:error:)]
     pub unsafe fn set_active_err<'ear>(
         &mut self,
         val: bool,
@@ -207,7 +207,7 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_active_err(val, err) })
     }
 
-    #[objc::msg_send2(setActive:withOptions:error:)]
+    #[objc::msg_send(setActive:withOptions:error:)]
     pub unsafe fn set_active_with_opts_err<'ear>(
         &mut self,
         val: bool,
@@ -230,7 +230,7 @@ impl Session {
 /// audio hardware in the current route. Applications whose functionality depends on these
 /// properties should reevaluate them any time the route changes.
 impl Session {
-    #[objc::msg_send2(setPreferredSampleRate:error:)]
+    #[objc::msg_send(setPreferredSampleRate:error:)]
     pub unsafe fn set_preferred_sample_rate_err<'ear>(
         &mut self,
         val: f64,
@@ -242,10 +242,10 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_preferred_sample_rate_err(val, err) })
     }
 
-    #[objc::msg_send2(preferredSampleRate)]
+    #[objc::msg_send(preferredSampleRate)]
     pub fn preferred_sample_rate(&self) -> f64;
 
-    #[objc::msg_send2(setPreferredIOBufferDuration:error:)]
+    #[objc::msg_send(setPreferredIOBufferDuration:error:)]
     pub unsafe fn set_preferred_io_buff_duration_err<'ear>(
         &mut self,
         val: ns::TimeInterval,
@@ -259,7 +259,7 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_preferred_io_buff_duration_err(val, err) })
     }
 
-    #[objc::msg_send2(setPreferredInputNumberOfChannels:error:)]
+    #[objc::msg_send(setPreferredInputNumberOfChannels:error:)]
     pub unsafe fn set_preferred_input_channels_num_err<'ear>(
         &mut self,
         val: isize,
@@ -274,10 +274,10 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_preferred_input_channels_num_err(val, err) })
     }
 
-    #[objc::msg_send2(preferredOutputNumberOfChannels)]
+    #[objc::msg_send(preferredOutputNumberOfChannels)]
     pub fn preferred_output_channels_num(&self) -> isize;
 
-    #[objc::msg_send2(setPreferredInputOrientation:error:)]
+    #[objc::msg_send(setPreferredInputOrientation:error:)]
     pub unsafe fn set_preferred_input_orientation_err<'ear>(
         &mut self,
         val: &Orientation,
@@ -291,16 +291,16 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_preferred_input_orientation_err(val, err) })
     }
 
-    #[objc::msg_send2(preferredInputOrientation)]
+    #[objc::msg_send(preferredInputOrientation)]
     pub fn preferred_input_orientation(&self) -> &Orientation;
 
-    #[objc::msg_send2(maximumInputNumberOfChannels)]
+    #[objc::msg_send(maximumInputNumberOfChannels)]
     pub fn max_input_channels_num(&self) -> isize;
 
-    #[objc::msg_send2(maximumOutputNumberOfChannels)]
+    #[objc::msg_send(maximumOutputNumberOfChannels)]
     pub fn max_output_channels_num(&self) -> isize;
 
-    #[objc::msg_send2(setInputGain:error:)]
+    #[objc::msg_send(setInputGain:error:)]
     pub unsafe fn set_input_gain_err<'ear>(
         &mut self,
         val: f32,
@@ -311,16 +311,16 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_input_gain_err(val, err) })
     }
 
-    #[objc::msg_send2(isInputGainSettable)]
+    #[objc::msg_send(isInputGainSettable)]
     pub fn is_input_gain_settable(&self) -> bool;
 
-    #[objc::msg_send2(isInputAvailable)]
+    #[objc::msg_send(isInputAvailable)]
     pub fn is_input_available(&self) -> bool;
 
-    #[objc::msg_send2(inputDataSources)]
+    #[objc::msg_send(inputDataSources)]
     pub fn input_data_srcs(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
 
-    #[objc::msg_send2(setInputDataSource:error:)]
+    #[objc::msg_send(setInputDataSource:error:)]
     pub unsafe fn set_input_data_src_err<'ear>(
         &mut self,
         val: Option<&DataSrcDesc>,
@@ -334,13 +334,13 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_input_data_src_err(val, err) })
     }
 
-    #[objc::msg_send2(outputDataSources)]
+    #[objc::msg_send(outputDataSources)]
     pub fn output_data_srcs(&self) -> Option<arc::R<ns::Array<DataSrcDesc>>>;
 
-    #[objc::msg_send2(outputDataSource)]
+    #[objc::msg_send(outputDataSource)]
     pub fn output_data_src(&self) -> Option<&DataSrcDesc>;
 
-    #[objc::msg_send2(setOutputDataSource:error:)]
+    #[objc::msg_send(setOutputDataSource:error:)]
     pub unsafe fn set_output_data_src_err<'ear>(
         &mut self,
         val: Option<&DataSrcDesc>,
@@ -355,22 +355,22 @@ impl Session {
     }
 
     /// The current hardware sample rate
-    #[objc::msg_send2(sampleRate)]
+    #[objc::msg_send(sampleRate)]
     pub fn sample_rate(&self) -> f64;
 
-    #[objc::msg_send2(inputNumberOfChannels)]
+    #[objc::msg_send(inputNumberOfChannels)]
     pub fn input_channels_num(&self) -> isize;
 
-    #[objc::msg_send2(outputNumberOfChannels)]
+    #[objc::msg_send(outputNumberOfChannels)]
     pub fn output_channels_num(&self) -> isize;
 
-    #[objc::msg_send2(inputLatency)]
+    #[objc::msg_send(inputLatency)]
     pub fn input_latency(&self) -> ns::TimeInterval;
 
-    #[objc::msg_send2(outputLatency)]
+    #[objc::msg_send(outputLatency)]
     pub fn output_latency(&self) -> ns::TimeInterval;
 
-    #[objc::msg_send2(IOBufferDuration)]
+    #[objc::msg_send(IOBufferDuration)]
     pub fn io_buf_duration(&self) -> ns::TimeInterval;
 }
 
@@ -384,17 +384,17 @@ impl Session {
     /// AVAudioSessionCategoryAmbient) is playing, whereas the secondaryAudioShouldBeSilencedHint
     /// property is more restrictive in its consideration of whether primary audio from another
     /// application is playing.
-    #[objc::msg_send2(isOtherAudioPlaying)]
+    #[objc::msg_send(isOtherAudioPlaying)]
     pub fn is_other_audio_playing(&self) -> bool;
 
-    #[objc::msg_send2(secondaryAudioShouldBeSilencedHint)]
+    #[objc::msg_send(secondaryAudioShouldBeSilencedHint)]
     pub fn secondary_audio_should_be_silenced_hint(&self) -> bool;
 
     /// The current output volume. Value in range \[0.0, 1.0\]. Is key-value observable.
-    #[objc::msg_send2(outputVolume)]
+    #[objc::msg_send(outputVolume)]
     pub fn output_volume(&self) -> f32;
 
-    #[objc::msg_send2(promptStyle)]
+    #[objc::msg_send(promptStyle)]
     pub fn prompt_style(&self) -> PromptStyle;
 }
 
@@ -403,15 +403,15 @@ impl Session {
     /// Note that this property only applies to the session's current category and mode. For
     /// example, if the session's current category is AVAudioSessionCategoryPlayback, there will be
     /// no available inputs.
-    #[objc::msg_send2(availableInputs)]
+    #[objc::msg_send(availableInputs)]
     pub fn available_inputs(&self) -> Option<arc::R<ns::Array<PortDesc>>>;
 
     /// A description of the current route, consisting of zero or more input ports and zero or more
     /// output ports
-    #[objc::msg_send2(currentRoute)]
+    #[objc::msg_send(currentRoute)]
     pub fn current_route(&self) -> arc::R<RouteDesc>;
 
-    #[objc::msg_send2(setAggregatedIOPreference:error:)]
+    #[objc::msg_send(setAggregatedIOPreference:error:)]
     pub unsafe fn set_aggregated_io_preference_err<'ear>(
         &mut self,
         val: IoType,
@@ -430,7 +430,7 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_aggregated_io_preference_err(val, err) })
     }
 
-    #[objc::msg_send2(setSupportsMultichannelContent:error:)]
+    #[objc::msg_send(setSupportsMultichannelContent:error:)]
     pub unsafe fn set_supports_multichannel_content_err<'ear>(
         &mut self,
         val: bool,
@@ -444,10 +444,10 @@ impl Session {
         ns::if_false(|err| unsafe { self.set_supports_multichannel_content_err(val, err) })
     }
 
-    #[objc::msg_send2(supportsMultichannelContent)]
+    #[objc::msg_send(supportsMultichannelContent)]
     pub fn supports_multichannel_content(&self) -> bool;
 
-    #[objc::msg_send2(setPrefersInterruptionOnRouteDisconnect:error:)]
+    #[objc::msg_send(setPrefersInterruptionOnRouteDisconnect:error:)]
     pub unsafe fn set_prefers_interruption_on_route_disconnect_err<'ear>(
         &mut self,
         val: bool,
@@ -472,7 +472,7 @@ impl Session {
     }
 
     /// Indicates if session will be interrupted on route disconnect.
-    #[objc::msg_send2(prefersInterruptionOnRouteDisconnect)]
+    #[objc::msg_send(prefersInterruptionOnRouteDisconnect)]
     pub fn prefers_interruption_on_route_disconnect(&self) -> bool;
 }
 

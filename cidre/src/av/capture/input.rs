@@ -51,14 +51,6 @@ impl DeviceInput {
     pub fn set_unified_auto_exposure_defaults_enabled(&mut self, val: bool);
 
     #[objc::msg_send(portsWithMediaType:sourceDeviceType:sourceDevicePosition:)]
-    pub fn ports_with_ar(
-        &self,
-        media_type: Option<&av::MediaType>,
-        src_device_type: Option<&av::CaptureDeviceType>,
-        src_device_pos: av::CaptureDevicePos,
-    ) -> arc::Rar<ns::Array<Port>>;
-
-    #[objc::rar_retain]
     pub fn ports_with(
         &self,
         media_type: Option<&av::MediaType>,

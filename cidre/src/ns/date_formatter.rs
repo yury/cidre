@@ -21,9 +21,6 @@ pub enum DateFormatterStyle {
 
 impl DateFormatter {
     #[objc::msg_send(stringFromDate:)]
-    pub fn string_from_date_ar(&self, date: &ns::Date) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_from_date(&self, date: &ns::Date) -> arc::R<ns::String>;
 
     #[objc::msg_send(dateStyle)]
@@ -39,18 +36,12 @@ impl DateFormatter {
     pub fn set_time_style(&mut self, val: ns::DateFormatterStyle);
 
     #[objc::msg_send(locale)]
-    pub fn locale_ar(&self) -> arc::Rar<ns::Locale>;
-
-    #[objc::rar_retain]
     pub fn locale(&self) -> arc::R<ns::Locale>;
 
     #[objc::msg_send(setLocale:)]
     pub fn set_locale(&mut self, val: Option<&ns::Locale>);
 
     #[objc::msg_send(dateFormat)]
-    pub fn date_format_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn date_format(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(setDateFormat:)]

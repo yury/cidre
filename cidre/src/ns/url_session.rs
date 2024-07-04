@@ -57,7 +57,7 @@ impl Session {
     /// data_task.resume();
     /// assert_eq!(data_task.state(), ns::UrlSessionTaskState::Running);
     /// ```
-    #[objc::msg_send2(sharedSession)]
+    #[objc::msg_send(sharedSession)]
     pub fn shared() -> &'static Session;
 
     #[inline]
@@ -66,15 +66,9 @@ impl Session {
     }
 
     #[objc::msg_send(dataTaskWithURL:)]
-    pub fn data_task_with_url_ar(&self, url: &ns::Url) -> arc::Rar<DataTask>;
-
-    #[objc::rar_retain]
     pub fn data_task_with_url(&self, url: &ns::Url) -> arc::R<DataTask>;
 
     #[objc::msg_send(dataTaskWithRequest:)]
-    pub fn data_task_with_request_ar(&self, request: &ns::UrlRequest) -> arc::Rar<DataTask>;
-
-    #[objc::rar_retain]
     pub fn data_task_with_request(&self, request: &ns::UrlRequest) -> arc::R<DataTask>;
 }
 

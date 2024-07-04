@@ -86,9 +86,6 @@ impl String {
     }
 
     #[objc::msg_send(lowercaseString)]
-    pub fn lowercased_ar(&self) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
     pub fn lowercased(&self) -> arc::R<Self>;
 
     #[objc::msg_send(intValue)]
@@ -121,9 +118,6 @@ impl String {
     pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
 
     #[objc::msg_send(substringWithRange:)]
-    pub fn substring_with_range_ar(&self, range: ns::Range) -> arc::Rar<Self>;
-
-    #[objc::rar_retain()]
     pub fn substring_with_range(&self, range: ns::Range) -> arc::R<Self>;
 
     #[inline]

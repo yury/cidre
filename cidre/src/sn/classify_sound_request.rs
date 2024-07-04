@@ -38,15 +38,9 @@ impl ClassifySoundRequest {
     pub fn set_window_duration(&self, val: cm::Time);
 
     #[objc::msg_send(windowDurationConstraint)]
-    pub fn window_duration_constraint_ar(&self) -> arc::Rar<sn::TimeDurationConstraint>;
-
-    #[objc::rar_retain]
     pub fn window_duration_constraint(&self) -> arc::R<sn::TimeDurationConstraint>;
 
     #[objc::msg_send(knownClassifications)]
-    pub fn known_classifications_ar(&self) -> arc::Rar<ns::Array<ns::String>>;
-
-    #[objc::rar_retain]
     pub fn known_classifications(&self) -> arc::R<ns::Array<ns::String>>;
 }
 

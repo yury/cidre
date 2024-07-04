@@ -7,10 +7,7 @@ define_obj_type!(
 );
 
 impl LangRecognizer {
-    #[objc::cls_msg_send(dominantLanguageForString:)]
-    pub fn dominant_lang_for_string_ar(str: &ns::String) -> Option<arc::Rar<nl::Lang>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(dominantLanguageForString:)]
     pub fn dominant_lang_for_string(str: &ns::String) -> Option<arc::R<nl::Lang>>;
 
     #[objc::msg_send(processString:)]
@@ -20,30 +17,18 @@ impl LangRecognizer {
     pub fn reset(&mut self);
 
     #[objc::msg_send(dominantLanguage)]
-    pub fn dominant_lang_ar(&self) -> Option<arc::Rar<nl::Lang>>;
-
-    #[objc::rar_retain]
     pub fn dominant_lang(&self) -> Option<arc::R<nl::Lang>>;
 
     #[objc::msg_send(languageHypothesesWithMaximum:)]
-    pub fn lang_hypotheses_ar(&self, max: usize) -> arc::Rar<ns::Dictionary<nl::Lang, ns::Number>>;
-
-    #[objc::rar_retain]
     pub fn lang_hypotheses(&self, max: usize) -> arc::R<ns::Dictionary<nl::Lang, ns::Number>>;
 
     #[objc::msg_send(languageHints)]
-    pub fn lang_hints_ar(&self) -> arc::Rar<ns::Dictionary<nl::Lang, ns::Number>>;
-
-    #[objc::rar_retain]
     pub fn lang_hints(&self) -> arc::R<ns::Dictionary<nl::Lang, ns::Number>>;
 
     #[objc::msg_send(setLanguageHints:)]
     pub fn set_lang_hints(&mut self, val: &ns::Dictionary<nl::Lang, ns::Number>);
 
     #[objc::msg_send(languageConstraints)]
-    pub fn lang_constraints_ar(&self) -> arc::Rar<ns::Array<nl::Lang>>;
-
-    #[objc::rar_retain]
     pub fn lang_constraints(&self) -> arc::R<ns::Array<nl::Lang>>;
 
     #[objc::msg_send(setLanguageConstraints:)]

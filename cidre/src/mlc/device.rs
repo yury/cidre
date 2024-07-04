@@ -2,25 +2,25 @@ use crate::{arc, define_obj_type, mlc, mtl, ns, objc};
 
 define_obj_type!(pub Device(ns::Id), MLC_DEVICE);
 impl Device {
-    #[objc::msg_send2(aneDevice)]
+    #[objc::msg_send(aneDevice)]
     pub fn ane() -> Option<arc::R<Device>>;
 
-    #[objc::msg_send2(gpuDevice)]
+    #[objc::msg_send(gpuDevice)]
     pub fn gpu() -> Option<arc::R<Device>>;
 
-    #[objc::msg_send2(cpuDevice)]
+    #[objc::msg_send(cpuDevice)]
     pub fn cpu() -> arc::R<Device>;
 
-    #[objc::msg_send2(deviceWithType:)]
+    #[objc::msg_send(deviceWithType:)]
     pub fn with_type(type_: mlc::DeviceType) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(deviceWithType:selectsMultipleComputeDevices:)]
+    #[objc::msg_send(deviceWithType:selectsMultipleComputeDevices:)]
     pub fn with_type_multiple_devices(
         type_: mlc::DeviceType,
         selects_mutliple_devices: bool,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(deviceWithGPUDevices:)]
+    #[objc::msg_send(deviceWithGPUDevices:)]
     pub fn with_gpus(gpus: &ns::Array<mtl::Device>) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(gpuDevices)]

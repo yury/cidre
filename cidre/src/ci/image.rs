@@ -7,7 +7,7 @@ define_obj_type!(
 );
 
 impl arc::A<Image> {
-    #[objc::msg_send2(initWithMTLTexture:options:)]
+    #[objc::msg_send(initWithMTLTexture:options:)]
     pub fn init_with_mlt_texture_options(
         self,
         texture: &mtl::Texture,
@@ -25,46 +25,46 @@ impl Image {
         Self::alloc().init_with_mlt_texture_options(texture, options)
     }
 
-    #[objc::msg_send2(imageByClampingToRect:)]
+    #[objc::msg_send(imageByClampingToRect:)]
     pub fn clamped_to(&self, rect: cg::Rect) -> arc::R<Self>;
 
-    #[objc::msg_send2(imageByCroppingToRect:)]
+    #[objc::msg_send(imageByCroppingToRect:)]
     pub fn cropped_to(&self, rect: cg::Rect) -> arc::R<Self>;
 
-    #[objc::msg_send2(blackImage)]
+    #[objc::msg_send(blackImage)]
     pub fn black() -> &'static Self;
 
-    #[objc::msg_send2(whiteImage)]
+    #[objc::msg_send(whiteImage)]
     pub fn white() -> &'static Self;
 
-    #[objc::msg_send2(grayImage)]
+    #[objc::msg_send(grayImage)]
     pub fn gray() -> &'static Self;
 
-    #[objc::msg_send2(redImage)]
+    #[objc::msg_send(redImage)]
     pub fn red() -> &'static Self;
 
-    #[objc::msg_send2(greenImage)]
+    #[objc::msg_send(greenImage)]
     pub fn green() -> &'static Self;
 
-    #[objc::msg_send2(blueImage)]
+    #[objc::msg_send(blueImage)]
     pub fn blue() -> &'static Self;
 
-    #[objc::msg_send2(cyanImage)]
+    #[objc::msg_send(cyanImage)]
     pub fn cyan() -> &'static Self;
 
-    #[objc::msg_send2(mangentaImage)]
+    #[objc::msg_send(mangentaImage)]
     pub fn mangenta() -> &'static Self;
 
-    #[objc::msg_send2(yellowImage)]
+    #[objc::msg_send(yellowImage)]
     pub fn yellow() -> &'static Self;
 
-    #[objc::msg_send2(clearImage)]
+    #[objc::msg_send(clearImage)]
     pub fn clear() -> &'static Self;
 
-    #[objc::msg_send2(emptyImage)]
+    #[objc::msg_send(emptyImage)]
     pub fn empty() -> &'static Self;
 
-    #[objc::msg_send2(colorSpace)]
+    #[objc::msg_send(colorSpace)]
     pub fn color_space(&self) -> Option<&cg::ColorSpace>;
 }
 

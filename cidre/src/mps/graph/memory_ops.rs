@@ -12,14 +12,6 @@ impl VariableOp {
 
 impl graph::Graph {
     #[objc::msg_send(placeholderWithShape:dataType:name:)]
-    pub fn placeholder_with_shape_ar(
-        &self,
-        shape: Option<&mps::Shape>,
-        data_type: mps::DataType,
-        name: Option<&cf::String>,
-    ) -> arc::Rar<graph::Tensor>;
-
-    #[objc::rar_retain()]
     pub fn placeholder_with_shape(
         &self,
         shape: Option<&mps::Shape>,
@@ -28,14 +20,6 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(constantWithData:shape:dataType:)]
-    pub fn constant_with_data_shape_data_type_ar(
-        &self,
-        data: &ns::Data,
-        shape: &mps::Shape,
-        data_type: mps::DataType,
-    ) -> arc::Rar<graph::Tensor>;
-
-    #[objc::rar_retain]
     pub fn constant_with_data_shape_data_type(
         &self,
         data: &ns::Data,
@@ -44,20 +28,9 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(constantWithScalar:dataType:)]
-    pub fn constant_ar(&self, scalar: f64, data_type: mps::DataType) -> arc::Rar<graph::Tensor>;
-
-    #[objc::rar_retain]
     pub fn constant(&self, scalar: f64, data_type: mps::DataType) -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(constantWithScalar:shape:dataType:)]
-    pub fn constant_shape_ar(
-        &self,
-        scalar: f64,
-        shape: &mps::Shape,
-        data_type: mps::DataType,
-    ) -> arc::Rar<graph::Tensor>;
-
-    #[objc::rar_retain]
     pub fn constant_shape(
         &self,
         scalar: f64,

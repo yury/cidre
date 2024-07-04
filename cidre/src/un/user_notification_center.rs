@@ -36,10 +36,10 @@ define_obj_type!(
 impl UserNotificationCenter {
     define_cls!(UN_USER_NOTIFICATION_CENTER);
 
-    #[objc::msg_send2(supportsContentExtensions)]
+    #[objc::msg_send(supportsContentExtensions)]
     pub fn supports_content_extensions(&self) -> bool;
 
-    #[objc::msg_send2(currentNotificationCenter)]
+    #[objc::msg_send(currentNotificationCenter)]
     pub fn current() -> &'static mut Self;
 }
 

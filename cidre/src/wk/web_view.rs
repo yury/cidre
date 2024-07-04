@@ -8,10 +8,6 @@ define_obj_type!(pub WebView(ns::View), WK_WEB_VIEW);
 
 impl WebView {
     #[objc::msg_send(loadRequest:)]
-    pub fn load_request_ar(&mut self, request: &ns::UrlRequest)
-        -> Option<arc::Rar<wk::Navigation>>;
-
-    #[objc::rar_retain]
     pub fn load_request(&mut self, request: &ns::UrlRequest) -> Option<arc::R<wk::Navigation>>;
 
     #[objc::msg_send(setNavigationDelegate:)]

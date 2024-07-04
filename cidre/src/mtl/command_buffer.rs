@@ -79,9 +79,6 @@ impl CmdBuf {
     pub fn add_completed_handler(&mut self, block: &mut CmdBufHandler);
 
     #[objc::msg_send(blitCommandEncoder)]
-    pub fn new_blit_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::BlitCmdEncoder>>;
-
-    #[objc::rar_retain()]
     pub fn new_blit_cmd_enc(&self) -> Option<arc::R<mtl::BlitCmdEncoder>>;
 
     pub fn blit<F: FnMut(&mut mtl::BlitCmdEncoder)>(&mut self, mut commands: F) {
@@ -93,9 +90,6 @@ impl CmdBuf {
     }
 
     #[objc::msg_send(computeCommandEncoder)]
-    pub fn new_compute_cmd_enc_ar(&self) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
-
-    #[objc::rar_retain()]
     pub fn new_compute_cmd_enc(&self) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     pub fn compute<F: FnMut(&mut mtl::ComputeCmdEncoder)>(&mut self, mut commands: F) {
@@ -107,24 +101,12 @@ impl CmdBuf {
     }
 
     #[objc::msg_send(computeCommandEncoderWithDescriptor:)]
-    pub fn new_compute_cmd_enc_desc_ar(
-        &self,
-        descriptor: &mtl::ComputePassDesc,
-    ) -> Option<arc::Rar<mtl::ComputeCmdEncoder>>;
-
-    #[objc::rar_retain()]
     pub fn new_compute_cmd_enc_desc(
         &self,
         descriptor: &mtl::ComputePassDesc,
     ) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
     #[objc::msg_send(renderCommandEncoderWithDescriptor:)]
-    pub fn new_render_cmd_enc_ar(
-        &self,
-        descriptor: &mtl::RenderPassDesc,
-    ) -> Option<arc::Rar<mtl::RenderCmdEncoder>>;
-
-    #[objc::rar_retain()]
     pub fn new_render_cmd_enc(
         &self,
         descriptor: &mtl::RenderPassDesc,

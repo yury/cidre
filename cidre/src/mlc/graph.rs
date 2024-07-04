@@ -7,13 +7,6 @@ define_obj_type!(
 
 impl Graph {
     #[objc::msg_send(nodeWithLayer:sources:)]
-    pub fn node_with_layer_sources_array_ar(
-        &self,
-        layer: &mlc::Layer,
-        sources: &ns::Array<mlc::Tensor>,
-    ) -> Option<arc::Rar<mlc::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn node_with_layer_sources_array(
         &self,
         layer: &mlc::Layer,

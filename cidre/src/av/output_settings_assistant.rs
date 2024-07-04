@@ -105,19 +105,19 @@ define_obj_type!(
 impl OutputSettingsAssistant {
     define_cls!(AV_OUTPUT_SETTINGS_ASSISTANT);
 
-    #[objc::msg_send2(availableOutputSettingsPresets)]
+    #[objc::msg_send(availableOutputSettingsPresets)]
     pub fn available_presets() -> arc::R<ns::Array<OutputSettingsPreset>>;
 
-    #[objc::msg_send2(outputSettingsAssistantWithPreset:)]
+    #[objc::msg_send(outputSettingsAssistantWithPreset:)]
     pub fn with_preset(preset: &OutputSettingsPreset) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(audioSettings)]
+    #[objc::msg_send(audioSettings)]
     pub fn audio_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
-    #[objc::msg_send2(videoSettings)]
+    #[objc::msg_send(videoSettings)]
     pub fn video_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
-    #[objc::msg_send2(outputFileType)]
+    #[objc::msg_send(outputFileType)]
     pub fn output_file_type(&self) -> arc::R<av::FileType>;
 }
 

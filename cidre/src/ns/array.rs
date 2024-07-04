@@ -93,15 +93,9 @@ impl<T: Obj> Array<T> {
     pub fn last(&self) -> Option<&T>;
 
     #[objc::msg_send(copy)]
-    pub fn copy_ar(&self) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
     pub fn copy(&self) -> arc::R<Self>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut_ar(&self) -> arc::Rar<ArrayMut<T>>;
-
-    #[objc::rar_retain]
     pub fn copy_mut(&self) -> arc::R<ArrayMut<T>>;
 
     #[inline]

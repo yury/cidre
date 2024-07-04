@@ -8,7 +8,7 @@ define_obj_type!(
 impl KeyedUnarchiver {
     define_cls!(NS_KEYED_UNARCHIVER);
 
-    #[objc::msg_send2(unarchivedObjectOfClass:fromData:error:)]
+    #[objc::msg_send(unarchivedObjectOfClass:fromData:error:)]
     pub unsafe fn unarchived_obj_of_cls_err<'a, 'ear, T: objc::Obj>(
         cls: &'a objc::Class<T>,
         data: &'a ns::Data,

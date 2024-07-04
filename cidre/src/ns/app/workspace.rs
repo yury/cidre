@@ -8,7 +8,7 @@ define_obj_type!(
 impl Workspace {
     define_cls!(NS_WORKSPACE);
 
-    #[objc::msg_send2(sharedWorkspace)]
+    #[objc::msg_send(sharedWorkspace)]
     pub fn shared() -> &'static mut Self;
 
     #[objc::msg_send(notificationCenter)]
@@ -65,7 +65,7 @@ impl Workspace {
 }
 
 impl ns::FileManager {
-    #[objc::msg_send2(fileManagerWithAuthorization:)]
+    #[objc::msg_send(fileManagerWithAuthorization:)]
     pub fn with_authorization(authorization: &ns::WorkspaceAuthorization) -> arc::R<Self>;
 }
 

@@ -8,7 +8,7 @@ define_obj_type!(
 impl NotificationRequest {
     define_cls!(UN_NOTIFICATION_REQUEST);
 
-    #[objc::msg_send2(identifier)]
+    #[objc::msg_send(identifier)]
     pub fn id(&self) -> &ns::String;
 }
 

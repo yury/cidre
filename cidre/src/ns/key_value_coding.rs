@@ -2,9 +2,6 @@ use crate::{arc, ns, objc};
 
 impl ns::Id {
     #[objc::msg_send(valueForKey:)]
-    pub unsafe fn value_for_key_throws_ar(&self, key: &ns::String) -> Option<arc::Rar<Self>>;
-
-    #[objc::rar_retain]
     pub unsafe fn value_for_key_throws(&self, key: &ns::String) -> Option<arc::R<Self>>;
 
     pub fn value_for_key<'ar>(
@@ -26,12 +23,6 @@ impl ns::Id {
     }
 
     #[objc::msg_send(valueForKeyPath:)]
-    pub unsafe fn value_for_key_path_throws_ar(
-        &self,
-        key_path: &ns::String,
-    ) -> Option<arc::Rar<Self>>;
-
-    #[objc::rar_retain]
     pub unsafe fn value_for_key_path_throws(&self, key_path: &ns::String) -> Option<arc::R<Self>>;
 
     pub fn value_for_key_path<'ar>(

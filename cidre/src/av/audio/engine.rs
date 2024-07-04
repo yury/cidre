@@ -189,9 +189,6 @@ impl Engine {
     pub fn set_auto_shutdown_enabled(&mut self, val: bool);
 
     #[objc::msg_send(attachedNodes)]
-    pub fn attached_nodes_ar(&self) -> arc::Rar<ns::Set<av::AudioNode>>;
-
-    #[objc::rar_retain]
     pub fn attached_nodes(&self) -> arc::R<ns::Set<av::AudioNode>>;
 }
 

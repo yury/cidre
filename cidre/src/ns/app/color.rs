@@ -6,13 +6,13 @@ define_obj_type!(
 );
 
 impl Color {
-    #[objc::msg_send2(colorWithWhite:alpha:)]
+    #[objc::msg_send(colorWithWhite:alpha:)]
     pub fn with_white_alpha(white: cg::Float, alpha: cg::Float) -> arc::R<Self>;
 
-    #[objc::msg_send2(colorWithRed:green:blue:alpha:)]
+    #[objc::msg_send(colorWithRed:green:blue:alpha:)]
     pub fn with_rgba(r: cg::Float, g: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
 
-    #[objc::msg_send2(colorWithHue:saturation:brightness:alpha:)]
+    #[objc::msg_send(colorWithHue:saturation:brightness:alpha:)]
     pub fn with_hsba(h: cg::Float, s: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
 
     #[objc::msg_send(whiteComponent)]

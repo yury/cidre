@@ -44,12 +44,6 @@ impl RecognizeAnimalsRequest {
     /// # Safety
     /// use `supported_ids()`
     #[objc::msg_send(supportedIdentifiersAndReturnError:)]
-    pub unsafe fn supported_ids_err_ar<'ear>(
-        &self,
-        error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::Array<AnimalId>>>;
-
-    #[objc::rar_retain]
     pub unsafe fn supported_ids_err<'ear>(
         &self,
         error: *mut Option<&'ear ns::Error>,

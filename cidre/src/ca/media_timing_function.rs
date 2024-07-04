@@ -38,7 +38,7 @@ define_obj_type!(pub MediaTimingFn(ns::Id));
 impl MediaTimingFn {
     define_cls!(CA_MEDIA_TIMING_FUNCTION);
 
-    #[objc::msg_send2(functionWithName:)]
+    #[objc::msg_send(functionWithName:)]
     pub fn with_name(name: &Name) -> arc::R<Self>;
 
     #[inline]

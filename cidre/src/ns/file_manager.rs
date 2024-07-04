@@ -109,19 +109,10 @@ impl FileManager {
         unsafe { NS_FILE_MANAGER }
     }
 
-    #[objc::msg_send2(defaultManager)]
+    #[objc::msg_send(defaultManager)]
     pub fn default() -> &'static mut FileManager;
 
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]
-    pub unsafe fn contents_of_dir_at_url_err_ar(
-        &self,
-        url: &ns::Url,
-        including_props_for_keys: Option<&ns::Array<ns::UrlResKey>>,
-        options: DirEnumOpts,
-        error: *mut Option<&'ar ns::Error>,
-    ) -> Option<arc::Rar<ns::Array<ns::Url>>>;
-
-    #[objc::rar_retain]
     pub unsafe fn contents_of_dir_at_url_err<'ear>(
         &self,
         url: &ns::Url,
@@ -142,16 +133,6 @@ impl FileManager {
     }
 
     #[objc::msg_send(URLForDirectory:inDomain:appropriateForURL:create:error:)]
-    pub unsafe fn url_for_dir_err_ar<'ear>(
-        &self,
-        directory: ns::SearchPathDirectory,
-        in_domain: ns::SearchPathDomainMask,
-        appropriate_for_url: Option<&ns::Url>,
-        create: bool,
-        error: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::Url>>;
-
-    #[objc::rar_retain]
     pub unsafe fn url_for_dir_err<'ear>(
         &self,
         directory: ns::SearchPathDirectory,
@@ -316,14 +297,6 @@ impl FileManager {
 
     #[cfg(target_os = "macos")]
     #[objc::msg_send(mountedVolumeURLsIncludingResourceValuesForKeys:options:)]
-    pub fn mounted_volume_urls_ar(
-        &self,
-        keys: Option<&ns::Array<ns::UrlResKey>>,
-        options: ns::VolumeEnumOpts,
-    ) -> arc::Rar<ns::Array<ns::Url>>;
-
-    #[cfg(target_os = "macos")]
-    #[objc::rar_retain]
     pub fn mounted_volume_urls(
         &self,
         keys: Option<&ns::Array<ns::UrlResKey>>,

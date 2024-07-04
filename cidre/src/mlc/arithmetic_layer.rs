@@ -8,7 +8,7 @@ impl ArithmeticLayer {
     #[objc::msg_send(operation)]
     pub fn operation(&self) -> mlc::ArithmeticOp;
 
-    #[objc::msg_send2(layerWithOperation:)]
+    #[objc::msg_send(layerWithOperation:)]
     pub fn with_op(op: mlc::ArithmeticOp) -> arc::R<Self>;
 }
 

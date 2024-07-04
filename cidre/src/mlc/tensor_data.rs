@@ -22,7 +22,7 @@ impl TensorData {
         self.len() == 0
     }
 
-    #[objc::msg_send2(dataWithImmutableBytesNoCopy:length:)]
+    #[objc::msg_send(dataWithImmutableBytesNoCopy:length:)]
     pub fn with_bytes_no_copy(bytes: *const u8, length: usize) -> arc::R<Self>;
 
     #[inline]

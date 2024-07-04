@@ -4,7 +4,7 @@ define_obj_type!(pub InferenceGraph(mlc::Graph));
 impl InferenceGraph {
     define_cls!(MLC_INFERENCE_GRAPH);
 
-    #[objc::msg_send2(graphWithGraphObjects:)]
+    #[objc::msg_send(graphWithGraphObjects:)]
     pub fn with_graph_objs(graph_objects: &ns::Array<mlc::Graph>) -> arc::R<Self>;
 
     #[inline]

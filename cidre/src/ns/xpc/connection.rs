@@ -3,18 +3,9 @@ use crate::{arc, blocks, define_cls, define_obj_type, define_opts, ns, objc};
 #[objc::obj_trait]
 pub trait ProxyCreating: objc::Obj {
     #[objc::msg_send(remoteObjectProxy)]
-    fn remote_object_proxy_ar(&self) -> arc::Rar<ns::Id>;
-
-    #[objc::rar_retain]
     fn remote_object_proxy(&self) -> arc::R<ns::Id>;
 
     #[objc::msg_send(remoteObjectProxyWithErrorHandler:)]
-    fn remote_object_proxy_with_err_handler_ar(
-        &self,
-        handler: &mut blocks::SendBlock<fn(&ns::Error)>,
-    ) -> arc::Rar<ns::Id>;
-
-    #[objc::rar_retain]
     fn remote_object_proxy_with_err_handler(
         &self,
         handler: &mut blocks::SendBlock<fn(&ns::Error)>,
@@ -22,12 +13,6 @@ pub trait ProxyCreating: objc::Obj {
 
     #[objc::optional]
     #[objc::msg_send(synchronousRemoteObjectProxyWithErrorHandler:)]
-    fn sync_remote_object_proxy_with_err_handler_ar(
-        &self,
-        handler: &mut blocks::SendBlock<fn(&ns::Error)>,
-    ) -> arc::Rar<ns::Id>;
-
-    #[objc::rar_retain]
     fn sync_remote_object_proxy_with_err_handler(
         &self,
         handler: &mut blocks::SendBlock<fn(&ns::Error)>,
@@ -116,24 +101,12 @@ impl Connection {
     pub fn set_remote_object_proxy(&mut self, val: Option<&ns::Id>);
 
     #[objc::msg_send(remoteObjectProxyWithErrorHandler:)]
-    pub fn remote_object_proxy_with_err_handler_ar(
-        &self,
-        handler: &mut blocks::SendBlock<fn(&ns::Error)>,
-    ) -> arc::Rar<ns::Id>;
-
-    #[objc::rar_retain]
     pub fn remote_object_proxy_with_err_handler(
         &self,
         handler: &mut blocks::SendBlock<fn(&ns::Error)>,
     ) -> arc::R<ns::Id>;
 
     #[objc::msg_send(synchronousRemoteObjectProxyWithErrorHandler:)]
-    pub fn sync_remote_object_proxy_with_err_handler_ar(
-        &self,
-        handler: &mut blocks::SendBlock<fn(&ns::Error)>,
-    ) -> arc::Rar<ns::Id>;
-
-    #[objc::rar_retain]
     pub fn sync_remote_object_proxy_with_err_handler(
         &self,
         handler: &mut blocks::SendBlock<fn(&ns::Error)>,
@@ -181,7 +154,7 @@ define_obj_type!(
 impl Iface {
     define_cls!(NS_XPC_INTERFACE);
 
-    #[objc::msg_send2(interfaceWithProtocol:)]
+    #[objc::msg_send(interfaceWithProtocol:)]
     pub fn interface_with_protocol(protocol: &ns::Id) -> arc::R<Self>;
 
     #[objc::msg_send(protocol)]
@@ -204,10 +177,10 @@ impl arc::A<Listener> {
 impl Listener {
     define_cls!(NS_XPC_LISTENER);
 
-    #[objc::msg_send2(serviceListener)]
+    #[objc::msg_send(serviceListener)]
     pub fn service() -> arc::R<Self>;
 
-    #[objc::msg_send2(anonymousListener)]
+    #[objc::msg_send(anonymousListener)]
     pub fn anonymous() -> arc::R<Self>;
 
     pub fn with_mach_service_name(name: &ns::String) -> arc::R<Self> {

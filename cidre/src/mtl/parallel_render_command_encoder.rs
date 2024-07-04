@@ -4,9 +4,6 @@ define_obj_type!(pub ParallelRenderCmdEncoder(mtl::RenderCmdEncoder));
 
 impl ParallelRenderCmdEncoder {
     #[objc::msg_send(renderCommandEncoder)]
-    pub fn render_cmd_encoder_ar(&self) -> Option<arc::Rar<Self>>;
-
-    #[objc::rar_retain]
     pub fn render_cmd_encoder(&self) -> Option<arc::R<Self>>;
 
     /// If the the store action for a given color attachment was set to mtl::StoreAction::Unknown

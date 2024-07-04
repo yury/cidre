@@ -124,15 +124,6 @@ impl Session {
     pub fn disconnect(&mut self);
 
     #[objc::msg_send(sendResourceAtURL:withName:toPeer:withCompletionHandler:)]
-    pub fn send_resource_at_url_ch_block_ar(
-        &mut self,
-        resource_url: &ns::Url,
-        resource_name: &ns::String,
-        to_peer: &mc::PeerId,
-        completion: &blocks::ErrCompletionHandler,
-    ) -> Option<arc::Rar<ns::Progress>>;
-
-    #[objc::rar_retain]
     pub fn send_resource_at_url_ch_block(
         &mut self,
         resource_url: &ns::Url,
@@ -153,14 +144,6 @@ impl Session {
     }
 
     #[objc::msg_send(startStreamWithName:toPeer:error:)]
-    pub unsafe fn start_stream_err_ar<'ear>(
-        &mut self,
-        stream_name: &ns::String,
-        to_peer: &mc::PeerId,
-        err: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<ns::OutputStream>>;
-
-    #[objc::rar_retain]
     pub unsafe fn start_stream_err<'ear>(
         &mut self,
         stream_name: &ns::String,

@@ -45,6 +45,7 @@ pub enum FrameStatus {
 }
 
 #[doc(alias = "CGDisplayStreamFrameAvailableHandler")]
+#[cfg(all(feature = "blocks", feature = "io"))]
 pub type FrameAvailableHandler<Attr> =
     blocks::Block<fn(FrameStatus, u64, Option<&io::Surf>, Option<&Update>), Attr>;
 
@@ -287,6 +288,7 @@ extern "C" {
 
     fn CGDisplayStreamGetTypeID() -> cf::TypeId;
 
+    #[cfg(all(feature = "blocks", feature = "io"))]
     fn CGDisplayStreamCreate(
         display: cg::DirectDisplayId,
         output_width: usize,
@@ -296,7 +298,7 @@ extern "C" {
         handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>>;
 
-    #[cfg(feature = "dispatch")]
+    #[cfg(all(feature = "dispatch", feature = "blocks", feature = "io"))]
     fn CGDisplayStreamCreateWithDispatchQueue(
         display: cg::DirectDisplayId,
         output_width: usize,
@@ -317,11 +319,10 @@ extern "C" {
 mod tests {
     use std::{thread::sleep, time::Duration};
 
-    use crate::blocks;
-
     #[test]
+    #[cfg(all(feature = "blocks", feature = "io", feature = "dispatch"))]
     fn basics() {
-        use crate::{cg, dispatch};
+        use crate::{blocks, cg, dispatch};
 
         let mut block = cg::DisplayStreamFrameAvailableHandler::<blocks::Esc>::new4(
             |_frame_status, _timestamp, _surf, _update| {

@@ -69,10 +69,10 @@ impl Number {
         Self::alloc().init_with_unsigned_char(value)
     }
 
-    #[objc::msg_send2(numberWithChar:)]
+    #[objc::msg_send(numberWithChar:)]
     pub fn tagged_i8(value: i8) -> &'static Self;
 
-    #[objc::msg_send2(numberWithUnsignedChar:)]
+    #[objc::msg_send(numberWithUnsignedChar:)]
     pub fn tagged_u8(value: u8) -> &'static Self;
 
     #[inline]
@@ -85,10 +85,10 @@ impl Number {
         Self::alloc().init_with_unsinged_short(value)
     }
 
-    #[objc::msg_send2(numberWithShort:)]
+    #[objc::msg_send(numberWithShort:)]
     pub fn tagged_i16(value: i16) -> &'static Self;
 
-    #[objc::msg_send2(numberWithUnsignedShort:)]
+    #[objc::msg_send(numberWithUnsignedShort:)]
     pub fn tagged_u16(value: u16) -> &'static Self;
 
     #[inline]
@@ -101,7 +101,7 @@ impl Number {
         Self::alloc().init_with_unsigned_int(value)
     }
 
-    #[objc::msg_send2(numberWithInt:)]
+    #[objc::msg_send(numberWithInt:)]
     pub fn tagged_i32(value: i32) -> &'static Self;
 
     // for benches
@@ -110,7 +110,7 @@ impl Number {
     //     unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
     // }
 
-    #[objc::msg_send2(numberWithUnsignedInt:)]
+    #[objc::msg_send(numberWithUnsignedInt:)]
     pub fn tagged_u32(value: u32) -> &'static Self;
 
     #[inline]
@@ -124,7 +124,7 @@ impl Number {
         arc::rar_retain(Self::with_i64_ar(value))
     }
 
-    #[objc::msg_send2(numberWithLongLong:)]
+    #[objc::msg_send(numberWithLongLong:)]
     pub fn with_i64_ar(value: i64) -> arc::Rar<Self>;
 
     // for benches
@@ -212,9 +212,6 @@ impl Number {
     pub fn as_uinteger(&self) -> ns::UInteger;
 
     #[objc::msg_send(stringValue)]
-    pub fn string_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(isEqualToNumber:)]

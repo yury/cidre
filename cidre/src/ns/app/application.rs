@@ -11,7 +11,7 @@ pub trait Delegate {}
 impl App {
     define_cls!(NS_APPLICATION);
 
-    #[objc::msg_send2(sharedApplication)]
+    #[objc::msg_send(sharedApplication)]
     pub fn shared() -> &'static mut Self;
 
     #[objc::msg_send(setDelegate:)]

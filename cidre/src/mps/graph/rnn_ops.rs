@@ -166,19 +166,6 @@ impl GRUDescr {
 
 impl graph::Graph {
     #[objc::msg_send(singleGateRNNWithSourceTensor:recurrentWeight:inputWeight:bias:initState:mask:descriptor:name:)]
-    pub fn single_gate_rnn_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDesc,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn single_gate_rnn(
         &self,
         source: &graph::Tensor,
@@ -193,22 +180,6 @@ impl graph::Graph {
 
     #[objc::msg_send(singleGateRNNGradientsWithSourceTensor:recurrentWeight:sourceGradient:
         zState:stageGradient:inputWeight:bias:initState:mask:descriptor:name:)]
-    pub fn single_gate_rnn_grad_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        stage_gradient: Option<&graph::Tensor>,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDesc,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn single_gate_rnn_grad(
         &self,
         source: &graph::Tensor,
@@ -226,21 +197,6 @@ impl graph::Graph {
 
     #[objc::msg_send(LSTMWithSourceTensor:recurrentWeight:inputWeight:bias:initState:
         initCell:mask:peephole:descriptor:name:)]
-    pub fn lstm_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        init_cell: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDesc,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn lstm(
         &self,
         source: &graph::Tensor,
@@ -260,26 +216,6 @@ impl graph::Graph {
         sourceGradient:zState:cellOutputFwd:stateGradient:
         cellGradient:inputWeight:bias:initState:initCell:
         mask:peephole:descriptor:name:)]
-    pub fn lstm_grad_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        cell_output_fwd: &graph::Tensor,
-        state_gradient: Option<&graph::Tensor>,
-        cell_gradient: Option<&graph::Tensor>,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        init_cell: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDesc,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn lstm_grad(
         &self,
         source: &graph::Tensor,
@@ -303,20 +239,6 @@ impl graph::Graph {
         GRUWithSourceTensor:recurrentWeight:inputWeight:
         bias:initState:mask:secondaryBias:descriptor:name:
     )]
-    pub fn gru_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescr,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn gru(
         &self,
         source: &graph::Tensor,
@@ -335,24 +257,6 @@ impl graph::Graph {
         sourceGradient:zState:outputFwd:stateGradient:inputWeight:
         bias:initState:mask:secondaryBias:descriptor:name:
     )]
-    pub fn gru_grad_ar(
-        &self,
-        source: &graph::Tensor,
-        recurrent_weight: &graph::Tensor,
-        source_gradient: &graph::Tensor,
-        z_state: &graph::Tensor,
-        output_fwd: &graph::Tensor,
-        state_gradient: Option<&graph::Tensor>,
-        input_weight: Option<&graph::Tensor>,
-        bias: Option<&graph::Tensor>,
-        init_state: Option<&graph::Tensor>,
-        mask: Option<&graph::Tensor>,
-        secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescr,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<ns::Array<graph::Tensor>>;
-
-    #[objc::rar_retain]
     pub fn gru_grad(
         &self,
         source: &graph::Tensor,

@@ -80,34 +80,34 @@ define_obj_type!(
 );
 
 impl Voice {
-    #[objc::msg_send2(speechVoices)]
+    #[objc::msg_send(speechVoices)]
     pub fn voices() -> arc::R<ns::Array<Self>>;
 
-    #[objc::msg_send2(currentLanguageCode)]
+    #[objc::msg_send(currentLanguageCode)]
     pub fn current_lang_code() -> arc::R<ns::String>;
 
-    #[objc::msg_send2(language)]
+    #[objc::msg_send(language)]
     pub fn lang(&self) -> Option<&ns::String>;
 
-    #[objc::msg_send2(identifier)]
+    #[objc::msg_send(identifier)]
     pub fn id(&self) -> &ns::String;
 
-    #[objc::msg_send2(name)]
+    #[objc::msg_send(name)]
     pub fn name(&self) -> &ns::String;
 
-    #[objc::msg_send2(quality)]
+    #[objc::msg_send(quality)]
     pub fn quality(&self) -> VoiceQuality;
 
-    #[objc::msg_send2(gender)]
+    #[objc::msg_send(gender)]
     pub fn gender(&self) -> VoiceGender;
 
-    #[objc::msg_send2(audioFileSettings)]
+    #[objc::msg_send(audioFileSettings)]
     pub fn audio_file_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
 
-    #[objc::msg_send2(voiceWithLanguage:)]
+    #[objc::msg_send(voiceWithLanguage:)]
     pub fn with_lang(lang_code: Option<&ns::String>) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(voiceWithIdentifier:)]
+    #[objc::msg_send(voiceWithIdentifier:)]
     pub fn with_id(identifier: &ns::String) -> Option<arc::R<Self>>;
 }
 
@@ -342,11 +342,11 @@ impl Synthesizer {
     #[objc::msg_send(setMixToTelephonyUplink:)]
     pub fn set_mix_to_telephony_uplink(&mut self, val: bool);
 
-    #[objc::msg_send2(personalVoiceAuthorizationStatus)]
+    #[objc::msg_send(personalVoiceAuthorizationStatus)]
     pub fn personal_voice_authorization_status() -> AuthorizationStatus;
 
     #[cfg(feature = "blocks")]
-    #[objc::msg_send2(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
+    #[objc::msg_send(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
     fn request_personal_voice_authorization_ch(
         block: &mut blocks::SendBlock<fn(AuthorizationStatus)>,
     );

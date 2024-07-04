@@ -9,9 +9,6 @@ unsafe impl Send for Uuid {}
 
 impl Uuid {
     #[objc::msg_send(UUIDString)]
-    pub fn string_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string(&self) -> arc::R<ns::String>;
 }
 

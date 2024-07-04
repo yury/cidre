@@ -18,18 +18,6 @@ pub enum ResizeNearestRoundingMode {
 
 impl graph::Graph {
     #[objc::msg_send(resizeTensor:size:mode:centerResult:alignCorners:layout:name:)]
-    pub fn resize_ar(
-        &self,
-        tensor: &graph::Tensor,
-        size: &mps::Shape,
-        mode: graph::ResizeMode,
-        center_result: bool,
-        align_corners: bool,
-        layout: graph::TensorNamedDataLayout,
-        name: Option<&ns::String>,
-    ) -> arc::Rar<graph::Tensor>;
-
-    #[objc::rar_retain]
     pub fn resize(
         &self,
         tensor: &graph::Tensor,

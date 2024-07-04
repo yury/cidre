@@ -33,7 +33,7 @@ impl Image {
         Self::alloc().init_with_data(data)
     }
 
-    #[objc::msg_send2(imageWithSystemSymbolName:accessibilityDescription:)]
+    #[objc::msg_send(imageWithSystemSymbolName:accessibilityDescription:)]
     pub fn with_sys_symbol_name(
         name: &ns::String,
         accessibility_description: Option<&ns::String>,

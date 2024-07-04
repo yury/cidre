@@ -48,23 +48,23 @@ define_obj_type!(pub Device(ns::Id));
 impl Device {
     define_cls!(AV_CAPTURE_DEVICE);
 
-    #[objc::msg_send2(defaultDeviceWithDeviceType:mediaType:position:)]
+    #[objc::msg_send(defaultDeviceWithDeviceType:mediaType:position:)]
     pub fn with_type_media_and_pos(
         device_type: &Type,
         media_type: Option<&av::MediaType>,
         position: Pos,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(devices)]
+    #[objc::msg_send(devices)]
     pub fn devices() -> arc::R<ns::Array<Self>>;
 
-    #[objc::msg_send2(defaultDeviceWithMediaType:)]
+    #[objc::msg_send(defaultDeviceWithMediaType:)]
     pub fn default_with_media(media_type: &av::MediaType) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(deviceWithUniqueID:)]
+    #[objc::msg_send(deviceWithUniqueID:)]
     pub fn with_unique_id(unique_id: ns::String) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(uniqueID)]
+    #[objc::msg_send(uniqueID)]
     pub fn unique_id(&self) -> &ns::String;
 
     /// The model ID of the receiver.
@@ -74,13 +74,13 @@ impl Device {
     /// and across different systems. For example, the model ID of the camera built in
     /// to two identical iPhone models will be the same even though they are different
     /// physical devices.
-    #[objc::msg_send2(modelID)]
+    #[objc::msg_send(modelID)]
     pub fn model_id(&self) -> &ns::String;
 
     /// A localized human-readable name for the receiver.
     ///
     /// This property can be used for displaying the name of a capture device in a user interface.
-    #[objc::msg_send2(localizedName)]
+    #[objc::msg_send(localizedName)]
     pub fn localized_name(&self) -> &ns::String;
 
     /// The human-readable manufacturer name for the receiver.
@@ -88,23 +88,23 @@ impl Device {
     /// This property can be used to identify capture devices from a particular manufacturer.
     /// All Apple devices return "Apple Inc.". Devices from third party manufacturers may
     /// return an empty string.
-    #[objc::msg_send2(manufacturer)]
+    #[objc::msg_send(manufacturer)]
     pub fn manufacturer(&self) -> Option<&ns::String>;
 
     /// Returns whether the receiver provides media with the given media type.
     ///
     /// 'true' if the device outputs the given media type, 'false' otherwise.
-    #[objc::msg_send2(hasMediaType:)]
+    #[objc::msg_send(hasMediaType:)]
     pub fn has_media_type(&self, media_type: &av::MediaType) -> bool;
 
-    #[objc::msg_send2(formats)]
+    #[objc::msg_send(formats)]
     pub fn formats(&self) -> &ns::Array<Format>;
 
-    #[objc::msg_send2(supportsAVCaptureSessionPreset:)]
+    #[objc::msg_send(supportsAVCaptureSessionPreset:)]
     pub fn supports_preset(&self, preset: &av::CaptureSessionPreset) -> bool;
 
     /// NOTE: On audio devices active format is None
-    #[objc::msg_send2(activeFormat)]
+    #[objc::msg_send(activeFormat)]
     pub fn active_format(&self) -> Option<&Format>;
 
     /// Indicates whether the device is connected and available to the system.
@@ -224,10 +224,10 @@ impl<'a> ConfigLockGuard<'a> {
 
 /// AVCaptureDeviceReactionEffects
 impl Device {
-    #[objc::msg_send2(reactionEffectsEnabled)]
+    #[objc::msg_send(reactionEffectsEnabled)]
     pub fn reaction_effects_enabled() -> bool;
 
-    #[objc::msg_send2(reactionEffectGesturesEnabled)]
+    #[objc::msg_send(reactionEffectGesturesEnabled)]
     pub fn reaction_effect_gestures_enabled() -> bool;
 
     #[objc::msg_send(canPerformReactionEffects)]
@@ -307,7 +307,7 @@ impl Device {
     /// Indicates the microphone mode that has been selected by the user in Control Center.
     ///
     /// This readonly property returns the microphone mode selected by the user in Control Center. It is key-value observable.
-    #[objc::msg_send2(preferredMicrophoneMode)]
+    #[objc::msg_send(preferredMicrophoneMode)]
     pub fn preferred_mic_mode() -> MicMode;
 
     /// Indicates the currently active microphone mode.
@@ -316,7 +316,7 @@ impl Device {
     /// which may differ from the 'preferred_mic_mode()' if the application's
     /// active audio route does not support the preferred microphone mode.
     /// This property is key-value observable.
-    #[objc::msg_send2(activeMicrophoneMode)]
+    #[objc::msg_send(activeMicrophoneMode)]
     pub fn active_mic_mode() -> MicMode;
 }
 
@@ -357,10 +357,10 @@ impl Device {
     /// instance property 'center_stage_active'). In cooperative mode, the 'center_stage_enabled'
     /// property may change at any time (such as when the user enables / disables the feature
     /// in Control Center).
-    #[objc::msg_send2(centerStageControlMode)]
+    #[objc::msg_send(centerStageControlMode)]
     pub fn center_stage_control_mode() -> CenterStageControlMode;
 
-    #[objc::msg_send2(setCenterStageControlMode:)]
+    #[objc::msg_send(setCenterStageControlMode:)]
     pub fn set_center_stage_control_mode(val: CenterStageControlMode);
 
     /// Indicates whether Center Stage is currently active on a particular av::CaptureDevice.
@@ -437,7 +437,7 @@ pub enum SysUi {
 
 /// AVCaptureSystemUserInterface
 impl Device {
-    #[objc::msg_send2(showSystemUserInterface:)]
+    #[objc::msg_send(showSystemUserInterface:)]
     pub fn show_sys_ui(system_ui: SysUi);
 }
 
@@ -1624,14 +1624,14 @@ impl Device {
 /// AVCaptureDevicePreferredCamera
 impl Device {
     /// Settable property that specifies a user preferred camera.
-    #[objc::msg_send2(userPreferredCamera)]
+    #[objc::msg_send(userPreferredCamera)]
     fn user_preferred_camera<'a>() -> Option<&'a Self>;
 
-    #[objc::msg_send2(setUserPreferredCamera:)]
+    #[objc::msg_send(setUserPreferredCamera:)]
     fn set_user_preferred_camera(val: Option<&Self>);
 
     /// Specifies the best camera to use as determined by the system.
-    #[objc::msg_send2(systemPreferredCamera)]
+    #[objc::msg_send(systemPreferredCamera)]
     fn sys_preferred_camera<'a>() -> Option<&'a Self>;
 }
 
@@ -1653,7 +1653,7 @@ pub enum AuthorizationStatus {
 
 /// AVCaptureDeviceAuthorization
 impl Device {
-    #[objc::msg_send2(authorizationStatusForMediaType:)]
+    #[objc::msg_send(authorizationStatusForMediaType:)]
     pub unsafe fn authorization_status_for_media_type_throws(
         media_type: &av::MediaType,
     ) -> AuthorizationStatus;
@@ -1665,7 +1665,7 @@ impl Device {
     }
 
     #[cfg(feature = "blocks")]
-    #[objc::msg_send2(requestAccessForMediaType:completionHandler:)]
+    #[objc::msg_send(requestAccessForMediaType:completionHandler:)]
     unsafe fn _request_access_for_media_type_ch_throws(
         media_type: &av::MediaType,
         block: &mut blocks::SendBlock<fn(bool)>,
@@ -1932,7 +1932,7 @@ define_obj_type!(
 impl DiscoverySession {
     define_cls!(AV_CAPTURE_DEVICE_DISCOVERY_SESSION);
 
-    #[objc::msg_send2(discoverySessionWithDeviceTypes:mediaType:position:)]
+    #[objc::msg_send(discoverySessionWithDeviceTypes:mediaType:position:)]
     pub fn with_device_types_media_and_pos(
         device_types: &ns::Array<Type>,
         media_type: Option<&av::MediaType>,

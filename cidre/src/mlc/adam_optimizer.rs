@@ -19,10 +19,10 @@ impl AdamOptimizer {
     #[objc::msg_send(timeStep)]
     pub fn time_step(&self) -> usize;
 
-    #[objc::msg_send2(optimizerWithDescriptor:)]
+    #[objc::msg_send(optimizerWithDescriptor:)]
     pub fn with_desc(desc: &mlc::OptimizerDesc) -> arc::R<Self>;
 
-    #[objc::msg_send2(optimizerWithDescriptor:beta1:beta2:epsilon:timeStep:)]
+    #[objc::msg_send(optimizerWithDescriptor:beta1:beta2:epsilon:timeStep:)]
     pub fn with_desc_betas_epsilon_time_step(
         desc: &mlc::OptimizerDesc,
         beta1: f32,
@@ -31,7 +31,7 @@ impl AdamOptimizer {
         time_step: usize,
     ) -> arc::R<Self>;
 
-    #[objc::msg_send2(optimizerWithDescriptor:beta1:beta2:epsilon:usesAMSGrad:timeStep:)]
+    #[objc::msg_send(optimizerWithDescriptor:beta1:beta2:epsilon:usesAMSGrad:timeStep:)]
     pub fn with_desc_betas_epsilon_uses_ams_grad_time_step(
         desc: &mlc::OptimizerDesc,
         beta1: f32,

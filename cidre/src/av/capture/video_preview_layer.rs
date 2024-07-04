@@ -62,12 +62,6 @@ impl VideoPreviewLayer {
     pub fn rect_for_metadata_output_roi(&self, rect: cg::Rect) -> cg::Rect;
 
     #[objc::msg_send(transformedMetadataObjectForMetadataObject:)]
-    pub fn transformed_metadata_obj_for_metadata_obj_ar(
-        &self,
-        obj: &av::MetadataObj,
-    ) -> Option<arc::Rar<av::MetadataObj>>;
-
-    #[objc::rar_retain]
     pub fn transformed_metadata_obj_for_metadata_obj(
         &self,
         obj: &av::MetadataObj,

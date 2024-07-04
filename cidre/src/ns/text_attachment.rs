@@ -31,12 +31,7 @@ impl TextAttachment {
 
     #[cfg(any(target_os = "ios", target_os = "tvos"))]
     #[cfg(feature = "ui")]
-    #[objc::cls_msg_send(textAttachmentWithImage:)]
-    pub fn with_image_ar(image: &Image) -> arc::Rar<Self>;
-
-    #[cfg(any(target_os = "ios", target_os = "tvos"))]
-    #[cfg(feature = "ui")]
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(textAttachmentWithImage:)]
     pub fn with_image(image: &Image) -> arc::R<Self>;
 
     #[objc::msg_send(bounds)]
@@ -57,12 +52,12 @@ impl TextAttachment {
     #[objc::msg_send(setImage:)]
     pub fn set_image(&mut self, val: Option<&Image>);
 
-    #[objc::msg_send2(textAttachmentViewProviderClassForFileType:)]
+    #[objc::msg_send(textAttachmentViewProviderClassForFileType:)]
     pub fn text_attachment_view_provider_class<'a>(
         file_type: &ns::String,
     ) -> Option<&'a objc::Class<ns::Id>>;
 
-    #[objc::msg_send2(registerTextAttachmentViewProviderClass:forFileType:)]
+    #[objc::msg_send(registerTextAttachmentViewProviderClass:forFileType:)]
     pub fn register_view_provider_class(cls: &objc::Class<ns::Id>, file_type: &ns::String);
 
     #[objc::msg_send(allowsTextAttachmentView)]
@@ -76,7 +71,7 @@ impl TextAttachment {
 }
 
 impl ns::AttrString {
-    #[objc::msg_send2(attributedStringWithAttachment:)]
+    #[objc::msg_send(attributedStringWithAttachment:)]
     pub fn with_attachment(attachment: &ns::TextAttachment) -> arc::R<Self>;
 }
 

@@ -10,16 +10,10 @@ unsafe impl Send for Type {}
 impl Type {
     define_cls!(UT_TYPE);
 
-    #[objc::cls_msg_send(typeWithIdentifier:)]
-    pub fn with_id_ar(identifier: &ns::String) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(typeWithIdentifier:)]
     pub fn with_id(identifier: &ns::String) -> Option<arc::R<Self>>;
 
-    #[objc::cls_msg_send(typeWithFilenameExtension:)]
-    pub fn with_file_ext_ar(file_name_extension: &ns::String) -> Option<arc::Rar<Self>>;
-
-    #[objc::cls_rar_retain]
+    #[objc::msg_send(typeWithFilenameExtension:)]
     pub fn with_file_ext(file_name_extension: &ns::String) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(identifier)]

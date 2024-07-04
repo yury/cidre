@@ -9,11 +9,11 @@ define_obj_type!(
 
 #[cfg(any(target_os = "ios", target_os = "watchos"))]
 impl Altimeter {
-    #[objc::cls_msg_send(isRelativeAltitudeAvailable)]
+    #[objc::msg_send(isRelativeAltitudeAvailable)]
     pub fn is_relative_altitude_available() -> bool;
 
     #[cfg(any(target_os = "ios", target_os = "watchos"))]
-    #[objc::cls_msg_send(authorizationStatus)]
+    #[objc::msg_send(authorizationStatus)]
     pub fn authorization_status() -> cm::AuthorizationStatus;
 
     #[objc::msg_send(startRelativeAltitudeUpdatesToQueue:withHandler:)]
@@ -36,7 +36,7 @@ impl Altimeter {
     #[objc::msg_send(stopRelativeAltitudeUpdates)]
     pub fn stop_relative_altitude_updates(&mut self);
 
-    #[objc::cls_msg_send(isAbsoluteAltitudeAvailable)]
+    #[objc::msg_send(isAbsoluteAltitudeAvailable)]
     pub fn is_abs_altitude_available() -> bool;
 
     #[objc::msg_send(startAbsoluteAltitudeUpdatesToQueue:withHandler:)]

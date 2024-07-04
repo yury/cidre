@@ -4,64 +4,37 @@ use crate::{
 };
 
 impl ns::String {
-    #[objc::msg_send2(pathWithComponents:)]
+    #[objc::msg_send(pathWithComponents:)]
     pub fn path_with_components(components: ns::Array<ns::String>) -> arc::R<Self>;
 
     #[objc::msg_send(pathComponents)]
-    pub fn path_components_ar(&self) -> arc::Rar<ns::Array<ns::String>>;
-
-    #[objc::rar_retain]
     pub fn path_components(&self) -> arc::R<ns::Array<ns::String>>;
 
     #[objc::msg_send(isAbsolutePath)]
     pub fn is_abs_path(&self) -> bool;
 
     #[objc::msg_send(lastPathComponent)]
-    pub fn last_path_component_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn last_path_component(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByDeletingLastPathComponent)]
-    pub fn string_by_deleting_last_path_component_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_by_deleting_last_path_component(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByAppendingPathComponent:)]
-    pub fn string_by_appending_path_component_ar(&self, str: &ns::String) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_by_appending_path_component(&self, str: &ns::String) -> arc::R<ns::String>;
 
     #[objc::msg_send(pathExtension)]
-    pub fn path_extension_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn path_extension(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByDeletingPathExtension)]
-    pub fn string_by_deleting_path_extension_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_by_deleting_path_extension(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByAppendingPathExtension:)]
-    pub fn string_by_appending_path_extension_ar(&self, str: &ns::String) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_by_appending_path_extension(&self, str: &ns::String) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByAbbreviatingWithTildeInPath)]
-    pub fn string_by_abbreviating_with_tilde_in_path_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_by_abbreviating_with_tilde_in_path(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(stringByExpandingTildeInPath)]
-    pub fn string_by_expanding_tilde_in_path_ar(&self) -> arc::Rar<ns::String>;
-
-    #[objc::rar_retain]
     pub fn string_by_expanding_tilde_in_path(&self) -> arc::R<ns::String>;
 }
 
@@ -246,12 +219,6 @@ pub fn home_dir_for_user(user_name: Option<&ns::String>) -> Option<arc::R<ns::St
 
 impl<T: Obj> ns::Array<T> {
     #[objc::msg_send(pathsMatchingExtensions:)]
-    pub fn paths_matching_extensions_ar(
-        &self,
-        filter_types: &ns::Array<ns::String>,
-    ) -> arc::Rar<ns::Array<ns::String>>;
-
-    #[objc::rar_retain]
     pub fn paths_matching_extensions(
         &self,
         filter_types: &ns::Array<ns::String>,

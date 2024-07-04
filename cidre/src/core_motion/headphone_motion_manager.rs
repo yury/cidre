@@ -7,7 +7,7 @@ define_obj_type!(
 );
 
 impl HeadphoneMotionManager {
-    #[objc::msg_send2(authorizationStatus)]
+    #[objc::msg_send(authorizationStatus)]
     pub fn authorization_status() -> cm::AuthorizationStatus;
 
     #[objc::msg_send(delegate)]

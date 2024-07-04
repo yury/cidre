@@ -227,19 +227,19 @@ impl Lib {
     ///
     /// Use new_fn_const_values
     #[objc::msg_send(newFunctionWithName:constantValues:error:)]
-    pub unsafe fn new_fn_with_consts_err<'ar>(
+    pub unsafe fn new_fn_with_consts_err<'ear>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FnConstValues,
-        error: *mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
     #[inline]
-    pub fn new_fn_with_consts<'ar>(
+    pub fn new_fn_with_consts<'ear>(
         &self,
         name: &ns::String,
         constant_values: &mtl::FnConstValues,
-    ) -> Result<arc::R<Fn>, &'ar ns::Error> {
+    ) -> Result<arc::R<Fn>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::new_fn_with_consts_err(self, name, constant_values, err) })
     }
 

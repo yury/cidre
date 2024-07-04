@@ -211,7 +211,7 @@ impl MultiCamSession {
     /// assert!(!av::CaptureMultiCamSession::is_multicam_supported());
     /// ```
     #[cfg(not(target_os = "macos"))]
-    #[objc::cls_msg_send(isMultiCamSupported)]
+    #[objc::msg_send(isMultiCamSupported)]
     pub fn is_multicam_supported() -> bool;
 
     #[cfg(target_os = "macos")]

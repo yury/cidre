@@ -43,15 +43,9 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
     pub fn get<'a>(&'a self, key: &K) -> Option<&'a V>;
 
     #[objc::msg_send(copy)]
-    pub fn copy_ar(&self) -> arc::Rar<Self>;
-
-    #[objc::rar_retain]
     pub fn copy(&self) -> arc::R<Self>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut_ar(&self) -> arc::Rar<DictionaryMut<K, V>>;
-
-    #[objc::rar_retain]
     pub fn copy_mut(&self) -> arc::R<DictionaryMut<K, V>>;
 
     pub fn with_keys_values<const N: usize>(keys: &[&K; N], objects: &[&V; N]) -> arc::R<Self> {

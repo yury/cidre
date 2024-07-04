@@ -68,7 +68,7 @@ define_obj_type!(
 unsafe impl Send for NotificationCenter {}
 
 impl NotificationCenter {
-    #[objc::msg_send2(defaultCenter)]
+    #[objc::msg_send(defaultCenter)]
     pub fn default() -> &'static mut Self;
 
     #[objc::msg_send(postNotification:)]
@@ -90,16 +90,6 @@ impl NotificationCenter {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(addObserverForName:object:queue:usingBlock:)]
-    pub fn add_observer_block_ar(
-        &mut self,
-        name: &ns::NotificationName,
-        object: Option<&ns::Id>,
-        queue: Option<&ns::OpQueue>,
-        using_block: &mut blocks::SyncBlock<fn(&ns::Notification)>,
-    ) -> arc::Rar<ns::Id>;
-
-    #[cfg(feature = "blocks")]
-    #[objc::rar_retain]
     pub fn add_observer_block(
         &mut self,
         name: &ns::NotificationName,

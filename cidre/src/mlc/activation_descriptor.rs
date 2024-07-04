@@ -16,20 +16,20 @@ impl ActivationDesc {
     #[objc::msg_send(c)]
     pub fn c(&self) -> f32;
 
-    #[objc::msg_send2(descriptorWithType:)]
+    #[objc::msg_send(descriptorWithType:)]
     pub fn with_type(activation_type: mlc::ActivationType) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(descriptorWithType:a:)]
+    #[objc::msg_send(descriptorWithType:a:)]
     pub fn with_type_a(activation_type: mlc::ActivationType, a: f32) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(descriptorWithType:a:b:)]
+    #[objc::msg_send(descriptorWithType:a:b:)]
     pub fn with_type_ab(
         activation_type: mlc::ActivationType,
         a: f32,
         b: f32,
     ) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send2(descriptorWithType:a:b:c:)]
+    #[objc::msg_send(descriptorWithType:a:b:c:)]
     pub fn with_type_abc(
         activation_type: mlc::ActivationType,
         a: f32,

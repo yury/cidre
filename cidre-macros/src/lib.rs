@@ -53,7 +53,7 @@ impl Attr {
                     let v = v.to_string();
                     return match v.as_str() {
                         "optional" => Some(Attr::Optional),
-                        "msg_send" | "msg_send2" => {
+                        "msg_send" => {
                             let Some(TokenTree::Group(a)) = iter.next() else {
                                 return None;
                             };
@@ -76,74 +76,6 @@ impl Attr {
 
         panic!("Unexpected attribute")
     }
-}
-
-fn get_fn_args(group: TokenStream, class: bool, debug: bool) -> Vec<String> {
-    let mut prev = None;
-    let mut vars = vec![];
-    if debug {
-        println!("tokens {:?}", group);
-    }
-
-    let mut can_be_name = class;
-    let mut level = 0;
-    for t in group.into_iter() {
-        match t {
-            TokenTree::Ident(i) => {
-                prev = Some(i);
-            }
-            TokenTree::Punct(p) => match p.as_char() {
-                ':' if can_be_name && level == 0 => {
-                    if let Some(id) = prev.take() {
-                        vars.push(id.to_string())
-                    }
-                    can_be_name = false;
-                }
-                '>' => level -= 1,
-                '<' => level += 1,
-                ',' => can_be_name = true,
-                _ => prev = None,
-            },
-            _ => prev = None,
-        }
-    }
-    vars
-}
-
-#[proc_macro_attribute]
-pub fn rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = false;
-    gen_msg_send(sel, func, true, false, false, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn rar_retain_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = true;
-    gen_msg_send(sel, func, true, false, false, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn cls_rar_retain(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = false;
-    gen_msg_send(sel, func, true, true, false, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn cls_rar_retain_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = true;
-    gen_msg_send(sel, func, true, true, false, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = false;
-    gen_msg_send(sel, func, false, false, false, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = true;
-    gen_msg_send(sel, func, false, false, false, x86_64)
 }
 
 /// Should generate static fn sel_xxx function that gets selector.
@@ -482,58 +414,25 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
 
     TokenStream::from_iter(tokens)
 }
-
-#[proc_macro_attribute]
-pub fn msg_send_debug_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = true;
-    gen_msg_send(sel, func, false, false, true, x86_64)
-}
-
 #[proc_macro_attribute]
 pub fn msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = false;
-    gen_msg_send(sel, func, false, false, true, x86_64)
+    gen_msg_send(sel, func, x86_64, true)
 }
 
 #[proc_macro_attribute]
-pub fn cls_msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
+pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = false;
-    gen_msg_send(sel, func, false, true, false, x86_64)
+    gen_msg_send(sel, func, x86_64, false)
 }
 
 #[proc_macro_attribute]
-pub fn cls_msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+pub fn msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = true;
-    gen_msg_send(sel, func, false, true, false, x86_64)
+    gen_msg_send(sel, func, x86_64, false)
 }
 
-#[proc_macro_attribute]
-pub fn cls_msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = false;
-    let debug = true;
-    gen_msg_send(sel, func, false, true, debug, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn cls_msg_send_debug_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = true;
-    let debug = true;
-    gen_msg_send(sel, func, false, true, debug, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn msg_send2(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = false;
-    gen_msg_send2(sel, func, x86_64)
-}
-
-#[proc_macro_attribute]
-pub fn msg_send2_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
-    let x86_64 = true;
-    gen_msg_send2(sel, func, x86_64)
-}
-
-fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStream {
+fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) -> TokenStream {
     let sel = sel.to_string().replace([' ', '\n'], "");
     let sel_args_count = sel.matches(':').count();
 
@@ -625,8 +524,14 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
         ret = a.to_string();
     }
     let option = ret_full.contains("-> Option <");
-    // println!("{option}: {ret_full}");
+    if debug {
+        println!("{option}: {ret_full}");
+    }
     let gen_rar_version = !sel.starts_with("new") && ret.contains("arc :: R <");
+
+    if debug {
+        println!("option: {option}, gen_rar_version {gen_rar_version} ret: {ret}");
+    }
 
     let fn_args = args.to_string();
 
@@ -704,12 +609,19 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
     let self_ = if class { "Self::" } else { "self." };
     let vars = vars.join(", ");
     let mut impl_fn_name = fn_name.clone();
-    let impl_ret_full = ret_full.replacen("arc :: R <", "arc :: Rar <", 1);
-    let impl_ret = ret.replacen("arc :: R <", "arc :: Rar <", 1);
+    let impl_ret_full = if gen_rar_version {
+        ret_full.replacen("arc :: R <", "arc :: Rar <", 1)
+    } else {
+        ret_full.clone()
+    };
+    let impl_ret = if gen_rar_version {
+        ret.replacen("arc :: R <", "arc :: Rar <", 1)
+    } else {
+        ret
+    };
 
     if gen_rar_version {
         impl_fn_name.push_str("_ar");
-        // println!("gen_rar_version!!!!");
     }
     if x86_64 {
         flow.push_str(&format!(
@@ -840,6 +752,9 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
     };
 
     if gen_rar_version {
+        if debug {
+            println!("get rar version");
+        }
         if option {
             flow.push_str(&format!(
                 "
@@ -897,9 +812,9 @@ fn gen_msg_send2(sel: TokenStream, func: TokenStream, x86_64: bool) -> TokenStre
             }
         }
     }
-    // if debug {
-    // println!("{flow}");
-    // }
+    if debug {
+        println!("{flow}");
+    }
 
     flow.parse().unwrap()
 }
@@ -912,11 +827,16 @@ fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
     let mut pos = 0;
     let mut self_arg = false;
     let mut skip_ident = false;
+    let mut lifetime = false;
     let mut nesting = 0;
     for s in stream.into_iter() {
         match s {
             TokenTree::Group(_) => {}
             TokenTree::Ident(ref i) => {
+                if lifetime {
+                    lifetime = false;
+                    continue;
+                }
                 if !skip_ident {
                     let str = i.to_string();
                     if str == "mut" {
@@ -930,9 +850,13 @@ fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
                     skip_ident = true;
                 }
             }
+            // #[objc::msg_send_debug(objectForKey:)]
+            // pub fn get<'a>(&'a self, key: &K) -> Option<&'a V>;
             TokenTree::Punct(p) => match p.as_char() {
                 '<' => nesting += 1,
                 '>' => nesting -= 1,
+                '\'' => lifetime = true,
+                // '&' => skip_ident = true,
                 ',' if nesting == 0 => {
                     pos += 1;
                     skip_ident = false;
@@ -944,215 +868,6 @@ fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {
         }
     }
     (!self_arg, res)
-}
-
-fn gen_msg_send(
-    sel: TokenStream,
-    func: TokenStream,
-    retain: bool,
-    class: bool,
-    debug: bool,
-    x86_64: bool,
-) -> TokenStream {
-    let extern_name = sel.to_string().replace([' ', '\n'], "");
-    let args_count = extern_name.matches(':').count();
-
-    let mut iter = func.into_iter();
-    let mut pre: Vec<String> = Vec::with_capacity(3);
-
-    for t in iter.by_ref() {
-        let s = t.to_string();
-        pre.push(s);
-        if let TokenTree::Ident(v) = t {
-            if v.to_string() == "fn" {
-                break;
-            }
-        }
-    }
-    let Some(TokenTree::Ident(fn_name)) = iter.next() else {
-        panic!("expected function name");
-    };
-
-    let fn_name = fn_name.to_string();
-    if extern_name.starts_with("new") && fn_name.ends_with("_ar") {
-        panic!("can't use _ar functions with methods started with `new`. See #3");
-    }
-    let mut generics = Vec::new();
-
-    let args = loop {
-        let Some(tt) = iter.next() else {
-            panic!("need more tokens");
-        };
-        match tt {
-            TokenTree::Group(args) => break args,
-            _ => generics.push(tt),
-        }
-    };
-    let gen = if fn_name.ends_with("_ar") {
-        if generics.is_empty() {
-            Cow::Borrowed("<'ar>")
-        } else {
-            let gen = TokenStream::from_iter(generics).to_string();
-            Cow::Owned(gen.replacen('<', "<'ar,", 1))
-        }
-    } else {
-        Cow::Owned(TokenStream::from_iter(generics).to_string())
-    };
-
-    let mut ret = TokenStream::from_iter(iter).to_string();
-    assert_eq!(ret.pop().expect(";"), ';');
-    let ret_full = ret.to_string();
-    if let Some((a, _)) = ret.split_once("where") {
-        ret = a.to_string();
-    }
-    let option = ret_full.contains("-> Option");
-
-    let fn_args = args.to_string();
-    if debug {
-        println!("ret: {ret}");
-        println!("fn_args: {fn_args}");
-    }
-
-    let vars = get_fn_args(args.stream(), class, debug);
-    let fn_args_count = vars.len();
-    if retain {
-        assert_eq!(args_count, 0, "retain should not have selector args");
-    } else {
-        assert_eq!(
-            fn_args_count, args_count,
-            "left: fn_args_count, right: sel_args_count"
-        );
-    }
-    let pre = pre.join(" ");
-    let vars = if vars.is_empty() {
-        Cow::Borrowed("")
-    } else {
-        Cow::Owned(vars.join(", "))
-    };
-
-    let (mut fn_args, mut call_args) = if x86_64 {
-        let fn_args = fn_args.replacen('(', "(id:", 1).replacen(
-            "self",
-            "Self, imp: *const std::ffi::c_void",
-            1,
-        );
-        (fn_args, format!("sig(self, x86_64_sel, {vars})"))
-    } else if fn_args_count == 0 {
-        let fn_args = fn_args
-            .replacen("( &", "(id: &", 1)
-            .replacen("self", "Self", 1);
-        (fn_args, "sig(self)".to_string())
-    } else {
-        let fn_args = fn_args
-            .replacen('(', "(id:", 1)
-            .replace("self", "Self, imp: *const std::ffi::c_void");
-        (fn_args, format!("sig(self, std::ptr::null(), {vars})"))
-    };
-
-    if class {
-        if x86_64 {
-            fn_args = fn_args.replacen(
-                "(id:",
-                "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
-                1,
-            );
-            call_args = call_args.replacen(
-                "sig(self",
-                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-                1,
-            );
-        } else if fn_args_count == 0 {
-            fn_args = fn_args.replacen('(', "(cls: *const std::ffi::c_void", 1);
-            call_args = call_args.replacen(
-                "sig(self",
-                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-                1,
-            );
-        } else {
-            fn_args = fn_args.replacen(
-                "(id:",
-                "(cls: *const std::ffi::c_void, imp: *const std::ffi::c_void,",
-                1,
-            );
-            call_args = call_args.replacen(
-                "sig(self",
-                "sig(Self::cls() as *const _ as *const std::ffi::c_void",
-                1,
-            );
-        }
-    }
-
-    let flow = if retain {
-        let self_ = if class { "Self::" } else { "self." };
-        if option {
-            format!(
-                "
-
-    #[inline]
-    {pre} {fn_name}{gen}{args}{ret_full} {{
-        arc::rar_retain_option({self_}{fn_name}_ar({vars}) )
-    }}
-                "
-            )
-        } else {
-            format!(
-                "
-
-    #[inline]
-    {pre} {fn_name}{gen}{args}{ret_full} {{
-        arc::rar_retain({self_}{fn_name}_ar({vars}))
-    }}
-                "
-            )
-        }
-    } else if x86_64 {
-        format!(
-            "
-
-    #[inline]
-    {pre} {fn_name}{gen}{args}{ret_full} {{
-        extern \"C\" {{
-            #[link_name = \"objc_msgSend\"]
-            fn msg_send();
-
-            fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
-        }}
-
-        unsafe {{
-            let x86_64_sel = sel_registerName(c\"{extern_name}\".as_ptr());
-            let fn_ptr = msg_send as *const std::ffi::c_void;
-            let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
-
-            {call_args}
-        }}
-    }}
-            "
-        )
-    } else {
-        format!(
-            "
-    #[inline]
-    {pre} {fn_name}{gen}{args}{ret_full} {{
-        extern \"C\" {{
-            #[link_name = \"objc_msgSend${extern_name}\"]
-            fn msg_send();
-        }}
-
-        unsafe {{
-            let fn_ptr = msg_send as *const std::ffi::c_void;
-            let sig: extern \"C\" fn{fn_args} {ret} = std::mem::transmute(fn_ptr);
-
-            {call_args}
-        }}
-    }}
-            "
-        )
-    };
-    if debug {
-        println!("{flow}");
-    }
-
-    flow.parse().unwrap()
 }
 
 #[proc_macro_attribute]

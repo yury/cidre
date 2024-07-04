@@ -20,13 +20,6 @@ impl RecognizedText {
     pub fn confidence(&self) -> vn::Confidence;
 
     #[objc::msg_send(boundingBoxForRange:error:)]
-    pub unsafe fn bounding_box_for_range_err_ar<'ear>(
-        &self,
-        range: ns::Range,
-        err: *mut Option<&'ear ns::Error>,
-    ) -> Option<arc::Rar<vn::RectangleObservation>>;
-
-    #[objc::rar_retain]
     pub unsafe fn bounding_box_for_range_err<'ear>(
         &self,
         range: ns::Range,

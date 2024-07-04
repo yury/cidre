@@ -16,10 +16,10 @@ define_obj_type!(
 impl Session {
     define_cls!(WC_SESSION);
 
-    #[objc::cls_msg_send(isSupported)]
+    #[objc::msg_send(isSupported)]
     pub fn is_supported() -> bool;
 
-    #[objc::cls_msg_send(defaultSession)]
+    #[objc::msg_send(defaultSession)]
     pub fn default() -> &'static mut Self;
 
     #[objc::msg_send(delegate)]

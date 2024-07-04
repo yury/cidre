@@ -86,7 +86,7 @@ define_obj_type!(
 );
 
 impl Desc {
-    #[objc::msg_send2(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
+    #[objc::msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
     pub fn new_2d_with_pixel_format(
         pixel_format: mtl::PixelFormat,
         width: usize,
@@ -102,14 +102,14 @@ impl Desc {
     /// assert_eq!(td.texture_type(), mtl::TextureType::Cube);
     ///
     /// ```
-    #[objc::msg_send2(textureCubeDescriptorWithPixelFormat:size:mipmapped:)]
+    #[objc::msg_send(textureCubeDescriptorWithPixelFormat:size:mipmapped:)]
     pub fn new_cube_with_pixel_format(
         pixel_format: mtl::PixelFormat,
         size: usize,
         mipmapped: bool,
     ) -> arc::R<Desc>;
 
-    #[objc::msg_send2(textureBufferDescriptorWithPixelFormat:width:resourceOptions:usage:)]
+    #[objc::msg_send(textureBufferDescriptorWithPixelFormat:width:resourceOptions:usage:)]
     pub fn new_buff_with_pixel_format(
         pixel_format: mtl::PixelFormat,
         width: usize,

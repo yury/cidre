@@ -81,19 +81,9 @@ impl Url {
     }
 
     #[objc::msg_send(absoluteString)]
-    pub fn abs_string_ar(&self) -> Option<arc::Rar<ns::String>>;
-
-    #[objc::rar_retain()]
     pub fn abs_string(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(resourceValuesForKeys:error:)]
-    pub unsafe fn res_values_for_keys_err_ar<'ear>(
-        &self,
-        keys: &ns::Array<ns::UrlResKey>,
-        err: *mut Option<&ns::Error>,
-    ) -> Option<arc::Rar<ns::Dictionary<ns::UrlResKey, ns::Id>>>;
-
-    #[objc::rar_retain]
     pub unsafe fn res_values_for_keys_err<'ear>(
         &self,
         keys: &ns::Array<ns::UrlResKey>,
