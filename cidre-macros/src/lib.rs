@@ -527,7 +527,8 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     if debug {
         println!("{option}: {ret_full}");
     }
-    let gen_rar_version = !sel.starts_with("new") && ret.contains("arc :: R <");
+    let gen_rar_version =
+        !sel.starts_with("new") && ret.contains("arc :: R <") && !sel.starts_with("initWith");
 
     if debug {
         println!("option: {option}, gen_rar_version {gen_rar_version} ret: {ret}");
