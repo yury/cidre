@@ -102,24 +102,30 @@ impl IndirectCmdBuf {
     pub fn reset_with_range(&mut self, range: ns::Range);
 
     #[objc::msg_send(indirectRenderCommandAtIndex:)]
-    pub unsafe fn indirect_render_cmd_at_throws(&self, index: usize) -> &mtl::IndirectRenderCmd;
+    pub unsafe fn indirect_render_cmd_at_throws(
+        &self,
+        index: usize,
+    ) -> arc::R<mtl::IndirectRenderCmd>;
 
     #[inline]
     pub fn indirect_render_cmd_at<'ar>(
         &self,
         index: usize,
-    ) -> Result<&mtl::IndirectRenderCmd, &'ar ns::Exception> {
+    ) -> Result<arc::R<mtl::IndirectRenderCmd>, &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.indirect_render_cmd_at_throws(index) })
     }
 
     #[objc::msg_send(indirectComputeCommandAtIndex:)]
-    pub unsafe fn indirect_compute_cmd_at_throws(&self, index: usize) -> &mtl::IndirectComputeCmd;
+    pub unsafe fn indirect_compute_cmd_at_throws(
+        &self,
+        index: usize,
+    ) -> arc::R<mtl::IndirectComputeCmd>;
 
     #[inline]
     pub fn indirect_compute_cmd_at<'ar>(
         &self,
         index: usize,
-    ) -> Result<&mtl::IndirectComputeCmd, &'ar ns::Exception> {
+    ) -> Result<arc::R<mtl::IndirectComputeCmd>, &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.indirect_compute_cmd_at_throws(index) })
     }
 }

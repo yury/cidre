@@ -1,6 +1,9 @@
 use crate::{define_obj_type, mtl, ns, objc};
 
-define_obj_type!(pub IndirectRenderCmd(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLIndirectRenderCommand")]
+    pub IndirectRenderCmd(ns::Id)
+);
 
 impl IndirectRenderCmd {
     /// Sets the render pipeline state object used by the command.
@@ -91,7 +94,7 @@ impl IndirectRenderCmd {
     /// Encodes a command to render a number of instances of primitives using an index list specified in a buffer,
     /// starting from the base vertex of the base instance.
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:baseVertex:baseInstance:)]
-    pub fn draw_indexed_primitives(
+    pub fn draw_indexed_primitives_index_type_index_count_instance_count(
         &self,
         primitive_type: mtl::Primitive,
         index_count: usize,
@@ -103,6 +106,44 @@ impl IndirectRenderCmd {
         base_instance: usize,
     );
 
+    #[inline]
+    pub fn draw_indexed_triangles_u16(
+        &mut self,
+        index_buffer: &mtl::Buf,
+        index_range: &std::ops::Range<usize>,
+        instance_range: &std::ops::Range<usize>,
+    ) {
+        self.draw_indexed_primitives_index_type_index_count_instance_count(
+            mtl::Primitive::Triangle,
+            index_range.len(),
+            mtl::IndexType::U16,
+            index_buffer,
+            index_range.start * std::mem::size_of::<u16>(),
+            instance_range.len(),
+            0, // base vertex,
+            instance_range.start,
+        );
+    }
+
+    #[inline]
+    pub fn draw_indexed_triangles_u32(
+        &mut self,
+        index_buffer: &mtl::Buf,
+        index_range: &std::ops::Range<usize>,
+        instance_range: &std::ops::Range<usize>,
+    ) {
+        self.draw_indexed_primitives_index_type_index_count_instance_count(
+            mtl::Primitive::Triangle,
+            index_range.len(),
+            mtl::IndexType::U32,
+            index_buffer,
+            index_range.start * std::mem::size_of::<u32>(),
+            instance_range.len(),
+            0, // base vertex,
+            instance_range.start,
+        );
+    }
+
     /// Resets the command to its default state.
     ///
     /// A command that has been reset loses any state that you previously
@@ -111,7 +152,10 @@ impl IndirectRenderCmd {
     pub fn reset(&mut self);
 }
 
-define_obj_type!(pub IndirectComputeCmd(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLIndirectComputeCommand")]
+    pub IndirectComputeCmd(ns::Id)
+);
 
 impl IndirectComputeCmd {
     #[objc::msg_send(setComputePipelineState:)]

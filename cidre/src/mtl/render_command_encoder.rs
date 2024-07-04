@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, define_opts, mtl, ns, objc};
+use crate::{api, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
@@ -449,5 +449,19 @@ impl RenderCmdEncoder {
         textures: &[Option<&mtl::Texture>; N],
     ) {
         self.set_tile_textures_with_range(textures.as_ptr(), ns::Range::new(0, N));
+    }
+
+    #[objc::msg_send(executeCommandsInBuffer:withRange:)]
+    #[api::available(macos = 10.14, ios = 12.0)]
+    pub fn execute_cmds_in_buf_with_range(&mut self, icb: &mtl::IndirectCmdBuf, range: ns::Range);
+
+    #[inline]
+    #[api::available(macos = 10.14, ios = 12.0)]
+    pub fn execute_cmds_in_buf(
+        &mut self,
+        icb: &mtl::IndirectCmdBuf,
+        range: std::ops::Range<usize>,
+    ) {
+        self.execute_cmds_in_buf_with_range(icb, ns::Range::new(range.start, range.len()))
     }
 }
