@@ -89,7 +89,20 @@ impl Heap {
 
     /// Create a new buffer backed by heap memory.
     #[objc::msg_send(newBufferWithLength:options:)]
-    pub fn new_buf(&self, length: usize, options: mtl::ResOpts) -> Option<arc::R<mtl::Buf>>;
+    pub unsafe fn new_buf_throws(
+        &self,
+        length: usize,
+        options: mtl::ResOpts,
+    ) -> Option<arc::R<mtl::Buf>>;
+
+    /// Create a new buffer backed by heap memory.
+    pub fn new_buf<'ear>(
+        &self,
+        length: usize,
+        options: mtl::ResOpts,
+    ) -> Result<Option<arc::R<mtl::Buf>>, &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.new_buf_throws(length, options) })
+    }
 
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
