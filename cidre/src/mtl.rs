@@ -321,7 +321,7 @@ macro_rules! define_mtl {
     };
 
     (gpu_resource_id) => {
-        #[$crate::objc::msg_send(resourceID)]
+        #[$crate::objc::msg_send(gpuResourceID)]
         pub fn gpu_resource_id(&self) -> crate::mtl::ResourceId;
     };
 

@@ -57,6 +57,7 @@ define_obj_type!(
 impl arc::A<Player> {
     #[objc::msg_send(initWithURL:)]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<Player>;
+
     #[objc::msg_send(initWithPlayerItem:)]
     pub unsafe fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
 }
