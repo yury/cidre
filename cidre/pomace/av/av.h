@@ -35,6 +35,7 @@ Class AV_URL_ASSET;
 Class AV_ASSET_WRITER;
 Class AV_ASSET_READER;
 Class AV_ASSET_WRITER_INPUT;
+Class AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR;
 Class AV_ASSET_READER_TRACK_OUTPUT;
 
 Class AV_OUTPUT_SETTINGS_ASSISTANT;
@@ -150,6 +151,7 @@ static void av_initializer(void)
 #else
         AV_ASSET_WRITER = [AVAssetWriter class];
         AV_ASSET_WRITER_INPUT = [AVAssetWriterInput class];
+        AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR = [AVAssetWriterInputPixelBufferAdaptor class];
         AV_ASSET_READER_TRACK_OUTPUT = [AVAssetReaderTrackOutput class];
         AV_ASSET_READER = [AVAssetReader class];
         

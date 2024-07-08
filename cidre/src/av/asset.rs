@@ -25,6 +25,7 @@ pub use writer::Writer as AssetWriter;
 
 pub mod writer_input;
 pub use writer_input::WriterInput;
+pub use writer_input::WriterInputPixelBufAdaptor;
 
 pub mod track;
 pub use track::FragmentedTrack;

@@ -1,4 +1,4 @@
-use crate::{arc, av::MediaType, blocks, cm, define_cls, define_obj_type, dispatch, ns, objc};
+use crate::{arc, av::MediaType, blocks, cm, cv, define_cls, define_obj_type, dispatch, ns, objc};
 
 define_obj_type!(pub WriterInput(ns::Id));
 
@@ -145,14 +145,70 @@ impl WriterInput {
     }
 }
 
+define_obj_type!(
+    #[doc(alias = "AVAssetWriterInputPixelBufferAdaptor")]
+    pub WriterInputPixelBufAdaptor(ns::Id),
+    AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR
+);
+
+impl arc::A<WriterInputPixelBufAdaptor> {
+    #[objc::msg_send(initWithAssetWriterInput:sourcePixelBufferAttributes:)]
+    pub unsafe fn init_with_asset_writer_input_throws(
+        self,
+        input: &WriterInput,
+        src_pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
+    ) -> arc::R<WriterInputPixelBufAdaptor>;
+}
+
+impl WriterInputPixelBufAdaptor {
+    pub fn with_input_writer<'ear>(
+        input: &WriterInput,
+        src_pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
+    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+        ns::try_catch(|| unsafe {
+            Self::alloc().init_with_asset_writer_input_throws(input, src_pixel_buf_attrs)
+        })
+    }
+
+    /// The asset writer input to which the receiver should append pixel buffers.
+    #[objc::msg_send(assetWriterInput)]
+    pub fn asset_writer_input(&self) -> arc::R<WriterInput>;
+
+    /// The pixel buffer attributes of pixel buffers that will be vended by the receiver's cv::PixelBufPool.
+    #[objc::msg_send(sourcePixelBufferAttributes)]
+    pub fn src_pixel_buf_attrs(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
+
+    /// A pixel buffer pool that will vend and efficiently recycle cv::PixelBuf objects that can be appended to the receiver.
+    #[objc::msg_send(pixelBufferPool)]
+    pub fn pixel_buf_pool(&self) -> Option<&cv::PixelBufPool>;
+
+    /// This method throws an exception if the presentation time is is non-numeric (see cm::Time::is_numeric()) or if "ready_for_more_media_data" is false.
+    #[objc::msg_send(appendPixelBuffer:withPresentationTime:)]
+    pub unsafe fn append_pixel_buf_with_pts_throws(
+        &mut self,
+        buf: &cv::PixelBuf,
+        pts: cm::Time,
+    ) -> bool;
+
+    pub fn append_pixel_buf_with_pts<'ear>(
+        &mut self,
+        buf: &cv::PixelBuf,
+        pts: cm::Time,
+    ) -> Result<bool, &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.append_pixel_buf_with_pts_throws(buf, pts) })
+    }
+}
+
 #[link(name = "av", kind = "static")]
 extern "C" {
     static AV_ASSET_WRITER_INPUT: &'static objc::Class<WriterInput>;
+    static AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR:
+        &'static objc::Class<WriterInputPixelBufAdaptor>;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::av;
+    use crate::{av, objc};
 
     #[test]
     fn basics() {
@@ -167,5 +223,20 @@ mod tests {
         av::asset::WriterInput::with_media_type(av::MediaType::depth_data()).unwrap();
         let input = av::asset::WriterInput::with_media_type(av::MediaType::timecode()).unwrap();
         println!("{:?}", input);
+    }
+
+    #[test]
+    fn pixel_buf_adapter() {
+        let input = av::asset::WriterInput::with_media_type(av::MediaType::video())
+            .expect("failed to create writer");
+        let adapter = av::asset::WriterInputPixelBufAdaptor::with_input_writer(&input, None)
+            .expect("failed to create pixel buf adapter");
+
+        assert!(adapter.pixel_buf_pool().is_none());
+
+        objc::ar_pool(|| {
+            let _ = av::asset::WriterInputPixelBufAdaptor::with_input_writer(&input, None)
+                .expect_err("should throw exception");
+        })
     }
 }
