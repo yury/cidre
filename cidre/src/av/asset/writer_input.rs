@@ -147,8 +147,7 @@ impl WriterInput {
 
 define_obj_type!(
     #[doc(alias = "AVAssetWriterInputPixelBufferAdaptor")]
-    pub WriterInputPixelBufAdaptor(ns::Id),
-    AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR
+    pub WriterInputPixelBufAdaptor(ns::Id)
 );
 
 impl arc::A<WriterInputPixelBufAdaptor> {
@@ -161,6 +160,8 @@ impl arc::A<WriterInputPixelBufAdaptor> {
 }
 
 impl WriterInputPixelBufAdaptor {
+    define_cls!(AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR);
+
     pub fn with_input_writer<'ear>(
         input: &WriterInput,
         src_pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
