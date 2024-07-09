@@ -876,7 +876,6 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
     let mut original_body = body.clone();
     let mut iter = body.into_iter();
     let mut versions = None;
-    let mut _is_fn = false;
     let mut tokens: Vec<TokenTree> = Vec::new();
     let mut vars: Vec<(Versions, String, String)> = Vec::new(); // Version, Name, Type
     while let Some(t) = iter.next() {
@@ -910,13 +909,36 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                             }
                         }
                         TokenTree::Punct(ref p) if p.as_char() == ';' => {
-                            // println!("{is_fn};");
                             tokens.clear();
                             versions = None;
-                            _is_fn = false;
                         }
                         TokenTree::Group(ref p) if p.delimiter() == Delimiter::Parenthesis => {
-                            _is_fn = true;
+                            if let Some(version) = versions.take() {
+                                let mut ty: Vec<TokenTree> =
+                                    TokenStream::from_str("extern \"C\" fn ")
+                                        .unwrap()
+                                        .into_iter()
+                                        .collect();
+                                let name = tokens.pop().unwrap();
+                                let var_name = name.to_string();
+                                // ty.push(name);
+                                ty.push(t.clone());
+                                while let Some(t) = group.next() {
+                                    match t {
+                                        TokenTree::Punct(ref p) if p.as_char() == ';' => break,
+                                        t => ty.push(t),
+                                    }
+                                }
+                                let ty = if ty.len() == 1 {
+                                    ty[0].to_string()
+                                } else {
+                                    TokenStream::from_iter(ty).to_string()
+                                };
+
+                                // println!("ty: {ty:?}");
+
+                                vars.push((version, var_name, ty));
+                            }
                         }
                         TokenTree::Group(ref p) if p.delimiter() == Delimiter::Bracket => {
                             let mut attr = p.stream().into_iter();
@@ -976,6 +998,7 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
         })
         .collect::<Vec<_>>()
         .join("\n");
+    // println!("vars : {vars}");
     let stream = TokenStream::from_str(&vars).unwrap();
     original_body.extend(stream);
     original_body

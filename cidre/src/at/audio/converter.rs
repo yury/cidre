@@ -6,7 +6,7 @@ use std::{
     ptr::NonNull,
 };
 
-use crate::{cat::audio, os};
+use crate::{api, cat::audio, define_opts, os};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -485,9 +485,9 @@ impl ConverterRef {
     pub unsafe fn new(
         src_format: &audio::StreamBasicDesc,
         dst_format: &audio::StreamBasicDesc,
-        out_audio_converer: *mut Option<Self>,
+        out_audio_converter: *mut Option<Self>,
     ) -> os::Status {
-        AudioConverterNew(src_format, dst_format, out_audio_converer)
+        AudioConverterNew(src_format, dst_format, out_audio_converter)
     }
 
     pub fn with_formats(
@@ -500,6 +500,23 @@ impl ConverterRef {
         }
     }
 }
+// impl ConverterRef {
+//     #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0, visionos = 2.0)]
+//     pub unsafe fn new_with_options(
+//         src_format: &audio::StreamBasicDesc,
+//         dst_format: &audio::StreamBasicDesc,
+//         options: Opts,
+//         out_audio_converter: *mut Option<Self>,
+//     ) -> os::Status {
+//         AUDIO_CONVERTER_NEW_WITH_OPTIONS.get().unwrap()(
+//             src_format,
+//             dst_format,
+//             options,
+//             out_audio_converter,
+//         )
+//         // AudioConverterNewWithOptions(src_format, dst_format, options, out_audio_converer)
+//     }
+// }
 
 impl Converter {
     #[inline]
@@ -833,11 +850,29 @@ pub struct PropInfo {
     pub writable: bool,
 }
 
+define_opts!(
+    #[doc(alias = "AudioConverterOptions")]
+    pub Opts(u32)
+);
+
+impl Opts {
+    pub const UNBUFFERED: Self = Self(1 << 16);
+}
+
 #[link(name = "AudioToolbox", kind = "framework")]
+#[api::weak]
 extern "C" {
     fn AudioConverterNew(
         in_source_format: &audio::StreamBasicDesc,
         in_destination_format: &audio::StreamBasicDesc,
+        out_audio_converer: *mut Option<ConverterRef>,
+    ) -> os::Status;
+
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0, visionos = 2.0)]
+    fn AudioConverterNewWithOptions(
+        in_source_format: &audio::StreamBasicDesc,
+        in_destination_format: &audio::StreamBasicDesc,
+        in_options: Opts,
         out_audio_converer: *mut Option<ConverterRef>,
     ) -> os::Status;
 

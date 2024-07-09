@@ -282,6 +282,14 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_64RGBALE")]
     pub const _64_RGBALE: Self = Self(os::Type::from_be_bytes(*b"l64r"));
 
+    /// 30 bit RGB, 10-bit big-endian samples, 2 unused padding bits (at least significant end).
+    #[doc(alias = "kCVPixelFormatType_30RGB")]
+    pub const _30_RGB: Self = Self(os::Type::from_be_bytes(*b"R10k"));
+
+    /// 30 bit RGB, 10-bit big-endian samples, 2 unused padding bits (at most significant end), video-range (64-940).
+    #[doc(alias = "kCVPixelFormatType_30RGB_r210")]
+    pub const _30_RGB_R210: Self = Self(os::Type::from_be_bytes(*b"r210"));
+
     /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, video-range (luma=\[16,235\] chroma=\[16,240\]).
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));

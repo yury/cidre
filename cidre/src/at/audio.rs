@@ -17,6 +17,7 @@ pub use converter::err as converter_err;
 pub use converter::Converter;
 pub use converter::ConverterRef;
 pub use converter::DitherAlgorithm;
+pub use converter::Opts as ConverterOpts;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 pub use converter::Quality as ConverterQuality;
 
