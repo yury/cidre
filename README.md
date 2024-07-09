@@ -31,6 +31,8 @@ Deployment targets are controlled via features `macos_x_x`, `ios_x_x`, `tvos_x_x
 If selector is not defined in deployment target it becomes unsafe. So developer
 should check if object responses to that selector before call it.
 
+Default features: `macos_14_0`, `ios_17_0`, `tvos_17_0`, `maccatalyst_17_0`, `watchos_10_0`, `visionos_1_0`;
+
 ### Shortcuts
 
 - address -> addr
