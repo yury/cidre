@@ -1280,6 +1280,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     let mut unavailable_doc = Some(unavailable_doc);
     let mut res = Vec::new();
     let mut maybe_res: Vec<TokenTree> = Vec::new();
+
     for t in body.into_iter() {
         if available.is_some() {
             res.extend(available.take().unwrap());
@@ -1318,26 +1319,9 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
                 no_args = g.stream().is_empty();
             }
             // function body {}
-            if no_args && g.delimiter() == Delimiter::Brace {
-                if replace_return(&mut maybe_res) {
-                    let mut iter = g.stream().into_iter();
-                    let ident = iter.next().unwrap().to_string();
-                    assert_eq!(ident, "unsafe");
-                    match iter.next().expect("token") {
-                        TokenTree::Group(g) => {
-                            let TokenTree::Ident(var) = g.stream().into_iter().next().unwrap()
-                            else {
-                                panic!("expecting variable");
-                            };
-                            let var = upper_case(&var.to_string());
-                            let stream =
-                                TokenStream::from_str(&format!("{{ unsafe {{ {var}.get() }} }}"))
-                                    .unwrap();
-                            maybe_res.extend(stream);
-                        }
-                        _ => panic!("expecting unsafe block"),
-                    }
-                }
+            if g.delimiter() == Delimiter::Brace {
+                if no_args && try_replace_return(&mut maybe_res) {}
+                if try_replace_fn(&mut maybe_res) {}
             }
         }
 
@@ -1349,7 +1333,57 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     TokenStream::from_iter(res)
 }
 
-fn replace_return(tokens: &mut Vec<TokenTree>) -> bool {
+fn try_replace_fn(tokens: &mut Vec<TokenTree>) -> bool {
+    let Some(TokenTree::Group(ref g)) = tokens.last() else {
+        return false;
+    };
+    if g.delimiter() != Delimiter::Brace {
+        return false;
+    }
+    // check fn body. it should be function call.
+    let mut body_stream = g.stream().into_iter();
+
+    match body_stream.next().unwrap() {
+        TokenTree::Ident(ident) => match ident.to_string().as_str() {
+            "unsafe" => {
+                let Some(TokenTree::Group(g)) = body_stream.next() else {
+                    return false;
+                };
+                if g.delimiter() != Delimiter::Brace {
+                    return false;
+                }
+                let mut block = g.stream().into_iter();
+                let Some(TokenTree::Ident(ident)) = block.next() else {
+                    return false;
+                };
+                let Some(TokenTree::Group(args)) = block.next() else {
+                    return false;
+                };
+                if args.delimiter() != Delimiter::Parenthesis {
+                    return false;
+                }
+                if block.next().is_none() {
+                    tokens.pop();
+                    let var = upper_case(&ident.to_string());
+                    let stream = TokenStream::from_str(&format!(
+                        "{{ unsafe {{ {var}.get().unwrap(){0} }} }}",
+                        args.to_string()
+                    ))
+                    .unwrap();
+                    tokens.extend(stream);
+
+                    return true;
+                }
+            }
+            _ => return false,
+        },
+
+        _ => return false,
+    };
+    return false;
+}
+
+fn try_replace_return(tokens: &mut Vec<TokenTree>) -> bool {
     let mut idx = tokens.len() - 1;
     let mut has_static = false;
     // going reverse till `&'static` or ()
@@ -1367,15 +1401,58 @@ fn replace_return(tokens: &mut Vec<TokenTree>) -> bool {
     if !has_static {
         return false;
     }
+
+    let mut body_stream = {
+        let Some(TokenTree::Group(ref g)) = tokens.last() else {
+            return false;
+        };
+
+        // check fn body. it should return single var, no function call.
+        g.stream().into_iter()
+    };
+
+    // check for
+    // unsafe { VAR }
+    // or
+    // unsafe { fn_call(args) }
+
+    let var = match body_stream.next().unwrap() {
+        TokenTree::Ident(ident) => match ident.to_string().as_str() {
+            "unsafe" => {
+                let TokenTree::Group(g) = body_stream.next().unwrap() else {
+                    return false;
+                };
+                if g.delimiter() != Delimiter::Brace {
+                    return false;
+                }
+                let mut block = g.stream().into_iter();
+                let TokenTree::Ident(ident) = block.next().unwrap() else {
+                    return false;
+                };
+                if let Some(TokenTree::Group(_g)) = block.next() {
+                    return false;
+                };
+                ident.to_string()
+            }
+            x => x.to_string(),
+        },
+
+        _ => return false,
+    };
+
     idx -= 1; // &
     tokens.pop(); // {}
     let stream = TokenStream::from_iter(tokens.drain(idx..));
     let ty = stream.to_string();
     let stream = TokenStream::from_str(&format!("Option<{ty}>")).unwrap();
     tokens.extend(stream);
+    let var = upper_case(&var.to_string());
+    let stream = TokenStream::from_str(&format!("{{ unsafe {{ {var}.get() }} }}")).unwrap();
+    tokens.extend(stream);
     return true;
 }
 
+// Super simple, but stable upper_case impl
 fn upper_case(str: &str) -> String {
     let len = str.len();
     let mut res = Vec::<u8>::with_capacity(len + 10);

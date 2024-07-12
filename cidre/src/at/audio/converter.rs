@@ -500,22 +500,41 @@ impl ConverterRef {
         }
     }
 }
-// impl ConverterRef {
-//     #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0, visionos = 2.0)]
-//     pub unsafe fn new_with_options(
-//         src_format: &audio::StreamBasicDesc,
-//         dst_format: &audio::StreamBasicDesc,
-//         options: Opts,
-//         out_audio_converter: *mut Option<Self>,
-//     ) -> os::Status {
-//         AUDIO_CONVERTER_NEW_WITH_OPTIONS.get().unwrap()(
-//             src_format,
-//             dst_format,
-//             options,
-//             out_audio_converter,
-//         )
-//         // AudioConverterNewWithOptions(src_format, dst_format, options, out_audio_converer)
-//     }
+impl ConverterRef {
+    #[doc(alias = "AudioConverterNewWithOptions")]
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0, visionos = 2.0)]
+    pub unsafe fn new_with_options(
+        src_format: &audio::StreamBasicDesc,
+        dst_format: &audio::StreamBasicDesc,
+        options: Opts,
+        out_audio_converter: *mut Option<Self>,
+    ) -> os::Status {
+        unsafe {
+            AudioConverterNewWithOptions(src_format, dst_format, options, out_audio_converter)
+        }
+    }
+
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0, visionos = 2.0)]
+    pub fn with_options(
+        src_fmt: &audio::StreamBasicDesc,
+        dst_fmt: &audio::StreamBasicDesc,
+        options: Opts,
+    ) -> Result<Self, os::Status> {
+        let mut out_converter = None;
+        unsafe {
+            Self::new_with_options(src_fmt, dst_fmt, options, &mut out_converter)
+                .to_result_unchecked(out_converter)
+        }
+    }
+}
+
+// #[cfg(test)]
+// mod tests {
+// use crate::at;
+// #[test]
+// fn basics() {
+//     at::AudioConverterRef::new_with_options(, , , )
+// }
 // }
 
 impl Converter {
