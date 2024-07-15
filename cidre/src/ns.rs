@@ -28,6 +28,10 @@ mod progress;
 pub use progress::Progress;
 
 pub mod objc_runtime;
+pub use objc_runtime::class_from_ns_string;
+pub use objc_runtime::selector_from_ns_string;
+pub use objc_runtime::string_from_class;
+pub use objc_runtime::string_from_selector;
 pub use objc_runtime::ExceptionName;
 
 pub mod exception;

@@ -4,26 +4,31 @@ use crate::{arc, define_obj_type, ns, objc::Obj};
 
 define_obj_type!(pub ExceptionName(ns::String));
 
+#[doc(alias = "NSStringFromSelector")]
 #[inline]
-pub fn ns_string_from_selector(sel: &ns::objc::Sel) -> arc::R<ns::String> {
+pub fn string_from_selector(sel: &ns::objc::Sel) -> arc::R<ns::String> {
     unsafe { NSStringFromSelector(sel) }
 }
 
+#[doc(alias = "NSSelectorFromString")]
 #[inline]
-pub fn ns_selector_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::Sel> {
+pub fn selector_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::Sel> {
     unsafe { NSSelectorFromString(name) }
 }
 
+#[doc(alias = "NSStringFromClass")]
 #[inline]
-pub fn ns_string_from_class<T: Obj>(cls: &ns::objc::Class<T>) -> arc::R<ns::String> {
+pub fn string_from_class<T: Obj>(cls: &ns::objc::Class<T>) -> arc::R<ns::String> {
     unsafe { NSStringFromClass(cls as *const ns::objc::Class<T> as _) }
 }
 
+#[doc(alias = "NSClassFromString")]
 #[inline]
-pub fn ns_class_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::Class<ns::Id>> {
+pub fn class_from_ns_string<T: Obj>(name: &ns::String) -> Option<&'static ns::objc::Class<T>> {
     unsafe { std::mem::transmute(NSClassFromString(name)) }
 }
 
+#[link(name = "Foundation", kind = "framework")]
 extern "C" {
     fn NSStringFromSelector(sel: &ns::objc::Sel) -> arc::R<ns::String>;
     fn NSSelectorFromString(name: &ns::String) -> Option<&'static ns::objc::Sel>;
@@ -37,12 +42,10 @@ extern "C" {
 mod tests {
     use crate::{ns, wk};
 
-    use super::ns_class_from_ns_string;
-
     #[test]
     fn basics() {
-        let name = ns::String::with_str("WKWebView");
-        let cls = ns_class_from_ns_string(&name).unwrap();
+        let name = ns::str!(c"WKWebView");
+        let cls = ns::class_from_ns_string::<ns::Id>(&name).unwrap();
         assert!(cls.as_type_ref().equal(wk::WebView::cls().as_type_ref()));
     }
 }
