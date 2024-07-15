@@ -2,7 +2,7 @@
 ///
 use std::{borrow::Cow, str::FromStr};
 
-use proc_macro::{Delimiter, Group, Punct, TokenStream, TokenTree};
+use proc_macro::{Delimiter, Group, Ident, Punct, Span, TokenStream, TokenTree};
 
 enum Attr {
     Optional,
@@ -1280,6 +1280,8 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     let mut unavailable_doc = Some(unavailable_doc);
     let mut res = Vec::new();
     let mut maybe_res: Vec<TokenTree> = Vec::new();
+    let mut fn_index = 0usize;
+    let mut unsafe_already = false;
 
     for t in body.into_iter() {
         if available.is_some() {
@@ -1306,22 +1308,42 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
                 _ => {}
             }
         }
-        if let TokenTree::Punct(ref p) = t {
-            if p.as_char() == ';' {
+        match t {
+            TokenTree::Punct(ref p) if p.as_char() == ';' => {
                 no_body = true;
             }
+            TokenTree::Ident(ref ident) => match ident.to_string().as_str() {
+                "fn" => {
+                    fn_index = maybe_res.len();
+                }
+                "unsafe" => {
+                    unsafe_already = true;
+                }
+                _ => {}
+            },
+            _ => {}
         }
+
         maybe_res.push(t.clone());
 
         if let TokenTree::Group(ref g) = t {
             // function without args ()
             if g.delimiter() == Delimiter::Parenthesis {
                 no_args = g.stream().is_empty();
+                // we are in function.
             }
             // function body {}
             if g.delimiter() == Delimiter::Brace {
                 if no_args && try_replace_return(&mut maybe_res) {}
-                if try_replace_fn(&mut maybe_res) {}
+                if try_replace_fn(&mut maybe_res) {
+                } else {
+                    if !unsafe_already {
+                        maybe_res.insert(
+                            fn_index,
+                            TokenTree::Ident(Ident::new("unsafe", Span::call_site())),
+                        );
+                    }
+                }
             }
         }
 
@@ -1366,7 +1388,7 @@ fn try_replace_fn(tokens: &mut Vec<TokenTree>) -> bool {
                     tokens.pop();
                     let var = upper_case(&ident.to_string());
                     let stream = TokenStream::from_str(&format!(
-                        "{{ unsafe {{ {var}.get().unwrap(){0} }} }}",
+                        "{{ unsafe {{ {var}.get_fn().unwrap(){} }} }}",
                         args.to_string()
                     ))
                     .unwrap();

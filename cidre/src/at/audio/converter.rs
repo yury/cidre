@@ -528,15 +528,6 @@ impl ConverterRef {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-// use crate::at;
-// #[test]
-// fn basics() {
-//     at::AudioConverterRef::new_with_options(, , , )
-// }
-// }
-
 impl Converter {
     #[inline]
     pub fn reset(&self) -> Result<(), os::Status> {
@@ -942,5 +933,24 @@ extern "C" {
     ) -> os::Status;
 
     fn AudioConverterDispose(converter: &Converter) -> os::Status;
+}
 
+#[cfg(test)]
+mod tests {
+    use crate::{api, at};
+
+    #[test]
+    fn basics() {
+        let src_fmt = at::audio::StreamBasicDesc::common_f32(44_100.0f64, 2, true);
+        let dst_fmt = at::audio::StreamBasicDesc::common_f32(44_100.0f64, 2, false);
+        let converter = if api::version!(macos = 15.0, ios = 18.0, tvos = 18.0) {
+            let opts = at::audio::ConverterOpts::UNBUFFERED;
+            unsafe { at::audio::ConverterRef::with_options(&src_fmt, &dst_fmt, opts).unwrap() }
+        } else {
+            at::audio::ConverterRef::with_formats(&src_fmt, &dst_fmt).unwrap()
+        };
+
+        let size = converter.max_output_packet_size().unwrap();
+        assert_eq!(size, 4);
+    }
 }
