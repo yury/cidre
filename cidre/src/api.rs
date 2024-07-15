@@ -24,23 +24,19 @@ impl<T> DlSym<T> {
     pub fn get_fn(&self) -> Option<&T> {
         unsafe {
             match self.ptr.load(Ordering::Relaxed) {
-                1 => {
-                    let fnptr = &(self.initialize_fn());
-                    std::mem::transmute(fnptr)
-                }
+                1 => std::mem::transmute(&self.initialize_fn()),
                 ptr => {
                     fence(Ordering::Acquire);
-                    let fnptr = &ptr;
-                    std::mem::transmute(fnptr)
+                    std::mem::transmute(&ptr)
                 }
             }
         }
     }
     #[inline]
-    pub fn get(&self) -> Option<&T> {
+    pub fn get_var(&self) -> Option<&T> {
         unsafe {
             match self.ptr.load(Ordering::Relaxed) {
-                1 => self.initialize(),
+                1 => std::mem::transmute(self.initialize_var()),
                 ptr => {
                     fence(Ordering::Acquire);
                     std::mem::transmute(ptr)
@@ -61,8 +57,6 @@ impl<T> DlSym<T> {
             return 0;
         }
 
-        // let val = val as *mut usize;
-        // let val = *val;
         let val = val as usize;
 
         // This synchronizes with the acquire fence in `get`.
@@ -72,14 +66,14 @@ impl<T> DlSym<T> {
     }
 
     #[cold]
-    unsafe fn initialize(&self) -> Option<&T> {
+    unsafe fn initialize_var(&self) -> usize {
         extern "C" {
             fn dlsym(handle: *const c_void, symbol: *const c_char) -> *mut c_void;
         }
         const RTLD_DEFAULT: isize = -2isize;
         let val = dlsym(RTLD_DEFAULT as _, self.name.as_ptr());
         if val.is_null() {
-            return None;
+            return 0;
         }
 
         let val = val as *mut usize;
@@ -88,7 +82,7 @@ impl<T> DlSym<T> {
         // This synchronizes with the acquire fence in `get`.
         self.ptr.store(val, Ordering::Release);
 
-        std::mem::transmute(val)
+        val
     }
 }
 
@@ -241,11 +235,11 @@ mod tests {
 
     #[test]
     fn basics() {
-        assert!(NOT_FOUND.get().is_none());
-        assert!(NOT_FOUND.get().is_none());
-        assert!(SHOULD_BE_FOUND.get().is_some());
-        assert!(SHOULD_BE_FOUND.get().unwrap().len() > 0);
-        assert!(SHOULD_BE_FOUND.get().unwrap().len() > 0);
+        assert!(NOT_FOUND.get_var().is_none());
+        assert!(NOT_FOUND.get_var().is_none());
+        assert!(SHOULD_BE_FOUND.get_var().is_some());
+        assert!(SHOULD_BE_FOUND.get_var().unwrap().len() > 0);
+        assert!(SHOULD_BE_FOUND.get_var().unwrap().len() > 0);
     }
 
     #[test]

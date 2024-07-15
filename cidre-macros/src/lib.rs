@@ -1469,7 +1469,7 @@ fn try_replace_return(tokens: &mut Vec<TokenTree>) -> bool {
     let stream = TokenStream::from_str(&format!("Option<{ty}>")).unwrap();
     tokens.extend(stream);
     let var = upper_case(&var.to_string());
-    let stream = TokenStream::from_str(&format!("{{ unsafe {{ {var}.get() }} }}")).unwrap();
+    let stream = TokenStream::from_str(&format!("{{ unsafe {{ {var}.get_var() }} }}")).unwrap();
     tokens.extend(stream);
     return true;
 }
