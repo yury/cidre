@@ -1,7 +1,7 @@
 use std::{ffi::c_void, mem::transmute};
 
 use crate::{
-    arc,
+    api, arc,
     cf::{self, Allocator},
     define_cf_type, os, FourCharCode,
 };
@@ -77,6 +77,7 @@ impl MediaType {
     pub const SUBTITLE: Self = Self::from_be_bytes(b"sbtl");
     pub const TIME_CODE: Self = Self::from_be_bytes(b"tmcd");
     pub const METADATA: Self = Self::from_be_bytes(b"meta");
+    pub const AUXILIARY_PICTURE: Self = Self::from_be_bytes(b"auxv");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
@@ -856,8 +857,30 @@ impl FormatDescExtKey {
     pub fn horizontal_field_of_view() -> &'static Self {
         unsafe { kCMFormatDescriptionExtension_HorizontalFieldOfView }
     }
+
+    /// Indicates that the transfer function or gamma of the content is a log format and identifies the specific log curve.
+    ///
+    /// The value is a CFString holding fully specified reverse DNS identifier.
+    /// Content captured in Apple Log will have this key set to kCMFormatDescriptionLogTransferFunction_AppleLog.
+    #[doc(alias = "kCMFormatDescriptionExtension_LogTransferFunction")]
+    #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+    pub fn log_transfer_fn() -> &'static Self {
+        unsafe { kCMFormatDescriptionExtension_LogTransferFunction }
+    }
 }
 
+define_cf_type!(LogTransferFn(cf::String));
+
+impl LogTransferFn {
+    #[doc(alias = "kCMFormatDescriptionLogTransferFunction_AppleLog")]
+    #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+    pub fn apple_log() -> &'static Self {
+        unsafe { kCMFormatDescriptionLogTransferFunction_AppleLog }
+    }
+}
+
+#[link(name = "CoreMedia", kind = "framework")]
+#[api::weak]
 extern "C" {
     static kCMFormatDescriptionExtension_FormatName: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_Depth: &'static FormatDescExtKey;
@@ -894,6 +917,12 @@ extern "C" {
     static kCMFormatDescriptionExtension_ContainsAlphaChannel: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_BitsPerComponent: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_HorizontalFieldOfView: &'static FormatDescExtKey;
+
+    #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+    static kCMFormatDescriptionExtension_LogTransferFunction: &'static FormatDescExtKey;
+
+    #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+    static kCMFormatDescriptionLogTransferFunction_AppleLog: &'static LogTransferFn;
 
     fn CMFormatDescriptionGetTypeID() -> cf::TypeId;
     fn CMFormatDescriptionGetMediaType(desc: &FormatDesc) -> MediaType;
