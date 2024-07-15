@@ -8,13 +8,7 @@ use crate::{
 #[cfg(feature = "cf")]
 use crate::cf;
 
-use super::{
-    objc_runtime::{
-        ns_class_from_ns_string, ns_selector_from_ns_string, ns_string_from_class,
-        ns_string_from_selector,
-    },
-    Class,
-};
+use super::Class;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
@@ -144,22 +138,22 @@ impl String {
 
     #[inline]
     pub fn to_selector(&self) -> Option<&'static objc::Sel> {
-        ns_selector_from_ns_string(self)
+        ns::selector_from_ns_string(self)
     }
 
     #[inline]
     pub fn to_class(&self) -> Option<&'static objc::Class<ns::Id>> {
-        ns_class_from_ns_string(self)
+        ns::class_from_ns_string(self)
     }
 
     #[inline]
     pub fn from_class<T: Obj>(cls: &objc::Class<T>) -> arc::R<Self> {
-        ns_string_from_class(cls)
+        ns::string_from_class(cls)
     }
 
     #[inline]
     pub fn from_selector(sel: &objc::Sel) -> arc::R<Self> {
-        ns_string_from_selector(sel)
+        ns::string_from_selector(sel)
     }
 }
 
