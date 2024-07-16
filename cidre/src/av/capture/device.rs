@@ -1,12 +1,12 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, ca, cg, cm, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
 #[link(name = "AVFoundation", kind = "framework")]
-// #[api::weak]
+#[api::weak]
 extern "C" {
     static AVCaptureDeviceTypeExternal: &'static Type;
     // #[api::available(ios = 19.0)]
@@ -15,7 +15,9 @@ extern "C" {
     static AVCaptureDeviceTypeMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInUltraWideCamera: &'static Type;
+    #[api::available(ios = 10.2, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInDualCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInDualWideCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTripleCamera: &'static Type;
@@ -1546,11 +1548,13 @@ impl Type {
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInUltraWideCamera")]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_ultra_wide_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInUltraWideCamera }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInDualCamera")]
+    #[api::available(ios = 10.2, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_dual_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInDualCamera }
     }
@@ -1792,14 +1796,20 @@ impl Format {
 }
 
 /// # Determining Field of View
+/// AVCaptureDeviceFormatGeometricDistortionCorrection
 impl Format {
     /// Format’s horizontal field of view in degrees.
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(videoFieldOfView)]
     pub fn video_fov(&self) -> f32;
 
+    /// A property indicating the format's horizontal field of view post geometric distortion correction.
+    ///
+    /// If the receiver's AVCaptureDevice does not support GDC, geometricDistortionCorrectedVideoFieldOfView
+    /// matches the `video_fov` property.
     #[objc::msg_send(geometricDistortionCorrectedVideoFieldOfView)]
-    pub fn geometric_distortion_corrected_video_field_of_view(&self) -> f32;
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn geometric_distortion_corrected_video_fov(&self) -> f32;
 }
 
 /// # Determining Exposure
@@ -1837,10 +1847,6 @@ impl Format {
     /// Indicating the autofocus system.
     #[objc::msg_send(autoFocusSystem)]
     pub fn auto_focus_sys(&self) -> AutoFocusSys;
-
-    #[cfg(not(target_os = "macos"))]
-    #[objc::msg_send(isMultiCamSupported)]
-    pub fn is_mutli_cam_supported(&self) -> bool;
 }
 
 /// # Center Stage
@@ -1888,6 +1894,40 @@ impl Format {
     /// Whether the format supports global tone mapping.
     #[objc::msg_send(globalToneMappingSupported)]
     pub fn global_tone_mapping_supported(&self) -> bool;
+}
+
+/// AVCaptureDeviceFormatMultiCamAdditions
+impl Format {
+    #[objc::msg_send(isMultiCamSupported)]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn is_mutli_cam_supported(&self) -> bool;
+}
+
+/// AVCaptureDeviceFormatSpatialVideoCapture
+impl Format {
+    /// Returns whether or not the format supports capturing spatial video to a file.
+    #[objc::msg_send(isSpatialVideoCaptureSupported)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_spatial_video_capture_supported(&self) -> bool;
+}
+
+/// AVCaptureDeviceFormatBackgroundReplacement
+impl Format {
+    /// Indicates whether the format supports the Background Replacement feature.
+    ///
+    /// This property returns YES if the format supports Background Replacement background replacement.
+    /// See +AVCaptureDevice.backgroundReplacementEnabled.
+    #[objc::msg_send(isBackgroundReplacementSupported)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_background_replacement_supported(&self) -> bool;
+
+    /// Indicates the minimum / maximum frame rates available when background replacement is active.
+    ///
+    /// Devices may support a limited frame rate range when Background Replacement is active.
+    /// If this device format does not support Background Replacement, this property returns None.
+    #[objc::msg_send(videoFrameRateRangeForBackgroundReplacement)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn video_frame_rate_range_for_background_replacement(&self) -> Option<&av::FrameRateRange>;
 }
 
 pub mod notifications {
