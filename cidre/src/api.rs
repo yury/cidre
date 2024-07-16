@@ -160,41 +160,50 @@ macro_rules! version {
     (
         $(macos = $macos_ver:literal)?
         $(, ios = $ios_ver:literal)?
+        $(, maccatalyst = $maccatalyst_ver:literal)?
         $(, tvos = $tvos_ver:literal)?
         $(, watchos = $watchos_ver:literal)?
         $(, visionos = $visionos_ver:literal)?
-        $(, maccatalyst = $maccatalyst_ver:literal)?
     ) => {
         $($crate::api::version!(macos = $macos_ver))?
         $( || $crate::api::version!(ios = $ios_ver))?
+        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
         $( || $crate::api::version!(tvos = $tvos_ver))?
         $( || $crate::api::version!(watchos = $watchos_ver))?
         $( || $crate::api::version!(visionos = $visionos_ver))?
-        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
     };
     (
         $(ios = $ios_ver:literal)?
+        $(, maccatalyst = $maccatalyst_ver:literal)?
         $(, tvos = $tvos_ver:literal)?
         $(, watchos = $watchos_ver:literal)?
         $(, visionos = $visionos_ver:literal)?
-        $(, maccatalyst = $maccatalyst_ver:literal)?
     ) => {
         $($crate::api::version!(ios = $ios_ver))?
+        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
         $( || $crate::api::version!(tvos = $tvos_ver))?
         $( || $crate::api::version!(watchos = $watchos_ver))?
         $( || $crate::api::version!(visionos = $visionos_ver))?
-        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
+    };
+    (
+        $(maccatalyst = $maccatalyst_ver:literal)?
+        $(, tvos = $tvos_ver:literal)?
+        $(, watchos = $watchos_ver:literal)?
+        $(, visionos = $visionos_ver:literal)?
+    ) => {
+        $($crate::api::version!(maccatalyst = $maccatalyst_ver))?
+        $( || $crate::api::version!(tvos = $tvos_ver))?
+        $( || $crate::api::version!(watchos = $watchos_ver))?
+        $( || $crate::api::version!(visionos = $visionos_ver))?
     };
     (
         $(tvos = $tvos_ver:literal)?
         $(, watchos = $watchos_ver:literal)?
         $(, visionos = $visionos_ver:literal)?
-        $(, maccatalyst = $maccatalyst_ver:literal)?
     ) => {
         $($crate::api::version!(tvos = $tvos_ver))?
         $( || $crate::api::version!(watchos = $watchos_ver))?
         $( || $crate::api::version!(visionos = $visionos_ver))?
-        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
     };
     (
         $(watchos = $watchos_ver:literal)?
@@ -202,23 +211,6 @@ macro_rules! version {
     ) => {
         $($crate::api::version!(watchos = $watchos_ver))?
         $( || $crate::api::version!(visionos = $visionos_ver))?
-        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
-    };
-    (
-        $(watchos = $watchos_ver:literal)?
-        $(, visionos = $visionos_ver:literal)?
-        $(, maccatalyst = $maccatalyst_ver:literal)?
-    ) => {
-        $($crate::api::version!(watchos = $watchos_ver))?
-        $( || $crate::api::version!(visionos = $visionos_ver))?
-        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
-    };
-    (
-        $(visionos = $visionos_ver:literal)?
-        $(, maccatalyst = $maccatalyst_ver:literal)?
-    ) => {
-        $( || $crate::api::version!(visionos = $visionos_ver))?
-        $( || $crate::api::version!(maccatalyst = $maccatalyst_ver))?
     };
 }
 pub use cidre_macros::api_available as available;
