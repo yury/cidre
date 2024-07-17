@@ -10,6 +10,9 @@ mod stage_input_output_descriptor;
 pub use stage_input_output_descriptor::AttrFormat;
 pub use stage_input_output_descriptor::IndexType;
 
+mod allocation;
+pub use allocation::Allocation;
+
 mod acceleration_structure;
 pub use acceleration_structure::AccelerationStructure;
 pub use acceleration_structure::Desc as AccelerationStructureDesc;
@@ -32,6 +35,9 @@ pub use argument::StructMember;
 pub use argument::StructType;
 pub use argument::TextureRefType;
 pub use argument::Type as ArgType;
+
+mod residency_set;
+pub use residency_set::ResidencySetDesc;
 
 mod resource;
 pub use resource::Opts as ResOpts;

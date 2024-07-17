@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{define_mtl, define_obj_type, define_opts, ns};
+use crate::{define_mtl, define_obj_type, define_opts, mtl};
 
 /// Options for setPurgeable call.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -83,7 +83,10 @@ impl Default for HazardTrackingMode {
     }
 }
 
-define_opts!(pub Opts(usize));
+define_opts!(
+    #[doc(alias = "MTLResourceOptions")]
+    pub Opts(usize)
+);
 
 pub const CPU_CACHE_MODE_SHIFT: usize = 0;
 pub const CPU_CACHE_MODE_MASK: usize = 0xfusize << CPU_CACHE_MODE_SHIFT;
@@ -94,7 +97,7 @@ pub const STORAGE_MODE_MASK: usize = 0xfusize << STORAGE_MODE_SHIFT;
 pub const HAZARD_TRACKING_MODE_SHIFT: usize = 8;
 pub const HAZARD_TRACKING_MODE_MASK: usize = 0x3usize << HAZARD_TRACKING_MODE_SHIFT;
 
-/// A set of optional arguments to influence the creation of a mtl::Resource (mtl::Texture or mtl::Buffer)
+/// A set of optional arguments to influence the creation of a mtl::Res (mtl::Texture or mtl::Buf)
 impl Opts {
     pub const CPU_CACHE_MODE_DEFAULT: Self =
         Self((CpuCacheMode::DefaultCache as usize) << CPU_CACHE_MODE_SHIFT);
@@ -139,7 +142,10 @@ impl Opts {
     }
 }
 
-define_obj_type!(pub Res(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLResource")]
+    pub Res(mtl::Allocation)
+);
 
 impl Res {
     define_mtl!(

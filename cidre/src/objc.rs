@@ -270,6 +270,26 @@ macro_rules! define_cls_init {
     };
 }
 
+#[macro_export]
+macro_rules! define_weak_cls_init {
+    ($NewType:ident, $CLS:ident) => {
+        impl $crate::arc::A<$NewType> {
+            #[$crate::objc::msg_send(init)]
+            pub fn init(self) -> arc::Retained<$NewType>;
+        }
+
+        impl $NewType {
+            $crate::define_weak_cls!($CLS);
+
+            /// shortcut to `Self::alloc().init()`
+            #[inline]
+            pub fn new() -> Option<$crate::arc::R<$NewType>> {
+                Some(Self::alloc()?.init())
+            }
+        }
+    };
+}
+
 /// Defines class
 ///
 /// Use when:
@@ -286,6 +306,21 @@ macro_rules! define_cls {
         #[inline]
         pub fn alloc() -> $crate::arc::A<Self> {
             Self::cls().alloc()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! define_weak_cls {
+    ($CLS:ident) => {
+        #[inline]
+        pub fn cls() -> Option<&'static $crate::objc::Class<Self>> {
+            unsafe { std::mem::transmute($CLS) }
+        }
+
+        #[inline]
+        pub fn alloc() -> Option<$crate::arc::A<Self>> {
+            Some(Self::cls()?.alloc())
         }
     };
 }
@@ -453,12 +488,14 @@ macro_rules! define_obj_type {
         $(#[$outer:meta])*
         $vis:vis
         $NewType:ident($BaseType:path), $CLS:ident
+        $(, #[$api_available:meta])?
     ) => {
         $crate::define_obj_type!(
             $(#[$outer])*
             $vis$
             NewType($BaseType)
         );
+        $(#[$api_available])?
         $crate::define_cls_init!($NewType, $CLS);
     };
 }

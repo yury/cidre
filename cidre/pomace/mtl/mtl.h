@@ -49,6 +49,7 @@ Class MTL_FUNCTION_STITCHING_INPUT_NODE;
 Class MTL_FUNCTION_STITCHING_FUNCTION_NODE;
 Class MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR;
 Class MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE;
+Class MTL_RESIDENCY_SET_DESCRIPTOR;
 
 
 __attribute__((constructor))
@@ -98,6 +99,8 @@ static void mtl_initializer(void)
         MTL_FUNCTION_STITCHING_FUNCTION_NODE = [MTLFunctionStitchingFunctionNode class];
         MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR = [MTLStitchedLibraryDescriptor class];
         MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE = [MTLFunctionStitchingAttributeAlwaysInline class];
+        
+        MTL_RESIDENCY_SET_DESCRIPTOR = NSClassFromString(@"MTLResidencySetDescriptor");
     }
     
 }

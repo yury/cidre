@@ -1283,7 +1283,9 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     let mut fn_index = 0usize;
     let mut unsafe_already = false;
 
-    for t in body.into_iter() {
+    let mut body_iter = body.into_iter();
+
+    while let Some(t) = body_iter.next() {
         if available.is_some() {
             res.extend(available.take().unwrap());
         }
@@ -1319,6 +1321,26 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
                 "unsafe" => {
                     unsafe_already = true;
                 }
+                "define_cls" => {
+                    let token = TokenTree::Ident(Ident::new("define_weak_cls", t.span()));
+                    maybe_res.push(token);
+                    res.push(t.clone());
+                    while let Some(t) = body_iter.next() {
+                        maybe_res.push(t.clone());
+                        res.push(t);
+                    }
+                    break;
+                }
+                "define_cls_init" => {
+                    let token = TokenTree::Ident(Ident::new("define_weak_cls_init", t.span()));
+                    maybe_res.push(token);
+                    res.push(t.clone());
+                    while let Some(t) = body_iter.next() {
+                        maybe_res.push(t.clone());
+                        res.push(t);
+                    }
+                    break;
+                }
                 _ => {}
             },
             _ => {}
@@ -1352,6 +1374,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     if !no_body {
         res.extend(maybe_res);
     }
+
     TokenStream::from_iter(res)
 }
 
@@ -1491,3 +1514,15 @@ fn upper_case(str: &str) -> String {
 
     String::from_utf8(res).unwrap()
 }
+
+// fn is_upper_case(str: &str) -> bool {
+//     let bytes = str.as_bytes();
+//     for ch in bytes {
+//         if ch != &b'_' {
+//             if !ch.is_ascii_uppercase() {
+//                 return false;
+//             }
+//         }
+//     }
+//     true
+// }
