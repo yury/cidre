@@ -155,12 +155,17 @@ define_obj_type!(
 );
 
 /// Client can use sc::StreamCfgPreset to create sc::StreamCfg with suggested values of properties for various use cases
+#[doc(alias = "SCStreamConfigurationPreset")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum CfgPreset {
+    #[doc(alias = "SCStreamConfigurationPresetCaptureHDRStreamLocalDisplay")]
     CaptureHdrStreamLocalDisplay,
+    #[doc(alias = "SCStreamConfigurationPresetCaptureHDRStreamCanonicalDisplay")]
     CaptureHdrStreamCanoncalDisplay,
+    #[doc(alias = "SCStreamConfigurationPresetCaptureHDRScreenshotLocalDisplay")]
     CaptureHdrScreenshotLocalDisplay,
+    #[doc(alias = "SCStreamConfigurationPresetCaptureHDRScreenshotCanonicalDisplay")]
     CaptureHdrScreenshotCanoncalDisplay,
 }
 
@@ -203,6 +208,9 @@ impl Cfg {
     /// 'l10r': Packed Little Endian ARGB2101010
     /// '420v': 2-plane "video" range YCbCr 4:2:0
     /// '420f': 2-plane "full" range YCbCr 4:2:0
+    /// Since macos 15.0
+    /// 'xf44': 2 plane "full" range YCbCr10 4:4:4
+    /// 'RGhA': 64 bit RGBA IEEE half-precision float, 16-bit little-endian
     #[objc::msg_send(pixelFormat)]
     pub fn pixel_format(&self) -> cv::PixelFormat;
 
@@ -465,15 +473,22 @@ extern "C" {
     static SCStreamFrameInfoPresenterOverlayContentRect: &'static FrameInfo;
 }
 
+#[doc(alias = "SCCaptureDynamicRange")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum CaptureDynamicRange {
+    #[doc(alias = "SCCaptureDynamicRangeSDR")]
     Sdr,
+    #[doc(alias = "SCCaptureDynamicRangeHDRLocalDisplay")]
     HdrLocalDisplay,
+    #[doc(alias = "SCCaptureDynamicRangeHDRCanonicalDisplay")]
     HdrCanonicalDisplay,
 }
 
-define_obj_type!(pub ContentFilter(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SCContentFilter")]
+    pub ContentFilter(ns::Id)
+);
 
 impl arc::A<ContentFilter> {
     #[objc::msg_send(initWithDesktopIndependentWindow:)]
@@ -698,12 +713,6 @@ mod tests {
         usize,
         FRAME_COUNTER_CLS
     );
-
-    impl FrameCounter {
-        // fn counter(&self) -> usize {
-        //     *self.inner()
-        // }
-    }
 
     impl Output for FrameCounter {}
 
