@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[doc(alias = "MTLPatchType")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -112,35 +112,26 @@ pub enum CompileSymbolVisibility {
 define_obj_type!(
     /// Compilation settings for a Metal shader library.
     #[doc(alias = "MTLCompileOptions")]
-    pub CompileOpts(ns::Id)
+    pub CompileOpts(ns::Id),
+    MTL_COMPILE_OPTIONS
 );
 
-impl arc::A<CompileOpts> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<CompileOpts>;
-}
-
+/// ```
+/// use cidre::mtl;
+///
+/// let mut options = mtl::CompileOpts::new();
+///
+/// assert_eq!(true, options.fast_math_enabled());
+/// options.set_fast_math_enabled(false);
+/// assert_eq!(false, options.fast_math_enabled());
+///
+/// assert_ne!(options.lang_version(), mtl::LangVersion::_2_0);
+///
+/// options.set_lang_version(mtl::LangVersion::_2_4);
+/// assert_eq!(options.lang_version(), mtl::LangVersion::_2_4);
+///
+/// ```
 impl CompileOpts {
-    define_cls!(MTL_COMPILE_OPTIONS);
-    /// ```
-    /// use cidre::mtl;
-    ///
-    /// let mut options = mtl::CompileOpts::new();
-    ///
-    /// assert_eq!(true, options.fast_math_enabled());
-    /// options.set_fast_math_enabled(false);
-    /// assert_eq!(false, options.fast_math_enabled());
-    ///
-    /// assert_ne!(options.lang_version(), mtl::LangVersion::_2_0);
-    ///
-    /// options.set_lang_version(mtl::LangVersion::_2_4);
-    /// assert_eq!(options.lang_version(), mtl::LangVersion::_2_4);
-    ///
-    /// ```
-    pub fn new() -> arc::R<CompileOpts> {
-        Self::alloc().init()
-    }
-
     #[objc::msg_send(fastMathEnabled)]
     pub fn fast_math_enabled(&self) -> bool;
 
@@ -170,6 +161,26 @@ impl CompileOpts {
 
     #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
     pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
+
+    #[objc::msg_send(enableLogging)]
+    #[objc::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn enable_logging(&self) -> bool;
+
+    #[objc::msg_send(setEnableLogging:)]
+    #[objc::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn set_enable_logging(&mut self, val: bool);
 }
 
 define_obj_type!(
