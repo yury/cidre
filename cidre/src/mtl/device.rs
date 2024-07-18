@@ -405,11 +405,34 @@ impl Device {
     ) -> Result<arc::R<mtl::ResidencySet>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { self.new_residency_set_err(desc, err) })
     }
+
+    /// Returns an array of all the Metal device instances in the system.
+    #[doc(alias = "MTLCopyAllDevices")]
+    #[api::available(
+        macos = 10.11,
+        ios = 18.0,
+        maccatalyst = 13.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn all_devices() -> arc::R<ns::Array<mtl::Device>> {
+        unsafe { MTLCopyAllDevices() }
+    }
 }
 
 #[link(name = "Metal", kind = "framework")]
+#[api::weak]
 extern "C" {
     fn MTLCreateSystemDefaultDevice() -> Option<arc::R<Device>>;
+
+    #[api::available(
+        macos = 10.11,
+        ios = 18.0,
+        maccatalyst = 13.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    fn MTLCopyAllDevices() -> arc::R<ns::Array<mtl::Device>>;
 }
 
 #[cfg(test)]
