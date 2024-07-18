@@ -468,6 +468,7 @@ pub mod key {
     /// cf::Number representation of the content headroom, which is defined as the ratio of nominal peak luminance
     /// ("peak white") to nominal diffuse luminance ("reference white" or "diffuse white").
     #[doc(alias = "kIOSurfaceContentHeadroom")]
+    #[inline]
     #[api::available(
         macos = 15.0,
         maccatalyst = 18.0,
@@ -475,7 +476,6 @@ pub mod key {
         watchos = 11.0,
         tvos = 18.0
     )]
-    #[inline]
     pub fn content_headroom() -> &'static String {
         unsafe { kIOSurfaceContentHeadroom }
     }
@@ -522,7 +522,7 @@ pub mod key {
 
 #[cfg(test)]
 mod test {
-    use crate::{cf, io};
+    use crate::{api, cf, io};
 
     #[test]
     fn basics() {
@@ -544,5 +544,15 @@ mod test {
         assert_eq!(false, surf2.is_in_use());
         let vals = surf2.all_values().unwrap();
         vals.show();
+    }
+
+    #[test]
+    fn versioning() {
+        if api::version!(macos = 15.0) {
+            let _ = unsafe { io::surface::key::content_headroom().unwrap() };
+        } else {
+            let k = unsafe { io::surface::key::content_headroom() };
+            assert!(k.is_none());
+        }
     }
 }
