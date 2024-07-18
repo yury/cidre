@@ -49,16 +49,25 @@ impl ResidencySet {
     pub fn add_allocation(&mut self, val: &mtl::Allocation);
 
     #[objc::msg_send(addAllocations:count:)]
-    pub fn add_allocations_count(&mut self, ptr: *const &mtl::Allocation, count: usize);
+    pub unsafe fn add_allocations_count(&mut self, ptr: *const &mtl::Allocation, count: usize);
 
     #[inline]
     pub fn add_allocations(&mut self, allocations: &[&mtl::Allocation]) {
-        self.add_allocations_count(allocations.as_ptr(), allocations.len());
+        unsafe { self.add_allocations_count(allocations.as_ptr(), allocations.len()) };
     }
 
     /// Marks an allocation to be removed from the set on the next commit call.
     #[objc::msg_send(removeAllocation:)]
     pub fn remove_allocation(&mut self, val: &mtl::Allocation);
+
+    #[objc::msg_send(removeAllocations:count:)]
+    pub unsafe fn remove_allocations_count(&mut self, ptr: *const &mtl::Allocation, count: usize);
+
+    /// Marks allocations to be removed from the set on the next commit call.
+    #[inline]
+    pub fn remove_allocations(&mut self, allocations: &[&mtl::Allocation]) {
+        unsafe { self.remove_allocations_count(allocations.as_ptr(), allocations.len()) };
+    }
 
     /// Marks all allocations to be removed from the set on the next commit call.
     #[objc::msg_send(removeAllAllocations)]
@@ -71,6 +80,8 @@ impl ResidencySet {
     pub fn contains_allocation(&self, val: &mtl::Allocation) -> bool;
 
     /// Array of all allocations associated with the set.
+    ///
+    /// This property includes non-committed allocations in the set.
     #[objc::msg_send(allAllocations)]
     pub fn all_allocations(&self) -> arc::R<ns::Array<mtl::Allocation>>;
 

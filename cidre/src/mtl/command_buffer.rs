@@ -1,4 +1,4 @@
-use crate::{arc, blocks, cf, define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{api, arc, blocks, cf, define_mtl, define_obj_type, mtl, ns, objc};
 
 /// Reports the current stage in the lifetime of MTLCommandBuffer, as it proceeds to enqueued, committed, scheduled, and completed.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -174,4 +174,40 @@ impl CmdBuf {
     /// The host time, in seconds, when the CPU finishes scheduling the command buffer.
     #[objc::msg_send(kernelEndTime)]
     pub fn kernel_end_time(&self) -> cf::TimeInterval;
+
+    /// Marks the residency set as part of the current command buffer execution.
+    /// This ensures that the residency set is resident during execution of the command buffer.
+    #[objc::msg_send(useResidencySet:)]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn use_residency_set(&self, set: &mtl::ResidencySet);
+
+    #[objc::msg_send(useResidencySets:count:)]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub unsafe fn use_residency_sets_count(&self, sets: *const &mtl::ResidencySet, count: usize);
+
+    /// Marks the residency sets as part of the current command buffer execution.
+    /// This ensures that the residency sets are resident during execution of the command buffer.
+    #[inline]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn use_residency_sets(&self, sets: &[&mtl::ResidencySet]) {
+        unsafe { self.use_residency_sets_count(sets.as_ptr(), sets.len()) }
+    }
 }
