@@ -2,7 +2,7 @@
 ///
 use std::{borrow::Cow, str::FromStr};
 
-use proc_macro::{Delimiter, Group, Ident, Punct, Span, TokenStream, TokenTree};
+use proc_macro::{Delimiter, Group, Ident, Punct, Spacing, Span, TokenStream, TokenTree};
 
 enum Attr {
     Optional,
@@ -1357,7 +1357,29 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
             // function body {}
             if g.delimiter() == Delimiter::Brace {
                 if no_args && try_replace_return(&mut maybe_res) {}
-                if try_replace_fn(&mut maybe_res) {
+                let mut make_result_optional = false;
+                if try_replace_fn(&mut maybe_res, &mut make_result_optional) {
+                    if make_result_optional {
+                        let mut i = maybe_res.len() - 2;
+
+                        while i > 0 {
+                            if let TokenTree::Punct(ref p) = maybe_res[i] {
+                                if p.as_char() == '-' && p.spacing() == Spacing::Joint {
+                                    i += 2;
+                                    break;
+                                }
+                            }
+                            i -= 1;
+                        }
+
+                        maybe_res.insert(i, TokenTree::Punct(Punct::new('<', Spacing::Alone)));
+                        maybe_res
+                            .insert(i, TokenTree::Ident(Ident::new("Option", Span::call_site())));
+                        maybe_res.insert(
+                            maybe_res.len() - 2,
+                            TokenTree::Punct(Punct::new('>', Spacing::Alone)),
+                        );
+                    }
                 } else {
                     if !unsafe_already {
                         maybe_res.insert(
@@ -1378,7 +1400,7 @@ pub fn api_available(versions: TokenStream, body: TokenStream) -> TokenStream {
     TokenStream::from_iter(res)
 }
 
-fn try_replace_fn(tokens: &mut Vec<TokenTree>) -> bool {
+fn try_replace_fn(tokens: &mut Vec<TokenTree>, make_result_optional: &mut bool) -> bool {
     let Some(TokenTree::Group(ref g)) = tokens.last() else {
         return false;
     };
@@ -1419,6 +1441,64 @@ fn try_replace_fn(tokens: &mut Vec<TokenTree>) -> bool {
 
                     return true;
                 }
+            }
+            "Self" => {
+                // `Self::alloc()`
+
+                let mut new_body = Vec::new();
+                new_body.push(TokenTree::Ident(ident));
+                let Some(TokenTree::Punct(p)) = body_stream.next() else {
+                    return false;
+                };
+
+                if p.as_char() != ':' {
+                    return false;
+                }
+                new_body.push(TokenTree::Punct(p));
+                let Some(TokenTree::Punct(p)) = body_stream.next() else {
+                    return false;
+                };
+
+                if p.as_char() != ':' {
+                    return false;
+                }
+                new_body.push(TokenTree::Punct(p));
+                let Some(TokenTree::Ident(ident)) = body_stream.next() else {
+                    return false;
+                };
+
+                if ident.to_string() != "alloc" {
+                    return false;
+                };
+                new_body.push(TokenTree::Ident(ident));
+
+                let Some(TokenTree::Group(g)) = body_stream.next() else {
+                    return false;
+                };
+
+                if g.delimiter() != Delimiter::Parenthesis {
+                    return false;
+                }
+                new_body.push(TokenTree::Group(g));
+
+                // Some(Self::alloc()?.)
+                new_body.push(TokenTree::Punct(Punct::new('?', Spacing::Alone)));
+                while let Some(t) = body_stream.next() {
+                    new_body.push(t)
+                }
+                let s = TokenStream::from_iter(new_body.drain(..));
+                new_body.push(TokenTree::Ident(Ident::new("Some", Span::call_site())));
+                let g = TokenTree::Group(Group::new(Delimiter::Parenthesis, s));
+                new_body.push(g);
+                let s = TokenStream::from_iter(new_body.drain(..));
+                let g = TokenTree::Group(Group::new(Delimiter::Brace, s));
+
+                tokens.pop();
+                tokens.push(g);
+
+                *make_result_optional = true;
+                return true;
+                // println!("found");
             }
             _ => return false,
         },

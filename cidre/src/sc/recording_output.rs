@@ -1,9 +1,10 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, cm, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "SCRecordingOutputConfiguration")]
     pub RecordingOutputCfg(ns::Id),
-    SC_RECORDING_OUTPUT_CONFIGURATION
+    SC_RECORDING_OUTPUT_CONFIGURATION,
+    #[api::available(macos = 15.0)]
 );
 
 impl RecordingOutputCfg {
@@ -63,7 +64,8 @@ impl arc::A<RecordingOutput> {
 }
 
 impl RecordingOutput {
-    define_cls!(SC_RECORDING_OUTPUT);
+    #[api::available(macos = 15.0)]
+    crate::define_cls!(SC_RECORDING_OUTPUT);
 
     /// Indicates current duration of recording to the output file.
     #[objc::msg_send(recordedDuration)]
@@ -74,6 +76,7 @@ impl RecordingOutput {
     pub fn recorded_file_size(&self) -> isize;
 
     #[inline]
+    #[api::available(macos = 15.0)]
     pub fn with_cfg(cfg: &RecordingOutputCfg, delegate: &impl Delegate) -> arc::R<Self> {
         Self::alloc().init_with_cfg_delegate(cfg, delegate)
     }
@@ -87,21 +90,25 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{av, sc};
+    use crate::{api, av, sc};
 
     #[test]
     fn basics() {
-        let cfg = sc::RecordingOutputCfg::new();
-        assert!(cfg.output_url().is_none());
+        if api::version!(macos = 15.0) {
+            let cfg = sc::RecordingOutputCfg::new().unwrap();
+            assert!(cfg.output_url().is_none());
 
-        let codec = cfg.video_codec();
+            let codec = cfg.video_codec();
 
-        assert_eq!(&codec, av::VideoCodec::h264());
+            assert_eq!(&codec, av::VideoCodec::h264());
 
-        let available_codecs = cfg.available_video_codecs();
-        assert!(!available_codecs.is_empty());
+            let available_codecs = cfg.available_video_codecs();
+            assert!(!available_codecs.is_empty());
 
-        let available_file_types = cfg.available_output_file_types();
-        assert!(!available_file_types.is_empty());
+            let available_file_types = cfg.available_output_file_types();
+            assert!(!available_file_types.is_empty());
+        } else {
+            assert!(sc::RecordingOutputCfg::new().is_none());
+        }
     }
 }
