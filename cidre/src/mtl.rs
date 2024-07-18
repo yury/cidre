@@ -37,6 +37,7 @@ pub use argument::TextureRefType;
 pub use argument::Type as ArgType;
 
 mod residency_set;
+pub use residency_set::ResidencySet;
 pub use residency_set::ResidencySetDesc;
 
 mod resource;

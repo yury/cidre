@@ -48,6 +48,38 @@ impl ResidencySet {
     #[objc::msg_send(addAllocation:)]
     pub fn add_allocation(&mut self, val: &mtl::Allocation);
 
+    #[objc::msg_send(addAllocations:count:)]
+    pub fn add_allocations_count(&mut self, ptr: *const &mtl::Allocation, count: usize);
+
+    #[inline]
+    pub fn add_allocations(&mut self, allocations: &[&mtl::Allocation]) {
+        self.add_allocations_count(allocations.as_ptr(), allocations.len());
+    }
+
+    /// Marks an allocation to be removed from the set on the next commit call.
+    #[objc::msg_send(removeAllocation:)]
+    pub fn remove_allocation(&mut self, val: &mtl::Allocation);
+
+    /// Marks all allocations to be removed from the set on the next commit call.
+    #[objc::msg_send(removeAllAllocations)]
+    pub fn remove_all_allocations(&mut self);
+
+    /// Returns a boolean indicating whether the allocation is present in the set or not.
+    ///
+    /// This check includes non-committed allocations in the set.
+    #[objc::msg_send(containsAllocation:)]
+    pub fn contains_allocation(&self, val: &mtl::Allocation) -> bool;
+
+    /// Array of all allocations associated with the set.
+    #[objc::msg_send(allAllocations)]
+    pub fn all_allocations(&self) -> arc::R<ns::Array<mtl::Allocation>>;
+
+    /// Returns the current number of unique allocations present in the set.
+    ///
+    /// This property includes non-committed allocations in the set.
+    #[objc::msg_send(allocationCount)]
+    pub fn allocation_count(&self) -> usize;
+
     /// Commits any pending adds/removes.
     ///
     /// If the residency set is resident, this will try to make added resources and heaps
@@ -58,13 +90,19 @@ impl ResidencySet {
 
 #[cfg(test)]
 mod tests {
-    use crate::mtl;
+    use crate::{api, mtl};
 
     #[test]
     fn basics() {
+        if !api::version!(macos = 15.0) {
+            return;
+        }
         let mut desc = mtl::ResidencySetDesc::new().unwrap();
         assert_eq!(0, desc.initial_capacity());
         desc.set_initial_capacity(10);
         assert_eq!(10, desc.initial_capacity());
+        let device = mtl::Device::sys_default().unwrap();
+        let set = unsafe { device.new_residency_set(&desc).unwrap() };
+        assert_eq!(0, set.allocation_count());
     }
 }

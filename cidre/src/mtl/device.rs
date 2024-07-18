@@ -1,4 +1,4 @@
-use crate::{arc, blocks, define_obj_type, define_opts, mtl, ns, objc};
+use crate::{api, arc, blocks, define_obj_type, define_opts, mtl, ns, objc};
 
 #[cfg(feature = "io")]
 use crate::io;
@@ -376,6 +376,35 @@ impl Device {
 
     #[objc::msg_send(minimumTextureBufferAlignmentForPixelFormat:)]
     pub fn min_texture_buffer_alignment_for_pixel_format(&self, format: mtl::PixelFormat) -> usize;
+
+    #[objc::msg_send(newResidencySetWithDescriptor:error:)]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub unsafe fn new_residency_set_err<'ear>(
+        &self,
+        desc: &mtl::ResidencySetDesc,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::ResidencySet>>;
+
+    /// Creates a new residency set with a descriptor.
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn new_residency_set<'ear>(
+        &self,
+        desc: &mtl::ResidencySetDesc,
+    ) -> Result<arc::R<mtl::ResidencySet>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { self.new_residency_set_err(desc, err) })
+    }
 }
 
 #[link(name = "Metal", kind = "framework")]
