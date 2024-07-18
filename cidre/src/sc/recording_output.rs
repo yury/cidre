@@ -92,6 +92,7 @@ extern "C" {
 mod tests {
     use crate::{api, av, sc};
 
+    #[cfg(not(feature = "macos_15_0"))]
     #[test]
     fn basics() {
         if api::version!(macos = 15.0) {
