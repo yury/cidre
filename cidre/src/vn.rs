@@ -45,6 +45,7 @@ pub use observation::FeaturePrintObservation;
 pub use observation::HorizonObservation;
 pub use observation::HumanObservation;
 pub use observation::ImageAestheticsScoresObservation;
+pub use observation::InstanceMaskObservation;
 pub use observation::Observation;
 pub use observation::PixelBufObservation;
 pub use observation::RecognizedObjectObservation;
@@ -60,6 +61,8 @@ pub use face_landmarks::FaceLandmarks;
 pub use face_landmarks::FaceLandmarks2d;
 pub use face_landmarks::Region as FaceLandmarkRegion;
 pub use face_landmarks::Region2d as FaceLandmarkRegion2d;
+
+mod generate_foreground_instance_mask_request;
 
 mod generate_person_segmentation_request;
 pub use generate_person_segmentation_request::GeneratePersonSegmentationRequest;

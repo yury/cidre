@@ -204,6 +204,88 @@ impl HumanObservation {
 }
 
 define_obj_type!(
+    #[doc(alias = "VNInstanceMaskObservation")]
+    pub InstanceMaskObservation(Observation)
+);
+
+impl InstanceMaskObservation {
+    /// The resulting mask represents all instances in a mask image where 0 represents
+    /// the background and all other values represent the indices of the instances identified.
+    #[objc::msg_send(instanceMask)]
+    pub fn instance_mask(&self) -> &cv::PixelBuf;
+
+    /// The IndexSet that encompases all instances except the background
+    #[objc::msg_send(allInstances)]
+    pub fn all_instances(&self) -> arc::R<ns::IndexSet>;
+
+    #[objc::msg_send(generateMaskForInstances:error:)]
+    pub unsafe fn generate_mask_for_instances_err<'ear>(
+        &self,
+        instances: &ns::IndexSet,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::Retained<cv::PixelBuf>>;
+
+    /// The low res mask from the selected instances in the resolution of the performed analysis
+    /// which is not upscaled to the image resolution.
+    ///
+    /// The pixel format of kCVPixelFormatType_OneComponent32Float
+    #[inline]
+    pub fn generate_mask_for_instances<'ear>(
+        &self,
+        instances: &ns::IndexSet,
+    ) -> Result<arc::Retained<cv::PixelBuf>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { self.generate_mask_for_instances_err(instances, err) })
+    }
+
+    #[objc::msg_send(generateMaskedImageOfInstances:fromRequestHandler:croppedToInstancesExtent:error:)]
+    pub unsafe fn generate_masked_image_for_instances_cropped_err<'ear>(
+        &self,
+        instances: &ns::IndexSet,
+        request_handler: &vn::ImageRequestHandler,
+        crop_result: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::Retained<cv::PixelBuf>>;
+
+    /// High res image with everything but the selected instances removed to transparent black.
+    #[inline]
+    pub fn generate_masked_image_for_instances_cropped<'ear>(
+        &self,
+        instances: &ns::IndexSet,
+        request_handler: &vn::ImageRequestHandler,
+        crop_result: bool,
+    ) -> Result<arc::Retained<cv::PixelBuf>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe {
+            self.generate_masked_image_for_instances_cropped_err(
+                instances,
+                request_handler,
+                crop_result,
+                err,
+            )
+        })
+    }
+
+    #[objc::msg_send(generateScaledMaskForImageForInstances:fromRequestHandler:error:)]
+    pub unsafe fn generate_scaled_mask_for_instances_err<'ear>(
+        &self,
+        instances: &ns::IndexSet,
+        request_handler: &vn::ImageRequestHandler,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::Retained<cv::PixelBuf>>;
+
+    /// High res mask with the selected instances preserved while everything else is removed to transparent black.
+    #[inline]
+    pub fn generate_scaled_mask_for_instances<'ear>(
+        &self,
+        instances: &ns::IndexSet,
+        request_handler: &vn::ImageRequestHandler,
+    ) -> Result<arc::Retained<cv::PixelBuf>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe {
+            self.generate_scaled_mask_for_instances_err(instances, request_handler, err)
+        })
+    }
+}
+
+define_obj_type!(
     #[doc(alias = "VNSaliencyImageObservation")]
     pub SaliencyImageObservation(PixelBufObservation)
 );

@@ -8,12 +8,14 @@ define_obj_type!(
 );
 
 impl CalcImageAestheticsScoresRequest {
+    #[doc(alias = "VNCalculateImageAestheticsScoresRequestRevision1")]
     pub const REVISION_1: usize = 1;
 
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::ImageAestheticsScoresObservation>>>;
 }
 
+#[link(name = "vn", kind = "static")]
 extern "C" {
     static VN_CALCULATE_IMAGE_AESTHETICS_SCORES_REQUEST:
         &'static objc::Class<CalcImageAestheticsScoresRequest>;

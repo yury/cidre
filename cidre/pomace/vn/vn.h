@@ -24,6 +24,7 @@ Class VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST;
 Class VN_DETECT_FACE_RECTANGLES_REQUEST;
 Class VN_IMAGE_REQUEST_HANDLER;
 Class VN_SEQUENCE_REQUEST_HANDLER;
+Class VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST;
 
 __attribute__((constructor))
 static void vn_initializer(void)
@@ -48,6 +49,9 @@ static void vn_initializer(void)
         VN_DETECT_FACE_RECTANGLES_REQUEST = [VNDetectFaceRectanglesRequest class];
         VN_IMAGE_REQUEST_HANDLER = [VNImageRequestHandler class];
         VN_SEQUENCE_REQUEST_HANDLER = [VNSequenceRequestHandler class];
+        
+        
+        VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST = NSClassFromString(@"VNGenerateForegroundInstanceMaskRequest");
     }
 }
 
