@@ -1,46 +1,55 @@
 pub mod keys {
     use crate::cf;
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_ScalingMode")]
     #[inline]
     pub fn scaling_mode() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_ScalingMode }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DestinationCleanAperture")]
     #[inline]
-    pub fn desination_clean_aperture() -> &'static cf::String {
+    pub fn dst_clean_aperture() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationCleanAperture }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DestinationPixelAspectRatio")]
     #[inline]
-    pub fn destination_pixel_aspect_ration() -> &'static cf::String {
+    pub fn dst_pixel_aspect_ration() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationPixelAspectRatio }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DownsamplingMode")]
     #[inline]
     pub fn downsampling_mode() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DownsamplingMode }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DestinationColorPrimaries")]
     #[inline]
-    pub fn destination_color_primaries() -> &'static cf::String {
+    pub fn dst_color_primaries() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationColorPrimaries }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DestinationTransferFunction")]
     #[inline]
-    pub fn destination_transfer_function() -> &'static cf::String {
+    pub fn dst_transfer_function() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationTransferFunction }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DestinationICCProfile")]
     #[inline]
-    pub fn destination_icc_profile() -> &'static cf::String {
+    pub fn dst_icc_profile() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationICCProfile }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_DestinationYCbCrMatrix")]
     #[inline]
-    pub fn destination_ycbcr_matrix() -> &'static cf::String {
+    pub fn dst_ycbcr_matrix() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationYCbCrMatrix }
     }
 
+    #[doc(alias = "kVTPixelTransferPropertyKey_RealTime")]
     #[inline]
     pub fn real_time() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_RealTime }
@@ -63,21 +72,25 @@ pub mod keys {
 pub mod scaling_mode {
     use crate::cf;
 
+    #[doc(alias = "kVTScalingMode_Normal")]
     #[inline]
     pub fn normal() -> &'static cf::String {
         unsafe { kVTScalingMode_Normal }
     }
 
+    #[doc(alias = "kVTScalingMode_CropSourceToCleanAperture")]
     #[inline]
     pub fn crop_src_to_clean_aperture() -> &'static cf::String {
         unsafe { kVTScalingMode_CropSourceToCleanAperture }
     }
 
+    #[doc(alias = "kVTScalingMode_Letterbox")]
     #[inline]
     pub fn letter_box() -> &'static cf::String {
         unsafe { kVTScalingMode_Letterbox }
     }
 
+    #[doc(alias = "kVTScalingMode_Trim")]
     #[inline]
     pub fn trim() -> &'static cf::String {
         unsafe { kVTScalingMode_Trim }
