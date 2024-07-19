@@ -8,6 +8,9 @@ pub use types::ElementType;
 pub use types::ImageCropAndScaleOpt;
 pub use types::PointsClassification;
 
+mod calculate_image_aesthetics_scores_request;
+pub use calculate_image_aesthetics_scores_request::CalcImageAestheticsScoresRequest;
+
 mod request;
 pub use request::DetectHorizonRequest;
 pub use request::ImageBasedRequest;
@@ -41,6 +44,7 @@ pub use observation::FaceObservation;
 pub use observation::FeaturePrintObservation;
 pub use observation::HorizonObservation;
 pub use observation::HumanObservation;
+pub use observation::ImageAestheticsScoresObservation;
 pub use observation::Observation;
 pub use observation::PixelBufObservation;
 pub use observation::RecognizedObjectObservation;

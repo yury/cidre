@@ -282,3 +282,19 @@ impl FeaturePrintObservation {
         }
     }
 }
+
+define_obj_type!(
+    #[doc(alias = "VNImageAestheticsScoresObservation")]
+    pub ImageAestheticsScoresObservation(Observation)
+);
+
+impl ImageAestheticsScoresObservation {
+    /// Represents images that are not necessarily of poor image quality but may not have memorable or exciting content.
+    #[objc::msg_send(isUtility)]
+    pub fn is_utility(&self) -> bool;
+
+    /// A score which incorporates aesthetic score, failure score and utility labels. `overallScore` is within the range \[-1, 1\]
+    /// where 1 is most desirable and -1 is not desirable.
+    #[objc::msg_send(overallScore)]
+    pub fn overall_score(&self) -> f32;
+}

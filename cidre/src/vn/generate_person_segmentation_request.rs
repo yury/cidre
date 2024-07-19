@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc, os, vn};
+use crate::{api, arc, define_obj_type, ns, objc, os, vn};
 
 /// Person segmentation level options to favor speed over recognition accuracy.
 /// Accurate is the default option.
@@ -11,6 +11,7 @@ pub enum QualityLevel {
 }
 
 define_obj_type!(
+    #[doc(alias = "VNGeneratePersonSegmentationRequest")]
     pub GeneratePersonSegmentationRequest(vn::StatefulRequest),
     VN_GENERATE_PERSON_SEGMENTAION_REQUEST
 );
@@ -32,6 +33,30 @@ impl GeneratePersonSegmentationRequest {
 
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::PixelBufObservation>>;
+
+    #[objc::msg_send(supportedOutputPixelFormatsAndReturnError:)]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub unsafe fn supported_output_pixel_formats_err<'ear>(
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<ns::Array<ns::Number>>>;
+
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn supported_output_pixel_formats<'ear>(
+    ) -> Result<arc::R<ns::Array<ns::Number>>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { Self::supported_output_pixel_formats_err(err) })
+    }
 }
 
 #[link(name = "vn", kind = "static")]

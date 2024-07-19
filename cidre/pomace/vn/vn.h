@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+Class VN_CALCULATE_IMAGE_AESTHETICS_SCORES_REQUEST;
 Class VN_DETECT_HORIZON_REQUEST;
 Class VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST;
 Class VN_RECOGNIZE_ANIMALS_REQUEST;
@@ -31,7 +32,9 @@ static void vn_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        VN_DETECT_HORIZON_REQUEST = [ VNDetectHorizonRequest class];
+        VN_CALCULATE_IMAGE_AESTHETICS_SCORES_REQUEST = NSClassFromString(@"VNCalculateImageAestheticsScoresRequest");
+        
+        VN_DETECT_HORIZON_REQUEST = [VNDetectHorizonRequest class];
         VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST = [VNDetectFaceCaptureQualityRequest class];
         VN_RECOGNIZE_ANIMALS_REQUEST = [VNRecognizeAnimalsRequest class];
         VN_GENERATE_PERSON_SEGMENTAION_REQUEST = [VNGeneratePersonSegmentationRequest class];
