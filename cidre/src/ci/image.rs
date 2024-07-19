@@ -1,4 +1,4 @@
-use crate::{arc, cf, cg, define_cls, define_obj_type, mtl, ns, objc};
+use crate::{api, arc, cf, cg, define_cls, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     /// A representation of an image to be processed or produced by Core Image filters.
@@ -66,6 +66,26 @@ impl Image {
 
     #[objc::msg_send(colorSpace)]
     pub fn color_space(&self) -> Option<&cg::ColorSpace>;
+
+    #[objc::msg_send(contentHeadroom)]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn content_headroom(&self) -> f32;
+
+    #[objc::msg_send(metalTexture)]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn mtl_texture(&self) -> Option<arc::R<mtl::Texture>>;
 }
 
 /// Pixel data formats for image input, output, and processing.
@@ -425,9 +445,23 @@ impl ImageOption {
     pub fn auxiliary_semantic_segmentation_sky_matte() -> &'static Self {
         unsafe { kCIImageAuxiliarySemanticSegmentationSkyMatte }
     }
+
+    #[doc(alias = "kCIImageContentHeadroom")]
+    #[inline]
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn content_headeroom() -> &'static Self {
+        unsafe { kCIImageContentHeadroom }
+    }
 }
 
 #[link(name = "ci", kind = "static")]
+#[api::weak]
 extern "C" {
     static CI_IMAGE: &'static objc::Class<Image>;
 
@@ -447,11 +481,20 @@ extern "C" {
     static kCIImageAuxiliarySemanticSegmentationTeethMatte: &'static ImageOption;
     static kCIImageAuxiliarySemanticSegmentationGlassesMatte: &'static ImageOption;
     static kCIImageAuxiliarySemanticSegmentationSkyMatte: &'static ImageOption;
+
+    #[api::available(
+        macos = 15.0,
+        ios = 18.0,
+        maccatalyst = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    static kCIImageContentHeadroom: &'static ImageOption;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::ci;
+    use crate::{api, ci};
 
     #[test]
     fn basics() {
@@ -469,6 +512,21 @@ mod tests {
             let empty = ci::Image::empty();
             let rc = empty.as_type_ref().retain_count();
             assert_eq!(rc, 1);
+        }
+    }
+
+    #[test]
+    fn versioning() {
+        let black = ci::Image::black();
+        if api::version!(macos = 15.0) {
+            let headroom = unsafe { black.content_headroom() };
+            assert_eq!(0.0f32, headroom);
+
+            let key = unsafe { ci::ImageOption::content_headeroom() };
+            assert!(key.is_some());
+        } else {
+            let key = unsafe { ci::ImageOption::content_headeroom() };
+            assert!(key.is_none());
         }
     }
 }
