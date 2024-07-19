@@ -229,20 +229,22 @@ pub use keyed_archiver::KeyedArchiver;
 mod keyed_unarchiver;
 pub use keyed_unarchiver::KeyedUnarchiver;
 
-pub fn log(str: &crate::ns::String) {
+pub fn log_string(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);
     }
 }
 
 #[macro_export]
-macro_rules! ns_log {
+macro_rules! log {
     ($($arg:tt)*) => {{
         let rstr = format!("{}",format_args!($($arg)*));
         let ns_str = $crate::ns::String::with_str_no_copy(&rstr);
-        $crate::ns::log(ns_str.as_ref());
+        $crate::ns::log_string(ns_str.as_ref());
     }};
 }
+
+pub use log;
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
