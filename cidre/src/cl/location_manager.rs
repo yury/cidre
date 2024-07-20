@@ -71,13 +71,15 @@ impl LocationManager {
     pub fn is_ranging_available() -> bool;
 
     #[objc::msg_send(authorizationStatus)]
+    #[api::available(macos = 11.0, ios = 14.0, tvos = 14.0, watchos = 7.0)]
     pub fn authorization_status(&self) -> cl::AuthorizationStatus;
 
     #[objc::msg_send(accuracyAuthorization)]
+    #[api::available(macos = 11.0, ios = 14.0, tvos = 14.0, watchos = 7.0)]
     pub fn accuracy_authorization(&self) -> cl::AccuracyAuthorization;
 
-    #[cfg(any(target_os = "ios", target_os = "macos"))]
     #[objc::msg_send(isAuthorizedForWidgetUpdates)]
+    #[api::available(macos = 11.0, ios = 14.0)]
     pub fn is_authorized_for_widget_updates(&self) -> bool;
 }
 
