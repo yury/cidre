@@ -24,10 +24,25 @@ pub enum AccuracyAuthorization {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum ActivityType {
+    /// positioning in activities that are not covered by one of
+    /// the other activity types.  Includes activities without a
+    /// specific user intention; for example, positioning while
+    /// the user sits on a bench interacting with the device
     Other = 1,
+    /// positioning in an automobile following a road network
     AutomotiveNavigation,
+    /// positioning in dedicated fitness sessions, e.g. walking
+    /// workouts, running workouts, cycling workouts, etc.
     Fitnes,
+    /// positioning for transportation that does not or may not
+    /// adhere to roads such as cycling, scooters, trains, boats
+    /// and off-road vehicles; also for positioning indoors and
+    /// outdoors that isn’t tied to a dedicated fitness session,
+    /// e.g. walking
     OtherNavigation,
+    /// positioning for activities in the air, e.g. flying in an
+    /// airplane or helicopter, paragliding, flying on a drone,
+    /// skydiving, etc.  Also includes runway taxiing
     Airborne,
 }
 
@@ -44,14 +59,15 @@ impl LocationManager {
     #[objc::msg_send(significantLocationChangeMonitoringAvailable)]
     pub fn significant_location_change_monitoring_available() -> bool;
 
+    /// true if the device supports the heading service, otherwise false.
     #[objc::msg_send(headingAvailable)]
     pub fn heading_available() -> bool;
 
     #[objc::msg_send(isMonitoringAvailableForClass:)]
     pub fn is_monitoring_available_for_class<T: objc::Obj>(cls: &objc::Class<T>) -> bool;
 
-    #[cfg(not(any(target_os = "watchos", target_os = "tvos")))]
     #[objc::msg_send(isRangingAvailable)]
+    #[api::available(macos = 10.15, ios = 7.0)]
     pub fn is_ranging_available() -> bool;
 
     #[objc::msg_send(authorizationStatus)]
