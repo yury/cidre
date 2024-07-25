@@ -17,7 +17,7 @@ impl Session {
 
     #[doc(alias = "VTPixelTransferSessionCreate")]
     #[inline]
-    pub fn create() -> Result<arc::R<Self>, os::Status> {
+    pub fn new() -> Result<arc::R<Self>, os::Status> {
         Self::create_in(None)
     }
 

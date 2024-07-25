@@ -121,4 +121,10 @@ impl ComputeCmdEncoder {
     /// The sum of these allocations can't exceed the maximum total tile memory limit.
     #[objc::msg_send(setImageblockWidth:height:)]
     pub fn set_image_block_size(&mut self, width: usize, height: usize);
+
+    /// Execute commands in the buffer within the range specified.
+    ///
+    /// The same indirect command buffer may be executed any number of times within the same encoder.
+    #[objc::msg_send(executeCommandsInBuffer:withRange:)]
+    pub fn execute_commands_in_buf(&mut self, icb: &mtl::IndirectCmdBuf, range: ns::Range);
 }

@@ -419,6 +419,9 @@ impl RenderCmdEncoder {
         index_buffer_offset: usize,
     );
 
+    #[objc::msg_send(updateFence:afterStages:)]
+    pub fn update_fence_after_stages(&self, fence: &mtl::Fence, stages: mtl::RenderStages);
+
     #[objc::msg_send(dispatchThreadsPerTile:)]
     pub fn dispatch_threads_per_tile(&self, val: mtl::Size);
 

@@ -225,22 +225,22 @@ impl Desc {
     pub fn set_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(depthAttachmentPixelFormat)]
-    pub fn depth_attachment_pixel_format(&self) -> PixelFormat;
+    pub fn depth_attach_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setDepthAttachmentPixelFormat:)]
-    pub fn set_depth_attachment_pixel_format(&mut self, val: PixelFormat);
+    pub fn set_depth_attach_pixel_format(&mut self, val: PixelFormat);
 
     #[objc::msg_send(stencilAttachmentPixelFormat)]
-    pub fn stencil_attachment_pixel_format(&self) -> PixelFormat;
+    pub fn stencil_attach_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
-    pub fn set_stencil_attachment_pixel_format(&mut self, val: PixelFormat);
+    pub fn set_stencil_attach_pixel_format(&mut self, val: PixelFormat);
 
     #[objc::msg_send(supportIndirectCommandBuffers)]
-    pub fn support_indirect_cmd_bufs(&self) -> bool;
+    pub fn support_icbs(&self) -> bool;
 
     #[objc::msg_send(setSupportIndirectCommandBuffers:)]
-    pub fn set_support_indirect_cmd_bufs(&self, val: bool);
+    pub fn set_support_icbs(&self, val: bool);
 }
 #[link(name = "mtl", kind = "static")]
 extern "C" {
@@ -352,6 +352,7 @@ impl arc::R<TileRenderPipelineDesc> {
 }
 
 define_obj_type!(
+    #[doc(alias = "MTLTileRenderPipelineDescriptor")]
     pub TileRenderPipelineDesc(ns::Id),
     MTL_TILE_RENDER_PIPELINE_DESCRIPTOR
 );
@@ -372,10 +373,10 @@ impl TileRenderPipelineDesc {
     pub fn set_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &TileRenderPipelineColorAttachDescArray;
+    pub fn color_attaches(&self) -> &TileRenderPipelineColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut TileRenderPipelineColorAttachDescArray;
+    pub fn color_attaches_mut(&mut self) -> &mut TileRenderPipelineColorAttachDescArray;
 
     #[objc::msg_send(threadgroupSizeMatchesTileSize)]
     pub fn threadgroup_size_matches_tile_size(&self) -> bool;
@@ -522,26 +523,26 @@ impl MeshRenderPipelineDesc {
     pub fn set_max_vertex_amplification_count(&mut self, val: usize);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments(&self) -> &mtl::RenderPipelineColorAttachDescArray;
+    pub fn color_attaches(&self) -> &mtl::RenderPipelineColorAttachDescArray;
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attachments_mut(&mut self) -> &mut mtl::RenderPipelineColorAttachDescArray;
+    pub fn color_attaches_mut(&mut self) -> &mut mtl::RenderPipelineColorAttachDescArray;
 
     /// The pixel format of the depth attachment of the render pass in which this pipeline will be used.
     /// The default value is mtl::PixelFormat::Invalid; indicating no depth attachment will be used.
     #[objc::msg_send(depthAttachmentPixelFormat)]
-    pub fn depth_attachment_pixel_format(&self) -> PixelFormat;
+    pub fn depth_attach_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setDepthAttachmentPixelFormat:)]
-    pub fn set_depth_attachment_pixel_format(&mut self, val: PixelFormat);
+    pub fn set_depth_attach_pixel_format(&mut self, val: PixelFormat);
 
     /// The pixel format of the stencil attachment of the render pass in which this pipeline will be used.
     /// The default value is mtl::PixelFormat::Invalid; indicating no stencil attachment will be used.
     #[objc::msg_send(stencilAttachmentPixelFormat)]
-    pub fn stencil_attachment_pixel_format(&self) -> PixelFormat;
+    pub fn stencil_attach_pixel_format(&self) -> PixelFormat;
 
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
-    pub fn set_stencil_attachment_pixel_format(&mut self, val: PixelFormat);
+    pub fn set_stencil_attach_pixel_format(&mut self, val: PixelFormat);
 }
 
 #[cfg(test)]

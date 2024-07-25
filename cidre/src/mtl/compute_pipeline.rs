@@ -2,7 +2,11 @@ use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(pub Reflection(ns::Id));
 
-define_obj_type!(pub Desc(ns::Id), MTL_COMPUTE_PIPELINE_DESCRIPTOR);
+define_obj_type!(
+    #[doc(alias = "MTLComputePipelineDescriptor")]
+    pub Desc(ns::Id),
+    MTL_COMPUTE_PIPELINE_DESCRIPTOR
+);
 
 impl Desc {
     define_mtl!(label, set_label);
@@ -24,6 +28,16 @@ impl Desc {
 
     #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
     pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
+
+    #[objc::msg_send(supportIndirectCommandBuffers)]
+    pub fn support_icbs(&self) -> bool;
+
+    #[objc::msg_send(setSupportIndirectCommandBuffers:)]
+    pub fn set_support_icbs(&mut self, val: bool);
+
+    /// Restore all compute pipeline descriptor properties to their default values.
+    #[objc::msg_send(reset)]
+    pub fn reset(&mut self);
 }
 
 #[link(name = "mtl", kind = "static")]

@@ -224,6 +224,24 @@ impl Device {
         ns::if_none(|err| unsafe { self.new_compute_ps_with_fn_err(function, err) })
     }
 
+    #[objc::msg_send(newComputePipelineStateWithDescriptor:options:reflection:error:)]
+    pub unsafe fn new_compute_ps_err<'ear, 'rar>(
+        &self,
+        desc: &mtl::ComputePipelineDesc,
+        opts: mtl::PipelineOpt,
+        reflection: *mut Option<&'rar mtl::ComputePipelineReflection>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::ComputePipelineState>>;
+
+    #[inline]
+    pub fn new_compute_ps<'ear>(
+        &self,
+        desc: &mtl::ComputePipelineDesc,
+        opts: mtl::PipelineOpt,
+    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ear ns::Error> {
+        ns::if_none(|err| unsafe { self.new_compute_ps_err(desc, opts, std::ptr::null_mut(), err) })
+    }
+
     #[objc::msg_send(newRenderPipelineStateWithTileDescriptor:options:reflection:error:)]
     pub unsafe fn new_tile_render_ps_err<'ear, 'rar>(
         &self,
