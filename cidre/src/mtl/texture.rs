@@ -56,14 +56,29 @@ impl SharedTextureHandle {
     define_mtl!(device, label);
 }
 
-define_opts!(pub Usage(usize));
+define_opts!(
+    #[doc(alias = "MTLTextureUsage")]
+    pub Usage(usize)
+);
 
 impl Usage {
+    #[doc(alias = "MTLTextureUsageUnknown")]
     pub const UNKNOWN: Self = Self(0x0000);
+
+    #[doc(alias = "MTLTextureUsageShaderRead")]
     pub const SHADER_READ: Self = Self(0x0001);
+
+    #[doc(alias = "MTLTextureUsageShaderWrite")]
     pub const SHADER_WRITE: Self = Self(0x0002);
+
+    #[doc(alias = "MTLTextureUsageRenderTarget")]
     pub const RENDER_TARGET: Self = Self(0x0004);
-    pub const PIXEL_FROMAT_VIEW: Self = Self(0x0010);
+
+    #[doc(alias = "MTLTextureUsagePixelFormatView")]
+    pub const PIXEL_FORMAT_VIEW: Self = Self(0x0010);
+
+    #[doc(alias = "MTLTextureUsageShaderAtomic")]
+    pub const SHADER_ATOMIC: Self = Self(0x0020);
 
     pub fn to_cf_number(&self) -> arc::R<cf::Number> {
         cf::Number::from_i64(self.0 as _)
