@@ -244,6 +244,17 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_Depth }
     }
 
+    /// The maximum frame delay count is the maximum number of frames that
+    /// a compressor is allowed to hold before it must output a compressed
+    /// frame.
+    ///
+    /// It limits the number of frames that may be held in the
+    /// "compression window". If the maximum frame delay count is M, then
+    /// before the call to encode frame N returns, frame N-M must have
+    /// been emitted.
+    ///
+    /// The default is UNLIMITED_FRAME_DELAY_COUNT, which sets no limit
+    /// on the compression window.
     #[doc(alias = "kVTCompressionPropertyKey_MaxFrameDelayCount")]
     #[inline]
     pub fn max_frame_delay_count() -> &'static cf::String {
@@ -556,6 +567,9 @@ pub mod keys {
         static kVTCompressionPropertyKey_EnableLTR: &'static cf::String;
     }
 }
+
+#[doc(alias = "kVTUnlimitedFrameDelayCount")]
+pub const UNLIMITED_FRAME_DELAY_COUNT: i32 = -1;
 
 pub mod h264_entropy_mode {
     use crate::cf;
