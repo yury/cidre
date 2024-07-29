@@ -1,6 +1,9 @@
 use crate::{arc, cf, cv, define_cf_type, define_opts};
 
-define_cf_type!(PixelBufPool(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CVPixelBufferPoolRef")]
+    PixelBufPool(cf::Type)
+);
 
 impl PixelBufPool {
     #[inline]

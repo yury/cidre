@@ -37,7 +37,7 @@ pub mod keys {
     /// and the client's pixel buffer attributes were incompatible.
     #[doc(alias = "kVTCompressionPropertyKey_PixelBufferPoolIsShared")]
     #[inline]
-    pub fn pixel_buffer_pool_is_shared() -> &'static cf::String {
+    pub fn pixel_buf_pool_is_shared() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_PixelBufferPoolIsShared }
     }
 
@@ -46,7 +46,7 @@ pub mod keys {
     /// You can use these to create a pixel buffer pool for source pixel buffers.
     #[doc(alias = "kVTCompressionPropertyKey_VideoEncoderPixelBufferAttributes")]
     #[inline]
-    pub fn video_encoder_pixel_buffer_attributes() -> &'static cf::String {
+    pub fn video_encoder_pixel_buf_attrs() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_VideoEncoderPixelBufferAttributes }
     }
 

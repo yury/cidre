@@ -8,7 +8,10 @@ pub enum AttachMode {
     ShouldPropagate = 1,
 }
 
-define_cf_type!(Buf(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CVBuffer")]
+    Buf(cf::Type)
+);
 
 impl Buf {
     #[inline]

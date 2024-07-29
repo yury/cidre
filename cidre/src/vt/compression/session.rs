@@ -8,7 +8,10 @@ use crate::blocks;
 pub type OutputHandler =
     blocks::Block<fn(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>), blocks::Sync>;
 
-define_cf_type!(Session(vt::Session));
+define_cf_type!(
+    #[doc(alias = "VTCompressionSession")]
+    Session(vt::Session)
+);
 
 pub type OutputCallback<T> = extern "C" fn(
     output_callback_ref_con: *mut T,

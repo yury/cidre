@@ -148,7 +148,12 @@ impl Null {
     }
 }
 
-define_cf_type!(Allocator(Type));
+define_cf_type!(
+    #[doc(alias = "CFAllocator")]
+    Allocator(Type)
+);
+
+unsafe impl Send for Allocator {}
 
 pub type AllocatorRetainCb<T = c_void> = extern "C" fn(info: *const T) -> *const T;
 pub type AllocatorReleaseCb<T = c_void> = extern "C" fn(info: *const T);
