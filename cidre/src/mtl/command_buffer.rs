@@ -106,6 +106,18 @@ impl CmdBuf {
         descriptor: &mtl::ComputePassDesc,
     ) -> Option<arc::R<mtl::ComputeCmdEncoder>>;
 
+    /// Encodes a command that pauses execution of this command buffer until the specified event reaches a given value.
+    ///
+    /// This method may only be called if there is no current command encoder on the receiver.
+    #[objc::msg_send(encodeWaitForEvent:value:)]
+    pub fn encode_wait_for_event(&mut self, event: &mtl::Event, value: u64);
+
+    /// Encodes a command that signals an event with a given value.
+    ///
+    /// This method may only be called if there is no current command encoder on the receiver.
+    #[objc::msg_send(encodeSignalEvent:value:)]
+    pub fn encode_signal_event(&mut self, event: &mtl::Event, value: u64);
+
     #[objc::msg_send(renderCommandEncoderWithDescriptor:)]
     pub fn new_render_cmd_enc(
         &self,

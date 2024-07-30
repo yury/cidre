@@ -51,6 +51,8 @@ Class MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR;
 Class MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE;
 Class MTL_RESIDENCY_SET_DESCRIPTOR;
 
+Class MTL_SHARED_EVENT_LISTENER;
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -99,6 +101,8 @@ static void mtl_initializer(void)
         MTL_FUNCTION_STITCHING_FUNCTION_NODE = [MTLFunctionStitchingFunctionNode class];
         MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR = [MTLStitchedLibraryDescriptor class];
         MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE = [MTLFunctionStitchingAttributeAlwaysInline class];
+        
+        MTL_SHARED_EVENT_LISTENER = [MTLSharedEventListener class];
         
         MTL_RESIDENCY_SET_DESCRIPTOR = NSClassFromString(@"MTLResidencySetDescriptor");
     }

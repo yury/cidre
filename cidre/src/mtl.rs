@@ -164,6 +164,8 @@ mod event;
 pub use event::Event;
 pub use event::SharedEvent;
 pub use event::SharedEventHandle;
+pub use event::SharedEventListener;
+pub use event::SharedEventNotificationBlock;
 
 mod blit_pass;
 pub use blit_pass::Desc as BlitPassDesc;
