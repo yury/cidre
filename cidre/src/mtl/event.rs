@@ -17,18 +17,19 @@ define_obj_type!(
 
 impl arc::A<SharedEventListener> {
     #[objc::msg_send(initWithDispatchQueue:)]
-    pub fn init_with_dispatch_queue(self, queue: dispatch::Queue) -> arc::R<SharedEventListener>;
+    pub fn init_with_dispatch_queue(self, queue: &dispatch::Queue) -> arc::R<SharedEventListener>;
 }
 
 /// A block of code invoked after a shareable event’s signal value equals or exceeds a given value.
-pub type SharedEventNotificationBlock = blocks::EscBlock<fn(event: &mtl::SharedEvent, value: u64)>;
+pub type SharedEventNotificationBlock =
+    blocks::EscBlock<fn(event: &mut mtl::SharedEvent, value: u64)>;
 
 impl SharedEventListener {
     define_cls!(MTL_SHARED_EVENT_LISTENER);
 
     /// Creates a new shareable event listener with a specific dispatch queue.
     #[inline]
-    pub fn with_dispatch_queue(queue: dispatch::Queue) -> arc::R<Self> {
+    pub fn with_dispatch_queue(queue: &dispatch::Queue) -> arc::R<Self> {
         Self::alloc().init_with_dispatch_queue(queue)
     }
 
@@ -67,7 +68,7 @@ impl SharedEvent {
         &self,
         listener: &mtl::SharedEventListener,
         at_value: u64,
-        block: impl FnMut(&mtl::SharedEvent, u64) + Send + 'static,
+        block: impl FnMut(&mut mtl::SharedEvent, u64) + Send + 'static,
     ) {
         let mut block = SharedEventNotificationBlock::new2(block);
         self.notify_listener_at_block(listener, at_value, &mut block);
@@ -81,6 +82,12 @@ impl SharedEvent {
     /// specified in milliseconds. Returns true if the value was signaled before the timeout, otherwise NO.
     #[objc::msg_send(waitUntilSignaledValue:timeoutMS:)]
     pub fn wait_until_signaled_value(&self, value: u64, timeout_ms: u64) -> bool;
+
+    #[objc::msg_send(signaledValue)]
+    pub fn signaled_value(&self) -> u64;
+
+    #[objc::msg_send(setSignaledValue:)]
+    pub fn set_signaled_value(&self, val: u64);
 }
 
 #[link(name = "mtl", kind = "static")]
