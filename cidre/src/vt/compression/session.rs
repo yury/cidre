@@ -6,7 +6,7 @@ use crate::{arc, cf, cm, cv, define_cf_type, os, vt};
 use crate::blocks;
 
 pub type OutputHandler =
-    blocks::Block<fn(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>), blocks::Sync>;
+    blocks::SendBlock<fn(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>)>;
 
 define_cf_type!(
     #[doc(alias = "VTCompressionSession")]
@@ -107,7 +107,7 @@ impl Session {
     #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn encode_frame(
-        &mut self,
+        &self,
         image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
@@ -131,7 +131,7 @@ impl Session {
     #[doc(alias = "VTCompressionSessionEncodeFrame")]
     #[inline]
     pub fn enc_frame(
-        &mut self,
+        &self,
         image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
@@ -178,14 +178,14 @@ impl Session {
     #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn enc_frame_with_output_handler(
+    pub fn enc_frame_with_output_handler_block(
         &mut self,
         image_buffer: &cv::ImageBuf,
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
-        block: &'static mut OutputHandler,
+        block: &mut OutputHandler,
     ) -> Result<(), os::Status> {
         unsafe {
             VTCompressionSessionEncodeFrameWithOutputHandler(
@@ -199,6 +199,28 @@ impl Session {
             )
             .result()
         }
+    }
+    #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn enc_frame_with_output_handler(
+        &mut self,
+        image_buffer: &cv::ImageBuf,
+        pts: cm::Time,
+        duration: cm::Time,
+        frame_properties: Option<&cf::Dictionary>,
+        info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
+        block: impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>) + Send + 'static,
+    ) -> Result<(), os::Status> {
+        let mut block = OutputHandler::new3(block);
+        self.enc_frame_with_output_handler_block(
+            image_buffer,
+            pts,
+            duration,
+            frame_properties,
+            info_flags_out,
+            &mut block,
+        )
     }
 
     #[doc(alias = "VTCompressionSessionGetPixelBufferPool")]
