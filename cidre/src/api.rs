@@ -95,7 +95,7 @@ pub fn macos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "macos"))]
     return false;
     #[cfg(target_os = "macos")]
-    ns::ProcessInfo::current().is_os_at_least_version(ns::OsVersion::from_str(_ver).unwrap())
+    ns::OsVersion::from_str(_ver).unwrap().at_least()
 }
 
 #[inline]
@@ -103,7 +103,7 @@ pub fn ios_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "ios"))]
     return false;
     #[cfg(target_os = "ios")]
-    ns::ProcessInfo::current().is_os_at_least_version(ns::OsVersion::from_str(_ver).unwrap())
+    ns::OsVersion::from_str(_ver).unwrap().at_least()
 }
 
 #[inline]
@@ -111,7 +111,7 @@ pub fn tvos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "tvos"))]
     return false;
     #[cfg(target_os = "tvos")]
-    ns::ProcessInfo::current().is_os_at_least_version(ns::OsVersion::from_str(_ver).unwrap())
+    ns::OsVersion::from_str(_ver).unwrap().at_least()
 }
 
 #[inline]
@@ -119,7 +119,7 @@ pub fn watchos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "watchos"))]
     return false;
     #[cfg(target_os = "watchos")]
-    ns::ProcessInfo::current().is_os_at_least_version(ns::OsVersion::from_str(_ver).unwrap())
+    ns::OsVersion::from_str(_ver).unwrap().at_least()
 }
 
 #[inline]
@@ -127,14 +127,15 @@ pub fn visionos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "visionos"))]
     return false;
     #[cfg(target_os = "visionos")]
-    ns::ProcessInfo::current().is_os_at_least_version(ns::OsVersion::from_str(_ver).unwrap())
+    ns::OsVersion::from_str(_ver).unwrap().at_least()
 }
+
 #[inline]
 pub fn maccatalyst_available(_ver: &str) -> bool {
     #[cfg(not(all(target_os = "ios", target_abi = "macabi")))]
     return false;
     #[cfg(all(target_os = "ios", target_abi = "macabi"))]
-    ns::ProcessInfo::current().is_os_at_least_version(ns::OsVersion::from_str(_ver).unwrap())
+    ns::OsVersion::from_str(_ver).unwrap().at_least()
 }
 
 #[macro_export]

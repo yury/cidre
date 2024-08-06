@@ -35,6 +35,64 @@ pub struct OsVersion {
     pub patch: isize,
 }
 
+#[repr(u32)]
+pub enum Platform {
+    MacOs = 1,
+    IOs = 2,
+    TvOs = 3,
+    WatchOs = 4,
+    // DriverKit = 10,
+    VisionOs = 11,
+}
+
+extern "C" {
+    fn __isPlatformVersionAtLeast(platform: u32, major: u32, minor: u32, patch: u32) -> i32;
+}
+
+impl OsVersion {
+    #[inline]
+    pub fn platform_at_least(&self, platform: Platform) -> bool {
+        unsafe {
+            __isPlatformVersionAtLeast(
+                platform as _,
+                self.major as _,
+                self.minor as _,
+                self.patch as _,
+            ) != 0
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    #[inline]
+    pub fn at_least(&self) -> bool {
+        self.platform_at_least(Platform::MacOs)
+    }
+
+    #[cfg(target_os = "ios")]
+    #[inline]
+    pub fn at_least(&self) -> bool {
+        self.platform_at_least(Platform::IOs)
+    }
+
+    #[cfg(target_os = "tvos")]
+    #[inline]
+    pub fn at_least(&self) -> bool {
+        self.platform_at_least(Platform::TvOs)
+    }
+
+    #[cfg(target_os = "watchos")]
+    #[inline]
+    pub fn at_least(&self) -> bool {
+        self.platform_at_least(Platform::WatchOs)
+    }
+
+    #[cfg(target_os = "visionos")]
+    #[inline]
+    pub fn at_least(&self) -> bool {
+        self.platform_at_least(Platform::VisionOs)
+    }
+}
+
 #[derive(Debug)]
 pub struct VersionError;
 
