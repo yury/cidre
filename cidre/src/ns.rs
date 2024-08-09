@@ -161,6 +161,9 @@ pub use error::if_none;
 pub use error::Domain as ErrorDomain;
 pub use error::Error;
 
+mod thread;
+pub use thread::Thread;
+
 mod timer;
 pub use timer::Timer;
 

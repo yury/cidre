@@ -80,6 +80,8 @@ Class NS_XPC_CONNECTION;
 Class NS_XPC_LISTENER;
 Class NS_XPC_INTERFACE;
 
+Class NS_THREAD;
+
 typedef void cidre_change(
                           void * _Nullable,
                           NSString * _Nullable,
@@ -118,6 +120,8 @@ static void common_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
+        initialized = 1;
+        
         NS_ARRAY = [NSArray class];
         NS_DATA = [NSData class];
         NS_DATE = [NSDate class];
@@ -172,7 +176,7 @@ static void common_initializer(void)
         NS_XPC_LISTENER = [NSXPCListener class];
         NS_XPC_INTERFACE = [NSXPCInterface class];
         
-        initialized = 1;
+        NS_THREAD = [NSThread class];   
     }
 }
 NS_ASSUME_NONNULL_END
