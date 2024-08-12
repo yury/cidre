@@ -94,6 +94,12 @@ impl Queue {
     }
 
     #[inline]
+    pub fn concurrent_with_ar_pool() -> arc::R<Self> {
+        let attr = Attr::concurrent_with_ar_pool();
+        Self::with_label_and_attrs(None, Some(&attr))
+    }
+
+    #[inline]
     pub fn with_label_and_attrs(label: Option<&CStr>, attr: Option<&Attr>) -> arc::R<Self> {
         unsafe {
             let label = label.map(|f| NonNull::new_unchecked(f.as_ptr() as *mut _));

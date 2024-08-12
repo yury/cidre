@@ -13,9 +13,9 @@ use super::Class;
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum Encoding {
-    ASCII = 1,
-    UTF8 = 4,
-    MacOSRoman = 30,
+    Ascii = 1,
+    Utf8 = 4,
+    MacOsRoman = 30,
 }
 
 define_obj_type!(
@@ -52,7 +52,7 @@ impl String {
     pub fn with_str(str: &str) -> arc::R<Self> {
         unsafe {
             Self::alloc()
-                .init_with_bytes_length_encoding(str.as_ptr(), str.len(), Encoding::UTF8)
+                .init_with_bytes_length_encoding(str.as_ptr(), str.len(), Encoding::Utf8)
                 .unwrap_unchecked()
         }
     }
@@ -64,7 +64,7 @@ impl String {
                 .init_with_bytes_no_copy_length_encoding_free_when_done(
                     str.as_ptr(),
                     str.len(),
-                    Encoding::UTF8,
+                    Encoding::Utf8,
                     false,
                 )
                 .unwrap_unchecked()
