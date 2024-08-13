@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
 
-use crate::{arc, cf, cm, cv, define_cf_type, os, vt};
+use crate::{api, arc, cf, cm, cv, define_cf_type, os, vt};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -247,10 +247,20 @@ impl Session {
         self.complete_frames(cm::Time::invalid()).result()
     }
 
+    /// Indicates whether the current system supports stereo MV-HEVC encode.
+    ///
+    /// This call returning true does not guarantee that encode resources will be available at all times.
+    #[doc(alias = "VTIsStereoMVHEVCEncodeSupported")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, visionos = 1.0)]
+    pub fn is_stereo_mv_hevc_encode_supported() -> bool {
+        unsafe { VTIsStereoMVHEVCEncodeSupported() }
+    }
+
     // TODO: multipass
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
+#[api::weak]
 extern "C" {
     fn VTCompressionSessionCreate(
         allocator: Option<&cf::Allocator>,
@@ -294,4 +304,6 @@ extern "C" {
         complete_until_pts: cm::Time,
     ) -> os::Status;
 
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, visionos = 1.0)]
+    fn VTIsStereoMVHEVCEncodeSupported() -> bool;
 }
