@@ -711,7 +711,12 @@ impl au::ParamId {
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(u64)]
 pub enum SoundIsolationSoundType {
+    /// Isolate voice signal from the input signal using high quality voice isolation model
+    #[doc(alias = "kAUSoundIsolationSoundType_HighQualityVoice")]
+    HighQualityVoice = 0,
+
     /// Isolate voice signal from the input signal.
+    #[doc(alias = "kAUSoundIsolationSoundType_Voice")]
     Voice = 1,
 }
 

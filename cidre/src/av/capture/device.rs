@@ -2080,12 +2080,14 @@ extern "C" {
 #[repr(isize)]
 pub enum VideoStabilizationMode {
     /// Indicates that video should not be stabilized.
+    #[doc(alias = "AVCaptureVideoStabilizationModeOff")]
     Off = 0,
 
     /// Indicates that video should be stabilized using the standard
     /// video stabilization algorithm introduced with iOS 5.0. Standard video
     /// stabilization has a reduced field of view. Enabling video stabilization
     /// may introduce additional latency into the video capture pipeline.
+    #[doc(alias = "AVCaptureVideoStabilizationModeStandard")]
     Standard = 1,
 
     /// Indicates that video should be stabilized using the cinematic stabilization
@@ -2094,6 +2096,7 @@ pub enum VideoStabilizationMode {
     /// video stabilization introduces much more latency into the video capture pipeline
     /// than standard video stabilization and consumes significantly more system memory.
     /// Use narrow or identical min and max frame durations in conjunction with this mode.
+    #[doc(alias = "AVCaptureVideoStabilizationModeCinematic")]
     Cinematic = 2,
 
     /// Indicates that the video should be stabilized using the extended cinematic
@@ -2102,16 +2105,26 @@ pub enum VideoStabilizationMode {
     /// 'av::CaptureVideoStabilizationMode::Cinematic' and consumes more memory, but yields
     /// improved stability. It is recommended to use identical or similar min and max frame
     /// durations in conjunction with this mode.
+    #[doc(alias = "AVCaptureVideoStabilizationModeCinematicExtended")]
     CinematicExtended = 3,
 
     /// Indicates that video should be stabilized using the preview optimized stabilization
     /// algorithm. Preview stabilization is a low latency and low power algorithm
     /// which is supported only on connections which either have an associated preview layer
     /// or have a preview-sized VideoDataOutput.
+    #[doc(alias = "AVCaptureVideoStabilizationModePreviewOptimized")]
     PreviewOptimized = 4,
+
+    /// Enhanced extended cinematic has a reduced field of view compared to extended
+    /// cinematic, without any noticeable increase in latency, and it yields improved stability.
+    ///
+    /// It’s recommended to use identical or similar minimum and maximum frame durations in conjunction with this mode.
+    #[doc(alias = "AVCaptureVideoStabilizationModeCinematicExtendedEnhanced")]
+    CinematicExtendedEnhanced = 5,
 
     /// Indicates that the most appropriate video stabilization mode for the device and
     /// format should be chosen.
+    #[doc(alias = "AVCaptureVideoStabilizationModeAuto")]
     Auto = -1,
 }
 
