@@ -41,7 +41,7 @@ impl Semaphore {
     #[doc(alias = "dispatch_semaphore_wait")]
     #[inline]
     pub fn wait_forever(&self) -> isize {
-        unsafe { dispatch_semaphore_wait(self, dispatch::Time::DISTANT_FUTURE) }
+        unsafe { dispatch_semaphore_wait(self, dispatch::Time::FOREVER) }
     }
 
     #[doc(alias = "dispatch_semaphore_signal")]

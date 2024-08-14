@@ -9,7 +9,7 @@ impl Time {
     pub const NOW: Time = Time(0);
 
     #[doc(alias("DISPATCH_TIME_FOREVER"))]
-    pub const DISTANT_FUTURE: Time = Time(!0);
+    pub const FOREVER: Time = Time(!0);
 
     #[inline]
     pub fn when_delta_nanos(when: Time, delta: i64) -> Time {
@@ -35,7 +35,7 @@ impl WallTime {
     pub const NOW: Self = Self(Time(!1));
 
     #[doc(alias("DISPATCH_TIME_FOREVER"))]
-    pub const DISTANT_FUTURE: Self = Self(Time::DISTANT_FUTURE);
+    pub const DISTANT_FUTURE: Self = Self(Time::FOREVER);
 
     // pub fn now() -> Self {
     //     unsafe { dispatch_walltime(std::ptr::null(), 0) }

@@ -57,14 +57,14 @@ impl WorkItem {
     }
 
     #[inline]
-    pub fn wait(&self) {
+    pub fn wait_forever(&self) {
         unsafe {
-            dispatch_block_wait(self, dispatch::Time::DISTANT_FUTURE);
+            dispatch_block_wait(self, dispatch::Time::FOREVER);
         }
     }
 
     #[inline]
-    pub fn wait_timeout(&self, timeout: dispatch::Time) -> Result<(), ()> {
+    pub fn wait(&self, timeout: dispatch::Time) -> Result<(), ()> {
         unsafe {
             if dispatch_block_wait(self, timeout) == 0 {
                 Ok(())
@@ -76,7 +76,7 @@ impl WorkItem {
 
     #[inline]
     pub fn wait_wall_timeout(&self, timeout: dispatch::WallTime) -> Result<(), ()> {
-        self.wait_timeout(timeout.0)
+        self.wait(timeout.0)
     }
 
     #[inline]
@@ -124,7 +124,7 @@ mod tests {
         assert!(!item.is_canceled());
         item.cancel();
         assert!(item.is_canceled());
-        let res = item.wait_timeout(dispatch::Time::NOW);
+        let res = item.wait(dispatch::Time::NOW);
         assert!(matches!(res, Err(())));
     }
 }
