@@ -9,6 +9,7 @@ impl ScreenshotManager {
     #[api::available(macos = 14.0)]
     define_cls!(SC_SCREENSHOT_MANAGER);
 
+    #[cfg(feature = "blocks")]
     #[api::available(macos = 14.0)]
     #[objc::msg_send(captureSampleBufferWithFilter:configuration:completionHandler:)]
     pub fn capture_sample_buf_ch(
@@ -17,6 +18,7 @@ impl ScreenshotManager {
         handler: Option<&mut blocks::ResultCompletionHandler<cm::SampleBuf>>,
     );
 
+    #[cfg(all(feature = "blocks", feature = "async"))]
     #[api::available(macos = 14.0)]
     pub async fn capture_sample_buf(
         filter: &sc::ContentFilter,
@@ -27,6 +29,7 @@ impl ScreenshotManager {
         future.await
     }
 
+    #[cfg(feature = "blocks")]
     #[api::available(macos = 14.0)]
     #[objc::msg_send(captureImageWithFilter:configuration:completionHandler:)]
     pub fn capture_image_ch(
@@ -35,6 +38,7 @@ impl ScreenshotManager {
         handler: Option<&mut blocks::ResultCompletionHandler<cg::Image>>,
     );
 
+    #[cfg(all(feature = "blocks", feature = "async"))]
     #[api::available(macos = 14.0)]
     pub async fn capture_image(
         filter: &sc::ContentFilter,

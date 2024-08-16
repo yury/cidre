@@ -63,7 +63,7 @@ define_obj_type!(
 
 impl Picker {
     #[api::available(macos = 14.0)]
-    define_cls!(SC_CONTENT_SHARING_PICKER_CONFIGURATION);
+    define_cls!(SC_CONTENT_SHARING_PICKER);
 
     #[objc::msg_send(sharedPicker)]
     pub fn shared() -> &'static mut Self;
@@ -140,4 +140,18 @@ extern "C" {
 
     #[api::available(macos = 14.0)]
     static SC_CONTENT_SHARING_PICKER: &'static objc::Class<Picker>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::sc;
+
+    #[test]
+    fn basics() {
+        let picker = sc::ContentSharingPicker::shared();
+        let cfg = picker.default_cfg();
+        assert!(cfg
+            .allowed_picker_modes()
+            .contains(sc::ContentSharingPickerMode::SINGLE_WINDOW));
+    }
 }
