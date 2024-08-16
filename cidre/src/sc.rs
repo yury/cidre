@@ -1,3 +1,10 @@
+pub mod content_sharing_picker;
+pub use content_sharing_picker::Cfg as ContentSharingPickerCfg;
+pub use content_sharing_picker::Mode as ContentSharingPickerMode;
+pub use content_sharing_picker::Observer as ContentSharingPickerObserver;
+pub use content_sharing_picker::ObserverImpl as ContentSharingPickerObserverImpl;
+pub use content_sharing_picker::Picker as ContentSharingPicker;
+
 pub mod stream;
 
 pub use stream::CaptureResolution;
