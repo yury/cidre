@@ -18,6 +18,7 @@ Class SC_RECORDING_OUTPUT_CONFIGURATION = nil;
 Class SC_RECORDING_OUTPUT = nil;
 Class SC_CONTENT_SHARING_PICKER_CONFIGURATION = nil;
 Class SC_CONTENT_SHARING_PICKER = nil;
+Class SC_SCREENSHOT_MANAGER = nil;
 
 __attribute__((constructor))
 static void sc_initializer(void)
@@ -35,7 +36,7 @@ static void sc_initializer(void)
         SC_RECORDING_OUTPUT = NSClassFromString(@"SCRecordingOutput");
         SC_CONTENT_SHARING_PICKER_CONFIGURATION = NSClassFromString(@"SCContentSharingPickerConfiguration");
         SC_CONTENT_SHARING_PICKER = NSClassFromString(@"SCContentSharingPicker");
-        
+        SC_SCREENSHOT_MANAGER = NSClassFromString(@"SCScreenshotManager");
         
     }
 }

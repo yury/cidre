@@ -20,6 +20,9 @@ pub use stream::OutputType;
 pub use stream::PresenterOverlayAlertSetting;
 pub use stream::Stream;
 
+mod screenshot_manager;
+pub use screenshot_manager::ScreenshotManager;
+
 pub mod shareable_content;
 pub use shareable_content::Display;
 pub use shareable_content::RunningApp;

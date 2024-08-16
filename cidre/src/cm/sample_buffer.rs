@@ -55,6 +55,8 @@ define_cf_type!(
     SampleBuf(cm::AttachBearer)
 );
 
+unsafe impl Send for SampleBuf {}
+
 /// An object that contains zero or more media samples of a uniform media type
 ///
 /// Sample buffers are Core Foundation objects that the system uses to move media

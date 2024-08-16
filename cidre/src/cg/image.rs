@@ -51,6 +51,8 @@ pub enum AlphaInfo {
 
 define_cf_type!(Image(cf::Type));
 
+unsafe impl Send for Image {}
+
 impl Image {
     /// Return true if `image' is an image mask, false otherwise.`
     #[inline]
