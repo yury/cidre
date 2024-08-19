@@ -27,9 +27,8 @@ unsafe impl Sync for Semaphore {}
 impl Semaphore {
     #[doc(alias = "dispatch_semaphore_create")]
     #[inline]
-    pub fn new(value: isize) -> arc::R<Self> {
-        debug_assert!(value >= 0);
-        unsafe { dispatch_semaphore_create(value) }
+    pub fn new(value: usize) -> arc::R<Self> {
+        unsafe { dispatch_semaphore_create(value as _) }
     }
 
     #[doc(alias = "dispatch_semaphore_wait")]

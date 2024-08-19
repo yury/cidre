@@ -1,4 +1,12 @@
+use std::ffi::c_ulonglong;
+
 use crate::sys::_types::TimeSpec;
+
+pub const MSEC_PER_SEC: c_ulonglong = 1000;
+pub const NSEC_PER_SEC: c_ulonglong = 1000000000;
+pub const NSEC_PER_MSEC: c_ulonglong = 1000000;
+pub const USEC_PER_SEC: c_ulonglong = 1000000;
+pub const NSEC_PER_USEC: c_ulonglong = 1000;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(transparent)]
@@ -35,7 +43,7 @@ impl WallTime {
     pub const NOW: Self = Self(Time(!1));
 
     #[doc(alias("DISPATCH_TIME_FOREVER"))]
-    pub const DISTANT_FUTURE: Self = Self(Time::FOREVER);
+    pub const FOREVER: Self = Self(Time::FOREVER);
 
     // pub fn now() -> Self {
     //     unsafe { dispatch_walltime(std::ptr::null(), 0) }

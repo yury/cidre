@@ -8,7 +8,7 @@ pub use object::Object;
 mod group;
 pub use group::Group;
 
-mod time;
+pub mod time;
 pub use time::Time;
 pub use time::WallTime;
 
