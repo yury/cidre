@@ -208,7 +208,7 @@ mod tests {
     pub fn current_ch() {
         let sema = dispatch::Semaphore::new(0);
 
-        let signal_guard = sema.signal_guard();
+        let signal_guard = sema.guard();
         let mut bl = blocks::ResultCompletionHandler::new2(move |content, error| {
             _ = &signal_guard;
             println!("nice {:?} {:?}", content, error);

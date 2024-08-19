@@ -49,18 +49,21 @@ impl WallTime {
     //     unsafe { dispatch_walltime(std::ptr::null(), 0) }
     // }
 
+    #[doc(alias = "dispatch_walltime")]
     #[inline]
     pub fn with_delta_nanos(delta: i64) -> Self {
         unsafe { dispatch_walltime(std::ptr::null(), delta) }
     }
 
+    #[doc(alias = "dispatch_walltime")]
     #[inline]
     pub fn with_delta(delta: std::time::Duration) -> WallTime {
         unsafe { dispatch_walltime(std::ptr::null(), delta.as_nanos() as _) }
     }
 
+    #[doc(alias = "dispatch_walltime")]
     #[inline]
-    pub fn with_timespec_delta_nanos(when: *const TimeSpec, delta: i64) -> WallTime {
+    pub fn with_spec_delta_nanos(when: *const TimeSpec, delta: i64) -> WallTime {
         unsafe { dispatch_walltime(when, delta) }
     }
 }
@@ -69,11 +72,4 @@ impl WallTime {
 extern "C" {
     fn dispatch_time(when: Time, delta: i64) -> Time;
     fn dispatch_walltime(when: *const TimeSpec, delta: i64) -> WallTime;
-}
-
-#[cfg(test)]
-mod tests {
-    //use crate::dispatch;
-    #[test]
-    fn basics() {}
 }

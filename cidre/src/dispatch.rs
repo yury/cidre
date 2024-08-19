@@ -34,9 +34,9 @@ pub use source::MachRecvFlags as SourceMachRecvFlags;
 pub use source::MachSendFlags as SourceMachSendFlags;
 pub use source::MemoryPressureFlags as SourceMemoryPressureFlags;
 pub use source::ProcFlags as SourceProcFlags;
-pub use source::Source;
+pub use source::Src;
 pub use source::TimerFlags as SourceTimerFlags;
-pub use source::TimerSource;
+pub use source::TimerSrc;
 pub use source::Type as SourceType;
 pub use source::TypeDataAdd as SourceDataAdd;
 

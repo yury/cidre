@@ -50,7 +50,7 @@ impl Semaphore {
     }
 
     #[inline]
-    pub fn signal_guard(&self) -> SignalGuard {
+    pub fn guard(&self) -> SignalGuard {
         SignalGuard {
             sema: self.retained(),
         }
