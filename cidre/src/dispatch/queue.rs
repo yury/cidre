@@ -69,8 +69,24 @@ impl Priority {
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
 #[repr(usize)]
 pub enum AutoreleaseFrequency {
+    /// Dispatch queues with this autorelease frequency inherit the behavior from
+    /// their target queue. This is the default behavior for manually created queues.
+    #[doc(alias = "DISPATCH_AUTORELEASE_FREQUENCY_INHERIT")]
+    #[doc(alias = "DispatchQueue.AutoreleaseFrequency.inherit")]
     Inherit = 0,
+
+    /// Dispatch queues with this autorelease frequency push and pop an autorelease
+    /// pool around the execution of every block that was submitted to it
+    /// asynchronously.
+    #[doc(alias = "DISPATCH_AUTORELEASE_FREQUENCY_WORK_ITEM")]
+    #[doc(alias = "DispatchQueue.AutoreleaseFrequency.workItem")]
     WorkItem = 1,
+
+    /// Dispatch queues with this autorelease frequency never set up an individual
+    /// autorelease pool around the execution of a block that is submitted to it
+    /// asynchronously. This is the behavior of the global concurrent queues.
+    #[doc(alias = "DISPATCH_AUTORELEASE_FREQUENCY_NEVER")]
+    #[doc(alias = "DispatchQueue.AutoreleaseFrequency.never")]
     Never = 2,
 }
 
@@ -82,9 +98,18 @@ pub enum AutoreleaseFrequency {
 /// q.as_type_ref().show();
 /// ```
 impl Queue {
+    /// Serial queue
     #[inline]
     pub fn new() -> arc::R<Self> {
-        Self::with_label_and_attrs(None, None)
+        let attr = Attr::serial();
+        Self::with_label_and_attrs(None, attr)
+    }
+
+    /// Concurrent queue
+    #[inline]
+    pub fn concurrent() -> arc::R<Self> {
+        let attr = Attr::concurrent();
+        Self::with_label_and_attrs(None, attr)
     }
 
     #[inline]
