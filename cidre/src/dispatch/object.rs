@@ -32,16 +32,29 @@ impl Object {
         unsafe { dispatch_set_context(self, context) }
     }
 
+    #[inline]
     pub fn context(&self) -> *mut c_void {
         unsafe { dispatch_get_context(self) }
     }
 
+    #[inline]
     pub fn set_finalizer_f<T>(&mut self, finalizer: Option<&dispatch::Fn<T>>) {
         unsafe { dispatch_set_finalizer_f(self, transmute(finalizer)) }
     }
 
+    #[inline]
     pub fn set_qos_class_floor(&mut self, qos_class: QOSClass, relative_priority: i32) {
         unsafe { dispatch_set_qos_class_floor(self, qos_class, relative_priority) }
+    }
+
+    /// Sets the target queue for the given object.
+    #[doc(alias = "dispatch_set_target_queue")]
+    #[doc(alias = "DispatchObject.setTarget(self:queue:)")]
+    #[inline]
+    pub fn set_target_queue(&mut self, val: Option<&dispatch::Queue>) {
+        unsafe {
+            dispatch_set_target_queue(self, val);
+        }
     }
 }
 
@@ -58,4 +71,6 @@ extern "C" {
         qos_class: QOSClass,
         relative_priority: i32,
     );
+
+    fn dispatch_set_target_queue(object: &mut Object, queue: Option<&dispatch::Queue>);
 }
