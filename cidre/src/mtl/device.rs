@@ -5,11 +5,22 @@ use crate::io;
 
 use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
-define_opts!(pub PipelineOpt(usize));
+define_opts!(
+    #[doc(alias = "MTLPipelineOption")]
+    pub PipelineOpt(usize)
+);
+
 impl PipelineOpt {
+    #[doc(alias = "MTLPipelineOptionNone")]
     pub const NONE: Self = Self(0);
-    pub const ARGUMENT_INFO: Self = Self(1 << 0);
+
+    #[doc(alias = "MTLPipelineOptionBindingInfo")]
+    pub const BINDING_INFO: Self = Self(1 << 0);
+
+    #[doc(alias = "MTLPipelineOptionBufferTypeInfo")]
     pub const BUFFER_TYPE_INFO: Self = Self(1 << 1);
+
+    #[doc(alias = "MTLPipelineOptionFailOnBinaryArchiveMiss")]
     pub const FAIL_ON_BINARY_ARCHIVE_MISS: Self = Self(1 << 2);
 }
 
@@ -17,8 +28,13 @@ impl PipelineOpt {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum ReadWriteTextureTier {
+    #[doc(alias = "MTLReadWriteTextureTierNone")]
     None = 0,
+
+    #[doc(alias = "MTLReadWriteTextureTier1")]
     _1 = 1,
+
+    #[doc(alias = "MTLReadWriteTextureTier2")]
     _2 = 2,
 }
 
@@ -26,7 +42,10 @@ pub enum ReadWriteTextureTier {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum ArgBufsTier {
+    #[doc(alias = "MTLArgumentBuffersTier1")]
     _1 = 0,
+
+    #[doc(alias = "MTLArgumentBuffersTier2")]
     _2 = 1,
 }
 
@@ -34,8 +53,13 @@ pub enum ArgBufsTier {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(isize)]
 pub enum SparsePageSize {
+    #[doc(alias = "MTLSparsePageSize16")]
     _16 = 101,
+
+    #[doc(alias = "MTLSparsePageSize64")]
     _64 = 102,
+
+    #[doc(alias = "MTLSparsePageSize256")]
     _256 = 103,
 }
 

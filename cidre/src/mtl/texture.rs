@@ -3,29 +3,62 @@ use crate::{arc, cf, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 #[cfg(feature = "io")]
 use crate::io;
 
+/// Describes the dimensionality of each image, and if multiple images are arranged into an array or cube.
+#[doc(alias = "MTLTextureType")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum Type {
+    #[doc(alias = "MTLTextureType1D")]
     _1d = 0,
+
+    #[doc(alias = "MTLTextureType1DArray")]
     _1dArray = 1,
+
+    #[doc(alias = "MTLTextureType2D")]
     _2d = 2,
+
+    #[doc(alias = "MTLTextureType2DArray")]
     _2dArray = 3,
+
+    #[doc(alias = "MTLTextureType2DMultisample")]
     _2dMultisample = 4,
+
+    #[doc(alias = "MTLTextureTypeCube")]
     Cube = 5,
+
+    #[doc(alias = "MTLTextureTypeCubeArray")]
     CubeArray = 6,
+
+    #[doc(alias = "MTLTextureType3D")]
     _3d = 7,
+
+    #[doc(alias = "MTLTextureType2DMultisampleArray")]
     _2dMultisampleArray = 8,
+
+    #[doc(alias = "MTLTextureTypeTextureBuffer")]
     TextureBuffer = 9,
 }
 
+#[doc(alias = "MTLTextureSwizzle")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(u8)]
 pub enum Swizzle {
+    #[doc(alias = "MTLTextureSwizzleZero")]
     Zero = 0,
+
+    #[doc(alias = "MTLTextureSwizzleOne")]
     One = 1,
+
+    #[doc(alias = "MTLTextureSwizzleRed")]
     Red = 2,
+
+    #[doc(alias = "MTLTextureSwizzleGreen")]
     Green = 3,
+
+    #[doc(alias = "MTLTextureSwizzleBlue")]
     Blue = 4,
+
+    #[doc(alias = "MTLTextureSwizzleAlpha")]
     Alpha = 5,
 }
 
@@ -50,7 +83,10 @@ impl Default for SwizzleChannels {
     }
 }
 
-define_obj_type!(pub SharedTextureHandle(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLSharedTextureHandle")]
+    pub SharedTextureHandle(ns::Id)
+);
 
 impl SharedTextureHandle {
     define_mtl!(device, label);
@@ -89,7 +125,10 @@ impl Usage {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd)]
 #[repr(usize)]
 pub enum Compression {
+    #[doc(alias = "MTLTextureCompressionTypeLossless")]
     Lossless = 0,
+
+    #[doc(alias = "MTLTextureCompressionTypeLossy")]
     Lossy = 1,
 }
 

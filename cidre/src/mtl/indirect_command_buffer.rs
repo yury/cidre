@@ -62,13 +62,13 @@ impl Desc {
     pub fn inherit_ps(&self) -> bool;
 
     #[objc::msg_send(setInheritPipelineState:)]
-    pub fn set_inherit_ps(&self, val: bool) -> bool;
+    pub fn set_inherit_ps(&mut self, val: bool) -> bool;
 
     #[objc::msg_send(inheritBuffers)]
     pub fn inherit_bufs(&self) -> bool;
 
     #[objc::msg_send(setInheritBuffers:)]
-    pub fn set_inherit_bufs(&self, val: bool);
+    pub fn set_inherit_bufs(&mut self, val: bool);
 
     #[objc::msg_send(maxVertexBufferBindCount)]
     pub fn max_vertex_buf_bind_count(&self) -> usize;

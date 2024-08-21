@@ -27,8 +27,8 @@ unsafe impl Sync for Semaphore {}
 impl Semaphore {
     #[doc(alias = "dispatch_semaphore_create")]
     #[inline]
-    pub fn new(value: usize) -> arc::R<Self> {
-        unsafe { dispatch_semaphore_create(value as _) }
+    pub fn new(n: usize) -> arc::R<Self> {
+        unsafe { dispatch_semaphore_create(n as _) }
     }
 
     #[doc(alias = "dispatch_semaphore_wait")]
@@ -62,4 +62,15 @@ extern "C" {
     fn dispatch_semaphore_create(value: isize) -> arc::R<Semaphore>;
     fn dispatch_semaphore_wait(sema: &Semaphore, timeout: dispatch::Time) -> isize;
     fn dispatch_semaphore_signal(sema: &Semaphore) -> isize;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::dispatch;
+
+    #[test]
+    fn basics() {
+        let _sema_0 = dispatch::Semaphore::new(0);
+        let _sema_1 = dispatch::Semaphore::new(1);
+    }
 }
