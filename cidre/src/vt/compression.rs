@@ -52,8 +52,8 @@ mod tests {
         props.insert(keys::real_time(), &bool_true);
         props.insert(keys::allow_frame_reordering(), &bool_false);
         props.insert(
-            keys::profile_level(),
-            profile_level::h264::main_auto_level(),
+            keys::profile_lvl(),
+            profile_level::h264::main_auto_lvl(),
         );
         props.insert(keys::allow_open_gop(), &bool_false);
         props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());

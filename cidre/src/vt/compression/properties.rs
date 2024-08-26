@@ -216,7 +216,7 @@ pub mod keys {
 
     #[doc(alias = "kVTCompressionPropertyKey_ProfileLevel")]
     #[inline]
-    pub fn profile_level() -> &'static cf::String {
+    pub fn profile_lvl() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ProfileLevel }
     }
 
@@ -421,13 +421,13 @@ pub mod keys {
 
     #[doc(alias = "kVTCompressionPropertyKey_ContentLightLevelInfo")]
     #[inline]
-    pub fn content_light_level_info() -> &'static cf::String {
+    pub fn content_light_lvl_info() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_ContentLightLevelInfo }
     }
 
     #[doc(alias = "kVTCompressionPropertyKey_GammaLevel")]
     #[inline]
-    pub fn gamma_level() -> &'static cf::String {
+    pub fn gamma_lvl() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_GammaLevel }
     }
 
@@ -615,15 +615,15 @@ pub mod profile_level {
 
     pub mod hevc {
         use crate::cf;
-        pub fn main_auto_level() -> &'static cf::String {
+        pub fn main_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main_AutoLevel }
         }
 
-        pub fn main10_auto_level() -> &'static cf::String {
+        pub fn main10_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main10_AutoLevel }
         }
 
-        pub fn main42210_auto_level() -> &'static cf::String {
+        pub fn main42210_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main42210_AutoLevel }
         }
 
@@ -689,12 +689,12 @@ pub mod profile_level {
         }
 
         #[doc(alias = "kVTProfileLevel_H264_Baseline_AutoLevel")]
-        pub fn baseline_auto_level() -> &'static cf::String {
+        pub fn baseline_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Baseline_AutoLevel }
         }
 
         #[doc(alias = "kVTProfileLevel_H264_ConstrainedBaseline_AutoLevel")]
-        pub fn constrained_baseline_auto_level() -> &'static cf::String {
+        pub fn constrained_baseline_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_ConstrainedBaseline_AutoLevel }
         }
 
@@ -744,7 +744,7 @@ pub mod profile_level {
         }
 
         #[doc(alias = "kVTProfileLevel_H264_Main_AutoLevel")]
-        pub fn main_auto_level() -> &'static cf::String {
+        pub fn main_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Main_AutoLevel }
         }
 
@@ -754,7 +754,7 @@ pub mod profile_level {
         }
 
         #[doc(alias = "kVTProfileLevel_H264_Extended_AutoLevel")]
-        pub fn extended_auto_level() -> &'static cf::String {
+        pub fn extended_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_Extended_AutoLevel }
         }
 
@@ -804,12 +804,12 @@ pub mod profile_level {
         }
 
         #[doc(alias = "kVTProfileLevel_H264_High_AutoLevel")]
-        pub fn high_auto_level() -> &'static cf::String {
+        pub fn high_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_High_AutoLevel }
         }
 
         #[doc(alias = "kVTProfileLevel_H264_ConstrainedHigh_AutoLevel")]
-        pub fn constrained_high_auto_level() -> &'static cf::String {
+        pub fn constrained_high_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_H264_ConstrainedHigh_AutoLevel }
         }
 
