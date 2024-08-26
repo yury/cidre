@@ -48,6 +48,7 @@ Default features: `macos_14_0`, `ios_17_0`, `tvos_17_0`, `maccatalyst_17_0`, `wa
 - destination -> dst
 - error -> err
 - extension -> ext
+- lavel -> lvl
 - language -> lang
 - length -> len
 - mutable -> mut
