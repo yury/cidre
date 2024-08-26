@@ -929,15 +929,15 @@ pub mod profile_level {
     pub mod h263 {
         use crate::cf;
 
-        pub fn profile0_level_10() -> &'static cf::String {
+        pub fn profile0_lvl_10() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile0_Level10 }
         }
 
-        pub fn profile0_level_45() -> &'static cf::String {
+        pub fn profile0_lvl_45() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile0_Level45 }
         }
 
-        pub fn profile3_level_45() -> &'static cf::String {
+        pub fn profile3_lvl_45() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile3_Level45 }
         }
 
