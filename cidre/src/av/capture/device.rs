@@ -1809,8 +1809,8 @@ impl Format {
     /// "always on" HDR. And thus the videoHDRSupported property is always NO for 10-bit formats only supporting
     /// HLG BT2020 colorspace, since HDR cannot be enabled or disabled. To enable videoHDR (EDR),
     /// set the AVCaptureDevice.videoHDREnabled property.
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(isVideoHDRSupported)]
+    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn is_video_hdr_supported(&self) -> bool;
 
     #[objc::msg_send(videoSupportedFrameRateRanges)]
@@ -1857,10 +1857,6 @@ impl Format {
     #[objc::msg_send(isGlobalToneMappingSupported)]
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn is_global_tone_mapping_supported(&self) -> bool;
-
-    #[objc::msg_send(isVideoHDRSupported)]
-    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
-    pub fn is_video_hdr_supported(&self) -> bool;
 
     #[objc::msg_send(isHighPhotoQualitySupported)]
     #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
