@@ -359,6 +359,13 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_CleanAperture }
     }
 
+    /// Describes the pixel aspect ratio for encoded frames.
+    ///
+    /// Some video encoders may enforce specific pixel aspect ratios;
+    /// in those cases this property will be read-only (SetProperty will return kVTPropertyReadOnlyErr).
+    /// The pixel aspect ratio will be set on the format description for output samples,
+    /// and may affect source frame scaling.
+    /// None is a valid value for this property, meaning square pixels (1:1).
     #[doc(alias = "kVTCompressionPropertyKey_PixelAspectRatio")]
     #[inline]
     pub fn pixel_aspect_ratio() -> &'static cf::String {
