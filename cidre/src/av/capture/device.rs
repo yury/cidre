@@ -227,12 +227,15 @@ impl<'a> ConfigLockGuard<'a> {
 /// AVCaptureDeviceReactionEffects
 impl Device {
     #[objc::msg_send(reactionEffectsEnabled)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn reaction_effects_enabled() -> bool;
 
     #[objc::msg_send(reactionEffectGesturesEnabled)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn reaction_effect_gestures_enabled() -> bool;
 
     #[objc::msg_send(canPerformReactionEffects)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn can_perform_reaction_effects(&self) -> bool;
 
     /// Returns a list of reaction types which can be passed to perform_effect_for_reaction.
@@ -240,14 +243,30 @@ impl Device {
     /// The list may differ between devices, or be affected by changes to active format,
     /// and can be key-value observed.
     #[objc::msg_send(availableReactionTypes)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn available_reaction_types(&self) -> &ns::Set<av::CaptureReactionType>;
 
     /// Triggers a specified reaction on the video stream.
     #[objc::msg_send(performEffectForReaction:)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn perform_effect_for_reaction(&mut self, reaction_type: &av::CaptureReactionType);
 
     #[objc::msg_send(reactionEffectsInProgress)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn reaction_effects_in_progress(&self) -> &ns::Array<av::CaptureReactionEffectState>;
+}
+
+/// AVCaptureDeviceBackgroundReplacement
+impl Device {
+    /// A class property indicating whether the user has enabled the Background Replacement
+    /// feature for this application.
+    #[objc::msg_send(isBackgroundReplacementEnabled)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_background_replacement_enabled() -> bool;
+
+    #[objc::msg_send(isBackgroundReplacementActive)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_background_replacement_active(&self) -> bool;
 }
 
 /// AVCaptureDeviceContinuityCamera
@@ -310,6 +329,7 @@ impl Device {
     ///
     /// This readonly property returns the microphone mode selected by the user in Control Center. It is key-value observable.
     #[objc::msg_send(preferredMicrophoneMode)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
     pub fn preferred_mic_mode() -> MicMode;
 
     /// Indicates the currently active microphone mode.
@@ -319,6 +339,7 @@ impl Device {
     /// active audio route does not support the preferred microphone mode.
     /// This property is key-value observable.
     #[objc::msg_send(activeMicrophoneMode)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
     pub fn active_mic_mode() -> MicMode;
 }
 
@@ -440,6 +461,7 @@ pub enum SysUi {
 /// AVCaptureSystemUserInterface
 impl Device {
     #[objc::msg_send(showSystemUserInterface:)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
     pub fn show_sys_ui(system_ui: SysUi);
 }
 
@@ -1814,21 +1836,44 @@ impl Format {
 
 /// # Determining Exposure
 impl Format {
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(minExposureDuration)]
+    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn min_exposure_duration(&self) -> cm::Time;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(maxExposureDuration)]
+    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn max_exposure_duration(&self) -> cm::Time;
 
     /// An [`f32`] indicating the minimum supported exposure ISO value.
     #[objc::msg_send(minISO)]
+    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn min_iso(&self) -> f32;
 
     /// An [`f32`] indicating the maximum supported exposure ISO value.
     #[objc::msg_send(maxISO)]
+    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn max_iso(&self) -> f32;
+
+    #[objc::msg_send(isGlobalToneMappingSupported)]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn is_global_tone_mapping_supported(&self) -> bool;
+
+    #[objc::msg_send(isVideoHDRSupported)]
+    #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn is_video_hdr_supported(&self) -> bool;
+
+    #[objc::msg_send(isHighPhotoQualitySupported)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn is_high_photo_quality_supported(&self) -> bool;
+
+    #[objc::msg_send(isHighestPhotoQualitySupported)]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn is_highest_photo_quality_supported(&self) -> bool;
+
+    /// Indicating the autofocus system.
+    #[objc::msg_send(autoFocusSystem)]
+    #[api::available(macos = 10.15, ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn auto_focus_sys(&self) -> AutoFocusSys;
 }
 
 impl Format {
@@ -1843,10 +1888,6 @@ impl Format {
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(videoZoomFactorUpscaleThreshold)]
     pub fn video_zoom_factor_upscale_threshold(&self) -> cg::Float;
-
-    /// Indicating the autofocus system.
-    #[objc::msg_send(autoFocusSystem)]
-    pub fn auto_focus_sys(&self) -> AutoFocusSys;
 }
 
 /// # Center Stage
