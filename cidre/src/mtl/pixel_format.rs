@@ -193,7 +193,7 @@ pub enum PixelFormat {
     /// from -0.752941 to 1.25098.
     ///
     /// To display wide color values on devices with wide color displays, you can set this
-    /// pixel format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat
+    /// pixel format on the colorPixelFormat property of an 'mtk::View' or the pixel_format
     /// property of a [`crate::ca::MetalLayer`].
     #[doc(alias = "MTLPixelFormatBGR10_XR")]
     Bgr10Xr = 554,
@@ -208,7 +208,7 @@ pub enum PixelFormat {
     /// from -0.5271 to 1.66894, before gamma expansion.
     ///
     /// To display wide color values on devices with wide color displays, you can set this pixel
-    /// format on the colorPixelFormat property of an 'mtk::View' or the pixelFormat property of
+    /// format on the colorPixelFormat property of an 'mtk::View' or the pixel_format property of
     /// a [`crate::ca::MetalLayer`]. You must also use specify an extended sRGB color space.
     #[doc(alias = "MTLPixelFormatBGR10_XR_sRGB")]
     Bgr10XrSrgb = 555,

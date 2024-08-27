@@ -1,4 +1,4 @@
-use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with
 /// [`av::CaptureVideoPreviewLayer`] and [`av::CaptureConnection`].
@@ -139,40 +139,66 @@ impl Session {
     #[objc::msg_send(isInterrupted)]
     pub fn is_interrupted(&self) -> bool;
 
-    #[cfg(not(target_os = "macos"))]
+    /// Returns whether the session can be configured to use the camera while multitasking.
+    ///
+    /// This property can be used to determine whether multitasking_camera_access_enabled may be set to true.
+    /// When this property changes from true to false, multitasking_camera_access_enabled also reverts to false.
+    /// Prior to iOS 18, this property returns true on iPads that support Stage Manager with an extended display.
+    /// In applications linked on or after iOS 18, this property returns true for video conferencing applications
+    /// (apps that use "voip" as one of their UIBackgroundModes).
+    /// This property also returns true for iOS applications that have the
+    /// com.apple.developer.avfoundation.multitasking-camera-access entitlement.
+    /// This property returns true on Apple TV.
+    /// This property is key-value observable.
     #[objc::msg_send(isMultitaskingCameraAccessSupported)]
+    #[api::available(ios = 16.0, tvos = 17.0)]
     pub fn is_multitasking_camera_access_supported(&self) -> bool;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(isMultitaskingCameraAccessEnabled)]
+    #[api::available(ios = 16.0, tvos = 17.0)]
     pub fn is_multitasking_camera_access_enabled(&self) -> bool;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(setMultitaskingCameraAccessEnabled:)]
+    #[api::available(ios = 16.0, tvos = 17.0)]
     pub fn set_multitasking_camera_access_enabled(&mut self, val: bool);
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(usesApplicationAudioSession)]
+    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn uses_app_audio_session(&self) -> bool;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(setUsesApplicationAudioSession:)]
+    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn set_uses_app_audio_session(&mut self, value: bool);
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(automaticallyConfiguresApplicationAudioSession)]
-    pub fn automatically_configures_application_audio_session(&self) -> bool;
+    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
+    pub fn automatically_configures_app_audio_session(&self) -> bool;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(setAutomaticallyConfiguresApplicationAudioSession:)]
-    pub fn set_automatically_configures_application_audio_session(&mut self, val: bool);
+    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
+    pub fn set_automatically_configures_app_audio_session(&mut self, val: bool);
 
-    #[cfg(not(target_os = "macos"))]
+    /// Indicates whether the receiver should configure the application's audio session to mix with others.
+    ///
+    /// The value of this property is a bool indicating whether the receiver should configure
+    /// the application's audio session to mix with, instead of interrupting, any ongoing audio
+    /// sessions. It has no effect when uses_application_audio_session is set to false. It also
+    /// has no effect on Live Photo movie complement capture (where music is always mixed with).
+    /// The default value is false.
+    #[objc::msg_send(configuresApplicationAudioSessionToMixWithOthers)]
+    #[api::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn configures_application_audio_session_to_mix_with_others(&self) -> bool;
+
+    #[objc::msg_send(setConfiguresApplicationAudioSessionToMixWithOthers:)]
+    #[api::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn set_configures_application_audio_session_to_mix_with_others(&mut self, val: bool);
+
     #[objc::msg_send(automaticallyConfiguresCaptureDeviceForWideColor)]
+    #[api::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn automatically_configures_capture_device_for_wide_color(&self) -> bool;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(setAutomaticallyConfiguresCaptureDeviceForWideColor:)]
+    #[api::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn set_automatically_configures_capture_device_for_wide_color(&mut self, val: bool);
 
     #[objc::msg_send(startRunning)]
@@ -184,8 +210,16 @@ impl Session {
     #[objc::msg_send(synchronizationClock)]
     pub fn sync_clock(&self) -> Option<&cm::Clock>;
 
-    #[cfg(not(target_os = "macos"))]
+    /// Indicates the percentage of the session's available hardware budget currently in use.
+    ///
+    /// The value of this property is a float from 0.0 => 1.0 indicating how much of the
+    /// session's available hardware is in use as a percentage, given the currently connected
+    /// inputs and outputs and the features for which you've opted in. When your hw_cost is greater
+    /// than 1.0, the capture session cannot run your desired configuration due to hardware
+    /// constraints, so you receive an AVCaptureSessionRuntimeErrorNotification when attempting
+    /// to start it running. Default value is 0.
     #[objc::msg_send(hardwareCost)]
+    #[api::available(ios = 16.0, maccatalyst = 16.0, tvos = 17.0)]
     pub fn hw_cost(&self) -> f32;
 }
 
