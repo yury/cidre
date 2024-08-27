@@ -1,17 +1,30 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, cm, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVCaptureInput")]
     pub Input(ns::Id)
 );
+
 define_obj_type!(
     #[doc(alias = "AVCaptureDeviceInput")]
     pub DeviceInput(Input)
 );
+
 define_obj_type!(
     #[doc(alias = "AVCaptureInputPort")]
     pub Port(ns::Id)
 );
+
+/// Constants indicating the modes of multichannel audio.
+#[doc(alias = "AVCaptureMultichannelAudioMode")]
+#[repr(isize)]
+pub enum MultichannelAudioMode {
+    /// Indicates that no multichannel audio should be used.
+    None = 0,
+
+    /// Indicates that the audio should be recorded using stereo.
+    Stereo = 1,
+}
 
 impl Input {
     #[objc::msg_send(ports)]
@@ -59,12 +72,33 @@ impl DeviceInput {
     ) -> arc::R<ns::Array<Port>>;
 
     /// A property that acts as a modifier to the [`av::CaptureDevice`]'s activeVideoMinFrameDuration property.
-    /// Default value is kCMTimeInvalid.
+    /// Default value is cm::Time::invalid().
     #[objc::msg_send(videoMinFrameDurationOverride)]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn video_min_frame_duration_override(&self) -> cm::Time;
 
     #[objc::msg_send(setVideoMinFrameDurationOverride:)]
-    pub fn set_video_min_frame_duration_override(&self, val: cm::Time);
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn set_video_min_frame_duration_override(&mut self, val: cm::Time);
+
+    /// Returns whether the receiver supports the given multichannel audio mode.
+    ///
+    /// Multichannel audio modes are not supported when used in conjunction with av::CaptureMultiCamSession.
+    #[objc::msg_send(isMultichannelAudioModeSupported:)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_multichannel_audio_mode_supported(&self, val: MultichannelAudioMode) -> bool;
+
+    /// Indicates the multichannel audio mode to apply when recording audio.
+    ///
+    /// This property only takes effect when audio is being routed through the built-in microphone, and is ignored if an external microphone is in use.
+    /// The default value is av::capture::MultichannelAudioMode::None, in which case the default single channel audio recording is used.
+    #[objc::msg_send(multichannelAudioMode)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn multichannel_audio_mode(&self) -> MultichannelAudioMode;
+
+    #[objc::msg_send(setMultichannelAudioMode:)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn set_multichannel_audio_mode(&mut self, val: MultichannelAudioMode);
 }
 
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
