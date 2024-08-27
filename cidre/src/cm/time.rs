@@ -1,6 +1,7 @@
 use crate::{arc, cf, define_opts};
 
 pub mod range;
+pub use range::Mapping as TimeMapping;
 pub use range::Range as TimeRange;
 
 #[doc(alias = "CMTimeValue")]

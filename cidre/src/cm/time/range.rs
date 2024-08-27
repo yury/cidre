@@ -16,3 +16,8 @@ impl Range {
             && self.duration.value >= 0
     }
 }
+
+pub struct Mapping {
+    pub source: cm::TimeRange,
+    pub target: cm::TimeRange,
+}

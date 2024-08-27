@@ -200,4 +200,6 @@ pub mod output_settings_assistant;
 pub use output_settings_assistant::OutputSettingsAssistant;
 pub use output_settings_assistant::OutputSettingsPreset;
 
+pub mod geometry;
+
 mod time;

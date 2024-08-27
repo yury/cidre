@@ -26,6 +26,7 @@ mod time;
 pub use time::Time;
 pub use time::TimeEpoch;
 pub use time::TimeFlags;
+pub use time::TimeMapping;
 pub use time::TimeRange;
 pub use time::TimeRoundingMethod;
 pub use time::TimeScale;
