@@ -1761,6 +1761,7 @@ define_obj_type!(
 impl Format {
     /// Indicates whether the device supports reaction effects.
     #[objc::msg_send(reactionEffectsSupported)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn reaction_effects_supported(&self) -> bool;
 
     /// The minimum and maximum frame rates available when a reaction effect runs.
@@ -1769,6 +1770,7 @@ impl Format {
     /// rate because most of the time the system isn’t rendering the effect. The frame rate
     /// only ramps down when the system renders a reaction on the stream.
     #[objc::msg_send(videoFrameRateRangeForReactionEffectsInProgress)]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn video_frame_rate_range_for_reaction_effects_in_progress(
         &self,
     ) -> Option<&av::FrameRateRange>;
@@ -1793,7 +1795,7 @@ impl Format {
 /// # Determining Video Capture Support
 impl Format {
     /// Indicates whether the format produces video data in a binned format.
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(all(not(target_os = "macos"), not(target_os = "visionos")))]
     #[objc::msg_send(isVideoBinned)]
     pub fn is_video_binned(&self) -> bool;
 
@@ -1906,7 +1908,24 @@ impl Format {
 impl Format {
     /// Indicates whether the format supports the Portrait Effect feature.
     #[objc::msg_send(isPortraitEffectSupported)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
     pub fn is_portrait_effect_supported(&self) -> bool;
+
+    #[objc::msg_send(videoFrameRateRangeForPortraitEffect)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn video_frame_rate_range_for_portrait_effect(&self) -> Option<&av::FrameRateRange>;
+}
+
+/// AVCaptureDeviceFormatStudioLight
+impl Format {
+    #[objc::msg_send(isStudioLightSupported)]
+    #[api::available(macos = 13.0, ios = 16.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn is_studio_light_supported(&self) -> bool;
+
+    /// Devices may support a limited frame rate range when Studio Light is active. If this device format does not support Studio Light, this property returns None.
+    #[objc::msg_send(videoFrameRateRangeForStudioLight)]
+    #[api::available(macos = 13.0, ios = 16.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn video_frame_rate_range_for_studio_light(&self) -> Option<&av::FrameRateRange>;
 }
 
 /// # Determining Color Support
@@ -2032,8 +2051,8 @@ impl DiscoverySession {
     #[objc::msg_send(devices)]
     pub fn devices(&self) -> &ns::Array<Device>;
 
-    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(supportedMultiCamDeviceSets)]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn supported_multi_cam_device_sets(&self) -> &ns::Array<ns::Set<Device>>;
 }
 
