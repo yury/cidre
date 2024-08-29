@@ -8,6 +8,7 @@
 - ML friendly
 - Rusty API (ObjC and C) 
 - API Availability checks
+- Buttle tested in own apps. (StreamChamp.app for recording, Yoml to be released)
 
 ### Performance 
 
