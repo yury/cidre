@@ -1,5 +1,7 @@
 use crate::{api, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
+/// The geometric primitive type for drawing commands.
+#[doc(alias = "MTLPrimitive")]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum Primitive {
@@ -25,6 +27,7 @@ pub enum Primitive {
     TriangleStrip = 4,
 }
 
+#[doc(alias = "MTLVisibilityResultMode")]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum VisibilityResultMode {
@@ -33,6 +36,7 @@ pub enum VisibilityResultMode {
     Counting = 2,
 }
 
+#[doc(alias = "MTLScissorRect")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct ScissorRect {
@@ -43,6 +47,7 @@ pub struct ScissorRect {
 }
 
 /// A 3D rectangular region for the viewport clipping.
+#[doc(alias = "MTLViewPort")]
 #[derive(Debug, PartialEq)]
 #[repr(C)]
 pub struct ViewPort {
@@ -60,7 +65,9 @@ pub struct ViewPort {
     pub z_far: f64,
 }
 
-/// The mode that determines whether to perform culling and which type of primitive to cull.
+/// The mode that determines whether to perform culling and which type of
+/// primitive to cull.
+#[doc(alias = "MTLCullMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum CullMode {
@@ -81,10 +88,10 @@ pub enum CullMode {
 pub enum Winding {
     /// Primitives whose vertices are specified in clockwise order are front-facing.
     #[doc(alias = "MTLWindingClockwise")]
-    CW = 0,
+    Cw = 0,
     /// Primitives whose vertices are specified in counter-clockwise order are front-facing.
     #[doc(alias = "MTLWindingCounterClockwise")]
-    CCW = 1,
+    Ccw = 1,
 }
 
 #[doc(alias = "MTLDepthClipMode")]
@@ -166,17 +173,34 @@ define_opts!(
 );
 
 impl RenderStages {
+    /// The vertex rendering stage.
+    #[doc(alias = "MTLRenderStageVertex")]
     pub const VERTEX: Self = Self(1usize << 0);
+
+    /// The fragment rendering stage.
+    #[doc(alias = "MTLRenderStageFragment")]
     pub const FRAGMENT: Self = Self(1usize << 1);
+
+    /// The tile rendering stage.
+    #[doc(alias = "MTLRenderStageTile")]
     pub const TILE: Self = Self(1usize << 2);
+
+    /// The object rendering stage.
+    #[doc(alias = "MTLRenderStageObject")]
     pub const OBJECT: Self = Self(1usize << 3);
+
+    /// The mesh rendering stage.
+    #[doc(alias = "MTLRenderStageMesh")]
     pub const MESH: Self = Self(1usize << 4);
 }
 
 define_obj_type!(
+    /// An interface that encodes a render pass into a command buffer,
+    /// including all its draw calls and configuration.
     #[doc(alias = "MTLRenderCommandEncoder")]
     pub RenderCmdEncoder(mtl::CmdEncoder)
 );
+
 impl RenderCmdEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
@@ -437,18 +461,23 @@ impl RenderCmdEncoder {
     pub fn update_fence_after_stages(&self, fence: &mtl::Fence, stages: mtl::RenderStages);
 
     #[objc::msg_send(dispatchThreadsPerTile:)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn dispatch_threads_per_tile(&self, val: mtl::Size);
 
     #[objc::msg_send(tileWidth)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn tile_width(&self) -> usize;
 
     #[objc::msg_send(tileHeight)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn tile_height(&self) -> usize;
 
     #[objc::msg_send(setTileTexture:atIndex:)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn set_tile_texture_at(&mut self, texture: Option<&mtl::Texture>, index: usize);
 
     #[objc::msg_send(setTileTextures:withRange:)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn set_tile_textures_with_range(
         &mut self,
         ptr: *const Option<&mtl::Texture>,
