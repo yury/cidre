@@ -31,8 +31,13 @@ pub enum Primitive {
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum VisibilityResultMode {
+    #[doc(alias = "MTLVisibilityResultModeDisabled")]
     Disabled = 0,
+
+    #[doc(alias = "MTLVisibilityResultModeBoolean")]
     Boolean = 1,
+
+    #[doc(alias = "MTLVisibilityResultModeCounting")]
     Counting = 2,
 }
 
@@ -89,6 +94,7 @@ pub enum Winding {
     /// Primitives whose vertices are specified in clockwise order are front-facing.
     #[doc(alias = "MTLWindingClockwise")]
     Cw = 0,
+
     /// Primitives whose vertices are specified in counter-clockwise order are front-facing.
     #[doc(alias = "MTLWindingCounterClockwise")]
     Ccw = 1,
@@ -106,7 +112,10 @@ pub enum DepthClipMode {
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TriangleFillMode {
+    #[doc(alias = "MTLTriangleFillModeFill")]
     Fill = 0,
+
+    #[doc(alias = "MTLTriangleFillModeLines")]
     Lines = 1,
 }
 
@@ -153,7 +162,7 @@ pub struct DrawPatchIndirectArgs {
 #[derive(Debug)]
 #[repr(C)]
 pub struct QuadTessellationFactorsHalf {
-    /* NOTE: edgeTessellationFactor and insideTessellationFactor are interpreted as half (16-bit floats) */
+    /// NOTE: edge_tessellation_factor and inside_tessellation_factor are interpreted as half (16-bit floats)
     pub edge_tessellation_factor: [u16; 4],
     pub inside_tessellation_factor: [u16; 2],
 }
@@ -162,7 +171,7 @@ pub struct QuadTessellationFactorsHalf {
 #[derive(Debug)]
 #[repr(C)]
 pub struct TriangleTessellationFactorsHalf {
-    /* NOTE: edgeTessellationFactor and insideTessellationFactor are interpreted as half (16-bit floats) */
+    // NOTE: edge_tessellation_factor and inside_tessellation_factorare interpreted as half (16-bit floats) */
     pub edge_tessellation_factor: [u16; 3],
     pub inside_tessellation_factor: u16,
 }
@@ -174,10 +183,14 @@ define_opts!(
 
 impl RenderStages {
     /// The vertex rendering stage.
+    ///
+    /// All vertex work prior to rasterization has completed.
     #[doc(alias = "MTLRenderStageVertex")]
     pub const VERTEX: Self = Self(1usize << 0);
 
     /// The fragment rendering stage.
+    ///
+    /// All rendering work has completed.
     #[doc(alias = "MTLRenderStageFragment")]
     pub const FRAGMENT: Self = Self(1usize << 1);
 
