@@ -17,15 +17,15 @@ define_obj_type!(
 define_obj_type!(pub Global(Queue));
 define_obj_type!(pub Serial(Queue));
 define_obj_type!(pub Main(Serial));
-define_obj_type!(pub Concurent(Queue));
+define_obj_type!(pub Concurrent(Queue));
 
 define_obj_type!(pub Attr(dispatch::Object));
 
 #[doc(alias = "DispatchQoS")]
 #[repr(transparent)]
-pub struct QOSClass(pub u32);
+pub struct QosClass(pub u32);
 
-impl QOSClass {
+impl QosClass {
     pub const USER_INTERACTIVE: Self = Self(0x21);
     pub const USER_INITIATED: Self = Self(0x19);
     pub const DEFAULT: Self = Self(0x15);
@@ -150,7 +150,7 @@ impl Queue {
     ///
     /// ```
     #[inline]
-    pub fn global_with_qos(qos: QOSClass) -> Option<&'static Global> {
+    pub fn global_with_qos(qos: QosClass) -> Option<&'static Global> {
         unsafe { Self::global_with_flags(qos.0 as _, 0) }
     }
 
@@ -341,7 +341,7 @@ impl Attr {
     #[inline]
     pub fn make_with_qos_class(
         attr: Option<&Attr>,
-        qos_class: QOSClass,
+        qos_class: QosClass,
         relative_priority: i32,
     ) -> arc::R<Attr> {
         unsafe { dispatch_queue_attr_make_with_qos_class(attr, qos_class, relative_priority) }
@@ -376,7 +376,7 @@ extern "C" {
     fn dispatch_queue_attr_make_initially_inactive(attr: Option<&Attr>) -> arc::R<Attr>;
     fn dispatch_queue_attr_make_with_qos_class(
         attr: Option<&Attr>,
-        qos_class: QOSClass,
+        qos_class: QosClass,
         relative_priority: i32,
     ) -> arc::R<Attr>;
     fn dispatch_queue_attr_make_with_autorelease_frequency(
@@ -463,7 +463,7 @@ mod tests {
 
     #[test]
     fn global_queue() {
-        let q = dispatch::Queue::global_with_qos(dispatch::QOSClass::BACKGROUND).unwrap();
+        let q = dispatch::Queue::global_with_qos(dispatch::QosClass::BACKGROUND).unwrap();
 
         q.as_type_ref().show();
         q.sync_f(std::ptr::null_mut(), foo);
@@ -475,6 +475,7 @@ mod tests {
         q.sync_f(std::ptr::null_mut(), foo);
         q.async_and_wait_f(std::ptr::null_mut(), foo);
     }
+
     #[test]
     fn sync() {
         let q = dispatch::Queue::new();

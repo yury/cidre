@@ -15,11 +15,11 @@ pub use time::WallTime;
 pub mod queue;
 pub use queue::Attr;
 pub use queue::AutoreleaseFrequency;
-pub use queue::Concurent as ConcurentQueue;
+pub use queue::Concurrent as ConcurrentQueue;
 pub use queue::Global as GlobalQueue;
 pub use queue::Main as MainQueue;
 pub use queue::Priority as QueuePriority;
-pub use queue::QOSClass;
+pub use queue::QosClass;
 pub use queue::Queue;
 
 pub mod data;

@@ -33,7 +33,7 @@ impl WorkItem {
     #[inline]
     pub fn with_qos(
         flags: dispatch::BlockFlags,
-        qos_class: dispatch::QOSClass,
+        qos_class: dispatch::QosClass,
         block: &dispatch::Block,
     ) -> Self {
         Self::with_qos_priority(flags, qos_class, 0, block)
@@ -42,7 +42,7 @@ impl WorkItem {
     #[inline]
     pub fn with_qos_priority(
         flags: dispatch::BlockFlags,
-        qos_class: dispatch::QOSClass,
+        qos_class: dispatch::QosClass,
         relative_priority: i32,
         block: &dispatch::Block,
     ) -> Self {
@@ -102,7 +102,7 @@ extern "C" {
     ) -> arc::R<WorkItem>;
     fn dispatch_block_create_with_qos_class(
         flags: dispatch::BlockFlags,
-        qos_class: dispatch::QOSClass,
+        qos_class: dispatch::QosClass,
         relative_priority: i32,
         block: &dispatch::Block,
     ) -> *mut c_void;

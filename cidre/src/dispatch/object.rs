@@ -2,7 +2,7 @@ use std::{ffi::c_void, mem::transmute};
 
 use crate::{
     define_obj_type,
-    dispatch::{self, QOSClass},
+    dispatch::{self, QosClass},
     ns,
 };
 
@@ -43,7 +43,7 @@ impl Object {
     }
 
     #[inline]
-    pub fn set_qos_class_floor(&mut self, qos_class: QOSClass, relative_priority: i32) {
+    pub fn set_qos_class_floor(&mut self, qos_class: QosClass, relative_priority: i32) {
         unsafe { dispatch_set_qos_class_floor(self, qos_class, relative_priority) }
     }
 
@@ -68,7 +68,7 @@ extern "C" {
     fn dispatch_set_finalizer_f(object: &mut Object, finalizer: Option<&dispatch::Fn<c_void>>);
     fn dispatch_set_qos_class_floor(
         object: &mut Object,
-        qos_class: QOSClass,
+        qos_class: QosClass,
         relative_priority: i32,
     );
 
