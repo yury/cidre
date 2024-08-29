@@ -87,6 +87,7 @@ pub enum Winding {
     CCW = 1,
 }
 
+#[doc(alias = "MTLDepthClipMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum DepthClipMode {
@@ -94,6 +95,7 @@ pub enum DepthClipMode {
     Clamp = 1,
 }
 
+#[doc(alias = "MTLTriangleFillMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum TriangleFillMode {
@@ -101,6 +103,7 @@ pub enum TriangleFillMode {
     Lines = 1,
 }
 
+#[doc(alias = "MTLDrawPrimitivesIndirectArguments")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct DrawPrimitivesIndirectArgs {
@@ -110,6 +113,7 @@ pub struct DrawPrimitivesIndirectArgs {
     pub base_instance: u32,
 }
 
+#[doc(alias = "MTLDrawIndexedPrimitivesIndirectArguments")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct DrawIndexedPrimitivesIndirectArgs {
@@ -120,6 +124,7 @@ pub struct DrawIndexedPrimitivesIndirectArgs {
     pub base_instance: u32,
 }
 
+#[doc(alias = "MTLVertexAmplificationViewMapping")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct VertexAmplificationViewMapping {
@@ -127,6 +132,7 @@ pub struct VertexAmplificationViewMapping {
     pub render_target_array_index_offset: u32,
 }
 
+#[doc(alias = "MTLDrawPatchIndirectArguments")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(C)]
 pub struct DrawPatchIndirectArgs {
@@ -136,6 +142,7 @@ pub struct DrawPatchIndirectArgs {
     pub base_instance: u32,
 }
 
+#[doc(alias = "MTLQuadTessellationFactorsHalf")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct QuadTessellationFactorsHalf {
@@ -144,6 +151,7 @@ pub struct QuadTessellationFactorsHalf {
     pub inside_tessellation_factor: [u16; 2],
 }
 
+#[doc(alias = "MTLTriangleTessellationFactorsHalf")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct TriangleTessellationFactorsHalf {
@@ -152,7 +160,10 @@ pub struct TriangleTessellationFactorsHalf {
     pub inside_tessellation_factor: u16,
 }
 
-define_opts!(pub RenderStages(usize));
+define_opts!(
+    #[doc(alias = "MTLRenderStages")]
+    pub RenderStages(usize)
+);
 
 impl RenderStages {
     pub const VERTEX: Self = Self(1usize << 0);
@@ -162,7 +173,10 @@ impl RenderStages {
     pub const MESH: Self = Self(1usize << 4);
 }
 
-define_obj_type!(pub RenderCmdEncoder(mtl::CmdEncoder));
+define_obj_type!(
+    #[doc(alias = "MTLRenderCommandEncoder")]
+    pub RenderCmdEncoder(mtl::CmdEncoder)
+);
 impl RenderCmdEncoder {
     define_mtl!(use_resource, use_resources, use_heap);
 
