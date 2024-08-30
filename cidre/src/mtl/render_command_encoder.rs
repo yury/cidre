@@ -315,7 +315,7 @@ impl RenderCmdEncoder {
     #[objc::msg_send(setVertexBuffers:offsets:withRange:)]
     pub fn set_vertex_bufs_offsets_with_range(
         &mut self,
-        buffers: *const &mtl::Buf,
+        bufs: *const &mtl::Buf,
         offsets: *const usize,
         range: ns::Range,
     );
@@ -415,9 +415,9 @@ impl RenderCmdEncoder {
         primitive_type: mtl::Primitive,
         index_count: usize,
         index_type: mtl::IndexType,
-        index_buffer: &mtl::Buf,
-        index_buffer_offset: usize,
-        instance_count: usize,
+        index_buf: &mtl::Buf,
+        index_buf_offset: usize,
+        inst_count: usize,
         base_vertex: isize,
         base_instance: usize,
     );
@@ -425,26 +425,26 @@ impl RenderCmdEncoder {
     #[inline]
     pub fn draw_indexed_triangles_u16(
         &mut self,
-        index_buffer: &mtl::Buf,
+        index_buf: &mtl::Buf,
         index_range: &std::ops::Range<usize>,
-        instance_range: &std::ops::Range<usize>,
+        inst_range: &std::ops::Range<usize>,
     ) {
         self.draw_indexed_primitives_index_type_index_count_instance_count(
             mtl::Primitive::Triangle,
             index_range.len(),
             mtl::IndexType::U16,
-            index_buffer,
+            index_buf,
             index_range.start * std::mem::size_of::<u16>(),
-            instance_range.len(),
+            inst_range.len(),
             0, // base vertex,
-            instance_range.start,
+            inst_range.start,
         );
     }
 
     #[inline]
     pub fn draw_indexed_triangles_u32(
         &mut self,
-        index_buffer: &mtl::Buf,
+        index_buf: &mtl::Buf,
         index_range: &std::ops::Range<usize>,
         instance_range: &std::ops::Range<usize>,
     ) {
@@ -452,7 +452,7 @@ impl RenderCmdEncoder {
             mtl::Primitive::Triangle,
             index_range.len(),
             mtl::IndexType::U32,
-            index_buffer,
+            index_buf,
             index_range.start * std::mem::size_of::<u32>(),
             instance_range.len(),
             0, // base vertex,
@@ -466,8 +466,8 @@ impl RenderCmdEncoder {
         primitive_type: mtl::Primitive,
         index_count: usize,
         index_type: mtl::IndexType,
-        index_buffer: &mtl::Buf,
-        index_buffer_offset: usize,
+        index_buf: &mtl::Buf,
+        index_buf_offset: usize,
     );
 
     #[objc::msg_send(updateFence:afterStages:)]
