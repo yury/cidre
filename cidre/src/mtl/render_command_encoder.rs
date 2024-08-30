@@ -124,7 +124,7 @@ pub enum TriangleFillMode {
 #[repr(C)]
 pub struct DrawPrimitivesIndirectArgs {
     pub vertex_count: u32,
-    pub instance_count: u32,
+    pub inst_count: u32,
     pub vertex_start: u32,
     pub base_instance: u32,
 }
@@ -134,7 +134,7 @@ pub struct DrawPrimitivesIndirectArgs {
 #[repr(C)]
 pub struct DrawIndexedPrimitivesIndirectArgs {
     pub index_count: u32,
-    pub instance_count: u32,
+    pub inst_count: u32,
     pub index_start: u32,
     pub base_vertex: i32,
     pub base_instance: u32,
