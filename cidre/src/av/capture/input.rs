@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_obj_type, ns, objc};
+
+#[cfg(any(target_os = "ios", target_os = "tvos"))]
+use crate::define_cls;
 
 define_obj_type!(
     #[doc(alias = "AVCaptureInput")]
@@ -40,6 +43,7 @@ impl arc::A<DeviceInput> {
     ) -> Option<arc::R<DeviceInput>>;
 }
 
+#[cfg(any(target_os = "ios", target_os = "tvos"))]
 impl DeviceInput {
     define_cls!(AV_CAPTURE_DEVICE_INPUT);
 
@@ -110,6 +114,7 @@ define_obj_type!(
 
 #[link(name = "av", kind = "static")]
 extern "C" {
+    #[cfg(any(target_os = "ios", target_os = "tvos"))]
     static AV_CAPTURE_DEVICE_INPUT: &'static objc::Class<DeviceInput>;
 
     #[cfg(any(target_os = "ios", target_os = "tvos"))]
