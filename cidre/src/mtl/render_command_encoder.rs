@@ -498,11 +498,13 @@ impl RenderCmdEncoder {
     );
 
     #[inline]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn set_tile_textures_with_slice(&mut self, textures: &[Option<&mtl::Texture>]) {
         self.set_tile_textures_with_range(textures.as_ptr(), ns::Range::new(0, textures.len()));
     }
 
     #[inline]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn set_tile_textures_with_array<const N: usize>(
         &mut self,
         textures: &[Option<&mtl::Texture>; N],
