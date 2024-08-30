@@ -1987,16 +1987,18 @@ impl Format {
 }
 
 pub mod notifications {
-    use crate::ns;
+    use crate::{api, ns};
 
     /// Posted when a device becomes available on the system.
     #[doc(alias = "AVCaptureDeviceWasConnectedNotification")]
+    #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn was_connected() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceWasConnectedNotification }
     }
 
     /// Posted when a device becomes unavailable on the system.
     #[doc(alias = "AVCaptureDeviceWasDisconnectedNotification")]
+    #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17)]
     pub fn was_disconnected() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceWasDisconnectedNotification }
     }
@@ -2004,16 +2006,19 @@ pub mod notifications {
     /// Posted when the instance of av::CaptureDevice has detected a substantial
     /// change to the video subject area.
     #[doc(alias = "AVCaptureDeviceSubjectAreaDidChangeNotification")]
-    #[cfg(not(target_os = "macos"))]
+    #[api::available(ios = 5.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn subject_area_did_change() -> &'static ns::NotificationName {
         unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
     }
 
     #[link(name = "AVFoundation", kind = "framework")]
+    #[api::weak]
     extern "C" {
+        #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
         static AVCaptureDeviceWasConnectedNotification: &'static ns::NotificationName;
+        #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17)]
         static AVCaptureDeviceWasDisconnectedNotification: &'static ns::NotificationName;
-        #[cfg(not(target_os = "macos"))]
+        #[api::available(ios = 5.0, maccatalyst = 14.0, tvos = 17.0)]
         static AVCaptureDeviceSubjectAreaDidChangeNotification: &'static ns::NotificationName;
     }
 }
