@@ -154,15 +154,18 @@ impl Port {
 }
 
 pub mod port_notifications {
-    use crate::ns;
+    use crate::{api, ns};
 
     #[doc(alias = "AVCaptureInputPortFormatDescriptionDidChangeNotification")]
+    #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn format_desc_did_change() -> &'static ns::NotificationName {
         unsafe { AVCaptureInputPortFormatDescriptionDidChangeNotification }
     }
 
     #[link(name = "AVFoundation", kind = "framework")]
+    #[api::weak]
     extern "C" {
+        #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
         static AVCaptureInputPortFormatDescriptionDidChangeNotification:
             &'static ns::NotificationName;
     }
