@@ -1,4 +1,4 @@
-use crate::{api, arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
 
 /// Constants indicating video orientation, for use with
 /// [`av::CaptureVideoPreviewLayer`] and [`av::CaptureConnection`].
@@ -151,31 +151,31 @@ impl Session {
     /// This property returns true on Apple TV.
     /// This property is key-value observable.
     #[objc::msg_send(isMultitaskingCameraAccessSupported)]
-    #[api::available(ios = 16.0, tvos = 17.0)]
+    #[objc::available(ios = 16.0, tvos = 17.0)]
     pub fn is_multitasking_camera_access_supported(&self) -> bool;
 
     #[objc::msg_send(isMultitaskingCameraAccessEnabled)]
-    #[api::available(ios = 16.0, tvos = 17.0)]
+    #[objc::available(ios = 16.0, tvos = 17.0)]
     pub fn is_multitasking_camera_access_enabled(&self) -> bool;
 
     #[objc::msg_send(setMultitaskingCameraAccessEnabled:)]
-    #[api::available(ios = 16.0, tvos = 17.0)]
+    #[objc::available(ios = 16.0, tvos = 17.0)]
     pub fn set_multitasking_camera_access_enabled(&mut self, val: bool);
 
     #[objc::msg_send(usesApplicationAudioSession)]
-    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
+    #[objc::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn uses_app_audio_session(&self) -> bool;
 
     #[objc::msg_send(setUsesApplicationAudioSession:)]
-    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
+    #[objc::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn set_uses_app_audio_session(&mut self, value: bool);
 
     #[objc::msg_send(automaticallyConfiguresApplicationAudioSession)]
-    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
+    #[objc::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn automatically_configures_app_audio_session(&self) -> bool;
 
     #[objc::msg_send(setAutomaticallyConfiguresApplicationAudioSession:)]
-    #[api::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
+    #[objc::available(ios = 7.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn set_automatically_configures_app_audio_session(&mut self, val: bool);
 
     /// Indicates whether the receiver should configure the application's audio session to mix with others.
@@ -186,19 +186,19 @@ impl Session {
     /// has no effect on Live Photo movie complement capture (where music is always mixed with).
     /// The default value is false.
     #[objc::msg_send(configuresApplicationAudioSessionToMixWithOthers)]
-    #[api::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    #[objc::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn configures_application_audio_session_to_mix_with_others(&self) -> bool;
 
     #[objc::msg_send(setConfiguresApplicationAudioSessionToMixWithOthers:)]
-    #[api::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    #[objc::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn set_configures_application_audio_session_to_mix_with_others(&mut self, val: bool);
 
     #[objc::msg_send(automaticallyConfiguresCaptureDeviceForWideColor)]
-    #[api::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
+    #[objc::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn automatically_configures_capture_device_for_wide_color(&self) -> bool;
 
     #[objc::msg_send(setAutomaticallyConfiguresCaptureDeviceForWideColor:)]
-    #[api::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
+    #[objc::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn set_automatically_configures_capture_device_for_wide_color(&mut self, val: bool);
 
     #[objc::msg_send(startRunning)]
@@ -219,7 +219,7 @@ impl Session {
     /// constraints, so you receive an AVCaptureSessionRuntimeErrorNotification when attempting
     /// to start it running. Default value is 0.
     #[objc::msg_send(hardwareCost)]
-    #[api::available(ios = 16.0, maccatalyst = 16.0, tvos = 17.0)]
+    #[objc::available(ios = 16.0, maccatalyst = 16.0, tvos = 17.0)]
     pub fn hw_cost(&self) -> f32;
 }
 
