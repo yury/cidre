@@ -71,19 +71,15 @@ impl BlitCmdEncoder {
     );
 
     #[objc::msg_send(optimizeIndirectCommandBuffer:withRange:)]
-    pub fn optimize_indirect_cmd_buffer_with_range(
-        &self,
-        buf: &mtl::IndirectCmdBuf,
-        range: ns::Range,
-    );
+    pub fn optimize_indirect_cmd_buf_with_range(&self, buf: &mtl::IndirectCmdBuf, range: ns::Range);
 
     #[inline]
-    pub fn optimize_indirect_cmd_buffer(
+    pub fn optimize_indirect_cmd_buf(
         &self,
         buf: &mtl::IndirectCmdBuf,
         range: std::ops::Range<usize>,
     ) {
-        self.optimize_indirect_cmd_buffer_with_range(
+        self.optimize_indirect_cmd_buf_with_range(
             buf,
             ns::Range {
                 loc: range.start,
