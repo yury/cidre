@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use crate::{define_cls, define_obj_type, ns, objc};
 
+#[doc(alias = "NSProcessInfoThermalState")]
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 #[repr(isize)]
 pub enum ThermalState {
@@ -24,7 +25,10 @@ pub enum ThermalState {
     Critical,
 }
 
-define_obj_type!(pub ProcessInfo(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSProcessInfo")]
+    pub ProcessInfo(ns::Id)
+);
 
 impl ns::KVObserverRegistration for ProcessInfo {}
 
@@ -153,9 +157,12 @@ impl ProcessInfo {
     pub fn current() -> &'static mut ProcessInfo;
 
     #[objc::msg_send(thermalState)]
+    // macosx(10.10.3), ios(11.0), watchos(4.0), tvos(11.0)
+    // #[objc::available(macos = "10.10.3", ios = 11.0, watchos = 4.0, tvos = 11.0)]
     pub fn thermal_state(&self) -> ThermalState;
 
     #[objc::msg_send(isLowPowerModeEnabled)]
+    #[objc::available(macos = 12.0, ios = 9.0, watchos = 2.0, tvos = 9.0)]
     pub fn is_low_power_mode_enabled(&self) -> bool;
 
     #[objc::msg_send(processorCount)]
@@ -165,15 +172,19 @@ impl ProcessInfo {
     pub fn active_processor_count(&self) -> usize;
 
     #[objc::msg_send(isMacCatalystApp)]
+    #[objc::available(macos = 10.15, ios = 13.0, watchos = 6.0, tvos = 13.0)]
     pub fn is_mac_catalyst_app(&self) -> bool;
 
     #[objc::msg_send(isiOSAppOnMac)]
+    #[objc::available(macos = 11.0, ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn is_ios_app_on_mac(&self) -> bool;
 
     #[objc::msg_send(isOperatingSystemAtLeastVersion:)]
+    #[objc::available(macos = 10.10, ios = 8.0, watchos = 2.0, tvos = 9.0)]
     pub fn is_os_at_least_version(&self, ver: OsVersion) -> bool;
 
     #[objc::msg_send(systemUptime)]
+    #[objc::available(macos = 10.6, ios = 4.0, watchos = 2.0, tvos = 9.0)]
     pub fn system_uptime(&self) -> ns::TimeInterval;
 }
 
