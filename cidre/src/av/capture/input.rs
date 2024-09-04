@@ -1,8 +1,5 @@
 use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
-#[cfg(any(target_os = "ios", target_os = "tvos"))]
-use crate::define_cls;
-
 define_obj_type!(
     #[doc(alias = "AVCaptureInput")]
     pub Input(ns::Id)
