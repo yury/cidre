@@ -39,14 +39,14 @@ impl DisplayLink {
     pub fn invalidate(&mut self);
 
     #[objc::msg_send(timestamp)]
-    pub fn timestamp(&self) -> cf::TimeInterval;
+    pub fn ts(&self) -> cf::TimeInterval;
 
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> cf::TimeInterval;
 
     /// The time interval that represents when the next frame displays.
     #[objc::msg_send(targetTimestamp)]
-    pub fn target_timestamp(&self) -> cf::TimeInterval;
+    pub fn target_ts(&self) -> cf::TimeInterval;
 
     /// Defines the range of desired callback rate in frames-per-second for this
     /// display link. If the range contains the same minimum and maximum frame rate,
