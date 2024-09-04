@@ -1,6 +1,10 @@
 use crate::{arc, cf, define_cf_type};
 
-define_cf_type!(MemPool(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CMMemoryPool")]
+    MemPool(cf::Type)
+);
+
 unsafe impl Send for MemPool {}
 
 /// Memory pool for optimizing repeated large block allocation.
