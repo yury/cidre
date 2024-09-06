@@ -3,6 +3,8 @@ name = "cidre"
 version = "0.2.0"
 edition = "2021"
 
+rust-version = "1.81"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
