@@ -1523,8 +1523,6 @@ define_obj_type!(pub Type(ns::String));
 /// let device_type = av::CaptureDeviceType::built_in_microphone();
 /// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
 /// let device_type = av::CaptureDeviceType::built_in_telephoto_camera();
-/// let device_type = av::CaptureDeviceType::built_in_ultra_wide_camera();
-/// let device_type = av::CaptureDeviceType::built_in_dual_camera();
 /// let device_type = av::CaptureDeviceType::built_in_dual_wide_camera();
 /// let device_type = av::CaptureDeviceType::built_in_tripple_camera();
 /// let device_type = av::CaptureDeviceType::built_in_true_depth_camera();

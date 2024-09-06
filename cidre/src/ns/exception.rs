@@ -174,7 +174,7 @@ extern "C" {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+extern "C-unwind" {
     fn cidre_raise_exception(message: &ns::String) -> !;
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
@@ -183,11 +183,11 @@ extern "C" {
 }
 
 #[inline]
-fn type_helper<F>(_t: &Option<F>) -> extern "C" fn(t: &mut Option<F>)
+fn type_helper<F>(_t: &Option<F>) -> extern "C-unwind" fn(t: &mut Option<F>)
 where
     F: FnOnce(),
 {
-    extern "C" fn during<F>(f: &mut Option<F>)
+    extern "C-unwind" fn during<F>(f: &mut Option<F>)
     where
         F: FnOnce(),
     {

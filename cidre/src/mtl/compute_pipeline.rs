@@ -45,7 +45,10 @@ extern "C" {
     static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
-define_obj_type!(pub State(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLComputePipelineState")]
+    pub State(ns::Id)
+);
 
 impl State {
     define_mtl!(device, label, gpu_resource_id);

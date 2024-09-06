@@ -214,7 +214,7 @@ pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
 }
 
 #[link(name = "objc", kind = "dylib")]
-extern "C" {
+extern "C-unwind" {
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
     pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
@@ -519,7 +519,7 @@ pub fn throw(obj: &Id) -> ! {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+extern "C-unwind" {
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
@@ -547,11 +547,11 @@ where
 }
 
 #[inline]
-fn type_helper<F>(_t: &Option<F>) -> extern "C" fn(t: &mut Option<F>)
+fn type_helper<F>(_t: &Option<F>) -> extern "C-unwind" fn(t: &mut Option<F>)
 where
     F: FnOnce(),
 {
-    extern "C" fn during<F>(f: &mut Option<F>)
+    extern "C-unwind" fn during<F>(f: &mut Option<F>)
     where
         F: FnOnce(),
     {

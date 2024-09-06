@@ -146,7 +146,7 @@ impl Queue {
     /// ```
     /// use cidre::dispatch;
     ///
-    /// let q = dispatch::Queue::global_with_qos(dispatch::QOSClass::BACKGROUND).unwrap();
+    /// let q = dispatch::Queue::global_with_qos(dispatch::QosClass::BACKGROUND).unwrap();
     ///
     /// ```
     #[inline]

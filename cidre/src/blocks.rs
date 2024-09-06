@@ -465,7 +465,7 @@ impl<'a, Closure: 'a + Sized> Layout2Mut<'a, Closure> {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C" {
+extern "C-unwind" {
     // static _NSConcreteGlobalBlock: objc::Class<ns::Id>;
     static _NSConcreteStackBlock: objc::Class<ns::Id>;
     static _NSConcreteMallocBlock: objc::Class<ns::Id>;

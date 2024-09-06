@@ -95,7 +95,7 @@ impl WorkItem {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C" {
+extern "C-unwind" {
     fn dispatch_block_create<'a>(
         flags: dispatch::BlockFlags,
         block: &dispatch::Block,

@@ -253,6 +253,7 @@ mod tests {
     #[test]
     fn basics() {
         use crate::{av, ns};
+
         let url = ns::Url::with_str("file://tmp/bla.mp4").unwrap();
 
         let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
@@ -260,6 +261,7 @@ mod tests {
 
         av::AssetWriter::with_content_type(&ut::Type::pdf())
             .expect_err("Can't create writer for pdf");
+
         av::AssetWriter::with_content_type(&ut::Type::mpeg4movie()).expect("Can't create viedeo");
     }
 }
