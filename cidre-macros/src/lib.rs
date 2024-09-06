@@ -634,7 +634,8 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
         extern \"C\" {{
             #[link_name = \"objc_msgSend\"]
             fn msg_send();
-
+        }}
+        extern \"C-unwind\" {{
             fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
         }}
 
@@ -677,6 +678,8 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
             #[link_name = \"objc_msgSend\"]
             fn msg_send();
 
+        }}
+        extern \"C-unwind\" {{
             fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
         }}
 
