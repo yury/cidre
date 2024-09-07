@@ -67,7 +67,7 @@ impl Device {
     pub fn with_unique_id(unique_id: ns::String) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(uniqueID)]
-    pub fn unique_id(&self) -> &ns::String;
+    pub fn unique_id(&self) -> arc::R<ns::String>;
 
     /// The model ID of the receiver.
     ///
@@ -77,7 +77,7 @@ impl Device {
     /// to two identical iPhone models will be the same even though they are different
     /// physical devices.
     #[objc::msg_send(modelID)]
-    pub fn model_id(&self) -> &ns::String;
+    pub fn model_id(&self) -> arc::R<ns::String>;
 
     /// A localized human-readable name for the receiver.
     ///
@@ -91,7 +91,7 @@ impl Device {
     /// All Apple devices return "Apple Inc.". Devices from third party manufacturers may
     /// return an empty string.
     #[objc::msg_send(manufacturer)]
-    pub fn manufacturer(&self) -> Option<&ns::String>;
+    pub fn manufacturer(&self) -> Option<arc::R<ns::String>>;
 
     /// Returns whether the receiver provides media with the given media type.
     ///
@@ -100,14 +100,14 @@ impl Device {
     pub fn has_media_type(&self, media_type: &av::MediaType) -> bool;
 
     #[objc::msg_send(formats)]
-    pub fn formats(&self) -> &ns::Array<Format>;
+    pub fn formats(&self) -> arc::R<ns::Array<Format>>;
 
     #[objc::msg_send(supportsAVCaptureSessionPreset:)]
     pub fn supports_preset(&self, preset: &av::CaptureSessionPreset) -> bool;
 
     /// NOTE: On audio devices active format is None
     #[objc::msg_send(activeFormat)]
-    pub fn active_format(&self) -> Option<&Format>;
+    pub fn active_format(&self) -> Option<arc::R<Format>>;
 
     /// Indicates whether the device is connected and available to the system.
     ///
@@ -244,7 +244,7 @@ impl Device {
     /// and can be key-value observed.
     #[objc::msg_send(availableReactionTypes)]
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
-    pub fn available_reaction_types(&self) -> &ns::Set<av::CaptureReactionType>;
+    pub fn available_reaction_types(&self) -> arc::R<ns::Set<av::CaptureReactionType>>;
 
     /// Triggers a specified reaction on the video stream.
     #[objc::msg_send(performEffectForReaction:)]
@@ -253,7 +253,8 @@ impl Device {
 
     #[objc::msg_send(reactionEffectsInProgress)]
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
-    pub fn reaction_effects_in_progress(&self) -> &ns::Array<av::CaptureReactionEffectState>;
+    pub fn reaction_effects_in_progress(&self)
+        -> arc::R<ns::Array<av::CaptureReactionEffectState>>;
 }
 
 /// AVCaptureDeviceBackgroundReplacement
@@ -284,7 +285,7 @@ impl Device {
     /// A reference to the Desk View Camera that is associated with and derived from
     /// this camera.
     #[objc::msg_send(companionDeskViewCamera)]
-    pub fn companion_desk_view_camera(&self) -> Option<&Device>;
+    pub fn companion_desk_view_camera(&self) -> Option<arc::R<Device>>;
 }
 
 /// Configuring HDR Settings
@@ -1254,9 +1255,9 @@ pub enum WbMode {
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct WbGains {
-    pub red: f32,
-    pub green: f32,
-    pub blue: f32,
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
 }
 
 #[doc(alias = "AVCaptureWhiteBalanceChromaticityValues")]
@@ -2227,11 +2228,14 @@ pub fn torch_max_level() -> f32 {
 mod tests {
     use crate::{
         av::{
-            self, capture,
-            capture::device::{self, Device},
+            self,
+            capture::{
+                self,
+                device::{self, Device},
+            },
         },
         cm::io,
-        ns,
+        ns, objc,
     };
 
     #[test]
