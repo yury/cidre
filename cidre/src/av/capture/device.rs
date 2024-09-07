@@ -1815,7 +1815,7 @@ impl Format {
     pub fn is_video_hdr_supported(&self) -> bool;
 
     #[objc::msg_send(videoSupportedFrameRateRanges)]
-    pub fn video_supported_frame_rate_ranges(&self) -> &ns::Array<FrameRateRange>;
+    pub fn video_supported_frame_rate_ranges(&self) -> arc::R<ns::Array<FrameRateRange>>;
 }
 
 /// # Determining Field of View
