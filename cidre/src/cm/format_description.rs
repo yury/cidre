@@ -57,6 +57,7 @@ impl PixelFormat {
     }
 }
 
+#[doc(alias = "CMVideoDimensions")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
 pub struct VideoDimensions {
@@ -64,20 +65,41 @@ pub struct VideoDimensions {
     pub height: i32,
 }
 
+#[doc(alias = "CMMediaType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct MediaType(pub FourCharCode);
 
 impl MediaType {
+    #[doc(alias = "kCMMediaType_Video")]
     pub const VIDEO: Self = Self::from_be_bytes(b"vide");
+
+    #[doc(alias = "kCMMediaType_Audio")]
     pub const AUDIO: Self = Self::from_be_bytes(b"soun");
+
+    #[doc(alias = "kCMMediaType_Muxed")]
     pub const MUXED: Self = Self::from_be_bytes(b"muxx");
+
+    #[doc(alias = "kCMMediaType_Text")]
     pub const TEXT: Self = Self::from_be_bytes(b"text");
+
+    #[doc(alias = "kCMMediaType_ClosedCaption")]
     pub const CLOSED_CAPTION: Self = Self::from_be_bytes(b"clcp");
+
+    #[doc(alias = "kCMMediaType_Subtitle")]
     pub const SUBTITLE: Self = Self::from_be_bytes(b"sbtl");
+
+    #[doc(alias = "kCMMediaType_TimeCode")]
     pub const TIME_CODE: Self = Self::from_be_bytes(b"tmcd");
+
+    #[doc(alias = "kCMMediaType_Metadata")]
     pub const METADATA: Self = Self::from_be_bytes(b"meta");
+
+    #[doc(alias = "kCMMediaType_AuxiliaryPicture")]
     pub const AUXILIARY_PICTURE: Self = Self::from_be_bytes(b"auxv");
+
+    #[doc(alias = "kCMMediaType_TaggedBufferGroup")]
+    pub const TAGGED_BUFFER_GROUP: Self = Self::from_be_bytes(b"tbgr");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
@@ -149,7 +171,11 @@ impl VideoCodec {
     }
 }
 
-define_cf_type!(FormatDesc(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CMFormatDescriptionRef")]
+    FormatDesc(cf::Type)
+);
+
 unsafe impl Send for FormatDesc {}
 
 impl FormatDesc {
@@ -323,6 +349,10 @@ impl VideoFormatDesc {
         }
     }
 
+    /// Returns the dimensions (in encoded pixels)
+    ///
+    /// This does not take into account pixel aspect ratio or clean aperture tags.
+    #[doc(alias = "CMVideoFormatDescriptionGetDimensions")]
     #[inline]
     pub fn dimensions(&self) -> VideoDimensions {
         unsafe { CMVideoFormatDescriptionGetDimensions(self) }
