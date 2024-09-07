@@ -65,10 +65,17 @@ impl Session {
     pub fn session_preset(&self) -> &av::CaptureSessionPreset;
 
     #[objc::msg_send(setSessionPreset:)]
-    pub fn set_session_preset(&self, value: &av::CaptureSessionPreset);
+    pub unsafe fn set_session_preset_throws(&self, val: &av::CaptureSessionPreset);
+
+    pub fn set_session_preset<'ear>(
+        &self,
+        val: &av::CaptureSessionPreset,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.set_session_preset_throws(val) })
+    }
 
     #[objc::msg_send(inputs)]
-    pub fn inputs(&self) -> &ns::Array<av::CaptureInput>;
+    pub fn inputs(&self) -> arc::R<ns::Array<av::CaptureInput>>;
 
     #[objc::msg_send(canAddInput:)]
     pub fn can_add_input(&self, input: &av::CaptureInput) -> bool;
@@ -80,7 +87,7 @@ impl Session {
     pub fn remove_input(&mut self, input: &av::CaptureInput);
 
     #[objc::msg_send(outputs)]
-    pub fn outputs(&self) -> &ns::Array<av::CaptureOutput>;
+    pub fn outputs(&self) -> arc::R<ns::Array<av::CaptureOutput>>;
 
     #[objc::msg_send(canAddOutput:)]
     pub fn can_add_output(&self, output: &av::CaptureOutput) -> bool;
@@ -98,7 +105,7 @@ impl Session {
     pub fn add_output_without_connections(&mut self, output: &av::CaptureOutput);
 
     #[objc::msg_send(connections)]
-    pub fn connections(&self) -> &ns::Array<av::CaptureConnection>;
+    pub fn connections(&self) -> arc::R<ns::Array<av::CaptureConnection>>;
 
     #[objc::msg_send(canAddConnection:)]
     pub fn can_add_connection(&self, connection: &av::CaptureConnection) -> bool;
@@ -115,6 +122,7 @@ impl Session {
     #[objc::msg_send(commitConfiguration)]
     pub fn commit_cfg(&mut self);
 
+    /// Batched configuration
     pub fn configure<F: FnMut(&mut Self)>(&mut self, mut config: F) {
         self.begin_cfg();
         config(self);
