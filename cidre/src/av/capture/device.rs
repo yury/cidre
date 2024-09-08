@@ -45,7 +45,10 @@ extern "C" {
     static AVCaptureMaxAvailableTorchLevel: f32;
 }
 
-define_obj_type!(pub Device(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVCaptureDevice")]
+    pub Device(ns::Id)
+);
 
 impl Device {
     define_cls!(AV_CAPTURE_DEVICE);
@@ -658,11 +661,11 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ar>(
+    pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ear>(
         &mut self,
         val: f32,
         block: &mut blocks::EscBlock<fn(cm::Time)>,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe {
             self.device
                 .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
@@ -767,7 +770,7 @@ pub enum AutoFocusSys {
     /// Indicates that autofocus is achieved by phase detection.
     /// Phase detection has the ability to achieve focus in many cases without a focus scan.
     /// Phase detection autofocus is typically less visually intrusive than contrast
-    // detection autofocus.
+    /// detection autofocus.
     PhaseDetection = 2,
 }
 
@@ -1002,7 +1005,10 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_exposure_mode_throws(val)
     }
 
-    pub fn set_exposure_mode<'ar>(&mut self, val: ExposureMode) -> Result<(), &'ar ns::Exception> {
+    pub fn set_exposure_mode<'ear>(
+        &mut self,
+        val: ExposureMode,
+    ) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.set_exposure_mode_throws(val) })
     }
 
@@ -1010,10 +1016,10 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_exposure_point_of_interest_throws(val)
     }
 
-    pub fn set_exposure_point_of_interest<'ar>(
+    pub fn set_exposure_point_of_interest<'ear>(
         &mut self,
         val: cg::Point,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(val) })
     }
 
@@ -1027,10 +1033,10 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ar>(
+    pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ear>(
         &mut self,
         val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe {
             self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(val)
         })
@@ -1043,10 +1049,10 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_face_driven_auto_exposure_enabled<'ar>(
+    pub fn set_face_driven_auto_exposure_enabled<'ear>(
         &mut self,
         val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> Result<(), &'ear ns::Exception> {
         ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(val) })
     }
 
