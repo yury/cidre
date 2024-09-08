@@ -1266,7 +1266,7 @@ extern "C" {
 mod tests {
     use audio::CodecRef;
 
-    use crate::{at::audio, four_cc_to_string};
+    use crate::{at::audio, four_cc_to_str};
 
     #[test]
     fn basics() {
@@ -1345,7 +1345,7 @@ mod tests {
                 "desc {:?} {:?} {}",
                 comp.name(),
                 comp.desc(),
-                four_cc_to_string(comp.desc().unwrap().sub_type.to_be_bytes())
+                four_cc_to_str(&mut comp.desc().unwrap().sub_type.to_be_bytes())
             );
         }
     }
