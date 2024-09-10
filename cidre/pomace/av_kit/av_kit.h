@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class AV_PICTURE_IN_PICTURE_CONTROLLER;
 Class AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SOURCE;
+Class AV_PICTURE_IN_PICTURE_VIDEO_CALL_VIEW_CONTROLLER;
 
 __attribute__((constructor))
 static void av_kit_initializer(void)
@@ -21,6 +22,7 @@ static void av_kit_initializer(void)
         
         AV_PICTURE_IN_PICTURE_CONTROLLER = [AVPictureInPictureController class];
         AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SOURCE = [AVPictureInPictureControllerContentSource class];
+        AV_PICTURE_IN_PICTURE_VIDEO_CALL_VIEW_CONTROLLER = NSClassFromString(@"AVPictureInPictureVideoCallViewController");
     }
 }
 

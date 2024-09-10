@@ -141,7 +141,8 @@ pub mod cat;
     any(
         target_os = "ios",
         all(target_os = "ios", target_abi = "macabi",),
-        target_os = "tvos"
+        target_os = "tvos",
+        target_os = "visionos"
     ),
     feature = "ui"
 ))]
