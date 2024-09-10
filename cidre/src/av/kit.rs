@@ -1,0 +1,5 @@
+mod picture_in_picture_controller;
+pub use picture_in_picture_controller::PipController;
+pub use picture_in_picture_controller::PipControllerContentSrc;
+pub use picture_in_picture_controller::PipControllerDelegate;
+pub use picture_in_picture_controller::PipControllerDelegateImpl;

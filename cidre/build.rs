@@ -295,7 +295,7 @@ fn main() {
     if sdk != "watchos" && sdk != "watchsimulator" {
         add_xc_target_args_from_features(
             &mut xc_target_args,
-            &["ca", "vn", "mps", "mpsg", "mc", "mtl", "ci", "gc"],
+            &["ca", "vn", "mps", "mpsg", "mc", "mtl", "ci", "gc", "av_kit"],
         );
         if sdk != "xros" && sdk != "xrsimulator" {
             add_xc_target_args_from_features(&mut xc_target_args, &["mlc"]);

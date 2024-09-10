@@ -27,6 +27,7 @@ full = [
   "cmio",
   "ct",
   "av",
+  "av_kit",
   "cf",
   "cg",
   "iio",
@@ -83,6 +84,7 @@ app = ["ns"]
 am = ["private", "cf", "dep:tokio"]
 at = ["cf", "cat"]
 av = ["ns", "ut", "cv", "ca"]
+av_kit = ["av"]
 ca = ["ns"]
 sc = ["ns"]
 cl = ["ns"]
@@ -183,7 +185,8 @@ tvos_11_0 = ["tvos_10_0"]
 tvos_12_0 = ["tvos_11_0"]
 tvos_13_0 = ["tvos_12_0"]
 tvos_14_0 = ["tvos_13_0"]
-tvos_16_0 = ["tvos_14_0"]
+tvos_15_0 = ["tvos_14_0"]
+tvos_16_0 = ["tvos_15_0"]
 tvos_17_0 = ["tvos_16_0"]
 tvos_18_0 = ["tvos_17_0"]
 

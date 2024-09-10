@@ -3,55 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 73;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D20656B1283DCA2200048B17 /* ui.m in Sources */ = {isa = PBXBuildFile; fileRef = D20656B0283DCA2200048B17 /* ui.m */; };
-		D20656B2283DCA2200048B17 /* ui.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D20656AF283DCA2200048B17 /* ui.h */; };
-		D21A0FF5287738ED00AB7EF8 /* ns.m in Sources */ = {isa = PBXBuildFile; fileRef = D21A0FF4287738ED00AB7EF8 /* ns.m */; };
-		D21A0FF6287738ED00AB7EF8 /* ns.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D21A0FF3287738ED00AB7EF8 /* ns.h */; };
-		D21EFEFF2B5911F500C86B08 /* mc.m in Sources */ = {isa = PBXBuildFile; fileRef = D21EFEFE2B5911F500C86B08 /* mc.m */; };
-		D21EFF002B5911F500C86B08 /* mc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D21EFEFD2B5911F500C86B08 /* mc.h */; };
-		D21EFF0C2B5A96FD00C86B08 /* core_motion.m in Sources */ = {isa = PBXBuildFile; fileRef = D21EFF0B2B5A96FD00C86B08 /* core_motion.m */; };
-		D21EFF0D2B5A96FD00C86B08 /* core_motion.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D21EFF0A2B5A96FD00C86B08 /* core_motion.h */; };
-		D21EFF192B5CDEB000C86B08 /* un.m in Sources */ = {isa = PBXBuildFile; fileRef = D21EFF182B5CDEB000C86B08 /* un.m */; };
-		D21EFF1A2B5CDEB000C86B08 /* un.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D21EFF172B5CDEB000C86B08 /* un.h */; };
-		D21EFF262B5D1ECC00C86B08 /* cl.m in Sources */ = {isa = PBXBuildFile; fileRef = D21EFF252B5D1ECC00C86B08 /* cl.m */; };
-		D21EFF272B5D1ECC00C86B08 /* cl.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D21EFF242B5D1ECC00C86B08 /* cl.h */; };
-		D22946A62AF217A0004FAA52 /* wk.m in Sources */ = {isa = PBXBuildFile; fileRef = D22946A52AF217A0004FAA52 /* wk.m */; };
-		D22946A72AF217A0004FAA52 /* wk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D22946A42AF217A0004FAA52 /* wk.h */; };
-		D22946B32AF22516004FAA52 /* app.m in Sources */ = {isa = PBXBuildFile; fileRef = D22946B22AF22516004FAA52 /* app.m */; };
-		D22946B42AF22516004FAA52 /* app.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D22946B12AF22516004FAA52 /* app.h */; };
-		D22A55102B78E27300114BDE /* wc.m in Sources */ = {isa = PBXBuildFile; fileRef = D22A550F2B78E27300114BDE /* wc.m */; };
-		D22A55112B78E27300114BDE /* wc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D22A550E2B78E27300114BDE /* wc.h */; };
-		D23E3BA82B4D3605006B1B9C /* gc.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E3BA72B4D3605006B1B9C /* gc.m */; };
-		D23E3BA92B4D3605006B1B9C /* gc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D23E3BA62B4D3605006B1B9C /* gc.h */; };
-		D2520D00280BFC4A00FD6562 /* sc.m in Sources */ = {isa = PBXBuildFile; fileRef = D2520CFF280BFC4A00FD6562 /* sc.m */; };
-		D2520D01280BFC4A00FD6562 /* sc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2520CFE280BFC4A00FD6562 /* sc.h */; };
-		D264D2A228F7E7CF002B1B14 /* vn.m in Sources */ = {isa = PBXBuildFile; fileRef = D264D2A128F7E7CF002B1B14 /* vn.m */; };
-		D264D2A328F7E7CF002B1B14 /* vn.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D264D2A028F7E7CF002B1B14 /* vn.h */; };
-		D26D52F52B27415E007D8074 /* ut.m in Sources */ = {isa = PBXBuildFile; fileRef = D26D52F42B27415E007D8074 /* ut.m */; };
-		D26D52F62B27415E007D8074 /* ut.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D26D52F32B27415E007D8074 /* ut.h */; };
-		D27864E62A0A29F400E64871 /* mlc.m in Sources */ = {isa = PBXBuildFile; fileRef = D27864E52A0A29F400E64871 /* mlc.m */; };
-		D27864E72A0A29F400E64871 /* mlc.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D27864E42A0A29F400E64871 /* mlc.h */; };
 		D27864ED2A0A2BBC00E64871 /* MLCompute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27864EB2A0A2A8600E64871 /* MLCompute.framework */; };
-		D28CF5F02BCD201B00ED6381 /* nl.m in Sources */ = {isa = PBXBuildFile; fileRef = D28CF5EF2BCD201B00ED6381 /* nl.m */; };
-		D28CF5F12BCD201B00ED6381 /* nl.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D28CF5EE2BCD201B00ED6381 /* nl.h */; };
-		D2A5293D283A1F5800E7B4C6 /* ca.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A5293C283A1F5800E7B4C6 /* ca.m */; };
-		D2A5293E283A1F5800E7B4C6 /* ca.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2A5293B283A1F5800E7B4C6 /* ca.h */; };
-		D2A5294A283A1F6A00E7B4C6 /* ci.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A52949283A1F6A00E7B4C6 /* ci.m */; };
-		D2A5294B283A1F6A00E7B4C6 /* ci.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2A52948283A1F6A00E7B4C6 /* ci.h */; };
-		D2DC5D26295870DB007E2B9D /* sn.m in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D25295870DB007E2B9D /* sn.m */; };
-		D2DC5D27295870DB007E2B9D /* sn.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2DC5D24295870DB007E2B9D /* sn.h */; };
-		D2DC5D38295B5064007E2B9D /* mps.m in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D37295B5064007E2B9D /* mps.m */; };
-		D2DC5D39295B5064007E2B9D /* mps.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2DC5D36295B5064007E2B9D /* mps.h */; };
-		D2DC5D45295B506F007E2B9D /* mpsg.m in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D44295B506F007E2B9D /* mpsg.m */; };
-		D2DC5D46295B506F007E2B9D /* mpsg.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2DC5D43295B506F007E2B9D /* mpsg.h */; };
-		D2FA4ADF2820227B001E2A51 /* av.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FA4ADE2820227B001E2A51 /* av.m */; };
-		D2FA4AE02820227B001E2A51 /* av.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2FA4ADD2820227B001E2A51 /* av.h */; };
-		D2FBEBFC27CB653200FD974A /* mtl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FBEBFB27CB653200FD974A /* mtl.m */; };
-		D2FBEBFD27CB653200FD974A /* mtl.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2FBEBFA27CB653200FD974A /* mtl.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,7 +17,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D20656B2283DCA2200048B17 /* ui.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -71,7 +26,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D21A0FF6287738ED00AB7EF8 /* ns.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -81,7 +35,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D21EFF002B5911F500C86B08 /* mc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -91,7 +44,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D21EFF0D2B5A96FD00C86B08 /* core_motion.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -101,7 +53,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D21EFF1A2B5CDEB000C86B08 /* un.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -111,7 +62,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D21EFF272B5D1ECC00C86B08 /* cl.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -121,7 +71,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D22946A72AF217A0004FAA52 /* wk.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -131,7 +80,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D22946B42AF22516004FAA52 /* app.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -141,7 +89,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D22A55112B78E27300114BDE /* wc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -151,7 +98,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D23E3BA92B4D3605006B1B9C /* gc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -161,9 +107,17 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2520D01280BFC4A00FD6562 /* sc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+		};
+		D25386502C9019D4002122EB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D264D29C28F7E7CF002B1B14 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -171,7 +125,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D264D2A328F7E7CF002B1B14 /* vn.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -181,7 +134,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D26D52F62B27415E007D8074 /* ut.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -191,7 +143,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D27864E72A0A29F400E64871 /* mlc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -201,7 +152,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D28CF5F12BCD201B00ED6381 /* nl.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -211,7 +161,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2A5293E283A1F5800E7B4C6 /* ca.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -221,7 +170,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2A5294B283A1F6A00E7B4C6 /* ci.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -231,7 +179,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2DC5D27295870DB007E2B9D /* sn.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -241,7 +188,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2DC5D39295B5064007E2B9D /* mps.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -251,7 +197,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2DC5D46295B506F007E2B9D /* mpsg.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -261,7 +206,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2FA4AE02820227B001E2A51 /* av.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -271,7 +215,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				D2FBEBFD27CB653200FD974A /* mtl.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -279,80 +222,227 @@
 
 /* Begin PBXFileReference section */
 		D20656AD283DCA2200048B17 /* libui.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libui.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D20656AF283DCA2200048B17 /* ui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ui.h; sourceTree = "<group>"; };
-		D20656B0283DCA2200048B17 /* ui.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ui.m; sourceTree = "<group>"; };
 		D21A0FF1287738ED00AB7EF8 /* libns.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libns.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D21A0FF3287738ED00AB7EF8 /* ns.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ns.h; sourceTree = "<group>"; };
-		D21A0FF4287738ED00AB7EF8 /* ns.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ns.m; sourceTree = "<group>"; };
 		D21E28702C308CD700CF9092 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D21E28722C313C5100CF9092 /* libcompiler_rt.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompiler_rt.tbd; path = usr/lib/system/libcompiler_rt.tbd; sourceTree = SDKROOT; };
 		D21EFEFB2B5911F500C86B08 /* libmc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D21EFEFD2B5911F500C86B08 /* mc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mc.h; sourceTree = "<group>"; };
-		D21EFEFE2B5911F500C86B08 /* mc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mc.m; sourceTree = "<group>"; };
 		D21EFF082B5A96FD00C86B08 /* libcore_motion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcore_motion.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D21EFF0A2B5A96FD00C86B08 /* core_motion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core_motion.h; sourceTree = "<group>"; };
-		D21EFF0B2B5A96FD00C86B08 /* core_motion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = core_motion.m; sourceTree = "<group>"; };
 		D21EFF152B5CDEB000C86B08 /* libun.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libun.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D21EFF172B5CDEB000C86B08 /* un.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = un.h; sourceTree = "<group>"; };
-		D21EFF182B5CDEB000C86B08 /* un.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = un.m; sourceTree = "<group>"; };
 		D21EFF222B5D1ECB00C86B08 /* libcl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcl.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D21EFF242B5D1ECC00C86B08 /* cl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cl.h; sourceTree = "<group>"; };
-		D21EFF252B5D1ECC00C86B08 /* cl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = cl.m; sourceTree = "<group>"; };
 		D22946A22AF217A0004FAA52 /* libwk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwk.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D22946A42AF217A0004FAA52 /* wk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wk.h; sourceTree = "<group>"; };
-		D22946A52AF217A0004FAA52 /* wk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wk.m; sourceTree = "<group>"; };
 		D22946AF2AF22515004FAA52 /* libapp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libapp.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D22946B12AF22516004FAA52 /* app.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = app.h; sourceTree = "<group>"; };
-		D22946B22AF22516004FAA52 /* app.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = app.m; sourceTree = "<group>"; };
 		D22A550C2B78E27300114BDE /* libwc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D22A550E2B78E27300114BDE /* wc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wc.h; sourceTree = "<group>"; };
-		D22A550F2B78E27300114BDE /* wc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = wc.m; sourceTree = "<group>"; };
 		D237F0AD293274B2005B7880 /* libSystem.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libSystem.tbd; path = usr/lib/libSystem.tbd; sourceTree = SDKROOT; };
 		D237F0AF293274C3005B7880 /* libSystem.B.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libSystem.B.tbd; path = usr/lib/libSystem.B.tbd; sourceTree = SDKROOT; };
 		D237F0B1293274EF005B7880 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		D237F0B329327506005B7880 /* libsystem_blocks.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsystem_blocks.tbd; path = usr/lib/system/libsystem_blocks.tbd; sourceTree = SDKROOT; };
 		D23E3BA42B4D3605006B1B9C /* libgc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D23E3BA62B4D3605006B1B9C /* gc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gc.h; sourceTree = "<group>"; };
-		D23E3BA72B4D3605006B1B9C /* gc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gc.m; sourceTree = "<group>"; };
 		D2520CFC280BFC4A00FD6562 /* libsc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2520CFE280BFC4A00FD6562 /* sc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sc.h; sourceTree = "<group>"; };
-		D2520CFF280BFC4A00FD6562 /* sc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sc.m; sourceTree = "<group>"; };
+		D25386522C9019D4002122EB /* libav_kit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libav_kit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D264D29E28F7E7CF002B1B14 /* libvn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libvn.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D264D2A028F7E7CF002B1B14 /* vn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vn.h; sourceTree = "<group>"; };
-		D264D2A128F7E7CF002B1B14 /* vn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = vn.m; sourceTree = "<group>"; };
 		D26D52F12B27415D007D8074 /* libut.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libut.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D26D52F32B27415E007D8074 /* ut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ut.h; sourceTree = "<group>"; };
-		D26D52F42B27415E007D8074 /* ut.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ut.m; sourceTree = "<group>"; };
 		D27864E22A0A29F400E64871 /* libmlc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmlc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D27864E42A0A29F400E64871 /* mlc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mlc.h; sourceTree = "<group>"; };
-		D27864E52A0A29F400E64871 /* mlc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mlc.m; sourceTree = "<group>"; };
 		D27864EB2A0A2A8600E64871 /* MLCompute.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MLCompute.framework; path = System/Library/Frameworks/MLCompute.framework; sourceTree = SDKROOT; };
 		D28CF5EC2BCD201B00ED6381 /* libnl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnl.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D28CF5EE2BCD201B00ED6381 /* nl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = nl.h; sourceTree = "<group>"; };
-		D28CF5EF2BCD201B00ED6381 /* nl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = nl.m; sourceTree = "<group>"; };
 		D2A52939283A1F5800E7B4C6 /* libca.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libca.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2A5293B283A1F5800E7B4C6 /* ca.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ca.h; sourceTree = "<group>"; };
-		D2A5293C283A1F5800E7B4C6 /* ca.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ca.m; sourceTree = "<group>"; };
 		D2A52946283A1F6A00E7B4C6 /* libci.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libci.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2A52948283A1F6A00E7B4C6 /* ci.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ci.h; sourceTree = "<group>"; };
-		D2A52949283A1F6A00E7B4C6 /* ci.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ci.m; sourceTree = "<group>"; };
 		D2A52950283A26B800E7B4C6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		D2DC5D22295870DB007E2B9D /* libsn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsn.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2DC5D24295870DB007E2B9D /* sn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sn.h; sourceTree = "<group>"; };
-		D2DC5D25295870DB007E2B9D /* sn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = sn.m; sourceTree = "<group>"; };
 		D2DC5D34295B5064007E2B9D /* libmps.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmps.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2DC5D36295B5064007E2B9D /* mps.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mps.h; sourceTree = "<group>"; };
-		D2DC5D37295B5064007E2B9D /* mps.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mps.m; sourceTree = "<group>"; };
 		D2DC5D41295B506F007E2B9D /* libmpsg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmpsg.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2DC5D43295B506F007E2B9D /* mpsg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mpsg.h; sourceTree = "<group>"; };
-		D2DC5D44295B506F007E2B9D /* mpsg.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mpsg.m; sourceTree = "<group>"; };
 		D2FA4ADB2820227B001E2A51 /* libav.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libav.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2FA4ADD2820227B001E2A51 /* av.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = av.h; sourceTree = "<group>"; };
-		D2FA4ADE2820227B001E2A51 /* av.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = av.m; sourceTree = "<group>"; };
 		D2FBEBF727CB653200FD974A /* libmtl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmtl.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2FBEBFA27CB653200FD974A /* mtl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mtl.h; sourceTree = "<group>"; };
-		D2FBEBFB27CB653200FD974A /* mtl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mtl.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		D25386702C901A6A002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D28CF5EA2BCD201B00ED6381 /* CopyFiles */;
+			membershipExceptions = (
+				nl.h,
+			);
+		};
+		D25386762C901A7B002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2FBEBF527CB653200FD974A /* CopyFiles */;
+			membershipExceptions = (
+				mtl.h,
+			);
+		};
+		D25386CC2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2520CFA280BFC4A00FD6562 /* CopyFiles */;
+			membershipExceptions = (
+				sc.h,
+			);
+		};
+		D25386CD2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2FA4AD92820227B001E2A51 /* CopyFiles */;
+			membershipExceptions = (
+				av.h,
+			);
+		};
+		D25386CE2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2A52937283A1F5800E7B4C6 /* CopyFiles */;
+			membershipExceptions = (
+				ca.h,
+			);
+		};
+		D25386CF2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2A52944283A1F6A00E7B4C6 /* CopyFiles */;
+			membershipExceptions = (
+				ci.h,
+			);
+		};
+		D25386D02C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D20656AB283DCA2200048B17 /* CopyFiles */;
+			membershipExceptions = (
+				ui.h,
+			);
+		};
+		D25386D12C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D21A0FEF287738ED00AB7EF8 /* CopyFiles */;
+			membershipExceptions = (
+				ns.h,
+			);
+		};
+		D25386D22C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D264D29C28F7E7CF002B1B14 /* CopyFiles */;
+			membershipExceptions = (
+				vn.h,
+			);
+		};
+		D25386D32C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2DC5D20295870DB007E2B9D /* CopyFiles */;
+			membershipExceptions = (
+				sn.h,
+			);
+		};
+		D25386D42C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2DC5D32295B5064007E2B9D /* CopyFiles */;
+			membershipExceptions = (
+				mps.h,
+			);
+		};
+		D25386D52C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D2DC5D3F295B506F007E2B9D /* CopyFiles */;
+			membershipExceptions = (
+				mpsg.h,
+			);
+		};
+		D25386D62C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D27864E02A0A29F400E64871 /* CopyFiles */;
+			membershipExceptions = (
+				mlc.h,
+			);
+		};
+		D25386D72C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D22946A02AF217A0004FAA52 /* CopyFiles */;
+			membershipExceptions = (
+				wk.h,
+			);
+		};
+		D25386D82C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D22946AD2AF22515004FAA52 /* CopyFiles */;
+			membershipExceptions = (
+				app.h,
+			);
+		};
+		D25386D92C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D26D52EF2B27415D007D8074 /* CopyFiles */;
+			membershipExceptions = (
+				ut.h,
+			);
+		};
+		D25386DA2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D23E3BA22B4D3605006B1B9C /* CopyFiles */;
+			membershipExceptions = (
+				gc.h,
+			);
+		};
+		D25386DB2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D21EFEF92B5911F500C86B08 /* CopyFiles */;
+			membershipExceptions = (
+				mc.h,
+			);
+		};
+		D25386DC2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D21EFF062B5A96FD00C86B08 /* CopyFiles */;
+			membershipExceptions = (
+				core_motion.h,
+			);
+		};
+		D25386EC2C901A84002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D21EFF132B5CDEAF00C86B08 /* CopyFiles */;
+			membershipExceptions = (
+				un.h,
+			);
+		};
+		D25386ED2C901A84002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D21EFF202B5D1ECB00C86B08 /* CopyFiles */;
+			membershipExceptions = (
+				cl.h,
+			);
+		};
+		D25386EE2C901A84002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D22A550A2B78E27300114BDE /* CopyFiles */;
+			membershipExceptions = (
+				wc.h,
+			);
+		};
+		D25386F42C901A87002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = D25386502C9019D4002122EB /* CopyFiles */;
+			membershipExceptions = (
+				av_kit.h,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D253866D2C901A6A002122EB /* nl */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386702C901A6A002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = nl; sourceTree = "<group>"; };
+		D25386732C901A7B002122EB /* mtl */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386762C901A7B002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = mtl; sourceTree = "<group>"; };
+		D25386792C901A7F002122EB /* gc */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386DA2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = gc; sourceTree = "<group>"; };
+		D253867E2C901A7F002122EB /* wk */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D72C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = wk; sourceTree = "<group>"; };
+		D25386832C901A7F002122EB /* core_motion */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386DC2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = core_motion; sourceTree = "<group>"; };
+		D25386882C901A7F002122EB /* av */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386CD2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = av; sourceTree = "<group>"; };
+		D253868D2C901A7F002122EB /* sc */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386CC2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = sc; sourceTree = "<group>"; };
+		D25386922C901A7F002122EB /* ut */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D92C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ut; sourceTree = "<group>"; };
+		D25386972C901A7F002122EB /* app */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D82C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = app; sourceTree = "<group>"; };
+		D253869C2C901A7F002122EB /* vn */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D22C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = vn; sourceTree = "<group>"; };
+		D25386A12C901A7F002122EB /* mlc */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D62C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = mlc; sourceTree = "<group>"; };
+		D25386A62C901A7F002122EB /* mc */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386DB2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = mc; sourceTree = "<group>"; };
+		D25386AB2C901A7F002122EB /* ns */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D12C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ns; sourceTree = "<group>"; };
+		D25386B02C901A80002122EB /* ui */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D02C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ui; sourceTree = "<group>"; };
+		D25386B52C901A80002122EB /* mps */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D42C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = mps; sourceTree = "<group>"; };
+		D25386BA2C901A80002122EB /* ci */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386CF2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ci; sourceTree = "<group>"; };
+		D25386BF2C901A80002122EB /* ca */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386CE2C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = ca; sourceTree = "<group>"; };
+		D25386C42C901A80002122EB /* sn */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D32C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = sn; sourceTree = "<group>"; };
+		D25386C92C901A80002122EB /* mpsg */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386D52C901A80002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = mpsg; sourceTree = "<group>"; };
+		D25386DF2C901A84002122EB /* wc */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386EE2C901A84002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = wc; sourceTree = "<group>"; };
+		D25386E42C901A84002122EB /* cl */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386ED2C901A84002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = cl; sourceTree = "<group>"; };
+		D25386E92C901A84002122EB /* un */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386EC2C901A84002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = un; sourceTree = "<group>"; };
+		D25386F12C901A87002122EB /* av_kit */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (D25386F42C901A87002122EB /* PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = av_kit; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D20656AA283DCA2200048B17 /* Frameworks */ = {
@@ -426,6 +516,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2520CF9280BFC4A00FD6562 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D253864F2C9019D4002122EB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -513,159 +610,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D20656AE283DCA2200048B17 /* ui */ = {
-			isa = PBXGroup;
-			children = (
-				D20656AF283DCA2200048B17 /* ui.h */,
-				D20656B0283DCA2200048B17 /* ui.m */,
-			);
-			path = ui;
-			sourceTree = "<group>";
-		};
-		D21A0FF2287738ED00AB7EF8 /* ns */ = {
-			isa = PBXGroup;
-			children = (
-				D21A0FF3287738ED00AB7EF8 /* ns.h */,
-				D21A0FF4287738ED00AB7EF8 /* ns.m */,
-			);
-			path = ns;
-			sourceTree = "<group>";
-		};
-		D21EFEFC2B5911F500C86B08 /* mc */ = {
-			isa = PBXGroup;
-			children = (
-				D21EFEFD2B5911F500C86B08 /* mc.h */,
-				D21EFEFE2B5911F500C86B08 /* mc.m */,
-			);
-			path = mc;
-			sourceTree = "<group>";
-		};
-		D21EFF092B5A96FD00C86B08 /* core_motion */ = {
-			isa = PBXGroup;
-			children = (
-				D21EFF0A2B5A96FD00C86B08 /* core_motion.h */,
-				D21EFF0B2B5A96FD00C86B08 /* core_motion.m */,
-			);
-			path = core_motion;
-			sourceTree = "<group>";
-		};
-		D21EFF162B5CDEB000C86B08 /* un */ = {
-			isa = PBXGroup;
-			children = (
-				D21EFF172B5CDEB000C86B08 /* un.h */,
-				D21EFF182B5CDEB000C86B08 /* un.m */,
-			);
-			path = un;
-			sourceTree = "<group>";
-		};
-		D21EFF232B5D1ECC00C86B08 /* cl */ = {
-			isa = PBXGroup;
-			children = (
-				D21EFF242B5D1ECC00C86B08 /* cl.h */,
-				D21EFF252B5D1ECC00C86B08 /* cl.m */,
-			);
-			path = cl;
-			sourceTree = "<group>";
-		};
-		D22946A32AF217A0004FAA52 /* wk */ = {
-			isa = PBXGroup;
-			children = (
-				D22946A42AF217A0004FAA52 /* wk.h */,
-				D22946A52AF217A0004FAA52 /* wk.m */,
-			);
-			path = wk;
-			sourceTree = "<group>";
-		};
-		D22946B02AF22516004FAA52 /* app */ = {
-			isa = PBXGroup;
-			children = (
-				D22946B12AF22516004FAA52 /* app.h */,
-				D22946B22AF22516004FAA52 /* app.m */,
-			);
-			path = app;
-			sourceTree = "<group>";
-		};
-		D22A550D2B78E27300114BDE /* wc */ = {
-			isa = PBXGroup;
-			children = (
-				D22A550E2B78E27300114BDE /* wc.h */,
-				D22A550F2B78E27300114BDE /* wc.m */,
-			);
-			path = wc;
-			sourceTree = "<group>";
-		};
-		D23E3BA52B4D3605006B1B9C /* gc */ = {
-			isa = PBXGroup;
-			children = (
-				D23E3BA62B4D3605006B1B9C /* gc.h */,
-				D23E3BA72B4D3605006B1B9C /* gc.m */,
-			);
-			path = gc;
-			sourceTree = "<group>";
-		};
-		D2520CFD280BFC4A00FD6562 /* sc */ = {
-			isa = PBXGroup;
-			children = (
-				D2520CFE280BFC4A00FD6562 /* sc.h */,
-				D2520CFF280BFC4A00FD6562 /* sc.m */,
-			);
-			path = sc;
-			sourceTree = "<group>";
-		};
-		D264D29F28F7E7CF002B1B14 /* vn */ = {
-			isa = PBXGroup;
-			children = (
-				D264D2A028F7E7CF002B1B14 /* vn.h */,
-				D264D2A128F7E7CF002B1B14 /* vn.m */,
-			);
-			path = vn;
-			sourceTree = "<group>";
-		};
-		D26D52F22B27415E007D8074 /* ut */ = {
-			isa = PBXGroup;
-			children = (
-				D26D52F32B27415E007D8074 /* ut.h */,
-				D26D52F42B27415E007D8074 /* ut.m */,
-			);
-			path = ut;
-			sourceTree = "<group>";
-		};
-		D27864E32A0A29F400E64871 /* mlc */ = {
-			isa = PBXGroup;
-			children = (
-				D27864E42A0A29F400E64871 /* mlc.h */,
-				D27864E52A0A29F400E64871 /* mlc.m */,
-			);
-			path = mlc;
-			sourceTree = "<group>";
-		};
-		D28CF5ED2BCD201B00ED6381 /* nl */ = {
-			isa = PBXGroup;
-			children = (
-				D28CF5EE2BCD201B00ED6381 /* nl.h */,
-				D28CF5EF2BCD201B00ED6381 /* nl.m */,
-			);
-			path = nl;
-			sourceTree = "<group>";
-		};
-		D2A5293A283A1F5800E7B4C6 /* ca */ = {
-			isa = PBXGroup;
-			children = (
-				D2A5293B283A1F5800E7B4C6 /* ca.h */,
-				D2A5293C283A1F5800E7B4C6 /* ca.m */,
-			);
-			path = ca;
-			sourceTree = "<group>";
-		};
-		D2A52947283A1F6A00E7B4C6 /* ci */ = {
-			isa = PBXGroup;
-			children = (
-				D2A52948283A1F6A00E7B4C6 /* ci.h */,
-				D2A52949283A1F6A00E7B4C6 /* ci.m */,
-			);
-			path = ci;
-			sourceTree = "<group>";
-		};
 		D2A5294F283A26B800E7B4C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -681,67 +625,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D2DC5D23295870DB007E2B9D /* sn */ = {
-			isa = PBXGroup;
-			children = (
-				D2DC5D24295870DB007E2B9D /* sn.h */,
-				D2DC5D25295870DB007E2B9D /* sn.m */,
-			);
-			path = sn;
-			sourceTree = "<group>";
-		};
-		D2DC5D35295B5064007E2B9D /* mps */ = {
-			isa = PBXGroup;
-			children = (
-				D2DC5D36295B5064007E2B9D /* mps.h */,
-				D2DC5D37295B5064007E2B9D /* mps.m */,
-			);
-			path = mps;
-			sourceTree = "<group>";
-		};
-		D2DC5D42295B506F007E2B9D /* mpsg */ = {
-			isa = PBXGroup;
-			children = (
-				D2DC5D43295B506F007E2B9D /* mpsg.h */,
-				D2DC5D44295B506F007E2B9D /* mpsg.m */,
-			);
-			path = mpsg;
-			sourceTree = "<group>";
-		};
-		D2FA4ADC2820227B001E2A51 /* av */ = {
-			isa = PBXGroup;
-			children = (
-				D2FA4ADD2820227B001E2A51 /* av.h */,
-				D2FA4ADE2820227B001E2A51 /* av.m */,
-			);
-			path = av;
-			sourceTree = "<group>";
-		};
 		D2FBEBEE27CB653200FD974A = {
 			isa = PBXGroup;
 			children = (
-				D2FBEBF927CB653200FD974A /* mtl */,
-				D2520CFD280BFC4A00FD6562 /* sc */,
-				D2FA4ADC2820227B001E2A51 /* av */,
-				D2A5293A283A1F5800E7B4C6 /* ca */,
-				D2A52947283A1F6A00E7B4C6 /* ci */,
-				D20656AE283DCA2200048B17 /* ui */,
-				D21A0FF2287738ED00AB7EF8 /* ns */,
-				D264D29F28F7E7CF002B1B14 /* vn */,
-				D2DC5D23295870DB007E2B9D /* sn */,
-				D2DC5D35295B5064007E2B9D /* mps */,
-				D2DC5D42295B506F007E2B9D /* mpsg */,
-				D27864E32A0A29F400E64871 /* mlc */,
-				D22946A32AF217A0004FAA52 /* wk */,
-				D22946B02AF22516004FAA52 /* app */,
-				D26D52F22B27415E007D8074 /* ut */,
-				D23E3BA52B4D3605006B1B9C /* gc */,
-				D21EFEFC2B5911F500C86B08 /* mc */,
-				D21EFF092B5A96FD00C86B08 /* core_motion */,
-				D21EFF162B5CDEB000C86B08 /* un */,
-				D21EFF232B5D1ECC00C86B08 /* cl */,
-				D22A550D2B78E27300114BDE /* wc */,
-				D28CF5ED2BCD201B00ED6381 /* nl */,
+				D25386732C901A7B002122EB /* mtl */,
+				D253868D2C901A7F002122EB /* sc */,
+				D25386882C901A7F002122EB /* av */,
+				D25386BF2C901A80002122EB /* ca */,
+				D25386BA2C901A80002122EB /* ci */,
+				D25386B02C901A80002122EB /* ui */,
+				D25386AB2C901A7F002122EB /* ns */,
+				D253869C2C901A7F002122EB /* vn */,
+				D25386C42C901A80002122EB /* sn */,
+				D25386B52C901A80002122EB /* mps */,
+				D25386C92C901A80002122EB /* mpsg */,
+				D25386A12C901A7F002122EB /* mlc */,
+				D253867E2C901A7F002122EB /* wk */,
+				D25386972C901A7F002122EB /* app */,
+				D25386922C901A7F002122EB /* ut */,
+				D25386792C901A7F002122EB /* gc */,
+				D25386A62C901A7F002122EB /* mc */,
+				D25386832C901A7F002122EB /* core_motion */,
+				D25386E92C901A84002122EB /* un */,
+				D25386E42C901A84002122EB /* cl */,
+				D25386DF2C901A84002122EB /* wc */,
+				D253866D2C901A6A002122EB /* nl */,
+				D25386F12C901A87002122EB /* av_kit */,
 				D2FBEBF827CB653200FD974A /* Products */,
 				D2A5294F283A26B800E7B4C6 /* Frameworks */,
 			);
@@ -772,17 +681,9 @@
 				D21EFF222B5D1ECB00C86B08 /* libcl.a */,
 				D22A550C2B78E27300114BDE /* libwc.a */,
 				D28CF5EC2BCD201B00ED6381 /* libnl.a */,
+				D25386522C9019D4002122EB /* libav_kit.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D2FBEBF927CB653200FD974A /* mtl */ = {
-			isa = PBXGroup;
-			children = (
-				D2FBEBFA27CB653200FD974A /* mtl.h */,
-				D2FBEBFB27CB653200FD974A /* mtl.m */,
-			);
-			path = mtl;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -799,6 +700,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386B02C901A80002122EB /* ui */,
 			);
 			name = ui;
 			productName = ui;
@@ -817,6 +721,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386AB2C901A7F002122EB /* ns */,
+			);
 			name = ns;
 			productName = ns;
 			productReference = D21A0FF1287738ED00AB7EF8 /* libns.a */;
@@ -833,6 +740,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386A62C901A7F002122EB /* mc */,
 			);
 			name = mc;
 			productName = mc;
@@ -851,6 +761,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386832C901A7F002122EB /* core_motion */,
+			);
 			name = core_motion;
 			productName = core_motion;
 			productReference = D21EFF082B5A96FD00C86B08 /* libcore_motion.a */;
@@ -867,6 +780,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386E92C901A84002122EB /* un */,
 			);
 			name = un;
 			productName = un;
@@ -885,6 +801,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386E42C901A84002122EB /* cl */,
+			);
 			name = cl;
 			productName = cl;
 			productReference = D21EFF222B5D1ECB00C86B08 /* libcl.a */;
@@ -901,6 +820,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D253867E2C901A7F002122EB /* wk */,
 			);
 			name = wk;
 			productName = wk;
@@ -919,6 +841,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386972C901A7F002122EB /* app */,
+			);
 			name = app;
 			productName = app;
 			productReference = D22946AF2AF22515004FAA52 /* libapp.a */;
@@ -935,6 +860,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386DF2C901A84002122EB /* wc */,
 			);
 			name = wc;
 			productName = wc;
@@ -953,6 +881,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386792C901A7F002122EB /* gc */,
+			);
 			name = gc;
 			productName = gc;
 			productReference = D23E3BA42B4D3605006B1B9C /* libgc.a */;
@@ -970,9 +901,34 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D253868D2C901A7F002122EB /* sc */,
+			);
 			name = sc;
 			productName = sc;
 			productReference = D2520CFC280BFC4A00FD6562 /* libsc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		D25386512C9019D4002122EB /* av_kit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D253865B2C9019D4002122EB /* Build configuration list for PBXNativeTarget "av_kit" */;
+			buildPhases = (
+				D253864E2C9019D4002122EB /* Sources */,
+				D253864F2C9019D4002122EB /* Frameworks */,
+				D25386502C9019D4002122EB /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386F12C901A87002122EB /* av_kit */,
+			);
+			name = av_kit;
+			packageProductDependencies = (
+			);
+			productName = av_kit;
+			productReference = D25386522C9019D4002122EB /* libav_kit.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D264D29D28F7E7CF002B1B14 /* vn */ = {
@@ -986,6 +942,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D253869C2C901A7F002122EB /* vn */,
 			);
 			name = vn;
 			productName = vn;
@@ -1004,6 +963,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386922C901A7F002122EB /* ut */,
+			);
 			name = ut;
 			productName = ut;
 			productReference = D26D52F12B27415D007D8074 /* libut.a */;
@@ -1020,6 +982,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386A12C901A7F002122EB /* mlc */,
 			);
 			name = mlc;
 			productName = mlc;
@@ -1038,6 +1003,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D253866D2C901A6A002122EB /* nl */,
+			);
 			name = nl;
 			productName = nl;
 			productReference = D28CF5EC2BCD201B00ED6381 /* libnl.a */;
@@ -1054,6 +1022,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386BF2C901A80002122EB /* ca */,
 			);
 			name = ca;
 			productName = ca;
@@ -1072,6 +1043,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386BA2C901A80002122EB /* ci */,
+			);
 			name = ci;
 			productName = ci;
 			productReference = D2A52946283A1F6A00E7B4C6 /* libci.a */;
@@ -1088,6 +1062,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386C42C901A80002122EB /* sn */,
 			);
 			name = sn;
 			productName = sn;
@@ -1106,6 +1083,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386B52C901A80002122EB /* mps */,
+			);
 			name = mps;
 			productName = mps;
 			productReference = D2DC5D34295B5064007E2B9D /* libmps.a */;
@@ -1122,6 +1102,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386C92C901A80002122EB /* mpsg */,
 			);
 			name = mpsg;
 			productName = mpsg;
@@ -1140,6 +1123,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				D25386882C901A7F002122EB /* av */,
+			);
 			name = av;
 			productName = av;
 			productReference = D2FA4ADB2820227B001E2A51 /* libav.a */;
@@ -1156,6 +1142,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D25386732C901A7B002122EB /* mtl */,
 			);
 			name = mtl;
 			productName = mtl;
@@ -1204,6 +1193,9 @@
 					D2520CFB280BFC4A00FD6562 = {
 						CreatedOnToolsVersion = 13.3.1;
 					};
+					D25386512C9019D4002122EB = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					D264D29D28F7E7CF002B1B14 = {
 						CreatedOnToolsVersion = 14.1;
 					};
@@ -1240,7 +1232,6 @@
 				};
 			};
 			buildConfigurationList = D2FBEBF227CB653200FD974A /* Build configuration list for PBXProject "pomace" */;
-			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1248,6 +1239,7 @@
 				Base,
 			);
 			mainGroup = D2FBEBEE27CB653200FD974A;
+			preferredProjectObjectVersion = 55;
 			productRefGroup = D2FBEBF827CB653200FD974A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1274,6 +1266,7 @@
 				D21EFF212B5D1ECB00C86B08 /* cl */,
 				D22A550B2B78E27300114BDE /* wc */,
 				D28CF5EB2BCD201B00ED6381 /* nl */,
+				D25386512C9019D4002122EB /* av_kit */,
 			);
 		};
 /* End PBXProject section */
@@ -1283,7 +1276,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D20656B1283DCA2200048B17 /* ui.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1291,7 +1283,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D21A0FF5287738ED00AB7EF8 /* ns.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1299,7 +1290,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D21EFEFF2B5911F500C86B08 /* mc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1307,7 +1297,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D21EFF0C2B5A96FD00C86B08 /* core_motion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1315,7 +1304,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D21EFF192B5CDEB000C86B08 /* un.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1323,7 +1311,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D21EFF262B5D1ECC00C86B08 /* cl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1331,7 +1318,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D22946A62AF217A0004FAA52 /* wk.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1339,7 +1325,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D22946B32AF22516004FAA52 /* app.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1347,7 +1332,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D22A55102B78E27300114BDE /* wc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1355,7 +1339,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D23E3BA82B4D3605006B1B9C /* gc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1363,7 +1346,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2520D00280BFC4A00FD6562 /* sc.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D253864E2C9019D4002122EB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1371,7 +1360,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D264D2A228F7E7CF002B1B14 /* vn.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1379,7 +1367,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D26D52F52B27415E007D8074 /* ut.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1387,7 +1374,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D27864E62A0A29F400E64871 /* mlc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1395,7 +1381,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D28CF5F02BCD201B00ED6381 /* nl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1403,7 +1388,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2A5293D283A1F5800E7B4C6 /* ca.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1411,7 +1395,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2A5294A283A1F6A00E7B4C6 /* ci.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1419,7 +1402,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2DC5D26295870DB007E2B9D /* sn.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1427,7 +1409,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2DC5D38295B5064007E2B9D /* mps.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1435,7 +1416,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2DC5D45295B506F007E2B9D /* mpsg.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1443,7 +1423,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2FA4ADF2820227B001E2A51 /* av.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1451,7 +1430,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2FBEBFC27CB653200FD974A /* mtl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1845,6 +1823,45 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D25386582C9019D4002122EB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D25386592C9019D4002122EB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2391,6 +2408,15 @@
 			buildConfigurations = (
 				D2520D02280BFC4A00FD6562 /* Debug */,
 				D2520D03280BFC4A00FD6562 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D253865B2C9019D4002122EB /* Build configuration list for PBXNativeTarget "av_kit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D25386582C9019D4002122EB /* Debug */,
+				D25386592C9019D4002122EB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
