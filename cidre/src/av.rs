@@ -214,7 +214,11 @@ pub use kit::PipControllerContentSrc;
 pub use kit::PipControllerDelegate;
 #[cfg(feature = "av_kit")]
 pub use kit::PipControllerDelegateImpl;
-
 #[cfg(feature = "av_kit")]
-#[cfg(any(target_os = "ios", target_os = "visionos"))]
+pub use kit::PipSampleBufPlayerDelegate;
+#[cfg(feature = "av_kit")]
+pub use kit::PipSampleBufPlayerDelegateImpl;
+#[cfg(all(feature = "av_kit", any(target_os = "ios", target_os = "visionos")))]
 pub use kit::PipViewCallController;
+#[cfg(feature = "av_kit")]
+pub use kit::VideoFrameAnalysisType;
