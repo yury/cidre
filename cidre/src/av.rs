@@ -207,6 +207,8 @@ mod time;
 #[cfg(feature = "av_kit")]
 mod kit;
 #[cfg(feature = "av_kit")]
+pub use kit::AudioSessionRouteSelection;
+#[cfg(feature = "av_kit")]
 pub use kit::PipController;
 #[cfg(feature = "av_kit")]
 pub use kit::PipControllerContentSrc;
