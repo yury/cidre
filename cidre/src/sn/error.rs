@@ -1,16 +1,14 @@
 use crate::ns;
 
-pub type Domain = ns::ErrorDomain;
-
-impl Domain {
-    pub fn sound_analysis() -> &'static Domain {
+impl ns::ErrorDomain {
+    pub fn sound_analysis() -> &'static Self {
         unsafe { SNErrorDomain }
     }
 }
 
 #[link(name = "SoundAnalysis", kind = "framework")]
 extern "C" {
-    static SNErrorDomain: &'static Domain;
+    static SNErrorDomain: &'static ns::ErrorDomain;
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

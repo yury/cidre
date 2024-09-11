@@ -1,6 +1,9 @@
 mod types;
 pub use types::VideoFrameAnalysisType;
 
+mod error;
+pub use error::Code as ErrorCode;
+
 mod picture_in_picture_controller;
 pub use picture_in_picture_controller::PipController;
 pub use picture_in_picture_controller::PipControllerContentSrc;

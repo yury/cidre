@@ -209,6 +209,8 @@ mod kit;
 #[cfg(feature = "av_kit")]
 pub use kit::AudioSessionRouteSelection;
 #[cfg(feature = "av_kit")]
+pub use kit::ErrorCode as KitErrorCode;
+#[cfg(feature = "av_kit")]
 pub use kit::PipController;
 #[cfg(feature = "av_kit")]
 pub use kit::PipControllerContentSrc;

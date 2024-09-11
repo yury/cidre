@@ -6,7 +6,6 @@ pub use types::Id;
 
 mod error;
 pub use error::Code as ErrorCode;
-pub use error::Domain as ErrorDomain;
 
 define_obj_type!(
     #[doc(alias = "SNRequest")]
