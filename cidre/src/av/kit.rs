@@ -18,3 +18,6 @@ pub use picture_in_picture_controller_sample_buffer_display_layer_support::PipSa
 
 mod playback_route_selecting;
 pub use playback_route_selecting::AudioSessionRouteSelection;
+
+mod playback_speed;
+pub use playback_speed::PlaybackSpeed;
