@@ -226,5 +226,15 @@ pub use kit::PipSampleBufPlayerDelegateImpl;
 pub use kit::PipViewCallController;
 #[cfg(feature = "av_kit")]
 pub use kit::PlaybackSpeed;
+#[cfg(all(
+    feature = "av_kit",
+    any(target_os = "ios", target_os = "visionos", target_os = "tvos")
+))]
+pub use kit::PlayerViewController;
+#[cfg(all(
+    feature = "av_kit",
+    any(target_os = "ios", target_os = "visionos", target_os = "tvos")
+))]
+pub use kit::PlayerViewControllerSkippingBehavior;
 #[cfg(feature = "av_kit")]
 pub use kit::VideoFrameAnalysisType;
