@@ -235,6 +235,17 @@ pub use kit::PlayerViewController;
     feature = "av_kit",
     any(target_os = "ios", target_os = "visionos", target_os = "tvos")
 ))]
+pub use kit::PlayerViewControllerDelegate;
+#[cfg(all(
+    feature = "av_kit",
+    any(target_os = "ios", target_os = "visionos", target_os = "tvos")
+))]
+pub use kit::PlayerViewControllerDelegateImpl;
+#[cfg(all(
+    feature = "av_kit",
+    any(target_os = "tvos")
+    // any(target_os = "ios", target_os = "visionos", target_os = "tvos")
+))]
 pub use kit::PlayerViewControllerSkippingBehavior;
 #[cfg(feature = "av_kit")]
 pub use kit::VideoFrameAnalysisType;

@@ -20,6 +20,10 @@ mod player_view_controller;
 #[cfg(any(target_os = "ios", target_os = "visionos", target_os = "tvos"))]
 pub use player_view_controller::PlayerViewController;
 #[cfg(any(target_os = "ios", target_os = "visionos", target_os = "tvos"))]
+pub use player_view_controller::PlayerViewControllerDelegate;
+#[cfg(any(target_os = "ios", target_os = "visionos", target_os = "tvos"))]
+pub use player_view_controller::PlayerViewControllerDelegateImpl;
+#[cfg(any(target_os = "tvos"))]
 pub use player_view_controller::PlayerViewControllerSkippingBehavior;
 
 mod picture_in_picture_controller_sample_buffer_display_layer_support;
