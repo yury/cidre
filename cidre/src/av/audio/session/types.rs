@@ -468,33 +468,41 @@ pub enum PortOverride {
 #[repr(usize)]
 pub enum RouteChangeReason {
     /// The reason is unknown.
+    #[doc(alias = "AVAudioSessionRouteChangeReasonUnknown")]
     Unknown = 0,
 
     /// A new device became available (e.g. headphones have been plugged in).
+    #[doc(alias = "AVAudioSessionRouteChangeReasonNewDeviceAvailable")]
     NewDeviceAvailable = 1,
 
     /// The old device became unavailable (e.g. headphones have been unplugged).
+    #[doc(alias = "AVAudioSessionRouteChangeReasonOldDeviceUnavailable")]
     OldDeviceUnavailable = 2,
 
     /// The audio category has changed (e.g. AVAudioSessionCategoryPlayback has been changed to
     /// AVAudioSessionCategoryPlayAndRecord).
+    #[doc(alias = "AVAudioSessionRouteChangeReasonCategoryChange")]
     CategoryChange = 3,
 
     /// The route has been overridden (e.g. category is AVAudioSessionCategoryPlayAndRecord and
     /// the output has been changed from the receiver, which is the default, to the speaker).
+    #[doc(alias = "AVAudioSessionRouteChangeReasonOverride")]
     Override = 4,
 
     /// The device woke from sleep.
+    #[doc(alias = "AVAudioSessionRouteChangeReasonWakeFromSleep")]
     WakeFromSleep = 6,
 
     /// Returned when there is no route for the current category (for instance, the category is
     /// AVAudioSessionCategoryRecord but no input device is available).
+    #[doc(alias = "AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory")]
     NoSuitableRouteForCategory = 7,
 
     /// Indicates that the set of input and/our output ports has not changed, but some aspect of
     /// their configuration has changed.  For example, a port's selected data source has changed.
     /// (Introduced in iOS 7.0, watchOS 2.0, tvOS 9.0).
-    RouteConfigurationChange = 8,
+    #[doc(alias = "AVAudioSessionRouteChangeReasonRouteConfigurationChange")]
+    RouteCfgChange = 8,
 }
 
 define_opts!(
@@ -696,7 +704,7 @@ pub enum InterruptionReason {
 
 /// options for use when calling setActive:withOptions:error:
 #[doc(alias = "AVAudioSessionSetActiveOptions")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum SetActiveOpts {
     None = 0,
@@ -709,7 +717,7 @@ pub enum SetActiveOpts {
 /// AVAudioSessionSilenceSecondaryAudioHintNotification's userInfo dictionary, to indicate whether
 /// optional secondary audio muting should begin or end.
 #[doc(alias = "AVAudioSessionSilenceSecondaryAudioHintType")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum SilenceSecondaryAudioHintType {
     /// Another application's primary audio has started.
@@ -735,7 +743,7 @@ pub enum SilenceSecondaryAudioHintType {
 /// Apps that don't use AVCaptureSession and use [`av::AudioSessionCategory::play_and_record()`] will continue
 /// to have aggregated audio I/O, as in previous versions of iOS.
 #[doc(alias = "AVAudioSessionIOType")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum IoType {
     /// The default value. If your app does not use [`av::CaptureSession`] or does not have any specific
@@ -761,7 +769,7 @@ pub enum IoType {
 /// to specify that its output audio should be routed somewhere other than the default system output,
 /// when appropriate alternative routes are available.
 #[doc(alias = "AVAudioSessionRouteSharingPolicy")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum RouteSharingPolicy {
     /// Follow normal rules for routing audio output.
@@ -799,7 +807,7 @@ pub enum RouteSharingPolicy {
 /// modify their prompts in response. Apple encourages the use of non-verbal prompts when the Short
 /// style is requested.
 #[doc(alias = "AVAudioSessionPromptStyle")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum PromptStyle {
     /// Indicates that another session is actively using microphone input and would be negatively impacted
@@ -818,7 +826,7 @@ pub enum PromptStyle {
 /// for use with built-in mic input data sources with
 /// a stereo polar pattern selected.
 #[doc(alias = "AVAudioStereoOrientation")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum StereoOrientation {
     /// Indicates that audio capture orientation is not applicable (on mono capture, for instance).
