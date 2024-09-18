@@ -674,9 +674,10 @@ pub enum InterruptionType {
 /// Values for AVAudioSessionInterruptionOptionKey in AVAudioSessionInterruptionNotification's
 /// userInfo dictionary.
 #[doc(alias = "AVAudioSessionInterruptionOptions")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum InterruptionOpts {
+    #[default]
     None = 0,
     /// Indicates that you should resume playback now that the interruption has ended.
     ShouldResume = 1,
@@ -684,10 +685,11 @@ pub enum InterruptionOpts {
 
 /// Values for AVAudioSessionInterruptionReasonKey in AVAudioSessionInterruptionNotification's userInfo dictionary.
 #[doc(alias = "AVAudioSessionInterruptionReason")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum InterruptionReason {
     /// The audio session was interrupted because another session was activated.
+    #[default]
     Default = 0,
     /// The audio session was interrupted due to the app being suspended by the operating sytem.
     ///
@@ -704,9 +706,10 @@ pub enum InterruptionReason {
 
 /// options for use when calling setActive:withOptions:error:
 #[doc(alias = "AVAudioSessionSetActiveOptions")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum SetActiveOpts {
+    #[default]
     None = 0,
     /// Notify an interrupted app that the interruption has ended and it may resume playback. Only
     /// valid on session deactivation.
@@ -769,10 +772,11 @@ pub enum IoType {
 /// to specify that its output audio should be routed somewhere other than the default system output,
 /// when appropriate alternative routes are available.
 #[doc(alias = "AVAudioSessionRouteSharingPolicy")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum RouteSharingPolicy {
     /// Follow normal rules for routing audio output.
+    #[default]
     Default = 0,
     /// Route output to the shared long-form audio output. A session whose primary use case is as a
     /// music or podcast player may use this value to play to the same output as the built-in Music (iOS),
@@ -826,10 +830,11 @@ pub enum PromptStyle {
 /// for use with built-in mic input data sources with
 /// a stereo polar pattern selected.
 #[doc(alias = "AVAudioStereoOrientation")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum StereoOrientation {
     /// Indicates that audio capture orientation is not applicable (on mono capture, for instance).
+    #[default]
     None = 0,
     /// Indicates that audio capture should be oriented vertically, Lightning connector on the bottom.
     Portrait = 1,
