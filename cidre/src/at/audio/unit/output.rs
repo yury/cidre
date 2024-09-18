@@ -124,6 +124,24 @@ impl Output<UninitializedState> {
         Ok(Self(unit))
     }
 
+    /// Apple voice processing unit
+    pub fn new_apple_vp() -> Result<Self, os::Status> {
+        let desc = audio::ComponentDesc {
+            type_: au::Type::OUTPUT.0,
+            sub_type: au::SubType::VOICE_PROCESSING_IO.0,
+            manufacturer: au::Manufacturer::APPLE.0,
+            flags: 0,
+            flags_mask: 0,
+        };
+
+        let comp = desc
+            .into_iter()
+            .next()
+            .ok_or(au::component_err::UNSUPPORTED_TYPE)?;
+        let unit = comp.open_unit()?;
+        Ok(Self(unit))
+    }
+
     pub fn allocate_resources(self) -> Result<Output<InitializedState>, os::Status> {
         Ok(Output(self.0.initialize()?))
     }
@@ -215,7 +233,7 @@ impl Output<InitializedState> {
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn AudioOutputUnitStart(unit: &mut audio::Unit) -> os::Status;
     fn AudioOutputUnitStop(unit: &mut audio::Unit) -> os::Status;
 }
@@ -256,7 +274,7 @@ mod tests {
         output.set_io_enabled(au::Scope::INPUT, 1, true).unwrap();
         output.set_io_enabled(au::Scope::OUTPUT, 0, false).unwrap();
 
-        extern "C" fn input_cb(
+        extern "C-unwind" fn input_cb(
             _in_ref_con: *mut c_void,
             _io_action_flags: &mut au::RenderActionFlags,
             _in_timestamp: &at::AudioTimeStamp,
@@ -285,5 +303,20 @@ mod tests {
         output.stop().unwrap();
 
         assert_eq!(output.last_render_err().unwrap(), os::Status::NO_ERR);
+    }
+
+    #[test]
+    fn voice_processing() {
+        let mut output = au::Output::new_apple_vp().unwrap();
+        let count = output.unit().element_count(au::Scope::INPUT);
+        println!("input count {count:?}");
+        let count = output.unit().element_count(au::Scope::OUTPUT);
+        println!("output count {count:?}");
+        let format = output.input_stream_format(0).unwrap();
+        eprintln!("{format:?}");
+        let mut output = output.allocate_resources().unwrap();
+        output.start().unwrap();
+        assert!(output.is_running().unwrap());
+        output.stop().unwrap();
     }
 }

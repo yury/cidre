@@ -144,7 +144,7 @@ mod tests {
         let max_frames_per_slice = conv.max_frames_per_slice().unwrap();
         assert_eq!(1024, max_frames_per_slice);
 
-        extern "C" fn render(
+        extern "C-unwind" fn render(
             in_ref_con: *mut c_void,
             _io_action_flags: &mut au::RenderActionFlags,
             _in_timestamp: &at::AudioTimeStamp,

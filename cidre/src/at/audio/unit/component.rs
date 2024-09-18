@@ -89,13 +89,15 @@ impl<S: State<Unit>> Drop for UnitRef<S> {
 pub struct Type(pub u32);
 
 impl Type {
-    /// An output unit can be used standalone or as part of an [`au::Graph`] or [`av::AudioEngine`]. Apple
-    /// provides a number of output units that interface directly with an audio device.
+    /// An output unit can be used standalone or as part of an [`au::Graph`] or
+    /// [`av::AudioEngine`]. Apple provides a number of output units that interface
+    /// directly with an audio device.
     #[doc(alias = "kAudioUnitType_Output")]
     pub const OUTPUT: Self = Self(u32::from_be_bytes(*b"auou"));
 
-    /// A software musical instrument such as a sampler or synthesizer. They respond to MIDI and
-    /// create notes, which are then controlled through parameters or MIDI control messages.
+    /// A software musical instrument such as a sampler or synthesizer. They respond
+    /// to MIDI and create notes, which are then controlled through parameters or MIDI
+    /// control messages.
     #[doc(alias = "kAudioUnitType_MusicDevice")]
     pub const MUSIC_DEVICE: Self = Self(u32::from_be_bytes(*b"aumu"));
 
@@ -779,7 +781,7 @@ pub struct Prop {
 }
 
 #[doc(alias = "AURenderCallback")]
-pub type RenderCb<const N: usize = 1, T = c_void> = extern "C" fn(
+pub type RenderCb<const N: usize = 1, T = c_void> = extern "C-unwind" fn(
     in_ref_con: *mut T,
     io_action_flags: &mut RenderActionFlags,
     in_timestamp: &at::AudioTimeStamp,
@@ -1543,7 +1545,7 @@ mod tests {
         bins[2].frequency = 2000.0;
         bins[3].frequency = -1.0;
 
-        extern "C" fn render(
+        extern "C-unwind" fn render(
             _in_ref_con: *mut c_void,
             _io_action_flags: &mut au::RenderActionFlags,
             _in_timestamp: &audio::TimeStamp,

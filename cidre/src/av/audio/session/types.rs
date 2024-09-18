@@ -1,23 +1,24 @@
-use crate::{define_obj_type, define_opts, ns};
+use crate::{api, define_obj_type, define_opts, ns};
 
 define_obj_type!(
     #[doc(alias = "AVAudioSessionPort")]
     pub Port(ns::String)
 );
 
+/// Input port types
 impl Port {
-    /* input port types */
-
     /// A Continuity Microphone is an iOS device that a user trusts to use for audio input on Apple TV.
     #[doc(alias = "AVAudioSessionPortContinuityMicrophone")]
     #[inline]
-    pub fn continuity_microphone() -> &'static Self {
+    #[api::available(ios = 17.0, watchos = 10.0, tvos = 17.0)]
+    pub fn continuity_mic() -> &'static Self {
         unsafe { AVAudioSessionPortContinuityMicrophone }
     }
 
     /// Line level input on a dock connector
     #[doc(alias = "AVAudioSessionPortLineIn")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn line_in() -> &'static Self {
         unsafe { AVAudioSessionPortLineIn }
     }
@@ -25,6 +26,7 @@ impl Port {
     /// Built-in microphone on an iOS device
     #[doc(alias = "AVAudioSessionPortBuiltInMic")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn built_in_mic() -> &'static Self {
         unsafe { AVAudioSessionPortBuiltInMic }
     }
@@ -33,15 +35,18 @@ impl Port {
     /// microphone.
     #[doc(alias = "AVAudioSessionPortHeadsetMic")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn headset_mic() -> &'static Self {
         unsafe { AVAudioSessionPortHeadsetMic }
     }
+}
 
-    /* output port types */
-
+/// Output port types
+impl Port {
     /// Line level output on a dock connector
     #[doc(alias = "AVAudioSessionPortLineOut")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn line_out() -> &'static Self {
         unsafe { AVAudioSessionPortLineOut }
     }
@@ -49,6 +54,7 @@ impl Port {
     /// Headphone or headset output
     #[doc(alias = "AVAudioSessionPortHeadphones")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn headphones() -> &'static Self {
         unsafe { AVAudioSessionPortHeadphones }
     }
@@ -56,6 +62,7 @@ impl Port {
     /// Output on a Bluetooth A2DP device
     #[doc(alias = "AVAudioSessionPortBluetoothA2DP")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn bluetooth_a2dp() -> &'static Self {
         unsafe { AVAudioSessionPortBluetoothA2DP }
     }
@@ -63,6 +70,7 @@ impl Port {
     /// The speaker you hold to your ear when on a phone call
     #[inline]
     #[doc(alias = "AVAudioSessionPortBuiltInReceiver")]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn built_in_receiver() -> &'static Self {
         unsafe { AVAudioSessionPortBuiltInReceiver }
     }
@@ -70,6 +78,7 @@ impl Port {
     /// Built-in speaker on an iOS device
     #[doc(alias = "AVAudioSessionPortBuiltInSpeaker")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn built_in_speaker() -> &'static Self {
         unsafe { AVAudioSessionPortBuiltInSpeaker }
     }
@@ -77,6 +86,7 @@ impl Port {
     /// Output via High-Definition Multimedia Interface
     #[doc(alias = "AVAudioSessionPortHDMI")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn hdmi() -> &'static Self {
         unsafe { AVAudioSessionPortHDMI }
     }
@@ -84,6 +94,7 @@ impl Port {
     /// Output on a remote Air Play device
     #[doc(alias = "AVAudioSessionPortAirPlay")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn air_play() -> &'static Self {
         unsafe { AVAudioSessionPortAirPlay }
     }
@@ -91,15 +102,18 @@ impl Port {
     /// Output on a Bluetooth Low Energy device
     #[doc(alias = "AVAudioSessionPortBluetoothLE")]
     #[inline]
+    #[api::available(ios = 7.0, watchos = 2.0, tvos = 9.0)]
     pub fn bluetooth_le() -> &'static Self {
         unsafe { AVAudioSessionPortBluetoothLE }
     }
+}
 
-    /* port types that refer to either input or output */
-
+/// Port types that refer to either input or output
+impl Port {
     /// Input or output on a Bluetooth Hands-Free Profile device
     #[doc(alias = "AVAudioSessionPortBluetoothHFP")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn bluetooth_hfp() -> &'static Self {
         unsafe { AVAudioSessionPortBluetoothHFP }
     }
@@ -107,6 +121,7 @@ impl Port {
     /// Input or output on a Universal Serial Bus device
     #[doc(alias = "AVAudioSessionPortUSBAudio")]
     #[inline]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     pub fn usb_audio() -> &'static Self {
         unsafe { AVAudioSessionPortUSBAudio }
     }
@@ -114,6 +129,7 @@ impl Port {
     /// Input or output via Car Audio
     #[doc(alias = "AVAudioSessionPortCarAudio")]
     #[inline]
+    #[api::available(ios = 7.0, watchos = 2.0, tvos = 9.0)]
     pub fn car_audio() -> &'static Self {
         unsafe { AVAudioSessionPortCarAudio }
     }
@@ -121,6 +137,7 @@ impl Port {
     /// Input or output that does not correspond to real audio hardware
     #[doc(alias = "AVAudioSessionPortVirtual")]
     #[inline]
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn virtual_() -> &'static Self {
         unsafe { AVAudioSessionPortVirtual }
     }
@@ -128,6 +145,7 @@ impl Port {
     /// Input or output connected via the PCI (Peripheral Component Interconnect) bus
     #[doc(alias = "AVAudioSessionPortPCI")]
     #[inline]
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn pci() -> &'static Self {
         unsafe { AVAudioSessionPortPCI }
     }
@@ -135,6 +153,7 @@ impl Port {
     /// Input or output connected via FireWire
     #[doc(alias = "AVAudioSessionPortFireWire")]
     #[inline]
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn fire_wire() -> &'static Self {
         unsafe { AVAudioSessionPortFireWire }
     }
@@ -142,6 +161,7 @@ impl Port {
     /// Input or output connected via DisplayPort
     #[doc(alias = "AVAudioSessionPortDisplayPort")]
     #[inline]
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn display_port() -> &'static Self {
         unsafe { AVAudioSessionPortDisplayPort }
     }
@@ -149,6 +169,7 @@ impl Port {
     /// Input or output connected via AVB (Audio Video Bridging)
     #[doc(alias = "AVAudioSessionPortAVB")]
     #[inline]
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn avb() -> &'static Self {
         unsafe { AVAudioSessionPortAVB }
     }
@@ -156,35 +177,76 @@ impl Port {
     /// Input or output connected via Thunderbolt
     #[doc(alias = "AVAudioSessionPortThunderbolt")]
     #[inline]
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn thunderbolt() -> &'static Self {
         unsafe { AVAudioSessionPortThunderbolt }
     }
 }
 
 #[link(name = "AVFAudio", kind = "framework")]
+#[api::weak]
 extern "C" {
+    #[api::available(ios = 17.0, watchos = 10.0, tvos = 17.0)]
     static AVAudioSessionPortContinuityMicrophone: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortLineIn: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortBuiltInMic: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortHeadsetMic: &'static Port;
 
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortLineOut: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortHeadphones: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortBluetoothA2DP: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortBuiltInReceiver: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortBuiltInSpeaker: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortHDMI: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortAirPlay: &'static Port;
+
+    #[api::available(ios = 7.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortBluetoothLE: &'static Port;
 
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortBluetoothHFP: &'static Port;
+
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortUSBAudio: &'static Port;
+
+    #[api::available(ios = 7.0, watchos = 2.0, tvos = 9.0)]
     static AVAudioSessionPortCarAudio: &'static Port;
+
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     static AVAudioSessionPortVirtual: &'static Port;
+
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     static AVAudioSessionPortPCI: &'static Port;
+
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     static AVAudioSessionPortFireWire: &'static Port;
+
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     static AVAudioSessionPortDisplayPort: &'static Port;
+
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     static AVAudioSessionPortAVB: &'static Port;
+
+    #[api::available(ios = 14.0, watchos = 7.0, tvos = 14.0)]
     static AVAudioSessionPortThunderbolt: &'static Port;
 
 }
