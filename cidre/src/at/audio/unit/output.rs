@@ -43,7 +43,18 @@ where
     ) -> Result<(), os::Status> {
         self.0
             .unit_mut()
-            .set_input_cb(au::Scope::GLOBAL, 1, cb, ref_con)
+            .output_set_input_cb(au::Scope::GLOBAL, 1, cb, ref_con)
+    }
+
+    #[inline]
+    pub fn set_output_cb<const N: usize, T>(
+        &mut self,
+        cb: au::RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> Result<(), os::Status> {
+        self.0
+            .unit_mut()
+            .set_input_cb(au::Scope::GLOBAL, 0, cb, ref_con)
     }
 
     // #[inline]
@@ -53,12 +64,12 @@ where
 
     #[inline]
     pub fn output_stream_format(&self, bus: u32) -> Result<audio::StreamBasicDesc, os::Status> {
-        self.unit().stream_format(Scope::OUTPUT, bus)
+        self.unit().stream_format(Scope::INPUT, bus)
     }
 
     #[inline]
     pub fn input_stream_format(&self, bus: u32) -> Result<audio::StreamBasicDesc, os::Status> {
-        self.unit().stream_format(Scope::INPUT, bus)
+        self.unit().stream_format(Scope::OUTPUT, bus)
     }
 
     pub fn is_running(&self) -> Result<bool, os::Status> {
@@ -100,6 +111,28 @@ where
             self.unit()
                 .prop(au::PropId::OUTPUT_HAS_IO, au::Scope::INPUT, au::Element(1))?;
         Ok(res != 0)
+    }
+
+    pub fn set_should_allocate_input_buf(&mut self, arg: bool) -> Result<(), os::Status> {
+        let arg: u32 = arg as u32;
+        self.unit_mut().set_prop(
+            au::PropId::SHOULD_ALLOCATE_BUF,
+            au::Scope::OUTPUT,
+            au::Element(1),
+            &arg,
+        )?;
+        Ok(())
+    }
+
+    pub fn set_should_allocate_output_buf(&mut self, arg: bool) -> Result<(), os::Status> {
+        let arg: u32 = arg as u32;
+        self.unit_mut().set_prop(
+            au::PropId::SHOULD_ALLOCATE_BUF,
+            au::Scope::INPUT,
+            au::Element(0),
+            &arg,
+        )?;
+        Ok(())
     }
 }
 
@@ -170,7 +203,7 @@ impl Output<UninitializedState> {
         &mut self,
         val: &audio::StreamBasicDesc,
     ) -> Result<(), os::Status> {
-        self.unit_mut().set_stream_format(Scope::OUTPUT, 0, val)
+        self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
     }
 
     #[inline]
@@ -178,7 +211,7 @@ impl Output<UninitializedState> {
         &mut self,
         val: &audio::StreamBasicDesc,
     ) -> Result<(), os::Status> {
-        self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
+        self.unit_mut().set_stream_format(Scope::OUTPUT, 1, val)
     }
 
     #[cfg(target_os = "macos")]

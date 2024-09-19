@@ -1140,6 +1140,28 @@ impl Unit {
         };
         self.set_prop(PropId::SET_RENDER_CB, scope, Element(bus), &val)
     }
+
+    pub fn output_set_input_cb<const N: usize, T>(
+        &mut self,
+        scope: Scope,
+        bus: u32,
+        cb: RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> Result<(), os::Status> {
+        let val: RenderCbStruct<N, T> = RenderCbStruct {
+            proc: cb as _,
+            proc_ref_con: ref_con,
+        };
+        self.set_prop(PropId::OUTPUT_SET_INPUT_CB, scope, Element(bus), &val)
+    }
+
+    pub fn output_remove_input_cb(&mut self, scope: Scope, bus: u32) -> Result<(), os::Status> {
+        let val: RenderCbStruct<1, c_void> = RenderCbStruct {
+            proc: std::ptr::null(),
+            proc_ref_con: std::ptr::null(),
+        };
+        self.set_prop(PropId::OUTPUT_SET_INPUT_CB, scope, Element(bus), &val)
+    }
 }
 
 impl UnitRef<UninitializedState> {
