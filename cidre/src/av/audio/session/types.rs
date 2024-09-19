@@ -757,7 +757,9 @@ pub enum IoType {
     /// If your app does utilize [`av::CaptureSession`], use of this value will allow [`av::CaptureSession`] to
     /// start recording without glitching already running output audio and will allow the system to
     /// utilize power-saving optimizations.
+    #[doc(alias = "AVAudioSessionIOTypeNotSpecified")]
     NotSpecified = 0,
+
     /// Use this value if your session uses [`av::AudioSessionCategory::play_and_record()`] and requires input and
     /// output audio to be presented in the same realtime I/O callback. For example, if your app will be using
     /// a RemoteIO with both input and output enabled.
@@ -765,6 +767,7 @@ pub enum IoType {
     /// Note that your session's preference to use aggregated IO will not be honored if it specifies
     /// AVAudioSessionCategoryOptionMixWithOthers AND another app's audio session was already active
     /// with non-mixable, non-aggregated input/output.
+    #[doc(alias = "AVAudioSessionIOTypeAggregated")]
     Aggregated = 1,
 }
 
@@ -776,8 +779,10 @@ pub enum IoType {
 #[repr(usize)]
 pub enum RouteSharingPolicy {
     /// Follow normal rules for routing audio output.
+    #[doc(alias = "AVAudioSessionRouteSharingPolicyDefault")]
     #[default]
     Default = 0,
+
     /// Route output to the shared long-form audio output. A session whose primary use case is as a
     /// music or podcast player may use this value to play to the same output as the built-in Music (iOS),
     /// Podcasts, or iTunes (macOS) applications. Typically applications that use this policy will also
@@ -790,10 +795,14 @@ pub enum RouteSharingPolicy {
     /// must use -activateWithOptions:completionHandler: instead of -setActive:withOptions:error: in
     /// order to ensure that the user will be given the opportunity to pick an appropriate audio route
     /// in cases where the system is unable to automatically pick the route.
+    #[doc(alias = "AVAudioSessionRouteSharingPolicyLongFormAudio")]
     LongFormAudio = 1,
+
     /// Applications should not attempt to set this value directly. On iOS, this value will be set by
     /// the system in cases where route picker UI is used to direct video to a wireless route.
+    #[doc(alias = "AVAudioSessionRouteSharingPolicyIndependent")]
     Independent = 2,
+
     /// Route output to the shared long-form video output. A session whose primary use case is as a
     /// movie or other long-form video content player may use this value to play to the same output as
     /// other long-form video content applications such as the built-in TV (iOS) application. Applications
@@ -802,6 +811,7 @@ pub enum RouteSharingPolicy {
     /// route sharing policy will have their audio and video routed to the same location (e.g. AppleTV when
     /// an AirPlay route is selected). Video content not using this route sharing policy will remain local
     /// to the playback device even when long form video content is being routed to AirPlay.
+    #[doc(alias = "AVAudioSessionRouteSharingPolicyLongFormVideo")]
     LongFormVideo = 3,
 }
 
@@ -818,11 +828,16 @@ pub enum PromptStyle {
     /// by having prompts play at that time. For example if Siri is recognizing speech, having navigation or
     /// exercise prompts play, could interfere with its ability to accurately recognize the user’s speech.
     /// Client sessions should refrain from playing any prompts while the prompt style is None.
+    #[doc(alias = "AVAudioSessionPromptStyleNone")]
     None = u32::from_be_bytes(*b"none") as _,
+
     /// Indicates one of three states: Siri is active but not recording, voicemail playback is active, or
     /// voice call is active. Short, non-verbal versions of prompts should be used.
+    #[doc(alias = "AVAudioSessionPromptStyleShort")]
     Short = u32::from_be_bytes(*b"shrt") as _,
+
     /// Indicates that normal (long, verbal) versions of prompts may be used.
+    #[doc(alias = "AVAudioSessionPromptStyleNormal")]
     Normal = u32::from_be_bytes(*b"nrml") as _,
 }
 
@@ -830,19 +845,34 @@ pub enum PromptStyle {
 /// for use with built-in mic input data sources with
 /// a stereo polar pattern selected.
 #[doc(alias = "AVAudioStereoOrientation")]
+#[doc(alias = "AVAudioSession.StereoOrientation")]
 #[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum StereoOrientation {
-    /// Indicates that audio capture orientation is not applicable (on mono capture, for instance).
+    /// Indicates that audio capture orientation is not applicable
+    /// (on mono capture, for instance).
+    #[doc(alias = "AVAudioStereoOrientationNone")]
     #[default]
     None = 0,
-    /// Indicates that audio capture should be oriented vertically, Lightning connector on the bottom.
+
+    /// Indicates that audio capture should be oriented vertically,
+    /// Lightning connector on the bottom.
+    #[doc(alias = "AVAudioStereoOrientationPortrait")]
     Portrait = 1,
-    /// Indicates that audio capture should be oriented vertically, Lightning connector on the top.
+
+    /// Indicates that audio capture should be oriented vertically,
+    /// Lightning connector on the top.
+    #[doc(alias = "AVAudioStereoOrientationPortraitUpsideDown")]
     PortraitUpsideDown = 2,
-    /// Indicates that audio capture should be oriented horizontally, Lightning connector on the right.
+
+    /// Indicates that audio capture should be oriented horizontally,
+    /// Lightning connector on the right.
+    #[doc(alias = "AVAudioStereoOrientationLandscapeRight")]
     LandscapeRight = 3,
-    /// Indicates that audio capture should be oriented horizontally, Lightning connector on the left.
+
+    /// Indicates that audio capture should be oriented horizontally,
+    /// Lightning connector on the left.
+    #[doc(alias = "AVAudioStereoOrientationLandscapeLeft")]
     LandscapeLeft = 4,
 }
 
@@ -859,24 +889,31 @@ pub enum RecordPermission {
 }
 
 #[doc(alias = "AVAudioSessionRenderingMode")]
+#[doc(alias = "AVAudioSession.RenderingMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum RenderingMode {
     /// Default Mode when no asset is loaded or playing
+    #[doc(alias = "AVAudioSessionRenderingModeNotApplicable")]
     NotApplicable = 0,
 
     /// Default mode for non multi-channel cases
+    #[doc(alias = "AVAudioSessionRenderingModeMonoStereo")]
     MonoStereo = 1,
 
     /// Default mode for multi-channel cases that do not fall into the modes below
+    #[doc(alias = "AVAudioSessionRenderingModeSurround")]
     Surround = 2,
 
     /// Fallback mode if provided content is Dolby variant but hardware capabilities don't support it
+    #[doc(alias = "AVAudioSessionRenderingModeSpatialAudio")]
     SpatialAudio = 3,
 
     /// Dolby Audio mode
+    #[doc(alias = "AVAudioSessionRenderingModeDolbyAudio")]
     DolbyAudio = 4,
 
     /// Dolby Atmos mode
+    #[doc(alias = "AVAudioSessionRenderingModeDolbyAtmos")]
     DolbyAtmos = 5,
 }
