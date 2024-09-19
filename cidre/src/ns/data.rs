@@ -27,11 +27,27 @@ define_opts!(
 );
 
 impl WriteOpts {
+    /// Hint to use auxiliary file when saving
+    #[doc(alias = "NSDataWritingAtomic")]
     pub const ATOMIC: Self = Self(1 << 0);
+
+    /// Hint to prevent overwriting an existing file. Cannot be combined with ATOMIC.
+    #[doc(alias = "NSDataWritingWithoutOverwriting")]
+    pub const WITHOUT_OVERWRITING: Self = Self(1 << 1);
+
+    #[doc(alias = "NSDataWritingFileProtectionNone")]
     pub const FILE_PROTECTION_NONE: Self = Self(0x10000000);
+
+    #[doc(alias = "NSDataWritingFileProtectionComplete")]
     pub const FILE_PROTECTION_COMPLETE: Self = Self(0x20000000);
+
+    #[doc(alias = "NSDataWritingFileProtectionCompleteUnlessOpen")]
     pub const FILE_PROTECTION_COMPLETE_UNLESS_OPEN: Self = Self(0x30000000);
+
+    #[doc(alias = "NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication")]
     pub const FILE_PROTECTION_COMPLETE_UNTIL_FIRST_USER_AUTHENTICATION: Self = Self(0x40000000);
+
+    #[doc(alias = "NSDataWritingFileProtectionMask")]
     pub const FILE_PROTECTION_MASK: Self = Self(0xf0000000);
 }
 
@@ -41,7 +57,10 @@ define_opts!(
 );
 
 impl SearchOpts {
+    #[doc(alias = "NSDataSearchBackwards")]
     pub const BACKWARDS: Self = Self(1 << 0);
+
+    #[doc(alias = "NSDataSearchAnchored")]
     pub const ANCHORED: Self = Self(1 << 1);
 }
 
