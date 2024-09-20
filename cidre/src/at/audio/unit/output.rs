@@ -284,6 +284,8 @@ mod tests {
         },
         os,
     };
+    const BUS_IN: u32 = 1;
+    const BUS_OUT: u32 = 0;
 
     #[test]
     fn basics() {
@@ -292,20 +294,27 @@ mod tests {
         println!("input count {count:?}");
         let count = output.unit().element_count(au::Scope::OUTPUT);
         println!("output count {count:?}");
-        let format = output.input_stream_format(0).unwrap();
+        let format = output.input_stream_format(BUS_IN).unwrap();
         eprintln!("{format:?}");
-        let format = output.output_stream_format(1).unwrap();
+        let format = output.output_stream_format(BUS_OUT).unwrap();
         eprintln!("{format:?}");
 
         assert!(!output.is_running().unwrap());
         assert!(output.start_ts_at_zero().unwrap());
 
-        assert_eq!(output.is_io_enabled(au::Scope::INPUT, 1).unwrap(), false);
+        assert_eq!(
+            output.is_io_enabled(au::Scope::INPUT, BUS_IN).unwrap(),
+            false
+        );
         // An I/O unit’s bus 1 connects to input hardware, such as for recording from a microphone.
         // Input is disabled by default. To enable input, the bus 1 input scope must be enabled,
         // as follows:
-        output.set_io_enabled(au::Scope::INPUT, 1, true).unwrap();
-        output.set_io_enabled(au::Scope::OUTPUT, 0, false).unwrap();
+        output
+            .set_io_enabled(au::Scope::INPUT, BUS_IN, true)
+            .unwrap();
+        output
+            .set_io_enabled(au::Scope::OUTPUT, BUS_OUT, false)
+            .unwrap();
 
         extern "C-unwind" fn input_cb(
             _in_ref_con: *mut c_void,
@@ -340,12 +349,12 @@ mod tests {
 
     #[test]
     fn voice_processing() {
-        let mut output = au::Output::new_apple_vp().unwrap();
+        let output = au::Output::new_apple_vp().unwrap();
         let count = output.unit().element_count(au::Scope::INPUT);
         println!("input count {count:?}");
         let count = output.unit().element_count(au::Scope::OUTPUT);
         println!("output count {count:?}");
-        let format = output.input_stream_format(0).unwrap();
+        let format = output.input_stream_format(BUS_IN).unwrap();
         eprintln!("{format:?}");
         let mut output = output.allocate_resources().unwrap();
         output.start().unwrap();
