@@ -1,4 +1,4 @@
-use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cg, cm, define_cls, define_obj_type, dispatch, ns, objc};
 
 /// Constants indicating video orientation, for use with
 /// [`av::CaptureVideoPreviewLayer`] and [`av::CaptureConnection`].
@@ -115,6 +115,57 @@ impl Session {
 
     #[objc::msg_send(removeConnection:)]
     pub fn remove_connection(&mut self, connection: &av::CaptureConnection);
+
+    /// Indicates whether session controls are supported on this platform.
+    #[objc::msg_send(supportsControls)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn supports_controls(&self) -> bool;
+
+    /// Specifies the maximum number of controls that can be added to a session.
+    #[objc::msg_send(maxControlsCount)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn max_controls_count(&self) -> isize;
+
+    #[objc::msg_send(controlsDelegate)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn controls_delegate(&self) -> Option<arc::R<AnyControlsDelegate>>;
+
+    #[objc::msg_send(setControlsDelegate:queue:)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn set_controls_delegate<D: ControlsDelegate>(
+        &mut self,
+        val: Option<&D>,
+        queue: Option<&dispatch::Queue>,
+    );
+
+    #[objc::msg_send(controlsDelegateCallbackQueue)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn controls_delegate_cb_queue(&self) -> Option<arc::R<dispatch::Queue>>;
+
+    #[objc::msg_send(controls)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn controls(&self) -> arc::R<ns::Array<av::CaptureControl>>;
+
+    /// Returns whether the proposed control can be added to the session.
+    #[objc::msg_send(canAddControl:)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn can_add_control(&self, val: &av::CaptureControl) -> bool;
+
+    #[objc::msg_send(addControl:)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub unsafe fn add_control_throws(&mut self, val: &av::CaptureControl);
+
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn add_control<'ear>(
+        &mut self,
+        val: &av::CaptureControl,
+    ) -> Result<(), &'ear ns::Exception> {
+        ns::try_catch(|| unsafe { self.add_control_throws(val) })
+    }
+
+    #[objc::msg_send(removeControl:)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn remove_control(&mut self, val: &av::CaptureControl);
 
     #[objc::msg_send(beginConfiguration)]
     pub fn begin_cfg(&mut self);
@@ -237,6 +288,42 @@ extern "C" {
     static AV_CAPTURE_MULTI_CAM_SESSION: &'static objc::Class<MultiCamSession>;
     static AV_CAPTURE_CONNECTION: &'static objc::Class<Connection>;
 }
+
+#[objc::obj_trait]
+pub trait ControlsDelegate: objc::Obj {
+    /// Called when the controls of an `av::CaptureSession` instance become active and are
+    /// available for interaction.
+    ///
+    /// Delegates receive this message when the controls of an `av::CaptureSession` instance become active and are available for interaction.
+    #[objc::msg_send(sessionControlsDidBecomeActive:)]
+    fn session_controls_did_become_active(&mut self, session: &mut av::CaptureSession);
+
+    /// Called when the controls of an `av::CaptureSession` instance will enter a fullscreen
+    /// appearance.
+    ///
+    /// When the controls enter a fullscreen appearance, applications are encouraged to hide portions of their user interface including zoom or
+    /// exposure sliders and shutter buttons. Few on-screen elements should be visible so users can focus on the controls they are interacting with and view the camera preview unobstructed.
+    #[objc::msg_send(sessionControlsWillEnterFullscreenAppearance:)]
+    fn session_controls_will_enter_fullscreen_appearance(
+        &mut self,
+        session: &mut av::CaptureSession,
+    );
+
+    /// Called when the controls of an `av::CaptureSession` instance will exit a fullscreen
+    /// appearance.
+    #[objc::msg_send(sessionControlsWillExitFullscreenAppearance:)]
+    fn session_controls_will_exit_fullscreen_appearance(
+        &mut self,
+        session: &mut av::CaptureSession,
+    );
+
+    #[objc::msg_send(sessionControlsDidBecomeInactive:)]
+    fn session_controls_did_become_inactive(&mut self, session: &mut av::CaptureSession);
+}
+
+define_obj_type!(pub AnyControlsDelegate(ns::Id));
+
+impl ControlsDelegate for AnyControlsDelegate {}
 
 define_obj_type!(
     /// A subclass of [`av::CaptureSession`] which supports simultaneous capture from

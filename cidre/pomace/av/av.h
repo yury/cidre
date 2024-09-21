@@ -63,6 +63,11 @@ Class AV_SPEECH_UTTERANCE;
 
 Class AV_AUDIO_APPLICATION;
 
+Class AV_CAPTURE_SYSTEM_ZOOM_SLIDER;
+Class AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER;
+Class AV_CAPTURE_SLIDER;
+Class AV_CAPTURE_INDEX_PICKER;
+
 __attribute__((constructor))
 static void av_initializer(void)
 {
@@ -171,6 +176,11 @@ static void av_initializer(void)
         AV_SPEECH_SYNTHESIS_VOICE = [AVSpeechSynthesisVoice class];
         AV_SPEECH_SYNTHESIZER = [AVSpeechSynthesizer class];
         AV_SPEECH_UTTERANCE = [AVSpeechUtterance class];
+        
+        AV_CAPTURE_SYSTEM_ZOOM_SLIDER = NSClassFromString(@"AVCaptureSystemZoomSlider");
+        AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER =  NSClassFromString(@"AVCaptureSystemExposureBiasSlider");
+        AV_CAPTURE_SLIDER = NSClassFromString(@"AVCaptureSlider");
+        AV_CAPTURE_INDEX_PICKER = NSClassFromString(@"AVCaptureIndexPicker");
 
     }
 }

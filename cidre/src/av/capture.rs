@@ -1,3 +1,17 @@
+mod control;
+pub use control::Control;
+
+mod system_zoom_slider;
+pub use system_zoom_slider::SysZoomSlider;
+
+mod system_exposure_bias_slider;
+pub use system_exposure_bias_slider::SysExposureBiasSlider;
+
+mod slider;
+pub use slider::Slider;
+
+mod index_picker;
+
 pub mod device;
 pub use device::AuthorizationStatus;
 pub use device::AutoFocusRangeRestriction;
@@ -44,6 +58,8 @@ pub use session::err_key as session_err_key;
 pub use session::notifications as session_notifications;
 pub use session::AudioChannel;
 pub use session::Connection;
+pub use session::ControlsDelegate;
+pub use session::ControlsDelegateImpl;
 #[cfg(not(any(target_os = "macos", target_os = "watchos")))]
 pub use session::InterruptionReason;
 pub use session::MultiCamSession;
