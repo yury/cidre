@@ -32,6 +32,7 @@ pub use capture::DiscoverySession as CaptureDeviceDiscoverySession;
 pub use capture::ExposureMode as CaptureExposureMode;
 pub use capture::FocusMode as CaptureFocusMode;
 pub use capture::FrameRateRange;
+pub use capture::IndexPicker as CaptureIndexPicker;
 pub use capture::Input as CaptureInput;
 pub use capture::InputPort as CaptureInputPort;
 #[cfg(not(any(target_os = "macos", target_os = "watchos")))]

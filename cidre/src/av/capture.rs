@@ -11,6 +11,7 @@ mod slider;
 pub use slider::Slider;
 
 mod index_picker;
+pub use index_picker::IndexPicker;
 
 pub mod device;
 pub use device::AuthorizationStatus;
