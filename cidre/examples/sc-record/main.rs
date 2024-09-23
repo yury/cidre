@@ -11,8 +11,11 @@ use cidre::{
     arc, at,
     cat::{AudioFormat, AudioFormatFlags},
     cf, cm, define_obj_type, dispatch, ns, objc, os,
-    sc::{self, stream::Output, stream::OutputImpl},
-    vt::{self, compression_properties::keys, EncodeInfoFlags},
+    sc::{
+        self,
+        stream::{Output, OutputImpl},
+    },
+    vt::{self, compression::profile_level, compression_properties::keys, EncodeInfoFlags},
 };
 
 #[repr(C)]
@@ -206,7 +209,7 @@ impl AudioQueue {
     }
 }
 
-extern "C" fn convert_audio(
+extern "C-unwind" fn convert_audio(
     _converter: &at::AudioConverter,
     _io_number_data_packets: &mut u32,
     io_data: &mut at::audio::BufList,
@@ -339,14 +342,11 @@ async fn main() {
     props.insert(keys::data_rate_limits(), &rate_limit);
     props.insert(keys::avarage_bit_rate(), &expected_bitrate);
     //props.insert(keys::constant_bit_rate(), &expected_bitrate);
-    // props.insert(
-    //     keys::profile_level(),
-    //     profile_level::hevc::main_auto_level(),
-    // );
+    props.insert(keys::profile_lvl(), profile_level::hevc::main_auto_lvl());
     // props.insert(keys::allow_open_gop(), bool_false);
     // props.insert(keys::h264_entropy_mode(), h264_entropy_mode::cabac());
     props.insert(keys::expected_frame_rate(), &expected_fr);
-    props.insert(keys::max_frame_delay_count(), &frame_delay_count);
+    // props.insert(keys::max_frame_delay_count(), &frame_delay_count);
 
     session.set_props(&props).unwrap();
     session.prepare().unwrap();
