@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn basics() {
         if api::version!(macos = 15.0) {
-            let mut desc = mtl::ResidencySetDesc::new();
+            let mut desc = mtl::ResidencySetDesc::new().unwrap();
             assert_eq!(0, desc.initial_capacity());
             desc.set_initial_capacity(10);
             assert_eq!(10, desc.initial_capacity());
