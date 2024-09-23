@@ -48,7 +48,7 @@ impl App {
     ) -> bool;
 
     #[inline]
-    pub fn set_input_muted<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Error> {
+    pub fn set_input_muted<'ear>(&mut self, val: bool) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.set_input_muted_err(val, err) })
     }
 

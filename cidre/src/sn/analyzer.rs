@@ -67,7 +67,7 @@ impl arc::A<AudioFileAnalyzer> {
 pub type FileCompletionHandler = blocks::Block<fn(bool), blocks::Send>;
 
 impl AudioFileAnalyzer {
-    pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
+    pub fn with_url(url: &ns::Url) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
     }
 

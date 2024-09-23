@@ -79,7 +79,7 @@ impl IndexPicker {
     pub unsafe fn set_selected_index_throws(&mut self, val: isize);
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn set_selected_index<'ear>(&mut self, val: isize) -> Result<(), &'ear ns::Exception> {
+    pub fn set_selected_index<'ear>(&mut self, val: isize) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_selected_index_throws(val) })
     }
 

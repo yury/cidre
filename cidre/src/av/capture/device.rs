@@ -206,7 +206,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_torch_mode_throws(val)
     }
 
-    pub fn set_torch_mode<'ear>(&mut self, val: TorchMode) -> Result<(), &'ear ns::Exception> {
+    pub fn set_torch_mode<'ear>(&mut self, val: TorchMode) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_torch_mode_throws(val) })
     }
 
@@ -219,10 +219,7 @@ impl<'a> ConfigLockGuard<'a> {
             .set_torch_mode_on_with_level_err(torch_level, error)
     }
 
-    pub fn set_torch_mode_on_with_level<'ear>(
-        &mut self,
-        torch_level: f32,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_torch_mode_on_with_level(&mut self, torch_level: f32) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_torch_mode_on_with_level_err(torch_level, err) })
     }
 }
@@ -313,7 +310,7 @@ impl Device {
 }
 
 impl<'a> ConfigLockGuard<'a> {
-    pub fn set_video_hdr_enabled<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Exception> {
+    pub fn set_video_hdr_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.device.set_video_hdr_enabled_throws(val) })
     }
 }
@@ -529,10 +526,7 @@ impl<'a> ConfigLockGuard<'a> {
         unsafe { self.device.set_active_video_max_frame_duration(val) }
     }
 
-    pub fn set_center_stage_rect_of_interest<'ar>(
-        &mut self,
-        val: cg::Rect,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_center_stage_rect_of_interest<'ear>(&mut self, val: cg::Rect) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(val) })
     }
 
@@ -545,7 +539,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_focus_mode_throws(mode)
     }
 
-    pub fn set_focus_mode<'ar>(&mut self, mode: FocusMode) -> Result<(), &'ar ns::Exception> {
+    pub fn set_focus_mode<'ear>(&mut self, mode: FocusMode) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_focus_mode_throws(mode) })
     }
 
@@ -562,10 +556,7 @@ impl<'a> ConfigLockGuard<'a> {
     /// Clients can observe automatic changes to the receiver's 'focusPointOfInterest' by key value observing this property.
     /// Note that setting focusPointOfInterest alone does not initiate a focus operation. After setting
     /// 'set_focus_point_of_interest', call 'set_focus_mode()' to apply the new point of interest.
-    pub fn set_focus_point_of_interest<'ar>(
-        &mut self,
-        val: cg::Point,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_focus_point_of_interest<'ear>(&mut self, val: cg::Point) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_focus_point_of_interest_throws(val) })
     }
 
@@ -579,10 +570,10 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_auto_focus_range_restriction<'ar>(
+    pub fn set_auto_focus_range_restriction<'ear>(
         &mut self,
         val: AutoFocusRangeRestriction,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_auto_focus_range_restriction_throws(val) })
     }
 
@@ -593,10 +584,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_smooth_auto_focus_enabled<'ar>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_smooth_auto_focus_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_smooth_auto_focus_enabled_throws(val) })
     }
 
@@ -611,10 +599,10 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_automatically_adjusts_face_driven_auto_focus_enabled<'ar>(
+    pub fn set_automatically_adjusts_face_driven_auto_focus_enabled<'ear>(
         &mut self,
         val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_automatically_adjusts_face_driven_auto_focus_enabled_throws(val)
         })
@@ -627,10 +615,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_face_driven_auto_focus_enabled<'ar>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_face_driven_auto_focus_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_face_driven_auto_focus_enabled_throws(val) })
     }
 
@@ -641,10 +626,10 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_focus_mode_locked_with_lens_pos_no_ch<'ar>(
+    pub fn set_focus_mode_locked_with_lens_pos_no_ch<'ear>(
         &mut self,
         val: f32,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_focus_mode_locked_with_lens_pos_no_ch_throws(val) })
     }
 
@@ -665,7 +650,7 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: f32,
         block: &mut blocks::EscBlock<fn(cm::Time)>,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.device
                 .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
@@ -1005,10 +990,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_exposure_mode_throws(val)
     }
 
-    pub fn set_exposure_mode<'ear>(
-        &mut self,
-        val: ExposureMode,
-    ) -> Result<(), &'ear ns::Exception> {
+    pub fn set_exposure_mode<'ear>(&mut self, val: ExposureMode) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_exposure_mode_throws(val) })
     }
 
@@ -1016,10 +998,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_exposure_point_of_interest_throws(val)
     }
 
-    pub fn set_exposure_point_of_interest<'ear>(
-        &mut self,
-        val: cg::Point,
-    ) -> Result<(), &'ear ns::Exception> {
+    pub fn set_exposure_point_of_interest<'ear>(&mut self, val: cg::Point) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_exposure_point_of_interest_throws(val) })
     }
 
@@ -1036,7 +1015,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub fn set_automatically_adjusts_face_driven_auto_exposure_enabled<'ear>(
         &mut self,
         val: bool,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(val)
         })
@@ -1049,10 +1028,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_face_driven_auto_exposure_enabled<'ear>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ear ns::Exception> {
+    pub fn set_face_driven_auto_exposure_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_face_driven_auto_exposure_enabled_throws(val) })
     }
 
@@ -1062,10 +1038,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_active_max_exposure_duration<'ar>(
-        &mut self,
-        val: cm::Time,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_active_max_exposure_duration<'ear>(&mut self, val: cm::Time) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(val) })
     }
 
@@ -1080,11 +1053,11 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_no_ch<'ar>(
+    pub fn set_exposure_mode_custom_with_duration_and_iso_no_ch<'ear>(
         &mut self,
         duration: cm::Time,
         iso: f32,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_exposure_mode_custom_with_duration_and_iso_no_ch_throws(duration, iso)
         })
@@ -1104,12 +1077,12 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_mode_custom_with_duration_and_iso_with_ch<'ar>(
+    pub fn set_exposure_mode_custom_with_duration_and_iso_with_ch<'ear>(
         &mut self,
         duration: cm::Time,
         iso: f32,
         block: &mut blocks::EscBlock<fn(cm::Time)>,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| {
             self.device
                 .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, Some(block))
@@ -1171,11 +1144,11 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_with_ch<'ar>(
+    pub fn set_exposure_target_bias_with_ch<'ear>(
         &mut self,
         bias: f32,
         block: &mut blocks::EscBlock<fn(cm::Time)>,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.device
                 .set_exposure_target_bias_throws(bias, Some(block))
@@ -1183,10 +1156,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_exposure_target_bias_no_ch<'ar>(
-        &mut self,
-        bias: f32,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_exposure_target_bias_no_ch<'ear>(&mut self, bias: f32) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.device.set_exposure_target_bias_throws(bias, None) })
     }
 
@@ -1235,10 +1205,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_global_tone_mapping_enabled<'ar>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_global_tone_mapping_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_global_tone_mapping_enabled_throws(val) })
     }
 }
@@ -1342,7 +1309,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_wb_mode_throws(val)
     }
 
-    pub fn set_wb_mode<'ar>(&mut self, val: WbMode) -> Result<(), &'ar ns::Exception> {
+    pub fn set_wb_mode<'ear>(&mut self, val: WbMode) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_wb_mode_throws(val) })
     }
 
@@ -1365,21 +1332,21 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(feature = "blocks")]
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ar>(
+    pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ear>(
         &mut self,
         gains: WbGains,
         block: &mut blocks::EscBlock<fn(cm::Time)>,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block)
         })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
-    pub fn set_wb_mode_locked_with_device_wb_gains_no_ch<'ar>(
+    pub fn set_wb_mode_locked_with_device_wb_gains_no_ch<'ear>(
         &mut self,
         gains: WbGains,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_wb_mode_locked_with_device_wb_gains_no_ch_throws(gains)
         })
@@ -1460,10 +1427,7 @@ impl<'a> ConfigLockGuard<'a> {
         self.device.set_low_light_boost_enabled_throws(val)
     }
 
-    pub fn set_low_light_boost_enabled<'ar>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    pub fn set_low_light_boost_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_low_light_boost_enabled_throws(val) })
     }
 
@@ -1475,10 +1439,10 @@ impl<'a> ConfigLockGuard<'a> {
             .set_automatically_enables_low_light_boost_when_available_throws(val)
     }
 
-    pub fn set_automatically_enables_low_light_boost_when_available<'ar>(
+    pub fn set_automatically_enables_low_light_boost_when_available<'ear>(
         &mut self,
         val: bool,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_automatically_enables_low_light_boost_when_available_throws(val)
         })
@@ -1711,10 +1675,10 @@ impl Device {
     }
 
     #[cfg(feature = "blocks")]
-    pub fn request_access_for_media_type_ch<'ar>(
+    pub fn request_access_for_media_type_ch<'ear>(
         media_type: &av::MediaType,
         block: &mut blocks::SendBlock<fn(bool)>,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             Self::request_access_for_media_type_ch_throws(media_type, block)
         })

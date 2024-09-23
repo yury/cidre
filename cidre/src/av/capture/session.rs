@@ -67,10 +67,7 @@ impl Session {
     #[objc::msg_send(setSessionPreset:)]
     pub unsafe fn set_session_preset_throws(&self, val: &av::CaptureSessionPreset);
 
-    pub fn set_session_preset<'ear>(
-        &self,
-        val: &av::CaptureSessionPreset,
-    ) -> Result<(), &'ear ns::Exception> {
+    pub fn set_session_preset<'ear>(&self, val: &av::CaptureSessionPreset) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_session_preset_throws(val) })
     }
 
@@ -156,10 +153,7 @@ impl Session {
     pub unsafe fn add_control_throws(&mut self, val: &av::CaptureControl);
 
     #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn add_control<'ear>(
-        &mut self,
-        val: &av::CaptureControl,
-    ) -> Result<(), &'ear ns::Exception> {
+    pub fn add_control<'ear>(&mut self, val: &av::CaptureControl) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.add_control_throws(val) })
     }
 
@@ -467,10 +461,7 @@ impl Connection {
     #[objc::msg_send(setVideoRotationAngle:)]
     pub unsafe fn set_video_rotation_angle_throws(&mut self, val: cg::Float);
 
-    pub fn set_video_rotation_angle<'ear>(
-        &mut self,
-        val: cg::Float,
-    ) -> Result<(), &'ear ns::Exception> {
+    pub fn set_video_rotation_angle<'ear>(&mut self, val: cg::Float) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_video_rotation_angle_throws(val) })
     }
 
