@@ -31,7 +31,13 @@ pub fn class_from_ns_string<T: Obj>(name: &ns::String) -> Option<&'static ns::ob
 #[doc(alias = "NSProtocolFromString")]
 #[inline]
 pub fn protocol_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::Protocol> {
-    unsafe { std::mem::transmute(NSProtocolFromString(name)) }
+    unsafe { NSProtocolFromString(name) }
+}
+
+#[doc(alias = "NSStringFromProtocol")]
+#[inline]
+pub fn string_from_protocol(proto: &ns::objc::Protocol) -> arc::R<ns::String> {
+    unsafe { NSStringFromProtocol(proto) }
 }
 
 #[link(name = "Foundation", kind = "framework")]
@@ -42,6 +48,7 @@ extern "C-unwind" {
     fn NSStringFromClass(cls: *const c_void) -> arc::R<ns::String>;
     fn NSClassFromString(name: &ns::String) -> *const c_void;
     fn NSProtocolFromString(name: &ns::String) -> Option<&'static ns::objc::Protocol>;
+    fn NSStringFromProtocol(proto: &ns::objc::Protocol) -> arc::R<ns::String>;
 }
 
 #[cfg(target_arch = "aarch64")]
