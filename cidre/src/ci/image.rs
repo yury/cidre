@@ -515,6 +515,7 @@ mod tests {
         }
     }
 
+    #[cfg(not(feature = "macos_15_0"))]
     #[test]
     fn versioning() {
         let black = ci::Image::black();

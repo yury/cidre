@@ -546,6 +546,7 @@ mod test {
         vals.show();
     }
 
+    #[cfg(not(feature = "macos_15_0"))]
     #[test]
     fn versioning() {
         if api::version!(macos = 15.0) {

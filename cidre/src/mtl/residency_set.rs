@@ -103,18 +103,17 @@ impl ResidencySet {
 mod tests {
     use crate::{api, mtl};
 
+    #[cfg(not(feature = "macos_15_0"))]
     #[test]
     fn basics() {
         if api::version!(macos = 15.0) {
-            let mut desc = mtl::ResidencySetDesc::new().unwrap();
+            let mut desc = mtl::ResidencySetDesc::new();
             assert_eq!(0, desc.initial_capacity());
             desc.set_initial_capacity(10);
             assert_eq!(10, desc.initial_capacity());
             let device = mtl::Device::sys_default().unwrap();
             let set = unsafe { device.new_residency_set(&desc).unwrap() };
             assert_eq!(0, set.allocation_count());
-        } else {
-            assert!(mtl::ResidencySetDesc::new().is_none());
         }
     }
 }

@@ -61,12 +61,12 @@ full = [
   "xpc",
   "vdsp",
 
-  "macos_14_0",
-  "ios_17_0",
-  "tvos_17_0",
-  "maccatalyst_17_0",
-  "watchos_10_0",
-  "visionos_1_0",
+  "macos_15_0",
+  "ios_18_0",
+  "tvos_18_0",
+  "maccatalyst_18_0",
+  "watchos_11_0",
+  "visionos_2_0",
 ]
 
 # Turn on private API

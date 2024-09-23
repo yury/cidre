@@ -254,6 +254,7 @@ extern "C-unwind" {
     ) -> Option<&'static Class<Id>>;
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
+    pub fn objc_getProtocol(name: *const u8) -> Option<&'static Protocol>;
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
     fn objc_exception_throw(exception: &Id) -> !;
 }
