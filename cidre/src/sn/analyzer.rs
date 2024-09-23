@@ -28,11 +28,11 @@ impl AudioStreamAnalyzer {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn add_request_with_observer<'ear, O: sn::ResultsObserving>(
+    pub fn add_request_with_observer<O: sn::ResultsObserving>(
         &mut self,
         request: &sn::Request,
         observer: &O,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe { self.add_request_with_observer_err(request, observer, err) })
     }
 
@@ -83,7 +83,7 @@ impl AudioFileAnalyzer {
         &mut self,
         request: &sn::Request,
         observer: &O,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.add_request_with_observer_err(request, observer, err) })
     }
 

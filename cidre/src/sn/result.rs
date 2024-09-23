@@ -1,6 +1,9 @@
 use crate::{define_obj_type, ns, objc, sn};
 
-define_obj_type!(pub Result(ns::Id));
+define_obj_type!(
+    #[doc(alias = "SNResult")]
+    pub Result(ns::Id)
+);
 
 #[objc::obj_trait]
 pub trait ResultsObserving: objc::Obj {

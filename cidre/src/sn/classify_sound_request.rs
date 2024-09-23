@@ -17,11 +17,11 @@ impl arc::A<ClassifySoundRequest> {
 impl ClassifySoundRequest {
     define_cls!(SN_CLASSIFY_SOUND_REQUEST);
 
-    pub fn with_classifier_id<'ear>(id: &sn::Id) -> Result<arc::R<Self>, &'ear ns::Error> {
+    pub fn with_classifier_id(id: &sn::Id) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_classifier_id_err(id, err) })
     }
 
-    pub fn v1<'ear>() -> Result<arc::R<Self>, &'ear ns::Error> {
+    pub fn v1<'ear>() -> ns::Result<'ear, arc::R<Self>> {
         Self::with_classifier_id(sn::Id::v1())
     }
 
@@ -56,6 +56,8 @@ mod tests {
     #[test]
     fn basics() {
         let classify_request = sn::ClassifySoundRequest::with_classifier_id(sn::Id::v1()).unwrap();
+        assert!(!classify_request.known_classifications().is_empty());
+        let classify_request = sn::ClassifySoundRequest::v1().unwrap();
         assert!(!classify_request.known_classifications().is_empty());
         // 303 ....
     }
