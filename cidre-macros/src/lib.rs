@@ -957,6 +957,12 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
                                                 attr.next();
                                                 continue;
                                             }
+                                            // objc::available
+                                            "objc" => {
+                                                attr.next();
+                                                attr.next();
+                                                continue;
+                                            }
                                             // direct available
                                             "available" => {
                                                 if let Some(TokenTree::Group(g)) = attr.next() {
@@ -1001,7 +1007,6 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
         })
         .collect::<Vec<_>>()
         .join("\n");
-    // println!("vars : {vars}");
     let stream = TokenStream::from_str(&vars).unwrap();
     original_body.extend(stream);
     original_body

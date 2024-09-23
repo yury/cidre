@@ -69,7 +69,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     converter.set_input_stream_format(&src_asbd).unwrap();
     converter.set_output_stream_format(&dst_asbd).unwrap();
 
-    extern "C" fn render(
+    extern "C-unwind" fn render(
         _in_ref_con: *mut c_void,
         _io_action_flags: &mut au::RenderActionFlags,
         _in_timestamp: &at::AudioTimeStamp,

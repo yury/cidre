@@ -31,22 +31,22 @@ impl Session {
         compressed_data_allocator: Option<&cf::Allocator>,
         output_callback: Option<OutputCallback<T>>,
         output_callback_ref_con: *mut T,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut session = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            Self::create_in(
-                width as _,
-                height as _,
-                codec,
-                encoder_specification,
-                source_image_buffer_attributes,
-                compressed_data_allocator,
-                transmute(output_callback),
-                transmute(output_callback_ref_con),
-                &mut session,
-                None,
-            )
-            .to_result_unchecked(session)
+            os::result_unchecked(|res| {
+                Self::create_in(
+                    width as _,
+                    height as _,
+                    codec,
+                    encoder_specification,
+                    source_image_buffer_attributes,
+                    compressed_data_allocator,
+                    transmute(output_callback),
+                    transmute(output_callback_ref_con),
+                    res,
+                    None,
+                )
+            })
         }
     }
 
@@ -63,7 +63,7 @@ impl Session {
         output_callback_ref_con: *mut c_void,
         compression_session_out: *mut Option<arc::R<Session>>,
         allocator: Option<&cf::Allocator>,
-    ) -> os::Status {
+    ) -> os::Result {
         VTCompressionSessionCreate(
             allocator,
             width,
@@ -76,6 +76,7 @@ impl Session {
             output_callback_ref_con,
             compression_session_out,
         )
+        .result()
     }
 
     #[doc(alias = "VTCompressionSessionInvalidate")]
@@ -86,16 +87,16 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
-    pub fn prepare(&mut self) -> Result<(), os::Status> {
-        unsafe { self.prepare_to_encode_frames().result() }
+    pub fn prepare(&mut self) -> os::Result {
+        unsafe { self.prepare_to_encode_frames() }
     }
 
     /// #Safety
     /// use `prepare`
     #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
-    pub unsafe fn prepare_to_encode_frames(&mut self) -> os::Status {
-        VTCompressionSessionPrepareToEncodeFrames(self)
+    pub unsafe fn prepare_to_encode_frames(&mut self) -> os::Result {
+        VTCompressionSessionPrepareToEncodeFrames(self).result()
     }
 
     /// Encoded frames may or may not be output before the function returns.
@@ -114,7 +115,7 @@ impl Session {
         frame_properties: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
         source_frame_ref_con: *mut c_void,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
-    ) -> os::Status {
+    ) -> os::Result {
         unsafe {
             VTCompressionSessionEncodeFrame(
                 self,
@@ -125,6 +126,7 @@ impl Session {
                 source_frame_ref_con,
                 info_flags_out,
             )
+            .result()
         }
     }
 
@@ -136,17 +138,18 @@ impl Session {
         pts: cm::Time,
         duration: cm::Time,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
-            self.encode_frame(
-                image_buffer,
-                pts,
-                duration,
-                None,
-                std::ptr::null_mut(),
-                info_flags_out,
-            )
-            .to_result_unchecked(Some(()))
+            os::result_unchecked(|_res| {
+                self.encode_frame(
+                    image_buffer,
+                    pts,
+                    duration,
+                    None,
+                    std::ptr::null_mut(),
+                    info_flags_out,
+                )
+            })
         }
     }
 
@@ -161,7 +164,7 @@ impl Session {
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: &'static mut OutputHandler,
-    ) -> os::Status {
+    ) -> os::Result {
         unsafe {
             VTCompressionSessionEncodeFrameWithOutputHandler(
                 self,
@@ -172,6 +175,7 @@ impl Session {
                 info_flags_out,
                 block,
             )
+            .result()
         }
     }
 
@@ -186,7 +190,7 @@ impl Session {
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: &mut OutputHandler,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             VTCompressionSessionEncodeFrameWithOutputHandler(
                 self,
@@ -211,7 +215,7 @@ impl Session {
         frame_properties: Option<&cf::Dictionary>,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
         block: impl FnMut(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>) + Send + 'static,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let mut block = OutputHandler::new3(block);
         self.enc_frame_with_output_handler_block(
             image_buffer,
@@ -231,20 +235,20 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete_frames(&self, complete_until_pts: cm::Time) -> os::Status {
-        unsafe { VTCompressionSessionCompleteFrames(self, complete_until_pts) }
+    pub fn complete_frames(&self, complete_until_pts: cm::Time) -> os::Result {
+        unsafe { VTCompressionSessionCompleteFrames(self, complete_until_pts).result() }
     }
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete_until_pts(&self, complete_until_pts: cm::Time) -> Result<(), os::Status> {
-        self.complete_frames(complete_until_pts).result()
+    pub fn complete_until_pts(&self, complete_until_pts: cm::Time) -> os::Result {
+        self.complete_frames(complete_until_pts)
     }
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete_all(&self) -> Result<(), os::Status> {
-        self.complete_frames(cm::Time::invalid()).result()
+    pub fn complete_all(&self) -> os::Result {
+        self.complete_frames(cm::Time::invalid())
     }
 
     /// Indicates whether the current system supports stereo MV-HEVC encode.

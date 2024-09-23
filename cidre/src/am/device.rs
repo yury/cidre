@@ -61,11 +61,7 @@ impl Device {
         unsafe { AMDeviceValidatePairing(self).result() }
     }
 
-    pub fn secure_install_app(
-        &self,
-        url: &cf::Url,
-        options: &cf::Dictionary,
-    ) -> Result<(), os::Status> {
+    pub fn secure_install_app(&self, url: &cf::Url, options: &cf::Dictionary) -> os::Result {
         unsafe {
             AMDeviceSecureInstallApplication(
                 0,
@@ -80,11 +76,7 @@ impl Device {
     }
 
     #[inline]
-    pub fn secure_transfer_path(
-        &self,
-        url: &cf::Url,
-        options: &cf::Dictionary,
-    ) -> Result<(), os::Status> {
+    pub fn secure_transfer_path(&self, url: &cf::Url, options: &cf::Dictionary) -> os::Result {
         unsafe {
             AMDeviceSecureTransferPath(0, self, url, options, std::ptr::null(), std::ptr::null())
                 .result()

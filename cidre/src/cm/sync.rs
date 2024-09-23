@@ -51,13 +51,14 @@ impl Clock {
     }
 
     /// Use `audio_clock`
+    #[cfg(not(target_os = "macos"))]
     #[doc(alias = "CMAudioClockCreate")]
     #[inline]
     pub unsafe fn audio_clock_create_in(
         allocator: Option<&cf::Allocator>,
         clock_out: *mut Option<arc::R<Clock>>,
-    ) -> os::Status {
-        CMAudioClockCreate(allocator, clock_out)
+    ) -> os::Result {
+        CMAudioClockCreate(allocator, clock_out).result()
     }
 
     /// Creates a clock that advances at the same rate as audio output.
@@ -67,13 +68,10 @@ impl Clock {
     /// until audio output starts up again.
     /// This clock is suitable for use as av::Player.master_clock when synchronizing video-only playback
     /// with audio played through other APIs or objects.
+    #[cfg(not(target_os = "macos"))]
     #[inline]
-    pub fn audio_clock() -> Result<arc::R<Clock>, os::Status> {
-        let mut clock_out = None;
-        unsafe {
-            let res = Self::audio_clock_create_in(None, &mut clock_out);
-            res.to_result_unchecked(clock_out)
-        }
+    pub fn audio_clock() -> os::Result<arc::R<Clock>> {
+        unsafe { os::result_unchecked(|res| Self::audio_clock_create_in(None, res)) }
     }
 
     #[doc(alias = "CMClockGetTime")]
@@ -107,7 +105,7 @@ impl Clock {
         &self,
         clock_time_out: &mut cm::Time,
         ref_clock_time_out: &mut cm::Time,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe { CMClockGetAnchorTime(self, clock_time_out, ref_clock_time_out).result() }
     }
 
@@ -132,61 +130,62 @@ impl Clock {
 
 /// cm::Clock error codes
 pub mod clock_err {
-    use crate::os;
+    use crate::os::Error;
 
     #[doc(alias = "kCMClockError_MissingRequiredParameter")]
-    pub const MISSING_REQUIRED_PARAMETER: os::Status = os::Status(-12745);
+    pub const MISSING_REQUIRED_PARAMETER: Error = Error::new_unchecked(-12745);
 
     #[doc(alias = "kCMClockError_InvalidParameter")]
-    pub const INVALID_PARAMETER: os::Status = os::Status(-12746);
+    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12746);
 
     #[doc(alias = "kCMClockError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: os::Status = os::Status(-12747);
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12747);
 
     #[doc(alias = "kCMClockError_UnsupportedOperation")]
-    pub const UNSUPPORTED_OPERATION: os::Status = os::Status(-12756);
+    pub const UNSUPPORTED_OPERATION: Error = Error::new_unchecked(-12756);
 }
 
 /// cm::Timebase error codes
 pub mod timebase_err {
-    use crate::os;
+    use crate::os::Error;
 
     #[doc(alias = "kCMTimebaseError_MissingRequiredParameter")]
-    pub const MISSING_REQUIRED_PARAMETER: os::Status = os::Status(-12748);
+    pub const MISSING_REQUIRED_PARAMETER: Error = Error::new_unchecked(-12748);
 
     #[doc(alias = "kCMTimebaseError_InvalidParameter")]
-    pub const INVALID_PARAMETER: os::Status = os::Status(-12749);
+    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12749);
 
     #[doc(alias = "kCMTimebaseError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: os::Status = os::Status(-12750);
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12750);
 
     #[doc(alias = "kCMTimebaseError_TimerIntervalTooShort")]
-    pub const TIMER_INTERVAL_TOO_SHORT: os::Status = os::Status(-12751);
+    pub const TIMER_INTERVAL_TOO_SHORT: Error = Error::new_unchecked(-12751);
 
     #[doc(alias = "kCMTimebaseError_ReadOnly")]
-    pub const READ_ONLY: os::Status = os::Status(-12757);
+    pub const READ_ONLY: Error = Error::new_unchecked(-12757);
 }
 
 pub mod sync_err {
-    use crate::os;
+    use crate::os::Error;
 
     #[doc(alias = "kCMSyncError_MissingRequiredParameter")]
-    pub const MISSING_REQUIRED_PARAMETER: os::Status = os::Status(-12752);
+    pub const MISSING_REQUIRED_PARAMETER: Error = Error::new_unchecked(-12752);
 
     #[doc(alias = "kCMSyncError_InvalidParameter")]
-    pub const INVALID_PARAMETER: os::Status = os::Status(-12753);
+    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12753);
 
     #[doc(alias = "kCMSyncError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: os::Status = os::Status(-12754);
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12754);
 
     #[doc(alias = "kCMSyncError_RateMustBeNonZero")]
-    pub const RATE_MUST_BE_NON_ZERO: os::Status = os::Status(-12755);
+    pub const RATE_MUST_BE_NON_ZERO: Error = Error::new_unchecked(-12755);
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
 extern "C-unwind" {
     fn CMClockGetTypeID() -> cf::TypeId;
     fn CMClockGetHostTimeClock() -> &'static Clock;
+    #[cfg(not(target_os = "macos"))]
     fn CMAudioClockCreate(
         allocator: Option<&cf::Allocator>,
         clock_out: *mut Option<arc::R<Clock>>,
@@ -214,10 +213,9 @@ impl Timebase {
     pub fn with_src_clock_in(
         src_clock: &cm::Clock,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut res = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            CMTimebaseCreateWithSourceClock(allocator, src_clock, &mut res).to_result_unchecked(res)
+            os::result_unchecked(|res| CMTimebaseCreateWithSourceClock(allocator, src_clock, res))
         }
     }
 
@@ -227,7 +225,7 @@ impl Timebase {
     /// Pass cm::Clock::host_time_clock() for source_clock to have the host time clock drive
     /// this timebase.
     #[doc(alias = "CMTimebaseCreateWithSourceClock")]
-    pub fn with_src_clock(src_clock: &cm::Clock) -> Result<arc::R<Self>, os::Status> {
+    pub fn with_src_clock(src_clock: &cm::Clock) -> os::Result<arc::R<Self>> {
         Self::with_src_clock_in(src_clock, None)
     }
 
@@ -235,11 +233,11 @@ impl Timebase {
     pub fn with_src_timebase_in(
         src_timebase: &cm::Timebase,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut res = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            CMTimebaseCreateWithSourceTimebase(allocator, src_timebase, &mut res)
-                .to_result_unchecked(res)
+            os::result_unchecked(|res| {
+                CMTimebaseCreateWithSourceTimebase(allocator, src_timebase, res)
+            })
         }
     }
 
@@ -248,7 +246,7 @@ impl Timebase {
     /// The timebase will initially have rate zero and time zero.
     #[doc(alias = "CMTimebaseCreateWithSourceTimebase")]
     #[inline]
-    pub fn with_src_timebase(src_timebase: &cm::Timebase) -> Result<arc::R<Self>, os::Status> {
+    pub fn with_src_timebase(src_timebase: &cm::Timebase) -> os::Result<arc::R<Self>> {
         Self::with_src_timebase_in(src_timebase, None)
     }
 
@@ -293,7 +291,7 @@ impl Timebase {
     /// will be posted.
     #[doc(alias = "CMTimebaseSetSourceClock")]
     #[inline]
-    pub fn set_src_clock(&mut self, val: &cm::Clock) -> Result<(), os::Status> {
+    pub fn set_src_clock(&mut self, val: &cm::Clock) -> os::Result {
         unsafe { CMTimebaseSetSourceClock(self, val).result() }
     }
 
@@ -306,7 +304,7 @@ impl Timebase {
     /// will be posted.
     #[doc(alias = "CMTimebaseSetSourceTimebase")]
     #[inline]
-    pub fn set_src_timebase(&mut self, val: &cm::Timebase) -> Result<(), os::Status> {
+    pub fn set_src_timebase(&mut self, val: &cm::Timebase) -> os::Result {
         unsafe { CMTimebaseSetSourceTimebase(self, val).result() }
     }
 
@@ -361,7 +359,7 @@ impl Timebase {
     /// Sets the current time of a timebase.  
     #[doc(alias = "CMTimebaseSetTime")]
     #[inline]
-    pub fn set_time(&mut self, val: cm::Time) -> Result<(), os::Status> {
+    pub fn set_time(&mut self, val: cm::Time) -> os::Result {
         unsafe { CMTimebaseSetTime(self, val).result() }
     }
 
@@ -374,7 +372,7 @@ impl Timebase {
         &mut self,
         timebase_time: cm::Time,
         immediate_src_time: cm::Time,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe { CMTimebaseSetAnchorTime(self, timebase_time, immediate_src_time).result() }
     }
 
@@ -394,18 +392,14 @@ impl Timebase {
     /// avoiding possible inconsistencies due to external changes between retrieval of time and rate.
     #[doc(alias = "CMTimebaseGetTimeAndRate")]
     #[inline]
-    pub fn time_and_rate(
-        &self,
-        time_out: &mut cm::Time,
-        rate_out: &mut f64,
-    ) -> Result<(), os::Status> {
+    pub fn time_and_rate(&self, time_out: &mut cm::Time, rate_out: &mut f64) -> os::Result {
         unsafe { CMTimebaseGetTimeAndRate(self, time_out, rate_out).result() }
     }
 
     /// Sets the rate of a timebase.
     #[doc(alias = "CMTimebaseSetRate")]
     #[inline]
-    pub fn set_rate(&mut self, val: f64) -> Result<(), os::Status> {
+    pub fn set_rate(&mut self, val: f64) -> os::Result {
         unsafe { CMTimebaseSetRate(self, val).result() }
     }
 
@@ -417,7 +411,7 @@ impl Timebase {
         rate: f64,
         timebase_time: cm::Time,
         immediate_src_time: cm::Time,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             CMTimebaseSetRateAndAnchorTime(self, rate, timebase_time, immediate_src_time).result()
         }
@@ -442,11 +436,7 @@ impl Timebase {
     /// used to call cf::RunLoop::wake_up() any time the timebase modifies the timer's fire date.
     #[doc(alias = "CMTimebaseAddTimer")]
     #[inline]
-    pub fn add_timer(
-        &mut self,
-        timer: &cf::RunLoopTimer,
-        run_loop: &cf::RunLoop,
-    ) -> Result<(), os::Status> {
+    pub fn add_timer(&mut self, timer: &cf::RunLoopTimer, run_loop: &cf::RunLoop) -> os::Result {
         unsafe { CMTimebaseAddTimer(self, timer, run_loop).result() }
     }
 
@@ -463,7 +453,7 @@ impl Timebase {
     /// from its list and release it even if this function is not called.
     #[doc(alias = "CMTimebaseRemoveTimer")]
     #[inline]
-    pub fn remove_timer(&mut self, timer: &cf::RunLoopTimer) -> Result<(), os::Status> {
+    pub fn remove_timer(&mut self, timer: &cf::RunLoopTimer) -> os::Result {
         unsafe { CMTimebaseRemoveTimer(self, timer).result() }
     }
 
@@ -488,7 +478,7 @@ impl Timebase {
         &self,
         timer: &mut cf::RunLoopTimer,
         fire_time: cm::Time,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe { CMTimebaseSetTimerNextFireTime(self, timer, fire_time, 0).result() }
     }
 
@@ -497,10 +487,7 @@ impl Timebase {
     ///
     #[doc(alias = "CMTimebaseSetTimerToFireImmediately")]
     #[inline]
-    pub fn set_timer_to_fire_immediately(
-        &self,
-        timer: &mut cf::RunLoopTimer,
-    ) -> Result<(), os::Status> {
+    pub fn set_timer_to_fire_immediately(&self, timer: &mut cf::RunLoopTimer) -> os::Result {
         unsafe { CMTimebaseSetTimerToFireImmediately(self, timer).result() }
     }
 
@@ -509,10 +496,7 @@ impl Timebase {
     ///
     #[doc(alias = "CMTimebaseAddTimerDispatchSource")]
     #[inline]
-    pub fn add_timer_dispatch_src(
-        &mut self,
-        timer_src: &dispatch::TimerSrc,
-    ) -> Result<(), os::Status> {
+    pub fn add_timer_dispatch_src(&mut self, timer_src: &dispatch::TimerSrc) -> os::Result {
         unsafe { CMTimebaseAddTimerDispatchSource(self, timer_src).result() }
     }
 
@@ -523,10 +507,7 @@ impl Timebase {
     /// from its list and release it even if this function is not called.
     #[doc(alias = "CMTimebaseRemoveTimerDispatchSource")]
     #[inline]
-    pub fn remove_timer_dispatch_src(
-        &mut self,
-        timer_src: &dispatch::TimerSrc,
-    ) -> Result<(), os::Status> {
+    pub fn remove_timer_dispatch_src(&mut self, timer_src: &dispatch::TimerSrc) -> os::Result {
         unsafe { CMTimebaseRemoveTimerDispatchSource(self, timer_src).result() }
     }
 
@@ -551,7 +532,7 @@ impl Timebase {
         &mut self,
         timer_src: &dispatch::TimerSrc,
         fire_time: cm::Time,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             CMTimebaseSetTimerDispatchSourceNextFireTime(self, timer_src, fire_time, 0).result()
         }
@@ -564,14 +545,14 @@ impl Timebase {
     pub fn set_timer_dispatch_src_to_fire_immediately(
         &mut self,
         timer_src: &dispatch::TimerSrc,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe { CMTimebaseSetTimerDispatchSourceToFireImmediately(self, timer_src).result() }
     }
 
     /// Requests that the timebase wait until it is not posting any notifications.
     #[doc(alias = "CMTimebaseNotificationBarrier")]
     #[inline]
-    pub fn notification_barrier(&self) -> Result<(), os::Status> {
+    pub fn notification_barrier(&self) -> os::Result {
         unsafe { CMTimebaseNotificationBarrier(self).result() }
     }
 }
@@ -715,7 +696,7 @@ impl ClockOrTimebase {
         relative_rate: &mut f64,
         anchor_time: &mut cm::Time,
         relative_to_anchor_time: &mut cm::Time,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             CMSyncGetRelativeRateAndAnchorTime(
                 self,

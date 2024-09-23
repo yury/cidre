@@ -1,35 +1,35 @@
 use crate::{arc, cf, cm, define_cf_type, os};
 
 pub mod errors {
-    use crate::os::Status;
+    use crate::os::Error;
 
     /// Invalid parameter.
     #[doc(alias = "kCMFormatDescriptionBridgeError_InvalidParameter")]
-    pub const INVALID_PARAMETER: Status = Status(-12712);
+    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12712);
 
     /// Returned when an allocation fails.
     #[doc(alias = "kCMFormatDescriptionBridgeError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Status = Status(-12713);
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12713);
 
     /// Returned when the sample description is invalid (e.g. invalid size).
     #[doc(alias = "kCMFormatDescriptionBridgeError_InvalidSerializedSampleDescription")]
-    pub const INVALID_SERIALIZED_SAMPLE_DESCRIPTION: Status = Status(-12714);
+    pub const INVALID_SERIALIZED_SAMPLE_DESCRIPTION: Error = Error::new_unchecked(-12714);
 
     /// Returned when the format description is invalid (e.g. invalid size).
     #[doc(alias = "kCMFormatDescriptionBridgeError_InvalidFormatDescription")]
-    pub const INVALID_FORMAT_DESCRIPTION: Status = Status(-12715);
+    pub const INVALID_FORMAT_DESCRIPTION: Error = Error::new_unchecked(-12715);
 
     /// Returned when the format description has an incompatible format (e.g. unknown format / incompatible atom).
     #[doc(alias = "kCMFormatDescriptionBridgeError_IncompatibleFormatDescription")]
-    pub const INCOMPATIBLE_FORMAT_DESCRIPTION: Status = Status(-12716);
+    pub const INCOMPATIBLE_FORMAT_DESCRIPTION: Error = Error::new_unchecked(-12716);
 
     /// Returned when the sample description is unsupported for the specified format flavor.
     #[doc(alias = "kCMFormatDescriptionBridgeError_UnsupportedSampleDescriptionFlavor")]
-    pub const UNSUPPORTED_SAMPLE_DESCRIPTION_FLAVOR: Status = Status(-12717);
+    pub const UNSUPPORTED_SAMPLE_DESCRIPTION_FLAVOR: Error = Error::new_unchecked(-12717);
 
     /// Returned when the slice has an invalid value.
     #[doc(alias = "kCMFormatDescriptionBridgeError_InvalidSlice")]
-    pub const INVALID_SLICE: Status = Status(-12719);
+    pub const INVALID_SLICE: Error = Error::new_unchecked(-12719);
 }
 
 define_cf_type!(
@@ -77,17 +77,17 @@ impl cm::VideoFormatDesc {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
+    ) -> os::Result<arc::R<cm::BlockBuf>> {
         unsafe {
-            let mut buffer_out = None;
-            CMVideoFormatDescriptionCopyAsBigEndianImageDescriptionBlockBuffer(
-                allocator,
-                self,
-                string_encoding,
-                flavor,
-                &mut buffer_out,
-            )
-            .to_result_unchecked(buffer_out)
+            os::result_unchecked(|res| {
+                CMVideoFormatDescriptionCopyAsBigEndianImageDescriptionBlockBuffer(
+                    allocator,
+                    self,
+                    string_encoding,
+                    flavor,
+                    res,
+                )
+            })
         }
     }
 
@@ -95,7 +95,7 @@ impl cm::VideoFormatDesc {
     pub fn as_be_image_desc_cm_buf(
         &self,
         flavor: Option<&ImageDescFlavor>,
-    ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
+    ) -> os::Result<arc::R<cm::BlockBuf>> {
         Self::as_be_image_desc_cm_buf_in(self, cf::StringEncoding::system_encoding(), flavor, None)
     }
 
@@ -104,24 +104,24 @@ impl cm::VideoFormatDesc {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionBlockBuffer(
-                allocator,
-                image_description_block_buffer,
-                string_encoding,
-                flavor,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionBlockBuffer(
+                    allocator,
+                    image_description_block_buffer,
+                    string_encoding,
+                    flavor,
+                    res,
+                )
+            })
         }
     }
 
     pub fn from_be_image_desc_buf(
         image_description_block_buffer: &cm::BlockBuf,
         flavor: Option<&ImageDescFlavor>,
-    ) -> Result<arc::R<Self>, os::Status> {
+    ) -> os::Result<arc::R<Self>> {
         Self::from_be_image_desc_buf_in(
             image_description_block_buffer,
             cf::StringEncoding::system_encoding(),
@@ -135,18 +135,18 @@ impl cm::VideoFormatDesc {
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
-                allocator,
-                data.as_ptr(),
-                data.len(),
-                string_encoding,
-                flavor,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMVideoFormatDescriptionCreateFromBigEndianImageDescriptionData(
+                    allocator,
+                    data.as_ptr(),
+                    data.len(),
+                    string_encoding,
+                    flavor,
+                    res,
+                )
+            })
         }
     }
 
@@ -154,33 +154,33 @@ impl cm::VideoFormatDesc {
         data: &[u8],
         string_encoding: cf::StringEncoding,
         flavor: Option<&ImageDescFlavor>,
-    ) -> Result<arc::R<Self>, os::Status> {
+    ) -> os::Result<arc::R<Self>> {
         Self::from_be_image_desc_data_in(data, string_encoding, flavor, None)
     }
 }
 
 /// Converts a ImageDescription data structure from big-endian to host-endian in place.
 #[inline]
-pub fn swap_be_image_desc_to_host(desc: &mut [u8]) -> os::Status {
-    unsafe { CMSwapBigEndianImageDescriptionToHost(desc.as_mut_ptr(), desc.len()) }
+pub fn swap_be_image_desc_to_host(desc: &mut [u8]) -> os::Result {
+    unsafe { CMSwapBigEndianImageDescriptionToHost(desc.as_mut_ptr(), desc.len()).result() }
 }
 
 /// Converts an ImageDescription data structure from host-endian to big-endian in place.
 #[inline]
-pub fn swap_host_image_desc_to_be(desc: &mut [u8]) -> os::Status {
-    unsafe { CMSwapHostEndianImageDescriptionToBig(desc.as_mut_ptr(), desc.len()) }
+pub fn swap_host_image_desc_to_be(desc: &mut [u8]) -> os::Result {
+    unsafe { CMSwapHostEndianImageDescriptionToBig(desc.as_mut_ptr(), desc.len()).result() }
 }
 
 /// Converts a SoundDescription data structure from big-endian to host-endian in place.
 #[inline]
-pub fn swap_be_sound_desc_to_host(desc: &mut [u8]) -> os::Status {
-    unsafe { CMSwapBigEndianSoundDescriptionToHost(desc.as_mut_ptr(), desc.len()) }
+pub fn swap_be_sound_desc_to_host(desc: &mut [u8]) -> os::Result {
+    unsafe { CMSwapBigEndianSoundDescriptionToHost(desc.as_mut_ptr(), desc.len()).result() }
 }
 
 /// Converts a SoundDescription data structure from host-endian to big-endian in place.
 #[inline]
-pub fn swap_host_sound_desc_to_be(desc: &mut [u8]) -> os::Status {
-    unsafe { CMSwapHostEndianSoundDescriptionToBig(desc.as_mut_ptr(), desc.len()) }
+pub fn swap_host_sound_desc_to_be(desc: &mut [u8]) -> os::Result {
+    unsafe { CMSwapHostEndianSoundDescriptionToBig(desc.as_mut_ptr(), desc.len()).result() }
 }
 
 define_cf_type!(
@@ -230,16 +230,13 @@ impl cm::AudioFormatDesc {
         &self,
         flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
+    ) -> os::Result<arc::R<cm::BlockBuf>> {
         unsafe {
-            let mut buffer_out = None;
-            CMAudioFormatDescriptionCopyAsBigEndianSoundDescriptionBlockBuffer(
-                allocator,
-                self,
-                flavor,
-                &mut buffer_out,
-            )
-            .to_result_unchecked(buffer_out)
+            os::result_unchecked(|res| {
+                CMAudioFormatDescriptionCopyAsBigEndianSoundDescriptionBlockBuffer(
+                    allocator, self, flavor, res,
+                )
+            })
         }
     }
 
@@ -247,7 +244,7 @@ impl cm::AudioFormatDesc {
     pub fn as_be_sound_desc_cm_buf(
         &self,
         flavor: Option<&SoundDescFlavor>,
-    ) -> Result<arc::R<cm::BlockBuf>, os::Status> {
+    ) -> os::Result<arc::R<cm::BlockBuf>> {
         Self::as_be_sound_desc_cm_buf_in(self, flavor, None)
     }
 
@@ -256,17 +253,17 @@ impl cm::AudioFormatDesc {
         data: &[u8],
         flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
-                allocator,
-                data.as_ptr(),
-                data.len(),
-                flavor,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionData(
+                    allocator,
+                    data.as_ptr(),
+                    data.len(),
+                    flavor,
+                    res,
+                )
+            })
         }
     }
 
@@ -275,7 +272,7 @@ impl cm::AudioFormatDesc {
     pub fn from_be_sound_desc_data(
         data: &[u8],
         flavor: Option<&SoundDescFlavor>,
-    ) -> Result<arc::R<Self>, os::Status> {
+    ) -> os::Result<arc::R<Self>> {
         Self::from_be_sound_desc_data_in(data, flavor, None)
     }
 
@@ -283,16 +280,13 @@ impl cm::AudioFormatDesc {
         buffer: &cm::BlockBuf,
         flavor: Option<&SoundDescFlavor>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
-                allocator,
-                buffer,
-                flavor,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMAudioFormatDescriptionCreateFromBigEndianSoundDescriptionBlockBuffer(
+                    allocator, buffer, flavor, res,
+                )
+            })
         }
     }
 
@@ -300,7 +294,7 @@ impl cm::AudioFormatDesc {
     pub fn from_be_sound_desc_buf(
         buffer: &cm::BlockBuf,
         flavor: Option<&SoundDescFlavor>,
-    ) -> Result<arc::R<Self>, os::Status> {
+    ) -> os::Result<arc::R<Self>> {
         Self::from_be_sound_desc_buf_in(buffer, flavor, None)
     }
 }
@@ -313,7 +307,7 @@ define_cf_type!(
 impl TextDescFlavor {}
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     static kCMImageDescriptionFlavor_QuickTimeMovie: &'static ImageDescFlavor;
     static kCMImageDescriptionFlavor_ISOFamily: &'static ImageDescFlavor;
     static kCMImageDescriptionFlavor_3GPFamily: &'static ImageDescFlavor;

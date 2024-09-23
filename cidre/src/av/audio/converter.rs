@@ -123,11 +123,11 @@ impl Converter {
     ) -> bool;
 
     #[inline]
-    pub fn convert_to_buf_from_buf<'ear>(
+    pub fn convert_to_buf_from_buf(
         &self,
         output_buffer: &mut av::AudioPcmBuf,
         from_buffer: &av::AudioPcmBuf,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result {
         unsafe {
             let mut error = None;
             let res = self.convert_to_buf_from_buf_err(output_buffer, from_buffer, &mut error);

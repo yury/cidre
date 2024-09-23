@@ -101,7 +101,7 @@ impl Object {
         qualifier_data: *const c_void,
         data_size: u32,
         data: *const c_void,
-    ) -> os::Status {
+    ) -> os::Result {
         unsafe {
             CMIOObjectSetPropertyData(
                 *self,
@@ -111,10 +111,11 @@ impl Object {
                 data_size,
                 data,
             )
+            .result()
         }
     }
 
-    pub fn set_prop<T: Sized>(&self, address: &PropAddr, val: &T) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&self, address: &PropAddr, val: &T) -> os::Result {
         unsafe {
             self.set_property_data(
                 address,
@@ -123,11 +124,10 @@ impl Object {
                 std::mem::size_of::<T>() as u32,
                 val as *const T as _,
             )
-            .result()
         }
     }
 
-    pub fn allow_screen_capture_devices(&self, val: bool) -> Result<(), os::Status> {
+    pub fn allow_screen_capture_devices(&self, val: bool) -> os::Result {
         let val: u32 = if val { 1u32 } else { 0u32 };
         let address = PropAddr {
             selector: PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES,
@@ -137,7 +137,7 @@ impl Object {
         self.set_prop(&address, &val)
     }
 
-    pub fn allow_wireless_screen_capture_devices(&self, val: bool) -> Result<(), os::Status> {
+    pub fn allow_wireless_screen_capture_devices(&self, val: bool) -> os::Result {
         let val: u32 = if val { 1u32 } else { 0u32 };
         let address = PropAddr {
             selector: PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES,

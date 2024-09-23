@@ -179,7 +179,7 @@ impl FileManager {
         url: &ns::Url,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.create_dir_at_url_err(url, create_intermediates, attributes, err)
         })
@@ -200,7 +200,7 @@ impl FileManager {
         path: &ns::String,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.create_dir_at_path_err(path, create_intermediates, attributes, err)
         })
@@ -214,7 +214,7 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> Result<(), &'ear ns::Error> {
+    pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_item_at_path_err(path, err) })
     }
 
@@ -252,12 +252,12 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn set_ubiquitous_item<'ar>(
+    pub fn set_ubiquitous_item(
         &mut self,
         value: bool,
         item_at_url: &ns::Url,
         dest_url: &ns::Url,
-    ) -> Result<(), &'ar ns::Error> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.set_ubiquitous_item_err(value, item_at_url, dest_url, err)
         })
@@ -273,10 +273,7 @@ impl FileManager {
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
-    pub fn start_downloading_ubquitous_item<'ar>(
-        &mut self,
-        item_at_url: &ns::Url,
-    ) -> Result<(), &'ar ns::Error> {
+    pub fn start_downloading_ubquitous_item(&mut self, item_at_url: &ns::Url) -> ns::Result {
         ns::if_false(|err| self.start_downloading_ubquitous_item_err(item_at_url, err))
     }
 
@@ -288,10 +285,7 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn evict_ubiquitous_item<'ar>(
-        &mut self,
-        item_at_url: &ns::Url,
-    ) -> Result<(), &'ar ns::Error> {
+    pub fn evict_ubiquitous_item(&mut self, item_at_url: &ns::Url) -> ns::Result {
         ns::if_false(|err| self.evict_ubiquitous_item_err(item_at_url, err))
     }
 

@@ -137,7 +137,7 @@ pub struct Instance(c_void);
 pub struct InstanceRef(&'static mut Instance);
 
 pub trait State<T> {
-    fn release_resources(_instance: &mut T) -> Result<(), os::Status> {
+    fn release_resources(_instance: &mut T) -> os::Result {
         Ok(())
     }
 }
@@ -147,43 +147,30 @@ pub struct InitializedState;
 
 impl Component {
     #[inline]
-    pub fn name(&self) -> Result<arc::R<cf::String>, os::Status> {
-        let mut res = None;
-        unsafe { AudioComponentCopyName(self, &mut res).to_result_unchecked(res) }
+    pub fn name(&self) -> os::Result<arc::R<cf::String>> {
+        unsafe { os::result_unchecked(|val| AudioComponentCopyName(self, val)) }
     }
 
     #[inline]
-    pub fn desc(&self) -> Result<Desc, os::Status> {
+    pub fn desc(&self) -> os::Result<Desc> {
         let mut desc = Desc::default();
-        let res = unsafe { AudioComponentGetDescription(self, &mut desc) };
-        if res.is_ok() {
-            Ok(desc)
-        } else {
-            Err(res)
-        }
+        unsafe { AudioComponentGetDescription(self, &mut desc).result()? };
+        Ok(desc)
     }
 
     #[inline]
-    pub fn version(&self) -> Result<u32, os::Status> {
+    pub fn version(&self) -> os::Result<u32> {
         let mut version = 0;
-        let res = unsafe { AudioComponentGetVersion(self, &mut version) };
-        if res.is_ok() {
-            Ok(version)
-        } else {
-            Err(res)
-        }
+        unsafe { AudioComponentGetVersion(self, &mut version).result()? };
+        Ok(version)
     }
 
     #[doc(alias = "AudioComponentInstanceNew")]
-    pub fn open(&self) -> Result<InstanceRef, os::Status> {
+    pub fn open(&self) -> os::Result<InstanceRef> {
         let mut instance = None;
         unsafe {
-            let res = AudioComponentInstanceNew(self, &mut instance);
-            if res.is_ok() {
-                Ok(InstanceRef(instance.unwrap_unchecked()))
-            } else {
-                Err(res)
-            }
+            AudioComponentInstanceNew(self, &mut instance).result()?;
+            Ok(InstanceRef(instance.unwrap_unchecked()))
         }
     }
 }
@@ -193,8 +180,8 @@ impl Instance {
         unsafe { AudioComponentInstanceGetComponent(self) }
     }
 
-    pub unsafe fn dispose(&mut self) -> Result<(), os::Status> {
-        unsafe { AudioComponentInstanceDispose(self).result() }
+    pub unsafe fn dispose(&mut self) -> os::Result {
+        AudioComponentInstanceDispose(self).into()
     }
 }
 
@@ -219,7 +206,7 @@ impl DerefMut for InstanceRef {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn AudioComponentFindNext(
         in_component: Option<&Component>,
         in_desc: &Desc,

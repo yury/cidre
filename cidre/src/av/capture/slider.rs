@@ -24,7 +24,7 @@ impl arc::A<Slider> {
         symbol_name: &ns::String,
         min_val: f32,
         max_val: f32,
-    ) -> Result<arc::R<Slider>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Slider>> {
         ns::try_catch(|| unsafe {
             self.init_with_range_throws(localized_title, symbol_name, min_val, max_val)
         })
@@ -47,7 +47,7 @@ impl arc::A<Slider> {
         min_val: f32,
         max_val: f32,
         step: f32,
-    ) -> Result<arc::R<Slider>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Slider>> {
         ns::try_catch(|| unsafe {
             self.init_with_range_step_throws(localized_title, symbol_name, min_val, max_val, step)
         })
@@ -66,7 +66,7 @@ impl arc::A<Slider> {
         localized_title: &ns::String,
         symbol_name: &ns::String,
         vals: &ns::Array<ns::Number>,
-    ) -> Result<arc::R<Slider>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Slider>> {
         ns::try_catch(|| unsafe { self.init_with_vals_throws(localized_title, symbol_name, vals) })
     }
 }
@@ -81,7 +81,7 @@ impl Slider {
         symbol_name: &ns::String,
         min_val: f32,
         max_val: f32,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         Self::alloc().init_with_range(localized_title, symbol_name, min_val, max_val)
     }
 
@@ -92,7 +92,7 @@ impl Slider {
         min_val: f32,
         max_val: f32,
         step: f32,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         Self::alloc().init_with_range_step(localized_title, symbol_name, min_val, max_val, step)
     }
 
@@ -101,7 +101,7 @@ impl Slider {
         localized_title: &ns::String,
         symbol_name: &ns::String,
         vals: &ns::Array<ns::Number>,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         Self::alloc().init_with_vals(localized_title, symbol_name, vals)
     }
 
@@ -109,14 +109,14 @@ impl Slider {
     pub unsafe fn value_throws(&self) -> f32;
 
     /// The current value of the slider.
-    pub fn value<'ear>(&self) -> Result<f32, &'ear ns::Exception> {
+    pub fn value(&self) -> ns::ExResult<f32> {
         ns::try_catch(|| unsafe { self.value_throws() })
     }
 
     #[objc::msg_send(setValue:)]
     pub unsafe fn set_value_throws(&mut self, val: f32);
 
-    pub fn set_value<'ear>(&mut self, val: f32) -> Result<(), &'ear ns::Exception> {
+    pub fn set_value(&mut self, val: f32) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_value_throws(val) })
     }
 

@@ -99,6 +99,7 @@ impl OutputImpl for FrameCounter {
         match kind {
             sc::OutputType::Screen => self.inner_mut().handle_video(sample_buf),
             sc::OutputType::Audio => self.inner_mut().handle_audio(sample_buf),
+            sc::OutputType::Mic => {}
         }
     }
 }
@@ -174,10 +175,7 @@ impl AudioQueue {
         self.queue.len() > 2
     }
 
-    pub fn fill_audio_buffer(
-        &mut self,
-        list: &mut at::audio::BufList<2>,
-    ) -> Result<(), os::Status> {
+    pub fn fill_audio_buffer(&mut self, list: &mut at::audio::BufList<2>) -> os::Result {
         let mut left = 1024i32;
         let mut offset: i32 = self.last_buffer_offset as i32;
         let mut out_offset = 0;
@@ -219,7 +217,7 @@ extern "C" fn convert_audio(
 
     match q.fill_audio_buffer(unsafe { std::mem::transmute(io_data) }) {
         Ok(()) => os::Status(0),
-        Err(status) => status,
+        Err(err) => err.status(),
     }
 
     //let frames = i32::min(*io_number_data_packets as i32, buf.num_samples() as _);

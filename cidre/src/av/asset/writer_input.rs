@@ -134,11 +134,11 @@ impl WriterInput {
         block: &mut blocks::CompletionBlock,
     );
 
-    pub fn request_media_data_when_ready_on_queue<'ear>(
+    pub fn request_media_data_when_ready_on_queue(
         &self,
         queue: &dispatch::Queue,
         block: &mut blocks::CompletionBlock,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.request_media_data_when_ready_on_queue_throws(queue, block)
         })

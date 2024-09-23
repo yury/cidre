@@ -56,8 +56,8 @@ pub fn animate_image_at_url_with_block(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
     block: &mut cg::ImageAnimationBlock<blocks::Esc>,
-) -> os::Status {
-    unsafe { CGAnimateImageAtURLWithBlock(url, options, block) }
+) -> os::Result {
+    unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }
 }
 
 #[cfg(feature = "blocks")]
@@ -67,7 +67,7 @@ pub fn animate_image_at_url(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
     block: &mut cg::ImageAnimationBlock<blocks::Esc>,
-) -> Result<(), os::Status> {
+) -> os::Result {
     unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }
 }
 
@@ -78,8 +78,8 @@ pub fn animate_image_data_with_block(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
     block: &mut cg::ImageAnimationBlock<blocks::Esc>,
-) -> os::Status {
-    unsafe { CGAnimateImageDataWithBlock(data, options, block) }
+) -> os::Result {
+    unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
 }
 
 #[cfg(feature = "blocks")]
@@ -89,12 +89,12 @@ pub fn animate_image_data(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
     block: &mut cg::ImageAnimationBlock<blocks::Esc>,
-) -> Result<(), os::Status> {
+) -> os::Result {
     unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
 }
 
 #[link(name = "ImageIO", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     static kCGImageAnimationStartIndex: &'static OptKey;
     static kCGImageAnimationDelayTime: &'static OptKey;
     static kCGImageAnimationLoopCount: &'static OptKey;

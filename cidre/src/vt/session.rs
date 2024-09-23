@@ -8,13 +8,14 @@ impl Session {
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<Option<arc::R<cf::Plist>>, os::Status> {
+    ) -> os::Result<Option<arc::R<cf::Plist>>> {
         let mut value = None;
-        unsafe { VTSessionCopyProperty(self, key, allocator, &mut value).to_result_option(value) }
+        unsafe { VTSessionCopyProperty(self, key, allocator, &mut value).result()? };
+        Ok(value)
     }
 
     #[inline]
-    pub fn property(&self, key: &cf::String) -> Result<Option<arc::R<cf::Plist>>, os::Status> {
+    pub fn property(&self, key: &cf::String) -> os::Result<Option<arc::R<cf::Plist>>> {
         self.property_in(key, None)
     }
 
@@ -25,77 +26,65 @@ impl Session {
         &mut self,
         key: &cf::String,
         value: Option<&cf::Type>,
-    ) -> os::Status {
-        VTSessionSetProperty(self, key, value)
+    ) -> os::Result {
+        VTSessionSetProperty(self, key, value).result()
     }
 
     #[inline]
-    pub unsafe fn set_properties(&mut self, dict: &cf::Dictionary) -> os::Status {
-        VTSessionSetProperties(self, dict)
+    pub unsafe fn set_properties(&mut self, dict: &cf::Dictionary) -> os::Result {
+        VTSessionSetProperties(self, dict).result()
     }
 
     #[inline]
-    pub fn set_props(&mut self, props: &cf::Dictionary) -> Result<(), os::Status> {
-        unsafe { self.set_properties(props).result() }
+    pub fn set_props(&mut self, props: &cf::Dictionary) -> os::Result {
+        unsafe { self.set_properties(props) }
     }
 
     #[doc(alias = "VTSessionSetProperty")]
     #[inline]
-    pub fn set_prop(
-        &mut self,
-        key: &cf::String,
-        value: Option<&cf::Type>,
-    ) -> Result<(), os::Status> {
-        unsafe { self.set_property(key, value).result() }
+    pub fn set_prop(&mut self, key: &cf::String, value: Option<&cf::Type>) -> os::Result {
+        unsafe { self.set_property(key, value) }
     }
 
     #[doc(alias = "VTSessionCopySupportedPropertyDictionary")]
     pub unsafe fn copy_supported_property_dictionary(
         &self,
         supported_property_dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
-    ) -> os::Status {
-        VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
+    ) -> os::Result {
+        VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out).result()
     }
 
     #[doc(alias = "VTSessionCopySupportedPropertyDictionary")]
-    pub fn supported_props(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
-        unsafe {
-            let mut supported_property_dictionary_out = None;
-            self.copy_supported_property_dictionary(&mut supported_property_dictionary_out)
-                .to_result_unchecked(supported_property_dictionary_out)
-        }
+    pub fn supported_props(&self) -> os::Result<arc::R<cf::Dictionary>> {
+        unsafe { os::result_unchecked(|res| self.copy_supported_property_dictionary(res)) }
     }
 
     pub unsafe fn copy_serializable_properties(
         &self,
         allocator: Option<&cf::Allocator>,
         dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
-    ) -> os::Status {
-        unsafe { VTSessionCopySerializableProperties(self, allocator, dictionary_out) }
+    ) -> os::Result {
+        unsafe { VTSessionCopySerializableProperties(self, allocator, dictionary_out).result() }
     }
 
     pub fn serializable_properties_in(
         &self,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<Option<arc::R<cf::Dictionary>>, os::Status> {
+    ) -> os::Result<Option<arc::R<cf::Dictionary>>> {
         unsafe {
             let mut dictionary_out = None;
-            let res = self.copy_serializable_properties(allocator, &mut dictionary_out);
-            if res.is_ok() {
-                Ok(dictionary_out)
-            } else {
-                Err(res)
-            }
+            self.copy_serializable_properties(allocator, &mut dictionary_out)?;
+            Ok(dictionary_out)
         }
     }
 
-    pub fn serializable_properties(&self) -> Result<Option<arc::R<cf::Dictionary>>, os::Status> {
+    pub fn serializable_properties(&self) -> os::Result<Option<arc::R<cf::Dictionary>>> {
         self.serializable_properties_in(None)
     }
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn VTSessionSetProperty(
         session: &mut Session,
         property_key: &cf::String,

@@ -634,7 +634,7 @@ impl Stream {
         output: &D,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
-    ) -> Result<(), &'ar ns::Error> {
+    ) -> ns::Result {
         let mut error = None;
         if self.add_stream_output_type_sample_handler_queue_err(
             output,
@@ -676,10 +676,7 @@ impl Stream {
     ) -> bool;
 
     #[api::available(macos = 15.0)]
-    pub fn add_recording_output<'ar>(
-        &mut self,
-        val: &sc::RecordingOutput,
-    ) -> Result<(), &'ar ns::Error> {
+    pub fn add_recording_output(&mut self, val: &sc::RecordingOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.add_recording_output_err(val, err) })
     }
 
@@ -692,10 +689,7 @@ impl Stream {
     ) -> bool;
 
     #[api::available(macos = 15.0)]
-    pub fn remove_recording_output<'ar>(
-        &mut self,
-        val: &sc::RecordingOutput,
-    ) -> Result<(), &'ar ns::Error> {
+    pub fn remove_recording_output(&mut self, val: &sc::RecordingOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_recording_output_err(val, err) })
     }
 }

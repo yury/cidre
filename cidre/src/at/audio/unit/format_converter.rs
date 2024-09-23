@@ -28,12 +28,12 @@ where
     }
 
     #[inline]
-    pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
+    pub fn max_frames_per_slice(&self) -> os::Result<u32> {
         self.unit().max_frames_per_slice()
     }
 
     #[inline]
-    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+    pub fn last_render_err(&self) -> os::Result<os::Status> {
         self.unit().last_render_err()
     }
 
@@ -42,28 +42,28 @@ where
         &mut self,
         cb: au::RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0.set_input_cb(0, cb, ref_con)
     }
 
     #[inline]
-    pub fn remove_input_cb(&mut self) -> Result<(), os::Status> {
+    pub fn remove_input_cb(&mut self) -> os::Result {
         self.0.remove_input_cb(0)
     }
 
     #[inline]
-    pub fn output_stream_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn output_stream_format(&self) -> os::Result<audio::StreamBasicDesc> {
         self.unit().stream_format(Scope::OUTPUT, 0)
     }
 
     #[inline]
-    pub fn input_stream_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn input_stream_format(&self) -> os::Result<audio::StreamBasicDesc> {
         self.unit().stream_format(Scope::INPUT, 0)
     }
 }
 
 impl FormatConverter<UninitializedState> {
-    pub fn new_apple() -> Result<Self, os::Status> {
+    pub fn new_apple() -> os::Result<Self> {
         let desc = audio::ComponentDesc {
             type_: au::Type::FORMAT_CONVERTER.0,
             sub_type: au::SubType::CONVERTER.0,
@@ -80,35 +80,29 @@ impl FormatConverter<UninitializedState> {
         Ok(Self(unit))
     }
 
-    pub fn allocate_resources(self) -> Result<FormatConverter<InitializedState>, os::Status> {
+    pub fn allocate_resources(self) -> os::Result<FormatConverter<InitializedState>> {
         Ok(FormatConverter(self.0.initialize()?))
     }
 
     #[inline]
-    pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_max_frames_per_slice(&mut self, val: u32) -> os::Result {
         self.unit_mut().set_max_frames_per_slice(val)
     }
 
     #[inline]
-    pub fn set_output_stream_format(
-        &mut self,
-        val: &audio::StreamBasicDesc,
-    ) -> Result<(), os::Status> {
+    pub fn set_output_stream_format(&mut self, val: &audio::StreamBasicDesc) -> os::Result {
         self.unit_mut().set_stream_format(Scope::OUTPUT, 0, val)
     }
 
     #[inline]
-    pub fn set_input_stream_format(
-        &mut self,
-        val: &audio::StreamBasicDesc,
-    ) -> Result<(), os::Status> {
+    pub fn set_input_stream_format(&mut self, val: &audio::StreamBasicDesc) -> os::Result {
         self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
     }
 }
 
 impl FormatConverter<InitializedState> {
     #[inline]
-    pub fn deallocate_resources(self) -> Result<FormatConverter<UninitializedState>, os::Status> {
+    pub fn deallocate_resources(self) -> os::Result<FormatConverter<UninitializedState>> {
         Ok(FormatConverter(self.0.unintialize()?))
     }
 
@@ -117,7 +111,7 @@ impl FormatConverter<InitializedState> {
         &mut self,
         n_frames: u32,
         buf_list: &mut audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let ts = audio::TimeStamp::invalid();
         self.0.render(&ts, 0, n_frames, buf_list)
     }

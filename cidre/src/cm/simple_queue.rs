@@ -7,22 +7,19 @@ define_cf_type!(
     SimpleQueue(cf::Type)
 );
 
-#[derive(Debug, Eq, PartialEq)]
-#[repr(transparent)]
-pub struct Error(pub os::Status);
-
-impl Error {
+pub mod err {
+    use crate::os::Error;
     /// An allocation failed.
-    pub const ALLOCATION_FAILED: Self = Self(os::Status(-12770));
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12770);
 
     /// NULL or 0 was passed for a required parameter.
-    pub const REQUIRED_PARAMETER_MISSING: Self = Self(os::Status(-12771));
+    pub const REQUIRED_PARAMETER_MISSING: Error = Error::new_unchecked(-12771);
 
     /// An out-of-range value was passed for a parameter with a restricted valid range.
-    pub const PARAMETER_OUT_OF_RANGE: Self = Self(os::Status(-12772));
+    pub const PARAMETER_OUT_OF_RANGE: Error = Error::new_unchecked(-12772);
 
     /// Operation failed because queue was full.
-    pub const QUEUE_IS_FULL: Self = Self(os::Status(-12773));
+    pub const QUEUE_IS_FULL: Error = Error::new_unchecked(-12773);
 }
 
 impl SimpleQueue {
@@ -36,22 +33,20 @@ impl SimpleQueue {
     pub unsafe fn create_in(
         capacity: i32,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, Error> {
-        let mut out = None;
-        let res = CMSimpleQueueCreate(allocator, capacity, &mut out);
-        std::mem::transmute(res.to_result_unchecked(out))
+    ) -> os::Result<arc::R<Self>> {
+        os::result_unchecked(|res| CMSimpleQueueCreate(allocator, capacity, res))
     }
 
     #[inline]
     pub fn with_capacity_in(
         capacity: NonZeroU16,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, Error> {
+    ) -> os::Result<arc::R<Self>> {
         unsafe { Self::create_in(capacity.get() as _, allocator) }
     }
 
     #[inline]
-    pub fn with_capacity(capacity: NonZeroU16) -> Result<arc::R<Self>, Error> {
+    pub fn with_capacity(capacity: NonZeroU16) -> os::Result<arc::R<Self>> {
         Self::with_capacity_in(capacity, None)
     }
 
@@ -68,8 +63,8 @@ impl SimpleQueue {
 
     #[doc(alias = "CMSimpleQueueEnqueue")]
     #[inline]
-    pub fn enqueue(&mut self, element: *const c_void) -> Result<(), Error> {
-        unsafe { std::mem::transmute(CMSimpleQueueEnqueue(self, element).result()) }
+    pub fn enqueue(&mut self, element: *const c_void) -> os::Result {
+        unsafe { std::mem::transmute(CMSimpleQueueEnqueue(self, element)) }
     }
 
     #[doc(alias = "CMSimpleQueueDequeue")]
@@ -86,8 +81,8 @@ impl SimpleQueue {
 
     #[doc(alias = "CMSimpleQueueReset")]
     #[inline]
-    pub fn reset(&mut self) -> Result<(), Error> {
-        unsafe { std::mem::transmute(CMSimpleQueueReset(self).result()) }
+    pub fn reset(&mut self) -> os::Result {
+        unsafe { CMSimpleQueueReset(self).result() }
     }
 
     #[doc(alias = "CMSimpleQueueGetCapacity")]
@@ -142,7 +137,7 @@ mod tests {
         assert_eq!(1.0f32, queue.fullness());
 
         let err = queue.enqueue(5usize as _).expect_err("should be err");
-        assert_eq!(err, cm::SimpleQueueError::QUEUE_IS_FULL);
+        assert_eq!(err, cm::simple_queue_err::QUEUE_IS_FULL);
 
         let r = queue.head() as usize;
         assert_eq!(r, 5usize);

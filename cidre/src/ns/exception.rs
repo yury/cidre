@@ -196,7 +196,7 @@ where
     during
 }
 
-pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar ns::Exception>
+pub fn try_catch<'ar, F, R>(f: F) -> ns::ExResult<'ar, R>
 where
     F: FnOnce() -> R,
 {

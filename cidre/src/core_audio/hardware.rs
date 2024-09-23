@@ -1,4 +1,4 @@
-use std::{ffi::c_void, mem::MaybeUninit};
+use std::ffi::c_void;
 
 use crate::{arc, core_audio, os};
 
@@ -9,7 +9,7 @@ impl core_audio::AudioObjId {
     pub const SYS_OBJECT: Self = Self(1);
 
     #[doc(alias = "AudioObjectSetPropertyData")]
-    pub fn set_prop<T: Sized>(&self, address: &AudioObjPropAddr, val: T) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&self, address: &AudioObjPropAddr, val: T) -> os::Result {
         let data_size = std::mem::size_of_val(&val) as u32;
         unsafe {
             AudioObjectSetPropertyData(
@@ -25,7 +25,7 @@ impl core_audio::AudioObjId {
     }
 
     #[doc(alias = "AudioObjectGetPropertyData")]
-    pub fn prop<T: Sized>(&self, address: &AudioObjPropAddr) -> Result<T, os::Status> {
+    pub fn prop<T: Sized>(&self, address: &AudioObjPropAddr) -> os::Result<T> {
         let mut data_size = std::mem::size_of::<T>() as u32;
         let mut val = std::mem::MaybeUninit::<T>::uninit();
         unsafe {
@@ -42,28 +42,22 @@ impl core_audio::AudioObjId {
         }
     }
 
-    pub fn cf_prop<T: arc::Release>(
-        &self,
-        address: &AudioObjPropAddr,
-    ) -> Result<arc::R<T>, os::Status> {
-        let mut data_size = std::mem::size_of::<arc::R<T>>() as u32;
-        let mut val = MaybeUninit::<arc::R<T>>::uninit();
-        unsafe {
+    pub fn cf_prop<T: arc::Release>(&self, address: &AudioObjPropAddr) -> os::Result<arc::R<T>> {
+        os::result_init(|res| unsafe {
+            let mut data_size = std::mem::size_of::<arc::R<T>>() as u32;
             AudioObjectGetPropertyData(
                 *self,
                 address,
                 0,
                 std::ptr::null(),
                 &mut data_size,
-                val.as_mut_ptr().cast(),
+                res as _,
             )
-            .result()?;
-            Ok(val.assume_init())
-        }
+        })
     }
 
     #[doc(alias = "AudioObjectGetPropertyData")]
-    pub fn prop_vec<T: Sized>(&self, address: &AudioObjPropAddr) -> Result<Vec<T>, os::Status> {
+    pub fn prop_vec<T: Sized>(&self, address: &AudioObjPropAddr) -> os::Result<Vec<T>> {
         let mut data_size = 0;
         unsafe {
             AudioObjectGetPropertyDataSize(*self, address, 0, std::ptr::null(), &mut data_size)

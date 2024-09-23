@@ -160,7 +160,7 @@ impl<T: Obj> ArrayMut<T> {
     pub unsafe fn remove_throws(&mut self, index: usize);
 
     #[inline]
-    pub fn remove<'ar>(&mut self, index: usize) -> Result<(), &'ar ns::Exception> {
+    pub fn remove(&mut self, index: usize) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_throws(index) })
     }
 
@@ -171,7 +171,7 @@ impl<T: Obj> ArrayMut<T> {
     pub unsafe fn insert_obj_throws(&mut self, obj: &T, at_index: usize);
 
     #[inline]
-    pub fn insert<'ar>(&mut self, index: usize, element: &T) -> Result<(), &'ar ns::Exception> {
+    pub fn insert(&mut self, index: usize, element: &T) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_obj_throws(element, index) })
     }
 }

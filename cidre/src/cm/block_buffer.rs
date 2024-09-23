@@ -78,22 +78,17 @@ impl BlockBuf {
         sub_block_capacity: u32,
         flags: Flags,
         structure_allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<BlockBuf>, os::Status> {
-        let mut block_buf_out = None;
+    ) -> os::Result<arc::R<BlockBuf>> {
         unsafe {
-            CMBlockBufferCreateEmpty(
-                structure_allocator,
-                sub_block_capacity,
-                flags,
-                &mut block_buf_out,
-            )
-            .to_result_unchecked(block_buf_out)
+            os::result_unchecked(|res| {
+                CMBlockBufferCreateEmpty(structure_allocator, sub_block_capacity, flags, res)
+            })
         }
     }
 
     #[doc(alias = "CMBlockBufferCreateEmpty")]
     #[inline]
-    pub fn new(sub_block_capacity: u32, flags: Flags) -> Result<arc::R<BlockBuf>, os::Status> {
+    pub fn new(sub_block_capacity: u32, flags: Flags) -> os::Result<arc::R<BlockBuf>> {
         Self::new_in(sub_block_capacity, flags, None)
     }
 
@@ -111,7 +106,7 @@ impl BlockBuf {
     pub fn with_mem_block(
         len: usize,
         block_allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<BlockBuf>, os::Status> {
+    ) -> os::Result<arc::R<BlockBuf>> {
         unsafe {
             Self::create_with_mem_block_in(
                 std::ptr::null_mut(),
@@ -136,20 +131,20 @@ impl BlockBuf {
         data_length: usize,
         flags: Flags,
         structure_allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<BlockBuf>, os::Status> {
-        let mut block_buf_out = None;
-        CMBlockBufferCreateWithMemoryBlock(
-            structure_allocator,
-            memory_block,
-            block_length,
-            block_allocator,
-            std::ptr::null(),
-            offset_to_data,
-            data_length,
-            flags,
-            &mut block_buf_out,
-        )
-        .to_result_unchecked(block_buf_out)
+    ) -> os::Result<arc::R<BlockBuf>> {
+        os::result_unchecked(|val| {
+            CMBlockBufferCreateWithMemoryBlock(
+                structure_allocator,
+                memory_block,
+                block_length,
+                block_allocator,
+                std::ptr::null(),
+                offset_to_data,
+                data_length,
+                flags,
+                val,
+            )
+        })
     }
 
     /// Obtains the total data length reachable via a cm::BlockBuf.
@@ -190,7 +185,7 @@ impl BlockBuf {
         length_at_offset_out: *mut usize,
         total_length_out: *mut usize,
         data_pointer_out: *mut *mut u8,
-    ) -> os::Status {
+    ) -> os::Result {
         CMBlockBufferGetDataPointer(
             self,
             offset,
@@ -198,42 +193,38 @@ impl BlockBuf {
             total_length_out,
             data_pointer_out,
         )
+        .result()
     }
 
     #[inline]
-    pub fn data_ptr_at(&self, offset: usize) -> Result<(&[u8], usize), os::Status> {
+    pub fn data_ptr_at(&self, offset: usize) -> os::Result<(&[u8], usize)> {
         let mut length_at_offset_out = 0;
         let mut total_length_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.data_ptr(
+            self.data_ptr(
                 offset,
                 &mut length_at_offset_out,
                 &mut total_length_out,
                 &mut data_pointer_out,
-            );
-            if res.is_err() {
-                return Err(res);
-            }
+            )?;
             let s = slice_from_raw_parts(data_pointer_out, length_at_offset_out);
             Ok((&*s, total_length_out))
         }
     }
 
     #[inline]
-    pub fn as_slice(&self) -> Result<&[u8], os::Status> {
+    pub fn as_slice(&self) -> os::Result<&[u8]> {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.data_ptr(
+            self.data_ptr(
                 0,
                 &mut length_at_offset_out,
                 std::ptr::null_mut(),
                 &mut data_pointer_out,
-            );
-            if res.is_err() {
-                return Err(res);
-            }
+            )?;
+
             Ok(&*slice_from_raw_parts(
                 data_pointer_out,
                 length_at_offset_out,
@@ -242,19 +233,16 @@ impl BlockBuf {
     }
 
     #[inline]
-    pub fn as_mut_slice(&mut self) -> Result<&mut [u8], os::Status> {
+    pub fn as_mut_slice(&mut self) -> os::Result<&mut [u8]> {
         let mut length_at_offset_out = 0;
         let mut data_pointer_out = std::ptr::null_mut();
         unsafe {
-            let res = self.data_ptr(
+            self.data_ptr(
                 0,
                 &mut length_at_offset_out,
                 std::ptr::null_mut(),
                 &mut data_pointer_out,
-            );
-            if res.is_err() {
-                return Err(res);
-            }
+            )?;
             Ok(&mut *slice_from_raw_parts_mut(
                 data_pointer_out,
                 length_at_offset_out,
@@ -268,18 +256,18 @@ impl BlockBuf {
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
-    ) -> Result<arc::R<BlockBuf>, os::Status> {
+    ) -> os::Result<arc::R<BlockBuf>> {
         unsafe {
-            let mut block_buf_out = None;
-            Self::create_with_buf_ref(
-                None,
-                buf_reference,
-                offset_to_data,
-                data_length,
-                flags,
-                &mut block_buf_out,
-            )
-            .to_result_unchecked(block_buf_out)
+            os::result_unchecked(|val| {
+                Self::create_with_buf_ref(
+                    None,
+                    buf_reference,
+                    offset_to_data,
+                    data_length,
+                    flags,
+                    val,
+                )
+            })
         }
     }
 
@@ -291,7 +279,7 @@ impl BlockBuf {
         data_length: usize,
         flags: Flags,
         block_buf_out: *mut Option<arc::R<BlockBuf>>,
-    ) -> os::Status {
+    ) -> os::Result {
         CMBlockBufferCreateWithBufferReference(
             structure_allocator,
             buf_reference,
@@ -300,6 +288,7 @@ impl BlockBuf {
             flags,
             block_buf_out,
         )
+        .result()
     }
 
     /// Assures that the system allocates memory for all memory blocks in a
@@ -309,7 +298,7 @@ impl BlockBuf {
     /// for any constituent memory blocks that are not yet allocated.
     #[doc(alias = "CMBlockBufferAssureBlockMemory")]
     #[inline]
-    pub fn assure_block_mem(&mut self) -> Result<(), os::Status> {
+    pub fn assure_block_mem(&mut self) -> os::Result {
         unsafe { CMBlockBufferAssureBlockMemory(self).result() }
     }
 }
@@ -363,35 +352,35 @@ extern "C" {
 }
 
 pub mod errors {
-    use crate::os::Status;
+    use crate::os::Error;
 
     /// Returned when a cm::BlockBuffer-creating API gets a failure
     /// from the cf::Allocator provided for cm::BlockBuffer construction.
-    pub const STRUCTURE_ALLOCATION_FAILED: Status = Status(-12700);
+    pub const STRUCTURE_ALLOCATION_FAILED: Error = Error::new_unchecked(-12700);
 
     /// Returned when the allocator provided to allocate a memory block
     /// (as distinct from cm::BlockBuffer structures) fails.
-    pub const BLOCK_ALLOCATION_FAILED: Status = Status(-12701);
+    pub const BLOCK_ALLOCATION_FAILED: Error = Error::new_unchecked(-12701);
 
     /// The custom block source’s Allocate() routine was NULL when an allocation was attempted.
-    pub const BAD_CUSTOM_BLOCK_SOURCE: Status = Status(-12702);
+    pub const BAD_CUSTOM_BLOCK_SOURCE: Error = Error::new_unchecked(-12702);
 
     /// The offset provided to an API is out of the range of the relevent cm::BlockBuffer
-    pub const BAD_OFFSET_PARAMETER: Status = Status(-12703);
+    pub const BAD_OFFSET_PARAMETER: Error = Error::new_unchecked(-12703);
 
     /// The length provided to an API is out of the range of the relevent cm::BlockBuffer,
     /// or is not allowed to be zero.
-    pub const BAD_LENGTH_PARAMETER: Status = Status(-12704);
+    pub const BAD_LENGTH_PARAMETER: Error = Error::new_unchecked(-12704);
 
     /// A pointer parameter (e.g. cm::BlockBuffer reference, destination memory) is NULL
     /// or otherwise invalid.
-    pub const BAD_POINTER_PARAMETER: Status = Status(-12705);
+    pub const BAD_POINTER_PARAMETER: Error = Error::new_unchecked(-12705);
 
     /// Expected a non-empty cm::BlockBuffer.
-    pub const EMPTY_BBUF: Status = Status(-12706);
+    pub const EMPTY_BBUF: Error = Error::new_unchecked(-12706);
 
     /// An unallocated memory block was encountered.
-    pub const UNALLOCATED_BLOCK: Status = Status(-12707);
+    pub const UNALLOCATED_BLOCK: Error = Error::new_unchecked(-12707);
 
-    pub const INSUFFICIENT_SPACE: Status = Status(-12708);
+    pub const INSUFFICIENT_SPACE: Error = Error::new_unchecked(-12708);
 }

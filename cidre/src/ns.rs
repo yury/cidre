@@ -1,5 +1,8 @@
 use crate::objc;
 
+pub type Result<'ear, R = ()> = std::result::Result<R, &'ear Error>;
+pub type ExResult<'ear, R = ()> = std::result::Result<R, &'ear Exception>;
+
 pub use objc::{
     ns::{Integer, UInteger},
     Class, Id, Sel,

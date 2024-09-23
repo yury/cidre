@@ -1,8 +1,7 @@
 use crate::{arc, cf, os};
 
-pub fn copy() -> Result<arc::R<cf::ArrayOf<cf::Dictionary>>, os::Status> {
-    let mut list_out = None;
-    unsafe { VTCopyVideoEncoderList(None, &mut list_out).to_result_unchecked(list_out) }
+pub fn copy() -> os::Result<arc::R<cf::ArrayOf<cf::Dictionary>>> {
+    unsafe { os::result_unchecked(|res| VTCopyVideoEncoderList(None, res)) }
 }
 
 extern "C" {

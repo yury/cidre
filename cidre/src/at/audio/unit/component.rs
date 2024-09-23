@@ -26,7 +26,7 @@ pub struct Unit(audio::component::Instance);
 impl State<Unit> for UninitializedState {}
 
 impl State<Unit> for InitializedState {
-    fn release_resources(unit: &mut Unit) -> Result<(), os::Status> {
+    fn release_resources(unit: &mut Unit) -> os::Result {
         unsafe { AudioUnitUninitialize(unit).result() }
     }
 }
@@ -490,171 +490,171 @@ impl RenderActionFlags {
 ///
 /// These are the various errors that can be returned by AudioUnit API calls
 pub mod err {
-    use crate::os::Status;
+    use crate::os::Error;
 
     /// The property is not supported
     #[doc(alias = "kAudioUnitErr_InvalidProperty")]
-    pub const INVALID_PROPERTY: Status = Status(-10879);
+    pub const INVALID_PROPERTY: Error = Error::new_unchecked(-10879);
 
     /// The parameter is not supported
     #[doc(alias = "kAudioUnitErr_InvalidParameter")]
-    pub const INVALID_PARAMETER: Status = Status(-10878);
+    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-10878);
 
     /// The specified element is not valid
     #[doc(alias = "kAudioUnitErr_InvalidElement")]
-    pub const INVALID_ELEMENT: Status = Status(-10877);
+    pub const INVALID_ELEMENT: Error = Error::new_unchecked(-10877);
 
     /// There is no connection (generally an audio unit is asked to render but it has
     /// not input from which to gather data)
     #[doc(alias = "kAudioUnitErr_NoConnection")]
-    pub const NO_CONNECTION: Status = Status(-10876);
+    pub const NO_CONNECTION: Error = Error::new_unchecked(-10876);
 
     /// The audio unit is unable to be initialized
     #[doc(alias = "kAudioUnitErr_FailedInitialization")]
-    pub const FAILED_INITIALIZATION: Status = Status(-10875);
+    pub const FAILED_INITIALIZATION: Error = Error::new_unchecked(-10875);
 
     /// When an audio unit is initialized it has a value which specifies the max
     /// number of frames it will be asked to render at any given time. If an audio
     /// unit is asked to render more than this, this error is returned.
     #[doc(alias = "kAudioUnitErr_TooManyFramesToProcess")]
-    pub const TOO_MANY_FRAMES_TO_PROCESS: Status = Status(-10874);
+    pub const TOO_MANY_FRAMES_TO_PROCESS: Error = Error::new_unchecked(-10874);
 
     /// If an audio unit uses external files as a data source, this error is returned
     /// if a file is invalid (Apple's DLS synth returns this error)
     #[doc(alias = "kAudioUnitErr_InvalidFile")]
-    pub const INVALID_FILE: Status = Status(-10871);
+    pub const INVALID_FILE: Error = Error::new_unchecked(-10871);
 
     /// If an audio unit uses external files as a data source, this error is returned
     /// if a file is invalid (Apple's DLS synth returns this error)
     #[doc(alias = "kAudioUnitErr_UnknownFileType")]
-    pub const UNKNOWN_FILE_TYPE: Status = Status(-10870);
+    pub const UNKNOWN_FILE_TYPE: Error = Error::new_unchecked(-10870);
 
     /// If an audio unit uses external files as a data source, this error is returned
     /// if a file hasn't been set on it
     /// (Apple's DLS synth returns this error)
     #[doc(alias = "kAudioUnitErr_FileNotSpecified")]
-    pub const FILE_NOT_SPECIFIED: Status = Status(-10869);
+    pub const FILE_NOT_SPECIFIED: Error = Error::new_unchecked(-10869);
 
     /// Returned if an input or output format is not supported
     #[doc(alias = "kAudioUnitErr_FormatNotSupported")]
-    pub const FORMAT_NOT_SUPPORTED: Status = Status(-10868);
+    pub const FORMAT_NOT_SUPPORTED: Error = Error::new_unchecked(-10868);
 
     /// Returned if an operation requires an audio unit to be initialized and it is
     /// not.
     #[doc(alias = "kAudioUnitErr_Uninitialized")]
-    pub const UNINITIALIZED: Status = Status(-10867);
+    pub const UNINITIALIZED: Error = Error::new_unchecked(-10867);
 
     /// The specified scope is invalid
     #[doc(alias = "kAudioUnitErr_InvalidScope")]
-    pub const INVALID_SCOPE: Status = Status(-10866);
+    pub const INVALID_SCOPE: Error = Error::new_unchecked(-10866);
 
     /// The property cannot be written
     #[doc(alias = "kAudioUnitErr_PropertyNotWritable")]
-    pub const PROPERTY_NOT_WRITABLE: Status = Status(-10865);
+    pub const PROPERTY_NOT_WRITABLE: Error = Error::new_unchecked(-10865);
 
     /// Returned when an audio unit is in a state where it can't perform the requested
     /// action now - but it could later. Its usually used to guard a render operation
     /// when a reconfiguration of its internal state is being performed.
     #[doc(alias = "kAudioUnitErr_CannotDoInCurrentContext")]
-    pub const CANNOT_DO_IN_CURRENT_CONTEXT: Status = Status(-10863);
+    pub const CANNOT_DO_IN_CURRENT_CONTEXT: Error = Error::new_unchecked(-10863);
 
     /// The property is valid, but the value of the property being provided is not
     #[doc(alias = "kAudioUnitErr_InvalidPropertyValue")]
-    pub const INVALID_PROPERTY_VALUE: Status = Status(-10851);
+    pub const INVALID_PROPERTY_VALUE: Error = Error::new_unchecked(-10851);
 
     /// Returned when a property is valid, but it hasn't been set to a valid value at
     /// this time.
     #[doc(alias = "kAudioUnitErr_PropertyNotInUse")]
-    pub const PROPERTY_NOT_IN_USE: Status = Status(-10850);
+    pub const PROPERTY_NOT_IN_USE: Error = Error::new_unchecked(-10850);
 
     /// Indicates the operation cannot be performed because the audio unit is
     /// initialized.
     #[doc(alias = "kAudioUnitErr_Initialized")]
-    pub const INITIALIZED: Status = Status(-10849);
+    pub const INITIALIZED: Error = Error::new_unchecked(-10849);
 
     /// Used to indicate that the offline render operation is invalid. For instance,
     /// when the audio unit needs to be pre-flighted,
     /// but it hasn't been.
     #[doc(alias = "kAudioUnitErr_InvalidOfflineRender")]
-    pub const INVALID_OFFLINE_RENDER: Status = Status(-10848);
+    pub const INVALID_OFFLINE_RENDER: Error = Error::new_unchecked(-10848);
 
     /// Returned by either Open or Initialize, this error is used to indicate that the
     /// audio unit is not authorised, that it cannot be used. A host can then present
     /// a UI to notify the user the audio unit is not able to be used in its current
     /// state.
     #[doc(alias = "kAudioUnitErr_Unauthorized")]
-    pub const UNAUTHORIZED: Status = Status(-10847);
+    pub const UNAUTHORIZED: Error = Error::new_unchecked(-10847);
 
     /// Returned during the render call, if the audio unit produces more MIDI output,
     /// than the default allocated buffer. The audio unit can provide a size hint, in
     /// case it needs a larger buffer. See the documentation for AUAudioUnit's
     /// MIDIOutputBufferSizeHint property.
     #[doc(alias = "kAudioUnitErr_MIDIOutputBufferFull")]
-    pub const MIDI_OUTPUT_BUFFER_FULL: Status = Status(-66753);
+    pub const MIDI_OUTPUT_BUFFER_FULL: Error = Error::new_unchecked(-66753);
 
     /// The audio unit did not satisfy the render request in time.
     #[doc(alias = "kAudioUnitErr_RenderTimeout")]
-    pub const RENDER_TIMEOUT: Status = Status(-66745);
+    pub const RENDER_TIMEOUT: Error = Error::new_unchecked(-66745);
 
     /// The specified identifier did not match any Audio Unit Extensions.
     #[doc(alias = "kAudioUnitErr_ExtensionNotFound")]
-    pub const EXTENSION_NOT_FOUND: Status = Status(-66744);
+    pub const EXTENSION_NOT_FOUND: Error = Error::new_unchecked(-66744);
 
     /// The parameter value is not supported, e.g. the value specified is NaN or
     /// infinite.
     #[doc(alias = "kAudioUnitErr_InvalidParameterValue")]
-    pub const INVALID_PARAMETER_VALUE: Status = Status(-66743);
+    pub const INVALID_PARAMETER_VALUE: Error = Error::new_unchecked(-66743);
 
     /// The file path that was passed is not supported. It is either too long or contains
     /// invalid characters.
     #[doc(alias = "kAudioUnitErr_InvalidFilePath")]
-    pub const INVALID_FILE_PATH: Status = Status(-66742);
+    pub const INVALID_FILE_PATH: Error = Error::new_unchecked(-66742);
 
     /// A required key is missing from a dictionary object.
     #[doc(alias = "kAudioUnitErr_MissingKey")]
-    pub const MISSING_KEY: Status = Status(-66741);
+    pub const MISSING_KEY: Error = Error::new_unchecked(-66741);
 
     /// The operation can not be performed for a component instance instantiated using the
     /// deprecated Component Manager. A host application should use the API functions
     /// AudioComponentInstantiate or AudioComponentInstanceNew when rebuilding
     /// against the macOS 11 or later SDK.
     #[doc(alias = "kAudioUnitErr_ComponentManagerNotSupported")]
-    pub const COMPONENT_MANAGER_NOT_SUPPORTED: Status = Status(-66749);
+    pub const COMPONENT_MANAGER_NOT_SUPPORTED: Error = Error::new_unchecked(-66749);
 }
 
 pub mod component_err {
-    use crate::os::Status;
+    use crate::os::Error;
 
     #[doc(alias = "kAudioComponentErr_InstanceTimedOut")]
-    pub const INSTANCE_TIMED_OUT: Status = Status(-66754);
+    pub const INSTANCE_TIMED_OUT: Error = Error::new_unchecked(-66754);
 
     #[doc(alias = "kAudioComponentErr_InstanceInvalidated")]
-    pub const INSTANCE_INVALIDATED: Status = Status(-66749);
+    pub const INSTANCE_INVALIDATED: Error = Error::new_unchecked(-66749);
 
     /// a non-unique component description was provided to AudioOutputUnitPublish
     #[doc(alias = "kAudioComponentErr_DuplicateDescription")]
-    pub const DUPLICATE_DESCRIPTION: Status = Status(-66752);
+    pub const DUPLICATE_DESCRIPTION: Error = Error::new_unchecked(-66752);
 
     /// an unsupported component type was provided to AudioOutputUnitPublish
     #[doc(alias = "kAudioComponentErr_UnsupportedType")]
-    pub const UNSUPPORTED_TYPE: Status = Status(-66751);
+    pub const UNSUPPORTED_TYPE: Error = Error::new_unchecked(-66751);
 
     /// components published via AudioOutputUnitPublish may only have one instance
     #[doc(alias = "kAudioComponentErr_TooManyInstances")]
-    pub const TOO_MANY_INSTANCES: Status = Status(-66750);
+    pub const TOO_MANY_INSTANCES: Error = Error::new_unchecked(-66750);
 
     /// app needs "inter-app-audio" entitlement or host app needs "audio" in its UIBackgroundModes.
     /// Or app is trying to register a component not declared in its Info.plist.
     #[doc(alias = "kAudioComponentErr_NotPermitted")]
-    pub const NOT_PERMITTED: Status = Status(-66748);
+    pub const NOT_PERMITTED: Error = Error::new_unchecked(-66748);
 
     /// host did not render in a timely manner; must uninitialize and reinitialize.
     #[doc(alias = "kAudioComponentErr_InitializationTimedOut")]
-    pub const INITIALIZATION_TIMED_OUT: Status = Status(-66747);
+    pub const INITIALIZATION_TIMED_OUT: Error = Error::new_unchecked(-66747);
 
     /// inter-app AU element formats must have sample rates matching the hardware.
     #[doc(alias = "kAudioComponentErr_InvalidFormat")]
-    pub const INVALID_FORMAT: Status = Status(-66746);
+    pub const INVALID_FORMAT: Error = Error::new_unchecked(-66746);
 }
 
 /// Type used for audio unit properties.
@@ -828,7 +828,7 @@ impl Unit {
         output_bus_num: u32,
         frames_num: u32,
         buf_list: &mut audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             AudioUnitRender(
                 self,
@@ -847,7 +847,7 @@ impl Unit {
         timestamp: &audio::TimeStamp,
         frames_num: u32,
         buf_list: &mut audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             AudioUnitProcess(
                 self,
@@ -865,7 +865,7 @@ impl Unit {
         prop_id: PropId,
         scope: Scope,
         element: Element,
-    ) -> Result<(u32, bool), os::Status> {
+    ) -> os::Result<(u32, bool)> {
         let mut size = 0u32;
         let mut writable = false;
         unsafe {
@@ -880,7 +880,7 @@ impl Unit {
         scope: Scope,
         element: Element,
         buf: &mut [T],
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let ptr = buf.as_mut_ptr();
         let mut size = (buf.len() * std::mem::size_of::<T>()) as u32;
         unsafe { AudioUnitGetProperty(self, prop_id, scope, element, ptr as _, &mut size).result() }
@@ -891,7 +891,7 @@ impl Unit {
         prop_id: PropId,
         scope: Scope,
         element: Element,
-    ) -> Result<Vec<T>, os::Status> {
+    ) -> os::Result<Vec<T>> {
         let (mut size, _) = self.prop_info(prop_id, scope, element)?;
         if size == 0 {
             return Ok(vec![]);
@@ -912,12 +912,7 @@ impl Unit {
     }
 
     #[doc(alias = "AudioCodecGetProperty")]
-    pub fn prop<T: Sized>(
-        &self,
-        prop_id: PropId,
-        scope: Scope,
-        element: Element,
-    ) -> Result<T, os::Status> {
+    pub fn prop<T: Sized>(&self, prop_id: PropId, scope: Scope, element: Element) -> os::Result<T> {
         let mut size = std::mem::size_of::<T>() as u32;
         unsafe {
             let mut value = MaybeUninit::<T>::uninit();
@@ -940,18 +935,18 @@ impl Unit {
         scope: Scope,
         element: Element,
         val: &T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let size = std::mem::size_of::<T>() as u32;
         unsafe {
             AudioUnitSetProperty(self, prop_id, scope, element, val as *const _ as _, size).result()
         }
     }
 
-    pub fn params_list(&self, scope: Scope) -> Result<Vec<ParamId>, os::Status> {
+    pub fn params_list(&self, scope: Scope) -> os::Result<Vec<ParamId>> {
         self.prop_vec(PropId::PARAM_LIST, scope, Element::OUTPUT)
     }
 
-    pub fn param_info(&self, param_id: ParamId) -> Result<ParamInfo, os::Status> {
+    pub fn param_info(&self, param_id: ParamId) -> os::Result<ParamInfo> {
         self.prop(PropId::PARAM_INFO, Scope::GLOBAL, Element(param_id.0))
     }
 
@@ -960,7 +955,7 @@ impl Unit {
         param_id: ParamId,
         scope: Scope,
         element: Element,
-    ) -> Result<ParamValue, os::Status> {
+    ) -> os::Result<ParamValue> {
         let mut val = Default::default();
         unsafe {
             AudioUnitGetParameter(self, param_id, scope, element, &mut val).result()?;
@@ -975,25 +970,24 @@ impl Unit {
         element: Element,
         val: ParamValue,
         frames_offset: u32,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             AudioUnitSetParameter(self, param_id, scope, element, val, frames_offset).result()
         }
     }
 
-    pub fn offline_render(&self) -> Result<bool, os::Status> {
-        let res: Result<u32, os::Status> =
-            self.prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT);
+    pub fn offline_render(&self) -> os::Result<bool> {
+        let res: os::Result<u32> = self.prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT);
         res.map(|v| v == 1)
     }
 
-    pub fn set_offline_render(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_offline_render(&mut self, val: bool) -> os::Result {
         let val = val as u32;
 
         self.set_prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT, &val)
     }
 
-    pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
+    pub fn last_render_sample_time(&self) -> os::Result<f64> {
         self.prop(
             PropId::LAST_RENDER_SAMPLE_TIME,
             Scope::GLOBAL,
@@ -1001,15 +995,15 @@ impl Unit {
         )
     }
 
-    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+    pub fn last_render_err(&self) -> os::Result<os::Status> {
         self.prop(PropId::LAST_RENDER_ERROR, Scope::GLOBAL, Element::OUTPUT)
     }
 
-    pub fn render_quality(&self) -> Result<u32, os::Status> {
+    pub fn render_quality(&self) -> os::Result<u32> {
         self.prop(PropId::RENDER_QUALITY, Scope::GLOBAL, Element::OUTPUT)
     }
 
-    pub fn set_render_quality(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_render_quality(&mut self, val: u32) -> os::Result {
         self.set_prop(
             PropId::RENDER_QUALITY,
             Scope::GLOBAL,
@@ -1018,19 +1012,19 @@ impl Unit {
         )
     }
 
-    pub fn should_allocate_input_buf(&self) -> Result<bool, os::Status> {
-        let res: Result<u32, os::Status> =
+    pub fn should_allocate_input_buf(&self) -> os::Result<bool> {
+        let res: os::Result<u32> =
             self.prop(PropId::SHOULD_ALLOCATE_BUF, Scope::INPUT, Element::INPUT);
         res.map(|v| v == 1)
     }
 
-    pub fn should_allocate_output_buf(&self) -> Result<bool, os::Status> {
-        let res: Result<u32, os::Status> =
+    pub fn should_allocate_output_buf(&self) -> os::Result<bool> {
+        let res: os::Result<u32> =
             self.prop(PropId::SHOULD_ALLOCATE_BUF, Scope::OUTPUT, Element::OUTPUT);
         res.map(|v| v == 1)
     }
 
-    pub fn set_should_allocate_output_buf(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_should_allocate_output_buf(&mut self, val: bool) -> os::Result {
         let val = val as u32;
         self.set_prop(
             PropId::SHOULD_ALLOCATE_BUF,
@@ -1040,7 +1034,7 @@ impl Unit {
         )
     }
 
-    pub fn set_should_allocate_input_buf(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_should_allocate_input_buf(&mut self, val: bool) -> os::Result {
         let val = val as u32;
         self.set_prop(
             PropId::SHOULD_ALLOCATE_BUF,
@@ -1050,7 +1044,7 @@ impl Unit {
         )
     }
 
-    pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
+    pub fn element_count(&self, scope: Scope) -> os::Result<u32> {
         let element = if scope == Scope::INPUT {
             Element::INPUT
         } else {
@@ -1059,7 +1053,7 @@ impl Unit {
         self.prop(PropId::ELEMENT_COUNT, scope, element)
     }
 
-    pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
+    pub fn set_element_count(&mut self, scope: Scope, val: u32) -> os::Result {
         let element = if scope == Scope::INPUT {
             Element::INPUT
         } else {
@@ -1068,7 +1062,7 @@ impl Unit {
         self.set_prop(PropId::ELEMENT_COUNT, scope, element, &val)
     }
 
-    pub fn sample_rate(&self, scope: Scope) -> Result<f64, os::Status> {
+    pub fn sample_rate(&self, scope: Scope) -> os::Result<f64> {
         let element = if scope == Scope::INPUT {
             Element::INPUT
         } else {
@@ -1078,11 +1072,7 @@ impl Unit {
         self.prop(PropId::SAMPLE_RATE, scope, element)
     }
 
-    pub fn stream_format(
-        &self,
-        scope: Scope,
-        bus: u32,
-    ) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn stream_format(&self, scope: Scope, bus: u32) -> os::Result<audio::StreamBasicDesc> {
         self.prop(PropId::STREAM_FORMAT, scope, Element(bus))
     }
 
@@ -1091,26 +1081,26 @@ impl Unit {
         scope: Scope,
         bus: u32,
         val: &StreamBasicDesc,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.set_prop(PropId::STREAM_FORMAT, scope, Element(bus), val)
     }
 
-    pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
+    pub fn nick_name(&self) -> os::Result<Option<arc::R<cf::String>>> {
         self.prop(PropId::NICK_NAME, Scope::GLOBAL, Default::default())
     }
 
-    pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> Result<(), os::Status> {
+    pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> os::Result {
         self.set_prop(PropId::NICK_NAME, Scope::GLOBAL, Default::default(), &val)
     }
 
-    pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
+    pub fn max_frames_per_slice(&self) -> os::Result<u32> {
         self.prop(
             PropId::MAX_FRAMES_PER_SLICE,
             Scope::GLOBAL,
             Default::default(),
         )
     }
-    pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_max_frames_per_slice(&mut self, val: u32) -> os::Result {
         self.set_prop(
             PropId::MAX_FRAMES_PER_SLICE,
             Scope::GLOBAL,
@@ -1125,7 +1115,7 @@ impl Unit {
         bus: u32,
         cb: RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let val: RenderCbStruct<N, T> = RenderCbStruct {
             proc: cb as _,
             proc_ref_con: ref_con,
@@ -1133,7 +1123,7 @@ impl Unit {
         self.set_prop(PropId::SET_RENDER_CB, scope, Element(bus), &val)
     }
 
-    pub fn remove_input_cb(&mut self, scope: Scope, bus: u32) -> Result<(), os::Status> {
+    pub fn remove_input_cb(&mut self, scope: Scope, bus: u32) -> os::Result {
         let val: RenderCbStruct<1, c_void> = RenderCbStruct {
             proc: std::ptr::null(),
             proc_ref_con: std::ptr::null(),
@@ -1147,7 +1137,7 @@ impl Unit {
         bus: u32,
         cb: RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let val: RenderCbStruct<N, T> = RenderCbStruct {
             proc: cb as _,
             proc_ref_con: ref_con,
@@ -1155,7 +1145,7 @@ impl Unit {
         self.set_prop(PropId::OUTPUT_SET_INPUT_CB, scope, Element(bus), &val)
     }
 
-    pub fn output_remove_input_cb(&mut self, scope: Scope, bus: u32) -> Result<(), os::Status> {
+    pub fn output_remove_input_cb(&mut self, scope: Scope, bus: u32) -> os::Result {
         let val: RenderCbStruct<1, c_void> = RenderCbStruct {
             proc: std::ptr::null(),
             proc_ref_con: std::ptr::null(),
@@ -1165,29 +1155,30 @@ impl Unit {
 }
 
 impl UnitRef<UninitializedState> {
-    pub fn initialize(mut self) -> Result<UnitRef<InitializedState>, os::Status> {
+    pub fn initialize(mut self) -> os::Result<UnitRef<InitializedState>> {
         unsafe {
             AudioUnitInitialize(&mut self.0).result()?;
             Ok(std::mem::transmute(self))
         }
     }
-    pub fn set_offline_render(&mut self, val: bool) -> Result<(), os::Status> {
+
+    pub fn set_offline_render(&mut self, val: bool) -> os::Result {
         self.0.set_offline_render(val)
     }
 
-    pub fn set_render_quality(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_render_quality(&mut self, val: u32) -> os::Result {
         self.0.set_render_quality(val)
     }
 
-    pub fn set_should_allocate_output_buf(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_should_allocate_output_buf(&mut self, val: bool) -> os::Result {
         self.0.set_should_allocate_output_buf(val)
     }
 
-    pub fn set_should_allocate_input_buf(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_should_allocate_input_buf(&mut self, val: bool) -> os::Result {
         self.0.set_should_allocate_input_buf(val)
     }
 
-    pub fn set_max_frames_per_slice(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_max_frames_per_slice(&mut self, val: u32) -> os::Result {
         self.0.set_max_frames_per_slice(val)
     }
 
@@ -1196,7 +1187,7 @@ impl UnitRef<UninitializedState> {
         scope: Scope,
         bus: u32,
         val: &audio::StreamBasicDesc,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0.set_stream_format(scope, bus, val)
     }
 }
@@ -1215,7 +1206,7 @@ impl<S: State<Unit>> UnitRef<S> {
         bus: u32,
         cb: RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0.set_input_cb(Scope::INPUT, bus, cb, ref_con)
     }
 
@@ -1223,15 +1214,15 @@ impl<S: State<Unit>> UnitRef<S> {
         &mut self,
         cb: RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0.set_input_cb(Scope::GLOBAL, 1, cb, ref_con)
     }
 
-    pub fn remove_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+    pub fn remove_input_cb(&mut self, bus: u32) -> os::Result {
         self.0.remove_input_cb(Scope::INPUT, bus)
     }
 
-    pub fn remove_global_input_cb(&mut self, bus: u32) -> Result<(), os::Status> {
+    pub fn remove_global_input_cb(&mut self, bus: u32) -> os::Result {
         self.0.remove_input_cb(Scope::GLOBAL, bus)
     }
 
@@ -1240,11 +1231,11 @@ impl<S: State<Unit>> UnitRef<S> {
         prop_id: PropId,
         scope: Scope,
         element: Element,
-    ) -> Result<(u32, bool), os::Status> {
+    ) -> os::Result<(u32, bool)> {
         self.0.prop_info(prop_id, scope, element)
     }
 
-    pub fn params_list(&self, scope: Scope) -> Result<Vec<ParamId>, os::Status> {
+    pub fn params_list(&self, scope: Scope) -> os::Result<Vec<ParamId>> {
         self.0.params_list(scope)
     }
 
@@ -1253,82 +1244,78 @@ impl<S: State<Unit>> UnitRef<S> {
         param_id: ParamId,
         scope: Scope,
         element: Element,
-    ) -> Result<ParamValue, os::Status> {
+    ) -> os::Result<ParamValue> {
         self.0.param(param_id, scope, element)
     }
 
     #[inline]
-    pub fn element_count(&self, scope: Scope) -> Result<u32, os::Status> {
+    pub fn element_count(&self, scope: Scope) -> os::Result<u32> {
         self.0.element_count(scope)
     }
 
     #[inline]
-    pub fn offline_render(&self) -> Result<bool, os::Status> {
+    pub fn offline_render(&self) -> os::Result<bool> {
         self.0.offline_render()
     }
 
     #[inline]
-    pub fn last_render_sample_time(&self) -> Result<f64, os::Status> {
+    pub fn last_render_sample_time(&self) -> os::Result<f64> {
         self.0.last_render_sample_time()
     }
 
     #[inline]
-    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+    pub fn last_render_err(&self) -> os::Result<os::Status> {
         self.0.last_render_err()
     }
 
     #[inline]
-    pub fn render_quality(&self) -> Result<u32, os::Status> {
+    pub fn render_quality(&self) -> os::Result<u32> {
         self.0.render_quality()
     }
 
     #[inline]
-    pub fn should_allocate_input_buf(&self) -> Result<bool, os::Status> {
+    pub fn should_allocate_input_buf(&self) -> os::Result<bool> {
         self.0.should_allocate_input_buf()
     }
 
     #[inline]
-    pub fn should_allocate_output_buf(&self) -> Result<bool, os::Status> {
+    pub fn should_allocate_output_buf(&self) -> os::Result<bool> {
         self.0.should_allocate_output_buf()
     }
 
     #[inline]
-    pub fn sample_rate(&self, scope: Scope) -> Result<f64, os::Status> {
+    pub fn sample_rate(&self, scope: Scope) -> os::Result<f64> {
         self.0.sample_rate(scope)
     }
 
     #[inline]
-    pub fn stream_format(
-        &self,
-        scope: Scope,
-        bus: u32,
-    ) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn stream_format(&self, scope: Scope, bus: u32) -> os::Result<audio::StreamBasicDesc> {
         self.0.stream_format(scope, bus)
     }
 
     #[inline]
-    pub fn set_element_count(&mut self, scope: Scope, val: u32) -> Result<(), os::Status> {
+    pub fn set_element_count(&mut self, scope: Scope, val: u32) -> os::Result {
         self.0.set_element_count(scope, val)
     }
 
     #[inline]
-    pub fn nick_name(&self) -> Result<Option<arc::R<cf::String>>, os::Status> {
+    pub fn nick_name(&self) -> os::Result<Option<arc::R<cf::String>>> {
         self.0.nick_name()
     }
 
     #[inline]
-    pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> Result<(), os::Status> {
+    pub fn set_nick_name(&mut self, val: Option<&cf::String>) -> os::Result {
         self.0.set_nick_name(val)
     }
 
     #[inline]
-    pub fn max_frames_per_slice(&self) -> Result<u32, os::Status> {
+    pub fn max_frames_per_slice(&self) -> os::Result<u32> {
         self.0.max_frames_per_slice()
     }
 }
 
 impl UnitRef<InitializedState> {
-    pub fn unintialize(mut self) -> Result<UnitRef<UninitializedState>, os::Status> {
+    pub fn unintialize(mut self) -> os::Result<UnitRef<UninitializedState>> {
         Ok(unsafe {
             AudioUnitUninitialize(&mut self.0).result()?;
             std::mem::transmute(self)
@@ -1341,7 +1328,7 @@ impl UnitRef<InitializedState> {
         output_bus_num: u32,
         frames_num: u32,
         buf_list: &mut audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0
             .render(timestamp, output_bus_num, frames_num, buf_list)
     }
@@ -1351,12 +1338,12 @@ impl UnitRef<InitializedState> {
         timestamp: &audio::TimeStamp,
         frames_num: u32,
         buf_list: &mut audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0.process(timestamp, frames_num, buf_list)
     }
 
     // TODO: may be restrict with subtype?
-    pub fn schedule_slice(&mut self, slice: &ScheduledSlice) -> Result<(), os::Status> {
+    pub fn schedule_slice(&mut self, slice: &ScheduledSlice) -> os::Result {
         self.0.set_prop(
             PropId::SCHEDULE_SLICE,
             Scope::GLOBAL,
@@ -1367,13 +1354,13 @@ impl UnitRef<InitializedState> {
 }
 
 impl audio::Component {
-    pub fn open_unit(&self) -> Result<UnitRef<UninitializedState>, os::Status> {
+    pub fn open_unit(&self) -> os::Result<UnitRef<UninitializedState>> {
         Ok(unsafe { std::mem::transmute(self.open()?) })
     }
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     static kAudioComponentRegistrationsChangedNotification: &'static cf::NotificationName;
     static kAudioComponentInstanceInvalidationNotification: &'static cf::NotificationName;
 

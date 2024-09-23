@@ -31,7 +31,7 @@ where
     }
 
     #[inline]
-    pub fn last_render_err(&self) -> Result<os::Status, os::Status> {
+    pub fn last_render_err(&self) -> os::Result<os::Status> {
         self.unit().last_render_err()
     }
 
@@ -40,7 +40,7 @@ where
         &mut self,
         cb: au::RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0
             .unit_mut()
             .output_set_input_cb(au::Scope::GLOBAL, 1, cb, ref_con)
@@ -51,28 +51,23 @@ where
         &mut self,
         cb: au::RenderCb<N, T>,
         ref_con: *const T,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         self.0
             .unit_mut()
             .set_input_cb(au::Scope::GLOBAL, 0, cb, ref_con)
     }
 
-    // #[inline]
-    // pub fn remove_input_cb(&mut self) -> Result<(), os::Status> {
-    //     self.0.remove_input_cb(0)
-    // }
-
     #[inline]
-    pub fn output_stream_format(&self, bus: u32) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn output_stream_format(&self, bus: u32) -> os::Result<audio::StreamBasicDesc> {
         self.unit().stream_format(Scope::INPUT, bus)
     }
 
     #[inline]
-    pub fn input_stream_format(&self, bus: u32) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn input_stream_format(&self, bus: u32) -> os::Result<audio::StreamBasicDesc> {
         self.unit().stream_format(Scope::OUTPUT, bus)
     }
 
-    pub fn is_running(&self) -> Result<bool, os::Status> {
+    pub fn is_running(&self) -> os::Result<bool> {
         let res: u32 = self.unit().prop(
             au::PropId::OUTPUT_IS_RUNNING,
             au::Scope::GLOBAL,
@@ -81,63 +76,56 @@ where
         Ok(res != 0)
     }
 
-    pub fn is_io_enabled(&self, scope: au::Scope, bus: u32) -> Result<bool, os::Status> {
+    pub fn is_io_enabled(&self, scope: au::Scope, bus: u32) -> os::Result<bool> {
         let res: u32 = self
             .unit()
             .prop(au::PropId::OUTPUT_ENABLE_IO, scope, au::Element(bus))?;
         Ok(res != 0)
     }
 
-    pub fn set_io_enabled(
-        &mut self,
-        scope: au::Scope,
-        bus: u32,
-        val: bool,
-    ) -> Result<(), os::Status> {
+    pub fn set_io_enabled(&mut self, scope: au::Scope, bus: u32, val: bool) -> os::Result {
         let val = val as u32;
         self.unit_mut()
             .set_prop(au::PropId::OUTPUT_ENABLE_IO, scope, au::Element(bus), &val)
     }
 
-    pub fn has_output_io(&self) -> Result<bool, os::Status> {
+    pub fn has_output_io(&self) -> os::Result<bool> {
         let res: u32 =
             self.unit()
                 .prop(au::PropId::OUTPUT_HAS_IO, au::Scope::OUTPUT, au::Element(0))?;
         Ok(res != 0)
     }
 
-    pub fn has_input_io(&self) -> Result<bool, os::Status> {
+    pub fn has_input_io(&self) -> os::Result<bool> {
         let res: u32 =
             self.unit()
                 .prop(au::PropId::OUTPUT_HAS_IO, au::Scope::INPUT, au::Element(1))?;
         Ok(res != 0)
     }
 
-    pub fn set_should_allocate_input_buf(&mut self, arg: bool) -> Result<(), os::Status> {
+    pub fn set_should_allocate_input_buf(&mut self, arg: bool) -> os::Result {
         let arg: u32 = arg as u32;
         self.unit_mut().set_prop(
             au::PropId::SHOULD_ALLOCATE_BUF,
             au::Scope::OUTPUT,
             au::Element(1),
             &arg,
-        )?;
-        Ok(())
+        )
     }
 
-    pub fn set_should_allocate_output_buf(&mut self, arg: bool) -> Result<(), os::Status> {
+    pub fn set_should_allocate_output_buf(&mut self, arg: bool) -> os::Result {
         let arg: u32 = arg as u32;
         self.unit_mut().set_prop(
             au::PropId::SHOULD_ALLOCATE_BUF,
             au::Scope::INPUT,
             au::Element(0),
             &arg,
-        )?;
-        Ok(())
+        )
     }
 }
 
 impl Output<UninitializedState> {
-    pub fn new_apple() -> Result<Self, os::Status> {
+    pub fn new_apple() -> os::Result<Self> {
         let desc = audio::ComponentDesc {
             type_: au::Type::OUTPUT.0,
             #[cfg(target_os = "macos")]
@@ -158,7 +146,7 @@ impl Output<UninitializedState> {
     }
 
     /// Apple voice processing unit
-    pub fn new_apple_vp() -> Result<Self, os::Status> {
+    pub fn new_apple_vp() -> os::Result<Self> {
         let desc = audio::ComponentDesc {
             type_: au::Type::OUTPUT.0,
             sub_type: au::SubType::VOICE_PROCESSING_IO.0,
@@ -175,11 +163,11 @@ impl Output<UninitializedState> {
         Ok(Self(unit))
     }
 
-    pub fn allocate_resources(self) -> Result<Output<InitializedState>, os::Status> {
+    pub fn allocate_resources(self) -> os::Result<Output<InitializedState>> {
         Ok(Output(self.0.initialize()?))
     }
 
-    pub fn start_ts_at_zero(&self) -> Result<bool, os::Status> {
+    pub fn start_ts_at_zero(&self) -> os::Result<bool> {
         let res: u32 = self.unit().prop(
             au::PropId::OUTPUT_START_TS_AT_ZERO,
             au::Scope::GLOBAL,
@@ -188,7 +176,7 @@ impl Output<UninitializedState> {
         Ok(res != 0)
     }
 
-    pub fn set_start_ts_at_zero(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_start_ts_at_zero(&mut self, val: bool) -> os::Result {
         let val = val as u32;
         self.unit_mut().set_prop(
             au::PropId::OUTPUT_START_TS_AT_ZERO,
@@ -199,24 +187,18 @@ impl Output<UninitializedState> {
     }
 
     #[inline]
-    pub fn set_output_stream_format(
-        &mut self,
-        val: &audio::StreamBasicDesc,
-    ) -> Result<(), os::Status> {
+    pub fn set_output_stream_format(&mut self, val: &audio::StreamBasicDesc) -> os::Result {
         self.unit_mut().set_stream_format(Scope::INPUT, 0, val)
     }
 
     #[inline]
-    pub fn set_input_stream_format(
-        &mut self,
-        val: &audio::StreamBasicDesc,
-    ) -> Result<(), os::Status> {
+    pub fn set_input_stream_format(&mut self, val: &audio::StreamBasicDesc) -> os::Result {
         self.unit_mut().set_stream_format(Scope::OUTPUT, 1, val)
     }
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn current_device(&self) -> Result<AudioObjId, os::Status> {
+    pub fn current_device(&self) -> os::Result<AudioObjId> {
         self.unit().prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -226,7 +208,7 @@ impl Output<UninitializedState> {
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn set_current_device(&mut self, val: AudioObjId) -> Result<(), os::Status> {
+    pub fn set_current_device(&mut self, val: AudioObjId) -> os::Result {
         self.unit_mut().set_prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -238,7 +220,7 @@ impl Output<UninitializedState> {
 
 impl Output<InitializedState> {
     #[inline]
-    pub fn deallocate_resources(self) -> Result<Output<UninitializedState>, os::Status> {
+    pub fn deallocate_resources(self) -> os::Result<Output<UninitializedState>> {
         Ok(Output(self.0.unintialize()?))
     }
 
@@ -247,20 +229,20 @@ impl Output<InitializedState> {
         &mut self,
         n_frames: u32,
         buf_list: &mut audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         let ts = audio::TimeStamp::invalid();
         self.0.render(&ts, 0, n_frames, buf_list)
     }
 
     #[doc(alias = "AudioOutputUnitStart")]
     #[inline]
-    pub fn start(&mut self) -> Result<(), os::Status> {
+    pub fn start(&mut self) -> os::Result {
         unsafe { AudioOutputUnitStart(self.unit_mut()).result() }
     }
 
     #[doc(alias = "AudioOutputUnitStop")]
     #[inline]
-    pub fn stop(&mut self) -> Result<(), os::Status> {
+    pub fn stop(&mut self) -> os::Result {
         unsafe { AudioOutputUnitStop(self.unit_mut()).result() }
     }
 }

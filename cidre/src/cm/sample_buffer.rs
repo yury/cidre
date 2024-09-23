@@ -1,4 +1,4 @@
-use std::{ffi::c_void, mem::MaybeUninit, ptr::slice_from_raw_parts};
+use std::{ffi::c_void, ptr::slice_from_raw_parts};
 
 use crate::{arc, cf, cm, define_cf_type, define_opts, os};
 
@@ -130,25 +130,24 @@ impl SampleBuf {
         data_buf: Option<&cm::BlockBuf>,
         data_ready: bool,
         format_description: Option<&cm::FormatDesc>,
-    ) -> Result<arc::R<SampleBuf>, os::Status> {
-        let mut sample_buf_out = None;
-
+    ) -> os::Result<arc::R<SampleBuf>> {
         unsafe {
-            Self::create_in(
-                None,
-                data_buf,
-                data_ready,
-                None,
-                std::ptr::null(),
-                format_description,
-                0,
-                0,
-                std::ptr::null(),
-                0,
-                std::ptr::null(),
-                &mut sample_buf_out,
-            )
-            .to_result_unchecked(sample_buf_out)
+            os::result_unchecked(|res| {
+                Self::create_in(
+                    None,
+                    data_buf,
+                    data_ready,
+                    None,
+                    std::ptr::null(),
+                    format_description,
+                    0,
+                    0,
+                    std::ptr::null(),
+                    0,
+                    std::ptr::null(),
+                    res,
+                )
+            })
         }
     }
 
@@ -166,7 +165,7 @@ impl SampleBuf {
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
         sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
-    ) -> os::Status {
+    ) -> os::Result {
         CMSampleBufferCreate(
             allocator,
             data_buffer,
@@ -181,6 +180,7 @@ impl SampleBuf {
             sample_size_array,
             sample_buffer_out,
         )
+        .result()
     }
 
     #[cfg(feature = "cv")]
@@ -192,20 +192,20 @@ impl SampleBuf {
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDesc,
         sample_timing: &SampleTimingInfo,
-    ) -> Result<arc::R<SampleBuf>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<SampleBuf>> {
         unsafe {
-            CMSampleBufferCreateForImageBuffer(
-                allocator,
-                image_buf,
-                data_ready,
-                make_data_ready_cb,
-                make_data_ready_refcon,
-                format_description,
-                sample_timing,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMSampleBufferCreateForImageBuffer(
+                    allocator,
+                    image_buf,
+                    data_ready,
+                    make_data_ready_cb,
+                    make_data_ready_refcon,
+                    format_description,
+                    sample_timing,
+                    res,
+                )
+            })
         }
     }
 
@@ -217,20 +217,20 @@ impl SampleBuf {
         make_data_ready_refcon: *const c_void,
         format_description: &cm::FormatDesc,
         sample_timing: &SampleTimingInfo,
-    ) -> Result<arc::R<SampleBuf>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<SampleBuf>> {
         unsafe {
-            CMSampleBufferCreateForImageBuffer(
-                None,
-                image_buffer,
-                data_ready,
-                make_data_ready_cb,
-                make_data_ready_refcon,
-                format_description,
-                sample_timing,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMSampleBufferCreateForImageBuffer(
+                    None,
+                    image_buffer,
+                    data_ready,
+                    make_data_ready_cb,
+                    make_data_ready_refcon,
+                    format_description,
+                    sample_timing,
+                    res,
+                )
+            })
         }
     }
 
@@ -256,7 +256,7 @@ impl SampleBuf {
 
     #[doc(alias = "CMSampleBufferSetDataBuffer")]
     #[inline]
-    pub fn set_data_buf(&mut self, val: &cm::BlockBuf) -> Result<(), os::Status> {
+    pub fn set_data_buf(&mut self, val: &cm::BlockBuf) -> os::Result {
         unsafe { CMSampleBufferSetDataBuffer(self, val).result() }
     }
 
@@ -310,15 +310,8 @@ impl SampleBuf {
 
     #[doc(alias = "CMSampleBufferGetSampleTimingInfo")]
     #[inline]
-    pub fn timing_info(
-        &self,
-        sample_index: cm::ItemIndex,
-    ) -> Result<cm::SampleTimingInfo, os::Status> {
-        let mut info = MaybeUninit::<cm::SampleTimingInfo>::uninit();
-        unsafe {
-            CMSampleBufferGetSampleTimingInfo(self, sample_index, info.as_mut_ptr())
-                .to_result_init(info)
-        }
+    pub fn timing_info(&self, sample_index: cm::ItemIndex) -> os::Result<cm::SampleTimingInfo> {
+        unsafe { os::result_init(|res| CMSampleBufferGetSampleTimingInfo(self, sample_index, res)) }
     }
 
     /// Returns the size in bytes of a specified sample in a 'cm::SampleBuf'.
@@ -414,7 +407,7 @@ impl SampleBuf {
     /// Example of use: the invalidation callback could cancel pending I/O.
     #[doc(alias = "CMSampleBufferInvalidate")]
     #[inline]
-    pub fn invalidate(&self) -> Result<(), os::Status> {
+    pub fn invalidate(&self) -> os::Result {
         unsafe { CMSampleBufferInvalidate(self).result() }
     }
 
@@ -422,7 +415,7 @@ impl SampleBuf {
     /// cm::SampleBufferMakeDataReadyCallback.
     #[doc(alias = "CMSampleBufferMakeDataReady")]
     #[inline]
-    pub fn make_data_ready(&self) -> Result<(), os::Status> {
+    pub fn make_data_ready(&self) -> os::Result {
         unsafe { CMSampleBufferMakeDataReady(self).result() }
     }
 
@@ -443,7 +436,7 @@ impl SampleBuf {
         frame_offset: i32,
         num_frames: i32,
         buffer_list: &mut cat::audio::BufList<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             CMSampleBufferCopyPCMDataIntoAudioBufferList(
                 self,
@@ -468,9 +461,7 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioStreamPacketDescriptionsPtr")]
     #[inline]
-    pub fn audio_stream_packet_descs(
-        &self,
-    ) -> Result<Option<&[cat::audio::StreamPacketDesc]>, os::Status> {
+    pub fn audio_stream_packet_descs(&self) -> os::Result<Option<&[cat::audio::StreamPacketDesc]>> {
         let ptr: *mut cat::audio::StreamPacketDesc = std::ptr::null_mut();
         let mut size = 0;
         unsafe {
@@ -486,7 +477,7 @@ impl SampleBuf {
     #[cfg(feature = "cat")]
     #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
     #[inline]
-    pub fn audio_buf_list<const N: usize>(&self) -> Result<BlockBufAudioBufList<N>, os::Status> {
+    pub fn audio_buf_list<const N: usize>(&self) -> os::Result<BlockBufAudioBufList<N>> {
         self.audio_buf_list_in(
             Flags::AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT,
             None,
@@ -509,7 +500,7 @@ impl SampleBuf {
         flags: Flags,
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,
-    ) -> Result<BlockBufAudioBufList<N>, os::Status> {
+    ) -> os::Result<BlockBufAudioBufList<N>> {
         let mut block_buff = None;
         let mut list = cat::audio::BufList::<N>::default();
         unsafe {
@@ -558,7 +549,7 @@ impl<const N: usize> BlockBufAudioBufList<N> {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     static kCMTimingInfoInvalid: SampleTimingInfo;
 
     fn CMSampleBufferCreate(
@@ -574,7 +565,7 @@ extern "C" {
         num_sample_size_entries: cm::ItemCount,
         sample_size_array: *const usize,
         sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
-    ) -> crate::os::Status;
+    ) -> os::Status;
 
     #[cfg(feature = "cv")]
     fn CMSampleBufferCreateForImageBuffer(
@@ -586,7 +577,7 @@ extern "C" {
         format_description: &cm::VideoFormatDesc,
         sample_timing: &SampleTimingInfo,
         sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
-    ) -> crate::os::Status;
+    ) -> os::Status;
 
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuf) -> bool;
     fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuf);
@@ -949,78 +940,78 @@ pub mod buffer_attachment_keys {
 }
 
 pub mod errors {
-    use crate::os::Status;
+    use crate::os::Error;
 
     /// An allocation failed.
     #[doc(alias = "kCMSampleBufferError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Status = Status(-12730);
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12730);
 
     /// NULL or 0 was passed for a required parameter.
     #[doc(alias = "kCMSampleBufferError_RequiredParameterMissing")]
-    pub const REQUIRED_PARAMETER_MISSING: Status = Status(-12731);
+    pub const REQUIRED_PARAMETER_MISSING: Error = Error::new_unchecked(-12731);
 
     /// Attempt was made to set a dataBuffer on a cm::SampleBuffer that already has one.
     #[doc(alias = "kCMSampleBufferError_AlreadyHasDataBuffer")]
-    pub const ALREADY_HAS_DATA_BUFFER: Status = Status(-12732);
+    pub const ALREADY_HAS_DATA_BUFFER: Error = Error::new_unchecked(-12732);
 
     /// Buffer could not be made ready.
     #[doc(alias = "kCMSampleBufferError_BufferNotReady")]
-    pub const BUFFER_NOT_READY: Status = Status(-12733);
+    pub const BUFFER_NOT_READY: Error = Error::new_unchecked(-12733);
 
     /// Sample index was not between 0 and numSamples-1, inclusive.
     #[doc(alias = "kCMSampleBufferError_SampleIndexOutOfRange")]
-    pub const SAMPLE_INDEX_OUT_OF_RANGE: Status = Status(-12734);
+    pub const SAMPLE_INDEX_OUT_OF_RANGE: Error = Error::new_unchecked(-12734);
 
     /// Attempt to get sample size information when there was none.
     #[doc(alias = "kCMSampleBufferError_BufferHasNoSampleSizes")]
-    pub const BUFFER_HAS_NO_SAMPLE_SIZES: Status = Status(-12735);
+    pub const BUFFER_HAS_NO_SAMPLE_SIZES: Error = Error::new_unchecked(-12735);
 
     /// Attempt to get sample timing information when there was none.
     #[doc(alias = "kCMSampleBufferError_BufferHasNoSampleTimingInfo")]
-    pub const BUFFER_HAS_NO_SAMPLE_TIMING_INFO: Status = Status(-12736);
+    pub const BUFFER_HAS_NO_SAMPLE_TIMING_INFO: Error = Error::new_unchecked(-12736);
 
     /// Output array was not large enough for the array being requested.
     #[doc(alias = "kCMSampleBufferError_ArrayTooSmall")]
-    pub const ARRAY_TOO_SMALL: Status = Status(-12737);
+    pub const ARRAY_TOO_SMALL: Error = Error::new_unchecked(-12737);
 
     /// Timing info or size array entry count was not 0, 1, or numSamples.
     #[doc(alias = "kCMSampleBufferError_InvalidEntryCount")]
-    pub const INVALID_ENTRY_COUNT: Status = Status(-12738);
+    pub const INVALID_ENTRY_COUNT: Error = Error::new_unchecked(-12738);
 
     /// Sample buffer does not contain sample sizes.  This can happen when the samples in the buffer are non-contiguous (eg. non-interleaved audio, where the channel values for a single sample are scattered through the buffer).
     #[doc(alias = "kCMSampleBufferError_CannotSubdivide")]
-    pub const CANNOT_SUBDIVIDE: Status = Status(-12739);
+    pub const CANNOT_SUBDIVIDE: Error = Error::new_unchecked(-12739);
 
     /// buffer unexpectedly contains a non-numeric sample timing info
     #[doc(alias = "kCMSampleBufferError_SampleTimingInfoInvalid")]
-    pub const SAMPLE_TIMING_INFO_INVALID: Status = Status(-12740);
+    pub const SAMPLE_TIMING_INFO_INVALID: Error = Error::new_unchecked(-12740);
 
     /// the media type specified by a format description is not valid for the given
     /// operation (eg. a cm::SampleBuffer with a non-audio format description passed
     /// to cm::SampleBufferGetAudioStreamPacketDescriptionsPtr).
     #[doc(alias = "kCMSampleBufferError_InvalidMediaTypeForOperation")]
-    pub const INVALID_MEDIA_TYPE_FOR_OPERATION: Status = Status(-12741);
+    pub const INVALID_MEDIA_TYPE_FOR_OPERATION: Error = Error::new_unchecked(-12741);
 
     /// Buffer contains bad data. Only returned by cm::SampleBuffer functions
     /// that inspect its sample data.
     #[doc(alias = "kCMSampleBufferError_InvalidSampleData")]
-    pub const INVALID_SAMPLE_DATA: Status = Status(-12742);
+    pub const INVALID_SAMPLE_DATA: Error = Error::new_unchecked(-12742);
 
     /// The format of the given media does not match the given format description
     /// (eg. a format description paired with a cv::ImageBuffer that fails
     /// cm::VideoFormatDescriptionMatchesImageBuffer).
     #[doc(alias = "kCMSampleBufferError_InvalidMediaFormat")]
-    pub const INVALID_MEDIA_FORMAT: Status = Status(-12743);
+    pub const INVALID_MEDIA_FORMAT: Error = Error::new_unchecked(-12743);
 
     /// the sample buffer was invalidated.
     #[doc(alias = "kCMSampleBufferError_Invalidated")]
-    pub const INVALIDATED: Status = Status(-12744);
+    pub const INVALIDATED: Error = Error::new_unchecked(-12744);
 
     /// the sample buffer's data loading operation failed (generic error).
     #[doc(alias = "kCMSampleBufferError_DataFailed")]
-    pub const DATA_FAILED: Status = Status(-16750);
+    pub const DATA_FAILED: Error = Error::new_unchecked(-16750);
 
     /// the sample buffer's data loading operation was canceled.
     #[doc(alias = "kCMSampleBufferError_DataCanceled")]
-    pub const DATA_CANCELED: Status = Status(-16751);
+    pub const DATA_CANCELED: Error = Error::new_unchecked(-16751);
 }

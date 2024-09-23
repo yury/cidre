@@ -6,7 +6,7 @@ impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
     }
 }
 
-pub fn if_false<'ear, F>(f: F) -> Result<(), &'ear ns::Error>
+pub fn if_false<'ear, F>(f: F) -> ns::Result<'ear>
 where
     F: FnOnce(*mut Option<&'ear ns::Error>) -> bool,
 {
@@ -26,7 +26,7 @@ where
     f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
 }
 
-pub fn if_err<'ear, F>(f: F) -> Result<(), &'ear ns::Error>
+pub fn if_err<'ear, F>(f: F) -> ns::Result<'ear>
 where
     F: FnOnce(*mut Option<&'ear ns::Error>),
 {

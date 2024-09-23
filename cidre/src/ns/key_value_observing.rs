@@ -158,34 +158,30 @@ pub trait KVObserverRegistration {
     #[objc::msg_send(removeObserver:forKeyPath:)]
     unsafe fn remove_observer_throws(&mut self, observer: &ns::Id, for_key_path: &ns::String);
 
-    fn add_observer<'ar>(
+    fn add_observer(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
         options: KVOOpts,
         context: *mut c_void,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.add_observer_throws(observer, for_key_path, options, context)
         })
     }
 
-    fn remove_observer_ctx<'ar>(
+    fn remove_observer_ctx(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
         context: *mut c_void,
-    ) -> Result<(), &'ar ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.remove_observer_ctx_throws(observer, for_key_path, context)
         })
     }
 
-    fn remove_observer<'ar>(
-        &mut self,
-        observer: &ns::Id,
-        for_key_path: &ns::String,
-    ) -> Result<(), &'ar ns::Exception> {
+    fn remove_observer(&mut self, observer: &ns::Id, for_key_path: &ns::String) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_observer_throws(observer, for_key_path) })
     }
 }

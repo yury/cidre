@@ -58,7 +58,7 @@ pub use memory_pool::keys as memory_pool_options;
 pub use memory_pool::MemPool;
 
 pub mod simple_queue;
-pub use simple_queue::Error as SimpleQueueError;
+pub use simple_queue::err as simple_queue_err;
 pub use simple_queue::SimpleQueue;
 
 #[link(name = "CoreMedia", kind = "framework")]

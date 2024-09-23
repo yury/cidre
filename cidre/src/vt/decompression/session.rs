@@ -42,18 +42,18 @@ impl Session {
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
         output_callback: Option<&OutputCbRecord<O, F>>,
-    ) -> Result<arc::R<Self>, os::Status> {
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            let mut session = None;
-            Self::create_in(
-                None,
-                video_format_description,
-                video_decoder_specification,
-                destination_image_buffer_attirbutes,
-                transmute(output_callback),
-                &mut session,
-            )
-            .to_result_unchecked(session)
+            os::result_unchecked(|res| {
+                Self::create_in(
+                    None,
+                    video_format_description,
+                    video_decoder_specification,
+                    destination_image_buffer_attirbutes,
+                    transmute(output_callback),
+                    res,
+                )
+            })
         }
     }
 
@@ -95,7 +95,7 @@ impl Session {
         &self,
         sample_buffer: &SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             VTDecompressionSessionDecodeFrame(
                 self,
@@ -117,7 +117,7 @@ impl Session {
         decode_flags: vt::DecodeFrameFlags,
         source_frame_ref_con: *mut F,
         info_flags_out: *mut vt::DecodeInfoFlags,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         VTDecompressionSessionDecodeFrame(
             self,
             sample_buffer,
@@ -128,11 +128,11 @@ impl Session {
         .result()
     }
 
-    pub fn finish_delayed_frames(&mut self) -> Result<(), os::Status> {
+    pub fn finish_delayed_frames(&mut self) -> os::Result {
         unsafe { VTDecompressionSessionFinishDelayedFrames(self).result() }
     }
 
-    pub fn wait_for_async_frames(&mut self) -> Result<(), os::Status> {
+    pub fn wait_for_async_frames(&mut self) -> os::Result {
         unsafe { VTDecompressionSessionWaitForAsynchronousFrames(self).result() }
     }
 
@@ -145,12 +145,8 @@ impl Session {
     ///
     /// The pixel buffer is in the same format that the session is decompressing to.
     #[inline]
-    pub fn copy_black_pixel_buffer(&self) -> Result<arc::R<cv::PixelBuf>, os::Status> {
-        let mut pixel_buffer_out = None;
-        unsafe {
-            VTDecompressionSessionCopyBlackPixelBuffer(self, &mut pixel_buffer_out)
-                .to_result_unchecked(pixel_buffer_out)
-        }
+    pub fn copy_black_pixel_buffer(&self) -> os::Result<arc::R<cv::PixelBuf>> {
+        unsafe { os::result_unchecked(|res| VTDecompressionSessionCopyBlackPixelBuffer(self, res)) }
     }
 }
 

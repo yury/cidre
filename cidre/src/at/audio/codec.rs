@@ -65,7 +65,7 @@ where
     S: State<Codec>;
 
 impl State<Codec> for InitializedState {
-    fn release_resources(instance: &mut Codec) -> Result<(), os::Status> {
+    fn release_resources(instance: &mut Codec) -> os::Result {
         unsafe { AudioCodecUninitialize(instance).result() }
     }
 }
@@ -584,7 +584,7 @@ pub struct Produced {
 }
 
 impl CodecRef<UninitializedState> {
-    pub fn new_apple_aac_encoder() -> Result<Self, os::Status> {
+    pub fn new_apple_aac_encoder() -> os::Result<Self> {
         let desc = audio::ComponentDesc {
             type_: audio::ENCODER_COMPONENT_TYPE,
             sub_type: audio::Format::MPEG4_AAC.0,
@@ -599,7 +599,7 @@ impl CodecRef<UninitializedState> {
         comp.open_codec()
     }
 
-    pub fn new_apple_opus_encoder() -> Result<Self, os::Status> {
+    pub fn new_apple_opus_encoder() -> os::Result<Self> {
         let desc = audio::ComponentDesc {
             type_: audio::ENCODER_COMPONENT_TYPE,
             sub_type: audio::Format::OPUS.0,
@@ -619,7 +619,7 @@ impl CodecRef<UninitializedState> {
         input_format: *const audio::StreamBasicDesc,
         output_format: *const audio::StreamBasicDesc,
         magic_cookie: Option<&[u8]>,
-    ) -> Result<CodecRef<InitializedState>, os::Status> {
+    ) -> os::Result<CodecRef<InitializedState>> {
         unsafe {
             self.0
                 .init_codec(input_format, output_format, magic_cookie)?;
@@ -628,7 +628,7 @@ impl CodecRef<UninitializedState> {
     }
 
     #[inline]
-    pub fn set_quality(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_quality(&mut self, val: u32) -> os::Result {
         self.0.set_quality(val)
     }
 }
@@ -647,7 +647,7 @@ impl CodecRef<InitializedState> {
     /// This call will move the codec from the initialized state back to the
     /// uninitialized state. The codec will release any resources it allocated
     /// or claimed in AudioCodecInitialize.
-    pub fn uninitialize(mut self) -> Result<CodecRef<UninitializedState>, os::Status> {
+    pub fn uninitialize(mut self) -> os::Result<CodecRef<UninitializedState>> {
         Ok(unsafe {
             AudioCodecUninitialize(&mut self.0).result()?;
             std::mem::transmute(self)
@@ -656,7 +656,7 @@ impl CodecRef<InitializedState> {
 
     #[doc(alias = "AudioCodecAppendInputData")]
     #[inline]
-    pub fn append(&mut self, data: &[u8]) -> Result<u32, os::Status> {
+    pub fn append(&mut self, data: &[u8]) -> os::Result<u32> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = 0;
         unsafe {
@@ -680,7 +680,7 @@ impl CodecRef<InitializedState> {
         &mut self,
         data: &[u8],
         packets: &[audio::StreamPacketDesc],
-    ) -> Result<Consumed, os::Status> {
+    ) -> os::Result<Consumed> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = packets.len() as _;
         unsafe {
@@ -705,7 +705,7 @@ impl CodecRef<InitializedState> {
     pub fn produce_packet(
         &mut self,
         data: &mut [u8],
-    ) -> Result<(u32, ProduceOutputPacketStatus), os::Status> {
+    ) -> os::Result<(u32, ProduceOutputPacketStatus)> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = 1;
         let mut status = ProduceOutputPacketStatus::Failure;
@@ -731,7 +731,7 @@ impl CodecRef<InitializedState> {
         &mut self,
         data: &mut [u8],
         out_packet_descriptions: &mut [audio::StreamPacketDesc],
-    ) -> Result<Produced, os::Status> {
+    ) -> os::Result<Produced> {
         let mut data_len: u32 = data.len() as _;
         let mut packets_len: u32 = out_packet_descriptions.len() as _;
         let mut status = ProduceOutputPacketStatus::Failure;
@@ -760,7 +760,7 @@ impl CodecRef<InitializedState> {
         &mut self,
         in_buf_list: &audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDesc],
-    ) -> Result<Consumed, os::Status> {
+    ) -> os::Result<Consumed> {
         let mut bytes_consumed: u32 = 0;
         let mut packets_len: u32 = packet_descriptions.len() as _;
         unsafe {
@@ -786,7 +786,7 @@ impl CodecRef<InitializedState> {
         &mut self,
         buf_list: &mut audio::BufList,
         number_of_packets: &mut u32,
-    ) -> Result<os::Status, os::Status> {
+    ) -> os::Result<os::Status> {
         let mut status = os::Status::NO_ERR;
         unsafe {
             AudioCodecProduceOutputBufferList(
@@ -808,7 +808,7 @@ impl CodecRef<InitializedState> {
         &mut self,
         buf_list: &mut audio::BufList,
         packet_descriptions: &mut [audio::StreamPacketDesc],
-    ) -> Result<(u32, os::Status), os::Status> {
+    ) -> os::Result<(u32, os::Status)> {
         let mut number_packets: u32 = packet_descriptions.len() as _;
         let mut status = os::Status::NO_ERR;
         unsafe {
@@ -832,7 +832,7 @@ impl Codec {
         input_format: *const audio::StreamBasicDesc,
         output_format: *const audio::StreamBasicDesc,
         magic_cookie: Option<&[u8]>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             match magic_cookie {
                 Some(cookie) => AudioCodecInitialize(
@@ -841,18 +841,19 @@ impl Codec {
                     output_format,
                     cookie.as_ptr(),
                     cookie.len() as _,
-                ),
+                )
+                .result(),
                 None => {
                     AudioCodecInitialize(self, input_format, output_format, std::ptr::null(), 0)
+                        .result()
                 }
             }
-            .result()
         }
     }
 
     #[doc(alias = "AudioCodecGetPropertyInfo")]
     #[inline]
-    pub fn prop_info(&self, prop_id: u32) -> Result<(u32, bool), os::Status> {
+    pub fn prop_info(&self, prop_id: u32) -> os::Result<(u32, bool)> {
         let (mut size, mut writable) = (0u32, false);
         unsafe { AudioCodecGetPropertyInfo(&self, prop_id, &mut size, &mut writable).result()? };
         Ok((size, writable))
@@ -860,10 +861,7 @@ impl Codec {
 
     #[doc(alias = "AudioCodecGetProperty")]
     #[inline]
-    pub unsafe fn prop_vec<T: Sized + Default + Clone>(
-        &self,
-        prop_id: u32,
-    ) -> Result<Vec<T>, os::Status> {
+    pub unsafe fn prop_vec<T: Sized + Default + Clone>(&self, prop_id: u32) -> os::Result<Vec<T>> {
         let (mut size, _) = self.prop_info(prop_id)?;
         if size == 0 {
             return Ok(vec![]);
@@ -876,7 +874,7 @@ impl Codec {
     }
 
     #[doc(alias = "AudioCodecGetProperty")]
-    pub fn prop<T: Sized>(&self, prop_id: u32) -> Result<T, os::Status> {
+    pub fn prop<T: Sized>(&self, prop_id: u32) -> os::Result<T> {
         let mut size = std::mem::size_of::<T>() as u32;
         unsafe {
             let mut value = MaybeUninit::<T>::uninit();
@@ -885,66 +883,62 @@ impl Codec {
         }
     }
 
-    pub unsafe fn set_prop<T: Sized>(
-        &mut self,
-        property_id: u32,
-        val: &T,
-    ) -> Result<(), os::Status> {
+    pub unsafe fn set_prop<T: Sized>(&mut self, property_id: u32, val: &T) -> os::Result {
         let size = std::mem::size_of::<T>() as u32;
         unsafe { AudioCodecSetProperty(self, property_id, size, val as *const _ as _).result() }
     }
 
     #[inline]
-    pub fn quality(&self) -> Result<u32, os::Status> {
+    pub fn quality(&self) -> os::Result<u32> {
         self.prop(InstancePropId::QUALITY_SETTING.0)
     }
 
     #[inline]
-    pub fn set_quality(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_quality(&mut self, val: u32) -> os::Result {
         unsafe { self.set_prop(InstancePropId::QUALITY_SETTING.0, &val) }
     }
 
     #[inline]
-    pub fn bit_rate_control_mode(&self) -> Result<BitRateControlMode, os::Status> {
+    pub fn bit_rate_control_mode(&self) -> os::Result<BitRateControlMode> {
         self.prop(InstancePropId::BIT_RATE_CONTROL_MODE.0)
     }
 
     #[inline]
-    pub fn set_bit_rate_control_mode(&mut self, val: BitRateControlMode) -> Result<(), os::Status> {
+    pub fn set_bit_rate_control_mode(&mut self, val: BitRateControlMode) -> os::Result {
         unsafe { self.set_prop(InstancePropId::BIT_RATE_CONTROL_MODE.0, &val) }
     }
 
     #[inline]
-    pub fn current_target_bit_rate(&self) -> Result<u32, os::Status> {
+    pub fn current_target_bit_rate(&self) -> os::Result<u32> {
         self.prop(InstancePropId::CURRENT_TARGET_BIT_RATE.0)
     }
 
     #[inline]
-    pub fn set_current_target_bit_rate(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_current_target_bit_rate(&mut self, val: u32) -> os::Result {
         unsafe { self.set_prop(InstancePropId::CURRENT_TARGET_BIT_RATE.0, &val) }
     }
 
     #[inline]
-    pub fn current_input_sample_rate(&self) -> Result<f64, os::Status> {
+    pub fn current_input_sample_rate(&self) -> os::Result<f64> {
         self.prop(InstancePropId::CURRENT_INPUT_SAMPLE_RATE.0)
     }
 
     /// A f64 containing the current input sample rate in Hz. No Default.
     /// May be writable. If only one sample rate is supported it does not have to be.
     #[inline]
-    pub fn set_current_input_sample_rate(&mut self, val: f64) -> Result<(), os::Status> {
+    pub fn set_current_input_sample_rate(&mut self, val: f64) -> os::Result {
         unsafe { self.set_prop(InstancePropId::CURRENT_INPUT_SAMPLE_RATE.0, &val) }
     }
 
     /// A f64 containing the current output sample rate in Hz. No Default.
     /// May be writable. If only one sample rate is supported it does not have to be.
     #[inline]
-    pub fn current_output_sample_rate(&self) -> Result<f64, os::Status> {
+    pub fn current_output_sample_rate(&self) -> os::Result<f64> {
         self.prop(InstancePropId::CURRENT_OUTPUT_SAMPLE_RATE.0)
     }
 
     #[inline]
-    pub fn set_current_output_sample_rate(&mut self, val: f64) -> Result<(), os::Status> {
+    pub fn set_current_output_sample_rate(&mut self, val: f64) -> os::Result {
         unsafe { self.set_prop(InstancePropId::CURRENT_OUTPUT_SAMPLE_RATE.0, &val) }
     }
 
@@ -952,14 +946,14 @@ impl Codec {
     pub fn set_current_input_channel_layout<const N: usize>(
         &mut self,
         val: &audio::ChannelLayout<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe { self.set_prop(InstancePropId::CURRENT_INPUT_CHANNEL_LAYOUT.0, val) }
     }
 
     #[inline]
     pub fn current_input_channel_layout<const N: usize>(
         &self,
-    ) -> Result<audio::ChannelLayout<N>, os::Status> {
+    ) -> os::Result<audio::ChannelLayout<N>> {
         self.prop(InstancePropId::CURRENT_INPUT_CHANNEL_LAYOUT.0)
     }
 
@@ -967,44 +961,44 @@ impl Codec {
     pub fn set_current_output_channel_layout<const N: usize>(
         &mut self,
         val: &audio::ChannelLayout<N>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe { self.set_prop(InstancePropId::CURRENT_OUTPUT_CHANNEL_LAYOUT.0, val) }
     }
 
     #[inline]
     pub fn current_output_channel_layout<const N: usize>(
         &self,
-    ) -> Result<audio::ChannelLayout<N>, os::Status> {
+    ) -> os::Result<audio::ChannelLayout<N>> {
         self.prop(InstancePropId::CURRENT_OUTPUT_CHANNEL_LAYOUT.0)
     }
 
     #[inline]
-    pub fn applicable_input_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_input_sample_rates(&self) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { self.prop_vec(InstancePropId::APPLICABLE_INPUT_SAMPLE_RATES.0) }
     }
 
     #[inline]
-    pub fn applicable_output_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_output_sample_rates(&self) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { self.prop_vec(InstancePropId::APPLICABLE_OUTPUT_SAMPLE_RATES.0) }
     }
 
     #[inline]
-    pub fn recommended_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn recommended_bit_rate_range(&self) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { self.prop_vec(InstancePropId::RECOMMENDED_BIT_RATE_RANGE.0) }
     }
 
     #[inline]
-    pub fn applicable_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_bit_rate_range(&self) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { self.prop_vec(InstancePropId::APPLICABLE_BIT_RATE_RANGE.0) }
     }
 
     #[inline]
-    pub fn supported_input_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
+    pub fn supported_input_formats(&self) -> os::Result<Vec<audio::StreamBasicDesc>> {
         unsafe { self.prop_vec(GlobalPropId::SUPPORTED_INPUT_FORMATS.0) }
     }
 
     #[inline]
-    pub fn supported_output_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
+    pub fn supported_output_formats(&self) -> os::Result<Vec<audio::StreamBasicDesc>> {
         unsafe { self.prop_vec(GlobalPropId::SUPPORTED_OUTPUT_FORMATS.0) }
     }
 
@@ -1012,7 +1006,7 @@ impl Codec {
     /// the formats, and magic cookie will be retained so they won't need to be
     /// set up again to decode the same data.
     #[doc(alias = "AudioCodecReset")]
-    pub fn reset(&mut self) -> Result<(), os::Status> {
+    pub fn reset(&mut self) -> os::Result {
         unsafe { AudioCodecReset(self).result() }
     }
 }
@@ -1022,47 +1016,47 @@ where
     S: State<Codec>,
 {
     #[inline]
-    pub fn supported_input_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
+    pub fn supported_input_formats(&self) -> os::Result<Vec<audio::StreamBasicDesc>> {
         self.0.supported_input_formats()
     }
 
     #[inline]
-    pub fn supported_output_formats(&self) -> Result<Vec<audio::StreamBasicDesc>, os::Status> {
+    pub fn supported_output_formats(&self) -> os::Result<Vec<audio::StreamBasicDesc>> {
         self.0.supported_output_formats()
     }
 
     #[inline]
-    pub fn bit_rate_control_mode(&self) -> Result<BitRateControlMode, os::Status> {
+    pub fn bit_rate_control_mode(&self) -> os::Result<BitRateControlMode> {
         self.0.bit_rate_control_mode()
     }
 
     #[inline]
-    pub fn recommended_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn recommended_bit_rate_range(&self) -> os::Result<Vec<audio::ValueRange>> {
         self.0.recommended_bit_rate_range()
     }
 
     #[inline]
-    pub fn applicable_output_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_output_sample_rates(&self) -> os::Result<Vec<audio::ValueRange>> {
         self.0.applicable_output_sample_rates()
     }
 
     #[inline]
-    pub fn applicable_input_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_input_sample_rates(&self) -> os::Result<Vec<audio::ValueRange>> {
         self.0.applicable_input_sample_rates()
     }
 
     #[inline]
-    pub fn applicable_bit_rate_range(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_bit_rate_range(&self) -> os::Result<Vec<audio::ValueRange>> {
         self.0.applicable_bit_rate_range()
     }
 
     #[inline]
-    pub fn magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+    pub fn magic_cookie(&self) -> os::Result<Vec<u8>> {
         unsafe { self.0.prop_vec(InstancePropId::MAGIC_COOKIE.0) }
     }
 
     #[inline]
-    pub fn current_output_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn current_output_format(&self) -> os::Result<audio::StreamBasicDesc> {
         let mut value = audio::StreamBasicDesc::default();
         let mut size = std::mem::size_of::<audio::StreamBasicDesc>() as u32;
         unsafe {
@@ -1078,7 +1072,7 @@ where
     }
 
     #[inline]
-    pub fn current_input_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn current_input_format(&self) -> os::Result<audio::StreamBasicDesc> {
         let mut value = audio::StreamBasicDesc::default();
         let mut size = std::mem::size_of::<audio::StreamBasicDesc>() as u32;
         unsafe {
@@ -1094,7 +1088,7 @@ where
     }
 
     #[inline]
-    pub fn max_packet_byte_size(&self) -> Result<u32, os::Status> {
+    pub fn max_packet_byte_size(&self) -> os::Result<u32> {
         let (mut value, mut size) = (0u32, 4u32);
         unsafe {
             AudioCodecGetProperty(
@@ -1109,7 +1103,7 @@ where
     }
 
     #[inline]
-    pub fn input_buf_size(&self) -> Result<u32, os::Status> {
+    pub fn input_buf_size(&self) -> os::Result<u32> {
         let (mut value, mut size) = (0u32, 4u32);
         unsafe {
             AudioCodecGetProperty(
@@ -1124,13 +1118,13 @@ where
     }
 
     #[inline]
-    pub fn quality(&self) -> Result<u32, os::Status> {
+    pub fn quality(&self) -> os::Result<u32> {
         self.0.quality()
     }
 }
 
 impl audio::Component {
-    pub fn open_codec(&self) -> Result<CodecRef<UninitializedState>, os::Status> {
+    pub fn open_codec(&self) -> os::Result<CodecRef<UninitializedState>> {
         Ok(unsafe { std::mem::transmute(self.open()?) })
     }
 }

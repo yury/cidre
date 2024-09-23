@@ -1,5 +1,3 @@
-use std::mem::transmute;
-
 use crate::{arc, cg, cm, cv, define_cls, define_obj_type, ns, objc, vn};
 
 define_obj_type!(pub ImageRequestHandler(ns::Id));
@@ -103,16 +101,8 @@ impl ImageRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform<'ear>(&self, requests: &ns::Array<vn::Request>) -> Result<(), &'ear ns::Error> {
-        unsafe {
-            let mut error = None;
-
-            if self.perform_request_err(requests, &mut error) {
-                Ok(())
-            } else {
-                Err(transmute(error))
-            }
-        }
+    pub fn perform(&self, requests: &ns::Array<vn::Request>) -> ns::Result {
+        unsafe { ns::if_false(|err| self.perform_request_err(requests, err)) }
     }
 }
 
@@ -159,11 +149,11 @@ impl SequenceRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cm_sample_buf<'ear>(
+    pub fn perform_on_cm_sample_buf(
         &self,
         requests: &ns::Array<vn::Request>,
         sample_buf: &cm::SampleBuf,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, err)
         })

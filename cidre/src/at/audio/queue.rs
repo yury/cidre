@@ -21,33 +21,33 @@ pub struct Queue(NonNull<c_void>);
 pub struct QueueTimeline(NonNull<c_void>);
 
 pub mod err {
-    use crate::os::Status;
+    use crate::os::Error;
 
-    pub const INVALID_BUFFER: Status = Status(-66687);
-    pub const BUFFER_EMPTY: Status = Status(-66686);
-    pub const DISPOSAL_PENDING: Status = Status(-66685);
-    pub const INVALID_PROPERTY: Status = Status(-66684);
-    pub const INVALID_PROPERTY_SIZE: Status = Status(-66683);
-    pub const INVALID_PARAMETER: Status = Status(-66682);
-    pub const CANNOT_START: Status = Status(-66681);
-    pub const INVALID_DEVICE: Status = Status(-66680);
-    pub const BUFFER_IN_QUEUE: Status = Status(-66679);
-    pub const INVALID_RUN_STATE: Status = Status(-66678);
-    pub const INVALID_QUEUE_TYPE: Status = Status(-66677);
-    pub const PERMISSIONS: Status = Status(-66676);
-    pub const INVALID_PROPERTY_VALUE: Status = Status(-66675);
-    pub const PRIME_TIMED_OUT: Status = Status(-66674);
-    pub const CODEC_NOT_FOUND: Status = Status(-66673);
-    pub const INVALID_CODEC_ACCESS: Status = Status(-66672);
-    pub const QUEUE_INVALIDATED: Status = Status(-66671);
-    pub const TOO_MANY_TAPS: Status = Status(-66670);
-    pub const INVALID_TAP_CONTEXT: Status = Status(-66669);
-    pub const RECORD_UNDERRUN: Status = Status(-66668);
-    pub const INVALID_TAP_TYPE: Status = Status(-66667);
-    pub const BUFFER_ENQUEUED_TWICE: Status = Status(-66666);
-    pub const CANNOT_START_YET: Status = Status(-66665);
-    pub const ENQUEUE_DURING_RESET: Status = Status(-66632);
-    pub const INVALID_OFFLINE_MODE: Status = Status(-66626);
+    pub const INVALID_BUFFER: Error = Error::new_unchecked(-66687);
+    pub const BUFFER_EMPTY: Error = Error::new_unchecked(-66686);
+    pub const DISPOSAL_PENDING: Error = Error::new_unchecked(-66685);
+    pub const INVALID_PROPERTY: Error = Error::new_unchecked(-66684);
+    pub const INVALID_PROPERTY_SIZE: Error = Error::new_unchecked(-66683);
+    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-66682);
+    pub const CANNOT_START: Error = Error::new_unchecked(-66681);
+    pub const INVALID_DEVICE: Error = Error::new_unchecked(-66680);
+    pub const BUFFER_IN_QUEUE: Error = Error::new_unchecked(-66679);
+    pub const INVALID_RUN_STATE: Error = Error::new_unchecked(-66678);
+    pub const INVALID_QUEUE_TYPE: Error = Error::new_unchecked(-66677);
+    pub const PERMISSIONS: Error = Error::new_unchecked(-66676);
+    pub const INVALID_PROPERTY_VALUE: Error = Error::new_unchecked(-66675);
+    pub const PRIME_TIMED_OUT: Error = Error::new_unchecked(-66674);
+    pub const CODEC_NOT_FOUND: Error = Error::new_unchecked(-66673);
+    pub const INVALID_CODEC_ACCESS: Error = Error::new_unchecked(-66672);
+    pub const QUEUE_INVALIDATED: Error = Error::new_unchecked(-66671);
+    pub const TOO_MANY_TAPS: Error = Error::new_unchecked(-66670);
+    pub const INVALID_TAP_CONTEXT: Error = Error::new_unchecked(-66669);
+    pub const RECORD_UNDERRUN: Error = Error::new_unchecked(-66668);
+    pub const INVALID_TAP_TYPE: Error = Error::new_unchecked(-66667);
+    pub const BUFFER_ENQUEUED_TWICE: Error = Error::new_unchecked(-66666);
+    pub const CANNOT_START_YET: Error = Error::new_unchecked(-66665);
+    pub const ENQUEUE_DURING_RESET: Error = Error::new_unchecked(-66632);
+    pub const INVALID_OFFLINE_MODE: Error = Error::new_unchecked(-66626);
 }
 
 impl QueueProp {

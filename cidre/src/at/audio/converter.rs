@@ -375,27 +375,27 @@ pub struct PrimeInfo {
 }
 
 pub mod err {
-    use crate::os::Status;
+    use crate::os::Error;
 
     /// 0x666D743F, 1718449215
-    pub const FORMAT_NOT_SUPPORTED: Status = Status(i32::from_be_bytes(*b"fmt?"));
+    pub const FORMAT_NOT_SUPPORTED: Error = Error::from_be_bytes(*b"fmt?");
 
     /// 'op??', integer used because of trigraph
-    pub const OPERATION_NOT_SUPPORTED: Status = Status(0x6F703F3F);
+    pub const OPERATION_NOT_SUPPORTED: Error = Error::new_unchecked(0x6F703F3F);
 
     /// 0x70726F70, 1886547824
-    pub const PROPERTY_NOT_SUPPORTED: Status = Status(i32::from_be_bytes(*b"prop"));
-    pub const INVALID_INPUT_SIZE: Status = Status(i32::from_be_bytes(*b"insz"));
-    pub const INVALID_OUTPUT_SIZE: Status = Status(i32::from_be_bytes(*b"otsz"));
+    pub const PROPERTY_NOT_SUPPORTED: Error = Error::from_be_bytes(*b"prop");
+    pub const INVALID_INPUT_SIZE: Error = Error::from_be_bytes(*b"insz");
+    pub const INVALID_OUTPUT_SIZE: Error = Error::from_be_bytes(*b"otsz");
     /// e.g. byte size is not a multiple of the frame size
     /// 0x77686174, 2003329396
-    pub const UNSPECIFIED_ERROR: Status = Status(i32::from_be_bytes(*b"what"));
+    pub const UNSPECIFIED_ERROR: Error = Error::from_be_bytes(*b"what");
 
     /// 0x2173697A, 561211770
-    pub const BAD_PROPERTY_SIZE_ERROR: Status = Status(i32::from_be_bytes(*b"!siz"));
-    pub const REQUIRES_PACKET_DESCRIPTIONS_ERROR: Status = Status(i32::from_be_bytes(*b"!pkd"));
-    pub const INPUT_SAMPLE_RATE_OUT_OF_RANGE: Status = Status(i32::from_be_bytes(*b"!isr"));
-    pub const OUTPUT_SAMPLE_RATE_OUT_OF_RANGE: Status = Status(i32::from_be_bytes(*b"!osr"));
+    pub const BAD_PROPERTY_SIZE_ERROR: Error = Error::from_be_bytes(*b"!siz");
+    pub const REQUIRES_PACKET_DESCRIPTIONS_ERROR: Error = Error::from_be_bytes(*b"!pkd");
+    pub const INPUT_SAMPLE_RATE_OUT_OF_RANGE: Error = Error::from_be_bytes(*b"!isr");
+    pub const OUTPUT_SAMPLE_RATE_OUT_OF_RANGE: Error = Error::from_be_bytes(*b"!osr");
 
     // ios only
 
@@ -405,11 +405,11 @@ pub mod err {
     /// interruption (see kAudioConverterPropertyCanResumeFromInterruption), you must
     /// wait for an EndInterruption notification from AudioSession, and call AudioSessionSetActive(true)
     /// before resuming.
-    pub const HARDWARE_IN_USE: Status = Status(i32::from_be_bytes(*b"hwiu"));
+    pub const HARDWARE_IN_USE: Error = Error::from_be_bytes(*b"hwiu");
 
     /// Returned from AudioConverterNew if the new converter would use a hardware codec
     /// which the application does not have permission to use.
-    pub const NO_HARDWARE_PERMISSION: Status = Status(i32::from_be_bytes(*b"perm"));
+    pub const NO_HARDWARE_PERMISSION: Error = Error::from_be_bytes(*b"perm");
 }
 
 #[repr(transparent)]
@@ -471,7 +471,7 @@ impl DerefMut for ConverterRef {
 /// mechanism can be used when an input proc has temporarily run out of data, but
 /// has not yet reached end of stream.
 #[doc(alias = "AudioConverterComplexInputDataProc")]
-pub type ComplexInputDataProc<const N: usize = 1, D = c_void> = extern "C" fn(
+pub type ComplexInputDataProc<const N: usize = 1, D = c_void> = extern "C-unwind" fn(
     converter: &Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufList<N>,
@@ -493,17 +493,15 @@ impl ConverterRef {
     pub fn with_formats(
         src_fmt: &audio::StreamBasicDesc,
         dst_fmt: &audio::StreamBasicDesc,
-    ) -> Result<Self, os::Status> {
-        let mut out_converter = None;
-        unsafe {
-            Self::new(src_fmt, dst_fmt, &mut out_converter).to_result_unchecked(out_converter)
-        }
+    ) -> os::Result<Self> {
+        unsafe { os::result_unchecked(|val| Self::new(src_fmt, dst_fmt, val)) }
     }
 }
+
 impl ConverterRef {
     #[doc(alias = "AudioConverterNewWithOptions")]
     #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0, visionos = 2.0)]
-    pub unsafe fn new_with_options(
+    pub fn new_with_options(
         src_format: &audio::StreamBasicDesc,
         dst_format: &audio::StreamBasicDesc,
         options: Opts,
@@ -519,34 +517,25 @@ impl ConverterRef {
         src_fmt: &audio::StreamBasicDesc,
         dst_fmt: &audio::StreamBasicDesc,
         options: Opts,
-    ) -> Result<Self, os::Status> {
-        let mut out_converter = None;
-        unsafe {
-            Self::new_with_options(src_fmt, dst_fmt, options, &mut out_converter)
-                .to_result_unchecked(out_converter)
-        }
+    ) -> os::Result<Self> {
+        os::result_unchecked(|val| Self::new_with_options(src_fmt, dst_fmt, options, val))
     }
 }
 
 impl Converter {
     #[inline]
-    pub fn reset(&self) -> Result<(), os::Status> {
+    pub fn reset(&self) -> os::Result {
         unsafe { AudioConverterReset(self).result() }
     }
 
     #[inline]
-    pub fn property_info(&self, prop_id: PropId) -> Result<PropInfo, os::Status> {
+    pub fn property_info(&self, prop_id: PropId) -> os::Result<PropInfo> {
         let mut size = 0;
         let mut writable = false;
         unsafe {
-            let r = AudioConverterGetPropertyInfo(self, prop_id, &mut size, &mut writable);
-
-            if r.is_ok() {
-                Ok(PropInfo { size, writable })
-            } else {
-                Err(r)
-            }
+            AudioConverterGetPropertyInfo(self, prop_id, &mut size, &mut writable).result()?;
         }
+        Ok(PropInfo { size, writable })
     }
 
     #[inline]
@@ -555,8 +544,8 @@ impl Converter {
         prop_id: PropId,
         io_prop_data_size: *mut u32,
         out_prop_data: *mut c_void,
-    ) -> os::Status {
-        AudioConverterGetProperty(self, prop_id, io_prop_data_size, out_prop_data)
+    ) -> os::Result {
+        AudioConverterGetProperty(self, prop_id, io_prop_data_size, out_prop_data).result()
     }
 
     #[inline]
@@ -565,136 +554,119 @@ impl Converter {
         prop_id: PropId,
         in_prop_data_size: u32,
         in_prop_data: *const c_void,
-    ) -> os::Status {
-        AudioConverterSetProperty(self, prop_id, in_prop_data_size, in_prop_data)
+    ) -> os::Result {
+        AudioConverterSetProperty(self, prop_id, in_prop_data_size, in_prop_data).result()
     }
 
-    pub unsafe fn set_prop<T: Sized>(
-        &mut self,
-        prop_id: PropId,
-        val: &T,
-    ) -> Result<(), os::Status> {
+    pub unsafe fn set_prop<T: Sized>(&mut self, prop_id: PropId, val: &T) -> os::Result {
         let size = size_of::<T>() as u32;
         self.set_property(prop_id, size, val as *const _ as _)
-            .result()
     }
 
     #[inline]
-    pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> Result<Vec<T>, os::Status> {
+    pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> os::Result<Vec<T>> {
         let mut info = self.property_info(prop_id)?;
         let mut vec = Vec::with_capacity(info.size as usize / size_of::<T>());
-        self.get_property(prop_id, &mut info.size, vec.as_mut_ptr() as _)
-            .result()?;
+        self.get_property(prop_id, &mut info.size, vec.as_mut_ptr() as _)?;
         vec.set_len(info.size as usize / size_of::<T>());
         Ok(vec)
     }
 
     #[inline]
-    pub unsafe fn set_prop_vec<T: Sized>(
-        &mut self,
-        prop_id: PropId,
-        val: Vec<T>,
-    ) -> Result<(), os::Status> {
+    pub unsafe fn set_prop_vec<T: Sized>(&mut self, prop_id: PropId, val: Vec<T>) -> os::Result {
         self.set_property(
             prop_id,
             (val.len() * std::mem::size_of::<T>()) as u32,
             val.as_ptr() as _,
-        )
-        .result()?;
+        )?;
         Ok(())
     }
 
     #[inline]
-    pub unsafe fn prop<T: Sized + Default>(&self, prop_id: PropId) -> Result<T, os::Status> {
+    pub unsafe fn prop<T: Sized + Default>(&self, prop_id: PropId) -> os::Result<T> {
         let mut size = size_of::<T>() as u32;
         let mut value = Default::default();
-        let res = self.get_property(prop_id, &mut size, &mut value as *mut _ as _);
-        if res.is_ok() {
-            Ok(value)
-        } else {
-            Err(res)
-        }
+        self.get_property(prop_id, &mut size, &mut value as *mut _ as _)?;
+        Ok(value)
     }
 
     #[inline]
-    pub fn max_output_packet_size(&self) -> Result<u32, os::Status> {
+    pub fn max_output_packet_size(&self) -> os::Result<u32> {
         unsafe { self.prop(PropId::MAXIMUM_OUTPUT_PACKET_SIZE) }
     }
 
     #[inline]
-    pub fn sample_rate_converter_quality(&self) -> Result<Quality, os::Status> {
+    pub fn sample_rate_converter_quality(&self) -> os::Result<Quality> {
         unsafe { self.prop(PropId::SAMPLE_RATE_CONVERTER_QUALITY) }
     }
 
     #[inline]
-    pub fn sample_rate_converter_complexity(
-        &self,
-    ) -> Result<SampleRateConverterComplexity, os::Status> {
+    pub fn sample_rate_converter_complexity(&self) -> os::Result<SampleRateConverterComplexity> {
         unsafe { self.prop(PropId::SAMPLE_RATE_CONVERTER_COMPLEXITY) }
     }
 
     #[inline]
-    pub fn codec_quality(&self) -> Result<Quality, os::Status> {
+    pub fn codec_quality(&self) -> os::Result<Quality> {
         unsafe { self.prop(PropId::CODEC_QUALITY) }
     }
 
     #[inline]
-    pub fn set_codec_quality(&mut self, val: Quality) -> Result<(), os::Status> {
+    pub fn set_codec_quality(&mut self, val: Quality) -> os::Result {
         unsafe { self.set_prop(PropId::CODEC_QUALITY, &val) }
     }
 
     #[inline]
-    pub fn applicable_encode_bit_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_encode_bit_rates(&self) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { self.prop_vec(PropId::APPLICABLE_ENCODE_BIT_RATES) }
     }
 
     #[inline]
-    pub fn applicable_encode_sample_rates(&self) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn applicable_encode_sample_rates(&self) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { self.prop_vec(PropId::APPLICABLE_ENCODE_SAMPLE_RATES) }
     }
 
     #[inline]
-    pub fn compression_magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+    pub fn compression_magic_cookie(&self) -> os::Result<Vec<u8>> {
         unsafe { self.prop_vec(PropId::COMPRESSION_MAGIC_COOKIE) }
     }
 
     #[inline]
-    pub fn decompression_magic_cookie(&self) -> Result<Vec<u8>, os::Status> {
+    pub fn decompression_magic_cookie(&self) -> os::Result<Vec<u8>> {
         unsafe { self.prop_vec(PropId::DECOMPRESSION_MAGIC_COOKIE) }
     }
 
     #[inline]
-    pub fn set_decompression_magic_cookie(&mut self, val: Vec<u8>) -> Result<(), os::Status> {
+    pub fn set_decompression_magic_cookie(&mut self, val: Vec<u8>) -> os::Result {
         unsafe { self.set_prop_vec(PropId::DECOMPRESSION_MAGIC_COOKIE, val) }
     }
 
     #[inline]
-    pub fn current_output_stream_desc(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn current_output_stream_desc(&self) -> os::Result<audio::StreamBasicDesc> {
         unsafe { self.prop(PropId::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
-    pub fn current_input_stream_desc(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn current_input_stream_desc(&self) -> os::Result<audio::StreamBasicDesc> {
         unsafe { self.prop(PropId::CURRENT_INPUT_STREAM_DESCRIPTION) }
     }
 
     #[inline]
-    pub fn encode_bit_rate(&self) -> Result<u32, os::Status> {
+    pub fn encode_bit_rate(&self) -> os::Result<u32> {
         unsafe { self.prop(PropId::ENCODE_BIT_RATE) }
     }
 
     #[inline]
-    pub fn set_encode_bit_rate(&mut self, val: u32) -> Result<(), os::Status> {
+    pub fn set_encode_bit_rate(&mut self, val: u32) -> os::Result {
         unsafe { self.set_prop(PropId::ENCODE_BIT_RATE, &val) }
     }
 
     #[inline]
-    pub fn prime_method(&self) -> Result<PrimeMethod, os::Status> {
+    pub fn prime_method(&self) -> os::Result<PrimeMethod> {
         unsafe { self.prop(PropId::PRIME_METHOD) }
     }
 
     #[inline]
-    pub fn set_prime_method(&mut self, val: PrimeMethod) -> Result<(), os::Status> {
+    pub fn set_prime_method(&mut self, val: PrimeMethod) -> os::Result {
         unsafe { self.set_prop(PropId::PRIME_METHOD, &val) }
     }
 
@@ -710,7 +682,7 @@ impl Converter {
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
         out_packet_description: *mut audio::StreamPacketDesc,
-    ) -> os::Status {
+    ) -> os::Result {
         AudioConverterFillComplexBuffer(
             self,
             transmute(in_input_data_proc),
@@ -719,6 +691,7 @@ impl Converter {
             transmute(out_output_data),
             out_packet_description,
         )
+        .result()
     }
 
     /// Converts PCM data from an input buffer list to an output buffer list.
@@ -737,13 +710,14 @@ impl Converter {
         in_number_pcm_frames: u32,
         in_input_data: *const audio::BufList<N1>,
         out_output_data: *mut audio::BufList<N2>,
-    ) -> os::Status {
+    ) -> os::Result {
         AudioConverterConvertComplexBuffer(
             self,
             in_number_pcm_frames,
             in_input_data as _,
             out_output_data as _,
         )
+        .result()
     }
 
     /// Converts PCM data from an input buffer list to an output buffer list.
@@ -760,27 +734,23 @@ impl Converter {
         frames: u32,
         input: &audio::BufList<N1>,
         output: &mut audio::BufList<N2>,
-    ) -> Result<(), os::Status> {
-        unsafe { self.convert_complex_buffer(frames, input as *const _, output as *mut _) }.result()
+    ) -> os::Result {
+        unsafe { self.convert_complex_buffer(frames, input as *const _, output as *mut _) }
     }
 
     #[doc(alias = "AudioConverterConvertBuffer")]
     #[inline]
-    pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> Result<usize, os::Status> {
+    pub fn convert_buf(&self, input: &[u8], output: &mut [u8]) -> os::Result<usize> {
         let mut n = output.len() as u32;
-        let res = unsafe {
+        unsafe {
             self.convert_buffer(
                 input.len() as _,
                 input.as_ptr() as _,
                 &mut n,
                 output.as_mut_ptr() as _,
             )
-        };
-        if res.is_ok() {
-            Ok(n as _)
-        } else {
-            Err(res)
-        }
+        }?;
+        Ok(n as _)
     }
 
     /// # Safety
@@ -794,7 +764,7 @@ impl Converter {
         in_input_data: *const c_void,
         io_output_data_size: *mut u32,
         out_output_data: *mut c_void,
-    ) -> os::Status {
+    ) -> os::Result {
         AudioConverterConvertBuffer(
             self,
             in_input_data_size,
@@ -802,6 +772,7 @@ impl Converter {
             io_output_data_size,
             out_output_data,
         )
+        .result()
     }
 
     #[inline]
@@ -812,7 +783,7 @@ impl Converter {
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
         out_packet_description: &mut Vec<audio::StreamPacketDesc>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             self.fill_complex_buffer(
                 proc,
@@ -821,7 +792,6 @@ impl Converter {
                 out_output_data,
                 out_packet_description.as_mut_ptr(),
             )
-            .result()
         }
     }
 
@@ -832,7 +802,7 @@ impl Converter {
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             self.fill_complex_buffer(
                 proc,
@@ -841,7 +811,6 @@ impl Converter {
                 out_output_data,
                 std::ptr::null_mut(),
             )
-            .result()
         }
     }
 }
@@ -871,7 +840,7 @@ impl Opts {
 
 #[link(name = "AudioToolbox", kind = "framework")]
 #[api::weak]
-extern "C" {
+extern "C-unwind" {
     fn AudioConverterNew(
         in_source_format: &audio::StreamBasicDesc,
         in_destination_format: &audio::StreamBasicDesc,

@@ -10,35 +10,35 @@ use crate::ns;
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
 pub mod errors {
-    use crate::os::Status;
+    use crate::os::Error;
 
     /// Unimplemented core routine.
     #[doc(alias = "kAudio_UnimplementedError")]
-    pub const UNIMPLEMENTED: Status = Status(-4);
+    pub const UNIMPLEMENTED: Error = Error::new_unchecked(-4);
 
     /// File not found.
     #[doc(alias = "kAudio_FileNotFoundError")]
-    pub const FILE_NOT_FOUND: Status = Status(-43);
+    pub const FILE_NOT_FOUND: Error = Error::new_unchecked(-43);
 
     /// File cannot be opened due to either file, directory, or sandbox permissions.
     #[doc(alias = "kAudio_FilePermissionError")]
-    pub const FILE_PERMISSION: Status = Status(-54);
+    pub const FILE_PERMISSION: Error = Error::new_unchecked(-54);
 
     /// File cannot be opened because too many files are already open.
     #[doc(alias = "kAudio_TooManyFilesOpenError")]
-    pub const TOO_MANY_FILES_OPEN: Status = Status(-42);
+    pub const TOO_MANY_FILES_OPEN: Error = Error::new_unchecked(-42);
 
     /// File cannot be opened because the specified path is malformed.
     #[doc(alias = "kAudio_BadFilePathError")]
-    pub const BAD_FILE_PATH: Status = Status(i32::from_be_bytes(*b"!pth"));
+    pub const BAD_FILE_PATH: Error = Error::from_be_bytes(*b"!pth");
 
     /// Error in user parameter list.
     #[doc(alias = "kAudio_ParamError")]
-    pub const PARAM: Status = Status(-50);
+    pub const PARAM: Error = Error::new_unchecked(-50);
 
     /// Not enough room in heap zone.
     #[doc(alias = "kAudio_MemFullError")]
-    pub const MEM_FULL: Status = Status(-108);
+    pub const MEM_FULL: Error = Error::new_unchecked(-108);
 }
 
 /// This structure holds a pair of numbers that represent a continuous range of values.

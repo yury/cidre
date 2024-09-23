@@ -254,19 +254,16 @@ impl PropId {
         &self,
         in_specifier_size: u32,
         in_specifier: *const c_void,
-    ) -> Result<u32, os::Status> {
+    ) -> os::Result<u32> {
         let mut out_property_data_size = 0;
-        let res = AudioFormatGetPropertyInfo(
+        AudioFormatGetPropertyInfo(
             *self,
             in_specifier_size,
             in_specifier,
             &mut out_property_data_size,
-        );
-        if res.is_ok() {
-            Ok(out_property_data_size)
-        } else {
-            Err(res)
-        }
+        )
+        .result()?;
+        Ok(out_property_data_size)
     }
 
     pub unsafe fn value(
@@ -275,27 +272,23 @@ impl PropId {
         in_specifier: *const c_void,
         io_property_data_size: *mut u32,
         out_property_data: *mut c_void,
-    ) -> Result<(), os::Status> {
-        let res = AudioFormatGetProperty(
+    ) -> os::Result {
+        AudioFormatGetProperty(
             *self,
             in_specifier_size,
             in_specifier,
             io_property_data_size,
             out_property_data,
-        );
-        res.result()
+        )
+        .result()
     }
 
-    pub unsafe fn fill<T: Sized>(&self, val: &mut T) -> Result<(), os::Status> {
+    pub unsafe fn fill<T: Sized>(&self, val: &mut T) -> os::Result {
         let mut size = size_of::<T>() as u32;
         self.value(0, std::ptr::null(), &mut size, val as *mut _ as *mut _)
     }
 
-    pub unsafe fn fill_with<S: Sized, T: Sized>(
-        &self,
-        val: &mut T,
-        specifier: &S,
-    ) -> Result<(), os::Status> {
+    pub unsafe fn fill_with<S: Sized, T: Sized>(&self, val: &mut T, specifier: &S) -> os::Result {
         let mut size = size_of::<T>() as u32;
         let spec_size = size_of::<S>() as u32;
         self.value(
@@ -306,7 +299,7 @@ impl PropId {
         )
     }
 
-    pub unsafe fn get_vec<T: Sized>(&self) -> Result<Vec<T>, os::Status> {
+    pub unsafe fn get_vec<T: Sized>(&self) -> os::Result<Vec<T>> {
         let mut size = self.info(0, std::ptr::null())?;
         let len = size as usize / size_of::<T>();
         let mut result = Vec::with_capacity(len);
@@ -315,10 +308,7 @@ impl PropId {
         Ok(result)
     }
 
-    pub unsafe fn get_vec_with<S: Sized, T: Sized>(
-        &self,
-        specifier: &S,
-    ) -> Result<Vec<T>, os::Status> {
+    pub unsafe fn get_vec_with<S: Sized, T: Sized>(&self, specifier: &S) -> os::Result<Vec<T>> {
         let spec_size = size_of::<S>() as u32;
         let mut size = self.info(spec_size, specifier as *const _ as _)?;
         let len = size as usize / size_of::<T>();
@@ -340,7 +330,7 @@ impl PropId {
     /// println!("{:?}", formats.len());
     /// assert!(formats.len() > 0);
     /// ```
-    pub fn encode_formats() -> Result<Vec<audio::Format>, os::Status> {
+    pub fn encode_formats() -> os::Result<Vec<audio::Format>> {
         unsafe { asbd_prop::ENCODE_FORMAT_IDS.get_vec() }
     }
 
@@ -354,7 +344,7 @@ impl PropId {
     /// audio::FormatPropId::format_info(&mut asbd).unwrap();
     ///
     /// ```
-    pub fn format_info(asbd: &mut audio::StreamBasicDesc) -> Result<(), os::Status> {
+    pub fn format_info(asbd: &mut audio::StreamBasicDesc) -> os::Result {
         unsafe { asbd_prop::FORMAT_INFO.fill(asbd) }
     }
 
@@ -365,11 +355,11 @@ impl PropId {
     /// println!("encoders: {:?}", encoders);
     /// assert!(encoders.len() > 0);
     /// ```
-    pub fn encoders(format: audio::Format) -> Result<Vec<audio::ClassDesc>, os::Status> {
+    pub fn encoders(format: audio::Format) -> os::Result<Vec<audio::ClassDesc>> {
         unsafe { asbd_prop::ENCODERS.get_vec_with(&format) }
     }
 
-    pub fn decoders(format: audio::Format) -> Result<Vec<audio::ClassDesc>, os::Status> {
+    pub fn decoders(format: audio::Format) -> os::Result<Vec<audio::ClassDesc>> {
         unsafe { asbd_prop::DECODERS.get_vec_with(&format) }
     }
 
@@ -380,9 +370,7 @@ impl PropId {
     /// println!("{:?}", rates);
     /// assert!(rates.len() > 0);
     /// ```
-    pub fn available_encode_bit_rates(
-        format: audio::Format,
-    ) -> Result<Vec<audio::ValueRange>, os::Status> {
+    pub fn available_encode_bit_rates(format: audio::Format) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { asbd_prop::AVAILABLE_ENCODE_BIT_RATES.get_vec_with(&format) }
     }
 
@@ -395,7 +383,7 @@ impl PropId {
     /// ```
     pub fn available_encode_sample_rates(
         format: audio::Format,
-    ) -> Result<Vec<audio::ValueRange>, os::Status> {
+    ) -> os::Result<Vec<audio::ValueRange>> {
         unsafe { asbd_prop::AVAILABLE_ENCODE_SAMPLE_RATES.get_vec_with(&format) }
     }
 }

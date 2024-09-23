@@ -2241,7 +2241,7 @@ mod tests {
             },
         },
         cm::io,
-        ns, objc,
+        ns,
     };
 
     #[test]

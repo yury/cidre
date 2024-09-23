@@ -15,44 +15,43 @@ impl Session {
     }
 
     #[inline]
-    pub fn create() -> Result<arc::R<Self>, os::Status> {
+    pub fn create() -> os::Result<arc::R<Self>> {
         Self::create_in(None)
     }
 
     #[inline]
-    pub fn create_in(allocator: Option<&cf::Allocator>) -> Result<arc::R<Self>, os::Status> {
-        let mut out = None;
-        unsafe { VTPixelRotationSessionCreate(allocator, &mut out).to_result_unchecked(out) }
+    pub fn create_in(allocator: Option<&cf::Allocator>) -> os::Result<arc::R<Self>> {
+        unsafe { os::result_unchecked(|res| VTPixelRotationSessionCreate(allocator, res)) }
     }
 
     #[inline]
-    pub fn set_rotate_0(&mut self) -> Result<(), os::Status> {
+    pub fn set_rotate_0(&mut self) -> os::Result {
         self.set_prop(keys::rotation(), Some(rotation::_0()))
     }
 
     #[inline]
-    pub fn set_rotate_cw_90(&mut self) -> Result<(), os::Status> {
+    pub fn set_rotate_cw_90(&mut self) -> os::Result {
         self.set_prop(keys::rotation(), Some(rotation::cw_90()))
     }
 
     #[inline]
-    pub fn set_rotate_ccw_90(&mut self) -> Result<(), os::Status> {
+    pub fn set_rotate_ccw_90(&mut self) -> os::Result {
         self.set_prop(keys::rotation(), Some(rotation::ccw_90()))
     }
 
     #[inline]
-    pub fn set_rotate_180(&mut self) -> Result<(), os::Status> {
+    pub fn set_rotate_180(&mut self) -> os::Result {
         self.set_prop(keys::rotation(), Some(rotation::_180()))
     }
 
     #[inline]
-    pub fn set_vertical_flip(&mut self, value: bool) -> Result<(), os::Status> {
+    pub fn set_vertical_flip(&mut self, value: bool) -> os::Result {
         let value: &'static cf::Boolean = value.into();
         self.set_prop(keys::flip_vertical_orientation(), Some(value))
     }
 
     #[inline]
-    pub fn set_horizontal_flip(&mut self, value: bool) -> Result<(), os::Status> {
+    pub fn set_horizontal_flip(&mut self, value: bool) -> os::Result {
         let value: &'static cf::Boolean = value.into();
         self.set_prop(keys::flip_horizontal_orientation(), Some(value))
     }
@@ -73,7 +72,7 @@ impl Session {
     /// Some properties may modify this behaviour; see VTPixelRotationProperties.h for more details.
     #[doc(alias = "VTPixelRotationSessionRotateImage")]
     #[inline]
-    pub fn rotate(&self, src: &cv::PixelBuf, dst: &mut cv::PixelBuf) -> Result<(), os::Status> {
+    pub fn rotate(&self, src: &cv::PixelBuf, dst: &mut cv::PixelBuf) -> os::Result {
         unsafe { VTPixelRotationSessionRotateImage(self, src, dst).result() }
     }
 }

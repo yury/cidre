@@ -52,7 +52,7 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category<'ear>(&mut self, val: &Category) -> Result<(), &'ear ns::Error> {
+    pub fn set_category(&mut self, val: &Category) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_category_err(val, err) })
     }
 
@@ -64,11 +64,7 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_with_opts<'ear>(
-        &mut self,
-        val: &Category,
-        options: CategoryOpts,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_category_with_opts(&mut self, val: &Category, options: CategoryOpts) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_category_with_opts_err(val, options, err) })
     }
 
@@ -81,12 +77,12 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_mod_opts<'ear>(
+    pub fn set_category_mod_opts(
         &mut self,
         val: &Category,
         mode: &Mode,
         options: CategoryOpts,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_category_mode_opts_err(val, mode, options, err) })
     }
 
@@ -106,7 +102,7 @@ impl Session {
         mode: &Mode,
         route_sharing_policy: RouteSharingPolicy,
         options: CategoryOpts,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.set_category_mode_policy_opts_err_throws(
                 val,
@@ -149,7 +145,7 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_mode<'ear>(&mut self, val: &Mode) -> Result<(), &'ear ns::Error> {
+    pub fn set_mode(&mut self, val: &Mode) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_mode_err(val, err) })
     }
 
@@ -163,10 +159,7 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_allow_haptics_and_sys_sounds_during_record<'ear>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_allow_haptics_and_sys_sounds_during_record(&mut self, val: bool) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.set_allow_haptics_and_sys_sounds_during_record_err(val, err)
         })
@@ -186,10 +179,7 @@ impl Session {
     ) -> bool;
 
     /// Use this method to temporarily override the output to built-in speaker.
-    pub fn override_output_audio_port<'ear>(
-        &mut self,
-        val: PortOverride,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn override_output_audio_port<'ear>(&mut self, val: PortOverride) -> ns::Result {
         ns::if_false(|err| unsafe { self.override_output_audio_port_err(val, err) })
     }
 }
@@ -203,7 +193,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_active<'ear>(&mut self, val: bool) -> Result<(), &'ear ns::Error> {
+    pub fn set_active(&mut self, val: bool) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_active_err(val, err) })
     }
 
@@ -215,11 +205,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_active_with_opts<'ear>(
-        &mut self,
-        val: bool,
-        options: SetActiveOpts,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_active_with_opts(&mut self, val: bool, options: SetActiveOpts) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_active_with_opts_err(val, options, err) })
     }
 }
@@ -238,7 +224,7 @@ impl Session {
     ) -> bool;
 
     /// The preferred hardware sample rate for the session. The actual sample rate may be different.
-    pub fn set_preferred_sample_rate<'ear>(&mut self, val: f64) -> Result<(), &'ear ns::Error> {
+    pub fn set_preferred_sample_rate(&mut self, val: f64) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_preferred_sample_rate_err(val, err) })
     }
 
@@ -252,10 +238,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_preferred_io_buff_duration<'ear>(
-        &mut self,
-        val: ns::TimeInterval,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_preferred_io_buff_duration(&mut self, val: ns::TimeInterval) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_preferred_io_buff_duration_err(val, err) })
     }
 
@@ -267,10 +250,7 @@ impl Session {
     ) -> bool;
 
     /// Sets the number of input channels that the app would prefer for the current route
-    pub fn set_preferred_input_channels_num<'ear>(
-        &mut self,
-        val: isize,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_preferred_input_channels_num(&mut self, val: isize) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_preferred_input_channels_num_err(val, err) })
     }
 
@@ -284,10 +264,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_preferred_input_orientation<'ear>(
-        &mut self,
-        val: &Orientation,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_preferred_input_orientation(&mut self, val: &Orientation) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_preferred_input_orientation_err(val, err) })
     }
 
@@ -307,7 +284,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_input_gain<'ear>(&mut self, val: f32) -> Result<(), &'ear ns::Error> {
+    pub fn set_input_gain(&mut self, val: f32) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_input_gain_err(val, err) })
     }
 
@@ -327,10 +304,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_input_data_src<'ear>(
-        &mut self,
-        val: Option<&DataSrcDesc>,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_input_data_src<'ear>(&mut self, val: Option<&DataSrcDesc>) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_input_data_src_err(val, err) })
     }
 
@@ -347,10 +321,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_output_data_src<'ear>(
-        &mut self,
-        val: Option<&DataSrcDesc>,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_output_data_src(&mut self, val: Option<&DataSrcDesc>) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_output_data_src_err(val, err) })
     }
 
@@ -423,10 +394,7 @@ impl Session {
     ///
     /// See the AVAudioSessionIOType documentation for a more detailed explanation of why a client may
     /// want to change the IO type.
-    pub fn set_aggregated_io_preference<'ear>(
-        &mut self,
-        val: IoType,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_aggregated_io_preference(&mut self, val: IoType) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_aggregated_io_preference_err(val, err) })
     }
 
@@ -437,10 +405,7 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_supports_multichannel_content<'ear>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_supports_multichannel_content(&mut self, val: bool) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_supports_multichannel_content_err(val, err) })
     }
 
@@ -462,10 +427,7 @@ impl Session {
     /// Starting in iOS 17, by default Now Playing sessions will be interrupted if they are active
     /// when a route change occurs because of a disconnect event. All other sessions will not be
     /// interrupted due to a disconnect event.
-    pub fn set_prefers_interruption_on_route_disconnect<'ear>(
-        &mut self,
-        val: bool,
-    ) -> Result<(), &'ear ns::Error> {
+    pub fn set_prefers_interruption_on_route_disconnect(&mut self, val: bool) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.set_prefers_interruption_on_route_disconnect_err(val, err)
         })

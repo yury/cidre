@@ -264,7 +264,7 @@ impl FormatDesc {
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: *mut Option<arc::R<FormatDesc>>,
         allocator: Option<&cf::Allocator>,
-    ) -> os::Status {
+    ) -> os::Result {
         unsafe {
             CMFormatDescriptionCreate(
                 allocator,
@@ -273,6 +273,7 @@ impl FormatDesc {
                 extensions,
                 format_description_out,
             )
+            .result()
         }
     }
 
@@ -289,16 +290,12 @@ impl FormatDesc {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut format_desc = None;
-        let res = Self::create_in(
-            media_type,
-            media_sub_type,
-            extensions,
-            &mut format_desc,
-            None,
-        );
-        unsafe { res.to_result_unchecked(format_desc) }
+    ) -> os::Result<arc::R<Self>> {
+        unsafe {
+            os::result_unchecked(|val| {
+                Self::create_in(media_type, media_sub_type, extensions, val, None)
+            })
+        }
     }
 }
 
@@ -315,17 +312,12 @@ impl VideoFormatDesc {
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-    ) -> Result<arc::R<Self>, os::Status> {
-        let mut format_desc = None;
-        let res = Self::create_video_in(
-            codec_type,
-            width,
-            height,
-            extensions,
-            &mut format_desc,
-            None,
-        );
-        unsafe { res.to_result_unchecked(format_desc) }
+    ) -> os::Result<arc::R<Self>> {
+        unsafe {
+            os::result_unchecked(|res| {
+                Self::create_video_in(codec_type, width, height, extensions, res, None)
+            })
+        }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionCreate")]
@@ -336,7 +328,7 @@ impl VideoFormatDesc {
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: *mut Option<arc::R<VideoFormatDesc>>,
         allocator: Option<&Allocator>,
-    ) -> os::Status {
+    ) -> os::Result {
         unsafe {
             CMVideoFormatDescriptionCreate(
                 allocator,
@@ -346,6 +338,7 @@ impl VideoFormatDesc {
                 extensions,
                 format_description_out,
             )
+            .result()
         }
     }
 
@@ -370,20 +363,18 @@ impl VideoFormatDesc {
     pub fn with_image_buf_in(
         image_buffer: &cv::ImageBuf,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
-        let mut result = None;
+    ) -> os::Result<arc::R<VideoFormatDesc>> {
         unsafe {
-            CMVideoFormatDescriptionCreateForImageBuffer(allocator, image_buffer, &mut result)
-                .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMVideoFormatDescriptionCreateForImageBuffer(allocator, image_buffer, res)
+            })
         }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionCreateForImageBuffer")]
     #[cfg(feature = "cv")]
     #[inline]
-    pub fn with_image_buf(
-        image_buffer: &cv::ImageBuf,
-    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
+    pub fn with_image_buf(image_buffer: &cv::ImageBuf) -> os::Result<arc::R<VideoFormatDesc>> {
         Self::with_image_buf_in(image_buffer, None)
     }
 
@@ -393,7 +384,7 @@ impl VideoFormatDesc {
         pointers: &[*const u8; N],
         sizes: &[usize; N],
         nal_unit_header_length: i32,
-    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
+    ) -> os::Result<arc::R<VideoFormatDesc>> {
         Self::with_h264_param_sets_in(pointers, sizes, nal_unit_header_length, None)
     }
 
@@ -404,19 +395,18 @@ impl VideoFormatDesc {
         sizes: &[usize; N],
         nal_unit_header_length: i32,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
-        let mut result = None;
-
+    ) -> os::Result<arc::R<VideoFormatDesc>> {
         unsafe {
-            CMVideoFormatDescriptionCreateFromH264ParameterSets(
-                allocator,
-                N,
-                pointers.as_ptr(),
-                sizes.as_ptr(),
-                nal_unit_header_length,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMVideoFormatDescriptionCreateFromH264ParameterSets(
+                    allocator,
+                    N,
+                    pointers.as_ptr(),
+                    sizes.as_ptr(),
+                    nal_unit_header_length,
+                    res,
+                )
+            })
         }
     }
 
@@ -428,7 +418,7 @@ impl VideoFormatDesc {
         sizes: &[usize],
         nal_unit_header_length: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
+    ) -> os::Result<arc::R<VideoFormatDesc>> {
         Self::with_hevc_param_sets_in(
             count,
             pointers,
@@ -448,30 +438,29 @@ impl VideoFormatDesc {
         nal_unit_header_length: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<VideoFormatDesc>, os::Status> {
-        let mut result = None;
-
+    ) -> os::Result<arc::R<VideoFormatDesc>> {
         unsafe {
-            CMVideoFormatDescriptionCreateFromHEVCParameterSets(
-                allocator,
-                count,
-                pointers.as_ptr(),
-                sizes.as_ptr(),
-                nal_unit_header_length,
-                extensions,
-                &mut result,
-            )
-            .to_result_unchecked(result)
+            os::result_unchecked(|res| {
+                CMVideoFormatDescriptionCreateFromHEVCParameterSets(
+                    allocator,
+                    count,
+                    pointers.as_ptr(),
+                    sizes.as_ptr(),
+                    nal_unit_header_length,
+                    extensions,
+                    res,
+                )
+            })
         }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionGetH264ParameterSetAtIndex")]
     #[inline]
-    pub fn h264_params_count_and_header_len(&self) -> Result<(usize, i32), os::Status> {
-        unsafe {
-            let mut parameters_count_out = 0;
-            let mut nal_unit_header_length_out = 0;
+    pub fn h264_params_count_and_header_len(&self) -> os::Result<(usize, i32)> {
+        let mut parameters_count_out = 0;
+        let mut nal_unit_header_length_out = 0;
 
+        unsafe {
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
                 self,
                 0,
@@ -480,8 +469,9 @@ impl VideoFormatDesc {
                 &mut parameters_count_out,
                 &mut nal_unit_header_length_out,
             )
-            .to_result_unchecked(Some((parameters_count_out, nal_unit_header_length_out)))
+            .result()?;
         }
+        Ok((parameters_count_out, nal_unit_header_length_out))
     }
 
     #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
@@ -493,7 +483,7 @@ impl VideoFormatDesc {
         parameter_set_size_out: *mut usize,
         parameter_set_count_out: *mut usize,
         nal_unit_header_length_out: *mut i32,
-    ) -> os::Status {
+    ) -> os::Result {
         CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
             self,
             parameter_set_index,
@@ -502,15 +492,15 @@ impl VideoFormatDesc {
             parameter_set_count_out,
             nal_unit_header_length_out,
         )
+        .result()
     }
 
     #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
     #[inline]
-    pub fn hevc_params_count_and_header_len(&self) -> Result<(usize, i32), os::Status> {
+    pub fn hevc_params_count_and_header_len(&self) -> os::Result<(usize, i32)> {
+        let mut parameters_count_out = 0;
+        let mut nal_unit_header_length_out = 0;
         unsafe {
-            let mut parameters_count_out = 0;
-            let mut nal_unit_header_length_out = 0;
-
             CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
                 self,
                 0,
@@ -519,53 +509,49 @@ impl VideoFormatDesc {
                 &mut parameters_count_out,
                 &mut nal_unit_header_length_out,
             )
-            .to_result_unchecked(Some((parameters_count_out, nal_unit_header_length_out)))
+            .result()?;
         }
+
+        Ok((parameters_count_out, nal_unit_header_length_out))
     }
 
     #[doc(alias = "CMVideoFormatDescriptionGetH264ParameterSetAtIndex")]
     #[inline]
-    pub fn h264_param_set_at(&self, index: usize) -> Result<&[u8], os::Status> {
+    pub fn h264_param_set_at(&self, index: usize) -> os::Result<&[u8]> {
+        let mut size = 0;
+        let mut bytes = std::ptr::null();
         unsafe {
-            let mut size = 0;
-            let mut bytes = std::ptr::null();
-            let res = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
+            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(
                 self,
                 index,
                 &mut bytes,
                 &mut size,
                 std::ptr::null_mut(),
                 std::ptr::null_mut(),
-            );
-            if res.is_ok() {
-                let slice = std::ptr::slice_from_raw_parts(bytes, size);
-                Ok(&*slice)
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
+            let slice = std::ptr::slice_from_raw_parts(bytes, size);
+            Ok(&*slice)
         }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
     #[inline]
-    pub fn hevc_param_set_at(&self, index: usize) -> Result<&[u8], os::Status> {
+    pub fn hevc_param_set_at(&self, index: usize) -> os::Result<&[u8]> {
+        let mut size = 0;
+        let mut bytes = std::ptr::null();
         unsafe {
-            let mut size = 0;
-            let mut bytes = std::ptr::null();
-            let res = CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+            CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
                 self,
                 index,
                 &mut bytes,
                 &mut size,
                 std::ptr::null_mut(),
                 std::ptr::null_mut(),
-            );
-            if res.is_ok() {
-                let slice = std::ptr::slice_from_raw_parts(bytes, size);
-                Ok(&*slice)
-            } else {
-                Err(res)
-            }
+            )
+            .result()?;
+            let slice = std::ptr::slice_from_raw_parts(bytes, size);
+            Ok(&*slice)
         }
     }
 
@@ -581,10 +567,9 @@ pub type AudioFormatDesc = FormatDesc;
 
 #[cfg(feature = "cat")]
 impl AudioFormatDesc {
-    pub fn with_asbd(asbd: &cat::audio::StreamBasicDesc) -> Result<arc::R<Self>, os::Status> {
-        let mut res = None;
+    pub fn with_asbd(asbd: &cat::audio::StreamBasicDesc) -> os::Result<arc::R<Self>> {
         unsafe {
-            Self::audio_in(asbd, 0, None, 0, None, None, &mut res, None).to_result_unchecked(res)
+            os::result_unchecked(|res| Self::audio_in(asbd, 0, None, 0, None, None, res, None))
         }
     }
 
@@ -597,7 +582,7 @@ impl AudioFormatDesc {
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
         format_description_out: *mut Option<arc::R<Self>>,
         allocator: Option<&cf::Allocator>,
-    ) -> os::Status {
+    ) -> os::Result {
         unsafe {
             CMAudioFormatDescriptionCreate(
                 allocator,
@@ -609,6 +594,7 @@ impl AudioFormatDesc {
                 extensions,
                 format_description_out,
             )
+            .result()
         }
     }
 
@@ -911,7 +897,7 @@ impl LogTransferFn {
 
 #[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
-extern "C" {
+extern "C-unwind" {
     static kCMFormatDescriptionExtension_FormatName: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_Depth: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_CleanAperture: &'static FormatDescExtKey;

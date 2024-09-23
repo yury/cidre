@@ -211,11 +211,9 @@ impl FileId {
         type_id: FileTypeId,
         format: &audio::StreamBasicDesc,
         flags: Flags,
-    ) -> Result<Self, os::Status> {
-        let mut result = None;
+    ) -> os::Result<Self> {
         unsafe {
-            AudioFileCreateWithURL(url, type_id, format, flags, &mut result)
-                .to_result_unchecked(result)
+            os::result_unchecked(|val| AudioFileCreateWithURL(url, type_id, format, flags, val))
         }
     }
 
@@ -235,11 +233,8 @@ impl FileId {
         url: &cf::Url,
         permissions: Permissions,
         type_hint: FileTypeId,
-    ) -> Result<Self, os::Status> {
-        let mut result = None;
-        unsafe {
-            AudioFileOpenURL(url, permissions, type_hint, &mut result).to_result_unchecked(result)
-        }
+    ) -> os::Result<Self> {
+        unsafe { os::result_unchecked(|val| AudioFileOpenURL(url, permissions, type_hint, val)) }
     }
 
     #[doc(alias = "AudioFileWritePackets")]
@@ -252,7 +247,7 @@ impl FileId {
         starting_packet: isize,
         num_packets: *mut u32,
         buffer: *const u8,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             AudioFileWritePackets(
                 self.0,
@@ -277,7 +272,7 @@ impl FileId {
         starting_packet: isize,
         num_packets: *mut u32,
         buffer: *mut u8,
-    ) -> Result<(), os::Status> {
+    ) -> os::Result {
         unsafe {
             AudioFileReadPacketData(
                 self.0,
@@ -294,21 +289,20 @@ impl FileId {
 
     #[doc(alias = "AudioFileGetPropertyInfo")]
     #[inline]
-    pub fn property_info(&self, property_id: PropId) -> Result<(usize, bool), os::Status> {
+    pub fn property_info(&self, property_id: PropId) -> os::Result<(usize, bool)> {
+        let mut data_size = 0;
+        let mut is_writable = 0;
         unsafe {
-            let mut data_size = 0;
-            let mut is_writable = 0;
-            let res = AudioFileGetPropertyInfo(
+            AudioFileGetPropertyInfo(
                 self.0,
                 property_id,
                 Some(&mut data_size),
                 Some(&mut is_writable),
-            );
-            match res {
-                os::Status::NO_ERR => Ok((data_size as _, is_writable == 1)),
-                _ => Err(res),
-            }
+            )
+            .result()?;
         }
+
+        Ok((data_size as _, is_writable == 1))
     }
 
     #[doc(alias = "AudioFileGetProperty")]
@@ -318,29 +312,27 @@ impl FileId {
         property_id: PropId,
         data_size: *mut u32,
         property_data: *mut c_void,
-    ) -> os::Status {
-        AudioFileGetProperty(self.0, property_id, data_size, property_data)
+    ) -> os::Result {
+        AudioFileGetProperty(self.0, property_id, data_size, property_data).result()
     }
 
     #[doc(alias = "AudioFileGetProperty")]
     #[inline]
-    pub fn prop<T: Default>(&self, property_id: PropId) -> Result<T, os::Status> {
+    pub fn prop<T: Default>(&self, property_id: PropId) -> os::Result<T> {
         let mut value = T::default();
         let mut size = std::mem::size_of::<T>() as u32;
         unsafe {
-            self.get_property(property_id, &mut size, &mut value as *mut T as _)
-                .result()?;
+            self.get_property(property_id, &mut size, &mut value as *mut T as _)?;
         }
         Ok(value)
     }
 
     #[doc(alias = "AudioFileSetProperty")]
     #[inline]
-    pub fn set_prop<T: Sized>(&mut self, property_id: PropId, val: &T) -> Result<(), os::Status> {
+    pub fn set_prop<T: Sized>(&mut self, property_id: PropId, val: &T) -> os::Result {
         let size = std::mem::size_of::<T>() as u32;
         unsafe {
-            self.set_property(property_id, size, val as *const T as _)
-                .result()?;
+            self.set_property(property_id, size, val as *const T as _)?;
         }
         Ok(())
     }
@@ -352,95 +344,94 @@ impl FileId {
         prop_id: PropId,
         data_size: u32,
         prop_data: *const c_void,
-    ) -> os::Status {
-        AudioFileSetProperty(self.0, prop_id, data_size, prop_data)
+    ) -> os::Result {
+        AudioFileSetProperty(self.0, prop_id, data_size, prop_data).result()
     }
 
     #[inline]
-    pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> Result<Vec<T>, os::Status> {
+    pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> os::Result<Vec<T>> {
         let (size, _writable) = self.property_info(prop_id)?;
         let mut sz: u32 = size as _;
         let mut vec = Vec::with_capacity(size / std::mem::size_of::<T>());
-        self.get_property(prop_id, &mut sz, vec.as_mut_ptr() as _)
-            .result()?;
+        self.get_property(prop_id, &mut sz, vec.as_mut_ptr() as _)?;
         vec.set_len(sz as usize / std::mem::size_of::<T>());
         Ok(vec)
     }
 
     #[inline]
-    pub fn magic_cookie_data(&self) -> Result<Vec<u8>, os::Status> {
+    pub fn magic_cookie_data(&self) -> os::Result<Vec<u8>> {
         unsafe { self.prop_vec(PropId::MAGIC_COOKIE_DATA) }
     }
 
     #[inline]
-    pub fn maximum_packet_size(&self) -> Result<u32, os::Status> {
+    pub fn maximum_packet_size(&self) -> os::Result<u32> {
         self.prop(PropId::MAXIMUM_PACKET_SIZE)
     }
 
     #[inline]
-    pub fn defer_size_updates(&self) -> Result<bool, os::Status> {
+    pub fn defer_size_updates(&self) -> os::Result<bool> {
         Ok(self.prop::<u32>(PropId::DEFER_SIZE_UPDATES)? == 1)
     }
 
     #[inline]
-    pub fn set_defer_size_updates(&mut self, val: bool) -> Result<(), os::Status> {
+    pub fn set_defer_size_updates(&mut self, val: bool) -> os::Result {
         let v: u32 = val as _;
         self.set_prop(PropId::DEFER_SIZE_UPDATES, &v)
     }
 
     #[inline]
-    pub fn optimized(&self) -> Result<bool, os::Status> {
+    pub fn optimized(&self) -> os::Result<bool> {
         Ok(self.prop::<u32>(PropId::IS_OPTIMIZED)? == 1)
     }
 
     /// Read only
     #[inline]
-    pub fn file_format(&self) -> Result<FileTypeId, os::Status> {
+    pub fn file_format(&self) -> os::Result<FileTypeId> {
         self.prop(PropId::FILE_FORMAT)
     }
 
     #[inline]
-    pub fn data_format(&self) -> Result<audio::StreamBasicDesc, os::Status> {
+    pub fn data_format(&self) -> os::Result<audio::StreamBasicDesc> {
         self.prop(PropId::DATA_FORMAT)
     }
 
     #[inline]
-    pub fn set_data_format(&mut self, asbd: &audio::StreamBasicDesc) -> Result<(), os::Status> {
+    pub fn set_data_format(&mut self, asbd: &audio::StreamBasicDesc) -> os::Result {
         self.set_prop(PropId::DATA_FORMAT, asbd)
     }
 
     #[inline]
-    pub fn reserve_duration(&self) -> Result<f64, os::Status> {
+    pub fn reserve_duration(&self) -> os::Result<f64> {
         self.prop(PropId::RESERVE_DURATION)
     }
 
     #[inline]
-    pub fn set_reserve_duration(&mut self, val: f64) -> Result<(), os::Status> {
+    pub fn set_reserve_duration(&mut self, val: f64) -> os::Result {
         self.set_prop(PropId::RESERVE_DURATION, &val)
     }
 
     #[inline]
-    pub fn estimated_duration(&self) -> Result<f64, os::Status> {
+    pub fn estimated_duration(&self) -> os::Result<f64> {
         self.prop(PropId::ESTIMATED_DURATION)
     }
 
     #[inline]
-    pub fn info_dictionary(&self) -> Result<arc::R<cf::Dictionary>, os::Status> {
+    pub fn info_dictionary(&self) -> os::Result<arc::R<cf::Dictionary>> {
         self.prop(PropId::INFO_DICTIONARY)
     }
 
     /// Close an existing audio file.
     #[doc(alias = "AudioFileClose")]
     #[inline]
-    pub fn close(&mut self) -> os::Status {
-        unsafe { AudioFileClose(self.0) }
+    pub fn close(&mut self) -> os::Result {
+        unsafe { AudioFileClose(self.0).result() }
     }
 }
 
 impl Drop for FileId {
     fn drop(&mut self) {
         let res = self.close();
-        debug_assert_eq!(res, 0, "failed to close audio file properly");
+        debug_assert!(res.is_ok(), "failed to close audio file properly");
     }
 }
 
@@ -541,89 +532,89 @@ impl FileTypeId {
 }
 
 pub mod err {
-    use crate::os::Status;
+    use crate::os::Error;
     /// 0x7768743F, 2003334207
     /// An unspecified error has occurred.
     #[doc(alias = "kAudioFileUnspecifiedError")]
-    pub const UNSPECIFIED: Status = Status(i32::from_be_bytes(*b"wht?"));
+    pub const UNSPECIFIED: Error = Error::from_be_bytes(*b"wht?");
 
     /// 0x7479703F, 1954115647
     /// The file type is not supported.
     #[doc(alias = "kAudioFileUnsupportedFileTypeError")]
-    pub const UNSUPPORTED_FILE_TYPE: Status = Status(i32::from_be_bytes(*b"typ?"));
+    pub const UNSUPPORTED_FILE_TYPE: Error = Error::from_be_bytes(*b"typ?");
 
     /// 0x666D743F, 1718449215
     /// The data format is not supported by this file type.
     #[doc(alias = "kAudioFileUnsupportedDataFormatError")]
-    pub const UNSUPPORTED_DATA_FORMAT: Status = Status(i32::from_be_bytes(*b"fmt?"));
+    pub const UNSUPPORTED_DATA_FORMAT: Error = Error::from_be_bytes(*b"fmt?");
 
     /// 0x7074793F, 1886681407
     /// The property is not supported.
     #[doc(alias = "kAudioFileUnsupportedPropertyError")]
-    pub const UNSUPPORTED_PROPERTY: Status = Status(i32::from_be_bytes(*b"pty?"));
+    pub const UNSUPPORTED_PROPERTY: Error = Error::from_be_bytes(*b"pty?");
 
     /// 0x2173697A,  561211770
     /// The size of the property data was not correct.
     #[doc(alias = "kAudioFileBadPropertySizeError")]
-    pub const BAD_PROPERTY_SIZE: Status = Status(i32::from_be_bytes(*b"!siz"));
+    pub const BAD_PROPERTY_SIZE: Error = Error::from_be_bytes(*b"!siz");
 
     /// 0x70726D3F, 1886547263
     /// The operation violated the file permissions. For example, an attempt was made to write to a file
     /// opened with the kAudioFileReadPermission constant.
     #[doc(alias = "kAudioFilePermissionsError")]
-    pub const PERMISSIONS: Status = Status(i32::from_be_bytes(*b"!prm"));
+    pub const PERMISSIONS: Error = Error::from_be_bytes(*b"!prm");
 
     /// 0x6F70746D, 1869640813
     /// The chunks following the audio data chunk are preventing the extension of the audio data chunk.
     ///  To write more data, you must optimize the file.
     #[doc(alias = "kAudioFileNotOptimizedError")]
-    pub const NOT_OPTIMIZED: Status = Status(i32::from_be_bytes(*b"optm"));
+    pub const NOT_OPTIMIZED: Error = Error::from_be_bytes(*b"optm");
 
     /// 0x63686B3F, 1667787583
     /// Either the chunk does not exist in the file or it is not supported by the file.
     #[doc(alias = "kAudioFileInvalidChunkError")]
-    pub const INVALID_CHUNK: Status = Status(i32::from_be_bytes(*b"chk?"));
+    pub const INVALID_CHUNK: Error = Error::from_be_bytes(*b"chk?");
 
     /// 0x6F66663F, 1868981823
     /// The file offset was too large for the file type. The AIFF and WAVE file format types have 32-bit file size limits.
     #[doc(alias = "kAudioFileDoesNotAllow64BitDataSizeError")]
-    pub const DOES_NOT_ALLOW64_BIT_DATA_SIZE: Status = Status(i32::from_be_bytes(*b"off?"));
+    pub const DOES_NOT_ALLOW64_BIT_DATA_SIZE: Error = Error::from_be_bytes(*b"off?");
 
     /// 0x70636B3F, 1885563711
     /// The file offset was too large for the file type. The AIFF and WAVE file format types have 32-bit file size limits.
     #[doc(alias = "kAudioFileInvalidPacketOffsetError")]
-    pub const INVALID_PACKET_OFFSET: Status = Status(i32::from_be_bytes(*b"pck?"));
+    pub const INVALID_PACKET_OFFSET: Error = Error::from_be_bytes(*b"pck?");
 
     /// 0x6465703F, 1684369471
     /// The file offset was too large for the file type. The AIFF and WAVE file format types have 32-bit file size limits.
     #[doc(alias = "kAudioFileInvalidPacketDependencyError")]
-    pub const INVALID_PACKET_DEPENDENCY: Status = Status(i32::from_be_bytes(*b"dep?"));
+    pub const INVALID_PACKET_DEPENDENCY: Error = Error::from_be_bytes(*b"dep?");
 
     /// 0x6474613F, 1685348671
     /// The file is malformed, or otherwise not a valid instance of an audio file of its type.
     #[doc(alias = "kAudioFileInvalidFileError")]
-    pub const INVALID_FILE: Status = Status(i32::from_be_bytes(*b"dta?"));
+    pub const INVALID_FILE: Error = Error::from_be_bytes(*b"dta?");
 
     /// 0x6F703F3F
     /// The file is malformed, or otherwise not a valid instance of an audio file of its type.
     #[doc(alias = "kAudioFileOperationNotSupportedError")]
-    pub const OPERATION_NOT_SUPPORTED: Status = Status(i32::from_be_bytes(*b"op??"));
+    pub const OPERATION_NOT_SUPPORTED: Error = Error::from_be_bytes(*b"op??");
 
     /// The file is closed.
     #[doc(alias = "kAudioFileNotOpenError")]
-    pub const NOT_OPEN: Status = Status(-38);
+    pub const NOT_OPEN: Error = Error::new_unchecked(-38);
 
     /// End of file.
     #[doc(alias = "kAudioFileEndOfFileError")]
-    pub const END_OF_FILE: Status = Status(-39);
+    pub const END_OF_FILE: Error = Error::new_unchecked(-39);
 
     /// Invalid file position.
     #[doc(alias = "kAudioFilePositionError")]
-    pub const POS: Status = Status(-40);
+    pub const POS: Error = Error::new_unchecked(-40);
 
     /// File not found.
     #[doc(alias = "kAudioFileFileNotFoundError")]
-    pub const FILE_NOT_FOUND: Status = Status(-43);
+    pub const FILE_NOT_FOUND: Error = Error::new_unchecked(-43);
 }
 
 define_opts!(pub Flags(u32));
@@ -814,7 +805,7 @@ mod tests {
         assert!(!info.is_empty());
         info.show();
 
-        file.close();
+        _ = file.close();
         std::mem::forget(file);
     }
 }

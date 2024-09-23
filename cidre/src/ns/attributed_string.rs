@@ -276,7 +276,7 @@ impl AttrStringMut {
         name: &ns::AttrStringKey,
         val: &ns::Id,
         range: ns::Range,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.add_attr_throws(name, val, range) })
     }
 
@@ -291,7 +291,7 @@ impl AttrStringMut {
         &mut self,
         attrs: &ns::Dictionary<ns::AttrStringKey, ns::Id>,
         range: ns::Range,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.add_attrs_throws(attrs, range) })
     }
 
@@ -302,7 +302,7 @@ impl AttrStringMut {
         &mut self,
         name: &ns::AttrStringKey,
         range: ns::Range,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_attr_throws(name, range) })
     }
 
@@ -323,7 +323,7 @@ impl AttrStringMut {
         &mut self,
         range: ns::Range,
         attr_str: &ns::AttrString,
-    ) -> Result<(), &'ear ns::Exception> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.replace_with_attr_string_throws(range, attr_str) })
     }
 }

@@ -63,7 +63,7 @@ struct Context {
     packet_descriptions: Vec<audio::StreamPacketDesc>,
 }
 
-extern "C" fn data_proc(
+extern "C-unwind" fn data_proc(
     _converter: &audio::Converter,
     io_number_data_packets: &mut u32,
     io_data: &mut audio::BufList,
@@ -108,7 +108,7 @@ extern "C" fn data_proc(
         }
         Err(e) => {
             eprintln!("error {e:?}");
-            e
+            e.status()
         }
     }
 }
@@ -234,7 +234,6 @@ fn encode(args: &EncodeArgs) {
                     cookie.len() as _,
                     cookie.as_ptr() as _,
                 )
-                .result()
                 .unwrap();
         }
     }
