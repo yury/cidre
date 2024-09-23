@@ -518,7 +518,9 @@ impl ConverterRef {
         dst_fmt: &audio::StreamBasicDesc,
         options: Opts,
     ) -> os::Result<Self> {
-        os::result_unchecked(|val| Self::new_with_options(src_fmt, dst_fmt, options, val))
+        unsafe {
+            os::result_unchecked(|val| Self::new_with_options(src_fmt, dst_fmt, options, val))
+        }
     }
 }
 
