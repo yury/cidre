@@ -28,13 +28,20 @@ pub fn class_from_ns_string<T: Obj>(name: &ns::String) -> Option<&'static ns::ob
     unsafe { std::mem::transmute(NSClassFromString(name)) }
 }
 
+#[doc(alias = "NSProtocolFromString")]
+#[inline]
+pub fn protocol_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::Protocol> {
+    unsafe { std::mem::transmute(NSProtocolFromString(name)) }
+}
+
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn NSStringFromSelector(sel: &ns::objc::Sel) -> arc::R<ns::String>;
     fn NSSelectorFromString(name: &ns::String) -> Option<&'static ns::objc::Sel>;
 
     fn NSStringFromClass(cls: *const c_void) -> arc::R<ns::String>;
     fn NSClassFromString(name: &ns::String) -> *const c_void;
+    fn NSProtocolFromString(name: &ns::String) -> Option<&'static ns::objc::Protocol>;
 }
 
 #[cfg(target_arch = "aarch64")]

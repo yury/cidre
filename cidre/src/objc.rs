@@ -10,9 +10,17 @@ pub use cidre_macros::api_available as available;
 #[repr(transparent)]
 pub struct Class<T: Obj>(Type, PhantomData<T>);
 
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Protocol(Type);
+
 impl<T: Obj> Class<T> {
     pub unsafe fn method_impl(&self, name: &Sel) -> *const c_void {
         class_getMethodImplementation(std::mem::transmute(self), name)
+    }
+
+    pub unsafe fn add_protocol(&self, protocol: &Protocol) -> bool {
+        class_addProtocol(std::mem::transmute(self), protocol)
     }
 }
 
@@ -224,6 +232,7 @@ extern "C-unwind" {
 
     fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
     fn class_getMethodImplementation(cls: &Class<Id>, name: &Sel) -> *const c_void;
+    fn class_addProtocol(cls: &Class<Id>, protocol: &Protocol) -> bool;
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
 
     pub fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<arc::R<Id>>;
