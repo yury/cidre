@@ -52,7 +52,7 @@ async fn main() {
     //         ducking_level: av::AudioVPOtherAudioDuckingLevel::Min,
     //     });
     // }
-    let format = input.input_format_for_bus(1);
+    let format = input.input_format_for_bus(0);
     let mut analysis = sn::AudioStreamAnalyzer::with_format(format);
 
     let obs = ResultsObs::new();
