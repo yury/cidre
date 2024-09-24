@@ -24,7 +24,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
-    c.bench_function("cf::String cfstr!", |b| {
+    c.bench_function("cf::String cf::str!", |b| {
         b.iter(|| {
             assert!(!cf::str!(c"very long string that can't be tagged cf::String").is_tagged_ptr())
         })

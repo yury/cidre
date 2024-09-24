@@ -127,12 +127,6 @@ impl Number {
     #[objc::msg_send(numberWithLongLong:)]
     pub fn with_i64_ar(value: i64) -> arc::Rar<Self>;
 
-    // for benches
-    #[inline]
-    pub fn with_i64_call(value: i64) -> arc::R<Self> {
-        unsafe { NSNumber_numberWithInteger(value) }
-    }
-
     #[inline]
     pub fn with_isize(value: isize) -> arc::R<Self> {
         Self::with_i64(value as _)
@@ -321,9 +315,6 @@ extern "C" {
 
     static NS_VALUE: &'static Class<ns::Value>;
     static NS_NUMBER: &'static Class<ns::Number>;
-
-    // just for benchmarks
-    fn NSNumber_numberWithInteger(value: i64) -> arc::R<ns::Number>;
 }
 
 #[cfg(test)]

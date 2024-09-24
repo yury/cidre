@@ -73,14 +73,6 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
-
-    c.bench_function("alloc_with_fn_call", |b| {
-        b.iter(|| {
-            ar_pool(|| {
-                ns::Number::with_i64_call(num);
-            })
-        })
-    });
 }
 
 criterion_group!(benches, criterion_benchmark);
