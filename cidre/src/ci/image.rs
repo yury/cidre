@@ -494,7 +494,10 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api, ci};
+    #[cfg(not(feature = "macos_15_0"))]
+    use crate::api;
+
+    use crate::ci;
 
     #[test]
     fn basics() {
@@ -529,5 +532,15 @@ mod tests {
             let key = unsafe { ci::ImageOption::content_headeroom() };
             assert!(key.is_none());
         }
+    }
+
+    #[cfg(feature = "macos_15_0")]
+    #[test]
+    fn versioning() {
+        let black = ci::Image::black();
+        let headroom = black.content_headroom();
+        assert_eq!(0.0f32, headroom);
+
+        let _key = ci::ImageOption::content_headeroom();
     }
 }

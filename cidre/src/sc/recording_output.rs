@@ -90,7 +90,27 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api, av, sc};
+    use crate::{av, sc};
+
+    #[cfg(not(feature = "macos_15_0"))]
+    use crate::api;
+
+    #[cfg(feature = "macos_15_0")]
+    #[test]
+    fn basics() {
+        let cfg = sc::RecordingOutputCfg::new();
+        assert!(cfg.output_url().is_none());
+
+        let codec = cfg.video_codec();
+
+        assert_eq!(&codec, av::VideoCodec::h264());
+
+        let available_codecs = cfg.available_video_codecs();
+        assert!(!available_codecs.is_empty());
+
+        let available_file_types = cfg.available_output_file_types();
+        assert!(!available_file_types.is_empty());
+    }
 
     #[cfg(not(feature = "macos_15_0"))]
     #[test]

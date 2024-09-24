@@ -908,8 +908,23 @@ extern "C-unwind" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api, at};
+    use crate::at;
 
+    #[cfg(not(feature = "macos_15_0"))]
+    use crate::api;
+
+    #[cfg(feature = "macos_15_0")]
+    #[test]
+    fn basics() {
+        let src_fmt = at::audio::StreamBasicDesc::common_f32(44_100.0f64, 2, true);
+        let dst_fmt = at::audio::StreamBasicDesc::common_f32(44_100.0f64, 2, false);
+        let opts = at::audio::ConverterOpts::UNBUFFERED;
+        let converter = at::audio::ConverterRef::with_options(&src_fmt, &dst_fmt, opts).unwrap();
+        let size = converter.max_output_packet_size().unwrap();
+        assert_eq!(size, 4);
+    }
+
+    #[cfg(not(feature = "macos_15_0"))]
     #[test]
     fn basics() {
         let src_fmt = at::audio::StreamBasicDesc::common_f32(44_100.0f64, 2, true);

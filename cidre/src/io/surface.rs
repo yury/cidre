@@ -522,7 +522,9 @@ pub mod key {
 
 #[cfg(test)]
 mod test {
-    use crate::{api, cf, io};
+    #[cfg(not(feature = "macos_15_0"))]
+    use crate::api;
+    use crate::{cf, io};
 
     #[test]
     fn basics() {
@@ -555,5 +557,11 @@ mod test {
             let k = unsafe { io::surface::key::content_headroom() };
             assert!(k.is_none());
         }
+    }
+
+    #[cfg(feature = "macos_15_0")]
+    #[test]
+    fn versioning() {
+        let _ = io::surface::key::content_headroom();
     }
 }
