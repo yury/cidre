@@ -12,6 +12,7 @@ pub struct DlSym<T> {
 }
 
 impl<T> DlSym<T> {
+    #[allow(dead_code)]
     pub(crate) const fn new(name: &'static CStr) -> Self {
         Self {
             name,
