@@ -552,7 +552,7 @@ define_obj_type!(
     pub Stream(ns::Id)
 );
 
-#[objc::obj_trait]
+#[objc::protocol(SCStreamOutput)]
 pub trait Output: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(stream:didOutputSampleBuffer:ofType:)]
@@ -564,7 +564,7 @@ pub trait Output: objc::Obj {
     );
 }
 
-#[objc::obj_trait]
+#[objc::protocol(SCStreamDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(stream:didStopWithError:)]

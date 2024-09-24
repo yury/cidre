@@ -113,8 +113,7 @@ impl Picker {
     );
 }
 
-// #[doc(alias = "SCContentSharingPickerObserver")]
-#[objc::obj_trait]
+#[objc::protocol(SCContentSharingPickerObserver)]
 pub trait Observer: objc::Obj {
     /// The observer callback method when the picker has been canceled with no selection.
     #[objc::msg_send(contentSharingPicker:didCancelForStream:)]

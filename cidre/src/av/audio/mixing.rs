@@ -1,6 +1,6 @@
 use crate::{av, define_obj_type, ns, objc};
 
-#[objc::obj_trait]
+#[objc::protocol(AVStereoMixing)]
 pub trait StereoMixing {
     #[objc::msg_send(pan)]
     fn pan(&self) -> f32;
@@ -18,7 +18,7 @@ impl MixingDestination {
 impl av::audio::StereoMixing for MixingDestination {}
 impl av::audio::Mixing for MixingDestination {}
 
-#[objc::obj_trait]
+#[objc::protocol(AVAudioMixing)]
 pub trait Mixing: StereoMixing {
     #[objc::msg_send(destinationForMixer:bus:)]
     fn destination_for_mixer(

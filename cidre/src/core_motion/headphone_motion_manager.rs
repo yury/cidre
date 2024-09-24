@@ -49,7 +49,7 @@ impl HeadphoneMotionManager {
     pub fn stop_device_motion_updates(&mut self);
 }
 
-#[objc::obj_trait]
+#[objc::protocol(CMHeadphoneMotionManagerDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(headphoneMotionManagerDidConnect:)]

@@ -254,7 +254,7 @@ extern "C-unwind" {
     ) -> Option<&'static Class<Id>>;
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
-    pub fn objc_getProtocol(name: *const u8) -> Option<&'static Protocol>;
+    pub fn objc_getProtocol(name: *const i8) -> Option<&'static Protocol>;
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
     fn objc_exception_throw(exception: &Id) -> !;
 }
@@ -374,6 +374,7 @@ macro_rules! define_obj_type {
                 let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
+                $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
 
                 if std::mem::needs_drop::<$InnerType>() {
                     extern "C" fn impl_dealloc(s: &mut $NewType, _sel: Option<$crate::objc::Sel>) {
@@ -424,6 +425,7 @@ macro_rules! define_obj_type {
                 let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
+                $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
 
                 unsafe { $crate::objc::objc_registerClassPair(cls) };
                 unsafe { std::mem::transmute(cls) }
@@ -595,9 +597,10 @@ mod tests {
     }
 }
 pub use cidre_macros::add_methods;
-pub use cidre_macros::obj_trait;
 pub use cidre_macros::optional;
+pub use cidre_macros::protocol;
 
+/// Docs
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send;
 #[cfg(target_arch = "aarch64")]
@@ -610,7 +613,7 @@ mod tests2 {
 
     use crate::objc::{self, Obj};
 
-    #[objc::obj_trait]
+    #[objc::protocol(Foo)]
     trait Foo: objc::Obj {
         #[objc::msg_send(count)]
         fn count(&self) -> usize;

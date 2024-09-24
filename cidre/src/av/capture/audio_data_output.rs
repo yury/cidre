@@ -2,7 +2,7 @@ use crate::{arc, av, cm, define_obj_type, dispatch, ns, objc};
 
 use super::Output;
 
-#[objc::obj_trait]
+#[objc::protocol(AVCaptureAudioDataOutputSampleBufferDelegate)]
 pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(captureOutput:didOutputSampleBuffer:fromConnection:)]

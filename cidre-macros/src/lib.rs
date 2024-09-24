@@ -134,14 +134,44 @@ pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
 }
 
 #[proc_macro_attribute]
-pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
-    let mut original_trait = tr.clone();
+pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
+    let mut original_trait = ts.clone();
+    let error_msg = "objc::protocol expects protocol name as first argument";
+    let mut args = args.into_iter();
+    let Some(TokenTree::Ident(ident)) = args.next() else {
+        panic!("{}", error_msg);
+    };
+    assert!(args.next().is_none(), "{}", error_msg);
+    let protocol_name = ident.to_string();
+    let mut trait_name = String::new();
 
-    let iter = tr.into_iter();
-    let mut before_trait_name_tokens = vec![];
-    let mut after_trait_name_tokens = vec![];
-    let mut trait_name = Cow::Borrowed("");
-    let mut expect_trait_name = false;
+    let mut pre_tokens = Vec::<TokenTree>::with_capacity(10);
+    let mut ts = ts.into_iter();
+    let mut group_stream = None;
+    while let Some(tt) = ts.next() {
+        match tt {
+            TokenTree::Group(ref g) if g.delimiter() == Delimiter::Brace => {
+                while let Some(tt) = pre_tokens.pop() {
+                    let val = tt.to_string();
+                    if val == "trait" {
+                        pre_tokens.push(tt);
+                        break;
+                    }
+                    trait_name = val;
+                }
+                group_stream = Some(g.stream());
+                break;
+            }
+            _ => pre_tokens.push(tt),
+        }
+    }
+    if trait_name != protocol_name {
+        let alias = format!("#[doc(alias = \"{protocol_name}\")]");
+        let stream = TokenStream::from_str(&alias).unwrap();
+        let mut alias_tokens = Vec::from_iter(stream.into_iter());
+        alias_tokens.append(&mut pre_tokens);
+        pre_tokens = alias_tokens;
+    }
     let mut is_optional = false;
     let mut skip = false;
     let mut sel = String::new();
@@ -156,182 +186,144 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
     let mut has_optionals = false;
     let mut fn_names = vec![];
 
-    for token in iter {
-        let collection = if trait_name.is_empty() {
-            &mut before_trait_name_tokens
-        } else {
-            &mut after_trait_name_tokens
-        };
-        match &token {
-            TokenTree::Group(g) => {
-                let mut iter = g.stream().into_iter();
-                while let Some(token) = iter.next() {
-                    match token {
-                        TokenTree::Group(g) => println!("group {g}"),
-                        TokenTree::Ident(i) => {
-                            let str = i.to_string();
-                            if str == "fn" {
-                                let Some(TokenTree::Ident(name)) = iter.next() else {
-                                    panic!("expect fn name");
-                                };
-                                fn_name = name.to_string();
-                                let args = loop {
-                                    let Some(tt) = iter.next() else {
-                                        panic!("need more tokens");
-                                    };
-                                    match tt {
-                                        TokenTree::Group(args) => break args,
-                                        _ => generics.push(tt),
-                                    }
-                                };
-                                fn_args_str = args.to_string();
-                                for tt in iter.by_ref() {
-                                    match tt {
-                                        TokenTree::Punct(ref p) if p.as_char() == ';' => {
-                                            result.push(tt);
-                                            break;
-                                        }
-                                        TokenTree::Group(ref g)
-                                            if g.delimiter() == Delimiter::Brace =>
-                                        {
-                                            fn_body = Cow::Owned(g.to_string());
-                                            break;
-                                        }
-                                        _ => result.push(tt),
-                                    }
-                                }
+    let mut iter = group_stream.expect("should be group").into_iter();
+    while let Some(token) = iter.next() {
+        match token {
+            TokenTree::Group(g) => println!("group {g}"),
+            TokenTree::Ident(i) => {
+                let str = i.to_string();
+                if str == "fn" {
+                    let Some(TokenTree::Ident(name)) = iter.next() else {
+                        panic!("expect fn name");
+                    };
+                    fn_name = name.to_string();
+                    let args = loop {
+                        let Some(tt) = iter.next() else {
+                            panic!("need more tokens");
+                        };
+                        match tt {
+                            TokenTree::Group(args) => break args,
+                            _ => generics.push(tt),
+                        }
+                    };
+                    fn_args_str = args.to_string();
+                    for tt in iter.by_ref() {
+                        match tt {
+                            TokenTree::Punct(ref p) if p.as_char() == ';' => {
+                                result.push(tt);
+                                break;
+                            }
+                            TokenTree::Group(ref g) if g.delimiter() == Delimiter::Brace => {
+                                fn_body = Cow::Owned(g.to_string());
+                                break;
+                            }
+                            _ => result.push(tt),
+                        }
+                    }
 
-                                let mut ext = "";
+                    let mut ext = "";
 
-                                let register_sel = if sel.is_empty() {
-                                    Cow::Borrowed("None")
-                                } else {
-                                    ext = "extern \"C\" ";
-                                    fn_args_str = fn_args_str.replacen("(& self", "(&self", 1);
-                                    fn_args_str = fn_args_str.replacen(
-                                        "(&self",
-                                        "(&self, _cmd: Option<&objc::Sel>",
-                                        1,
-                                    );
+                    let register_sel = if sel.is_empty() {
+                        Cow::Borrowed("None")
+                    } else {
+                        ext = "extern \"C\" ";
+                        fn_args_str = fn_args_str.replacen("(& self", "(&self", 1);
+                        fn_args_str =
+                            fn_args_str.replacen("(&self", "(&self, _cmd: Option<&objc::Sel>", 1);
 
-                                    fn_args_str =
-                                        fn_args_str.replacen("(& mut self", "(&mut self", 1);
-                                    fn_args_str = fn_args_str.replacen(
-                                        "(&mut self",
-                                        "(&mut self, _cmd: Option<&objc::Sel>",
-                                        1,
-                                    );
-                                    Cow::Owned(format!(
-                                        "unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }}"
-                                    ))
-                                };
+                        fn_args_str = fn_args_str.replacen("(& mut self", "(&mut self", 1);
+                        fn_args_str = fn_args_str.replacen(
+                            "(&mut self",
+                            "(&mut self, _cmd: Option<&objc::Sel>",
+                            1,
+                        );
+                        Cow::Owned(format!(
+                            "unsafe {{ objc::sel_reg_name(c\"{sel}\".as_ptr()) }}"
+                        ))
+                    };
 
-                                if is_optional && !sel.is_empty() && fn_body.is_empty() {
-                                    result.pop(); // remove ';'
-                                    fn_body = Cow::Borrowed("{ unimplemented!() }");
-                                }
+                    if is_optional && !sel.is_empty() && fn_body.is_empty() {
+                        result.pop(); // remove ';'
+                        fn_body = Cow::Borrowed("{ unimplemented!() }");
+                    }
 
-                                if !is_optional && sel.is_empty() {
-                                    skip = true;
-                                }
+                    if !is_optional && sel.is_empty() {
+                        skip = true;
+                    }
 
-                                let ret = if result.is_empty() {
-                                    Cow::Borrowed("")
-                                } else {
-                                    Cow::Owned(
-                                        TokenStream::from_iter(result.clone().into_iter())
-                                            .to_string(),
-                                    )
-                                };
+                    let ret = if result.is_empty() {
+                        Cow::Borrowed("")
+                    } else {
+                        Cow::Owned(TokenStream::from_iter(result.clone().into_iter()).to_string())
+                    };
 
-                                let gen = if generics.is_empty() {
-                                    Cow::Borrowed("")
-                                } else {
-                                    Cow::Owned(
-                                        TokenStream::from_iter(generics.clone().into_iter())
-                                            .to_string(),
-                                    )
-                                };
+                    let gen = if generics.is_empty() {
+                        Cow::Borrowed("")
+                    } else {
+                        Cow::Owned(TokenStream::from_iter(generics.clone().into_iter()).to_string())
+                    };
 
-                                let impl_fn = if skip {
-                                    format!(
-                                        "
+                    let impl_fn = if skip {
+                        format!(
+                            "
     {ext}fn {fn_name}{gen}{fn_args_str}{ret} {fn_body}
 
                                     "
-                                    )
-                                } else {
-                                    fn_names.push(fn_name.clone());
-                                    format!(
-                                        "
+                        )
+                    } else {
+                        fn_names.push(fn_name.clone());
+                        format!(
+                            "
     {ext}fn impl_{fn_name}{gen}{fn_args_str}{ret} {fn_body}
 
                                     "
-                                    )
-                                };
+                        )
+                    };
 
-                                impl_trait_functions.push(impl_fn);
+                    impl_trait_functions.push(impl_fn);
 
-                                if !is_optional && !skip {
-                                    let impl_sel = format!(
-                                        "
+                    if !is_optional && !skip {
+                        let impl_sel = format!(
+                            "
     fn sel_{fn_name}() -> &'static objc::Sel {{ {register_sel} }}
         "
-                                    );
-                                    impl_trait_functions.push(impl_sel);
-                                }
+                        );
+                        impl_trait_functions.push(impl_sel);
+                    }
 
-                                is_optional = false;
-                                sel.clear();
-                                fn_name.clear();
-                                fn_body = Cow::Borrowed("");
-                                fn_args_str.clear();
-                                generics.clear();
-                                skip = false;
-                                //fn_args.clear();
-                                result.clear();
-                            }
+                    is_optional = false;
+                    sel.clear();
+                    fn_name.clear();
+                    fn_body = Cow::Borrowed("");
+                    fn_args_str.clear();
+                    generics.clear();
+                    skip = false;
+                    //fn_args.clear();
+                    result.clear();
+                }
+            }
+            TokenTree::Punct(p) => match p.as_char() {
+                '#' => {
+                    let TokenTree::Group(g) = iter.next().unwrap() else {
+                        panic!("not a group");
+                    };
+                    match Attr::from_stream(g.stream()) {
+                        Some(Attr::Optional) => {
+                            has_optionals = true;
+                            is_optional = true;
                         }
-                        TokenTree::Punct(p) => match p.as_char() {
-                            '#' => {
-                                let TokenTree::Group(g) = iter.next().unwrap() else {
-                                    panic!("not a group");
-                                };
-                                match Attr::from_stream(g.stream()) {
-                                    Some(Attr::Optional) => {
-                                        has_optionals = true;
-                                        is_optional = true;
-                                    }
-                                    Some(Attr::MsgSend(s)) => sel = s,
-                                    Some(_) => continue,
-                                    None => continue,
-                                }
-                            }
-                            _ => panic!("other char '{p}'"),
-                        },
-                        TokenTree::Literal(l) => println!("lit {l}"),
+                        Some(Attr::MsgSend(s)) => sel = s,
+                        Some(_) => continue,
+                        None => continue,
                     }
                 }
-            }
-            TokenTree::Ident(i) => {
-                let str = i.to_string();
-                if expect_trait_name {
-                    expect_trait_name = false;
-                    trait_name = Cow::Owned(str);
-                    continue;
-                }
-                collection.push(token.clone());
-                if str == "trait" {
-                    expect_trait_name = true;
-                }
-            }
-            TokenTree::Punct(_) | TokenTree::Literal(_) => collection.push(token),
+                _ => panic!("other char '{p}'"),
+            },
+            TokenTree::Literal(l) => println!("lit {l}"),
         }
     }
-
-    let pre = TokenStream::from_iter(before_trait_name_tokens).to_string();
+    let pre = TokenStream::from_iter(pre_tokens).to_string();
     let obj_trait_name = format!("{trait_name}Impl");
-    //let after = TokenStream::from_iter(after_trait_name_tokens.into_iter()).to_string();
     let fns = impl_trait_functions.join("\n");
 
     let add_methods = if has_optionals {
@@ -340,12 +332,26 @@ pub fn obj_trait(_args: TokenStream, tr: TokenStream) -> TokenStream {
         Cow::Owned(add_methods_fn(&fn_names))
     };
 
+    let add_protocol = format!(
+        "
+    fn cls_add_protocol<O: objc::Obj>(cls: &objc::Class<O>) {{
+        unsafe {{
+            let cls: &objc::Class<objc::Id> = std::mem::transmute(cls);
+            if let Some(proto) =  objc::objc_getProtocol(c\"{protocol_name}\".as_ptr())  {{
+                cls.add_protocol(proto);
+            }}
+        }}
+    }}
+        "
+    );
+
     let code = format!(
         "
 
 {pre} {obj_trait_name}: {trait_name} {{
     {fns}
     {add_methods}
+    {add_protocol}
 }}
         "
     );
@@ -377,7 +383,6 @@ fn add_methods_fn(fns: &[String]) -> String {
     res.push_str("\n}");
     res
 }
-
 #[proc_macro_attribute]
 pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
     let mut tokens = vec![];

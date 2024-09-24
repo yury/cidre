@@ -5,7 +5,7 @@ define_obj_type!(
     pub App(ns::Id)
 );
 
-#[objc::obj_trait]
+#[objc::protocol(NSApplicationDelegate)]
 pub trait Delegate {}
 
 impl App {

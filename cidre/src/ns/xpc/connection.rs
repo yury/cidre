@@ -1,6 +1,6 @@
 use crate::{arc, blocks, define_cls, define_obj_type, define_opts, ns, objc};
 
-#[objc::obj_trait]
+#[objc::protocol(NSXPCProxyCreating)]
 pub trait ProxyCreating: objc::Obj {
     #[objc::msg_send(remoteObjectProxy)]
     fn remote_object_proxy(&self) -> arc::R<ns::Id>;

@@ -283,7 +283,7 @@ extern "C" {
     static AV_CAPTURE_CONNECTION: &'static objc::Class<Connection>;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(AVCaptureSessionControlsDelegate)]
 pub trait ControlsDelegate: objc::Obj {
     /// Called when the controls of an `av::CaptureSession` instance become active and are
     /// available for interaction.

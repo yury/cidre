@@ -118,7 +118,7 @@ impl PipControllerContentSrc {
     pub fn player_layer(&self) -> Option<arc::R<av::PlayerLayer>>;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(AVPictureInPictureControllerDelegate)]
 pub trait PipControllerDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(pictureInPictureControllerWillStartPictureInPicture:)]

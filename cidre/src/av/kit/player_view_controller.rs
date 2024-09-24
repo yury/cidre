@@ -258,7 +258,7 @@ impl PlayerViewController {
     pub fn begin_trimming_with_ch(&self, block: Option<&mut blocks::EscBlock<fn(success: bool)>>);
 }
 
-#[objc::obj_trait]
+#[objc::protocol(AVPlayerViewControllerDelegate)]
 pub trait PlayerViewControllerDelegate: objc::Obj {
     // #[objc::optional]
     // #[objc::msg_send(playerViewController:willBeginFullScreenPresentationWithAnimationCoordinator:)]

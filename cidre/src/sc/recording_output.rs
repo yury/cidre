@@ -27,7 +27,7 @@ impl RecordingOutputCfg {
     pub fn available_output_file_types(&self) -> arc::R<ns::Array<av::FileType>>;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(SCRecordingOutputDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(recordingOutputDidStartRecording:)]

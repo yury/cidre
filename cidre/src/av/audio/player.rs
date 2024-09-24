@@ -168,8 +168,7 @@ impl Player {
     pub fn average_power_for_channel(&self, channel_number: usize) -> f32;
 }
 
-// #[doc(alias = "AVAudioPlayerDelegate")]
-#[objc::obj_trait]
+#[objc::protocol(AVAudioPlayerDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(audioPlayerDidFinishPlaying:successfully:)]

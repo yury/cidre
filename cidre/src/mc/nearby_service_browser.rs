@@ -54,7 +54,7 @@ impl NearbyServiceBrowser {
     pub fn service_type(&self) -> &ns::String;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(MCNearbyServiceBrowserDelegate)]
 pub trait Delegate: objc::Obj {
     /// Found a nearby advertising peer.
     #[objc::msg_send(browser:foundPeer:withDiscoveryInfo:)]

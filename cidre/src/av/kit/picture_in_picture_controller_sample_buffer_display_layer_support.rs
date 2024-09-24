@@ -6,8 +6,7 @@ impl av::PipController {
     pub fn invalidate_playback_state(&mut self);
 }
 
-// AVPictureInPictureSampleBufferPlaybackDelegate
-#[objc::obj_trait]
+#[objc::protocol(AVPictureInPictureSampleBufferPlaybackDelegate)]
 pub trait PipSampleBufPlayerDelegate: objc::Obj {
     #[objc::msg_send(pictureInPictureController:setPlaying:)]
     fn pip_controller_set_playing(&mut self, pip_controller: &mut av::PipController, val: bool);

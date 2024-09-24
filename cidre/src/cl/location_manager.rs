@@ -83,7 +83,7 @@ impl LocationManager {
     pub fn is_authorized_for_widget_updates(&self) -> bool;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(CLLocationManagerDelegate)]
 pub trait Delegate {
     #[objc::optional]
     #[objc::msg_send(locationManager:didUpdateLocations:)]

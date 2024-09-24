@@ -1,5 +1,5 @@
 use cidre::{
-    av, define_obj_type, dispatch, ns,
+    av, define_obj_type, dispatch,
     objc::{self, Obj},
     sn::{self, ResultsObserving},
 };
@@ -56,15 +56,6 @@ async fn main() {
     let mut analysis = sn::AudioStreamAnalyzer::with_format(format);
 
     let obs = ResultsObs::new();
-    // TODO: quick fix for now, need to rework protocol impl.
-    // new sound analysis do protocol comformance check on macos 15
-    // I think it is bc they changed internals to swift
-    let proto = ns::protocol_from_ns_string(ns::str!(c"SNResultsObserving")).unwrap();
-    unsafe {
-        obs.class().add_protocol(&proto);
-        println!("class {:?}", ns::string_from_class(obs.class()));
-    }
-
     let req = sn::ClassifySoundRequest::v1().unwrap();
     println!("knowns classes {:?}", req.known_classifications().len());
 

@@ -8,7 +8,7 @@ pub enum Status {
     Failed = 2,
 }
 
-#[objc::obj_trait]
+#[objc::protocol(AVQueuedSampleBufferRendering)]
 pub trait QueuedSampleBufRendering: objc::Obj {
     #[objc::msg_send(timebase)]
     fn timebase(&self) -> &cm::Timebase;

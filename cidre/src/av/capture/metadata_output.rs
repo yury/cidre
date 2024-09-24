@@ -2,8 +2,7 @@ use crate::{arc, av, cg, define_obj_type, dispatch, ns, objc};
 
 use super::Output;
 
-// #[doc(alias = "AVCaptureMetadataOutputObjectsDelegate")]
-#[objc::obj_trait]
+#[objc::protocol(AVCaptureMetadataOutputObjectsDelegate)]
 pub trait MetadataOutputObjsDelegate {
     #[objc::optional]
     #[objc::msg_send(captureOutput:didOutputMetadataObjects:fromConnection:)]

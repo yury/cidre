@@ -35,7 +35,7 @@ impl MachPort {
     fn delegate(&self) -> Option<&AnyMachPortDelegate>;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(NSMachPortDelegate)]
 pub trait MachPortDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(handleMachMessage:)]

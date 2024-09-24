@@ -134,7 +134,7 @@ impl SequenceRequestHandler {
         &self,
         requests: &ns::Array<vn::Request>,
         pixel_buf: &cv::PixelBuf,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, err)
         })

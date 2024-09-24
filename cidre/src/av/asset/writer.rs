@@ -216,7 +216,7 @@ impl Writer {
     pub fn set_movie_time_scale(&self, val: cm::TimeScale);
 }
 
-#[objc::obj_trait]
+#[objc::protocol(AVAssetWriterDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(assetWriter:didOutputSegmentData:segmentType:segmentReport:)]

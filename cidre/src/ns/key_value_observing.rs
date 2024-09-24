@@ -136,7 +136,7 @@ where
     }
 }
 
-#[objc::obj_trait]
+#[objc::protocol(CidreKVObserverRegistration)]
 pub trait KVObserverRegistration {
     #[objc::msg_send(addObserver:forKeyPath:options:context:)]
     unsafe fn add_observer_throws(

@@ -6,7 +6,7 @@ define_obj_type!(
     CA_DISPLAY_LINK
 );
 
-#[objc::obj_trait]
+#[objc::protocol(CidreTarget)]
 pub trait Target: objc::Obj {
     #[objc::msg_send(onDisplayLink:)]
     fn on_display_link(&mut self, link: &mut DisplayLink);

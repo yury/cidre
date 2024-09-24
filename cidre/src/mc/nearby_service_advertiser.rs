@@ -50,7 +50,7 @@ impl NearbyServiceAdvertiser {
     pub fn service_type(&self) -> &ns::String;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(MCNearbyServiceAdvertiserDelegate)]
 pub trait Delegate: objc::Obj {
     /// Incoming invitation request.  Call the invitation_handler block with true
     /// and a valid session to connect the inviting peer to the session.

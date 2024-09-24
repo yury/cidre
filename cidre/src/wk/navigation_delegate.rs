@@ -1,7 +1,6 @@
 use crate::{ns, objc, wk};
 
-// #[doc(alias = "WKNavigationDelegate")]
-#[objc::obj_trait]
+#[objc::protocol(WKNavigationDelegate)]
 pub trait NavigationDelegate {
     #[objc::optional]
     #[objc::msg_send(webView:didFinishNavigation:)]

@@ -172,7 +172,7 @@ impl Session {
     pub fn connected_peers(&self) -> &ns::Array<mc::PeerId>;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(MCSessionDelegate)]
 pub trait Delegate: objc::Obj {
     /// Remote peer changed state.
     #[objc::msg_send(session:peer:didChangeState:)]

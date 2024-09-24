@@ -45,7 +45,7 @@ impl AdvertiserAssistant {
     pub fn delegate(&mut self) -> &AnyDelegate;
 }
 
-#[objc::obj_trait]
+#[objc::protocol(MCAdvertiserAssistantDelegate)]
 pub trait Delegate {
     #[objc::msg_send(advertiserAssistantWillPresentInvitation:)]
     fn assistant_will_present_invitation(&mut self, assistant: &AdvertiserAssistant);

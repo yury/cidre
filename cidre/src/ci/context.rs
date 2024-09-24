@@ -40,7 +40,7 @@ impl Context {
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &ns::Dictionary<ns::String, ns::Id>,
-    ) -> Result<(), &'ear ns::Error> {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.write_png_to_url_format_colorspace_opts_err(
                 image,

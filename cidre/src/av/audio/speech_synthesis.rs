@@ -205,7 +205,7 @@ impl Utterance {
     pub fn set_post_utterance_delay(&self, val: ns::TimeInterval);
 }
 
-#[objc::obj_trait]
+#[objc::protocol(AVSpeechSynthesizerDelegate)]
 pub trait Delegate: Obj {
     #[objc::optional]
     #[objc::msg_send(speechSynthesizer:didStartSpeechUtterance:)]

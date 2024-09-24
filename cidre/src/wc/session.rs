@@ -100,7 +100,7 @@ impl Session {
     }
 }
 
-#[objc::obj_trait]
+#[objc::protocol(WCSessionDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::msg_send(session:activationDidCompleteWithState:error:)]
     fn session_activation_did_complete_with_state(

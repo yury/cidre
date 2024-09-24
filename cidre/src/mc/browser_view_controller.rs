@@ -83,7 +83,7 @@ impl BrowserViewController {
     pub fn set_max_number_of_peers(&mut self, val: usize);
 }
 
-#[objc::obj_trait]
+#[objc::protocol(MCBrowserViewControllerDelegate)]
 pub trait Delegate: objc::Obj {
     /// Notifies the delegate, when the user taps the done button.
     #[objc::msg_send(browserViewControllerDidFinish:)]
