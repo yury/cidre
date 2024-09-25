@@ -215,7 +215,7 @@ define_obj_type!(
 );
 
 impl RenderCmdEncoder {
-    define_mtl!(use_resource, use_resources, use_heap);
+    define_mtl!(use_heap);
 
     #[objc::msg_send(setRenderPipelineState:)]
     pub fn set_render_ps(&mut self, val: &mtl::RenderPipelineState);
@@ -289,6 +289,45 @@ impl RenderCmdEncoder {
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
     pub fn set_vertex_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, index: usize);
+
+    #[objc::msg_send(useResource:usage:stages:)]
+    pub fn use_resource(
+        &mut self,
+        resources: &mtl::Res,
+        usage: mtl::ResUsage,
+        stages: mtl::RenderStages,
+    );
+
+    #[objc::msg_send(useResources:count:usage:stages:)]
+    pub unsafe fn use_resources_count(
+        &mut self,
+        resources: *const &mtl::Res,
+        count: usize,
+        usage: mtl::ResUsage,
+        stages: mtl::RenderStages,
+    );
+
+    /// Declare that an array of resources may be accessed through an argument buffer by the render pass
+    ///
+    /// For hazard tracked resources, this method protects against data hazards.
+    /// This method must be called before encoding any draw commands which may access the resources
+    /// through an argument buffer. However, this method may cause color attachments to become decompressed.
+    /// Therefore, this method should be called until as late as possible within a render command encoder.
+    /// Declaring a minimal usage (i.e. read-only) may prevent color attachments from becoming decompressed on
+    /// some devices.
+    ///
+    /// Note that calling use_resources() does not retain the resources. It is the responsiblity of the user
+    /// to retain the resources until the command buffer has been executed.
+    #[doc(alias = "useResources:count:usage:stages:")]
+    #[inline]
+    pub fn use_resources(
+        &mut self,
+        resources: &[&mtl::Res],
+        usage: crate::mtl::ResUsage,
+        stages: mtl::RenderStages,
+    ) {
+        unsafe { self.use_resources_count(resources.as_ptr(), resources.len(), usage, stages) };
+    }
 
     /// Set the offset within the current global buffer for all vertex shaders at the given bind point index.
     ///
