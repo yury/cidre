@@ -139,18 +139,14 @@ impl Session {
         duration: cm::Time,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Result {
-        unsafe {
-            os::result_unchecked(|_res| {
-                self.encode_frame(
-                    image_buffer,
-                    pts,
-                    duration,
-                    None,
-                    std::ptr::null_mut(),
-                    info_flags_out,
-                )
-            })
-        }
+        self.encode_frame(
+            image_buffer,
+            pts,
+            duration,
+            None,
+            std::ptr::null_mut(),
+            info_flags_out,
+        )
     }
 
     #[doc(alias = "VTCompressionSessionEncodeFrameWithOutputHandler")]
