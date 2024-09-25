@@ -79,14 +79,14 @@ impl<'r, 'i> SplitComplex<'r, 'i, f32> {
 pub struct FftSetup<T>(std::ffi::c_void, std::marker::PhantomData<T>);
 
 struct FftVt<T> {
-    transform_io: unsafe extern "C" fn(
+    transform_io: unsafe extern "C-unwind" fn(
         __Setup: *mut FftSetup<T>,
         __C: *mut SplitComplex<T>,
         __IC: Stride,
         __Log2N: Len,
         __Direction: FftDirection,
     ),
-    transform: unsafe extern "C" fn(
+    transform: unsafe extern "C-unwind" fn(
         __Setup: *mut FftSetup<T>,
         __C: *const SplitComplex<T>,
         __IC: Stride,
@@ -94,7 +94,7 @@ struct FftVt<T> {
         __Log2N: Len,
         __Direction: FftDirection,
     ),
-    zrip: unsafe extern "C" fn(
+    zrip: unsafe extern "C-unwind" fn(
         __Setup: *mut FftSetup<T>,
         __C: *const SplitComplex<T>,
         __IC: Stride,
@@ -102,7 +102,7 @@ struct FftVt<T> {
         __Direction: FftDirection,
     ),
 
-    destroy: unsafe extern "C" fn(*mut FftSetup<T>),
+    destroy: unsafe extern "C-unwind" fn(*mut FftSetup<T>),
 }
 
 impl FftVt<f32> {
@@ -1210,7 +1210,7 @@ pub fn u16_f32(a: &[u16], c: &mut [f32]) {
 }
 
 #[link(name = "Accelerate", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     #[link_name = "vDSP_vadd"]
     pub fn _add_f32(
         __A: *const f32,

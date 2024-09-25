@@ -89,7 +89,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         .unwrap();
     let mut converter = converter.allocate_resources().unwrap();
 
-    c.bench_function("interleave with au format converter", |b| {
+    c.bench_function("interleave with au::FormatConverter", |b| {
         b.iter(|| {
             converter.render(N as u32, &mut list_b).unwrap();
         })
