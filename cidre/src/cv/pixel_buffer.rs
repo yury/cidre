@@ -290,6 +290,56 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_30RGB_r210")]
     pub const _30_RGB_R210: Self = Self(os::Type::from_be_bytes(*b"r210"));
 
+    /// Component Y'CbCr 8-bit 4:2:2, ordered Cb Y'0 Cr Y'1
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr8")]
+    pub const _422_YP_CB_CR_8: Self = Self(os::Type::from_be_bytes(*b"2vuy"));
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr8")]
+    pub const _2VUY: Self = Self::_422_YP_CB_CR_8;
+
+    /// Component Y'CbCrA 8-bit 4:4:4:4, ordered Cb Y' Cr A
+    #[doc(alias = "kCVPixelFormatType_4444YpCbCrA8")]
+    pub const _4444_YP_CB_CR_A_8: Self = Self(os::Type::from_be_bytes(*b"v408"));
+
+    /// Component Y'CbCrA 8-bit 4:4:4:4, rendering format. full range alpha, zero biased YUV, ordered A Y' Cb Cr
+    #[doc(alias = "kCVPixelFormatType_4444YpCbCrA8R")]
+    pub const _4444_YP_CB_CR_A_8_R: Self = Self(os::Type::from_be_bytes(*b"r408"));
+
+    /// Component Y'CbCrA 8-bit 4:4:4:4, ordered A Y' Cb Cr, full range alpha, video range Y'CbCr.
+    #[doc(alias = "kCVPixelFormatType_4444AYpCbCr8")]
+    pub const _4444_A_YP_CB_CR_8: Self = Self(os::Type::from_be_bytes(*b"y408"));
+
+    /// Component Y'CbCrA 16-bit 4:4:4:4, ordered A Y' Cb Cr, full range alpha, video range Y'CbCr, 16-bit little-endian samples.
+    #[doc(alias = "kCVPixelFormatType_4444AYpCbCr16")]
+    pub const _4444_A_YP_CB_CR_16: Self = Self(os::Type::from_be_bytes(*b"y416"));
+
+    /// Component AY'CbCr single precision floating-point 4:4:4:4
+    #[doc(alias = "kCVPixelFormatType_4444AYpCbCrFloat")]
+    pub const _4444_A_YP_CB_CR_FLOAT: Self = Self(os::Type::from_be_bytes(*b"r4fl"));
+
+    /// Component Y'CbCr 8-bit 4:4:4, ordered Cr Y' Cb, video range Y'CbCr
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr8")]
+    pub const _444_YP_CB_CR_8: Self = Self(os::Type::from_be_bytes(*b"v308"));
+
+    /// Component Y'CbCr 10,12,14,16-bit 4:2:2
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr16")]
+    pub const _422_YP_CB_CR_16: Self = Self(os::Type::from_be_bytes(*b"v216"));
+
+    /// Component Y'CbCr 10-bit 4:2:2
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr10")]
+    pub const _422_YP_CB_CR_10: Self = Self(os::Type::from_be_bytes(*b"v210"));
+
+    /// Component Y'CbCr 10-bit 4:4:4
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr10")]
+    pub const _444_YP_CB_CR_10: Self = Self(os::Type::from_be_bytes(*b"v410"));
+
+    /// Planar Component Y'CbCr 8-bit 4:2:0, full range.  baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrPlanar struct
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8PlanarFullRange")]
+    pub const _420_YP_CB_CR8_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"f420"));
+
+    /// First plane: Video-range Component Y'CbCr 8-bit 4:2:2, ordered Cb Y'0 Cr Y'1; second plane: alpha 8-bit 0-255
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr_4A_8BiPlanar")]
+    pub const _422_YP_CB_CR_4_A_8_BI_PLANAR: Self = Self(os::Type::from_be_bytes(*b"a2vy"));
+
     /// Bi-Planar Component Y'CbCr 8-bit 4:2:0, video-range (luma=\[16,235\] chroma=\[16,240\]).
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange")]
     pub const _420_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"420v"));

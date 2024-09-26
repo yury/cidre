@@ -432,11 +432,27 @@ pub enum PixelFormat {
 
     /// A pixel format where the red and green channels are subsampled horizontally.
     /// Two pixels are stored in 32 bits, with shared red and blue values, and unique green values.
+    ///
+    /// This format is equivalent to YUY2, YUYV, yuvs, or GL_RGB_422_APPLE/GL_UNSIGNED_SHORT_8_8_REV_APPLE.
+    /// The component order, from lowest addressed byte to highest, is Y0, Cb, Y1, Cr.
+    /// There is no implicit colorspace conversion from YUV to RGB, the shader will receive (Cr, Y, Cb, 1).
+    /// 422 textures must have a width that is a multiple of 2, and can only be used for 2D non-mipmap textures.
+    /// When sampling, ClampToEdge is the only usable wrap mode.
+    ///
+    /// This format is a compressed format with a block size of 2x1 in a 32-bit block.
     #[doc(alias = "MTLPixelFormatGBGR422")]
     Gbgr422 = 240,
 
     /// A pixel format where the red and green channels are subsampled horizontally.
     /// Two pixels are stored in 32 bits, with shared red and blue values, and unique green values.
+    ///
+    /// This format is equivalent to UYVY, 2vuy, or GL_RGB_422_APPLE/GL_UNSIGNED_SHORT_8_8_APPLE.
+    /// The component order, from lowest addressed byte to highest, is Cb, Y0, Cr, Y1.
+    /// There is no implicit colorspace conversion from YUV to RGB, the shader will receive (Cr, Y, Cb, 1).
+    /// 422 textures must have a width that is a multiple of 2, and can only be used for 2D non-mipmap textures.
+    ///  When sampling, ClampToEdge is the only usable wrap mode.
+    ///
+    /// This format is a compressed format with a block size of 2x1 in a 32-bit block.
     #[doc(alias = "MTLPixelFormatBGRG422")]
     Bgrg422 = 241,
 
