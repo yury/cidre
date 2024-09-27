@@ -414,7 +414,7 @@ mod tests {
 
     use crate::dispatch;
 
-    extern "C" fn foo(_ctx: *mut c_void) {
+    extern "C-unwind" fn foo(_ctx: *mut c_void) {
         println!("nice");
     }
 
