@@ -126,7 +126,8 @@ classic-objc-retain-release = []
 # deployment targets
 
 macos_10_0 = []
-macos_10_5 = ["macos_10_0"]
+macos_10_4 = ["macos_10_0"]
+macos_10_5 = ["macos_10_4"]
 macos_10_6 = ["macos_10_5"]
 macos_10_7 = ["macos_10_6"]
 macos_10_8 = ["macos_10_7"]

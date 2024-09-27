@@ -6,4 +6,4 @@
 /// function and it is your responsibility to ensure that the pointer
 /// is valid.
 #[doc(alias = "dispatch_function_t")]
-pub type Fn<T> = extern "C" fn(*mut T);
+pub type Fn<T> = extern "C-unwind" fn(*mut T);

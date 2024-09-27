@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type};
+use crate::{api, arc, cf, define_cf_type};
 
 #[doc(alias = "CVAttachmentMode")]
 #[derive(Debug, Eq, PartialEq)]
@@ -66,16 +66,58 @@ impl Buf {
     pub fn has_attach(&self, key: &cf::String) -> bool {
         unsafe { CVBufferHasAttachment(self, key) }
     }
+
+    /// Useful with the CoreVideo pool and texture cache APIs so that you can specify
+    /// an initial set of default buffer attachments to automatically be attached to the buffer when it is created.
+    #[doc(alias = "kCVBufferPropagatedAttachmentsKey")]
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    pub fn propagated_attaches_key() -> &'static cf::String {
+        unsafe { kCVBufferPropagatedAttachmentsKey }
+    }
+
+    /// Useful with the CoreVideo pool and texture cache APIs so that you can specify
+    /// an initial set of default buffer attachments to automatically be attached to the buffer when it is created.
+    #[doc(alias = "kCVBufferNonPropagatedAttachmentsKey")]
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    pub fn not_propagated_attaches_key() -> &'static cf::String {
+        unsafe { kCVBufferNonPropagatedAttachmentsKey }
+    }
+
+    #[doc(alias = "kCVBufferMovieTimeKey")]
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    pub fn movie_time_key() -> &'static cf::String {
+        unsafe { kCVBufferMovieTimeKey }
+    }
+
+    #[doc(alias = "kCVBufferTimeValueKey")]
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    pub fn time_value_key() -> &'static cf::String {
+        unsafe { kCVBufferTimeValueKey }
+    }
+
+    #[doc(alias = "kCVBufferTimeScaleKey")]
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    pub fn time_scale_key() -> &'static cf::String {
+        unsafe { kCVBufferTimeScaleKey }
+    }
 }
 
-extern "C" {
+#[link(name = "CoreVideo", kind = "framework")]
+#[api::weak]
+extern "C-unwind" {
 
-    // static kCVBufferPropagatedAttachmentsKey: &'static cf::String;
-    // static kCVBufferNonPropagatedAttachmentsKey: &'static cf::String;
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    static kCVBufferPropagatedAttachmentsKey: &'static cf::String;
 
-    // static kCVBufferMovieTimeKey: &'static cf::String;
-    // static kCVBufferTimeValueKey: &'static cf::String;
-    // static kCVBufferTimeScaleKey: &'static cf::String;
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    static kCVBufferNonPropagatedAttachmentsKey: &'static cf::String;
+
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    static kCVBufferMovieTimeKey: &'static cf::String;
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    static kCVBufferTimeValueKey: &'static cf::String;
+    #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
+    static kCVBufferTimeScaleKey: &'static cf::String;
 
     fn CVBufferSetAttachment(
         buffer: &mut Buf,
