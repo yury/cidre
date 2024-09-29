@@ -107,6 +107,12 @@ impl IndirectCmdBuf {
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;
 
+    #[doc(alias = "size")]
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.size()
+    }
+
     #[objc::msg_send(resetWithRange:)]
     pub fn reset_with_range(&mut self, range: ns::Range);
 

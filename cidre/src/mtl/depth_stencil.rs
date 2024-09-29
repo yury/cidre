@@ -154,10 +154,12 @@ impl DepthStencilDesc {
     define_mtl!(label, set_label);
 }
 
-define_obj_type!(pub State(ns::Id));
+define_obj_type!(
+    /// A depth and stencil state object that specifies the depth and stencil
+    /// configuration and operations used in a render pass.
+    pub State(ns::Id)
+);
 
-/// A depth and stencil state object that specifies the depth and stencil
-/// configuration and operations used in a render pass.
 impl State {
     define_mtl!(label, device);
 }
