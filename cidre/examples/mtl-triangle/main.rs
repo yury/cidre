@@ -75,12 +75,8 @@ fn main() {
 
         let render_ps = device.new_render_ps(&desc).unwrap();
 
-        let render_texture_desc = mtl::TextureDesc::new_2d_with_pixel_format(
-            mtl::PixelFormat::Rgba8UNorm,
-            1920,
-            1080,
-            false,
-        );
+        let render_texture_desc =
+            mtl::TextureDesc::new_2d(mtl::PixelFormat::Rgba8UNorm, 1920, 1080, false);
 
         let rgba_texture = device.new_texture(&render_texture_desc).unwrap();
 

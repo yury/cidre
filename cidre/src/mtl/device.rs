@@ -520,8 +520,7 @@ mod tests {
 
         assert!(device.new_default_lib().is_none());
 
-        let td =
-            mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
+        let td = mtl::TextureDesc::new_2d(mtl::PixelFormat::A8UNorm, 100, 200, false);
 
         let _t = device.new_texture(&td).unwrap();
 

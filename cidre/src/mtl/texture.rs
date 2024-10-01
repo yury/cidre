@@ -141,7 +141,7 @@ define_obj_type!(
 
 impl Desc {
     #[objc::msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
-    pub fn new_2d_with_pixel_format(
+    pub fn new_2d(
         pixel_format: mtl::PixelFormat,
         width: usize,
         height: usize,
@@ -151,20 +151,16 @@ impl Desc {
     /// ```
     /// use cidre::mtl;
     ///
-    /// let td = mtl::TextureDesc::new_cube_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, false);
+    /// let td = mtl::TextureDesc::new_cube(mtl::PixelFormat::A8UNorm, 100, false);
     ///
     /// assert_eq!(td.texture_type(), mtl::TextureType::Cube);
     ///
     /// ```
     #[objc::msg_send(textureCubeDescriptorWithPixelFormat:size:mipmapped:)]
-    pub fn new_cube_with_pixel_format(
-        pixel_format: mtl::PixelFormat,
-        size: usize,
-        mipmapped: bool,
-    ) -> arc::R<Desc>;
+    pub fn new_cube(pixel_format: mtl::PixelFormat, size: usize, mipmapped: bool) -> arc::R<Desc>;
 
     #[objc::msg_send(textureBufferDescriptorWithPixelFormat:width:resourceOptions:usage:)]
-    pub fn new_buff_with_pixel_format(
+    pub fn new_buff(
         pixel_format: mtl::PixelFormat,
         width: usize,
         res_opts: mtl::resource::Opts,
@@ -189,11 +185,11 @@ impl Desc {
     #[objc::msg_send(setPixelFormat:)]
     pub fn set_pixel_format(&mut self, val: mtl::PixelFormat);
 
-    #[inline]
-    pub fn with_pixel_format(&mut self, val: mtl::PixelFormat) -> &mut Self {
-        self.set_pixel_format(val);
-        self
-    }
+    // #[inline]
+    // pub fn with_pixel_format(&mut self, val: mtl::PixelFormat) -> &mut Self {
+    //     self.set_pixel_format(val);
+    //     self
+    // }
 
     define_mtl!(
         width,
@@ -323,8 +319,7 @@ mod tests {
 
     #[test]
     fn basics1() {
-        let mut td =
-            mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
+        let mut td = mtl::TextureDesc::new_2d(mtl::PixelFormat::A8UNorm, 100, 200, false);
 
         assert_eq!(td.texture_type(), mtl::TextureType::_2d);
         assert_eq!(td.pixel_format(), mtl::PixelFormat::A8UNorm);
@@ -344,8 +339,7 @@ mod tests {
 
     #[test]
     fn basics2() {
-        let td =
-            mtl::TextureDesc::new_cube_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, false);
+        let td = mtl::TextureDesc::new_cube(mtl::PixelFormat::A8UNorm, 100, false);
 
         assert_eq!(td.texture_type(), mtl::TextureType::Cube);
     }
@@ -354,8 +348,7 @@ mod tests {
     fn basics3() {
         let device = mtl::Device::sys_default().unwrap();
 
-        let td =
-            mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
+        let td = mtl::TextureDesc::new_2d(mtl::PixelFormat::A8UNorm, 100, 200, false);
 
         let t = device.new_texture(&td).unwrap();
 
@@ -368,8 +361,7 @@ mod tests {
     fn basics4() {
         let device = mtl::Device::sys_default().unwrap();
 
-        let td =
-            mtl::TextureDesc::new_2d_with_pixel_format(mtl::PixelFormat::A8UNorm, 100, 200, false);
+        let td = mtl::TextureDesc::new_2d(mtl::PixelFormat::A8UNorm, 100, 200, false);
 
         let t = device.new_texture(&td).unwrap();
 

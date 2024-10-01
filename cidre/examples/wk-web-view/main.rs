@@ -67,7 +67,7 @@ impl NavD {
         self.inner_mut().load_request(request);
     }
 
-    extern "C" fn start_on_main(_ctx: *mut c_void) {
+    extern "C-unwind" fn start_on_main(_ctx: *mut c_void) {
         let mut navd = NavD::new();
         let url = ns::Url::with_str("https://twitch.com").unwrap();
         let request = ns::UrlRequest::with_url(&url);
