@@ -8,10 +8,10 @@ define_obj_type!(
 
 pub trait MetalDrawable<T: objc::Obj>: mtl::Drawable<T> {
     #[objc::msg_send(texture)]
-    fn texture(&self) -> &mtl::Texture;
+    fn texture(&self) -> arc::R<mtl::Texture>;
 
     #[objc::msg_send(layer)]
-    fn layer(&self) -> &MetalLayer;
+    fn layer(&self) -> arc::R<MetalLayer>;
 }
 
 define_obj_type!(pub AnyMetalDrawable(ns::Id));

@@ -1,5 +1,6 @@
 use crate::{arc, define_obj_type, mtl, ns, objc};
 
+#[doc(alias = "MTLLoadAction")]
 #[derive(Debug, Default, PartialEq, Copy, Clone, Eq)]
 #[repr(usize)]
 pub enum LoadAction {
@@ -10,6 +11,7 @@ pub enum LoadAction {
 }
 
 /// Types of actions performed for an attachment at the end of a rendering pass.
+#[doc(alias = "MTLStoreAction")]
 #[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreAction {
@@ -62,6 +64,7 @@ pub enum StoreAction {
     CustomSampleDepthStore = 5,
 }
 
+#[doc(alias = "MTLStoreActionOptions")]
 #[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum StoreActionOpts {
@@ -70,6 +73,7 @@ pub enum StoreActionOpts {
     CustomSamplePositions = 1 << 0,
 }
 
+#[doc(alias = "MTLClearColor")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct ClearColor {
@@ -109,30 +113,43 @@ impl ClearColor {
     }
 }
 
-define_obj_type!(pub StencilAttachDesc(AttachDesc));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPassStencilAttachmentDescriptor")]
+    pub StencilAttachDesc(AttachDesc)
+);
 
-define_obj_type!(pub Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR);
+impl StencilAttachDesc {
+    /// The clear stencil value to be used if the load_action property is mtl::LoadAction::Clear
+    #[objc::msg_send(clearStencil)]
+    pub fn clear_stencil(&self) -> u32;
+
+    #[objc::msg_send(setClearStencil:)]
+    pub fn set_clear_stencil(&mut self, val: u32);
+
+    #[objc::msg_send(stencilResolveFilter)]
+    pub fn stencil_resolve_filter(&self) -> MultisampleDepthResolveFilter;
+
+    #[objc::msg_send(setStencilResolveFilter:)]
+    pub fn set_stencil_resolve_filter(&mut self, val: MultisampleDepthResolveFilter);
+}
+
+define_obj_type!(
+    #[doc(alias = "MTLRenderPassDescriptor")]
+    pub Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR
+);
+
 impl Desc {
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches(&self) -> &ColorAttachDescArray;
-
-    #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches_mut(&mut self) -> &mut ColorAttachDescArray;
+    pub fn color_attaches(&self) -> arc::R<ColorAttachDescArray>;
 
     #[objc::msg_send(depthAttachment)]
-    pub fn depth_attach(&self) -> &DepthAttachDesc;
-
-    #[objc::msg_send(depthAttachment)]
-    pub fn depth_attach_mut(&mut self) -> &mut DepthAttachDesc;
+    pub fn depth_attach(&self) -> arc::R<DepthAttachDesc>;
 
     #[objc::msg_send(setDepthAttachment:)]
     pub fn set_depth_attach(&mut self, val: Option<&DepthAttachDesc>);
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attach(&self) -> &StencilAttachDesc;
-
-    #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attach_mut(&mut self) -> &mut StencilAttachDesc;
+    pub fn stencil_attach(&self) -> arc::R<StencilAttachDesc>;
 
     #[objc::msg_send(setStencilAttachment:)]
     pub fn set_stencil_attach_option(&mut self, val: Option<&StencilAttachDesc>);
@@ -177,13 +194,20 @@ impl Desc {
     pub fn set_imageblock_sample_len(&self, val: usize);
 }
 
-define_obj_type!(pub ColorAttachDescArray(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPassColorAttachmentDescriptorArray")]
+    pub ColorAttachDescArray(ns::Id)
+);
+
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> &ColorAttachDesc;
+    pub fn ar_get_at(&self, index: usize) -> &ColorAttachDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
+    pub fn get_at(&self, index: usize) -> arc::R<ColorAttachDesc>;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn ar_get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set_at(&mut self, object: Option<&ColorAttachDesc>, index: usize);
@@ -194,21 +218,21 @@ impl std::ops::Index<usize> for ColorAttachDescArray {
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        self.get_at(index)
+        self.ar_get_at(index)
     }
 }
 
 impl std::ops::IndexMut<usize> for ColorAttachDescArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut_at(index)
+        self.ar_get_mut_at(index)
     }
 }
 
 define_obj_type!(pub AttachDesc(ns::Id));
 impl AttachDesc {
     #[objc::msg_send(texture)]
-    pub fn texture(&self) -> Option<&mtl::Texture>;
+    pub fn texture(&self) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(setTexture:)]
     pub fn set_texture(&mut self, val: Option<&mtl::Texture>);
@@ -232,7 +256,7 @@ impl AttachDesc {
     pub fn set_depth_plane(&mut self, val: usize);
 
     #[objc::msg_send(resolveTexture)]
-    pub fn resolve_texture(&self) -> Option<&mtl::Texture>;
+    pub fn resolve_texture(&self) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(setResolveTexture:)]
     pub fn set_resolve_texture(&mut self, val: Option<&mtl::Texture>);
@@ -279,7 +303,11 @@ extern "C" {
     static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
-define_obj_type!(pub ColorAttachDesc(AttachDesc));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPassColorAttachmentDescriptor")]
+    pub ColorAttachDesc(AttachDesc)
+);
+
 impl ColorAttachDesc {
     #[objc::msg_send(clearColor)]
     pub fn clear_color(&self) -> ClearColor;
@@ -288,7 +316,8 @@ impl ColorAttachDesc {
     pub fn set_clear_color(&mut self, val: ClearColor);
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[doc(alias = "MTLMultisampleStencilResolveFilter")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(usize)]
 pub enum MultisampleDepthResolveFilter {
     Sample0 = 0,
@@ -296,7 +325,11 @@ pub enum MultisampleDepthResolveFilter {
     Max = 2,
 }
 
-define_obj_type!(pub DepthAttachDesc(AttachDesc));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPassDepthAttachmentDescriptor")]
+    pub DepthAttachDesc(AttachDesc)
+);
+
 impl DepthAttachDesc {
     #[objc::msg_send(clearDepth)]
     pub fn clear_depth(&self) -> f64;

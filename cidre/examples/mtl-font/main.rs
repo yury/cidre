@@ -298,9 +298,9 @@ fn main() {
     let fragment_fn_name = ns::String::with_str("glyph_fragment");
     let fragment_fn = lib.new_fn(&fragment_fn_name).unwrap();
 
-    let mut desc = mtl::RenderPipelineDesc::new().with_fns(&vertex_fn, &fragment_fn);
+    let desc = mtl::RenderPipelineDesc::new().with_fns(&vertex_fn, &fragment_fn);
 
-    let ca = &mut desc.color_attaches_mut()[0];
+    let ca = &mut desc.color_attaches()[0];
     ca.set_pixel_format(mtl::PixelFormat::Rgba8UNorm);
     ca.set_blending_enabled(true);
     ca.set_rgb_blend_op(mtl::BlendOp::Add);
@@ -317,8 +317,8 @@ fn main() {
 
     let rgba_texture = device.new_texture(&render_texture_desc).unwrap();
 
-    let mut render_pass_desc = mtl::RenderPassDesc::new();
-    let ca = &mut render_pass_desc.color_attaches_mut()[0];
+    let render_pass_desc = mtl::RenderPassDesc::new();
+    let ca = &mut render_pass_desc.color_attaches()[0];
     ca.set_clear_color(mtl::ClearColor::clear());
     ca.set_load_action(mtl::LoadAction::Clear);
     ca.set_store_action(mtl::StoreAction::Store);

@@ -195,28 +195,25 @@ impl Desc {
     define_mtl!(reset);
 
     #[objc::msg_send(vertexFunction)]
-    pub fn vertex_fn(&self) -> Option<&Fn>;
+    pub fn vertex_fn(&self) -> Option<arc::R<Fn>>;
 
     #[objc::msg_send(setVertexFunction:)]
     pub fn set_vertex_fn(&mut self, val: Option<&Fn>);
 
     #[objc::msg_send(vertexDescriptor)]
-    pub fn vertex_desc(&self) -> Option<&mtl::VertexDesc>;
+    pub fn vertex_desc(&self) -> Option<arc::R<mtl::VertexDesc>>;
 
     #[objc::msg_send(setVertexDescriptor:)]
     pub fn set_vertex_desc(&mut self, val: Option<&mtl::VertexDesc>);
 
     #[objc::msg_send(fragmentFunction)]
-    pub fn fragment_fn(&self) -> Option<&Fn>;
+    pub fn fragment_fn(&self) -> Option<arc::R<Fn>>;
 
     #[objc::msg_send(setFragmentFunction:)]
     pub fn set_fragment_fn(&mut self, val: Option<&Fn>);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches(&self) -> &ColorAttachDescArray;
-
-    #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches_mut(&mut self) -> &mut ColorAttachDescArray;
+    pub fn color_attaches(&self) -> arc::R<ColorAttachDescArray>;
 
     #[objc::msg_send(rasterSampleCount)]
     pub fn raster_sample_count(&self) -> usize;
@@ -272,10 +269,13 @@ define_obj_type!(pub ColorAttachDescArray(ns::Id));
 
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> &ColorAttachDesc;
+    pub fn ar_get_at(&self, index: usize) -> &ColorAttachDesc;
 
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
+    pub fn get_at(&self, index: usize) -> arc::R<ColorAttachDesc>;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn ar_get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set_object_at(&mut self, object: Option<&ColorAttachDesc>, index: usize);
@@ -296,14 +296,14 @@ impl Index<usize> for ColorAttachDescArray {
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        self.get_at(index)
+        self.ar_get_at(index)
     }
 }
 
 impl IndexMut<usize> for ColorAttachDescArray {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut_at(index)
+        self.ar_get_mut_at(index)
     }
 }
 
