@@ -149,6 +149,36 @@ impl f32x4x4 {
     pub fn set_tz(&mut self, value: f32) {
         self[2].set_w(value)
     }
+
+    #[inline]
+    pub fn sx(&self) -> f32 {
+        self[0].x()
+    }
+
+    #[inline]
+    pub fn set_sx(&mut self, value: f32) {
+        self[0].set_x(value)
+    }
+
+    #[inline]
+    pub fn sy(&self) -> f32 {
+        self[0].y()
+    }
+
+    #[inline]
+    pub fn set_sy(&mut self, value: f32) {
+        self[0].set_y(value)
+    }
+
+    #[inline]
+    pub fn sz(&self) -> f32 {
+        self[0].z()
+    }
+
+    #[inline]
+    pub fn set_sz(&mut self, value: f32) {
+        self[0].set_z(value)
+    }
 }
 
 impl std::ops::Index<usize> for f32x4x4 {
