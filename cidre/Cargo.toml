@@ -256,6 +256,10 @@ harness = false
 name = "interleave"
 harness = false
 
+[[bench]]
+name = "dispatch_sync"
+harness = false
+
 [[example]]
 name = "am-device-list"
 required-features = ["am"]
