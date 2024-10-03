@@ -1,3 +1,5 @@
+use std::ffi::c_void;
+
 use cidre::dispatch;
 use criterion::{criterion_group, criterion_main, Criterion};
 
@@ -12,6 +14,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("dispatch::queue.sync_f", |b| {
         b.iter(|| queue.sync_f(std::ptr::null_mut(), work))
+    });
+
+    c.bench_function("dispatch::queue.sync_fn", |b| {
+        extern "C" fn foo(_ctx: *const c_void) {}
+        b.iter(|| queue.sync_fn(foo));
     });
 
     c.bench_function("dispatch::queue.barrier_async_and_wait_f", |b| {
