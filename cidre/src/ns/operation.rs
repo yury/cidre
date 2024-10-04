@@ -45,6 +45,20 @@ impl Op {
     /// An array of the operation objects that must finish executing before the current object can begin executing.
     #[objc::msg_send(dependencies)]
     pub fn dependencies(&self) -> arc::R<ns::Array<ns::Op>>;
+
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setName:)]
+    pub fn set_name(&mut self, val: Option<&ns::String>);
+
+    /// Begins the execution of the operation.
+    #[objc::msg_send(start)]
+    pub fn start(&mut self);
+
+    /// Performs the receiver’s non-concurrent task.
+    #[objc::msg_send(main)]
+    pub fn main(&mut self);
 }
 
 define_obj_type!(
