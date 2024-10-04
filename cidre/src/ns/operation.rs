@@ -55,17 +55,38 @@ impl OpQueue {
     pub fn cancel_all_ops(&mut self);
 
     #[objc::msg_send(underlyingQueue)]
-    pub fn underlying_queue(&self) -> Option<&dispatch::Queue>;
+    pub fn underlying_queue(&self) -> Option<arc::R<dispatch::Queue>>;
+
+    #[objc::msg_send(setUnderlyingQueue:)]
+    pub fn set_underlying_queue(&mut self, val: Option<&dispatch::Queue>);
 
     #[objc::msg_send(currentQueue)]
-    pub fn current<'a>() -> Option<&'a Self>;
+    pub fn current() -> Option<arc::R<Self>>;
 
     #[objc::msg_send(mainQueue)]
-    pub fn main() -> &'static Self;
+    pub fn main() -> arc::R<Self>;
 }
 
 extern "C" {
     static NS_OPERATION: &'static objc::Class<Op>;
     static NS_BLOCK_OPERATION: &'static objc::Class<BlockOp>;
     static NS_OPERATION_QUEUE: &'static objc::Class<OpQueue>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{dispatch, ns};
+
+    #[test]
+    fn basics() {
+        assert!(ns::OpQueue::current().is_none());
+        let mut queue = ns::OpQueue::new();
+        assert!(queue.underlying_queue().is_none());
+        let dqueue = dispatch::Queue::new();
+        queue.set_underlying_queue(Some(&dqueue));
+        assert_eq!(queue.underlying_queue(), Some(dqueue));
+
+        let main_op_queue = ns::OpQueue::main();
+        println!("tid {main_op_queue:?}");
+    }
 }

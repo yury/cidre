@@ -69,7 +69,7 @@ unsafe impl Send for NotificationCenter {}
 
 impl NotificationCenter {
     #[objc::msg_send(defaultCenter)]
-    pub fn default() -> &'static mut Self;
+    pub fn default() -> arc::R<Self>;
 
     #[objc::msg_send(postNotification:)]
     pub fn post(&self, notification: &ns::Notification);
@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let nc = ns::NotificationCenter::default();
+        let mut nc = ns::NotificationCenter::default();
         let counter = Arc::new(Mutex::new(0));
         let block_counter = counter.clone();
         let mut block = blocks::SyncBlock::new1(move |note: &ns::Notification| {
@@ -182,7 +182,7 @@ mod tests {
 
     #[test]
     fn guard() {
-        let nc = ns::NotificationCenter::default();
+        let mut nc = ns::NotificationCenter::default();
         let counter = Arc::new(Mutex::new(0));
         let block_counter = counter.clone();
         let name = ns::NotificationName::with_raw(ns::str!(c"test"));

@@ -110,7 +110,7 @@ impl FileManager {
     }
 
     #[objc::msg_send(defaultManager)]
-    pub fn default() -> &'static mut FileManager;
+    pub fn default() -> arc::R<FileManager>;
 
     #[objc::msg_send(contentsOfDirectoryAtURL:includingPropertiesForKeys:options:error:)]
     pub unsafe fn contents_of_dir_at_url_err<'ear>(

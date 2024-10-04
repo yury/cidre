@@ -1,4 +1,4 @@
-use crate::{define_cls, define_obj_type, mps, mtl, ns, objc};
+use crate::{arc, define_cls, define_obj_type, mps, mtl, ns, objc};
 
 define_obj_type!(pub NDArrayAllocator(ns::Id));
 
@@ -7,7 +7,7 @@ impl NDArray {
     define_cls!(MPS_NDARRAY);
 
     #[objc::msg_send(defaultAllocator)]
-    pub fn default_allocator() -> &'static NDArrayAllocator;
+    pub fn default_allocator() -> arc::R<NDArrayAllocator>;
 
     #[objc::msg_send(label)]
     pub fn label(&self) -> Option<&ns::String>;

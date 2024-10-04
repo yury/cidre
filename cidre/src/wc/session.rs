@@ -20,10 +20,10 @@ impl Session {
     pub fn is_supported() -> bool;
 
     #[objc::msg_send(defaultSession)]
-    pub fn default() -> &'static mut Self;
+    pub fn default() -> arc::R<Self>;
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(set_delegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
