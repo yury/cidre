@@ -23,10 +23,12 @@ impl Service {
     pub const MAX_DOMAIN_NAME: usize = 1009;
 
     /// Access underlying Unix domain socket for an initialized DNSServiceRef.
+    #[doc(alias = "DNSServiceRefSockFD")]
     pub fn sock_fd(&self) -> Sock {
         unsafe { DNSServiceRefSockFD(self) }
     }
 
+    #[doc(alias = "DNSServiceProcessResult")]
     pub fn process_result(&self) -> Result<(), ServiceErrorType> {
         let res = unsafe { DNSServiceProcessResult(self) };
         if res.0 == 0 {
@@ -36,6 +38,7 @@ impl Service {
         }
     }
 
+    #[doc(alias = "DNSServiceRefDeallocate")]
     pub fn deallocate(self) {
         unsafe { DNSServiceRefDeallocate(&self) }
     }
@@ -43,9 +46,11 @@ impl Service {
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(i32)]
-pub enum ServiceAAAAPolicyName {
+pub enum ServiceAaaaPolicyName {
+    #[doc(alias = "kDNSServiceAAAAPolicyNone")]
     None = 0,
     /// If AAAA record doesn't exist, query for A.
+    #[doc(alias = "kDNSServiceAAAAPolicyFallback")]
     Fallback = 1,
 }
 
@@ -57,7 +62,7 @@ define_opts!(pub ServiceProtocol(u32));
 #[repr(transparent)]
 pub struct ServiceErrorType(i32);
 
-extern "C" {
+extern "C-unwind" {
     fn DNSServiceRefSockFD(service: &Service) -> Sock;
     fn DNSServiceProcessResult(service: &Service) -> ServiceErrorType;
     fn DNSServiceRefDeallocate(service: &Service);
