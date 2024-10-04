@@ -193,7 +193,7 @@ impl Fn {
     define_mtl!(device, label, set_label);
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(newArgumentEncoderWithBufferIndex:)]
     pub fn new_argument_enc_with_buf_index(&self, index: ns::UInteger) -> arc::R<mtl::ArgEncoder>;
@@ -208,10 +208,10 @@ impl Fn {
     pub fn patch_ctrl_point(&self) -> isize;
 
     #[objc::msg_send(vertexAttributes)]
-    pub fn vertext_attrs(&self) -> Option<&ns::Array<mtl::VertexAttr>>;
+    pub fn vertext_attrs(&self) -> Option<arc::R<ns::Array<mtl::VertexAttr>>>;
 
     #[objc::msg_send(stageInputAttributes)]
-    pub fn stage_input_attrs(&self) -> Option<ns::Array<mtl::Attr>>;
+    pub fn stage_input_attrs(&self) -> Option<arc::R<ns::Array<mtl::Attr>>>;
 
     #[objc::msg_send(options)]
     pub fn opts(&self) -> mtl::FnOpts;
@@ -229,7 +229,7 @@ impl Lib {
 
     /// The array contains ns::String objects, with the name of each function in library.
     #[objc::msg_send(functionNames)]
-    pub fn fn_names(&self) -> &ns::Array<ns::String>;
+    pub fn fn_names(&self) -> arc::R<ns::Array<ns::String>>;
 
     #[objc::msg_send(newFunctionWithName:)]
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
@@ -278,7 +278,7 @@ impl Lib {
     /// Always nil if the type of the library is not mtl::LibType::Dynamic.
     /// [read more](https://developer.apple.com/documentation/metal/mtllibrary/3554039-installname?language=objc)
     #[objc::msg_send(installName)]
-    pub fn install_name(&self) -> Option<&ns::String>;
+    pub fn install_name(&self) -> Option<arc::R<ns::String>>;
 }
 
 pub type ErrorDomain = ns::ErrorDomain;
@@ -383,8 +383,8 @@ mod tests {
         let fn_name = ns::str!(c"function_a");
         let func = lib.new_fn(fn_name).unwrap();
         let name = func.name();
-        assert!(fn_name.is_equal(name));
-        assert_eq!(func.opts(), mtl::FnOpts::None);
+        assert!(fn_name.is_equal(&name));
+        assert_eq!(func.opts(), Default::default());
     }
 
     #[test]
@@ -398,7 +398,7 @@ mod tests {
         let const_values = mtl::FnConstValues::new();
         let func = lib.new_fn_with_consts(fn_name, &const_values).unwrap();
         let name = func.name();
-        assert!(fn_name.is_equal(name));
+        assert!(fn_name.is_equal(&name));
     }
 
     #[test]
