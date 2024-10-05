@@ -54,6 +54,35 @@ impl BlitCmdEncoder {
         dst_offset: usize,
     );
 
+    #[objc::msg_send(copyFromBuffer:sourceOffset:sourceBytesPerRow:sourceBytesPerImage:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:)]
+    pub fn copy_from_buf_to_texture(
+        &self,
+        src_buf: &mtl::Buf,
+        src_offset: usize,
+        src_bytes_per_row: usize,
+        src_bytes_per_image: usize,
+        src_size: mtl::Size,
+        dst_texture: &mtl::Texture,
+        dst_slice: usize,
+        dst_level: usize,
+        dst_origin: mtl::Origin,
+    );
+
+    #[objc::msg_send(copyFromBuffer:sourceOffset:sourceBytesPerRow:sourceBytesPerImage:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:options:)]
+    pub fn copy_from_buf_to_texture_opts(
+        &self,
+        src_buf: &mtl::Buf,
+        src_offset: usize,
+        src_bytes_per_row: usize,
+        src_bytes_per_image: usize,
+        src_size: mtl::Size,
+        dst_texture: &mtl::Texture,
+        dst_slice: usize,
+        dst_level: usize,
+        dst_origin: mtl::Origin,
+        opts: mtl::BlitOpt,
+    );
+
     /// Encodes a command that improves the performance of the GPU’s accesses to a texture.
     ///
     /// This command can reduce the time it takes the GPU to access a texture. Apps typically run the command for:
