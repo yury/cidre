@@ -43,7 +43,7 @@ define_obj_type!(
 
 impl Attr {
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(attributeIndex)]
     pub fn attr_index(&self) -> usize;
