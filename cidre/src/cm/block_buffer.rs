@@ -27,6 +27,7 @@ impl Flags {
     /// Passed to CMBlockBufferAppendBufferReference() and
     /// CMBlockBufferCreateWithBufferReference()
     /// to allow references into a CMBlockBuffer that may not yet be populated.
+    #[doc(alias = "kCMBlockBufferPermitEmptyReferenceFlag")]
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 

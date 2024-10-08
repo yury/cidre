@@ -37,6 +37,7 @@ impl SimpleQueue {
         os::result_unchecked(|res| CMSimpleQueueCreate(allocator, capacity, res))
     }
 
+    #[doc(alias = "CMSimpleQueueCreate")]
     #[inline]
     pub fn with_capacity_in(
         capacity: NonZeroU16,
@@ -45,6 +46,7 @@ impl SimpleQueue {
         unsafe { Self::create_in(capacity.get() as _, allocator) }
     }
 
+    #[doc(alias = "CMSimpleQueueCreate")]
     #[inline]
     pub fn with_capacity(capacity: NonZeroU16) -> os::Result<arc::R<Self>> {
         Self::with_capacity_in(capacity, None)

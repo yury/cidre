@@ -19,6 +19,7 @@ impl Bearer {
     /// In both cases the retain count of the attachment will be incremented.
     /// The value can be any cf::Type but nil has no defined behavior.
     /// Given a cv::Buf, 'set_attach' is equivalent to CVBufferSetAttachment.
+    #[doc(alias = "CMSetAttachment")]
     pub fn set_attach(&mut self, key: &cf::String, val: &cf::Type, mode: Mode) {
         unsafe { CMSetAttachment(self, key, val, mode) }
     }
@@ -29,6 +30,7 @@ impl Bearer {
     /// additional information. get_attachment retrieves an attachment identified
     /// by a key. Given a cv::Buf, CMGetAttachment is equivalent to
     /// CVBufferGetAttachment.
+    #[doc(alias = "CMGetAttachment")]
     #[inline]
     pub fn attach<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
         unsafe { CMGetAttachment(self, key, mode) }
@@ -40,17 +42,20 @@ impl Bearer {
     /// is removed and the retain count decremented.
     /// Given a cv::Buff, CMRemoveAttachment is equivalent to
     /// CVBufferRemoveAttachment.
+    #[doc(alias = "CMRemoveAttachment")]
     #[inline]
     pub fn remove_attach(&mut self, key: &cf::String) {
         unsafe { CMRemoveAttachment(self, key) }
     }
 
     /// Removes all attachments of a cm::AttachBearer
+    #[doc(alias = "CMRemoveAllAttachments")]
     #[inline]
     pub fn remove_all_attaches(&mut self) {
         unsafe { CMRemoveAllAttachments(self) }
     }
 
+    #[doc(alias = "CMCopyDictionaryOfAttachments")]
     #[inline]
     pub unsafe fn copy_dictionary_of_attaches_in(
         &self,
@@ -60,6 +65,7 @@ impl Bearer {
         CMCopyDictionaryOfAttachments(allocator, self, mode)
     }
 
+    #[doc(alias = "CMCopyDictionaryOfAttachments")]
     #[inline]
     pub fn dictionary_of_attaches(
         &self,
@@ -69,7 +75,7 @@ impl Bearer {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn CMSetAttachment(target: &Bearer, key: &cf::String, value: &cf::Type, attachment_mode: Mode);
 
     fn CMGetAttachment<'a>(

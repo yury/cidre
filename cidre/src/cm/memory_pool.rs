@@ -96,7 +96,7 @@ pub mod keys {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn CMMemoryPoolCreate(options: Option<&cf::Dictionary>) -> arc::R<MemPool>;
     fn CMMemoryPoolGetAllocator(pool: &MemPool) -> &cf::Allocator;
     fn CMMemoryPoolFlush(pool: &MemPool);
