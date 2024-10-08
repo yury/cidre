@@ -487,6 +487,13 @@ pub enum ColorSpace {
     AppleLog = 3,
 }
 
+impl ColorSpace {
+    #[inline]
+    pub fn as_ns_number(&self) -> &'static ns::Number {
+        ns::Number::tagged_i32(*self as isize as i32)
+    }
+}
+
 /// AVCaptureDeviceColorSpaceSupport
 /// <https://developer.apple.com/videos/play/wwdc2016/501/?time=2972>
 impl Device {
@@ -530,8 +537,12 @@ impl<'a> ConfigLockGuard<'a> {
         ns::try_catch(|| unsafe { self.device.set_center_stage_rect_of_interest_throws(val) })
     }
 
-    pub fn set_active_color_space(&mut self, val: ColorSpace) {
-        unsafe { self.device.set_active_color_space_throws(val) }
+    /// Will throw uncatchable NSInvalidArgumentsException if ColorSpace is not supported.
+    ///
+    /// NOTE: I suspect bc of dispatch_sync on other queue.
+    #[inline]
+    pub unsafe fn set_active_color_space_throws(&mut self, val: ColorSpace) {
+        self.device.set_active_color_space_throws(val)
     }
 
     #[inline]
@@ -1914,7 +1925,7 @@ impl Format {
     /// wide-gamut capture for supported devices and capture workflows (for details,
     /// see the [`av::CaptureSession`] property automaticallyConfiguresCaptureDeviceForWideColor).
     #[objc::msg_send(supportedColorSpaces)]
-    pub fn supported_color_spaces(&self) -> &ns::Array<ns::Number>;
+    pub fn supported_color_spaces(&self) -> arc::R<ns::Array<ns::Number>>;
 
     /// Whether the format supports global tone mapping.
     #[objc::msg_send(globalToneMappingSupported)]
@@ -2206,6 +2217,7 @@ mod tests {
         },
         cm::io,
         ns,
+        objc::Obj,
     };
 
     #[test]
@@ -2257,5 +2269,12 @@ mod tests {
 
         let res = av::CaptureDevice::authorization_status_for_media_type(av::MediaType::text());
         assert!(res.is_err());
+    }
+
+    #[test]
+    fn color_space() {
+        let num = av::CaptureColorSpace::AppleLog.as_ns_number();
+        assert_eq!(3, num.as_i32());
+        assert!(num.is_tagged_ptr());
     }
 }
