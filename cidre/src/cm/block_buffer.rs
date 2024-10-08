@@ -153,16 +153,19 @@ impl BlockBuf {
     /// of the cm::BlockBuf's memoryBlocks and buffer references. Note that the dataLengths are
     /// the _portions_ of those constituents that this cm::BlockBuf subscribes to. This cm::BlockBuf presents a
     /// contiguous range of offsets from zero to its totalDataLength as returned by this routine.
+    #[doc(alias = "CMBlockBufferGetDataLength")]
     #[inline]
     pub fn data_len(&self) -> usize {
         unsafe { CMBlockBufferGetDataLength(self) }
     }
 
+    #[doc(alias = "CMBlockBufferGetDataLength")]
     #[inline]
     pub fn len(&self) -> usize {
         self.data_len()
     }
 
+    #[doc(alias = "CMBlockBufferIsRangeContiguous")]
     #[inline]
     pub fn is_range_contiguous(&self, offset: usize, length: usize) -> bool {
         unsafe { CMBlockBufferIsRangeContiguous(self, offset, length) }
@@ -196,6 +199,7 @@ impl BlockBuf {
         .result()
     }
 
+    #[doc(alias = "CMBlockBufferGetDataPointer")]
     #[inline]
     pub fn data_ptr_at(&self, offset: usize) -> os::Result<(&[u8], usize)> {
         let mut length_at_offset_out = 0;
@@ -271,6 +275,7 @@ impl BlockBuf {
         }
     }
 
+    #[doc(alias = "CMBlockBufferCreateWithBufferReference")]
     #[inline]
     pub unsafe fn create_with_buf_ref(
         structure_allocator: Option<&cf::Allocator>,
@@ -303,7 +308,7 @@ impl BlockBuf {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn CMBlockBufferGetTypeID() -> cf::TypeId;
     fn CMBlockBufferIsEmpty(the_buffer: &BlockBuf) -> bool;
 
