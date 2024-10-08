@@ -102,11 +102,13 @@ impl SampleBuf {
     /// let buf = res.unwrap();
     /// assert!(buf.data_is_ready());
     /// ```
+    #[doc(alias = "CMSampleBufferDataIsReady")]
     #[inline]
     pub fn data_is_ready(&self) -> bool {
         unsafe { CMSampleBufferDataIsReady(self) }
     }
 
+    #[doc(alias = "CMSampleBufferSetDataReady")]
     #[inline]
     pub fn set_data_ready(&mut self) {
         unsafe { CMSampleBufferSetDataReady(self) }
@@ -152,6 +154,7 @@ impl SampleBuf {
     }
 
     /// [CMSampleBufferCreate](https://developer.apple.com/documentation/coremedia/1489723-cmsamplebuffercreate?language=objc)
+    #[doc(alias = "CMSampleBufferCreate")]
     pub unsafe fn create_in(
         allocator: Option<&cf::Allocator>,
         data_buffer: Option<&cm::BlockBuf>,
@@ -183,6 +186,7 @@ impl SampleBuf {
         .result()
     }
 
+    #[doc(alias = "CMSampleBufferCreateForImageBuffer")]
     #[cfg(feature = "cv")]
     pub fn with_image_buf_in(
         allocator: Option<&cf::Allocator>,
@@ -209,6 +213,7 @@ impl SampleBuf {
         }
     }
 
+    #[doc(alias = "CMSampleBufferCreateForImageBuffer")]
     #[cfg(feature = "cv")]
     pub fn with_image_buf(
         image_buffer: &cv::ImageBuf,
@@ -523,6 +528,7 @@ impl SampleBuf {
         }
     }
 
+    #[doc(alias = "CMSampleBufferGetNumSamples")]
     #[inline]
     pub fn num_samples(&self) -> cf::Index {
         unsafe { CMSampleBufferGetNumSamples(self) }
