@@ -71,6 +71,7 @@ pub struct SizeAlign {
     pub align: usize,
 }
 
+#[doc(alias = "MTLGPUFamily")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum GpuFamily {
@@ -110,7 +111,7 @@ impl Device {
     }
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(registryID)]
     pub fn registry_id(&self) -> u64;
@@ -464,7 +465,7 @@ impl Device {
 
 #[link(name = "Metal", kind = "framework")]
 #[api::weak]
-extern "C" {
+extern "C-unwind" {
     fn MTLCreateSystemDefaultDevice() -> Option<arc::R<Device>>;
 
     #[api::available(
