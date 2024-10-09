@@ -290,6 +290,12 @@ impl Device {
 
 /// Configuring HDR Settings
 impl Device {
+    #[objc::msg_send(automaticallyAdjustsVideoHDREnabled)]
+    pub fn automatically_adjusts_video_hdr_enabled(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyAdjustsVideoHDREnabled:)]
+    pub unsafe fn set_automatically_adjusts_video_hdr_enabled_throws(&mut self, val: bool);
+
     #[objc::msg_send(isVideoHDREnabled)]
     pub fn is_video_hdr_enabled(&self) -> bool;
 
@@ -312,6 +318,16 @@ impl Device {
 impl<'a> ConfigLockGuard<'a> {
     pub fn set_video_hdr_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.device.set_video_hdr_enabled_throws(val) })
+    }
+
+    pub fn set_automatically_adjusts_video_hdr_enabled<'ear>(
+        &mut self,
+        val: bool,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_automatically_adjusts_video_hdr_enabled_throws(val)
+        })
     }
 }
 

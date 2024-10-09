@@ -59,7 +59,7 @@ impl VideoDataOutput {
     /// The formats are listed in an unspecified order. This list can may change if the
     /// activeFormat of the AVCaptureDevice connected to the receiver changes.
     #[objc::msg_send(availableVideoCVPixelFormatTypes)]
-    pub fn available_video_cv_pixel_formats(&self) -> &ns::Array<ns::Number>;
+    pub fn available_video_cv_pixel_formats(&self) -> arc::R<ns::Array<ns::Number>>;
 
     /// Indicates the supported video codec formats that can be specified in
     /// setOutputSettingsForConnection:.
@@ -70,27 +70,40 @@ impl VideoDataOutput {
     /// may change depending on the current session preset. The first codec in the array
     /// is used by default when recording a file.
     #[objc::msg_send(availableVideoCodecTypes)]
-    pub fn available_video_codecs(&self) -> &ns::Array<av::VideoCodec>;
+    pub fn available_video_codecs(&self) -> arc::R<ns::Array<av::VideoCodec>>;
 
     /// The dispatch queue on which all sample buffer delegate methods will be called.
     #[objc::msg_send(sampleBufferCallbackQueue)]
-    pub fn sample_buf_callback_queue(&self) -> Option<&dispatch::Queue>;
+    pub fn sample_buf_callback_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 
     #[objc::msg_send(videoSettings)]
-    pub fn video_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
+    pub fn video_settings(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
+
+    #[objc::msg_send(setVideoSettings:)]
+    pub unsafe fn set_video_settings_throws(
+        &mut self,
+        val: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    );
+
+    pub fn set_video_settings<'ear>(
+        &mut self,
+        val: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> ns::ExResult<'ear> {
+        unsafe { ns::try_catch(|| self.set_video_settings_throws(val)) }
+    }
 
     #[objc::msg_send(recommendedVideoSettingsForAssetWriterWithOutputFileType:)]
-    pub fn recommended_video_settings_for_asset_writer_with_output_file_type<'a>(
-        &'a self,
+    pub fn recommended_video_settings_for_asset_writer_with_output_file_type(
+        &self,
         output_file_type: &av::FileType,
-    ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
+    ) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
     #[objc::msg_send(recommendedVideoSettingsForVideoCodecType:assetWriterOutputFileType:)]
-    pub fn recommended_video_settings_for_video_codec_asset_writer_output_file_type<'a>(
-        &'a self,
+    pub fn recommended_video_settings_for_video_codec_asset_writer_output_file_type(
+        &self,
         codec_type: &av::VideoCodec,
         output_file_type: &av::FileType,
-    ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
+    ) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 }
 
 #[link(name = "av", kind = "static")]
