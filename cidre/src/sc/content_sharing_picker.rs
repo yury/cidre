@@ -1,4 +1,4 @@
-use crate::{api, arc, define_cls, define_obj_type, define_opts, ns, objc, sc};
+use crate::{api, arc, define_obj_type, define_opts, ns, objc, sc};
 
 define_opts!(
     #[doc(alias = "SCContentSharingPickerMode")]
@@ -63,10 +63,11 @@ define_obj_type!(
 
 impl Picker {
     #[api::available(macos = 14.0)]
-    define_cls!(SC_CONTENT_SHARING_PICKER);
+    crate::define_cls!(SC_CONTENT_SHARING_PICKER);
 
     #[objc::msg_send(sharedPicker)]
-    pub fn shared() -> &'static mut Self;
+    #[api::available(macos = 14.0)]
+    pub fn shared() -> arc::R<Self>;
 
     /// Default cfg for the content sharing picker. If a stream does not have a configuration, the default configuration will be used.
     #[objc::msg_send(defaultConfiguration)]
@@ -132,12 +133,8 @@ pub trait Observer: objc::Obj {
 }
 
 #[link(name = "sc", kind = "static")]
-#[api::weak]
 extern "C" {
-    #[api::available(macos = 14.0)]
     static SC_CONTENT_SHARING_PICKER_CONFIGURATION: &'static objc::Class<Cfg>;
-
-    #[api::available(macos = 14.0)]
     static SC_CONTENT_SHARING_PICKER: &'static objc::Class<Picker>;
 }
 

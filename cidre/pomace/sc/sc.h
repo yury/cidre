@@ -27,10 +27,10 @@ static void sc_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        SC_STREAM_CONFIGURATION = [SCStreamConfiguration class];
-        SC_CONTENT_FILTER = [SCContentFilter class];
-        SC_STREAM = [SCStream class];
-        SC_SHAREABLE_CONTENT = [SCShareableContent class];
+        SC_STREAM_CONFIGURATION = NSClassFromString(@"SCStreamConfiguration");
+        SC_CONTENT_FILTER = NSClassFromString(@"SCContentFilter");
+        SC_STREAM = NSClassFromString(@"SCStream");
+        SC_SHAREABLE_CONTENT = NSClassFromString(@"SCShareableContent");
         
         SC_RECORDING_OUTPUT_CONFIGURATION = NSClassFromString(@"SCRecordingOutputConfiguration");
         SC_RECORDING_OUTPUT = NSClassFromString(@"SCRecordingOutput");

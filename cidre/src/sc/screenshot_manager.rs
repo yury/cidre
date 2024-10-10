@@ -1,4 +1,4 @@
-use crate::{api, arc, blocks, cg, cm, define_cls, define_obj_type, ns, objc, sc};
+use crate::{api, arc, blocks, cg, cm, define_obj_type, ns, objc, sc};
 
 define_obj_type!(
     #[doc(alias = "SCScreenshotManager")]
@@ -7,11 +7,11 @@ define_obj_type!(
 
 impl ScreenshotManager {
     #[api::available(macos = 14.0)]
-    define_cls!(SC_SCREENSHOT_MANAGER);
+    crate::define_cls!(SC_SCREENSHOT_MANAGER);
 
     #[cfg(feature = "blocks")]
-    #[api::available(macos = 14.0)]
     #[objc::msg_send(captureSampleBufferWithFilter:configuration:completionHandler:)]
+    #[api::available(macos = 14.0)]
     pub fn capture_sample_buf_ch(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
@@ -30,8 +30,8 @@ impl ScreenshotManager {
     }
 
     #[cfg(feature = "blocks")]
-    #[api::available(macos = 14.0)]
     #[objc::msg_send(captureImageWithFilter:configuration:completionHandler:)]
+    #[api::available(macos = 14.0)]
     pub fn capture_image_ch(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
@@ -51,9 +51,7 @@ impl ScreenshotManager {
 }
 
 #[link(name = "sc", kind = "static")]
-#[api::weak]
 extern "C" {
-    #[api::available(macos = 14.0)]
     static SC_SCREENSHOT_MANAGER: &'static objc::Class<ScreenshotManager>;
 }
 

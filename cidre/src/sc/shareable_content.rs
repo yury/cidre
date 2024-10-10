@@ -84,7 +84,7 @@ impl std::fmt::Display for Window {
             .field("frame", &self.frame())
             .field("title", &self.title())
             .field("is_on_screen", &self.is_on_screen())
-            .field("is_active", &self.is_active())
+            .field("is_active", unsafe { &self.is_active() })
             .finish()
     }
 }
