@@ -11,7 +11,7 @@ extern "C" {
     static AVCaptureDeviceTypeExternal: &'static Type;
     #[api::available(macos = 10.15, ios = 10.0)]
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
-    #[api::available(macos = 15.0, ios = 17.0)]
+    #[api::available(macos = 14.0, ios = 17.0)]
     static AVCaptureDeviceTypeMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
@@ -1551,7 +1551,7 @@ impl Type {
     }
 
     #[doc(alias = "AVCaptureDeviceTypeMicrophone")]
-    #[api::available(macos = 15.0, ios = 17.0)]
+    #[api::available(macos = 14.0, ios = 17.0)]
     pub fn microphone() -> &'static Self {
         unsafe { AVCaptureDeviceTypeMicrophone }
     }
