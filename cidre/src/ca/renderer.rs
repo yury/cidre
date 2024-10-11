@@ -33,7 +33,7 @@ impl Renderer {
     ) -> arc::R<Self>;
 
     #[objc::msg_send(layer)]
-    pub fn layer(&self) -> Option<&ca::Layer>;
+    pub fn layer(&self) -> Option<arc::R<ca::Layer>>;
 
     #[objc::msg_send(setLayer:)]
     pub fn set_layer(&mut self, val: Option<&ca::Layer>);
