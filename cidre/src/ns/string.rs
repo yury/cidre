@@ -216,6 +216,7 @@ impl StringMut {
     #[objc::msg_send(setString:)]
     pub fn set(&mut self, string: &ns::String);
 
+    #[cfg(feature = "cf")]
     #[inline]
     pub fn as_cf_mut(&self) -> &cf::StringMut {
         unsafe { std::mem::transmute(self) }

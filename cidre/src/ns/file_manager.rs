@@ -1,4 +1,4 @@
-use crate::{arc, blocks, define_obj_type, define_opts, ns, objc, os};
+use crate::{arc, blocks, define_cls, define_obj_type, define_opts, ns, objc, os};
 
 define_obj_type!(
     #[doc(alias = "NSFileAttributeKey")]
@@ -104,10 +104,7 @@ define_obj_type!(
 );
 
 impl FileManager {
-    #[inline]
-    pub fn cls() -> &'static objc::Class<Self> {
-        unsafe { NS_FILE_MANAGER }
-    }
+    define_cls!(NS_FILE_MANAGER);
 
     #[objc::msg_send(defaultManager)]
     pub fn default() -> arc::R<FileManager>;

@@ -44,6 +44,7 @@ define_obj_type!(
 );
 
 impl Session {
+    define_cls!(NS_URL_SESSION);
     /// ```
     /// use cidre::ns;
     ///
@@ -59,11 +60,6 @@ impl Session {
     /// ```
     #[objc::msg_send(sharedSession)]
     pub fn shared() -> &'static Session;
-
-    #[inline]
-    pub fn cls() -> &'static Class<Self> {
-        unsafe { NS_URL_SESSION }
-    }
 
     #[objc::msg_send(dataTaskWithURL:)]
     pub fn data_task_with_url(&self, url: &ns::Url) -> arc::R<DataTask>;

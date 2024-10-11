@@ -78,13 +78,23 @@ impl Window {
 }
 
 impl std::fmt::Display for Window {
+    #[cfg(not(feature = "macos_13_1"))]
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Window")
             .field("id", &self.id())
             .field("frame", &self.frame())
             .field("title", &self.title())
             .field("is_on_screen", &self.is_on_screen())
-            .field("is_active", unsafe { &self.is_active() })
+            .finish()
+    }
+    #[cfg(feature = "macos_13_1")]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Window")
+            .field("id", &self.id())
+            .field("frame", &self.frame())
+            .field("title", &self.title())
+            .field("is_on_screen", &self.is_on_screen())
+            .field("is_active", &self.is_active())
             .finish()
     }
 }

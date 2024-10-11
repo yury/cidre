@@ -194,7 +194,7 @@ impl DisplayStream {
     /// 'l10r' Packed Little Endian ARGB2101010
     /// '420v' 2-plane "video" range YCbCr 4:2:0
     /// '420f' 2-plane "full" range YCbCr 4:2:0
-    #[cfg(all(feature = "blocks", feature = "io"))]
+    #[cfg(all(feature = "blocks", feature = "dispatch", feature = "io"))]
     pub fn with_dispatch_queue(
         display: cg::DirectDisplayId,
         output_width: usize,

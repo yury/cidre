@@ -1,10 +1,9 @@
 use std::ffi::c_void;
 
-use crate::{
-    arc,
-    at::{audio::StreamPacketDesc, AudioBufList},
-    define_cls, define_obj_type, ns, objc,
-};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "at")]
+use crate::at::{audio::StreamPacketDesc, AudioBufList};
 
 use super::{Format, FrameCount, PacketCount};
 
@@ -18,9 +17,11 @@ impl Buf {
     #[objc::msg_send(format)]
     pub fn format(&self) -> &Format;
 
+    #[cfg(feature = "at")]
     #[objc::msg_send(audioBufferList)]
     pub fn audio_buffer_list(&self) -> &AudioBufList;
 
+    #[cfg(feature = "at")]
     #[objc::msg_send(mutableAudioBufferList)]
     pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufList;
 }
@@ -155,6 +156,7 @@ impl CompressedBuf {
     /// Access the buffer's array of packet descriptions, if any.
     ///
     /// If the format has constant bytes per packet (format.streamDescription->mBytesPerPacket != 0), then this will return nil.
+    #[cfg(feature = "at")]
     #[objc::msg_send(packetDescriptions)]
     pub fn packet_descs(&self) -> Option<&StreamPacketDesc>;
 

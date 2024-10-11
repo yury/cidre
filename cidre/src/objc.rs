@@ -314,6 +314,11 @@ macro_rules! define_cls {
         }
 
         #[inline]
+        pub fn cls_ptr() -> *const std::ffi::c_void {
+            unsafe { std::mem::transmute($CLS) }
+        }
+
+        #[inline]
         pub fn alloc() -> $crate::arc::A<Self> {
             Self::cls().alloc()
         }
@@ -325,6 +330,11 @@ macro_rules! define_weak_cls {
     ($CLS:ident) => {
         #[inline]
         pub fn cls() -> Option<&'static $crate::objc::Class<Self>> {
+            unsafe { std::mem::transmute($CLS) }
+        }
+
+        #[inline]
+        pub fn cls_ptr() -> *const std::ffi::c_void {
             unsafe { std::mem::transmute($CLS) }
         }
 
@@ -399,6 +409,12 @@ macro_rules! define_obj_type {
                     Some(c) => unsafe { std::mem::transmute(c) }
                     None => Self::register_cls()
                 }
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn cls_ptr() -> *const std::ffi::c_void {
+                unsafe { std::mem::transmute(Self::cls()) }
             }
 
             #[allow(dead_code)]

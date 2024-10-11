@@ -29,9 +29,13 @@ pub use layer::CornerMask;
 pub use layer::EdgeAntialiasingMask;
 pub use layer::Layer;
 
+#[cfg(feature = "mtl")]
 mod metal_layer;
+#[cfg(feature = "mtl")]
 pub use metal_layer::AnyMetalDrawable;
+#[cfg(feature = "mtl")]
 pub use metal_layer::MetalDrawable;
+#[cfg(feature = "mtl")]
 pub use metal_layer::MetalLayer;
 
 mod renderer;
