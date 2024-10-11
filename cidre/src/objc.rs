@@ -414,7 +414,7 @@ macro_rules! define_obj_type {
             #[allow(dead_code)]
             #[inline]
             pub fn cls_ptr() -> *const std::ffi::c_void {
-                unsafe { std::mem::transmute(Self::cls()) }
+                Self::cls() as *const $crate::objc::ClassInstExtra<Self, $InnerType> as *const std::ffi::c_void
             }
 
             #[allow(dead_code)]
