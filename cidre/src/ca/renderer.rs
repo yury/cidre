@@ -20,7 +20,10 @@ impl OptionKey {
     }
 }
 
-define_obj_type!(pub Renderer(ns::Id));
+define_obj_type!(
+    #[doc(alias = "CARenderer")]
+    pub Renderer(ns::Id)
+);
 
 impl Renderer {
     define_cls!(CA_RENDERER);
@@ -32,6 +35,7 @@ impl Renderer {
         options: Option<&ns::Dictionary<OptionKey, ns::Id>>,
     ) -> arc::R<Self>;
 
+    /// The root layer of the layer-tree the receiver should render.
     #[objc::msg_send(layer)]
     pub fn layer(&self) -> Option<arc::R<ca::Layer>>;
 

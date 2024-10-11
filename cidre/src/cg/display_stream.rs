@@ -9,9 +9,18 @@ use crate::blocks;
 #[cfg(feature = "dispatch")]
 use crate::dispatch;
 
-define_cf_type!(DisplayStream(cf::Type));
-define_cf_type!(Update(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CGDisplayStream")]
+    #[doc(alias = "CGDisplayStreamRef")]
+    DisplayStream(cf::Type)
+);
+define_cf_type!(
+    #[doc(alias = "CGDisplayStreamUpdate")]
+    #[doc(alias = "CGDisplayStreamUpdateRef")]
+    Update(cf::Type)
+);
 
+#[doc(alias = "CGDisplayStreamUpdateRectType")]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(i32)]
 pub enum UpdateRectType {
@@ -28,6 +37,7 @@ pub enum UpdateRectType {
     ReducedDirtyRects,
 }
 
+#[doc(alias = "CGDisplayStreamFrameStatus")]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(i32)]
 pub enum FrameStatus {
@@ -252,7 +262,7 @@ impl DisplayStream {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CGDisplayStreamUpdateGetTypeID() -> cf::TypeId;
 
     fn CGDisplayStreamUpdateGetRects(
