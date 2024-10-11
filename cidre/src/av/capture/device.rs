@@ -9,9 +9,9 @@ use crate::blocks;
 #[api::weak]
 extern "C" {
     static AVCaptureDeviceTypeExternal: &'static Type;
-    // #[api::available(ios = 19.0)]
+    #[api::available(macos = 10.15, ios = 10.0)]
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
-    // static AVCaptureDeviceTypeBuiltInMicrophone: api::DlSym<&'static Type>;
+    #[api::available(macos = 15.0, ios = 17.0)]
     static AVCaptureDeviceTypeMicrophone: &'static Type;
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
@@ -1545,12 +1545,13 @@ impl Type {
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInMicrophone")]
-    // #[api::available(macos = 15.0, ios = 17.0)]
+    #[api::available(macos = 10.15, ios = 10.0)]
     pub fn built_in_microphone() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInMicrophone }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeMicrophone")]
+    #[api::available(macos = 15.0, ios = 17.0)]
     pub fn microphone() -> &'static Self {
         unsafe { AVCaptureDeviceTypeMicrophone }
     }
