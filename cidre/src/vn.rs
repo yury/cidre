@@ -15,6 +15,7 @@ mod request;
 pub use request::DetectHorizonRequest;
 pub use request::ImageBasedRequest;
 pub use request::Request;
+pub use request::RequestCh;
 
 mod request_handler;
 pub use request_handler::ImageRequestHandler;

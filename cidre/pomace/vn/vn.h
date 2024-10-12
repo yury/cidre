@@ -25,6 +25,7 @@ Class VN_DETECT_FACE_RECTANGLES_REQUEST;
 Class VN_IMAGE_REQUEST_HANDLER;
 Class VN_SEQUENCE_REQUEST_HANDLER;
 Class VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST;
+Class VN_STATEFUL_REQUEST;
 
 __attribute__((constructor))
 static void vn_initializer(void)
@@ -52,6 +53,8 @@ static void vn_initializer(void)
         
         
         VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST = NSClassFromString(@"VNGenerateForegroundInstanceMaskRequest");
+        
+        VN_STATEFUL_REQUEST = [VNStatefulRequest class];
     }
 }
 

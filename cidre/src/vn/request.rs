@@ -1,6 +1,13 @@
-use crate::{arc, cg, define_obj_type, ns, objc, vn};
+use crate::{arc, blocks, cg, define_obj_type, ns, objc, vn};
 
-define_obj_type!(pub Request(ns::Id));
+define_obj_type!(
+    #[doc(alias = "VNRequest")]
+    pub Request(ns::Id)
+);
+
+/// A block that is executed at the completion of a request.
+#[doc(alias = "VNRequestCompletionHandler")]
+pub type RequestCh = blocks::EscBlock<fn(request: &Request, error: Option<&ns::Error>)>;
 
 impl Request {
     /// The specific algorithm or implementation revision that is to be used to perform the request.

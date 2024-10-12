@@ -1,12 +1,19 @@
 use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
+    #[doc(alias = "VNClassifyImageRequest")]
     pub ClassifyImageRequest(vn::ImageBasedRequest),
     VN_CLASSIFY_IMAGE_REQUEST
 );
 
 impl ClassifyImageRequest {
+    /// Classification with a taxonomy of 1,303 possible identifiers.
+    #[doc(alias = "VNClassifyImageRequestRevision1")]
     pub const REVISION_1: usize = 1;
+
+    /// The same taxonomy as `vn::ClassifyImageRequest::REVISION_1` but with improved accuracy, reduced latency and memory utilization.
+    #[doc(alias = "VNClassifyImageRequestRevision2")]
+    pub const REVISION_2: usize = 2;
 
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::ClassificationObservation>>;
@@ -43,6 +50,8 @@ mod test {
     fn basics() {
         ar_pool(|| {
             let mut request = vn::ClassifyImageRequest::new();
+
+            assert_eq!(vn::ClassifyImageRequest::REVISION_2, request.revision());
             let supported_ids = request.supported_ids().unwrap();
 
             assert!(!supported_ids.is_empty());
