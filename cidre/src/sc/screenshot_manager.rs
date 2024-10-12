@@ -1,4 +1,10 @@
-use crate::{api, arc, blocks, cg, cm, define_obj_type, ns, objc, sc};
+use crate::{api, arc, cg, define_obj_type, ns, objc, sc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "SCScreenshotManager")]
@@ -9,7 +15,7 @@ impl ScreenshotManager {
     #[api::available(macos = 14.0)]
     crate::define_cls!(SC_SCREENSHOT_MANAGER);
 
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "cm"))]
     #[objc::msg_send(captureSampleBufferWithFilter:configuration:completionHandler:)]
     #[api::available(macos = 14.0)]
     pub fn capture_sample_buf_ch(
@@ -18,7 +24,7 @@ impl ScreenshotManager {
         handler: Option<&mut blocks::ResultCompletionHandler<cm::SampleBuf>>,
     );
 
-    #[cfg(all(feature = "blocks", feature = "async"))]
+    #[cfg(all(feature = "blocks", feature = "async", feature = "cm"))]
     #[api::available(macos = 14.0)]
     pub async fn capture_sample_buf(
         filter: &sc::ContentFilter,

@@ -1,4 +1,7 @@
-use crate::{api, arc, av, cm, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "SCRecordingOutputConfiguration")]
@@ -68,6 +71,7 @@ impl RecordingOutput {
     crate::define_cls!(SC_RECORDING_OUTPUT);
 
     /// Indicates current duration of recording to the output file.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(recordedDuration)]
     pub fn recorded_duration(&self) -> cm::Time;
 

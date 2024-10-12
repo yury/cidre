@@ -8,23 +8,56 @@ use crate::blocks;
 #[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
 extern "C" {
+
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 2.1
+    )]
     static AVCaptureDeviceTypeExternal: &'static Type;
+
     #[api::available(macos = 10.15, ios = 10.0)]
     static AVCaptureDeviceTypeBuiltInMicrophone: &'static Type;
+
     #[api::available(macos = 14.0, ios = 17.0)]
     static AVCaptureDeviceTypeMicrophone: &'static Type;
+
+    #[api::available(
+        macos = 10.15,
+        ios = 10.0,
+        maccatalyst = 14.0,
+        tvos = 17.0,
+        visionos = 2.1
+    )]
     static AVCaptureDeviceTypeBuiltInWideAngleCamera: &'static Type;
+
+    #[api::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInTelephotoCamera: &'static Type;
+
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInUltraWideCamera: &'static Type;
+
     #[api::available(ios = 10.2, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInDualCamera: &'static Type;
+
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInDualWideCamera: &'static Type;
+
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInTripleCamera: &'static Type;
+
+    #[api::available(ios = 11.1, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInTrueDepthCamera: &'static Type;
+
+    #[api::available(ios = 15.4, maccatalyst = 15.4, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInLiDARDepthCamera: &'static Type;
+
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     static AVCaptureDeviceTypeContinuityCamera: &'static Type;
-    #[cfg(target_os = "macos")]
+
+    #[api::available(macos = 13.0)]
     static AVCaptureDeviceTypeDeskViewCamera: &'static Type;
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1520,11 +1553,6 @@ define_obj_type!(pub Type(ns::String));
 /// let device_type = av::CaptureDeviceType::external();
 /// let device_type = av::CaptureDeviceType::built_in_microphone();
 /// let device_type = av::CaptureDeviceType::built_in_wide_angle_camera();
-/// let device_type = av::CaptureDeviceType::built_in_telephoto_camera();
-/// let device_type = av::CaptureDeviceType::built_in_dual_wide_camera();
-/// let device_type = av::CaptureDeviceType::built_in_tripple_camera();
-/// let device_type = av::CaptureDeviceType::built_in_true_depth_camera();
-/// let device_type = av::CaptureDeviceType::built_in_lidar_depth_camera();
 /// ```
 impl Type {
     /// An external device type. On iPad, external devices are those that conform
@@ -1540,6 +1568,13 @@ impl Type {
     /// Otherwise, external cameras on Mac Catalyst report that their device type is
     /// 'av::CaptureDeviceType::built_in_wide_angle_camera()'.
     #[doc(alias = "AVCaptureDeviceTypeExternal")]
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 2.1
+    )]
     pub fn external() -> &'static Self {
         unsafe { AVCaptureDeviceTypeExternal }
     }
@@ -1556,12 +1591,21 @@ impl Type {
         unsafe { AVCaptureDeviceTypeMicrophone }
     }
 
+    /// A built-in wide angle camera device. These devices are suitable for general purpose use.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInWideAngleCamera")]
+    #[api::available(
+        macos = 10.15,
+        ios = 10.0,
+        maccatalyst = 14.0,
+        tvos = 17.0,
+        visionos = 2.1
+    )]
     pub fn built_in_wide_angle_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInWideAngleCamera }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInTelephotoCamera")]
+    #[api::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_telephoto_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTelephotoCamera }
     }
@@ -1578,12 +1622,16 @@ impl Type {
         unsafe { AVCaptureDeviceTypeBuiltInDualCamera }
     }
 
+    /// A built-in camera device type that consists of two cameras of fixed focal length, one ultrawide angle and one wide angle.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInDualWideCamera")]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_dual_wide_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInDualWideCamera }
     }
 
+    /// A device that consists of three fixed focal length cameras, one ultra wide, one wide angle, and one telephoto.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInTripleCamera")]
+    #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_tripple_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTripleCamera }
     }
@@ -1595,6 +1643,7 @@ impl Type {
     /// always match. Note that devices of this type may only be discovered using an
     /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInTrueDepthCamera")]
+    #[api::available(ios = 11.1, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_true_depth_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInTrueDepthCamera }
     }
@@ -1607,6 +1656,7 @@ impl Type {
     /// using an av::CaptureDeviceDiscoverySession or
     /// `av::CaptureDevice::default_device_with_device_type_media_type_position`.
     #[doc(alias = "AVCaptureDeviceTypeBuiltInLiDARDepthCamera")]
+    #[api::available(ios = 15.4, maccatalyst = 15.4, tvos = 17.0)]
     pub fn built_in_lidar_depth_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInLiDARDepthCamera }
     }
@@ -1624,6 +1674,7 @@ impl Type {
     /// <true/>
     /// ```
     #[doc(alias = "AVCaptureDeviceTypeContinuityCamera")]
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn continuity_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeContinuityCamera }
     }
@@ -1632,7 +1683,7 @@ impl Type {
     /// an overhead camera pointing at a desk.
     /// Supports multicam operation.
     #[doc(alias = "AVCaptureDeviceTypeDeskViewCamera")]
-    #[cfg(target_os = "macos")]
+    #[api::available(macos = 13.0)]
     pub fn desk_view_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeDeskViewCamera }
     }
