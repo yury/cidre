@@ -3,10 +3,10 @@ use crate::{arc, cf, cg, define_cf_type};
 #[cfg(feature = "io")]
 use crate::io;
 
-#[cfg(feature = "blocks")]
+#[cfg(all(feature = "blocks", feature = "io"))]
 use crate::blocks;
 
-#[cfg(feature = "dispatch")]
+#[cfg(all(feature = "dispatch", feature = "io"))]
 use crate::dispatch;
 
 define_cf_type!(
