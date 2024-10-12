@@ -476,7 +476,7 @@ impl From<Duration> for arc::R<Number> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFBooleanGetTypeID() -> TypeId;
     static kCFBooleanTrue: &'static Boolean;
     static kCFBooleanFalse: &'static Boolean;

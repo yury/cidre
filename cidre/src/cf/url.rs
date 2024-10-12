@@ -184,7 +184,7 @@ impl Url {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFURLGetTypeID() -> cf::TypeId;
 
     fn CFURLCreateWithBytes(

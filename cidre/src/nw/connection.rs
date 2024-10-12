@@ -3,7 +3,6 @@ use crate::{arc, define_obj_type, dispatch, ns, nw};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-// nw_connection_receive_completion_t
 #[doc(alias = "nw_connection_receive_completion_t")]
 pub type RecvCompletion = blocks::SyncBlock<
     fn(Option<&dispatch::Data>, Option<&nw::ContentCtx>, bool, Option<&nw::Error>),
@@ -269,7 +268,7 @@ impl Connection {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_connection_create(
         endpoint: &nw::Endpoint,
         params: &nw::Params,

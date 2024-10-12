@@ -394,7 +394,7 @@ impl PartialEq<str> for String {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;
     fn CFStringCreateMutable(

@@ -110,7 +110,7 @@ pub enum NotificationSuspensionBehavior {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFNotificationCenterGetTypeID() -> cf::TypeId;
     fn CFNotificationCenterGetLocalCenter<'a>() -> &'a mut NotificationCenter;
     fn CFNotificationCenterAddObserver(

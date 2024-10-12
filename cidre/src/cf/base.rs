@@ -317,7 +317,7 @@ impl Allocator {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<arc::R<String>>;
 
     static kCFNull: &'static Null;

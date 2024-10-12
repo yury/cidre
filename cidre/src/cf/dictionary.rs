@@ -585,7 +585,8 @@ where
     }
 }
 
-extern "C" {
+#[link(name = "CoreFoundation", kind = "framework")]
+extern "C-unwind" {
     fn CFDictionaryCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,

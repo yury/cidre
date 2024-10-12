@@ -506,7 +506,7 @@ impl ArrayMut {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     static kCFTypeArrayCallBacks: Cbs;
 
     fn CFArrayGetTypeID() -> TypeId;

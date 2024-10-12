@@ -106,7 +106,7 @@ macro_rules! define_cf_type {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFRetain(cf: &Type) -> arc::R<Type>;
     fn CFRelease(cf: &mut Type);
     fn CFGetTypeID(cf: &Type) -> TypeId;

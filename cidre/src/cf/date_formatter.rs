@@ -201,7 +201,7 @@ impl DateFormatter {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFDateFormatterGetTypeID() -> cf::TypeId;
     fn CFDateFormatterCreateISO8601Formatter(
         allocator: Option<&cf::Allocator>,

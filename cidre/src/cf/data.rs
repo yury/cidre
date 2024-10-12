@@ -155,7 +155,7 @@ impl From<&[u8]> for arc::R<Data> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFDataGetTypeID() -> cf::TypeId;
     fn CFDataCreate(
         allocator: Option<&cf::Allocator>,

@@ -31,7 +31,8 @@ impl MachPort {
     }
 }
 
-extern "C" {
+#[link(name = "CoreFoundation", kind = "framework")]
+extern "C-unwind" {
     fn CFMachPortInvalidate(port: &MachPort);
     fn CFMachPortIsValid(port: &MachPort) -> bool;
     fn CFMachPortCreateRunLoopSource(

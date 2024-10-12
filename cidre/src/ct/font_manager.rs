@@ -59,7 +59,7 @@ impl FontManager {
 }
 
 #[link(name = "CoreText", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CTFontManagerCopyAvailablePostScriptNames() -> arc::R<cf::ArrayOf<cf::String>>;
     fn CTFontManagerCopyAvailableFontFamilyNames() -> arc::R<cf::ArrayOf<cf::String>>;
     fn CTFontManagerRegisterFontsForURL(

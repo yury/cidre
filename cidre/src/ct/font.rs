@@ -317,7 +317,7 @@ pub enum UIFontType {
 }
 
 #[link(name = "CoreText", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CTFontGetTypeID() -> cf::TypeId;
     fn CTFontCreateWithName(
         name: &cf::String,

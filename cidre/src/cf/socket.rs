@@ -159,7 +159,7 @@ impl Socket {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFSocketCreate(
         allocator: Option<&cf::Allocator>,
         protocol_family: i32,

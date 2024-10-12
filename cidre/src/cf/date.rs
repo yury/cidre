@@ -103,7 +103,7 @@ impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFAbsoluteTimeGetCurrent() -> AbsTime;
     fn CFDateGetTypeID() -> cf::TypeId;
     fn CFDateCreate(allocator: Option<&cf::Allocator>, at: AbsTime) -> Option<arc::R<Date>>;

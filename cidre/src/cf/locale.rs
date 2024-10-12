@@ -39,7 +39,7 @@ impl Locale {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFLocaleGetSystem() -> &'static Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Id;
     fn CFLocaleCopyCurrent() -> arc::R<Locale>;
