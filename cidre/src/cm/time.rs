@@ -365,7 +365,8 @@ mod tests {
     }
 }
 
-extern "C" {
+#[link(name = "CoreMedia", kind = "framework")]
+extern "C-unwind" {
     static kCMTimeInvalid: Time;
     static kCMTimeIndefinite: Time;
     static kCMTimePositiveInfinity: Time;

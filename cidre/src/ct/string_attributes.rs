@@ -215,7 +215,7 @@ impl AttrName {
 }
 
 #[link(name = "CoreText", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     static kCTFontAttributeName: &'static AttrName;
     static kCTForegroundColorFromContextAttributeName: &'static AttrName;
     static kCTKernAttributeName: &'static AttrName;

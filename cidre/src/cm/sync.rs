@@ -12,8 +12,11 @@ define_cf_type!(
     /// cm::Clocks are read-only: they cannot be stopped or started, and the current time cannot be set.
     /// A CMClock has one primary function, cm::Clock::get_time, which tells what time it is now.
     /// Additionally, the cm::Sync infrastructure monitors relative drift between cm::Clocks.
+    #[doc(alias = "CMClock")]
+    #[doc(alias = "CMClockRef")]
     Clock(cf::Type)
 );
+
 define_cf_type!(
     /// Models a timeline under application control.
     ///
@@ -29,9 +32,16 @@ define_cf_type!(
     /// In fact, a timebase's effective rate is defined as the product of its rate, its source timebase's rate,
     /// its source timebase's source timebase's rate, and so on up to the ultimate source clock.  This is the rate at which
     /// the timebase's time changes relative to the ultimate source clock.
+    #[doc(alias = "CMTimebase")]
+    #[doc(alias = "CMTimebaseRef")]
     Timebase(cf::Type)
 );
-define_cf_type!(ClockOrTimebase(cf::Type));
+
+define_cf_type!(
+    #[doc(alias = "CMClockOrTimebase")]
+    #[doc(alias = "CMClockOrTimebaseRef")]
+    ClockOrTimebase(cf::Type)
+);
 
 unsafe impl Send for Clock {}
 unsafe impl Send for Timebase {}

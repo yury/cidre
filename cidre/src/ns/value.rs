@@ -1,9 +1,15 @@
 use crate::{
-    arc, cf, define_cls, define_obj_type, ns,
+    arc, define_cls, define_obj_type, ns,
     objc::{self, Class},
 };
 
-define_obj_type!(pub Value(ns::Id));
+#[cfg(feature = "cf")]
+use crate::cf;
+
+define_obj_type!(
+    #[doc(alias = "NSValue")]
+    pub Value(ns::Id)
+);
 
 impl Value {
     define_cls!(NS_VALUE);
@@ -12,7 +18,10 @@ impl Value {
     pub fn eq_to_value(&self, other: &Self) -> bool;
 }
 
-define_obj_type!(pub Number(Value));
+define_obj_type!(
+    #[doc(alias = "NSNumber")]
+    pub Number(Value)
+);
 
 // initializers
 impl arc::A<Number> {
@@ -103,12 +112,6 @@ impl Number {
 
     #[objc::msg_send(numberWithInt:)]
     pub fn tagged_i32(value: i32) -> &'static Self;
-
-    // for benches
-    // #[inline]
-    // pub fn tagged_i32_alloc(value: i32) -> &'static Self {
-    //     unsafe { NS_NUMBER.alloc().call1(init_with_int, value) }
-    // }
 
     #[objc::msg_send(numberWithUnsignedInt:)]
     pub fn tagged_u32(value: u32) -> &'static Self;
@@ -211,6 +214,7 @@ impl Number {
     #[objc::msg_send(isEqualToNumber:)]
     pub fn eq_to_number(&self, number: &ns::Number) -> bool;
 
+    #[cfg(feature = "cf")]
     #[inline]
     pub fn as_cf(&self) -> &cf::Number {
         unsafe { std::mem::transmute(self) }
@@ -312,7 +316,6 @@ impl Eq for Number {}
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-
     static NS_VALUE: &'static Class<ns::Value>;
     static NS_NUMBER: &'static Class<ns::Number>;
 }

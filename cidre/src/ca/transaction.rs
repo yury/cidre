@@ -1,6 +1,11 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-define_obj_type!(pub Transaction(ns::Id), CA_TRANSACTION);
+define_obj_type!(
+   #[doc(alias = "CATransaction")]
+   pub Transaction(ns::Id),
+    CA_TRANSACTION
+);
+
 impl Transaction {
     #[objc::msg_send(begin)]
     pub fn begin();
@@ -30,6 +35,7 @@ impl Transaction {
         Self::commit();
         r
     }
+
     #[inline]
     pub fn perform_with_disabled_actions<R, F: FnMut() -> R>(mut f: F) -> R {
         Self::perform(|| {

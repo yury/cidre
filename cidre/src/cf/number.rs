@@ -3,7 +3,7 @@ use crate::{arc, cf, define_cf_type, FourCharCode};
 #[cfg(feature = "ns")]
 use crate::ns;
 
-use super::{Allocator, ComparisonResult, Index, Type, TypeId};
+use crate::cf::{Allocator, ComparisonResult, Index, Type, TypeId};
 
 use std::{ffi::c_void, time::Duration};
 
@@ -114,7 +114,10 @@ impl NumberType {
     pub const MAX: Self = Self(16);
 }
 
-define_cf_type!(Number(Type));
+define_cf_type!(
+    #[doc(alias = "CFNumber")]
+    Number(Type)
+);
 
 impl Number {
     /// ```
@@ -270,13 +273,15 @@ impl Number {
         }
     }
 
+    #[doc(alias = "kCFNumberPositiveInfinity")]
     #[inline]
-    pub fn positive_infinity() -> &'static Self {
+    pub fn infinity() -> &'static Self {
         unsafe { kCFNumberPositiveInfinity }
     }
 
+    #[doc(alias = "kCFNumberNegativeInfinity")]
     #[inline]
-    pub fn negative_infinity() -> &'static Self {
+    pub fn neg_infinity() -> &'static Self {
         unsafe { kCFNumberNegativeInfinity }
     }
 

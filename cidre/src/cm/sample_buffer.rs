@@ -555,6 +555,7 @@ impl<const N: usize> BlockBufAudioBufList<N> {
     }
 }
 
+#[link(name = "CoreMedia", kind = "framework")]
 extern "C-unwind" {
     static kCMTimingInfoInvalid: SampleTimingInfo;
 
