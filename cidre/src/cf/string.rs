@@ -24,16 +24,20 @@ impl Encoding {
     /// ```
     /// use cidre::cf;
     ///
-    /// let encoding = cf::StringEncoding::system_encoding();
+    /// let encoding = cf::StringEncoding::sys_encoding();
     /// assert_eq!(encoding, cf::StringEncoding::MAC_ROMAN);
     /// ```
+    #[doc(alias = "CFStringGetSystemEncoding")]
     #[inline]
-    pub fn system_encoding() -> Self {
+    pub fn sys_encoding() -> Self {
         unsafe { CFStringGetSystemEncoding() }
     }
 }
 
-define_opts!(pub CompareFlags(OptionFlags));
+define_opts!(
+    #[doc(alias = "CFStringCompareFlags")]
+    pub CompareFlags(OptionFlags)
+);
 
 impl CompareFlags {
     pub const NONE: Self = Self(OptionFlags(0));
@@ -354,7 +358,10 @@ impl fmt::Display for String {
     }
 }
 
-define_cf_type!(StringMut(String));
+define_cf_type!(
+    #[doc(alias = "CFMutableStringRef")]
+    StringMut(String)
+);
 
 impl StringMut {
     #[inline]
@@ -373,7 +380,7 @@ impl StringMut {
     }
 
     #[inline]
-    pub fn create(alloc: Option<&cf::Allocator>, max_length: Index) -> Option<arc::R<Self>> {
+    pub fn create_in(max_length: Index, alloc: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
     }
 }

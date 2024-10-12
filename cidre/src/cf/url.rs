@@ -62,7 +62,7 @@ impl Url {
     #[inline]
     pub fn with_path(path: &Path, is_dir: bool) -> Option<arc::R<Url>> {
         let bytes = path.as_os_str().as_bytes();
-        let encoding = cf::StringEncoding::system_encoding();
+        let encoding = cf::StringEncoding::sys_encoding();
         let Some(path) = cf::String::create_with_bytes_no_copy_in(
             bytes,
             encoding,

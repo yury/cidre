@@ -96,7 +96,7 @@ impl cm::VideoFormatDesc {
         &self,
         flavor: Option<&ImageDescFlavor>,
     ) -> os::Result<arc::R<cm::BlockBuf>> {
-        Self::as_be_image_desc_cm_buf_in(self, cf::StringEncoding::system_encoding(), flavor, None)
+        Self::as_be_image_desc_cm_buf_in(self, cf::StringEncoding::sys_encoding(), flavor, None)
     }
 
     pub fn from_be_image_desc_buf_in(
@@ -124,7 +124,7 @@ impl cm::VideoFormatDesc {
     ) -> os::Result<arc::R<Self>> {
         Self::from_be_image_desc_buf_in(
             image_description_block_buffer,
-            cf::StringEncoding::system_encoding(),
+            cf::StringEncoding::sys_encoding(),
             flavor,
             None,
         )
