@@ -1,9 +1,11 @@
 use core::fmt;
 use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
 
-use super::{Index, OptionFlags, Range, Type, TypeId};
-
-use crate::{arc, cf, define_cf_type, define_opts, UniChar};
+use crate::{
+    arc,
+    cf::{self, Index, OptionFlags, Range, Type, TypeId},
+    define_cf_type, define_opts, UniChar,
+};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -18,8 +20,6 @@ impl Encoding {
     pub const UTF8: Self = Self(0x08000100);
 
     /// The default encoding for the system; untagged 8-bit characters are usually in this encoding
-    ///
-    /// CFStringGetSystemEncoding
     ///
     /// ```
     /// use cidre::cf;
