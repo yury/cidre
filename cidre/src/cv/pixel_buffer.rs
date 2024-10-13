@@ -1,4 +1,4 @@
-use crate::{arc, cf, cv, define_opts, os};
+use crate::{arc, cf, cv, define_opts, four_cc_to_str, os};
 
 #[cfg(feature = "io")]
 use crate::io;
@@ -189,7 +189,7 @@ impl LockFlags {
 ///
 /// CoreVideo does not provide support for all of these formats; this list just defines their names.
 #[doc(alias = "CVPixelFormatType")]
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
 pub struct PixelFormat(pub os::Type);
 
@@ -334,7 +334,7 @@ impl PixelFormat {
 
     /// Planar Component Y'CbCr 8-bit 4:2:0, full range.  baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrPlanar struct
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8PlanarFullRange")]
-    pub const _420_YP_CB_CR8_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"f420"));
+    pub const _420_YP_CB_CR_8_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"f420"));
 
     /// First plane: Video-range Component Y'CbCr 8-bit 4:2:2, ordered Cb Y'0 Cr Y'1; second plane: alpha 8-bit 0-255
     #[doc(alias = "kCVPixelFormatType_422YpCbCr_4A_8BiPlanar")]
@@ -495,12 +495,8 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange")]
     pub const LOSSLESS_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"&xv0"));
-
-    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarVideoRange")]
-    pub const LOSSLESS_PACKED_10_420V: Self =
-        Self::LOSSLESS_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
-
     /// Lossless-compressed form of 'cv::PixelFormat::_422_YP_CB_CR_10_BI_PLANAR_VIDEO_RANGE'.
+
     /// Format is compressed-packed with no padding bits between pixels.
     #[doc(alias = "kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange")]
     pub const LOSSLESS_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
@@ -553,20 +549,25 @@ impl PixelFormat {
     pub const LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-xv0"));
 
-    #[doc(alias = "kCVPixelFormatType_Lossy_420YpCbCr10PackedBiPlanarVideoRange")]
-    pub const LOSSY_PACKED_10_420V: Self = Self::LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
-
     /// Lossy-compressed form of `cv::PixelFormat::_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE`.
     /// Format is compressed-packed with no padding bits between pixels.
     #[doc(alias = "kCVPixelFormatType_Lossy_422YpCbCr10PackedBiPlanarVideoRange")]
     pub const LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"-xv2"));
-
-    #[doc(alias = "kCVPixelFormatType_Lossy_422YpCbCr10PackedBiPlanarVideoRange")]
-    pub const LOSSY_PACKED_10_422V: Self = Self::LOSSY_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE;
 }
 
-extern "C" {
+impl std::fmt::Debug for PixelFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut fcc = self.0.to_be_bytes();
+        f.debug_struct("cv::PixelFormat")
+            .field("raw", &self.0)
+            .field("fcc", &four_cc_to_str(&mut fcc))
+            .finish()
+    }
+}
+
+#[link(name = "CoreVideo", kind = "framework")]
+extern "C-unwind" {
     fn CVPixelBufferGetTypeID() -> cf::TypeId;
     fn CVPixelBufferCreate(
         allocator: Option<&cf::Allocator>,
