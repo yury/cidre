@@ -73,7 +73,7 @@ pub use number_formatter::FormatterStyle as NumberFormatterStyle;
 pub use number_formatter::NumberFormatter;
 
 mod url;
-pub use url::PathStyle;
+pub use url::PathStyle as UrlPathStyle;
 pub use url::Url;
 
 pub mod locale;

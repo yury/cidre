@@ -24,6 +24,30 @@ impl Bundle {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
+    #[doc(alias = "CFBundleCopyResourceURL")]
+    pub fn res_url(&self, resource_name: &cf::String) -> Option<arc::R<cf::Url>> {
+        self.res_url_with_type_subdir(resource_name, None, None)
+    }
+
+    #[doc(alias = "CFBundleCopyResourceURL")]
+    pub fn res_url_in_subdir(
+        &self,
+        resource_name: &cf::String,
+        subdir: &cf::String,
+    ) -> Option<arc::R<cf::Url>> {
+        self.res_url_with_type_subdir(resource_name, None, Some(subdir))
+    }
+
+    #[doc(alias = "CFBundleCopyResourceURL")]
+    pub fn res_url_with_type_subdir(
+        &self,
+        resource_name: &cf::String,
+        resource_type: Option<&cf::String>,
+        subdir: Option<&cf::String>,
+    ) -> Option<arc::R<cf::Url>> {
+        unsafe { CFBundleCopyResourceURL(self, resource_name, resource_type, subdir) }
+    }
+
     /// ```
     /// use cidre::cf;
     ///
@@ -45,6 +69,12 @@ extern "C-unwind" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle() -> Option<&'static Bundle>;
     fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<arc::R<cf::Url>>;
+    fn CFBundleCopyResourceURL(
+        bundle: &Bundle,
+        resource_name: &cf::String,
+        resource_type: Option<&cf::String>,
+        subdir_name: Option<&cf::String>,
+    ) -> Option<arc::R<cf::Url>>;
 
     fn CFBundleGetValueForInfoDictionaryKey<'a>(
         bundle: &'a Bundle,

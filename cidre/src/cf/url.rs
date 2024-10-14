@@ -10,7 +10,7 @@ use crate::ns;
 #[repr(isize)]
 pub enum PathStyle {
     Posix = 0,
-    // HFS = 1,
+    // Hfs = 1,
     Windows = 2,
 }
 
@@ -50,7 +50,7 @@ impl Url {
 
     #[doc(alias = "CFURLCreateWithFileSystemPath")]
     #[inline]
-    pub fn with_file_system_path_in(
+    pub fn with_fs_path_in(
         file_path: &cf::String,
         path_style: PathStyle,
         is_directory: bool,
@@ -72,7 +72,7 @@ impl Url {
         ) else {
             return None;
         };
-        cf::Url::with_file_system_path_in(&path, PathStyle::Posix, is_dir, None)
+        cf::Url::with_fs_path_in(&path, PathStyle::Posix, is_dir, None)
     }
 
     /// ```
@@ -181,6 +181,30 @@ impl Url {
     pub fn abs_url(&self) -> Option<arc::R<Self>> {
         unsafe { CFURLCopyAbsoluteURL(self) }
     }
+
+    #[doc(alias = "CFURLCopyPath")]
+    #[inline]
+    pub fn path(&self) -> Option<arc::R<cf::String>> {
+        unsafe { CFURLCopyPath(self) }
+    }
+
+    #[doc(alias = "CFURLCopyFileSystemPath")]
+    #[inline]
+    pub fn fs_path(&self, path_style: PathStyle) -> Option<arc::R<cf::String>> {
+        unsafe { CFURLCopyFileSystemPath(self, path_style) }
+    }
+
+    #[doc(alias = "CFURLCopyFileSystemPath")]
+    #[inline]
+    pub fn fs_path_posix(&self) -> Option<arc::R<cf::String>> {
+        unsafe { CFURLCopyFileSystemPath(self, PathStyle::Posix) }
+    }
+
+    #[doc(alias = "CFURLHasDirectoryPath")]
+    #[inline]
+    pub fn has_dir_path(&self) -> bool {
+        unsafe { CFURLHasDirectoryPath(self) }
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
@@ -214,4 +238,10 @@ extern "C-unwind" {
     fn CFURLCopyScheme(anURL: &Url) -> Option<arc::R<cf::String>>;
     fn CFURLGetPortNumber(anURL: &Url) -> i32;
     fn CFURLCopyAbsoluteURL(relativeURL: &Url) -> Option<arc::R<cf::Url>>;
+    fn CFURLCopyPath(anURL: &Url) -> Option<arc::R<cf::String>>;
+    fn CFURLCopyFileSystemPath(
+        anURL: &Url,
+        path_style: cf::UrlPathStyle,
+    ) -> Option<arc::R<cf::String>>;
+    fn CFURLHasDirectoryPath(anURL: &Url) -> bool;
 }
