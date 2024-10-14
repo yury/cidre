@@ -520,19 +520,23 @@ impl Device {
 #[repr(isize)]
 pub enum ColorSpace {
     /// The sRGB color space (<https://www.w3.org/Graphics/Color/srgb>)
+    #[doc(alias = "AVCaptureColorSpace_sRGB")]
     Srgb = 0,
 
     /// The P3 D65 wide color space which uses Illuminant D65 as the white point.
+    #[doc(alias = "AVCaptureColorSpace_P3_D65")]
     P3D65 = 1,
 
     /// The BT2020 wide color space which uses Illuminant D65 as the white point
     /// and Hybrid Log-Gamma as the transfer function.
+    #[doc(alias = "AVCaptureColorSpace_HLG_BT2020")]
     HlgBt2020 = 2,
 
     /// The Apple Log Color space, which uses BT2020 as the color primaries,
     /// and an Apple defined Log curve as a transfer function. When this is set as the active color
     /// space on an [`av::CaptureDevice`], any [`av::CapturePhotoOutput`] or [`av::CaptureStillImageOutput`]
     /// connected to the same 'av::CaptureDevice' will have its video connection disabled.
+    #[doc(alias = "AVCaptureColorSpace")]
     AppleLog = 3,
 }
 
