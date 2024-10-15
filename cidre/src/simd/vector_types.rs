@@ -124,6 +124,21 @@ impl<T: PartialEq, const LANES: usize, const N: usize> PartialEq for Simd<T, LAN
         true
     }
 }
+
+impl<T, const LANES: usize, const N: usize> std::ops::Index<usize> for Simd<T, LANES, N> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl<T, const LANES: usize, const N: usize> std::ops::IndexMut<usize> for Simd<T, LANES, N> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.0[index]
+    }
+}
+
 impl<const LANES: usize, const N: usize> Eq for Simd<f32, LANES, N> {}
 
 impl<const LANES: usize, const N: usize> Hash for Simd<f32, LANES, N> {
@@ -210,12 +225,18 @@ impl Simd<f32, 4, 4> {
 
 #[cfg(test)]
 pub mod tests {
-    use crate::simd::f32x2;
+    use crate::simd::{f32x2, f32x4x4};
 
     #[test]
     fn basics() {
         let mut f = f32x2::with_xy(0., 0.);
         f.set_x(10.0);
         assert_eq!(f.r(), 10.0);
+
+        let mut f = f32x4x4::identity();
+        assert_eq!(f[0][0], 1.0);
+
+        f[0][1] = 10.0;
+        assert_eq!(f[0][1], 10.0);
     }
 }
