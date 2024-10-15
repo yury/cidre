@@ -683,11 +683,21 @@ mod tests {
         assert!(PixelFormat::LOSSY_32_BGRA.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420V.is_compressed_avaliable());
         assert!(PixelFormat::LOSSY_420F.is_compressed_avaliable());
-        assert!(PixelFormat::LOSSY_PACKED_10_420V.is_compressed_avaliable());
+        assert!(
+            PixelFormat::LOSSY_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE
+                .is_compressed_avaliable()
+        );
 
         assert!(PixelFormat::LOSSLESS_32_BGRA.is_compressed_avaliable());
         assert!(PixelFormat::LOSSLESS_420V.is_compressed_avaliable());
         assert!(PixelFormat::LOSSLESS_420F.is_compressed_avaliable());
-        assert!(PixelFormat::LOSSLESS_PACKED_10_420V.is_compressed_avaliable());
+        assert!(
+            PixelFormat::LOSSLESS_420_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE
+                .is_compressed_avaliable()
+        );
+        assert!(
+            PixelFormat::LOSSLESS_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE
+                .is_compressed_avaliable()
+        );
     }
 }
