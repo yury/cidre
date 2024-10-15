@@ -24,6 +24,15 @@ impl Bundle {
         unsafe { CFBundleCopyBundleURL(self) }
     }
 
+    #[doc(alias = "CFBundleCopyResourceURLsOfType")]
+    pub fn res_urls(
+        &self,
+        resource_type: Option<&cf::String>,
+        subdir: Option<&cf::String>,
+    ) -> Option<arc::R<cf::ArrayOf<cf::Url>>> {
+        unsafe { CFBundleCopyResourceURLsOfType(self, resource_type, subdir) }
+    }
+
     #[doc(alias = "CFBundleCopyResourceURL")]
     pub fn res_url(&self, resource_name: &cf::String) -> Option<arc::R<cf::Url>> {
         self.res_url_with_type_subdir(resource_name, None, None)
@@ -75,6 +84,12 @@ extern "C-unwind" {
         resource_type: Option<&cf::String>,
         subdir_name: Option<&cf::String>,
     ) -> Option<arc::R<cf::Url>>;
+
+    fn CFBundleCopyResourceURLsOfType(
+        bundle: &Bundle,
+        resource_type: Option<&cf::String>,
+        subdir_name: Option<&cf::String>,
+    ) -> Option<arc::R<cf::ArrayOf<cf::Url>>>;
 
     fn CFBundleGetValueForInfoDictionaryKey<'a>(
         bundle: &'a Bundle,
