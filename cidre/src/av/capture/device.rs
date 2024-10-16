@@ -1999,6 +1999,10 @@ impl Format {
     #[objc::msg_send(supportedColorSpaces)]
     pub fn supported_color_spaces(&self) -> arc::R<ns::Array<ns::Number>>;
 
+    pub fn color_space_supported(&self, val: av::CaptureColorSpace) -> bool {
+        self.supported_color_spaces().contains(val.as_ns_number())
+    }
+
     /// Whether the format supports global tone mapping.
     #[objc::msg_send(globalToneMappingSupported)]
     pub fn global_tone_mapping_supported(&self) -> bool;
@@ -2106,11 +2110,11 @@ impl DiscoverySession {
     /// Starting in Mac Catalyst 14.0, clients can key value observe the value of this
     /// property to be notified when the devices change.
     #[objc::msg_send(devices)]
-    pub fn devices(&self) -> &ns::Array<Device>;
+    pub fn devices(&self) -> arc::R<ns::Array<Device>>;
 
     #[objc::msg_send(supportedMultiCamDeviceSets)]
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
-    pub fn supported_multi_cam_device_sets(&self) -> &ns::Array<ns::Set<Device>>;
+    pub fn supported_multi_cam_device_sets(&self) -> arc::R<ns::Array<ns::Set<Device>>>;
 }
 
 impl ns::KVObserverRegistration for DiscoverySession {}
