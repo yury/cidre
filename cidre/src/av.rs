@@ -114,6 +114,8 @@ pub use asset::SegmentReportSampleInfo as AssetSegmentReportSampleInfo;
 pub use asset::SegmentTrackReport as AssetSegmentTrackReport;
 pub use asset::SegmentType as AssetSegmentType;
 
+pub use asset::AssetImageGenerator;
+
 pub mod audio;
 pub use audio::Buf as AudioBuf;
 pub use audio::CommonFormat as AudioCommonFormat;

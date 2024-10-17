@@ -79,7 +79,7 @@ mod generate_objectness_based_saliency_image_request;
 pub use generate_objectness_based_saliency_image_request::GenerateObjectnessBasedSaliencyImageRequest;
 
 mod generate_image_feature_print_request;
-pub use generate_image_feature_print_request::GenerateImageFeaturePrintRequest;
+pub use generate_image_feature_print_request::GenImageFeaturePrintRequest;
 
 mod generate_optical_flow_request;
 pub use generate_optical_flow_request::GenerateOpticalFlowRequest;
@@ -102,3 +102,10 @@ pub use detect_barcodes_request::DetectBarcodesRequest;
 mod error;
 pub use error::Code as ErrorCode;
 pub use error::Domain as ErrorDomain;
+
+pub mod video_processor;
+pub use video_processor::Cadence as VideoProcessorCadence;
+pub use video_processor::FrameRateCadence as VideoProcessorFrameRateCadence;
+pub use video_processor::RequestProcessingOpts as VideoProcessorRequestProcessingOpts;
+pub use video_processor::TimeIntervalCadence as VideoProcessorTimeIntervalCadence;
+pub use video_processor::VideoProcessor;

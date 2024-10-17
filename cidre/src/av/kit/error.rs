@@ -1,6 +1,7 @@
 use crate::ns;
 
 impl ns::ErrorDomain {
+    #[doc(alias = "AVKitErrorDomain")]
     pub fn av_kit() -> &'static Self {
         unsafe { AVKitErrorDomain }
     }

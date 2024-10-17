@@ -37,6 +37,7 @@ Class AV_ASSET_READER;
 Class AV_ASSET_WRITER_INPUT;
 Class AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR;
 Class AV_ASSET_READER_TRACK_OUTPUT;
+Class AV_ASSET_IMAGE_GENERATOR;
 
 Class AV_OUTPUT_SETTINGS_ASSISTANT;
 
@@ -67,6 +68,7 @@ Class AV_CAPTURE_SYSTEM_ZOOM_SLIDER;
 Class AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER;
 Class AV_CAPTURE_SLIDER;
 Class AV_CAPTURE_INDEX_PICKER;
+
 
 __attribute__((constructor))
 static void av_initializer(void)
@@ -181,6 +183,8 @@ static void av_initializer(void)
         AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER =  NSClassFromString(@"AVCaptureSystemExposureBiasSlider");
         AV_CAPTURE_SLIDER = NSClassFromString(@"AVCaptureSlider");
         AV_CAPTURE_INDEX_PICKER = NSClassFromString(@"AVCaptureIndexPicker");
+        
+        AV_ASSET_IMAGE_GENERATOR =  [AVAssetImageGenerator class];
 
     }
 }

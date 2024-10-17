@@ -35,7 +35,7 @@ async fn main() {
     // let horizon = vn::DetectHorizonRequest::new();
     // let attention = vn::GenerateAttentionBasedSaliencyImageRequest::new();
     // let objectness = vn::GenerateObjectnessBasedSaliencyImageRequest::new();
-    let features = vn::GenerateImageFeaturePrintRequest::new();
+    let features = vn::GenImageFeaturePrintRequest::new();
     //let face_quality = vn::DetectFaceCaptureQualityRequest::new();
     // let text = vn::RecognizeTextRequest::new();
     //let requests_slice: &[&vn::Request] = &[&classify, &horizon, &attention, &objectness, &text];

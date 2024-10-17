@@ -337,7 +337,7 @@ impl FeaturePrintObservation {
     /// use `compute_distance`
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[objc::msg_send(computeDistance:toFeaturePrintObservation:error:)]
-    pub unsafe fn compute_distance_err<'ar>(
+    pub unsafe fn distance_err<'ar>(
         &self,
         distance: &mut f32,
         to: &FeaturePrintObservation,
@@ -349,14 +349,11 @@ impl FeaturePrintObservation {
     /// Shorter distances indicate greater similarity between feature prints.
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[inline]
-    pub fn compute_distance<'ear>(
-        &self,
-        to: &FeaturePrintObservation,
-    ) -> Result<f32, &'ear ns::Error> {
+    pub fn distance_to<'ear>(&self, to: &FeaturePrintObservation) -> Result<f32, &'ear ns::Error> {
         let mut distance = 0f32;
         let mut error = None;
         unsafe {
-            if self.compute_distance_err(&mut distance, to, &mut error) {
+            if self.distance_err(&mut distance, to, &mut error) {
                 Ok(distance)
             } else {
                 Err(error.unwrap_unchecked())

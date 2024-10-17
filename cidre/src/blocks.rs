@@ -512,14 +512,14 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 #[cfg(feature = "async")]
-struct Shared<T> {
+pub(crate) struct Shared<T> {
     ready: Option<T>,
     pending: Option<std::task::Waker>,
 }
 
 #[cfg(feature = "async")]
 impl<T> Shared<T> {
-    fn new() -> Arc<Mutex<Self>> {
+    pub(crate) fn new() -> Arc<Mutex<Self>> {
         Arc::new(Mutex::new(Self {
             ready: None,
             pending: None,

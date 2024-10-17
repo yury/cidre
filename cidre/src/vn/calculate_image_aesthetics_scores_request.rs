@@ -1,5 +1,13 @@
 use crate::{api, arc, define_obj_type, ns, objc, vn};
 
+impl arc::A<CalcImageAestheticsScoresRequest> {
+    #[objc::msg_send(initWithCompletionHandler:)]
+    pub fn init_with_ch(
+        self,
+        ch: Option<&mut vn::RequestCh<CalcImageAestheticsScoresRequest>>,
+    ) -> arc::R<CalcImageAestheticsScoresRequest>;
+}
+
 define_obj_type!(
     #[doc(alias = "VNCalculateImageAestheticsScoresRequest")]
     pub CalcImageAestheticsScoresRequest(vn::ImageBasedRequest),
@@ -8,6 +16,15 @@ define_obj_type!(
 );
 
 impl CalcImageAestheticsScoresRequest {
+    pub fn with_ch(ch: &mut vn::RequestCh<Self>) -> arc::R<Self> {
+        Self::alloc().init_with_ch(Some(ch))
+    }
+
+    pub fn with(f: impl FnMut(&mut Self, Option<&ns::Error>) + 'static) -> arc::R<Self> {
+        let mut block = vn::RequestCh::<Self>::new2(f);
+        Self::with_ch(&mut block)
+    }
+
     #[doc(alias = "VNCalculateImageAestheticsScoresRequestRevision1")]
     pub const REVISION_1: usize = 1;
 

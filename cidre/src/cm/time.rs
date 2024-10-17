@@ -30,7 +30,7 @@ impl TimeFlags {
 
 #[doc(alias = "CMTime")]
 #[repr(C)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Hash, Clone, Copy, Debug)]
 pub struct Time {
     pub value: TimeValue,
     pub scale: TimeScale,

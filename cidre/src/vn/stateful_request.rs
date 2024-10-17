@@ -26,7 +26,7 @@ impl StatefulRequest {
 
     pub fn with_frame_analysis_spacing(
         frame_analysis_spacing: cm::Time,
-        completion: impl FnMut(&vn::Request, Option<&ns::Error>) + 'static,
+        completion: impl FnMut(&mut vn::Request, Option<&ns::Error>) + 'static,
     ) -> arc::R<Self> {
         let mut block = vn::RequestCh::new2(completion);
         Self::with_frame_analysis_spacing_ch(frame_analysis_spacing, Some(&mut block))

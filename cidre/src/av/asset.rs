@@ -1,5 +1,5 @@
-use crate::define_cls;
 use crate::{arc, av, blocks, define_obj_type, ns, objc};
+use crate::{cm, define_cls};
 
 pub mod cache;
 pub use cache::Cache as AssetCache;
@@ -36,6 +36,9 @@ pub use segment_report::SampleInfo as SegmentReportSampleInfo;
 pub use segment_report::SegmentReport;
 pub use segment_report::SegmentType;
 pub use segment_report::TrackReport as SegmentTrackReport;
+
+pub mod image_generator;
+pub use image_generator::ImageGenerator as AssetImageGenerator;
 
 define_obj_type!(
     #[doc(alias = "AVAsset")]
@@ -113,6 +116,9 @@ impl UrlAsset {
 
     #[objc::msg_send(audiovisualMIMETypes)]
     pub fn av_mime_types() -> arc::R<ns::Array<ns::String>>;
+
+    #[objc::msg_send(duration)]
+    pub fn duration(&self) -> cm::Time;
 }
 
 #[link(name = "av", kind = "static")]
@@ -122,7 +128,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::av;
+    use crate::{av, ns};
 
     #[test]
     fn basics() {
@@ -130,5 +136,11 @@ mod tests {
         assert!(!types.is_empty());
         let types = av::UrlAsset::av_mime_types();
         assert!(!types.is_empty());
+
+        let url = ns::Url::with_str("foo").unwrap();
+        let asset = av::UrlAsset::with_url(&url, None).unwrap();
+        let duration = asset.duration();
+        assert!(duration.is_ok());
+        assert_eq!(duration.as_secs(), 0.0);
     }
 }

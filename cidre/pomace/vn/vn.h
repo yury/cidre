@@ -26,6 +26,10 @@ Class VN_IMAGE_REQUEST_HANDLER;
 Class VN_SEQUENCE_REQUEST_HANDLER;
 Class VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST;
 Class VN_STATEFUL_REQUEST;
+Class VN_VIDEO_PROCESSOR;
+Class VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE;
+Class VN_VIDEO_PROCESSOR_TIME_INTERVAL_CADENCE;
+Class VN_VIDEO_PROCESSOR_REQUEST_PROCESSING_OPTIONS;
 
 __attribute__((constructor))
 static void vn_initializer(void)
@@ -55,6 +59,11 @@ static void vn_initializer(void)
         VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST = NSClassFromString(@"VNGenerateForegroundInstanceMaskRequest");
         
         VN_STATEFUL_REQUEST = [VNStatefulRequest class];
+        VN_VIDEO_PROCESSOR = NSClassFromString(@"VNVideoProcessor");
+        VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE = NSClassFromString(@"VNVideoProcessorFrameRateCadence");
+        VN_VIDEO_PROCESSOR_TIME_INTERVAL_CADENCE = NSClassFromString(@"VNVideoProcessorTimeIntervalCadence");
+        
+        VN_VIDEO_PROCESSOR_REQUEST_PROCESSING_OPTIONS = NSClassFromString(@"VNVideoProcessorRequestProcessingOptions");
     }
 }
 

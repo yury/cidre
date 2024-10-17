@@ -1,6 +1,6 @@
 use crate::objc;
 
-pub type Result<'ear, R = ()> = std::result::Result<R, &'ear Error>;
+pub type Result<'ear, R = (), E = &'ear Error> = std::result::Result<R, E>;
 pub type ExResult<'ear, R = ()> = std::result::Result<R, &'ear Exception>;
 
 pub use objc::{

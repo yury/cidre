@@ -7,7 +7,7 @@ define_obj_type!(
 
 /// A block that is executed at the completion of a request.
 #[doc(alias = "VNRequestCompletionHandler")]
-pub type RequestCh = blocks::EscBlock<fn(request: &Request, error: Option<&ns::Error>)>;
+pub type RequestCh<R = Request> = blocks::EscBlock<fn(request: &mut R, error: Option<&ns::Error>)>;
 
 impl Request {
     /// The specific algorithm or implementation revision that is to be used to perform the request.
@@ -26,10 +26,25 @@ impl Request {
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<&ns::Array<vn::Observation>>;
 
+    #[objc::msg_send(completionHandler)]
+    pub fn completion_handler(&self) -> Option<arc::R<RequestCh>>;
+
+    #[objc::msg_send(preferBackgroundProcessing)]
+    pub fn prefer_background_processing(&self) -> bool;
+
+    #[objc::msg_send(setPreferBackgroundProcessing:)]
+    pub fn set_prefer_background_processing(&mut self, val: bool);
+
+    #[objc::msg_send(cancel)]
+    pub fn cancel(&mut self);
+
     pub const REVISION_UNSPECIFIED: usize = 0;
 }
 
-define_obj_type!(pub ImageBasedRequest(Request));
+define_obj_type!(
+    #[doc(alias = "VNImageBasedRequest")]
+    pub ImageBasedRequest(Request)
+);
 
 impl ImageBasedRequest {
     /// The region of the image in which the request will be performed.
@@ -47,6 +62,7 @@ impl ImageBasedRequest {
 }
 
 define_obj_type!(
+    #[doc(alias = "VNDetectHorizonRequest")]
     pub DetectHorizonRequest(ImageBasedRequest),
     VN_DETECT_HORIZON_REQUEST
 );

@@ -96,21 +96,26 @@ impl Session {
     pub fn remove_output(&mut self, output: &av::CaptureOutput);
 
     #[objc::msg_send(addInputWithNoConnections:)]
+    #[objc::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0, visionos = 2.1)]
     pub fn add_input_without_connections(&mut self, input: &av::CaptureInput);
 
     #[objc::msg_send(addOutputWithNoConnections:)]
+    #[objc::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0, visionos = 2.1)]
     pub fn add_output_without_connections(&mut self, output: &av::CaptureOutput);
 
     #[objc::msg_send(connections)]
     pub fn connections(&self) -> arc::R<ns::Array<av::CaptureConnection>>;
 
     #[objc::msg_send(canAddConnection:)]
+    #[objc::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0, visionos = 2.1)]
     pub fn can_add_connection(&self, connection: &av::CaptureConnection) -> bool;
 
     #[objc::msg_send(addConnection:)]
+    #[objc::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0, visionos = 2.1)]
     pub fn add_connection(&mut self, connection: &av::CaptureConnection);
 
     #[objc::msg_send(removeConnection:)]
+    #[objc::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0, visionos = 2.1)]
     pub fn remove_connection(&mut self, connection: &av::CaptureConnection);
 
     /// Indicates whether session controls are supported on this platform.
