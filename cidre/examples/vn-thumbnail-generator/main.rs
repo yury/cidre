@@ -113,7 +113,7 @@ async fn process_video(
     .unwrap()?;
 
     let (a, f) = collect_task.await.unwrap();
-    print!("\r");
+    eprint!("\r");
     let frames = calc_top_frames(&a, &f, top_n).map_err(|e| e.retained())?;
     gen_thumbs(frames, &asset).await?;
     Ok(())
@@ -197,7 +197,7 @@ async fn gen_thumbs<'ear>(
     for (i, frame) in frames.drain(..).enumerate() {
         let (image, actual_time) = image_generator.cg_image_for_time(frame.ts).await?;
         let path = format!("thumb-{i}.png");
-        println!("writing {path} ts: {}", actual_time.as_secs());
+        eprintln!("writing {path} ts: {}", actual_time.as_secs());
         let path = Path::new(&path);
         let url = cf::Url::with_path(path, false).unwrap();
         let mut dst = cg::ImageDst::with_url(&url, png_type.as_cf(), 0).unwrap();
