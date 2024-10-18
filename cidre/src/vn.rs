@@ -66,23 +66,23 @@ pub use face_landmarks::Region2d as FaceLandmarkRegion2d;
 mod generate_foreground_instance_mask_request;
 
 mod generate_person_segmentation_request;
-pub use generate_person_segmentation_request::GeneratePersonSegmentationRequest;
-pub use generate_person_segmentation_request::QualityLevel as GeneratePersonSegmentationRequestQualityLevel;
+pub use generate_person_segmentation_request::GenPersonSegmentationRequest;
+pub use generate_person_segmentation_request::QualityLevel as GenPersonSegmentationRequestQualityLevel;
 
 mod detect_document_segmentation_request;
 pub use detect_document_segmentation_request::DetectDocumentSegmentationRequest;
 
 mod generate_attention_based_saliency_image_request;
-pub use generate_attention_based_saliency_image_request::GenerateAttentionBasedSaliencyImageRequest;
+pub use generate_attention_based_saliency_image_request::GenAttentionBasedSaliencyImageRequest;
 
 mod generate_objectness_based_saliency_image_request;
-pub use generate_objectness_based_saliency_image_request::GenerateObjectnessBasedSaliencyImageRequest;
+pub use generate_objectness_based_saliency_image_request::GenObjectnessBasedSaliencyImageRequest;
 
 mod generate_image_feature_print_request;
 pub use generate_image_feature_print_request::GenImageFeaturePrintRequest;
 
 mod generate_optical_flow_request;
-pub use generate_optical_flow_request::GenerateOpticalFlowRequest;
+pub use generate_optical_flow_request::GenOpticalFlowRequest;
 
 mod targeted_image_request;
 use targeted_image_request::TargetedImageRequest;

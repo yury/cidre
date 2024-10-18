@@ -12,11 +12,11 @@ pub enum QualityLevel {
 
 define_obj_type!(
     #[doc(alias = "VNGeneratePersonSegmentationRequest")]
-    pub GeneratePersonSegmentationRequest(vn::StatefulRequest),
+    pub GenPersonSegmentationRequest(vn::StatefulRequest),
     VN_GENERATE_PERSON_SEGMENTAION_REQUEST
 );
 
-impl GeneratePersonSegmentationRequest {
+impl GenPersonSegmentationRequest {
     pub const REVISION_1: usize = 1;
 
     #[objc::msg_send(qualityLevel)]
@@ -62,19 +62,19 @@ impl GeneratePersonSegmentationRequest {
 #[link(name = "vn", kind = "static")]
 extern "C" {
     static VN_GENERATE_PERSON_SEGMENTAION_REQUEST:
-        &'static objc::Class<GeneratePersonSegmentationRequest>;
+        &'static objc::Class<GenPersonSegmentationRequest>;
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{
         cv::PixelFormat, vn::generate_person_segmentation_request::QualityLevel,
-        vn::GeneratePersonSegmentationRequest,
+        vn::GenPersonSegmentationRequest,
     };
 
     #[test]
     fn basics() {
-        let request = GeneratePersonSegmentationRequest::new();
+        let request = GenPersonSegmentationRequest::new();
 
         assert_eq!(request.quality_level(), QualityLevel::Accurate);
 
