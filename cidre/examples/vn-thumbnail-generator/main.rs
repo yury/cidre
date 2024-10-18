@@ -1,3 +1,4 @@
+/// This is port of Apple [swift example](https://developer.apple.com/documentation/vision/generating-thumbnails-from-videos)
 use cidre::{
     arc, av, cf, cg, cm, ns, ut,
     vn::{self, video_processor as vp},
@@ -9,8 +10,8 @@ use tokio::{sync::mpsc, task};
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Url for video to analyse
-    video_url: String,
+    /// Video file path to analyse
+    path: String,
 
     /// Number of frames to analyse
     #[arg(short, default_value_t = unsafe { num::NonZeroU32::new_unchecked(200) } )]
@@ -211,6 +212,6 @@ async fn gen_thumbs<'ear>(
 #[tokio::main]
 pub async fn main() {
     let args = Args::parse();
-    let url = ns::Url::with_fs_path_str(&args.video_url, false);
+    let url = ns::Url::with_fs_path_str(&args.path, false);
     process_video(&url, args.n, args.t).await.unwrap();
 }
