@@ -1,12 +1,9 @@
 use cidre::{
-    am::device::development::image_type,
-    arc,
-    av::{self, asset::image_generator},
-    cg, cm, ns,
+    arc, av, cf, cg, cm, ns, ut,
     vn::{self, video_processor as vp},
 };
 use clap::Parser;
-use std::collections::HashMap;
+use std::{collections::HashMap, num, path::Path};
 use tokio::{sync::mpsc, task};
 
 #[derive(Parser, Debug)]
@@ -15,13 +12,13 @@ struct Args {
     /// Url for video to analyse
     video_url: String,
 
-    /// Number of times to greet
-    #[arg(short, default_value_t = 100)]
-    n: u8,
+    /// Number of frames to analyse
+    #[arg(short, default_value_t = unsafe { num::NonZeroU32::new_unchecked(200) } )]
+    n: num::NonZeroU32,
 
-    /// Number of times to greet
-    #[arg(short, default_value_t = 100)]
-    g: u8,
+    /// Number of top frames to peek
+    #[arg(short, default_value_t = unsafe { num::NonZeroU8::new_unchecked(5) } )]
+    t: num::NonZeroU8,
 }
 
 #[derive(Debug, Clone)]
@@ -36,15 +33,11 @@ struct Frame {
     observation: arc::R<vn::FeaturePrintObservation>,
 }
 
-struct Thumbnail {
-    /// The image that captures from the video frame.
-    image: arc::R<cg::Image>,
-
-    /// The frame that the thumbnail represents.
-    frame: Frame,
-}
-
-async fn process_video(url: &ns::Url) -> ns::Result<Vec<Thumbnail>, arc::R<ns::Error>> {
+async fn process_video(
+    url: &ns::Url,
+    n: num::NonZeroU32,
+    top_n: num::NonZeroU8,
+) -> ns::Result<(), arc::R<ns::Error>> {
     // The instance of the `VideoProcessor` with the local path to the video file.
     let mut processor = vp::VideoProcessor::with_url(url);
 
@@ -53,14 +46,14 @@ async fn process_video(url: &ns::Url) -> ns::Result<Vec<Thumbnail>, arc::R<ns::E
     let total_duration = asset.duration().as_secs();
 
     if total_duration <= 0.0 {
-        return Ok(vec![]);
+        return Ok(());
     }
 
-    const FRAMES_TO_EVAL: i32 = 100;
+    let frames_to_eval: i32 = n.get() as i32;
     const TIME_SCALE: i32 = 600;
 
     // The time interval for the video-processing cadence.
-    let interval = cm::Time::with_secs(total_duration / FRAMES_TO_EVAL as f64, TIME_SCALE);
+    let interval = cm::Time::with_secs(total_duration / frames_to_eval as f64, TIME_SCALE);
 
     // The video-processing cadence to process only 100 frames.
     let cadence = vp::TimeIntervalCadence::new(interval.as_secs());
@@ -120,21 +113,24 @@ async fn process_video(url: &ns::Url) -> ns::Result<Vec<Thumbnail>, arc::R<ns::E
     .unwrap()?;
 
     let (a, f) = collect_task.await.unwrap();
-    let _frames = calc_top_frames(&a, &f);
-    Ok(vec![])
+    print!("\r");
+    let frames = calc_top_frames(&a, &f, top_n).map_err(|e| e.retained())?;
+    gen_thumbs(frames, &asset).await?;
+    Ok(())
 }
 
 fn calc_top_frames<'ear>(
     aesthetic_map: &HashMap<cm::Time, f32>,
     feature_print_map: &HashMap<cm::Time, arc::R<vn::FeaturePrintObservation>>,
+    n: num::NonZeroU8,
 ) -> ns::Result<'ear, Vec<Frame>> {
     // The number of frames to store.
-    const TOP_FRAMES_N: usize = 3;
+    let top_frames_n: usize = n.get() as _;
 
     // The threshold for counting the image distance as similar.
     const SIMILARITY_THRESHOLD: f32 = 0.3f32;
 
-    let mut frames: Vec<Frame> = Vec::with_capacity(TOP_FRAMES_N + 1);
+    let mut frames: Vec<Frame> = Vec::with_capacity(top_frames_n + 1);
 
     for (ts, score) in aesthetic_map.iter() {
         let Some(feature_print) = feature_print_map.get(ts) else {
@@ -176,9 +172,9 @@ fn calc_top_frames<'ear>(
 
         // Insert the new frame if it's not similar and
         // has an insertion index within the number of frames to store.
-        if !is_similar && insert_idx < TOP_FRAMES_N {
+        if !is_similar && insert_idx < top_frames_n {
             frames.insert(insert_idx, new_frame);
-            if frames.len() > TOP_FRAMES_N {
+            if frames.len() > top_frames_n {
                 frames.pop();
             }
         }
@@ -187,23 +183,34 @@ fn calc_top_frames<'ear>(
     Ok(frames)
 }
 
-pub async fn gen_thumbs(frames: &[Frame], asset: &av::UrlAsset) -> Vec<Thumbnail> {
+async fn gen_thumbs<'ear>(
+    mut frames: Vec<Frame>,
+    asset: &av::UrlAsset,
+) -> ns::Result<'ear, (), arc::R<ns::Error>> {
     // The image generator that generates images from the video.
     let mut image_generator = av::AssetImageGenerator::with_asset(asset);
 
     // Apply the orientation of the source when it generates an image.
     image_generator.set_applies_preferred_track_transform(true);
 
-    for frame in frames {
-        // image_generator.gen_cg_image_for_time_ch(, )
+    let png_type = ut::Type::png().id();
+    for (i, frame) in frames.drain(..).enumerate() {
+        let (image, actual_time) = image_generator.cg_image_for_time(frame.ts).await?;
+        let path = format!("thumb-{i}.png");
+        println!("writing {path} ts: {}", actual_time.as_secs());
+        let path = Path::new(&path);
+        let url = cf::Url::with_path(path, false).unwrap();
+        let mut dst = cg::ImageDst::with_url(&url, png_type.as_cf(), 0).unwrap();
+        dst.add_image(&image, None);
+        dst.finalize();
     }
 
-    todo!()
+    Ok(())
 }
 
 #[tokio::main]
 pub async fn main() {
     let args = Args::parse();
     let url = ns::Url::with_fs_path_str(&args.video_url, false);
-    let res = process_video(&url).await.unwrap();
+    process_video(&url, args.n, args.t).await.unwrap();
 }

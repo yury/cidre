@@ -1,10 +1,4 @@
-use std::future::Future;
-
-use crate::{
-    arc, av,
-    blocks::{self, Completion, SendBlock, Shared},
-    cg, cm, define_obj_type, ns, objc,
-};
+use crate::{arc, av, blocks, cg, cm, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVAssetImageGenerator")]
@@ -43,24 +37,31 @@ impl ImageGenerator {
     #[objc::msg_send(generateCGImageAsynchronouslyForTime:completionHandler:)]
     pub fn cg_image_for_time_ch(
         &self,
-        request_time: &cm::Time,
+        request_time: cm::Time,
         ch: &mut blocks::EscBlock<
-            fn(image: Option<&cg::Image>, actual_time: cm::Time, error: *mut Option<&ns::Error>),
+            fn(image: Option<&cg::Image>, actual_time: cm::Time, error: Option<&ns::Error>),
         >,
     );
 
-    // pub fn cg_image_for_time(
-    //     &self,
-    //     request_time: &cm::Time,
-    // ) -> impl Future<Output = ns::Result<(arc::R<cg::Image>, cm::Time), arc::R<ns::Error>>> {
-    //     let shared = Shared::new();
-    //     let (a, b ) = (
-    //         Completion(shared.clone()),
-    //         SendBlock::new3(move |v: R| shared.lock().ready(v)),
-    //     )
-
-    //     b
-    // }
+    pub async fn cg_image_for_time(
+        &self,
+        request_time: cm::Time,
+    ) -> ns::Result<(arc::R<cg::Image>, cm::Time), arc::R<ns::Error>> {
+        let shared = blocks::Shared::new();
+        let comp = blocks::Completion::new(shared.clone());
+        let mut block = blocks::EscBlock::new3(
+            move |image: Option<&cg::Image>, actual_time: cm::Time, error: Option<&ns::Error>| {
+                if let Some(err) = error {
+                    shared.lock().ready(Err(err.retained()));
+                } else {
+                    let img = unsafe { image.unwrap_unchecked().retained() };
+                    shared.lock().ready(Ok((img, actual_time)));
+                }
+            },
+        );
+        self.cg_image_for_time_ch(request_time, &mut block);
+        comp.await
+    }
 
     #[objc::msg_send(cancelAllCGImageGeneration)]
     pub fn cancel_all_cg_image_gen(&mut self);

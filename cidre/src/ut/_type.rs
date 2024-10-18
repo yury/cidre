@@ -17,22 +17,22 @@ impl Type {
     pub fn with_file_ext(file_name_extension: &ns::String) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(identifier)]
-    pub fn id(&self) -> &ns::String;
+    pub fn id(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(preferredFilenameExtension)]
-    pub fn preferred_file_ext(&self) -> Option<&ns::String>;
+    pub fn preferred_file_ext(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(preferredMIMEType)]
-    pub fn preferred_mime_type(&self) -> Option<&ns::String>;
+    pub fn preferred_mime_type(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(localizedDescription)]
-    pub fn localized_desc(&self) -> Option<&ns::String>;
+    pub fn localized_desc(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(version)]
-    pub fn version(&self) -> Option<&ns::String>;
+    pub fn version(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(referenceURL)]
-    pub fn reference_url(&self) -> Option<&ns::Url>;
+    pub fn reference_url(&self) -> Option<arc::R<ns::Url>>;
 
     #[objc::msg_send(isDynamic)]
     pub fn is_dynamic(&self) -> bool;
@@ -70,7 +70,7 @@ mod tests {
     #[test]
     fn basics() {
         let t = ut::Type::with_file_ext(&ns::String::with_str("png")).unwrap();
-        assert_eq!(t.id(), "public.png");
+        assert_eq!(t.id().as_ref(), "public.png");
 
         let sup = t.supertypes();
         assert!(sup.len() >= 4);

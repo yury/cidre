@@ -185,8 +185,16 @@ impl Dst {
 
     #[doc(alias = "CGImageDestinationFinalize")]
     #[inline]
+    pub fn finalize(&mut self) -> bool {
+        unsafe { CGImageDestinationFinalize(self) }
+    }
+}
+
+impl arc::R<Dst> {
+    #[doc(alias = "CGImageDestinationFinalize")]
+    #[inline]
     pub fn finalize(mut self) -> bool {
-        unsafe { CGImageDestinationFinalize(&mut self) }
+        self.as_mut().finalize()
     }
 }
 
