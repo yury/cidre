@@ -39,6 +39,8 @@ pub use segment_report::TrackReport as SegmentTrackReport;
 
 pub mod image_generator;
 pub use image_generator::ImageGenerator as AssetImageGenerator;
+pub use image_generator::ImageGeneratorCh as AssetImageGeneratorCh;
+pub use image_generator::ImageGeneratorResult as AssetImageGeneratorResult;
 
 define_obj_type!(
     #[doc(alias = "AVAsset")]

@@ -1,5 +1,25 @@
 use crate::{arc, av, blocks, cg, cm, define_obj_type, ns, objc};
 
+#[doc(alias = "AVAssetImageGeneratorResult")]
+#[derive(Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ImageGeneratorResult {
+    Succeeded = 0,
+    Failed = 1,
+    Cancelled = 2,
+}
+
+#[doc(alias = "AVAssetImageGeneratorCompletionHandler")]
+pub type ImageGeneratorCh = blocks::EscBlock<
+    fn(
+        requested_time: cm::Time,
+        image: Option<&cg::Image>,
+        actual_time: cm::Time,
+        result: ImageGeneratorResult,
+        error: Option<&ns::Error>,
+    ),
+>;
+
 define_obj_type!(
     #[doc(alias = "AVAssetImageGenerator")]
     pub ImageGenerator(ns::Id)
@@ -33,6 +53,25 @@ impl ImageGenerator {
 
     #[objc::msg_send(setMaximumSize:)]
     pub fn set_max_size(&mut self, val: cg::Size);
+
+    #[objc::msg_send(requestedTimeToleranceBefore)]
+    pub fn requested_time_tolerance_before(&self) -> cm::Time;
+
+    #[objc::msg_send(setRequestedTimeToleranceBefore:)]
+    pub fn set_requested_time_tolerance_before(&mut self, val: cm::Time);
+
+    #[objc::msg_send(requestedTimeToleranceAfter)]
+    pub fn requested_time_tolerance_after(&self) -> cm::Time;
+
+    #[objc::msg_send(setRequestedTimeToleranceAfter:)]
+    pub fn set_requested_time_tolerance_after(&mut self, val: cm::Time);
+
+    #[objc::msg_send(generateCGImagesAsynchronouslyForTimes:completionHandler:)]
+    pub fn cg_images_for_times_ch(
+        &self,
+        requested_times: &ns::Array<ns::Value>,
+        ch: &mut ImageGeneratorCh,
+    );
 
     #[objc::msg_send(generateCGImageAsynchronouslyForTime:completionHandler:)]
     pub fn cg_image_for_time_ch(

@@ -115,6 +115,8 @@ pub use asset::SegmentTrackReport as AssetSegmentTrackReport;
 pub use asset::SegmentType as AssetSegmentType;
 
 pub use asset::AssetImageGenerator;
+pub use asset::AssetImageGeneratorCh;
+pub use asset::AssetImageGeneratorResult;
 
 pub mod audio;
 pub use audio::Buf as AudioBuf;
@@ -141,9 +143,9 @@ pub use audio::Player as AudioPlayer;
 pub use audio::PlayerDelegate as AudioPlayerDelegate;
 pub use audio::PlayerNode as AudioPlayerNode;
 pub use audio::Time as AudioTime;
-pub use audio::VPOtherAudioDuckingCfg as AudioVPOtherAudioDuckingCfg;
-pub use audio::VPOtherAudioDuckingLevel as AudioVPOtherAudioDuckingLevel;
-pub use audio::VPSpeechActivityEvent as AudioVPSpeechActivityEvent;
+pub use audio::VpOtherAudioDuckingCfg as AudioVpOtherAudioDuckingCfg;
+pub use audio::VpOtherAudioDuckingLevel as AudioVpOtherAudioDuckingLevel;
+pub use audio::VpSpeechActivityEvent as AudioVpSpeechActivityEvent;
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::Session as AudioSession;

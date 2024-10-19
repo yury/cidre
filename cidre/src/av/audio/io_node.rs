@@ -6,7 +6,7 @@ pub type InputBlock<Attr> = blocks::Block<fn(av::AudioFrameCount) -> *const at::
 #[doc(alias = "AVAudioVoiceProcessingSpeechActivityEvent")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
-pub enum VPSpeechActivityEvent {
+pub enum VpSpeechActivityEvent {
     /// Speech activity has started.
     Started = 0,
     /// Speech activity has ended.
@@ -16,7 +16,7 @@ pub enum VPSpeechActivityEvent {
 #[doc(alias = "AVAudioVoiceProcessingSpeechActivityEvent")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
 #[repr(isize)]
-pub enum VPOtherAudioDuckingLevel {
+pub enum VpOtherAudioDuckingLevel {
     #[default]
     Default = 0,
     Min = 10,
@@ -27,9 +27,9 @@ pub enum VPOtherAudioDuckingLevel {
 #[doc(alias = "AVAudioVoiceProcessingOtherAudioDuckingConfiguration")]
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct VPOtherAudioDuckingCfg {
+pub struct VpOtherAudioDuckingCfg {
     pub enable_advanced_ducking: bool,
-    pub ducking_level: VPOtherAudioDuckingLevel,
+    pub ducking_level: VpOtherAudioDuckingLevel,
 }
 
 define_obj_type!(
@@ -115,12 +115,12 @@ impl InputNode {
     #[objc::msg_send(setMutedSpeechActivityEventListener:)]
     pub fn _set_muted_speech_activity_event_listener(
         &mut self,
-        block: Option<&mut blocks::EscBlock<fn(VPSpeechActivityEvent)>>,
+        block: Option<&mut blocks::EscBlock<fn(VpSpeechActivityEvent)>>,
     ) -> bool;
 
     pub fn set_muted_speech_activity_event_listener(
         &mut self,
-        block: Option<&mut blocks::EscBlock<fn(VPSpeechActivityEvent)>>,
+        block: Option<&mut blocks::EscBlock<fn(VpSpeechActivityEvent)>>,
     ) -> Result<(), ()> {
         if self._set_muted_speech_activity_event_listener(block) {
             Ok(())
@@ -130,10 +130,10 @@ impl InputNode {
     }
 
     #[objc::msg_send(voiceProcessingOtherAudioDuckingConfiguration)]
-    pub fn vp_other_audio_ducking_cfg(&self) -> VPOtherAudioDuckingCfg;
+    pub fn vp_other_audio_ducking_cfg(&self) -> VpOtherAudioDuckingCfg;
 
     #[objc::msg_send(setVoiceProcessingOtherAudioDuckingConfiguration:)]
-    pub fn set_vp_other_audio_ducking_cfg(&mut self, val: VPOtherAudioDuckingCfg);
+    pub fn set_vp_other_audio_ducking_cfg(&mut self, val: VpOtherAudioDuckingCfg);
 }
 
 define_obj_type!(

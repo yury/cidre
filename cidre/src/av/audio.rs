@@ -27,9 +27,9 @@ pub use io_node::InputBlock as IoNodeInputBlock;
 pub use io_node::InputNode;
 pub use io_node::IoNode;
 pub use io_node::OutputNode;
-pub use io_node::VPOtherAudioDuckingCfg;
-pub use io_node::VPOtherAudioDuckingLevel;
-pub use io_node::VPSpeechActivityEvent;
+pub use io_node::VpOtherAudioDuckingCfg;
+pub use io_node::VpOtherAudioDuckingLevel;
+pub use io_node::VpSpeechActivityEvent;
 
 mod mixer_node;
 pub use mixer_node::MixerNode;
