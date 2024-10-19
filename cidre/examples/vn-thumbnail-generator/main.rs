@@ -198,7 +198,11 @@ async fn gen_thumbs<'ear>(
     for (i, frame) in frames.drain(..).enumerate() {
         let (image, actual_time) = image_generator.cg_image_for_time(frame.ts).await?;
         let path = format!("thumb-{i}.png");
-        eprintln!("writing {path} ts: {}", actual_time.as_secs());
+        eprintln!(
+            "writing {path} score: {} ts: {}",
+            frame.score,
+            actual_time.as_secs()
+        );
         let path = Path::new(&path);
         let url = cf::Url::with_path(path, false).unwrap();
         let mut dst = cg::ImageDst::with_url(&url, png_type.as_cf(), 0).unwrap();
