@@ -104,6 +104,7 @@ pub use device::PipelineOpt;
 pub use device::ReadWriteTextureTier;
 pub use device::SizeAlign;
 pub use device::SparsePageSize;
+pub use device::Timestamp;
 
 mod drawable;
 pub use drawable::Drawable;

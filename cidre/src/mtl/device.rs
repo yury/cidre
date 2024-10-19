@@ -5,6 +5,9 @@ use crate::io;
 
 use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
 
+#[doc(alias = "MTLTimestamp")]
+pub type Timestamp = u64;
+
 define_opts!(
     #[doc(alias = "MTLPipelineOption")]
     pub PipelineOpt(usize)
@@ -115,6 +118,9 @@ impl Device {
 
     #[objc::msg_send(registryID)]
     pub fn registry_id(&self) -> u64;
+
+    #[objc::msg_send(sampleTimestamps:gpuTimestamp:)]
+    pub fn sample_timestamps(&self, cpu_ts: &mut Timestamp, gpu_ts: &mut Timestamp);
 
     #[objc::msg_send(maxThreadsPerThreadgroup)]
     pub fn max_threads_per_threadgroup(&self) -> Size;
@@ -491,6 +497,13 @@ mod tests {
         assert!(device.supports_fn_pointers_from_render());
         assert!(device.supports_raytracing_from_render());
         assert!(device.supports_primitive_motion_blur());
+
+        let mut cpu_ts = 0;
+        let mut gpu_ts = 0;
+
+        device.sample_timestamps(&mut cpu_ts, &mut gpu_ts);
+
+        println!("cpu ts {cpu_ts}, gpu ts {gpu_ts}");
 
         let mut fence = device.new_fence().unwrap();
         fence.set_label(Some(ns::str!(c"nice")));
