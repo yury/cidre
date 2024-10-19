@@ -75,6 +75,36 @@ pub enum LangVersion {
     _2_4 = (2 << 16) + 4,
     _3_0 = (3 << 16),
     _3_1 = (3 << 16) + 1,
+    _3_2 = (3 << 16) + 2,
+}
+
+/// An enum to indicate if the compiler can perform optimizations for floating-point
+/// arithmetic that may violate the IEEE 754 standard
+#[doc(alias = "MTLMathMode")]
+#[repr(isize)]
+pub enum MathMode {
+    /// Disables unsafe floating-point optimizations
+    #[doc(alias = "MTLMathModeSafe")]
+    Safe = 0,
+
+    /// Allows aggressive, unsafe floating-point optimizations but preserves infs and nans
+    #[doc(alias = "MTLMathModeRelaxed")]
+    Relaxed = 1,
+
+    /// Allows aggressive, unsafe floating-point optimizations
+    #[doc(alias = "MTLMathModeFast")]
+    Fast = 2,
+}
+
+/// An enum to indicate the default math functions for single precision floating-point
+#[doc(alias = "MTLMathFloatingPointFunctions")]
+#[repr(isize)]
+pub enum MathFloatingPointFns {
+    /// Sets the default math functions for single precision floating-point to the corresponding functions in `metal::fast` namespace
+    Fast = 0,
+
+    /// Sets the default math functions for single precision floating-point to the corresponding functions in 'metal::precise' namespace
+    Precise = 1,
 }
 
 #[doc(alias = "MTLLibraryType")]
@@ -137,6 +167,46 @@ impl CompileOpts {
 
     #[objc::msg_send(setFastMathEnabled:)]
     pub fn set_fast_math_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(mathMode)]
+    #[objc::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn math_mode(&self) -> MathMode;
+
+    #[objc::msg_send(setMathMode:)]
+    #[objc::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn set_math_mode(&mut self, val: MathMode);
+
+    #[objc::msg_send(mathFloatingPointFunctions)]
+    #[objc::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn math_floating_point_fns(&self) -> MathFloatingPointFns;
+
+    #[objc::msg_send(setMathFloatingPointFunctions:)]
+    #[objc::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn set_math_floating_point_fns(&mut self, val: MathFloatingPointFns);
 
     #[objc::msg_send(languageVersion)]
     pub fn lang_version(&self) -> LangVersion;

@@ -78,6 +78,8 @@ pub use library::Fn;
 pub use library::FnType;
 pub use library::LangVersion;
 pub use library::Lib;
+pub use library::MathFloatingPointFns;
+pub use library::MathMode;
 pub use library::OptimizationLevel as LibOptimizationLevel;
 pub use library::PatchType;
 pub use library::Type as LibType;
