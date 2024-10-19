@@ -22,6 +22,13 @@ pub use acceleration_structure::MotionBorderMode;
 pub use acceleration_structure::MotionBoundingBoxGeometryDesc;
 pub use acceleration_structure::Usage as AccelerationStructUsage;
 
+mod acceleration_structure_types;
+pub use acceleration_structure_types::AxisAlignedBoundingBox;
+pub use acceleration_structure_types::ComponentTransform;
+pub use acceleration_structure_types::PackedF32Quaternion;
+pub use acceleration_structure_types::PackedF32x3;
+pub use acceleration_structure_types::PackedF32x4x3;
+
 mod pixel_format;
 pub use pixel_format::PixelFormat;
 
