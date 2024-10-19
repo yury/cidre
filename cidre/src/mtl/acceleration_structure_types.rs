@@ -1,5 +1,5 @@
 #[doc(alias = "MTLPackedFloat3")]
-#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Default, Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct PackedF32x3([f32; 3]);
 
@@ -49,11 +49,11 @@ impl PackedF32Quaternion {
 
 #[doc(alias = "MTLPackedFloat4x3")]
 pub struct PackedF32x4x3 {
-    cols: [PackedF32x3; 4],
+    pub cols: [PackedF32x3; 4],
 }
 
 impl PackedF32x4x3 {
-    pub fn new() {
+    pub fn new() -> Self {
         Self {
             cols: Default::default(),
         }
