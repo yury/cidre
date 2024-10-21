@@ -464,7 +464,7 @@ impl Device {
         tvos = 18.0,
         visionos = 2.0
     )]
-    pub fn all_devices() -> arc::R<ns::Array<mtl::Device>> {
+    pub fn all() -> arc::R<ns::Array<mtl::Device>> {
         unsafe { MTLCopyAllDevices() }
     }
 }
