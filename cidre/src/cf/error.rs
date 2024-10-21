@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 use crate::{arc, cf, define_cf_type};
 
 #[cfg(feature = "ns")]
@@ -39,6 +37,15 @@ where
 define_cf_type!(Error(cf::Type));
 
 unsafe impl Send for Error {}
+
+impl std::error::Error for Error {}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = self.desc();
+        s.fmt(f)
+    }
+}
 
 pub type Domain = cf::String;
 

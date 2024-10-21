@@ -60,6 +60,14 @@ impl std::fmt::Debug for Error {
     }
 }
 
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Debug::fmt(&self, f)
+    }
+}
+
+impl std::error::Error for Error {}
+
 pub type Result<Ok = ()> = std::result::Result<Ok, Error>;
 
 pub(crate) unsafe fn result_unchecked<T, R>(op: impl FnOnce(&mut Option<T>) -> R) -> Result<T>

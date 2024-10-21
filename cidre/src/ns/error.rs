@@ -46,6 +46,15 @@ define_obj_type!(
 
 unsafe impl Send for Error {}
 
+impl std::error::Error for Error {}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let desc = self.localized_description();
+        desc.fmt(f)
+    }
+}
+
 impl arc::A<Error> {
     #[objc::msg_send(initWithDomain:code:userInfo:)]
     pub fn init_with_domain(
@@ -73,6 +82,21 @@ impl Error {
     ) -> arc::R<Self> {
         Self::alloc().init_with_domain(domain, code, user_info)
     }
+
+    #[objc::msg_send(localizedDescription)]
+    pub fn localized_description(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(localizedRecoveryOptions)]
+    pub fn localized_recovery_options(&self) -> Option<arc::R<ns::Array<ns::String>>>;
+
+    #[objc::msg_send(localizedRecoverySuggestion)]
+    pub fn localized_recovery_suggestion(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(localizedFailureReason)]
+    pub fn localized_failure_reason(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(userInfo)]
+    pub fn user_info(self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
 
     /// Toll-Free Bridged
     #[inline]
@@ -111,6 +135,10 @@ impl Domain {
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_ERROR: &'static objc::Class<Error>;
+}
+
+#[link(name = "Foundation", kind = "framework")]
+extern "C" {
 
     static NSCocoaErrorDomain: &'static Domain;
     static NSPOSIXErrorDomain: &'static Domain;

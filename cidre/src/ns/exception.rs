@@ -141,7 +141,10 @@ extern "C" {
     static NSInconsistentArchiveException: &'static ExceptionName;
 }
 
-define_obj_type!(pub Exception(ns::Id));
+define_obj_type!(
+    #[doc(alias = "NSException")]
+    pub Exception(ns::Id)
+);
 
 impl Exception {
     pub fn raise(message: &ns::String) -> ! {
@@ -156,6 +159,16 @@ impl Exception {
 
     #[objc::msg_send(userInfo)]
     pub fn user_info(&self) -> Option<&ns::Dictionary<ns::Id, ns::Id>>;
+}
+
+impl std::fmt::Display for Exception {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(reason) = self.reason() {
+            std::fmt::Display::fmt(&reason, f)
+        } else {
+            write!(f, "unknown exception")
+        }
+    }
 }
 
 pub type UncaughtExceptionHandler = extern "C" fn(exception: &Exception);
