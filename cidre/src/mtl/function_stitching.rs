@@ -66,7 +66,7 @@ impl FnStitchingFnNode {
     }
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> Option<&ns::String>;
+    pub fn name(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, val: &ns::String);
@@ -78,7 +78,7 @@ impl FnStitchingFnNode {
     pub fn set_args(&mut self, val: &ns::Array<FnStitchingNode>);
 
     #[objc::msg_send(controlDependencies)]
-    pub fn control_deps(&self) -> &ns::Array<FnStitchingFnNode>;
+    pub fn control_deps(&self) -> arc::R<ns::Array<FnStitchingFnNode>>;
 
     #[objc::msg_send(setControlDependencies:)]
     pub fn set_control_deps(&mut self, val: &ns::Array<FnStitchingFnNode>);
@@ -113,25 +113,25 @@ impl FnStitchingGraph {
     }
 
     #[objc::msg_send(functionName)]
-    pub fn fn_name(&self) -> &ns::String;
+    pub fn fn_name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(setFunctionName:)]
     pub fn set_fn_name(&mut self, val: &ns::String);
 
     #[objc::msg_send(nodes)]
-    pub fn nodes(&self) -> &ns::Array<FnStitchingFnNode>;
+    pub fn nodes(&self) -> arc::R<ns::Array<FnStitchingFnNode>>;
 
     #[objc::msg_send(setNodes:)]
     pub fn set_nodes(&self, val: &ns::Array<FnStitchingFnNode>);
 
     #[objc::msg_send(outputNode)]
-    pub fn output_node(&self) -> Option<&FnStitchingFnNode>;
+    pub fn output_node(&self) -> Option<arc::R<FnStitchingFnNode>>;
 
     #[objc::msg_send(setOutputNode:)]
     pub fn set_output_node(&mut self, val: Option<&FnStitchingFnNode>);
 
     #[objc::msg_send(attributes)]
-    pub fn attrs(&self) -> &ns::Array<FnStitchingAttr>;
+    pub fn attrs(&self) -> arc::R<ns::Array<FnStitchingAttr>>;
 
     #[objc::msg_send(setAttributes:)]
     pub fn set_attrs(&mut self, val: &ns::Array<FnStitchingAttr>);
@@ -145,13 +145,13 @@ define_obj_type!(
 
 impl FnStitchedLibDesc {
     #[objc::msg_send(functionGraphs)]
-    pub fn fn_graphs(&self) -> &ns::Array<FnStitchingGraph>;
+    pub fn fn_graphs(&self) -> arc::R<ns::Array<FnStitchingGraph>>;
 
     #[objc::msg_send(setFunctionGraphs:)]
     pub fn set_fn_graphs(&mut self, val: &ns::Array<FnStitchingGraph>);
 
     #[objc::msg_send(functions)]
-    pub fn fns(&self) -> &ns::Array<mtl::Fn>;
+    pub fn fns(&self) -> arc::R<ns::Array<mtl::Fn>>;
 
     #[objc::msg_send(setFunctions:)]
     pub fn set_fns(&self, val: &ns::Array<mtl::Fn>);
