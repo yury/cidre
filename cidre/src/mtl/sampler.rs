@@ -1,5 +1,6 @@
 use crate::{define_mtl, define_obj_type, ns, objc};
 
+#[doc(alias = "MTLSamplerMinMagFilter")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum MinMagFilter {
@@ -7,6 +8,7 @@ pub enum MinMagFilter {
     Linear = 1,
 }
 
+#[doc(alias = "MTLSamplerMipFilter")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum MipFilter {
@@ -15,6 +17,7 @@ pub enum MipFilter {
     Linear = 2,
 }
 
+#[doc(alias = "MTLSamplerAddressMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum AddrMode {
@@ -26,6 +29,7 @@ pub enum AddrMode {
     ClampToBorderColor = 5,
 }
 
+#[doc(alias = "MTLSamplerBorderColor")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum BorderColor {
@@ -37,7 +41,10 @@ pub enum BorderColor {
     OpaqueWhite = 2,
 }
 
-define_obj_type!(pub Desc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLSamplerDescriptor")]
+    pub Desc(ns::Id)
+);
 
 impl Desc {
     define_mtl!(label, set_label);
@@ -67,7 +74,9 @@ impl Desc {
     pub fn set_normalized_coordinates(&mut self, val: bool);
 }
 
-define_obj_type!(pub State(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLSamplerState")]
+    pub State(ns::Id));
 
 impl State {
     define_mtl!(device, label, gpu_resource_id);
