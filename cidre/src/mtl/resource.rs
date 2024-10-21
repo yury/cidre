@@ -2,7 +2,7 @@ use std::mem::transmute;
 
 use crate::{define_mtl, define_obj_type, define_opts, mtl};
 
-/// Options for setPurgeable call.
+/// Options for set_purgeable call.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum PurgableState {
@@ -37,6 +37,7 @@ pub enum CpuCacheMode {
 }
 
 /// Describes location and CPU mapping of MTLTexture.
+#[doc(alias = "MTLStorageMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum StorageMode {
@@ -67,6 +68,7 @@ pub enum StorageMode {
 }
 
 /// Describes how hazard tracking is performed.
+#[doc(alias = "MTLHazardTrackingMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
 pub enum HazardTrackingMode {
