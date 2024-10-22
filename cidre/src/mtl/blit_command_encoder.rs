@@ -1,6 +1,9 @@
 use crate::{define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
-define_opts!(pub BlitOpt(usize));
+define_opts!(
+    #[doc(alias = "MTLBlitOption")]
+    pub BlitOpt(usize)
+);
 
 impl BlitOpt {
     pub const NONE: Self = Self(0);
@@ -9,13 +12,16 @@ impl BlitOpt {
     pub const ROW_LINEAR_PVRTC: Self = Self(1 << 2);
 }
 
-define_obj_type!(pub BlitCmdEncoder(mtl::CmdEncoder));
+define_obj_type!(
+    #[doc(alias = "MTLBlitCommandEncoder")]
+    pub BlitCmdEncoder(mtl::CmdEncoder)
+);
 
 impl BlitCmdEncoder {
     define_mtl!(update_fence, wait_for_fence);
 
     #[objc::msg_send(fillBuffer:range:value:)]
-    pub fn fill_buf(&self, buffer: &mtl::Buf, range: ns::Range, val: u8);
+    pub fn fill_buf(&self, buffer: &mut mtl::Buf, range: ns::Range, val: u8);
 
     #[objc::msg_send(copyFromTexture:sourceSlice:sourceLevel:sourceOrigin:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:)]
     pub fn copy_texture(
@@ -25,17 +31,21 @@ impl BlitCmdEncoder {
         src_level: usize,
         src_origin: mtl::Origin,
         src_size: mtl::Size,
-        dst_texture: &mtl::Texture,
+        dst_texture: &mut mtl::Texture,
         dst_slice: usize,
         dst_level: usize,
         dst_origin: mtl::Origin,
     );
 
     #[objc::msg_send(copyFromTexture:toTexture:)]
-    pub fn copy_texture_to_texture(&self, src_texture: &mtl::Texture, dst_texture: &mtl::Texture);
+    pub fn copy_texture_to_texture(
+        &self,
+        src_texture: &mtl::Texture,
+        dst_texture: &mut mtl::Texture,
+    );
 
     #[objc::msg_send(generateMipmapsForTexture:)]
-    pub fn generate_mipmaps(&self, texture: &mtl::Texture);
+    pub fn generate_mipmaps(&self, texture: &mut mtl::Texture);
 
     /// Encodes a command that copies data from one buffer into another.
     ///
@@ -50,7 +60,7 @@ impl BlitCmdEncoder {
         &self,
         src_buf: &mtl::Buf,
         src_offset: usize,
-        dst_buf: &mtl::Buf,
+        dst_buf: &mut mtl::Buf,
         dst_offset: usize,
     );
 
@@ -62,7 +72,7 @@ impl BlitCmdEncoder {
         src_bytes_per_row: usize,
         src_bytes_per_image: usize,
         src_size: mtl::Size,
-        dst_texture: &mtl::Texture,
+        dst_texture: &mut mtl::Texture,
         dst_slice: usize,
         dst_level: usize,
         dst_origin: mtl::Origin,
@@ -76,7 +86,7 @@ impl BlitCmdEncoder {
         src_bytes_per_row: usize,
         src_bytes_per_image: usize,
         src_size: mtl::Size,
-        dst_texture: &mtl::Texture,
+        dst_texture: &mut mtl::Texture,
         dst_slice: usize,
         dst_level: usize,
         dst_origin: mtl::Origin,
@@ -89,23 +99,27 @@ impl BlitCmdEncoder {
     /// - Textures the GPU accesses for an extended period of time
     /// - Textures with a storageMode property that’s mtl::StorageMode::Shared or mtl::StorageMode::Managed
     #[objc::msg_send(optimizeContentsForGPUAccess:)]
-    pub fn optimize_contents_for_gpu_access(&self, texture: &mtl::Texture);
+    pub fn optimize_contents_for_gpu_access(&self, texture: &mut mtl::Texture);
 
     #[objc::msg_send(optimizeContentsForGPUAccess:slice:level:)]
     pub fn optimize_contents_for_gpu_access_slice_level(
         &self,
-        texture: &mtl::Texture,
+        texture: &mut mtl::Texture,
         slice: usize,
         level: usize,
     );
 
     #[objc::msg_send(optimizeIndirectCommandBuffer:withRange:)]
-    pub fn optimize_indirect_cmd_buf_with_range(&self, buf: &mtl::IndirectCmdBuf, range: ns::Range);
+    pub fn optimize_indirect_cmd_buf_with_range(
+        &self,
+        buf: &mut mtl::IndirectCmdBuf,
+        range: ns::Range,
+    );
 
     #[inline]
     pub fn optimize_indirect_cmd_buf(
         &self,
-        buf: &mtl::IndirectCmdBuf,
+        buf: &mut mtl::IndirectCmdBuf,
         range: std::ops::Range<usize>,
     ) {
         self.optimize_indirect_cmd_buf_with_range(
@@ -118,7 +132,7 @@ impl BlitCmdEncoder {
     }
 
     #[objc::msg_send(resetCommandsInBuffer:withRange:)]
-    pub fn reset_cmds_in_buf(&self, buf: &mtl::IndirectCmdBuf, range: ns::Range);
+    pub fn reset_cmds_in_buf(&self, buf: &mut mtl::IndirectCmdBuf, range: ns::Range);
 }
 
 #[cfg(test)]
