@@ -20,10 +20,18 @@ define_obj_type!(
 #[repr(isize)]
 pub enum MultichannelAudioMode {
     /// Indicates that no multichannel audio should be used.
+    #[doc(alias = "AVCaptureMultichannelAudioModeNone")]
     None = 0,
 
     /// Indicates that the audio should be recorded using stereo.
+    #[doc(alias = "AVCaptureMultichannelAudioModeStereo")]
     Stereo = 1,
+
+    /// Indicates that the audio should be recorded using first-order ambisonics.
+    /// When recording a QuickTime movie file, a stereo audio track will be recorded alongside the FOA
+    /// track for backward playback compatibility.
+    #[doc(alias = "AVCaptureMultichannelAudioModeFirstOrderAmbisonics")]
+    FirstOrderAmbisonics = 2,
 }
 
 impl Input {
@@ -56,7 +64,7 @@ impl DeviceInput {
     }
 
     #[objc::msg_send(device)]
-    pub fn device(&self) -> &av::CaptureDevice;
+    pub fn device(&self) -> arc::R<av::CaptureDevice>;
 
     #[objc::msg_send(unifiedAutoExposureDefaultsEnabled)]
     pub fn unified_auto_exposure_defaults_enabled(&self) -> bool;
@@ -100,6 +108,23 @@ impl DeviceInput {
     #[objc::msg_send(setMultichannelAudioMode:)]
     #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn set_multichannel_audio_mode(&mut self, val: MultichannelAudioMode);
+
+    /// Returns whether or not the device supports wind noise removal during audio capture.
+    #[objc::msg_send(isWindNoiseRemovalSupported)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_wind_noise_removal_supported(&self) -> bool;
+
+    /// Specifies whether or not wind noise is removed during audio capture.
+    ///
+    /// Wind noise removal is available when the AVCaptureDeviceInput multichannelAudioMode property is set to any value other than av::CaptureMultichannelAudioModeNone.
+    #[objc::msg_send(isWindNoiseRemovalEnabled)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_wind_noise_removal_enabled(&self) -> bool;
+
+    /// Specifies whether or not wind noise is removed during audio capture.
+    #[objc::msg_send(setWindNoiseRemovalEnabled:)]
+    #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn set_wind_noise_removal_enabled(&mut self, val: bool);
 }
 
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
