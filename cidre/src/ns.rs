@@ -3,10 +3,7 @@ use crate::objc;
 pub type Result<'ear, R = (), E = &'ear Error> = std::result::Result<R, E>;
 pub type ExResult<'ear, R = ()> = std::result::Result<R, &'ear Exception>;
 
-pub use objc::{
-    ns::{Integer, UInteger},
-    Class, Id, Sel,
-};
+pub use objc::{ns, Class, Id, Sel};
 
 mod range;
 pub use range::Range;
@@ -290,3 +287,6 @@ pub enum ExErr<'ar> {
 mod text_attachment;
 #[cfg(any(feature = "app", feature = "ui"))]
 pub use text_attachment::TextAttachment;
+
+pub use objc::ns::Integer;
+pub use objc::ns::UInteger;
