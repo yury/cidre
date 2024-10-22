@@ -19,3 +19,8 @@ pub use color::Color;
 
 mod image;
 pub use image::Image;
+
+mod interaction;
+pub use interaction::AnyInteraction;
+pub use interaction::Interaction;
+pub use interaction::InteractionImpl;
