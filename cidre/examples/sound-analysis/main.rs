@@ -41,7 +41,7 @@ impl sn::ResultsObservingImpl for ResultsObs {
 async fn main() {
     let mut engine = av::AudioEngine::new();
 
-    let input = engine.input_node_mut();
+    let mut input = engine.input_node();
     println!("voice processing enabled? {}", input.is_vp_enabled());
 
     // this is heavy on CPU

@@ -146,10 +146,7 @@ impl Engine {
     /// let en = input_node.engine().expect("engine");
     /// ```
     #[objc::msg_send(inputNode)]
-    pub fn input_node(&self) -> &InputNode;
-
-    #[objc::msg_send(inputNode)]
-    pub fn input_node_mut(&mut self) -> &mut InputNode;
+    pub fn input_node(&self) -> arc::R<InputNode>;
 
     /// ```
     /// use cidre::av;
@@ -159,10 +156,7 @@ impl Engine {
     ///
     /// ```
     #[objc::msg_send(outputNode)]
-    pub fn output_node(&self) -> &OutputNode;
-
-    #[objc::msg_send(outputNode)]
-    pub fn output_node_mut(&mut self) -> &mut OutputNode;
+    pub fn output_node(&self) -> arc::R<OutputNode>;
 
     #[objc::msg_send(mainMixerNode)]
     pub fn main_mixer_node(&self) -> &MixerNode;
@@ -273,7 +267,7 @@ impl Engine {
     /// Querying this property when the engine is not in manual rendering mode will return an
     /// invalid format, with zero sample rate and channel count.
     #[objc::msg_send(manualRenderingFormat)]
-    pub fn manual_rendering_format(&self) -> &av::audio::Format;
+    pub fn manual_rendering_format(&self) -> arc::R<av::audio::Format>;
 
     /// The maximum number of PCM sample frames the engine can produce in any single render call in
     /// the manual rendering mode.
