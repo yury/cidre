@@ -23,6 +23,12 @@ pub struct Allocated<T: Release + 'static>(&'static mut T);
 #[repr(transparent)]
 pub struct Retained<T: Release + 'static>(&'static mut T);
 
+impl<T: Release + std::fmt::Display> std::fmt::Display for Retained<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
 impl<T: Retain + PartialEq> PartialEq for Retained<T> {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0
