@@ -3,7 +3,7 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{define_opts, os};
+use crate::{define_opts, four_cc_to_str, os};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -164,9 +164,19 @@ impl<const N: usize> BufList<N> {
 
 /// A four char code indicating the general kind of data in the stream.
 #[doc(alias = "AudioFromatID")]
-#[derive(Clone, Copy, PartialEq, Eq, Default, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Default)]
 #[repr(transparent)]
 pub struct Format(pub u32);
+
+impl std::fmt::Debug for Format {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut be = self.0.to_be_bytes();
+        f.debug_struct("Format")
+            .field("raw", &self.0)
+            .field("fcc", &four_cc_to_str(&mut be))
+            .finish()
+    }
+}
 
 /// The AudioFormatIDs used to identify individual formats of audio data.
 impl Format {
