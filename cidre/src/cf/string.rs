@@ -1,5 +1,9 @@
 use core::fmt;
-use std::{borrow::Cow, ffi::CStr, os::raw::c_char, str::from_utf8_unchecked};
+use std::{
+    borrow::Cow,
+    ffi::{c_char, CStr},
+    str::from_utf8_unchecked,
+};
 
 use crate::{
     arc,
@@ -364,21 +368,25 @@ define_cf_type!(
 );
 
 impl StringMut {
+    #[doc(alias = "CFStringAppend")]
     #[inline]
     pub fn append(&mut self, appended_string: &String) {
         unsafe { CFStringAppend(self, appended_string) }
     }
 
+    #[doc(alias = "CFStringTrim")]
     #[inline]
     pub fn trim(&mut self, trim_string: &String) {
         unsafe { CFStringTrim(self, trim_string) }
     }
 
+    #[doc(alias = "CFStringTrimWhitespace")]
     #[inline]
     pub fn trim_whitespace(&mut self) {
         unsafe { CFStringTrimWhitespace(self) }
     }
 
+    #[doc(alias = "CFStringCreateMutable")]
     #[inline]
     pub fn create_in(max_length: Index, alloc: Option<&cf::Allocator>) -> Option<arc::R<Self>> {
         unsafe { CFStringCreateMutable(alloc, max_length) }
