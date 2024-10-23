@@ -80,7 +80,11 @@ impl From<ComparisonResult> for Ordering {
     }
 }
 
-define_cf_type!(Null(Type));
+define_cf_type!(
+    #[doc(alias = "CFNullRef")]
+    #[doc(alias = "CFNull")]
+    Null(Type)
+);
 
 impl Type {
     #[inline]

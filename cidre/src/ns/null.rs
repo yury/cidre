@@ -1,4 +1,4 @@
-use crate::{cf, define_cls, define_obj_type, ns, objc};
+use crate::{arc, cf, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSNull")]
@@ -11,8 +11,10 @@ impl Null {
     define_cls!(NS_NULL);
 
     /// The singleton instance of [`ns::Null`]. Equal to [`cf::Null::value()`].
+    ///
+    /// use cf::Null::value if possible.
     #[objc::msg_send(null)]
-    pub fn value() -> &'static Self;
+    pub fn value() -> arc::R<Self>;
 
     #[inline]
     pub fn as_cf(&self) -> &cf::Null {
@@ -20,7 +22,7 @@ impl Null {
     }
 }
 
-impl Default for &'static Null {
+impl Default for arc::R<Null> {
     fn default() -> Self {
         Null::value()
     }
