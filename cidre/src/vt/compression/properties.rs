@@ -19,7 +19,7 @@
 /// • kVTCompressionPropertyKey_RealTime: kCFBooleanTrue
 /// • kVTCompressionPropertyKey_PrioritizeEncodingSpeedOverQuality: kCFBooleanTrue
 pub mod keys {
-    use crate::cf;
+    use crate::{api, cf};
 
     /// The number of pending frames in the compression session.
     ///
@@ -517,7 +517,41 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_ConstantBitRate }
     }
 
+    /// Read/write, cf::Number, Optional
+    ///
+    /// Requests that the encoder retain the specified number of frames during encoding. These frames will be used for additional analysis and statistics
+    /// gathering before the frame is finally encoded at the end of the window. When this property is not set, video encoder will automatically determine
+    /// the number of lookahead frames.
+    ///
+    /// Encoder will choose number of lookahead frames closer to the suggested value based on internal configuration. This property directly affects latency
+    /// of the video encoder. The following properties also affect look ahead frames:
+    ///
+    /// 1. Value of this property must be less than or equal to `kVTCompressionPropertyKey_MaxFrameDelayCount`.
+    /// 2. This property is ignored when `VTVideoEncoderSpecification_EnableLowLatencyRateControl` is set to true
+    /// 3. This property is ignored when `kVTCompressionPropertyKey_Quality` is set to 1.0
+    /// 4. This property can not be used in conjunction with multi-pass feature (`kVTCompressionPropertyKey_MultiPassStorage`)
+    #[doc(alias = "kVTCompressionPropertyKey_SuggestedLookAheadFrameCount")]
+    #[inline]
+    #[api::available(macos = 15.0)]
+    pub fn suggested_look_ahead_frame_count() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_SuggestedLookAheadFrameCount }
+    }
+
+    /// Read/write, cf::Number, Optional
+    /// Control spatial adaptation of the quantization parameter (QP) based on per-frame statistics.
+    ///
+    /// If set to `qp_modulation_level::disable()`, spatial QP adaptation is not applied based on per-frame statistics.
+    /// If set to `qp_modulation_level::default()`, video encoder is allowed to apply spatial QP adaptation for each macro block (or coding unit) within a video frame.
+    /// QP adaptation is based on spatial characteristics of a frame and the level of spatial QP adaptation is decided internally by the rate controller.
+    #[doc(alias = "kVTCompressionPropertyKey_SpatialAdaptiveQPLevel")]
+    #[inline]
+    #[api::available(macos = 15.0)]
+    pub fn spatial_adaptive_qp_level() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_SpatialAdaptiveQPLevel }
+    }
+
     #[link(name = "VideoToolbox", kind = "framework")]
+    #[api::weak]
     extern "C" {
         static kVTCompressionPropertyKey_NumberOfPendingFrames: &'static cf::String;
         static kVTCompressionPropertyKey_PixelBufferPoolIsShared: &'static cf::String;
@@ -572,6 +606,26 @@ pub mod keys {
         static kVTCompressionPropertyKey_PreserveDynamicHDRMetadata: &'static cf::String;
         static kVTCompressionPropertyKey_MaxAllowedFrameQP: &'static cf::String;
         static kVTCompressionPropertyKey_EnableLTR: &'static cf::String;
+
+        #[api::available(macos = 15.0)]
+        static kVTCompressionPropertyKey_SuggestedLookAheadFrameCount: &'static cf::String;
+
+        #[api::available(macos = 15.0)]
+        static kVTCompressionPropertyKey_SpatialAdaptiveQPLevel: &'static cf::String;
+    }
+}
+
+pub mod qp_modulation_level {
+    use crate::cf;
+
+    #[doc(alias = "kVTQPModulationLevel_Default")]
+    pub fn default() -> &'static cf::Number {
+        cf::Number::tagged_i32(-1)
+    }
+
+    #[doc(alias = "kVTQPModulationLevel_Disable")]
+    pub fn disabled() -> &'static cf::Number {
+        cf::Number::tagged_i32(0)
     }
 }
 
