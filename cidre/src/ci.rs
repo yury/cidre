@@ -5,3 +5,6 @@ mod image;
 pub use image::Format;
 pub use image::Image;
 pub use image::ImageOption;
+
+mod vector;
+pub use vector::Vec;
