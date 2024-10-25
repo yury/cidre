@@ -901,11 +901,73 @@ pub fn min_f32(a: &[f32]) -> f32 {
 }
 
 /// Minimum value of vector
+///
+/// ```
+/// use cidre::vdsp;
+///
+/// let a = [10.0f32, -5.0, 0.0, 5.0];
+/// let min = vdsp::min_stride_f32(&[], 0);
+/// let min0 = vdsp::min_stride_f32(&a, 0);
+/// let min1 = vdsp::min_stride_f32(&a, 1);
+/// let min2 = vdsp::min_stride_f32(&a, 2);
+/// let min3 = vdsp::min_stride_f32(&a, 3);
+/// let min4 = vdsp::min_stride_f32(&a, 4);
+/// assert_eq!(min, f32::INFINITY);
+/// assert_eq!(min0, 10.0f32);
+/// assert_eq!(min1, -5.0f32);
+/// assert_eq!(min2, 0.0f32);
+/// assert_eq!(min3, 10.0f32);
+/// assert_eq!(min4, 10.0f32);
+/// ```
+#[doc(alias = "vDSP_minv")]
+#[inline]
+pub fn min_stride_f32(a: &[f32], stride: usize) -> f32 {
+    let mut res = f32::NAN;
+    let mut n = a.len();
+    if stride > 1 {
+        n /= stride;
+    }
+    unsafe { _min_f32(a.as_ptr(), stride as isize, &mut res, n) };
+    res
+}
+
+/// Minimum value of vector
 #[doc(alias = "vDSP_minvD")]
 #[inline]
 pub fn min_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
+    let mut res = f64::NAN;
     unsafe { _min_f64(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Maximum value of vector
+#[doc(alias = "vDSP_maxv")]
+#[inline]
+pub fn max_f32(a: &[f32]) -> f32 {
+    let mut res = f32::NAN;
+    unsafe { _max_f32(a.as_ptr(), 1, &mut res, a.len()) };
+    res
+}
+
+/// Maximum value of vector
+#[doc(alias = "vDSP_maxv")]
+#[inline]
+pub fn max_stride_f32(a: &[f32], stride: usize) -> f32 {
+    let mut res = f32::NAN;
+    let mut n = a.len();
+    if stride > 1 {
+        n /= stride;
+    }
+    unsafe { _max_f32(a.as_ptr(), stride as isize, &mut res, n) };
+    res
+}
+
+/// Maximum value of vector
+#[doc(alias = "vDSP_maxvD")]
+#[inline]
+pub fn max_f64(a: &[f64]) -> f64 {
+    let mut res = f64::NAN;
+    unsafe { _max_f64(a.as_ptr(), 1, &mut res, a.len()) };
     res
 }
 
@@ -1649,6 +1711,16 @@ extern "C-unwind" {
     #[doc(alias = "vDSP_minmgvD")]
     #[link_name = "vDSP_minmgvD"]
     pub fn _minmg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+
+    /// Maximum value of vector.
+    #[doc(alias = "vDSP_maxv")]
+    #[link_name = "vDSP_maxv"]
+    pub fn _max_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+
+    /// Maximum value of vector.
+    #[doc(alias = "vDSP_maxvD")]
+    #[link_name = "vDSP_maxvD"]
+    pub fn _max_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
 
     /// Minimum value of vector
     #[doc(alias = "vDSP_minv")]
