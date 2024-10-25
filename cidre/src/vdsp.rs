@@ -6,6 +6,14 @@ pub type Len = usize;
 #[doc(alias = "vDSP_Stride")]
 pub type Stride = isize;
 
+/// Helper
+#[inline]
+fn with<R>(f: impl FnOnce(*mut R)) -> R {
+    let mut res = std::mem::MaybeUninit::uninit();
+    f(res.as_mut_ptr());
+    unsafe { res.assume_init() }
+}
+
 #[doc(alias = "FFTDirection")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
@@ -455,39 +463,50 @@ pub fn ssq_io_f64(io: &mut [f64]) {
 }
 
 /// Mean of vector
+///
+/// ```
+/// use cidre::vdsp;
+///
+/// let m = vdsp::mean_f32(&[]);
+/// assert!(m.is_nan());
+/// let m = vdsp::mean_f32(&[1.0, 2.0, 1.0, 1.0]);
+/// assert_eq!(m, 1.25);
+/// ```
 #[doc(alias = "vDSP_meanv")]
 #[inline]
 pub fn mean_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0;
-    unsafe { _mean_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _mean_f32(a.as_ptr(), 1, r, a.len()) })
+}
+
+#[doc(alias = "vDSP_meanv")]
+#[inline]
+pub fn mean_stride_f32(a: &[f32], stride: usize) -> f32 {
+    let mut n = a.len();
+    if stride > 1 {
+        n /= stride;
+    }
+    with(|r| unsafe { _mean_f32(a.as_ptr(), stride as _, r, n) })
 }
 
 /// Mean of vector
 #[doc(alias = "vDSP_meanvD")]
 #[inline]
 pub fn mean_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0;
-    unsafe { _mean_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _mean_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Mean square of vector
 #[doc(alias = "vDSP_measqv")]
 #[inline]
-pub fn meansq_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0;
-    unsafe { _meansq_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+pub fn mean_sq_f32(a: &[f32]) -> f32 {
+    with(|r| unsafe { _meansq_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Mean square of vector
 #[doc(alias = "vDSP_measqvD")]
 #[inline]
-pub fn meansq_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0;
-    unsafe { _meansq_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+pub fn mean_sq_f64(a: &[f64]) -> f64 {
+    with(|r| unsafe { _meansq_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Euclidean distance, squared
@@ -495,9 +514,7 @@ pub fn meansq_f64(a: &[f64]) -> f64 {
 pub fn distance_sq_f32(a: &[f32], b: &[f32]) -> f32 {
     let n = a.len();
     assert_eq!(n, b.len());
-    let mut res = 0.0;
-    unsafe { _distance_sq_f32(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
-    res
+    with(|r| unsafe { _distance_sq_f32(a.as_ptr(), 1, b.as_ptr(), 1, r, n) })
 }
 
 /// Euclidean distance, squared
@@ -505,9 +522,7 @@ pub fn distance_sq_f32(a: &[f32], b: &[f32]) -> f32 {
 pub fn distance_sq_f64(a: &[f64], b: &[f64]) -> f64 {
     let n = a.len();
     assert_eq!(n, b.len());
-    let mut res = 0.0;
-    unsafe { _distance_sq_f64(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
-    res
+    with(|r| unsafe { _distance_sq_f64(a.as_ptr(), 1, b.as_ptr(), 1, r, n) })
 }
 
 /// Dot product
@@ -516,9 +531,7 @@ pub fn distance_sq_f64(a: &[f64], b: &[f64]) -> f64 {
 pub fn dotpr_f32(a: &[f32], b: &[f32]) -> f32 {
     let n = a.len();
     assert_eq!(n, b.len());
-    let mut res = 0.0;
-    unsafe { _dotpr_f32(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
-    res
+    with(|r| unsafe { _dotpr_f32(a.as_ptr(), 1, b.as_ptr(), 1, r, n) })
 }
 
 /// Dot product
@@ -527,9 +540,7 @@ pub fn dotpr_f32(a: &[f32], b: &[f32]) -> f32 {
 pub fn dotpr_f64(a: &[f64], b: &[f64]) -> f64 {
     let n = a.len();
     assert_eq!(n, b.len());
-    let mut res = 0.0;
-    unsafe { _dotpr_f64(a.as_ptr(), 1, b.as_ptr(), 1, &mut res, n) };
-    res
+    with(|r| unsafe { _dotpr_f64(a.as_ptr(), 1, b.as_ptr(), 1, r, n) })
 }
 
 /// Vector add and multiply
@@ -788,116 +799,113 @@ pub fn sadd_i32(a: &[i32], b: &i32, c: &mut [i32]) {
 #[doc(alias = "vDSP_sve")]
 #[inline]
 pub fn se_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _se_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _se_f32(a.as_ptr(), 1, r, a.len()) })
+}
+
+/// Sum of vector elements with stride
+#[doc(alias = "vDSP_sve")]
+#[inline]
+pub fn se_stride_f32(a: &[f32], stride: usize) -> f32 {
+    let mut n = a.len();
+    if stride > 1 {
+        n /= stride;
+    }
+    with(|r| unsafe { _se_f32(a.as_ptr(), stride as _, r, n) })
 }
 
 /// Sum of vector elements
 #[doc(alias = "vDSP_sveD")]
 #[inline]
 pub fn se_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
-    unsafe { _se_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _se_f64(a.as_ptr(), 1, r, a.len()) })
+}
+
+/// Sum of vector elements with stride
+#[doc(alias = "vDSP_sveD")]
+#[inline]
+pub fn se_stride_f64(a: &[f64], stride: usize) -> f64 {
+    let mut n = a.len();
+    if stride > 1 {
+        n /= stride;
+    }
+    with(|r| unsafe { _se_f64(a.as_ptr(), stride as _, r, n) })
 }
 
 /// Sum of vector elements magnitudes
 #[doc(alias = "vDSP_svemg")]
 #[inline]
 pub fn semg_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _semg_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _semg_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Sum of vector elements magnitudes
 #[doc(alias = "vDSP_svemgD")]
 #[inline]
 pub fn semg_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
-    unsafe { _semg_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _semg_f64(a.as_ptr(), 1, r, a.len()) })
 }
+
 /// Sum of vector elements' squares
 #[doc(alias = "vDSP_svesq")]
 #[inline]
 pub fn sesq_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _sesq_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _sesq_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Sum of vector elements' squares
 #[doc(alias = "vDSP_svesqD")]
 #[inline]
 pub fn sesq_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
-    unsafe { _sesq_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _sesq_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Sum of vector elements' signed squares
 #[doc(alias = "vDSP_svs")]
 #[inline]
 pub fn svs_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _svs_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _svs_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Sum of vector elements' signed squares
 #[doc(alias = "vDSP_svsD")]
 #[inline]
 pub fn svs_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
-    unsafe { _svs_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _svs_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Maximum magnitude of vector
 #[doc(alias = "vDSP_maxmgv")]
 #[inline]
 pub fn maxmg_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _maxmg_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _maxmg_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Maximum magnitude of vector
 #[doc(alias = "vDSP_maxmgvD")]
 #[inline]
 pub fn maxmg_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
-    unsafe { _maxmg_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _maxmg_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Minimum magnitude of vector
 #[doc(alias = "vDSP_minmgv")]
 #[inline]
 pub fn minmg_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _minmg_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _minmg_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Minimum magnitude of vector
 #[doc(alias = "vDSP_minmgvD")]
 #[inline]
 pub fn minmg_f64(a: &[f64]) -> f64 {
-    let mut res = 0.0f64;
-    unsafe { _minmg_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _minmg_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Minimum value of vector
 #[doc(alias = "vDSP_minv")]
 #[inline]
 pub fn min_f32(a: &[f32]) -> f32 {
-    let mut res = 0.0f32;
-    unsafe { _min_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _min_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Minimum value of vector
@@ -922,53 +930,43 @@ pub fn min_f32(a: &[f32]) -> f32 {
 #[doc(alias = "vDSP_minv")]
 #[inline]
 pub fn min_stride_f32(a: &[f32], stride: usize) -> f32 {
-    let mut res = f32::NAN;
     let mut n = a.len();
     if stride > 1 {
         n /= stride;
     }
-    unsafe { _min_f32(a.as_ptr(), stride as isize, &mut res, n) };
-    res
+    with(|r| unsafe { _min_f32(a.as_ptr(), stride as isize, r, n) })
 }
 
 /// Minimum value of vector
 #[doc(alias = "vDSP_minvD")]
 #[inline]
 pub fn min_f64(a: &[f64]) -> f64 {
-    let mut res = f64::NAN;
-    unsafe { _min_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _min_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Maximum value of vector
 #[doc(alias = "vDSP_maxv")]
 #[inline]
 pub fn max_f32(a: &[f32]) -> f32 {
-    let mut res = f32::NAN;
-    unsafe { _max_f32(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _max_f32(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Maximum value of vector
 #[doc(alias = "vDSP_maxv")]
 #[inline]
 pub fn max_stride_f32(a: &[f32], stride: usize) -> f32 {
-    let mut res = f32::NAN;
     let mut n = a.len();
     if stride > 1 {
         n /= stride;
     }
-    unsafe { _max_f32(a.as_ptr(), stride as isize, &mut res, n) };
-    res
+    with(|r| unsafe { _max_f32(a.as_ptr(), stride as isize, r, n) })
 }
 
 /// Maximum value of vector
 #[doc(alias = "vDSP_maxvD")]
 #[inline]
 pub fn max_f64(a: &[f64]) -> f64 {
-    let mut res = f64::NAN;
-    unsafe { _max_f64(a.as_ptr(), 1, &mut res, a.len()) };
-    res
+    with(|r| unsafe { _max_f64(a.as_ptr(), 1, r, a.len()) })
 }
 
 /// Vector generate tapered ramp
@@ -1442,22 +1440,22 @@ extern "C-unwind" {
     /// Mean of vector
     #[doc(alias = "vDSP_meanv")]
     #[link_name = "vDSP_meanv"]
-    pub fn _mean_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _mean_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Mean of vector
     #[doc(alias = "vDSP_meanvD")]
     #[link_name = "vDSP_meanvD"]
-    pub fn _mean_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _mean_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Mean square of vector
     #[doc(alias = "vDSP_measqv")]
     #[link_name = "vDSP_measqv"]
-    pub fn _meansq_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _meansq_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Mean square of vector
     #[doc(alias = "vDSP_measqvD")]
     #[link_name = "vDSP_measqvD"]
-    pub fn _meansq_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _meansq_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     #[doc(alias = "vDSP_distancesq")]
     #[link_name = "vDSP_distancesq"]
@@ -1466,7 +1464,7 @@ extern "C-unwind" {
         __IA: Stride,
         __B: *const f32,
         __IB: Stride,
-        __C: &mut f32,
+        __C: *mut f32,
         __N: Len,
     );
 
@@ -1477,7 +1475,7 @@ extern "C-unwind" {
         __IA: Stride,
         __B: *const f64,
         __IB: Stride,
-        __C: &mut f64,
+        __C: *mut f64,
         __N: Len,
     );
 
@@ -1488,7 +1486,7 @@ extern "C-unwind" {
         __IA: Stride,
         __B: *const f32,
         __IB: Stride,
-        __C: &mut f32,
+        __C: *mut f32,
         __N: Len,
     );
 
@@ -1499,7 +1497,7 @@ extern "C-unwind" {
         __IA: Stride,
         __B: *const f64,
         __IB: Stride,
-        __C: &mut f64,
+        __C: *mut f64,
         __N: Len,
     );
 
@@ -1655,82 +1653,82 @@ extern "C-unwind" {
     /// Sum of vector elements
     #[doc(alias = "vDSP_sve")]
     #[link_name = "vDSP_sve"]
-    pub fn _se_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _se_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Sum of vector elements
     #[doc(alias = "vDSP_sveD")]
     #[link_name = "vDSP_sveD"]
-    pub fn _se_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _se_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Sum of vector elements magnitudes
     #[doc(alias = "vDSP_svemg")]
     #[link_name = "vDSP_svemg"]
-    pub fn _semg_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _semg_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Sum of vector elements magnitudes
     #[doc(alias = "vDSP_svemgD")]
     #[link_name = "vDSP_svemgD"]
-    pub fn _semg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _semg_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Sum of vector elements' squares
     #[doc(alias = "vDSP_svesq")]
     #[link_name = "vDSP_svesq"]
-    pub fn _sesq_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _sesq_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Sum of vector elements' squares
     #[doc(alias = "vDSP_svesqD")]
     #[link_name = "vDSP_svesqD"]
-    pub fn _sesq_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _sesq_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Sum of vector elements' signed squares
     #[doc(alias = "vDSP_svs")]
     #[link_name = "vDSP_svs"]
-    pub fn _svs_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _svs_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Sum of vector elements' signed squares
     #[doc(alias = "vDSP_svsD")]
     #[link_name = "vDSP_svsD"]
-    pub fn _svs_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _svs_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Maximum magnitude of vector
     #[doc(alias = "vDSP_maxmgv")]
     #[link_name = "vDSP_maxmgv"]
-    pub fn _maxmg_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _maxmg_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Maximum magnitude of vector
     #[doc(alias = "vDSP_maxmgvD")]
     #[link_name = "vDSP_maxmgvD"]
-    pub fn _maxmg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _maxmg_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Minimum magnitude of vector
     #[doc(alias = "vDSP_minmgv")]
     #[link_name = "vDSP_minmgv"]
-    pub fn _minmg_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _minmg_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Mimimum magnitude of vector
     #[doc(alias = "vDSP_minmgvD")]
     #[link_name = "vDSP_minmgvD"]
-    pub fn _minmg_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _minmg_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Maximum value of vector.
     #[doc(alias = "vDSP_maxv")]
     #[link_name = "vDSP_maxv"]
-    pub fn _max_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _max_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Maximum value of vector.
     #[doc(alias = "vDSP_maxvD")]
     #[link_name = "vDSP_maxvD"]
-    pub fn _max_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _max_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Minimum value of vector
     #[doc(alias = "vDSP_minv")]
     #[link_name = "vDSP_minv"]
-    pub fn _min_f32(__A: *const f32, __IA: Stride, __C: &mut f32, __N: Len);
+    pub fn _min_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __N: Len);
 
     /// Minimum value of vector
     #[doc(alias = "vDSP_minvD")]
     #[link_name = "vDSP_minvD"]
-    pub fn _min_f64(__A: *const f64, __IA: Stride, __C: &mut f64, __N: Len);
+    pub fn _min_f64(__A: *const f64, __IA: Stride, __C: *mut f64, __N: Len);
 
     /// Vector generate tapered ramp
     #[doc(alias = "vDSP_vgen")]
