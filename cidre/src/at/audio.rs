@@ -21,7 +21,7 @@ pub use converter::Opts as ConverterOpts;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 pub use converter::Quality as ConverterQuality;
 
-mod component;
+pub mod component;
 pub use component::Component;
 pub use component::Desc as ComponentDesc;
 pub use component::Flags as ComponentFlags;

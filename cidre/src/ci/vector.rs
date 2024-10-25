@@ -82,6 +82,18 @@ impl ci::Vec {
 
     #[objc::msg_send(stringRepresentation)]
     pub fn ns_string(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(X)]
+    pub fn x(&self) -> cg::Float;
+
+    #[objc::msg_send(Y)]
+    pub fn y(&self) -> cg::Float;
+
+    #[objc::msg_send(Z)]
+    pub fn z(&self) -> cg::Float;
+
+    #[objc::msg_send(W)]
+    pub fn w(&self) -> cg::Float;
 }
 
 #[link(name = "ci", kind = "static")]
@@ -118,6 +130,6 @@ mod tests {
         assert_eq!(0.0f64, vec.get(1000));
 
         let vec = ci::Vec::with_ns_string(ns::str!(c"hello"));
-        assert_eq!(vec.get(0), 0.0f64);
+        assert_eq!(vec.x(), 0.0f64);
     }
 }

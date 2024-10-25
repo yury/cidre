@@ -36,6 +36,12 @@ impl Error {
     }
 }
 
+impl From<Error> for Status {
+    fn from(value: Error) -> Self {
+        value.status()
+    }
+}
+
 impl std::fmt::Debug for Status {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let val = self.0;

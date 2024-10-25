@@ -64,7 +64,7 @@ impl Default for ValueRange {
 pub struct Buf {
     /// The number of interleaved channels in the buffer.
     pub number_channels: u32,
-    /// The number of bytes in the buffer pointed at by mData.
+    /// The number of bytes in the buffer pointed at by `data`.
     pub data_bytes_size: u32,
     /// A pointer to the buffer of audio data.
     pub data: *mut u8,

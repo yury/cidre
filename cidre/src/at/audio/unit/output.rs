@@ -163,6 +163,7 @@ impl Output<UninitializedState> {
         Ok(Self(unit))
     }
 
+    #[doc(alias = "AudioUnitInitialize")]
     pub fn allocate_resources(self) -> os::Result<Output<InitializedState>> {
         Ok(Output(self.0.initialize()?))
     }
@@ -229,9 +230,10 @@ impl Output<InitializedState> {
         &mut self,
         n_frames: u32,
         buf_list: &mut audio::BufList<N>,
+        bus: u32,
     ) -> os::Result {
         let ts = audio::TimeStamp::invalid();
-        self.0.render(&ts, 0, n_frames, buf_list)
+        self.0.render(&ts, bus, n_frames, buf_list)
     }
 
     #[doc(alias = "AudioOutputUnitStart")]
