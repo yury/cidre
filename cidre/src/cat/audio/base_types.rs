@@ -71,6 +71,7 @@ pub struct Buf {
 }
 
 /// A variable length array of AudioBuffer structures.
+#[doc(alias = "AudioBufferList")]
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct BufList<const N: usize = 1> {
@@ -78,6 +79,51 @@ pub struct BufList<const N: usize = 1> {
     /// this is a variable length array of `number_buffers` elements
     pub buffers: [Buf; N],
 }
+
+pub struct BufListN {
+    inner: Vec<u8>,
+}
+
+impl BufListN {
+    pub fn new(size: usize) -> Self {
+        assert!(size > std::mem::size_of::<u32>());
+        Self {
+            inner: vec![0; size],
+        }
+    }
+
+    pub fn number_buffers(&self) -> usize {
+        let mut bytes = [0u8; 4];
+        bytes.copy_from_slice(&self.inner[..4]);
+        u32::from_le_bytes(bytes) as _
+    }
+
+    pub fn buffers(&self) -> &[Buf] {
+        let (_pre, bufs, _post) = unsafe { self.inner[4..].align_to() };
+        bufs
+    }
+
+    pub fn as_mut_ptr(&mut self) -> *mut u8 {
+        self.inner.as_mut_ptr()
+    }
+}
+
+impl std::fmt::Debug for BufListN {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("BufListN")
+            .field("number_buffers", &self.number_buffers())
+            .field("buffers", &self.buffers())
+            .finish()
+    }
+}
+
+// #[derive(Debug, Copy, Clone)]
+// pub struct BufferList<
+//     Buffers: ?Sized = [Buf], // add a convenient default parameter
+// > {
+//     pub num_buffers: u32,
+//     pub buffers: Buffers,
+// }
 
 unsafe impl<const N: usize> Send for BufList<N> {}
 

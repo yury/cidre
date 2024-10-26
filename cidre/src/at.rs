@@ -2,6 +2,7 @@ pub mod audio;
 pub use audio::BalanceFade as AudioBalanceFade;
 pub use audio::Buf as AudioBuf;
 pub use audio::BufList as AudioBufList;
+pub use audio::BufListN as AudioBufListN;
 pub use audio::ChannelBitmap as AudioChannelBitmap;
 pub use audio::ChannelCoordinateIndex as AudioChannelCoordinateIndex;
 pub use audio::ChannelDesc as AudioChannelDesc;

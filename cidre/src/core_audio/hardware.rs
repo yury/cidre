@@ -1,12 +1,40 @@
 use std::ffi::c_void;
 
-use crate::{arc, core_audio, os};
+use crate::{arc, at::AudioBufListN, core_audio, os};
 
-use super::{AudioObjId, AudioObjPropAddr};
+use super::{
+    AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
+};
 
 impl core_audio::AudioObjId {
     #[doc(alias = "kAudioObjectSystemObject")]
     pub const SYS_OBJECT: Self = Self(1);
+
+    pub fn hardware_devices(&self) -> os::Result<Vec<Self>> {
+        self.prop_vec::<Self>(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_DEVICES,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::WILDCARD,
+        })
+    }
+
+    pub fn default_input_device(&self) -> os::Result<Self> {
+        let addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        };
+        self.prop(&addr)
+    }
+
+    pub fn default_output_device(&self) -> os::Result<Self> {
+        let addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_DEFAULT_OUTPUT_DEVICE,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        };
+        self.prop(&addr)
+    }
 
     #[doc(alias = "AudioObjectSetPropertyData")]
     pub fn set_prop<T: Sized>(&self, address: &AudioObjPropAddr, val: T) -> os::Result {
@@ -21,6 +49,45 @@ impl core_audio::AudioObjId {
                 &val as *const _ as _,
             )
             .result()
+        }
+    }
+    pub fn stream_cfg(&self, scope: AudioObjPropScope) -> os::Result<AudioBufListN> {
+        let addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::STREAM_CFG,
+            scope,
+            element: AudioObjPropElement::WILDCARD,
+        };
+        let mut size = self.prop_size(&addr)?;
+        let mut res = AudioBufListN::new(size as _);
+        unsafe {
+            AudioObjectGetPropertyData(
+                *self,
+                &addr,
+                0,
+                std::ptr::null(),
+                &mut size,
+                res.as_mut_ptr() as _,
+            )
+        }
+        .result()?;
+        Ok(res)
+    }
+
+    pub fn input_stream_cfg(&self) -> os::Result<AudioBufListN> {
+        self.stream_cfg(AudioObjPropScope::INPUT)
+    }
+
+    pub fn output_stream_cfg(&self) -> os::Result<AudioBufListN> {
+        self.stream_cfg(AudioObjPropScope::OUTPUT)
+    }
+
+    #[doc(alias = "AudioObjectGetPropertyDataSize")]
+    pub fn prop_size(&self, address: &AudioObjPropAddr) -> os::Result<u32> {
+        let mut val = std::mem::MaybeUninit::uninit();
+        unsafe {
+            AudioObjectGetPropertyDataSize(*self, address, 0, std::ptr::null(), val.as_mut_ptr())
+                .result()?;
+            Ok(val.assume_init())
         }
     }
 
@@ -58,10 +125,8 @@ impl core_audio::AudioObjId {
 
     #[doc(alias = "AudioObjectGetPropertyData")]
     pub fn prop_vec<T: Sized>(&self, address: &AudioObjPropAddr) -> os::Result<Vec<T>> {
-        let mut data_size = 0;
+        let mut data_size = self.prop_size(address)?;
         unsafe {
-            AudioObjectGetPropertyDataSize(*self, address, 0, std::ptr::null(), &mut data_size)
-                .result()?;
             let len = (data_size as usize) / std::mem::size_of::<T>();
             if len == 0 {
                 return Ok(vec![]);

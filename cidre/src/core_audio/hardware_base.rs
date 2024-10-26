@@ -158,7 +158,7 @@ impl AudioObjPropSelector {
     /// whose class is in the qualifier array or whose is a subclass of one in the
     /// qualifier array.
     #[doc(alias = "kAudioObjectPropertyOwnedObjects")]
-    pub const OWNED_OBJECTS: Self = Self(u32::from_be_bytes(*b"ownd"));
+    pub const OWNED_OBJS: Self = Self(u32::from_be_bytes(*b"ownd"));
 
     /// A u32 where a value of one indicates that the object's hardware is
     /// drawing attention to itself, typically by flashing or lighting up its front

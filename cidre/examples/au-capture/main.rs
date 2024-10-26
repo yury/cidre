@@ -1,10 +1,17 @@
 use cidre::{
     at::{
         self, au,
-        audio::component::{InitializedState, UninitializedState},
+        audio::{
+            self,
+            component::{InitializedState, UninitializedState},
+        },
+        AudioBufList,
     },
+    cat::AudioBasicStreamDesc,
     cf,
-    core_audio::{AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector},
+    core_audio::{
+        self, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
+    },
     os, vdsp,
 };
 
@@ -71,23 +78,25 @@ impl Ctx {
 #[tokio::main]
 async fn main() {
     let output = au::Output::new_apple_vp().unwrap();
-    let device = output.current_device().unwrap();
+    let input_device = output.input_device().unwrap();
     let asbd = output
         .input_stream_format(0)
         .expect("Failed to get output stream format");
 
     println!("format {:#?}", asbd);
 
-    let name = device
+    let name = input_device
         .cf_prop::<cf::String>(&AudioObjPropAddr {
             selector: AudioObjPropSelector::NAME,
-            scope: AudioObjPropScope::INPUT,
+            scope: AudioObjPropScope::GLOBAL,
             element: AudioObjPropElement::MAIN,
         })
         .expect("Failed to device name property");
 
-    println!("name {name}");
-    println!("device {device:?}");
+    println!("input device: {name}");
+
+    let buf_list = input_device.input_stream_cfg().unwrap();
+    println!("stream cfg: {:?}", buf_list);
 
     let mut ctx = Box::new(Ctx::default());
 

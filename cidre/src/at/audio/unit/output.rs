@@ -199,7 +199,7 @@ impl Output<UninitializedState> {
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn current_device(&self) -> os::Result<AudioObjId> {
+    pub fn output_device(&self) -> os::Result<AudioObjId> {
         self.unit().prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -209,11 +209,32 @@ impl Output<UninitializedState> {
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn set_current_device(&mut self, val: AudioObjId) -> os::Result {
+    pub fn set_output_device(&mut self, val: AudioObjId) -> os::Result {
         self.unit_mut().set_prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
             au::Element(0),
+            &val,
+        )
+    }
+
+    #[cfg(target_os = "macos")]
+    #[inline]
+    pub fn input_device(&self) -> os::Result<AudioObjId> {
+        self.unit().prop(
+            au::PropId::OUTPUT_CURRENT_DEVICE,
+            Scope::GLOBAL,
+            au::Element(1),
+        )
+    }
+
+    #[cfg(target_os = "macos")]
+    #[inline]
+    pub fn set_input_device(&mut self, val: AudioObjId) -> os::Result {
+        self.unit_mut().set_prop(
+            au::PropId::OUTPUT_CURRENT_DEVICE,
+            Scope::GLOBAL,
+            au::Element(1),
             &val,
         )
     }
@@ -321,7 +342,7 @@ mod tests {
         let device_id: AudioObjId = AudioObjId::SYS_OBJECT.prop(&addr).unwrap();
         device_id.show();
 
-        output.set_current_device(device_id).unwrap();
+        output.set_input_device(device_id).unwrap();
         let mut output = output.allocate_resources().unwrap();
 
         output.start().unwrap();
