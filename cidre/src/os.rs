@@ -85,7 +85,7 @@ where
     Ok(unsafe { option.unwrap_unchecked() })
 }
 
-pub(crate) fn result_init<T, R>(op: impl Fn(*mut T) -> R) -> Result<T>
+pub(crate) fn result_init<T, R>(op: impl FnOnce(*mut T) -> R) -> Result<T>
 where
     R: Into<Result>,
 {

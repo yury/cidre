@@ -19,34 +19,31 @@ impl core_audio::AudioObjId {
     }
 
     pub fn default_input_device(&self) -> os::Result<Self> {
-        let addr = AudioObjPropAddr {
+        self.prop(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
             scope: AudioObjPropScope::GLOBAL,
             element: AudioObjPropElement::MAIN,
-        };
-        self.prop(&addr)
+        })
     }
 
     pub fn default_output_device(&self) -> os::Result<Self> {
-        let addr = AudioObjPropAddr {
+        self.prop(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEFAULT_OUTPUT_DEVICE,
             scope: AudioObjPropScope::GLOBAL,
             element: AudioObjPropElement::MAIN,
-        };
-        self.prop(&addr)
+        })
     }
 
     #[doc(alias = "AudioObjectSetPropertyData")]
-    pub fn set_prop<T: Sized>(&self, address: &AudioObjPropAddr, val: T) -> os::Result {
-        let data_size = std::mem::size_of_val(&val) as u32;
+    pub fn set_prop<T: Sized>(&self, address: &AudioObjPropAddr, val: &T) -> os::Result {
         unsafe {
             AudioObjectSetPropertyData(
                 *self,
                 address,
                 0,
                 std::ptr::null(),
-                data_size,
-                &val as *const _ as _,
+                std::mem::size_of_val(val) as u32,
+                val as *const _ as _,
             )
             .result()
         }
@@ -94,7 +91,7 @@ impl core_audio::AudioObjId {
     #[doc(alias = "AudioObjectGetPropertyData")]
     pub fn prop<T: Sized>(&self, address: &AudioObjPropAddr) -> os::Result<T> {
         let mut data_size = std::mem::size_of::<T>() as u32;
-        let mut val = std::mem::MaybeUninit::<T>::uninit();
+        let mut val = std::mem::MaybeUninit::uninit();
         unsafe {
             AudioObjectGetPropertyData(
                 *self,
@@ -260,7 +257,7 @@ impl core_audio::AudioObjPropSelector {
     pub const IO_CYCLE_USAGE: Self = Self(u32::from_be_bytes(*b"ncyc"));
 
     /// This property returns the stream configuration of the device in an
-    /// AudioBufList (with the buffer pointers set to NULL) which describes the
+    /// AudioBufListN (with the buffer pointers set to NULL) which describes the
     /// list of streams and the number of channels in each stream. This corresponds
     /// to what will be passed into the IOProc.
     #[doc(alias = "kAudioDevicePropertyStreamConfiguration")]
