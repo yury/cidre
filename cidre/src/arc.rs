@@ -23,6 +23,8 @@ pub struct Allocated<T: Release + 'static>(&'static mut T);
 #[repr(transparent)]
 pub struct Retained<T: Release + 'static>(&'static mut T);
 
+impl<T: Release + std::error::Error> std::error::Error for Retained<T> {}
+
 impl<T: Release + std::fmt::Display> std::fmt::Display for Retained<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.0.fmt(f)
