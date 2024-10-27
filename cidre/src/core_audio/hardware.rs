@@ -94,6 +94,16 @@ impl core_audio::AudioObjId {
         })
     }
 
+    #[doc(alias = "AudioObjectHasProperty")]
+    pub fn has_prop(&self, address: &AudioObjPropAddr) -> bool {
+        unsafe { AudioObjectHasProperty(*self, address) }
+    }
+
+    #[doc(alias = "AudioObjectIsPropertySettable")]
+    pub fn is_prop_settable(&self, address: &AudioObjPropAddr) -> os::Result<bool> {
+        os::result_init(|res| unsafe { AudioObjectIsPropertySettable(*self, address, res) })
+    }
+
     #[doc(alias = "AudioObjectGetPropertyDataSize")]
     pub fn prop_size(&self, address: &AudioObjPropAddr) -> os::Result<u32> {
         let mut val = std::mem::MaybeUninit::uninit();
@@ -696,6 +706,14 @@ extern "C-unwind" {
 
     fn AudioObjectShow(objectId: AudioObjId);
 
+    fn AudioObjectHasProperty(objectId: AudioObjId, address: *const AudioObjPropAddr) -> bool;
+
+    fn AudioObjectIsPropertySettable(
+        objectId: AudioObjId,
+        address: *const AudioObjPropAddr,
+        out_is_settable: *mut bool,
+    ) -> os::Status;
+
     fn AudioObjectGetPropertyData(
         objectId: AudioObjId,
         address: *const AudioObjPropAddr,
@@ -707,7 +725,7 @@ extern "C-unwind" {
 
     fn AudioObjectSetPropertyData(
         objectId: AudioObjId,
-        address: &AudioObjPropAddr,
+        address: *const AudioObjPropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: u32,
@@ -716,7 +734,7 @@ extern "C-unwind" {
 
     fn AudioObjectGetPropertyDataSize(
         objectId: AudioObjId,
-        address: &AudioObjPropAddr,
+        address: *const AudioObjPropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: *mut u32,
