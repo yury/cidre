@@ -307,3 +307,139 @@ impl AudioDeviceTransportType {
     #[doc(alias = "kAudioDeviceTransportTypeContinuityCaptureWireless")]
     pub const CONTINUITY_CAPTURE_WIRELESS: Self = Self(u32::from_be_bytes(*b"ccwl"));
 }
+
+/// Values provided by the AudioDevice class
+impl AudioObjPropSelector {
+    /// A cf::String that contains the bundle ID for an application that provides a
+    /// GUI for configuring the AudioDevice.
+    ///
+    /// By default, the value of this property
+    /// is the bundle ID for Audio MIDI Setup. The caller is responsible for
+    /// releasing the returned cf::Obj.
+    #[doc(alias = "kAudioDevicePropertyConfigurationApplication")]
+    pub const CONFIGURATION_APP: Self = Self(u32::from_be_bytes(*b"capp"));
+
+    /// A cf::String that contains a persistent identifier for the AudioDevice. An
+    /// AudioDevice's UID is persistent across boots. The content of the UID string
+    /// is a black box and may contain information that is unique to a particular
+    /// instance of an AudioDevice's hardware or unique to the CPU. Therefore they
+    /// are not suitable for passing between CPUs or for identifying similar models
+    /// of hardware. The caller is responsible for releasing the returned cf::Obj.
+    #[doc(alias = "kAudioDevicePropertyDeviceUID")]
+    pub const DEVICE_UID: Self = Self(u32::from_be_bytes(*b"uid "));
+
+    /// A cf::String that contains a persistent identifier for the model of an
+    /// AudioDevice. The identifier is unique such that the identifier from two
+    /// AudioDevices are equal if and only if the two AudioDevices are the exact
+    /// same model from the same manufacturer. Further, the identifier has to be the
+    /// same no matter on what machine the AudioDevice appears. The caller is
+    /// responsible for releasing the returned cf::Obj.
+    #[doc(alias = "kAudioDevicePropertyModelUID")]
+    pub const MODEL_UID: Self = Self(u32::from_be_bytes(*b"muid"));
+
+    /// A u32 whose value indicates how the AudioDevice is connected to the CPU.
+    /// Constants for some of the values for this property can be found in the enum
+    /// in the AudioDevice Constants section of this file.
+    #[doc(alias = "kAudioDevicePropertyTransportType")]
+    pub const TRANSPORT_TYPE: Self = Self(u32::from_be_bytes(*b"tran"));
+
+    ///  An array of AudioDeviceIDs for devices related to the AudioDevice. For
+    /// IOAudio-based devices, AudioDevices are related if they share the same
+    /// IOAudioDevice object.
+    #[doc(alias = "kAudioDevicePropertyRelatedDevices")]
+    pub const RELATED_DEVICES: Self = Self(u32::from_be_bytes(*b"akin"));
+
+    /// A u32 whose value indicates the clock domain to which this AudioDevice
+    /// belongs. AudioDevices that have the same value for this property are able to
+    /// be synchronized in hardware. However, a value of 0 indicates that the clock
+    /// domain for the device is unspecified and should be assumed to be separate
+    /// from every other device's clock domain, even if they have the value of 0 as
+    /// their clock domain as well.
+    #[doc(alias = "kAudioDevicePropertyClockDomain")]
+    pub const CLOCK_DOMAIN: Self = Self(u32::from_be_bytes(*b"clkd"));
+
+    /// A u32 where a value of 1 means the device is ready and available and 0
+    /// means the device is unusable and will most likely go away shortly.
+    #[doc(alias = "kAudioDevicePropertyDeviceIsAlive")]
+    pub const IS_ALIVE: Self = Self(u32::from_be_bytes(*b"livn"));
+
+    ///  A u32 where a value of 0 means the AudioDevice is not performing IO and
+    /// a value of 1 means that it is. Note that the device can be running even if
+    /// there are no active IOProcs such as by calling AudioDeviceStart() and
+    /// passing a NULL IOProc. Note that the notification for this property is
+    /// usually sent from the AudioDevice's IO thread.
+    #[doc(alias = "kAudioDevicePropertyDeviceIsRunning")]
+    pub const IS_RUNNING: Self = Self(u32::from_be_bytes(*b"goin"));
+
+    /// A u32 where 1 means that the AudioDevice is a possible selection for
+    /// kAudioHardwarePropertyDefaultInputDevice or
+    /// kAudioHardwarePropertyDefaultOutputDevice depending on the scope.
+    #[doc(alias = "kAudioDevicePropertyDeviceCanBeDefaultDevice")]
+    pub const CAN_BE_DEFAULT_DEVICE: Self = Self(u32::from_be_bytes(*b"dflt"));
+
+    /// A u32 where 1 means that the AudioDevice is a possible selection for
+    /// kAudioHardwarePropertyDefaultSystemOutputDevice.
+    #[doc(alias = "kAudioDevicePropertyDeviceCanBeDefaultSystemDevice")]
+    pub const CAN_BE_DEFAULT_SYS_DEVICE: Self = Self(u32::from_be_bytes(*b"sflt"));
+
+    /// A u32 containing the number of frames of latency in the AudioDevice. Note
+    /// that input and output latency may differ. Further, the AudioDevice's
+    /// AudioStreams may have additional latency so they should be queried as well.
+    /// If both the device and the stream say they have latency, then the total
+    /// latency for the stream is the device latency summed with the stream latency.
+    #[doc(alias = "kAudioDevicePropertyLatency")]
+    pub const LATENCY: Self = Self(u32::from_be_bytes(*b"ltnc"));
+
+    /// An array of AudioStreamIDs that represent the AudioStreams of the
+    /// AudioDevice. Note that if a notification is received for this property, any
+    /// cached AudioStreamIDs for the device become invalid and need to be
+    /// re-fetched.
+    #[doc(alias = "kAudioDevicePropertyStreams")]
+    pub const STREAMS: Self = Self(u32::from_be_bytes(*b"stm#"));
+
+    /// An array of AudioObjectIDs that represent the AudioControls of the
+    /// AudioDevice. Note that if a notification is received for this property, any
+    /// cached AudioObjectIDs for the device become invalid and need to be
+    /// re-fetched.
+    #[doc(alias = "kAudioObjectPropertyControlList")]
+    pub const CTRL_LIST: Self = Self(u32::from_be_bytes(*b"ctrl"));
+
+    /// A u32 whose value indicates the number for frames in ahead (for output)
+    /// or behind (for input the current hardware position that is safe to do IO.
+    #[doc(alias = "kAudioDevicePropertySafetyOffset")]
+    pub const SAFETY_OFFSET: Self = Self(u32::from_be_bytes(*b"saft"));
+
+    /// A f64 that indicates the current nominal sample rate of the AudioDevice.
+    #[doc(alias = "kAudioDevicePropertyNominalSampleRate")]
+    pub const NOMINAL_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"nsrt"));
+
+    /// An array of AudioValueRange structs that indicates the valid ranges for the
+    /// nominal sample rate of the AudioDevice.
+    #[doc(alias = "kAudioDevicePropertyAvailableNominalSampleRates")]
+    pub const AVAILABLE_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"nsr#"));
+
+    /// A cf::URL that indicates an image file that can be used to represent the
+    /// device visually. The caller is responsible for releasing the returned
+    /// cf::Obj.
+    #[doc(alias = "kAudioDevicePropertyIcon")]
+    pub const ICON: Self = Self(u32::from_be_bytes(*b"icon"));
+
+    /// A u32 where a non-zero value indicates that the device is not included
+    /// in the normal list of devices provided by kAudioHardwarePropertyDevices nor
+    /// can it be the default device. Hidden devices can only be discovered by
+    /// knowing their UID and using kAudioHardwarePropertyDeviceForUID.
+    #[doc(alias = "kAudioDevicePropertyIsHidden")]
+    pub const IS_HIDDEN: Self = Self(u32::from_be_bytes(*b"hidn"));
+
+    /// An array of two u32s, the first for the left channel, the second for the
+    /// right channel, that indicate the channel numbers to use for stereo IO on the
+    /// device. The value of this property can be different for input and output and
+    /// there are no restrictions on the channel numbers that can be used.
+    #[doc(alias = "kAudioDevicePropertyPreferredChannelsForStereo")]
+    pub const PREFERRED_CHANNELS_FOR_STEREO: Self = Self(u32::from_be_bytes(*b"dch2"));
+
+    /// An AudioChannelLayout that indicates how each channel of the AudioDevice
+    /// should be used.
+    #[doc(alias = "kAudioDevicePropertyPreferredChannelLayout")]
+    pub const PREFERRED_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"srnd"));
+}

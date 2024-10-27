@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, at::AudioBufListN, core_audio, os};
+use crate::{arc, at::AudioBufListN, cf, core_audio, os};
 
 use super::{
     AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
@@ -76,6 +76,14 @@ impl core_audio::AudioObjId {
 
     pub fn output_stream_cfg(&self) -> os::Result<AudioBufListN> {
         self.stream_cfg(AudioObjPropScope::OUTPUT)
+    }
+
+    pub fn name(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::NAME,
+            scope: AudioObjPropScope::WILDCARD,
+            element: AudioObjPropElement::WILDCARD,
+        })
     }
 
     #[doc(alias = "AudioObjectGetPropertyDataSize")]
