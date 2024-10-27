@@ -1,4 +1,7 @@
+use crate::four_cc_to_str;
+
 #[doc(alias = "AudioDeviceID")]
+#[doc(alias = "AudioObjectID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct AudioObjId(pub u32);
@@ -9,14 +12,34 @@ pub struct AudioObjId(pub u32);
 pub struct AudioObjClassId(pub u32);
 
 #[doc(alias = "AudioObjectPropertySelector")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct AudioObjPropSelector(pub u32);
 
+impl std::fmt::Debug for AudioObjPropSelector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut fcc = self.0.to_be_bytes();
+        f.debug_struct("AudioObjPropSelector")
+            .field("raw", &self.0)
+            .field("fcc", &four_cc_to_str(&mut fcc))
+            .finish()
+    }
+}
+
 #[doc(alias = "AudioObjectPropertyScope")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct AudioObjPropScope(pub u32);
+
+impl std::fmt::Debug for AudioObjPropScope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut fcc = self.0.to_be_bytes();
+        f.debug_struct("AudioObjPropScope")
+            .field("raw", &self.0)
+            .field("fcc", &four_cc_to_str(&mut fcc))
+            .finish()
+    }
+}
 
 #[doc(alias = "AudioObjectPropertyElement")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -46,16 +69,19 @@ impl AudioObjPropScope {
 
     /// The AudioObjectPropertyScope for properties that apply to the input side of
     /// an object.
+    #[doc(alias = "kAudioDevicePropertyScopeInput")]
     #[doc(alias = "kAudioObjectPropertyScopeInput")]
     pub const INPUT: Self = Self(u32::from_be_bytes(*b"inpt"));
 
     /// The AudioObjectPropertyScope for properties that apply to the output side of
     /// an object.
+    #[doc(alias = "kAudioDevicePropertyScopeOutput")]
     #[doc(alias = "kAudioObjectPropertyScopeOutput")]
     pub const OUTPUT: Self = Self(u32::from_be_bytes(*b"outp"));
 
     /// The AudioObjectPropertyScope for properties that apply to the play through
     /// side of an object.
+    #[doc(alias = "kAudioDevicePropertyScopePlayThrough")]
     #[doc(alias = "kAudioObjectPropertyScopePlayThrough")]
     pub const PLAY_THROUGH: Self = Self(u32::from_be_bytes(*b"ptru"));
 

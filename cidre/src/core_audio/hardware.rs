@@ -10,25 +10,33 @@ impl core_audio::AudioObjId {
     #[doc(alias = "kAudioObjectSystemObject")]
     pub const SYS_OBJECT: Self = Self(1);
 
-    pub fn hardware_devices(&self) -> os::Result<Vec<Self>> {
-        self.prop_vec::<Self>(&AudioObjPropAddr {
+    pub fn hardware_devices() -> os::Result<Vec<Self>> {
+        Self::SYS_OBJECT.prop_vec::<Self>(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEVICES,
             scope: AudioObjPropScope::GLOBAL,
             element: AudioObjPropElement::WILDCARD,
         })
     }
 
-    pub fn default_input_device(&self) -> os::Result<Self> {
-        self.prop(&AudioObjPropAddr {
+    pub fn default_input_device() -> os::Result<Self> {
+        Self::SYS_OBJECT.prop(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
             scope: AudioObjPropScope::GLOBAL,
             element: AudioObjPropElement::MAIN,
         })
     }
 
-    pub fn default_output_device(&self) -> os::Result<Self> {
-        self.prop(&AudioObjPropAddr {
+    pub fn default_output_device() -> os::Result<Self> {
+        Self::SYS_OBJECT.prop(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEFAULT_OUTPUT_DEVICE,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        })
+    }
+
+    pub fn nominal_sample_rate(&self) -> os::Result<f64> {
+        self.prop(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::NOMINAL_SAMPLE_RATE,
             scope: AudioObjPropScope::GLOBAL,
             element: AudioObjPropElement::MAIN,
         })
@@ -304,6 +312,383 @@ impl core_audio::AudioObjPropSelector {
     /// aggregate devices, just real, physical devices.
     #[doc(alias = "kAudioDevicePropertyProcessMute")]
     pub const PROCESS_MUTE: Self = Self(u32::from_be_bytes(*b"appm"));
+}
+
+/// AudioDevice Properties Implemented via AudioControl objects
+///
+/// AudioObjectPropertySelector values for AudioDevice properties that are
+/// implemented by AudioControl objects.
+///
+/// These properties are also accessible by locating the AudioControl object
+/// attached to the AudioDevice and using that object to access the properties of
+/// the control.
+impl core_audio::AudioObjPropSelector {
+    /// A u32 where a value of 0 means that there isn't anything plugged into the
+    /// jack associated withe given element and scope. This property is implemented
+    /// by an AudioJackControl, a subclass of AudioBooleanControl.
+    #[doc(alias = "kAudioDevicePropertyJackIsConnected")]
+    pub const JACK_IS_CONNECTED: Self = Self(u32::from_be_bytes(*b"jack"));
+
+    /// A f32 that represents the value of the volume control. The range is
+    /// between 0.0 and 1.0 (inclusive). Note that the set of all Float32 values
+    /// between 0.0 and 1.0 inclusive is much larger than the set of actual values
+    /// that the hardware can select. This means that the Float32 range has a many
+    /// to one mapping with the underlying hardware values. As such, setting a
+    /// scalar value will result in the control taking on the value nearest to what
+    /// was set. This property is implemented by an AudioControl object that is a
+    /// subclass of AudioVolumeControl.
+    #[doc(alias = "kAudioDevicePropertyVolumeScalar")]
+    pub const VOLUME_SCALAR: Self = Self(u32::from_be_bytes(*b"volm"));
+
+    /// A f32 that represents the value of the volume control in dB. Note that
+    /// the set of all f32 values in the dB range for the control is much larger
+    /// than the set of actual values that the hardware can select. This means that
+    /// the f32 range has a many to one mapping with the underlying hardware
+    /// values. As such, setting a dB value will result in the control taking on the
+    /// value nearest to what was set. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioVolumeControl.
+    #[doc(alias = "kAudioDevicePropertyVolumeDecibels")]
+    pub const VOLUME_DECIBELS: Self = Self(u32::from_be_bytes(*b"vold"));
+
+    /// An AudioValueRange that contains the minimum and maximum dB values the
+    /// control can have. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioVolumeControl.
+    #[doc(alias = "kAudioDevicePropertyVolumeRangeDecibels")]
+    pub const VOLUME_RANGE_DECIBELS: Self = Self(u32::from_be_bytes(*b"vdb#"));
+
+    /// A f32 that on input contains a scalar volume value for the and on exit
+    /// contains the equivalent dB value. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioVolumeControl.
+    #[doc(alias = "kAudioDevicePropertyVolumeScalarToDecibels")]
+    pub const VOLUME_SCALAR_TO_DECIBELS: Self = Self(u32::from_be_bytes(*b"v2db"));
+
+    /// A f32 that on input contains a dB volume value for the and on exit
+    /// contains the equivalent scalar value. This property is implemented by
+    /// AudioControl object that is a subclass of AudioVolumeControl.
+    #[doc(alias = "kAudioDevicePropertyVolumeDecibelsToScalar")]
+    pub const VOLUME_DECIBELS_TO_SCALAR: Self = Self(u32::from_be_bytes(*b"db2v"));
+
+    /// A f32 where 0.0 is full left, 1.0 is full right, and 0.5 is center. This
+    /// property is implemented by an AudioControl object that is a subclass of
+    /// AudioStereoPanControl.
+    #[doc(alias = "kAudioDevicePropertyStereoPan")]
+    pub const STEREO_PAN: Self = Self(u32::from_be_bytes(*b"span"));
+
+    /// An array of two u32s that indicate which elements of the owning object
+    /// the signal is being panned between. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioStereoPanControl.
+    #[doc(alias = "kAudioDevicePropertyStereoPanChannels")]
+    pub const STEREO_PAN_CHANNELS: Self = Self(u32::from_be_bytes(*b"spn#"));
+
+    /// A u32 where a value of 1 means that mute is enabled making that element
+    /// inaudible. The property is implemented by an AudioControl object that is a
+    /// subclass of AudioMuteControl.
+    #[doc(alias = "kAudioDevicePropertyMute")]
+    pub const MUTE: Self = Self(u32::from_be_bytes(*b"mute"));
+
+    /// A u32 where a value of 1 means that just that element is audible and the
+    /// other elements are inaudible. The property is implemented by an AudioControl
+    /// object that is a subclass of AudioSoloControl.
+    #[doc(alias = "kAudioDevicePropertySolo")]
+    pub const SOLO: Self = Self(u32::from_be_bytes(*b"solo"));
+
+    /// A u32 where a value of 1 means that the AudioDevice has enabled phantom
+    /// power for the given element. The property is implemented by an AudioControl
+    /// object that is a subclass of AudioPhantomPowerControl.
+    #[doc(alias = "kAudioDevicePropertyPhantomPower")]
+    pub const PHANTOM_POWER: Self = Self(u32::from_be_bytes(*b"phan"));
+
+    /// A u32 where a value of 1 means that phase of the signal for the given
+    /// element has been flipped 180 degrees. The property is implemented by an
+    /// AudioControl object that is a subclass of AudioPhaseInvertControl.
+    #[doc(alias = "kAudioDevicePropertyPhaseInvert")]
+    pub const PHASE_INVERT: Self = Self(u32::from_be_bytes(*b"phsi"));
+
+    /// A u32 where a value of 1 means that the signal for the element has
+    /// exceeded the sample range. Once a clip light is turned on, it is to stay on
+    /// until either the value of the control is set to false or the current IO
+    /// session stops and a new IO session starts. The property is implemented by an
+    /// AudioControl object that is a subclass of AudioClipLightControl.
+    #[doc(alias = "kAudioDevicePropertyClipLight")]
+    pub const CLIP_LIGHT: Self = Self(u32::from_be_bytes(*b"clip"));
+
+    /// A u32 where a value of 1 means that the talkback channel is enabled. The
+    /// property is implemented by an AudioControl object that is a subclass of
+    /// AudioTalkbackControl.
+    #[doc(alias = "kAudioDevicePropertyTalkback")]
+    pub const TALKBACK: Self = Self(u32::from_be_bytes(*b"talb"));
+
+    /// A u32 where a value of 1 means that the listenback channel is enabled.
+    /// The property is implemented by an AudioControl object that is a subclass of
+    /// AudioListenbackControl.
+    #[doc(alias = "kAudioDevicePropertyListenback")]
+    pub const LISTENBACK: Self = Self(u32::from_be_bytes(*b"lsnb"));
+
+    /// An array of u32s whose values are the item IDs for the currently selected
+    /// data sources. This property is implemented by an AudioControl object that is
+    /// a subclass of AudioDataSourceControl.
+    #[doc(alias = "kAudioDevicePropertyDataSource")]
+    pub const DATA_SRC: Self = Self(u32::from_be_bytes(*b"ssrc"));
+
+    /// An array of u32s that are represent all the IDs of all the data sources
+    /// currently available. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioDataSourceControl.
+    #[doc(alias = "kAudioDevicePropertyDataSources")]
+    pub const DATA_SRCS: Self = Self(u32::from_be_bytes(*b"ssc#"));
+
+    /// This property translates the given data source item ID into a human readable
+    /// name using an AudioValueTranslation structure. The input data is the u32
+    /// containing the item ID to translated and the output data is a cf::String. The
+    /// caller is responsible for releasing the returned cf::Object. This property is
+    /// implemented by an AudioControl object that is a subclass of
+    /// AudioDataSourceControl.
+    #[doc(alias = "kAudioDevicePropertyDataSourceNameForIDCFString")]
+    pub const DATA_SRC_NAME_FOR_IDCF_STR: Self = Self(u32::from_be_bytes(*b"lscn"));
+
+    /// This property returns a u32 that identifies the kind of data source
+    /// the item ID refers to using an AudioValueTranslation structure. The input
+    /// data is the u32 containing the item ID and the output data is the u32.
+    #[doc(alias = "kAudioDevicePropertyDataSourceKindForID")]
+    pub const DATA_SRC_KIND_FOR_ID: Self = Self(u32::from_be_bytes(*b"ssck"));
+
+    /// An array of u32s whose values are the item IDs for the currently selected
+    /// clock sources. This property is implemented by an AudioControl object that
+    /// is a subclass of AudioClockControl.
+    #[doc(alias = "kAudioDevicePropertyClockSource")]
+    pub const CLOCK_SRC: Self = Self(u32::from_be_bytes(*b"csrc"));
+
+    /// An array of u32s that are represent all the IDs of all the clock sources
+    /// currently available. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioClockControl.
+    #[doc(alias = "kAudioDevicePropertyClockSources")]
+    pub const CLOCK_SRCS: Self = Self(u32::from_be_bytes(*b"csc#"));
+
+    /// This property translates the given clock source item ID into a human
+    /// readable name using an AudioValueTranslation structure. The input data is
+    /// the u32 containing the item ID to translated and the output data is a
+    /// cf::String. The caller is responsible for releasing the returned cf::Object.
+    /// This property is implemented by an AudioControl object that is a subclass of
+    /// AudioClockControl.
+    #[doc(alias = "kAudioDevicePropertyClockSourceNameForIDCFString")]
+    pub const CLOCK_SRC_NAME_FOR_IDCF_STR: Self = Self(u32::from_be_bytes(*b"lcsn"));
+
+    /// This property returns a u32 that identifies the kind of clock source
+    /// the item ID refers to using an AudioValueTranslation structure. The input
+    /// data is the u32 containing the item ID and the output data is the u32.
+    #[doc(alias = "kAudioDevicePropertyClockSourceKindForID")]
+    pub const CLOCK_SRC_KIND_FOR_ID: Self = Self(u32::from_be_bytes(*b"csck"));
+
+    /// A u32 where a value of 0 means that play through is off and a value of 1
+    /// means that it is on. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioMuteControl. Further, the control that implements
+    /// this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThru")]
+    pub const PLAY_THRU: Self = Self(u32::from_be_bytes(*b"thru"));
+
+    /// A u32 where a value of 1 means that just that play through element is
+    /// audible and the other elements are inaudible. The property is implemented by
+    /// an AudioControl object that is a subclass of AudioSoloControl. Further, the
+    /// control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruSolo")]
+    pub const PLAY_THRU_SOLO: Self = Self(u32::from_be_bytes(*b"thrs"));
+
+    /// A f32 that represents the value of the volume control. The range is
+    /// between 0.0 and 1.0 (inclusive). Note that the set of all f32 values
+    /// between 0.0 and 1.0 inclusive is much larger than the set of actual values
+    /// that the hardware can select. This means that the f32 range has a many
+    /// to one mapping with the underlying hardware values. As such, setting a
+    /// scalar value will result in the control taking on the value nearest to what
+    /// was set. This property is implemented by an AudioControl object that is a
+    /// subclass of AudioVolumeControl.Further, the control that implements this
+    /// property is only available through kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruVolumeScalar")]
+    pub const PLAY_THRU_VOLUME_SCALAR: Self = Self(u32::from_be_bytes(*b"mvsc"));
+
+    /// A f32 that represents the value of the volume control in dB. Note that
+    /// the set of all f32 values in the dB range for the control is much larger
+    /// than the set of actual values that the hardware can select. This means that
+    /// the f32 range has a many to one mapping with the underlying hardware
+    /// values. As such, setting a dB value will result in the control taking on the
+    /// value nearest to what was set. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioVolumeControl. Further, the
+    /// control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruVolumeDecibels")]
+    pub const PLAY_THRU_VOLUME_DECIBELS: Self = Self(u32::from_be_bytes(*b"mvdb"));
+
+    /// An AudioValueRange that contains the minimum and maximum dB values the
+    /// control can have. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioVolumeControl. Further, the control that
+    /// implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruVolumeRangeDecibels")]
+    pub const PLAY_THRU_VOLUME_RANGE_DECIBELS: Self = Self(u32::from_be_bytes(*b"mvd#"));
+
+    /// A f32 that on input contains a scalar volume value for the and on exit
+    /// contains the equivalent dB value. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioVolumeControl. Further, the
+    /// control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruVolumeScalarToDecibels")]
+    pub const PLAY_THRU_VOLUME_SCALAR_TO_DECIBELS: Self = Self(u32::from_be_bytes(*b"mv2d"));
+
+    /// A f32 that on input contains a dB volume value for the and on exit
+    /// contains the equivalent scalar value. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioVolumeControl. Further, the
+    /// control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruVolumeDecibelsToScalar")]
+    pub const PLAY_THRU_VOLUME_DECIBELS_TO_SCALAR: Self = Self(u32::from_be_bytes(*b"mv2s"));
+
+    /// A f32 where 0.0 is full left, 1.0 is full right, and 0.5 is center. This
+    /// property is implemented by an AudioControl object that is a subclass of
+    /// AudioStereoPanControl. Further, the control that implements this property is
+    /// only available through kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruStereoPan")]
+    pub const PLAY_THRU_STEREO_PAN: Self = Self(u32::from_be_bytes(*b"mspn"));
+
+    /// An array of two u32s that indicate which elements of the owning object
+    /// the signal is being panned between. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioStereoPanControl. Further,
+    /// the control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruStereoPanChannels")]
+    pub const PLAY_THRU_STEREO_PAN_CHANNELS: Self = Self(u32::from_be_bytes(*b"msp#"));
+
+    /// An array of u32s whose values are the item IDs for the currently selected
+    /// play through data destinations. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioDataDestinationControl.
+    /// Further, the control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruDestination")]
+    pub const PLAY_THRU_DST: Self = Self(u32::from_be_bytes(*b"mdds"));
+
+    /// An array of u32s that are represent all the IDs of all the play through
+    /// data destinations currently available. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioDataDestinationControl.
+    /// Further, the control that implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruDestinations")]
+    pub const PLAY_THRU_DSTS: Self = Self(u32::from_be_bytes(*b"mdd#"));
+
+    /// This property translates the given play through data destination item ID
+    /// into a human readable name using an AudioValueTranslation structure. The
+    /// input data is the u32 containing the item ID to translated and the output
+    /// data is a cf::String. The caller is responsible for releasing the returned
+    /// cf::Object. This property is implemented by an AudioControl object that is a
+    /// subclass of AudioDataDestinationControl. Further, the control that
+    /// implements this property is only available through
+    /// kAudioDevicePropertyScopePlayThrough.
+    #[doc(alias = "kAudioDevicePropertyPlayThruDestinationNameForIDCFString")]
+    pub const PLAY_THRU_DST_NAME_FOR_IDCF_STR: Self = Self(u32::from_be_bytes(*b"mddc"));
+
+    /// An array of u32s whose values are the item IDs for the currently selected
+    /// nominal line levels. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioLineLevelControl.
+    #[doc(alias = "kAudioDevicePropertyChannelNominalLineLevel")]
+    pub const CHANNEL_NOMINAL_LINE_LEVEL: Self = Self(u32::from_be_bytes(*b"nlvl"));
+
+    /// An array of u32s that represent all the IDs of all the nominal line
+    /// levels currently available. This property is implemented by an AudioControl
+    /// object that is a subclass of AudioLineLevelControl.
+    #[doc(alias = "kAudioDevicePropertyChannelNominalLineLevels")]
+    pub const CHANNEL_NOMINAL_LINE_LEVELS: Self = Self(u32::from_be_bytes(*b"nlv#"));
+
+    /// This property translates the given nominal line level item ID into a human
+    /// readable name using an AudioValueTranslation structure. The input data is
+    /// the u32 containing the item ID to be translated and the output data is a
+    /// cf::String. The caller is responsible for releasing the returned cf::Object.
+    /// This property is implemented by an AudioControl object that is a subclass of
+    /// AudioLineLevelControl.
+    #[doc(alias = "kAudioDevicePropertyChannelNominalLineLevelNameForIDCFString")]
+    pub const CHANNEL_NOMINAL_LINE_LEVEL_NAME_FOR_IDCF_STR: Self =
+        Self(u32::from_be_bytes(*b"lcnl"));
+
+    /// An array of u32s whose values are the item IDs for the currently selected
+    /// high pass filter setting. This property is implemented by an AudioControl
+    /// object that is a subclass of AudioHighPassFilterControl.
+    #[doc(alias = "kAudioDevicePropertyHighPassFilterSetting")]
+    pub const HIGH_PASS_FILTER_SETTING: Self = Self(u32::from_be_bytes(*b"hipf"));
+
+    /// An array of u32s that represent all the IDs of all the high pass filter
+    /// settings currently available. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioHighPassFilterControl.
+    #[doc(alias = "kAudioDevicePropertyHighPassFilterSettings")]
+    pub const HIGH_PASS_FILTER_SETTINGS: Self = Self(u32::from_be_bytes(*b"hip#"));
+
+    /// This property translates the given high pass filter setting item ID into a
+    /// human readable name using an AudioValueTranslation structure. The input data
+    /// is the u32 containing the item ID to be translated and the output data is
+    /// a cf::String. The caller is responsible for releasing the returned cf::Object.
+    /// This property is implemented by an AudioControl object that is a subclass of
+    /// AudioHighPassFilterControl.
+    #[doc(alias = "kAudioDevicePropertyHighPassFilterSettingNameForIDCFString")]
+    pub const HIGH_PASS_FILTER_SETTING_NAME_FOR_IDCF_STR: Self = Self(u32::from_be_bytes(*b"hipl"));
+
+    /// A f32 that represents the value of the LFE volume control. The range is
+    /// between 0.0 and 1.0 (inclusive). Note that the set of all f32 values
+    /// between 0.0 and 1.0 inclusive is much larger than the set of actual values
+    /// that the hardware can select. This means that the f32 range has a many
+    /// to one mapping with the underlying hardware values. As such, setting a
+    /// scalar value will result in the control taking on the value nearest to what
+    /// was set. This property is implemented by an AudioControl object that is a
+    /// subclass of AudioLFEVolumeControl.
+    #[doc(alias = "kAudioDevicePropertySubVolumeScalar")]
+    pub const SUB_VOLUME_SCALAR: Self = Self(u32::from_be_bytes(*b"svlm"));
+
+    /// A f32 that represents the value of the LFE volume control in dB. Note
+    /// that the set of all f32 values in the dB range for the control is much
+    /// larger than the set of actual values that the hardware can select. This
+    /// means that the f32 range has a many to one mapping with the underlying
+    /// hardware values. As such, setting a dB value will result in the control
+    /// taking on the value nearest to what was set. This property is implemented by
+    /// an AudioControl object that is a subclass of AudioLFE VolumeControl.
+    #[doc(alias = "kAudioDevicePropertySubVolumeDecibels")]
+    pub const SUB_VOLUME_DECIBELS: Self = Self(u32::from_be_bytes(*b"svld"));
+
+    /// An AudioValueRange that contains the minimum and maximum dB values the
+    /// control can have. This property is implemented by an AudioControl object
+    /// that is a subclass of AudioLFEVolumeControl.
+    #[doc(alias = "kAudioDevicePropertySubVolumeRangeDecibels")]
+    pub const SUB_VOLUME_RANGE_DECIBELS: Self = Self(u32::from_be_bytes(*b"svd#"));
+
+    /// A f32 that on input contains a scalar volume value for the and on exit
+    /// contains the equivalent dB value. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioLFEVolumeControl.
+    #[doc(alias = "kAudioDevicePropertySubVolumeScalarToDecibels")]
+    pub const SUB_VOLUME_SCALAR_TO_DECIBELS: Self = Self(u32::from_be_bytes(*b"sv2d"));
+
+    /// A f32 that on input contains a dB volume value for the and on exit
+    /// contains the equivalent scalar value. This property is implemented by an
+    /// AudioControl object that is a subclass of AudioLFEVolumeControl.
+    #[doc(alias = "kAudioDevicePropertySubVolumeDecibelsToScalar")]
+    pub const SUB_VOLUME_DECIBELS_TO_SCALAR: Self = Self(u32::from_be_bytes(*b"sd2v"));
+
+    /// A u32 where a value of 1 means that mute is enabled making the LFE on
+    ///
+    /// that element inaudible. The property is implemented by an AudioControl
+    /// object that is a subclass of AudioLFEMuteControl.
+    #[doc(alias = "kAudioDevicePropertySubMute")]
+    pub const SUB_MUTE: Self = Self(u32::from_be_bytes(*b"smut"));
+
+    /// A u32 where 0 disables voice activity detection process and non-zero enables it.
+    ///
+    /// Voice activity detection can be used with input audio and has echo cancellation.
+    /// Detection works when a process mute is used, but not with hardware mute.
+    #[doc(alias = "kAudioDevicePropertyVoiceActivityDetectionEnable")]
+    pub const VOICE_ACTIVITY_DETECTION_ENABLE: Self = Self(u32::from_be_bytes(*b"vAd+"));
+
+    /// A read-only u32 where 0 indicates no voice currently detected and 1 indicates voice.
+    ///
+    /// Used in conjunction with VOICE_ACTIVITY_DETECTION_ENABLE.
+    /// A client would normally register to listen to this property for changes and then query
+    /// the state rather than continuously poll the value.
+    /// NOTE: If input audio is not active/runnning or the voice activity detection is disabled,
+    /// then it is not analyzed and this will provide 0.
+    #[doc(alias = "kAudioDevicePropertyVoiceActivityDetectionState")]
+    pub const VOICE_ACTIVITY_DETECTION_STATE: Self = Self(u32::from_be_bytes(*b"vAdS"));
 }
 
 #[link(name = "CoreAudio", kind = "framework")]

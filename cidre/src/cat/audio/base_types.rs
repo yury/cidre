@@ -42,6 +42,7 @@ pub mod errors {
 }
 
 /// This structure holds a pair of numbers that represent a continuous range of values.
+#[doc(alias = "AudioValueRange")]
 #[derive(Debug, PartialEq, Clone, Copy)]
 #[repr(C)]
 pub struct ValueRange {
@@ -59,6 +60,7 @@ impl Default for ValueRange {
 }
 
 /// A structure to hold a buffer of audio data.
+#[doc(alias = "AudioBuffer")]
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct Buf {

@@ -1,18 +1,9 @@
 use cidre::{
     at::{
         self, au,
-        audio::{
-            self,
-            component::{InitializedState, UninitializedState},
-        },
-        AudioBufList,
+        audio::component::{InitializedState, UninitializedState},
     },
-    cat::AudioBasicStreamDesc,
-    cf,
-    core_audio::{
-        self, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
-    },
-    os, vdsp,
+    core_audio, os, vdsp,
 };
 
 #[derive(Default)]
@@ -77,6 +68,7 @@ impl Ctx {
 
 #[tokio::main]
 async fn main() {
+    let input = core_audio::AudioObjId::default_input_device().unwrap();
     let output = au::Output::new_apple_vp().unwrap();
     let input_device = output.input_device().unwrap();
     let asbd = output
@@ -85,13 +77,7 @@ async fn main() {
 
     println!("format {:#?}", asbd);
 
-    let name = input_device
-        .cf_prop::<cf::String>(&AudioObjPropAddr {
-            selector: AudioObjPropSelector::NAME,
-            scope: AudioObjPropScope::GLOBAL,
-            element: AudioObjPropElement::MAIN,
-        })
-        .expect("Failed to device name property");
+    let name = input_device.name().expect("Failed to device name property");
 
     println!("input device: {name}");
 
