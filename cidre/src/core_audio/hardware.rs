@@ -1,10 +1,22 @@
 use std::ffi::c_void;
 
-use crate::{arc, at::AudioBufListN, cf, core_audio, os};
+use crate::{arc, at::AudioBufListN, blocks, cf, core_audio, dispatch, os};
 
 use super::{
     AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
 };
+
+#[doc(alias = "AudioObjectPropertyListenerProc")]
+pub type AudioObjPropListenerFn<T = c_void> = extern "C-unwind" fn(
+    obj_id: core_audio::AudioObjId,
+    number_addresses: u32,
+    addresses: *const AudioObjPropAddr,
+    client_data: *mut T,
+) -> os::Status;
+
+#[doc(alias = "AudioObjectPropertyListenerBlock")]
+pub type AudioObjPropListenerBlock =
+    blocks::EscBlock<fn(number_addresses: u32, addresses: *const AudioObjPropAddr)>;
 
 impl core_audio::AudioObjId {
     #[doc(alias = "kAudioObjectSystemObject")]
@@ -169,8 +181,70 @@ impl core_audio::AudioObjId {
         }
     }
 
+    #[doc(alias = "AudioObjectShow")]
     pub fn show(&self) {
         unsafe { AudioObjectShow(*self) }
+    }
+
+    #[doc(alias = "AudioObjectAddPropertyListener")]
+    pub fn add_prop_listener<T>(
+        &self,
+        address: &AudioObjPropAddr,
+        listener: &AudioObjPropListenerFn<T>,
+        client_data: *mut T,
+    ) -> os::Result {
+        unsafe {
+            AudioObjectAddPropertyListener(
+                *self,
+                address,
+                std::mem::transmute(listener),
+                client_data.cast(),
+            )
+            .result()
+        }
+    }
+
+    #[doc(alias = "AudioObjectRemovePropertyListener")]
+    pub fn remove_prop_listener<T>(
+        &self,
+        address: &AudioObjPropAddr,
+        listener: &AudioObjPropListenerFn<T>,
+        client_data: *mut T,
+    ) -> os::Result {
+        unsafe {
+            AudioObjectRemovePropertyListener(
+                *self,
+                address,
+                std::mem::transmute(listener),
+                client_data.cast(),
+            )
+            .result()
+        }
+    }
+
+    #[doc(alias = "AudioObjectAddPropertyListenerBlock")]
+    pub fn add_prop_listener_block(
+        &self,
+        address: &AudioObjPropAddr,
+        dispatch_queue: Option<&dispatch::Queue>,
+        listener: &mut AudioObjPropListenerBlock,
+    ) -> os::Result {
+        unsafe {
+            AudioObjectAddPropertyListenerBlock(*self, address, dispatch_queue, listener).result()
+        }
+    }
+
+    #[doc(alias = "AudioObjectRemovePropertyListenerBlock")]
+    pub fn remove_prop_listener_block(
+        &self,
+        address: &AudioObjPropAddr,
+        dispatch_queue: Option<&dispatch::Queue>,
+        listener: &mut AudioObjPropListenerBlock,
+    ) -> os::Result {
+        unsafe {
+            AudioObjectRemovePropertyListenerBlock(*self, address, dispatch_queue, listener)
+                .result()
+        }
     }
 }
 
@@ -738,6 +812,34 @@ extern "C-unwind" {
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
         data_size: *mut u32,
+    ) -> os::Status;
+
+    fn AudioObjectAddPropertyListener(
+        objectId: AudioObjId,
+        address: *const AudioObjPropAddr,
+        listener: AudioObjPropListenerFn,
+        client_data: *mut c_void,
+    ) -> os::Status;
+
+    fn AudioObjectRemovePropertyListener(
+        objectId: AudioObjId,
+        address: *const AudioObjPropAddr,
+        listener: AudioObjPropListenerFn,
+        client_data: *mut c_void,
+    ) -> os::Status;
+
+    fn AudioObjectAddPropertyListenerBlock(
+        objectId: AudioObjId,
+        address: *const AudioObjPropAddr,
+        dispatch_queue: Option<&dispatch::Queue>,
+        listener: *mut AudioObjPropListenerBlock,
+    ) -> os::Status;
+
+    fn AudioObjectRemovePropertyListenerBlock(
+        objectId: AudioObjId,
+        address: *const AudioObjPropAddr,
+        dispatch_queue: Option<&dispatch::Queue>,
+        listener: *mut AudioObjPropListenerBlock,
     ) -> os::Status;
 
 }
