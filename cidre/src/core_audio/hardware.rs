@@ -30,7 +30,7 @@ impl core_audio::AudioObjId {
         })
     }
 
-    pub fn default_input_device() -> os::Result<Self> {
+    pub fn hardware_default_input_device() -> os::Result<Self> {
         Self::SYS_OBJECT.prop(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
             scope: AudioObjPropScope::GLOBAL,
@@ -38,7 +38,7 @@ impl core_audio::AudioObjId {
         })
     }
 
-    pub fn default_output_device() -> os::Result<Self> {
+    pub fn hardware_default_output_device() -> os::Result<Self> {
         Self::SYS_OBJECT.prop(&AudioObjPropAddr {
             selector: AudioObjPropSelector::HARDWARE_DEFAULT_OUTPUT_DEVICE,
             scope: AudioObjPropScope::GLOBAL,
