@@ -4,28 +4,25 @@ use std::{
     ops::{Deref, Index, IndexMut},
 };
 
-use crate::{
-    arc, define_cls, ns,
-    objc::{self, Class, Obj},
-};
+use crate::{arc, define_cls, ns, objc};
 
 #[doc(alias = "NSArray")]
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct Array<T: Obj>(ns::Id, PhantomData<T>);
+pub struct Array<T: objc::Obj>(ns::Id, PhantomData<T>);
 
-unsafe impl<T: Obj> Send for Array<T> where T: Send {}
+unsafe impl<T: objc::Obj> Send for Array<T> where T: Send {}
 
-impl<T: Obj> Obj for Array<T> where T: Obj {}
+impl<T: objc::Obj> objc::Obj for Array<T> where T: objc::Obj {}
 
 #[doc(alias = "NSMutableArray")]
 #[derive(Debug)]
 #[repr(transparent)]
-pub struct ArrayMut<T: Obj>(ns::Array<T>);
+pub struct ArrayMut<T: objc::Obj>(ns::Array<T>);
 
-impl<T: Obj> Obj for ArrayMut<T> {}
+impl<T: objc::Obj> objc::Obj for ArrayMut<T> {}
 
-impl<T: Obj> Deref for Array<T> {
+impl<T: objc::Obj> Deref for Array<T> {
     type Target = ns::Id;
 
     fn deref(&self) -> &Self::Target {
@@ -33,7 +30,7 @@ impl<T: Obj> Deref for Array<T> {
     }
 }
 
-impl<T: Obj> Deref for ArrayMut<T> {
+impl<T: objc::Obj> Deref for ArrayMut<T> {
     type Target = Array<T>;
 
     fn deref(&self) -> &Self::Target {
@@ -41,13 +38,13 @@ impl<T: Obj> Deref for ArrayMut<T> {
     }
 }
 
-impl<T: Obj> std::ops::DerefMut for ArrayMut<T> {
+impl<T: objc::Obj> std::ops::DerefMut for ArrayMut<T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
-impl<T: Obj> arc::A<Array<T>> {
+impl<T: objc::Obj> arc::A<Array<T>> {
     #[objc::msg_send(init)]
     pub fn init(self) -> arc::R<Array<T>>;
 
@@ -55,7 +52,7 @@ impl<T: Obj> arc::A<Array<T>> {
     pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<Array<T>>;
 }
 
-impl<T: Obj> Array<T> {
+impl<T: objc::Obj> Array<T> {
     define_cls!(NS_ARRAY);
 
     #[inline]
@@ -109,22 +106,22 @@ impl<T: Obj> Array<T> {
     }
 }
 
-impl<T: Obj> Index<usize> for Array<T> {
+impl<T: objc::Obj> Index<usize> for Array<T> {
     type Output = T;
 
     #[objc::msg_send(objectAtIndex:)]
     fn index(&self, index: usize) -> &Self::Output;
 }
 
-impl<T: Obj> IndexMut<usize> for Array<T>
+impl<T: objc::Obj> IndexMut<usize> for Array<T>
 where
-    T: Obj,
+    T: objc::Obj,
 {
     #[objc::msg_send(objectAtIndex:)]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output;
 }
 
-impl<T: Obj> arc::A<ArrayMut<T>> {
+impl<T: objc::Obj> arc::A<ArrayMut<T>> {
     #[objc::msg_send(initWithCapacity:)]
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<ArrayMut<T>>;
 
@@ -132,7 +129,7 @@ impl<T: Obj> arc::A<ArrayMut<T>> {
     pub unsafe fn init_with_objs(&self, ptr: *const &T, count: usize) -> arc::R<ArrayMut<T>>;
 }
 
-impl<T: Obj> ArrayMut<T> {
+impl<T: objc::Obj> ArrayMut<T> {
     define_cls!(NS_MUTABLE_ARRAY);
 
     #[inline]
@@ -176,22 +173,22 @@ impl<T: Obj> ArrayMut<T> {
     }
 }
 
-impl<T: Obj> arc::R<ArrayMut<T>> {
+impl<T: objc::Obj> arc::R<ArrayMut<T>> {
     pub fn freeze(self) -> arc::R<Array<T>> {
         unsafe { std::mem::transmute(self) }
     }
 }
 
-impl<T: Obj> ns::FastEnumeration<T> for Array<T> {}
-impl<T: Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
+impl<T: objc::Obj> ns::FastEnumeration<T> for Array<T> {}
+impl<T: objc::Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
 
-impl<T: Obj> From<&[&T]> for arc::R<Array<T>> {
+impl<T: objc::Obj> From<&[&T]> for arc::R<Array<T>> {
     fn from(value: &[&T]) -> Self {
         Array::from_slice(value)
     }
 }
 
-impl<T: Obj> From<&[arc::R<T>]> for arc::R<Array<T>> {
+impl<T: objc::Obj> From<&[arc::R<T>]> for arc::R<Array<T>> {
     fn from(value: &[arc::R<T>]) -> Self {
         Array::from_slice_retained(value)
     }
@@ -375,8 +372,8 @@ impl<const N: usize> From<[u32; N]> for arc::R<ns::Array<ns::Number>> {
 
 #[link(name = "ns", kind = "static")]
 extern "C" {
-    static NS_ARRAY: &'static Class<ns::Array<ns::Id>>;
-    static NS_MUTABLE_ARRAY: &'static Class<ns::ArrayMut<ns::Id>>;
+    static NS_ARRAY: &'static objc::Class<ns::Array<ns::Id>>;
+    static NS_MUTABLE_ARRAY: &'static objc::Class<ns::ArrayMut<ns::Id>>;
 }
 
 #[cfg(test)]
