@@ -1,6 +1,6 @@
 use std::ops::DerefMut;
 
-use crate::{arc, define_mtl, define_obj_type, define_opts, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 define_opts!(
     /// Describes how a resource will be used by a shader through an argument buffer
@@ -46,7 +46,13 @@ define_obj_type!(
 );
 
 impl CmdEncoder {
-    define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
+    define_mtl!(set_label, push_debug_group, pop_debug_group);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     /// Declares that all command generation from the encoder is completed.
     ///

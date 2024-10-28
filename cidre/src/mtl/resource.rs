@@ -1,6 +1,6 @@
 use std::mem::transmute;
 
-use crate::{define_mtl, define_obj_type, define_opts, mtl};
+use crate::{arc, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 /// Options for set_purgeable call.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -153,14 +153,18 @@ define_obj_type!(
 
 impl Res {
     define_mtl!(
-        device,
-        label,
         set_label,
         cpu_cache_mode,
         storage_mode,
         hazard_tracking_mode,
         res_opts
     );
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 }
 
 #[cfg(test)]

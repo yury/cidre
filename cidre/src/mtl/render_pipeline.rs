@@ -250,7 +250,13 @@ define_obj_type!(pub FnsDesc(ns::Id));
 define_obj_type!(pub State(ns::Id));
 
 impl State {
-    define_mtl!(device, label, gpu_resource_id);
+    define_mtl!(gpu_resource_id);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
@@ -358,7 +364,13 @@ define_obj_type!(
 );
 
 impl TileRenderPipelineDesc {
-    define_mtl!(reset, label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(tileFunction)]
     pub fn tile_fn(&self) -> &mtl::Fn;
@@ -394,7 +406,10 @@ impl TileRenderPipelineDesc {
 define_obj_type!(pub MeshRenderPipelineDesc(ns::Id));
 
 impl MeshRenderPipelineDesc {
-    define_mtl!(reset, label, set_label);
+    define_mtl!(reset, set_label);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     /// Optional shader function responsible for determining how many threadgroups of the mesh shader to run,
     /// can optionally provide payload data for the mesh stage.

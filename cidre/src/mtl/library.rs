@@ -17,7 +17,7 @@ define_obj_type!(
 
 impl VertexAttr {
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(attributeIndex)]
     pub fn attr_index(&self) -> usize;
@@ -260,7 +260,13 @@ define_obj_type!(
 );
 
 impl Fn {
-    define_mtl!(device, label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(name)]
     pub fn name(&self) -> arc::R<ns::String>;
@@ -295,7 +301,13 @@ define_obj_type!(
 unsafe impl Send for Lib {}
 
 impl Lib {
-    define_mtl!(device, label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     /// The array contains ns::String objects, with the name of each function in library.
     #[objc::msg_send(functionNames)]

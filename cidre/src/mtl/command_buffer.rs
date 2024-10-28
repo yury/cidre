@@ -55,7 +55,13 @@ define_obj_type!(
 );
 
 impl CmdBuf {
-    define_mtl!(device, label, set_label, push_debug_group, pop_debug_group);
+    define_mtl!(set_label, push_debug_group, pop_debug_group);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(commandQueue)]
     pub fn cmd_queue(&self) -> &mtl::CmdQueue;

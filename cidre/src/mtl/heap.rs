@@ -73,7 +73,13 @@ impl Desc {
 define_obj_type!(pub Heap(ns::Id));
 
 impl Heap {
-    define_mtl!(device, label, set_label, hazard_tracking_mode, res_opts);
+    define_mtl!(set_label, hazard_tracking_mode, res_opts);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;

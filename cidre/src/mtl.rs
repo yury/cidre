@@ -294,19 +294,9 @@ pub use capture_manager::CaptureManager;
 
 #[macro_export]
 macro_rules! define_mtl {
-    (device) => {
-        #[$crate::objc::msg_send(device)]
-        pub fn device(&self) -> &crate::mtl::Device;
-    };
-
     (set_label) => {
         #[$crate::objc::msg_send(setLabel:)]
         pub fn set_label(&mut self, val: Option<&crate::ns::String>);
-    };
-
-    (label) => {
-        #[$crate::objc::msg_send(label)]
-        pub fn label(&self) -> Option<&crate::ns::String>;
     };
 
     (width) => {

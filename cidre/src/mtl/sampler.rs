@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[doc(alias = "MTLSamplerMinMagFilter")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -47,7 +47,10 @@ define_obj_type!(
 );
 
 impl Desc {
-    define_mtl!(label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(minFilter)]
     pub fn min_filter(&self) -> MinMagFilter;
@@ -79,5 +82,11 @@ define_obj_type!(
     pub State(ns::Id));
 
 impl State {
-    define_mtl!(device, label, gpu_resource_id);
+    define_mtl!(gpu_resource_id);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 }

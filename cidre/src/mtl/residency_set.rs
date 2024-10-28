@@ -13,7 +13,10 @@ extern "C" {
 }
 
 impl ResidencySetDesc {
-    define_mtl!(label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     /// If non-zero, defines the number of allocations for which to initialize the internal arrays. Defaults to zero.
     #[objc::msg_send(initialCapacity)]
@@ -29,7 +32,11 @@ define_obj_type!(
 );
 
 impl ResidencySet {
-    define_mtl!(device, label);
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     /// The memory footprint of the set in bytes at the last commit operation.
     /// This may include internal allocations as well.

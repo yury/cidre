@@ -1,9 +1,15 @@
-use crate::{define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(pub ArgEncoder(ns::Id));
 
 impl ArgEncoder {
-    define_mtl!(device, label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(encodedLength)]
     pub fn encoded_len(&self) -> usize;

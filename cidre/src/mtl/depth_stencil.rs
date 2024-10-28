@@ -1,4 +1,4 @@
-use crate::{arc, define_mtl, define_obj_type, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 #[doc(alias = "MTLCompareFunction")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -151,7 +151,10 @@ impl DepthStencilDesc {
         self._set_back_face_stencil(None)
     }
 
-    define_mtl!(label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 }
 
 define_obj_type!(
@@ -161,7 +164,11 @@ define_obj_type!(
 );
 
 impl State {
-    define_mtl!(label, device);
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 }
 
 #[link(name = "mtl", kind = "static")]

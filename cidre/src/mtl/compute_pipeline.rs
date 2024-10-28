@@ -9,7 +9,10 @@ define_obj_type!(
 );
 
 impl Desc {
-    define_mtl!(label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(threadGroupSizeIsMultipleOfThreadExecutionWidth)]
     pub fn thread_group_size_is_multiple_of_thread_execution_width(&self) -> bool;
@@ -51,7 +54,13 @@ define_obj_type!(
 );
 
 impl State {
-    define_mtl!(device, label, gpu_resource_id);
+    define_mtl!(gpu_resource_id);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;

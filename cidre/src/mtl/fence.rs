@@ -1,4 +1,4 @@
-use crate::{define_mtl, define_obj_type, ns};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     /// An object that can capture, track, and manage resource dependencies
@@ -12,5 +12,11 @@ define_obj_type!(
 );
 
 impl Fence {
-    define_mtl!(device, label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 }

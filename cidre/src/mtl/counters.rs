@@ -1,4 +1,4 @@
-use crate::{arc, define_mtl, define_obj_type, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     /// A specialized memory buffer that stores a GPU’s counter set data.
@@ -7,7 +7,11 @@ define_obj_type!(
 );
 
 impl CounterSampleBuf {
-    define_mtl!(device, label);
+    #[objc::msg_send(device)]
+    pub fn device(&self) -> arc::R<mtl::Device>;
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 }
 
 #[derive(Debug)]
@@ -49,7 +53,10 @@ define_obj_type!(
 );
 
 impl Desc {
-    define_mtl!(label, set_label, storage_mode);
+    define_mtl!(set_label, storage_mode);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     /// The number of instances of a counter set’s data that a counter sample buffer can store.
     #[objc::msg_send(sampleCount)]

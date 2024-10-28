@@ -72,7 +72,10 @@ impl GeometryDesc {
     #[objc::msg_send(setAllowDuplicateIntersectionFunctionInvocation:)]
     pub fn set_allow_duplicate_intersection_fn_invocation(&mut self, val: bool);
 
-    define_mtl!(label, set_label);
+    define_mtl!(set_label);
+
+    #[objc::msg_send(label)]
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(primitiveDataBuffer)]
     pub fn primitive_data_buf(&self) -> Option<&mtl::Buf>;
