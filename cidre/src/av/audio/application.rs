@@ -39,6 +39,7 @@ pub enum MicInjectionPermission {
 }
 
 impl ns::NotificationName {
+    #[doc(alias = "AVAudioApplicationInputMuteStateChangeNotification")]
     #[inline]
     pub fn audio_app_input_mute_state_change() -> &'static Self {
         unsafe { AVAudioApplicationInputMuteStateChangeNotification }
@@ -53,12 +54,15 @@ define_obj_type!(
 impl App {
     define_cls!(AV_AUDIO_APPLICATION);
 
+    #[doc(alias = "AVAudioApplicationInputMuteStateChangeNotification")]
+    #[doc(alias = "AVAudioApplication.inputMuteStateChangeNotification")]
     #[inline]
     pub fn input_change_notification() -> &'static ns::NotificationName {
         ns::NotificationName::audio_app_input_mute_state_change()
     }
 
     #[doc(alias = "AVAudioApplicationMuteStateKey")]
+    #[doc(alias = "AVAudioApplication.muteStateKey")]
     #[inline]
     pub fn mute_state_key() -> &'static ns::String {
         unsafe { AVAudioApplicationMuteStateKey }
