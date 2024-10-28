@@ -190,7 +190,7 @@ impl core_audio::AudioObjId {
     pub fn add_prop_listener<T>(
         &self,
         address: &AudioObjPropAddr,
-        listener: &AudioObjPropListenerFn<T>,
+        listener: AudioObjPropListenerFn<T>,
         client_data: *mut T,
     ) -> os::Result {
         unsafe {
@@ -208,7 +208,7 @@ impl core_audio::AudioObjId {
     pub fn remove_prop_listener<T>(
         &self,
         address: &AudioObjPropAddr,
-        listener: &AudioObjPropListenerFn<T>,
+        listener: AudioObjPropListenerFn<T>,
         client_data: *mut T,
     ) -> os::Result {
         unsafe {

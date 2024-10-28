@@ -122,6 +122,62 @@ where
             &arg,
         )
     }
+
+    pub fn vp_mute_output(&mut self) -> os::Result<bool> {
+        let val: u32 = self.unit().prop(
+            au::PropId::VOICE_IO_MUTE_OUTPUT,
+            au::Scope::GLOBAL,
+            au::Element(1),
+        )?;
+        Ok(val == 1)
+    }
+
+    pub fn vp_set_mute_output(&mut self, arg: bool) -> os::Result {
+        let arg: u32 = arg as u32;
+        self.unit_mut().set_prop(
+            au::PropId::VOICE_IO_MUTE_OUTPUT,
+            au::Scope::GLOBAL,
+            au::Element(1),
+            &arg,
+        )
+    }
+
+    pub fn vp_enable_agc(&mut self) -> os::Result<bool> {
+        let val: u32 = self.unit().prop(
+            au::PropId::VOICE_IO_ENABLE_AGC,
+            au::Scope::GLOBAL,
+            au::Element(1),
+        )?;
+        Ok(val == 1)
+    }
+
+    pub fn vp_set_enable_agc(&mut self, arg: bool) -> os::Result {
+        let arg: u32 = arg as u32;
+        self.unit_mut().set_prop(
+            au::PropId::VOICE_IO_ENABLE_AGC,
+            au::Scope::GLOBAL,
+            au::Element(1),
+            &arg,
+        )
+    }
+    pub fn vp_bypass_voice_processing(&mut self) -> os::Result<bool> {
+        let val: u32 = self.unit().prop(
+            au::PropId::VOICE_IO_BYPASS_VOICE_PROCESSING,
+            au::Scope::GLOBAL,
+            au::Element(1),
+        )?;
+        Ok(val == 1)
+    }
+
+    pub fn vp_set_bypass_voice_processing(&mut self, arg: bool) -> os::Result {
+        let arg: u32 = arg as u32;
+        self.unit_mut().set_prop(
+            au::PropId::VOICE_IO_BYPASS_VOICE_PROCESSING,
+            au::Scope::GLOBAL,
+            au::Element(1),
+            &arg,
+        )
+    }
 }
 
 impl Output<UninitializedState> {
@@ -146,6 +202,10 @@ impl Output<UninitializedState> {
     }
 
     /// Apple voice processing unit
+    ///
+    /// Note: It is reported that the echo source need to be specified as the output device.
+    /// If no output device is specified, MacOS would take the default output device as echo source.
+    /// See [mumble-voip](https://github.com/mumble-voip/mumble/blob/70dea6077854d79d4cb60b3ed1e8f1f8f78963a5/src/mumble/CoreAudio.mm#L614)
     pub fn new_apple_vp() -> os::Result<Self> {
         let desc = audio::ComponentDesc {
             type_: au::Type::OUTPUT.0,
@@ -207,6 +267,7 @@ impl Output<UninitializedState> {
         )
     }
 
+    /// Set device after enable IO
     #[cfg(target_os = "macos")]
     #[inline]
     pub fn set_output_device(&mut self, val: AudioObjId) -> os::Result {
@@ -228,6 +289,7 @@ impl Output<UninitializedState> {
         )
     }
 
+    /// Set device after enable IO
     #[cfg(target_os = "macos")]
     #[inline]
     pub fn set_input_device(&mut self, val: AudioObjId) -> os::Result {
@@ -355,13 +417,55 @@ mod tests {
     #[test]
     fn voice_processing() {
         let output = au::Output::new_apple_vp().unwrap();
+
         let count = output.unit().element_count(au::Scope::INPUT);
         println!("input count {count:?}");
         let count = output.unit().element_count(au::Scope::OUTPUT);
         println!("output count {count:?}");
         let format = output.input_stream_format(BUS_IN).unwrap();
         eprintln!("{format:?}");
+
+        let output_device = output.input_device().unwrap();
+        let mut mute_count = 0usize;
+
+        extern "C-unwind" fn callback(
+            _obj_id: AudioObjId,
+            _number_addresses: u32,
+            _addresses: *const AudioObjPropAddr,
+            client_data: *mut usize,
+        ) -> os::Status {
+            unsafe { client_data.write(1) };
+            os::Status::NO_ERR
+        }
+
+        let mute_addr = AudioObjPropAddr {
+            selector: AudioObjPropSelector::MUTE,
+            scope: AudioObjPropScope::INPUT,
+            element: AudioObjPropElement::MAIN,
+        };
+
+        output_device
+            .add_prop_listener(&mute_addr, callback, &mut mute_count)
+            .unwrap();
+
+        output_device.set_prop(&mute_addr, &1u32).unwrap();
+
         let mut output = output.allocate_resources().unwrap();
+
+        assert_eq!(true, output.vp_mute_output().unwrap());
+        output.vp_set_mute_output(false).unwrap();
+        assert_eq!(false, output.vp_mute_output().unwrap());
+
+        assert_eq!(true, output.vp_enable_agc().unwrap());
+        output.vp_set_enable_agc(false).unwrap();
+        assert_eq!(false, output.vp_enable_agc().unwrap());
+
+        assert_eq!(false, output.vp_bypass_voice_processing().unwrap());
+        output.vp_set_bypass_voice_processing(true).unwrap();
+        assert_eq!(true, output.vp_bypass_voice_processing().unwrap());
+
+        assert_eq!(1, mute_count);
+
         output.start().unwrap();
         assert!(output.is_running().unwrap());
         output.stop().unwrap();
