@@ -24,7 +24,7 @@ impl Request {
     pub fn set_uses_cpu_only(&mut self, value: bool);
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::Observation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::Observation>>>;
 
     #[objc::msg_send(completionHandler)]
     pub fn completion_handler(&self) -> Option<arc::R<RequestCh>>;
@@ -71,7 +71,7 @@ impl DetectHorizonRequest {
     pub const REVISION_1: usize = 1;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::HorizonObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::HorizonObservation>>>;
 }
 
 #[link(name = "vn", kind = "static")]
