@@ -1,4 +1,4 @@
-use crate::{arc, blocks, define_cls, define_obj_type, mtl, ns, objc};
+use crate::{arc, blocks, cf, define_cls, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "MTKTextureLoader")]
@@ -92,6 +92,44 @@ impl TextureLoaderOpt {
     }
 }
 
+define_obj_type!(
+    #[doc(alias = "MTKTextureLoaderCubeLayout")]
+    pub TextureLoaderCubeLayout(ns::String)
+);
+
+impl TextureLoaderCubeLayout {
+    #[doc(alias = "MTKTextureLoaderCubeLayoutVertical")]
+    #[inline]
+    pub fn vertical() -> &'static Self {
+        unsafe { MTKTextureLoaderCubeLayoutVertical }
+    }
+}
+
+define_obj_type!(
+    #[doc(alias = "MTKTextureLoaderOrigin")]
+    pub TextureLoaderOrigin(ns::String)
+);
+
+impl TextureLoaderOrigin {
+    #[doc(alias = "MTKTextureLoaderOriginTopLeft")]
+    #[inline]
+    pub fn top_left() -> &'static Self {
+        unsafe { MTKTextureLoaderOriginTopLeft }
+    }
+
+    #[doc(alias = "MTKTextureLoaderOriginBottomLeft")]
+    #[inline]
+    pub fn bottom_left() -> &'static Self {
+        unsafe { MTKTextureLoaderOriginBottomLeft }
+    }
+
+    #[doc(alias = "MTKTextureLoaderOriginFlippedVertically")]
+    #[inline]
+    pub fn flipped_vertically() -> &'static Self {
+        unsafe { MTKTextureLoaderOriginFlippedVertically }
+    }
+}
+
 #[doc(alias = "MTKTextureLoaderCallback")]
 pub type TextureLoaderCb = blocks::ResultCompletionHandler<mtl::Texture>;
 
@@ -113,6 +151,7 @@ impl TextureLoader {
         Self::alloc().init_with_device(device)
     }
 
+    /// Synchronously create a Metal texture and load image data from the file at URL
     #[objc::msg_send(newTextureWithContentsOfURL:options:error:)]
     pub fn new_texture_with_url_err<'ear>(
         &self,
@@ -121,12 +160,31 @@ impl TextureLoader {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::Texture>>;
 
+    /// Synchronously create a Metal texture and load image data from the file at URL
     pub fn new_texture_with_url<'ear>(
         &self,
         url: &ns::Url,
         options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
     ) -> ns::Result<arc::R<mtl::Texture>> {
         ns::if_none(|err| self.new_texture_with_url_err(url, options, err))
+    }
+
+    #[objc::msg_send(newTexturesWithContentsOfURLs:options:error:)]
+    pub fn new_textures_with_urls_err<'ear>(
+        &self,
+        urls: &ns::Array<ns::Url>,
+        options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> arc::R<ns::Array<OptionTexture>>;
+
+    pub fn new_textures_with_urls<'ear>(
+        &self,
+        urls: &ns::Array<ns::Url>,
+        options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
+    ) -> (arc::R<ns::Array<OptionTexture>>, Option<&'ear ns::Error>) {
+        let mut err = None;
+        let textures = self.new_textures_with_urls_err(urls, options, &mut err);
+        (textures, err)
     }
 
     /// The key used to retrieve an error string from an error object’s user_info() dictionary.
@@ -137,12 +195,31 @@ impl TextureLoader {
     }
 }
 
+define_obj_type!(
+    pub OptionTexture(ns::Id)
+);
+
+impl OptionTexture {
+    pub fn is_none(&self) -> bool {
+        unsafe { cf::Null::value().as_type_ptr() == self.as_type_ref().as_type_ptr() }
+    }
+
+    pub fn as_texture(&self) -> Option<&mtl::Texture> {
+        if self.is_none() {
+            None
+        } else {
+            Some(unsafe { std::mem::transmute(self) })
+        }
+    }
+}
+
 #[link(name = "mtk", kind = "static")]
 extern "C" {
     static MTK_TEXTURE_LOADER: &'static objc::Class<TextureLoader>;
 }
 
 impl ns::ErrorDomain {
+    #[doc(alias = "MTKTextureLoaderErrorDomain")]
     pub fn texture_loader() -> &'static Self {
         unsafe { MTKTextureLoaderErrorDomain }
     }
@@ -161,6 +238,12 @@ extern "C" {
     static MTKTextureLoaderOptionTextureStorageMode: &'static TextureLoaderOpt;
     static MTKTextureLoaderOptionOrigin: &'static TextureLoaderOpt;
     static MTKTextureLoaderOptionLoadAsArray: &'static TextureLoaderOpt;
+
+    static MTKTextureLoaderCubeLayoutVertical: &'static TextureLoaderCubeLayout;
+
+    static MTKTextureLoaderOriginTopLeft: &'static TextureLoaderOrigin;
+    static MTKTextureLoaderOriginBottomLeft: &'static TextureLoaderOrigin;
+    static MTKTextureLoaderOriginFlippedVertically: &'static TextureLoaderOrigin;
 }
 
 #[cfg(test)]
@@ -179,5 +262,22 @@ mod tests {
         assert_eq!(err.domain(), ns::ErrorDomain::texture_loader());
         let user_info = err.user_info();
         let _error = user_info.get(mtk::TextureLoader::error_key()).unwrap();
+    }
+
+    #[test]
+    fn batch() {
+        let device = mtl::Device::sys_default().unwrap();
+        let loader = mtk::TextureLoader::with_device(&device);
+
+        let url = ns::Url::with_fs_path_str("unknown.png", false);
+        let urls = ns::Array::from_slice_retained(&[url]);
+
+        let (textures, err) = loader.new_textures_with_urls(&urls, None);
+
+        assert_eq!(1, textures.len());
+        assert!(err.is_some());
+        assert!(textures[0].is_none());
+        let texture = textures[0].as_texture();
+        assert!(texture.is_none());
     }
 }
