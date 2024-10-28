@@ -37,6 +37,7 @@ full = [
   "sc",
   "mc",
   "mtl",
+  "mtk",
   "mlc",
   "cv",
   "objc",
@@ -108,7 +109,8 @@ ut = ["ns"]
 un = ["ns"]
 ct = ["cf", "cg"]
 mc = ["ns"]
-mtl = ["ns"]
+mtl = ["ns", "blocks"]
+mtk = ["mtl"]
 mlc = ["mtl"]
 mps = ["mtl"]
 mpsg = ["mps"]

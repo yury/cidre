@@ -54,6 +54,8 @@
 		D25387712C906096002122EB /* cl.m in Sources */ = {isa = PBXBuildFile; fileRef = D253876F2C906096002122EB /* cl.m */; };
 		D25387722C906096002122EB /* cl.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D253876E2C906096002122EB /* cl.h */; };
 		D27864ED2A0A2BBC00E64871 /* MLCompute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27864EB2A0A2A8600E64871 /* MLCompute.framework */; };
+		D2C1FA3B2CCFAA7C008EFEDC /* mtk.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C1FA392CCFAA7C008EFEDC /* mtk.m */; };
+		D2C1FA3C2CCFAA7C008EFEDC /* mtk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2C1FA382CCFAA7C008EFEDC /* mtk.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -237,6 +239,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		D2C1FA2C2CCFAA6E008EFEDC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D2C1FA3C2CCFAA7C008EFEDC /* mtk.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2DC5D20295870DB007E2B9D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
@@ -362,6 +374,9 @@
 		D2A52939283A1F5800E7B4C6 /* libca.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libca.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A52946283A1F6A00E7B4C6 /* libci.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libci.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A52950283A26B800E7B4C6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D2C1FA2E2CCFAA6E008EFEDC /* libmtk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmtk.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2C1FA382CCFAA7C008EFEDC /* mtk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mtk.h; sourceTree = "<group>"; };
+		D2C1FA392CCFAA7C008EFEDC /* mtk.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mtk.m; sourceTree = "<group>"; };
 		D2DC5D22295870DB007E2B9D /* libsn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libsn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2DC5D34295B5064007E2B9D /* libmps.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmps.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2DC5D41295B506F007E2B9D /* libmpsg.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmpsg.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -491,6 +506,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2A52943283A1F6A00E7B4C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2C1FA2B2CCFAA6E008EFEDC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -757,9 +779,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D2C1FA3A2CCFAA7C008EFEDC /* mtk */ = {
+			isa = PBXGroup;
+			children = (
+				D2C1FA382CCFAA7C008EFEDC /* mtk.h */,
+				D2C1FA392CCFAA7C008EFEDC /* mtk.m */,
+			);
+			path = mtk;
+			sourceTree = "<group>";
+		};
 		D2FBEBEE27CB653200FD974A = {
 			isa = PBXGroup;
 			children = (
+				D2C1FA3A2CCFAA7C008EFEDC /* mtk */,
 				D25386F72C906079002122EB /* mtl */,
 				D25386FC2C90607C002122EB /* sc */,
 				D25387012C90607F002122EB /* av */,
@@ -814,6 +846,7 @@
 				D22A550C2B78E27300114BDE /* libwc.a */,
 				D28CF5EC2BCD201B00ED6381 /* libnl.a */,
 				D25386522C9019D4002122EB /* libav_kit.a */,
+				D2C1FA2E2CCFAA6E008EFEDC /* libmtk.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1129,6 +1162,25 @@
 			productReference = D2A52946283A1F6A00E7B4C6 /* libci.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D2C1FA2D2CCFAA6E008EFEDC /* mtk */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2C1FA372CCFAA6E008EFEDC /* Build configuration list for PBXNativeTarget "mtk" */;
+			buildPhases = (
+				D2C1FA2A2CCFAA6E008EFEDC /* Sources */,
+				D2C1FA2B2CCFAA6E008EFEDC /* Frameworks */,
+				D2C1FA2C2CCFAA6E008EFEDC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mtk;
+			packageProductDependencies = (
+			);
+			productName = mtk;
+			productReference = D2C1FA2E2CCFAA6E008EFEDC /* libmtk.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D2DC5D21295870DB007E2B9D /* sn */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2DC5D2A295870DB007E2B9D /* Build configuration list for PBXNativeTarget "sn" */;
@@ -1277,6 +1329,9 @@
 					D2A52945283A1F6A00E7B4C6 = {
 						CreatedOnToolsVersion = 13.4;
 					};
+					D2C1FA2D2CCFAA6E008EFEDC = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					D2DC5D21295870DB007E2B9D = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -1330,6 +1385,7 @@
 				D22A550B2B78E27300114BDE /* wc */,
 				D28CF5EB2BCD201B00ED6381 /* nl */,
 				D25386512C9019D4002122EB /* av_kit */,
+				D2C1FA2D2CCFAA6E008EFEDC /* mtk */,
 			);
 		};
 /* End PBXProject section */
@@ -1476,6 +1532,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D253870C2C906085002122EB /* ci.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2C1FA2A2CCFAA6E008EFEDC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2C1FA3B2CCFAA7C008EFEDC /* mtk.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2135,6 +2199,45 @@
 			};
 			name = Release;
 		};
+		D2C1FA342CCFAA6E008EFEDC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D2C1FA352CCFAA6E008EFEDC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D2DC5D28295870DB007E2B9D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2557,6 +2660,15 @@
 			buildConfigurations = (
 				D2A5294D283A1F6A00E7B4C6 /* Debug */,
 				D2A5294E283A1F6A00E7B4C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2C1FA372CCFAA6E008EFEDC /* Build configuration list for PBXNativeTarget "mtk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2C1FA342CCFAA6E008EFEDC /* Debug */,
+				D2C1FA352CCFAA6E008EFEDC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

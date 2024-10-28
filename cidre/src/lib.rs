@@ -87,6 +87,9 @@ pub mod mc;
 #[cfg(feature = "mtl")]
 pub mod mtl;
 
+#[cfg(feature = "mtk")]
+pub mod mtk;
+
 /// MLCompute
 #[cfg(feature = "mlc")]
 pub mod mlc;
