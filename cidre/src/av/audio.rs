@@ -74,6 +74,8 @@ pub use session::InterruptionType as SessionInterruptionType;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::IoType as SessionIoType;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::MicInjectionMode as SessionMicInjectionMode;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::Mode as SessionMode;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::Port as SessionPort;

@@ -917,3 +917,22 @@ pub enum RenderingMode {
     #[doc(alias = "AVAudioSessionRenderingModeDolbyAtmos")]
     DolbyAtmos = 5,
 }
+
+/// Various modes to inject audio coming from a session to another app’s input stream
+///
+/// Applications can state their intent to mix locally generated audio, which should consist primarily of
+/// synthesized speech, to another app's input stream. This feature is intended to be used by accessibility apps
+/// implementing augmentative and alternative communication systems that enable users with disabilities to
+/// communicate with synthesized speech. When input is muted, microphone injection will also be muted.
+#[doc(alias = "AVAudioSessionMicrophoneInjectionMode")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum MicInjectionMode {
+    /// Default state, microphone injection is not preferred
+    #[doc(alias = "AVAudioSessionMicrophoneInjectionModeNone")]
+    None = 0,
+
+    /// Inject Spoken Audio, like synthesized speech, with microphone audio
+    #[doc(alias = "AVAudioSessionMicrophoneInjectionModeSpokenAudio")]
+    SpokenAudio = 1,
+}

@@ -1,10 +1,40 @@
-use crate::{av, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, blocks, define_cls, define_obj_type, ns, objc};
 
+#[doc(alias = "AVAudioApplicationRecordPermission")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum RecordPermission {
+    /// The user has not yet been asked for permission.
+    #[doc(alias = "AVAudioApplicationRecordPermissionUndetermined")]
     Undetermined = i32::from_be_bytes(*b"undt") as _,
+
+    /// The user has been asked and has denied permission.
+    #[doc(alias = "AVAudioApplicationRecordPermissionDenied")]
     Denied = i32::from_be_bytes(*b"deny") as _,
+
+    /// The user has been asked and has granted permission.
+    #[doc(alias = "AVAudioApplicationRecordPermissionGranted")]
+    Granted = i32::from_be_bytes(*b"grnt") as _,
+}
+
+#[doc(alias = "AVAudioApplicationMicrophoneInjectionPermission")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum MicInjectionPermission {
+    /// The user has disabled this service for all apps.
+    #[doc(alias = "AVAudioApplicationMicrophoneInjectionPermissionServiceDisabled")]
+    ServiceDisabled = i32::from_be_bytes(*b"srds") as _,
+
+    /// The user has not yet been asked for permission.
+    #[doc(alias = "AVAudioApplicationMicrophoneInjectionPermissionUndetermined")]
+    Undetermined = i32::from_be_bytes(*b"undt") as _,
+
+    /// The user has been asked and has denied permission.
+    #[doc(alias = "AVAudioApplicationMicrophoneInjectionPermissionDenied")]
+    Denied = i32::from_be_bytes(*b"deny") as _,
+
+    /// The user has been asked and has granted permission.
+    #[doc(alias = "AVAudioApplicationMicrophoneInjectionPermissionGranted")]
     Granted = i32::from_be_bytes(*b"grnt") as _,
 }
 
@@ -35,7 +65,7 @@ impl App {
     }
 
     #[objc::msg_send(sharedInstance)]
-    pub fn shared() -> &'static mut Self;
+    pub fn shared() -> arc::R<Self>;
 
     #[objc::msg_send(isInputMuted)]
     pub fn is_input_mutted(&self) -> bool;
@@ -74,6 +104,34 @@ impl App {
     pub async fn request_record_permission() -> bool {
         let (future, mut block) = blocks::comp1();
         Self::request_record_permission_ch_block(&mut block);
+        future.await
+    }
+
+    /// Returns an enum indicating whether the user has granted or denied permission to inject audio into input,
+    /// or has not been asked
+    #[objc::msg_send(microphoneInjectionPermission)]
+    #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub fn mic_injection_permission(&self) -> MicInjectionPermission;
+
+    #[objc::msg_send(requestMicrophoneInjectionPermissionWithCompletionHandler:)]
+    #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub fn request_mic_injection_permission_ch_block(
+        handler: &mut blocks::SendBlock<fn(MicInjectionPermission)>,
+    );
+
+    #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub fn request_mic_injection_permission_ch(
+        handler: impl FnMut(MicInjectionPermission) + 'static + std::marker::Send,
+    ) {
+        let mut handler = blocks::SendBlock::new1(handler);
+        Self::request_mic_injection_permission_ch_block(&mut handler)
+    }
+
+    #[cfg(feature = "async")]
+    #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub async fn request_mic_injection_permission() -> MicInjectionPermission {
+        let (future, mut block) = blocks::comp1();
+        Self::request_mic_injection_permission_ch_block(&mut block);
         future.await
     }
 }

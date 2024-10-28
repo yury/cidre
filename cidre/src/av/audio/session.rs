@@ -1,3 +1,4 @@
+use crate::api;
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 mod types;
@@ -8,6 +9,7 @@ pub use types::InterruptionOpts;
 pub use types::InterruptionReason;
 pub use types::InterruptionType;
 pub use types::IoType;
+pub use types::MicInjectionMode;
 pub use types::Mode;
 pub use types::Port;
 pub use types::PortOverride;
@@ -438,8 +440,33 @@ impl Session {
     pub fn prefers_interruption_on_route_disconnect(&self) -> bool;
 }
 
+/// MicrophoneInjection
+impl Session {
+    #[objc::msg_send(setPreferredMicrophoneInjectionMode:error:)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub unsafe fn set_preferred_mic_injection_mode_err<'ear>(
+        &mut self,
+        val: MicInjectionMode,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    /// Set the preferred form of audio injection into another app's input stream
+    #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub fn set_preferred_mic_injection_mode<'ear>(&mut self, val: MicInjectionMode) -> ns::Result {
+        ns::if_false(|err| unsafe { self.set_preferred_mic_injection_mode_err(val, err) })
+    }
+
+    #[objc::msg_send(preferredMicrophoneInjectionMode)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub fn preferred_mic_injection_mode(&self) -> MicInjectionMode;
+
+    #[objc::msg_send(isMicrophoneInjectionAvailable)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    pub fn is_mic_injection_available(&self) -> bool;
+}
+
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-#[link(name = "AVFAudio", kind = "framework")]
+#[link(name = "av", kind = "static")]
 extern "C" {
     static AV_AUDIO_SESSION: &'static objc::Class<Session>;
 }
@@ -492,8 +519,17 @@ impl Session {
     pub fn rendering_capabilities_change_notification() -> &'static ns::NotificationName {
         unsafe { AVAudioSessionRenderingCapabilitiesChangeNotification }
     }
+
+    #[doc(alias = "AVAudioSessionMicrophoneInjectionCapabilitiesChangeNotification")]
+    #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    #[inline]
+    pub fn mic_injection_capabilities_change_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionMicrophoneInjectionCapabilitiesChangeNotification }
+    }
 }
 
+#[link(name = "AVAudio", kind = "framework")]
+#[api::weak]
 extern "C" {
     static AVAudioSessionInterruptionNotification: &'static ns::NotificationName;
     static AVAudioSessionRouteChangeNotification: &'static ns::NotificationName;
@@ -504,4 +540,8 @@ extern "C" {
         &'static ns::NotificationName;
     static AVAudioSessionRenderingModeChangeNotification: &'static ns::NotificationName;
     static AVAudioSessionRenderingCapabilitiesChangeNotification: &'static ns::NotificationName;
+
+    #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    static AVAudioSessionMicrophoneInjectionCapabilitiesChangeNotification:
+        &'static ns::NotificationName;
 }

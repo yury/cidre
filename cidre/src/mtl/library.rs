@@ -355,7 +355,7 @@ impl Lib {
     #[objc::msg_send(type)]
     pub fn type_(&self) -> mtl::LibType;
 
-    /// The installName provided when this mtl::Lib was created.
+    /// The install_name provided when this mtl::Lib was created.
     ///
     /// Always nil if the type of the library is not mtl::LibType::Dynamic.
     /// [read more](https://developer.apple.com/documentation/metal/mtllibrary/3554039-installname?language=objc)

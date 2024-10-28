@@ -177,6 +177,7 @@ ios_16_0 = ["ios_15_0"]
 ios_16_4 = ["ios_16_0"]
 ios_17_0 = ["ios_16_4"]
 ios_18_0 = ["ios_17_0"]
+ios_18_2 = ["ios_18_0"]
 
 tvos_7_0 = []
 tvos_8_0 = ["tvos_7_0"]
@@ -206,6 +207,7 @@ visionos_1_0 = []
 visionos_1_1 = ["visionos_1_0"]
 visionos_1_2 = ["visionos_1_1"]
 visionos_2_0 = ["visionos_1_2"]
+visionos_2_2 = ["visionos_2_0"]
 
 # end of deployment targets
 
