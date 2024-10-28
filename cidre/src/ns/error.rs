@@ -96,7 +96,7 @@ impl Error {
     pub fn localized_failure_reason(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(userInfo)]
-    pub fn user_info(self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
+    pub fn user_info(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
 
     /// Toll-Free Bridged
     #[inline]

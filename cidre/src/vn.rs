@@ -101,7 +101,6 @@ pub use detect_barcodes_request::DetectBarcodesRequest;
 
 mod error;
 pub use error::Code as ErrorCode;
-pub use error::Domain as ErrorDomain;
 
 pub mod video_processor;
 pub use video_processor::Cadence as VideoProcessorCadence;

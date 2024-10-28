@@ -1,16 +1,14 @@
 use crate::ns;
 
-pub type Domain = ns::ErrorDomain;
-
-impl Domain {
-    pub fn multipeer_connectivity() -> &'static Domain {
+impl ns::ErrorDomain {
+    pub fn multipeer_connectivity() -> &'static Self {
         unsafe { MCErrorDomain }
     }
 }
 
 #[link(name = "MultipeerConnectivity", kind = "framework")]
 extern "C" {
-    static MCErrorDomain: &'static Domain;
+    static MCErrorDomain: &'static ns::ErrorDomain;
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

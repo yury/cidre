@@ -36,6 +36,13 @@ pub enum CpuCacheMode {
     WriteCombined = 1,
 }
 
+impl CpuCacheMode {
+    #[inline]
+    pub fn to_ns_number(&self) -> arc::R<ns::Number> {
+        ns::Number::with_u64(*self as u64)
+    }
+}
+
 /// Describes location and CPU mapping of MTLTexture.
 #[doc(alias = "MTLStorageMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -65,6 +72,12 @@ pub enum StorageMode {
     /// mtl::Texture descriptor. Textures created with MTLStorageModeMemoryless dont have an IOAccelResource at any point in their
     /// lifetime. The only way to populate such resource is to perform rendering operations on it. Blit operations are disallowed.
     Memoryless = 3,
+}
+
+impl StorageMode {
+    pub fn to_ns_number(&self) -> arc::R<ns::Number> {
+        ns::Number::with_u64(*self as _)
+    }
 }
 
 /// Describes how hazard tracking is performed.

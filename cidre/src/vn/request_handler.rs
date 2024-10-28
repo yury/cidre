@@ -178,7 +178,7 @@ mod tests {
         let requests = ns::Array::<vn::Request>::from_slice(&[&request]);
         let error = handler.perform(&requests).expect_err("should be error");
 
-        assert!(error.domain().is_equal(vn::ErrorDomain::vision()));
+        assert!(error.domain().is_equal(ns::ErrorDomain::vision()));
         assert_eq!(vn::ErrorCode::InvalidImage, error.code());
     }
 }

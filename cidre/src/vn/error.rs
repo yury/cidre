@@ -1,16 +1,14 @@
 use crate::ns;
 
-pub type Domain = ns::ErrorDomain;
-
-impl Domain {
-    pub fn vision() -> &'static Domain {
+impl ns::ErrorDomain {
+    pub fn vision() -> &'static Self {
         unsafe { VNErrorDomain }
     }
 }
 
 #[link(name = "Vision", kind = "framework")]
 extern "C" {
-    static VNErrorDomain: &'static Domain;
+    static VNErrorDomain: &'static ns::ErrorDomain;
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

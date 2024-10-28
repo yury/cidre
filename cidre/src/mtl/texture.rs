@@ -124,6 +124,10 @@ impl Usage {
     pub fn to_cf_number(&self) -> arc::R<cf::Number> {
         cf::Number::from_i64(self.0 as _)
     }
+
+    pub fn to_ns_number(&self) -> arc::R<ns::Number> {
+        ns::Number::with_i64(self.0 as _)
+    }
 }
 
 #[doc(alias = "MTLTextureCompressionType")]

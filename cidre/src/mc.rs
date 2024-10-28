@@ -1,6 +1,5 @@
 mod error;
 pub use error::Code as ErrorCode;
-pub use error::Domain as ErrorDomain;
 
 #[cfg(any(feature = "ui", feature = "app"))]
 mod browser_view_controller;
