@@ -29,6 +29,8 @@ pub mod err {
 
 define_cf_type!(OptKey(cf::String));
 
+pub type Opts = cf::DictionaryOf<OptKey, cf::Number>;
+
 impl OptKey {
     /// Starts the animation at the given index. Defaults to 0
     /// Value is a 'cf::Number'
@@ -56,7 +58,7 @@ impl OptKey {
 #[inline]
 pub fn animate_image_at_url_with_block(
     url: &cf::Url,
-    options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
+    options: Option<&Opts>,
     block: &mut cg::ImageAnimationBlock,
 ) -> os::Result {
     unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }

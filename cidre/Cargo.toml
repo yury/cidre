@@ -218,9 +218,9 @@ visionos_2_2 = ["visionos_2_0"]
 
 [dependencies]
 
-tokio = { version = "1", optional = true, default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
-parking_lot = { version = "0.12", optional = true }
-cidre-macros = { optional = true, path = "../cidre-macros"}
+tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
+parking_lot = { optional = true, version = "0.12" }
+cidre-macros = { optional = true, path = "../cidre-macros" }
 
 [dev-dependencies]
 criterion = "0.5"
@@ -272,10 +272,6 @@ required-features = ["am"]
 [[example]]
 name = "sc-record"
 required-features = ["custom-allocator"]
-
-#[lib]
-#proc-macro = true
-#crate-type = ["staticlib", "rlib"]
 
 [package.metadata.playground]
 features = ["full"]
