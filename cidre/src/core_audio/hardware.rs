@@ -1,6 +1,9 @@
 use std::ffi::c_void;
 
-use crate::{arc, at::AudioBufListN, blocks, cf, core_audio, dispatch, os};
+use crate::{arc, at::AudioBufListN, cf, core_audio, os};
+
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
+use crate::{blocks, dispatch};
 
 use super::{
     AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
@@ -15,6 +18,7 @@ pub type AudioObjPropListenerFn<T = c_void> = extern "C-unwind" fn(
 ) -> os::Status;
 
 #[doc(alias = "AudioObjectPropertyListenerBlock")]
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 pub type AudioObjPropListenerBlock =
     blocks::EscBlock<fn(number_addresses: u32, addresses: *const AudioObjPropAddr)>;
 
@@ -223,6 +227,7 @@ impl core_audio::AudioObjId {
     }
 
     #[doc(alias = "AudioObjectAddPropertyListenerBlock")]
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     pub fn add_prop_listener_block(
         &self,
         address: &AudioObjPropAddr,
@@ -235,6 +240,7 @@ impl core_audio::AudioObjId {
     }
 
     #[doc(alias = "AudioObjectRemovePropertyListenerBlock")]
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     pub fn remove_prop_listener_block(
         &self,
         address: &AudioObjPropAddr,
@@ -828,6 +834,7 @@ extern "C-unwind" {
         client_data: *mut c_void,
     ) -> os::Status;
 
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     fn AudioObjectAddPropertyListenerBlock(
         objectId: AudioObjId,
         address: *const AudioObjPropAddr,
@@ -835,6 +842,7 @@ extern "C-unwind" {
         listener: *mut AudioObjPropListenerBlock,
     ) -> os::Status;
 
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     fn AudioObjectRemovePropertyListenerBlock(
         objectId: AudioObjId,
         address: *const AudioObjPropAddr,
