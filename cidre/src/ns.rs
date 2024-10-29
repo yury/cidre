@@ -5,6 +5,9 @@ pub type ExResult<'ear, R = ()> = std::result::Result<R, &'ear Exception>;
 
 pub use objc::{ns, Class, Id, Sel};
 
+mod bundle;
+pub use bundle::Bundle;
+
 mod range;
 pub use range::Range;
 

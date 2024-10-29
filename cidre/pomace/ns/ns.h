@@ -81,6 +81,7 @@ Class NS_XPC_LISTENER;
 Class NS_XPC_INTERFACE;
 
 Class NS_THREAD;
+Class NS_BUNDLE;
 
 typedef void cidre_change(
                           void * _Nullable,
@@ -176,7 +177,8 @@ static void common_initializer(void)
         NS_XPC_LISTENER = [NSXPCListener class];
         NS_XPC_INTERFACE = [NSXPCInterface class];
         
-        NS_THREAD = [NSThread class];   
+        NS_THREAD = [NSThread class];
+        NS_BUNDLE = [NSBundle class];
     }
 }
 NS_ASSUME_NONNULL_END

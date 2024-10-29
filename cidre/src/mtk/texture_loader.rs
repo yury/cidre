@@ -1,5 +1,8 @@
 use crate::{arc, blocks, cf, define_cls, define_obj_type, mtl, ns, objc};
 
+#[cfg(feature = "cg")]
+use crate::cg;
+
 define_obj_type!(
     #[doc(alias = "MTKTextureLoader")]
     pub TextureLoader(ns::Id)
@@ -141,6 +144,8 @@ impl arc::A<TextureLoader> {
     pub fn init_with_device(self, device: &mtl::Device) -> arc::R<TextureLoader>;
 }
 
+pub type Opts = ns::Dictionary<TextureLoaderOpt, ns::Id>;
+
 impl TextureLoader {
     define_cls!(MTK_TEXTURE_LOADER);
 
@@ -151,12 +156,20 @@ impl TextureLoader {
         Self::alloc().init_with_device(device)
     }
 
-    /// Synchronously create a Metal texture and load image data from the file at URL
-    #[objc::msg_send(newTextureWithContentsOfURL:options:error:)]
-    pub fn new_texture_with_url_err<'ear>(
+    #[objc::msg_send(newTextureWithContentsOfURL:options:completionHandler:)]
+    pub fn new_texture_with_url_ch(
         &self,
         url: &ns::Url,
-        options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
+        options: Option<&Opts>,
+        ch: &mut TextureLoaderCb,
+    );
+
+    /// Synchronously create a Metal texture and load image data from the file at URL
+    #[objc::msg_send(newTextureWithContentsOfURL:options:error:)]
+    pub unsafe fn new_texture_with_url_err<'ear>(
+        &self,
+        url: &ns::Url,
+        options: Option<&Opts>,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::Texture>>;
 
@@ -164,27 +177,85 @@ impl TextureLoader {
     pub fn new_texture_with_url<'ear>(
         &self,
         url: &ns::Url,
-        options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
+        options: Option<&Opts>,
     ) -> ns::Result<arc::R<mtl::Texture>> {
-        ns::if_none(|err| self.new_texture_with_url_err(url, options, err))
+        ns::if_none(|err| unsafe { self.new_texture_with_url_err(url, options, err) })
     }
 
     #[objc::msg_send(newTexturesWithContentsOfURLs:options:error:)]
-    pub fn new_textures_with_urls_err<'ear>(
+    pub unsafe fn new_textures_with_urls_err<'ear>(
         &self,
         urls: &ns::Array<ns::Url>,
-        options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
+        options: Option<&Opts>,
         error: *mut Option<&'ear ns::Error>,
     ) -> arc::R<ns::Array<OptionTexture>>;
 
     pub fn new_textures_with_urls<'ear>(
         &self,
         urls: &ns::Array<ns::Url>,
-        options: Option<&ns::Dictionary<TextureLoaderOpt, ns::Id>>,
+        options: Option<&Opts>,
     ) -> (arc::R<ns::Array<OptionTexture>>, Option<&'ear ns::Error>) {
         let mut err = None;
-        let textures = self.new_textures_with_urls_err(urls, options, &mut err);
+        let textures = unsafe { self.new_textures_with_urls_err(urls, options, &mut err) };
         (textures, err)
+    }
+
+    #[objc::msg_send(newTextureWithData:options:error:)]
+    pub unsafe fn new_texture_with_data_err<'ear>(
+        &self,
+        data: &ns::Data,
+        options: Option<&Opts>,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::Texture>>;
+
+    pub fn new_texture_with_data<'ear>(
+        &self,
+        data: &ns::Data,
+        options: Option<&Opts>,
+    ) -> ns::Result<arc::R<mtl::Texture>> {
+        ns::if_none(|err| unsafe { self.new_texture_with_data_err(data, options, err) })
+    }
+
+    #[cfg(feature = "cg")]
+    #[objc::msg_send(newTextureWithCGImage:options:error:)]
+    pub unsafe fn new_texture_with_cg_image_err<'ear>(
+        &self,
+        image: &cg::Image,
+        options: Option<&Opts>,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::Texture>>;
+
+    #[cfg(feature = "cg")]
+    pub fn new_texture_with_cg_image<'ear>(
+        &self,
+        image: &cg::Image,
+        options: Option<&Opts>,
+    ) -> ns::Result<arc::R<mtl::Texture>> {
+        ns::if_none(|err| unsafe { self.new_texture_with_cg_image_err(image, options, err) })
+    }
+
+    #[cfg(feature = "cg")]
+    #[objc::msg_send(newTextureWithName:scaleFactor:bundle:options:error:)]
+    pub unsafe fn new_texture_with_name_err<'ear>(
+        &self,
+        name: &ns::String,
+        scale_factor: cg::Float,
+        bundle: Option<&ns::Bundle>,
+        options: Option<&Opts>,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::Texture>>;
+
+    #[cfg(feature = "cg")]
+    pub fn new_texture_with_name<'ear>(
+        &self,
+        name: &ns::String,
+        scale_factor: cg::Float,
+        bundle: Option<&ns::Bundle>,
+        options: Option<&Opts>,
+    ) -> ns::Result<arc::R<mtl::Texture>> {
+        ns::if_none(|err| unsafe {
+            self.new_texture_with_name_err(name, scale_factor, bundle, options, err)
+        })
     }
 
     /// The key used to retrieve an error string from an error object’s user_info() dictionary.
@@ -200,11 +271,13 @@ define_obj_type!(
 );
 
 impl OptionTexture {
+    #[inline]
     pub fn is_none(&self) -> bool {
         unsafe { cf::Null::value().as_type_ptr() == self.as_type_ref().as_type_ptr() }
     }
 
-    pub fn as_texture(&self) -> Option<&mtl::Texture> {
+    #[inline]
+    pub fn texture(&self) -> Option<&mtl::Texture> {
         if self.is_none() {
             None
         } else {
@@ -277,7 +350,7 @@ mod tests {
         assert_eq!(1, textures.len());
         assert!(err.is_some());
         assert!(textures[0].is_none());
-        let texture = textures[0].as_texture();
+        let texture = textures[0].texture();
         assert!(texture.is_none());
     }
 }
