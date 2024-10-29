@@ -68,7 +68,7 @@ pub fn animate_image_at_url_with_block(
 #[inline]
 pub fn animate_image_at_url(
     url: &cf::Url,
-    options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
+    options: Option<&Opts>,
     f: impl FnMut(/* index: */ usize, /* image: */ &cg::Image, /* stop: */ &mut bool) + 'static,
 ) -> os::Result {
     let mut block = cg::ImageAnimationBlock::new3(f);
@@ -79,7 +79,7 @@ pub fn animate_image_at_url(
 #[inline]
 pub fn animate_image_data_with_block(
     data: &cf::Data,
-    options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
+    options: Option<&Opts>,
     block: &mut cg::ImageAnimationBlock,
 ) -> os::Result {
     unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
@@ -89,7 +89,7 @@ pub fn animate_image_data_with_block(
 #[inline]
 pub fn animate_image_data(
     data: &cf::Data,
-    options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
+    options: Option<&Opts>,
     f: impl FnMut(/* index: */ usize, /* image: */ &cg::Image, /* stop: */ &mut bool) + 'static,
 ) -> os::Result {
     let mut block = cg::ImageAnimationBlock::new3(f);
@@ -125,13 +125,17 @@ mod tests {
     #[test]
     fn error() {
         let url = cf::Url::from_str("foo").unwrap();
-        match cg::animate_image_at_url(&url, None, |_idx, _img, _stp| {}) {
+        match cg::animate_image_at_url(&url, None, |_idx, _img, _stp| {
+            panic!("should not be called");
+        }) {
             Err(ERROR) => {}
             x => panic!("failed {x:?}"),
         }
 
         let data = cf::Data::from_slice(&[]).unwrap();
-        match cg::animate_image_data(&data, None, |_idx, _img, _stp| {}) {
+        match cg::animate_image_data(&data, None, |_idx, _img, _stp| {
+            panic!("should not be called");
+        }) {
             Err(cg::image_animation_err::CORRUPT_INPUT_IMAGE) => {}
             x => panic!("failed {x:?}"),
         }
