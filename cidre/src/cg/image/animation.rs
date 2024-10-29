@@ -52,7 +52,6 @@ impl OptKey {
     }
 }
 
-#[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageAtURLWithBlock")]
 #[inline]
 pub fn animate_image_at_url_with_block(
@@ -63,7 +62,6 @@ pub fn animate_image_at_url_with_block(
     unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }
 }
 
-#[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageAtURLWithBlock")]
 #[inline]
 pub fn animate_image_at_url(
@@ -75,7 +73,6 @@ pub fn animate_image_at_url(
     unsafe { CGAnimateImageAtURLWithBlock(url, options, &mut block).result() }
 }
 
-#[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageDataWithBlock")]
 #[inline]
 pub fn animate_image_data_with_block(
@@ -86,7 +83,6 @@ pub fn animate_image_data_with_block(
     unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
 }
 
-#[cfg(feature = "blocks")]
 #[doc(alias = "CGAnimateImageDataWithBlock")]
 #[inline]
 pub fn animate_image_data(
