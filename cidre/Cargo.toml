@@ -87,7 +87,7 @@ at = ["cf", "cat"]
 av = ["ns", "ut", "cv", "ca", "at"]
 av_kit = ["av"]
 ca = ["ns"]
-sc = ["ns", "cm"]
+sc = ["ns", "cm"] # optional blocks, async
 cl = ["ns"]
 cm = ["cf"] # optional cv, cat
 cmio = ["cm"]
@@ -148,6 +148,7 @@ macos_13_1 = ["macos_13_0"]
 macos_14_0 = ["macos_13_1"]
 macos_14_2 = ["macos_14_0"]
 macos_15_0 = ["macos_14_2"]
+macos_15_2 = ["macos_15_0"]
 
 maccatalyst_13_0 = []
 maccatalyst_14_0 = ["maccatalyst_13_0"]
@@ -155,6 +156,7 @@ maccatalyst_16_0 = ["maccatalyst_14_0"]
 maccatalyst_16_1 = ["maccatalyst_16_0"]
 maccatalyst_17_0 = ["maccatalyst_16_1"]
 maccatalyst_18_0 = ["maccatalyst_17_0"]
+maccatalyst_18_2 = ["maccatalyst_18_0"]
 
 ios_2_0 = []
 ios_3_0 = ["ios_2_0"]
@@ -194,6 +196,7 @@ tvos_15_0 = ["tvos_14_0"]
 tvos_16_0 = ["tvos_15_0"]
 tvos_17_0 = ["tvos_16_0"]
 tvos_18_0 = ["tvos_17_0"]
+tvos_18_2 = ["tvos_18_0"]
 
 watchos_2_0 = []
 watchos_3_0 = ["watchos_2_0"]
@@ -221,16 +224,10 @@ cidre-macros = { optional = true, path = "../cidre-macros"}
 
 [dev-dependencies]
 criterion = "0.5"
-# rt = { path = "../../rt"}
-# ndarray = "0.15"
-# linfa = "0.6.1"
-# linfa-clustering = "0.6.1"
-# linfa-reduction = "0.6.1"
-clap = { version = "4.3", features = ["default", "derive"] }
+clap = { version = "4.5", features = ["default", "derive"] }
 tokio = { version = "1", features = ["signal", "sync"] }
 mimalloc = { version = "0.1" }
 uuid = { version = "1.9", features = ["v4", "v7", "fast-rng", "serde"] }
-
 
 [[bench]]
 name = "alloc"
@@ -276,10 +273,9 @@ required-features = ["am"]
 name = "sc-record"
 required-features = ["custom-allocator"]
 
-[lib]
+#[lib]
 #proc-macro = true
 #crate-type = ["staticlib", "rlib"]
-
 
 [package.metadata.playground]
 features = ["full"]
