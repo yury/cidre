@@ -1,7 +1,10 @@
-use crate::{arc, blocks, cf, define_cls, define_obj_type, mtl, ns, objc};
+use crate::{arc, cf, define_cls, define_obj_type, mtl, ns, objc};
 
 #[cfg(feature = "cg")]
 use crate::cg;
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "MTKTextureLoader")]
@@ -134,9 +137,11 @@ impl TextureLoaderOrigin {
 }
 
 #[doc(alias = "MTKTextureLoaderCallback")]
+#[cfg(feature = "blocks")]
 pub type TextureLoaderCb = blocks::ResultCompletionHandler<mtl::Texture>;
 
 #[doc(alias = "MTKTextureLoaderArrayCallback")]
+#[cfg(feature = "blocks")]
 pub type TextureLoaderArrayCb = blocks::ResultCompletionHandler<ns::Array<mtl::Texture>>;
 
 impl arc::A<TextureLoader> {
@@ -156,6 +161,7 @@ impl TextureLoader {
         Self::alloc().init_with_device(device)
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(newTextureWithContentsOfURL:options:completionHandler:)]
     pub fn new_texture_with_url_ch(
         &self,
