@@ -42,11 +42,11 @@ pub use image::animate_image_data;
 #[cfg(feature = "iio")]
 pub use image::animate_image_data_with_block;
 #[cfg(feature = "iio")]
+pub use image::animation_err as image_animation_err;
+#[cfg(feature = "iio")]
 pub use image::AnimationBlock as ImageAnimationBlock;
 #[cfg(feature = "iio")]
 pub use image::AnimationOptKey as ImageAnimationOptKey;
-#[cfg(feature = "iio")]
-pub use image::AnimationStatus as ImageAnimationStatus;
 #[cfg(feature = "iio")]
 pub use image::ImageDst;
 #[cfg(feature = "iio")]

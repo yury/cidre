@@ -1,27 +1,30 @@
 use crate::{blocks, cf, cg, define_cf_type, os};
 
 #[doc(alias = "CGImageSourceAnimationBlock")]
-pub type AnimationBlock<Attr> = blocks::Block<fn(usize, &cg::Image, &mut bool), Attr>;
+pub type AnimationBlock = blocks::EscBlock<fn(index: usize, image: &cg::Image, stop: &mut bool)>;
 
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
-#[repr(transparent)]
-pub struct Status(os::Status);
+pub mod err {
+    use crate::os::Error;
 
-impl Status {
     /// NULL or invalid parameter passed to API
-    pub const PARAMAMETER_ERROR: Self = Self(os::Status(-22140));
+    #[doc(alias = "kCGImageAnimationStatus_ParameterError")]
+    pub const PARAMAMETER_ERROR: Error = Error::new_unchecked(-22140);
 
     /// An image cannot be read from the given source
-    pub const CORRUPT_INPUT_IMAGE: Self = Self(os::Status(-22141));
+    #[doc(alias = "kCGImageAnimationStatus_CorruptInputImage")]
+    pub const CORRUPT_INPUT_IMAGE: Error = Error::new_unchecked(-22141);
 
     /// The image format is not applicable to animation
-    pub const UNSUPPORTED_FORMAT: Self = Self(os::Status(-22142));
+    #[doc(alias = "kCGImageAnimationStatus_UnsupportedFormat")]
+    pub const UNSUPPORTED_FORMAT: Error = Error::new_unchecked(-22142);
 
     /// An image can be read from the given source, but it is incomplete
-    pub const INCOMPLETE_INPUT_IMAGE: Self = Self(os::Status(-22143));
+    #[doc(alias = "kCGImageAnimationStatus_IncompleteInputImage")]
+    pub const INCOMPLETE_INPUT_IMAGE: Error = Error::new_unchecked(-22143);
 
     /// A required resource could not be created
-    pub const ALLOCATION_FAILURE: Self = Self(os::Status(-22143));
+    #[doc(alias = "kCGImageAnimationStatus_AllocationFailure")]
+    pub const ALLOCATION_FAILURE: Error = Error::new_unchecked(-22143);
 }
 
 define_cf_type!(OptKey(cf::String));
@@ -55,7 +58,7 @@ impl OptKey {
 pub fn animate_image_at_url_with_block(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+    block: &mut cg::ImageAnimationBlock,
 ) -> os::Result {
     unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }
 }
@@ -66,9 +69,10 @@ pub fn animate_image_at_url_with_block(
 pub fn animate_image_at_url(
     url: &cf::Url,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+    f: impl FnMut(/* index: */ usize, /* image: */ &cg::Image, /* stop: */ &mut bool) + 'static,
 ) -> os::Result {
-    unsafe { CGAnimateImageAtURLWithBlock(url, options, block).result() }
+    let mut block = cg::ImageAnimationBlock::new3(f);
+    unsafe { CGAnimateImageAtURLWithBlock(url, options, &mut block).result() }
 }
 
 #[cfg(feature = "blocks")]
@@ -77,7 +81,7 @@ pub fn animate_image_at_url(
 pub fn animate_image_data_with_block(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+    block: &mut cg::ImageAnimationBlock,
 ) -> os::Result {
     unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
 }
@@ -88,9 +92,10 @@ pub fn animate_image_data_with_block(
 pub fn animate_image_data(
     data: &cf::Data,
     options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-    block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+    f: impl FnMut(/* index: */ usize, /* image: */ &cg::Image, /* stop: */ &mut bool) + 'static,
 ) -> os::Result {
-    unsafe { CGAnimateImageDataWithBlock(data, options, block).result() }
+    let mut block = cg::ImageAnimationBlock::new3(f);
+    unsafe { CGAnimateImageDataWithBlock(data, options, &mut block).result() }
 }
 
 #[link(name = "ImageIO", kind = "framework")]
@@ -102,13 +107,35 @@ extern "C-unwind" {
     fn CGAnimateImageAtURLWithBlock(
         url: &cf::Url,
         options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-        block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+        block: &mut cg::ImageAnimationBlock,
     ) -> os::Status;
 
     fn CGAnimateImageDataWithBlock(
         data: &cf::Data,
         options: Option<&cf::DictionaryOf<OptKey, cf::Number>>,
-        block: &mut cg::ImageAnimationBlock<blocks::Esc>,
+        block: &mut cg::ImageAnimationBlock,
     ) -> os::Status;
 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, cg, os};
+
+    const ERROR: os::Error = os::Error::new_unchecked(-50);
+
+    #[test]
+    fn error() {
+        let url = cf::Url::from_str("foo").unwrap();
+        match cg::animate_image_at_url(&url, None, |_idx, _img, _stp| {}) {
+            Err(ERROR) => {}
+            x => panic!("failed {x:?}"),
+        }
+
+        let data = cf::Data::from_slice(&[]).unwrap();
+        match cg::animate_image_data(&data, None, |_idx, _img, _stp| {}) {
+            Err(cg::image_animation_err::CORRUPT_INPUT_IMAGE) => {}
+            x => panic!("failed {x:?}"),
+        }
+    }
 }

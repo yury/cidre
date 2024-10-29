@@ -35,6 +35,11 @@ impl Data {
         Self::new_in(bytes, length, None)
     }
 
+    #[inline]
+    pub fn from_slice(slice: &[u8]) -> Option<arc::R<Self>> {
+        Self::new(slice.as_ptr(), slice.len() as _)
+    }
+
     #[doc(alias = "length")]
     #[inline]
     pub fn len(&self) -> usize {
