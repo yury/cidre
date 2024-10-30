@@ -1,5 +1,6 @@
 use crate::{arc, cf, cg, define_cf_type};
 
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(i32)]
 pub enum Status {
     UnexpectedEof = -5,
@@ -10,7 +11,10 @@ pub enum Status {
     Complete = 0,
 }
 
-define_cf_type!(Src(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CGImageSourceRef")]
+    Src(cf::Type)
+);
 
 impl Src {
     pub fn type_id() -> cf::TypeId {
