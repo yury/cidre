@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type};
+use crate::{arc, cf, cg, define_cf_type};
 
 #[repr(i32)]
 pub enum Status {
@@ -24,11 +24,13 @@ impl Src {
         unsafe { CGImageSourceCopyTypeIdentifiers() }
     }
 
+    #[doc(alias = "CGImageSourceCreateWithData")]
     #[inline]
     pub fn with_data(data: &cf::Data, options: Option<&cf::Dictionary>) -> Option<arc::R<Src>> {
         unsafe { CGImageSourceCreateWithData(data, options) }
     }
 
+    #[doc(alias = "CGImageSourceCreateWithURL")]
     #[inline]
     pub fn with_url(url: &cf::Url, options: Option<&cf::Dictionary>) -> Option<arc::R<Src>> {
         unsafe { CGImageSourceCreateWithURL(url, options) }
@@ -40,19 +42,57 @@ impl Src {
     }
 
     /// Return the number of images (not including thumbnails) in the image source
+    #[doc(alias = "CGImageSourceGetCount")]
     #[inline]
     pub fn count(&self) -> usize {
         unsafe { CGImageSourceGetCount(self) }
     }
 
+    #[doc(alias = "CGImageSourceGetStatus")]
     #[inline]
     pub fn status(&self) -> Status {
         unsafe { CGImageSourceGetStatus(self) }
     }
+
+    #[doc(alias = "CGImageSourceCopyProperties")]
+    #[inline]
+    pub fn props(&self, options: Option<&cf::Dictionary>) -> Option<arc::R<cf::Dictionary>> {
+        unsafe { CGImageSourceCopyProperties(self, options) }
+    }
+
+    #[doc(alias = "CGImageSourceCopyPropertiesAtIndex")]
+    #[inline]
+    pub fn props_at(
+        &self,
+        index: usize,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cf::Dictionary>> {
+        unsafe { CGImageSourceCopyPropertiesAtIndex(self, index, options) }
+    }
+
+    #[doc(alias = "CGImageSourceCreateImageAtIndex")]
+    #[inline]
+    pub fn image_at(
+        &self,
+        index: usize,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cg::Image>> {
+        unsafe { CGImageSourceCreateImageAtIndex(self, index, options) }
+    }
+
+    #[doc(alias = "CGImageSourceCreateThumbnailAtIndex")]
+    #[inline]
+    pub fn thumbnail_at(
+        &self,
+        index: usize,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cg::Image>> {
+        unsafe { CGImageSourceCreateThumbnailAtIndex(self, index, options) }
+    }
 }
 
 #[link(name = "ImageIO", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CGImageSourceGetTypeID() -> cf::TypeId;
     fn CGImageSourceCopyTypeIdentifiers() -> arc::R<cf::ArrayOf<cf::String>>;
 
@@ -71,6 +111,29 @@ extern "C" {
     fn CGImageSourceGetCount(isrc: &Src) -> usize;
 
     fn CGImageSourceGetStatus(isrc: &Src) -> Status;
+
+    fn CGImageSourceCopyProperties(
+        isrc: &Src,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cf::Dictionary>>;
+
+    fn CGImageSourceCopyPropertiesAtIndex(
+        isrc: &Src,
+        index: usize,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cf::Dictionary>>;
+
+    fn CGImageSourceCreateImageAtIndex(
+        isrc: &Src,
+        index: usize,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cg::Image>>;
+
+    fn CGImageSourceCreateThumbnailAtIndex(
+        isrc: &Src,
+        index: usize,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cg::Image>>;
 }
 
 #[cfg(test)]
