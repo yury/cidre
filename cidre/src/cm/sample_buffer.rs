@@ -1050,5 +1050,18 @@ mod tests {
         );
 
         assert!(sample_buf.is_key_frame());
+
+        let err = sample_buf
+            .audio_stream_packet_descs()
+            .expect_err("It is video format");
+        assert_eq!(err, cm::sample_buf_err::INVALID_MEDIA_TYPE_FOR_OPERATION);
+
+        // check with match:
+        match sample_buf.audio_stream_packet_descs() {
+            Err(cm::sample_buf_err::INVALID_MEDIA_TYPE_FOR_OPERATION) => {}
+            _ => {
+                panic!("should be error")
+            }
+        }
     }
 }
