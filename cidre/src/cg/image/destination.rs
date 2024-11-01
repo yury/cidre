@@ -130,6 +130,12 @@ impl Dst {
         unsafe { CGImageDestinationCreateWithData(data, ty, count, None) }
     }
 
+    /// Creates an image destination that writes image data to the specified URL.
+    ///
+    /// # Arguments:
+    /// * `url` - The URL at which to write the image data. This object overwrites any data at the specified URL.
+    /// * `ty` -  The uniform type identifier of the resulting image file.
+    /// * `count` - The number of images (not including thumbnail images) you want to include in the image file.
     #[doc(alias = "CGImageDestinationCreateWithURL")]
     #[inline]
     pub fn with_url(url: &cf::Url, ty: &cf::String, count: usize) -> Option<arc::R<Self>> {

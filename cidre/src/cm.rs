@@ -15,7 +15,7 @@ pub use format_description::VideoDimensions;
 pub use format_description::VideoFormatDesc;
 
 mod format_description_bridge;
-pub use format_description_bridge::errors as format_description_bridge_errors;
+pub use format_description_bridge::err as format_desc_bridge_err;
 pub use format_description_bridge::swap_be_image_desc_to_host;
 pub use format_description_bridge::swap_be_sound_desc_to_host;
 pub use format_description_bridge::swap_host_image_desc_to_be;
@@ -35,6 +35,7 @@ pub use time::TimeValue;
 
 pub mod sample_buffer;
 
+pub use sample_buffer::err as sample_buf_err;
 #[cfg(feature = "cat")]
 pub use sample_buffer::BlockBufAudioBufList;
 pub use sample_buffer::Flags as SampleBufFlags;
@@ -46,6 +47,7 @@ pub use attachment::Bearer as AttachBearer;
 pub use attachment::Mode as AttachMode;
 
 pub mod block_buffer;
+pub use block_buffer::err as block_buf_err;
 pub use block_buffer::BlockBuf;
 pub use block_buffer::Flags as BlockBufFlags;
 

@@ -1,6 +1,6 @@
 use crate::{arc, cf, cm, define_cf_type, os};
 
-pub mod errors {
+pub mod err {
     use crate::os::Error;
 
     /// Invalid parameter.

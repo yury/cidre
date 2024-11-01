@@ -161,6 +161,10 @@ impl TextureLoader {
         Self::alloc().init_with_device(device)
     }
 
+    pub fn with_sys_default_device() -> Option<arc::R<Self>> {
+        Some(Self::alloc().init_with_device(mtl::Device::sys_default().as_ref()?))
+    }
+
     #[cfg(feature = "blocks")]
     #[objc::msg_send(newTextureWithContentsOfURL:options:completionHandler:)]
     pub fn new_texture_with_url_ch(

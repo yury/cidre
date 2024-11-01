@@ -9,7 +9,7 @@ use crate::{define_opts, four_cc_to_str, os};
 use crate::ns;
 
 /// These are the error codes returned from the APIs found through Core Audio related frameworks.
-pub mod errors {
+pub mod err {
     use crate::os::Error;
 
     /// Unimplemented core routine.

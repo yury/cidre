@@ -64,6 +64,7 @@ pub use face_landmarks::Region as FaceLandmarkRegion;
 pub use face_landmarks::Region2d as FaceLandmarkRegion2d;
 
 mod generate_foreground_instance_mask_request;
+pub use generate_foreground_instance_mask_request::GenForegroundInstanceMaskRequest;
 
 mod generate_person_segmentation_request;
 pub use generate_person_segmentation_request::GenPersonSegmentationRequest;

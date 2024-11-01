@@ -357,7 +357,7 @@ extern "C-unwind" {
 
 }
 
-pub mod errors {
+pub mod err {
     use crate::os::Error;
 
     /// Returned when a cm::BlockBuffer-creating API gets a failure

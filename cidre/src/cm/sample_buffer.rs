@@ -377,7 +377,7 @@ impl SampleBuf {
                     true
                 } else {
                     let dict = &arr[0];
-                    match dict.get(attachment_keys::not_sync()) {
+                    match dict.get(attach_keys::not_sync()) {
                         None => true,
                         Some(not_sync) => unsafe {
                             // in theory we don't need check actual value here.
@@ -395,7 +395,7 @@ impl SampleBuf {
     #[inline]
     pub unsafe fn contains_not_sync(&self) -> bool {
         let arr = self.attaches(true).unwrap_unchecked();
-        arr[0].contains_key(attachment_keys::not_sync())
+        arr[0].contains_key(attach_keys::not_sync())
     }
 
     /// Returns a value that indicates whether a sample buffer is valid.
@@ -649,7 +649,7 @@ extern "C-unwind" {
 }
 
 /// Use attachements()
-pub mod attachment_keys {
+pub mod attach_keys {
     use crate::cf;
 
     /// cf::Boolean (absence of this key implies Sync)
@@ -743,7 +743,7 @@ pub mod attachment_keys {
 }
 
 /// use get_attachment or dictionary_of_attachments
-pub mod buffer_attachment_keys {
+pub mod buf_attach_keys {
     use crate::cf;
 
     /// cf::Boolean
@@ -946,7 +946,7 @@ pub mod buffer_attachment_keys {
     }
 }
 
-pub mod errors {
+pub mod err {
     use crate::os::Error;
 
     /// An allocation failed.
@@ -1021,4 +1021,34 @@ pub mod errors {
     /// the sample buffer's data loading operation was canceled.
     #[doc(alias = "kCMSampleBufferError_DataCanceled")]
     pub const DATA_CANCELED: Error = Error::new_unchecked(-16751);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, cm, cv};
+
+    #[test]
+    fn basics() {
+        let image_buf = cv::ImageBuf::new(1920, 1080, cv::PixelFormat::_32_BGRA, None).unwrap();
+        let format_desc = cm::FormatDesc::with_image_buf(&image_buf).unwrap();
+        let timing_info = cm::SampleTimingInfo::invalid();
+        let mut sample_buf = cm::SampleBuf::with_image_buf(
+            &image_buf,
+            true,
+            None,
+            std::ptr::null(),
+            &format_desc,
+            &timing_info,
+        )
+        .unwrap();
+        assert!(sample_buf.data_is_ready());
+
+        let attaches = sample_buf.attaches_mut(true).unwrap();
+        attaches[0].insert(
+            cm::sample_buffer::attach_keys::do_not_display(),
+            cf::Number::tagged_i8(1).into(),
+        );
+
+        assert!(sample_buf.is_key_frame());
+    }
 }

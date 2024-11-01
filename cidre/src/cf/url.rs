@@ -75,6 +75,11 @@ impl Url {
         cf::Url::with_fs_path_in(&path, PathStyle::Posix, is_dir, None)
     }
 
+    #[inline]
+    pub fn with_file_path(path: &Path) -> Option<arc::R<Url>> {
+        Self::with_path(path.into(), false)
+    }
+
     /// ```
     /// use cidre::cf;
     ///

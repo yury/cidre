@@ -76,6 +76,7 @@ impl std::error::Error for Error {}
 
 pub type Result<Ok = ()> = std::result::Result<Ok, Error>;
 
+#[inline]
 pub(crate) unsafe fn result_unchecked<T, R>(op: impl FnOnce(&mut Option<T>) -> R) -> Result<T>
 where
     R: Into<Result>,
@@ -85,6 +86,7 @@ where
     Ok(unsafe { option.unwrap_unchecked() })
 }
 
+#[inline]
 pub(crate) fn result_init<T, R>(op: impl FnOnce(*mut T) -> R) -> Result<T>
 where
     R: Into<Result>,
