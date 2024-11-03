@@ -2,7 +2,7 @@ mod types;
 pub use types::Coordinate2d;
 pub use types::Origin;
 pub use types::Region;
-pub use types::ResourceId;
+pub use types::ResId;
 pub use types::SamplePos;
 pub use types::Size;
 

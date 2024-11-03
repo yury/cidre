@@ -17,9 +17,10 @@ pub struct Origin {
 }
 
 /// Handle of the GPU resource suitable for storing in an Argument Buffer
+#[doc(alias = "MTLResourceID")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[repr(C)]
-pub struct ResourceId {
+pub struct ResId {
     _impl: usize,
 }
 
