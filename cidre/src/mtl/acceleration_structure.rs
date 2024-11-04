@@ -194,7 +194,7 @@ impl AccelerationStructure {
     #[objc::msg_send(size)]
     pub fn size(&self) -> usize;
 
-    define_mtl!(gpu_resource_id);
+    define_mtl!(gpu_res_id);
 }
 
 extern "C" {

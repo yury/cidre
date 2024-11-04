@@ -59,7 +59,7 @@ impl Desc {
 define_obj_type!(pub IntersectionFnTable(mtl::Res));
 
 impl IntersectionFnTable {
-    define_mtl!(gpu_resource_id);
+    define_mtl!(gpu_res_id);
 
     #[objc::msg_send(setBuffer:atIndex:)]
     pub fn set_buf_at(&mut self, buf: Option<&mtl::Buf>, index: usize);

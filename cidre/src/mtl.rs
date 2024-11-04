@@ -329,7 +329,7 @@ macro_rules! define_mtl {
         pub fn set_depth(&mut self, val: usize);
     };
 
-    (gpu_resource_id) => {
+    (gpu_res_id) => {
         #[$crate::objc::msg_send(gpuResourceID)]
         pub fn gpu_resource_id(&self) -> crate::mtl::ResId;
     };

@@ -268,7 +268,7 @@ define_obj_type!(
 );
 
 impl Texture {
-    define_mtl!(width, height, depth, gpu_resource_id);
+    define_mtl!(width, height, depth, gpu_res_id);
 
     /// The texture this texture view was created from, or [`None`] if this is not
     /// a texture view or it was not created from a texture.

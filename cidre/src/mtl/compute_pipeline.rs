@@ -54,7 +54,7 @@ define_obj_type!(
 );
 
 impl State {
-    define_mtl!(gpu_resource_id);
+    define_mtl!(gpu_res_id);
 
     #[objc::msg_send(device)]
     pub fn device(&self) -> arc::R<mtl::Device>;

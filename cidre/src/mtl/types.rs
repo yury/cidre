@@ -8,12 +8,30 @@ pub struct Size {
     pub depth: ns::UInteger,
 }
 
+impl Size {
+    #[inline]
+    pub fn _2d(width: usize, height: usize) -> Self {
+        Self {
+            width,
+            height,
+            depth: 1,
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Origin {
     pub x: usize,
     pub y: usize,
     pub z: usize,
+}
+
+impl Origin {
+    #[inline]
+    pub fn zero() -> Self {
+        Self::default()
+    }
 }
 
 /// Handle of the GPU resource suitable for storing in an Argument Buffer

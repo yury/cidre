@@ -24,7 +24,7 @@ define_obj_type!(
 );
 
 impl VisibleFnTable {
-    define_mtl!(gpu_resource_id);
+    define_mtl!(gpu_res_id);
 
     /// Sets a table entry to point to a callable function.
     #[objc::msg_send(setFunction:atIndex:)]
