@@ -331,7 +331,7 @@ macro_rules! define_mtl {
 
     (gpu_res_id) => {
         #[$crate::objc::msg_send(gpuResourceID)]
-        pub fn gpu_resource_id(&self) -> crate::mtl::ResId;
+        pub fn gpu_res_id(&self) -> crate::mtl::ResId;
     };
 
     (update_fence) => {
