@@ -78,22 +78,22 @@ impl PcmBuf {
     pub fn frame_capacity(&self) -> FrameCount;
 
     #[objc::msg_send(floatChannelData)]
-    pub fn data_f32(&self) -> Option<*const f32>;
+    pub fn data_f32(&self) -> *const *const f32;
 
     #[objc::msg_send(floatChannelData)]
-    pub unsafe fn data_f32_mut(&mut self) -> Option<*mut f32>;
+    pub unsafe fn data_f32_mut(&mut self) -> *const *mut f32;
 
     #[objc::msg_send(int16ChannelData)]
-    pub fn data_i16(&self) -> Option<*const i16>;
+    pub fn data_i16(&self) -> *const *const i16;
 
     #[objc::msg_send(int16ChannelData)]
-    pub unsafe fn data_i16_mut(&mut self) -> Option<*mut i16>;
+    pub unsafe fn data_i16_mut(&mut self) -> *const *mut i16;
 
     #[objc::msg_send(int32ChannelData)]
-    pub fn data_i32(&mut self) -> Option<*const i32>;
+    pub fn data_i32(&mut self) -> *const *const i32;
 
     #[objc::msg_send(int32ChannelData)]
-    pub unsafe fn data_i32_mut(&mut self) -> Option<*mut i32>;
+    pub unsafe fn data_i32_mut(&mut self) -> *const *mut i32;
 }
 
 define_obj_type!(
@@ -189,4 +189,31 @@ impl CompressedBuf {
 extern "C" {
     static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PcmBuf>;
     static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuf>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::av;
+
+    #[test]
+    fn basics() {
+        let channel_count = 2;
+        let format =
+            av::AudioFormat::standard_with_sample_rate_and_channels(44800.0, channel_count)
+                .unwrap();
+        let cap = 1024;
+        let mut buf = av::AudioPcmBuf::with_format_and_frame_capacity(&format, cap).unwrap();
+        buf.set_frame_length(cap);
+        let data = buf.data_f32();
+        let (n, cap) = if format.is_interleaved() {
+            (1, channel_count * cap)
+        } else {
+            (channel_count, cap)
+        };
+        let buf = unsafe { std::slice::from_raw_parts(data, n as _) };
+        let channel = buf[0];
+        let left = unsafe { std::slice::from_raw_parts(channel, cap as _) };
+        let sum = left.iter().sum();
+        assert_eq!(0.0f32, sum);
+    }
 }
