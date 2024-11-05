@@ -270,7 +270,7 @@ mod tests {
                 .unwrap();
         let cap = 1024;
         let mut buf = av::AudioPcmBuf::with_format(&format, cap).unwrap();
-        buf.set_frame_length(cap);
+        buf.set_frame_length(cap).unwrap();
         let data = buf.data_f32();
         let (n, cap) = if format.is_interleaved() {
             (1, channel_count * cap)
@@ -283,6 +283,7 @@ mod tests {
         let sum = left.iter().sum();
         assert_eq!(0.0f32, sum);
     }
+
     #[test]
     fn safe() {
         let channel_count = 2;
@@ -292,5 +293,7 @@ mod tests {
         let cap = 1024;
         let mut buf = av::AudioPcmBuf::with_format(&format, cap).unwrap();
         let _err = buf.set_frame_length(1025).expect_err("Should fail");
+        buf.set_frame_length(1024)
+            .expect("Failed to set max cap frame len");
     }
 }
