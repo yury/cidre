@@ -48,10 +48,7 @@ impl arc::A<PcmBuf> {
 impl PcmBuf {
     define_cls!(AV_AUDIO_PCM_BUFFER);
 
-    pub fn with_format_and_frame_capacity(
-        format: &Format,
-        frame_capacity: FrameCount,
-    ) -> Option<arc::R<Self>> {
+    pub fn with_format(format: &Format, frame_capacity: FrameCount) -> Option<arc::R<Self>> {
         Self::alloc().init_with_pcm_format_frame_capacity(format, frame_capacity)
     }
     /// The current number of valid sample frames in the buffer.
@@ -65,7 +62,11 @@ impl PcmBuf {
     pub fn frame_length(&self) -> FrameCount;
 
     #[objc::msg_send(setFrameLength:)]
-    pub fn set_frame_length(&mut self, value: FrameCount);
+    pub fn set_frame_length_throws<'ear>(&mut self, value: FrameCount);
+
+    pub fn set_frame_length<'ear>(&mut self, value: FrameCount) -> ns::ExResult<'ear> {
+        ns::try_catch(|| self.set_frame_length_throws(value))
+    }
 
     /// The buffer's number of interleaved channels.
     ///
@@ -90,10 +91,76 @@ impl PcmBuf {
     pub unsafe fn data_i16_mut(&mut self) -> *const *mut i16;
 
     #[objc::msg_send(int32ChannelData)]
-    pub fn data_i32(&mut self) -> *const *const i32;
+    pub fn data_i32(&self) -> *const *const i32;
 
     #[objc::msg_send(int32ChannelData)]
     pub unsafe fn data_i32_mut(&mut self) -> *const *mut i32;
+
+    pub fn data_i16_at(&self, index: usize) -> Option<&[i16]> {
+        pcm_slice_at(self, self.data_i16(), index)
+    }
+
+    pub fn data_i16_mut_at(&mut self, index: usize) -> Option<&mut [i16]> {
+        let ptr = unsafe { self.data_i16_mut() };
+        pcm_slice_at_mut(self, ptr, index)
+    }
+
+    pub fn data_f32_at(&self, index: usize) -> Option<&[f32]> {
+        pcm_slice_at(self, self.data_f32(), index)
+    }
+
+    pub fn data_f32_mut_at(&mut self, index: usize) -> Option<&mut [f32]> {
+        let ptr = unsafe { self.data_f32_mut() };
+        pcm_slice_at_mut(self, ptr, index)
+    }
+
+    pub fn data_i32_at(&self, index: usize) -> Option<&[i32]> {
+        pcm_slice_at(self, self.data_i32(), index)
+    }
+
+    pub fn data_i32_mut_at(&mut self, index: usize) -> Option<&mut [i32]> {
+        let ptr = unsafe { self.data_i32_mut() };
+        pcm_slice_at_mut(self, ptr, index)
+    }
+}
+
+fn pcm_slice_at<T>(buf: &PcmBuf, ptr: *const *const T, index: usize) -> Option<&[T]> {
+    if ptr.is_null() {
+        return None;
+    }
+
+    let len = buf.frame_length() as usize;
+    let stride = buf.stride() as usize;
+    if stride > 1 {
+        // if stride is not 1 it is interleaved, single buf
+        // save some calls to format
+        let slice = unsafe { std::slice::from_raw_parts(ptr, 1) };
+        let data = unsafe { std::slice::from_raw_parts(slice[0], stride * len) };
+        return Some(data);
+    }
+    let channels_n = buf.format().channel_count();
+    let slice = unsafe { std::slice::from_raw_parts(ptr, channels_n as _) };
+    let data = unsafe { std::slice::from_raw_parts(slice[index], len) };
+    Some(data)
+}
+
+fn pcm_slice_at_mut<T>(buf: &mut PcmBuf, ptr: *const *mut T, index: usize) -> Option<&mut [T]> {
+    if ptr.is_null() {
+        return None;
+    }
+
+    let len = buf.frame_length() as usize;
+    let stride = buf.stride() as usize;
+    if stride > 1 {
+        // interleaved, single buf
+        let slice = unsafe { std::slice::from_raw_parts(ptr, 1) };
+        let data = unsafe { std::slice::from_raw_parts_mut(slice[0], stride * len) };
+        return Some(data);
+    }
+    let channels_n = buf.format().channel_count();
+    let slice = unsafe { std::slice::from_raw_parts(ptr, channels_n as _) };
+    let data = unsafe { std::slice::from_raw_parts_mut(slice[index], len) };
+    Some(data)
 }
 
 define_obj_type!(
@@ -202,7 +269,7 @@ mod tests {
             av::AudioFormat::standard_with_sample_rate_and_channels(44800.0, channel_count)
                 .unwrap();
         let cap = 1024;
-        let mut buf = av::AudioPcmBuf::with_format_and_frame_capacity(&format, cap).unwrap();
+        let mut buf = av::AudioPcmBuf::with_format(&format, cap).unwrap();
         buf.set_frame_length(cap);
         let data = buf.data_f32();
         let (n, cap) = if format.is_interleaved() {
@@ -215,5 +282,15 @@ mod tests {
         let left = unsafe { std::slice::from_raw_parts(channel, cap as _) };
         let sum = left.iter().sum();
         assert_eq!(0.0f32, sum);
+    }
+    #[test]
+    fn safe() {
+        let channel_count = 2;
+        let format =
+            av::AudioFormat::standard_with_sample_rate_and_channels(44800.0, channel_count)
+                .unwrap();
+        let cap = 1024;
+        let mut buf = av::AudioPcmBuf::with_format(&format, cap).unwrap();
+        let _err = buf.set_frame_length(1025).expect_err("Should fail");
     }
 }

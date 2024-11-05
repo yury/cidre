@@ -345,9 +345,9 @@ mod tests {
             format.channel_count()
         );
 
-        let mut pcm_buf = av::audio::PcmBuf::with_format_and_frame_capacity(&format, 1024).unwrap();
+        let mut pcm_buf = av::audio::PcmBuf::with_format(&format, 1024).unwrap();
 
-        pcm_buf.set_frame_length(1024);
+        pcm_buf.set_frame_length(1024).unwrap();
 
         engine.start().expect("Failed to start engine");
         assert!(engine.is_running());
