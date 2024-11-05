@@ -14,8 +14,8 @@ mod allocation;
 pub use allocation::Allocation;
 
 mod acceleration_structure;
-pub use acceleration_structure::AccelerationStructure;
-pub use acceleration_structure::Desc as AccelerationStructureDesc;
+pub use acceleration_structure::AccelerationStruct;
+pub use acceleration_structure::Desc as AccelerationStructDesc;
 pub use acceleration_structure::GeometryDesc as AccelerationStructGeometryDesc;
 pub use acceleration_structure::InstanceOpts as AccelerationStructInstanceOpts;
 pub use acceleration_structure::MotionBorderMode;

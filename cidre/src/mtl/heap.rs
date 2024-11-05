@@ -142,27 +142,27 @@ impl Heap {
     pub fn new_acceleration_structure_size(
         &self,
         size: usize,
-    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+    ) -> Option<arc::R<mtl::AccelerationStruct>>;
 
     #[objc::msg_send(newAccelerationStructureWithSize:offset:)]
     pub fn new_acceleration_structure_size_offset(
         &self,
         size: usize,
         offset: usize,
-    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+    ) -> Option<arc::R<mtl::AccelerationStruct>>;
 
     #[objc::msg_send(newAccelerationStructureWithDescriptor:)]
     pub fn new_acceleration_structure_with_desc(
         &self,
-        descriptor: &mtl::AccelerationStructureDesc,
-    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+        descriptor: &mtl::AccelerationStructDesc,
+    ) -> Option<arc::R<mtl::AccelerationStruct>>;
 
     #[objc::msg_send(newAccelerationStructureWithDescriptor:offset:)]
     pub fn new_acceleration_structure_with_desc_offset(
         &self,
-        descriptor: &mtl::AccelerationStructureDesc,
+        descriptor: &mtl::AccelerationStructDesc,
         offset: usize,
-    ) -> Option<arc::R<mtl::AccelerationStructure>>;
+    ) -> Option<arc::R<mtl::AccelerationStruct>>;
 
     #[objc::msg_send(type)]
     pub fn type_(&self) -> Type;
