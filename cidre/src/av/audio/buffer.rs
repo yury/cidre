@@ -78,22 +78,22 @@ impl PcmBuf {
     pub fn frame_capacity(&self) -> FrameCount;
 
     #[objc::msg_send(floatChannelData)]
-    pub fn f32_data(&self) -> Option<*const f32>;
+    pub fn data_f32(&self) -> Option<*const f32>;
 
     #[objc::msg_send(floatChannelData)]
-    pub unsafe fn f32_data_mut(&mut self) -> Option<*mut f32>;
+    pub unsafe fn data_f32_mut(&mut self) -> Option<*mut f32>;
 
     #[objc::msg_send(int16ChannelData)]
-    pub fn i16_data(&self) -> Option<*const i16>;
+    pub fn data_i16(&self) -> Option<*const i16>;
 
     #[objc::msg_send(int16ChannelData)]
-    pub unsafe fn i16_data_mut(&mut self) -> Option<*mut i16>;
+    pub unsafe fn data_i16_mut(&mut self) -> Option<*mut i16>;
 
     #[objc::msg_send(int32ChannelData)]
-    pub fn i32_data(&mut self) -> Option<*const i32>;
+    pub fn data_i32(&mut self) -> Option<*const i32>;
 
     #[objc::msg_send(int32ChannelData)]
-    pub unsafe fn i32_data_mut(&mut self) -> Option<*mut i32>;
+    pub unsafe fn data_i32_mut(&mut self) -> Option<*mut i32>;
 }
 
 define_obj_type!(
