@@ -76,6 +76,24 @@ impl PcmBuf {
     /// The buffer's capacity, in audio sample frames.
     #[objc::msg_send(frameCapacity)]
     pub fn frame_capacity(&self) -> FrameCount;
+
+    #[objc::msg_send(floatChannelData)]
+    pub fn f32_data(&self) -> Option<*const f32>;
+
+    #[objc::msg_send(floatChannelData)]
+    pub unsafe fn f32_data_mut(&mut self) -> Option<*mut f32>;
+
+    #[objc::msg_send(int16ChannelData)]
+    pub fn i16_data(&self) -> Option<*const i16>;
+
+    #[objc::msg_send(int16ChannelData)]
+    pub unsafe fn i16_data_mut(&mut self) -> Option<*mut i16>;
+
+    #[objc::msg_send(int32ChannelData)]
+    pub fn i32_data(&mut self) -> Option<*const i32>;
+
+    #[objc::msg_send(int32ChannelData)]
+    pub unsafe fn i32_data_mut(&mut self) -> Option<*mut i32>;
 }
 
 define_obj_type!(
