@@ -107,6 +107,9 @@ mod format;
 pub use format::CommonFormat;
 pub use format::Format;
 
+mod file;
+pub use file::File;
+
 mod channel_layout;
 pub use channel_layout::ChannelLayout;
 

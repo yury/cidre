@@ -126,6 +126,7 @@ pub use audio::Converter as AudioConverter;
 pub use audio::ConverterInputBlock as AudioConverterInputBlock;
 pub use audio::ConverterInputStatus as AudioConverterInputStatus;
 pub use audio::Engine as AudioEngine;
+pub use audio::File as AudioFile;
 pub use audio::Format as AudioFormat;
 pub use audio::FrameCount as AudioFrameCount;
 pub use audio::FramePos as AudioFramePos;

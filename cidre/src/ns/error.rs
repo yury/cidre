@@ -45,6 +45,7 @@ define_obj_type!(
 );
 
 unsafe impl Send for Error {}
+unsafe impl Sync for Error {}
 
 impl std::error::Error for Error {}
 
