@@ -26,7 +26,10 @@ impl Buf {
     pub fn audio_buffer_list_mut(&mut self) -> &mut AudioBufList;
 }
 
-define_obj_type!(pub PcmBuf(Buf));
+define_obj_type!(
+    #[doc(alias = "AVAudioPCMBuffer")]
+    pub PcmBuf(Buf)
+);
 
 unsafe impl Send for PcmBuf {}
 unsafe impl Sync for PcmBuf {}
