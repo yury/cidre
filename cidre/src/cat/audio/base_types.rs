@@ -1161,7 +1161,7 @@ impl ChannelCoordinateIndex {
 /// Lt - left matrix total. for matrix encoded stereo.
 /// Rt - right matrix total. for matrix encoded stereo.
 #[doc(alias = "AudioChannelLayoutTag")]
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(transparent)]
 pub struct ChannelLayoutTag(pub u32);
 

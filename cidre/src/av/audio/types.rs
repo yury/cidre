@@ -3,6 +3,7 @@ use crate::blocks;
 pub type FramePos = i64;
 pub type FrameCount = u32;
 pub type PacketCount = u32;
+#[doc(alias = "AVAudioChannelCount")]
 pub type ChannelCount = u32;
 pub type NodeBus = usize;
 

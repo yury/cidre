@@ -52,6 +52,7 @@ Class AV_AUDIO_COMPRESSED_BUFFER;
 Class AV_AUDIO_FORMAT;
 Class AV_AUDIO_CONVERTER;
 Class AV_AUDIO_FILE;
+Class AV_AUDIO_CHANNEL_LAYOUT;
 
 Class AV_PLAYER;
 
@@ -174,6 +175,7 @@ static void av_initializer(void)
         AV_AUDIO_COMPRESSED_BUFFER = [AVAudioCompressedBuffer class];
         AV_AUDIO_CONVERTER = [AVAudioConverter class];
         AV_AUDIO_FILE = [AVAudioFile class];
+        AV_AUDIO_CHANNEL_LAYOUT = [AVAudioChannelLayout class];
         
         AV_PLAYER = [AVPlayer class];
 

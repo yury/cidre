@@ -120,6 +120,8 @@ pub use asset::AssetImageGeneratorResult;
 
 pub mod audio;
 pub use audio::Buf as AudioBuf;
+pub use audio::ChannelCount as AudioChannelCount;
+pub use audio::ChannelLayout as AudioChannelLayout;
 pub use audio::CommonFormat as AudioCommonFormat;
 pub use audio::CompressedBuf as AudioCompressedBuf;
 pub use audio::Converter as AudioConverter;
