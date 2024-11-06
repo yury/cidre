@@ -1584,6 +1584,7 @@ impl ChannelLayoutTag {
     /// The low 16 bits of an AudioChannelLayoutTag gives the number of channels except
     /// for `kAudioChannelLayoutTag_UseChannelDescriptions` and
     /// `kAudioChannelLayoutTag_UseChannelBitmap`
+    #[doc(alias = "AudioChannelLayoutTag_GetNumberOfChannels")]
     #[inline]
     pub fn number_of_channels(&self) -> u32 {
         self.0 & 0x0000FFFF
