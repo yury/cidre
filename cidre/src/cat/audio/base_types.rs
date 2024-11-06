@@ -1586,7 +1586,7 @@ impl ChannelLayoutTag {
     /// `kAudioChannelLayoutTag_UseChannelBitmap`
     #[doc(alias = "AudioChannelLayoutTag_GetNumberOfChannels")]
     #[inline]
-    pub fn number_of_channels(&self) -> u32 {
+    pub const fn number_of_channels(&self) -> u32 {
         self.0 & 0x0000FFFF
     }
 }
