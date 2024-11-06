@@ -620,6 +620,11 @@ pub mod err {
     /// against the macOS 11 or later SDK.
     #[doc(alias = "kAudioUnitErr_ComponentManagerNotSupported")]
     pub const COMPONENT_MANAGER_NOT_SUPPORTED: Error = Error::new_unchecked(-66749);
+
+    /// On some platforms, this error is returned when a client attempts to initialize
+    /// a voice processor instance while another is initialized
+    #[doc(alias = "kAudioUnitErr_MultipleVoiceProcessors")]
+    pub const MULTIPLE_VOICE_PROCESSORS: Error = Error::new_unchecked(-66635);
 }
 
 pub mod component_err {
