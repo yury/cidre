@@ -379,7 +379,10 @@ extern "C" {
 
 }
 
-define_cf_type!(DictionaryMut(Dictionary));
+define_cf_type!(
+    #[doc(alias = "CFMutableDictionary")]
+    DictionaryMut(Dictionary)
+);
 
 impl DictionaryMut {
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
@@ -479,6 +482,19 @@ where
     #[cfg(feature = "ns")]
     pub fn as_ns(&self) -> &ns::Dictionary<K, V> {
         unsafe { transmute(self) }
+    }
+}
+
+impl DictionaryOf<cf::String, cf::Plist> {
+    pub fn value<'a>(&'a self, key: &cf::String) -> Option<&'a cf::Plist> {
+        let mut result = None;
+        unsafe {
+            if CFDictionaryGetValueIfPresent(&self.0, key.as_type_ptr(), &mut result) {
+                Some(std::mem::transmute(result))
+            } else {
+                None
+            }
+        }
     }
 }
 

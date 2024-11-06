@@ -60,7 +60,10 @@ impl Src {
 
     #[doc(alias = "CGImageSourceCopyProperties")]
     #[inline]
-    pub fn props(&self, options: Option<&cf::Dictionary>) -> Option<arc::R<cf::Dictionary>> {
+    pub fn props(
+        &self,
+        options: Option<&cf::Dictionary>,
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Plist>>> {
         unsafe { CGImageSourceCopyProperties(self, options) }
     }
 
@@ -70,7 +73,7 @@ impl Src {
         &self,
         index: usize,
         options: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<cf::Dictionary>> {
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Plist>>> {
         unsafe { CGImageSourceCopyPropertiesAtIndex(self, index, options) }
     }
 
@@ -119,13 +122,13 @@ extern "C-unwind" {
     fn CGImageSourceCopyProperties(
         isrc: &Src,
         options: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<cf::Dictionary>>;
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Plist>>>;
 
     fn CGImageSourceCopyPropertiesAtIndex(
         isrc: &Src,
         index: usize,
         options: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<cf::Dictionary>>;
+    ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Plist>>>;
 
     fn CGImageSourceCreateImageAtIndex(
         isrc: &Src,
