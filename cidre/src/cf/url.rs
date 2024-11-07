@@ -1,4 +1,4 @@
-use std::{os::unix::prelude::OsStrExt, path::Path};
+use std::path::Path;
 
 use crate::{arc, cf, define_cf_type};
 
@@ -61,8 +61,8 @@ impl Url {
 
     #[inline]
     pub fn with_path(path: &Path, is_dir: bool) -> Option<arc::R<Url>> {
-        let bytes = path.as_os_str().as_bytes();
-        let encoding = cf::StringEncoding::sys_encoding();
+        let bytes = path.to_str()?.as_bytes();
+        let encoding = cf::StringEncoding::UTF8;
         let Some(path) = cf::String::create_with_bytes_no_copy_in(
             bytes,
             encoding,
@@ -249,4 +249,19 @@ extern "C-unwind" {
         path_style: cf::UrlPathStyle,
     ) -> Option<arc::R<cf::String>>;
     fn CFURLHasDirectoryPath(anURL: &Url) -> bool;
+}
+
+#[cfg(test)]
+mod tests {
+    use std::path::Path;
+
+    use crate::cf;
+
+    #[test]
+    fn basics() {
+        let path = Path::new("/tmp/MacBook Airのマイク");
+        let url = cf::Url::with_file_path(path).unwrap();
+        let str = url.fs_path_posix().unwrap();
+        assert_eq!("/tmp/MacBook Airのマイク", str.to_string());
+    }
 }
