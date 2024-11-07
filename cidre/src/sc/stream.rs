@@ -581,6 +581,14 @@ pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(outputVideoEffectDidStopForStream:)]
     fn output_video_effect_did_stop_for_stream(&mut self, stream: &Stream);
+
+    #[objc::optional]
+    #[objc::msg_send(streamDidBecomeActive:)]
+    fn stream_did_become_active(&mut self, stream: &Stream);
+
+    #[objc::optional]
+    #[objc::msg_send(streamDidBecomeInactive:)]
+    fn stream_did_become_inactive(&mut self, stream: &Stream);
 }
 
 define_obj_type!(pub AnyDelegate(ns::Id));
