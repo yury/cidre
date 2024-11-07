@@ -61,17 +61,7 @@ impl Url {
 
     #[inline]
     pub fn with_path(path: &Path, is_dir: bool) -> Option<arc::R<Url>> {
-        let bytes = path.to_str()?.as_bytes();
-        let encoding = cf::StringEncoding::UTF8;
-        let Some(path) = cf::String::create_with_bytes_no_copy_in(
-            bytes,
-            encoding,
-            false,
-            cf::Allocator::null(),
-            None,
-        ) else {
-            return None;
-        };
+        let path = unsafe { cf::String::from_str_no_copy(path.to_str()?) };
         cf::Url::with_fs_path_in(&path, PathStyle::Posix, is_dir, None)
     }
 
