@@ -18,6 +18,7 @@ pub use acceleration_structure::AccelerationStruct;
 pub use acceleration_structure::Desc as AccelerationStructDesc;
 pub use acceleration_structure::GeometryDesc as AccelerationStructGeometryDesc;
 pub use acceleration_structure::InstanceOpts as AccelerationStructInstanceOpts;
+pub use acceleration_structure::MatrixLayout;
 pub use acceleration_structure::MotionBorderMode;
 pub use acceleration_structure::MotionBoundingBoxGeometryDesc;
 pub use acceleration_structure::Usage as AccelerationStructUsage;

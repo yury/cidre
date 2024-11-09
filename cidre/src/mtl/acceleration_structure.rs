@@ -38,6 +38,19 @@ pub enum InstanceOpts {
     NonOpaque = (1 << 3),
 }
 
+#[derive(Copy, Clone, Eq, PartialEq)]
+#[doc(alias = "MTLMatrixLayout")]
+#[repr(isize)]
+pub enum MatrixLayout {
+    /// Column-major order
+    #[doc(alias = "MTLMatrixLayoutColumnMajor")]
+    ColumnMajor = 0,
+
+    /// Row-major order
+    #[doc(alias = "MTLMatrixLayoutRowMajor")]
+    RowMajor,
+}
+
 define_obj_type!(pub Desc(ns::Id));
 
 impl Desc {
