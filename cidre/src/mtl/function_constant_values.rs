@@ -15,12 +15,12 @@ impl FnConstValues {
     pub fn set_value_at(&mut self, val: *const c_void, type_: mtl::DType, at_index: ns::UInteger);
 
     pub fn set_bool_at(&mut self, val: bool, at_index: usize) {
-        debug_assert!(at_index < u16::MAX as _);
+        debug_assert!(at_index <= u16::MAX as _);
         self.set_value_at(&val as *const bool as *const _, mtl::DType::Bool, at_index);
     }
 
     pub fn set_u8_at(&mut self, val: u8, at_index: usize) {
-        debug_assert!(at_index < u16::MAX as _);
+        debug_assert!(at_index <= u16::MAX as _);
         self.set_value_at(&val as *const u8 as *const _, mtl::DType::U8, at_index);
     }
 
