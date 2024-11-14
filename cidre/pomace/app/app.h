@@ -20,6 +20,7 @@ Class NS_VIEW_CONTROLLER;
 Class NS_WORKSPACE;
 Class NS_TEXT_ATTACHMENT;
 Class NS_IMAGE;
+Class NS_EVENT;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -41,6 +42,7 @@ static void app_initializer(void)
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         NS_IMAGE = [NSImage class];
+        NS_EVENT = [NSEvent class];
     }
 }
 

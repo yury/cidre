@@ -40,3 +40,21 @@ pub use color::Color;
 
 mod graphics;
 pub use graphics::WindowOrderingMode;
+
+mod event;
+pub use event::Event;
+pub use event::EventButtonMask;
+pub use event::EventGestureAxis;
+pub use event::EventMask;
+pub use event::EventModifierFlags;
+pub use event::EventPhase;
+pub use event::EventSubtype;
+pub use event::EventSwipeTrackingOpts;
+pub use event::EventType;
+pub use event::PointingDeviceType;
+
+mod touch;
+pub use touch::Touch;
+pub use touch::TouchPhase;
+pub use touch::TouchType;
+pub use touch::TouchTypeMask;
