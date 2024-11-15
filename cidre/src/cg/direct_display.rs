@@ -1,4 +1,4 @@
-#[cfg(feature = "mtl")]
+#[cfg(all(target_os = "macos", feature = "mtl"))]
 use crate::{arc, mtl};
 
 pub type Id = u32;
