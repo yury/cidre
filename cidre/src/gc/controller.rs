@@ -46,15 +46,15 @@ impl Controller {
     pub fn set_should_monitor_background_events(val: bool);
 
     #[objc::msg_send(startWirelessControllerDiscoveryWithCompletionHandler:)]
-    pub fn start_wireless_controller_discovery_bl(ch: Option<&mut blocks::CompletionBlock>);
+    pub fn start_wireless_discovery_ch(ch: Option<&mut blocks::CompletionBlock>);
 
-    pub fn start_wireless_controller_discovery_ch(ch: impl FnMut() + 'static) {
+    pub fn start_wireless_discovery(ch: impl FnMut() + 'static) {
         let mut block = blocks::CompletionBlock::new0(ch);
-        Self::start_wireless_controller_discovery_bl(Some(&mut block));
+        Self::start_wireless_discovery_ch(Some(&mut block));
     }
 
     #[objc::msg_send(stopWirelessControllerDiscovery)]
-    pub fn stop_wireless_controller_discovery();
+    pub fn stop_wireless_discovery();
 }
 
 /// Notifications
