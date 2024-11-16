@@ -394,5 +394,5 @@ async fn main() {
 
     tokio::time::sleep(Duration::from_secs(100_200)).await;
 
-    _ = stream.stop();
+    _ = stream.stop().await;
 }

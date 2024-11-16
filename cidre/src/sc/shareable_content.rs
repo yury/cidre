@@ -125,12 +125,18 @@ impl ShareableContent {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(getShareableContentWithCompletionHandler:)]
-    pub fn current_with_ch(block: &mut blocks::ResultCompletionHandler<Self>);
+    pub fn current_with_ch_block(block: &mut blocks::ResultCompletionHandler<Self>);
+
+    #[cfg(feature = "blocks")]
+    pub fn current_with_ch(f: impl FnMut(Option<&Self>, Option<&ns::Error>) + 'static) {
+        let mut block = blocks::ResultCompletionHandler::new2(f);
+        Self::current_with_ch_block(&mut block);
+    }
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn current() -> Result<arc::R<Self>, arc::R<ns::Error>> {
         let (future, mut block) = blocks::result();
-        Self::current_with_ch(&mut block);
+        Self::current_with_ch_block(&mut block);
         future.await
     }
 
@@ -225,7 +231,7 @@ mod tests {
         });
 
         dispatch::Queue::global(0).unwrap().async_mut(move || {
-            ShareableContent::current_with_ch(&mut bl);
+            ShareableContent::current_with_ch_block(&mut bl);
         });
 
         sema.wait_forever();
