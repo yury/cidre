@@ -342,6 +342,122 @@ pub mod err {
     /// Unable to decode the provided data.
     #[doc(alias = "errSecDecode")]
     pub const DECODE: Error = Error::new_unchecked(-26275);
+
+    /// The required service is not available.
+    #[doc(alias = "errSecServiceNotAvailable")]
+    pub const SERVICE_NOT_AVAILABLE: Error = Error::new_unchecked(-67585);
+
+    /// The client ID is not correct.
+    #[doc(alias = "errSecInsufficientClientID")]
+    pub const INSUFFICIENT_CLIENT_ID: Error = Error::new_unchecked(-67586);
+
+    /// A device reset has occurred.
+    #[doc(alias = "errSecDeviceReset")]
+    pub const DEVICE_RESET: Error = Error::new_unchecked(-67587);
+
+    /// A device failure has occurred.
+    #[doc(alias = "errSecDeviceFailed")]
+    pub const DEVICE_FAILED: Error = Error::new_unchecked(-67588);
+
+    /// Adding an application ACL subject failed.
+    #[doc(alias = "errSecAppleAddAppACLSubject")]
+    pub const APPLE_ADD_APP_ACL_SUBJECT: Error = Error::new_unchecked(-67589);
+
+    /// The public key is incomplete.
+    #[doc(alias = "errSecApplePublicKeyIncomplete")]
+    pub const APPLE_PUBLIC_KEY_INCOMPLETE: Error = Error::new_unchecked(-67590);
+
+    /// A signature mismatch has occurred.
+    #[doc(alias = "errSecAppleSignatureMismatch")]
+    pub const APPLE_SIGNATURE_MISMATCH: Error = Error::new_unchecked(-67591);
+
+    /// The specified key has an invalid start date.
+    #[doc(alias = "errSecAppleInvalidKeyStartDate")]
+    pub const APPLE_INVALID_KEY_START_DATE: Error = Error::new_unchecked(-67592);
+
+    /// The specified key has an invalid end date.
+    #[doc(alias = "errSecAppleInvalidKeyEndDate")]
+    pub const APPLE_INVALID_KEY_END_DATE: Error = Error::new_unchecked(-67593);
+
+    /// A conversion error has occurred.
+    #[doc(alias = "errSecConversionError")]
+    pub const CONVERSION_ERROR: Error = Error::new_unchecked(-67594);
+
+    /// A SSLv2 rollback error has occurred.
+    #[doc(alias = "errSecAppleSSLv2Rollback")]
+    pub const APPLE_SSL_V2_ROLLBACK: Error = Error::new_unchecked(-67595);
+
+    /// The quota was exceeded.
+    #[doc(alias = "errSecQuotaExceeded")]
+    pub const QUOTA_EXCEEDED: Error = Error::new_unchecked(-67596);
+
+    /// The file is too big.
+    #[doc(alias = "errSecFileTooBig")]
+    pub const FILE_TOO_BIG: Error = Error::new_unchecked(-67597);
+
+    /// The specified database has an invalid blob.
+    #[doc(alias = "errSecInvalidDatabaseBlob")]
+    pub const INVALID_DATABASE_BLOB: Error = Error::new_unchecked(-67598);
+
+    /// The specified database has an invalid key blob.
+    #[doc(alias = "errSecInvalidKeyBlob")]
+    pub const INVALID_KEY_BLOB: Error = Error::new_unchecked(-67599);
+
+    /// The specified database has an incompatible blob.
+    #[doc(alias = "errSecIncompatibleDatabaseBlob")]
+    pub const INCOMPATIBLE_DATABASE_BLOB: Error = Error::new_unchecked(-67600);
+
+    /// The specified database has an incompatible key blob.
+    #[doc(alias = "errSecIncompatibleKeyBlob")]
+    pub const INCOMPATIBLE_KEY_BLOB: Error = Error::new_unchecked(-67601);
+
+    /// A host name mismatch has occurred.
+    #[doc(alias = "errSecHostNameMismatch")]
+    pub const HOST_NAME_MISMATCH: Error = Error::new_unchecked(-67602);
+
+    /// There is an unknown critical extension flag.
+    #[doc(alias = "errSecUnknownCriticalExtensionFlag")]
+    pub const UNKNOWN_CRITICAL_EXTENSION_FLAG: Error = Error::new_unchecked(-67603);
+
+    /// No basic constraints were found.
+    #[doc(alias = "errSecNoBasicConstraints")]
+    pub const NO_BASIC_CONSTRAINTS: Error = Error::new_unchecked(-67604);
+
+    /// No basic CA constraints were found.
+    #[doc(alias = "errSecNoBasicConstraintsCA")]
+    pub const NO_BASIC_CONSTRAINTS_CA: Error = Error::new_unchecked(-67605);
+
+    /// The authority key ID is not valid.
+    #[doc(alias = "errSecInvalidAuthorityKeyID")]
+    pub const INVALID_AUTHORITY_KEY_ID: Error = Error::new_unchecked(-67606);
+
+    /// The subject key ID is not valid.
+    #[doc(alias = "errSecInvalidSubjectKeyID")]
+    pub const INVALID_SUBJECT_KEY_ID: Error = Error::new_unchecked(-67607);
+
+    /// The key usage is not valid for the specified policy.
+    #[doc(alias = "errSecInvalidKeyUsageForPolicy")]
+    pub const INVALID_KEY_USAGE_FOR_POLICY: Error = Error::new_unchecked(-67608);
+
+    /// The extended key usage is not valid.
+    #[doc(alias = "errSecInvalidExtendedKeyUsage")]
+    pub const INVALID_EXTENDED_KEY_USAGE: Error = Error::new_unchecked(-67609);
+
+    /// The ID linkage is not valid.
+    #[doc(alias = "errSecInvalidIDLinkage")]
+    pub const INVALID_ID_LINKAGE: Error = Error::new_unchecked(-67610);
+
+    /// The path length constraint was exceeded.
+    #[doc(alias = "errSecPathLengthConstraintExceeded")]
+    pub const PATH_LENGTH_CONSTRAINT_EXCEEDED: Error = Error::new_unchecked(-67611);
+
+    /// The root or anchor certificate is not valid.
+    #[doc(alias = "errSecInvalidRoot")]
+    pub const INVALID_ROOT: Error = Error::new_unchecked(-67612);
+
+    /// The CRL has expired.
+    #[doc(alias = "errSecCRLExpired")]
+    pub const CRL_EXPIRED: Error = Error::new_unchecked(-67613);
 }
 
 #[link(name = "Security", kind = "framework")]
