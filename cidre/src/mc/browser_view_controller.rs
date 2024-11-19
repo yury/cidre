@@ -45,7 +45,7 @@ impl BrowserViewController {
     pub fn with_service_type<'ear>(
         service_type: &ns::String,
         session: &mc::Session,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_service_type_throws(service_type, session)
         })
@@ -54,7 +54,7 @@ impl BrowserViewController {
     pub fn with_browser<'ear>(
         browser: &mc::NearbyServiceBrowser,
         session: &mc::Session,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_with_browser_throws(browser, session) })
     }
 

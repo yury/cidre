@@ -75,7 +75,7 @@ impl arc::A<Session> {
     pub unsafe fn init_with_encryption_throws(
         self,
         peer: &mc::PeerId,
-        sec_identity: Option<ns::Array<ns::Id>>,
+        sec_identity: Option<&ns::Array<ns::Id>>,
         encryption_preference: mc::EncryptionPreference,
     ) -> arc::R<Session>;
 }
@@ -85,16 +85,16 @@ impl Session {
 
     /// Create a session with an MCPeerID for the local peer.
     #[inline]
-    pub fn with_peer<'ear>(peer: &mc::PeerId) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    pub fn with_peer<'ear>(peer: &mc::PeerId) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_with_peer_throws(peer) })
     }
 
     #[inline]
     pub fn with_encryption<'ear>(
         peer: &mc::PeerId,
-        sec_identity: Option<ns::Array<ns::Id>>,
+        sec_identity: Option<&ns::Array<ns::Id>>,
         encryption_preference: mc::EncryptionPreference,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_encryption_throws(peer, sec_identity, encryption_preference)
         })
@@ -155,7 +155,7 @@ impl Session {
         &mut self,
         stream_name: &ns::String,
         to_peer: &mc::PeerId,
-    ) -> Result<arc::R<ns::OutputStream>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<ns::OutputStream>> {
         ns::if_none(|err| unsafe { self.start_stream_err(stream_name, to_peer, err) })
     }
 
@@ -163,13 +163,13 @@ impl Session {
     pub fn my_peer_id(&self) -> &mc::PeerId;
 
     #[objc::msg_send(securityIdentity)]
-    pub fn security_identity(&self) -> Option<&ns::Array<ns::Id>>;
+    pub fn security_identity(&self) -> Option<arc::R<ns::Array<ns::Id>>>;
 
     #[objc::msg_send(encryptionPreference)]
     pub fn encryption_preference(&self) -> mc::EncryptionPreference;
 
     #[objc::msg_send(connectedPeers)]
-    pub fn connected_peers(&self) -> &ns::Array<mc::PeerId>;
+    pub fn connected_peers(&self) -> arc::R<ns::Array<mc::PeerId>>;
 }
 
 #[objc::protocol(MCSessionDelegate)]
@@ -243,7 +243,7 @@ impl Session {
     pub fn nearby_data_for_peer_ch_block(
         &self,
         peer: &mc::PeerId,
-        handler: &blocks::ResultCompletionHandler<ns::Data>,
+        handler: &mut blocks::ResultCompletionHandler<ns::Data>,
     );
 
     pub fn nearby_data_for_peer_ch(
