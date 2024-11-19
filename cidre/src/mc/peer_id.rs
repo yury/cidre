@@ -14,12 +14,12 @@ impl PeerId {
     define_cls!(MC_PEER_ID);
 
     #[inline]
-    pub fn with_display_name<'ear>(name: &ns::String) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    pub fn with_display_name<'ear>(name: &ns::String) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_with_display_name_throws(name) })
     }
 
     #[objc::msg_send(displayName)]
-    pub fn display_name(&self) -> &ns::String;
+    pub fn display_name(&self) -> arc::R<ns::String>;
 }
 
 #[link(name = "mc", kind = "static")]
@@ -35,7 +35,7 @@ mod tests {
     fn basics() {
         let name = ns::str!(c"test");
         let peer = mc::PeerId::with_display_name(name).unwrap();
-        assert_eq!(peer.display_name(), name);
+        assert_eq!(&peer.display_name(), name);
 
         let name = ns::str!(c"");
         let _err = mc::PeerId::with_display_name(name).expect_err("should be err");

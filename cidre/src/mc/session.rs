@@ -227,7 +227,7 @@ pub trait Delegate: objc::Obj {
 
     #[objc::optional]
     #[objc::msg_send(session:didReceiveCertificate:fromPeer:certificateHandler:)]
-    fn session_did_receive_cert<'a>(
+    fn session_did_receive_cert(
         &mut self,
         session: &mc::Session,
         cert: Option<&ns::Array<ns::Id>>,

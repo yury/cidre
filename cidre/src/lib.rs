@@ -121,6 +121,9 @@ pub mod gc;
 pub mod os;
 pub mod sys;
 
+#[cfg(feature = "sec")]
+pub mod sec;
+
 /// Video Toolbox
 #[cfg(feature = "vt")]
 pub mod vt;

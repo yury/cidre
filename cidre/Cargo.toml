@@ -35,6 +35,7 @@ full = [
   "nl",
   "vt",
   "sc",
+  "sec",
   "mc",
   "mtl",
   "mtk",
@@ -101,6 +102,7 @@ nl = ["ns"]
 vt = ["cf", "cv", "cg", "cm"]
 io = ["cf"]
 sn = ["ns"]
+sec = ["cf"]
 vn = ["ns"]
 vdsp = []
 nw = ["ns", "dispatch"]
