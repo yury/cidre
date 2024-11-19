@@ -92,7 +92,7 @@ static void av_initializer(void)
         
 #if TARGET_OS_VISION
 #else
-        AV_CAPTURE_METADATA_OUTPUT = [AVCaptureMetadataOutput class];
+        AV_CAPTURE_METADATA_OUTPUT = NSClassFromString(@"AVCaptureMetadataOutput");
         AV_CAPTURE_DEVICE_DISCOVERY_SESSION = [AVCaptureDeviceDiscoverySession class];
         AV_CAPTURE_AUDIO_DATA_OUTPUT = [AVCaptureAudioDataOutput class];
         AV_CAPTURE_VIDEO_PREVIEW_LAYER = [AVCaptureVideoPreviewLayer class];
@@ -104,11 +104,11 @@ static void av_initializer(void)
 #else
 #if TARGET_OS_VISION
 #else
-                AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = [AVCaptureDeviceRotationCoordinator class];
+    AV_CAPTURE_DEVICE_ROTATION_COORDINATOR = NSClassFromString(@"AVCaptureDeviceRotationCoordinator");
 #endif
     
-    AV_SAMPLE_BUFFER_VIDEO_RENDERER = [AVSampleBufferVideoRenderer class];
-    AV_AUDIO_APPLICATION = [AVAudioApplication class];
+    AV_SAMPLE_BUFFER_VIDEO_RENDERER = NSClassFromString(@"AVSampleBufferVideoRenderer");
+    AV_AUDIO_APPLICATION = NSClassFromString(@"AVAudioApplication");
 #endif
         } else {
 #if TARGET_OS_WATCH

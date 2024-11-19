@@ -2142,8 +2142,10 @@ impl arc::A<RotationCoordinator> {
 }
 
 impl RotationCoordinator {
-    define_cls!(AV_CAPTURE_DEVICE_ROTATION_COORDINATOR);
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
+    crate::define_cls!(AV_CAPTURE_DEVICE_ROTATION_COORDINATOR);
 
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn with_device_preview_layer(
         device: &Device,
         preview_layer: Option<&ca::Layer>,

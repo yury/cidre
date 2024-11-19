@@ -1,4 +1,4 @@
-use crate::{arc, av, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, blocks, define_obj_type, ns, objc};
 
 #[doc(alias = "AVAudioApplicationRecordPermission")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -41,6 +41,14 @@ pub enum MicInjectionPermission {
 impl ns::NotificationName {
     #[doc(alias = "AVAudioApplicationInputMuteStateChangeNotification")]
     #[inline]
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 1.0,
+        watchos = 10.0
+    )]
     pub fn audio_app_input_mute_state_change() -> &'static Self {
         unsafe { AVAudioApplicationInputMuteStateChangeNotification }
     }
@@ -52,18 +60,42 @@ define_obj_type!(
 );
 
 impl App {
-    define_cls!(AV_AUDIO_APPLICATION);
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 1.0,
+        watchos = 10.0
+    )]
+    crate::define_cls!(AV_AUDIO_APPLICATION);
 
     #[doc(alias = "AVAudioApplicationInputMuteStateChangeNotification")]
     #[doc(alias = "AVAudioApplication.inputMuteStateChangeNotification")]
     #[inline]
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 1.0,
+        watchos = 10.0
+    )]
     pub fn input_change_notification() -> &'static ns::NotificationName {
-        ns::NotificationName::audio_app_input_mute_state_change()
+        unsafe { AVAudioApplicationInputMuteStateChangeNotification }
     }
 
     #[doc(alias = "AVAudioApplicationMuteStateKey")]
     #[doc(alias = "AVAudioApplication.muteStateKey")]
     #[inline]
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 1.0,
+        watchos = 10.0
+    )]
     pub fn mute_state_key() -> &'static ns::String {
         unsafe { AVAudioApplicationMuteStateKey }
     }
@@ -141,8 +173,26 @@ impl App {
 }
 
 #[link(name = "AVFAudio", kind = "framework")]
+#[api::weak]
 extern "C" {
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 1.0,
+        watchos = 10.0
+    )]
     static AVAudioApplicationInputMuteStateChangeNotification: &'static ns::NotificationName;
+
+    #[api::available(
+        macos = 14.0,
+        ios = 17.0,
+        maccatalyst = 17.0,
+        tvos = 17.0,
+        visionos = 1.0,
+        watchos = 10.0
+    )]
     static AVAudioApplicationMuteStateKey: &'static ns::String;
 }
 

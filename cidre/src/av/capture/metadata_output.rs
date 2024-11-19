@@ -1,4 +1,4 @@
-use crate::{arc, av, cg, define_obj_type, dispatch, ns, objc};
+use crate::{api, arc, av, cg, define_obj_type, dispatch, ns, objc};
 
 use super::Output;
 
@@ -24,7 +24,8 @@ define_obj_type!(
     /// adding it as an output to an [`av::CaptureSession`] object.
     #[doc(alias = "AVCaptureMetadataOutput")]
     pub MetadataOutput(Output),
-    AV_CAPTURE_METADATA_OUTPUT
+    AV_CAPTURE_METADATA_OUTPUT,
+    #[api::available(macos = 13.0, ios = 6.0, maccatalyst = 14.0, tvos = 17.0)]
 );
 
 impl MetadataOutput {

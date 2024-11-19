@@ -1,6 +1,11 @@
-use crate::{arc, av, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
 
-define_obj_type!(pub VideoRenderer(ns::Id), AV_SAMPLE_BUFFER_VIDEO_RENDERER);
+define_obj_type!(
+    #[doc(alias = "AVSampleBufferVideoRenderer")]
+    pub VideoRenderer(ns::Id),
+    AV_SAMPLE_BUFFER_VIDEO_RENDERER,
+    #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0, visionos = 1.0)]
+);
 
 impl av::QueuedSampleBufRendering for VideoRenderer {}
 
