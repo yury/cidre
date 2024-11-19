@@ -1412,6 +1412,12 @@ fn try_replace_fn(tokens: &mut Vec<TokenTree>, make_result_optional: &mut bool) 
     let mut body_stream = g.stream().into_iter();
 
     match body_stream.next().unwrap() {
+        TokenTree::Group(scope) => {
+            if scope.delimiter() == Delimiter::Brace {
+                *make_result_optional = true;
+                return true;
+            }
+        }
         TokenTree::Ident(ident) => match ident.to_string().as_str() {
             "unsafe" => {
                 let Some(TokenTree::Group(g)) = body_stream.next() else {

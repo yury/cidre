@@ -26,7 +26,8 @@ static void ca_initializer(void)
         
         CA_ANIMATION = [CAAnimation class];
         CA_MEDIA_TIMING_FUNCTION = [CAMediaTimingFunction class];
-        CA_DISPLAY_LINK = [CADisplayLink class];
+        CA_DISPLAY_LINK = NSClassFromString(@"CADisplayLink");
+//        CA_DISPLAY_LINK = [CADisplayLink class];
         CA_LAYER = [CALayer class];
         CA_METAL_LAYER = [CAMetalLayer class];
         CA_RENDERER = [CARenderer class];

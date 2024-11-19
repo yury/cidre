@@ -16,13 +16,18 @@ define_obj_type!(
 );
 
 impl CalcImageAestheticsScoresRequest {
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, visionos = 2.0)]
     pub fn with_ch(ch: &mut vn::RequestCh<Self>) -> arc::R<Self> {
         Self::alloc().init_with_ch(Some(ch))
     }
 
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, visionos = 2.0)]
     pub fn with(f: impl FnMut(&mut Self, Option<&ns::Error>) + 'static) -> arc::R<Self> {
-        let mut block = vn::RequestCh::<Self>::new2(f);
-        Self::with_ch(&mut block)
+        // this scope is marker for api::available to make result optional and skip body
+        {
+            let mut block = vn::RequestCh::<Self>::new2(f);
+            Self::with_ch(&mut block)
+        }
     }
 
     #[doc(alias = "VNCalculateImageAestheticsScoresRequestRevision1")]

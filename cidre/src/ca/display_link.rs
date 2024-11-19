@@ -1,9 +1,10 @@
-use crate::{arc, ca, cf, define_obj_type, ns, objc};
+use crate::{api, arc, ca, cf, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "CADisplayLink")]
     pub DisplayLink(ns::Id),
-    CA_DISPLAY_LINK
+    CA_DISPLAY_LINK,
+    #[api::available(macos = 14.0, maccatalyst = 13.1, ios = 3.1, tvos = 9.0, visionos = 1.0)]
 );
 
 #[objc::protocol(CidreTarget)]
