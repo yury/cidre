@@ -128,10 +128,10 @@ impl IndirectCmdBuf {
     ) -> arc::R<mtl::IndirectRenderCmd>;
 
     #[inline]
-    pub fn indirect_render_cmd_at<'ar>(
+    pub fn indirect_render_cmd_at<'ear>(
         &self,
         index: usize,
-    ) -> Result<arc::R<mtl::IndirectRenderCmd>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<mtl::IndirectRenderCmd>> {
         ns::try_catch(|| unsafe { self.indirect_render_cmd_at_throws(index) })
     }
 
@@ -142,10 +142,10 @@ impl IndirectCmdBuf {
     ) -> arc::R<mtl::IndirectComputeCmd>;
 
     #[inline]
-    pub fn indirect_compute_cmd_at<'ar>(
+    pub fn indirect_compute_cmd_at<'ear>(
         &self,
         index: usize,
-    ) -> Result<arc::R<mtl::IndirectComputeCmd>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<mtl::IndirectComputeCmd>> {
         ns::try_catch(|| unsafe { self.indirect_compute_cmd_at_throws(index) })
     }
 }

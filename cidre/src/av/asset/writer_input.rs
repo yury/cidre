@@ -29,10 +29,10 @@ impl WriterInput {
         Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
     }
 
-    pub fn with_media_type_and_output_settings<'ar>(
+    pub fn with_media_type_and_output_settings<'ear>(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<WriterInput>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
         })
@@ -50,11 +50,11 @@ impl WriterInput {
         )
     }
 
-    pub fn with_media_type_output_settings_source_format_hint<'ar>(
+    pub fn with_media_type_output_settings_source_format_hint<'ear>(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDesc>,
-    ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<WriterInput>> {
         ns::try_catch(|| unsafe {
             Self::with_media_type_output_settings_source_format_hint_throws(
                 media_type,
@@ -79,17 +79,17 @@ impl WriterInput {
         Self::with_media_type_output_settings_throws(media_type, None)
     }
 
-    pub fn with_media_type<'ar>(
+    pub fn with_media_type<'ear>(
         media_type: &MediaType,
-    ) -> Result<arc::R<WriterInput>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<WriterInput>> {
         ns::try_catch(|| unsafe { Self::with_media_type_throws(media_type) })
     }
 
     #[objc::msg_send(mediaType)]
-    pub fn media_type(&self) -> &MediaType;
+    pub fn media_type(&self) -> arc::R<MediaType>;
 
     #[objc::msg_send(outputSettings)]
-    pub fn output_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
+    pub fn output_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
     #[objc::msg_send(isReadyForMoreMediaData)]
     pub fn is_ready_for_more_media_data(&self) -> bool;
@@ -120,10 +120,7 @@ impl WriterInput {
     #[objc::msg_send(appendSampleBuffer:)]
     pub unsafe fn append_sample_buf_throws(&mut self, buffer: &cm::SampleBuf) -> bool;
 
-    pub fn append_sample_buf<'ar>(
-        &mut self,
-        buffer: &cm::SampleBuf,
-    ) -> Result<bool, &'ar ns::Exception> {
+    pub fn append_sample_buf<'ear>(&mut self, buffer: &cm::SampleBuf) -> ns::ExResult<'ear, bool> {
         ns::try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
     }
 
@@ -165,7 +162,7 @@ impl WriterInputPixelBufAdaptor {
     pub fn with_input_writer<'ear>(
         input: &WriterInput,
         src_pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_asset_writer_input_throws(input, src_pixel_buf_attrs)
         })
@@ -195,7 +192,7 @@ impl WriterInputPixelBufAdaptor {
         &mut self,
         buf: &cv::PixelBuf,
         pts: cm::Time,
-    ) -> Result<bool, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, bool> {
         ns::try_catch(|| unsafe { self.append_pixel_buf_with_pts_throws(buf, pts) })
     }
 }
@@ -215,7 +212,7 @@ mod tests {
     fn basics() {
         let input = av::asset::WriterInput::with_media_type(av::MediaType::video())
             .expect("failed to create writer");
-        assert_eq!(input.media_type(), av::MediaType::video());
+        assert_eq!(input.media_type().as_ref(), av::MediaType::video());
         av::asset::WriterInput::with_media_type(av::MediaType::muxed()).unwrap();
         av::asset::WriterInput::with_media_type(av::MediaType::audio()).unwrap();
         av::asset::WriterInput::with_media_type(av::MediaType::text()).unwrap();

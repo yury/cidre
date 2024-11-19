@@ -20,7 +20,7 @@ impl NearbyServiceBrowser {
     pub fn with_peer<'ear>(
         peer: &mc::PeerId,
         service_type: &ns::String,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_peer_and_service_type_throws(peer, service_type)
         })
