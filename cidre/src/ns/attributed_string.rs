@@ -193,11 +193,11 @@ impl AttrString {
         effective_range: Option<&ns::Range>,
     ) -> arc::R<ns::Dictionary<AttrStringKey, ns::Id>>;
 
-    pub fn attrs_at<'ar>(
+    pub fn attrs_at<'ear>(
         &self,
         index: usize,
         effective_range: Option<&ns::Range>,
-    ) -> Result<arc::R<ns::Dictionary<AttrStringKey, ns::Id>>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<ns::Dictionary<AttrStringKey, ns::Id>>> {
         ns::try_catch(|| unsafe { self.attrs_at_throws(index, effective_range) })
     }
 

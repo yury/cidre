@@ -87,7 +87,10 @@ fn writer_and_input(
     let mut writer = av::AssetWriter::with_url_and_file_type(dst.as_ns(), file_type).unwrap();
 
     assert!(reader.start_reading());
-    let buf = output.copy_next_sample_buf_throws().unwrap();
+    let buf = output
+        .next_sample_buf()
+        .expect("Failed to copy next sample buf")
+        .unwrap();
     let fd = buf.format_desc().unwrap();
     let src_asbd = fd.stream_basic_desc().unwrap();
     let desc = cm::AudioFormatDesc::with_asbd(&src_asbd).unwrap();
@@ -154,7 +157,7 @@ fn write(
     let mut block = blocks::EscBlock::new0(move || {
         while inp.is_ready_for_more_media_data() {
             unsafe { inp.append_sample_buf_throws(&buf) };
-            let Some(b) = out.copy_next_sample_buf_throws() else {
+            let Ok(Some(b)) = out.next_sample_buf() else {
                 inp.mark_as_finished();
                 sem.signal();
                 break;

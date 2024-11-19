@@ -22,7 +22,7 @@ impl arc::A<IndexPicker> {
         localized_title: &ns::String,
         symbol_name: &ns::String,
         n: isize,
-    ) -> Result<arc::R<IndexPicker>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
         ns::try_catch(|| unsafe {
             self.init_with_indexes_n_throws(localized_title, symbol_name, n)
         })
@@ -41,7 +41,7 @@ impl arc::A<IndexPicker> {
         localized_title: &ns::String,
         symbol_name: &ns::String,
         titles: &ns::Array<ns::String>,
-    ) -> Result<arc::R<IndexPicker>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
         ns::try_catch(|| unsafe {
             self.init_with_indexes_titles_throws(localized_title, symbol_name, titles)
         })
@@ -57,7 +57,7 @@ impl IndexPicker {
         localized_title: &ns::String,
         symbol_name: &ns::String,
         n: isize,
-    ) -> Result<arc::R<IndexPicker>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
         Self::alloc().init_with_indexes_n(localized_title, symbol_name, n)
     }
 
@@ -66,7 +66,7 @@ impl IndexPicker {
         localized_title: &ns::String,
         symbol_name: &ns::String,
         titles: &ns::Array<ns::String>,
-    ) -> Result<arc::R<IndexPicker>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
         Self::alloc().init_with_titles(localized_title, symbol_name, titles)
     }
 

@@ -22,7 +22,7 @@ impl NearbyServiceAdvertiser {
         my_peer: &mc::PeerId,
         discorvery_info: Option<&ns::Dictionary<ns::String, ns::String>>,
         service_type: &ns::String,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_peer_throws(my_peer, discorvery_info, service_type)
         })
@@ -38,7 +38,7 @@ impl NearbyServiceAdvertiser {
     pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
-    pub fn set_delegate<D: Delegate>(&self, val: Option<&D>);
+    pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
 
     #[objc::msg_send(myPeerID)]
     pub fn my_peer_id(&self) -> arc::R<mc::PeerId>;

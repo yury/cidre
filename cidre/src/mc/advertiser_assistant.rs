@@ -19,7 +19,7 @@ impl AdvertiserAssistant {
     pub fn with_service_type<'ear>(
         peer: &mc::PeerId,
         service_type: &ns::String,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_service_type_throws(peer, service_type) })
     }
 
@@ -30,19 +30,19 @@ impl AdvertiserAssistant {
     pub fn stop(&mut self);
 
     #[objc::msg_send(session)]
-    pub fn session(&self) -> &mc::Session;
+    pub fn session(&self) -> arc::R<mc::Session>;
 
     #[objc::msg_send(discoveryInfo)]
-    pub fn discovery_info(&self) -> Option<&ns::Dictionary<ns::String, ns::String>>;
+    pub fn discovery_info(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::String>>>;
 
     #[objc::msg_send(serviceType)]
-    pub fn service_type(&self) -> &ns::String;
+    pub fn service_type(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: &D);
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&mut self) -> &AnyDelegate;
+    pub fn delegate(&self) -> arc::R<AnyDelegate>;
 }
 
 #[objc::protocol(MCAdvertiserAssistantDelegate)]

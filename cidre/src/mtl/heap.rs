@@ -106,7 +106,7 @@ impl Heap {
         &self,
         length: usize,
         options: mtl::ResOpts,
-    ) -> Result<Option<arc::R<mtl::Buf>>, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, Option<arc::R<mtl::Buf>>> {
         ns::try_catch(|| unsafe { self.new_buf_throws(length, options) })
     }
 

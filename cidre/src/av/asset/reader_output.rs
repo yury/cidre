@@ -1,8 +1,4 @@
-use crate::{
-    arc,
-    av::{self, MediaType},
-    cm, define_cls, define_obj_type, ns, objc,
-};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(pub ReaderOutput(ns::Id));
 define_obj_type!(pub ReaderTrackOutput(ReaderOutput));
@@ -23,7 +19,7 @@ define_obj_type!(pub ReaderOutputCaptionAdaptor(ns::Id));
 /// if you do not need to modify the sample data in-place, to avoid unnecessary and inefficient copying.
 impl ReaderOutput {
     #[objc::msg_send(mediaType)]
-    pub fn media_type(&self) -> &MediaType;
+    pub fn media_type(&self) -> arc::R<av::MediaType>;
 
     /// Indicates whether or not the data in buffers gets copied before being vended to the client.
     ///
@@ -57,13 +53,11 @@ impl ReaderOutput {
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
     /// (using -addOutput:) and -startReading is not called on that asset reader.
     #[objc::msg_send(copyNextSampleBuffer)]
-    pub fn copy_next_sample_buf_throws(&mut self) -> Option<arc::Retained<cm::SampleBuf>>;
+    pub unsafe fn next_sample_buf_throws(&mut self) -> Option<arc::Retained<cm::SampleBuf>>;
 
     #[inline]
-    pub fn copy_next_sample_buf<'ar>(
-        &mut self,
-    ) -> Result<Option<arc::R<cm::SampleBuf>>, &'ar ns::Exception> {
-        ns::try_catch(|| self.copy_next_sample_buf_throws())
+    pub fn next_sample_buf<'ear>(&mut self) -> ns::ExResult<'ear, Option<arc::R<cm::SampleBuf>>> {
+        ns::try_catch(|| unsafe { self.next_sample_buf_throws() })
     }
 }
 
@@ -123,10 +117,10 @@ impl ReaderTrackOutput {
         Self::alloc().init_with_track_throws(track, output_settings)
     }
 
-    pub fn with_track<'ar>(
+    pub fn with_track<'ear>(
         track: &av::asset::Track,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> Result<arc::R<Self>, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| Self::with_track_throws(track, output_settings))
     }
 
