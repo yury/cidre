@@ -42,7 +42,7 @@ impl NearbyServiceBrowser {
     );
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);

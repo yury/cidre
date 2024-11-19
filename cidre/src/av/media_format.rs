@@ -535,7 +535,10 @@ impl FileType {
     }
 }
 
-define_obj_type!(pub FileTypeProfile(ns::String));
+define_obj_type!(
+    #[doc(alias = "AVFileTypeProfile")]
+    pub FileTypeProfile(ns::String)
+);
 
 /// File type profiles
 impl FileTypeProfile {

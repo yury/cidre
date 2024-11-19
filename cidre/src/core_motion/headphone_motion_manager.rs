@@ -11,7 +11,7 @@ impl HeadphoneMotionManager {
     pub fn authorization_status() -> cm::AuthorizationStatus;
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
@@ -23,7 +23,7 @@ impl HeadphoneMotionManager {
     pub fn is_device_motion_active(&self) -> bool;
 
     #[objc::msg_send(deviceMotion)]
-    pub fn device_motion(&self) -> Option<&cm::DeviceMotion>;
+    pub fn device_motion(&self) -> Option<arc::R<cm::DeviceMotion>>;
 
     #[objc::msg_send(startDeviceMotionUpdates)]
     pub fn start_device_motion_updates(&mut self);

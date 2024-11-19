@@ -137,14 +137,14 @@ impl Writer {
     pub fn set_initial_segment_start_time(&mut self, val: cm::Time);
 
     #[objc::msg_send(outputFileTypeProfile)]
-    pub fn output_file_type_profile(&self) -> Option<&av::FileTypeProfile>;
+    pub fn output_file_type_profile(&self) -> Option<arc::R<av::FileTypeProfile>>;
 
     /// TODO: check throws
     #[objc::msg_send(setOutputFileTypeProfile:)]
     pub fn set_output_file_type_profile(&mut self, val: Option<&av::FileTypeProfile>);
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);

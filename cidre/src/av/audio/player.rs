@@ -87,16 +87,16 @@ impl Player {
     pub fn duration(&self) -> ns::TimeInterval;
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: &D);
 
     #[objc::msg_send(url)]
-    pub fn url(&self) -> Option<&ns::Url>;
+    pub fn url(&self) -> Option<arc::R<ns::Url>>;
 
     #[objc::msg_send(data)]
-    pub fn data(&self) -> Option<&ns::Data>;
+    pub fn data(&self) -> Option<arc::R<ns::Data>>;
 
     #[objc::msg_send(pan)]
     pub fn pan(&self) -> f32;
@@ -148,7 +148,7 @@ impl Player {
     pub fn settings(&self) -> &ns::Dictionary<ns::String, ns::Id>;
 
     #[objc::msg_send(format)]
-    pub fn format(&self) -> &av::AudioFormat;
+    pub fn format(&self) -> arc::R<av::AudioFormat>;
 
     #[objc::msg_send(isMeteringEnabled)]
     pub fn is_metering_enabled(&self) -> bool;

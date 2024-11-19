@@ -35,24 +35,24 @@ impl NearbyServiceAdvertiser {
     pub fn stop_advertising_peer(&mut self);
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&self, val: Option<&D>);
 
     #[objc::msg_send(myPeerID)]
-    pub fn my_peer_id(&self) -> &mc::PeerId;
+    pub fn my_peer_id(&self) -> arc::R<mc::PeerId>;
 
     #[objc::msg_send(discoveryInfo)]
-    pub fn discovery_info(&self) -> Option<&ns::Dictionary<ns::String, ns::String>>;
+    pub fn discovery_info(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::String>>>;
 
     #[objc::msg_send(serviceType)]
-    pub fn service_type(&self) -> &ns::String;
+    pub fn service_type(&self) -> arc::R<ns::String>;
 }
 
 #[objc::protocol(MCNearbyServiceAdvertiserDelegate)]
 pub trait Delegate: objc::Obj {
-    /// Incoming invitation request.  Call the invitation_handler block with true
+    /// Incoming invitation request. Call the invitation_handler block with true
     /// and a valid session to connect the inviting peer to the session.
     #[objc::msg_send(advertiser:didReceiveInvitationFromPeer:withContext:invitationHandler:)]
     fn advertiser_did_receive_invitation_from_peer(

@@ -81,7 +81,7 @@ impl PipController {
     pub fn set_can_start_pip_automatically_from_inline(&mut self, val: bool);
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: PipControllerDelegate>(&mut self, val: Option<&D>);

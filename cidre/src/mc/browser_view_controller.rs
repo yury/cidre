@@ -59,13 +59,13 @@ impl BrowserViewController {
     }
 
     #[objc::msg_send(browser)]
-    pub fn browser(&self) -> Option<&mc::NearbyServiceBrowser>;
+    pub fn browser(&self) -> Option<arc::R<mc::NearbyServiceBrowser>>;
 
     #[objc::msg_send(session)]
-    pub fn session(&self) -> &mc::Session;
+    pub fn session(&self) -> arc::R<mc::Session>;
 
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
