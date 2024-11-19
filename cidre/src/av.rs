@@ -68,6 +68,10 @@ pub use capture::SysPressureState as CaptureSysPressureState;
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
 pub use capture::MetadataInput as CaptureMetadataInput;
 
+pub mod external_storage_device;
+pub use external_storage_device::Device as ExternalStorageDevice;
+pub use external_storage_device::DiscoverySession as ExternalStorageDeviceDiscoverySession;
+
 pub mod metadata_object;
 pub use metadata_object::CatBodyObj as MetadataCatBodyObj;
 pub use metadata_object::DogBodyObj as MetadataDogBodyObj;

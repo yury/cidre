@@ -71,6 +71,9 @@ Class AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER;
 Class AV_CAPTURE_SLIDER;
 Class AV_CAPTURE_INDEX_PICKER;
 
+Class AV_EXTERNAL_STORAGE_DEVICE;
+Class AV_EXTERNAL_STORAGE_DEVICE_DISCOVERY_SESSION;
+
 
 __attribute__((constructor))
 static void av_initializer(void)
@@ -189,6 +192,9 @@ static void av_initializer(void)
         AV_CAPTURE_INDEX_PICKER = NSClassFromString(@"AVCaptureIndexPicker");
         
         AV_ASSET_IMAGE_GENERATOR =  [AVAssetImageGenerator class];
+        
+        AV_EXTERNAL_STORAGE_DEVICE = NSClassFromString(@"AVExternalStorageDevice");
+        AV_EXTERNAL_STORAGE_DEVICE_DISCOVERY_SESSION = NSClassFromString(@" AVExternalStorageDeviceDiscoverySession");
 
     }
 }

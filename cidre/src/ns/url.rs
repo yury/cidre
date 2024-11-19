@@ -98,6 +98,12 @@ impl Url {
         ns::if_none(|err| unsafe { self.res_values_for_keys_err(keys, err) })
     }
 
+    #[objc::msg_send(startAccessingSecurityScopedResource)]
+    pub fn start_accessing_security_scoped_resource(&self) -> bool;
+
+    #[objc::msg_send(stopAccessingSecurityScopedResource)]
+    pub fn stop_accessing_security_scoped_resource(&self);
+
     #[cfg(feature = "cf")]
     #[inline]
     pub fn as_cf(&self) -> &cf::Url {
