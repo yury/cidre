@@ -863,6 +863,94 @@ pub mod err {
     /// An invalid service mask was encountered.
     #[doc(alias = "errSecInvalidServiceMask")]
     pub const INVALID_SERVICE_MASK: Error = Error::new_unchecked(-67717);
+
+    /// A module was not loaded.
+    #[doc(alias = "errSecModuleNotLoaded")]
+    pub const MODULE_NOT_LOADED: Error = Error::new_unchecked(-67718);
+
+    /// An invalid subservice ID was encountered.
+    #[doc(alias = "errSecInvalidSubServiceID")]
+    pub const INVALID_SUB_SERVICE_ID: Error = Error::new_unchecked(-67719);
+
+    /// An attribute was not in the context.
+    #[doc(alias = "errSecAttributeNotInContext")]
+    pub const ATTRIBUTE_NOT_IN_CONTEXT: Error = Error::new_unchecked(-67720);
+
+    /// A module failed to initialize.
+    #[doc(alias = "errSecModuleManagerInitializeFailed")]
+    pub const MODULE_MANAGER_INITIALIZE_FAILED: Error = Error::new_unchecked(-67721);
+
+    /// A module was not found.
+    #[doc(alias = "errSecModuleManagerNotFound")]
+    pub const MODULE_MANAGER_NOT_FOUND: Error = Error::new_unchecked(-67722);
+
+    /// An event notification callback was not found.
+    #[doc(alias = "errSecEventNotificationCallbackNotFound")]
+    pub const EVENT_NOTIFICATION_CALLBACK_NOT_FOUND: Error = Error::new_unchecked(-67723);
+
+    /// An input length error was encountered.
+    #[doc(alias = "errSecInputLengthError")]
+    pub const INPUT_LENGTH_ERROR: Error = Error::new_unchecked(-67724);
+
+    /// An output length error was encountered.
+    #[doc(alias = "errSecOutputLengthError")]
+    pub const OUTPUT_LENGTH_ERROR: Error = Error::new_unchecked(-67725);
+
+    /// The privilege is not supported.
+    #[doc(alias = "errSecPrivilegeNotSupported")]
+    pub const PRIVILEGE_NOT_SUPPORTED: Error = Error::new_unchecked(-67726);
+
+    /// A device error was encountered.
+    #[doc(alias = "errSecDeviceError")]
+    pub const DEVICE_ERROR: Error = Error::new_unchecked(-67727);
+
+    /// The CSP handle was busy.
+    #[doc(alias = "errSecAttachHandleBusy")]
+    pub const ATTACH_HANDLE_BUSY: Error = Error::new_unchecked(-67728);
+
+    /// You are not logged in.
+    #[doc(alias = "errSecNotLoggedIn")]
+    pub const NOT_LOGGED_IN: Error = Error::new_unchecked(-67729);
+
+    /// An algorithm mismatch was encountered.
+    #[doc(alias = "errSecAlgorithmMismatch")]
+    pub const ALGORITHM_MISMATCH: Error = Error::new_unchecked(-67730);
+
+    /// The key usage is incorrect.
+    #[doc(alias = "errSecKeyUsageIncorrect")]
+    pub const KEY_USAGE_INCORRECT: Error = Error::new_unchecked(-67731);
+
+    /// The key blob type is incorrect.
+    #[doc(alias = "errSecKeyBlobTypeIncorrect")]
+    pub const KEY_BLOB_TYPE_INCORRECT: Error = Error::new_unchecked(-67732);
+
+    /// The key header is inconsistent.
+    #[doc(alias = "errSecKeyHeaderInconsistent")]
+    pub const KEY_HEADER_INCONSISTENT: Error = Error::new_unchecked(-67733);
+
+    /// The key header format is not supported.
+    #[doc(alias = "errSecUnsupportedKeyFormat")]
+    pub const UNSUPPORTED_KEY_FORMAT: Error = Error::new_unchecked(-67734);
+
+    /// The key size is not supported.
+    #[doc(alias = "errSecUnsupportedKeySize")]
+    pub const UNSUPPORTED_KEY_SIZE: Error = Error::new_unchecked(-67735);
+
+    /// The key usage mask is not valid.
+    #[doc(alias = "errSecInvalidKeyUsageMask")]
+    pub const INVALID_KEY_USAGE_MASK: Error = Error::new_unchecked(-67736);
+
+    /// The key usage mask is not supported.
+    #[doc(alias = "errSecUnsupportedKeyUsageMask")]
+    pub const UNSUPPORTED_KEY_USAGE_MASK: Error = Error::new_unchecked(-67737);
+
+    /// The key attribute mask is not valid.
+    #[doc(alias = "errSecInvalidKeyAttributeMask")]
+    pub const INVALID_KEY_ATTRIBUTE_MASK: Error = Error::new_unchecked(-67738);
+
+    /// The key attribute mask is not supported.
+    #[doc(alias = "errSecUnsupportedKeyAttributeMask")]
+    pub const UNSUPPORTED_KEY_ATTRIBUTE_MASK: Error = Error::new_unchecked(-67739);
 }
 
 #[link(name = "Security", kind = "framework")]
