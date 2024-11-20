@@ -951,6 +951,238 @@ pub mod err {
     /// The key attribute mask is not supported.
     #[doc(alias = "errSecUnsupportedKeyAttributeMask")]
     pub const UNSUPPORTED_KEY_ATTRIBUTE_MASK: Error = Error::new_unchecked(-67739);
+
+    /// The key label is not valid.
+    #[doc(alias = "errSecInvalidKeyLabel")]
+    pub const INVALID_KEY_LABEL: Error = Error::new_unchecked(-67740);
+
+    /// The key label is not supported.
+    #[doc(alias = "errSecUnsupportedKeyLabel")]
+    pub const ERR_SEC_UNSUPPORTED_KEY_LABEL: Error = Error::new_unchecked(-67741);
+
+    /// The key format is not valid.
+    #[doc(alias = "errSecInvalidKeyFormat")]
+    pub const INVALID_KEY_FORMAT: Error = Error::new_unchecked(-67742);
+
+    /// The vector of buffers is not supported.
+    #[doc(alias = "errSecUnsupportedVectorOfBuffers")]
+    pub const UNSUPPORTED_VECTOR_OF_BUFFERS: Error = Error::new_unchecked(-67743);
+
+    /// The input vector is not valid.
+    #[doc(alias = "errSecInvalidInputVector")]
+    pub const INVALID_INPUT_VECTOR: Error = Error::new_unchecked(-67744);
+
+    /// The output vector is not valid.
+    #[doc(alias = "errSecInvalidOutputVector")]
+    pub const INVALID_OUTPUT_VECTOR: Error = Error::new_unchecked(-67745);
+
+    /// An invalid context was encountered.
+    #[doc(alias = "errSecInvalidContext")]
+    pub const INVALID_CONTEXT: Error = Error::new_unchecked(-67746);
+
+    /// An invalid algorithm was encountered.
+    #[doc(alias = "errSecInvalidAlgorithm")]
+    pub const INVALID_ALGORITHM: Error = Error::new_unchecked(-67747);
+
+    /// A key attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeKey")]
+    pub const INVALID_ATTRIBUTE_KEY: Error = Error::new_unchecked(-67748);
+
+    /// A key attribute was missing.
+    #[doc(alias = "errSecMissingAttributeKey")]
+    pub const MISSING_ATTRIBUTE_KEY: Error = Error::new_unchecked(-67749);
+
+    /// An init vector attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeInitVector")]
+    pub const INVALID_ATTRIBUTE_INIT_VECTOR: Error = Error::new_unchecked(-67750);
+
+    /// An init vector attribute was missing.
+    #[doc(alias = "errSecMissingAttributeInitVector")]
+    pub const MISSING_ATTRIBUTE_INIT_VECTOR: Error = Error::new_unchecked(-67751);
+
+    /// A salt attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeSalt")]
+    pub const INVALID_ATTRIBUTE_SALT: Error = Error::new_unchecked(-67752);
+
+    /// A salt attribute was missing.
+    #[doc(alias = "errSecMissingAttributeSalt")]
+    pub const MISSING_ATTRIBUTE_SALT: Error = Error::new_unchecked(-67753);
+
+    /// A padding attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributePadding")]
+    pub const INVALID_ATTRIBUTE_PADDING: Error = Error::new_unchecked(-67754);
+
+    /// A padding attribute was missing.
+    #[doc(alias = "errSecMissingAttributePadding")]
+    pub const MISSING_ATTRIBUTE_PADDING: Error = Error::new_unchecked(-67755);
+
+    /// A random number attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeRandom")]
+    pub const INVALID_ATTRIBUTE_RANDOM: Error = Error::new_unchecked(-67756);
+
+    /// A random number attribute was missing.
+    #[doc(alias = "errSecMissingAttributeRandom")]
+    pub const MISSING_ATTRIBUTE_RANDOM: Error = Error::new_unchecked(-67757);
+
+    /// A seed attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeSeed")]
+    pub const INVALID_ATTRIBUTE_SEED: Error = Error::new_unchecked(-67758);
+
+    /// A seed attribute was missing.
+    #[doc(alias = "errSecMissingAttributeSeed")]
+    pub const MISSING_ATTRIBUTE_SEED: Error = Error::new_unchecked(-67759);
+
+    /// A passphrase attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributePassphrase")]
+    pub const INVALID_ATTRIBUTE_PASSPHRASE: Error = Error::new_unchecked(-67760);
+
+    /// A passphrase attribute was missing.
+    #[doc(alias = "errSecMissingAttributePassphrase")]
+    pub const MISSING_ATTRIBUTE_PASSPHRASE: Error = Error::new_unchecked(-67761);
+
+    /// A key length attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeKeyLength")]
+    pub const INVALID_ATTRIBUTE_KEY_LENGTH: Error = Error::new_unchecked(-67762);
+
+    /// A key length attribute was missing.
+    #[doc(alias = "errSecMissingAttributeKeyLength")]
+    pub const MISSING_ATTRIBUTE_KEY_LENGTH: Error = Error::new_unchecked(-67763);
+
+    /// A block size attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeBlockSize")]
+    pub const INVALID_ATTRIBUTE_BLOCK_SIZE: Error = Error::new_unchecked(-67764);
+
+    /// A block size attribute was missing.
+    #[doc(alias = "errSecMissingAttributeBlockSize")]
+    pub const MISSING_ATTRIBUTE_BLOCK_SIZE: Error = Error::new_unchecked(-67765);
+
+    /// An output size attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeOutputSize")]
+    pub const INVALID_ATTRIBUTE_OUTPUT_SIZE: Error = Error::new_unchecked(-67766);
+
+    /// An output size attribute was missing.
+    #[doc(alias = "errSecMissingAttributeOutputSize")]
+    pub const MISSING_ATTRIBUTE_OUTPUT_SIZE: Error = Error::new_unchecked(-67767);
+
+    /// The number of rounds attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeRounds")]
+    pub const INVALID_ATTRIBUTE_ROUNDS: Error = Error::new_unchecked(-67768);
+
+    /// The number of rounds attribute was missing.
+    #[doc(alias = "errSecMissingAttributeRounds")]
+    pub const MISSING_ATTRIBUTE_ROUNDS: Error = Error::new_unchecked(-67769);
+
+    /// An algorithm parameters attribute was not valid.
+    #[doc(alias = "errSecInvalidAlgorithmParms")]
+    pub const INVALID_ALGORITHM_PARMS: Error = Error::new_unchecked(-67770);
+
+    /// An algorithm parameters attribute was missing.
+    #[doc(alias = "errSecMissingAlgorithmParms")]
+    pub const MISSING_ALGORITHM_PARMS: Error = Error::new_unchecked(-67771);
+
+    /// A label attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeLabel")]
+    pub const INVALID_ATTRIBUTE_LABEL: Error = Error::new_unchecked(-67772);
+
+    /// A label attribute was missing.
+    #[doc(alias = "errSecMissingAttributeLabel")]
+    pub const MISSING_ATTRIBUTE_LABEL: Error = Error::new_unchecked(-67773);
+
+    /// A key type attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeKeyType")]
+    pub const INVALID_ATTRIBUTE_KEY_TYPE: Error = Error::new_unchecked(-67774);
+
+    /// A key type attribute was missing.
+    #[doc(alias = "errSecMissingAttributeKeyType")]
+    pub const MISSING_ATTRIBUTE_KEY_TYPE: Error = Error::new_unchecked(-67775);
+
+    /// A mode attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeMode")]
+    pub const INVALID_ATTRIBUTE_MODE: Error = Error::new_unchecked(-67776);
+
+    /// A mode attribute was missing.
+    #[doc(alias = "errSecMissingAttributeMode")]
+    pub const MISSING_ATTRIBUTE_MODE: Error = Error::new_unchecked(-67777);
+
+    /// An effective bits attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeEffectiveBits")]
+    pub const INVALID_ATTRIBUTE_EFFECTIVE_BITS: Error = Error::new_unchecked(-67778);
+
+    /// An effective bits attribute was missing.
+    #[doc(alias = "errSecMissingAttributeEffectiveBits")]
+    pub const MISSING_ATTRIBUTE_EFFECTIVE_BITS: Error = Error::new_unchecked(-67779);
+
+    /// A start date attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeStartDate")]
+    pub const INVALID_ATTRIBUTE_START_DATE: Error = Error::new_unchecked(-67780);
+
+    /// A start date attribute was missing.
+    #[doc(alias = "errSecMissingAttributeStartDate")]
+    pub const MISSING_ATTRIBUTE_START_DATE: Error = Error::new_unchecked(-67781);
+
+    /// An end date attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeEndDate")]
+    pub const INVALID_ATTRIBUTE_END_DATE: Error = Error::new_unchecked(-67782);
+
+    /// An end date attribute was missing.
+    #[doc(alias = "errSecMissingAttributeEndDate")]
+    pub const MISSING_ATTRIBUTE_END_DATE: Error = Error::new_unchecked(-67783);
+
+    /// A version attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeVersion")]
+    pub const INVALID_ATTRIBUTE_VERSION: Error = Error::new_unchecked(-67784);
+
+    /// A version attribute was missing.
+    #[doc(alias = "errSecMissingAttributeVersion")]
+    pub const MISSING_ATTRIBUTE_VERSION: Error = Error::new_unchecked(-67785);
+
+    /// A prime attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributePrime")]
+    pub const INVALID_ATTRIBUTE_PRIME: Error = Error::new_unchecked(-67786);
+
+    /// A prime attribute was missing.
+    #[doc(alias = "errSecMissingAttributePrime")]
+    pub const MISSING_ATTRIBUTE_PRIME: Error = Error::new_unchecked(-67787);
+
+    /// A base attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeBase")]
+    pub const INVALID_ATTRIBUTE_BASE: Error = Error::new_unchecked(-67788);
+
+    /// A base attribute was missing.
+    #[doc(alias = "errSecMissingAttributeBase")]
+    pub const MISSING_ATTRIBUTE_BASE: Error = Error::new_unchecked(-67789);
+
+    /// A subprime attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeSubprime")]
+    pub const INVALID_ATTRIBUTE_SUBPRIME: Error = Error::new_unchecked(-67790);
+
+    /// A subprime attribute was missing.
+    #[doc(alias = "errSecMissingAttributeSubprime")]
+    pub const MISSING_ATTRIBUTE_SUBPRIME: Error = Error::new_unchecked(-67791);
+
+    /// An iteration count attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeIterationCount")]
+    pub const INVALID_ATTRIBUTE_ITERATION_COUNT: Error = Error::new_unchecked(-67792);
+
+    /// An iteration count attribute was missing.
+    #[doc(alias = "errSecMissingAttributeIterationCount")]
+    pub const MISSING_ATTRIBUTE_ITERATION_COUNT: Error = Error::new_unchecked(-67793);
+
+    /// A database handle attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeDLDBHandle")]
+    pub const INVALID_ATTRIBUTE_DLDB_HANDLE: Error = Error::new_unchecked(-67794);
+
+    /// A database handle attribute was missing.
+    #[doc(alias = "errSecMissingAttributeDLDBHandle")]
+    pub const MISSING_ATTRIBUTE_DLDBHANDLE: Error = Error::new_unchecked(-67795);
+
+    /// An access credentials attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeAccessCredentials")]
+    pub const INVALID_ATTRIBUTE_ACCESS_CREDENTIALS: Error = Error::new_unchecked(-67796);
+
+    /// An access credentials attribute was missing.
+    #[doc(alias = "errSecMissingAttributeAccessCredentials")]
+    pub const MISSING_ATTRIBUTE_ACCESS_CREDENTIALS: Error = Error::new_unchecked(-67797);
 }
 
 #[link(name = "Security", kind = "framework")]
