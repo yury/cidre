@@ -49,7 +49,7 @@ pub type KeychainAttrType = os::Type;
 #[doc(alias = "SecKeychainAttribute")]
 #[cfg(target_os = "macos")]
 #[repr(C)]
-pub struct KeychainAttribute {
+pub struct KeychainAttr {
     pub tag: KeychainAttrType,
     pub len: u32,
     pub data: *mut std::ffi::c_void,
@@ -58,9 +58,9 @@ pub struct KeychainAttribute {
 #[doc(alias = "SecKeychainAttributeList")]
 #[cfg(target_os = "macos")]
 #[repr(C)]
-pub struct KeychainAttributeList {
+pub struct KeychainAttrList {
     pub count: u32,
-    pub attr: *mut KeychainAttribute,
+    pub attr: *mut KeychainAttr,
 }
 
 pub type KeychainStatus = u32;
@@ -91,7 +91,7 @@ define_cf_type!(
 
 #[doc(alias = "SecKeychainAttributeInfo")]
 #[repr(C)]
-pub struct KeychainAttributeInfo {
+pub struct KeychainAttrInfo {
     pub count: u32,
     pub tag: *mut u32,
     pub format: *mut u32,
