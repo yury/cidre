@@ -696,6 +696,173 @@ pub mod err {
     /// An invalid pointer was encountered.
     #[doc(alias = "errSecInvalidPointer")]
     pub const INVALID_POINTER: Error = Error::new_unchecked(-67675);
+
+    /// Self-check has failed.
+    #[doc(alias = "errSecSelfCheckFailed")]
+    pub const SELF_CHECK_FAILED: Error = Error::new_unchecked(-67676);
+
+    /// A function has failed.
+    #[doc(alias = "errSecFunctionFailed")]
+    pub const FUNCTION_FAILED: Error = Error::new_unchecked(-67677);
+
+    /// A module manifest verification failure has occurred.
+    #[doc(alias = "errSecModuleManifestVerifyFailed")]
+    pub const MODULE_MANIFEST_VERIFY_FAILED: Error = Error::new_unchecked(-67678);
+
+    /// An invalid GUID was encountered.
+    #[doc(alias = "errSecInvalidGUID")]
+    pub const INVALID_GUID: Error = Error::new_unchecked(-67679);
+
+    /// An invalid handle was encountered.
+    #[doc(alias = "errSecInvalidHandle")]
+    pub const INVALID_HANDLE: Error = Error::new_unchecked(-67680);
+
+    /// An invalid DB list was encountered.
+    #[doc(alias = "errSecInvalidDBList")]
+    pub const INVALID_DB_LIST: Error = Error::new_unchecked(-67681);
+
+    /// An invalid passthrough ID was encountered.
+    #[doc(alias = "errSecInvalidPassthroughID")]
+    pub const INVALID_PASSTHROUGH_ID: Error = Error::new_unchecked(-67682);
+
+    /// An invalid network address was encountered.
+    #[doc(alias = "errSecInvalidNetworkAddress")]
+    pub const INVALID_NETWORK_ADDRESS: Error = Error::new_unchecked(-67683);
+
+    /// The certificate revocation list is already signed.
+    #[doc(alias = "errSecCRLAlreadySigned")]
+    pub const CRL_ALREADY_SIGNED: Error = Error::new_unchecked(-67684);
+
+    /// An invalid number of fields were encountered.
+    #[doc(alias = "errSecInvalidNumberOfFields")]
+    pub const INVALID_NUMBER_OF_FIELDS: Error = Error::new_unchecked(-67685);
+
+    /// A verification failure occurred.
+    #[doc(alias = "errSecVerificationFailure")]
+    pub const VERIFICATION_FAILURE: Error = Error::new_unchecked(-67686);
+
+    /// An unknown tag was encountered.
+    #[doc(alias = "errSecUnknownTag")]
+    pub const UNKNOWN_TAG: Error = Error::new_unchecked(-67687);
+
+    /// An invalid signature was encountered.
+    #[doc(alias = "errSecInvalidSignature")]
+    pub const INVALID_SIGNATURE: Error = Error::new_unchecked(-67688);
+
+    /// An invalid name was encountered.
+    #[doc(alias = "errSecInvalidName")]
+    pub const INVALID_NAME: Error = Error::new_unchecked(-67689);
+
+    /// An invalid certificate reference was encountered.
+    #[doc(alias = "errSecInvalidCertificateRef")]
+    pub const INVALID_CERTIFICATE_REF: Error = Error::new_unchecked(-67690);
+
+    /// An invalid certificate group was encountered.
+    #[doc(alias = "errSecInvalidCertificateGroup")]
+    pub const INVALID_CERTIFICATE_GROUP: Error = Error::new_unchecked(-67691);
+
+    /// The specified tag was not found.
+    #[doc(alias = "errSecTagNotFound")]
+    pub const TAG_NOT_FOUND: Error = Error::new_unchecked(-67692);
+
+    /// The specified query was not valid.
+    #[doc(alias = "errSecInvalidQuery")]
+    pub const INVALID_QUERY: Error = Error::new_unchecked(-67693);
+
+    /// An invalid value was detected.
+    #[doc(alias = "errSecInvalidValue")]
+    pub const INVALID_VALUE: Error = Error::new_unchecked(-67694);
+
+    /// A callback has failed.
+    #[doc(alias = "errSecCallbackFailed")]
+    pub const CALLBACK_FAILED: Error = Error::new_unchecked(-67695);
+
+    /// An ACL delete operation has failed.
+    #[doc(alias = "errSecACLDeleteFailed")]
+    pub const ACL_DELETE_FAILED: Error = Error::new_unchecked(-67696);
+
+    /// An ACL replace operation has failed.
+    #[doc(alias = "errSecACLReplaceFailed")]
+    pub const ACL_REPLACE_FAILED: Error = Error::new_unchecked(-67697);
+
+    /// An ACL add operation has failed.
+    #[doc(alias = "errSecACLAddFailed")]
+    pub const ACL_ADD_FAILED: Error = Error::new_unchecked(-67698);
+
+    /// An ACL change operation has failed.
+    #[doc(alias = "errSecACLChangeFailed")]
+    pub const ACL_CHANGE_FAILED: Error = Error::new_unchecked(-67699);
+
+    #[doc(alias = "errSecInvalidAccessCredentials")]
+    pub const INVALID_ACCESS_CREDENTIALS: Error = Error::new_unchecked(-67700);
+
+    /// An invalid record was encountered.
+    #[doc(alias = "errSecInvalidRecord")]
+    pub const INVALID_RECORD: Error = Error::new_unchecked(-67701);
+
+    /// An invalid ACL was encountered.
+    #[doc(alias = "errSecInvalidACL")]
+    pub const INVALID_ACL: Error = Error::new_unchecked(-67702);
+
+    /// An invalid sample value was encountered.
+    #[doc(alias = "errSecInvalidSampleValue")]
+    pub const INVALID_SAMPLE_VALUE: Error = Error::new_unchecked(-67703);
+
+    /// An incompatible version was encountered.
+    #[doc(alias = "errSecIncompatibleVersion")]
+    pub const INCOMPATIBLE_VERSION: Error = Error::new_unchecked(-67704);
+
+    /// The privilege was not granted.
+    #[doc(alias = "errSecPrivilegeNotGranted")]
+    pub const PRIVILEGE_NOT_GRANTED: Error = Error::new_unchecked(-67705);
+
+    /// An invalid scope was encountered.
+    #[doc(alias = "errSecInvalidScope")]
+    pub const INVALID_SCOPE: Error = Error::new_unchecked(-67706);
+
+    /// The PVC is already configured.
+    #[doc(alias = "errSecPVCAlreadyConfigured")]
+    pub const PVC_ALREADY_CONFIGURED: Error = Error::new_unchecked(-67707);
+
+    /// An invalid PVC was encountered.
+    #[doc(alias = "errSecInvalidPVC")]
+    pub const INVALID_PVC: Error = Error::new_unchecked(-67708);
+
+    /// The EMM load has failed.
+    #[doc(alias = "errSecEMMLoadFailed")]
+    pub const EMM_LOAD_FAILED: Error = Error::new_unchecked(-67709);
+
+    /// The EMM unload has failed.
+    #[doc(alias = "errSecEMMUnloadFailed")]
+    pub const EMM_UNLOAD_FAILED: Error = Error::new_unchecked(-67710);
+
+    /// The add-in load operation has failed.
+    #[doc(alias = "errSecAddinLoadFailed")]
+    pub const ADDIN_LOAD_FAILED: Error = Error::new_unchecked(-67711);
+
+    /// An invalid key was encountered.
+    #[doc(alias = "errSecInvalidKeyRef")]
+    pub const INVALID_KEY_REF: Error = Error::new_unchecked(-67712);
+
+    /// An invalid key hierarchy was encountered.
+    #[doc(alias = "errSecInvalidKeyHierarchy")]
+    pub const INVALID_KEY_HIERARCHY: Error = Error::new_unchecked(-67713);
+
+    /// The add-in unload operation has failed.
+    #[doc(alias = "errSecAddinUnloadFailed")]
+    pub const ADDIN_UNLOAD_FAILED: Error = Error::new_unchecked(-67714);
+
+    /// A library reference was not found.
+    #[doc(alias = "errSecLibraryReferenceNotFound")]
+    pub const LIBRARY_REFERENCE_NOT_FOUND: Error = Error::new_unchecked(-67715);
+
+    /// An invalid add-in function table was encountered.
+    #[doc(alias = "errSecInvalidAddinFunctionTable")]
+    pub const INVALID_ADDIN_FUNCTION_TABLE: Error = Error::new_unchecked(-67716);
+
+    /// An invalid service mask was encountered.
+    #[doc(alias = "errSecInvalidServiceMask")]
+    pub const INVALID_SERVICE_MASK: Error = Error::new_unchecked(-67717);
 }
 
 #[link(name = "Security", kind = "framework")]
