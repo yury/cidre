@@ -1183,6 +1183,430 @@ pub mod err {
     /// An access credentials attribute was missing.
     #[doc(alias = "errSecMissingAttributeAccessCredentials")]
     pub const MISSING_ATTRIBUTE_ACCESS_CREDENTIALS: Error = Error::new_unchecked(-67797);
+
+    /// A public key format attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributePublicKeyFormat")]
+    pub const INVALID_ATTRIBUTE_PUBLIC_KEY_FORMAT: Error = Error::new_unchecked(-67798);
+
+    /// A public key format attribute was missing.
+    #[doc(alias = "errSecMissingAttributePublicKeyFormat")]
+    pub const MISSING_ATTRIBUTE_PUBLIC_KEY_FORMAT: Error = Error::new_unchecked(-67799);
+
+    /// A private key format attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributePrivateKeyFormat")]
+    pub const INVALID_ATTRIBUTE_PRIVATE_KEY_FORMAT: Error = Error::new_unchecked(-67800);
+
+    /// A private key format attribute was missing.
+    #[doc(alias = "errSecMissingAttributePrivateKeyFormat")]
+    pub const MISSING_ATTRIBUTE_PRIVATE_KEY_FORMAT: Error = Error::new_unchecked(-67801);
+
+    /// A symmetric key format attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeSymmetricKeyFormat")]
+    pub const INVALID_ATTRIBUTE_SYMMETRIC_KEY_FORMAT: Error = Error::new_unchecked(-67802);
+
+    /// A symmetric key format attribute was missing.
+    #[doc(alias = "errSecMissingAttributeSymmetricKeyFormat")]
+    pub const MISSING_ATTRIBUTE_SYMMETRIC_KEY_FORMAT: Error = Error::new_unchecked(-67803);
+
+    /// A wrapped key format attribute was not valid.
+    #[doc(alias = "errSecInvalidAttributeWrappedKeyFormat")]
+    pub const INVALID_ATTRIBUTE_WRAPPED_KEY_FORMAT: Error = Error::new_unchecked(-67804);
+
+    /// A wrapped key format attribute was missing.
+    #[doc(alias = "errSecMissingAttributeWrappedKeyFormat")]
+    pub const MISSING_ATTRIBUTE_WRAPPED_KEY_FORMAT: Error = Error::new_unchecked(-67805);
+
+    /// A staged operation is in progress.
+    #[doc(alias = "errSecStagedOperationInProgress")]
+    pub const STAGED_OPERATION_IN_PROGRESS: Error = Error::new_unchecked(-67806);
+
+    /// A staged operation was not started.
+    #[doc(alias = "errSecStagedOperationNotStarted")]
+    pub const STAGED_OPERATION_NOT_STARTED: Error = Error::new_unchecked(-67807);
+
+    /// A cryptographic verification failure has occurred.
+    #[doc(alias = "errSecVerifyFailed")]
+    pub const VERIFY_FAILED: Error = Error::new_unchecked(-67808);
+
+    /// The query size is unknown.
+    #[doc(alias = "errSecQuerySizeUnknown")]
+    pub const QUERY_SIZE_UNKNOWN: Error = Error::new_unchecked(-67809);
+
+    /// A block size mismatch occurred.
+    #[doc(alias = "errSecBlockSizeMismatch")]
+    pub const BLOCK_SIZE_MISMATCH: Error = Error::new_unchecked(-67810);
+
+    /// The public key was inconsistent.
+    #[doc(alias = "errSecPublicKeyInconsistent")]
+    pub const PUBLIC_KEY_INCONSISTENT: Error = Error::new_unchecked(-67811);
+
+    /// A device verification failure has occurred.
+    #[doc(alias = "errSecDeviceVerifyFailed")]
+    pub const DEVICE_VERIFY_FAILED: Error = Error::new_unchecked(-67812);
+
+    /// An invalid login name was detected.
+    #[doc(alias = "errSecInvalidLoginName")]
+    pub const INVALID_LOGIN_NAME: Error = Error::new_unchecked(-67813);
+
+    /// The user is already logged in.
+    #[doc(alias = "errSecAlreadyLoggedIn")]
+    pub const ALREADY_LOGGED_IN: Error = Error::new_unchecked(-67814);
+
+    /// An invalid digest algorithm was detected.
+    #[doc(alias = "errSecInvalidDigestAlgorithm")]
+    pub const INVALID_DIGEST_ALGORITHM: Error = Error::new_unchecked(-67815);
+
+    /// An invalid CRL group was detected.
+    #[doc(alias = "errSecInvalidCRLGroup")]
+    pub const INVALID_CRL_GROUP: Error = Error::new_unchecked(-67816);
+
+    /// The certificate cannot operate.
+    #[doc(alias = "errSecCertificateCannotOperate")]
+    pub const CERTIFICATE_CANNOT_OPERATE: Error = Error::new_unchecked(-67817);
+
+    /// An expired certificate was detected.
+    #[doc(alias = "errSecCertificateExpired")]
+    pub const CERTIFICATE_EXPIRED: Error = Error::new_unchecked(-67818);
+
+    /// The certificate is not yet valid.
+    #[doc(alias = "errSecCertificateNotValidYet")]
+    pub const CERTIFICATE_NOT_VALID_YET: Error = Error::new_unchecked(-67819);
+
+    /// The certificate was revoked.
+    #[doc(alias = "errSecCertificateRevoked")]
+    pub const CERTIFICATE_REVOKED: Error = Error::new_unchecked(-67820);
+
+    /// The certificate was suspended.
+    #[doc(alias = "errSecCertificateSuspended")]
+    pub const CERTIFICATE_SUSPENDED: Error = Error::new_unchecked(-67821);
+
+    /// Insufficient credentials were detected.
+    #[doc(alias = "errSecInsufficientCredentials")]
+    pub const INSUFFICIENT_CREDENTIALS: Error = Error::new_unchecked(-67822);
+
+    /// The action was not valid.
+    #[doc(alias = "errSecInvalidAction")]
+    pub const INVALID_ACTION: Error = Error::new_unchecked(-67823);
+
+    /// The authority was not valid.
+    #[doc(alias = "errSecInvalidAuthority")]
+    pub const INVALID_AUTHORITY: Error = Error::new_unchecked(-67824);
+
+    /// A verify action has failed.
+    #[doc(alias = "errSecVerifyActionFailed")]
+    pub const VERIFY_ACTION_FAILED: Error = Error::new_unchecked(-67825);
+
+    /// The certificate authority was not valid.
+    #[doc(alias = "errSecInvalidCertAuthority")]
+    pub const INVALID_CERT_AUTHORITY: Error = Error::new_unchecked(-67826);
+
+    /// The CRL authority was not valid.
+    #[doc(alias = "errSecInvalidCRLAuthority")]
+    pub const INVALID_CRL_AUTHORITY: Error = Error::new_unchecked(-67827);
+
+    /// The CRL encoding was not valid.
+    #[doc(alias = "errSecInvalidCRLEncoding")]
+    pub const INVALID_CRL_ENCODING: Error = Error::new_unchecked(-67828);
+
+    /// The CRL type was not valid.
+    #[doc(alias = "errSecInvalidCRLType")]
+    pub const INVALID_CRL_TYPE: Error = Error::new_unchecked(-67829);
+
+    /// The CRL was not valid.
+    #[doc(alias = "errSecInvalidCRL")]
+    pub const INVALID_CRL: Error = Error::new_unchecked(-67830);
+
+    /// The form type was not valid.
+    #[doc(alias = "errSecInvalidFormType")]
+    pub const INVALID_FORM_TYPE: Error = Error::new_unchecked(-67831);
+
+    /// The ID was not valid.
+    #[doc(alias = "errSecInvalidID")]
+    pub const INVALID_ID: Error = Error::new_unchecked(-67832);
+
+    /// The identifier was not valid.
+    #[doc(alias = "errSecInvalidIdentifier")]
+    pub const INVALID_IDENTIFIER: Error = Error::new_unchecked(-67833);
+
+    /// The index was not valid.
+    #[doc(alias = "errSecInvalidIndex")]
+    pub const INVALID_INDEX: Error = Error::new_unchecked(-67834);
+
+    /// The policy identifiers are not valid.
+    #[doc(alias = "errSecInvalidPolicyIdentifiers")]
+    pub const INVALID_POLICY_IDENTIFIERS: Error = Error::new_unchecked(-67835);
+
+    /// The time specified was not valid.
+    #[doc(alias = "errSecInvalidTimeString")]
+    pub const INVALID_TIME_STRING: Error = Error::new_unchecked(-67836);
+
+    /// The trust policy reason was not valid.
+    #[doc(alias = "errSecInvalidReason")]
+    pub const INVALID_REASON: Error = Error::new_unchecked(-67837);
+
+    /// The request inputs are not valid.
+    #[doc(alias = "errSecInvalidRequestInputs")]
+    pub const INVALID_REQUEST_INPUTS: Error = Error::new_unchecked(-67838);
+
+    /// The response vector was not valid.
+    #[doc(alias = "errSecInvalidResponseVector")]
+    pub const INVALID_RESPONSE_VECTOR: Error = Error::new_unchecked(-67839);
+
+    /// The stop-on policy was not valid.
+    #[doc(alias = "errSecInvalidStopOnPolicy")]
+    pub const INVALID_STOP_ON_POLICY: Error = Error::new_unchecked(-67840);
+
+    /// The tuple was not valid.
+    #[doc(alias = "errSecInvalidTuple")]
+    pub const INVALID_TUPLE: Error = Error::new_unchecked(-67841);
+
+    /// Multiple values are not supported.
+    #[doc(alias = "errSecMultipleValuesUnsupported")]
+    pub const MULTIPLE_VALUES_UNSUPPORTED: Error = Error::new_unchecked(-67842);
+
+    /// The certificate was not trusted.
+    #[doc(alias = "errSecNotTrusted")]
+    pub const NOT_TRUSTED: Error = Error::new_unchecked(-67843);
+
+    /// No default authority was detected.
+    #[doc(alias = "errSecNoDefaultAuthority")]
+    pub const NO_DEFAULT_AUTHORITY: Error = Error::new_unchecked(-67844);
+
+    /// The trust policy had a rejected form.
+    #[doc(alias = "errSecRejectedForm")]
+    pub const REJECTED_FORM: Error = Error::new_unchecked(-67845);
+
+    /// The request was lost.
+    #[doc(alias = "errSecRequestLost")]
+    pub const REQUEST_LOST: Error = Error::new_unchecked(-67846);
+
+    /// The request was rejected.
+    #[doc(alias = "errSecRequestRejected")]
+    pub const REQUEST_REJECTED: Error = Error::new_unchecked(-67847);
+
+    /// The address type is not supported.
+    #[doc(alias = "errSecUnsupportedAddressType")]
+    pub const UNSUPPORTED_ADDRESS_TYPE: Error = Error::new_unchecked(-67848);
+
+    /// The service is not supported.
+    #[doc(alias = "errSecUnsupportedService")]
+    pub const UNSUPPORTED_SERVICE: Error = Error::new_unchecked(-67849);
+
+    /// The tuple group was not valid.
+    #[doc(alias = "errSecInvalidTupleGroup")]
+    pub const INVALID_TUPLE_GROUP: Error = Error::new_unchecked(-67850);
+
+    /// The base ACLs are not valid.
+    #[doc(alias = "errSecInvalidBaseACLs")]
+    pub const INVALID_BASE_ACLS: Error = Error::new_unchecked(-67851);
+
+    /// The tuple credentials are not valid.
+    #[doc(alias = "errSecInvalidTupleCredentials")]
+    pub const INVALID_TUPLE_CREDENTIALS: Error = Error::new_unchecked(-67852);
+
+    /// The encoding was not valid.
+    #[doc(alias = "errSecInvalidEncoding")]
+    pub const INVALID_ENCODING: Error = Error::new_unchecked(-67853);
+
+    /// The validity period was not valid.
+    #[doc(alias = "errSecInvalidValidityPeriod")]
+    pub const INVALID_VALIDITY_PERIOD: Error = Error::new_unchecked(-67854);
+
+    /// The requestor was not valid.
+    #[doc(alias = "errSecInvalidRequestor")]
+    pub const INVALID_REQUESTOR: Error = Error::new_unchecked(-67855);
+
+    /// The request descriptor was not valid.
+    #[doc(alias = "errSecRequestDescriptor")]
+    pub const REQUEST_DESCRIPTOR: Error = Error::new_unchecked(-67856);
+
+    /// The bundle information was not valid.
+    #[doc(alias = "errSecInvalidBundleInfo")]
+    pub const INVALID_BUNDLE_INFO: Error = Error::new_unchecked(-67857);
+
+    /// The CRL index was not valid.
+    #[doc(alias = "errSecInvalidCRLIndex")]
+    pub const INVALID_CRL_INDEX: Error = Error::new_unchecked(-67858);
+
+    /// No field values were detected.
+    #[doc(alias = "errSecNoFieldValues")]
+    pub const NO_FIELD_VALUES: Error = Error::new_unchecked(-67859);
+
+    /// The field format is not supported.
+    #[doc(alias = "errSecUnsupportedFieldFormat")]
+    pub const UNSUPPORTED_FIELD_FORMAT: Error = Error::new_unchecked(-67860);
+
+    /// The index information is not supported.
+    #[doc(alias = "errSecUnsupportedIndexInfo")]
+    pub const UNSUPPORTED_INDEX_INFO: Error = Error::new_unchecked(-67861);
+
+    /// The locality is not supported.
+    #[doc(alias = "errSecUnsupportedLocality")]
+    pub const UNSUPPORTED_LOCALITY: Error = Error::new_unchecked(-67862);
+
+    /// The number of attributes is not supported.
+    #[doc(alias = "errSecUnsupportedNumAttributes")]
+    pub const UNSUPPORTED_NUM_ATTRIBUTES: Error = Error::new_unchecked(-67863);
+
+    /// The number of indexes is not supported.
+    #[doc(alias = "errSecUnsupportedNumIndexes")]
+    pub const UNSUPPORTED_NUM_INDEXES: Error = Error::new_unchecked(-67864);
+
+    /// The number of record types is not supported.
+    #[doc(alias = "errSecUnsupportedNumRecordTypes")]
+    pub const UNSUPPORTED_NUM_RECORD_TYPES: Error = Error::new_unchecked(-67865);
+
+    /// Too many fields were specified.
+    #[doc(alias = "errSecFieldSpecifiedMultiple")]
+    pub const FIELD_SPECIFIED_MULTIPLE: Error = Error::new_unchecked(-67866);
+
+    /// The field format was incompatible.
+    #[doc(alias = "errSecIncompatibleFieldFormat")]
+    pub const INCOMPATIBLE_FIELD_FORMAT: Error = Error::new_unchecked(-67867);
+
+    /// The parsing module was not valid.
+    #[doc(alias = "errSecInvalidParsingModule")]
+    pub const INVALID_PARSING_MODULE: Error = Error::new_unchecked(-67868);
+
+    /// The database is locked.
+    #[doc(alias = "errSecDatabaseLocked")]
+    pub const DATABASE_LOCKED: Error = Error::new_unchecked(-67869);
+
+    /// The data store is open.
+    #[doc(alias = "errSecDatastoreIsOpen")]
+    pub const DATASTORE_IS_OPEN: Error = Error::new_unchecked(-67870);
+
+    /// A missing value was detected.
+    #[doc(alias = "errSecMissingValue")]
+    pub const MISSING_VALUE: Error = Error::new_unchecked(-67871);
+
+    /// The query limits are not supported.
+    #[doc(alias = "errSecUnsupportedQueryLimits")]
+    pub const UNSUPPORTED_QUERY_LIMITS: Error = Error::new_unchecked(-67872);
+
+    /// The number of selection predicates is not supported.
+    #[doc(alias = "errSecUnsupportedNumSelectionPreds")]
+    pub const UNSUPPORTED_NUM_SELECTION_PREDS: Error = Error::new_unchecked(-67873);
+
+    /// The operator is not supported.
+    #[doc(alias = "errSecUnsupportedOperator")]
+    pub const UNSUPPORTED_OPERATOR: Error = Error::new_unchecked(-67874);
+
+    /// The database location is not valid.
+    #[doc(alias = "errSecInvalidDBLocation")]
+    pub const INVALID_DB_LOCATION: Error = Error::new_unchecked(-67875);
+
+    /// The access request is not valid.
+    #[doc(alias = "errSecInvalidAccessRequest")]
+    pub const INVALID_ACCESS_REQUEST: Error = Error::new_unchecked(-67876);
+
+    /// The index information is not valid.
+    #[doc(alias = "errSecInvalidIndexInfo")]
+    pub const INVALID_INDEX_INFO: Error = Error::new_unchecked(-67877);
+
+    /// The new owner is not valid.
+    #[doc(alias = "errSecInvalidNewOwner")]
+    pub const INVALID_NEW_OWNER: Error = Error::new_unchecked(-67878);
+
+    /// The modify mode is not valid.
+    #[doc(alias = "errSecInvalidModifyMode")]
+    pub const INVALID_MODIFY_MODE: Error = Error::new_unchecked(-67879);
+
+    /// A required certificate extension is missing.
+    #[doc(alias = "errSecMissingRequiredExtension")]
+    pub const MISSING_REQUIRED_EXTENSION: Error = Error::new_unchecked(-67880);
+
+    /// The extended key usage extension was not marked critical.
+    #[doc(alias = "errSecExtendedKeyUsageNotCritical")]
+    pub const EXTENDED_KEY_USAGE_NOT_CRITICAL: Error = Error::new_unchecked(-67881);
+
+    /// A timestamp was expected but was not found.
+    #[doc(alias = "errSecTimestampMissing")]
+    pub const TIMESTAMP_MISSING: Error = Error::new_unchecked(-67882);
+
+    /// The timestamp was not valid.
+    #[doc(alias = "errSecTimestampInvalid")]
+    pub const TIMESTAMP_INVALID: Error = Error::new_unchecked(-67883);
+
+    /// The timestamp was not trusted.
+    #[doc(alias = "errSecTimestampNotTrusted")]
+    pub const TIMESTAMP_NOT_TRUSTED: Error = Error::new_unchecked(-67884);
+
+    /// The timestamp service is not available.
+    #[doc(alias = "errSecTimestampServiceNotAvailable")]
+    pub const TIMESTAMP_SERVICE_NOT_AVAILABLE: Error = Error::new_unchecked(-67885);
+
+    /// An unrecognized or unsupported Algorithm Identifier in timestamp.
+    #[doc(alias = "errSecTimestampBadAlg")]
+    pub const TIMESTAMP_BAD_ALG: Error = Error::new_unchecked(-67886);
+
+    /// The timestamp transaction is not permitted or supported.
+    #[doc(alias = "errSecTimestampBadRequest")]
+    pub const TIMESTAMP_BAD_REQUEST: Error = Error::new_unchecked(-67887);
+
+    /// The timestamp data submitted has the wrong format.
+    #[doc(alias = "errSecTimestampBadDataFormat")]
+    pub const TIMESTAMP_BAD_DATA_FORMAT: Error = Error::new_unchecked(-67888);
+
+    /// The time source for the Timestamp Authority is not available.
+    #[doc(alias = "errSecTimestampTimeNotAvailable")]
+    pub const TIMESTAMP_TIME_NOT_AVAILABLE: Error = Error::new_unchecked(-67889);
+
+    /// The requested policy is not supported by the Timestamp Authority.
+    #[doc(alias = "errSecTimestampUnacceptedPolicy")]
+    pub const TIMESTAMP_UNACCEPTED_POLICY: Error = Error::new_unchecked(-67890);
+
+    /// The requested extension is not supported by the Timestamp Authority.
+    #[doc(alias = "errSecTimestampUnacceptedExtension")]
+    pub const TIMESTAMP_UNACCEPTED_EXTENSION: Error = Error::new_unchecked(-67891);
+
+    /// The additional information requested is not available.
+    #[doc(alias = "errSecTimestampAddInfoNotAvailable")]
+    pub const TIMESTAMP_ADD_INFO_NOT_AVAILABLE: Error = Error::new_unchecked(-67892);
+
+    /// The timestamp request cannot be handled due to system failure.
+    #[doc(alias = "errSecTimestampSystemFailure")]
+    pub const TIMESTAMP_SYSTEM_FAILURE: Error = Error::new_unchecked(-67893);
+
+    /// A signing time was expected but was not found.
+    #[doc(alias = "errSecSigningTimeMissing")]
+    pub const SIGNING_TIME_MISSING: Error = Error::new_unchecked(-67894);
+
+    /// A timestamp transaction was rejected.
+    #[doc(alias = "errSecTimestampRejection")]
+    pub const TIMESTAMP_REJECTION: Error = Error::new_unchecked(-67895);
+
+    /// A timestamp transaction is waiting.
+    #[doc(alias = "errSecTimestampWaiting")]
+    pub const TIMESTAMP_WAITING: Error = Error::new_unchecked(-67896);
+
+    /// A timestamp authority revocation warning was issued.
+    #[doc(alias = "errSecTimestampRevocationWarning")]
+    pub const TIMESTAMP_REVOCATION_WARNING: Error = Error::new_unchecked(-67897);
+
+    /// A timestamp authority revocation notification was issued.
+    #[doc(alias = "errSecTimestampRevocationNotification")]
+    pub const TIMESTAMP_REVOCATION_NOTIFICATION: Error = Error::new_unchecked(-67898);
+
+    /// The requested policy is not allowed for this certificate.
+    #[doc(alias = "errSecCertificatePolicyNotAllowed")]
+    pub const CERTIFICATE_POLICY_NOT_ALLOWED: Error = Error::new_unchecked(-67899);
+
+    /// The requested name is not allowed for this certificate.
+    #[doc(alias = "errSecCertificateNameNotAllowed")]
+    pub const CERTIFICATE_NAME_NOT_ALLOWED: Error = Error::new_unchecked(-67900);
+
+    /// The validity period in the certificate exceeds the maximum allowed.
+    #[doc(alias = "errSecCertificateValidityPeriodTooLong")]
+    pub const CERTIFICATE_VALIDITY_PERIOD_TOO_LONG: Error = Error::new_unchecked(-67901);
+
+    /// The verified certificate is a CA rather than an end-entity
+    #[doc(alias = "errSecCertificateIsCA")]
+    pub const CERTIFICATE_IS_CA: Error = Error::new_unchecked(-67902);
+
+    /// The certificate contains multiple extensions with the same extension ID.
+    #[doc(alias = "errSecCertificateDuplicateExtension")]
+    pub const CERTIFICATE_DUPLICATE_EXTENSION: Error = Error::new_unchecked(-67903);
 }
 
 #[link(name = "Security", kind = "framework")]
