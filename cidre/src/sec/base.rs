@@ -562,6 +562,140 @@ pub mod err {
     /// The OCSP response had an invalid signature.
     #[doc(alias = "errSecOCSPSignatureError")]
     pub const OCSP_SIGNATURE_ERROR: Error = Error::new_unchecked(-67639);
+
+    /// The OCSP response had no signer.
+    #[doc(alias = "errSecOCSPNoSigner")]
+    pub const OCSP_NO_SIGNER: Error = Error::new_unchecked(-67640);
+
+    /// The OCSP responder was given a malformed request.
+    #[doc(alias = "errSecOCSPResponderMalformedReq")]
+    pub const OCSP_RESPONDER_MALFORMED_REQ: Error = Error::new_unchecked(-67641);
+
+    /// The OCSP responder encountered an internal error.
+    #[doc(alias = "errSecOCSPResponderInternalError")]
+    pub const OCSP_RESPONDER_INTERNAL_ERROR: Error = Error::new_unchecked(-67642);
+
+    /// The OCSP responder is busy, try again later.
+    #[doc(alias = "errSecOCSPResponderTryLater")]
+    pub const OCSP_RESPONDER_TRY_LATER: Error = Error::new_unchecked(-67643);
+
+    /// The OCSP responder requires a signature.
+    #[doc(alias = "errSecOCSPResponderSignatureRequired")]
+    pub const OCSP_RESPONDER_SIGNATURE_REQUIRED: Error = Error::new_unchecked(-67644);
+
+    /// The OCSP responder rejected this request as unauthorized.
+    #[doc(alias = "errSecOCSPResponderUnauthorized")]
+    pub const OCSP_RESPONDER_UNAUTHORIZED: Error = Error::new_unchecked(-67645);
+
+    /// The OCSP response nonce did not match the request.
+    #[doc(alias = "errSecOCSPResponseNonceMismatch")]
+    pub const OCSP_RESPONSE_NONCE_MISMATCH: Error = Error::new_unchecked(-67646);
+
+    /// Code signing encountered an incorrect certificate chain length.
+    #[doc(alias = "errSecCodeSigningBadCertChainLength")]
+    pub const CODE_SIGNING_BAD_CERT_CHAIN_LENGTH: Error = Error::new_unchecked(-67647);
+
+    /// Code signing found no basic constraints.
+    #[doc(alias = "errSecCodeSigningNoBasicConstraints")]
+    pub const CODE_SIGNING_NO_BASIC_CONSTRAINTS: Error = Error::new_unchecked(-67648);
+
+    /// Code signing encountered an incorrect path length constraint.
+    #[doc(alias = "errSecCodeSigningBadPathLengthConstraint")]
+    pub const CODE_SIGNING_BAD_PATH_LENGTH_CONSTRAINT: Error = Error::new_unchecked(-67649);
+
+    /// Code signing found no extended key usage.
+    #[doc(alias = "errSecCodeSigningNoExtendedKeyUsage")]
+    pub const CODE_SIGNING_NO_EXTENDED_KEY_USAGE: Error = Error::new_unchecked(-67650);
+
+    /// Code signing indicated use of a development-only certificate.
+    #[doc(alias = "errSecCodeSigningDevelopment")]
+    pub const CODE_SIGNING_DEVELOPMENT: Error = Error::new_unchecked(-67651);
+
+    /// Resource signing has encountered an incorrect certificate chain length.
+    #[doc(alias = "errSecResourceSignBadCertChainLength")]
+    pub const RESOURCE_SIGN_BAD_CERT_CHAIN_LENGTH: Error = Error::new_unchecked(-67652);
+
+    /// Resource signing has encountered an error in the extended key usage.
+    #[doc(alias = "errSecResourceSignBadExtKeyUsage")]
+    pub const RESOURCE_SIGN_BAD_EXT_KEY_USAGE: Error = Error::new_unchecked(-67653);
+
+    /// The trust setting for this policy was set to Deny.
+    #[doc(alias = "errSecTrustSettingDeny")]
+    pub const TRUST_SETTING_DENY: Error = Error::new_unchecked(-67654);
+
+    /// An invalid certificate subject name was encountered.
+    #[doc(alias = "errSecInvalidSubjectName")]
+    pub const INVALID_SUBJECT_NAME: Error = Error::new_unchecked(-67655);
+
+    /// An unknown qualified certificate statement was encountered.
+    #[doc(alias = "errSecUnknownQualifiedCertStatement")]
+    pub const UNKNOWN_QUALIFIED_CERT_STATEMENT: Error = Error::new_unchecked(-67656);
+
+    #[doc(alias = "errSecMobileMeRequestQueued")]
+    pub const MOBILE_ME_REQUEST_QUEUED: Error = Error::new_unchecked(-67657);
+
+    #[doc(alias = "errSecMobileMeRequestRedirected")]
+    pub const MOBILE_ME_REQUEST_REDIRECTED: Error = Error::new_unchecked(-67658);
+
+    #[doc(alias = "errSecMobileMeServerError")]
+    pub const MOBILE_ME_SERVER_ERROR: Error = Error::new_unchecked(-67659);
+
+    #[doc(alias = "errSecMobileMeServerNotAvailable")]
+    pub const MOBILE_ME_SERVER_NOT_AVAILABLE: Error = Error::new_unchecked(-67660);
+
+    #[doc(alias = "errSecMobileMeServerAlreadyExists")]
+    pub const MOBILE_ME_SERVER_ALREADY_EXISTS: Error = Error::new_unchecked(-67661);
+
+    #[doc(alias = "errSecMobileMeServerServiceErr")]
+    pub const MOBILE_ME_SERVER_SERVICE_ERR: Error = Error::new_unchecked(-67662);
+
+    #[doc(alias = "errSecMobileMeRequestAlreadyPending")]
+    pub const MOBILE_ME_REQUEST_ALREADY_PENDING: Error = Error::new_unchecked(-67663);
+
+    #[doc(alias = "errSecMobileMeNoRequestPending")]
+    pub const MOBILE_ME_NO_REQUEST_PENDING: Error = Error::new_unchecked(-67664);
+
+    #[doc(alias = "errSecMobileMeCSRVerifyFailure")]
+    pub const MOBILE_ME_CSR_VERIFY_FAILURE: Error = Error::new_unchecked(-67665);
+
+    #[doc(alias = "errSecMobileMeFailedConsistencyCheck")]
+    pub const MOBILE_ME_FAILED_CONSISTENCY_CHECK: Error = Error::new_unchecked(-67666);
+
+    /// A function was called without initializing CSSM.
+    #[doc(alias = "errSecNotInitialized")]
+    pub const NOT_INITIALIZED: Error = Error::new_unchecked(-67667);
+
+    /// The CSSM handle does not match with the service type.
+    #[doc(alias = "errSecInvalidHandleUsage")]
+    pub const INVALID_HANDLE_USAGE: Error = Error::new_unchecked(-67668);
+
+    /// A reference to the calling module was not found in the list of authorized callers.
+    #[doc(alias = "errSecPVCReferentNotFound")]
+    pub const PVC_REFERENT_NOT_FOUND: Error = Error::new_unchecked(-67669);
+
+    /// A function address was not within the verified module.
+    #[doc(alias = "errSecFunctionIntegrityFail")]
+    pub const FUNCTION_INTEGRITY_FAIL: Error = Error::new_unchecked(-67670);
+
+    /// An internal error has occurred.
+    #[doc(alias = "errSecInternalError")]
+    pub const INTERNAL_ERROR: Error = Error::new_unchecked(-67671);
+
+    /// A memory error has occurred.
+    #[doc(alias = "errSecMemoryError")]
+    pub const MEMORY_ERROR: Error = Error::new_unchecked(-67672);
+
+    /// Invalid data was encountered.
+    #[doc(alias = "errSecInvalidData")]
+    pub const INVALID_DATA: Error = Error::new_unchecked(-67673);
+
+    /// A Module Directory Service error has occurred.
+    #[doc(alias = "errSecMDSError")]
+    pub const MDS_ERROR: Error = Error::new_unchecked(-67674);
+
+    /// An invalid pointer was encountered.
+    #[doc(alias = "errSecInvalidPointer")]
+    pub const INVALID_POINTER: Error = Error::new_unchecked(-67675);
 }
 
 #[link(name = "Security", kind = "framework")]
