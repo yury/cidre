@@ -121,6 +121,7 @@ pub mod gc;
 pub mod os;
 pub mod sys;
 
+/// Security
 #[cfg(feature = "sec")]
 pub mod sec;
 

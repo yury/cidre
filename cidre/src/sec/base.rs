@@ -458,6 +458,110 @@ pub mod err {
     /// The CRL has expired.
     #[doc(alias = "errSecCRLExpired")]
     pub const CRL_EXPIRED: Error = Error::new_unchecked(-67613);
+
+    /// The CRL is not yet valid.
+    #[doc(alias = "errSecCRLNotValidYet")]
+    pub const CRL_NOT_VALID_YET: Error = Error::new_unchecked(-67614);
+
+    /// The CRL was not found.
+    #[doc(alias = "errSecCRLNotFound")]
+    pub const CRL_NOT_FOUND: Error = Error::new_unchecked(-67615);
+
+    /// The CRL server is down.
+    #[doc(alias = "errSecCRLServerDown")]
+    pub const CRL_SERVER_DOWN: Error = Error::new_unchecked(-67616);
+
+    /// The CRL has a bad Uniform Resource Identifier.
+    #[doc(alias = "errSecCRLBadURI")]
+    pub const CRL_BAD_URI: Error = Error::new_unchecked(-67617);
+
+    /// An unknown certificate extension was encountered.
+    #[doc(alias = "errSecUnknownCertExtension")]
+    pub const UNKNOWN_CERT_EXTENSION: Error = Error::new_unchecked(-67618);
+
+    /// An unknown CRL extension was encountered.
+    #[doc(alias = "errSecUnknownCRLExtension")]
+    pub const UNKNOWN_CRL_EXTENSION: Error = Error::new_unchecked(-67619);
+
+    /// The CRL is not trusted.
+    #[doc(alias = "errSecCRLNotTrusted")]
+    pub const CRL_NOT_TRUSTED: Error = Error::new_unchecked(-67620);
+
+    /// The CRL policy failed.
+    #[doc(alias = "errSecCRLPolicyFailed")]
+    pub const CRL_POLICY_FAILED: Error = Error::new_unchecked(-67621);
+
+    /// The issuing distribution point was not valid.
+    #[doc(alias = "errSecIDPFailure")]
+    pub const IDP_FAILURE: Error = Error::new_unchecked(-67622);
+
+    /// An email address mismatch was encountered.
+    #[doc(alias = "errSecSMIMEEmailAddressesNotFound")]
+    pub const SMIME_EMAIL_ADDRESSES_NOT_FOUND: Error = Error::new_unchecked(-67623);
+
+    /// The appropriate extended key usage for SMIME was not found.
+    #[doc(alias = "errSecSMIMEBadExtendedKeyUsage")]
+    pub const SMIME_BAD_EXTENDED_KEY_USAGE: Error = Error::new_unchecked(-67624);
+
+    /// The key usage is not compatible with SMIME.
+    #[doc(alias = "errSecSMIMEBadKeyUsage")]
+    pub const SMIME_BAD_KEY_USAGE: Error = Error::new_unchecked(-67625);
+
+    /// The key usage extension is not marked as critical.
+    #[doc(alias = "errSecSMIMEKeyUsageNotCritical")]
+    pub const SMIME_KEY_USAGE_NOT_CRITICAL: Error = Error::new_unchecked(-67626);
+
+    /// No email address was found in the certificate.
+    #[doc(alias = "errSecSMIMENoEmailAddress")]
+    pub const SMIME_NO_EMAIL_ADDRESS: Error = Error::new_unchecked(-67627);
+
+    /// The subject alternative name extension is not marked as critical.
+    #[doc(alias = "errSecSMIMESubjAltNameNotCritical")]
+    pub const SMIME_SUBJ_ALT_NAME_NOT_CRITICAL: Error = Error::new_unchecked(-67628);
+
+    /// The appropriate extended key usage for SSL was not found.
+    #[doc(alias = "errSecSSLBadExtendedKeyUsage")]
+    pub const SSL_BAD_EXTENDED_KEY_USAGE: Error = Error::new_unchecked(-67629);
+
+    /// The OCSP response was incorrect or could not be parsed.
+    #[doc(alias = "errSecOCSPBadResponse")]
+    pub const OCSP_BAD_RESPONSE: Error = Error::new_unchecked(-67630);
+
+    /// The OCSP request was incorrect or could not be parsed.
+    #[doc(alias = "errSecOCSPBadRequest")]
+    pub const OCSP_BAD_REQUEST: Error = Error::new_unchecked(-67631);
+
+    /// OCSP service is unavailable.
+    #[doc(alias = "errSecOCSPUnavailable")]
+    pub const OCSP_UNAVAILABLE: Error = Error::new_unchecked(-67632);
+
+    /// The OCSP server did not recognize this certificate.
+    #[doc(alias = "errSecOCSPStatusUnrecognized")]
+    pub const OCSP_STATUS_UNRECOGNIZED: Error = Error::new_unchecked(-67633);
+
+    /// An end-of-data was detected.
+    #[doc(alias = "errSecEndOfData")]
+    pub const END_OF_DATA: Error = Error::new_unchecked(-67634);
+
+    /// An incomplete certificate revocation check occurred.
+    #[doc(alias = "errSecIncompleteCertRevocationCheck")]
+    pub const INCOMPLETE_CERT_REVOCATION_CHECK: Error = Error::new_unchecked(-67635);
+
+    /// A network failure occurred.
+    #[doc(alias = "errSecNetworkFailure")]
+    pub const NETWORK_FAILURE: Error = Error::new_unchecked(-67636);
+
+    /// The OCSP response was not trusted to a root or anchor certificate.
+    #[doc(alias = "errSecOCSPNotTrustedToAnchor")]
+    pub const OCSP_NOT_TRUSTED_TO_ANCHOR: Error = Error::new_unchecked(-67637);
+
+    /// The record was modified.
+    #[doc(alias = "errSecRecordModified")]
+    pub const RECORD_MODIFIED: Error = Error::new_unchecked(-67638);
+
+    /// The OCSP response had an invalid signature.
+    #[doc(alias = "errSecOCSPSignatureError")]
+    pub const OCSP_SIGNATURE_ERROR: Error = Error::new_unchecked(-67639);
 }
 
 #[link(name = "Security", kind = "framework")]
