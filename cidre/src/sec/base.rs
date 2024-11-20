@@ -2,7 +2,7 @@ use crate::{arc, cf, define_cf_type, os};
 
 define_cf_type!(
     #[doc(alias = "SecCertificateRef")]
-    Certificate(cf::Type)
+    Cert(cf::Type)
 );
 
 define_cf_type!(
@@ -245,7 +245,7 @@ pub mod err {
 
     /// A required component (certificate module) could not be loaded. You may need to restart your computer.
     #[doc(alias = "errSecNoCertificateModule")]
-    pub const NO_CERTIFICATE_MODULE: Error = Error::new_unchecked(-25313);
+    pub const NO_CERT_MODULE: Error = Error::new_unchecked(-25313);
 
     /// A required component (policy module) could not be loaded. You may need to restart your computer.
     #[doc(alias = "errSecNoPolicyModule")]
@@ -755,11 +755,11 @@ pub mod err {
 
     /// An invalid certificate reference was encountered.
     #[doc(alias = "errSecInvalidCertificateRef")]
-    pub const INVALID_CERTIFICATE_REF: Error = Error::new_unchecked(-67690);
+    pub const INVALID_CERT_REF: Error = Error::new_unchecked(-67690);
 
     /// An invalid certificate group was encountered.
     #[doc(alias = "errSecInvalidCertificateGroup")]
-    pub const INVALID_CERTIFICATE_GROUP: Error = Error::new_unchecked(-67691);
+    pub const INVALID_CERT_GROUP: Error = Error::new_unchecked(-67691);
 
     /// The specified tag was not found.
     #[doc(alias = "errSecTagNotFound")]
@@ -1262,23 +1262,23 @@ pub mod err {
 
     /// The certificate cannot operate.
     #[doc(alias = "errSecCertificateCannotOperate")]
-    pub const CERTIFICATE_CANNOT_OPERATE: Error = Error::new_unchecked(-67817);
+    pub const CERT_CANNOT_OPERATE: Error = Error::new_unchecked(-67817);
 
     /// An expired certificate was detected.
     #[doc(alias = "errSecCertificateExpired")]
-    pub const CERTIFICATE_EXPIRED: Error = Error::new_unchecked(-67818);
+    pub const CERT_EXPIRED: Error = Error::new_unchecked(-67818);
 
     /// The certificate is not yet valid.
     #[doc(alias = "errSecCertificateNotValidYet")]
-    pub const CERTIFICATE_NOT_VALID_YET: Error = Error::new_unchecked(-67819);
+    pub const CERT_NOT_VALID_YET: Error = Error::new_unchecked(-67819);
 
     /// The certificate was revoked.
     #[doc(alias = "errSecCertificateRevoked")]
-    pub const CERTIFICATE_REVOKED: Error = Error::new_unchecked(-67820);
+    pub const CERT_REVOKED: Error = Error::new_unchecked(-67820);
 
     /// The certificate was suspended.
     #[doc(alias = "errSecCertificateSuspended")]
-    pub const CERTIFICATE_SUSPENDED: Error = Error::new_unchecked(-67821);
+    pub const CERT_SUSPENDED: Error = Error::new_unchecked(-67821);
 
     /// Insufficient credentials were detected.
     #[doc(alias = "errSecInsufficientCredentials")]
@@ -1590,23 +1590,341 @@ pub mod err {
 
     /// The requested policy is not allowed for this certificate.
     #[doc(alias = "errSecCertificatePolicyNotAllowed")]
-    pub const CERTIFICATE_POLICY_NOT_ALLOWED: Error = Error::new_unchecked(-67899);
+    pub const CERT_POLICY_NOT_ALLOWED: Error = Error::new_unchecked(-67899);
 
     /// The requested name is not allowed for this certificate.
     #[doc(alias = "errSecCertificateNameNotAllowed")]
-    pub const CERTIFICATE_NAME_NOT_ALLOWED: Error = Error::new_unchecked(-67900);
+    pub const CERT_NAME_NOT_ALLOWED: Error = Error::new_unchecked(-67900);
 
     /// The validity period in the certificate exceeds the maximum allowed.
     #[doc(alias = "errSecCertificateValidityPeriodTooLong")]
-    pub const CERTIFICATE_VALIDITY_PERIOD_TOO_LONG: Error = Error::new_unchecked(-67901);
+    pub const CERT_VALIDITY_PERIOD_TOO_LONG: Error = Error::new_unchecked(-67901);
 
     /// The verified certificate is a CA rather than an end-entity
     #[doc(alias = "errSecCertificateIsCA")]
-    pub const CERTIFICATE_IS_CA: Error = Error::new_unchecked(-67902);
+    pub const CERT_IS_CA: Error = Error::new_unchecked(-67902);
 
     /// The certificate contains multiple extensions with the same extension ID.
     #[doc(alias = "errSecCertificateDuplicateExtension")]
-    pub const CERTIFICATE_DUPLICATE_EXTENSION: Error = Error::new_unchecked(-67903);
+    pub const CERT_DUPLICATE_EXTENSION: Error = Error::new_unchecked(-67903);
+}
+
+pub mod ssl_err {
+    use crate::os::Error;
+
+    /// SSL protocol error
+    #[doc(alias = "errSSLProtocol")]
+    pub const PROTOCOL: Error = Error::new_unchecked(-9800);
+
+    /// Cipher Suite negotiation failure
+    #[doc(alias = "errSSLNegotiation")]
+    pub const NEGOTIATION: Error = Error::new_unchecked(-9801);
+
+    /// Fatal alert
+    #[doc(alias = "errSSLFatalAlert")]
+    pub const FATAL_ALERT: Error = Error::new_unchecked(-9802);
+
+    /// I/O would block (not fatal)
+    #[doc(alias = "errSSLWouldBlock")]
+    pub const WOULD_BLOCK: Error = Error::new_unchecked(-9803);
+
+    /// Attempt to restore an unknown session
+    #[doc(alias = "errSSLSessionNotFound")]
+    pub const SESSION_NOT_FOUND: Error = Error::new_unchecked(-9804);
+
+    /// Connection closed gracefully
+    #[doc(alias = "errSSLClosedGraceful")]
+    pub const CLOSED_GRACEFUL: Error = Error::new_unchecked(-9805);
+
+    /// Connection closed via error
+    #[doc(alias = "errSSLClosedAbort")]
+    pub const CLOSED_ABORT: Error = Error::new_unchecked(-9806);
+
+    /// Invalid certificate chain
+    #[doc(alias = "errSSLXCertChainInvalid")]
+    pub const CERT_CHAIN_INVALID: Error = Error::new_unchecked(-9807);
+
+    /// Bad certificate format
+    #[doc(alias = "errSSLBadCert")]
+    pub const BAD_CERT: Error = Error::new_unchecked(-9808);
+
+    /// Underlying cryptographic error
+    #[doc(alias = "errSSLCrypto")]
+    pub const CRYPTO: Error = Error::new_unchecked(-9809);
+
+    /// Internal error
+    #[doc(alias = "errSSLInternal")]
+    pub const INTERNAL: Error = Error::new_unchecked(-9810);
+
+    /// Module attach failure
+    #[doc(alias = "errSSLModuleAttach")]
+    pub const MODULE_ATTACH: Error = Error::new_unchecked(-9811);
+
+    /// Valid cert chain, untrusted root
+    #[doc(alias = "errSSLUnknownRootCert")]
+    pub const UNKNOWN_ROOT_CERT: Error = Error::new_unchecked(-9812);
+
+    /// Cert chain not verified by root
+    #[doc(alias = "errSSLNoRootCert")]
+    pub const NO_ROOT_CERT: Error = Error::new_unchecked(-9813);
+
+    /// Chain had an expired cert
+    #[doc(alias = "errSSLCertExpired")]
+    pub const CERT_EXPIRED: Error = Error::new_unchecked(-9814);
+
+    /// Chain had a cert not yet valid
+    #[doc(alias = "errSSLCertNotYetValid")]
+    pub const CERT_NOT_YET_VALID: Error = Error::new_unchecked(-9815);
+
+    /// Server closed session with no notification
+    #[doc(alias = "errSSLClosedNoNotify")]
+    pub const CLOSED_NO_NOTIFY: Error = Error::new_unchecked(-9816);
+
+    /// Insufficient buffer provided
+    #[doc(alias = "errSSLBufferOverflow")]
+    pub const BUF_OVERFLOW: Error = Error::new_unchecked(-9817);
+
+    /// bad SSLCipherSuite
+    #[doc(alias = "errSSLBadCipherSuite")]
+    pub const BAD_CIPHER_SUITE: Error = Error::new_unchecked(-9818);
+
+    /* fatal errors detected by peer */
+
+    /// Unexpected message received
+    #[doc(alias = "errSSLPeerUnexpectedMsg")]
+    pub const PEER_UNEXPECTED_MSG: Error = Error::new_unchecked(-9819);
+
+    /// Bad MAC
+    #[doc(alias = "errSSLPeerBadRecordMac")]
+    pub const PEER_BAD_RECORD_MAC: Error = Error::new_unchecked(-9820);
+
+    /// Decryption failed
+    #[doc(alias = "errSSLPeerDecryptionFail")]
+    pub const PEER_DECRYPTION_FAIL: Error = Error::new_unchecked(-9821);
+
+    /// Record overflow
+    #[doc(alias = "errSSLPeerRecordOverflow")]
+    pub const PEER_RECORD_OVERFLOW: Error = Error::new_unchecked(-9822);
+
+    /// Decompression failure
+    #[doc(alias = "errSSLPeerDecompressFail")]
+    pub const PEER_DECOMPRESS_FAIL: Error = Error::new_unchecked(-9823);
+
+    /// Handshake failure
+    #[doc(alias = "errSSLPeerHandshakeFail")]
+    pub const PEER_HANDSHAKE_FAIL: Error = Error::new_unchecked(-9824);
+
+    /// Misc. bad certificate
+    #[doc(alias = "errSSLPeerBadCert")]
+    pub const PEER_BAD_CERT: Error = Error::new_unchecked(-9825);
+
+    /// Bad unsupported cert format
+    #[doc(alias = "errSSLPeerUnsupportedCert")]
+    pub const PEER_UNSUPPORTED_CERT: Error = Error::new_unchecked(-9826);
+
+    /// Certificate revoked
+    #[doc(alias = "errSSLPeerCertRevoked")]
+    pub const PEER_CERT_REVOKED: Error = Error::new_unchecked(-9827);
+
+    /// Certificate expired
+    #[doc(alias = "errSSLPeerCertExpired")]
+    pub const PEER_CERT_EXPIRED: Error = Error::new_unchecked(-9828);
+
+    /// Unknown certificate
+    #[doc(alias = "errSSLPeerCertUnknown")]
+    pub const PEER_CERT_UNKNOWN: Error = Error::new_unchecked(-9829);
+
+    /// Illegal parameter
+    #[doc(alias = "errSSLIllegalParam")]
+    pub const ILLEGAL_PARAM: Error = Error::new_unchecked(-9830);
+
+    /// Unknown Cert Authority
+    #[doc(alias = "errSSLPeerUnknownCA")]
+    pub const PEER_UNKNOWN_CA: Error = Error::new_unchecked(-9831);
+
+    /// Access denied
+    #[doc(alias = "errSSLPeerAccessDenied")]
+    pub const PEER_ACCESS_DENIED: Error = Error::new_unchecked(-9832);
+
+    /// Decoding error
+    #[doc(alias = "errSSLPeerDecodeError")]
+    pub const PEER_DECODE_ERROR: Error = Error::new_unchecked(-9833);
+
+    /// Decryption error
+    #[doc(alias = "errSSLPeerDecryptError")]
+    pub const PEER_DECRYPT_ERROR: Error = Error::new_unchecked(-9834);
+
+    /// Export restriction
+    #[doc(alias = "errSSLPeerExportRestriction")]
+    pub const PEER_EXPORT_RESTRICTION: Error = Error::new_unchecked(-9835);
+
+    /// Bad protocol version
+    #[doc(alias = "errSSLPeerProtocolVersion")]
+    pub const PEER_PROTOCOL_VERSION: Error = Error::new_unchecked(-9836);
+
+    /// Insufficient security
+    #[doc(alias = "errSSLPeerInsufficientSecurity")]
+    pub const PEER_INSUFFICIENT_SECURITY: Error = Error::new_unchecked(-9837);
+
+    /// Internal error
+    #[doc(alias = "errSSLPeerInternalError")]
+    pub const PEER_INTERNAL_ERROR: Error = Error::new_unchecked(-9838);
+
+    /// User canceled
+    #[doc(alias = "errSSLPeerUserCancelled")]
+    pub const PEER_USER_CANCELLED: Error = Error::new_unchecked(-9839);
+
+    /// No renegotiation allowed
+    #[doc(alias = "errSSLPeerNoRenegotiation")]
+    pub const PEER_NO_RENEGOTIATION: Error = Error::new_unchecked(-9840);
+
+    /* non-fatal result codes */
+
+    /// Peer cert is valid, or was ignored if verification disabled
+    #[doc(alias = "errSSLPeerAuthCompleted")]
+    pub const PEER_AUTH_COMPLETED: Error = Error::new_unchecked(-9841);
+
+    /// Server has requested a client cert
+    #[doc(alias = "errSSLClientCertRequested")]
+    pub const CLIENT_CERT_REQUESTED: Error = Error::new_unchecked(-9842);
+
+    /* more errors detected by us */
+
+    /// Peer host name mismatch
+    #[doc(alias = "errSSLHostNameMismatch")]
+    pub const HOST_NAME_MISMATCH: Error = Error::new_unchecked(-9843);
+
+    /// Peer dropped connection before responding
+    #[doc(alias = "errSSLConnectionRefused")]
+    pub const CONNECTION_REFUSED: Error = Error::new_unchecked(-9844);
+
+    /// Decryption failure
+    #[doc(alias = "errSSLDecryptionFail")]
+    pub const DECRYPTION_FAIL: Error = Error::new_unchecked(-9845);
+
+    /// Bad MAC
+    #[doc(alias = "errSSLBadRecordMac")]
+    pub const BAD_RECORD_MAC: Error = Error::new_unchecked(-9846);
+
+    /// Record overflow
+    #[doc(alias = "errSSLRecordOverflow")]
+    pub const RECORD_OVERFLOW: Error = Error::new_unchecked(-9847);
+
+    /// Configuration error
+    #[doc(alias = "errSSLBadConfiguration")]
+    pub const BAD_CONFIGURATION: Error = Error::new_unchecked(-9848);
+
+    /// Unexpected (skipped) record in DTLS
+    #[doc(alias = "errSSLUnexpectedRecord")]
+    pub const UNEXPECTED_RECORD: Error = Error::new_unchecked(-9849);
+
+    /// Weak ephemeral dh key  
+    #[doc(alias = "errSSLWeakPeerEphemeralDHKey")]
+    pub const WEAK_PEER_EPHEMERAL_DH_KEY: Error = Error::new_unchecked(-9850);
+
+    /* non-fatal result codes */
+
+    /// SNI
+    #[doc(alias = "errSSLClientHelloReceived")]
+    pub const CLIENT_HELLO_RECEIVED: Error = Error::new_unchecked(-9851);
+
+    /* fatal errors resulting from transport or networking errors */
+
+    /// Transport (socket) shutdown, e.g., TCP RST or FIN.
+    #[doc(alias = "errSSLTransportReset")]
+    pub const TRANSPORT_RESET: Error = Error::new_unchecked(-9852);
+
+    /// Network timeout triggered
+    #[doc(alias = "errSSLNetworkTimeout")]
+    pub const NETWORK_TIMEOUT: Error = Error::new_unchecked(-9853);
+
+    /* fatal errors resulting from software misconfiguration */
+
+    /// TLS configuration failed
+    #[doc(alias = "errSSLConfigurationFailed")]
+    pub const CONFIGURATION_FAILED: Error = Error::new_unchecked(-9854);
+
+    /* additional errors */
+
+    /// Unsupported TLS extension
+    #[doc(alias = "errSSLUnsupportedExtension")]
+    pub const UNSUPPORTED_EXTENSION: Error = Error::new_unchecked(-9855);
+
+    /// Peer rejected unexpected message
+    #[doc(alias = "errSSLUnexpectedMessage")]
+    pub const UNEXPECTED_MESSAGE: Error = Error::new_unchecked(-9856);
+
+    /// Decompression failed
+    #[doc(alias = "errSSLDecompressFail")]
+    pub const DECOMPRESS_FAIL: Error = Error::new_unchecked(-9857);
+
+    /// Handshake failed
+    #[doc(alias = "errSSLHandshakeFail")]
+    pub const HANDSHAKE_FAIL: Error = Error::new_unchecked(-9858);
+
+    /// Decode failed
+    #[doc(alias = "errSSLDecodeError")]
+    pub const DECODE_ERROR: Error = Error::new_unchecked(-9859);
+
+    /// Inappropriate fallback
+    #[doc(alias = "errSSLInappropriateFallback")]
+    pub const INAPPROPRIATE_FALLBACK: Error = Error::new_unchecked(-9860);
+
+    /// Missing extension
+    #[doc(alias = "errSSLMissingExtension")]
+    pub const MISSING_EXTENSION: Error = Error::new_unchecked(-9861);
+
+    /// Bad OCSP response
+    #[doc(alias = "errSSLBadCertificateStatusResponse")]
+    pub const BAD_CERT_STATUS_RESPONSE: Error = Error::new_unchecked(-9862);
+
+    /// Certificate required
+    #[doc(alias = "errSSLCertificateRequired")]
+    pub const CERT_REQUIRED: Error = Error::new_unchecked(-9863);
+
+    /// Unknown PSK identity
+    #[doc(alias = "errSSLUnknownPSKIdentity")]
+    pub const UNKNOWN_PSK_IDENTITY: Error = Error::new_unchecked(-9864);
+
+    /// Unknown or unrecognized name
+    #[doc(alias = "errSSLUnrecognizedName")]
+    pub const UNRECOGNIZED_NAME: Error = Error::new_unchecked(-9865);
+
+    /* ATS compliance violation errors */
+
+    /// ATS violation
+    #[doc(alias = "errSSLATSViolation")]
+    pub const ATS_VIOLATION: Error = Error::new_unchecked(-9880);
+
+    /// ATS violation: minimum protocol version is not ATS compliant
+    #[doc(alias = "errSSLATSMinimumVersionViolation")]
+    pub const ATS_MIN_VERSION_VIOLATION: Error = Error::new_unchecked(-9881);
+
+    /// ATS violation: selected ciphersuite is not ATS compliant
+    #[doc(alias = "errSSLATSCiphersuiteViolation")]
+    pub const ATS_CIPHERSUITE_VIOLATION: Error = Error::new_unchecked(-9882);
+
+    /// ATS violation: peer key size is not ATS compliant
+    #[doc(alias = "errSSLATSMinimumKeySizeViolation")]
+    pub const ATS_MIN_KEY_SIZE_VIOLATION: Error = Error::new_unchecked(-9883);
+
+    /// ATS violation: peer leaf certificate hash algorithm is not ATS compliant
+    #[doc(alias = "errSSLATSLeafCertificateHashAlgorithmViolation")]
+    pub const ATS_LEAF_CERT_HASH_ALGORITHM_VIOLATION: Error = Error::new_unchecked(-9884);
+
+    /// ATS violation: peer certificate hash algorithm is not ATS compliant
+    #[doc(alias = "errSSLATSCertificateHashAlgorithmViolation")]
+    pub const ATS_CERT_HASH_ALGORITHM_VIOLATION: Error = Error::new_unchecked(-9885);
+
+    /// ATS violation: peer certificate is not issued by trusted peer
+    #[doc(alias = "errSSLATSCertificateTrustViolation")]
+    pub const ATS_CERT_TRUST_VIOLATION: Error = Error::new_unchecked(-9886);
+
+    /* early data errors */
+
+    /// Early application data rejected by peer
+    #[doc(alias = "errSSLEarlyDataRejected")]
+    pub const EARLY_DATA_REJECTED: Error = Error::new_unchecked(-9890);
 }
 
 #[link(name = "Security", kind = "framework")]
