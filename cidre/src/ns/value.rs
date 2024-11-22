@@ -314,6 +314,12 @@ impl From<ns::UInteger> for arc::R<Number> {
 
 impl Eq for Number {}
 
+impl AsRef<ns::Number> for ns::Number {
+    fn as_ref(&self) -> &ns::Number {
+        self
+    }
+}
+
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_VALUE: &'static Class<ns::Value>;

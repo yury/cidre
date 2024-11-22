@@ -1,9 +1,8 @@
-use std::intrinsics::transmute;
-
 use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc, ut};
 
 use super::WriterInput;
 
+#[doc(alias = "AVAssetWriterStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum Status {
@@ -79,10 +78,10 @@ impl Writer {
     pub fn status(&self) -> Status;
 
     #[objc::msg_send(error)]
-    pub fn error(&self) -> Option<&ns::Error>;
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
 
     #[objc::msg_send(inputs)]
-    pub fn inputs(&self) -> &ns::Array<WriterInput>;
+    pub fn inputs(&self) -> arc::R<ns::Array<WriterInput>>;
 
     /// ```
     /// use cidre::{av, ns};
@@ -94,15 +93,8 @@ impl Writer {
     pub fn with_url_and_file_type<'ear>(
         url: &ns::Url,
         file_type: &av::FileType,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res = Self::alloc().init_with_url_file_type_err(url, file_type, &mut error);
-            match error {
-                None => Ok(transmute(res)),
-                Some(e) => Err(e),
-            }
-        }
+    ) -> ns::Result<'ear, arc::R<Self>> {
+        ns::if_none(|err| Self::alloc().init_with_url_file_type_err(url, file_type, err))
     }
 
     pub fn with_content_type<'ear>(

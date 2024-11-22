@@ -250,6 +250,32 @@ macro_rules! nsstr {
 
 pub use nsstr as str;
 
+impl AsRef<ns::String> for ns::String {
+    fn as_ref(&self) -> &ns::String {
+        self
+    }
+}
+
+#[cfg(feature = "cf")]
+impl AsRef<cf::String> for ns::String {
+    fn as_ref(&self) -> &cf::String {
+        self.as_cf()
+    }
+}
+
+impl AsRef<ns::String> for ns::StringMut {
+    fn as_ref(&self) -> &ns::String {
+        self
+    }
+}
+
+#[cfg(feature = "cf")]
+impl AsRef<cf::String> for ns::StringMut {
+    fn as_ref(&self) -> &cf::String {
+        self.as_cf()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{ns, objc::ar_pool};

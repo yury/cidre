@@ -119,7 +119,7 @@ impl Device {
     ///
     /// This property can be used for displaying the name of a capture device in a user interface.
     #[objc::msg_send(localizedName)]
-    pub fn localized_name(&self) -> &ns::String;
+    pub fn localized_name(&self) -> arc::R<ns::String>;
 
     /// The human-readable manufacturer name for the receiver.
     ///
@@ -1736,9 +1736,9 @@ impl Device {
         media_type: &av::MediaType,
     ) -> AuthorizationStatus;
 
-    pub fn authorization_status_for_media_type<'ar>(
+    pub fn authorization_status_for_media_type<'ear>(
         media_type: &av::MediaType,
-    ) -> Result<AuthorizationStatus, &'ar ns::Exception> {
+    ) -> ns::ExResult<'ear, AuthorizationStatus> {
         ns::try_catch(|| unsafe { Self::authorization_status_for_media_type_throws(media_type) })
     }
 
@@ -1951,7 +1951,7 @@ impl Format {
     pub fn video_min_zoom_factor_for_center_stage(&self) -> cg::Float;
 
     #[objc::msg_send(videoFrameRateRangeForCenterStage)]
-    pub fn video_frame_rate_range_for_center_stage(&self) -> Option<&FrameRateRange>;
+    pub fn video_frame_rate_range_for_center_stage(&self) -> Option<arc::R<FrameRateRange>>;
 }
 
 /// # Portrait Effect
@@ -1965,7 +1965,7 @@ impl Format {
 
     #[objc::msg_send(videoFrameRateRangeForPortraitEffect)]
     #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
-    pub fn video_frame_rate_range_for_portrait_effect(&self) -> Option<&av::FrameRateRange>;
+    pub fn video_frame_rate_range_for_portrait_effect(&self) -> Option<arc::R<av::FrameRateRange>>;
 }
 
 /// AVCaptureDeviceFormatStudioLight
@@ -1977,7 +1977,7 @@ impl Format {
     /// Devices may support a limited frame rate range when Studio Light is active. If this device format does not support Studio Light, this property returns None.
     #[objc::msg_send(videoFrameRateRangeForStudioLight)]
     #[api::available(macos = 13.0, ios = 16.0, maccatalyst = 16.0, tvos = 17.0)]
-    pub fn video_frame_rate_range_for_studio_light(&self) -> Option<&av::FrameRateRange>;
+    pub fn video_frame_rate_range_for_studio_light(&self) -> Option<arc::R<av::FrameRateRange>>;
 }
 
 /// # Determining Color Support
@@ -2039,7 +2039,9 @@ impl Format {
     /// If this device format does not support Background Replacement, this property returns None.
     #[objc::msg_send(videoFrameRateRangeForBackgroundReplacement)]
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn video_frame_rate_range_for_background_replacement(&self) -> Option<&av::FrameRateRange>;
+    pub fn video_frame_rate_range_for_background_replacement(
+        &self,
+    ) -> Option<arc::R<av::FrameRateRange>>;
 }
 
 pub mod notifications {

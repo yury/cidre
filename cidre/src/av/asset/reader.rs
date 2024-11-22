@@ -1,5 +1,6 @@
 use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
+#[doc(alias = "AVAssetReaderStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum Status {
@@ -15,21 +16,24 @@ pub enum Status {
     Cancelled = 4,
 }
 
-define_obj_type!(pub Reader(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAssetReader")]
+    pub Reader(ns::Id)
+);
 
 impl arc::A<Reader> {
     #[objc::msg_send(initWithAsset:error:)]
-    pub unsafe fn init_with_assert_err<'ar>(
+    pub unsafe fn init_with_assert_err<'ear>(
         self,
         asset: &av::Asset,
-        error: *mut Option<&'ar ns::Error>,
+        error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Reader>>;
 }
 
 impl Reader {
     define_cls!(AV_ASSET_READER);
 
-    pub fn with_asset<'ar>(asset: &av::Asset) -> Result<arc::R<Reader>, &'ar ns::Error> {
+    pub fn with_asset<'ear>(asset: &av::Asset) -> ns::Result<'ear, arc::R<Reader>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_assert_err(asset, err) })
     }
 
@@ -48,7 +52,11 @@ impl Reader {
     ///
     /// This method throws an exception if reading has already started (`status` has progressed beyond AVAssetReaderStatusUnknown).
     #[objc::msg_send(startReading)]
-    pub fn start_reading(&mut self) -> bool;
+    pub unsafe fn start_reading_throws(&mut self) -> bool;
+
+    pub fn start_reading<'ear>(&mut self) -> ns::ExResult<'ear, bool> {
+        ns::try_catch(|| unsafe { self.start_reading_throws() })
+    }
 
     /// Cancels any background work and prevents the receiver's outputs from reading more samples.
     ///
@@ -62,7 +70,7 @@ impl Reader {
     pub fn can_add_output(&self, output: &av::AssetReaderOutput) -> bool;
 
     #[objc::msg_send(error)]
-    pub fn error(&self) -> Option<&ns::Error>;
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
 
     #[objc::msg_send(status)]
     pub fn status(&self) -> Status;
@@ -74,7 +82,7 @@ impl Reader {
     pub fn set_time_range(&mut self, value: cm::TimeRange);
 
     #[objc::msg_send(outputs)]
-    pub fn outputs(&self) -> &ns::Array<av::AssetReaderOutput>;
+    pub fn outputs(&self) -> arc::R<ns::Array<av::AssetReaderOutput>>;
 }
 
 #[link(name = "av", kind = "static")]
