@@ -702,7 +702,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_focus_mode_locked_with_lens_pos_with_ch_throws(
         &mut self,
         val: f32,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
         self.device
             .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
@@ -713,7 +713,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ear>(
         &mut self,
         val: f32,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.device
@@ -923,7 +923,7 @@ impl Device {
     unsafe fn set_focus_mode_locked_with_lens_pos_ch_throws(
         &mut self,
         val: f32,
-        ch: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
+        ch: Option<&mut blocks::EscBlock<fn(sync_time: cm::Time)>>,
     );
 
     /// A property indicating the minimum focus distance.
@@ -1019,7 +1019,7 @@ impl Device {
         &mut self,
         duration: cm::Time,
         iso: f32,
-        handler: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
+        handler: Option<&mut blocks::EscBlock<fn(sync_time: cm::Time)>>,
     );
 
     /// Indicates the metered exposure level's offset from the target exposure value, in EV units.
@@ -1044,7 +1044,7 @@ impl Device {
     unsafe fn set_exposure_target_bias_throws(
         &mut self,
         bias: f32,
-        handler: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
+        handler: Option<&mut blocks::EscBlock<fn(sync_time: cm::Time)>>,
     );
 }
 
@@ -1133,7 +1133,7 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         duration: cm::Time,
         iso: f32,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
         self.device
             .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, Some(block))
@@ -1145,7 +1145,7 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         duration: cm::Time,
         iso: f32,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) -> ns::ExResult<'ear> {
         ns::try_catch(|| {
             self.device
@@ -1195,7 +1195,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_exposure_target_bias_with_ch_throws(
         &mut self,
         bias: f32,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
         self.device
             .set_exposure_target_bias_throws(bias, Some(block))
@@ -1211,7 +1211,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub fn set_exposure_target_bias_with_ch<'ear>(
         &mut self,
         bias: f32,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.device
@@ -1349,7 +1349,7 @@ impl Device {
     unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
         &mut self,
         gains: WbGains,
-        block: Option<&mut blocks::EscBlock<fn(cm::Time)>>,
+        block: Option<&mut blocks::EscBlock<fn(sync_time: cm::Time)>>,
     );
 
     /// Converts device-independent chromaticity values to device-specific white balance RGB gain values.
@@ -1382,7 +1382,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_wb_mode_locked_with_device_wb_gains_with_ch_throws(
         &mut self,
         gains: WbGains,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
         self.device
             .set_wb_mode_locked_with_device_wb_gains_throws(gains, Some(block))
@@ -1399,7 +1399,7 @@ impl<'a> ConfigLockGuard<'a> {
     pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ear>(
         &mut self,
         gains: WbGains,
-        block: &mut blocks::EscBlock<fn(cm::Time)>,
+        block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block)
