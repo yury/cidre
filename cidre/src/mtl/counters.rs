@@ -12,6 +12,9 @@ impl CounterSampleBuf {
 
     #[objc::msg_send(label)]
     pub fn label(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(sampleCount)]
+    pub fn sample_count(&self) -> usize;
 }
 
 #[derive(Debug)]

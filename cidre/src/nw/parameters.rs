@@ -7,7 +7,7 @@ define_obj_type!(
 );
 
 #[doc(alias = "nw_parameters_configure_protocol_block_t")]
-pub type ParamsCfgProtocolBlock = blocks::SyncBlock<fn(&mut nw::ProtocolOpts)>;
+pub type ParamsCfgProtocolBlock = blocks::SyncBlock<fn(options: &mut nw::ProtocolOpts)>;
 
 impl Params {
     #[doc(alias = "nw_parameters_create")]

@@ -68,7 +68,7 @@ impl Ctx {
 
 #[tokio::main]
 async fn main() {
-    let input = core_audio::AudioObjId::hardware_default_input_device().unwrap();
+    let _input = core_audio::AudioObjId::hardware_default_input_device().unwrap();
     let output = au::Output::new_apple_vp().unwrap();
     let input_device = output.input_device().unwrap();
     let asbd = output

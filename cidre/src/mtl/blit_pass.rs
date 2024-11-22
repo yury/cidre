@@ -1,21 +1,58 @@
-use crate::{arc, define_cls_init, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, mtl, ns, objc};
 
-define_obj_type!(pub SampleBufAttachDesc(ns::Id));
-define_obj_type!(pub SampleBufAttachDescArray(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLBlitPassSampleBufferAttachmentDescriptor")]
+    pub SampleBufAttachDesc(ns::Id)
+);
 
-define_obj_type!(pub Desc(ns::Id));
+impl SampleBufAttachDesc {
+    #[objc::msg_send(sampleBuffer)]
+    pub fn sample_buffer(&self) -> Option<arc::R<mtl::CounterSampleBuf>>;
 
-define_cls_init!(Desc, MTL_BLIT_PASS_DESCRIPTOR);
+    #[objc::msg_send(setSampleBuffer:)]
+    pub fn set_sample_buffer(&mut self, val: Option<&mtl::CounterSampleBuf>);
+
+    #[objc::msg_send(startOfEncoderSampleIndex)]
+    pub fn start_of_encoder_sample_index(&self) -> usize;
+
+    #[objc::msg_send(setStartOfEncoderSampleIndex:)]
+    pub fn set_start_of_encoder_sample_index(&mut self, value: usize);
+
+    #[objc::msg_send(endOfEncoderSampleIndex)]
+    pub fn end_of_encoder_sample_index(&self) -> usize;
+
+    #[objc::msg_send(setEndOfEncoderSampleIndex:)]
+    pub fn set_end_of_encoder_sample_index(&mut self, value: usize);
+}
+
+define_obj_type!(
+    #[doc(alias = "MTLBlitPassSampleBufferAttachmentDescriptorArray")]
+    pub SampleBufAttachDescArray(ns::Id)
+);
+
+impl SampleBufAttachDescArray {
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn obj_at(&self, attachment_index: usize) -> arc::R<SampleBufAttachDesc>;
+
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
+    pub fn set_obj_at(
+        &mut self,
+        val: Option<&SampleBufAttachDesc>,
+        attachment_index: usize,
+    ) -> arc::R<SampleBufAttachDesc>;
+}
+
+define_obj_type!(
+    #[doc(alias = "MTLBlitPassDescriptor")]
+    pub Desc(ns::Id),
+    MTL_BLIT_PASS_DESCRIPTOR
+);
 
 /// Represents a collection of attachments to be used to create a concrete blit command encoder
 impl Desc {
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attaches(&self) -> &SampleBufAttachDescArray;
-
-    /// An array of sample buffers and associated sample indices.
-    #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attaches_mut(&mut self) -> &mut SampleBufAttachDescArray;
+    pub fn sample_buf_attaches(&self) -> arc::R<SampleBufAttachDescArray>;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -29,7 +66,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut bpd = mtl::BlitPassDesc::new();
-        let _attaches = bpd.sample_buf_attaches_mut();
+        let bpd = mtl::BlitPassDesc::new();
+        let attaches = bpd.sample_buf_attaches();
+        let mut attach = attaches.obj_at(0);
+        attach.set_start_of_encoder_sample_index(0);
+        assert!(attach.sample_buffer().is_none());
     }
 }

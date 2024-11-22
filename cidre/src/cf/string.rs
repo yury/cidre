@@ -393,21 +393,6 @@ impl StringMut {
     }
 }
 
-impl PartialEq<str> for String {
-    fn eq(&self, other: &str) -> bool {
-        let ptr = unsafe { CFStringGetCStringPtr(self, Encoding::UTF8) };
-        if ptr.is_null() {
-            return false;
-        }
-        let s = unsafe { CStr::from_ptr(ptr) };
-        if let Ok(s) = s.to_str() {
-            return s.eq(other);
-        }
-
-        false
-    }
-}
-
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C-unwind" {
     fn CFStringGetTypeID() -> TypeId;
@@ -511,6 +496,39 @@ impl From<&std::string::String> for arc::R<String> {
     }
 }
 
+impl PartialEq<str> for String {
+    fn eq(&self, other: &str) -> bool {
+        let ptr = unsafe { CFStringGetCStringPtr(self, Encoding::UTF8) };
+        if ptr.is_null() {
+            return false;
+        }
+        let s = unsafe { CStr::from_ptr(ptr) };
+        if let Ok(s) = s.to_str() {
+            return s.eq(other);
+        }
+
+        false
+    }
+}
+
+impl PartialEq<std::string::String> for String {
+    fn eq(&self, other: &std::string::String) -> bool {
+        self.eq(other.as_str())
+    }
+}
+
+impl AsRef<cf::String> for cf::String {
+    fn as_ref(&self) -> &cf::String {
+        self
+    }
+}
+
+impl AsRef<cf::String> for cf::StringMut {
+    fn as_ref(&self) -> &cf::String {
+        self
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -525,6 +543,7 @@ mod tests {
 
         let ns_str = s.as_ns();
         assert_eq!(&ns_str.to_string(), "hello");
+        assert_eq!(ns_str, "hello");
     }
 
     #[test]
