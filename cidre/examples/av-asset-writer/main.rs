@@ -86,7 +86,7 @@ fn writer_and_input(
 
     let mut writer = av::AssetWriter::with_url_and_file_type(dst.as_ns(), file_type).unwrap();
 
-    assert!(reader.start_reading());
+    assert!(reader.start_reading().expect("failed to start reading"));
     let buf = output
         .next_sample_buf()
         .expect("Failed to copy next sample buf")

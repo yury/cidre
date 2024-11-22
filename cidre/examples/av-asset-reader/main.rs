@@ -25,7 +25,7 @@ async fn main() {
 
     let mut reader = av::AssetReader::with_asset(&asset).unwrap();
     reader.add_output(&output).unwrap();
-    let true = reader.start_reading() else {
+    let true = reader.start_reading().expect("Failed to start reading") else {
         println!("error: {:?}", reader.error());
         println!("status: {:?}", reader.status());
         return;
