@@ -9,7 +9,7 @@ pub struct AudioObjId(pub u32);
 #[doc(alias = "AudioClassID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjClassId(pub u32);
+pub struct AudioClassId(pub u32);
 
 #[doc(alias = "AudioObjectPropertySelector")]
 #[derive(Eq, PartialEq, Copy, Clone)]
@@ -61,6 +61,12 @@ impl AudioObjId {
     pub const UNKNOWN: Self = Self(0);
 }
 
+impl Default for AudioObjId {
+    fn default() -> Self {
+        Self::UNKNOWN
+    }
+}
+
 impl AudioObjPropScope {
     /// The AudioObjectPropertyScope for properties that apply to the object as a
     /// whole. All objects have a global scope and for most it is their only scope.
@@ -100,7 +106,7 @@ impl AudioObjPropElement {
     pub const WILDCARD: Self = Self(0xFFFFFFFF);
 }
 
-impl AudioObjClassId {
+impl AudioClassId {
     #[doc(alias = "kAudioObjectClassIDWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 
@@ -115,11 +121,147 @@ impl AudioObjClassId {
     #[doc(alias = "kAudioTransportManagerClassID")]
     pub const TRANSPORT_MANAGER: Self = Self(u32::from_be_bytes(*b"trpm"));
 
+    /// The AudioClassId that identifies the AudioBox class.
     #[doc(alias = "kAudioBoxClassID")]
     pub const BOX: Self = Self(u32::from_be_bytes(*b"abox"));
 
+    /// The AudioClassID that identifies the AudioDevice class.
     #[doc(alias = "kAudioDeviceClassID")]
     pub const DEVICE: Self = Self(u32::from_be_bytes(*b"adev"));
+
+    /// The AudioClassId that identifies the Tap class.
+    ///
+    /// The Tap class contains a list of input streams that originate from the output
+    /// stream(s) of one or more processes.
+    #[doc(alias = "kAudioTapClassID")]
+    pub const TAP: Self = Self(u32::from_be_bytes(*b"tcls"));
+
+    #[doc(alias = "kAudioEndPointClassID")]
+    pub const END_POINT: Self = Self(u32::from_be_bytes(*b"endp"));
+
+    /// The AudioClassId that identifies the AudioStream class.
+    #[doc(alias = "kAudioStreamClassID")]
+    pub const STREAM: Self = Self(u32::from_be_bytes(*b"astr"));
+
+    /// The AudioClassId that identifies the AudioControl class.
+    #[doc(alias = "kAudioControlClassID")]
+    pub const CONTROL: Self = Self(u32::from_be_bytes(*b"actl"));
+
+    /// The AudioClassId that identifies the AudioSliderControl class.
+    #[doc(alias = "kAudioSliderControlClassID")]
+    pub const SLIDER_CONTROL: Self = Self(u32::from_be_bytes(*b"sldr"));
+
+    /// The AudioClassId that identifies the LevelControl class.
+    #[doc(alias = "kAudioLevelControlClassID")]
+    pub const LEVEL_CONTROL: Self = Self(u32::from_be_bytes(*b"levl"));
+
+    /// A subclass of the LevelControl class that implements a general
+    /// gain/attenuation stage.
+    #[doc(alias = "kAudioVolumeControlClassID")]
+    pub const VOLUME_CONTROL: Self = Self(u32::from_be_bytes(*b"vlme"));
+
+    /// A subclass of the LevelControl class for an LFE channel that results from
+    /// bass management. Note that LFE channels that are represented as normal audio
+    /// channels must use kAudioVolumeControlClassID to manipulate the level.
+    #[doc(alias = "kAudioLFEVolumeControlClassID")]
+    pub const LFE_VOLUME_CONTROL: Self = Self(u32::from_be_bytes(*b"subv"));
+
+    /// The AudioClassID that identifies the BooleanControl class.
+    #[doc(alias = "kAudioBooleanControlClassID")]
+    pub const BOOLEAN_CONTROL: Self = Self(u32::from_be_bytes(*b"togl"));
+
+    /// A subclass of the AudioBooleanControl class where a true value means that
+    /// mute is enabled making that element inaudible.
+    #[doc(alias = "kAudioMuteControlClassID")]
+    pub const MUTE_CONTROL: Self = Self(u32::from_be_bytes(*b"mute"));
+
+    /// A subclass of the AudioBooleanControl class where a true value means that
+    /// solo is enabled making just that element audible and the other elements
+    /// inaudible.
+    #[doc(alias = "kAudioSoloControlClassID")]
+    pub const SOLO_CONTROL: Self = Self(u32::from_be_bytes(*b"solo"));
+
+    /// A subclass of the AudioBooleanControl class where a true value means
+    /// something is plugged into that element.
+    #[doc(alias = "kAudioJackControlClassID")]
+    pub const JACK_CONTROL: Self = Self(u32::from_be_bytes(*b"jack"));
+
+    /// A subclass of the AudioBooleanControl class where true means that mute is
+    /// enabled making that LFE element inaudible. This control is for LFE channels
+    /// that result from bass management. Note that LFE channels that are
+    /// represented as normal audio channels must use an AudioMuteControl.
+    #[doc(alias = "kAudioLFEMuteControlClassID")]
+    pub const LFE_MUTE_CONTROL: Self = Self(u32::from_be_bytes(*b"subm"));
+
+    /// A subclass of the AudioBooleanControl class where true means that the
+    /// element's hardware has phantom power enabled.
+    #[doc(alias = "kAudioPhantomPowerControlClassID")]
+    pub const PHANTOM_POWER_CONTROL: Self = Self(u32::from_be_bytes(*b"phan"));
+
+    /// A subclass of the AudioBooleanControl class where true means that the phase
+    /// of the signal on the given element is being inverted by 180 degrees.
+    #[doc(alias = "kAudioPhaseInvertControlClassID")]
+    pub const PHASE_INVERT_CONTROL: Self = Self(u32::from_be_bytes(*b"phsi"));
+
+    /// A subclass of the AudioBooleanControl class where true means that the signal
+    /// for the element has exceeded the sample range. Once a clip light is turned
+    /// on, it is to stay on until either the value of the control is set to false
+    /// or the current IO session stops and a new IO session starts.
+    #[doc(alias = "kAudioClipLightControlClassID")]
+    pub const CLIP_LIGHT_CONTROL: Self = Self(u32::from_be_bytes(*b"clip"));
+
+    /// An AudioBooleanControl where true means that the talkback channel is
+    /// enabled. This control is for talkback channels that are handled outside of
+    /// the regular IO channels. If the talkback channel is among the normal IO
+    /// channels, it will use AudioMuteControl.
+    #[doc(alias = "kAudioTalkbackControlClassID")]
+    pub const TALKBACK_CONTROL: Self = Self(u32::from_be_bytes(*b"talb"));
+
+    /// An AudioBooleanControl where true means that the listenback channel is
+    /// audible. This control is for listenback channels that are handled outside of
+    /// the regular IO channels. If the listenback channel is among the normal IO
+    /// channels, it will use AudioMuteControl.
+    #[doc(alias = "kAudioListenbackControlClassID")]
+    pub const LISTENBACK_CONTROL: Self = Self(u32::from_be_bytes(*b"lsnb"));
+
+    /// The AudioClassID that identifies the AudioSelectorControl class.
+    #[doc(alias = "kAudioSelectorControlClassID")]
+    pub const SELECTOR_CONTROL: Self = Self(u32::from_be_bytes(*b"slct"));
+
+    /// A subclass of the AudioSelectorControl class that identifies where the data
+    /// for the element is coming from.
+    #[doc(alias = "kAudioDataSourceControlClassID")]
+    pub const DATA_SRC_CONTROL: Self = Self(u32::from_be_bytes(*b"dsrc"));
+
+    /// A subclass of the AudioSelectorControl class that identifies where the data
+    /// for the element is going.
+    #[doc(alias = "kAudioDataDestinationControlClassID")]
+    pub const DATA_DST_CONTROL: Self = Self(u32::from_be_bytes(*b"dest"));
+
+    /// A subclass of the AudioSelectorControl class that identifies where the
+    /// timing info for the object is coming from.
+    #[doc(alias = "kAudioClockSourceControlClassID")]
+    pub const CLOCK_SRC_CONTROL: Self = Self(u32::from_be_bytes(*b"clck"));
+
+    /// A subclass of the AudioSelectorControl class that identifies the nominal
+    /// line level for the element. Note that this is not a gain stage but rather
+    /// indicating the voltage standard (if any) used for the element, such as
+    /// +4dBu, -10dBV, instrument, etc.
+    #[doc(alias = "kAudioLineLevelControlClassID")]
+    pub const LINE_LEVEL_CONTROL: Self = Self(u32::from_be_bytes(*b"nlvl"));
+
+    /// A subclass of the AudioSelectorControl class that indicates the setting for
+    /// the high pass filter on the given element.
+    #[doc(alias = "kAudioHighPassFilterControlClassID")]
+    pub const HIGH_PASS_FILTER_CONTROL: Self = Self(u32::from_be_bytes(*b"hipf"));
+
+    /// The AudioClassId that identifies the StereoPanControl class.
+    #[doc(alias = "kAudioStereoPanControlClassID")]
+    pub const STEREO_PAN_CONTROL: Self = Self(u32::from_be_bytes(*b"span"));
+
+    /// The AudioClassId that identifies the AudioAggregateDevice class.
+    #[doc(alias = "kAudioAggregateDeviceClassID")]
+    pub const AGGREGATE_DEVICE: Self = Self(u32::from_be_bytes(*b"aagg"));
 }
 
 impl AudioObjPropSelector {

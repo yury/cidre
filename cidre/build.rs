@@ -337,6 +337,9 @@ fn main() {
             );
         }
     }
+    if sdk == "macosx" {
+        add_xc_target_args_from_features(&mut xc_target_args, &["core_audio"]);
+    }
 
     xc_build(&xc_target_args, sdk, arch, configuration, &versions);
 

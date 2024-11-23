@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, at::AudioBufListN, cf, core_audio, os};
+use crate::{arc, at::AudioBufListN, cat, cf, core_audio, os};
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::{blocks, dispatch};
@@ -250,6 +250,26 @@ impl core_audio::AudioObjId {
         unsafe {
             AudioObjectRemovePropertyListenerBlock(*self, address, dispatch_queue, listener)
                 .result()
+        }
+    }
+}
+
+impl core_audio::AudioObjId {
+    pub fn create_io_proc_id<const IN: usize, const ON: usize, T>(
+        &self,
+        proc: AudioDeviceIoProc<IN, ON, T>,
+        client_data: Option<&mut T>,
+    ) -> os::Result<AudioDeviceIoProcId> {
+        let mut res = None;
+        unsafe {
+            AudioDeviceCreateIOProcID(
+                *self,
+                std::mem::transmute(proc),
+                std::mem::transmute(client_data),
+                &mut res,
+            )
+            .result()?;
+            Ok(res.unwrap_unchecked())
         }
     }
 }
@@ -781,6 +801,32 @@ impl core_audio::AudioObjPropSelector {
     pub const VOICE_ACTIVITY_DETECTION_STATE: Self = Self(u32::from_be_bytes(*b"vAdS"));
 }
 
+#[doc(alias = "AudioDeviceIOProc")]
+pub type AudioDeviceIoProc<const IN: usize = 1, const ON: usize = 1, T = std::ffi::c_void> =
+    extern "C" fn(
+        device: AudioObjId,
+        now: &cat::AudioTimeStamp,
+        input_data: &cat::AudioBufList<IN>,
+        input_time: &cat::AudioTimeStamp,
+        output_data: &mut cat::AudioBufList<ON>,
+        output_time: &cat::AudioTimeStamp,
+        cliend_data: Option<&mut T>,
+    ) -> os::Status;
+
+#[doc(alias = "AudioDeviceIOBlock")]
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
+pub type AudioDeviceIoBlock<const IN: usize = 1, const ON: usize = 1> = blocks::EscBlock<
+    fn(
+        now: &cat::AudioTimeStamp,
+        input_data: &cat::AudioBufList<IN>,
+        input_time: &cat::AudioTimeStamp,
+        output_data: &mut cat::AudioBufList<ON>,
+        output_time: &cat::AudioTimeStamp,
+    ),
+>;
+
+pub type AudioDeviceIoProcId = AudioDeviceIoProc;
+
 #[link(name = "CoreAudio", kind = "framework")]
 extern "C-unwind" {
 
@@ -850,16 +896,24 @@ extern "C-unwind" {
         listener: *mut AudioObjPropListenerBlock,
     ) -> os::Status;
 
+    fn AudioDeviceCreateIOProcID(
+        device: AudioObjId,
+        proc: AudioDeviceIoProc,
+        client_data: *mut std::ffi::c_void,
+        out_proc_id: *mut Option<AudioDeviceIoProcId>,
+    ) -> os::Status;
+
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{
-        arc, cf,
+        arc, cat, cf,
         core_audio::{
             AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope,
-            AudioObjPropSelector,
+            AudioObjPropSelector, TapDesc,
         },
+        ns, os,
     };
 
     #[test]
@@ -894,5 +948,26 @@ mod tests {
             let _val: arc::R<cf::String> = d.cf_prop(&name_addr).unwrap();
             let _val: arc::R<cf::String> = d.cf_prop(&man_addr).unwrap();
         }
+    }
+
+    #[test]
+    fn proc_io() {
+        let desc = TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
+        let tap = desc.create_process_tap().unwrap();
+        // tap.stream_cfg()
+
+        // extern "C" fn proc(
+        //     device: AudioObjId,
+        //     now: &cat::AudioTimeStamp,
+        //     input_data: &cat::AudioBufList<1>,
+        //     input_time: &cat::AudioTimeStamp,
+        //     output_data: &mut cat::AudioBufList<1>,
+        //     output_time: &cat::AudioTimeStamp,
+        //     cliend_data: Option<&mut std::ffi::c_void>,
+        // ) -> os::Status {
+        //     os::Status::NO_ERR
+        // }
+
+        // tap.create_io_proc_id(proc, None).unwrap();
     }
 }
