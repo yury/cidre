@@ -75,7 +75,7 @@ impl Obj {
         }
     }
 
-    pub fn prop_bool(&self, address: &PropAddr) -> os::Result<bool> {
+    pub fn bool_prop(&self, address: &PropAddr) -> os::Result<bool> {
         let res: u32 = self.prop(address)?;
         Ok(res == 1)
     }
@@ -249,15 +249,15 @@ impl Process {
     }
 
     pub fn is_running(&self) -> os::Result<bool> {
-        self.prop_bool(&PropSelector::PROCESS_IS_RUNNING.global_addr())
+        self.bool_prop(&PropSelector::PROCESS_IS_RUNNING.global_addr())
     }
 
     pub fn is_running_input(&self) -> os::Result<bool> {
-        self.prop_bool(&PropSelector::PROCESS_IS_RUNNING_INPUT.global_addr())
+        self.bool_prop(&PropSelector::PROCESS_IS_RUNNING_INPUT.global_addr())
     }
 
     pub fn is_running_output(&self) -> os::Result<bool> {
-        self.prop_bool(&PropSelector::PROCESS_IS_RUNNING_OUTPUT.global_addr())
+        self.bool_prop(&PropSelector::PROCESS_IS_RUNNING_OUTPUT.global_addr())
     }
 
     pub fn devices(&self) -> os::Result<Vec<Device>> {
