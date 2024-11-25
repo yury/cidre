@@ -1266,7 +1266,7 @@ extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::{
-        arc, cat, cf,
+        cat, cf,
         core_audio::{
             aggregate_device_keys as agg_keys, AggregateDevice, Class, Device, Obj, Process,
             PropAddr, PropElement, PropScope, PropSelector, System, TapDesc,
