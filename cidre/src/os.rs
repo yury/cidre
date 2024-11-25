@@ -9,6 +9,12 @@ pub type Err = i16;
 #[repr(C)]
 pub struct Status(pub i32);
 
+impl Default for Status {
+    fn default() -> Self {
+        Self::NO_ERR
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
 pub struct Error(pub NonZeroI32);
