@@ -1059,6 +1059,73 @@ impl std::ops::DerefMut for AggregateDevice {
     }
 }
 
+impl AsRef<Device> for Device {
+    fn as_ref(&self) -> &Device {
+        self
+    }
+}
+
+impl AsRef<Device> for AggregateDevice {
+    fn as_ref(&self) -> &Device {
+        &self.0
+    }
+}
+
+pub struct StartedDevice<D: AsRef<Device>> {
+    device: D,
+    proc_id: Option<DeviceIoProcId>,
+}
+
+impl<D: AsRef<Device>> Drop for StartedDevice<D> {
+    fn drop(&mut self) {
+        let device = Device(self.device.as_ref().0);
+        let res = unsafe { AudioDeviceStop(device, self.proc_id) };
+        debug_assert!(res.is_ok());
+    }
+}
+
+#[doc(alias = "AudioDeviceStart")]
+pub fn device_start<D: AsRef<Device>>(
+    device: D,
+    proc_id: Option<DeviceIoProcId>,
+) -> os::Result<StartedDevice<D>> {
+    let dev = Device(device.as_ref().0);
+    unsafe { AudioDeviceStart(dev, proc_id).result()? }
+    Ok(StartedDevice { device, proc_id })
+}
+
+mod common_keys {
+    use crate::cf;
+
+    pub fn uid() -> &'static cf::String {
+        cf::str!(c"uid")
+    }
+
+    pub fn name() -> &'static cf::String {
+        cf::str!(c"name")
+    }
+}
+
+pub mod sub_tap_keys {
+    use crate::cf;
+
+    #[doc(alias = "kAudioSubTapUIDKey")]
+    pub use super::common_keys::uid;
+
+    #[doc(alias = "kAudioSubTapDriftCompensationKey")]
+    pub fn drift_compensation() -> &'static cf::String {
+        cf::str!(c"drift")
+    }
+}
+
+pub mod sub_device_keys {
+    #[doc(alias = "kAudioSubDeviceUIDKey")]
+    pub use super::common_keys::uid;
+
+    #[doc(alias = "kAudioSubDeviceNameKey")]
+    pub use super::common_keys::name;
+}
+
 pub mod aggregate_device_keys {
     use crate::cf;
 
@@ -1066,17 +1133,13 @@ pub mod aggregate_device_keys {
     /// AudioAggregateDevice. The value for this key is a CFString that contains the UID
     /// of the AudioAggregateDevice.
     #[doc(alias = "kAudioAggregateDeviceUIDKey")]
-    pub fn device_uid() -> &'static cf::String {
-        cf::str!(c"uid")
-    }
+    pub use super::common_keys::uid;
 
     /// The key used in a CFDictionary that describes the composition of an
     /// AudioAggregateDevice. The value for this key is a CFString that contains the
     /// human readable name of the AudioAggregateDevice.
     #[doc(alias = "kAudioAggregateDeviceNameKey")]
-    pub fn device_name() -> &'static cf::String {
-        cf::str!(c"name")
-    }
+    pub use super::common_keys::name;
 
     /// The key used in a CFDictionary that describes the composition of an
     /// AudioAggregateDevice. The value for this key is a CFArray of CFDictionaries that
@@ -1087,8 +1150,8 @@ pub mod aggregate_device_keys {
         cf::str!(c"subdevices")
     }
 
-    /// The key used in a CFDictionary that describes the composition of an
-    /// AudioAggregateDevice. The value for this key is a CFString that contains the
+    /// The key used in a cf::Dictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a cf::String that contains the
     /// UID for the sub-device that is the time source for the
     /// AudioAggregateDevice.
     #[doc(alias = "kAudioAggregateDeviceMainSubDeviceKey")]
@@ -1261,6 +1324,9 @@ extern "C-unwind" {
     ) -> os::Status;
 
     fn AudioHardwareDestroyAggregateDevice(device_id: AggregateDevice) -> os::Status;
+
+    fn AudioDeviceStart(device: Device, proc_id: Option<DeviceIoProcId>) -> os::Status;
+    fn AudioDeviceStop(device: Device, proc_id: Option<DeviceIoProcId>) -> os::Status;
 }
 
 #[cfg(test)]
@@ -1307,9 +1373,9 @@ mod tests {
                 agg_keys::is_private(),
                 agg_keys::is_stacked(),
                 agg_keys::tap_auto_start(),
-                agg_keys::device_name(),
+                agg_keys::name(),
                 agg_keys::main_sub_device(),
-                agg_keys::device_uid(),
+                agg_keys::uid(),
             ],
             &[
                 cf::Boolean::value_true().as_type_ref(),

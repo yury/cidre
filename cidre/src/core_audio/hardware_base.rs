@@ -180,9 +180,13 @@ impl Class {
     #[doc(alias = "kAudioBoxClassID")]
     pub const BOX: Self = Self(u32::from_be_bytes(*b"abox"));
 
-    /// The AudioClassID that identifies the AudioDevice class.
+    /// The AudioClassId that identifies the AudioDevice class.
     #[doc(alias = "kAudioDeviceClassID")]
     pub const DEVICE: Self = Self(u32::from_be_bytes(*b"adev"));
+
+    /// The AudioClassId that identifies the AudioSubDevice class.
+    #[doc(alias = "kAudioSubDeviceClassID")]
+    pub const SUB_DEVICE: Self = Self(u32::from_be_bytes(*b"asub"));
 
     /// The AudioClassId that identifies the Tap class.
     ///
@@ -190,6 +194,10 @@ impl Class {
     /// stream(s) of one or more processes.
     #[doc(alias = "kAudioTapClassID")]
     pub const TAP: Self = Self(u32::from_be_bytes(*b"tcls"));
+
+    /// The AudioClassID that identifies the AudioSubTap class.
+    #[doc(alias = "kAudioSubTapClassID")]
+    pub const SUB_TAP: Self = Self(u32::from_be_bytes(*b"stap"));
 
     #[doc(alias = "kAudioEndPointClassID")]
     pub const END_POINT: Self = Self(u32::from_be_bytes(*b"endp"));
