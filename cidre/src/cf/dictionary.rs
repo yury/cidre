@@ -470,6 +470,10 @@ where
     pub fn get(&self, k: &K) -> Option<&V> {
         unsafe { transmute(self.0.value(transmute(k))) }
     }
+
+    pub fn new() -> arc::R<Self> {
+        unsafe { std::mem::transmute(Dictionary::new()) }
+    }
 }
 
 #[cfg(feature = "objc")]

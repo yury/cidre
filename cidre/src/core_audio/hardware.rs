@@ -1,12 +1,13 @@
 use std::ffi::c_void;
 
-use crate::{arc, at::AudioBufListN, cat, cf, core_audio, os};
+use crate::{arc, at::AudioBufListN, cat, cf, core_audio, os, sys};
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::{blocks, dispatch};
 
 use super::{
-    AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
+    hardware_tapping::AudioHardwareCreateProcessTap, AudioObjId, AudioObjPropAddr,
+    AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector,
 };
 
 #[doc(alias = "AudioObjectPropertyListenerProc")]
@@ -72,6 +73,14 @@ impl core_audio::AudioObjId {
             .result()
         }
     }
+    pub fn device_uid(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::DEVICE_UID,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        })
+    }
+
     pub fn stream_cfg(&self, scope: AudioObjPropScope) -> os::Result<AudioBufListN> {
         let addr = AudioObjPropAddr {
             selector: AudioObjPropSelector::STREAM_CFG,
@@ -140,6 +149,29 @@ impl core_audio::AudioObjId {
                 address,
                 0,
                 std::ptr::null(),
+                &mut data_size,
+                val.as_mut_ptr() as _,
+            )
+            .result()?;
+            Ok(val.assume_init())
+        }
+    }
+
+    #[doc(alias = "AudioObjectGetPropertyData")]
+    pub fn prop_with_qualifier<T: Sized, Q: Sized>(
+        &self,
+        address: &AudioObjPropAddr,
+        qualifier: &Q,
+    ) -> os::Result<T> {
+        let mut data_size = std::mem::size_of::<T>() as u32;
+        let qualifier_size = std::mem::size_of::<Q>() as u32;
+        let mut val = std::mem::MaybeUninit::uninit();
+        unsafe {
+            let res = AudioObjectGetPropertyData(
+                *self,
+                address,
+                qualifier_size,
+                qualifier as *const Q as *const _,
                 &mut data_size,
                 val.as_mut_ptr() as _,
             )
@@ -254,6 +286,129 @@ impl core_audio::AudioObjId {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
+#[repr(transparent)]
+pub struct ProcessObj(pub core_audio::AudioObjId);
+
+impl std::ops::Deref for ProcessObj {
+    type Target = core_audio::AudioObjId;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for ProcessObj {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl ProcessObj {
+    pub fn pid(&self) -> os::Result<sys::Pid> {
+        self.prop(&AudioObjPropAddr {
+            selector: core_audio::AudioObjPropSelector::PROCESS_PID,
+            scope: Default::default(),
+            element: Default::default(),
+        })
+    }
+
+    pub fn bundle_id(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&AudioObjPropAddr {
+            selector: core_audio::AudioObjPropSelector::PROCESS_BUNDLE_ID,
+            scope: Default::default(),
+            element: Default::default(),
+        })
+    }
+
+    pub fn is_running(&self) -> os::Result<bool> {
+        let res: u32 = self.prop(&AudioObjPropAddr {
+            selector: core_audio::AudioObjPropSelector::PROCESS_IS_RUNNING,
+            scope: Default::default(),
+            element: Default::default(),
+        })?;
+        Ok(res == 1)
+    }
+
+    pub fn is_running_input(&self) -> os::Result<bool> {
+        let res: u32 = self.prop(&AudioObjPropAddr {
+            selector: core_audio::AudioObjPropSelector::PROCESS_IS_RUNNING_INPUT,
+            scope: Default::default(),
+            element: Default::default(),
+        })?;
+        Ok(res == 1)
+    }
+
+    pub fn is_running_output(&self) -> os::Result<bool> {
+        let res: u32 = self.prop(&AudioObjPropAddr {
+            selector: core_audio::AudioObjPropSelector::PROCESS_IS_RUNNING_OUTPUT,
+            scope: Default::default(),
+            element: Default::default(),
+        })?;
+        Ok(res == 1)
+    }
+
+    pub fn devices(&self) -> os::Result<Vec<core_audio::AudioObjId>> {
+        self.prop_vec(&AudioObjPropAddr {
+            selector: core_audio::AudioObjPropSelector::PROCESS_DEVICES,
+            scope: Default::default(),
+            element: Default::default(),
+        })
+    }
+
+    pub fn with_pid(pid: sys::Pid) -> os::Result<Self> {
+        core_audio::AudioObjId::SYS_OBJECT.prop_with_qualifier(
+            &AudioObjPropAddr {
+                selector: AudioObjPropSelector::HARDWARE_TRANSLATE_PID_TO_PROCESS_OBJ,
+                scope: Default::default(),
+                element: Default::default(),
+            },
+            &pid,
+        )
+    }
+
+    pub fn list() -> os::Result<Vec<Self>> {
+        core_audio::AudioObjId::SYS_OBJECT.prop_vec(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::HARDWARE_PROCESS_OBJ_LIST,
+            scope: Default::default(),
+            element: Default::default(),
+        })
+    }
+}
+
+/// Processes AudioObjectPropertySelector values provided by the Process class.
+impl core_audio::AudioObjPropSelector {
+    /// A pid_t indicating the process ID associated with the process.
+    #[doc(alias = "kAudioProcessPropertyPID")]
+    pub const PROCESS_PID: Self = Self(u32::from_be_bytes(*b"ppid"));
+
+    /// A cf::String that contains the bundle ID of the process. The caller is
+    /// responsible for releasing the returned cf::Object.
+    #[doc(alias = "kAudioProcessPropertyBundleID")]
+    pub const PROCESS_BUNDLE_ID: Self = Self(u32::from_be_bytes(*b"pbid"));
+
+    /// An array of AudioObjectIds that represent the devices currently used by the
+    /// process for input or used by the process for output. The scope will select
+    /// the input or output device list.
+    pub const PROCESS_DEVICES: Self = Self(u32::from_be_bytes(*b"pdv#"));
+
+    /// A u32 where a value of 0 indicates that there is not audio IO in progress
+    /// in the process, and a value of 1 indicates that there is audio IO in progress
+    /// in the process. Note that audio IO may in progress even if no input or output
+    /// streams are active.
+    pub const PROCESS_IS_RUNNING: Self = Self(u32::from_be_bytes(*b"pir?"));
+
+    /// A u32 where a value of 0 indicates that the process is not running any
+    /// IO or there is not any active input streams, and a value of 1 indicates that
+    /// the process is running IO and there is at least one active input stream.
+    pub const PROCESS_IS_RUNNING_INPUT: Self = Self(u32::from_be_bytes(*b"piri"));
+
+    /// A u32 where a value of 0 indicates that the process is not running any
+    /// IO or there is not any active output streams, and a value of 1 indicates that
+    /// the process is running IO and there is at least one active output stream.
+    pub const PROCESS_IS_RUNNING_OUTPUT: Self = Self(u32::from_be_bytes(*b"piro"));
+}
+
 impl core_audio::AudioObjId {
     pub fn create_io_proc_id<const IN: usize, const ON: usize, T>(
         &self,
@@ -295,6 +450,29 @@ impl core_audio::AudioObjPropSelector {
     /// from the alert sound to digital call progress.
     #[doc(alias = "kAudioHardwarePropertyDefaultSystemOutputDevice")]
     pub const HARDWARE_DEFAULT_SYS_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"sOut"));
+
+    /// This property fetches the AudioObjectId that corresponds to the AudioDevice
+    /// that has the given UID. The UID is passed in via the qualifier as a cf::String
+    /// while the AudioObjectId for the AudioDevice is returned to the caller as the
+    /// property's data. Note that an error is not returned if the UID doesn't refer
+    /// to any AudioDevices. Rather, this property will return kAudioObjectUnknown
+    /// as the value of the property.
+    #[doc(alias = "kAudioHardwarePropertyTranslateUIDToDevice")]
+    pub const HARDWARE_TRANSLATE_UID_TO_DEVICE: Self = Self(u32::from_be_bytes(*b"uidd"));
+
+    /// An array of AudioObjectIds that represent the Process objects for all client processes
+    /// currently connected to the system.
+    #[doc(alias = "kAudioHardwarePropertyProcessObjectList")]
+    pub const HARDWARE_PROCESS_OBJ_LIST: Self = Self(u32::from_be_bytes(*b"prs#"));
+
+    /// This property fetches the AudioObjectID that corresponds to the Process object
+    /// that has the given PID. The PID is passed in via the qualifier as a pid_t
+    /// while the AudioObjectID for the Process is returned to the caller as the
+    /// property's data. Note that an error is not returned if the PID doesn't refer
+    /// to any Process. Rather, this property will return kAudioObjectUnknown
+    /// as the value of the property.
+    #[doc(alias = "kAudioHardwarePropertyTranslatePIDToProcessObject")]
+    pub const HARDWARE_TRANSLATE_PID_TO_PROCESS_OBJ: Self = Self(u32::from_be_bytes(*b"id2p"));
 }
 
 ///  AudioDevice Properties
@@ -801,6 +979,28 @@ impl core_audio::AudioObjPropSelector {
     pub const VOICE_ACTIVITY_DETECTION_STATE: Self = Self(u32::from_be_bytes(*b"vAdS"));
 }
 
+/// AudioObjectPropertySelector values provided by the Tap Object class.
+/// The Tap class is a subclass of the AudioObject class. the class
+/// has just the global scope, kAudioObjectPropertyScopeGlobal, and only a master element.
+impl core_audio::AudioObjPropSelector {
+    /// A cf::String that contains a persistent identifier for the Tap. A Taps UID
+    /// persists until the tap is destroyed. The caller is responsible for releasing
+    /// the returned cf::Object.
+    #[doc(alias = "kAudioTapPropertyUID")]
+    pub const TAP_UID: Self = Self(u32::from_be_bytes(*b"tuid"));
+
+    /// The CATapDescription used to initially create this tap. This property can be used
+    /// to modify and set the description of an existing tap.
+    #[doc(alias = "kAudioTapPropertyDescription")]
+    pub const TAP_DESCRIPTION: Self = Self(u32::from_be_bytes(*b"tdsc"));
+
+    /// An AudioStreamBasicDescription that describes the current data format for
+    /// the tap. This is the format of that data that will be accessible in any aggregate
+    /// device that contains the tap.
+    #[doc(alias = "kAudioTapPropertyFormat")]
+    pub const TAP_FORMAT: Self = Self(u32::from_be_bytes(*b"tfmt"));
+}
+
 #[doc(alias = "AudioDeviceIOProc")]
 pub type AudioDeviceIoProc<const IN: usize = 1, const ON: usize = 1, T = std::ffi::c_void> =
     extern "C" fn(
@@ -826,6 +1026,134 @@ pub type AudioDeviceIoBlock<const IN: usize = 1, const ON: usize = 1> = blocks::
 >;
 
 pub type AudioDeviceIoProcId = AudioDeviceIoProc;
+
+#[repr(transparent)]
+pub struct AudioAggregateDevice(core_audio::AudioObjId);
+
+impl std::ops::Deref for AudioAggregateDevice {
+    type Target = core_audio::AudioObjId;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl std::ops::DerefMut for AudioAggregateDevice {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+pub mod aggregate_device_keys {
+    use crate::cf;
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFString that contains the UID
+    /// of the AudioAggregateDevice.
+    #[doc(alias = "kAudioAggregateDeviceUIDKey")]
+    pub fn device_uid() -> &'static cf::String {
+        cf::str!(c"uid")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFString that contains the
+    /// human readable name of the AudioAggregateDevice.
+    #[doc(alias = "kAudioAggregateDeviceNameKey")]
+    pub fn device_name() -> &'static cf::String {
+        cf::str!(c"name")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFArray of CFDictionaries that
+    /// describe each sub-device in the AudioAggregateDevice. The keys for this
+    /// CFDictionary are defined in the AudioSubDevice section.
+    #[doc(alias = "kAudioAggregateDeviceSubDeviceListKey")]
+    pub fn sub_device_list() -> &'static cf::String {
+        cf::str!(c"subdevices")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFString that contains the
+    /// UID for the sub-device that is the time source for the
+    /// AudioAggregateDevice.
+    #[doc(alias = "kAudioAggregateDeviceMainSubDeviceKey")]
+    pub fn main_sub_device() -> &'static cf::String {
+        cf::str!(c"master")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFString that contains the
+    /// UID for the clock device that is the time source for the
+    /// AudioAggregateDevice. If the aggregate device includes both a main audio
+    /// device and a clock device, the clock device will control the time base.
+    #[doc(alias = "kAudioAggregateDeviceClockDeviceKey")]
+    pub fn clock_device() -> &'static cf::String {
+        cf::str!(c"clock")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFNumber where a value of 0
+    /// means that the AudioAggregateDevice is to be published to the entire system and
+    /// a value of 1 means that the AudioAggregateDevice is private to the process that
+    /// created it. Note that a private AudioAggregateDevice is not persistent across
+    /// launches of the process that created it. Note that if this key is not present,
+    /// it implies that the AudioAggregateDevice is published to the entire system.
+    #[doc(alias = "kAudioAggregateDeviceIsPrivateKey")]
+    pub fn is_private() -> &'static cf::String {
+        cf::str!(c"private")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFNumber where a value of 0
+    /// means that the sub-devices of the AudioAggregateDevice are arranged such that
+    /// the output streams are all fed the same data.
+    #[doc(alias = "kAudioAggregateDeviceIsStackedKey")]
+    pub fn is_stacked() -> &'static cf::String {
+        cf::str!(c"stacked")
+    }
+
+    /// The key used in a CFDictionary that describes the Tap composition of an
+    /// AudioAggregateDevice.  The value for this key is a CFArray of CFDictionaries
+    /// that describe each tap in the AudioAggregateDevice.  The keys for this
+    /// CFDictionary are defined in the AudioTap section.
+    #[doc(alias = "kAudioAggregateDeviceTapListKey")]
+    pub fn tap_list() -> &'static cf::String {
+        cf::str!(c"taps")
+    }
+
+    /// The key used in a CFDictionary that describes the composition of an
+    /// AudioAggregateDevice. The value for this key is a CFNumber where a non-zero  
+    /// value indicates that this aggregate device’s start should wait for the first
+    /// tap that receives audio. When this key is used, calling AudioDeviceStart with
+    /// the aggregate device will wait until a tapped process begins receiving its  
+    /// first audio from any tapped applications. The composition must also include
+    /// the private key so that the aggregate is private to the process that created
+    /// it.
+    #[doc(alias = "kAudioAggregateDeviceTapAutoStartKey")]
+    pub fn tap_auto_start() -> &'static cf::String {
+        cf::str!(c"tapautostart")
+    }
+}
+
+impl AudioAggregateDevice {
+    pub fn with_desc(desc: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result<Self> {
+        let mut res = std::mem::MaybeUninit::uninit();
+        unsafe {
+            AudioHardwareCreateAggregateDevice(desc, res.as_mut_ptr()).result()?;
+            Ok(Self(res.assume_init()))
+        }
+    }
+}
+
+impl Drop for AudioAggregateDevice {
+    fn drop(&mut self) {
+        unsafe {
+            let mut id = AudioObjId::UNKNOWN;
+            std::mem::swap(&mut self.0, &mut id);
+            let res = AudioHardwareDestroyAggregateDevice(id).result();
+            debug_assert!(res.is_ok());
+        }
+    }
+}
 
 #[link(name = "CoreAudio", kind = "framework")]
 extern "C-unwind" {
@@ -903,6 +1231,13 @@ extern "C-unwind" {
         out_proc_id: *mut Option<AudioDeviceIoProcId>,
     ) -> os::Status;
 
+    fn AudioHardwareCreateAggregateDevice(
+        desc: &cf::DictionaryOf<cf::String, cf::Type>,
+        out_device_id: *mut AudioObjId,
+    ) -> os::Status;
+
+    fn AudioHardwareDestroyAggregateDevice(device_id: AudioObjId) -> os::Status;
+
 }
 
 #[cfg(test)]
@@ -910,11 +1245,13 @@ mod tests {
     use crate::{
         arc, cat, cf,
         core_audio::{
-            AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope,
-            AudioObjPropSelector, TapDesc,
+            aggregate_device_keys as agg_keys, AudioObjId, AudioObjPropAddr, AudioObjPropElement,
+            AudioObjPropScope, AudioObjPropSelector, ProcessObj, TapDesc,
         },
         ns, os,
     };
+
+    use super::AudioAggregateDevice;
 
     #[test]
     fn list_devices() {
@@ -954,7 +1291,6 @@ mod tests {
     fn proc_io() {
         let desc = TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
         let tap = desc.create_process_tap().unwrap();
-        // tap.stream_cfg()
 
         // extern "C" fn proc(
         //     device: AudioObjId,
@@ -969,5 +1305,50 @@ mod tests {
         // }
 
         // tap.create_io_proc_id(proc, None).unwrap();
+    }
+
+    #[test]
+    fn aggregate_device() {
+        let output_device = AudioObjId::hardware_default_output_device().unwrap();
+        let output_uid = output_device.device_uid().unwrap();
+        let uuid = cf::Uuid::new().to_cf_string();
+        let dict = cf::DictionaryOf::with_keys_values(
+            &[
+                agg_keys::is_private(),
+                agg_keys::is_stacked(),
+                agg_keys::tap_auto_start(),
+                agg_keys::device_name(),
+                agg_keys::main_sub_device(),
+                agg_keys::device_uid(),
+            ],
+            &[
+                cf::Boolean::value_true().as_type_ref(),
+                cf::Boolean::value_false(),
+                cf::Boolean::value_true(),
+                cf::str!(c"Tap"),
+                &output_uid,
+                &uuid,
+            ],
+        );
+        let agg_device = AudioAggregateDevice::with_desc(&dict).unwrap();
+    }
+
+    #[test]
+    fn translate_pid() {
+        let obj = ProcessObj::with_pid(0).unwrap();
+        assert_eq!(obj.0, AudioObjId::UNKNOWN);
+
+        let _objs = ProcessObj::list().unwrap();
+
+        let pid = ns::ProcessInfo::current().process_id();
+        let obj = ProcessObj::with_pid(pid).unwrap();
+        assert_ne!(obj.0, AudioObjId::UNKNOWN);
+        let process_id = obj.pid().unwrap();
+        assert_eq!(pid, process_id);
+        println!("{:?}", obj.bundle_id());
+
+        assert!(!obj.is_running().unwrap());
+
+        let _devices = obj.devices().unwrap();
     }
 }

@@ -1,7 +1,10 @@
 use crate::{
+    arc, cat, cf,
     core_audio::{AudioObjId, TapDesc},
     os,
 };
+
+use super::{AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector};
 
 #[repr(transparent)]
 pub struct Tap(AudioObjId);
@@ -18,6 +21,38 @@ impl std::ops::Deref for Tap {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl std::ops::DerefMut for Tap {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Tap {
+    pub fn uid(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::TAP_UID,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        })
+    }
+
+    pub fn desc(&self) -> os::Result<arc::R<TapDesc>> {
+        self.cf_prop(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::TAP_DESCRIPTION,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement::MAIN,
+        })
+    }
+
+    pub fn asbd(&self) -> os::Result<cat::AudioBasicStreamDesc> {
+        self.prop(&AudioObjPropAddr {
+            selector: AudioObjPropSelector::TAP_FORMAT,
+            scope: AudioObjPropScope::GLOBAL,
+            element: AudioObjPropElement(0),
+        })
     }
 }
 
@@ -40,12 +75,23 @@ extern "C-unwind" {
 
 #[cfg(test)]
 pub mod tests {
-    pub use crate::core_audio as ca;
-    use crate::ns;
+    pub use crate::{core_audio as ca, ns};
 
     #[test]
     fn basics() {
-        let tap_desc = ca::TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
-        let _tap = tap_desc.create_process_tap().unwrap();
+        let desc = {
+            let tap_desc =
+                ca::TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
+            println!("{tap_desc:?}");
+            let tap = tap_desc.create_process_tap().unwrap();
+            let uid = tap.uid().unwrap();
+            println!("{uid:?}");
+            let asbd = tap.asbd();
+            println!("{asbd:?}");
+            let desc = tap.desc().unwrap();
+            desc
+        };
+        println!("{desc:?}");
+        println!("{}", desc.as_type_ref().retain_count());
     }
 }

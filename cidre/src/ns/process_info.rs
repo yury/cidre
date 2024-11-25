@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::{arc, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc, sys};
 
 #[doc(alias = "NSProcessInfoThermalState")]
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
@@ -172,7 +172,7 @@ impl ProcessInfo {
     pub fn process_name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(processIdentifier)]
-    pub fn process_id(&self) -> i32;
+    pub fn process_id(&self) -> sys::Pid;
 
     #[objc::msg_send(globallyUniqueString)]
     pub fn globally_unique_string(&self) -> arc::R<ns::String>;

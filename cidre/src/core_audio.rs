@@ -15,5 +15,8 @@ mod tap_description;
 pub use tap_description::TapDesc;
 pub use tap_description::TapMuteBehavior;
 
+pub use hardware::aggregate_device_keys;
+pub use hardware::ProcessObj;
+
 #[cfg(feature = "macos_14_2")]
 pub mod hardware_tapping;

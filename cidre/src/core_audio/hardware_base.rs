@@ -95,6 +95,12 @@ impl AudioObjPropScope {
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 }
 
+impl Default for AudioObjPropScope {
+    fn default() -> Self {
+        Self::GLOBAL
+    }
+}
+
 impl AudioObjPropElement {
     /// The AudioObjectPropertyElement value for properties that apply to the main
     /// element or to the entire scope.
@@ -104,6 +110,12 @@ impl AudioObjPropElement {
 
     #[doc(alias = "kAudioObjectPropertyElementWildcard")]
     pub const WILDCARD: Self = Self(0xFFFFFFFF);
+}
+
+impl Default for AudioObjPropElement {
+    fn default() -> Self {
+        Self::MAIN
+    }
 }
 
 impl AudioClassId {
