@@ -4,19 +4,49 @@ use crate::four_cc_to_str;
 #[doc(alias = "AudioObjectID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjId(pub u32);
+pub struct Obj(pub u32);
 
 #[doc(alias = "AudioClassID")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioClassId(pub u32);
+pub struct Class(pub u32);
+
+impl std::fmt::Debug for Class {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut fcc = self.0.to_be_bytes();
+        f.debug_struct("AudioClass")
+            .field("raw", &self.0)
+            .field("fcc", &four_cc_to_str(&mut fcc))
+            .finish()
+    }
+}
 
 #[doc(alias = "AudioObjectPropertySelector")]
 #[derive(Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjPropSelector(pub u32);
+pub struct PropSelector(pub u32);
 
-impl std::fmt::Debug for AudioObjPropSelector {
+impl PropSelector {
+    #[inline]
+    pub const fn global_addr(self) -> PropAddr {
+        PropAddr {
+            selector: self,
+            scope: PropScope::GLOBAL,
+            element: PropElement::MAIN,
+        }
+    }
+
+    #[inline]
+    pub const fn addr(self, scope: PropScope, element: PropElement) -> PropAddr {
+        PropAddr {
+            selector: self,
+            scope,
+            element,
+        }
+    }
+}
+
+impl std::fmt::Debug for PropSelector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut fcc = self.0.to_be_bytes();
         f.debug_struct("AudioObjPropSelector")
@@ -29,9 +59,9 @@ impl std::fmt::Debug for AudioObjPropSelector {
 #[doc(alias = "AudioObjectPropertyScope")]
 #[derive(Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjPropScope(pub u32);
+pub struct PropScope(pub u32);
 
-impl std::fmt::Debug for AudioObjPropScope {
+impl std::fmt::Debug for PropScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut fcc = self.0.to_be_bytes();
         f.debug_struct("AudioObjPropScope")
@@ -44,30 +74,40 @@ impl std::fmt::Debug for AudioObjPropScope {
 #[doc(alias = "AudioObjectPropertyElement")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
-pub struct AudioObjPropElement(pub u32);
+pub struct PropElement(pub u32);
 
 #[doc(alias = "AudioObjectPropertyAddress")]
 #[derive(Debug)]
 #[repr(C)]
-pub struct AudioObjPropAddr {
-    pub selector: AudioObjPropSelector,
-    pub scope: AudioObjPropScope,
-    pub element: AudioObjPropElement,
+pub struct PropAddr {
+    pub selector: PropSelector,
+    pub scope: PropScope,
+    pub element: PropElement,
 }
 
-impl AudioObjId {
+impl Default for PropAddr {
+    fn default() -> Self {
+        Self {
+            selector: PropSelector::WILDCARD,
+            scope: Default::default(),
+            element: Default::default(),
+        }
+    }
+}
+
+impl Obj {
     /// This is the sentinel value. No object will have an ID whose value is 0.
     #[doc(alias = "kAudioObjectUnknown")]
     pub const UNKNOWN: Self = Self(0);
 }
 
-impl Default for AudioObjId {
+impl Default for Obj {
     fn default() -> Self {
         Self::UNKNOWN
     }
 }
 
-impl AudioObjPropScope {
+impl PropScope {
     /// The AudioObjectPropertyScope for properties that apply to the object as a
     /// whole. All objects have a global scope and for most it is their only scope.
     #[doc(alias = "kAudioObjectPropertyScopeGlobal")]
@@ -95,13 +135,13 @@ impl AudioObjPropScope {
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 }
 
-impl Default for AudioObjPropScope {
+impl Default for PropScope {
     fn default() -> Self {
         Self::GLOBAL
     }
 }
 
-impl AudioObjPropElement {
+impl PropElement {
     /// The AudioObjectPropertyElement value for properties that apply to the main
     /// element or to the entire scope.
     #[doc(alias = "kAudioObjectPropertyElementMaster")] // replaced with main
@@ -112,18 +152,21 @@ impl AudioObjPropElement {
     pub const WILDCARD: Self = Self(0xFFFFFFFF);
 }
 
-impl Default for AudioObjPropElement {
+impl Default for PropElement {
     fn default() -> Self {
         Self::MAIN
     }
 }
 
-impl AudioClassId {
+impl Class {
     #[doc(alias = "kAudioObjectClassIDWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 
     #[doc(alias = "kAudioObjectClassID")]
     pub const OBJECT: Self = Self(u32::from_be_bytes(*b"aobj"));
+
+    #[doc(alias = "kAudioSystemObjectClassID")]
+    pub const SYSTEM: Self = Self(u32::from_be_bytes(*b"asys"));
 
     /// The AudioClassId that identifies the AudioPlugIn class.
     #[doc(alias = "kAudioPlugInClassID")]
@@ -276,7 +319,7 @@ impl AudioClassId {
     pub const AGGREGATE_DEVICE: Self = Self(u32::from_be_bytes(*b"aagg"));
 }
 
-impl AudioObjPropSelector {
+impl PropSelector {
     #[doc(alias = "kAudioObjectPropertySelectorWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
 
@@ -347,7 +390,7 @@ impl AudioObjPropSelector {
     /// representation in an application. Typically, this property is only supported
     /// by AudioDevices and AudioBoxes.
     #[doc(alias = "kAudioObjectPropertyIdentify")]
-    pub const IDENTITY: Self = Self(u32::from_be_bytes(*b"iden"));
+    pub const IDENTIFY: Self = Self(u32::from_be_bytes(*b"iden"));
 
     /// A cf::String that contains the human readable serial number for the object.
     /// This property will typically be implemented by AudioBox and AudioDevice
@@ -367,7 +410,7 @@ impl AudioObjPropSelector {
 }
 
 /// AudioPlugIn Properties
-impl AudioObjPropSelector {
+impl PropSelector {
     #[doc(alias = "kAudioPlugInPropertyBundleID")]
     pub const PLUG_IN_BUNDLE_ID: Self = Self(u32::from_be_bytes(*b"piid"));
 
@@ -391,7 +434,7 @@ impl AudioObjPropSelector {
 }
 
 /// AudioTransportManager Properties
-impl AudioObjPropSelector {
+impl PropSelector {
     #[doc(alias = "kAudioTransportManagerPropertyEndPointList")]
     pub const TRANSPORT_MANAGER_END_POINT_LIST: Self = Self(u32::from_be_bytes(*b"end#"));
 
@@ -404,7 +447,7 @@ impl AudioObjPropSelector {
 }
 
 /// AudioObjectPropertySelector values provided by the AudioBox class.
-impl AudioObjPropSelector {
+impl PropSelector {
     #[doc(alias = "kAudioBoxPropertyBoxUID")]
     pub const BOX_UID: Self = Self(u32::from_be_bytes(*b"buid"));
 
@@ -436,9 +479,9 @@ impl AudioObjPropSelector {
     pub const BOX_CLOCK_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"bcl#"));
 }
 
-pub struct AudioDeviceTransportType(pub u32);
+pub struct DeviceTransportType(pub u32);
 
-impl AudioDeviceTransportType {
+impl DeviceTransportType {
     #[doc(alias = "kAudioDeviceTransportTypeUnknown")]
     pub const UNKNOWN: Self = Self(0);
 
@@ -489,7 +532,7 @@ impl AudioDeviceTransportType {
 }
 
 /// Values provided by the AudioDevice class
-impl AudioObjPropSelector {
+impl PropSelector {
     /// A cf::String that contains the bundle ID for an application that provides a
     /// GUI for configuring the AudioDevice.
     ///
@@ -497,7 +540,7 @@ impl AudioObjPropSelector {
     /// is the bundle ID for Audio MIDI Setup. The caller is responsible for
     /// releasing the returned cf::Obj.
     #[doc(alias = "kAudioDevicePropertyConfigurationApplication")]
-    pub const CONFIGURATION_APP: Self = Self(u32::from_be_bytes(*b"capp"));
+    pub const DEVICE_CONFIGURATION_APP: Self = Self(u32::from_be_bytes(*b"capp"));
 
     /// A cf::String that contains a persistent identifier for the AudioDevice. An
     /// AudioDevice's UID is persistent across boots. The content of the UID string
@@ -515,19 +558,19 @@ impl AudioObjPropSelector {
     /// same no matter on what machine the AudioDevice appears. The caller is
     /// responsible for releasing the returned cf::Obj.
     #[doc(alias = "kAudioDevicePropertyModelUID")]
-    pub const MODEL_UID: Self = Self(u32::from_be_bytes(*b"muid"));
+    pub const DEVICE_MODEL_UID: Self = Self(u32::from_be_bytes(*b"muid"));
 
     /// A u32 whose value indicates how the AudioDevice is connected to the CPU.
     /// Constants for some of the values for this property can be found in the enum
     /// in the AudioDevice Constants section of this file.
     #[doc(alias = "kAudioDevicePropertyTransportType")]
-    pub const TRANSPORT_TYPE: Self = Self(u32::from_be_bytes(*b"tran"));
+    pub const DEVICE_TRANSPORT_TYPE: Self = Self(u32::from_be_bytes(*b"tran"));
 
     ///  An array of AudioDeviceIDs for devices related to the AudioDevice. For
     /// IOAudio-based devices, AudioDevices are related if they share the same
     /// IOAudioDevice object.
     #[doc(alias = "kAudioDevicePropertyRelatedDevices")]
-    pub const RELATED_DEVICES: Self = Self(u32::from_be_bytes(*b"akin"));
+    pub const DEVICE_RELATED_DEVICES: Self = Self(u32::from_be_bytes(*b"akin"));
 
     /// A u32 whose value indicates the clock domain to which this AudioDevice
     /// belongs. AudioDevices that have the same value for this property are able to
@@ -536,12 +579,12 @@ impl AudioObjPropSelector {
     /// from every other device's clock domain, even if they have the value of 0 as
     /// their clock domain as well.
     #[doc(alias = "kAudioDevicePropertyClockDomain")]
-    pub const CLOCK_DOMAIN: Self = Self(u32::from_be_bytes(*b"clkd"));
+    pub const DEVICE_CLOCK_DOMAIN: Self = Self(u32::from_be_bytes(*b"clkd"));
 
     /// A u32 where a value of 1 means the device is ready and available and 0
     /// means the device is unusable and will most likely go away shortly.
     #[doc(alias = "kAudioDevicePropertyDeviceIsAlive")]
-    pub const IS_ALIVE: Self = Self(u32::from_be_bytes(*b"livn"));
+    pub const DEVICE_IS_ALIVE: Self = Self(u32::from_be_bytes(*b"livn"));
 
     ///  A u32 where a value of 0 means the AudioDevice is not performing IO and
     /// a value of 1 means that it is. Note that the device can be running even if
@@ -549,18 +592,18 @@ impl AudioObjPropSelector {
     /// passing a NULL IOProc. Note that the notification for this property is
     /// usually sent from the AudioDevice's IO thread.
     #[doc(alias = "kAudioDevicePropertyDeviceIsRunning")]
-    pub const IS_RUNNING: Self = Self(u32::from_be_bytes(*b"goin"));
+    pub const DEVICE_IS_RUNNING: Self = Self(u32::from_be_bytes(*b"goin"));
 
     /// A u32 where 1 means that the AudioDevice is a possible selection for
     /// kAudioHardwarePropertyDefaultInputDevice or
     /// kAudioHardwarePropertyDefaultOutputDevice depending on the scope.
     #[doc(alias = "kAudioDevicePropertyDeviceCanBeDefaultDevice")]
-    pub const CAN_BE_DEFAULT_DEVICE: Self = Self(u32::from_be_bytes(*b"dflt"));
+    pub const DEVICE_CAN_BE_DEFAULT_DEVICE: Self = Self(u32::from_be_bytes(*b"dflt"));
 
     /// A u32 where 1 means that the AudioDevice is a possible selection for
     /// kAudioHardwarePropertyDefaultSystemOutputDevice.
     #[doc(alias = "kAudioDevicePropertyDeviceCanBeDefaultSystemDevice")]
-    pub const CAN_BE_DEFAULT_SYS_DEVICE: Self = Self(u32::from_be_bytes(*b"sflt"));
+    pub const DEVICE_CAN_BE_DEFAULT_SYS_DEVICE: Self = Self(u32::from_be_bytes(*b"sflt"));
 
     /// A u32 containing the number of frames of latency in the AudioDevice. Note
     /// that input and output latency may differ. Further, the AudioDevice's
@@ -568,14 +611,14 @@ impl AudioObjPropSelector {
     /// If both the device and the stream say they have latency, then the total
     /// latency for the stream is the device latency summed with the stream latency.
     #[doc(alias = "kAudioDevicePropertyLatency")]
-    pub const LATENCY: Self = Self(u32::from_be_bytes(*b"ltnc"));
+    pub const DEVICE_LATENCY: Self = Self(u32::from_be_bytes(*b"ltnc"));
 
     /// An array of AudioStreamIDs that represent the AudioStreams of the
     /// AudioDevice. Note that if a notification is received for this property, any
     /// cached AudioStreamIDs for the device become invalid and need to be
     /// re-fetched.
     #[doc(alias = "kAudioDevicePropertyStreams")]
-    pub const STREAMS: Self = Self(u32::from_be_bytes(*b"stm#"));
+    pub const DEVICE_STREAMS: Self = Self(u32::from_be_bytes(*b"stm#"));
 
     /// An array of AudioObjectIDs that represent the AudioControls of the
     /// AudioDevice. Note that if a notification is received for this property, any
@@ -587,39 +630,39 @@ impl AudioObjPropSelector {
     /// A u32 whose value indicates the number for frames in ahead (for output)
     /// or behind (for input the current hardware position that is safe to do IO.
     #[doc(alias = "kAudioDevicePropertySafetyOffset")]
-    pub const SAFETY_OFFSET: Self = Self(u32::from_be_bytes(*b"saft"));
+    pub const DEVICE_SAFETY_OFFSET: Self = Self(u32::from_be_bytes(*b"saft"));
 
     /// A f64 that indicates the current nominal sample rate of the AudioDevice.
     #[doc(alias = "kAudioDevicePropertyNominalSampleRate")]
-    pub const NOMINAL_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"nsrt"));
+    pub const DEVICE_NOMINAL_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"nsrt"));
 
     /// An array of AudioValueRange structs that indicates the valid ranges for the
     /// nominal sample rate of the AudioDevice.
     #[doc(alias = "kAudioDevicePropertyAvailableNominalSampleRates")]
-    pub const AVAILABLE_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"nsr#"));
+    pub const DEVICE_AVAILABLE_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"nsr#"));
 
-    /// A cf::URL that indicates an image file that can be used to represent the
+    /// A cf::Url that indicates an image file that can be used to represent the
     /// device visually. The caller is responsible for releasing the returned
     /// cf::Obj.
     #[doc(alias = "kAudioDevicePropertyIcon")]
-    pub const ICON: Self = Self(u32::from_be_bytes(*b"icon"));
+    pub const DEVICE_ICON: Self = Self(u32::from_be_bytes(*b"icon"));
 
     /// A u32 where a non-zero value indicates that the device is not included
     /// in the normal list of devices provided by kAudioHardwarePropertyDevices nor
     /// can it be the default device. Hidden devices can only be discovered by
     /// knowing their UID and using kAudioHardwarePropertyDeviceForUID.
     #[doc(alias = "kAudioDevicePropertyIsHidden")]
-    pub const IS_HIDDEN: Self = Self(u32::from_be_bytes(*b"hidn"));
+    pub const DEVICE_IS_HIDDEN: Self = Self(u32::from_be_bytes(*b"hidn"));
 
     /// An array of two u32s, the first for the left channel, the second for the
     /// right channel, that indicate the channel numbers to use for stereo IO on the
     /// device. The value of this property can be different for input and output and
     /// there are no restrictions on the channel numbers that can be used.
     #[doc(alias = "kAudioDevicePropertyPreferredChannelsForStereo")]
-    pub const PREFERRED_CHANNELS_FOR_STEREO: Self = Self(u32::from_be_bytes(*b"dch2"));
+    pub const DEVICE_PREFERRED_CHANNELS_FOR_STEREO: Self = Self(u32::from_be_bytes(*b"dch2"));
 
     /// An AudioChannelLayout that indicates how each channel of the AudioDevice
     /// should be used.
     #[doc(alias = "kAudioDevicePropertyPreferredChannelLayout")]
-    pub const PREFERRED_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"srnd"));
+    pub const DEVICE_PREFERRED_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"srnd"));
 }

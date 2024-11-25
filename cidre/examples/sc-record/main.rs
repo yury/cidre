@@ -5,7 +5,7 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-use std::{collections::VecDeque, ffi::c_void, time::Duration};
+use std::{collections::VecDeque, ffi::c_void, fmt::Debug, time::Duration};
 
 use cidre::{
     arc, at,

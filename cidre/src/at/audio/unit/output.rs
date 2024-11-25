@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[cfg(target_os = "macos")]
-use crate::core_audio::AudioObjId;
+use crate::core_audio::Device;
 
 pub struct Output<S>(UnitRef<S>)
 where
@@ -259,7 +259,7 @@ impl Output<UninitializedState> {
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn output_device(&self) -> os::Result<AudioObjId> {
+    pub fn output_device(&self) -> os::Result<Device> {
         self.unit().prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -270,18 +270,18 @@ impl Output<UninitializedState> {
     /// Set device after enable IO
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn set_output_device(&mut self, val: AudioObjId) -> os::Result {
+    pub fn set_output_device(&mut self, val: &Device) -> os::Result {
         self.unit_mut().set_prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
             au::Element(0),
-            &val,
+            val,
         )
     }
 
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn input_device(&self) -> os::Result<AudioObjId> {
+    pub fn input_device(&self) -> os::Result<Device> {
         self.unit().prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
@@ -292,12 +292,12 @@ impl Output<UninitializedState> {
     /// Set device after enable IO
     #[cfg(target_os = "macos")]
     #[inline]
-    pub fn set_input_device(&mut self, val: AudioObjId) -> os::Result {
+    pub fn set_input_device(&mut self, val: &Device) -> os::Result {
         self.unit_mut().set_prop(
             au::PropId::OUTPUT_CURRENT_DEVICE,
             Scope::GLOBAL,
             au::Element(1),
-            &val,
+            val,
         )
     }
 }
@@ -345,10 +345,7 @@ mod tests {
 
     use crate::{
         at::{self, au},
-        core_audio::{
-            AudioObjId, AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope,
-            AudioObjPropSelector,
-        },
+        core_audio::{Obj, PropAddr, PropElement, PropScope, PropSelector, System},
         os,
     };
     const BUS_IN: u32 = 1;
@@ -396,15 +393,10 @@ mod tests {
 
         output.set_input_cb(input_cb, std::ptr::null_mut()).unwrap();
 
-        let addr = AudioObjPropAddr {
-            selector: AudioObjPropSelector::HARDWARE_DEFAULT_INPUT_DEVICE,
-            scope: AudioObjPropScope::GLOBAL,
-            element: AudioObjPropElement::MAIN,
-        };
-        let device_id: AudioObjId = AudioObjId::SYS_OBJECT.prop(&addr).unwrap();
-        device_id.show();
+        let device = System::default_input_device().unwrap();
+        device.show();
 
-        output.set_input_device(device_id).unwrap();
+        output.set_input_device(&device).unwrap();
         let mut output = output.allocate_resources().unwrap();
 
         output.start().unwrap();
@@ -429,19 +421,19 @@ mod tests {
         let mut mute_count = 0usize;
 
         extern "C-unwind" fn callback(
-            _obj_id: AudioObjId,
+            _obj_id: Obj,
             _number_addresses: u32,
-            _addresses: *const AudioObjPropAddr,
+            _addresses: *const PropAddr,
             client_data: *mut usize,
         ) -> os::Status {
             unsafe { client_data.write(1) };
             os::Status::NO_ERR
         }
 
-        let mute_addr = AudioObjPropAddr {
-            selector: AudioObjPropSelector::MUTE,
-            scope: AudioObjPropScope::INPUT,
-            element: AudioObjPropElement::MAIN,
+        let mute_addr = PropAddr {
+            selector: PropSelector::DEVICE_MUTE,
+            scope: PropScope::INPUT,
+            element: PropElement::MAIN,
         };
 
         output_device

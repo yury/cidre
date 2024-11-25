@@ -1,13 +1,12 @@
 use crate::{
     arc, cat, cf,
-    core_audio::{AudioObjId, TapDesc},
+    core_audio::{Obj, PropSelector, TapDesc},
     os,
 };
 
-use super::{AudioObjPropAddr, AudioObjPropElement, AudioObjPropScope, AudioObjPropSelector};
-
+#[derive(Debug)]
 #[repr(transparent)]
-pub struct Tap(AudioObjId);
+pub struct Tap(Obj);
 
 impl Drop for Tap {
     fn drop(&mut self) {
@@ -17,7 +16,7 @@ impl Drop for Tap {
 }
 
 impl std::ops::Deref for Tap {
-    type Target = AudioObjId;
+    type Target = Obj;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -32,27 +31,19 @@ impl std::ops::DerefMut for Tap {
 
 impl Tap {
     pub fn uid(&self) -> os::Result<arc::R<cf::String>> {
-        self.cf_prop(&AudioObjPropAddr {
-            selector: AudioObjPropSelector::TAP_UID,
-            scope: AudioObjPropScope::GLOBAL,
-            element: AudioObjPropElement::MAIN,
-        })
+        self.cf_prop(&PropSelector::TAP_UID.global_addr())
     }
 
     pub fn desc(&self) -> os::Result<arc::R<TapDesc>> {
-        self.cf_prop(&AudioObjPropAddr {
-            selector: AudioObjPropSelector::TAP_DESCRIPTION,
-            scope: AudioObjPropScope::GLOBAL,
-            element: AudioObjPropElement::MAIN,
-        })
+        self.cf_prop(&PropSelector::TAP_DESCRIPTION.global_addr())
     }
 
+    /// An cat::AudioStreamBasicDesc that describes the current data format for
+    /// the tap. This is the format of that data that will be accessible in any aggregate
+    /// device that contains the tap.
+    #[doc(alias = "kAudioTapPropertyFormat")]
     pub fn asbd(&self) -> os::Result<cat::AudioBasicStreamDesc> {
-        self.prop(&AudioObjPropAddr {
-            selector: AudioObjPropSelector::TAP_FORMAT,
-            scope: AudioObjPropScope::GLOBAL,
-            element: AudioObjPropElement(0),
-        })
+        self.prop(&PropSelector::TAP_FORMAT.global_addr())
     }
 }
 
@@ -68,20 +59,18 @@ impl TapDesc {
 
 #[link(name = "CoreAudio", kind = "framework")]
 extern "C-unwind" {
-    pub fn AudioHardwareCreateProcessTap(desc: &TapDesc, out_tap_id: *mut AudioObjId)
-        -> os::Status;
-    pub fn AudioHardwareDestroyProcessTap(tap_id: AudioObjId) -> os::Status;
+    pub fn AudioHardwareCreateProcessTap(desc: &TapDesc, out_tap_id: *mut Obj) -> os::Status;
+    pub fn AudioHardwareDestroyProcessTap(tap_id: Obj) -> os::Status;
 }
 
 #[cfg(test)]
 pub mod tests {
-    pub use crate::{core_audio as ca, ns};
+    pub use crate::{core_audio::TapDesc, ns};
 
     #[test]
     fn basics() {
         let desc = {
-            let tap_desc =
-                ca::TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
+            let tap_desc = TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
             println!("{tap_desc:?}");
             let tap = tap_desc.create_process_tap().unwrap();
             let uid = tap.uid().unwrap();
