@@ -12,7 +12,7 @@ fn main() {
     let sub_device =
         cf::DictionaryOf::with_keys_values(&[sub_keys::uid()], &[output_uid.as_type_ref()]);
 
-    let sub_devices = cf::ArrayOf::from_slice(&[sub_device.as_ref()]);
+    let sub_device_list = cf::ArrayOf::from_slice(&[sub_device.as_ref()]);
 
     let tap_desc = ca::TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
     let tap = tap_desc.create_process_tap().unwrap();
@@ -41,7 +41,7 @@ fn main() {
             cf::str!(c"Tap"),
             &output_uid,
             &uuid,
-            &sub_devices,
+            &sub_device_list,
             &tap_list,
         ],
     );
