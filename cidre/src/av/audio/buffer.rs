@@ -47,7 +47,7 @@ impl arc::A<PcmBuf> {
         self,
         format: &Format,
         buf_list: &AudioBufList<N>,
-        deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *mut AudioBufList<N>)>>,
+        deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *const AudioBufList<N>)>>,
     ) -> Option<arc::R<PcmBuf>>;
 }
 
@@ -63,7 +63,7 @@ impl PcmBuf {
     pub fn with_buf_list_no_copy<const N: usize>(
         format: &Format,
         buf_list: &AudioBufList<N>,
-        deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *mut AudioBufList<N>)>>,
+        deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *const AudioBufList<N>)>>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_pcm_format_buf_list_no_copy(format, buf_list, deallocator)
     }
