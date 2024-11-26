@@ -130,7 +130,7 @@ impl Format {
     /// let settings = format.settings();
     /// ```
     #[objc::msg_send(settings)]
-    pub fn settings(&self) -> &ns::Dictionary<ns::String, ns::Id>;
+    pub fn settings(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
 
     #[objc::msg_send(isInterleaved)]
     pub fn is_interleaved(&self) -> bool;
@@ -145,10 +145,10 @@ impl Format {
     pub fn absd(&self) -> &StreamBasicDesc;
 
     #[objc::msg_send(channelLayout)]
-    pub fn channel_layout(&self) -> Option<&ChannelLayout>;
+    pub fn channel_layout(&self) -> Option<arc::R<ChannelLayout>>;
 
     #[objc::msg_send(magicCookie)]
-    pub fn magic_cookie(&self) -> Option<&ns::Data>;
+    pub fn magic_cookie(&self) -> Option<arc::R<ns::Data>>;
 }
 
 #[link(name = "av", kind = "static")]
