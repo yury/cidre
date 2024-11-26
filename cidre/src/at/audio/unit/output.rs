@@ -9,7 +9,7 @@ use crate::{
     os,
 };
 
-#[cfg(target_os = "macos")]
+#[cfg(all(target_os = "macos", feature = "core_audio"))]
 use crate::core_audio::Device;
 
 pub struct Output<S>(UnitRef<S>)
@@ -257,7 +257,7 @@ impl Output<UninitializedState> {
         self.unit_mut().set_stream_format(Scope::OUTPUT, 1, val)
     }
 
-    #[cfg(target_os = "macos")]
+    #[cfg(all(target_os = "macos", feature = "core_audio"))]
     #[inline]
     pub fn output_device(&self) -> os::Result<Device> {
         self.unit().prop(
@@ -268,7 +268,7 @@ impl Output<UninitializedState> {
     }
 
     /// Set device after enable IO
-    #[cfg(target_os = "macos")]
+    #[cfg(all(target_os = "macos", feature = "core_audio"))]
     #[inline]
     pub fn set_output_device(&mut self, val: &Device) -> os::Result {
         self.unit_mut().set_prop(
@@ -279,7 +279,7 @@ impl Output<UninitializedState> {
         )
     }
 
-    #[cfg(target_os = "macos")]
+    #[cfg(all(target_os = "macos", feature = "core_audio"))]
     #[inline]
     pub fn input_device(&self) -> os::Result<Device> {
         self.unit().prop(
@@ -290,7 +290,7 @@ impl Output<UninitializedState> {
     }
 
     /// Set device after enable IO
-    #[cfg(target_os = "macos")]
+    #[cfg(all(target_os = "macos", feature = "core_audio"))]
     #[inline]
     pub fn set_input_device(&mut self, val: &Device) -> os::Result {
         self.unit_mut().set_prop(
