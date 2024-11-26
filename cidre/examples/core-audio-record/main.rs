@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use ca::aggregate_device_keys as agg_keys;
 use ca::sub_device_keys as sub_keys;
-use cidre::{cat, cf, core_audio as ca, ns, os};
+use cidre::{arc, av, cat, cf, core_audio as ca, ns, os};
 
 fn main() {
     let output_device = ca::System::default_output_device().unwrap();
@@ -42,6 +42,24 @@ fn main() {
     );
     let agg_device = ca::AggregateDevice::with_desc(&dict).unwrap();
 
+    let asbd = tap.asbd().unwrap();
+    let format = av::AudioFormat::with_asbd(&asbd).unwrap();
+    let url = ns::Url::with_fs_path_string(ns::str!(c"/tmp/record.wav"), false);
+    let file = av::AudioFile::open_write_common_format(
+        &url,
+        &format.settings(),
+        av::audio::CommonFormat::PcmF32,
+        format.is_interleaved(),
+    )
+    .unwrap();
+
+    struct Ctx {
+        file: arc::R<av::AudioFile>,
+        format: arc::R<av::AudioFormat>,
+    }
+
+    let mut ctx = Ctx { file, format };
+
     extern "C" fn proc(
         _device: ca::Device,
         _now: &cat::AudioTimeStamp,
@@ -49,15 +67,19 @@ fn main() {
         _input_time: &cat::AudioTimeStamp,
         _output_data: &mut cat::AudioBufList<1>,
         _output_time: &cat::AudioTimeStamp,
-        _client_data: Option<&mut std::ffi::c_void>,
+        ctx: Option<&mut Ctx>,
     ) -> os::Status {
-        println!("{input_data:?}");
+        let ctx = ctx.unwrap();
+        let buf = av::AudioPcmBuf::with_buf_list_no_copy(&ctx.format, input_data, None).unwrap();
+        ctx.file.write(&buf).unwrap();
         Default::default()
     }
 
     {
-        let proc_id = agg_device.create_io_proc_id(proc, None).unwrap();
+        let proc_id = agg_device.create_io_proc_id(proc, Some(&mut ctx)).unwrap();
         let _started_device = ca::device_start(agg_device, Some(proc_id)).unwrap();
         std::thread::sleep(Duration::from_secs(10));
     }
+
+    ctx.file.close();
 }

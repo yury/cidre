@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, define_cls, define_obj_type, ns, objc};
+use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "at")]
 use crate::at::{audio::StreamPacketDesc, AudioBufList};
@@ -41,6 +41,14 @@ impl arc::A<PcmBuf> {
         format: &Format,
         frame_capacity: FrameCount,
     ) -> Option<arc::R<PcmBuf>>;
+
+    #[objc::msg_send(initWithPCMFormat:bufferListNoCopy:deallocator:)]
+    pub fn init_with_pcm_format_buf_list_no_copy<const N: usize>(
+        self,
+        format: &Format,
+        buf_list: &AudioBufList<N>,
+        deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *mut AudioBufList<N>)>>,
+    ) -> Option<arc::R<PcmBuf>>;
 }
 
 /// Provides a number of methods useful for manipulating buffers of
@@ -50,6 +58,14 @@ impl PcmBuf {
 
     pub fn with_format(format: &Format, frame_capacity: FrameCount) -> Option<arc::R<Self>> {
         Self::alloc().init_with_pcm_format_frame_capacity(format, frame_capacity)
+    }
+
+    pub fn with_buf_list_no_copy<const N: usize>(
+        format: &Format,
+        buf_list: &AudioBufList<N>,
+        deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *mut AudioBufList<N>)>>,
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_pcm_format_buf_list_no_copy(format, buf_list, deallocator)
     }
     /// The current number of valid sample frames in the buffer.
     ///
