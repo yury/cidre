@@ -8,9 +8,19 @@ use crate::{
 #[repr(transparent)]
 pub struct Tap(Obj);
 
-impl Drop for Tap {
+pub struct TapGuard(Tap);
+
+impl std::ops::Deref for TapGuard {
+    type Target = Tap;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Drop for TapGuard {
     fn drop(&mut self) {
-        let res = unsafe { AudioHardwareDestroyProcessTap(self.0) };
+        let res = unsafe { AudioHardwareDestroyProcessTap(self.0 .0) };
         debug_assert!(res.is_ok(), "Failed to destroy process tap");
     }
 }
@@ -48,11 +58,11 @@ impl Tap {
 }
 
 impl TapDesc {
-    pub fn create_process_tap(&self) -> os::Result<Tap> {
+    pub fn create_process_tap(&self) -> os::Result<TapGuard> {
         let mut res = std::mem::MaybeUninit::uninit();
         unsafe {
             AudioHardwareCreateProcessTap(self, res.as_mut_ptr()).result()?;
-            Ok(Tap(res.assume_init()))
+            Ok(TapGuard(Tap(res.assume_init())))
         }
     }
 }

@@ -24,3 +24,7 @@ pub use tap_description::TapMuteBehavior;
 
 #[cfg(feature = "macos_14_2")]
 pub mod hardware_tapping;
+#[cfg(feature = "macos_14_2")]
+pub use hardware_tapping::Tap;
+#[cfg(feature = "macos_14_2")]
+pub use hardware_tapping::TapGuard;
